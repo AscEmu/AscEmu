@@ -887,7 +887,7 @@ Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, ui
 
     pCreature->SetEquippedItem(MELEE, 22802);
 
-    pCreature->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PLUS_MOB | UNIT_FLAG_NOT_ATTACKABLE_9 | UNIT_FLAG_UNKNOWN_10 | UNIT_FLAG_PVP); // 4928
+    pCreature->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PLUS_MOB | UNIT_FLAG_NOT_ATTACKABLE_9 | UNIT_FLAG_UNKNOWN_10 | UNIT_FLAG_PVP); // 4928
 
     pCreature->SetBaseAttackTime(MELEE, 2000);
     pCreature->SetBaseAttackTime(OFFHAND, 2000);
@@ -900,8 +900,8 @@ Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, ui
     pCreature->SetChannelSpellId(22011);
     pCreature->SetCastSpeedMod(1.0f);
 
-    pCreature->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPIRITGUIDE);
-    pCreature->SetUInt32Value(UNIT_FIELD_BYTES_2, 1 | (0x10 << 8));
+    pCreature->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPIRITGUIDE);
+    pCreature->setUInt32Value(UNIT_FIELD_BYTES_2, 1 | (0x10 << 8));
 
     pCreature->DisableAI();
 

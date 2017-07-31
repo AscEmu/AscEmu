@@ -492,7 +492,7 @@ class CrystalSpikeAI : public MoonScriptBossAI
     {
         SetCanEnterCombat(false);
         SetCanMove(false);
-        _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
         Despawn(4500, 0);
         RegisterAIUpdateEvent(500);

@@ -1083,7 +1083,7 @@ void WorldSession::HandleCharterBuyOpcode(WorldPacket& recv_data)
             charter->PetitionSignerCount = petitionSignerCount;
             memcpy(charter->Data, charterData, sizeof(charterData));
 
-            item->SetUInt32Value(ITEM_FIELD_STACK_COUNT, 1);
+            item->setUInt32Value(ITEM_FIELD_STACK_COUNT, 1);
             item->SoulBind();
             item->SetEnchantmentId(0, charter->GetID());
             item->SetItemRandomSuffixFactor(57813883);

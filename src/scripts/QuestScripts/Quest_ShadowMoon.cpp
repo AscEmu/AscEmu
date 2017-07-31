@@ -126,7 +126,7 @@ class DeathbringerJovaanAI : public MoonScriptCreatureAI
                             MoonScriptCreatureAI* pRazuunAI = SpawnCreature(21502, -3300.47f, 2927.22f, 173.870f, 2.42924f, false);    // Spawn Razuun
                             if(pRazuunAI != NULL)
                             {
-                                pRazuunAI->GetUnit()->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+                                pRazuunAI->GetUnit()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
                                 pRazuunAI->SetCanEnterCombat(false);
                                 pRazuunAI->SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
                                 pRazuunAI->SetCanMove(false);
@@ -353,7 +353,7 @@ class EnslavedNetherwingDrakeAI : public MoonScriptCreatureAI
         {
             Movement::LocationWithFlag WayPoint = { _unit->GetPositionX(), _unit->GetPositionY() + 30, _unit->GetPositionZ() + 100, _unit->GetOrientation(), Movement::WP_MOVE_TYPE_FLY };
             SetCanMove(false);
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH | UNIT_FLAG_NOT_ATTACKABLE_2);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH | UNIT_FLAG_NOT_ATTACKABLE_2);
             AddWaypoint(CreateWaypoint(1, 0, WayPoint));
         }
 

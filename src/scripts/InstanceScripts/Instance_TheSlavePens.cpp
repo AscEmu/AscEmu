@@ -954,7 +954,7 @@ class TotemsAI : public CreatureAIScript
                     break;
                 default:    // for Corrupted Nova Totem and it's also safe case
                     {
-                        _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);    // hax
+                        _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);    // hax
                         Despawn = 6000;
                         SpellID = 33132;
                         AIUpdate = 5000;
@@ -980,7 +980,7 @@ class TotemsAI : public CreatureAIScript
         void AIUpdate()
         {
             if (_unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2))
-                _unit->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
+                _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
 
             _unit->CastSpell(_unit, SpellID, true);
         }

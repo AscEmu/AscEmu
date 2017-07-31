@@ -64,10 +64,10 @@ class SERVER_DECL Corpse : public Object
 
         //Easy functions
         void SetOwner(uint64 guid);
-        uint64 GetOwner() { return GetUInt64Value(CORPSE_FIELD_OWNER); }
+        uint64 GetOwner() { return getUInt64Value(CORPSE_FIELD_OWNER); }
 
-        void SetDisplayId(uint32 id) { SetUInt32Value(CORPSE_FIELD_DISPLAY_ID, id); }
-        uint32 GetDisplayId() { return GetUInt32Value(CORPSE_FIELD_DISPLAY_ID); }
+        void SetDisplayId(uint32 id) { setUInt32Value(CORPSE_FIELD_DISPLAY_ID, id); }
+        uint32 GetDisplayId() { return getUInt32Value(CORPSE_FIELD_DISPLAY_ID); }
 
     private:
 

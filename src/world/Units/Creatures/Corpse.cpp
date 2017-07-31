@@ -42,7 +42,7 @@ Corpse::Corpse(uint32 high, uint32 low)
     memset(m_uint32Values, 0, (CORPSE_END)*sizeof(uint32));
     m_updateMask.SetCount(CORPSE_END);
 
-    SetUInt32Value(OBJECT_FIELD_TYPE, TYPE_CORPSE | TYPE_OBJECT);
+    setUInt32Value(OBJECT_FIELD_TYPE, TYPE_CORPSE | TYPE_OBJECT);
 
     SetLowGUID(low);
     SetHighGUID(high);
@@ -94,7 +94,7 @@ void Corpse::SaveToDB()
         << "', '";
 
     for (uint16 i = 0; i < m_valuesCount; i++)
-        ss << GetUInt32Value(i) << " ";
+        ss << getUInt32Value(i) << " ";
 
     ss << "', " << GetInstanceID() << ")";
 
@@ -125,13 +125,13 @@ void Corpse::generateLoot()
 
 void Corpse::SpawnBones()
 {
-    SetUInt32Value(CORPSE_FIELD_FLAGS, 5);
+    setUInt32Value(CORPSE_FIELD_FLAGS, 5);
     SetOwner(0); // remove corpse owner association
     //remove item association
     for (uint8 i = 0; i < EQUIPMENT_SLOT_END; i++)
     {
-        if (GetUInt32Value(CORPSE_FIELD_ITEM + i))
-            SetUInt32Value(CORPSE_FIELD_ITEM + i, 0);
+        if (getUInt32Value(CORPSE_FIELD_ITEM + i))
+            setUInt32Value(CORPSE_FIELD_ITEM + i, 0);
     }
     DeleteFromDB();
     objmgr.CorpseAddEventDespawn(this);
@@ -140,7 +140,7 @@ void Corpse::SpawnBones()
 
 void Corpse::Delink()
 {
-    SetUInt32Value(CORPSE_FIELD_FLAGS, 5);
+    setUInt32Value(CORPSE_FIELD_FLAGS, 5);
     SetOwner(0);
     SetCorpseState(CORPSE_STATE_BONES);
     DeleteFromDB();
@@ -148,7 +148,7 @@ void Corpse::Delink()
 
 void Corpse::SetOwner(uint64 guid)
 {
-    SetUInt64Value(CORPSE_FIELD_OWNER, guid);
+    setUInt64Value(CORPSE_FIELD_OWNER, guid);
     if (guid == 0)
     {
         //notify the MapCell that the Corpse has no more an owner so the MapCell can go idle (if there's nothing else)

@@ -339,8 +339,8 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
 
     SystemMessage(m_session, "Damage (min / max): %f / %f", creature_target->GetMinDamage(), creature_target->GetMaxDamage());
 
-    if (creature_target->GetByte(UNIT_FIELD_BYTES_1, 1) != 0)
-        SystemMessage(m_session, "Free pet talent points: %u", creature_target->GetByte(UNIT_FIELD_BYTES_1, 1));
+    if (creature_target->getByteValue(UNIT_FIELD_BYTES_1, 1) != 0)
+        SystemMessage(m_session, "Free pet talent points: %u", creature_target->getByteValue(UNIT_FIELD_BYTES_1, 1));
 
     if (creature_target->GetCreatureProperties()->vehicleid > 0)
         SystemMessage(m_session, "VehicleID: %u", creature_target->GetCreatureProperties()->vehicleid);
@@ -353,7 +353,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     else
         SystemMessage(m_session, "Not in combat!");
 
-    uint8 sheat = creature_target->GetByte(UNIT_FIELD_BYTES_2, 0);
+    uint8 sheat = creature_target->getByteValue(UNIT_FIELD_BYTES_2, 0);
     if (sheat <= 2)
         SystemMessage(m_session, "Sheat state: %s", SHEATSTATE[sheat]);
 
@@ -387,16 +387,16 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     //////////////////////////////////////////////////////////////////////////////////////////
     // show byte
     std::stringstream sstext;
-    uint32 theBytes = creature_target->GetUInt32Value(UNIT_FIELD_BYTES_0);
+    uint32 theBytes = creature_target->getUInt32Value(UNIT_FIELD_BYTES_0);
     sstext << "UNIT_FIELD_BYTES_0 are " << uint16((uint8)theBytes & 0xFF) << " " << uint16((uint8)(theBytes >> 8) & 0xFF) << " ";
     sstext << uint16((uint8)(theBytes >> 16) & 0xFF) << " " << uint16((uint8)(theBytes >> 24) & 0xFF) << '\n';
 
 
-    theBytes = creature_target->GetUInt32Value(UNIT_FIELD_BYTES_1);
+    theBytes = creature_target->getUInt32Value(UNIT_FIELD_BYTES_1);
     sstext << "UNIT_FIELD_BYTES_1 are " << uint16((uint8)theBytes & 0xFF) << " " << uint16((uint8)(theBytes >> 8) & 0xFF) << " ";
     sstext << uint16((uint8)(theBytes >> 16) & 0xFF) << " " << uint16((uint8)(theBytes >> 24) & 0xFF) << '\n';
 
-    theBytes = creature_target->GetUInt32Value(UNIT_FIELD_BYTES_2);
+    theBytes = creature_target->getUInt32Value(UNIT_FIELD_BYTES_2);
     sstext << "UNIT_FIELD_BYTES_2 are " << uint16((uint8)theBytes & 0xFF) << " " << uint16((uint8)(theBytes >> 8) & 0xFF) << " ";
     sstext << uint16((uint8)(theBytes >> 16) & 0xFF) << " " << uint16((uint8)(theBytes >> 24) & 0xFF) << '\0';
 
@@ -408,16 +408,16 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     // flags
     GreenSystemMessage(m_session, "Flags ============================");
     std::string s = GetNpcFlagString(creature_target);
-    GreenSystemMessage(m_session, "NpcFlags: %u%s", creature_target->GetUInt32Value(UNIT_NPC_FLAGS), s.c_str());
+    GreenSystemMessage(m_session, "NpcFlags: %u%s", creature_target->getUInt32Value(UNIT_NPC_FLAGS), s.c_str());
 
-    uint8 pvp_flags = creature_target->GetByte(UNIT_FIELD_BYTES_2, 1);
+    uint8 pvp_flags = creature_target->getByteValue(UNIT_FIELD_BYTES_2, 1);
     GreenSystemMessage(m_session, "PvPFlags: %u", pvp_flags);
 
     for (uint32 i = 0; i < numpvpflags; i++)
         if ((pvp_flags & UnitPvPFlagToName[i].Flag) != 0)
             GreenSystemMessage(m_session, "%s", UnitPvPFlagToName[i].Name);
 
-    uint8 pet_flags = creature_target->GetByte(UNIT_FIELD_BYTES_2, 2);
+    uint8 pet_flags = creature_target->getByteValue(UNIT_FIELD_BYTES_2, 2);
     if (pet_flags != 0)
     {
         GreenSystemMessage(m_session, "PetFlags: %u", pet_flags);
@@ -426,14 +426,14 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
                 GreenSystemMessage(m_session, "%s", PetFlagToName[i].Name);
     }
 
-    uint32 unit_flags = creature_target->GetUInt32Value(UNIT_FIELD_FLAGS);
+    uint32 unit_flags = creature_target->getUInt32Value(UNIT_FIELD_FLAGS);
     GreenSystemMessage(m_session, "UnitFlags: %u", unit_flags);
 
     for (uint32 i = 0; i < numflags; i++)
         if ((unit_flags & UnitFlagToName[i].Flag) != 0)
             GreenSystemMessage(m_session, "-- %s", UnitFlagToName[i].Name);
 
-    uint32 dyn_flags = creature_target->GetUInt32Value(UNIT_DYNAMIC_FLAGS);
+    uint32 dyn_flags = creature_target->getUInt32Value(UNIT_DYNAMIC_FLAGS);
     GreenSystemMessage(m_session, "UnitDynamicFlags: %u", dyn_flags);
 
     for (uint32 i = 0; i < numdynflags; i++)
@@ -1200,8 +1200,8 @@ bool ChatHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession* m_ses
     if (creature_target == nullptr)
         return false;
 
-    uint32 old_npc_flags = creature_target->GetUInt32Value(UNIT_NPC_FLAGS);
-    creature_target->SetUInt32Value(UNIT_NPC_FLAGS, npc_flags);
+    uint32 old_npc_flags = creature_target->getUInt32Value(UNIT_NPC_FLAGS);
+    creature_target->setUInt32Value(UNIT_NPC_FLAGS, npc_flags);
 
     if (m_session->GetPlayer()->SaveAllChangesCommand)
         save = 1;

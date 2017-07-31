@@ -2079,7 +2079,7 @@ class AlarAI : public CreatureAIScript
             //_unit->SetPosition(fly[11].x, fly[11].y, fly[11].z, fly[11].o);
             SetPhase(2);
             _unit->CastSpell(_unit, spells[6].info, spells[6].instant);
-            _unit->SetUInt64Value(UNIT_FIELD_HEALTH, _unit->GetUInt32Value(UNIT_FIELD_MAXHEALTH));
+            _unit->setUInt64Value(UNIT_FIELD_HEALTH, _unit->getUInt32Value(UNIT_FIELD_MAXHEALTH));
             _unit->setDeathState(ALIVE);
             _unit->RemoveFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_TAGGED_BY_OTHER);
             _unit->SetFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_LOOTABLE);
@@ -2462,7 +2462,7 @@ class EmberAlarAI : public CreatureAIScript
             uint32 Phase = Alar->GetBaseMana();
             if (Phase == 2)
             {
-                uint32 maxhp = Alar->GetUInt32Value(UNIT_FIELD_MAXHEALTH);
+                uint32 maxhp = Alar->getUInt32Value(UNIT_FIELD_MAXHEALTH);
                 Alar->DealDamage(Alar, (maxhp * 3) / 100, 0, 0, 0);
             }
         }
@@ -2498,7 +2498,7 @@ class PatchAlarAI : public CreatureAIScript
             //_unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             //_unit->GetAIInterface()->SetAIState(STATE_IDLE);
             //_unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
             _unit->GetAIInterface()->m_canMove = false;
             _unit->Despawn(120000, 0);
         }
@@ -2794,7 +2794,7 @@ class FlameStrikeAI : public MoonScriptCreatureAI
             SetCanEnterCombat(false);
             SetAllowMelee(false);
             SetCanMove(false);
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         }
 
         void OnDied(Unit* mKiller)
@@ -2806,7 +2806,7 @@ class FlameStrikeAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
             ApplyAura(FLAME_STRIKE_TRIGGER_FLAME_STRIKE);
             RemoveAIUpdateEvent();
             Despawn(8500);
@@ -2863,8 +2863,8 @@ class PhoenixAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            double CurrentHP = (double)_unit->GetUInt32Value(UNIT_FIELD_HEALTH);
-            double PercMaxHP = (double)_unit->GetUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.05;
+            double CurrentHP = (double)_unit->getUInt32Value(UNIT_FIELD_HEALTH);
+            double PercMaxHP = (double)_unit->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.05;
             if (CurrentHP > PercMaxHP && IsTimerFinished(mBurnTimer))
             {
                 _unit->SetHealth((uint32)(CurrentHP - PercMaxHP));
@@ -3104,7 +3104,7 @@ class KaelThasAI : public MoonScriptBossAI
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
             SetAIUpdateFreq(24000);
             ParentClass::OnCombatStart(mTarget);
             SetBehavior(Behavior_Spell);
@@ -3128,7 +3128,7 @@ class KaelThasAI : public MoonScriptBossAI
         {
             SetCanMove(true);
             ParentClass::OnCombatStop(mTarget);
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
 
             if (IsAlive())
             {
@@ -3182,7 +3182,7 @@ class KaelThasAI : public MoonScriptBossAI
         void SendAdvisorToFight(Creature* pCreature)
         {
             pCreature->GetAIInterface()->SetAllowedToEnterCombat(true);
-            pCreature->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
+            pCreature->setUInt64Value(UNIT_FIELD_FLAGS, 0);
 
             Unit* pTarget = GetBestPlayerTarget();
             if (pTarget != NULL)
@@ -3288,7 +3288,7 @@ class KaelThasAI : public MoonScriptBossAI
                         if (pCreature != NULL)
                         {
                             pCreature->GetAIInterface()->SetAllowedToEnterCombat(true);
-                            pCreature->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
+                            pCreature->setUInt64Value(UNIT_FIELD_FLAGS, 0);
                             if (pCreature->GetScript() != NULL)
                             {
                                 static_cast< MoonScriptCreatureAI* >(pCreature->GetScript())->AggroNearestUnit(200);

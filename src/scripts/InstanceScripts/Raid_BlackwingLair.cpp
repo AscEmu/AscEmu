@@ -1128,7 +1128,7 @@ class VaelastraszAI : public CreatureAIScript
             spells[2].perctrigger = 3.0f;
             spells[2].attackstoptimer = 2000; // 1sec
 
-            _unit->SetHealth((uint32)(_unit->GetUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.3f));
+            _unit->SetHealth((uint32)(_unit->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.3f));
 
         }
 

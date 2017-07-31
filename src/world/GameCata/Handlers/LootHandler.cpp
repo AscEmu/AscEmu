@@ -544,7 +544,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
     {
         Corpse* pCorpse = objmgr.GetCorpse((uint32_t)guid);
         if (pCorpse)
-            pCorpse->SetUInt32Value(CORPSE_FIELD_DYNAMIC_FLAGS, 0);
+            pCorpse->setUInt32Value(CORPSE_FIELD_DYNAMIC_FLAGS, 0);
     }
     else if (GET_TYPE_FROM_GUID(guid) == HIGHGUID_TYPE_PLAYER)
     {

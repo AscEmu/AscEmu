@@ -561,8 +561,8 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
     else  // weapon_damage_type == RANGED
         offset = UNIT_FIELD_MINRANGEDDAMAGE;
 
-    float min_damage = pAttacker->GetFloatValue(offset);
-    float max_damage = pAttacker->GetFloatValue(offset + 1);
+    float min_damage = pAttacker->getFloatValue(offset);
+    float max_damage = pAttacker->getFloatValue(offset + 1);
     if (it)
     {
         min_damage -= it->GetItemProperties()->Damage[0].Min;

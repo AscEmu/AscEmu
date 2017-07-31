@@ -2680,7 +2680,7 @@ class FrostBreathTriggerAI : public CreatureAIScript
     FrostBreathTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         _unit->GetAIInterface()->MoveTo(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z + 10.5f);
-        _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         _unit->GetAIInterface()->SetFly();
         _unit->m_noRespawn = true;
         _unit->Despawn(7000, 0);
@@ -2727,7 +2727,7 @@ class FrostBreathTrigger2AI : public CreatureAIScript
     FrostBreathTrigger2AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 #ifdef DISABLE_FROST_BREATH
-        _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 #else
         _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
 #endif
@@ -2758,7 +2758,7 @@ class FrostBreathTrigger3AI : public CreatureAIScript
 
     FrostBreathTrigger3AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+        _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
         _unit->CastSpell(_unit, SAPPHIRONS_WING_BUFFET, true);
         _unit->GetAIInterface()->disable_melee = true;
         _unit->GetAIInterface()->m_canMove = false;
@@ -2792,7 +2792,7 @@ class ChillTriggerAI : public CreatureAIScript
     ChillTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         _unit->CastSpellAoF(_unit->GetPosition(), sSpellCustomizations.GetSpellInfo(28547), true);
-        _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+        _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
         _unit->GetAIInterface()->disable_melee = true;
         _unit->GetAIInterface()->m_canMove = false;
         _unit->m_noRespawn = true;
@@ -3622,7 +3622,7 @@ class KelthuzadAI : public CreatureAIScript
         spells[6].attackstoptimer = 1000;
 
         _unit->GetAIInterface()->disable_melee = false;
-        _unit->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
+        _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
         _unit->GetAIInterface()->m_canMove = true;
 
         DespawnTrash = false;
@@ -3654,7 +3654,7 @@ class KelthuzadAI : public CreatureAIScript
         if (KelGate)
             KelGate->SetState(GO_STATE_CLOSED);
 
-        _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         _unit->GetAIInterface()->disable_melee = true;
         _unit->GetAIInterface()->m_canMove = false;
 
@@ -3688,7 +3688,7 @@ class KelthuzadAI : public CreatureAIScript
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         _unit->GetAIInterface()->disable_melee = false;
-        _unit->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
+        _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
         _unit->GetAIInterface()->m_canMove = true;
         RemoveAIUpdateEvent();
 
@@ -3742,7 +3742,7 @@ class KelthuzadAI : public CreatureAIScript
         _unit->PlaySoundToSet(8814);
 
         _unit->GetAIInterface()->disable_melee = false;
-        _unit->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
+        _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
         _unit->GetAIInterface()->m_canMove = true;
         RemoveAIUpdateEvent();
 
@@ -3876,7 +3876,7 @@ class KelthuzadAI : public CreatureAIScript
                 _unit->SetChannelSpellTargetGUID(0);
                 _unit->SetChannelSpellId(0);
                 _unit->GetAIInterface()->disable_melee = false;
-                _unit->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
+                _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
                 _unit->GetAIInterface()->m_canMove = true;
 
                 DespawnTrash = false;
@@ -4141,7 +4141,7 @@ class TheLichKingAI : public CreatureAIScript
 
     TheLichKingAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
     }
 };
 

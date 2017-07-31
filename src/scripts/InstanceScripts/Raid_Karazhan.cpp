@@ -738,7 +738,7 @@ class BarnesGS : public GossipScript
                         pCreature->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                         pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
                         pCreature->GetAIInterface()->setWaypointToMove(0);
-                        pCreature->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+                        pCreature->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
                         pCreature->PlaySoundToSet(9357);
                         WayStartBBW[pCreature->GetInstanceID()] = 2;
                     }
@@ -866,7 +866,7 @@ class BarnesAI : public CreatureAIScript
                             EventWOZ();
                             break;
                     }
-                    _unit->SetUInt32Value(UNIT_FIELD_FLAGS, 1);
+                    _unit->setUInt32Value(UNIT_FIELD_FLAGS, 1);
                     WayStartBBW[_unit->GetInstanceID()] = 5;
                     break;
             }
@@ -1110,7 +1110,7 @@ class StageLight : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(StageLight);
         StageLight(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            _unit->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            _unit->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             _unit->GetAIInterface()->disable_melee = true;
             _unit->GetAIInterface()->m_canMove = false;
             _unit->m_noRespawn = true;
@@ -1289,7 +1289,7 @@ class CuratorAI : public CreatureAIScript
                     break;
             }
 
-            _unit->SetUInt32Value(UNIT_FIELD_POWER1, _unit->GetPower(POWER_TYPE_MANA) - (_unit->GetMaxPower(POWER_TYPE_MANA) / 10));
+            _unit->setUInt32Value(UNIT_FIELD_POWER1, _unit->GetPower(POWER_TYPE_MANA) - (_unit->GetMaxPower(POWER_TYPE_MANA) / 10));
             float dX = _unit->GetPositionX();
             float dY = _unit->GetPositionY();
             Creature* AstralFlare = NULL;
@@ -1552,7 +1552,7 @@ class ShadeofAranAI : public CreatureAIScript
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
-            _unit->SetUInt32Value(UNIT_FIELD_POWER1, _unit->GetMaxPower(POWER_TYPE_MANA));
+            _unit->setUInt32Value(UNIT_FIELD_POWER1, _unit->GetMaxPower(POWER_TYPE_MANA));
             // Door opening
             GameObject* SDoor = NULL;
             SDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-11190.012f, -1881.016f, 231.95f, 184517);
@@ -2494,7 +2494,7 @@ class FiendishImpAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
             _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
 
             if (_unit->GetDistance2dSq(mTarget) <= 1225.0f)
@@ -2666,7 +2666,7 @@ class FiendPortal : public CreatureAIScript
         {
             _unit->setMoveRoot(true);
 
-            _unit->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            _unit->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
             _unit->GetAIInterface()->disable_melee = true;
             _unit->GetAIInterface()->m_canMove = false;
             _unit->m_noRespawn = true;
@@ -3095,7 +3095,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
                 if ((*E_Itr)->GetGUID() != _unit->GetAIInterface()->GetMostHated()->GetGUID())
                 {
                     Enfeeble_Targets[i] = (*E_Itr)->GetGUID();
-                    Enfeeble_Health[i] = (*E_Itr)->GetUInt32Value(UNIT_FIELD_HEALTH);
+                    Enfeeble_Health[i] = (*E_Itr)->getUInt32Value(UNIT_FIELD_HEALTH);
 
                     _unit->CastSpell((*E_Itr), spells[1].info, spells[1].instant);
                     (*E_Itr)->SetHealth(1);
@@ -3110,7 +3110,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
             {
                 Unit* ETarget = _unit->GetMapMgr()->GetUnit(Enfeeble_Targets[i]);
                 if (ETarget && ETarget->isAlive())
-                    ETarget->SetUInt64Value(UNIT_FIELD_HEALTH, Enfeeble_Health[i]);
+                    ETarget->setUInt64Value(UNIT_FIELD_HEALTH, Enfeeble_Health[i]);
                 Enfeeble_Targets[i] = 0;
                 Enfeeble_Health[i] = 0;
             }
@@ -3225,7 +3225,7 @@ class NetherInfernalAI : public MoonScriptBossAI
         {
             SetCanMove(false);
             SetCanEnterCombat(false);
-            _unit->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            _unit->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             _unit->m_noRespawn = true;
             RegisterAIUpdateEvent(6000);
             Despawn(175000, 0);
@@ -3279,7 +3279,7 @@ class MAxesAI : public CreatureAIScript
 
         MAxesAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            _unit->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            _unit->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
 
             spells[0].info = sSpellCustomizations.GetSpellInfo(DEMONIC_FRENZY);
             spells[0].targettype = TARGET_SELF;
@@ -3523,7 +3523,7 @@ class VoidZoneAI : public CreatureAIScript
         {
             _unit->setMoveRoot(true);
             _unit->DisableAI();
-            _unit->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            _unit->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
             _unit->GetAIInterface()->disable_melee = true;
             _unit->GetAIInterface()->m_canMove = false;
             _unit->m_noRespawn = true;
@@ -4814,7 +4814,7 @@ class CycloneOZ : public CreatureAIScript
         CycloneOZ(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CYCLONE_VISUAL), true);
-            _unit->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            _unit->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
             _unit->GetAIInterface()->disable_melee = true;
             _unit->GetAIInterface()->m_canMove = false;
             _unit->m_noRespawn = true;

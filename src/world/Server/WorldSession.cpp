@@ -361,7 +361,7 @@ void WorldSession::LogoutPlayer(bool Save)
         _player->GetItemInterface()->removeLootableItems();
 
         // Save HP/Mana
-        _player->load_health = _player->GetUInt32Value(UNIT_FIELD_HEALTH);
+        _player->load_health = _player->getUInt32Value(UNIT_FIELD_HEALTH);
         _player->load_mana = _player->GetPower(POWER_TYPE_MANA);
 
 
@@ -1199,11 +1199,11 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
         data << uint8(pcaster->getClass());
 
         // facial features, like big nose, piercings, bonehead, etc
-        data << uint8(pcaster->GetByte(PLAYER_BYTES, 0));	// skin color
-        data << uint8(pcaster->GetByte(PLAYER_BYTES, 1));	// face
-        data << uint8(pcaster->GetByte(PLAYER_BYTES, 2));	// hair style
-        data << uint8(pcaster->GetByte(PLAYER_BYTES, 3));	// hair color
-        data << uint8(pcaster->GetByte(PLAYER_BYTES_2, 0));	// facial hair
+        data << uint8(pcaster->getByteValue(PLAYER_BYTES, 0));	// skin color
+        data << uint8(pcaster->getByteValue(PLAYER_BYTES, 1));	// face
+        data << uint8(pcaster->getByteValue(PLAYER_BYTES, 2));	// hair style
+        data << uint8(pcaster->getByteValue(PLAYER_BYTES, 3));	// hair color
+        data << uint8(pcaster->getByteValue(PLAYER_BYTES_2, 0));	// facial hair
 
 #if VERSION_STRING != Cata
         if (pcaster->IsInGuild())

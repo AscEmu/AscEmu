@@ -33,12 +33,12 @@ class BalosJackenQAI : public CreatureAIScript
         void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
         {
             // If Balos Jacken HP - fAmount < 20%
-            if(_unit->GetUInt32Value(UNIT_FIELD_HEALTH) - fAmount <= _unit->GetUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.2f)
+            if(_unit->getUInt32Value(UNIT_FIELD_HEALTH) - fAmount <= _unit->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.2f)
             {
                 //Missing: modify fAmount to prevent Balos Jacken death.
                 //{...}
                 //force player to loose target and stop melee auto-attack:
-                _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 //start AIUpdate
                 RegisterAIUpdateEvent(1000);
             }
@@ -58,7 +58,7 @@ class BalosJackenQAI : public CreatureAIScript
                 _unit->GetAIInterface()->disable_melee = true;
                 _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
                 //remove not_selectable flag:
-                _unit->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
+                _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
                 // decrease timer
                 friendlyTimer--;
             }
@@ -143,11 +143,11 @@ class OverlordMokMorokk : public CreatureAIScript
             {
                 _unit->CastSpell(mAttacker, sSpellCustomizations.GetSpellInfo(6749), true);
             }
-            if(_unit->GetUInt32Value(UNIT_FIELD_HEALTH) - fAmount <= _unit->GetUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.3f)
+            if(_unit->getUInt32Value(UNIT_FIELD_HEALTH) - fAmount <= _unit->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.3f)
             {
                 if(mAttacker->IsPlayer())
                 {
-                    _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                    _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                     RegisterAIUpdateEvent(1000);
                     QuestLogEntry* qle = (static_cast<Player*>(mAttacker))->GetQuestLogForEntry(1173);
                     if(!qle)
@@ -167,7 +167,7 @@ class OverlordMokMorokk : public CreatureAIScript
             _unit->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, _unit, 0);
             _unit->GetAIInterface()->disable_melee = true;
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-            _unit->SetUInt32Value(UNIT_FIELD_FLAGS, 0);
+            _unit->setUInt32Value(UNIT_FIELD_FLAGS, 0);
         }
 };
 
@@ -210,11 +210,11 @@ class PrivateHendel : public CreatureAIScript
 
         void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
         {
-            if(_unit->GetUInt32Value(UNIT_FIELD_HEALTH) - fAmount <= _unit->GetUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.37f)
+            if(_unit->getUInt32Value(UNIT_FIELD_HEALTH) - fAmount <= _unit->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.37f)
             {
                 if(mAttacker->IsPlayer())
                 {
-                    _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                    _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                     RegisterAIUpdateEvent(1000);
                     QuestLogEntry* qle = (static_cast<Player*>(mAttacker))->GetQuestLogForEntry(1324);
                     if(!qle)
@@ -235,7 +235,7 @@ class PrivateHendel : public CreatureAIScript
             _unit->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, _unit, 0);
             _unit->GetAIInterface()->disable_melee = true;
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-            _unit->SetUInt32Value(UNIT_FIELD_FLAGS, 0);
+            _unit->setUInt32Value(UNIT_FIELD_FLAGS, 0);
         }
 };
 

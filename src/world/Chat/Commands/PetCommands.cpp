@@ -254,8 +254,8 @@ bool ChatHandler::HandlePetSetLevelCommand(const char* args, WorldSession* m_ses
     }
 
     selected_pet->setLevel(newLevel);
-    selected_pet->SetUInt32Value(UNIT_FIELD_PETEXPERIENCE, 0);
-    selected_pet->SetUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP, selected_pet->GetNextLevelXP(newLevel));
+    selected_pet->setUInt32Value(UNIT_FIELD_PETEXPERIENCE, 0);
+    selected_pet->setUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP, selected_pet->GetNextLevelXP(newLevel));
     selected_pet->ApplyStatsForLevel();
     selected_pet->UpdateSpellList();
 

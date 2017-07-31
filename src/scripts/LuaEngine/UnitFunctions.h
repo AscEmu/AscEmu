@@ -774,7 +774,7 @@ class LuaUnit
     {
         float scale = CHECK_FLOAT(L, 1);
         if (scale && ptr)
-            ptr->SetFloatValue(OBJECT_FIELD_SCALE_X, (float)scale);
+            ptr->setFloatValue(OBJECT_FIELD_SCALE_X, (float)scale);
         else
             RET_BOOL(false)
             RET_BOOL(true)
@@ -794,7 +794,7 @@ class LuaUnit
     {
         TEST_UNIT()
         int flags = static_cast<int>(luaL_checkinteger(L, 1));
-        ptr->SetUInt32Value(UNIT_NPC_FLAGS, flags);
+        ptr->setUInt32Value(UNIT_NPC_FLAGS, flags);
         return 0;
     }
     static int SetMount(lua_State* L, Unit* ptr)
@@ -1854,7 +1854,7 @@ class LuaUnit
         if (!ptr)
             lua_pushinteger(L, 0);
         else
-            lua_pushinteger(L, ptr->GetUInt32Value(UNIT_FIELD_HEALTH));
+            lua_pushinteger(L, ptr->getUInt32Value(UNIT_FIELD_HEALTH));
         return 1;
     }
 
@@ -1863,7 +1863,7 @@ class LuaUnit
         if (!ptr)
             lua_pushinteger(L, 0);
         else
-            lua_pushinteger(L, ptr->GetUInt32Value(UNIT_FIELD_MAXHEALTH));
+            lua_pushinteger(L, ptr->getUInt32Value(UNIT_FIELD_MAXHEALTH));
 
         return 1;
     }
@@ -1873,8 +1873,8 @@ class LuaUnit
         uint32 val = static_cast<uint32>(luaL_checkinteger(L, 1));
         if (ptr != nullptr && val > 0)
         {
-            if (val > ptr->GetUInt32Value(UNIT_FIELD_MAXHEALTH))
-                ptr->SetHealth(ptr->GetUInt32Value(UNIT_FIELD_MAXHEALTH));
+            if (val > ptr->getUInt32Value(UNIT_FIELD_MAXHEALTH))
+                ptr->SetHealth(ptr->getUInt32Value(UNIT_FIELD_MAXHEALTH));
             else
                 ptr->SetHealth(val);
         }
@@ -1886,9 +1886,9 @@ class LuaUnit
         uint32 val = static_cast<uint32>(luaL_checkinteger(L, 1));
         if (ptr != nullptr && val > 0)
         {
-            if (val < ptr->GetUInt32Value(UNIT_FIELD_HEALTH))
+            if (val < ptr->getUInt32Value(UNIT_FIELD_HEALTH))
                 ptr->SetHealth(val);
-            ptr->SetUInt32Value(UNIT_FIELD_MAXHEALTH, val);
+            ptr->setUInt32Value(UNIT_FIELD_MAXHEALTH, val);
         }
         return 0;
     }
@@ -1977,7 +1977,7 @@ class LuaUnit
     {
         uint32 val = static_cast<uint32>(luaL_checkinteger(L, 1));
         if (ptr != nullptr)
-            ptr->SetUInt32Value(UNIT_FIELD_POWER1, val);
+            ptr->setUInt32Value(UNIT_FIELD_POWER1, val);
         return 0;
     }
 
@@ -2182,7 +2182,7 @@ class LuaUnit
             Creature* unit = static_cast<Creature*>(ptr);
         uint32 quest_id = (uint32)luaL_checknumber(L, 1);
         if (!unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER))
-            unit->SetUInt32Value(UNIT_NPC_FLAGS, unit->GetUInt32Value(UNIT_NPC_FLAGS) + UNIT_NPC_FLAG_QUESTGIVER);
+            unit->setUInt32Value(UNIT_NPC_FLAGS, unit->getUInt32Value(UNIT_NPC_FLAGS) + UNIT_NPC_FLAG_QUESTGIVER);
         if (!quest_id)
             return 0;
 
@@ -2225,7 +2225,7 @@ class LuaUnit
             Creature* unit = static_cast<Creature*>(ptr);
         uint32 quest_id = CHECK_ULONG(L, 1);
         if (!unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER))
-            unit->SetUInt32Value(UNIT_NPC_FLAGS, unit->GetUInt32Value(UNIT_NPC_FLAGS) + UNIT_NPC_FLAG_QUESTGIVER);
+            unit->setUInt32Value(UNIT_NPC_FLAGS, unit->getUInt32Value(UNIT_NPC_FLAGS) + UNIT_NPC_FLAG_QUESTGIVER);
         if (!quest_id)
             return 0;
 
@@ -2535,7 +2535,7 @@ class LuaUnit
     {
         uint32 field = static_cast<uint32>(luaL_checkinteger(L, 1));
         if (ptr)
-            lua_pushnumber(L, ptr->GetFloatValue(field));
+            lua_pushnumber(L, ptr->getFloatValue(field));
         return 1;
     }
 
@@ -2591,7 +2591,7 @@ class LuaUnit
         uint32 field = static_cast<uint32>(luaL_checkinteger(L, 1));
         uint32 value = static_cast<uint32>(luaL_checkinteger(L, 2));
         if (ptr)
-            ptr->SetUInt32Value(field, value);
+            ptr->setUInt32Value(field, value);
         return 0;
     }
 
@@ -2600,7 +2600,7 @@ class LuaUnit
         uint32 field = CHECK_ULONG(L, 1);
         uint64 guid = CHECK_GUID(L, 2);
         if (ptr)
-            ptr->SetUInt64Value(field, guid);
+            ptr->setUInt64Value(field, guid);
         return 0;
     }
 
@@ -2627,7 +2627,7 @@ class LuaUnit
         uint32 field = static_cast<uint32>(luaL_checkinteger(L, 1));
         float value = CHECK_FLOAT(L, 2);
         if (ptr)
-            ptr->SetFloatValue(field, value);
+            ptr->setFloatValue(field, value);
         return 0;
     }
 
@@ -2635,7 +2635,7 @@ class LuaUnit
     {
         uint32 field = static_cast<uint32>(luaL_checkinteger(L, 1));
         if (ptr)
-            lua_pushnumber(L, ptr->GetUInt32Value(field));
+            lua_pushnumber(L, ptr->getUInt32Value(field));
         return 1;
     }
 
@@ -2643,7 +2643,7 @@ class LuaUnit
     {
         uint32 field = static_cast<uint32>(luaL_checkinteger(L, 1));
         if (ptr)
-            PUSH_GUID(L, ptr->GetUInt64Value(field));
+            PUSH_GUID(L, ptr->getUInt64Value(field));
         return 1;
     }
 
@@ -2914,7 +2914,7 @@ class LuaUnit
         Unit* target = CHECK_UNIT(L, 1);
         if (!ptr || !target)
             return 0;
-        ptr->DealDamage(target, target->GetUInt32Value(UNIT_FIELD_HEALTH), 0, 0, 0, true);
+        ptr->DealDamage(target, target->getUInt32Value(UNIT_FIELD_HEALTH), 0, 0, 0, true);
         return 0;
     }
 
@@ -4250,22 +4250,22 @@ class LuaUnit
         int kills = static_cast<int>(luaL_checkinteger(L, 1));
         const char* check = luaL_checklstring(L, 2, NULL);
         Player* plr = static_cast<Player*>(ptr);
-        int killscheck = plr->GetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS);
+        int killscheck = plr->getUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS);
         if (check && strncmp(check, "add", 4) == 0 && kills > 0)
         {
-            plr->SetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, killscheck + kills);
+            plr->setUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, killscheck + kills);
             plr->SaveToDB(false);
             return 0;
         }
         else if (check && strncmp(check, "del", 4) == 0 && killscheck >= kills)
         {
-            plr->SetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, killscheck - kills);
+            plr->setUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, killscheck - kills);
             plr->SaveToDB(false);
             return 0;
         }
         else if (check && strncmp(check, "set", 4) == 0 && kills >= 0)
         {
-            plr->SetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, kills);
+            plr->setUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, kills);
             plr->SaveToDB(false);
             return 0;
         }
@@ -4670,10 +4670,10 @@ class LuaUnit
         {
             Player* plr = static_cast<Player*>(ptr);
             plr->RemoveAura(plr->m_MountSpellId);
-            plr->SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
+            plr->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
         }
         else
-            ptr->SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
+            ptr->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
         return 0;
     }
 
@@ -5290,7 +5290,7 @@ class LuaUnit
         uint32 index = static_cast<uint32>(luaL_checkinteger(L, 1));
         uint32 index1 = static_cast<uint32>(luaL_checkinteger(L, 2));
         uint8 value = static_cast<uint8>(luaL_checkinteger(L, 3));
-        ptr->SetByte(index, index1, value);
+        ptr->setByteValue(index, index1, value);
         return 0;
     }
 
@@ -5301,7 +5301,7 @@ class LuaUnit
 
         uint32 index = static_cast<uint32>(luaL_checkinteger(L, 1));
         uint32 index1 = static_cast<uint32>(luaL_checkinteger(L, 2));
-        lua_pushinteger(L, ptr->GetByte(index, index1));
+        lua_pushinteger(L, ptr->getByteValue(index, index1));
         return 1;
     }
 
@@ -5925,7 +5925,7 @@ class LuaUnit
         TEST_UNITPLAYER()
         uint32 index = static_cast<uint32>(luaL_checkinteger(L, 1));
         uint32 index2 = static_cast<uint32>(luaL_checkinteger(L, 2));
-        uint8 value = ptr->GetByte(index, index2);
+        uint8 value = ptr->getByteValue(index, index2);
         RET_INT(value);
     }
     static int SetByte(lua_State* L, Unit* ptr)
@@ -5934,7 +5934,7 @@ class LuaUnit
         uint32 index = static_cast<uint32>(luaL_checkinteger(L, 1));
         uint32 index2 = static_cast<uint32>(luaL_checkinteger(L, 2));
         uint8 value = static_cast<uint8>(luaL_checkinteger(L, 3));
-        ptr->SetByte(index, index2, value);
+        ptr->setByteValue(index, index2, value);
         RET_BOOL(true)
     }
 

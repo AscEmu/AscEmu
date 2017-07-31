@@ -392,7 +392,7 @@ class DofNaralexGossip : public GossipScript
                 } break;
                 case 2: // Start Event
                 {
-                    pCreature->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+                    pCreature->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
                     pCreature->GetAIInterface()->StopMovement(0);
                     pCreature->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                     pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
@@ -537,7 +537,7 @@ class Naralex : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(Naralex, MoonScriptCreatureAI);
         Naralex(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            _unit->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            _unit->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             _unit->SetStandState(STANDSTATE_SLEEP);
         }
 };

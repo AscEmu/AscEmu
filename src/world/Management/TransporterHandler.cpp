@@ -782,10 +782,10 @@ uint32 Transporter::AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y
     pCreature->m_transportData.relativePosition.o = o;
 
     if (anim)
-        pCreature->SetUInt32Value(UNIT_NPC_EMOTESTATE, anim);
+        pCreature->setUInt32Value(UNIT_NPC_EMOTESTATE, anim);
 
     if (creature_properties->NPCFLags)
-        pCreature->SetUInt32Value(UNIT_NPC_FLAGS, creature_properties->NPCFLags);
+        pCreature->setUInt32Value(UNIT_NPC_FLAGS, creature_properties->NPCFLags);
 
     m_creatureSetMutex.Acquire();
     m_NPCPassengerSet.insert(pCreature);

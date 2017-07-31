@@ -346,6 +346,26 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
 public:
 
     // MIT Start
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Object values
+
+    void setByteValue(uint16_t index, uint8_t offset, uint8_t value);
+    uint8_t getByteValue(uint16_t index, uint8_t offset) const;
+
+    void setUInt16Value(uint16_t index, uint8_t offset, uint16_t value);
+    uint16_t getUInt16Value(uint16_t index, uint8_t offset) const;
+
+    void setUInt32Value(uint16_t index, uint32_t value);
+    uint32_t getUInt32Value(uint16_t index) const;
+
+    void setUInt64Value(uint16_t index, uint64_t value);
+    uint64_t getUInt64Value(uint16_t index) const;
+
+    void setFloatValue(uint16_t index, float value);
+    float getFloatValue(uint16_t index) const;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Position functions
     bool isInRange(LocationVector location, float square_r) const;
     bool isInRange(float x, float y, float z, float square_r) const;
 
@@ -417,8 +437,8 @@ public:
 
 
         /// Guid always comes first
-        const uint64 & GetGUID() const { return GetUInt64Value(OBJECT_FIELD_GUID); }
-        void SetGUID(uint64 GUID) { SetUInt64Value(OBJECT_FIELD_GUID, GUID); }
+        const uint64 & GetGUID() const { return getUInt64Value(OBJECT_FIELD_GUID); }
+        void SetGUID(uint64 GUID) { setUInt64Value(OBJECT_FIELD_GUID, GUID); }
         const uint32 GetLowGUID() const { return m_uint32Values[OBJECT_FIELD_GUID]; }
         uint32 GetHighGUID() { return m_uint32Values[OBJECT_FIELD_GUID + 1]; }
         void SetLowGUID(uint32 val) { m_uint32Values[OBJECT_FIELD_GUID] = val; }
@@ -426,10 +446,10 @@ public:
 
         const WoWGuid & GetNewGUID() const { return m_wowGuid; }
         uint32 GetEntry() { return m_uint32Values[OBJECT_FIELD_ENTRY]; }
-        void SetEntry(uint32 value) { SetUInt32Value(OBJECT_FIELD_ENTRY, value); }
+        void SetEntry(uint32 value) { setUInt32Value(OBJECT_FIELD_ENTRY, value); }
 
         float GetScale() { return m_floatValues[OBJECT_FIELD_SCALE_X]; }
-        void SetScale(float scale) { SetFloatValue(OBJECT_FIELD_SCALE_X, scale); };
+        void SetScale(float scale) { setFloatValue(OBJECT_FIELD_SCALE_X, scale); };
 
         const uint32 GetTypeFromGUID() const { return (m_uint32Values[OBJECT_FIELD_GUID + 1] & HIGHGUID_TYPE_MASK); }
         const uint32 GetUIdFromGUID() const { return (m_uint32Values[OBJECT_FIELD_GUID] & LOWGUID_ENTRY_MASK); }
@@ -533,51 +553,18 @@ public:
         const uint32 GetMapId() const { return m_mapId; }
         const uint32 & GetZoneId() const { return m_zoneId; }
 
-        /// Get uint32 property
-        const uint32 & GetUInt32Value(uint32 index) const
-        {
-            ARCEMU_ASSERT(index < m_valuesCount);
-            return m_uint32Values[index];
-        }
-
-        const uint64 & GetUInt64Value(uint32 index) const
-        {
-            ARCEMU_ASSERT(index + uint32(1) < m_valuesCount);
-
-            uint64* p = reinterpret_cast<uint64*>(&m_uint32Values[index]);
-
-            return *p;
-        }
-
-        /// Get float property
-        const float & GetFloatValue(uint32 index) const
-        {
-            ARCEMU_ASSERT(index < m_valuesCount);
-            return m_floatValues[index];
-        }
-
         void ModFloatValue(const uint32 index, const float value);
         void ModFloatValueByPCT(const uint32 index, int32 byPct);
         void ModSignedInt32Value(uint32 index, int32 value);
         void ModUnsigned32Value(uint32 index, int32 mod);
         uint32 GetModPUInt32Value(const uint32 index, const int32 value);
 
-        /// Set uint32 property
-        void SetByte(uint32 index, uint32 index1, uint8 value);
-
-        uint8 GetByte(uint32 i, uint32 i1)
-        {
-            ARCEMU_ASSERT(i < m_valuesCount);
-            ARCEMU_ASSERT(i1 < 4);
-            return ((uint8*)m_uint32Values)[i * 4 + i1];
-        }
-
         void SetByteFlag(uint16 index, uint8 offset, uint8 newFlag);
         void RemoveByteFlag(uint16 index, uint8 offset, uint8 newFlag);
 
         bool HasByteFlag(uint32 index, uint32 index1, uint8 flag)
         {
-            return ((GetByte(index, index1) & flag) != 0);
+            return ((getByteValue(index, index1) & flag) != 0);
         }
 
         void SetNewGuid(uint32 Guid)
@@ -587,16 +574,6 @@ public:
         }
 
         void EventSetUInt32Value(uint32 index, uint32 value);
-
-        void SetUInt16Value(uint16 index, uint8 offset, uint16 value);
-        uint16 GetUInt16Value(uint16 index, uint8 offset) const;
-        void SetUInt32Value(const uint32 index, const uint32 value);
-
-        /// Set uint64 property
-        void SetUInt64Value(const uint32 index, const uint64 value);
-
-        /// Set float property
-        void SetFloatValue(const uint32 index, const float value);
 
         void SetFlag(const uint32 index, uint32 newFlag);
 

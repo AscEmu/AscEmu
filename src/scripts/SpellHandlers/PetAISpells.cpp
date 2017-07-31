@@ -322,7 +322,7 @@ class FrostBroodVanquisherAI : public CreatureAIScript
 
         void OnLoad()
         {
-            _unit->SetByte(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
+            _unit->setByteValue(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
         }
 
         void OnLastPassengerLeft(Unit *passenger)

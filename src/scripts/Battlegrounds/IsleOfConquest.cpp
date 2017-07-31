@@ -578,16 +578,16 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
         {
             case IOC_SPAWN_TYPE_ALLIANCE_ASSAULT:
             case IOC_SPAWN_TYPE_ALLIANCE_CONTROLLED:
-                controlpoint[Id].banner->SetUInt32Value(GAMEOBJECT_FACTION, 2);
+                controlpoint[Id].banner->setUInt32Value(GAMEOBJECT_FACTION, 2);
                 break;
 
             case IOC_SPAWN_TYPE_HORDE_ASSAULT:
             case IOC_SPAWN_TYPE_HORDE_CONTROLLED:
-                controlpoint[Id].banner->SetUInt32Value(GAMEOBJECT_FACTION, 1);
+                controlpoint[Id].banner->setUInt32Value(GAMEOBJECT_FACTION, 1);
                 break;
 
             default:
-                controlpoint[Id].banner->SetUInt32Value(GAMEOBJECT_FACTION, 35);         // neutral
+                controlpoint[Id].banner->setUInt32Value(GAMEOBJECT_FACTION, 35);         // neutral
                 break;
         }
 

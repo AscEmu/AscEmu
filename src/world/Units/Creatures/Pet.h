@@ -148,7 +148,7 @@ class SERVER_DECL Pet : public Creature
         void Update(unsigned long time_passed);
         void OnPushToWorld();
 
-        inline uint32 GetXP(void) { return GetUInt32Value(UNIT_FIELD_PETEXPERIENCE); }
+        inline uint32 GetXP(void) { return getUInt32Value(UNIT_FIELD_PETEXPERIENCE); }
 
         void InitializeSpells();
         void InitializeMe(bool first);
@@ -253,8 +253,8 @@ class SERVER_DECL Pet : public Creature
         // talents
         void SendTalentsToOwner();        /// Send talentpoints and talent spells to owner
         inline uint8 GetTPsForLevel(uint32 level) { return (level >= 20) ? uint8(level - 16) >> 2 : 0; }    /// pet gain first talent point at lvl 20, then every 4 lvls another point
-        inline void SetTPs(uint8 TP) { SetByte(UNIT_FIELD_BYTES_1, 1, TP); }            /// sets talent points
-        inline uint8 GetTPs() { return GetByte(UNIT_FIELD_BYTES_1, 1); }                /// returns available talent points
+        inline void SetTPs(uint8 TP) { setByteValue(UNIT_FIELD_BYTES_1, 1, TP); }            /// sets talent points
+        inline uint8 GetTPs() { return getByteValue(UNIT_FIELD_BYTES_1, 1); }                /// returns available talent points
         inline uint8 GetSpentTPs() { return GetTPsForLevel(getLevel()) - GetTPs(); }    /// returns amount of spent talent points
 
         void HandleAutoCastEvent(AutoCastEvents Type);

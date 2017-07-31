@@ -1447,7 +1447,7 @@ void WorldSession::HandleSetWatchedFactionIndexOpcode(WorldPacket & recvPacket)
 
     uint32 factionid;
     recvPacket >> factionid;
-    GetPlayer()->SetUInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, factionid);
+    GetPlayer()->setUInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, factionid);
 }
 
 void WorldSession::HandleTogglePVPOpcode(WorldPacket& recv_data)
@@ -1548,10 +1548,10 @@ void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
     recv_data >> facialhairorpiercing;
     recv_data >> skincolor;
 
-    uint32 oldhair = _player->GetByte(PLAYER_BYTES, 2);
-    uint32 oldhaircolor = _player->GetByte(PLAYER_BYTES, 3);
-    uint32 oldfacial = _player->GetByte(PLAYER_BYTES_2, 0);
-    uint32 oldskincolor = _player->GetByte(PLAYER_BYTES, 0);
+    uint32 oldhair = _player->getByteValue(PLAYER_BYTES, 2);
+    uint32 oldhaircolor = _player->getByteValue(PLAYER_BYTES, 3);
+    uint32 oldfacial = _player->getByteValue(PLAYER_BYTES_2, 0);
+    uint32 oldskincolor = _player->getByteValue(PLAYER_BYTES, 0);
 
     uint32 newhair, newhaircolor, newfacial;
 
@@ -1607,11 +1607,11 @@ void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
     data << uint32(0);                                  // ok
     SendPacket(&data);
 
-    _player->SetByte(PLAYER_BYTES, 2, static_cast<uint8>(newhair));
-    _player->SetByte(PLAYER_BYTES, 3, static_cast<uint8>(newhaircolor));
-    _player->SetByte(PLAYER_BYTES_2, 0, static_cast<uint8>(newfacial));
+    _player->setByteValue(PLAYER_BYTES, 2, static_cast<uint8>(newhair));
+    _player->setByteValue(PLAYER_BYTES, 3, static_cast<uint8>(newhaircolor));
+    _player->setByteValue(PLAYER_BYTES_2, 0, static_cast<uint8>(newfacial));
     if (barberShopSkinColor)
-        _player->SetByte(PLAYER_BYTES, 0, static_cast<uint8>(barberShopSkinColor->hair_id));
+        _player->setByteValue(PLAYER_BYTES, 0, static_cast<uint8>(barberShopSkinColor->hair_id));
     _player->ModGold(-(int32)cost);
 
     _player->SetStandState(STANDSTATE_STAND);                              // stand up
@@ -2051,7 +2051,7 @@ void WorldSession::HandleSetSheathedOpcode(WorldPacket& recv_data)
 
     uint32 active;
     recv_data >> active;
-    _player->SetByte(UNIT_FIELD_BYTES_2, 0, (uint8)active);
+    _player->setByteValue(UNIT_FIELD_BYTES_2, 0, (uint8)active);
 }
 
 void WorldSession::HandlePlayedTimeOpcode(WorldPacket& recv_data)
@@ -2275,7 +2275,7 @@ void WorldSession::HandleSetActionBarTogglesOpcode(WorldPacket & recvPacket)
     recvPacket >> cActionBarId;
     LOG_DEBUG("Received CMSG_SET_ACTIONBAR_TOGGLES for actionbar id %d.", cActionBarId);
 
-    GetPlayer()->SetByte(PLAYER_FIELD_BYTES, 2, cActionBarId);
+    GetPlayer()->setByteValue(PLAYER_FIELD_BYTES, 2, cActionBarId);
 }
 
 #if VERSION_STRING != Cata
@@ -2300,7 +2300,7 @@ void WorldSession::HandleSelfResurrectOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint32 self_res_spell = _player->GetUInt32Value(PLAYER_SELF_RES_SPELL);
+    uint32 self_res_spell = _player->getUInt32Value(PLAYER_SELF_RES_SPELL);
     if (self_res_spell)
     {
         SpellInfo* sp = sSpellCustomizations.GetSpellInfo(self_res_spell);

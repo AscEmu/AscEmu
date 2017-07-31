@@ -71,11 +71,11 @@ class Bartleby : public CreatureAIScript
 
         void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
         {
-            if(_unit->GetUInt32Value(UNIT_FIELD_HEALTH) - fAmount <= _unit->GetUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.37f)
+            if(_unit->getUInt32Value(UNIT_FIELD_HEALTH) - fAmount <= _unit->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.37f)
             {
                 if(mAttacker->IsPlayer())
                 {
-                    _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                    _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                     RegisterAIUpdateEvent(1000);
                     QuestLogEntry* qle = (static_cast<Player*>(mAttacker))->GetQuestLogForEntry(1640);
                     if(!qle)
@@ -95,7 +95,7 @@ class Bartleby : public CreatureAIScript
             _unit->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, _unit, 0);
             _unit->GetAIInterface()->disable_melee = true;
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-            _unit->SetUInt32Value(UNIT_FIELD_FLAGS, 0);
+            _unit->setUInt32Value(UNIT_FIELD_FLAGS, 0);
         }
 
         void OnDied(Unit* mKiller)

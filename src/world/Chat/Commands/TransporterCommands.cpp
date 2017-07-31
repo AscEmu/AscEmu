@@ -113,8 +113,8 @@ bool ChatHandler::HandleStartTransport(const char* /*args*/, WorldSession* m_ses
         {
             transport->SetFlag(GAMEOBJECT_FLAGS, 1);
             transport->SetState(GO_STATE_OPEN);
-            transport->SetUInt32Value(GAMEOBJECT_DYNAMIC, 0x10830010); // Seen in sniffs
-            transport->SetFloatValue(GAMEOBJECT_PARENTROTATION + 3, 1.0f);
+            transport->setUInt32Value(GAMEOBJECT_DYNAMIC, 0x10830010); // Seen in sniffs
+            transport->setFloatValue(GAMEOBJECT_PARENTROTATION + 3, 1.0f);
             std::set<uint32> mapsUsed;
             GameObjectProperties const* goinfo = transport->GetGameObjectProperties();
 

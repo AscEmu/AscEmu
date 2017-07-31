@@ -170,7 +170,7 @@ class FunnyDragon : public CreatureAIScript
         void OnLoad()
         {
             RegisterAIUpdateEvent(5000);
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
             _unit->GetAIInterface()->disable_melee = true;
@@ -229,15 +229,15 @@ class LegionObelisk : public GameObjectAIScript
 
 #if VERSION_STRING > TBC
             if (obelisk1 != nullptr)
-                sEventMgr.AddEvent(static_cast<Object*>(obelisk1), &Object::SetByte, (uint32)GAMEOBJECT_BYTES_1, (uint32)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
+                sEventMgr.AddEvent(static_cast<Object*>(obelisk1), &Object::setByteValue, (uint16)GAMEOBJECT_BYTES_1, (uint8)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
             if (obelisk2 != nullptr)
-                sEventMgr.AddEvent(static_cast<Object*>(obelisk2), &Object::SetByte, (uint32)GAMEOBJECT_BYTES_1, (uint32)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
+                sEventMgr.AddEvent(static_cast<Object*>(obelisk2), &Object::setByteValue, (uint16)GAMEOBJECT_BYTES_1, (uint8)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
             if (obelisk3 != nullptr)
-                sEventMgr.AddEvent(static_cast<Object*>(obelisk3), &Object::SetByte, (uint32)GAMEOBJECT_BYTES_1, (uint32)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
+                sEventMgr.AddEvent(static_cast<Object*>(obelisk3), &Object::setByteValue, (uint16)GAMEOBJECT_BYTES_1, (uint8)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
             if (obelisk4 != nullptr)
-                sEventMgr.AddEvent(static_cast<Object*>(obelisk4), &Object::SetByte, (uint32)GAMEOBJECT_BYTES_1, (uint32)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
+                sEventMgr.AddEvent(static_cast<Object*>(obelisk4), &Object::setByteValue, (uint16)GAMEOBJECT_BYTES_1, (uint8)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
             if (obelisk5 != nullptr)
-                sEventMgr.AddEvent(static_cast<Object*>(obelisk5), &Object::SetByte, (uint32)GAMEOBJECT_BYTES_1, (uint32)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
+                sEventMgr.AddEvent(static_cast<Object*>(obelisk5), &Object::setByteValue, (uint16)GAMEOBJECT_BYTES_1, (uint8)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
 #endif
         }
 
@@ -285,7 +285,7 @@ class Thuk_the_DefiantAI : public CreatureAIScript
         Thuk_the_DefiantAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
         void OnLoad()
         {
-            _unit->SetFloatValue(OBJECT_FIELD_SCALE_X, 0.4f);
+            _unit->setFloatValue(OBJECT_FIELD_SCALE_X, 0.4f);
         }
 
         void OnDied(Unit* mKiller)
@@ -296,7 +296,7 @@ class Thuk_the_DefiantAI : public CreatureAIScript
         void OnTargetDied(Unit* mTarget)
         {
             _unit->SetFaction(35);
-            _unit->SetFloatValue(OBJECT_FIELD_SCALE_X, 0.4f);
+            _unit->setFloatValue(OBJECT_FIELD_SCALE_X, 0.4f);
         }
 };
 
@@ -319,7 +319,7 @@ class Stasis_Chamber_Alpha : public GameObjectAIScript
                 if (pCreature != nullptr)
                 {
                     pCreature->SetFaction(14);
-                    pCreature->SetFloatValue(OBJECT_FIELD_SCALE_X, 1);
+                    pCreature->setFloatValue(OBJECT_FIELD_SCALE_X, 1);
                     pCreature->GetAIInterface()->setNextTarget(pPlayer);
                     pCreature->GetAIInterface()->AttackReaction(pPlayer, 1);
                 }

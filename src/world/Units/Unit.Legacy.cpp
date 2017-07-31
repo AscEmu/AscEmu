@@ -1736,7 +1736,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                         //this spell builds up n time
                         spell_proc->mProcCharges += dmg;
                         if ((int32)spell_proc->mProcCharges >= ospinfo->EffectBasePoints[1] &&  //if charge built up
-                            dmg < this->GetUInt32Value(UNIT_FIELD_HEALTH))    //if this is not a killer blow
+                            dmg < this->getUInt32Value(UNIT_FIELD_HEALTH))    //if this is not a killer blow
                             can_proc_now = true;
                     }
                     else can_proc_now = true; //target died
@@ -3126,18 +3126,18 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
         vskill = static_cast<Player*>(pVictim)->_GetSkillLineCurrent(SKILL_DEFENSE);
         if (weapon_damage_type != RANGED && !backAttack)                // block chance
         {
-            block = pVictim->GetFloatValue(PLAYER_BLOCK_PERCENTAGE);    //shield check already done in Update chances
+            block = pVictim->getFloatValue(PLAYER_BLOCK_PERCENTAGE);    //shield check already done in Update chances
 
             if (pVictim->m_stunned <= 0)                                // dodge chance
             {
-                dodge = pVictim->GetFloatValue(PLAYER_DODGE_PERCENTAGE);
+                dodge = pVictim->getFloatValue(PLAYER_DODGE_PERCENTAGE);
             }
 
             if (pVictim->can_parry && !pVictim->disarmed)               // parry chance
             {
                 if (static_cast<Player*>(pVictim)->HasSpell(3127) || static_cast<Player*>(pVictim)->HasSpell(18848))
                 {
-                    parry = pVictim->GetFloatValue(PLAYER_PARRY_PERCENTAGE);
+                    parry = pVictim->getFloatValue(PLAYER_PARRY_PERCENTAGE);
                 }
             }
         }
@@ -3426,7 +3426,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         // mobs can dodge attacks from behind
         if (weapon_damage_type != RANGED && pVictim->m_stunned <= 0)
         {
-            dodge = pVictim->GetUInt32Value(UNIT_FIELD_STAT1) / 14.5f;
+            dodge = pVictim->getUInt32Value(UNIT_FIELD_STAT1) / 14.5f;
             dodge += pVictim->GetDodgeFromSpell();
         }
 
@@ -3513,7 +3513,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         }
 
         self_skill += pr->_GetSkillLineCurrent(SubClassSkill);
-        crit = GetFloatValue(PLAYER_CRIT_PERCENTAGE);
+        crit = getFloatValue(PLAYER_CRIT_PERCENTAGE);
     }
     else
     {
@@ -3625,9 +3625,9 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         float expertise_bonus = plr->CalcRating(PCR_EXPERTISE);
 #if VERSION_STRING != Classic
         if (weapon_damage_type == MELEE)
-            expertise_bonus += plr->GetUInt32Value(PLAYER_EXPERTISE);
+            expertise_bonus += plr->getUInt32Value(PLAYER_EXPERTISE);
         else if (weapon_damage_type == OFFHAND)
-            expertise_bonus += plr->GetUInt32Value(PLAYER_OFFHAND_EXPERTISE);
+            expertise_bonus += plr->getUInt32Value(PLAYER_OFFHAND_EXPERTISE);
 #endif
 
         dodge -= expertise_bonus;
@@ -3945,7 +3945,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                                 float block_multiplier = (100.0f + static_cast<Player*>(pVictim)->m_modblockabsorbvalue) / 100.0f;
                                 if (block_multiplier < 1.0f)block_multiplier = 1.0f;
 
-                                blocked_damage = float2int32((shield->GetItemProperties()->Block + ((static_cast<Player*>(pVictim)->m_modblockvaluefromspells + pVictim->GetUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_BLOCK))) + ((pVictim->GetStat(STAT_STRENGTH) / 2.0f) - 1.0f)) * block_multiplier);
+                                blocked_damage = float2int32((shield->GetItemProperties()->Block + ((static_cast<Player*>(pVictim)->m_modblockvaluefromspells + pVictim->getUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_BLOCK))) + ((pVictim->GetStat(STAT_STRENGTH) / 2.0f) - 1.0f)) * block_multiplier);
 
                                 if (Rand(m_BlockModPct))
                                     blocked_damage *= 2;
@@ -4218,9 +4218,9 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                 this->Energize(owner, 34650, amount, POWER_TYPE_MANA);
         }
         //ugly hack for Bloodsworm restoring hp
-        if (GetUInt64Value(UNIT_FIELD_SUMMONEDBY) != 0 && GetUInt32Value(OBJECT_FIELD_ENTRY) == 28017)
+        if (getUInt64Value(UNIT_FIELD_SUMMONEDBY) != 0 && getUInt32Value(OBJECT_FIELD_ENTRY) == 28017)
         {
-            Player* owner = GetMapMgr()->GetPlayer((uint32)GetUInt64Value(UNIT_FIELD_SUMMONEDBY));
+            Player* owner = GetMapMgr()->GetPlayer((uint32)getUInt64Value(UNIT_FIELD_SUMMONEDBY));
             if (owner != NULL)
                 Heal(owner, 50452, float2int32(1.5f * realdamage));
         }
@@ -4353,7 +4353,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         if (weapon == nullptr)
         {
             if (weapon_damage_type == OFFHAND)
-                s = GetUInt32Value(UNIT_FIELD_BASEATTACKTIME + 1) / 1000.0f;
+                s = getUInt32Value(UNIT_FIELD_BASEATTACKTIME + 1) / 1000.0f;
             else
                 s = GetBaseAttackTime(MELEE) / 1000.0f;
         }
@@ -5023,7 +5023,7 @@ bool Unit::RemoveAurasByHeal()
                 case 38801:
                 case 43093:
                 {
-                    if (GetUInt32Value(UNIT_FIELD_HEALTH) == GetUInt32Value(UNIT_FIELD_MAXHEALTH))
+                    if (getUInt32Value(UNIT_FIELD_HEALTH) == getUInt32Value(UNIT_FIELD_MAXHEALTH))
                     {
                         m_auras[x]->Remove();
                         res = true;
@@ -5034,7 +5034,7 @@ bool Unit::RemoveAurasByHeal()
                 case 38772:
                 {
                     uint32 p = m_auras[x]->GetSpellInfo()->EffectBasePoints[1];
-                    if (GetUInt32Value(UNIT_FIELD_MAXHEALTH) * p <= GetUInt32Value(UNIT_FIELD_HEALTH) * 100)
+                    if (getUInt32Value(UNIT_FIELD_MAXHEALTH) * p <= getUInt32Value(UNIT_FIELD_HEALTH) * 100)
                     {
                         m_auras[x]->Remove();
                         res = true;
@@ -5664,7 +5664,7 @@ uint32 Unit::ManaShieldAbsorb(uint32 dmg)
 
     uint32 cost = (potential * (100 + effectbonus)) / 50;
 
-    SetUInt32Value(UNIT_FIELD_POWER1, mana - cost);
+    setUInt32Value(UNIT_FIELD_POWER1, mana - cost);
     m_manashieldamt -= potential;
     if (!m_manashieldamt)
         RemoveAura(m_manaShieldId);
@@ -5763,7 +5763,7 @@ void Unit::SetStandState(uint8 standstate)
     if (bef == standstate)
         return;
 
-    SetByte(UNIT_FIELD_BYTES_1, 0, standstate);
+    setByteValue(UNIT_FIELD_BYTES_1, 0, standstate);
     if (standstate == STANDSTATE_STAND)  //standup
         RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_STAND_UP);
 
@@ -6751,7 +6751,7 @@ void Unit::EventHealthChangeSinceLastUpdate()
 int32 Unit::GetAP()
 {
     int32 baseap = GetAttackPower() + GetAttackPowerMods();
-    float totalap = baseap * (GetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER) + 1);
+    float totalap = baseap * (getFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER) + 1);
     if (totalap >= 0)
         return float2int32(totalap);
     return	0;
@@ -7708,7 +7708,7 @@ void Unit::EventUpdateFlag()
 
 void Unit::EventModelChange()
 {
-    MySQLStructure::DisplayBoundingBoxes const* displayBoundingBox = sMySQLStore.getDisplayBounding(GetUInt32Value(UNIT_FIELD_DISPLAYID));
+    MySQLStructure::DisplayBoundingBoxes const* displayBoundingBox = sMySQLStore.getDisplayBounding(getUInt32Value(UNIT_FIELD_DISPLAYID));
 
     //\todo if has mount, grab mount model and add the z value of attachment 0
     if (displayBoundingBox != nullptr)
@@ -7989,20 +7989,20 @@ void Unit::RemoveReflect(uint32 spellid, bool apply)
 
 void Unit::SetPower(uint32 type, int32 value)
 {
-    uint32 maxpower = GetUInt32Value(UNIT_FIELD_MAXPOWER1 + type);
+    uint32 maxpower = getUInt32Value(UNIT_FIELD_MAXPOWER1 + type);
 
     if (value < 0)
         value = 0;
     else if (value > (int32)maxpower)
         value = maxpower;
 
-    SetUInt32Value(UNIT_FIELD_POWER1 + type, value);
+    setUInt32Value(UNIT_FIELD_POWER1 + type, value);
 }
 
 void Unit::SendPowerUpdate(bool self)
 {
 #if VERSION_STRING > TBC
-    uint32 amount = GetUInt32Value(UNIT_FIELD_POWER1 + GetPowerType()); //save the amount, so we send the same to the player and everyone else
+    uint32 amount = getUInt32Value(UNIT_FIELD_POWER1 + GetPowerType()); //save the amount, so we send the same to the player and everyone else
 
     WorldPacket data(SMSG_POWER_UPDATE, 14);
     FastGUIDPack(data, GetGUID());
@@ -8028,7 +8028,7 @@ void Unit::UpdatePowerAmm()
     WorldPacket data(SMSG_POWER_UPDATE, 14);
     FastGUIDPack(data, GetGUID());
     data << uint8(GetPowerType());
-    data << GetUInt32Value(UNIT_FIELD_POWER1 + GetPowerType());
+    data << getUInt32Value(UNIT_FIELD_POWER1 + GetPowerType());
     SendMessageToSet(&data, true);
 #endif
 }
@@ -8350,7 +8350,7 @@ bool Unit::IsCriticalDamageForSpell(Object* victim, SpellInfo* spell)
     {
         if (IsPlayer())
         {
-            CritChance = GetFloatValue(PLAYER_RANGED_CRIT_PERCENTAGE);
+            CritChance = getFloatValue(PLAYER_RANGED_CRIT_PERCENTAGE);
             if (victim->IsPlayer())
                 CritChance += static_cast<Player*>(victim)->res_R_crit_get();
 
@@ -8367,7 +8367,7 @@ bool Unit::IsCriticalDamageForSpell(Object* victim, SpellInfo* spell)
     {
         // Same shit with the melee spells, such as Judgment/Seal of Command
         if (IsPlayer())
-            CritChance = GetFloatValue(PLAYER_CRIT_PERCENTAGE);
+            CritChance = getFloatValue(PLAYER_CRIT_PERCENTAGE);
 
         if (victim->IsPlayer())
         {
@@ -8764,7 +8764,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
 
 void Unit::setLevel(uint32 level)
 {
-    SetUInt32Value(UNIT_FIELD_LEVEL, level);
+    setUInt32Value(UNIT_FIELD_LEVEL, level);
     if (IsPlayer())
         static_cast< Player* >(this)->SetNextLevelXp(sMySQLStore.getPlayerXPForLevel(level));
 }

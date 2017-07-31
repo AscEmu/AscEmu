@@ -314,16 +314,16 @@ void AIInterface::Update(unsigned long time_passed)
             if ((*next_timed_emote)->type == 1)   //standstate
             {
                 m_Unit->SetStandState(static_cast<uint8>((*next_timed_emote)->value));
-                m_Unit->SetUInt32Value(UNIT_NPC_EMOTESTATE, 0);
+                m_Unit->setUInt32Value(UNIT_NPC_EMOTESTATE, 0);
             }
             else if ((*next_timed_emote)->type == 2)   //emotestate
             {
-                m_Unit->SetUInt32Value(UNIT_NPC_EMOTESTATE, (*next_timed_emote)->value);
+                m_Unit->setUInt32Value(UNIT_NPC_EMOTESTATE, (*next_timed_emote)->value);
                 m_Unit->SetStandState(STANDSTATE_STAND);
             }
             else if ((*next_timed_emote)->type == 3)   //oneshot emote
             {
-                m_Unit->SetUInt32Value(UNIT_NPC_EMOTESTATE, 0);
+                m_Unit->setUInt32Value(UNIT_NPC_EMOTESTATE, 0);
                 m_Unit->SetStandState(STANDSTATE_STAND);
                 m_Unit->Emote((EmoteType)(*next_timed_emote)->value);           // Animation
             }
@@ -2093,7 +2093,7 @@ bool AIInterface::showWayPoints(Player* pPlayer, bool Backwards)
             }
 
             pWayPoint->setLevel(wp->id);
-            pWayPoint->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+            pWayPoint->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
             pWayPoint->SetFaction(pPlayer->GetFaction());
             pWayPoint->SetHealth(1);
             pWayPoint->SetMaxHealth(1);
@@ -4207,7 +4207,7 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 misc1)
             Creature* aiowner = static_cast< Creature* >(m_Unit);
             //clear tagger.
             aiowner->UnTag();
-            aiowner->SetUInt32Value(UNIT_DYNAMIC_FLAGS, aiowner->GetUInt32Value(UNIT_DYNAMIC_FLAGS) & ~(U_DYN_FLAG_TAGGED_BY_OTHER | U_DYN_FLAG_LOOTABLE));
+            aiowner->setUInt32Value(UNIT_DYNAMIC_FLAGS, aiowner->getUInt32Value(UNIT_DYNAMIC_FLAGS) & ~(U_DYN_FLAG_TAGGED_BY_OTHER | U_DYN_FLAG_LOOTABLE));
         }
         CALL_SCRIPT_EVENT(m_Unit, OnCombatStop)(SavedFollow);
     }
@@ -4747,7 +4747,7 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
 
             m_Unit->SetCombatReach(properties_difficulty->CombatReach);
 
-            m_Unit->SetUInt32Value(UNIT_NPC_FLAGS, properties_difficulty->NPCFLags);
+            m_Unit->setUInt32Value(UNIT_NPC_FLAGS, properties_difficulty->NPCFLags);
 
             // resistances
             for (uint8 j = 0; j < 7; ++j)

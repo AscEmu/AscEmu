@@ -583,7 +583,7 @@ class KrickAI : MoonScriptBossAI
             SetCanEnterCombat(false);
 
             // Clear Hatelist dont allow Combat and root the Unit
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             _unit->GetAIInterface()->WipeTargetList();
             _unit->GetAIInterface()->WipeHateList();
@@ -690,7 +690,7 @@ class BarrageAI : public MoonScriptBossAI
         MOONSCRIPT_FACTORY_FUNCTION(BarrageAI, MoonScriptBossAI);
         BarrageAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
         {
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
             _unit->CastSpell(_unit, SPELL_EXPLODING_ORB, false);
             _unit->CastSpell(_unit, SPELL_AUTO_GROW, false);
 

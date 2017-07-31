@@ -157,7 +157,7 @@ void WorldSession::sendTradeUpdate(bool trade_state /*= true*/)
                     data << uint32_t(item->GetEnchantmentId(EnchantmentSlot(enchant_slot)));
                 }
 
-                data << uint32_t(item->GetUInt32Value(ITEM_FIELD_MAXDURABILITY));
+                data << uint32_t(item->getUInt32Value(ITEM_FIELD_MAXDURABILITY));
 
                 data.WriteByteSeq(creatorGuid[6]);
                 data.WriteByteSeq(creatorGuid[2]);
@@ -165,7 +165,7 @@ void WorldSession::sendTradeUpdate(bool trade_state /*= true*/)
                 data.WriteByteSeq(creatorGuid[4]);
 
                 data << uint32_t(item->GetEnchantmentId(REFORGE_ENCHANTMENT_SLOT));
-                data << uint32_t(item->GetUInt32Value(ITEM_FIELD_DURABILITY));
+                data << uint32_t(item->getUInt32Value(ITEM_FIELD_DURABILITY));
                 data << uint32_t(item->GetItemRandomPropertyId());
 
                 data.WriteByteSeq(creatorGuid[3]);
@@ -490,12 +490,12 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recv_data)
         {
             if (trade_items[i])
             {
-                trade_items[i]->SetUInt64Value(ITEM_FIELD_GIFTCREATOR, _player->GetGUID());
+                trade_items[i]->setUInt64Value(ITEM_FIELD_GIFTCREATOR, _player->GetGUID());
                 _player->m_ItemInterface->SafeRemoveAndRetreiveItemByGuid(trade_items[i]->GetGUID(), true);
             }
             if (target_trade_items[i])
             {
-                target_trade_items[i]->SetUInt64Value(ITEM_FIELD_GIFTCREATOR, trade_target->GetGUID());
+                target_trade_items[i]->setUInt64Value(ITEM_FIELD_GIFTCREATOR, trade_target->GetGUID());
                 trade_target->m_ItemInterface->SafeRemoveAndRetreiveItemByGuid(target_trade_items[i]->GetGUID(), true);
             }
         }

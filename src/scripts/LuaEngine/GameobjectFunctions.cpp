@@ -546,7 +546,7 @@ int LuaGameObject::GetUInt32Value(lua_State* L, GameObject* ptr)
 {
     int field = static_cast<int>(luaL_checkinteger(L, 1));
     if (ptr && field > 0)
-        lua_pushinteger(L, ptr->GetUInt32Value(field));
+        lua_pushinteger(L, ptr->getUInt32Value(field));
     else
         lua_pushnil(L);
     return 1;
@@ -556,7 +556,7 @@ int LuaGameObject::GetUInt64Value(lua_State* L, GameObject* ptr)
 {
     int field = static_cast<int>(luaL_checkinteger(L, 1));
     if (ptr && field)
-    PUSH_GUID(L, ptr->GetUInt64Value(field));
+    PUSH_GUID(L, ptr->getUInt64Value(field));
     else
         lua_pushnil(L);
     return 1;
@@ -567,7 +567,7 @@ int LuaGameObject::SetUInt32Value(lua_State* L, GameObject* ptr)
     int field = static_cast<int>(luaL_checkinteger(L, 1));
     int value = static_cast<int>(luaL_checkinteger(L, 2));
     if (ptr && field)
-        ptr->SetUInt32Value(field, value);
+        ptr->setUInt32Value(field, value);
     return 0;
 }
 
@@ -576,7 +576,7 @@ int LuaGameObject::SetUInt64Value(lua_State* L, GameObject* ptr)
     int field = static_cast<int>(luaL_checkinteger(L, 1));
     uint64 guid = CHECK_GUID(L, 1);
     if (ptr && field)
-        ptr->SetUInt64Value(field, guid);
+        ptr->setUInt64Value(field, guid);
     return 0;
 }
 
@@ -585,7 +585,7 @@ int LuaGameObject::SetFloatValue(lua_State* L, GameObject* ptr)
     int field = static_cast<int>(luaL_checkinteger(L, 1));
     float value = CHECK_FLOAT(L, 2);
     if (ptr)
-        ptr->SetFloatValue(field, value);
+        ptr->setFloatValue(field, value);
     return 0;
 }
 
@@ -625,7 +625,7 @@ int LuaGameObject::GetFloatValue(lua_State* L, GameObject* ptr)
 {
     int field = static_cast<int>(luaL_checkinteger(L, 1));
     if (ptr && field)
-        lua_pushnumber(L, ptr->GetFloatValue(field));
+        lua_pushnumber(L, ptr->getFloatValue(field));
     else
         lua_pushnil(L);
     return 1;
@@ -1062,7 +1062,7 @@ int LuaGameObject::GetByte(lua_State* L, GameObject* ptr)
     TEST_GO()
     uint32_t index = static_cast<uint32_t>(luaL_checkinteger(L, 1));
     uint32_t index2 = static_cast<uint32_t>(luaL_checkinteger(L, 2));
-    uint8 value = ptr->GetByte(index, index2);
+    uint8 value = ptr->getByteValue(index, index2);
     RET_INT(value);
 }
 
@@ -1072,7 +1072,7 @@ int LuaGameObject::SetByte(lua_State* L, GameObject* ptr)
     int index = static_cast<int>(luaL_checkinteger(L, 1));
     int index2 = static_cast<int>(luaL_checkinteger(L, 2));
     uint8 value = static_cast<uint8>(luaL_checkinteger(L, 3));
-    ptr->SetByte(index, index2, value);
+    ptr->setByteValue(index, index2, value);
     RET_BOOL(true)
 }
 

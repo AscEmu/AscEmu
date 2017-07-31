@@ -268,7 +268,7 @@ void WorldSession::HandlePetNameQuery(WorldPacket& recv_data)
     data.SetOpcode(SMSG_PET_NAME_QUERY_RESPONSE);
     data << petNumber;
     data << pPet->GetName();
-    data << pPet->GetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP);
+    data << pPet->getUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP);
     data << uint8(0);
     SendPacket(&data);
 }
@@ -473,7 +473,7 @@ void WorldSession::HandlePetRename(WorldPacket& recv_data)
     pet->Rename(name);
 
     // Disable pet rename.
-    pet->SetUInt32Value(UNIT_FIELD_BYTES_2, 1 | /* (0x28 << 8) | */ (PET_RENAME_NOT_ALLOWED << 16));
+    pet->setUInt32Value(UNIT_FIELD_BYTES_2, 1 | /* (0x28 << 8) | */ (PET_RENAME_NOT_ALLOWED << 16));
 
     ARCEMU_ASSERT(pet->GetPetOwner() != NULL);
 

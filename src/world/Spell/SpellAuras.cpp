@@ -939,7 +939,7 @@ void Aura::Remove()
         p->SendSpellCooldownEvent(m_spellInfo->Id);
     }
 
-    if (caster != NULL && caster->IsPlayer() && caster->IsInWorld() && caster->GetUInt32Value(PLAYER_FARSIGHT) != 0)
+    if (caster != NULL && caster->IsPlayer() && caster->IsInWorld() && caster->getUInt32Value(PLAYER_FARSIGHT) != 0)
     {
         uint8 j;
         for (j = 0; j < 3; ++j)
@@ -4175,13 +4175,13 @@ void Aura::SpellAuraTrackCreatures(bool apply)
             if (p_target->TrackingSpell != 0)
                 p_target->RemoveAura(p_target->TrackingSpell);
 
-            p_target->SetUInt32Value(PLAYER_TRACK_CREATURES, (uint32)1 << (mod->m_miscValue - 1));
+            p_target->setUInt32Value(PLAYER_TRACK_CREATURES, (uint32)1 << (mod->m_miscValue - 1));
             p_target->TrackingSpell = GetSpellId();
         }
         else
         {
             p_target->TrackingSpell = 0;
-            p_target->SetUInt32Value(PLAYER_TRACK_CREATURES, 0);
+            p_target->setUInt32Value(PLAYER_TRACK_CREATURES, 0);
         }
     }
 }
@@ -4195,13 +4195,13 @@ void Aura::SpellAuraTrackResources(bool apply)
             if (p_target->TrackingSpell != 0)
                 p_target->RemoveAura(p_target->TrackingSpell);
 
-            p_target->SetUInt32Value(PLAYER_TRACK_RESOURCES, (uint32)1 << (mod->m_miscValue - 1));
+            p_target->setUInt32Value(PLAYER_TRACK_RESOURCES, (uint32)1 << (mod->m_miscValue - 1));
             p_target->TrackingSpell = GetSpellId();
         }
         else
         {
             p_target->TrackingSpell = 0;
-            p_target->SetUInt32Value(PLAYER_TRACK_RESOURCES, 0);
+            p_target->setUInt32Value(PLAYER_TRACK_RESOURCES, 0);
         }
     }
 }
@@ -4375,7 +4375,7 @@ void Aura::EventPeriodicLeech(uint32 amount)
         }
     }
 
-    amount = (uint32)std::min(amount, m_target->GetUInt32Value(UNIT_FIELD_HEALTH));
+    amount = (uint32)std::min(amount, m_target->getUInt32Value(UNIT_FIELD_HEALTH));
 
     // Apply bonus from [Warlock] Soul Siphon
     if (m_caster->m_soulSiphon.amt)
@@ -4730,11 +4730,11 @@ void Aura::SpellAuraTransform(bool apply)
                 // dwarf = 7819
                 // Halfling = 7818
                 // maybe 7842 as its from a lesser npc
-                m_target->SetUInt32Value(UNIT_FIELD_DISPLAYID, 7842);
+                m_target->setUInt32Value(UNIT_FIELD_DISPLAYID, 7842);
             }
             else
             {
-                m_target->SetUInt32Value(UNIT_FIELD_DISPLAYID, m_target->GetNativeDisplayId());
+                m_target->setUInt32Value(UNIT_FIELD_DISPLAYID, m_target->GetNativeDisplayId());
             }
         }
         break;
@@ -4745,11 +4745,11 @@ void Aura::SpellAuraTransform(bool apply)
 
             if (apply)
             {
-                m_target->SetUInt32Value(UNIT_FIELD_DISPLAYID, displayId);
+                m_target->setUInt32Value(UNIT_FIELD_DISPLAYID, displayId);
             }
             else
             {
-                m_target->SetUInt32Value(UNIT_FIELD_DISPLAYID, m_target->GetNativeDisplayId());
+                m_target->setUInt32Value(UNIT_FIELD_DISPLAYID, m_target->GetNativeDisplayId());
             }
         }
         break;
@@ -5321,7 +5321,7 @@ void Aura::SpellAuraMounted(bool apply)
 
         p_target->m_MountSpellId = m_spellInfo->Id;
         p_target->flying_aura = 0;
-        m_target->SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, displayId);
+        m_target->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, displayId);
         //m_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
 
         if (p_target->GetShapeShift() && !(p_target->GetShapeShift() & (FORM_BATTLESTANCE | FORM_DEFENSIVESTANCE | FORM_BERSERKERSTANCE)) && p_target->m_ShapeShifted != m_spellInfo->Id)
@@ -6062,12 +6062,12 @@ void Aura::SpellAuraHover(bool apply)
     if (apply)
     {
         m_target->setMoveHover(true);
-        m_target->SetFloatValue(UNIT_FIELD_HOVERHEIGHT, (float(mod->m_amount) / 2));
+        m_target->setFloatValue(UNIT_FIELD_HOVERHEIGHT, (float(mod->m_amount) / 2));
     }
     else
     {
         m_target->setMoveHover(false);
-        m_target->SetFloatValue(UNIT_FIELD_HOVERHEIGHT, 0.0f);
+        m_target->setFloatValue(UNIT_FIELD_HOVERHEIGHT, 0.0f);
     }
 #endif
 }
@@ -6688,8 +6688,8 @@ void Aura::SpellAuraModIncreaseHealthPerc(bool apply)
     else
     {
         m_target->ModMaxHealth(-mod->fixed_amount[mod->i]);
-        if (m_target->GetUInt32Value(UNIT_FIELD_HEALTH) > m_target->GetUInt32Value(UNIT_FIELD_MAXHEALTH))
-            m_target->SetHealth(m_target->GetUInt32Value(UNIT_FIELD_MAXHEALTH));
+        if (m_target->getUInt32Value(UNIT_FIELD_HEALTH) > m_target->getUInt32Value(UNIT_FIELD_MAXHEALTH))
+            m_target->SetHealth(m_target->getUInt32Value(UNIT_FIELD_MAXHEALTH));
         if (p_target != NULL)
             p_target->SetHealthFromSpell(static_cast<Player*>(m_target)->GetHealthFromSpell() - mod->fixed_amount[mod->i]);
         //		else if (m_target->IsPet())
@@ -6817,10 +6817,10 @@ void Aura::SpellAuraModHaste(bool apply)
             mod->fixed_amount[mod->i] = m_target->GetModPUInt32Value(UNIT_FIELD_BASEATTACKTIME, mod->m_amount);
             mod->fixed_amount[mod->i * 2] = m_target->GetModPUInt32Value(UNIT_FIELD_BASEATTACKTIME + 1, mod->m_amount);
 
-            if ((int32)m_target->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME) <= mod->fixed_amount[mod->i])
-                mod->fixed_amount[mod->i] = m_target->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME);    //watch it, a negative timer might be bad ;)
-            if ((int32)m_target->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME + 1) <= mod->fixed_amount[mod->i * 2])
-                mod->fixed_amount[mod->i * 2] = m_target->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME + 1); //watch it, a negative timer might be bad ;)
+            if ((int32)m_target->getUInt32Value(UNIT_FIELD_BASEATTACKTIME) <= mod->fixed_amount[mod->i])
+                mod->fixed_amount[mod->i] = m_target->getUInt32Value(UNIT_FIELD_BASEATTACKTIME);    //watch it, a negative timer might be bad ;)
+            if ((int32)m_target->getUInt32Value(UNIT_FIELD_BASEATTACKTIME + 1) <= mod->fixed_amount[mod->i * 2])
+                mod->fixed_amount[mod->i * 2] = m_target->getUInt32Value(UNIT_FIELD_BASEATTACKTIME + 1); //watch it, a negative timer might be bad ;)
 
             m_target->ModBaseAttackTime(MELEE, -mod->fixed_amount[mod->i]);
             m_target->ModBaseAttackTime(OFFHAND, -mod->fixed_amount[mod->i * 2]);
@@ -7657,7 +7657,7 @@ void Aura::SpellAuraEmphaty(bool apply)
         return;
 
     // Show extra info about beast
-    uint32 dynflags = m_target->GetUInt32Value(UNIT_DYNAMIC_FLAGS);
+    uint32 dynflags = m_target->getUInt32Value(UNIT_DYNAMIC_FLAGS);
     if (apply)
         dynflags |= U_DYN_FLAG_PLAYER_INFO;
 
@@ -7878,10 +7878,10 @@ void Aura::SpellAuraMeleeHaste(bool apply)
             mod->fixed_amount[0] = m_target->GetModPUInt32Value(UNIT_FIELD_BASEATTACKTIME, mod->m_amount);
             mod->fixed_amount[1] = m_target->GetModPUInt32Value(UNIT_FIELD_BASEATTACKTIME + 1, mod->m_amount);
 
-            if ((int32)m_target->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME) <= mod->fixed_amount[0])
-                mod->fixed_amount[0] = m_target->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME);
-            if ((int32)m_target->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME + 1) <= mod->fixed_amount[1])
-                mod->fixed_amount[1] = m_target->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME + 1);
+            if ((int32)m_target->getUInt32Value(UNIT_FIELD_BASEATTACKTIME) <= mod->fixed_amount[0])
+                mod->fixed_amount[0] = m_target->getUInt32Value(UNIT_FIELD_BASEATTACKTIME);
+            if ((int32)m_target->getUInt32Value(UNIT_FIELD_BASEATTACKTIME + 1) <= mod->fixed_amount[1])
+                mod->fixed_amount[1] = m_target->getUInt32Value(UNIT_FIELD_BASEATTACKTIME + 1);
 
             m_target->ModBaseAttackTime(MELEE, -mod->fixed_amount[0]);
             m_target->ModBaseAttackTime(OFFHAND, -mod->fixed_amount[1]);
@@ -8194,7 +8194,7 @@ void Aura::SpellAuraSpellHealingStatPCT(bool apply)
         for (uint32 x = 1; x < 7; x++)
         m_target->HealDoneMod[x] += mod->realamount;*/
 
-        mod->realamount = ((m_target->GetUInt32Value(UNIT_FIELD_STAT4) * mod->m_amount) / 100);
+        mod->realamount = ((m_target->getUInt32Value(UNIT_FIELD_STAT4) * mod->m_amount) / 100);
 
         static_cast<Player*>(m_target)->ModifyBonuses(CRITICAL_STRIKE_RATING, mod->realamount, true);
         static_cast<Player*>(m_target)->UpdateChances();
@@ -8552,9 +8552,9 @@ void Aura::SpellAuraAddHealth(bool apply)
     else
     {
         m_target->ModMaxHealth(-mod->m_amount);
-        uint32 maxHealth = m_target->GetUInt32Value(UNIT_FIELD_MAXHEALTH);
-        if (m_target->GetUInt32Value(UNIT_FIELD_HEALTH) > maxHealth)
-            m_target->SetUInt32Value(UNIT_FIELD_MAXHEALTH, maxHealth);
+        uint32 maxHealth = m_target->getUInt32Value(UNIT_FIELD_MAXHEALTH);
+        if (m_target->getUInt32Value(UNIT_FIELD_HEALTH) > maxHealth)
+            m_target->setUInt32Value(UNIT_FIELD_MAXHEALTH, maxHealth);
     }
 }
 
@@ -9084,7 +9084,7 @@ void Aura::SpellAuraMirrorImage(bool apply)
 
         s->SetDisplayId(s->GetOwner()->GetDisplayId());
 #if VERSION_STRING != Classic
-        s->SetUInt32Value(UNIT_FIELD_FLAGS_2, s->GetUInt32Value(UNIT_FIELD_FLAGS_2) | UNIT_FLAG2_MIRROR_IMAGE);
+        s->setUInt32Value(UNIT_FIELD_FLAGS_2, s->getUInt32Value(UNIT_FIELD_FLAGS_2) | UNIT_FLAG2_MIRROR_IMAGE);
 #endif
     }
 
@@ -9106,17 +9106,17 @@ void Aura::SpellAuraMirrorImage2(bool apply)
 
             item = p->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
             if (item != nullptr)
-                m_target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, item->GetItemProperties()->ItemId);
+                m_target->setUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, item->GetItemProperties()->ItemId);
 
             item = p->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
             if (item != nullptr)
-                m_target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, item->GetItemProperties()->ItemId);
+                m_target->setUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, item->GetItemProperties()->ItemId);
         }
         else
         {
-            m_target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, GetCaster()->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID));
-            m_target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, GetCaster()->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1));
-            m_target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2, GetCaster()->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2));
+            m_target->setUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, GetCaster()->getUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID));
+            m_target->setUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, GetCaster()->getUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1));
+            m_target->setUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2, GetCaster()->getUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2));
         }
     }
 }

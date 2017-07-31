@@ -45,7 +45,7 @@ GameObject::GameObject(uint64 guid)
     m_uint32Values = _fields;
     std::fill(m_uint32Values, &m_uint32Values[GAMEOBJECT_END], 0);
     m_updateMask.SetCount(GAMEOBJECT_END);
-    SetUInt32Value(OBJECT_FIELD_TYPE, TYPE_GAMEOBJECT | TYPE_OBJECT);
+    setUInt32Value(OBJECT_FIELD_TYPE, TYPE_GAMEOBJECT | TYPE_OBJECT);
     SetGUID(guid);
     SetAnimProgress(100);
     m_wowGuid.Init(guid);
@@ -76,7 +76,7 @@ GameObject::~GameObject()
         myScript = NULL;
     }
 
-    uint32 guid = GetUInt32Value(OBJECT_FIELD_CREATED_BY);
+    uint32 guid = getUInt32Value(OBJECT_FIELD_CREATED_BY);
     if (guid)
     {
         Player* plr = objmgr.GetPlayer(guid);
@@ -442,10 +442,10 @@ void GameObject::SetRotationQuat(float qx, float qy, float qz, float qw)
 
     quat.unitize();
     m_rotation = QuaternionCompressed(quat).m_raw;
-    SetFloatValue(GAMEOBJECT_PARENTROTATION+0, quat.x);
-    SetFloatValue(GAMEOBJECT_PARENTROTATION+1, quat.y);
-    SetFloatValue(GAMEOBJECT_PARENTROTATION+2, quat.z);
-    SetFloatValue(GAMEOBJECT_PARENTROTATION+3, quat.w);
+    setFloatValue(GAMEOBJECT_PARENTROTATION+0, quat.x);
+    setFloatValue(GAMEOBJECT_PARENTROTATION+1, quat.y);
+    setFloatValue(GAMEOBJECT_PARENTROTATION+2, quat.z);
+    setFloatValue(GAMEOBJECT_PARENTROTATION+3, quat.w);
 }
 
 void GameObject::SetRotationAngles(float z_rot, float y_rot, float x_rot)
@@ -876,7 +876,7 @@ void GameObject_SpellFocus::SpawnLinkedTrap()
     }
 
     go->SetFaction(GetFaction());
-    go->SetUInt64Value(OBJECT_FIELD_CREATED_BY, GetGUID());
+    go->setUInt64Value(OBJECT_FIELD_CREATED_BY, GetGUID());
     go->PushToWorld(m_mapMgr);
 }
 

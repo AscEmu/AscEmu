@@ -49,7 +49,7 @@ class CalvinMontague : public CreatureAIScript
             {
                 if(mAttacker->IsPlayer())
                 {
-                    _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                    _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                     RegisterAIUpdateEvent(1000);
                     QuestLogEntry* qle = (static_cast<Player*>(mAttacker))->GetQuestLogForEntry(590);
                     if(!qle)
@@ -72,7 +72,7 @@ class CalvinMontague : public CreatureAIScript
             _unit->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, _unit, 0);
             _unit->GetAIInterface()->disable_melee = true;
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
         }
 };
 

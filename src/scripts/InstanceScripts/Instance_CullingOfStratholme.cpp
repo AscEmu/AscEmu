@@ -1122,7 +1122,7 @@ class ArthasAI : public CreatureAIScript
                     _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
                     _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                     _unit->GetAIInterface()->m_canMove = false;
-                    _unit->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                    _unit->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                 }
                 break;
                 case 1000://haxxed ;)
@@ -1163,13 +1163,13 @@ class ArthasAI : public CreatureAIScript
                     if (citizen)
                     {
                         _unit->GetAIInterface()->MoveTo(citizen->GetPositionX(), citizen->GetPositionY(), citizen->GetPositionZ());
-                        _unit->DealDamage(citizen, citizen->GetUInt32Value(UNIT_FIELD_HEALTH), 0, 0, 0);
+                        _unit->DealDamage(citizen, citizen->getUInt32Value(UNIT_FIELD_HEALTH), 0, 0, 0);
                     }
                     citizen = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 28169);
                     if (citizen)
                     {
                         _unit->GetAIInterface()->MoveTo(citizen->GetPositionX(), citizen->GetPositionY(), citizen->GetPositionZ());
-                        _unit->DealDamage(citizen, citizen->GetUInt32Value(UNIT_FIELD_HEALTH), 0, 0, 0);
+                        _unit->DealDamage(citizen, citizen->getUInt32Value(UNIT_FIELD_HEALTH), 0, 0, 0);
                     }
                     _unit->SendTimedScriptTextChatMessage(SAY_ARTHAS_13, 1000);
                     phase++;
@@ -1199,7 +1199,7 @@ class ArthasAI : public CreatureAIScript
                         c->GetAIInterface()->SetAllowedToEnterCombat(false);
                         for (uint8 i = 0; i < 7; i++)
                             c->SchoolImmunityList[i] = 1;
-                        c->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                        c->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                         //1 = 0s
                         c->SendScriptTextChatMessage(SAY_MALGANIS_01);
                         //2 = 13s
@@ -1268,7 +1268,7 @@ class ArthasGossip : public GossipScript
                 break;
                 case 1:
                 {
-                    static_cast<Creature*>(pObject)->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+                    static_cast<Creature*>(pObject)->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
                     static_cast<Creature*>(pObject)->GetScript()->OnReachWP(1000, 0);
                 }
                 break;

@@ -505,7 +505,7 @@ class VolkhansAnvil : public MoonScriptCreatureAI
     VolkhansAnvil(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-        _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         SetCanMove(false);
     };
 

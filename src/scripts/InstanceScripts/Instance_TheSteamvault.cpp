@@ -2222,7 +2222,7 @@ class NagaDistillerAI : public CreatureAIScript
 
         NagaDistillerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->disable_melee = true;
             _unit->GetAIInterface()->m_canMove = false;
@@ -2361,7 +2361,7 @@ class WarlordKalitreshAI : public CreatureAIScript
             pDistiller = GetClosestDistiller();
             if (pDistiller)
             {
-                pDistiller->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+                pDistiller->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
                 pDistiller->SetChannelSpellTargetGUID(0);
                 pDistiller->SetChannelSpellId(0);
                 pDistiller->GetAIInterface()->WipeTargetList();
@@ -2418,7 +2418,7 @@ class WarlordKalitreshAI : public CreatureAIScript
 
                         if (_unit->GetDistance2dSq(pDistiller) <= 100.0f)
                         {
-                            pDistiller->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
+                            pDistiller->setUInt64Value(UNIT_FIELD_FLAGS, 0);
                             pDistiller->SetChannelSpellTargetGUID(_unit->GetGUID());
                             pDistiller->SetChannelSpellId(31543);
 
@@ -2443,7 +2443,7 @@ class WarlordKalitreshAI : public CreatureAIScript
 
                     else if (t > EnrageTimer && RagePhase == 2)
                     {
-                        pDistiller->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+                        pDistiller->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
                         pDistiller->SetChannelSpellTargetGUID(0);
                         pDistiller->SetChannelSpellId(0);
                         pDistiller->GetAIInterface()->WipeTargetList();

@@ -428,7 +428,7 @@ public:
     // Spells
     bool isSpellFitByClassAndRace(uint32_t spell_id);
 #if VERSION_STRING == Cata
-    uint32_t getFreePrimaryProfessionPoints() const { return GetUInt32Value(PLAYER_CHARACTER_POINTS); }
+    uint32_t getFreePrimaryProfessionPoints() const { return getUInt32Value(PLAYER_CHARACTER_POINTS); }
 #endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -498,7 +498,7 @@ public:
         void HandleUpdateFieldChanged(uint32 index)
         {
             if (index == PLAYER_FLAGS)
-                m_cache->SetUInt32Value(CACHE_PLAYER_FLAGS, GetUInt32Value(PLAYER_FLAGS));
+                m_cache->SetUInt32Value(CACHE_PLAYER_FLAGS, getUInt32Value(PLAYER_FLAGS));
         }
 
         void EventGroupFullUpdate();
@@ -834,7 +834,7 @@ public:
 #if VERSION_STRING == Classic
             return 60;      // world levelcap!
 #else
-            return GetUInt32Value(PLAYER_FIELD_MAX_LEVEL);
+            return getUInt32Value(PLAYER_FIELD_MAX_LEVEL);
 #endif
         }
 
@@ -927,17 +927,17 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         uint8 GetPVPRank()
         {
-            return (uint8)((GetUInt32Value(PLAYER_BYTES_3) >> 24) & 0xFF);
+            return (uint8)((getUInt32Value(PLAYER_BYTES_3) >> 24) & 0xFF);
         }
         void SetPVPRank(int newrank)
         {
-            SetUInt32Value(PLAYER_BYTES_3, ((GetUInt32Value(PLAYER_BYTES_3) & 0x00FFFFFF) | (uint8(newrank) << 24)));
+            setUInt32Value(PLAYER_BYTES_3, ((getUInt32Value(PLAYER_BYTES_3) & 0x00FFFFFF) | (uint8(newrank) << 24)));
         }
         uint32 GetMaxPersonalRating();
 
         bool HasTitle(RankTitles title)
         {
-            return (GetUInt64Value(PLAYER_FIELD_KNOWN_TITLES + ((title >> 6) << 1)) & (uint64(1) << (title % 64))) != 0;
+            return (getUInt64Value(PLAYER_FIELD_KNOWN_TITLES + ((title >> 6) << 1)) & (uint64(1) << (title % 64))) != 0;
         }
         void SetKnownTitle(RankTitles title, bool set);
         void SendAvailSpells(DBC::Structures::SpellShapeshiftFormEntry const* shapeshift_form, bool active);
@@ -993,14 +993,14 @@ public:
         void SetGuildRank(uint32 guildRank);
         void SetInGuild(uint32 guildId);
 
-        void SetRank(uint8 rankId) { SetUInt32Value(PLAYER_GUILDRANK, rankId); }
-        uint8 GetRank() const { return uint8(GetUInt32Value(PLAYER_GUILDRANK)); }
+        void SetRank(uint8 rankId) { setUInt32Value(PLAYER_GUILDRANK, rankId); }
+        uint8 GetRank() const { return uint8(getUInt32Value(PLAYER_GUILDRANK)); }
 
-        void SetGuildLevel(uint32 level) { SetUInt32Value(PLAYER_GUILDLEVEL, level); }
-        uint32 GetGuildLevel() { return GetUInt32Value(PLAYER_GUILDLEVEL); }
+        void SetGuildLevel(uint32 level) { setUInt32Value(PLAYER_GUILDLEVEL, level); }
+        uint32 GetGuildLevel() { return getUInt32Value(PLAYER_GUILDLEVEL); }
 
         void SetGuildIdInvited(uint32 GuildId) { m_GuildIdInvited = GuildId; }
-        uint32 GetGuildId() const { return GetUInt32Value(OBJECT_FIELD_DATA); /* return only lower part */ }
+        uint32 GetGuildId() const { return getUInt32Value(OBJECT_FIELD_DATA); /* return only lower part */ }
         Guild* GetGuild();
         bool IsInGuild() { return GetGuild() != nullptr; }
 
@@ -1026,10 +1026,10 @@ public:
         uint8 GetDuelState() { return m_duelState; }
         // duel variables
         Player* DuelingWith;
-        void SetDuelArbiter(uint64 guid) { SetUInt64Value(PLAYER_DUEL_ARBITER, guid); }
-        uint64 GetDuelArbiter() { return GetUInt64Value(PLAYER_DUEL_ARBITER); }
-        void SetDuelTeam(uint32 team) { SetUInt32Value(PLAYER_DUEL_TEAM, team); }
-        uint32 GetDuelTeam() { return GetUInt32Value(PLAYER_DUEL_TEAM); }
+        void SetDuelArbiter(uint64 guid) { setUInt64Value(PLAYER_DUEL_ARBITER, guid); }
+        uint64 GetDuelArbiter() { return getUInt64Value(PLAYER_DUEL_ARBITER); }
+        void SetDuelTeam(uint32 team) { setUInt32Value(PLAYER_DUEL_TEAM, team); }
+        uint32 GetDuelTeam() { return getUInt32Value(PLAYER_DUEL_TEAM); }
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Trade
@@ -1650,7 +1650,7 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         void SetGold(int32 coins)
         {
-            SetUInt32Value(PLAYER_FIELD_COINAGE, coins);
+            setUInt32Value(PLAYER_FIELD_COINAGE, coins);
         }
         void ModGold(int32 coins)
         {
@@ -1658,11 +1658,11 @@ public:
         }
         uint32 GetGold()
         {
-            return GetUInt32Value(PLAYER_FIELD_COINAGE);
+            return getUInt32Value(PLAYER_FIELD_COINAGE);
         }
         bool HasGold(uint32 coins)
         {
-            return (GetUInt32Value(PLAYER_FIELD_COINAGE) >= coins);
+            return (getUInt32Value(PLAYER_FIELD_COINAGE) >= coins);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -1685,19 +1685,19 @@ public:
         void SetChosenTitle(uint32 id)
         {
 #if VERSION_STRING > Classic
-            SetUInt32Value(PLAYER_CHOSEN_TITLE, id);
+            setUInt32Value(PLAYER_CHOSEN_TITLE, id);
 #endif
         }
 
-        void SetInventorySlot(uint32 slot, uint64 guid) { SetUInt64Value(PLAYER_FIELD_INV_SLOT_HEAD + (slot * 2), guid); }
+        void SetInventorySlot(uint32 slot, uint64 guid) { setUInt64Value(PLAYER_FIELD_INV_SLOT_HEAD + (slot * 2), guid); }
 
-        void SetFarsightTarget(uint64 guid) { SetUInt64Value(PLAYER_FARSIGHT, guid); }
-        uint64 GetFarsightTarget() { return GetUInt64Value(PLAYER_FARSIGHT); }
+        void SetFarsightTarget(uint64 guid) { setUInt64Value(PLAYER_FARSIGHT, guid); }
+        uint64 GetFarsightTarget() { return getUInt64Value(PLAYER_FARSIGHT); }
 
-        void SetXp(uint32 xp) { SetUInt32Value(PLAYER_XP, xp); }
-        uint32 GetXp() { return GetUInt32Value(PLAYER_XP); }
-        uint32 GetXpToLevel() { return GetUInt32Value(PLAYER_NEXT_LEVEL_XP); }
-        void SetNextLevelXp(uint32 xp) { SetUInt32Value(PLAYER_NEXT_LEVEL_XP, xp); }
+        void SetXp(uint32 xp) { setUInt32Value(PLAYER_XP, xp); }
+        uint32 GetXp() { return getUInt32Value(PLAYER_XP); }
+        uint32 GetXpToLevel() { return getUInt32Value(PLAYER_NEXT_LEVEL_XP); }
+        void SetNextLevelXp(uint32 xp) { setUInt32Value(PLAYER_NEXT_LEVEL_XP, xp); }
 
         //\todo fix this
         void SetTalentPointsForAllSpec(uint32 amt)
@@ -1707,7 +1707,7 @@ public:
 #if VERSION_STRING != Cata
             SetUInt32Value(PLAYER_CHARACTER_POINTS1, amt);
 #else
-            SetUInt32Value(PLAYER_CHARACTER_POINTS, amt);
+            setUInt32Value(PLAYER_CHARACTER_POINTS, amt);
 #endif
             smsg_TalentsInfo(false);
         }
@@ -1719,7 +1719,7 @@ public:
 #if VERSION_STRING != Cata
             SetUInt32Value(PLAYER_CHARACTER_POINTS1, GetUInt32Value(PLAYER_CHARACTER_POINTS1) + amt);
 #else
-            SetUInt32Value(PLAYER_CHARACTER_POINTS, GetUInt32Value(PLAYER_CHARACTER_POINTS) + amt);
+            setUInt32Value(PLAYER_CHARACTER_POINTS, getUInt32Value(PLAYER_CHARACTER_POINTS) + amt);
 #endif
             smsg_TalentsInfo(false);
         }
@@ -1730,7 +1730,7 @@ public:
 #if VERSION_STRING != Cata
             SetUInt32Value(PLAYER_CHARACTER_POINTS1, points);
 #else
-            SetUInt32Value(PLAYER_CHARACTER_POINTS, points);
+            setUInt32Value(PLAYER_CHARACTER_POINTS, points);
 #endif
             smsg_TalentsInfo(false);
         }
@@ -1740,7 +1740,7 @@ public:
 #if VERSION_STRING != Cata
             uint32 points = GetUInt32Value(PLAYER_CHARACTER_POINTS1);
 #else
-            uint32 points = GetUInt32Value(PLAYER_CHARACTER_POINTS);
+            uint32 points = getUInt32Value(PLAYER_CHARACTER_POINTS);
 #endif
             Arcemu::Util::ArcemuAssert(points == m_specs[m_talentActiveSpec].GetTP());
             return points;
@@ -1768,10 +1768,10 @@ public:
         }
 
         void ModPosDamageDoneMod(uint32 school, uint32 value) { ModUnsigned32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + school, value); }
-        uint32 GetPosDamageDoneMod(uint32 school) { return GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + school); }
+        uint32 GetPosDamageDoneMod(uint32 school) { return getUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + school); }
 
         void ModNegDamageDoneMod(uint32 school, uint32 value) { ModUnsigned32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_NEG + school, value); }
-        uint32 GetNegDamageDoneMod(uint32 school) { return GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_NEG + school); }
+        uint32 GetNegDamageDoneMod(uint32 school) { return getUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_NEG + school); }
 
         void ModHealingDoneMod(uint32 value)
         {
@@ -1782,7 +1782,7 @@ public:
         uint32 GetHealingDoneMod()
         {
 #if VERSION_STRING > Classic
-            return GetUInt32Value(PLAYER_FIELD_MOD_HEALING_DONE_POS);
+            return getUInt32Value(PLAYER_FIELD_MOD_HEALING_DONE_POS);
 #else
             return 0;
 #endif
@@ -1866,8 +1866,8 @@ public:
         void UpdateArenaPoints();
 
 #if VERSION_STRING > TBC
-        void SetGlyph(uint32 slot, uint32 id) { SetUInt32Value(PLAYER_FIELD_GLYPHS_1 + slot, id); }
-        uint32 GetGlyph(uint32 slot) { return GetUInt32Value(PLAYER_FIELD_GLYPHS_1 + slot); }
+        void SetGlyph(uint32 slot, uint32 id) { setUInt32Value(PLAYER_FIELD_GLYPHS_1 + slot, id); }
+        uint32 GetGlyph(uint32 slot) { return getUInt32Value(PLAYER_FIELD_GLYPHS_1 + slot); }
         uint32 GetGlyph(uint32 spec, uint32 slot) const { return m_specs[spec].glyphs[slot]; }
 #endif
 

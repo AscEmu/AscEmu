@@ -1550,7 +1550,7 @@ class ShadowmoonDarkcasterAI : public CreatureAIScript
             GrandWarlock = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(178.811996f, 292.377991f, -8.190210f, CN_GRAND_WARLOCK_NETHEKURSE);
             if (GrandWarlock)
             {
-                GrandWarlock->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+                GrandWarlock->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
                 GrandWarlock->GetAIInterface()->SetAllowedToEnterCombat(false);
             }
         }
@@ -1736,7 +1736,7 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
             {
                 _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
                 _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
-                _unit->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
+                _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
 
                 _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
                 _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -2262,7 +2262,7 @@ class HeadAI : public MoonScriptCreatureAI
     HeadAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         SetScale(4.0f);
-        _unit->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        _unit->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         _unit->m_noRespawn = true;
     }
 

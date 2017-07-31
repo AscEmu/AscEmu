@@ -79,7 +79,7 @@ void Item::Init(uint32 high, uint32 low)
 {
     ///////////////////////////// from virtual_constructor ///////////////
     memset(m_uint32Values, 0, (ITEM_END)* sizeof(uint32));
-    SetUInt32Value(OBJECT_FIELD_TYPE, TYPE_ITEM | TYPE_OBJECT);
+    setUInt32Value(OBJECT_FIELD_TYPE, TYPE_ITEM | TYPE_OBJECT);
     SetScale(1);   //always 1
     SetScale(1);   //always 1
 
@@ -199,7 +199,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
 
     SetChargesLeft(fields[7].GetUInt32());
 
-    SetUInt32Value(ITEM_FIELD_FLAGS, fields[8].GetUInt32());
+    setUInt32Value(ITEM_FIELD_FLAGS, fields[8].GetUInt32());
     random_prop = fields[9].GetUInt32();
     random_suffix = fields[10].GetUInt32();
 
@@ -750,7 +750,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
     uint32 ItemSlot = m_owner->GetItemInterface()->GetInventorySlotByGuid(GetGUID()) * 2;   //VLack: for 3.1.1 "* 18" is a bad idea, now it's "* 2"; but this could have been calculated based on UpdateFields.h! This is PLAYER_VISIBLE_ITEM_LENGTH
     uint32 VisibleBase = PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + ItemSlot;
     if (VisibleBase <= PLAYER_VISIBLE_ITEM_19_ENCHANTMENT)
-        m_owner->SetUInt32Value(VisibleBase, Apply ? Entry->Id : 0);   //On 3.1 we can't add a Slot to the base now, as we no longer have multiple fields for storing them. This in some cases will try to write for example 3 visuals into one place, but now every item has only one field for this, and as we can't choose which visual to have, we'll accept the last one.
+        m_owner->setUInt32Value(VisibleBase, Apply ? Entry->Id : 0);   //On 3.1 we can't add a Slot to the base now, as we no longer have multiple fields for storing them. This in some cases will try to write for example 3 visuals into one place, but now every item has only one field for this, and as we can't choose which visual to have, we'll accept the last one.
     else
         LOG_ERROR("Item::ApplyEnchantmentBonus visual out of range! Tried to address UInt32 field %i !!!", VisibleBase);
 #else

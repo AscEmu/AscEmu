@@ -466,7 +466,7 @@ class SkarvaldTheConstructorAI : public MoonScriptCreatureAI
                 Emote("Not... over... yet.", Text_Yell, 0);
                 pDalronn->Emote("Skarvald, you incompetent slug! Return and make yourself useful!", Text_Yell, 13203);
                 SpawnCreature(CN_SKARVALD_GHOST, true);
-                _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
             }
             else if (pDalronn != NULL && !pDalronn->IsAlive())
@@ -556,7 +556,7 @@ class DalronnTheControllerAI : public MoonScriptCreatureAI
                 Emote("See... you... soon.", Text_Yell, 0);
                 pSkarvald->Emote("Pagh! What sort of necromancer lets death stop him? I knew you were worthless!", Text_Yell, 13233);
                 SpawnCreature(CN_DALRONN_GHOST, true);
-                _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             }
             else if (pSkarvald != NULL && !pSkarvald->IsAlive())
             {
@@ -608,7 +608,7 @@ class SkarvaldTheConstructorGhostAI : public MoonScriptCreatureAI
 
         void OnLoad()
         {
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
 
             Player* pTarget = GetNearestPlayer();
             if (pTarget != NULL)
@@ -638,7 +638,7 @@ class DalronnTheControllerGhostAI : public MoonScriptCreatureAI
 
         void OnLoad()
         {
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
 
             Player* pTarget = GetNearestPlayer();
             if (pTarget != NULL)

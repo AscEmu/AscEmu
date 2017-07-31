@@ -91,7 +91,7 @@ class JainaProudmooreAI : public CreatureAIScript
 
         JainaProudmooreAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            _unit->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+            _unit->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
         }
 };
 
@@ -135,7 +135,7 @@ class JainaProudmooreGS : public GossipScript
                     break;
             }
 
-            creature->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+            creature->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
         }
 
         void GossipEnd(Object* pObject, Player* Plr) { GossipScript::GossipEnd(pObject, Plr); }
@@ -151,7 +151,7 @@ class ThrallAI : public CreatureAIScript
 
         ThrallAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            _unit->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+            _unit->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
         }
 };
 
@@ -191,7 +191,7 @@ class ThrallGS : public GossipScript
                     break;
             }
 
-            creature->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+            creature->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
         }
 
         void GossipEnd(Object* pObject, Player* Plr) { GossipScript::GossipEnd(pObject, Plr); }
@@ -1131,7 +1131,7 @@ class ArchimondeTriggerAI : public CreatureAIScript
 
         ArchimondeTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->m_noRespawn = true;
 
@@ -1155,7 +1155,7 @@ class DoomfireAI : public CreatureAIScript
 
         DoomfireAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->m_noRespawn = true;
 
@@ -1357,7 +1357,7 @@ class ArchimondeAI : public CreatureAIScript
 
             if (Trigger && Trigger->IsInWorld())
             {
-                Trigger->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                Trigger->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 Trigger->GetAIInterface()->SetAllowedToEnterCombat(false);
                 Trigger->m_noRespawn = true;
 

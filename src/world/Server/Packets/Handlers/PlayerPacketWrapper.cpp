@@ -625,7 +625,7 @@ void Player::SendLootUpdate(Object* o)
     // Build the actual update.
     ByteBuffer buf(500);
 
-    uint32 Flags = o->GetUInt32Value(UNIT_DYNAMIC_FLAGS);
+    uint32 Flags = o->getUInt32Value(UNIT_DYNAMIC_FLAGS);
 
     Flags |= U_DYN_FLAG_LOOTABLE;
     Flags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
@@ -687,7 +687,7 @@ void Player::TagUnit(Object* o)
 {
 
     // For new players who get a create object
-    uint32 Flags = o->GetUInt32Value(UNIT_DYNAMIC_FLAGS);
+    uint32 Flags = o->getUInt32Value(UNIT_DYNAMIC_FLAGS);
     Flags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
 
     // Update existing players.
@@ -695,7 +695,7 @@ void Player::TagUnit(Object* o)
     ByteBuffer buf1(500);
 
     o->BuildFieldUpdatePacket(&buf1, UNIT_DYNAMIC_FLAGS, Flags);
-    o->BuildFieldUpdatePacket(&buf, UNIT_DYNAMIC_FLAGS, o->GetUInt32Value(UNIT_DYNAMIC_FLAGS));
+    o->BuildFieldUpdatePacket(&buf, UNIT_DYNAMIC_FLAGS, o->getUInt32Value(UNIT_DYNAMIC_FLAGS));
 
     SendUpdateDataToSet(&buf1, &buf, true);
 }

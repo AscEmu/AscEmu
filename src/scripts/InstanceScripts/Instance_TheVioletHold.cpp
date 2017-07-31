@@ -314,7 +314,7 @@ class SinclariAI : public MoonScriptCreatureAI
                 case 4:
                 {
                     _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARY_SAY_2);
-                    _unit->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                    _unit->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                 }break;
                 case 5:
                 {
@@ -399,7 +399,7 @@ class SinclariGossip : public GossipScript
 
                 case 2:
                 {
-                    static_cast<Creature*>(pObject)->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+                    static_cast<Creature*>(pObject)->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
                     pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
                     //pCreature->MoveToWaypoint(1);
                     pCreature->GetAIInterface()->StopMovement(10);

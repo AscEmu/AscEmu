@@ -890,7 +890,7 @@ void WorldSession::HandleBuyBackOpcode(WorldPacket& recv_data)
         }
 
         // Check for gold
-        int32 cost = _player->GetUInt32Value(PLAYER_FIELD_BUYBACK_PRICE_1 + stuff);
+        int32 cost = _player->getUInt32Value(PLAYER_FIELD_BUYBACK_PRICE_1 + stuff);
         if (!_player->HasGold(cost))
         {
             WorldPacket data(SMSG_BUY_FAILED, 12);
@@ -1882,7 +1882,7 @@ void WorldSession::HandleBuyBankSlotOpcode(WorldPacket& recvPacket)
 
     LOG_DEBUG("WORLD: CMSG_BUY_bytes_SLOT");
 
-    bytes = GetPlayer()->GetUInt32Value(PLAYER_BYTES_2);
+    bytes = GetPlayer()->getUInt32Value(PLAYER_BYTES_2);
     slots = (uint8)(bytes >> 16);
 
     LOG_DETAIL("PLAYER: Buy bytes bag slot, slot number = %d", slots);
@@ -1898,7 +1898,7 @@ void WorldSession::HandleBuyBankSlotOpcode(WorldPacket& recvPacket)
     price = bank_bag_slot_prices->Price;
     if (_player->HasGold(price))
     {
-        _player->SetUInt32Value(PLAYER_BYTES_2, (bytes & 0xff00ffff) | ((slots + 1) << 16));
+        _player->setUInt32Value(PLAYER_BYTES_2, (bytes & 0xff00ffff) | ((slots + 1) << 16));
         _player->ModGold(-price);
 #if VERSION_STRING > TBC
         _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BUY_BANK_SLOT, 1, 0, 0);

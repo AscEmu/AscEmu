@@ -286,10 +286,10 @@ void QuestLogEntry::Finish()
     sEventMgr.RemoveEvents(m_plr, EVENT_TIMED_QUEST_EXPIRE);
 
     uint32 base = GetBaseField(m_slot);
-    m_plr->SetUInt32Value(base + 0, 0);
-    m_plr->SetUInt32Value(base + 1, 0);
-    m_plr->SetUInt64Value(base + 2, 0);
-    m_plr->SetUInt32Value(base + 4, 0);
+    m_plr->setUInt32Value(base + 0, 0);
+    m_plr->setUInt32Value(base + 1, 0);
+    m_plr->setUInt64Value(base + 2, 0);
+    m_plr->setUInt32Value(base + 4, 0);
 
     // clear from player log
     m_plr->SetQuestLogSlot(NULL, m_slot);
@@ -309,7 +309,7 @@ void QuestLogEntry::Fail(bool timerexpired)
     mDirty = true;
 
     uint32 base = GetBaseField(m_slot);
-    m_plr->SetUInt32Value(base + 1, 2);
+    m_plr->setUInt32Value(base + 1, 2);
 
     if (timerexpired)
         sQuestMgr.SendQuestUpdateFailedTimer(m_quest, m_plr);
@@ -328,7 +328,7 @@ void QuestLogEntry::UpdatePlayerFields()
         return;
 
     uint32 base = GetBaseField(m_slot);
-    m_plr->SetUInt32Value(base + 0, m_quest->id);
+    m_plr->setUInt32Value(base + 0, m_quest->id);
     uint32 field0 = 0;          // 0x01000000 = "Objective Complete" - 0x02 = Quest Failed - 0x04 = Quest Accepted
 
     // next field is count (kills, etc)
@@ -406,16 +406,16 @@ void QuestLogEntry::UpdatePlayerFields()
     if (completed == QUEST_FAILED)
         field0 |= 2;
 
-    m_plr->SetUInt32Value(base + 1, field0);
-    m_plr->SetUInt64Value(base + 2, field1);
+    m_plr->setUInt32Value(base + 1, field0);
+    m_plr->setUInt64Value(base + 2, field1);
 
     if ((m_quest->time != 0) && (completed != QUEST_FAILED))
     {
-        m_plr->SetUInt32Value(base + 4, expirytime);
+        m_plr->setUInt32Value(base + 4, expirytime);
         sEventMgr.AddEvent(m_plr, &Player::EventTimedQuestExpire, m_quest->id, EVENT_TIMED_QUEST_EXPIRE, (expirytime - UNIXTIME) * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
     else
-        m_plr->SetUInt32Value(base + 4, 0);
+        m_plr->setUInt32Value(base + 4, 0);
 }
 
 void QuestLogEntry::SendQuestComplete()

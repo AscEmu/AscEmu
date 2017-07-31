@@ -269,7 +269,7 @@ namespace luaItem
         uint32 index = static_cast<uint32>(luaL_checkinteger(L, 1));
         uint32 index1 = static_cast<uint32>(luaL_checkinteger(L, 2));
         uint8 value = static_cast<uint8>(luaL_checkinteger(L, 3));
-        ptr->SetByte(index, index1, value);
+        ptr->setByteValue(index, index1, value);
         return 1;
     }
 
@@ -277,7 +277,7 @@ namespace luaItem
     {
         uint32 index = static_cast<uint32>(luaL_checkinteger(L, 1));
         uint32 index1 = static_cast<uint32>(luaL_checkinteger(L, 2));
-        lua_pushinteger(L, ptr->GetByte(index, index1));
+        lua_pushinteger(L, ptr->getByteValue(index, index1));
         return 1;
     }
 
@@ -475,7 +475,7 @@ namespace luaItem
         uint32 field = static_cast<uint32>(luaL_checkinteger(L, 1));
         uint32 value = static_cast<uint32>(luaL_checkinteger(L, 2));
         if (ptr)
-            ptr->SetUInt32Value(field, value);
+            ptr->setUInt32Value(field, value);
         return 0;
     }
 
@@ -484,7 +484,7 @@ namespace luaItem
         uint32 field = CHECK_ULONG(L, 1);
         uint64 guid = CHECK_GUID(L, 2);
         if (ptr)
-            ptr->SetUInt64Value(field, guid);
+            ptr->setUInt64Value(field, guid);
         return 0;
     }
 
@@ -511,7 +511,7 @@ namespace luaItem
         uint32 field = static_cast<uint32>(luaL_checkinteger(L, 1));
         float value = CHECK_FLOAT(L, 2);
         if (ptr)
-            ptr->SetFloatValue(field, value);
+            ptr->setFloatValue(field, value);
         return 0;
     }
 
@@ -519,7 +519,7 @@ namespace luaItem
     {
         uint32 field = static_cast<uint32>(luaL_checkinteger(L, 1));
         if (ptr)
-            lua_pushnumber(L, ptr->GetUInt32Value(field));
+            lua_pushnumber(L, ptr->getUInt32Value(field));
         return 1;
     }
 
@@ -527,7 +527,7 @@ namespace luaItem
     {
         uint32 field = static_cast<uint32>(luaL_checkinteger(L, 1));
         if (ptr)
-            PUSH_GUID(L, ptr->GetUInt64Value(field));
+            PUSH_GUID(L, ptr->getUInt64Value(field));
         return 1;
     }
 
@@ -535,7 +535,7 @@ namespace luaItem
     {
         uint32 field = static_cast<uint32>(luaL_checkinteger(L, 1));
         if (ptr)
-            lua_pushnumber(L, ptr->GetFloatValue(field));
+            lua_pushnumber(L, ptr->getFloatValue(field));
         return 1;
     }
 }

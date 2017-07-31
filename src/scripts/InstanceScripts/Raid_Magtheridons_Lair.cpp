@@ -104,7 +104,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
             PhaseOneTimer = 0;
             Phase = 0;
             // Trigger settings
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             RegisterAIUpdateEvent(1000);
         }
@@ -234,7 +234,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                 if (Magtheridon)
                 {
                     Magtheridon->GetAIInterface()->SetAllowedToEnterCombat(true);
-                    Magtheridon->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
+                    Magtheridon->setUInt64Value(UNIT_FIELD_FLAGS, 0);
                     Magtheridon->RemoveAura(BANISHMENT);
                     Magtheridon->RemoveAura(BANISH);
                 }
@@ -327,7 +327,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                                 Magtheridon->SendScriptTextChatMessage(8748);    // I... am... unleashed!
                             }
 
-                            Magtheridon->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+                            Magtheridon->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
                             Magtheridon->Emote(EMOTE_ONESHOT_CREATURE_SPECIAL);
                             Magtheridon->RemoveAura(BANISHMENT);
                         }
@@ -340,7 +340,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                         if (Magtheridon)
                         {
                             Magtheridon->GetAIInterface()->SetAllowedToEnterCombat(true);
-                            Magtheridon->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
+                            Magtheridon->setUInt64Value(UNIT_FIELD_FLAGS, 0);
                         }
 
                         Phase = 2;
@@ -465,7 +465,7 @@ class ManticronCubeGO : public GameObjectAIScript
                 return;
 
             // We check if Cube Trigger is not in use
-            if (CubeTrigger && CubeTrigger->GetChannelSpellId() == SHADOW_GRASP && CubeTrigger->GetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT) == Magtheridon->GetGUID())
+            if (CubeTrigger && CubeTrigger->GetChannelSpellId() == SHADOW_GRASP && CubeTrigger->getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT) == Magtheridon->GetGUID())
                 return;
 
             // We set player to channel spell "on Cube"
@@ -506,7 +506,7 @@ class ManticronCubeGO : public GameObjectAIScript
                 aura = Channeler->getAuraWithId(SHADOW_GRASP2);
 
             // If player doesn't have aura we interrupt channeling
-            if (Channeler && (!aura || !Channeler->GetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT)))
+            if (Channeler && (!aura || !Channeler->getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT)))
             {
                 CubeTrigger->SetChannelSpellTargetGUID(0);
                 CubeTrigger->SetChannelSpellId(0);
@@ -526,7 +526,7 @@ class ManticronCubeGO : public GameObjectAIScript
                     Unit* GlobalCubeTrigger = NULL;
                     GlobalCubeTrigger = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(CubeTriggers[i].x, CubeTriggers[i].y, CubeTriggers[i].z, 17376);
                     if (Magtheridon != nullptr)
-                        if (GlobalCubeTrigger && GlobalCubeTrigger->GetChannelSpellId() == SHADOW_GRASP && CubeTrigger->GetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT) == Magtheridon->GetGUID())
+                        if (GlobalCubeTrigger && GlobalCubeTrigger->GetChannelSpellId() == SHADOW_GRASP && CubeTrigger->getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT) == Magtheridon->GetGUID())
                             Counter++;
                 }
 
@@ -555,7 +555,7 @@ class ManticronCubeGO : public GameObjectAIScript
                 Unit* GlobalCubeTrigger = NULL;
                 GlobalCubeTrigger = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(CubeTriggers[i].x, CubeTriggers[i].y, CubeTriggers[i].z, 17376);
                 if (Magtheridon != nullptr)
-                    if (GlobalCubeTrigger && GlobalCubeTrigger->GetChannelSpellId() == SHADOW_GRASP && CubeTrigger->GetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT) == Magtheridon->GetGUID())
+                    if (GlobalCubeTrigger && GlobalCubeTrigger->GetChannelSpellId() == SHADOW_GRASP && CubeTrigger->getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT) == Magtheridon->GetGUID())
                         Counter++;
             }
 
@@ -616,7 +616,7 @@ class CubeTriggerAI : public CreatureAIScript
 
         CubeTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
         }
 };
@@ -1305,14 +1305,14 @@ class MagtheridonAI : public CreatureAIScript
             spells[6].targettype = TARGET_SELF;
             spells[6].instant = true;
 
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
 
             Aura* aura = sSpellFactoryMgr.NewAura(sSpellCustomizations.GetSpellInfo(BANISHMENT), (uint32) - 1, _unit, _unit);
             _unit->AddAura(aura);
 
             _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(BANISH), true);
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-            _unit->SetUInt32Value(UNIT_FIELD_BYTES_2, 1);
+            _unit->setUInt32Value(UNIT_FIELD_BYTES_2, 1);
 
             timer_quake = timer_enrage = timer_blastNova = timer_caveIn = 0;
             PhaseSwitch = false;

@@ -335,7 +335,7 @@ bool ChatHandler::HandleSetBytesCommand(const char* args, WorldSession* m_sessio
         << " " << uint16((uint8)Value3)
         << " " << uint16((uint8)Value4)
         << '\0';
-    obj->SetUInt32Value(BytesIndex, ((Value1) | (Value2 << 8) | (Value3 << 16) | (Value4 << 24)));
+    obj->setUInt32Value(BytesIndex, ((Value1) | (Value2 << 8) | (Value3 << 16) | (Value4 << 24)));
     SystemMessage(m_session, sstext.str().c_str());
 
     return true;
@@ -362,7 +362,7 @@ bool ChatHandler::HandleGetBytesCommand(const char* args, WorldSession* m_sessio
         return false;
 
     uint32 BytesIndex = atoi(pBytesIndex);
-    uint32 theBytes = obj->GetUInt32Value(BytesIndex);
+    uint32 theBytes = obj->getUInt32Value(BytesIndex);
 
     std::stringstream sstext;
     sstext << "bytes for Field " << BytesIndex << " are " << uint16((uint8)theBytes & 0xFF) << " " << uint16((uint8)(theBytes >> 8) & 0xFF) << " ";
@@ -638,8 +638,8 @@ bool ChatHandler::HandleModifyValueCommand(const char* args, WorldSession* m_ses
     }
 
     char buf[256];
-    uint32 oldValue = obj->GetUInt32Value(field);
-    obj->SetUInt32Value(field, value);
+    uint32 oldValue = obj->getUInt32Value(field);
+    obj->setUInt32Value(field, value);
 
     snprintf((char*)buf, 256, "Set Field %i from %i to %i.", (unsigned int)field, (unsigned int)oldValue, (unsigned int)value);
 
@@ -854,10 +854,10 @@ bool ChatHandler::HandleDebugSpawnWarCommand(const char* args, WorldSession* m_s
         c->Load(cp, bx + x, by + y, z, 0.0f);
         if (health != 0)
         {
-            c->SetUInt32Value(UNIT_FIELD_MAXHEALTH, health);
-            c->SetUInt32Value(UNIT_FIELD_HEALTH, health);
+            c->setUInt32Value(UNIT_FIELD_MAXHEALTH, health);
+            c->setUInt32Value(UNIT_FIELD_HEALTH, health);
         }
-        c->SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, (count % 2) ? 1 : 2);
+        c->setUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, (count % 2) ? 1 : 2);
         c->_setFaction();
         c->PushToWorld(m);
 

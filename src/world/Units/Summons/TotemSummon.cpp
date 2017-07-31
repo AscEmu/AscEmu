@@ -88,7 +88,7 @@ void TotemSummon::Load(CreatureProperties const* properties_, Unit* owner, Locat
     SetDisplayId(displayID);
     SetNativeDisplayId(creature_properties->Male_DisplayID);
     SetCastSpeedMod(1.0f);
-    SetUInt32Value(UNIT_DYNAMIC_FLAGS, 0);
+    setUInt32Value(UNIT_DYNAMIC_FLAGS, 0);
 
     InheritSMMods(owner);
 

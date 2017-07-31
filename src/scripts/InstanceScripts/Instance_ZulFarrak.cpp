@@ -186,7 +186,7 @@ class AntusulTriggerAI : public CreatureAIScript
         {
             _unit->GetAIInterface()->m_canMove = false;
             _unit->GetAIInterface()->disable_melee = true;
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
             Unit* antusul = NULL;
             antusul = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1815.030029f, 686.817017f, 14.519000f, 8127);
@@ -351,7 +351,7 @@ class AntusulAI : public CreatureAIScript
             {
                 trigger->GetAIInterface()->m_canMove = true;
                 trigger->GetAIInterface()->disable_melee = false;
-                trigger->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
+                trigger->setUInt64Value(UNIT_FIELD_FLAGS, 0);
             }
         }
 

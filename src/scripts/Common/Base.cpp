@@ -172,7 +172,7 @@ bool MoonScriptCreatureAI::GetCanEnterCombat()
 
 void MoonScriptCreatureAI::SetCanEnterCombat(bool pCanEnterCombat)
 {
-    _unit->SetUInt64Value(UNIT_FIELD_FLAGS, (pCanEnterCombat) ? 0 : UNIT_FLAG_NOT_ATTACKABLE_9);
+    _unit->setUInt64Value(UNIT_FIELD_FLAGS, (pCanEnterCombat) ? 0 : UNIT_FLAG_NOT_ATTACKABLE_9);
     _unit->GetAIInterface()->SetAllowedToEnterCombat(pCanEnterCombat);
 }
 
@@ -350,12 +350,12 @@ void MoonScriptCreatureAI::Regenerate()
 
 void MoonScriptCreatureAI::SetScale(float pScale)
 {
-    _unit->SetFloatValue(OBJECT_FIELD_SCALE_X, pScale);
+    _unit->setFloatValue(OBJECT_FIELD_SCALE_X, pScale);
 }
 
 float MoonScriptCreatureAI::GetScale()
 {
-    return _unit->GetFloatValue(OBJECT_FIELD_SCALE_X);
+    return _unit->getFloatValue(OBJECT_FIELD_SCALE_X);
 }
 
 void MoonScriptCreatureAI::SetDisplayId(uint32 pDisplayId)
@@ -365,13 +365,13 @@ void MoonScriptCreatureAI::SetDisplayId(uint32 pDisplayId)
 
 void MoonScriptCreatureAI::SetWieldWeapon(bool pValue)
 {
-    if (pValue && _unit->GetUInt32Value(UNIT_FIELD_BYTES_2) != 1)
+    if (pValue && _unit->getUInt32Value(UNIT_FIELD_BYTES_2) != 1)
     {
-        _unit->SetUInt32Value(UNIT_FIELD_BYTES_2, 1);
+        _unit->setUInt32Value(UNIT_FIELD_BYTES_2, 1);
     }
-    else if (!pValue && _unit->GetUInt32Value(UNIT_FIELD_BYTES_2) != 0)
+    else if (!pValue && _unit->getUInt32Value(UNIT_FIELD_BYTES_2) != 0)
     {
-        _unit->SetUInt32Value(UNIT_FIELD_BYTES_2, 0);
+        _unit->setUInt32Value(UNIT_FIELD_BYTES_2, 0);
     }
 }
 
@@ -921,7 +921,7 @@ void MoonScriptCreatureAI::SetTargetToChannel(Unit* pTarget, uint32 pSpellId)
 
 Unit* MoonScriptCreatureAI::GetTargetToChannel()
 {
-    return _unit->GetMapMgr()->GetUnit(_unit->GetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT));
+    return _unit->GetMapMgr()->GetUnit(_unit->getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT));
 }
 
 void MoonScriptCreatureAI::SetAIUpdateFreq(uint32 pUpdateFreq)
@@ -1699,7 +1699,7 @@ void EventFunc_RemoveUnitFieldFlags(MoonScriptCreatureAI* pCreatureAI, int32 pMi
     if (!pCreatureAI || pMiscVal <= 0)
         return;
 
-    pCreatureAI->GetUnit()->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
+    pCreatureAI->GetUnit()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
 
     if (!pCreatureAI->IsInCombat() && !pCreatureAI->HasEvents() && pCreatureAI->GetTimerCount() == 0)
         pCreatureAI->RemoveAIUpdateEvent();

@@ -453,7 +453,7 @@ class BoneSpikeAI : public MoonScriptBossAI
         MOONSCRIPT_FACTORY_FUNCTION(BoneSpikeAI, MoonScriptBossAI);
         BoneSpikeAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
         {
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);  // On wowhead they said "kill them not just looking at them".
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);  // On wowhead they said "kill them not just looking at them".
             _unit->Despawn(8000, 0);
         }
 

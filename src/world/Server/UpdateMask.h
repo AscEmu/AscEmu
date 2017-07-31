@@ -45,21 +45,18 @@ class UpdateMask
         {
             ARCEMU_ASSERT(index < mCount);
             ((uint8*)mUpdateMask)[ index >> 3 ] |= 1 << (index & 0x7);
-            // ((uint8 *)mUpdateMask)[ index / 8 ] |= 1 * pow(2, index % 8);
         }
 
         void UnsetBit(const uint32 index)
         {
             ARCEMU_ASSERT(index < mCount);
             ((uint8*)mUpdateMask)[ index >> 3 ] &= (0xff ^ (1 << (index & 0x7)));
-            // ((uint8 *)mUpdateMask)[ index / 8 ] &= 255 - (1 * pow(2, index % 8)));
         }
 
         bool GetBit(const uint32 index) const
         {
             ARCEMU_ASSERT(index < mCount);
             return (((uint8*)mUpdateMask)[ index >> 3 ] & (1 << (index & 0x7))) != 0;
-            //actually int->bool conversion is not needed here
         }
 
         uint32 GetUpdateBlockCount() const

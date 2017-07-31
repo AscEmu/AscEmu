@@ -47,6 +47,190 @@
 
 // MIT Start
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Object values
+void Object::setByteValue(uint16_t index, uint8_t offset, uint8_t value)
+{
+    ARCEMU_ASSERT(index < m_valuesCount);
+
+    if (offset > 3)
+    {
+        LOG_DEBUG("wrong offset %u", offset);
+        return;
+    }
+
+    if (uint8_t(m_uint32Values[index] >> (offset * 8)) != value)
+    {
+        m_uint32Values[index] &= ~uint32_t(uint32_t(0xFF) << (offset * 8));
+        m_uint32Values[index] |= uint32_t(uint32_t(value) << (offset * 8));
+        m_updateMask.SetBit(index);
+
+        if (IsInWorld() && m_objectUpdated == false)
+        {
+            m_mapMgr->ObjectUpdated(this);
+            m_objectUpdated = true;
+        }
+    }
+
+}
+
+uint8_t Object::getByteValue(uint16_t index, uint8_t offset) const
+{
+    ARCEMU_ASSERT(index < m_valuesCount);
+    ARCEMU_ASSERT(offset < 4);
+    return *(((uint8_t*)&m_uint32Values[index]) + offset);
+}
+
+void Object::setUInt16Value(uint16_t index, uint8_t offset, uint16_t value)
+{
+    ARCEMU_ASSERT(index < m_valuesCount);
+
+    if (offset > 1)
+    {
+        LOG_DEBUG("wrong offset %u", offset);
+        return;
+    }
+
+    if (uint16_t(m_uint32Values[index] >> (offset * 16)) != value)
+    {
+        m_uint32Values[index] &= ~uint32_t(uint32_t(0xFFFF) << (offset * 16));
+        m_uint32Values[index] |= uint32_t(uint32_t(value) << (offset * 16));
+        m_updateMask.SetBit(index);
+
+        if (IsInWorld() && m_objectUpdated == false)
+        {
+            m_mapMgr->ObjectUpdated(this);
+            m_objectUpdated = true;
+        }
+    }
+}
+
+uint16_t Object::getUInt16Value(uint16_t index, uint8_t offset) const
+{
+    ARCEMU_ASSERT(index < m_valuesCount);
+    ARCEMU_ASSERT(offset < 2);
+    return *(((uint16_t*)&m_uint32Values[index]) + offset);
+}
+
+void Object::setUInt32Value(uint16_t index, uint32_t value)
+{
+    ARCEMU_ASSERT(index < m_valuesCount);
+
+    if (m_uint32Values[index] != value)
+    {
+        m_uint32Values[index] = value;
+        m_updateMask.SetBit(index);
+
+        if (IsInWorld() && m_objectUpdated == false)
+        {
+            m_mapMgr->ObjectUpdated(this);
+            m_objectUpdated = true;
+        }
+    }
+
+//    // the following is definitely misplaced here!
+//    if (IsUnit())
+//    {
+//        static_cast<Unit*>(this)->HandleUpdateFieldChange(index);
+//    }
+//
+//    // Group update handling
+//    if (IsPlayer())
+//    {
+//        static_cast<Player*>(this)->HandleUpdateFieldChanged(index);
+//
+//        switch (index)
+//        {
+//            case UNIT_FIELD_POWER1:
+//            case UNIT_FIELD_POWER2:
+//            case UNIT_FIELD_POWER4:
+//#if VERSION_STRING == WotLK
+//            case UNIT_FIELD_POWER7:
+//#endif
+//                static_cast<Unit*>(this)->SendPowerUpdate(true);
+//                break;
+//            default:
+//                break;
+//        }
+//    }
+//    else if (IsCreature())
+//    {
+//        switch (index)
+//        {
+//            case UNIT_FIELD_POWER1:
+//            case UNIT_FIELD_POWER2:
+//            case UNIT_FIELD_POWER3:
+//            case UNIT_FIELD_POWER4:
+//#if VERSION_STRING == WotLK
+//            case UNIT_FIELD_POWER7:
+//#endif
+//                static_cast<Creature*>(this)->SendPowerUpdate(false);
+//                break;
+//            default:
+//                break;
+//        }
+//    }
+}
+
+uint32_t Object::getUInt32Value(uint16_t index) const
+{
+    ARCEMU_ASSERT(index < m_valuesCount);
+    return m_uint32Values[index];
+}
+
+void Object::setUInt64Value(uint16_t index, uint64_t value)
+{
+    ARCEMU_ASSERT(index + 1 < m_valuesCount);
+
+    if (*((uint64*)&(m_uint32Values[index])) != value)
+    {
+        m_uint32Values[index] = (uint32_t)(value & UINT64_C(0x00000000FFFFFFFF));
+        m_uint32Values[index + 1] = (uint32_t)(value & UINT64_C(0x00000000FFFFFFFF));
+        m_updateMask.SetBit(index);
+        m_updateMask.SetBit(index + 1);
+
+        if (IsInWorld() && m_objectUpdated == false)
+        {
+            m_mapMgr->ObjectUpdated(this);
+            m_objectUpdated = true;
+        }
+    }
+}
+
+uint64_t Object::getUInt64Value(uint16_t index) const
+{
+    ARCEMU_ASSERT(index + 1 < m_valuesCount);
+    return *((uint64_t*)&(m_uint32Values[index]));
+}
+
+void Object::setFloatValue(uint16_t index, float value)
+{
+    ARCEMU_ASSERT(index < m_valuesCount);
+    if (m_floatValues[index] == value)
+    {
+        return;
+    }
+
+    m_floatValues[index] = value;
+    m_updateMask.SetBit(index);
+
+    if (IsInWorld() && m_objectUpdated == false)
+    {
+        m_mapMgr->ObjectUpdated(this);
+        m_objectUpdated = true;
+    }
+}
+
+float Object::getFloatValue(uint16_t index) const
+{
+    ARCEMU_ASSERT(index < m_valuesCount);
+    return m_floatValues[index];
+}
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Position functions
 bool Object::isInRange(LocationVector location, float square_r) const
 {
     return getDistanceSq(location) <= square_r;
@@ -1697,103 +1881,6 @@ void Object::RemoveFromWorld(bool free_guid)
     event_Relocate();
 }
 
-void Object::SetUInt16Value(uint16 index, uint8 offset, uint16 value)
-{
-    ASSERT(index < m_valuesCount);
-
-    if (offset > 2)
-    {
-        LogDebug("Object::SetUInt16Value: wrong offset %u", offset);
-        return;
-    }
-
-    if (uint16(m_uint32Values[index] >> (offset * 16)) != value)
-    {
-        m_uint32Values[index] &= ~uint32(uint32(0xFFFF) << (offset * 16));
-        m_uint32Values[index] |= uint32(uint32(value) << (offset * 16));
-        m_updateMask.SetBit(index);
-
-        if (!m_objectUpdated)
-        {
-            m_mapMgr->ObjectUpdated(this);
-            m_objectUpdated = true;
-        }
-    }
-}
-
-uint16 Object::GetUInt16Value(uint16 index, uint8 offset) const
-{
-    ASSERT(index < m_valuesCount);
-    ASSERT(offset < 2);
-    return *(((uint16*)&m_uint32Values[index]) + offset);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
-/// Set uint32 property
-//////////////////////////////////////////////////////////////////////////////////////////
-void Object::SetUInt32Value(const uint32 index, const uint32 value)
-{
-    ARCEMU_ASSERT(index < m_valuesCount);
-    /// Save updating when val isn't changing.
-    if (m_uint32Values[index] == value)
-        return;
-
-    m_uint32Values[index] = value;
-
-    if (IsInWorld())
-    {
-        m_updateMask.SetBit(index);
-
-        if (!m_objectUpdated)
-        {
-            m_mapMgr->ObjectUpdated(this);
-            m_objectUpdated = true;
-        }
-    }
-
-    if(IsUnit())
-	{
-		static_cast<Unit*>(this)->HandleUpdateFieldChange(index);
-	}
-
-    /// Group update handling
-    if (IsPlayer())
-    {
-        static_cast<Player*>(this)->HandleUpdateFieldChanged(index);
-
-        switch (index)
-        {
-            case UNIT_FIELD_POWER1:
-            case UNIT_FIELD_POWER2:
-            case UNIT_FIELD_POWER4:
-#if VERSION_STRING == WotLK
-            case UNIT_FIELD_POWER7:
-#endif
-                static_cast< Unit* >(this)->SendPowerUpdate(true);
-                break;
-            default:
-                break;
-        }
-    }
-    else if (IsCreature())
-    {
-        switch (index)
-        {
-            case UNIT_FIELD_POWER1:
-            case UNIT_FIELD_POWER2:
-            case UNIT_FIELD_POWER3:
-            case UNIT_FIELD_POWER4:
-#if VERSION_STRING == WotLK
-            case UNIT_FIELD_POWER7:
-#endif
-                static_cast<Creature*>(this)->SendPowerUpdate(false);
-                break;
-            default:
-                break;
-        }
-    }
-}
-
 uint32 Object::GetModPUInt32Value(const uint32 index, const int32 value)
 {
     ARCEMU_ASSERT(index < m_valuesCount);
@@ -1914,66 +2001,16 @@ void Object::ModFloatValueByPCT(const uint32 index, int32 byPct)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-/// Set uint64 property
-//////////////////////////////////////////////////////////////////////////////////////////
-void Object::SetUInt64Value(const uint32 index, const uint64 value)
-{
-    ARCEMU_ASSERT(index + 1 < m_valuesCount);
-
-    uint64* p = reinterpret_cast< uint64* >(&m_uint32Values[index]);
-
-    if (*p == value)
-        return;
-    else
-        *p = value;
-
-    if (IsInWorld())
-    {
-        m_updateMask.SetBit(index);
-        m_updateMask.SetBit(index + 1);
-
-        if (!m_objectUpdated)
-        {
-            m_mapMgr->ObjectUpdated(this);
-            m_objectUpdated = true;
-        }
-    }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
-/// Set float property
-//////////////////////////////////////////////////////////////////////////////////////////
-void Object::SetFloatValue(const uint32 index, const float value)
-{
-    ARCEMU_ASSERT(index < m_valuesCount);
-    if (m_floatValues[index] == value)
-        return;
-
-    m_floatValues[index] = value;
-
-    if (IsInWorld())
-    {
-        m_updateMask.SetBit(index);
-
-        if (!m_objectUpdated)
-        {
-            m_mapMgr->ObjectUpdated(this);
-            m_objectUpdated = true;
-        }
-    }
-}
-
 
 void Object::SetFlag(const uint32 index, uint32 newFlag)
 {
-    SetUInt32Value(index, GetUInt32Value(index) | newFlag);
+    setUInt32Value(index, getUInt32Value(index) | newFlag);
 }
 
 
 void Object::RemoveFlag(const uint32 index, uint32 oldFlag)
 {
-    SetUInt32Value(index, GetUInt32Value(index) & ~oldFlag);
+    setUInt32Value(index, getUInt32Value(index) & ~oldFlag);
 }
 
 
@@ -2331,7 +2368,7 @@ void Object::UpdateSameFactionSet()
 
 void Object::EventSetUInt32Value(uint32 index, uint32 value)
 {
-    SetUInt32Value(index, value);
+    setUInt32Value(index, value);
 }
 
 void Object::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32 unitEvent, uint32 spellId, bool no_remove_auras)
@@ -2472,7 +2509,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
         else if (pl->HasAura(44396))
             pctmod = 0.15f;
 
-        uint32 hp = static_cast< uint32 >(0.05f * pl->GetUInt32Value(UNIT_FIELD_MAXHEALTH));
+        uint32 hp = static_cast< uint32 >(0.05f * pl->getUInt32Value(UNIT_FIELD_MAXHEALTH));
         uint32 spellpower = static_cast< uint32 >(pctmod * pl->GetPosDamageDoneMod(SCHOOL_NORMAL));
 
         if (spellpower > hp)
@@ -2613,8 +2650,8 @@ void Object::SendSpellNonMeleeDamageLog(Object* Caster, Object* Target, uint32 S
 
     uint32 Overkill = 0;
 
-    if (Damage > Target->GetUInt32Value(UNIT_FIELD_HEALTH))
-        Overkill = Damage - Target->GetUInt32Value(UNIT_FIELD_HEALTH);
+    if (Damage > Target->getUInt32Value(UNIT_FIELD_HEALTH))
+        Overkill = Damage - Target->getUInt32Value(UNIT_FIELD_HEALTH);
 
     WorldPacket data(SMSG_SPELLNONMELEEDAMAGELOG, 48);
 
@@ -2650,8 +2687,8 @@ void Object::SendAttackerStateUpdate(Object* Caster, Object* Target, dealdamage*
 
     uint32 Overkill = 0;
 
-    if (Damage > Target->GetUInt32Value(UNIT_FIELD_MAXHEALTH))
-        Overkill = Damage - Target->GetUInt32Value(UNIT_FIELD_HEALTH);
+    if (Damage > Target->getUInt32Value(UNIT_FIELD_MAXHEALTH))
+        Overkill = Damage - Target->getUInt32Value(UNIT_FIELD_HEALTH);
 
     data << uint32(HitStatus);
     data << Caster->GetNewGUID();
@@ -2789,31 +2826,6 @@ void Object::Deactivate(MapMgr* mgr)
             break;
     }
     Active = false;
-}
-
-void Object::SetByte(uint32 index, uint32 index1, uint8 value)
-{
-    ARCEMU_ASSERT(index < m_valuesCount);
-    // save updating when val isn't changing.
-
-    uint8* v = &((uint8*)m_uint32Values)[index * 4 + index1];
-
-    if (*v == value)
-        return;
-
-    *v = value;
-
-    if (IsInWorld())
-    {
-        m_updateMask.SetBit(index);
-
-        if (!m_objectUpdated)
-        {
-            m_mapMgr->ObjectUpdated(this);
-            m_objectUpdated = true;
-        }
-    }
-
 }
 
 void Object::SetByteFlag(uint16 index, uint8 offset, uint8 newFlag)

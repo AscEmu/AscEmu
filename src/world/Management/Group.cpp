@@ -1168,13 +1168,13 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
                     for (uint32 j = PLAYER_QUEST_LOG_1_1; j <= PLAYER_QUEST_LOG_25_5; ++j)
 #endif
                     {
-                        if (plr->GetUInt32Value(j))
+                        if (plr->getUInt32Value(j))
                         {
                             hisMask.SetBit(j);
                             u1 = true;
                         }
 
-                        if (pPlayer->GetUInt32Value(j))
+                        if (pPlayer->getUInt32Value(j))
                         {
                             u2 = true;
                             myMask.SetBit(j);
@@ -1282,7 +1282,7 @@ void Group::SendLootUpdates(Object* o)
     // Build the actual update.
     ByteBuffer buf(500);
 
-    uint32 Flags = o->GetUInt32Value(UNIT_DYNAMIC_FLAGS);
+    uint32 Flags = o->getUInt32Value(UNIT_DYNAMIC_FLAGS);
 
     Flags |= U_DYN_FLAG_LOOTABLE;
     Flags |= U_DYN_FLAG_TAPPED_BY_PLAYER;

@@ -74,7 +74,7 @@ class SCRIPT_DECL EasyFunctions
                 pCreature->m_custom_waypoint_map = new Movement::WayPointMap;
 
             if (!modelid)
-                modelid = pCreature->GetUInt32Value(UNIT_FIELD_DISPLAYID);
+                modelid = pCreature->getUInt32Value(UNIT_FIELD_DISPLAYID);
 
             pCreature->LoadCustomWaypoint(x, y, z, o, waittime, flags, false, 0, false, 0, modelid, modelid);
         }
@@ -158,7 +158,7 @@ class SCRIPT_DECL EasyFunctions
             pCreature->GetAIInterface()->disable_targeting = dis_target;
             pCreature->PushToWorld(pThis->GetMapMgr());
             pCreature->Despawn(duration, 0);
-            pCreature->SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, faction);
+            pCreature->setUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, faction);
             pCreature->_setFaction();
 
             return pCreature;
@@ -187,7 +187,7 @@ class SCRIPT_DECL EasyFunctions
             //pC->spawnid=0;
             pC->m_spawn = 0;
             pC->CreateFromProto(entry_id, plr->GetMapId(), (float)x, (float)y, (float)z, (float)o, float(orientation1), float(orientation2), float(orientation3), float(orientation4));
-            pC->SetFloatValue(OBJECT_FIELD_SCALE_X, (float)scale);
+            pC->setFloatValue(OBJECT_FIELD_SCALE_X, (float)scale);
             pC->PushToWorld(plr->GetMapMgr());
 
             return pC;

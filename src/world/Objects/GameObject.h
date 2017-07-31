@@ -453,24 +453,24 @@ class SERVER_DECL GameObject : public Object
         void SetAnimProgress(uint8 progress) { SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, progress); }
         uint8 GetAnimProgress() { return GetUInt32Value(GAMEOBJECT_ANIMPROGRESS); }
 #else
-        void SetState(uint8 state) { SetByte(GAMEOBJECT_BYTES_1, 0, state); }
-        uint8 GetState() { return GetByte(GAMEOBJECT_BYTES_1, 0); }
+        void SetState(uint8 state) { setByteValue(GAMEOBJECT_BYTES_1, 0, state); }
+        uint8 GetState() { return getByteValue(GAMEOBJECT_BYTES_1, 0); }
 
-        void SetType(uint8 type) { SetByte(GAMEOBJECT_BYTES_1, 1, type); }
+        void SetType(uint8 type) { setByteValue(GAMEOBJECT_BYTES_1, 1, type); }
         uint32 GetType() { return this->GetGameObjectProperties()->type; }
 
-        void SetArtKit(uint8 artkit) { SetByte(GAMEOBJECT_BYTES_1, 2, artkit); }
-        uint8 GetArtkKit() { return GetByte(GAMEOBJECT_BYTES_1, 2); }
+        void SetArtKit(uint8 artkit) { setByteValue(GAMEOBJECT_BYTES_1, 2, artkit); }
+        uint8 GetArtkKit() { return getByteValue(GAMEOBJECT_BYTES_1, 2); }
 
-        void SetAnimProgress(uint8 progress) { SetByte(GAMEOBJECT_BYTES_1, 3, progress); }
-        uint8 GetAnimProgress() { return GetByte(GAMEOBJECT_BYTES_1, 3); }
+        void SetAnimProgress(uint8 progress) { setByteValue(GAMEOBJECT_BYTES_1, 3, progress); }
+        uint8 GetAnimProgress() { return getByteValue(GAMEOBJECT_BYTES_1, 3); }
 #endif
 
         void SetOverrides(uint32 go_overrides) { m_overrides = go_overrides; }
         uint32 GetOverrides() { return m_overrides; }
 
-        void Deactivate() { SetUInt32Value(GAMEOBJECT_DYNAMIC, 0); }
-        void Activate() { SetUInt32Value(GAMEOBJECT_DYNAMIC, 1); }
+        void Deactivate() { setUInt32Value(GAMEOBJECT_DYNAMIC, 0); }
+        void Activate() { setUInt32Value(GAMEOBJECT_DYNAMIC, 1); }
         bool IsActive()
         {
             if (m_uint32Values[GAMEOBJECT_DYNAMIC] == 1)
@@ -479,26 +479,26 @@ class SERVER_DECL GameObject : public Object
                 return false;
         }
 
-        void SetDisplayId(uint32 id) { SetUInt32Value(GAMEOBJECT_DISPLAYID, id); }
-        uint32 GetDisplayId() { return GetUInt32Value(GAMEOBJECT_DISPLAYID); }
+        void SetDisplayId(uint32 id) { setUInt32Value(GAMEOBJECT_DISPLAYID, id); }
+        uint32 GetDisplayId() { return getUInt32Value(GAMEOBJECT_DISPLAYID); }
 
         void SetRotationQuat(float qx, float qy, float qz, float qw);
 
-        void SetParentRotation(uint8 rot, float value) { SetFloatValue(GAMEOBJECT_PARENTROTATION + rot, value); }
-        float GetParentRotation(uint8 rot) { return GetFloatValue(GAMEOBJECT_PARENTROTATION + rot); }
+        void SetParentRotation(uint8 rot, float value) { setFloatValue(GAMEOBJECT_PARENTROTATION + rot, value); }
+        float GetParentRotation(uint8 rot) { return getFloatValue(GAMEOBJECT_PARENTROTATION + rot); }
 
         void SetFaction(uint32 id)
         {
-            SetUInt32Value(GAMEOBJECT_FACTION, id);
+            setUInt32Value(GAMEOBJECT_FACTION, id);
             _setFaction();
         }
-        uint32 GetFaction() { return GetUInt32Value(GAMEOBJECT_FACTION); }
+        uint32 GetFaction() { return getUInt32Value(GAMEOBJECT_FACTION); }
 
-        void SetLevel(uint32 level) { SetUInt32Value(GAMEOBJECT_LEVEL, level); }
-        uint32 GetLevel() { return GetUInt32Value(GAMEOBJECT_LEVEL); }
+        void SetLevel(uint32 level) { setUInt32Value(GAMEOBJECT_LEVEL, level); }
+        uint32 GetLevel() { return getUInt32Value(GAMEOBJECT_LEVEL); }
 
-        void SetFlags(uint32 flags) { SetUInt32Value(GAMEOBJECT_FLAGS, flags); }
-        uint32 GetFlags() { return GetUInt32Value(GAMEOBJECT_FLAGS); }
+        void SetFlags(uint32 flags) { setUInt32Value(GAMEOBJECT_FLAGS, flags); }
+        uint32 GetFlags() { return getUInt32Value(GAMEOBJECT_FLAGS); }
         void RemoveFlags(uint32 flags) { RemoveFlag(GAMEOBJECT_FLAGS, flags); }
 
         bool HasFlags(uint32 flags)

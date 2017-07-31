@@ -48,7 +48,7 @@ Creature::Creature(uint64 guid)
     m_uint32Values = _fields;
     memset(m_uint32Values, 0, (UNIT_END)*sizeof(uint32));
     m_updateMask.SetCount(UNIT_END);
-    SetUInt32Value(OBJECT_FIELD_TYPE, TYPE_UNIT | TYPE_OBJECT);
+    setUInt32Value(OBJECT_FIELD_TYPE, TYPE_UNIT | TYPE_OBJECT);
     SetGUID(guid);
     m_wowGuid.Init(GetGUID());
 
@@ -247,10 +247,10 @@ void Creature::OnRespawn(MapMgr* m)
 
     LOG_DETAIL("Respawning " I64FMT "...", GetGUID());
     SetHealth(GetMaxHealth());
-    SetUInt32Value(UNIT_DYNAMIC_FLAGS, 0); // not tagging shit
+    setUInt32Value(UNIT_DYNAMIC_FLAGS, 0); // not tagging shit
     if (m_spawn)
     {
-        SetUInt32Value(UNIT_NPC_FLAGS, creature_properties->NPCFLags);
+        setUInt32Value(UNIT_NPC_FLAGS, creature_properties->NPCFLags);
         SetEmoteState(m_spawn->emote_state);
 
         // creature's death state
@@ -258,7 +258,7 @@ void Creature::OnRespawn(MapMgr* m)
         {
             m_limbostate = true;
             setDeathState(ALIVE);   // we are not actually dead, we just appear dead
-            SetUInt32Value(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_DEAD);
+            setUInt32Value(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_DEAD);
         }
         else if (m_spawn->death_state == CREATURE_STATE_DEAD)
         {
@@ -903,8 +903,8 @@ void Creature::CalcResistance(uint32 type)
         pos += FlatResistanceMod[type];
 
 #if VERSION_STRING != Classic
-    SetUInt32Value(UNIT_FIELD_RESISTANCEBUFFMODSPOSITIVE + type, pos);
-    SetUInt32Value(UNIT_FIELD_RESISTANCEBUFFMODSNEGATIVE + type, neg);
+    setUInt32Value(UNIT_FIELD_RESISTANCEBUFFMODSPOSITIVE + type, pos);
+    setUInt32Value(UNIT_FIELD_RESISTANCEBUFFMODSNEGATIVE + type, neg);
 #endif
 
     int32 tot = BaseResistance[type] + pos - neg;
@@ -942,8 +942,8 @@ void Creature::CalcStat(uint32 type)
         pos += FlatStatMod[type];
 
 #if VERSION_STRING != Classic
-    SetUInt32Value(UNIT_FIELD_POSSTAT0 + type, pos);
-    SetUInt32Value(UNIT_FIELD_NEGSTAT0 + type, neg);
+    setUInt32Value(UNIT_FIELD_POSSTAT0 + type, pos);
+    setUInt32Value(UNIT_FIELD_NEGSTAT0 + type, neg);
 #endif
 
     int32 tot = BaseStats[type] + pos - neg;
@@ -977,16 +977,16 @@ void Creature::CalcStat(uint32 type)
 #if VERSION_STRING != Classic
             //Health
             uint32 hp = GetBaseHealth();
-            uint32 stat_bonus = GetUInt32Value(UNIT_FIELD_POSSTAT2) - GetUInt32Value(UNIT_FIELD_NEGSTAT2);
+            uint32 stat_bonus = getUInt32Value(UNIT_FIELD_POSSTAT2) - getUInt32Value(UNIT_FIELD_NEGSTAT2);
             if (static_cast<int32>(stat_bonus) < 0) stat_bonus = 0;
 
             uint32 bonus = stat_bonus * 10 + m_healthfromspell;
             uint32 res = hp + bonus;
 
             if (res < hp) res = hp;
-            SetUInt32Value(UNIT_FIELD_MAXHEALTH, res);
-            if (GetUInt32Value(UNIT_FIELD_HEALTH) > GetUInt32Value(UNIT_FIELD_MAXHEALTH))
-                SetHealth(GetUInt32Value(UNIT_FIELD_MAXHEALTH));
+            setUInt32Value(UNIT_FIELD_MAXHEALTH, res);
+            if (getUInt32Value(UNIT_FIELD_HEALTH) > getUInt32Value(UNIT_FIELD_MAXHEALTH))
+                SetHealth(getUInt32Value(UNIT_FIELD_MAXHEALTH));
 #endif
         }
         break;
@@ -996,7 +996,7 @@ void Creature::CalcStat(uint32 type)
             if (GetPowerType() == POWER_TYPE_MANA)
             {
                 uint32 mana = GetBaseMana();
-                uint32 stat_bonus = (GetUInt32Value(UNIT_FIELD_POSSTAT3) - GetUInt32Value(UNIT_FIELD_NEGSTAT3));
+                uint32 stat_bonus = (getUInt32Value(UNIT_FIELD_POSSTAT3) - getUInt32Value(UNIT_FIELD_NEGSTAT3));
                 if (static_cast<int32>(stat_bonus) < 0) stat_bonus = 0;
 
                 uint32 bonus = stat_bonus * 15;
@@ -1309,7 +1309,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MySQLStructure::MapInfo c
     SetScale(creature_properties->Scale);
 
 #if VERSION_STRING > TBC
-    SetFloatValue(UNIT_FIELD_HOVERHEIGHT, creature_properties->Scale);
+    setFloatValue(UNIT_FIELD_HOVERHEIGHT, creature_properties->Scale);
 #endif
 
     uint32 health;
@@ -1360,7 +1360,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MySQLStructure::MapInfo c
     SetEquippedItem(RANGED, spawn->Item3SlotDisplay);
 
     SetFaction(spawn->factionid);
-    SetUInt32Value(UNIT_FIELD_FLAGS, spawn->flags);
+    setUInt32Value(UNIT_FIELD_FLAGS, spawn->flags);
     SetEmoteState(spawn->emote_state);
     SetBoundingRadius(creature_properties->BoundingRadius);
     SetCombatReach(creature_properties->CombatReach);
@@ -1387,7 +1387,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MySQLStructure::MapInfo c
         m_aiInterface->m_canRangedAttack = false;
 
     //SETUP NPC FLAGS
-    SetUInt32Value(UNIT_NPC_FLAGS, creature_properties->NPCFLags);
+    setUInt32Value(UNIT_NPC_FLAGS, creature_properties->NPCFLags);
 
     if (isVendor())
         m_SellItems = objmgr.GetVendorList(GetEntry());
@@ -1416,9 +1416,9 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MySQLStructure::MapInfo c
     BaseAttackType = creature_properties->AttackType;
 
     SetCastSpeedMod(1.0f);   // better set this one
-    SetUInt32Value(UNIT_FIELD_BYTES_0, spawn->bytes0);
-    SetUInt32Value(UNIT_FIELD_BYTES_1, spawn->bytes1);
-    SetUInt32Value(UNIT_FIELD_BYTES_2, spawn->bytes2);
+    setUInt32Value(UNIT_FIELD_BYTES_0, spawn->bytes0);
+    setUInt32Value(UNIT_FIELD_BYTES_1, spawn->bytes1);
+    setUInt32Value(UNIT_FIELD_BYTES_2, spawn->bytes2);
 
     ////////////AI
 
@@ -1502,7 +1502,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MySQLStructure::MapInfo c
     if (spawn->death_state == CREATURE_STATE_APPEAR_DEAD)
     {
         m_limbostate = true;
-        SetUInt32Value(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_DEAD);
+        setUInt32Value(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_DEAD);
     }
     else if (spawn->death_state == CREATURE_STATE_DEAD)
     {
@@ -1559,7 +1559,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     SetScale(creature_properties->Scale);
 
 #if VERSION_STRING > TBC
-    SetFloatValue(UNIT_FIELD_HOVERHEIGHT, creature_properties->Scale);
+    setFloatValue(UNIT_FIELD_HOVERHEIGHT, creature_properties->Scale);
 #endif
 
     uint32 health = creature_properties->MinHealth + RandomUInt(creature_properties->MaxHealth - creature_properties->MinHealth);
@@ -1615,7 +1615,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
         m_aiInterface->m_canRangedAttack = false;
 
     //SETUP NPC FLAGS
-    SetUInt32Value(UNIT_NPC_FLAGS, creature_properties->NPCFLags);
+    setUInt32Value(UNIT_NPC_FLAGS, creature_properties->NPCFLags);
 
     if (isVendor())
         m_SellItems = objmgr.GetVendorList(GetEntry());
@@ -1883,8 +1883,8 @@ void Creature::LoadCustomWaypoint(float pX, float pY, float pZ, float pO, uint32
     wp->forwardemoteid = pForwardEmoteId;
     wp->backwardemoteoneshot = pBackwardEmoteOneshot;
     wp->backwardemoteid = pBackwardEmoteId;
-    wp->forwardskinid = (pForwardSkinId == 0 ? this->GetUInt32Value(UNIT_FIELD_DISPLAYID) : pForwardSkinId);
-    wp->backwardskinid = (pBackwardSkinId == 0 ? this->GetUInt32Value(UNIT_FIELD_DISPLAYID) : pBackwardSkinId);
+    wp->forwardskinid = (pForwardSkinId == 0 ? this->getUInt32Value(UNIT_FIELD_DISPLAYID) : pForwardSkinId);
+    wp->backwardskinid = (pBackwardSkinId == 0 ? this->getUInt32Value(UNIT_FIELD_DISPLAYID) : pBackwardSkinId);
 
     this->m_custom_waypoint_map->resize(wp->id + 1);
     (*this->m_custom_waypoint_map)[wp->id] = wp;

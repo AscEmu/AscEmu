@@ -90,12 +90,12 @@ void DynamicObject::Create(Unit* caster, Spell* pSpell, float x, float y, float 
 
     m_spellProto = pSpell->GetSpellInfo();
     SetEntry(m_spellProto->Id);
-    SetFloatValue(OBJECT_FIELD_SCALE_X, 1);
-    SetUInt64Value(DYNAMICOBJECT_CASTER, caster->GetGUID());
+    setFloatValue(OBJECT_FIELD_SCALE_X, 1);
+    setUInt64Value(DYNAMICOBJECT_CASTER, caster->GetGUID());
     SetByteFlag(DYNAMICOBJECT_BYTES, 0, type);
-    SetUInt32Value(DYNAMICOBJECT_SPELLID, m_spellProto->Id);
-    SetFloatValue(DYNAMICOBJECT_RADIUS, radius);
-    SetUInt32Value(DYNAMICOBJECT_CASTTIME, getMSTime());
+    setUInt32Value(DYNAMICOBJECT_SPELLID, m_spellProto->Id);
+    setFloatValue(DYNAMICOBJECT_RADIUS, radius);
+    setUInt32Value(DYNAMICOBJECT_CASTTIME, getMSTime());
     m_position.x = x; //m_floatValues[DYNAMICOBJECT_POS_X]  = x;
     m_position.y = y; //m_floatValues[DYNAMICOBJECT_POS_Y]  = y;
     m_position.z = z; //m_floatValues[DYNAMICOBJECT_POS_Z]  = z;
@@ -147,7 +147,7 @@ void DynamicObject::UpdateTargets()
         Unit* target;
         Aura* pAura;
 
-        float radius = GetFloatValue(DYNAMICOBJECT_RADIUS) * GetFloatValue(DYNAMICOBJECT_RADIUS);
+        float radius = getFloatValue(DYNAMICOBJECT_RADIUS) * getFloatValue(DYNAMICOBJECT_RADIUS);
 
         // Looking for targets in the Object set
         for (std::set< Object* >::iterator itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)

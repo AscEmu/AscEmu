@@ -189,7 +189,7 @@ bool BanishExile(uint32 i, Spell* pSpell)
     if (!pSpell->p_caster || !target)
         return true;
 
-    pSpell->p_caster->SpellNonMeleeDamageLog(target, pSpell->m_spellInfo->Id, target->GetUInt32Value(UNIT_FIELD_HEALTH), true);
+    pSpell->p_caster->SpellNonMeleeDamageLog(target, pSpell->m_spellInfo->Id, target->getUInt32Value(UNIT_FIELD_HEALTH), true);
     return true;
 }
 

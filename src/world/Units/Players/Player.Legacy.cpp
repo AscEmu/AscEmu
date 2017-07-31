@@ -303,18 +303,18 @@ Player::Player(uint32 guid)
 
     memset(m_uint32Values, 0, (PLAYER_END)* sizeof(uint32));
     m_updateMask.SetCount(PLAYER_END);
-    SetUInt32Value(OBJECT_FIELD_TYPE, TYPE_PLAYER | TYPE_UNIT | TYPE_OBJECT);
+    setUInt32Value(OBJECT_FIELD_TYPE, TYPE_PLAYER | TYPE_UNIT | TYPE_OBJECT);
     SetLowGUID(guid);
     m_wowGuid.Init(GetGUID());
 #if VERSION_STRING != Classic
-    SetUInt32Value(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_ENABLE_POWER_REGEN);
+    setUInt32Value(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_ENABLE_POWER_REGEN);
 #endif
 
 #if VERSION_STRING > TBC
-    SetFloatValue(PLAYER_RUNE_REGEN_1, 0.100000f);
-    SetFloatValue(PLAYER_RUNE_REGEN_1 + 1, 0.100000f);
-    SetFloatValue(PLAYER_RUNE_REGEN_1 + 2, 0.100000f);
-    SetFloatValue(PLAYER_RUNE_REGEN_1 + 3, 0.100000f);
+    setFloatValue(PLAYER_RUNE_REGEN_1, 0.100000f);
+    setFloatValue(PLAYER_RUNE_REGEN_1 + 1, 0.100000f);
+    setFloatValue(PLAYER_RUNE_REGEN_1 + 2, 0.100000f);
+    setFloatValue(PLAYER_RUNE_REGEN_1 + 3, 0.100000f);
 #endif
 
     for (i = 0; i < 28; i++)
@@ -1009,28 +1009,28 @@ bool Player::Create(WorldPacket& data)
     SetUInt32Value(PLAYER_BYTES_3, ((gender) | (0x00 << 8) | (0x00 << 16) | (GetPVPRank() << 24)));
 #else
     // Set Byte Values
-    SetByte(PLAYER_BYTES, 0, skin);
-    SetByte(PLAYER_BYTES, 1, face);
-    SetByte(PLAYER_BYTES, 2, hairStyle);
-    SetByte(PLAYER_BYTES, 3, hairColor);
+    setByteValue(PLAYER_BYTES, 0, skin);
+    setByteValue(PLAYER_BYTES, 1, face);
+    setByteValue(PLAYER_BYTES, 2, hairStyle);
+    setByteValue(PLAYER_BYTES, 3, hairColor);
 
     //Set Byte2 Values
-    SetByte(PLAYER_BYTES_2, 0, facialHair);
+    setByteValue(PLAYER_BYTES_2, 0, facialHair);
     //SetByte(PLAYER_BYTES_2, 1, 0);  // unknown
     //SetByte(PLAYER_BYTES_2, 2, 0);  // unknown
-    SetByte(PLAYER_BYTES_2, 3, RESTSTATE_NORMAL);
+    setByteValue(PLAYER_BYTES_2, 3, RESTSTATE_NORMAL);
 
     //Set Byte3 Values
-    SetByte(PLAYER_BYTES_3, 0, gender);
-    SetByte(PLAYER_BYTES_3, 1, 0);  // drunkenstate?
-    SetByte(PLAYER_BYTES_3, 2, 0);  // unknown
-    SetByte(PLAYER_BYTES_3, 3, GetPVPRank());  // pvp rank
+    setByteValue(PLAYER_BYTES_3, 0, gender);
+    setByteValue(PLAYER_BYTES_3, 1, 0);  // drunkenstate?
+    setByteValue(PLAYER_BYTES_3, 2, 0);  // unknown
+    setByteValue(PLAYER_BYTES_3, 3, GetPVPRank());  // pvp rank
 #endif
     SetNextLevelXp(400);
-    SetUInt32Value(PLAYER_FIELD_BYTES, 0x08);
+    setUInt32Value(PLAYER_FIELD_BYTES, 0x08);
     SetCastSpeedMod(1.0f);
 #if VERSION_STRING != Classic
-    SetUInt32Value(PLAYER_FIELD_MAX_LEVEL, worldConfig.player.playerLevelCap);
+    setUInt32Value(PLAYER_FIELD_MAX_LEVEL, worldConfig.player.playerLevelCap);
 #endif
 
     // Gold Starting Amount
@@ -1038,9 +1038,9 @@ bool Player::Create(WorldPacket& data)
 
 
     for (uint32 x = 0; x < 7; x++)
-        SetFloatValue(PLAYER_FIELD_MOD_DAMAGE_DONE_PCT + x, 1.00);
+        setFloatValue(PLAYER_FIELD_MOD_DAMAGE_DONE_PCT + x, 1.00);
 
-    SetUInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, 0xEEEEEEEE);
+    setUInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, 0xEEEEEEEE);
 
     m_StableSlotCount = 0;
     Item* item;
@@ -1282,7 +1282,7 @@ void Player::EventDismount(uint32 money, float x, float y, float z)
     UnSetTaxiPos();
     m_taxi_ride_time = 0;
 
-    SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
+    setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
 
@@ -1518,7 +1518,7 @@ bool Player::HasAreaExplored(::DBC::Structures::AreaTableEntry const* at)
     offset += PLAYER_EXPLORED_ZONES_1;
 
     uint32 val = (uint32)(1 << (at->explore_flag % 32));
-    uint32 currFields = GetUInt32Value(offset);
+    uint32 currFields = getUInt32Value(offset);
 
     return (currFields & val) != 0;
 }
@@ -1547,7 +1547,7 @@ void Player::_EventExploration()
     offset += PLAYER_EXPLORED_ZONES_1;
 
     uint32 val = (uint32)(1 << (at->explore_flag % 32));
-    uint32 currFields = GetUInt32Value(offset);
+    uint32 currFields = getUInt32Value(offset);
 
     if (AreaId != m_AreaID)
     {
@@ -1627,7 +1627,7 @@ void Player::_EventExploration()
     if (!(currFields & val) && !GetTaxiState() && obj_movement_info.getTransportGuid().IsEmpty()) //Unexplored Area        // bur: we don't want to explore new areas when on taxi
 #endif
     {
-        SetUInt32Value(offset, (uint32)(currFields | val));
+        setUInt32Value(offset, (uint32)(currFields | val));
 
         uint32 explore_xp = at->area_level * 10;
         explore_xp *= float2int32(worldConfig.getFloatRate(RATE_EXPLOREXP));
@@ -2083,7 +2083,7 @@ void Player::ActivateSpec(uint8 spec)
 #if VERSION_STRING != Cata
     SetUInt32Value(PLAYER_CHARACTER_POINTS1, m_specs[m_talentActiveSpec].GetTP());
 #else
-    SetUInt32Value(PLAYER_CHARACTER_POINTS, m_specs[m_talentActiveSpec].GetTP());
+    setUInt32Value(PLAYER_CHARACTER_POINTS, m_specs[m_talentActiveSpec].GetTP());
 #endif
     smsg_TalentsInfo(false);
 }
@@ -2682,13 +2682,13 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 #else
         << uint32(0) << ","
 #endif
-        << GetUInt64Value(PLAYER_FIELD_KNOWN_TITLES) << ","
+        << getUInt64Value(PLAYER_FIELD_KNOWN_TITLES) << ","
 #if VERSION_STRING < WotLK
         << uint32(0) << ","
         << uint32(0) << ","
 #else
-        << GetUInt64Value(PLAYER_FIELD_KNOWN_TITLES1) << ","
-        << GetUInt64Value(PLAYER_FIELD_KNOWN_TITLES2) << ","
+        << getUInt64Value(PLAYER_FIELD_KNOWN_TITLES1) << ","
+        << getUInt64Value(PLAYER_FIELD_KNOWN_TITLES2) << ","
 #endif
         << m_uint32Values[PLAYER_FIELD_COINAGE] << ",";
 
@@ -3269,10 +3269,10 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     // set the rest of the stuff
     m_uint32Values[PLAYER_FIELD_WATCHED_FACTION_INDEX] = get_next_field.GetUInt32();
     SetChosenTitle(get_next_field.GetUInt32());
-    SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES, get_next_field.GetUInt64());
+    setUInt64Value(PLAYER_FIELD_KNOWN_TITLES, get_next_field.GetUInt64());
 #if VERSION_STRING > TBC
-    SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES1, get_next_field.GetUInt64());
-    SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES2, get_next_field.GetUInt64());
+    setUInt64Value(PLAYER_FIELD_KNOWN_TITLES1, get_next_field.GetUInt64());
+    setUInt64Value(PLAYER_FIELD_KNOWN_TITLES2, get_next_field.GetUInt64());
 #else
     get_next_field.GetUInt32();
     get_next_field.GetUInt32();
@@ -3289,11 +3289,11 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     load_mana = get_next_field.GetUInt32();
     SetHealth(load_health);
     uint8 pvprank = get_next_field.GetUInt8();
-    SetUInt32Value(PLAYER_BYTES, get_next_field.GetUInt32());
-    SetUInt32Value(PLAYER_BYTES_2, get_next_field.GetUInt32());
-    SetUInt32Value(PLAYER_BYTES_3, getGender() | (pvprank << 24));
-    SetUInt32Value(PLAYER_FLAGS, get_next_field.GetUInt32());
-    SetUInt32Value(PLAYER_FIELD_BYTES, get_next_field.GetUInt32());
+    setUInt32Value(PLAYER_BYTES, get_next_field.GetUInt32());
+    setUInt32Value(PLAYER_BYTES_2, get_next_field.GetUInt32());
+    setUInt32Value(PLAYER_BYTES_3, getGender() | (pvprank << 24));
+    setUInt32Value(PLAYER_FLAGS, get_next_field.GetUInt32());
+    setUInt32Value(PLAYER_FIELD_BYTES, get_next_field.GetUInt32());
     //m_uint32Values[0x22]=(m_uint32Values[0x22]>0x46)?0x46:m_uint32Values[0x22];
 
     m_position.x = get_next_field.GetFloat();
@@ -3314,7 +3314,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
 #if VERSION_STRING != Classic
     for (uint32 x = PLAYER_FIELD_MOD_DAMAGE_DONE_PCT; x < PLAYER_FIELD_MOD_HEALING_DONE_POS; ++x)
-        SetFloatValue(x, 1.0f);
+        setFloatValue(x, 1.0f);
 #endif
 
     // Normal processing...
@@ -3323,7 +3323,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     // Initialize 'normal' fields
     SetScale(1.0f);
 #if VERSION_STRING > TBC
-    SetFloatValue(UNIT_FIELD_HOVERHEIGHT, 1.0f);
+    setFloatValue(UNIT_FIELD_HOVERHEIGHT, 1.0f);
 #endif
 
     //SetUInt32Value(UNIT_FIELD_POWER2, 0);
@@ -3338,7 +3338,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     if (getClass() == WARRIOR)
         SetShapeShift(FORM_BATTLESTANCE);
 
-    SetUInt32Value(UNIT_FIELD_BYTES_2, (0x28 << 8));
+    setUInt32Value(UNIT_FIELD_BYTES_2, (0x28 << 8));
     SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
     SetBoundingRadius(0.388999998569489f);
     SetCombatReach(1.5f);
@@ -3357,7 +3357,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     SetCastSpeedMod(1.0f);
 #if VERSION_STRING != Classic
-    SetUInt32Value(PLAYER_FIELD_MAX_LEVEL, worldConfig.player.playerLevelCap);
+    setUInt32Value(PLAYER_FIELD_MAX_LEVEL, worldConfig.player.playerLevelCap);
 #endif
     SetFaction(info->factiontemplate);
     if (cfaction)
@@ -3433,11 +3433,11 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         if (m_arenaTeams[z] != NULL)
         {
 #if VERSION_STRING != Classic
-            SetUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (z * 7), m_arenaTeams[z]->m_id);
+            setUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (z * 7), m_arenaTeams[z]->m_id);
             if (m_arenaTeams[z]->m_leader == GetLowGUID())
-                SetUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (z * 7) + 1, 0);
+                setUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (z * 7) + 1, 0);
             else
-                SetUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (z * 7) + 1, 1);
+                setUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (z * 7) + 1, 1);
 #endif
         }
     }
@@ -3673,7 +3673,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 #if VERSION_STRING != Cata
         SetUInt32Value(PLAYER_CHARACTER_POINTS1, m_specs[m_talentActiveSpec].GetTP());
 #else
-        SetUInt32Value(PLAYER_CHARACTER_POINTS, m_specs[m_talentActiveSpec].GetTP());
+        setUInt32Value(PLAYER_CHARACTER_POINTS, m_specs[m_talentActiveSpec].GetTP());
 #endif
     }
 
@@ -3753,7 +3753,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 #endif
 
     if (GetGuildId())
-        SetUInt32Value(PLAYER_GUILD_TIMESTAMP, (uint32)UNIXTIME);
+        setUInt32Value(PLAYER_GUILD_TIMESTAMP, (uint32)UNIXTIME);
 
 #undef get_next_field
 
@@ -3954,10 +3954,10 @@ void Player::_LoadQuestLogEntry(QueryResult* result)
     for (uint8 i = 0; i < 25; ++i)
     {
         baseindex = PLAYER_QUEST_LOG_1_1 + (i * 5);
-        SetUInt32Value(baseindex + 0, 0);
-        SetUInt32Value(baseindex + 1, 0);
-        SetUInt64Value(baseindex + 2, 0);
-        SetUInt32Value(baseindex + 4, 0);
+        setUInt32Value(baseindex + 0, 0);
+        setUInt32Value(baseindex + 1, 0);
+        setUInt64Value(baseindex + 2, 0);
+        setUInt32Value(baseindex + 4, 0);
     }
 
     int slot = 0;
@@ -4910,7 +4910,7 @@ void Player::KillPlayer()
     StopMirrorTimer(MIRROR_TYPE_FIRE);
 
     SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE); // Player death animation, also can be used with DYNAMIC_FLAGS <- huh???
-    SetUInt32Value(UNIT_DYNAMIC_FLAGS, 0x00);
+    setUInt32Value(UNIT_DYNAMIC_FLAGS, 0x00);
 
     if (getClass() == WARRIOR)   // Rage resets on death
         SetPower(POWER_TYPE_RAGE, 0);
@@ -4945,8 +4945,8 @@ void Player::CreateCorpse()
     pCorpse->Create(this, GetMapId(), GetPositionX(),
                     GetPositionY(), GetPositionZ(), GetOrientation());
 
-    _pb = GetUInt32Value(PLAYER_BYTES);
-    _pb2 = GetUInt32Value(PLAYER_BYTES_2);
+    _pb = getUInt32Value(PLAYER_BYTES);
+    _pb2 = getUInt32Value(PLAYER_BYTES_2);
 
     uint8 race = getRace();
     uint8 skin = (uint8)(_pb);
@@ -4959,9 +4959,9 @@ void Player::CreateCorpse()
     _cfb2 = ((face) | (hairstyle << 8) | (haircolor << 16) | (facialhair << 24));
 
     pCorpse->SetZoneId(GetZoneId());
-    pCorpse->SetUInt32Value(CORPSE_FIELD_BYTES_1, _cfb1);
-    pCorpse->SetUInt32Value(CORPSE_FIELD_BYTES_2, _cfb2);
-    pCorpse->SetUInt32Value(CORPSE_FIELD_FLAGS, 4);
+    pCorpse->setUInt32Value(CORPSE_FIELD_BYTES_1, _cfb1);
+    pCorpse->setUInt32Value(CORPSE_FIELD_BYTES_2, _cfb2);
+    pCorpse->setUInt32Value(CORPSE_FIELD_FLAGS, 4);
     pCorpse->SetDisplayId(GetDisplayId());
 
     if (m_bg)
@@ -4975,12 +4975,12 @@ void Player::CreateCorpse()
         pCorpse->generateLoot();
         if (bShouldHaveLootableOnCorpse)
         {
-            pCorpse->SetUInt32Value(CORPSE_FIELD_DYNAMIC_FLAGS, 1); // sets it so you can loot the plyr
+            pCorpse->setUInt32Value(CORPSE_FIELD_DYNAMIC_FLAGS, 1); // sets it so you can loot the plyr
         }
         else
         {
             // Hope this works
-            pCorpse->SetUInt32Value(CORPSE_FIELD_FLAGS, 60);
+            pCorpse->setUInt32Value(CORPSE_FIELD_FLAGS, 60);
         }
 
         // Now that our corpse is created, don't do it again
@@ -5003,7 +5003,7 @@ void Player::CreateCorpse()
             iIventoryType = (uint16)pItem->GetItemProperties()->InventoryType;
 
             _cfi = (uint16(iDisplayID)) | (iIventoryType) << 24;
-            pCorpse->SetUInt32Value(CORPSE_FIELD_ITEM + i, _cfi);
+            pCorpse->setUInt32Value(CORPSE_FIELD_ITEM + i, _cfi);
         }
     }
     // Save corpse in db for future use
@@ -5019,8 +5019,8 @@ void Player::SpawnCorpseBody()
     {
         if (!pCorpse->IsInWorld())
         {
-            if (bShouldHaveLootableOnCorpse && pCorpse->GetUInt32Value(CORPSE_FIELD_DYNAMIC_FLAGS) != 1)
-                pCorpse->SetUInt32Value(CORPSE_FIELD_DYNAMIC_FLAGS, 1); // sets it so you can loot the plyr
+            if (bShouldHaveLootableOnCorpse && pCorpse->getUInt32Value(CORPSE_FIELD_DYNAMIC_FLAGS) != 1)
+                pCorpse->setUInt32Value(CORPSE_FIELD_DYNAMIC_FLAGS, 1); // sets it so you can loot the plyr
 
             if (m_mapMgr == 0)
                 pCorpse->AddToWorld();
@@ -5398,7 +5398,7 @@ void Player::UpdateChances()
     tmp = GetDodgeChance();
     tmp += defence_contribution;
     tmp = std::min(std::max(tmp, 0.0f), 95.0f);
-    SetFloatValue(PLAYER_DODGE_PERCENTAGE, tmp);
+    setFloatValue(PLAYER_DODGE_PERCENTAGE, tmp);
 
     // Block
     Item* it = this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
@@ -5411,7 +5411,7 @@ void Player::UpdateChances()
     else
         tmp = 0.0f;
 
-    SetFloatValue(PLAYER_BLOCK_PERCENTAGE, tmp);
+    setFloatValue(PLAYER_BLOCK_PERCENTAGE, tmp);
 
     // Parry (can only parry with something in main hand)
     it = this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
@@ -5424,7 +5424,7 @@ void Player::UpdateChances()
     else
         tmp = 0.0f;
 
-    SetFloatValue(PLAYER_PARRY_PERCENTAGE, tmp);
+    setFloatValue(PLAYER_PARRY_PERCENTAGE, tmp);
 
     // Critical
     auto baseCrit = sGtChanceToMeleeCritBaseStore.LookupEntry(pClass - 1);
@@ -5461,10 +5461,10 @@ void Player::UpdateChances()
     }
 
     float cr = tmp + CalcRating(PCR_MELEE_CRIT) + melee_bonus;
-    SetFloatValue(PLAYER_CRIT_PERCENTAGE, std::min(cr, 95.0f));
+    setFloatValue(PLAYER_CRIT_PERCENTAGE, std::min(cr, 95.0f));
 
     float rcr = tmp + CalcRating(PCR_RANGED_CRIT) + ranged_bonus;
-    SetFloatValue(PLAYER_RANGED_CRIT_PERCENTAGE, std::min(rcr, 95.0f));
+    setFloatValue(PLAYER_RANGED_CRIT_PERCENTAGE, std::min(rcr, 95.0f));
 
     auto SpellCritBase = sGtChanceToSpellCritBaseStore.LookupEntry(pClass - 1);
 
@@ -5484,7 +5484,7 @@ void Player::UpdateChanceFields()
     // Update spell crit values in fields
     for (uint8 i = 0; i < 7; ++i)
     {
-        SetFloatValue(PLAYER_SPELL_CRIT_PERCENTAGE1 + i, SpellCritChanceSchool[i] + spellcritperc);
+        setFloatValue(PLAYER_SPELL_CRIT_PERCENTAGE1 + i, SpellCritChanceSchool[i] + spellcritperc);
     }
 #endif
 }
@@ -5660,7 +5660,7 @@ void Player::UpdateStats()
     uint32 hp = GetBaseHealth();
 
 #if VERSION_STRING != Classic
-    int32 stat_bonus = GetUInt32Value(UNIT_FIELD_POSSTAT2) - GetUInt32Value(UNIT_FIELD_NEGSTAT2);
+    int32 stat_bonus = getUInt32Value(UNIT_FIELD_POSSTAT2) - getUInt32Value(UNIT_FIELD_NEGSTAT2);
 #else
     int32 stat_bonus = 0;
 #endif
@@ -5669,7 +5669,7 @@ void Player::UpdateStats()
     int32 bonus = stat_bonus * 10 + m_healthfromspell + m_healthfromitems;
 
     uint32 res = hp + bonus + hpdelta;
-    uint32 oldmaxhp = GetUInt32Value(UNIT_FIELD_MAXHEALTH);
+    uint32 oldmaxhp = getUInt32Value(UNIT_FIELD_MAXHEALTH);
 
     if (res < hp)
         res = hp;
@@ -5693,13 +5693,13 @@ void Player::UpdateStats()
             res = worldConfig.limit.maxHealthCap;
         }
     }
-    SetUInt32Value(UNIT_FIELD_MAXHEALTH, res);
+    setUInt32Value(UNIT_FIELD_MAXHEALTH, res);
 
-    if (GetUInt32Value(UNIT_FIELD_HEALTH) > res)
+    if (getUInt32Value(UNIT_FIELD_HEALTH) > res)
         SetHealth(res);
     else if ((cl == DRUID) && (GetShapeShift() == FORM_BEAR || GetShapeShift() == FORM_DIREBEAR))
     {
-        res = GetUInt32Value(UNIT_FIELD_MAXHEALTH) * GetUInt32Value(UNIT_FIELD_HEALTH) / oldmaxhp;
+        res = getUInt32Value(UNIT_FIELD_MAXHEALTH) * getUInt32Value(UNIT_FIELD_HEALTH) / oldmaxhp;
         SetHealth(res);
     }
 
@@ -5708,7 +5708,7 @@ void Player::UpdateStats()
         // MP
         uint32 mana = GetBaseMana();
 #if VERSION_STRING != Classic
-        stat_bonus = GetUInt32Value(UNIT_FIELD_POSSTAT3) - GetUInt32Value(UNIT_FIELD_NEGSTAT3);
+        stat_bonus = getUInt32Value(UNIT_FIELD_POSSTAT3) - getUInt32Value(UNIT_FIELD_NEGSTAT3);
 #endif
         if (stat_bonus < 0)
             stat_bonus = 0; // Avoid of having negative mana
@@ -5758,8 +5758,8 @@ void Player::UpdateStats()
         uint32 Intellect = GetStat(STAT_INTELLECT);
         float amt = (0.001f + sqrt((float)Intellect) * Spirit * BaseRegen[level - 1]) * PctPowerRegenModifier[POWER_TYPE_MANA];
 #if VERSION_STRING > TBC
-        SetFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER, amt + m_ModInterrMRegen * 0.2f);
-        SetFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER, amt * m_ModInterrMRegenPCT / 100.0f + m_ModInterrMRegen * 0.2f);
+        setFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER, amt + m_ModInterrMRegen * 0.2f);
+        setFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER, amt * m_ModInterrMRegenPCT / 100.0f + m_ModInterrMRegen * 0.2f);
 #endif
     }
 
@@ -5780,15 +5780,15 @@ void Player::UpdateStats()
         float block_multiplier = (100.0f + m_modblockabsorbvalue) / 100.0f;
         if (block_multiplier < 1.0f)block_multiplier = 1.0f;
 
-        int32 blockable_damage = float2int32((shield->GetItemProperties()->Block + m_modblockvaluefromspells + GetUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_BLOCK) + (str / 2.0f) - 1.0f) * block_multiplier);
+        int32 blockable_damage = float2int32((shield->GetItemProperties()->Block + m_modblockvaluefromspells + getUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_BLOCK) + (str / 2.0f) - 1.0f) * block_multiplier);
 #if VERSION_STRING != Classic
-        SetUInt32Value(PLAYER_SHIELD_BLOCK, blockable_damage);
+        setUInt32Value(PLAYER_SHIELD_BLOCK, blockable_damage);
 #endif
     }
     else
     {
 #if VERSION_STRING != Classic
-        SetUInt32Value(PLAYER_SHIELD_BLOCK, 0);
+        setUInt32Value(PLAYER_SHIELD_BLOCK, 0);
 #endif
     }
 
@@ -5869,10 +5869,10 @@ void Player::UpdateRestState()
         m_restState = RESTSTATE_NORMAL;
 
     // Update RestState 100%/200%
-    SetUInt32Value(PLAYER_BYTES_2, ((GetUInt32Value(PLAYER_BYTES_2) & 0x00FFFFFF) | (m_restState << 24)));
+    setUInt32Value(PLAYER_BYTES_2, ((getUInt32Value(PLAYER_BYTES_2) & 0x00FFFFFF) | (m_restState << 24)));
 
     //update needle (weird, works at 1/2 rate)
-    SetUInt32Value(PLAYER_REST_STATE_EXPERIENCE, m_restAmount >> 1);
+    setUInt32Value(PLAYER_REST_STATE_EXPERIENCE, m_restAmount >> 1);
 }
 
 void Player::ApplyPlayerRestState(bool apply)
@@ -6055,7 +6055,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
 
             if (gObj->invisible) // Invisibility - Detection of GameObjects
             {
-                uint64 owner = gObj->GetUInt64Value(OBJECT_FIELD_CREATED_BY);
+                uint64 owner = gObj->getUInt64Value(OBJECT_FIELD_CREATED_BY);
 
                 if (GetGUID() == owner) // the owner of an object can always see it
                     return true;
@@ -6198,7 +6198,7 @@ void Player::SetDrunkValue(uint16 newDrunkenValue, uint32 itemId)
     uint32 oldDrunkenState = Player::GetDrunkenstateByValue(m_drunk);
 
     m_drunk = newDrunkenValue;
-    SetUInt32Value(PLAYER_BYTES_3, (GetUInt32Value(PLAYER_BYTES_3) & 0xFFFF0001) | (m_drunk & 0xFFFE));
+    setUInt32Value(PLAYER_BYTES_3, (getUInt32Value(PLAYER_BYTES_3) & 0xFFFF0001) | (m_drunk & 0xFFFE));
 
     uint32 newDrunkenState = Player::GetDrunkenstateByValue(m_drunk);
 
@@ -6824,8 +6824,8 @@ void Player::CalcResistance(uint32 type)
         res = 1;
 
 #if VERSION_STRING != Classic
-    SetUInt32Value(UNIT_FIELD_RESISTANCEBUFFMODSPOSITIVE + type, pos);
-    SetUInt32Value(UNIT_FIELD_RESISTANCEBUFFMODSNEGATIVE + type, -neg);
+    setUInt32Value(UNIT_FIELD_RESISTANCEBUFFMODSPOSITIVE + type, pos);
+    setUInt32Value(UNIT_FIELD_RESISTANCEBUFFMODSNEGATIVE + type, -neg);
 #endif
     SetResistance(type, res > 0 ? res : 0);
 
@@ -7139,7 +7139,7 @@ void Player::JumpToEndTaxiNode(TaxiPath* path)
     UnSetTaxiPos();
     m_taxi_ride_time = 0;
 
-    SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
+    setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
 
@@ -7191,12 +7191,12 @@ void Player::CalcStat(uint32 type)
         res = 1;
 
 #if VERSION_STRING != Classic
-    SetUInt32Value(UNIT_FIELD_POSSTAT0 + type, pos);
+    setUInt32Value(UNIT_FIELD_POSSTAT0 + type, pos);
 
     if (neg < 0)
-        SetUInt32Value(UNIT_FIELD_NEGSTAT0 + type, -neg);
+        setUInt32Value(UNIT_FIELD_NEGSTAT0 + type, -neg);
     else
-        SetUInt32Value(UNIT_FIELD_NEGSTAT0 + type, neg);
+        setUInt32Value(UNIT_FIELD_NEGSTAT0 + type, neg);
 #endif
 
     SetStat(type, res);
@@ -7225,7 +7225,7 @@ void Player::RegenerateMana(bool is_interrupted)
 #elif VERSION_STRING == Classic
     float amt = 10;
 #else
-    float amt = (is_interrupted) ? GetFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER) : GetFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER);
+    float amt = (is_interrupted) ? getFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER) : getFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER);
 #endif
     amt *= wrate * 2.0f;
 
@@ -8343,7 +8343,7 @@ void Player::RequestDuel(Player* pTarget)
     pGameObj->CreateFromProto(21680, GetMapId(), x, y, z, GetOrientation());
 
     //Spawn the Flag
-    pGameObj->SetUInt64Value(OBJECT_FIELD_CREATED_BY, GetGUID());
+    pGameObj->setUInt64Value(OBJECT_FIELD_CREATED_BY, GetGUID());
     pGameObj->SetFaction(GetFaction());
     pGameObj->SetLevel(getLevel());
 
@@ -8704,7 +8704,7 @@ float Player::CalcRating(PlayerCombatRating index)
     if (level > 100)
         level = 100;
 
-    uint32 rating = GetUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + index);
+    uint32 rating = getUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + index);
 
     DBC::Structures::GtCombatRatingsEntry const* combat_rating_entry = sGtCombatRatingsStore.LookupEntry(index * 100 + level - 1);
     if (combat_rating_entry == nullptr)
@@ -8829,7 +8829,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
         SetTaxiPath(NULL);
         UnSetTaxiPos();
         m_taxi_ride_time = 0;
-        SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
+        setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
         setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN));
@@ -8991,17 +8991,17 @@ void Player::SetGuildId(uint32 guildId)
         m_GuildId = guildId;
         if (m_GuildId == 0)
         {
-            SetUInt64Value(OBJECT_FIELD_DATA, 0);
-            SetUInt32Value(OBJECT_FIELD_TYPE, GetUInt32Value(OBJECT_FIELD_TYPE) | 0x00010000);
+            setUInt64Value(OBJECT_FIELD_DATA, 0);
+            setUInt32Value(OBJECT_FIELD_TYPE, getUInt32Value(OBJECT_FIELD_TYPE) | 0x00010000);
         }
         else
         {
-            SetUInt64Value(OBJECT_FIELD_DATA, m_GuildId);
-            SetUInt32Value(OBJECT_FIELD_TYPE, GetUInt32Value(OBJECT_FIELD_TYPE) & ~0x00010000);
+            setUInt64Value(OBJECT_FIELD_DATA, m_GuildId);
+            setUInt32Value(OBJECT_FIELD_TYPE, getUInt32Value(OBJECT_FIELD_TYPE) & ~0x00010000);
         }
 
         //ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_GUILD_LEVEL_ENABLED, guildId != 0 );
-        SetUInt16Value(OBJECT_FIELD_TYPE, 1, m_GuildId != 0);
+        setUInt16Value(OBJECT_FIELD_TYPE, 1, m_GuildId != 0);
     }
 #endif
 }
@@ -9014,17 +9014,17 @@ void Player::SetInGuild(uint32 guildId)
         m_GuildId = guildId;
         if (m_GuildId == 0)
         {
-            SetUInt64Value(OBJECT_FIELD_DATA, 0);
-            SetUInt32Value(OBJECT_FIELD_TYPE, GetUInt32Value(OBJECT_FIELD_TYPE) | 0x00010000);
+            setUInt64Value(OBJECT_FIELD_DATA, 0);
+            setUInt32Value(OBJECT_FIELD_TYPE, getUInt32Value(OBJECT_FIELD_TYPE) | 0x00010000);
         }
         else
         {
-            SetUInt64Value(OBJECT_FIELD_DATA, m_GuildId);
-            SetUInt32Value(OBJECT_FIELD_TYPE, GetUInt32Value(OBJECT_FIELD_TYPE) & ~0x00010000);
+            setUInt64Value(OBJECT_FIELD_DATA, m_GuildId);
+            setUInt32Value(OBJECT_FIELD_TYPE, getUInt32Value(OBJECT_FIELD_TYPE) & ~0x00010000);
         }
 
         ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_GUILD_LVL_ENABLED, guildId != 0 );
-        SetUInt16Value(OBJECT_FIELD_TYPE, 1, m_GuildId != 0);
+        setUInt16Value(OBJECT_FIELD_TYPE, 1, m_GuildId != 0);
     }
 }
 
@@ -9068,13 +9068,13 @@ void Player::SetGuildRank(uint32 guildRank)
 {
     if (IsInWorld())
     {
-        const uint32 field = PLAYER_GUILDRANK;
-        sEventMgr.AddEvent(static_cast<Object*>(this), &Object::SetUInt32Value, field, guildRank, EVENT_PLAYER_SEND_PACKET, 1,
+        const uint16 field = PLAYER_GUILDRANK;
+        sEventMgr.AddEvent(static_cast<Object*>(this), &Object::setUInt32Value, field, guildRank, EVENT_PLAYER_SEND_PACKET, 1,
                            1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
     else
     {
-        SetUInt32Value(PLAYER_GUILDRANK, guildRank);
+        setUInt32Value(PLAYER_GUILDRANK, guildRank);
     }
 }
 
@@ -9404,13 +9404,13 @@ void Player::AddHonor(uint32 honorPoints, bool sendUpdate)
 void Player::UpdateHonor()
 {
 #if VERSION_STRING != Classic
-    this->SetUInt32Value(PLAYER_FIELD_KILLS, uint16(this->m_killsToday) | (this->m_killsYesterday << 16));
+    this->setUInt32Value(PLAYER_FIELD_KILLS, uint16(this->m_killsToday) | (this->m_killsYesterday << 16));
 #if VERSION_STRING != Cata
     this->SetUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, this->m_honorToday);
     this->SetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION, this->m_honorYesterday);
 #endif
 #endif
-    this->SetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, this->m_killsLifetime);
+    this->setUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, this->m_killsLifetime);
     this->SetHonorCurrency(this->m_honorPoints);
 
     this->UpdateKnownCurrencies(43308, true); //Honor Points
@@ -9977,7 +9977,7 @@ void Player::SaveAuras(std::stringstream & ss)
 void Player::SetShapeShift(uint8 ss)
 {
     uint8 old_ss = GetShapeShift(); //GetByte(UNIT_FIELD_BYTES_2, 3);
-    SetByte(UNIT_FIELD_BYTES_2, 3, ss);
+    setByteValue(UNIT_FIELD_BYTES_2, 3, ss);
 
     //remove auras that we should not have
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
@@ -10172,7 +10172,7 @@ void Player::CalcDamage()
                 cr = itr->second;
         }
     }
-    SetUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_MAIN_HAND_SKILL, cr);
+    setUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_MAIN_HAND_SKILL, cr);
     /////////////// MAIN HAND END
 
     /////////////// OFF HAND START
@@ -10210,7 +10210,7 @@ void Player::CalcDamage()
                 cr = itr->second;
         }
     }
-    SetUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_OFF_HAND_SKILL, cr);
+    setUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_OFF_HAND_SKILL, cr);
 
     /////////////second hand end
     ///////////////////////////RANGED
@@ -10263,7 +10263,7 @@ void Player::CalcDamage()
         }
 
     }
-    SetUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_SKILL, cr);
+    setUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_SKILL, cr);
 
     /////////////////////////////////RANGED end
     std::list<Pet*> summons = GetSummons();
@@ -10597,7 +10597,7 @@ void Player::_UpdateSkillFields()
 #endif
         if (itr->second.Skill->type == SKILL_TYPE_PROFESSION)
         {
-            SetUInt32Value(f++, itr->first | 0x10000);
+            setUInt32Value(f++, itr->first | 0x10000);
 #if VERSION_STRING > TBC
             m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, itr->second.Skill->id, itr->second.CurrentValue, 0);
 #endif
@@ -10605,20 +10605,20 @@ void Player::_UpdateSkillFields()
 #if VERSION_STRING == Cata
         else if (itr->second.Skill->type == SKILL_TYPE_SECONDARY)
         {
-            SetUInt32Value(f++, itr->first | 0x40000);
+            setUInt32Value(f++, itr->first | 0x40000);
             m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, itr->second.Skill->id, itr->second.CurrentValue, 0);
         }
 #endif
         else
         {
-            SetUInt32Value(f++, itr->first);
+            setUInt32Value(f++, itr->first);
 #if VERSION_STRING > TBC
             m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, itr->second.Skill->id, itr->second.MaximumValue / 75, 0);
 #endif
         }
 
-        SetUInt32Value(f++, (itr->second.MaximumValue << 16) | itr->second.CurrentValue);
-        SetUInt32Value(f++, itr->second.BonusValue);
+        setUInt32Value(f++, (itr->second.MaximumValue << 16) | itr->second.CurrentValue);
+        setUInt32Value(f++, itr->second.BonusValue);
         ++itr;
     }
 
@@ -10630,7 +10630,7 @@ void Player::_UpdateSkillFields()
 #endif
     {
         if (m_uint32Values[f] != 0)
-            SetUInt32Value(f, 0);
+            setUInt32Value(f, 0);
     }
 }
 
@@ -11058,7 +11058,7 @@ void Player::EventTalentHearthOfWildChange(bool apply)
     //increase attackpower if :
     else if (SS == FORM_CAT)
     {
-        SetAttackPowerMultiplier(GetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER) + tval / 200.0f);
+        SetAttackPowerMultiplier(getFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER) + tval / 200.0f);
         SetRangedAttackPowerMultiplier(GetRangedAttackPowerMultiplier() + tval / 200.0f);
         UpdateStats();
     }
@@ -12021,7 +12021,7 @@ void Player::UpdatePowerAmm()
     WorldPacket data(SMSG_POWER_UPDATE, 5);
     FastGUIDPack(data, GetGUID());
     data << uint8(GetPowerType());
-    data << GetUInt32Value(UNIT_FIELD_POWER1 + GetPowerType());
+    data << getUInt32Value(UNIT_FIELD_POWER1 + GetPowerType());
     SendMessageToSet(&data, true);
 #endif
 }
@@ -12081,7 +12081,7 @@ void Player::UpdateGlyphs()
     {
         if (DBC::Structures::GlyphSlotEntry const* glyphSlot = sGlyphSlotStore.LookupEntry(i))
         {
-            SetUInt32Value(PLAYER_FIELD_GLYPH_SLOTS_1 + slot++, glyphSlot->Id);
+            setUInt32Value(PLAYER_FIELD_GLYPH_SLOTS_1 + slot++, glyphSlot->Id);
         }
     }
 
@@ -12101,7 +12101,7 @@ void Player::UpdateGlyphs()
         slotMask = GS_MASK_LEVEL_75;
     }
 
-    SetUInt32Value(PLAYER_GLYPHS_ENABLED, slotMask);
+    setUInt32Value(PLAYER_GLYPHS_ENABLED, slotMask);
 }
 #endif
 
@@ -12118,7 +12118,7 @@ void Player::LoadFieldsFromString(const char* string, uint32 firstField, uint32 
         if (!end)
             break;
         *end = 0;
-        SetUInt32Value(firstField + Counter, atol(start));
+        setUInt32Value(firstField + Counter, atol(start));
         start = end + 1;
     }
 }
@@ -12128,11 +12128,11 @@ void Player::SetKnownTitle(RankTitles title, bool set)
     if (!HasTitle(title) ^ set)
         return;
 
-    uint64 current = GetUInt64Value(PLAYER_FIELD_KNOWN_TITLES + ((title >> 6) << 1));
+    uint64 current = getUInt64Value(PLAYER_FIELD_KNOWN_TITLES + ((title >> 6) << 1));
     if (set)
-        SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES + ((title >> 6) << 1), current | uint64(1) << (title % 64));
+        setUInt64Value(PLAYER_FIELD_KNOWN_TITLES + ((title >> 6) << 1), current | uint64(1) << (title % 64));
     else
-        SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES + ((title >> 6) << 1), current & ~uint64(1) << (title % 64));
+        setUInt64Value(PLAYER_FIELD_KNOWN_TITLES + ((title >> 6) << 1), current & ~uint64(1) << (title % 64));
 
     WorldPacket data(SMSG_TITLE_EARNED, 8);
     data << uint32(title);
@@ -12165,8 +12165,8 @@ void Player::CalcExpertise()
     SpellInfo* entry = NULL;
 
 #if VERSION_STRING != Classic
-    SetUInt32Value(PLAYER_EXPERTISE, 0);
-    SetUInt32Value(PLAYER_OFFHAND_EXPERTISE, 0);
+    setUInt32Value(PLAYER_EXPERTISE, 0);
+    setUInt32Value(PLAYER_OFFHAND_EXPERTISE, 0);
 #endif
 
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
@@ -13442,8 +13442,8 @@ void Player::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
             }
         }
 
-        SetUInt32Value(PLAYER_SELF_RES_SPELL, self_res_spell);
-        SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
+        setUInt32Value(PLAYER_SELF_RES_SPELL, self_res_spell);
+        setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
     }
 
     // Wipe our attacker set on death
@@ -13651,7 +13651,7 @@ uint32 Player::GetBlockDamageReduction()
     if (block_multiplier < 1.0f)
         block_multiplier = 1.0f;
 
-    return float2int32((it->GetItemProperties()->Block + this->m_modblockvaluefromspells + this->GetUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_BLOCK) + this->GetStat(STAT_STRENGTH) / 2.0f - 1.0f) * block_multiplier);
+    return float2int32((it->GetItemProperties()->Block + this->m_modblockvaluefromspells + this->getUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_BLOCK) + this->GetStat(STAT_STRENGTH) / 2.0f - 1.0f) * block_multiplier);
 }
 
 void Player::ApplyFeralAttackPower(bool apply, Item* item)
@@ -14619,7 +14619,7 @@ void Player::RemoteRevive()
     setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN, true));
     setSpeedForType(TYPE_SWIM, getSpeedForType(TYPE_SWIM, true));
     setMoveLandWalk();
-    SetHealth(GetUInt32Value(UNIT_FIELD_MAXHEALTH));
+    SetHealth(getUInt32Value(UNIT_FIELD_MAXHEALTH));
 }
 
 void Player::SetMover(Unit* target)

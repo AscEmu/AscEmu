@@ -53,10 +53,10 @@ class SERVER_DECL Container : public Item
         bool SafeFullRemoveItemFromSlot(int16 slot);                        /// destroys item fully
 
         void SaveBagToDB(int8 slot, bool first, QueryBuffer* buf);
-        void SetNumSlots(uint32 num) { SetUInt32Value(CONTAINER_FIELD_NUM_SLOTS, num); }
-        uint32 GetNumSlots() { return GetUInt32Value(CONTAINER_FIELD_NUM_SLOTS); }
-        void SetSlot(uint16 slot, uint64 guid) { SetUInt64Value(CONTAINER_FIELD_SLOT_1 + (slot * 2), guid); }
-        uint64 GetSlot(uint16 slot) { return GetUInt64Value(CONTAINER_FIELD_SLOT_1 + (slot * 2)); }
+        void SetNumSlots(uint32 num) { setUInt32Value(CONTAINER_FIELD_NUM_SLOTS, num); }
+        uint32 GetNumSlots() { return getUInt32Value(CONTAINER_FIELD_NUM_SLOTS); }
+        void SetSlot(uint16 slot, uint64 guid) { setUInt64Value(CONTAINER_FIELD_SLOT_1 + (slot * 2), guid); }
+        uint64 GetSlot(uint16 slot) { return getUInt64Value(CONTAINER_FIELD_SLOT_1 + (slot * 2)); }
 
     protected:
 

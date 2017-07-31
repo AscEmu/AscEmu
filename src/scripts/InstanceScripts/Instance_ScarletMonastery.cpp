@@ -343,7 +343,7 @@ class MograineAI : public CreatureAIScript
         void OnCombatStart(Unit* mTarget)
         {
             _unit->SendScriptTextChatMessage(SAY_MORGRAINE_01);
-            RegisterAIUpdateEvent(_unit->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME));
+            RegisterAIUpdateEvent(_unit->getUInt32Value(UNIT_FIELD_BASEATTACKTIME));
         }
 
         void OnTargetDied(Unit* mTarget)
@@ -494,7 +494,7 @@ class WhitemaneAI : public CreatureAIScript
         void OnCombatStart(Unit* mTarget)
         {
             _unit->SendScriptTextChatMessage(SAY_WHITEMANE_01);
-            RegisterAIUpdateEvent(_unit->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME));
+            RegisterAIUpdateEvent(_unit->getUInt32Value(UNIT_FIELD_BASEATTACKTIME));
         }
 
         void OnTargetDied(Unit* mTarget)
@@ -655,7 +655,7 @@ class FairbanksAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            RegisterAIUpdateEvent(_unit->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME));
+            RegisterAIUpdateEvent(_unit->getUInt32Value(UNIT_FIELD_BASEATTACKTIME));
         }
 
         void OnTargetDied(Unit* mTarget)

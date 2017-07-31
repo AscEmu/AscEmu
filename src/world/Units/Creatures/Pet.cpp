@@ -184,7 +184,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
     SetSummonedByGUID(owner->GetGUID());
     SetCreatedByGUID(owner->GetGUID());
 
-    SetUInt32Value(UNIT_FIELD_BYTES_0, 2048 | (0 << 24));
+    setUInt32Value(UNIT_FIELD_BYTES_0, 2048 | (0 << 24));
 
     SetBaseAttackTime(MELEE, 2000);
     SetBaseAttackTime(OFFHAND, 2000);
@@ -208,8 +208,8 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
             SetCreatedBySpell(created_by_spell->Id);
         }
 
-        SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
-        SetUInt32Value(UNIT_FIELD_BYTES_2, (0x01 | (0x28 << 8) | (0x2 << 24)));
+        setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
+        setUInt32Value(UNIT_FIELD_BYTES_2, (0x01 | (0x28 << 8) | (0x2 << 24)));
         SetBoundingRadius(0.5f);
         SetCombatReach(0.75f);
         SetPowerType(POWER_TYPE_MANA);
@@ -228,14 +228,14 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
         SetBoundingRadius(created_from_creature->GetBoundingRadius());
         SetCombatReach(created_from_creature->GetCombatReach());
 
-        SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE | UNIT_FLAG_COMBAT);  // why combat ??
+        setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE | UNIT_FLAG_COMBAT);  // why combat ??
         SetPower(POWER_TYPE_HAPPINESS, PET_HAPPINESS_UPDATE_VALUE >> 1);                //happiness
         SetMaxPower(POWER_TYPE_HAPPINESS, 1000000);
-        SetUInt32Value(UNIT_FIELD_PETEXPERIENCE, 0);
-        SetUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP, GetNextLevelXP(level));
+        setUInt32Value(UNIT_FIELD_PETEXPERIENCE, 0);
+        setUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP, GetNextLevelXP(level));
         SetPower(POWER_TYPE_FOCUS, 100);                                                // Focus
         SetMaxPower(POWER_TYPE_FOCUS, 100);
-        SetUInt32Value(UNIT_FIELD_BYTES_2, 1  /* | (0x28 << 8) */ | (PET_RENAME_ALLOWED << 16));  // 0x3 -> Enable pet rename.
+        setUInt32Value(UNIT_FIELD_BYTES_2, 1  /* | (0x28 << 8) */ | (PET_RENAME_ALLOWED << 16));  // 0x3 -> Enable pet rename.
         SetPowerType(POWER_TYPE_FOCUS);
     }
     SetFaction(owner->GetFaction());
@@ -671,14 +671,14 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     SetBaseAttackTime(OFFHAND, 2000);
     SetCastSpeedMod(1.0f);          // better set this one
 
-    SetUInt32Value(UNIT_FIELD_BYTES_0, 2048 | (0 << 24));
+    setUInt32Value(UNIT_FIELD_BYTES_0, 2048 | (0 << 24));
 
     if (pi->type == WARLOCKPET)
     {
         SetNameForEntry(mPi->entry);
-        SetUInt64Value(UNIT_CREATED_BY_SPELL, mPi->spellid);
-        SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
-        SetUInt32Value(UNIT_FIELD_BYTES_2, (0x01 | (0x28 << 8) | (0x2 << 24)));
+        setUInt64Value(UNIT_CREATED_BY_SPELL, mPi->spellid);
+        setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
+        setUInt32Value(UNIT_FIELD_BYTES_2, (0x01 | (0x28 << 8) | (0x2 << 24)));
         SetBoundingRadius(0.5f);
         SetCombatReach(0.75f);
         SetPowerType(POWER_TYPE_MANA);
@@ -687,12 +687,12 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     {
         SetBoundingRadius(creature_properties->BoundingRadius);
         SetCombatReach(creature_properties->CombatReach);
-        SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE | UNIT_FLAG_COMBAT);      // why combat ??
+        setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE | UNIT_FLAG_COMBAT);      // why combat ??
         SetPower(POWER_TYPE_HAPPINESS, PET_HAPPINESS_UPDATE_VALUE >> 1);                    //happiness
         SetMaxPower(POWER_TYPE_HAPPINESS, 1000000);
-        SetUInt32Value(UNIT_FIELD_PETEXPERIENCE, mPi->xp);
-        SetUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP, GetNextLevelXP(mPi->level));
-        SetUInt32Value(UNIT_FIELD_BYTES_2, 1);
+        setUInt32Value(UNIT_FIELD_PETEXPERIENCE, mPi->xp);
+        setUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP, GetNextLevelXP(mPi->level));
+        setUInt32Value(UNIT_FIELD_BYTES_2, 1);
         SetPower(POWER_TYPE_FOCUS, 100);                                                    // Focus
         SetMaxPower(POWER_TYPE_FOCUS, 100);
         SetPowerType(POWER_TYPE_FOCUS);
@@ -730,15 +730,15 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     SetPower(POWER_TYPE_HAPPINESS, mPi->current_happiness);
 
     if (mPi->renamable == 0)
-        SetByte(UNIT_FIELD_BYTES_2, 2, PET_RENAME_NOT_ALLOWED);
+        setByteValue(UNIT_FIELD_BYTES_2, 2, PET_RENAME_NOT_ALLOWED);
     else
-        SetByte(UNIT_FIELD_BYTES_2, 2, PET_RENAME_ALLOWED);
+        setByteValue(UNIT_FIELD_BYTES_2, 2, PET_RENAME_ALLOWED);
 
     //if pet was dead on logout then it should be dead now too.//we could use mPi->alive but this will break backward compatibility
     if (HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DEAD))   //LoadFromDB() (called by Player::SpawnPet()) now always revive the Pet if it was dead.
         //This is because now we call SpawnPet() only if it's alive or we wanna revive it.
     {
-        SetUInt32Value(UNIT_DYNAMIC_FLAGS, 0);
+        setUInt32Value(UNIT_DYNAMIC_FLAGS, 0);
         SetHealth(GetMaxHealth());              //this is modified (if required) in Spell::SpellEffectSummonDeadPet()
         setDeathState(ALIVE);
     }
@@ -769,8 +769,8 @@ void Pet::InitializeMe(bool first)
     m_Owner->AddSummon(this);
     m_Owner->SetSummonedUnitGUID(GetGUID());
 
-    SetUInt32Value(UNIT_FIELD_PETNUMBER, GetUIdFromGUID());
-    SetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, (uint32)UNIXTIME);
+    setUInt32Value(UNIT_FIELD_PETNUMBER, GetUIdFromGUID());
+    setUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, (uint32)UNIXTIME);
 
     myFamily = sCreatureFamilyStore.LookupEntry(creature_properties->Family);
 
@@ -885,7 +885,7 @@ void Pet::UpdatePetInfo(bool bSetToOffline)
     player_pet->current_hp = GetHealth();
     player_pet->current_happiness = GetPower(POWER_TYPE_HAPPINESS);
 
-    uint32 renamable = GetByte(UNIT_FIELD_BYTES_2, 2);
+    uint32 renamable = getByteValue(UNIT_FIELD_BYTES_2, 2);
 
     if (renamable == PET_RENAME_ALLOWED)
         player_pet->renamable = 1;
@@ -1029,13 +1029,13 @@ void Pet::GiveXP(uint32 xp)
         modLevel(1);
         xp -= nxp;
         nxp = GetNextLevelXP(getLevel());
-        SetUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP, nxp);
+        setUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP, nxp);
         ApplyStatsForLevel();
         UpdateSpellList();
         SendTalentsToOwner();
     }
 
-    SetUInt32Value(UNIT_FIELD_PETEXPERIENCE, xp);
+    setUInt32Value(UNIT_FIELD_PETEXPERIENCE, xp);
 }
 
 uint32 Pet::GetNextLevelXP(uint32 level)
@@ -1389,7 +1389,7 @@ void Pet::Rename(std::string NewName)
     UpdatePetInfo(false);
 
     // update timestamp to force a re-query
-    SetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, (uint32)UNIXTIME);
+    setUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, (uint32)UNIXTIME);
 
     // save new summoned name to db (.pet renamepet)
     if (m_Owner->getClass() == WARLOCK)
@@ -1580,7 +1580,7 @@ void Pet::ApplyPetLevelAbilities()
     BaseStats[4] = pet_abilities->spirit;
 
     SetBaseHealth(pet_abilities->health);
-    SetUInt32Value(UNIT_FIELD_MAXHEALTH, pet_abilities->health);
+    setUInt32Value(UNIT_FIELD_MAXHEALTH, pet_abilities->health);
 
     //Family Aura
     if (pet_family > 46)
@@ -1686,7 +1686,7 @@ uint32 Pet::CanLearnSpell(SpellInfo* sp)
 HappinessState Pet::GetHappinessState()
 {
     //gets happiness state from happiness points
-    uint32 pts = GetUInt32Value(UNIT_FIELD_POWER5);
+    uint32 pts = getUInt32Value(UNIT_FIELD_POWER5);
     if (pts < PET_HAPPINESS_UPDATE_VALUE)
         return UNHAPPY;
     else if (pts >= PET_HAPPINESS_UPDATE_VALUE << 1)

@@ -343,13 +343,13 @@ void WorldSession::HandleInspectHonorStatsOpcode(WorldPacket& recv_data)
     data << player->GetGUID();
     data << uint8(player->GetHonorCurrency());
 #if VERSION_STRING != Classic
-    data << player->GetUInt32Value(PLAYER_FIELD_KILLS);
+    data << player->getUInt32Value(PLAYER_FIELD_KILLS);
 #if VERSION_STRING != Cata
     data << player->GetUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION);
     data << player->GetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION);
 #endif
 #endif
-    data << player->GetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS);
+    data << player->getUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS);
 
     SendPacket(&data);
 }
@@ -372,7 +372,7 @@ void WorldSession::HandleInspectArenaStatsOpcode(WorldPacket& recv_data)
 
     for (uint8 i = 0; i < 3; i++)
     {
-        uint32 id = player->GetUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (i * 7));
+        uint32 id = player->getUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (i * 7));
         if (id > 0)
         {
             ArenaTeam* team = objmgr.GetArenaTeamById(id);

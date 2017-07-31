@@ -33,7 +33,7 @@ Container::Container(uint32 high, uint32 low) : Item()
     memset(m_uint32Values, 0, (CONTAINER_END)*sizeof(uint32));
     m_updateMask.SetCount(CONTAINER_END);
 
-    SetUInt32Value(OBJECT_FIELD_TYPE, TYPE_CONTAINER | TYPE_ITEM | TYPE_OBJECT);
+    setUInt32Value(OBJECT_FIELD_TYPE, TYPE_CONTAINER | TYPE_ITEM | TYPE_OBJECT);
 
     SetLowGUID(low);
     SetHighGUID(high);
@@ -70,7 +70,7 @@ void Container::LoadFromDB(Field* fields)
     SetCreatorGUID(fields[5].GetUInt32());
     SetStackCount(1);
 
-    SetUInt32Value(ITEM_FIELD_FLAGS, fields[8].GetUInt32());
+    setUInt32Value(ITEM_FIELD_FLAGS, fields[8].GetUInt32());
     SetItemRandomPropertyId(fields[9].GetUInt32());
 
     SetDurabilityMax(m_itemProperties->MaxDurability);

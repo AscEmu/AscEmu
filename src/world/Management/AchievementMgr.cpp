@@ -1351,7 +1351,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
                 SetCriteriaProgress(achievementCriteria, GetPlayer()->_GetSkillLineMax(achievementCriteria->learn_skill_level.skillID) / 75);
                 break;
             case ACHIEVEMENT_CRITERIA_TYPE_BUY_BANK_SLOT:
-                SetCriteriaProgress(achievementCriteria, (uint8)(GetPlayer()->GetUInt32Value(PLAYER_BYTES_2) >> 16));
+                SetCriteriaProgress(achievementCriteria, (uint8)(GetPlayer()->getUInt32Value(PLAYER_BYTES_2) >> 16));
                 break;
                 //End of Achievement List
             default:

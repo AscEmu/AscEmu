@@ -50,7 +50,7 @@ class SamAI : public CreatureAIScript
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->m_canMove = false;
             _unit->GetAIInterface()->disable_melee = true;
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
             timer = 0;
             RegisterAIUpdateEvent(1000);
@@ -122,7 +122,7 @@ class BerAI : public CreatureAIScript
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->m_canMove = false;
             _unit->GetAIInterface()->disable_melee = true;
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
             timer = 0;
             RegisterAIUpdateEvent(1000);
@@ -190,7 +190,7 @@ class SigAI : public CreatureAIScript
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->m_canMove = false;
             _unit->GetAIInterface()->disable_melee = true;
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -262,7 +262,7 @@ class MaiAI : public CreatureAIScript
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->m_canMove = false;
             _unit->GetAIInterface()->disable_melee = true;
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -332,7 +332,7 @@ class ThuAI : public CreatureAIScript
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->m_canMove = false;
             _unit->GetAIInterface()->disable_melee = true;
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -392,7 +392,7 @@ class ThuAI : public CreatureAIScript
                 case 200:
                 {
                     _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL01);
-                    _unit->SetUInt32Value(UNIT_NPC_EMOTESTATE, 401);
+                    _unit->setUInt32Value(UNIT_NPC_EMOTESTATE, 401);
                     break;
                 }
                 case 279: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true); break;
@@ -417,7 +417,7 @@ class UndeadAI : public CreatureAIScript
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->m_canMove = false;
             _unit->GetAIInterface()->disable_melee = true;
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -453,7 +453,7 @@ class UndeadAI : public CreatureAIScript
         {
             switch (timer)
             {
-                case 2:  _unit->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_DANCE); break;
+                case 2:  _unit->setUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_DANCE); break;
                 case 280: _unit->Emote(EMOTE_ONESHOT_APPLAUD); break;
                 case 281: _unit->Despawn(1000, 301000); break;
             }
@@ -475,7 +475,7 @@ class Undead2AI : public CreatureAIScript
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->m_canMove = false;
             _unit->GetAIInterface()->disable_melee = true;
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -512,7 +512,7 @@ class Undead2AI : public CreatureAIScript
         {
             switch (timer)
             {
-                case 2:  _unit->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_DANCE); break;
+                case 2:  _unit->setUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_DANCE); break;
                 case 280: _unit->Emote(EMOTE_ONESHOT_CHEER); break;
                 case 281: _unit->Despawn(1000, 301000); break;
             }
@@ -534,7 +534,7 @@ class Undead3AI : public CreatureAIScript
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->m_canMove = false;
             _unit->GetAIInterface()->disable_melee = true;
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -565,7 +565,7 @@ class Undead3AI : public CreatureAIScript
         {
             switch (timer)
             {
-                case 2:  _unit->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_DANCE); break;
+                case 2:  _unit->setUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_DANCE); break;
                 case 279: _unit->Emote(EMOTE_ONESHOT_CHEER); break;
                 case 280: _unit->Despawn(1000, 301000); break;
             }
@@ -587,7 +587,7 @@ class TriggerAI : public CreatureAIScript
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->m_canMove = false;
             _unit->GetAIInterface()->disable_melee = true;
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -692,7 +692,7 @@ class Trigger2AI : public CreatureAIScript
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->m_canMove = false;
             _unit->GetAIInterface()->disable_melee = true;
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -790,7 +790,7 @@ class Effectsground : public CreatureAIScript
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->m_canMove = false;
             _unit->GetAIInterface()->disable_melee = true;
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -814,7 +814,7 @@ class Effectsground : public CreatureAIScript
 
         void OnSpawn()
         {
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
         }
 
@@ -919,7 +919,7 @@ class Effectsair : public CreatureAIScript
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->m_canMove = false;
             _unit->GetAIInterface()->disable_melee = true;
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -943,7 +943,7 @@ class Effectsair : public CreatureAIScript
         void OnSpawn()
         {
             timer = 0;
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         }
 
         void OnDespawn()

@@ -1822,7 +1822,7 @@ bool ToLegionHold(uint32 i, Aura* pAura, bool apply)
         Creature* pJovaan = sEAS.SpawnCreature(pPlayer, 21633, -3310.743896f, 2951.929199f, 171.132538f, 5.054039f, 0);    // Spawn Jovaan
         if (pJovaan != nullptr)
         {
-            pJovaan->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            pJovaan->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
             if (pJovaan->GetAIInterface() != nullptr)
             {
                 pJovaan->GetAIInterface()->SetAllowedToEnterCombat(false);

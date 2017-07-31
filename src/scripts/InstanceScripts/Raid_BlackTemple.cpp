@@ -839,7 +839,7 @@ class EnslavedServantAI : public MoonScriptCreatureAI
         {
             if (IsTimerFinished(mHealthResetTimer))
             {
-                _unit->SetHealth(_unit->GetUInt32Value(UNIT_FIELD_MAXHEALTH));    // Found such note about this mob
+                _unit->SetHealth(_unit->getUInt32Value(UNIT_FIELD_MAXHEALTH));    // Found such note about this mob
                 ResetTimer(mHealthResetTimer, 45000);
             }
 
@@ -895,7 +895,7 @@ class IllidariArchonAI : public MoonScriptCreatureAI
         void AIUpdate()
         {
             SpellDesc* pDeath = FindSpellById(ILLIDARI_ARCHON_SHADOW_WORD_DEATH);
-            if (mIsShadowPriest && _unit->GetUInt32Value(UNIT_FIELD_HEALTH) <= 2500 && pDeath->mEnabled)
+            if (mIsShadowPriest && _unit->getUInt32Value(UNIT_FIELD_HEALTH) <= 2500 && pDeath->mEnabled)
             {
                 Spell* pCurrentSpell = _unit->GetCurrentSpell();
                 if (pCurrentSpell != NULL && pCurrentSpell->pSpellId == pDeath->mInfo->Id)
@@ -1041,7 +1041,7 @@ class ShadowmoonDeathshaperAI : public MoonScriptCreatureAI
             AddSpellFunc(&SpellFunc_RaiseDead, Target_RandomCorpse, 12, 1.5, 30);
             AddSpell(SHADOWMOON_DEATHSHAPER_SHADOW_BOLT, Target_Current, 75, 3, 0, 0, 40);    // Typical caster? Slap me if not...
 
-            _unit->SetUInt32Value(UNIT_FIELD_POWER1, 100000);    // temporary way to set up mana of this unit
+            _unit->setUInt32Value(UNIT_FIELD_POWER1, 100000);    // temporary way to set up mana of this unit
         }
 
         void OnCombatStart(Unit* pTarget)
@@ -2414,7 +2414,7 @@ class EssenceOfSufferingAI : public MoonScriptCreatureAI
                 SetCanEnterCombat(false);
                 SetAllowMelee(false);
                 SetAllowSpell(false);
-                _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+                _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
                 RemoveAllAuras();
                 RemoveAuraOnPlayers(EOS_AURA_OF_SUFFERING);
                 MoonScriptCreatureAI* mRoS = GetNearestCreature(22856);
@@ -2470,7 +2470,7 @@ class EssenceOfDesireAI : public MoonScriptCreatureAI
                 SetCanEnterCombat(false);
                 SetAllowMelee(false);
                 SetAllowSpell(false);
-                _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+                _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
                 RemoveAllAuras();
                 RemoveAuraOnPlayers(EOD_AURA_OF_DESIRE);
                 MoonScriptCreatureAI* mRoS = GetNearestCreature(22856);
@@ -2567,7 +2567,7 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
             SetAllowMelee(false);
             SetAllowRanged(false);
 
@@ -3941,7 +3941,7 @@ class UnselectableTriggerAI : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(UnselectableTriggerAI, MoonScriptCreatureAI);
         UnselectableTriggerAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         }
 };
 
@@ -4005,21 +4005,21 @@ class GenericTriggerAI : public MoonScriptCreatureAI
 
             if (OnSpawn)
             {
-                _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+                _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
                 ApplyAura(mSpellId);
                 SetAllowMelee(false);
                 Despawn(mDespawnTimer, 0);
             }
             else
             {
-                _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 RegisterAIUpdateEvent(AIUpdate);
             }
         }
 
         void AIUpdate()
         {
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
             ApplyAura(mSpellId);
             SetAllowMelee(false);
             Despawn(mDespawnTimer, 0);
@@ -4027,7 +4027,7 @@ class GenericTriggerAI : public MoonScriptCreatureAI
 
             if (_unit->GetEntry() == CN_FLAME_BURST)
             {
-                _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             }
         }
 
@@ -4045,7 +4045,7 @@ class EyeBeamTriggerAI : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(EyeBeamTriggerAI, MoonScriptCreatureAI);
         EyeBeamTriggerAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
             _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
             _unit->m_noRespawn = true;
 
@@ -4178,7 +4178,7 @@ class ParasiticShadowfiendAI : public MoonScriptCreatureAI
             mParasiticDmg = AddSpell(PARASITIC_SHADOWFIEND_WITH_DAMAGE, Target_Current, 0, 0, 0);
             mParasitic = AddSpellFunc(&SpellFunc_Parasitic, Target_Current, 0, 0, 0);
 
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             ApplyAura(PARASITIC_SHADOWFIEND_PASSIVE);
             _unit->m_noRespawn = true;
             SetDespawnWhenInactive(true);
@@ -4208,11 +4208,11 @@ class ParasiticShadowfiendAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            if (_unit->GetUInt64Value(UNIT_FIELD_FLAGS) == UNIT_FLAG_NOT_SELECTABLE)
+            if (_unit->getUInt64Value(UNIT_FIELD_FLAGS) == UNIT_FLAG_NOT_SELECTABLE)
             {
                 DelayNextAttack(3000);
                 SetScale(1.0f);
-                _unit->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
+                _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
                 _unit->GetAIInterface()->ResetUnitToFollow();
                 _unit->GetAIInterface()->SetUnitToFollowAngle(0.0f);
                 RemoveAIUpdateEvent();
@@ -4291,11 +4291,11 @@ class SCRIPT_DECL AkamaGossip : public GossipScript
                     GossipHello(pObject, pPlayer);
                     break;
                 case 1:
-                    pAIOwner->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+                    pAIOwner->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
                     pAI->ForceWaypointMove(1);
                     break;
                 case 2:
-                    pAIOwner->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+                    pAIOwner->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
                     pAI->ForceWaypointMove(17);
                     pAI->SetWieldWeapon(false);
                     break;
@@ -4344,7 +4344,7 @@ class AkamaAI : public MoonScriptBossAI
                 AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_RUN, ToIllidan[i]));
             }
 
-            _unit->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+            _unit->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
             _unit->SetDualWield(true);
 
             mUdaloAI = mOlumAI = NULL;
@@ -4508,7 +4508,7 @@ class AkamaAI : public MoonScriptBossAI
                     _unit->SetFacing(2.113512f);
                     break;
                 case 17:
-                    _unit->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                    _unit->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                     RemoveAIUpdateEvent();
 
                     mScenePart = 0;
@@ -4906,8 +4906,8 @@ class MaievAI : public MoonScriptBossAI
             mTrapSummon = AddSpell(MAIEV_CAGE_TRAP_SUMMON, Target_Self, 0, 1.3f, 0);
 
             // HACK!
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
-            _unit->SetUInt32Value(UNIT_FIELD_MAXHEALTH, 1000000);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            _unit->setUInt32Value(UNIT_FIELD_MAXHEALTH, 1000000);
             _unit->SetHealth(1000000);
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
 
@@ -4953,7 +4953,7 @@ class MaievAI : public MoonScriptBossAI
 
         void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
         {
-            _unit->SetHealth(_unit->GetUInt32Value(UNIT_FIELD_MAXHEALTH));
+            _unit->SetHealth(_unit->getUInt32Value(UNIT_FIELD_MAXHEALTH));
         }
 
         void AIUpdate()
@@ -5465,7 +5465,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 ApplyAura(ILLIDAN_DEATH1);
                 ApplyAura(ILLIDAN_DEATH2);
 
-                pMaiev->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+                pMaiev->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
                 pMaiev->GetAIInterface()->setAiState(AI_STATE_IDLE);
                 pMaiev->GetAIInterface()->WipeTargetList();
                 pMaiev->GetAIInterface()->WipeHateList();
@@ -5672,7 +5672,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                             Creature* pBlade = _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_BLADE_OF_AZZINOTH, UnitPos[i].x, UnitPos[i].y, UnitPos[i].z, UnitPos[i].o, true, false, 0, 0);
                             if (pBlade != NULL)
                             {
-                                pBlade->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                                pBlade->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                                 pBlade->m_noRespawn = true;
                             }
                         }
@@ -5698,7 +5698,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                                 pBlade->SetChannelSpellId(TEAR_OF_AZZINOTH_CHANNEL);
                             }
                         }
-                        _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+                        _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
                         break;
                     case 4:
                         {
@@ -5750,7 +5750,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                             SetCanMove(true);
                             ClearHateList();
                             SetPhase(3);
-                            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
+                            _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
 
                             SetAIUpdateFreq(1000);
 
@@ -6041,7 +6041,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             SetAllowMelee(true);
             SetCanMove(true);
 
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
 
             mScenePart = 0;
         }
@@ -6124,7 +6124,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                     SetCanMove(true);
                     SetPhase(5);
 
-                    _unit->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
+                    _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
 
                     pMaievAI->RegisterAIUpdateEvent(1000);
                     pMaievAI->mYellTimer = pMaievAI->AddTimer((RandomUInt(20) + 20) * 1000);
@@ -6525,7 +6525,7 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(CageTrapTriggerAI, MoonScriptCreatureAI);
         CageTrapTriggerAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             _unit->GetAIInterface()->m_canMove = false;
             _unit->m_noRespawn = true;
 
@@ -6572,7 +6572,7 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
                         MoonScriptCreatureAI* pTriggerAI = SpawnCreature(CN_CAGE_TRAP_TRIGGER, _unit->GetPositionX() + PositionAdds[i][0], _unit->GetPositionY() + PositionAdds[i][1], _unit->GetPositionZ(), _unit->GetOrientation());
                         if (pTriggerAI != NULL)
                         {
-                            pTriggerAI->GetUnit()->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                            pTriggerAI->GetUnit()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                             pTriggerAI->GetUnit()->GetAIInterface()->m_canMove = false;
                             pTriggerAI->GetUnit()->m_noRespawn = true;
                             mTriggerAIList.push_back(pTriggerAI);
@@ -6672,7 +6672,7 @@ class CageTrapGO : public GameObjectAIScript
     public:
         CageTrapGO(GameObject* pGameObject) : GameObjectAIScript(pGameObject)
         {
-            _gameobject->SetFloatValue(OBJECT_FIELD_SCALE_X, 3);
+            _gameobject->setFloatValue(OBJECT_FIELD_SCALE_X, 3);
         }
 
         void OnActivate(Player* pPlayer)

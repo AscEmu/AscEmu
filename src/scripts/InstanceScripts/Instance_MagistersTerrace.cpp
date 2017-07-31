@@ -114,7 +114,7 @@ class SelinFireheartAI : public MoonScriptCreatureAI
             Selin Fireheart starts with 0 mana and drains it from the felcrystals in the room
             \todo  Set it so mana regen is off
             */
-        _unit->SetUInt32Value(UNIT_FIELD_POWER1, 0);
+        _unit->setUInt32Value(UNIT_FIELD_POWER1, 0);
         ParentClass::OnCombatStart(pTarget);
     }
 
@@ -170,7 +170,7 @@ class SelinFireheartAI : public MoonScriptCreatureAI
         if (mana >= _unit->GetMaxPower(POWER_TYPE_MANA))
             mana = _unit->GetMaxPower(POWER_TYPE_MANA);
 
-        _unit->SetUInt32Value(UNIT_FIELD_POWER1, mana);
+        _unit->setUInt32Value(UNIT_FIELD_POWER1, mana);
 
         // Re-Enable FelExplosion
         if (GetManaPercent() >= 100)
@@ -210,7 +210,7 @@ class SelinFireheartAI : public MoonScriptCreatureAI
         CastSpellNowNoScheduling(FelExplosion);
 
         // No Idea why the mana isnt taken when the spell is cast so had to manually take it -_-
-        _unit->SetUInt32Value(UNIT_FIELD_POWER1, _unit->GetPower(POWER_TYPE_MANA) - 3231);
+        _unit->setUInt32Value(UNIT_FIELD_POWER1, _unit->GetPower(POWER_TYPE_MANA) - 3231);
     }
 
     SpellInfo* ManaRage;

@@ -1769,7 +1769,7 @@ void HeiganTheUncleanAI::OnCombatStart(Unit* pTarget)
                 if (Fissure->GetGameObjectProperties() == nullptr)
                     continue;
 
-                if (Fissure->GetUInt32Value(GAMEOBJECT_DISPLAYID) != 6785 && Fissure->GetUInt32Value(GAMEOBJECT_DISPLAYID) != 1287)
+                if (Fissure->getUInt32Value(GAMEOBJECT_DISPLAYID) != 6785 && Fissure->getUInt32Value(GAMEOBJECT_DISPLAYID) != 1287)
                     continue;
 
                 if (Fissure->GetScript() == NULL)
@@ -2157,7 +2157,7 @@ void ShadeOfNaxxramasAI::OnDied(Unit* pKiller)
     MoonScriptCreatureAI* Ghost = SpawnCreature(CN_GHOST_OF_NAXXRAMAS, true);
     if (Ghost != NULL)
     {
-        Ghost->GetUnit()->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+        Ghost->GetUnit()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
         Ghost->SetDespawnWhenInactive(true);
         Ghost->AggroNearestPlayer(200);
     };
@@ -2232,7 +2232,7 @@ void PortalOfShadowsAI::AIUpdate()
             MoonScriptCreatureAI* Ghost = SpawnCreature(CN_GHOST_OF_NAXXRAMAS, true);
             if (Ghost != NULL)
             {
-                Ghost->GetUnit()->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+                Ghost->GetUnit()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
                 Ghost->SetDespawnWhenInactive(true);
                 Ghost->AggroNearestPlayer(200);
             };
@@ -2321,7 +2321,7 @@ DeathKnightCavalierAI::DeathKnightCavalierAI(Creature* pCreature) : MoonScriptCr
     AddSpell(DEATH_KNIGHT_CAVALIER_AURA_OF_AGONY, Target_RandomPlayer, 10, 0, 5, 0, 30);
     AddSpell(DEATH_KNIGHT_CAVALIER_CLEAVE, Target_Current, 10, 0, 10, 0, 8);
     AddSpell(DEATH_KNIGHT_CAVALIER_DEATH_COIL, Target_RandomPlayer, 7, 0, 10, 0, 30);
-    _unit->SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID , 25278);
+    _unit->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID , 25278);
     mChargerAI = NULL;
     mIsMounted = true;
 };
@@ -2332,7 +2332,7 @@ void DeathKnightCavalierAI::OnCombatStop(Unit* pTarget)
     if (mChargerAI != NULL)
     {
         if (IsAlive() && _unit->GetMount() == 0)
-            _unit->SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID , 25278);
+            _unit->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID , 25278);
 
         mChargerAI->mDeathKnightAI = NULL;
         mChargerAI->Despawn();
@@ -2345,10 +2345,10 @@ void DeathKnightCavalierAI::OnCombatStop(Unit* pTarget)
 void DeathKnightCavalierAI::AIUpdate()
 {
     if (mIsMounted && _unit->GetMount() == 0)
-        _unit->SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID , 25278);
+        _unit->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID , 25278);
     if (mIsMounted && RandomUInt(99) < 2)
     {
-        _unit->SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID , 0);
+        _unit->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID , 0);
         ApplyAura(DEATH_KNIGHT_CAVALIER_DISMOUNT_DEATHCHARGER);
         mIsMounted = false;
     };
@@ -2704,9 +2704,9 @@ void SpellFunc_PatchwerkHatefulStrike(SpellDesc* pThis, MoonScriptCreatureAI* pC
             PlayerIter != pCreatureAI->GetUnit()->GetInRangePlayerSetEnd(); ++PlayerIter)
     {
         if ((*PlayerIter) && (static_cast< Player* >(*PlayerIter))->isAlive() && (*PlayerIter)->GetDistance2dSq(pCreatureAI->GetUnit()) <= 5.0f
-                && (*PlayerIter)->GetUInt32Value(UNIT_FIELD_HEALTH) > _mostHP)
+                && (*PlayerIter)->getUInt32Value(UNIT_FIELD_HEALTH) > _mostHP)
         {
-            _mostHP = (*PlayerIter)->GetUInt32Value(UNIT_FIELD_HEALTH);
+            _mostHP = (*PlayerIter)->getUInt32Value(UNIT_FIELD_HEALTH);
             pBestTarget = static_cast< Player* >(*PlayerIter);
         };
     };

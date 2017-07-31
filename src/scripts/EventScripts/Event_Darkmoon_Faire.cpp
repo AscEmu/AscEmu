@@ -440,7 +440,7 @@ class ProfessorThaddeusPaleo_Gossip : public GossipScript
         GossipMenu* gossipMenu;
         objmgr.CreateGossipMenuForPlayer(&gossipMenu, pObject->GetGUID(), 60016, plr);
 
-        if (pObject->GetUInt32Value(UNIT_NPC_FLAGS) & UNIT_NPC_FLAG_VENDOR)
+        if (pObject->getUInt32Value(UNIT_NPC_FLAGS) & UNIT_NPC_FLAG_VENDOR)
             gossipMenu->AddItem(GOSSIP_ICON_VENDOR, plr->GetSession()->LocalizedGossipOption(GI_BROWS_GOODS), 1);
         
         gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_ME_DARKMOON_CARDS), 2);

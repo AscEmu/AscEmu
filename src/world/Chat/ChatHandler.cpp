@@ -551,11 +551,11 @@ bool ChatHandler::CmdSetValueField(WorldSession* m_session, uint32 field, uint32
             plr->SetHealth(av);
         }
 
-        plr->SetUInt32Value(field, av);
+        plr->setUInt32Value(field, av);
 
         if (fieldmax)
         {
-            plr->SetUInt32Value(fieldmax, mv);
+            plr->setUInt32Value(fieldmax, mv);
         }
     }
     else
@@ -589,11 +589,11 @@ bool ChatHandler::CmdSetValueField(WorldSession* m_session, uint32 field, uint32
                     break;
             }
 
-            cr->SetUInt32Value(field, av);
+            cr->setUInt32Value(field, av);
 
             if (fieldmax)
             {
-                cr->SetUInt32Value(fieldmax, mv);
+                cr->setUInt32Value(fieldmax, mv);
             }
             // reset faction
             if (field == UNIT_FIELD_FACTIONTEMPLATE)
@@ -665,8 +665,8 @@ bool ChatHandler::CmdSetFloatField(WorldSession* m_session, uint32 field, uint32
             BlueSystemMessage(m_session, "You set the %s of %s to %.1f.", fieldname, plr->GetName(), av);
             GreenSystemMessage(plr->GetSession(), "%s set your %s to %.1f.", m_session->GetPlayer()->GetName(), fieldname, av);
         }
-        plr->SetFloatValue(field, av);
-        if (fieldmax) plr->SetFloatValue(fieldmax, mv);
+        plr->setFloatValue(field, av);
+        if (fieldmax) plr->setFloatValue(fieldmax, mv);
     }
     else
     {
@@ -679,11 +679,11 @@ bool ChatHandler::CmdSetFloatField(WorldSession* m_session, uint32 field, uint32
                 BlueSystemMessage(m_session, "Setting %s of %s to %.1f/%.1f.", fieldname, creaturename.c_str(), av, mv);
             else
                 BlueSystemMessage(m_session, "Setting %s of %s to %.1f.", fieldname, creaturename.c_str(), av);
-            cr->SetFloatValue(field, av);
+            cr->setFloatValue(field, av);
             sGMLog.writefromsession(m_session, "used modify field value: [creature]%s, %f on %s", fieldname, av, creaturename.c_str());
             if (fieldmax)
             {
-                cr->SetFloatValue(fieldmax, mv);
+                cr->setFloatValue(fieldmax, mv);
             }
             //cr->SaveToDB();
         }

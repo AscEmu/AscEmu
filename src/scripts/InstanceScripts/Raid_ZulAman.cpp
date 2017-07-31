@@ -210,7 +210,7 @@ class HalazziAI : public MoonScriptBossAI
         {
             mTotemTimer = AddTimer(5000); // Just to make the Timer ID
             SplitCount = 1;
-            MaxHealth = _unit->GetUInt32Value(UNIT_FIELD_MAXHEALTH);
+            MaxHealth = _unit->getUInt32Value(UNIT_FIELD_MAXHEALTH);
             mLynx = NULL;
 
             ParentClass::OnCombatStart(pTarget);
@@ -267,10 +267,10 @@ class HalazziAI : public MoonScriptBossAI
 
         void Split()
         {
-            CurrentHealth = GetUnit()->GetUInt32Value(UNIT_FIELD_HEALTH);
+            CurrentHealth = GetUnit()->getUInt32Value(UNIT_FIELD_HEALTH);
             SetDisplayId(24144);
             _unit->SetHealth(240000);
-            _unit->SetUInt32Value(UNIT_FIELD_MAXHEALTH, 240000);
+            _unit->setUInt32Value(UNIT_FIELD_MAXHEALTH, 240000);
 
             mLynx = GetUnit()->GetMapMgr()->GetInterface()->SpawnCreature(CN_LYNX_SPIRIT, GetUnit()->GetPositionX(), GetUnit()->GetPositionY(), GetUnit()->GetPositionZ(), GetUnit()->GetOrientation(), true, false, 0, 0);
             if (mLynx)
@@ -294,7 +294,7 @@ class HalazziAI : public MoonScriptBossAI
             if (CurrentHealth)
                 _unit->SetHealth(CurrentHealth);
             if (MaxHealth)
-                _unit->SetUInt32Value(UNIT_FIELD_MAXHEALTH, MaxHealth);
+                _unit->setUInt32Value(UNIT_FIELD_MAXHEALTH, MaxHealth);
             SetDisplayId(21632);
 
             SplitCount++;

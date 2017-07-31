@@ -50,7 +50,7 @@ class Quest_The_Ring_of_Blood_The_Final_Challenge : public QuestScript
                     Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 32000);
                 }
 
-                pMogor->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
+                pMogor->setUInt64Value(UNIT_FIELD_FLAGS, 0);
                 pMogor->GetAIInterface()->SetAllowedToEnterCombat(true);
                 pMogor->GetAIInterface()->MoveTo(-704.669f, 7871.08f, 45.0387f);
                 pMogor->SetOrientation(1.59531f);
@@ -274,7 +274,7 @@ class mogorQAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(mogorQAI);
         mogorQAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
         };
 
@@ -320,7 +320,7 @@ class NotOnMyWatch : public CreatureAIScript
                 _unit->GetAIInterface()->WipeHateList();
                 _unit->GetAIInterface()->WipeTargetList();
                 _unit->SetStandState(STANDSTATE_SIT);
-                _unit->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                _unit->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
 
                 _unit->Despawn(180000, 0);
 
