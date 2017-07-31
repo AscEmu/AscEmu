@@ -2570,7 +2570,7 @@ void Creature::HandleMonsterSayEvent(MONSTER_SAY_EVENTS Event)
     }
     else
     {
-        int choice;
+        int choice = 0;
         if (Rand(npcMonsterSay->chance))
         {
             choice = (npcMonsterSay->textCount == 1) ? 0 : RandomUInt(npcMonsterSay->textCount - 1);
