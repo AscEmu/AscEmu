@@ -714,7 +714,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
             c->PetitionSignerCount = PetitionSignerCount;
             memcpy(c->Data, Data, sizeof(Data));
 
-            i->SetUInt32Value(ITEM_FIELD_STACK_COUNT, 1);
+            i->setUInt32Value(ITEM_FIELD_STACK_COUNT, 1);
             i->SoulBind();
             i->SetEnchantmentId(0, c->GetID());
             i->SetItemRandomSuffixFactor(57813883);

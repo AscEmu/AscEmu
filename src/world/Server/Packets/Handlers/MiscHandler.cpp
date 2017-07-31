@@ -645,7 +645,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
     {
         Corpse* pCorpse = objmgr.GetCorpse((uint32)guid);
         if (pCorpse)
-            pCorpse->SetUInt32Value(CORPSE_FIELD_DYNAMIC_FLAGS, 0);
+            pCorpse->setUInt32Value(CORPSE_FIELD_DYNAMIC_FLAGS, 0);
     }
     else if (GET_TYPE_FROM_GUID(guid) == HIGHGUID_TYPE_PLAYER)
     {
@@ -1182,7 +1182,7 @@ void WorldSession::HandleCorpseReclaimOpcode(WorldPacket& recv_data)
     if (pCorpse == NULL)	return;
 
     // Check that we're reviving from a corpse, and that corpse is associated with us.
-    if (GET_LOWGUID_PART(pCorpse->GetOwner()) != _player->GetLowGUID() && pCorpse->GetUInt32Value(CORPSE_FIELD_FLAGS) == 5)
+    if (GET_LOWGUID_PART(pCorpse->GetOwner()) != _player->GetLowGUID() && pCorpse->getUInt32Value(CORPSE_FIELD_FLAGS) == 5)
     {
         WorldPacket data(SMSG_RESURRECT_FAILED, 4);
         data << uint32(1); // this is a real guess!

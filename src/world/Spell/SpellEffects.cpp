@@ -1078,7 +1078,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                 if (p_caster != NULL)
                 {
                     Item* pItem = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-                    ItemProperties const* pItemProto = sMySQLStore.getItemProperties(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
+                    ItemProperties const* pItemProto = sMySQLStore.getItemProperties(p_caster->getUInt32Value(PLAYER_AMMO_ID));
                     uint32 stundmg;
                     float bowdmg;
                     float ammodmg;

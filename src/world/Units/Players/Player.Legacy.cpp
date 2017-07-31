@@ -965,7 +965,7 @@ bool Player::Create(WorldPacket& data)
     SetPowerType(powertype);
 
 #if VERSION_STRING != Cata
-    SetUInt32Value(UNIT_FIELD_BYTES_2, (U_FIELD_BYTES_FLAG_PVP << 8));
+    setUInt32Value(UNIT_FIELD_BYTES_2, (U_FIELD_BYTES_FLAG_PVP << 8));
 #else
     SetByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_PVP);
     SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
@@ -1001,12 +1001,12 @@ bool Player::Create(WorldPacket& data)
     //SetMaxDamage(info->maxdmg);
     SetAttackPower(info->attackpower);
 #if VERSION_STRING != Cata
-    SetUInt32Value(PLAYER_BYTES, ((skin) | (face << 8) | (hairStyle << 16) | (hairColor << 24)));
+    setUInt32Value(PLAYER_BYTES, ((skin) | (face << 8) | (hairStyle << 16) | (hairColor << 24)));
     //PLAYER_BYTES_2                               GM ON/OFF     BANKBAGSLOTS   RESTEDSTATE
-    SetUInt32Value(PLAYER_BYTES_2, (facialHair /*| (0xEE << 8)*/ | (0x02 << 24)));//no bank slot by default!
+    setUInt32Value(PLAYER_BYTES_2, (facialHair /*| (0xEE << 8)*/ | (0x02 << 24)));//no bank slot by default!
 
     //PLAYER_BYTES_3                           DRUNKENSTATE                 PVPRANK
-    SetUInt32Value(PLAYER_BYTES_3, ((gender) | (0x00 << 8) | (0x00 << 16) | (GetPVPRank() << 24)));
+    setUInt32Value(PLAYER_BYTES_3, ((gender) | (0x00 << 8) | (0x00 << 16) | (GetPVPRank() << 24)));
 #else
     // Set Byte Values
     setByteValue(PLAYER_BYTES, 0, skin);
@@ -2081,7 +2081,7 @@ void Player::ActivateSpec(uint8 spec)
         addSpell(talent_info->RankID[itr->second]);
     }
 #if VERSION_STRING != Cata
-    SetUInt32Value(PLAYER_CHARACTER_POINTS1, m_specs[m_talentActiveSpec].GetTP());
+    setUInt32Value(PLAYER_CHARACTER_POINTS1, m_specs[m_talentActiveSpec].GetTP());
 #else
     setUInt32Value(PLAYER_CHARACTER_POINTS, m_specs[m_talentActiveSpec].GetTP());
 #endif
@@ -3671,7 +3671,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         m_specs[SPEC_PRIMARY].SetTP(tp1);
         m_specs[SPEC_SECONDARY].SetTP(tp2);
 #if VERSION_STRING != Cata
-        SetUInt32Value(PLAYER_CHARACTER_POINTS1, m_specs[m_talentActiveSpec].GetTP());
+        setUInt32Value(PLAYER_CHARACTER_POINTS1, m_specs[m_talentActiveSpec].GetTP());
 #else
         setUInt32Value(PLAYER_CHARACTER_POINTS, m_specs[m_talentActiveSpec].GetTP());
 #endif
@@ -8740,7 +8740,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
         SetTaxiPath(NULL);
         UnSetTaxiPos();
         m_taxi_ride_time = 0;
-        SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
+        setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
         setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN));
@@ -8977,13 +8977,13 @@ void Player::SetGuildId(uint32 guildId)
 #if VERSION_STRING != Cata
     if (IsInWorld())
     {
-        const uint32 field = PLAYER_GUILDID;
-        sEventMgr.AddEvent(static_cast<Object*>(this), &Object::SetUInt32Value, field, guildId, EVENT_PLAYER_SEND_PACKET, 1,
+        const uint16 field = PLAYER_GUILDID;
+        sEventMgr.AddEvent(static_cast<Object*>(this), &Object::setUInt32Value, field, guildId, EVENT_PLAYER_SEND_PACKET, 1,
                            1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
     else
     {
-        SetUInt32Value(PLAYER_GUILDID, guildId);
+        setUInt32Value(PLAYER_GUILDID, guildId);
     }
 #else
     if (IsInWorld())
@@ -9406,8 +9406,8 @@ void Player::UpdateHonor()
 #if VERSION_STRING != Classic
     this->setUInt32Value(PLAYER_FIELD_KILLS, uint16(this->m_killsToday) | (this->m_killsYesterday << 16));
 #if VERSION_STRING != Cata
-    this->SetUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, this->m_honorToday);
-    this->SetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION, this->m_honorYesterday);
+    this->setUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, this->m_honorToday);
+    this->setUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION, this->m_honorYesterday);
 #endif
 #endif
     this->setUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, this->m_killsLifetime);
@@ -12042,7 +12042,7 @@ void Player::UpdateGlyphs()
                 continue;
 
             if (glyph_slot->Slot > 0)
-                SetUInt32Value(PLAYER_FIELD_GLYPH_SLOTS_1 + y++, glyph_slot->Id);
+                setUInt32Value(PLAYER_FIELD_GLYPH_SLOTS_1 + y++, glyph_slot->Id);
         }
     }
 
@@ -12050,7 +12050,7 @@ void Player::UpdateGlyphs()
         level = DBC_PLAYER_LEVEL_CAP;
 
     // Enable number of glyphs depending on level
-    SetUInt32Value(PLAYER_GLYPHS_ENABLED, glyphMask[level]);
+    setUInt32Value(PLAYER_GLYPHS_ENABLED, glyphMask[level]);
 }
 #endif
 
@@ -12210,15 +12210,15 @@ void Player::UpdateKnownCurrencies(uint32 itemId, bool apply)
     {
         if (apply)
         {
-            uint64 oldval = GetUInt64Value(PLAYER_FIELD_KNOWN_CURRENCIES);
+            uint64 oldval = getUInt64Value(PLAYER_FIELD_KNOWN_CURRENCIES);
             uint64 newval = oldval | (1LL << (currency_type_entry->bit_index - 1));
-            SetUInt64Value(PLAYER_FIELD_KNOWN_CURRENCIES, newval);
+            setUInt64Value(PLAYER_FIELD_KNOWN_CURRENCIES, newval);
         }
         else
         {
-            uint64 oldval = GetUInt64Value(PLAYER_FIELD_KNOWN_CURRENCIES);
+            uint64 oldval = getUInt64Value(PLAYER_FIELD_KNOWN_CURRENCIES);
             uint64 newval = oldval & ~(1LL << (currency_type_entry->bit_index - 1));
-            SetUInt64Value(PLAYER_FIELD_KNOWN_CURRENCIES, newval);
+            setUInt64Value(PLAYER_FIELD_KNOWN_CURRENCIES, newval);
         }
     }
 #endif

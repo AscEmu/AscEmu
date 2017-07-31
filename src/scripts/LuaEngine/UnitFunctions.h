@@ -5590,7 +5590,7 @@ class LuaUnit
         static_cast<Player*>(ptr)->m_specs[spec].SetTP(points);
 
         if (spec == static_cast<Player*>(ptr)->m_talentActiveSpec)
-            static_cast<Player*>(ptr)->SetUInt32Value(PLAYER_CHARACTER_POINTS1, points);
+            static_cast<Player*>(ptr)->setUInt32Value(PLAYER_CHARACTER_POINTS1, points);
 
         static_cast<Player*>(ptr)->smsg_TalentsInfo(false);
 #endif

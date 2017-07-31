@@ -345,8 +345,8 @@ void WorldSession::HandleInspectHonorStatsOpcode(WorldPacket& recv_data)
 #if VERSION_STRING != Classic
     data << player->getUInt32Value(PLAYER_FIELD_KILLS);
 #if VERSION_STRING != Cata
-    data << player->GetUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION);
-    data << player->GetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION);
+    data << player->getUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION);
+    data << player->getUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION);
 #endif
 #endif
     data << player->getUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS);

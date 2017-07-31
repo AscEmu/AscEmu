@@ -1705,7 +1705,7 @@ public:
             m_specs[0].SetTP(amt);
             m_specs[1].SetTP(amt);
 #if VERSION_STRING != Cata
-            SetUInt32Value(PLAYER_CHARACTER_POINTS1, amt);
+            setUInt32Value(PLAYER_CHARACTER_POINTS1, amt);
 #else
             setUInt32Value(PLAYER_CHARACTER_POINTS, amt);
 #endif
@@ -1717,7 +1717,7 @@ public:
             m_specs[0].SetTP(m_specs[0].GetTP() + amt);
             m_specs[1].SetTP(m_specs[1].GetTP() + amt);
 #if VERSION_STRING != Cata
-            SetUInt32Value(PLAYER_CHARACTER_POINTS1, GetUInt32Value(PLAYER_CHARACTER_POINTS1) + amt);
+            setUInt32Value(PLAYER_CHARACTER_POINTS1, getUInt32Value(PLAYER_CHARACTER_POINTS1) + amt);
 #else
             setUInt32Value(PLAYER_CHARACTER_POINTS, getUInt32Value(PLAYER_CHARACTER_POINTS) + amt);
 #endif
@@ -1728,7 +1728,7 @@ public:
         {
             m_specs[m_talentActiveSpec].SetTP(points);
 #if VERSION_STRING != Cata
-            SetUInt32Value(PLAYER_CHARACTER_POINTS1, points);
+            setUInt32Value(PLAYER_CHARACTER_POINTS1, points);
 #else
             setUInt32Value(PLAYER_CHARACTER_POINTS, points);
 #endif
@@ -1738,7 +1738,7 @@ public:
         uint32 GetCurrentTalentPoints()
         {
 #if VERSION_STRING != Cata
-            uint32 points = GetUInt32Value(PLAYER_CHARACTER_POINTS1);
+            uint32 points = getUInt32Value(PLAYER_CHARACTER_POINTS1);
 #else
             uint32 points = getUInt32Value(PLAYER_CHARACTER_POINTS);
 #endif
@@ -1749,7 +1749,7 @@ public:
         void SetPrimaryProfessionPoints(uint32 amt)
         {
 #if VERSION_STRING != Cata
-            SetUInt32Value(PLAYER_CHARACTER_POINTS2, amt);
+            setUInt32Value(PLAYER_CHARACTER_POINTS2, amt);
 #endif
         }
         void ModPrimaryProfessionPoints(int32 amt)
@@ -1761,7 +1761,7 @@ public:
         uint32 GetPrimaryProfessionPoints()
         {
 #if VERSION_STRING != Cata
-            return GetUInt32Value(PLAYER_CHARACTER_POINTS2);
+            return getUInt32Value(PLAYER_CHARACTER_POINTS2);
 #else
             return 0;
 #endif
@@ -1792,13 +1792,13 @@ public:
         void SetAmmoId(uint32 id)
         {
 #if VERSION_STRING < Cata
-            SetUInt32Value(PLAYER_AMMO_ID, id);
+            setUInt32Value(PLAYER_AMMO_ID, id);
 #endif
         }
         uint32 GetAmmoId()
         {
 #if VERSION_STRING < Cata
-            return GetUInt32Value(PLAYER_AMMO_ID);
+            return getUInt32Value(PLAYER_AMMO_ID);
 #else
             return 0;
 #endif
@@ -1809,7 +1809,7 @@ public:
 #if VERSION_STRING == Cata
 #elif VERSION_STRING == Classic
 #else
-            SetUInt32Value(PLAYER_FIELD_HONOR_CURRENCY, value);
+            setUInt32Value(PLAYER_FIELD_HONOR_CURRENCY, value);
 #endif
         }
         void ModHonorCurrency(uint32 value)
@@ -1827,7 +1827,7 @@ public:
 #elif VERSION_STRING == Classic
             return 0;
 #else
-            return GetUInt32Value(PLAYER_FIELD_HONOR_CURRENCY);
+            return getUInt32Value(PLAYER_FIELD_HONOR_CURRENCY);
 #endif
         }
 
@@ -1840,7 +1840,7 @@ public:
 #if VERSION_STRING == Cata
 #elif VERSION_STRING == Classic
 #else
-            SetUInt32Value(PLAYER_FIELD_ARENA_CURRENCY, value);
+            setUInt32Value(PLAYER_FIELD_ARENA_CURRENCY, value);
 #endif
         }
         void ModArenaCurrency(uint32 value)
@@ -1858,7 +1858,7 @@ public:
 #elif VERSION_STRING == Classic
             return 0;
 #else
-            return GetUInt32Value(PLAYER_FIELD_ARENA_CURRENCY);
+            return getUInt32Value(PLAYER_FIELD_ARENA_CURRENCY);
 #endif
         }
 

@@ -2997,7 +2997,7 @@ void Unit::RegeneratePower(bool isinterrupted)
                 if (!CombatStatus.IsInCombat())
                 {
 #if VERSION_STRING == WotLK
-                    uint32 cur = GetUInt32Value(UNIT_FIELD_POWER7);
+                    uint32 cur = getUInt32Value(UNIT_FIELD_POWER7);
                     SetPower(POWER_TYPE_RUNIC_POWER, cur - 20);
 #endif
                 }

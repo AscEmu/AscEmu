@@ -2052,7 +2052,7 @@ void Spell::SendSpellStart()
         else if (hasAttributeExC(ATTRIBUTESEXC_PLAYER_RANGED_SPELLS))
         {
             if (p_caster != nullptr)
-                ip = sMySQLStore.getItemProperties(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
+                ip = sMySQLStore.getItemProperties(p_caster->getUInt32Value(PLAYER_AMMO_ID));
             else
                 ip = sMySQLStore.getItemProperties(2512);	/*rough arrow*/
         }
@@ -2199,7 +2199,7 @@ void Spell::SendSpellGo()
         {
 #if VERSION_STRING != Cata
             if (p_caster != nullptr)
-                ip = sMySQLStore.getItemProperties(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
+                ip = sMySQLStore.getItemProperties(p_caster->getUInt32Value(PLAYER_AMMO_ID));
             else // HACK FIX
                 ip = sMySQLStore.getItemProperties(2512);	/*rough arrow*/
 #endif
@@ -4779,7 +4779,7 @@ void Spell::RemoveItems()
         if (hasAttributeExB(ATTRIBUTESEXB_REQ_RANGED_WEAPON) || hasAttributeExC(ATTRIBUTESEXC_PLAYER_RANGED_SPELLS))
         {
             if (!p_caster->m_requiresNoAmmo)
-                p_caster->GetItemInterface()->RemoveItemAmt_ProtectPointer(p_caster->GetUInt32Value(PLAYER_AMMO_ID), 1, &i_caster);
+                p_caster->GetItemInterface()->RemoveItemAmt_ProtectPointer(p_caster->getUInt32Value(PLAYER_AMMO_ID), 1, &i_caster);
         }
 #endif
 
