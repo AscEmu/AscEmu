@@ -65,11 +65,7 @@ void Object::setByteValue(uint16_t index, uint8_t offset, uint8_t value)
         m_uint32Values[index] |= uint32_t(uint32_t(value) << (offset * 8));
         m_updateMask.SetBit(index);
 
-        if (IsInWorld() && m_objectUpdated == false)
-        {
-            m_mapMgr->ObjectUpdated(this);
-            m_objectUpdated = true;
-        }
+        updateObject();
     }
 
 }
@@ -97,11 +93,7 @@ void Object::setUInt16Value(uint16_t index, uint8_t offset, uint16_t value)
         m_uint32Values[index] |= uint32_t(uint32_t(value) << (offset * 16));
         m_updateMask.SetBit(index);
 
-        if (IsInWorld() && m_objectUpdated == false)
-        {
-            m_mapMgr->ObjectUpdated(this);
-            m_objectUpdated = true;
-        }
+        updateObject();
     }
 }
 
@@ -121,11 +113,7 @@ void Object::setUInt32Value(uint16_t index, uint32_t value)
         m_uint32Values[index] = value;
         m_updateMask.SetBit(index);
 
-        if (IsInWorld() && m_objectUpdated == false)
-        {
-            m_mapMgr->ObjectUpdated(this);
-            m_objectUpdated = true;
-        }
+        updateObject();
     }
 
 //    // the following is definitely misplaced here!
@@ -188,17 +176,10 @@ void Object::setUInt64Value(uint16_t index, uint64_t value)
     {
         *_value = value;
 
-        if (IsInWorld())
-        {
-            m_updateMask.SetBit(index);
-            m_updateMask.SetBit(index + 1);
+        m_updateMask.SetBit(index);
+        m_updateMask.SetBit(index + 1);
 
-            if (!m_objectUpdated)
-            {
-                m_mapMgr->ObjectUpdated(this);
-                m_objectUpdated = true;
-            }
-        }
+        updateObject();
     }
 }
 
@@ -219,11 +200,7 @@ void Object::setFloatValue(uint16_t index, float value)
     m_floatValues[index] = value;
     m_updateMask.SetBit(index);
 
-    if (IsInWorld() && m_objectUpdated == false)
-    {
-        m_mapMgr->ObjectUpdated(this);
-        m_objectUpdated = true;
-    }
+    updateObject();
 }
 
 float Object::getFloatValue(uint16_t index) const
@@ -232,6 +209,16 @@ float Object::getFloatValue(uint16_t index) const
     return m_floatValues[index];
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Object update
+void Object::updateObject()
+{
+    if (IsInWorld() && m_objectUpdated == false)
+    {
+        m_mapMgr->ObjectUpdated(this);
+        m_objectUpdated = true;
+    }
+}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1903,16 +1890,9 @@ void Object::ModUnsigned32Value(uint32 index, int32 mod)
     if ((int32)m_uint32Values[index] < 0)
         m_uint32Values[index] = 0;
 
-    if (IsInWorld())
-    {
-        m_updateMask.SetBit(index);
+    m_updateMask.SetBit(index);
 
-        if (!m_objectUpdated)
-        {
-            m_mapMgr->ObjectUpdated(this);
-            m_objectUpdated = true;
-        }
-    }
+    updateObject();
 
     if (IsPlayer())
     {
@@ -1956,16 +1936,10 @@ void Object::ModSignedInt32Value(uint32 index, int32 value)
         return;
 
     m_uint32Values[index] += value;
-    if (IsInWorld())
-    {
-        m_updateMask.SetBit(index);
 
-        if (!m_objectUpdated)
-        {
-            m_mapMgr->ObjectUpdated(this);
-            m_objectUpdated = true;
-        }
-    }
+    m_updateMask.SetBit(index);
+
+    updateObject();
 }
 
 void Object::ModFloatValue(const uint32 index, const float value)
@@ -1973,16 +1947,9 @@ void Object::ModFloatValue(const uint32 index, const float value)
     ARCEMU_ASSERT(index < m_valuesCount);
     m_floatValues[index] += value;
 
-    if (IsInWorld())
-    {
-        m_updateMask.SetBit(index);
+    m_updateMask.SetBit(index);
 
-        if (!m_objectUpdated)
-        {
-            m_mapMgr->ObjectUpdated(this);
-            m_objectUpdated = true;
-        }
-    }
+    updateObject();
 }
 
 void Object::ModFloatValueByPCT(const uint32 index, int32 byPct)
@@ -1993,17 +1960,9 @@ void Object::ModFloatValueByPCT(const uint32 index, int32 byPct)
     else
         m_floatValues[index] /= 1.0f - byPct / 100.0f;
 
+    m_updateMask.SetBit(index);
 
-    if (IsInWorld())
-    {
-        m_updateMask.SetBit(index);
-
-        if (!m_objectUpdated)
-        {
-            m_mapMgr->ObjectUpdated(this);
-            m_objectUpdated = true;
-        }
-    }
+    updateObject();
 }
 
 
@@ -2844,16 +2803,9 @@ void Object::SetByteFlag(uint16 index, uint8 offset, uint8 newFlag)
     {
         m_uint32Values[index] |= uint32(uint32(newFlag) << offset);
 
-        if (IsInWorld())
-        {
-            m_updateMask.SetBit(index);
+        m_updateMask.SetBit(index);
 
-            if (!m_objectUpdated)
-            {
-                m_mapMgr->ObjectUpdated(this);
-                m_objectUpdated = true;
-            }
-        }
+        updateObject();
     }
 }
 
@@ -2868,16 +2820,9 @@ void Object::RemoveByteFlag(uint16 index, uint8 offset, uint8 oldFlag)
     {
         m_uint32Values[index] &= ~uint32(uint32(oldFlag) << offset);
 
-        if (IsInWorld())
-        {
-            m_updateMask.SetBit(index);
+        m_updateMask.SetBit(index);
 
-            if (!m_objectUpdated)
-            {
-                m_mapMgr->ObjectUpdated(this);
-                m_objectUpdated = true;
-            }
-        }
+        updateObject();
     }
 }
 

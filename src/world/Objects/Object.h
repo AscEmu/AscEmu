@@ -365,6 +365,10 @@ public:
     float getFloatValue(uint16_t index) const;
 
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Object update
+    void updateObject();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Position functions
     bool isInRange(LocationVector location, float square_r) const;
     bool isInRange(float x, float y, float z, float square_r) const;
