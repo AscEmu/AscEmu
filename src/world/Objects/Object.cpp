@@ -182,17 +182,22 @@ void Object::setUInt64Value(uint16_t index, uint64_t value)
 {
     ARCEMU_ASSERT(index + 1 < m_valuesCount);
 
-    if (*((uint64*)&(m_uint32Values[index])) != value)
-    {
-        m_uint32Values[index] = (uint32_t)(value & UINT64_C(0x00000000FFFFFFFF));
-        m_uint32Values[index + 1] = (uint32_t)(value & UINT64_C(0x00000000FFFFFFFF));
-        m_updateMask.SetBit(index);
-        m_updateMask.SetBit(index + 1);
+    uint64_t* _value = reinterpret_cast<uint64_t*>(&m_uint32Values[index]);
 
-        if (IsInWorld() && m_objectUpdated == false)
+    if (*_value != value)
+    {
+        *_value = value;
+
+        if (IsInWorld())
         {
-            m_mapMgr->ObjectUpdated(this);
-            m_objectUpdated = true;
+            m_updateMask.SetBit(index);
+            m_updateMask.SetBit(index + 1);
+
+            if (!m_objectUpdated)
+            {
+                m_mapMgr->ObjectUpdated(this);
+                m_objectUpdated = true;
+            }
         }
     }
 }
