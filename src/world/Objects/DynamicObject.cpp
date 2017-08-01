@@ -92,7 +92,7 @@ void DynamicObject::Create(Unit* caster, Spell* pSpell, float x, float y, float 
     SetEntry(m_spellProto->Id);
     setFloatValue(OBJECT_FIELD_SCALE_X, 1);
     setUInt64Value(DYNAMICOBJECT_CASTER, caster->GetGUID());
-    SetByteFlag(DYNAMICOBJECT_BYTES, 0, type);
+    setByteFlag(DYNAMICOBJECT_BYTES, 0, type);
     setUInt32Value(DYNAMICOBJECT_SPELLID, m_spellProto->Id);
     setFloatValue(DYNAMICOBJECT_RADIUS, radius);
     setUInt32Value(DYNAMICOBJECT_CASTTIME, getMSTime());

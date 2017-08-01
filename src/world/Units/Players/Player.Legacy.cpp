@@ -967,7 +967,7 @@ bool Player::Create(WorldPacket& data)
 #if VERSION_STRING != Cata
     setUInt32Value(UNIT_FIELD_BYTES_2, (U_FIELD_BYTES_FLAG_PVP << 8));
 #else
-    SetByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_PVP);
+    setByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_PVP);
     SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
     SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_ENABLE_POWER_REGEN);
 #endif
@@ -4114,7 +4114,7 @@ void Player::OnPushToWorld()
 
     // Update PVP Situation
     LoginPvPSetup();
-    RemoveByteFlag(UNIT_FIELD_BYTES_2, 1, 0x28);
+    removeByteFlag(UNIT_FIELD_BYTES_2, 1, 0x28);
 
     if (m_playerInfo->lastOnline + 900 < UNIXTIME)    // did we logged out for more than 15 minutes?
         m_ItemInterface->RemoveAllConjured();
@@ -12266,14 +12266,14 @@ void Player::SendAvailSpells(DBC::Structures::SpellShapeshiftFormEntry const* sh
 
 bool Player::IsPvPFlagged()
 {
-    return HasByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_PVP);
+    return hasByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_PVP);
 }
 
 void Player::SetPvPFlag()
 {
     StopPvPTimer();
 
-    SetByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_PVP);
+    setByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_PVP);
     SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
 
     summonhandler.SetPvPFlags();
@@ -12293,7 +12293,7 @@ void Player::SetPvPFlag()
 void Player::RemovePvPFlag()
 {
     StopPvPTimer();
-    RemoveByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_PVP);
+    removeByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_PVP);
     RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
 
     summonhandler.RemovePvPFlags();
@@ -12308,13 +12308,13 @@ void Player::RemovePvPFlag()
 
 bool Player::IsFFAPvPFlagged()
 {
-    return HasByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_FFA_PVP);
+    return hasByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_FFA_PVP);
 }
 
 void Player::SetFFAPvPFlag()
 {
     StopPvPTimer();
-    SetByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_FFA_PVP);
+    setByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_FFA_PVP);
     SetFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP);
 
     summonhandler.SetFFAPvPFlags();
@@ -12330,7 +12330,7 @@ void Player::SetFFAPvPFlag()
 void Player::RemoveFFAPvPFlag()
 {
     StopPvPTimer();
-    RemoveByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_FFA_PVP);
+    removeByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_FFA_PVP);
     RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP);
 
     summonhandler.RemoveFFAPvPFlags();
@@ -12345,12 +12345,12 @@ void Player::RemoveFFAPvPFlag()
 
 bool Player::IsSanctuaryFlagged()
 {
-    return HasByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_SANCTUARY);
+    return hasByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_SANCTUARY);
 }
 
 void Player::SetSanctuaryFlag()
 {
-    SetByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_SANCTUARY);
+    setByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_SANCTUARY);
 
     summonhandler.SetSanctuaryFlags();
 
@@ -12364,7 +12364,7 @@ void Player::SetSanctuaryFlag()
 
 void Player::RemoveSanctuaryFlag()
 {
-    RemoveByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_SANCTUARY);
+    removeByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_SANCTUARY);
 
     summonhandler.RemoveSanctuaryFlags();
 

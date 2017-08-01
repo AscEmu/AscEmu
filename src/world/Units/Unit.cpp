@@ -164,7 +164,7 @@ void Unit::setMoveHover(bool set_hover)
         {
             AddUnitMovementFlag(MOVEFLAG_HOVER);
 
-            SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
+            setByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
 
             WorldPacket data(SMSG_SPLINE_MOVE_SET_HOVER, 10);
 #if VERSION_STRING != Cata
@@ -178,7 +178,7 @@ void Unit::setMoveHover(bool set_hover)
         {
             RemoveUnitMovementFlag(MOVEFLAG_HOVER);
 
-            RemoveByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
+            removeByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
 
             WorldPacket data(SMSG_SPLINE_MOVE_UNSET_HOVER, 10);
 #if VERSION_STRING != Cata

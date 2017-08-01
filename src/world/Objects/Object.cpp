@@ -77,6 +77,51 @@ uint8_t Object::getByteValue(uint16_t index, uint8_t offset) const
     return *(((uint8_t*)&m_uint32Values[index]) + offset);
 }
 
+void Object::setByteFlag(uint16_t index, uint8_t offset, uint8_t newFlag)
+{
+    ARCEMU_ASSERT(index < m_valuesCount);
+
+    if (offset > 3)
+    {
+        LOG_DEBUG("wrong offset %u", offset);
+        return;
+    }
+
+    if (!(uint8_t(m_uint32Values[index] >> (offset * 8)) & newFlag))
+    {
+        m_uint32Values[index] |= uint32_t(uint32_t(newFlag) << (offset * 8));
+
+        m_updateMask.SetBit(index);
+
+        updateObject();
+    }
+}
+
+void Object::removeByteFlag(uint16_t index, uint8_t offset, uint8_t oldFlag)
+{
+    ARCEMU_ASSERT(index < m_valuesCount);
+
+    if (offset > 3)
+    {
+        LOG_DEBUG("wrong offset %u", offset);
+        return;
+    }
+
+    if (uint8_t(m_uint32Values[index] >> (offset * 8)) & oldFlag)
+    {
+        m_uint32Values[index] &= ~uint32_t(uint32_t(oldFlag) << (offset * 8));
+
+        m_updateMask.SetBit(index);
+
+        updateObject();
+    }
+}
+
+bool Object::hasByteFlag(uint16_t index, uint8_t offset, uint8_t flag)
+{
+    return ((getByteValue(index, offset) & flag) != 0);
+}
+
 void Object::setUInt16Value(uint16_t index, uint8_t offset, uint16_t value)
 {
     ARCEMU_ASSERT(index < m_valuesCount);
@@ -116,48 +161,50 @@ void Object::setUInt32Value(uint16_t index, uint32_t value)
         updateObject();
     }
 
-//    // the following is definitely misplaced here!
-//    if (IsUnit())
-//    {
-//        static_cast<Unit*>(this)->HandleUpdateFieldChange(index);
-//    }
-//
-//    // Group update handling
-//    if (IsPlayer())
-//    {
-//        static_cast<Player*>(this)->HandleUpdateFieldChanged(index);
-//
-//        switch (index)
-//        {
-//            case UNIT_FIELD_POWER1:
-//            case UNIT_FIELD_POWER2:
-//            case UNIT_FIELD_POWER4:
-//#if VERSION_STRING == WotLK
-//            case UNIT_FIELD_POWER7:
-//#endif
-//                static_cast<Unit*>(this)->SendPowerUpdate(true);
-//                break;
-//            default:
-//                break;
-//        }
-//    }
-//    else if (IsCreature())
-//    {
-//        switch (index)
-//        {
-//            case UNIT_FIELD_POWER1:
-//            case UNIT_FIELD_POWER2:
-//            case UNIT_FIELD_POWER3:
-//            case UNIT_FIELD_POWER4:
-//#if VERSION_STRING == WotLK
-//            case UNIT_FIELD_POWER7:
-//#endif
-//                static_cast<Creature*>(this)->SendPowerUpdate(false);
-//                break;
-//            default:
-//                break;
-//        }
-//    }
+    if (IsUnit())
+    {
+        static_cast<Unit*>(this)->HandleUpdateFieldChange(index);
+    }
+
+    if (IsPlayer())
+    {
+        static_cast<Player*>(this)->HandleUpdateFieldChanged(index);
+    }
+
+    // Group update handling
+    if (IsPlayer())
+    {
+        switch (index)
+        {
+            case UNIT_FIELD_POWER1:
+            case UNIT_FIELD_POWER2:
+            case UNIT_FIELD_POWER4:
+#if VERSION_STRING == WotLK
+            case UNIT_FIELD_POWER7:
+#endif
+                static_cast<Unit*>(this)->SendPowerUpdate(true);
+                break;
+            default:
+                break;
+        }
+    }
+    else if (IsCreature())
+    {
+        switch (index)
+        {
+            case UNIT_FIELD_POWER1:
+            case UNIT_FIELD_POWER2:
+            case UNIT_FIELD_POWER3:
+            case UNIT_FIELD_POWER4:
+#if VERSION_STRING == WotLK
+            case UNIT_FIELD_POWER7:
+#endif
+                static_cast<Creature*>(this)->SendPowerUpdate(false);
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 uint32_t Object::getUInt32Value(uint16_t index) const
@@ -2790,40 +2837,6 @@ void Object::Deactivate(MapMgr* mgr)
             break;
     }
     Active = false;
-}
-
-void Object::SetByteFlag(uint16 index, uint8 offset, uint8 newFlag)
-{
-    ARCEMU_ASSERT(index < m_valuesCount);
-    ARCEMU_ASSERT(offset < 4);
-
-    offset <<= 3;
-
-    if (!(uint8(m_uint32Values[index] >> offset) & newFlag))
-    {
-        m_uint32Values[index] |= uint32(uint32(newFlag) << offset);
-
-        m_updateMask.SetBit(index);
-
-        updateObject();
-    }
-}
-
-void Object::RemoveByteFlag(uint16 index, uint8 offset, uint8 oldFlag)
-{
-    ARCEMU_ASSERT(index < m_valuesCount);
-    ARCEMU_ASSERT(offset < 4);
-
-    offset <<= 3;
-
-    if (uint8(m_uint32Values[index] >> offset) & oldFlag)
-    {
-        m_uint32Values[index] &= ~uint32(uint32(oldFlag) << offset);
-
-        m_updateMask.SetBit(index);
-
-        updateObject();
-    }
 }
 
 void Object::SetZoneId(uint32 newZone)

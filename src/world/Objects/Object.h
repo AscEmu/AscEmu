@@ -352,6 +352,11 @@ public:
     void setByteValue(uint16_t index, uint8_t offset, uint8_t value);
     uint8_t getByteValue(uint16_t index, uint8_t offset) const;
 
+    void setByteFlag(uint16_t index, uint8_t offset, uint8_t newFlag);
+    void removeByteFlag(uint16_t index, uint8_t offset, uint8_t oldFlag);
+
+    bool hasByteFlag(uint16_t index, uint8_t offset, uint8_t flag);
+
     void setUInt16Value(uint16_t index, uint8_t offset, uint16_t value);
     uint16_t getUInt16Value(uint16_t index, uint8_t offset) const;
 
@@ -562,14 +567,6 @@ public:
         void ModSignedInt32Value(uint32 index, int32 value);
         void ModUnsigned32Value(uint32 index, int32 mod);
         uint32 GetModPUInt32Value(const uint32 index, const int32 value);
-
-        void SetByteFlag(uint16 index, uint8 offset, uint8 newFlag);
-        void RemoveByteFlag(uint16 index, uint8 offset, uint8 newFlag);
-
-        bool HasByteFlag(uint32 index, uint32 index1, uint8 flag)
-        {
-            return ((getByteValue(index, index1) & flag) != 0);
-        }
 
         void SetNewGuid(uint32 Guid)
         {
