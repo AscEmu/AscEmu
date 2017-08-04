@@ -2414,13 +2414,17 @@ void ObjectMgr::LoadCreatureWaypoints()
         return;
 
     uint32_t waypointCount = 0;
+#ifdef EXTENDED_DB_CHECKS
     uint32_t cachedSpawnId = 0;
     bool isValidSpawn = true;
+#endif
     do
     {
         Field* fields = result->Fetch();
         uint32_t spawnid = fields[0].GetUInt32();
 
+        // expensive check
+#ifdef EXTENDED_DB_CHECKS
         if (cachedSpawnId != spawnid)
         {
             cachedSpawnId = spawnid;
@@ -2442,6 +2446,7 @@ void ObjectMgr::LoadCreatureWaypoints()
                 continue;
             }
         }
+#endif
 
         Movement::WayPoint* wp = new Movement::WayPoint;
         wp->id = fields[1].GetUInt32();
