@@ -907,6 +907,9 @@ void World::loadMySQLStores()
     sMySQLStore.loadNpcMonstersayTable();
     //sMySQLStore.loadDefaultPetSpellsTable();      Zyres 2017/07/16 not used
     sMySQLStore.loadProfessionDiscoveriesTable();
+
+    sMySQLStore.loadTransportCreaturesTable();
+    sMySQLStore.loadTransportDataTable();
 }
 
 void World::loadMySQLTablesByTask(uint32_t start_time)

@@ -3828,3 +3828,91 @@ void MySQLDataStore::loadProfessionDiscoveriesTable()
         LogDetail("MySQLDataLoads : Loaded %u rows from `professiondiscoveries` table in %u ms!", load_count, getMSTime() - start_time);
     }
 }
+
+void MySQLDataStore::loadTransportCreaturesTable()
+{
+    uint32_t start_time = getMSTime();
+    //                                                  0       1              2              3            4              5            6          7
+    QueryResult* result = WorldDatabase.Query("SELECT guid, npc_entry, transport_entry, TransOffsetX, TransOffsetY, TransOffsetZ, TransOffsetO, emote FROM transport_creatures");
+    if (result == nullptr)
+    {
+        LogNotice("MySQLDataLoads : Table `transport_creatures` is empty!");
+        return;
+    }
+
+    LogNotice("MySQLDataLoads : Table `transport_creatures` has %u columns", result->GetFieldCount());
+
+    if (result != nullptr)
+    {
+        uint32_t load_count = 0;
+        do
+        {
+            Field* fields = result->Fetch();
+            MySQLStructure::TransportCreatures& transportCreature = _transportCreaturesStore[load_count];
+            transportCreature.guid = fields[0].GetUInt32();
+            transportCreature.entry = fields[1].GetUInt32();
+            transportCreature.transportEntry = fields[2].GetUInt32();
+            transportCreature.transportOffsetX = fields[3].GetFloat();
+            transportCreature.transportOffsetY = fields[4].GetFloat();
+            transportCreature.transportOffsetZ = fields[5].GetFloat();
+            transportCreature.transportOffsetO = fields[6].GetFloat();
+            transportCreature.animation = fields[7].GetUInt32();
+
+            ++load_count;
+
+        } while (result->NextRow());
+
+        delete result;
+
+        LogDetail("MySQLDataLoads : Loaded %u rows from `transport_creatures` table in %u ms!", load_count, getMSTime() - start_time);
+    }
+}
+
+void MySQLDataStore::loadTransportDataTable()
+{
+    uint32_t start_time = getMSTime();
+    //                                                  0      1     2
+    QueryResult* result = WorldDatabase.Query("SELECT entry, name, period FROM transport_data");
+    if (result == nullptr)
+    {
+        LogNotice("MySQLDataLoads : Table `transport_data` is empty!");
+        return;
+    }
+
+    LogNotice("MySQLDataLoads : Table `transport_data` has %u columns", result->GetFieldCount());
+
+    if (result != nullptr)
+    {
+        uint32_t load_count = 0;
+        do
+        {
+            Field* fields = result->Fetch();
+            uint32_t entry = fields[0].GetUInt32();
+
+            GameObjectProperties const* gameobject_info = sMySQLStore.getGameObjectProperties(entry);
+            if (gameobject_info == nullptr)
+            {
+                LOG_ERROR("Transport entry: %u, will not be loaded, gameobject_properties missing", entry);
+                continue;
+            }
+
+            if (gameobject_info->type != GAMEOBJECT_TYPE_MO_TRANSPORT)
+            {
+                LOG_ERROR("Transport entry: %u, will not be loaded, gameobject_properties type wrong", entry);
+                continue;
+            }
+
+            MySQLStructure::TransportData& transportData = _transportDataStore[entry];
+            transportData.entry = entry;
+            transportData.name = fields[1].GetString();
+            transportData.period = fields[2].GetUInt32();
+
+            ++load_count;
+
+        } while (result->NextRow());
+
+        delete result;
+
+        LogDetail("MySQLDataLoads : Loaded %u rows from `transport_data` table in %u ms!", load_count, getMSTime() - start_time);
+    }
+}

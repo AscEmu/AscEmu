@@ -127,114 +127,66 @@ void ObjectMgr::UnloadTransportFromInstance(Transporter *t)
 
 void ObjectMgr::LoadTransports()
 {
-    LogNotice("TransportHandler : Starting loading transport data...");
+    LogNotice("TransportHandler : Start creating transports...");
     {
-        QueryResult* result = WorldDatabase.Query("SELECT entry, name, period FROM transport_data");
+        uint32_t createCount = 0;
 
-        if (!result)
+        for (auto it : sMySQLStore._transportDataStore)
         {
-            LOG_ERROR("Loaded 0 transports. DB table `transport_data` is empty!");
-            return;
-        }
-
-        uint32 pCount = 0;
-        do
-        {
-            Field* fields = result->Fetch();
-            uint32 entry = fields[0].GetUInt32();
-            std::string name = fields[1].GetString();
-            uint32 period = fields[2].GetUInt32();
-
-            auto gameobject_info = sMySQLStore.getGameObjectProperties(entry);
-            if (gameobject_info == nullptr)
-            {
-                LOG_ERROR("Transport ID:%u, Name: %s, will not be loaded, gameobject_properties missing", entry, name.c_str());
-                continue;
-            }
-
-            if (gameobject_info->type != GAMEOBJECT_TYPE_MO_TRANSPORT)
-            {
-                LOG_ERROR("Transport ID:%u, Name: %s, will not be loaded, gameobject_properties type wrong", entry, name.c_str());
-                continue;
-            }
+            GameObjectProperties const* gameobject_info = sMySQLStore.getGameObjectProperties(it.first);
 
             std::set<uint32> mapsUsed;
 
-            Transporter* pTransporter = new Transporter((uint64)HIGHGUID_TYPE_TRANSPORTER << 32 | entry);
+            Transporter* pTransporter = new Transporter((uint64)HIGHGUID_TYPE_TRANSPORTER << 32 | it.first);
 
-            // Generate waypoints
-            if (!pTransporter->GenerateWaypoints(gameobject_info->mo_transport.taxi_path_id))
+            if (pTransporter->GenerateWaypoints(gameobject_info->mo_transport.taxi_path_id) == false)
             {
-                LOG_ERROR("Transport ID:%u, Name: %s, failed to create waypoints", entry, name.c_str());
+                LOG_ERROR("Transport entry: %u, failed to create waypoints", it.first);
                 delete pTransporter;
                 continue;
             }
 
-            if (!pTransporter->Create(entry, period))
+            if (pTransporter->Create(it.first, it.second.period) == false)
             {
                 delete pTransporter;
                 continue;
             }
 
-            // AddObject To World
             pTransporter->AddToWorld();
 
             m_Transporters.insert(pTransporter);
             AddTransport(pTransporter);
 
             for (std::set<uint32>::const_iterator i = mapsUsed.begin(); i != mapsUsed.end(); ++i)
+            {
                 m_TransportersByMap[*i].insert(pTransporter);
+            }
 
-            ++pCount;
-        } while (result->NextRow());
-
-        delete result;
-
-        LogDetail("Transporter Handler : Loaded %u transports", pCount);
-    }
-    LogNotice("TransportHandler : Starting loading transport creatures...");
-    {
-        QueryResult* result = WorldDatabase.Query("SELECT guid, npc_entry, transport_entry, TransOffsetX, TransOffsetY, TransOffsetZ, TransOffsetO, emote FROM transport_creatures");
-
-        if (!result)
-        {
-            LOG_ERROR("Loaded 0 transport NPCs. DB table `transport_creatures` is empty!");
-            return;
+            ++createCount;
         }
 
-        uint32 pCount = 0;
-        do
-        {
-            Field* fields = result->Fetch();
-            uint32 guid = fields[0].GetInt32();
-            uint32 entry = fields[1].GetInt32();
-            uint32 transportEntry = fields[2].GetInt32();
-            float tX = fields[3].GetFloat();
-            float tY = fields[4].GetFloat();
-            float tZ = fields[5].GetFloat();
-            float tO = fields[6].GetFloat();
-            uint32 anim = fields[7].GetInt32();
+        LogDetail("Transporter Handler : Created %u transports", createCount);
+    }
 
+    LogNotice("TransportHandler : Start populating transports with creatures...");
+    {
+        for (auto it : sMySQLStore._transportCreaturesStore)
+        {
             for (ObjectMgr::TransporterSet::iterator itr = m_Transporters.begin(); itr != m_Transporters.end(); ++itr)
             {
-                if ((*itr)->GetEntry() == transportEntry)
+                if ((*itr)->GetEntry() == it.second.transportEntry)
                 {
-                    TransportSpawn spawn{ guid, entry, transportEntry, tX, tY, tZ, tO, anim };
+                    TransportSpawn spawn{ it.second.guid, it.second.entry, it.second.transportEntry, it.second.transportOffsetX, it.second.transportOffsetY, it.second.transportOffsetZ, it.second.transportOffsetO, it.second.animation };
                     (*itr)->AddCreature(spawn);
                     break;
                 }
             }
-
-            ++pCount;
-        } while (result->NextRow());
-        delete result;
+        }
 
         for (auto transport : m_Transporters)
         {
             transport->RespawnCreaturePassengers();
         }
-
-        LogDetail("Transport Handler : Loaded %u Transport Npcs", pCount);
     }
 }
 

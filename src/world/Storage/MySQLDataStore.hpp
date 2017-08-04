@@ -93,6 +93,9 @@ public:
 
     typedef std::set<MySQLStructure::ProfessionDiscovery*> ProfessionDiscoverySet;
 
+    typedef std::unordered_map<uint32_t, MySQLStructure::TransportCreatures> TransportCreaturesContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::TransportData> TransportDataContainer;
+
     //helper
     MySQLStructure::ItemPage const* getItemPage(uint32_t entry);
     ItemPageContainer const* getItemPagesStore() { return &_itemPagesStore; }
@@ -193,6 +196,8 @@ public:
 
     MySQLStructure::NpcMonsterSay* getMonstersayEventForCreature(uint32_t entry, MONSTER_SAY_EVENTS Event);
     //std::set<SpellInfo*>* getDefaultPetSpellsByEntry(uint32_t entry);     Zyres 2017/07/16 not used
+
+    TransportCreaturesContainer* getTransportCreaturesStore() { return &_transportCreaturesStore; }
     
 
     bool isCharacterNameAllowed(std::string charName);
@@ -277,6 +282,9 @@ public:
 
     void loadProfessionDiscoveriesTable();
 
+    void loadTransportCreaturesTable();
+    void loadTransportDataTable();
+
 
     ItemPageContainer _itemPagesStore;
     ItemPropertiesContainer _itemPropertiesStore;
@@ -342,6 +350,9 @@ public:
     //PetDefaultSpellsMap _defaultPetSpellsStore;   Zyres 2017/07/16 not used
 
     ProfessionDiscoverySet _professionDiscoveryStore;
+
+    TransportCreaturesContainer _transportCreaturesStore;
+    TransportDataContainer _transportDataStore;
 };
 
 #define sMySQLStore MySQLDataStore::getSingleton()

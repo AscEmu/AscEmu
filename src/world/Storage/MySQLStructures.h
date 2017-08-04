@@ -446,7 +446,25 @@ namespace MySQLStructure
     //trainer_spells
 
     //transport_creatures
+    struct TransportCreatures
+    {
+        uint32_t guid;
+        uint32_t entry;
+        uint32_t transportEntry;
+        float transportOffsetX;
+        float transportOffsetY;
+        float transportOffsetZ;
+        float transportOffsetO;
+        uint32_t animation;
+    };
+
     //transport_data
+    struct TransportData
+    {
+        uint32_t entry;
+        std::string name;
+        uint32_t period;
+    };
 
     //vehicle_accessories
 
