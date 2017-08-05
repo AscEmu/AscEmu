@@ -292,15 +292,15 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
         }
         else
         {
-            m_pOwner->SetUInt32Value(VisibleBase, item->GetUInt32Value(OBJECT_FIELD_ENTRY));
-            m_pOwner->SetUInt32Value(VisibleBase + 1, item->GetUInt32Value(ITEM_FIELD_ENCHANTMENT));
-            m_pOwner->SetUInt32Value(VisibleBase + 2, item->GetUInt32Value(ITEM_FIELD_ENCHANTMENT + 3));
-            m_pOwner->SetUInt32Value(VisibleBase + 3, item->GetUInt32Value(ITEM_FIELD_ENCHANTMENT + 6));
-            m_pOwner->SetUInt32Value(VisibleBase + 4, item->GetUInt32Value(ITEM_FIELD_ENCHANTMENT + 9));
-            m_pOwner->SetUInt32Value(VisibleBase + 5, item->GetUInt32Value(ITEM_FIELD_ENCHANTMENT + 12));
-            m_pOwner->SetUInt32Value(VisibleBase + 6, item->GetUInt32Value(ITEM_FIELD_ENCHANTMENT + 15));
-            m_pOwner->SetUInt32Value(VisibleBase + 7, item->GetUInt32Value(ITEM_FIELD_ENCHANTMENT + 18));
-            m_pOwner->SetUInt32Value(VisibleBase + 8, item->GetUInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID));
+            m_pOwner->setUInt32Value(VisibleBase, item->getUInt32Value(OBJECT_FIELD_ENTRY));
+            m_pOwner->setUInt32Value(VisibleBase + 1, item->getUInt32Value(ITEM_FIELD_ENCHANTMENT));
+            m_pOwner->setUInt32Value(VisibleBase + 2, item->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 3));
+            m_pOwner->setUInt32Value(VisibleBase + 3, item->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 6));
+            m_pOwner->setUInt32Value(VisibleBase + 4, item->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 9));
+            m_pOwner->setUInt32Value(VisibleBase + 5, item->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 12));
+            m_pOwner->setUInt32Value(VisibleBase + 6, item->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 15));
+            m_pOwner->setUInt32Value(VisibleBase + 7, item->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 18));
+            m_pOwner->setUInt32Value(VisibleBase + 8, item->getUInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID));
         }
     }
 #endif
@@ -3157,15 +3157,15 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             if (srcslot < EQUIPMENT_SLOT_END)
             {
                 int VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + (srcslot * 16);
-                m_pOwner->SetUInt32Value(VisibleBase, m_pItems[(int)srcslot]->GetEntry());
-                m_pOwner->SetUInt32Value(VisibleBase + 1, m_pItems[(int)srcslot]->GetUInt32Value(ITEM_FIELD_ENCHANTMENT));
-                m_pOwner->SetUInt32Value(VisibleBase + 2, m_pItems[(int)srcslot]->GetUInt32Value(ITEM_FIELD_ENCHANTMENT + 3));
-                m_pOwner->SetUInt32Value(VisibleBase + 3, m_pItems[(int)srcslot]->GetUInt32Value(ITEM_FIELD_ENCHANTMENT + 6));
-                m_pOwner->SetUInt32Value(VisibleBase + 4, m_pItems[(int)srcslot]->GetUInt32Value(ITEM_FIELD_ENCHANTMENT + 9));
-                m_pOwner->SetUInt32Value(VisibleBase + 5, m_pItems[(int)srcslot]->GetUInt32Value(ITEM_FIELD_ENCHANTMENT + 12));
-                m_pOwner->SetUInt32Value(VisibleBase + 6, m_pItems[(int)srcslot]->GetUInt32Value(ITEM_FIELD_ENCHANTMENT + 15));
-                m_pOwner->SetUInt32Value(VisibleBase + 7, m_pItems[(int)srcslot]->GetUInt32Value(ITEM_FIELD_ENCHANTMENT + 18));
-                m_pOwner->SetUInt32Value(VisibleBase + 8, m_pItems[(int)srcslot]->GetUInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID));
+                m_pOwner->setUInt32Value(VisibleBase, m_pItems[(int)srcslot]->GetEntry());
+                m_pOwner->setUInt32Value(VisibleBase + 1, m_pItems[(int)srcslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT));
+                m_pOwner->setUInt32Value(VisibleBase + 2, m_pItems[(int)srcslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 3));
+                m_pOwner->setUInt32Value(VisibleBase + 3, m_pItems[(int)srcslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 6));
+                m_pOwner->setUInt32Value(VisibleBase + 4, m_pItems[(int)srcslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 9));
+                m_pOwner->setUInt32Value(VisibleBase + 5, m_pItems[(int)srcslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 12));
+                m_pOwner->setUInt32Value(VisibleBase + 6, m_pItems[(int)srcslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 15));
+                m_pOwner->setUInt32Value(VisibleBase + 7, m_pItems[(int)srcslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 18));
+                m_pOwner->setUInt32Value(VisibleBase + 8, m_pItems[(int)srcslot]->getUInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID));
             }
 
             // handle bind on equip
@@ -3178,15 +3178,15 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             if (srcslot < EQUIPMENT_SLOT_END)
             {
                 int VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + (srcslot * 16);
-                m_pOwner->SetUInt32Value(VisibleBase, 0);
-                m_pOwner->SetUInt32Value(VisibleBase + 1, 0);
-                m_pOwner->SetUInt32Value(VisibleBase + 2, 0);
-                m_pOwner->SetUInt32Value(VisibleBase + 3, 0);
-                m_pOwner->SetUInt32Value(VisibleBase + 4, 0);
-                m_pOwner->SetUInt32Value(VisibleBase + 5, 0);
-                m_pOwner->SetUInt32Value(VisibleBase + 6, 0);
-                m_pOwner->SetUInt32Value(VisibleBase + 7, 0);
-                m_pOwner->SetUInt32Value(VisibleBase + 8, 0);
+                m_pOwner->setUInt32Value(VisibleBase, 0);
+                m_pOwner->setUInt32Value(VisibleBase + 1, 0);
+                m_pOwner->setUInt32Value(VisibleBase + 2, 0);
+                m_pOwner->setUInt32Value(VisibleBase + 3, 0);
+                m_pOwner->setUInt32Value(VisibleBase + 4, 0);
+                m_pOwner->setUInt32Value(VisibleBase + 5, 0);
+                m_pOwner->setUInt32Value(VisibleBase + 6, 0);
+                m_pOwner->setUInt32Value(VisibleBase + 7, 0);
+                m_pOwner->setUInt32Value(VisibleBase + 8, 0);
             }
         }
     }
@@ -3238,15 +3238,15 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             if (dstslot < EQUIPMENT_SLOT_END)
             {
                 int VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + (dstslot * 16);
-                m_pOwner->SetUInt32Value(VisibleBase, m_pItems[(int)dstslot]->GetEntry());
-                m_pOwner->SetUInt32Value(VisibleBase + 1, m_pItems[(int)dstslot]->GetUInt32Value(ITEM_FIELD_ENCHANTMENT));
-                m_pOwner->SetUInt32Value(VisibleBase + 2, m_pItems[(int)dstslot]->GetUInt32Value(ITEM_FIELD_ENCHANTMENT + 3));
-                m_pOwner->SetUInt32Value(VisibleBase + 3, m_pItems[(int)dstslot]->GetUInt32Value(ITEM_FIELD_ENCHANTMENT + 6));
-                m_pOwner->SetUInt32Value(VisibleBase + 4, m_pItems[(int)dstslot]->GetUInt32Value(ITEM_FIELD_ENCHANTMENT + 9));
-                m_pOwner->SetUInt32Value(VisibleBase + 5, m_pItems[(int)dstslot]->GetUInt32Value(ITEM_FIELD_ENCHANTMENT + 12));
-                m_pOwner->SetUInt32Value(VisibleBase + 6, m_pItems[(int)dstslot]->GetUInt32Value(ITEM_FIELD_ENCHANTMENT + 15));
-                m_pOwner->SetUInt32Value(VisibleBase + 7, m_pItems[(int)dstslot]->GetUInt32Value(ITEM_FIELD_ENCHANTMENT + 18));
-                m_pOwner->SetUInt32Value(VisibleBase + 8, m_pItems[(int)dstslot]->GetUInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID));
+                m_pOwner->setUInt32Value(VisibleBase, m_pItems[(int)dstslot]->GetEntry());
+                m_pOwner->setUInt32Value(VisibleBase + 1, m_pItems[(int)dstslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT));
+                m_pOwner->setUInt32Value(VisibleBase + 2, m_pItems[(int)dstslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 3));
+                m_pOwner->setUInt32Value(VisibleBase + 3, m_pItems[(int)dstslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 6));
+                m_pOwner->setUInt32Value(VisibleBase + 4, m_pItems[(int)dstslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 9));
+                m_pOwner->setUInt32Value(VisibleBase + 5, m_pItems[(int)dstslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 12));
+                m_pOwner->setUInt32Value(VisibleBase + 6, m_pItems[(int)dstslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 15));
+                m_pOwner->setUInt32Value(VisibleBase + 7, m_pItems[(int)dstslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 18));
+                m_pOwner->setUInt32Value(VisibleBase + 8, m_pItems[(int)dstslot]->getUInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID));
             }
 
             // handle bind on equip
@@ -3261,15 +3261,15 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             if (dstslot < EQUIPMENT_SLOT_END)
             {
                 int VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + (dstslot * 16);
-                m_pOwner->SetUInt32Value(VisibleBase, 0);
-                m_pOwner->SetUInt32Value(VisibleBase + 1, 0);
-                m_pOwner->SetUInt32Value(VisibleBase + 2, 0);
-                m_pOwner->SetUInt32Value(VisibleBase + 3, 0);
-                m_pOwner->SetUInt32Value(VisibleBase + 4, 0);
-                m_pOwner->SetUInt32Value(VisibleBase + 5, 0);
-                m_pOwner->SetUInt32Value(VisibleBase + 6, 0);
-                m_pOwner->SetUInt32Value(VisibleBase + 7, 0);
-                m_pOwner->SetUInt32Value(VisibleBase + 8, 0);
+                m_pOwner->setUInt32Value(VisibleBase, 0);
+                m_pOwner->setUInt32Value(VisibleBase + 1, 0);
+                m_pOwner->setUInt32Value(VisibleBase + 2, 0);
+                m_pOwner->setUInt32Value(VisibleBase + 3, 0);
+                m_pOwner->setUInt32Value(VisibleBase + 4, 0);
+                m_pOwner->setUInt32Value(VisibleBase + 5, 0);
+                m_pOwner->setUInt32Value(VisibleBase + 6, 0);
+                m_pOwner->setUInt32Value(VisibleBase + 7, 0);
+                m_pOwner->setUInt32Value(VisibleBase + 8, 0);
             }
         }
     }

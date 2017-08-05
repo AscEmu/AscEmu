@@ -757,7 +757,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
     uint32 ItemSlot = m_owner->GetItemInterface()->GetInventorySlotByGuid(GetGUID()) * 16;
     uint32 VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + ItemSlot;
     if (VisibleBase <= PLAYER_VISIBLE_ITEM_19_PAD)
-        m_owner->SetUInt32Value(VisibleBase + 1 + Slot, Apply ? Entry->Id : 0);
+        m_owner->setUInt32Value(VisibleBase + 1 + Slot, Apply ? Entry->Id : 0);
     else
         LOG_ERROR("Item::ApplyEnchantmentBonus visual out of range! Tried to address UInt32 field %i !!!", VisibleBase);
 #endif

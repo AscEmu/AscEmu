@@ -46,7 +46,7 @@ const static ItemProf prof[22] =
     {2, 262144}, {2, 524288}, {2, 1048576}
 };
 
-const static uint32 arm_skills[7] = 
+const static uint32 arm_skills[7] =
 {
     0,
     SKILL_CLOTH,
@@ -94,7 +94,7 @@ const static float pricemod[9] =
     0.80f        // EXHALTED
 };
 
-const static double SuffixMods[NUM_INVENTORY_TYPES] = 
+const static double SuffixMods[NUM_INVENTORY_TYPES] =
 {
     0.0,
     0.46,        // HEAD
@@ -271,14 +271,14 @@ class SERVER_DECL Item : public Object
         void SetDurabilityToMax() { setUInt32Value(ITEM_FIELD_DURABILITY, getUInt32Value(ITEM_FIELD_MAXDURABILITY)); }
 
 #if VERSION_STRING < WotLK
-        uint32 GetEnchantmentId(uint32 index) { return GetUInt32Value(ITEM_FIELD_ENCHANTMENT + 3 * index); }
-        void SetEnchantmentId(uint32 index, uint32 value) { SetUInt32Value(ITEM_FIELD_ENCHANTMENT + 3 * index, value); }
+        uint32 GetEnchantmentId(uint32 index) { return getUInt32Value(ITEM_FIELD_ENCHANTMENT + 3 * index); }
+        void SetEnchantmentId(uint32 index, uint32 value) { setUInt32Value(ITEM_FIELD_ENCHANTMENT + 3 * index, value); }
 
-        uint32 GetEnchantmentDuration(uint32 index) { return GetUInt32Value(ITEM_FIELD_ENCHANTMENT + 1 + 3 * index); }
-        void SetEnchantmentDuration(uint32 index, uint32 value) { SetUInt32Value(ITEM_FIELD_ENCHANTMENT + 1 + 3 * index, value); }
+        uint32 GetEnchantmentDuration(uint32 index) { return getUInt32Value(ITEM_FIELD_ENCHANTMENT + 1 + 3 * index); }
+        void SetEnchantmentDuration(uint32 index, uint32 value) { setUInt32Value(ITEM_FIELD_ENCHANTMENT + 1 + 3 * index, value); }
 
-        uint32 GetEnchantmentCharges(uint32 index) { return GetUInt32Value(ITEM_FIELD_ENCHANTMENT + 2 + 3 * index); }
-        void SetEnchantmentCharges(uint32 index, uint32 value) { SetUInt32Value(ITEM_FIELD_ENCHANTMENT + 2 + 3 * index, value); }
+        uint32 GetEnchantmentCharges(uint32 index) { return getUInt32Value(ITEM_FIELD_ENCHANTMENT + 2 + 3 * index); }
+        void SetEnchantmentCharges(uint32 index, uint32 value) { setUInt32Value(ITEM_FIELD_ENCHANTMENT + 2 + 3 * index, value); }
 #else
         uint32 GetEnchantmentId(uint32 index) { return getUInt32Value(ITEM_FIELD_ENCHANTMENT_1_1 + 3 * index); }
         void SetEnchantmentId(uint32 index, uint32 value) { setUInt32Value(ITEM_FIELD_ENCHANTMENT_1_1 + 3 * index, value); }

@@ -441,17 +441,17 @@ class SERVER_DECL GameObject : public Object
         MapCell* m_respawnCell;
 
 #if VERSION_STRING < WotLK
-        void SetState(uint8 state) { SetUInt32Value(GAMEOBJECT_STATE, state); }
-        uint8 GetState() { return GetUInt32Value(GAMEOBJECT_STATE); }
+        void SetState(uint8 state) { setUInt32Value(GAMEOBJECT_STATE, state); }
+        uint8 GetState() { return getUInt32Value(GAMEOBJECT_STATE); }
 
-        void SetType(uint8 type) { SetUInt32Value(GAMEOBJECT_TYPE_ID, type); }
+        void SetType(uint8 type) { setUInt32Value(GAMEOBJECT_TYPE_ID, type); }
         uint32 GetType() { return this->GetGameObjectProperties()->type; }
 
-        void SetArtKit(uint8 artkit) { SetUInt32Value(GAMEOBJECT_ARTKIT, artkit); }
-        uint8 GetArtkKit() { return GetUInt32Value(GAMEOBJECT_ARTKIT); }
+        void SetArtKit(uint8 artkit) { setUInt32Value(GAMEOBJECT_ARTKIT, artkit); }
+        uint8 GetArtkKit() { return getUInt32Value(GAMEOBJECT_ARTKIT); }
 
-        void SetAnimProgress(uint8 progress) { SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, progress); }
-        uint8 GetAnimProgress() { return GetUInt32Value(GAMEOBJECT_ANIMPROGRESS); }
+        void SetAnimProgress(uint8 progress) { setUInt32Value(GAMEOBJECT_ANIMPROGRESS, progress); }
+        uint8 GetAnimProgress() { return getUInt32Value(GAMEOBJECT_ANIMPROGRESS); }
 #else
         void SetState(uint8 state) { setByteValue(GAMEOBJECT_BYTES_1, 0, state); }
         uint8 GetState() { return getByteValue(GAMEOBJECT_BYTES_1, 0); }
@@ -709,7 +709,7 @@ class GameObject_Trap : public GameObject
         void Update(unsigned long time_passed);
 
     private:
-        
+
         SpellInfo* spell;
         uint32 targetupdatetimer;
         float maxdistance;
@@ -795,7 +795,7 @@ class GameObject_Ritual : public GameObject
         ~GameObject_Ritual();
 
         void InitAI();
-        
+
         CRitual* GetRitual() const
         {
             return Ritual;
