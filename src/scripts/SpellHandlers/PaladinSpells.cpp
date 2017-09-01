@@ -388,7 +388,7 @@ bool Illumination(uint32 i, Spell* s)
     {
                   if (s->p_caster == NULL)
                       return false;
-                  SpellInfo* sp = s->p_caster->last_heal_spell ? s->p_caster->last_heal_spell : s->GetSpellInfo();
+                  SpellInfo const* sp = s->p_caster->last_heal_spell ? s->p_caster->last_heal_spell : s->GetSpellInfo();
                   s->p_caster->Energize(s->p_caster, 20272, 60 * s->u_caster->GetBaseMana() * sp->ManaCostPercentage / 10000, POWER_TYPE_MANA);
     }
         break;

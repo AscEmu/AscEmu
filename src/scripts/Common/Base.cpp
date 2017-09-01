@@ -37,7 +37,7 @@ TargetType::~TargetType()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Class SpellDesc
-SpellDesc::SpellDesc(SpellInfo* pInfo, SpellFunc pFnc, TargetType pTargetType, float pChance, float pCastTime, int32 pCooldown, float pMinRange, float pMaxRange,
+SpellDesc::SpellDesc(SpellInfo const* pInfo, SpellFunc pFnc, TargetType pTargetType, float pChance, float pCastTime, int32 pCooldown, float pMinRange, float pMaxRange,
                      bool pStrictRange, const char* pText, TextType pTextType, uint32 pSoundId, const char* pAnnouncement)
 {
     mInfo = pInfo;
@@ -533,7 +533,7 @@ SpellDesc* MoonScriptCreatureAI::AddSpell(uint32 pSpellId, TargetType pTargetTyp
     SpellDesc* NewSpell = NULL;
 
     //Find spell info from spell id
-    SpellInfo* Info = sSpellCustomizations.GetSpellInfo(pSpellId);
+    SpellInfo const* Info = sSpellCustomizations.GetSpellInfo(pSpellId);
 
 #ifdef USE_DBC_SPELL_INFO
     float CastTime = (Info->CastingTimeIndex) ? GetCastTime(sSpellCastTimesStore.LookupEntry(Info->CastingTimeIndex)) : pCastTime;
@@ -1255,7 +1255,7 @@ bool MoonScriptCreatureAI::CastSpellInternal(SpellDesc* pSpell, uint32 pCurrentT
     return true;            //No targets possible? Consider spell casted nonetheless
 }
 
-void MoonScriptCreatureAI::CastSpellOnTarget(Unit* pTarget, TargetType pType, SpellInfo* pEntry, bool pInstant)
+void MoonScriptCreatureAI::CastSpellOnTarget(Unit* pTarget, TargetType pType, SpellInfo const* pEntry, bool pInstant)
 {
     switch (pType.mTargetGenerator)
     {

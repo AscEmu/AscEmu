@@ -949,8 +949,8 @@ class LeotherasAI : public CreatureAIScript
         bool mInWhirlwind;
         bool IsMorphing;
         uint32 Phase;
-        SpellInfo* info_whirlwind;
-        SpellInfo* info_chaos_blast;
+        SpellInfo const* info_whirlwind;
+        SpellInfo const* info_chaos_blast;
         uint32 FinalPhaseSubphase;
         uint32 FinalPhaseTimer;
 };
@@ -1179,7 +1179,7 @@ class ShadowofLeotherasAI : public CreatureAIScript
         }
 
     protected:
-        SpellInfo* info_chaos_blast;
+        SpellInfo const* info_chaos_blast;
 };
 
 
@@ -1270,7 +1270,8 @@ class KarathressAI : public CreatureAIScript
                 if (random_target == nullptr)
                     return;
                 //let's force this effect
-                info_cataclysmic_bolt->EffectBasePoints[0] = random_target->getUInt32Value(UNIT_FIELD_MAXHEALTH) / 2;
+				// TODO: fix this
+                //info_cataclysmic_bolt->EffectBasePoints[0] = random_target->getUInt32Value(UNIT_FIELD_MAXHEALTH) / 2;
                 _unit->CastSpell(random_target, info_cataclysmic_bolt, true);
                 TargetTable.clear();
             }
@@ -1301,7 +1302,7 @@ class KarathressAI : public CreatureAIScript
         uint32 AdvisorsLeft;
 
     private:
-        SpellInfo* info_cataclysmic_bolt;
+        SpellInfo const* info_cataclysmic_bolt;
         uint32 CataclysmicBoltTimer;
         uint32 EnrageTimer;
         uint32 BlessingOfTidesCounter;
@@ -2253,8 +2254,8 @@ class VashjAI : public CreatureAIScript
         uint32 CoilfangEliteTimer;
         uint32 SporebatTimer;
         uint32 ForkedLightningTimer;
-        SpellInfo* info_multishot;
-        SpellInfo* info_shot;
+        SpellInfo const* info_multishot;
+        SpellInfo const* info_shot;
 };
 
 class TaintedElementalAI : public CreatureAIScript

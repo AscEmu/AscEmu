@@ -213,7 +213,7 @@ class SelinFireheartAI : public MoonScriptCreatureAI
         _unit->setUInt32Value(UNIT_FIELD_POWER1, _unit->GetPower(POWER_TYPE_MANA) - 3231);
     }
 
-    SpellInfo* ManaRage;
+    SpellInfo const* ManaRage;
     SpellDesc* ManaRageTrigger;
     SpellDesc* FelExplosion;
 };

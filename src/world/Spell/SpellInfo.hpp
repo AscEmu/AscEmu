@@ -21,8 +21,8 @@ public:
 
     // helper functions
     bool HasEffect(uint32 effect) const;
-    bool HasEffectApplyAuraName(uint32_t aura_name);
-    bool HasCustomFlagForEffect(uint32 effect, uint32 flag);
+    bool HasEffectApplyAuraName(uint32_t aura_name) const;
+    bool HasCustomFlagForEffect(uint32 effect, uint32 flag) const;
 
     bool isDamagingSpell() const;
     bool isHealingSpell() const;
@@ -35,7 +35,7 @@ public:
     bool isTargetingStealthed() const;
     bool isRequireCooldownSpell() const;
 
-    bool IsPassive();
+    bool IsPassive() const;
     bool IsProfession();
     bool IsPrimaryProfession();
     bool IsPrimaryProfessionSkill(uint32 skill_id);
@@ -43,7 +43,7 @@ public:
     bool isDeathPersistent() const;
 
     bool appliesAreaAura(uint32 aura) const;
-    uint32 GetAreaAuraEffectId();
+    uint32 GetAreaAuraEffectId() const;
 
 #if VERSION_STRING != Cata
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -177,7 +177,7 @@ public:
         bool custom_always_apply;
         bool custom_is_melee_spell;
         bool custom_is_ranged_spell;
-	    bool CheckLocation(uint32 map_id, uint32 zone_id, uint32 area_id, Player* player = NULL);
+	    bool CheckLocation(uint32 map_id, uint32 zone_id, uint32 area_id, Player* player = NULL) const;
         uint32 custom_SchoolMask;
         uint32 CustomFlags;
         uint32 EffectCustomFlag[MAX_SPELL_EFFECTS];
@@ -362,7 +362,7 @@ public:
         bool custom_always_apply;
         bool custom_is_melee_spell;
         bool custom_is_ranged_spell;
-        bool CheckLocation(uint32 map_id, uint32 zone_id, uint32 area_id, Player* player = NULL);
+        bool CheckLocation(uint32 map_id, uint32 zone_id, uint32 area_id, Player* player = NULL) const;
         uint32 custom_SchoolMask;
         uint32 CustomFlags;
         uint32 EffectCustomFlag[MAX_SPELL_EFFECTS];

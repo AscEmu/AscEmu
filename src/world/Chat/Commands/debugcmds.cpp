@@ -977,7 +977,7 @@ bool ChatHandler::HandleAuraUpdateAdd(const char* args, WorldSession* m_session)
     }
     else
     {
-        SpellInfo* Sp = sSpellCustomizations.GetSpellInfo(SpellID);
+        SpellInfo const* Sp = sSpellCustomizations.GetSpellInfo(SpellID);
         if (!Sp)
         {
             SystemMessage(m_session, "SpellID %u is invalid.", SpellID);
@@ -1149,10 +1149,10 @@ struct spell_thingo
     uint32 target;
 };
 
-std::list<SpellInfo*> aiagent_spells;
+std::list<SpellInfo const*> aiagent_spells;
 std::map<uint32, spell_thingo> aiagent_extra;
 
-SpellCastTargets SetTargets(SpellInfo* sp, uint32 type, uint32 targettype, Unit* dst, Creature* src)
+SpellCastTargets SetTargets(SpellInfo const* sp, uint32 type, uint32 targettype, Unit* dst, Creature* src)
 {
     SpellCastTargets targets;
     targets.m_unitTarget = 0;
@@ -1212,7 +1212,7 @@ bool ChatHandler::HandleAIAgentDebugContinue(const char* args, WorldSession* m_s
         if (!aiagent_spells.size())
             break;
 
-        SpellInfo* sp = *aiagent_spells.begin();
+        SpellInfo const* sp = *aiagent_spells.begin();
         aiagent_spells.erase(aiagent_spells.begin());
         BlueSystemMessage(m_session, "Casting %u, " MSG_COLOR_SUBWHITE "%u remaining.", sp->Id, aiagent_spells.size());
 
@@ -1242,13 +1242,13 @@ bool ChatHandler::HandleAIAgentDebugBegin(const char* args, WorldSession* m_sess
 
     do
     {
-        SpellInfo* se = sSpellCustomizations.GetSpellInfo(result->Fetch()[0].GetUInt32());
+        SpellInfo const* se = sSpellCustomizations.GetSpellInfo(result->Fetch()[0].GetUInt32());
         if (se)
             aiagent_spells.push_back(se);
     } while (result->NextRow());
     delete result;
 
-    for (std::list<SpellInfo*>::iterator itr = aiagent_spells.begin(); itr != aiagent_spells.end(); ++itr)
+    for (std::list<SpellInfo const*>::iterator itr = aiagent_spells.begin(); itr != aiagent_spells.end(); ++itr)
     {
         result = WorldDatabase.Query("SELECT * FROM ai_agents WHERE spell = %u", (*itr)->Id);
         ARCEMU_ASSERT(result != NULL);
@@ -1276,7 +1276,7 @@ bool ChatHandler::HandleCastSpellCommand(const char* args, WorldSession* m_sessi
     }
 
     uint32 spellid = atol(args);
-    SpellInfo* spellentry = sSpellCustomizations.GetSpellInfo(spellid);
+    SpellInfo const* spellentry = sSpellCustomizations.GetSpellInfo(spellid);
     if (!spellentry)
     {
         RedSystemMessage(m_session, "Invalid spell id!");
@@ -1317,7 +1317,7 @@ bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_ses
     }
 
     uint32 spellId = atol(args);
-    SpellInfo* spellentry = sSpellCustomizations.GetSpellInfo(spellId);
+    SpellInfo const* spellentry = sSpellCustomizations.GetSpellInfo(spellId);
     if (!spellentry)
     {
         RedSystemMessage(m_session, "Invalid spell id!");
@@ -1377,7 +1377,7 @@ bool ChatHandler::HandleCastSelfCommand(const char* args, WorldSession* m_sessio
     }
 
     uint32 spellid = atol(args);
-    SpellInfo* spellentry = sSpellCustomizations.GetSpellInfo(spellid);
+    SpellInfo const* spellentry = sSpellCustomizations.GetSpellInfo(spellid);
     if (!spellentry)
     {
         RedSystemMessage(m_session, "Invalid spell id!");

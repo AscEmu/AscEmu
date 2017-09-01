@@ -275,7 +275,7 @@ class DancingRuneWeaponAI : public CreatureAIScript
                 if (dpsCycle > 11)
                     dpsCycle = 0;
 
-                SpellInfo* MyNextSpell = sSpellCustomizations.GetSpellInfo(dpsSpell);
+                SpellInfo const* MyNextSpell = sSpellCustomizations.GetSpellInfo(dpsSpell);
                 if (MyNextSpell != NULL)
                     _unit->CastSpell(curtarget, MyNextSpell, true);
 
@@ -288,7 +288,7 @@ class DancingRuneWeaponAI : public CreatureAIScript
             {
                 if (procSpell[p] != 0)
                 {
-                    SpellInfo* mProc = sSpellCustomizations.GetSpellInfo(procSpell[p]);
+                    SpellInfo const* mProc = sSpellCustomizations.GetSpellInfo(procSpell[p]);
                     if (!mProc)
                         return;
                     int x = RandomUInt(99);
