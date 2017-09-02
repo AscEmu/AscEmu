@@ -61,7 +61,7 @@ void WorldSession::SendTrainerList(Creature* pCreature)
                     break;
                 }
 
-                SpellInfo* learnedSpellInfo = sSpellCustomizations.GetSpellInfo(pSpell->learnedSpell[i]);
+                SpellInfo const* learnedSpellInfo = sSpellCustomizations.GetSpellInfo(pSpell->learnedSpell[i]);
                 if (learnedSpellInfo && learnedSpellInfo->IsPrimaryProfession())
                     primary_prof_first_rank = true;
             }
@@ -107,7 +107,7 @@ void WorldSession::SendTrainerList(Creature* pCreature)
                 ++maxReq;
             }
 
-            SpellInfo* spell = sSpellCustomizations.GetSpellInfo(pSpell->spell);
+            SpellInfo const* spell = sSpellCustomizations.GetSpellInfo(pSpell->spell);
             if (spell && spell->IsPrimaryProfession())
                 data << uint32_t(primary_prof_first_rank && can_learn_primary_prof ? 1 : 0);
             else

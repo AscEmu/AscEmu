@@ -135,7 +135,7 @@ void WorldSession::HandlePetLearnTalent(WorldPacket& recvPacket)
     if (talent_rank > 0 && talent_entry->RankID[talent_rank - 1] != 0)
         player_pet->RemoveSpell(talent_entry->RankID[talent_rank - 1]);
 
-    SpellInfo* spell_info = sSpellCustomizations.GetSpellInfo(talent_entry->RankID[talent_rank]);
+    SpellInfo const* spell_info = sSpellCustomizations.GetSpellInfo(talent_entry->RankID[talent_rank]);
     if (spell_info != nullptr)
     {
         player_pet->AddSpell(spell_info, true);

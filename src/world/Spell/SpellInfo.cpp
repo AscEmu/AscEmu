@@ -662,7 +662,7 @@ bool SpellInfo::IsProfession()
     return false;
 }
 
-bool SpellInfo::IsPrimaryProfession()
+bool SpellInfo::IsPrimaryProfession() const
 {
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
@@ -677,7 +677,7 @@ bool SpellInfo::IsPrimaryProfession()
     return false;
 }
 
-bool SpellInfo::IsPrimaryProfessionSkill(uint32 skill_id)
+bool SpellInfo::IsPrimaryProfessionSkill(uint32 skill_id) const
 {
     if (DBC::Structures::SkillLineEntry const* skill_line = sSkillLineStore.LookupEntry(skill_id))
         if (skill_line && skill_line->type == SKILL_TYPE_PROFESSION)

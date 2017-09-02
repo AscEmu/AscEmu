@@ -37,8 +37,8 @@ public:
 
     bool IsPassive() const;
     bool IsProfession();
-    bool IsPrimaryProfession();
-    bool IsPrimaryProfessionSkill(uint32 skill_id);
+    bool IsPrimaryProfession() const;
+    bool IsPrimaryProfessionSkill(uint32 skill_id) const;
 
     bool isDeathPersistent() const;
 
