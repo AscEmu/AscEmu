@@ -37,7 +37,7 @@
 
 class SERVER_DECL ByteBuffer
 {
-#if VERSION_STRING == Cata
+#ifdef AE_CATA
     public:
 
         class error{};

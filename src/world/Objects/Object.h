@@ -446,7 +446,7 @@ public:
 
 
         /// Guid always comes first
-        const uint64 & GetGUID() const { return getUInt64Value(OBJECT_FIELD_GUID); }
+        uint64 GetGUID() const { return getUInt64Value(OBJECT_FIELD_GUID); }
         void SetGUID(uint64 GUID) { setUInt64Value(OBJECT_FIELD_GUID, GUID); }
         const uint32 GetLowGUID() const { return m_uint32Values[OBJECT_FIELD_GUID]; }
         uint32 GetHighGUID() { return m_uint32Values[OBJECT_FIELD_GUID + 1]; }
