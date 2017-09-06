@@ -24,6 +24,7 @@
 #include "CommonHelpers.hpp"
 #include "WoWGuid.h"
 #include "LocationVector.h"
+#include "../world/WorldConf.h"     // <--- eeeek
 
 #include <cstdlib>
 #include <string>
