@@ -233,7 +233,7 @@ void Object::setUInt64Value(uint16_t index, uint64_t value)
 uint64_t Object::getUInt64Value(uint16_t index) const
 {
     ARCEMU_ASSERT(index + 1 < m_valuesCount);
-    return *((uint64_t*)&(m_uint32Values[index]));
+    return *reinterpret_cast<uint64_t*>(&m_uint32Values[index]);
 }
 
 void Object::setFloatValue(uint16_t index, float value)

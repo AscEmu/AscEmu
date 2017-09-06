@@ -46,7 +46,7 @@ Creature::Creature(uint64 guid)
     m_valuesCount = UNIT_END;
     m_objectTypeId = TYPEID_UNIT;
     m_uint32Values = _fields;
-    memset(m_uint32Values, 0, (UNIT_END)*sizeof(uint32));
+    memset(m_uint32Values, 0, ((UNIT_END)*sizeof(uint32)));
     m_updateMask.SetCount(UNIT_END);
     setUInt32Value(OBJECT_FIELD_TYPE, TYPE_UNIT | TYPE_OBJECT);
     SetGUID(guid);
