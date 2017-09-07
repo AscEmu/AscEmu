@@ -1677,7 +1677,7 @@ bool HunterTamingQuest(uint32 i, Aura* a, bool apply)
     {
         uint32 TamingSpellid = a->GetSpellInfo()->EffectMiscValue[1];
 
-        SpellInfo* triggerspell = sSpellCustomizations.GetSpellInfo(TamingSpellid);
+        SpellInfo const* triggerspell = sSpellCustomizations.GetSpellInfo(TamingSpellid);
         if (triggerspell == NULL)
         {
             LogError("An Aura with spellid %u is calling HunterTamingQuest() with an invalid TamingSpellid: %u", a->GetSpellId(), TamingSpellid);

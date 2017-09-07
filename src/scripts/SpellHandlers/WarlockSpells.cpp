@@ -653,7 +653,7 @@ bool DemonicCircleSummon(uint32 i, Aura* a, bool apply)
     {
 
         GameObject* circle = m_target->GetMapMgr()->GetGameObject(a->GetTarget()->m_ObjectSlots[0]);
-        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(48020);
+        SpellInfo const* sp = sSpellCustomizations.GetSpellInfo(48020);
 
         if (circle != NULL && sp != NULL && m_target->CalcDistance(circle) <= GetMaxRange(sSpellRangeStore.LookupEntry(sp->rangeIndex)))
         {

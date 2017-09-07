@@ -177,7 +177,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
     public:
 
-        std::list<SpellInfo*> dummySpellList;
+        std::list<SpellInfo const*> dummySpellList;
 
         bool setInitialWorldSettings();
         void resetCharacterLoginBannState();

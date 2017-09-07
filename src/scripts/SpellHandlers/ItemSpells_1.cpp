@@ -83,7 +83,7 @@ bool HallowsEndCandy(uint32 i, Spell* pSpell)
 
     int newspell = 24924 + RandomUInt(3);
 
-    SpellInfo* spInfo = sSpellCustomizations.GetSpellInfo(newspell);
+    SpellInfo const* spInfo = sSpellCustomizations.GetSpellInfo(newspell);
     if (!spInfo) return true;
 
     pSpell->p_caster->CastSpell(pSpell->p_caster, spInfo, true);
@@ -97,7 +97,7 @@ bool DeviateFish(uint32 i, Spell* pSpell)
 
     int newspell = 8064 + RandomUInt(4);
 
-    SpellInfo* spInfo = sSpellCustomizations.GetSpellInfo(newspell);
+    SpellInfo const* spInfo = sSpellCustomizations.GetSpellInfo(newspell);
     if (!spInfo) return true;
 
     pSpell->p_caster->CastSpell(pSpell->p_caster, spInfo, true);
@@ -126,7 +126,7 @@ bool CookedDeviateFish(uint32 i, Spell* pSpell)
 
     if (newspell)
     {
-        SpellInfo* spInfo = sSpellCustomizations.GetSpellInfo(newspell);
+        SpellInfo const* spInfo = sSpellCustomizations.GetSpellInfo(newspell);
         if (!spInfo) return true;
 
         pSpell->p_caster->CastSpell(pSpell->p_caster, spInfo, true);
@@ -163,7 +163,7 @@ bool NetOMatic(uint32 i, Spell* pSpell)
     if (!pSpell->p_caster || !target)
         return true;
 
-    SpellInfo* spInfo = sSpellCustomizations.GetSpellInfo(13099);
+    SpellInfo const* spInfo = sSpellCustomizations.GetSpellInfo(13099);
     if (!spInfo)
         return true;
 
@@ -221,7 +221,7 @@ bool ForemansBlackjack(uint32 i, Spell* pSpell)
     c_target->Emote(EMOTE_STATE_WORK_CHOPWOOD);
 
     // Add timed event to return lazy peon to Zzz after 5-10 minutes (spell 17743)
-    SpellInfo* pSpellEntry = sSpellCustomizations.GetSpellInfo(17743);
+    SpellInfo const* pSpellEntry = sSpellCustomizations.GetSpellInfo(17743);
     sEventMgr.AddEvent(target, &Unit::EventCastSpell, target, pSpellEntry, EVENT_UNK, 300000 + RandomUInt(300000), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
     return true;

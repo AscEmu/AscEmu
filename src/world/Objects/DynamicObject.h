@@ -55,7 +55,7 @@ public:
 
     protected:
 
-        SpellInfo* m_spellProto;
+        SpellInfo const* m_spellProto;
         Unit* u_caster;
         Player* p_caster;
         Spell* m_parentSpell;

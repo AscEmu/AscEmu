@@ -125,7 +125,7 @@ bool RaiseDead(uint32 i, Spell* s)
     float y = s->p_caster->GetPositionY() - 1;
     float z = s->p_caster->GetPositionZ();
 
-    SpellInfo* sp = nullptr;
+    SpellInfo const* sp = nullptr;
 
     // Master of Ghouls
     if (s->p_caster->HasAura(52143) == false)

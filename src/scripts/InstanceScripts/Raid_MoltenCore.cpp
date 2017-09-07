@@ -86,7 +86,7 @@ class CoreRagerAI : public CreatureAIScript
     protected:
 
         bool m_mangle;
-        SpellInfo* info_mangle;
+        SpellInfo const* info_mangle;
 };
 
 #define CN_SULFURON_HARBRINGER 12098
@@ -183,7 +183,7 @@ class SulfuronAI : public CreatureAIScript
     protected:
 
         bool m_demoralizingshout, m_inspire, m_flamespear;
-        SpellInfo* info_demoralizingshout, *info_inspire, *info_flamespear;
+        SpellInfo const* info_demoralizingshout, *info_inspire, *info_flamespear;
 };
 
 
@@ -325,7 +325,7 @@ class RagnarosAI : public CreatureAIScript
     protected:
 
         bool m_elementalfire, m_wrath, m_hammer, m_meltweapon, m_summonsons;
-        SpellInfo* info_elementalfire, *info_wrath, *info_hammer, *info_meltweapon, *info_summonsons;
+        SpellInfo const* info_elementalfire, *info_wrath, *info_hammer, *info_meltweapon, *info_summonsons;
 };
 
 /*

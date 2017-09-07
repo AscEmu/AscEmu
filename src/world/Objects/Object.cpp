@@ -2392,7 +2392,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
     if (pVictim == NULL || !pVictim->isAlive())
         return;
 
-    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellID);
+    SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(spellID);
     if (spellInfo == NULL)
         return;
 
@@ -2509,7 +2509,8 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
         vproc |= PROC_ON_ABSORB;
 
     // Incanter's Absorption
-    if (pVictim->IsPlayer() && pVictim->HasAurasWithNameHash(SPELL_HASH_INCANTER_S_ABSORPTION))
+    // Appled: needs rework
+    /*if (pVictim->IsPlayer() && pVictim->HasAurasWithNameHash(SPELL_HASH_INCANTER_S_ABSORPTION))
     {
         float pctmod = 0.0f;
         Player* pl = static_cast< Player* >(pVictim);
@@ -2526,7 +2527,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
         if (spellpower > hp)
             spellpower = hp;
 
-        SpellInfo* entry = sSpellCustomizations.GetSpellInfo(44413);
+        SpellInfo const* entry = sSpellCustomizations.GetSpellInfo(44413);
         if (!entry)
             return;
 
@@ -2535,7 +2536,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
         SpellCastTargets targets;
         targets.m_unitTarget = pl->GetGUID();
         sp->prepare(&targets);
-    }
+    }*/
 
     res = static_cast< float >(ress);
     dealdamage dmg;

@@ -527,7 +527,7 @@ void Spell::SpellEffectInstantKill(uint32 i)
             }
             if (DemonicSacEffectSpellId)
             {
-                SpellInfo* se = sSpellCustomizations.GetSpellInfo(DemonicSacEffectSpellId);
+                SpellInfo const* se = sSpellCustomizations.GetSpellInfo(DemonicSacEffectSpellId);
                 if (se && u_caster)
                     u_caster->CastSpell(u_caster, se, true);
             }
@@ -542,7 +542,7 @@ void Spell::SpellEffectInstantKill(uint32 i)
 
             //TO< Pet* >(u_caster)->Dismiss(true);
 
-            SpellInfo* se = sSpellCustomizations.GetSpellInfo(5);
+            SpellInfo const* se = sSpellCustomizations.GetSpellInfo(5);
             if (static_cast< Pet* >(u_caster)->GetPetOwner() == NULL)
                 return;
 
@@ -559,7 +559,7 @@ void Spell::SpellEffectInstantKill(uint32 i)
 
             //TO< Pet* >(unitTarget)->Dismiss(true);
 
-            SpellInfo* se = sSpellCustomizations.GetSpellInfo(5);
+            SpellInfo const* se = sSpellCustomizations.GetSpellInfo(5);
 
             SpellCastTargets targets(unitTarget->GetGUID());
             Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, se, true, 0);
@@ -1455,8 +1455,8 @@ void Spell::SpellEffectApplyAura(uint32 i)  // Apply Aura
     //if we do not make a check to see if the aura owner is the same as the caster then we will stack the 2 auras and they will not be visible client sided
     if (itr == m_pendingAuras.end())
     {
-        if (GetSpellInfo()->custom_NameHash == SPELL_HASH_BLOOD_FRENZY && ProcedOnSpell)  //Warrior's Blood Frenzy
-            GetSpellInfo()->DurationIndex = ProcedOnSpell->DurationIndex;
+        //if (GetSpellInfo()->custom_NameHash == SPELL_HASH_BLOOD_FRENZY && ProcedOnSpell)  //Warrior's Blood Frenzy
+            //GetSpellInfo()->DurationIndex = ProcedOnSpell->DurationIndex;
 
         uint32 Duration = GetDuration();
 
@@ -1658,7 +1658,7 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
                 if (unitTarget && unitTarget->IsPlayer() && pSpellId && unitTarget->GetHealthPct() < 30)
                 {
                     //check for that 10 second cooldown
-                    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(pSpellId);
+                    SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(pSpellId);
                     if (spellInfo)
                     {
                         //heal value is received by the level of current active talent :s
@@ -1777,7 +1777,7 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
 
                     if (new_dmg > 0)
                     {
-                        SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(18562);
+                        SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(18562);
                         Spell* spell = sSpellFactoryMgr.NewSpell(unitTarget, spellInfo, true, NULL);
                         spell->SetUnitTarget(unitTarget);
                         spell->Heal((int32)new_dmg);
@@ -2112,7 +2112,7 @@ void Spell::SpellEffectCreateItem(uint32 i)
 
             if ((learn_spell != 0) && (p_caster->getLevel() > 60) && !p_caster->HasSpell(learn_spell) && Rand(cast_chance))
             {
-                SpellInfo* dspellproto = sSpellCustomizations.GetSpellInfo(learn_spell);
+                SpellInfo const* dspellproto = sSpellCustomizations.GetSpellInfo(learn_spell);
 
                 if (dspellproto != NULL)
                 {
@@ -2145,7 +2145,7 @@ void Spell::SpellEffectCreateItem(uint32 i)
             // if something was discovered teach player that recipe and broadcast message
             if (discovered_recipe != 0)
             {
-                SpellInfo* se = sSpellCustomizations.GetSpellInfo(discovered_recipe);
+                SpellInfo const* se = sSpellCustomizations.GetSpellInfo(discovered_recipe);
 
                 if (se != NULL)
                 {
@@ -2820,7 +2820,7 @@ void Spell::SpellEffectEnergize(uint32 i) // Energize
         case 31786: // Paladin - Spiritual Attunement
             if (ProcedOnSpell)
             {
-                SpellInfo* motherspell = sSpellCustomizations.GetSpellInfo(pSpellId);
+                SpellInfo const* motherspell = sSpellCustomizations.GetSpellInfo(pSpellId);
                 if (motherspell)
                 {
                     //heal amount from procspell (we only proceed on a heal spell)
@@ -2926,7 +2926,7 @@ void Spell::SpellEffectTriggerMissile(uint32 i) // Trigger Missile
         return;
     }
 
-    SpellInfo* spInfo = sSpellCustomizations.GetSpellInfo(spellid);
+    SpellInfo const* spInfo = sSpellCustomizations.GetSpellInfo(spellid);
     if (spInfo == NULL)
     {
         LOG_ERROR("Spell %u (%s) has a trigger missle effect (%u) but has an invalid trigger spell ID. Spell needs fixing.", m_spellInfo->Id, m_spellInfo->Name.c_str(), i);
@@ -3126,7 +3126,7 @@ void Spell::SpellEffectOpenLock(uint32 i)
                     return;
 
             uint32 spellid = !gameObjTarget->GetGameObjectProperties()->raw.parameter_10 ? 23932 : gameObjTarget->GetGameObjectProperties()->raw.parameter_10;
-            SpellInfo* en = sSpellCustomizations.GetSpellInfo(spellid);
+            SpellInfo const* en = sSpellCustomizations.GetSpellInfo(spellid);
             Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, en, true, NULL);
             SpellCastTargets tgt;
             tgt.m_unitTarget = gameObjTarget->GetGUID();
@@ -3281,7 +3281,7 @@ void Spell::SpellEffectLearnSpell(uint32 i) // Learn Spell
             playerTarget->addSpell(32605);
 
         //smth is wrong here, first we add this spell to player then we may cast it on player...
-        SpellInfo* spellinfo = sSpellCustomizations.GetSpellInfo(spellToLearn);
+        SpellInfo const* spellinfo = sSpellCustomizations.GetSpellInfo(spellToLearn);
         //remove specializations
         switch (spellinfo->Id)
         {
@@ -3397,7 +3397,7 @@ void Spell::SpellEffectDispel(uint32 i) // Dispel
     }
 
     Aura* aur;
-    SpellInfo* aursp;
+    SpellInfo const* aursp;
     std::list< uint32 > dispelledSpells;
     bool finish = false;
 
@@ -3440,7 +3440,7 @@ void Spell::SpellEffectDispel(uint32 i) // Dispel
                 {
                     if (aursp->custom_NameHash == SPELL_HASH_UNSTABLE_AFFLICTION)
                     {
-                        SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(31117);
+                        SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(31117);
                         Spell* spell = sSpellFactoryMgr.NewSpell(u_caster, spellInfo, true, NULL);
                         spell->forced_basepoints[0] = (aursp->EffectBasePoints[0] + 1) * 9;   //damage effect
                         spell->ProcedOnSpell = GetSpellInfo();
@@ -4087,7 +4087,7 @@ void Spell::SpellEffectClearQuest(uint32 i)
 
 void Spell::SpellEffectTriggerSpell(uint32 i) // Trigger Spell
 {
-    SpellInfo* entry = sSpellCustomizations.GetSpellInfo(GetSpellInfo()->EffectTriggerSpell[i]);
+    SpellInfo const* entry = sSpellCustomizations.GetSpellInfo(GetSpellInfo()->EffectTriggerSpell[i]);
     if (entry == NULL)
         return;
 
@@ -4733,7 +4733,7 @@ void Spell::SpellEffectFeedPet(uint32 i)  // Feed Pet
     if (deltaLvl > 20) damage = damage >> 1;
     damage *= 1000;
 
-    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(GetSpellInfo()->EffectTriggerSpell[i]);
+    SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(GetSpellInfo()->EffectTriggerSpell[i]);
     Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, spellInfo, true, NULL);
     sp->forced_basepoints[0] = damage;
     SpellCastTargets tgt;
@@ -4914,7 +4914,7 @@ void Spell::SpellEffectDestroyAllTotems(uint32 i)
     for (std::vector< uint32 >::iterator itr = spellids.begin(); itr != spellids.end(); ++itr)
     {
         uint32 spellid = *itr;
-        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spellid);
+        SpellInfo const* sp = sSpellCustomizations.GetSpellInfo(spellid);
 
         if (sp != NULL)
         {
@@ -5102,7 +5102,7 @@ void Spell::SpellEffectDummyMelee(uint32 i)   // Normalized Weapon damage +
     {
         //count the number of sunder armors on target
         uint32 sunder_count = 0;
-        SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(7386);
+        SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(7386);
         for (uint32 x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_NEGATIVE_AURAS_EXTEDED_END; ++x)
             if (unitTarget->m_auras[x] && unitTarget->m_auras[x]->GetSpellInfo()->custom_NameHash == SPELL_HASH_SUNDER_ARMOR)
             {
@@ -5353,7 +5353,7 @@ void Spell::SpellEffectSpellSteal(uint32 i)
         return;
 
     Aura* aur;
-    SpellInfo* aursp;
+    SpellInfo const* aursp;
     std::list< uint32 > stealedSpells;
 
     for (uint32 x = start; x < end; x++)
@@ -5526,7 +5526,7 @@ void Spell::SpellEffectTriggerSpellWithValue(uint32 i)
 {
     if (!unitTarget) return;
 
-    SpellInfo* TriggeredSpell = sSpellCustomizations.GetSpellInfo(GetSpellInfo()->EffectTriggerSpell[i]);
+    SpellInfo const* TriggeredSpell = sSpellCustomizations.GetSpellInfo(GetSpellInfo()->EffectTriggerSpell[i]);
     if (TriggeredSpell == NULL)
         return;
 
