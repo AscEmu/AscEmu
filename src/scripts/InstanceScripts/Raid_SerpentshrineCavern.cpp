@@ -1270,7 +1270,7 @@ class KarathressAI : public CreatureAIScript
                 if (random_target == nullptr)
                     return;
                 //let's force this effect
-				// TODO: fix this
+                // TODO: fix this
                 //info_cataclysmic_bolt->EffectBasePoints[0] = random_target->getUInt32Value(UNIT_FIELD_MAXHEALTH) / 2;
                 _unit->CastSpell(random_target, info_cataclysmic_bolt, true);
                 TargetTable.clear();

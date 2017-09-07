@@ -1364,7 +1364,7 @@ std::vector<CreatureItem>* ObjectMgr::GetVendorList(uint32 entry)
 
 void ObjectMgr::LoadAIThreatToSpellId()
 {
-	QueryResult* result = WorldDatabase.Query("SELECT * FROM ai_threattospellid");
+    QueryResult* result = WorldDatabase.Query("SELECT * FROM ai_threattospellid");
 
     if (!result)
     {
@@ -1391,7 +1391,7 @@ void ObjectMgr::LoadAIThreatToSpellId()
 
 void ObjectMgr::LoadSpellEffectsOverride()
 {
-	QueryResult* result = WorldDatabase.Query("SELECT * FROM spell_effects_override");
+    QueryResult* result = WorldDatabase.Query("SELECT * FROM spell_effects_override");
     if (result)
     {
         do

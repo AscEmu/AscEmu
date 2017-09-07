@@ -2509,7 +2509,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
         vproc |= PROC_ON_ABSORB;
 
     // Incanter's Absorption
-	// Appled: needs rework
+    // Appled: needs rework
     /*if (pVictim->IsPlayer() && pVictim->HasAurasWithNameHash(SPELL_HASH_INCANTER_S_ABSORPTION))
     {
         float pctmod = 0.0f;

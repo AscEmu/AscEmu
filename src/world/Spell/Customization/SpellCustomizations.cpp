@@ -436,20 +436,20 @@ void SpellCustomizations::LoadSpellInfoData()
 #endif
 }
 
-SpellInfo const* SpellCustomizations::GetSpellInfo(uint32 spell_id)
+SpellInfo const* SpellCustomizations::GetSpellInfo(uint32 spell_id) const
 {
     SpellInfoContainer::const_iterator itr = _spellInfoContainerStore.find(spell_id);
     if (itr != _spellInfoContainerStore.end())
-        return const_cast<SpellInfo const*>(&itr->second);
+        return &itr->second;
 
     return nullptr;
 }
 
 SpellInfo* SpellCustomizations::getSpellInfoUnsafe(uint32_t spell_id)
 {
-	SpellInfoContainer::const_iterator itr = _spellInfoContainerStore.find(spell_id);
+	SpellInfoContainer::iterator itr = _spellInfoContainerStore.find(spell_id);
 	if (itr != _spellInfoContainerStore.end())
-		return const_cast<SpellInfo*>(&itr->second);
+		return &itr->second;
 
 	return nullptr;
 }

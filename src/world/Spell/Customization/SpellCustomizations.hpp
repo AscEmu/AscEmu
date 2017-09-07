@@ -39,7 +39,7 @@ public:
     typedef std::unordered_map<uint32, SpellInfo> SpellInfoContainer;
 
     void LoadSpellInfoData();
-    SpellInfo const* GetSpellInfo(uint32 spell_id);
+    SpellInfo const* GetSpellInfo(uint32 spell_id) const;
     SpellInfoContainer* GetSpellInfoStore();
 
     void StartSpellCustomization();
