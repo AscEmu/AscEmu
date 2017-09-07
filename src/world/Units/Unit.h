@@ -141,7 +141,7 @@ struct AreaAura
 
 typedef struct
 {
-    SpellInfo* spell_info;
+    SpellInfo const* spell_info;
     uint32 charges;
 } ExtraStrike;
 
@@ -286,8 +286,8 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Spells
     void playSpellVisual(uint64_t guid, uint32_t spell_id);
-    void applyDiminishingReturnTimer(uint32_t* duration, SpellInfo* spell);
-    void removeDiminishingReturnTimer(SpellInfo* spell);
+    void applyDiminishingReturnTimer(uint32_t* duration, SpellInfo const* spell);
+    void removeDiminishingReturnTimer(SpellInfo const* spell);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Aura
@@ -348,36 +348,36 @@ public:
     uint8 getStandState() { return ((uint8)m_uint32Values[UNIT_FIELD_BYTES_1]); }
 
     //// Combat
-    uint32 GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability);
-    void Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, int32 add_damage, int32 pct_dmg_mod, uint32 exclusive_damage, bool disable_proc, bool skip_hit_check, bool force_crit = false);
+    uint32 GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* ability);
+    void Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo const* ability, int32 add_damage, int32 pct_dmg_mod, uint32 exclusive_damage, bool disable_proc, bool skip_hit_check, bool force_crit = false);
     uint32 m_procCounter;
-    uint32 HandleProc(uint32 flag, Unit* Victim, SpellInfo* CastingSpell, bool is_triggered = false, uint32 dmg = -1, uint32 abs = 0, uint32 weapon_damage_type = 0);
+    uint32 HandleProc(uint32 flag, Unit* Victim, SpellInfo const* CastingSpell, bool is_triggered = false, uint32 dmg = -1, uint32 abs = 0, uint32 weapon_damage_type = 0);
     void HandleProcDmgShield(uint32 flag, Unit* attacker);//almost the same as handleproc :P
-    bool IsCriticalDamageForSpell(Object* victim, SpellInfo* spell);
-    float GetCriticalDamageBonusForSpell(Object* victim, SpellInfo* spell, float amount);
-    bool IsCriticalHealForSpell(Object* victim, SpellInfo* spell);
-    float GetCriticalHealBonusForSpell(Object* victim, SpellInfo* spell, float amount);
+    bool IsCriticalDamageForSpell(Object* victim, SpellInfo const* spell);
+    float GetCriticalDamageBonusForSpell(Object* victim, SpellInfo const* spell, float amount);
+    bool IsCriticalHealForSpell(Object* victim, SpellInfo const* spell);
+    float GetCriticalHealBonusForSpell(Object* victim, SpellInfo const* spell, float amount);
 
-    void RemoveExtraStrikeTarget(SpellInfo* spell_info);
-    void AddExtraStrikeTarget(SpellInfo* spell_info, uint32 charges);
+    void RemoveExtraStrikeTarget(SpellInfo const* spell_info);
+    void AddExtraStrikeTarget(SpellInfo const* spell_info, uint32 charges);
 
     int32 GetAP();
     int32 GetRAP();
 
     uint8 CastSpell(Unit* Target, uint32 SpellID, bool triggered);
-    uint8 CastSpell(Unit* Target, SpellInfo* Sp, bool triggered);
+    uint8 CastSpell(Unit* Target, SpellInfo const* Sp, bool triggered);
     uint8 CastSpell(uint64 targetGuid, uint32 SpellID, bool triggered);
-    uint8 CastSpell(uint64 targetGuid, SpellInfo* Sp, bool triggered);
+    uint8 CastSpell(uint64 targetGuid, SpellInfo const* Sp, bool triggered);
     uint8 CastSpell(Unit* Target, uint32 SpellID, uint32 forced_basepoints, bool triggered);
-    uint8 CastSpell(Unit* Target, SpellInfo* Sp, uint32 forced_basepoints, bool triggered);
+    uint8 CastSpell(Unit* Target, SpellInfo const* Sp, uint32 forced_basepoints, bool triggered);
     uint8 CastSpell(Unit* Target, uint32 SpellID, uint32 forced_basepoints, int32 charges, bool triggered);
-    uint8 CastSpell(Unit* Target, SpellInfo* Sp, uint32 forced_basepoints, int32 charges, bool triggered);
-    void CastSpellAoF(LocationVector lv, SpellInfo* Sp, bool triggered);
-    void EventCastSpell(Unit* Target, SpellInfo* Sp);
+    uint8 CastSpell(Unit* Target, SpellInfo const* Sp, uint32 forced_basepoints, int32 charges, bool triggered);
+    void CastSpellAoF(LocationVector lv, SpellInfo const* Sp, bool triggered);
+    void EventCastSpell(Unit* Target, SpellInfo const* Sp);
 
     bool IsCasting();
     bool IsInInstance();
-    void CalculateResistanceReduction(Unit* pVictim, dealdamage* dmg, SpellInfo* ability, float ArmorPctReduce);
+    void CalculateResistanceReduction(Unit* pVictim, dealdamage* dmg, SpellInfo const* ability, float ArmorPctReduce);
     void RegenerateHealth();
     void RegeneratePower(bool isinterrupted);
     void setHRegenTimer(uint32 time) { m_H_regenTimer = static_cast<uint16>(time); }
@@ -496,17 +496,17 @@ public:
     bool IsControlledByPlayer();
 
     // Auras that can affect only one target at a time
-    uint64 GetCurrentUnitForSingleTargetAura(SpellInfo* spell);
+    uint64 GetCurrentUnitForSingleTargetAura(SpellInfo const* spell);
     uint64 GetCurrentUnitForSingleTargetAura(uint32* name_hashes, uint32* index);
-    void SetCurrentUnitForSingleTargetAura(SpellInfo* spell, uint64 guid);
-    void RemoveCurrentUnitForSingleTargetAura(SpellInfo* spell);
+    void SetCurrentUnitForSingleTargetAura(SpellInfo const* spell, uint64 guid);
+    void RemoveCurrentUnitForSingleTargetAura(SpellInfo const* spell);
     void RemoveCurrentUnitForSingleTargetAura(uint32 name_hash);
 
     // ProcTrigger
     std::list<SpellProc*> m_procSpells;
-    SpellProc* AddProcTriggerSpell(uint32 spell_id, uint32 orig_spell_id, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, uint32* groupRelation, uint32* procClassMask = NULL, Object* obj = NULL);
-    SpellProc* AddProcTriggerSpell(SpellInfo* spell, SpellInfo* orig_spell, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, uint32* groupRelation, uint32* procClassMask = NULL, Object* obj = NULL);
-    SpellProc* AddProcTriggerSpell(SpellInfo* sp, uint64 caster, uint32* groupRelation, uint32* procClassMask = NULL, Object* obj = NULL);
+    SpellProc* AddProcTriggerSpell(uint32 spell_id, uint32 orig_spell_id, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, const uint32* groupRelation, uint32* procClassMask = NULL, Object* obj = NULL);
+    SpellProc* AddProcTriggerSpell(SpellInfo const* spell, SpellInfo const* orig_spell, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, const uint32* groupRelation, uint32* procClassMask = NULL, Object* obj = NULL);
+    SpellProc* AddProcTriggerSpell(SpellInfo const* sp, uint64 caster, const uint32* groupRelation, uint32* procClassMask = NULL, Object* obj = NULL);
     SpellProc* GetProcTriggerSpell(uint32 spellId, uint64 casterGuid = 0);
     void RemoveProcTriggerSpell(uint32 spellId, uint64 casterGuid = 0, uint64 misc = 0);
 
@@ -529,9 +529,9 @@ public:
     void InterruptSpell();
 
     //caller is the caster
-    int32 GetSpellDmgBonus(Unit* pVictim, SpellInfo* spellInfo, int32 base_dmg, bool isdot);
+    int32 GetSpellDmgBonus(Unit* pVictim, SpellInfo const* spellInfo, int32 base_dmg, bool isdot);
 
-    float CalcSpellDamageReduction(Unit* victim, SpellInfo* spell, float res);
+    float CalcSpellDamageReduction(Unit* victim, SpellInfo const* spell, float res);
 
     uint32 m_addDmgOnce;
     uint32 m_ObjectSlots[4];
@@ -922,8 +922,8 @@ public:
 
     void SetFacing(float newo);     //only working if creature is idle
 
-    AuraCheckResponse AuraCheck(SpellInfo* proto, Object* caster = NULL);
-    AuraCheckResponse AuraCheck(SpellInfo* proto, Aura* aur, Object* caster = NULL);
+    AuraCheckResponse AuraCheck(SpellInfo const* proto, Object* caster = NULL);
+    AuraCheckResponse AuraCheck(SpellInfo const* proto, Aura* aur, Object* caster = NULL);
 
     uint16 m_diminishCount[DIMINISHING_GROUP_COUNT];
     uint8 m_diminishAuraCount[DIMINISHING_GROUP_COUNT];
@@ -946,7 +946,7 @@ public:
     uint8 FindVisualSlot(uint32 SpellId, bool IsPos);
     uint32 m_auravisuals[MAX_NEGATIVE_VISUAL_AURAS_END];
 
-    SpellInfo* pLastSpell;
+    SpellInfo const* pLastSpell;
     bool bProcInUse;
     bool bInvincible;
     Player* m_redirectSpellPackets;
@@ -968,7 +968,7 @@ public:
 
     void CancelSpell(Spell* ptr);
     void EventStopChanneling(bool abort);
-    void EventStrikeWithAbility(uint64 guid, SpellInfo* sp, uint32 damage);
+    void EventStrikeWithAbility(uint64 guid, SpellInfo const* sp, uint32 damage);
     void DispelAll(bool positive);
 
     void SendPowerUpdate(bool self);

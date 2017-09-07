@@ -123,7 +123,7 @@ enum PetType
     WARLOCKPET  = 2,
 };
 
-typedef std::map<SpellInfo*, uint16> PetSpellMap;
+typedef std::map<SpellInfo const*, uint16> PetSpellMap;
 struct PlayerPet;
 
 
@@ -143,7 +143,7 @@ class SERVER_DECL Pet : public Creature
 
         void LoadFromDB(Player* owner, PlayerPet* pi);
         /// returns false if an error occurred. The caller MUST delete us.
-        bool CreateAsSummon(uint32 entry, CreatureProperties const* properties_, Creature* created_from_creature, Player* owner, SpellInfo* created_by_spell, uint32 type, uint32 expiretime, LocationVector* Vec = NULL, bool dismiss_old_pet = true);
+        bool CreateAsSummon(uint32 entry, CreatureProperties const* properties_, Creature* created_from_creature, Player* owner, SpellInfo const* created_by_spell, uint32 type, uint32 expiretime, LocationVector* Vec = NULL, bool dismiss_old_pet = true);
 
         void Update(unsigned long time_passed);
         void OnPushToWorld();
@@ -206,27 +206,27 @@ class SERVER_DECL Pet : public Creature
         void SetDefaultActionbar();
         void SetActionBarSlot(uint32 slot, uint32 spell) { ActionBar[slot] = spell; }
 
-        void AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell = true);
-        void RemoveSpell(SpellInfo* sp, bool showUnlearnSpell = true);
+        void AddSpell(SpellInfo const* sp, bool learning, bool showLearnSpell = true);
+        void RemoveSpell(SpellInfo const* sp, bool showUnlearnSpell = true);
         void WipeTalents();
         uint32 GetUntrainCost();
-        void SetSpellState(SpellInfo* sp, uint16 State);
-        uint16 GetSpellState(SpellInfo* sp);
+        void SetSpellState(SpellInfo const* sp, uint16 State);
+        uint16 GetSpellState(SpellInfo const* sp);
         bool HasSpell(uint32 SpellID)
         {
-            SpellInfo* sp = sSpellCustomizations.GetSpellInfo(SpellID);
+            SpellInfo const* sp = sSpellCustomizations.GetSpellInfo(SpellID);
             if (sp)
                 return mSpells.find(sp) != mSpells.end();
             return false;
         }
         inline void RemoveSpell(uint32 SpellID)
         {
-            SpellInfo* sp = sSpellCustomizations.GetSpellInfo(SpellID);
+            SpellInfo const* sp = sSpellCustomizations.GetSpellInfo(SpellID);
             if (sp) RemoveSpell(sp);
         }
         inline void SetSpellState(uint32 SpellID, uint16 State)
         {
-            SpellInfo* sp = sSpellCustomizations.GetSpellInfo(SpellID);
+            SpellInfo const* sp = sSpellCustomizations.GetSpellInfo(SpellID);
             if (sp) SetSpellState(sp, State);
         }
         inline uint16 GetSpellState(uint32 SpellID)
@@ -234,20 +234,20 @@ class SERVER_DECL Pet : public Creature
             if (SpellID == 0)
                 return DEFAULT_SPELL_STATE;
 
-            SpellInfo* sp = sSpellCustomizations.GetSpellInfo(SpellID);
+            SpellInfo const* sp = sSpellCustomizations.GetSpellInfo(SpellID);
             if (sp)
                 return GetSpellState(sp);
             return DEFAULT_SPELL_STATE;
         }
 
-        AI_Spell* CreateAISpell(SpellInfo* info);
+        AI_Spell* CreateAISpell(SpellInfo const* info);
         inline PetSpellMap* GetSpells() { return &mSpells; }
         inline bool IsSummonedPet() { return Summon; }
 
         void SetAutoCastSpell(AI_Spell* sp);
         void Rename(std::string NewName);
         inline std::string & GetName() { return m_name; }
-        uint32 CanLearnSpell(SpellInfo* sp);
+        uint32 CanLearnSpell(SpellInfo const* sp);
         void UpdateSpellList(bool showLearnSpells = true);
 
         // talents
@@ -298,7 +298,7 @@ class SERVER_DECL Pet : public Creature
         std::string m_name;
         HappinessState GetHappinessState();
         void SetNameForEntry(uint32 entry);
-        uint32 GetAutoCastTypeForSpell(SpellInfo* ent);
+        uint32 GetAutoCastTypeForSpell(SpellInfo const* ent);
         void SafeDelete();
 
     std::list<AI_Spell*> m_autoCastSpells[AUTOCAST_EVENT_COUNT];

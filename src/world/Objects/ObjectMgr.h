@@ -132,9 +132,9 @@ struct TrainerSpell
 #else
 struct TrainerSpell
 {
-    SpellInfo* pCastSpell;
-    SpellInfo* pLearnSpell;
-    SpellInfo* pCastRealSpell;
+    SpellInfo const* pCastSpell;
+    SpellInfo const* pLearnSpell;
+    SpellInfo const* pCastRealSpell;
     uint32 DeleteSpell;
     uint32 RequiredSpell;
     uint32 RequiredSkillLine;
@@ -504,7 +504,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         GM_Ticket* GetGMTicketByPlayer(uint64 playerGuid);
 
         DBC::Structures::SkillLineAbilityEntry const* GetSpellSkill(uint32 id);
-        SpellInfo* GetNextSpellRank(SpellInfo* sp, uint32 level);
+        SpellInfo const* GetNextSpellRank(SpellInfo const* sp, uint32 level);
 
         //Vendors
         std::vector<CreatureItem> *GetVendorList(uint32 entry);

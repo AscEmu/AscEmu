@@ -573,7 +573,7 @@ bool ChatHandler::HandleLookupSpellCommand(const char* args, WorldSession* m_ses
     char itoabuf[12];
     for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
     {
-        SpellInfo* spell = sSpellCustomizations.GetSpellInfo(it->first);
+        SpellInfo const* spell = sSpellCustomizations.GetSpellInfo(it->first);
         std::string y = std::string(spell->Name);
         Util::StringToLowerCase(y);
         if (Util::findXinYString(x, y))

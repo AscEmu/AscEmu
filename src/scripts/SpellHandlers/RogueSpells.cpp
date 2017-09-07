@@ -72,7 +72,7 @@ bool Shiv(uint32 i, Spell* pSpell)
         {
             if(Entry->type[c] && Entry->spell[c])
             {
-                SpellInfo* sp = sSpellCustomizations.GetSpellInfo(Entry->spell[c]);
+                SpellInfo const* sp = sSpellCustomizations.GetSpellInfo(Entry->spell[c]);
                 if(!sp) return true;
 
                 if(sp->custom_c_is_flags & SPELL_FLAG_IS_POISON)

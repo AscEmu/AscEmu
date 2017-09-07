@@ -143,7 +143,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 
     SpellCastTargets targets(recvPacket, _player->GetGUID());
 
-    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
+    SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
     if (spellInfo == NULL)
     {
         LOG_ERROR("WORLD: unknown spell id %i", spellId);
@@ -334,7 +334,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
     {
         cast_spell_id = sp->SpellID;
 
-        SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(cast_spell_id);
+        SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(cast_spell_id);
         if (spellInfo == nullptr)
             return;
 
@@ -354,7 +354,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 
     recvPacket >> cn >> spellId >> unk;
     // check for spell id
-    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
+    SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
 
     if (!spellInfo)
     {
@@ -426,7 +426,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
                     LogDebugFlag(LF_SPELL, "HandleCastSpellOpcode : Cancelling auto-shot cast because targets.m_unitTarget is null!");
                     return;
                 }
-                SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spellid);
+                SpellInfo const* sp = sSpellCustomizations.GetSpellInfo(spellid);
 
                 _player->m_AutoShotSpell = sp;
                 _player->m_AutoShotDuration = duration;
@@ -503,7 +503,7 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
         _player->m_currentSpell->cancel();
     else
     {
-        SpellInfo* info = sSpellCustomizations.GetSpellInfo(spellId);
+        SpellInfo const* info = sSpellCustomizations.GetSpellInfo(spellId);
         if (info == nullptr)
             return;
 
@@ -564,7 +564,7 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
     recvPacket >> spellid;
     recvPacket >> castflags;
 
-    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spellid);
+    SpellInfo const* sp = sSpellCustomizations.GetSpellInfo(spellid);
     if (sp == NULL)
         return;
     // Summoned Elemental's Freeze
@@ -701,7 +701,7 @@ void WorldSession::HandleUpdateProjectilePosition(WorldPacket& recv_data)
 
     LogDebugFlag(LF_OPCODE, "Recieved spell: %u, count: %i, position: x(%f) y(%f) z(%f)", spellId, castCount, x, y, z);
 
-    SpellInfo* spell = Spell::checkAndReturnSpellEntry(spellId);
+    SpellInfo const* spell = Spell::checkAndReturnSpellEntry(spellId);
     if (!spell || spell->ai_target_type == TARGET_FLAG_DEST_LOCATION)
         return;
 

@@ -124,9 +124,9 @@ class CheatDeathAura : public AbsorbAura
 {
 public:
 
-    static Aura* Create(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) { return new CheatDeathAura(proto, duration, caster, target, temporary, i_caster); }
+    static Aura* Create(SpellInfo const* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) { return new CheatDeathAura(proto, duration, caster, target, temporary, i_caster); }
 
-    CheatDeathAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL)
+    CheatDeathAura(SpellInfo const* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL)
         : AbsorbAura(proto, duration, caster, target, temporary, i_caster)
     {
         dSpell = sSpellCustomizations.GetSpellInfo(31231);
@@ -165,7 +165,8 @@ public:
         p_target->CastSpell(p_target->GetGUID(), 45182, true);
 
         // Better to add custom cooldown procedure then fucking with entry, or not!!
-        dSpell->RecoveryTime = 60000;
+		// Appled: needs better solution
+        //dSpell->RecoveryTime = 60000;
         p_target->Cooldown_Add(dSpell, NULL);
 
         // Calc abs and applying it
@@ -178,7 +179,7 @@ public:
 
 private:
 
-    SpellInfo* dSpell;
+    SpellInfo const* dSpell;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -348,9 +349,9 @@ class RuneStrileSpell : public Spell
 class AntiMagicShellAura : public AbsorbAura
 {
     public:
-    static Aura* Create(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) { return new AntiMagicShellAura(proto, duration, caster, target, temporary, i_caster); }
+    static Aura* Create(SpellInfo const* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) { return new AntiMagicShellAura(proto, duration, caster, target, temporary, i_caster); }
 
-    AntiMagicShellAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL)
+    AntiMagicShellAura(SpellInfo const* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL)
         : AbsorbAura(proto, duration, caster, target, temporary, i_caster) {}
 
     int32 CalcAbsorbAmount()
@@ -371,9 +372,9 @@ class AntiMagicShellAura : public AbsorbAura
 class SpellDeflectionAura : public AbsorbAura
 {
     public:
-    static Aura* Create(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) { return new SpellDeflectionAura(proto, duration, caster, target, temporary, i_caster); }
+    static Aura* Create(SpellInfo const* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) { return new SpellDeflectionAura(proto, duration, caster, target, temporary, i_caster); }
 
-    SpellDeflectionAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL)
+    SpellDeflectionAura(SpellInfo const* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL)
         : AbsorbAura(proto, duration, caster, target, temporary, i_caster) {}
 
     uint32 AbsorbDamage(uint32 School, uint32* dmg)
@@ -409,9 +410,9 @@ class BloodwormSpell : public Spell
 class WillOfTheNecropolisAura : public AbsorbAura
 {
     public:
-    static Aura* Create(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) { return new WillOfTheNecropolisAura(proto, duration, caster, target, temporary, i_caster); }
+    static Aura* Create(SpellInfo const* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) { return new WillOfTheNecropolisAura(proto, duration, caster, target, temporary, i_caster); }
 
-    WillOfTheNecropolisAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL)
+    WillOfTheNecropolisAura(SpellInfo const* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL)
         : AbsorbAura(proto, duration, caster, target, temporary, i_caster) {}
 
     uint32 AbsorbDamage(uint32 School, uint32* dmg)
