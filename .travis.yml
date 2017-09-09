@@ -133,7 +133,10 @@ matrix:
             - libbz2-dev
             - libmysqlclient-dev
             - libmysql++-dev
+            - gcc-6
+            - g++-6
             - clang-3.8
+            - clang++-3.8
       env: ASC_VERSION=WotLK COMPILER=clang++-3.8 
   # Cata
     - os: linux
@@ -170,7 +173,10 @@ matrix:
             - libbz2-dev
             - libmysqlclient-dev
             - libmysql++-dev
+            - gcc-6
+            - g++-6
             - clang-3.8
+            - clang++-3.8
       env: ASC_VERSION=Cata COMPILER=clang++-3.8 
   exclude:
     - env: TRAVIS_EMPTY_JOB_WORKAROUND=true
