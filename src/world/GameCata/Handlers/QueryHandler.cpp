@@ -116,7 +116,7 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
 
         data << (lcn ? lcn->subName : ci->SubName);
         data << ci->info_str;
-        data << uint32_t(ci->Flags1);
+        data << uint32_t(ci->typeFlags);
         data << uint32_t(0);                  // unk set 4 times with 1
         data << uint32_t(ci->Type);
         data << uint32_t(ci->Family);
@@ -127,8 +127,8 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
         data << uint32_t(ci->Female_DisplayID);
         data << uint32_t(ci->Male_DisplayID2);
         data << uint32_t(ci->Female_DisplayID2);
-        data << float(ci->unkfloat1);
-        data << float(ci->unkfloat2);
+        data << float(ci->baseAttackMod);
+        data << float(ci->rangeAttackMod);
         data << uint8_t(ci->Leader);
 
         for (uint8_t i = 0; i < 6; ++i)

@@ -505,10 +505,10 @@ void MySQLDataStore::loadCreaturePropertiesTable()
         std::string table_name = *tableiterator;
         //                                                                 0          1           2             3                 4               5                  6
         QueryResult* creature_properties_result = WorldDatabase.Query("SELECT entry, killcredit1, killcredit2, male_displayid, female_displayid, male_displayid2, female_displayid2, "
-        //                                                         7      8         9       10     11     12     13       14           15             16           17
-                                                                "name, subname, info_str, flags1, type, family, rank, encounter, unknown_float1, unknown_float2, leader, "
-        //                                                          18        19        20        21         22      23     24      25          26         27
-                                                                "minlevel, maxlevel, faction, minhealth, maxhealth, mana, scale, npcflags, attacktime, attacktype, "
+        //                                                         7      8         9         10       11     12     13       14            15              16           17
+                                                                "name, subname, info_str, type_flags, type, family, rank, encounter, base_attack_mod, range_attack_mod, leader, "
+        //                                                          18        19        20        21         22      23     24      25          26           27
+                                                                "minlevel, maxlevel, faction, minhealth, maxhealth, mana, scale, npcflags, attacktime, attack_school, "
         //                                                          28          29         30            31                 32                33            34        35
                                                                 "mindamage, maxdamage, can_ranged, rangedattacktime, rangedmindamage, rangedmaxdamage, respawntime, armor, "
         //                                                            36           37           38            39          40           41            42             43
@@ -608,13 +608,13 @@ void MySQLDataStore::loadCreaturePropertiesTable()
 
             creatureProperties.SubName = fields[8].GetString();
             creatureProperties.info_str = fields[9].GetString();
-            creatureProperties.Flags1 = fields[10].GetUInt32();
+            creatureProperties.typeFlags = fields[10].GetUInt32();
             creatureProperties.Type = fields[11].GetUInt32();
             creatureProperties.Family = fields[12].GetUInt32();
             creatureProperties.Rank = fields[13].GetUInt32();
             creatureProperties.Encounter = fields[14].GetUInt32();
-            creatureProperties.unkfloat1 = fields[15].GetFloat();
-            creatureProperties.unkfloat2 = fields[16].GetFloat();
+            creatureProperties.baseAttackMod = fields[15].GetFloat();
+            creatureProperties.rangeAttackMod = fields[16].GetFloat();
             creatureProperties.Leader = fields[17].GetUInt8();
             creatureProperties.MinLevel = fields[18].GetUInt32();
             creatureProperties.MaxLevel = fields[19].GetUInt32();
@@ -643,15 +643,15 @@ void MySQLDataStore::loadCreaturePropertiesTable()
             creatureProperties.Scale = fields[24].GetFloat();
             creatureProperties.NPCFLags = fields[25].GetUInt32();
             creatureProperties.AttackTime = fields[26].GetUInt32();
-            creatureProperties.AttackType = fields[27].GetUInt32();
+            creatureProperties.attackSchool = fields[27].GetUInt32();
             if (fields[27].GetUInt32() <= SCHOOL_ARCANE)
             {
-                creatureProperties.AttackType = fields[27].GetUInt32();
+                creatureProperties.attackSchool = fields[27].GetUInt32();
             }
             else
             {
                 LOG_ERROR("Table `%s` AttackType: %u is not a valid value! Default set to 0 for entry: %u.", table_name.c_str(), fields[10].GetUInt32(), entry);
-                creatureProperties.AttackType = SCHOOL_NORMAL;
+                creatureProperties.attackSchool = SCHOOL_NORMAL;
             }
 
             creatureProperties.MinDamage = fields[28].GetFloat();

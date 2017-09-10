@@ -75,7 +75,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
             m_spellcheck[1] = false;
 
             //frost attack type
-            const_cast<CreatureProperties*>(_unit->GetCreatureProperties())->AttackType = 4;
+            const_cast<CreatureProperties*>(_unit->GetCreatureProperties())->attackSchool = 4;
             //frost immunity
             _unit->SchoolImmunityList[SCHOOL_FROST] = 1;
 
@@ -220,7 +220,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
                     _unit->SetDisplayId(5498);
                     _unit->SendScriptTextChatMessage(4754);     // Aaghh, the poison...
                     _unit->PlaySoundToSet(11297);
-                    const_cast<CreatureProperties*>(_unit->GetCreatureProperties())->AttackType = 3;
+                    const_cast<CreatureProperties*>(_unit->GetCreatureProperties())->attackSchool = 3;
                     _unit->SchoolImmunityList[SCHOOL_FROST] = 0;
                     _unit->SchoolImmunityList[SCHOOL_NATURE] = 1;
 
@@ -304,7 +304,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
                     _unit->SetDisplayId(20162);
                     _unit->SendScriptTextChatMessage(4750);     // Better, much better.
                     _unit->PlaySoundToSet(11290);
-                    const_cast<CreatureProperties*>(_unit->GetCreatureProperties())->AttackType = 4;
+                    const_cast<CreatureProperties*>(_unit->GetCreatureProperties())->attackSchool = 4;
                     _unit->SchoolImmunityList[SCHOOL_FROST] = 1;
                     _unit->SchoolImmunityList[SCHOOL_NATURE] = 0;
 

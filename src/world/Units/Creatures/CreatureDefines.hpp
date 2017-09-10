@@ -113,13 +113,13 @@ struct CreatureProperties
     std::string Name;
     std::string SubName;
     std::string info_str;
-    uint32 Flags1;
+    uint32 typeFlags;
     uint32 Type;
     uint32 Family;
     uint32 Rank;
     uint32 Encounter;
-    float unkfloat1;
-    float unkfloat2;
+    float baseAttackMod;
+    float rangeAttackMod;
     uint8  Leader;
     uint32 MinLevel;
     uint32 MaxLevel;
@@ -130,7 +130,7 @@ struct CreatureProperties
     float Scale;
     uint32 NPCFLags;
     uint32 AttackTime;
-    uint32 AttackType;
+    uint32 attackSchool;
     float MinDamage;
     float MaxDamage;
     uint32 CanRanged;

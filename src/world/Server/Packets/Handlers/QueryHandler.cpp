@@ -130,7 +130,7 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
         }
 
         data << ci->info_str;       // this is a string in 2.3.0 Example: stormwind guard has : "Direction"
-        data << ci->Flags1;         // flags like skinnable
+        data << ci->typeFlags;      // flags like skinnable
         data << ci->Type;           // humanoid, beast, etc
         data << ci->Family;         // petfamily
         data << ci->Rank;           // normal, elite, etc
@@ -140,8 +140,8 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
         data << ci->Female_DisplayID;
         data << ci->Male_DisplayID2;
         data << ci->Female_DisplayID2;
-        data << ci->unkfloat1;
-        data << ci->unkfloat2;
+        data << ci->baseAttackMod;
+        data << ci->rangeAttackMod;
         data << ci->Leader;         // faction leader
 
         // these are the 6 seperate quest items a creature can drop

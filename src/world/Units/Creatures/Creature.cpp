@@ -1413,7 +1413,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MySQLStructure::MapInfo c
     BaseOffhandDamage[1] = GetMaxOffhandDamage();
     BaseRangedDamage[0] = GetMinRangedDamage();
     BaseRangedDamage[1] = GetMaxRangedDamage();
-    BaseAttackType = creature_properties->AttackType;
+    BaseAttackType = creature_properties->attackSchool;
 
     SetCastSpeedMod(1.0f);   // better set this one
     setUInt32Value(UNIT_FIELD_BYTES_0, spawn->bytes0);
@@ -1641,7 +1641,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     BaseOffhandDamage[1] = GetMaxOffhandDamage();
     BaseRangedDamage[0] = GetMinRangedDamage();
     BaseRangedDamage[1] = GetMaxRangedDamage();
-    BaseAttackType = creature_properties->AttackType;
+    BaseAttackType = creature_properties->attackSchool;
 
     SetCastSpeedMod(1.0f);   // better set this one
 
@@ -2041,11 +2041,11 @@ bool Creature::HasLootForPlayer(Player* plr)
 
 uint32 Creature::GetRequiredLootSkill()
 {
-    if (GetCreatureProperties()->Flags1 & CREATURE_FLAG1_HERBLOOT)
+    if (GetCreatureProperties()->typeFlags & CREATURE_FLAG1_HERBLOOT)
         return SKILL_HERBALISM;     // herbalism
-    else if (GetCreatureProperties()->Flags1 & CREATURE_FLAG1_MININGLOOT)
+    else if (GetCreatureProperties()->typeFlags & CREATURE_FLAG1_MININGLOOT)
         return SKILL_MINING;        // mining
-    else if (GetCreatureProperties()->Flags1 & CREATURE_FLAG1_ENGINEERLOOT)
+    else if (GetCreatureProperties()->typeFlags & CREATURE_FLAG1_ENGINEERLOOT)
         return SKILL_ENGINEERING;
     else
         return SKILL_SKINNING;      // skinning
@@ -2237,7 +2237,7 @@ void Creature::PrepareForRemove()
 
 bool Creature::IsExotic()
 {
-    if ((GetCreatureProperties()->Flags1 & CREATURE_FLAG1_EXOTIC) != 0)
+    if ((GetCreatureProperties()->typeFlags & CREATURE_FLAG1_EXOTIC) != 0)
         return true;
 
     return false;

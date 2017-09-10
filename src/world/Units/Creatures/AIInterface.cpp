@@ -4037,7 +4037,7 @@ void AIInterface::EventEnterCombat(Unit* pUnit, uint32 misc1)
 
 
     // dismount if mounted
-    if (m_Unit->IsCreature() && !(static_cast<Creature*>(m_Unit)->GetCreatureProperties()->Flags1 & CREATURE_FLAG1_FIGHT_MOUNTED))
+    if (m_Unit->IsCreature() && !(static_cast<Creature*>(m_Unit)->GetCreatureProperties()->typeFlags & CREATURE_FLAG1_FIGHT_MOUNTED))
         m_Unit->SetMount(0);
 
     if (!isAiState(AI_STATE_ATTACKING))
@@ -4767,7 +4767,7 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
             m_Unit->BaseRangedDamage[0] = m_Unit->GetMinRangedDamage();
             m_Unit->BaseRangedDamage[1] = m_Unit->GetMaxRangedDamage();
 
-            creature->BaseAttackType = properties_difficulty->AttackType;
+            creature->BaseAttackType = properties_difficulty->attackSchool;
 
             //guard
             if (properties_difficulty->guardtype == GUARDTYPE_CITY)
