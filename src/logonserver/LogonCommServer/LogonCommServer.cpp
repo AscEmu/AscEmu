@@ -19,16 +19,8 @@
 
 #include "LogonCommServer/LogonRealmOpcodes.hpp"
 #include "LogonStdAfx.h"
+#include "LogonCommDefines.h"
 
-#pragma pack(push, 1)
-typedef struct
-{
-    uint16 opcode;
-    uint32 size;
-} logonpacket;
-#pragma pack(pop)
-
-static void swap32(uint32* p) { *p = ((*p >> 24) & 0xff) | ((*p >> 8) & 0xff00) | ((*p << 8) & 0xff0000) | (*p << 24); }
 
 LogonCommServerSocket::LogonCommServerSocket(SOCKET fd) : Socket(fd, 65536, 524288)
 {
@@ -99,7 +91,7 @@ void LogonCommServerSocket::OnRead()
             }
 
             /* reverse byte order */
-            swap32(&remaining);
+            byteSwapUInt32(&remaining);
         }
 
         // do we have a full packet?
@@ -279,11 +271,11 @@ void LogonCommServerSocket::SendPacket(WorldPacket* data)
     bool rv;
     BurstBegin();
 
-    logonpacket header;
+    LogonWorldPacket header;
     header.opcode = data->GetOpcode();
     //header.size   = ntohl((u_long)data->size());
     header.size = (uint32)data->size();
-    swap32(&header.size);
+    byteSwapUInt32(&header.size);
 
     if (use_crypto)
         sendCrypto.Process((unsigned char*)&header, (unsigned char*)&header, 6);

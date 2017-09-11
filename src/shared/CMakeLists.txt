@@ -70,6 +70,7 @@ set(headers
 	FindFilesResult.hpp
 	LocationVector.h
 	Log.Legacy.h
+    LogonCommDefines.h
 	MapFile.h
 	MapFileEntry.h
 	MersenneTwister.h
