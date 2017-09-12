@@ -683,7 +683,7 @@ void Unit::playSpellVisual(uint64_t guid, uint32_t spell_id)
 #endif
 }
 
-void Unit::applyDiminishingReturnTimer(uint32_t* duration, SpellInfo* spell)
+void Unit::applyDiminishingReturnTimer(uint32_t* duration, SpellInfo const* spell)
 {
     uint32_t status = spell->custom_DiminishStatus;
     uint32_t group  = status & 0xFFFF;
@@ -730,7 +730,7 @@ void Unit::applyDiminishingReturnTimer(uint32_t* duration, SpellInfo* spell)
     ++m_diminishCount[group];
 }
 
-void Unit::removeDiminishingReturnTimer(SpellInfo* spell)
+void Unit::removeDiminishingReturnTimer(SpellInfo const* spell)
 {
     uint32_t status = spell->custom_DiminishStatus;
     uint32_t group  = status & 0xFFFF;

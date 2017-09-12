@@ -151,7 +151,7 @@ bool GiftOfLife(uint32 i, Spell* s)
 
     SpellCastTargets tgt;
     tgt.m_unitTarget = playerTarget->GetGUID();
-    SpellInfo* inf = sSpellCustomizations.GetSpellInfo(23782);
+    SpellInfo const* inf = sSpellCustomizations.GetSpellInfo(23782);
     Spell* spe = sSpellFactoryMgr.NewSpell(s->u_caster, inf, true, NULL);
     spe->prepare(&tgt);
 
@@ -204,13 +204,13 @@ bool NorthRendInscriptionResearch(uint32 i, Spell* s)
 
             if (skill_line_ability->skilline == SKILL_INSCRIPTION && skill_line_ability->next == 0)
             {
-                SpellInfo* se1 = sSpellCustomizations.GetSpellInfo(skill_line_ability->spell);
+                SpellInfo const* se1 = sSpellCustomizations.GetSpellInfo(skill_line_ability->spell);
                 if (se1 && se1->Effect[0] == SPELL_EFFECT_CREATE_ITEM)
                 {
                     ItemProperties const* itm = sMySQLStore.getItemProperties(se1->EffectItemType[0]);
                     if (itm && (itm->Spells[0].Id != 0))
                     {
-                        SpellInfo* se2 = sSpellCustomizations.GetSpellInfo(itm->Spells[0].Id);
+                        SpellInfo const* se2 = sSpellCustomizations.GetSpellInfo(itm->Spells[0].Id);
                         if (se2 && se2->Effect[0] == SPELL_EFFECT_USE_GLYPH)
                         {
 #if VERSION_STRING > TBC
@@ -382,7 +382,7 @@ bool Dummy_Solarian_WrathOfTheAstromancer(uint32 pEffectIndex, Spell* pSpell)
     if (!Target)
         return true;
 
-    SpellInfo* SpellInfo = sSpellCustomizations.GetSpellInfo(42787);
+    SpellInfo const* SpellInfo = sSpellCustomizations.GetSpellInfo(42787);
     if (!SpellInfo)
         return true;
 

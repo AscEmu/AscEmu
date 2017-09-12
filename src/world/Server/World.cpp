@@ -138,7 +138,7 @@ World::~World()
 
     delete mEventableObjectHolder;
 
-    for (std::list<SpellInfo*>::iterator itr = dummySpellList.begin(); itr != dummySpellList.end(); ++itr)
+    for (std::list<SpellInfo const*>::iterator itr = dummySpellList.begin(); itr != dummySpellList.end(); ++itr)
         delete *itr;
 }
 

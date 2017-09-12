@@ -488,7 +488,7 @@ void MoonInstanceScript::OnGameObjectPushToWorld(GameObject* pGameObject)
         pGameObject->SetState((*Iter).second);
 };
 
-GameObject* MoonInstanceScript::GetObjectForOpenLock(Player* pCaster, Spell* pSpell, SpellInfo* pSpellEntry)
+GameObject* MoonInstanceScript::GetObjectForOpenLock(Player* pCaster, Spell* pSpell, SpellInfo const* pSpellEntry)
 {
     return NULL;
 };

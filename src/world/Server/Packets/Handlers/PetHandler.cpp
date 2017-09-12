@@ -164,7 +164,7 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
             case PET_ACTION_SPELL:
             {
                 // misc == spellid
-                SpellInfo* entry = sSpellCustomizations.GetSpellInfo(misc);
+                SpellInfo const* entry = sSpellCustomizations.GetSpellInfo(misc);
                 if (entry == NULL)
                     return;
 
@@ -430,7 +430,7 @@ void WorldSession::HandlePetSetActionOpcode(WorldPacket& recv_data)
         return;
 
     Pet* pet = _player->GetSummon();
-    SpellInfo* spe = sSpellCustomizations.GetSpellInfo(spell);
+    SpellInfo const* spe = sSpellCustomizations.GetSpellInfo(spell);
     if (spe == NULL)
         return;
 
@@ -545,7 +545,7 @@ void WorldSession::HandlePetSpellAutocast(WorldPacket& recvPacket)
     uint8  state;
     recvPacket >> guid >> spellid >> unk >> state;
 
-    SpellInfo* spe = sSpellCustomizations.GetSpellInfo(spellid);
+    SpellInfo const* spe = sSpellCustomizations.GetSpellInfo(spellid);
     if (spe == NULL)
         return;
 
@@ -569,7 +569,7 @@ void WorldSession::HandlePetCancelAura(WorldPacket& recvPacket)
 
     recvPacket >> guid >> spellid;
 
-    SpellInfo* info = sSpellCustomizations.GetSpellInfo(spellid);
+    SpellInfo const* info = sSpellCustomizations.GetSpellInfo(spellid);
     if (info != NULL && info->Attributes & static_cast<uint32>(ATTRIBUTES_CANT_CANCEL))
         return;
     Creature* pet = _player->GetMapMgr()->GetCreature(static_cast<uint32>(guid));
@@ -634,7 +634,7 @@ void WorldSession::HandlePetLearnTalent(WorldPacket& recvPacket)
 
 #if VERSION_STRING > TBC
     // add spell, discount talent point
-    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(talent->RankID[talentcol]);
+    SpellInfo const* sp = sSpellCustomizations.GetSpellInfo(talent->RankID[talentcol]);
     if (sp != NULL)
     {
         pPet->AddSpell(sp, true);

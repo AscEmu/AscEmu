@@ -49,7 +49,7 @@
 #define SPIRITWOLF              29264
 #define DANCINGRUNEWEAPON       27893
 
-uint32 Pet::GetAutoCastTypeForSpell(SpellInfo* ent)
+uint32 Pet::GetAutoCastTypeForSpell(SpellInfo const* ent)
 {
     switch (ent->custom_NameHash)
     {
@@ -135,7 +135,7 @@ void Pet::SetNameForEntry(uint32 entry)
     }
 }
 
-bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* created_from_creature, Player* owner, SpellInfo* created_by_spell, uint32 type, uint32 expiretime, LocationVector* Vec, bool dismiss_old_pet)
+bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* created_from_creature, Player* owner, SpellInfo const* created_by_spell, uint32 type, uint32 expiretime, LocationVector* Vec, bool dismiss_old_pet)
 {
     if (ci == nullptr || owner == nullptr)
     {
@@ -537,7 +537,7 @@ void Pet::InitializeSpells()
 {
     for (PetSpellMap::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
     {
-        SpellInfo* info = itr->first;
+        SpellInfo const* info = itr->first;
 
         // Check that the spell isn't passive
         if (info->IsPassive())
@@ -558,7 +558,7 @@ void Pet::InitializeSpells()
     }
 }
 
-AI_Spell* Pet::CreateAISpell(SpellInfo* info)
+AI_Spell* Pet::CreateAISpell(SpellInfo const* info)
 {
     ARCEMU_ASSERT(info != NULL);
 
@@ -807,7 +807,7 @@ void Pet::InitializeMe(bool first)
             do
             {
                 Field* f = query->Fetch();
-                SpellInfo* spell = sSpellCustomizations.GetSpellInfo(f[2].GetUInt32());
+                SpellInfo const* spell = sSpellCustomizations.GetSpellInfo(f[2].GetUInt32());
                 uint16 flags = f[3].GetUInt16();
                 if (spell != NULL && mSpells.find(spell) == mSpells.end())
                     mSpells.insert(std::make_pair(spell, flags));
@@ -1064,7 +1064,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
 
             if (spellid != 0)
             {
-                SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spellid);
+                SpellInfo const* sp = sSpellCustomizations.GetSpellInfo(spellid);
                 if (sp != NULL)
                     AddSpell(sp, true, showLearnSpells);
             }
@@ -1076,7 +1076,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
         uint32 spellid = creature_properties->AISpells[i];
         if (spellid != 0)
         {
-            SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spellid);
+            SpellInfo const* sp = sSpellCustomizations.GetSpellInfo(spellid);
             if (sp != NULL)
                 AddSpell(sp, true, showLearnSpells);
         }
@@ -1110,7 +1110,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
 
     if (s || s2)
     {
-        SpellInfo* sp;
+        SpellInfo const* sp;
         for (uint32 idx = 0; idx < sSkillLineAbilityStore.GetNumRows(); ++idx)
         {
             auto skill_line_ability = sSkillLineAbilityStore.LookupEntry(idx);
@@ -1143,7 +1143,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
     }
 }
 
-void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
+void Pet::AddSpell(SpellInfo const* sp, bool learning, bool showLearnSpell)
 {
     if (sp == NULL)
         return;
@@ -1254,7 +1254,7 @@ void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
         SendSpellsToOwner();
 }
 
-void Pet::SetSpellState(SpellInfo* sp, uint16 State)
+void Pet::SetSpellState(SpellInfo const* sp, uint16 State)
 {
     PetSpellMap::iterator itr = mSpells.find(sp);
     if (itr == mSpells.end())
@@ -1276,7 +1276,7 @@ void Pet::SetSpellState(SpellInfo* sp, uint16 State)
     }
 }
 
-uint16 Pet::GetSpellState(SpellInfo* sp)
+uint16 Pet::GetSpellState(SpellInfo const* sp)
 {
     PetSpellMap::iterator itr = mSpells.find(sp);
     if (itr == mSpells.end())
@@ -1324,7 +1324,7 @@ void Pet::WipeTalents()
     SendSpellsToOwner();
 }
 
-void Pet::RemoveSpell(SpellInfo* sp, bool showUnlearnSpell)
+void Pet::RemoveSpell(SpellInfo const* sp, bool showUnlearnSpell)
 {
     mSpells.erase(sp);
     std::map<uint32, AI_Spell*>::iterator itr = m_AISpellStore.find(sp->Id);
@@ -1675,7 +1675,7 @@ void Pet::UpdateAP()
     SetAttackPower(AP);
 }
 
-uint32 Pet::CanLearnSpell(SpellInfo* sp)
+uint32 Pet::CanLearnSpell(SpellInfo const* sp)
 {
     // level requirement
     if (getLevel() < sp->spellLevel)
@@ -2113,7 +2113,7 @@ void Pet::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
 
     // on die and an target die proc
     {
-        SpellInfo* killerspell;
+        SpellInfo const* killerspell;
         if (spellid)
             killerspell = sSpellCustomizations.GetSpellInfo(spellid);
         else killerspell = NULL;

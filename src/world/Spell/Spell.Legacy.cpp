@@ -92,7 +92,7 @@ bool CanAttackCreatureType(uint32 TargetTypeMask, uint32 type)
         return true;
 }
 
-Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
+Spell::Spell(Object* Caster, SpellInfo const* info, bool triggered, Aura* aur)
 {
     ARCEMU_ASSERT(Caster != NULL && info != NULL);
 
@@ -111,7 +111,7 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
 
     if ((info->SpellDifficultyID != 0) && (Caster->GetTypeId() != TYPEID_PLAYER) && (Caster->GetMapMgr() != NULL) && (Caster->GetMapMgr()->pInstance != NULL))
     {
-        SpellInfo* SpellDiffEntry = sSpellFactoryMgr.GetSpellEntryByDifficulty(info->SpellDifficultyID, Caster->GetMapMgr()->iInstanceMode);
+        SpellInfo const* SpellDiffEntry = sSpellFactoryMgr.GetSpellEntryByDifficulty(info->SpellDifficultyID, Caster->GetMapMgr()->iInstanceMode);
         if (SpellDiffEntry != NULL)
             m_spellInfo = SpellDiffEntry;
         else
@@ -2997,7 +2997,7 @@ void Spell::HandleAddAura(uint64 guid)
         p_caster->GetShapeShift() == FORM_DIREBEAR) &&
         p_caster->HasAurasWithNameHash(SPELL_HASH_KING_OF_THE_JUNGLE))
     {
-        SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(51185);
+        SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(51185);
         if (!spellInfo)
         {
             delete aur;
@@ -3040,7 +3040,7 @@ void Spell::HandleAddAura(uint64 guid)
 
     if (spellid && Target)
     {
-        SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellid);
+        SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(spellid);
         if (!spellInfo)
         {
             delete aur;
@@ -3167,7 +3167,7 @@ bool Spell::IsSeal()
         (GetSpellInfo()->Id == 31801) || (GetSpellInfo()->Id == 31892) || (GetSpellInfo()->Id == 53720) || (GetSpellInfo()->Id == 53736));
 }
 
-SpellInfo* Spell::GetSpellInfo()
+SpellInfo const* Spell::GetSpellInfo()
 {
     return (m_spellInfo_override == NULL) ? m_spellInfo : m_spellInfo_override;
 }
@@ -3288,7 +3288,7 @@ uint32 Spell::GetBaseThreat(uint32 dmg)
     return dmg;
 }
 
-uint32 Spell::GetMechanic(SpellInfo* sp)
+uint32 Spell::GetMechanic(SpellInfo const* sp)
 {
     if (sp->MechanicsType)
         return sp->MechanicsType;
@@ -4175,7 +4175,7 @@ uint8 Spell::CanCast(bool tolerate)
                         return SPELL_FAILED_NO_PET;
 
                     // other checks
-                    SpellInfo* trig = sSpellCustomizations.GetSpellInfo(GetSpellInfo()->EffectTriggerSpell[0]);
+                    SpellInfo const* trig = sSpellCustomizations.GetSpellInfo(GetSpellInfo()->EffectTriggerSpell[0]);
                     if (trig == NULL)
                         return SPELL_FAILED_SPELL_UNAVAILABLE;
 
@@ -4641,7 +4641,7 @@ uint8 Spell::CanCast(bool tolerate)
 
         if (u_caster->GetChannelSpellTargetGUID() != 0)
         {
-            SpellInfo* t_spellInfo = (u_caster->GetCurrentSpell() ? u_caster->GetCurrentSpell()->GetSpellInfo() : NULL);
+            SpellInfo const* t_spellInfo = (u_caster->GetCurrentSpell() ? u_caster->GetCurrentSpell()->GetSpellInfo() : NULL);
 
             if (!t_spellInfo || !m_triggeredSpell)
                 return SPELL_FAILED_SPELL_IN_PROGRESS;
@@ -5841,7 +5841,7 @@ void Spell::SafeAddModeratedTarget(uint64 guid, uint16 type)
 
 bool Spell::Reflect(Unit* refunit)
 {
-    SpellInfo* refspell = NULL;
+    SpellInfo const* refspell = NULL;
     bool canreflect = false;
 
     if (m_reflectedParent != NULL || refunit == NULL || m_caster == refunit)
@@ -6157,7 +6157,7 @@ void Spell::SetCanReflect(bool reflect)
     m_CanRelect = reflect;
 }
 
-uint8 Spell::GetErrorAtShapeshiftedCast(SpellInfo* spellInfo, uint32 form)
+uint8 Spell::GetErrorAtShapeshiftedCast(SpellInfo const* spellInfo, uint32 form)
 {
     uint32 stanceMask = (form ? decimalToMask(form) : 0);
 
@@ -6526,7 +6526,7 @@ void Spell::HandleTargetNoObject()
     m_targets.setDestination(LocationVector(newx, newy, newz));
 }
 
-SpellInfo* Spell::checkAndReturnSpellEntry(uint32_t spellid)
+SpellInfo const* Spell::checkAndReturnSpellEntry(uint32_t spellid)
 {
     //Logging that spellid 0 or -1 don't exist is not needed.
     if (spellid == 0 || spellid == uint32_t(-1))
@@ -6539,5 +6539,17 @@ SpellInfo* Spell::checkAndReturnSpellEntry(uint32_t spellid)
     }
 
     return spell_info;
+}
+
+SpellInfo* Spell::checkAndReturnSpellEntryUnsafe(uint32_t spellId)
+{
+    if (spellId == 0 || spellId == uint32_t(-1))
+        return nullptr;
+
+    auto spellInfo = sSpellCustomizations.getSpellInfoUnsafe(spellId);
+    if (spellInfo == nullptr)
+        LogDebugFlag(LF_SPELL, "Something tried to access nonexistent spell %u", spellId);
+
+    return spellInfo;
 }
 #endif

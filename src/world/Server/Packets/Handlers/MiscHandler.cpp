@@ -1628,7 +1628,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
     recv_data >> guid;
     SpellCastTargets targets;
     Spell* spell = NULL;
-    SpellInfo* spellInfo = NULL;
+    SpellInfo const* spellInfo = NULL;
     LOG_DEBUG("WORLD: CMSG_GAMEOBJ_USE: [GUID %d]", guid);
 
     GameObject* obj = _player->GetMapMgr()->GetGameObject((uint32)guid);
@@ -1866,7 +1866,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                     }
                 }
 
-                SpellInfo* info = nullptr;
+                SpellInfo const* info = nullptr;
                 if (gameobject_info->entry == 36727 || gameobject_info->entry == 194108)   // summon portal
                 {
                     if (!ritual_obj->GetRitual()->GetTargetGUID() == 0)
@@ -2303,7 +2303,7 @@ void WorldSession::HandleSelfResurrectOpcode(WorldPacket& recv_data)
     uint32 self_res_spell = _player->getUInt32Value(PLAYER_SELF_RES_SPELL);
     if (self_res_spell)
     {
-        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(self_res_spell);
+        SpellInfo const* sp = sSpellCustomizations.GetSpellInfo(self_res_spell);
         Spell* s = sSpellFactoryMgr.NewSpell(_player, sp, true, NULL);
         SpellCastTargets tgt;
         tgt.m_unitTarget = _player->GetGUID();

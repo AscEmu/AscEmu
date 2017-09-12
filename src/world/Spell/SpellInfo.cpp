@@ -341,7 +341,7 @@ bool SpellInfo::HasEffect(uint32 effect) const
     return false;
 }
 
-bool SpellInfo::HasEffectApplyAuraName(uint32_t aura_name)
+bool SpellInfo::HasEffectApplyAuraName(uint32_t aura_name) const
 {
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
         if (Effect[i] == SPELL_EFFECT_APPLY_AURA && EffectApplyAuraName[i] == aura_name)
@@ -350,7 +350,7 @@ bool SpellInfo::HasEffectApplyAuraName(uint32_t aura_name)
     return false;
 }
 
-bool SpellInfo::HasCustomFlagForEffect(uint32 effect, uint32 flag)
+bool SpellInfo::HasCustomFlagForEffect(uint32 effect, uint32 flag) const
 {
     if (effect >= MAX_SPELL_EFFECTS)
         return false;
@@ -638,7 +638,7 @@ bool SpellInfo::isRequireCooldownSpell() const
     return cond1 || cond2;
 }
 
-bool SpellInfo::IsPassive()
+bool SpellInfo::IsPassive() const
 {
     return (Attributes & ATTRIBUTES_PASSIVE) != 0;
 }
@@ -662,7 +662,7 @@ bool SpellInfo::IsProfession()
     return false;
 }
 
-bool SpellInfo::IsPrimaryProfession()
+bool SpellInfo::IsPrimaryProfession() const
 {
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
@@ -677,7 +677,7 @@ bool SpellInfo::IsPrimaryProfession()
     return false;
 }
 
-bool SpellInfo::IsPrimaryProfessionSkill(uint32 skill_id)
+bool SpellInfo::IsPrimaryProfessionSkill(uint32 skill_id) const
 {
     if (DBC::Structures::SkillLineEntry const* skill_line = sSkillLineStore.LookupEntry(skill_id))
         if (skill_line && skill_line->type == SKILL_TYPE_PROFESSION)
@@ -717,7 +717,7 @@ bool SpellInfo::appliesAreaAura(uint32 aura) const
     return false;
 }
 
-uint32 SpellInfo::GetAreaAuraEffectId()
+uint32 SpellInfo::GetAreaAuraEffectId() const
 {
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {

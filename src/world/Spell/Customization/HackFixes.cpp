@@ -439,7 +439,7 @@ void Set_missing_spellLevel(SpellInfo* sp)
 
             if (teachspell)
             {
-                SpellInfo* spellInfo = Spell::checkAndReturnSpellEntry(teachspell);
+                SpellInfo* spellInfo = Spell::checkAndReturnSpellEntryUnsafe(teachspell);
                 if (spellInfo != nullptr)
                 {
                     spellInfo->spellLevel = new_level;
@@ -6483,7 +6483,7 @@ void ApplyNormalFixes()
     for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
     {
         // Read every SpellEntry row
-        sp = sSpellCustomizations.GetSpellInfo(it->first);
+        sp = sSpellCustomizations.getSpellInfoUnsafe(it->first);
         if (sp == nullptr)
             continue;
 
@@ -6907,7 +6907,7 @@ void ApplyNormalFixes()
     for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
     {
         // get spellentry
-        sp = sSpellCustomizations.GetSpellInfo(it->first);
+        sp = sSpellCustomizations.getSpellInfoUnsafe(it->first);
         if (sp == nullptr)
             continue;
 
@@ -7330,7 +7330,7 @@ void ApplyNormalFixes()
         {
             Field* f;
             f = resultx->Fetch();
-            sp = sSpellCustomizations.GetSpellInfo(f[0].GetUInt32());
+            sp = sSpellCustomizations.getSpellInfoUnsafe(f[0].GetUInt32());
             if (sp != nullptr)
             {
                 sp->Dspell_coef_override = f[2].GetFloat();
@@ -7347,7 +7347,7 @@ void ApplyNormalFixes()
     for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
     {
         // get spellentry
-        sp = sSpellCustomizations.GetSpellInfo(it->first);
+        sp = sSpellCustomizations.getSpellInfoUnsafe(it->first);
         if (sp == nullptr)
             continue;
 
@@ -7358,7 +7358,7 @@ void ApplyNormalFixes()
         {
             if (sp->EffectApplyAuraName[i] == SPELL_AURA_PERIODIC_TRIGGER_SPELL)
             {
-                spz = Spell::checkAndReturnSpellEntry(sp->EffectTriggerSpell[i]);
+                spz = Spell::checkAndReturnSpellEntryUnsafe(sp->EffectTriggerSpell[i]);
                 if (spz != NULL)
                 {
                     if (sp->Dspell_coef_override >= 0)
@@ -7403,7 +7403,7 @@ void ApplyNormalFixes()
     const static uint32 thrown_spells[] = { SPELL_RANGED_GENERAL, SPELL_RANGED_THROW, SPELL_RANGED_WAND, 26679, 29436, 37074, 41182, 41346, 0 };
     for (uint32 i = 0; thrown_spells[i] != 0; ++i)
     {
-        sp = Spell::checkAndReturnSpellEntry(thrown_spells[i]);
+        sp = Spell::checkAndReturnSpellEntryUnsafe(thrown_spells[i]);
         if (sp != nullptr && sp->RecoveryTime == 0 && sp->StartRecoveryTime == 0)
         {
             if (sp->Id == SPELL_RANGED_GENERAL)
@@ -7415,7 +7415,7 @@ void ApplyNormalFixes()
 
     ////////////////////////////////////////////////////////////
     // Wands
-    sp = Spell::checkAndReturnSpellEntry(SPELL_RANGED_WAND);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(SPELL_RANGED_WAND);
     if (sp != nullptr)
         sp->Spell_Dmg_Type = SPELL_DMG_TYPE_RANGED;
 
@@ -7436,70 +7436,70 @@ void ApplyNormalFixes()
     // Arms
 
     // Juggernaut
-    sp = Spell::checkAndReturnSpellEntry(65156);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(65156);
     if (sp != nullptr)
         sp->AuraInterruptFlags = AURA_INTERRUPT_ON_CAST_SPELL;
 
     // Warrior - Overpower Rank 1
-    sp = Spell::checkAndReturnSpellEntry(7384);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(7384);
     if (sp != nullptr)
         sp->Attributes |= ATTRIBUTES_CANT_BE_DPB;
     // Warrior - Overpower Rank 2
-    sp = Spell::checkAndReturnSpellEntry(7887);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(7887);
     if (sp != nullptr)
         sp->Attributes |= ATTRIBUTES_CANT_BE_DPB;
     // Warrior - Overpower Rank 3
-    sp = Spell::checkAndReturnSpellEntry(11584);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(11584);
     if (sp != nullptr)
         sp->Attributes |= ATTRIBUTES_CANT_BE_DPB;
     // Warrior - Overpower Rank 4
-    sp = Spell::checkAndReturnSpellEntry(11585);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(11585);
     if (sp != nullptr)
         sp->Attributes |= ATTRIBUTES_CANT_BE_DPB;
 
     // Warrior - Tactical Mastery Rank 1
-    sp = Spell::checkAndReturnSpellEntry(12295);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(12295);
     if (sp != nullptr)
         sp->RequiredShapeShift = 0x00070000;
     // Warrior - Tactical Mastery Rank 2
-    sp = Spell::checkAndReturnSpellEntry(12676);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(12676);
     if (sp != nullptr)
         sp->RequiredShapeShift = 0x00070000;
     // Warrior - Tactical Mastery Rank 3
-    sp = Spell::checkAndReturnSpellEntry(12677);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(12677);
     if (sp != nullptr)
         sp->RequiredShapeShift = 0x00070000;
 
     // Warrior - Heroic Throw
-    sp = Spell::checkAndReturnSpellEntry(57755);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(57755);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_SCHOOL_DAMAGE;
     }
 
     // Warrior - Rend
-    sp = Spell::checkAndReturnSpellEntry(772);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(772);
     if (sp != nullptr)
         sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = Spell::checkAndReturnSpellEntry(6546);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(6546);
     if (sp != nullptr)
         sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = Spell::checkAndReturnSpellEntry(6547);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(6547);
     if (sp != nullptr)
         sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = Spell::checkAndReturnSpellEntry(6548);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(6548);
     if (sp != nullptr)
         sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = Spell::checkAndReturnSpellEntry(11572);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(11572);
     if (sp != nullptr)
         sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = Spell::checkAndReturnSpellEntry(11573);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(11573);
     if (sp != nullptr)
         sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = Spell::checkAndReturnSpellEntry(11574);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(11574);
     if (sp != nullptr)
         sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = Spell::checkAndReturnSpellEntry(25208);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(25208);
     if (sp != nullptr)
         sp->MechanicsType = MECHANIC_BLEEDING;
 
@@ -7507,70 +7507,70 @@ void ApplyNormalFixes()
     // Fury
 
     // Warrior - Slam
-    sp = Spell::checkAndReturnSpellEntry(1464);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(1464);
     if (sp != nullptr)
         sp->Effect[0] = SPELL_EFFECT_SCHOOL_DAMAGE;
 
-    sp = Spell::checkAndReturnSpellEntry(8820);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(8820);
     if (sp != nullptr)
         sp->Effect[0] = SPELL_EFFECT_SCHOOL_DAMAGE;
 
-    sp = Spell::checkAndReturnSpellEntry(11604);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(11604);
     if (sp != nullptr)
         sp->Effect[0] = SPELL_EFFECT_SCHOOL_DAMAGE;
 
-    sp = Spell::checkAndReturnSpellEntry(11605);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(11605);
     if (sp != nullptr)
         sp->Effect[0] = SPELL_EFFECT_SCHOOL_DAMAGE;
 
-    sp = Spell::checkAndReturnSpellEntry(25241);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(25241);
     if (sp != nullptr)
         sp->Effect[0] = SPELL_EFFECT_SCHOOL_DAMAGE;
 
-    sp = Spell::checkAndReturnSpellEntry(25242);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(25242);
     if (sp != nullptr)
         sp->Effect[0] = SPELL_EFFECT_SCHOOL_DAMAGE;
 
-    sp = Spell::checkAndReturnSpellEntry(47474);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(47474);
     if (sp != nullptr)
         sp->Effect[0] = SPELL_EFFECT_SCHOOL_DAMAGE;
 
-    sp = Spell::checkAndReturnSpellEntry(47475);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(47475);
     if (sp != nullptr)
         sp->Effect[0] = SPELL_EFFECT_SCHOOL_DAMAGE;
 
     // Warrior - Bloodthirst new version is ok but old version is wrong from now on :(
-    sp = Spell::checkAndReturnSpellEntry(23881);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(23881);
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL; //cast on us, it is good
         sp->EffectTriggerSpell[1] = 23885; //evil , but this is good for us :D
     }
-    sp = Spell::checkAndReturnSpellEntry(23892);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(23892);
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[1] = 23886; //evil , but this is good for us :D  // DankoDJ: Is there a reason to trigger an non existing spell?
     }
-    sp = Spell::checkAndReturnSpellEntry(23893);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(23893);
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL; //
         sp->EffectTriggerSpell[1] = 23887; //evil , but this is good for us :D // DankoDJ: Is there a reason to trigger an non existing spell?
     }
-    sp = Spell::checkAndReturnSpellEntry(23894);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(23894);
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL; //
         sp->EffectTriggerSpell[1] = 23888; //evil , but this is good for us :D // DankoDJ: Is there a reason to trigger an non existing spell?
     }
-    sp = Spell::checkAndReturnSpellEntry(25251);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(25251);
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL; //aura
         sp->EffectTriggerSpell[1] = 25252; //evil , but this is good for us :D // DankoDJ: Is there a reason to trigger an non existing spell?
     }
-    sp = Spell::checkAndReturnSpellEntry(30335);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(30335);
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL; //aura
@@ -7578,7 +7578,7 @@ void ApplyNormalFixes()
     }
 
     // Warrior - Berserker Rage
-    sp = Spell::checkAndReturnSpellEntry(18499);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(18499);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_DUMMY;//Forcing a dummy aura, so we can add the missing 4th effect.
@@ -7587,7 +7587,7 @@ void ApplyNormalFixes()
     }
 
     // Warrior - Heroic Fury
-    sp = Spell::checkAndReturnSpellEntry(60970);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(60970);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_DUMMY;
@@ -7597,7 +7597,7 @@ void ApplyNormalFixes()
     // Protection
 
     // Intervene  Ranger: stop attack
-    sp = Spell::checkAndReturnSpellEntry(3411);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(3411);
     if (sp != nullptr)
     {
         sp->Attributes |= ATTRIBUTES_STOP_ATTACK;
@@ -7610,36 +7610,36 @@ void ApplyNormalFixes()
     // Insert paladin spell fixes here
 
     //Paladin - Seal of Command - Holy damage, but melee mechanics (crit damage, chance, etc)
-    sp = Spell::checkAndReturnSpellEntry(20424);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(20424);
     if (sp != nullptr)
         sp->custom_is_melee_spell = true;
 
     //Paladin - Hammer of the Righteous
-    sp = Spell::checkAndReturnSpellEntry(53595);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(53595);
     if (sp != nullptr)
     {
         sp->speed = 0;    //without, no damage is done
     }
 
     //Paladin - Seal of Martyr
-    sp = Spell::checkAndReturnSpellEntry(53720);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(53720);
     if (sp != nullptr)
     {
         sp->School = SCHOOL_HOLY;
     }
     //Paladin - seal of blood
-    sp = Spell::checkAndReturnSpellEntry(31892);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(31892);
     if (sp != nullptr)
     {
         sp->School = SCHOOL_HOLY;
     }
-    sp = Spell::checkAndReturnSpellEntry(53719);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(53719);
     if (sp != nullptr)
     {
         sp->School = SCHOOL_HOLY;
         sp->Spell_Dmg_Type = SPELL_DMG_TYPE_MAGIC;
     }
-    sp = Spell::checkAndReturnSpellEntry(31893);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(31893);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_PHYSICAL_ATTACK;
@@ -7648,7 +7648,7 @@ void ApplyNormalFixes()
     }
 
     //Paladin - Divine Storm
-    sp = Spell::checkAndReturnSpellEntry(53385);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(53385);
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
@@ -7661,7 +7661,7 @@ void ApplyNormalFixes()
     }
 
     //Paladin - Judgements of the Wise
-    sp = Spell::checkAndReturnSpellEntry(31930);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(31930);
     if (sp != nullptr)
     {
         sp->SpellFamilyName = 0;
@@ -7670,7 +7670,7 @@ void ApplyNormalFixes()
         sp->SpellGroupType[2] = 0;
     }
 
-    sp = Spell::checkAndReturnSpellEntry(54180);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(54180);
     if (sp != nullptr)
     {
         sp->SpellFamilyName = 0;
@@ -7680,83 +7680,83 @@ void ApplyNormalFixes()
     }
 
     //Paladin - Avenging Wrath marker - Is forced debuff
-    sp = Spell::checkAndReturnSpellEntry(61987);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(61987);
     if (sp != nullptr)
     {
         sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
     }
 
     //Paladin - Forbearance - Is forced debuff
-    sp = Spell::checkAndReturnSpellEntry(25771);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(25771);
     if (sp != nullptr)
     {
         sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
     }
 
     //Divine Protection
-    sp = Spell::checkAndReturnSpellEntry(498);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(498);
     if (sp != nullptr)
         sp->targetAuraSpellNot = 25771;
 
     //Divine Shield
-    sp = Spell::checkAndReturnSpellEntry(642);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(642);
     if (sp != nullptr)
         sp->targetAuraSpellNot = 25771;
 
     //Hand of Protection Rank 1
-    sp = Spell::checkAndReturnSpellEntry(1022);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(1022);
     if (sp != nullptr)
         sp->targetAuraSpellNot = 25771;
 
     //Hand of Protection Rank 2
-    sp = Spell::checkAndReturnSpellEntry(5599);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(5599);
     if (sp != nullptr)
         sp->targetAuraSpellNot = 25771;
 
     //Hand of Protection Rank 3
-    sp = Spell::checkAndReturnSpellEntry(10278);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(10278);
     if (sp != nullptr)
         sp->targetAuraSpellNot = 25771;
 
     //Paladin - Art of War
-    sp = Spell::checkAndReturnSpellEntry(53486);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(53486);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_DAMAGE_DONE;
     }
-    sp = Spell::checkAndReturnSpellEntry(53489);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(53489);
     if (sp != nullptr)
         sp->AuraInterruptFlags = AURA_INTERRUPT_ON_CAST_SPELL;
 
-    sp = Spell::checkAndReturnSpellEntry(53488);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(53488);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_DAMAGE_DONE;
     }
-    sp = Spell::checkAndReturnSpellEntry(59578);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(59578);
     if (sp != nullptr)
         sp->AuraInterruptFlags = AURA_INTERRUPT_ON_CAST_SPELL;
 
     //Paladin - Hammer of Justice - Interrupt effect
-    sp = Spell::checkAndReturnSpellEntry(853);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(853);
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[1] = 32747;
     }
-    sp = Spell::checkAndReturnSpellEntry(5588);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(5588);
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[1] = 32747;
     }
-    sp = Spell::checkAndReturnSpellEntry(5589);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(5589);
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[1] = 32747;
     }
-    sp = Spell::checkAndReturnSpellEntry(10308);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(10308);
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
@@ -7770,37 +7770,37 @@ void ApplyNormalFixes()
     // Insert hunter spell fixes here
 
     //Hunter - Bestial Wrath
-    sp = Spell::checkAndReturnSpellEntry(19574);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(19574);
     if (sp != nullptr)
         sp->EffectApplyAuraName[2] = SPELL_AURA_DUMMY;
 
     //Hunter - The Beast Within
-    sp = Spell::checkAndReturnSpellEntry(34471);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(34471);
     if (sp != nullptr)
         sp->EffectApplyAuraName[2] = SPELL_AURA_DUMMY;
 
     //Hunter - Go for the Throat
-    sp = Spell::checkAndReturnSpellEntry(34952);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(34952);
     if (sp != nullptr)
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
-    sp = Spell::checkAndReturnSpellEntry(34953);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(34953);
     if (sp != nullptr)
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
 
     // Hunter - Spirit Bond
-    sp = Spell::checkAndReturnSpellEntry(19578);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(19578);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 19579;
     }
-    sp = Spell::checkAndReturnSpellEntry(20895);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(20895);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 24529;
     }
-    sp = Spell::checkAndReturnSpellEntry(19579);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(19579);
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_APPLY_AURA; //we should do the same for player too as we did for pet
@@ -7810,7 +7810,7 @@ void ApplyNormalFixes()
         sp->EffectAmplitude[1] = sp->EffectAmplitude[0];
         sp->EffectDieSides[1] = sp->EffectDieSides[0];
     }
-    sp = Spell::checkAndReturnSpellEntry(24529);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(24529);
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_APPLY_AURA; //we should do the same for player too as we did for pet
@@ -7822,14 +7822,14 @@ void ApplyNormalFixes()
     }
 
     //Hunter Silencing Shot
-    sp = Spell::checkAndReturnSpellEntry(34490);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(34490);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[1] = SPELL_AURA_MOD_SILENCE;
     }
 
     // Hunter - Ferocious Inspiration
-    sp = Spell::checkAndReturnSpellEntry(34455);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(34455);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
@@ -7838,7 +7838,7 @@ void ApplyNormalFixes()
         sp->procFlags = PROC_ON_CRIT_ATTACK | PROC_ON_SPELL_CRIT_HIT | static_cast<uint32>(PROC_TARGET_SELF); //maybe target master ?
         sp->Effect[1] = SPELL_EFFECT_NULL; //remove this
     }
-    sp = Spell::checkAndReturnSpellEntry(34459);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(34459);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
@@ -7847,7 +7847,7 @@ void ApplyNormalFixes()
         sp->procFlags = PROC_ON_CRIT_ATTACK | PROC_ON_SPELL_CRIT_HIT | static_cast<uint32>(PROC_TARGET_SELF);
         sp->Effect[1] = SPELL_EFFECT_NULL; //remove this
     }
-    sp = Spell::checkAndReturnSpellEntry(34460);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(34460);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
@@ -7858,13 +7858,13 @@ void ApplyNormalFixes()
     }
 
     // Hunter - Focused Fire
-    sp = Spell::checkAndReturnSpellEntry(35029);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(35029);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 35060;
     }
-    sp = Spell::checkAndReturnSpellEntry(35030);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(35030);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
@@ -7872,7 +7872,7 @@ void ApplyNormalFixes()
     }
 
     // Hunter - Thrill of the Hunt
-    sp = Spell::checkAndReturnSpellEntry(34497);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(34497);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_SPELL_CRIT_HIT | static_cast<uint32>(PROC_TARGET_SELF);
@@ -7880,7 +7880,7 @@ void ApplyNormalFixes()
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 34720;
     }
-    sp = Spell::checkAndReturnSpellEntry(34498);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(34498);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_SPELL_CRIT_HIT | static_cast<uint32>(PROC_TARGET_SELF);
@@ -7888,7 +7888,7 @@ void ApplyNormalFixes()
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 34720;
     }
-    sp = Spell::checkAndReturnSpellEntry(34499);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(34499);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_SPELL_CRIT_HIT | static_cast<uint32>(PROC_TARGET_SELF);
@@ -7898,7 +7898,7 @@ void ApplyNormalFixes()
     }
 
     //Hunter - Frenzy
-    sp = Spell::checkAndReturnSpellEntry(19621);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(19621);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
@@ -7907,7 +7907,7 @@ void ApplyNormalFixes()
         sp->procChance = sp->EffectBasePoints[0];
         sp->procFlags = PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF);        //Zyres: moved from custom_c_is_flag
     }
-    sp = Spell::checkAndReturnSpellEntry(19622);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(19622);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
@@ -7916,7 +7916,7 @@ void ApplyNormalFixes()
         sp->procChance = sp->EffectBasePoints[0];
         sp->procFlags = PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF);        //Zyres: moved from custom_c_is_flag
     }
-    sp = Spell::checkAndReturnSpellEntry(19623);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(19623);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
@@ -7925,7 +7925,7 @@ void ApplyNormalFixes()
         sp->procChance = sp->EffectBasePoints[0];
         sp->procFlags = PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF);        //Zyres: moved from custom_c_is_flag
     }
-    sp = Spell::checkAndReturnSpellEntry(19624);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(19624);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
@@ -7934,7 +7934,7 @@ void ApplyNormalFixes()
         sp->procChance = sp->EffectBasePoints[0];
         sp->procFlags = PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF);        //Zyres: moved from custom_c_is_flag
     }
-    sp = Spell::checkAndReturnSpellEntry(19625);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(19625);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
@@ -7945,24 +7945,24 @@ void ApplyNormalFixes()
     }
 
     //Hunter : Pathfinding
-    sp = Spell::checkAndReturnSpellEntry(19559);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(19559);
     if (sp != nullptr)
     {
         sp->EffectMiscValue[0] = SMT_MISC_EFFECT;
     }
-    sp = Spell::checkAndReturnSpellEntry(19560);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(19560);
     if (sp != nullptr)
     {
         sp->EffectMiscValue[0] = SMT_MISC_EFFECT;
     }
 
     //Hunter : Rapid Killing - might need to add honor trigger too here. I'm guessing you receive Xp too so I'm avoiding double proc
-    sp = Spell::checkAndReturnSpellEntry(34948);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(34948);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_GAIN_EXPIERIENCE | static_cast<uint32>(PROC_TARGET_SELF);
     }
-    sp = Spell::checkAndReturnSpellEntry(34949);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(34949);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_GAIN_EXPIERIENCE | static_cast<uint32>(PROC_TARGET_SELF);
@@ -7970,18 +7970,18 @@ void ApplyNormalFixes()
 
     /* Zyres: Same procFlags are already in the dbcs!
     //Hunter : Entrapment
-    sp = checkAndReturnSpellEntry(19184);
+    sp = checkAndReturnSpellEntryUnsafe(19184);
     if (sp != nullptr)
         sp->procFlags = PROC_ON_TRAP_TRIGGER;
-    sp = checkAndReturnSpellEntry(19387);
+    sp = checkAndReturnSpellEntryUnsafe(19387);
     if (sp != nullptr)
         sp->procFlags = PROC_ON_TRAP_TRIGGER;
-    sp = checkAndReturnSpellEntry(19388);
+    sp = checkAndReturnSpellEntryUnsafe(19388);
     if (sp != nullptr)
         sp->procFlags = PROC_ON_TRAP_TRIGGER;*/
 
     // Feed pet
-    sp = Spell::checkAndReturnSpellEntry(6991);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(6991);
     if (sp != nullptr)
     {
         sp->EffectImplicitTargetA[0] = 0;
@@ -7989,21 +7989,21 @@ void ApplyNormalFixes()
 
     //\todo 16/03/08 Zyres: sql
     // MesoX: Serendipity http://www.wowhead.com/?spell=63730
-    sp = Spell::checkAndReturnSpellEntry(63730);   // Rank 1
+    sp = Spell::checkAndReturnSpellEntryUnsafe(63730);   // Rank 1
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
         sp->custom_ProcOnNameHash[0] = SPELL_HASH_BINDING_HEAL;
         sp->custom_ProcOnNameHash[1] = SPELL_HASH_FLASH_HEAL;
     }
-    sp = Spell::checkAndReturnSpellEntry(63733);   // Rank 2
+    sp = Spell::checkAndReturnSpellEntryUnsafe(63733);   // Rank 2
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
         sp->custom_ProcOnNameHash[0] = SPELL_HASH_BINDING_HEAL;
         sp->custom_ProcOnNameHash[1] = SPELL_HASH_FLASH_HEAL;
     }
-    sp = Spell::checkAndReturnSpellEntry(63737);   // Rank 3
+    sp = Spell::checkAndReturnSpellEntryUnsafe(63737);   // Rank 3
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
@@ -8019,7 +8019,7 @@ void ApplyNormalFixes()
     // Insert rogue spell fixes here
 
     // Garrote - this is used?
-    sp = Spell::checkAndReturnSpellEntry(37066);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(37066);
     if (sp != nullptr)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SINGLE_ENEMY;
@@ -8027,29 +8027,29 @@ void ApplyNormalFixes()
     }
 
     //rogue - Camouflage.
-    sp = Spell::checkAndReturnSpellEntry(13975);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(13975);
     if (sp != nullptr)
     {
         sp->EffectMiscValue[0] = SMT_MISC_EFFECT;
     }
-    sp = Spell::checkAndReturnSpellEntry(14062);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(14062);
     if (sp != nullptr)
     {
         sp->EffectMiscValue[0] = SMT_MISC_EFFECT;
     }
-    sp = Spell::checkAndReturnSpellEntry(14063);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(14063);
     if (sp != nullptr)
     {
         sp->EffectMiscValue[0] = SMT_MISC_EFFECT;
     }
 
     //rogue - Vanish : Second Trigger Spell
-    sp = Spell::checkAndReturnSpellEntry(18461);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(18461);
     if (sp != nullptr)
         sp->AttributesEx |= ATTRIBUTESEX_NOT_BREAK_STEALTH;
 
     // rogue - Blind (Make it able to miss!)
-    sp = Spell::checkAndReturnSpellEntry(2094);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(2094);
     if (sp != nullptr)
     {
         sp->Spell_Dmg_Type = SPELL_DMG_TYPE_RANGED;
@@ -8057,73 +8057,73 @@ void ApplyNormalFixes()
     }
 
     //rogue - Shadowstep
-    sp = Spell::checkAndReturnSpellEntry(36563);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(36563);
     if (sp != nullptr)
     {
         sp->EffectMiscValue[2] = SMT_MISC_EFFECT;
     }
     // Still related to shadowstep - prevent the trigger spells from breaking stealth.
-    sp = Spell::checkAndReturnSpellEntry(44373);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(44373);
     if (sp != nullptr)
         sp->AttributesEx |= ATTRIBUTESEX_NOT_BREAK_STEALTH;
-    sp = Spell::checkAndReturnSpellEntry(36563);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(36563);
     if (sp != nullptr)
         sp->AttributesEx |= ATTRIBUTESEX_NOT_BREAK_STEALTH;
-    sp = Spell::checkAndReturnSpellEntry(36554);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(36554);
     if (sp != nullptr)
         sp->AttributesEx |= ATTRIBUTESEX_NOT_BREAK_STEALTH;
 
     //garrot
-    sp = Spell::checkAndReturnSpellEntry(703);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(703);
     if (sp != nullptr)
         sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = Spell::checkAndReturnSpellEntry(8631);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(8631);
     if (sp != nullptr)
         sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = Spell::checkAndReturnSpellEntry(8632);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(8632);
     if (sp != nullptr)
         sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = Spell::checkAndReturnSpellEntry(8633);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(8633);
     if (sp != nullptr)
         sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = Spell::checkAndReturnSpellEntry(11289);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(11289);
     if (sp != nullptr)
         sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = Spell::checkAndReturnSpellEntry(11290);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(11290);
     if (sp != nullptr)
         sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = Spell::checkAndReturnSpellEntry(26839);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(26839);
     if (sp != nullptr)
         sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = Spell::checkAndReturnSpellEntry(26884);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(26884);
     if (sp != nullptr)
         sp->MechanicsType = MECHANIC_BLEEDING;
 
     //rupture
-    sp = Spell::checkAndReturnSpellEntry(1943);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(1943);
     if (sp != nullptr)
         sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = Spell::checkAndReturnSpellEntry(8639);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(8639);
     if (sp != nullptr)
         sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = Spell::checkAndReturnSpellEntry(8640);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(8640);
     if (sp != nullptr)
         sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = Spell::checkAndReturnSpellEntry(11273);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(11273);
     if (sp != nullptr)
         sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = Spell::checkAndReturnSpellEntry(11274);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(11274);
     if (sp != nullptr)
         sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = Spell::checkAndReturnSpellEntry(11275);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(11275);
     if (sp != nullptr)
         sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = Spell::checkAndReturnSpellEntry(26867);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(26867);
     if (sp != nullptr)
         sp->MechanicsType = MECHANIC_BLEEDING;
 
     //Rogue - Killing Spree Stealth fix
-    sp = Spell::checkAndReturnSpellEntry(51690);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(51690);
     if (sp != nullptr)
         sp->AttributesEx |= ATTRIBUTESEX_NOT_BREAK_STEALTH;
 
@@ -8135,30 +8135,30 @@ void ApplyNormalFixes()
     // Insert priest spell fixes here
 
     // Prayer of mending
-    sp = Spell::checkAndReturnSpellEntry(41635);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(41635);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_DUMMY;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SINGLE_FRIEND;
     }
-    sp = Spell::checkAndReturnSpellEntry(48110);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(48110);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_DUMMY;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SINGLE_FRIEND;
     }
-    sp = Spell::checkAndReturnSpellEntry(48111);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(48111);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_DUMMY;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SINGLE_FRIEND;
     }
-    sp = Spell::checkAndReturnSpellEntry(33110);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(33110);
     if (sp != nullptr)
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SINGLE_FRIEND;
 
     // Vampiric Embrace heal spell
-    sp = Spell::checkAndReturnSpellEntry(15290);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(15290);
     if (sp != nullptr)
     {
         sp->EffectBasePoints[0] = 2;
@@ -8166,31 +8166,31 @@ void ApplyNormalFixes()
     }
 
     // Improved Mind Blast
-    sp = Spell::checkAndReturnSpellEntry(15273);   //rank 1
+    sp = Spell::checkAndReturnSpellEntryUnsafe(15273);   //rank 1
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_APPLY_AURA;
         sp->EffectApplyAuraName[1] = SPELL_AURA_DUMMY;
     }
-    sp = Spell::checkAndReturnSpellEntry(15312);   //rank 2
+    sp = Spell::checkAndReturnSpellEntryUnsafe(15312);   //rank 2
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_APPLY_AURA;
         sp->EffectApplyAuraName[1] = SPELL_AURA_DUMMY;
     }
-    sp = Spell::checkAndReturnSpellEntry(15313);   //rank 3
+    sp = Spell::checkAndReturnSpellEntryUnsafe(15313);   //rank 3
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_APPLY_AURA;
         sp->EffectApplyAuraName[1] = SPELL_AURA_DUMMY;
     }
-    sp = Spell::checkAndReturnSpellEntry(15314);   //rank 4
+    sp = Spell::checkAndReturnSpellEntryUnsafe(15314);   //rank 4
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_APPLY_AURA;
         sp->EffectApplyAuraName[1] = SPELL_AURA_DUMMY;
     }
-    sp = Spell::checkAndReturnSpellEntry(15316);   //rank 5
+    sp = Spell::checkAndReturnSpellEntryUnsafe(15316);   //rank 5
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_APPLY_AURA;
@@ -8198,44 +8198,44 @@ void ApplyNormalFixes()
     }
 
     // Body and soul - fix duration of cleanse poison
-    sp = Spell::checkAndReturnSpellEntry(64134);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(64134);
     if (sp != nullptr)
         sp->DurationIndex = 29;
 
     // Spirit of Redemption - required spells can be casted while dead
-    sp = Spell::checkAndReturnSpellEntry(27795);   // This is casted by shape shift
+    sp = Spell::checkAndReturnSpellEntryUnsafe(27795);   // This is casted by shape shift
     if (sp != nullptr)
         sp->AttributesExC |= ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD;
-    sp = Spell::checkAndReturnSpellEntry(27792);   // This is casted by Apply Aura: Spirit of Redemption
+    sp = Spell::checkAndReturnSpellEntryUnsafe(27792);   // This is casted by Apply Aura: Spirit of Redemption
     if (sp != nullptr)
         sp->AttributesExC |= ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD;
 
     //Priest - Wand Specialization
-    sp = Spell::checkAndReturnSpellEntry(14524);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(14524);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
         sp->EffectMiscValue[0] = SMT_MISC_EFFECT;
     }
-    sp = Spell::checkAndReturnSpellEntry(14525);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(14525);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
         sp->EffectMiscValue[0] = SMT_MISC_EFFECT;
     }
-    sp = Spell::checkAndReturnSpellEntry(14526);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(14526);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
         sp->EffectMiscValue[0] = SMT_MISC_EFFECT;
     }
-    sp = Spell::checkAndReturnSpellEntry(14527);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(14527);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
         sp->EffectMiscValue[0] = SMT_MISC_EFFECT;
     }
-    sp = Spell::checkAndReturnSpellEntry(14528);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(14528);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
@@ -8243,31 +8243,31 @@ void ApplyNormalFixes()
     }
 
     //Priest - Inspiration proc spell
-    sp = Spell::checkAndReturnSpellEntry(14893);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(14893);
     if (sp != nullptr)
         sp->rangeIndex = 4;
-    sp = Spell::checkAndReturnSpellEntry(15357);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(15357);
     if (sp != nullptr)
         sp->rangeIndex = 4;
-    sp = Spell::checkAndReturnSpellEntry(15359);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(15359);
     if (sp != nullptr)
         sp->rangeIndex = 4;
 
     //priest - surge of light
-    sp = Spell::checkAndReturnSpellEntry(33151);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(33151);
     if (sp != nullptr)
     {
         sp->AuraInterruptFlags = AURA_INTERRUPT_ON_CAST_SPELL;
     }
     // priest - Reflective Shield
-    sp = Spell::checkAndReturnSpellEntry(33201);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(33201);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_ABSORB;
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 33619; //!! WRONG spell, we will make direct dmg here
     }
-    sp = Spell::checkAndReturnSpellEntry(33202);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(33202);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_ABSORB;
@@ -8275,35 +8275,35 @@ void ApplyNormalFixes()
         sp->EffectTriggerSpell[0] = 33619; //!! WRONG spell, we will make direct dmg here
     }
     // Weakened Soul - Is debuff
-    sp = Spell::checkAndReturnSpellEntry(6788);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(6788);
     if (sp != nullptr)
     {
         sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
     }
 
     // Penance
-    sp = Spell::checkAndReturnSpellEntry(47540);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(47540);
     if (sp != nullptr)
     {
         sp->DurationIndex = 566; // Change to instant cast as script will cast the real channeled spell.
         sp->ChannelInterruptFlags = 0; // Remove channeling behavior.
     }
 
-    sp = Spell::checkAndReturnSpellEntry(53005);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(53005);
     if (sp != nullptr)
     {
         sp->DurationIndex = 566;
         sp->ChannelInterruptFlags = 0;
     }
 
-    sp = Spell::checkAndReturnSpellEntry(53006);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(53006);
     if (sp != nullptr)
     {
         sp->DurationIndex = 566;
         sp->ChannelInterruptFlags = 0;
     }
 
-    sp = Spell::checkAndReturnSpellEntry(53007);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(53007);
     if (sp != nullptr)
     {
         sp->DurationIndex = 566;
@@ -8311,25 +8311,25 @@ void ApplyNormalFixes()
     }
 
     // Penance triggered healing spells have wrong targets.
-    sp = Spell::checkAndReturnSpellEntry(47750);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(47750);
     if (sp != nullptr)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SINGLE_FRIEND;
     }
 
-    sp = Spell::checkAndReturnSpellEntry(52983);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(52983);
     if (sp != nullptr)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SINGLE_FRIEND;
     }
 
-    sp = Spell::checkAndReturnSpellEntry(52984);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(52984);
     if (sp != nullptr)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SINGLE_FRIEND;
     }
 
-    sp = Spell::checkAndReturnSpellEntry(52985);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(52985);
     if (sp != nullptr)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SINGLE_FRIEND;
@@ -8342,19 +8342,19 @@ void ApplyNormalFixes()
 
     // Insert shaman spell fixes here
     //shaman - Healing Way
-    sp = Spell::checkAndReturnSpellEntry(29202);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(29202);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;     // DankoDJ: No triggered Spell! We override SPELL_AURA_ADD_PCT_MODIFIER with this crap?
     }
-    sp = Spell::checkAndReturnSpellEntry(29205);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(29205);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;     // DankoDJ: No triggered Spell! We override SPELL_AURA_ADD_PCT_MODIFIER with this crap?
     }
-    sp = Spell::checkAndReturnSpellEntry(29206);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(29206);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
@@ -8362,7 +8362,7 @@ void ApplyNormalFixes()
     }
 
     // Elemental Mastery
-    sp = Spell::checkAndReturnSpellEntry(16166);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(16166);
     if (sp != nullptr)
     {
         sp->EffectMiscValue[0] = SMT_CRITICAL;
@@ -8372,18 +8372,18 @@ void ApplyNormalFixes()
 
     ////////////////////////////////////////////////////////////
     // Shamanistic Rage
-    SpellInfo*  parentsp = Spell::checkAndReturnSpellEntry(30823);
-    SpellInfo* triggersp = Spell::checkAndReturnSpellEntry(30824);
+    SpellInfo const*  parentsp = Spell::checkAndReturnSpellEntry(30823);
+    SpellInfo* triggersp = Spell::checkAndReturnSpellEntryUnsafe(30824);
     if (parentsp != nullptr && triggersp != nullptr)
         triggersp->EffectBasePoints[0] = parentsp->EffectBasePoints[0];
 
     //summon only 1 elemental totem
-    sp = Spell::checkAndReturnSpellEntry(2894);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(2894);
     if (sp != nullptr)
         sp->EffectImplicitTargetA[0] = EFF_TARGET_TOTEM_FIRE; //remove this targeting. it is enough to get 1 target
 
     //summon only 1 elemental totem
-    sp = Spell::checkAndReturnSpellEntry(2062);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(2062);
     if (sp != nullptr)
         sp->EffectImplicitTargetA[0] = EFF_TARGET_TOTEM_EARTH; //remove this targeting. it is enough to get 1 target
 
@@ -8391,12 +8391,12 @@ void ApplyNormalFixes()
     ////////////////////////////////////////////////////////////
     // Bloodlust
     //Bloodlust
-    sp = Spell::checkAndReturnSpellEntry(2825);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(2825);
     if (sp != nullptr)
         sp->casterAuraSpellNot = 57724; //sated debuff
 
     // Sated - is debuff
-    sp = Spell::checkAndReturnSpellEntry(57724);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(57724);
     if (sp != nullptr)
     {
         sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
@@ -8405,12 +8405,12 @@ void ApplyNormalFixes()
     ////////////////////////////////////////////////////////////
     // Heroism
     //Heroism
-    sp = Spell::checkAndReturnSpellEntry(32182);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(32182);
     if (sp != nullptr)
         sp->casterAuraSpellNot = 57723; //sated debuff
 
     // Sated - is debuff
-    sp = Spell::checkAndReturnSpellEntry(57723);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(57723);
     if (sp != nullptr)
     {
         sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
@@ -8418,47 +8418,47 @@ void ApplyNormalFixes()
 
     ////////////////////////////////////////////////////////////
     // Purge
-    sp = Spell::checkAndReturnSpellEntry(370);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(370);
     if (sp != nullptr)
         sp->DispelType = DISPEL_MAGIC;
-    sp = Spell::checkAndReturnSpellEntry(8012);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(8012);
     if (sp != nullptr)
         sp->DispelType = DISPEL_MAGIC;
-    sp = Spell::checkAndReturnSpellEntry(27626);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(27626);
     if (sp != nullptr)
         sp->DispelType = DISPEL_MAGIC;
-    sp = Spell::checkAndReturnSpellEntry(33625);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(33625);
     if (sp != nullptr)
         sp->DispelType = DISPEL_MAGIC;
 
     //Shaman - Shamanistic Focus
     // needs to be fixed (doesn't need to proc, it now just reduces mana cost always by %)
-    sp = Spell::checkAndReturnSpellEntry(43338);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(43338);
     if (sp != nullptr)
     {
         sp->EffectTriggerSpell[0] = 43339;
     }
 
-    sp = Spell::checkAndReturnSpellEntry(43339);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(43339);
     if (sp != nullptr)
     {
         sp->EffectMiscValue[0] = SMT_COST;
     }
 
     //shaman - Improved Chain Heal
-    sp = Spell::checkAndReturnSpellEntry(30873);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(30873);
     if (sp != nullptr)
     {
         sp->EffectDieSides[0] = 0;
     }
-    sp = Spell::checkAndReturnSpellEntry(30872);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(30872);
     if (sp != nullptr)
     {
         sp->EffectDieSides[0] = 0;
     }
 
     //shaman - Improved Weapon Totems
-    sp = Spell::checkAndReturnSpellEntry(29193);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(29193);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
@@ -8466,7 +8466,7 @@ void ApplyNormalFixes()
         sp->EffectMiscValue[0] = SMT_MISC_EFFECT;
         sp->EffectMiscValue[1] = SMT_MISC_EFFECT;
     }
-    sp = Spell::checkAndReturnSpellEntry(29192);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(29192);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
@@ -8476,31 +8476,31 @@ void ApplyNormalFixes()
     }
 
     // Shaman - Improved Fire Totems
-    sp = Spell::checkAndReturnSpellEntry(16544);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(16544);
     if (sp != nullptr)
     {
         sp->EffectMiscValue[0] = SMT_DURATION;
     }
-    sp = Spell::checkAndReturnSpellEntry(16086);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(16086);
     if (sp != nullptr)
     {
         sp->EffectMiscValue[0] = SMT_DURATION;
     }
 
     //shaman - Elemental Weapons
-    sp = Spell::checkAndReturnSpellEntry(29080);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(29080);
     if (sp != nullptr)
     {
         sp->EffectMiscValue[1] = SMT_DAMAGE_DONE;
         sp->EffectMiscValue[2] = SMT_DAMAGE_DONE;
     }
-    sp = Spell::checkAndReturnSpellEntry(29079);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(29079);
     if (sp != nullptr)
     {
         sp->EffectMiscValue[1] = SMT_DAMAGE_DONE;
         sp->EffectMiscValue[2] = SMT_DAMAGE_DONE;
     }
-    sp = Spell::checkAndReturnSpellEntry(16266);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(16266);
     if (sp != nullptr)
     {
         sp->EffectMiscValue[1] = SMT_DAMAGE_DONE;
@@ -8508,37 +8508,37 @@ void ApplyNormalFixes()
     }
 
     // Magma Totem - 0% spd coefficient
-    sp = Spell::checkAndReturnSpellEntry(25550);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(25550);
     if (sp != nullptr)
         sp->fixed_dddhcoef = 0.0f;
-    sp = Spell::checkAndReturnSpellEntry(10581);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(10581);
     if (sp != nullptr)
         sp->fixed_dddhcoef = 0.0f;
-    sp = Spell::checkAndReturnSpellEntry(10580);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(10580);
     if (sp != nullptr)
         sp->fixed_dddhcoef = 0.0f;
-    sp = Spell::checkAndReturnSpellEntry(10579);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(10579);
     if (sp != nullptr)
         sp->fixed_dddhcoef = 0.0f;
-    sp = Spell::checkAndReturnSpellEntry(8187);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(8187);
     if (sp != nullptr)
         sp->fixed_dddhcoef = 0.0f;
 
     ////////////////////////////////////////////////////////////
     //  Unleashed Rage - LordLeeCH
-    sp = Spell::checkAndReturnSpellEntry(30802);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(30802);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CRIT_ATTACK;
         sp->Effect[0] = SPELL_EFFECT_APPLY_GROUP_AREA_AURA;
     }
-    sp = Spell::checkAndReturnSpellEntry(30808);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(30808);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CRIT_ATTACK;
         sp->Effect[0] = SPELL_EFFECT_APPLY_GROUP_AREA_AURA;
     }
-    sp = Spell::checkAndReturnSpellEntry(30809);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(30809);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CRIT_ATTACK;
@@ -8547,17 +8547,17 @@ void ApplyNormalFixes()
 
     ////////////////////////////////////////////////////////////
     // Ancestral healing proc spell
-    sp = Spell::checkAndReturnSpellEntry(16177);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(16177);
     if (sp != nullptr)
         sp->rangeIndex = 4;
-    sp = Spell::checkAndReturnSpellEntry(16236);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(16236);
     if (sp != nullptr)
         sp->rangeIndex = 4;
-    sp = Spell::checkAndReturnSpellEntry(16237);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(16237);
     if (sp != nullptr)
         sp->rangeIndex = 4;
 
-    sp = Spell::checkAndReturnSpellEntry(20608);   //Reincarnation
+    sp = Spell::checkAndReturnSpellEntryUnsafe(20608);   //Reincarnation
     if (sp != nullptr)
     {
         for (uint8 i = 0; i < 8; ++i)
@@ -8573,7 +8573,7 @@ void ApplyNormalFixes()
     //////////////////////////////////////////
     // SHAMAN WRATH OF AIR TOTEM            //
     //////////////////////////////////////////
-    sp = Spell::checkAndReturnSpellEntry(2895);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(2895);
     if (sp != nullptr)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SELF;
@@ -8585,7 +8585,7 @@ void ApplyNormalFixes()
     }
 
     // Rogue - Master of Subtlety
-    sp = Spell::checkAndReturnSpellEntry(31665);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(31665);
     if (sp != nullptr)
         sp->AttributesEx |= ATTRIBUTESEX_NOT_BREAK_STEALTH;
 
@@ -8596,40 +8596,40 @@ void ApplyNormalFixes()
     // Insert mage spell fixes here
 
     // Brain Freeze rank 1
-    sp = Spell::checkAndReturnSpellEntry(44546);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(44546);
     if (sp != nullptr)
         sp->EffectApplyAuraName[0] = SPELL_AURA_DUMMY;
 
     // Brain Freeze rank 2
-    sp = Spell::checkAndReturnSpellEntry(44548);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(44548);
     if (sp != nullptr)
         sp->EffectApplyAuraName[0] = SPELL_AURA_DUMMY;
 
     // Brain Freeze rank 3
-    sp = Spell::checkAndReturnSpellEntry(44549);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(44549);
     if (sp != nullptr)
         sp->EffectApplyAuraName[0] = SPELL_AURA_DUMMY;
 
     // Fingers of Frost rank 1
-    sp = Spell::checkAndReturnSpellEntry(44543);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(44543);
     if (sp != nullptr)
         sp->EffectApplyAuraName[0] = SPELL_AURA_DUMMY;
 
 
     // Fingers of Frost rank 2
-    sp = Spell::checkAndReturnSpellEntry(44545);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(44545);
     if (sp != nullptr)
         sp->EffectApplyAuraName[0] = SPELL_AURA_DUMMY;
 
 
     //Mage - Spell Power
-    sp = Spell::checkAndReturnSpellEntry(35578);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(35578);
     if (sp != nullptr)
     {
         sp->EffectMiscValue[0] = SMT_CRITICAL_DAMAGE;
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
     }
-    sp = Spell::checkAndReturnSpellEntry(35581);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(35581);
     if (sp != nullptr)
     {
         sp->EffectMiscValue[0] = SMT_CRITICAL_DAMAGE;
@@ -8637,19 +8637,19 @@ void ApplyNormalFixes()
     }
 
     //Mage - Elemental Precision
-    sp = Spell::checkAndReturnSpellEntry(29438);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(29438);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
         sp->EffectMiscValue[0] = SMT_COST;
     }
-    sp = Spell::checkAndReturnSpellEntry(29439);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(29439);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
         sp->EffectMiscValue[0] = SMT_COST;
     }
-    sp = Spell::checkAndReturnSpellEntry(29440);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(29440);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
@@ -8657,7 +8657,7 @@ void ApplyNormalFixes()
     }
 
     //Mage - Arcane Blast
-    sp = Spell::checkAndReturnSpellEntry(30451);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(30451);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[1] = SPELL_AURA_PROC_TRIGGER_SPELL;
@@ -8666,7 +8666,7 @@ void ApplyNormalFixes()
     }
 
     // Arcane Blast
-    sp = Spell::checkAndReturnSpellEntry(42894);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(42894);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[1] = SPELL_AURA_PROC_TRIGGER_SPELL;
@@ -8674,14 +8674,14 @@ void ApplyNormalFixes()
         sp->custom_ProcOnNameHash[1] = SPELL_HASH_ARCANE_BLAST;
     }
 
-    sp = Spell::checkAndReturnSpellEntry(42896);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(42896);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[1] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
     }
 
-    sp = Spell::checkAndReturnSpellEntry(42897);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(42897);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[1] = SPELL_AURA_PROC_TRIGGER_SPELL;
@@ -8690,17 +8690,17 @@ void ApplyNormalFixes()
 
     //mage : Empowered Arcane Missiles
     //heh B thinks he is smart by adding this to description ? If it doesn't work std then it still needs to made by hand
-    sp = Spell::checkAndReturnSpellEntry(31579);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(31579);
     if (sp != nullptr)
     {
         sp->EffectBasePoints[0] = 5 * (sp->EffectBasePoints[0] + 1);
     }
-    sp = Spell::checkAndReturnSpellEntry(31582);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(31582);
     if (sp != nullptr)
     {
         sp->EffectBasePoints[0] = 5 * (sp->EffectBasePoints[0] + 1);
     }
-    sp = Spell::checkAndReturnSpellEntry(31583);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(31583);
     if (sp != nullptr)
     {
         sp->EffectBasePoints[0] = 5 * (sp->EffectBasePoints[0] + 1);
@@ -8708,7 +8708,7 @@ void ApplyNormalFixes()
 
     // cebernic: not for self?
     // impact
-    sp = Spell::checkAndReturnSpellEntry(12355);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(12355);
     if (sp != nullptr)
     {
         // passive rank: 11103, 12357, 12358 ,12359,12360 :D
@@ -8722,7 +8722,7 @@ void ApplyNormalFixes()
     }
 
     //Mage - Invisibility
-    sp = Spell::checkAndReturnSpellEntry(66);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(66);
     if (sp != nullptr)
     {
         sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_CAST_SPELL;
@@ -8738,14 +8738,14 @@ void ApplyNormalFixes()
     }
 
     //Invisibility triggered spell, should be removed on cast
-    sp = Spell::checkAndReturnSpellEntry(32612);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(32612);
     if (sp != nullptr)
     {
         sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_CAST_SPELL;
     }
 
     //Arcane Potency procs
-    sp = Spell::checkAndReturnSpellEntry(57529);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(57529);
     if (sp != nullptr)
     {
         sp->procFlags = 0;
@@ -8753,7 +8753,7 @@ void ApplyNormalFixes()
         sp->AuraInterruptFlags = 0;
     }
 
-    sp = Spell::checkAndReturnSpellEntry(57531);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(57531);
     if (sp != nullptr)
     {
         sp->procFlags = 0;
@@ -8762,37 +8762,37 @@ void ApplyNormalFixes()
     }
 
     //Hot Streak proc
-    sp = Spell::checkAndReturnSpellEntry(48108);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(48108);
     if (sp != nullptr)
     {
         sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_CAST_SPELL;
     }
 
     //Ice Lances
-    sp = Spell::checkAndReturnSpellEntry(42914);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(42914);
     if (sp != nullptr)
         sp->Dspell_coef_override = 0.1429f;
 
-    sp = Spell::checkAndReturnSpellEntry(42913);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(42913);
     if (sp != nullptr)
         sp->Dspell_coef_override = 0.1429f;
 
-    sp = Spell::checkAndReturnSpellEntry(30455);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(30455);
     if (sp != nullptr)
         sp->Dspell_coef_override = 0.1429f;
 
     // Frostfire Bolts
-    sp = Spell::checkAndReturnSpellEntry(47610);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(47610);
     if (sp != nullptr)
         sp->fixed_dddhcoef = 0.8571f;
 
-    sp = Spell::checkAndReturnSpellEntry(44614);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(44614);
     if (sp != nullptr)
         sp->fixed_dddhcoef = 0.8571f;
 
 
     //mage - Combustion
-    sp = Spell::checkAndReturnSpellEntry(11129);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(11129);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_NULL;
@@ -8804,40 +8804,40 @@ void ApplyNormalFixes()
     }
 
     // mage - Conjure Refreshment Table
-    sp = Spell::checkAndReturnSpellEntry(43985);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(43985);
     if (sp != nullptr)
         sp->EffectImplicitTargetA[0] = EFF_TARGET_DYNAMIC_OBJECT;
 
     // Hypothermia - forced debuff
-    sp = Spell::checkAndReturnSpellEntry(41425);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(41425);
     if (sp != nullptr)
     {
         sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
     }
 
     // Mage - Permafrost Rank 1
-    sp = Spell::checkAndReturnSpellEntry(11175);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(11175);
     if (sp != nullptr)
     {
         sp->EffectMiscValue[1] = SMT_MISC_EFFECT;
     }
 
     // Mage - Permafrost Rank 2
-    sp = Spell::checkAndReturnSpellEntry(12569);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(12569);
     if (sp != nullptr)
     {
         sp->EffectMiscValue[1] = SMT_MISC_EFFECT;
     }
 
     // Mage - Permafrost Rank 3
-    sp = Spell::checkAndReturnSpellEntry(12571);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(12571);
     if (sp != nullptr)
     {
         sp->EffectMiscValue[1] = SMT_MISC_EFFECT;
     }
 
     //Improved Counterspell rank 1
-    sp = Spell::checkAndReturnSpellEntry(11255);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(11255);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
@@ -8845,7 +8845,7 @@ void ApplyNormalFixes()
     }
 
     //Improved Counterspell rank 2
-    sp = Spell::checkAndReturnSpellEntry(12598);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(12598);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
@@ -8858,13 +8858,13 @@ void ApplyNormalFixes()
     // Insert warlock spell fixes here
 
     //Dummy for Demonic Circle
-    sp = Spell::checkAndReturnSpellEntry(48018);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(48018);
     if (sp != nullptr)
     {
 
         sp->EffectImplicitTargetA[1] = 1;
         CreateDummySpell(62388);
-        sp = Spell::checkAndReturnSpellEntry(62388);
+        sp = Spell::checkAndReturnSpellEntryUnsafe(62388);
         if (sp != nullptr)
         {
             sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
@@ -8873,7 +8873,7 @@ void ApplyNormalFixes()
     }
 
     //megai2: Immolation Aura
-    sp = Spell::checkAndReturnSpellEntry(50589);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(50589);
     if (sp != nullptr)
     {
         sp->ChannelInterruptFlags = 0; // Remove channeling behaviour.
@@ -8881,7 +8881,7 @@ void ApplyNormalFixes()
 
 #if VERSION_STRING != Cata
     //megai2: Everlasting Affliction
-    sp = Spell::checkAndReturnSpellEntry(47205);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(47205);
     if (sp != nullptr)
     {
         sp->EffectSpellClassMask[1][0] = 0x111;
@@ -8889,7 +8889,7 @@ void ApplyNormalFixes()
         sp->procFlags = PROC_ON_ANY_HOSTILE_ACTION;
     }
 
-    sp = Spell::checkAndReturnSpellEntry(47204);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(47204);
     if (sp != nullptr)
     {
         sp->EffectSpellClassMask[1][0] = 0x111;
@@ -8897,7 +8897,7 @@ void ApplyNormalFixes()
         sp->procFlags = PROC_ON_ANY_HOSTILE_ACTION;
     }
 
-    sp = Spell::checkAndReturnSpellEntry(47203);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(47203);
     if (sp != nullptr)
     {
         sp->EffectSpellClassMask[1][0] = 0x111;
@@ -8905,7 +8905,7 @@ void ApplyNormalFixes()
         sp->procFlags = PROC_ON_ANY_HOSTILE_ACTION;
     }
 
-    sp = Spell::checkAndReturnSpellEntry(47202);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(47202);
     if (sp != nullptr)
     {
         sp->EffectSpellClassMask[1][0] = 0x111;
@@ -8913,7 +8913,7 @@ void ApplyNormalFixes()
         sp->procFlags = PROC_ON_ANY_HOSTILE_ACTION;
     }
 
-    sp = Spell::checkAndReturnSpellEntry(47201);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(47201);
     if (sp != nullptr)
     {
         sp->EffectSpellClassMask[1][0] = 0x111;
@@ -8923,7 +8923,7 @@ void ApplyNormalFixes()
 
     ////////////////////////////////////////////////////////////
     // Backlash
-    sp = Spell::checkAndReturnSpellEntry(34936);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(34936);
     if (sp != nullptr)
     {
         sp->AuraInterruptFlags = AURA_INTERRUPT_ON_CAST_SPELL;
@@ -8931,7 +8931,7 @@ void ApplyNormalFixes()
 
     ////////////////////////////////////////////////////////////
     // Demonic Knowledge
-    sp = Spell::checkAndReturnSpellEntry(35691);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(35691);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_DAMAGE_DONE;
@@ -8944,7 +8944,7 @@ void ApplyNormalFixes()
         sp->EffectTriggerSpell[2] = 35696;
         sp->EffectImplicitTargetA[2] = EFF_TARGET_PET;
     }
-    sp = Spell::checkAndReturnSpellEntry(35692);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(35692);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_DAMAGE_DONE;
@@ -8957,7 +8957,7 @@ void ApplyNormalFixes()
         sp->EffectTriggerSpell[2] = 35696;
         sp->EffectImplicitTargetA[2] = EFF_TARGET_PET;
     }
-    sp = Spell::checkAndReturnSpellEntry(35693);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(35693);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_DAMAGE_DONE;
@@ -8970,7 +8970,7 @@ void ApplyNormalFixes()
         sp->EffectTriggerSpell[2] = 35696;
         sp->EffectImplicitTargetA[2] = EFF_TARGET_PET;
     }
-    sp = Spell::checkAndReturnSpellEntry(35696);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(35696);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA; //making this only for the visible effect
@@ -8979,31 +8979,31 @@ void ApplyNormalFixes()
     }
 
     //Shadow Trance should be removed on the first SB
-    sp = Spell::checkAndReturnSpellEntry(17941);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(17941);
     if (sp != nullptr)
     {
         sp->AuraInterruptFlags = AURA_INTERRUPT_ON_CAST_SPELL;
     }
 
     //warlock: Empowered Corruption
-    sp = Spell::checkAndReturnSpellEntry(32381);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(32381);
     if (sp != nullptr)
     {
         sp->EffectBasePoints[0] *= 6;
     }
-    sp = Spell::checkAndReturnSpellEntry(32382);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(32382);
     if (sp != nullptr)
     {
         sp->EffectBasePoints[0] *= 6;
     }
-    sp = Spell::checkAndReturnSpellEntry(32383);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(32383);
     if (sp != nullptr)
     {
         sp->EffectBasePoints[0] *= 6;
     }
 
     //warlock - Demonic Tactics
-    sp = Spell::checkAndReturnSpellEntry(30242);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(30242);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_NULL; //disable this. This is just blizz crap. Pure proof that they suck :P
@@ -9012,28 +9012,28 @@ void ApplyNormalFixes()
                                                                         // Zyres: No you fukced it up. This spell was defined few lines below.
         sp->EffectImplicitTargetB[2] = EFF_TARGET_PET;
     }
-    sp = Spell::checkAndReturnSpellEntry(30245);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(30245);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_NULL; //disable this. This is just blizz crap. Pure proof that they suck :P
         sp->EffectImplicitTargetB[1] = EFF_TARGET_PET;
         sp->EffectImplicitTargetB[2] = EFF_TARGET_PET;
     }
-    sp = Spell::checkAndReturnSpellEntry(30246);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(30246);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_NULL; //disable this. This is just blizz crap. Pure proof that they suck :P
         sp->EffectImplicitTargetB[1] = EFF_TARGET_PET;
         sp->EffectImplicitTargetB[2] = EFF_TARGET_PET;
     }
-    sp = Spell::checkAndReturnSpellEntry(30247);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(30247);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_NULL; //disable this. This is just blizz crap. Pure proof that they suck :P
         sp->EffectImplicitTargetB[1] = EFF_TARGET_PET;
         sp->EffectImplicitTargetB[2] = EFF_TARGET_PET;
     }
-    sp = Spell::checkAndReturnSpellEntry(30248);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(30248);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_NULL; //disable this. This is just blizz crap. Pure proof that they suck :P
@@ -9042,19 +9042,19 @@ void ApplyNormalFixes()
     }
 
     //warlock - Demonic Resilience
-    sp = Spell::checkAndReturnSpellEntry(30319);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(30319);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[1] = SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_PET;
     }
-    sp = Spell::checkAndReturnSpellEntry(30320);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(30320);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[1] = SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_PET;
     }
-    sp = Spell::checkAndReturnSpellEntry(30321);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(30321);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[1] = SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN;
@@ -9062,53 +9062,53 @@ void ApplyNormalFixes()
     }
 
     //warlock - Improved Imp
-    sp = Spell::checkAndReturnSpellEntry(18694);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(18694);
     if (sp != nullptr)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
     }
-    sp = Spell::checkAndReturnSpellEntry(18695);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(18695);
     if (sp != nullptr)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
     }
-    sp = Spell::checkAndReturnSpellEntry(18696);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(18696);
     if (sp != nullptr)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
     }
 
     //warlock - Demonic Brutality
-    sp = Spell::checkAndReturnSpellEntry(18705);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(18705);
     if (sp != nullptr)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
     }
-    sp = Spell::checkAndReturnSpellEntry(18706);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(18706);
     if (sp != nullptr)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
     }
-    sp = Spell::checkAndReturnSpellEntry(18707);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(18707);
     if (sp != nullptr)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
     }
 
     //warlock - Improved Succubus
-    sp = Spell::checkAndReturnSpellEntry(18754);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(18754);
     if (sp != nullptr)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_PET;
     }
-    sp = Spell::checkAndReturnSpellEntry(18755);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(18755);
     if (sp != nullptr)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_PET;
     }
-    sp = Spell::checkAndReturnSpellEntry(18756);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(18756);
     if (sp != nullptr)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
@@ -9116,21 +9116,21 @@ void ApplyNormalFixes()
     }
 
     //warlock - Fel Vitality
-    sp = Spell::checkAndReturnSpellEntry(18731);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(18731);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_PERCENT_STAT;
         sp->EffectMiscValue[0] = 3;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
     }
-    sp = Spell::checkAndReturnSpellEntry(18743);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(18743);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_PERCENT_STAT;
         sp->EffectMiscValue[0] = 3;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
     }
-    sp = Spell::checkAndReturnSpellEntry(18744);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(18744);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_PERCENT_STAT;
@@ -9140,7 +9140,7 @@ void ApplyNormalFixes()
 
     //warlock - Demonic Tactics
     /* Zyres: Disabled this spell has already some changes few lines above!
-    sp = checkAndReturnSpellEntry(30242);
+    sp = checkAndReturnSpellEntryUnsafe(30242);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
@@ -9154,7 +9154,7 @@ void ApplyNormalFixes()
     }*/
 
     //warlock - Unholy Power
-    sp = Spell::checkAndReturnSpellEntry(18769);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(18769);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
@@ -9166,7 +9166,7 @@ void ApplyNormalFixes()
         sp->EffectMiscValue[1] = SCHOOL_NORMAL;
         sp->EffectBasePoints[1] = sp->EffectBasePoints[0];
     }
-    sp = Spell::checkAndReturnSpellEntry(18770);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(18770);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
@@ -9178,7 +9178,7 @@ void ApplyNormalFixes()
         sp->EffectMiscValue[1] = SCHOOL_NORMAL;
         sp->EffectBasePoints[1] = sp->EffectBasePoints[0];
     }
-    sp = Spell::checkAndReturnSpellEntry(18771);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(18771);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
@@ -9190,7 +9190,7 @@ void ApplyNormalFixes()
         sp->EffectMiscValue[1] = SCHOOL_NORMAL;
         sp->EffectBasePoints[1] = sp->EffectBasePoints[0];
     }
-    sp = Spell::checkAndReturnSpellEntry(18772);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(18772);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
@@ -9202,7 +9202,7 @@ void ApplyNormalFixes()
         sp->EffectMiscValue[1] = SCHOOL_NORMAL;
         sp->EffectBasePoints[1] = sp->EffectBasePoints[0];
     }
-    sp = Spell::checkAndReturnSpellEntry(18773);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(18773);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
@@ -9216,88 +9216,88 @@ void ApplyNormalFixes()
     }
 
     //warlock - Master Demonologist - 25 spells here
-    sp = Spell::checkAndReturnSpellEntry(23785);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(23785);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 23784;
     }
-    sp = Spell::checkAndReturnSpellEntry(23822);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(23822);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 23830;
     }
-    sp = Spell::checkAndReturnSpellEntry(23823);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(23823);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 23831;
     }
-    sp = Spell::checkAndReturnSpellEntry(23824);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(23824);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 23832;
     }
-    sp = Spell::checkAndReturnSpellEntry(23825);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(23825);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 35708;
     }
     //and the rest
-    sp = Spell::checkAndReturnSpellEntry(23784);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(23784);
     if (sp != nullptr)
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
-    sp = Spell::checkAndReturnSpellEntry(23830);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(23830);
     if (sp != nullptr)
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
-    sp = Spell::checkAndReturnSpellEntry(23831);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(23831);
     if (sp != nullptr)
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
-    sp = Spell::checkAndReturnSpellEntry(23832);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(23832);
     if (sp != nullptr)
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
-    sp = Spell::checkAndReturnSpellEntry(35708);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(35708);
     if (sp != nullptr)
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
-    sp = Spell::checkAndReturnSpellEntry(23759);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(23759);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
     }
-    sp = Spell::checkAndReturnSpellEntry(23760);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(23760);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
     }
-    sp = Spell::checkAndReturnSpellEntry(23761);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(23761);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
     }
-    sp = Spell::checkAndReturnSpellEntry(23762);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(23762);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
     }
-    sp = Spell::checkAndReturnSpellEntry(23826);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(23826);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
     }
-    sp = Spell::checkAndReturnSpellEntry(23827);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(23827);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
     }
-    sp = Spell::checkAndReturnSpellEntry(23828);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(23828);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
     }
-    sp = Spell::checkAndReturnSpellEntry(23829);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(23829);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
@@ -9305,37 +9305,37 @@ void ApplyNormalFixes()
     // Zyres: eeek
     for (uint32 i = 23833; i <= 23844; ++i)
     {
-        sp = Spell::checkAndReturnSpellEntry(i);
+        sp = Spell::checkAndReturnSpellEntryUnsafe(i);
         if (sp != nullptr)
         {
             sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
         }
     }
-    sp = Spell::checkAndReturnSpellEntry(35702);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(35702);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
         sp->Effect[1] = SPELL_EFFECT_NULL; //hacks, we are handling this in another way
     }
-    sp = Spell::checkAndReturnSpellEntry(35703);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(35703);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
         sp->Effect[1] = SPELL_EFFECT_NULL; //hacks, we are handling this in another way
     }
-    sp = Spell::checkAndReturnSpellEntry(35704);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(35704);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
         sp->Effect[1] = SPELL_EFFECT_NULL; //hacks, we are handling this in another way
     }
-    sp = Spell::checkAndReturnSpellEntry(35705);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(35705);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
         sp->Effect[1] = SPELL_EFFECT_NULL; //hacks, we are handling this in another way
     }
-    sp = Spell::checkAndReturnSpellEntry(35706);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(35706);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
@@ -9343,7 +9343,7 @@ void ApplyNormalFixes()
     }
 
     //warlock - Improved Drain Soul
-    sp = Spell::checkAndReturnSpellEntry(18213);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(18213);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_TARGET_DIE | static_cast<uint32>(PROC_TARGET_SELF);
@@ -9354,7 +9354,7 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SELF;
         sp->Effect[2] = SPELL_EFFECT_NULL; //remove this effect
     }
-    sp = Spell::checkAndReturnSpellEntry(18372);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(18372);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_TARGET_DIE | static_cast<uint32>(PROC_TARGET_SELF);
@@ -9367,28 +9367,28 @@ void ApplyNormalFixes()
     }
 
     //Warlock Chaos bolt
-    sp = Spell::checkAndReturnSpellEntry(50796);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(50796);
     if (sp != nullptr)
     {
         sp->Attributes |= ATTRIBUTES_IGNORE_INVULNERABILITY;
         sp->School = SCHOOL_FIRE;
     }
 
-    sp = Spell::checkAndReturnSpellEntry(59170);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(59170);
     if (sp != nullptr)
     {
         sp->Attributes |= ATTRIBUTES_IGNORE_INVULNERABILITY;
         sp->School = SCHOOL_FIRE;
     }
 
-    sp = Spell::checkAndReturnSpellEntry(59171);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(59171);
     if (sp != nullptr)
     {
         sp->Attributes |= ATTRIBUTES_IGNORE_INVULNERABILITY;
         sp->School = SCHOOL_FIRE;
     }
 
-    sp = Spell::checkAndReturnSpellEntry(59172);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(59172);
     if (sp != nullptr)
     {
         sp->Attributes |= ATTRIBUTES_IGNORE_INVULNERABILITY;
@@ -9400,7 +9400,7 @@ void ApplyNormalFixes()
     int HealthStoneID[8] = { 6201, 6202, 5699, 11729, 11730, 27230, 47871, 47878 };
     for (uint8 i = 0; i < 8; i++)
     {
-        sp = Spell::checkAndReturnSpellEntry(HealthStoneID[i]);
+        sp = Spell::checkAndReturnSpellEntryUnsafe(HealthStoneID[i]);
         if (sp != nullptr)
         {
             sp->Reagent[1] = 0;
@@ -9418,7 +9418,7 @@ void ApplyNormalFixes()
     ////////////////////////////////////////////////////////////
 
     // Druid - Force of Nature
-    sp = Spell::checkAndReturnSpellEntry(33831);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(33831);
     if (sp != nullptr)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SELF; //some land under target is used that gathers multiple targets ...
@@ -9430,7 +9430,7 @@ void ApplyNormalFixes()
     ////////////////////////////////////////////////////////////
 
     // Druid - Infected Wounds
-    sp = Spell::checkAndReturnSpellEntry(48483);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(48483);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
@@ -9439,7 +9439,7 @@ void ApplyNormalFixes()
         sp->custom_ProcOnNameHash[2] = SPELL_HASH_MANGLE;
     }
 
-    sp = Spell::checkAndReturnSpellEntry(48484);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(48484);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
@@ -9448,7 +9448,7 @@ void ApplyNormalFixes()
         sp->custom_ProcOnNameHash[2] = SPELL_HASH_MANGLE;
     }
 
-    sp = Spell::checkAndReturnSpellEntry(48485);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(48485);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
@@ -9458,19 +9458,19 @@ void ApplyNormalFixes()
     }
 
     // Druid - Bash - Interrupt effect
-    sp = Spell::checkAndReturnSpellEntry(5211);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(5211);
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[1] = 32747;
     }
-    sp = Spell::checkAndReturnSpellEntry(6798);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(6798);
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[1] = 32747;
     }
-    sp = Spell::checkAndReturnSpellEntry(8983);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(8983);
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
@@ -9478,13 +9478,13 @@ void ApplyNormalFixes()
     }
 
     //Druid - Feral Swiftness
-    sp = Spell::checkAndReturnSpellEntry(17002);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(17002);
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[1] = 24867;
     }
-    sp = Spell::checkAndReturnSpellEntry(24866);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(24866);
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
@@ -9492,31 +9492,31 @@ void ApplyNormalFixes()
     }
 
     // Druid - Maim
-    sp = Spell::checkAndReturnSpellEntry(22570);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(22570);
     if (sp != nullptr)
     {
         sp->AuraInterruptFlags = AURA_INTERRUPT_ON_UNUSED2;
         sp->custom_is_melee_spell = true;
     }
-    sp = Spell::checkAndReturnSpellEntry(49802);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(49802);
     if (sp != nullptr)
     {
         sp->AuraInterruptFlags = AURA_INTERRUPT_ON_UNUSED2;
         sp->custom_is_melee_spell = true;
     }
 
-    sp = Spell::checkAndReturnSpellEntry(20719); //feline grace
+    sp = Spell::checkAndReturnSpellEntryUnsafe(20719); //feline grace
     if (sp != nullptr)
         sp->Effect[0] = SPELL_EFFECT_NULL;
 
     // Druid - Feral Swiftness
-    sp = Spell::checkAndReturnSpellEntry(17002);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(17002);
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[1] = 24867;
     }
-    sp = Spell::checkAndReturnSpellEntry(24866);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(24866);
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
@@ -9524,7 +9524,7 @@ void ApplyNormalFixes()
     }
 
     // Druid - Frenzied Regeneration
-    sp = Spell::checkAndReturnSpellEntry(22842);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(22842);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
@@ -9533,24 +9533,24 @@ void ApplyNormalFixes()
     }
 
     // Druid - Primal Fury (talent)
-    sp = Spell::checkAndReturnSpellEntry(37116);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(37116);
     if (sp != nullptr)
         sp->RequiredShapeShift = 0;
 
-    sp = Spell::checkAndReturnSpellEntry(37117);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(37117);
     if (sp != nullptr)
         sp->RequiredShapeShift = 0;
 
     // Druid - Predatory Strikes
     uint32 mm = decimalToMask(FORM_BEAR) | decimalToMask(FORM_DIREBEAR) | decimalToMask(FORM_MOONKIN) | decimalToMask(FORM_CAT);
 
-    sp = Spell::checkAndReturnSpellEntry(16972);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(16972);
     if (sp != nullptr)
         sp->RequiredShapeShift = mm;
-    sp = Spell::checkAndReturnSpellEntry(16974);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(16974);
     if (sp != nullptr)
         sp->RequiredShapeShift = mm;
-    sp = Spell::checkAndReturnSpellEntry(16975);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(16975);
     if (sp != nullptr)
         sp->RequiredShapeShift = mm;
 
@@ -9560,22 +9560,22 @@ void ApplyNormalFixes()
 
     // Druid - Tree Form Aura
     /* Zyres: Genius... Delete this! I'm not familiar with this technique, looks awesome. Unfortunately I don't understand the effect of this. SPELL_HASH_TREE_OF_LIFE is not used in any statement...
-    sp = checkAndReturnSpellEntry(34123);
+    sp = checkAndReturnSpellEntryUnsafe(34123);
     if (sp != nullptr)
         sp->custom_NameHash = 0;*/
 
     // Druid - Natural Shapeshifter
-    sp = Spell::checkAndReturnSpellEntry(16833);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(16833);
     if (sp != nullptr)
         sp->DurationIndex = 0;
-    sp = Spell::checkAndReturnSpellEntry(16834);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(16834);
     if (sp != nullptr)
         sp->DurationIndex = 0;
-    sp = Spell::checkAndReturnSpellEntry(16835);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(16835);
     if (sp != nullptr)
         sp->DurationIndex = 0;
 
-    sp = Spell::checkAndReturnSpellEntry(61177); // Northrend Inscription Research
+    sp = Spell::checkAndReturnSpellEntryUnsafe(61177); // Northrend Inscription Research
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_NULL;
@@ -9584,7 +9584,7 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetA[1] = 0;
         sp->EffectDieSides[1] = 0;
     }
-    sp = Spell::checkAndReturnSpellEntry(61288); // Minor Inscription Research
+    sp = Spell::checkAndReturnSpellEntryUnsafe(61288); // Minor Inscription Research
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_NULL;
@@ -9593,7 +9593,7 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetA[1] = 0;
         sp->EffectDieSides[1] = 0;
     }
-    sp = Spell::checkAndReturnSpellEntry(60893); // Northrend Alchemy Research
+    sp = Spell::checkAndReturnSpellEntryUnsafe(60893); // Northrend Alchemy Research
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_NULL;
@@ -9603,7 +9603,7 @@ void ApplyNormalFixes()
         sp->EffectDieSides[1] = 0;
     }
 #if VERSION_STRING != Cata
-    sp = Spell::checkAndReturnSpellEntry(46097); // Brutal Totem of Survival
+    sp = Spell::checkAndReturnSpellEntryUnsafe(46097); // Brutal Totem of Survival
     if (sp != nullptr)
     {
         sp->EffectSpellClassMask[0][0] = 0x00100000 | 0x10000000 | 0x80000000;
@@ -9611,7 +9611,7 @@ void ApplyNormalFixes()
         sp->procFlags = PROC_ON_CAST_SPELL;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_SELF;
     }
-    sp = Spell::checkAndReturnSpellEntry(43860); // Totem of Survival
+    sp = Spell::checkAndReturnSpellEntryUnsafe(43860); // Totem of Survival
     if (sp != nullptr)
     {
         sp->EffectSpellClassMask[0][0] = 0x00100000 | 0x10000000 | 0x80000000;
@@ -9619,7 +9619,7 @@ void ApplyNormalFixes()
         sp->procFlags = PROC_ON_CAST_SPELL;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_SELF;
     }
-    sp = Spell::checkAndReturnSpellEntry(43861); // Merciless Totem of Survival
+    sp = Spell::checkAndReturnSpellEntryUnsafe(43861); // Merciless Totem of Survival
     if (sp != nullptr)
     {
         sp->EffectSpellClassMask[0][0] = 0x00100000 | 0x10000000 | 0x80000000;
@@ -9627,7 +9627,7 @@ void ApplyNormalFixes()
         sp->procFlags = PROC_ON_CAST_SPELL;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_SELF;
     }
-    sp = Spell::checkAndReturnSpellEntry(43862); // Vengeful Totem of Survival
+    sp = Spell::checkAndReturnSpellEntryUnsafe(43862); // Vengeful Totem of Survival
     if (sp != nullptr)
     {
         sp->EffectSpellClassMask[0][0] = 0x00100000 | 0x10000000 | 0x80000000;
@@ -9635,7 +9635,7 @@ void ApplyNormalFixes()
         sp->procFlags = PROC_ON_CAST_SPELL;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_SELF;
     }
-    sp = Spell::checkAndReturnSpellEntry(60564); // Savage Gladiator's Totem of Survival
+    sp = Spell::checkAndReturnSpellEntryUnsafe(60564); // Savage Gladiator's Totem of Survival
     if (sp != nullptr)
     {
         sp->EffectSpellClassMask[0][0] = 0x00100000 | 0x10000000 | 0x80000000;
@@ -9645,7 +9645,7 @@ void ApplyNormalFixes()
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[1] = 60565; // Savage Magic
     }
-    sp = Spell::checkAndReturnSpellEntry(60571); // Hateful Gladiator's Totem of Survival
+    sp = Spell::checkAndReturnSpellEntryUnsafe(60571); // Hateful Gladiator's Totem of Survival
     if (sp != nullptr)
     {
         sp->EffectSpellClassMask[0][0] = 0x00100000 | 0x10000000 | 0x80000000;
@@ -9655,7 +9655,7 @@ void ApplyNormalFixes()
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[1] = 60566; // Hateful Magic
     }
-    sp = Spell::checkAndReturnSpellEntry(60572); // Deadly Gladiator's Totem of Survival
+    sp = Spell::checkAndReturnSpellEntryUnsafe(60572); // Deadly Gladiator's Totem of Survival
     if (sp != nullptr)
     {
         sp->EffectSpellClassMask[0][0] = 0x00100000 | 0x10000000 | 0x80000000;
@@ -9665,10 +9665,10 @@ void ApplyNormalFixes()
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[1] = 60567; // Deadly Magic
     }
-    sp = Spell::checkAndReturnSpellEntry(60567); // Deadly Magic
+    sp = Spell::checkAndReturnSpellEntryUnsafe(60567); // Deadly Magic
     if (sp != nullptr)
         sp->EffectImplicitTargetA[1] = EFF_TARGET_SELF;
-    sp = Spell::checkAndReturnSpellEntry(46098); // Brutal Totem of Third WInd
+    sp = Spell::checkAndReturnSpellEntryUnsafe(46098); // Brutal Totem of Third WInd
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
@@ -9676,7 +9676,7 @@ void ApplyNormalFixes()
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[1] = 46099; // Brutal Gladiator's Totem of the Third Wind
     }
-    sp = Spell::checkAndReturnSpellEntry(34138); // Totem of the Third Wind
+    sp = Spell::checkAndReturnSpellEntryUnsafe(34138); // Totem of the Third Wind
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
@@ -9684,7 +9684,7 @@ void ApplyNormalFixes()
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[1] = 34132; // Gladiator's Totem of the Third Wind
     }
-    sp = Spell::checkAndReturnSpellEntry(42370); // Merciless Totem of the Third WInd
+    sp = Spell::checkAndReturnSpellEntryUnsafe(42370); // Merciless Totem of the Third WInd
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
@@ -9692,7 +9692,7 @@ void ApplyNormalFixes()
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[1] = 42371; // Merciless Gladiator's Totem of the Third Wind
     }
-    sp = Spell::checkAndReturnSpellEntry(43728); // Vengeful Totem of Third WInd
+    sp = Spell::checkAndReturnSpellEntryUnsafe(43728); // Vengeful Totem of Third WInd
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
@@ -9708,42 +9708,42 @@ void ApplyNormalFixes()
     // Insert items spell fixes here
 
     //Compact Harvest Reaper
-    sp = Spell::checkAndReturnSpellEntry(4078);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(4078);
     if (sp != nullptr)
     {
         sp->DurationIndex = 6;
     }
 
     //Graccu's Mince Meat Fruitcake
-    sp = Spell::checkAndReturnSpellEntry(25990);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(25990);
     if (sp != nullptr)
     {
         sp->EffectAmplitude[1] = 1000;
     }
 
     //Extract Gas
-    sp = Spell::checkAndReturnSpellEntry(30427);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(30427);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_DUMMY;
     }
 
     //Relic - Idol of the Unseen Moon
-    sp = Spell::checkAndReturnSpellEntry(43739);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(43739);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
     }
 
     //Lunar Grace - Idol of the Unseen Moon proc
-    sp = Spell::checkAndReturnSpellEntry(43740);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(43740);
     if (sp != nullptr)
     {
         sp->custom_ProcOnNameHash[0] = SPELL_HASH_MOONFIRE;
     }
 
     //Primal Instinct - Idol of Terror proc
-    sp = Spell::checkAndReturnSpellEntry(43738);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(43738);
     if (sp != nullptr)
     {
         sp->custom_self_cast_only = true;
@@ -9752,14 +9752,14 @@ void ApplyNormalFixes()
     }
 
     //Thunderfury
-    sp = Spell::checkAndReturnSpellEntry(21992);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(21992);
     if (sp != nullptr)
     {
         sp->EffectImplicitTargetA[2] = EFF_TARGET_ALL_ENEMIES_AROUND_CASTER; // cebernic: for enemies not self
     }
 
     // Sigil of the Unfaltering Knight
-    sp = Spell::checkAndReturnSpellEntry(62147);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(62147);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
@@ -9768,7 +9768,7 @@ void ApplyNormalFixes()
     }
 
     // Deadly Aggression - triggered by Deadly Gladiator's Relic/Idol/Libram/Totem
-    sp = Spell::checkAndReturnSpellEntry(60549);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(60549);
     if (sp != nullptr)
     {
         // effect 1 and 2 are the same... dunno why
@@ -9776,7 +9776,7 @@ void ApplyNormalFixes()
     }
 
     // Furious Gladiator's Libram of Fortitude - triggered by LK Arena 4 Gladiator's Relic/Idol/Libram/Totem
-    sp = Spell::checkAndReturnSpellEntry(60551);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(60551);
     if (sp != nullptr)
     {
         // effect 1 and 2 are the same... dunno why
@@ -9784,7 +9784,7 @@ void ApplyNormalFixes()
     }
 
     // Relentless Aggression - triggered by LK Arena 5 Gladiator's Relic/Idol/Libram/Totem
-    sp = Spell::checkAndReturnSpellEntry(60553);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(60553);
     if (sp != nullptr)
     {
         // effect 1 and 2 are the same... dunno why
@@ -9792,7 +9792,7 @@ void ApplyNormalFixes()
     }
 
     // Savage Aggression - triggered by Savage Gladiator's Relic/Idol/Libram/Totem
-    sp = Spell::checkAndReturnSpellEntry(60544);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(60544);
     if (sp != nullptr)
     {
         // effect 1 and 2 are the same... dunno why
@@ -9800,7 +9800,7 @@ void ApplyNormalFixes()
     }
 
     // Sigil of Haunted Dreams
-    sp = Spell::checkAndReturnSpellEntry(60826);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(60826);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
@@ -9810,36 +9810,36 @@ void ApplyNormalFixes()
     }
 
     //Totem of the Third Wind - bad range
-    sp = Spell::checkAndReturnSpellEntry(34132);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(34132);
     if (sp != nullptr)
     {
         sp->rangeIndex = 5;
     }
-    sp = Spell::checkAndReturnSpellEntry(42371);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(42371);
     if (sp != nullptr)
     {
         sp->rangeIndex = 5;
     }
-    sp = Spell::checkAndReturnSpellEntry(43729);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(43729);
     if (sp != nullptr)
     {
         sp->rangeIndex = 5;
     }
-    sp = Spell::checkAndReturnSpellEntry(46099);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(46099);
     if (sp != nullptr)
     {
         sp->rangeIndex = 5;
     }
 
     // Eye of Acherus, our phase shift mode messes up the control :/
-    sp = Spell::checkAndReturnSpellEntry(51852);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(51852);
     if (sp != nullptr)
         sp->Effect[0] = SPELL_EFFECT_NULL;
 
 
     //Ashtongue Talisman of Equilibrium
     // DankoDJ: To set the same value several times makes no sense!
-    sp = Spell::checkAndReturnSpellEntry(40442);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(40442);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
@@ -9864,7 +9864,7 @@ void ApplyNormalFixes()
 
     //Ashtongue Talisman of Acumen
     // DankoDJ: To set the same value several times makes no sense!
-    sp = Spell::checkAndReturnSpellEntry(40438);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(40438);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
@@ -9881,7 +9881,7 @@ void ApplyNormalFixes()
         sp->maxstack = 1;
     }
     // Drums of war targets surrounding party members instead of us
-    sp = Spell::checkAndReturnSpellEntry(35475);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(35475);
     if (sp != nullptr)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_ALL_PARTY;
@@ -9893,7 +9893,7 @@ void ApplyNormalFixes()
     }
 
     // Drums of Battle targets surrounding party members instead of us
-    sp = Spell::checkAndReturnSpellEntry(35476);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(35476);
     if (sp != nullptr)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_ALL_PARTY;
@@ -9905,7 +9905,7 @@ void ApplyNormalFixes()
     }
 
     // Drums of Panic targets surrounding creatures instead of us
-    sp = Spell::checkAndReturnSpellEntry(35474);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(35474);
     if (sp != nullptr)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_ALL_ENEMIES_AROUND_CASTER;
@@ -9917,7 +9917,7 @@ void ApplyNormalFixes()
     }
 
     // Drums of Restoration targets surrounding party members instead of us
-    sp = Spell::checkAndReturnSpellEntry(35478);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(35478);
     if (sp != nullptr)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_ALL_PARTY;
@@ -9928,7 +9928,7 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetB[2] = 0;
     }
     // Drums of Speed targets surrounding party members instead of us
-    sp = Spell::checkAndReturnSpellEntry(35477);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(35477);
     if (sp != nullptr)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_ALL_PARTY;
@@ -9940,24 +9940,24 @@ void ApplyNormalFixes()
     }
 
     //all Drums
-    sp = Spell::checkAndReturnSpellEntry(35474);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(35474);
     if (sp != nullptr)
         sp->RequiredShapeShift = 0;
-    sp = Spell::checkAndReturnSpellEntry(35475);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(35475);
     if (sp != nullptr)
         sp->RequiredShapeShift = 0;
-    sp = Spell::checkAndReturnSpellEntry(35476);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(35476);
     if (sp != nullptr)
         sp->RequiredShapeShift = 0;
-    sp = Spell::checkAndReturnSpellEntry(35477);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(35477);
     if (sp != nullptr)
         sp->RequiredShapeShift = 0;
-    sp = Spell::checkAndReturnSpellEntry(35478);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(35478);
     if (sp != nullptr)
         sp->RequiredShapeShift = 0;
 
     //Purify helboar meat
-    sp = Spell::checkAndReturnSpellEntry(29200);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(29200);
     if (sp != nullptr)
     {
         sp->Reagent[1] = 0;
@@ -9965,35 +9965,35 @@ void ApplyNormalFixes()
     }
 
     //Thorium Grenade
-    sp = Spell::checkAndReturnSpellEntry(19769);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(19769);
     if (sp != nullptr)
     {
         sp->InterruptFlags |= ~(CAST_INTERRUPT_ON_MOVEMENT);
     }
 
     //M73 Frag Grenade
-    sp = Spell::checkAndReturnSpellEntry(13808);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(13808);
     if (sp != nullptr)
     {
         sp->InterruptFlags |= ~(CAST_INTERRUPT_ON_MOVEMENT);
     }
 
     //Iron Grenade
-    sp = Spell::checkAndReturnSpellEntry(4068);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(4068);
     if (sp != nullptr)
     {
         sp->InterruptFlags |= ~(CAST_INTERRUPT_ON_MOVEMENT);
     }
 
     //Frost Grenade
-    sp = Spell::checkAndReturnSpellEntry(39965);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(39965);
     if (sp != nullptr)
     {
         sp->InterruptFlags |= ~(CAST_INTERRUPT_ON_MOVEMENT);
     }
 
     //Adamantine Grenade
-    sp = Spell::checkAndReturnSpellEntry(30217);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(30217);
     if (sp != nullptr)
     {
         sp->InterruptFlags |= ~(CAST_INTERRUPT_ON_MOVEMENT);
@@ -10004,7 +10004,7 @@ void ApplyNormalFixes()
     ///////////////////////////////////////////////////////////////
 
     // Citrine Pendant of Golden Healing
-    sp = Spell::checkAndReturnSpellEntry(25608);        //    http://www.wowhead.com/?item=20976
+    sp = Spell::checkAndReturnSpellEntryUnsafe(25608);        //    http://www.wowhead.com/?item=20976
     if (sp != nullptr)
     {
         //Overrides any spell coefficient calculation - DBCStores.h
@@ -10013,25 +10013,25 @@ void ApplyNormalFixes()
     }
 
     //Figurine - Shadowsong Panther
-    sp = Spell::checkAndReturnSpellEntry(46784);        //    http://www.wowhead.com/?item=35702
+    sp = Spell::checkAndReturnSpellEntryUnsafe(46784);        //    http://www.wowhead.com/?item=35702
     if (sp != nullptr)
         sp->AttributesEx |= ATTRIBUTESEX_NOT_BREAK_STEALTH;
 
     // Infernal Protection
-    sp = Spell::checkAndReturnSpellEntry(36488);            //    http://www.wowhead.com/?spell=36488
+    sp = Spell::checkAndReturnSpellEntryUnsafe(36488);            //    http://www.wowhead.com/?spell=36488
     if (sp != nullptr)
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SINGLE_FRIEND;
 
 
     //Fury of the Five Flights
-    sp = Spell::checkAndReturnSpellEntry(60313);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(60313);
     if (sp != nullptr)
     {
         sp->maxstack = 20;
     }
 
     //Pendant of the Violet Eye
-    sp = Spell::checkAndReturnSpellEntry(35095);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(35095);
     if (sp != nullptr)
     {
         sp->custom_self_cast_only = true;
@@ -10044,7 +10044,7 @@ void ApplyNormalFixes()
     // Insert boss spell fixes here
 
     // Major Domo - Magic Reflection
-    sp = Spell::checkAndReturnSpellEntry(20619);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(20619);
     if (sp != nullptr)
     {
         for (uint8 i = 0; i < 3; ++i)
@@ -10057,7 +10057,7 @@ void ApplyNormalFixes()
     }
 
     // Major Domo - Damage Shield
-    sp = Spell::checkAndReturnSpellEntry(21075);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(21075);
     if (sp != nullptr)
     {
         for (uint8 i = 0; i < 3; ++i)
@@ -10070,20 +10070,20 @@ void ApplyNormalFixes()
     }
 
     // Dark Glare
-    sp = Spell::checkAndReturnSpellEntry(26029);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(26029);
     if (sp != nullptr)
         sp->cone_width = 15.0f; // 15 degree cone
 
     // Drain Power (Malacrass) // bugged - the charges fade even when refreshed with new ones. This makes them everlasting.
-    sp = Spell::checkAndReturnSpellEntry(44131);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(44131);
     if (sp != nullptr)
         sp->DurationIndex = 21;
-    sp = Spell::checkAndReturnSpellEntry(44132);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(44132);
     if (sp != nullptr)
         sp->DurationIndex = 21;
 
     // Zul'jin spell, proc from Creeping Paralysis
-    sp = Spell::checkAndReturnSpellEntry(43437);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(43437);
     if (sp != nullptr)
     {
         sp->EffectImplicitTargetA[0] = 0;
@@ -10091,46 +10091,46 @@ void ApplyNormalFixes()
     }
 
     //Bloodboil
-    sp = Spell::checkAndReturnSpellEntry(42005);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(42005);
     if (sp != nullptr)
     {
         sp->MaxTargets = 5;
     }
 
     //Doom
-    sp = Spell::checkAndReturnSpellEntry(31347);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(31347);
     if (sp != nullptr)
     {
         sp->MaxTargets = 1;
     }
     //Shadow of Death
-    sp = Spell::checkAndReturnSpellEntry(40251);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(40251);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_PERIODIC_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 0;
     }
 
-    sp = Spell::checkAndReturnSpellEntry(9036);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(9036);
     if (sp != nullptr)
     {
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[1] = 20584;
     }
 
-    sp = Spell::checkAndReturnSpellEntry(24379);   //bg Restoration
+    sp = Spell::checkAndReturnSpellEntryUnsafe(24379);   //bg Restoration
     if (sp != nullptr)
     {
         sp->EffectTriggerSpell[0] = 23493;
     }
 
-    sp = Spell::checkAndReturnSpellEntry(23493);   //bg Restoration
+    sp = Spell::checkAndReturnSpellEntryUnsafe(23493);   //bg Restoration
     if (sp != nullptr)
     {
         sp->EffectTriggerSpell[0] = 24379;
     }
 
-    sp = Spell::checkAndReturnSpellEntry(5246);    // why self?
+    sp = Spell::checkAndReturnSpellEntryUnsafe(5246);    // why self?
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
@@ -10147,7 +10147,7 @@ void ApplyNormalFixes()
     // Insert Death Knight spells here
 
     // Unholy Aura - Ranks 1
-    sp = Spell::checkAndReturnSpellEntry(50391);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(50391);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_INCREASE_SPEED_ALWAYS;
@@ -10158,7 +10158,7 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetA[1] = EFF_TARGET_SELF;
     }
     // Unholy Aura - Ranks 2
-    sp = Spell::checkAndReturnSpellEntry(50392);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(50392);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_INCREASE_SPEED_ALWAYS;
@@ -10170,7 +10170,7 @@ void ApplyNormalFixes()
     }
 
     //    Empower Rune Weapon
-    sp = Spell::checkAndReturnSpellEntry(47568);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(47568);
     if (sp != nullptr)
     {
         sp->Effect[2] = SPELL_EFFECT_ACTIVATE_RUNES;
@@ -10179,7 +10179,7 @@ void ApplyNormalFixes()
     }
 
     // Frost Presence
-    sp = Spell::checkAndReturnSpellEntry(48263);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(48263);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_BASE_RESISTANCE_PCT;
@@ -10190,7 +10190,7 @@ void ApplyNormalFixes()
     }
 
     //    Unholy Presence
-    sp = Spell::checkAndReturnSpellEntry(48265);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(48265);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_HASTE;
@@ -10201,28 +10201,28 @@ void ApplyNormalFixes()
     }
 
     // DEATH AND DECAY
-    sp = sSpellCustomizations.GetSpellInfo(49937);
+    sp = sSpellCustomizations.getSpellInfoUnsafe(49937);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_PERIODIC_DAMAGE;
         sp->Effect[0] = SPELL_EFFECT_PERSISTENT_AREA_AURA;
     }
 
-    sp = sSpellCustomizations.GetSpellInfo(49936);
+    sp = sSpellCustomizations.getSpellInfoUnsafe(49936);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_PERIODIC_DAMAGE;
         sp->Effect[0] = SPELL_EFFECT_PERSISTENT_AREA_AURA;
     }
 
-    sp = sSpellCustomizations.GetSpellInfo(49938);
+    sp = sSpellCustomizations.getSpellInfoUnsafe(49938);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_PERIODIC_DAMAGE;
         sp->Effect[0] = SPELL_EFFECT_PERSISTENT_AREA_AURA;
     }
 
-    sp = sSpellCustomizations.GetSpellInfo(43265);
+    sp = sSpellCustomizations.getSpellInfoUnsafe(43265);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_PERIODIC_DAMAGE;
@@ -10243,7 +10243,7 @@ void ApplyNormalFixes()
     }*/
 
     // Vengeance
-    sp = sSpellCustomizations.GetSpellInfo(93099);
+    sp = sSpellCustomizations.getSpellInfoUnsafe(93099);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_ANY_DAMAGE_VICTIM;
@@ -10254,7 +10254,7 @@ void ApplyNormalFixes()
     ///////////////////////////////////////////////////////////
     //    Path of Frost
     ///////////////////////////////////////////////////////////
-    sp = Spell::checkAndReturnSpellEntry(3714);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(3714);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_WATER_WALK;
@@ -10262,14 +10262,14 @@ void ApplyNormalFixes()
     }
 
     // Rune Strike
-    sp = Spell::checkAndReturnSpellEntry(56815);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(56815);
     if (sp != nullptr)
     {
         sp->Attributes |= ATTRIBUTES_CANT_BE_DPB;
     }
 
     CreateDummySpell(56817);
-    sp = Spell::checkAndReturnSpellEntry(56817);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(56817);
     if (sp != nullptr)
     {
         sp->DurationIndex = 28;
@@ -10278,39 +10278,39 @@ void ApplyNormalFixes()
     }
 
     //Frost Strike
-    sp = Spell::checkAndReturnSpellEntry(49143);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(49143);
     if (sp != nullptr)
     {
         sp->Attributes = ATTRIBUTES_CANT_BE_DPB;
     }
-    sp = Spell::checkAndReturnSpellEntry(51416);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(51416);
     if (sp != nullptr)
     {
         sp->Attributes = ATTRIBUTES_CANT_BE_DPB;
     }
-    sp = Spell::checkAndReturnSpellEntry(51417);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(51417);
     if (sp != nullptr)
     {
         sp->Attributes = ATTRIBUTES_CANT_BE_DPB;
     }
-    sp = Spell::checkAndReturnSpellEntry(51418);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(51418);
     if (sp != nullptr)
     {
         sp->Attributes = ATTRIBUTES_CANT_BE_DPB;
     }
-    sp = Spell::checkAndReturnSpellEntry(51419);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(51419);
     if (sp != nullptr)
     {
         sp->Attributes = ATTRIBUTES_CANT_BE_DPB;
     }
-    sp = Spell::checkAndReturnSpellEntry(55268);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(55268);
     if (sp != nullptr)
     {
         sp->Attributes = ATTRIBUTES_CANT_BE_DPB;
     }
 
     // Noggenfogger elixir - reduce size effect
-    sp = Spell::checkAndReturnSpellEntry(16595);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(16595);
     if (sp != nullptr)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_SCALE;
@@ -10318,7 +10318,7 @@ void ApplyNormalFixes()
         sp->maxstack = 1;
     }
 
-    sp = Spell::checkAndReturnSpellEntry(46584);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(46584);
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_DUMMY;
@@ -10328,7 +10328,7 @@ void ApplyNormalFixes()
 
     //Other Librams
     //Libram of Saints Departed and Libram of Zeal
-    sp = Spell::checkAndReturnSpellEntry(34263);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(34263);
     if (sp != nullptr)
     {
         sp->custom_self_cast_only = true;
@@ -10337,7 +10337,7 @@ void ApplyNormalFixes()
     }
 
     //Libram of Avengement
-    sp = Spell::checkAndReturnSpellEntry(34260);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(34260);
     if (sp != nullptr)
     {
         sp->custom_self_cast_only = true;
@@ -10346,7 +10346,7 @@ void ApplyNormalFixes()
     }
 
     //Libram of Mending
-    sp = Spell::checkAndReturnSpellEntry(43742);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(43742);
     if (sp != nullptr)
     {
         sp->custom_self_cast_only = true;
@@ -10355,18 +10355,18 @@ void ApplyNormalFixes()
     }
 
     // Recently Bandaged - is debuff
-    sp = Spell::checkAndReturnSpellEntry(11196);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(11196);
     if (sp != nullptr)
     {
         sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
     }
 
-    sp = Spell::checkAndReturnSpellEntry(44856);        // Bash'ir Phasing Device
+    sp = Spell::checkAndReturnSpellEntryUnsafe(44856);        // Bash'ir Phasing Device
     if (sp != nullptr)
         sp->AuraInterruptFlags = AURA_INTERRUPT_ON_LEAVE_AREA;
 
 
-    sp = Spell::checkAndReturnSpellEntry(24574);        // Zandalarian Hero Badge 24590 24575
+    sp = Spell::checkAndReturnSpellEntryUnsafe(24574);        // Zandalarian Hero Badge 24590 24575
     if (sp != nullptr)
     {
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
@@ -10375,19 +10375,19 @@ void ApplyNormalFixes()
     }
 
     //Tempfix for Stone Statues
-    sp = Spell::checkAndReturnSpellEntry(32253);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(32253);
     if (sp != nullptr)
         sp->DurationIndex = 64;
-    sp = Spell::checkAndReturnSpellEntry(32787);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(32787);
     if (sp != nullptr)
         sp->DurationIndex = 64;
-    sp = Spell::checkAndReturnSpellEntry(32788);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(32788);
     if (sp != nullptr)
         sp->DurationIndex = 64;
-    sp = Spell::checkAndReturnSpellEntry(32790);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(32790);
     if (sp != nullptr)
         sp->DurationIndex = 64;
-    sp = Spell::checkAndReturnSpellEntry(32791);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(32791);
     if (sp != nullptr)
         sp->DurationIndex = 64;
 
@@ -10396,21 +10396,21 @@ void ApplyNormalFixes()
     //////////////////////////////////////////////////////
 
     // Blessing of Zim'Torga
-    sp = Spell::checkAndReturnSpellEntry(51729);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(51729);
     if (sp)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SCRIPTED_OR_SINGLE_TARGET;
     }
 
     // Blessing of Zim'Abwa
-    sp = Spell::checkAndReturnSpellEntry(51265);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(51265);
     if (sp)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SCRIPTED_OR_SINGLE_TARGET;
     }
 
     // Blessing of Zim'Rhuk
-    sp = Spell::checkAndReturnSpellEntry(52051);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(52051);
     if (sp)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SCRIPTED_OR_SINGLE_TARGET;
@@ -10419,12 +10419,12 @@ void ApplyNormalFixes()
     // Ritual of Summoning summons a GameObject that triggers an inexistant spell.
     // This will copy an existant Summon Player spell used for another Ritual Of Summoning
     // to the one taught by Warlock trainers.
-    sp = Spell::checkAndReturnSpellEntry(7720);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(7720);
     if (sp)
     {
         const uint32 ritOfSummId = 62330;
         CreateDummySpell(ritOfSummId);
-        SpellInfo * ritOfSumm = sSpellCustomizations.GetSpellInfo(ritOfSummId);
+        SpellInfo* ritOfSumm = sSpellCustomizations.getSpellInfoUnsafe(ritOfSummId);
         if (ritOfSumm != NULL)
         {
             memcpy(ritOfSumm, sp, sizeof(SpellInfo));
@@ -10432,7 +10432,7 @@ void ApplyNormalFixes()
         }
     }
     //Persistent Shield
-    sp = Spell::checkAndReturnSpellEntry(26467);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(26467);
 	if (sp)
 	{
 		sp->EffectTriggerSpell[0] = 26470;
@@ -10441,7 +10441,7 @@ void ApplyNormalFixes()
 		sp->procFlags = PROC_ON_CAST_SPELL;
 	}
     //Gravity Bomb
-    sp = Spell::checkAndReturnSpellEntry(63024);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(63024);
 	if (sp)
 	{
 		sp->EffectBasePoints[0] = 0;
@@ -10458,7 +10458,7 @@ void ApplyNormalFixes()
 		sp->Attributes |= ATTRIBUTES_NEGATIVE;
 	}
     // War Stomp
-    sp = Spell::checkAndReturnSpellEntry(20549);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(20549);
     if (sp)
     {
         sp->EffectMechanic[0] = MECHANIC_STUNNED;
@@ -10467,7 +10467,7 @@ void ApplyNormalFixes()
     }
 
     // Fan of knives
-    sp = Spell::checkAndReturnSpellEntry(51723);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(51723);
     if (sp != nullptr)
     {
         //sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
@@ -10479,7 +10479,7 @@ void ApplyNormalFixes()
 
     //Mage - firestarter talent ranks 1 & 2
     // overwrite procs, should only proc on these 2 spellgroups.
-    sp = Spell::checkAndReturnSpellEntry(44442);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(44442);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
@@ -10487,7 +10487,7 @@ void ApplyNormalFixes()
         sp->custom_ProcOnNameHash[0] = SPELL_HASH_DRAGON_S_BREATH;
         sp->custom_ProcOnNameHash[1] = SPELL_HASH_BLAST_WAVE;
     }
-    sp = Spell::checkAndReturnSpellEntry(44443);
+    sp = Spell::checkAndReturnSpellEntryUnsafe(44443);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;

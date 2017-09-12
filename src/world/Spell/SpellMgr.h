@@ -54,16 +54,16 @@ class Aura;
 
 #define SPELL_FACTORY_FUNCTION(T) \
   public: \
-  static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new T(Caster, info, triggered, aur); } \
-  T(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
+  static Spell* Create(Object* Caster, SpellInfo const* info, bool triggered, Aura* aur) { return new T(Caster, info, triggered, aur); } \
+  T(Object* Caster, SpellInfo const* info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
 
 #define AURA_FACTORY_FUNCTION(T) \
   public: \
-  static Aura* Create(SpellInfo *proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) { return new T(proto, duration, caster, target, temporary, i_caster); } \
-  T(SpellInfo *proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) : Aura(proto, duration, caster, target, temporary, i_caster) {}
+  static Aura* Create(SpellInfo const* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) { return new T(proto, duration, caster, target, temporary, i_caster); } \
+  T(SpellInfo const* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) : Aura(proto, duration, caster, target, temporary, i_caster) {}
 
-typedef Spell* (*spell_factory_function)(Object* Caster, SpellInfo* info, bool triggered, Aura* aur);
-typedef Aura* (*aura_factory_function)(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary, Item* i_caster);
+typedef Spell* (*spell_factory_function)(Object* Caster, SpellInfo const* info, bool triggered, Aura* aur);
+typedef Aura* (*aura_factory_function)(SpellInfo const* proto, int32 duration, Object* caster, Unit* target, bool temporary, Item* i_caster);
 
 class SERVER_DECL SpellFactoryMgr: public Singleton < SpellFactoryMgr >
 {
@@ -78,9 +78,9 @@ class SERVER_DECL SpellFactoryMgr: public Singleton < SpellFactoryMgr >
 		{
 		}
 
-		SpellInfo* GetSpellEntryByDifficulty(uint32 id, uint8 difficulty);
-		Spell* NewSpell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur);
-		Aura* NewAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL);
+		SpellInfo const* GetSpellEntryByDifficulty(uint32 id, uint8 difficulty);
+		Spell* NewSpell(Object* Caster, SpellInfo const* info, bool triggered, Aura* aur);
+		Aura* NewAura(SpellInfo const* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL);
 
 		// Spell area
 		void LoadSpellAreas();

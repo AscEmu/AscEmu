@@ -454,7 +454,7 @@ void GameObject::SetRotationAngles(float z_rot, float y_rot, float x_rot)
     SetRotationQuat(quat.x, quat.y, quat.z, quat.w);
 }
 
-void GameObject::CastSpell(uint64 TargetGUID, SpellInfo* sp)
+void GameObject::CastSpell(uint64 TargetGUID, SpellInfo const* sp)
 {
     Spell* s = new Spell(this, sp, true, NULL);
 
@@ -468,7 +468,7 @@ void GameObject::CastSpell(uint64 TargetGUID, SpellInfo* sp)
 
 void GameObject::CastSpell(uint64 TargetGUID, uint32 SpellID)
 {
-    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(SpellID);
+    SpellInfo const* sp = sSpellCustomizations.GetSpellInfo(SpellID);
     if (sp == nullptr)
     {
         LogError("GameObject %u tried to cast a non-existing Spell %u.", gameobject_properties->entry, SpellID);

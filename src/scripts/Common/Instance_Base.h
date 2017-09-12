@@ -193,7 +193,7 @@ class MoonInstanceScript : public InstanceScript
         virtual void OnGameObjectPushToWorld(GameObject* pGameObject);
 
         // Reimplemented events
-        virtual GameObject* GetObjectForOpenLock(Player* pCaster, Spell* pSpell, SpellInfo* pSpellEntry);
+        virtual GameObject* GetObjectForOpenLock(Player* pCaster, Spell* pSpell, SpellInfo const* pSpellEntry);
         virtual void SetLockOptions(uint32 pEntryId, GameObject* pGameObject);
         virtual uint32 GetRespawnTimeForCreature(uint32 pEntryId, Creature* pCreature);
 

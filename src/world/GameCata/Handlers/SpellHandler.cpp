@@ -32,7 +32,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     recvPacket >> missileflag;
 
     // check for spell id
-    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
+    SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
     if (!spellInfo)
     {
         LogError("WORLD: unknown spell id %i", spellId);
@@ -103,7 +103,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
                     LogDebugFlag(LF_SPELL, "HandleCastSpellOpcode : Cancelling auto-shot cast because targets.m_unitTarget is null!");
                     return;
                 }
-                SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spellid);
+                SpellInfo const* sp = sSpellCustomizations.GetSpellInfo(spellid);
 
                 _player->m_AutoShotSpell = sp;
                 _player->m_AutoShotDuration = duration;

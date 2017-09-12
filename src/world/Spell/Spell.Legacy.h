@@ -50,7 +50,7 @@ class SERVER_DECL Spell : public EventableObject
     public:
 
         friend class DummySpellHandler;
-        Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur);
+        Spell(Object* Caster, SpellInfo const* info, bool triggered, Aura* aur);
         ~Spell();
 
     int32 event_GetInstanceID() override;
@@ -135,7 +135,7 @@ class SERVER_DECL Spell : public EventableObject
         void AddCooldown();
         void AddStartCooldown();
         //
-        uint8 GetErrorAtShapeshiftedCast(SpellInfo* spellInfo, uint32 form);
+        uint8 GetErrorAtShapeshiftedCast(SpellInfo const* spellInfo, uint32 form);
 
 
         bool Reflect(Unit* refunit);
@@ -168,7 +168,7 @@ class SERVER_DECL Spell : public EventableObject
         void writeSpellGoTargets(WorldPacket* data);
         void writeSpellMissedTargets(WorldPacket* data);
         uint32 pSpellId;
-        SpellInfo* ProcedOnSpell;
+        SpellInfo const* ProcedOnSpell;
         SpellCastTargets m_targets;
         SpellExtraError m_extraError;
 
@@ -340,7 +340,7 @@ class SERVER_DECL Spell : public EventableObject
         bool IsAspect();
         bool IsSeal();
 
-    SpellInfo* GetSpellInfo();
+    SpellInfo const* GetSpellInfo();
 
     void InitProtoOverride();
 
@@ -350,7 +350,7 @@ class SERVER_DECL Spell : public EventableObject
 
     static uint32 GetBaseThreat(uint32 dmg);
 
-    static uint32 GetMechanic(SpellInfo* sp);
+    static uint32 GetMechanic(SpellInfo const* sp);
 
         bool IsStealthSpell();
         bool IsInvisibilitySpell();
@@ -479,10 +479,18 @@ class SERVER_DECL Spell : public EventableObject
 
     public:
 
-        SpellInfo* m_spellInfo;
-        SpellInfo* m_spellInfo_override;   //used by spells that should have dynamic variables in spellentry.
+        SpellInfo const* m_spellInfo;
+        SpellInfo const* m_spellInfo_override;   //used by spells that should have dynamic variables in spellentry.
         static uint32_t getDiminishingGroup(uint32_t nameHash);
-        static SpellInfo* checkAndReturnSpellEntry(uint32_t spellid);
+        static SpellInfo const* checkAndReturnSpellEntry(uint32_t spellid);
+        // APGL End
+        // MIT Start
+
+        // Used in Hackfixes.cpp, avoid using it elsewhere. Will be removed when it's time to get rid of Hackfixes.cpp -Appled
+        static SpellInfo* checkAndReturnSpellEntryUnsafe(uint32_t spellid);
+
+        // MIT End
+        // APGL Start
 };
 
 #endif // USE_EXPERIMENTAL_SPELL_SYSTEM

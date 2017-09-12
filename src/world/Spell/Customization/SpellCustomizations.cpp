@@ -436,13 +436,22 @@ void SpellCustomizations::LoadSpellInfoData()
 #endif
 }
 
-SpellInfo* SpellCustomizations::GetSpellInfo(uint32 spell_id)
+SpellInfo const* SpellCustomizations::GetSpellInfo(uint32 spell_id) const
 {
     SpellInfoContainer::const_iterator itr = _spellInfoContainerStore.find(spell_id);
     if (itr != _spellInfoContainerStore.end())
-        return const_cast<SpellInfo*>(&itr->second);
+        return &itr->second;
 
     return nullptr;
+}
+
+SpellInfo* SpellCustomizations::getSpellInfoUnsafe(uint32_t spell_id)
+{
+	SpellInfoContainer::iterator itr = _spellInfoContainerStore.find(spell_id);
+	if (itr != _spellInfoContainerStore.end())
+		return &itr->second;
+
+	return nullptr;
 }
 
 SpellCustomizations::SpellInfoContainer* SpellCustomizations::GetSpellInfoStore()
@@ -463,7 +472,7 @@ void SpellCustomizations::StartSpellCustomization()
 
     for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
     {
-        auto spellentry = GetSpellInfo(it->first);
+        auto spellentry = getSpellInfoUnsafe(it->first);
         if (spellentry != nullptr)
         {
             //Set spell overwrites (effect based)
@@ -494,7 +503,7 @@ void SpellCustomizations::LoadSpellRanks()
             uint32 spell_id = result->Fetch()[0].GetUInt32();
             uint32 pRank = result->Fetch()[1].GetUInt32();
 
-            SpellInfo* spell_entry = GetSpellInfo(spell_id);
+            SpellInfo* spell_entry = getSpellInfoUnsafe(spell_id);
             if (spell_entry != nullptr)
             {
                 spell_entry->custom_RankNumber = pRank;
@@ -535,7 +544,7 @@ void SpellCustomizations::LoadSpellCustomAssign()
             bool self_cast_only = result->Fetch()[3].GetBool();
             uint32 c_is_flag = result->Fetch()[4].GetUInt32();
 
-            SpellInfo* spell_entry = GetSpellInfo(spell_id);
+            SpellInfo* spell_entry = getSpellInfoUnsafe(spell_id);
             if (spell_entry != nullptr)
             {
                 spell_entry->custom_BGR_one_buff_on_target = on_target;
@@ -576,7 +585,7 @@ void SpellCustomizations::LoadSpellCustomCoefFlags()
             uint32 spell_id = result->Fetch()[0].GetUInt32();
             uint32 coef_flags = result->Fetch()[1].GetUInt32();
 
-            SpellInfo* spell_entry = GetSpellInfo(spell_id);
+            SpellInfo* spell_entry = getSpellInfoUnsafe(spell_id);
             if (spell_entry != nullptr)
             {
                 spell_entry->custom_spell_coef_flags = coef_flags;
@@ -614,7 +623,7 @@ void SpellCustomizations::LoadSpellProcs()
             uint32 spell_id = f[0].GetUInt32();
             uint32 name_hash = f[1].GetUInt32();
 
-            auto spell_entry = GetSpellInfo(spell_id);
+            auto spell_entry = getSpellInfoUnsafe(spell_id);
             if (spell_entry != nullptr)
             {
                 for (uint8 x = 0; x < 3; ++x)
@@ -673,7 +682,7 @@ void SpellCustomizations::LoadSpellProcs()
 }
 
 ///Fix if it is a periodic trigger with amplitude = 0, to avoid division by zero
-void SpellCustomizations::SetEffectAmplitude(SpellInfo* spell_entry)
+void SpellCustomizations::SetEffectAmplitude(SpellInfo * spell_entry)
 {
     for (uint8 y = 0; y < 3; y++)
     {

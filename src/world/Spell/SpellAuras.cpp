@@ -743,7 +743,7 @@ Object* Aura::GetCaster()
         return nullptr;
 }
 
-Aura::Aura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary, Item* i_caster)
+Aura::Aura(SpellInfo const* proto, int32 duration, Object* caster, Unit* target, bool temporary, Item* i_caster)
 {
     m_castInDuel = false;
     m_spellInfo = proto;
@@ -1745,7 +1745,7 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
             {
                 if (!pSpellId) //we need a parent spell and should always have one since it procs on it
                     break;
-                SpellInfo* parentsp = sSpellCustomizations.GetSpellInfo(pSpellId);
+                SpellInfo const* parentsp = sSpellCustomizations.GetSpellInfo(pSpellId);
                 if (!parentsp)
                     return;
                 if (c != nullptr && c->IsPlayer())
@@ -1796,7 +1796,7 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
                 }
             }
         }
-        uint32* gr = GetSpellInfo()->SpellGroupType;
+        const uint32* gr = GetSpellInfo()->SpellGroupType;
         if (gr)
         {
             if (c != nullptr)
@@ -1944,7 +1944,7 @@ void Aura::EventPeriodicDamage(uint32 amount)
     }
 
     // grep: this is hack.. some auras seem to delete this shit.
-    SpellInfo* sp = m_spellInfo;
+    SpellInfo const* sp = m_spellInfo;
 
     if (m_target->m_damageSplitTarget)
         res = static_cast<float>(m_target->DoDamageSplitTarget(static_cast<uint32>(res), GetSpellInfo()->School, false));
@@ -3087,7 +3087,7 @@ void Aura::SpellAuraPeriodicTriggerSpellWithValue(bool apply)
 {
     if (apply)
     {
-        SpellInfo* spe = sSpellCustomizations.GetSpellInfo(m_spellInfo->EffectTriggerSpell[mod->i]);
+        SpellInfo const* spe = sSpellCustomizations.GetSpellInfo(m_spellInfo->EffectTriggerSpell[mod->i]);
         if (spe == NULL)
             return;
 
@@ -3163,7 +3163,7 @@ void Aura::SpellAuraPeriodicTriggerSpell(bool apply)
 
     if (apply)
     {
-        SpellInfo* trigger = sSpellCustomizations.GetSpellInfo(GetSpellInfo()->EffectTriggerSpell[mod->i]);
+        SpellInfo const* trigger = sSpellCustomizations.GetSpellInfo(GetSpellInfo()->EffectTriggerSpell[mod->i]);
 
         if (trigger == NULL)
             return;
@@ -3185,7 +3185,7 @@ void Aura::SpellAuraPeriodicTriggerSpell(bool apply)
     }
 }
 
-void Aura::EventPeriodicTriggerSpell(SpellInfo* spellInfo, bool overridevalues, int32 overridevalue)
+void Aura::EventPeriodicTriggerSpell(SpellInfo const* spellInfo, bool overridevalues, int32 overridevalue)
 {
     Spell* spell = sSpellFactoryMgr.NewSpell(m_target, spellInfo, true, this);
     if (overridevalues)
@@ -3727,7 +3727,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
                     modelId = 2289;
 
                 //some say there is a second effect
-                SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(21178);
+                SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(21178);
 
                 Spell* sp = sSpellFactoryMgr.NewSpell(m_target, spellInfo, true, NULL);
                 SpellCastTargets tgt;
@@ -3869,7 +3869,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
 
                     if (furorSpell != 0)
                     {
-                        SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(furorSpell);
+                        SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(furorSpell);
 
                         Spell* sp = sSpellFactoryMgr.NewSpell(m_target, spellInfo, true, NULL);
                         SpellCastTargets tgt;
@@ -3900,7 +3900,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
         if (spellId == 0)
             return;
 
-        SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
+        SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
 
         Spell* sp = sSpellFactoryMgr.NewSpell(m_target, spellInfo, true, NULL);
         SpellCastTargets tgt;
@@ -4330,7 +4330,7 @@ void Aura::EventPeriodicLeech(uint32 amount)
     if (!(m_target->isAlive() && m_caster->isAlive()))
         return;
 
-    SpellInfo* sp = GetSpellInfo();
+    SpellInfo const* sp = GetSpellInfo();
 
     if (m_target->SchoolImmunityList[sp->School])
     {
@@ -6076,9 +6076,9 @@ void Aura::SpellAuraAddPctMod(bool apply)
 {
     int32 val = apply ? mod->m_amount : -mod->m_amount;
 #if VERSION_STRING != Cata
-    uint32* AffectedGroups = GetSpellInfo()->EffectSpellClassMask[mod->i];
+    const uint32* AffectedGroups = GetSpellInfo()->EffectSpellClassMask[mod->i];
 #else
-    uint32* AffectedGroups = GetSpellInfo()->EffectSpellClassMask;
+    const uint32* AffectedGroups = GetSpellInfo()->EffectSpellClassMask;
 #endif
 
     switch (mod->m_miscValue)  //let's generate warnings for unknown types of modifiers
@@ -6186,7 +6186,7 @@ void Aura::SpellAuraAddPctMod(bool apply)
     }
 }
 
-void Aura::SendModifierLog(int32** m, int32 v, uint32* mask, uint8 type, bool pct)
+void Aura::SendModifierLog(int32** m, int32 v, const uint32* mask, uint8 type, bool pct)
 {
     uint32 intbit = 0, groupnum = 0;
 
@@ -6237,13 +6237,13 @@ void Aura::SendModifierLog(int32** m, int32 v, uint32* mask, uint8 type, bool pc
     }
 }
 
-void Aura::SendDummyModifierLog(std::map< SpellInfo*, uint32 >* m, SpellInfo* spellInfo, uint32 i, bool apply, bool pct)
+void Aura::SendDummyModifierLog(std::map< SpellInfo const*, uint32 >* m, SpellInfo const* spellInfo, uint32 i, bool apply, bool pct)
 {
     int32 v = spellInfo->EffectBasePoints[i] + 1;
 #if VERSION_STRING != Cata
-    uint32* mask = spellInfo->EffectSpellClassMask[i];
+    const uint32* mask = spellInfo->EffectSpellClassMask[i];
 #else
-    uint32* mask = spellInfo->EffectSpellClassMask;
+    const uint32* mask = spellInfo->EffectSpellClassMask;
 #endif
     uint8 type = static_cast<uint8>(spellInfo->EffectMiscValue[i]);
 
@@ -6254,7 +6254,7 @@ void Aura::SendDummyModifierLog(std::map< SpellInfo*, uint32 >* m, SpellInfo* sp
     else
     {
         v = -v;
-        std::map<SpellInfo*, uint32>::iterator itr = m->find(spellInfo);
+        std::map<SpellInfo const*, uint32>::iterator itr = m->find(spellInfo);
         if (itr != m->end())
             m->erase(itr);
     }
@@ -6283,7 +6283,7 @@ void Aura::SpellAuraAddClassTargetTrigger(bool apply)
     {
         uint32 groupRelation[3], procClassMask[3];
         int charges;
-        SpellInfo* sp;
+        SpellInfo const* sp;
 
         // Find spell of effect to be triggered
         sp = sSpellCustomizations.GetSpellInfo(GetSpellInfo()->EffectTriggerSpell[mod->i]);
@@ -6400,7 +6400,7 @@ void Aura::SpellAuraOverrideClassScripts(bool apply)
                     break;
                 }
 
-                std::list<SpellInfo*>::iterator itrSE = itermap->second->begin();
+                std::list<SpellInfo const*>::iterator itrSE = itermap->second->begin();
 
                 SpellOverrideMap::iterator itr = plr->mSpellOverrideMap.find((*itrSE)->Id);
 
@@ -6449,7 +6449,7 @@ void Aura::SpellAuraOverrideClassScripts(bool apply)
                 SpellOverrideMap::iterator itr = plr->mSpellOverrideMap.begin(), itr2;
                 while (itr != plr->mSpellOverrideMap.end())
                 {
-                    std::list<SpellInfo*>::iterator itrSE = itermap->second->begin();
+                    std::list<SpellInfo const*>::iterator itrSE = itermap->second->begin();
                     for (; itrSE != itermap->second->end(); ++itrSE)
                     {
                         if (itr->first == (*itrSE)->Id)
@@ -7444,9 +7444,9 @@ void Aura::SpellAuraAddFlatModifier(bool apply)
 {
     int32 val = apply ? mod->m_amount : -mod->m_amount;
 #if VERSION_STRING != Cata
-    uint32* AffectedGroups = GetSpellInfo()->EffectSpellClassMask[mod->i];
+    const uint32* AffectedGroups = GetSpellInfo()->EffectSpellClassMask[mod->i];
 #else
-    uint32* AffectedGroups = GetSpellInfo()->EffectSpellClassMask;
+    const uint32* AffectedGroups = GetSpellInfo()->EffectSpellClassMask;
 #endif
 
     switch (mod->m_miscValue) //let's generate warnings for unknown types of modifiers
@@ -8280,7 +8280,7 @@ void Aura::SpellAuraSpiritOfRedemption(bool apply)
     {
         m_target->SetScale(0.5);
         m_target->SetHealth(1);
-        SpellInfo* sorInfo = sSpellCustomizations.GetSpellInfo(27792);
+        SpellInfo const* sorInfo = sSpellCustomizations.GetSpellInfo(27792);
         Spell* sor = sSpellFactoryMgr.NewSpell(m_target, sorInfo, true, NULL);
         SpellCastTargets targets;
         targets.m_unitTarget = m_target->GetGUID();
@@ -8854,7 +8854,7 @@ bool Aura::DotCanCrit()
     if (caster == nullptr)
         return false;
 
-    SpellInfo* spell_info = this->GetSpellInfo();
+    SpellInfo const* spell_info = this->GetSpellInfo();
     if (spell_info == nullptr)
         return false;
 
@@ -8872,7 +8872,7 @@ bool Aura::DotCanCrit()
     if (aura == nullptr)
         return false;
 
-    SpellInfo* aura_spell_info = aura->GetSpellInfo();
+    SpellInfo const* aura_spell_info = aura->GetSpellInfo();
 
     uint8 i = 0;
     if (aura_spell_info->EffectApplyAuraName[1] == SPELL_AURA_ALLOW_DOT_TO_CRIT)
@@ -8895,7 +8895,7 @@ bool Aura::DotCanCrit()
     if (caster == NULL)
         return false;
 
-    SpellInfo* sp = this->GetSpellInfo();
+    SpellInfo const* sp = this->GetSpellInfo();
     uint32 index = MAX_TOTAL_AURAS_START;
     Aura* aura;
     bool found = false;
@@ -8907,7 +8907,7 @@ bool Aura::DotCanCrit()
         if (aura == NULL)
             break;
 
-        SpellInfo* aura_sp = aura->GetSpellInfo();
+        SpellInfo const* aura_sp = aura->GetSpellInfo();
 
         uint8 i = 0;
         if (aura_sp->EffectApplyAuraName[1] == SPELL_AURA_ALLOW_DOT_TO_CRIT)
@@ -8949,7 +8949,7 @@ bool Aura::DotCanCrit()
 
 bool Aura::IsCombatStateAffecting()
 {
-    SpellInfo* sp = m_spellInfo;
+    SpellInfo const* sp = m_spellInfo;
 
     if (sp->appliesAreaAura(SPELL_AURA_PERIODIC_DAMAGE) ||
         sp->appliesAreaAura(SPELL_AURA_PERIODIC_DAMAGE_PERCENT) ||
@@ -8963,7 +8963,7 @@ bool Aura::IsCombatStateAffecting()
 
 bool Aura::IsAreaAura()
 {
-    SpellInfo* sp = m_spellInfo;
+    SpellInfo const* sp = m_spellInfo;
 
     if (sp->HasEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA) ||
         sp->HasEffect(SPELL_EFFECT_APPLY_RAID_AREA_AURA) ||

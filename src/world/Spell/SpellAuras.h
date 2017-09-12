@@ -418,13 +418,13 @@ class SERVER_DECL Aura : public EventableObject
 {
     public:
 
-        Aura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL);
+        Aura(SpellInfo const* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL);
         ~Aura();
 
         void Remove();
         void AddMod(uint32 t, int32 a, uint32 miscValue, uint32 i);
 
-        inline SpellInfo* GetSpellInfo() const { return m_spellInfo; }
+        inline SpellInfo const* GetSpellInfo() const { return m_spellInfo; }
         inline uint32 GetSpellId() const { return m_spellInfo->Id; }
         inline bool IsPassive() { if (!m_spellInfo) return false; return (m_spellInfo->IsPassive() && !m_areaAura); }
 
@@ -729,14 +729,14 @@ class SERVER_DECL Aura : public EventableObject
         void SpellAuraConvertRune(bool apply);
         void UpdateAuraModDecreaseSpeed();
 
-        void SendModifierLog(int32** m, int32 v, uint32* mask, uint8 type, bool pct = false);
-        void SendDummyModifierLog(std::map<SpellInfo*, uint32> * m, SpellInfo* spellInfo, uint32 i, bool apply, bool pct = false);
+        void SendModifierLog(int32** m, int32 v, const uint32* mask, uint8 type, bool pct = false);
+        void SendDummyModifierLog(std::map<SpellInfo const*, uint32> * m, SpellInfo const* spellInfo, uint32 i, bool apply, bool pct = false);
 
         // Events
         void EventPeriodicDamage(uint32);
         void EventPeriodicDamagePercent(uint32);
         void EventPeriodicHeal(uint32);
-        void EventPeriodicTriggerSpell(SpellInfo* spellInfo, bool overridevalues, int32 overridevalue);
+        void EventPeriodicTriggerSpell(SpellInfo const* spellInfo, bool overridevalues, int32 overridevalue);
         void EventPeriodicTrigger(uint32 amount, uint32 type);
         void EventPeriodicEnergize(uint32, uint32);
         void EventPeriodicEnergizeVariable(uint32, uint32);
@@ -769,7 +769,7 @@ class SERVER_DECL Aura : public EventableObject
 
         virtual bool IsAbsorb() { return false; }
 
-        SpellInfo* m_spellInfo;
+        SpellInfo const* m_spellInfo;
         AreaAuraList targets; // This is only used for AA
         uint64 m_casterGuid;
         uint16 m_auraSlot;

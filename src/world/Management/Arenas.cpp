@@ -441,7 +441,7 @@ void Arena::HookOnAreaTrigger(Player* plr, uint32 id)
         if (m_buffs[buffslot] != NULL && m_buffs[buffslot]->IsInWorld())
         {
             // apply the buff
-            SpellInfo* sp = sSpellCustomizations.GetSpellInfo(m_buffs[buffslot]->GetGameObjectProperties()->raw.parameter_3);
+            SpellInfo const* sp = sSpellCustomizations.GetSpellInfo(m_buffs[buffslot]->GetGameObjectProperties()->raw.parameter_3);
             ARCEMU_ASSERT(sp != NULL);
 
             Spell* s = sSpellFactoryMgr.NewSpell(plr, sp, true, 0);
