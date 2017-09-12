@@ -199,3 +199,20 @@ bool ChatHandler::HandleAccountChangePassword(const char* args, WorldSession* m_
 
     return true;
 }
+
+bool ChatHandler::HandleAccountGetAccountID(const char* args, WorldSession* m_session)
+{
+    if (!*args)
+    {
+        return false;
+    }
+
+    char* pAccount = (char*)args;
+
+    sLogonCommHandler.Account_CheckExist(pAccount, m_session->GetAccountNameS(), NULL, 2);
+
+    sGMLog.writefromsession(m_session, "looked up account id for account %s", pAccount);
+
+
+    return true;
+}

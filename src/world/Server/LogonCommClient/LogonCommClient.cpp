@@ -522,7 +522,7 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
     const char* request_string = request_name.c_str();
     const char* account_string = account_name.c_str();
 
-    auto session_name = sWorld.getSessionByAccountName(request_string);
+    WorldSession* session_name = sWorld.getSessionByAccountName(request_string);
     if (session_name == nullptr)
     {
         LOG_ERROR("Receiver %s not found!", request_string);
@@ -534,13 +534,11 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
         case 1:     // Account not available
         {
             session_name->SystemMessage("Account: %s not found in database!", account_string);
-        }
-        break;
+        } break;
         case 2:     // No additional data set
         {
             session_name->SystemMessage("No gmlevel set for account: %s !", account_string);
-        }
-        break;
+        } break;
         case 3:     // Everything is okay
         {
             std::string gmlevel;
@@ -564,8 +562,14 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
             {
                 updated_account_session->SystemMessage("Your permissions has been updated! Please reconnect your account.");
             }
+        } break;
+        case 4:     // Account ID
+        {
+            uint32 account_id;
+            recvData >> account_id;
+
+            session_name->SystemMessage("Account '%s' has account ID %u.", account_string, account_id);
         }
-        break;
     }
 }
 

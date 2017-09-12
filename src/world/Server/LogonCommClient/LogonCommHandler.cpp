@@ -620,7 +620,7 @@ void LogonCommHandler::RefreshRealmPop()
     server_population = sWorld.getPlayerCount() * 3.0f / pLimit;
 }
 
-void LogonCommHandler::Account_CheckExist(const char* account, const char* request_name, const char* additional)
+void LogonCommHandler::Account_CheckExist(const char* account, const char* request_name, const char* additional, uint32 method)
 {
     std::map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
     if (logons.size() == 0 || itr->second == 0)
@@ -628,13 +628,28 @@ void LogonCommHandler::Account_CheckExist(const char* account, const char* reque
         return;         // No valid logonserver is connected.
     }
 
-    WorldPacket data(LRCMSG_ACCOUNT_REQUEST, 50);
-    data << uint32(1);        // 1 = Account available
-    data << account;
-    data << request_name;
 
-    if (additional)           // additional data (gmlevel)
-        data << additional;
+    WorldPacket data(LRCMSG_ACCOUNT_REQUEST, 50);
+
+    switch (method)
+    {
+        case 2:
+        {
+            data << uint32(2);        // 2 = get requested account id
+            data << account;
+            data << request_name;
+
+        } break;
+        default:
+        {
+            data << uint32(1);        // 1 = check requested account available
+            data << account;
+            data << request_name;
+
+            if (additional)           // additional data (gmlevel)
+                data << additional;
+        } break;
+    }
 
     itr->second->SendPacket(&data, false);
 }

@@ -76,6 +76,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleAccountUnbanCommand(const char* args, WorldSession* m_session);
         bool HandleAccountMuteCommand(const char* args, WorldSession* m_session);
         bool HandleAccountUnmuteCommand(const char* args, WorldSession* m_session);
+        bool HandleAccountGetAccountID(const char* args, WorldSession* m_session);
 
 #if VERSION_STRING > TBC
         // Achievement

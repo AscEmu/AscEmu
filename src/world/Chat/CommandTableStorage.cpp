@@ -592,6 +592,7 @@ void CommandTableStorage::Init()
         { "ban",        'a', &ChatHandler::HandleAccountBannedCommand,  "Bans account: .ban account <name> [duration] [reason]",            nullptr, 0, 0, 0 },
         { "unban",      'z', &ChatHandler::HandleAccountUnbanCommand,   "Unbans account x.",                                                nullptr, 0, 0, 0 },
         { "changepw",   '0', &ChatHandler::HandleAccountChangePassword, "Change the password of your account.",                             nullptr, 0, 0, 0 },
+        { "getid",      '1', &ChatHandler::HandleAccountGetAccountID,   "Get Account ID for account name X",                                nullptr, 0, 0, 0 },
         { nullptr,      '0', nullptr,                                   "",                                                                 nullptr, 0, 0, 0 }
     };
     dupe_command_table(accountCommandTable, _accountCommandTable);
