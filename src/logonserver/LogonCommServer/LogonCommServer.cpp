@@ -17,7 +17,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "LogonCommServer/LogonRealmOpcodes.hpp"
 #include "LogonStdAfx.h"
 #include "LogonCommDefines.h"
 
@@ -319,21 +318,21 @@ void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
     recvCrypto.Setup(key, 20);
     sendCrypto.Setup(key, 20);
 
-    /* packets are encrypted from now on */
+    // packets are encrypted from now on
     use_crypto = true;
 
-    /* send the response packet */
+    // send the response packet
     WorldPacket data(LRSMSG_AUTH_RESPONSE, 1);
     data << result;
     SendPacket(&data);
 
-    /* set our general var */
+    // set our general var
     authenticated = result;
 }
 
 void LogonCommServerSocket::HandleMappingReply(WorldPacket & recvData)
 {
-    /* this packet is gzipped, whee! :D */
+    // this packet is gzipped, whee! :D
     uint32 real_size;
     recvData >> real_size;
     uLongf rsize = real_size;
