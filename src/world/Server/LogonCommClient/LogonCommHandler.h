@@ -63,7 +63,7 @@ enum RealmType
 class LogonCommHandler : public Singleton<LogonCommHandler>
 {
 #ifdef WIN32
-    typedef std::unordered_map<std::string, std::string> ForcedPermissionMap;
+    typedef std::unordered_map<uint32, std::string> ForcedPermissionMap;
 #else
     typedef std::map<std::string, std::string> ForcedPermissionMap;
 #endif
@@ -94,7 +94,8 @@ class LogonCommHandler : public Singleton<LogonCommHandler>
         void RequestAddition(LogonCommClientSocket* Socket);
         void CheckAllServers();
         void Startup();
-        void AddForcedPermission(std::string acct, std::string perm);
+        void AddForcedPermission(uint32 acct, std::string perm);
+        void RemoveForcedPermission(uint32 acct);
         void ConnectionDropped(uint32 ID);
         void AdditionAck(uint32 ID, uint32 ServID);
         void UpdateSockets();
@@ -140,7 +141,7 @@ class LogonCommHandler : public Singleton<LogonCommHandler>
             return sock;
         }
         inline Mutex & GetPendingLock() { return pendingLock; }
-        const std::string* GetForcedPermissions(std::string & username);
+        const std::string* GetForcedPermissions(uint32 username);
 
         void TestConsoleLogon(std::string & username, std::string & password, uint32 requestnum);
         std::string accountResult;

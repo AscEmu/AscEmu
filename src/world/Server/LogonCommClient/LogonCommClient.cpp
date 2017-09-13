@@ -544,24 +544,48 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
             std::string gmlevel;
             recvData >> gmlevel;
 
-            const char* gmlevel_string = gmlevel.c_str();
+            uint32 accountId;
+            recvData >> accountId;
 
-            //Update account_forced_permissions
-            CharacterDatabase.Execute("REPLACE INTO account_forced_permissions (`login`, `permissions`) VALUES ('%s', '%s')", account_string, gmlevel_string);
-            session_name->SystemMessage("Forced permissions Account has been updated to '%s' for account '%s'. The change will be effective immediately.", gmlevel_string, account_string);
-
-            //Update forcedpermission map
-            sLogonCommHandler.AddForcedPermission(account_string, gmlevel_string);
-
-            //Write info to gmlog
-            sGMLog.writefromsession(session_name, "set account %s forced_permissions to %s", account_string, gmlevel_string);
-
-            //Send information to updated account
-            WorldSession* updated_account_session = sWorld.getSessionByAccountName(account_string);
-            if (updated_account_session != nullptr)
+            if (gmlevel.compare("0") != 0)
             {
-                updated_account_session->SystemMessage("Your permissions has been updated! Please reconnect your account.");
+                //Update account_permissions
+                CharacterDatabase.Execute("REPLACE INTO account_permissions (`id`, `permissions`, `name`) VALUES (%u, '%s', '%s')", accountId, gmlevel.c_str(), account_string);
+                session_name->SystemMessage("Account permissions has been updated to '%s' for account '%s' (%u). The change will be effective immediately.", gmlevel.c_str(), account_string, accountId);
+
+                //Update forcedpermission map
+                sLogonCommHandler.AddForcedPermission(accountId, gmlevel.c_str());
+
+                //Write info to gmlog
+                sGMLog.writefromsession(session_name, "set account %s (%u) permissions to %s", account_string, accountId, gmlevel.c_str());
+
+                //Send information to updated account
+                WorldSession* updated_account_session = sWorld.getSessionByAccountName(account_string);
+                if (updated_account_session != nullptr)
+                {
+                    updated_account_session->SystemMessage("Your permissions has been updated! Please reconnect your account.");
+                }
             }
+            else
+            {
+                //Update account_permissions
+                CharacterDatabase.Execute("DELETE FROM account_permissions WHERE id = %u", accountId);
+                session_name->SystemMessage("Account permissions removed for account '%s' (%u). The change will be effective immediately.", account_string, accountId);
+
+                //Update forcedpermission map
+                sLogonCommHandler.RemoveForcedPermission(accountId);
+
+                //Write info to gmlog
+                sGMLog.writefromsession(session_name, "removed permissions for account %s (%u)", account_string, accountId);
+
+                //Send information to updated account
+                WorldSession* updated_account_session = sWorld.getSessionByAccountName(account_string);
+                if (updated_account_session != nullptr)
+                {
+                    sWorld.disconnectSessionByAccountName(account_string, session_name);
+                }
+            }
+
         } break;
         case 4:     // Account ID
         {

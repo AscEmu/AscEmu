@@ -133,17 +133,16 @@ void LogonCommHandler::Startup()
     // Try to connect to all logons.
     LoadRealmConfiguration();
 
-    LogNotice("LogonCommClient : Loading forced permission strings...");
-    QueryResult* result = CharacterDatabase.Query("SELECT login, permissions FROM account_forced_permissions");
+    LogNotice("LogonCommClient : Loading account permissions...");
+    QueryResult* result = CharacterDatabase.Query("SELECT id, permissions FROM account_permissions");
     if (result != NULL)
     {
         do
         {
-            std::string acct = result->Fetch()[0].GetString();
+            uint32 id = result->Fetch()[0].GetUInt32();
             std::string perm = result->Fetch()[1].GetString();
 
-            Util::StringToUpperCase(acct);
-            forced_permissions.insert(make_pair(acct, perm));
+            forced_permissions.insert(make_pair(id, perm));
 
         }
         while (result->NextRow());
@@ -152,24 +151,35 @@ void LogonCommHandler::Startup()
     ThreadPool.ExecuteTask(new LogonCommWatcherThread());
 }
 
-void LogonCommHandler::AddForcedPermission(std::string acct, std::string perm)
+void LogonCommHandler::AddForcedPermission(uint32 acct, std::string perm)
 {
-    auto account_name = acct.c_str();
     auto permission_string = perm.c_str();
-    Util::StringToUpperCase(acct);
 
     ForcedPermissionMap::iterator itr = forced_permissions.find(acct);
     if (itr != forced_permissions.end())
     {
-        LogNotice("LogonCommClient : Permission for %s already available!", account_name);
+        LogNotice("LogonCommClient : Permission for Account ID %u already available!", acct);
         forced_permissions.erase(acct);
     }
 
-    LogNotice("LogonCommClient : Permission set to %s for account %s", permission_string, account_name);
+    LogNotice("LogonCommClient : Permission set to %s for account %u", permission_string, acct);
     forced_permissions.insert(make_pair(acct, perm));
 
 }
 
+void LogonCommHandler::RemoveForcedPermission(uint32 acct)
+{
+    ForcedPermissionMap::iterator itr = forced_permissions.find(acct);
+    if (itr != forced_permissions.end())
+    {
+        forced_permissions.erase(acct);
+        LogNotice("LogonCommClient : Permission for Account ID %u removed!", acct);
+    }
+    else
+    {
+        LogNotice("LogonCommClient : Permission removed for account %u", acct);
+    }
+}
 
 void LogonCommHandler::ConnectAll()
 {
@@ -178,7 +188,7 @@ void LogonCommHandler::ConnectAll()
         Connect(*itr);
 }
 
-const std::string* LogonCommHandler::GetForcedPermissions(std::string & username)
+const std::string* LogonCommHandler::GetForcedPermissions(uint32 username)
 {
     ForcedPermissionMap::iterator itr = forced_permissions.find(username);
     if (itr == forced_permissions.end())

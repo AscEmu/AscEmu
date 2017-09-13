@@ -708,6 +708,7 @@ void LogonCommServerSocket::HandleRequestCheckAccount(WorldPacket & recvData)
                 data << account_name_save;  // requested account
                 data << request_name;       // account_name for receive the session
                 data << additional;         // additional data
+                data << uint32(account_check->AccountId);
             }
         } break;
         case 2:            // get account id

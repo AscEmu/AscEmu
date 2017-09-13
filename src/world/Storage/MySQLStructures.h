@@ -582,7 +582,7 @@ namespace MySQLStructure
     */
 
     //account_data
-    //account_forced_permissions
+    //account_permissions
     //arenateams
     //auctions
     //banned_char_log
