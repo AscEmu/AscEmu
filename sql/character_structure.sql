@@ -1,7 +1,7 @@
 /*
 ********************************************************************
 AscEmu char structure
-Last update: 03/21/2017
+Last update: 09/13/2017
 *********************************************************************
 */
 
@@ -30,16 +30,17 @@ CREATE TABLE IF NOT EXISTS `account_data` (
 /*!40000 ALTER TABLE `account_data` ENABLE KEYS */;
 
 
--- Dumping structure for table account_forced_permissions
-CREATE TABLE IF NOT EXISTS `account_forced_permissions` (
-  `login` varchar(50) NOT NULL,
+-- Dumping structure for table account_permissions
+CREATE TABLE `account_permissions` (
+  `id` int(10) unsigned NOT NULL,
   `permissions` varchar(100) NOT NULL,
-  PRIMARY KEY (`login`)
+  `name` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dumping data for table account_forced_permissions: ~0 rows (approximately)
-/*!40000 ALTER TABLE `account_forced_permissions` DISABLE KEYS */;
-/*!40000 ALTER TABLE `account_forced_permissions` ENABLE KEYS */;
+-- Dumping data for table account_permissions: ~0 rows (approximately)
+/*!40000 ALTER TABLE `account_permissions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `account_permissions` ENABLE KEYS */;
 
 
 -- Dumping structure for table arenateams
