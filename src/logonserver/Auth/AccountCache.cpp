@@ -32,7 +32,7 @@ void AccountMgr::ReloadAccounts(bool silent)
     }
 
     // Load *all* accounts.
-    QueryResult* result = sLogonSQL->Query("SELECT acct, login, encrypted_password, gm, flags, banned, forceLanguage, muted FROM accounts");
+    QueryResult* result = sLogonSQL->Query("SELECT id, acc_name, encrypted_password, flags, banned, forceLanguage, muted FROM accounts");
     Field* field;
     std::string AccountName;
     std::set<std::string> account_list;
@@ -103,22 +103,20 @@ void AccountMgr::AddAccount(Field* field)
     Sha1Hash hash;
     std::string Username = field[1].GetString();
     std::string EncryptedPassword = field[2].GetString();
-    std::string GMFlags = field[3].GetString();
 
     acct->AccountId = field[0].GetUInt32();
-    acct->AccountFlags = field[4].GetUInt8();
-    acct->Banned = field[5].GetUInt32();
+    acct->AccountFlags = field[3].GetUInt8();
+    acct->Banned = field[4].GetUInt32();
     if ((uint32)UNIXTIME > acct->Banned && acct->Banned != 0 && acct->Banned != 1)   //1 = perm ban?
     {
         // Accounts should be unbanned once the date is past their set expiry date.
         acct->Banned = 0;
         // me go boom :(
         // printf("Account %s's ban has expired.\n",acct->UsernamePtr->c_str());
-        sLogonSQL->Execute("UPDATE accounts SET banned = 0 WHERE acct=%u", acct->AccountId);
+        sLogonSQL->Execute("UPDATE accounts SET banned = 0 WHERE id = %u", acct->AccountId);
     }
-    acct->SetGMFlags(GMFlags.c_str());
 
-    acct->forcedLanguage = field[6].GetString();
+    acct->forcedLanguage = field[5].GetString();
     if (acct->forcedLanguage.compare("enUS") != 0)
     {
         acct->forcedLocale = true;
@@ -128,13 +126,13 @@ void AccountMgr::AddAccount(Field* field)
         acct->forcedLocale = false;
     }
 
-    acct->Muted = field[7].GetUInt32();
+    acct->Muted = field[6].GetUInt32();
     if ((uint32)UNIXTIME > acct->Muted && acct->Muted != 0 && acct->Muted != 1)   //1 = perm ban?
     {
         // Accounts should be unbanned once the date is past their set expiry date.
         acct->Muted = 0;
         //LOG_DEBUG("Account %s's mute has expired.",acct->UsernamePtr->c_str());
-        sLogonSQL->Execute("UPDATE accounts SET muted = 0 WHERE acct=%u", acct->AccountId);
+        sLogonSQL->Execute("UPDATE accounts SET muted = 0 WHERE id = %u", acct->AccountId);
     }
     // Convert username to uppercase. this is needed ;)
     Util::StringToUpperCase(Username);
@@ -181,27 +179,26 @@ void AccountMgr::UpdateAccount(Account* acct, Field* field)
     Sha1Hash hash;
     std::string Username = field[1].GetString();
     std::string EncryptedPassword = field[2].GetString();
-    std::string GMFlags = field[3].GetString();
 
     if (id != acct->AccountId)
     {
         LOG_ERROR(" >> deleting duplicate account %u [%s]...", id, Username.c_str());
-        sLogonSQL->Execute("DELETE FROM accounts WHERE acct=%u", id);
+        sLogonSQL->Execute("DELETE FROM accounts WHERE id = %u", id);
         return;
     }
 
     acct->AccountId = field[0].GetUInt32();
-    acct->AccountFlags = field[4].GetUInt8();
-    acct->Banned = field[5].GetUInt32();
+    acct->AccountFlags = field[3].GetUInt8();
+    acct->Banned = field[4].GetUInt32();
     if ((uint32)UNIXTIME > acct->Banned && acct->Banned != 0 && acct->Banned != 1)  //1 = perm ban?
     {
         //Accounts should be unbanned once the date is past their set expiry date.
         acct->Banned = 0;
         LOG_DEBUG("Account %s's ban has expired.", acct->UsernamePtr->c_str());
-        sLogonSQL->Execute("UPDATE accounts SET banned = 0 WHERE acct=%u", acct->AccountId);
+        sLogonSQL->Execute("UPDATE accounts SET banned = 0 WHERE id = %u", acct->AccountId);
     }
-    acct->SetGMFlags(GMFlags.c_str());
-    acct->forcedLanguage = field[6].GetString();
+
+    acct->forcedLanguage = field[5].GetString();
     if (acct->forcedLanguage.compare("enUS") != 0)
     {
         acct->forcedLocale = true;
@@ -211,13 +208,13 @@ void AccountMgr::UpdateAccount(Account* acct, Field* field)
         acct->forcedLocale = false;
     }
 
-    acct->Muted = field[7].GetUInt32();
+    acct->Muted = field[6].GetUInt32();
     if ((uint32)UNIXTIME > acct->Muted && acct->Muted != 0 && acct->Muted != 1)  //1 = perm ban?
     {
         //Accounts should be unbanned once the date is past their set expiry date.
         acct->Muted = 0;
         LOG_DEBUG("Account %s's mute has expired.", acct->UsernamePtr->c_str());
-        sLogonSQL->Execute("UPDATE accounts SET muted = 0 WHERE acct=%u", acct->AccountId);
+        sLogonSQL->Execute("UPDATE accounts SET muted = 0 WHERE id = %u", acct->AccountId);
     }
     // Convert username to uppercase. this is needed ;)
     Util::StringToUpperCase(Username);

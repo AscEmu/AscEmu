@@ -13,10 +13,9 @@ Last update: 03/14/2015
 DROP TABLE IF EXISTS `accounts`;
 
 CREATE TABLE `accounts` (
-  `acct` int(10) unsigned NOT NULL auto_increment COMMENT 'Unique ID',
-  `login` varchar(32) collate utf8_unicode_ci NOT NULL COMMENT 'Login username',
+  `id` int(10) unsigned NOT NULL auto_increment COMMENT 'Unique ID',
+  `acc_name` varchar(32) collate utf8_unicode_ci NOT NULL COMMENT 'Login username',
   `encrypted_password` varchar(42) collate utf8_unicode_ci NOT NULL default '',
-  `gm` varchar(32) collate utf8_unicode_ci NOT NULL default '' COMMENT 'Game permissions',
   `banned` int(10) unsigned NOT NULL,
   `lastlogin` timestamp NOT NULL default '0000-00-00 00:00:00' COMMENT 'Last login timestamp',
   `lastip` varchar(16) collate utf8_unicode_ci NOT NULL default '' COMMENT 'Last remote address',
@@ -26,8 +25,8 @@ CREATE TABLE `accounts` (
   `muted` int(30) NOT NULL default '0',
   `banreason` varchar(255) collate utf8_unicode_ci default NULL,
   `joindate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY  (`acct`),
-  UNIQUE KEY `a` (`login`)
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `a` (`acc_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Account Information';
 
 /*Data for the table `accounts` */

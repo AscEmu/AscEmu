@@ -131,7 +131,6 @@ void LogonConsole::ProcessCmd(char* cmd)
         { "help", &LogonConsole::TranslateHelp },
         { "account create", &LogonConsole::AccountCreate },
         { "account delete", &LogonConsole::AccountDelete },
-        { "account set gm", &LogonConsole::AccountSetGm },
         { "account set password", &LogonConsole::AccountSetPassword },
         { "account change password", &LogonConsole::AccountChangePassword },
         { "reload", &LogonConsole::ReloadAccts },
@@ -242,9 +241,9 @@ void LogonConsole::AccountCreate(char* str)
     pass.append(password);
 
     std::stringstream query;
-    query << "INSERT INTO `accounts`( `login`,`encrypted_password`,`gm`,`banned`,`email`,`flags`,`banreason`) VALUES ( '";
+    query << "INSERT INTO `accounts`( `acc_name`,`encrypted_password`,`banned`,`email`,`flags`,`banreason`) VALUES ( '";
     query << name << "',";
-    query << "SHA( UPPER( '" << pass << "' ) ),'0','0','";
+    query << "SHA( UPPER( '" << pass << "' ) ),'0','";
     query << email << "','";
     query << 24 << "','' );";
 
@@ -274,7 +273,7 @@ void LogonConsole::AccountDelete(char* str)
     checkAccountName(name, ACC_NAME_DO_EXIST);
 
     std::stringstream query;
-    query << "DELETE FROM `accounts` WHERE `login` = '";
+    query << "DELETE FROM `accounts` WHERE `acc_name` = '";
     query << name << "';";
 
     if (!sLogonSQL->WaitExecuteNA(query.str().c_str()))
@@ -286,41 +285,6 @@ void LogonConsole::AccountDelete(char* str)
     AccountMgr::getSingleton().ReloadAccounts(true);
 
     std::cout << "Account deleted." << std::endl;
-}
-
-void LogonConsole::AccountSetGm(char* str)
-{
-    char name[512];
-    char gmlevel[512];
-
-    int count = sscanf(str, "%s %s", name, gmlevel);
-    if (count != 2)
-    {
-        std::cout << "usage: account set gm <name> <gmlevel>" << std::endl;
-        std::cout << "example: account set gm ghostcrawler az" << std::endl;
-        return;
-    }
-
-    checkAccountName(name, ACC_NAME_DO_EXIST);
-
-    std::string pass;
-    pass.assign(name);
-    pass.push_back(':');
-
-    std::stringstream query;
-    query << "UPDATE `accounts` SET `gm` = '";
-    query << gmlevel << "' WHERE `login` = '";
-    query << name << "'";
-
-    if (!sLogonSQL->WaitExecuteNA(query.str().c_str()))
-    {
-        std::cout << "Couldn't update gmlevel to database. Aborting." << std::endl;
-        return;
-    }
-
-    AccountMgr::getSingleton().ReloadAccounts(true);
-
-    std::cout << "Account gmlevel set." << std::endl;
 }
 
 void LogonConsole::AccountSetPassword(char* str)
@@ -345,7 +309,7 @@ void LogonConsole::AccountSetPassword(char* str)
 
     std::stringstream query;
     query << "UPDATE `accounts` SET `encrypted_password` = ";
-    query << "SHA( UPPER( '" << pass << "' ) ) WHERE `login` = '";
+    query << "SHA( UPPER( '" << pass << "' ) ) WHERE `acc_name` = '";
     query << name << "'";
 
     if (!sLogonSQL->WaitExecuteNA(query.str().c_str()))
@@ -387,7 +351,7 @@ void LogonConsole::AccountChangePassword(char* str)
     pass.push_back(':');
     pass.append(old_password);
 
-    auto check_oldpass_query = sLogonSQL->Query("SELECT login, encrypted_password FROM accounts WHERE encrypted_password=SHA(UPPER('%s')) AND login='%s'", pass.c_str(), std::string(account_name).c_str());
+    auto check_oldpass_query = sLogonSQL->Query("SELECT acc_name, encrypted_password FROM accounts WHERE encrypted_password = SHA(UPPER('%s')) AND acc_name = '%s'", pass.c_str(), std::string(account_name).c_str());
 
     if (!check_oldpass_query)
     {
@@ -401,7 +365,7 @@ void LogonConsole::AccountChangePassword(char* str)
         new_pass.push_back(':');
         new_pass.append(new_password_1);
 
-        auto new_pass_query = sLogonSQL->Query("UPDATE accounts SET encrypted_password=SHA(UPPER('%s')) WHERE login='%s'", new_pass.c_str(), std::string(account_name).c_str());
+        auto new_pass_query = sLogonSQL->Query("UPDATE accounts SET encrypted_password = SHA(UPPER('%s')) WHERE acc_name = '%s'", new_pass.c_str(), std::string(account_name).c_str());
 
         if (!new_pass_query)
         {

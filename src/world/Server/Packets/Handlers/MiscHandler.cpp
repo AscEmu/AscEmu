@@ -918,6 +918,7 @@ void WorldSession::HandleWhoIsOpcode(WorldPacket& recv_data)
     uint32 accid = fields_acctID[0].GetUInt32();
     delete result_acctID;
 
+    //TODO - this will not work! no table accounts in character_db!!!
     QueryResult* result = CharacterDatabase.Query("SELECT acct, login, gm, email, lastip, muted FROM accounts WHERE acct = %u", accid);
 
     if (!result)

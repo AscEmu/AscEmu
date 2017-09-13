@@ -43,11 +43,11 @@ class LogonConsole : public Singleton < LogonConsole >
 {
     friend class LogonConsoleThread;
 
-    public:                        // Public methods:
+    public:
 
         void Kill();
 
-    protected:                    // Protected methods:
+    protected:
 
         LogonConsoleThread* _thread;
 
@@ -73,7 +73,6 @@ class LogonConsole : public Singleton < LogonConsole >
         // AccountHandling
         void AccountCreate(char* str);
         void AccountDelete(char* str);
-        void AccountSetGm(char* str);
         void AccountSetPassword(char* str);
         void AccountChangePassword(char* str);
 
