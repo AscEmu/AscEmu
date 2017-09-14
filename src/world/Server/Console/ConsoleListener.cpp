@@ -132,6 +132,7 @@ static ConsoleCommand Commands[] =
     { &handleSendChatAnnounceCommand,   "announce",         1,  "<announce>",                           "Send chat announce." },
     { &handleBanAccountCommand,         "ban",              3,  "<account> <time e.g. 3d> [reason]",    "Bans account <account> for time <time> with optional reason [reason]." },
     { &handleBanAccountCommand,         "banaccount",       3,  "<account> <time e.g. 3d> [reason]",    "Bans account <account> for time <time> with optional reason [reason]." },
+    { &handleCreateAccountCommand,      "createaccount",    2,  "<accountname> <password>",             "Creates an account X with password y" },
     { &handleCancelShutdownCommand,     "cancel",           0,  "None",                                 "Cancels a pending shutdown." },
     { &handleServerInfoCommand,         "info",             0,  "None",                                 "Return current Server information." },
     { &handleOnlineGmsCommand,          "gms",              0,  "None",                                 "Shows online GMs." },

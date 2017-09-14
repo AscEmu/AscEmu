@@ -59,6 +59,27 @@ bool handleBanAccountCommand(BaseConsole* baseConsole, int argumentCount, std::s
     return true;
 }
 
+bool handleCreateAccountCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient)
+{
+    if (argumentCount > 0 && consoleInput.empty())
+        return false;
+
+    std::string accountName;
+    std::string password;
+    std::string none("none");
+
+    std::stringstream accountBanStream(consoleInput);
+    accountBanStream >> accountName;
+    accountBanStream >> password;
+    std::getline(accountBanStream, password);
+
+    sLogonCommHandler.AccountCreate(accountName.c_str(), password.c_str(), none.c_str());
+
+    baseConsole->Write("Account '%s' has been created with password: '%s'. The change will be effective immediately.\r\n", accountName.c_str(), password.c_str());
+
+    return true;
+}
+
 bool handleCancelShutdownCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient)
 {
     sMaster.m_ShutdownTimer = 5000;

@@ -484,24 +484,27 @@ void LogonCommClientSocket::HandleModifyDatabaseResult(WorldPacket& recvData)
             const char* account_string = account_name.c_str();
             const char* created_string = created_name.c_str();
 
-            WorldSession* pSession = sWorld.getSessionByAccountName(account_string);
-            if (pSession == nullptr)
+            if (account_name.compare("none") != 0)
             {
-                LOG_ERROR("No session found!");
-                return;
-            }
+                WorldSession* pSession = sWorld.getSessionByAccountName(account_string);
+                if (pSession == nullptr)
+                {
+                    LOG_ERROR("No session found!");
+                    return;
+                }
 
-            if (result_id == Result_Account_Exists)
-            {
-                pSession->SystemMessage("Account name: '%s' already in use!", created_string);
-            }
-            else if (result_id == Result_Account_Finished)
-            {
-                pSession->SystemMessage("Account: '%s' created", created_string);
-            }
-            else
-            {
-                LOG_ERROR("HandleModifyDatabaseResult: Unknown logon result in Method_Account_Create");
+                if (result_id == Result_Account_Exists)
+                {
+                    pSession->SystemMessage("Account name: '%s' already in use!", created_string);
+                }
+                else if (result_id == Result_Account_Finished)
+                {
+                    pSession->SystemMessage("Account: '%s' created", created_string);
+                }
+                else
+                {
+                    LOG_ERROR("HandleModifyDatabaseResult: Unknown logon result in Method_Account_Create");
+                }
             }
 
         }break;

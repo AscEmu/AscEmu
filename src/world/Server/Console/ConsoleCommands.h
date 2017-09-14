@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 bool handleSendChatAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient);
 bool handleBanAccountCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient);
+bool handleCreateAccountCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient);
 bool handleCancelShutdownCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient);
 bool handleServerInfoCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient);
 bool handleOnlineGmsCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient);
