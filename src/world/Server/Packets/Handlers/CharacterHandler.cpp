@@ -295,7 +295,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
     }
 
     //Same Faction limitation only applies to PVP and RPPVP realms :)
-    uint32 realmType = sLogonCommHandler.GetRealmType();
+    uint32 realmType = sLogonCommHandler.getRealmType();
     if (!HasGMPermissions() && realmType == REALMTYPE_PVP && _side >= 0 && !worldConfig.player.isCrossoverCharsCreationEnabled)  // ceberwow fixed bug
     {
         if ((pNewChar->IsTeamAlliance() && (_side == 1)) || (pNewChar->IsTeamHorde() && (_side == 0)))
@@ -362,7 +362,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
     LoginErrorCode login_error = E_CHAR_CREATE_SUCCESS;
     OutPacket(SMSG_CHAR_CREATE, 1, &login_error);
 
-    sLogonCommHandler.UpdateAccountCount(GetAccountId(), 1);
+    sLogonCommHandler.updateAccountCount(GetAccountId(), 1);
 }
 
 void WorldSession::HandleCharDeleteOpcode(WorldPacket& recv_data)

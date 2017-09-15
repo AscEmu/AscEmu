@@ -24,7 +24,7 @@ bool ChatHandler::HandleAccountCreate(const char* args, WorldSession* m_session)
     // get current account name to send back result later
     auto account_name = m_session->GetAccountNameS();
 
-    sLogonCommHandler.AccountCreate(account, password, account_name);
+    sLogonCommHandler.createAccount(account, password, account_name);
 
     return true;
 }
@@ -43,7 +43,7 @@ bool ChatHandler::HandleAccountSetGMCommand(const char* args, WorldSession* m_se
     // get current account name to send back result later
     auto account_name = m_session->GetAccountNameS();
 
-    sLogonCommHandler.Account_CheckExist(account, account_name, gmlevel);
+    sLogonCommHandler.checkIfAccountExist(account, account_name, gmlevel);
 
     return true;
 }
@@ -66,7 +66,7 @@ bool ChatHandler::HandleAccountMuteCommand(const char* args, WorldSession* m_ses
 
     uint32 banned = (uint32)UNIXTIME + timeperiod;
 
-    sLogonCommHandler.Account_SetMute(pAccount, banned);
+    sLogonCommHandler.setAccountMute(pAccount, banned);
 
     std::string tsstr = Util::GetDateTimeStringFromTimeStamp(timeperiod + (uint32)UNIXTIME);
     GreenSystemMessage(m_session, "Account '%s' has been muted until %s. The change will be effective immediately.", pAccount,
@@ -86,7 +86,7 @@ bool ChatHandler::HandleAccountMuteCommand(const char* args, WorldSession* m_ses
 
 bool ChatHandler::HandleAccountUnmuteCommand(const char* args, WorldSession* m_session)
 {
-    sLogonCommHandler.Account_SetMute(args, 0);
+    sLogonCommHandler.setAccountMute(args, 0);
 
     GreenSystemMessage(m_session, "Account '%s' has been unmuted.", args);
     sGMLog.writefromsession(m_session, "unmuted account %s", args);
@@ -150,7 +150,7 @@ bool ChatHandler::HandleAccountBannedCommand(const char* args, WorldSession* m_s
     if (pReason == NULL)
         pReason = &emptystring;
 
-    sLogonCommHandler.Account_SetBanned(pAccount, banned, pReason);
+    sLogonCommHandler.setAccountBanned(pAccount, banned, pReason);
 
     GreenSystemMessage(m_session, "Account '%s' has been banned %s%s for reason : %s. The change will be effective immediately.", pAccount,
                        timeperiod ? "until " : "forever", timeperiod ? Util::GetDateTimeStringFromTimeStamp(timeperiod + (uint32)UNIXTIME).c_str() : "", pReason);
@@ -166,7 +166,7 @@ bool ChatHandler::HandleAccountUnbanCommand(const char* args, WorldSession* m_se
         return false;
     char* pAccount = (char*)args;
 
-    sLogonCommHandler.Account_SetBanned(pAccount, 0, "");
+    sLogonCommHandler.setAccountBanned(pAccount, 0, "");
     GreenSystemMessage(m_session, "Account '%s' has been unbanned. This change will be effective immediately.", pAccount);
 
     sGMLog.writefromsession(m_session, "unbanned account %s", pAccount);
@@ -195,7 +195,7 @@ bool ChatHandler::HandleAccountChangePassword(const char* args, WorldSession* m_
     }
     auto account_name = m_session->GetAccountNameS();
 
-    sLogonCommHandler.AccountChangePassword(old_password, new_password_1, account_name);
+    sLogonCommHandler.changeAccountPassword(old_password, new_password_1, account_name);
 
     return true;
 }
@@ -209,7 +209,7 @@ bool ChatHandler::HandleAccountGetAccountID(const char* args, WorldSession* m_se
 
     char* pAccount = (char*)args;
 
-    sLogonCommHandler.Account_CheckExist(pAccount, m_session->GetAccountNameS(), NULL, 2);
+    sLogonCommHandler.checkIfAccountExist(pAccount, m_session->GetAccountNameS(), NULL, 2);
 
     sGMLog.writefromsession(m_session, "looked up account id for account %s", pAccount);
 

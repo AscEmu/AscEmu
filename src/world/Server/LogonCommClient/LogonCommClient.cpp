@@ -43,7 +43,7 @@ LogonCommClientSocket::LogonCommClientSocket(SOCKET fd) : Socket(fd, 724288, 262
     authenticated = 0;
     pingtime = 0;
 
-    LOG_DEBUG("Created LogonCommClientSocket %u", m_fd);
+    LOG_DEBUG("Create new LogonCommClientSocket %u", m_fd);
 }
 
 void LogonCommClientSocket::OnRead()
@@ -147,7 +147,7 @@ void LogonCommClientSocket::HandleRegister(WorldPacket& recvData)
 
     LogDefault("Realm `%s` registered as realm %u.", realmname.c_str(), realmlid);
 
-    LogonCommHandler::getSingleton().AdditionAck(_id, realmlid);
+    LogonCommHandler::getSingleton().addRealmToRealmlistResult(_id, realmlid);
     realm_ids.insert(realmlid);
 }
 
@@ -156,12 +156,12 @@ void LogonCommClientSocket::HandleSessionInfo(WorldPacket& recvData)
     uint32 request_id;
     recvData >> request_id;
 
-    Mutex & m = sLogonCommHandler.GetPendingLock();
+    Mutex & m = sLogonCommHandler.getPendingLock();
     m.Acquire();
 
     // find the socket with this request
-    WorldSocket* sock = sLogonCommHandler.GetSocketByRequest(request_id);
-    if (sock == 0 || sock->Authed || !sock->IsConnected())       // Expired/Client disconnected
+    WorldSocket* sock = sLogonCommHandler.getWorldSocketForClientRequestId(request_id);
+    if (sock == nullptr || sock->Authed || !sock->IsConnected())       // Expired/Client disconnected
     {
         m.Release();
         return;
@@ -169,7 +169,7 @@ void LogonCommClientSocket::HandleSessionInfo(WorldPacket& recvData)
 
     // extract sessionkey / account information (done by WS)
     sock->Authed = true;
-    sLogonCommHandler.RemoveUnauthedSocket(request_id);
+    sLogonCommHandler.removeUnauthedClientSocket(request_id);
     sock->InformationRetreiveCallback(recvData, request_id);
     m.Release();
 }
@@ -226,7 +226,7 @@ void LogonCommClientSocket::OnDisconnect()
     if (_id != 0)
     {
         LOG_DETAIL("Calling ConnectionDropped() due to OnDisconnect().");
-        sLogonCommHandler.ConnectionDropped(_id);
+        sLogonCommHandler.dropLogonServerConnection(_id);
     }
 }
 
@@ -428,7 +428,7 @@ void LogonCommClientSocket::HandlePopulationRequest(WorldPacket& recvData)
     // Send the result
     WorldPacket data(LRCMSG_REALM_POPULATION_RESULT, 16);
     data << realmId;
-    data << LogonCommHandler::getSingleton().GetServerPopulation();
+    data << LogonCommHandler::getSingleton().getRealmPopulation();
     SendPacket(&data, false);
 }
 
@@ -557,7 +557,7 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
                 session_name->SystemMessage("Account permissions has been updated to '%s' for account '%s' (%u). The change will be effective immediately.", gmlevel.c_str(), account_string, accountId);
 
                 //Update forcedpermission map
-                sLogonCommHandler.AddForcedPermission(accountId, gmlevel.c_str());
+                sLogonCommHandler.setAccountPermission(accountId, gmlevel.c_str());
 
                 //Write info to gmlog
                 sGMLog.writefromsession(session_name, "set account %s (%u) permissions to %s", account_string, accountId, gmlevel.c_str());
@@ -576,7 +576,7 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
                 session_name->SystemMessage("Account permissions removed for account '%s' (%u). The change will be effective immediately.", account_string, accountId);
 
                 //Update forcedpermission map
-                sLogonCommHandler.RemoveForcedPermission(accountId);
+                sLogonCommHandler.removeAccountPermission(accountId);
 
                 //Write info to gmlog
                 sGMLog.writefromsession(session_name, "removed permissions for account %s (%u)", account_string, accountId);

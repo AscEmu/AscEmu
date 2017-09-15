@@ -1134,7 +1134,7 @@ bool ChatHandler::HandleIPUnBanCommand(const char* args, WorldSession* m_session
     }
 
     SystemMessage(m_session, "Deleting [%s] from ip ban table if it exists", pIp.c_str());
-    sLogonCommHandler.IPBan_Remove(pIp.c_str());
+    sLogonCommHandler.removeIpBan(pIp.c_str());
     sGMLog.writefromsession(m_session, "unbanned ip address %s", pIp.c_str());
     return true;
 }
@@ -1245,7 +1245,7 @@ bool ChatHandler::HandleIPBanCommand(const char* args, WorldSession* m_session)
         pReason = &emptystring;
 
     SystemMessage(m_session, "Adding [%s] to IP ban table, expires %s.Reason is :%s", pIp, (expire_time == 0) ? "Never" : ctime(&expire_time), pReason);
-    sLogonCommHandler.IPBan_Add(IP.c_str(), (uint32)expire_time, pReason);
+    sLogonCommHandler.addIpBan(IP.c_str(), (uint32)expire_time, pReason);
     sWorld.disconnectSessionByIp(IP.substr(0, IP.find("/")).c_str(), m_session);
     sGMLog.writefromsession(m_session, "banned ip address %s, expires %s", pIp, (expire_time == 0) ? "Never" : ctime(&expire_time));
 

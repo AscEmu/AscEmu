@@ -206,5 +206,5 @@ void ConsoleSocket::getConsoleAuthResult(bool result)
 
 void ConsoleSocket::testConsoleLogin(std::string& username, std::string& password, uint32_t requestno)
 {
-    sLogonCommHandler.TestConsoleLogon(username, password, requestno);
+    sLogonCommHandler.testConsoleLogon(username, password, requestno);
 }

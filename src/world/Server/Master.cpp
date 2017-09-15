@@ -320,7 +320,7 @@ bool Master::Run(int argc, char** argv)
 
     /* Connect to realmlist servers / logon servers */
     new LogonCommHandler();
-    sLogonCommHandler.Startup();
+    sLogonCommHandler.startLogonCommHandler();
 
     // Create listener
     ListenSocket<WorldSocket> * ls = new ListenSocket<WorldSocket>(worldConfig.listen.listenHost.c_str(), worldConfig.listen.listenPort);

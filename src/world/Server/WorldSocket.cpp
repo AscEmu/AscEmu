@@ -122,7 +122,7 @@ void WorldSocket::OnDisconnect()
 
     if (mRequestID != 0)
     {
-        sLogonCommHandler.UnauthedSocketClose(mRequestID);
+        sLogonCommHandler.removeUnauthedClientSocketClose(mRequestID);
         mRequestID = 0;
     }
 
@@ -390,7 +390,7 @@ void WorldSocket::_HandleAuthSession(WorldPacket* recvPacket)
     }
 
     // Send out a request for this account.
-    mRequestID = sLogonCommHandler.ClientConnected(account, this);
+    mRequestID = sLogonCommHandler.clientConnectionId(account, this);
 
     if (mRequestID == 0xFFFFFFFF)
     {
@@ -433,7 +433,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     recvData >> GMFlags;
     recvData >> AccountFlags;
 
-    ForcedPermissions = sLogonCommHandler.GetForcedPermissions(AccountID);
+    ForcedPermissions = sLogonCommHandler.getPermissionStringForAccountId(AccountID);
     if (ForcedPermissions != nullptr)
         GMFlags.assign(ForcedPermissions->c_str());
 
