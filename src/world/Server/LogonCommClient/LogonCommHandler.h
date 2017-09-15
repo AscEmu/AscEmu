@@ -47,13 +47,13 @@ enum RealmType
 
 class LogonCommHandler : public Singleton<LogonCommHandler>
 {
-    typedef std::unordered_map<uint32, std::string> AccountPermissionMap;
+    typedef std::unordered_map<uint32_t, std::string> AccountPermissionMap;
     AccountPermissionMap accountPermissionsStore;
 
     typedef std::map<LogonServerStructure*, LogonCommClientSocket*> LogonServerConnection;
     LogonServerConnection logons;
 
-    typedef std::map<uint32, WorldSocket*> ActiveWorldSocketsMap;
+    typedef std::map<uint32_t, WorldSocket*> ActiveWorldSocketsMap;
     ActiveWorldSocketsMap pending_logons;
 
     typedef std::set<RealmStructure*> RealmsSet;
@@ -76,7 +76,7 @@ class LogonCommHandler : public Singleton<LogonCommHandler>
 
     public:
 
-        uint8 sql_passhash[20];
+        uint8_t sql_passhash[20];
 
         LogonCommHandler();
         ~LogonCommHandler();

@@ -80,6 +80,27 @@ bool handleCreateAccountCommand(BaseConsole* baseConsole, int argumentCount, std
     return true;
 }
 
+bool handleAccountPermission(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient)
+{
+    if (argumentCount > 0 && consoleInput.empty())
+        return false;
+
+    std::string accountName;
+    std::string permission;
+    std::string none("none");
+
+    std::stringstream accountBanStream(consoleInput);
+    accountBanStream >> accountName;
+    accountBanStream >> permission;
+    std::getline(accountBanStream, permission);
+
+    sLogonCommHandler.checkIfAccountExist(accountName.c_str(), none.c_str(), permission.c_str());
+
+    baseConsole->Write("Permission '%s' has been set for Account: '%s'. The change will be effective immediately.\r\n", permission.c_str(), accountName.c_str());
+
+    return true;
+}
+
 bool handleCancelShutdownCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient)
 {
     sMaster.m_ShutdownTimer = 5000;

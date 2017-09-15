@@ -528,19 +528,24 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
     WorldSession* session_name = sWorld.getSessionByAccountName(request_string);
     if (session_name == nullptr)
     {
-        LOG_ERROR("Receiver %s not found!", request_string);
-        return;
+        if (request_name.compare("none") != 0)
+        {
+            LOG_ERROR("Receiver %s not found!", request_string);
+            return;
+        }
     }
 
     switch (result_id)
     {
         case 1:     // Account not available
         {
-            session_name->SystemMessage("Account: %s not found in database!", account_string);
+            if (request_name.compare("none") != 0)
+                session_name->SystemMessage("Account: %s not found in database!", account_string);
         } break;
         case 2:     // No additional data set
         {
-            session_name->SystemMessage("No gmlevel set for account: %s !", account_string);
+            if (request_name.compare("none") != 0)
+                session_name->SystemMessage("No gmlevel set for account: %s !", account_string);
         } break;
         case 3:     // Everything is okay
         {
@@ -554,13 +559,15 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
             {
                 //Update account_permissions
                 CharacterDatabase.Execute("REPLACE INTO account_permissions (`id`, `permissions`, `name`) VALUES (%u, '%s', '%s')", accountId, gmlevel.c_str(), account_string);
-                session_name->SystemMessage("Account permissions has been updated to '%s' for account '%s' (%u). The change will be effective immediately.", gmlevel.c_str(), account_string, accountId);
+                if (request_name.compare("none") != 0)
+                    session_name->SystemMessage("Account permissions has been updated to '%s' for account '%s' (%u). The change will be effective immediately.", gmlevel.c_str(), account_string, accountId);
 
                 //Update forcedpermission map
                 sLogonCommHandler.setAccountPermission(accountId, gmlevel.c_str());
 
                 //Write info to gmlog
-                sGMLog.writefromsession(session_name, "set account %s (%u) permissions to %s", account_string, accountId, gmlevel.c_str());
+                if (request_name.compare("none") != 0)
+                    sGMLog.writefromsession(session_name, "set account %s (%u) permissions to %s", account_string, accountId, gmlevel.c_str());
 
                 //Send information to updated account
                 WorldSession* updated_account_session = sWorld.getSessionByAccountName(account_string);
@@ -573,13 +580,15 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
             {
                 //Update account_permissions
                 CharacterDatabase.Execute("DELETE FROM account_permissions WHERE id = %u", accountId);
-                session_name->SystemMessage("Account permissions removed for account '%s' (%u). The change will be effective immediately.", account_string, accountId);
+                if (request_name.compare("none") != 0)
+                    session_name->SystemMessage("Account permissions removed for account '%s' (%u). The change will be effective immediately.", account_string, accountId);
 
                 //Update forcedpermission map
                 sLogonCommHandler.removeAccountPermission(accountId);
 
                 //Write info to gmlog
-                sGMLog.writefromsession(session_name, "removed permissions for account %s (%u)", account_string, accountId);
+                if (request_name.compare("none") != 0)
+                    sGMLog.writefromsession(session_name, "removed permissions for account %s (%u)", account_string, accountId);
 
                 //Send information to updated account
                 WorldSession* updated_account_session = sWorld.getSessionByAccountName(account_string);
@@ -595,7 +604,8 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
             uint32 account_id;
             recvData >> account_id;
 
-            session_name->SystemMessage("Account '%s' has account ID %u.", account_string, account_id);
+            if (request_name.compare("none") != 0)
+                session_name->SystemMessage("Account '%s' has account ID %u.", account_string, account_id);
         }
     }
 }

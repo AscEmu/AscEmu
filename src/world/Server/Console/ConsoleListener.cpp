@@ -139,6 +139,7 @@ static ConsoleCommand Commands[] =
     { &handleKickPlayerCommand,         "kick",             2,  "<player name> [reason]",               "Kicks player <player name> for optional reason [reason]." },
     { &handleMotdCommand,               "getmotd",          0,  "None",                                 "View the current MOTD" },
     { &handleMotdCommand,               "setmotd",          1,  "<motd>",                               "Sets a new MOTD" },
+    { &handleAccountPermission,         "setaccpermission", 2,  "<account> <permission>",               "Aets permission y for account name x" },
     { &handleListOnlinePlayersCommand,  "online",           0,  "None",                                 "Shows online players." },
     { &handlePlayerInfoCommand,         "playerinfo",       1,  "<player name>",                        "Shows information about a player." },
     { &handleShutDownServerCommand,     "exit",             0,  "[delay]",                              "Server shutdown with optional delay in seconds." },
