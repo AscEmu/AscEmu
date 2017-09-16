@@ -19,7 +19,7 @@
 
 #include "PathCommon.h"
 #include "MapBuilder.h"
-#include "Timer.h"
+#include "Util.hpp"
 
 using namespace MMAP;
 
@@ -282,7 +282,7 @@ int main(int argc, char** argv)
     MapBuilder builder(maxAngle, skipLiquid, skipContinents, skipJunkMaps,
                        skipBattlegrounds, debugOutput, bigBaseUnit, offMeshInputPath);
 
-    uint32 start = getMSTime();
+    auto startTime = Util::TimeNow();
     if (file)
         builder.buildMeshFromFile(file);
     else if (tileX > -1 && tileY > -1 && mapnum >= 0)
@@ -293,6 +293,6 @@ int main(int argc, char** argv)
         builder.buildAllMaps(threads);
 
     if (!silent)
-        printf("Finished. MMAPS were built in %u ms!\n", GetMSTimeDiffToNow(start));
+        printf("Finished. MMAPS were built in %u ms!\n", Util::GetTimeDifferenceToNow(startTime));
     return 0;
 }
