@@ -59,17 +59,17 @@ DynamicObject::DynamicObject(uint32 high, uint32 low)
     SetScale(1);
 
 
-    m_parentSpell = NULL;
+    m_parentSpell = nullptr;
     m_aliveDuration = 0;
-    u_caster = NULL;
-    m_spellProto = NULL;
-    p_caster = NULL;
+    u_caster = nullptr;
+    m_spellProto = nullptr;
+    p_caster = nullptr;
 }
 
 DynamicObject::~DynamicObject()
 {
-    if (u_caster != NULL && u_caster->dynObj == this)
-        u_caster->dynObj = NULL;
+    if (u_caster != nullptr && u_caster->dynObj == this)
+        u_caster->dynObj = nullptr;
 }
 
 void DynamicObject::Create(Unit* caster, Spell* pSpell, float x, float y, float z, uint32 duration, float radius, uint32 type)
@@ -79,7 +79,7 @@ void DynamicObject::Create(Unit* caster, Spell* pSpell, float x, float y, float 
     {
         m_parentSpell = pSpell;
     }
-    if (pSpell->p_caster == NULL)
+    if (pSpell->p_caster == nullptr)
     {
         // try to find player caster here
         if (caster->IsPlayer())
@@ -112,7 +112,7 @@ void DynamicObject::Create(Unit* caster, Spell* pSpell, float x, float y, float 
     else
         PushToWorld(caster->GetMapMgr());
 
-    if (caster->dynObj != NULL)
+    if (caster->dynObj != nullptr)
     {
         //expires
         caster->dynObj->Remove();
@@ -197,11 +197,11 @@ void DynamicObject::UpdateTargets()
 
         while (jtr != jend)
         {
-            target = GetMapMgr() ? GetMapMgr()->GetUnit(*jtr) : NULL;
+            target = GetMapMgr() ? GetMapMgr()->GetUnit(*jtr) : nullptr;
             jtr2 = jtr;
             ++jtr;
 
-            if ((target != NULL) && (getDistanceSq(target) > radius))
+            if ((target != nullptr) && (getDistanceSq(target) > radius))
             {
                 target->RemoveAura(m_spellProto->Id);
                 targets.erase(jtr2);
@@ -239,7 +239,7 @@ void DynamicObject::Remove()
 
         target = m_mapMgr->GetUnit(TargetGUID);
 
-        if (target != NULL)
+        if (target != nullptr)
             target->RemoveAura(m_spellProto->Id);
     }
 
@@ -251,7 +251,7 @@ void DynamicObject::Remove()
     if (IsInWorld())
         RemoveFromWorld(true);
 
-    if (u_caster != NULL && m_spellProto->ChannelInterruptFlags != 0)
+    if (u_caster != nullptr && m_spellProto->ChannelInterruptFlags != 0)
     {
         u_caster->SetChannelSpellTargetGUID(0);
         u_caster->SetChannelSpellId(0);
