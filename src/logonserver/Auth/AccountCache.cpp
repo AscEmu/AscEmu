@@ -109,10 +109,7 @@ void AccountMgr::AddAccount(Field* field)
     acct->Banned = field[4].GetUInt32();
     if ((uint32)UNIXTIME > acct->Banned && acct->Banned != 0 && acct->Banned != 1)   //1 = perm ban?
     {
-        // Accounts should be unbanned once the date is past their set expiry date.
         acct->Banned = 0;
-        // me go boom :(
-        // printf("Account %s's ban has expired.\n",acct->UsernamePtr->c_str());
         sLogonSQL->Execute("UPDATE accounts SET banned = 0 WHERE id = %u", acct->AccountId);
     }
 
@@ -192,7 +189,6 @@ void AccountMgr::UpdateAccount(Account* acct, Field* field)
     acct->Banned = field[4].GetUInt32();
     if ((uint32)UNIXTIME > acct->Banned && acct->Banned != 0 && acct->Banned != 1)  //1 = perm ban?
     {
-        //Accounts should be unbanned once the date is past their set expiry date.
         acct->Banned = 0;
         LOG_DEBUG("Account %s's ban has expired.", acct->UsernamePtr->c_str());
         sLogonSQL->Execute("UPDATE accounts SET banned = 0 WHERE id = %u", acct->AccountId);
@@ -211,7 +207,6 @@ void AccountMgr::UpdateAccount(Account* acct, Field* field)
     acct->Muted = field[6].GetUInt32();
     if ((uint32)UNIXTIME > acct->Muted && acct->Muted != 0 && acct->Muted != 1)  //1 = perm ban?
     {
-        //Accounts should be unbanned once the date is past their set expiry date.
         acct->Muted = 0;
         LOG_DEBUG("Account %s's mute has expired.", acct->UsernamePtr->c_str());
         sLogonSQL->Execute("UPDATE accounts SET muted = 0 WHERE id = %u", acct->AccountId);

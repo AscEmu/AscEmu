@@ -1208,7 +1208,7 @@ void Creature::FormationLinkUp(uint32 SqlId)
         return;
 
     Creature* creature = m_mapMgr->GetSqlIdCreature(SqlId);
-    if (creature != 0)
+    if (creature != nullptr)
     {
         m_aiInterface->m_formationLinkTarget = creature->GetGUID();
         haslinkupevent = false;
@@ -1222,7 +1222,7 @@ void Creature::ChannelLinkUpGO(uint32 SqlId)
         return;
 
     GameObject* go = m_mapMgr->GetSqlIdGameObject(SqlId);
-    if (go != 0)
+    if (go != nullptr)
     {
         event_RemoveEvents(EVENT_CREATURE_CHANNEL_LINKUP);
         SetChannelSpellTargetGUID(go->GetGUID());
@@ -1235,11 +1235,11 @@ void Creature::ChannelLinkUpCreature(uint32 SqlId)
     if (!m_mapMgr)        // shouldn't happen
         return;
 
-    Creature* go = m_mapMgr->GetSqlIdCreature(SqlId);
-    if (go != 0)
+    Creature* creature = m_mapMgr->GetSqlIdCreature(SqlId);
+    if (creature != nullptr)
     {
         event_RemoveEvents(EVENT_CREATURE_CHANNEL_LINKUP);
-        SetChannelSpellTargetGUID(go->GetGUID());
+        SetChannelSpellTargetGUID(creature->GetGUID());
         SetChannelSpellId(m_spawn->channel_spell);
     }
 }
@@ -1252,12 +1252,13 @@ Movement::WayPoint* Creature::CreateWaypointStruct()
 
 bool Creature::isattackable(CreatureSpawn* spawn)
 {
-    if (spawn == NULL)
+    if (spawn == nullptr)
         return false;
 
     if ((spawn->flags & 2) || (spawn->flags & 128) || (spawn->flags & 256) || (spawn->flags & 65536))
         return false;
-    else return true;
+    else
+        return true;
 }
 
 uint8 get_byte(uint32 buffer, uint32 index)
