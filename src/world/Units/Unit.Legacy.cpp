@@ -1412,7 +1412,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
         //check if we can trigger due to time limitation
         if (ospinfo->custom_proc_interval)
         {
-            uint32 now_in_ms =Util::getMSTime();
+            uint32 now_in_ms = Util::getMSTime();
             if (spell_proc->mLastTrigger + ospinfo->custom_proc_interval > now_in_ms)
                 continue; //we can't trigger it yet.
             spell_proc->mLastTrigger = now_in_ms; // consider it triggered
@@ -4171,7 +4171,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                 if (itr->second.first)
                 {
                     // We have a *periodic* delayed spell.
-                    uint32 t =Util::getMSTime();
+                    uint32 t = Util::getMSTime();
                     if (t > itr->second.second)    // Time expired
                     {
                         // Set new time
@@ -4473,7 +4473,7 @@ void Unit::smsg_AttackStop(Unit* pVictim)
     {
         if (!IsPlayer() || getClass() == ROGUE)
         {
-            m_cTimer =Util::getMSTime() + 8000;
+            m_cTimer = Util::getMSTime() + 8000;
             sEventMgr.RemoveEvents(this, EVENT_COMBAT_TIMER);
             sEventMgr.AddEvent(this, &Unit::EventUpdateFlag, EVENT_COMBAT_TIMER, 8000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
             if (pVictim->IsUnit())   // there could be damage coming from objects/enviromental
@@ -7682,9 +7682,9 @@ void Unit::setAttackTimer(int32 time, bool offhand)
         time = offhand ? m_uint32Values[UNIT_FIELD_BASEATTACKTIME + 1] : m_uint32Values[UNIT_FIELD_BASEATTACKTIME];
 
     if (offhand)
-        m_attackTimer_1 =Util::getMSTime() + time;
+        m_attackTimer_1 = Util::getMSTime() + time;
     else
-        m_attackTimer =Util::getMSTime() + time;
+        m_attackTimer = Util::getMSTime() + time;
 }
 
 bool Unit::isAttackReady(bool offhand)

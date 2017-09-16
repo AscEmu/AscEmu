@@ -108,7 +108,7 @@ class MeathookAI : public CreatureAIScript
                         if (Rand(spells[i]->chance))
                         {
                             CastScriptSpell(spells[i]);
-                            spells[i]->time =Util::getMSTime() + spells[i]->timer;
+                            spells[i]->time = Util::getMSTime() + spells[i]->timer;
                         }
                     }
                 }
@@ -288,7 +288,7 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
                         if (Rand(spells[i]->chance))
                         {
                             CastScriptSpell(spells[i]);
-                            spells[i]->time =Util::getMSTime() + spells[i]->timer;
+                            spells[i]->time = Util::getMSTime() + spells[i]->timer;
                         }
                     }
                 }
@@ -465,7 +465,7 @@ class ChronoLordEpochAI : public CreatureAIScript
                         if (Rand(spells[i]->chance))
                         {
                             CastScriptSpell(spells[i]);
-                            spells[i]->time =Util::getMSTime() + spells[i]->timer;
+                            spells[i]->time = Util::getMSTime() + spells[i]->timer;
                         }
                     }
                 }
@@ -602,7 +602,7 @@ class InfiniteCorruptorAI : public CreatureAIScript
                         if (Rand(spells[i]->chance))
                         {
                             CastScriptSpell(spells[i]);
-                            spells[i]->time =Util::getMSTime() + spells[i]->timer;
+                            spells[i]->time = Util::getMSTime() + spells[i]->timer;
                         }
                     }
                 }
@@ -797,7 +797,7 @@ class MalganisAI : public CreatureAIScript
                         if (Rand(spells[i]->chance))
                         {
                             CastScriptSpell(spells[i]);
-                            spells[i]->time =Util::getMSTime() + spells[i]->timer;
+                            spells[i]->time = Util::getMSTime() + spells[i]->timer;
                         }
                     }
                 }

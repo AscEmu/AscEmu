@@ -4499,7 +4499,7 @@ uint8 Spell::CanCast(bool tolerate)
     {
         if (u_caster->SchoolCastPrevent[GetSpellInfo()->School])
         {
-            uint32 now_ =Util::getMSTime();
+            uint32 now_ = Util::getMSTime();
             if (now_ > u_caster->SchoolCastPrevent[GetSpellInfo()->School]) //this limit has expired,remove
                 u_caster->SchoolCastPrevent[GetSpellInfo()->School] = 0;
             else

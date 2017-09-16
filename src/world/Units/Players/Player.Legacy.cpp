@@ -11891,9 +11891,9 @@ void Player::Social_SendFriendList(uint32 flag)
 
 void Player::SpeedCheatDelay(uint32 ms_delay)
 {
-    //    SDetector->SkipSamplingUntil(getMSTime() + ms_delay);
+    //    SDetector->SkipSamplingUntil(Util::getMSTime() + ms_delay);
     //add triple latency to avoid client handling the spell effect with delay and we detect as cheat
-    //    SDetector->SkipSamplingUntil(getMSTime() + ms_delay + GetSession()->GetLatency() * 3);
+    //    SDetector->SkipSamplingUntil(Util::getMSTime() + ms_delay + GetSession()->GetLatency() * 3);
     //add constant value to make sure the effect packet was sent to client from network pool
     SDetector->SkipSamplingUntil(Util::getMSTime() + ms_delay + GetSession()->GetLatency() * 2 + 2000);   //2 second should be enough to send our packets to client
 }

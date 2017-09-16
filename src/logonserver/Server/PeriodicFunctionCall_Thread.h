@@ -22,6 +22,7 @@
 
 #include "../shared/CallBack.h"
 #include "Master.hpp"
+#include "Util.hpp"
 
 #ifndef WIN32
 static pthread_cond_t abortcond;
@@ -51,17 +52,17 @@ class PeriodicFunctionCaller : public ThreadBase
 #ifndef WIN32
             struct timeval now;
             struct timespec tv;
-            uint32 next =Util::getMSTime() + interval;
+            uint32 next = Util::getMSTime() + interval;
 
             pthread_mutex_init(&abortmutex, NULL);
             pthread_cond_init(&abortcond, NULL);
 
             while (running.GetVal() && mrunning.GetVal())
             {
-                if (getMSTime() > next)
+                if (Util::getMSTime() > next)
                 {
                     cb->execute();
-                    next =Util::getMSTime() + interval;
+                    next = Util::getMSTime() + interval;
                 }
                 gettimeofday(&now, NULL);
                 tv.tv_sec = now.tv_sec + 120;
