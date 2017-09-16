@@ -1878,6 +1878,7 @@ void ObjectMgr::LoadTrainers()
 #else
 void ObjectMgr::LoadTrainers()
 {
+#if VERSION_STRING > TBC    //todo: tbc
     QueryResult* result = WorldDatabase.Query("SELECT * FROM trainer_defs");
     LoadDisabledSpells();
 
@@ -2033,6 +2034,7 @@ void ObjectMgr::LoadTrainers()
     while (result->NextRow());
     delete result;
     LogDetail("ObjectMgr : %u trainers loaded.", mTrainers.size());
+#endif
 }
 #endif
 

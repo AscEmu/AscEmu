@@ -72,8 +72,8 @@ namespace DBC
             char const stable_slot_prices_format[] = "ni";
             char const spell_cast_times_format[] = "nixx";
             char const spell_duration_format[] = "niii";
-            char const spell_entry_format[] = "niiiiiiiiiiiixixiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiifiiiiiiiiiiiiiiiiiiiiiiiiiiiiifffiiiiiiiiiiiiiiiiiiiiifffiiiiiiiiiiiiiiifffiiiiiiiiiiiiiisxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxxiiiiiiiiiiiifffiiiiiiiixxxxxxi";
-            char const spell_item_enchantment_format[] = "nxiiiiiiiiiiiissssssssssssssssxiiii";
+            char const spell_entry_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiifiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiffffffiiiiiiiiiiiiiiiiiiiiifffiiiiiiiiiiiiiiifffiiiiisxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxxiiiiiiiiiiifffiiiiiii";
+            char const spell_item_enchantment_format[] = "niiiiiiiiiiiisxxxxxxxxxxxxxxxxiiii";
             char const spell_radius_format[] = "nfff";
             char const spell_range_format[] = "nffixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
             char const spell_shapeshift_form_format[] = "nxxxxxxxxxxxxxxxxxxiixiiixxiiiiiiii";
@@ -570,31 +570,25 @@ namespace DBC
             uint32_t Id;                                                // 0
             uint32_t Category;                                          // 1
             uint32_t DispelType;                                        // 2
-            uint32_t MechanicsType;                                     // 3
-            uint32_t Attributes;                                        // 4
-            uint32_t AttributesEx;                                      // 5
-            uint32_t AttributesExB;                                     // 6
-            uint32_t AttributesExC;                                     // 7
-            uint32_t AttributesExD;                                     // 8
-            uint32_t AttributesExE;                                     // 9
-            uint32_t AttributesExF;                                     // 10
-            uint32_t AttributesExG;                                     // 11 
+            uint32_t castUI;                                            // 3
+            uint32_t MechanicsType;                                     // 4
+            uint32_t Attributes;                                        // 5
+            uint32_t AttributesEx;                                      // 6
+            uint32_t AttributesExB;                                     // 7
+            uint32_t AttributesExC;                                     // 8
+            uint32_t AttributesExD;                                     // 9
+            uint32_t AttributesExE;                                     // 10
+            uint32_t AttributesExF;                                     // 11
             uint32_t RequiredShapeShift;                                // 12
-          //uint32_t Unknown;                                           // 13 (12-13 Stances[2])
-            uint32_t ShapeshiftExclude;                                 // 14 
-          //uint32_t Unknown;                                           // 15 (14-15 StancesExcluded[2])
-            uint32_t Targets;                                           // 16
-            uint32_t TargetCreatureType;                                // 17
-            uint32_t RequiresSpellFocus;                                // 18
-            uint32_t FacingCasterFlags;                                 // 19
-            uint32_t CasterAuraState;                                   // 20
-            uint32_t TargetAuraState;                                   // 21
-            uint32_t CasterAuraStateNot;                                // 22
-            uint32_t TargetAuraStateNot;                                // 23
-            uint32_t casterAuraSpell;                                   // 24
-            uint32_t targetAuraSpell;                                   // 25
-            uint32_t casterAuraSpellNot;                                // 26
-            uint32_t targetAuraSpellNot;                                // 27
+            uint32_t ShapeshiftExclude;                                 // 13 
+            uint32_t Targets;                                           // 14
+            uint32_t TargetCreatureType;                                // 15
+            uint32_t RequiresSpellFocus;                                // 16
+            uint32_t FacingCasterFlags;                                 // 17
+            uint32_t CasterAuraState;                                   // 18
+            uint32_t TargetAuraState;                                   // 19
+            uint32_t CasterAuraStateNot;                                // 20
+            uint32_t TargetAuraStateNot;                                // 21
             uint32_t CastingTimeIndex;                                  // 28
             uint32_t RecoveryTime;                                      // 29
             uint32_t CategoryRecoveryTime;                              // 30
@@ -603,12 +597,12 @@ namespace DBC
             uint32_t ChannelInterruptFlags;                             // 33
             uint32_t procFlags;                                         // 34
             uint32_t procChance;                                        // 35
-            uint32_t procCharges;                                       // 36
+            int32_t procCharges;                                       // 36
             uint32_t maxLevel;                                          // 37
             uint32_t baseLevel;                                         // 38
             uint32_t spellLevel;                                        // 39
             uint32_t DurationIndex;                                     // 40
-            int32_t powerType;                                         // 41
+            uint32_t powerType;                                         // 41
             uint32_t manaCost;                                          // 42
             uint32_t manaCostPerlevel;                                  // 43
             uint32_t manaPerSecond;                                     // 44
@@ -625,6 +619,8 @@ namespace DBC
             uint32_t RequiredItemFlags;                                 // 70 int32_t
             uint32_t Effect[MAX_SPELL_EFFECTS];                         // 71 - 73
             uint32_t EffectDieSides[MAX_SPELL_EFFECTS];                 // 74 - 76
+            uint32_t EffectBaseDice[3];
+            float  EffectDicePerLevel[3];
             float EffectRealPointsPerLevel[MAX_SPELL_EFFECTS];        // 77 - 79
             int32_t EffectBasePoints[MAX_SPELL_EFFECTS];                // 80 - 82
             int32_t EffectMechanic[MAX_SPELL_EFFECTS];                  // 83 - 85 uint32_t
@@ -640,7 +636,6 @@ namespace DBC
             uint32_t EffectMiscValueB[MAX_SPELL_EFFECTS];               // 113 - 115 int32_t
             uint32_t EffectTriggerSpell[MAX_SPELL_EFFECTS];             // 116 - 118
             float EffectPointsPerComboPoint[MAX_SPELL_EFFECTS];       // 119 - 121
-            uint32_t EffectSpellClassMask[3][3];                        // 122 - 130
             uint32_t SpellVisual;                                       // 131
             uint32_t field114;                                          // 132 (131-132 SpellVisual[2])
             uint32_t spellIconID;                                       // 133
@@ -659,11 +654,12 @@ namespace DBC
           //char* BuffDescription[15];                                // 188 - 202 (187-202 BuffDescription[16])
           //uint32_t buffdescflags;                                     // 203 not used
             uint32_t ManaCostPercentage;                                // 204
-            uint32_t StartRecoveryCategory;                             // 205
+            uint32_t unkflags;                             // 205
             uint32_t StartRecoveryTime;                                 // 206
-            uint32_t MaxTargetLevel;                                    // 207
+            uint32 StartRecoveryCategory;
+            //uint32_t MaxTargetLevel;                                    // 207
             uint32_t SpellFamilyName;                                   // 208
-            uint32_t SpellGroupType[MAX_SPELL_EFFECTS];                 // 209 - 211
+            uint64_t SpellGroupType;                 // 209 - 211
             uint32_t MaxTargets;                                        // 212
             uint32_t Spell_Dmg_Type;                                    // 213
             uint32_t PreventionType;                                    // 214
@@ -673,14 +669,9 @@ namespace DBC
             uint32_t MinReputation;                                     // 220  comment this out
             uint32_t RequiredAuraVision;                                // 221  comment this out
             uint32_t TotemCategory[2];                                  // 222 - 223
-            int32_t RequiresAreaId;                                     // 224
+            uint32_t RequiresAreaId;                                     // 224
             uint32_t School;                                            // 225
-            uint32_t RuneCostID;                                        // 226
-          //uint32_t SpellMissileID;                                    // 227
-          //uint32_t PowerDisplayId;                                    // 228
-          //float EffectBonusMultiplier[MAX_SPELL_EFFECTS];           // 229 - 231
-          //uint32_t SpellDescriptionVariable;                          // 232
-            uint32_t SpellDifficultyID;                                 // 233  comment this out
+
         };
 
         struct SpellItemEnchantmentEntry
@@ -690,8 +681,8 @@ namespace DBC
             uint32_t min[3];              // 4-6 for combat, in practice min==max
             uint32_t max[3];              // 7-9
             uint32_t spell[3];            // 10-12
-            char* Name[16];               // 13-28
-            //uint32_t NameFlags;         // 29
+            char* Name;                   // 13
+            //uint32_t NameAlt[16]       // 14-29
             uint32_t visual;              // 30 aura
             uint32_t EnchantGroups;       // 31 slot
             uint32_t GemEntry;            // 32

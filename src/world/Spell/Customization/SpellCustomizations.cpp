@@ -59,7 +59,9 @@ void SpellCustomizations::LoadSpellInfoData()
             spellInfo.AttributesExD = dbc_spell_entry->AttributesExD;
             spellInfo.AttributesExE = dbc_spell_entry->AttributesExE;
             spellInfo.AttributesExF = dbc_spell_entry->AttributesExF;
+#if VERSION_STRING > TBC
             spellInfo.AttributesExG = dbc_spell_entry->AttributesExG;
+#endif
             spellInfo.RequiredShapeShift = dbc_spell_entry->RequiredShapeShift;
             spellInfo.ShapeshiftExclude = dbc_spell_entry->ShapeshiftExclude;
             spellInfo.Targets = dbc_spell_entry->Targets;
@@ -70,10 +72,12 @@ void SpellCustomizations::LoadSpellInfoData()
             spellInfo.TargetAuraState = dbc_spell_entry->TargetAuraState;
             spellInfo.CasterAuraStateNot = dbc_spell_entry->CasterAuraStateNot;
             spellInfo.TargetAuraStateNot = dbc_spell_entry->TargetAuraStateNot;
+#if VERSION_STRING > TBC
             spellInfo.casterAuraSpell = dbc_spell_entry->casterAuraSpell;
             spellInfo.targetAuraSpell = dbc_spell_entry->targetAuraSpell;
             spellInfo.casterAuraSpellNot = dbc_spell_entry->casterAuraSpellNot;
             spellInfo.targetAuraSpellNot = dbc_spell_entry->targetAuraSpellNot;
+#endif
             spellInfo.CastingTimeIndex = dbc_spell_entry->CastingTimeIndex;
             spellInfo.RecoveryTime = dbc_spell_entry->RecoveryTime;
             spellInfo.CategoryRecoveryTime = dbc_spell_entry->CategoryRecoveryTime;
@@ -161,9 +165,11 @@ void SpellCustomizations::LoadSpellInfoData()
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
                 spellInfo.EffectPointsPerComboPoint[i] = dbc_spell_entry->EffectPointsPerComboPoint[i];
 
+#if VERSION_STRING > TBC
             for (uint8 i = 0; i < 3; ++i)
                 for (uint8 j = 0; j < 3; ++j)
                     spellInfo.EffectSpellClassMask[i][j] = dbc_spell_entry->EffectSpellClassMask[i][j];
+#endif
 
             spellInfo.SpellVisual = dbc_spell_entry->SpellVisual;
             spellInfo.field114 = dbc_spell_entry->field114;
@@ -177,11 +183,15 @@ void SpellCustomizations::LoadSpellInfoData()
             spellInfo.ManaCostPercentage = dbc_spell_entry->ManaCostPercentage;
             spellInfo.StartRecoveryCategory = dbc_spell_entry->StartRecoveryCategory;
             spellInfo.StartRecoveryTime = dbc_spell_entry->StartRecoveryTime;
+#if VERSION_STRING > TBC
             spellInfo.MaxTargetLevel = dbc_spell_entry->MaxTargetLevel;
+#endif
             spellInfo.SpellFamilyName = dbc_spell_entry->SpellFamilyName;
 
+#if VERSION_STRING > TBC
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
                 spellInfo.SpellGroupType[i] = dbc_spell_entry->SpellGroupType[i];
+#endif
 
             spellInfo.MaxTargets = dbc_spell_entry->MaxTargets;
             spellInfo.Spell_Dmg_Type = dbc_spell_entry->Spell_Dmg_Type;
@@ -200,9 +210,11 @@ void SpellCustomizations::LoadSpellInfoData()
 
             spellInfo.RequiresAreaId = dbc_spell_entry->RequiresAreaId;
             spellInfo.School = dbc_spell_entry->School;
+#if VERSION_STRING > TBC
             spellInfo.RuneCostID = dbc_spell_entry->RuneCostID;
 
             spellInfo.SpellDifficultyID = dbc_spell_entry->SpellDifficultyID;
+#endif
         }
     }
 #else

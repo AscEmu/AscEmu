@@ -7221,7 +7221,7 @@ void Player::RegenerateMana(bool is_interrupted)
         return;
     float wrate = worldConfig.getFloatRate(RATE_POWER1); // config file regen rate
 #if VERSION_STRING == TBC
-    float amt = (is_interrupted) ? GetFloatValue(PLAYER_FIELD_MOD_MANA_REGEN_INTERRUPT) : GetFloatValue(PLAYER_FIELD_MOD_MANA_REGEN);
+    float amt = (is_interrupted) ? getFloatValue(PLAYER_FIELD_MOD_MANA_REGEN_INTERRUPT) : getFloatValue(PLAYER_FIELD_MOD_MANA_REGEN);
 #elif VERSION_STRING == Classic
     float amt = 10;
 #else
