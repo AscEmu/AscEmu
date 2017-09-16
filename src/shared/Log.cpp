@@ -5,9 +5,131 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Log.hpp"
 #include "Util.hpp"
+#include "Config/Config.h"
 
 #include <iostream>
+#include <cstdarg>
+#include <string>
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// World functions
+initialiseSingleton(WorldPacketLog);
+
+SERVER_DECL time_t UNIXTIME;
+SERVER_DECL tm g_localTime;
+
+WorldPacketLog::WorldPacketLog() : isLogEnabled(false), mPacketLogFile(nullptr)
+{
+}
+
+WorldPacketLog::~WorldPacketLog()
+{
+    if (mPacketLogFile)
+    {
+        fclose(mPacketLogFile);
+        mPacketLogFile = nullptr;
+    }
+}
+
+void WorldPacketLog::initWorldPacketLog(bool enableLog)
+{
+    isLogEnabled = enableLog;
+
+    if (isLogEnabled)
+    {
+        LogNotice("WorldPacketLog : Enabling packetlog output to \"world-packet.log\"");
+        enablePacketLog();
+    }
+    else
+    {
+        disablePacketLog();
+    }
+}
+
+void WorldPacketLog::enablePacketLog()
+{
+    if (mPacketLogFile != nullptr)
+    {
+        disablePacketLog();
+        isLogEnabled = true;
+    }
+    mPacketLogFile = fopen("world-packet.log", "a");
+}
+
+void WorldPacketLog::disablePacketLog()
+{
+    if (mPacketLogFile != nullptr)
+    {
+        fflush(mPacketLogFile);
+        fclose(mPacketLogFile);
+        mPacketLogFile = nullptr;
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// SessionLog functions
+
+SessionLog::SessionLog(const char* filename, bool open)
+{
+    mFileName = strdup(filename);
+    mSessionLogFile = nullptr;
+    if (open)
+    {
+        openSessionLog();
+    }
+}
+
+SessionLog::~SessionLog()
+{
+    if (mSessionLogFile != nullptr)
+    {
+        closeSessionLog();
+    }
+
+    free(mFileName);
+}
+
+void SessionLog::openSessionLog()
+{
+    mSessionLogFile = fopen(mFileName, "a");
+}
+
+bool SessionLog::isSessionLogOpen()
+{
+    return (mSessionLogFile != nullptr);
+}
+
+void SessionLog::closeSessionLog()
+{
+    if (mSessionLogFile != nullptr)
+    {
+        fflush(mSessionLogFile);
+        fclose(mSessionLogFile);
+        mSessionLogFile = nullptr;
+    }
+}
+
+void SessionLog::write(const char* format, ...)
+{
+    if (mSessionLogFile != nullptr)
+    {
+        char out[32768];
+        va_list ap;
+
+        va_start(ap, format);
+
+        std::string current_time = "[" + Util::GetCurrentDateTimeString() + "] ";
+        sprintf(out, current_time.c_str());
+
+        size_t l = strlen(out);
+        vsnprintf(&out[l], 32768 - l, format, ap);
+        fprintf(mSessionLogFile, "%s\n", out);
+        va_end(ap);
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// AscEmuLog format/color functions
 namespace AELog
 {
     std::string GetFormattedFileName(std::string path_prefix, std::string file_prefix, bool use_date_time)
@@ -366,3 +488,4 @@ void AscEmuLog::ConsoleLogMajorError(std::string line1, std::string line2, std::
 
     WriteFile(error_log_file, strdup(sstream.str().c_str()));
 }
+

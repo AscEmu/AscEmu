@@ -29,10 +29,6 @@
 #include <RC4Engine.h>
 #include "zlib.h"
 
-extern SERVER_DECL SessionLogWriter* GMCommand_Log;
-#define sGMLog (*GMCommand_Log)
-
-
 class LogonCommClientSocket : public Socket
 {
     uint32 remaining;

@@ -45,9 +45,9 @@ SERVER_DECL Database* Database_Character;
 SERVER_DECL Database* Database_World;
 
 // mainserv defines
-SERVER_DECL SessionLogWriter* GMCommand_Log;
-SERVER_DECL SessionLogWriter* Anticheat_Log;
-SERVER_DECL SessionLogWriter* Player_Log;
+SERVER_DECL SessionLog* GMCommand_Log;
+SERVER_DECL SessionLog* Anticheat_Log;
+SERVER_DECL SessionLog* Player_Log;
 
 // threads
 extern DayWatcherThread* dw;
@@ -679,44 +679,44 @@ void Master::OpenCheatLogFiles()
     bool useTimeStamp = worldConfig.log.enableTimeStamp;
     std::string logDir = worldConfig.log.extendedLogsDir;
 
-    Anticheat_Log = new SessionLogWriter(AELog::GetFormattedFileName(logDir.c_str(), "cheaters", useTimeStamp).c_str(), false);
-    GMCommand_Log = new SessionLogWriter(AELog::GetFormattedFileName(logDir.c_str(), "gmcommands", useTimeStamp).c_str(), false);
-    Player_Log = new SessionLogWriter(AELog::GetFormattedFileName(logDir.c_str(), "players", useTimeStamp).c_str(), false);
+    Anticheat_Log = new SessionLog(AELog::GetFormattedFileName(logDir.c_str(), "cheaters", useTimeStamp).c_str(), false);
+    GMCommand_Log = new SessionLog(AELog::GetFormattedFileName(logDir.c_str(), "gmcommands", useTimeStamp).c_str(), false);
+    Player_Log = new SessionLog(AELog::GetFormattedFileName(logDir.c_str(), "players", useTimeStamp).c_str(), false);
 
-    if (Anticheat_Log->IsOpen())
+    if (Anticheat_Log->isSessionLogOpen())
     {
         if (!worldConfig.log.enableCheaterLog)
         {
-            Anticheat_Log->Close();
+            Anticheat_Log->closeSessionLog();
         }
     }
     else if (worldConfig.log.enableCheaterLog)
     {
-        Anticheat_Log->Open();
+        Anticheat_Log->openSessionLog();
     }
 
-    if (GMCommand_Log->IsOpen())
+    if (GMCommand_Log->isSessionLogOpen())
     {
         if (!worldConfig.log.enableGmCommandLog)
         {
-            GMCommand_Log->Close();
+            GMCommand_Log->closeSessionLog();
         }
     }
     else if (worldConfig.log.enableGmCommandLog)
     {
-        GMCommand_Log->Open();
+        GMCommand_Log->openSessionLog();
     }
 
-    if (Player_Log->IsOpen())
+    if (Player_Log->isSessionLogOpen())
     {
         if (!worldConfig.log.enablePlayerLog)
         {
-            Player_Log->Close();
+            Player_Log->closeSessionLog();
         }
     }
     else if (worldConfig.log.enablePlayerLog)
     {
-        Player_Log->Open();
+        Player_Log->openSessionLog();
     }
 }
 

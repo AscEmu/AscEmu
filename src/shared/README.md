@@ -53,8 +53,6 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 2008 | PreallocatedQueue.h
 * 2008 | MersenneTwister.h
 * 2008 | MersenneTwister.cpp
-* 2008 | Log.Legacy.h
-* 2008 | Log.Legacy.cpp
 * 2008 | LocationVector.h
 * 2008 | FindFilesResult.hpp
 * 2008 | FindFiles.hpp
@@ -109,7 +107,6 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 2007 | Auth/MD5.h
 * 2007 | Auth/BigNumber.h
 * 2007 | ascemu_getopt.h
-* 2005 | Timer.h
 * 2005 | SysInfo.hpp
 * 2005 | SysInfo.cpp
 * 2005 | StackWalker.h
@@ -141,6 +138,11 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 2008 | Database/DataStore.h
 * 2008 | Util.Legacy.h
 * 2008 | Util.Legacy.cpp
+
+### Removed on 16 Sep 2017
+* 2008 | Log.Legacy.h
+* 2008 | Log.Legacy.cpp
+* 2005 | Timer.h
 
 ### New files
 * 2017 | Common.hpp

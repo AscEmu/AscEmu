@@ -35,7 +35,6 @@ set(sources
     FindFiles.cpp
 	LocationVector.cpp
     Log.cpp
-    Log.Legacy.cpp
     MapFile.cpp
     MapFileEntry.cpp
     MersenneTwister.cpp
@@ -69,7 +68,6 @@ set(headers
 	FindFiles.hpp
 	FindFilesResult.hpp
 	LocationVector.h
-	Log.Legacy.h
     LogonCommDefines.h
 	MapFile.h
 	MapFileEntry.h

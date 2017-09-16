@@ -226,7 +226,7 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32 opcode, size_t len, const void* 
     }
 
     // Packet logger :)
-    sWorldLog.LogPacket((uint32)len, opcode, (const uint8*)data, 1, (mSession ? mSession->GetAccountId() : 0));
+    sWorldPacketLog.logPacket((uint32)len, opcode, (const uint8*)data, 1, (mSession ? mSession->GetAccountId() : 0));
 
 #if VERSION_STRING == Cata
     ServerPktHeader Header(uint32(len + 2), opcode);
@@ -785,7 +785,7 @@ void WorldSocket::OnRead()
             readBuffer.Read((uint8*)Packet->contents(), mRemaining);
         }
 
-        sWorldLog.LogPacket(mSize, static_cast<uint16>(mOpcode), mSize ? Packet->contents() : NULL, 0, (mSession ? mSession->GetAccountId() : 0));
+        sWorldPacketLog.logPacket(mSize, static_cast<uint16>(mOpcode), mSize ? Packet->contents() : NULL, 0, (mSession ? mSession->GetAccountId() : 0));
         mRemaining = mSize = mOpcode = 0;
 
         // Check for packets that we handle
@@ -842,9 +842,9 @@ void WorldSocket::SendAuthResponseError(uint8_t code)
 #endif
 
 #if VERSION_STRING != Cata
-void WorldLog::LogPacket(uint32 len, uint16 opcode, const uint8* data, uint8 direction, uint32 accountid)
+void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* data, uint8_t direction, uint32_t accountid)
 #else
-void WorldLog::LogPacket(uint32 len, uint32 opcode, const uint8* data, uint8 direction, uint32 accountid)
+void WorldPacketLog::logPacket(uint32_t len, uint32_t opcode, const uint8_t* data, uint8_t direction, uint32_t accountid)
 #endif
 {
     if (worldConfig.log.worldDebugFlags & LF_OPCODE)
@@ -854,107 +854,131 @@ void WorldLog::LogPacket(uint32 len, uint32 opcode, const uint8* data, uint8 dir
             //stop spaming opcodes here
             case SMSG_MONSTER_MOVE:
             case MSG_MOVE_HEARTBEAT:
-                break;
+            {
+            } break;
             default:
+            {
                 LogDebugFlag(LF_OPCODE, "[%s]: %s %s (0x%03X) of %u bytes.", direction ? "SERVER" : "CLIENT", direction ? "sent" : "received",
-                             getOpcodeName(opcode).c_str(), opcode, len);
+                    getOpcodeName(opcode).c_str(), opcode, len);
+            } break;
         }
 }
 
-    if (bEnabled)
+    if (isLogEnabled)
     {
-        mutex.Acquire();
+        mPacketLogMutex.Acquire();
         unsigned int line = 1;
         unsigned int countpos = 0;
-        uint16 lenght = static_cast<uint16>(len);
+        uint16_t lenght = static_cast<uint16_t>(len);
         unsigned int count = 0;
 
-        fprintf(m_file, "{%s} Packet: (0x%04X) %s PacketSize = %u stamp = %u accountid = %u\n", (direction ? "SERVER" : "CLIENT"), opcode,
-                getOpcodeName(opcode).c_str(), lenght, Util::getMSTime(), accountid);
-        fprintf(m_file, "|------------------------------------------------|----------------|\n");
-        fprintf(m_file, "|00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |0123456789ABCDEF|\n");
-        fprintf(m_file, "|------------------------------------------------|----------------|\n");
+        fprintf(mPacketLogFile, "{%s} Packet: (0x%04X) %s PacketSize = %u stamp = %u accountid = %u\n", (direction ? "SERVER" : "CLIENT"), opcode,
+            getOpcodeName(opcode).c_str(), lenght, Util::getMSTime(), accountid);
+        fprintf(mPacketLogFile, "|------------------------------------------------|----------------|\n");
+        fprintf(mPacketLogFile, "|00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |0123456789ABCDEF|\n");
+        fprintf(mPacketLogFile, "|------------------------------------------------|----------------|\n");
 
         if (lenght > 0)
         {
-            fprintf(m_file, "|");
+            fprintf(mPacketLogFile, "|");
             for (count = 0; count < lenght; count++)
             {
                 if (countpos == 16)
                 {
                     countpos = 0;
 
-                    fprintf(m_file, "|");
+                    fprintf(mPacketLogFile, "|");
 
                     for (unsigned int a = count - 16; a < count; a++)
                     {
                         if ((data[a] < 32) || (data[a] > 126))
-                            fprintf(m_file, ".");
+                        {
+                            fprintf(mPacketLogFile, ".");
+                        }
                         else
-                            fprintf(m_file, "%c", data[a]);
+                        {
+                            fprintf(mPacketLogFile, "%c", data[a]);
+                        }
                     }
 
-                    fprintf(m_file, "|\n");
+                    fprintf(mPacketLogFile, "|\n");
 
                     line++;
-                    fprintf(m_file, "|");
+                    fprintf(mPacketLogFile, "|");
                 }
 
-                fprintf(m_file, "%02X ", data[count]);
+                fprintf(mPacketLogFile, "%02X ", data[count]);
 
                 //FIX TO PARSE PACKETS WITH LENGTH < OR = TO 16 BYTES.
                 if (count + 1 == lenght && lenght <= 16)
                 {
                     for (unsigned int b = countpos + 1; b < 16; b++)
-                        fprintf(m_file, "   ");
+                    {
+                        fprintf(mPacketLogFile, "   ");
+                    }
 
-                    fprintf(m_file, "|");
+                    fprintf(mPacketLogFile, "|");
 
                     for (unsigned int a = 0; a < lenght; a++)
                     {
                         if ((data[a] < 32) || (data[a] > 126))
-                            fprintf(m_file, ".");
+                        {
+                            fprintf(mPacketLogFile, ".");
+                        }
                         else
-                            fprintf(m_file, "%c", data[a]);
+                        {
+                            fprintf(mPacketLogFile, "%c", data[a]);
+                        }
                     }
 
                     for (unsigned int c = count; c < 15; c++)
-                        fprintf(m_file, " ");
+                    {
+                        fprintf(mPacketLogFile, " ");
+                    }
 
-                    fprintf(m_file, "|\n");
+                    fprintf(mPacketLogFile, "|\n");
                 }
 
                 //FIX TO PARSE THE LAST LINE OF THE PACKETS WHEN THE LENGTH IS > 16 AND ITS IN THE LAST LINE.
                 if (count + 1 == lenght && lenght > 16)
                 {
                     for (unsigned int b = countpos + 1; b < 16; b++)
-                        fprintf(m_file, "   ");
+                    {
+                        fprintf(mPacketLogFile, "   ");
+                    }
 
-                    fprintf(m_file, "|");
+                    fprintf(mPacketLogFile, "|");
 
                     unsigned short print = 0;
 
                     for (unsigned int a = line * 16 - 16; a < lenght; a++)
                     {
                         if ((data[a] < 32) || (data[a] > 126))
-                            fprintf(m_file, ".");
+                        {
+                            fprintf(mPacketLogFile, ".");
+                        }
                         else
-                            fprintf(m_file, "%c", data[a]);
+                        {
+                            fprintf(mPacketLogFile, "%c", data[a]);
+                        }
 
                         print++;
                     }
 
                     for (unsigned int c = print; c < 16; c++)
-                        fprintf(m_file, " ");
+                    {
+                        fprintf(mPacketLogFile, " ");
+                    }
 
-                    fprintf(m_file, "|\n");
+                    fprintf(mPacketLogFile, "|\n");
                 }
 
                 countpos++;
             }
         }
-        fprintf(m_file, "-------------------------------------------------------------------\n\n");
-        fflush(m_file);
-        mutex.Release();
+
+        fprintf(mPacketLogFile, "-------------------------------------------------------------------\n\n");
+        fflush(mPacketLogFile);
+        mPacketLogMutex.Release();
     }
 }

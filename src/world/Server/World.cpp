@@ -84,7 +84,7 @@ World::World()
 World::~World()
 {
     LogNotice("WorldLog : ~WorldLog()");
-    delete WorldLog::getSingletonPtr();
+    delete WorldPacketLog::getSingletonPtr();
 
     LogNotice("ObjectMgr : ~ObjectMgr()");
     delete ObjectMgr::getSingletonPtr();
@@ -750,8 +750,8 @@ bool World::setInitialWorldSettings()
     new ChatHandler;
     new SpellProcMgr;
 
-    new WorldLog;
-    sWorldLog.InitWorldLog(worldConfig.log.enableWorldPacketLog);
+    new WorldPacketLog;
+    sWorldPacketLog.initWorldPacketLog(worldConfig.log.enableWorldPacketLog);
 
     new SpellCustomizations;
     sSpellCustomizations.StartSpellCustomization();

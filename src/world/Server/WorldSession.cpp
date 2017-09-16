@@ -558,33 +558,31 @@ void WorldSession::InitPacketHandlerTable()
     loadSpecificHandlers();
 }
 
-void SessionLogWriter::writefromsession(WorldSession* session, const char* format, ...)
+void SessionLog::writefromsession(WorldSession* session, const char* format, ...)
 {
-    if (!IsOpen())
-        return;
+    if (isSessionLogOpen())
+    {
+        va_list ap;
+        va_start(ap, format);
+        char out[32768];
 
-    va_list ap;
-    va_start(ap, format);
-    char out[32768];
+        std::string current_time = "[" + Util::GetCurrentDateTimeString() + "] ";
+        snprintf(out, 32768, current_time.c_str());
+        size_t lenght = strlen(out);
 
-    std::string current_time = "[" + Util::GetCurrentDateTimeString() + "] ";
-    snprintf(out, 32768, current_time.c_str());
-    size_t l = strlen(out);
+        snprintf(&out[lenght], 32768 - lenght, "Account %u [%s], IP %s, Player %s :: ",
+            (unsigned int)session->GetAccountId(),
+            session->GetAccountName().c_str(),
+            session->GetSocket() ? session->GetSocket()->GetRemoteIP().c_str() : "NOIP",
+            session->GetPlayer() ? session->GetPlayer()->GetName() : "nologin");
 
-    snprintf(&out[l], 32768 - l, "Account %u [%s], IP %s, Player %s :: ",
-             (unsigned int)session->GetAccountId(),
-             session->GetAccountName().c_str(),
-             session->GetSocket() ? session->GetSocket()->GetRemoteIP().
-             c_str() : "NOIP",
-             session->GetPlayer() ? session->GetPlayer()->
-             GetName() : "nologin");
+        lenght = strlen(out);
+        vsnprintf(&out[lenght], 32768 - lenght, format, ap);
 
-    l = strlen(out);
-    vsnprintf(&out[l], 32768 - l, format, ap);
-
-    fprintf(m_file, "%s\n", out);
-    fflush(m_file);
-    va_end(ap);
+        fprintf(mSessionLogFile, "%s\n", out);
+        fflush(mSessionLogFile);
+        va_end(ap);
+    }
 }
 
 void WorldSession::SystemMessage(const char* format, ...)
