@@ -46,7 +46,7 @@ void GuildFinderMgr::loadGuildSettingsFromDB()
     }
 
     uint32_t count = 0;
-    uint32_t oldMSTime = getMSTime();
+    auto startTime = Util::TimeNow();
     do
     {
         Field* fields = result->Fetch();
@@ -73,7 +73,7 @@ void GuildFinderMgr::loadGuildSettingsFromDB()
         ++count;
     } while(result->NextRow());
 
-    LogNotice("Loaded %u guild finder guild-related settings in %u ms.", count, GetMSTimeDiffToNow(oldMSTime));
+    LogNotice("Loaded %u guild finder guild-related settings in %u ms.", count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 void GuildFinderMgr::loadMembershipRequestsFromDB()
@@ -90,7 +90,7 @@ void GuildFinderMgr::loadMembershipRequestsFromDB()
     }
 
     uint32_t count = 0;
-    uint32_t oldMSTime = getMSTime();
+    auto startTime = Util::TimeNow();
     do
     {
         Field* fields = result->Fetch();
@@ -109,7 +109,7 @@ void GuildFinderMgr::loadMembershipRequestsFromDB()
         ++count;
     } while(result->NextRow());
 
-    LogNotice("Loaded %u guild finder membership requests in %u ms.", count, GetMSTimeDiffToNow(oldMSTime));
+    LogNotice("Loaded %u guild finder membership requests in %u ms.", count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 void GuildFinderMgr::addMembershipRequest(uint32_t guildGuid, MembershipRequest const& request)

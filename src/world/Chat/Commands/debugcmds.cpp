@@ -412,7 +412,7 @@ bool ChatHandler::HandleKnockBackCommand(const char* args, WorldSession* m_sessi
 
     WorldPacket data(SMSG_MOVE_KNOCK_BACK, 50);
     data << m_session->GetPlayer()->GetNewGUID();
-    data << getMSTime();
+    data << Util::getMSTime();
     data << dy;
     data << dx;
     data << f;

@@ -184,7 +184,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         bool loadDbcDb2Stores();
 
         void loadMySQLStores();
-        void loadMySQLTablesByTask(uint32_t start_time);
+        void loadMySQLTablesByTask();
         void logEntitySize();
 
         void Update(unsigned long time_passed);

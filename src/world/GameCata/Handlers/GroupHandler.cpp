@@ -141,7 +141,7 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recv_data)
         data.WriteByteSeq(inviter_guid[1]);
         data.WriteByteSeq(inviter_guid[4]);
 
-        data << int32_t(getMSTime());
+        data << int32_t(Util::getMSTime());
         data << int32_t(0);
         data << int32_t(0);
 
@@ -212,7 +212,7 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recv_data)
     data.WriteByteSeq(inviter_guid[1]);
     data.WriteByteSeq(inviter_guid[4]);
 
-    data << int32_t(getMSTime());
+    data << int32_t(Util::getMSTime());
     data << int32_t(0);
     data << int32_t(0);
 

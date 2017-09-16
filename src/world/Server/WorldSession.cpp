@@ -41,7 +41,7 @@ OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
 
 WorldSession::WorldSession(uint32 id, std::string Name, WorldSocket* sock) :
     m_loggingInPlayer(NULL),
-    m_currMsTime(getMSTime()),
+    m_currMsTime(Util::getMSTime()),
     bDeleted(false),
     m_moveDelayTime(0),
     m_clientTimeDelay(0),
@@ -116,7 +116,7 @@ WorldSession::~WorldSession()
 
 uint8 WorldSession::Update(uint32 InstanceID)
 {
-    m_currMsTime = getMSTime();
+    m_currMsTime = Util::getMSTime();
 
     if (!((++_updatecount) % 2) && _socket)
         _socket->UpdateQueuedPackets();

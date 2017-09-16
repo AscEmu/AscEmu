@@ -217,7 +217,7 @@ void DatabaseCleaner::CleanCharacters()
     result = CharacterDatabase.Query("SELECT OwnerGuid, CooldownTimeStamp FROM playercooldownitems");
     if (result)
     {
-        uint32 t = getMSTime();
+        uint32 t = Util::getMSTime();
         do
         {
             uint32 guid = result->Fetch()[0].GetUInt32();
@@ -243,7 +243,7 @@ void DatabaseCleaner::CleanCharacters()
     result = CharacterDatabase.Query("SELECT OwnerGuid, TimeStamp FROM playercooldownsecurity");
     if (result)
     {
-        uint32 t = getMSTime();
+        uint32 t = Util::getMSTime();
         do
         {
             uint32 guid = result->Fetch()[0].GetUInt32();

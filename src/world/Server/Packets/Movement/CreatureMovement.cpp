@@ -26,7 +26,7 @@ namespace Packets
                 MovePacket.data << float(pUnit->GetPositionX());
                 MovePacket.data << float(pUnit->GetPositionY());
                 MovePacket.data << float(pUnit->GetPositionZ());
-                MovePacket.data << uint32(getMSTime());
+                MovePacket.data << uint32(Util::getMSTime());
                 MovePacket.data << uint8(1);
             }
             else

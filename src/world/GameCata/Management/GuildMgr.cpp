@@ -112,7 +112,7 @@ void GuildMgr::loadGuildDataFromDB()
     // 1. Load all guilds
     LogDebug("Loading guilds definitions...");
     {
-        uint32_t oldMSTime = getMSTime();
+        auto startTime = Util::TimeNow();
 
         //                                                         0          1            2             3              4              5              6
         QueryResult* result = CharacterDatabase.Query("SELECT g.guildId, g.guildName, g.leaderGuid, g.emblemStyle, g.emblemColor, g.borderStyle, g.borderColor, "
@@ -143,14 +143,14 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while(result->NextRow());
 
-            LogDebug("Loaded %u guild definitions in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+            LogDebug("Loaded %u guild definitions in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
         }
     }
 
     // 2. Load all guild ranks
     LogDebug("Loading guild ranks...");
     {
-        uint32_t oldMSTime = getMSTime();
+        auto startTime = Util::TimeNow();
 
         // Delete orphaned guild rank entries before loading the valid ones
         CharacterDatabase.Execute("DELETE gr FROM guild_rank gr LEFT JOIN guild g ON gr.guildId = g.guildId WHERE g.guildId IS NULL");
@@ -178,14 +178,14 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while(result->NextRow());
 
-            LogDebug("Loaded %u guild ranks in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+            LogDebug("Loaded %u guild ranks in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
         }
     }
 
     // 3. Load all guild members
     LogDebug("Loading guild members...");
     {
-        uint32_t oldMSTime = getMSTime();
+        auto startTime = Util::TimeNow();
 
         CharacterDatabase.Execute("DELETE gm FROM guild_member gm LEFT JOIN guild g ON gm.guildId = g.guildId WHERE g.guildId IS NULL");
 
@@ -214,14 +214,14 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while(result->NextRow() && result2->NextRow());
 
-            LogDebug("Loaded %u guild members int %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+            LogDebug("Loaded %u guild members int %u ms", count, Util::GetTimeDifferenceToNow(startTime));
         }
     }
 
     // 4. Load all guild bank tab rights
     LogDebug("Loading bank tab rights...");
     {
-        uint32_t oldMSTime = getMSTime();
+        auto startTime = Util::TimeNow();
 
         // Delete orphaned guild bank right entries before loading the valid ones
         CharacterDatabase.Execute("DELETE gbr FROM guild_bank_right gbr LEFT JOIN guild g ON gbr.guildId = g.guildId WHERE g.guildId IS NULL");
@@ -249,14 +249,14 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while(result->NextRow());
 
-            LogDebug("Loaded %u bank tab rights in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+            LogDebug("Loaded %u bank tab rights in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
         }
     }
 
     // 5. Load all event logs
     LogDebug("Loading guild event logs...");
     {
-        uint32_t oldMSTime = getMSTime();
+        auto startTime = Util::TimeNow();
 
         CharacterDatabase.Execute("DELETE FROM guild_eventlog WHERE logGuid > %u", 100);
         CharacterDatabase.Execute("DELETE ge FROM guild_eventlog ge LEFT JOIN guild g ON ge.guildId = g.guildId WHERE g.guildId IS NULL");
@@ -284,14 +284,14 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while(result->NextRow());
 
-            LogDebug("Loaded %u guild event logs in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+            LogDebug("Loaded %u guild event logs in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
         }
     }
 
     // 6. Load all bank event logs
     LogDebug("Loading guild bank event logs...");
     {
-        uint32_t oldMSTime = getMSTime();
+        auto startTime = Util::TimeNow();
 
         // Remove log entries that exceed the number of allowed entries per guild
         CharacterDatabase.Execute("DELETE FROM guild_bank_eventlog WHERE logGuid > %u", 25);
@@ -320,14 +320,14 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while(result->NextRow());
 
-            LogDebug("Loaded %u guild bank event logs in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+            LogDebug("Loaded %u guild bank event logs in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
         }
     }
 
     // 7. Load all news event logs
     LogDebug("Loading Guild News...");
     {
-        uint32_t oldMSTime = getMSTime();
+        auto startTime = Util::TimeNow();
 
         CharacterDatabase.Execute("DELETE FROM guild_newslog WHERE logGuid > %u", 250);
         CharacterDatabase.Execute("DELETE gn FROM guild_newslog gn LEFT JOIN guild g ON gn.guildId = g.guildId WHERE g.guildId IS NULL");
@@ -355,7 +355,7 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while(result->NextRow());
 
-            LogDebug("Loaded %u guild new logs in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+            LogDebug("Loaded %u guild new logs in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
         }
     }
 
@@ -363,7 +363,7 @@ void GuildMgr::loadGuildDataFromDB()
     // 8. Load all guild bank tabs
     LogDebug("Loading guild bank tabs...");
     {
-        uint32_t oldMSTime = getMSTime();
+        auto startTime = Util::TimeNow();
 
         // Delete orphaned guild bank tab entries before loading the valid ones
         CharacterDatabase.Execute("DELETE gbt FROM guild_bank_tab gbt LEFT JOIN guild g ON gbt.guildId = g.guildId WHERE g.guildId IS NULL");
@@ -391,14 +391,14 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while(result->NextRow());
 
-            LogDebug("Loaded %u guild bank tabs in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+            LogDebug("Loaded %u guild bank tabs in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
         }
     }
 
     // 9. Fill all guild bank tabs
     LogDebug("Filling bank tabs with items...");
     {
-        uint32_t oldMSTime = getMSTime();
+        auto startTime = Util::TimeNow();
 
         QueryResult* result = CharacterDatabase.Query("SELECT guildId, tabId, slotId, itemGuid FROM guild_bank_item");
 
@@ -422,7 +422,7 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow());
 
-            LogNotice("Loaded %u guild bank tab items in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+            LogNotice("Loaded %u guild bank tab items in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
         }
     }
 
@@ -434,7 +434,7 @@ void GuildMgr::loadGuildDataFromDB()
 
 void GuildMgr::loadGuildXpForLevelFromDB()
 {
-    uint32_t oldMSTime = getMSTime();
+    auto startTime = Util::TimeNow();
 
     GuildXPperLevel.resize(worldConfig.guild.maxLevel);
     for (uint8_t level = 0; level < worldConfig.guild.maxLevel; ++level)
@@ -480,12 +480,12 @@ void GuildMgr::loadGuildXpForLevelFromDB()
         }
     }
 
-    LogDebug("Loaded %u xp for guild level definitions in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    LogDebug("Loaded %u xp for guild level definitions in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 void GuildMgr::loadGuildRewardsFromDB()
 {
-    uint32_t oldMSTime = getMSTime();
+    auto startTime = Util::TimeNow();
 
     //                                                  0       1         2        3         4
     QueryResult* result = WorldDatabase.Query("SELECT entry, standing, racemask, price, achievement FROM guild_rewards");
@@ -523,7 +523,7 @@ void GuildMgr::loadGuildRewardsFromDB()
         ++count;
     } while(result->NextRow());
 
-    LogDebug("Loaded %u guild reward definitions in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    LogDebug("Loaded %u guild reward definitions in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 void GuildMgr::resetTimes(bool week)

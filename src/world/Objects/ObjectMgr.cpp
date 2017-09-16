@@ -1596,7 +1596,7 @@ void ObjectMgr::CorpseCollectorUnload()
 //move to spellmgr or mysqldatastore todo danko
 void ObjectMgr::LoadSkillLineAbilityMap()
 {
-    uint32_t oldMSTime = getMSTime();
+    auto startTime = Util::TimeNow();
 
     mSkillLineAbilityMap.clear();
 
@@ -1611,7 +1611,7 @@ void ObjectMgr::LoadSkillLineAbilityMap()
         ++count;
     }
 
-    LogDetail("ObjectMgr : Loaded %u SkillLineAbility MultiMap Data in %u ms", count, (oldMSTime - getMSTime()));
+    LogDetail("ObjectMgr : Loaded %u SkillLineAbility MultiMap Data in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 SkillLineAbilityMapBounds ObjectMgr::GetSkillLineAbilityMapBounds(uint32_t spell_id) const
@@ -1621,7 +1621,7 @@ SkillLineAbilityMapBounds ObjectMgr::GetSkillLineAbilityMapBounds(uint32_t spell
 
 void ObjectMgr::LoadSpellRequired()
 {
-    uint32_t oldMSTime = getMSTime();
+    auto startTime = Util::TimeNow();
 
     mSpellsReqSpell.clear();    // need for reload case
     mSpellReq.clear();          // need for reload case
@@ -1670,7 +1670,7 @@ void ObjectMgr::LoadSpellRequired()
 
     } while (result->NextRow());
 
-    LogNotice("ObjectMgr: Loaded %u spell required records in %u ms", count, (oldMSTime - getMSTime()));
+    LogNotice("ObjectMgr: Loaded %u spell required records in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 
@@ -3770,7 +3770,7 @@ void ObjectMgr::LoadCreatureAIAgents()
                 sp->cooldown = fields[9].GetInt32();
                 sp->floatMisc1 = fields[10].GetFloat();
                 sp->autocast_type = (uint32)-1;
-                sp->cooldowntime = getMSTime();
+                sp->cooldowntime = Util::getMSTime();
                 sp->procCounter = 0;
                 sp->Misc2 = fields[11].GetUInt32();
                 if (sp->agent == AGENT_SPELL)

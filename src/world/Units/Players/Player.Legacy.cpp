@@ -158,7 +158,7 @@ Player::Player(uint32 guid)
     m_furorChance(0),
     //WayPoint
     waypointunit(NULL),
-    m_nextSave(getMSTime() + worldConfig.getIntRate(INTRATE_SAVE)),
+    m_nextSave(Util::getMSTime() + worldConfig.getIntRate(INTRATE_SAVE)),
     m_lifetapbonus(0),
     PlayerTalkClass(NULL),
     m_bUnlimitedBreath(false),
@@ -215,7 +215,7 @@ Player::Player(uint32 guid)
     m_Autojoin(false),
     m_AutoAddMem(false),
     m_UnderwaterMaxTime(180000),
-    m_UnderwaterLastDmg(getMSTime()),
+    m_UnderwaterLastDmg(Util::getMSTime()),
     m_resurrectHealth(0),
     m_resurrectMana(0),
     m_resurrectInstanceID(0),
@@ -403,7 +403,7 @@ Player::Player(uint32 guid)
     myCorpseInstanceId = 0;
     bCorpseCreateable = true;
     blinked = false;
-    m_explorationTimer = getMSTime();
+    m_explorationTimer = Util::getMSTime();
     linkTarget = NULL;
     m_pvpTimer = 0;
     m_globalCooldown = 0;
@@ -1113,7 +1113,7 @@ void Player::Update(unsigned long time_passed)
         return;
 
     Unit::Update(time_passed);
-    uint32 mstime = getMSTime();
+    uint32 mstime = Util::getMSTime();
 
     RemoveGarbageItems();
 
@@ -1807,7 +1807,7 @@ void Player::smsg_InitialSpells()
 
     uint16 spellCount = (uint16)mSpells.size();
     size_t itemCount = m_cooldownMap[0].size() + m_cooldownMap[1].size();
-    uint32 mstime = getMSTime();
+    uint32 mstime = Util::getMSTime();
     size_t pos;
 
     WorldPacket data(SMSG_INITIAL_SPELLS, 5 + (spellCount * 4) + (itemCount * 4));
@@ -2970,7 +2970,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
         _SavePet(buf);
         _SavePetSpells(buf);
     }
-    m_nextSave = getMSTime() + worldConfig.getIntRate(INTRATE_SAVE);
+    m_nextSave = Util::getMSTime() + worldConfig.getIntRate(INTRATE_SAVE);
 #if VERSION_STRING > TBC
     m_achievementMgr.SaveToDB(buf);
 #endif
@@ -6085,7 +6085,7 @@ void Player::AddInRangeObject(Object* pObj)
     //Send taxi move if we're on a taxi
     if (m_CurrentTaxiPath && pObj->IsPlayer())
     {
-        uint32 ntime = getMSTime();
+        uint32 ntime = Util::getMSTime();
 
         if (ntime > m_taxi_ride_time)
             m_CurrentTaxiPath->SendMoveForTime(this, static_cast< Player* >(pObj), ntime - m_taxi_ride_time);
@@ -6943,7 +6943,7 @@ void Player::EventTaxiInterpolate()
     float y = 0.0f;
     float z = 0.0f;
 
-    uint32 ntime = getMSTime();
+    uint32 ntime = Util::getMSTime();
 
     if (ntime > m_taxi_ride_time)
         m_CurrentTaxiPath->SetPosForTime(x, y, z, ntime - m_taxi_ride_time, &lastNode, m_mapId);
@@ -6985,7 +6985,7 @@ void Player::TaxiStart(TaxiPath* path, uint32 modelid, uint32 start_node)
     SetTaxiPath(path);
     SetTaxiPos();
     SetTaxiState(true);
-    m_taxi_ride_time = getMSTime();
+    m_taxi_ride_time = Util::getMSTime();
 
     //uint32 traveltime = uint32(path->getLength() * TAXI_TRAVEL_SPEED); // 36.7407
     float traveldist = 0;
@@ -11284,7 +11284,7 @@ void Player::AddCategoryCooldown(uint32 category_id, uint32 time, uint32 SpellId
         m_cooldownMap[COOLDOWN_TYPE_CATEGORY].insert(std::make_pair(category_id, cd));
     }
 
-    LogDebugFlag(LF_SPELL, "Player::AddCategoryCooldown added cooldown for COOLDOWN_TYPE_CATEGORY category_type %u time %u item %u spell %u", category_id, time - getMSTime(), ItemId, SpellId);
+    LogDebugFlag(LF_SPELL, "Player::AddCategoryCooldown added cooldown for COOLDOWN_TYPE_CATEGORY category_type %u time %u item %u spell %u", category_id, time - Util::getMSTime(), ItemId, SpellId);
 }
 
 void Player::_Cooldown_Add(uint32 Type, uint32 Misc, uint32 Time, uint32 SpellId, uint32 ItemId)
@@ -11309,12 +11309,12 @@ void Player::_Cooldown_Add(uint32 Type, uint32 Misc, uint32 Time, uint32 SpellId
         m_cooldownMap[Type].insert(std::make_pair(Misc, cd));
     }
 
-    LogDebugFlag(LF_SPELL, "Cooldown added cooldown for type %u misc %u time %u item %u spell %u", Type, Misc, Time - getMSTime(), ItemId, SpellId);
+    LogDebugFlag(LF_SPELL, "Cooldown added cooldown for type %u misc %u time %u item %u spell %u", Type, Misc, Time - Util::getMSTime(), ItemId, SpellId);
 }
 
 void Player::Cooldown_Add(SpellInfo* pSpell, Item* pItemCaster)
 {
-    uint32 mstime = getMSTime();
+    uint32 mstime = Util::getMSTime();
     int32 cool_time;
     uint32 spell_id = pSpell->Id;
     uint32 category_id = pSpell->Category;
@@ -11343,7 +11343,7 @@ void Player::Cooldown_AddStart(SpellInfo* pSpell)
     if (pSpell->StartRecoveryTime == 0)
         return;
 
-    uint32 mstime = getMSTime();
+    uint32 mstime = Util::getMSTime();
     int32 atime; // = float2int32(float(pSpell->StartRecoveryTime) / SpellHasteRatingBonus);
 
     if (GetCastSpeedMod() >= 1.0f)
@@ -11372,7 +11372,7 @@ void Player::Cooldown_AddStart(SpellInfo* pSpell)
 bool Player::Cooldown_CanCast(SpellInfo* pSpell)
 {
     PlayerCooldownMap::iterator itr;
-    uint32 mstime = getMSTime();
+    uint32 mstime = Util::getMSTime();
 
     if (pSpell->Category)
     {
@@ -11412,7 +11412,7 @@ void Player::Cooldown_AddItem(ItemProperties const* pProto, uint32 x)
         return;
 
     ItemSpell const* isp = &pProto->Spells[x];
-    uint32 mstime = getMSTime();
+    uint32 mstime = Util::getMSTime();
 
     uint32 item_spell_id = isp->Id;
 
@@ -11432,7 +11432,7 @@ bool Player::Cooldown_CanCast(ItemProperties const* pProto, uint32 x)
 {
     PlayerCooldownMap::iterator itr;
     ItemSpell const* isp = &pProto->Spells[x];
-    uint32 mstime = getMSTime();
+    uint32 mstime = Util::getMSTime();
 
     if (isp->Category)
     {
@@ -11466,7 +11466,7 @@ void Player::_SavePlayerCooldowns(QueryBuffer* buf)
     PlayerCooldownMap::iterator itr2;
     uint32 i;
     uint32 seconds;
-    uint32 mstime = getMSTime();
+    uint32 mstime = Util::getMSTime();
 
     // clear them (this should be replaced with an update queue later)
     if (buf != NULL)
@@ -11519,9 +11519,9 @@ void Player::_LoadPlayerCooldowns(QueryResult* result)
     if (result == NULL)
         return;
 
-    // we should only really call getMSTime() once to avoid user->system transitions, plus
+    // we should only really call Util::getMSTime() once to avoid user->system transitions, plus
     // the cost of calling a function for every cooldown the player has
-    uint32 mstime = getMSTime();
+    uint32 mstime = Util::getMSTime();
     uint32 type;
     uint32 misc;
     uint32 rtime;
@@ -11895,7 +11895,7 @@ void Player::SpeedCheatDelay(uint32 ms_delay)
     //add triple latency to avoid client handling the spell effect with delay and we detect as cheat
     //    SDetector->SkipSamplingUntil(getMSTime() + ms_delay + GetSession()->GetLatency() * 3);
     //add constant value to make sure the effect packet was sent to client from network pool
-    SDetector->SkipSamplingUntil(getMSTime() + ms_delay + GetSession()->GetLatency() * 2 + 2000);   //2 second should be enough to send our packets to client
+    SDetector->SkipSamplingUntil(Util::getMSTime() + ms_delay + GetSession()->GetLatency() * 2 + 2000);   //2 second should be enough to send our packets to client
 }
 
 // Reset GM speed hacks after a SafeTeleport
@@ -13495,7 +13495,7 @@ void Player::HandleKnockback(Object* caster, float horizontal, float vertical)
     WorldPacket data(SMSG_MOVE_KNOCK_BACK, 50);
 
     data << GetNewGUID();
-    data << uint32(getMSTime());
+    data << uint32(Util::getMSTime());
     data << float(cos);
     data << float(sin);
     data << float(horizontal);
@@ -14277,7 +14277,7 @@ void Player::ResetTimeSync()
     m_timeSyncCounter = 0;
     m_timeSyncTimer = 0;
     m_timeSyncClient = 0;
-    m_timeSyncServer = getMSTime();
+    m_timeSyncServer = Util::getMSTime();
 }
 
 void Player::SendTimeSync()
@@ -14288,7 +14288,7 @@ void Player::SendTimeSync()
 
     // Schedule next sync in 10 sec
     m_timeSyncTimer = 10000;
-    m_timeSyncServer = getMSTime();
+    m_timeSyncServer = Util::getMSTime();
 }
 
 void Player::SetBattlegroundEntryPoint()

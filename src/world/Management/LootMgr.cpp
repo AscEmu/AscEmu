@@ -100,6 +100,8 @@ LootMgr::LootMgr()
 
 void LootMgr::LoadLoot()
 {
+    auto startTime = Util::TimeNow();
+
     //THIS MUST BE CALLED AFTER LOADING OF ITEMS
     is_loading = true;
     LoadLootProp();
@@ -110,6 +112,8 @@ void LootMgr::LoadLoot()
     LoadLootTables("loot_items", &ItemLoot);
     LoadLootTables("loot_pickpocketing", &PickpocketingLoot);
     is_loading = false;
+
+    LOG_DEBUG("Loaded loot tables in %u ms", Util::GetTimeDifferenceToNow(startTime));
 }
 
 DBC::Structures::ItemRandomPropertiesEntry const* LootMgr::GetRandomProperties(ItemProperties const* proto)

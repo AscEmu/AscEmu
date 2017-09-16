@@ -22,7 +22,7 @@
 
 #include "Log.hpp"
 #include "RegularGrid.h"
-#include "Timer.h"
+#include "Util.hpp"
 #include "GameObjectModel.h"
 #include "ModelInstance.h"
 
@@ -93,16 +93,16 @@ struct DynTreeImpl : public ParentTree/*, public Intersectable*/
         if (!size())
             return;
 
-        rebalance_timer.Update(difftime);
-        if (rebalance_timer.Passed())
+        rebalance_timer.updateTimer(difftime);
+        if (rebalance_timer.isTimePassed())
         {
-            rebalance_timer.Reset(CHECK_TREE_PERIOD);
+            rebalance_timer.resetInterval(CHECK_TREE_PERIOD);
             if (unbalanced_times > 0)
                 balance();
         }
     }
 
-    TimeTrackerSmall rebalance_timer;
+    SmallTimeTracker rebalance_timer;
     int unbalanced_times;
 };
 

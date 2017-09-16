@@ -23,7 +23,7 @@
 #include "WorldModel.h"
 #include "GameObjectModel.h"
 #include "Log.hpp"
-#include "Timer.h"
+#include "Util.hpp"
 
 using G3D::Vector3;
 using G3D::Ray;
@@ -44,7 +44,7 @@ ModelList model_list;
 void LoadGameObjectModelList(std::string const& dataPath)
 {
 #ifndef NO_CORE_FUNCS
-    uint32 oldMSTime = getMSTime();
+    auto startTime = Util::TimeNow();
 #endif
 
     FILE* model_list_file = fopen((dataPath + "/" + VMAP::GAMEOBJECT_MODELS).c_str(), "rb");
@@ -86,7 +86,7 @@ void LoadGameObjectModelList(std::string const& dataPath)
     }
 
     fclose(model_list_file);
-    LogNotice("LoadGameObjectModelList : Loaded %u GameObject models in %u ms", uint32(model_list.size()), GetMSTimeDiffToNow(oldMSTime));
+    LogNotice("LoadGameObjectModelList : Loaded %u GameObject models in %u ms", uint32(model_list.size()), Util::GetTimeDifferenceToNow(startTime));
 }
 
 GameObjectModel::~GameObjectModel()

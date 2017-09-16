@@ -89,6 +89,13 @@ namespace Util
         return std::chrono::high_resolution_clock::now();
     }
 
+    uint32_t getMSTime()
+    {
+        auto startTime = std::chrono::high_resolution_clock::now();
+
+        return uint32_t(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - startTime).count());
+    }
+
     long long GetTimeDifferenceToNow(std::chrono::high_resolution_clock::time_point start_time)
     {
         std::chrono::duration<float> float_diff = TimeNow() - start_time;

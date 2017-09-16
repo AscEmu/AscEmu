@@ -165,19 +165,19 @@ class TrollgoreAI : public CreatureAIScript
             {
                 for (uint8 i = 0; i < spells.size(); i++)
                 {
-                    if (spells[i]->time < getMSTime())
+                    if (spells[i]->time <Util::getMSTime())
                     {
                         if (Rand(spells[i]->chance))
                         {
                             CastScriptSpell(spells[i]);
-                            spells[i]->time = getMSTime() + spells[i]->timer;
+                            spells[i]->time =Util::getMSTime() + spells[i]->timer;
                         }
                     }
                 }
             }
-            if (invastion_timer < getMSTime())
+            if (invastion_timer <Util::getMSTime())
             {
-                invastion_timer = getMSTime() + INVASION_INTERVAL;
+                invastion_timer =Util::getMSTime() + INVASION_INTERVAL;
                 //spawn invaders ;)
                 for (uint8 i = 0; i < INVADERS_PER_INVASION; i++)
                 {
@@ -337,7 +337,7 @@ class NovosTheSummonerAI : public CreatureAIScript
             //spawn 4 Ritual Crystal
             for (uint8 i = 0; i < 4; i++)
                 SpawnCrystal(i);
-            handler_timer = getMSTime() + HANDLER_INTERVAL;
+            handler_timer =Util::getMSTime() + HANDLER_INTERVAL;
             _unit->GetAIInterface()->disable_melee = true;
             phase = 1;
             for (uint8 i = 0; i < 7; i++)
@@ -392,26 +392,26 @@ class NovosTheSummonerAI : public CreatureAIScript
             {
                 for (uint8 i = 0; i < spells.size(); i++)
                 {
-                    if (spells[i]->time < getMSTime())
+                    if (spells[i]->time <Util::getMSTime())
                     {
                         if (Rand(spells[i]->chance))
                         {
                             CastScriptSpell(spells[i]);
-                            spells[i]->time = getMSTime() + spells[i]->timer;
+                            spells[i]->time =Util::getMSTime() + spells[i]->timer;
                         }
                     }
                 }
             }
             if (phase == 1)
             {
-                if (invasion_timer < getMSTime())
+                if (invasion_timer <Util::getMSTime())
                 {
-                    invasion_timer = getMSTime() + INVADE_INTERVAL;
+                    invasion_timer =Util::getMSTime() + INVADE_INTERVAL;
                     SpawnInvader(0);
                 }
-                if (handler_timer < getMSTime())
+                if (handler_timer <Util::getMSTime())
                 {
-                    handler_timer = getMSTime() + HANDLER_INTERVAL;
+                    handler_timer =Util::getMSTime() + HANDLER_INTERVAL;
                     SpawnInvader(1);
                 }
                 bool new_phase = true;
@@ -677,12 +677,12 @@ class CrystalHandlerAI : public CreatureAIScript
             {
                 for (uint8 i = 0; i < spells.size(); i++)
                 {
-                    if (spells[i]->time < getMSTime())
+                    if (spells[i]->time <Util::getMSTime())
                     {
                         if (Rand(spells[i]->chance))
                         {
                             CastScriptSpell(spells[i]);
-                            spells[i]->time = getMSTime() + spells[i]->timer;
+                            spells[i]->time =Util::getMSTime() + spells[i]->timer;
                         }
                     }
                 }
@@ -830,12 +830,12 @@ class KingDreadAI : public CreatureAIScript
             {
                 for (uint8 i = 0; i < spells.size(); i++)
                 {
-                    if (spells[i]->time < getMSTime())
+                    if (spells[i]->time <Util::getMSTime())
                     {
                         if (Rand(spells[i]->chance))
                         {
                             CastScriptSpell(spells[i]);
-                            spells[i]->time = getMSTime() + spells[i]->timer;
+                            spells[i]->time =Util::getMSTime() + spells[i]->timer;
                         }
                     }
                 }
@@ -1001,7 +1001,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
             phase = 1;
             phase_length = 0;
-            phase_timer = getMSTime() + WINDSERPENT_PHASE_INTERVAL;
+            phase_timer =Util::getMSTime() + WINDSERPENT_PHASE_INTERVAL;
         }
 
         void OnCombatStop(Unit* mTarget)
@@ -1025,7 +1025,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
             if (_unit->GetHealthPct() < 2 && phase == 2)
             {
                 phase = 1;
-                phase_timer = getMSTime() + WINDSERPENT_PHASE_INTERVAL;
+                phase_timer =Util::getMSTime() + WINDSERPENT_PHASE_INTERVAL;
                 _unit->SetDisplayId(_unit->GetNativeDisplayId());
                 _unit->CastSpell(_unit, 53463, false);
             }
@@ -1033,18 +1033,18 @@ class TheProphetTaronjaAI : public CreatureAIScript
 
         void AIUpdate()
         {
-            if (phase == 1 && phase_timer < getMSTime())
+            if (phase == 1 && phase_timer <Util::getMSTime())
             {
                 phase = 2;
-                phase_length = getMSTime() + WINDSERPENT_PHASE_LENGTH;
+                phase_length =Util::getMSTime() + WINDSERPENT_PHASE_LENGTH;
                 _unit->SetDisplayId(27073);
                 _unit->RemoveAllAuras();
                 _unit->CastSpell(_unit, 49356, false);
             }
-            if (phase == 2 && phase_length < getMSTime())
+            if (phase == 2 && phase_length <Util::getMSTime())
             {
                 phase = 1;
-                phase_timer = getMSTime() + WINDSERPENT_PHASE_INTERVAL;
+                phase_timer =Util::getMSTime() + WINDSERPENT_PHASE_INTERVAL;
                 _unit->SetDisplayId(_unit->GetNativeDisplayId());
                 _unit->RemoveAllAuras();
                 _unit->CastSpell(_unit, 53463, false);
@@ -1053,12 +1053,12 @@ class TheProphetTaronjaAI : public CreatureAIScript
             {
                 for (uint8 i = 0; i < spells.size(); i++)
                 {
-                    if (spells[i]->time < getMSTime() && (spells[i]->phase == phase || spells[i]->phase > PHASES_COUNT))
+                    if (spells[i]->time <Util::getMSTime() && (spells[i]->phase == phase || spells[i]->phase > PHASES_COUNT))
                     {
                         if (Rand(spells[i]->chance))
                         {
                             CastScriptSpell(spells[i]);
-                            spells[i]->time = getMSTime() + spells[i]->timer;
+                            spells[i]->time =Util::getMSTime() + spells[i]->timer;
                         }
                     }
                 }

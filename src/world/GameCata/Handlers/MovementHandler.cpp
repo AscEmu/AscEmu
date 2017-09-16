@@ -135,7 +135,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
 //        // simplified: just take the fastest speed. less chance of fuckups too
 //        float speed = (_player->flying_aura) ? _player->getSpeedForType(TYPE_FLY) : (_player->getSpeedForType(TYPE_SWIM) > _player->getSpeedForType(TYPE_RUN)) ? _player->getSpeedForType(TYPE_SWIM) : _player->getSpeedForType(TYPE_RUN);
 //
-//        _player->SDetector->AddSample(movement_info.position.x, movement_info.position.y, getMSTime(), speed);
+//        _player->SDetector->AddSample(movement_info.position.x, movement_info.position.y, Util::getMSTime(), speed);
 //
 //        if (_player->SDetector->IsCheatDetected())
 //            _player->SDetector->ReportCheater(_player);
@@ -161,7 +161,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     ///* Calculate the timestamp of the packet we have to send out            */
     ///************************************************************************/
     //size_t pos = (size_t)m_MoverWoWGuid.GetNewGuidLen() + 1;
-    //uint32 mstime = getMSTime();
+    //uint32 mstime = Util::getMSTime();
     //int32 move_time;
     //if (m_clientTimeDelay == 0)
     //    m_clientTimeDelay = mstime - movement_info.time;
@@ -660,7 +660,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint32_t opcode, float cu
                 break;
             case MSETimestamp:
                 if (status_info.hasTimeStamp)
-                    data << getMSTime();
+                    data << Util::getMSTime();
                 break;
             case MSEHasPitch:
                 data.writeBit(!status_info.hasPitch);

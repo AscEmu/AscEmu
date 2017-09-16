@@ -35,8 +35,8 @@ WorldRunnable::WorldRunnable() : CThread()
 bool WorldRunnable::runThread()
 {
     SetThreadName("WorldRunnable (non-instance/logon)");
-    uint32 LastWorldUpdate = getMSTime();
-    uint32 LastSessionsUpdate = getMSTime();
+    uint32 LastWorldUpdate = Util::getMSTime();
+    uint32 LastSessionsUpdate = Util::getMSTime();
 
     THREAD_TRY_EXECUTION
         while (GetThreadState() != THREADSTATE_TERMINATE)
@@ -59,7 +59,7 @@ bool WorldRunnable::runThread()
             uint32 diff;
             //calc time passed
             uint32 now, execution_start;
-            now = getMSTime();
+            now = Util::getMSTime();
             execution_start = now;
 
             if (now < LastWorldUpdate) //overrun
@@ -70,7 +70,7 @@ bool WorldRunnable::runThread()
             LastWorldUpdate = now;
             sWorld.Update(diff);
 
-            now = getMSTime();
+            now = Util::getMSTime();
 
             if (now < LastSessionsUpdate) //overrun
                 diff = WORLD_UPDATE_DELAY;
@@ -80,7 +80,7 @@ bool WorldRunnable::runThread()
             LastSessionsUpdate = now;
             sWorld.updateGlobalSession(diff);
 
-            now = getMSTime();
+            now = Util::getMSTime();
             //we have to wait now
 
             if (execution_start > now)//overrun

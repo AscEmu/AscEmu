@@ -55,7 +55,7 @@ include_directories(
 )
 
 add_library(${PROJECT_NAME} SHARED ${SRCS} ${HEADERS})
-target_link_libraries(${PROJECT_NAME} world lualib)
+target_link_libraries(${PROJECT_NAME} world lualib shared)
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
 unset(sources)

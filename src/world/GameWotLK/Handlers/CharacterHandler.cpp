@@ -63,7 +63,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
         numchar = result->GetRowCount();
     }
 
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     WorldPacket data(SMSG_CHAR_ENUM, 1 + numchar * 200);
     data << uint8_t(char_real_count);
@@ -223,6 +223,6 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
 
     data.put<uint8_t>(0, char_real_count);
 
-    LogDebugFlag(LF_OPCODE, "Character Enum Built in %u ms.", getMSTime() - start_time);
+    LogDebugFlag(LF_OPCODE, "Character Enum Built in %u ms.", Util::GetTimeDifferenceToNow(startTime));
     SendPacket(&data);
 }

@@ -103,12 +103,12 @@ class MeathookAI : public CreatureAIScript
             {
                 for (uint8 i = 0; i < spells.size(); i++)
                 {
-                    if (spells[i]->time < getMSTime())
+                    if (spells[i]->time <Util::getMSTime())
                     {
                         if (Rand(spells[i]->chance))
                         {
                             CastScriptSpell(spells[i]);
-                            spells[i]->time = getMSTime() + spells[i]->timer;
+                            spells[i]->time =Util::getMSTime() + spells[i]->timer;
                         }
                     }
                 }
@@ -283,12 +283,12 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
             {
                 for (uint8 i = 0; i < spells.size(); i++)
                 {
-                    if (spells[i]->time < getMSTime())
+                    if (spells[i]->time <Util::getMSTime())
                     {
                         if (Rand(spells[i]->chance))
                         {
                             CastScriptSpell(spells[i]);
-                            spells[i]->time = getMSTime() + spells[i]->timer;
+                            spells[i]->time =Util::getMSTime() + spells[i]->timer;
                         }
                     }
                 }
@@ -460,12 +460,12 @@ class ChronoLordEpochAI : public CreatureAIScript
             {
                 for (uint8 i = 0; i < spells.size(); i++)
                 {
-                    if (spells[i]->time < getMSTime())
+                    if (spells[i]->time <Util::getMSTime())
                     {
                         if (Rand(spells[i]->chance))
                         {
                             CastScriptSpell(spells[i]);
-                            spells[i]->time = getMSTime() + spells[i]->timer;
+                            spells[i]->time =Util::getMSTime() + spells[i]->timer;
                         }
                     }
                 }
@@ -597,12 +597,12 @@ class InfiniteCorruptorAI : public CreatureAIScript
             {
                 for (uint8 i = 0; i < spells.size(); i++)
                 {
-                    if (spells[i]->time < getMSTime())
+                    if (spells[i]->time <Util::getMSTime())
                     {
                         if (Rand(spells[i]->chance))
                         {
                             CastScriptSpell(spells[i]);
-                            spells[i]->time = getMSTime() + spells[i]->timer;
+                            spells[i]->time =Util::getMSTime() + spells[i]->timer;
                         }
                     }
                 }
@@ -792,12 +792,12 @@ class MalganisAI : public CreatureAIScript
             {
                 for (uint8 i = 0; i < spells.size(); i++)
                 {
-                    if (spells[i]->time < getMSTime())
+                    if (spells[i]->time <Util::getMSTime())
                     {
                         if (Rand(spells[i]->chance))
                         {
                             CastScriptSpell(spells[i]);
-                            spells[i]->time = getMSTime() + spells[i]->timer;
+                            spells[i]->time =Util::getMSTime() + spells[i]->timer;
                         }
                     }
                 }

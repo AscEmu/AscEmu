@@ -85,7 +85,6 @@ set(headers
 	StackTrace.h
 	StackWalker.h
 	TextFile.h
-	Timer.h
 	TLSObject.h
 	WorldPacket.h
 	WoWGuid.h

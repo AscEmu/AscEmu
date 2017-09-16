@@ -3,8 +3,7 @@ Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef UTIL_HPP
-#define UTIL_HPP
+#pragma once
 
 #include "Common.hpp"
 #include <chrono>
@@ -41,6 +40,9 @@ namespace Util
     /*! \brief Returns the current point in time */
     std::chrono::high_resolution_clock::time_point TimeNow();
 
+    /*! \ brief Returns TimeNow() as uint32_t*/
+    uint32_t getMSTime();
+
     /*! \brief Returns the difference between start_time and now in milliseconds */
     long long GetTimeDifferenceToNow(std::chrono::high_resolution_clock::time_point start_time);
 
@@ -66,4 +68,17 @@ namespace Util
 
 }
 
-#endif  // UTIL_HPP
+struct SmallTimeTracker
+{
+    int32_t mExpireTime;
+
+    public:
+
+        SmallTimeTracker(uint32_t expired = 0) : mExpireTime(expired) {}
+
+        void updateTimer(int32_t diffTime) { mExpireTime -= diffTime; }
+        void resetInterval(uint32_t intervalTime) { mExpireTime = intervalTime; }
+
+        int32_t getExpireTime() const { return mExpireTime; }
+        bool isTimePassed() const { return mExpireTime <= 0; }
+};

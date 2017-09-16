@@ -1412,7 +1412,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
         //check if we can trigger due to time limitation
         if (ospinfo->custom_proc_interval)
         {
-            uint32 now_in_ms = getMSTime();
+            uint32 now_in_ms =Util::getMSTime();
             if (spell_proc->mLastTrigger + ospinfo->custom_proc_interval > now_in_ms)
                 continue; //we can't trigger it yet.
             spell_proc->mLastTrigger = now_in_ms; // consider it triggered
@@ -4171,7 +4171,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                 if (itr->second.first)
                 {
                     // We have a *periodic* delayed spell.
-                    uint32 t = getMSTime();
+                    uint32 t =Util::getMSTime();
                     if (t > itr->second.second)    // Time expired
                     {
                         // Set new time
@@ -4473,7 +4473,7 @@ void Unit::smsg_AttackStop(Unit* pVictim)
     {
         if (!IsPlayer() || getClass() == ROGUE)
         {
-            m_cTimer = getMSTime() + 8000;
+            m_cTimer =Util::getMSTime() + 8000;
             sEventMgr.RemoveEvents(this, EVENT_COMBAT_TIMER);
             sEventMgr.AddEvent(this, &Unit::EventUpdateFlag, EVENT_COMBAT_TIMER, 8000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
             if (pVictim->IsUnit())   // there could be damage coming from objects/enviromental
@@ -6805,7 +6805,7 @@ void Unit::SetFacing(float newo)
     data << GetPositionX();
     data << GetPositionY();
     data << GetPositionZ();
-    data << getMSTime();
+    data <<Util::getMSTime();
     data << uint8(4); //set orientation
     data << newo;
     data << uint32(0x1000); //move flags: run
@@ -7682,17 +7682,17 @@ void Unit::setAttackTimer(int32 time, bool offhand)
         time = offhand ? m_uint32Values[UNIT_FIELD_BASEATTACKTIME + 1] : m_uint32Values[UNIT_FIELD_BASEATTACKTIME];
 
     if (offhand)
-        m_attackTimer_1 = getMSTime() + time;
+        m_attackTimer_1 =Util::getMSTime() + time;
     else
-        m_attackTimer = getMSTime() + time;
+        m_attackTimer =Util::getMSTime() + time;
 }
 
 bool Unit::isAttackReady(bool offhand)
 {
     if (offhand)
-        return (getMSTime() >= m_attackTimer_1) ? true : false;
+        return (Util::getMSTime() >= m_attackTimer_1) ? true : false;
     else
-        return (getMSTime() >= m_attackTimer) ? true : false;
+        return (Util::getMSTime() >= m_attackTimer) ? true : false;
 }
 
 void Unit::ReplaceAIInterface(AIInterface* new_interface)
@@ -8572,7 +8572,7 @@ void Unit::SendHopOnVehicle(Unit* vehicleowner, uint32 seat)
     data << float(GetPositionX());
     data << float(GetPositionY());
     data << float(GetPositionZ());
-    data << getMSTime();
+    data <<Util::getMSTime();
     data << uint8(4);                // splinetype_facing_angle
     data << float(0.0f);             // facing angle
     data << uint32(0x00800000);      // splineflag transport
@@ -8598,7 +8598,7 @@ void Unit::SendHopOffVehicle(Unit* vehicleowner, LocationVector& landposition)
     data << float(GetPositionX());
     data << float(GetPositionY());
     data << float(GetPositionZ());
-    data << uint32(getMSTime());
+    data << uint32(Util::getMSTime());
     data << uint8(4);                            // SPLINETYPE_FACING_ANGLE
     data << float(GetOrientation());             // guess
     data << uint32(0x01000000);                  // SPLINEFLAG_EXIT_VEHICLE
@@ -8669,7 +8669,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
 {
     *data << uint32(GetUnitMovementFlags());            // movement flags
     *data << uint16(GetExtraUnitMovementFlags());       // 2.3.0
-    *data << uint32(getMSTime());                       // time / counter
+    *data << uint32(Util::getMSTime());                       // time / counter
     *data << GetPositionX();
     *data << GetPositionY();
     *data << GetPositionZ();
@@ -8730,7 +8730,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
 {
     *data << uint32(GetUnitMovementFlags());            // movement flags
     *data << uint16(GetExtraUnitMovementFlags());       // 2.3.0
-    *data << uint32(getMSTime());                       // time / counter
+    *data << uint32(Util::getMSTime());                       // time / counter
     *data << x;
     *data << y;
     *data << z;

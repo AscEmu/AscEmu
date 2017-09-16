@@ -169,7 +169,7 @@ void AIInterface::Init(Unit* un, AiScriptTypes at, Movement::WaypointMovementScr
     m_runSpeed = m_Unit->m_currentSpeedRun * 0.001f; //move distance per ms time
     m_flySpeed = m_Unit->m_currentSpeedFly * 0.001f;
 
-    m_guardTimer = getMSTime();
+    m_guardTimer = Util::getMSTime();
 }
 
 AIInterface::~AIInterface()
@@ -847,7 +847,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 
                     // CastSpell(m_Unit, spellInfo, targets);
                     if (m_nextSpell && m_nextSpell->cooldown)
-                        m_nextSpell->cooldowntime = getMSTime() + m_nextSpell->cooldown;
+                        m_nextSpell->cooldowntime = Util::getMSTime() + m_nextSpell->cooldown;
 
                     next_spell_time = (uint32)UNIXTIME + MOB_SPELLCAST_GLOBAL_COOLDOWN;
 
@@ -1274,9 +1274,9 @@ Unit* AIInterface::FindTarget()
     Unit* critterTarget = nullptr;
 
     //a lot less times are check inter faction mob wars :)
-    if (m_updateTargetsTimer2 < getMSTime())
+    if (m_updateTargetsTimer2 < Util::getMSTime())
     {
-        m_updateTargetsTimer2 = getMSTime() + TARGET_UPDATE_INTERVAL;
+        m_updateTargetsTimer2 = Util::getMSTime() + TARGET_UPDATE_INTERVAL;
 
         for (std::set<Object*>::iterator itr2 = m_Unit->GetInRangeSetBegin(); itr2 != m_Unit->GetInRangeSetEnd();)
         {
@@ -1442,9 +1442,9 @@ bool AIInterface::FindFriends(float dist)
 
     summonguard = pt->summonguard;
 
-    if (family == UNIT_TYPE_HUMANOID && summonguard > 0 && getMSTime() > m_guardTimer && !IS_INSTANCE(m_Unit->GetMapId()))
+    if (family == UNIT_TYPE_HUMANOID && summonguard > 0 && Util::getMSTime() > m_guardTimer && !IS_INSTANCE(m_Unit->GetMapId()))
     {
-        m_guardTimer = getMSTime() + 15000;
+        m_guardTimer = Util::getMSTime() + 15000;
         DBC::Structures::AreaTableEntry const* at = m_Unit->GetArea();
         if (!at)
             return result;
@@ -1877,7 +1877,7 @@ void AIInterface::SendCurrentMove(Player* plyr)
         return;
 
     auto start = m_Unit->m_movementManager.m_spline.GetFirstSplinePoint();
-    uint32 timepassed = getMSTime() - start.setoff;
+    uint32 timepassed = Util::getMSTime() - start.setoff;
 
     ByteBuffer* splineBuf = new ByteBuffer(20 * 4);
     *splineBuf << uint32(0); // spline flags
@@ -2477,7 +2477,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
     Unit* unitToFear = getUnitToFear();
     if (isAiState(AI_STATE_FEAR) && unitToFear != NULL && m_creatureState == STOPPED)
     {
-        if (getMSTime() > m_FearTimer)   // Wait at point for x ms ;)
+        if (Util::getMSTime() > m_FearTimer)   // Wait at point for x ms ;)
         {
             float Fx;
             float Fy;
@@ -2540,12 +2540,12 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                 if (fabs(m_Unit->GetPositionZ() - Fz) > 10.0f ||
                     (wl != 0.0f && Fz < wl))        // in water
                 {
-                    m_FearTimer = getMSTime() + 500;
+                    m_FearTimer = Util::getMSTime() + 500;
                 }
                 else if (los)
                 {
                     MoveTo(Fx, Fy, Fz);
-                    m_FearTimer = m_totalMoveTime + getMSTime() + 400;
+                    m_FearTimer = m_totalMoveTime + Util::getMSTime() + 400;
                 }
                 else
                 {
@@ -2556,12 +2556,12 @@ void AIInterface::_UpdateMovement(uint32 p_time)
             {
                 Fz = m_Unit->GetMapMgr()->GetADTLandHeight(Fx, Fy);
                 if (fabs(m_Unit->GetPositionZ() - Fz) > 4 || (Fz != 0.0f && Fz < (wl - 2.0f)))
-                    m_FearTimer = getMSTime() + 100;
+                    m_FearTimer = Util::getMSTime() + 100;
                 else
                 {
                     SetRun(); //fear = run bitch run
                     MoveTo(Fx, Fy, Fz);
-                    m_FearTimer = m_totalMoveTime + getMSTime() + 200;
+                    m_FearTimer = m_totalMoveTime + Util::getMSTime() + 200;
                 }
             }
         }
@@ -2570,7 +2570,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
     // Wander AI movement code
     if (isAiState(AI_STATE_WANDER) && m_creatureState == STOPPED)
     {
-        if (getMSTime() < m_WanderTimer) // is it time to move again?
+        if (Util::getMSTime() < m_WanderTimer) // is it time to move again?
             return;
 
         // calculate a random distance and angle to move
@@ -2583,7 +2583,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
         VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
         bool isHittingObject = mgr->getObjectHitPos(m_Unit->GetMapId(), m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ() + 2, wanderX, wanderY, wanderZ, wanderX, wanderY, wanderZ, -1);
         MoveTo(wanderX, wanderY, wanderZ);
-        m_WanderTimer = getMSTime() + m_totalMoveTime + 300; // time till next move (+ pause)
+        m_WanderTimer = Util::getMSTime() + m_totalMoveTime + 300; // time till next move (+ pause)
     }
 
     //Unit Follow Code
@@ -2725,7 +2725,7 @@ AI_Spell* AIInterface::getSpell()
     AI_Spell* def_spell = nullptr;
     uint32 cool_time = 0;
     uint32 cool_time2;
-    uint32 nowtime = getMSTime();
+    uint32 nowtime = Util::getMSTime();
 
     if (m_Unit->IsPet())
     {
@@ -3578,7 +3578,7 @@ void AIInterface::UpdateMovementSpline()
 
     float o = atan2(current->pos.x - prev->pos.x, current->pos.y - prev->pos.y);
 
-    uint32 curmstime = getMSTime();
+    uint32 curmstime = Util::getMSTime();
 
     if (curmstime >= current->arrive)
     {
@@ -3676,8 +3676,8 @@ void AIInterface::AddSpline(float x, float y, float z)
     if (m_Unit->m_movementManager.m_spline.GetSplinePoints()->size() == 0)
     {
         //this is first point just insert it, it's always our position for future points
-        p.setoff = getMSTime();
-        p.arrive = getMSTime(); //now
+        p.setoff = Util::getMSTime();
+        p.arrive = Util::getMSTime(); //now
         m_Unit->m_movementManager.m_spline.AddSplinePoint(p);
         return;
     }

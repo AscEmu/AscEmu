@@ -200,7 +200,7 @@ bool Master::Run(int argc, char** argv)
     InitRandomNumberGenerators();
 
     ThreadPool.Startup();
-    uint32 LoadingTime = getMSTime();
+    auto startTime = Util::TimeNow();
 
     new EventMgr;
     new World;
@@ -277,8 +277,7 @@ bool Master::Run(int argc, char** argv)
         sScriptMgr.DumpUnimplementedSpells();
     }
 
-    LoadingTime = getMSTime() - LoadingTime;
-    LogDetail("Server : Ready for connections. Startup time: %ums", LoadingTime);
+    LogDetail("Server : Ready for connections. Startup time: %u ms", Util::GetTimeDifferenceToNow(startTime));
 
     ThreadPool.ExecuteTask(new GameEventMgr::GameEventMgrThread());
 
@@ -759,7 +758,7 @@ void Master::ShutdownThreadPools(bool listnersockcreate)
     time_t curTime;
     uint32 loopcounter = 0;
     auto last_time = Util::TimeNow();
-    uint32 next_printout = getMSTime(), next_send = getMSTime();
+    uint32 next_printout = Util::getMSTime(), next_send = Util::getMSTime();
 
     while (!m_stopEvent && listnersockcreate)
     {
@@ -794,7 +793,7 @@ void Master::ShutdownThreadPools(bool listnersockcreate)
         auto etime = Util::GetTimeDifference(start, last_time);
         if (m_ShutdownEvent)
         {
-            if (getMSTime() >= next_printout)
+            if (Util::getMSTime() >= next_printout)
             {
                 if (m_ShutdownTimer > 60000.0f)
                 {
@@ -804,10 +803,10 @@ void Master::ShutdownThreadPools(bool listnersockcreate)
                 else
                 LogNotice("Server : Shutdown in %i seconds.", (int)(m_ShutdownTimer / 1000.0f));
 
-                next_printout = getMSTime() + 500;
+                next_printout = Util::getMSTime() + 500;
             }
 
-            if (getMSTime() >= next_send)
+            if (Util::getMSTime() >= next_send)
             {
                 int time = m_ShutdownTimer / 1000;
                 if ((time % 30 == 0) || time < 10)
@@ -834,7 +833,7 @@ void Master::ShutdownThreadPools(bool listnersockcreate)
                         sWorld.sendGlobalMessage(&data);
                     }
                 }
-                next_send = getMSTime() + 1000;
+                next_send = Util::getMSTime() + 1000;
             }
             if (diff >= m_ShutdownTimer)
                 break;

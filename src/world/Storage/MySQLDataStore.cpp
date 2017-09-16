@@ -102,7 +102,7 @@ void MySQLDataStore::loadAdditionalTableConfig()
 
 void MySQLDataStore::loadItemPagesTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     QueryResult* itempages_result = WorldDatabase.Query("SELECT entry, text, next_page FROM item_pages");
     if (itempages_result == nullptr)
@@ -134,7 +134,7 @@ void MySQLDataStore::loadItemPagesTable()
 
     delete itempages_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u pages from `item_pages` table in %u ms!", itempages_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u pages from `item_pages` table in %u ms!", itempages_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::ItemPage const* MySQLDataStore::getItemPage(uint32_t entry)
@@ -148,7 +148,7 @@ MySQLStructure::ItemPage const* MySQLDataStore::getItemPage(uint32_t entry)
 
 void MySQLDataStore::loadItemPropertiesTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     uint32_t item_count = 0;
     uint32_t basic_field_count = 0;
@@ -481,7 +481,7 @@ void MySQLDataStore::loadItemPropertiesTable()
         delete item_result;
     }
 
-    LogDetail("MySQLDataLoads : Loaded %u item_properties in %u ms!", item_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u item_properties in %u ms!", item_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 ItemProperties const* MySQLDataStore::getItemProperties(uint32_t entry)
@@ -495,7 +495,7 @@ ItemProperties const* MySQLDataStore::getItemProperties(uint32_t entry)
 
 void MySQLDataStore::loadCreaturePropertiesTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
     uint32_t creature_properties_count = 0;
     uint32_t basic_field_count = 0;
 
@@ -773,7 +773,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
         delete creature_properties_result;
     }
 
-    LogDetail("MySQLDataLoads : Loaded %u creature proto data in %u ms!", creature_properties_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u creature proto data in %u ms!", creature_properties_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 CreatureProperties const* MySQLDataStore::getCreatureProperties(uint32_t entry)
@@ -787,7 +787,7 @@ CreatureProperties const* MySQLDataStore::getCreatureProperties(uint32_t entry)
 
 void MySQLDataStore::loadGameObjectPropertiesTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
     uint32_t gameobject_properties_count = 0;
     uint32_t basic_field_count = 0;
 
@@ -901,7 +901,7 @@ void MySQLDataStore::loadGameObjectPropertiesTable()
         delete gameobject_properties_result;
     }
 
-    LogDetail("MySQLDataLoads : Loaded %u gameobject data in %u ms!", gameobject_properties_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u gameobject data in %u ms!", gameobject_properties_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 GameObjectProperties const* MySQLDataStore::getGameObjectProperties(uint32_t entry)
@@ -916,7 +916,7 @@ GameObjectProperties const* MySQLDataStore::getGameObjectProperties(uint32_t ent
 //quests
 void MySQLDataStore::loadQuestPropertiesTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
     uint32_t quest_count = 0;
     uint32_t basic_field_count = 0;
 
@@ -1163,7 +1163,7 @@ void MySQLDataStore::loadQuestPropertiesTable()
         delete quest_result;
     }
 
-    LogDetail("MySQLDataLoads : Loaded %u quest_properties data in %u ms!", quest_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u quest_properties data in %u ms!", quest_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 QuestProperties const* MySQLDataStore::getQuestProperties(uint32_t entry)
@@ -1177,7 +1177,7 @@ QuestProperties const* MySQLDataStore::getQuestProperties(uint32_t entry)
 
 void MySQLDataStore::loadGameObjectQuestItemBindingTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     //                                                                        0      1     2        3
     QueryResult* gameobject_quest_item_result = WorldDatabase.Query("SELECT entry, quest, item, item_count FROM gameobject_quest_item_binding");
@@ -1216,12 +1216,12 @@ void MySQLDataStore::loadGameObjectQuestItemBindingTable()
         delete gameobject_quest_item_result;
     }
 
-    LogDetail("MySQLDataLoads : Loaded %u data from `gameobject_quest_item_binding` table in %u ms!", gameobject_quest_item_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u data from `gameobject_quest_item_binding` table in %u ms!", gameobject_quest_item_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 void MySQLDataStore::loadGameObjectQuestPickupBindingTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     //                                                                          0      1           2
     QueryResult* gameobject_quest_pickup_result = WorldDatabase.Query("SELECT entry, quest, required_count FROM gameobject_quest_pickup_binding");
@@ -1262,12 +1262,12 @@ void MySQLDataStore::loadGameObjectQuestPickupBindingTable()
         delete gameobject_quest_pickup_result;
     }
 
-    LogDetail("MySQLDataLoads : Loaded %u data from `gameobject_quest_pickup_binding` table in %u ms!", gameobject_quest_pickup_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u data from `gameobject_quest_pickup_binding` table in %u ms!", gameobject_quest_pickup_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 void MySQLDataStore::loadCreatureDifficultyTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     //                                                                         0          1            2             3
     QueryResult* creature_difficulty_result = WorldDatabase.Query("SELECT entry, difficulty_1, difficulty_2, difficulty_3 FROM creature_difficulty");
@@ -1303,7 +1303,7 @@ void MySQLDataStore::loadCreatureDifficultyTable()
 
     delete creature_difficulty_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u creature difficulties info from `creature_difficulty` table in %u ms!", creature_difficulty_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u creature difficulties info from `creature_difficulty` table in %u ms!", creature_difficulty_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 uint32_t MySQLDataStore::getCreatureDifficulty(uint32_t entry, uint8_t difficulty_type)
@@ -1339,7 +1339,7 @@ uint32_t MySQLDataStore::getCreatureDifficulty(uint32_t entry, uint8_t difficult
 
 void MySQLDataStore::loadDisplayBoundingBoxesTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     //                                                                            0       1    2     3      4      5      6         7
     //QueryResult* display_bounding_boxes_result = WorldDatabase.Query("SELECT displayid, lowx, lowy, lowz, highx, highy, highz, boundradius FROM display_bounding_boxes");
@@ -1383,7 +1383,7 @@ void MySQLDataStore::loadDisplayBoundingBoxesTable()
 
     delete display_bounding_boxes_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u display bounding info from `display_bounding_boxes` table in %u ms!", display_bounding_boxes_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u display bounding info from `display_bounding_boxes` table in %u ms!", display_bounding_boxes_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::DisplayBoundingBoxes const* MySQLDataStore::getDisplayBounding(uint32_t entry)
@@ -1397,7 +1397,7 @@ MySQLStructure::DisplayBoundingBoxes const* MySQLDataStore::getDisplayBounding(u
 
 void MySQLDataStore::loadVendorRestrictionsTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     //                                                                      0       1          2            3              4
     QueryResult* vendor_restricitons_result = WorldDatabase.Query("SELECT entry, racemask, classmask, reqrepfaction, reqrepfactionvalue, "
@@ -1437,7 +1437,7 @@ void MySQLDataStore::loadVendorRestrictionsTable()
 
     delete vendor_restricitons_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u restrictions from `vendor_restrictions` table in %u ms!", vendor_restricitons_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u restrictions from `vendor_restrictions` table in %u ms!", vendor_restricitons_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::VendorRestrictions const* MySQLDataStore::getVendorRestriction(uint32_t entry)
@@ -1451,7 +1451,7 @@ MySQLStructure::VendorRestrictions const* MySQLDataStore::getVendorRestriction(u
 
 void MySQLDataStore::loadNpcTextTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     //                                                           0
     QueryResult* npc_text_result = WorldDatabase.Query("SELECT entry, "
@@ -1516,7 +1516,7 @@ void MySQLDataStore::loadNpcTextTable()
 
     delete npc_text_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `npc_text` table in %u ms!", npc_text_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `npc_text` table in %u ms!", npc_text_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::NpcText const* MySQLDataStore::getNpcText(uint32_t entry)
@@ -1532,7 +1532,7 @@ MySQLStructure::NpcText const* MySQLDataStore::getNpcText(uint32_t entry)
 
 void MySQLDataStore::loadNpcScriptTextTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     //                                                                  0      1           2       3     4       5          6         7       8        9         10
     QueryResult* npc_script_text_result = WorldDatabase.Query("SELECT entry, text, creature_entry, id, type, language, probability, emote, duration, sound, broadcast_id FROM npc_script_text");
@@ -1573,7 +1573,7 @@ void MySQLDataStore::loadNpcScriptTextTable()
 
     delete npc_script_text_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `npc_script_text` table in %u ms!", npc_script_text_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `npc_script_text` table in %u ms!", npc_script_text_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::NpcScriptText const* MySQLDataStore::getNpcScriptText(uint32_t entry)
@@ -1587,7 +1587,7 @@ MySQLStructure::NpcScriptText const* MySQLDataStore::getNpcScriptText(uint32_t e
 
 void MySQLDataStore::loadGossipMenuOptionTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     //                                                                      0         1
     QueryResult* gossip_menu_optiont_result = WorldDatabase.Query("SELECT entry, option_text FROM gossip_menu_option");
@@ -1619,7 +1619,7 @@ void MySQLDataStore::loadGossipMenuOptionTable()
 
     delete gossip_menu_optiont_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `gossip_menu_option` table in %u ms!", gossip_menu_optiont_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `gossip_menu_option` table in %u ms!", gossip_menu_optiont_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::GossipMenuOption const* MySQLDataStore::getGossipMenuOption(uint32_t entry)
@@ -1633,7 +1633,7 @@ MySQLStructure::GossipMenuOption const* MySQLDataStore::getGossipMenuOption(uint
 
 void MySQLDataStore::loadGraveyardsTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     //                                                            0         1         2           3            4         5          6           7       8
     QueryResult* graveyards_result = WorldDatabase.Query("SELECT id, position_x, position_y, position_z, orientation, zoneid, adjacentzoneid, mapid, faction FROM graveyards");
@@ -1671,7 +1671,7 @@ void MySQLDataStore::loadGraveyardsTable()
 
     delete graveyards_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `graveyards` table in %u ms!", graveyards_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `graveyards` table in %u ms!", graveyards_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::Graveyards const* MySQLDataStore::getGraveyard(uint32_t entry)
@@ -1685,7 +1685,7 @@ MySQLStructure::Graveyards const* MySQLDataStore::getGraveyard(uint32_t entry)
 
 void MySQLDataStore::loadTeleportCoordsTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     //                                                                0     1         2           3           4
     QueryResult* teleport_coords_result = WorldDatabase.Query("SELECT id, mapId, position_x, position_y, position_z FROM spell_teleport_coords");
@@ -1719,7 +1719,7 @@ void MySQLDataStore::loadTeleportCoordsTable()
 
     delete teleport_coords_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `spell_teleport_coords` table in %u ms!", teleport_coords_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `spell_teleport_coords` table in %u ms!", teleport_coords_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 TeleportCoords const* MySQLDataStore::getTeleportCoord(uint32_t entry)
@@ -1733,7 +1733,7 @@ TeleportCoords const* MySQLDataStore::getTeleportCoord(uint32_t entry)
 
 void MySQLDataStore::loadFishingTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     //                                                          0      1         2
     QueryResult* fishing_result = WorldDatabase.Query("SELECT zone, MinSkill, MaxSkill FROM fishing");
@@ -1765,7 +1765,7 @@ void MySQLDataStore::loadFishingTable()
 
     delete fishing_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `fishing` table in %u ms!", fishing_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `fishing` table in %u ms!", fishing_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::FishingZones const* MySQLDataStore::getFishingZone(uint32_t entry)
@@ -1779,7 +1779,7 @@ MySQLStructure::FishingZones const* MySQLDataStore::getFishingZone(uint32_t entr
 
 void MySQLDataStore::loadWorldMapInfoTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     //                                                                0        1       2       3           4             5          6        7      8          9
     QueryResult* worldmap_info_result = WorldDatabase.Query("SELECT entry, screenid, type, maxplayers, minlevel, minlevel_heroic, repopx, repopy, repopz, repopentry, "
@@ -1833,7 +1833,7 @@ void MySQLDataStore::loadWorldMapInfoTable()
 
     delete worldmap_info_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `worldmap_info` table in %u ms!", world_map_info_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `worldmap_info` table in %u ms!", world_map_info_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::MapInfo const* MySQLDataStore::getWorldMapInfo(uint32_t entry)
@@ -1847,7 +1847,7 @@ MySQLStructure::MapInfo const* MySQLDataStore::getWorldMapInfo(uint32_t entry)
 
 void MySQLDataStore::loadZoneGuardsTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     //                                                             0         1              2
     QueryResult* zone_guards_result = WorldDatabase.Query("SELECT zone, horde_entry, alliance_entry FROM zoneguards");
@@ -1879,7 +1879,7 @@ void MySQLDataStore::loadZoneGuardsTable()
 
     delete zone_guards_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `zoneguards` table in %u ms!", zone_guards_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `zoneguards` table in %u ms!", zone_guards_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::ZoneGuards const* MySQLDataStore::getZoneGuard(uint32_t entry)
@@ -1893,7 +1893,7 @@ MySQLStructure::ZoneGuards const* MySQLDataStore::getZoneGuard(uint32_t entry)
 
 void MySQLDataStore::loadBattleMastersTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     //                                                                      0                1
     QueryResult* battlemasters_result = WorldDatabase.Query("SELECT creature_entry, battleground_id FROM battlemasters");
@@ -1924,7 +1924,7 @@ void MySQLDataStore::loadBattleMastersTable()
 
     delete battlemasters_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `battlemasters` table in %u ms!", battlemasters_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `battlemasters` table in %u ms!", battlemasters_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::Battlemasters const* MySQLDataStore::getBattleMaster(uint32_t entry)
@@ -1940,7 +1940,7 @@ MySQLStructure::Battlemasters const* MySQLDataStore::getBattleMaster(uint32_t en
 
 void MySQLDataStore::loadTotemDisplayIdsTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
 #if VERSION_STRING != Cata
     //                                                                      0         1        2       3
@@ -1983,7 +1983,7 @@ void MySQLDataStore::loadTotemDisplayIdsTable()
 
     delete totemdisplayids_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `totemdisplayids` table in %u ms!", totemdisplayids_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `totemdisplayids` table in %u ms!", totemdisplayids_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::TotemDisplayIds const* MySQLDataStore::getTotemDisplayId(uint32_t entry)
@@ -1997,7 +1997,7 @@ MySQLStructure::TotemDisplayIds const* MySQLDataStore::getTotemDisplayId(uint32_
 
 void MySQLDataStore::loadSpellClickSpellsTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     //                                                                      0         1
     QueryResult* spellclickspells_result = WorldDatabase.Query("SELECT CreatureID, SpellID FROM spellclickspells");
@@ -2028,7 +2028,7 @@ void MySQLDataStore::loadSpellClickSpellsTable()
 
     delete spellclickspells_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `spellclickspells` table in %u ms!", spellclickspells_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `spellclickspells` table in %u ms!", spellclickspells_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 SpellClickSpell const* MySQLDataStore::getSpellClickSpell(uint32_t entry)
@@ -2042,7 +2042,7 @@ SpellClickSpell const* MySQLDataStore::getSpellClickSpell(uint32_t entry)
 
 void MySQLDataStore::loadWorldStringsTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     //                                                                     0     1
     QueryResult* worldstring_tables_result = WorldDatabase.Query("SELECT entry, text FROM worldstring_tables");
@@ -2073,7 +2073,7 @@ void MySQLDataStore::loadWorldStringsTable()
 
     delete worldstring_tables_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `worldstring_tables` table in %u ms!", worldstring_tables_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `worldstring_tables` table in %u ms!", worldstring_tables_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::WorldStringTable const* MySQLDataStore::getWorldString(uint32_t entry)
@@ -2087,7 +2087,7 @@ MySQLStructure::WorldStringTable const* MySQLDataStore::getWorldString(uint32_t 
 
 void MySQLDataStore::loadPointsOfInterestTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     //                                                                      0   1  2    3     4     5        6
     QueryResult* points_of_interest_result = WorldDatabase.Query("SELECT entry, x, y, icon, flags, data, icon_name FROM points_of_interest");
@@ -2123,7 +2123,7 @@ void MySQLDataStore::loadPointsOfInterestTable()
 
     delete points_of_interest_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `points_of_interest` table in %u ms!", points_of_interest_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `points_of_interest` table in %u ms!", points_of_interest_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::PointsOfInterest const* MySQLDataStore::getPointOfInterest(uint32_t entry)
@@ -2137,7 +2137,7 @@ MySQLStructure::PointsOfInterest const* MySQLDataStore::getPointOfInterest(uint3
 
 void MySQLDataStore::loadItemSetLinkedSetBonusTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     //                                                                    0            1
     QueryResult* linked_set_bonus_result = WorldDatabase.Query("SELECT itemset, itemset_bonus FROM itemset_linked_itemsetbonus");
@@ -2169,7 +2169,7 @@ void MySQLDataStore::loadItemSetLinkedSetBonusTable()
 
     delete linked_set_bonus_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `itemset_linked_itemsetbonus` table in %u ms!", linked_set_bonus_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `itemset_linked_itemsetbonus` table in %u ms!", linked_set_bonus_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 uint32_t MySQLDataStore::getItemSetLinkedBonus(int32_t itemset)
@@ -2187,7 +2187,7 @@ uint32_t MySQLDataStore::getItemSetLinkedBonus(int32_t itemset)
 
 void MySQLDataStore::loadCreatureInitialEquipmentTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     //                                                                        0              1           2          3
     QueryResult* initial_equipment_result = WorldDatabase.Query("SELECT creature_entry, itemslot_1, itemslot_2, itemslot_3 FROM creature_initial_equip;");
@@ -2221,12 +2221,12 @@ void MySQLDataStore::loadCreatureInitialEquipmentTable()
 
     delete initial_equipment_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `creature_initial_equip` table in %u ms!", initial_equipment_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `creature_initial_equip` table in %u ms!", initial_equipment_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 void MySQLDataStore::loadPlayerCreateInfoTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     //                                                                     0       1           2           3      4       5        6          7          8          9            10
     QueryResult* player_create_info_result = WorldDatabase.Query("SELECT `Index`, race, factiontemplate, class, mapID, zoneID, positionX, positionY, positionZ, orientation, displayID, "
@@ -2290,12 +2290,12 @@ void MySQLDataStore::loadPlayerCreateInfoTable()
 
     delete player_create_info_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `playercreateinfo` table in %u ms!", _playerCreateInfoStore.size(), getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `playercreateinfo` table in %u ms!", _playerCreateInfoStore.size(), Util::GetTimeDifferenceToNow(startTime));
 }
 
 void MySQLDataStore::loadPlayerCreateInfoSkillsTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     //                                                                              0       1       2        3
     QueryResult* player_create_info_skills_result = WorldDatabase.Query("SELECT Indexid, skillid, level, maxlevel FROM playercreateinfo_skills;");
@@ -2338,12 +2338,12 @@ void MySQLDataStore::loadPlayerCreateInfoSkillsTable()
 
     delete player_create_info_skills_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `playercreateinfo_skills` table in %u ms!", player_create_info_skills_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `playercreateinfo_skills` table in %u ms!", player_create_info_skills_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 void MySQLDataStore::loadPlayerCreateInfoSpellsTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     //                                                                            0       1
     QueryResult* player_create_info_spells_result = WorldDatabase.Query("SELECT indexid, spellid FROM playercreateinfo_spells");
@@ -2381,12 +2381,12 @@ void MySQLDataStore::loadPlayerCreateInfoSpellsTable()
 
     delete player_create_info_spells_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `playercreateinfo_spells` table in %u ms!", player_create_info_spells_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `playercreateinfo_spells` table in %u ms!", player_create_info_spells_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 void MySQLDataStore::loadPlayerCreateInfoItemsTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     //                                                                            0        1       2        3
     QueryResult* player_create_info_items_result = WorldDatabase.Query("SELECT indexid, protoid, slotid, amount FROM playercreateinfo_items;");
@@ -2433,7 +2433,7 @@ void MySQLDataStore::loadPlayerCreateInfoItemsTable()
 
     delete player_create_info_items_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `playercreateinfo_items` table in %u ms!", player_create_info_items_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `playercreateinfo_items` table in %u ms!", player_create_info_items_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 void MySQLDataStore::loadPlayerCreateInfoBarsTable(uint32_t player_info_index)
@@ -2485,7 +2485,7 @@ PlayerCreateInfo const* MySQLDataStore::getPlayerCreateInfo(uint8_t player_race,
 
 void MySQLDataStore::loadPlayerXpToLevelTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     _playerXPperLevelStore.clear();
     _playerXPperLevelStore.resize(worldConfig.player.playerLevelCap);
@@ -2523,7 +2523,7 @@ void MySQLDataStore::loadPlayerXpToLevelTable()
 
     delete player_xp_to_level_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `player_xp_for_level` table in %u ms!", player_xp_to_level_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `player_xp_for_level` table in %u ms!", player_xp_to_level_count, Util::GetTimeDifferenceToNow(startTime));
 
     if (player_xp_to_level_count < (worldConfig.player.playerLevelCap - 1))
         LOG_ERROR("Table `player_xp_for_level` includes definitions for %u level, but your defined level cap is %u!", player_xp_to_level_count, worldConfig.player.playerLevelCap);
@@ -2593,7 +2593,7 @@ void MySQLDataStore::loadSpellOverrideTable()
 
 void MySQLDataStore::loadNpcGossipTextIdTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
     //                                                    0         1
     QueryResult* npc_gossip_textid_result = WorldDatabase.Query("SELECT creatureid, textid FROM npc_gossip_textid");
     if (npc_gossip_textid_result == nullptr)
@@ -2626,7 +2626,7 @@ void MySQLDataStore::loadNpcGossipTextIdTable()
 
     delete npc_gossip_textid_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `npc_gossip_textid` table in %u ms!", npc_gossip_textid_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `npc_gossip_textid` table in %u ms!", npc_gossip_textid_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 uint32_t MySQLDataStore::getGossipTextIdForNpc(uint32_t entry)
@@ -2636,7 +2636,7 @@ uint32_t MySQLDataStore::getGossipTextIdForNpc(uint32_t entry)
 
 void MySQLDataStore::loadPetLevelAbilitiesTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
     //                                                                      0       1      2        3        4        5         6         7
     QueryResult* pet_level_abilities_result = WorldDatabase.Query("SELECT level, health, armor, strength, agility, stamina, intellect, spirit FROM pet_level_abilities");
     if (pet_level_abilities_result == nullptr)
@@ -2673,7 +2673,7 @@ void MySQLDataStore::loadPetLevelAbilitiesTable()
 
     delete pet_level_abilities_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `pet_level_abilities` table in %u ms!", pet_level_abilities_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `pet_level_abilities` table in %u ms!", pet_level_abilities_count, Util::GetTimeDifferenceToNow(startTime));
 
     if (pet_level_abilities_count < worldConfig.player.playerLevelCap)
         LOG_ERROR("Table `pet_level_abilities` includes definitions for %u level, but your defined level cap is %u!", pet_level_abilities_count, worldConfig.player.playerLevelCap);
@@ -2690,7 +2690,7 @@ MySQLStructure::PetLevelAbilities const* MySQLDataStore::getPetLevelAbilities(ui
 
 void MySQLDataStore::loadBroadcastTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     QueryResult* broadcast_result = WorldDatabase.Query("SELECT * FROM worldbroadcast");
     if (broadcast_result == nullptr)
@@ -2727,7 +2727,7 @@ void MySQLDataStore::loadBroadcastTable()
 
     delete broadcast_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `worldbroadcast` table in %u ms!", broadcast_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `worldbroadcast` table in %u ms!", broadcast_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::WorldBroadCast const* MySQLDataStore::getWorldBroadcastById(uint32_t id)
@@ -2741,7 +2741,7 @@ MySQLStructure::WorldBroadCast const* MySQLDataStore::getWorldBroadcastById(uint
 
 void MySQLDataStore::loadAreaTriggerTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
     //                                                               0      1    2     3       4       5           6          7             8               9                  10
     QueryResult* area_trigger_result = WorldDatabase.Query("SELECT entry, type, map, screen, name, position_x, position_y, position_z, orientation, required_honor_rank, required_level FROM areatriggers");
     if (area_trigger_result == nullptr)
@@ -2799,7 +2799,7 @@ void MySQLDataStore::loadAreaTriggerTable()
 
     delete area_trigger_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `areatriggers` table in %u ms!", areaTrigger_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `areatriggers` table in %u ms!", areaTrigger_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::AreaTrigger const* MySQLDataStore::getAreaTrigger(uint32_t entry)
@@ -2827,7 +2827,7 @@ MySQLStructure::AreaTrigger const* MySQLDataStore::getMapEntranceTrigger(uint32_
 
 void MySQLDataStore::loadWordFilterCharacterNames()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     QueryResult* filter_character_names_result = WorldDatabase.Query("SELECT * FROM wordfilter_character_names");
     if (filter_character_names_result == nullptr)
@@ -2861,7 +2861,7 @@ void MySQLDataStore::loadWordFilterCharacterNames()
 
     delete filter_character_names_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `wordfilter_character_names` table in %u ms!", filter_character_names_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `wordfilter_character_names` table in %u ms!", filter_character_names_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 bool MySQLDataStore::isCharacterNameAllowed(std::string charName)
@@ -2881,7 +2881,7 @@ bool MySQLDataStore::isCharacterNameAllowed(std::string charName)
 
 void MySQLDataStore::loadWordFilterChat()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
 
     QueryResult* filter_chat_result = WorldDatabase.Query("SELECT * FROM wordfilter_chat");
     if (filter_chat_result == nullptr)
@@ -2919,12 +2919,12 @@ void MySQLDataStore::loadWordFilterChat()
 
     delete filter_chat_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `wordfilter_chat` table in %u ms!", filter_chat_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `wordfilter_chat` table in %u ms!", filter_chat_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 void MySQLDataStore::loadCreatureFormationsTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
     //                                                                       0              1              2            3
     QueryResult* creature_formations_result = WorldDatabase.Query("SELECT spawn_id, target_spawn_id, follow_angle, follow_dist FROM creature_formations");
     if (creature_formations_result == nullptr)
@@ -2962,7 +2962,7 @@ void MySQLDataStore::loadCreatureFormationsTable()
 
     delete creature_formations_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `creature_formations` table in %u ms!", formations_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `creature_formations` table in %u ms!", formations_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::CreatureFormation const* MySQLDataStore::getCreatureFormationBySpawnId(uint32_t spawnId)
@@ -2978,7 +2978,7 @@ MySQLStructure::CreatureFormation const* MySQLDataStore::getCreatureFormationByS
 // locales
 void MySQLDataStore::loadLocalesCreature()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
     //                                                0         1          2      3
     QueryResult* result = WorldDatabase.Query("SELECT id, language_code, name, subname FROM locales_creature");
     if (result == nullptr)
@@ -3012,7 +3012,7 @@ void MySQLDataStore::loadLocalesCreature()
 
     delete result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_creature` table in %u ms!", load_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_creature` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::LocalesCreature const* MySQLDataStore::getLocalizedCreature(uint32_t entry, uint32_t sessionLocale)
@@ -3032,7 +3032,7 @@ MySQLStructure::LocalesCreature const* MySQLDataStore::getLocalizedCreature(uint
 
 void MySQLDataStore::loadLocalesGameobject()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
     //                                                  0         1          2
     QueryResult* result = WorldDatabase.Query("SELECT entry, language_code, name FROM locales_gameobject");
     if (result == nullptr)
@@ -3065,7 +3065,7 @@ void MySQLDataStore::loadLocalesGameobject()
 
     delete result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_gameobject` table in %u ms!", load_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_gameobject` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::LocalesGameobject const* MySQLDataStore::getLocalizedGameobject(uint32_t entry, uint32_t sessionLocale)
@@ -3085,7 +3085,7 @@ MySQLStructure::LocalesGameobject const* MySQLDataStore::getLocalizedGameobject(
 
 void MySQLDataStore::loadLocalesGossipMenuOption()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
     //                                                   0         1             2
     QueryResult* result = WorldDatabase.Query("SELECT entry, language_code, option_text FROM locales_gossip_menu_option");
     if (result == nullptr)
@@ -3118,7 +3118,7 @@ void MySQLDataStore::loadLocalesGossipMenuOption()
 
     delete result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_gossip_menu_option` table in %u ms!", load_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_gossip_menu_option` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::LocalesGossipMenuOption const* MySQLDataStore::getLocalizedGossipMenuOption(uint32_t entry, uint32_t sessionLocale)
@@ -3138,7 +3138,7 @@ MySQLStructure::LocalesGossipMenuOption const* MySQLDataStore::getLocalizedGossi
 
 void MySQLDataStore::loadLocalesItem()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
     //                                                  0         1          2         3
     QueryResult* result = WorldDatabase.Query("SELECT entry, language_code, name, description FROM locales_item");
     if (result == nullptr)
@@ -3172,7 +3172,7 @@ void MySQLDataStore::loadLocalesItem()
 
     delete result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_item` table in %u ms!", load_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_item` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::LocalesItem const* MySQLDataStore::getLocalizedItem(uint32_t entry, uint32_t sessionLocale)
@@ -3192,7 +3192,7 @@ MySQLStructure::LocalesItem const* MySQLDataStore::getLocalizedItem(uint32_t ent
 
 void MySQLDataStore::loadLocalesItemPages()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
     //                                                 0         1           2
     QueryResult* result = WorldDatabase.Query("SELECT entry, language_code, text FROM locales_item_pages");
     if (result == nullptr)
@@ -3225,7 +3225,7 @@ void MySQLDataStore::loadLocalesItemPages()
 
     delete result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_item_pages` table in %u ms!", load_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_item_pages` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::LocalesItemPages const* MySQLDataStore::getLocalizedItemPages(uint32_t entry, uint32_t sessionLocale)
@@ -3245,7 +3245,7 @@ MySQLStructure::LocalesItemPages const* MySQLDataStore::getLocalizedItemPages(ui
 
 void MySQLDataStore::loadLocalesNPCMonstersay()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
     //                                                                   0      1          2            3         4      5      6      7      8
     QueryResult* local_monstersay_result = WorldDatabase.Query("SELECT entry, type, language_code, monstername, text0, text1, text2, text3, text4 FROM locales_npc_monstersay");
     if (local_monstersay_result == nullptr)
@@ -3284,7 +3284,7 @@ void MySQLDataStore::loadLocalesNPCMonstersay()
 
     delete local_monstersay_result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_npc_monstersay` table in %u ms!", local_monstersay_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_npc_monstersay` table in %u ms!", local_monstersay_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::LocalesNPCMonstersay const* MySQLDataStore::getLocalizedMonsterSay(uint32_t entry, uint32_t sessionLocale, uint32_t event)
@@ -3307,7 +3307,7 @@ MySQLStructure::LocalesNPCMonstersay const* MySQLDataStore::getLocalizedMonsterS
 
 void MySQLDataStore::loadLocalesNpcScriptText()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
     //                                                  0         1          2
     QueryResult* result = WorldDatabase.Query("SELECT entry, language_code, text FROM locales_npc_script_text");
     if (result == nullptr)
@@ -3340,7 +3340,7 @@ void MySQLDataStore::loadLocalesNpcScriptText()
 
     delete result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_npc_script_text` table in %u ms!", load_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_npc_script_text` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::LocalesNpcScriptText const* MySQLDataStore::getLocalizedNpcScriptText(uint32_t entry, uint32_t sessionLocale)
@@ -3360,7 +3360,7 @@ MySQLStructure::LocalesNpcScriptText const* MySQLDataStore::getLocalizedNpcScrip
 
 void MySQLDataStore::loadLocalesNpcText()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
     //                                                  0         1           2       3       4       5       6       7       8       9       10      11     12      13      14      15      16      17
     QueryResult* result = WorldDatabase.Query("SELECT entry, language_code, text0, text0_1, text1, text1_1, text2, text2_1, text3, text3_1, text4, text4_1, text5, text5_1, text6, text6_1, text7, text7_1 FROM locales_npc_text");
     if (result == nullptr)
@@ -3398,7 +3398,7 @@ void MySQLDataStore::loadLocalesNpcText()
 
     delete result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_npc_text` table in %u ms!", load_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_npc_text` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::LocalesNpcText const* MySQLDataStore::getLocalizedNpcText(uint32_t entry, uint32_t sessionLocale)
@@ -3418,7 +3418,7 @@ MySQLStructure::LocalesNpcText const* MySQLDataStore::getLocalizedNpcText(uint32
 
 void MySQLDataStore::loadLocalesQuest()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
     //                                                  0         1           2       3         4            5                 6           7           8                9              10             11
     QueryResult* result = WorldDatabase.Query("SELECT entry, language_code, Title, Details, Objectives, CompletionText, IncompleteText, EndText, ObjectiveText1, ObjectiveText2, ObjectiveText3, ObjectiveText4 FROM locales_quest");
     if (result == nullptr)
@@ -3460,7 +3460,7 @@ void MySQLDataStore::loadLocalesQuest()
 
     delete result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_quest` table in %u ms!", load_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_quest` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::LocalesQuest const* MySQLDataStore::getLocalizedQuest(uint32_t entry, uint32_t sessionLocale)
@@ -3480,7 +3480,7 @@ MySQLStructure::LocalesQuest const* MySQLDataStore::getLocalizedQuest(uint32_t e
 
 void MySQLDataStore::loadLocalesWorldbroadcast()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
     //                                                  0         1          2
     QueryResult* result = WorldDatabase.Query("SELECT entry, language_code, text FROM locales_worldbroadcast");
     if (result == nullptr)
@@ -3513,7 +3513,7 @@ void MySQLDataStore::loadLocalesWorldbroadcast()
 
     delete result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_worldbroadcast` table in %u ms!", load_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_worldbroadcast` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::LocalesWorldbroadcast const* MySQLDataStore::getLocalizedWorldbroadcast(uint32_t entry, uint32_t sessionLocale)
@@ -3533,7 +3533,7 @@ MySQLStructure::LocalesWorldbroadcast const* MySQLDataStore::getLocalizedWorldbr
 
 void MySQLDataStore::loadLocalesWorldmapInfo()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
     //                                                  0           1         2
     QueryResult* result = WorldDatabase.Query("SELECT entry, language_code, text FROM locales_worldmap_info");
     if (result == nullptr)
@@ -3566,7 +3566,7 @@ void MySQLDataStore::loadLocalesWorldmapInfo()
 
     delete result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_worldmap_info` table in %u ms!", load_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_worldmap_info` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::LocalesWorldmapInfo const* MySQLDataStore::getLocalizedWorldmapInfo(uint32_t entry, uint32_t sessionLocale)
@@ -3586,7 +3586,7 @@ MySQLStructure::LocalesWorldmapInfo const* MySQLDataStore::getLocalizedWorldmapI
 
 void MySQLDataStore::loadLocalesWorldStringTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
     //                                                  0           1         2
     QueryResult* result = WorldDatabase.Query("SELECT entry, language_code, text FROM locales_worldstring_table");
     if (result == nullptr)
@@ -3619,7 +3619,7 @@ void MySQLDataStore::loadLocalesWorldStringTable()
 
     delete result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_worldstring_table` table in %u ms!", load_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_worldstring_table` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::LocalesWorldStringTable const* MySQLDataStore::getLocalizedWorldStringTable(uint32_t entry, uint32_t sessionLocale)
@@ -3639,7 +3639,7 @@ MySQLStructure::LocalesWorldStringTable const* MySQLDataStore::getLocalizedWorld
 
 void MySQLDataStore::loadNpcMonstersayTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
     //                                                  0      1       2        3       4       5          6      7      8      9     10
     QueryResult* result = WorldDatabase.Query("SELECT entry, event, chance, language, type, monstername, text0, text1, text2, text3, text4 FROM npc_monstersay");
     if (result == nullptr)
@@ -3719,7 +3719,7 @@ void MySQLDataStore::loadNpcMonstersayTable()
 
     delete result;
 
-    LogDetail("MySQLDataLoads : Loaded %u rows from `npc_monstersay` table in %u ms!", load_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `npc_monstersay` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 MySQLStructure::NpcMonsterSay* MySQLDataStore::getMonstersayEventForCreature(uint32_t entry, MONSTER_SAY_EVENTS _event)
@@ -3741,7 +3741,7 @@ MySQLStructure::NpcMonsterSay* MySQLDataStore::getMonstersayEventForCreature(uin
 //\brief Data loaded but never used!    Zyres 2017/07/16 not used
 //void MySQLDataStore::loadDefaultPetSpellsTable()
 //{
-//    uint32_t start_time = getMSTime();
+//    auto startTime = Util::TimeNow();
 //    //                                                  0      1
 //    QueryResult* result = WorldDatabase.Query("SELECT entry, spell FROM petdefaultspells");
 //    if (result == nullptr)
@@ -3778,7 +3778,7 @@ MySQLStructure::NpcMonsterSay* MySQLDataStore::getMonstersayEventForCreature(uin
 //
 //    delete result;
 //
-//    LogDetail("MySQLDataLoads : Loaded %u rows from `petdefaultspells` table in %u ms!", load_count, getMSTime() - start_time);
+//    LogDetail("MySQLDataLoads : Loaded %u rows from `petdefaultspells` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
 //}
 
 //\brief This function is never called!     Zyres 2017/07/16 not used
@@ -3795,7 +3795,7 @@ MySQLStructure::NpcMonsterSay* MySQLDataStore::getMonstersayEventForCreature(uin
 
 void MySQLDataStore::loadProfessionDiscoveriesTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
     //                                                   0           1              2          3
     QueryResult* result = WorldDatabase.Query("SELECT SpellId, SpellToDiscover, SkillValue, Chance FROM professiondiscoveries");
     if (result == nullptr)
@@ -3825,13 +3825,13 @@ void MySQLDataStore::loadProfessionDiscoveriesTable()
 
         delete result;
 
-        LogDetail("MySQLDataLoads : Loaded %u rows from `professiondiscoveries` table in %u ms!", load_count, getMSTime() - start_time);
+        LogDetail("MySQLDataLoads : Loaded %u rows from `professiondiscoveries` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
     }
 }
 
 void MySQLDataStore::loadTransportCreaturesTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
     //                                                  0       1              2              3            4              5            6          7
     QueryResult* result = WorldDatabase.Query("SELECT guid, npc_entry, transport_entry, TransOffsetX, TransOffsetY, TransOffsetZ, TransOffsetO, emote FROM transport_creatures");
     if (result == nullptr)
@@ -3864,13 +3864,13 @@ void MySQLDataStore::loadTransportCreaturesTable()
 
         delete result;
 
-        LogDetail("MySQLDataLoads : Loaded %u rows from `transport_creatures` table in %u ms!", load_count, getMSTime() - start_time);
+        LogDetail("MySQLDataLoads : Loaded %u rows from `transport_creatures` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
     }
 }
 
 void MySQLDataStore::loadTransportDataTable()
 {
-    uint32_t start_time = getMSTime();
+    auto startTime = Util::TimeNow();
     //                                                  0      1     2
     QueryResult* result = WorldDatabase.Query("SELECT entry, name, period FROM transport_data");
     if (result == nullptr)
@@ -3913,6 +3913,6 @@ void MySQLDataStore::loadTransportDataTable()
 
         delete result;
 
-        LogDetail("MySQLDataLoads : Loaded %u rows from `transport_data` table in %u ms!", load_count, getMSTime() - start_time);
+        LogDetail("MySQLDataLoads : Loaded %u rows from `transport_data` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
     }
 }

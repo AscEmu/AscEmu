@@ -2163,7 +2163,7 @@ void Spell::SendSpellGo()
 #endif
     data << GetSpellInfo()->Id;
     data << flags;
-    data << getMSTime();
+    data <<Util::getMSTime();
     data << (uint8)(UniqueTargets.size()); //number of hits
     writeSpellGoTargets(&data);
 
@@ -4499,7 +4499,7 @@ uint8 Spell::CanCast(bool tolerate)
     {
         if (u_caster->SchoolCastPrevent[GetSpellInfo()->School])
         {
-            uint32 now_ = getMSTime();
+            uint32 now_ =Util::getMSTime();
             if (now_ > u_caster->SchoolCastPrevent[GetSpellInfo()->School]) //this limit has expired,remove
                 u_caster->SchoolCastPrevent[GetSpellInfo()->School] = 0;
             else
@@ -5347,7 +5347,7 @@ void Spell::HandleTeleport(float x, float y, float z, uint32 mapid, Unit* Target
         data << Target->GetPositionX();
         data << Target->GetPositionY();
         data << Target->GetPositionZ();
-        data << getMSTime();
+        data <<Util::getMSTime();
         data << uint8(0x00);
         data << uint32(256);
         data << uint32(1);

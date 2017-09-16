@@ -176,13 +176,13 @@ void LogonCommClientSocket::HandleSessionInfo(WorldPacket& recvData)
 
 void LogonCommClientSocket::HandlePong(WorldPacket& recvData)
 {
-    latency = getMSTime() - pingtime;
+    latency = Util::getMSTime() - pingtime;
     last_pong = (uint32)UNIXTIME;
 }
 
 void LogonCommClientSocket::SendPing()
 {
-    pingtime = getMSTime();
+    pingtime = Util::getMSTime();
     WorldPacket data(LRCMSG_LOGON_PING_STATUS, 4);
     SendPacket(&data, false);
 
@@ -279,7 +279,7 @@ void LogonCommClientSocket::UpdateAccountCount(uint32 account_id, uint8 add)
 
 void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket& recvData)
 {
-    uint32 t = getMSTime();
+    auto startTime = Util::TimeNow();
     uint32 realm_id;
     uint32 account_id;
     QueryResult* result;
@@ -340,7 +340,7 @@ void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket& recvData)
 
         uncompressed.clear();
     }
-    LogNotice("LogonCommClient : Build character mapping in %ums. (%u)", getMSTime() - t, mapping_to_send.size());
+    LogNotice("LogonCommClient : Build character mapping in %u ms. (%u)", Util::GetTimeDifferenceToNow(startTime), mapping_to_send.size());
 }
 
 void LogonCommClientSocket::CompressAndSend(ByteBuffer& uncompressed)

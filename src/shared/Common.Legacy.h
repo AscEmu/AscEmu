@@ -250,7 +250,7 @@ static inline int long2int32(const double value)
     #define TRUE  1
 #endif
 
-#include "Timer.h"
+#include "Util.hpp"
 
 inline void reverse_array(uint8* pointer, size_t count)
 {

@@ -933,7 +933,7 @@ void WorldSession::HandleBuyBackOpcode(WorldPacket& recv_data)
         WorldPacket data(16);
         data.Initialize(SMSG_BUY_ITEM);
         data << uint64(guid);
-        data << getMSTime(); //VLack: seen is Aspire code
+        data <<Util::getMSTime(); //VLack: seen is Aspire code
         data << uint32(itemid);
         data << uint32(amount);
 #else
@@ -1239,7 +1239,7 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recv_data)   // drag &
     WorldPacket data(SMSG_BUY_ITEM, 22);
     data << uint64(srcguid);
 #if VERSION_STRING != Cata
-    data << getMSTime();
+    data <<Util::getMSTime();
     data << uint32(itemid);
 #else
     data << uint32(slot + 1);       // numbered from 1 at client
@@ -1408,7 +1408,7 @@ void WorldSession::HandleBuyItemOpcode(WorldPacket& recv_data)   // right-click 
     WorldPacket data(45);
     data.Initialize(SMSG_BUY_ITEM);
     data << uint64(srcguid);
-    data << getMSTime();
+    data <<Util::getMSTime();
     data << uint32(itemid);
     data << uint32(amount * creature_item.amount);
 

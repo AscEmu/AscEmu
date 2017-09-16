@@ -268,7 +268,7 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32 opcode, size_t len, const void* 
 void WorldSocket::OnConnect()
 {
     sWorld.increaseAcceptedConnections();
-    _latency = getMSTime();
+    _latency = Util::getMSTime();
 
 #if VERSION_STRING < WotLK
     OutPacket(SMSG_AUTH_CHALLENGE, 4, &mSeed);
@@ -310,7 +310,7 @@ void WorldSocket::_HandleAuthSession(WorldPacket* recvPacket)
     std::string account;
     uint32_t addonSize;
 
-    _latency = getMSTime() - _latency;
+    _latency = Util::getMSTime() - _latency;
 
     try
     {
@@ -361,7 +361,7 @@ void WorldSocket::_HandleAuthSession(WorldPacket* recvPacket)
     uint64 unk4;
     uint32 unk5, unk6, unk7;
 
-    _latency = getMSTime() - _latency;
+    _latency = Util::getMSTime() - _latency;
 
     try
     {
@@ -870,7 +870,7 @@ void WorldLog::LogPacket(uint32 len, uint32 opcode, const uint8* data, uint8 dir
         unsigned int count = 0;
 
         fprintf(m_file, "{%s} Packet: (0x%04X) %s PacketSize = %u stamp = %u accountid = %u\n", (direction ? "SERVER" : "CLIENT"), opcode,
-                getOpcodeName(opcode).c_str(), lenght, getMSTime(), accountid);
+                getOpcodeName(opcode).c_str(), lenght, Util::getMSTime(), accountid);
         fprintf(m_file, "|------------------------------------------------|----------------|\n");
         fprintf(m_file, "|00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |0123456789ABCDEF|\n");
         fprintf(m_file, "|------------------------------------------------|----------------|\n");

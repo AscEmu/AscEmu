@@ -51,7 +51,7 @@ class PeriodicFunctionCaller : public ThreadBase
 #ifndef WIN32
             struct timeval now;
             struct timespec tv;
-            uint32 next = getMSTime() + interval;
+            uint32 next =Util::getMSTime() + interval;
 
             pthread_mutex_init(&abortmutex, NULL);
             pthread_cond_init(&abortcond, NULL);
@@ -61,7 +61,7 @@ class PeriodicFunctionCaller : public ThreadBase
                 if (getMSTime() > next)
                 {
                     cb->execute();
-                    next = getMSTime() + interval;
+                    next =Util::getMSTime() + interval;
                 }
                 gettimeofday(&now, NULL);
                 tv.tv_sec = now.tv_sec + 120;

@@ -2797,7 +2797,7 @@ void Spell::SpellEffectLeap(uint32 i) // Leap
 
         WorldPacket data(SMSG_MOVE_KNOCK_BACK, 50);
         data << playerTarget->GetNewGUID();
-        data << getMSTime();
+        data <<Util::getMSTime();
         data << cosf(playerTarget->GetOrientation());
         data << sinf(playerTarget->GetOrientation());
         data << radius;
@@ -4176,7 +4176,7 @@ void Spell::SpellEffectInterruptCast(uint32 i) // Interrupt Cast
             }
             else
                 // Prevent unit from casting in that school
-                unitTarget->SchoolCastPrevent[school] = duration + getMSTime();
+                unitTarget->SchoolCastPrevent[school] = duration +Util::getMSTime();
 
             TargetSpell->cancel(); // Interrupt the spell cast
         }
@@ -5311,7 +5311,7 @@ void Spell::SpellEffectPlayerPull(uint32 i)
     data << p_target->GetPositionX();
     data << p_target->GetPositionY();
     data << p_target->GetPositionZ();
-    data << getMSTime();
+    data <<Util::getMSTime();
     data << uint8(4);
     data << pullO;
     data << uint32(0x00001000);

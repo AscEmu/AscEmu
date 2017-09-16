@@ -46,7 +46,7 @@ include_directories(
 add_library(${PROJECT_NAME} SHARED ${sources} ${headers})
 add_definitions(-DSCRIPTLIB -DSKIP_ALLOCATOR_SHARING)
 
-target_link_libraries(${PROJECT_NAME} world)
+target_link_libraries(${PROJECT_NAME} world shared)
 
 if(USE_PCH AND PCHSupport_FOUND)
     ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} Setup.h ${CMAKE_CURRENT_SOURCE_DIR}/Setup.cpp)

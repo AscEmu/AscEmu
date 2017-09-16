@@ -300,7 +300,6 @@ void AddonMgr::SaveToDB()
 void AddonMgr::LoadFromDB()
 {
     auto startTime = Util::TimeNow();
-    uint32_t startMSTime = getMSTime();
 
     QueryResult* clientAddonsResult = CharacterDatabase.Query("SELECT name, crc FROM clientaddons");
     if (clientAddonsResult)
@@ -321,7 +320,7 @@ void AddonMgr::LoadFromDB()
 
         delete clientAddonsResult;
 
-        LOG_DEBUG("Loaded %u known addons from table `clientaddons` in %u ms", knownAddonsCount, Util::GetTimeDifferenceToNow(startTime));
+        LOG_DEBUG("Loaded %u known addons from table `clientaddons` in %u ms", knownAddonsCount, Util::GetTimeDifferenceToNow(startTime) );
     }
     else
     {

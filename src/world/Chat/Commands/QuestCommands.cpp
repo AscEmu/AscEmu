@@ -1414,11 +1414,11 @@ bool ChatHandler::HandleQuestFinisherSpawnCommand(const char* args, WorldSession
 bool ChatHandler::HandleQuestLoadCommand(const char* args, WorldSession* m_session)
 {
     BlueSystemMessage(m_session, "Load of quests from the database has been initiated ...", "");
-    uint32 t = getMSTime();
+    auto startTime = Util::TimeNow();
 
     sQuestMgr.LoadExtraQuestStuff();
 
-    BlueSystemMessage(m_session, "Load completed in %u ms.", getMSTime() - t);
+    BlueSystemMessage(m_session, "Load completed in %u ms.", Util::GetTimeDifferenceToNow(startTime));
 
     uint64 guid = m_session->GetPlayer()->GetSelection();
     if (guid == 0)

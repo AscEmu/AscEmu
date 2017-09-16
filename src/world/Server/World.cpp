@@ -733,7 +733,7 @@ void World::sendBroadcastMessageById(uint32_t broadcastId)
 // General Functions
 bool World::setInitialWorldSettings()
 {
-    uint32_t start_time = getMSTime();
+    uint32_t start_time = Util::getMSTime();
 
     Player::InitVisibleUpdateBits();
 
@@ -763,7 +763,7 @@ bool World::setInitialWorldSettings()
     LoadGameObjectModelList(vmapPath);
 
     loadMySQLStores();
-    loadMySQLTablesByTask(start_time);
+    loadMySQLTablesByTask();
     logEntitySize();
 
 #if VERSION_STRING > TBC
@@ -912,8 +912,10 @@ void World::loadMySQLStores()
     sMySQLStore.loadTransportDataTable();
 }
 
-void World::loadMySQLTablesByTask(uint32_t start_time)
+void World::loadMySQLTablesByTask()
 {
+    auto startTime = Util::TimeNow();
+
     new ObjectMgr;
     new QuestMgr;
     new SpellFactoryMgr;
@@ -983,7 +985,7 @@ void World::loadMySQLTablesByTask(uint32_t start_time)
 
     g_chatFilter = new WordFilter();
 
-    LogDetail("WordFilter : Done. Database loaded in %ums.", getMSTime() - start_time);
+    LogDetail("Done. Database loaded in %u ms.", Util::GetTimeDifferenceToNow(startTime));
 
     // calling this puts all maps into our task list.
     sInstanceMgr.Load(&tl);
@@ -1037,9 +1039,9 @@ void World::saveAllPlayersToDb()
     {
         if (itr->second->GetSession())
         {
-            save_start_time = getMSTime();
+            auto startTime = Util::TimeNow();
             itr->second->SaveToDB(false);
-            LogDetail("Saved player `%s` (level %u) in %ums.", itr->second->GetName(), itr->second->getLevel(), getMSTime() - save_start_time);
+            LogDetail("Saved player `%s` (level %u) in %u ms.", itr->second->GetName(), itr->second->getLevel(), Util::GetTimeDifferenceToNow(startTime));
             ++count;
         }
     }

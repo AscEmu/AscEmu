@@ -231,7 +231,7 @@ void TaxiPath::SendMoveForTime(Player* riding, Player* to, uint32 time)
     *data << riding->GetPositionX();
     *data << riding->GetPositionY();
     *data << riding->GetPositionZ();
-    *data << getMSTime();
+    *data <<Util::getMSTime();
     *data << uint8(0);
     *data << uint32(0x00003000);
     *data << uint32(uint32((length * TAXI_TRAVEL_SPEED) - time));

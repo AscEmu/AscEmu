@@ -667,7 +667,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
 
         *data << uint8(moveflags2);
 
-        *data << getMSTime(); // this appears to be time in ms but can be any thing. Maybe packet serializer ?
+        *data <<Util::getMSTime(); // this appears to be time in ms but can be any thing. Maybe packet serializer ?
 
                               // this stuff:
                               //   0x01 -> Enable Swimming?
@@ -812,7 +812,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
 
     if (flags & UPDATEFLAG_TRANSPORT)   //0x2
     {
-        *data << getMSTime();
+        *data <<Util::getMSTime();
     }
 
     if (flags & UPDATEFLAG_ROTATION)   //0x0200
@@ -919,7 +919,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
 
         *data << uint16(moveflags2);
 
-        *data << getMSTime(); // this appears to be time in ms but can be any thing. Maybe packet serializer ?
+        *data <<Util::getMSTime(); // this appears to be time in ms but can be any thing. Maybe packet serializer ?
 
         // this stuff:
         //   0x01 -> Enable Swimming?
@@ -1064,7 +1064,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
 
     if (flags & UPDATEFLAG_TRANSPORT)   //0x2
     {
-        *data << getMSTime();
+        *data <<Util::getMSTime();
     }
 
     if (flags & UPDATEFLAG_VEHICLE)
@@ -1334,7 +1334,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* 
 
         *data << float(unit->getSpeedForType(TYPE_WALK));
 
-        *data << uint32_t(getMSTime());
+        *data << uint32_t(Util::getMSTime());
 
         *data << float(unit->getSpeedForType(TYPE_FLY_BACK));
 
@@ -1463,7 +1463,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* 
     }
 
     if (updateFlags & UPDATEFLAG_TRANSPORT)
-        *data << uint32_t(getMSTime());
+        *data << uint32_t(Util::getMSTime());
 }
 #endif
 

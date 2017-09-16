@@ -472,7 +472,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
         // simplified: just take the fastest speed. less chance of fuckups too
         float speed = (_player->flying_aura) ? _player->getSpeedForType(TYPE_FLY) : (_player->getSpeedForType(TYPE_SWIM) > _player->getSpeedForType(TYPE_RUN)) ? _player->getSpeedForType(TYPE_SWIM) : _player->getSpeedForType(TYPE_RUN);
 
-        _player->SDetector->AddSample(movement_info.position.x, movement_info.position.y, getMSTime(), speed);
+        _player->SDetector->AddSample(movement_info.position.x, movement_info.position.y,Util::getMSTime(), speed);
 
         if (_player->SDetector->IsCheatDetected())
             _player->SDetector->ReportCheater(_player);
@@ -955,7 +955,7 @@ void MovementInfo::write(WorldPacket& data)
 {
     data << flags;
     data << flags2;
-    data << getMSTime();
+    data <<Util::getMSTime();
 
     data << position.x;
     data << position.y;

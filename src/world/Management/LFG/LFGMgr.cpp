@@ -85,7 +85,7 @@ LfgMgr::~LfgMgr()
 /// Load rewards for completing dungeons
 void LfgMgr::LoadRewards()
 {
-    uint32 oldMSTime = getMSTime();
+    auto startTime = Util::TimeNow();
 
     for (LfgRewardMap::iterator itr = m_RewardMap.begin(); itr != m_RewardMap.end(); ++itr)
     {
@@ -149,7 +149,7 @@ void LfgMgr::LoadRewards()
     }
     while (result->NextRow());
 
-    LogDetail("LFGMgr : Loaded %u lfg dungeon rewards from DB", count);
+    LogDetail("LFGMgr : Loaded %u lfg dungeon rewards in %u ms", count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 void LfgMgr::Update(uint32 diff)
