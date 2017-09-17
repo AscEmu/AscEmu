@@ -12,7 +12,6 @@ set(SRC_PACKET_HANDLER_FILES
    ${PATH_PREFIX}/CombatHandler.cpp
    ${PATH_PREFIX}/DuelHandler.cpp
    ${PATH_PREFIX}/GroupHandler.cpp
-   ${PATH_PREFIX}/GMTicket.cpp
    ${PATH_PREFIX}/GuildHandler.cpp
    ${PATH_PREFIX}/HonorHandler.cpp
    ${PATH_PREFIX}/HonorHandler.h

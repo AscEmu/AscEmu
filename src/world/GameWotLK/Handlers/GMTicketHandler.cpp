@@ -167,15 +167,75 @@ void WorldSession::HandleGMTicketGetTicketOpcode(WorldPacket& /*recv_data*/)
 void WorldSession::HandleGMTicketSystemStatusOpcode(WorldPacket& /*recv_data*/)
 {
     WorldPacket data(SMSG_GMTICKET_SYSTEMSTATUS, 4);
-
-    if (sWorld.getGmTicketStatus())
-    {
-        data << uint32_t(TicketSystemOK);
-    }
-    else
-    {
-        data << uint32_t(TicketSystemDisabled);
-    }
-
+    data << uint32_t(sWorld.getGmTicketStatus() ? TicketSystemOK : TicketSystemDisabled);
     SendPacket(&data);
+}
+
+void WorldSession::HandleGMTicketToggleSystemStatusOpcode(WorldPacket& recv_data)
+{
+    if (HasGMPermissions())
+    {
+        sWorld.toggleGmTicketStatus();
+    }
+}
+
+void WorldSession::HandleReportLag(WorldPacket& recv_data)
+{
+    uint32_t lagType;
+    uint32_t mapId;
+    float position_x;
+    float position_y;
+    float position_z;
+
+    recv_data >> lagType;
+    recv_data >> mapId;
+    recv_data >> position_x;
+    recv_data >> position_y;
+    recv_data >> position_z;
+
+    if (GetPlayer() != nullptr)
+    {
+        CharacterDatabase.Execute("INSERT INTO lag_reports (player, account, lag_type, map_id, position_x, position_y, position_z) VALUES(%u, %u, %u, %u, %f, %f, %f)", GetPlayer()->GetLowGUID(), _accountId, lagType, mapId, position_x, position_y, position_z);
+    }
+
+    LogDebugFlag(LF_OPCODE, "Player %s has reported a lagreport with Type: %u on Map: %u", GetPlayer()->GetName(), lagType, mapId);
+}
+
+void WorldSession::HandleGMSurveySubmitOpcode(WorldPacket& recv_data)
+{
+    QueryResult* result = CharacterDatabase.Query("SELECT MAX(survey_id) FROM gm_survey");
+    if (result == nullptr)
+        return;
+
+    uint32_t next_survey_id = result->Fetch()[0].GetUInt32() + 1;
+
+    uint32_t main_survey;
+    recv_data >> main_survey;
+
+    std::unordered_set<uint32> survey_ids;
+    for (uint8_t i = 0; i < 10; ++i)
+    {
+        uint32_t sub_survey_id;
+        recv_data >> sub_survey_id;
+        if (sub_survey_id == 0)
+            break;
+
+        uint8_t answer_id;
+        recv_data >> answer_id;
+
+        std::string comment; // unused empty string
+        recv_data >> comment;
+
+        if (!survey_ids.insert(sub_survey_id).second)
+            continue;
+
+        CharacterDatabase.Execute("INSERT INTO gm_survey_answers VALUES(%u , %u , %u)", next_survey_id, sub_survey_id, answer_id);
+    }
+
+    std::string comment; // receive the player comment for this survey
+    recv_data >> comment;
+
+    CharacterDatabase.Execute("INSERT INTO gm_survey VALUES (%u, %u, %u, \'%s\', UNIX_TIMESTAMP(NOW()))", next_survey_id, GetPlayer()->GetLowGUID(), main_survey, CharacterDatabase.EscapeString(comment).c_str());
+
+    LogDebugFlag(LF_OPCODE, "Player %s has submitted the gm suvey %u successfully.", GetPlayer()->GetName(), next_survey_id);
 }
