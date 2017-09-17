@@ -26,15 +26,15 @@
 #include <Spell/Definitions/PowerType.h>
 #include <Spell/Customization/SpellCustomizations.hpp>
 
-/************************************************************************/
-/* Spell Defs                                                           */
-/************************************************************************/
+ /************************************************************************/
+ /* Spell Defs                                                           */
+ /************************************************************************/
 
 bool FlametongueWeaponPassive(uint32 i, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 
-    if(apply)
+    if (apply)
     {
         // target is always a player
         Item* item = static_cast<Player*>(target)->GetItemInterface()->GetItemByGUID(pAura->itemCasterGUID);
@@ -51,17 +51,17 @@ bool SkyShatterRegalia(uint32 i, Spell* s)
     // Shaman - Skyshatter Regalia - Two Piece Bonus
     // it checks for earth, air, water, fire totems and triggers Totemic Mastery spell 38437.
 
-    if(!s->p_caster)
+    if (!s->p_caster)
         return false;
 
-    if(s->p_caster->summonhandler.HasSummonInSlot(0) &&
-            s->p_caster->summonhandler.HasSummonInSlot(1) &&
-            s->p_caster->summonhandler.HasSummonInSlot(2) &&
-            s->p_caster->summonhandler.HasSummonInSlot(3))
+    if (s->p_caster->summonhandler.HasSummonInSlot(0) &&
+        s->p_caster->summonhandler.HasSummonInSlot(1) &&
+        s->p_caster->summonhandler.HasSummonInSlot(2) &&
+        s->p_caster->summonhandler.HasSummonInSlot(3))
     {
         Aura* aur = sSpellFactoryMgr.NewAura(sSpellCustomizations.GetSpellInfo(38437), 5000, s->p_caster, s->p_caster, true);
 
-        for(uint32 j = 0; j < 3; j++)
+        for (uint32 j = 0; j < 3; j++)
             aur->AddMod(aur->GetSpellInfo()->EffectApplyAuraName[j], aur->GetSpellInfo()->EffectBasePoints[j] + 1, aur->GetSpellInfo()->EffectMiscValue[j], j);
 
         s->p_caster->AddAura(aur);
@@ -74,7 +74,7 @@ bool ManaTide(uint32 i, Spell* s)
 {
     Unit* unitTarget = s->GetUnitTarget();
 
-    if(unitTarget == NULL || unitTarget->IsDead() || unitTarget->getClass() == WARRIOR || unitTarget->getClass() == ROGUE)
+    if (unitTarget == NULL || unitTarget->IsDead() || unitTarget->getClass() == WARRIOR || unitTarget->getClass() == ROGUE)
         return false;
 
     uint32 gain = (uint32)(unitTarget->GetMaxPower(POWER_TYPE_MANA) * 0.06);
@@ -87,9 +87,9 @@ bool EarthShieldDummyAura(uint32 i, Aura* pAura, bool apply)
 {
     Unit* m_target = pAura->GetTarget();
 
-    if(apply)
+    if (apply)
         m_target->AddProcTriggerSpell(379, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, pAura->GetSpellInfo()->procFlags & ~PROC_ON_SPELL_LAND_VICTIM, pAura->GetSpellInfo()->procCharges, NULL, NULL);
-    else if(m_target->GetAuraStackCount(pAura->GetSpellId()) == 1)
+    else if (m_target->GetAuraStackCount(pAura->GetSpellId()) == 1)
         m_target->RemoveProcTriggerSpell(379, pAura->m_casterGuid);
 
     return true;
@@ -99,12 +99,12 @@ bool Reincarnation(uint32 i, Aura* a, bool apply)
 {
     Unit* u_target = a->GetTarget();
 
-    if(!u_target->IsPlayer())
+    if (!u_target->IsPlayer())
         return true;
 
     Player* p_target = static_cast<Player*>(u_target);
 
-    if(apply)
+    if (apply)
         p_target->bReincarnation = true;
     else
         p_target->bReincarnation = false;

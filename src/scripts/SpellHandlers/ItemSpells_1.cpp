@@ -24,18 +24,18 @@
 #include "Objects/Faction.h"
 #include "Spell/SpellAuras.h"
 
-/*
-    How to add a new item spell to the dummy spell handler:
+ /*
+     How to add a new item spell to the dummy spell handler:
 
-    1) Add a new function to handle the spell at the end of this file but before the
-    SetupItemSpells_1() function. SetupItemSpells_1() must always be the last function.
+     1) Add a new function to handle the spell at the end of this file but before the
+     SetupItemSpells_1() function. SetupItemSpells_1() must always be the last function.
 
-    2) Register the dummy spell by adding a new line to the end of the list in the
-    SetupItemSpells_1() function.
+     2) Register the dummy spell by adding a new line to the end of the list in the
+     SetupItemSpells_1() function.
 
-    Please look at how the other spells are handled and try to use the
-    same variable names and formatting style in your new spell handler.
-*/
+     Please look at how the other spells are handled and try to use the
+     same variable names and formatting style in your new spell handler.
+ */
 
 
 bool BreathOfFire(uint32 i, Spell* pSpell)
@@ -267,7 +267,7 @@ bool ReindeerTransformation(uint32 i, Spell* pSpell)
         if (pSpell->p_caster->m_setflycheat)
             pSpell->p_caster->SetMount(22724);
         else*/
-            pSpell->p_caster->SetMount(15902);
+        pSpell->p_caster->SetMount(15902);
     }
     return true;
 }
@@ -557,7 +557,7 @@ bool ExtractGas(uint32 i, Spell* s)
     {
         if ((*itr)->IsCreature())
         {
-            creature = static_cast< Creature* >((*itr));
+            creature = static_cast<Creature*>((*itr));
             cloudtype = creature->GetEntry();
 
             if (cloudtype == 24222 || cloudtype == 17408 || cloudtype == 17407 || cloudtype == 17378)
@@ -876,7 +876,7 @@ bool X53Mount(uint32 i, Aura *a, bool apply)
     if (apply)
     {
         uint32 newspell = 0;
-        Player* p = static_cast< Player* >(a->GetTarget());
+        Player* p = static_cast<Player*>(a->GetTarget());
         auto area = p->GetArea();
         uint32 skill = p->_GetSkillLineCurrent(SKILL_RIDING, true);
 

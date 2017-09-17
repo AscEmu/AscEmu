@@ -92,9 +92,9 @@ bool Cannibalize(uint32 i, Spell* s)
     {
         if ((*itr)->IsCreature())
         {
-            if (static_cast< Creature* >((*itr))->getDeathState() == CORPSE)
+            if (static_cast<Creature*>((*itr))->getDeathState() == CORPSE)
             {
-                CreatureProperties const* cn = static_cast< Creature* >((*itr))->GetCreatureProperties();
+                CreatureProperties const* cn = static_cast<Creature*>((*itr))->GetCreatureProperties();
                 if (cn->Type == UNIT_TYPE_HUMANOID || cn->Type == UNIT_TYPE_UNDEAD)
                 {
                     if (s->p_caster->GetDistance2dSq((*itr)) < rad)
@@ -258,7 +258,7 @@ bool DeadlyThrowInterrupt(uint32 i, Aura* a, bool apply)
     }
 
     m_target->InterruptSpell();
-    m_target->SchoolCastPrevent[school] = 3000 +Util::getMSTime();
+    m_target->SchoolCastPrevent[school] = 3000 + Util::getMSTime();
 
     return true;
 }

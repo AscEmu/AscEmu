@@ -2782,7 +2782,7 @@ bool PlantForsakenBanner(uint32 i, Spell* pSpell)
     if (pQuest == nullptr)
         return true;
 
-    Creature* target = static_cast< Creature* >(pSpell->GetUnitTarget());
+    Creature* target = static_cast<Creature*>(pSpell->GetUnitTarget());
     if (target == nullptr || target->isAlive())
         return true;
 
@@ -2868,7 +2868,7 @@ bool OrbOfMurlocControl(uint32 i, Spell* pSpell)
                 pQuest->SetMobCount(0, pQuest->GetMobCount(0) + 1);
                 pQuest->SendUpdateAddKill(0);
                 Creature* FreedGreengill = sEAS.SpawnCreature(pPlayer, 25085, pTarget->GetPositionX(),
-                                                              pTarget->GetPositionY(), pTarget->GetPositionZ(), pTarget->GetOrientation(), 0);
+                    pTarget->GetPositionY(), pTarget->GetPositionZ(), pTarget->GetOrientation(), 0);
                 FreedGreengill->Despawn(6 * 60 * 1000, 0);
                 pTarget->Despawn(0, 6 * 60 * 1000);
                 pQuest->UpdatePlayerFields();
@@ -3486,7 +3486,7 @@ bool ReleaseUmisYeti(uint32 i, Spell* pSpell)
     if (qLogEntry == nullptr)
         return true;
 
-    Creature* target = static_cast< Creature* >(pSpell->GetUnitTarget());
+    Creature* target = static_cast<Creature*>(pSpell->GetUnitTarget());
     static const uint32 friends[] = { 10978, 7583, 10977 };
     for (uint32 j = 0; j < sizeof(friends) / sizeof(uint32); j++)
     {

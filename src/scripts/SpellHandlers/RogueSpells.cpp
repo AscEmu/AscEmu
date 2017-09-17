@@ -32,7 +32,7 @@
 
 bool Preparation(uint32 i, Spell* pSpell)
 {
-    if(!pSpell->p_caster) return true;
+    if (!pSpell->p_caster) return true;
 
     pSpell->p_caster->ClearCooldownForSpell(5277);          // Evasion Rank 1
     pSpell->p_caster->ClearCooldownForSpell(26669);         // Evasion Rank 2
@@ -44,7 +44,7 @@ bool Preparation(uint32 i, Spell* pSpell)
     pSpell->p_caster->ClearCooldownForSpell(26889);         // Vanish Rank 3
     pSpell->p_caster->ClearCooldownForSpell(14177);         // Cold Blood
     pSpell->p_caster->ClearCooldownForSpell(36554);         // Shadowstep
-    if(pSpell->p_caster->HasAura(56819))                    // Glyph of Preparation item = 42968 casts 57127 that apply aura 56819.
+    if (pSpell->p_caster->HasAura(56819))                    // Glyph of Preparation item = 42968 casts 57127 that apply aura 56819.
     {
         pSpell->p_caster->ClearCooldownForSpell(13877);     // Blade Flurry
         pSpell->p_caster->ClearCooldownForSpell(51722);     // Dismantle
@@ -56,26 +56,26 @@ bool Preparation(uint32 i, Spell* pSpell)
 bool Shiv(uint32 i, Spell* pSpell)
 {
     Unit* pTarget = pSpell->GetUnitTarget();
-    if(!pSpell->p_caster || !pTarget) return true;
+    if (!pSpell->p_caster || !pTarget) return true;
 
     pSpell->p_caster->CastSpell(pTarget->GetGUID(), 5940, true);
 
     Item* it = pSpell->p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-    if(!it)
+    if (!it)
         return true;
 
     EnchantmentInstance* ench = it->GetEnchantment(TEMP_ENCHANTMENT_SLOT);
-    if(ench)
+    if (ench)
     {
         DBC::Structures::SpellItemEnchantmentEntry const* Entry = ench->Enchantment;
-        for(uint8 c = 0; c < 3; c++)
+        for (uint8 c = 0; c < 3; c++)
         {
-            if(Entry->type[c] && Entry->spell[c])
+            if (Entry->type[c] && Entry->spell[c])
             {
                 SpellInfo* sp = sSpellCustomizations.GetSpellInfo(Entry->spell[c]);
-                if(!sp) return true;
+                if (!sp) return true;
 
-                if(sp->custom_c_is_flags & SPELL_FLAG_IS_POISON)
+                if (sp->custom_c_is_flags & SPELL_FLAG_IS_POISON)
                 {
                     pSpell->p_caster->CastSpell(pTarget->GetGUID(), Entry->spell[c], true);
                 }
@@ -87,10 +87,10 @@ bool Shiv(uint32 i, Spell* pSpell)
 
 bool ImprovedSprint(uint32 i, Spell* pSpell)
 {
-    if(i == 0)
+    if (i == 0)
     {
         Unit* target = pSpell->GetUnitTarget();
-        if(target == NULL)
+        if (target == NULL)
             return true;
 
         target->RemoveAllAurasByMechanic(MECHANIC_ENSNARED, -1, true);
@@ -104,7 +104,7 @@ bool CutToTheChase(uint32 i, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 
-    if(apply)
+    if (apply)
     {
         static uint32 classMask[3] = { 0x20000, 0x8, 0 };
         target->AddProcTriggerSpell(pAura->GetSpellInfo(), pAura->GetSpellInfo(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_CAST_SPELL | PROC_TARGET_SELF, 0, NULL, classMask);
@@ -119,10 +119,10 @@ bool DeadlyBrew(uint32 i, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 
-    if(apply)
+    if (apply)
     {
         static uint32 classMask[3] = { 0x1000A000, 0, 0 };
-        target->AddProcTriggerSpell(pAura->GetSpellInfo(), pAura->GetSpellInfo(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_CAST_SPELL , 0, NULL, classMask);
+        target->AddProcTriggerSpell(pAura->GetSpellInfo(), pAura->GetSpellInfo(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_CAST_SPELL, 0, NULL, classMask);
     }
     else
         target->RemoveProcTriggerSpell(pAura->GetSpellId(), pAura->m_casterGuid);
@@ -134,18 +134,18 @@ bool CloakOfShadows(uint32 i, Spell* s)
 {
     Unit* unitTarget = s->GetUnitTarget();
 
-    if(!unitTarget || !unitTarget->isAlive())
+    if (!unitTarget || !unitTarget->isAlive())
         return false;
 
     Aura* pAura;
-    for(uint32 j = MAX_NEGATIVE_AURAS_EXTEDED_START; j < MAX_NEGATIVE_AURAS_EXTEDED_END; ++j)
+    for (uint32 j = MAX_NEGATIVE_AURAS_EXTEDED_START; j < MAX_NEGATIVE_AURAS_EXTEDED_END; ++j)
     {
         pAura = unitTarget->m_auras[j];
-        if(pAura != NULL && !pAura->IsPassive()
-                && !pAura->IsPositive()
-                && !(pAura->GetSpellInfo()->Attributes & ATTRIBUTES_IGNORE_INVULNERABILITY)
-                && pAura->GetSpellInfo()->School != 0
-          )
+        if (pAura != NULL && !pAura->IsPassive()
+            && !pAura->IsPositive()
+            && !(pAura->GetSpellInfo()->Attributes & ATTRIBUTES_IGNORE_INVULNERABILITY)
+            && pAura->GetSpellInfo()->School != 0
+            )
             pAura->Remove();
     }
 
@@ -157,29 +157,29 @@ bool CheatDeath(uint32 i, Aura* a, bool apply)
     Unit* u_target = a->GetTarget();
     Player* p_target = NULL;
 
-    if(u_target->IsPlayer())
-        p_target = static_cast< Player* >(u_target);
+    if (u_target->IsPlayer())
+        p_target = static_cast<Player*>(u_target);
 
-    if(p_target != NULL)
+    if (p_target != NULL)
     {
         int32 m = (int32)(8.0f * p_target->CalcRating(PCR_MELEE_CRIT_RESILIENCE));
-        if(m > 90)
+        if (m > 90)
             m = 90;
 
         float val;
 
-        if(apply)
+        if (apply)
         {
             a->SetPositive();
 
-            val = - m / 100.0f;
+            val = -m / 100.0f;
         }
         else
         {
             val = m / 100.0f;
         }
 
-        for(uint32 x = 0; x < 7; x++)
+        for (uint32 x = 0; x < 7; x++)
             p_target->DamageTakenPctMod[x] += val;
     }
 
@@ -189,14 +189,14 @@ bool CheatDeath(uint32 i, Aura* a, bool apply)
 bool MasterOfSubtlety(uint32 i, Aura* a, bool apply)
 {
     Unit* u_target = a->GetTarget();
-    if(!u_target->IsPlayer())
+    if (!u_target->IsPlayer())
         return true;
 
-    Player* p_target = static_cast< Player* >(u_target);
+    Player* p_target = static_cast<Player*>(u_target);
 
     int32 amount = a->GetModAmount(i);
 
-    if(apply)
+    if (apply)
     {
         p_target->m_outStealthDamageBonusPct += amount;
         p_target->m_outStealthDamageBonusPeriod = 6;        // 6 seconds
@@ -217,23 +217,23 @@ bool PreyOnTheWeakPeriodicDummy(uint32 i, Aura* a, bool apply)
     Unit* m_target = a->GetTarget();
     Player* p_target = NULL;
 
-    if(!apply)
+    if (!apply)
         return true;
 
-    if(m_target->IsPlayer())
-        p_target = static_cast< Player* >(m_target);
+    if (m_target->IsPlayer())
+        p_target = static_cast<Player*>(m_target);
 
-    if(p_target != NULL && p_target->getClass() == ROGUE)
+    if (p_target != NULL && p_target->getClass() == ROGUE)
     {
 
         Unit* target = p_target->GetMapMgr()->GetUnit(p_target->GetTarget());
-        if(target == NULL)
+        if (target == NULL)
             return true;
 
         uint32 plrHP = p_target->GetHealth();
         uint32 targetHP = target->GetHealth();
 
-        if(plrHP > targetHP)
+        if (plrHP > targetHP)
             p_target->CastSpell(p_target, 58670, true);
     }
 
@@ -243,17 +243,17 @@ bool PreyOnTheWeakPeriodicDummy(uint32 i, Aura* a, bool apply)
 bool KillingSpreePeriodicDummy(uint32 i, Aura* a, bool apply)
 {
     Unit* m_target = a->GetTarget();
-    if(!m_target->IsPlayer())
+    if (!m_target->IsPlayer())
         return true;
 
-    Player* p_target = static_cast< Player* >(m_target);
+    Player* p_target = static_cast<Player*>(m_target);
 
     //Find targets around aura's target in range of 10 yards.
     //It can hit same target multiple times.
-    for(std::set<Object*>::iterator itr = p_target->GetInRangeSetBegin(); itr != p_target->GetInRangeSetEnd(); ++itr)
+    for (std::set<Object*>::iterator itr = p_target->GetInRangeSetBegin(); itr != p_target->GetInRangeSetEnd(); ++itr)
     {
         //Get the range of 10 yards from Effect 1
-        float r = static_cast< float >( a->m_spellInfo->EffectRadiusIndex[1] );
+        float r = static_cast<float>(a->m_spellInfo->EffectRadiusIndex[1]);
 
         //Get initial position of aura target (caster)
         LocationVector source = p_target->GetPosition();
@@ -262,17 +262,17 @@ bool KillingSpreePeriodicDummy(uint32 i, Aura* a, bool apply)
         float dist = (*itr)->CalcDistance(source);
 
         //Radius check
-        if(dist <= r)
+        if (dist <= r)
         {
             //Avoid targeting anything that is not unit and not alive
-            if(!(*itr)->IsUnit() || !static_cast< Unit* >((*itr))->isAlive())
+            if (!(*itr)->IsUnit() || !static_cast<Unit*>((*itr))->isAlive())
                 continue;
 
-                uint64 spellTarget = (*itr)->GetGUID();
-                //SPELL_EFFECT_TELEPORT
-                p_target->CastSpell(spellTarget, 57840, true);
-                //SPELL_EFFECT_NORMALIZED_WEAPON_DMG and triggering 57842 with the same effect
-                p_target->CastSpell(spellTarget, 57841, true);
+            uint64 spellTarget = (*itr)->GetGUID();
+            //SPELL_EFFECT_TELEPORT
+            p_target->CastSpell(spellTarget, 57840, true);
+            //SPELL_EFFECT_NORMALIZED_WEAPON_DMG and triggering 57842 with the same effect
+            p_target->CastSpell(spellTarget, 57841, true);
         }
 
     }
@@ -284,7 +284,7 @@ bool KillingSpreeEffectDummy(uint32 i, Spell* s)
 {
     Player* p_caster = s->p_caster;
 
-    if(p_caster == NULL)
+    if (p_caster == NULL)
         return true;
 
     //SPELL_EFFECT_BREAK_PLAYER_TARGETING

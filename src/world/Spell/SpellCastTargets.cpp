@@ -38,15 +38,15 @@ SpellCastTargets::SpellCastTargets(
     uint64_t itemTarget,
     LocationVector source,
     LocationVector destination) : m_targetMask(TargetMask),
-                                  m_unitTarget(unitTarget),
-                                  m_itemTarget(itemTarget)
+    m_unitTarget(unitTarget),
+    m_itemTarget(itemTarget)
 {
     setSource(source);
     setDestination(destination);
 }
 
-SpellCastTargets::SpellCastTargets(uint64_t unitTarget): m_targetMask(0x2),
-                                                       m_unitTarget(unitTarget)
+SpellCastTargets::SpellCastTargets(uint64_t unitTarget) : m_targetMask(0x2),
+m_unitTarget(unitTarget)
 {
 }
 
@@ -131,7 +131,7 @@ void SpellCastTargets::read(WorldPacket& data, uint64 caster)
                     m_unitTarget = player->GetTargetGUID();
                 }
             }
-                break;
+            break;
             default:
                 m_unitTarget = caster;
                 break;

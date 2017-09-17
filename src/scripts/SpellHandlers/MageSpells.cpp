@@ -24,7 +24,9 @@
 
 bool Cold_Snap(uint32 i, Spell* pSpell)
 {
-    if(!pSpell->p_caster) return true;
+    if (!pSpell->p_caster)
+        return true;
+
     pSpell->p_caster->ClearCooldownsOnLine(6, pSpell->GetSpellInfo()->Id);
     return true;
 }
@@ -32,7 +34,7 @@ bool Cold_Snap(uint32 i, Spell* pSpell)
 bool Living_Bomb(uint32 i, Aura* pAura, bool apply)
 {
     Unit* caster = pAura->GetUnitCaster();
-    if(caster && !apply)
+    if (caster && !apply)
         caster->CastSpell(pAura->GetTarget(), pAura->GetSpellInfo()->EffectBasePoints[i] + 1, true);
     return true;
 }
@@ -40,13 +42,13 @@ bool Living_Bomb(uint32 i, Aura* pAura, bool apply)
 bool HotStreak(uint32 i, Aura* pAura, bool apply)
 {
 #if VERSION_STRING != Cata
-    if(i == 0)
+    if (i == 0)
     {
         auto caster = pAura->GetUnitCaster();
         if (caster == nullptr)
             return true;
 
-        if(apply)
+        if (apply)
         {
             static uint32 classMask[3] = { 0x13, 0x21000, 0 };
             caster->AddProcTriggerSpell(48108, pAura->GetSpellInfo()->Id, caster->GetGUID(), pAura->GetSpellInfo()->EffectBasePoints[i] + 1, PROC_ON_SPELL_CRIT_HIT | PROC_ON_SPELL_HIT, 0, pAura->GetSpellInfo()->EffectSpellClassMask[i], classMask);
@@ -61,10 +63,10 @@ bool HotStreak(uint32 i, Aura* pAura, bool apply)
 bool SummonWaterElemental(uint32 i, Spell* pSpell)
 {
     Unit* caster = pSpell->u_caster;
-    if(caster == NULL)
+    if (caster == NULL)
         return true;
 
-    if(caster->HasAura(70937))    // Glyph of Eternal Water
+    if (caster->HasAura(70937))    // Glyph of Eternal Water
         caster->CastSpell(caster, 70908, true);
     else
         caster->CastSpell(caster, 70907, true);
@@ -76,9 +78,9 @@ bool TormentOfTheWeak(uint32 i, Aura* a, bool apply)
 {
     Unit* m_target = a->GetTarget();
 
-    if(m_target->IsPlayer())
+    if (m_target->IsPlayer())
     {
-        static_cast< Player* >(m_target)->m_IncreaseDmgSnaredSlowed += ((apply) ? 1 : -1) * (uint32)(((float) a->GetModAmount(i)) / 100);
+        static_cast<Player*>(m_target)->m_IncreaseDmgSnaredSlowed += ((apply) ? 1 : -1) * (uint32)(((float)a->GetModAmount(i)) / 100);
     }
 
     return true;
@@ -88,10 +90,10 @@ bool FingersOfFrost(uint32 i, Aura* a, bool apply) // Should be visible to clien
 {
     Player* caster = a->GetPlayerCaster();
 
-    if(caster == NULL)
+    if (caster == NULL)
         return true;
 
-    if(apply)
+    if (apply)
         caster->SetTriggerChill(44544, a->GetModAmount(i), false);
     else
         caster->SetTriggerChill(0, 0, false);
@@ -103,10 +105,10 @@ bool BrainFreeze(uint32 i, Aura* a, bool apply)
 {
     Player* caster = a->GetPlayerCaster();
 
-    if(caster == NULL)
+    if (caster == NULL)
         return true;
 
-    if(apply)
+    if (apply)
         caster->SetTriggerChill(57761, a->GetModAmount(i), false);
     else
         caster->SetTriggerChill(0, 0, false);
@@ -118,11 +120,11 @@ bool MagicAbsorbtion(uint32 i, Aura* a, bool apply)
 {
     Unit* m_target = a->GetTarget();
 
-    if(m_target->IsPlayer())
+    if (m_target->IsPlayer())
     {
         Player* p_target = static_cast<Player*>(m_target);
 
-        if(apply)
+        if (apply)
             p_target->m_RegenManaOnSpellResist += (a->GetModAmount(i) / 100);
         else
             p_target->m_RegenManaOnSpellResist -= (a->GetModAmount(i) / 100);
@@ -134,8 +136,8 @@ bool MagicAbsorbtion(uint32 i, Aura* a, bool apply)
 bool MirrorImage(uint32 i, Aura* pAura, bool apply)
 {
     Unit* caster = pAura->GetUnitCaster();
-    if(caster != NULL && apply && i == 2)
-        if(caster->GetGUID() == pAura->GetTarget()->GetCreatedByGUID())
+    if (caster != NULL && apply && i == 2)
+        if (caster->GetGUID() == pAura->GetTarget()->GetCreatedByGUID())
             caster->CastSpell(pAura->GetTarget(), pAura->GetSpellInfo()->EffectTriggerSpell[i], true);
 
     return true;

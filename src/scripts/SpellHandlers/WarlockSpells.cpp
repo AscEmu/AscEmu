@@ -27,18 +27,18 @@
 #include <Spell/Customization/SpellCustomizations.hpp>
 #include <Units/Creatures/Pet.h>
 
-//////////////////////////////////////////////////////////////
-//bool SoulLinkParent( uint32 i, Spell *s )
-//
-//Precondition(s)
-//  Caster is a Player.
-//  Target is a Unit, a warlock pet
-//
-//Effect(s)
-//  Makes the warlock pet cast the Soul Link owner aree aura
-//
-//
-/////////////////////////////////////////////////////////////
+ //////////////////////////////////////////////////////////////
+ //bool SoulLinkParent( uint32 i, Spell *s )
+ //
+ //Precondition(s)
+ //  Caster is a Player.
+ //  Target is a Unit, a warlock pet
+ //
+ //Effect(s)
+ //  Makes the warlock pet cast the Soul Link owner aree aura
+ //
+ //
+ /////////////////////////////////////////////////////////////
 bool SoulLinkParent(uint32 i, Spell* s)
 {
     if (s->p_caster == nullptr)

@@ -30,306 +30,306 @@
 
 class ArmyOfTheDeadGhoulAI : public CreatureAIScript
 {
-    public:
+public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(ArmyOfTheDeadGhoulAI);
-        ArmyOfTheDeadGhoulAI(Creature* c) : CreatureAIScript(c)
+    ADD_CREATURE_FACTORY_FUNCTION(ArmyOfTheDeadGhoulAI);
+    ArmyOfTheDeadGhoulAI(Creature* c) : CreatureAIScript(c)
+    {
+        _unit->GetAIInterface()->m_canMove = false;
+    }
+
+    void OnLoad()
+    {
+
+        RegisterAIUpdateEvent(200);
+
+        if (_unit->IsSummon())
         {
-            _unit->GetAIInterface()->m_canMove = false;
+            Summon* s = static_cast<Summon*>(_unit);
+
+            float parent_bonus = s->GetOwner()->GetDamageDoneMod(SCHOOL_NORMAL) * 0.04f;
+
+            s->SetMinDamage(s->GetMinDamage() + parent_bonus);
+            s->SetMaxDamage(s->GetMaxDamage() + parent_bonus);
         }
+    }
 
-        void OnLoad()
-        {
-
-            RegisterAIUpdateEvent(200);
-
-            if (_unit->IsSummon())
-            {
-                Summon* s = static_cast< Summon* >(_unit);
-
-                float parent_bonus = s->GetOwner()->GetDamageDoneMod(SCHOOL_NORMAL) * 0.04f;
-
-                s->SetMinDamage(s->GetMinDamage() + parent_bonus);
-                s->SetMaxDamage(s->GetMaxDamage() + parent_bonus);
-            }
-        }
-
-        void AIUpdate()
-        {
-            _unit->CastSpell(_unit->GetGUID(), 20480, false);
-            RemoveAIUpdateEvent();
-            _unit->GetAIInterface()->m_canMove = true;
-        }
+    void AIUpdate()
+    {
+        _unit->CastSpell(_unit->GetGUID(), 20480, false);
+        RemoveAIUpdateEvent();
+        _unit->GetAIInterface()->m_canMove = true;
+    }
 };
 
 class ShadowFiendAI : public CreatureAIScript
 {
-    public:
+public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(ShadowFiendAI);
-        ShadowFiendAI(Creature* c) : CreatureAIScript(c)
-        {
-        }
+    ADD_CREATURE_FACTORY_FUNCTION(ShadowFiendAI);
+    ShadowFiendAI(Creature* c) : CreatureAIScript(c)
+    {
+    }
 
-        void OnLoad()
+    void OnLoad()
+    {
+        if (_unit->IsPet())
         {
-            if (_unit->IsPet())
+            Pet* s = static_cast<Pet*>(_unit);
+            Player* owner = s->GetPetOwner();
+
+            float owner_bonus = static_cast<float>(owner->GetDamageDoneMod(SCHOOL_SHADOW) * 0.375f); // 37.5%
+            s->BaseAttackType = SCHOOL_SHADOW; // Melee hits are supposed to do damage with the shadow school
+            s->SetBaseAttackTime(MELEE, 1500); // Shadowfiend is supposed to do 10 attacks, sometimes it can be 11
+            s->SetMinDamage(s->GetMinDamage() + owner_bonus);
+            s->SetMaxDamage(s->GetMaxDamage() + owner_bonus);
+            s->BaseDamage[0] += owner_bonus;
+            s->BaseDamage[1] += owner_bonus;
+
+            Unit* uTarget = s->GetMapMgr()->GetUnit(owner->GetTargetGUID());
+            if ((uTarget != NULL) && isAttackable(owner, uTarget))
             {
-                Pet* s = static_cast< Pet* >(_unit);
-                Player* owner = s->GetPetOwner();
-
-                float owner_bonus = static_cast<float>(owner->GetDamageDoneMod(SCHOOL_SHADOW) * 0.375f); // 37.5%
-                s->BaseAttackType = SCHOOL_SHADOW; // Melee hits are supposed to do damage with the shadow school
-                s->SetBaseAttackTime(MELEE, 1500); // Shadowfiend is supposed to do 10 attacks, sometimes it can be 11
-                s->SetMinDamage(s->GetMinDamage() + owner_bonus);
-                s->SetMaxDamage(s->GetMaxDamage() + owner_bonus);
-                s->BaseDamage[0] += owner_bonus;
-                s->BaseDamage[1] += owner_bonus;
-
-                Unit* uTarget = s->GetMapMgr()->GetUnit(owner->GetTargetGUID());
-                if ((uTarget != NULL) && isAttackable(owner, uTarget))
-                {
-                    s->GetAIInterface()->AttackReaction(uTarget, 1);
-                    s->GetAIInterface()->setNextTarget(uTarget);
-                }
+                s->GetAIInterface()->AttackReaction(uTarget, 1);
+                s->GetAIInterface()->setNextTarget(uTarget);
             }
         }
+    }
 };
 
 class MirrorImageAI : public CreatureAIScript
 {
-    public:
+public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(MirrorImageAI);
-        MirrorImageAI(Creature* c) : CreatureAIScript(c)
-        {
-        }
+    ADD_CREATURE_FACTORY_FUNCTION(MirrorImageAI);
+    MirrorImageAI(Creature* c) : CreatureAIScript(c)
+    {
+    }
 
-        void OnLoad()
+    void OnLoad()
+    {
+        if (_unit->IsSummon())
         {
-            if (_unit->IsSummon())
+            Summon* s = static_cast<Summon*>(_unit);
+            Unit* owner = s->GetOwner();
+
+            owner->CastSpell(_unit, 45204, true);   // clone me
+            owner->CastSpell(_unit, 58838, true);   // inherit threat list
+
+            // Mage mirror image spell
+            if (_unit->GetCreatedBySpell() == 58833)
             {
-                Summon* s = static_cast< Summon* >(_unit);
-                Unit* owner = s->GetOwner();
+                _unit->SetMaxHealth(2500);
+                _unit->SetHealth(2500);
+                _unit->SetMaxPower(POWER_TYPE_MANA, owner->GetMaxPower(POWER_TYPE_MANA));
+                _unit->SetPower(POWER_TYPE_MANA, owner->GetPower(POWER_TYPE_MANA));
 
-                owner->CastSpell(_unit, 45204, true);   // clone me
-                owner->CastSpell(_unit, 58838, true);   // inherit threat list
+                DBC::Structures::SpellRangeEntry const* range = NULL;
 
-                // Mage mirror image spell
-                if (_unit->GetCreatedBySpell() == 58833)
-                {
-                    _unit->SetMaxHealth(2500);
-                    _unit->SetHealth(2500);
-                    _unit->SetMaxPower(POWER_TYPE_MANA, owner->GetMaxPower(POWER_TYPE_MANA));
-                    _unit->SetPower(POWER_TYPE_MANA, owner->GetPower(POWER_TYPE_MANA));
+                AI_Spell sp1;
+                sp1.entryId = 59638;
+                sp1.spell = sSpellCustomizations.GetSpellInfo(sp1.entryId);
+                if (!sp1.spell)
+                    return;
 
-                    DBC::Structures::SpellRangeEntry const* range = NULL;
+                sp1.spellType = STYPE_DAMAGE;
+                sp1.agent = AGENT_SPELL;
+                sp1.spelltargetType = TTYPE_SINGLETARGET;
+                sp1.cooldown = 0;
+                sp1.cooldowntime = 0;
+                sp1.Misc2 = 0;
+                sp1.procCount = 0;
+                sp1.procChance = 100;
+                range = sSpellRangeStore.LookupEntry(sp1.spell->rangeIndex);
+                sp1.minrange = GetMinRange(range);
+                sp1.maxrange = GetMaxRange(range);
 
-                    AI_Spell sp1;
-                    sp1.entryId = 59638;
-                    sp1.spell = sSpellCustomizations.GetSpellInfo(sp1.entryId);
-                    if (!sp1.spell)
-                        return;
+                _unit->GetAIInterface()->addSpellToList(&sp1);
 
-                    sp1.spellType = STYPE_DAMAGE;
-                    sp1.agent = AGENT_SPELL;
-                    sp1.spelltargetType = TTYPE_SINGLETARGET;
-                    sp1.cooldown = 0;
-                    sp1.cooldowntime = 0;
-                    sp1.Misc2 = 0;
-                    sp1.procCount = 0;
-                    sp1.procChance = 100;
-                    range = sSpellRangeStore.LookupEntry(sp1.spell->rangeIndex);
-                    sp1.minrange = GetMinRange(range);
-                    sp1.maxrange = GetMaxRange(range);
+                AI_Spell sp2;
+                sp2.entryId = 59637;
+                sp2.spell = sSpellCustomizations.GetSpellInfo(sp2.entryId);
+                if (!sp2.spell)
+                    return;
 
-                    _unit->GetAIInterface()->addSpellToList(&sp1);
+                sp2.spellType = STYPE_DAMAGE;
+                sp2.agent = AGENT_SPELL;
+                sp2.spelltargetType = TTYPE_SINGLETARGET;
+                sp2.cooldown = 0;
+                sp2.cooldowntime = 0;
+                sp2.Misc2 = 0;
+                sp2.procCount = 0;
+                sp2.procChance = 100;
+                range = sSpellRangeStore.LookupEntry(sp2.spell->rangeIndex);
+                sp2.minrange = GetMinRange(range);
+                sp2.maxrange = GetMaxRange(range);
 
-                    AI_Spell sp2;
-                    sp2.entryId = 59637;
-                    sp2.spell = sSpellCustomizations.GetSpellInfo(sp2.entryId);
-                    if (!sp2.spell)
-                        return;
-
-                    sp2.spellType = STYPE_DAMAGE;
-                    sp2.agent = AGENT_SPELL;
-                    sp2.spelltargetType = TTYPE_SINGLETARGET;
-                    sp2.cooldown = 0;
-                    sp2.cooldowntime = 0;
-                    sp2.Misc2 = 0;
-                    sp2.procCount = 0;
-                    sp2.procChance = 100;
-                    range = sSpellRangeStore.LookupEntry(sp2.spell->rangeIndex);
-                    sp2.minrange = GetMinRange(range);
-                    sp2.maxrange = GetMaxRange(range);
-
-                    _unit->GetAIInterface()->addSpellToList(&sp2);
-                }
+                _unit->GetAIInterface()->addSpellToList(&sp2);
             }
         }
+    }
 };
 
 
 class DancingRuneWeaponAI : public CreatureAIScript
 {
-    public:
+public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(DancingRuneWeaponAI);
-        DancingRuneWeaponAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(DancingRuneWeaponAI);
+    DancingRuneWeaponAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        dpsCycle = 0;
+        dpsSpell = 0;
+    }
+
+    void OnLoad()
+    {
+        _unit->SetDisplayId(_unit->GetCreatureProperties()->Female_DisplayID);
+        _unit->SetBaseAttackTime(MELEE, 2000);
+
+        if (_unit->IsSummon())
         {
-            dpsCycle = 0;
-            dpsSpell = 0;
-        }
+            Summon* s = static_cast<Summon*>(_unit);
+            Unit* owner = s->GetOwner();
 
-        void OnLoad()
-        {
-            _unit->SetDisplayId(_unit->GetCreatureProperties()->Female_DisplayID);
-            _unit->SetBaseAttackTime(MELEE, 2000);
-
-            if (_unit->IsSummon())
+            if (owner->IsPlayer())
             {
-                Summon* s = static_cast< Summon* >(_unit);
-                Unit* owner = s->GetOwner();
+                Player* pOwner = static_cast<Player*>(owner);
+                Item* item = pOwner->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
 
-                if (owner->IsPlayer())
+                if (item != NULL)
                 {
-                    Player* pOwner = static_cast< Player* >(owner);
-                    Item* item = pOwner->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-
-                    if (item != NULL)
+                    for (uint8 s = 0; s < 5; s++)
                     {
-                        for (uint8 s = 0; s < 5; s++)
-                        {
-                            if (item->GetItemProperties()->Spells[s].Id == 0)
-                                continue;
+                        if (item->GetItemProperties()->Spells[s].Id == 0)
+                            continue;
 
-                            if (item->GetItemProperties()->Spells[s].Trigger == CHANCE_ON_HIT)
-                                procSpell[s] = item->GetItemProperties()->Spells[s].Id;
-                        }
-
-                        s->SetEquippedItem(MELEE, item->GetEntry());
-                        s->SetBaseAttackTime(MELEE, item->GetItemProperties()->Delay);
+                        if (item->GetItemProperties()->Spells[s].Trigger == CHANCE_ON_HIT)
+                            procSpell[s] = item->GetItemProperties()->Spells[s].Id;
                     }
 
-                    pOwner->SetPower(POWER_TYPE_RUNIC_POWER, 0);
+                    s->SetEquippedItem(MELEE, item->GetEntry());
+                    s->SetBaseAttackTime(MELEE, item->GetItemProperties()->Delay);
                 }
 
-                s->SetMinDamage(float(owner->GetDamageDoneMod(SCHOOL_NORMAL)));
-                s->SetMaxDamage(float(owner->GetDamageDoneMod(SCHOOL_NORMAL)));
+                pOwner->SetPower(POWER_TYPE_RUNIC_POWER, 0);
             }
-        }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
+            s->SetMinDamage(float(owner->GetDamageDoneMod(SCHOOL_NORMAL)));
+            s->SetMaxDamage(float(owner->GetDamageDoneMod(SCHOOL_NORMAL)));
         }
+    }
 
-        void OnCombatStart(Unit* mTarget)
-        {
-            RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
-        }
+    void OnDied(Unit* mKiller)
+    {
+        RemoveAIUpdateEvent();
+    }
 
-        void OnCombatStop(Unit* mTarget)
-        {
-            RemoveAIUpdateEvent();
-            dpsCycle = 0;
-        }
+    void OnCombatStart(Unit* mTarget)
+    {
+        RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
+    }
 
-        void AIUpdate()
+    void OnCombatStop(Unit* mTarget)
+    {
+        RemoveAIUpdateEvent();
+        dpsCycle = 0;
+    }
+
+    void AIUpdate()
+    {
+        Unit* curtarget = _unit->GetAIInterface()->getNextTarget();
+        if (_unit->GetCurrentSpell() == NULL && curtarget)
         {
-            Unit* curtarget = _unit->GetAIInterface()->getNextTarget();
-            if (_unit->GetCurrentSpell() == NULL && curtarget)
+            switch (dpsCycle)
             {
-                switch (dpsCycle)
-                {
-                    case 0:
-                        dpsSpell = 49921; // Plague Strike
-                        break;
-                    case 1:
-                        dpsSpell = 49909; // Icy Touch
-                        break;
-                    case 2:
-                    case 3:
-                        dpsSpell = 55262; // Heart Strike x 2
-                        break;
-                    case 4:
-                        dpsSpell = 51425; // Obliterate
-                        break;
-                    case 5:
-                        dpsSpell = 49895; // Death Coil
-                        break;
-                    case 6:
-                    case 7:
-                        dpsSpell = 51425; // Obliterate x 2
-                        break;
-                    case 8:
-                    case 9:
-                        dpsSpell = 55262; // Heart Strike x 2
-                        break;
-                    case 10:
-                    case 11:
-                        dpsSpell = 49895; // Death Coil x 2
-                        break;
-                }
-                dpsCycle++;
-                if (dpsCycle > 11)
-                    dpsCycle = 0;
-
-                SpellInfo* MyNextSpell = sSpellCustomizations.GetSpellInfo(dpsSpell);
-                if (MyNextSpell != NULL)
-                    _unit->CastSpell(curtarget, MyNextSpell, true);
-
+                case 0:
+                    dpsSpell = 49921; // Plague Strike
+                    break;
+                case 1:
+                    dpsSpell = 49909; // Icy Touch
+                    break;
+                case 2:
+                case 3:
+                    dpsSpell = 55262; // Heart Strike x 2
+                    break;
+                case 4:
+                    dpsSpell = 51425; // Obliterate
+                    break;
+                case 5:
+                    dpsSpell = 49895; // Death Coil
+                    break;
+                case 6:
+                case 7:
+                    dpsSpell = 51425; // Obliterate x 2
+                    break;
+                case 8:
+                case 9:
+                    dpsSpell = 55262; // Heart Strike x 2
+                    break;
+                case 10:
+                case 11:
+                    dpsSpell = 49895; // Death Coil x 2
+                    break;
             }
-        }
+            dpsCycle++;
+            if (dpsCycle > 11)
+                dpsCycle = 0;
 
-        void OnHit(Unit* mTarget, float fAmount)
+            SpellInfo* MyNextSpell = sSpellCustomizations.GetSpellInfo(dpsSpell);
+            if (MyNextSpell != NULL)
+                _unit->CastSpell(curtarget, MyNextSpell, true);
+
+        }
+    }
+
+    void OnHit(Unit* mTarget, float fAmount)
+    {
+        for (uint8 p = 0; p < 5; p++)
         {
-            for (uint8 p = 0; p < 5; p++)
+            if (procSpell[p] != 0)
             {
-                if (procSpell[p] != 0)
-                {
-                    SpellInfo* mProc = sSpellCustomizations.GetSpellInfo(procSpell[p]);
-                    if (!mProc)
-                        return;
-                    int x = RandomUInt(99);
-                    uint32 proc = mProc->procChance;
-                    if (proc < 1)
-                        proc = 10; // Got to be fair :P
+                SpellInfo* mProc = sSpellCustomizations.GetSpellInfo(procSpell[p]);
+                if (!mProc)
+                    return;
+                int x = RandomUInt(99);
+                uint32 proc = mProc->procChance;
+                if (proc < 1)
+                    proc = 10; // Got to be fair :P
 
-                    if ((uint32)x <= proc)
-                    {
-                        Unit* Vic = mProc->custom_self_cast_only ? _unit : mTarget;
-                        _unit->CastSpell(Vic, mProc, true);
-                    }
+                if ((uint32)x <= proc)
+                {
+                    Unit* Vic = mProc->custom_self_cast_only ? _unit : mTarget;
+                    _unit->CastSpell(Vic, mProc, true);
                 }
             }
         }
-    private:
+    }
+private:
 
-        int dpsCycle;
-        int dpsSpell;
-        int procSpell[5];
+    int dpsCycle;
+    int dpsSpell;
+    int procSpell[5];
 };
 
 class FrostBroodVanquisherAI : public CreatureAIScript
 {
-    public:
+public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(FrostBroodVanquisherAI);
-        FrostBroodVanquisherAI(Creature* c) : CreatureAIScript(c)
-        {
-        }
+    ADD_CREATURE_FACTORY_FUNCTION(FrostBroodVanquisherAI);
+    FrostBroodVanquisherAI(Creature* c) : CreatureAIScript(c)
+    {
+    }
 
-        void OnLoad()
-        {
-            _unit->setByteValue(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
-        }
+    void OnLoad()
+    {
+        _unit->setByteValue(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
+    }
 
-        void OnLastPassengerLeft(Unit *passenger)
-        {
-            if (_unit->GetSummonedByGUID() == passenger->GetGUID())
-                _unit->Despawn(1 * 1000, 0);
-        }
+    void OnLastPassengerLeft(Unit *passenger)
+    {
+        if (_unit->GetSummonedByGUID() == passenger->GetGUID())
+            _unit->Despawn(1 * 1000, 0);
+    }
 };
 
 void SetupPetAISpells(ScriptMgr* mgr)

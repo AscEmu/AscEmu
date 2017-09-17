@@ -349,10 +349,10 @@ bool RighteousDefense(uint32 i, Spell* s)
         i2 = itr++;
 
         // don't add objects that are not creatures and that are dead
-        if (!(*i2)->IsCreature() || !static_cast< Creature* >((*i2))->isAlive())
+        if (!(*i2)->IsCreature() || !static_cast<Creature*>((*i2))->isAlive())
             continue;
 
-        Creature* cr = static_cast< Creature* >((*i2));
+        Creature* cr = static_cast<Creature*>((*i2));
         if (cr->GetAIInterface()->getNextTarget() == unitTarget)
             targets[targets_got++] = cr;
 
@@ -380,17 +380,17 @@ bool Illumination(uint32 i, Spell* s)
 {
     switch (s->m_triggeredByAura == NULL ? s->GetSpellInfo()->Id : s->m_triggeredByAura->GetSpellId())
     {
-    case 20210:
-    case 20212:
-    case 20213:
-    case 20214:
-    case 20215:
-    {
-                  if (s->p_caster == NULL)
-                      return false;
-                  SpellInfo* sp = s->p_caster->last_heal_spell ? s->p_caster->last_heal_spell : s->GetSpellInfo();
-                  s->p_caster->Energize(s->p_caster, 20272, 60 * s->u_caster->GetBaseMana() * sp->ManaCostPercentage / 10000, POWER_TYPE_MANA);
-    }
+        case 20210:
+        case 20212:
+        case 20213:
+        case 20214:
+        case 20215:
+        {
+            if (s->p_caster == NULL)
+                return false;
+            SpellInfo* sp = s->p_caster->last_heal_spell ? s->p_caster->last_heal_spell : s->GetSpellInfo();
+            s->p_caster->Energize(s->p_caster, 20272, 60 * s->u_caster->GetBaseMana() * sp->ManaCostPercentage / 10000, POWER_TYPE_MANA);
+        }
         break;
 
 
