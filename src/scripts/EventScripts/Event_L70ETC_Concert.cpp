@@ -6,39 +6,45 @@
 #include "Setup.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
-///\details <b>At: Worlds End Tavern</b>\n
-/// event_properties entry: NA \n
-/// event_properties holiday: NA \n
+//\details <b>At: Worlds End Tavern</b>\n
+// event_properties entry: NA \n
+// event_properties holiday: NA \n
 
 //////////////////////////////////////////////////////////////////////////////////////////
-///\details <b>L70ETC Concert</b>\n
-/// event_properties entry: 32 \n
-/// event_properties holiday: 0 \n
-/// Original: ArcScript/Moon++ \n
+//\details <b>L70ETC Concert</b>\n
+// event_properties entry: 32 \n
+// event_properties holiday: 0 \n
+// Original: ArcScript/Moon++ \n
 
-/// L80etc band members
-#define SAMURO                  23625
-#define BERGRISST               23619
-#define MAIKYL                  23624
-#define SIGNICIOUS              23626
-#define THUNDERSKINS            23623
-#define TARGETGROUND            48000
-#define TARGETAIR               48001
-//#define UNDEAD                48002
-//#define UNDEAD2               48003
-//#define UNDEAD3               48004
-#define TRIGGER                 48005
+// L80etc band members
+enum L80BandMembers
+{
+    SAMURO = 23625,
+    BERGRISST = 23619,
+    MAIKYL = 23624,
+    SIGNICIOUS = 23626,
+    THUNDERSKINS = 23623,
+    TARGETGROUND = 48000,
+    TARGETAIR = 48001,
+    //UNDEAD = 48002,
+    //UNDEAD2 = 48003,
+    //UNDEAD3 = 48004,
+    TRIGGER = 48005
+};
 
-/// Spells
-#define SPELLFLARE          42505
-#define SPELLFIRE           42501
-#define SPOTLIGHT           39312
-#define SPELLEARTH          42499
-#define SPELLLLIGHTNING     42510
-#define SPELLLLIGHTNING2    42507
-#define SPELLSTORM          42500
-#define CONSECRATION        26573
-#define SINGERSLIGHT        42510
+// Spells
+enum L80Spells
+{
+    SPELLFLARE = 42505,
+    SPELLFIRE = 42501,
+    SPOTLIGHT = 39312,
+    SPELLEARTH = 42499,
+    SPELLLLIGHTNING = 42510,
+    SPELLLLIGHTNING2 = 42507,
+    SPELLSTORM = 42500,
+    CONSECRATION = 26573,
+    SINGERSLIGHT = 42510
+};
 
 class SamAI : public CreatureAIScript
 {

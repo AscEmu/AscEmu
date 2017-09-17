@@ -6,14 +6,14 @@
 #include "Setup.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
-///\details <b>Day of the Dead</b>\n
-/// event_properties entry: 51 \n
-/// event_properties holiday: 409 \n
+//\details <b>Day of the Dead</b>\n
+// event_properties entry: 51 \n
+// event_properties holiday: 409 \n
 
-/// Catrina
-#define SPELL_HONOR_THE_DEAD 65386
-#define NPC_CATRINA 34383
-#define ACHIEVEMRNT_DEAD_MANS_PARTY 3456
+// Catrina
+const uint32 SPELL_HONOR_THE_DEAD = 65386;
+const uint32 NPC_CATRINA = 34383;
+const uint32 ACHIEVEMRNT_DEAD_MANS_PARTY = 3456;
 
 void Catrina(Player* pPlayer, Unit* pUnit)
 {

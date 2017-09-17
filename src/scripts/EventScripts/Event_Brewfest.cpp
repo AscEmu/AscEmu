@@ -7,9 +7,9 @@
 #include "Management/Gossip/GossipMenu.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
-///\details <b>Brewfest</b>\n
-/// event_properties entry: 24 \n
-/// event_properties holiday: 372 \n
+//\details <b>Brewfest</b>\n
+// event_properties entry: 24 \n
+// event_properties holiday: 372 \n
 
 /// Boss Coren Direbrew
 enum eGossipTexts
@@ -18,14 +18,14 @@ enum eGossipTexts
     DIREBREW_2 = 15859
 };
 
-#define BOSS_DIREBREW 23872
+const uint32 BOSS_DIREBREW = 23872;
 
-#define NPC_ILSA 26764
-#define NPC_URSULA 26822
-#define NPC_MINION 26776
+const uint32 NPC_ILSA = 26764;
+const uint32 NPC_URSULA = 26822;
+const uint32 NPC_MINION = 26776;
 
-#define SPELL_DISARM 47310
-#define SPELL_SUMMON_MINION 47375
+const uint32 SPELL_DISARM = 47310;
+const uint32 SPELL_SUMMON_MINION = 47375;
 
 class SCRIPT_DECL CorenDirebrewGossip : public GossipScript
 {

@@ -6,10 +6,10 @@
 #include "Setup.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
-///\details <b>Pirates' Day</b>\n
-/// event_properties entry: 50 \n
-/// event_properties holiday: 398 \n
-///\todo Pirates' Day \n
+//\details <b>Pirates' Day</b>\n
+// event_properties entry: 50 \n
+// event_properties holiday: 398 \n
+//\todo Pirates' Day \n
 
 void SetupPiratesDay(ScriptMgr* mgr)
 { }

@@ -6,13 +6,13 @@
 #include "Setup.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
-///\details <b>SLunar Festival</b>\n
-/// event_properties entry: 7 \n
-/// event_properties holiday: 327 \n
-///\todo SLunar Festival \n
+//\details <b>SLunar Festival</b>\n
+// event_properties entry: 7 \n
+// event_properties holiday: 327 \n
+//\todo SLunar Festival \n
 
-/// The Elder
-/// https://www.youtube.com/watch?v=MkB10Klu-sc
+// The Elder
+// https://www.youtube.com/watch?v=MkB10Klu-sc
 
 void SetupLunarFestival(ScriptMgr* mgr)
 { }

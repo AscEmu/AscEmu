@@ -8,28 +8,28 @@
 #include "Management/Gossip/GossipMenu.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
-///\details <b>Darkmoon Faire (Elwynn Forest)</b>\n
+//\details <b>Darkmoon Faire (Elwynn Forest)</b>\n
 // event_properties entry: 4 \n
 // event_properties holiday: 374 \n
-///\todo Check all Darkmoon Faire events
+//\todo Check all Darkmoon Faire events
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
-///\details <b>Darkmoon Faire (Mulgore)</b>\n
+//\details <b>Darkmoon Faire (Mulgore)</b>\n
 // event_properties entry: 5 \n
 // event_properties holiday: 375 \n
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
-///\details <b>Darkmoon Faire (Terokkar Forest)</b>\n
+//\details <b>Darkmoon Faire (Terokkar Forest)</b>\n
 // event_properties entry: 3 \n
 // event_properties holiday: 376 \n
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
-///\details <b>Darkmoon Faire Gameobjects</b>\n
+//\details <b>Darkmoon Faire Gameobjects</b>\n
 
-/// Blastenheimer 5000 Ultra Cannon
+// Blastenheimer 5000 Ultra Cannon
 class Blastenheimer5000 : public GameObjectAIScript
 {
     public:

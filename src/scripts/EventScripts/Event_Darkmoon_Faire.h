@@ -6,7 +6,6 @@
 #ifndef _DARKMOONFAIRE_H
 #define _DARKMOONFAIRE_H
 
-/// enum creature_text for Darkmoon Faire
 enum DarkmoonFaireCreatureTexts
 {
     // Gevas Grimegate Text

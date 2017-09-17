@@ -5,7 +5,7 @@
 
 #include "Setup.h"
 
-/// Black Cat
+// Black Cat
 class BlackCat : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(BlackCat, MoonScriptCreatureAI);
@@ -18,7 +18,7 @@ class BlackCat : public MoonScriptCreatureAI
     }
 };
 
-/// HEADLESS HORSEMAN ENCOUNTER
+// HEADLESS HORSEMAN ENCOUNTER
 static Movement::LocationWithFlag WaypointGoldshire[] =
 {
     { -9502.733398f, 31.395960f, 60.433193f, 1.217366f, Movement::WP_MOVE_TYPE_FLY }, // 0
@@ -53,22 +53,22 @@ static Movement::LocationWithFlag WaypointGoldshire[] =
     { -9477.427734f, 86.952667f, 70.950249f, 3.318317f, Movement::WP_MOVE_TYPE_FLY }  // 29
 };
 
-/// Headless HorsemanAI
-#define CN_HEADLESS_HORSEMAN 23682
-#define HEADLESS_HORSEMAN_CLEAVE 42587
-#define HEADLESS_HORSEMAN_CONFLAGRATION 42380
+// Headless HorsemanAI
+const uint32 CN_HEADLESS_HORSEMAN = 23682;
+const uint32 HEADLESS_HORSEMAN_CLEAVE = 42587;
+const uint32 HEADLESS_HORSEMAN_CONFLAGRATION = 42380;
 class HeadlessHorsemanAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(HeadlessHorsemanAI, MoonScriptCreatureAI);
     HeadlessHorsemanAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
-        ///Scarlet Monastery Boss
+        //Scarlet Monastery Boss
     }
 };
 
 
 // Headless Horseman - Fire
-#define CN_HEADLESS_HORSEMAN_FIRE                23537
+const uint32 CN_HEADLESS_HORSEMAN_FIRE = 23537;
 class HeadlessHorsemanFireAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(HeadlessHorsemanFireAI, MoonScriptCreatureAI);
@@ -80,8 +80,8 @@ class HeadlessHorsemanFireAI : public MoonScriptCreatureAI
 
 
 // Shade of the HorsemanAI
-#define CN_SHADE_OF_THE_HORSEMAN                23543
-#define SHADE_OF_THE_HORSEMAN_SUMMON            42394  ///Don't think this one is the correct spell
+const uint32 CN_SHADE_OF_THE_HORSEMAN = 23543;
+const uint32 SHADE_OF_THE_HORSEMAN_SUMMON = 42394;  //Don't think this one is the correct spell
 /*
 * Research
 * NPC:
@@ -112,7 +112,7 @@ class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
         {
             switch (area->id)
             {
-                case 87: /// Goldshire
+                case 87: // Goldshire
                 {
                     WPCount = 29;
                     WayPoints = WaypointGoldshire;
@@ -132,25 +132,25 @@ class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
         auto area = _unit->GetArea();
         auto area_id = area ? area->id : 0;
 
-        if (iWaypointId == uint32(WPCount))   /// Reached end
+        if (iWaypointId == uint32(WPCount))   // Reached end
         {
             StopWaypointMovement();
-            if (GetNearestCreature(CN_HEADLESS_HORSEMAN_FIRE) == NULL)     /// CASE players win
+            if (GetNearestCreature(CN_HEADLESS_HORSEMAN_FIRE) == NULL)     // CASE players win
             {
                 Emote("My flames have died, left not a spark! I shall send you now to the lifeless dark!", Text_Yell, 11968);
-                Despawn(30000, 0); ///Despawn after 30 secs
+                Despawn(30000, 0); //Despawn after 30 secs
             }
             else // CASE players lost
             {
                 Emote("Fire consumes! You've tried and failed. Let there be no doubt, justice prevailed!", Text_Yell, 11967);
-                Despawn(12000, 0); ///Despawn after 12 secs
+                Despawn(12000, 0); //Despawn after 12 secs
             }
         }
         else
         {
             switch (area_id)
             {
-                case 87: /// Goldshire
+                case 87: // Goldshire
                 {
                     if (iWaypointId == 6)
                     {
@@ -180,7 +180,7 @@ class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
 
 
 // Headless Horseman - Wisp Invis
-#define CN_HEADLESS_HORSEMAN_WISP_INVIS 24034    // 42394
+const uint32 CN_HEADLESS_HORSEMAN_WISP_INVIS = 24034;    // 42394
 class HeadlessHorsemanWispInvisAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(HeadlessHorsemanWispInvisAI, MoonScriptCreatureAI);
@@ -195,7 +195,7 @@ class HeadlessHorsemanWispInvisAI : public MoonScriptCreatureAI
         struct tm* tmPtr;
         tiempo = UNIXTIME;
         tmPtr = localtime(&tiempo);
-        if (tmPtr->tm_min == 0 && (tmPtr->tm_hour % 4) == 0)   /// All check for the time
+        if (tmPtr->tm_min == 0 && (tmPtr->tm_hour % 4) == 0)   // All check for the time
         {
             mHeadlessHorseman = GetNearestCreature(CN_SHADE_OF_THE_HORSEMAN);
             if (mHeadlessHorseman == NULL)

@@ -6,10 +6,10 @@
 #include "Setup.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
-///\details <b>Winter Veil</b>\n
-/// event_properties entry: 2 \n
-/// event_properties holiday: 141 \n
-///\todo Check Winter Veil \n
+//\details <b>Winter Veil</b>\n
+// event_properties entry: 2 \n
+// event_properties holiday: 141 \n
+//\todo Check Winter Veil \n
 
 class PX238WinterWondervolt : public GameObjectAIScript
 {
