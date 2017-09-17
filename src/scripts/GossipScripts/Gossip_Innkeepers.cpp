@@ -22,8 +22,8 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 
-#define SPELL_TRICK_OR_TREATED  24755
-#define SPELL_TREAT             24715
+const uint32 SPELL_TRICK_OR_TREATED = 24755;
+const uint32 SPELL_TREAT = 24715;
 // -------------------------
 
 class InnkeeperGossip : public Arcemu::Gossip::Script
@@ -78,9 +78,6 @@ void InnkeeperGossip::OnHello(Object* pObject, Player* Plr)
 
     menu.Send(Plr);
 }
-
-//#define SendQuickMenu(textid) objmgr.CreateGossipMenuForPlayer(&Menu, pCreature->GetGUID(), textid, Plr); \
-//    Menu->SendTo(Plr);
 
 void InnkeeperGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code)
 {
