@@ -23,9 +23,9 @@
 #include "Setup.h"
 
 
-#define CN_CORERAGER 11672
+const uint32 CN_CORERAGER = 11672;
 
-#define MANGLE 19820 // 1 target
+const uint32 MANGLE = 19820; // 1 target
 // put full HP if less 50% and golemagg is still alive
 
 // Golemagg AI
@@ -89,11 +89,11 @@ class CoreRagerAI : public CreatureAIScript
         SpellInfo* info_mangle;
 };
 
-#define CN_SULFURON_HARBRINGER 12098
+const uint32 CN_SULFURON_HARBRINGER = 12098;
 
-#define DEMORALIZING_SHOUT 19778
-#define INSPIRE 19779
-#define FLAME_SPEAR 19781
+const uint32 DEMORALIZING_SHOUT = 19778;
+const uint32 INSPIRE = 19779;
+const uint32 FLAME_SPEAR = 19781;
 // needs a aoe knockback 19780?
 
 // Sulfuron Harbringer AI
@@ -201,14 +201,14 @@ class SulfuronAI : public CreatureAIScript
     * TASTE THE FLAMES OF SULFURON! (Melee knockback)
     * COME FORTH, MY SERVANTS! DEFEND YOUR MASTER! (Summoning Sons of Flame) */
 
-#define CN_RAGNAROS 11502
+const uint32 CN_RAGNAROS = 11502;
 
-#define ELEMENTAL_FIRE 20563 // 1 target
-#define MAGMA_BLAST 20565 // various targets on not attacked. -> sound -> 8048 ?
-#define WRATH_OF_RAGNAROS 20566  // Fly bitches fly! quote -> "Taste the Flames of Sulfuron!" -> sound 8047
-#define HAMMER_OF_RAGNAROS 19780 // quote -> "By fire be purged!" -> sound 8046
-#define MELT_WEAPON 21387 // 1 target
-#define SUMMON_SONS_OF_FLAMES 21108 ///\todo  DUMMY :P summon the sons of flames. entry = 12143 -> sound 8049,8050
+const uint32 ELEMENTAL_FIRE = 20563; // 1 target
+const uint32 MAGMA_BLAST = 20565; // various targets on not attacked. -> sound -> 8048 ?
+const uint32 WRATH_OF_RAGNAROS = 20566;  // Fly bitches fly! quote -> "Taste the Flames of Sulfuron!" -> sound 8047
+const uint32 HAMMER_OF_RAGNAROS = 19780; // quote -> "By fire be purged!" -> sound 8046
+const uint32 MELT_WEAPON = 21387; // 1 target
+const uint32 SUMMON_SONS_OF_FLAMES = 21108; //\todo  DUMMY :P summon the sons of flames. entry = 12143 -> sound 8049,8050
 
 
 //Ragnaros Submerge Visual -> 20567
@@ -337,9 +337,9 @@ class RagnarosAI : public CreatureAIScript
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Molten Giant AI Script
-#define CN_MOLTENGIANT            11658
-#define MOLTENGIANT_STOMP        31900    //to verify
-#define MOLTENGIANT_KNOCKBACK    30056    //to verify
+const uint32 CN_MOLTENGIANT = 11658;
+const uint32 MOLTENGIANT_STOMP = 31900;   //to verify
+const uint32 MOLTENGIANT_KNOCKBACK = 30056;   //to verify
 
 class MoltenGiantAI : public MoonScriptCreatureAI
 {
@@ -353,10 +353,10 @@ class MoltenGiantAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Molten Destroyer AI Script
-#define CN_MOLTENDESTROYER                11659
-#define MOLTENDESTROYER_MASSIVE_TREMOR    19129    //to verify
-//#define MOLTENDESTROYER_SMASH_ATTACK    ?
-#define MOLTENDESTROYER_KNOCKDOWN        13360    //wrong, fixme!
+const uint32 CN_MOLTENDESTROYER = 11659;
+const uint32 MOLTENDESTROYER_MASSIVE_TREMOR = 19129;    //to verify
+//const uint32 MOLTENDESTROYER_SMASH_ATTACK    ?
+const uint32 MOLTENDESTROYER_KNOCKDOWN = 13360;    //wrong, fixme!
 
 class MoltenDestroyerAI : public MoonScriptCreatureAI
 {
@@ -371,9 +371,9 @@ class MoltenDestroyerAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Firelord AI Script
-#define CN_FIRELORD                    11668
-#define FIRELORD_SUMMON_LAVA_SPAWN    19392
-#define FIRELORD_SOUL_BURN            19393
+const uint32 CN_FIRELORD = 11668;
+const uint32 FIRELORD_SUMMON_LAVA_SPAWN = 19392;
+const uint32 FIRELORD_SOUL_BURN = 19393;
 
 class FirelordAI : public MoonScriptCreatureAI
 {
@@ -387,7 +387,7 @@ class FirelordAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Lava Annihilator AI Script
-#define CN_LAVAANNIHILATOR 11665
+const uint32 CN_LAVAANNIHILATOR = 11665;
 
 class LavaAnnihilatorAI : public MoonScriptCreatureAI
 {
@@ -400,15 +400,15 @@ class LavaAnnihilatorAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Ancient Core Hound AI Script
-#define CN_ANCIENTCOREHOUND                    11673
-#define ANCIENTCOREHOUND_LAVA_BREATH        19272
-#define ANCIENTCOREHOUND_VICIOUS_BITE        19319
-#define ANCIENTCOREHOUND_GROUND_STOMP        19364
-#define ANCIENTCOREHOUND_ANCIENT_DREAD        19365
-#define ANCIENTCOREHOUND_ANCIENT_DESPAIR    19369
-#define ANCIENTCOREHOUND_CAUTERIZING_FLAMES    19366
-#define ANCIENTCOREHOUND_WITHERING_HEAT        19367
-#define ANCIENTCOREHOUND_ANCIENT_HYSTERIA    19372
+const uint32 CN_ANCIENTCOREHOUND = 11673;
+const uint32 ANCIENTCOREHOUND_LAVA_BREATH = 19272;
+const uint32 ANCIENTCOREHOUND_VICIOUS_BITE = 19319;
+const uint32 ANCIENTCOREHOUND_GROUND_STOMP = 19364;
+const uint32 ANCIENTCOREHOUND_ANCIENT_DREAD = 19365;
+const uint32 ANCIENTCOREHOUND_ANCIENT_DESPAIR = 19369;
+const uint32 ANCIENTCOREHOUND_CAUTERIZING_FLAMES = 19366;
+const uint32 ANCIENTCOREHOUND_WITHERING_HEAT = 19367;
+const uint32 ANCIENTCOREHOUND_ANCIENT_HYSTERIA = 19372;
 
 class AncientCoreHoundAI : public MoonScriptCreatureAI
 {
@@ -445,8 +445,8 @@ class AncientCoreHoundAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Lava Surger AI Script
-#define CN_LAVASURGER        12101
-#define LAVASURGER_SURGE    25787
+const uint32 CN_LAVASURGER = 12101;
+const uint32 LAVASURGER_SURGE = 25787;
 
 class LavaSurgerAI : public MoonScriptCreatureAI
 {
@@ -459,8 +459,8 @@ class LavaSurgerAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Flame Imp AI Script
-#define CN_FLAMEIMP            11669
-#define FLAMEIMP_FIRE_NOVA    20602    //corrected http://www.wowhead.com/?npc=11669#abilities
+const uint32 CN_FLAMEIMP = 11669;
+const uint32 FLAMEIMP_FIRE_NOVA = 20602;   //corrected http://www.wowhead.com/?npc=11669#abilities
 
 class FlameImpAI : public MoonScriptCreatureAI
 {
@@ -473,8 +473,8 @@ class FlameImpAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Core Hound AI Script
-#define CN_COREHOUND            11671
-#define COREHOUND_SERRATED_BITE    19771
+const uint32 CN_COREHOUND = 11671;
+const uint32 COREHOUND_SERRATED_BITE = 19771;
 
 class CoreHoundAI : public MoonScriptCreatureAI
 {
@@ -487,8 +487,8 @@ class CoreHoundAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Lava Reaver AI Script
-#define CN_LAVAREAVER        12100
-#define LAVAREAVER_CLEAVE    20691
+const uint32 CN_LAVAREAVER = 12100;
+const uint32 LAVAREAVER_CLEAVE = 20691;
 
 class LavaReaverAI : public MoonScriptCreatureAI
 {
@@ -501,8 +501,8 @@ class LavaReaverAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Lava Elemental AI Script
-#define CN_LAVAELEMENTAL                12076
-#define LAVAELEMENTAL_PYROCLAST_BARRAGE    19641
+const uint32 CN_LAVAELEMENTAL = 12076;
+const uint32 LAVAELEMENTAL_PYROCLAST_BARRAGE = 19641;
 
 class LavaElementalAI : public MoonScriptCreatureAI
 {
@@ -515,9 +515,9 @@ class LavaElementalAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Flameguard AI Script
-#define CN_FLAMEGUARD            11667
-#define FLAMEGUARD_FIRE_SHIELD    19627
-#define FLAMEGUARD_FLAMES        19628
+const uint32 CN_FLAMEGUARD = 11667;
+const uint32 FLAMEGUARD_FIRE_SHIELD = 19627;
+const uint32 FLAMEGUARD_FLAMES = 19628;
 
 class FlameguardAI : public MoonScriptCreatureAI
 {
@@ -539,10 +539,10 @@ class FlameguardAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Firewalker AI Script
-#define CN_FIREWALKER                11666
-#define FIREWALKER_MELT_ARMOR        19631
-#define FIREWALKER_INCITE_FLAMES    19635
-#define FIREWALKER_FIRE_BLOSSOM        19636 //Added
+const uint32 CN_FIREWALKER = 11666;
+const uint32 FIREWALKER_MELT_ARMOR = 19631;
+const uint32 FIREWALKER_INCITE_FLAMES = 19635;
+const uint32 FIREWALKER_FIRE_BLOSSOM = 19636; //Added
 
 class FirewalkerAI : public MoonScriptCreatureAI
 {
@@ -557,10 +557,10 @@ class FirewalkerAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Lucifron AI Script
-#define CN_LUCIFRON                    12118
-#define LUCIFRON_IMPEDING_DOOM        19702
-#define LUCIFRON_LUCIFRONS_CURSE    19703
-#define LUCIFRON_SHADOW_SHOCK        20603
+const uint32 CN_LUCIFRON = 12118;
+const uint32 LUCIFRON_IMPEDING_DOOM = 19702;
+const uint32 LUCIFRON_LUCIFRONS_CURSE = 19703;
+const uint32 LUCIFRON_SHADOW_SHOCK = 20603;
 
 class LucifronAI : public MoonScriptBossAI
 {
@@ -575,9 +575,9 @@ class LucifronAI : public MoonScriptBossAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Flamewaker Protector AI Script
-#define CN_FLAMEWAKERPROTECTOR                12119
-#define FLAMEWAKERPROTECTOR_CLEAVE            20691
-#define FLAMEWAKERPROTECTOR_DOMINATE_MIND    20740    //to verify
+const uint32 CN_FLAMEWAKERPROTECTOR = 12119;
+const uint32 FLAMEWAKERPROTECTOR_CLEAVE = 20691;
+const uint32 FLAMEWAKERPROTECTOR_DOMINATE_MIND = 20740;    //to verify
 
 class FlamewakerProtectorAI : public MoonScriptCreatureAI
 {
@@ -591,11 +591,11 @@ class FlamewakerProtectorAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Magmadar AI Script
-#define CN_MAGMADAR                11982
-#define MAGMADAR_MAGMA_SPIT        19450    //aura doesnt work
-#define MAGMADAR_LAVA_BREATH    19272    //to verify
-#define MAGMADAR_PANIC            19408
-#define MAGMADAR_LAVA_BOMB        19411    //need dummy spell
+const uint32 CN_MAGMADAR = 11982;
+const uint32 MAGMADAR_MAGMA_SPIT = 19450;   //aura doesnt work
+const uint32 MAGMADAR_LAVA_BREATH = 19272;   //to verify
+const uint32 MAGMADAR_PANIC = 19408;
+const uint32 MAGMADAR_LAVA_BOMB = 19411;    //need dummy spell
 
 class MagmadarAI : public MoonScriptBossAI
 {
@@ -611,10 +611,10 @@ class MagmadarAI : public MoonScriptBossAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Gehennas AI Script
-#define CN_GEHENNAS                12259
-#define GEHENNAS_SHADOW_BOLT    29317    //to verify
-#define GEHENNAS_GEHENNAS_CURSE    19716
-#define GEHENNAS_RAIN_OF_FIRE    19717
+const uint32 CN_GEHENNAS = 12259;
+const uint32 GEHENNAS_SHADOW_BOLT = 29317;   //to verify
+const uint32 GEHENNAS_GEHENNAS_CURSE = 19716;
+const uint32 GEHENNAS_RAIN_OF_FIRE = 19717;
 
 class GehennasAI : public MoonScriptBossAI
 {
@@ -629,10 +629,10 @@ class GehennasAI : public MoonScriptBossAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Flamewaker AI Script
-#define CN_FLAMEWAKER                11661
-#define FLAMEWAKER_SUNDER_ARMOR        25051
-#define FLAMEWAKER_FIST_OF_RAGNAROS    20277
-#define FLAMEWAKER_STRIKE            11998
+const uint32 CN_FLAMEWAKER = 11661;
+const uint32 FLAMEWAKER_SUNDER_ARMOR = 25051;
+const uint32 FLAMEWAKER_FIST_OF_RAGNAROS = 20277;
+const uint32 FLAMEWAKER_STRIKE = 11998;
 
 class FlamewakerAI : public MoonScriptCreatureAI
 {
@@ -647,9 +647,9 @@ class FlamewakerAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Garr AI Script
-#define CN_GARR                    12057
-#define GARR_ANTIMAGIC_PULSE    19492
-#define GARR_MAGMA_SHACKES        19496
+const uint32 CN_GARR = 12057;
+const uint32 GARR_ANTIMAGIC_PULSE = 19492;
+const uint32 GARR_MAGMA_SHACKES = 19496;
 
 class GarrAI : public MoonScriptBossAI
 {
@@ -663,10 +663,10 @@ class GarrAI : public MoonScriptBossAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Firesworn AI Script
-#define CN_FIRESWORN                    12099
-#define FIRESWORN_IMMOLATE                20294
-#define FIRESWORN_ERUPTION                19497
-#define FIRESWORN_SEPARATION_ANXIETY    23492
+const uint32 CN_FIRESWORN = 12099;
+const uint32 FIRESWORN_IMMOLATE = 20294;
+const uint32 FIRESWORN_ERUPTION = 19497;
+const uint32 FIRESWORN_SEPARATION_ANXIETY = 23492;
 
 class FireswornAI : public MoonScriptCreatureAI
 {
@@ -709,10 +709,10 @@ class FireswornAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Baron Geddon AI Script
-#define CN_BARONGEDDON            12056
-#define BARONGEDDON_INFERNO        19698    //35268
-#define BARONGEDDON_IGNITE_MANA    19659
-#define BARONGEDDON_LIVING_BOMB    20475
+const uint32 CN_BARONGEDDON = 12056;
+const uint32 BARONGEDDON_INFERNO = 19698;    //35268
+const uint32 BARONGEDDON_IGNITE_MANA = 19659;
+const uint32 BARONGEDDON_LIVING_BOMB = 20475;
 
 class BaronGeddonAI : public MoonScriptBossAI
 {
@@ -727,12 +727,12 @@ class BaronGeddonAI : public MoonScriptBossAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Shazzrah AI Script
-#define CN_SHAZZRAH                    12264
-#define SHAZZRAH_ARCANE_EXPLOSION    19712
-#define SHAZZRAH_SHAZZRAHS_CURSE    19713
-#define SHAZZRAH_MAGIC_GROUNDING    19714
-#define SHAZZRAH_COUNTERSPELL        19715
-#define SHAZZRAH_BLINK                29883    //dummy spell, need to be coded in core
+const uint32 CN_SHAZZRAH = 12264;
+const uint32 SHAZZRAH_ARCANE_EXPLOSION = 19712;
+const uint32 SHAZZRAH_SHAZZRAHS_CURSE = 19713;
+const uint32 SHAZZRAH_MAGIC_GROUNDING = 19714;
+const uint32 SHAZZRAH_COUNTERSPELL = 19715;
+const uint32 SHAZZRAH_BLINK = 29883;    //dummy spell, need to be coded in core
 
 void SpellFunc_ShazzrahBlinkArcaneExplosions(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
@@ -768,11 +768,11 @@ void SpellFunc_ShazzrahBlinkArcaneExplosions(SpellDesc* pThis, MoonScriptCreatur
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Golemagg AI Script
-#define CN_GOLEMAGG                    11988
-#define GOLEMAGG_GOLEMAGGS_TRUST    20553
-#define GOLEMAGG_MAGMA_SPLASH        13880
-#define GOLEMAGG_PYROBLAST            20228
-#define GOLEMAGG_EARTHQUAKE            19798
+const uint32 CN_GOLEMAGG = 11988;
+const uint32 GOLEMAGG_GOLEMAGGS_TRUST = 20553;
+const uint32 GOLEMAGG_MAGMA_SPLASH = 13880;
+const uint32 GOLEMAGG_PYROBLAST = 20228;
+const uint32 GOLEMAGG_EARTHQUAKE = 19798;
 
 class GolemaggAI : public MoonScriptBossAI
 {

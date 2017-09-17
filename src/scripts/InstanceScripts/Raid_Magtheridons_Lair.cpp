@@ -28,9 +28,9 @@
 // \todo Fire Magtheridon throws around the battlefield.
 
 // Encounter Settings
-#define BANISH_TIMER            120        // 2 minutes
-#define YELL_TIMER                260        // 4 minutes and 20 seconds
-#define ACTIVE_CUBES_TO_BANISH    5        // 5 cubes
+const uint32 BANISH_TIMER = 120;       // 2 minutes
+const uint32 YELL_TIMER = 260;       // 4 minutes and 20 seconds
+const uint32 ACTIVE_CUBES_TO_BANISH = 5;        // 5 cubes
 
 // Channelers Coords is list of spawn points of all 5 channelers casting spell on Magtheridon
 static Movement::Location Channelers[] =
@@ -75,14 +75,14 @@ static Movement::Location CubeTriggers[] =
 };
 
 // Magtheridon Trigger AI - Creature AI Class
-#define CN_MAGTHERIDON_TRIGGER 133338
+const uint32 CN_MAGTHERIDON_TRIGGER = 133338;
 
 // Spell macros used in whole script
-#define BANISH            30231    // 31797
-#define BANISHMENT        40825
-#define SOUL_TRANSFER    30531
-#define SHADOW_GRASP    30166    //30207
-#define SHADOW_GRASP2    30410
+const uint32 BANISH = 30231;    // 31797
+const uint32 BANISHMENT = 40825;
+const uint32 SOUL_TRANSFER = 30531;
+const uint32 SHADOW_GRASP = 30166;   //30207
+const uint32 SHADOW_GRASP2 = 30410;
 
 class MagtheridonTriggerAI : public CreatureAIScript
 {
@@ -411,9 +411,9 @@ class MagtheridonTriggerAI : public CreatureAIScript
 
 // Manticron Cube Gameobject
 
-#define MANTICRON_CUBE    181713
+const uint32 MANTICRON_CUBE = 181713;
 
-#define MIND_EXHAUSTION    44032
+const uint32 MIND_EXHAUSTION = 44032;
 
 class ManticronCubeGO : public GameObjectAIScript
 {
@@ -607,7 +607,7 @@ class ManticronCubeGO : public GameObjectAIScript
         Unit* CubeTrigger;
 };
 
-#define CN_CUBE_TRIGGER 17376
+const uint32 CN_CUBE_TRIGGER = 17376;
 
 class CubeTriggerAI : public CreatureAIScript
 {
@@ -622,15 +622,15 @@ class CubeTriggerAI : public CreatureAIScript
 };
 
 // Hellfire Warder
-#define CN_HELLFIRE_WARDER 18829
+const uint32 CN_HELLFIRE_WARDER = 18829;
 
-#define HW_SHADOW_BOLT_VOLLEY    36275    // 39175
-#define SHADOW_WORD_PAIN        34441
-#define UNSTABLE_AFFLICTION        35183
-#define DEATH_COIL                33130
-#define RAIN_OF_FIRE            34435
-#define HW_FEAR                    34259    // this one is probably wrong
-#define SHADOW_BURST            34436
+const uint32 HW_SHADOW_BOLT_VOLLEY = 36275;   // 39175
+const uint32 SHADOW_WORD_PAIN = 34441;
+const uint32 UNSTABLE_AFFLICTION = 35183;
+const uint32 DEATH_COIL = 33130;
+const uint32 RAIN_OF_FIRE = 34435;
+const uint32 HW_FEAR = 34259;    // this one is probably wrong
+const uint32 SHADOW_BURST = 34436;
 
 class HellfireWarderAI : public CreatureAIScript
 {
@@ -846,12 +846,12 @@ class HellfireWarderAI : public CreatureAIScript
 };
 
 // Hellfire Channeler
-#define CN_HELLFIRE_CHANNELER 17256
+const uint32 CN_HELLFIRE_CHANNELER = 17256;
 
-#define SHADOW_BOLT_VOLLEY    30510    // 39175
-#define FEAR                30615    // not sure
-#define DARK_MENDING        30528
-#define BURNING_ABYSSAL        30511
+const uint32 SHADOW_BOLT_VOLLEY = 30510;    // 39175
+const uint32 FEAR = 30615;   // not sure
+const uint32 DARK_MENDING = 30528;
+const uint32 BURNING_ABYSSAL = 30511;
 
 class HellfireChannelerAI : public CreatureAIScript
 {
@@ -1075,9 +1075,9 @@ class HellfireChannelerAI : public CreatureAIScript
 
 // Burning Abyssal AI
 
-#define CN_BURNING_ABYSSAL 17454
+const uint32 CN_BURNING_ABYSSAL = 17454;
 
-#define FIRE_BLAST 37110
+const uint32 FIRE_BLAST = 37110;
 
 class BurningAbyssalAI : public CreatureAIScript
 {
@@ -1238,19 +1238,19 @@ class BurningAbyssalAI : public CreatureAIScript
 };
 
 // Magtheridon
-#define CN_MAGTHERIDON 17257
+const uint32 CN_MAGTHERIDON = 17257;
 
 // Normal Casts
-#define CLEAVE            31345    // not sure; should be better, but not sure if it gives 8k dmg
-#define CONFLAGRATION    23023    // 35840 - this one was affecting caster; not sure - it's not right spell, but better than nothing for now
+const uint32 CLEAVE = 31345;    // not sure; should be better, but not sure if it gives 8k dmg
+const uint32 CONFLAGRATION = 23023;   // 35840 - this one was affecting caster; not sure - it's not right spell, but better than nothing for now
 
 // Timed Casts
-#define QUAKE1            30571    // Each 40 sec after Phase 2 starts
-#define QUAKE2            30658    // Effect
-#define BLAST_NOVA        30616    // Each 60 sec after Phase 2 starts
-#define CAVE_IN            36240    // don't know correct timer
-#define CAMERA_SHAKE    36455    // is used when Magtheridon uses Cave In
-#define ENRAGE            34624    // dunno if it's correct spell    -- 20 min after Phase 2 starts
+const uint32 QUAKE1 = 30571;   // Each 40 sec after Phase 2 starts
+const uint32 QUAKE2 = 30658;    // Effect
+const uint32 BLAST_NOVA = 30616;    // Each 60 sec after Phase 2 starts
+const uint32 CAVE_IN = 36240;    // don't know correct timer
+const uint32 CAMERA_SHAKE = 36455;    // is used when Magtheridon uses Cave In
+const uint32 ENRAGE = 34624;    // dunno if it's correct spell    -- 20 min after Phase 2 starts
 
 class MagtheridonAI : public CreatureAIScript
 {

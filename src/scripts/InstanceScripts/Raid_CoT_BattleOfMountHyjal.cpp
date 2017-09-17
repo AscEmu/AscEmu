@@ -82,7 +82,7 @@ class MountHyjalScript : public MoonInstanceScript
         //   Index 0 = Current Phase;
 };
 //Jaina Proudmoore AI & GS
-#define CN_JAINA_PROUDMOORE 17772
+const uint32 CN_JAINA_PROUDMOORE = 17772;
 
 class JainaProudmooreAI : public CreatureAIScript
 {
@@ -142,7 +142,7 @@ class JainaProudmooreGS : public GossipScript
 };
 
 //Thrall AI & GS
-#define CN_THRALL 17852
+const uint32 CN_THRALL = 17852;
 
 class ThrallAI : public CreatureAIScript
 {
@@ -199,12 +199,12 @@ class ThrallGS : public GossipScript
 
 
 // Rage WinterchillAI
-#define CN_RAGE_WINTERCHILL 17767
+const uint32 CN_RAGE_WINTERCHILL = 17767;
 
-#define FROSTBOLT 31249            // it's not correct spell for sure (not sure to others too :P)
-#define DEATCH_AND_DECAY 31258
-#define FROST_NOVA 31250
-#define FROST_ARMOR 31256
+const uint32 FROSTBOLT = 31249;           // it's not correct spell for sure (not sure to others too :P)
+const uint32 DEATCH_AND_DECAY = 31258;
+const uint32 FROST_NOVA = 31250;
+const uint32 FROST_ARMOR = 31256;
 
 class RageWinterchillAI : public CreatureAIScript
 {
@@ -414,13 +414,13 @@ class RageWinterchillAI : public CreatureAIScript
 
 // AnetheronAI
 
-#define CN_ANETHERON 17808
+const uint32 CN_ANETHERON = 17808;
 
-#define CARRION_SWARM    31306
-#define VAMPIRIC_AURA    38196    // 31317
-#define INFERNO            31299    // doesn't summon infernal - core bug
-#define SLEEP            31298    // 12098
-#define BERSERK            26662
+const uint32 CARRION_SWARM = 31306;
+const uint32 VAMPIRIC_AURA = 38196;   // 31317
+const uint32 INFERNO = 31299;    // doesn't summon infernal - core bug
+const uint32 SLEEP = 31298;   // 12098
+const uint32 BERSERK = 26662;
 
 class AnetheronAI : public CreatureAIScript
 {
@@ -654,12 +654,12 @@ class AnetheronAI : public CreatureAIScript
 
 // KazrogalAI
 
-#define CN_KAZROGAL 17888
+const uint32 CN_KAZROGAL = 17888;
 
-#define K_CLEAVE            31345
-#define WAR_STOMP            31480
-#define MARK_OF_KAZROGAL    31447
-#define MARK_OF_KAZROGAL2    31463    // should it be scripted to attack friends?
+const uint32 K_CLEAVE = 31345;
+const uint32 WAR_STOMP = 31480;
+const uint32 MARK_OF_KAZROGAL = 31447;
+const uint32 MARK_OF_KAZROGAL2 = 31463;   // should it be scripted to attack friends?
 
 class KazrogalAI : public CreatureAIScript
 {
@@ -892,12 +892,12 @@ class KazrogalAI : public CreatureAIScript
 
 // AzgalorAI
 
-#define CN_AZGALOR 17842
+const uint32 CN_AZGALOR = 17842;
 
-#define CLEAVE            31345
-#define RAIN_OF_FIRE    31340
-#define HOWL_OF_AZGALOR    31344
-#define DOOM            31347    // it's applied, but doesn't do anything more - should be scripted?
+const uint32 CLEAVE = 31345;
+const uint32 RAIN_OF_FIRE = 31340;
+const uint32 HOWL_OF_AZGALOR = 31344;
+const uint32 DOOM = 31347;    // it's applied, but doesn't do anything more - should be scripted?
 
 class AzgalorAI : public CreatureAIScript
 {
@@ -1118,11 +1118,11 @@ class AzgalorAI : public CreatureAIScript
 
 // Archimonde Channel TriggerAI
 
-#define CN_ARCHIMONDE_CHANNEL_TRIGGER 30004
+const uint32 CN_ARCHIMONDE_CHANNEL_TRIGGER = 30004;
 
 // Additional
-#define DRAIN_WORLD_TREE_VISUAL        39140
-#define DRAIN_WORLD_TREE_VISUAL2    39141
+const uint32 DRAIN_WORLD_TREE_VISUAL = 39140;
+const uint32 DRAIN_WORLD_TREE_VISUAL2 = 39141;
 
 class ArchimondeTriggerAI : public CreatureAIScript
 {
@@ -1146,7 +1146,7 @@ class ArchimondeTriggerAI : public CreatureAIScript
 
 // DoomfireAI
 
-#define CN_DOOMFIRE 18095
+const uint32 CN_DOOMFIRE = 18095;
 
 class DoomfireAI : public CreatureAIScript
 {
@@ -1279,17 +1279,17 @@ class DoomfireAI : public CreatureAIScript
 
 // ArchimondeAI
 
-#define CN_ARCHIMONDE 17968
+const uint32 CN_ARCHIMONDE = 17968;
 
-#define FEAR                        33547
-#define AIR_BURST                    32014
-#define GRIP_OF_THE_LEGION            31972
-#define DOOMFIRE_STRIKE                31903
-#define FINGER_OF_DEATH                31984    // should be casted only when no one in melee range
-#define HAND_OF_DEATH                35354    // used if too close to Well of Eternity or if after 10 min caster has more than 10% hp
-#define SOUL_CHARGER                32053    // If player dies whole raid gets one of those 3 buffs
-#define SOUL_CHARGEO                32054
-#define SOUL_CHARGEG                32057
+const uint32 FEAR = 33547;
+const uint32 AIR_BURST = 32014;
+const uint32 GRIP_OF_THE_LEGION = 31972;
+const uint32 DOOMFIRE_STRIKE = 31903;
+const uint32 FINGER_OF_DEATH = 31984;   // should be casted only when no one in melee range
+const uint32 HAND_OF_DEATH = 35354;   // used if too close to Well of Eternity or if after 10 min caster has more than 10% hp
+const uint32 SOUL_CHARGER = 32053;   // If player dies whole raid gets one of those 3 buffs
+const uint32 SOUL_CHARGEO = 32054;
+const uint32 SOUL_CHARGEG = 32057;
 
 class ArchimondeAI : public CreatureAIScript
 {

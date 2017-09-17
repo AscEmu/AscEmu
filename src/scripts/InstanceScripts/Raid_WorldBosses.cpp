@@ -29,17 +29,17 @@
 
 
 // Emeriss AI
-///\todo Check Putrid Mushroom
-#define CN_EMERISS        14889
+//\todo Check Putrid Mushroom
+const uint32 CN_EMERISS = 14889;
 
-#define SLEEP                24777
-#define NOXIOUS_BREATH            24818
-#define TAIL_SWEEP            15847
-#define MARK_OF_NATURE            25040   //If a player is killed by Emeriss, they will be afflicted by a 15 minute debuff called Mark of Nature. If resurrected during this time, they will be slept for 2 minutes rather than 4 seconds if they are hit with Sleep.
-#define VOLATILE_INFECTION           24928
-#define CORRUPTION_OF_EARTH              24910
-#define PUTRID_MUSHROOM                24904 //31690 - Putrid mushroom //Summon Putrid Mushroom = 24904     //Despawn Putrid Mushroom = 24958
-#define TELEPORT                15734
+const uint32 SLEEP = 24777;
+const uint32 NOXIOUS_BREATH = 24818;
+const uint32 TAIL_SWEEP = 15847;
+const uint32 MARK_OF_NATURE = 25040;   //If a player is killed by Emeriss, they will be afflicted by a 15 minute debuff called Mark of Nature. If resurrected during this time, they will be slept for 2 minutes rather than 4 seconds if they are hit with Sleep.
+const uint32 VOLATILE_INFECTION = 24928;
+const uint32 CORRUPTION_OF_EARTH = 24910;
+const uint32 PUTRID_MUSHROOM = 24904; //31690 - Putrid mushroom //Summon Putrid Mushroom = 24904     //Despawn Putrid Mushroom = 24958
+const uint32 TELEPORT = 15734;
 
 class EmerissAI : public CreatureAIScript
 {
@@ -218,17 +218,12 @@ class EmerissAI : public CreatureAIScript
 };
 
 // Taerar AI
-#define CN_TAERAR        14890
-#define CN_SHADESTAERAR 15302
+const uint32 CN_TAERAR = 14890;
+const uint32 CN_SHADESTAERAR = 15302;
 
-#define SLEEP                24777
-#define NOXIOUS_BREATH            24818
-#define TAIL_SWEEP            15847
-#define TELEPORT                15734
-#define MARK_OF_NATURE            25040   //If a player is killed by Taerar, they will be afflicted by a 15 minute debuff called Mark of Nature. If resurrected during this time, they will be slept for 2 minutes rather than 4 seconds if they are hit with Sleep.
-#define ARCANE_BLAST          24857
-#define BELLOWING_ROAR        22686            //Mass fear
-#define SUMMON_SHADE          24843
+const uint32 ARCANE_BLAST = 24857;
+const uint32 BELLOWING_ROAR = 22686;           //Mass fear
+const uint32 SUMMON_SHADE = 24843;
 
 class TaerarAI : public CreatureAIScript
 {
@@ -449,10 +444,10 @@ class TaerarAI : public CreatureAIScript
 };
 
 // Shades of Taerar AI
-#define CN_SHADEOFTAERAR 15302
+const uint32 CN_SHADEOFTAERAR = 15302;
 
-#define POSION_CLOUD                24840
-#define POSION_BREATH             20667
+const uint32 POSION_CLOUD = 24840;
+const uint32 POSION_BREATH = 20667;
 
 class ShadeofTaerarAI : public CreatureAIScript
 {
@@ -579,16 +574,11 @@ class ShadeofTaerarAI : public CreatureAIScript
 
 
 // Ysondre AI
-#define CN_YSONDRE        14887
-#define CN_YDRUIDS        15260
+const uint32 CN_YSONDRE = 14887;
+const uint32 CN_YDRUIDS = 15260;
 
-#define SLEEP                24777
-#define NOXIOUS_BREATH            24818
-#define TAIL_SWEEP            15847
-#define TELEPORT                15734
-#define MARK_OF_NATURE            25040   //If a player is killed by Ysondre, they will be afflicted by a 15 minute debuff called Mark of Nature. If resurrected during this time, they will be slept for 2 minutes rather than 4 seconds if they are hit with Sleep.
-#define LIGHTNING_WAVE        24819
-#define SUMMON_DRUIDS         24795 // Summon Demented Druid Spirit
+const uint32 LIGHTNING_WAVE = 24819;
+const uint32 SUMMON_DRUIDS = 24795; // Summon Demented Druid Spirit
 
 class YsondreAI : public CreatureAIScript
 {
@@ -765,9 +755,9 @@ class YsondreAI : public CreatureAIScript
 };
 
 // Demented Druid Spirit AI
-#define CN_DEMENTEDDRUID    15260
+const uint32 CN_DEMENTEDDRUID = 15260;
 
-#define MOONFIRE               27737
+const uint32 MOONFIRE = 27737;
 
 class DementedDruidSpiritAI : public CreatureAIScript
 {
@@ -885,15 +875,10 @@ class DementedDruidSpiritAI : public CreatureAIScript
 };
 
 // Lethon AI
-#define CN_LETHON        14888
+const uint32 CN_LETHON = 14888;
 
-#define SLEEP                24777
-#define NOXIOUS_BREATH            24818
-#define TAIL_SWEEP            15847
-#define TELEPORT                15734
-#define MARK_OF_NATURE            25040   // If a player is killed by Lethon, they will be afflicted by a 15 minute debuff called Mark of Nature. If resurrected during this time, they will be slept for 2 minutes rather than 4 seconds if they are hit with Sleep.
-#define SHADOW_WHIRL        24837
-#define SUMMON_SHADES         24810
+const uint32 SHADOW_WHIRL = 24837;
+const uint32 SUMMON_SHADES = 24810;
 
 class LethonAI : public CreatureAIScript
 {
@@ -1096,7 +1081,7 @@ class LethonAI : public CreatureAIScript
 
 //Shades of Lethon
 
-#define CN_LSHADE        15261
+const uint32 CN_LSHADE = 15261;
 
 class ShadeofLethonAI : public CreatureAIScript
 {
@@ -1172,16 +1157,16 @@ class ShadeofLethonAI : public CreatureAIScript
 //////////////////////////////////////////////////////////////////////////////////////////
 
 // Highlord Kruul
-#define CN_KRUUL    18338
-#define CN_HOUNDS    19207
+const uint32 CN_KRUUL = 18338;
+const uint32 CN_HOUNDS = 19207;
 
-#define SHADOW_VOLLEY                21341
-#define CLEAVE           20677
-#define THUNDER_CLAP            23931
-#define TWISTED_REFLECTION            21063
-#define VOID_BOLT            21066
-#define RAGE           21340
-#define CAPTURE_SOUL               21053
+const uint32 SHADOW_VOLLEY = 21341;
+const uint32 CLEAVE = 20677;
+const uint32 THUNDER_CLAP = 23931;
+const uint32 TWISTED_REFLECTION = 21063;
+const uint32 VOID_BOLT = 21066;
+const uint32 RAGE = 21340;
+const uint32 CAPTURE_SOUL = 21053;
 
 class KruulAI : public CreatureAIScript
 {
@@ -1434,16 +1419,9 @@ Remaining:
 11340,10,"A_GRULLAIR_Kazzak_Death01" (444060),"GRULLAIR_Kazzak_Death01.wav"
 */
 
-#define CN_KAZZAK    18728
+const uint32 CN_KAZZAK = 18728;
 
-#define SHADOW_VOLLEY                21341
-#define CLEAVE           20677
-#define THUNDER_CLAP            23931
-#define TWISTED_REFLECTION            21063
-#define VOID_BOLT            21066
-#define RAGE           21340
-#define CAPTURE_SOUL               21053
-#define MARK_OF_KAZZAK            21056
+const uint32 MARK_OF_KAZZAK = 21056;
 
 class KazzakAI : public CreatureAIScript
 {
@@ -1673,15 +1651,15 @@ class KazzakAI : public CreatureAIScript
 
 // Azuregos
 
-#define CN_AZUREGOS        6109
+const uint32 CN_AZUREGOS = 6109;
 
-#define MARK_OF_FROST                23183
-#define MANA_STORM            21097
-#define REFLECT            30969               //Might not be the right, this one doesn't work on dots?
-#define ACLEAVE           8255                //This is Strong Cleave, maybe it should be 27794, normal cleave 250+ damage
-#define CONE_OF_COLD    30095
-#define MASS_TELEPORT            16807
-///\todo check for gossip azuregos ghost (AQ) "You seek to harm me $R?
+const uint32 MARK_OF_FROST = 23183;
+const uint32 MANA_STORM = 21097;
+const uint32 REFLECT = 30969;           //Might not be the right, this one doesn't work on dots?
+const uint32 ACLEAVE = 8255;            //This is Strong Cleave, maybe it should be 27794, normal cleave 250+ damage
+const uint32 CONE_OF_COLD = 30095;
+const uint32 MASS_TELEPORT = 16807;
+//\todo check for gossip azuregos ghost (AQ) "You seek to harm me $R?
 // Answer (race)
 // I am a treasure hunter in search of powerful artifacts. Give them to me and you will not be harmed.
 // give me all your money and you won't get hurt!
@@ -1852,15 +1830,15 @@ class AzuregosAI : public CreatureAIScript
 
 // Doomwalker
 
-#define CN_DOOMWALKER        17711
+const uint32 CN_DOOMWALKER = 17711;
 
-#define EARTHQUAKE                 32686
-#define MARK_OF_DEATH           37128
-#define CHAIN_LIGHTNING            33665
-#define OVERRUN                    32636
-#define ENRAGE                33653
-#define AURA_OF_DEATH        37131
-#define SUNDER_ARMOR          33661
+const uint32 EARTHQUAKE = 32686;
+const uint32 MARK_OF_DEATH = 37128;
+const uint32 CHAIN_LIGHTNING = 33665;
+const uint32 OVERRUN = 32636;
+const uint32 ENRAGE = 33653;
+const uint32 AURA_OF_DEATH = 37131;
+const uint32 SUNDER_ARMOR = 33661;
 
 class DoomwalkerAI : public CreatureAIScript
 {
@@ -2070,11 +2048,11 @@ class DoomwalkerAI : public CreatureAIScript
 
 // Teremus The Devourer
 
-#define CN_TEREMUS        7846
+const uint32 CN_TEREMUS = 7846;
 
-#define FLAME_BREATH                20712
-#define SOUL_CONSUMPTION             12667
-#define RESIST_ALL            18114
+const uint32 FLAME_BREATH = 20712;
+const uint32 SOUL_CONSUMPTION = 12667;
+const uint32 RESIST_ALL = 18114;
 
 class TeremusAI : public CreatureAIScript
 {

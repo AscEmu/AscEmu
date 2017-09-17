@@ -41,8 +41,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Sunblade Protector
-#define CN_SUNBLADE_PROTECTOR                25507
-#define SUNBLADE_PROTECTOR_FEL_LIGHTNING    46480
+const uint32 CN_SUNBLADE_PROTECTOR = 25507;
+const uint32 SUNBLADE_PROTECTOR_FEL_LIGHTNING = 46480;
 
 class SunbladeProtectorAI : public MoonScriptCreatureAI
 {
@@ -55,11 +55,11 @@ class SunbladeProtectorAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Shadowsword Assassin
-#define CN_SHADOWSWORD_ASSASSIN                        25484
-#define SHADOWSWORD_ASSASSIN_ASSASSINS_MARK            46459
-#define SHADOWSWORD_ASSASSIN_AIMED_SHOT                46460
-#define SHADOWSWORD_ASSASSIN_SHADOWSTEP                46463
-#define SHADOWSWORD_ASSASSIN_GREATER_INVISIBILITY    16380
+const uint32 CN_SHADOWSWORD_ASSASSIN = 25484;
+const uint32 SHADOWSWORD_ASSASSIN_ASSASSINS_MARK = 46459;
+const uint32 SHADOWSWORD_ASSASSIN_AIMED_SHOT = 46460;
+const uint32 SHADOWSWORD_ASSASSIN_SHADOWSTEP = 46463;
+const uint32 SHADOWSWORD_ASSASSIN_GREATER_INVISIBILITY = 16380;
 
 class ShadowswordAssassinAI : public MoonScriptCreatureAI
 {
@@ -75,9 +75,9 @@ class ShadowswordAssassinAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Shadowsword Commander
-#define CN_SHADOWSWORD_COMMANDER            25837
-#define SHADOWSWORD_COMMANDER_SHIELD_SLAM    46762
-#define SHADOWSWORD_COMMANDER_BATTLESHOUT    46763
+const uint32 CN_SHADOWSWORD_COMMANDER = 25837;
+const uint32 SHADOWSWORD_COMMANDER_SHIELD_SLAM = 46762;
+const uint32 SHADOWSWORD_COMMANDER_BATTLESHOUT = 46763;
 
 class ShadowswordCommanderAI : public MoonScriptCreatureAI
 {
@@ -91,10 +91,10 @@ class ShadowswordCommanderAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Kalecgos
-/*#define CN_KALECGOS                    24850
-#define KALECGOS_FROST_BREATH        44799
-#define KALECGOS_SPECTRAL_BLAST        44866
-#define KALECGOS_ARCANE_BUFFET        45018
+/*const uint32 CN_KALECGOS = 24850
+const uint32 KALECGOS_FROST_BREATH = 44799
+const uint32 KALECGOS_SPECTRAL_BLAST = 44866
+const uint32 KALECGOS_ARCANE_BUFFET = 45018
 
 void SpellFunc_Kalecgos_WildMagic(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
@@ -123,20 +123,20 @@ void SpellFunc_Kalecgos_WildMagic(SpellDesc* pThis, MoonScriptCreatureAI* pCreat
     {
         \todo 
 
-        #define SP_WILD_MAGIC_1            44978
-        #define SP_WILD_MAGIC_2            45001
-        #define SP_WILD_MAGIC_3            45002
-        #define SP_WILD_MAGIC_4            45004
-        #define SP_WILD_MAGIC_5            45006
-        #define SP_WILD_MAGIC_6            45010
+        const uint32 SP_WILD_MAGIC_1            44978
+        const uint32 SP_WILD_MAGIC_2            45001
+        const uint32 SP_WILD_MAGIC_3            45002
+        const uint32 SP_WILD_MAGIC_4            45004
+        const uint32 SP_WILD_MAGIC_5            45006
+        const uint32 SP_WILD_MAGIC_6            45010
     }
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Sathrovarr the Corruptor
-#define CN_SATHROVARR_THE_CORRUPTOR                            24892
-#define SATHROVARR_THE_CORRUPTOR_CURSE_OF_BOUNDLESS_AGONY    45034
-#define SATHROVARR_THE_CORRUPTOR_SHADOW_BOLT_VOLLEY            38840
-#define SATHROVARR_THE_CORRUPTOR_CORRUPTING_STRIKE            45029
+const uint32 CN_SATHROVARR_THE_CORRUPTOR = 24892
+const uint32 SATHROVARR_THE_CORRUPTOR_CURSE_OF_BOUNDLESS_AGONY = 45034
+const uint32 SATHROVARR_THE_CORRUPTOR_SHADOW_BOLT_VOLLEY = 38840
+const uint32 SATHROVARR_THE_CORRUPTOR_CORRUPTING_STRIKE = 45029
 
 class SathrovarrTheCorruptorAI : public MoonScriptBossAI
 {
@@ -157,11 +157,11 @@ class SathrovarrTheCorruptorAI : public MoonScriptBossAI
 */
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Brutallus
-#define CN_BRUTALLUS            24882
-#define BRUTALLUS_METEOR_SLASH    45150
-#define BRUTALLUS_BURN            45141
-#define BRUTALLUS_STOMP            45185
-#define BRUTALLUS_BERSERK        26662
+const uint32 CN_BRUTALLUS = 24882;
+const uint32 BRUTALLUS_METEOR_SLASH = 45150;
+const uint32 BRUTALLUS_BURN = 45141;
+const uint32 BRUTALLUS_STOMP = 45185;
+const uint32 BRUTALLUS_BERSERK = 26662;
 
 class BrutallusAI : public MoonScriptBossAI
 {
@@ -189,15 +189,15 @@ class BrutallusAI : public MoonScriptBossAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Felmyst
-#define CN_FELMYST                    25038
-#define FELMYST_CLEAVE                19983
-#define FELMYST_CORROSION            45866
-#define FELMYST_DEMONIC_VAPOR        45402
-#define FELMYST_GAS_NOVA            45855
-#define FELMYST_NOXIOUS_FUME        47002
-#define FELMYST_ENCAPSULATE            45662
-#define FELMYST_FOG_OF_CORRUPTION    45717
-#define FELMYST_ENRAGE                26662    //Using same as Brutallus for now, need to find actual spell id
+const uint32 CN_FELMYST = 25038;
+const uint32 FELMYST_CLEAVE = 19983;
+const uint32 FELMYST_CORROSION = 45866;
+const uint32 FELMYST_DEMONIC_VAPOR = 45402;
+const uint32 FELMYST_GAS_NOVA = 45855;
+const uint32 FELMYST_NOXIOUS_FUME = 47002;
+const uint32 FELMYST_ENCAPSULATE = 45662;
+const uint32 FELMYST_FOG_OF_CORRUPTION = 45717;
+const uint32 FELMYST_ENRAGE = 26662;    //Using same as Brutallus for now, need to find actual spell id
 
 class FelmystAI : public MoonScriptBossAI
 {
@@ -237,13 +237,13 @@ class FelmystAI : public MoonScriptBossAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Lady Sacrolash
-#define CN_LADY_SACROLASH                25165
-#define CN_GRAND_WARLOCK_ALYTHESS        25166
-#define LADY_SACROLASH_DARK_TOUCHED        45347
-#define LADY_SACROLASH_SHADOW_BLADES    45248
-#define LADY_SACROLASH_SHADOW_NOVA        45329
-#define LADY_SACROLASH_CONFOUNDING_BLOW    45256
-#define LADY_SACROLASH_ENRAGE            26662    //Using same as Brutallus for now, need to find actual spell id
+const uint32 CN_LADY_SACROLASH = 25165;
+const uint32 CN_GRAND_WARLOCK_ALYTHESS = 25166;
+const uint32 LADY_SACROLASH_DARK_TOUCHED = 45347;
+const uint32 LADY_SACROLASH_SHADOW_BLADES = 45248;
+const uint32 LADY_SACROLASH_SHADOW_NOVA = 45329;
+const uint32 LADY_SACROLASH_CONFOUNDING_BLOW = 45256;
+const uint32 LADY_SACROLASH_ENRAGE = 26662;    //Using same as Brutallus for now, need to find actual spell id
 
 class LadySacrolashAI : public MoonScriptBossAI
 {
@@ -274,12 +274,12 @@ class LadySacrolashAI : public MoonScriptBossAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Grand Warlock Alythess
-#define GRAND_WARLOCK_ALYTHESS_PYROGENICS        45230
-#define GRAND_WARLOCK_ALYTHESS_FLAME_TOUCHED    45348
-#define GRAND_WARLOCK_ALYTHESS_CONFLAGRATION    45342
-#define GRAND_WARLOCK_ALYTHESS_BLAZE            45235
-#define GRAND_WARLOCK_ALYTHESS_FLAME_SEAR        46771
-#define GRAND_WARLOCK_ALYTHESS_ENRAGE            26662    //Using same as Brutallus for now, need to find actual spell id
+const uint32 GRAND_WARLOCK_ALYTHESS_PYROGENICS = 45230;
+const uint32 GRAND_WARLOCK_ALYTHESS_FLAME_TOUCHED = 45348;
+const uint32 GRAND_WARLOCK_ALYTHESS_CONFLAGRATION = 45342;
+const uint32 GRAND_WARLOCK_ALYTHESS_BLAZE = 45235;
+const uint32 GRAND_WARLOCK_ALYTHESS_FLAME_SEAR = 46771;
+const uint32 GRAND_WARLOCK_ALYTHESS_ENRAGE = 26662;    //Using same as Brutallus for now, need to find actual spell id
 
 class GrandWarlockAlythessAI : public MoonScriptBossAI
 {
@@ -311,15 +311,15 @@ class GrandWarlockAlythessAI : public MoonScriptBossAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //M'uru
-#define CN_MURU                        25741
-#define CN_SHADOWSWORD_BERSERKER    25798
-#define CN_SHADOWSWORD_FURY_MAGE    25799
-#define CN_VOID_SENTINEL            25772
-#define MURU_NEGATIVE_ENERGY        46008    //patch 2.4.2: this spell shouldn't cause casting pushback (to be fixed in core)
-#define MURU_DARKNESS                45996
-#define MURU_SUMMON_BERSERKER        46037
-#define MURU_SUMMON_FURY_MAGE        46038
-#define MURU_SUMMON_VOID_SENTINEL    45988
+const uint32 CN_MURU = 25741;
+const uint32 CN_SHADOWSWORD_BERSERKER = 25798;
+const uint32 CN_SHADOWSWORD_FURY_MAGE = 25799;
+const uint32 CN_VOID_SENTINEL = 25772;
+const uint32 MURU_NEGATIVE_ENERGY = 46008;   //patch 2.4.2: this spell shouldn't cause casting pushback (to be fixed in core)
+const uint32 MURU_DARKNESS = 45996;
+const uint32 MURU_SUMMON_BERSERKER = 46037;
+const uint32 MURU_SUMMON_FURY_MAGE = 46038;
+const uint32 MURU_SUMMON_VOID_SENTINEL = 45988;
 
 class MuruAI : public MoonScriptBossAI
 {
@@ -355,7 +355,7 @@ class VoidSentinelAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Entropius
-#define CN_ENTROPIUS 25840
+const uint32 CN_ENTROPIUS = 25840;
 
 class EntropiusAI : public MoonScriptBossAI
 {

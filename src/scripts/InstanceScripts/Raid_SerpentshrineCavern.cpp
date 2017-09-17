@@ -25,29 +25,29 @@
 #include "Objects/Faction.h"
 #include <Spell/Definitions/PowerType.h>
 
-#define SP_SCALDING_WATER 37284 //This "dot" is supposed to tick whenever you get in the water, it doesnt tick anymore after u kill lurker.
+const uint32 SP_SCALDING_WATER = 37284; //This "dot" is supposed to tick whenever you get in the water, it doesnt tick anymore after u kill lurker.
 
 //------------------------------------
 //    -= Hydross the Unstable =-
 //------------------------------------
-#define WATER_TOMB 38235
-#define VILE_SLUDGE 38246
-#define MARK_OF_HYDROSS1    38215
-#define MARK_OF_HYDROSS2    38216
-#define MARK_OF_HYDROSS3    38217
-#define MARK_OF_HYDROSS4    38218
-#define MARK_OF_HYDROSS5    38231
-#define MARK_OF_HYDROSS6    40584
+const uint32 WATER_TOMB = 38235;
+const uint32 VILE_SLUDGE = 38246;
+const uint32 MARK_OF_HYDROSS1 = 38215;
+const uint32 MARK_OF_HYDROSS2 = 38216;
+const uint32 MARK_OF_HYDROSS3 = 38217;
+const uint32 MARK_OF_HYDROSS4 = 38218;
+const uint32 MARK_OF_HYDROSS5 = 38231;
+const uint32 MARK_OF_HYDROSS6 = 40584;
 
-#define MARK_OF_CORRUPTION1 38219
-#define MARK_OF_CORRUPTION2 38220
-#define MARK_OF_CORRUPTION3 38221
-#define MARK_OF_CORRUPTION4 38222
-#define MARK_OF_CORRUPTION5 38230
-#define MARK_OF_CORRUPTION6 40583
+const uint32 MARK_OF_CORRUPTION1 = 38219;
+const uint32 MARK_OF_CORRUPTION2 = 38220;
+const uint32 MARK_OF_CORRUPTION3 = 38221;
+const uint32 MARK_OF_CORRUPTION4 = 38222;
+const uint32 MARK_OF_CORRUPTION5 = 38230;
+const uint32 MARK_OF_CORRUPTION6 = 40583;
 
-#define HYDROSS_ENRAGE 13048
-#define PURIFY_ELEMENTAL 36461
+const uint32 HYDROSS_ENRAGE = 13048;
+const uint32 PURIFY_ELEMENTAL = 36461;
 
 class HydrossTheUnstableAI : public CreatureAIScript
 {
@@ -448,11 +448,11 @@ class HydrossTheUnstableAI : public CreatureAIScript
 //------------------------------------
 //    -= The Lurker Below=-
 //------------------------------------
-#define WHIRL 37363
-#define GEYSER 37478
-#define SPOUT 37433
-#define SUBMERGE 37433 // Didn't find the spell id
-//#define WATER_BOLT 37138
+const uint32 WHIRL = 37363;
+const uint32 GEYSER = 37478;
+const uint32 SPOUT = 37433;
+const uint32 SUBMERGE = 37433; // Didn't find the spell id
+//const uint32 WATER_BOLT  = 37138;
 
 class LurkerAI : public CreatureAIScript
 {
@@ -585,13 +585,13 @@ class LurkerAI : public CreatureAIScript
  - Some phase timers
  - Insidious whispers
 */
-#define MIND_BLAST 37531
-#define WHIRLWINDLEO 40653
-#define INSIDIOUS_WHISPER 37676
-#define CHAOS_BLAST_ANIMATION 37674
-#define CHAOS_BLAST_EFFECT 37675
-#define LEO_ENRAGE 41447 //13048
-#define LEO_BANISH 37546
+const uint32 MIND_BLAST = 37531;
+const uint32 WHIRLWINDLEO = 40653;
+const uint32 INSIDIOUS_WHISPER = 37676;
+const uint32 CHAOS_BLAST_ANIMATION = 37674;
+const uint32 CHAOS_BLAST_EFFECT = 37675;
+const uint32 LEO_ENRAGE = 41447; //13048
+const uint32 LEO_BANISH = 37546;
 
 uint32 LeotherasEventGreyheartToKill[1000000];
 
@@ -1187,9 +1187,9 @@ class ShadowofLeotherasAI : public CreatureAIScript
 //------------------------------------
 //    -= Fathom-Lord Karathress =-
 //------------------------------------
-#define CATACLYSMIC_BOLT 38441
-#define BLESSING_OF_THE_TIDES 38449
-#define KARATHRESS_ENRAGE 39249
+const uint32 CATACLYSMIC_BOLT = 38441;
+const uint32 BLESSING_OF_THE_TIDES = 38449;
+const uint32 KARATHRESS_ENRAGE = 39249;
 
 class KarathressAI : public CreatureAIScript
 {
@@ -1309,9 +1309,9 @@ class KarathressAI : public CreatureAIScript
 };
 
 //Fathom-Guard Sharkkis (Hunter)
-#define MULTI_SHOT 29576
-#define LEECHING_THROW 29436
-#define THE_BEAST_WITHIN 38373
+const uint32 MULTI_SHOT = 29576;
+const uint32 LEECHING_THROW = 29436;
+const uint32 THE_BEAST_WITHIN = 38373;
 
 class FathomGuardSharkissAI : public MoonScriptCreatureAI
 {
@@ -1381,11 +1381,11 @@ class FathomGuardSharkissAI : public MoonScriptCreatureAI
 };
 
 //Fathom-Guard Tidalvess (Shaman)
-#define SPITFIRE_TOTEM 38236
-#define POISON_CLEANSING_TOTEM 38306
-#define EARTHBIND_TOTEM 38304
-#define FROST_SHOCK 38234
-#define WINDFURY 38229
+const uint32 SPITFIRE_TOTEM = 38236;
+const uint32 POISON_CLEANSING_TOTEM = 38306;
+const uint32 EARTHBIND_TOTEM = 38304;
+const uint32 FROST_SHOCK = 38234;
+const uint32 WINDFURY = 38229;
 
 class FathomGuardTidalvessAI : public MoonScriptCreatureAI
 {
@@ -1419,9 +1419,9 @@ class FathomGuardTidalvessAI : public MoonScriptCreatureAI
 };
 
 //Fathom-Guard Caribdis (Priest)
-#define HEAL 33144
-#define TIDAL_SURGE 38358
-#define SUMMON_CYCLONE 38337
+const uint32 HEAL = 33144;
+const uint32 TIDAL_SURGE = 38358;
+const uint32 SUMMON_CYCLONE = 38337;
 
 class FathomGuardCaribdisAI : public MoonScriptCreatureAI
 {
@@ -1481,10 +1481,10 @@ class FathomGuardCaribdisAI : public MoonScriptCreatureAI
 //    -= Morogrim Tidewalker =-
 //------------------------------------
 
-#define TIDAL_WAVE 37730
-#define WATERY_GRAVE 38049
-#define EARTHQUAKE 37764
-#define SUMMON_WATER_GLOBULE 37854
+const uint32 TIDAL_WAVE = 37730;
+const uint32 WATERY_GRAVE = 38049;
+const uint32 EARTHQUAKE = 37764;
+const uint32 SUMMON_WATER_GLOBULE = 37854;
 
 class MorogrimAI : public CreatureAIScript
 {
@@ -1705,16 +1705,16 @@ class TidewalkerLurkerAI : public CreatureAIScript
  - Right Shield generators coords
 */
 
-#define SHOOT 37770
-#define ENTANGLE 38316
-#define SPAWN_ELEMENTAL 37053
-#define MULTI_SHOT 29576
-#define STATIC_CHARGE 38280
-#define FORKED_LIGHTNING 40088
-#define VASHJ_SHIELD 38112
-#define POISON_SPIT 40078
-#define TOXIC_SPORES 38575
-#define SHOCK_BLAST 38509
+const uint32 SHOOT = 37770;
+const uint32 ENTANGLE = 38316;
+const uint32 SPAWN_ELEMENTAL = 37053;
+const uint32 EEMULTI_SHOT = 29576;
+const uint32 STATIC_CHARGE = 38280;
+const uint32 FORKED_LIGHTNING = 40088;
+const uint32 VASHJ_SHIELD = 38112;
+const uint32 POISON_SPIT = 40078;
+const uint32 TOXIC_SPORES = 38575;
+const uint32 SHOCK_BLAST = 38509;
 
 
 class EnchantedElementalAI : public CreatureAIScript
@@ -1803,7 +1803,7 @@ class VashjAI : public CreatureAIScript
             spells[3].perctrigger = 0.0f;
             spells[3].instant = false;
 
-            info_multishot = sSpellCustomizations.GetSpellInfo(MULTI_SHOT);
+            info_multishot = sSpellCustomizations.GetSpellInfo(EEMULTI_SHOT);
             info_shot = sSpellCustomizations.GetSpellInfo(SHOOT);
 
             Movement::WayPoint* wp = _unit->CreateWaypointStruct();
@@ -2786,7 +2786,7 @@ class ToxicSporeBatAI : public CreatureAIScript
 //------------------------------------
 
 //Coilfang Ambusher
-#define CA_MULTI_SHOT 27021
+const uint32 CA_MULTI_SHOT = 27021;
 
 class CoilfangAmbusherAI : public MoonScriptCreatureAI
 {
@@ -2799,8 +2799,8 @@ class CoilfangAmbusherAI : public MoonScriptCreatureAI
 };
 
 //Coilfang Fathom-Witch
-#define SHADOW_BOLT 27209
-#define WHIRLWIND_KNOCKBACK 34109
+const uint32 SHADOW_BOLT = 27209;
+const uint32 WHIRLWIND_KNOCKBACK = 34109;
 
 class CoilfangFathomWitchAI : public MoonScriptCreatureAI
 {
@@ -2814,7 +2814,7 @@ class CoilfangFathomWitchAI : public MoonScriptCreatureAI
 };
 
 //Coilfang Guardian
-#define CLEAVE 38260
+const uint32 CLEAVE = 38260;
 
 class CoilfangGuardianAI : public MoonScriptCreatureAI
 {
@@ -2827,9 +2827,9 @@ class CoilfangGuardianAI : public MoonScriptCreatureAI
 };
 
 //Coilfang Priestess
-#define HOLY_NOVA 38589
-#define SMITE 25364
-#define SPIRIT_OF_REDEMPTION 35618
+const uint32 HOLY_NOVA = 38589;
+const uint32 SMITE = 25364;
+const uint32 SPIRIT_OF_REDEMPTION = 35618;
 
 class CoilfangPriestessAI : public MoonScriptCreatureAI
 {
@@ -2844,13 +2844,13 @@ class CoilfangPriestessAI : public MoonScriptCreatureAI
 };
 
 //Underbog Colossus
-#define ACID_GEYSER 37959
-#define ATROPIC_BLOW 39015
-#define SPORE_QUAKE 38976
-#define TOXIC_POOL 38718
-#define FRENZY 37605
-#define RAMPANT_INFECTION 39042
-#define PARASITE 39044
+const uint32 ACID_GEYSER = 37959;
+const uint32 ATROPIC_BLOW = 39015;
+const uint32 SPORE_QUAKE = 38976;
+const uint32 TOXIC_POOL = 38718;
+const uint32 FRENZY = 37605;
+const uint32 RAMPANT_INFECTION = 39042;
+const uint32 PARASITE = 39044;
 
 class UnderbogColossusAI : public MoonScriptCreatureAI
 {
@@ -2903,9 +2903,9 @@ class UnderbogColossusAI : public MoonScriptCreatureAI
 };
 
 //Tidewalker Warrior
-#define TW_CLEAVE 38260
-#define TW_BLOODTHIRST 30335 //INSTANT
-#define TW_FRENZY 37605
+const uint32 TW_CLEAVE = 38260;
+const uint32 TW_BLOODTHIRST = 30335; //INSTANT
+const uint32 TW_FRENZY = 37605;
 
 class TidewalkerWarriorAI : public MoonScriptCreatureAI
 {
@@ -2920,9 +2920,9 @@ class TidewalkerWarriorAI : public MoonScriptCreatureAI
 };
 
 //Coilfang Serpentguard
-#define CSERP_CLEAVE 38260
-#define CSERP_REFLECTION 36096
-#define CSERP_DEVOTION 38603
+const uint32 CSERP_CLEAVE = 38260;
+const uint32 CSERP_REFLECTION = 36096;
+const uint32 CSERP_DEVOTION = 38603;
 
 class CoilfangSerpentguardAI : public MoonScriptCreatureAI
 {
@@ -2937,7 +2937,7 @@ class CoilfangSerpentguardAI : public MoonScriptCreatureAI
 };
 
 //Coilfang Shatterer
-#define CSHATT_ARMOR 38591
+const uint32 CSHATT_ARMOR = 38591;
 
 class CoilfangShattererAI : public MoonScriptCreatureAI
 {
@@ -2950,7 +2950,7 @@ class CoilfangShattererAI : public MoonScriptCreatureAI
 };
 
 //Coilfang Strider
-#define CSTRID_SCREAM 10890
+const uint32 CSTRID_SCREAM = 10890;
 
 class CoilfangStriderAI : public MoonScriptCreatureAI
 {

@@ -25,10 +25,10 @@
 
 
 // APPRENTICE STAR SCRYER
-#define CN_A_STAR_SCRYER    20043
+const uint32 CN_A_STAR_SCRYER = 20043;
 
-#define ARCANE_VOLLEY        40424
-#define A_STAR_ARCANE_EXPLOSION    27082
+const uint32 ARCANE_VOLLEY = 40424;
+const uint32 A_STAR_ARCANE_EXPLOSION = 27082;
 
 class AStarScryerAI : public CreatureAIScript
 {
@@ -197,9 +197,9 @@ class AStarScryerAI : public CreatureAIScript
 };
 
 // STAR SCRYER
-#define CN_STAR_SCRYER 20034
+const uint32 CN_STAR_SCRYER = 20034;
 
-#define STARFALL 37124
+const uint32 STARFALL = 37124;
 
 class StarScryerAI : public CreatureAIScript
 {
@@ -362,11 +362,11 @@ class StarScryerAI : public CreatureAIScript
 };
 
 // ASTROMANCER
-#define CN_ASTROMANCER                20033
+const uint32 CN_ASTROMANCER = 20033;
 
-#define ASTROMANCER_FIREBALL        36971
-#define ASTROMANCER_CONFLAGRATION    37018
-#define ASTROMANCER_ARCANE_BURST    36970
+const uint32 ASTROMANCER_FIREBALL = 36971;
+const uint32 ASTROMANCER_CONFLAGRATION = 37018;
+const uint32 ASTROMANCER_ARCANE_BURST = 36970;
 
 class AstromancerAI : public MoonScriptCreatureAI
 {
@@ -411,11 +411,11 @@ class AstromancerAI : public MoonScriptCreatureAI
 
 
 // ASTROMANCER LORD
-#define CN_ASTROMANCER_LORD 20046
+const uint32 CN_ASTROMANCER_LORD = 20046;
 
-#define A_LORD_FIREBALL_VOLLEY 29922
-#define BLAST_WEAVE    33933
-#define DRAGONS_BREATH 33043
+const uint32 A_LORD_FIREBALL_VOLLEY = 29922;
+const uint32 BLAST_WEAVE = 33933;
+const uint32 DRAGONS_BREATH = 33043;
 
 class AstromancerLordAI : public CreatureAIScript
 {
@@ -591,10 +591,10 @@ class AstromancerLordAI : public CreatureAIScript
 };
 
 // BLOODWARDER VINDICATOR
-#define CN_BLOOD_VINDICATOR    20032
+const uint32 CN_BLOOD_VINDICATOR = 20032;
 
-#define HAMMER_OF_JUSTICE 32416
-#define FLASH_HEAL 38588
+const uint32 HAMMER_OF_JUSTICE = 32416;
+const uint32 FLASH_HEAL = 38588;
 
 class BloodVindicatorAI : public CreatureAIScript
 {
@@ -763,10 +763,10 @@ class BloodVindicatorAI : public CreatureAIScript
 };
 
 // BLOODWARDER LEGIONNARE
-#define CN_BLOOD_LEGIONNARE 20031
+const uint32 CN_BLOOD_LEGIONNARE = 20031;
 
-#define LEGION_WHIRLWIND 36981
-#define CLEAVE    26350
+const uint32 LEGION_WHIRLWIND = 36981;
+const uint32 CLEAVE = 26350;
 
 class BloodLegionnareAI : public CreatureAIScript
 {
@@ -935,10 +935,10 @@ class BloodLegionnareAI : public CreatureAIScript
 };
 
 // BLOODWARDER MARSHAL
-#define CN_BLOOD_MARSHAL 20035
+const uint32 CN_BLOOD_MARSHAL = 20035;
 
-#define WHIRLWIND        36981
-#define UPPERCUT    26007
+const uint32 WHIRLWIND = 36981;
+const uint32 UPPERCUT = 26007;
 
 class BloodMarshalAI : public CreatureAIScript
 {
@@ -1107,10 +1107,10 @@ class BloodMarshalAI : public CreatureAIScript
 };
 
 // PHOENIX HAWK
-#define CN_PHOENIX_HAWK 20039
+const uint32 CN_PHOENIX_HAWK = 20039;
 
-#define MANA_BURN 25380
-#define HAWK_CHARGE    16636
+const uint32 MANA_BURN = 25380;
+const uint32 HAWK_CHARGE = 16636;
 
 class PhoenixHawkAI : public CreatureAIScript
 {
@@ -1281,10 +1281,10 @@ class PhoenixHawkAI : public CreatureAIScript
 };
 
 // CRYSTALCORE SENTINEL
-#define CN_CRYSTAL_SENTINEL 20041
+const uint32 CN_CRYSTAL_SENTINEL = 20041;
 
-#define TRAMPLE 40340
-#define CHARGET_ARCANE_EXPLOSION 37106
+const uint32 TRAMPLE = 40340;
+const uint32 CHARGET_ARCANE_EXPLOSION = 37106;
 
 class CrystalSentinelAI : public CreatureAIScript
 {
@@ -1453,9 +1453,9 @@ class CrystalSentinelAI : public CreatureAIScript
 };
 
 // CRYSTALCORE MECHANIC
-#define CN_CRYSTAL_MECHANIC 20052
+const uint32 CN_CRYSTAL_MECHANIC = 20052;
 
-#define SAW_BLADE 37123
+const uint32 SAW_BLADE = 37123;
 
 class CrystalMechanicAI : public CreatureAIScript
 {
@@ -1626,13 +1626,13 @@ class CrystalMechanicAI : public CreatureAIScript
 //    -= Void Reaver =-
 //------------------------------------
 
-#define CN_VOID_REAVER                    19516
+const uint32 CN_VOID_REAVER = 19516;
 
-#define VOID_REAVER_POUNDING            34164
-#define VOID_REAVER_ARCANE_ORB            34190
-#define VOID_REAVER_ARCANE_ORB_TRIGGER    34172
-#define VOID_REAVER_KNOCK_AWAY            25778
-#define VOID_REAVER_ENRAGE                27680 // Needs checking (as it can be wrong [or maybe IS wrong])
+const uint32 VOID_REAVER_POUNDING = 34164;
+const uint32 VOID_REAVER_ARCANE_ORB = 34190;
+const uint32 VOID_REAVER_ARCANE_ORB_TRIGGER = 34172;
+const uint32 VOID_REAVER_KNOCK_AWAY = 25778;
+const uint32 VOID_REAVER_ENRAGE = 27680; // Needs checking (as it can be wrong [or maybe IS wrong])
 
 class VoidReaverAI : public MoonScriptBossAI
 {
@@ -1695,19 +1695,19 @@ class VoidReaverAI : public MoonScriptBossAI
 // - Once phase 2 is finished, phase 1 starts again
 // - At 20% health, Solarian enter phase 3 until she dies
 //
-#define CN_SOLARIAN                                18805
-#define CN_SOLARIUMAGENT                        18925
-#define CN_SOLARIUMPRIEST                        18806
-#define CN_SOLARIUM_SPOT_LIGHT                    15631
-#define SOLARIAN_WRATH_OF_THE_ASTROMANCER        42783    //Infuses an enemy with Arcane power, causing them to harm nearby allies for 5400 to 6600. Arcane damage after 6 sec.
-#define SOLARIAN_WRATH_OF_THE_ASTROMANCER_BOMB    42787    //The actual spell that triggers the explosion with arcane damage and slow fall
-#define SOLARIAN_ARCANE_MISSILES                33031    //Launches magical missiles at an enemy, inflicting Arcane damage each second for 3 sec. Trigger spell (3000 arcane damage)
-#define SOLARIAN_BLINDING_LIGHT                    33009    //Hits everyone in the raid for 2280 to 2520 arcane damage. 20sec cooldown.
-#define SOLARIAN_SOLARIANS_TRANSFORM            39117    //Transforms into void walker.
-#define SOLARIAN_VOID_BOLT                        39329    //The Void Walker casts this every 10 seconds. It deals 4394 to 5106 shadow damage to the target with the highest aggro.
-#define SOLARIAN_PSYCHIC_SCREAM                    34322    //Fears up to 5 targets in melee range.
-#define SOLARIUMPRIEST_GREATER_HEAL                38580    //Heals 23125 to 26875 any friendly target
-#define SOLARIUMPRIEST_HOLY_SMITE                31740    //Deals 553 to 747 holy damage
+const uint32 CN_SOLARIAN = 18805;
+const uint32 CN_SOLARIUMAGENT = 18925;
+const uint32 CN_SOLARIUMPRIEST = 18806;
+const uint32 CN_SOLARIUM_SPOT_LIGHT = 15631;
+const uint32 SOLARIAN_WRATH_OF_THE_ASTROMANCER = 42783;    //Infuses an enemy with Arcane power, causing them to harm nearby allies for 5400 to 6600. Arcane damage after 6 sec.
+const uint32 SOLARIAN_WRATH_OF_THE_ASTROMANCER_BOMB = 42787;    //The actual spell that triggers the explosion with arcane damage and slow fall
+const uint32 SOLARIAN_ARCANE_MISSILES = 33031;   //Launches magical missiles at an enemy, inflicting Arcane damage each second for 3 sec. Trigger spell (3000 arcane damage)
+const uint32 SOLARIAN_BLINDING_LIGHT = 33009;    //Hits everyone in the raid for 2280 to 2520 arcane damage. 20sec cooldown.
+const uint32 SOLARIAN_SOLARIANS_TRANSFORM = 39117;    //Transforms into void walker.
+const uint32 SOLARIAN_VOID_BOLT = 39329;    //The Void Walker casts this every 10 seconds. It deals 4394 to 5106 shadow damage to the target with the highest aggro.
+const uint32 SOLARIAN_PSYCHIC_SCREAM = 34322;    //Fears up to 5 targets in melee range.
+const uint32 SOLARIUMPRIEST_GREATER_HEAL = 38580;    //Heals 23125 to 26875 any friendly target
+const uint32 SOLARIUMPRIEST_HOLY_SMITE = 31740;   //Deals 553 to 747 holy damage
 
 bool Dummy_Solarian_WrathOfTheAstromancer(uint32 pEffectIndex, Spell* pSpell);
 void SpellFunc_Solarian_Disappear(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
@@ -1900,22 +1900,22 @@ class AlarAuxClass: public Object
 };
 
 
-#define CN_ALAR 19514
+const uint32 CN_ALAR = 19514;
 
 // Phase1 spells
-#define FLAME_BUFFET 34121    // casted only when there is no player in melee range!
-#define FLAME_QUILLS 34316    // it flies to a high point in a center of room and use this on players located on platform    // also can be many others (Idk even if this spell works =S)
-#define SUMMON_PHOENIX_ADDS 18814    // Summons 3 phoenixs
+const uint32 FLAME_BUFFET = 34121;   // casted only when there is no player in melee range!
+const uint32 FLAME_QUILLS = 34316;    // it flies to a high point in a center of room and use this on players located on platform    // also can be many others (Idk even if this spell works =S)
+const uint32 SUMMON_PHOENIX_ADDS = 18814;    // Summons 3 phoenixs
 
 // Phase2 spells
-#define FLAME_PATCH 35383    // 35383, 35380;
-#define METEOR 35181        // but shouldn't be instant imho --Dive Bomb 35367
-//#define EMBER_BLAST 34133    // used when one of adds has low health
-#define MELT_ARMOR 35410 // maybe they are used, but not sure
-//#define RANDOM_CHARGE
+const uint32 FLAME_PATCH = 35383;    // 35383, 35380;
+const uint32 METEOR = 35181;       // but shouldn't be instant imho --Dive Bomb 35367
+//const uint32 EMBER_BLAST  = 34133;    // used when one of adds has low health
+const uint32 MELT_ARMOR = 35410; // maybe they are used, but not sure
+//const uint32 RANDOM_CHARGE
 
 // Other spells
-#define REBIRTH 34342
+const uint32 REBIRTH = 34342;
 
 static Movement::Location fly[] =
 {
@@ -2379,7 +2379,7 @@ class AlarAI : public CreatureAIScript
         bool Flying;
 };
 
-#define CN_EMBEROFALAR    19551
+const uint32 CN_EMBEROFALAR = 19551;
 
 class EmberAlarAI : public CreatureAIScript
 {
@@ -2472,7 +2472,7 @@ class EmberAlarAI : public CreatureAIScript
 };
 
 
-#define CN_PATCHALAR    20602
+const uint32 CN_PATCHALAR = 20602;
 
 class PatchAlarAI : public CreatureAIScript
 {
@@ -2563,9 +2563,9 @@ class PatchAlarAI : public CreatureAIScript
 //-----------------------------------------------------------//
 
 // Thaladred the Darkener AI(1st advisor)
-#define CN_DARKENER                20064
-#define DARKENER_PSYCHIC_BLOW    36966
-#define DARKENER_SILENCE        29943
+const uint32 CN_DARKENER = 20064;
+const uint32 DARKENER_PSYCHIC_BLOW = 36966;
+const uint32 DARKENER_SILENCE = 29943;
 
 class DarkenerAI : public MoonScriptCreatureAI
 {
@@ -2644,8 +2644,8 @@ class DarkenerAI : public MoonScriptCreatureAI
 };
 
 // Lord Sanguinar AI (2nd advisor)
-#define CN_SANGUINAR            20060
-#define SANGUINAR_BELLOWING        36922
+const uint32 CN_SANGUINAR = 20060;
+const uint32 SANGUINAR_BELLOWING = 36922;
 
 class SanguinarAI : public MoonScriptCreatureAI
 {
@@ -2677,10 +2677,10 @@ class SanguinarAI : public MoonScriptCreatureAI
 };
 
 // Grand Astromancer Capernian AI (3rd advisor)
-#define CN_CAPERNIAN                20062
-#define CAPERNIAN_CONFLAGRATION        37018
-#define CAPERNIAN_FIREBALL            36971
-#define CAPERNIAN_ARCANE_BURST        36970
+const uint32 CN_CAPERNIAN = 20062;
+const uint32 CAPERNIAN_CONFLAGRATION = 37018;
+const uint32 CAPERNIAN_FIREBALL = 36971;
+const uint32 CAPERNIAN_ARCANE_BURST = 36970;
 
 class CapernianAI : public MoonScriptCreatureAI
 {
@@ -2744,9 +2744,9 @@ class CapernianAI : public MoonScriptCreatureAI
 };
 
 // Master Engineer Telonicus AI (4th advisor)
-#define CN_TELONICUS            20063
-#define TELONICUS_BOMB            37036
-#define TELONICUS_REMOTE_TOY    37027    // doesn't seems to work like it should
+const uint32 CN_TELONICUS = 20063;
+const uint32 TELONICUS_BOMB = 37036;
+const uint32 TELONICUS_REMOTE_TOY = 37027;    // doesn't seems to work like it should
 
 class TelonicusAI : public MoonScriptCreatureAI
 {
@@ -2779,9 +2779,9 @@ class TelonicusAI : public MoonScriptCreatureAI
 };
 
 // Flame Strike AI
-#define CN_FLAME_STRIKE_TRIGGER                        21369
-#define FLAME_STRIKE_TRIGGER_FLAME_STRIKE            36731
-#define FLAME_STRIKE_TRIGGER_FLAME_STRIKE_EFFECT    36730
+const uint32 CN_FLAME_STRIKE_TRIGGER = 21369;
+const uint32 FLAME_STRIKE_TRIGGER_FLAME_STRIKE = 36731;
+const uint32 FLAME_STRIKE_TRIGGER_FLAME_STRIKE_EFFECT = 36730;
 
 class FlameStrikeAI : public MoonScriptCreatureAI
 {
@@ -2814,9 +2814,9 @@ class FlameStrikeAI : public MoonScriptCreatureAI
 };
 
 // Phoenix AI
-#define CN_PHOENIX        21362
-#define PHOENIX_BURN    36721
-#define PHOENIX_REBIRTH 35369        // used as instant cast - but it does not show animation now (maybe it would be good to move it to trigger?)
+const uint32 CN_PHOENIX = 21362;
+const uint32 PHOENIX_BURN = 36721;
+const uint32 PHOENIX_REBIRTH = 35369;        // used as instant cast - but it does not show animation now (maybe it would be good to move it to trigger?)
 
 class PhoenixAI : public MoonScriptCreatureAI
 {
@@ -2885,7 +2885,7 @@ class PhoenixAI : public MoonScriptCreatureAI
 };
 
 //Phoenix Egg AI
-#define CN_PHOENIX_EGG                21364
+const uint32 CN_PHOENIX_EGG = 21364;
 
 class PhoenixEggAI : public MoonScriptCreatureAI
 {
@@ -2914,13 +2914,13 @@ class PhoenixEggAI : public MoonScriptCreatureAI
 
 //-------------------Kael'thas Weapons------------------//
 
-#define NETHERSTRAND_LONGBOW    21268
-#define DEVASTATION                21269
-#define COSMIC_INFUSER            21270
-#define INFINITY_BLADE            21271
-#define WARP_SLICER                21272
-#define PHASESHIFT_BULWARK        21273
-#define STAFF_OF_DISINTEGRATION    21274
+const uint32 NETHERSTRAND_LONGBOW = 21268;
+const uint32 DEVASTATION = 21269;
+const uint32 COSMIC_INFUSER = 21270;
+const uint32 INFINITY_BLADE = 21271;
+const uint32 WARP_SLICER = 21272;
+const uint32 PHASESHIFT_BULWARK = 21273;
+const uint32 STAFF_OF_DISINTEGRATION = 21274;
 
 class WeaponsAI : public MoonScriptCreatureAI
 {
@@ -2951,40 +2951,40 @@ class WeaponsAI : public MoonScriptCreatureAI
         }
 };
 
-///\todo Add weapon summon effect
-/// Check why some features block (like melee, movement and so on) if there's only 1 target and spell req. NotCurrent one
+//\todo Add weapon summon effect
+// Check why some features block (like melee, movement and so on) if there's only 1 target and spell req. NotCurrent one
 
 //Prince Kael'Thas
-#define CN_KAELTHAS                        19622
+const uint32 CN_KAELTHAS = 19622;
 
 // Common spells
-#define KAELTHAS_FIREBALL                36805    // prolly wrong id
-#define KAELTHAS_ARCANE_DISRUPTION        36834
-#define KAELTHAS_SHOCK_BARRIER            36815    // timed
+const uint32 KAELTHAS_FIREBALL = 36805;    // prolly wrong id
+const uint32 KAELTHAS_ARCANE_DISRUPTION = 36834;
+const uint32 KAELTHAS_SHOCK_BARRIER = 36815;    // timed
 
 // Phase 4 spells
-#define KAELTHAS_FLAME_STRIKE_SUMMON    36735
-#define KAELTHAS_PHOENIX                36723
-#define KAELTHAS_PYROBLAST                36819    // timed
-#define KAELTHAS_MIND_CONTROL            36797    // timed
+const uint32 KAELTHAS_FLAME_STRIKE_SUMMON = 36735;
+const uint32 KAELTHAS_PHOENIX = 36723;
+const uint32 KAELTHAS_PYROBLAST = 36819;    // timed
+const uint32 KAELTHAS_MIND_CONTROL = 36797;    // timed
 
 // Phase 5 spells
-#define KAELTHAS_GRAVITY_LAPSE            35966    // timed
-#define KAELTHAS_NETHER_VAPOR            35859
-#define KAELTHAS_NETHER_BEAM            35873    // timed along with lapse
+const uint32 KAELTHAS_GRAVITY_LAPSE = 35966;    // timed
+const uint32 KAELTHAS_NETHER_VAPOR = 35859;
+const uint32 KAELTHAS_NETHER_BEAM = 35873;    // timed along with lapse
 
-//#define KAELTHAS_GRAVITY1                34480    // knockback + aura
-//#define KAELTHAS_GRAVITY2                35941    // explosion effect
+//const uint32 KAELTHAS_GRAVITY1 = 34480;    // knockback + aura
+//const uint32 KAELTHAS_GRAVITY2 = 35941;    // explosion effect
 
-#define KAELTHAS_SUMMON_WEAPONS            36976    //casting effect
+const uint32 KAELTHAS_SUMMON_WEAPONS = 36976;    //casting effect
 
-#define REMOVE_INFUSER                    39498
-#define REMOVE_DEVASTATION                39499
-#define REMOVE_INFINITY                    39500
-#define REMOVE_LONGBOW                    39501
-#define REMOVE_BULWARK                    39502
-#define REMOVE_STAFF                    39503
-#define REMOVE_SLICER                    39504
+const uint32 REMOVE_INFUSER = 39498;
+const uint32 REMOVE_DEVASTATION = 39499;
+const uint32 REMOVE_INFINITY = 39500;
+const uint32 REMOVE_LONGBOW = 39501;
+const uint32 REMOVE_BULWARK = 39502;
+const uint32 REMOVE_STAFF = 39503;
+const uint32 REMOVE_SLICER = 39504;
 
 const Movement::Location Triggers[] =
 {

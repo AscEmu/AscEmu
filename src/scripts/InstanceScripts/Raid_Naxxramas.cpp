@@ -25,7 +25,7 @@
 /////////////////////////////////////////////////////////////////////////////////
 ////// Naxxramas Instance
 
-#define CN_THADDIUS 15928
+const uint32 CN_THADDIUS = 15928;
 
 class NaxxramasScript : public MoonInstanceScript
 {

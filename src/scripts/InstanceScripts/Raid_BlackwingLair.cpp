@@ -26,10 +26,10 @@
 // --- Death Talon Pack ---
 
 // Death Talon Captain AI
-#define CN_DTCAPTAIN 12467
+const uint32 CN_DTCAPTAIN = 12467;
 
-#define MARK_OF_FLAMES 25050 // 1 target
-#define MARK_OF_DETONATION 22438 // 1 target
+const uint32 MARK_OF_FLAMES = 25050; // 1 target
+const uint32 MARK_OF_DETONATION = 22438; // 1 target
 
 class DTcaptainAI : public CreatureAIScript
 {
@@ -146,9 +146,9 @@ The Captain can also dispel any Hibernate effect cast on Death Talon Wyrmkin.
 */
 
 // Death Talon Flamescale AI
-#define CN_DTFLAMESCALE 12463
+const uint32 CN_DTFLAMESCALE = 12463;
 
-#define FLAME_SHOCK 22423 //1 target, ranged like
+const uint32 FLAME_SHOCK = 22423; //1 target, ranged like
 
 class DTflamescaleAI : public CreatureAIScript
 {
@@ -267,9 +267,9 @@ As of patch 1.12 Seethers now have a Flame Buffet ability that deals roughly 1k 
 */
 
 // Death Talon Wyrmkin AI
-#define CN_DTWYRMKIN 12465
+const uint32 CN_DTWYRMKIN = 12465;
 
-#define FIREBALL_VOLLEY 36742 // various targets
+const uint32 FIREBALL_VOLLEY = 36742; // various targets
 
 class DTwyrmkinAI : public CreatureAIScript
 {
@@ -382,9 +382,9 @@ They can be put to sleep by a druid's hibernate ability, but due to their high l
 // --- Blackwing Lair Lab Packs ---
 
 // Blackwing Technician AI
-#define CN_TECHNICIAN 13996
+const uint32 CN_TECHNICIAN = 13996;
 
-#define GRANADE 30217
+const uint32 GRANADE = 30217;
 
 class TechnicianAI : public CreatureAIScript
 {
@@ -486,10 +486,10 @@ Relatively low HP. Has a ranged aoe grenade that inflicts moderate damage to any
 */
 
 // Blackwing Warlock AI
-#define CN_BLACK_WARLOCK 12459
+const uint32 CN_BLACK_WARLOCK = 12459;
 
-#define RAIN_OF_FIRE 19717
-#define SHADOW_BOLT 36986
+const uint32 RAIN_OF_FIRE = 19717;
+const uint32 SHADOW_BOLT = 36986;
 
 class BlackWarlockAI : public CreatureAIScript
 {
@@ -630,11 +630,11 @@ It would appear more accurate to say that the polymorph is targetted at people w
 // --- BOSS'S ---
 
 // Broodlord Lashlayer AI
-#define CN_LASHLAYER 12017
+const uint32 CN_LASHLAYER = 12017;
 
-#define FIRE_NOVA_LASH 39001 //BLAST WAVE
-#define MORTAL_STRIKE 9347
-#define KNOCK_BACK 20686
+const uint32 FIRE_NOVA_LASH = 39001; //BLAST WAVE
+const uint32 MORTAL_STRIKE = 9347;
+const uint32 KNOCK_BACK = 20686;
 
 class LashlayerAI : public CreatureAIScript
 {
@@ -735,10 +735,10 @@ class LashlayerAI : public CreatureAIScript
 
 
 // Firemaw AI
-#define CN_FIREMAW 11983
+const uint32 CN_FIREMAW = 11983;
 
-#define WING_BUFFET 37319
-#define FLAME_BUFFET 23341
+const uint32 WING_BUFFET = 37319;
+const uint32 FLAME_BUFFET = 23341;
 
 class FiremawAI : public CreatureAIScript
 {
@@ -844,9 +844,9 @@ class FiremawAI : public CreatureAIScript
 
 // Ebonroc AI
 
-#define CN_EBONROC 14601
+const uint32 CN_EBONROC = 14601;
 
-#define SHADOW_OF_EBONROC 23340
+const uint32 SHADOW_OF_EBONROC = 23340;
 
 class EbonrocAI : public CreatureAIScript
 {
@@ -951,9 +951,9 @@ class EbonrocAI : public CreatureAIScript
 };
 
 // Flamegor AI
-#define CN_FLAMEGOR 11981
+const uint32 CN_FLAMEGOR = 11981;
 
-#define FIRE_NOVA 23462
+const uint32 FIRE_NOVA = 23462;
 
 
 class FlamegorAI : public CreatureAIScript
@@ -1083,11 +1083,11 @@ Over the course of this fight, he will do this repeatedly on all of your tanks.
 
 
 // Vaelastrasz the corruptAI
-#define CN_VAELASTRASZ 13020
+const uint32 CN_VAELASTRASZ = 13020;
 
-#define ESSENCE_OF_THE_RED 23513
-#define FLAME_BREATH 18435
-#define BURNING_ADRENALINE 18173
+const uint32 ESSENCE_OF_THE_RED = 23513;
+const uint32 FLAME_BREATH = 18435;
+const uint32 BURNING_ADRENALINE = 18173;
 
 class VaelastraszAI : public CreatureAIScript
 {

@@ -64,11 +64,11 @@ class Berthold : public GossipScript
 
 /////////////////////////////////////////////////////////////////////
 //Attumen the Huntsman (and Midnight)
-#define CN_MIDNIGHT                    16151
-#define CN_ATTUMEN                    15550
-#define ATTUMEN_SHADOW_CLEAVE        29832
-#define ATTUMEN_BERSERKER_CHARGE    22886
-#define ATTUMEN_INTANGIBLE_PRESENCE    29833
+const uint32 CN_MIDNIGHT = 16151;
+const uint32 CN_ATTUMEN = 15550;
+const uint32 ATTUMEN_SHADOW_CLEAVE = 29832;
+const uint32 ATTUMEN_BERSERKER_CHARGE = 22886;
+const uint32 ATTUMEN_INTANGIBLE_PRESENCE = 29833;
 
 class AttumenTheHuntsmanAI : public MoonScriptBossAI
 {
@@ -197,12 +197,12 @@ class MidnightAI : public MoonScriptBossAI
 
 /////////////////////////////////////////////////////////////////////
 //Moroes
-#define CN_MOROES        15687
-#define MOROES_GOUGE    28456
-#define MOROES_VANISH    29448
-#define MOROES_BLIND    34654
-#define MOROES_ENRAGE    37023
-#define MOROES_GARROTE    37066
+const uint32 CN_MOROES = 15687;
+const uint32 MOROES_GOUGE = 28456;
+const uint32 MOROES_VANISH = 29448;
+const uint32 MOROES_BLIND = 34654;
+const uint32 MOROES_ENRAGE = 37023;
+const uint32 MOROES_GARROTE = 37066;
 
 class MoroesAI : public MoonScriptBossAI
 {
@@ -281,11 +281,11 @@ class MoroesAI : public MoonScriptBossAI
 
 /////////////////////////////////////////////////////////////////////
 //Maiden of Virtue
-#define CN_MAIDENOFVIRTUE            16457
-#define MAIDENOFVIRTUE_REPENTANCE    29511
-#define MAIDENOFVIRTUE_HOLY_GROUND    29512
-#define MAIDENOFVIRTUE_HOLY_FIRE    29522
-#define MAIDENOFVIRTUE_HOLY_WRATH    32445
+const uint32 CN_MAIDENOFVIRTUE = 16457;
+const uint32 MAIDENOFVIRTUE_REPENTANCE = 29511;
+const uint32 MAIDENOFVIRTUE_HOLY_GROUND = 29512;
+const uint32 MAIDENOFVIRTUE_HOLY_FIRE = 29522;
+const uint32 MAIDENOFVIRTUE_HOLY_WRATH = 32445;
 
 class MaidenOfVirtueAI : public MoonScriptBossAI
 {
@@ -319,13 +319,13 @@ class MaidenOfVirtueAI : public MoonScriptBossAI
 
 /////////////////////////////////////////////////////////////////////
 //The Big Bad Wolf
-#define CN_BIGBADWOLF                    17521
+const uint32 CN_BIGBADWOLF = 17521;
 
-#define TERRIFYING_HOWL                    30752
-#define WIDE_SWIPE                        6749
+const uint32 TERRIFYING_HOWL = 30752;
+const uint32 WIDE_SWIPE = 6749;
 // Combines display visual + buff
-#define REDRIDINGHOOD_DEBUFF            30768
-#define PBS_TAUNT                        30755    // Picnic Basket Smell (taunt)
+const uint32 REDRIDINGHOOD_DEBUFF = 30768;
+const uint32 PBS_TAUNT = 30755;    // Picnic Basket Smell (taunt)
 
 class BigBadWolfAI : public CreatureAIScript
 {
@@ -523,9 +523,9 @@ class BigBadWolfAI : public CreatureAIScript
 };
 
 
-#define TERRIFYING_HOWL 30752
-#define MORPH_LITTLE_RED_RIDING_HOOD 30768
-#define DEBUFF_LITTLE_RED_RIDING_HOOD 30756
+const uint32 THEBIGBADWOLF_TERRIFYING_HOWL = 30752;
+const uint32 MORPH_LITTLE_RED_RIDING_HOOD = 30768;
+const uint32 DEBUFF_LITTLE_RED_RIDING_HOOD = 30756;
 
 class THEBIGBADWOLFAI : public CreatureAIScript
 {
@@ -543,7 +543,7 @@ class THEBIGBADWOLFAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = sSpellCustomizations.GetSpellInfo(TERRIFYING_HOWL);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(THEBIGBADWOLF_TERRIFYING_HOWL);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].cooldown = 10;
@@ -1120,13 +1120,13 @@ class StageLight : public CreatureAIScript
 };
 
 // The Curator + Astral Flare
-#define CN_CURATOR            15691
-#define CN_ASTRALFLARE        17096
+const uint32 CN_CURATOR = 15691;
+const uint32 CN_ASTRALFLARE = 17096;
 
-#define HATEFUL_BOLT        30383
-#define EVOCATION            30254
-#define C_ENRAGE            28747
-#define BERSERK                26662
+const uint32 HATEFUL_BOLT = 30383;
+const uint32 EVOCATION = 30254;
+const uint32 C_ENRAGE = 28747;
+const uint32 BERSERK = 26662;
 
 class CuratorAI : public CreatureAIScript
 {
@@ -1340,9 +1340,9 @@ class CuratorAI : public CreatureAIScript
 };
 
 // Astral Flare
-#define ASTRAL_FLARE_PASSIVE    30234
-#define ASTRAL_FLARE_VISUAL        30237
-#define ARCING_SEAR                30235
+const uint32 ASTRAL_FLARE_PASSIVE = 30234;
+const uint32 ASTRAL_FLARE_VISUAL = 30237;
+const uint32 ARCING_SEAR = 30235;
 
 class AstralFlareAI : public MoonScriptCreatureAI
 {
@@ -1358,36 +1358,36 @@ class AstralFlareAI : public MoonScriptCreatureAI
 };
 
 // Shade of Aran
-#define SHADEOFARAN            16524
+const uint32 SHADEOFARAN = 16524;
 
-#define FROSTBOLT            29954
-#define FIREBALL            29953
-#define ARCMISSLE            29955
-#define CHAINSOFICE            29991
-#define DRAGONSBREATH        29964
-#define AOE_COUNTERSPELL    29961
+const uint32 FROSTBOLT = 29954;
+const uint32 FIREBALL = 29953;
+const uint32 ARCMISSLE = 29955;
+const uint32 CHAINSOFICE = 29991;
+const uint32 DRAGONSBREATH = 29964;
+const uint32 AOE_COUNTERSPELL = 29961;
 
-#define BLIZZARD            29952
-#define FLAME_WREATH        29946 // detonate -> 30004
+const uint32 BLIZZARD = 29952;
+const uint32 FLAME_WREATH = 29946; // detonate -> 30004
 
-#define BLINK_CENTER        29967
-#define MAGNETIC_PULL        38540
-#define MASSSLOW            30035
-#define AEXPLOSION            29973
+const uint32 BLINK_CENTER = 29967;
+const uint32 MAGNETIC_PULL = 38540;
+const uint32 MASSSLOW = 30035;
+const uint32 AEXPLOSION = 29973;
 
-#define MASS_POLYMORPH        29963
-#define CONJURE                29975
-#define DRINK                30024
-#define AOE_PYROBLAST        29978
+const uint32 MASS_POLYMORPH = 29963;
+const uint32 CONJURE = 29975;
+const uint32 DRINK = 30024;
+const uint32 AOE_PYROBLAST = 29978;
 
-#define SUMMON_ELEMENTAL_1    37051
-#define SUMMON_ELEMENTAL_2    37052
-#define SUMMON_ELEMENTAL_3    37053
-#define WATERELE            17167
-#define WATERBOLT            31012
+const uint32 SUMMON_ELEMENTAL_1 = 37051;
+const uint32 SUMMON_ELEMENTAL_2 = 37052;
+const uint32 SUMMON_ELEMENTAL_3 = 37053;
+const uint32 WATERELE = 17167;
+const uint32 WATERBOLT = 31012;
 
-#define SHADOWOFARAN        18254
-#define SHADOWPYRO            29978
+const uint32 SHADOWOFARAN = 18254;
+const uint32 SHADOWPYRO = 29978;
 
 enum SUPERSPELL
 {
@@ -2043,30 +2043,30 @@ class ShadowofAranAI : public CreatureAIScript
 };
 
 // Terestian Illhoof
-#define CN_ILLHOOF                    15688
+const uint32 CN_ILLHOOF = 15688;
 
-#define SHADOW_BOLT                    19729
-// #define S_DEMONCHAINS                30120
-#define S_KILREK                        30066
-// #define F_PORTAL1                    30179
-// #define F_PORTAL2                    30171
-#define I_ENRAGE                    32964
-#define SACRIFICE                    30115
+const uint32 SHADOW_BOLT = 19729;
+// const uint32 S_DEMONCHAINS = 30120;
+const uint32 S_KILREK = 30066;
+// const uint32 F_PORTAL1 = 30179;
+// const uint32 F_PORTAL2 = 30171;
+const uint32 I_ENRAGE = 32964;
+const uint32 SACRIFICE = 30115;
 
 // Kil'Rek
-#define CN_KILREK                    17229
-#define AMPLIFY_FLAMES                30053
-#define BROKEN_PACT                    30065
+const uint32 CN_KILREK = 17229;
+const uint32 AMPLIFY_FLAMES = 30053;
+const uint32 BROKEN_PACT = 30065;
 
 // Imps
-#define CN_FIENDISH_IMP                17267
-#define FIREBALL_IMP                31620
+const uint32 CN_FIENDISH_IMP = 17267;
+const uint32 FIREBALL_IMP = 31620;
 
 // Demon Chains
-#define    CN_DEMONCHAINS                17248
-#define    CHAINS_VISUAL                30206
+const uint32 CN_DEMONCHAINS = 17248;
+const uint32 CHAINS_VISUAL = 30206;
 
-#define CN_FPORTAL                    17265
+const uint32 CN_FPORTAL = 17265;
 
 class IllhoofAI : public CreatureAIScript
 {
@@ -2684,29 +2684,29 @@ class FiendPortal : public CreatureAIScript
 };
 
 // Prince Malchezaar
-#define CN_MALCHEZAAR            15690
-#define CN_INFERNAL                17646
-#define CN_AXES                    17650
-#define CN_DUMMY                17644
+const uint32 CN_MALCHEZAAR = 15690;
+const uint32 CN_INFERNAL = 17646;
+const uint32 CN_AXES = 17650;
+const uint32 CN_DUMMY = 17644;
 
-#define ENFEEBLE                30843
-#define SHADOWNOVA                30852
-#define SW_PAIN                    30854
-#define THRASH_AURA                12787
-#define SUNDER_ARMOR            25225
-#define AMPLIFY_DMG                39095 // old 12738
-#define SUMMON_AXES                30891
-#define WIELD_AXES                30857
+const uint32 ENFEEBLE = 30843;
+const uint32 SHADOWNOVA = 30852;
+const uint32 SW_PAIN = 30854;
+const uint32 THRASH_AURA = 12787;
+const uint32 SUNDER_ARMOR = 25225;
+const uint32 AMPLIFY_DMG = 39095; // old 12738
+const uint32 SUMMON_AXES = 30891;
+const uint32 WIELD_AXES = 30857;
 
 // Extra creature info
-#define INF_RAIN                33814
-#define HELLFIRE                39131
-#define DEMONIC_FRENZY            32851
+const uint32 INF_RAIN = 33814;
+const uint32 HELLFIRE = 39131;
+const uint32 DEMONIC_FRENZY = 32851;
 
 // Item model info
-#define AXE_ITEM_MODEL            40066
-#define AXE_ITEM_INFO            33488898
-#define AXE_ITEM_SLOT            768
+const uint32 AXE_ITEM_MODEL = 40066;
+const uint32 AXE_ITEM_INFO = 33488898;
+const uint32 AXE_ITEM_SLOT = 768;
 /* Emotes:
 SPECIAL? - 9223 - 9320
 AXETOSS2? - 9317
@@ -3343,15 +3343,15 @@ class MAxesAI : public CreatureAIScript
 };
 
 // Netherspite
-#define CN_NETHERSPITE        15689
-#define CN_VOIDZONE            17470
+const uint32 CN_NETHERSPITE = 15689;
+const uint32 CN_VOIDZONE = 17470;
 
-// #define NETHERBURN        30523 not aura
-// #define VOIDZONE            28863
-#define CONSUMPTION            32251 // used by void zone
-#define NETHERBREATH        38524 // old 36631
-#define N_BERSERK            38688
-#define NETHERBURN            30522
+// const uint32 NETHERBURN = 30523; //not aura
+// const uint32 VOIDZONE = 28863;
+const uint32 CONSUMPTION = 32251; // used by void zone
+const uint32 NETHERBREATH = 38524; // old 36631
+const uint32 N_BERSERK = 38688;
+const uint32 NETHERBURN = 30522;
 
 class NetherspiteAI : public CreatureAIScript
 {
@@ -3560,25 +3560,25 @@ class VoidZoneAI : public CreatureAIScript
  - Summons five Restless Skeletons.
 */
 
-#define CN_NIGHTBANE 17225
-#define CN_RESTLESS_SKELETON 17261 // not needed if spell works
+const uint32 CN_NIGHTBANE = 17225;
+const uint32 CN_RESTLESS_SKELETON = 17261; // not needed if spell works
 
 
 // ground spells
-#define BELLOWING_ROAR 36922
-#define CHARRED_EARTH 30129 //Also 30209 (Target Charred Earth) triggers this
+const uint32 BELLOWING_ROAR = 36922;
+const uint32 CHARRED_EARTH = 30129; //Also 30209 (Target Charred Earth) triggers this
 #undef CLEAVE
-#define CLEAVE 31043 // fixme: correct spell?!
-#define SMOLDERING_BREATH 39385
-#define TAIL_SWEEP 25653 ///\todo  how to use this spell???
-#define DISTRACTING_ASH 30280
+const uint32 CLEAVE = 31043; // fixme: correct spell?!
+const uint32 SMOLDERING_BREATH = 39385;
+const uint32 TAIL_SWEEP = 25653;//\todo  how to use this spell???
+const uint32 DISTRACTING_ASH = 30280;
 
 // air spells
-#define DISTRACTING_ASH_FLY 30130 // all guides say ground spell but animation is flying?!
-#define RAIN_OF_BONES 37091 // Spell bugged: should debuff with 37098
-#define SMOKING_BLAST 37057
-#define FIREBALL_BARRAGE 30282
-#define SUMMON_BONE_SKELETONS 30170
+const uint32 DISTRACTING_ASH_FLY = 30130; // all guides say ground spell but animation is flying?!
+const uint32 RAIN_OF_BONES = 37091; // Spell bugged: should debuff with 37098
+const uint32 SMOKING_BLAST = 37057;
+const uint32 FIREBALL_BARRAGE = 30282;
+const uint32 SUMMON_BONE_SKELETONS = 30170;
 
 static Movement::Location coords[] =
 {
@@ -3977,11 +3977,11 @@ class NightbaneAI : public CreatureAIScript
 
 //Opera Event
 //Wizzard of Oz
-#define CN_DOROTHEE 17535
+const uint32 CN_DOROTHEE = 17535;
 
-#define SP_AOE_FEAR 29321
-#define SP_WATER_BOLT 31012
-#define SP_SUMMON_TITO 31014
+const uint32 SP_AOE_FEAR = 29321;
+const uint32 SP_WATER_BOLT = 31012;
+const uint32 SP_SUMMON_TITO = 31014;
 
 class DorotheeAI : public CreatureAIScript
 {
@@ -4207,9 +4207,9 @@ class DorotheeAI : public CreatureAIScript
         bool titoDeadSpeech;
 };
 
-#define CN_TITO    17548
+const uint32 CN_TITO = 17548;
 
-#define SP_ANNOYING_YIPPING    31015
+const uint32 SP_ANNOYING_YIPPING = 31015;
 
 //No kill sound
 
@@ -4324,10 +4324,10 @@ class TitoAI : public CreatureAIScript
         uint8 nrspells;
 };
 
-#define CN_STRAWMAN    17543
+const uint32 CN_STRAWMAN = 17543;
 
-#define SP_BURNING_STRAW    31075
-#define SP_BRAIN_BASH    31046
+const uint32 SP_BURNING_STRAW = 31075;
+const uint32 SP_BRAIN_BASH = 31046;
 
 class StrawmanAI : public CreatureAIScript
 {
@@ -4465,10 +4465,10 @@ class StrawmanAI : public CreatureAIScript
         uint8 nrspells;
 };
 
-#define CN_TINHEAD    17547
+const uint32 CN_TINHEAD = 17547;
 
-#define SP_CLEAVE        15284
-#define SP_RUST        31086
+const uint32 SP_CLEAVE = 15284;
+const uint32 SP_RUST = 31086;
 //dont bother.. spell does not work.. needs fix
 
 class TinheadAI : public CreatureAIScript
@@ -4606,7 +4606,7 @@ class TinheadAI : public CreatureAIScript
         uint8 nrspells;
 };
 
-#define CN_ROAR    17546
+const uint32 CN_ROAR = 17546;
 
 class RoarAI : public CreatureAIScript
 {
@@ -4645,10 +4645,10 @@ class RoarAI : public CreatureAIScript
 
 };
 
-#define CN_CRONE 18168
+const uint32 CN_CRONE = 18168;
 
-#define SP_SUMMON_CYCLONE 38337
-#define SP_CHAIN_LIGHTNING 32337
+const uint32 SP_SUMMON_CYCLONE = 38337;
+const uint32 SP_CHAIN_LIGHTNING = 32337;
 
 class CroneAI : public CreatureAIScript
 {
@@ -4803,9 +4803,9 @@ class CroneAI : public CreatureAIScript
         uint8 nrspells;
 };
 
-#define CN_CYCLONEOZ            22104
-#define CYCLONE_VISUAL            32332
-#define CYCLONE_KNOCK            38517
+const uint32 CN_CYCLONEOZ = 22104;
+const uint32 CYCLONE_VISUAL = 32332;
+const uint32 CYCLONE_KNOCK = 38517;
 
 class CycloneOZ : public CreatureAIScript
 {
@@ -4842,14 +4842,14 @@ class CycloneOZ : public CreatureAIScript
 };
 
 //Romulo & Julianne
-#define CN_ROMULO 17533
+const uint32 CN_ROMULO = 17533;
 
-#define SP_BACKWARD_LUNGE 30815
-#define SP_DEADLY_SWATHE 30817
-#define SP_POISONED_THRUST 30822
-#define SP_DARING 30841
+const uint32 SP_BACKWARD_LUNGE = 30815;
+const uint32 SP_DEADLY_SWATHE = 30817;
+const uint32 SP_POISONED_THRUST = 30822;
+const uint32 SP_DARING = 30841;
 
-///\todo play sound on resurection
+//\todo play sound on resurection
 //_unit->SendScriptTextChatMessage(2005);     // Thou detestable maw, thou womb of death; I enforce thy rotten jaws to open!
 
 class RomuloAI : public CreatureAIScript
@@ -5028,14 +5028,14 @@ class RomuloAI : public CreatureAIScript
         uint8 nrspells;
 };
 
-#define CN_JULIANNE 17534
+const uint32 CN_JULIANNE = 17534;
 
-#define SP_ETERNAL_AFFECTION 30878
-#define SP_POWERFUL_ATTRACTION 30889
-#define SP_BINDING_PASSION 30890
-#define SP_DEVOTION 30887
+const uint32 SP_ETERNAL_AFFECTION = 30878;
+const uint32 SP_POWERFUL_ATTRACTION = 30889;
+const uint32 SP_BINDING_PASSION = 30890;
+const uint32 SP_DEVOTION = 30887;
 
-///\todo play sound on resurrection
+//\todo play sound on resurrection
 //_unit->SendScriptTextChatMessage(2000);     // Come, gentle night; and give me back my Romulo!
 
 class JulianneAI : public CreatureAIScript

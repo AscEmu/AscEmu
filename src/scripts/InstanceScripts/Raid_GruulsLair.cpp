@@ -21,10 +21,10 @@
 
 #include "Setup.h"
 
-#define CN_LAIR_BRUTE                19389
-#define LAIR_BRUTE_MORTALSTRIKE        39171
-#define LAIR_BRUTE_CLEAVE            39174
-#define LAIR_BRUTE_CHARGE            24193
+const uint32 CN_LAIR_BRUTE = 19389;
+const uint32 LAIR_BRUTE_MORTALSTRIKE = 39171;
+const uint32 LAIR_BRUTE_CLEAVE = 39174;
+const uint32 LAIR_BRUTE_CHARGE = 24193;
 
 void SpellFunc_LairBrute_Charge(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
@@ -59,10 +59,10 @@ void SpellFunc_LairBrute_Charge(SpellDesc* pThis, MoonScriptCreatureAI* pCreatur
     }
 }
 
-#define CN_GRONN_PRIEST                    21350
-#define GRONN_PRIEST_PSYCHICSCREAM        22884
-#define GRONN_PRIEST_RENEW                36679
-#define GRONN_PRIEST_HEAL                36678
+const uint32 CN_GRONN_PRIEST = 21350;
+const uint32 GRONN_PRIEST_PSYCHICSCREAM = 22884;
+const uint32 GRONN_PRIEST_RENEW = 36679;
+const uint32 GRONN_PRIEST_HEAL = 36678;
 
 class GronnPriestAI : public MoonScriptCreatureAI
 {
@@ -75,15 +75,15 @@ class GronnPriestAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_HIGH_KING_MAULGAR                18831
-#define HIGH_KING_MAULGAR_BERSERKER_CHARGE    26561
-#define HIGH_KING_MAULGAR_INTIMIDATING_ROAR    16508
-#define HIGH_KING_MAULGAR_MIGHTY_BLOW        33230
-#define HIGH_KING_MAULGAR_FLURRY            33232
-#define HIGH_KING_MAULGAR_ARCING_SMASH        28168
-#define HIGH_KING_MAULGAR_ARCING_SMASH2        39144
-#define HIGH_KING_MAULGAR_WHIRLWIND            33238
-#define HIGH_KING_MAULGAR_WHIRLWIND2        33239
+const uint32 CN_HIGH_KING_MAULGAR = 18831;
+const uint32 HIGH_KING_MAULGAR_BERSERKER_CHARGE = 26561;
+const uint32 HIGH_KING_MAULGAR_INTIMIDATING_ROAR = 16508;
+const uint32 HIGH_KING_MAULGAR_MIGHTY_BLOW = 33230;
+const uint32 HIGH_KING_MAULGAR_FLURRY = 33232;
+const uint32 HIGH_KING_MAULGAR_ARCING_SMASH = 28168;
+const uint32 HIGH_KING_MAULGAR_ARCING_SMASH2 = 39144;
+const uint32 HIGH_KING_MAULGAR_WHIRLWIND = 33238;
+const uint32 HIGH_KING_MAULGAR_WHIRLWIND2 = 33239;
 
 void SpellFunc_Maulgar_Enrage(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 // 4th unit sometimes cannot be found - blame cell system
@@ -220,11 +220,11 @@ void SpellFunc_Maulgar_Enrage(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureA
     }
 }
 
-#define CN_KIGGLER_THE_CRAZED                    18835
-#define KIGGLER_THE_CRAZED_LIGHTNING_BOLT        36152
-#define KIGGLER_THE_CRAZED_GREATER_POLYMORPH    33173
-#define KIGGLER_THE_CRAZED_ARCANE_EXPLOSION        33237
-#define    KIGGLER_THE_CRAZED_ARCANE_SHOCK            33175
+const uint32 CN_KIGGLER_THE_CRAZED = 18835;
+const uint32 KIGGLER_THE_CRAZED_LIGHTNING_BOLT = 36152;
+const uint32 KIGGLER_THE_CRAZED_GREATER_POLYMORPH = 33173;
+const uint32 KIGGLER_THE_CRAZED_ARCANE_EXPLOSION = 33237;
+const uint32 KIGGLER_THE_CRAZED_ARCANE_SHOCK = 33175;
 
 class KigglerTheCrazedAI : public MoonScriptCreatureAI
 {
@@ -275,10 +275,10 @@ class KigglerTheCrazedAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_BLINDEYE_THE_SEER                        18836
-#define BLINDEYE_THE_SEER_PRAYER_OF_HEALING            33152
-#define BLINDEYE_THE_SEER_GREAT_POWER_WORD_SHIELD    33147
-#define BLINDEYE_THE_SEER_HEAL                        33144
+const uint32 CN_BLINDEYE_THE_SEER = 18836;
+const uint32 BLINDEYE_THE_SEER_PRAYER_OF_HEALING = 33152;
+const uint32 BLINDEYE_THE_SEER_GREAT_POWER_WORD_SHIELD = 33147;
+const uint32 BLINDEYE_THE_SEER_HEAL = 33144;
 
 class BlindeyeTheSeerAI : public MoonScriptCreatureAI
 {
@@ -302,10 +302,10 @@ class BlindeyeTheSeerAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_OLM_THE_SUMMONER                            18834
-#define OLM_THE_SUMMONER_DEATH_COIL                    33130
-#define OLM_THE_SUMMONER_SUMMON_WILD_FELHUNTER        33131
-#define OLM_THE_SUMMONER_DARK_DECAY                    33129
+const uint32 CN_OLM_THE_SUMMONER = 18834;
+const uint32 OLM_THE_SUMMONER_DEATH_COIL = 33130;
+const uint32 OLM_THE_SUMMONER_SUMMON_WILD_FELHUNTER = 33131;
+const uint32 OLM_THE_SUMMONER_DARK_DECAY = 33129;
 
 class OlmTheSummonerAI : public MoonScriptCreatureAI
 {
@@ -329,8 +329,8 @@ class OlmTheSummonerAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_WILD_FEL_STALKER            18847
-#define WILD_FEL_STALKER_WILD_BITE    33086
+const uint32 CN_WILD_FEL_STALKER = 18847;
+const uint32 WILD_FEL_STALKER_WILD_BITE = 33086;
 
 class WildFelStalkerAI : public MoonScriptCreatureAI
 {
@@ -342,16 +342,16 @@ class WildFelStalkerAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_KROSH_FIREHAND      18832
+const uint32 CN_KROSH_FIREHAND = 18832;
 
 /* He will first spellshield on himself, and recast every 30 sec,
    then spam great fireball to the target, also if there is any unit
    close to him (15yr) he'll cast blast wave
 */
 
-#define GREAT_FIREBALL         33051
-#define BALST_WAVE                     33061
-#define SPELLSHIELD                    33054
+const uint32 GREAT_FIREBALL = 33051;
+const uint32 BALST_WAVE = 33061;
+const uint32 SPELLSHIELD = 33054;
 
 class KroshFirehandAI : public MoonScriptCreatureAI
 {
@@ -421,16 +421,16 @@ class KroshFirehandAI : public MoonScriptCreatureAI
         int32 mBlastWaveTimer;
 };
 
-#define CN_GRUUL_THE_DRAGONKILLER                    19044
-#define GRUUL_THE_DRAGONKILLER_GROWTH                36300    // +
-#define GRUUL_THE_DRAGONKILLER_CAVE_IN                36240    // + 
-#define GRUUL_THE_DRAGONKILLER_GROUND_SLAM            33525    // +
-#define GRUUL_THE_DRAGONKILLER_GROUND_SLAM2            39187    // +
-#define GRUUL_THE_DRAGONKILLER_SHATTER                33671    // does not make dmg - to script
-#define GRUUL_THE_DRAGONKILLER_HURTFUL_STRIKE        33813    // +
-#define GRUUL_THE_DRAGONKILLER_REVERBERATION        36297    // +
-#define GRUUL_THE_DRAGONKILLER_STONED                33652    // +
-#define GRUUL_THE_DRAGONKILLER_GRONN_LORDS_GRASP    33572    // Should be used only after Ground Slam
+const uint32 CN_GRUUL_THE_DRAGONKILLER = 19044;
+const uint32 GRUUL_THE_DRAGONKILLER_GROWTH = 36300;   // +
+const uint32 GRUUL_THE_DRAGONKILLER_CAVE_IN = 36240;   // + 
+const uint32 GRUUL_THE_DRAGONKILLER_GROUND_SLAM = 33525;    // +
+const uint32 GRUUL_THE_DRAGONKILLER_GROUND_SLAM2 = 39187;    // +
+const uint32 GRUUL_THE_DRAGONKILLER_SHATTER = 33671;    // does not make dmg - to script
+const uint32 GRUUL_THE_DRAGONKILLER_HURTFUL_STRIKE = 33813;   // +
+const uint32 GRUUL_THE_DRAGONKILLER_REVERBERATION = 36297;    // +
+const uint32 GRUUL_THE_DRAGONKILLER_STONED = 33652;    // +
+const uint32 GRUUL_THE_DRAGONKILLER_GRONN_LORDS_GRASP = 33572;    // Should be used only after Ground Slam
 
 void SpellFunc_Gruul_GroundSlam(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 void SpellFunc_Gruul_Stoned(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);

@@ -23,16 +23,16 @@
 #include "Setup.h"
 
 // High Priestess Jeklik AI
-#define CN_JEKLIK 14517
+const uint32 CN_JEKLIK = 14517;
 
-#define TRANSFORM_BAT 23966 ///\todo  MISSING CREATURE_NAME TO TRANSFORM
-#define CRUSHING_BLOW 24257
-#define CRUSHING_AOE_SILENCE 24687
+const uint32 TRANSFORM_BAT = 23966; //\todo  MISSING CREATURE_NAME TO TRANSFORM
+const uint32 CRUSHING_BLOW = 24257;
+const uint32 CRUSHING_AOE_SILENCE = 24687;
 
-#define MIND_FLAY 23953
-#define SUMMON_BATS 23974 ///\todo  EFFECT :P
-#define SHADOW_WORD_PAIN 24212
-#define GREAT_HEAL 29564
+const uint32 MIND_FLAY = 23953;
+const uint32 SUMMON_BATS = 23974; //\todo  EFFECT :P
+const uint32 SHADOW_WORD_PAIN = 24212;
+const uint32 GREAT_HEAL = 29564;
 
 // agro/transform sound -> 8417
 
@@ -186,13 +186,13 @@ She also summons bomb bats which drop fire bombs on the ground which AOE DoT tho
 
 // High Priestess Venoxis AI
 
-#define CN_VENOXIS 14507 ///\todo  MISSING CREATURE_NAME TO TRANSFORM
+const uint32 CN_VENOXIS = 14507; //\todo  MISSING CREATURE_NAME TO TRANSFORM
 
-#define HOLY_NOVA 23858 // various targets
-#define HOLY_FIRE 23860 // various targets
+const uint32 HOLY_NOVA = 23858; // various targets
+const uint32 HOLY_FIRE = 23860; // various targets
 
-#define TRANSFORM_SNAKE 23849
-#define SPIT_POISON  24688 // various targets
+const uint32 TRANSFORM_SNAKE = 23849;
+const uint32 SPIT_POISON = 24688; // various targets
 
 class VenoxisAI : public CreatureAIScript
 {
@@ -332,8 +332,8 @@ He later shifts to snake form, where his melee damage goes up dramatically and h
 
 #define CN_MARLI
 
-#define SUMMON_SPIDERS 24081 ///\todo  SUMMON WILDS
-#define SPIDER_TRANSFORM 24084
+const uint32 SUMMON_SPIDERS = 24081; //\todo  SUMMON WILDS
+const uint32 SPIDER_TRANSFORM = 24084;
 
 /*
 Mar'li has two main forms, like the other bosses in Zul'Gurub.
