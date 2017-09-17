@@ -23,10 +23,6 @@
 #include "../Common/EasyFunctions.h"
 #include "../Common/Instance_Base.h"
 
-#define INVALIDATE_TIMER -1
-#define DEFAULT_UPDATE_FREQUENCY 1000    //milliseconds
-#define DEFAULT_DESPAWN_TIMER 2000      //milliseconds
-
 #define MOONSCRIPT_FACTORY_FUNCTION(ClassName, ParentClassName)\
 public:\
     ADD_CREATURE_FACTORY_FUNCTION(ClassName);\

@@ -22,8 +22,9 @@
 
 #include "Map/WorldCreatorDefines.hpp"
 
-#define INVALIDATE_TIMER -1
-#define DEFAULT_UPDATE_FREQUENCY 1000       //milliseconds
+const int32 INVALIDATE_TIMER = -1;
+const uint32 DEFAULT_UPDATE_FREQUENCY = 1000;    //milliseconds
+const uint32 DEFAULT_DESPAWN_TIMER = 2000;      //milliseconds
 
 #define MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(ClassName, ParentClassName) \
 public:\
