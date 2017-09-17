@@ -85,11 +85,11 @@ class InstanceTheUnderbogScript : public MoonInstanceScript
 
 // Bog Giant AI
 
-#define CN_BOG_GIANT 17723
+const uint32 CN_BOG_GIANT = 17723;
 
-#define FUNGAL_DECAY_GIANT 32065
-#define TRAMPLE 15550    // not sure to those spells
-#define ENRAGE_GIANT 8599
+const uint32 FUNGAL_DECAY_GIANT = 32065;
+const uint32 TRAMPLE = 15550;    // not sure to those spells
+const uint32 ENRAGE_GIANT = 8599;
 
 class BOGGIANTAI : public CreatureAIScript
 {
@@ -219,9 +219,9 @@ class BOGGIANTAI : public CreatureAIScript
 };
 
 // Claw AI
-#define ENRAGE_CLAW 34971
-#define ECHOING_ROAR 31429
-#define MAUL 34298
+const uint32 ENRAGE_CLAW = 34971;
+const uint32 ECHOING_ROAR = 31429;
+const uint32 CLAW_MAUL = 34298;
 
 class CLAWAI : public CreatureAIScript
 {
@@ -252,7 +252,7 @@ class CLAWAI : public CreatureAIScript
             spells[1].perctrigger = 0.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = sSpellCustomizations.GetSpellInfo(MAUL);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(CLAW_MAUL);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
             spells[2].cooldown = 10;
@@ -352,10 +352,10 @@ class CLAWAI : public CreatureAIScript
 
 // Underbat AI
 
-#define CN_UNDERBAT 17724
+const uint32 CN_UNDERBAT = 17724;
 
-#define KNOCKDOWN 20276 // can't find correct aoe knockdown for now =/ does it use it for sure?
-#define TENTACLE_LASH 34171 // not sure to this
+const uint32 KNOCKDOWN = 20276; // can't find correct aoe knockdown for now =/ does it use it for sure?
+const uint32 TENTACLE_LASH = 34171; // not sure to this
 
 class UNDERBATAI : public CreatureAIScript
 {
@@ -479,9 +479,9 @@ class UNDERBATAI : public CreatureAIScript
 
 // Fen Ray AI
 
-#define CN_FEN_RAY 17731
+const uint32 CN_FEN_RAY = 17731;
 
-#define PSYCHIC_HORROR 34984
+const uint32 PSYCHIC_HORROR = 34984;
 
 class FENRAYAI : public CreatureAIScript
 {
@@ -583,10 +583,10 @@ class FENRAYAI : public CreatureAIScript
 
 // Lykul Stinger AI
 
-#define CN_LYKUL_STINGER 19632
+const uint32 CN_LYKUL_STINGER = 19632;
 
-#define POISON 36694 // Maybe be: 36694 (armor - 5000 :O), 13526, 3396 (both very old spells), 24111
-#define STINGER_FRENZY 34392    // not sure
+const uint32 LYKULSTINGER_POISON = 36694; // Maybe be: 36694 (armor - 5000 :O), 13526, 3396 (both very old spells), 24111
+const uint32 STINGER_FRENZY = 34392;    // not sure
 // From description this poison is Corrosive Poison, but Idk for sure
 
 class LYKULSTINGERAI : public CreatureAIScript
@@ -604,7 +604,7 @@ class LYKULSTINGERAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = sSpellCustomizations.GetSpellInfo(POISON);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(LYKULSTINGER_POISON);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = 40;
@@ -712,11 +712,11 @@ class LYKULSTINGERAI : public CreatureAIScript
 
 // Lykul Wasp AI
 
-#define CN_LYKUL_WASP 17732
+const uint32 CN_LYKUL_WASP = 17732;
 
-#define POISON 36694 // Maybe be: 36694 (armor - 5000 :O), 13526, 3396 (both very old spells), 24111
-#define POISON_SPIT 32330
-#define ENRAGE_WASP 8599
+const uint32 LYKULWASP_POISON = 36694; // Maybe be: 36694 (armor - 5000 :O), 13526, 3396 (both very old spells), 24111
+const uint32 LYKULWASP_POISON_SPIT = 32330;
+const uint32 LYKULWASP_ENRAGE_WASP = 8599;
 // From description this poison is Corrosive Poison, but Idk for sure
 
 class LYKULWASPAI : public CreatureAIScript
@@ -734,21 +734,21 @@ class LYKULWASPAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = sSpellCustomizations.GetSpellInfo(POISON);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(LYKULWASP_POISON);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = 45;
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = sSpellCustomizations.GetSpellInfo(POISON_SPIT);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(LYKULWASP_POISON_SPIT);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
             spells[1].cooldown = 10;
             spells[1].perctrigger = 0.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = sSpellCustomizations.GetSpellInfo(ENRAGE_WASP);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(LYKULWASP_ENRAGE_WASP);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
             spells[2].cooldown = 70;
@@ -850,14 +850,14 @@ class LYKULWASPAI : public CreatureAIScript
 
 // Wrathfin Warrior AI
 
-#define CN_WRATHFIN_WARRIOR 17735
+const uint32 CN_WRATHFIN_WARRIOR = 17735;
 
-#define REND 36991 // It is only bleed like spell I remember well (if it isn't bleed, but other spell
+const uint32 REND = 36991; // It is only bleed like spell I remember well (if it isn't bleed, but other spell
 // report it then. Can be: 36991, 37662, 29574, 29578, 36965 (big dmg)    // not sure if it's even casted =(
 // Also can be Carnivorous Bite, but no idea :P
-#define STRIKE 11976
-#define SHIELD_BASH 11972    // ofc not sure to those
-#define ENRAGE_WARTHFIN_WARRIOR 8599
+const uint32 STRIKE = 11976;
+const uint32 SHIELD_BASH = 11972;    // ofc not sure to those
+const uint32 ENRAGE_WARTHFIN_WARRIOR = 8599;
 
 class WRATHFINWARRIORAI : public CreatureAIScript
 {
@@ -996,10 +996,10 @@ class WRATHFINWARRIORAI : public CreatureAIScript
 
 // Wrathfin Sentry AI
 
-#define CN_WRATHFIN_SENTRY 17727
+const uint32 CN_WRATHFIN_SENTRY = 17727;
 
-#define STRIKE_WRATHFIN_SENTRY 11976
-#define SHIELD_BASH_WRATHFIN_SENTRY 11972
+const uint32 STRIKE_WRATHFIN_SENTRY = 11976;
+const uint32 SHIELD_BASH_WRATHFIN_SENTRY = 11972;
 //Invisibility and Stealth Detection 18950 ?
 
 class WRATHFINSENTRYAI : public CreatureAIScript
@@ -1124,9 +1124,9 @@ class WRATHFINSENTRYAI : public CreatureAIScript
 
 // Wrathfin Myrmidon AI
 
-#define CN_WRATHFIN_MYRMIDON 17726
+const uint32 CN_WRATHFIN_MYRMIDON = 17726;
 
-#define CORAL_CUT 31410
+const uint32 CORAL_CUT = 31410;
 
 class WRATHFINMYRMIDONAI : public CreatureAIScript
 {
@@ -1218,12 +1218,12 @@ class WRATHFINMYRMIDONAI : public CreatureAIScript
 
 // Underbog Lord AI
 
-#define CN_UNDERBOG_LORD 17734
+const uint32 CN_UNDERBOG_LORD = 17734;
 
-#define ENRAGE_LORD 8599    //33653 // This spell was added, but still I don't have infos abou it :| 
+const uint32 ENRAGE_LORD = 8599;    //33653 // This spell was added, but still I don't have infos abou it :| 
 // Can be: 37023, 33653 and others...
-#define KNOCK_AWAY 25778    // not sure to those
-#define FUNGAL_DECAY 32065
+const uint32 KNOCK_AWAY = 25778;    // not sure to those
+const uint32 FUNGAL_DECAY = 32065;
 
 class UNDERBOGLORDAI : public CreatureAIScript
 {
@@ -1361,11 +1361,11 @@ class UNDERBOGLORDAI : public CreatureAIScript
 //should be killed first or crowd-controlled until last. The heal is interruptible.
 
 // Murkblood Spearman AI
-#define CN_MURKBLOOD_SPEARMAN 17729
+const uint32 CN_MURKBLOOD_SPEARMAN = 17729;
 
 //#define SPEAR_THROW 31758 // not sure if that spell is casted (maybe other, but similar), also can be: 31758, 40083, 32248
-#define THROW 22887
-#define VIPER_STRING 31407
+const uint32 THROW = 22887;
+const uint32 VIPER_STRING = 31407;
 
 class MURKBLOODSPEARMANAI : public CreatureAIScript
 {
@@ -1489,15 +1489,15 @@ class MURKBLOODSPEARMANAI : public CreatureAIScript
 
 
 // Murkblood Oracle AI
-#define CN_MURKBLOOD_ORACLE 17771
+const uint32 CN_MURKBLOOD_ORACLE = 17771;
 
-#define FIREBALL 14034 //32369 // can be: 32369, 37329, 32363, 31262, 40877, 38641, 37111
-#define SHADOW_BOLT_ORACLE 12471
-#define CORRUPTION 31405
-#define SCORCH 15241
-#define AMPLIFY_DAMAGE 12248
-#define FROSTBOLT 15497
-#define ELEMENTAL_ARMOR 34880
+const uint32 FIREBALL = 14034; //32369 // can be: 32369, 37329, 32363, 31262, 40877, 38641, 37111
+const uint32 SHADOW_BOLT_ORACLE = 12471;
+const uint32 CORRUPTION = 31405;
+const uint32 SCORCH = 15241;
+const uint32 AMPLIFY_DAMAGE = 12248;
+const uint32 FROSTBOLT = 15497;
+const uint32 ELEMENTAL_ARMOR = 34880;
 
 class MURKBLOODORACLEAI : public CreatureAIScript
 {
@@ -1657,12 +1657,12 @@ class MURKBLOODORACLEAI : public CreatureAIScript
 
 
 // Murkblood Healer AI
-#define CN_MURKBLOOD_HEALER 17730
+const uint32 CN_MURKBLOOD_HEALER = 17730;
 
 //#define HEAL 32130 // also can be: 32130, 31730, 34945, 38209, 39378, 31739 NOT CASTED!?
-#define HOLY_LIGHT 29427 //32769 // can be: 37979, 32769, 31713
-#define RENEW 34423
-#define PRAYER_OF_HEALING 15585 //30604 // can be: 35943, 30604 causes crashes =/
+const uint32 HOLY_LIGHT = 29427; //32769 // can be: 37979, 32769, 31713
+const uint32 RENEW = 34423;
+const uint32 PRAYER_OF_HEALING = 15585; //30604 // can be: 35943, 30604 causes crashes =/
 
 class MURKBLOODHEALERAI : public CreatureAIScript
 {
@@ -1792,10 +1792,10 @@ class MURKBLOODHEALERAI : public CreatureAIScript
 };
 
 // Murkblood Tribesman AI
-#define CN_MURKBLOOD_TRIBESMAN 17728
+const uint32 CN_MURKBLOOD_TRIBESMAN = 17728;
 
-#define STRIKE_TRIBESMAN 12057
-#define ENRAGE_TRIBESMAN 8599
+const uint32 STRIKE_TRIBESMAN = 12057;
+const uint32 ENRAGE_TRIBESMAN = 8599;
 
 class MURKBLOODTRIBESMANAI : public CreatureAIScript
 {
@@ -1926,13 +1926,13 @@ class MURKBLOODTRIBESMANAI : public CreatureAIScript
                                                                                 */
 
 // Underbog Shambler AI
-#define CN_UNDERBOG_SHAMBLER 17871
+const uint32 CN_UNDERBOG_SHAMBLER = 17871;
 
-//#define HEAL 32130 // 38209 | no idea if he is using heal (using healing spell yes (nearly sure), but if heal Idk)
-//#define SPORE_EXPLOSION 37966 //38419 //32327
-#define ITCHY_SPORES 32329
-#define ALLERGIES 31427
-#define FUNGAL_REGROWTH 34163
+//const uint32 HEAL 32130 // 38209 | no idea if he is using heal (using healing spell yes (nearly sure), but if heal Idk)
+//const uint32 SPORE_EXPLOSION 37966 //38419 //32327
+const uint32 ITCHY_SPORES = 32329;
+const uint32 ALLERGIES = 31427;
+const uint32 FUNGAL_REGROWTH = 34163;
 
 class UNDERBOGSHAMBLERAI : public CreatureAIScript
 {
@@ -2063,9 +2063,9 @@ class UNDERBOGSHAMBLERAI : public CreatureAIScript
 
 
 // Underbog Frenzy AI
-#define CN_UNDERBOG_FRENZY 20465
+const uint32 CN_UNDERBOG_FRENZY = 20465;
 
-#define ENRAGE_FRENZY 34971 // no idea if this is good spell id / still don't know if it's good
+const uint32 ENRAGE_FRENZY = 34971; // no idea if this is good spell id / still don't know if it's good
 // Invisibility and Stealth Detection 18950 ?
 // Permanent Feign Death (Root) 31261 ?
 class UNDERBOGFRENZYAI : public CreatureAIScript
@@ -2157,9 +2157,9 @@ class UNDERBOGFRENZYAI : public CreatureAIScript
 };
 
 // Underbog Lurker AI
-#define CN_UNDERBOG_LURKER 17725
+const uint32 CN_UNDERBOG_LURKER = 17725;
 
-#define WILD_GROWTH 34161
+const uint32 WILD_GROWTH = 34161;
 
 class UNDERBOGLURKERAI : public CreatureAIScript
 {

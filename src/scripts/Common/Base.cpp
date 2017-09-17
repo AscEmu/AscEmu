@@ -1638,7 +1638,7 @@ void MoonScriptBossAI::AIUpdate()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Premade Spell Functions
-#define SPELLFUNC_VANISH 24699
+const uint32 SPELLFUNC_VANISH = 24699;
 
 void SpellFunc_ClearHateList(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
 {

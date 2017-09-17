@@ -1482,14 +1482,14 @@ class WrathboneFlayerAI : public MoonScriptCreatureAI
 // Bosses
 //----------------------High Warlord Naj'entus--------------------------//
 
-#define CN_NAJENTUS 22887
+const uint32 CN_NAJENTUS = 22887;
 
-#define CRASHING_WAVE                    40100    // Crashing Wave (2313-2687 Nature damage)
-#define NEEDLE_SPINE                    39835    // Needle Spine (3188-4312 Damage, AoE of 2375-2625 Aura): Fires a needle spine at an enemy target.
-#define NEEDLE_SPINE_EXPLOSION            39968
-#define TIDAL_SHIELD                    39872    // Tidal Shield : Impervious to normal attack and spells. Regenerating health. Will deal 8500 frost damage to the raid when broken.
-#define IMPALING_SPINE                    39837
-#define NAJENTUS_SPINE_GO                3264    // Campfire so it wont crash Real go is 185584 //Did not find it in any database (including drake's go's), tested with a chair, and it works
+const uint32 CRASHING_WAVE = 40100;  // Crashing Wave (2313-2687 Nature damage)
+const uint32 NEEDLE_SPINE = 39835;  // Needle Spine (3188-4312 Damage, AoE of 2375-2625 Aura): Fires a needle spine at an enemy target.
+const uint32 NEEDLE_SPINE_EXPLOSION = 39968;
+const uint32 TIDAL_SHIELD = 39872;    // Tidal Shield : Impervious to normal attack and spells. Regenerating health. Will deal 8500 frost damage to the raid when broken.
+const uint32 IMPALING_SPINE = 39837;
+const uint32 NAJENTUS_SPINE_GO = 3264;    // Campfire so it wont crash Real go is 185584 //Did not find it in any database (including drake's go's), tested with a chair, and it works
 // There are also other sounds, but Idk where they should go (mostly specials and enrage - which erange spell is that O_O)
 class NajentusAI : public CreatureAIScript
 {
@@ -1721,16 +1721,14 @@ class NajentusAI : public CreatureAIScript
 //          -= Supremus =-
 //------------------------------------
 
-#define CN_SUPREMUS 22898
-
 //Abilities - Phase 1
-#define MOLTEN_FLAME 40253 //Molten Flame: Blue-flamed fire sent along the ground in a straight line toward random players that deals 3325-3675 fire damage every 1 second while stood on. Ability used every 20 seconds.
-#define HURTFUL_STRIKE 40126 //33813 //Hurtful Strike: A massive melee ability applied to the second highest on his aggro list. If there are no other melee targets in range, it will be performed on the main tank instead.
+const uint32 MOLTEN_FLAME = 40253; //Molten Flame: Blue-flamed fire sent along the ground in a straight line toward random players that deals 3325-3675 fire damage every 1 second while stood on. Ability used every 20 seconds.
+const uint32 HURTFUL_STRIKE = 40126; //33813 //Hurtful Strike: A massive melee ability applied to the second highest on his aggro list. If there are no other melee targets in range, it will be performed on the main tank instead.
 
 //Abilities - Phase 2
 //Gaze: Supremus will target a random player and follow that target around for 10 seconds at 90% of normal movement speed. Switches targets after 10 seconds.
-#define MOLTEN_PUNCH 40126 //Molten Punch: Once a targeted player is within a 40 yard range, Supremus will do a knockback ability for 5250 damage.
-#define VOLCANIC_GAZER 42055 //Volcanic Geyser: Emoting "the ground begins to crack open", Supremus will summon small volcanoes that spit out blue flames for 4163-4837 fire damage in a 15 yard radius.
+const uint32 MOLTEN_PUNCH = 40126; //Molten Punch: Once a targeted player is within a 40 yard range, Supremus will do a knockback ability for 5250 damage.
+const uint32 VOLCANIC_GAZER = 42055; //Volcanic Geyser: Emoting "the ground begins to crack open", Supremus will summon small volcanoes that spit out blue flames for 4163-4837 fire damage in a 15 yard radius.
 
 class SupremusAI : public CreatureAIScript
 {
@@ -1905,41 +1903,37 @@ class SupremusAI : public CreatureAIScript
 //------------------------------------
 //    -= Shade Of Akama =-
 //------------------------------------
-#define CN_SHADE_OF_AKAMA 22841
-#define CN_ASHTONGUE_CHANNELER 23421
-#define CN_ASHTONGUE_SORCERER 23215
+const uint32 CN_SHADE_OF_AKAMA = 22841;
+const uint32 CN_ASHTONGUE_CHANNELER = 23421;
+const uint32 CN_ASHTONGUE_SORCERER = 23215;
 
-#define CN_ASHTONGUE_DEFENDER 23216
-#define DEBILITATING_STRIKE 41178
+const uint32 DEBILITATING_STRIKE = 41178;
 
-#define CN_ASHTONGUE_ELEMENTALIST 23523
-#define RAIN_OF_FIRE 42023
+const uint32 RAIN_OF_FIRE = 42023;
 
-#define CN_ASHTONGUE_ROGUE 23318
-#define DEBILITATING_POISON 41978
+const uint32 DEBILITATING_POISON = 41978;
 
-#define CN_ASHTONGUE_SPIRITBINDER 23524
-#define SPIRIT_MEND 42025
-#define CHAIN_HEAL 42027
+const uint32 SPIRIT_MEND = 42025;
+const uint32 CHAIN_HEAL = 42027;
 
 //-------------------------Gurtogg Bloodboil----------------------------//
 
-#define CN_GURTOGG_BLOODBOIL 22948
+const uint32 CN_GURTOGG_BLOODBOIL = 22948;
 
 // Phase 1
-#define BLOODBOIL        42005
-#define ACIDIC_WOUND    40481
-#define DISORIENT        32752
-#define KNOCKBACK        38576
+const uint32 BLOODBOIL = 42005;
+const uint32 ACIDIC_WOUND = 40481;
+const uint32 DISORIENT = 32752;
+const uint32 KNOCKBACK = 38576;
 
 // Phase 2
-#define FEL_RAGE1        40604
-#define FEL_RAGE2        40594    // 40616 - doesn't work at all
-#define ACID_GEYSER        40629
+const uint32 FEL_RAGE1 = 40604;
+const uint32 FEL_RAGE2 = 40594;   // 40616 - doesn't work at all
+const uint32 ACID_GEYSER = 40629;
 
 // Spells common for both phases
-#define ARCING_SMASH    40599
-#define FEL_ACID_BREATH    40595
+const uint32 ARCING_SMASH = 40599;
+const uint32 FEL_ACID_BREATH = 40595;
 
 class GurtoggAI : public CreatureAIScript
 {
@@ -2373,12 +2367,12 @@ class GurtoggAI : public CreatureAIScript
 //////////////////////////////////////////////////////////////////////////
 // Essence of Suffering
 
-#define CN_ESSENCEOFSUFFERING    23418
+const uint32 CN_ESSENCEOFSUFFERING = 23418;
 
-#define EOS_FIXATE                40893 //40414
-#define EOS_FRENZY                41305
-#define EOS_SOUL_DRAIN            41303
-#define EOS_AURA_OF_SUFFERING    41292
+const uint32 EOS_FIXATE = 40893; //40414
+const uint32 EOS_FRENZY = 41305;
+const uint32 EOS_SOUL_DRAIN = 41303;
+const uint32 EOS_AURA_OF_SUFFERING = 41292;
 
 class EssenceOfSufferingAI : public MoonScriptCreatureAI
 {
@@ -2429,12 +2423,12 @@ class EssenceOfSufferingAI : public MoonScriptCreatureAI
 //////////////////////////////////////////////////////////////////////////
 // Essence Of Desire
 
-#define CN_ESSENCEOFDESIRE 23419
+const uint32 CN_ESSENCEOFDESIRE = 23419;
 
-#define EOD_RUNE_SHIELD 41431
-#define EOD_DEADEN 41410
-#define EOD_SPIRIT_SHOCK 41426
-#define EOD_AURA_OF_DESIRE 41350
+const uint32 EOD_RUNE_SHIELD = 41431;
+const uint32 EOD_DEADEN = 41410;
+const uint32 EOD_SPIRIT_SHOCK = 41426;
+const uint32 EOD_AURA_OF_DESIRE = 41350;
 
 class EssenceOfDesireAI : public MoonScriptCreatureAI
 {
@@ -2485,12 +2479,12 @@ class EssenceOfDesireAI : public MoonScriptCreatureAI
 //////////////////////////////////////////////////////////////////////////
 // EssenceOfAnger
 
-#define CN_ESSENCEOFANGER        23420
+const uint32 CN_ESSENCEOFANGER = 23420;
 
-#define EOA_SEETHE                41520
-#define EOA_SOUL_SCREAM            41545
-#define EOA_SPITE                41377
-#define EOA_AURA_OF_ANGER        41337
+const uint32 EOA_SEETHE = 41520;
+const uint32 EOA_SOUL_SCREAM = 41545;
+const uint32 EOA_SPITE = 41377;
+const uint32 EOA_AURA_OF_ANGER = 41337;
 
 class EssenceOfAngerAI : public MoonScriptCreatureAI
 {
@@ -2538,10 +2532,10 @@ class EssenceOfAngerAI : public MoonScriptCreatureAI
         SpellDesc* mSpite;
 };
 
-#define CN_RELIQUARY_OF_SOULS    22856
-#define ROS_SUMMON_SUFFERING    41488
-#define ROS_SUMMON_DESIRE        41493
-#define ROS_SUMMON_ANGER        41496
+const uint32 CN_RELIQUARY_OF_SOULS = 22856;
+const uint32 ROS_SUMMON_SUFFERING = 41488;
+const uint32 ROS_SUMMON_DESIRE = 41493;
+const uint32 ROS_SUMMON_ANGER = 41496;
 
 class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
 {
@@ -2719,16 +2713,16 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
 
 //--------------------------Mother Shahraz------------------------------//
 
-#define CN_MOTHER_SHAHRAZ 22947
+const uint32 CN_MOTHER_SHAHRAZ = 22947;
 
-#define SINFUL_BEAM                40827
-#define SINISTER_BEAM            40859
-#define VILE_BEAM                40860
-#define WICKED_BEAM                40861
+const uint32 SINFUL_BEAM = 40827;
+const uint32 SINISTER_BEAM = 40859;
+const uint32 VILE_BEAM = 40860;
+const uint32 WICKED_BEAM = 40861;
 
-#define SABER_LASH                40810    // Should be 40816 but 40816 is not supported by core
-#define FATAL_ATTRACTION        41001    // 40869 - needs more scripting
-#define MS_ENRAGE                40743    // 40683
+const uint32 SABER_LASH = 40810;   // Should be 40816 but 40816 is not supported by core
+const uint32 FATAL_ATTRACTION = 41001;   // 40869 - needs more scripting
+const uint32 MS_ENRAGE = 40743;   // 40683
 // Dunno where "spell" sounds/texts should go
 class ShahrazAI : public CreatureAIScript
 {
@@ -3039,18 +3033,18 @@ class ShahrazAI : public CreatureAIScript
 //------------------------------------
 //    -= Gathios the Shatterer =-
 //------------------------------------
-#define CN_GATHIOS_THE_SHATTERER 22949
+const uint32 CN_GATHIOS_THE_SHATTERER = 22949;
 
 typedef std::vector<Creature*> EncounterVector;
 
-#define HAMMER_OF_JUSTICE            41468
-#define SEAL_OF_COMMAND                41469
-#define SEAL_OF_BLOOD                41459
-#define CONSECRATION                41541
-#define BLESSING_OF_SPELL_WARDING    41451
-#define BLESSING_OF_PROTECTION        41450
-#define CHROMATIC_RESISTANCE_AURA    41453
-#define DEVOTION_AURA                41452
+const uint32 HAMMER_OF_JUSTICE = 41468;
+const uint32 SEAL_OF_COMMAND = 41469;
+const uint32 SEAL_OF_BLOOD = 41459;
+const uint32 CONSECRATION = 41541;
+const uint32 BLESSING_OF_SPELL_WARDING = 41451;
+const uint32 BLESSING_OF_PROTECTION = 41450;
+const uint32 CHROMATIC_RESISTANCE_AURA = 41453;
+const uint32 DEVOTION_AURA = 41452;
 
 class GathiosAI : public MoonScriptCreatureAI
 {
@@ -3113,11 +3107,11 @@ class GathiosAI : public MoonScriptCreatureAI
 //------------------------------------
 //    -=Veras Darkshadow  =-
 //------------------------------------
-#define CN_VERAS_DARKSHADOW 22952
+const uint32 CN_VERAS_DARKSHADOW = 22952;
 
-#define DEADLY_POISON    41485
-#define ENVENOM            41487
-#define VANISH            41476
+const uint32 DEADLY_POISON = 41485;
+const uint32 ENVENOM = 41487;
+const uint32 VANISH = 41476;
 
 class VerasAI : public MoonScriptCreatureAI
 {
@@ -3148,13 +3142,13 @@ class VerasAI : public MoonScriptCreatureAI
 //------------------------------------
 //    -= High Nethermancer Zerevor  =-
 //------------------------------------
-#define CN_HIGH_NETHERMANCER_ZEREVOR 22950
+const uint32 CN_HIGH_NETHERMANCER_ZEREVOR = 22950;
 
-#define ARCANE_BOLT            41483
-#define BLIZZARD            41482
-#define FLAMESTRIKE            41481
-#define ARCANE_EXPLOSION    29973
-#define DAMPEN_MAGIC        41478
+const uint32 ARCANE_BOLT = 41483;
+const uint32 BLIZZARD = 41482;
+const uint32 FLAMESTRIKE = 41481;
+const uint32 ARCANE_EXPLOSION = 29973;
+const uint32 DAMPEN_MAGIC = 41478;
 
 class ZerevorAI : public MoonScriptCreatureAI
 {
@@ -3187,12 +3181,12 @@ class ZerevorAI : public MoonScriptCreatureAI
 //------------------------------------
 //    -= Lady Malande =-
 //------------------------------------
-#define CN_LADY_MALANDE 22951
+const uint32 CN_LADY_MALANDE = 22951;
 
-#define DIVINE_WRATH        41472
-#define REFLECTIVE_SHIELD    41475
-#define EMPOWERED_SMITE        41471
-#define CIRCLE_OF_HEALING    41455
+const uint32 DIVINE_WRATH = 41472;
+const uint32 REFLECTIVE_SHIELD = 41475;
+const uint32 EMPOWERED_SMITE = 41471;
+const uint32 CIRCLE_OF_HEALING = 41455;
 
 class MalandeAI : public MoonScriptCreatureAI
 {
@@ -3225,12 +3219,12 @@ class MalandeAI : public MoonScriptCreatureAI
 
 //--------------------------Teron Gorefiend-----------------------------//
 
-#define CN_TERON_GOREFIEND 22871
+const uint32 CN_TERON_GOREFIEND = 22871;
 
-#define DOOM_BLOSSOM        40188    // needs additional creature in DB
-#define CRUSHING_SHADOWS    40243
-#define INCINERATE            40239
-#define SHADOW_OF_DEATH        40251    // need further scripting?
+const uint32 DOOM_BLOSSOM = 40188;   // needs additional creature in DB
+const uint32 CRUSHING_SHADOWS = 40243;
+const uint32 INCINERATE = 40239;
+const uint32 SHADOW_OF_DEATH = 40251;    // need further scripting?
 // Dunno where other sounds should go
 class TeronGorefiendAI : public CreatureAIScript
 {
@@ -3452,10 +3446,9 @@ class TeronGorefiendAI : public CreatureAIScript
 };
 
 //Shade of AkamaAI
-///\todo all these texts seems to be incorrect... is the creature entry correct?
-#define CN_SHADE_OF_AKAMA 22841
+//\todo all these texts seems to be incorrect... is the creature entry correct?
 
-#define SINFUL_BEAM0 00000
+const uint32 SINFUL_BEAM0 = 00000;
 
 class ShadeofakamaAI : public CreatureAIScript
 {
@@ -3933,8 +3926,8 @@ uint32 DeathSceneTimers[] =
 #define USE_SHADOW_PRISON    // aggroes a lot of mobs/NPCs if they are not friendly to Illidan
 
 // Unselectable Trigger AI
-#define CN_DOOR_EVENT_TRIGGER    60001
-#define CN_FACE_TRIGGER            60002
+const uint32 CN_DOOR_EVENT_TRIGGER = 60001;
+const uint32 CN_FACE_TRIGGER = 60002;
 
 class UnselectableTriggerAI : public MoonScriptCreatureAI
 {
@@ -3948,24 +3941,24 @@ class UnselectableTriggerAI : public MoonScriptCreatureAI
 // Generic Trigger AI
 
 // Demon Fire settings
-#define CN_DEMON_FIRE                23069
-#define DEMON_FIRE                    40029
-#define DEMON_FIRE_DESPAWN            60000    // time in ms
+const uint32 CN_DEMON_FIRE = 23069;
+const uint32 DEMON_FIRE = 40029;
+const uint32 DEMON_FIRE_DESPAWN = 60000;   // time in ms
 
 // Blaze Effect settings
-#define CN_BLAZE_EFFECT                23259
-#define BLAZE_EFFECT                40610
-#define BLAZE_EFFECT_DESPAWN        60000    // time in ms
+const uint32 CN_BLAZE_EFFECT = 23259;
+const uint32 BLAZE_EFFECT = 40610;
+const uint32 BLAZE_EFFECT_DESPAWN = 60000;   // time in ms
 
 // Flame Crash Effect settings
-#define CN_FLAME_CRASH                23336
-#define FLAME_CRASH_EFFECT            40836
-#define FLAME_CRASH_EFFECT_DESPAWN    120000    // time in ms
+const uint32 CN_FLAME_CRASH = 23336;
+const uint32 FLAME_CRASH_EFFECT = 40836;
+const uint32 FLAME_CRASH_EFFECT_DESPAWN = 120000;    // time in ms
 
 // Flame Burst settings
-#define CN_FLAME_BURST                30003
-#define FLAME_BURST                    41131
-#define FLAME_BURST_DESPAWN            1000    // time in ms
+const uint32 CN_FLAME_BURST = 30003;
+const uint32 FLAME_BURST = 41131;
+const uint32 FLAME_BURST_DESPAWN = 1000;    // time in ms
 
 class GenericTriggerAI : public MoonScriptCreatureAI
 {
@@ -4036,9 +4029,9 @@ class GenericTriggerAI : public MoonScriptCreatureAI
 };
 
 // Eye Beam Trigger AI
-#define CN_EYE_BEAM_TRIGGER    30000
+const uint32 CN_EYE_BEAM_TRIGGER = 30000;
 
-#define EYE_BLAST            40017
+const uint32 EYE_BLAST = 40017;
 
 class EyeBeamTriggerAI : public MoonScriptCreatureAI
 {
@@ -4085,12 +4078,12 @@ class EyeBeamTriggerAI : public MoonScriptCreatureAI
 // ---    Other creature AIs    --- //
 
 // Shadow Demon AI
-#define CN_SHADOW_DEMON                23375
+const uint32 CN_SHADOW_DEMON = 23375;
 
-#define SHADOW_DEMON_PARALYZE        41083
-#define SHADOW_DEMON_CONSUME_SOUL    41080
-#define SHADOW_DEMON_PURPLE_BEAM    39123    // temporary spell
-#define SHADOW_DEMON_PASSIVE        41079
+const uint32 SHADOW_DEMON_PARALYZE = 41083;
+const uint32 SHADOW_DEMON_CONSUME_SOUL = 41080;
+const uint32 SHADOW_DEMON_PURPLE_BEAM = 39123;   // temporary spell
+const uint32 SHADOW_DEMON_PASSIVE = 41079;
 
 class ShadowDemonAI : public MoonScriptCreatureAI
 {
@@ -4163,10 +4156,10 @@ class ShadowDemonAI : public MoonScriptCreatureAI
 };
 
 // Parasitic Shadowfiend AI - This AI is one huge hack :P
-#define CN_PARASITIC_SHADOWFIEND                    23498
+const uint32 CN_PARASITIC_SHADOWFIEND = 23498;
 
-#define PARASITIC_SHADOWFIEND_PASSIVE                41913
-#define PARASITIC_SHADOWFIEND_WITH_DAMAGE            41917
+const uint32 PARASITIC_SHADOWFIEND_PASSIVE = 41913;
+const uint32 PARASITIC_SHADOWFIEND_WITH_DAMAGE = 41917;
 
 void SpellFunc_Parasitic(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
@@ -4306,19 +4299,19 @@ class SCRIPT_DECL AkamaGossip : public GossipScript
 
 /* Akama AI - Creature AI Class */
 
-#define CN_AKAMA                22990
+const uint32 CN_AKAMA = 22990;
 
-#define AKAMA_HEALING_POTION    40535
-#define AKAMA_BLESSING_OF_KINGS    20217
-#define AKAMA_DESPAWN            41242
+const uint32 AKAMA_HEALING_POTION = 40535;
+const uint32 AKAMA_BLESSING_OF_KINGS = 20217;
+const uint32 AKAMA_DESPAWN = 41242;
 
 // Door Event Spells
-#define AKAMA_DOOR_FAIL            41271
-#define AKAMA_DOOR_OPEN            41268
-#define DEATHSWORN_DOOR_OPEN    41269
-#define GATE_FAILURE            10390
+const uint32 AKAMA_DOOR_FAIL = 41271;
+const uint32 AKAMA_DOOR_OPEN = 41268;
+const uint32 DEATHSWORN_DOOR_OPEN = 41269;
+const uint32 GATE_FAILURE = 10390;
 
-#define AKAMA_WAYPOINT_SIZE        20
+const uint32 AKAMA_WAYPOINT_SIZE = 20;
 
 class AkamaAI : public MoonScriptBossAI
 {
@@ -4887,13 +4880,13 @@ class AkamaAI : public MoonScriptBossAI
 
 /* Maiev AI - Creature AI Class */
 
-#define CN_MAIEV 23197
+const uint32 CN_MAIEV = 23197;
 
-//#define TELEPORT_MAIEV 41221
-#define MAIEV_TELEPORT            34673
-#define MAIEV_SHADOW_STRIKE        40685
-#define MAIEV_THROW_DAGGER        41152
-#define MAIEV_CAGE_TRAP_SUMMON    40694
+//const uint32 TELEPORT_MAIEV  = 41221;
+const uint32 MAIEV_TELEPORT = 34673;
+const uint32 MAIEV_SHADOW_STRIKE = 40685;
+const uint32 MAIEV_THROW_DAGGER = 41152;
+const uint32 MAIEV_CAGE_TRAP_SUMMON = 40694;
 
 class MaievAI : public MoonScriptBossAI
 {
@@ -5230,61 +5223,60 @@ class MaievAI : public MoonScriptBossAI
 
 ///\todo rewritten Illidan Script
 //------- Macros
-#define CN_ILLIDAN_STORMRAGE 22917
+const uint32 CN_ILLIDAN_STORMRAGE = 22917;
 
 // Normal Form Spells
-#define ILLIDAN_SHEAR                                41032  // +
-#define ILLIDAN_DRAW_SOUL                            40904  // +
-#define ILLIDAN_FLAME_CRASH                            40832  // +
+const uint32 ILLIDAN_SHEAR = 41032; // +
+const uint32 ILLIDAN_DRAW_SOUL = 40904; // +
+const uint32 ILLIDAN_FLAME_CRASH = 40832;  // +
 
 // Phase 2 Spells
-#define ILLIDAN_FIREBALL                            40598  // +
-#define ILLIDAN_DARK_BARRAGE                        40585  // ? Haven't Tried
-#define ILLIDAN_SUMMON_TEAR_OF_AZZINOTH                39855  // +
-#define ILLIDAN_EYE_BLAST1                            39908
-#define ILLIDAN_EYE_BLAST2                            40017
+const uint32 ILLIDAN_FIREBALL = 40598;  // +
+const uint32 ILLIDAN_DARK_BARRAGE = 40585;  // ? Haven't Tried
+const uint32 ILLIDAN_SUMMON_TEAR_OF_AZZINOTH = 39855;  // +
+const uint32 ILLIDAN_EYE_BLAST1 = 39908;
+const uint32 ILLIDAN_EYE_BLAST2 = 40017;
 
 // Illidan's Glaive spells
-#define ILLIDAN_SUMMON_GLAIVE                        41466
-#define ILLIDAN_GLAIVE_RETURNS                        39873
-#define ILLIDAN_THROW_GLAIVE1                        39635
-#define ILLIDAN_THROW_GLAIVE2                        39849
+const uint32 ILLIDAN_SUMMON_GLAIVE = 41466;
+const uint32 ILLIDAN_GLAIVE_RETURNS = 39873;
+const uint32 ILLIDAN_THROW_GLAIVE1 = 39635;
+const uint32 ILLIDAN_THROW_GLAIVE2 = 39849;
 
-#define TEAR_OF_AZZINOTH_CHANNEL                    39857
+const uint32 TEAR_OF_AZZINOTH_CHANNEL = 39857;
 
 // Phase 3 Spells
-#define ILLIDAN_AGONIZING_FLAMES                    40932  // +
+const uint32 ILLIDAN_AGONIZING_FLAMES = 40932;  // +
 
 // Phase 4 Spells
-#define ILLIDAN_DEMON_FORM                            40506
-#define ILLIDAN_AURA_OF_DREAD                        41142
-#define ILLIDAN_SHADOW_BLAST                        41078  // +
-#define ILLIDAN_SUMMON_DEMON                        41117  // - Core Support
-#define ILLIDAN_FLAME_BURST1                        41131  // ? Frost-nova-like effect dealing damage
-#define ILLIDAN_FLAME_BURST2                        41126  // ? Cast Effect
+const uint32 ILLIDAN_DEMON_FORM = 40506;
+const uint32 ILLIDAN_AURA_OF_DREAD = 41142;
+const uint32 ILLIDAN_SHADOW_BLAST = 41078;  // +
+const uint32 ILLIDAN_SUMMON_DEMON = 41117;  // - Core Support
+const uint32 ILLIDAN_FLAME_BURST1 = 41131;  // ? Frost-nova-like effect dealing damage
+const uint32 ILLIDAN_FLAME_BURST2 = 41126;  // ? Cast Effect
 
 // Demon Forms
-#define ILLIDAN_DEMON_FORM1                            40511  // +
-#define ILLIDAN_DEMON_FORM2                            40398  // +
-#define ILLIDAN_DEMON_FORM3                            40510  // +
+const uint32 ILLIDAN_DEMON_FORM1 = 40511;  // +
+const uint32 ILLIDAN_DEMON_FORM2 = 40398;  // +
+const uint32 ILLIDAN_DEMON_FORM3 = 40510; // +
 
 // Phase 5 Spells
-#define ILLIDAN_ENRAGE                                40683  // +
+const uint32 ILLIDAN_ENRAGE = 40683; // +
 
 // Other spells
-#define ILLIDAN_SHADOW_PRISON                        40647  // +
-#define ILLIDAN_SKULL_INTRO                            39656  // + Works with RemoveAura
-#define ILLIDAN_SUMMON_PARASITIC_SHADOWFIENDS        41915  // ? Haven't Tried
-#define ILLIDAN_PARASITIC_SHADOWFIEND_WITH_SE        41914
-#define ILLIDAN_SUMMON_PARASITIC_SHADOWFIENDS        41915
-#define ILLIDAN_BERSERK                                45078
-#define ILLIDAN_DEATH1                                41218
-#define ILLIDAN_DEATH2                                41220
-#define ILLIDAN_RAKE                                1822   // + Used to force animation use
+const uint32 ILLIDAN_SHADOW_PRISON = 40647; // +
+const uint32 ILLIDAN_SKULL_INTRO = 39656; // + Works with RemoveAura
+const uint32 ILLIDAN_SUMMON_PARASITIC_SHADOWFIENDS = 41915; // ? Haven't Tried
+const uint32 ILLIDAN_PARASITIC_SHADOWFIEND_WITH_SE = 41914;
+const uint32 ILLIDAN_BERSERK = 45078;
+const uint32 ILLIDAN_DEATH1 = 41218;
+const uint32 ILLIDAN_DEATH2 = 41220;
+const uint32 ILLIDAN_RAKE = 1822;  // + Used to force animation use
 
 // Other macros
-#define CN_BLADE_OF_AZZINOTH                        22996
-#define ILLIDAN_WAYPOINT_SIZE                        5
+const uint32 CN_BLADE_OF_AZZINOTH = 22996;
+const uint32 ILLIDAN_WAYPOINT_SIZE = 5;
 
 void SpellFunc_Illidan_Parasitic(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
@@ -6500,13 +6492,13 @@ void SpellFunc_Illidan_Parasitic(SpellDesc* pThis, MoonScriptCreatureAI* pCreatu
 END*/
 
 // Cage Trap Trigger AI
-#define CN_CAGE_TRAP_DISTURB_TRIGGER    23304        // GO data taken from UDB
-#define CN_CAGE_TRAP_TRIGGER            23292        // 23292 - 9
-#define GO_CAGE_TRAP                    185916
+const uint32 CN_CAGE_TRAP_DISTURB_TRIGGER = 23304;       // GO data taken from UDB
+const uint32 CN_CAGE_TRAP_TRIGGER = 23292;      // 23292 - 9
+const uint32 GO_CAGE_TRAP = 185916;
 
-#define CAGE_TRAP                        40760
-#define CAGED1                            40695
-#define CAGED2                            40713        // must find proper spell for it
+const uint32 CAGE_TRAP = 40760;
+const uint32 CAGED1 = 40695;
+const uint32 CAGED2 = 40713;       // must find proper spell for it
 
 float PositionAdds[8][2] =
 {
@@ -6690,8 +6682,8 @@ class CageTrapGO : public GameObjectAIScript
 };
 
 // Udalo and Olum AI
-#define CN_UDALO    23410
-#define CN_OLUM        23411
+const uint32 CN_UDALO = 23410;
+const uint32 CN_OLUM = 23411;
 
 class DranaeiSpiritAI : public MoonScriptCreatureAI
 {
@@ -6723,12 +6715,12 @@ class DranaeiSpiritAI : public MoonScriptCreatureAI
 };
 
 // Flame of Azzinoth AI
-#define CN_FLAME_OF_AZZINOTH                22997
+const uint32 CN_FLAME_OF_AZZINOTH = 22997;
 
-#define FLAME_OF_AZZINOTH_BLAZE                40637        // this one just summons mob that will trigger that fire cloud - currently not used
-#define FLAME_OF_AZZINOTH_FLAME_BLAST        40631
-#define FLAME_OF_AZZINOTH_ENRAGE            40683        // 40683 or 40743
-#define FLAME_OF_AZZINOTH_CHARGE            40602        // CHAOS_CHARGE 40497 CHARGE 40602
+const uint32 FLAME_OF_AZZINOTH_BLAZE = 40637;       // this one just summons mob that will trigger that fire cloud - currently not used
+const uint32 FLAME_OF_AZZINOTH_FLAME_BLAST = 40631;
+const uint32 FLAME_OF_AZZINOTH_ENRAGE = 40683;        // 40683 or 40743
+const uint32 FLAME_OF_AZZINOTH_CHARGE = 40602;        // CHAOS_CHARGE 40497 CHARGE 40602
 
 void SpellFunc_FlameOfAzzinothFlameBlast(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 void SpellFunc_FlameOfAzzinothCharge(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);

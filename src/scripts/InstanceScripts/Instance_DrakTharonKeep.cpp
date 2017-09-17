@@ -88,8 +88,8 @@ class InstanceDrakTharonKeepScript : public MoonInstanceScript
  */
 
 //TrollgoreAI
-#define INVASION_INTERVAL 20000
-#define INVADERS_PER_INVASION 1
+const uint32 INVASION_INTERVAL = 20000;
+const uint32 INVADERS_PER_INVASION = 1;
 //two mobs per 10s
 
 class TrollgoreAI : public CreatureAIScript
@@ -275,10 +275,10 @@ class TrollgoreAI : public CreatureAIScript
  */
 
 // NovosTheSummonerAI
-#define INVADE_INTERVAL 30000//4 mobs per 30s
-#define INVADERS_COUNT 3
-#define HANDLER_INTERVAL 60000//one handler per 60s
-#define ELITE_CHANCE 20//how much chance for elite we've got each invasion?
+const uint32 INVADE_INTERVAL = 30000; //4 mobs per 30s
+const uint32 INVADERS_COUNT = 3;
+const uint32 HANDLER_INTERVAL = 60000; //one handler per 60s
+const uint32 ELITE_CHANCE = 20; //how much chance for elite we've got each invasion?
 
 class NovosTheSummonerAI : public CreatureAIScript
 {
@@ -918,9 +918,9 @@ class KingDreadAI : public CreatureAIScript
  */
 
 // TheProphetTaronjaAI
-#define WINDSERPENT_PHASE_INTERVAL 60000//change phase each 60s
-#define WINDSERPENT_PHASE_LENGTH 30000//30s
-#define PHASES_COUNT 2
+const uint32 WINDSERPENT_PHASE_INTERVAL = 60000; //change phase each 60s
+const uint32 WINDSERPENT_PHASE_LENGTH = 30000; //30s
+const uint32 PHASES_COUNT = 2;
 
 class TheProphetTaronjaAI : public CreatureAIScript
 {

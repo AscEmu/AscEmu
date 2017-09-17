@@ -87,7 +87,7 @@ static Movement::Location ThrallWP1[] = // pre 2nd boss
     { 2054.77f, 243.723f, 63.2682f, 2.39857f }
 };
 
-#define MAX_THRALLWP1 27
+const uint32 MAX_THRALLWP1 = 27;
 
 
 class OldHilsbradInstance : public MoonInstanceScript

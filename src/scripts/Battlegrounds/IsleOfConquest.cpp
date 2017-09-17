@@ -23,8 +23,8 @@
 #include "Management/WorldStates.h"
 #include "Map/MapMgr.h"
 
-#define IOC_NUM_REINFORCEMENTS 300
-#define IOC_POINTS_ON_KILL 1
+const uint32 IOC_NUM_REINFORCEMENTS = 300;
+const uint32 IOC_POINTS_ON_KILL = 1;
 
 enum IOCGOs
 {

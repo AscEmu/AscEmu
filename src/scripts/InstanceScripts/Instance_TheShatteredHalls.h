@@ -87,8 +87,8 @@ enum CreatureSpells
     SP_SHADOWMOON_ACOLYTE_PW_SHIELD     = 35944,    // 41373, 29408, 36052, 35944, 32595
     SP_SHADOWMOON_ACOLYTE_MIND_BLAST    = 31516,    //26048 //38259 // ofc not sure (and this one can be really overpowered)
     SP_SHADOWMOON_ACOLYTE_RESIST_SHADOW = 30479,    // not sure to those both
-    //#define PRAYER_OF_HEALING 15585    // crashes server
-    //#define 105 resist shadow buff?
+    //PRAYER_OF_HEALING 15585    // crashes server
+    //105 resist shadow buff?
     // Self Visual - Sleep Until Cancelled (DND) 16093 ?
 
     // ShatteredHandAssassinAI
@@ -134,7 +134,7 @@ enum CreatureSpells
 
     // Blood Guard PorungAI
     SP_BLOOD_GUARD_PORUNG_CLEAVE        = 37476,    // right description, but no idea if this is right spell
-    //#define FEAR <-- disabled in 2.1
+    //FEAR <-- disabled in 2.1
 
     // WarbringerOmroggAI
     SP_WARBRINGER_OMROGG_THUNDERCLAP    = 30633,

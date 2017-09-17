@@ -51,7 +51,7 @@ const uint32 SPELL_AMBUSH = 34794;
 // event_properties holiday: 0 \n
 // npc_id: 15085 \n
 // First you must find four Artifacts to interact with them (Archeologie) with an Gossip MenuItem \n
-// #define GOSSIP_MENU_ITEM "Examine the object." 
+// GOSSIP_MENU_ITEM "Examine the object." 
 //\todo Monsterscript for Wushoolay
 
 #define YELL_WUSHOOLAY_1 "You shall regret disturbing my homeland!"                     /// on start attacking

@@ -1,7 +1,7 @@
 /*
  * ArcScripts for ArcEmu MMORPG Server
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2008-2015 Sun++ Team <http://www.sunplusplus.info/>
+ * Copyright (C) 2008-2017 Sun++ Team <http://www.sunplusplus.info/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,10 +17,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// \todo Move defines to enums, cleanup this... this... thing o.O
 
 #include "Objects/Faction.h"
 #include <Units/Creatures/Pet.h>
+
 class GrandWidowFaerlinaAI;
 class AnubRekhanAI;
 class DeathchargerSteedAI;
@@ -37,10 +37,10 @@ class DeathKnightUnderstudyAI;
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Carrion Spinner
-#define CN_CARRION_SPINNER                    15975
-#define CARRION_SPINNER_POISON_BOLT_NORMAL    30043
-#define CARRION_SPINNER_POISON_BOLT_HEROIC    56032
-#define CARRION_SPINNER_WEB_WRAP            28618 ///\todo  PULL EFFECT *FUN*
+const uint32 CN_CARRION_SPINNER = 15975;
+const uint32 CARRION_SPINNER_POISON_BOLT_NORMAL = 30043;
+const uint32 CARRION_SPINNER_POISON_BOLT_HEROIC = 56032;
+const uint32 CARRION_SPINNER_WEB_WRAP = 28618; //\todo  PULL EFFECT *FUN*
 
 class CarrionSpinnerAI : public MoonScriptCreatureAI
 {
@@ -50,9 +50,9 @@ class CarrionSpinnerAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Dread Creeper
-#define CN_DREAD_CREEPER                        15974
-#define DREAD_CREEPER_VEIL_OF_SHADOW_NORMAL        53803
-#define DREAD_CREEPER_VEIL_OF_SHADOW_HEROIC        28440
+const uint32 CN_DREAD_CREEPER = 15974;
+const uint32 DREAD_CREEPER_VEIL_OF_SHADOW_NORMAL = 53803;
+const uint32 DREAD_CREEPER_VEIL_OF_SHADOW_HEROIC = 28440;
 
 class DreadCreeperAI : public MoonScriptCreatureAI
 {
@@ -62,9 +62,9 @@ class DreadCreeperAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Naxxramas Cultist
-#define CN_NAXXRAMAS_CULTIST                    15980
-#define NAXXRAMAS_CULTIST_KNOCKBACK_NORMAL        53850
-#define NAXXRAMAS_CULTIST_KNOCKBACK_HEROIC        53851
+const uint32 CN_NAXXRAMAS_CULTIST = 15980;
+const uint32 NAXXRAMAS_CULTIST_KNOCKBACK_NORMAL = 53850;
+const uint32 NAXXRAMAS_CULTIST_KNOCKBACK_HEROIC = 53851;
 
 class NaxxramasCultistAI : public MoonScriptCreatureAI
 {
@@ -74,9 +74,9 @@ class NaxxramasCultistAI : public MoonScriptCreatureAI
 //Necro Stalker AI - was it removed ?
 /////////////////////////////////////////////////////////////////////////////////
 ////// Venom Stalker
-#define CN_VENOM_STALKER                        15976
-#define VENOM_STALKER_POISON_CHARGE_NORMAL        28431
-#define VENOM_STALKER_POISON_CHARGE_HEROIC        53809
+const uint32 CN_VENOM_STALKER = 15976;
+const uint32 VENOM_STALKER_POISON_CHARGE_NORMAL = 28431;
+const uint32 VENOM_STALKER_POISON_CHARGE_HEROIC = 53809;
 
 class VenomStalkerAI : public MoonScriptCreatureAI
 {
@@ -86,12 +86,12 @@ class VenomStalkerAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Tomb Horror
-#define CN_TOMB_HORROR                            15979
-#define TOMB_HORROR_SPIKE_VOLLEY                28615
-#define TOMB_HORROR_CRYPT_SCARAB_SWARM_NORMAL    54313
-#define TOMB_HORROR_CRYPT_SCARAB_SWARM_HEROIC    54317
-#define TOMB_HORROR_CRYPT_SCARABS_NORMAL        54311
-#define TOMB_HORROR_CRYPT_SCARABS_HEROIC        54316
+const uint32 CN_TOMB_HORROR = 15979;
+const uint32 TOMB_HORROR_SPIKE_VOLLEY = 28615;
+const uint32 TOMB_HORROR_CRYPT_SCARAB_SWARM_NORMAL = 54313;
+const uint32 TOMB_HORROR_CRYPT_SCARAB_SWARM_HEROIC = 54317;
+const uint32 TOMB_HORROR_CRYPT_SCARABS_NORMAL = 54311;
+const uint32 TOMB_HORROR_CRYPT_SCARABS_HEROIC = 54316;
 
 class TombHorrorAI : public MoonScriptCreatureAI
 {
@@ -101,11 +101,11 @@ class TombHorrorAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Naxxramas Acolyte
-#define CN_NAXXRAMAS_ACOLYTE                            16368
-#define NAXXRAMAS_ACOLYTE_SHADOW_BOLT_VOLLEY_NORMAL        56064
-#define NAXXRAMAS_ACOLYTE_SHADOW_BOLT_VOLLEY_HEROIC        56065
-#define NAXXRAMAS_ACOLYTE_ARCANE_EXPLOSION_NORMAL        56063
-#define NAXXRAMAS_ACOLYTE_ARCANE_EXPLOSION_HEROIC        56067
+const uint32 CN_NAXXRAMAS_ACOLYTE = 16368;
+const uint32 NAXXRAMAS_ACOLYTE_SHADOW_BOLT_VOLLEY_NORMAL = 56064;
+const uint32 NAXXRAMAS_ACOLYTE_SHADOW_BOLT_VOLLEY_HEROIC = 56065;
+const uint32 NAXXRAMAS_ACOLYTE_ARCANE_EXPLOSION_NORMAL = 56063;
+const uint32 NAXXRAMAS_ACOLYTE_ARCANE_EXPLOSION_HEROIC = 56067;
 // To check: "total caster" + Explosion only when players are close ?
 class NaxxramasAcolyteAI : public MoonScriptCreatureAI
 {
@@ -115,10 +115,10 @@ class NaxxramasAcolyteAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Vigilant Shade
-#define CN_VIGILANT_SHADE                                30085
-#define VIGILANT_SHADE_INVISIBILITY                        55848
-#define VIGILANT_SHADE_SHADOW_BOLT_VOLLEY_NORMAL        55850
-#define VIGILANT_SHADE_SHADOW_BOLT_VOLLEY_HEROIC        55851
+const uint32 CN_VIGILANT_SHADE = 30085;
+const uint32 VIGILANT_SHADE_INVISIBILITY = 55848;
+const uint32 VIGILANT_SHADE_SHADOW_BOLT_VOLLEY_NORMAL = 55850;
+const uint32 VIGILANT_SHADE_SHADOW_BOLT_VOLLEY_HEROIC = 55851;
 // Invisiblity should be removed OnCombatStart ?
 class VigilantShadeAI : public MoonScriptCreatureAI
 {
@@ -131,9 +131,9 @@ class VigilantShadeAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Crypt Reaver
-#define CN_CRYPT_REAVER                            15978
-#define CRYPT_REAVER_CLEAVE                        40504
-#define CRYPT_REAVER_FRENZY                        56625
+const uint32 CN_CRYPT_REAVER = 15978;
+const uint32 CRYPT_REAVER_CLEAVE = 40504;
+const uint32 CRYPT_REAVER_FRENZY = 56625;
 
 class CryptReaverAI : public MoonScriptCreatureAI
 {
@@ -143,7 +143,7 @@ class CryptReaverAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Web Wrap
-#define CN_WEB_WRAP                                16486
+const uint32 CN_WEB_WRAP = 16486;
 
 class WebWrapAI : public MoonScriptCreatureAI
 {
@@ -161,9 +161,9 @@ class WebWrapAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Maexxna Spiderling
-#define CN_MAEXXNA_SPIDERLING                        17055
-#define MAEXXNA_SPIDERLING_NECROTIC_POISON_NORMAL    54121
-#define MAEXXNA_SPIDERLING_NECROTIC_POISON_HEROIC    28776
+const uint32 CN_MAEXXNA_SPIDERLING = 17055;
+const uint32 MAEXXNA_SPIDERLING_NECROTIC_POISON_NORMAL = 54121;
+const uint32 MAEXXNA_SPIDERLING_NECROTIC_POISON_HEROIC = 28776;
 
 class MaexxnaSpiderlingAI : public MoonScriptCreatureAI
 {
@@ -173,16 +173,16 @@ class MaexxnaSpiderlingAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Maexxna
-#define CN_MAEXXNA                                15952
-#define MAEXXNA_WEB_WRAP                        28622
-#define MAEXXNA_WEB_SPRAY_NORMAL                29484
-#define MAEXXNA_WEB_SPRAY_HEROIC                54125
-#define MAEXXNA_POISON_SHOCK_NORMAL                28741
-#define MAEXXNA_POISON_SHOCK_HEROIC                54122
-#define MAEXXNA_NECROTIC_POISON_NORMAL            54121
-#define MAEXXNA_NECROTIC_POISON_HEROIC            28776
-#define MAEXXNA_FRENZY_NORMAL                    54123
-#define MAEXXNA_FRENZY_HEROIC                    54124
+const uint32 CN_MAEXXNA = 15952;
+const uint32 MAEXXNA_WEB_WRAP = 28622;
+const uint32 MAEXXNA_WEB_SPRAY_NORMAL = 29484;
+const uint32 MAEXXNA_WEB_SPRAY_HEROIC = 54125;
+const uint32 MAEXXNA_POISON_SHOCK_NORMAL = 28741;
+const uint32 MAEXXNA_POISON_SHOCK_HEROIC = 54122;
+const uint32 MAEXXNA_NECROTIC_POISON_NORMAL = 54121;
+const uint32 MAEXXNA_NECROTIC_POISON_HEROIC = 28776;
+const uint32 MAEXXNA_FRENZY_NORMAL = 54123;
+const uint32 MAEXXNA_FRENZY_HEROIC = 54124;
 
 static Movement::Location WebWrapPos[] =
 {
@@ -217,11 +217,11 @@ class MaexxnaAI : public MoonScriptBossAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Naxxramas Worshipper
-#define CN_NAXXRAMAS_WORSHIPPER                            16506
-#define NAXXRAMAS_WORSHIPPER_FIREBALL_NORMAL            54095
-#define NAXXRAMAS_WORSHIPPER_FIREBALL_HEROIC            54096
-#define NAXXRAMAS_WORSHIPPER_WIDOW_EMBRACE                28732
-#define NAXXRAMAS_WORSHIPPER_MIND_EXHAUSTION            28727
+const uint32 CN_NAXXRAMAS_WORSHIPPER = 16506;
+const uint32 NAXXRAMAS_WORSHIPPER_FIREBALL_NORMAL = 54095;
+const uint32 NAXXRAMAS_WORSHIPPER_FIREBALL_HEROIC = 54096;
+const uint32 NAXXRAMAS_WORSHIPPER_WIDOW_EMBRACE = 28732;
+const uint32 NAXXRAMAS_WORSHIPPER_MIND_EXHAUSTION = 28727;
 
 class NaxxramasWorshipperAI : public MoonScriptCreatureAI
 {
@@ -240,9 +240,9 @@ class NaxxramasWorshipperAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Naxxramas Follower
-#define CN_NAXXRAMAS_FOLLOWER                            16505
-#define NAXXRAMAS_FOLLOWER_BERSERKER_CHARGE_HEROIC        56107
-#define NAXXRAMAS_FOLLOWER_SILENCE_HEROIC                54093
+const uint32 CN_NAXXRAMAS_FOLLOWER = 16505;
+const uint32 NAXXRAMAS_FOLLOWER_BERSERKER_CHARGE_HEROIC = 56107;
+const uint32 NAXXRAMAS_FOLLOWER_SILENCE_HEROIC = 54093;
 
 void SpellFunc_NaxxramasFollowerCharge(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
@@ -260,13 +260,13 @@ class NaxxramasFollowerAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Grand Widow Faerlina
-#define CN_GRAND_WIDOW_FAERLINA                            15953
-#define GRAND_WIDOW_FAERLINA_POISON_VOLLEY_BOLT_NORMAL    28796
-#define GRAND_WIDOW_FAERLINA_POISON_VOLLEY_BOLT_HEROIC    54098
-#define GRAND_WIDOW_FAERLINA_FRENZY_NORMAL                28798
-#define GRAND_WIDOW_FAERLINA_FRENZY_HEROIC                54100
-#define GRAND_WIDOW_RAIN_OF_FIRE_NORMAL                    39024
-#define GRAND_WIDOW_RAIN_OF_FIRE_HEROIC                    58936
+const uint32 CN_GRAND_WIDOW_FAERLINA = 15953;
+const uint32 GRAND_WIDOW_FAERLINA_POISON_VOLLEY_BOLT_NORMAL = 28796;
+const uint32 GRAND_WIDOW_FAERLINA_POISON_VOLLEY_BOLT_HEROIC = 54098;
+const uint32 GRAND_WIDOW_FAERLINA_FRENZY_NORMAL = 28798;
+const uint32 GRAND_WIDOW_FAERLINA_FRENZY_HEROIC = 54100;
+const uint32 GRAND_WIDOW_RAIN_OF_FIRE_NORMAL = 39024;
+const uint32 GRAND_WIDOW_RAIN_OF_FIRE_HEROIC = 58936;
 
 static Movement::Location Worshippers[4] =
 {
@@ -302,11 +302,11 @@ class GrandWidowFaerlinaAI : public MoonScriptBossAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Crypt Guard
-#define CN_CRYPT_GUARD                        16573
-#define CRYPT_GUARD_ACID_SPLIT_NORMAL        28969
-#define CRYPT_GUARD_ACID_SPLIT_HEROIC        56098
-#define CRYPT_GUARD_CLEAVE                    40504
-#define CRYPT_GUARD_FRENZY                    8269
+const uint32 CN_CRYPT_GUARD = 16573;
+const uint32 CRYPT_GUARD_ACID_SPLIT_NORMAL = 28969;
+const uint32 CRYPT_GUARD_ACID_SPLIT_HEROIC = 56098;
+const uint32 CRYPT_GUARD_CLEAVE = 40504;
+const uint32 CRYPT_GUARD_FRENZY = 8269;
 
 class CryptGuardAI : public MoonScriptCreatureAI
 {
@@ -324,7 +324,7 @@ class CryptGuardAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Corpse Scarab
-#define CN_CORPSE_SCARAB                        16698
+const uint32 CN_CORPSE_SCARAB = 16698;
 
 class CorpseScarabAI : public MoonScriptCreatureAI
 {
@@ -339,14 +339,14 @@ class CorpseScarabAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Anub'Rekhan
-#define CN_ANUBREKHAN                            15956
-#define ANUBREKHAN_IMPALE_NORMAL                28783
-#define ANUBREKHAN_IMPALE_HEROIC                56090
-#define ANUBREKHAN_LOCUST_SWARM_NORMAL            28785
-#define ANUBREKHAN_LOCUST_SWARM_HEROIC            54021
-#define ANUBREKHAN_SUMMON_CORPSE_SCARABS_5        29105
-#define ANUBREKHAN_SUMMON_CORPSE_SCARABS_10        28864
-#define ANUBREKHAN_BERSERK                        26662
+const uint32 CN_ANUBREKHAN = 15956;
+const uint32 ANUBREKHAN_IMPALE_NORMAL = 28783;
+const uint32 ANUBREKHAN_IMPALE_HEROIC = 56090;
+const uint32 ANUBREKHAN_LOCUST_SWARM_NORMAL = 28785;
+const uint32 ANUBREKHAN_LOCUST_SWARM_HEROIC = 54021;
+const uint32 ANUBREKHAN_SUMMON_CORPSE_SCARABS_5 = 29105;
+const uint32 ANUBREKHAN_SUMMON_CORPSE_SCARABS_10 = 28864;
+const uint32 ANUBREKHAN_BERSERK = 26662;
 
 static Movement::Location CryptGuards[] =
 {
@@ -381,12 +381,12 @@ class AnubRekhanAI : public MoonScriptBossAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Infectious Ghoul
-#define CN_INFECTIOUS_GHOUL                        16244
-#define INFECTIOUS_GHOUL_FLESH_ROT                54709
-#define INFECTIOUS_GHOUL_REND_NORMAL            54703
-#define INFECTIOUS_GHOUL_REND_HEROIC            54708
-#define INFECTIOUS_GHOUL_FRENZY_NORMAL            54701
-#define INFECTIOUS_GHOUL_FRENZY_HEROIC            24318
+const uint32 CN_INFECTIOUS_GHOUL = 16244;
+const uint32 INFECTIOUS_GHOUL_FLESH_ROT = 54709;
+const uint32 INFECTIOUS_GHOUL_REND_NORMAL = 54703;
+const uint32 INFECTIOUS_GHOUL_REND_HEROIC = 54708;
+const uint32 INFECTIOUS_GHOUL_FRENZY_NORMAL = 54701;
+const uint32 INFECTIOUS_GHOUL_FRENZY_HEROIC = 24318;
 
 class InfectiousGhoulAI : public MoonScriptCreatureAI
 {
@@ -401,11 +401,11 @@ class InfectiousGhoulAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Stoneskin Gargoyle
-#define CN_STONESKIN_GARGOYLE                    16168
-#define STONESKIN_GARGOYLE_ACID_VOLLEY_NORMAL    29325
-#define STONESKIN_GARGOYLE_ACID_VOLLEY_HEROIC    54714
-#define STONESKIN_GARGOYLE_STONESKIN_NORMAL        28995
-#define STONESKIN_GARGOYLE_STONESKIN_HEROIC        54722
+const uint32 CN_STONESKIN_GARGOYLE = 16168;
+const uint32 STONESKIN_GARGOYLE_ACID_VOLLEY_NORMAL = 29325;
+const uint32 STONESKIN_GARGOYLE_ACID_VOLLEY_HEROIC = 54714;
+const uint32 STONESKIN_GARGOYLE_STONESKIN_NORMAL = 28995;
+const uint32 STONESKIN_GARGOYLE_STONESKIN_HEROIC = 54722;
 
 class StoneskinGargoyleAI : public MoonScriptCreatureAI
 {
@@ -420,8 +420,8 @@ class StoneskinGargoyleAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Frenzied Bat
-#define CN_FRENZIED_BAT                        16036
-#define FRENZIED_BAT_FRENZIED_DIVE            54781
+const uint32 CN_FRENZIED_BAT = 16036;
+const uint32 FRENZIED_BAT_FRENZIED_DIVE = 54781;
 
 class FrenziedBatAI : public MoonScriptCreatureAI
 {
@@ -431,11 +431,11 @@ class FrenziedBatAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Plague Beast
-#define CN_PLAGUE_BEAST                        16034
-#define PLAGUE_BEAST_PLAGUE_SPLASH_NORMAL    54780
-#define PLAGUE_BEAST_PLAGUE_SPLASH_HEROIC    56538
-#define PLAGUE_BEAST_MUTATED_SPORES            30110
-#define PLAGUE_BEAST_TRAMPLE                5568
+const uint32 CN_PLAGUE_BEAST = 16034;
+const uint32 PLAGUE_BEAST_PLAGUE_SPLASH_NORMAL = 54780;
+const uint32 PLAGUE_BEAST_PLAGUE_SPLASH_HEROIC = 56538;
+const uint32 PLAGUE_BEAST_MUTATED_SPORES = 30110;
+const uint32 PLAGUE_BEAST_TRAMPLE = 5568;
 
 class PlagueBeastAI : public MoonScriptCreatureAI
 {
@@ -448,9 +448,9 @@ class PlagueBeastAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Eye Stalker
-#define CN_EYE_STALKER                        16236
-#define EYE_STALKER_MIND_FLAY_NORMAL        29407
-#define EYE_STALKER_MIND_FLAY_HEROIC        54805
+const uint32 CN_EYE_STALKER = 16236;
+const uint32 EYE_STALKER_MIND_FLAY_NORMAL = 29407;
+const uint32 EYE_STALKER_MIND_FLAY_HEROIC = 54805;
 
 class EyeStalkerAI : public MoonScriptCreatureAI
 {
@@ -463,12 +463,12 @@ class EyeStalkerAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Noth the Plaguebringer
-#define CN_NOTH_THE_PLAGUEBRINGER                            15954
-#define NOTH_THE_PLAGUEBRINGER_BLINK_HEROIC                    29208
-#define NOTH_THE_PLAGUEBRINGER_CRIPLE_HEROIC                29212
-#define NOTH_THE_PLAGUEBRINGER_CURSE_OF_THE_PLAGUE_NORMAL    29213    // I must check if it's target-limited spell
-#define NOTH_THE_PLAGUEBRINGER_CURSE_OF_THE_PLAGUE_HEROIC    54835    // I must check if it's target-limited spell
-#define NOTH_THE_PLAGUEBRINGER_BERSERK                        47008    // Guessed
+const uint32 CN_NOTH_THE_PLAGUEBRINGER = 15954;
+const uint32 NOTH_THE_PLAGUEBRINGER_BLINK_HEROIC = 29208;
+const uint32 NOTH_THE_PLAGUEBRINGER_CRIPLE_HEROIC = 29212;
+const uint32 NOTH_THE_PLAGUEBRINGER_CURSE_OF_THE_PLAGUE_NORMAL = 29213;    // I must check if it's target-limited spell
+const uint32 NOTH_THE_PLAGUEBRINGER_CURSE_OF_THE_PLAGUE_HEROIC = 54835;    // I must check if it's target-limited spell
+const uint32 NOTH_THE_PLAGUEBRINGER_BERSERK = 47008;    // Guessed
 
 static Movement::Location SkelPosPhase1[] =
 {
@@ -518,9 +518,9 @@ class NothThePlaguebringerAI : public MoonScriptBossAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Plagued Warrior
-#define CN_PLAGUED_WARRIOR                        16984
-#define PLAGUED_WARRIOR_STRIKE                    12057
-#define PLAGUED_WARRIOR_CLEAVE                    15496
+const uint32 CN_PLAGUED_WARRIOR = 16984;
+const uint32 PLAGUED_WARRIOR_STRIKE = 12057;
+const uint32 PLAGUED_WARRIOR_CLEAVE = 15496;
 
 class PlaguedWarriorAI : public MoonScriptCreatureAI
 {
@@ -534,11 +534,11 @@ class PlaguedWarriorAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Plagued Champion
-#define CN_PLAGUED_CHAMPION                        16983
-#define PLAGUED_CHAMPION_MORTAL_STRIKE_NORMAL    32736
-#define PLAGUED_CHAMPION_MORTAL_STRIKE_HEROIC    13737
-#define PLAGUED_CHAMPION_SHADOW_SHOCK_NORMAL    30138
-#define PLAGUED_CHAMPION_SHADOW_SHOCK_HEROIC    54889
+const uint32 CN_PLAGUED_CHAMPION = 16983;
+const uint32 PLAGUED_CHAMPION_MORTAL_STRIKE_NORMAL = 32736;
+const uint32 PLAGUED_CHAMPION_MORTAL_STRIKE_HEROIC = 13737;
+const uint32 PLAGUED_CHAMPION_SHADOW_SHOCK_NORMAL = 30138;
+const uint32 PLAGUED_CHAMPION_SHADOW_SHOCK_HEROIC = 54889;
 
 class PlaguedChampionAI : public MoonScriptCreatureAI
 {
@@ -552,10 +552,10 @@ class PlaguedChampionAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Plagued Guardian
-#define CN_PLAGUED_GUARDIAN                            16981
-#define PLAGUED_GUARDIAN_ARCANE_EXPLOSION_NORMAL    54890
-#define PLAGUED_GUARDIAN_ARCANE_EXPLOSION_HEROIC    54891
-#define PLAGUED_GUARDIAN_BLINK                        29208
+const uint32 CN_PLAGUED_GUARDIAN = 16981;
+const uint32 PLAGUED_GUARDIAN_ARCANE_EXPLOSION_NORMAL = 54890;
+const uint32 PLAGUED_GUARDIAN_ARCANE_EXPLOSION_HEROIC = 54891;
+const uint32 PLAGUED_GUARDIAN_BLINK = 29208;
 
 class PlaguedGuardianAI : public MoonScriptCreatureAI
 {
@@ -569,14 +569,14 @@ class PlaguedGuardianAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Heigan the Unclean
-#define CN_HEIGAN_THE_UNCLEAN                        15936
-#define HEIGAN_THE_UNCLEAN_SPELL_DISRUPTION            29310
-#define HEIGAN_THE_UNCLEAN_DECREPIT_FEVER_NORMAL    29998
-#define HEIGAN_THE_UNCLEAN_DECREPIT_FEVER_HEROIC    55011
-#define HEIGAN_THE_UNCLEAN_PLAGUE_CLOUD_CHANNEL        29350
-#define HEIGAN_THE_UNCLEAN_PLAGUE_CLOUD_DAMAGE        30122
-#define HEIGAN_THE_UNCLEAN_TELEPORT                    34673    // Guessed.
-#define FISSURE_TRIGGER_ERUPTION                29371
+const uint32 CN_HEIGAN_THE_UNCLEAN = 15936;
+const uint32 HEIGAN_THE_UNCLEAN_SPELL_DISRUPTION = 29310;
+const uint32 HEIGAN_THE_UNCLEAN_DECREPIT_FEVER_NORMAL = 29998;
+const uint32 HEIGAN_THE_UNCLEAN_DECREPIT_FEVER_HEROIC = 55011;
+const uint32 HEIGAN_THE_UNCLEAN_PLAGUE_CLOUD_CHANNEL = 29350;
+const uint32 HEIGAN_THE_UNCLEAN_PLAGUE_CLOUD_DAMAGE = 30122;
+const uint32 HEIGAN_THE_UNCLEAN_TELEPORT = 34673;   // Guessed.
+const uint32 FISSURE_TRIGGER_ERUPTION = 29371;
 
 float HeiganPos[2] = { 2796, -3707 };
 const float HeiganEruptionSlope[3] =
@@ -608,7 +608,7 @@ class HeiganTheUncleanAI : public MoonScriptBossAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Plague Fissure
-#define GO_PLAGUE_FISSURE        181533
+const uint32 GO_PLAGUE_FISSURE = 181533;
 
 class PlagueFissureGO : public GameObjectAIScript
 {
@@ -628,16 +628,16 @@ class PlagueFissureGO : public GameObjectAIScript
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Loatheb
-#define CN_LOATHEB                            16011
-#define LOATHEB_NECROTIC_AURA                55593
-#define LOATHEB_SUMMON_SPORE                29234
-#define LOATHEB_DEATHBLOOM_NORMAL            29865
-#define LOATHEB_DEATHBLOOM_HEROIC            55053
-#define LOATHEB_DEATHBLOOM_DAMAGE_NORMAL    55594
-#define LOATHEB_DEATHBLOOM_DAMAGE_HEROIC    55601
-#define LOATHEB_INEVITABLE_DOOM_NORMAL        29204
-#define LOATHEB_INEVITABLE_DOOM_HEROIC        55052
-#define LOATHEB_BERSERK                        26662    // Unused
+const uint32 CN_LOATHEB = 16011;
+const uint32 LOATHEB_NECROTIC_AURA = 55593;
+const uint32 LOATHEB_SUMMON_SPORE = 29234;
+const uint32 LOATHEB_DEATHBLOOM_NORMAL = 29865;
+const uint32 LOATHEB_DEATHBLOOM_HEROIC = 55053;
+const uint32 LOATHEB_DEATHBLOOM_DAMAGE_NORMAL = 55594;
+const uint32 LOATHEB_DEATHBLOOM_DAMAGE_HEROIC = 55601;
+const uint32 LOATHEB_INEVITABLE_DOOM_NORMAL = 29204;
+const uint32 LOATHEB_INEVITABLE_DOOM_HEROIC = 55052;
+const uint32 LOATHEB_BERSERK = 26662;    // Unused
 
 static Movement::Location Spores[] =
 {
@@ -668,8 +668,8 @@ class LoathebAI : public MoonScriptBossAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Spore
-#define CN_SPORE                        16286
-#define SPORE_FUNGAL_CREEP                29232
+const uint32 CN_SPORE = 16286;
+const uint32 SPORE_FUNGAL_CREEP = 29232;
 
 class SporeAI : public MoonScriptCreatureAI
 {
@@ -687,12 +687,12 @@ class SporeAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Death Knight
-#define CN_DEATH_KNIGHT                        16146
-#define DEATH_KNIGHT_BLOOD_PRESENCE            55212
-#define DEATH_KNIGHT_DEATH_COIL_NORMAL        55209
-#define DEATH_KNIGHT_DEATH_COIL_HEROIC        55320
-#define DEATH_KNIGHT_DEATH_COIL_HEAL        55210
-#define DEATH_KNIGHT_HYSTERIA                55213
+const uint32 CN_DEATH_KNIGHT = 16146;
+const uint32 DEATH_KNIGHT_BLOOD_PRESENCE = 55212;
+const uint32 DEATH_KNIGHT_DEATH_COIL_NORMAL = 55209;
+const uint32 DEATH_KNIGHT_DEATH_COIL_HEROIC = 55320;
+const uint32 DEATH_KNIGHT_DEATH_COIL_HEAL = 55210;
+const uint32 DEATH_KNIGHT_HYSTERIA = 55213;
 
 class DeathKnightAI : public MoonScriptCreatureAI
 {
@@ -704,12 +704,12 @@ class DeathKnightAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Death Knight Captain
-#define CN_DEATH_KNIGHT_CAPTAIN                        16145
-#define DEATH_KNIGHT_CAPTAIN_UNHOLY_PRESENCE        55222
-#define DEATH_KNIGHT_CAPTAIN_RAISE_DEAD                28353
-#define DEATH_KNIGHT_CAPTAIN_PLAGUE_STRIKE_NORMAL    55255
-#define DEATH_KNIGHT_CAPTAIN_PLAGUE_STRIKE_HEROIC    55321
-#define DEATH_KNIGHT_CAPTAIN_WHIRLWIND                28335
+const uint32 CN_DEATH_KNIGHT_CAPTAIN = 16145;
+const uint32 DEATH_KNIGHT_CAPTAIN_UNHOLY_PRESENCE = 55222;
+const uint32 DEATH_KNIGHT_CAPTAIN_RAISE_DEAD = 28353;
+const uint32 DEATH_KNIGHT_CAPTAIN_PLAGUE_STRIKE_NORMAL = 55255;
+const uint32 DEATH_KNIGHT_CAPTAIN_PLAGUE_STRIKE_HEROIC = 55321;
+const uint32 DEATH_KNIGHT_CAPTAIN_WHIRLWIND = 28335;
 
 class DeathKnightCaptainAI : public MoonScriptCreatureAI
 {
@@ -724,7 +724,7 @@ class DeathKnightCaptainAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Ghost of Naxxramas
-#define CN_GHOST_OF_NAXXRAMAS                            16419
+const uint32 CN_GHOST_OF_NAXXRAMAS = 16419;
 
 class GhostOfNaxxramasAI : public MoonScriptCreatureAI
 {
@@ -734,10 +734,10 @@ class GhostOfNaxxramasAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Shade of Naxxramas
-#define CN_SHADE_OF_NAXXRAMAS                            16164
-#define SHADE_OF_NAXXRAMAS_PORTAL_OF_SHADOWS            28383
-#define SHADE_OF_NAXXRAMAS_SHADOW_BOLT_VOLLEY_NORMAL    28407
-#define SHADE_OF_NAXXRAMAS_SHADOW_BOLT_VOLLEY_HEROIC    55323
+const uint32 CN_SHADE_OF_NAXXRAMAS = 16164;
+const uint32 SHADE_OF_NAXXRAMAS_PORTAL_OF_SHADOWS = 28383;
+const uint32 SHADE_OF_NAXXRAMAS_SHADOW_BOLT_VOLLEY_NORMAL = 28407;
+const uint32 SHADE_OF_NAXXRAMAS_SHADOW_BOLT_VOLLEY_HEROIC = 55323;
 
 class ShadeOfNaxxramasAI : public MoonScriptCreatureAI
 {
@@ -753,7 +753,7 @@ class ShadeOfNaxxramasAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Portal of Shadows
-#define CN_PORTAL_OF_SHADOWS                            16420
+const uint32 CN_PORTAL_OF_SHADOWS = 16420;
 
 class PortalOfShadowsAI : public MoonScriptCreatureAI
 {
@@ -771,13 +771,13 @@ class PortalOfShadowsAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Necro Knight
-#define CN_NECRO_KNIGHT                            16165
-#define NECRO_KNIGHT_ARCANE_EXPLOSION            15453
-#define NECRO_KNIGHT_BLAST_WAVE                    30092
-#define NECRO_KNIGHT_BLINK                        28391
-#define NECRO_KNIGHT_CONE_OF_COLD                30095
-#define NECRO_KNIGHT_FLAMESTRIKE                30091
-#define NECRO_KNIGHT_FROST_NOVA                    30094
+const uint32 CN_NECRO_KNIGHT = 16165;
+const uint32 NECRO_KNIGHT_ARCANE_EXPLOSION = 15453;
+const uint32 NECRO_KNIGHT_BLAST_WAVE = 30092;
+const uint32 NECRO_KNIGHT_BLINK = 28391;
+const uint32 NECRO_KNIGHT_CONE_OF_COLD = 30095;
+const uint32 NECRO_KNIGHT_FLAMESTRIKE = 30091;
+const uint32 NECRO_KNIGHT_FROST_NOVA = 30094;
 
 void SpellFunc_NecroKnightBlink(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
@@ -789,11 +789,11 @@ class NecroKnightAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Skeletal Smith
-#define CN_SKELETAL_SMITH                        16193
-#define SKELETAL_SMITH_CRUSH_ARMOR                33661
-#define SKELETAL_SMITH_DISARM                    6713
-#define SKELETAL_SMITH_THUNDERCLAP                23931
-//#define SKELETAL_SMITH_SUDDER_ARMOR                24317
+const uint32 CN_SKELETAL_SMITH = 16193;
+const uint32 SKELETAL_SMITH_CRUSH_ARMOR = 33661;
+const uint32 SKELETAL_SMITH_DISARM = 6713;
+const uint32 SKELETAL_SMITH_THUNDERCLAP = 23931;
+//const uint32 SKELETAL_SMITH_SUDDER_ARMOR = 24317;
 
 class SkeletalSmithAI : public MoonScriptCreatureAI
 {
@@ -803,17 +803,17 @@ class SkeletalSmithAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Death Knight Cavalier
-#define CN_DEATH_KNIGHT_CAVALIER                    16163
-#define DEATH_KNIGHT_CAVALIER_BONE_ARMOR_NORMAL        55315
-#define DEATH_KNIGHT_CAVALIER_BONE_ARMOR_HEROIC        55336
-#define DEATH_KNIGHT_CAVALIER_DISMOUNT_DEATHCHARGER    55294
-#define DEATH_KNIGHT_CAVALIER_ICY_TOUCH_NORMAL        55313
-#define DEATH_KNIGHT_CAVALIER_ICY_TOUCH_HEROIC        55331
-#define DEATH_KNIGHT_CAVALIER_STRANGULATE_NORMAL    55314
-#define DEATH_KNIGHT_CAVALIER_STRANGULATE_HEROIC    55334
-#define DEATH_KNIGHT_CAVALIER_AURA_OF_AGONY            28413
-#define DEATH_KNIGHT_CAVALIER_CLEAVE                15284
-#define DEATH_KNIGHT_CAVALIER_DEATH_COIL            28412
+const uint32 CN_DEATH_KNIGHT_CAVALIER = 16163;
+const uint32 DEATH_KNIGHT_CAVALIER_BONE_ARMOR_NORMAL = 55315;
+const uint32 DEATH_KNIGHT_CAVALIER_BONE_ARMOR_HEROIC = 55336;
+const uint32 DEATH_KNIGHT_CAVALIER_DISMOUNT_DEATHCHARGER = 55294;
+const uint32 DEATH_KNIGHT_CAVALIER_ICY_TOUCH_NORMAL = 55313;
+const uint32 DEATH_KNIGHT_CAVALIER_ICY_TOUCH_HEROIC = 55331;
+const uint32 DEATH_KNIGHT_CAVALIER_STRANGULATE_NORMAL = 55314;
+const uint32 DEATH_KNIGHT_CAVALIER_STRANGULATE_HEROIC = 55334;
+const uint32 DEATH_KNIGHT_CAVALIER_AURA_OF_AGONY = 28413;
+const uint32 DEATH_KNIGHT_CAVALIER_CLEAVE = 15284;
+const uint32 DEATH_KNIGHT_CAVALIER_DEATH_COIL = 28412;
 
 class DeathKnightCavalierAI : public MoonScriptCreatureAI
 {
@@ -831,8 +831,8 @@ class DeathKnightCavalierAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Deathcharger Steed
-#define CN_DEATHCHARGER_STEED                    29818
-#define DEATHCHARGER_STEED_CHARGE                55317
+const uint32 CN_DEATHCHARGER_STEED = 29818;
+const uint32 DEATHCHARGER_STEED_CHARGE = 55317;
 
 void SpellFunc_DeathchargerSteedCharge(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
@@ -851,9 +851,9 @@ class DeathchargerSteedAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Dark Touched Warrior
-#define CN_DARK_TOUCHED_WARRIOR                    16156
-#define DARK_TOUCHED_WARRIOR_WHIRLWIND            55267
-//#define DARK_TOUCHED_WARRIOR_WHIRLWIND            55266    // This one disables mob's melee
+const uint32 CN_DARK_TOUCHED_WARRIOR = 16156;
+const uint32 DARK_TOUCHED_WARRIOR_WHIRLWIND = 55267;
+//const uint32 DARK_TOUCHED_WARRIOR_WHIRLWIND = 55266;    // This one disables mob's melee
 
 class DarkTouchedWarriorAI : public MoonScriptCreatureAI
 {
@@ -868,8 +868,8 @@ class DarkTouchedWarriorAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Risen Squire
-#define CN_RISEN_SQUIRE                        16154
-#define RISEN_SQUIRE_PIERCE_ARMOR            55318
+const uint32 CN_RISEN_SQUIRE = 16154;
+const uint32 RISEN_SQUIRE_PIERCE_ARMOR = 55318;
 
 class RisenSquireAI : public MoonScriptCreatureAI
 {
@@ -879,11 +879,11 @@ class RisenSquireAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Unholy Axe
-#define CN_UNHOLY_AXE                            16194
-#define UNHOLY_AXE_MORTAL_STRIKE_NORMAL            16856
-#define UNHOLY_AXE_MORTAL_STRIKE_HEROIC            15708
-#define UNHOLY_AXE_WHIRLWIND_NORMAL                55463
-#define UNHOLY_AXE_WHIRLWIND_HEROIC                24236
+const uint32 CN_UNHOLY_AXE = 16194;
+const uint32 UNHOLY_AXE_MORTAL_STRIKE_NORMAL = 16856;
+const uint32 UNHOLY_AXE_MORTAL_STRIKE_HEROIC = 15708;
+const uint32 UNHOLY_AXE_WHIRLWIND_NORMAL = 55463;
+const uint32 UNHOLY_AXE_WHIRLWIND_HEROIC = 24236;
 
 class UnholyAxeAI : public MoonScriptCreatureAI
 {
@@ -893,9 +893,9 @@ class UnholyAxeAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Unholy Sword
-#define CN_UNHOLY_SWORD                            16216
-#define UNHOLY_SWORD_CLEAVE_NORMAL                15284
-#define UNHOLY_SWORD_CLEAVE_HEROIC                19632
+const uint32 CN_UNHOLY_SWORD = 16216;
+const uint32 UNHOLY_SWORD_CLEAVE_NORMAL = 15284;
+const uint32 UNHOLY_SWORD_CLEAVE_HEROIC = 19632;
 
 class UnholySwordAI : public MoonScriptCreatureAI
 {
@@ -905,11 +905,11 @@ class UnholySwordAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Unholy Staff
-#define CN_UNHOLY_STAFF                            16215
-#define UNHOLY_STAFF_ARCANE_EXPLOSION_NORMAL    28450
-#define UNHOLY_STAFF_ARCANE_EXPLOSION_HEROIC    55467
-#define UNHOLY_STAFF_FROST_NOVA                    29849
-#define UNHOLY_STAFF_POLYMORPH                    29848
+const uint32 CN_UNHOLY_STAFF = 16215;
+const uint32 UNHOLY_STAFF_ARCANE_EXPLOSION_NORMAL = 28450;
+const uint32 UNHOLY_STAFF_ARCANE_EXPLOSION_HEROIC = 55467;
+const uint32 UNHOLY_STAFF_FROST_NOVA = 29849;
+const uint32 UNHOLY_STAFF_POLYMORPH = 29848;
 
 class UnholyStaffAI : public MoonScriptCreatureAI
 {
@@ -919,12 +919,12 @@ class UnholyStaffAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Instructor Razuvious
-#define CN_INSTRUCTOR_RAZUVIOUS                            16061
-#define INSTRUCTOR_RAZUVIOUS_DISRUPTING_SHOUT_NORMAL    55543
-#define INSTRUCTOR_RAZUVIOUS_DISRUPTING_SHOUT_HEROIC    29107
-#define INSTRUCTOR_RAZUVIOUS_JAGGED_KNIFE                55550
-#define INSTRUCTOR_RAZUVIOUS_UNBALANCING_STRIKE            55470
-#define INSTRUCTOR_RAZUVIOUS_HOPELESS                    29125
+const uint32 CN_INSTRUCTOR_RAZUVIOUS = 16061;
+const uint32 INSTRUCTOR_RAZUVIOUS_DISRUPTING_SHOUT_NORMAL = 55543;
+const uint32 INSTRUCTOR_RAZUVIOUS_DISRUPTING_SHOUT_HEROIC = 29107;
+const uint32 INSTRUCTOR_RAZUVIOUS_JAGGED_KNIFE = 55550;
+const uint32 INSTRUCTOR_RAZUVIOUS_UNBALANCING_STRIKE = 55470;
+const uint32 INSTRUCTOR_RAZUVIOUS_HOPELESS = 29125;
 
 class InstructorRazuviousAI : public MoonScriptBossAI
 {
@@ -966,10 +966,10 @@ void InstructorRazuviousAI::AIUpdate()
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Death Knight Understudy
-#define CN_DEATH_KNIGHT_UNDERSTUDY                    16803
-#define DEATH_KNIGHT_UNDERSTUDY_BLOOD_STRIKE        61696
-#define DEATH_KNIGHT_UNDERSTUDY_BONE_BARRIER        29061
-#define DEATH_KNIGHT_UNDERSTUDY_TAUNT                29060
+const uint32 CN_DEATH_KNIGHT_UNDERSTUDY = 16803;
+const uint32 DEATH_KNIGHT_UNDERSTUDY_BLOOD_STRIKE = 61696;
+const uint32 DEATH_KNIGHT_UNDERSTUDY_BONE_BARRIER = 29061;
+const uint32 DEATH_KNIGHT_UNDERSTUDY_TAUNT = 29060;
 
 class DeathKnightUnderstudyAI : public MoonScriptCreatureAI
 {
@@ -1068,14 +1068,14 @@ void DeathKnightUnderstudyAI::Destroy()
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Patchwork Golem
-#define CN_PATCHWORK_GOLEM                        16017
-#define PATCHWORK_GOLEM_CLEAVE                    27794
-#define PATCHWORK_GOLEM_DISEASE_CLOUD_NORMAL    27793
-#define PATCHWORK_GOLEM_DISEASE_CLOUD_HEROIC    28362
-#define PATCHWORK_GOLEM_EXECUTE_NORMAL            7160
-#define PATCHWORK_GOLEM_EXECUTE_HEROIC            56426
-#define PATCHWORK_GOLEM_WAR_STOMP_NORMAL        27758
-#define PATCHWORK_GOLEM_WAR_STOMP_HEROIC        56427
+const uint32 CN_PATCHWORK_GOLEM = 16017;
+const uint32 PATCHWORK_GOLEM_CLEAVE = 27794;
+const uint32 PATCHWORK_GOLEM_DISEASE_CLOUD_NORMAL = 27793;
+const uint32 PATCHWORK_GOLEM_DISEASE_CLOUD_HEROIC = 28362;
+const uint32 PATCHWORK_GOLEM_EXECUTE_NORMAL = 7160;
+const uint32 PATCHWORK_GOLEM_EXECUTE_HEROIC = 56426;
+const uint32 PATCHWORK_GOLEM_WAR_STOMP_NORMAL = 27758;
+const uint32 PATCHWORK_GOLEM_WAR_STOMP_HEROIC = 56427;
 
 class PatchworkGolemAI : public MoonScriptCreatureAI
 {
@@ -1088,10 +1088,10 @@ class PatchworkGolemAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Bile Retcher
-#define CN_BILE_RETCHER                            16018
-#define BILE_RETCHER_BILE_VOMIT_NORMAL            27807
-#define BILE_RETCHER_BILE_VOMIT_HEROIC            54326
-#define BILE_RETCHER_BILE_RETCHER_SLAM            27862
+const uint32 CN_BILE_RETCHER = 16018;
+const uint32 BILE_RETCHER_BILE_VOMIT_NORMAL = 27807;
+const uint32 BILE_RETCHER_BILE_VOMIT_HEROIC = 54326;
+const uint32 BILE_RETCHER_BILE_RETCHER_SLAM = 27862;
 
 class BileRetcherAI : public MoonScriptCreatureAI
 {
@@ -1101,8 +1101,8 @@ class BileRetcherAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Sewage Slime
-#define CN_SEWAGE_SLIME                            16375
-#define SEWAGE_SLIME_DISEASE_CLOUD                28156
+const uint32 CN_SEWAGE_SLIME = 16375;
+const uint32 SEWAGE_SLIME_DISEASE_CLOUD = 28156;
 
 class SewageSlimeAI : public MoonScriptCreatureAI
 {
@@ -1115,8 +1115,8 @@ class SewageSlimeAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Embalming Slime
-#define CN_EMBALMING_SLIME                        16024
-#define EMBALMING_SLIME_EMBALMING_CLOUD            28322
+const uint32 CN_EMBALMING_SLIME = 16024;
+const uint32 EMBALMING_SLIME_EMBALMING_CLOUD = 28322;
 
 class EmbalmingSlimeAI : public MoonScriptCreatureAI
 {
@@ -1129,11 +1129,11 @@ class EmbalmingSlimeAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Mad Scientist
-#define CN_MAD_SCIENTIST                        16020
-#define MAD_SCIENTIST_GREAT_HEAL_NORMAL            28306
-#define MAD_SCIENTIST_GREAT_HEAL_HEROIC            54337
-#define MAD_SCIENTIST_MANA_BURN_NORMAL            28301
-#define MAD_SCIENTIST_MANA_BURN_HEROIC            54338
+const uint32 CN_MAD_SCIENTIST = 16020;
+const uint32 MAD_SCIENTIST_GREAT_HEAL_NORMAL = 28306;
+const uint32 MAD_SCIENTIST_GREAT_HEAL_HEROIC = 54337;
+const uint32 MAD_SCIENTIST_MANA_BURN_NORMAL = 28301;
+const uint32 MAD_SCIENTIST_MANA_BURN_HEROIC = 54338;
 
 class MadScientistAI : public MoonScriptCreatureAI
 {
@@ -1143,11 +1143,11 @@ class MadScientistAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Living Monstrosity
-#define CN_LIVING_MONSTROSITY                        16021
-#define LIVING_MONSTROSITY_FEAR                        27990
-#define LIVING_MONSTROSITY_LIGHTNING_TOTEM            28294
-#define LIVING_MONSTROSITY_CHAIN_LIGHTNING_NORMAL    28293
-#define LIVING_MONSTROSITY_CHAIN_LIGHTNING_HEROIC    54334
+const uint32 CN_LIVING_MONSTROSITY = 16021;
+const uint32 LIVING_MONSTROSITY_FEAR = 27990;
+const uint32 LIVING_MONSTROSITY_LIGHTNING_TOTEM = 28294;
+const uint32 LIVING_MONSTROSITY_CHAIN_LIGHTNING_NORMAL = 28293;
+const uint32 LIVING_MONSTROSITY_CHAIN_LIGHTNING_HEROIC = 54334;
 
 class LivingMonstrosityAI : public MoonScriptCreatureAI
 {
@@ -1157,9 +1157,9 @@ class LivingMonstrosityAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Lightning Totem
-#define CN_LIGHTNING_TOTEM                            16385
-#define LIGHTNING_TOTEM_SHOCK_NORMAL                28297
-#define LIGHTNING_TOTEM_SHOCK_HEROIC                54333
+const uint32 CN_LIGHTNING_TOTEM = 16385;
+const uint32 LIGHTNING_TOTEM_SHOCK_NORMAL = 28297;
+const uint32 LIGHTNING_TOTEM_SHOCK_HEROIC = 54333;
 
 class LightningTotemAI : public MoonScriptCreatureAI
 {
@@ -1172,10 +1172,10 @@ class LightningTotemAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Stitched Colossus
-#define CN_STITCHED_COLOSSUS                    30071
-#define STITCHED_COLOSSUS_MASSIVE_STOMP_NORMAL    55821
-#define STITCHED_COLOSSUS_MASSIVE_STOMP_HEROIC    55826
-#define STITCHED_COLOSSUS_UNSTOPPABLE_ENRAGE    54356
+const uint32 CN_STITCHED_COLOSSUS = 30071;
+const uint32 STITCHED_COLOSSUS_MASSIVE_STOMP_NORMAL = 55821;
+const uint32 STITCHED_COLOSSUS_MASSIVE_STOMP_HEROIC = 55826;
+const uint32 STITCHED_COLOSSUS_UNSTOPPABLE_ENRAGE = 54356;
 
 class StitchedColossusAI : public MoonScriptCreatureAI
 {
@@ -1190,8 +1190,8 @@ class StitchedColossusAI : public MoonScriptCreatureAI
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Marauding Geist
-#define CN_MARAUDING_GEIST                        30083
-#define MARAUDING_GEIST_FRENZIED_LEAP            56729
+const uint32 CN_MARAUDING_GEIST = 30083;
+const uint32 MARAUDING_GEIST_FRENZIED_LEAP = 56729;
 
 class MaraudingGeistAI : public MoonScriptCreatureAI
 {
@@ -1204,11 +1204,11 @@ class MaraudingGeistAI : public MoonScriptCreatureAI
 
 void SpellFunc_PatchwerkHatefulStrike(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
-#define CN_PATCHWERK 16028
-#define PATCHWERK_FRENZY 28131
-#define PATCHWERK_BERSERK 26662
-#define PATCHWERK_HATEFUL_STRIKE_10 41926
-#define PATCHWERK_HATEFUL_STRIKE_25 59192
+const uint32 CN_PATCHWERK = 16028;
+const uint32 PATCHWERK_FRENZY = 28131;
+const uint32 PATCHWERK_BERSERK = 26662;
+const uint32 PATCHWERK_HATEFUL_STRIKE_10 = 41926;
+const uint32 PATCHWERK_HATEFUL_STRIKE_25 = 59192;
 
 class PatchwerkAI : public MoonScriptBossAI
 {
@@ -1223,10 +1223,10 @@ class PatchwerkAI : public MoonScriptBossAI
 // ---- Abomination Wing ----
 
 // Stitched Spewer AI
-#define STICKED_SPEWER 16025
+const uint32 STICKED_SPEWER = 16025;
 
-#define CN_SLIME_BOLT 32309
-#define CN_UPPERCUT 26007
+const uint32 CN_SLIME_BOLT = 32309;
+const uint32 CN_UPPERCUT = 26007;
 
 class StickedSpewerAI : public CreatureAIScript
 {
@@ -1333,9 +1333,9 @@ class StickedSpewerAI : public CreatureAIScript
 
 
 //Surgical Assistant AI
-#define CN_SURGICAL_ASSISTANT 16022
+const uint32 CN_SURGICAL_ASSISTANT = 16022;
 
-#define MIND_FLAY 28310
+const uint32 MIND_FLAY = 28310;
 
 class SurgicalAssistantAI : public CreatureAIScript
 {
@@ -1435,10 +1435,10 @@ class SurgicalAssistantAI : public CreatureAIScript
 
 
 // Sludge Belcher AI
-#define CN_SLUDGE_BELCHER 16029
+const uint32 CN_SLUDGE_BELCHER = 16029;
 
-#define DISEISE_BUFFET 27891
-#define SUMMON_BILE_SLIMES 27889 ///\todo  GAWD :P
+const uint32 DISEISE_BUFFET = 27891;
+const uint32 SUMMON_BILE_SLIMES = 27889; //\todo  GAWD :P
 
 class SludgeBelcherAI : public CreatureAIScript
 {
@@ -1548,12 +1548,12 @@ class SludgeBelcherAI : public CreatureAIScript
 
 
 // Grobbulus AI
-#define CN_GROBBULUS 15931
+const uint32 CN_GROBBULUS = 15931;
 
-#define POISON_CLOUD_GROB 31259 // self
-#define SLIME_SPRAY 28157 // various
-#define SUMMON_FALLOUT_SLIME 28218 ///\todo  cast on slime sprayd targets
-#define MUTATING_INJECTION 28169 ///\todo  DUMMY AURA
+const uint32 POISON_CLOUD_GROB = 31259; // self
+const uint32 SLIME_SPRAY = 28157; // various
+const uint32 SUMMON_FALLOUT_SLIME = 28218; //\todo  cast on slime sprayd targets
+const uint32 MUTATING_INJECTION = 28169; //\todo  DUMMY AURA
 
 class GrobbulusAI : public CreatureAIScript
 {
@@ -1660,12 +1660,12 @@ class GrobbulusAI : public CreatureAIScript
 
 
 // Gluth AI
-#define CN_GLUTH 15932
+const uint32 CN_GLUTH = 15932;
 
-#define MORTAL_WOUND 28308 // target
-#define DECIMATE 28374 ///\todo  needs to be scripted
-#define TERRIFYING_ROAR 37939
-#define FRENZY 38664 // self
+const uint32 MORTAL_WOUND = 28308; // target
+const uint32 DECIMATE = 28374; //\todo  needs to be scripted
+const uint32 TERRIFYING_ROAR = 37939;
+const uint32 FRENZY = 38664; // self
 
 class GluthAI : public CreatureAIScript
 {
@@ -1782,10 +1782,10 @@ class GluthAI : public CreatureAIScript
 // ---- Deathknight Wing ----
 
 // Bony Construct AI
-#define CN_BONY_CONSTRUCT 16167
+const uint32 CN_BONY_CONSTRUCT = 16167;
 
-#define SWEEPING_SLAM 25322
-///\todo  Melee Chain Cleave - Strikes enemies in front of the Construct, chaining to anyone in melee range of the targets.
+const uint32 SWEEPING_SLAM = 25322;
+//\todo  Melee Chain Cleave - Strikes enemies in front of the Construct, chaining to anyone in melee range of the targets.
 
 class BonyConstructAI : public CreatureAIScript
 {
@@ -1886,9 +1886,9 @@ class BonyConstructAI : public CreatureAIScript
 
 
 // Death Lord AI
-#define CN_DEATH_LORD 16861
+const uint32 CN_DEATH_LORD = 16861;
 
-#define AURA_OF_AGONY 28413
+const uint32 AURA_OF_AGONY = 28413;
 
 class DeathLordAI : public CreatureAIScript
 {
@@ -1989,10 +1989,8 @@ class DeathLordAI : public CreatureAIScript
 // -- BOSS'S --
 
 // Instructor Razuvious AI
-#define CN_INSTRUCTOR_RAZUVIOUS 16061
-
-#define UNBALANCING_STRIKE 26613
-#define DISRUPTING_SHOUT 29107
+const uint32 UNBALANCING_STRIKE = 26613;
+const uint32 DISRUPTING_SHOUT = 29107;
 
 class RazuviousAI : public CreatureAIScript
 {
@@ -2114,10 +2112,10 @@ class RazuviousAI : public CreatureAIScript
 // - The Four Horsemen: -
 
 // Thane Korth'azz AI
-#define CN_THANE_KORTHAZZ 16064
+const uint32 CN_THANE_KORTHAZZ = 16064;
 
-#define MARK_OF_KORTHAZZ 28832
-#define METEOR 35181 // 1 target
+const uint32 MARK_OF_KORTHAZZ = 28832;
+const uint32 METEOR = 35181; // 1 target
 
 class KorthazzAI : public CreatureAIScript
 {
@@ -2287,15 +2285,15 @@ class KorthazzAI : public CreatureAIScript
 */
 
 // Baron Rivendare AI
-#define CN_Baron_Rivendare_4H 30549 //4H not to confuse with Strat UD Side..
+const uint32 CN_Baron_Rivendare_4H = 30549; //4H not to confuse with Strat UD Side..
 //Gief new Strat boss blizz or you make Stab a sad panda
 
 
 // Lady Blaumeux AI
-#define CN_LADY_BLAUMEUX 16065
+const uint32 CN_LADY_BLAUMEUX = 16065;
 
-#define MARK_OF_BLAUMEUX 28833
-#define VOID_ZONE 28863 ///\todo  DUMMY PART
+const uint32 MARK_OF_BLAUMEUX = 28833;
+const uint32 VOID_ZONE = 28863; //\todo  DUMMY PART
 
 class BlaumeuxAI : public CreatureAIScript
 {
@@ -2465,10 +2463,10 @@ class BlaumeuxAI : public CreatureAIScript
 */
 
 // Sir Zeliek AI
-#define CN_SIR_ZELIEK 16063
+const uint32 CN_SIR_ZELIEK = 16063;
 
-#define MARK_OF_ZELIEK 28835
-#define HOLY_WRATH 32445 // 1target
+const uint32 MARK_OF_ZELIEK = 28835;
+const uint32 HOLY_WRATH = 32445; // 1target
 
 class ZeliekAI : public CreatureAIScript
 {
@@ -2628,18 +2626,18 @@ class ZeliekAI : public CreatureAIScript
 
 // Frost Breath TrgiggerAI
 
-#define CN_FROST_BREATH_TRIGGER        50010    // Flying "ball" of frost energy
-#define CN_FROST_BREATH_TRIGGER2    50011    // Explosion
-#define CN_FROST_BREATH_TRIGGER3    50012    // Wing Buffet
-#define CN_CHILL_TRIGGER            50013    // Mass chill trigger (used, because we can't cast many aoe triggers on one character >_>)
+const uint32 CN_FROST_BREATH_TRIGGER = 50010;   // Flying "ball" of frost energy
+const uint32 CN_FROST_BREATH_TRIGGER2 = 50011;    // Explosion
+const uint32 CN_FROST_BREATH_TRIGGER3 = 50012;    // Wing Buffet
+const uint32 CN_CHILL_TRIGGER = 50013;    // Mass chill trigger (used, because we can't cast many aoe triggers on one character >_>)
 
 // Air phase spells
-#define FROST_BREATH        28524
-#define FROST_BREATH_EFFECT    30101
-#define FROST_BREATH_DAMAGE    29318
+const uint32 FROST_BREATH = 28524;
+const uint32 FROST_BREATH_EFFECT = 30101;
+const uint32 FROST_BREATH_DAMAGE = 29318;
 
 // Additional spells
-#define SAPPHIRONS_WING_BUFFET    29328
+const uint32 SAPPHIRONS_WING_BUFFET = 29328;
 
 struct Movement::Location PhaseTwoWP[] =
 {
@@ -2808,34 +2806,34 @@ class ChillTriggerAI : public CreatureAIScript
 
 // SapphironAI
 // Missing spawning effect with building skeleton of Sappiron
-#define CN_SAPPHIRON    15989
+const uint32 CN_SAPPHIRON = 15989;
 
 // Land phase spells
-#define LIFE_DRAIN                    28542
-#define CHILL                        28547
-#define FROST_AURA                    28531
+const uint32 LIFE_DRAIN = 28542;
+const uint32 CHILL = 28547;
+const uint32 FROST_AURA = 28531;
 
 // Air phase spells
-#define ICEBOLT                        28522
+const uint32 ICEBOLT = 28522;
 
 // Additional spells
-#define SAPPHIRON_DIES                29357
-#define BERSERK                        26662    // 28498 - casts frostbolt (would be cool for Sapphiron), but every 2 sec for 5 min (~16k dmg per hit);
+const uint32 SAPPHIRON_DIES = 29357;
+const uint32 BERSERK = 26662;    // 28498 - casts frostbolt (would be cool for Sapphiron), but every 2 sec for 5 min (~16k dmg per hit);
 // 27680 - 10 mins instead 5 mins
 // Researches
-#define SAPPHIRON_BIRTH                181356
-#define FROSTWYRM_WATERFALL_DOOR    181225
-#define ICE_BLOCK_GO                181247
+const uint32 SAPPHIRON_BIRTH = 181356;
+const uint32 FROSTWYRM_WATERFALL_DOOR = 181225;
+const uint32 ICE_BLOCK_GO = 181247;
 
 // Immunities
-#define IMMUNITY_DISEASE            6681
-#define IMMUNITY_SHADOW                7743
-#define IMMUNITY_FROST                7940
-#define IMMUNITY_NATURE                7941
-#define IMMUNITY_FIRE                7942
-#define IMMUNITY_HOLY                34182
-#define IMMUNITY_ARCANE                34184
-#define IMMUNITY_PHYSICAL            34310
+const uint32 IMMUNITY_DISEASE = 6681;
+const uint32 IMMUNITY_SHADOW = 7743;
+const uint32 IMMUNITY_FROST = 7940;
+const uint32 IMMUNITY_NATURE = 7941;
+const uint32 IMMUNITY_FIRE = 7942;
+const uint32 IMMUNITY_HOLY = 34182;
+const uint32 IMMUNITY_ARCANE = 34184;
+const uint32 IMMUNITY_PHYSICAL = 34310;
 
 class SapphironAI : public CreatureAIScript
 {
@@ -3369,11 +3367,11 @@ class SapphironAI : public CreatureAIScript
 
 // Encounter mobs
 
-#define CN_THE_LICH_KING 16980
-#define CN_SOLDIER_OF_THE_FROZEN_WASTES 16427
-#define CN_UNSTOPPABLE_ABOMINATION 16428
-#define CN_SOUL_WEAVER 16429
-#define CN_GUARDIAN_OF_ICECROWN 16441
+const uint32 CN_THE_LICH_KING = 16980;
+const uint32 CN_SOLDIER_OF_THE_FROZEN_WASTES = 16427;
+const uint32 CN_UNSTOPPABLE_ABOMINATION = 16428;
+const uint32 CN_SOUL_WEAVER = 16429;
+const uint32 CN_GUARDIAN_OF_ICECROWN = 16441;
 
 /*
   _____
@@ -3520,16 +3518,16 @@ static Movement::Location Waves[] =            // Spawn positions of units that 
 // Kel'thuzad AI
 // each ~10-20 sec new mob
 
-#define CN_KELTHUZAD 15990
+const uint32 CN_KELTHUZAD = 15990;
 
-#define SFROSTBOLT 28478
-#define MFROSTBOLT 28479
-#define CHAINS_OF_KELTHUZAD 28410
-#define DETONATE_MANA 27819
-#define SHADOW_FISSURE 27810
-#define FROST_BLAST 27808
+const uint32 SFROSTBOLT = 28478;
+const uint32 MFROSTBOLT = 28479;
+const uint32 CHAINS_OF_KELTHUZAD = 28410;
+const uint32 DETONATE_MANA = 27819;
+const uint32 SHADOW_FISSURE = 27810;
+const uint32 FROST_BLAST = 27808;
 
-#define KELTHUZAD_CHANNEL 29423
+const uint32 KELTHUZAD_CHANNEL = 29423;
 
 class KelthuzadAI : public CreatureAIScript
 {
@@ -4147,7 +4145,7 @@ class TheLichKingAI : public CreatureAIScript
 
 // Soldier of the Frozen WastesAI
 
-#define DARK_BLAST 28457 // 28458
+const uint32 DARK_BLAST = 28457; // 28458
 
 class SoldierOfTheFrozenWastesAI : public CreatureAIScript
 {
@@ -4257,7 +4255,7 @@ class SoldierOfTheFrozenWastesAI : public CreatureAIScript
 
 // Unstoppable Abomination AI
 
-#define UA_MORTAL_WOUND 25646    // 36814
+const uint32 UA_MORTAL_WOUND = 25646;    // 36814
 
 class UnstoppableAbominationAI : public CreatureAIScript
 {
@@ -4429,7 +4427,7 @@ class UnstoppableAbominationAI : public CreatureAIScript
 
 // Soul Weaver AI
 
-#define WAIL_OF_SOULS 28459
+const uint32 WAIL_OF_SOULS = 28459;
 
 class SoulWeaverAI : public CreatureAIScript
 {
@@ -4601,7 +4599,7 @@ class SoulWeaverAI : public CreatureAIScript
 
 // Guardian of Icecrown AI
 
-#define BLOOD_TAP 28459
+const uint32 BLOOD_TAP = 28459;
 
 class GuardianOfIcecrownAI : public CreatureAIScript
 {

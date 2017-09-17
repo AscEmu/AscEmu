@@ -96,7 +96,7 @@ class InstanceTheArcatrazScript : public MoonInstanceScript
         }
 };
 
-// #define VOID_ZONE 36119    // DBC: 36119; it's not fully functionl without additional core support (for dmg and random place targeting).
+// VOID_ZONE 36119    // DBC: 36119; it's not fully functionl without additional core support (for dmg and random place targeting).
 
 // Zereketh the UnboundAI
 class ZerekethAI : public MoonScriptBossAI

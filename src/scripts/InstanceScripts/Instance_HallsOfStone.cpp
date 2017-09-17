@@ -283,8 +283,8 @@ class MaidenOfGriefAI : public MoonScriptCreatureAI
 };
 
 // Krystallus
-#define STOMP_TIMER     35000
-#define SHATTER_TIMER   4500
+const uint32 STOMP_TIMER = 35000;
+const uint32 SHATTER_TIMER = 4500;
 
 class KrystallusAI : public MoonScriptCreatureAI
 {

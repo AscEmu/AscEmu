@@ -131,9 +131,9 @@ enum CreatureSpells
     SP_MURMUR_SONIC_BOOM1                   = 33923,   // anything missed? additional dmging spell?
     SP_MURMUR_SONIC_BOOM2                   = 33666,
     SP_MURMUR_RESONANCE                     = 33657    // should be applied only when no target in melee combat range (each 5 sec)
-    /*#define THUNDERING_STORM 39365
-    #define SUPPRESSION_BLAST 33332*/
-    // #define SONIC_BOOM 33666
+    /*const uint32 THUNDERING_STORM = 39365
+    const uint32 SUPPRESSION_BLAST = 33332*/
+    // const uint32 SONIC_BOOM 33666
     // 33666 or 38795 (I think it's dummy (33923); it should be connected with Murmur's Touch; Murmur should say
     // Murmur draws energy from the air then use Murmur's Touch (33711), Sonic Boom (33923) and
     // release Sonic Boom (38052); it also shouldn't attack during all those casts;

@@ -179,7 +179,7 @@ class HallsOfLightningScript : public MoonInstanceScript
         };
 };
 
-#define TIMER_STANCE_CHANGE            18000
+const uint32 TIMER_STANCE_CHANGE = 18000;
 
 enum GENERAL_STANCES
 {
@@ -315,14 +315,14 @@ class GeneralBjarngrimAI : public MoonScriptBossAI
 // Main Spells
 #define SPELL_HEAT                  HeroicInt(52237, 59529)
 #define SPELL_SHATTERING_STOMP      HeroicInt(52237, 59529)
-#define SPELL_TEMPER                52238
+const uint32 SPELL_TEMPER = 52238;
 
 // Molten Golem Spells
-#define SPELL_BLAST_WAVE            23113
+const uint32 SPELL_BLAST_WAVE = 23113;
 #define SPELL_IMMOLATION_STRIKE     HeroicInt(52433, 59530)
 #define SPELL_SHATTER               HeroicInt(52429, 59527)
 // 24 seconds + up to 6
-#define TIMER_STOMP                 24000
+const uint32 TIMER_STOMP = 24000;
 
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -511,10 +511,10 @@ class VolkhansAnvil : public MoonScriptCreatureAI
 
 };
 
-#define DISPRESE            52770
+const uint32 DISPRESE = 52770;;
 #define BALL_LIGHTNING      HeroicInt(52780, 59800)
 #define STATIC_OVERLOAD     HeroicInt(52658, 59795)
-#define SPELL_SUMMON_SPARK  52746
+const uint32 SPELL_SUMMON_SPARK = 52746;
 
 #define ARCING_BURN         HeroicInt(52671, 59834)
 
@@ -576,12 +576,12 @@ class IonarAI : public MoonScriptBossAI
 
 
 #define PULSING_SHOCKWAVE       HeroicInt(52961, 59836)
-#define PULSING_SHOCKWAVE_AURA  59414
-#define ARC_LIGHTNING           52921
+const uint32 PULSING_SHOCKWAVE_AURA = 59414;
+const uint32 ARC_LIGHTNING = 52921;
 #define LIGHTNING_NOVA          HeroicInt(52960, 59835)
 // 14 seconds + random up to 8
-#define TIMER_NOVA              14000
-#define TIMER_RESPOND           18000
+const uint32 TIMER_NOVA = 14000;
+const uint32 TIMER_RESPOND = 18000;
 
 /////////////////////////////////////////////////////////////////////////////////
 /// Loken

@@ -30,9 +30,9 @@
 #include "Spell/SpellMgr.h"
 #include <Spell/Customization/SpellCustomizations.hpp>
 
-#define BASE_RESOURCES_GAIN 10
-#define RESOURCES_WARNING_THRESHOLD 1400
-#define RESOURCES_WINVAL 1600
+const uint32 BASE_RESOURCES_GAIN = 10;
+const uint32 RESOURCES_WARNING_THRESHOLD = 1400;
+const uint32 RESOURCES_WINVAL = 1600;
 
 uint32 buffentries[3] = { 180380, 180362, 180146 };
 

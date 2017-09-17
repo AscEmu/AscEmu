@@ -99,13 +99,13 @@ Drop Mine - 39685, 25024
 Nitrous Boost - 27746
 
 
-#define CANNON 24933            //39692, 34154
-#define MORTAR 25003            //33861 -- Triggers Explosion, 39695 --- Summons Mortar
-#define NITROUS 27746           //Needs Scripting
-#define FLAMETHROWER 39693      //25027
-#define MACHINEGUN 25026
-#define DROPMINE 25024
-#define SHIELD 27759
+const uint32 CANNON = 24933            //39692, 34154
+const uint32 MORTAR = 25003            //33861 -- Triggers Explosion, 39695 --- Summons Mortar
+const uint32 NITROUS = 27746           //Needs Scripting
+const uint32 FLAMETHROWER = 39693      //25027
+const uint32 MACHINEGUN = 25026
+const uint32 DROPMINE = 25024
+const uint32 SHIELD = 27759
 
 static uint32 TonkSpecials[4] = { FLAMETHROWER, MACHINEGUN, DROPMINE, SHIELD };
 
