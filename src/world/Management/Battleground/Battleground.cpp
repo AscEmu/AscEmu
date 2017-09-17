@@ -90,7 +90,7 @@ CBattleground::~CBattleground()
 
 void CBattleground::UpdatePvPData()
 {
-    if (IS_ARENA(m_type))
+    if (isArena(m_type))
     {
         if (!m_ended)
         {
@@ -128,7 +128,7 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
     data->reserve(10 * (m_players[0].size() + m_players[1].size()) + 50);
 
     BGScore* bs;
-    if (IS_ARENA(m_type))
+    if (isArena(m_type))
     {
         if (!m_ended)
         {
@@ -1085,7 +1085,7 @@ bool CBattleground::HasFreeSlots(uint32 Team, uint32 type)
     bool res;
     uint32 maxPlayers = BattlegroundManager.GetMaximumPlayers(type);
 
-    if (IS_ARENA(type))
+    if (isArena(type))
     {
         res = (static_cast<uint32>(m_players[Team].size()) + m_pendPlayers[Team].size() < maxPlayers);
     }

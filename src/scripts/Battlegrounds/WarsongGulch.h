@@ -23,14 +23,14 @@
 
 #include "Management/Battleground/Battleground.h"
 
-#define TIME_LEFT              25
-#define TIME_FOCUSED_ASSAULT   10
-#define TIME_BRUTAL_ASSAULT    15
-#define BUFF_RESPAWN_TIME      90000
-#define SILVERWING_FLAG        179785
-#define WARSONG_FLAG           179786
-#define SPELL_FOCUSED_ASSAULT  46392
-#define SPELL_BRUTAL_ASSAULT   46393
+const uint32 TIME_LEFT = 25;
+const uint32 TIME_FOCUSED_ASSAULT = 10;
+const uint32 TIME_BRUTAL_ASSAULT = 15;
+const uint32 BUFF_RESPAWN_TIME = 90000;
+const uint32 SILVERWING_FLAG = 179785;
+const uint32 WARSONG_FLAG = 179786;
+const uint32 SPELL_FOCUSED_ASSAULT = 46392;
+const uint32 SPELL_BRUTAL_ASSAULT = 46393;
 
 enum WarsongGulchAreaTriggers
 {

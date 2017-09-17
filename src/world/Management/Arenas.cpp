@@ -29,10 +29,10 @@
 #include "Objects/ObjectMgr.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
 
-#define ARENA_PREPARATION 32727
+const uint32 ARENA_PREPARATION = 32727;
 
-#define GREEN_TEAM 0
-#define GOLD_TEAM 1
+const uint32 GREEN_TEAM = 0;
+const uint32 GOLD_TEAM = 1;
 
 Arena::Arena(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side) : CBattleground(mgr, id, lgroup, t)
 {
@@ -112,7 +112,7 @@ Arena::~Arena()
 
 }
 
-/// \todo Rewrite this function entirely
+// \todo Rewrite this function entirely
 bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
 {
     // update arena team stats

@@ -24,24 +24,24 @@
 #include "Management/Battleground/Battleground.h"
 
  // GENERAL AV DEFINES
-#define AV_NUM_REINFORCEMENTS               600     // Amount of reinforcements we start off with
-#define AV_SCORE_WARNING                    530     // Dunno what this should be ;p
-#define AV_ADD_POINTS_ON_CONTROLLED_MINE    1       // Points to give the team who controls (a) mine(s)
-#define AV_REINFORCEMENT_ADD_INTERVAL       45000   // The interval (in milliseconds) that points from mines are awarded
-#define AV_POINTS_ON_DESTROY_BUNKER         75      // Points to remove for destroying a team's bunker
-#define AV_POINTS_ON_KILL                   1       // Points to remove when killing a member of the opposite team
-#define AV_POINTS_ON_KILL_CAPTAIN           100     // Points  to remove for killing a team's captain
-#define AV_HONOR_ON_KILL_BOSS               62      // Amount of honor awarded to players for killing a boss of the opposite team
-#define AV_NUM_CONTESTED_AREAS              9       // Total contested areas (graveyards/mines)
-#define AV_NUM_DESTROYABLE_AREAS            8       // Total destroyable areas (towers/bunkers)
-#define AV_NUM_BOSS_UNITS                   14      // Boss units (generals/captains/wing commanders etc)
-#define AV_NUM_COLDTOOTH_UNITS              5       // Coldtooth mine NPC types
-#define AV_NUM_IRONDEEP_UNITS               4       // Irondeep mine NPC types
-#define AV_NUM_SNOWFALL_FLAGS               2       // Count of Snowfall flags (used when changing them on a team's acquiration of the CP
-#define AV_CONTESTED_AREAS_START            0       // ID at which contested points start (for loops/ifs)
-#define AV_CONTESTED_AREAS_END              8       // ID at which contested points end (for loops/ifs)
-#define AV_DESTROYABLE_AREAS_START          9       // ID at which destroyable points start (for loops/ifs)
-#define AV_DESTROYABLE_AREAS_END            16      // ID at which contested points finish (for loops/ifs)
+const uint32 AV_NUM_REINFORCEMENTS              = 600;     // Amount of reinforcements we start off with
+const uint32 AV_SCORE_WARNING                   = 530;     // Dunno what this should be ;p
+const uint32 AV_ADD_POINTS_ON_CONTROLLED_MINE   = 1;       // Points to give the team who controls (a) mine(s)
+const uint32 AV_REINFORCEMENT_ADD_INTERVAL      = 45000;   // The interval (in milliseconds) that points from mines are awarded
+const uint32 AV_POINTS_ON_DESTROY_BUNKER        = 75;      // Points to remove for destroying a team's bunker
+const uint32 AV_POINTS_ON_KILL                  = 1;       // Points to remove when killing a member of the opposite team
+const uint32 AV_POINTS_ON_KILL_CAPTAIN          = 100;     // Points  to remove for killing a team's captain
+const uint32 AV_HONOR_ON_KILL_BOSS              = 62;      // Amount of honor awarded to players for killing a boss of the opposite team
+const uint32 AV_NUM_CONTESTED_AREAS             = 9;       // Total contested areas (graveyards/mines)
+const uint32 AV_NUM_DESTROYABLE_AREAS           = 8;       // Total destroyable areas (towers/bunkers)
+const uint32 AV_NUM_BOSS_UNITS                  = 14;      // Boss units (generals/captains/wing commanders etc)
+const uint32 AV_NUM_COLDTOOTH_UNITS             = 5;       // Coldtooth mine NPC types
+const uint32 AV_NUM_IRONDEEP_UNITS              = 4;       // Irondeep mine NPC types
+const uint32 AV_NUM_SNOWFALL_FLAGS              = 2;       // Count of Snowfall flags (used when changing them on a team's acquiration of the CP
+const uint32 AV_CONTESTED_AREAS_START           = 0;       // ID at which contested points start (for loops/ifs)
+const uint32 AV_CONTESTED_AREAS_END             = 8;       // ID at which contested points end (for loops/ifs)
+const uint32 AV_DESTROYABLE_AREAS_START         = 9;       // ID at which destroyable points start (for loops/ifs)
+const uint32 AV_DESTROYABLE_AREAS_END           = 16;      // ID at which contested points finish (for loops/ifs)
 
 enum AVControlPoints
 {

@@ -73,7 +73,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     if ((itemProto->Class == ITEM_CLASS_CONSUMABLE) &&
         !itemProto->HasFlag(ITEM_FLAG_USEABLE_IN_ARENA) &&
         (GetPlayer()->m_bg != NULL) &&
-        IS_ARENA(GetPlayer()->m_bg->GetType()))
+        isArena(GetPlayer()->m_bg->GetType()))
     {
         GetPlayer()->GetItemInterface()->BuildInventoryChangeError(tmpItem, NULL, INV_ERR_NOT_DURING_ARENA_MATCH);
         return;

@@ -23,12 +23,12 @@
 #include "Management/Battleground/Battleground.h"
 #include "Units/Creatures/Vehicle.h"
 
-#define IOC_NUM_CONTROL_POINTS          7
-#define IOC_NUM_TELEPORTERS             12
-#define IOC_NUM_DOCKVEHICLES            4
-#define IOC_NUM_WORKSHOP_DEMOLISHERS    4
-#define IOC_NUM_GATES_PER_TEAM          3
-#define IOC_NUM_GRAVEYARDS              7
+const uint32 IOC_NUM_CONTROL_POINTS = 7;
+const uint32 IOC_NUM_TELEPORTERS = 12;
+const uint32 IOC_NUM_DOCKVEHICLES = 4;
+const uint32 IOC_NUM_WORKSHOP_DEMOLISHERS = 4;
+const uint32 IOC_NUM_GATES_PER_TEAM = 3;
+const uint32 IOC_NUM_GRAVEYARDS = 7;
 
 enum ControlPointTypes
 {

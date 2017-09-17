@@ -27,35 +27,35 @@
 
 #define ANTI_CHEAT
 
-#define BG_SCORE_AB_BASES_ASSAULTED       0
-#define BG_SCORE_AB_BASES_CAPTURED        1
-#define BG_SCORE_AV_GRAVEYARDS_ASSAULTED  0
-#define BG_SCORE_AV_GRAVEYARDS_DEFENDED   1
-#define BG_SCORE_AV_TOWERS_ASSAULTED      2
-#define BG_SCORE_AV_TOWERS_DEFENDED       3
-#define BG_SCORE_AV_MINES_CAPTURES        4
-#define BG_SCORE_EOTS_FLAGS_CAPTURED      0
-#define BG_SCORE_WSG_FLAGS_CAPTURED       0
-#define BG_SCORE_WSG_FLAGS_RETURNED       1
-#define BG_SCORE_IOC_BASES_ASSAULTED      0
-#define BG_SCORE_IOC_BASES_DEFENDED       1
+const uint32 BG_SCORE_AB_BASES_ASSAULTED        = 0;
+const uint32 BG_SCORE_AB_BASES_CAPTURED         = 1;
+const uint32 BG_SCORE_AV_GRAVEYARDS_ASSAULTED   = 0;
+const uint32 BG_SCORE_AV_GRAVEYARDS_DEFENDED    = 1;
+const uint32 BG_SCORE_AV_TOWERS_ASSAULTED       = 2;
+const uint32 BG_SCORE_AV_TOWERS_DEFENDED        = 3;
+const uint32 BG_SCORE_AV_MINES_CAPTURES         = 4;
+const uint32 BG_SCORE_EOTS_FLAGS_CAPTURED       = 0;
+const uint32 BG_SCORE_WSG_FLAGS_CAPTURED        = 0;
+const uint32 BG_SCORE_WSG_FLAGS_RETURNED        = 1;
+const uint32 BG_SCORE_IOC_BASES_ASSAULTED       = 0;
+const uint32 BG_SCORE_IOC_BASES_DEFENDED        = 1;
 
-#define SOUND_BATTLEGROUND_BEGIN       3439
-#define SOUND_FLAG_RESPAWN             8232
-#define SOUND_HORDE_SCORES             8213
-#define SOUND_ALLIANCE_SCORES          8173
-#define SOUND_ALLIANCE_CAPTURE         8174
-#define SOUND_HORDE_CAPTURE            8212
-#define SOUND_FLAG_RETURNED            8192
-#define SOUND_HORDEWINS                8454
-#define SOUND_ALLIANCEWINS             8455
-#define SOUND_HORDE_BGALMOSTEND        8456
-#define SOUND_ALLIANCE_BGALMOSTEND     8457
+const uint32 SOUND_BATTLEGROUND_BEGIN   = 3439;
+const uint32 SOUND_FLAG_RESPAWN         = 8232;
+const uint32 SOUND_HORDE_SCORES         = 8213;
+const uint32 SOUND_ALLIANCE_SCORES      = 8173;
+const uint32 SOUND_ALLIANCE_CAPTURE     = 8174;
+const uint32 SOUND_HORDE_CAPTURE        = 8212;
+const uint32 SOUND_FLAG_RETURNED        = 8192;
+const uint32 SOUND_HORDEWINS            = 8454;
+const uint32 SOUND_ALLIANCEWINS         = 8455;
+const uint32 SOUND_HORDE_BGALMOSTEND    = 8456;
+const uint32 SOUND_ALLIANCE_BGALMOSTEND = 8457;
 
-#define BG_PREPARATION                44521
-#define BG_REVIVE_PREPARATION         44535
-#define RESURRECT_SPELL               21074 /// Spirit Healer Res
-#define BG_DESERTER                   26013
+const uint32 BG_PREPARATION             = 44521;
+const uint32 BG_REVIVE_PREPARATION      = 44535;
+const uint32 RESURRECT_SPELL            = 21074; // Spirit Healer Res
+const uint32 BG_DESERTER                = 26013;
 
 class CBattleground;
 class MapMgr;
@@ -95,10 +95,13 @@ enum BattleGroundTypes
     BATTLEGROUND_STRAND_OF_THE_ANCIENT = 9,
     BATTLEGROUND_ISLE_OF_CONQUEST = 30,
     BATTLEGROUND_RANDOM = 32,
-    BATTLEGROUND_NUM_TYPES = 33   /// Based on BattlemasterList.dbc, make the storage arrays big enough! On 3.1.3 the last one was 11 The Ring of Valor, so 12 was enough here, but on 3.2.0 there is 32 All Battlegrounds!
+    BATTLEGROUND_NUM_TYPES = 33   // Based on BattlemasterList.dbc, make the storage arrays big enough! On 3.1.3 the last one was 11 The Ring of Valor, so 12 was enough here, but on 3.2.0 there is 32 All Battlegrounds!
 };
 
-#define IS_ARENA(x) ((x) >= BATTLEGROUND_ARENA_2V2 && (x) <= BATTLEGROUND_ARENA_5V5)
+inline bool isArena(uint32 x)
+{
+    return (x >= BATTLEGROUND_ARENA_2V2 && x <= BATTLEGROUND_ARENA_5V5);
+}
 
 enum BattleGroundMasterTypes
 {
@@ -109,10 +112,10 @@ enum BattleGroundMasterTypes
 
 enum BattleGroundStatus
 {
-    BGSTATUS_NOFLAGS = 0, /// wtfbbq, why aren't there any flags?
-    BGSTATUS_INQUEUE = 1, /// Battleground has a queue, player is now in queue
-    BGSTATUS_READY = 2,   /// Battleground is ready to join
-    BGSTATUS_TIME = 3     /// Ex. Wintergrasp time remaining
+    BGSTATUS_NOFLAGS = 0, // wtfbbq, why aren't there any flags?
+    BGSTATUS_INQUEUE = 1, // Battleground has a queue, player is now in queue
+    BGSTATUS_READY = 2,   // Battleground is ready to join
+    BGSTATUS_TIME = 3     // Ex. Wintergrasp time remaining
 };
 
 struct BGScore
@@ -137,7 +140,7 @@ struct BGScore
     }
 };
 
-/// get level grouping for player
+// get level grouping for player
 static inline uint32 GetLevelGrouping(uint32 level)
 {
     if (level < 10)
@@ -191,14 +194,14 @@ typedef CBattleground* (*ArenaFactoryMethod)(MapMgr* mgr, uint32 iid, uint32 gro
 
 class SERVER_DECL CBattlegroundManager : public Singleton<CBattlegroundManager>, public EventableObject
 {
-    /// Battleground Instance Map
+    // Battleground Instance Map
     std::map<uint32, CBattleground*> m_instances[BATTLEGROUND_NUM_TYPES];
     Mutex m_instanceLock;
 
-    /// Max Id
+    // Max Id
     uint32 m_maxBattlegroundId[BATTLEGROUND_NUM_TYPES];
 
-    /// Queue System
+    // Queue System
     // Instance Id -> list<Player guid> [ BattlegroundType ] (instance 0 - first available)
     std::list<uint32> m_queuedPlayers[BATTLEGROUND_NUM_TYPES][MAX_LEVEL_GROUP];
 
@@ -207,19 +210,19 @@ class SERVER_DECL CBattlegroundManager : public Singleton<CBattlegroundManager>,
 
     Mutex m_queueLock;
 
-    /// Bg factory methods by Bg map Id
+    // Bg factory methods by Bg map Id
     std::map<uint32, BattlegroundFactoryMethod> bgFactories;
 
-    /// Arena factory methods
+    // Arena factory methods
     std::vector<ArenaFactoryMethod> arenaFactories;
 
-    /// Bg map IDs by Bg type Id
+    // Bg map IDs by Bg type Id
     std::map<uint32, uint32> bgMaps;
 
-    /// Arena map IDs
+    // Arena map IDs
     std::vector<uint32> arenaMaps;
 
-    /// All battlegrounds that are available in random BG queue
+    // All battlegrounds that are available in random BG queue
     std::vector<uint32> avalibleInRandom;
 
     public:
@@ -228,45 +231,45 @@ class SERVER_DECL CBattlegroundManager : public Singleton<CBattlegroundManager>,
         ~CBattlegroundManager();
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// void RegisterBgFactory(uint32 map, BattlegroundFactoryMethod method)
-        /// \note   Registers the specified Battleground class factory method for
-        ///         the specified Battleground type.
-        ///         When trying to register a duplicate, the duplicate will be ignored.
-        ///
-        /// \param  uint32 map                          -  The map of the Battleground
-        /// \param  BattlegroundFactoryMethod method    -  The Battleground factory method
-        ///
-        /// \return none
-        ///
+        // void RegisterBgFactory(uint32 map, BattlegroundFactoryMethod method)
+        // \note   Registers the specified Battleground class factory method for
+        //         the specified Battleground type.
+        //         When trying to register a duplicate, the duplicate will be ignored.
+        //
+        // \param  uint32 map                          -  The map of the Battleground
+        // \param  BattlegroundFactoryMethod method    -  The Battleground factory method
+        //
+        // \return none
+        //
         //////////////////////////////////////////////////////////////////////////////////////////
         void RegisterBgFactory(uint32 map, BattlegroundFactoryMethod method);
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// void RegisterArenaFactory(uint32 map, ArenaFactoryMethod method)
-        /// \note   Registers the specified Arena class factory method for
-        ///         the specified Battleground type.
-        ///         When trying to register a duplicate, the duplicate will be ignored.
-        ///
-        /// \param  uint32 map                  -  Map id
-        /// \param  ArenaFactoryMethod method   -  The Arena factory method
-        ///
-        /// \return none
-        ///
+        // void RegisterArenaFactory(uint32 map, ArenaFactoryMethod method)
+        // \note   Registers the specified Arena class factory method for
+        //         the specified Battleground type.
+        //         When trying to register a duplicate, the duplicate will be ignored.
+        //
+        // \param  uint32 map                  -  Map id
+        // \param  ArenaFactoryMethod method   -  The Arena factory method
+        //
+        // \return none
+        //
         //////////////////////////////////////////////////////////////////////////////////////////
         void RegisterArenaFactory(uint32 map, ArenaFactoryMethod method);
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // void RegisterMapForBgType(uint32 type, uint32 map)
-        /// \note   Registers a Map Id for the specified Battleground type.
-        ///         When trying to register a duplicate, the duplicate will be ignored.
-        ///
-        /// \param  uint32 type  -  The Battleground type
-        /// \param  uint32 map   -  The map Id
-        ///
-        /// \return none
-        ///
+        // \note   Registers a Map Id for the specified Battleground type.
+        //         When trying to register a duplicate, the duplicate will be ignored.
+        //
+        // \param  uint32 type  -  The Battleground type
+        // \param  uint32 map   -  The map Id
+        //
+        // \return none
+        //
         //////////////////////////////////////////////////////////////////////////////////////////
         void RegisterMapForBgType(uint32 type, uint32 map);
 

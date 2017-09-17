@@ -2601,7 +2601,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     if (!bNewCharacter)
         buf = new QueryBuffer;
 
-    if (m_bg != NULL && IS_ARENA(m_bg->GetType()))
+    if (m_bg != NULL && isArena(m_bg->GetType()))
         in_arena = true;
 
     if (GetPrimaryProfessionPoints() > worldConfig.player.maxProfessions)
@@ -13423,7 +13423,7 @@ void Player::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
 
     {
         uint32 self_res_spell = 0;
-        if (m_bg == NULL || (m_bg != NULL && !IS_ARENA(m_bg->GetType())))
+        if (m_bg == NULL || (m_bg != NULL && !isArena(m_bg->GetType())))
         {
             self_res_spell = SoulStone;
 

@@ -23,7 +23,7 @@
 
 #include "Management/Battleground/Battleground.h"
 
-#define AB_BUFF_RESPAWN_TIME 90000
+const uint32 AB_BUFF_RESPAWN_TIME = 90000;
 
 enum ABBuffs
 {

@@ -124,7 +124,7 @@ void CBattlegroundManager::HandleBattlegroundListPacket(WorldSession* m_session,
         data << uint32(honorPointsForLosing);
     }
 
-    if (IS_ARENA(BattlegroundType))
+    if (isArena(BattlegroundType))
     {
         data << uint32(0);
         m_session->SendPacket(&data);
@@ -314,7 +314,7 @@ void CBattlegroundManager::HandleGetBattlegroundQueueCommand(WorldSession* m_ses
 
             ss << (uint32)m_queuedPlayers[i][j].size() << " players queued";
 
-            if (!IS_ARENA(i))
+            if (!isArena(i))
             {
                 int ally = 0, horde = 0;
 
@@ -344,7 +344,7 @@ void CBattlegroundManager::HandleGetBattlegroundQueueCommand(WorldSession* m_ses
             ss.rdbuf()->str("");
         }
 
-        if (IS_ARENA(i))
+        if (isArena(i))
         {
             if (m_queuedGroups[i].size())
             {
@@ -572,7 +572,7 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
                 }
                 else
                 {
-                    if (IS_ARENA(i))
+                    if (isArena(i))
                         tempPlayerVec[plr->GetTeam()].push_back(plrguid);
                     else if (!plr->HasAura(BG_DESERTER))
                         tempPlayerVec[plr->GetTeam()].push_back(plrguid);
@@ -601,7 +601,7 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
                     if (iitr->second->HasEnded() || iitr->second->GetLevelGroup() != j)
                         continue;
 
-                    if (IS_ARENA(i))
+                    if (isArena(i))
                     {
                         arena = static_cast<Arena*>(iitr->second);
                         if (arena->Rated())
@@ -649,7 +649,7 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
 
             // Now that that we added everyone we could to a running Bg/Arena
             // We shall see if we can start a new one!
-            if (IS_ARENA(i))
+            if (isArena(i))
             {
                 // enough players to start a round?
                 uint32 minPlayers = BattlegroundManager.GetMinimumPlayers(i);
@@ -1028,7 +1028,7 @@ CBattleground* CBattlegroundManager::CreateInstance(uint32 Type, uint32 LevelGro
 {
     if (bgMaps.find(Type) == bgMaps.end())
     {
-        if (!IS_ARENA(Type))
+        if (!isArena(Type))
         {
             LOG_ERROR("BattlegroundManager", "No map Id is registered for Battleground type %u", Type);
             return NULL;
@@ -1037,7 +1037,7 @@ CBattleground* CBattlegroundManager::CreateInstance(uint32 Type, uint32 LevelGro
 
     BattlegroundFactoryMethod cfunc = NULL;
 
-    if (!IS_ARENA(Type))
+    if (!isArena(Type))
         if (bgFactories.find(bgMaps[Type]) != bgFactories.end())
             cfunc = bgFactories[bgMaps[Type]];
 
@@ -1049,7 +1049,7 @@ CBattleground* CBattlegroundManager::CreateInstance(uint32 Type, uint32 LevelGro
     time_t t;
     int n;
 
-    if (IS_ARENA(Type))
+    if (isArena(Type))
     {
         // arenas follow a different procedure.
         uint32 arenaMapCount = static_cast<uint32>(arenaMaps.size());
@@ -1208,7 +1208,7 @@ void CBattlegroundManager::SendBattlefieldStatus(Player* plr, BattleGroundStatus
     }
     else
     {
-        if (IS_ARENA(Type))
+        if (isArena(Type))
         {
             data << uint32(0);                // Queue Slot 0..2. Only the first slot is used in arcemu!
             switch (Type)
@@ -1264,7 +1264,7 @@ void CBattlegroundManager::SendBattlefieldStatus(Player* plr, BattleGroundStatus
                 data << uint64(0);
                 data << uint32(0);
                 data << Time;
-                if (IS_ARENA(Type))
+                if (isArena(Type))
                     data << uint8(0);
                 else
                     data << uint8(1);
