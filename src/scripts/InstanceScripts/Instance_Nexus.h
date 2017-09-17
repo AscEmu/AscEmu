@@ -1,24 +1,9 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
- * Copyright (C) 2008-2015 Sun++ Team <http://www.sunplusplus.info/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-#ifndef _INSTANCE_NEXUS_H
-#define _INSTANCE_NEXUS_H
+#pragma once
 
 enum NexusEncounterList
 {
@@ -69,46 +54,46 @@ enum CreatureSpells
     // Grand Magus Telestra
     GRAVITY_WELL            = 47756,
 
-        // Normal mode spells
-        ICE_NOVA            = 47772,
-        FIREBOMB            = 47773,
+    // Normal mode spells
+    ICE_NOVA            = 47772,
+    FIREBOMB            = 47773,
+    
+    // Heroic mode spells
+    ICE_NOVA_HC         = 56935,
+    FIREBOMB_HC         = 56934,
 
-        // Heroic mode spells
-        ICE_NOVA_HC         = 56935,
-        FIREBOMB_HC         = 56934,
+    // Arcane spells
+    CRITTER             = 47731,
+    TIME_STOP           = 47736,
 
-        // Arcane spells
-        CRITTER             = 47731,
-        TIME_STOP           = 47736,
+    // Fire
+    FIRE_BLAST          = 47721,
+    FIRE_BLAST_HC       = 56939,
+    SCORCH              = 47723,
+    SCORCH_HC           = 56938,
 
-        // Fire
-        FIRE_BLAST          = 47721,
-        FIRE_BLAST_HC       = 56939,
-        SCORCH              = 47723,
-        SCORCH_HC           = 56938,
-
-        // Frost
-        BLIZZARD            = 47727,
-        BLIZZARD_HC         = 56936,
-        ICE_BARB            = 47729,
-        ICE_BARB_HC         = 56937,
+    // Frost
+    BLIZZARD            = 47727,
+    BLIZZARD_HC         = 56936,
+    ICE_BARB            = 47729,
+    ICE_BARB_HC         = 56937,
 
     // Ormorok the Tree-Shaper
     SPELL_REFLECTION        = 47981,
     FRENZY                  = 48017,
 
-        // normal mode spells
-        TRAMPLE                     = 48016,
-        CRYSTAL_SPIKES              = 47958,
+    // normal mode spells
+    TRAMPLE                     = 48016,
+    CRYSTAL_SPIKES              = 47958,
 
-        // heroic mode spells
-        TRAMPLE_H                   = 57066,
-        CRYSTAL_SPIKES_H            = 57082,
+    // heroic mode spells
+    TRAMPLE_H                   = 57066,
+    CRYSTAL_SPIKES_H            = 57082,
 
-        // Crystal Spike spells
-        SPELL_CRYSTAL_SPIKE_VISUAL  = 50442,
-        SPELL_CRYSTAL_SPIKE         = 47944,
-        SPELL_CRYSTAL_SPIKE_H       = 57067,
+    // Crystal Spike spells
+    SPELL_CRYSTAL_SPIKE_VISUAL  = 50442,
+    SPELL_CRYSTAL_SPIKE         = 47944,
+    SPELL_CRYSTAL_SPIKE_H       = 57067,
 
     // Keristrasza
     TAIL_SWEEP              = 50155,
@@ -186,5 +171,3 @@ enum CreatureSay
 {
 
 };
-
-#endif // _INSTANCE_NEXUS_H

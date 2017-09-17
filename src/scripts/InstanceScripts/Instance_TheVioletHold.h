@@ -1,10 +1,9 @@
 /*
-Copyright (c) 2016 AscEmu Team <http://www.ascemu.org/>
+Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef _INSTANCE_THE_VIOLET_HOLD_H
-#define _INSTANCE_THE_VIOLET_HOLD_H
+#pragma once
 
 static Movement::LocationWithFlag AttackerWP[] =
 {
@@ -133,5 +132,3 @@ enum CreatureGossip
     SINCLARI_GET_SAFETY = 601,
     SINCLARI_SEND_ME_IN = 602
 };
-
-#endif // _INSTANCE_THE_VIOLET_HOLD_H

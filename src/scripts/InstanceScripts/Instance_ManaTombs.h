@@ -1,23 +1,9 @@
 /*
- * AscScripts for AscEmu Framework
- * Copyright (C) 2008-2015 Sun++ Team <http://www.sunplusplus.info/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-#ifndef _INSTANCE_MANA_TOMBS_H
-#define _INSTANCE_MANA_TOMBS_H
+#pragma once
 
 enum CreatureEntry
 {
@@ -117,7 +103,7 @@ enum CreatureSpells
 
     // YorAI
     DOUBLE_BREATH               = 38369,    // couldn't have found anything more powerful with that name
-    STOMP                       = 34716,    // not sure even more about this one
+    STOMP                       = 34716     // not sure even more about this one
 };
 
 enum CreatureSay
@@ -140,8 +126,5 @@ enum CreatureSay
     SAY_NEXUSPRINCE_05      = 4579,     // It has been... entertaining.
     SAY_NEXUSPRINCE_06      = 4580,     // And now we part company.
     SAY_NEXUSPRINCE_07      = 4581,     /// \todo unused I have such fascinating things to show you.
-    SAY_NEXUSPRINCE_08      = 4582,     // I must bid you... farewell.
-
+    SAY_NEXUSPRINCE_08      = 4582      // I must bid you... farewell.
 };
-
-#endif // _INSTANCE_MANA_TOMBS_H

@@ -1,23 +1,9 @@
 /*
- * AscScripts for AscEmu Framework
- * Copyright (C) 2008-2015 Sun++ Team <http://www.sunplusplus.info/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-#ifndef _INSTANCE_SETHEKK_HALLS_H
-#define _INSTANCE_SETHEKK_HALLS_H
+#pragma once
 
 enum CreatureEntry
 {
@@ -138,11 +124,11 @@ enum CreatureSpells
     SP_DARKW_SYNTH_ARCANE_SHOCK         = 37132,
     SP_DARKW_SYNTH_CHAIN_LIGHTNING      = 39945,
 
-        // Darkweaver SythAI Summons
-        SP_DARKW_SYNTH_SUM_FIRE_ELEMENTAL       = 33537,
-        SP_DARKW_SYNTH_SUM_FROST_ELEMENTAL      = 33539,
-        SP_DARKW_SYNTH_SUM_ARCANE_ELEMENTAL     = 33538,
-        SP_DARKW_SYNTH_SUM_SHADOW_ELEMENTAL     = 33540,
+    // Darkweaver SythAI Summons
+    SP_DARKW_SYNTH_SUM_FIRE_ELEMENTAL       = 33537,
+    SP_DARKW_SYNTH_SUM_FROST_ELEMENTAL      = 33539,
+    SP_DARKW_SYNTH_SUM_ARCANE_ELEMENTAL     = 33538,
+    SP_DARKW_SYNTH_SUM_SHADOW_ELEMENTAL     = 33540,
 
     // Talon King IkissAI
     SP_TALRON_K_IKISS_ARCANE_VOLLEY     = 36738,    // 35059 ?
@@ -179,9 +165,5 @@ enum CreatureSay
     SAY_TALRON_K_IKISS_05   = 4601,     // You die -- ka!Stay away from trinkets!
     SAY_TALRON_K_IKISS_06   = 4602,     // Mmmmmm...
     SAY_TALRON_K_IKISS_07   = 4603,     // Ikiss will not -- rak, rak -- die...
-    BROADCAST_TALRON_K_IKISS_01     = 4604,      /// \todo not used %s begins to channel arcane energy....
-
-
+    BROADCAST_TALRON_K_IKISS_01     = 4604      /// \todo not used %s begins to channel arcane energy....
 };
-
-#endif // _INSTANCE_SETHEKK_HALLS_H
