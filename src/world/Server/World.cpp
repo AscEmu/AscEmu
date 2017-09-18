@@ -910,6 +910,7 @@ void World::loadMySQLStores()
 
     sMySQLStore.loadTransportCreaturesTable();
     sMySQLStore.loadTransportDataTable();
+    sMySQLStore.loadGossipMenuItemsTable();
 }
 
 void World::loadMySQLTablesByTask()

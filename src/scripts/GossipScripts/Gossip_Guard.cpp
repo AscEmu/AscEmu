@@ -1,22 +1,7 @@
-/**
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2007-2015 Moon++ Team <http://www.moonplusplus.info/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+/*
+Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "Management/Gossip/Gossip.h"
 #include "Setup.h"
@@ -24,349 +9,25 @@
 #include "Objects/ObjectMgr.h"
 
 
- // Covers *all* guard types, scripting their texts to guide players around.
- // Enable this define to make all gossip texts have a "back" / "I was looking
- // for somethinge else" button added.
-
-#define BACK_BUTTON
-
-#ifdef BACK_BUTTON
-
-// Make code neater with this define.
-#define SendQuickMenu(textid) objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), textid, Plr); \
-    Menu->SendTo(Plr);
-
-#else
-
-// Make code neater with this define.
-#define SendQuickMenu(textid) objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), textid, Plr); \
-    Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_LOOKING_SOMTH_ELSE), 0); \
-    Menu->SendTo(Plr);
-
-#endif
-
-
 class StormwindGuard : public GossipScript
 {
 public:
 
+    uint32_t definedGossipMenu = 114;
     void GossipHello(Object* pObject, Player* plr)
     {
-        GossipMenu* Menu;
-        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 933, plr);
-
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_BANK_OF_STORMWIND), 2);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_STORMWIND_HARBOUR), 3);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DEEPRUN_TRAM), 4);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 5);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GRYPHON_M), 6);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD2_M), 7);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MAILBOX), 8);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M), 9);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WEAPON3_M), 10);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_OFFICERS_LOUNGE), 11);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE3_M), 12);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BARBER), 13);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS2_T), 14);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 15);
-
-        Menu->SendTo(plr);
+        objmgr.createGuardGossipMenuForPlayer(pObject->GetGUID(), definedGossipMenu, plr);
     }
 
     void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
     {
-        GossipMenu* Menu;
-        switch (IntId)
+        if (IntId > 0)
         {
-            case 0:     // Return to start
-                GossipHello(pObject, Plr);
-                break;
-
-            case 1:     // Auction House
-            {
-                SendQuickMenu(3834);
-                Plr->Gossip_SendSQLPOI(1);
-            }
-            break;
-
-            case 2:     // Bank of Stormwind
-            {
-                SendQuickMenu(764);
-                Plr->Gossip_SendSQLPOI(2);
-            }
-            break;
-
-            case 3:     // Stormwind Harbor
-            {
-                SendQuickMenu(13439);
-                Plr->Gossip_SendSQLPOI(3);
-            }
-            break;
-
-            case 4:     // Deeprun Tram
-            {
-                SendQuickMenu(3813);
-                Plr->Gossip_SendSQLPOI(4);
-            }
-            break;
-
-            case 5:     // The Inn
-            {
-                SendQuickMenu(3860);
-                Plr->Gossip_SendSQLPOI(5);
-            }
-            break;
-
-            case 6:     // Gryphon Master
-            {
-                SendQuickMenu(879);
-                Plr->Gossip_SendSQLPOI(6);
-            }
-            break;
-
-            case 7:     // Guild Master
-            {
-                SendQuickMenu(882);
-                Plr->Gossip_SendSQLPOI(7);
-            }
-            break;
-
-            case 8:     // Mailbox
-            {
-                SendQuickMenu(3861);
-                Plr->Gossip_SendSQLPOI(8);
-            }
-            break;
-
-            case 9:     // Stable Master
-            {
-                SendQuickMenu(5984);
-                Plr->Gossip_SendSQLPOI(9);
-            }
-            break;
-
-            case 10:     // Weapons Master
-            {
-                SendQuickMenu(4516);
-                Plr->Gossip_SendSQLPOI(10);
-            }
-            break;
-
-            case 11:    // Officers' Lounge
-            {
-                SendQuickMenu(7047);
-                Plr->Gossip_SendSQLPOI(11);
-            }
-            break;
-
-            case 12:    // Battlemaster
-            {
-                SendQuickMenu(10218);
-                Plr->Gossip_SendSQLPOI(12);
-            }
-            break;
-
-            case 13:     // Barber
-            {
-                SendQuickMenu(13882);
-                Plr->Gossip_SendSQLPOI(13);
-            }
-            break;
-
-            case 14:    // Class Trainers
-            {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 898, Plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_DRUID), 16);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 17);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 18);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN), 19);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 20);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 21);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SHAMAN), 22);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK), 23);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 24);
-                Menu->SendTo(Plr);
-            }
-            break;
-
-            case 15:    // Profession Trainers
-            {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 918, Plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 25);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 26);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 27);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 28);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 29);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 30);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 31);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 32);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION), 33);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 34);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 35);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 36);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 37);
-                Menu->SendTo(Plr);
-            }
-            break;
-
-            ////////////////
-            // Class trainer submenu
-            ////////
-
-            case 16: //Druid
-            {
-                Plr->Gossip_SendSQLPOI(14);
-                SendQuickMenu(902);
-            }
-            break;
-
-            case 17: //Hunter
-            {
-                Plr->Gossip_SendSQLPOI(15);
-                SendQuickMenu(905);
-            }
-            break;
-
-            case 18: //Mage
-            {
-                Plr->Gossip_SendSQLPOI(16);
-                SendQuickMenu(899);
-            }
-            break;
-
-            case 19: //Paladin
-            {
-                Plr->Gossip_SendSQLPOI(17);
-                SendQuickMenu(904);
-            }
-            break;
-
-            case 20: //Priest
-            {
-                Plr->Gossip_SendSQLPOI(18);
-                SendQuickMenu(903);
-            }
-            break;
-
-            case 21: //Rogue
-            {
-                Plr->Gossip_SendSQLPOI(19);
-                SendQuickMenu(900);
-            }
-            break;
-
-            case 22: //Shaman
-            {
-                Plr->Gossip_SendSQLPOI(20);
-                SendQuickMenu(10106);
-            }
-            break;
-
-            case 23: //Warlock
-            {
-                Plr->Gossip_SendSQLPOI(21);
-                SendQuickMenu(906);
-            }
-            break;
-
-            case 24: //Warrior
-            {
-                Plr->Gossip_SendSQLPOI(22);
-                SendQuickMenu(901);
-            }
-            break;
-
-            case 25: //Alchemy
-            {
-                Plr->Gossip_SendSQLPOI(23);
-                SendQuickMenu(919);
-            }
-            break;
-
-            case 26: //Blacksmithing
-            {
-                Plr->Gossip_SendSQLPOI(24);
-                SendQuickMenu(920);
-            }
-            break;
-
-            case 27: //Cooking
-            {
-                Plr->Gossip_SendSQLPOI(25);
-                SendQuickMenu(921);
-            }
-            break;
-
-            case 28: //Enchanting
-            {
-                Plr->Gossip_SendSQLPOI(26);
-                SendQuickMenu(941);
-            }
-            break;
-
-            case 29: //Engineering
-            {
-                Plr->Gossip_SendSQLPOI(27);
-                SendQuickMenu(922);
-            }
-            break;
-
-            case 30: //First Aid
-            {
-                Plr->Gossip_SendSQLPOI(28);
-                SendQuickMenu(923);
-            }
-            break;
-
-            case 31: //Fishing
-            {
-                Plr->Gossip_SendSQLPOI(29);
-                SendQuickMenu(940);
-            }
-            break;
-
-            case 32: //Herbalism
-            {
-                Plr->Gossip_SendSQLPOI(30);
-                SendQuickMenu(924);
-            }
-            break;
-
-            case 33: //Inscription
-            {
-                Plr->Gossip_SendSQLPOI(31);
-                SendQuickMenu(13881);
-            }
-            break;
-
-            case 34: //Leatherworking
-            {
-                Plr->Gossip_SendSQLPOI(32);
-                SendQuickMenu(925);
-            }
-            break;
-
-            case 35: //Mining
-            {
-                Plr->Gossip_SendSQLPOI(33);
-                SendQuickMenu(927);
-            }
-            break;
-
-            case 36: //Skinning
-            {
-                Plr->Gossip_SendSQLPOI(34);
-                SendQuickMenu(928);
-            }
-            break;
-
-            case 37: //Tailoring
-            {
-                Plr->Gossip_SendSQLPOI(35);
-                SendQuickMenu(929);
-            }
-            break;
+            objmgr.createGuardGossipOptionAndSubMenu(pObject->GetGUID(), Plr, IntId, definedGossipMenu);
+        }
+        else
+        {
+            GossipHello(pObject, Plr);
         }
     }
 };
@@ -374,492 +35,22 @@ public:
 class DarnassusGuard : public GossipScript
 {
 public:
+
+    uint32_t definedGossipMenu = 122;
     void GossipHello(Object* pObject, Player* plr)
     {
-        GossipMenu* Menu;
-        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3016, plr);
-
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 2);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_HYPPOGRYPH_M), 3);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD2_M), 4);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 5);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MAILBOX), 6);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M), 7);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WEAPON3_M), 8);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE3_M), 9);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS2_T), 10);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 11);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_LEXICON_OF_POWER), 27);
-
-        Menu->SendTo(plr);
+        objmgr.createGuardGossipMenuForPlayer(pObject->GetGUID(), definedGossipMenu, plr);
     }
 
     void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
     {
-        GossipMenu* Menu;
-        switch (IntId)
+        if (IntId > 0)
         {
-            case 0:     // Return to start
-                GossipHello(pObject, Plr);
-                break;
-
-            case 1:     // Auction House
-            {
-                SendQuickMenu(3833);
-                Plr->Gossip_SendSQLPOI(36);
-            }
-            break;
-
-            case 2:        // The Bank
-            {
-                SendQuickMenu(3017);
-                Plr->Gossip_SendSQLPOI(37);
-            }
-            break;
-
-            case 3:        // Hippogryph Master
-            {
-                SendQuickMenu(3018);
-                Plr->Gossip_SendSQLPOI(38);
-            }
-            break;
-
-            case 4:        // Guild Master
-            {
-                SendQuickMenu(3019);
-                Plr->Gossip_SendSQLPOI(39);
-            }
-            break;
-
-            case 5:        // The Inn
-            {
-                SendQuickMenu(3020);
-                Plr->Gossip_SendSQLPOI(40);
-            }
-            break;
-
-            case 6:        // Mailbox
-            {
-                SendQuickMenu(3021);
-                Plr->Gossip_SendSQLPOI(41);
-            }
-            break;
-
-            case 7:        // Stable Master
-            {
-                SendQuickMenu(5980);
-                Plr->Gossip_SendSQLPOI(42);
-            }
-            break;
-
-            case 8:        // Weapons Trainer
-            {
-                SendQuickMenu(4517);
-                Plr->Gossip_SendSQLPOI(43);
-            }
-            break;
-
-            case 9:    // Battlemaster
-            {
-                SendQuickMenu(7519);
-                Plr->Gossip_SendSQLPOI(44);
-            }
-            break;
-
-            case 10:    // Class Trainer
-            {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4264, Plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_DRUID), 12);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 13);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 14);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 15);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 16);
-                Menu->SendTo(Plr);
-            }
-            break;
-
-            case 11:    // Profession Trainer
-            {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4273, Plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 17);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 18);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 19);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 20);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 21);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 22);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION), 23);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 24);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 25);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 26);
-                Menu->SendTo(Plr);
-            }
-            break;
-
-            case 12:    // Druid
-            {
-                Plr->Gossip_SendSQLPOI(45);
-                SendQuickMenu(3024);
-            }
-            break;
-
-            case 13:    // Hunter
-            {
-                Plr->Gossip_SendSQLPOI(46);
-                SendQuickMenu(3023);
-            }
-            break;
-
-            case 14:    // Priest
-            {
-                Plr->Gossip_SendSQLPOI(47);
-                SendQuickMenu(3025);
-            }
-            break;
-
-            case 15:    // Rogue
-            {
-                Plr->Gossip_SendSQLPOI(48);
-                SendQuickMenu(3026);
-            }
-            break;
-
-            case 16:    // Warrior
-            {
-                Plr->Gossip_SendSQLPOI(49);
-                SendQuickMenu(3033);
-            }
-            break;
-
-            case 17: //Alchemy
-            {
-                Plr->Gossip_SendSQLPOI(50);
-                SendQuickMenu(3035);
-            }
-            break;
-
-            case 18: //Cooking
-            {
-                Plr->Gossip_SendSQLPOI(51);
-                SendQuickMenu(3036);
-            }
-            break;
-
-            case 19: //Enchanting
-            {
-                Plr->Gossip_SendSQLPOI(52);
-                SendQuickMenu(3337);
-            }
-            break;
-
-            case 20: //First Aid
-            {
-                Plr->Gossip_SendSQLPOI(53);
-                SendQuickMenu(3037);
-            }
-            break;
-
-            case 21: //Fishing
-            {
-                Plr->Gossip_SendSQLPOI(54);
-                SendQuickMenu(3038);
-            }
-            break;
-
-            case 22: //Herbalism
-            {
-                Plr->Gossip_SendSQLPOI(55);
-                SendQuickMenu(3039);
-            }
-            break;
-            case 23: //Inscription
-            {
-                Plr->Gossip_SendSQLPOI(56);
-                SendQuickMenu(13886);
-            }
-            break;
-
-            case 24: //Leatherworking
-            {
-                Plr->Gossip_SendSQLPOI(57);
-                SendQuickMenu(3040);
-            }
-            break;
-
-            case 25: //Skinning
-            {
-                Plr->Gossip_SendSQLPOI(58);
-                SendQuickMenu(3042);
-            }
-            break;
-
-            case 26: //Tailoring
-            {
-                Plr->Gossip_SendSQLPOI(59);
-                SendQuickMenu(3044);
-            }
-            break;
-
-            case 27: //Lexicon of Power
-            {
-                Plr->Gossip_SendSQLPOI(60);
-                SendQuickMenu(14174);
-            }
-            break;
+            objmgr.createGuardGossipOptionAndSubMenu(pObject->GetGUID(), Plr, IntId, definedGossipMenu);
         }
-    }
-    void GossipEnd(Object* pObject, Player* Plr)
-    {
-
-    }
-};
-
-class GoldshireGuard : public GossipScript
-{
-public:
-    void GossipHello(Object* pObject, Player* plr)
-    {
-        GossipMenu* Menu;
-        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4259, plr);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK2), 1);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GRYPHON_M), 2);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD2_M), 3);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN2), 4);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M), 5);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS2_T), 6);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 7);
-
-        Menu->SendTo(plr);
-    }
-
-    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
-    {
-        GossipMenu* Menu;
-        switch (IntId)
+        else
         {
-
-            case 0:     // Return to start
-                GossipHello(pObject, Plr);
-                break;
-
-            case 1:     //Bank
-            {
-                SendQuickMenu(4260);
-            }
-            break;
-
-            case 2:     //Gryphon Master
-            {
-                SendQuickMenu(4261);
-            }
-            break;
-
-            case 3:     //Guild Master
-            {
-                SendQuickMenu(4262);
-            }
-            break;
-
-            case 4:     //Inn
-            {
-                SendQuickMenu(4263);
-                Plr->Gossip_SendSQLPOI(61);
-            }
-            break;
-
-            case 5:     //Stable Master
-            {
-                SendQuickMenu(5983);
-                Plr->Gossip_SendSQLPOI(62);
-            }
-            break;
-
-            case 6:     //Class Trainer
-            {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4264, Plr);
-
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_DRUID), 8);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 9);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 10);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN), 11);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 12);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 13);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SHAMAN), 14);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK), 15);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 16);
-
-                Menu->SendTo(Plr);
-            }
-            break;
-
-            case 7:        //Profession Trainer
-            {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4273, Plr);
-
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 17);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 18);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 19);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 20);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 21);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 22);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 23);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 24);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION), 25);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 26);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 27);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 28);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 29);
-                Menu->SendTo(Plr);
-            }
-            break;
-
-            case 8: //Druid
-            {
-                SendQuickMenu(4265);
-            }
-            break;
-
-            case 9: //Hunter
-            {
-                SendQuickMenu(4266);
-            }
-            break;
-
-            case 10: //Mage
-            {
-                Plr->Gossip_SendSQLPOI(63);
-                SendQuickMenu(4268);
-            }
-            break;
-
-            case 11: //Paladin
-            {
-                Plr->Gossip_SendSQLPOI(64);
-                SendQuickMenu(4269);
-            }
-            break;
-
-            case 12: //Priest
-            {
-                Plr->Gossip_SendSQLPOI(65);
-                SendQuickMenu(4267);
-            }
-            break;
-
-            case 13: //Rogue
-            {
-                Plr->Gossip_SendSQLPOI(66);
-                SendQuickMenu(4270);
-            }
-            break;
-
-            case 14: //Shaman
-            {
-                SendQuickMenu(10101);
-            }
-            break;
-
-            case 15: //Warlock
-            {
-                Plr->Gossip_SendSQLPOI(67);
-                SendQuickMenu(4272);
-            }
-            break;
-
-            case 16: //Warrior
-            {
-                Plr->Gossip_SendSQLPOI(68);
-                SendQuickMenu(4271);
-            }
-            break;
-
-            case 17: //Alchemy
-            {
-                Plr->Gossip_SendSQLPOI(69);
-                SendQuickMenu(4274);
-            }
-            break;
-
-            case 18: //Blacksmithing
-            {
-                Plr->Gossip_SendSQLPOI(70);
-                SendQuickMenu(4275);
-            }
-            break;
-
-            case 19: //Cooking
-            {
-                Plr->Gossip_SendSQLPOI(71);
-                SendQuickMenu(4276);
-            }
-            break;
-
-            case 20: //Enchanting
-            {
-                SendQuickMenu(4277);
-            }
-            break;
-
-            case 21: //Engineering
-            {
-                SendQuickMenu(4278);
-            }
-            break;
-
-            case 22: //First Aid
-            {
-                Plr->Gossip_SendSQLPOI(72);
-                SendQuickMenu(4279);
-            }
-            break;
-
-            case 23: //Fishing
-            {
-                Plr->Gossip_SendSQLPOI(73);
-                SendQuickMenu(4280);
-            }
-            break;
-
-            case 24: //Herbalism
-            {
-                Plr->Gossip_SendSQLPOI(74);
-                SendQuickMenu(4281);
-            }
-            break;
-
-            case 25: //Inscription
-            {
-                Plr->Gossip_SendSQLPOI(75);
-                SendQuickMenu(13881);
-            }
-            break;
-
-            case 26: //Leatherworking
-            {
-                Plr->Gossip_SendSQLPOI(76);
-                SendQuickMenu(4282);
-            }
-            break;
-
-            case 27: //Mining
-            {
-                SendQuickMenu(4283);
-            }
-            break;
-
-            case 28: //Skinning
-            {
-                Plr->Gossip_SendSQLPOI(77);
-                SendQuickMenu(4284);
-            }
-            break;
-
-            case 29: //Tailoring
-            {
-                Plr->Gossip_SendSQLPOI(78);
-                SendQuickMenu(4285);
-            }
-            break;
+            GossipHello(pObject, Plr);
         }
     }
 };
@@ -867,268 +58,22 @@ public:
 class UndercityGuard : public GossipScript
 {
 public:
+
+    uint32_t definedGossipMenu = 142;
     void GossipHello(Object* pObject, Player* plr)
     {
-        GossipMenu* Menu;
-        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3543, plr);
-
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BAT_H), 2);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD_M), 3);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 4);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_MAILBOX), 5);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_AH), 6);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_ZEPPELIN_M), 7);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WEAPON_M), 8);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE_M), 9);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE_M), 10);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS_T), 11);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION_T), 12);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_LOCKSMITH), 32);
-        Menu->SendTo(plr);
+        objmgr.createGuardGossipMenuForPlayer(pObject->GetGUID(), definedGossipMenu, plr);
     }
 
     void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
     {
-        GossipMenu* Menu;
-        switch (IntId)
+        if (IntId > 0)
         {
-            case 0:     // Return to start
-                GossipHello(pObject, Plr);
-                break;
-
-            case 1:     // The bank
-            {
-                SendQuickMenu(3514);
-                Plr->Gossip_SendSQLPOI(79);
-            }
-            break;
-
-            case 2:     // The bat handler
-            {
-                SendQuickMenu(3515);
-                Plr->Gossip_SendSQLPOI(80);
-            }
-            break;
-
-            case 3:     // The guild master
-            {
-                SendQuickMenu(3516);
-                Plr->Gossip_SendSQLPOI(81);
-            }
-            break;
-
-            case 4:     // The inn
-            {
-                SendQuickMenu(3517);
-                Plr->Gossip_SendSQLPOI(82);
-            }
-            break;
-
-            case 5:     // The mailbox
-            {
-                SendQuickMenu(3518);
-                Plr->Gossip_SendSQLPOI(83);
-            }
-            break;
-
-            case 6:     // The auction house
-            {
-                SendQuickMenu(3520);
-                Plr->Gossip_SendSQLPOI(84);
-            }
-            break;
-
-            case 7:     // The zeppelin master
-            {
-                SendQuickMenu(3519);
-                Plr->Gossip_SendSQLPOI(85);
-            }
-            break;
-
-            case 8:     // The weapon master
-            {
-                SendQuickMenu(4521);
-                Plr->Gossip_SendSQLPOI(86);
-            }
-            break;
-
-            case 9:     // The stable master
-            {
-                SendQuickMenu(5979);
-                Plr->Gossip_SendSQLPOI(87);
-            }
-            break;
-
-            case 10:    // The battlemaster
-            {
-                SendQuickMenu(7527);
-                Plr->Gossip_SendSQLPOI(88);
-            }
-            break;
-
-            case 11:    // A class trainer
-            {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3542, Plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 13);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN), 14);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 15);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 16);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK), 17);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 18);
-                Menu->SendTo(Plr);
-            }
-            break;
-
-            case 12:    // A profession trainer
-            {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3541, Plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 19);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 20);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 21);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 22);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 23);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 24);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 25);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 26);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 27);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 28);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 29);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 30);
-                Menu->SendTo(Plr);
-            }
-            break;
-
-            case 13: //Mage
-            {
-                Plr->Gossip_SendSQLPOI(89);
-                SendQuickMenu(3513);
-            }
-            break;
-
-            case 14: //Paladin
-            {
-                Plr->Gossip_SendSQLPOI(90);
-                SendQuickMenu(3521);
-            }
-            break;
-
-            case 15: //Priest
-            {
-                Plr->Gossip_SendSQLPOI(91);
-                SendQuickMenu(3521);
-            }
-            break;
-
-            case 16: //Rogue
-            {
-                Plr->Gossip_SendSQLPOI(92);
-                SendQuickMenu(3526);
-            }
-            break;
-
-            case 17: //Warlock
-            {
-                Plr->Gossip_SendSQLPOI(93);
-                SendQuickMenu(3526);
-            }
-            break;
-
-            case 18: //Warrior
-            {
-                Plr->Gossip_SendSQLPOI(94);
-                SendQuickMenu(3527);
-            }
-            break;
-
-            case 19: //Alchemy
-            {
-                Plr->Gossip_SendSQLPOI(95);
-                SendQuickMenu(3528);
-            }
-            break;
-
-            case 20: //Blacksmithing
-            {
-                Plr->Gossip_SendSQLPOI(96);
-                SendQuickMenu(3529);
-            }
-            break;
-
-            case 21: //Cooking
-            {
-                Plr->Gossip_SendSQLPOI(97);
-                SendQuickMenu(3530);
-            }
-            break;
-
-            case 22: //Enchanting
-            {
-                Plr->Gossip_SendSQLPOI(98);
-                SendQuickMenu(3531);
-            }
-            break;
-
-            case 23: //Engineering
-            {
-                Plr->Gossip_SendSQLPOI(99);
-                SendQuickMenu(3532);
-            }
-            break;
-
-            case 24: //First Aid
-            {
-                Plr->Gossip_SendSQLPOI(100);
-                SendQuickMenu(3533);
-            }
-            break;
-
-            case 25: //Fishing
-            {
-                Plr->Gossip_SendSQLPOI(101);
-                SendQuickMenu(3534);
-            }
-            break;
-
-            case 26: //Herbalism
-            {
-                Plr->Gossip_SendSQLPOI(102);
-                SendQuickMenu(3535);
-            }
-            break;
-
-            case 27: //Leatherworking
-            {
-                Plr->Gossip_SendSQLPOI(103);
-                SendQuickMenu(3536);
-            }
-            break;
-
-            case 28: //Mining
-            {
-                Plr->Gossip_SendSQLPOI(104);
-                SendQuickMenu(3537);
-            }
-            break;
-
-            case 29: //Skinning
-            {
-                Plr->Gossip_SendSQLPOI(105);
-                SendQuickMenu(3538);
-            }
-            break;
-
-            case 30: //Tailoring
-            {
-                Plr->Gossip_SendSQLPOI(106);
-                SendQuickMenu(3539);
-            }
-            break;
-            case 32:     // Locksmith
-            {
-                Plr->Gossip_SendSQLPOI(107);
-                SendQuickMenu(14916);
-            }break;
+            objmgr.createGuardGossipOptionAndSubMenu(pObject->GetGUID(), Plr, IntId, definedGossipMenu);
+        }
+        else
+        {
+            GossipHello(pObject, Plr);
         }
     }
 };
@@ -1136,289 +81,109 @@ public:
 class UndercityGuardOverseer : public GossipScript
 {
 public:
-    void OnHello(Object* pObject, Player* Plr)
+
+    uint32_t definedGossipMenu = 163;
+    void GossipHello(Object* pObject, Player* plr)
     {
-        GossipMenu* Menu;
-        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 15321, Plr);
-        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_AH), 1);
-        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 2);
-        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BARBER), 3);
-        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BAT_H), 4);
-        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE_M), 5);
-        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD_M), 6);
-        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 7);
-        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_LOCKSMITH), 8);
-        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_MAILBOX), 9);
-        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE_M), 10);
-        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_WEAPON_M), 11);
-        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_ZEPPELIN_M), 12);
-        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_CLASS_T), 13);
-        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION_T), 14);
-        Menu->SendTo(Plr);
+        objmgr.createGuardGossipMenuForPlayer(pObject->GetGUID(), definedGossipMenu, plr);
     }
 
     void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
     {
-        GossipMenu* Menu;
-        switch (IntId)
+        if (IntId > 0)
         {
-            case 0:
-                OnHello(pObject, Plr);
-                break;
-
-            case 1:     // The auction house
-            {
-                SendQuickMenu(14900);
-                Plr->Gossip_SendSQLPOI(108);
-            }
-            break;
-
-            case 2:     // The bank
-            {
-                SendQuickMenu(14901);
-                Plr->Gossip_SendSQLPOI(109);
-            }
-            break;
-
-            case 3:     // Barber
-            {
-                SendQuickMenu(14902);
-                Plr->Gossip_SendSQLPOI(110);
-            }
-            break;
-
-            case 4:     // The bat handler
-            {
-                SendQuickMenu(14903);
-                Plr->Gossip_SendSQLPOI(111);
-            }
-            break;
-
-            case 5:    // The battlemaster
-            {
-                SendQuickMenu(14904);
-                Plr->Gossip_SendSQLPOI(112);
-            }
-            break;
-
-            case 6:     // The guild master
-            {
-                SendQuickMenu(14911);
-                Plr->Gossip_SendSQLPOI(113);
-            }
-            break;
-
-            case 7:     // The inn
-            {
-                SendQuickMenu(14913);
-                Plr->Gossip_SendSQLPOI(114);
-            }
-            break;
-
-            case 8:     // Locksmith
-            {
-                SendQuickMenu(14916);
-                Plr->Gossip_SendSQLPOI(115);
-            }
-            break;
-
-            case 9:     // The mailbox
-            {
-                SendQuickMenu(14918);
-                Plr->Gossip_SendSQLPOI(116);
-            }
-            break;
-
-            case 10:     // The stable master
-            {
-                SendQuickMenu(14924);
-                Plr->Gossip_SendSQLPOI(117);
-            }
-            break;
-
-            case 11:     // The weapon master
-            {
-                SendQuickMenu(14928);
-                Plr->Gossip_SendSQLPOI(118);
-            }
-            break;
-
-            case 12:     // The zeppelin master
-            {
-                SendQuickMenu(14929);
-                Plr->Gossip_SendSQLPOI(119);
-            }
-            break;
-
-            case 13:    // A class trainer
-            {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3542, Plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 15);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN), 16);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 17);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 18);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK), 19);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 20);
-                Menu->SendTo(Plr);
-            }
-            break;
-
-            case 14:    // A profession trainer
-            {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3541, Plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 21);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 22);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 23);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 24);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 25);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 26);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 27);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 28);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION), 29);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 30);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 31);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 32);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 33);
-                Menu->SendTo(Plr);
-            }
-            break;
-
-            case 15: //Mage
-            {
-                SendQuickMenu(3513);
-                Plr->Gossip_SendSQLPOI(120);
-            }
-            break;
-
-            case 16: //Paladin
-            {
-                SendQuickMenu(3521);
-                Plr->Gossip_SendSQLPOI(121);
-            }
-            break;
-
-            case 17: //Priest
-            {
-                SendQuickMenu(3521);
-                Plr->Gossip_SendSQLPOI(122);
-            }
-            break;
-
-            case 18: //Rogue
-            {
-                SendQuickMenu(3526);
-                Plr->Gossip_SendSQLPOI(123);
-            }
-            break;
-
-            case 19: //Warlock
-            {
-                SendQuickMenu(3526);
-                Plr->Gossip_SendSQLPOI(124);
-            }
-            break;
-
-            case 20: //Warrior
-            {
-                SendQuickMenu(3527);
-                Plr->Gossip_SendSQLPOI(125);
-            }
-            break;
-
-            case 21: //Alchemy
-            {
-                SendQuickMenu(3528);
-                Plr->Gossip_SendSQLPOI(126);
-            }
-            break;
-
-            case 22: //Blacksmithing
-            {
-                SendQuickMenu(3529);
-                Plr->Gossip_SendSQLPOI(127);
-            }
-            break;
-
-            case 23: //Cooking
-            {
-                SendQuickMenu(3530);
-                Plr->Gossip_SendSQLPOI(128);
-            }
-            break;
-
-            case 24: //Enchanting
-            {
-                SendQuickMenu(3531);
-                Plr->Gossip_SendSQLPOI(129);
-            }
-            break;
-
-            case 25: //Engineering
-            {
-                SendQuickMenu(3532);
-                Plr->Gossip_SendSQLPOI(130);
-            }
-            break;
-
-            case 26: //First Aid
-            {
-                SendQuickMenu(3533);
-                Plr->Gossip_SendSQLPOI(131);
-            }
-            break;
-
-            case 27: //Fishing
-            {
-                SendQuickMenu(3534);
-                Plr->Gossip_SendSQLPOI(132);
-            }
-            break;
-
-            case 28: //Herbalism
-            {
-                SendQuickMenu(3535);
-                Plr->Gossip_SendSQLPOI(133);
-            }
-            break;
-
-            case 29: //Inscription
-            {
-                SendQuickMenu(14914);
-                Plr->Gossip_SendSQLPOI(134);
-            }
-            break;
-
-            case 30: //Leatherworking
-            {
-                SendQuickMenu(3536);
-                Plr->Gossip_SendSQLPOI(135);
-            }
-            break;
-
-            case 31: //Mining
-            {
-                SendQuickMenu(3537);
-                Plr->Gossip_SendSQLPOI(136);
-            }
-            break;
-
-            case 32: //Skinning
-            {
-                SendQuickMenu(3538);
-                Plr->Gossip_SendSQLPOI(137);
-            }
-            break;
-
-            case 33: //Tailoring
-            {
-                SendQuickMenu(3539);
-                Plr->Gossip_SendSQLPOI(138);
-            }
-            break;
-
+            objmgr.createGuardGossipOptionAndSubMenu(pObject->GetGUID(), Plr, IntId, definedGossipMenu);
+        }
+        else
+        {
+            GossipHello(pObject, Plr);
         }
     }
 };
+
+class ThunderbluffGuard : public GossipScript
+{
+public:
+
+    uint32_t definedGossipMenu = 152;
+    void GossipHello(Object* pObject, Player* plr)
+    {
+        objmgr.createGuardGossipMenuForPlayer(pObject->GetGUID(), definedGossipMenu, plr);
+    }
+
+    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
+    {
+        if (IntId > 0)
+        {
+            objmgr.createGuardGossipOptionAndSubMenu(pObject->GetGUID(), Plr, IntId, definedGossipMenu);
+        }
+        else
+        {
+            GossipHello(pObject, Plr);
+        }
+    }
+};
+
+class GoldshireGuard : public GossipScript
+{
+public:
+
+    uint32_t definedGossipMenu = 132;
+    void GossipHello(Object* pObject, Player* plr)
+    {
+        objmgr.createGuardGossipMenuForPlayer(pObject->GetGUID(), definedGossipMenu, plr);
+    }
+
+    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
+    {
+        if (IntId > 0)
+        {
+            objmgr.createGuardGossipOptionAndSubMenu(pObject->GetGUID(), Plr, IntId, definedGossipMenu);
+        }
+        else
+        {
+            GossipHello(pObject, Plr);
+        }
+    }
+};
+
+/**
+* AscEmu Framework based on ArcEmu MMORPG Server
+* Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+* Copyright (C) 2007-2015 Moon++ Team <http://www.moonplusplus.info/>
+* Copyright (C) 2005-2007 Ascent Team
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+// Covers *all* guard types, scripting their texts to guide players around.
+// Enable this define to make all gossip texts have a "back" / "I was looking
+// for somethinge else" button added.
+
+#define BACK_BUTTON
+
+#ifdef BACK_BUTTON
+    // Make code neater with this define.
+    #define SendQuickMenu(textid) objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), textid, Plr); \
+        Menu->SendTo(Plr);
+#else
+    // Make code neater with this define.
+    #define SendQuickMenu(textid) objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), textid, Plr); \
+        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_LOOKING_SOMTH_ELSE), 0); \
+        Menu->SendTo(Plr);
+#endif
+
 
 class TeldrassilGuard : public GossipScript
 {
@@ -2552,254 +1317,6 @@ public:
             {
                 Plr->Gossip_SendSQLPOI(251);
                 SendQuickMenu(2518);
-            }
-            break;
-        }
-    }
-};
-
-class ThunderbluffGuard : public GossipScript
-{
-public:
-    void GossipHello(Object* pObject, Player* plr)
-    {
-        GossipMenu* Menu;
-        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3543, plr);
-
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WIND_R_M), 2);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD_M), 3);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 4);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_MAILBOX), 5);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_AH), 6);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WEAPON_M), 7);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE_M), 8);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE_M), 9);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS_T), 10);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION_T), 11);
-
-        Menu->SendTo(plr);
-    }
-
-    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
-    {
-        GossipMenu* Menu;
-        switch (IntId)
-        {
-            case 0:     // Return to start
-                GossipHello(pObject, Plr);
-                break;
-
-            case 1:     // The bank
-            {
-                SendQuickMenu(1292);
-                Plr->Gossip_SendSQLPOI(252);
-            }
-            break;
-
-            case 2:     // The wind rider master
-            {
-                SendQuickMenu(1293);
-                Plr->Gossip_SendSQLPOI(253);
-            }
-            break;
-
-            case 3:     // The guild master
-            {
-                SendQuickMenu(1291);
-                Plr->Gossip_SendSQLPOI(254);
-            }
-            break;
-
-            case 4:     // The inn
-            {
-                SendQuickMenu(3153);
-                Plr->Gossip_SendSQLPOI(255);
-            }
-            break;
-
-            case 5:     // The mailbox
-            {
-                SendQuickMenu(3154);
-                Plr->Gossip_SendSQLPOI(256);
-            }
-            break;
-
-            case 6:     // The auction house
-            {
-                SendQuickMenu(3155);
-                Plr->Gossip_SendSQLPOI(257);
-            }
-            break;
-
-            case 7:     // The weapon master
-            {
-                SendQuickMenu(4520);
-                Plr->Gossip_SendSQLPOI(258);
-            }
-            break;
-
-            case 8:     // The stable master
-            {
-                SendQuickMenu(5977);
-                Plr->Gossip_SendSQLPOI(259);
-            }
-            break;
-
-            case 9:    // The battlemaster
-            {
-                SendQuickMenu(7527);
-                Plr->Gossip_SendSQLPOI(260);
-            }
-            break;
-
-            case 10:    // A class trainer
-            {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3542, Plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_DRUID), 12);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 13);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 14);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 15);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SHAMAN), 16);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 17);
-                Menu->SendTo(Plr);
-            }
-            break;
-
-            case 11:    // A profession trainer
-            {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3541, Plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 18);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 19);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 20);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 21);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 22);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 23);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 24);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 25);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 26);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 27);
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 28);
-                Menu->SendTo(Plr);
-            }
-            break;
-
-            case 12: //Druid
-            {
-                Plr->Gossip_SendSQLPOI(261);
-                SendQuickMenu(1294);
-            }
-            break;
-
-            case 13: //Hunter
-            {
-                Plr->Gossip_SendSQLPOI(262);
-                SendQuickMenu(1295);
-            }
-            break;
-
-            case 14: //Mage
-            {
-                Plr->Gossip_SendSQLPOI(263);
-                SendQuickMenu(1296);
-            }
-            break;
-
-            case 15: //Priest
-            {
-                Plr->Gossip_SendSQLPOI(264);
-                SendQuickMenu(1297);
-            }
-            break;
-
-            case 16: //Shaman
-            {
-                Plr->Gossip_SendSQLPOI(265);
-                SendQuickMenu(1298);
-            }
-            break;
-
-            case 17: //Warrior
-            {
-                Plr->Gossip_SendSQLPOI(266);
-                SendQuickMenu(1299);
-            }
-            break;
-
-            case 18: //Alchemy
-            {
-                Plr->Gossip_SendSQLPOI(267);
-                SendQuickMenu(1332);
-            }
-            break;
-
-            case 19: //Blacksmithing
-            {
-                Plr->Gossip_SendSQLPOI(268);
-                SendQuickMenu(1333);
-            }
-            break;
-
-            case 20: //Cooking
-            {
-                Plr->Gossip_SendSQLPOI(269);
-                SendQuickMenu(1334);
-            }
-            break;
-
-            case 21: //Enchanting
-            {
-                Plr->Gossip_SendSQLPOI(270);
-                SendQuickMenu(1335);
-            }
-            break;
-
-            case 22: //First Aid
-            {
-                Plr->Gossip_SendSQLPOI(271);
-                SendQuickMenu(1336);
-            }
-            break;
-
-            case 23: //Fishing
-            {
-                Plr->Gossip_SendSQLPOI(272);
-                SendQuickMenu(1337);
-            }
-            break;
-
-            case 24: //Herbalism
-            {
-                Plr->Gossip_SendSQLPOI(273);
-                SendQuickMenu(1338);
-            }
-            break;
-
-            case 25: //Leatherworking
-            {
-                Plr->Gossip_SendSQLPOI(274);
-                SendQuickMenu(1339);
-            }
-            break;
-
-            case 26: //Mining
-            {
-                Plr->Gossip_SendSQLPOI(275);
-                SendQuickMenu(1340);
-            }
-            break;
-
-            case 27: //Skinning
-            {
-                Plr->Gossip_SendSQLPOI(276);
-                SendQuickMenu(1343);
-            }
-            break;
-
-            case 28: //Tailoring
-            {
-                Plr->Gossip_SendSQLPOI(277);
-                SendQuickMenu(1341);
             }
             break;
         }

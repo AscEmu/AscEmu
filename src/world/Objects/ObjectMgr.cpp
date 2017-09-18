@@ -1730,6 +1730,80 @@ void ObjectMgr::CreateGossipMenuForPlayer(GossipMenu** Location, uint64 Guid, ui
     *Location = Menu;
 }
 
+//MIT
+void ObjectMgr::createGuardGossipMenuForPlayer(uint64_t senderGuid, uint32_t gossipMenuId, Player* player)
+{
+    uint32_t textId = 2;
+    auto gossipMenuTextStore = sMySQLStore.getGossipMenuInitTextId();
+
+    for (auto &initItr : *gossipMenuTextStore)
+    {
+        if (initItr.first == gossipMenuId)
+        {
+            textId = initItr.second.textId;
+            break;
+        }
+    }
+
+    GossipMenu* gossipMenu = new GossipMenu(senderGuid, textId);
+    ARCEMU_ASSERT(gossipMenu != nullptr);
+
+    if (player->CurrentGossipMenu != nullptr)
+        delete player->CurrentGossipMenu;
+
+    player->CurrentGossipMenu = gossipMenu;
+
+    auto gossipMenuStore = sMySQLStore.getGossipMenuItemsStore();
+
+    for (auto itr : *gossipMenuStore)
+    {
+        if (itr.first == gossipMenuId)
+            gossipMenu->AddItem(itr.second.icon, player->GetSession()->LocalizedGossipOption(itr.second.menuOptionText), itr.second.itemOrder);
+    }
+
+    gossipMenu->SendTo(player);
+}
+
+//MIT
+void ObjectMgr::createGuardGossipOptionAndSubMenu(uint64_t senderGuid, Player* player, uint32_t gossipItemId, uint32_t gossipMenuId)
+{
+    GossipMenu* gossipMenu;
+
+    auto gossipMenuItems = sMySQLStore.getGossipMenuItemsStore();
+    auto gossipSubMenu = sMySQLStore.getGossipMenuItemsStore();
+
+    for (auto itr : *gossipMenuItems)
+    {
+        bool isOwnOrSubmenu = false;
+        if (itr.first != gossipMenuId && sMySQLStore.isSubmenuOfGossipMenu(itr.first, gossipMenuId))
+            isOwnOrSubmenu = true;
+
+        bool isSubmenu = sMySQLStore.isSubmenuOfGossipMenu(itr.second.nextGossipMenu, gossipMenuId);
+
+        if (itr.second.itemOrder == gossipItemId && (isSubmenu || isOwnOrSubmenu || itr.first == gossipMenuId))
+        {
+            if (isSubmenu == false)
+            {
+                objmgr.CreateGossipMenuForPlayer(&gossipMenu, senderGuid, itr.second.nextGossipMenuText, player);
+                gossipMenu->SendTo(player);
+
+                if (itr.second.pointOfInterest != 0)
+                    player->Gossip_SendSQLPOI(itr.second.pointOfInterest);
+            }
+            else
+            {
+                objmgr.CreateGossipMenuForPlayer(&gossipMenu, senderGuid, itr.second.nextGossipMenuText, player);
+                for (auto subitr : *gossipSubMenu)
+                {
+                    if (subitr.first == itr.second.nextGossipMenu)
+                        gossipMenu->AddItem(subitr.second.icon, player->GetSession()->LocalizedGossipOption(subitr.second.menuOptionText), subitr.second.itemOrder);
+                }
+                gossipMenu->SendTo(player);
+            }
+        }
+    }
+}
+
 #if VERSION_STRING == Cata
 void ObjectMgr::LoadTrainers()
 {

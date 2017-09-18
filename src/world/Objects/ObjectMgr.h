@@ -387,6 +387,10 @@ class PlayerCache;
 class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableObject
 {
     public:
+        //NIT
+        void createGuardGossipMenuForPlayer(uint64_t senderGuid, uint32_t gossipMenuId, Player* player);
+        void createGuardGossipOptionAndSubMenu(uint64_t senderGuid, Player* player, uint32_t gossipItemId, uint32_t gossipMenuId);
+        //NIT END
 
         ObjectMgr();
         ~ObjectMgr();

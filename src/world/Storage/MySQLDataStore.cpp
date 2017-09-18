@@ -3793,6 +3793,27 @@ MySQLStructure::NpcMonsterSay* MySQLDataStore::getMonstersayEventForCreature(uin
 //    return &(itr->second);
 //}
 
+MySQLStructure::GossipMenuItems const* MySQLDataStore::getGossipMenuItemsForMenuId(uint32_t menuId)
+{
+    GossipMenuItemsContainer::const_iterator itr = _gossipMenuItemsStores.find(menuId);
+    if (itr != _gossipMenuItemsStores.end())
+        return &(itr->second);
+
+    return nullptr;
+}
+
+bool MySQLDataStore::isSubmenuOfGossipMenu(uint32_t menuId, uint32_t targetMenu)
+{
+    auto menuStore = _gossipMenuItemsStores;
+    for (MySQLDataStore::GossipMenuItemsContainer::const_iterator itr = menuStore.begin(); itr != menuStore.end(); ++itr)
+    {
+        if (itr->first == targetMenu && itr->second.nextGossipMenu == menuId && hasGossipSubMenu(menuId))
+            return true;
+    }
+
+    return false;
+}
+
 void MySQLDataStore::loadProfessionDiscoveriesTable()
 {
     auto startTime = Util::TimeNow();
@@ -3914,5 +3935,78 @@ void MySQLDataStore::loadTransportDataTable()
         delete result;
 
         LogDetail("MySQLDataLoads : Loaded %u rows from `transport_data` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
+    }
+}
+
+void MySQLDataStore::loadGossipMenuItemsTable()
+{
+    auto startTime = Util::TimeNow();
+
+    //                                                      0          1
+    QueryResult* result = WorldDatabase.Query("SELECT gossip_menu, text_id FROM gossip_menu ORDER BY gossip_menu");
+    if (result == nullptr)
+    {
+        LogNotice("MySQLDataLoads : Table `gossip_menu` is empty!");
+        return;
+    }
+
+    LogNotice("MySQLDataLoads : Table `gossip_menu` has %u columns", result->GetFieldCount());
+
+    if (result != nullptr)
+    {
+        uint32_t load_count = 0;
+        do
+        {
+            Field* fields = result->Fetch();
+            uint32_t entry = fields[0].GetUInt32();
+
+            MySQLStructure::GossipMenuInit& gMenuItem = _gossipMenuInitStore[entry];
+            gMenuItem.gossipMenu = entry;
+            gMenuItem.textId = fields[1].GetUInt32();
+
+            ++load_count;
+        } while (result->NextRow());
+
+        delete result;
+
+        LogDetail("MySQLDataLoads : Loaded %u rows from `gossip_menu` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
+    }
+
+    _gossipMenuItemsStores.clear();
+
+    //                                                      0       1            2        3            4                  5                6
+    QueryResult* resultItems = WorldDatabase.Query("SELECT id, item_order, menu_option, icon, point_of_interest, next_gossip_menu, next_gossip_text FROM gossip_menu_items ORDER BY id, item_order");
+    if (resultItems == nullptr)
+    {
+        LogNotice("MySQLDataLoads : Table `gossip_menu_items` is empty!");
+        return;
+    }
+
+    LogNotice("MySQLDataLoads : Table `gossip_menu_items` has %u columns", resultItems->GetFieldCount());
+
+    if (resultItems != nullptr)
+    {
+        uint32_t load_count = 0;
+        do
+        {
+            Field* fields = resultItems->Fetch();
+
+            MySQLStructure::GossipMenuItems gMenuItem;
+
+            gMenuItem.gossipMenu = fields[0].GetUInt32();
+            gMenuItem.itemOrder = fields[1].GetUInt32();
+            gMenuItem.menuOptionText = fields[2].GetUInt32();
+            gMenuItem.icon = fields[3].GetUInt32();
+            gMenuItem.pointOfInterest = fields[4].GetUInt32();
+            gMenuItem.nextGossipMenu = fields[5].GetUInt32();
+            gMenuItem.nextGossipMenuText = fields[6].GetUInt32();
+
+            _gossipMenuItemsStores.insert(GossipMenuItemsContainer::value_type(gMenuItem.gossipMenu, gMenuItem));
+            ++load_count;
+        } while (resultItems->NextRow());
+
+        delete resultItems;
+
+        LogDetail("MySQLDataLoads : Loaded %u rows from `gossip_menu_items` table in %u ms!", load_count, Util::GetTimeDifferenceToNow(startTime));
     }
 }

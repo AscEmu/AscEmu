@@ -134,6 +134,25 @@ namespace MySQLStructure
     //gameobject_staticspawns
     //gameobject_teleports
 
+    //gossip_menu
+    struct GossipMenuInit
+    {
+        uint32_t gossipMenu;
+        uint32_t textId;
+    };
+
+    //gossip_menu_items
+    struct GossipMenuItems
+    {
+        uint32_t gossipMenu;
+        uint32_t itemOrder;
+        uint32_t menuOptionText;
+        uint32_t icon;
+        uint32_t pointOfInterest;
+        uint32_t nextGossipMenu;
+        uint32_t nextGossipMenuText;
+    };
+
     //gossip_menu_option
     struct GossipMenuOption
     {
