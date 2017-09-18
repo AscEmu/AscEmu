@@ -22,10 +22,6 @@
 #include "Management/Gossip/GossipMenu.hpp"
 #include <Units/Creatures/Pet.h>
 
-#define SendQuickMenu(textid) objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), textid, plr); \
-    Menu->SendTo(plr);
-
-
 class TheKesselRun : public QuestScript
 {
 public:
@@ -38,7 +34,6 @@ public:
             mTarget->CastSpell(mTarget, 30829, true);
     }
 };
-
 
 class TheKesselRun1 : public GossipScript
 {
@@ -90,7 +85,6 @@ public:
         }
     }
 };
-
 
 class TheKesselRun2 : public GossipScript
 {
@@ -144,7 +138,6 @@ public:
     }
 };
 
-
 class TheKesselRun3 : public GossipScript
 {
 public:
@@ -197,8 +190,6 @@ public:
     }
 };
 
-
-
 class SavingPrincessStillpine : public GameObjectAIScript
 {
 public:
@@ -227,7 +218,6 @@ public:
         return;
     }
 };
-
 
 class HighChiefBristlelimb : public CreatureAIScript
 {
@@ -259,7 +249,6 @@ private:
 
     int fulborgskilled;
 };
-
 
 class WebbedCreature : public CreatureAIScript
 {

@@ -22,10 +22,6 @@
 #include "Setup.h"
 #include "Management/Gossip/GossipMenu.hpp"
 
-#define SendQuickMenu(textid) objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), textid, plr); \
-    Menu->SendTo(plr);
-
- // Threat from Above
 class ThreatFromAboveQAI : public CreatureAIScript
 {
 public:
@@ -49,7 +45,6 @@ public:
     }
 };
 
-//The Infested Protectors
 class TheInfestedProtectorsQAI : public CreatureAIScript
 {
 public:
@@ -106,7 +101,6 @@ private:
     uint32 finall;
 };
 
-// Taken in the Night
 class TakenInTheNight : public CreatureAIScript
 {
 public:
@@ -174,7 +168,6 @@ public:
     }
 };
 
-// An Improper Burial
 class AnImproperBurial : public CreatureAIScript
 {
 public:
@@ -239,7 +232,6 @@ public:
             break;
         }
     }
-
 };
 
 

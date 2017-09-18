@@ -186,10 +186,6 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // The Dreghood Elders
-
-#define SendQuickMenu(textid) objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), textid, pPlayer); \
-    Menu->SendTo(pPlayer);
-
 class PrisonerGossip : public GossipScript
 {
 public:

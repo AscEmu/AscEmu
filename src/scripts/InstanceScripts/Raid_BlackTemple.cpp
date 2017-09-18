@@ -4242,10 +4242,6 @@ void SpellFunc_Parasitic(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Un
     }
 }
 
-// Akama AI
-#define SendQuickMenu(textid) objmgr.CreateGossipMenuForPlayer(&Menu, pCreature->GetGUID(), textid, plr); \
-    Menu->SendTo(plr);
-
 class SCRIPT_DECL AkamaGossip : public GossipScript
 {
     public:

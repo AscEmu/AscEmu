@@ -21,8 +21,6 @@
 #include "Setup.h"
 #include "Management/Gossip/GossipMenu.hpp"
 
-#define SendQuickMenu(textid) objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), textid, plr); \ Menu->SendTo(plr);
-
 class SpiritScreeches : public GossipScript
 {
 public:
@@ -126,7 +124,6 @@ public:
                 break;
         }
     }
-
 };
 
 

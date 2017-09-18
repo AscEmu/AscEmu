@@ -53,12 +53,8 @@ public:
     }
 };
 
-#define SendQuickMenu(textid) objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), textid, pPlayer); \
-    Menu->SendTo(pPlayer);
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////// Ayren Cloudbreaker Gossip
-
 class SCRIPT_DECL AyrenCloudbreaker_Gossip : public GossipScript
 {
 public:
@@ -96,7 +92,6 @@ public:
             break;
         }
     }
-
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

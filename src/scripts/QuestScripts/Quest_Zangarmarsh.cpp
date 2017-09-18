@@ -22,9 +22,6 @@
 #include "Setup.h"
 #include "Management/Gossip/GossipMenu.hpp"
 
-#define SendQuickMenu(textid) objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), textid, plr); \
-    Menu->SendTo(plr);
-
 class AncientMarks : public GossipScript
 {
 public:
@@ -142,11 +139,11 @@ public:
                 {
                     sEAS.AddItem(24573, plr);
                 }
-                SendQuickMenu(9231);
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9231, plr);
+                Menu->SendTo(plr);
                 break;
         }
     }
-
 };
 
 

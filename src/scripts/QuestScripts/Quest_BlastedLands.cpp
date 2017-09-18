@@ -21,9 +21,6 @@
 #include "Setup.h"
 #include "Management/Gossip/GossipMenu.hpp"
 
-#define SendQuickMenu(textid) objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), textid, plr); \
-    Menu->SendTo(plr);
-
 class HeroesofOld : public QuestScript
 {
 public:
@@ -46,7 +43,6 @@ public:
         }
     }
 };
-
 
 
 class HeroesofOld1 : public GossipScript

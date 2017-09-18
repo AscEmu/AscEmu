@@ -689,10 +689,6 @@ class THEBIGBADWOLFAI : public CreatureAIScript
 
 
 uint32 WayStartBBW[1000000];
-
-#define SendQuickMenu(textid) objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), textid, Plr); \
-    Menu->SendTo(Plr);
-
 class BarnesGS : public GossipScript
 {
     public:
@@ -709,7 +705,6 @@ class BarnesGS : public GossipScript
                 Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(432), 1);     // I'm not an actor.
 
                 Menu->SendTo(Plr);
-
             }
         }
 

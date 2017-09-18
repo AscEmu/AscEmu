@@ -22,9 +22,6 @@
 #include "Setup.h"
 #include "Management/Gossip/GossipMenu.hpp"
 
-#define SendQuickMenu(textid) objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), textid, plr); \
-    Menu->SendTo(plr);
-
 class BeatenCorpse : public GossipScript
 {
 public:
@@ -47,7 +44,8 @@ public:
         {
             case 1:
             {
-                SendQuickMenu(3558);
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3558, plr);
+                Menu->SendTo(plr);
 
                 QuestLogEntry* qle = plr->GetQuestLogForEntry(4921);
                 if (qle == NULL)
