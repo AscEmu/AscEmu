@@ -1799,6 +1799,9 @@ void ObjectMgr::createGuardGossipOptionAndSubMenu(uint64_t senderGuid, Player* p
                         gossipMenu->AddItem(subitr.second.icon, player->GetSession()->LocalizedGossipOption(subitr.second.menuOptionText), subitr.second.itemOrder);
                 }
                 gossipMenu->SendTo(player);
+
+                if (itr.second.pointOfInterest != 0)
+                    player->Gossip_SendSQLPOI(itr.second.pointOfInterest);
             }
         }
     }
