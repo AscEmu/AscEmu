@@ -18,8 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CIRCLE_OF_BLOOD_H
-#define _CIRCLE_OF_BLOOD_H
+#pragma once
 
 #include "Management/Arenas.h"
 #include "Management/Battleground/Battleground.h"
@@ -40,5 +39,3 @@ class CircleOfBlood : public Arena
         LocationVector GetStartingCoords(uint32 Team);
         bool HookHandleRepop(Player *plr);
 };
-
-#endif  // _CIRCLE_OF_BLOOD_H

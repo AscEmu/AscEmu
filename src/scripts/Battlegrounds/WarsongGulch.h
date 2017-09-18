@@ -18,8 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _WARSONG_GULCH_H
-#define _WARSONG_GULCH_H
+#pragma once
 
 #include "Management/Battleground/Battleground.h"
 
@@ -97,5 +96,3 @@ class WarsongGulch : public CBattleground
         void SetIsWeekend(bool isweekend);
         void DespawnGates(uint32 delay);
 };
-
-#endif // _WARSONG_GULCH_H

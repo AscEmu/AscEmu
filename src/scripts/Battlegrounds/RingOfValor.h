@@ -18,8 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _RING_OF_VALOR_H
-#define _RING_OF_VALOR_H
+#pragma once
 
 #include "Management/Arenas.h"
 #include "Management/Battleground/Battleground.h"
@@ -41,5 +40,3 @@ class RingOfValor : public Arena
         void HookOnAreaTrigger(Player* plr, uint32 trigger);
         bool HookHandleRepop(Player* plr);
 };
-
-#endif  // _RING_OF_VALOR_H

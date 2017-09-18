@@ -18,8 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _RING_OF_TRIALS_H
-#define _RING_OF_TRIALS_H
+#pragma once
 
 #include "Management/Arenas.h"
 #include "Management/Battleground/Battleground.h"
@@ -41,5 +40,3 @@ class RingOfTrials : public Arena
         LocationVector GetStartingCoords(uint32 Team);
         bool HookHandleRepop(Player* plr);
 };
-
-#endif  // _RING_OF_TRIALS_H

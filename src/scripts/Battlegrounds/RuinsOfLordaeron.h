@@ -18,8 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _RUINS_OF_LORDAERON_H
-#define _RUINS_OF_LORDAERON_H
+#pragma once
 
 #include "Management/Arenas.h"
 #include "Management/Battleground/Battleground.h"
@@ -42,5 +41,3 @@ class RuinsOfLordaeron : public Arena
         void HookOnAreaTrigger(Player* plr, uint32 trigger);
         bool HookHandleRepop(Player* plr);
 };
-
-#endif  // _RUINS_OF_LORDAERON_H

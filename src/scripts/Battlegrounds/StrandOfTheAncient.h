@@ -18,8 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _STRAND_OF_THE_ANCIENT_H
-#define _STRAND_OF_THE_ANCIENT_H
+#pragma once
 
 #include "Management/Battleground/Battleground.h"
 
@@ -229,5 +228,3 @@ class StrandOfTheAncient : public CBattleground
         void SpawnGraveyard(SOTAGraveyards gyid, uint32 team);
 
 };
-
-#endif  // _STRAND_OF_THE_ANCIENT_H

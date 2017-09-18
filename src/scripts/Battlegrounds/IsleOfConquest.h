@@ -17,8 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _ISLE_OF_CONQUEST_H
-#define _ISLE_OF_CONQUEST_H
+#pragma once
 
 #include "Management/Battleground/Battleground.h"
 #include "Units/Creatures/Vehicle.h"
@@ -245,5 +244,3 @@ class IsleOfConquest : public CBattleground
         Unit* generals[MAX_PLAYER_TEAMS];
         uint32 m_reinforcements[MAX_PLAYER_TEAMS];
 };
-
-#endif  // _ISLE_OF_CONQUEST_H

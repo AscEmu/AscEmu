@@ -18,8 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EYE_OF_THE_STORM_H
-#define _EYE_OF_THE_STORM_H
+#pragma once
 
 #include "Management/Battleground/Battleground.h"
 
@@ -115,5 +114,3 @@ class EyeOfTheStorm : public CBattleground
         uint32 m_points[2];
         Creature* m_spiritGuides[EOTS_TOWER_COUNT];
 };
-
-#endif  // _EYE_OF_THE_STORM_H

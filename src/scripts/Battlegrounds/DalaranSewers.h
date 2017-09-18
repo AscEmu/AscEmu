@@ -18,8 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _DALARAN_SEWERS_H
-#define _DALARAN_SEWERS_H
+#pragma once
 
 #include "Management/Arenas.h"
 #include "Management/Battleground/Battleground.h"
@@ -41,5 +40,3 @@ class DalaranSewers : public Arena
         void HookOnAreaTrigger(Player* plr, uint32 trigger);
         bool HookHandleRepop(Player* plr);
 };
-
-#endif  // _DALARAN_SEWERS_H

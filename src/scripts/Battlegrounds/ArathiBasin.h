@@ -18,8 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _ARATHI_BASIN_H
-#define _ARATHI_BASIN_H
+#pragma once
 
 #include "Management/Battleground/Battleground.h"
 
@@ -118,5 +117,3 @@ class ArathiBasin : public CBattleground
 
         void SetIsWeekend(bool isweekend);
 };
-
-#endif  // _ARATHI_BASIN_H

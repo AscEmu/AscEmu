@@ -18,8 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _ALTERAC_VALLERY_H
-#define _ALTERAC_VALLERY_H
+#pragma once
 
 #include "Management/Battleground/Battleground.h"
 
@@ -264,5 +263,3 @@ class AlteracValley : public CBattleground
 
             AVNode* m_nodes[AV_NUM_CONTROL_POINTS];
 };
-
-#endif  // _ALTERAC_VALLERY_H
