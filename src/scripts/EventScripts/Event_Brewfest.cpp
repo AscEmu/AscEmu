@@ -11,7 +11,7 @@
 // event_properties entry: 24 \n
 // event_properties holiday: 372 \n
 
-/// Boss Coren Direbrew
+// Boss Coren Direbrew
 enum eGossipTexts
 {
     DIREBREW_1 = 15858,
@@ -86,15 +86,15 @@ void SetupBrewfest(ScriptMgr* mgr)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-///\details <b>Brew of the Month</b>\n
-/// Brew of the Month Vendors \n
-/// -> Accept Quest on Brewfest (qid: 12421) \n
-/// -> bringt the ticket(id: 37829) to npc \n
-/// -> get every month mail with the brew of the month. \n
-/// -> earn achievement "Brew of the Month" (id: 2796) \n
-/// -> can buy brew of the month after finishing the quest. \n
-/// f.e. Larkin Thunderbrew \n
-///\todo check botm npcs (vendoritems, gossip, ...)
+//\details <b>Brew of the Month</b>\n
+// Brew of the Month Vendors \n
+// -> Accept Quest on Brewfest (qid: 12421) \n
+// -> bringt the ticket(id: 37829) to npc \n
+// -> get every month mail with the brew of the month. \n
+// -> earn achievement "Brew of the Month" (id: 2796) \n
+// -> can buy brew of the month after finishing the quest. \n
+// f.e. Larkin Thunderbrew \n
+//\todo check botm npcs (vendoritems, gossip, ...)
 
 
 

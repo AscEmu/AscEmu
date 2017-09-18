@@ -17,16 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Raid_TheObsidianSanctum.h"
-
-
-
-#define SARTHARION_FLAME_BREATH HeroicInt(56908, 58956)
-#define SARTHARION_TAIL_LASH    HeroicInt(56910, 58957)
-
-
 
 class ObsidianSanctumScript : public MoonInstanceScript
 {
@@ -174,10 +166,10 @@ class SartharionAI : public MoonScriptBossAI
 
             AddSpell(SARTHARION_CLEAVE, Target_Current, 24, 0, 8);
 
-            SpellDesc* mFlame = AddSpell(SARTHARION_FLAME_BREATH, Target_Self, 18, 2, 16);
+            SpellDesc* mFlame = AddSpell(HeroicInt(56908, 58956), Target_Self, 18, 2, 16);
             mFlame->AddEmote("Burn, you miserable wretches!", Text_Yell, 14098);
 
-            AddSpell(SARTHARION_TAIL_LASH, Target_Self, 40, 0, 12);
+            AddSpell(HeroicInt(56910, 58957), Target_Self, 40, 0, 12);
             mFlameTsunami = AddSpellFunc(&SpellFunc_FlameTsunami, Target_Self, 99, 0, 25);
             mSummonLava = AddSpellFunc(&SpellFunc_LavaSpawn, Target_RandomUnitNotCurrent, 25, 0, 8);
 

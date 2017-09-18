@@ -346,7 +346,7 @@ class MoonScriptCreatureAI : public CreatureAIScript
 
         //Instances
         bool IsHeroic();
-        int32 HeroicInt(int32 pNormal, int32 pHeroic) { return IsHeroic() ? pHeroic : pNormal; }
+        uint32 HeroicInt(uint32 pNormal, uint32 pHeroic) { return IsHeroic() ? pHeroic : pNormal; }
         MoonInstanceScript* GetInstanceScript();
 
         void CastOnAllInrangePlayers(uint32 pSpellId, bool pTriggered = false);

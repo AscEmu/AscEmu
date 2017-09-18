@@ -313,14 +313,10 @@ class GeneralBjarngrimAI : public MoonScriptBossAI
 
 
 // Main Spells
-#define SPELL_HEAT                  HeroicInt(52237, 59529)
-#define SPELL_SHATTERING_STOMP      HeroicInt(52237, 59529)
 const uint32 SPELL_TEMPER = 52238;
 
 // Molten Golem Spells
 const uint32 SPELL_BLAST_WAVE = 23113;
-#define SPELL_IMMOLATION_STRIKE     HeroicInt(52433, 59530)
-#define SPELL_SHATTER               HeroicInt(52429, 59527)
 // 24 seconds + up to 6
 const uint32 TIMER_STOMP = 24000;
 
@@ -334,8 +330,8 @@ class Volkhan : public MoonScriptCreatureAI
     {
         mInstance = GetInstanceScript();
 
-        AddSpell(SPELL_HEAT, Target_WoundedFriendly, 15, 1.5f, 15);
-        mStomp = AddSpell(SPELL_SHATTERING_STOMP, Target_Self, 0, 3, 0);
+        AddSpell(HeroicInt(52237, 59529), Target_WoundedFriendly, 15, 1.5f, 15);
+        mStomp = AddSpell(HeroicInt(52237, 59529), Target_Self, 0, 3, 0);
 
         mStomp->AddEmote("I will crush you beneath my boots!", Text_Yell, 13963);
         mStomp->AddEmote("All my work... undone!", Text_Yell, 13964);
@@ -448,7 +444,7 @@ class Volkhan : public MoonScriptCreatureAI
             if ((*itr) && (*itr)->IsCreature() && (*itr)->GetEntry() == CN_BRITTLE_GOLEM)
             {
                 Creature* pCreature = static_cast< Creature* >((*itr));
-                pCreature->CastSpell(pCreature, SPELL_SHATTER, true);
+                pCreature->CastSpell(pCreature, HeroicInt(52429, 59527), true);
 
                 pCreature->Despawn(1000, 0);
             };
@@ -477,7 +473,7 @@ class MoltenGolem : public MoonScriptCreatureAI
     MoltenGolem(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         AddSpell(SPELL_BLAST_WAVE, Target_Self, 25, 0, 20);
-        AddSpell(SPELL_IMMOLATION_STRIKE, Target_Current, 15, 0, 15);
+        AddSpell(HeroicInt(52433, 59530), Target_Current, 15, 0, 15);
     };
 
     void OnDied(Unit* pKiller)
@@ -512,12 +508,7 @@ class VolkhansAnvil : public MoonScriptCreatureAI
 };
 
 const uint32 DISPRESE = 52770;;
-#define BALL_LIGHTNING      HeroicInt(52780, 59800)
-#define STATIC_OVERLOAD     HeroicInt(52658, 59795)
 const uint32 SPELL_SUMMON_SPARK = 52746;
-
-#define ARCING_BURN         HeroicInt(52671, 59834)
-
 /////////////////////////////////////////////////////////////////////////////////
 /// Ionar
 // Status: Basic script, missing spark phase
@@ -528,8 +519,8 @@ class IonarAI : public MoonScriptBossAI
     {
         mInstance = GetInstanceScript();
 
-        AddSpell(BALL_LIGHTNING, Target_RandomPlayerNotCurrent, 20, 1.5f, 5);
-        AddSpell(STATIC_OVERLOAD, Target_RandomPlayerNotCurrent, 15, 0, 12);
+        AddSpell(HeroicInt(52780, 59800), Target_RandomPlayerNotCurrent, 20, 1.5f, 5);
+        AddSpell(HeroicInt(52658, 59795), Target_RandomPlayerNotCurrent, 15, 0, 12);
     }
 
     void OnCombatStart(Unit* pTarget)
@@ -575,10 +566,8 @@ class IonarAI : public MoonScriptBossAI
 };
 
 
-#define PULSING_SHOCKWAVE       HeroicInt(52961, 59836)
 const uint32 PULSING_SHOCKWAVE_AURA = 59414;
 const uint32 ARC_LIGHTNING = 52921;
-#define LIGHTNING_NOVA          HeroicInt(52960, 59835)
 // 14 seconds + random up to 8
 const uint32 TIMER_NOVA = 14000;
 const uint32 TIMER_RESPOND = 18000;
@@ -591,7 +580,7 @@ class LokenAI : public MoonScriptCreatureAI
     LokenAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         mInstance = GetInstanceScript();
-        mNova = AddSpell(LIGHTNING_NOVA, Target_Self, 0, 4.0f, 0);
+        mNova = AddSpell(HeroicInt(52960, 59835), Target_Self, 0, 4.0f, 0);
         AddSpell(ARC_LIGHTNING, Target_RandomPlayer, 25, 0, 6);
 
         Emote("I have witnessed the rise and fall of empires. The birth and extinction of entire species. Over countless millennia the foolishness of mortals has remained the only constant. Your presence here confirms this.", Text_Yell, 14160);
@@ -608,7 +597,7 @@ class LokenAI : public MoonScriptCreatureAI
 
         ParentClass::OnCombatStart(pTarget);
         mSpeech = 1;
-        ApplyAura(PULSING_SHOCKWAVE);
+        ApplyAura(HeroicInt(52961, 59836));
         mNovaTimer = AddTimer(TIMER_NOVA);
         CastOnAllInrangePlayers(PULSING_SHOCKWAVE_AURA);
 

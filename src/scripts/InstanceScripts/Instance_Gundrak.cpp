@@ -354,12 +354,8 @@ class GundrakScript : public MoonInstanceScript
         };
 };
 
-
-#define POISON_NOVA         HeroicInt(55081, 59842)
-#define POWERFUL_BITE       HeroicInt(48287, 59840)
-#define VENOM_BOLT          HeroicInt(54970, 59839)
 /////////////////////////////////////////////////////////////////////////////////
-/// Slad'ran encounter
+// Slad'ran encounter
 // Status: 50% done, missing add related stuff and maybe correct timers
 class SladranAI : public MoonScriptCreatureAI
 {
@@ -368,11 +364,11 @@ class SladranAI : public MoonScriptCreatureAI
     {
         mInstance = GetInstanceScript();
 
-        SpellDesc* sdPoisonNova = AddSpell(POISON_NOVA, Target_Self, 10, 3.5f, 16);
+        SpellDesc* sdPoisonNova = AddSpell(HeroicInt(55081, 59842), Target_Self, 10, 3.5f, 16);
         sdPoisonNova->AddAnnouncement("Slad'ran begins to cast Poison Nova!");
 
-        AddSpell(POWERFUL_BITE, Target_Current, 25, 0, 6);
-        AddSpell(VENOM_BOLT, Target_RandomPlayerNotCurrent, 18, 1.5f, 8);
+        AddSpell(HeroicInt(48287, 59840), Target_Current, 25, 0, 6);
+        AddSpell(HeroicInt(54970, 59839), Target_RandomPlayerNotCurrent, 18, 1.5f, 8);
     }
 
     void OnCombatStart(Unit* pTarget)
@@ -417,9 +413,8 @@ class SladranAI : public MoonScriptCreatureAI
 };
 
 
-#define WHIRLING_SLASH    HeroicInt(55250, 59824)
 /////////////////////////////////////////////////////////////////////////////////
-/// Gal'darah encounter
+// Gal'darah encounter
 // Status: 20% done, missing rihno part, need vehicle support for that, missing stampade script
 class GalDarahAI : public MoonScriptCreatureAI
 {
@@ -428,7 +423,7 @@ class GalDarahAI : public MoonScriptCreatureAI
     {
         mInstance = GetInstanceScript();
 
-        AddSpell(WHIRLING_SLASH, Target_Self, 20, 0, 12);
+        AddSpell(HeroicInt(55250, 59824), Target_Self, 20, 0, 12);
     }
 
     void OnCombatStart(Unit* pTarget)

@@ -3,8 +3,7 @@
  This file is released under the MIT license. See README-MIT for more information.
  */
 
-#ifndef _DARKMOONFAIRE_H
-#define _DARKMOONFAIRE_H
+#pragma once
 
 enum DarkmoonFaireCreatureTexts
 {
@@ -67,5 +66,3 @@ enum DarkmoonFaireCreatureTexts
     BARK_MAXIMA_1 = 7789,       // in npc_text
     BARK_MAXIMA_2 = 7790        // in npc_text
 };
-
-#endif // _DARKMOONFAIRE_H
