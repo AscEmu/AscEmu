@@ -23,116 +23,112 @@
 
 #define SendQuickMenu(textid) objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), textid, plr); \ Menu->SendTo(plr);
 
-
-
 class SpiritScreeches : public GossipScript
 {
-    public:
-        void GossipHello(Object* pObject, Player* plr)
+public:
+    void GossipHello(Object* pObject, Player* plr)
+    {
+        if (!plr)
+            return;
+
+        GossipMenu* Menu;
+        Creature* spirit = static_cast<Creature*>(pObject);
+        if (spirit == NULL)
+            return;
+
+        if (plr->HasQuest(3520))
         {
-            if(!plr)
-                return;
+            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 2039, plr);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(495), 1);     // Goodbye
 
-            GossipMenu* Menu;
-            Creature* spirit = static_cast<Creature*>(pObject);
-            if(spirit == NULL)
-                return;
-
-            if(plr->HasQuest(3520))
-            {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 2039, plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(495), 1);     // Goodbye
-
-                Menu->SendTo(plr);
-            }
-
-
-
+            Menu->SendTo(plr);
         }
+    }
 
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
+    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
+    {
+        if (!plr)
+            return;
+
+        Creature* spirit = static_cast<Creature*>(pObject);
+        if (spirit == NULL)
+            return;
+
+        switch (IntId)
         {
-            if(!plr)
-                return;
+            case 0:
+                GossipHello(pObject, plr);
+                break;
 
-            Creature* spirit = static_cast<Creature*>(pObject);
-            if(spirit == NULL)
-                return;
-
-            switch(IntId)
+            case 1:
             {
-                case 0:
-                    GossipHello(pObject, plr);
-                    break;
+                QuestLogEntry* en = plr->GetQuestLogForEntry(3520);
+                if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
+                {
+                    en->SetMobCount(0, en->GetMobCount(0) + 1);
+                    en->SendUpdateAddKill(0);
+                    en->UpdatePlayerFields();
+                }
 
-                case 1:
-                    {
-                        QuestLogEntry* en = plr->GetQuestLogForEntry(3520);
-                        if(en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-                        {
-                            en->SetMobCount(0, en->GetMobCount(0) + 1);
-                            en->SendUpdateAddKill(0);
-                            en->UpdatePlayerFields();
-                        }
+                spirit->Despawn(1, 0);
+                return;
 
-                        spirit->Despawn(1, 0);
-                        return;
-
-                    }
             }
         }
+    }
 
 };
 
 class ScreecherSpirit : public CreatureAIScript
 {
-    public:
-        ADD_CREATURE_FACTORY_FUNCTION(ScreecherSpirit);
+public:
+    ADD_CREATURE_FACTORY_FUNCTION(ScreecherSpirit);
 
-        ScreecherSpirit(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    ScreecherSpirit(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnLoad()
-        {
-            if(!_unit)
-                return;
+    void OnLoad()
+    {
+        if (!_unit)
+            return;
 
-            Creature* cialo = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 5307);
-            if(!cialo)
-                return;
+        Creature* cialo = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 5307);
+        if (!cialo)
+            return;
 
-            if(!cialo->isAlive())
-                cialo->Despawn(1, 6 * 60 * 1000);
+        if (!cialo->isAlive())
+            cialo->Despawn(1, 6 * 60 * 1000);
 
-            _unit->Despawn(60 * 1000, 0);
-        }
+        _unit->Despawn(60 * 1000, 0);
+    }
 };
 
 class StewardOfTime : public GossipScript
 {
-    public:
-        void GossipHello(Object* pObject, Player* plr)
+public:
+    void GossipHello(Object* pObject, Player* plr)
+    {
+        GossipMenu* Menu;
+        if (plr->HasQuest(10279) || plr->HasFinishedQuest(10279))
         {
-            GossipMenu* Menu;
-            if(plr->HasQuest(10279) || plr->HasFinishedQuest(10279))
-            {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9978, plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(496), 1);     // Please take me to the Master's Lair
-                Menu->SendTo(plr);
-            }
+            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9978, plr);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(496), 1);     // Please take me to the Master's Lair
+            Menu->SendTo(plr);
         }
+    }
 
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    {
+        Creature* creat = static_cast<Creature*>(pObject);
+        switch (IntId)
         {
-            Creature* creat = static_cast<Creature*>(pObject);
-            switch(IntId)
-            {
-                case 1:
-                    creat->CastSpell(plr, sSpellCustomizations.GetSpellInfo(34891), true);
-                    break;
-            }
+            case 1:
+                creat->CastSpell(plr, sSpellCustomizations.GetSpellInfo(34891), true);
+                break;
         }
+    }
 
 };
+
 
 void SetupTanaris(ScriptMgr* mgr)
 {

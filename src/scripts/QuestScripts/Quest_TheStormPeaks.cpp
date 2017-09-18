@@ -19,103 +19,103 @@
 #include "Setup.h"
 #include "Management/Gossip/GossipMenu.hpp"
 
-// The Gifts of Loken
+ // The Gifts of Loken
 class LokensFury : public GameObjectAIScript
 {
-    public:
-        ADD_GAMEOBJECT_FACTORY_FUNCTION(LokensFury);
-        LokensFury(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+public:
+    ADD_GAMEOBJECT_FACTORY_FUNCTION(LokensFury);
+    LokensFury(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
 
-        void OnActivate(Player* pPlayer)
-        {
-            if(sEAS.GetQuest(pPlayer, 12965))
-                sEAS.KillMobForQuest(pPlayer, 12965, 0);
-        };
+    void OnActivate(Player* pPlayer)
+    {
+        if (sEAS.GetQuest(pPlayer, 12965))
+            sEAS.KillMobForQuest(pPlayer, 12965, 0);
+    };
 
 };
 
 class LokensPower : public GameObjectAIScript
 {
-    public:
-        ADD_GAMEOBJECT_FACTORY_FUNCTION(LokensPower);
-        LokensPower(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+public:
+    ADD_GAMEOBJECT_FACTORY_FUNCTION(LokensPower);
+    LokensPower(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
 
-        void OnActivate(Player* pPlayer)
-        {
-            if(sEAS.GetQuest(pPlayer, 12965))
-                sEAS.KillMobForQuest(pPlayer, 12965, 1);
-        };
+    void OnActivate(Player* pPlayer)
+    {
+        if (sEAS.GetQuest(pPlayer, 12965))
+            sEAS.KillMobForQuest(pPlayer, 12965, 1);
+    };
 
 };
 
 class LokensFavor : public GameObjectAIScript
 {
-    public:
-        ADD_GAMEOBJECT_FACTORY_FUNCTION(LokensFavor);
-        LokensFavor(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+public:
+    ADD_GAMEOBJECT_FACTORY_FUNCTION(LokensFavor);
+    LokensFavor(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
 
-        void OnActivate(Player* pPlayer)
-        {
-            if(sEAS.GetQuest(pPlayer, 12965))
-                sEAS.KillMobForQuest(pPlayer, 12965, 2);
-        };
+    void OnActivate(Player* pPlayer)
+    {
+        if (sEAS.GetQuest(pPlayer, 12965))
+            sEAS.KillMobForQuest(pPlayer, 12965, 2);
+    };
 
 };
-
 
 class SCRIPT_DECL MissingScout_Gossip : public GossipScript
 {
-    public:
-        void GossipHello(Object* pObject, Player* plr)
-        {
-            GossipMenu* Menu;
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 13611, plr);
-            if(plr->HasQuest(12864))
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(499), 1);     // Are you okay? I've come to take you back to Frosthold if you can stand.
+public:
+    void GossipHello(Object* pObject, Player* plr)
+    {
+        GossipMenu* Menu;
+        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 13611, plr);
+        if (plr->HasQuest(12864))
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(499), 1);     // Are you okay? I've come to take you back to Frosthold if you can stand.
 
-            Menu->SendTo(plr);
-        }
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
-        {
-            Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
-            if(pCreature == NULL)
-                return;
+        Menu->SendTo(plr);
+    }
+    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    {
+        Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
+        if (pCreature == NULL)
+            return;
 
-            GossipMenu* Menu;
-            switch(IntId)
+        GossipMenu* Menu;
+        switch (IntId)
+        {
+            case 1:
             {
-                case 1:
-                    {
-                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 13612, plr);
-                        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(500), 2);     // I'm sorry that I didn't get here sooner. What happened?
-                        Menu->SendTo(plr);
-                    }
-                    break;
-                case 2:
-                    {
-                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 13613, plr);
-                        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(501), 3);     // I'll go get some help. Hang in there.
-                        Menu->SendTo(plr);
-                    }
-                    break;
-                case 3:
-                    {
-                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 13614, plr);
-                        Menu->SendTo(plr);
-
-                        QuestLogEntry* qle = plr->GetQuestLogForEntry(12864);
-                        if(qle == NULL || qle->GetMobCount(0) != 0)
-                            return;
-
-                        qle->SetMobCount(0, 1);
-                        qle->SendUpdateAddKill(0);
-                        qle->UpdatePlayerFields();
-                    }
-                    break;
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 13612, plr);
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(500), 2);     // I'm sorry that I didn't get here sooner. What happened?
+                Menu->SendTo(plr);
             }
+            break;
+            case 2:
+            {
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 13613, plr);
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(501), 3);     // I'll go get some help. Hang in there.
+                Menu->SendTo(plr);
+            }
+            break;
+            case 3:
+            {
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 13614, plr);
+                Menu->SendTo(plr);
+
+                QuestLogEntry* qle = plr->GetQuestLogForEntry(12864);
+                if (qle == NULL || qle->GetMobCount(0) != 0)
+                    return;
+
+                qle->SetMobCount(0, 1);
+                qle->SendUpdateAddKill(0);
+                qle->UpdatePlayerFields();
+            }
+            break;
         }
+    }
 
 };
+
 
 void SetupTheStormPeaks(ScriptMgr* mgr)
 {

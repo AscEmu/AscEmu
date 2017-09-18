@@ -1,22 +1,6 @@
 /*
-* AscEmu Framework based on ArcEmu MMORPG Server
-* Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
-* Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
-* Copyright (C) 2008-2009 Sun++ Team <http://www.sunplusplus.info/>
-* Copyright (C) 2008 WEmu Team
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+This file is released under the MIT license. See README-MIT for more information.
 */
 
 #include "Setup.h"
@@ -57,37 +41,38 @@ static Movement::LocationWithFlag WaypointPlainVision[] =
 
 class The_Plains_Vision : public MoonScriptCreatureAI
 {
-    public:
+public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(The_Plains_Vision, MoonScriptCreatureAI);
-        The_Plains_Vision(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    MOONSCRIPT_FACTORY_FUNCTION(The_Plains_Vision, MoonScriptCreatureAI);
+    The_Plains_Vision(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    {
+        WPCount = 22;
+        WayPoints = WaypointPlainVision;
+        _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
+
+
+        for (uint8 i = 1; i < WPCount; ++i)
         {
-            WPCount = 22;
-            WayPoints = WaypointPlainVision;
-            _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-
-
-            for (uint8 i = 1; i < WPCount; ++i)
-            {
-                AddWaypoint(CreateWaypoint(i, 0, WayPoints[i]));
-            }
+            AddWaypoint(CreateWaypoint(i, 0, WayPoints[i]));
         }
+    }
 
-        void OnReachWP(uint32 iWaypointId, bool bForwards)
+    void OnReachWP(uint32 iWaypointId, bool bForwards)
+    {
+        if (iWaypointId == 1)
+            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You follow me.");
+        if (iWaypointId == 22)
         {
-            if(iWaypointId == 1)
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You follow me.");
-            if(iWaypointId == 22)
-            {
 
-                sEAS.DeleteWaypoints(_unit);
-                _unit->Despawn(500, 0);
-            }
+            sEAS.DeleteWaypoints(_unit);
+            _unit->Despawn(500, 0);
         }
+    }
 
-        uint8 WPCount;
-        Movement::LocationWithFlag* WayPoints;
+    uint8 WPCount;
+    Movement::LocationWithFlag* WayPoints;
 };
+
 
 void SetupMulgore(ScriptMgr* mgr)
 {

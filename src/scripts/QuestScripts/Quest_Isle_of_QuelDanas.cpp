@@ -21,48 +21,37 @@
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/TaxiMgr.h"
 
-/*--------------------------------------------------------------------------------------------------------*/
-// Crisis at the Sunwell
-
 class ScryingOrb : public GameObjectAIScript
 {
-    public:
-        ScryingOrb(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
-        static GameObjectAIScript* Create(GameObject* GO) { return new ScryingOrb(GO); }
+public:
+    ScryingOrb(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    static GameObjectAIScript* Create(GameObject* GO) { return new ScryingOrb(GO); }
 
-        void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer)
+    {
+        QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(11490);
+        if (qle)
         {
-            QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(11490);
-            if(qle)
-            {
-                float SSX = pPlayer->GetPositionX();
-                float SSY = pPlayer->GetPositionY();
-                float SSZ = pPlayer->GetPositionZ();
+            float SSX = pPlayer->GetPositionX();
+            float SSY = pPlayer->GetPositionY();
+            float SSZ = pPlayer->GetPositionZ();
 
-                GameObject* pOrb = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(SSX, SSY, SSZ, 187578);
-                if(pOrb)
-                {
-                    pOrb->SetState(GO_STATE_OPEN);
-                    qle->SetMobCount(0, 1);
-                    qle->SendUpdateAddKill(0);
-                    qle->UpdatePlayerFields();
-                }
-                return;
-            }
-            else
+            GameObject* pOrb = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(SSX, SSY, SSZ, 187578);
+            if (pOrb)
             {
-                pPlayer->BroadcastMessage("Missing required quest : The Scryer's Scryer");
+                pOrb->SetState(GO_STATE_OPEN);
+                qle->SetMobCount(0, 1);
+                qle->SendUpdateAddKill(0);
+                qle->UpdatePlayerFields();
             }
+            return;
         }
+        else
+        {
+            pPlayer->BroadcastMessage("Missing required quest : The Scryer's Scryer");
+        }
+    }
 };
-
-
-
-
-
-
-
-
 
 #define SendQuickMenu(textid) objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), textid, pPlayer); \
     Menu->SendTo(pPlayer);
@@ -72,41 +61,41 @@ class ScryingOrb : public GameObjectAIScript
 
 class SCRIPT_DECL AyrenCloudbreaker_Gossip : public GossipScript
 {
-    public:
-        void GossipHello(Object* pObject, Player* pPlayer)
+public:
+    void GossipHello(Object* pObject, Player* pPlayer)
+    {
+        GossipMenu* Menu;
+        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 12252, pPlayer);
+
+        if (pPlayer->HasQuest(11532) || pPlayer->HasQuest(11533))
+            Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(466), 1);     // Speaking of action, I've been ordered to undertake an air strike.
+
+        if (pPlayer->HasQuest(11543) || pPlayer->HasQuest(11542))
+            Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(467), 2);     // I need to intercept the Dawnblade reinforcements.
+
+        Menu->SendTo(pPlayer);
+    }
+
+    void GossipSelectOption(Object* pObject, Player* pPlayer, uint32 Id, uint32 IntId, const char* Code)
+    {
+        switch (IntId)
         {
-            GossipMenu* Menu;
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 12252, pPlayer);
-
-            if(pPlayer->HasQuest(11532) || pPlayer->HasQuest(11533))
-                Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(466), 1);     // Speaking of action, I've been ordered to undertake an air strike.
-
-            if(pPlayer->HasQuest(11543) || pPlayer->HasQuest(11542))
-                Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(467), 2);     // I need to intercept the Dawnblade reinforcements.
-
-            Menu->SendTo(pPlayer);
-        }
-
-        void GossipSelectOption(Object* pObject, Player* pPlayer, uint32 Id, uint32 IntId, const char* Code)
-        {
-            switch(IntId)
+            case 1:
             {
-                case 1:
-                    {
-                        TaxiPath* pPath = sTaxiMgr.GetTaxiPath(779);
-                        pPlayer->TaxiStart(pPath, 22840, 0);
-                        pPlayer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
-                    }
-                    break;
-                case 2:
-                    {
-                        TaxiPath* pPath = sTaxiMgr.GetTaxiPath(784);
-                        pPlayer->TaxiStart(pPath, 22840, 0);
-                        pPlayer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
-                    }
-                    break;
+                TaxiPath* pPath = sTaxiMgr.GetTaxiPath(779);
+                pPlayer->TaxiStart(pPath, 22840, 0);
+                pPlayer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
             }
+            break;
+            case 2:
+            {
+                TaxiPath* pPath = sTaxiMgr.GetTaxiPath(784);
+                pPlayer->TaxiStart(pPath, 22840, 0);
+                pPlayer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
+            }
+            break;
         }
+    }
 
 };
 
@@ -115,72 +104,68 @@ class SCRIPT_DECL AyrenCloudbreaker_Gossip : public GossipScript
 
 class SCRIPT_DECL UnrestrainedDragonhawk_Gossip : public GossipScript
 {
-    public:
-        void GossipHello(Object* pObject, Player* pPlayer)
-        {
-            GossipMenu* Menu;
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 12371, pPlayer);
-            if(pPlayer->HasQuest(11543) || pPlayer->HasQuest(11542))
-                Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(468), 1);     // <Ride the dragonhawk to Sun's Reach>
+public:
+    void GossipHello(Object* pObject, Player* pPlayer)
+    {
+        GossipMenu* Menu;
+        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 12371, pPlayer);
+        if (pPlayer->HasQuest(11543) || pPlayer->HasQuest(11542))
+            Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(468), 1);     // <Ride the dragonhawk to Sun's Reach>
 
-            Menu->SendTo(pPlayer);
-        }
+        Menu->SendTo(pPlayer);
+    }
 
-        void GossipSelectOption(Object* pObject, Player* pPlayer, uint32 Id, uint32 IntId, const char* Code)
+    void GossipSelectOption(Object* pObject, Player* pPlayer, uint32 Id, uint32 IntId, const char* Code)
+    {
+        switch (IntId)
         {
-            switch(IntId)
+            case 1:
             {
-                case 1:
-                    {
-                        TaxiPath* pPath = sTaxiMgr.GetTaxiPath(788);
-                        pPlayer->TaxiStart(pPath, 22840, 0);
-                        pPlayer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
-                    }
-                    break;
+                TaxiPath* pPath = sTaxiMgr.GetTaxiPath(788);
+                pPlayer->TaxiStart(pPath, 22840, 0);
+                pPlayer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
             }
+            break;
         }
+    }
 
 };
 
 // The Battle for the Sun's Reach Armory
 class TheBattleForTheSunReachArmory : public CreatureAIScript
 {
-    public:
-        ADD_CREATURE_FACTORY_FUNCTION(TheBattleForTheSunReachArmory);
-        TheBattleForTheSunReachArmory(Creature* pCreature) : CreatureAIScript(pCreature)  {}
+public:
+    ADD_CREATURE_FACTORY_FUNCTION(TheBattleForTheSunReachArmory);
+    TheBattleForTheSunReachArmory(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnDied(Unit* pKiller)
+    void OnDied(Unit* pKiller)
+    {
+        if (pKiller->IsPlayer())
         {
-            if(pKiller->IsPlayer())
+            QuestLogEntry* qle = (static_cast<Player*>(pKiller))->GetQuestLogForEntry(11537);
+            if (qle == NULL)
             {
-                QuestLogEntry* qle = (static_cast<Player*>(pKiller))->GetQuestLogForEntry(11537);
-                if(qle == NULL)
-                {
-                    qle = (static_cast<Player*>(pKiller))->GetQuestLogForEntry(11538);
-                    if(qle == NULL)
-                        return;
-                }
-
-                if(qle->GetMobCount(1) < qle->GetQuest()->required_mob_or_go_count[1])
-                {
-                    uint32 newcount = qle->GetMobCount(1) + 1;
-                    qle->SetMobCount(1, newcount);
-                    qle->SendUpdateAddKill(1);
-                    qle->UpdatePlayerFields();
+                qle = (static_cast<Player*>(pKiller))->GetQuestLogForEntry(11538);
+                if (qle == NULL)
                     return;
-                }
+            }
+
+            if (qle->GetMobCount(1) < qle->GetQuest()->required_mob_or_go_count[1])
+            {
+                uint32 newcount = qle->GetMobCount(1) + 1;
+                qle->SetMobCount(1, newcount);
+                qle->SendUpdateAddKill(1);
+                qle->UpdatePlayerFields();
+                return;
             }
         }
+    }
 };
-
 
 
 void SetupIsleOfQuelDanas(ScriptMgr* mgr)
 {
     mgr->register_gameobject_script(187578, &ScryingOrb::Create);
-
-
-
     mgr->register_creature_script(24999, &TheBattleForTheSunReachArmory::Create);
     mgr->register_creature_script(25001, &TheBattleForTheSunReachArmory::Create);
     mgr->register_creature_script(25002, &TheBattleForTheSunReachArmory::Create);

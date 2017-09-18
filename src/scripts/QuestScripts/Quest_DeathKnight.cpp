@@ -23,82 +23,82 @@
 
 class GossipScourgeGryphon : public GossipScript
 {
-    public:
+public:
 
-        void GossipHello(Object* pObject, Player* plr)
+    void GossipHello(Object* pObject, Player* plr)
+    {
+        if (plr->HasQuest(12670) || plr->HasFinishedQuest(12670))
         {
-            if (plr->HasQuest(12670) || plr->HasFinishedQuest(12670))
-            {
-                if (TaxiPath* path = sTaxiMgr.GetTaxiPath(pObject->GetEntry() == 29488 ? 1053 : 1054))
-                    plr->TaxiStart(path, 26308, 0);
-            }
+            if (TaxiPath* path = sTaxiMgr.GetTaxiPath(pObject->GetEntry() == 29488 ? 1053 : 1054))
+                plr->TaxiStart(path, 26308, 0);
         }
+    }
 };
 
-#define CN_INITIATE_1                29519
-#define CN_INITIATE_2                29565
-#define CN_INITIATE_3                29567
-#define CN_INITIATE_4                29520
+const uint32 CN_INITIATE_1 = 29519;
+const uint32 CN_INITIATE_2 = 29565;
+const uint32 CN_INITIATE_3 = 29567;
+const uint32 CN_INITIATE_4 = 29520;
 
 class AcherusSoulPrison : GameObjectAIScript
 {
-    public:
+public:
 
-        AcherusSoulPrison(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
-        static GameObjectAIScript* Create(GameObject* GO)
-        {
-            return new AcherusSoulPrison(GO);
-        }
+    AcherusSoulPrison(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    static GameObjectAIScript* Create(GameObject* GO)
+    {
+        return new AcherusSoulPrison(GO);
+    }
 
-        void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer)
+    {
+        QuestLogEntry* en = pPlayer->GetQuestLogForEntry(12848);
+        if (!en)
+            return;
+
+        float SSX = pPlayer->GetPositionX();
+        float SSY = pPlayer->GetPositionY();
+        float SSZ = pPlayer->GetPositionZ();
+
+        Creature* pCreature = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ);
+
+        if (!pCreature || !pCreature->isAlive())
+            return;
+
+        if (pCreature->GetEntry() == CN_INITIATE_1 || pCreature->GetEntry() == CN_INITIATE_2 || pCreature->GetEntry() == CN_INITIATE_3 || pCreature->GetEntry() == CN_INITIATE_4)
         {
-            QuestLogEntry* en = pPlayer->GetQuestLogForEntry(12848);
-            if (!en)
+            pPlayer->SendChatMessage(CHAT_MSG_SAY, LANG_UNIVERSAL, "I give you the key to your salvation");
+            pCreature->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+            pCreature->GetAIInterface()->setNextTarget(pPlayer);
+            pCreature->GetAIInterface()->AttackReaction(pPlayer, 1, 0);
+            pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You have committed a big mistake, demon");
+
+            if (en->GetMobCount(0) != 0)
                 return;
 
-            float SSX = pPlayer->GetPositionX();
-            float SSY = pPlayer->GetPositionY();
-            float SSZ = pPlayer->GetPositionZ();
-
-            Creature* pCreature = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ);
-
-            if (!pCreature || !pCreature->isAlive())
-                return;
-
-            if (pCreature->GetEntry() == CN_INITIATE_1 || pCreature->GetEntry() == CN_INITIATE_2 || pCreature->GetEntry() == CN_INITIATE_3 || pCreature->GetEntry() == CN_INITIATE_4)
-            {
-                pPlayer->SendChatMessage(CHAT_MSG_SAY, LANG_UNIVERSAL, "I give you the key to your salvation");
-                pCreature->setUInt64Value(UNIT_FIELD_FLAGS, 0);
-                pCreature->GetAIInterface()->setNextTarget(pPlayer);
-                pCreature->GetAIInterface()->AttackReaction(pPlayer, 1, 0);
-                pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You have committed a big mistake, demon");
-
-                if (en->GetMobCount(0) != 0)
-                    return;
-
-                en->SetMobCount(0, 1);
-                en->SendUpdateAddKill(0);
-                en->UpdatePlayerFields();
-            }
-
+            en->SetMobCount(0, 1);
+            en->SendUpdateAddKill(0);
+            en->UpdatePlayerFields();
         }
+
+    }
 };
 
 class QuestInServiceOfLichKing : public QuestScript
 {
-    public:
+public:
 
-        void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/)
-        {
-            // Play first sound
-            mTarget->PlaySound(14734);
+    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/)
+    {
+        // Play first sound
+        mTarget->PlaySound(14734);
 
-            // Play second sound after 22.5 seconds
-            sEventMgr.AddEvent(mTarget, &Player::PlaySound, (uint32)14735, EVENT_UNK, 22500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        // Play second sound after 22.5 seconds
+        sEventMgr.AddEvent(mTarget, &Player::PlaySound, (uint32)14735, EVENT_UNK, 22500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-            // Play third sound after 48.5 seconds
-            sEventMgr.AddEvent(mTarget, &Player::PlaySound, (uint32)14736, EVENT_UNK, 48500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-        }
+        // Play third sound after 48.5 seconds
+        sEventMgr.AddEvent(mTarget, &Player::PlaySound, (uint32)14736, EVENT_UNK, 48500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    }
 };
 
 // QuestID for Praparation for the Battle
@@ -127,23 +127,24 @@ bool PreparationForBattleEffect(uint32 effectIndex, Spell* pSpell)
 //Quest Death Comes From On High
 class EyeofAcherusControl : public GameObjectAIScript
 {
-    public:
-        EyeofAcherusControl(GameObject* gameobject) : GameObjectAIScript(gameobject) {}
-        static GameObjectAIScript* Create(GameObject* gameobject_ai) { return new EyeofAcherusControl(gameobject_ai); }
+public:
+    EyeofAcherusControl(GameObject* gameobject) : GameObjectAIScript(gameobject) {}
+    static GameObjectAIScript* Create(GameObject* gameobject_ai) { return new EyeofAcherusControl(gameobject_ai); }
 
-        void OnActivate(Player* player)
-        {
-            if (!player->HasQuest(12641))
-                return;
+    void OnActivate(Player* player)
+    {
+        if (!player->HasQuest(12641))
+            return;
 
-            if (player->HasAura(51852))
-                return;
+        if (player->HasAura(51852))
+            return;
 
-            player->CastSpell(player, 51888, true);
+        player->CastSpell(player, 51888, true);
 
-            _gameobject->SetState(GO_STATE_CLOSED);
-        }
+        _gameobject->SetState(GO_STATE_CLOSED);
+    }
 };
+
 
 void SetupDeathKnight(ScriptMgr* mgr)
 {

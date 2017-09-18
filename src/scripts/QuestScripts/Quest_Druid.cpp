@@ -19,29 +19,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-/**********************
-Edits by : FenixGman
-**********************/
+ /**********************
+ Edits by : FenixGman
+ **********************/
 #include "Setup.h"
 #include "Management/Gossip/GossipMenu.hpp"
 
 
 class Lunaclaw : public CreatureAIScript
 {
-    public:
-        ADD_CREATURE_FACTORY_FUNCTION(Lunaclaw);
+public:
+    ADD_CREATURE_FACTORY_FUNCTION(Lunaclaw);
 
-        Lunaclaw(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    Lunaclaw(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnDied(Unit* mKiller)
-        {
-            if(!mKiller->IsPlayer())
-                return;
+    void OnDied(Unit* mKiller)
+    {
+        if (!mKiller->IsPlayer())
+            return;
 
-            Player* plr = static_cast<Player*>(mKiller);
+        Player* plr = static_cast<Player*>(mKiller);
 
-            sEAS.SpawnCreature(plr, 12144, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 0, 1 * 60 * 1000);
-        }
+        sEAS.SpawnCreature(plr, 12144, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 0, 1 * 60 * 1000);
+    }
 };
 
 // Lunaclaw ghost gossip
@@ -49,208 +49,207 @@ class Lunaclaw : public CreatureAIScript
 
 class SCRIPT_DECL MoonkinGhost_Gossip : public GossipScript
 {
-    public:
-        void GossipHello(Object* pObject, Player* plr)
+public:
+    void GossipHello(Object* pObject, Player* plr)
+    {
+        GossipMenu* Menu;
+        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4714, plr);
+
+        if (plr->HasQuest(6002))
         {
-            GossipMenu* Menu;
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4714, plr);
-
-            if(plr->HasQuest(6002))
-            {
-                //Horde
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(455), 1);     // You have fought well, spirit. I ask you to grand me the strenght of your body and the strenght of your heart.
-            }
-            else if(plr->HasQuest(6001))
-            {
-                //Ally
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(455), 2);     // You have fought well, spirit. I ask you to grand me the strenght of your body and the strenght of your heart.
-            }
-
-            Menu->SendTo(plr);
+            //Horde
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(455), 1);     // You have fought well, spirit. I ask you to grand me the strenght of your body and the strenght of your heart.
+        }
+        else if (plr->HasQuest(6001))
+        {
+            //Ally
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(455), 2);     // You have fought well, spirit. I ask you to grand me the strenght of your body and the strenght of your heart.
         }
 
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+        Menu->SendTo(plr);
+    }
+
+    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    {
+        if (!pObject->IsCreature())
+            return;
+        Creature* pCreature = static_cast<Creature*>(pObject);
+
+        GossipMenu* Menu;
+        switch (IntId)
         {
-            if(!pObject->IsCreature())
-                return;
-            Creature* pCreature = static_cast<Creature*>(pObject);
+            case 0: // Return to start
+                GossipHello(pCreature, plr);
+                break;
 
-            GossipMenu* Menu;
-            switch(IntId)
+            case 1: //Horde
             {
-                case 0: // Return to start
-                    GossipHello(pCreature, plr);
-                    break;
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4715, plr);
+                Menu->SendTo(plr);
 
-                case 1: //Horde
-                    {
-                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4715, plr);
-                        Menu->SendTo(plr);
+                QuestLogEntry* qle = plr->GetQuestLogForEntry(6002);
+                if (qle == NULL)
+                    return;
 
-                        QuestLogEntry* qle = plr->GetQuestLogForEntry(6002);
-                        if(qle == NULL)
-                            return;
+                if (qle->CanBeFinished())
+                    return;
 
-                        if(qle->CanBeFinished())
-                            return;
+                qle->Complete();
+                qle->SendQuestComplete();
+                qle->UpdatePlayerFields();
 
-                        qle->Complete();
-                        qle->SendQuestComplete();
-                        qle->UpdatePlayerFields();
-
-                        pCreature->Emote(EMOTE_ONESHOT_WAVE);
-                        pCreature->Despawn(240000, 0);
-                    }
-                    break;
-
-                case 2: //Ally
-                    {
-                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4715, plr);
-                        Menu->SendTo(plr);
-
-                        QuestLogEntry* qle = plr->GetQuestLogForEntry(6001);
-                        if(qle == NULL)
-                            return;
-
-                        if(qle->CanBeFinished())
-                            return;
-
-                        qle->Complete();
-                        qle->SendQuestComplete();
-                        qle->UpdatePlayerFields();
-
-                        pCreature->Emote(EMOTE_ONESHOT_WAVE);
-                        pCreature->Despawn(240000, 0);
-                    }
-                    break;
-
+                pCreature->Emote(EMOTE_ONESHOT_WAVE);
+                pCreature->Despawn(240000, 0);
             }
+            break;
+
+            case 2: //Ally
+            {
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4715, plr);
+                Menu->SendTo(plr);
+
+                QuestLogEntry* qle = plr->GetQuestLogForEntry(6001);
+                if (qle == NULL)
+                    return;
+
+                if (qle->CanBeFinished())
+                    return;
+
+                qle->Complete();
+                qle->SendQuestComplete();
+                qle->UpdatePlayerFields();
+
+                pCreature->Emote(EMOTE_ONESHOT_WAVE);
+                pCreature->Despawn(240000, 0);
+            }
+            break;
+
         }
+    }
 };
 
 
 class SCRIPT_DECL BearGhost_Gossip : public GossipScript
 {
-    public:
-        void GossipHello(Object* pObject, Player* plr)
+public:
+    void GossipHello(Object* pObject, Player* plr)
+    {
+        GossipMenu* Menu;
+        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4719, plr);
+
+        if (plr->HasQuest(5930)) // horde
         {
-            GossipMenu* Menu;
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4719, plr);
-
-            if(plr->HasQuest(5930)) // horde
-            {
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(456), 1);     // What do you represent, spirit?
-            }
-            else if(plr->HasQuest(5929)) // ally
-            {
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(456), 5);     // What do you represent, spirit?
-            }
-
-            Menu->SendTo(plr);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(456), 1);     // What do you represent, spirit?
+        }
+        else if (plr->HasQuest(5929)) // ally
+        {
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(456), 5);     // What do you represent, spirit?
         }
 
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+        Menu->SendTo(plr);
+    }
+
+    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    {
+        Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
+        if (!pObject->IsCreature())
+            return;
+
+        GossipMenu* Menu;
+        switch (IntId)
         {
-            Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
-            if(!pObject->IsCreature())
-                return;
-
-            GossipMenu* Menu;
-            switch(IntId)
+            case 0: // Return to start
+                GossipHello(pCreature, plr);
+                break;
+            case 1:
             {
-                case 0: // Return to start
-                    GossipHello(pCreature, plr);
-                    break;
-                case 1:
-                    {
-                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4721, plr);
-                        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(457), 2);     // I seek to understand the importance of strength of the body.
-                        Menu->SendTo(plr);
-                        break;
-                    }
-                case 2:
-                    {
-                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4733, plr);
-                        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(458), 3);     // I seek to understand the importance of strength of the heart.
-                        Menu->SendTo(plr);
-                        break;
-                    }
-                case 3:
-                    {
-                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4734, plr);
-                        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(459), 4);     // I have heard your words, Great Bear Spirit, and I understand. I now...
-                        Menu->SendTo(plr);
-                        break;
-                    }
-                case 4:
-                    {
-                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4735, plr);
-                        Menu->SendTo(plr);
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4721, plr);
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(457), 2);     // I seek to understand the importance of strength of the body.
+                Menu->SendTo(plr);
+                break;
+            }
+            case 2:
+            {
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4733, plr);
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(458), 3);     // I seek to understand the importance of strength of the heart.
+                Menu->SendTo(plr);
+                break;
+            }
+            case 3:
+            {
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4734, plr);
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(459), 4);     // I have heard your words, Great Bear Spirit, and I understand. I now...
+                Menu->SendTo(plr);
+                break;
+            }
+            case 4:
+            {
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4735, plr);
+                Menu->SendTo(plr);
 
-                        QuestLogEntry* qle = plr->GetQuestLogForEntry(5930);
-                        if(qle == NULL)
-                            return;
+                QuestLogEntry* qle = plr->GetQuestLogForEntry(5930);
+                if (qle == NULL)
+                    return;
 
-                        if(qle->CanBeFinished())
-                            return;
+                if (qle->CanBeFinished())
+                    return;
 
-                        qle->Complete();
-                        qle->SendQuestComplete();
-                        qle->UpdatePlayerFields();
-                        break;
-                    }
-                case 5:
-                    {
-                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4721, plr);
-                        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(457), 6);     // I seek to understand the importance of strength of the body.
-                        Menu->SendTo(plr);
-                        break;
-                    }
-                case 6:
-                    {
-                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4733, plr);
-                        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(458), 7);     // I seek to understand the importance of strength of the heart.
-                        Menu->SendTo(plr);
-                        break;
-                    }
-                case 7:
-                    {
-                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4734, plr);
-                        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(459), 8);     // I have heard your words, Great Bear Spirit, and I understand. I now...
-                        Menu->SendTo(plr);
-                        break;
-                    }
-                case 8:
-                    {
-                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4735, plr);
-                        Menu->SendTo(plr);
+                qle->Complete();
+                qle->SendQuestComplete();
+                qle->UpdatePlayerFields();
+                break;
+            }
+            case 5:
+            {
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4721, plr);
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(457), 6);     // I seek to understand the importance of strength of the body.
+                Menu->SendTo(plr);
+                break;
+            }
+            case 6:
+            {
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4733, plr);
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(458), 7);     // I seek to understand the importance of strength of the heart.
+                Menu->SendTo(plr);
+                break;
+            }
+            case 7:
+            {
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4734, plr);
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(459), 8);     // I have heard your words, Great Bear Spirit, and I understand. I now...
+                Menu->SendTo(plr);
+                break;
+            }
+            case 8:
+            {
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4735, plr);
+                Menu->SendTo(plr);
 
-                        QuestLogEntry* qle = plr->GetQuestLogForEntry(5929);
-                        if(qle == NULL)
-                            return;
+                QuestLogEntry* qle = plr->GetQuestLogForEntry(5929);
+                if (qle == NULL)
+                    return;
 
-                        if(qle->CanBeFinished())
-                            return;
+                if (qle->CanBeFinished())
+                    return;
 
-                        qle->Complete();
-                        qle->SendQuestComplete();
-                        qle->UpdatePlayerFields();
-                        break;
-                    }
+                qle->Complete();
+                qle->SendQuestComplete();
+                qle->UpdatePlayerFields();
+                break;
             }
         }
+    }
 };
 
 class MoongladeQuest : public QuestScript
 {
-    public:
-        void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
-        {
-            if(!mTarget->HasSpell(19027))
-                mTarget->CastSpell(mTarget, sSpellCustomizations.GetSpellInfo(19027), true);
-        }
+public:
+    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+    {
+        if (!mTarget->HasSpell(19027))
+            mTarget->CastSpell(mTarget, sSpellCustomizations.GetSpellInfo(19027), true);
+    }
 };
-
 
 
 void SetupDruid(ScriptMgr* mgr)
@@ -266,6 +265,4 @@ void SetupDruid(ScriptMgr* mgr)
     //Register gossip scripts
     mgr->register_gossip_script(12144, MoonkinGhostGossip); // Ghost of Lunaclaw
     mgr->register_gossip_script(11956, BearGhostGossip); // Great Bear Spirit
-
 }
-

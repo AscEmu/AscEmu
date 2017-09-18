@@ -21,20 +21,21 @@
 
 class Zenn_Foulhoof : public QuestScript
 {
-    public:
+public:
 
-        void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
-        {
-            Creature* creat = mTarget->GetMapMgr()->GetSqlIdCreature(43727);
-            if(creat == NULL)
-                return;
+    void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    {
+        Creature* creat = mTarget->GetMapMgr()->GetSqlIdCreature(43727);
+        if (creat == NULL)
+            return;
 
-            creat->SetDisplayId(901);
-            creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Ribbit! No! This cannot...ribbit...be! You have duped me with...ribbit..your foul trickery! Ribbit!");
+        creat->SetDisplayId(901);
+        creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Ribbit! No! This cannot...ribbit...be! You have duped me with...ribbit..your foul trickery! Ribbit!");
 
-            sEventMgr.AddEvent(static_cast<Object*>(creat), &Object::EventSetUInt32Value, (uint32)UNIT_FIELD_DISPLAYID, (uint32)10035, EVENT_UNK, 50000, 0, 1);
-        }
+        sEventMgr.AddEvent(static_cast<Object*>(creat), &Object::EventSetUInt32Value, (uint32)UNIT_FIELD_DISPLAYID, (uint32)10035, EVENT_UNK, 50000, 0, 1);
+    }
 };
+
 
 void SetupTeldrassil(ScriptMgr* mgr)
 {

@@ -23,196 +23,195 @@
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Spell/SpellAuras.h"
 
-// -----------------------------------------------------------------------------
-// Quest 12532 - Flown the Coop!
-// Quest 12702 - Chicken Party! (by bartus
+ // -----------------------------------------------------------------------------
+ // Quest 12532 - Flown the Coop!
+ // Quest 12702 - Chicken Party! (by bartus
 
 class ChickenEscapee : public CreatureAIScript
 {
-    public:
-        ADD_CREATURE_FACTORY_FUNCTION(ChickenEscapee);
-        ChickenEscapee(Creature* c) : CreatureAIScript(c) {}
+public:
+    ADD_CREATURE_FACTORY_FUNCTION(ChickenEscapee);
+    ChickenEscapee(Creature* c) : CreatureAIScript(c) {}
 
-        void OnLoad()
-        {
-            RegisterAIUpdateEvent(1000);
-        }
+    void OnLoad()
+    {
+        RegisterAIUpdateEvent(1000);
+    }
 
-        void AIUpdate()
+    void AIUpdate()
+    {
+        // Let's see if we are netted
+        Aura* a = _unit->getAuraWithId(51959);
+        if (a != NULL)
         {
-            // Let's see if we are netted
-            Aura* a = _unit->getAuraWithId(51959);
-            if(a != NULL)
+            Unit* Caster = a->GetUnitCaster();
+            if (Caster == nullptr)
+                return;
+            if (Caster->IsPlayer())
             {
-                Unit* Caster = a->GetUnitCaster();
-                if (Caster == nullptr)
-                    return;
-                if(Caster->IsPlayer())
+
+                QuestLogEntry* qle = static_cast<Player*>(Caster)->GetQuestLogForEntry(12532);
+                if (qle == NULL)
+                    qle = static_cast<Player*>(Caster)->GetQuestLogForEntry(12702);
+
+                if (qle != NULL)
                 {
-
-                    QuestLogEntry* qle = static_cast<Player*>(Caster)->GetQuestLogForEntry(12532);
-                    if(qle == NULL)
-                        qle = static_cast<Player*>(Caster)->GetQuestLogForEntry(12702);
-
-                    if(qle != NULL)
-                    {
-                        // casting the spell that will create the item for the player
-                        _unit->CastSpell(Caster, 51037, true);
-                        _unit->Despawn(1000, 360000);
-                    }
+                    // casting the spell that will create the item for the player
+                    _unit->CastSpell(Caster, 51037, true);
+                    _unit->Despawn(1000, 360000);
                 }
             }
         }
+    }
 };
 
-#define HEMET 27986
-#define HADRIUS 28047
-#define TAMARA 28568
+const uint32 HEMET = 27986;
+const uint32 HADRIUS = 28047;
+const uint32 TAMARA = 28568;
 
 class SCRIPT_DECL HemetTasteTest : public GossipScript
 {
-    public:
-        void GossipHello(Object* pObject, Player* plr)
+public:
+    void GossipHello(Object* pObject, Player* plr)
+    {
+        if (plr->HasQuest(12645))
         {
-            if(plr->HasQuest(12645))
-            {
-                GossipMenu* Menu;
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 40002, plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(476), 1);     // Care to try Grimbooze Thunderbrew's Jungle punch?
+            GossipMenu* Menu;
+            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 40002, plr);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(476), 1);     // Care to try Grimbooze Thunderbrew's Jungle punch?
 
-                Menu->SendTo(plr);
-            }
+            Menu->SendTo(plr);
         }
+    }
 
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    {
+        Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
+        if (pCreature == NULL)
+            return;
+
+        switch (IntId)
         {
-            Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
-            if(pCreature == NULL)
-                return;
-
-            switch(IntId)
+            case 1:
             {
-                case 1:
-                    {
-                        std::string msg = "Aye, I'll try it.";
-                        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());
-                        std::string msg2 = "That's exactly what I needed!";
-                        std::string msg3 = "It's got my vote! That'll put hair on your chest like nothing else will.";
-                        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg2.c_str(), 2000);
-                        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg3.c_str(), 4000);
-                        QuestLogEntry* qle = plr->GetQuestLogForEntry(12645);
-                        if(qle == NULL)
-                            return;
+                std::string msg = "Aye, I'll try it.";
+                pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());
+                std::string msg2 = "That's exactly what I needed!";
+                std::string msg3 = "It's got my vote! That'll put hair on your chest like nothing else will.";
+                pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg2.c_str(), 2000);
+                pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg3.c_str(), 4000);
+                QuestLogEntry* qle = plr->GetQuestLogForEntry(12645);
+                if (qle == NULL)
+                    return;
 
-                        if(qle->GetMobCount(0) != 0)
-                            return;
-                        qle->SetMobCount(0, 1);
-                        qle->SendUpdateAddKill(0);
-                        qle->UpdatePlayerFields();
+                if (qle->GetMobCount(0) != 0)
+                    return;
+                qle->SetMobCount(0, 1);
+                qle->SendUpdateAddKill(0);
+                qle->UpdatePlayerFields();
 
-                    }
-                    break;
             }
+            break;
         }
+    }
 
 };
 
 class SCRIPT_DECL HadriusTasteTest : public GossipScript
 {
-    public:
-        void GossipHello(Object* pObject, Player* plr)
+public:
+    void GossipHello(Object* pObject, Player* plr)
+    {
+        if (plr->HasQuest(12645))
         {
-            if(plr->HasQuest(12645))
-            {
-                GossipMenu* Menu;
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 40002, plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(476), 1);     // Care to try Grimbooze Thunderbrew's Jungle punch?
+            GossipMenu* Menu;
+            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 40002, plr);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(476), 1);     // Care to try Grimbooze Thunderbrew's Jungle punch?
 
-                Menu->SendTo(plr);
-            }
+            Menu->SendTo(plr);
         }
+    }
 
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    {
+        Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
+        if (pCreature == NULL)
+            return;
+
+        switch (IntId)
         {
-            Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
-            if(pCreature == NULL)
-                return;
-
-            switch(IntId)
+            case 1:
             {
-                case 1:
-                    {
-                        std::string msg = "I'm always up for something of Grimbooze's.";
-                        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());
-                        std::string msg2 = "Well, so far, it tastes like something my wife would drink...";
-                        std::string msg3 = "Now, there's the kick I've come to expect from Grimbooze's drinks! I like it!";
-                        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg2.c_str(), 2000);
-                        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg3.c_str(), 4000);
-                        QuestLogEntry* qle = plr->GetQuestLogForEntry(12645);
-                        if(qle == NULL)
-                            return;
+                std::string msg = "I'm always up for something of Grimbooze's.";
+                pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());
+                std::string msg2 = "Well, so far, it tastes like something my wife would drink...";
+                std::string msg3 = "Now, there's the kick I've come to expect from Grimbooze's drinks! I like it!";
+                pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg2.c_str(), 2000);
+                pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg3.c_str(), 4000);
+                QuestLogEntry* qle = plr->GetQuestLogForEntry(12645);
+                if (qle == NULL)
+                    return;
 
-                        if(qle->GetMobCount(0) != 0)
-                            return;
-                        qle->SetMobCount(1, 1);
-                        qle->SendUpdateAddKill(1);
-                        qle->UpdatePlayerFields();
-                    }
-                    break;
+                if (qle->GetMobCount(0) != 0)
+                    return;
+                qle->SetMobCount(1, 1);
+                qle->SendUpdateAddKill(1);
+                qle->UpdatePlayerFields();
             }
+            break;
         }
+    }
 
 };
 
 class SCRIPT_DECL TamaraTasteTest : public GossipScript
 {
-    public:
-        void GossipHello(Object* pObject, Player* plr)
+public:
+    void GossipHello(Object* pObject, Player* plr)
+    {
+        if (plr->HasQuest(12645))
         {
-            if(plr->HasQuest(12645))
-            {
-                GossipMenu* Menu;
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 40002, plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(476), 1);     // Care to try Grimbooze Thunderbrew's Jungle punch?
+            GossipMenu* Menu;
+            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 40002, plr);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(476), 1);     // Care to try Grimbooze Thunderbrew's Jungle punch?
 
-                Menu->SendTo(plr);
-            }
+            Menu->SendTo(plr);
         }
+    }
 
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    {
+        Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
+        if (pCreature == NULL)
+            return;
+
+        switch (IntId)
         {
-            Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
-            if(pCreature == NULL)
-                return;
-
-            switch(IntId)
+            case 1:
             {
-                case 1:
-                    {
-                        std::string msg = " Sure!";
-                        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());
-                        std::string msg2 = "Oh my...";
-                        std::string msg3 = "Tastes like I'm drinking... engine degreaser!";
-                        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg2.c_str(), 2000);
-                        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg3.c_str(), 4000);
-                        QuestLogEntry* qle = plr->GetQuestLogForEntry(12645);
-                        if(qle == NULL)
-                            return;
+                std::string msg = " Sure!";
+                pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());
+                std::string msg2 = "Oh my...";
+                std::string msg3 = "Tastes like I'm drinking... engine degreaser!";
+                pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg2.c_str(), 2000);
+                pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg3.c_str(), 4000);
+                QuestLogEntry* qle = plr->GetQuestLogForEntry(12645);
+                if (qle == NULL)
+                    return;
 
-                        if(qle->GetMobCount(0) != 0)
-                            return;
-                        qle->SetMobCount(2, 1);
-                        qle->SendUpdateAddKill(2);
-                        qle->UpdatePlayerFields();
-                    }
-                    break;
+                if (qle->GetMobCount(0) != 0)
+                    return;
+                qle->SetMobCount(2, 1);
+                qle->SendUpdateAddKill(2);
+                qle->UpdatePlayerFields();
             }
+            break;
         }
+    }
 
 };
 
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
+
 void SetupSholazarBasin(ScriptMgr* mgr)
 {
     GossipScript* gossip1 = new HemetTasteTest();

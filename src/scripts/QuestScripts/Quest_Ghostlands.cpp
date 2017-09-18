@@ -26,178 +26,178 @@
 
 class Prisoner12 : public GossipScript
 {
-    public:
+public:
 
-        void GossipHello(Object* pObject, Player* plr)
+    void GossipHello(Object* pObject, Player* plr)
+    {
+        if (!plr)
+            return;
+
+        GossipMenu* Menu;
+        Creature* Prisoner12 = static_cast<Creature*>(pObject);
+        if (Prisoner12 == nullptr)
+            return;
+
+        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
+        if (plr->HasQuest(9164))
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(462), 1);     // Release Him.
+
+        Menu->SendTo(plr);
+    }
+
+    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
+    {
+        if (!plr)
+            return;
+
+        Creature* Prisoner12 = static_cast<Creature*>(pObject);
+        if (Prisoner12 == nullptr)
+            return;
+
+        switch (IntId)
         {
-            if (!plr)
-                return;
+            case 0:
+                GossipHello(pObject, plr);
+                break;
 
-            GossipMenu* Menu;
-            Creature* Prisoner12 = static_cast<Creature*>(pObject);
-            if (Prisoner12 == nullptr)
-                return;
-
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
-            if (plr->HasQuest(9164))
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(462), 1);     // Release Him.
-
-            Menu->SendTo(plr);
-        }
-
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
-        {
-            if (!plr)
-                return;
-
-            Creature* Prisoner12 = static_cast<Creature*>(pObject);
-            if (Prisoner12 == nullptr)
-                return;
-
-            switch (IntId)
+            case 1:
             {
-                case 0:
-                    GossipHello(pObject, plr);
-                    break;
-
-                case 1:
+                QuestLogEntry* en = plr->GetQuestLogForEntry(9164);
+                if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
                 {
-                    QuestLogEntry* en = plr->GetQuestLogForEntry(9164);
-                    if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-                    {
-                        en->SetMobCount(0, en->GetMobCount(0) + 1);
-                        en->SendUpdateAddKill(0);
-                        en->UpdatePlayerFields();
+                    en->SetMobCount(0, en->GetMobCount(0) + 1);
+                    en->SendUpdateAddKill(0);
+                    en->UpdatePlayerFields();
 
-                        Prisoner12->Despawn(5000, 6 * 60 * 1000);
-                        Prisoner12->SetStandState(STANDSTATE_STAND);
-                        Prisoner12->SetEmoteState(EMOTE_ONESHOT_EAT);
-                        return;
-                    }
-                    break;
+                    Prisoner12->Despawn(5000, 6 * 60 * 1000);
+                    Prisoner12->SetStandState(STANDSTATE_STAND);
+                    Prisoner12->SetEmoteState(EMOTE_ONESHOT_EAT);
+                    return;
                 }
+                break;
             }
         }
+    }
 };
 
 class Prisoner22 : public GossipScript
 {
-    public:
+public:
 
-        void GossipHello(Object* pObject, Player* plr)
+    void GossipHello(Object* pObject, Player* plr)
+    {
+        if (!plr)
+            return;
+
+        GossipMenu* Menu;
+        Creature* Prisoner22 = static_cast<Creature*>(pObject);
+
+        if (Prisoner22 == NULL)
+            return;
+
+        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
+        if (plr->HasQuest(9164))
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(462), 1);     // Release Him.
+
+        Menu->SendTo(plr);
+    }
+
+    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
+    {
+        if (!plr)
+            return;
+
+        Creature* Prisoner22 = static_cast<Creature*>(pObject);
+
+        if (Prisoner22 == nullptr)
+            return;
+
+        switch (IntId)
         {
-            if (!plr)
-                return;
+            case 0:
+                GossipHello(pObject, plr);
+                break;
 
-            GossipMenu* Menu;
-            Creature* Prisoner22 = static_cast<Creature*>(pObject);
-
-            if (Prisoner22 == NULL)
-                return;
-
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
-            if (plr->HasQuest(9164))
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(462), 1);     // Release Him.
-
-            Menu->SendTo(plr);
-        }
-
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
-        {
-            if (!plr)
-                return;
-
-            Creature* Prisoner22 = static_cast<Creature*>(pObject);
-
-            if (Prisoner22 == nullptr)
-                return;
-
-            switch (IntId)
+            case 1:
             {
-                case 0:
-                    GossipHello(pObject, plr);
-                    break;
-
-                case 1:
+                QuestLogEntry* en = plr->GetQuestLogForEntry(9164);
+                if (en && en->GetMobCount(1) < en->GetQuest()->required_mob_or_go_count[1])
                 {
-                    QuestLogEntry* en = plr->GetQuestLogForEntry(9164);
-                    if (en && en->GetMobCount(1) < en->GetQuest()->required_mob_or_go_count[1])
-                    {
-                        en->SetMobCount(1, en->GetMobCount(1) + 1);
-                        en->SendUpdateAddKill(1);
-                        en->UpdatePlayerFields();
+                    en->SetMobCount(1, en->GetMobCount(1) + 1);
+                    en->SendUpdateAddKill(1);
+                    en->UpdatePlayerFields();
 
-                        Prisoner22->Despawn(5000, 6 * 60 * 1000);
-                        Prisoner22->SetStandState(STANDSTATE_STAND);
-                        Prisoner22->SetEmoteState(EMOTE_ONESHOT_EAT);
-                        return;
-                    }
-                    break;
+                    Prisoner22->Despawn(5000, 6 * 60 * 1000);
+                    Prisoner22->SetStandState(STANDSTATE_STAND);
+                    Prisoner22->SetEmoteState(EMOTE_ONESHOT_EAT);
+                    return;
                 }
+                break;
             }
         }
+    }
 };
 
 class Prisoner32 : public GossipScript
 {
-    public:
+public:
 
-        void GossipHello(Object* pObject, Player* plr)
+    void GossipHello(Object* pObject, Player* plr)
+    {
+        if (!plr)
+            return;
+
+        GossipMenu* Menu;
+        Creature* Prisoner32 = static_cast<Creature*>(pObject);
+        if (Prisoner32 == nullptr)
+            return;
+
+        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
+        if (plr->HasQuest(9164))
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(462), 1);     // Release Him.
+
+        Menu->SendTo(plr);
+    }
+
+    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
+    {
+        if (!plr)
+            return;
+
+        Creature* Prisoner32 = static_cast<Creature*>(pObject);
+
+        if (Prisoner32 == nullptr)
+            return;
+
+        switch (IntId)
         {
-            if (!plr)
-                return;
+            case 0:
+                GossipHello(pObject, plr);
+                break;
 
-            GossipMenu* Menu;
-            Creature* Prisoner32 = static_cast<Creature*>(pObject);
-            if (Prisoner32 == nullptr)
-                return;
-
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
-            if (plr->HasQuest(9164))
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(462), 1);     // Release Him.
-
-            Menu->SendTo(plr);
-        }
-
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
-        {
-            if (!plr)
-                return;
-
-            Creature* Prisoner32 = static_cast<Creature*>(pObject);
-
-            if (Prisoner32 == nullptr)
-                return;
-
-            switch (IntId)
+            case 1:
             {
-                case 0:
-                    GossipHello(pObject, plr);
-                    break;
-
-                case 1:
+                QuestLogEntry* en = plr->GetQuestLogForEntry(9164);
+                if (en && en->GetMobCount(2) < en->GetQuest()->required_mob_or_go_count[2])
                 {
-                    QuestLogEntry* en = plr->GetQuestLogForEntry(9164);
-                    if (en && en->GetMobCount(2) < en->GetQuest()->required_mob_or_go_count[2])
-                    {
-                        en->SetMobCount(2, en->GetMobCount(2) + 1);
-                        en->SendUpdateAddKill(2);
-                        en->UpdatePlayerFields();
+                    en->SetMobCount(2, en->GetMobCount(2) + 1);
+                    en->SendUpdateAddKill(2);
+                    en->UpdatePlayerFields();
 
-                        Prisoner32->Despawn(5000, 6 * 60 * 1000);
-                        Prisoner32->SetStandState(STANDSTATE_STAND);
-                        Prisoner32->SetEmoteState(EMOTE_ONESHOT_EAT);
-                        return;
-                    }
-                    break;
+                    Prisoner32->Despawn(5000, 6 * 60 * 1000);
+                    Prisoner32->SetStandState(STANDSTATE_STAND);
+                    Prisoner32->SetEmoteState(EMOTE_ONESHOT_EAT);
+                    return;
                 }
+                break;
             }
         }
+    }
 };
 
 class PrisonersatDeatholme : public CreatureAIScript
 {
-    public:
+public:
     ADD_CREATURE_FACTORY_FUNCTION(PrisonersatDeatholme);
     PrisonersatDeatholme(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -210,7 +210,7 @@ class PrisonersatDeatholme : public CreatureAIScript
 
 class VanquishingAquantion : public GameObjectAIScript
 {
-    public:
+public:
     VanquishingAquantion(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new VanquishingAquantion(GO); }
 
@@ -225,6 +225,7 @@ class VanquishingAquantion : public GameObjectAIScript
         naga->Despawn(6 * 60 * 1000, 0);
     }
 };
+
 
 void SetupGhostlands(ScriptMgr* mgr)
 {

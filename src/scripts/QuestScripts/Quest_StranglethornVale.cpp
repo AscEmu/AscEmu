@@ -27,209 +27,209 @@
 
 class StrFever : public GossipScript
 {
-    public:
-        void GossipHello(Object* pObject, Player* plr)
+public:
+    void GossipHello(Object* pObject, Player* plr)
+    {
+        if (!plr)
+            return;
+
+        GossipMenu* Menu;
+        Creature* doctor = static_cast<Creature*>(pObject);
+        if (doctor == NULL)
+            return;
+
+        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
+        if (plr->HasQuest(348) && plr->GetItemInterface()->GetItemCount(2799, 0) && !plr->GetItemInterface()->GetItemCount(2797, 0))
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(494), 1);     // I'm ready, Summon Him!
+
+        Menu->SendTo(plr);
+    }
+
+    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
+    {
+        if (!plr)
+            return;
+
+        Creature* doctor = static_cast<Creature*>(pObject);
+        if (doctor == NULL)
+            return;
+
+        switch (IntId)
         {
-            if(!plr)
-                return;
+            case 0:
+                GossipHello(pObject, plr);
+                break;
 
-            GossipMenu* Menu;
-            Creature* doctor = static_cast<Creature*>(pObject);
-            if(doctor == NULL)
-                return;
-
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
-            if(plr->HasQuest(348) && plr->GetItemInterface()->GetItemCount(2799, 0) && !plr->GetItemInterface()->GetItemCount(2797, 0))
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(494), 1);     // I'm ready, Summon Him!
-
-            Menu->SendTo(plr);
-        }
-
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
-        {
-            if(!plr)
-                return;
-
-            Creature* doctor = static_cast<Creature*>(pObject);
-            if(doctor == NULL)
-                return;
-
-            switch(IntId)
+            case 1:
             {
-                case 0:
-                    GossipHello(pObject, plr);
-                    break;
-
-                case 1:
-                    {
-                        plr->GetItemInterface()->RemoveItemAmt(2799, 1);
-                        doctor->CastSpell(doctor, sSpellCustomizations.GetSpellInfo(12380), true);
-                        if(!plr || !plr->GetMapMgr() || !plr->GetMapMgr()->GetInterface())
-                            return;
-                        Creature* firstenemy = sEAS.SpawnCreature(plr, 1511, -13770.5f, -6.79f, 42.8f, 5.7f , 0);
-                        firstenemy->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f);
-                        firstenemy->Despawn(10 * 60 * 1000, 0);
-                    }
-                    break;
+                plr->GetItemInterface()->RemoveItemAmt(2799, 1);
+                doctor->CastSpell(doctor, sSpellCustomizations.GetSpellInfo(12380), true);
+                if (!plr || !plr->GetMapMgr() || !plr->GetMapMgr()->GetInterface())
+                    return;
+                Creature* firstenemy = sEAS.SpawnCreature(plr, 1511, -13770.5f, -6.79f, 42.8f, 5.7f, 0);
+                firstenemy->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f);
+                firstenemy->Despawn(10 * 60 * 1000, 0);
             }
+            break;
         }
+    }
 
 };
 
 class Beka : public CreatureAIScript
 {
-    public:
-        ADD_CREATURE_FACTORY_FUNCTION(Beka);
-        Beka(Creature* pCreature) : CreatureAIScript(pCreature)  {}
+public:
+    ADD_CREATURE_FACTORY_FUNCTION(Beka);
+    Beka(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller)
+    {
+        if (mKiller->IsPlayer())
         {
-            if(mKiller->IsPlayer())
+            Player* mPlayer = static_cast<Player*>(mKiller);
+            Creature* beka1 = sEAS.SpawnCreature(mPlayer, 1516, -13770.5f, -6.79f, 42.8f, 5.7f, 0);
+            beka1->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f);
+            beka1->SetOrientation(4.07f);
+            beka1->Despawn(10 * 60 * 1000, 0);
+        }
+        else
+        {
+            Player* mPlayer = _unit->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ());
+            if (mPlayer)
             {
-                Player* mPlayer = static_cast<Player*>(mKiller);
-                Creature* beka1 = sEAS.SpawnCreature(mPlayer, 1516, -13770.5f, -6.79f, 42.8f, 5.7f , 0);
+                Creature* beka1 = sEAS.SpawnCreature(mPlayer, 1516, -13770.5f, -6.79f, 42.8f, 5.7f, 0);
                 beka1->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f);
                 beka1->SetOrientation(4.07f);
                 beka1->Despawn(10 * 60 * 1000, 0);
             }
-            else
-            {
-                Player* mPlayer = _unit->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ());
-                if(mPlayer)
-                {
-                    Creature* beka1 = sEAS.SpawnCreature(mPlayer, 1516, -13770.5f, -6.79f, 42.8f, 5.7f , 0);
-                    beka1->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f);
-                    beka1->SetOrientation(4.07f);
-                    beka1->Despawn(10 * 60 * 1000, 0);
-                }
-            }
         }
+    }
 };
 
 class Beka1 : public CreatureAIScript
 {
-    public:
-        ADD_CREATURE_FACTORY_FUNCTION(Beka1);
-        Beka1(Creature* pCreature) : CreatureAIScript(pCreature)  {}
+public:
+    ADD_CREATURE_FACTORY_FUNCTION(Beka1);
+    Beka1(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller)
+    {
+        if (mKiller->IsPlayer())
         {
-            if(mKiller->IsPlayer())
+            Player* mPlayer = static_cast<Player*>(mKiller);
+            Creature* beka1 = sEAS.SpawnCreature(mPlayer, 1514, -13770.5f, -6.79f, 42.8f, 5.7f, 0);
+            beka1->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f);
+            beka1->SetOrientation(4.07f);
+            beka1->Despawn(10 * 60 * 1000, 0);
+        }
+        else
+        {
+            Player* mPlayer = _unit->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ());
+            if (mPlayer)
             {
-                Player* mPlayer = static_cast<Player*>(mKiller);
                 Creature* beka1 = sEAS.SpawnCreature(mPlayer, 1514, -13770.5f, -6.79f, 42.8f, 5.7f, 0);
                 beka1->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f);
                 beka1->SetOrientation(4.07f);
                 beka1->Despawn(10 * 60 * 1000, 0);
             }
-            else
-            {
-                Player* mPlayer = _unit->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ());
-                if(mPlayer)
-                {
-                    Creature* beka1 = sEAS.SpawnCreature(mPlayer, 1514, -13770.5f, -6.79f, 42.8f, 5.7f, 0);
-                    beka1->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f);
-                    beka1->SetOrientation(4.07f);
-                    beka1->Despawn(10 * 60 * 1000, 0);
-                }
-            }
         }
+    }
 };
 
 class Beka2 : public CreatureAIScript
 {
-    public:
-        ADD_CREATURE_FACTORY_FUNCTION(Beka2);
-        Beka2(Creature* pCreature) : CreatureAIScript(pCreature)  {}
+public:
+    ADD_CREATURE_FACTORY_FUNCTION(Beka2);
+    Beka2(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnDied(Unit* mKiller)
-        {
-            float SSX = mKiller->GetPositionX();
-            float SSY = mKiller->GetPositionY();
-            float SSZ = mKiller->GetPositionZ();
+    void OnDied(Unit* mKiller)
+    {
+        float SSX = mKiller->GetPositionX();
+        float SSY = mKiller->GetPositionY();
+        float SSZ = mKiller->GetPositionZ();
 
-            Creature* doctor = mKiller->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 1449);
-            if(doctor)
-                doctor->Emote(EMOTE_ONESHOT_CHEER);
-        }
+        Creature* doctor = mKiller->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 1449);
+        if (doctor)
+            doctor->Emote(EMOTE_ONESHOT_CHEER);
+    }
 };
 
 class BloodscalpClanHeads : public QuestScript
 {
-    public:
+public:
 
-        void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
-        {
-            float SSX = mTarget->GetPositionX();
-            float SSY = mTarget->GetPositionY();
-            float SSZ = mTarget->GetPositionZ();
+    void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    {
+        float SSX = mTarget->GetPositionX();
+        float SSY = mTarget->GetPositionY();
+        float SSZ = mTarget->GetPositionZ();
 
-            GameObject* skull1 = mTarget->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(SSX, SSY, SSZ, 2551);
-            if(skull1 == NULL)
-                return;
+        GameObject* skull1 = mTarget->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(SSX, SSY, SSZ, 2551);
+        if (skull1 == NULL)
+            return;
 
-            Creature* Kin_weelay = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 2519);
-            if(Kin_weelay == NULL)
-                return;
+        Creature* Kin_weelay = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 2519);
+        if (Kin_weelay == NULL)
+            return;
 
-            std::string msg1 = "Ah. Good ";
-            msg1 += mTarget->GetName();
-            msg1 += ". Now let us see what tale these heads tell...";
-            Kin_weelay->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg1.c_str());
-            Kin_weelay->CastSpell(Kin_weelay, sSpellCustomizations.GetSpellInfo(3644), false);
-            skull1->Despawn(5000, 0);
-            GameObject* skull2 = mTarget->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(SSX, SSY, SSZ, 2551);
-            if(skull2)
-                skull2->Despawn(5000, 0);
+        std::string msg1 = "Ah. Good ";
+        msg1 += mTarget->GetName();
+        msg1 += ". Now let us see what tale these heads tell...";
+        Kin_weelay->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg1.c_str());
+        Kin_weelay->CastSpell(Kin_weelay, sSpellCustomizations.GetSpellInfo(3644), false);
+        skull1->Despawn(5000, 0);
+        GameObject* skull2 = mTarget->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(SSX, SSY, SSZ, 2551);
+        if (skull2)
+            skull2->Despawn(5000, 0);
 
-            std::string msg = "There, ";
-            msg += mTarget->GetName();
-            msg += ". You may now speak to the Bloodscalp chief and his witchdoctor.";
-            Kin_weelay->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str(), 500);
-        }
+        std::string msg = "There, ";
+        msg += mTarget->GetName();
+        msg += ". You may now speak to the Bloodscalp chief and his witchdoctor.";
+        Kin_weelay->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str(), 500);
+    }
 
 };
 
 class BacktoBootyBay : public QuestScript
 {
-    public:
+public:
 
-        void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    {
+        float X = mTarget->GetPositionX();
+        float Y = mTarget->GetPositionY();
+        float Z = mTarget->GetPositionZ();
+
+        Creature* Crank = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(X, Y, Z, 2498);
+        if (Crank)
         {
-            float X = mTarget->GetPositionX();
-            float Y = mTarget->GetPositionY();
-            float Z = mTarget->GetPositionZ();
-
-            Creature* Crank = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(X, Y, Z, 2498);
-            if(Crank)
-            {
-                std::string say = "Hm... if you're looking to adle wits. ";
-                say += mTarget->GetName();
-                say += ", then the secret behind Zanzil's zombies might just fo the trick!";
-                Crank->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
-            }
+            std::string say = "Hm... if you're looking to adle wits. ";
+            say += mTarget->GetName();
+            say += ", then the secret behind Zanzil's zombies might just fo the trick!";
+            Crank->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
         }
+    }
 };
 
 class VoodooDues : public QuestScript
 {
-    public:
+public:
 
-        void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    {
+        float X = mTarget->GetPositionX();
+        float Y = mTarget->GetPositionY();
+        float Z = mTarget->GetPositionZ();
+
+        Creature* MacKinley = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(X, Y, Z, 2501);
+        if (MacKinley)
         {
-            float X = mTarget->GetPositionX();
-            float Y = mTarget->GetPositionY();
-            float Z = mTarget->GetPositionZ();
-
-            Creature* MacKinley = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(X, Y, Z, 2501);
-            if(MacKinley)
-            {
-                std::string say = "Bah! ";
-                say += mTarget->GetName();
-                say += ", this foot won't budge!";
-                MacKinley->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
-            }
+            std::string say = "Bah! ";
+            say += mTarget->GetName();
+            say += ", this foot won't budge!";
+            MacKinley->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
         }
+    }
 };
 
 #define GO_MEAT 181291
@@ -266,44 +266,44 @@ static Movement::Location BreadSpawnPoints[] =
 
 class FacingNegolash : public QuestScript
 {
-        void OnQuestComplete(Player* pPlayer, QuestLogEntry* qLogEntry)
+    void OnQuestComplete(Player* pPlayer, QuestLogEntry* qLogEntry)
+    {
+        GameObject* obj = NULL;
+
+        for (uint8 i = 0; i < 9; i++)
         {
-            GameObject* obj = NULL;
-
-            for(uint8 i = 0; i < 9; i++)
-            {
-                obj = sEAS.SpawnGameobject(pPlayer, GO_MEAT, MeatSpawnPoints[i].x, MeatSpawnPoints[i].y, MeatSpawnPoints[i].z, MeatSpawnPoints[i].o, 1, 0, 0, 0, 0);
-                sEAS.GameobjectDelete(obj, 2 * 60 * 1000);
-            }
-            for(uint8 i = 0; i < 5; i++)
-            {
-                obj = sEAS.SpawnGameobject(pPlayer, GO_BOTTLE, BottleSpawnPoints[i].x, BottleSpawnPoints[i].y, BottleSpawnPoints[i].z, BottleSpawnPoints[i].o, 1, 0, 0, 0, 0);
-                sEAS.GameobjectDelete(obj, 2 * 60 * 1000);
-            }
-            for(uint8 i = 0; i < 3; i++)
-            {
-                obj = sEAS.SpawnGameobject(pPlayer, GO_BREAD, BreadSpawnPoints[i].x, BreadSpawnPoints[i].y, BreadSpawnPoints[i].z, BreadSpawnPoints[i].o, 1, 0, 0, 0, 0);
-                sEAS.GameobjectDelete(obj, 2 * 60 * 1000);
-            }
-
-            Creature* Negolash = sEAS.SpawnCreature(pPlayer, 1494, -14657.400391f, 155.115997f, 4.081050f, 0.353429f);
-            Negolash->GetAIInterface()->MoveTo(-14647.526367f, 143.710052f, 1.164550f);
+            obj = sEAS.SpawnGameobject(pPlayer, GO_MEAT, MeatSpawnPoints[i].x, MeatSpawnPoints[i].y, MeatSpawnPoints[i].z, MeatSpawnPoints[i].o, 1, 0, 0, 0, 0);
+            sEAS.GameobjectDelete(obj, 2 * 60 * 1000);
         }
+        for (uint8 i = 0; i < 5; i++)
+        {
+            obj = sEAS.SpawnGameobject(pPlayer, GO_BOTTLE, BottleSpawnPoints[i].x, BottleSpawnPoints[i].y, BottleSpawnPoints[i].z, BottleSpawnPoints[i].o, 1, 0, 0, 0, 0);
+            sEAS.GameobjectDelete(obj, 2 * 60 * 1000);
+        }
+        for (uint8 i = 0; i < 3; i++)
+        {
+            obj = sEAS.SpawnGameobject(pPlayer, GO_BREAD, BreadSpawnPoints[i].x, BreadSpawnPoints[i].y, BreadSpawnPoints[i].z, BreadSpawnPoints[i].o, 1, 0, 0, 0, 0);
+            sEAS.GameobjectDelete(obj, 2 * 60 * 1000);
+        }
+
+        Creature* Negolash = sEAS.SpawnCreature(pPlayer, 1494, -14657.400391f, 155.115997f, 4.081050f, 0.353429f);
+        Negolash->GetAIInterface()->MoveTo(-14647.526367f, 143.710052f, 1.164550f);
+    }
 };
 
 class NegolashAI : public CreatureAIScript
 {
-    public:
-        ADD_CREATURE_FACTORY_FUNCTION(NegolashAI);
+public:
+    ADD_CREATURE_FACTORY_FUNCTION(NegolashAI);
 
-        NegolashAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-        }
-        void OnDied(Unit* mKiller)
-        {
-            _unit->Despawn(180000, 0);
-            RemoveAIUpdateEvent();
-        }
+    NegolashAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+    }
+    void OnDied(Unit* mKiller)
+    {
+        _unit->Despawn(180000, 0);
+        RemoveAIUpdateEvent();
+    }
 };
 
 
@@ -311,13 +311,9 @@ void SetupStranglethornVale(ScriptMgr* mgr)
 {
     GossipScript* gossip1 = new StrFever();
     mgr->register_gossip_script(1449, gossip1);
-
     mgr->register_creature_script(1511, &Beka::Create);
-
     mgr->register_creature_script(1516, &Beka1::Create);
-
     mgr->register_quest_script(584, new BloodscalpClanHeads());
-
     mgr->register_quest_script(1118, new BacktoBootyBay());
     mgr->register_quest_script(609, new VoodooDues());
 }

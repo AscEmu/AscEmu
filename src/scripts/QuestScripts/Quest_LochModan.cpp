@@ -22,26 +22,26 @@
 
 class ProtectingtheShipment : public QuestScript
 {
-    public:
+public:
 
-        void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
-        {
-            float SSX = mTarget->GetPositionX();
-            float SSY = mTarget->GetPositionY();
-            float SSZ = mTarget->GetPositionZ();
+    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+    {
+        float SSX = mTarget->GetPositionX();
+        float SSY = mTarget->GetPositionY();
+        float SSZ = mTarget->GetPositionZ();
 
 
-            Creature* creat = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 1379);
-            if(creat == NULL)
-                return;
-            creat->m_escorter = mTarget;
-            creat->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_QUEST);
-            creat->GetAIInterface()->StopMovement(3000);
-            creat->GetAIInterface()->SetAllowedToEnterCombat(false);
-            creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay let's do!");
-            creat->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+        Creature* creat = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 1379);
+        if (creat == NULL)
+            return;
+        creat->m_escorter = mTarget;
+        creat->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_QUEST);
+        creat->GetAIInterface()->StopMovement(3000);
+        creat->GetAIInterface()->SetAllowedToEnterCombat(false);
+        creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay let's do!");
+        creat->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
 
-        }
+    }
 };
 
 // Miran Waypoints
@@ -60,43 +60,44 @@ static Movement::LocationWithFlag WaypointsMiran[] =
 class Miran : public MoonScriptCreatureAI
 {
 
-    public:
-        MOONSCRIPT_FACTORY_FUNCTION(Miran, MoonScriptCreatureAI);
-        Miran(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+public:
+    MOONSCRIPT_FACTORY_FUNCTION(Miran, MoonScriptCreatureAI);
+    Miran(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    {
+        WPCount = 7;
+        WayPoints = WaypointsMiran;
+
+        for (uint8 i = 1; i <= WPCount; ++i)
         {
-            WPCount = 7;
-            WayPoints = WaypointsMiran;
-
-            for (uint8 i = 1; i <= WPCount; ++i)
-            {
-                AddWaypoint(CreateWaypoint(i, 0, WayPoints[i]));
-            }
-
-            pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+            AddWaypoint(CreateWaypoint(i, 0, WayPoints[i]));
         }
 
-        void OnReachWP(uint32 iWaypointId, bool bForwards)
+        pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+    }
+
+    void OnReachWP(uint32 iWaypointId, bool bForwards)
+    {
+        if (iWaypointId == 7)
         {
-            if(iWaypointId == 7)
-            {
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, I'm outta here!");
-                _unit->Despawn(5000, 1000);
-                sEAS.DeleteWaypoints(_unit);
-                if(_unit->m_escorter == NULL)
-                    return;
-                auto player = _unit->m_escorter;
-                _unit->m_escorter = NULL;
+            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, I'm outta here!");
+            _unit->Despawn(5000, 1000);
+            sEAS.DeleteWaypoints(_unit);
+            if (_unit->m_escorter == NULL)
+                return;
+            auto player = _unit->m_escorter;
+            _unit->m_escorter = NULL;
 
-                auto quest_entry = player->GetQuestLogForEntry(309);
-                if (quest_entry == nullptr)
-                    return;
-                quest_entry->SendQuestComplete();
-            }
+            auto quest_entry = player->GetQuestLogForEntry(309);
+            if (quest_entry == nullptr)
+                return;
+            quest_entry->SendQuestComplete();
         }
+    }
 
-        uint8 WPCount;
-        Movement::LocationWithFlag* WayPoints;
+    uint8 WPCount;
+    Movement::LocationWithFlag* WayPoints;
 };
+
 
 void SetupLochModan(ScriptMgr* mgr)
 {

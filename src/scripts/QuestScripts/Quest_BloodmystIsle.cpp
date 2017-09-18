@@ -28,304 +28,304 @@
 
 class TheKesselRun : public QuestScript
 {
-    public:
+public:
 
-        void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
-        {
-            if (!mTarget)
-                return;
-            if (!mTarget->HasSpell(30829))
-                mTarget->CastSpell(mTarget, 30829, true);
-        }
+    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+    {
+        if (!mTarget)
+            return;
+        if (!mTarget->HasSpell(30829))
+            mTarget->CastSpell(mTarget, 30829, true);
+    }
 };
 
 
 class TheKesselRun1 : public GossipScript
 {
-    public:
+public:
 
-        void GossipHello(Object* pObject, Player* plr)
+    void GossipHello(Object* pObject, Player* plr)
+    {
+        if (!plr)
+            return;
+
+        GossipMenu* Menu;
+        Creature* highchief = static_cast<Creature*>(pObject);
+        if (highchief == NULL)
+            return;
+
+        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
+        if (plr->HasQuest(9663))
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(454), 1);     // Warn him
+
+        Menu->SendTo(plr);
+    }
+
+    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
+    {
+        if (!plr)
+            return;
+
+        Creature* highchief = static_cast<Creature*>(pObject);
+        if (highchief == NULL)
+            return;
+
+        switch (IntId)
         {
-            if (!plr)
-                return;
-
-            GossipMenu* Menu;
-            Creature* highchief = static_cast<Creature*>(pObject);
-            if (highchief == NULL)
-                return;
-
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
-            if (plr->HasQuest(9663))
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(454), 1);     // Warn him
-
-            Menu->SendTo(plr);
-        }
-
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
-        {
-            if (!plr)
-                return;
-
-            Creature* highchief = static_cast<Creature*>(pObject);
-            if (highchief == NULL)
-                return;
-
-            switch (IntId)
+            case 0:
+                GossipHello(pObject, plr);
+                break;
+            case 1:
             {
-                case 0:
-                    GossipHello(pObject, plr);
-                    break;
-                case 1:
+                QuestLogEntry* en = plr->GetQuestLogForEntry(9663);
+                if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
                 {
-                    QuestLogEntry* en = plr->GetQuestLogForEntry(9663);
-                    if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-                    {
-                        en->SetMobCount(0, en->GetMobCount(0) + 1);
-                        en->SendUpdateAddKill(0);
-                        en->UpdatePlayerFields();
-                        return;
-                    }
-                    break;
+                    en->SetMobCount(0, en->GetMobCount(0) + 1);
+                    en->SendUpdateAddKill(0);
+                    en->UpdatePlayerFields();
+                    return;
                 }
+                break;
             }
         }
+    }
 };
 
 
 class TheKesselRun2 : public GossipScript
 {
-    public:
+public:
 
-        void GossipHello(Object* pObject, Player* plr)
+    void GossipHello(Object* pObject, Player* plr)
+    {
+        if (!plr)
+            return;
+
+        GossipMenu* Menu;
+        Creature* highchief = static_cast<Creature*>(pObject);
+        if (highchief == NULL)
+            return;
+
+        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
+        if (plr->HasQuest(9663))
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(454), 1);     // Warn him
+
+        Menu->SendTo(plr);
+    }
+
+    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
+    {
+        if (!plr)
+            return;
+
+        Creature* highchief = static_cast<Creature*>(pObject);
+        if (highchief == NULL)
+            return;
+
+        switch (IntId)
         {
-            if (!plr)
-                return;
+            case 0:
+                GossipHello(pObject, plr);
+                break;
 
-            GossipMenu* Menu;
-            Creature* highchief = static_cast<Creature*>(pObject);
-            if (highchief == NULL)
-                return;
-
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
-            if (plr->HasQuest(9663))
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(454), 1);     // Warn him
-
-            Menu->SendTo(plr);
-        }
-
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
-        {
-            if (!plr)
-                return;
-
-            Creature* highchief = static_cast<Creature*>(pObject);
-            if (highchief == NULL)
-                return;
-
-            switch (IntId)
+            case 1:
             {
-                case 0:
-                    GossipHello(pObject, plr);
-                    break;
-
-                case 1:
+                QuestLogEntry* en = plr->GetQuestLogForEntry(9663);
+                if (en && en->GetMobCount(1) < en->GetQuest()->required_mob_or_go_count[1])
                 {
-                    QuestLogEntry* en = plr->GetQuestLogForEntry(9663);
-                    if (en && en->GetMobCount(1) < en->GetQuest()->required_mob_or_go_count[1])
-                    {
-                        en->SetMobCount(1, en->GetMobCount(1) + 1);
-                        en->SendUpdateAddKill(1);
-                        en->UpdatePlayerFields();
-                        return;
-                    }
-                    break;
+                    en->SetMobCount(1, en->GetMobCount(1) + 1);
+                    en->SendUpdateAddKill(1);
+                    en->UpdatePlayerFields();
+                    return;
                 }
+                break;
             }
         }
+    }
 };
 
 
 class TheKesselRun3 : public GossipScript
 {
-    public:
+public:
 
-        void GossipHello(Object* pObject, Player* plr)
+    void GossipHello(Object* pObject, Player* plr)
+    {
+        if (!plr)
+            return;
+
+        GossipMenu* Menu;
+        Creature* highchief = static_cast<Creature*>(pObject);
+        if (highchief == NULL)
+            return;
+
+        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
+        if (plr->HasQuest(9663))
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(454), 1);     // Warn him
+
+        Menu->SendTo(plr);
+    }
+
+    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
+    {
+        if (!plr)
+            return;
+
+        Creature* highchief = static_cast<Creature*>(pObject);
+        if (highchief == NULL)
+            return;
+
+        switch (IntId)
         {
-            if (!plr)
-                return;
+            case 0:
+                GossipHello(pObject, plr);
+                break;
 
-            GossipMenu* Menu;
-            Creature* highchief = static_cast<Creature*>(pObject);
-            if (highchief == NULL)
-                return;
-
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
-            if (plr->HasQuest(9663))
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(454), 1);     // Warn him
-
-            Menu->SendTo(plr);
-        }
-
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
-        {
-            if (!plr)
-                return;
-
-            Creature* highchief = static_cast<Creature*>(pObject);
-            if (highchief == NULL)
-                return;
-
-            switch (IntId)
+            case 1:
             {
-                case 0:
-                    GossipHello(pObject, plr);
-                    break;
-
-                case 1:
+                QuestLogEntry* en = plr->GetQuestLogForEntry(9663);
+                if (en && en->GetMobCount(2) < en->GetQuest()->required_mob_or_go_count[2])
                 {
-                    QuestLogEntry* en = plr->GetQuestLogForEntry(9663);
-                    if (en && en->GetMobCount(2) < en->GetQuest()->required_mob_or_go_count[2])
-                    {
-                        en->SetMobCount(2, en->GetMobCount(2) + 1);
-                        en->SendUpdateAddKill(2);
-                        en->UpdatePlayerFields();
-                        return;
-                    }
-                    break;
+                    en->SetMobCount(2, en->GetMobCount(2) + 1);
+                    en->SendUpdateAddKill(2);
+                    en->UpdatePlayerFields();
+                    return;
                 }
+                break;
             }
         }
+    }
 };
 
 
 
 class SavingPrincessStillpine : public GameObjectAIScript
 {
-    public:
+public:
 
-        SavingPrincessStillpine(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
-        static GameObjectAIScript* Create(GameObject* GO) { return new SavingPrincessStillpine(GO); }
+    SavingPrincessStillpine(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    static GameObjectAIScript* Create(GameObject* GO) { return new SavingPrincessStillpine(GO); }
 
-        void OnActivate(Player* pPlayer)
-        {
-            QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(9667);
-            if (qle == NULL)
-                return;
-
-            if (qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
-            {
-                qle->SetMobCount(0, qle->GetMobCount(0) + 1);
-                qle->SendUpdateAddKill(0);
-                qle->UpdatePlayerFields();
-            }
-
-            Creature* princess = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17682);
-            if (!princess)
-                return;
-
-            princess->Despawn(1000, 6 * 60 * 1000);
+    void OnActivate(Player* pPlayer)
+    {
+        QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(9667);
+        if (qle == NULL)
             return;
+
+        if (qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
+        {
+            qle->SetMobCount(0, qle->GetMobCount(0) + 1);
+            qle->SendUpdateAddKill(0);
+            qle->UpdatePlayerFields();
         }
+
+        Creature* princess = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17682);
+        if (!princess)
+            return;
+
+        princess->Despawn(1000, 6 * 60 * 1000);
+        return;
+    }
 };
 
 
 class HighChiefBristlelimb : public CreatureAIScript
 {
-    public:
+public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(HighChiefBristlelimb);
-        HighChiefBristlelimb(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-            fulborgskilled = 0;
-        }
+    ADD_CREATURE_FACTORY_FUNCTION(HighChiefBristlelimb);
+    HighChiefBristlelimb(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        fulborgskilled = 0;
+    }
 
-        void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller)
+    {
+        fulborgskilled++;
+        if (mKiller->IsPlayer())
         {
-            fulborgskilled++;
-            if (mKiller->IsPlayer())
+            Player* mPlayer = static_cast<Player*>(mKiller);
+
+            if (fulborgskilled > 8 && mPlayer->HasQuest(9667))
             {
-                Player* mPlayer = static_cast<Player*>(mKiller);
-
-                if (fulborgskilled > 8 && mPlayer->HasQuest(9667))
-                {
-                    _unit->GetMapMgr()->GetInterface()->SpawnCreature(17702, -2419, -12166, 33, 3.45f, true, false, 0, 0)->Despawn(18000000, 0);
-                    fulborgskilled = 0;
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Chief, we need your help!");
-                }
+                _unit->GetMapMgr()->GetInterface()->SpawnCreature(17702, -2419, -12166, 33, 3.45f, true, false, 0, 0)->Despawn(18000000, 0);
+                fulborgskilled = 0;
+                _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Chief, we need your help!");
             }
         }
+    }
 
-        private:
+private:
 
-            int fulborgskilled;
+    int fulborgskilled;
 };
 
 
 class WebbedCreature : public CreatureAIScript
 {
-    public:
+public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(WebbedCreature);
-        WebbedCreature(Creature* pCreature) : CreatureAIScript(pCreature)
-        {}
+    ADD_CREATURE_FACTORY_FUNCTION(WebbedCreature);
+    WebbedCreature(Creature* pCreature) : CreatureAIScript(pCreature)
+    {}
 
-        void OnCombatStart(Unit* pTarget)
+    void OnCombatStart(Unit* pTarget)
+    {
+        _unit->GetAIInterface()->disable_melee = true;
+        _unit->setMoveRoot(true);
+        _unit->GetAIInterface()->StopMovement(0);
+    }
+
+    void OnCombatStop(Unit* pTarget)
+    {
+        _unit->GetAIInterface()->disable_melee = false;
+        _unit->setMoveRoot(false);
+    }
+
+    void OnDied(Unit* pKiller)
+    {
+        Player* QuestHolder = NULL;
+        if (pKiller->IsPlayer())
+            QuestHolder = static_cast<Player*>(pKiller);
+        else if (pKiller->IsPet() && static_cast<Pet*>(pKiller)->GetPetOwner() != NULL)
+            QuestHolder = static_cast<Pet*>(pKiller)->GetPetOwner();
+
+        if (QuestHolder == NULL)
+            return;
+
+        // M4ksiu: I don't think the method is correct, but it can stay the way it was until someone gives proper infos
+        QuestLogEntry* Quest = QuestHolder->GetQuestLogForEntry(9670);
+        Creature* RandomCreature = NULL;
+        if (Quest == NULL)
         {
-            _unit->GetAIInterface()->disable_melee = true;
-            _unit->setMoveRoot(true);
-            _unit->GetAIInterface()->StopMovement(0);
-        }
-
-        void OnCombatStop(Unit* pTarget)
-        {
-            _unit->GetAIInterface()->disable_melee = false;
-            _unit->setMoveRoot(false);
-        }
-
-        void OnDied(Unit* pKiller)
-        {
-            Player* QuestHolder = NULL;
-            if (pKiller->IsPlayer())
-                QuestHolder = static_cast<Player*>(pKiller);
-            else if (pKiller->IsPet() && static_cast<Pet*>(pKiller)->GetPetOwner() != NULL)
-                QuestHolder = static_cast<Pet*>(pKiller)->GetPetOwner();
-
-            if (QuestHolder == NULL)
-                return;
-
-            // M4ksiu: I don't think the method is correct, but it can stay the way it was until someone gives proper infos
-            QuestLogEntry* Quest = QuestHolder->GetQuestLogForEntry(9670);
-            Creature* RandomCreature = NULL;
-            if (Quest == NULL)
+            // Creatures from Bloodmyst Isle
+            uint32 Id[51] = { 17681, 17887, 17550, 17323, 17338, 17341, 17333, 17340, 17353, 17320, 17339, 17337, 17715, 17322, 17494, 17654, 17342, 17328, 17331, 17325, 17321, 17330, 17522, 17329, 17524, 17327, 17661, 17352, 17334, 17326, 17324, 17673, 17336, 17346, 17589, 17609, 17608, 17345, 17527, 17344, 17347, 17525, 17713, 17523, 17348, 17606, 17604, 17607, 17610, 17358, 17588 };
+            RandomCreature = _unit->GetMapMgr()->GetInterface()->SpawnCreature(Id[RandomUInt(50)], _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), true, false, 0, 0);
+            if (RandomCreature != NULL)
             {
-                // Creatures from Bloodmyst Isle
-                uint32 Id[51] = { 17681, 17887, 17550, 17323, 17338, 17341, 17333, 17340, 17353, 17320, 17339, 17337, 17715, 17322, 17494, 17654, 17342, 17328, 17331, 17325, 17321, 17330, 17522, 17329, 17524, 17327, 17661, 17352, 17334, 17326, 17324, 17673, 17336, 17346, 17589, 17609, 17608, 17345, 17527, 17344, 17347, 17525, 17713, 17523, 17348, 17606, 17604, 17607, 17610, 17358, 17588 };
-                RandomCreature = _unit->GetMapMgr()->GetInterface()->SpawnCreature(Id[RandomUInt(50)], _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), true, false, 0, 0);
-                if (RandomCreature != NULL)
-                {
-                    RandomCreature->m_noRespawn = true;
-                    RandomCreature->Despawn(60000, 0);
-                }
-
-                return;
+                RandomCreature->m_noRespawn = true;
+                RandomCreature->Despawn(60000, 0);
             }
-            else
+
+            return;
+        }
+        else
+        {
+            uint32 Id[8] = { 17681, 17321, 17330, 17522, 17673, 17336, 17346, 17589 };
+            RandomCreature = _unit->GetMapMgr()->GetInterface()->SpawnCreature(Id[RandomUInt(7)], _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), true, false, 0, 0);
+            if (RandomCreature != NULL)
             {
-                uint32 Id[8] = { 17681, 17321, 17330, 17522, 17673, 17336, 17346, 17589 };
-                RandomCreature = _unit->GetMapMgr()->GetInterface()->SpawnCreature(Id[RandomUInt(7)], _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), true, false, 0, 0);
-                if (RandomCreature != NULL)
+                RandomCreature->m_noRespawn = true;
+                RandomCreature->Despawn(60000, 0);
+                if (RandomCreature->GetEntry() == 17681 && Quest->GetMobCount(0) < Quest->GetQuest()->required_mob_or_go_count[0])
                 {
-                    RandomCreature->m_noRespawn = true;
-                    RandomCreature->Despawn(60000, 0);
-                    if (RandomCreature->GetEntry() == 17681 && Quest->GetMobCount(0) < Quest->GetQuest()->required_mob_or_go_count[0])
-                    {
-                        Quest->SetMobCount(0, Quest->GetMobCount(0) + 1);
-                        Quest->SendUpdateAddKill(0);
-                        Quest->UpdatePlayerFields();
-                    }
+                    Quest->SetMobCount(0, Quest->GetMobCount(0) + 1);
+                    Quest->SendUpdateAddKill(0);
+                    Quest->UpdatePlayerFields();
                 }
             }
         }
+    }
 };
 
 

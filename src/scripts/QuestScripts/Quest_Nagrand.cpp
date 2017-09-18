@@ -22,355 +22,330 @@
 #include "Setup.h"
 #include "Management/Gossip/GossipMenu.hpp"
 
-//*********************************************************************************************
-//                               The Ring of Blood
-//*********************************************************************************************
-
-
 class Quest_The_Ring_of_Blood_The_Final_Challenge : public QuestScript
 {
-    public:
-        void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+public:
+    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+    {
+        Creature* pMogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
+        if (pMogor != NULL)
         {
-            Creature* pMogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
-
-            if(pMogor != NULL)
+            pMogor->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Prepare yourselves!");
+            Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
+            if (Qgiver != NULL)
             {
-                pMogor->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Prepare yourselves!");
-                Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
-
-                if(Qgiver != NULL)
-                {
-                    char msg[256];
-                    snprintf((char*)msg, 256, "Mogor has challenged you. You have to accept! Get in the right of blood if you are ready to fight.");
-                    Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
-                    std::string msg2 = "For the first time in the Ring of Bloods history. Mogor has chosen to exercise his right of the battle! On this wartorn ground, ";
-                    msg2 += mTarget->GetName();
-                    msg2 += "  will face Mogor, hero of the Warmaul!";
-                    Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 32000);
-                }
-
-                pMogor->setUInt64Value(UNIT_FIELD_FLAGS, 0);
-                pMogor->GetAIInterface()->SetAllowedToEnterCombat(true);
-                pMogor->GetAIInterface()->MoveTo(-704.669f, 7871.08f, 45.0387f);
-                pMogor->SetOrientation(1.59531f);
-                pMogor->SetFacing(1.908516f);
-                pMogor->SetFaction(14);
+                char msg[256];
+                snprintf((char*)msg, 256, "Mogor has challenged you. You have to accept! Get in the right of blood if you are ready to fight.");
+                Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
+                std::string msg2 = "For the first time in the Ring of Bloods history. Mogor has chosen to exercise his right of the battle! On this wartorn ground, ";
+                msg2 += mTarget->GetName();
+                msg2 += "  will face Mogor, hero of the Warmaul!";
+                Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 32000);
             }
+
+            pMogor->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+            pMogor->GetAIInterface()->SetAllowedToEnterCombat(true);
+            pMogor->GetAIInterface()->MoveTo(-704.669f, 7871.08f, 45.0387f);
+            pMogor->SetOrientation(1.59531f);
+            pMogor->SetFacing(1.908516f);
+            pMogor->SetFaction(14);
         }
+    }
 
-        void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
-        {
-            Creature* mogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
+    void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    {
+        Creature* mogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
+        if (mogor != NULL)
+            mogor->Despawn(1000, 0);
 
-            if(mogor != NULL)
-                mogor->Despawn(1000, 0);
-
-            mTarget->GetMapMgr()->GetInterface()->SpawnCreature(18069, -712.443115f, 7932.182129f, 59.430191f, 4.515952f, true, false, 0, 0);
-        }
+        mTarget->GetMapMgr()->GetInterface()->SpawnCreature(18069, -712.443115f, 7932.182129f, 59.430191f, 4.515952f, true, false, 0, 0);
+    }
 };
 
 class Quest_The_Ring_of_Blood_The_Warmaul_Champion : public QuestScript
 {
-    public:
-        void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+public:
+    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+    {
+        Unit* pQgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
+        if (pQgiver != NULL)
         {
-            Unit* pQgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
+            char msg[256];
+            snprintf((char*)msg, 256, "Get in the Ring of Blood, %s . The fight is about to start!", mTarget->GetName());
+            pQgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
+            std::string msg2 = "They had to ship the champion in from the Blade's Edge gladiator pits. He was training on mountain giants - three at a time.";
+            //char msg2[256];
+            //snprintf((char*)msg2, 256, "They had to ship the champion in from the Blade's Edge gladiator pits. He was training on mountain giants - three at a time.", mTarget->GetName());
+            pQgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 4000);
+            mTarget->GetMapMgr()->GetInterface()->SpawnCreature(18402, -704.669f, 7871.08f, 45.0387f, 1.59531f, true, false, 0, 0);
+        };
+    };
 
-            if(pQgiver != NULL)
-            {
-                char msg[256];
-                snprintf((char*)msg, 256, "Get in the Ring of Blood, %s . The fight is about to start!", mTarget->GetName());
-                pQgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
-                std::string msg2 = "They had to ship the champion in from the Blade's Edge gladiator pits. He was training on mountain giants - three at a time.";
-                //char msg2[256];
-                //snprintf((char*)msg2, 256, "They had to ship the champion in from the Blade's Edge gladiator pits. He was training on mountain giants - three at a time.", mTarget->GetName());
-                pQgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 4000);
-                mTarget->GetMapMgr()->GetInterface()->SpawnCreature(18402, -704.669f, 7871.08f, 45.0387f, 1.59531f, true, false, 0, 0);
-            };
+    void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    {
+        Unit* pMogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
+        if (pMogor != NULL)
+        {
+            char msg[256];
+            snprintf((char*)msg, 256, "WUT!? UNPOSSIBLE!! You fight Mogor now! Mogor destroy!");
+            pMogor->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
         };
 
-        void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
-        {
-            Unit* pMogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
-
-            if(pMogor != NULL)
-            {
-                char msg[256];
-                snprintf((char*)msg, 256, "WUT!? UNPOSSIBLE!! You fight Mogor now! Mogor destroy!");
-                pMogor->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
-            };
-
-            Creature* pWarmaulChamp = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18402);
-
-            if(pWarmaulChamp != NULL)
-                pWarmaulChamp->Despawn(1000, 0);
-        };
+        Creature* pWarmaulChamp = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18402);
+        if (pWarmaulChamp != NULL)
+            pWarmaulChamp->Despawn(1000, 0);
+    };
 
 };
 
 class Quest_The_Ring_of_Blood_Skragath : public QuestScript
 {
-    public:
-        void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+public:
+    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+    {
+        Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
+        if (Qgiver != NULL)
         {
-            Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
+            char msg[256];
+            snprintf((char*)msg, 256, "Get in the Ring of Blood, %s . The fight is about to start!", mTarget->GetName());
+            Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
+            std::string msg2 = "From the parts unknown: Ska'gath! Can ";
+            msg2 += mTarget->GetName();
+            msg2 += " possibly survive the onslaught of void energies?";
+            //char msg2[256];
+            //snprintf((char*)msg2, 256, "From the parts unknown: Ska'gath! Can %s possibly survive the onslaught of void energies?", mTarget->GetName());
+            Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 4000);
+            mTarget->GetMapMgr()->GetInterface()->SpawnCreature(18401, -704.669f, 7871.08f, 45.0387f, 1.59531f, true, false, 0, 0);
+        };
+    };
 
-            if(Qgiver != NULL)
-            {
-                char msg[256];
-                snprintf((char*)msg, 256, "Get in the Ring of Blood, %s . The fight is about to start!", mTarget->GetName());
-                Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
-                std::string msg2 = "From the parts unknown: Ska'gath! Can ";
-                msg2 += mTarget->GetName();
-                msg2 += " possibly survive the onslaught of void energies?";
-                //char msg2[256];
-                //snprintf((char*)msg2, 256, "From the parts unknown: Ska'gath! Can %s possibly survive the onslaught of void energies?", mTarget->GetName());
-                Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 4000);
-                mTarget->GetMapMgr()->GetInterface()->SpawnCreature(18401, -704.669f, 7871.08f, 45.0387f, 1.59531f, true, false, 0, 0);
-            };
+    void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    {
+        Unit* mogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
+        if (mogor != NULL)
+        {
+            char msg[256];
+            snprintf((char*)msg, 256, "Mogor not impressed! Skra'gat wuz made of da air and shadow! Soft like da squishy orcies!");
+            mogor->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
         };
 
-        void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
-        {
-            Unit* mogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
-
-            if(mogor != NULL)
-            {
-                char msg[256];
-                snprintf((char*)msg, 256, "Mogor not impressed! Skra'gat wuz made of da air and shadow! Soft like da squishy orcies!");
-                mogor->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
-            };
-
-            Creature* pSkragath = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18401);
-
-            if(pSkragath != NULL)
-                pSkragath->Despawn(1000, 0);
-        };
+        Creature* pSkragath = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18401);
+        if (pSkragath != NULL)
+            pSkragath->Despawn(1000, 0);
+    };
 };
 
 class Quest_The_Ring_of_Blood_Rokdar_the_Sundered_Lord : public QuestScript
 {
-    public:
-        void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+public:
+    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+    {
+        Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
+        if (Qgiver != NULL)
         {
-            Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
+            char msg[256];
+            snprintf((char*)msg, 256, "Get in the Ring of Blood, %s . The fight is about to start!", mTarget->GetName());
+            Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
+            std::string msg2 = "Hailing from the mountains of Blade's Edge comes Rokdar the Sundered Lord! ";
+            msg2 += mTarget->GetName();
+            msg2 += " is in for the fight of his life.";
+            Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 4000);
 
-            if(Qgiver != NULL)
-            {
-                char msg[256];
-                snprintf((char*)msg, 256, "Get in the Ring of Blood, %s . The fight is about to start!", mTarget->GetName());
-                Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
-                std::string msg2 = "Hailing from the mountains of Blade's Edge comes Rokdar the Sundered Lord! ";
-                msg2 += mTarget->GetName();
-                msg2 += " is in for the fight of his life.";
-                Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 4000);
-
-                mTarget->GetMapMgr()->GetInterface()->SpawnCreature(18400, -704.669f, 7871.08f, 45.0387f, 1.59531f, true, false, 0, 0);
-            };
+            mTarget->GetMapMgr()->GetInterface()->SpawnCreature(18400, -704.669f, 7871.08f, 45.0387f, 1.59531f, true, false, 0, 0);
         };
+    };
 
-        void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
-        {
-            Unit* mogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
+    void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    {
+        Unit* mogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
+        if (mogor != NULL)
+            mogor->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "WUT!? UNPOSSIBLE!!");
 
-            if(mogor != NULL)
-                mogor->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "WUT!? UNPOSSIBLE!!");
-
-            Creature* pRokdar = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18400);
-
-            if(pRokdar != NULL)
-                pRokdar->Despawn(1000, 0);
-        };
+        Creature* pRokdar = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18400);
+        if (pRokdar != NULL)
+            pRokdar->Despawn(1000, 0);
+    };
 };
 
 class Quest_The_Ring_of_Blood_The_Blue_Brothers : public QuestScript
 {
-    public:
-        void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+public:
+    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+    {
+        Creature* pBrokentoe = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18398);
+        if (pBrokentoe != NULL)
+            pBrokentoe->Despawn(1000, 0);
+
+        Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
+        if (Qgiver != NULL)
         {
-            Creature* pBrokentoe = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18398);
+            char msg[256];
+            snprintf((char*)msg, 256, "Get in the Ring of Blood, %s . The fight is about to start!", mTarget->GetName());
+            Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
+            std::string msg2 = "The battle is about to begin! The unmerciful Murkblood twins versus ";
+            msg2 += mTarget->GetName();
+            Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 4000);
+            mTarget->GetMapMgr()->GetInterface()->SpawnCreature(18399, -704.669f, 7871.08f, 45.0387f, 1.59531f, true, false, 0, 0);
+            mTarget->GetMapMgr()->GetInterface()->SpawnCreature(18399, -708.076f, 7870.41f, 44.8457f, 1.59531f, true, false, 0, 0);
+        };
+    };
 
-            if(pBrokentoe != NULL)
-                pBrokentoe->Despawn(1000, 0);
-
-            Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
-
-            if(Qgiver != NULL)
-            {
-                char msg[256];
-                snprintf((char*)msg, 256, "Get in the Ring of Blood, %s . The fight is about to start!", mTarget->GetName());
-                Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
-                std::string msg2 = "The battle is about to begin! The unmerciful Murkblood twins versus ";
-                msg2 += mTarget->GetName();
-                Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 4000);
-                mTarget->GetMapMgr()->GetInterface()->SpawnCreature(18399, -704.669f, 7871.08f, 45.0387f, 1.59531f, true, false, 0, 0);
-                mTarget->GetMapMgr()->GetInterface()->SpawnCreature(18399, -708.076f, 7870.41f, 44.8457f, 1.59531f, true, false, 0, 0);
-            };
+    void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    {
+        Unit* mogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
+        if (mogor != NULL)
+        {
+            char msg[256];
+            snprintf((char*)msg, 256, "...");
+            mogor->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
         };
 
-        void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
-        {
-            Unit* mogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
+        Creature* pBrother1 = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18399);
+        if (pBrother1 != NULL)
+            pBrother1->Despawn(1000, 0);
 
-            if(mogor != NULL)
-            {
-                char msg[256];
-                snprintf((char*)msg, 256, "...");
-                mogor->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
-            };
-
-            Creature* pBrother1 = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18399);
-            if(pBrother1 != NULL)
-                pBrother1->Despawn(1000, 0);
-
-            Creature* pBrother2 = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18399);
-            if(pBrother2 != NULL)
-                pBrother2->Despawn(1000, 0);
-        };
+        Creature* pBrother2 = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18399);
+        if (pBrother2 != NULL)
+            pBrother2->Despawn(1000, 0);
+    };
 };
 
 class Quest_The_Ring_of_Blood_Brokentoe : public QuestScript
 {
-    public:
-        void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+public:
+    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+    {
+        Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
+        if (Qgiver != NULL)
         {
-            Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
+            char msg[256];
+            snprintf((char*)msg, 256, "Get in the Ring of Blood, %s . The fight is about to start!", mTarget->GetName());
+            Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
+            mTarget->GetMapMgr()->GetInterface()->SpawnCreature(18398, -704.669f, 7871.08f, 45.0387f, 1.59531f, true, false, 0, 0)->Despawn(600000, 0);
+        };
+    };
 
-            if(Qgiver != NULL)
-            {
-                char msg[256];
-                snprintf((char*)msg, 256, "Get in the Ring of Blood, %s . The fight is about to start!", mTarget->GetName());
-                Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
-                mTarget->GetMapMgr()->GetInterface()->SpawnCreature(18398, -704.669f, 7871.08f, 45.0387f, 1.59531f, true, false, 0, 0)->Despawn(600000, 0);
-            };
+    void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    {
+        Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
+        if (Qgiver != NULL)
+        {
+            char msg[256];
+            snprintf((char*)msg, 256, "%s is victorious!", mTarget->GetName());
+            Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
         };
 
-        void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+        Unit* mogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
+        if (mogor != NULL)
         {
-            Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
-
-            if(Qgiver != NULL)
-            {
-                char msg[256];
-                snprintf((char*)msg, 256, "%s is victorious!", mTarget->GetName());
-                Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
-            };
-
-            Unit* mogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
-
-            if(mogor != NULL)
-            {
-                char msg[256];
-                snprintf((char*)msg, 256, "...");
-                mogor->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
-            };
+            char msg[256];
+            snprintf((char*)msg, 256, "...");
+            mogor->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
         };
+    };
 };
 
 class mogorQAI : public CreatureAIScript
 {
-    public:
-        ADD_CREATURE_FACTORY_FUNCTION(mogorQAI);
-        mogorQAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
-            _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-        };
+public:
+    ADD_CREATURE_FACTORY_FUNCTION(mogorQAI);
+    mogorQAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+        _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
+    };
 
 };
 
 class NotOnMyWatch : public CreatureAIScript
 {
-    public:
-        ADD_CREATURE_FACTORY_FUNCTION(NotOnMyWatch);
-        NotOnMyWatch(Creature* pCreature) : CreatureAIScript(pCreature) {};
+public:
+    ADD_CREATURE_FACTORY_FUNCTION(NotOnMyWatch);
+    NotOnMyWatch(Creature* pCreature) : CreatureAIScript(pCreature) {};
 
-        void OnCombatStart(Unit* mTarget)
-        {
-            RegisterAIUpdateEvent(1000);
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "In Nagrand, food hunt ogre!");
-        };
+    void OnCombatStart(Unit* mTarget)
+    {
+        RegisterAIUpdateEvent(1000);
+        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "In Nagrand, food hunt ogre!");
+    };
 
-        void OnCombatStop()
+    void OnCombatStop()
+    {
+        RemoveAIUpdateEvent();
+    };
+
+    void OnDied(Unit* mTarget)
+    {
+        RemoveAIUpdateEvent();
+    };
+
+    void OnLoad()
+    {
+        _unit->SetFaction(14);
+        RemoveAIUpdateEvent();
+    };
+
+    void AIUpdate()
+    {
+        if (_unit->GetHealthPct() < 30)
         {
+            Unit* pUnit = _unit->GetAIInterface()->GetMostHated();
+            if (pUnit != NULL && pUnit->IsPlayer())
+                static_cast<Player*>(pUnit)->EventAttackStop();
+
+            _unit->SetFaction(35);
+            _unit->GetAIInterface()->WipeHateList();
+            _unit->GetAIInterface()->WipeTargetList();
+            _unit->SetStandState(STANDSTATE_SIT);
+            _unit->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+
+            _unit->Despawn(180000, 0);
+
             RemoveAIUpdateEvent();
         };
-
-        void OnDied(Unit* mTarget)
-        {
-            RemoveAIUpdateEvent();
-        };
-
-        void OnLoad()
-        {
-            _unit->SetFaction(14);
-            RemoveAIUpdateEvent();
-        };
-
-        void AIUpdate()
-        {
-            if(_unit->GetHealthPct() < 30)
-            {
-                Unit* pUnit = _unit->GetAIInterface()->GetMostHated();
-                if(pUnit != NULL && pUnit->IsPlayer())
-                    static_cast<Player*>(pUnit)->EventAttackStop();
-
-                _unit->SetFaction(35);
-                _unit->GetAIInterface()->WipeHateList();
-                _unit->GetAIInterface()->WipeTargetList();
-                _unit->SetStandState(STANDSTATE_SIT);
-                _unit->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-
-                _unit->Despawn(180000, 0);
-
-                RemoveAIUpdateEvent();
-            };
-        };
+    };
 
 };
 
 class LumpGossipScript : public GossipScript
 {
-    public:
-        void GossipHello(Object* pObject, Player* plr)
-        {
-            GossipMenu* Menu;
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(469), 1);     // Why are Boulderfist out this far? You know this is Kurenai territory!
-            Menu->SendTo(plr);
-        };
+public:
+    void GossipHello(Object* pObject, Player* plr)
+    {
+        GossipMenu* Menu;
+        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
+        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(469), 1);     // Why are Boulderfist out this far? You know this is Kurenai territory!
+        Menu->SendTo(plr);
+    };
 
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
-        {
-            Creature* Lump = static_cast<Creature*>(pObject);
-            if(Lump == NULL)
-                return;
+    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
+    {
+        Creature* Lump = static_cast<Creature*>(pObject);
+        if (Lump == NULL)
+            return;
 
-            switch(IntId)
-            {
-                case 0:
-                    GossipHello(pObject, plr);
-                    break;
-                case 1:
-                    if(plr->HasQuest(9918))
+        switch (IntId)
+        {
+            case 0:
+                GossipHello(pObject, plr);
+                break;
+            case 1:
+                if (plr->HasQuest(9918))
+                {
+                    QuestLogEntry* en = plr->GetQuestLogForEntry(9918);
+                    if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
                     {
-                        QuestLogEntry* en = plr->GetQuestLogForEntry(9918);
-                        if(en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-                        {
-                            uint32 newcount = en->GetMobCount(0) + 1;
-                            en->SetMobCount(0, newcount);
-                            en->SendUpdateAddKill(0);
-                            en->UpdatePlayerFields();
-                        }
+                        uint32 newcount = en->GetMobCount(0) + 1;
+                        en->SetMobCount(0, newcount);
+                        en->SendUpdateAddKill(0);
+                        en->UpdatePlayerFields();
                     }
-                    break;
-            }
-        };
+                }
+                break;
+        }
+    };
 
 };
-
-
 
 
 void SetupNagrand(ScriptMgr* mgr)
@@ -387,6 +362,4 @@ void SetupNagrand(ScriptMgr* mgr)
 
     GossipScript* LumpGossip = new LumpGossipScript;
     mgr->register_gossip_script(18351, LumpGossip);
-
 }
-

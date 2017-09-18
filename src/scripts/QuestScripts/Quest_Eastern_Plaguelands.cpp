@@ -24,70 +24,71 @@
 
 class Flayer : public CreatureAIScript
 {
-    public:
-        Flayer(Creature* pCreature) : CreatureAIScript(pCreature) { }
-        static CreatureAIScript* Create(Creature* c) { return new Flayer(c); }
+public:
+    Flayer(Creature* pCreature) : CreatureAIScript(pCreature) { }
+    static CreatureAIScript* Create(Creature* c) { return new Flayer(c); }
 
-        void OnDied(Unit* mKiller)
-        {
-            if(!mKiller->IsPlayer())
-                return;
+    void OnDied(Unit* mKiller)
+    {
+        if (!mKiller->IsPlayer())
+            return;
 
-            Creature* creat = _unit->GetMapMgr()->GetInterface()->SpawnCreature(11064, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), true, false, 0, 0);
-            if(creat)
-                creat->Despawn(60000, 0);
-        }
+        Creature* creat = _unit->GetMapMgr()->GetInterface()->SpawnCreature(11064, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), true, false, 0, 0);
+        if (creat)
+            creat->Despawn(60000, 0);
+    }
 
 };
 
 class Darrowshire_Spirit : public GossipScript
 {
-    public:
+public:
 
-        void GossipHello(Object* pObject, Player* plr)
+    void GossipHello(Object* pObject, Player* plr)
+    {
+        QuestLogEntry* en = plr->GetQuestLogForEntry(5211);
+
+        if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
         {
-            QuestLogEntry* en = plr->GetQuestLogForEntry(5211);
+            uint32 newcount = en->GetMobCount(0) + 1;
 
-            if(en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-            {
-                uint32 newcount = en->GetMobCount(0) + 1;
-
-                en->SetMobCount(0, newcount);
-                en->SendUpdateAddKill(0);
-                en->UpdatePlayerFields();
-            }
-
-            GossipMenu* Menu;
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3873, plr);
-
-            Menu->SendTo(plr);
-
-            if(!pObject->IsCreature())
-                return;
-
-            Creature* Spirit = static_cast<Creature*>(pObject);
-
-            Spirit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            Spirit->Despawn(4000, 0);
+            en->SetMobCount(0, newcount);
+            en->SendUpdateAddKill(0);
+            en->UpdatePlayerFields();
         }
+
+        GossipMenu* Menu;
+        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3873, plr);
+
+        Menu->SendTo(plr);
+
+        if (!pObject->IsCreature())
+            return;
+
+        Creature* Spirit = static_cast<Creature*>(pObject);
+
+        Spirit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        Spirit->Despawn(4000, 0);
+    }
 
 };
 
 class ArajTheSummoner : public CreatureAIScript
 {
-    public:
-        ADD_CREATURE_FACTORY_FUNCTION(ArajTheSummoner);
-        ArajTheSummoner(Creature* pCreature) : CreatureAIScript(pCreature) { }
+public:
+    ADD_CREATURE_FACTORY_FUNCTION(ArajTheSummoner);
+    ArajTheSummoner(Creature* pCreature) : CreatureAIScript(pCreature) { }
 
-        void OnDied(Unit* mKiller)
-        {
-            if(!mKiller->IsPlayer())
-                return;
+    void OnDied(Unit* mKiller)
+    {
+        if (!mKiller->IsPlayer())
+            return;
 
-            GameObject* go = sEAS.SpawnGameobject(static_cast<Player*>(mKiller), 177241, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), 1, 0, 0, 0, 0);
-            sEAS.GameobjectDelete(go, 60000);
-        }
+        GameObject* go = sEAS.SpawnGameobject(static_cast<Player*>(mKiller), 177241, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), 1, 0, 0, 0, 0);
+        sEAS.GameobjectDelete(go, 60000);
+    }
 };
+
 
 void SetupEasternPlaguelands(ScriptMgr* mgr)
 {

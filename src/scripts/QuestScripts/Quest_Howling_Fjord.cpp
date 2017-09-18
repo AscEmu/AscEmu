@@ -23,138 +23,138 @@
 
 class NorthFleet : public CreatureAIScript
 {
-    public:
-        ADD_CREATURE_FACTORY_FUNCTION(NorthFleet);
-        NorthFleet(Creature* pCreature) : CreatureAIScript(pCreature)  {}
+public:
+    ADD_CREATURE_FACTORY_FUNCTION(NorthFleet);
+    NorthFleet(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller)
+    {
+        if (mKiller->IsPlayer())
         {
-            if(mKiller->IsPlayer())
+            QuestLogEntry* qle = static_cast<Player*>(mKiller)->GetQuestLogForEntry(11230);
+            if (qle != NULL)
             {
-                QuestLogEntry* qle = static_cast<Player*>(mKiller)->GetQuestLogForEntry(11230);
-                if(qle != NULL)
+                if (qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
                 {
-                    if(qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
-                    {
-                        uint32 newcount = qle->GetMobCount(0) + 1;
-                        qle->SetMobCount(0, newcount);
-                        qle->SendUpdateAddKill(0);
-                        qle->UpdatePlayerFields();
-                        return;
-                    }
+                    uint32 newcount = qle->GetMobCount(0) + 1;
+                    qle->SetMobCount(0, newcount);
+                    qle->SendUpdateAddKill(0);
+                    qle->UpdatePlayerFields();
+                    return;
                 }
             }
         }
+    }
 };
 class ChillmereScourge : public CreatureAIScript
 {
-    public:
-        ADD_CREATURE_FACTORY_FUNCTION(ChillmereScourge);
-        ChillmereScourge(Creature* pCreature) : CreatureAIScript(pCreature)  {}
+public:
+    ADD_CREATURE_FACTORY_FUNCTION(ChillmereScourge);
+    ChillmereScourge(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller)
+    {
+        if (mKiller->IsPlayer())
         {
-            if(mKiller->IsPlayer())
+            QuestLogEntry* qle = static_cast<Player*>(mKiller)->GetQuestLogForEntry(11397);
+            if (qle != NULL)
             {
-                QuestLogEntry* qle = static_cast<Player*>(mKiller)->GetQuestLogForEntry(11397);
-                if(qle != NULL)
+                if (qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
                 {
-                    if(qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
-                    {
-                        uint32 newcount = qle->GetMobCount(0) + 1;
-                        qle->SetMobCount(0, newcount);
-                        qle->SendUpdateAddKill(0);
-                        qle->UpdatePlayerFields();
-                        return;
-                    }
+                    uint32 newcount = qle->GetMobCount(0) + 1;
+                    qle->SetMobCount(0, newcount);
+                    qle->SendUpdateAddKill(0);
+                    qle->UpdatePlayerFields();
+                    return;
                 }
             }
         }
+    }
 };
 class Baleheim : public CreatureAIScript
 {
-    public:
-        ADD_CREATURE_FACTORY_FUNCTION(Baleheim);
-        Baleheim(Creature* pCreature) : CreatureAIScript(pCreature)  {}
+public:
+    ADD_CREATURE_FACTORY_FUNCTION(Baleheim);
+    Baleheim(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller)
+    {
+        if (mKiller->IsPlayer())
         {
-            if(mKiller->IsPlayer())
+            QuestLogEntry* qle = static_cast<Player*>(mKiller)->GetQuestLogForEntry(11283);
+            if (qle != NULL)
             {
-                QuestLogEntry* qle = static_cast<Player*>(mKiller)->GetQuestLogForEntry(11283);
-                if(qle != NULL)
+                if (qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
                 {
-                    if(qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
-                    {
-                        uint32 newcount = qle->GetMobCount(0) + 1;
-                        qle->SetMobCount(0, newcount);
-                        qle->SendUpdateAddKill(0);
-                        qle->UpdatePlayerFields();
-                        return;
-                    }
+                    uint32 newcount = qle->GetMobCount(0) + 1;
+                    qle->SetMobCount(0, newcount);
+                    qle->SendUpdateAddKill(0);
+                    qle->UpdatePlayerFields();
+                    return;
                 }
             }
         }
+    }
 };
 
 class Plaguethis_Gossip : public GossipScript
 {
-    public:
-        void GossipHello(Object* pObject, Player* plr)
+public:
+    void GossipHello(Object* pObject, Player* plr)
+    {
+        GossipMenu* Menu;
+        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 40002, plr);
+        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(464), 2);     // Where would you like to fly too ?
+
+        if (plr->HasQuest(11332))
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(465), 1);     // Greer, i need a Gryphon to ride and some bombs to drop on New Agamand!
+
+        Menu->SendTo(plr);
+    }
+
+    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    {
+        Creature* pCreature = (pObject->IsCreature()) ? static_cast<Creature*>(pObject) : NULL;
+        if (pCreature == NULL)
+            return;
+
+        switch (IntId)
         {
-            GossipMenu* Menu;
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 40002, plr);
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(464), 2);     // Where would you like to fly too ?
-
-            if(plr->HasQuest(11332))
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(465), 1);     // Greer, i need a Gryphon to ride and some bombs to drop on New Agamand!
-
-            Menu->SendTo(plr);
-        }
-
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
-        {
-            Creature* pCreature = (pObject->IsCreature()) ? static_cast<Creature*>(pObject) : NULL;
-            if(pCreature == NULL)
-                return;
-
-            switch(IntId)
+            case 1:
             {
-                case 1:
-                    {
-                        auto item = objmgr.CreateItem(33634 , plr);
-                        if (item == nullptr)
-                            return;
+                auto item = objmgr.CreateItem(33634, plr);
+                if (item == nullptr)
+                    return;
 
-                        item->SetStackCount(10);
+                item->SetStackCount(10);
 
-                        if(!plr->GetItemInterface()->AddItemToFreeSlot(item))
-                        {
-                            plr->GetSession()->SendNotification("No free slots were found in your inventory!");
-                            item->DeleteMe();
-                        }
-                        else
-                        {
-                            plr->SendItemPushResult(false, true, false, true, plr->GetItemInterface()->LastSearchResult()->ContainerSlot,
-                                                    plr->GetItemInterface()->LastSearchResult()->Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(),
-                                                    item->GetItemRandomPropertyId(), item->GetStackCount());
+                if (!plr->GetItemInterface()->AddItemToFreeSlot(item))
+                {
+                    plr->GetSession()->SendNotification("No free slots were found in your inventory!");
+                    item->DeleteMe();
+                }
+                else
+                {
+                    plr->SendItemPushResult(false, true, false, true, plr->GetItemInterface()->LastSearchResult()->ContainerSlot,
+                        plr->GetItemInterface()->LastSearchResult()->Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(),
+                        item->GetItemRandomPropertyId(), item->GetStackCount());
 
-                        }
+                }
 
-                        if(pCreature->GetEntry() == 23859)
-                        {
-                            TaxiPath* path = sTaxiMgr.GetTaxiPath(745);
-                            plr->TaxiStart(path, 17759, 0);
-                        }
-                        break;
-                    }
-                case 2:
-                    {
-                        plr->GetSession()->SendTaxiList(pCreature);
-                        break;
-                    }
+                if (pCreature->GetEntry() == 23859)
+                {
+                    TaxiPath* path = sTaxiMgr.GetTaxiPath(745);
+                    plr->TaxiStart(path, 17759, 0);
+                }
+                break;
+            }
+            case 2:
+            {
+                plr->GetSession()->SendTaxiList(pCreature);
+                break;
             }
         }
+    }
 
 };
 

@@ -23,35 +23,33 @@
 
 class Veronia : public GossipScript
 {
-    public:
-        void GossipHello(Object* pObject, Player* plr)
+public:
+    void GossipHello(Object* pObject, Player* plr)
+    {
+        GossipMenu* Menu;
+        if (plr->HasQuest(10652))
         {
-            GossipMenu* Menu;
-            if(plr->HasQuest(10652))
-            {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(470), 1);     // I'm ready
-                Menu->SendTo(plr);
-            }
+            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(470), 1);     // I'm ready
+            Menu->SendTo(plr);
         }
+    }
 
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    {
+        Creature* creat = static_cast<Creature*>(pObject);
+        switch (IntId)
         {
-            Creature* creat = static_cast<Creature*>(pObject);
-            switch(IntId)
-            {
-                case 1:
-                    creat->CastSpell(plr, sSpellCustomizations.GetSpellInfo(34905), true);
-                    break;
-            }
+            case 1:
+                creat->CastSpell(plr, sSpellCustomizations.GetSpellInfo(34905), true);
+                break;
         }
+    }
 
 };
-
 
 
 void SetupNetherstorm(ScriptMgr* mgr)
 {
     mgr->register_gossip_script(20162, new Veronia());
-
 }

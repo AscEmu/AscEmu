@@ -23,64 +23,63 @@
 
 class PathoftheAdept : public GossipScript
 {
-    public:
-        void GossipHello(Object* pObject, Player* plr)
+public:
+    void GossipHello(Object* pObject, Player* plr)
+    {
+        if (!plr)
+            return;
+
+        GossipMenu* Menu;
+        Creature* lord = static_cast<Creature*>(pObject);
+        if (lord == NULL)
+            return;
+
+        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
+        if (plr->HasQuest(9692))
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(493), 1);     // Take Insignia
+
+        Menu->SendTo(plr);
+    }
+
+    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
+    {
+        if (!plr)
+            return;
+
+        Creature* lord = static_cast<Creature*>(pObject);
+        if (lord == NULL)
+            return;
+
+        switch (IntId)
         {
-            if(!plr)
-                return;
+            case 0:
+                GossipHello(pObject, plr);
+                break;
 
-            GossipMenu* Menu;
-            Creature* lord = static_cast<Creature*>(pObject);
-            if(lord == NULL)
-                return;
-
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
-            if(plr->HasQuest(9692))
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(493), 1);     // Take Insignia
-
-            Menu->SendTo(plr);
-        }
-
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
-        {
-            if(!plr)
-                return;
-
-            Creature* lord = static_cast<Creature*>(pObject);
-            if(lord == NULL)
-                return;
-
-            switch(IntId)
+            case 1:
             {
-                case 0:
-                    GossipHello(pObject, plr);
-                    break;
-
-                case 1:
-                    {
-                        sEAS.AddItem(24226, plr);
-                        return;
-                    }
-                    break;
+                sEAS.AddItem(24226, plr);
+                return;
             }
+            break;
         }
+    }
 
 };
 
-
 class LordDawnstar : public CreatureAIScript
 {
-    public:
-        ADD_CREATURE_FACTORY_FUNCTION(LordDawnstar);
-        LordDawnstar(Creature* pCreature) : CreatureAIScript(pCreature) {}
+public:
+    ADD_CREATURE_FACTORY_FUNCTION(LordDawnstar);
+    LordDawnstar(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnLoad()
-        {
-            _unit->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-            _unit->SetStandState(STANDSTATE_DEAD);
-            _unit->setDeathState(CORPSE);
-            _unit->GetAIInterface()->m_canMove = false;
-        }
+    void OnLoad()
+    {
+        _unit->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+        _unit->SetStandState(STANDSTATE_DEAD);
+        _unit->setDeathState(CORPSE);
+        _unit->GetAIInterface()->m_canMove = false;
+    }
 };
 
 

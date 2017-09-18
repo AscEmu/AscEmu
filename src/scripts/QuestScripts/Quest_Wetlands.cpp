@@ -3,7 +3,7 @@
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2008-2015 Sun++ Team <http://www.sunplusplus.info/>
  * Copyright (C) 2008 WEmu Team
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,9 +20,9 @@
 
 #include "Setup.h"
 
-#define SPELL_BENDINGSHINBONE 8856
-#define ITEM_STURDYSHINBONE 7134
-#define ITEM_BROKENSHINBONE 7135
+const uint32 SPELL_BENDINGSHINBONE = 8856;
+const uint32 ITEM_STURDYSHINBONE = 7134;
+const uint32 ITEM_BROKENSHINBONE = 7135;
 
 bool BendingShinbone(uint32 i, Spell* pSpell)
 {
@@ -35,6 +35,7 @@ bool BendingShinbone(uint32 i, Spell* pSpell)
     }
     return true;
 }
+
 
 void SetupWetlands(ScriptMgr* mgr)
 {

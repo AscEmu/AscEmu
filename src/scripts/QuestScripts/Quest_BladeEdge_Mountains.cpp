@@ -24,393 +24,396 @@
 
 class WyrmcultBlackwhelp : public CreatureAIScript
 {
-    public:
+public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(WyrmcultBlackwhelp);
-        WyrmcultBlackwhelp(Creature* c) : CreatureAIScript(c) {}
+    ADD_CREATURE_FACTORY_FUNCTION(WyrmcultBlackwhelp);
+    WyrmcultBlackwhelp(Creature* c) : CreatureAIScript(c) {}
 
-        void OnLoad()
+    void OnLoad()
+    {
+        RegisterAIUpdateEvent(1000);
+    }
+
+    void AIUpdate()
+    {
+        // Let's see if we are netted
+        Aura* a = _unit->getAuraWithId(38177);
+        if (a != nullptr)
         {
-            RegisterAIUpdateEvent(1000);
-        }
+            Unit* Caster = a->GetUnitCaster();
+            if (!Caster)
+                return;
 
-        void AIUpdate()
-        {
-            // Let's see if we are netted
-            Aura* a = _unit->getAuraWithId(38177);
-            if (a != nullptr)
+            if (Caster->IsPlayer())
             {
-                Unit* Caster = a->GetUnitCaster();
-                if (!Caster)
-                    return;
 
-                if (Caster->IsPlayer())
+                QuestLogEntry* qle = static_cast<Player*>(Caster)->GetQuestLogForEntry(10747);
+                if (qle != nullptr)
                 {
-
-                    QuestLogEntry* qle = static_cast<Player*>(Caster)->GetQuestLogForEntry(10747);
-                    if (qle != nullptr)
-                    {
-                        // casting the spell that will create the item for the player
-                        _unit->CastSpell(Caster, 38178, true);
-                        _unit->Despawn(1000, 360000);
-                    }
+                    // casting the spell that will create the item for the player
+                    _unit->CastSpell(Caster, 38178, true);
+                    _unit->Despawn(1000, 360000);
                 }
             }
         }
+    }
 };
 
 // The Bladespire Threat Quest
 class BladespireQAI : public CreatureAIScript
 {
-    public:
+public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(BladespireQAI);
-        BladespireQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    ADD_CREATURE_FACTORY_FUNCTION(BladespireQAI);
+    BladespireQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller)
+    {
+        if (mKiller->IsPlayer())
         {
-            if (mKiller->IsPlayer())
+            QuestLogEntry* en = (static_cast<Player*>(mKiller))->GetQuestLogForEntry(10503);
+            if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
             {
-                QuestLogEntry* en = (static_cast<Player*>(mKiller))->GetQuestLogForEntry(10503);
-                if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-                {
-                    uint32 newcount = en->GetMobCount(0) + 1;
-                    en->SetMobCount(0, newcount);
-                    en->SendUpdateAddKill(0);
-                    en->UpdatePlayerFields();
-                    return;
-                }
+                uint32 newcount = en->GetMobCount(0) + 1;
+                en->SetMobCount(0, newcount);
+                en->SendUpdateAddKill(0);
+                en->UpdatePlayerFields();
+                return;
             }
         }
+    }
 };
 
 class IntotheSoulgrinder : public QuestScript
 {
-    public:
+public:
 
-        void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
-        {
-            Creature* qg = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 22941);
-            if (qg == nullptr)
-                return;
+    void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    {
+        Creature* qg = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 22941);
+        if (qg == nullptr)
+            return;
 
-            qg->GetMapMgr()->GetInterface()->SpawnCreature(23053, 2794.978271f, 5842.185547f, 35.911819f, 0, true, false, 0, 0);
-        }
+        qg->GetMapMgr()->GetInterface()->SpawnCreature(23053, 2794.978271f, 5842.185547f, 35.911819f, 0, true, false, 0, 0);
+    }
 };
 
 class MagnetoAura : public CreatureAIScript
 {
-    public:
+public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(MagnetoAura);
-        MagnetoAura(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    ADD_CREATURE_FACTORY_FUNCTION(MagnetoAura);
+    MagnetoAura(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnLoad()
-        {
-            _unit->CastSpell(_unit, 37136, true);
-        }
+    void OnLoad()
+    {
+        _unit->CastSpell(_unit, 37136, true);
+    }
 };
 
 class powerconv : public GameObjectAIScript
 {
-    public:
+public:
 
-        powerconv(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
-        static GameObjectAIScript* Create(GameObject* GO) { return new powerconv(GO); }
+    powerconv(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    static GameObjectAIScript* Create(GameObject* GO) { return new powerconv(GO); }
 
-        void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer)
+    {
+        QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(10584);
+        if (qle == nullptr)
+            return;
+
+        Creature* magneto = sEAS.SpawnCreature(pPlayer, 21729, _gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), 0, 0);
+        if (magneto != nullptr)
         {
-            QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(10584);
-            if (qle == nullptr)
-                return;
-
-            Creature* magneto = sEAS.SpawnCreature(pPlayer, 21729, _gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), 0, 0);
-            if (magneto != nullptr)
-            {
-                magneto->Despawn(5 * 60 * 1000, 0);
-            }
-
-            _gameobject->Despawn(300000, 0);
+            magneto->Despawn(5 * 60 * 1000, 0);
         }
+
+        _gameobject->Despawn(300000, 0);
+    }
 };
 
 class NetherEgg : public GameObjectAIScript
 {
-    public:
+public:
 
-        NetherEgg(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
-        static GameObjectAIScript* Create(GameObject* GO) { return new NetherEgg(GO); }
+    NetherEgg(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    static GameObjectAIScript* Create(GameObject* GO) { return new NetherEgg(GO); }
 
-        void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer)
+    {
+        QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(10609);
+        if (qle == nullptr)
+            return;
+
+        Creature* whelp = sEAS.SpawnCreature(pPlayer, 20021, _gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), 0, 0);
+        if (whelp != nullptr)
         {
-            QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(10609);
-            if (qle == nullptr)
-                return;
-
-            Creature* whelp = sEAS.SpawnCreature(pPlayer, 20021, _gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), 0, 0);
-            if (whelp != nullptr)
-            {
-                whelp->Despawn(5 * 60 * 1000, 0);
-            }
-
-            _gameobject->Despawn(300000, 0);
+            whelp->Despawn(5 * 60 * 1000, 0);
         }
+
+        _gameobject->Despawn(300000, 0);
+    }
 };
 
 class FunnyDragon : public CreatureAIScript
 {
-    public:
+public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(FunnyDragon);
-        FunnyDragon(Creature* pCreature) : CreatureAIScript(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(FunnyDragon);
+    FunnyDragon(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        i = 0;      // rename this....
+    }
+
+    void OnLoad()
+    {
+        RegisterAIUpdateEvent(5000);
+        _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+        _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
+        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        _unit->GetAIInterface()->disable_melee = true;
+        _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
+        _unit->GetAIInterface()->m_canMove = false;
+        i = 1;
+    }
+
+    void AIUpdate()
+    {
+        switch (i)
         {
-            i = 0;      // rename this....
+            case 1:
+                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Muahahahahaha! You fool! you've released me from my banishment in the interstices between space and time!");
+                break;
+            case 2:
+                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "All of Draenor shall quake beneath my feet! i Will destroy this world and reshape it in my immage!");
+                break;
+            case 3:
+                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Where shall i Begin? i cannot bother myself with a worm such as yourself. Theres a World to be Conquered!");
+                break;
+            case 4:
+                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "No doubt the fools that banished me are long dead. i shall take the wing and survey my new demense, Pray to whatever gods you hold dear that we do not meet again.");
+                _unit->Despawn(5000, 0);
+                break;
         }
 
-        void OnLoad()
-        {
-            RegisterAIUpdateEvent(5000);
-            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
-            _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->disable_melee = true;
-            _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
-            _unit->GetAIInterface()->m_canMove = false;
-            i = 1;
-        }
+        ++i;
+    }
 
-        void AIUpdate()
-        {
-            switch (i)
-            {
-                case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Muahahahahaha! You fool! you've released me from my banishment in the interstices between space and time!");
-                    break;
-                case 2:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "All of Draenor shall quake beneath my feet! i Will destroy this world and reshape it in my immage!");
-                    break;
-                case 3:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Where shall i Begin? i cannot bother myself with a worm such as yourself. Theres a World to be Conquered!");
-                    break;
-                case 4:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "No doubt the fools that banished me are long dead. i shall take the wing and survey my new demense, Pray to whatever gods you hold dear that we do not meet again.");
-                    _unit->Despawn(5000, 0);
-                    break;
-            }
-
-            ++i;
-        }
-
-        uint32 i;
+    uint32 i;
 };
 
 class LegionObelisk : public GameObjectAIScript
 {
-    public:
+public:
 
-        LegionObelisk(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
-        static GameObjectAIScript* Create(GameObject* GO) { return new LegionObelisk(GO); }
+    LegionObelisk(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    static GameObjectAIScript* Create(GameObject* GO) { return new LegionObelisk(GO); }
 
-        void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer)
+    {
+        GameObject* obelisk1 = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2898.92f, 4759.29f, 277.408f, 185198);
+        GameObject* obelisk2 = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2942.3f, 4752.28f, 285.553f, 185197);
+        GameObject* obelisk3 = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2834.39f, 4856.67f, 277.632f, 185196);
+        GameObject* obelisk4 = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2923.37f, 4840.36f, 278.45f, 185195);
+        GameObject* obelisk5 = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2965.75f, 4835.25f, 277.949f, 185193);
+
+        if (obelisk1 && obelisk2 && obelisk3 && obelisk4 && obelisk5)
         {
-            GameObject* obelisk1 = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2898.92f, 4759.29f, 277.408f, 185198);
-            GameObject* obelisk2 = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2942.3f, 4752.28f, 285.553f, 185197);
-            GameObject* obelisk3 = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2834.39f, 4856.67f, 277.632f, 185196);
-            GameObject* obelisk4 = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2923.37f, 4840.36f, 278.45f, 185195);
-            GameObject* obelisk5 = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2965.75f, 4835.25f, 277.949f, 185193);
-
-            if (obelisk1 && obelisk2 && obelisk3 && obelisk4 && obelisk5)
+            if (obelisk1->GetState() == 0 && obelisk2->GetState() == 0 && obelisk3->GetState() == 0 && obelisk4->GetState() == 0 && obelisk5->GetState() == 0)
             {
-                if (obelisk1->GetState() == 0 && obelisk2->GetState() == 0 && obelisk3->GetState() == 0 && obelisk4->GetState() == 0 && obelisk5->GetState() == 0)
-                {
-                    sEAS.SpawnCreature(pPlayer, 19963, 2943.59f, 4779.05f, 284.49f, 1.89f, 60 * 5 * 1000);
-                }
+                sEAS.SpawnCreature(pPlayer, 19963, 2943.59f, 4779.05f, 284.49f, 1.89f, 60 * 5 * 1000);
             }
+        }
 
 #if VERSION_STRING > TBC
-            if (obelisk1 != nullptr)
-                sEventMgr.AddEvent(static_cast<Object*>(obelisk1), &Object::setByteValue, (uint16)GAMEOBJECT_BYTES_1, (uint8)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
-            if (obelisk2 != nullptr)
-                sEventMgr.AddEvent(static_cast<Object*>(obelisk2), &Object::setByteValue, (uint16)GAMEOBJECT_BYTES_1, (uint8)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
-            if (obelisk3 != nullptr)
-                sEventMgr.AddEvent(static_cast<Object*>(obelisk3), &Object::setByteValue, (uint16)GAMEOBJECT_BYTES_1, (uint8)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
-            if (obelisk4 != nullptr)
-                sEventMgr.AddEvent(static_cast<Object*>(obelisk4), &Object::setByteValue, (uint16)GAMEOBJECT_BYTES_1, (uint8)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
-            if (obelisk5 != nullptr)
-                sEventMgr.AddEvent(static_cast<Object*>(obelisk5), &Object::setByteValue, (uint16)GAMEOBJECT_BYTES_1, (uint8)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
+        if (obelisk1 != nullptr)
+            sEventMgr.AddEvent(static_cast<Object*>(obelisk1), &Object::setByteValue, (uint16)GAMEOBJECT_BYTES_1, (uint8)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
+        if (obelisk2 != nullptr)
+            sEventMgr.AddEvent(static_cast<Object*>(obelisk2), &Object::setByteValue, (uint16)GAMEOBJECT_BYTES_1, (uint8)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
+        if (obelisk3 != nullptr)
+            sEventMgr.AddEvent(static_cast<Object*>(obelisk3), &Object::setByteValue, (uint16)GAMEOBJECT_BYTES_1, (uint8)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
+        if (obelisk4 != nullptr)
+            sEventMgr.AddEvent(static_cast<Object*>(obelisk4), &Object::setByteValue, (uint16)GAMEOBJECT_BYTES_1, (uint8)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
+        if (obelisk5 != nullptr)
+            sEventMgr.AddEvent(static_cast<Object*>(obelisk5), &Object::setByteValue, (uint16)GAMEOBJECT_BYTES_1, (uint8)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
 #endif
-        }
+    }
 
 };
 
 class BloodmaulQAI : public CreatureAIScript
 {
-    public:
+public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(BloodmaulQAI);
-        BloodmaulQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    ADD_CREATURE_FACTORY_FUNCTION(BloodmaulQAI);
+    BloodmaulQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller)
+    {
+        if (!mKiller->IsPlayer())
+            return;
+
+        Player* pPlayer = static_cast<Player*>(mKiller);
+        QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10502);
+        if (pQuest == nullptr)
         {
-            if (!mKiller->IsPlayer())
-                return;
-
-            Player* pPlayer = static_cast<Player*>(mKiller);
-            QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10502);
+            pQuest = pPlayer->GetQuestLogForEntry(10505);
             if (pQuest == nullptr)
             {
-                pQuest = pPlayer->GetQuestLogForEntry(10505);
-                if (pQuest == nullptr)
-                {
-                    return;
-                }
-            }
-
-            if (pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mob_or_go_count[0])
-            {
-                uint32 NewCount = pQuest->GetMobCount(0) + 1;
-                pQuest->SetMobCount(0, NewCount);
-                pQuest->SendUpdateAddKill(0);
-                pQuest->UpdatePlayerFields();
+                return;
             }
         }
+
+        if (pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mob_or_go_count[0])
+        {
+            uint32 NewCount = pQuest->GetMobCount(0) + 1;
+            pQuest->SetMobCount(0, NewCount);
+            pQuest->SendUpdateAddKill(0);
+            pQuest->UpdatePlayerFields();
+        }
+    }
 };
 
 class Thuk_the_DefiantAI : public CreatureAIScript
 {
-    public:
+public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(Thuk_the_DefiantAI);
+    ADD_CREATURE_FACTORY_FUNCTION(Thuk_the_DefiantAI);
 
-        Thuk_the_DefiantAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
-        void OnLoad()
-        {
-            _unit->setFloatValue(OBJECT_FIELD_SCALE_X, 0.4f);
-        }
+    Thuk_the_DefiantAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    void OnLoad()
+    {
+        _unit->setFloatValue(OBJECT_FIELD_SCALE_X, 0.4f);
+    }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
+    void OnDied(Unit* mKiller)
+    {
+        RemoveAIUpdateEvent();
+    }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-            _unit->SetFaction(35);
-            _unit->setFloatValue(OBJECT_FIELD_SCALE_X, 0.4f);
-        }
+    void OnTargetDied(Unit* mTarget)
+    {
+        _unit->SetFaction(35);
+        _unit->setFloatValue(OBJECT_FIELD_SCALE_X, 0.4f);
+    }
 };
 
 class Stasis_Chamber_Alpha : public GameObjectAIScript
 {
-    public:
+public:
 
-        Stasis_Chamber_Alpha(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
-        static GameObjectAIScript* Create(GameObject* GO)
-        {
-            return new Stasis_Chamber_Alpha(GO);
-        }
+    Stasis_Chamber_Alpha(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    static GameObjectAIScript* Create(GameObject* GO)
+    {
+        return new Stasis_Chamber_Alpha(GO);
+    }
 
-        void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer)
+    {
+        if (pPlayer->HasQuest(10974))
         {
-            if (pPlayer->HasQuest(10974))
+            Creature* pCreature = nullptr;
+            pCreature = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(3989.094482f, 6071.562500f, 266.416656f, 22920);
+            if (pCreature != nullptr)
             {
-                Creature* pCreature = nullptr;
-                pCreature = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(3989.094482f, 6071.562500f, 266.416656f, 22920);
-                if (pCreature != nullptr)
-                {
-                    pCreature->SetFaction(14);
-                    pCreature->setFloatValue(OBJECT_FIELD_SCALE_X, 1);
-                    pCreature->GetAIInterface()->setNextTarget(pPlayer);
-                    pCreature->GetAIInterface()->AttackReaction(pPlayer, 1);
-                }
-            }
-            else
-            {
-                pPlayer->BroadcastMessage("Missing required quest : Stasis Chambers of Bash'ir");
+                pCreature->SetFaction(14);
+                pCreature->setFloatValue(OBJECT_FIELD_SCALE_X, 1);
+                pCreature->GetAIInterface()->setNextTarget(pPlayer);
+                pCreature->GetAIInterface()->AttackReaction(pPlayer, 1);
             }
         }
+        else
+        {
+            pPlayer->BroadcastMessage("Missing required quest : Stasis Chambers of Bash'ir");
+        }
+    }
 };
 
 
 
 //////////////////////////////////////////////////////////////////////////
-/////// Bladespire Brute/Shaman/Cook
-#define CN_BLADESPIRE_OGRE_1 19995
-#define CN_BLADESPIRE_OGRE_2 19998
-#define CN_BLADESPIRE_OGRE_3 20756
+// Bladespire entry
+enum CreatureEntry
+{
+    CN_BLADESPIRE_OGRE_1 = 19995,
+    CN_BLADESPIRE_OGRE_2 = 19998,
+    CN_BLADESPIRE_OGRE_3 = 20756,
+    CN_BLOODMAUL_BRUTEBANE_STOUT_TRIGGER = 21241
+};
 
 //////////////////////////////////////////////////////////////////////////
 /////// Bloodmaul Brutebane Stout Trigger
-#define CN_BLOODMAUL_BRUTEBANE_STOUT_TRIGGER 21241
-
 class BrutebaneStoutTriggerAI : public MoonScriptCreatureAI
 {
-    public:
+public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(BrutebaneStoutTriggerAI, MoonScriptCreatureAI);
-        BrutebaneStoutTriggerAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    MOONSCRIPT_FACTORY_FUNCTION(BrutebaneStoutTriggerAI, MoonScriptCreatureAI);
+    BrutebaneStoutTriggerAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    {
+        _unit->SetFaction(35);
+
+        SetCanMove(false);
+        NdGo = nullptr;
+
+        plr = _unit->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ());
+        Ogre = GetNearestCreature(CN_BLADESPIRE_OGRE_1);
+        if (Ogre == nullptr)
         {
-            _unit->SetFaction(35);
-
-            SetCanMove(false);
-            NdGo = nullptr;
-
-            plr = _unit->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ());
-            Ogre = GetNearestCreature(CN_BLADESPIRE_OGRE_1);
+            Ogre = GetNearestCreature(CN_BLADESPIRE_OGRE_2);
             if (Ogre == nullptr)
             {
-                Ogre = GetNearestCreature(CN_BLADESPIRE_OGRE_2);
+                Ogre = GetNearestCreature(CN_BLADESPIRE_OGRE_3);
                 if (Ogre == nullptr)
                 {
-                    Ogre = GetNearestCreature(CN_BLADESPIRE_OGRE_3);
-                    if (Ogre == nullptr)
-                    {
-                        return;
-                    }
+                    return;
                 }
             }
-            Ogre->MoveTo(_unit);
-            RegisterAIUpdateEvent(1000);
         }
+        Ogre->MoveTo(_unit);
+        RegisterAIUpdateEvent(1000);
+    }
 
-        void AIUpdate()
+    void AIUpdate()
+    {
+        if (Ogre == nullptr)
+            return;
+
+        if (GetRange(Ogre) <= 5)
         {
-            if (Ogre == nullptr)
+            Ogre->SetDisplayWeaponIds(28562, 0);
+            Ogre->GetUnit()->SetEmoteState(EMOTE_ONESHOT_EAT_NOSHEATHE);
+            Ogre->GetUnit()->SetFaction(35);
+            Ogre->GetUnit()->SetStandState(STANDSTATE_SIT);
+
+            NdGo = GetNearestGameObject(184315);
+            if (NdGo == nullptr)
                 return;
 
-            if (GetRange(Ogre) <= 5)
+            NdGo->Despawn(0, 0);
+            Ogre->Despawn(60 * 1000, 3 * 60 * 1000);
+            if (plr == nullptr)
+                return;
+
+            QuestLogEntry* qle = plr->GetQuestLogForEntry(10512);
+            if (qle != nullptr && qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
             {
-                Ogre->SetDisplayWeaponIds(28562, 0);
-                Ogre->GetUnit()->SetEmoteState(EMOTE_ONESHOT_EAT_NOSHEATHE);
-                Ogre->GetUnit()->SetFaction(35);
-                Ogre->GetUnit()->SetStandState(STANDSTATE_SIT);
-
-                NdGo = GetNearestGameObject(184315);
-                if (NdGo == nullptr)
-                    return;
-
-                NdGo->Despawn(0, 0);
-                Ogre->Despawn(60 * 1000, 3 * 60 * 1000);
-                if (plr == nullptr)
-                    return;
-
-                QuestLogEntry* qle = plr->GetQuestLogForEntry(10512);
-                if (qle != nullptr && qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
-                {
-                    qle->SetMobCount(0, qle->GetMobCount(0) + 1);
-                    qle->SendUpdateAddKill(0);
-                    qle->UpdatePlayerFields();
-                }
-                Despawn(0, 0);
-                return;
+                qle->SetMobCount(0, qle->GetMobCount(0) + 1);
+                qle->SendUpdateAddKill(0);
+                qle->UpdatePlayerFields();
             }
-            ParentClass::AIUpdate();
+            Despawn(0, 0);
+            return;
         }
+        ParentClass::AIUpdate();
+    }
 
-        Player* plr;
-        GameObject* NdGo;
-        MoonScriptCreatureAI* Ogre;
+    Player* plr;
+    GameObject* NdGo;
+    MoonScriptCreatureAI* Ogre;
 };
+
 
 void SetupBladeEdgeMountains(ScriptMgr* mgr)
 {

@@ -27,127 +27,128 @@
 
 class AncientMarks : public GossipScript
 {
-    public:
-        void GossipHello(Object* pObject, Player* plr)
+public:
+    void GossipHello(Object* pObject, Player* plr)
+    {
+        GossipMenu* Menu;
+        uint32 entry = pObject->GetEntry();
+        const char* text = "";
+        uint32 TextId = 0;
+
+        if (entry == 17900)
         {
-            GossipMenu* Menu;
-            uint32 entry = pObject->GetEntry();
-            const char* text = "";
-            uint32 TextId = 0;
-
-            if(entry == 17900)
-            {
-                text = "Grant me your mark, wise ancient.";
-                TextId = 9176;
-            }
-            else if(entry == 17901)
-            {
-                text = "Grant me your mark, mighty ancient.";
-                TextId = 9177;
-            }
-
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), TextId, plr);
-
-            if(plr->HasFinishedQuest(9785) || plr->HasQuest(9785))
-                Menu->AddItem(0, text, 1);
-
-            Menu->SendTo(plr);
+            text = "Grant me your mark, wise ancient.";
+            TextId = 9176;
+        }
+        else if (entry == 17901)
+        {
+            text = "Grant me your mark, mighty ancient.";
+            TextId = 9177;
         }
 
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), TextId, plr);
+
+        if (plr->HasFinishedQuest(9785) || plr->HasQuest(9785))
+            Menu->AddItem(0, text, 1);
+
+        Menu->SendTo(plr);
+    }
+
+    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    {
+        if (IntId == 1)
         {
-            if(IntId == 1)
+            QuestLogEntry* en = plr->GetQuestLogForEntry(9785);
+            Creature* casta = (static_cast<Creature*>(pObject));
+            switch (pObject->GetEntry())
             {
-                QuestLogEntry* en = plr->GetQuestLogForEntry(9785);
-                Creature* casta = (static_cast<Creature*>(pObject));
-                switch(pObject->GetEntry())
+                case 17900:
                 {
-                    case 17900:
-                        {
-                            if(en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-                            {
-                                en->SetMobCount(0, 1);
-                                en->SendUpdateAddKill(0);
-                                en->UpdatePlayerFields();
-                            }
+                    if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
+                    {
+                        en->SetMobCount(0, 1);
+                        en->SendUpdateAddKill(0);
+                        en->UpdatePlayerFields();
+                    }
 
-                            if(plr->GetStandingRank(942) == 4)
-                                casta->CastSpell(plr, 31808, true);
-                            else if(plr->GetStandingRank(942) == 5)
-                                casta->CastSpell(plr, 31810, true);
-                            else if(plr->GetStandingRank(942) == 6)
-                                casta->CastSpell(plr, 31811, true);
-                            else if(plr->GetStandingRank(942) == 7)
-                                casta->CastSpell(plr, 31815, true);
+                    if (plr->GetStandingRank(942) == 4)
+                        casta->CastSpell(plr, 31808, true);
+                    else if (plr->GetStandingRank(942) == 5)
+                        casta->CastSpell(plr, 31810, true);
+                    else if (plr->GetStandingRank(942) == 6)
+                        casta->CastSpell(plr, 31811, true);
+                    else if (plr->GetStandingRank(942) == 7)
+                        casta->CastSpell(plr, 31815, true);
 
-                        }
-                        break;
-                    case 17901:
-                        {
-                            if(en && en->GetMobCount(1) < en->GetQuest()->required_mob_or_go_count[1])
-                            {
-                                en->SetMobCount(1, 1);
-                                en->SendUpdateAddKill(1);
-                                en->UpdatePlayerFields();
-                            }
-
-                            if(plr->GetStandingRank(942) == 4)
-                                casta->CastSpell(plr, 31807, true);
-                            else if(plr->GetStandingRank(942) == 5)
-                                casta->CastSpell(plr, 31814, true);
-                            else if(plr->GetStandingRank(942) == 6)
-                                casta->CastSpell(plr, 31813, true);
-                            else if(plr->GetStandingRank(942) == 7)
-                                casta->CastSpell(plr, 31812, true);
-
-                        }
-                        break;
                 }
+                break;
+                case 17901:
+                {
+                    if (en && en->GetMobCount(1) < en->GetQuest()->required_mob_or_go_count[1])
+                    {
+                        en->SetMobCount(1, 1);
+                        en->SendUpdateAddKill(1);
+                        en->UpdatePlayerFields();
+                    }
+
+                    if (plr->GetStandingRank(942) == 4)
+                        casta->CastSpell(plr, 31807, true);
+                    else if (plr->GetStandingRank(942) == 5)
+                        casta->CastSpell(plr, 31814, true);
+                    else if (plr->GetStandingRank(942) == 6)
+                        casta->CastSpell(plr, 31813, true);
+                    else if (plr->GetStandingRank(942) == 7)
+                        casta->CastSpell(plr, 31812, true);
+
+                }
+                break;
             }
         }
+    }
 
 };
 
 class ElderKuruti : public GossipScript
 {
-    public:
-        void GossipHello(Object* pObject, Player* plr)
+public:
+    void GossipHello(Object* pObject, Player* plr)
+    {
+        GossipMenu* Menu;
+        if (!plr->GetItemInterface()->GetItemCount(24573, true))
         {
-            GossipMenu* Menu;
-            if(!plr->GetItemInterface()->GetItemCount(24573, true))
-            {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9226, plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(502), 1);     // Offer treat
-                Menu->SendTo(plr);
-            }
+            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9226, plr);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(502), 1);     // Offer treat
+            Menu->SendTo(plr);
         }
+    }
 
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    {
+        GossipMenu* Menu;
+        switch (IntId)
         {
-            GossipMenu* Menu;
-            switch(IntId)
-            {
-                case 1:
-                    objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9227, plr);
-                    Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(503), 2);     // I'm a messenger for Draenei
-                    Menu->SendTo(plr);
-                    break;
-                case 2:
-                    objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9229, plr);
-                    Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(504), 3);     // Get message
-                    Menu->SendTo(plr);
-                    break;
-                case 3:
-                    if(!plr->GetItemInterface()->GetItemCount(24573, true))
-                    {
-                        sEAS.AddItem(24573, plr);
-                    }
-                        SendQuickMenu(9231);
-                    break;
-            }
+            case 1:
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9227, plr);
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(503), 2);     // I'm a messenger for Draenei
+                Menu->SendTo(plr);
+                break;
+            case 2:
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9229, plr);
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(504), 3);     // Get message
+                Menu->SendTo(plr);
+                break;
+            case 3:
+                if (!plr->GetItemInterface()->GetItemCount(24573, true))
+                {
+                    sEAS.AddItem(24573, plr);
+                }
+                SendQuickMenu(9231);
+                break;
         }
+    }
 
 };
+
 
 void SetupZangarmarsh(ScriptMgr* mgr)
 {

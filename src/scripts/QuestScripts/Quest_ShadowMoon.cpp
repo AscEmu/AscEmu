@@ -22,68 +22,64 @@
 #include "Setup.h"
 #include "Management/Gossip/GossipMenu.hpp"
 
-// Infiltrating Dragonmaw Fortress Quest
 class InfiltratingDragonmawFortressQAI : public CreatureAIScript
 {
-    public:
-        ADD_CREATURE_FACTORY_FUNCTION(InfiltratingDragonmawFortressQAI);
-        InfiltratingDragonmawFortressQAI(Creature* pCreature) : CreatureAIScript(pCreature)  {}
+public:
+    ADD_CREATURE_FACTORY_FUNCTION(InfiltratingDragonmawFortressQAI);
+    InfiltratingDragonmawFortressQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller)
+    {
+        if (mKiller->IsPlayer())
         {
-            if(mKiller->IsPlayer())
+            QuestLogEntry* en = (static_cast<Player*>(mKiller))->GetQuestLogForEntry(10836);
+            if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
             {
-                QuestLogEntry* en = (static_cast<Player*>(mKiller))->GetQuestLogForEntry(10836);
-                if(en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-                {
-                    uint32 newcount = en->GetMobCount(0) + 1;
-                    en->SetMobCount(0, newcount);
-                    en->SendUpdateAddKill(0);
-                    en->UpdatePlayerFields();
-                    return;
-                }
+                uint32 newcount = en->GetMobCount(0) + 1;
+                en->SetMobCount(0, newcount);
+                en->SendUpdateAddKill(0);
+                en->UpdatePlayerFields();
+                return;
             }
         }
+    }
 };
 
 class KneepadsQAI : public CreatureAIScript
 {
-    public:
-        ADD_CREATURE_FACTORY_FUNCTION(KneepadsQAI);
-        KneepadsQAI(Creature* pCreature) : CreatureAIScript(pCreature)  {}
+public:
+    ADD_CREATURE_FACTORY_FUNCTION(KneepadsQAI);
+    KneepadsQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller)
+    {
+        if (mKiller->IsPlayer())
         {
-            if(mKiller->IsPlayer())
+            QuestLogEntry* en = static_cast<Player*>(mKiller)->GetQuestLogForEntry(10703);
+            if (en == NULL)
             {
-                QuestLogEntry* en = NULL;
-                en = (static_cast<Player*>(mKiller))->GetQuestLogForEntry(10703);
-                if(en == NULL)
+                en = (static_cast<Player*>(mKiller))->GetQuestLogForEntry(10702);
+                if (en == NULL)
                 {
-                    en = (static_cast<Player*>(mKiller))->GetQuestLogForEntry(10702);
-                    if(en == NULL)
-                    {
-                        return;
-                    }
-                }
-
-                if(en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-                {
-                    uint32 newcount = en->GetMobCount(0) + 1;
-                    en->SetMobCount(0, newcount);
-                    en->SendUpdateAddKill(0);
-                    en->UpdatePlayerFields();
+                    return;
                 }
             }
-            return;
+
+            if (en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
+            {
+                uint32 newcount = en->GetMobCount(0) + 1;
+                en->SetMobCount(0, newcount);
+                en->SendUpdateAddKill(0);
+                en->UpdatePlayerFields();
+            }
         }
+        return;
+    }
 };
-
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////// Deathbringer Jovaan
-#define CN_DEATHBRINGER_JOVAAN    21633
+const uint32 CN_DEATHBRINGER_JOVAAN = 21633;
 
 //WP Coords Wait Times
 struct WPWaitTimes
@@ -91,6 +87,7 @@ struct WPWaitTimes
     Movement::LocationWithFlag mCoords;
     uint32 WaitTime;
 };
+
 const WPWaitTimes DeathbringerJovaanWP[] =
 {
     { { }, 0},
@@ -102,107 +99,107 @@ const WPWaitTimes DeathbringerJovaanWP[] =
 
 class DeathbringerJovaanAI : public MoonScriptCreatureAI
 {
-    public:
-        MOONSCRIPT_FACTORY_FUNCTION(DeathbringerJovaanAI, MoonScriptCreatureAI);
-        DeathbringerJovaanAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
-        {
-            mJovaanTimer = INVALIDATE_TIMER;
-            mJovaanPhase = -1;
+public:
+    MOONSCRIPT_FACTORY_FUNCTION(DeathbringerJovaanAI, MoonScriptCreatureAI);
+    DeathbringerJovaanAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    {
+        mJovaanTimer = INVALIDATE_TIMER;
+        mJovaanPhase = -1;
 
-            for(int i = 1; i < 5; ++i)
-            {
-                AddWaypoint(CreateWaypoint(i, DeathbringerJovaanWP[i].WaitTime, DeathbringerJovaanWP[i].mCoords));
-            }
+        for (int i = 1; i < 5; ++i)
+        {
+            AddWaypoint(CreateWaypoint(i, DeathbringerJovaanWP[i].WaitTime, DeathbringerJovaanWP[i].mCoords));
         }
+    }
 
-        void AIUpdate()
+    void AIUpdate()
+    {
+        if (IsTimerFinished(mJovaanTimer))
         {
-            if(IsTimerFinished(mJovaanTimer))
+            switch (mJovaanPhase)
             {
-                switch(mJovaanPhase)
+                case 0:
                 {
-                    case 0:
-                        {
-                            MoonScriptCreatureAI* pRazuunAI = SpawnCreature(21502, -3300.47f, 2927.22f, 173.870f, 2.42924f, false);    // Spawn Razuun
-                            if(pRazuunAI != NULL)
-                            {
-                                pRazuunAI->GetUnit()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
-                                pRazuunAI->SetCanEnterCombat(false);
-                                pRazuunAI->SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
-                                pRazuunAI->SetCanMove(false);
-                            }
-                            _unit->SetStandState(STANDSTATE_KNEEL);
-                            _unit->Emote(EMOTE_ONESHOT_TALK);
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Everything is in readiness, warbringer.");
-                            mJovaanPhase = 1;
-                            ResetTimer(mJovaanTimer, 6000);
-                        }
-                        break;
-                    case 1:
-                        {
-                            _unit->Emote(EMOTE_ONESHOT_TALK);
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Warbringer, that will require the use of all the hold's infernals. It may leave us vulnerable to a counterattack.");
-                            mJovaanPhase = 2;
-                            ResetTimer(mJovaanTimer, 11000);
-                        }
-                        break;
-                    case 2:
-                        {
-                            _unit->SetStandState(STANDSTATE_STAND);
-                            mJovaanPhase = 3;
-                            ResetTimer(mJovaanTimer, 1000);
-                        }
-                        break;
-                    case 3:
-                        {
-                            _unit->Emote(EMOTE_ONESHOT_SALUTE);
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "It shall be as you say, warbringer. One last question, if I may...");
-                            mJovaanPhase = 4;
-                            ResetTimer(mJovaanTimer, 10000);
-                        }
-                        break;
-                    case 4:
-                        {
-                            _unit->Emote(EMOTE_ONESHOT_QUESTION);
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "What's in the crate?");
-                            mJovaanPhase = 5;
-                            ResetTimer(mJovaanTimer, 10000);
-                        }
-                        break;
-                    case 5:
-                        {
-                            _unit->Emote(EMOTE_ONESHOT_SALUTE);
-                            mJovaanPhase = -1;
-                            RemoveTimer(mJovaanTimer);
-                        }
-                        break;
+                    MoonScriptCreatureAI* pRazuunAI = SpawnCreature(21502, -3300.47f, 2927.22f, 173.870f, 2.42924f, false);    // Spawn Razuun
+                    if (pRazuunAI != NULL)
+                    {
+                        pRazuunAI->GetUnit()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+                        pRazuunAI->SetCanEnterCombat(false);
+                        pRazuunAI->SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+                        pRazuunAI->SetCanMove(false);
+                    }
+                    _unit->SetStandState(STANDSTATE_KNEEL);
+                    _unit->Emote(EMOTE_ONESHOT_TALK);
+                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Everything is in readiness, warbringer.");
+                    mJovaanPhase = 1;
+                    ResetTimer(mJovaanTimer, 6000);
                 }
-            }
-            ParentClass::AIUpdate();
-        }
-
-        void OnReachWP(uint32 iWaypointId, bool bForwards)
-        {
-            switch(iWaypointId)
-            {
+                break;
+                case 1:
+                {
+                    _unit->Emote(EMOTE_ONESHOT_TALK);
+                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Warbringer, that will require the use of all the hold's infernals. It may leave us vulnerable to a counterattack.");
+                    mJovaanPhase = 2;
+                    ResetTimer(mJovaanTimer, 11000);
+                }
+                break;
+                case 2:
+                {
+                    _unit->SetStandState(STANDSTATE_STAND);
+                    mJovaanPhase = 3;
+                    ResetTimer(mJovaanTimer, 1000);
+                }
+                break;
                 case 3:
-                    {
-                        RegisterAIUpdateEvent(1000);
-                        _unit->Emote(EMOTE_ONESHOT_POINT);
-                        mJovaanPhase = 0;
-                        mJovaanTimer = AddTimer(1500);
-                    }
-                    break;
+                {
+                    _unit->Emote(EMOTE_ONESHOT_SALUTE);
+                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "It shall be as you say, warbringer. One last question, if I may...");
+                    mJovaanPhase = 4;
+                    ResetTimer(mJovaanTimer, 10000);
+                }
+                break;
                 case 4:
-                    {
-                        Despawn(1, 0);
-                    }
-                    break;
+                {
+                    _unit->Emote(EMOTE_ONESHOT_QUESTION);
+                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "What's in the crate?");
+                    mJovaanPhase = 5;
+                    ResetTimer(mJovaanTimer, 10000);
+                }
+                break;
+                case 5:
+                {
+                    _unit->Emote(EMOTE_ONESHOT_SALUTE);
+                    mJovaanPhase = -1;
+                    RemoveTimer(mJovaanTimer);
+                }
+                break;
             }
         }
+        ParentClass::AIUpdate();
+    }
 
-        int32    mJovaanTimer;
-        int32    mJovaanPhase;
+    void OnReachWP(uint32 iWaypointId, bool bForwards)
+    {
+        switch (iWaypointId)
+        {
+            case 3:
+            {
+                RegisterAIUpdateEvent(1000);
+                _unit->Emote(EMOTE_ONESHOT_POINT);
+                mJovaanPhase = 0;
+                mJovaanTimer = AddTimer(1500);
+            }
+            break;
+            case 4:
+            {
+                Despawn(1, 0);
+            }
+            break;
+        }
+    }
+
+    int32    mJovaanTimer;
+    int32    mJovaanPhase;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -211,190 +208,186 @@ class DeathbringerJovaanAI : public MoonScriptCreatureAI
 
 class WarbringerRazuunAI : public MoonScriptCreatureAI
 {
-    public:
-        MOONSCRIPT_FACTORY_FUNCTION(WarbringerRazuunAI, MoonScriptCreatureAI);
-        WarbringerRazuunAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
-        {
-            RegisterAIUpdateEvent(1000);
-            mRazuunTimer = AddTimer(800);
-            mRazuunPhase = 0;
-        }
+public:
+    MOONSCRIPT_FACTORY_FUNCTION(WarbringerRazuunAI, MoonScriptCreatureAI);
+    WarbringerRazuunAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    {
+        RegisterAIUpdateEvent(1000);
+        mRazuunTimer = AddTimer(800);
+        mRazuunPhase = 0;
+    }
 
-        void AIUpdate()
+    void AIUpdate()
+    {
+        if (IsTimerFinished(mRazuunTimer))
         {
-            if(IsTimerFinished(mRazuunTimer))
+            switch (mRazuunPhase)
             {
-                switch(mRazuunPhase)
+                case 0:
                 {
-                    case 0:
-                        {
-                            _unit->Emote(EMOTE_ONESHOT_TALK);
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Doom Lord Kazzak will be pleased. You are to increase the pace of your attacks. Destroy the orcish and dwarven strongholds with all haste.");
-                            mRazuunPhase = 1;
-                            ResetTimer(mRazuunTimer, 9000);
-                        }
-                        break;
-                    case 1:
-                        {
-                            _unit->Emote(EMOTE_ONESHOT_TALK);
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Don't worry about that. I've increased production at the Deathforge. You'll have all the infernals you need to carry out your orders. Don't fail, Jovaan.");
-                            mRazuunPhase = 2;
-                            ResetTimer(mRazuunTimer, 15000);
-                        }
-                        break;
-                    case 2:
-                        {
-                            _unit->Emote(EMOTE_ONESHOT_QUESTION);
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Yes?");
-                            mRazuunPhase = 3;
-                            ResetTimer(mRazuunTimer, 8000);
-                        }
-                        break;
-                    case 3:
-                        {
-                            _unit->Emote(EMOTE_ONESHOT_QUESTION);
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Crate? I didn't send you a crate, Jovaan. Don't you have more important things to worry about? Go see to them!");
-                            mRazuunPhase = 4;
-                            ResetTimer(mRazuunTimer, 5000);
-                        }
-                        break;
-                    case 4:
-                        {
-                            mRazuunPhase = -1;
-                            RemoveTimer(mRazuunTimer);
-                            Despawn(0, 0);
-                            return;
-                        }
-                        break;
+                    _unit->Emote(EMOTE_ONESHOT_TALK);
+                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Doom Lord Kazzak will be pleased. You are to increase the pace of your attacks. Destroy the orcish and dwarven strongholds with all haste.");
+                    mRazuunPhase = 1;
+                    ResetTimer(mRazuunTimer, 9000);
                 }
+                break;
+                case 1:
+                {
+                    _unit->Emote(EMOTE_ONESHOT_TALK);
+                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Don't worry about that. I've increased production at the Deathforge. You'll have all the infernals you need to carry out your orders. Don't fail, Jovaan.");
+                    mRazuunPhase = 2;
+                    ResetTimer(mRazuunTimer, 15000);
+                }
+                break;
+                case 2:
+                {
+                    _unit->Emote(EMOTE_ONESHOT_QUESTION);
+                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Yes?");
+                    mRazuunPhase = 3;
+                    ResetTimer(mRazuunTimer, 8000);
+                }
+                break;
+                case 3:
+                {
+                    _unit->Emote(EMOTE_ONESHOT_QUESTION);
+                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Crate? I didn't send you a crate, Jovaan. Don't you have more important things to worry about? Go see to them!");
+                    mRazuunPhase = 4;
+                    ResetTimer(mRazuunTimer, 5000);
+                }
+                break;
+                case 4:
+                {
+                    mRazuunPhase = -1;
+                    RemoveTimer(mRazuunTimer);
+                    Despawn(0, 0);
+                    return;
+                }
+                break;
             }
-            ParentClass::AIUpdate();
         }
+        ParentClass::AIUpdate();
+    }
 
-        int32    mRazuunTimer;
-        int32    mRazuunPhase;
+    int32 mRazuunTimer;
+    int32 mRazuunPhase;
 };
-
-
-
 
 
 class NeltharakusTale_Gossip : public GossipScript
 {
-    public:
-        void GossipHello(Object* pObject, Player* plr)
+public:
+    void GossipHello(Object* pObject, Player* plr)
+    {
+        if (plr->HasQuest(10814))
         {
-            if(plr->HasQuest(10814))
+            GossipMenu* Menu;
+            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10613, plr);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(471), 1);     // I am listening, Dragon
+
+            Menu->SendTo(plr);
+        }
+    }
+
+    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    {
+        if (!pObject->IsCreature())
+            return;
+
+        switch (IntId)
+        {
+            case 1:
             {
                 GossipMenu* Menu;
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10613, plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(471), 1);     // I am listening, Dragon
-
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10614, plr);
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(472), 2);     // But you are Dragons! How could orcs do this to you?
                 Menu->SendTo(plr);
             }
-        }
-
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
-        {
-            if(!pObject->IsCreature())
-                return;
-
-            switch(IntId)
+            break;
+            case 2:
             {
-                case 1:
-                    {
-                        GossipMenu* Menu;
-                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10614, plr);
-                        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(472), 2);     // But you are Dragons! How could orcs do this to you?
-                        Menu->SendTo(plr);
-                    }
-                    break;
-                case 2:
-                    {
-                        GossipMenu* Menu;
-                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10615, plr);
-                        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(473), 3);     // Your mate?
-                        Menu->SendTo(plr);
-                    }
-                    break;
-                case 3:
-                    {
-                        GossipMenu* Menu;
-                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10616, plr);
-                        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(474), 4);     // I have battled many beasts, Dragon. I will help you.
-                        Menu->SendTo(plr);
-                    }
-                    break;
-                case 4:
-                    {
-                        QuestLogEntry* pQuest = plr->GetQuestLogForEntry(10814);
-                        if(pQuest && pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mob_or_go_count[0])
-                        {
-                            pQuest->SetMobCount(0, 1);
-                            pQuest->SendUpdateAddKill(0);
-                            pQuest->UpdatePlayerFields();
-                        }
-                    }
-                    break;
+                GossipMenu* Menu;
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10615, plr);
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(473), 3);     // Your mate?
+                Menu->SendTo(plr);
             }
+            break;
+            case 3:
+            {
+                GossipMenu* Menu;
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10616, plr);
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(474), 4);     // I have battled many beasts, Dragon. I will help you.
+                Menu->SendTo(plr);
+            }
+            break;
+            case 4:
+            {
+                QuestLogEntry* pQuest = plr->GetQuestLogForEntry(10814);
+                if (pQuest && pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mob_or_go_count[0])
+                {
+                    pQuest->SetMobCount(0, 1);
+                    pQuest->SendUpdateAddKill(0);
+                    pQuest->UpdatePlayerFields();
+                }
+            }
+            break;
         }
+    }
 
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////// Warbringer Razuun
-#define CN_ENSLAVED_NETHERWING_DRAKE    21722
+const uint32 CN_ENSLAVED_NETHERWING_DRAKE = 21722;
 
 class EnslavedNetherwingDrakeAI : public MoonScriptCreatureAI
 {
-    public:
-        MOONSCRIPT_FACTORY_FUNCTION(EnslavedNetherwingDrakeAI, MoonScriptCreatureAI);
-        EnslavedNetherwingDrakeAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
-        {
-            Movement::LocationWithFlag WayPoint = { _unit->GetPositionX(), _unit->GetPositionY() + 30, _unit->GetPositionZ() + 100, _unit->GetOrientation(), Movement::WP_MOVE_TYPE_FLY };
-            SetCanMove(false);
-            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH | UNIT_FLAG_NOT_ATTACKABLE_2);
-            AddWaypoint(CreateWaypoint(1, 0, WayPoint));
-        }
+public:
+    MOONSCRIPT_FACTORY_FUNCTION(EnslavedNetherwingDrakeAI, MoonScriptCreatureAI);
+    EnslavedNetherwingDrakeAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    {
+        Movement::LocationWithFlag WayPoint = { _unit->GetPositionX(), _unit->GetPositionY() + 30, _unit->GetPositionZ() + 100, _unit->GetOrientation(), Movement::WP_MOVE_TYPE_FLY };
+        SetCanMove(false);
+        _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH | UNIT_FLAG_NOT_ATTACKABLE_2);
+        AddWaypoint(CreateWaypoint(1, 0, WayPoint));
+    }
 
-        void OnReachWP(uint32 iWaypointId, bool bForwards)
+    void OnReachWP(uint32 iWaypointId, bool bForwards)
+    {
+        if (iWaypointId == 1)
         {
-            if(iWaypointId == 1)
-            {
-                Despawn(0, 3 * 60 * 1000);
-            }
+            Despawn(0, 3 * 60 * 1000);
         }
+    }
 };
-
 
 
 class KarynakuChains : public GameObjectAIScript
 {
-    public:
-        KarynakuChains(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
-        static GameObjectAIScript* Create(GameObject* GO) { return new KarynakuChains(GO); }
+public:
+    KarynakuChains(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+    static GameObjectAIScript* Create(GameObject* GO) { return new KarynakuChains(GO); }
 
-        void OnActivate(Player* pPlayer)
-        {
-            QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10872);
+    void OnActivate(Player* pPlayer)
+    {
+        QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10872);
 
-            if(pQuest == NULL)
-                return;
+        if (pQuest == NULL)
+            return;
 
-            pQuest->SetMobCount(0, pQuest->GetMobCount(0) + 1);
-            pQuest->SendUpdateAddKill(0);
-            pQuest->UpdatePlayerFields();
-        }
+        pQuest->SetMobCount(0, pQuest->GetMobCount(0) + 1);
+        pQuest->SendUpdateAddKill(0);
+        pQuest->UpdatePlayerFields();
+    }
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////// Flanis Swiftwing
 class FlanisSwiftwing_Gossip : public GossipScript
 {
-    public:
-        void GossipHello(Object* pObject, Player* Plr);
-        void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code);
-        void GossipEnd(Object* pObject, Player* Plr, Creature* pCreature);
+public:
+    void GossipHello(Object* pObject, Player* Plr);
+    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code);
+    void GossipEnd(Object* pObject, Player* Plr, Creature* pCreature);
 
 };
 
@@ -402,7 +395,7 @@ void FlanisSwiftwing_Gossip::GossipHello(Object* pObject, Player* plr)
 {
     GossipMenu* Menu;
     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 40002, plr);
-    if(plr->HasQuest(10583))
+    if (plr->HasQuest(10583))
         Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(475), 1);     // Examine the corpse
 
     Menu->SendTo(plr);
@@ -411,15 +404,15 @@ void FlanisSwiftwing_Gossip::GossipHello(Object* pObject, Player* plr)
 void FlanisSwiftwing_Gossip::GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
 {
     Creature* pCreature = (pObject->IsCreature()) ? static_cast<Creature*>(pObject) : NULL;
-    if(pCreature == NULL)
+    if (pCreature == NULL)
         return;
-    if(IntId == 1)
+    if (IntId == 1)
     {
-        auto item = objmgr.CreateItem(30658 , plr);
+        auto item = objmgr.CreateItem(30658, plr);
         if (item == nullptr)
             return;
         item->SetStackCount(1);
-        if(!plr->GetItemInterface()->AddItemToFreeSlot(item))
+        if (!plr->GetItemInterface()->AddItemToFreeSlot(item))
         {
             plr->GetSession()->SendNotification("No free slots were found in your inventory!");
             item->DeleteMe();
@@ -427,8 +420,8 @@ void FlanisSwiftwing_Gossip::GossipSelectOption(Object* pObject, Player* plr, ui
         else
         {
             plr->SendItemPushResult(false, true, false, true, plr->GetItemInterface()->LastSearchResult()->ContainerSlot,
-                                    plr->GetItemInterface()->LastSearchResult()->Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(),
-                                    item->GetItemRandomPropertyId(), item->GetStackCount());
+                plr->GetItemInterface()->LastSearchResult()->Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(),
+                item->GetItemRandomPropertyId(), item->GetStackCount());
         }
     }
 };
@@ -436,6 +429,7 @@ void FlanisSwiftwing_Gossip::GossipEnd(Object* pObject, Player* Plr, Creature* p
 {
     GossipScript::GossipEnd(pObject, Plr);
 }
+
 
 void SetupShadowmoon(ScriptMgr* mgr)
 {

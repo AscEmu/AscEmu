@@ -20,77 +20,37 @@
 
 #include "Setup.h"
 
-/*class SunkenTreasure : public QuestScript
-{
-    public:
-
-        void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
-        {
-            float SSX = mTarget->GetPositionX();
-            float SSY = mTarget->GetPositionY();
-            float SSZ = mTarget->GetPositionZ();
-
-            Creature* creat = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 2768);
-            if (creat == nullptr)
-                return;
-
-            creat->m_escorter = mTarget;
-            creat->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_QUEST);
-            creat->GetAIInterface()->StopMovement(3000);
-            creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Defens Me!");
-            creat->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
-
-            sEAS.CreateCustomWaypointMap(creat);
-            sEAS.WaypointCreate(creat, -2078.054443f, -2091.207764f, 9.526212f, 4.770276f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
-            sEAS.WaypointCreate(creat, -2076.626465f, -2109.960449f, 14.320494f, 4.821321f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
-            sEAS.WaypointCreate(creat, -2072.851074f, -2123.574219f, 18.482662f, 5.623996f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
-            sEAS.WaypointCreate(creat, -2063.878906f, -2132.617920f, 21.430487f, 5.512474f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
-            sEAS.WaypointCreate(creat, -2051.495117f, -2145.205811f, 20.500065f, 5.481060f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
-            sEAS.WaypointCreate(creat, -2044.748291f, -2152.411377f, 20.158432f, 5.437863f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
-            sEAS.WaypointCreate(creat, -2044.748291f, -2152.411377f, 20.158432f, 5.437863f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
-            sEAS.WaypointCreate(creat, -2044.748291f, -2152.411377f, 20.158432f, 5.437863f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
-            sEAS.WaypointCreate(creat, -2044.748291f, -2152.411377f, 20.158432f, 5.437863f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
-            sEAS.WaypointCreate(creat, -2044.748291f, -2152.411377f, 20.158432f, 5.437863f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
-            sEAS.WaypointCreate(creat, -2051.495117f, -2145.205811f, 20.500065f, 5.481060f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
-            sEAS.WaypointCreate(creat, -2063.878906f, -2132.617920f, 21.430487f, 5.512474f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
-            sEAS.WaypointCreate(creat, -2072.851074f, -2123.574219f, 18.482662f, 5.623996f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
-            sEAS.WaypointCreate(creat, -2076.626465f, -2109.960449f, 14.320494f, 4.821321f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
-            sEAS.WaypointCreate(creat, -2078.054443f, -2091.207764f, 9.526212f, 4.770276f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
-            sEAS.EnableWaypoints(creat);
-        }
-};*/
-
 class Professor_Phizzlethorpe : public CreatureAIScript
 {
-    public:
+public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(Professor_Phizzlethorpe);
-        Professor_Phizzlethorpe(Creature* pCreature) : CreatureAIScript(pCreature) {}
+    ADD_CREATURE_FACTORY_FUNCTION(Professor_Phizzlethorpe);
+    Professor_Phizzlethorpe(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnReachWP(uint32 iWaypointId, bool bForwards)
+    void OnReachWP(uint32 iWaypointId, bool bForwards)
+    {
+        if (iWaypointId == 15)
         {
-            if(iWaypointId == 15)
-            {
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, I found the fact that, it searched");
-                _unit->Despawn(5000, 1000);
-                sEAS.DeleteWaypoints(_unit);
+            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, I found the fact that, it searched");
+            _unit->Despawn(5000, 1000);
+            sEAS.DeleteWaypoints(_unit);
 
-                if (_unit->m_escorter == nullptr)
-                    return;
+            if (_unit->m_escorter == nullptr)
+                return;
 
-                Player* plr = _unit->m_escorter;
-                _unit->m_escorter = nullptr;
+            Player* plr = _unit->m_escorter;
+            _unit->m_escorter = nullptr;
 
-                auto quest_entry = plr->GetQuestLogForEntry(665);
-                if (quest_entry == nullptr)
-                    return;
-                quest_entry->SendQuestComplete();
-            }
+            auto quest_entry = plr->GetQuestLogForEntry(665);
+            if (quest_entry == nullptr)
+                return;
+            quest_entry->SendQuestComplete();
         }
+    }
 };
+
 
 void SetupArathiHighlands(ScriptMgr* mgr)
 {
     mgr->register_creature_script(2768, &Professor_Phizzlethorpe::Create);
-    //mgr->register_quest_script(665, new SunkenTreasure());
 }

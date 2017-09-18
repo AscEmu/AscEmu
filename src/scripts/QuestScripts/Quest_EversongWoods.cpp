@@ -23,11 +23,11 @@
 #include "../Common/EasyFunctions.h"
 #include "Management/Gossip/GossipMenu.hpp"
 
-///////////////////////////////////////////////////////
-//Quest: The Drwarfen Spy
-//ID: 8486
+ ///////////////////////////////////////////////////////
+ //Quest: The Drwarfen Spy
+ //ID: 8486
 
-// Anvilward say
+ // Anvilward say
 #define ANVILWARD_SAY_1 "Very well. Let's see what you have to show me."
 #define ANVILWARD_SAY_2 "What manner of trick is this, blood elf? If you seek to ambush me, I warn you I will not go down quietly!"
 
@@ -66,7 +66,7 @@ void ProspectorAnvilwardGossip::GossipSelectOption(Object* pObject, Player* Plr,
     GossipMenu* Menu;
     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 8240, Plr);
 
-    if(!pObject->IsCreature())
+    if (!pObject->IsCreature())
         return;
 
     Creature* pCreature = static_cast<Creature*>(pObject);
@@ -116,6 +116,7 @@ public:
         }
     }
 };
+
 
 void SetupEversongWoods(ScriptMgr* mgr)
 {
