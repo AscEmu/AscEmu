@@ -386,7 +386,7 @@ class FlanisSwiftwing_Gossip : public GossipScript
 {
 public:
     void GossipHello(Object* pObject, Player* Plr);
-    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code);
+    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId);
     void GossipEnd(Object* pObject, Player* Plr, Creature* pCreature);
 
 };
@@ -401,26 +401,26 @@ void FlanisSwiftwing_Gossip::GossipHello(Object* pObject, Player* plr)
     Menu->SendTo(plr);
 };
 
-void FlanisSwiftwing_Gossip::GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+void FlanisSwiftwing_Gossip::GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
 {
     Creature* pCreature = (pObject->IsCreature()) ? static_cast<Creature*>(pObject) : NULL;
     if (pCreature == NULL)
         return;
     if (IntId == 1)
     {
-        auto item = objmgr.CreateItem(30658, plr);
+        auto item = objmgr.CreateItem(30658, Plr);
         if (item == nullptr)
             return;
         item->SetStackCount(1);
-        if (!plr->GetItemInterface()->AddItemToFreeSlot(item))
+        if (!Plr->GetItemInterface()->AddItemToFreeSlot(item))
         {
-            plr->GetSession()->SendNotification("No free slots were found in your inventory!");
+            Plr->GetSession()->SendNotification("No free slots were found in your inventory!");
             item->DeleteMe();
         }
         else
         {
-            plr->SendItemPushResult(false, true, false, true, plr->GetItemInterface()->LastSearchResult()->ContainerSlot,
-                plr->GetItemInterface()->LastSearchResult()->Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(),
+            Plr->SendItemPushResult(false, true, false, true, Plr->GetItemInterface()->LastSearchResult()->ContainerSlot,
+                Plr->GetItemInterface()->LastSearchResult()->Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(),
                 item->GetItemRandomPropertyId(), item->GetStackCount());
         }
     }

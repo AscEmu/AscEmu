@@ -436,7 +436,7 @@ namespace Arcemu
                 virtual ~Script() {}
 
                 virtual void OnHello(Object* pObject, Player* Plr) = 0;
-                virtual void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode) {}
+                virtual void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32 gossipId = 0) {}
                 virtual void OnEnd(Object* pObject, Player* Plr) {}
                 virtual void Destroy();
 
@@ -461,7 +461,7 @@ namespace Arcemu
                 Vendor() {}
                 virtual ~Vendor() {}
                 void OnHello(Object* pObject, Player* Plr);
-                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode);
+                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId);
         };
         class SERVER_DECL Trainer : public Script
         {
@@ -470,7 +470,7 @@ namespace Arcemu
                 Trainer() {}
                 virtual ~Trainer() {}
                 virtual void OnHello(Object* pObject, Player* Plr);
-                virtual void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode);
+                virtual void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId);
         };
         class SERVER_DECL ClassTrainer : public Script
         {
@@ -479,7 +479,7 @@ namespace Arcemu
                 ClassTrainer() {}
                 virtual ~ClassTrainer() {}
                 virtual void OnHello(Object* pObject, Player* Plr);
-                virtual void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode);
+                virtual void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId);
         };
         class SERVER_DECL PetTrainer : public Script
         {
@@ -488,7 +488,7 @@ namespace Arcemu
                 PetTrainer() {}
                 virtual ~PetTrainer() {}
                 virtual void OnHello(Object* pObject, Player* Plr);
-                virtual void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode);
+                virtual void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId);
         };
         class SERVER_DECL FlightMaster : public Script
         {
@@ -497,7 +497,7 @@ namespace Arcemu
                 FlightMaster() {}
                 virtual ~FlightMaster() {}
                 void OnHello(Object* pObject, Player* Plr);
-                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode);
+                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId);
         };
         class SERVER_DECL Auctioneer: public Script
         {
@@ -506,7 +506,7 @@ namespace Arcemu
                 Auctioneer() {}
                 virtual ~Auctioneer() {}
                 void OnHello(Object* pObject, Player* Plr);
-                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode);
+                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId);
         };
         class SERVER_DECL InnKeeper : public Script
         {
@@ -515,7 +515,7 @@ namespace Arcemu
                 InnKeeper() {}
                 virtual ~InnKeeper() {}
                 void OnHello(Object* pObject, Player* Plr);
-                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode);
+                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId);
         };
         class SERVER_DECL BattleMaster : public Script
         {
@@ -524,7 +524,7 @@ namespace Arcemu
                 BattleMaster() {}
                 virtual ~BattleMaster() {}
                 void OnHello(Object* pObject, Player* Plr);
-                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode);
+                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId);
         };
         class SERVER_DECL Banker : public Script
         {
@@ -533,7 +533,7 @@ namespace Arcemu
                 Banker() {}
                 virtual ~Banker() {}
                 void OnHello(Object* pObject, Player* Plr);
-                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode);
+                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId);
         };
         class SERVER_DECL CharterGiver : public Script
         {
@@ -542,7 +542,7 @@ namespace Arcemu
                 CharterGiver() {}
                 virtual ~CharterGiver() {}
                 void OnHello(Object* pObject, Player* Plr);
-                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode);
+                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId);
         };
         class SERVER_DECL TabardDesigner : public Script
         {
@@ -551,7 +551,7 @@ namespace Arcemu
                 TabardDesigner() {}
                 virtual ~TabardDesigner() {}
                 void OnHello(Object* pObject, Player* Plr);
-                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode);
+                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId);
         };
         class SERVER_DECL StableMaster : public Script
         {
@@ -560,7 +560,7 @@ namespace Arcemu
                 StableMaster() {}
                 virtual ~StableMaster() {}
                 void OnHello(Object* pObject, Player* Plr);
-                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode);
+                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId);
         };
         class SERVER_DECL Generic : public Script
         {
@@ -569,7 +569,7 @@ namespace Arcemu
                 Generic() {}
                 virtual ~Generic() {}
                 void OnHello(Object* pObject, Player* Plr);
-                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode);
+                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId);
         };
     }
 }

@@ -369,7 +369,7 @@ class DofNaralexGossip : public GossipScript
             }
 
         }
-        void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
+        void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
         {
             Creature* pCreature = (pObject->IsCreature()) ? static_cast<Creature*>(pObject) : nullptr;
             if (pCreature == nullptr)

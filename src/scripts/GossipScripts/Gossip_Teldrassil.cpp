@@ -31,7 +31,7 @@ class ErelasAmbersky_Gossip : public Arcemu::Gossip::Script
             Arcemu::Gossip::Menu::SendQuickMenu(pObject->GetGUID(), 2153, plr, 1, GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELDSASSIL_HIPPO));
         }
 
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)
+        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32_t gossipId)
         {
             Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 2154, plr);
         }

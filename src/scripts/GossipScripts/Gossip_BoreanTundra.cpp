@@ -41,7 +41,7 @@ class TiareGossipScript : public GossipScript
             Menu->SendTo(Plr);
         }
 
-        void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
+        void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
         {
             static_cast<Creature*>(pObject)->CastSpell(Plr, sSpellCustomizations.GetSpellInfo(50135), true);
         }

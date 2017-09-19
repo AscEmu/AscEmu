@@ -201,7 +201,7 @@ class SetupCarnies_Gossip : public GossipScript
             gossipMenu->SendTo(plr);
         }
 
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code) override
+        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
         {
             if (!pObject->IsCreature())
                 return;
@@ -281,7 +281,7 @@ class FliksFrog_Gossip : public GossipScript
             gossipMenu->SendTo(plr);
         }
 
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code) override
+        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
         {
             if (!pObject->IsCreature())
                 return;
@@ -387,7 +387,7 @@ class MaximaBlastenheimer_Gossip : public GossipScript
             gossipMenu->SendTo(plr);
         }
 
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code) override
+        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
         {
             if (!pObject->IsCreature())
                 return;
@@ -447,7 +447,7 @@ class ProfessorThaddeusPaleo_Gossip : public GossipScript
         gossipMenu->SendTo(plr);
     }
 
-    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code) override
+    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
     {
         if (!pObject->IsCreature())
             return;
@@ -564,7 +564,7 @@ class Sayge_Gossip : public GossipScript
                 Menu->SendTo(plr);
         }
 
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code) override
+        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
         {
             if (!pObject->IsCreature())
                 return;
@@ -769,7 +769,7 @@ class SelinaDourman_Gossip : public GossipScript
             gossipMenu->SendTo(plr);
         }
 
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code) override
+        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
         {
             if (!pObject->IsCreature())
                 return;
@@ -827,7 +827,7 @@ class SilasDarkmoon_Gossip : public GossipScript
 
         }
 
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code) override
+        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
         {
             if (!pObject->IsCreature())
                 return;

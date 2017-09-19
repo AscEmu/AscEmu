@@ -121,7 +121,7 @@ class JainaProudmooreGS : public GossipScript
             Menu->SendTo(plr);
         }
 
-        void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
+        void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
         {
             if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
                 return;
@@ -178,7 +178,7 @@ class ThrallGS : public GossipScript
             Menu->SendTo(plr);
         }
 
-        void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
+        void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
         {
             if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
                 return;

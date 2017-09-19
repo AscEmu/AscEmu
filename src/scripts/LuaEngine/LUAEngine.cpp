@@ -2171,7 +2171,7 @@ class LuaGossip : public Arcemu::Gossip::Script
             RELEASE_LOCK
         }
 
-        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode)
+        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId)
         {
             GET_LOCK
             if (pObject->IsCreature())
