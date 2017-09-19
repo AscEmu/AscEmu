@@ -14,20 +14,23 @@ class StormwindGuard : public GossipScript
 public:
 
     uint32_t definedGossipMenu = 114;
-    void GossipHello(Object* pObject, Player* plr)
+    void GossipHello(Object* object, Player* player)
     {
-        objmgr.createGuardGossipMenuForPlayer(pObject->GetGUID(), definedGossipMenu, plr);
+        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
+    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
     {
         if (IntId > 0)
         {
-            objmgr.createGuardGossipOptionAndSubMenu(pObject->GetGUID(), Plr, IntId, definedGossipMenu);
+            if (gossipId != 0)
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+            else
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
         else
         {
-            GossipHello(pObject, Plr);
+            GossipHello(object, player);
         }
     }
 };
@@ -37,20 +40,23 @@ class DarnassusGuard : public GossipScript
 public:
 
     uint32_t definedGossipMenu = 122;
-    void GossipHello(Object* pObject, Player* plr)
+    void GossipHello(Object* object, Player* player)
     {
-        objmgr.createGuardGossipMenuForPlayer(pObject->GetGUID(), definedGossipMenu, plr);
+        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
+    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
     {
         if (IntId > 0)
         {
-            objmgr.createGuardGossipOptionAndSubMenu(pObject->GetGUID(), Plr, IntId, definedGossipMenu);
+            if (gossipId != 0)
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+            else
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
         else
         {
-            GossipHello(pObject, Plr);
+            GossipHello(object, player);
         }
     }
 };
@@ -60,20 +66,23 @@ class UndercityGuard : public GossipScript
 public:
 
     uint32_t definedGossipMenu = 142;
-    void GossipHello(Object* pObject, Player* plr)
+    void GossipHello(Object* object, Player* player)
     {
-        objmgr.createGuardGossipMenuForPlayer(pObject->GetGUID(), definedGossipMenu, plr);
+        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
+    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
     {
         if (IntId > 0)
         {
-            objmgr.createGuardGossipOptionAndSubMenu(pObject->GetGUID(), Plr, IntId, definedGossipMenu);
+            if (gossipId != 0)
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+            else
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
         else
         {
-            GossipHello(pObject, Plr);
+            GossipHello(object, player);
         }
     }
 };
@@ -83,20 +92,23 @@ class UndercityGuardOverseer : public GossipScript
 public:
 
     uint32_t definedGossipMenu = 163;
-    void GossipHello(Object* pObject, Player* plr)
+    void GossipHello(Object* object, Player* player)
     {
-        objmgr.createGuardGossipMenuForPlayer(pObject->GetGUID(), definedGossipMenu, plr);
+        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
+    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
     {
         if (IntId > 0)
         {
-            objmgr.createGuardGossipOptionAndSubMenu(pObject->GetGUID(), Plr, IntId, definedGossipMenu);
+            if (gossipId != 0)
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+            else
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
         else
         {
-            GossipHello(pObject, Plr);
+            GossipHello(object, player);
         }
     }
 };
@@ -106,20 +118,23 @@ class ThunderbluffGuard : public GossipScript
 public:
 
     uint32_t definedGossipMenu = 152;
-    void GossipHello(Object* pObject, Player* plr)
+    void GossipHello(Object* object, Player* player)
     {
-        objmgr.createGuardGossipMenuForPlayer(pObject->GetGUID(), definedGossipMenu, plr);
+        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
+    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
     {
         if (IntId > 0)
         {
-            objmgr.createGuardGossipOptionAndSubMenu(pObject->GetGUID(), Plr, IntId, definedGossipMenu);
+            if (gossipId != 0)
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+            else
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
         else
         {
-            GossipHello(pObject, Plr);
+            GossipHello(object, player);
         }
     }
 };
@@ -129,20 +144,23 @@ class GoldshireGuard : public GossipScript
 public:
 
     uint32_t definedGossipMenu = 132;
-    void GossipHello(Object* pObject, Player* plr)
+    void GossipHello(Object* object, Player* player)
     {
-        objmgr.createGuardGossipMenuForPlayer(pObject->GetGUID(), definedGossipMenu, plr);
+        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
+    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
     {
         if (IntId > 0)
         {
-            objmgr.createGuardGossipOptionAndSubMenu(pObject->GetGUID(), Plr, IntId, definedGossipMenu);
+            if (gossipId != 0)
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+            else
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
         else
         {
-            GossipHello(pObject, Plr);
+            GossipHello(object, player);
         }
     }
 };
@@ -152,20 +170,23 @@ class TeldrassilGuard : public GossipScript
 public:
 
     uint32_t definedGossipMenu = 172;
-    void GossipHello(Object* pObject, Player* plr)
+    void GossipHello(Object* object, Player* player)
     {
-        objmgr.createGuardGossipMenuForPlayer(pObject->GetGUID(), definedGossipMenu, plr);
+        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
+    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
     {
         if (IntId > 0)
         {
-            objmgr.createGuardGossipOptionAndSubMenu(pObject->GetGUID(), Plr, IntId, definedGossipMenu);
+            if (gossipId != 0)
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+            else
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
         else
         {
-            GossipHello(pObject, Plr);
+            GossipHello(object, player);
         }
     }
 };
@@ -175,20 +196,23 @@ class SilvermoonGuard : public GossipScript
 public:
 
     uint32_t definedGossipMenu = 180;
-    void GossipHello(Object* pObject, Player* plr)
+    void GossipHello(Object* object, Player* player)
     {
-        objmgr.createGuardGossipMenuForPlayer(pObject->GetGUID(), definedGossipMenu, plr);
+        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
+    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
     {
         if (IntId > 0)
         {
-            objmgr.createGuardGossipOptionAndSubMenu(pObject->GetGUID(), Plr, IntId, definedGossipMenu);
+            if (gossipId != 0)
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+            else
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
         else
         {
-            GossipHello(pObject, Plr);
+            GossipHello(object, player);
         }
     }
 };
@@ -198,20 +222,23 @@ class ExodarGuard : public GossipScript
 public:
 
     uint32_t definedGossipMenu = 191;
-    void GossipHello(Object* pObject, Player* plr)
+    void GossipHello(Object* object, Player* player)
     {
-        objmgr.createGuardGossipMenuForPlayer(pObject->GetGUID(), definedGossipMenu, plr);
+        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
+    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
     {
         if (IntId > 0)
         {
-            objmgr.createGuardGossipOptionAndSubMenu(pObject->GetGUID(), Plr, IntId, definedGossipMenu);
+            if (gossipId != 0)
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+            else
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
         else
         {
-            GossipHello(pObject, Plr);
+            GossipHello(object, player);
         }
     }
 };
@@ -221,20 +248,23 @@ class OrgrimmarGuard : public GossipScript
 public:
 
     uint32_t definedGossipMenu = 724;
-    void GossipHello(Object* pObject, Player* plr)
+    void GossipHello(Object* object, Player* player)
     {
-        objmgr.createGuardGossipMenuForPlayer(pObject->GetGUID(), definedGossipMenu, plr);
+        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
+    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
     {
         if (IntId > 0)
         {
-            objmgr.createGuardGossipOptionAndSubMenu(pObject->GetGUID(), Plr, IntId, definedGossipMenu);
+            if (gossipId != 0)
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+            else
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
         else
         {
-            GossipHello(pObject, Plr);
+            GossipHello(object, player);
         }
     }
 };
@@ -244,20 +274,23 @@ class BloodhoofGuard : public GossipScript
 public:
 
     uint32_t definedGossipMenu = 751;
-    void GossipHello(Object* pObject, Player* plr)
+    void GossipHello(Object* object, Player* player)
     {
-        objmgr.createGuardGossipMenuForPlayer(pObject->GetGUID(), definedGossipMenu, plr);
+        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
+    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
     {
         if (IntId > 0)
         {
-            objmgr.createGuardGossipOptionAndSubMenu(pObject->GetGUID(), Plr, IntId, definedGossipMenu);
+            if (gossipId != 0)
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+            else
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
         else
         {
-            GossipHello(pObject, Plr);
+            GossipHello(object, player);
         }
     }
 };
@@ -267,20 +300,23 @@ class RazorHillGuard : public GossipScript
 public:
 
     uint32_t definedGossipMenu = 989;
-    void GossipHello(Object* pObject, Player* plr)
+    void GossipHello(Object* object, Player* player)
     {
-        objmgr.createGuardGossipMenuForPlayer(pObject->GetGUID(), definedGossipMenu, plr);
+        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
+    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
     {
         if (IntId > 0)
         {
-            objmgr.createGuardGossipOptionAndSubMenu(pObject->GetGUID(), Plr, IntId, definedGossipMenu);
+            if (gossipId != 0)
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+            else
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
         else
         {
-            GossipHello(pObject, Plr);
+            GossipHello(object, player);
         }
     }
 };
@@ -290,20 +326,23 @@ class BrillGuard : public GossipScript
 public:
 
     uint32_t definedGossipMenu = 1003;
-    void GossipHello(Object* pObject, Player* plr)
+    void GossipHello(Object* object, Player* player)
     {
-        objmgr.createGuardGossipMenuForPlayer(pObject->GetGUID(), definedGossipMenu, plr);
+        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
+    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
     {
         if (IntId > 0)
         {
-            objmgr.createGuardGossipOptionAndSubMenu(pObject->GetGUID(), Plr, IntId, definedGossipMenu);
+            if (gossipId != 0)
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+            else
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
         else
         {
-            GossipHello(pObject, Plr);
+            GossipHello(object, player);
         }
     }
 };
@@ -313,20 +352,23 @@ class IronforgeGuard : public GossipScript
 public:
 
     uint32_t definedGossipMenu = 1012;
-    void GossipHello(Object* pObject, Player* plr)
+    void GossipHello(Object* object, Player* player)
     {
-        objmgr.createGuardGossipMenuForPlayer(pObject->GetGUID(), definedGossipMenu, plr);
+        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
+    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
     {
         if (IntId > 0)
         {
-            objmgr.createGuardGossipOptionAndSubMenu(pObject->GetGUID(), Plr, IntId, definedGossipMenu);
+            if (gossipId != 0)
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+            else
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
         else
         {
-            GossipHello(pObject, Plr);
+            GossipHello(object, player);
         }
     }
 };
@@ -336,20 +378,23 @@ class KharanosGuard : public GossipScript
 public:
 
     uint32_t definedGossipMenu = 1035;
-    void GossipHello(Object* pObject, Player* plr)
+    void GossipHello(Object* object, Player* player)
     {
-        objmgr.createGuardGossipMenuForPlayer(pObject->GetGUID(), definedGossipMenu, plr);
+        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
+    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
     {
         if (IntId > 0)
         {
-            objmgr.createGuardGossipOptionAndSubMenu(pObject->GetGUID(), Plr, IntId, definedGossipMenu);
+            if (gossipId != 0)
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+            else
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
         else
         {
-            GossipHello(pObject, Plr);
+            GossipHello(object, player);
         }
     }
 };
@@ -359,20 +404,23 @@ class FalconwingGuard : public GossipScript
 public:
 
     uint32_t definedGossipMenu = 1047;
-    void GossipHello(Object* pObject, Player* plr)
+    void GossipHello(Object* object, Player* player)
     {
-        objmgr.createGuardGossipMenuForPlayer(pObject->GetGUID(), definedGossipMenu, plr);
+        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
+    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
     {
         if (IntId > 0)
         {
-            objmgr.createGuardGossipOptionAndSubMenu(pObject->GetGUID(), Plr, IntId, definedGossipMenu);
+            if (gossipId != 0)
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+            else
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
         else
         {
-            GossipHello(pObject, Plr);
+            GossipHello(object, player);
         }
     }
 };
@@ -382,20 +430,23 @@ class AzureWatchGuard : public GossipScript
 public:
 
     uint32_t definedGossipMenu = 1058;
-    void GossipHello(Object* pObject, Player* plr)
+    void GossipHello(Object* object, Player* player)
     {
-        objmgr.createGuardGossipMenuForPlayer(pObject->GetGUID(), definedGossipMenu, plr);
+        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
+    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
     {
         if (IntId > 0)
         {
-            objmgr.createGuardGossipOptionAndSubMenu(pObject->GetGUID(), Plr, IntId, definedGossipMenu);
+            if (gossipId != 0)
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+            else
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
         else
         {
-            GossipHello(pObject, Plr);
+            GossipHello(object, player);
         }
     }
 };
@@ -405,20 +456,23 @@ class ShattrathGuard : public GossipScript
 public:
 
     uint32_t definedGossipMenu = 1068;
-    void GossipHello(Object* pObject, Player* plr)
+    void GossipHello(Object* object, Player* player)
     {
-        objmgr.createGuardGossipMenuForPlayer(pObject->GetGUID(), definedGossipMenu, plr);
+        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
+    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
     {
         if (IntId > 0)
         {
-            objmgr.createGuardGossipOptionAndSubMenu(pObject->GetGUID(), Plr, IntId, definedGossipMenu);
+            if (gossipId != 0)
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+            else
+                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
         else
         {
-            GossipHello(pObject, Plr);
+            GossipHello(object, player);
         }
     }
 };
@@ -488,7 +542,7 @@ public:
         Menu->SendTo(Plr);
     }
 
-    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
+    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
     {
         GossipMenu* Menu;
         switch (IntId)

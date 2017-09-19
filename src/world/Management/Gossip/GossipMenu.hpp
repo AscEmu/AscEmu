@@ -12,7 +12,7 @@ class SERVER_DECL GossipMenu
 {
 public:
 
-    GossipMenu(uint64 Creature_Guid, uint32 Text_Id);
+    GossipMenu(uint64 Creature_Guid, uint32 Text_Id, uint32_t gossip_id = 0);
     void AddItem(GossipMenuItem* GossipItem);
     void AddItem(uint8 Icon, const char* Text, int32 Id = -1, int8 Extra = 0);
     void AddMenuItem(uint8 Icon, const char* Message, uint32 dtSender, uint32 dtAction, const char* BoxMessage, uint32 BoxMoney, bool Coded = false);
@@ -24,6 +24,7 @@ public:
 protected:
 
     uint32 TextId;
+    uint32_t mGossipId;
     uint64 CreatureGuid;
     std::vector<GossipMenuItem> Menu;
 };

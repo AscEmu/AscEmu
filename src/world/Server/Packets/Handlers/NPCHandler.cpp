@@ -430,14 +430,14 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recv_data)
     CHECK_INWORLD_RETURN
 
     uint32 option;
-    uint32 unk24;
+    uint32 gossipId;
     uint64 guid;
 
     recv_data >> guid;
-    recv_data >> unk24;
+    recv_data >> gossipId;
     recv_data >> option;
 
-    LOG_DETAIL("WORLD: CMSG_GOSSIP_SELECT_OPTION Option %i Guid %.8X", option, guid);
+    LOG_DETAIL("WORLD: CMSG_GOSSIP_SELECT_OPTION GossipId: %u Item: %i senderGuid %.8X", gossipId, option, guid);
     Arcemu::Gossip::Script* script = NULL;
     uint32 guidtype = GET_TYPE_FROM_GUID(guid);
 
@@ -463,9 +463,9 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recv_data)
         if (recv_data.rpos() != recv_data.wpos())
             recv_data >> str;
         if (str.length() > 0)
-            script->OnSelectOption(qst_giver, GetPlayer(), option, str.c_str());
+            script->OnSelectOption(qst_giver, GetPlayer(), option, str.c_str(), gossipId);
         else
-            script->OnSelectOption(qst_giver, GetPlayer(), option, NULL);
+            script->OnSelectOption(qst_giver, GetPlayer(), option, NULL, gossipId);
     }
 }
 

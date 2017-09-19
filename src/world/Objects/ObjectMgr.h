@@ -388,7 +388,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 {
     public:
         //NIT
-        void createGuardGossipMenuForPlayer(uint64_t senderGuid, uint32_t gossipMenuId, Player* player);
+        void createGuardGossipMenuForPlayer(uint64_t senderGuid, uint32_t gossipMenuId, Player* player, uint32_t forcedTextId = 0);
         void createGuardGossipOptionAndSubMenu(uint64_t senderGuid, Player* player, uint32_t gossipItemId, uint32_t gossipMenuId);
         //NIT END
 

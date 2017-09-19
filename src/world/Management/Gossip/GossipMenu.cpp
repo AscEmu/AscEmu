@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Units/Players/Player.h"
 
-GossipMenu::GossipMenu(uint64 Creature_Guid, uint32 Text_Id) : TextId(Text_Id), CreatureGuid(Creature_Guid)
+GossipMenu::GossipMenu(uint64 Creature_Guid, uint32 Text_Id, uint32_t gossip_id) : TextId(Text_Id), CreatureGuid(Creature_Guid), mGossipId(gossip_id)
 {
 }
 
@@ -76,7 +76,7 @@ void GossipMenu::AddItem(GossipMenuItem* GossipItem)
 void GossipMenu::BuildPacket(WorldPacket& Packet)
 {
     Packet << CreatureGuid;
-    Packet << uint32(0);            // some new menu type in 2.4?
+    Packet << uint32(mGossipId);            // some new menu type in 2.4?
     Packet << TextId;
     Packet << uint32(Menu.size());
 

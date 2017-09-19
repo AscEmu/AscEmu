@@ -204,11 +204,6 @@ public:
     
     GossipMenuInitMap const* getGossipMenuInitTextId() { return &_gossipMenuInitStore; }
 
-    GossipMenuItemsContainer const* getGossipMenuItemsStore() { return &_gossipMenuItemsStores; }
-    MySQLStructure::GossipMenuItems const* getGossipMenuItemsForMenuId(uint32_t menuId);
-    bool hasGossipSubMenu(uint32_t subMenuId) { return getGossipMenuItemsForMenuId(subMenuId) != nullptr; }
-    bool isSubmenuOfGossipMenu(uint32_t menuId, uint32_t targetMenu);
-
     bool isCharacterNameAllowed(std::string charName);
 
     //Config

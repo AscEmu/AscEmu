@@ -792,7 +792,7 @@ void GossipScript::OnHello(Object* pObject, Player* Plr)
     GossipHello(pObject, Plr);
 }
 
-void GossipScript::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode)
+void GossipScript::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId)
 {
     uint32 IntId = Id;
 
@@ -802,7 +802,7 @@ void GossipScript::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const
         IntId = item.IntId;
     }
 
-    GossipSelectOption(pObject, Plr, Id, IntId, EnteredCode);
+    GossipSelectOption(pObject, Plr, Id, IntId, EnteredCode, gossipId);
 }
 
 void GossipScript::OnEnd(Object* pObject, Player* Plr)

@@ -3793,27 +3793,6 @@ MySQLStructure::NpcMonsterSay* MySQLDataStore::getMonstersayEventForCreature(uin
 //    return &(itr->second);
 //}
 
-MySQLStructure::GossipMenuItems const* MySQLDataStore::getGossipMenuItemsForMenuId(uint32_t menuId)
-{
-    GossipMenuItemsContainer::const_iterator itr = _gossipMenuItemsStores.find(menuId);
-    if (itr != _gossipMenuItemsStores.end())
-        return &(itr->second);
-
-    return nullptr;
-}
-
-bool MySQLDataStore::isSubmenuOfGossipMenu(uint32_t menuId, uint32_t targetMenu)
-{
-    auto menuStore = _gossipMenuItemsStores;
-    for (MySQLDataStore::GossipMenuItemsContainer::const_iterator itr = menuStore.begin(); itr != menuStore.end(); ++itr)
-    {
-        if (itr->first == targetMenu && itr->second.nextGossipMenu == menuId && hasGossipSubMenu(menuId))
-            return true;
-    }
-
-    return false;
-}
-
 void MySQLDataStore::loadProfessionDiscoveriesTable()
 {
     auto startTime = Util::TimeNow();

@@ -1731,21 +1731,28 @@ void ObjectMgr::CreateGossipMenuForPlayer(GossipMenu** Location, uint64 Guid, ui
 }
 
 //MIT
-void ObjectMgr::createGuardGossipMenuForPlayer(uint64_t senderGuid, uint32_t gossipMenuId, Player* player)
+void ObjectMgr::createGuardGossipMenuForPlayer(uint64_t senderGuid, uint32_t gossipMenuId, Player* player, uint32_t forcedTextId /*= 0*/)
 {
     uint32_t textId = 2;
-    auto gossipMenuTextStore = sMySQLStore.getGossipMenuInitTextId();
 
-    for (auto &initItr : *gossipMenuTextStore)
+    if (forcedTextId == 0)
     {
-        if (initItr.first == gossipMenuId)
+        auto gossipMenuTextStore = sMySQLStore.getGossipMenuInitTextId();
+        for (auto &initItr : *gossipMenuTextStore)
         {
-            textId = initItr.second.textId;
-            break;
+            if (initItr.first == gossipMenuId)
+            {
+                textId = initItr.second.textId;
+                break;
+            }
         }
     }
+    else
+    {
+        textId = forcedTextId;
+    }
 
-    GossipMenu* gossipMenu = new GossipMenu(senderGuid, textId);
+    GossipMenu* gossipMenu = new GossipMenu(senderGuid, textId, gossipMenuId);
     ARCEMU_ASSERT(gossipMenu != nullptr);
 
     if (player->CurrentGossipMenu != nullptr)
@@ -1753,12 +1760,12 @@ void ObjectMgr::createGuardGossipMenuForPlayer(uint64_t senderGuid, uint32_t gos
 
     player->CurrentGossipMenu = gossipMenu;
 
-    auto gossipMenuStore = sMySQLStore.getGossipMenuItemsStore();
-
-    for (auto itr : *gossipMenuStore)
+    typedef MySQLDataStore::GossipMenuItemsContainer::iterator GossipMenuItemsIterator;
+    std::pair<GossipMenuItemsIterator, GossipMenuItemsIterator> gossipEqualRange = sMySQLStore._gossipMenuItemsStores.equal_range(gossipMenuId);
+    for (GossipMenuItemsIterator itr = gossipEqualRange.first; itr != gossipEqualRange.second; ++itr)
     {
-        if (itr.first == gossipMenuId)
-            gossipMenu->AddItem(itr.second.icon, player->GetSession()->LocalizedGossipOption(itr.second.menuOptionText), itr.second.itemOrder);
+        if (itr->first == gossipMenuId)
+            gossipMenu->AddItem(itr->second.icon, player->GetSession()->LocalizedGossipOption(itr->second.menuOptionText), itr->second.itemOrder);
     }
 
     gossipMenu->SendTo(player);
@@ -1767,41 +1774,33 @@ void ObjectMgr::createGuardGossipMenuForPlayer(uint64_t senderGuid, uint32_t gos
 //MIT
 void ObjectMgr::createGuardGossipOptionAndSubMenu(uint64_t senderGuid, Player* player, uint32_t gossipItemId, uint32_t gossipMenuId)
 {
+    LOG_DEBUG("GossipId: %u  gossipItemId: %u", gossipMenuId, gossipItemId);
+
     GossipMenu* gossipMenu;
 
-    auto gossipMenuItems = sMySQLStore.getGossipMenuItemsStore();
-    auto gossipSubMenu = sMySQLStore.getGossipMenuItemsStore();
+    bool openSubMenu = true;
 
-    for (auto itr : *gossipMenuItems)
+    typedef MySQLDataStore::GossipMenuItemsContainer::iterator GossipMenuItemsIterator;
+    std::pair<GossipMenuItemsIterator, GossipMenuItemsIterator> gossipEqualRange = sMySQLStore._gossipMenuItemsStores.equal_range(gossipMenuId);
+    for (GossipMenuItemsIterator itr = gossipEqualRange.first; itr != gossipEqualRange.second; ++itr)
     {
-        bool isOwnOrSubmenu = false;
-        if (itr.first != gossipMenuId && sMySQLStore.isSubmenuOfGossipMenu(itr.first, gossipMenuId))
-            isOwnOrSubmenu = true;
-
-        bool isSubmenu = sMySQLStore.isSubmenuOfGossipMenu(itr.second.nextGossipMenu, gossipMenuId);
-
-        if (itr.second.itemOrder == gossipItemId && (isSubmenu || isOwnOrSubmenu || itr.first == gossipMenuId))
+        if (itr->second.itemOrder == gossipItemId)
         {
-            if (isSubmenu == false)
+            if (itr->second.nextGossipMenu != 0)
             {
-                objmgr.CreateGossipMenuForPlayer(&gossipMenu, senderGuid, itr.second.nextGossipMenuText, player);
-                gossipMenu->SendTo(player);
+                createGuardGossipMenuForPlayer(senderGuid, itr->second.nextGossipMenu, player, itr->second.nextGossipMenuText);
 
-                if (itr.second.pointOfInterest != 0)
-                    player->Gossip_SendSQLPOI(itr.second.pointOfInterest);
+                // one submenu menu sends a poi
+                if (itr->second.pointOfInterest != 0)
+                    player->Gossip_SendSQLPOI(itr->second.pointOfInterest);
             }
             else
             {
-                objmgr.CreateGossipMenuForPlayer(&gossipMenu, senderGuid, itr.second.nextGossipMenuText, player);
-                for (auto subitr : *gossipSubMenu)
-                {
-                    if (subitr.first == itr.second.nextGossipMenu)
-                        gossipMenu->AddItem(subitr.second.icon, player->GetSession()->LocalizedGossipOption(subitr.second.menuOptionText), subitr.second.itemOrder);
-                }
+                CreateGossipMenuForPlayer(&gossipMenu, senderGuid, itr->second.nextGossipMenuText, player);
                 gossipMenu->SendTo(player);
 
-                if (itr.second.pointOfInterest != 0)
-                    player->Gossip_SendSQLPOI(itr.second.pointOfInterest);
+                if (itr->second.pointOfInterest != 0)
+                    player->Gossip_SendSQLPOI(itr->second.pointOfInterest);
             }
         }
     }
