@@ -3,23 +3,22 @@ Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Management/Gossip/Gossip.h"
 #include "Setup.h"
-#include "Management/Gossip/GossipMenu.hpp"
+#include "Management/Gossip/Gossip.h"
 #include "Objects/ObjectMgr.h"
 
 
-class StormwindGuard : public GossipScript
+class StormwindGuard : public Arcemu::Gossip::Script
 {
 public:
 
     uint32_t definedGossipMenu = 114;
-    void GossipHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player)
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
     {
         if (IntId > 0)
         {
@@ -28,24 +27,20 @@ public:
             else
                 objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
-        else
-        {
-            GossipHello(object, player);
-        }
     }
 };
 
-class DarnassusGuard : public GossipScript
+class DarnassusGuard : public Arcemu::Gossip::Script
 {
 public:
 
     uint32_t definedGossipMenu = 122;
-    void GossipHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player)
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
     {
         if (IntId > 0)
         {
@@ -54,24 +49,20 @@ public:
             else
                 objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
-        else
-        {
-            GossipHello(object, player);
-        }
     }
 };
 
-class UndercityGuard : public GossipScript
+class UndercityGuard : public Arcemu::Gossip::Script
 {
 public:
 
     uint32_t definedGossipMenu = 142;
-    void GossipHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player)
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
     {
         if (IntId > 0)
         {
@@ -80,24 +71,20 @@ public:
             else
                 objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
-        else
-        {
-            GossipHello(object, player);
-        }
     }
 };
 
-class UndercityGuardOverseer : public GossipScript
+class UndercityGuardOverseer : public Arcemu::Gossip::Script
 {
 public:
 
     uint32_t definedGossipMenu = 163;
-    void GossipHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player)
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
     {
         if (IntId > 0)
         {
@@ -106,24 +93,20 @@ public:
             else
                 objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
-        else
-        {
-            GossipHello(object, player);
-        }
     }
 };
 
-class ThunderbluffGuard : public GossipScript
+class ThunderbluffGuard : public Arcemu::Gossip::Script
 {
 public:
 
     uint32_t definedGossipMenu = 152;
-    void GossipHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player)
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
     {
         if (IntId > 0)
         {
@@ -132,24 +115,20 @@ public:
             else
                 objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
-        else
-        {
-            GossipHello(object, player);
-        }
     }
 };
 
-class GoldshireGuard : public GossipScript
+class GoldshireGuard : public Arcemu::Gossip::Script
 {
 public:
 
     uint32_t definedGossipMenu = 132;
-    void GossipHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player)
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
     {
         if (IntId > 0)
         {
@@ -158,24 +137,20 @@ public:
             else
                 objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
-        else
-        {
-            GossipHello(object, player);
-        }
     }
 };
 
-class TeldrassilGuard : public GossipScript
+class TeldrassilGuard : public Arcemu::Gossip::Script
 {
 public:
 
     uint32_t definedGossipMenu = 172;
-    void GossipHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player)
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
     {
         if (IntId > 0)
         {
@@ -184,24 +159,20 @@ public:
             else
                 objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
-        else
-        {
-            GossipHello(object, player);
-        }
     }
 };
 
-class SilvermoonGuard : public GossipScript
+class SilvermoonGuard : public Arcemu::Gossip::Script
 {
 public:
 
     uint32_t definedGossipMenu = 180;
-    void GossipHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player)
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
     {
         if (IntId > 0)
         {
@@ -210,24 +181,20 @@ public:
             else
                 objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
-        else
-        {
-            GossipHello(object, player);
-        }
     }
 };
 
-class ExodarGuard : public GossipScript
+class ExodarGuard : public Arcemu::Gossip::Script
 {
 public:
 
     uint32_t definedGossipMenu = 191;
-    void GossipHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player)
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
     {
         if (IntId > 0)
         {
@@ -236,24 +203,20 @@ public:
             else
                 objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
-        else
-        {
-            GossipHello(object, player);
-        }
     }
 };
 
-class OrgrimmarGuard : public GossipScript
+class OrgrimmarGuard : public Arcemu::Gossip::Script
 {
 public:
 
     uint32_t definedGossipMenu = 724;
-    void GossipHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player)
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
     {
         if (IntId > 0)
         {
@@ -262,24 +225,20 @@ public:
             else
                 objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
-        else
-        {
-            GossipHello(object, player);
-        }
     }
 };
 
-class BloodhoofGuard : public GossipScript
+class BloodhoofGuard : public Arcemu::Gossip::Script
 {
 public:
 
     uint32_t definedGossipMenu = 751;
-    void GossipHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player)
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
     {
         if (IntId > 0)
         {
@@ -288,24 +247,20 @@ public:
             else
                 objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
-        else
-        {
-            GossipHello(object, player);
-        }
     }
 };
 
-class RazorHillGuard : public GossipScript
+class RazorHillGuard : public Arcemu::Gossip::Script
 {
 public:
 
     uint32_t definedGossipMenu = 989;
-    void GossipHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player)
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
     {
         if (IntId > 0)
         {
@@ -314,24 +269,20 @@ public:
             else
                 objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
-        else
-        {
-            GossipHello(object, player);
-        }
     }
 };
 
-class BrillGuard : public GossipScript
+class BrillGuard : public Arcemu::Gossip::Script
 {
 public:
 
     uint32_t definedGossipMenu = 1003;
-    void GossipHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player)
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
     {
         if (IntId > 0)
         {
@@ -340,24 +291,20 @@ public:
             else
                 objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
-        else
-        {
-            GossipHello(object, player);
-        }
     }
 };
 
-class IronforgeGuard : public GossipScript
+class IronforgeGuard : public Arcemu::Gossip::Script
 {
 public:
 
     uint32_t definedGossipMenu = 1012;
-    void GossipHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player)
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
     {
         if (IntId > 0)
         {
@@ -366,24 +313,20 @@ public:
             else
                 objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
-        else
-        {
-            GossipHello(object, player);
-        }
     }
 };
 
-class KharanosGuard : public GossipScript
+class KharanosGuard : public Arcemu::Gossip::Script
 {
 public:
 
     uint32_t definedGossipMenu = 1035;
-    void GossipHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player)
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
     {
         if (IntId > 0)
         {
@@ -392,24 +335,20 @@ public:
             else
                 objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
-        else
-        {
-            GossipHello(object, player);
-        }
     }
 };
 
-class FalconwingGuard : public GossipScript
+class FalconwingGuard : public Arcemu::Gossip::Script
 {
 public:
 
     uint32_t definedGossipMenu = 1047;
-    void GossipHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player)
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
     {
         if (IntId > 0)
         {
@@ -418,24 +357,20 @@ public:
             else
                 objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
-        else
-        {
-            GossipHello(object, player);
-        }
     }
 };
 
-class AzureWatchGuard : public GossipScript
+class AzureWatchGuard : public Arcemu::Gossip::Script
 {
 public:
 
     uint32_t definedGossipMenu = 1058;
-    void GossipHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player)
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
     {
         if (IntId > 0)
         {
@@ -444,24 +379,20 @@ public:
             else
                 objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
         }
-        else
-        {
-            GossipHello(object, player);
-        }
     }
 };
 
-class ShattrathGuard : public GossipScript
+class ShattrathGuard : public Arcemu::Gossip::Script
 {
 public:
 
     uint32_t definedGossipMenu = 1068;
-    void GossipHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player)
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
     {
         if (IntId > 0)
         {
@@ -469,25 +400,21 @@ public:
                 objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
             else
                 objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
-        }
-        else
-        {
-            GossipHello(object, player);
         }
     }
 };
 
-class DalaranGuard : public GossipScript
+class DalaranGuard : public Arcemu::Gossip::Script
 {
 public:
 
     uint32_t definedGossipMenu = 1095;
-    void GossipHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player)
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void GossipSelectOption(Object* object, Player* player, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
     {
         if (IntId > 0)
         {
@@ -495,72 +422,105 @@ public:
                 objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
             else
                 objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
-        }
-        else
-        {
-            GossipHello(object, player);
         }
     }
 };
 
 void SetupGuardGossip(ScriptMgr* mgr)
 {
-    mgr->register_gossip_script(1423, new GoldshireGuard);
-    mgr->register_gossip_script(68, new StormwindGuard);
-    mgr->register_gossip_script(1976, new StormwindGuard);
-    mgr->register_gossip_script(29712, new StormwindGuard);
-    mgr->register_gossip_script(4262, new DarnassusGuard);
-    mgr->register_gossip_script(5624, new UndercityGuard);
-    mgr->register_gossip_script(36213, new UndercityGuardOverseer);
-    mgr->register_gossip_script(3571, new TeldrassilGuard);
-    mgr->register_gossip_script(16222, new SilvermoonGuard);
-    mgr->register_gossip_script(16733, new ExodarGuard);
-    mgr->register_gossip_script(20674, new ExodarGuard);
-    mgr->register_gossip_script(3296, new OrgrimmarGuard);
-    mgr->register_gossip_script(3084, new ThunderbluffGuard);
-    mgr->register_gossip_script(3222, new BloodhoofGuard);
-    mgr->register_gossip_script(3224, new BloodhoofGuard);
-    mgr->register_gossip_script(3220, new BloodhoofGuard);
-    mgr->register_gossip_script(3219, new BloodhoofGuard);
-    mgr->register_gossip_script(3217, new BloodhoofGuard);
-    mgr->register_gossip_script(3215, new BloodhoofGuard);
-    mgr->register_gossip_script(3218, new BloodhoofGuard);
-    mgr->register_gossip_script(3221, new BloodhoofGuard);
-    mgr->register_gossip_script(3223, new BloodhoofGuard);
-    mgr->register_gossip_script(3212, new BloodhoofGuard);
-    mgr->register_gossip_script(5953, new RazorHillGuard);
-    mgr->register_gossip_script(5725, new BrillGuard);
-    mgr->register_gossip_script(1738, new BrillGuard);
-    mgr->register_gossip_script(1652, new BrillGuard);
-    mgr->register_gossip_script(1746, new BrillGuard);
-    mgr->register_gossip_script(1745, new BrillGuard);
-    mgr->register_gossip_script(1743, new BrillGuard);
-    mgr->register_gossip_script(1744, new BrillGuard);
-    mgr->register_gossip_script(1496, new BrillGuard);
-    mgr->register_gossip_script(1742, new BrillGuard);
-    mgr->register_gossip_script(5595, new IronforgeGuard);
-    mgr->register_gossip_script(727, new KharanosGuard);
-    mgr->register_gossip_script(16221, new FalconwingGuard);
-    mgr->register_gossip_script(18038, new AzureWatchGuard);
-    mgr->register_gossip_script(19687, new ShattrathGuard);
-    mgr->register_gossip_script(18568, new ShattrathGuard);
-    mgr->register_gossip_script(18549, new ShattrathGuard);
-    mgr->register_gossip_script(32675, new DalaranGuard);
-    mgr->register_gossip_script(32676, new DalaranGuard);
-    mgr->register_gossip_script(32677, new DalaranGuard);
-    mgr->register_gossip_script(32678, new DalaranGuard);
-    mgr->register_gossip_script(32679, new DalaranGuard);
-    mgr->register_gossip_script(32680, new DalaranGuard);
-    mgr->register_gossip_script(32681, new DalaranGuard);
-    mgr->register_gossip_script(32683, new DalaranGuard);
-    mgr->register_gossip_script(32684, new DalaranGuard);
-    mgr->register_gossip_script(32685, new DalaranGuard);
-    mgr->register_gossip_script(32686, new DalaranGuard);
-    mgr->register_gossip_script(32687, new DalaranGuard);
-    mgr->register_gossip_script(32688, new DalaranGuard);
-    mgr->register_gossip_script(32689, new DalaranGuard);
-    mgr->register_gossip_script(32690, new DalaranGuard);
-    mgr->register_gossip_script(32691, new DalaranGuard);
-    mgr->register_gossip_script(32692, new DalaranGuard);
-    mgr->register_gossip_script(32693, new DalaranGuard);
+    Arcemu::Gossip::Script* goldshireGuard = new GoldshireGuard();
+    mgr->register_creature_gossip(1423, goldshireGuard);
+
+    Arcemu::Gossip::Script* stormwindGuard = new StormwindGuard();
+    mgr->register_creature_gossip(68, stormwindGuard);
+    mgr->register_creature_gossip(1976, stormwindGuard);
+    mgr->register_creature_gossip(29712, stormwindGuard);
+
+    Arcemu::Gossip::Script* darnassusGuard = new DarnassusGuard();
+    mgr->register_creature_gossip(4262, darnassusGuard);
+
+    Arcemu::Gossip::Script* undercityGuard = new UndercityGuard();
+    mgr->register_creature_gossip(5624, undercityGuard);
+
+    Arcemu::Gossip::Script* undercityGuardOverseer = new UndercityGuardOverseer();
+    mgr->register_creature_gossip(36213, undercityGuardOverseer);
+
+    Arcemu::Gossip::Script* teldrassilGuard = new TeldrassilGuard();
+    mgr->register_creature_gossip(3571, teldrassilGuard);
+
+    Arcemu::Gossip::Script* silvermoonGuard = new SilvermoonGuard();
+    mgr->register_creature_gossip(16222, silvermoonGuard);
+
+    Arcemu::Gossip::Script* exodarGuard = new ExodarGuard();
+    mgr->register_creature_gossip(16733, exodarGuard);
+    mgr->register_creature_gossip(20674, exodarGuard);
+
+    Arcemu::Gossip::Script* orgrimmarGuard = new OrgrimmarGuard();
+    mgr->register_creature_gossip(3296, orgrimmarGuard);
+
+    Arcemu::Gossip::Script* thunderbluffGuard = new ThunderbluffGuard();
+    mgr->register_creature_gossip(3084, thunderbluffGuard);
+
+    Arcemu::Gossip::Script* bloodhoofGuard = new BloodhoofGuard();
+    mgr->register_creature_gossip(3222, bloodhoofGuard);
+    mgr->register_creature_gossip(3224, bloodhoofGuard);
+    mgr->register_creature_gossip(3220, bloodhoofGuard);
+    mgr->register_creature_gossip(3219, bloodhoofGuard);
+    mgr->register_creature_gossip(3217, bloodhoofGuard);
+    mgr->register_creature_gossip(3215, bloodhoofGuard);
+    mgr->register_creature_gossip(3218, bloodhoofGuard);
+    mgr->register_creature_gossip(3221, bloodhoofGuard);
+    mgr->register_creature_gossip(3223, bloodhoofGuard);
+    mgr->register_creature_gossip(3212, bloodhoofGuard);
+
+    Arcemu::Gossip::Script* razorHillGuard = new RazorHillGuard();
+    mgr->register_creature_gossip(5953, razorHillGuard);
+
+    Arcemu::Gossip::Script* brillGuard = new BrillGuard();
+    mgr->register_creature_gossip(5725, brillGuard);
+    mgr->register_creature_gossip(1738, brillGuard);
+    mgr->register_creature_gossip(1652, brillGuard);
+    mgr->register_creature_gossip(1746, brillGuard);
+    mgr->register_creature_gossip(1745, brillGuard);
+    mgr->register_creature_gossip(1743, brillGuard);
+    mgr->register_creature_gossip(1744, brillGuard);
+    mgr->register_creature_gossip(1496, brillGuard);
+    mgr->register_creature_gossip(1742, brillGuard);
+
+    Arcemu::Gossip::Script* ironforgeGuard = new IronforgeGuard();
+    mgr->register_creature_gossip(5595, ironforgeGuard);
+
+    Arcemu::Gossip::Script* kharanosGuard = new KharanosGuard();
+    mgr->register_creature_gossip(727, kharanosGuard);
+
+    Arcemu::Gossip::Script* falconwingGuard = new FalconwingGuard();
+    mgr->register_creature_gossip(16221, falconwingGuard);
+
+    Arcemu::Gossip::Script* azureWatchGuard = new AzureWatchGuard();
+    mgr->register_creature_gossip(18038, azureWatchGuard);
+
+    Arcemu::Gossip::Script* shattrathGuard = new ShattrathGuard();
+    mgr->register_creature_gossip(19687, shattrathGuard);
+    mgr->register_creature_gossip(18568, shattrathGuard);
+    mgr->register_creature_gossip(18549, shattrathGuard);
+
+    Arcemu::Gossip::Script* dalaranGuard = new DalaranGuard();
+    mgr->register_creature_gossip(32675, dalaranGuard);
+    mgr->register_creature_gossip(32676, dalaranGuard);
+    mgr->register_creature_gossip(32677, dalaranGuard);
+    mgr->register_creature_gossip(32678, dalaranGuard);
+    mgr->register_creature_gossip(32679, dalaranGuard);
+    mgr->register_creature_gossip(32680, dalaranGuard);
+    mgr->register_creature_gossip(32681, dalaranGuard);
+    mgr->register_creature_gossip(32683, dalaranGuard);
+    mgr->register_creature_gossip(32684, dalaranGuard);
+    mgr->register_creature_gossip(32685, dalaranGuard);
+    mgr->register_creature_gossip(32686, dalaranGuard);
+    mgr->register_creature_gossip(32687, dalaranGuard);
+    mgr->register_creature_gossip(32688, dalaranGuard);
+    mgr->register_creature_gossip(32689, dalaranGuard);
+    mgr->register_creature_gossip(32690, dalaranGuard);
+    mgr->register_creature_gossip(32691, dalaranGuard);
+    mgr->register_creature_gossip(32692, dalaranGuard);
+    mgr->register_creature_gossip(32693, dalaranGuard);
 }

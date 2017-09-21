@@ -1752,31 +1752,23 @@ void ObjectMgr::createGuardGossipMenuForPlayer(uint64_t senderGuid, uint32_t gos
         textId = forcedTextId;
     }
 
-    GossipMenu* gossipMenu = new GossipMenu(senderGuid, textId, gossipMenuId);
-    ARCEMU_ASSERT(gossipMenu != nullptr);
-
-    if (player->CurrentGossipMenu != nullptr)
-        delete player->CurrentGossipMenu;
-
-    player->CurrentGossipMenu = gossipMenu;
+    Arcemu::Gossip::Menu menu(senderGuid, textId, player->GetSession()->language, gossipMenuId);
 
     typedef MySQLDataStore::GossipMenuItemsContainer::iterator GossipMenuItemsIterator;
     std::pair<GossipMenuItemsIterator, GossipMenuItemsIterator> gossipEqualRange = sMySQLStore._gossipMenuItemsStores.equal_range(gossipMenuId);
     for (GossipMenuItemsIterator itr = gossipEqualRange.first; itr != gossipEqualRange.second; ++itr)
     {
         if (itr->first == gossipMenuId)
-            gossipMenu->AddItem(itr->second.icon, player->GetSession()->LocalizedGossipOption(itr->second.menuOptionText), itr->second.itemOrder);
+            menu.AddItem(itr->second.icon, player->GetSession()->LocalizedGossipOption(itr->second.menuOptionText), itr->second.itemOrder);
     }
 
-    gossipMenu->SendTo(player);
+    menu.Send(player);
 }
 
 //MIT
 void ObjectMgr::createGuardGossipOptionAndSubMenu(uint64_t senderGuid, Player* player, uint32_t gossipItemId, uint32_t gossipMenuId)
 {
     LOG_DEBUG("GossipId: %u  gossipItemId: %u", gossipMenuId, gossipItemId);
-
-    GossipMenu* gossipMenu;
 
     bool openSubMenu = true;
 
@@ -1796,8 +1788,7 @@ void ObjectMgr::createGuardGossipOptionAndSubMenu(uint64_t senderGuid, Player* p
             }
             else
             {
-                CreateGossipMenuForPlayer(&gossipMenu, senderGuid, itr->second.nextGossipMenuText, player);
-                gossipMenu->SendTo(player);
+                createGuardGossipMenuForPlayer(senderGuid, itr->second.nextGossipMenu, player, itr->second.nextGossipMenuText);
 
                 if (itr->second.pointOfInterest != 0)
                     player->Gossip_SendSQLPOI(itr->second.pointOfInterest);

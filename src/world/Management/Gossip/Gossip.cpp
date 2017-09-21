@@ -69,14 +69,15 @@ StackBuffer<size>& operator<<(StackBuffer<size>& packet, const Gossip::Item & it
 }
 
 
-Gossip::Menu::Menu(uint64 Creature_Guid, uint32 Text_Id, uint32 language) : textid_(Text_Id), guid_(Creature_Guid), language_(language)
+Gossip::Menu::Menu(uint64 Creature_Guid, uint32 Text_Id, uint32 language, uint32 gossip_id) : textid_(Text_Id), guid_(Creature_Guid), language_(language), gossipId(gossip_id)
 {}
 
-Gossip::Menu::Menu(Object* obj, uint32 textid, uint32 language)
+Gossip::Menu::Menu(Object* obj, uint32 textid, uint32 language, uint32 gossip_id)
 {
     guid_ = obj->GetGUID();
     textid_ = textid;
     language_ = language;
+    gossipId = gossip_id;
 }
 
 void Gossip::Menu::AddItem(uint8 icon, const char* itemtext, uint32 itemid, bool coded/*=false*/)
@@ -120,7 +121,7 @@ void Gossip::Menu::RemoveQuest(QuestProperties const* quest)
 WorldPacket& operator<<(WorldPacket& packet, const Gossip::Menu & menu)
 {
     packet << menu.guid_;
-    packet << uint32(0);
+    packet << menu.gossipId;
     packet << menu.textid_;
     packet << uint32(menu.itemlist_.size());
     {
@@ -155,7 +156,7 @@ template<uint32 size>
 StackBuffer<size>& operator<<(StackBuffer<size> & packet, const Gossip::Menu & menu)
 {
     packet << menu.guid_;
-    packet << uint32(0);
+    packet << menu.gossipId;
     packet << menu.textid_;
     packet << uint32(menu.itemlist_.size());
     {

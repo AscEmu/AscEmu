@@ -318,8 +318,8 @@ namespace Arcemu
         {
             public:
 
-                Menu(uint64, uint32, uint32 = 0);
-                Menu(Object*, uint32, uint32 = 0);
+                Menu(uint64, uint32, uint32 = 0, uint32 = 0);
+                Menu(Object*, uint32, uint32 = 0, uint32 = 0);
 
                 //////////////////////////////////////////////////////////////////////////////////////////
                 /// Adds a menu item.
@@ -423,6 +423,7 @@ namespace Arcemu
 
                 uint32 textid_;
                 uint32 language_;                   /// For localized quest texts.
+                uint32 gossipId;
                 uint64 guid_;
                 Gossip::ItemList itemlist_;         /// Contains non quest items.
                 Gossip::QuestList questlist_;       /// Contains the quests, it's filled up then added to the packet when it comes to send.
