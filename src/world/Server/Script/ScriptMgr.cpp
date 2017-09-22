@@ -342,16 +342,6 @@ void ScriptMgr::register_dummy_spell(uint32 entry, exp_handle_dummy_spell callba
     _spells.insert(HandleDummySpellMap::value_type(entry, callback));
 }
 
-void ScriptMgr::register_gossip_script(uint32 entry, GossipScript* gs)
-{
-    register_creature_gossip(entry, gs);
-}
-
-void ScriptMgr::register_go_gossip_script(uint32 entry, GossipScript* gs)
-{
-    register_go_gossip(entry, gs);
-}
-
 void ScriptMgr::register_quest_script(uint32 entry, QuestScript* qs)
 {
     QuestProperties const* q = sMySQLStore.getQuestProperties(entry);
@@ -527,11 +517,6 @@ bool ScriptMgr::CallScriptedItem(Item* pItem, Player* pPlayer)
         return true;
     }
     return false;
-}
-
-void ScriptMgr::register_item_gossip_script(uint32 entry, GossipScript* gs)
-{
-    register_item_gossip(entry, gs);
 }
 
 /* CreatureAI Stuff */

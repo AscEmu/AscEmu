@@ -198,10 +198,7 @@ class SERVER_DECL ScriptMgr : public Singleton<ScriptMgr>
         void register_dummy_spell(uint32 entry, exp_handle_dummy_spell callback);
         void register_script_effect(uint32 entry, exp_handle_script_effect callback);
         void register_instance_script(uint32 pMapId, exp_create_instance_ai pCallback);
-        void register_gossip_script(uint32 entry, GossipScript* gs);
-        void register_go_gossip_script(uint32 entry, GossipScript* gs);
         void register_hook(ServerHookEvents event, void* function_pointer);
-        void register_item_gossip_script(uint32 entry, GossipScript* gs);
         void register_quest_script(uint32 entry, QuestScript* qs);
         void register_event_script(uint32 entry, EventScript* es);
 
