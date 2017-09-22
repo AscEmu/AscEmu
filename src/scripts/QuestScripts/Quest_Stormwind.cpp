@@ -91,8 +91,13 @@ public:
             say += "!";
             Dashel->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
         }
-        sEAS.SpawnCreature(mTarget, 4969, -8686.803711f, 445.267792f, 99.789223f, 5.461184f, 300000);
-        sEAS.SpawnCreature(mTarget, 4969, -8675.571289f, 444.162262f, 99.644737f, 3.834103f, 300000);
+        Creature* ct1 = mTarget->GetMapMgr()->CreateAndSpawnCreature(4969, -8686.803711f, 445.267792f, 99.789223f, 5.461184f);
+        if (ct1 != nullptr)
+            ct1->Despawn(300000, 0);
+
+        Creature* ct2 = mTarget->GetMapMgr()->CreateAndSpawnCreature(4969, -8675.571289f, 444.162262f, 99.644737f, 3.834103f);
+        if (ct2 != nullptr)
+            ct2->Despawn(300000, 0);
     }
 };
 

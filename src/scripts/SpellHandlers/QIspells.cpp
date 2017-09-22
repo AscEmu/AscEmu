@@ -36,11 +36,9 @@ bool CleansingVial(uint32 i, Spell* pSpell)
         return true;
     }
 
-    Creature* pAggonar = sEAS.SpawnCreature(pPlayer, 17000, 428.15f, 3461.73f, 63.40f, 0, 0);
+    Creature* pAggonar = pPlayer->GetMapMgr()->CreateAndSpawnCreature(17000, 428.15f, 3461.73f, 63.40f, 0);
     if (pAggonar != nullptr)
-    {
         pAggonar->Despawn(6 * 60 * 1000, 0);
-    }
 
     return true;
 }
@@ -88,17 +86,13 @@ bool ElementalPowerExtractor(uint32 i, Spell* pSpell)
 bool SummonEkkorash(uint32 i, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
-    {
         return true;
-    }
 
     Player* plr = pSpell->p_caster;
     if (plr == nullptr)
-    {
         return true;
-    }
 
-    sEAS.SpawnCreature(plr, 19493, plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), 0, 0);
+    plr->GetMapMgr()->CreateAndSpawnCreature(19493, plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), 0);
     return true;
 }
 
@@ -112,8 +106,13 @@ bool CallRexxar(uint32 i, Spell* pSpell)
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer->HasQuest(10742))
     {
-        sEAS.SpawnCreature(pPlayer, 21984, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 2 * 60 * 1000);
-        sEAS.SpawnCreature(pPlayer, 20555, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 2 * 60 * 1000);
+        Creature* calax1 = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21984, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation());
+        if (calax1 != nullptr)
+            calax1->Despawn(2 * 60 * 1000, 0);
+
+        Creature* calax2 = pPlayer->GetMapMgr()->CreateAndSpawnCreature(20555, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation());
+        if (calax2 != nullptr)
+            calax2->Despawn(2 * 60 * 1000, 0);
     }
 
     return true;
@@ -133,7 +132,7 @@ bool LayWreath(uint32 i, Spell* pSpell)  //Peace at Last quest
         return true;
     }
 
-    GameObject* pWreath = sEAS.SpawnGameobject(pPlayer, 501541, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 1, 0, 0, 0, 0);
+    GameObject* pWreath = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(501541, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 1);
     if (pWreath != nullptr)
         pWreath->Despawn(2 * 60 * 1000, 0);
 
@@ -204,14 +203,10 @@ bool FuryoftheDreghoodElders(uint32 i, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
-    {
         return true;
-    }
 
     if (pPlayer->HasQuest(10369) == false)
-    {
         return true;
-    }
 
     Creature* arzethpower = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 19354);
     if (arzethpower == nullptr)
@@ -219,7 +214,7 @@ bool FuryoftheDreghoodElders(uint32 i, Spell* pSpell)
         return true;
     }
 
-    Creature* arzethless = sEAS.SpawnCreature(pPlayer, 20680, arzethpower->GetPositionX(), arzethpower->GetPositionY(), arzethpower->GetPositionZ(), arzethpower->GetOrientation(), 0);
+    Creature* arzethless = pPlayer->GetMapMgr()->CreateAndSpawnCreature(20680, arzethpower->GetPositionX(), arzethpower->GetPositionY(), arzethpower->GetPositionZ(), arzethpower->GetOrientation());
     arzethpower->Despawn(1, 6 * 60 * 1000);
     arzethless->Despawn(5 * 60 * 1000, 0);
 
@@ -230,17 +225,14 @@ bool ASpiritAlly(uint32 i, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
-    {
         return true;
-    }
 
     if (pPlayer->HasQuest(9847) == false)
-    {
         return true;
-    }
 
-    Creature* allyspirit = sEAS.SpawnCreature(pPlayer, 18185, -353, 7255, 49.36f, 6.28f, 0);
-    allyspirit->Despawn(6 * 60 * 1000, 0);
+    Creature* allyspirit = pPlayer->GetMapMgr()->CreateAndSpawnCreature(18185, -353, 7255, 49.36f, 6.28f);
+    if (allyspirit != nullptr)
+        allyspirit->Despawn(6 * 60 * 1000, 0);
 
     return true;
 }
@@ -423,7 +415,7 @@ bool TagMurloc(uint32 i, Aura* pAura, bool apply)
         return true;
     }
 
-    Creature* tagged = sEAS.SpawnCreature(pPlayer, 17654, murloc->GetPositionX(), murloc->GetPositionY(), murloc->GetPositionZ(), 0);
+    Creature* tagged = pPlayer->GetMapMgr()->CreateAndSpawnCreature(17654, murloc->GetPositionX(), murloc->GetPositionY(), murloc->GetPositionZ(), 0);
     murloc->Despawn(1, 6 * 60 * 1000);
     tagged->Despawn(5 * 60 * 1000, 0);
 
@@ -471,7 +463,7 @@ bool EvilDrawsNear(uint32 i, Spell* pSpell)
         return true;
     }
 
-    Creature* dragon = sEAS.SpawnCreature(pPlayer, 22441, pPlayer->GetPositionX() + 15, pPlayer->GetPositionY() + 15, pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 0);
+    Creature* dragon = pPlayer->GetMapMgr()->CreateAndSpawnCreature(22441, pPlayer->GetPositionX() + 15, pPlayer->GetPositionY() + 15, pPlayer->GetPositionZ(), pPlayer->GetOrientation());
     dragon->Despawn(6 * 60 * 1000, 0);
 
     return true;
@@ -620,7 +612,7 @@ bool ScrollOfMyzrael(uint32 i, Spell* pSpell)
         }
     }
 
-    myzrael = sEAS.SpawnCreature(pPlayer, 2755, MyzraelPos[0], MyzraelPos[1], MyzraelPos[2], MyzraelPos[3], 0);
+    myzrael = pPlayer->GetMapMgr()->CreateAndSpawnCreature(2755, MyzraelPos[0], MyzraelPos[1], MyzraelPos[2], MyzraelPos[3]);
     return true;
 }
 
@@ -637,7 +629,7 @@ bool Showdown(uint32 i, Spell* pSpell)
         return true;
     }
 
-    Creature* goc = sEAS.SpawnCreature(p_caster, 20555, 3739, 5365, -4, 3.5, 0);
+    Creature* goc = p_caster->GetMapMgr()->CreateAndSpawnCreature(20555, 3739, 5365, -4, 3.5);
     goc->Despawn(6 * 60 * 1000, 0);
 
     return true;
@@ -657,7 +649,7 @@ bool TheBaitforLarkorwi1(uint32 i, Spell* pSpell)
         return true;
     }
 
-    GameObject* obj = sEAS.SpawnGameobject(pPlayer, 169216, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 1, 0, 0, 0, 0);
+    GameObject* obj = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(169216, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 1);
     if (obj != nullptr)
         obj->Despawn(1 * 60 * 1000, 0);
 
@@ -677,7 +669,7 @@ bool TheBaitforLarkorwi2(uint32 i, Spell* pSpell)
         return true;
     }
 
-    Creature* larkowi = sEAS.SpawnCreature(pPlayer, 9684, pPlayer->GetPositionX() + 2, pPlayer->GetPositionY() + 3, pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 0);
+    Creature* larkowi = pPlayer->GetMapMgr()->CreateAndSpawnCreature(9684, pPlayer->GetPositionX() + 2, pPlayer->GetPositionY() + 3, pPlayer->GetPositionZ(), pPlayer->GetOrientation());
     larkowi->Despawn(5 * 60 * 1000, 0);
 
     return true;
@@ -709,11 +701,12 @@ bool Fumping(uint32 i, Spell* pSpell)
             break;
     }
 
-    Creature* creat = sEAS.SpawnCreature(pPlayer, entry, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 5 * 60 * 1000);
+    Creature* creat = pPlayer->GetMapMgr()->CreateAndSpawnCreature(entry, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 0);
     if (entry == 22483) //Sand Gnomes ;)
     {
         creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "YIEEEEEEEAA!");
     }
+    creat->Despawn(5 * 60 * 1000, 0);
 
     return true;
 }
@@ -731,7 +724,7 @@ bool TheBigBoneWorm(uint32 i, Spell* pSpell)
         return true;
     }
 
-    Creature* exarch = sEAS.SpawnCreature(pPlayer, 22038, pPlayer->GetPositionX() + 7, pPlayer->GetPositionY() + 7, pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 0);
+    Creature* exarch = pPlayer->GetMapMgr()->CreateAndSpawnCreature(22038, pPlayer->GetPositionX() + 7, pPlayer->GetPositionY() + 7, pPlayer->GetPositionZ(), pPlayer->GetOrientation());
     exarch->Despawn(6 * 60 * 1000, 0);
 
     return true;
@@ -750,7 +743,7 @@ bool Torgos(uint32 i, Spell* pSpell)
         return true;
     }
 
-    Creature* torgos = sEAS.SpawnCreature(pPlayer, 18707, pPlayer->GetPositionX(), pPlayer->GetPositionY() - 10, pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 0);
+    Creature* torgos = pPlayer->GetMapMgr()->CreateAndSpawnCreature(18707, pPlayer->GetPositionX(), pPlayer->GetPositionY() - 10, pPlayer->GetPositionZ(), pPlayer->GetOrientation());
     if (torgos == nullptr)
     {
         return true;
@@ -774,7 +767,7 @@ bool WelcomingtheWolfSpirit(uint32 i, Spell* pSpell)
         return true;
     }
 
-    Creature* spiritwolf = sEAS.SpawnCreature(pPlayer, 19616, pPlayer->GetPositionX() + 2, pPlayer->GetPositionY() + 3, pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 0);
+    Creature* spiritwolf = pPlayer->GetMapMgr()->CreateAndSpawnCreature(19616, pPlayer->GetPositionX() + 2, pPlayer->GetPositionY() + 3, pPlayer->GetPositionZ(), pPlayer->GetOrientation());
     spiritwolf->Despawn(5 * 60 * 1000, 0);
 
     if (qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
@@ -799,7 +792,7 @@ bool NaturalRemedies(uint32 i, Spell* pSpell)
         return true;
     }
 
-    Creature* colos = sEAS.SpawnCreature(pPlayer, 19305, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 0);
+    Creature* colos = pPlayer->GetMapMgr()->CreateAndSpawnCreature(19305, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 0);
     if (colos != nullptr)
     {
         colos->Despawn(5 * 60 * 1000, 0);
@@ -818,7 +811,7 @@ bool FloraoftheEcoDomes(uint32 i, Spell* pSpell)
     Player* pPlayer = pSpell->p_caster;
 
     Creature* normal = static_cast<Creature*>(pSpell->GetUnitTarget());
-    Creature* mutant = sEAS.SpawnCreature(pPlayer, 20983, normal->GetPositionX(), normal->GetPositionY(), normal->GetPositionZ(), 0);
+    Creature* mutant = pPlayer->GetMapMgr()->CreateAndSpawnCreature(20983, normal->GetPositionX(), normal->GetPositionY(), normal->GetPositionZ(), 0);
 
     normal->Despawn(1, 6 * 60 * 1000);
     mutant->Despawn(5 * 60 * 1000, 0);
@@ -855,13 +848,13 @@ bool TheCleansingMustBeStopped(uint32 i, Spell* pSpell)
         return true;
     }
 
-    Creature* draenei1 = sEAS.SpawnCreature(pPlayer, 16994, pPlayer->GetPositionX() + RandomFloat(5.0f), pPlayer->GetPositionY() + RandomFloat(5.0f), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 0);
+    Creature* draenei1 = pPlayer->GetMapMgr()->CreateAndSpawnCreature(16994, pPlayer->GetPositionX() + RandomFloat(5.0f), pPlayer->GetPositionY() + RandomFloat(5.0f), pPlayer->GetPositionZ(), pPlayer->GetOrientation());
     draenei1->Despawn(6 * 60 * 1000, 0);
 
-    Creature* draenei2 = sEAS.SpawnCreature(pPlayer, 16994, pPlayer->GetPositionX() - RandomFloat(5.0f), pPlayer->GetPositionY() + RandomFloat(5.0f), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 0);
+    Creature* draenei2 = pPlayer->GetMapMgr()->CreateAndSpawnCreature(16994, pPlayer->GetPositionX() - RandomFloat(5.0f), pPlayer->GetPositionY() + RandomFloat(5.0f), pPlayer->GetPositionZ(), pPlayer->GetOrientation());
     draenei2->Despawn(6 * 60 * 1000, 0);
 
-    Creature* draenei3 = sEAS.SpawnCreature(pPlayer, 16994, pPlayer->GetPositionX() + RandomFloat(5.0f), pPlayer->GetPositionY() - RandomFloat(5.0f), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 0);
+    Creature* draenei3 = pPlayer->GetMapMgr()->CreateAndSpawnCreature(16994, pPlayer->GetPositionX() + RandomFloat(5.0f), pPlayer->GetPositionY() - RandomFloat(5.0f), pPlayer->GetPositionZ(), pPlayer->GetOrientation());
     draenei3->Despawn(6 * 60 * 1000, 0);
 
     return true;
@@ -896,7 +889,7 @@ bool AdministreringtheSalve(uint32 i, Aura* pAura, bool apply)
             return true;
         }
 
-        Creature* healed = sEAS.SpawnCreature(pPlayer, 16846, sick->GetPositionX(), sick->GetPositionY(), sick->GetPositionZ(), 0);
+        Creature* healed = pPlayer->GetMapMgr()->CreateAndSpawnCreature(16846, sick->GetPositionX(), sick->GetPositionY(), sick->GetPositionZ(), 0);
         sick->Despawn(1, 6 * 60 * 1000);
         healed->Despawn(3 * 60 * 1000, 0);
 
@@ -941,35 +934,35 @@ bool ZappedGiants(uint32 i, Spell* pSpell)
         case 5360:
         {
             creat->Despawn(1000, 6 * 60 * 1000);
-            Creature* zappedcreat = sEAS.SpawnCreature(pPlayer, 14639, X, Y, Z, 0);
+            Creature* zappedcreat = pPlayer->GetMapMgr()->CreateAndSpawnCreature(14639, X, Y, Z, 0);
             zappedcreat->Despawn(3 * 60 * 1000, 0);
         }
         break;
         case 5361:
         {
             creat->Despawn(1000, 6 * 60 * 1000);
-            Creature* zappedcreat = sEAS.SpawnCreature(pPlayer, 14638, X, Y, Z, 0);
+            Creature* zappedcreat = pPlayer->GetMapMgr()->CreateAndSpawnCreature(14638, X, Y, Z, 0);
             zappedcreat->Despawn(3 * 60 * 1000, 0);
         }
         break;
         case 5359:
         {
             creat->Despawn(1000, 6 * 60 * 1000);
-            Creature* zappedcreat = sEAS.SpawnCreature(pPlayer, 14603, X, Y, Z, 0);
+            Creature* zappedcreat = pPlayer->GetMapMgr()->CreateAndSpawnCreature(14603, X, Y, Z, 0);
             zappedcreat->Despawn(3 * 60 * 1000, 0);
         }
         break;
         case 5358:
         {
             creat->Despawn(1000, 6 * 60 * 1000);
-            Creature* zappedcreat = sEAS.SpawnCreature(pPlayer, 14640, X, Y, Z, 0);
+            Creature* zappedcreat = pPlayer->GetMapMgr()->CreateAndSpawnCreature(14640, X, Y, Z, 0);
             zappedcreat->Despawn(3 * 60 * 1000, 0);
         }
         break;
         case 5357:
         {
             creat->Despawn(1000, 6 * 60 * 1000);
-            Creature* zappedcreat = sEAS.SpawnCreature(pPlayer, 14604, X, Y, Z, 0);
+            Creature* zappedcreat = pPlayer->GetMapMgr()->CreateAndSpawnCreature(14604, X, Y, Z, 0);
             zappedcreat->Despawn(3 * 60 * 1000, 0);
         }
         break;
@@ -1073,7 +1066,8 @@ bool AnUnusualPatron(uint32 i, Spell* pSpell)
         return true;
     }
 
-    sEAS.SpawnCreature(pPlayer, 17207, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 60 * 10 * 1000);
+    Naias = pPlayer->GetMapMgr()->CreateAndSpawnCreature(17207, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation());
+    Naias->Despawn(10 * 60 * 1000, 0);
     return true;
 }
 
@@ -1096,7 +1090,7 @@ bool MagnetoCollector(uint32 i, Aura* pAura, bool apply)
         return true;
     }
 
-    Creature* auramagneto = sEAS.SpawnCreature(pPlayer, 21731, magneto->GetPositionX(), magneto->GetPositionY(), magneto->GetPositionZ(), magneto->GetOrientation(), 0);
+    Creature* auramagneto = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21731, magneto->GetPositionX(), magneto->GetPositionY(), magneto->GetPositionZ(), magneto->GetOrientation());
     magneto->Despawn(1, 0);
     auramagneto->Despawn(4 * 60 * 1000, 0);
 
@@ -1121,12 +1115,12 @@ bool TemporalPhaseModulator(uint32 i, Spell* pSpell)
     {
         if (RandomUInt(1) == 0)
         {
-            Creature* adolescent = sEAS.SpawnCreature(pPlayer, 21817, whelp->GetPositionX(), whelp->GetPositionY(), whelp->GetPositionZ(), whelp->GetOrientation(), 0);
+            Creature* adolescent = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21817, whelp->GetPositionX(), whelp->GetPositionY(), whelp->GetPositionZ(), whelp->GetOrientation());
             adolescent->Despawn(5 * 60 * 1000, 0);
         }
         else
         {
-            Creature* proto = sEAS.SpawnCreature(pPlayer, 21821, whelp->GetPositionX(), whelp->GetPositionY(), whelp->GetPositionZ(), whelp->GetOrientation(), 0);
+            Creature* proto = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21821, whelp->GetPositionX(), whelp->GetPositionY(), whelp->GetPositionZ(), whelp->GetOrientation());
             proto->Despawn(5 * 60 * 1000, 0);
         }
         whelp->Despawn(1, 0);
@@ -1138,12 +1132,12 @@ bool TemporalPhaseModulator(uint32 i, Spell* pSpell)
     {
         if (RandomUInt(10) < 8)
         {
-            Creature* mature = sEAS.SpawnCreature(pPlayer, 21820, whelp->GetPositionX(), whelp->GetPositionY(), whelp->GetPositionZ(), whelp->GetOrientation(), 0);
+            Creature* mature = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21820, whelp->GetPositionX(), whelp->GetPositionY(), whelp->GetPositionZ(), whelp->GetOrientation());
             mature->Despawn(5 * 60 * 1000, 0);
         }
         else
         {
-            Creature* funnyd = sEAS.SpawnCreature(pPlayer, 21823, whelp->GetPositionX(), whelp->GetPositionY(), whelp->GetPositionZ(), whelp->GetOrientation(), 0);
+            Creature* funnyd = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21823, whelp->GetPositionX(), whelp->GetPositionY(), whelp->GetPositionZ(), whelp->GetOrientation());
             funnyd->Despawn(5 * 60 * 1000, 0);
         }
         whelp->Despawn(1, 0);
@@ -1155,12 +1149,12 @@ bool TemporalPhaseModulator(uint32 i, Spell* pSpell)
     {
         if (RandomUInt(10) < 8)
         {
-            Creature* mature = sEAS.SpawnCreature(pPlayer, 21820, whelp->GetPositionX(), whelp->GetPositionY(), whelp->GetPositionZ(), whelp->GetOrientation(), 0);
+            Creature* mature = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21820, whelp->GetPositionX(), whelp->GetPositionY(), whelp->GetPositionZ(), whelp->GetOrientation());
             mature->Despawn(5 * 60 * 1000, 0);
         }
         else
         {
-            Creature* funnyd = sEAS.SpawnCreature(pPlayer, 21823, whelp->GetPositionX(), whelp->GetPositionY(), whelp->GetPositionZ(), whelp->GetOrientation(), 0);
+            Creature* funnyd = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21823, whelp->GetPositionX(), whelp->GetPositionY(), whelp->GetPositionZ(), whelp->GetOrientation());
             funnyd->Despawn(5 * 60 * 1000, 0);
         }
         whelp->Despawn(1, 0);
@@ -1173,12 +1167,12 @@ bool TemporalPhaseModulator(uint32 i, Spell* pSpell)
     {
         if (RandomUInt(1) == 0)
         {
-            Creature* adolescent = sEAS.SpawnCreature(pPlayer, 21817, whelp->GetPositionX(), whelp->GetPositionY(), whelp->GetPositionZ(), whelp->GetOrientation(), 0);
+            Creature* adolescent = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21817, whelp->GetPositionX(), whelp->GetPositionY(), whelp->GetPositionZ(), whelp->GetOrientation());
             adolescent->Despawn(5 * 60 * 1000, 0);
         }
         else
         {
-            Creature* proto = sEAS.SpawnCreature(pPlayer, 21821, whelp->GetPositionX(), whelp->GetPositionY(), whelp->GetPositionZ(), whelp->GetOrientation(), 0);
+            Creature* proto = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21821, whelp->GetPositionX(), whelp->GetPositionY(), whelp->GetPositionZ(), whelp->GetOrientation());
             proto->Despawn(5 * 60 * 1000, 0);
         }
         whelp->Despawn(1, 0);
@@ -1218,7 +1212,7 @@ bool WyrmcallersHorn(uint32 i, Spell* pSpell)
 
     Player* plr = pSpell->p_caster;
 
-    Creature* pCreature = sEAS.SpawnCreature(plr, 24019, plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), 0, 0);
+    Creature* pCreature = plr->GetMapMgr()->CreateAndSpawnCreature(24019, plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), 0);
     if (pCreature == nullptr)
     {
         return true;
@@ -1241,7 +1235,7 @@ bool RaeloraszSpark(uint32 i, Spell* pSpell)
         return true;
     }
 
-    Creature* pCreature = sEAS.SpawnCreature(plr, 26237, plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), 0, 0);
+    Creature* pCreature = plr->GetMapMgr()->CreateAndSpawnCreature(26237, plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), 0);
     pCreature->Despawn(5 * 60 * 1000, 0);
 
     QuestLogEntry* qle = plr->GetQuestLogForEntry(11969);
@@ -1262,7 +1256,7 @@ bool RuneOfDistortion(uint32 i, Spell* pSpell)
         return true;
     }
 
-    Creature* pCreature = sEAS.SpawnCreature(plr, 32162, plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), 0, 0);
+    Creature* pCreature = plr->GetMapMgr()->CreateAndSpawnCreature(32162, plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), 0);
     pCreature->Despawn(5 * 60 * 1000, 0);
 
     if (plr->HasQuest(13312) == false && plr->HasQuest(13337) == false)
@@ -1818,7 +1812,7 @@ bool ToLegionHold(uint32 i, Aura* pAura, bool apply)
     {
 
         pPlayer->setMoveRoot(true);
-        Creature* pJovaan = sEAS.SpawnCreature(pPlayer, 21633, -3310.743896f, 2951.929199f, 171.132538f, 5.054039f, 0);    // Spawn Jovaan
+        Creature* pJovaan = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21633, -3310.743896f, 2951.929199f, 171.132538f, 5.054039f);    // Spawn Jovaan
         if (pJovaan != nullptr)
         {
             pJovaan->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
@@ -1861,11 +1855,10 @@ bool CenarionMoondust(uint32 i, Spell* pSpell) // Body And Heart (Alliance)
     Player* p_caster = pSpell->p_caster;
 
     //Moonkin Stone aura
-    sEAS.SpawnGameobject(p_caster, 177644, 6331.01f, 88.245f, 22.6522f, 2.01455f, 1.0, 0.0, 0.0, 0.0, 0.0);
+    p_caster->GetMapMgr()->CreateAndSpawnGameObject(177644, 6331.01f, 88.245f, 22.6522f, 2.01455f, 1.0);
 
     // it dont delete lunaclaw if he is here
-    Creature* lunaclaw;
-    lunaclaw = sEAS.SpawnCreature(p_caster, 12138, pos[0], pos[1], pos[2], pos[3], 0);
+    Creature* lunaclaw = p_caster->GetMapMgr()->CreateAndSpawnCreature(12138, pos[0], pos[1], pos[2], pos[3]);
 
     sEAS.CreateCustomWaypointMap(lunaclaw);
     uint32 md = lunaclaw->GetDisplayId();
@@ -1909,9 +1902,9 @@ bool CenarionLunardust(uint32 i, Spell* pSpell)  // Body And Heart (Horde)
     Player* p_caster = pSpell->p_caster;
 
     //Moonkin Stone aura
-    sEAS.SpawnGameobject(p_caster, 177644, -2499.54f, -1633.03f, 91.8121f, 0.262894f, 1.0, 0.0, 0.0, 0.0, 0.0);
+    p_caster->GetMapMgr()->CreateAndSpawnGameObject(177644, -2499.54f, -1633.03f, 91.8121f, 0.262894f, 1.0);
 
-    Creature* lunaclaw = sEAS.SpawnCreature(p_caster, 12138, pos[0], pos[1], pos[2], pos[3], 0);
+    Creature* lunaclaw = p_caster->GetMapMgr()->CreateAndSpawnCreature(12138, pos[0], pos[1], pos[2], pos[3]);
 
     sEAS.CreateCustomWaypointMap(lunaclaw);
     uint32 md = lunaclaw->GetDisplayId();
@@ -1969,9 +1962,17 @@ bool CurativeAnimalSalve(uint32 i, Spell* pSpell) // Curing the Sick
             return true;
 
         if (entry == 12298) // Sickly Deer
-            sEAS.SpawnCreature(caster, 12298, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), 2 * 60 * 1000); // Cured Deer
+        {
+            Creature* deer = caster->GetMapMgr()->CreateAndSpawnCreature(12298, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation()); // Cured Deer
+            if (deer != nullptr)
+                deer->Despawn(2 * 60 * 1000, 0);
+        }
         else // Sickly Gazelle
-            sEAS.SpawnCreature(caster, 12297, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), 2 * 60 * 1000); // Cured Gazelle
+        {
+            Creature* gazelle = caster->GetMapMgr()->CreateAndSpawnCreature(12297, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation()); // Cured Gazelle
+            if (gazelle != nullptr)
+                gazelle->Despawn(2 * 60 * 1000, 0);
+        }
 
         target->Despawn(0, 3 * 60 * 1000);
 
@@ -2378,27 +2379,27 @@ bool ZethGorMustBurnHorde(uint32 i, Spell* pSpell)
                 pQuest->SendUpdateAddKill(0);
                 pQuest->UpdatePlayerFields();
 
-                GameObject* pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -1129.08f, 1921.77f, 94.0074f, 0, 4, 0, 0, 0, 0);
+                GameObject* pGameobject = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(183816, -1129.08f, 1921.77f, 94.0074f, 0, 4);
                 if (pGameobject != nullptr)
                     pGameobject->Despawn(1 * 60 * 1000, 0);
 
-                pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -1135.00f, 1944.05f, 84.7084f, 0, 4, 0, 0, 0, 0);
+                pGameobject = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(183816, -1135.00f, 1944.05f, 84.7084f, 0, 4);
                 if (pGameobject != nullptr)
                     pGameobject->Despawn(1 * 60 * 1000, 0);
 
-                pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -1152.01f, 1945.00f, 102.901f, 0, 4, 0, 0, 0, 0);
+                pGameobject = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(183816, -1152.01f, 1945.00f, 102.901f, 0, 4);
                 if (pGameobject != nullptr)
                     pGameobject->Despawn(1 * 60 * 1000, 0);
 
-                pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -1159.60f, 1958.76f, 83.0412f, 0, 4, 0, 0, 0, 0);
+                pGameobject = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(183816, -1159.60f, 1958.76f, 83.0412f, 0, 4);
                 if (pGameobject != nullptr)
                     pGameobject->Despawn(1 * 60 * 1000, 0);
 
-                pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -1126.17f, 1880.96f, 95.065f, 0, 4, 0, 0, 0, 0);
+                pGameobject = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(183816, -1126.17f, 1880.96f, 95.065f, 0, 4);
                 if (pGameobject != nullptr)
                     pGameobject->Despawn(1 * 60 * 1000, 0);
 
-                pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -1185.79f, 1968.29f, 90.931f, 0, 4, 0, 0, 0, 0);
+                pGameobject = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(183816, -1185.79f, 1968.29f, 90.931f, 0, 4);
                 if (pGameobject != nullptr)
                     pGameobject->Despawn(1 * 60 * 1000, 0);
 
@@ -2416,7 +2417,7 @@ bool ZethGorMustBurnHorde(uint32 i, Spell* pSpell)
                 pQuest->SendUpdateAddKill(1);
                 pQuest->UpdatePlayerFields();
 
-                GameObject* pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -938.034f, 1924.153f, 73.590f, 0, 4, 0, 0, 0, 0);
+                GameObject* pGameobject = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(183816, -938.034f, 1924.153f, 73.590f, 0, 4);
                 if (pGameobject != nullptr)
                     pGameobject->Despawn(1 * 60 * 1000, 0);
 
@@ -2434,7 +2435,7 @@ bool ZethGorMustBurnHorde(uint32 i, Spell* pSpell)
                 pQuest->SendUpdateAddKill(2);
                 pQuest->UpdatePlayerFields();
 
-                GameObject* pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -1152.10f, 2066.20f, 72.959f, 0, 4, 0, 0, 0, 0);
+                GameObject* pGameobject = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(183816, -1152.10f, 2066.20f, 72.959f, 0, 4);
                 if (pGameobject != nullptr)
                     pGameobject->Despawn(1 * 60 * 1000, 0);
 
@@ -2452,7 +2453,7 @@ bool ZethGorMustBurnHorde(uint32 i, Spell* pSpell)
                 pQuest->SendUpdateAddKill(3);
                 pQuest->UpdatePlayerFields();
 
-                GameObject* pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -1058.85f, 2010.95f, 68.776f, 0, 4, 0, 0, 0, 0);
+                GameObject* pGameobject = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(183816, -1058.85f, 2010.95f, 68.776f, 0, 4);
                 if (pGameobject != nullptr)
                     pGameobject->Despawn(1 * 60 * 1000, 0);
 
@@ -2490,7 +2491,7 @@ bool LayingWasteToTheUnwantedAlliance(uint32 i, Spell* pSpell)
                 pQuest->SendUpdateAddKill(0);
                 pQuest->UpdatePlayerFields();
 
-                GameObject* pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -157.916f, 2517.71f, 58.5508f, 0, 4, 0, 0, 0, 0);
+                GameObject* pGameobject = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(183816, -157.916f, 2517.71f, 58.5508f, 0, 4);
                 if (pGameobject != nullptr)
                     pGameobject->Despawn(1 * 60 * 1000, 0);
 
@@ -2508,7 +2509,7 @@ bool LayingWasteToTheUnwantedAlliance(uint32 i, Spell* pSpell)
                 pQuest->SendUpdateAddKill(1);
                 pQuest->UpdatePlayerFields();
 
-                GameObject* pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -152.527f, 2661.99f, 60.8123f, 0, 4, 0, 0, 0, 0);
+                GameObject* pGameobject = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(183816, -152.527f, 2661.99f, 60.8123f, 0, 4);
                 if (pGameobject != nullptr)
                     pGameobject->Despawn(1 * 60 * 1000, 0);
 
@@ -2526,7 +2527,7 @@ bool LayingWasteToTheUnwantedAlliance(uint32 i, Spell* pSpell)
                 pQuest->SendUpdateAddKill(2);
                 pQuest->UpdatePlayerFields();
 
-                GameObject* pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -177.916f, 2773.75f, 48.636f, 0, 4, 0, 0, 0, 0);
+                GameObject* pGameobject = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(183816, -177.916f, 2773.75f, 48.636f, 0, 4);
                 if (pGameobject != nullptr)
                     pGameobject->Despawn(1 * 60 * 1000, 0);
 
@@ -2544,7 +2545,7 @@ bool LayingWasteToTheUnwantedAlliance(uint32 i, Spell* pSpell)
                 pQuest->SendUpdateAddKill(3);
                 pQuest->UpdatePlayerFields();
 
-                GameObject* pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -166.0f, 2818.0f, 29.0f, 0, 4, 0, 0, 0, 0);
+                GameObject* pGameobject = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(183816, -166.0f, 2818.0f, 29.0f, 0, 4);
                 if (pGameobject != nullptr)
                     pGameobject->Despawn(1 * 60 * 1000, 0);
 
@@ -2587,7 +2588,7 @@ bool BurnItUp(uint32 i, Spell* pSpell)
             pQuest->SendUpdateAddKill(0);
             pQuest->UpdatePlayerFields();
 
-            GameObject* pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -300.0f, 2407.0f, 50.0f, 0, 4, 0, 0, 0, 0);
+            GameObject* pGameobject = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(183816, -300.0f, 2407.0f, 50.0f, 0, 4);
             if (pGameobject != nullptr)
                 pGameobject->Despawn(1 * 60 * 1000, 0);
 
@@ -2607,7 +2608,7 @@ bool BurnItUp(uint32 i, Spell* pSpell)
             pQuest->SendUpdateAddKill(1);
             pQuest->UpdatePlayerFields();
 
-            GameObject* pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -350.0f, 2708.0f, 35.0f, 0, 4, 0, 0, 0, 0);
+            GameObject* pGameobject = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(183816, -350.0f, 2708.0f, 35.0f, 0, 4);
             if (pGameobject != nullptr)
                 pGameobject->Despawn(1 * 60 * 1000, 0);
 
@@ -2765,7 +2766,10 @@ bool FuryOfTheDreghoodElders(uint32 i, Spell* pSpell)
 
     //pPlayer->BroadcastMessage("blaah");    // Really blizzlike?
 
-    sEAS.SpawnCreature(pPlayer, 20680, pUnit->GetPositionX(), pUnit->GetPositionY(), pUnit->GetPositionZ(), pUnit->GetOrientation(), 5 * 60 * 1000);
+    Creature* elder = pPlayer->GetMapMgr()->CreateAndSpawnCreature(20680, pUnit->GetPositionX(), pUnit->GetPositionY(), pUnit->GetPositionZ(), pUnit->GetOrientation());
+    if (elder != nullptr)
+        elder->Despawn(5 * 60 * 1000, 0);
+
     static_cast<Creature*>(pUnit)->Despawn(0, 3 * 60 * 1000);
     return true;
 }
@@ -2794,7 +2798,7 @@ bool WarIsHell(uint32 i, Spell* pSpell)
         qle->UpdatePlayerFields();
     }
 
-    GameObject* obj = sEAS.SpawnGameobject(plr, 183816, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), 1, 0, 0, 0, 0);
+    GameObject* obj = plr->GetMapMgr()->CreateAndSpawnGameObject(183816, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), 1);
     if (obj != nullptr)
         obj->Despawn(1 * 60 * 1000, 0);
 
@@ -2925,9 +2929,9 @@ bool OrbOfMurlocControl(uint32 i, Spell* pSpell)
             {
                 pQuest->SetMobCount(0, pQuest->GetMobCount(0) + 1);
                 pQuest->SendUpdateAddKill(0);
-                Creature* FreedGreengill = sEAS.SpawnCreature(pPlayer, 25085, pTarget->GetPositionX(),
-                    pTarget->GetPositionY(), pTarget->GetPositionZ(), pTarget->GetOrientation(), 0);
-                FreedGreengill->Despawn(6 * 60 * 1000, 0);
+                Creature* FreedGreengill = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25085, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), pTarget->GetOrientation());
+                if (FreedGreengill != nullptr)
+                    FreedGreengill->Despawn(6 * 60 * 1000, 0);
                 pTarget->Despawn(0, 6 * 60 * 1000);
                 pQuest->UpdatePlayerFields();
                 return true;
@@ -2972,11 +2976,11 @@ bool ShipBombing(uint32 i, Spell* pSpell)
                 qle->SendUpdateAddKill(0);
                 qle->UpdatePlayerFields();
 
-                obj = sEAS.SpawnGameobject(pPlayer, GO_FIRE, 13214.3f, -7059.19f, 17.5717f, 1.58573f, 1, 0, 0, 0, 0);
+                obj = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(GO_FIRE, 13214.3f, -7059.19f, 17.5717f, 1.58573f, 1);
                 if (obj != nullptr)
                     obj->Despawn(2 * 60 * 1000, 0);
 
-                obj = sEAS.SpawnGameobject(pPlayer, GO_FIRE, 13204.2f, -7059.38f, 17.5717f, 1.57787f, 1, 0, 0, 0, 0);
+                obj = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(GO_FIRE, 13204.2f, -7059.38f, 17.5717f, 1.57787f, 1);
                 if (obj != nullptr)
                     obj->Despawn(2 * 60 * 1000, 0);
 
@@ -2993,11 +2997,11 @@ bool ShipBombing(uint32 i, Spell* pSpell)
                 qle->SendUpdateAddKill(1);
                 qle->UpdatePlayerFields();
 
-                obj = sEAS.SpawnGameobject(pPlayer, GO_FIRE, 13329.4f, -6994.70f, 14.5219f, 1.38938f, 1, 0, 0, 0, 0);
+                obj = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(GO_FIRE, 13329.4f, -6994.70f, 14.5219f, 1.38938f, 1);
                 if (obj != nullptr)
                     obj->Despawn(2 * 60 * 1000, 0);
 
-                obj = sEAS.SpawnGameobject(pPlayer, GO_FIRE, 13315.4f, -6990.72f, 14.7647f, 1.25979f, 1, 0, 0, 0, 0);
+                obj = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(GO_FIRE, 13315.4f, -6990.72f, 14.7647f, 1.25979f, 1);
                 if (obj != nullptr)
                     obj->Despawn(2 * 60 * 1000, 0);
 
@@ -3014,11 +3018,11 @@ bool ShipBombing(uint32 i, Spell* pSpell)
                 qle->SendUpdateAddKill(2);
                 qle->UpdatePlayerFields();
 
-                obj = sEAS.SpawnGameobject(pPlayer, GO_FIRE, 13284.1f, -7152.65f, 15.9774f, 1.44828f, 1, 0, 0, 0, 0);
+                obj = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(GO_FIRE, 13284.1f, -7152.65f, 15.9774f, 1.44828f, 1);
                 if (obj != nullptr)
                     obj->Despawn(2 * 60 * 1000, 0);
 
-                obj = sEAS.SpawnGameobject(pPlayer, GO_FIRE, 13273.0f, -7151.21f, 15.9774f, 1.39723f, 1, 0, 0, 0, 0);
+                obj = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(GO_FIRE, 13273.0f, -7151.21f, 15.9774f, 1.39723f, 1);
                 if (obj != nullptr)
                     obj->Despawn(2 * 60 * 1000, 0);
             }
@@ -3135,7 +3139,7 @@ bool StoppingTheSpread(uint32 i, Spell* pSpell)
         qle->SetMobCount(0, qle->GetMobCount(0) + 1);
         qle->SendUpdateAddKill(0);
 
-        GameObject* obj = sEAS.SpawnGameobject(plr, 183816, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), 1, 0, 0, 0, 0);
+        GameObject* obj = plr->GetMapMgr()->CreateAndSpawnGameObject(183816, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), 1);
         if (obj != nullptr)
             obj->Despawn(1 * 30 * 1000, 0);
     }
@@ -3207,7 +3211,7 @@ bool TheFleshLies(uint32 i, Spell* pSpell)
         qle->SetMobCount(0, qle->GetMobCount(0) + 1);
         qle->SendUpdateAddKill(0);
 
-        GameObject* obj = sEAS.SpawnGameobject(plr, 183816, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), 1, 0, 0, 0, 0);
+        GameObject* obj = plr->GetMapMgr()->CreateAndSpawnGameObject(183816, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), 1);
         if (obj != nullptr)
             obj->Despawn(1 * 30 * 1000, 0);
     }
@@ -3330,7 +3334,7 @@ bool Carcass(uint32 i, Spell* pSpell) // Becoming a Shadoweave Tailor
 
     if (FlayerCarcass == nullptr)
     {
-        FlayerCarcass = sEAS.SpawnGameobject(pPlayer, 185155, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 0, 1, 0, 0, 0, 0);
+        FlayerCarcass = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(185155, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 0, 1);
         FlayerCarcass->Despawn(60000, 0);
     }
     if (NetherDrake == nullptr)
@@ -3432,7 +3436,7 @@ bool ShatariTorch(uint32 i, Spell* pSpell)
         qle->SetMobCount(0, qle->GetMobCount(0) + 1);
         qle->SendUpdateAddKill(0);
 
-        obj = sEAS.SpawnGameobject(plr, 183816, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), 1, 0, 0, 0, 0);
+        obj = plr->GetMapMgr()->CreateAndSpawnGameObject(183816, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), 1);
         if (obj != nullptr)
             obj->Despawn(1 * 60 * 1000, 0);
     }
@@ -3444,7 +3448,7 @@ bool ShatariTorch(uint32 i, Spell* pSpell)
         qle->SetMobCount(1, qle->GetMobCount(1) + 1);
         qle->SendUpdateAddKill(1);
 
-        obj = sEAS.SpawnGameobject(plr, 183816, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), 1, 0, 0, 0, 0);
+        obj = plr->GetMapMgr()->CreateAndSpawnGameObject(183816, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), 1);
         if (obj != nullptr)
             obj->Despawn(1 * 60 * 1000, 0);
     }

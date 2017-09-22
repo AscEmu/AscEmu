@@ -29,7 +29,7 @@ public:
 
         if (!spawncheckcr)
         {
-            Creature* general = sEAS.SpawnCreature(mTarget, 7750, -10619, -2997, 28.8f, 4, 0);
+            Creature* general = mTarget->GetMapMgr()->CreateAndSpawnCreature(7750, -10619, -2997, 28.8f, 4);
             general->Despawn(3 * 60 * 1000, 0);
         }
 
@@ -37,7 +37,7 @@ public:
 
         if (!spawncheckgobj)
         {
-            GameObject* generalsbox = sEAS.SpawnGameobject(mTarget, 141980, -10622, -2994, 28.6f, 4, 4, 0, 0, 0, 0);
+            GameObject* generalsbox = mTarget->GetMapMgr()->CreateAndSpawnGameObject(141980, -10622, -2994, 28.6f, 4, 4);
             if (generalsbox != nullptr)
                 generalsbox->Despawn(3 * 60 * 1000, 0);
         }
@@ -80,14 +80,14 @@ public:
                 Creature* spawncheckcr = plr->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), 7750);
                 if (!spawncheckcr)
                 {
-                    general = sEAS.SpawnCreature(plr, 7750, -10619, -2997, 28.8f, 4, 0);
+                    general = plr->GetMapMgr()->CreateAndSpawnCreature(7750, -10619, -2997, 28.8f, 4);
                     general->Despawn(3 * 60 * 1000, 0);
                 }
 
                 GameObject* spawncheckgobj = plr->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), 141980);
                 if (!spawncheckgobj)
                 {
-                    GameObject* generalsbox = sEAS.SpawnGameobject(plr, 141980, -10622, -2994, 28.6f, 4, 4, 0, 0, 0, 0);
+                    GameObject* generalsbox = plr->GetMapMgr()->CreateAndSpawnGameObject(141980, -10622, -2994, 28.6f, 4, 4);
                     if (generalsbox != nullptr)
                         generalsbox->Despawn(3 * 60 * 1000, 0);
                 }

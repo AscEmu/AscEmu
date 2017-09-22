@@ -84,44 +84,6 @@ class SCRIPT_DECL EasyFunctions
             creat->m_custom_waypoint_map->clear();
         }
 
-        Creature* SpawnCreature(Player* pThis, uint32 entry, float posX, float posY, float posZ, float posO, uint32 duration = 0, uint32 phase = 1)
-        {
-            ARCEMU_ASSERT(pThis != NULL);
-            ARCEMU_ASSERT(pThis->IsInWorld());
-
-            CreatureProperties const* p = sMySQLStore.getCreatureProperties(entry);
-            if (p == nullptr)
-                return NULL;
-
-            Creature* pCreature = pThis->GetMapMgr()->CreateCreature(entry);
-            pCreature->m_spawn = 0;
-            pCreature->Load(p, posX, posY, posZ);
-            pCreature->SetOrientation(posO);
-            pCreature->Despawn(duration, 0);
-            pCreature->PushToWorld(pThis->GetMapMgr());
-            pCreature->Phase(PHASE_SET, phase);
-
-            return pCreature;
-        }
-
-        GameObject* SpawnGameobject(Player* plr, uint32 entry_id, float x, float y, float z, float o, float scale, float orientation1, float orientation2, float orientation3, float orientation4)
-        {
-            if (plr == NULL)
-                return NULL;
-
-            auto gameobject_info = sMySQLStore.getGameObjectProperties(entry_id);
-            if (gameobject_info == nullptr)
-                return nullptr;
-
-            GameObject* pC = plr->GetMapMgr()->CreateGameObject(entry_id);
-            pC->m_spawn = 0;
-            pC->CreateFromProto(entry_id, plr->GetMapId(), x, y, z, o, float(orientation1), float(orientation2), float(orientation3), float(orientation4));
-            pC->setFloatValue(OBJECT_FIELD_SCALE_X, (float)scale);
-            pC->PushToWorld(plr->GetMapMgr());
-
-            return pC;
-        }
-
         // creates the storage for custom waypoints. If one already exists, it is cleared.
         void CreateCustomWaypointMap(Creature* creat)
         {

@@ -145,7 +145,7 @@ public:
         if (qle == nullptr)
             return;
 
-        Creature* naga = sEAS.SpawnCreature(pPlayer, 16292, 7938, -7632, 114, 3.05f, 0);
+        Creature* naga = pPlayer->GetMapMgr()->CreateAndSpawnCreature(16292, 7938, -7632, 114, 3.05f);
         naga->Despawn(6 * 60 * 1000, 0);
     }
 };

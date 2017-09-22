@@ -89,9 +89,9 @@ void OntoGoldshireComplete(Player* pPlayer, Object* pObject)
 void ZuluhedtheWhacked(Player* pPlayer, Object* pObject)
 {
     Creature* Zuluhed = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-4206.199219f, 313.5462f, 122.907f, 11980);
-    if(Zuluhed == NULL)
+    if(Zuluhed == nullptr)
     {
-        sEAS.SpawnCreature(pPlayer, 11980, -4206.199219f, 313.5462f, 122.907f, 1.2589f);
+        pPlayer->GetMapMgr()->CreateAndSpawnCreature(11980, -4206.199219f, 313.5462f, 122.907f, 1.2589f);
     }
 }
 //=================================================================================================

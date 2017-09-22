@@ -124,7 +124,7 @@ public:
         if (qle == nullptr)
             return;
 
-        Creature* magneto = sEAS.SpawnCreature(pPlayer, 21729, _gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), 0, 0);
+        Creature* magneto = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21729, _gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), 0);
         if (magneto != nullptr)
         {
             magneto->Despawn(5 * 60 * 1000, 0);
@@ -147,7 +147,7 @@ public:
         if (qle == nullptr)
             return;
 
-        Creature* whelp = sEAS.SpawnCreature(pPlayer, 20021, _gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), 0, 0);
+        Creature* whelp = pPlayer->GetMapMgr()->CreateAndSpawnCreature(20021, _gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), 0);
         if (whelp != nullptr)
         {
             whelp->Despawn(5 * 60 * 1000, 0);
@@ -223,7 +223,9 @@ public:
         {
             if (obelisk1->GetState() == 0 && obelisk2->GetState() == 0 && obelisk3->GetState() == 0 && obelisk4->GetState() == 0 && obelisk5->GetState() == 0)
             {
-                sEAS.SpawnCreature(pPlayer, 19963, 2943.59f, 4779.05f, 284.49f, 1.89f, 60 * 5 * 1000);
+                Creature* ct = pPlayer->GetMapMgr()->CreateAndSpawnCreature(19963, 2943.59f, 4779.05f, 284.49f, 1.89f);
+                if (ct != nullptr)
+                    ct->Despawn(5 * 60 * 1000, 0);
             }
         }
 

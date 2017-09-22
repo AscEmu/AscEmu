@@ -39,7 +39,9 @@ public:
 
         Player* plr = static_cast<Player*>(mKiller);
 
-        sEAS.SpawnCreature(plr, 12144, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 0, 1 * 60 * 1000);
+        Creature* ct = plr->GetMapMgr()->CreateAndSpawnCreature(12144, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 0);
+        if (ct != nullptr)
+            ct->Despawn(1 * 60 * 1000, 0);
     }
 };
 

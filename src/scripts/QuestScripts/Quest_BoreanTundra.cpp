@@ -452,7 +452,7 @@ public:
         if (quest_entry->GetMobCount(0) != 0)
             return;
 
-        Creature* Twonky = sEAS.SpawnCreature(pPlayer, 25830, 4117.513672f, 5089.670898f, -1.506265f, 2.043593f, 0);
+        Creature* Twonky = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25830, 4117.513672f, 5089.670898f, -1.506265f, 2.043593f);
         if (Twonky->isAlive())
             _gameobject->SetState(GO_STATE_OPEN);
         else
@@ -480,7 +480,7 @@ public:
         if (quest_entry->GetMobCount(1) != 0)
             return;
 
-        Creature* Ed210 = sEAS.SpawnCreature(pPlayer, 25831, 4218.529785f, 4802.284668f, -12.975346f, 5.833142f, 0);
+        Creature* Ed210 = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25831, 4218.529785f, 4802.284668f, -12.975346f, 5.833142f);
         if (Ed210->isAlive())
             _gameobject->SetState(GO_STATE_OPEN);
         else
@@ -508,7 +508,7 @@ public:
         if (quest_entry->GetMobCount(2) != 0)
             return;
 
-        Creature* MaxBlasto = sEAS.SpawnCreature(pPlayer, 25832, 4029.974609f, 4890.195313f, -12.775084f, 1.081481f, 0);
+        Creature* MaxBlasto = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25832, 4029.974609f, 4890.195313f, -12.775084f, 1.081481f);
         if (MaxBlasto->isAlive())
             _gameobject->SetState(GO_STATE_OPEN);
         else
@@ -536,7 +536,7 @@ public:
         if (quest_entry->GetMobCount(3) != 0)
             return;
 
-        Creature* TheGrinder = sEAS.SpawnCreature(pPlayer, 25833, 3787.021484f, 4821.941895f, -12.967110f, 5.097224f, 0);
+        Creature* TheGrinder = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25833, 3787.021484f, 4821.941895f, -12.967110f, 5.097224f);
         if (TheGrinder->isAlive())
             _gameobject->SetState(GO_STATE_OPEN);
         else
@@ -570,7 +570,7 @@ public:
             quest_entry->UpdatePlayerFields();
         }
 
-        Creature* GearmasterMechazod = sEAS.SpawnCreature(pPlayer, 25834, 4006.289551f, 4848.437500f, 25.957747f, 2.459837f, 0);
+        Creature* GearmasterMechazod = pPlayer->GetMapMgr()->CreateAndSpawnCreature(25834, 4006.289551f, 4848.437500f, 25.957747f, 2.459837f);
         GearmasterMechazod->SetTargetGUID(pPlayer->GetGUID());
         if (GearmasterMechazod->isAlive())
             _gameobject->SetState(GO_STATE_OPEN);

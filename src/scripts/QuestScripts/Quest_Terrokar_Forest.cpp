@@ -146,7 +146,11 @@ public:
                 break;
         }
 
-        Creature* creat = sEAS.SpawnCreature(plr, spawn, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 1 * 60 * 1000);
+        Creature* creat = plr->GetMapMgr()->CreateAndSpawnCreature(spawn, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 0);
+        if (creat == nullptr)
+            return;
+
+        creat->Despawn(1 * 60 * 1000, 0);
 
         if (spawn != 22459)
             return;

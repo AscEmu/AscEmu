@@ -45,7 +45,7 @@ public:
         Creature* cyclonian = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(323.947f, -1483.68f, 43.1363f, 6239);
         if (cyclonian == nullptr)
         {
-            cyclonian = sEAS.SpawnCreature(pPlayer, 6239, 323.947f, -1483.68f, 43.1363f, 0.682991f);
+            cyclonian = pPlayer->GetMapMgr()->CreateAndSpawnCreature(6239, 323.947f, -1483.68f, 43.1363f, 0.682991f);
 
             // if spawning cyclonian failed, we have to return.
             if (cyclonian == nullptr)

@@ -27,7 +27,9 @@ public:
 
     void OnActivate(Player* p)
     {
-        sEAS.SpawnCreature(p, 20787, p->GetPositionX(), p->GetPositionY(), p->GetPositionZ(), p->GetOrientation(), 2 * 60 * 1000);
+        Creature* creature = p->GetMapMgr()->CreateAndSpawnCreature(20787, p->GetPositionX(), p->GetPositionY(), p->GetPositionZ(), p->GetOrientation());
+        if (creature != nullptr)
+            creature->Despawn(2 * 60 * 1000, 0);
     }
 };
 
@@ -599,7 +601,7 @@ public:
         if (bird != nullptr)
             return;
 
-        bird = sEAS.SpawnCreature(pPlayer, 19055, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 0);
+        bird = pPlayer->GetMapMgr()->CreateAndSpawnCreature(19055, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation());
         if (bird != nullptr)
             bird->Despawn(5 * 60 * 1000, 0);
     }
@@ -650,7 +652,7 @@ public:
             GameObject* go = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 177491);
             if (go == nullptr)
             {
-                GameObject* barel = sEAS.SpawnGameobject(pPlayer, 177491, 2449.51f, -1662.32f, 104.38f, 1.0f, 1, 0, 0, 0, 0);
+                GameObject* barel = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(177491, 2449.51f, -1662.32f, 104.38f, 1.0f, 1);
                 if (barel != nullptr)
                     barel->Despawn(2 * 60 * 1000, 0);
             }
@@ -672,7 +674,7 @@ public:
         if (qle == nullptr)
             return;
 
-        Creature* naga = sEAS.SpawnCreature(pPlayer, 12369, 246.741f, 2953.3f, 5.8631f, 1.078f, 0);
+        Creature* naga = pPlayer->GetMapMgr()->CreateAndSpawnCreature(12369, 246.741f, 2953.3f, 5.8631f, 1.078f);
         if (naga != nullptr)
             naga->Despawn(6 * 60 * 1000, 0);
     }
@@ -692,27 +694,27 @@ public:
         if (qle == nullptr)
             return;
 
-        Creature* pirate = sEAS.SpawnCreature(pPlayer, 7899, pPlayer->GetPositionX() + RandomFloat(5.0f), pPlayer->GetPositionY() + RandomFloat(5.0f), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 0);
+        Creature* pirate = pPlayer->GetMapMgr()->CreateAndSpawnCreature(7899, pPlayer->GetPositionX() + RandomFloat(5.0f), pPlayer->GetPositionY() + RandomFloat(5.0f), pPlayer->GetPositionZ(), pPlayer->GetOrientation());
         if (pirate != nullptr)
             pirate->Despawn(6 * 60 * 1000, 0);
 
-        pirate = sEAS.SpawnCreature(pPlayer, 7899, pPlayer->GetPositionX() - RandomFloat(5.0f), pPlayer->GetPositionY() + RandomFloat(5.0f), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 0);
+        pirate = pPlayer->GetMapMgr()->CreateAndSpawnCreature(7899, pPlayer->GetPositionX() - RandomFloat(5.0f), pPlayer->GetPositionY() + RandomFloat(5.0f), pPlayer->GetPositionZ(), pPlayer->GetOrientation());
         if (pirate != nullptr)
             pirate->Despawn(6 * 60 * 1000, 0);
 
-        pirate = sEAS.SpawnCreature(pPlayer, 7901, pPlayer->GetPositionX() + RandomFloat(5.0f), pPlayer->GetPositionY() - RandomFloat(5.0f), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 0);
+        pirate = pPlayer->GetMapMgr()->CreateAndSpawnCreature(7901, pPlayer->GetPositionX() + RandomFloat(5.0f), pPlayer->GetPositionY() - RandomFloat(5.0f), pPlayer->GetPositionZ(), pPlayer->GetOrientation());
         if (pirate != nullptr)
             pirate->Despawn(6 * 60 * 1000, 0);
 
-        pirate = sEAS.SpawnCreature(pPlayer, 7901, pPlayer->GetPositionX() + RandomFloat(5.0f), pPlayer->GetPositionY() + RandomFloat(5.0f), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 0);
+        pirate = pPlayer->GetMapMgr()->CreateAndSpawnCreature(7901, pPlayer->GetPositionX() + RandomFloat(5.0f), pPlayer->GetPositionY() + RandomFloat(5.0f), pPlayer->GetPositionZ(), pPlayer->GetOrientation());
         if (pirate != nullptr)
             pirate->Despawn(6 * 60 * 1000, 0);
 
-        pirate = sEAS.SpawnCreature(pPlayer, 7902, pPlayer->GetPositionX() - RandomFloat(5.0f), pPlayer->GetPositionY() - RandomFloat(5.0f), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 0);
+        pirate = pPlayer->GetMapMgr()->CreateAndSpawnCreature(7902, pPlayer->GetPositionX() - RandomFloat(5.0f), pPlayer->GetPositionY() - RandomFloat(5.0f), pPlayer->GetPositionZ(), pPlayer->GetOrientation());
         if (pirate != nullptr)
             pirate->Despawn(6 * 60 * 1000, 0);
 
-        GameObject* gobj = sEAS.SpawnGameobject(pPlayer, 142194, pPlayer->GetPositionX() + 5, pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 1, 0, 0, 0, 0);
+        GameObject* gobj = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(142194, pPlayer->GetPositionX() + 5, pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 1);
         if (gobj != nullptr)
             gobj->Despawn(10 * 60 * 1000, 0);
     }
@@ -736,7 +738,7 @@ public:
         if (shaghost)
             return;
 
-        Creature* shaghostspawn = sEAS.SpawnCreature(pPlayer, 9136, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 0);
+        Creature* shaghostspawn = pPlayer->GetMapMgr()->CreateAndSpawnCreature(9136, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation());
         if (shaghostspawn != nullptr)
             shaghostspawn->Despawn(2 * 60 * 1000, 0);
     }
@@ -756,7 +758,7 @@ public:
         if (qle == nullptr)
             return;
 
-        Creature* demon = sEAS.SpawnCreature(pPlayer, 11876, -348.231f, 1763.85f, 138.371f, 4.42728f, 0);
+        Creature* demon = pPlayer->GetMapMgr()->CreateAndSpawnCreature(11876, -348.231f, 1763.85f, 138.371f, 4.42728f);
         if (demon != nullptr)
             demon->Despawn(6 * 60 * 1000, 0);
     }
@@ -829,7 +831,7 @@ public:
         if (qle == nullptr)
             return;
 
-        Creature* razormaw = sEAS.SpawnCreature(pPlayer, 17592, -1203.8f, -12424.7f, 95.36f, 4.7f, 0);
+        Creature* razormaw = pPlayer->GetMapMgr()->CreateAndSpawnCreature(17592, -1203.8f, -12424.7f, 95.36f, 4.7f);
         if (razormaw != nullptr)
             razormaw->Despawn(6 * 60 * 1000, 0);
     }
@@ -877,7 +879,7 @@ public:
                 return;
         }
 
-        Creature* grenkaspawn = sEAS.SpawnCreature(pPlayer, 4490, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 0);
+        Creature* grenkaspawn = pPlayer->GetMapMgr()->CreateAndSpawnCreature(4490, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation());
         if (grenkaspawn != nullptr)
             grenkaspawn->Despawn(6 * 60 * 1000, 0);
     }
@@ -897,7 +899,7 @@ public:
         if (qle == nullptr)
             return;
 
-        Creature* exarch = sEAS.SpawnCreature(pPlayer, 22452, -3365.9f, 5143.19f, -9.00132f, 3.05f, 0);
+        Creature* exarch = pPlayer->GetMapMgr()->CreateAndSpawnCreature(22452, -3365.9f, 5143.19f, -9.00132f, 3.05f);
         if (exarch != nullptr)
             exarch->Despawn(6 * 60 * 1000, 0);
     }
@@ -940,11 +942,9 @@ public:
         if (qle == nullptr)
             return;
 
-        Creature* xandivious = sEAS.SpawnCreature(pPlayer, 15623, pPlayer->GetPositionX() + 5, pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 0);
+        Creature* xandivious = pPlayer->GetMapMgr()->CreateAndSpawnCreature(15623, pPlayer->GetPositionX() + 5, pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation());
         if (xandivious != nullptr)
-        {
             xandivious->Despawn(6 * 60 * 1000, 0);
-        }
     }
 };
 
@@ -965,8 +965,9 @@ public:
         if (gobj != nullptr)
             gobj->Despawn(6 * 60 * 1000, 0);
 
-        Creature* spike = sEAS.SpawnCreature(pPlayer, 21319, 1315.54f, 6688.33f, -18, 0.001f, 0);
-        spike->Despawn(5 * 60 * 1000, 0);
+        Creature* spike = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21319, 1315.54f, 6688.33f, -18, 0.001f);
+        if (spike != nullptr)
+            spike->Despawn(5 * 60 * 1000, 0);
     }
 };
 
@@ -1026,7 +1027,7 @@ public:
     void OnActivate(Player* pPlayer)
     {
         if (pPlayer->GetMapMgr()->iInstanceMode == MODE_HEROIC)
-            sEAS.SpawnCreature(pPlayer, 23035, -87.3546f, 288.006f, 26.4832f, 0, 0);
+            pPlayer->GetMapMgr()->CreateAndSpawnCreature(23035, -87.3546f, 288.006f, 26.4832f, 0);
     }
 };
 
