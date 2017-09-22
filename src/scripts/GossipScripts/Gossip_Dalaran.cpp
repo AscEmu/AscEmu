@@ -52,9 +52,8 @@ public:
  class DedicationOfHonorAI : public GameObjectAIScript
 {
     public:
-        ADD_GAMEOBJECT_FACTORY_FUNCTION(DedicationOfHonorAI)
-        DedicationOfHonorAI(GameObject* go) : GameObjectAIScript(go){}
-        ~DedicationOfHonorAI() {}
+        DedicationOfHonorAI(GameObject* go) : GameObjectAIScript(go) {}
+        static GameObjectAIScript* Create(GameObject* GO) { return new DedicationOfHonorAI(GO); };
 
         void OnActivate(Player* player)
         {
