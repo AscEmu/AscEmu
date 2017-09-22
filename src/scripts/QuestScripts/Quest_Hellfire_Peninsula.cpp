@@ -102,10 +102,8 @@ public:
                     pQuest->UpdatePlayerFields();
 
                     GameObject* pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -819.77f, 2029.09f, 55.6082f, 0, 4, 0, 0, 0, 0);
-                    if (pGameobject != NULL)
-                    {
-                        sEAS.GameobjectDelete(pGameobject, 1 * 60 * 1000);
-                    }
+                    if (pGameobject != nullptr)
+                        pGameobject->Despawn(1 * 60 * 1000, 0);
 
                     return;
                 }
@@ -122,10 +120,8 @@ public:
                     pQuest->UpdatePlayerFields();
 
                     GameObject* pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -1150.53f, 2109.92f, 84.4204f, 0, 4, 0, 0, 0, 0);
-                    if (pGameobject != NULL)
-                    {
-                        sEAS.GameobjectDelete(pGameobject, 1 * 60 * 1000);
-                    }
+                    if (pGameobject != nullptr)
+                        pGameobject->Despawn(1 * 60 * 1000, 0);
 
                     return;
                 }
@@ -142,10 +138,8 @@ public:
                     pQuest->UpdatePlayerFields();
 
                     GameObject* pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -893.499f, 1919.27f, 81.6449f, 0, 4, 0, 0, 0, 0);
-                    if (pGameobject != NULL)
-                    {
-                        sEAS.GameobjectDelete(pGameobject, 1 * 60 * 1000);
-                    }
+                    if (pGameobject != nullptr)
+                        pGameobject->Despawn(1 * 60 * 1000, 0);
 
                     return;
                 }
@@ -162,10 +156,8 @@ public:
                     pQuest->UpdatePlayerFields();
 
                     GameObject* pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -977.713f, 1879.500f, 110.892f, 0, 4, 0, 0, 0, 0);
-                    if (pGameobject != NULL)
-                    {
-                        sEAS.GameobjectDelete(pGameobject, 1 * 60 * 1000);
-                    }
+                    if (pGameobject != nullptr)
+                        pGameobject->Despawn(1 * 60 * 1000, 0);
 
                     return;
                 }

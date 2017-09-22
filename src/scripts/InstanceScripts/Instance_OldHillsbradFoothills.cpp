@@ -160,11 +160,11 @@ public:
             qle->UpdatePlayerFields();
         };
 
-        GameObject* pGO = NULL;
-        for (uint8 i = 0; i < 21; i++)
+        for (uint8 i = 0; i < 21; ++i)
         {
-            pGO = SpawnGameObject(GO_FIRE, Fires[i].x, Fires[i].y, Fires[i].z, Fires[i].o);
-            sEAS.GameobjectDelete(pGO, 10 * 60 * 1000);
+            GameObject* pGO = SpawnGameObject(GO_FIRE, Fires[i].x, Fires[i].y, Fires[i].z, Fires[i].o);
+            if (pGO != nullptr)
+                pGO->Despawn(10 * 60 * 1000, 0);
         }
 
         SpawnCreature(CN_LIEUTENANT_DRAKE, 2118.310303f, 89.565969f, 52.453037f, 2.027089f);

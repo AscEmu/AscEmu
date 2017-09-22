@@ -135,9 +135,7 @@ bool LayWreath(uint32 i, Spell* pSpell)  //Peace at Last quest
 
     GameObject* pWreath = sEAS.SpawnGameobject(pPlayer, 501541, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 1, 0, 0, 0, 0);
     if (pWreath != nullptr)
-    {
-        sEAS.GameobjectDelete(pWreath, 2 * 60 * 1000);
-    }
+        pWreath->Despawn(2 * 60 * 1000, 0);
 
     pQuest->SetMobCount(0, 1);
     pQuest->SendUpdateAddKill(0);
@@ -660,7 +658,8 @@ bool TheBaitforLarkorwi1(uint32 i, Spell* pSpell)
     }
 
     GameObject* obj = sEAS.SpawnGameobject(pPlayer, 169216, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 1, 0, 0, 0, 0);
-    sEAS.GameobjectDelete(obj, 1 * 60 * 1000);
+    if (obj != nullptr)
+        obj->Despawn(1 * 60 * 1000, 0);
 
     return true;
 }
@@ -2165,7 +2164,7 @@ bool NeutralizingTheCauldrons(uint32 i, Spell* pSpell)
         return true;
 
     Player* pPlayer = pSpell->p_caster;
-    QuestLogEntry* pQuest = sEAS.GetQuest(pPlayer, 11647);
+    QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(11647);
     if (pQuest == nullptr)
         return true;
 
@@ -2176,13 +2175,13 @@ bool NeutralizingTheCauldrons(uint32 i, Spell* pSpell)
     float posX = pCauldron->GetPositionX();
 
     if (posX == 3747.07f)
-        sEAS.KillMobForQuest(pPlayer, pQuest, 0);
+        sEAS.KillMobForQuest(pPlayer, 11647, 0);
 
     if (posX == 4023.5f)
-        sEAS.KillMobForQuest(pPlayer, pQuest, 1);
+        sEAS.KillMobForQuest(pPlayer, 11647, 1);
 
     if (posX == 4126.12f)
-        sEAS.KillMobForQuest(pPlayer, pQuest, 2);
+        sEAS.KillMobForQuest(pPlayer, 11647, 2);
 
     return true;
 }
@@ -2194,11 +2193,11 @@ bool HighmessasCleansingSeeds(uint32 i, Spell* pSpell)
         return true;
 
     Player* pPlayer = pSpell->p_caster;
-    QuestLogEntry* pQuest = sEAS.GetQuest(pPlayer, 11677);
+    QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(11677);
     if (!pQuest)
         return true;
 
-    sEAS.KillMobForQuest(pPlayer, pQuest, 0);
+    sEAS.KillMobForQuest(pPlayer, 11677, 0);
     return true;
 }
 
@@ -2209,7 +2208,7 @@ bool BixiesInhibitingPowder(uint32 i, Spell* pSpell)
         return true;
 
     Player* pPlayer = pSpell->p_caster;
-    QuestLogEntry* pQuest = sEAS.GetQuest(pPlayer, 11694);
+    QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(11694);
     if (!pQuest)
         return true;
 
@@ -2224,7 +2223,7 @@ bool CompleteAncestorRitual(uint32 i, Spell* pSpell)
         return true;
 
     Player* pPlayer = pSpell->p_caster;
-    QuestLogEntry* pQuest = sEAS.GetQuest(pPlayer, 11610);
+    QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(11610);
     if (!pQuest)
         return true;
 
@@ -2322,39 +2321,27 @@ bool ZethGorMustBurnHorde(uint32 i, Spell* pSpell)
 
                 GameObject* pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -1129.08f, 1921.77f, 94.0074f, 0, 4, 0, 0, 0, 0);
                 if (pGameobject != nullptr)
-                {
-                    sEAS.GameobjectDelete(pGameobject, 1 * 60 * 1000);
-                }
+                    pGameobject->Despawn(1 * 60 * 1000, 0);
 
                 pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -1135.00f, 1944.05f, 84.7084f, 0, 4, 0, 0, 0, 0);
                 if (pGameobject != nullptr)
-                {
-                    sEAS.GameobjectDelete(pGameobject, 1 * 60 * 1000);
-                }
+                    pGameobject->Despawn(1 * 60 * 1000, 0);
 
                 pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -1152.01f, 1945.00f, 102.901f, 0, 4, 0, 0, 0, 0);
                 if (pGameobject != nullptr)
-                {
-                    sEAS.GameobjectDelete(pGameobject, 1 * 60 * 1000);
-                }
+                    pGameobject->Despawn(1 * 60 * 1000, 0);
 
                 pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -1159.60f, 1958.76f, 83.0412f, 0, 4, 0, 0, 0, 0);
                 if (pGameobject != nullptr)
-                {
-                    sEAS.GameobjectDelete(pGameobject, 1 * 60 * 1000);
-                }
+                    pGameobject->Despawn(1 * 60 * 1000, 0);
 
                 pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -1126.17f, 1880.96f, 95.065f, 0, 4, 0, 0, 0, 0);
                 if (pGameobject != nullptr)
-                {
-                    sEAS.GameobjectDelete(pGameobject, 1 * 60 * 1000);
-                }
+                    pGameobject->Despawn(1 * 60 * 1000, 0);
 
                 pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -1185.79f, 1968.29f, 90.931f, 0, 4, 0, 0, 0, 0);
                 if (pGameobject != nullptr)
-                {
-                    sEAS.GameobjectDelete(pGameobject, 1 * 60 * 1000);
-                }
+                    pGameobject->Despawn(1 * 60 * 1000, 0);
 
                 return true;
             }
@@ -2372,9 +2359,7 @@ bool ZethGorMustBurnHorde(uint32 i, Spell* pSpell)
 
                 GameObject* pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -938.034f, 1924.153f, 73.590f, 0, 4, 0, 0, 0, 0);
                 if (pGameobject != nullptr)
-                {
-                    sEAS.GameobjectDelete(pGameobject, 1 * 60 * 1000);
-                }
+                    pGameobject->Despawn(1 * 60 * 1000, 0);
 
                 return true;
             }
@@ -2392,9 +2377,7 @@ bool ZethGorMustBurnHorde(uint32 i, Spell* pSpell)
 
                 GameObject* pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -1152.10f, 2066.20f, 72.959f, 0, 4, 0, 0, 0, 0);
                 if (pGameobject != nullptr)
-                {
-                    sEAS.GameobjectDelete(pGameobject, 1 * 60 * 1000);
-                }
+                    pGameobject->Despawn(1 * 60 * 1000, 0);
 
                 return true;
             }
@@ -2412,9 +2395,7 @@ bool ZethGorMustBurnHorde(uint32 i, Spell* pSpell)
 
                 GameObject* pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -1058.85f, 2010.95f, 68.776f, 0, 4, 0, 0, 0, 0);
                 if (pGameobject != nullptr)
-                {
-                    sEAS.GameobjectDelete(pGameobject, 1 * 60 * 1000);
-                }
+                    pGameobject->Despawn(1 * 60 * 1000, 0);
 
                 return true;
             }
@@ -2452,9 +2433,7 @@ bool LayingWasteToTheUnwantedAlliance(uint32 i, Spell* pSpell)
 
                 GameObject* pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -157.916f, 2517.71f, 58.5508f, 0, 4, 0, 0, 0, 0);
                 if (pGameobject != nullptr)
-                {
-                    sEAS.GameobjectDelete(pGameobject, 1 * 60 * 1000);
-                }
+                    pGameobject->Despawn(1 * 60 * 1000, 0);
 
                 return true;
             }
@@ -2472,9 +2451,7 @@ bool LayingWasteToTheUnwantedAlliance(uint32 i, Spell* pSpell)
 
                 GameObject* pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -152.527f, 2661.99f, 60.8123f, 0, 4, 0, 0, 0, 0);
                 if (pGameobject != nullptr)
-                {
-                    sEAS.GameobjectDelete(pGameobject, 1 * 60 * 1000);
-                }
+                    pGameobject->Despawn(1 * 60 * 1000, 0);
 
                 return true;
             }
@@ -2492,9 +2469,7 @@ bool LayingWasteToTheUnwantedAlliance(uint32 i, Spell* pSpell)
 
                 GameObject* pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -177.916f, 2773.75f, 48.636f, 0, 4, 0, 0, 0, 0);
                 if (pGameobject != nullptr)
-                {
-                    sEAS.GameobjectDelete(pGameobject, 1 * 60 * 1000);
-                }
+                    pGameobject->Despawn(1 * 60 * 1000, 0);
 
                 return true;
             }
@@ -2512,9 +2487,7 @@ bool LayingWasteToTheUnwantedAlliance(uint32 i, Spell* pSpell)
 
                 GameObject* pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -166.0f, 2818.0f, 29.0f, 0, 4, 0, 0, 0, 0);
                 if (pGameobject != nullptr)
-                {
-                    sEAS.GameobjectDelete(pGameobject, 1 * 60 * 1000);
-                }
+                    pGameobject->Despawn(1 * 60 * 1000, 0);
 
                 return true;
             }
@@ -2557,9 +2530,7 @@ bool BurnItUp(uint32 i, Spell* pSpell)
 
             GameObject* pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -300.0f, 2407.0f, 50.0f, 0, 4, 0, 0, 0, 0);
             if (pGameobject != nullptr)
-            {
-                sEAS.GameobjectDelete(pGameobject, 1 * 60 * 1000);
-            }
+                pGameobject->Despawn(1 * 60 * 1000, 0);
 
             return true;
         }
@@ -2579,9 +2550,7 @@ bool BurnItUp(uint32 i, Spell* pSpell)
 
             GameObject* pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -350.0f, 2708.0f, 35.0f, 0, 4, 0, 0, 0, 0);
             if (pGameobject != nullptr)
-            {
-                sEAS.GameobjectDelete(pGameobject, 1 * 60 * 1000);
-            }
+                pGameobject->Despawn(1 * 60 * 1000, 0);
 
             return true;
         }
@@ -2759,10 +2728,11 @@ bool WarIsHell(uint32 i, Spell* pSpell)
     if (qle == nullptr)
         return true;
 
-    sEAS.KillMobForQuest(plr, qle, 0);
+    sEAS.KillMobForQuest(plr, 11270, 0);
 
     GameObject* obj = sEAS.SpawnGameobject(plr, 183816, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), 1, 0, 0, 0, 0);
-    sEAS.GameobjectDelete(obj, 1 * 30 * 1000);
+    if (obj != nullptr)
+        obj->Despawn(1 * 60 * 1000, 0);
 
     target->Despawn(2000, 60 * 1000);
     plr->UpdateNearbyGameObjects();
@@ -2915,10 +2885,12 @@ bool ShipBombing(uint32 i, Spell* pSpell)
                 qle->UpdatePlayerFields();
 
                 obj = sEAS.SpawnGameobject(pPlayer, GO_FIRE, 13214.3f, -7059.19f, 17.5717f, 1.58573f, 1, 0, 0, 0, 0);
-                sEAS.GameobjectDelete(obj, 2 * 60 * 1000);
+                if (obj != nullptr)
+                    obj->Despawn(2 * 60 * 1000, 0);
 
                 obj = sEAS.SpawnGameobject(pPlayer, GO_FIRE, 13204.2f, -7059.38f, 17.5717f, 1.57787f, 1, 0, 0, 0, 0);
-                sEAS.GameobjectDelete(obj, 2 * 60 * 1000);
+                if (obj != nullptr)
+                    obj->Despawn(2 * 60 * 1000, 0);
 
             }
         }
@@ -2934,10 +2906,12 @@ bool ShipBombing(uint32 i, Spell* pSpell)
                 qle->UpdatePlayerFields();
 
                 obj = sEAS.SpawnGameobject(pPlayer, GO_FIRE, 13329.4f, -6994.70f, 14.5219f, 1.38938f, 1, 0, 0, 0, 0);
-                sEAS.GameobjectDelete(obj, 2 * 60 * 1000);
+                if (obj != nullptr)
+                    obj->Despawn(2 * 60 * 1000, 0);
 
                 obj = sEAS.SpawnGameobject(pPlayer, GO_FIRE, 13315.4f, -6990.72f, 14.7647f, 1.25979f, 1, 0, 0, 0, 0);
-                sEAS.GameobjectDelete(obj, 2 * 60 * 1000);
+                if (obj != nullptr)
+                    obj->Despawn(2 * 60 * 1000, 0);
 
             }
         }
@@ -2953,11 +2927,12 @@ bool ShipBombing(uint32 i, Spell* pSpell)
                 qle->UpdatePlayerFields();
 
                 obj = sEAS.SpawnGameobject(pPlayer, GO_FIRE, 13284.1f, -7152.65f, 15.9774f, 1.44828f, 1, 0, 0, 0, 0);
-                sEAS.GameobjectDelete(obj, 2 * 60 * 1000);
+                if (obj != nullptr)
+                    obj->Despawn(2 * 60 * 1000, 0);
 
                 obj = sEAS.SpawnGameobject(pPlayer, GO_FIRE, 13273.0f, -7151.21f, 15.9774f, 1.39723f, 1, 0, 0, 0, 0);
-                sEAS.GameobjectDelete(obj, 2 * 60 * 1000);
-
+                if (obj != nullptr)
+                    obj->Despawn(2 * 60 * 1000, 0);
             }
         }
     }
@@ -3073,7 +3048,8 @@ bool StoppingTheSpread(uint32 i, Spell* pSpell)
         qle->SendUpdateAddKill(0);
 
         GameObject* obj = sEAS.SpawnGameobject(plr, 183816, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), 1, 0, 0, 0, 0);
-        sEAS.GameobjectDelete(obj, 1 * 30 * 1000);
+        if (obj != nullptr)
+            obj->Despawn(1 * 30 * 1000, 0);
     };
 
     target->Despawn(2000, 60 * 1000);
@@ -3144,7 +3120,8 @@ bool TheFleshLies(uint32 i, Spell* pSpell)
         qle->SendUpdateAddKill(0);
 
         GameObject* obj = sEAS.SpawnGameobject(plr, 183816, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), 1, 0, 0, 0, 0);
-        sEAS.GameobjectDelete(obj, 1 * 30 * 1000);
+        if (obj != nullptr)
+            obj->Despawn(1 * 30 * 1000, 0);
     }
     target->Despawn(2000, 60 * 1000);
     plr->UpdateNearbyGameObjects();
@@ -3368,7 +3345,8 @@ bool ShatariTorch(uint32 i, Spell* pSpell)
         qle->SendUpdateAddKill(0);
 
         obj = sEAS.SpawnGameobject(plr, 183816, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), 1, 0, 0, 0, 0);
-        sEAS.GameobjectDelete(obj, 1 * 60 * 1000);
+        if (obj != nullptr)
+            obj->Despawn(1 * 60 * 1000, 0);
     }
     else if (target->GetEntry() == 21846)
     {
@@ -3379,7 +3357,8 @@ bool ShatariTorch(uint32 i, Spell* pSpell)
         qle->SendUpdateAddKill(1);
 
         obj = sEAS.SpawnGameobject(plr, 183816, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), 1, 0, 0, 0, 0);
-        sEAS.GameobjectDelete(obj, 1 * 60 * 1000);
+        if (obj != nullptr)
+            obj->Despawn(1 * 60 * 1000, 0);
     }
     else
         return true;

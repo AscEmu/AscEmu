@@ -30,7 +30,7 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        if (sEAS.GetQuest(pPlayer, 11965))
+        if (pPlayer->GetQuestLogForEntry(11965))
             sEAS.KillMobForQuest(pPlayer, 11965, 0);
     }
 };
@@ -45,7 +45,7 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        if (sEAS.GetQuest(pPlayer, 11900))
+        if (pPlayer->GetQuestLogForEntry(11900))
             sEAS.KillMobForQuest(pPlayer, 11900, 0);
     }
 };
@@ -59,7 +59,7 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        if (sEAS.GetQuest(pPlayer, 11900))
+        if (pPlayer->GetQuestLogForEntry(11900))
             sEAS.KillMobForQuest(pPlayer, 11900, 1);
     }
 };
@@ -73,7 +73,7 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        if (sEAS.GetQuest(pPlayer, 11900))
+        if (pPlayer->GetQuestLogForEntry(11900))
             sEAS.KillMobForQuest(pPlayer, 11900, 2);
     }
 };
@@ -87,7 +87,7 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        if (sEAS.GetQuest(pPlayer, 11900))
+        if (pPlayer->GetQuestLogForEntry(11900))
             sEAS.KillMobForQuest(pPlayer, 11900, 3);
     }
 };
@@ -117,7 +117,7 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        if (sEAS.GetQuest(pPlayer, 11602))
+        if (!pPlayer->GetQuestLogForEntry(11602))
             return;
 
         sEAS.KillMobForQuest(pPlayer, 11602, 0);
@@ -190,7 +190,7 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        if (!sEAS.GetQuest(pPlayer, 11936))
+        if (!pPlayer->GetQuestLogForEntry(11936))
             return;
 
         sEAS.KillMobForQuest(pPlayer, 11936, 0);
@@ -631,7 +631,7 @@ bool PlaceCart(uint32 i, Spell* pSpell)
             pCreature->CastSpell(pCreature, 46800, true);
         }
 
-        if (sEAS.GetQuest(pPlayer, 11897))
+        if (pPlayer->GetQuestLogForEntry(11897))
             sEAS.KillMobForQuest(pPlayer, 11897, 2);
     }
 
@@ -644,7 +644,7 @@ bool PlaceCart(uint32 i, Spell* pSpell)
             pCreature->CastSpell(pCreature, 46800, true);
         }
 
-        if (sEAS.GetQuest(pPlayer, 11897))
+        if (pPlayer->GetQuestLogForEntry(11897))
             sEAS.KillMobForQuest(pPlayer, 11897, 1);
     }
 

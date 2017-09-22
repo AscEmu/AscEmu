@@ -28,13 +28,6 @@
 #include "Map/MapMgr.h"
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
-
-// Uncomment if you want debug texts
-// #define ENABLE_DEBUG_TEXT
-
-
-#define CREATE_GAMEOBJECT_SCRIPT(cl) &cl::Create
-#define CREATE_CREATURESCRIPT(cl) &cl::Create
 #include <Management/QuestLogEntry.hpp>
 #include "Map/MapScriptInterface.h"
 #include <Spell/Customization/SpellCustomizations.hpp>
@@ -49,25 +42,10 @@ class SCRIPT_DECL EasyFunctions
             return easy_singleton;
         }
 
-        void PrintMessage(const char* text, ...)
-        {
-#ifdef ENABLE_DEBUG_TEXT
-            va_list arg;
-            va_start(arg, text);
-
-            printf("[EAS] ");
-            vprintf(text, arg);
-            putc('\n', stdout);
-
-            va_end(arg);
-#endif
-        }
-
         // creates a waypoint and adds it to to the creatures custom waypoints.
         // LEGACY
         void WaypointCreate(Creature* pCreature, float x, float y, float z, float o, uint32 waittime, uint32 flags, uint32 modelid)
         {
-            PrintMessage("Function call: WaypointCreate()");
             ARCEMU_ASSERT(pCreature != NULL);
 
             if (!pCreature->m_custom_waypoint_map)
@@ -90,7 +68,6 @@ class SCRIPT_DECL EasyFunctions
         // deletes all custom waypoint objects the creature has.
         void DeleteWaypoints(Creature* creat)
         {
-            PrintMessage("Function call: DeleteWaypoints()");
             ARCEMU_ASSERT(creat != NULL);
 
             if (creat->m_custom_waypoint_map == NULL)
@@ -109,7 +86,6 @@ class SCRIPT_DECL EasyFunctions
 
         Creature* SpawnCreature(Player* pThis, uint32 entry, float posX, float posY, float posZ, float posO, uint32 duration = 0, uint32 phase = 1)
         {
-            PrintMessage("Function call: SpawnCreature()");
             ARCEMU_ASSERT(pThis != NULL);
             ARCEMU_ASSERT(pThis->IsInWorld());
 
@@ -128,20 +104,9 @@ class SCRIPT_DECL EasyFunctions
             return pCreature;
         }
 
-        void DeleteSpawned(Creature* creat)
-        {
-            PrintMessage("Function call: DeleteSpawned()");
-            if (creat == NULL)
-                return;
-
-            creat->DeleteMe();
-        }
-
         Creature* SpawnCreatureExtended(Player* pThis, uint32 entry, float posX, float posY, float posZ, float posO, uint32 faction,
                                         uint32 duration, bool dis_comb = false, bool dis_mel = false, bool dis_target = false)
         {
-            PrintMessage("Function call: SpawnCreatureExtended()");
-
             if (pThis == NULL)
                 return NULL;
 
@@ -164,18 +129,8 @@ class SCRIPT_DECL EasyFunctions
             return pCreature;
         }
 
-        void GameobjectDelete(GameObject* pC, uint32 duration)
-        {
-            PrintMessage("Function call: GameobjectDelete()");
-            if (pC == NULL)
-                return;
-
-            pC->Despawn(duration, 0);
-        }
-
         GameObject* SpawnGameobject(Player* plr, uint32 entry_id, float x, float y, float z, float o, float scale, float orientation1, float orientation2, float orientation3, float orientation4)
         {
-            PrintMessage("Function call: SpawnGameobject()");
             if (plr == NULL)
                 return NULL;
 
@@ -195,7 +150,6 @@ class SCRIPT_DECL EasyFunctions
 
         void MoveToPlayer(Player* plr, Creature* creat)
         {
-            PrintMessage("Function call: MoveToPlayer()");
             if (plr == NULL)
                 return;
 
@@ -208,7 +162,6 @@ class SCRIPT_DECL EasyFunctions
         // creates the storage for custom waypoints. If one already exists, it is cleared.
         void CreateCustomWaypointMap(Creature* creat)
         {
-            PrintMessage("Function call: CreateCustomWaypointMap()");
             ARCEMU_ASSERT(creat != NULL);
 
             if (creat->m_custom_waypoint_map == NULL)
@@ -223,7 +176,6 @@ class SCRIPT_DECL EasyFunctions
 
         bool AddItem(uint32 pEntry, Player* pPlayer, uint32 pCount = 1)
         {
-            PrintMessage("Function call: AddItem(%u)", pEntry);
             if (pPlayer == NULL || pEntry == 0 || pCount == 0)
                 return false;
 
@@ -272,66 +224,10 @@ class SCRIPT_DECL EasyFunctions
             return false;
         };
 
-        void EventCreatureDelete(Creature* creat, uint32 time)  // Creature and time in ms
-        {
-            sEventMgr.AddEvent(creat, &Creature::DeleteMe, EVENT_CREATURE_SAFE_DELETE, time, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-        }
-
         void EventCastSpell(Unit* caster, Unit* target, uint32 spellid, uint32 time)
         {
             sEventMgr.AddEvent(static_cast<Unit*>(caster), &Unit::EventCastSpell, static_cast<Unit*>(target), sSpellCustomizations.GetSpellInfo(spellid), EVENT_UNK, time, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         }
-
-        void EventPlaySound(Creature* creat, uint32 id, uint32 time)
-        {
-            sEventMgr.AddEvent(static_cast<Object*>(creat), &Object::PlaySoundToSet, id, EVENT_UNK, time, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-        }
-
-        void EventCreatureSay(Creature* creat, std::string say, uint32 time)
-        {
-            creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str(), time);
-        }
-
-        void EventCreatureYell(Creature* creat, std::string say, uint32 time)
-        {
-            creat->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, say.c_str(), time);
-        }
-
-        Creature* getNpcQuester(Player* plr, uint32 npcid)
-        {
-            if (plr == NULL || plr->GetMapMgr() == NULL || plr->GetMapMgr()->GetInterface() == NULL)
-                return NULL;
-            return plr->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), npcid);
-        }
-
-        GameObject* getGOQuester(Player* plr, uint32 goid)
-        {
-            if (plr == NULL || plr->GetMapMgr() == NULL || plr->GetMapMgr()->GetInterface() == NULL)
-                return NULL;
-            return plr->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), goid);
-        }
-
-        QuestLogEntry* GetQuest(Player* pPlayer, uint32 pQuestId)
-        {
-            return pPlayer->GetQuestLogForEntry(pQuestId);
-        };
-
-        void KillMobForQuest(Player* pPlayer, QuestLogEntry* pQuest, uint32 pRequiredMobCount)
-        {
-            if (pPlayer == NULL)
-                return;
-
-            uint32 i = pRequiredMobCount;
-            if (!pQuest)
-                return;
-
-            if (pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
-            {
-                pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
-                pQuest->SendUpdateAddKill(i);
-                pQuest->UpdatePlayerFields();
-            };
-        };
 
         void KillMobForQuest(Player* pPlayer, uint32 pQuestId, uint32 pRequiredMobCount)
         {
@@ -339,7 +235,7 @@ class SCRIPT_DECL EasyFunctions
                 return;
 
             uint32 i = pRequiredMobCount;
-            QuestLogEntry* pQuest = GetQuest(pPlayer, pQuestId);
+            QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(pQuestId);
             if (!pQuest)
                 return;
 

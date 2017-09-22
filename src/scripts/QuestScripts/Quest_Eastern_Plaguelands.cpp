@@ -76,7 +76,8 @@ public:
             return;
 
         GameObject* go = sEAS.SpawnGameobject(static_cast<Player*>(mKiller), 177241, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), 1, 0, 0, 0, 0);
-        sEAS.GameobjectDelete(go, 60000);
+        if (go != nullptr)
+            go->Despawn(60 * 1000, 0);
     }
 };
 

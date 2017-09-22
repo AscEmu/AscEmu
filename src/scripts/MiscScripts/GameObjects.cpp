@@ -660,10 +660,11 @@ class APlagueUponThee : public GameObjectAIScript
             if (pPlayer->HasQuest(5902) || pPlayer->HasQuest(5904))
             {
                 GameObject* go = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pPlayer->GetPositionX(),pPlayer->GetPositionY(),pPlayer->GetPositionZ(), 177491);
-                if (go == NULL)
+                if (go == nullptr)
                 {
                     GameObject* barel = sEAS.SpawnGameobject(pPlayer, 177491, 2449.51f, -1662.32f, 104.38f, 1.0f, 1, 0, 0, 0, 0);
-                    sEAS.GameobjectDelete(barel, 2*60*1000);
+                    if (barel != nullptr)
+                        barel->Despawn(2 * 60 * 1000, 0);
                 }
             }
         }
@@ -724,7 +725,8 @@ class CuregosGold : public GameObjectAIScript
                 pirate->Despawn(6 * 60 * 1000, 0);
 
             GameObject* gobj = sEAS.SpawnGameobject(pPlayer, 142194, pPlayer->GetPositionX() + 5, pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 1, 0, 0, 0, 0);
-            sEAS.GameobjectDelete(gobj, 10 * 60 * 1000);
+            if (gobj != nullptr)
+                gobj->Despawn(10 * 60 * 1000, 0);
         }
 };
 

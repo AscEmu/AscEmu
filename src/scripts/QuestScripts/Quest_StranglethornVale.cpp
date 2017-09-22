@@ -239,22 +239,27 @@ class FacingNegolash : public QuestScript
 {
     void OnQuestComplete(Player* pPlayer, QuestLogEntry* qLogEntry)
     {
-        GameObject* obj = NULL;
+        GameObject* obj = nullptr;
 
-        for (uint8 i = 0; i < 9; i++)
+        for (uint8 i = 0; i < 9; ++i)
         {
             obj = sEAS.SpawnGameobject(pPlayer, GO_MEAT, MeatSpawnPoints[i].x, MeatSpawnPoints[i].y, MeatSpawnPoints[i].z, MeatSpawnPoints[i].o, 1, 0, 0, 0, 0);
-            sEAS.GameobjectDelete(obj, 2 * 60 * 1000);
+            if (obj != nullptr)
+                obj->Despawn(2 * 60 * 1000, 0);
         }
-        for (uint8 i = 0; i < 5; i++)
+
+        for (uint8 i = 0; i < 5; ++i)
         {
             obj = sEAS.SpawnGameobject(pPlayer, GO_BOTTLE, BottleSpawnPoints[i].x, BottleSpawnPoints[i].y, BottleSpawnPoints[i].z, BottleSpawnPoints[i].o, 1, 0, 0, 0, 0);
-            sEAS.GameobjectDelete(obj, 2 * 60 * 1000);
+            if (obj != nullptr)
+                obj->Despawn(2 * 60 * 1000, 0);
         }
-        for (uint8 i = 0; i < 3; i++)
+
+        for (uint8 i = 0; i < 3; ++i)
         {
             obj = sEAS.SpawnGameobject(pPlayer, GO_BREAD, BreadSpawnPoints[i].x, BreadSpawnPoints[i].y, BreadSpawnPoints[i].z, BreadSpawnPoints[i].o, 1, 0, 0, 0, 0);
-            sEAS.GameobjectDelete(obj, 2 * 60 * 1000);
+            if (obj != nullptr)
+                obj->Despawn(2 * 60 * 1000, 0);
         }
 
         Creature* Negolash = sEAS.SpawnCreature(pPlayer, 1494, -14657.400391f, 155.115997f, 4.081050f, 0.353429f);

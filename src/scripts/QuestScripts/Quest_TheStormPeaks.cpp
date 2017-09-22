@@ -27,7 +27,7 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        if (sEAS.GetQuest(pPlayer, 12965))
+        if (pPlayer->GetQuestLogForEntry(12965))
             sEAS.KillMobForQuest(pPlayer, 12965, 0);
     };
 
@@ -41,7 +41,7 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        if (sEAS.GetQuest(pPlayer, 12965))
+        if (pPlayer->GetQuestLogForEntry(12965))
             sEAS.KillMobForQuest(pPlayer, 12965, 1);
     };
 
@@ -55,7 +55,7 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        if (sEAS.GetQuest(pPlayer, 12965))
+        if (pPlayer->GetQuestLogForEntry(12965))
             sEAS.KillMobForQuest(pPlayer, 12965, 2);
     };
 
