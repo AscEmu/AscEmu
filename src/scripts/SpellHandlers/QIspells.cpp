@@ -79,7 +79,7 @@ bool ElementalPowerExtractor(uint32 i, Spell* pSpell)
     Creature* pTarget = static_cast<Creature*>(pUnit);
     if ((pTarget->GetEntry() == 18881 || pTarget->GetEntry() == 18865) && pTarget->isAlive())
     {
-        sEAS.AddItem(28548, pPlayer);
+        pPlayer->GetItemInterface()->AddItemById(28548, 1, 0);
     }
 
     return true;
@@ -453,7 +453,7 @@ bool CookingPot(uint32 i, Spell* pSpell)
 
     pPlayer->GetItemInterface()->RemoveItemAmt(31673, 1);
     pPlayer->GetItemInterface()->RemoveItemAmt(31672, 2);
-    sEAS.AddItem(33848, pPlayer);
+    pPlayer->GetItemInterface()->AddItemById(33848, 1, 0);
 
     return true;
 }
@@ -1204,7 +1204,7 @@ bool EmblazonRuneblade(uint32 i, Spell* pSpell)
         return true;
     }
 
-    sEAS.AddItem(38631, pPlayer, 1);
+    pPlayer->GetItemInterface()->AddItemById(38631, 1, 0);
     pPlayer->GetItemInterface()->RemoveItemAmt(38607, 1);
     return true;
 }

@@ -231,7 +231,7 @@ public:
             } break;
             case 7:
             {
-                sEAS.AddItem(19016, player);
+                player->GetItemInterface()->AddItemById(19016, 1, 0);
                 Arcemu::Gossip::Menu::Complete(player);
             } break;
         }

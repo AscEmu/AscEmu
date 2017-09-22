@@ -46,7 +46,7 @@ public:
         }
         else
         {
-            sEAS.AddItem(36786, plr);
+            plr->GetItemInterface()->AddItemById(36786, 1, 0);
             pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Breaking off a piece of its bark, the Woodlands Walker hands it to you before departing.");
         }
     }

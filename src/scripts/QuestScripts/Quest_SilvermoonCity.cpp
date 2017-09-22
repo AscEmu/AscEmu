@@ -34,7 +34,7 @@ public:
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* EnteredCode, uint32 gossipId)
     {
-        sEAS.AddItem(24226, plr);
+        plr->GetItemInterface()->AddItemById(24226, 1, 0);
     }
 };
 

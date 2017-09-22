@@ -162,56 +162,6 @@ class SCRIPT_DECL EasyFunctions
                 DeleteWaypoints(creat);
             }
         }
-
-        bool AddItem(uint32 pEntry, Player* pPlayer, uint32 pCount = 1)
-        {
-            if (pPlayer == NULL || pEntry == 0 || pCount == 0)
-                return false;
-
-            Item* ItemStack = pPlayer->GetItemInterface()->FindItemLessMax(pEntry, pCount, false);
-            if (ItemStack == NULL)
-            {
-                ItemProperties const* ItemProto = sMySQLStore.getItemProperties(pEntry);
-                if (ItemProto == nullptr)
-                    return false;
-
-                SlotResult Result = pPlayer->GetItemInterface()->FindFreeInventorySlot(ItemProto);
-                if (!Result.Result)
-                {
-                    pPlayer->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
-                    return false;
-                }
-                else
-                {
-                    Item* NewItem = objmgr.CreateItem(pEntry, pPlayer);
-                    if (NewItem == NULL)
-                        return false;
-
-                    if (ItemProto->MaxCount < pCount)
-                        pCount = ItemProto->MaxCount;
-
-                    NewItem->SetStackCount(pCount);
-                    if (pPlayer->GetItemInterface()->SafeAddItem(NewItem, Result.ContainerSlot, Result.Slot) == ADD_ITEM_RESULT_ERROR)
-                    {
-                        NewItem = NULL;
-                        return false;
-                    };
-
-                    pPlayer->SendItemPushResult(false, true, true, true, pPlayer->GetItemInterface()->LastSearchItemBagSlot(), pPlayer->GetItemInterface()->LastSearchItemSlot(), pCount,
-                                                NewItem->GetEntry(), NewItem->GetItemRandomSuffixFactor(), NewItem->GetItemRandomPropertyId(), NewItem->GetStackCount());
-                    return true;
-                };
-            }
-            else
-            {
-                ItemStack->SetStackCount(ItemStack->GetStackCount() + pCount);
-                ItemStack->m_isDirty = true;
-                pPlayer->SendItemPushResult(false, true, true, false, static_cast<uint8>(pPlayer->GetItemInterface()->GetBagSlotByGuid(ItemStack->GetGUID())), 0xFFFFFFFF, pCount, ItemStack->GetEntry(), ItemStack->GetItemRandomSuffixFactor(), ItemStack->GetItemRandomPropertyId(), ItemStack->GetStackCount());
-                return true;
-            };
-
-            return false;
-        };
 };
 
 #define sEAS EasyFunctions::GetInstance()

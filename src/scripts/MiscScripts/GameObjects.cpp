@@ -862,7 +862,7 @@ class TabletoftheSeven : public GameObjectAIScript
                 return;
 
             if(pPlayer->GetItemInterface()->GetItemCount(11470, 0) < 1)
-                sEAS.AddItem(11470, pPlayer);
+                pPlayer->GetItemInterface()->AddItemById(11470, 1, 0);
         }
 };
 

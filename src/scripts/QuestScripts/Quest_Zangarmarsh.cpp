@@ -131,7 +131,7 @@ public:
                 Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 9231, plr);
 
                 if (!plr->GetItemInterface()->GetItemCount(24573, true))
-                    sEAS.AddItem(24573, plr);
+                    plr->GetItemInterface()->AddItemById(24573, 1, 0);
 
             }break;
         }
