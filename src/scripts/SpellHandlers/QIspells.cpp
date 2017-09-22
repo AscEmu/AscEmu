@@ -2175,13 +2175,37 @@ bool NeutralizingTheCauldrons(uint32 i, Spell* pSpell)
     float posX = pCauldron->GetPositionX();
 
     if (posX == 3747.07f)
-        sEAS.KillMobForQuest(pPlayer, 11647, 0);
+    {
+        uint32 i = 0;
+        if (pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
+        {
+            pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
+            pQuest->SendUpdateAddKill(i);
+            pQuest->UpdatePlayerFields();
+        }
+    }
 
     if (posX == 4023.5f)
-        sEAS.KillMobForQuest(pPlayer, 11647, 1);
+    {
+        uint32 i = 1;
+        if (pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
+        {
+            pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
+            pQuest->SendUpdateAddKill(i);
+            pQuest->UpdatePlayerFields();
+        }
+    }
 
     if (posX == 4126.12f)
-        sEAS.KillMobForQuest(pPlayer, 11647, 2);
+    {
+        uint32 i = 2;
+        if (pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
+        {
+            pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
+            pQuest->SendUpdateAddKill(i);
+            pQuest->UpdatePlayerFields();
+        }
+    }
 
     return true;
 }
@@ -2197,7 +2221,14 @@ bool HighmessasCleansingSeeds(uint32 i, Spell* pSpell)
     if (!pQuest)
         return true;
 
-    sEAS.KillMobForQuest(pPlayer, 11677, 0);
+    uint32 num = 0;
+    if (pQuest->GetMobCount(num) < pQuest->GetQuest()->required_mob_or_go_count[num])
+    {
+        pQuest->SetMobCount(num, pQuest->GetMobCount(num) + 1);
+        pQuest->SendUpdateAddKill(num);
+        pQuest->UpdatePlayerFields();
+    }
+
     return true;
 }
 
@@ -2212,7 +2243,14 @@ bool BixiesInhibitingPowder(uint32 i, Spell* pSpell)
     if (!pQuest)
         return true;
 
-    sEAS.KillMobForQuest(pPlayer, 11694, 0);
+    uint32 num = 0;
+    if (pQuest->GetMobCount(num) < pQuest->GetQuest()->required_mob_or_go_count[num])
+    {
+        pQuest->SetMobCount(num, pQuest->GetMobCount(num) + 1);
+        pQuest->SendUpdateAddKill(num);
+        pQuest->UpdatePlayerFields();
+    }
+
     return true;
 }
 
@@ -2231,21 +2269,42 @@ bool CompleteAncestorRitual(uint32 i, Spell* pSpell)
     pElderObj = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 191088);
     if (pElderObj != nullptr && pPlayer->GetDistance2dSq(pElderObj) < 8.0f)
     {
-        sEAS.KillMobForQuest(pPlayer, 11610, 0);
+        uint32 i = 0;
+        if (pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
+        {
+            pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
+            pQuest->SendUpdateAddKill(i);
+            pQuest->UpdatePlayerFields();
+        }
+
         return true;
     }
 
     pElderObj = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 191089);
     if (pElderObj != nullptr && pPlayer->GetDistance2dSq(pElderObj) < 8.0f)
     {
-        sEAS.KillMobForQuest(pPlayer, 11610, 1);
+        uint32 i = 1;
+        if (pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
+        {
+            pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
+            pQuest->SendUpdateAddKill(i);
+            pQuest->UpdatePlayerFields();
+        }
+
         return true;
     }
 
     pElderObj = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 191090);
     if (pElderObj != nullptr && pPlayer->GetDistance2dSq(pElderObj) < 8.0f)
     {
-        sEAS.KillMobForQuest(pPlayer, 11610, 2);
+        uint32 i = 2;
+        if (pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
+        {
+            pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
+            pQuest->SendUpdateAddKill(i);
+            pQuest->UpdatePlayerFields();
+        }
+
         return true;
     }
 
@@ -2724,11 +2783,16 @@ bool WarIsHell(uint32 i, Spell* pSpell)
         return true;
 
     QuestLogEntry* qle = plr->GetQuestLogForEntry(11270);
-
     if (qle == nullptr)
         return true;
 
-    sEAS.KillMobForQuest(plr, 11270, 0);
+    uint32 num = 0;
+    if (qle->GetMobCount(num) < qle->GetQuest()->required_mob_or_go_count[num])
+    {
+        qle->SetMobCount(num, qle->GetMobCount(num) + 1);
+        qle->SendUpdateAddKill(num);
+        qle->UpdatePlayerFields();
+    }
 
     GameObject* obj = sEAS.SpawnGameobject(plr, 183816, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), 1, 0, 0, 0, 0);
     if (obj != nullptr)
@@ -2760,17 +2824,41 @@ bool PlantForsakenBanner(uint32 i, Spell* pSpell)
     switch (cit)
     {
         case 24161:
-            sEAS.KillMobForQuest(pPlayer, 11282, 0);
+        {
+            uint32 num = 0;
+            if (pQuest->GetMobCount(num) < pQuest->GetQuest()->required_mob_or_go_count[num])
+            {
+                pQuest->SetMobCount(num, pQuest->GetMobCount(num) + 1);
+                pQuest->SendUpdateAddKill(num);
+                pQuest->UpdatePlayerFields();
+            }
+
             target->Despawn(0, 3 * 60 * 1000);
-            break;
+        } break;
         case 24016:
-            sEAS.KillMobForQuest(pPlayer, 11282, 1);
+        {
+            uint32 num = 1;
+            if (pQuest->GetMobCount(num) < pQuest->GetQuest()->required_mob_or_go_count[num])
+            {
+                pQuest->SetMobCount(num, pQuest->GetMobCount(num) + 1);
+                pQuest->SendUpdateAddKill(num);
+                pQuest->UpdatePlayerFields();
+            }
+
             target->Despawn(0, 3 * 60 * 1000);
-            break;
+        } break;
         case 24162:
-            sEAS.KillMobForQuest(pPlayer, 11282, 2);
+        {
+            uint32 num = 2;
+            if (pQuest->GetMobCount(num) < pQuest->GetQuest()->required_mob_or_go_count[num])
+            {
+                pQuest->SetMobCount(num, pQuest->GetMobCount(num) + 1);
+                pQuest->SendUpdateAddKill(num);
+                pQuest->UpdatePlayerFields();
+            }
+
             target->Despawn(0, 3 * 60 * 1000);
-            break;
+        } break;
     }
     return true;
 }
@@ -3050,7 +3138,7 @@ bool StoppingTheSpread(uint32 i, Spell* pSpell)
         GameObject* obj = sEAS.SpawnGameobject(plr, 183816, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation(), 1, 0, 0, 0, 0);
         if (obj != nullptr)
             obj->Despawn(1 * 30 * 1000, 0);
-    };
+    }
 
     target->Despawn(2000, 60 * 1000);
     plr->UpdateNearbyGameObjects();

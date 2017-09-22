@@ -148,17 +148,6 @@ class SCRIPT_DECL EasyFunctions
             return pC;
         }
 
-        void MoveToPlayer(Player* plr, Creature* creat)
-        {
-            if (plr == NULL)
-                return;
-
-            if (creat == NULL)
-                return;
-
-            creat->GetAIInterface()->MoveTo(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ());
-        }
-
         // creates the storage for custom waypoints. If one already exists, it is cleared.
         void CreateCustomWaypointMap(Creature* creat)
         {
@@ -222,29 +211,6 @@ class SCRIPT_DECL EasyFunctions
             };
 
             return false;
-        };
-
-        void EventCastSpell(Unit* caster, Unit* target, uint32 spellid, uint32 time)
-        {
-            sEventMgr.AddEvent(static_cast<Unit*>(caster), &Unit::EventCastSpell, static_cast<Unit*>(target), sSpellCustomizations.GetSpellInfo(spellid), EVENT_UNK, time, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-        }
-
-        void KillMobForQuest(Player* pPlayer, uint32 pQuestId, uint32 pRequiredMobCount)
-        {
-            if (pPlayer == NULL)
-                return;
-
-            uint32 i = pRequiredMobCount;
-            QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(pQuestId);
-            if (!pQuest)
-                return;
-
-            if (pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
-            {
-                pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
-                pQuest->SendUpdateAddKill(i);
-                pQuest->UpdatePlayerFields();
-            };
         };
 };
 

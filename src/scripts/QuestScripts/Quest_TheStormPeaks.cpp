@@ -27,10 +27,18 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        if (pPlayer->GetQuestLogForEntry(12965))
-            sEAS.KillMobForQuest(pPlayer, 12965, 0);
-    };
+        uint32 i = 0;
+        QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(12965);
+        if (!pQuest)
+            return;
 
+        if (pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
+        {
+            pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
+            pQuest->SendUpdateAddKill(i);
+            pQuest->UpdatePlayerFields();
+        }
+    }
 };
 
 class LokensPower : public GameObjectAIScript
@@ -41,10 +49,18 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        if (pPlayer->GetQuestLogForEntry(12965))
-            sEAS.KillMobForQuest(pPlayer, 12965, 1);
-    };
+        uint32 i = 1;
+        QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(12965);
+        if (!pQuest)
+            return;
 
+        if (pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
+        {
+            pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
+            pQuest->SendUpdateAddKill(i);
+            pQuest->UpdatePlayerFields();
+        }
+    }
 };
 
 class LokensFavor : public GameObjectAIScript
@@ -55,10 +71,18 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        if (pPlayer->GetQuestLogForEntry(12965))
-            sEAS.KillMobForQuest(pPlayer, 12965, 2);
-    };
+        uint32 i = 2;
+        QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(12965);
+        if (!pQuest)
+            return;
 
+        if (pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
+        {
+            pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
+            pQuest->SendUpdateAddKill(i);
+            pQuest->UpdatePlayerFields();
+        }
+    }
 };
 
 class MissingScout_Gossip : public Arcemu::Gossip::Script

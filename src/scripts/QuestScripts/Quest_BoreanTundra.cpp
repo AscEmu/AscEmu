@@ -30,8 +30,17 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        if (pPlayer->GetQuestLogForEntry(11965))
-            sEAS.KillMobForQuest(pPlayer, 11965, 0);
+        uint32 i = 0;
+        QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(11965);
+        if (!pQuest)
+            return;
+
+        if (pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
+        {
+            pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
+            pQuest->SendUpdateAddKill(i);
+            pQuest->UpdatePlayerFields();
+        }
     }
 };
 
@@ -45,8 +54,17 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        if (pPlayer->GetQuestLogForEntry(11900))
-            sEAS.KillMobForQuest(pPlayer, 11900, 0);
+        uint32 i = 0;
+        QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(11900);
+        if (!pQuest)
+            return;
+
+        if (pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
+        {
+            pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
+            pQuest->SendUpdateAddKill(i);
+            pQuest->UpdatePlayerFields();
+        }
     }
 };
 
@@ -59,8 +77,17 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        if (pPlayer->GetQuestLogForEntry(11900))
-            sEAS.KillMobForQuest(pPlayer, 11900, 1);
+        uint32 i = 1;
+        QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(11900);
+        if (!pQuest)
+            return;
+
+        if (pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
+        {
+            pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
+            pQuest->SendUpdateAddKill(i);
+            pQuest->UpdatePlayerFields();
+        }
     }
 };
 
@@ -73,8 +100,17 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        if (pPlayer->GetQuestLogForEntry(11900))
-            sEAS.KillMobForQuest(pPlayer, 11900, 2);
+        uint32 i = 2;
+        QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(11900);
+        if (!pQuest)
+            return;
+
+        if (pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
+        {
+            pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
+            pQuest->SendUpdateAddKill(i);
+            pQuest->UpdatePlayerFields();
+        }
     }
 };
 
@@ -87,8 +123,17 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        if (pPlayer->GetQuestLogForEntry(11900))
-            sEAS.KillMobForQuest(pPlayer, 11900, 3);
+        uint32 i = 3;
+        QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(11900);
+        if (!pQuest)
+            return;
+
+        if (pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
+        {
+            pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
+            pQuest->SendUpdateAddKill(i);
+            pQuest->UpdatePlayerFields();
+        }
     }
 };
 
@@ -117,10 +162,18 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        if (!pPlayer->GetQuestLogForEntry(11602))
+        uint32 i = 0;
+        QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(11602);
+        if (!pQuest)
             return;
 
-        sEAS.KillMobForQuest(pPlayer, 11602, 0);
+        if (pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
+        {
+            pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
+            pQuest->SendUpdateAddKill(i);
+            pQuest->UpdatePlayerFields();
+        }
+
         _gameobject->SetState(GO_STATE_CLOSED);
         _gameobject->SetState(GO_STATE_OPEN);
         _gameobject->Despawn(500, 60000);
@@ -158,18 +211,54 @@ class SeaforiumDepthCharge : public MoonScriptCreatureAI
                     {
                         _unit->CastSpell(_unit, 45502, true);
 
+                        QuestLogEntry* pQuest = p->GetQuestLogForEntry(11608);
+                        if (!pQuest)
+                            return;
+
                         float posX = pSinkhole->GetPositionX();
                         if (posX == 2657.13f)
-                            sEAS.KillMobForQuest(p, 11608, 0);
+                        {
+                            uint32 i = 0;
+                            if (pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
+                            {
+                                pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
+                                pQuest->SendUpdateAddKill(i);
+                                pQuest->UpdatePlayerFields();
+                            }
+                        }
 
                         if (posX == 2716.02f)
-                            sEAS.KillMobForQuest(p, 11608, 1);
+                        {
+                            uint32 i = 1;
+                            if (pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
+                            {
+                                pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
+                                pQuest->SendUpdateAddKill(i);
+                                pQuest->UpdatePlayerFields();
+                            }
+                        }
 
                         if (posX == 2877.96f)
-                            sEAS.KillMobForQuest(p, 11608, 2);
+                        {
+                            uint32 i = 2;
+                            if (pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
+                            {
+                                pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
+                                pQuest->SendUpdateAddKill(i);
+                                pQuest->UpdatePlayerFields();
+                            }
+                        }
 
                         if (posX == 2962.16f)
-                            sEAS.KillMobForQuest(p, 11608, 3);
+                        {
+                            uint32 i = 3;
+                            if (pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
+                            {
+                                pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
+                                pQuest->SendUpdateAddKill(i);
+                                pQuest->UpdatePlayerFields();
+                            }
+                        }
 
                     }
                 }
@@ -190,11 +279,19 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        if (!pPlayer->GetQuestLogForEntry(11936))
+        uint32 i = 0;
+        QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(11936);
+        if (!pQuest)
             return;
 
-        sEAS.KillMobForQuest(pPlayer, 11936, 0);
-        ///\todo why setting gameobject state 1 and 0?!?!
+        if (pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
+        {
+            pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
+            pQuest->SendUpdateAddKill(i);
+            pQuest->UpdatePlayerFields();
+        }
+
+        //\todo why setting gameobject state 1 and 0?!?!
         _gameobject->SetState(GO_STATE_CLOSED);
         _gameobject->SetState(GO_STATE_OPEN);
         _gameobject->Despawn(500, 60000);
@@ -631,8 +728,13 @@ bool PlaceCart(uint32 i, Spell* pSpell)
             pCreature->CastSpell(pCreature, 46800, true);
         }
 
-        if (pPlayer->GetQuestLogForEntry(11897))
-            sEAS.KillMobForQuest(pPlayer, 11897, 2);
+        uint32 i = 2;
+        if (qle->GetMobCount(i) < qle->GetQuest()->required_mob_or_go_count[i])
+        {
+            qle->SetMobCount(i, qle->GetMobCount(i) + 1);
+            qle->SendUpdateAddKill(i);
+            qle->UpdatePlayerFields();
+        }
     }
 
     if (pCreature->GetEntry() == 26249)
@@ -644,8 +746,13 @@ bool PlaceCart(uint32 i, Spell* pSpell)
             pCreature->CastSpell(pCreature, 46800, true);
         }
 
-        if (pPlayer->GetQuestLogForEntry(11897))
-            sEAS.KillMobForQuest(pPlayer, 11897, 1);
+        uint32 i = 1;
+        if (qle->GetMobCount(i) < qle->GetQuest()->required_mob_or_go_count[i])
+        {
+            qle->SetMobCount(i, qle->GetMobCount(i) + 1);
+            qle->SendUpdateAddKill(i);
+            qle->UpdatePlayerFields();
+        }
     }
 
     return true;
