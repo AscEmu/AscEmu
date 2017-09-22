@@ -17,7 +17,6 @@
  */
 
 #include "Setup.h"
-#include "Management/Gossip/GossipMenu.hpp"
 #include "Units/Creatures/Creature.h"
 #include "Units/Summons/Summon.h"
 
@@ -225,71 +224,75 @@ enum eFizzcrank
 };
 
 
-class FizzcrankGossip : public GossipScript
+class FizzcrankGossip : public Arcemu::Gossip::Script
 {
 public:
 
-    void GossipHello(Object* pObject, Player* pPlayer)
+    void OnHello(Object* pObject, Player* pPlayer)
     {
-        GossipMenu* Menu;
+        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 12435, pPlayer->GetSession()->language);
+        if (pPlayer->HasQuest(QUEST_THE_MECHAGNOMES))
+            menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_1), 1);
 
-        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 12435, pPlayer);
-
-        if (sEAS.GetQuest(pPlayer, QUEST_THE_MECHAGNOMES))
-            Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_1), 1);
-
-        Menu->SendTo(pPlayer);
+        menu.Send(pPlayer);
     }
 
-    void GossipSelectOption(Object* pObject, Player* pPlayer, uint32 Id, uint32 IntId, const char* Code)
+    void OnSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* Code, uint32 gossipId)
     {
-        GossipMenu* Menu;
-        switch (IntId)
+        switch (Id)
         {
             case 1:
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK1, pPlayer);
-                Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 2);
-                Menu->SendTo(pPlayer);
-                break;
+            {
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK1, pPlayer->GetSession()->language);
+                menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 2);
+                menu.Send(pPlayer);
+            }break;
             case 2:
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK2, pPlayer);
-                Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 3);
-                Menu->SendTo(pPlayer);
-                break;
+            {
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK2, pPlayer->GetSession()->language);
+                menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 3);
+                menu.Send(pPlayer);
+            }break;
             case 3:
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK3, pPlayer);
-                Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 4);
-                Menu->SendTo(pPlayer);
-                break;
+            {
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK3, pPlayer->GetSession()->language);
+                menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 4);
+                menu.Send(pPlayer);
+            }break;
             case 4:
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK4, pPlayer);
-                Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 5);
-                Menu->SendTo(pPlayer);
-                break;
+            {
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK4, pPlayer->GetSession()->language);
+                menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 5);
+                menu.Send(pPlayer);
+            }break;
             case 5:
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK5, pPlayer);
-                Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 6);
-                Menu->SendTo(pPlayer);
-                break;
+            {
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK5, pPlayer->GetSession()->language);
+                menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 6);
+                menu.Send(pPlayer);
+            }break;
             case 6:
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK6, pPlayer);
-                Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 7);
-                Menu->SendTo(pPlayer);
-                break;
+            {
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK6, pPlayer->GetSession()->language);
+                menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 7);
+                menu.Send(pPlayer);
+            }break;
             case 7:
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK7, pPlayer);
-                Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 8);
-                Menu->SendTo(pPlayer);
-                break;
+            {
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK7, pPlayer->GetSession()->language);
+                menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 8);
+                menu.Send(pPlayer);
+            }break;
             case 8:
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK8, pPlayer);
-                Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 9);
-                Menu->SendTo(pPlayer);
-                break;
+            {
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK8, pPlayer->GetSession()->language);
+                menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 9);
+                menu.Send(pPlayer);
+            }break;
             case 9:
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK9, pPlayer);
-                Menu->SendTo(pPlayer);
-                break;
+            {
+                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK9, pPlayer);
+            }break;
         }
     }
 };
@@ -304,11 +307,11 @@ enum eSurristrasz
     SPELL_ABMER_TO_COLDARRA = 46064
 };
 
-class SurristraszGossip : public GossipScript
+class SurristraszGossip : public Arcemu::Gossip::Script
 {
 public:
 
-    void GossipHello(Object* pObject, Player* pPlayer)
+    void OnHello(Object* pObject, Player* pPlayer)
     {
         uint32 Text = sMySQLStore.getGossipTextIdForNpc(static_cast<Creature*>(pObject)->GetEntry());
 
@@ -324,17 +327,9 @@ public:
         menu.Send(pPlayer);
     }
 
-    void GossipSelectOption(Object* pObject, Player* pPlayer, uint32 Id, uint32 IntId, const char* Code)
+    void OnSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* Code, uint32 gossipId)
     {
-        if (!pObject->IsCreature())
-            return;
-
-        switch (IntId)
-        {
-            case 1:
-                pPlayer->GetSession()->SendTaxiList(static_cast<Creature*>(pObject));
-                break;
-        }
+        pPlayer->GetSession()->SendTaxiList(static_cast<Creature*>(pObject));
     }
 };
 
@@ -550,96 +545,69 @@ protected:
 // Hunt Is On (Quest: 11794)
 const uint32 questHuntIsOn = 11794;
 
-class SaltyJohnGossip : public GossipScript
+class SaltyJohnGossip : public Arcemu::Gossip::Script
 {
 public:
 
-    void GossipHello(Object* pObject, Player* pPlayer)
+    void OnHello(Object* pObject, Player* pPlayer)
     {
-        GossipMenu* Menu;
-        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 12435, pPlayer);
-        if (sEAS.GetQuest(pPlayer, questHuntIsOn) && pPlayer->HasAura(46078))
-            Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(603), 1);
-
-        Menu->SendTo(pPlayer);
+        if (pPlayer->HasQuest(questHuntIsOn) && pPlayer->HasAura(46078))
+        {
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 12435, pPlayer->GetSession()->language);
+            menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(603), 1);
+            menu.Send(pPlayer);
+        }
     }
 
-    void GossipSelectOption(Object* pObject, Player*  pPlayer, uint32 Id, uint32 IntId, const char* Code)
+    void OnSelectOption(Object* pObject, Player*  pPlayer, uint32 Id, const char* Code, uint32 gossipId)
     {
-        switch (IntId)
-        {
-            case 1:
-            {
-                Creature* SaltyJohn = static_cast<Creature*>(pObject);
-                SaltyJohn->SetFaction(14);
-                SaltyJohn->SendChatMessage(12, 0, "I suppose this is it.. then? I won't go down quietly!");
-            }
-            break;
-            default:
-                break;
-        }
+        Creature* SaltyJohn = static_cast<Creature*>(pObject);
+        SaltyJohn->SetFaction(14);
+        SaltyJohn->SendChatMessage(12, 0, "I suppose this is it.. then? I won't go down quietly!");
     }
 };
 
-class TomHeggerGossip : public GossipScript
+class TomHeggerGossip : public Arcemu::Gossip::Script
 {
 public:
 
-    void GossipHello(Object* pObject, Player* pPlayer)
+    void OnHello(Object* pObject, Player* pPlayer)
     {
-        GossipMenu* Menu;
-        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 12435, pPlayer);
-        if (sEAS.GetQuest(pPlayer, questHuntIsOn) && pPlayer->HasAura(46078)) // Has quest and has used the item.
-            Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(604), 1);
-
-        Menu->SendTo(pPlayer);
+        if (pPlayer->HasQuest(questHuntIsOn) && pPlayer->HasAura(46078))
+        {
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 12435, pPlayer->GetSession()->language);
+            menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(604), 1);
+            menu.Send(pPlayer);
+        }
     }
 
-    void GossipSelectOption(Object* pObject, Player*  pPlayer, uint32 Id, uint32 IntId, const char* Code)
+    void OnSelectOption(Object* pObject, Player*  pPlayer, uint32 Id, const char* Code, uint32 gossipId)
     {
-        switch (IntId)
-        {
-            case 1:
-            {
-                Creature* TomHegger = static_cast<Creature*>(pObject);
-                TomHegger->SetFaction(14);
-                TomHegger->SendChatMessage(12, 0, "You don't know who you're messing with, ! Death beckons!");
-            }
-            break;
-            default:
-                break;
-        }
+        Creature* TomHegger = static_cast<Creature*>(pObject);
+        TomHegger->SetFaction(14);
+        TomHegger->SendChatMessage(12, 0, "You don't know who you're messing with, ! Death beckons!");
     }
 };
 
-class GuardMitchGossip : public GossipScript
+class GuardMitchGossip : public Arcemu::Gossip::Script
 {
 public:
 
-    void GossipHello(Object* pObject, Player* pPlayer)
+    void OnHello(Object* pObject, Player* pPlayer)
     {
-        GossipMenu* Menu;
-        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 12435, pPlayer);
-        if (sEAS.GetQuest(pPlayer, questHuntIsOn) && pPlayer->HasAura(46078))
-            Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(605), 1);
-
-        Menu->SendTo(pPlayer);
+        if (pPlayer->HasQuest(questHuntIsOn) && pPlayer->HasAura(46078))
+        {
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 12435, pPlayer->GetSession()->language);
+            menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(605), 1);
+            menu.Send(pPlayer);
+        }
     }
 
-    void GossipSelectOption(Object* pObject, Player*  pPlayer, uint32 Id, uint32 IntId, const char* Code)
+    void OnSelectOption(Object* pObject, Player*  pPlayer, uint32 Id, const char* Code, uint32 gossipId)
     {
-        switch (IntId)
-        {
-            case 1:
-            {
-                Creature* GuardMitch = static_cast<Creature*>(pObject);
-                GuardMitch->SetFaction(14);
-                GuardMitch->SendChatMessage(12, 0, "Finally! This charade is over... Arthas give me strength!");
-            }
-            break;
-            default:
-                break;
-        }
+        Creature* GuardMitch = static_cast<Creature*>(pObject);
+        GuardMitch->SetFaction(14);
+        GuardMitch->SendChatMessage(12, 0, "Finally! This charade is over... Arthas give me strength!");
     }
 };
 
@@ -720,10 +688,10 @@ void SetupBoreanTundra(ScriptMgr* mgr)
 
     // Mechagnomes
     // Fizzcrank Fullthrottle
-    mgr->register_gossip_script(NPC_FIZZCRANK, new FizzcrankGossip);
+    mgr->register_creature_gossip(NPC_FIZZCRANK, new FizzcrankGossip());
 
     // Surristrasz
-    mgr->register_gossip_script(NPC_SURRISTRASZ, new SurristraszGossip);
+    mgr->register_creature_gossip(NPC_SURRISTRASZ, new SurristraszGossip());
 
     // Quest: Lefty Loosey, Righty Tighty ID: 11788
     mgr->register_gameobject_script(187984, &WestPointStationValve::Create);
@@ -736,9 +704,9 @@ void SetupBoreanTundra(ScriptMgr* mgr)
     mgr->register_creature_script(25834, &GearmasterMechazodAI::Create);
 
     // Hunt Is On
-    mgr->register_gossip_script(25248, new SaltyJohnGossip);
-    mgr->register_gossip_script(25827, new TomHeggerGossip);
-    mgr->register_gossip_script(25828, new GuardMitchGossip);
+    mgr->register_creature_gossip(25248, new SaltyJohnGossip());
+    mgr->register_creature_gossip(25827, new TomHeggerGossip());
+    mgr->register_creature_gossip(25828, new GuardMitchGossip());
 
     // Quest: Plug the Sinkholes
     mgr->register_dummy_spell(46797, &PlaceCart);

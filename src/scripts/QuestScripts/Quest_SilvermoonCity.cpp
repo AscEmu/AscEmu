@@ -19,52 +19,23 @@
  */
 
 #include "Setup.h"
-#include "Management/Gossip/GossipMenu.hpp"
 
-class PathoftheAdept : public GossipScript
+class PathoftheAdept : public Arcemu::Gossip::Script
 {
 public:
-    void GossipHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr)
     {
-        if (!plr)
-            return;
-
-        GossipMenu* Menu;
-        Creature* lord = static_cast<Creature*>(pObject);
-        if (lord == NULL)
-            return;
-
-        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
+        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1, plr->GetSession()->language);
         if (plr->HasQuest(9692))
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(493), 1);     // Take Insignia
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(493), 1);     // Take Insignia
 
-        Menu->SendTo(plr);
+        menu.Send(plr);
     }
 
-    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* EnteredCode, uint32 gossipId)
     {
-        if (!plr)
-            return;
-
-        Creature* lord = static_cast<Creature*>(pObject);
-        if (lord == NULL)
-            return;
-
-        switch (IntId)
-        {
-            case 0:
-                GossipHello(pObject, plr);
-                break;
-
-            case 1:
-            {
-                sEAS.AddItem(24226, plr);
-                return;
-            }
-            break;
-        }
+        sEAS.AddItem(24226, plr);
     }
-
 };
 
 class LordDawnstar : public CreatureAIScript
@@ -85,8 +56,8 @@ public:
 
 void SetupSilvermoonCity(ScriptMgr* mgr)
 {
-    GossipScript* LordGossip = new PathoftheAdept();
-    mgr->register_gossip_script(17832, LordGossip);
+    Arcemu::Gossip::Script* LordGossip = new PathoftheAdept();
+    mgr->register_creature_gossip(17832, LordGossip);
 
     mgr->register_creature_script(17832, &LordDawnstar::Create);
 }

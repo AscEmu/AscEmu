@@ -21,7 +21,6 @@
 
 #include "Setup.h"
 #include "../Common/EasyFunctions.h"
-#include "Management/Gossip/GossipMenu.hpp"
 
  ///////////////////////////////////////////////////////
  //Quest: The Drwarfen Spy
@@ -37,53 +36,41 @@ enum eGossipTexts
     ANVILWARD_2 = 8240,
 };
 
-class SCRIPT_DECL ProspectorAnvilwardGossip : public GossipScript
+class ProspectorAnvilwardGossip : public Arcemu::Gossip::Script
 {
 public:
-    void GossipHello(Object* pObject, Player* Plr);
-    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* EnteredCode);
-    void GossipEnd(Object* pObject, Player* Plr) { Plr->CloseGossip(); }
+    void OnHello(Object* pObject, Player* Plr);
+    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32 gossipId);
+    void Destroy() { delete this; }
 };
 
-void ProspectorAnvilwardGossip::GossipHello(Object* pObject, Player * Plr)
+void ProspectorAnvilwardGossip::OnHello(Object* pObject, Player * Plr)
 {
-    GossipMenu* Menu;
-
-    Creature* pCreature = static_cast<Creature*>(pObject);
-    if (pCreature == NULL)
-        return;
-
-    objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), ANVILWARD_1, Plr);
-
+    Arcemu::Gossip::Menu menu(pObject->GetGUID(), ANVILWARD_1, Plr->GetSession()->language);
     if (Plr->HasQuest(8483))
-        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(460), 1);     // I need a moment of your time, Sir.
+        menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(460), 1);     // I need a moment of your time, Sir.
 
-    Menu->SendTo(Plr);
+    menu.Send(Plr);
 }
 
-void ProspectorAnvilwardGossip::GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char * Code)
+void ProspectorAnvilwardGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char * Code, uint32 gossipId)
 {
-    GossipMenu* Menu;
-    objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 8240, Plr);
-
-    if (!pObject->IsCreature())
-        return;
-
-    Creature* pCreature = static_cast<Creature*>(pObject);
-
-    switch (IntId)
+    switch (Id)
     {
         case 1:
         {
-            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(461), 2);     // Why... yes, of course. I've something to show you right inside this building. Mr. Anvilward.
-            Menu->SendTo(Plr);
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 8240, Plr->GetSession()->language);
+            menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(461), 2);     // Why... yes, of course. I've something to show you right inside this building. Mr. Anvilward.
+            menu.Send(Plr);
         }break;
         case 2:
         {
+            Creature* pCreature = static_cast<Creature*>(pObject);
+
             pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, ANVILWARD_SAY_1);
             Plr->Gossip_Complete();
             pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_QUEST);
-            //Every Gossip NPC has a "StopMovement(30000)" by default.... lets overwrite it.
+
             pCreature->GetAIInterface()->StopMovement(10);
         }break;
     }
@@ -120,6 +107,6 @@ public:
 
 void SetupEversongWoods(ScriptMgr* mgr)
 {
-    mgr->register_gossip_script(15420, new ProspectorAnvilwardGossip);
+    mgr->register_creature_gossip(15420, new ProspectorAnvilwardGossip());
     mgr->register_creature_script(15420, ProspectorAnvilward::Create);
 }

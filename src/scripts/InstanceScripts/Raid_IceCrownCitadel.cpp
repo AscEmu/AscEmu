@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Raid_IceCrownCitadel.h"
-#include "Management/Gossip/GossipMenu.hpp"
 #include "Objects/Faction.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -159,58 +158,38 @@ class IceCrownCitadelScript : public MoonInstanceScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // IceCrown Teleporter
-class ICCTeleporterAI : public GameObjectAIScript
+class ICCTeleporterGossip : public Arcemu::Gossip::Script
 {
 public:
-
-    ICCTeleporterAI(GameObject* go) : GameObjectAIScript(go){}
-
-    ~ICCTeleporterAI(){}
-
-    static GameObjectAIScript* Create(GameObject* go) { return new ICCTeleporterAI(go); }
-
-    void OnActivate(Player* player)
+    void OnHello(Object* object, Player* player)
     {
         IceCrownCitadelScript* pInstance = (IceCrownCitadelScript*)player->GetMapMgr()->GetScript();
         if (!pInstance)
             return;
 
-        GossipMenu* menu = NULL;
-        objmgr.CreateGossipMenuForPlayer(&menu, _gameobject->GetGUID(), 15221, player);
-        menu->AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(515), 0);     // Teleport to Light's Hammer.
+        Arcemu::Gossip::Menu menu(object->GetGUID(), 15221, player->GetSession()->language);
+        menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(515), 0);     // Teleport to Light's Hammer.
 
         if (pInstance->GetInstanceData(Data_EncounterState, CN_LORD_MARROWGAR) == State_Finished)
-            menu->AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(516), 1);      // Teleport to Oratory of The Damned.
+            menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(516), 1);      // Teleport to Oratory of The Damned.
 
         if (pInstance->GetInstanceData(Data_EncounterState, CN_LADY_DEATHWHISPER) == State_Finished)
-            menu->AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(517), 2);      // Teleport to Rampart of Skulls.
+            menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(517), 2);      // Teleport to Rampart of Skulls.
 
         // GunshipBattle has to be finished...
-        //menu->AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(518), 3);        // Teleport to Deathbringer's Rise.
+        //menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(518), 3);        // Teleport to Deathbringer's Rise.
 
         if (pInstance->GetInstanceData(Data_EncounterState, CN_VALITHRIA_DREAMWALKER) == State_Finished)
-            menu->AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(519), 4);      // Teleport to the Upper Spire.
+            menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(519), 4);      // Teleport to the Upper Spire.
 
         if (pInstance->GetInstanceData(Data_EncounterState, CN_COLDFLAME) == State_Finished)
-            menu->AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(520), 5);      // Teleport to Sindragosa's Lair.
+            menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(520), 5);      // Teleport to Sindragosa's Lair.
 
-        menu->SendTo(player);
+        menu.Send(player);
     }
 
-};
-
-class ICCTeleporterGossip : public GossipScript
-{
-public:
-    ICCTeleporterGossip() : GossipScript(){}
-
-    void OnSelectOption(Object* object, Player* player, uint32 Id, const char* enteredcode)
+    void OnSelectOption(Object* object, Player* player, uint32 Id, const char* enteredcode, uint32 gossipId)
     {
-        Arcemu::Gossip::Menu::Complete(player);
-
-        if (Id >= 6)
-            return;
-
         switch (Id)
         {
             case 0:
@@ -232,6 +211,24 @@ public:
                 player->CastSpell(player, 70861, true);     // Sindragosa's Lair
                 break;
         }
+        Arcemu::Gossip::Menu::Complete(player);
+    }
+};
+
+class ICCTeleporterAI : public GameObjectAIScript
+{
+public:
+
+    ICCTeleporterAI(GameObject* go) : GameObjectAIScript(go) {}
+
+    ~ICCTeleporterAI() {}
+
+    static GameObjectAIScript* Create(GameObject* go) { return new ICCTeleporterAI(go); }
+
+    void OnActivate(Player* player)
+    {
+        ICCTeleporterGossip gossip;
+        gossip.OnHello(_gameobject, player);
     }
 };
 
@@ -480,19 +477,19 @@ void SetupICC(ScriptMgr* mgr)
 
     //Teleporters
     mgr->register_gameobject_script(GO_TELE_1, &ICCTeleporterAI::Create);
-    mgr->register_go_gossip_script(GO_TELE_1, new ICCTeleporterGossip());
+    mgr->register_go_gossip(GO_TELE_1, new ICCTeleporterGossip());
 
     mgr->register_gameobject_script(GO_TELE_2, &ICCTeleporterAI::Create);
-    mgr->register_go_gossip_script(GO_TELE_2, new ICCTeleporterGossip());
+    mgr->register_go_gossip(GO_TELE_2, new ICCTeleporterGossip());
 
     mgr->register_gameobject_script(GO_TELE_3, &ICCTeleporterAI::Create);
-    mgr->register_go_gossip_script(GO_TELE_3, new ICCTeleporterGossip());
+    mgr->register_go_gossip(GO_TELE_3, new ICCTeleporterGossip());
 
     mgr->register_gameobject_script(GO_TELE_4, &ICCTeleporterAI::Create);
-    mgr->register_go_gossip_script(GO_TELE_4, new ICCTeleporterGossip());
+    mgr->register_go_gossip(GO_TELE_4, new ICCTeleporterGossip());
 
     mgr->register_gameobject_script(GO_TELE_5, &ICCTeleporterAI::Create);
-    mgr->register_go_gossip_script(GO_TELE_5, new ICCTeleporterGossip());
+    mgr->register_go_gossip(GO_TELE_5, new ICCTeleporterGossip());
 
     //Bosses
     mgr->register_creature_script(CN_LORD_MARROWGAR, &LordMarrowgarAI::Create);

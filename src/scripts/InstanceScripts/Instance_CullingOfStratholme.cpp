@@ -20,7 +20,6 @@
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Instance_CullingOfStratholme.h"
-#include "Management/Gossip/GossipMenu.hpp"
 
 //MeathookAA
 class MeathookAI : public CreatureAIScript
@@ -1243,29 +1242,23 @@ class ArthasAI : public CreatureAIScript
 
 
 //ArthasGossip
-class ArthasGossip : public GossipScript
+class ArthasGossip : public Arcemu::Gossip::Script
 {
     public:
 
-        void GossipHello(Object* pObject, Player* Plr)
+        void OnHello(Object* pObject, Player* Plr)
         {
-            GossipMenu* Menu;
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, Plr);
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1, 0);
 
-            Menu->AddItem(0, "We're ready to go!", 1);  //find correct txt
+            menu.AddItem(0, "We're ready to go!", 1);  //find correct txt
 
-            Menu->SendTo(Plr);
+            menu.Send(Plr);
         }
 
-        void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId)
         {
-            switch (IntId)
+            switch (Id)
             {
-                case 0:
-                {
-                    GossipHello(pObject, Plr);
-                }
-                break;
                 case 1:
                 {
                     static_cast<Creature*>(pObject)->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
@@ -1273,6 +1266,7 @@ class ArthasGossip : public GossipScript
                 }
                 break;
             }
+            Arcemu::Gossip::Menu::Complete(Plr);
         }
 };
 
@@ -1299,6 +1293,6 @@ void SetupCullingOfStratholme(ScriptMgr* mgr)
     mgr->register_quest_script(13149, Dispelling_Illusions);
     //mgr->register_creature_script(CN_UTHER, &UtherAI::Create);
     //mgr->register_creature_script(CN_ARTHAS, &ArthasAI::Create);
-    //GossipScript * AG = new ArthasGossip();
-    //mgr->register_gossip_script(CN_ARTHAS, AG);
+    Arcemu::Gossip::Script* gs = new ArthasGossip();
+    mgr->register_creature_gossip(CN_ARTHAS, gs);
 }

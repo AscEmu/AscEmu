@@ -20,132 +20,101 @@
  */
 
 #include "Setup.h"
-#include "Management/Gossip/GossipMenu.hpp"
 
-class Lady_Jaina : public GossipScript
+class Lady_Jaina : public Arcemu::Gossip::Script
 {
-    public:
+public:
 
-        void GossipHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr)
+    {
+        if (plr->HasQuest(558))
         {
-            GossipMenu* Menu;
-            if (plr->HasQuest(558))
-            {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7012, plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(505), 1);     // Lady Jaina, this may sound like an odd request... but I have a young ward who is quite shy. You are a hero to him, and he asked me to get your autograph.
-                Menu->SendTo(plr);
-            }
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 7012, plr->GetSession()->language);
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(505), 1);     // Lady Jaina, this may sound like an odd request... but I have a young ward who is quite shy. You are a hero to him, and he asked me to get your autograph.
+            menu.Send(plr);
         }
+    }
 
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
-        {
-            switch (IntId)
-            {
-                case 0: // Return to start
-                    GossipHello(pObject, plr);
-                    break;
-                case 1: // Give Item
-                {
-                    plr->CastSpell(plr, sSpellCustomizations.GetSpellInfo(23122), true);
-                    plr->Gossip_Complete();
-                    break;
-                }
-                break;
-            }
-        }
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
+    {
+        plr->CastSpell(plr, sSpellCustomizations.GetSpellInfo(23122), true);
+        plr->Gossip_Complete();
+    }
 };
 
-class Cairne : public GossipScript
+class Cairne : public Arcemu::Gossip::Script
 {
-    public:
+public:
 
-        void GossipHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr)
+    {
+        if (plr->HasQuest(925))
         {
-            GossipMenu* Menu;
-            if (plr->HasQuest(925))
-            {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7013, plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(506), 1);     // Give me hoofprint.
-                Menu->SendTo(plr);
-            }
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 7013, plr->GetSession()->language);
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(506), 1);     // Give me hoofprint.
+            menu.Send(plr);
         }
+    }
 
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
-        {
-            GossipMenu* Menu;
-            switch (IntId)
-            {
-                case 0: // Return to start
-                    GossipHello(pObject, plr);
-                    break;
-                case 1: // Give Item
-                {
-                    objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7014, plr);
-                    Menu->SendTo(plr);
-                    plr->CastSpell(plr, sSpellCustomizations.GetSpellInfo(23123), true);
-                    break;
-                }
-                break;
-            }
-        }
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
+    {
+        Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 7014, plr);
+        plr->CastSpell(plr, sSpellCustomizations.GetSpellInfo(23123), true);
+    }
 };
 
 
 #define DALARAN_TELEPORT_SPELL 68328
 
-class TeleportQ_Gossip : public GossipScript
+class TeleportQ_Gossip : public Arcemu::Gossip::Script
 {
-    public:
+public:
 
-        void GossipHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr)
+    {
+        uint32 Text = sMySQLStore.getGossipTextIdForNpc(static_cast<Creature*>(pObject)->GetEntry());
+        if (sMySQLStore.getNpcText(Text) == nullptr)
+            Text = DefaultGossipTextId;
+
+        Arcemu::Gossip::Menu menu(pObject->GetGUID(), Text, plr->GetSession()->language);
+        sQuestMgr.FillQuestMenu(static_cast<Creature*>(pObject), plr, menu);
+
+        if ((plr->HasQuest(12791) || plr->HasQuest(12794) || plr->HasQuest(12796)) && plr->HasItemCount(39740, 1, false))
         {
-            uint32 Text = sMySQLStore.getGossipTextIdForNpc(static_cast<Creature*>(pObject)->GetEntry());
-
-            // check if there is a entry in the db
-            if (sMySQLStore.getNpcText(Text) == nullptr)
-                Text = DefaultGossipTextId;
-
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), Text, plr->GetSession()->language);
-            sQuestMgr.FillQuestMenu(static_cast<Creature*>(pObject), plr, menu);
-
-            // Requirements:
-            // one of these quests: 12791, 12794, 12796
-            // and item 39740: Kirin Tor Signet
-            if ((plr->HasQuest(12791) || plr->HasQuest(12794) || plr->HasQuest(12796)) && plr->HasItemCount(39740, 1, false))
-            {
-                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(514), 1);        // Teleport me to Dalaran.
-            }
-            menu.Send(plr);
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(514), 1);        // Teleport me to Dalaran.
         }
+        menu.Send(plr);
+    }
 
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
-        {
-            if (IntId == 1)
-            {
-                plr->CastSpell(plr, DALARAN_TELEPORT_SPELL, true);
-            }
-            plr->Gossip_Complete();
-        }
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
+    {
+        plr->CastSpell(plr, DALARAN_TELEPORT_SPELL, true);
+    }
 };
 
 void SetupQuestGossip(ScriptMgr* mgr)
 {
-    mgr->register_gossip_script(4968, new Lady_Jaina());
-    mgr->register_gossip_script(3057, new Cairne());
+    Arcemu::Gossip::Script* ladyJaina = new Lady_Jaina();
+    mgr->register_creature_gossip(4968, ladyJaina);
+
+    Arcemu::Gossip::Script* cairne = new Cairne();
+    mgr->register_creature_gossip(3057, cairne);
 
     // **** Dalaran quests start **** //
+    Arcemu::Gossip::Script* gs = new TeleportQ_Gossip();
+
     // Horde
-    mgr->register_gossip_script(26471, new TeleportQ_Gossip);
-    mgr->register_gossip_script(29155, new TeleportQ_Gossip);
-    mgr->register_gossip_script(29159, new TeleportQ_Gossip);
-    mgr->register_gossip_script(29160, new TeleportQ_Gossip);
-    mgr->register_gossip_script(29162, new TeleportQ_Gossip);
+    mgr->register_creature_gossip(26471, gs);
+    mgr->register_creature_gossip(29155, gs);
+    mgr->register_creature_gossip(29159, gs);
+    mgr->register_creature_gossip(29160, gs);
+    mgr->register_creature_gossip(29162, gs);
     // Alliance
-    mgr->register_gossip_script(23729, new TeleportQ_Gossip);
-    mgr->register_gossip_script(26673, new TeleportQ_Gossip);
-    mgr->register_gossip_script(27158, new TeleportQ_Gossip);
-    mgr->register_gossip_script(29158, new TeleportQ_Gossip);
-    mgr->register_gossip_script(29161, new TeleportQ_Gossip);
+    mgr->register_creature_gossip(23729, gs);
+    mgr->register_creature_gossip(26673, gs);
+    mgr->register_creature_gossip(27158, gs);
+    mgr->register_creature_gossip(29158, gs);
+    mgr->register_creature_gossip(29161, gs);
     // Both
-    mgr->register_gossip_script(29169, new TeleportQ_Gossip);
+    mgr->register_creature_gossip(29169, gs);
 }

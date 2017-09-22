@@ -20,7 +20,6 @@
  */
 
 #include "StdAfx.h"
-#include "Management/Gossip/GossipMenu.hpp"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Objects/Faction.h"
@@ -372,9 +371,7 @@ void WorldSession::HandleStabledPetList(WorldPacket& recv_data)
 
     if (_player->getClass() != HUNTER)
     {
-        GossipMenu* pMenu;
-        objmgr.CreateGossipMenuForPlayer(&pMenu, npcguid, 13584, _player);
-        pMenu->SendTo(_player);
+        Arcemu::Gossip::Menu::SendSimpleMenu(npcguid, 13584, _player);
         return;
     }
 

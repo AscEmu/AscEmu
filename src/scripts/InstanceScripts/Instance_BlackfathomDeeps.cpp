@@ -19,7 +19,6 @@
 
 #include "Setup.h"
 #include "Instance_BlackfathomDeeps.h"
-#include "Management/Gossip/GossipMenu.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Blackfathom Deeps
@@ -174,30 +173,25 @@ class AkumaiAI : public MoonScriptCreatureAI
 };
 
 // MorriduneGossip
-class MorriduneGossip : public GossipScript
+class MorriduneGossip : public Arcemu::Gossip::Script
 {
     public:
 
-        void GossipHello(Object* pObject, Player* pPlayer)
+        void OnHello(Object* pObject, Player* pPlayer)
         {
-            GossipMenu* menu;
-            objmgr.CreateGossipMenuForPlayer(&menu, pObject->GetGUID(), MORRIDUNE_ON_HELLO, pPlayer);
-
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), MORRIDUNE_ON_HELLO, 0);
             if (pPlayer->IsTeamAlliance())
-                menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(MORRIDUNE_OPTION_1), 1);
+                menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(MORRIDUNE_OPTION_1), 1);
             else
-                menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(MORRIDUNE_OPTION_2), 2);
+                menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(MORRIDUNE_OPTION_2), 2);
 
-            menu->SendTo(pPlayer);
+            menu.Send(pPlayer);
         }
 
-        void GossipSelectOption(Object* pObject, Player* pPlayer, uint32 Id, uint32 IntId, const char* Code)
+        void OnSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* Code, uint32 gossipId)
         {
-            switch (IntId)
+            switch (Id)
             {
-                case 0:
-                    GossipHello(pObject, pPlayer);
-                    break;
                 case 1:
                     pPlayer->SafeTeleport(1, 0, 9951.52f, 2280.32f, 1341.39f, 0);
                     break;
@@ -205,6 +199,8 @@ class MorriduneGossip : public GossipScript
                     pPlayer->SafeTeleport(1, 0, 4247.74f, 745.879f, -24.2967f, 4.36996f);
                     break;
             }
+
+            Arcemu::Gossip::Menu::Complete(pPlayer);
         }
 };
 
@@ -218,7 +214,8 @@ void SetupBlackfathomDeeps(ScriptMgr* mgr)
     mgr->register_creature_script(CN_LORD_KELRIS, &KelrisAI::Create);
     mgr->register_creature_script(CN_AKUMAI, &AkumaiAI::Create);
 
-    mgr->register_creature_gossip(CN_MORRIDUNE, new MorriduneGossip);
+    Arcemu::Gossip::Script* gs = new MorriduneGossip();
+    mgr->register_creature_gossip(CN_MORRIDUNE, gs);
 
     mgr->register_gameobject_script(GO_FATHOM_STONE, &FathomStone::Create);
 }

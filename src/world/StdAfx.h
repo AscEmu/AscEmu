@@ -100,7 +100,6 @@
 #include "Units/Creatures/Vehicle.h"
 #include "Units/Unit.h"
 #include "Management/Gossip/Gossip.h"
-#include "Management/Gossip/GossipMenu.hpp"
 #include "Management/AchievementMgr.h"
 
 //VMAP

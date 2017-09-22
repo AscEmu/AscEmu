@@ -20,7 +20,6 @@
  */
 
 #include "Setup.h"
-#include "Management/Gossip/GossipMenu.hpp"
 
  //////////////////////////////////////////////////////////////////////////////////////////
  // Fel Orc Scavengers
@@ -186,16 +185,43 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // The Dreghood Elders
-class PrisonerGossip : public GossipScript
+class PrisonerGossip : public Arcemu::Gossip::Script
 {
 public:
-    void GossipHello(Object* pObject, Player* pPlayer)
+    void OnHello(Object* pObject, Player* pPlayer)
     {
-        if (pPlayer == NULL)
+        int32 i = -1;
+        Creature* pPrisoner = static_cast<Creature*>(pObject);
+        switch (pPrisoner->GetEntry())
+        {
+            case 20677:
+                i = 0;
+                break;
+            case 20678:
+                i = 1;
+                break;
+            case 20679:
+                i = 2;
+                break;
+        }
+
+        if (i == -1)
             return;
 
-        if (!pObject->IsCreature())
-            return;
+        QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10368);
+        if (pQuest != nullptr && pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
+        {
+            if (pPlayer->GetItemInterface()->GetItemCount(29501) > 0)
+            {
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 10104, pPlayer->GetSession()->language);
+                menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(463), 1);     // Walk free, Elder. Bring the spirits back to your tribe.
+                menu.Send(pPlayer);
+            }
+        }
+    }
+
+    void OnSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* EnteredCode, uint32 gossipId)
+    {
 
         int32 i = -1;
         Creature* pPrisoner = static_cast<Creature*>(pObject);
@@ -216,65 +242,15 @@ public:
             return;
 
         QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10368);
-        if (pQuest != NULL && pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
+        if (pQuest != nullptr && pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
         {
-            if (pPlayer->GetItemInterface()->GetItemCount(29501) > 0)
-            {
-                GossipMenu* Menu;
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10104, pPlayer);
-                Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(463), 1);     // Walk free, Elder. Bring the spirits back to your tribe.
+            pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
+            pQuest->SendUpdateAddKill(i);
+            pQuest->UpdatePlayerFields();
 
-                Menu->SendTo(pPlayer);
-            }
-        }
-    }
-
-    void GossipSelectOption(Object* pObject, Player* pPlayer, uint32 Id, uint32 IntId, const char* EnteredCode)
-    {
-        if (pPlayer == NULL)
-            return;
-
-        if (!pObject->IsCreature())
-            return;
-
-        switch (IntId)
-        {
-            case 0:
-                GossipHello(pObject, pPlayer);
-                break;
-            case 1:
-            {
-                int32 i = -1;
-                Creature* pPrisoner = static_cast<Creature*>(pObject);
-                switch (pPrisoner->GetEntry())
-                {
-                    case 20677:
-                        i = 0;
-                        break;
-                    case 20678:
-                        i = 1;
-                        break;
-                    case 20679:
-                        i = 2;
-                        break;
-                }
-
-                if (i == -1)
-                    return;
-
-                QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10368);
-                if (pQuest != NULL && pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
-                {
-                    pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
-                    pQuest->SendUpdateAddKill(i);
-                    pQuest->UpdatePlayerFields();
-
-                    pPrisoner->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You've freed me! The winds speak to my people one again and grant us their strength. I thank you, stranger.");
-                    pPrisoner->Despawn(5000, 6 * 60 * 1000);
-                    pPrisoner->SetStandState(STANDSTATE_STAND);
-                }
-            }
-            break;
+            pPrisoner->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You've freed me! The winds speak to my people one again and grant us their strength. I thank you, stranger.");
+            pPrisoner->Despawn(5000, 6 * 60 * 1000);
+            pPrisoner->SetStandState(STANDSTATE_STAND);
         }
     }
 };
@@ -371,10 +347,11 @@ void SetupHellfirePeninsula(ScriptMgr* mgr)
     mgr->register_creature_script(16992, &Dreadtusk::Create);
 
     mgr->register_gameobject_script(184661, &ZethGorMustBurnAlliance::Create);
-    GossipScript* pPrisonerGossip = new PrisonerGossip();
-    mgr->register_gossip_script(20677, pPrisonerGossip);
-    mgr->register_gossip_script(20678, pPrisonerGossip);
-    mgr->register_gossip_script(20679, pPrisonerGossip);
+
+    Arcemu::Gossip::Script* pPrisonerGossip = new PrisonerGossip();
+    mgr->register_creature_gossip(20677, pPrisonerGossip);
+    mgr->register_creature_gossip(20678, pPrisonerGossip);
+    mgr->register_creature_gossip(20679, pPrisonerGossip);
 
     //\todo mgr->register_dummy_spell(35460, &FuryOfTheDreghoodElders);
 

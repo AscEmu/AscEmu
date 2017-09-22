@@ -26,7 +26,6 @@
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Instance_OldHillsbradFoothills.h"
-#include "Management/Gossip/GossipMenu.hpp"
 #include "Management/TaxiMgr.h"
 #include "Management/WorldStates.h"
 
@@ -173,31 +172,27 @@ class OldHilsbradInstance : public MoonInstanceScript
 };
 
 
-class ErozionGossip : public GossipScript
+class ErozionGossip : public Arcemu::Gossip::Script
 {
     public:
 
-        void GossipHello(Object* pObject, Player* Plr)
+        void OnHello(Object* pObject, Player* Plr)
         {
-            GossipMenu* Menu;
             OldHilsbradInstance* pInstance = dynamic_cast<OldHilsbradInstance*>(pObject->GetMapMgr()->GetScript());
-
             if (!pInstance)
                 return;
 
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), EROZION_ON_HELLO, Plr);
-
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), EROZION_ON_HELLO, 0);
             if (pInstance->GetData(OHF_PHASE_1) != OHF_DATA_DONE && !Plr->HasItemCount(25853, 1))
-                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(EROZION_NEED_PACKET), 1);
+                menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(EROZION_NEED_PACKET), 1);
 
             // It should give another menu if instance is done id: 10474, NYI
-
-            Menu->SendTo(Plr);
+            menu.Send(Plr);
         }
 
-        void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId)
         {
-            switch (IntId)
+            switch (Id)
             {
                 case 1:
                     Item* pBombs = objmgr.CreateItem(25853, Plr);
@@ -207,34 +202,29 @@ class ErozionGossip : public GossipScript
                     break;
             }
         }
-
 };
 
-class BrazenGossip : public GossipScript
+class BrazenGossip : public Arcemu::Gossip::Script
 {
     public:
 
-        void GossipHello(Object* pObject, Player* Plr)
+        void OnHello(Object* pObject, Player* Plr)
         {
-            GossipMenu* Menu;
-
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), BRAZAN_ON_HELLO, Plr);
-            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(BRAZAN_DURNHOLDE_KEEP), 1);
-
-            Menu->SendTo(Plr);
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), BRAZAN_ON_HELLO, 0);
+            menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(BRAZAN_DURNHOLDE_KEEP), 1);
+            menu.Send(Plr);
         }
 
-        void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId)
         {
-            GossipMenu* Menu;
-            switch (IntId)
+            switch (Id)
             {
                 case 1:
                 {
                     if (!Plr->HasItemCount(25853, 1))
                     {
-                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), BRAZAN_NEED_ITEM, Plr);
-                        Menu->SendTo(Plr);
+                        Arcemu::Gossip::Menu menu(pObject->GetGUID(), BRAZAN_NEED_ITEM, 0);
+                        menu.Send(Plr);
                     }
                     else
                     {
@@ -313,25 +303,24 @@ class ThrallAI : public MoonScriptCreatureAI // this will be replaced with escor
     uint32 m_currentWp;
 };
 
-class ThrallGossip : public GossipScript
+class ThrallGossip : public Arcemu::Gossip::Script
 {
     public:
 
-        void GossipHello(Object* pObject, Player* Plr)
+        void OnHello(Object* pObject, Player* Plr)
         {
             GossipMenu* Menu;
             if (!pObject->IsCreature())
                 return;
 
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), THRALL_ON_HELLO, Plr);
-            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(THRALL_START_ESCORT), 1);
-
-            Menu->SendTo(Plr);
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), THRALL_ON_HELLO, 0);
+            menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(THRALL_START_ESCORT), 1);
+            menu.Send(Plr);
         }
 
-        void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32 gossipId)
         {
-            switch (IntId)
+            switch (Id)
             {
                 case 1:
                     ThrallAI* pThrall = static_cast< ThrallAI* >(static_cast<Creature*>(pObject)->GetScript());
@@ -340,7 +329,6 @@ class ThrallGossip : public GossipScript
                     break;
             }
         }
-
 };
 
 void SetupOldHillsbradFoothills(ScriptMgr* mgr)
@@ -349,10 +337,10 @@ void SetupOldHillsbradFoothills(ScriptMgr* mgr)
     mgr->register_creature_script(CN_LIEUTENANT_DRAKE, &LieutenantDrakeAI::Create);
     mgr->register_creature_script(CN_THRALL, &ThrallAI::Create);
 
-    GossipScript* eGossip = new ErozionGossip;
-    mgr->register_gossip_script(CN_EROZION, eGossip);
-    GossipScript* bGossip = new BrazenGossip;
-    mgr->register_gossip_script(CN_BRAZEN, bGossip);
-    GossipScript* tGossip = new ThrallGossip;
-    mgr->register_gossip_script(CN_THRALL, tGossip);
+    Arcemu::Gossip::Script* eGossip = new ErozionGossip();
+    mgr->register_creature_gossip(CN_EROZION, eGossip);
+    Arcemu::Gossip::Script* bGossip = new BrazenGossip();
+    mgr->register_creature_gossip(CN_BRAZEN, bGossip);
+    Arcemu::Gossip::Script* tGossip = new ThrallGossip();
+    mgr->register_creature_gossip(CN_THRALL, tGossip);
 }

@@ -30,6 +30,25 @@ enum UnorderedEntrys
 
 };
 
+class DedicationOfHonorGossip : public Arcemu::Gossip::Script
+{
+public:
+
+    void OnHello(Object* object, Player* player)
+    {
+        Arcemu::Gossip::Menu::SendQuickMenu(object->GetGUID(), GT_DEDICATION_OF_HONOR, player, 1, GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(GI_SEE_FALL_LICH_KING));
+    }
+
+    void OnSelectOption(Object* object, Player* player, uint32 Id, const char* enteredcode, uint32 gossipId)
+    {
+#if VERSION_STRING > TBC
+        uint32 video_id = 16;
+        player->GetSession()->OutPacket(SMSG_TRIGGER_MOVIE, sizeof(uint32), &video_id);
+        Arcemu::Gossip::Menu::Complete(player);
+#endif
+    }
+};
+
  class DedicationOfHonorAI : public GameObjectAIScript
 {
     public:
@@ -39,28 +58,13 @@ enum UnorderedEntrys
 
         void OnActivate(Player* player)
         {
-            Arcemu::Gossip::Menu::SendQuickMenu(_gameobject->GetGUID(), GT_DEDICATION_OF_HONOR, player, 1, GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(GI_SEE_FALL_LICH_KING));
-        }
-};
-
-class DedicationOfHonorGossip : public GossipScript
-{
-    public:
-
-        DedicationOfHonorGossip() : GossipScript(){}
-
-        void OnSelectOption(Object* object, Player* player, uint32 Id, const char* enteredcode)
-        {
-#if VERSION_STRING > TBC
-            uint32 video_id = 16;
-            player->GetSession()->OutPacket(SMSG_TRIGGER_MOVIE, sizeof(uint32), &video_id);
-            Arcemu::Gossip::Menu::Complete(player);
-#endif
+            DedicationOfHonorGossip gossip;
+            gossip.OnHello(_gameobject, player);
         }
 };
 
 void SetupDalaranGossip(ScriptMgr* mgr)
 {
     mgr->register_gameobject_script(GO_DEDICATION_OF_HONOR, &DedicationOfHonorAI::Create);
-    mgr->register_go_gossip_script(GO_DEDICATION_OF_HONOR, new DedicationOfHonorGossip);
+    mgr->register_go_gossip(GO_DEDICATION_OF_HONOR, new DedicationOfHonorGossip);
 }

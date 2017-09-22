@@ -20,7 +20,6 @@
  */
 
 #include "Setup.h"
-#include "Management/Gossip/GossipMenu.hpp"
 
 class ThreatFromAboveQAI : public CreatureAIScript
 {
@@ -183,53 +182,28 @@ public:
     }
 };
 
-class TheMomentofTruth : public GossipScript
+class TheMomentofTruth : public Arcemu::Gossip::Script
 {
 public:
-    void GossipHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr)
     {
-        if (!plr)
-            return;
-
-        GossipMenu* Menu;
-        Creature* doctor = static_cast<Creature*>(pObject);
-        if (doctor == NULL)
-            return;
-
-        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
+        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1, plr->GetSession()->language);
         if (plr->HasQuest(10201) && plr->GetItemInterface()->GetItemCount(28500, 0))
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(497), 1);     // Try this
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(497), 1);     // Try this
 
-        Menu->SendTo(plr);
+        menu.Send(plr);
     }
 
-    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* EnteredCode, uint32 gossipId)
     {
-        if (!plr)
-            return;
+        plr->GetItemInterface()->RemoveItemAmt(2799, 1);
 
-        Creature* doctor = static_cast<Creature*>(pObject);
-        if (doctor == NULL)
-            return;
-
-        switch (IntId)
+        QuestLogEntry* qle = plr->GetQuestLogForEntry(10201);
+        if (qle && qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
         {
-            case 0:
-                GossipHello(pObject, plr);
-                break;
-
-            case 1:
-            {
-                plr->GetItemInterface()->RemoveItemAmt(2799, 1);
-                QuestLogEntry* qle = plr->GetQuestLogForEntry(10201);
-                if (qle && qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
-                {
-                    qle->SetMobCount(0, qle->GetMobCount(0) + 1);
-                    qle->SendUpdateAddKill(0);
-                    qle->UpdatePlayerFields();
-                }
-            }
-            break;
+            qle->SetMobCount(0, qle->GetMobCount(0) + 1);
+            qle->SendUpdateAddKill(0);
+            qle->UpdatePlayerFields();
         }
     }
 };
@@ -245,6 +219,7 @@ void SetupTerrokarForest(ScriptMgr* mgr)
     mgr->register_creature_script(21846, &AnImproperBurial::Create);
     mgr->register_creature_script(22307, &TheInfestedProtectorsQAI::Create);
     mgr->register_creature_script(22095, &TheInfestedProtectorsQAI::Create);
-    GossipScript* gossip1 = new TheMomentofTruth();
-    mgr->register_gossip_script(19606, gossip1);
+
+    Arcemu::Gossip::Script* gossip1 = new TheMomentofTruth();
+    mgr->register_creature_gossip(19606, gossip1);
 }

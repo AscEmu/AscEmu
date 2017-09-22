@@ -4,7 +4,6 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "StdAfx.h"
-#include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Item.h"
 #include "Management/Container.h"
 #include "Management/ItemInterface.h"

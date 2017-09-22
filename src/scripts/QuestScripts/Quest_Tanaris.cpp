@@ -19,62 +19,35 @@
  */
 
 #include "Setup.h"
-#include "Management/Gossip/GossipMenu.hpp"
 
-class SpiritScreeches : public GossipScript
+class SpiritScreeches : public Arcemu::Gossip::Script
 {
 public:
-    void GossipHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr)
     {
-        if (!plr)
-            return;
-
-        GossipMenu* Menu;
-        Creature* spirit = static_cast<Creature*>(pObject);
-        if (spirit == NULL)
-            return;
-
         if (plr->HasQuest(3520))
         {
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 2039, plr);
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(495), 1);     // Goodbye
-
-            Menu->SendTo(plr);
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 2039, plr->GetSession()->language);
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(495), 1);     // Goodbye
+            menu.Send(plr);
         }
     }
 
-    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* EnteredCode, uint32 gossipId)
     {
-        if (!plr)
-            return;
-
         Creature* spirit = static_cast<Creature*>(pObject);
-        if (spirit == NULL)
-            return;
 
-        switch (IntId)
+        QuestLogEntry* en = plr->GetQuestLogForEntry(3520);
+        if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
         {
-            case 0:
-                GossipHello(pObject, plr);
-                break;
-
-            case 1:
-            {
-                QuestLogEntry* en = plr->GetQuestLogForEntry(3520);
-                if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-                {
-                    en->SetMobCount(0, en->GetMobCount(0) + 1);
-                    en->SendUpdateAddKill(0);
-                    en->UpdatePlayerFields();
-                }
-
-                spirit->Despawn(1, 0);
-                return;
-
-            }
+            en->SetMobCount(0, en->GetMobCount(0) + 1);
+            en->SendUpdateAddKill(0);
+            en->UpdatePlayerFields();
         }
-    }
 
+        spirit->Despawn(1, 0);
+        return;
+    }
 };
 
 class ScreecherSpirit : public CreatureAIScript
@@ -100,40 +73,35 @@ public:
     }
 };
 
-class StewardOfTime : public GossipScript
+class StewardOfTime : public Arcemu::Gossip::Script
 {
 public:
-    void GossipHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr)
     {
-        GossipMenu* Menu;
         if (plr->HasQuest(10279) || plr->HasFinishedQuest(10279))
         {
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9978, plr);
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(496), 1);     // Please take me to the Master's Lair
-            Menu->SendTo(plr);
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 9978, plr->GetSession()->language);
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(496), 1);     // Please take me to the Master's Lair
+            menu.Send(plr);
         }
     }
 
-    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
     {
         Creature* creat = static_cast<Creature*>(pObject);
-        switch (IntId)
-        {
-            case 1:
-                creat->CastSpell(plr, sSpellCustomizations.GetSpellInfo(34891), true);
-                break;
-        }
+
+        creat->CastSpell(plr, sSpellCustomizations.GetSpellInfo(34891), true);
     }
 };
 
 
 void SetupTanaris(ScriptMgr* mgr)
 {
-    GossipScript* Screeches = new SpiritScreeches();
-    mgr->register_gossip_script(8612, Screeches);
+    Arcemu::Gossip::Script* Screeches = new SpiritScreeches();
+    mgr->register_creature_gossip(8612, Screeches);
 
     mgr->register_creature_script(8612, &ScreecherSpirit::Create);
 
-    GossipScript* StewardOfTimeGossip = new StewardOfTime();
-    mgr->register_gossip_script(20142, StewardOfTimeGossip);
+    Arcemu::Gossip::Script* StewardOfTimeGossip = new StewardOfTime();
+    mgr->register_creature_gossip(20142, StewardOfTimeGossip);
 }

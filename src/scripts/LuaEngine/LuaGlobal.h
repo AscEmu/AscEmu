@@ -4,8 +4,9 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #pragma once
+
 #include <memory>
-#include <Management/Gossip/GossipMenu.hpp>
+#include <Management/Gossip/Gossip.h>
 #include <Server/Script/ScriptMgr.h>
 
 class LuaEngine;

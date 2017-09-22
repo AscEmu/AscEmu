@@ -1286,8 +1286,8 @@ public:
 
         // scriptdev2
         GossipMenu* PlayerTalkClass;
-        void PrepareQuestMenu(uint64 guid);
-        void SendGossipMenu(uint32 TitleTextId, uint64 npcGUID);
+        //void PrepareQuestMenu(uint64 guid);
+        //void SendGossipMenu(uint32 TitleTextId, uint64 npcGUID);
         void CloseGossip();
 
 

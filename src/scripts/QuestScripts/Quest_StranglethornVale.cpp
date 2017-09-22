@@ -19,55 +19,31 @@
  */
 
 #include "Setup.h"
-#include "Management/Gossip/GossipMenu.hpp"
 
-class StrFever : public GossipScript
+class StrFever : public Arcemu::Gossip::Script
 {
 public:
-    void GossipHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr)
     {
-        if (!plr)
-            return;
-
-        GossipMenu* Menu;
-        Creature* doctor = static_cast<Creature*>(pObject);
-        if (doctor == NULL)
-            return;
-
-        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
+        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1, plr->GetSession()->language);
         if (plr->HasQuest(348) && plr->GetItemInterface()->GetItemCount(2799, 0) && !plr->GetItemInterface()->GetItemCount(2797, 0))
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(494), 1);     // I'm ready, Summon Him!
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(494), 1);     // I'm ready, Summon Him!
 
-        Menu->SendTo(plr);
+        menu.Send(plr);
     }
 
-    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
     {
-        if (!plr)
-            return;
-
         Creature* doctor = static_cast<Creature*>(pObject);
-        if (doctor == NULL)
+
+        plr->GetItemInterface()->RemoveItemAmt(2799, 1);
+        doctor->CastSpell(doctor, sSpellCustomizations.GetSpellInfo(12380), true);
+        if (!plr || !plr->GetMapMgr() || !plr->GetMapMgr()->GetInterface())
             return;
 
-        switch (IntId)
-        {
-            case 0:
-                GossipHello(pObject, plr);
-                break;
-
-            case 1:
-            {
-                plr->GetItemInterface()->RemoveItemAmt(2799, 1);
-                doctor->CastSpell(doctor, sSpellCustomizations.GetSpellInfo(12380), true);
-                if (!plr || !plr->GetMapMgr() || !plr->GetMapMgr()->GetInterface())
-                    return;
-                Creature* firstenemy = sEAS.SpawnCreature(plr, 1511, -13770.5f, -6.79f, 42.8f, 5.7f, 0);
-                firstenemy->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f);
-                firstenemy->Despawn(10 * 60 * 1000, 0);
-            }
-            break;
-        }
+        Creature* firstenemy = sEAS.SpawnCreature(plr, 1511, -13770.5f, -6.79f, 42.8f, 5.7f, 0);
+        firstenemy->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f);
+        firstenemy->Despawn(10 * 60 * 1000, 0);
     }
 };
 
@@ -304,8 +280,9 @@ public:
 
 void SetupStranglethornVale(ScriptMgr* mgr)
 {
-    GossipScript* gossip1 = new StrFever();
-    mgr->register_gossip_script(1449, gossip1);
+    Arcemu::Gossip::Script* gossip1 = new StrFever();
+    mgr->register_creature_gossip(1449, gossip1);
+
     mgr->register_creature_script(1511, &Beka::Create);
     mgr->register_creature_script(1516, &Beka1::Create);
     mgr->register_quest_script(584, new BloodscalpClanHeads());

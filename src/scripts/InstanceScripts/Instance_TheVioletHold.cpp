@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Instance_TheVioletHold.h"
-#include "Management/Gossip/GossipMenu.hpp"
 
 enum DataIndex
 {
@@ -339,41 +338,36 @@ class SinclariAI : public MoonScriptCreatureAI
 ///////////////////////////////////////////////////////
 //Lieutnant Sinclari Gossip and init events
 //Sinclari Gossip
-class SinclariGossip : public GossipScript
+class SinclariGossip : public Arcemu::Gossip::Script
 {
     public:
 
-        void GossipHello(Object* pObject, Player* pPlayer)
+        void OnHello(Object* pObject, Player* pPlayer)
         {
             TheVioletHoldScript* pInstance = (TheVioletHoldScript*)pPlayer->GetMapMgr()->GetScript();
             if (!pInstance)
                 return;
 
-            GossipMenu* menu;
-
             //Page 1: Textid and first menu item
             if (pInstance->GetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD) == State_NotStarted)
             {
-                objmgr.CreateGossipMenuForPlayer(&menu, pObject->GetGUID(), SINCLARI_ON_HELLO, pPlayer);
-                menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(SINCLARI_ACTIVATE), 1);
-
-                menu->SendTo(pPlayer);
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), SINCLARI_ON_HELLO, 0);
+                menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(SINCLARI_ACTIVATE), 1);
+                menu.Send(pPlayer);
             }
 
             //If VioletHold is started, Sinclari has this item for people who aould join.
             if (pInstance->GetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD) == State_InProgress)
             {
-                objmgr.CreateGossipMenuForPlayer(&menu, pObject->GetGUID(), SINCLARI_OUTSIDE, pPlayer);
-                menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(SINCLARI_SEND_ME_IN), 3);
-
-                menu->SendTo(pPlayer);
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), SINCLARI_ON_HELLO, 0);
+                menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(SINCLARI_SEND_ME_IN), 3);
+                menu.Send(pPlayer);
             }
         }
 
-        void GossipSelectOption(Object* pObject, Player* pPlayer, uint32 Id, uint32 IntId, const char* Code)
+        void OnSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* Code, uint32 gossipId)
         {
             TheVioletHoldScript* pInstance = (TheVioletHoldScript*)pPlayer->GetMapMgr()->GetScript();
-
             if (!pInstance)
                 return;
 
@@ -382,18 +376,13 @@ class SinclariGossip : public GossipScript
 
             Creature* pCreature = static_cast<Creature*>(pObject);
 
-            switch (IntId)
+            switch (Id)
             {
-                case 0:
-                    GossipHello(pObject, pPlayer);
-                    break;
-
                 case 1:
                 {
-                    GossipMenu* menu;
-                    objmgr.CreateGossipMenuForPlayer(&menu, pObject->GetGUID(), SINCLARI_ON_FINISH, pPlayer);
-                    menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(SINCLARI_GET_SAFETY), 2);
-                    menu->SendTo(pPlayer);
+                    Arcemu::Gossip::Menu menu(pObject->GetGUID(), SINCLARI_ON_FINISH, 0);
+                    menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(SINCLARI_GET_SAFETY), 2);
+                    menu.Send(pPlayer);
 
                 }break;
 
@@ -813,6 +802,6 @@ void SetupTheVioletHold(ScriptMgr* mgr)
     //mgr->register_creature_script(CN_TURAMAT_THE_OBLITERATOR, &ZuramatTheObliteratorAI::Create);
     //mgr->register_creature_script(CN_CYANIGOSA, &CyanigosaAI::Create);
 
-    GossipScript* GSinclari = new SinclariGossip;
-    mgr->register_gossip_script(CN_LIEUTNANT_SINCLARI, GSinclari);
+    Arcemu::Gossip::Script* GSinclari = new SinclariGossip();
+    mgr->register_creature_gossip(CN_LIEUTNANT_SINCLARI, GSinclari);
 }

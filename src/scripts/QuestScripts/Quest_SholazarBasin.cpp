@@ -20,7 +20,6 @@
  */
 
 #include "Setup.h"
-#include "Management/Gossip/GossipMenu.hpp"
 #include "Spell/SpellAuras.h"
 
  // -----------------------------------------------------------------------------
@@ -69,157 +68,127 @@ const uint32 HEMET = 27986;
 const uint32 HADRIUS = 28047;
 const uint32 TAMARA = 28568;
 
-class SCRIPT_DECL HemetTasteTest : public GossipScript
+class SCRIPT_DECL HemetTasteTest : public Arcemu::Gossip::Script
 {
 public:
-    void GossipHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr)
     {
         if (plr->HasQuest(12645))
         {
-            GossipMenu* Menu;
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 40002, plr);
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(476), 1);     // Care to try Grimbooze Thunderbrew's Jungle punch?
-
-            Menu->SendTo(plr);
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 40002, plr->GetSession()->language);
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(476), 1);     // Care to try Grimbooze Thunderbrew's Jungle punch?
+            menu.Send(plr);
         }
     }
 
-    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
     {
-        Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
-        if (pCreature == NULL)
+        Creature* pCreature = static_cast<Creature*>(pObject);
+
+        std::string msg = "Aye, I'll try it.";
+        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());
+        std::string msg2 = "That's exactly what I needed!";
+        std::string msg3 = "It's got my vote! That'll put hair on your chest like nothing else will.";
+        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg2.c_str(), 2000);
+        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg3.c_str(), 4000);
+
+        QuestLogEntry* qle = plr->GetQuestLogForEntry(12645);
+        if (qle == nullptr)
             return;
 
-        switch (IntId)
-        {
-            case 1:
-            {
-                std::string msg = "Aye, I'll try it.";
-                pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());
-                std::string msg2 = "That's exactly what I needed!";
-                std::string msg3 = "It's got my vote! That'll put hair on your chest like nothing else will.";
-                pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg2.c_str(), 2000);
-                pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg3.c_str(), 4000);
-                QuestLogEntry* qle = plr->GetQuestLogForEntry(12645);
-                if (qle == NULL)
-                    return;
+        if (qle->GetMobCount(0) != 0)
+            return;
 
-                if (qle->GetMobCount(0) != 0)
-                    return;
-                qle->SetMobCount(0, 1);
-                qle->SendUpdateAddKill(0);
-                qle->UpdatePlayerFields();
-
-            }
-            break;
-        }
+        qle->SetMobCount(0, 1);
+        qle->SendUpdateAddKill(0);
+        qle->UpdatePlayerFields();
     }
-
 };
 
-class SCRIPT_DECL HadriusTasteTest : public GossipScript
+class SCRIPT_DECL HadriusTasteTest : public Arcemu::Gossip::Script
 {
 public:
-    void GossipHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr)
     {
         if (plr->HasQuest(12645))
         {
-            GossipMenu* Menu;
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 40002, plr);
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(476), 1);     // Care to try Grimbooze Thunderbrew's Jungle punch?
-
-            Menu->SendTo(plr);
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 40002, plr->GetSession()->language);
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(476), 1);     // Care to try Grimbooze Thunderbrew's Jungle punch?
+            menu.Send(plr);
         }
     }
 
-    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
     {
-        Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
-        if (pCreature == NULL)
+        Creature* pCreature = static_cast<Creature*>(pObject);
+
+        std::string msg = "I'm always up for something of Grimbooze's.";
+        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());
+        std::string msg2 = "Well, so far, it tastes like something my wife would drink...";
+        std::string msg3 = "Now, there's the kick I've come to expect from Grimbooze's drinks! I like it!";
+        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg2.c_str(), 2000);
+        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg3.c_str(), 4000);
+        QuestLogEntry* qle = plr->GetQuestLogForEntry(12645);
+        if (qle == nullptr)
             return;
 
-        switch (IntId)
-        {
-            case 1:
-            {
-                std::string msg = "I'm always up for something of Grimbooze's.";
-                pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());
-                std::string msg2 = "Well, so far, it tastes like something my wife would drink...";
-                std::string msg3 = "Now, there's the kick I've come to expect from Grimbooze's drinks! I like it!";
-                pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg2.c_str(), 2000);
-                pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg3.c_str(), 4000);
-                QuestLogEntry* qle = plr->GetQuestLogForEntry(12645);
-                if (qle == NULL)
-                    return;
+        if (qle->GetMobCount(0) != 0)
+            return;
 
-                if (qle->GetMobCount(0) != 0)
-                    return;
-                qle->SetMobCount(1, 1);
-                qle->SendUpdateAddKill(1);
-                qle->UpdatePlayerFields();
-            }
-            break;
-        }
+        qle->SetMobCount(1, 1);
+        qle->SendUpdateAddKill(1);
+        qle->UpdatePlayerFields();
     }
-
 };
 
-class SCRIPT_DECL TamaraTasteTest : public GossipScript
+class SCRIPT_DECL TamaraTasteTest : public Arcemu::Gossip::Script
 {
 public:
-    void GossipHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr)
     {
         if (plr->HasQuest(12645))
         {
-            GossipMenu* Menu;
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 40002, plr);
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(476), 1);     // Care to try Grimbooze Thunderbrew's Jungle punch?
-
-            Menu->SendTo(plr);
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 40002, plr->GetSession()->language);
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(476), 1);     // Care to try Grimbooze Thunderbrew's Jungle punch?
+            menu.Send(plr);
         }
     }
 
-    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
     {
-        Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
-        if (pCreature == NULL)
+        Creature* pCreature = static_cast<Creature*>(pObject);
+
+        std::string msg = " Sure!";
+        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());
+        std::string msg2 = "Oh my...";
+        std::string msg3 = "Tastes like I'm drinking... engine degreaser!";
+        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg2.c_str(), 2000);
+        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg3.c_str(), 4000);
+
+        QuestLogEntry* qle = plr->GetQuestLogForEntry(12645);
+        if (qle == nullptr)
             return;
 
-        switch (IntId)
-        {
-            case 1:
-            {
-                std::string msg = " Sure!";
-                pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());
-                std::string msg2 = "Oh my...";
-                std::string msg3 = "Tastes like I'm drinking... engine degreaser!";
-                pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg2.c_str(), 2000);
-                pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg3.c_str(), 4000);
-                QuestLogEntry* qle = plr->GetQuestLogForEntry(12645);
-                if (qle == NULL)
-                    return;
+        if (qle->GetMobCount(0) != 0)
+            return;
 
-                if (qle->GetMobCount(0) != 0)
-                    return;
-                qle->SetMobCount(2, 1);
-                qle->SendUpdateAddKill(2);
-                qle->UpdatePlayerFields();
-            }
-            break;
-        }
+        qle->SetMobCount(2, 1);
+        qle->SendUpdateAddKill(2);
+        qle->UpdatePlayerFields();
     }
-
 };
 
 
 void SetupSholazarBasin(ScriptMgr* mgr)
 {
-    GossipScript* gossip1 = new HemetTasteTest();
-    mgr->register_gossip_script(HEMET, gossip1);
-    GossipScript* gossip2 = new HadriusTasteTest();
-    mgr->register_gossip_script(HADRIUS, gossip2);
-    GossipScript* gossip3 = new TamaraTasteTest();
-    mgr->register_gossip_script(TAMARA, gossip3);
+    Arcemu::Gossip::Script* gossip1 = new HemetTasteTest();
+    mgr->register_creature_gossip(HEMET, gossip1);
+
+    Arcemu::Gossip::Script* gossip2 = new HadriusTasteTest();
+    mgr->register_creature_gossip(HADRIUS, gossip2);
+
+    Arcemu::Gossip::Script* gossip3 = new TamaraTasteTest();
+    mgr->register_creature_gossip(TAMARA, gossip3);
 
     mgr->register_creature_script(28161, &ChickenEscapee::Create);
 }

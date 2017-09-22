@@ -25,7 +25,6 @@
 #include <sstream>
 
 #include "Management/QuestLogEntry.hpp"
-#include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Item.h"
 #include "Management/Container.h"
 #include "Server/Packets/Opcode.h"
@@ -8055,17 +8054,17 @@ void Player::CloseGossip()
     Gossip_Complete();
 }
 
-void Player::PrepareQuestMenu(uint64 guid)
-{
-    uint32 TextID = 820;
-    objmgr.CreateGossipMenuForPlayer(&PlayerTalkClass, guid, TextID, this);
-}
+//void Player::PrepareQuestMenu(uint64 guid)
+//{
+//    uint32 TextID = 820;
+//    objmgr.CreateGossipMenuForPlayer(&PlayerTalkClass, guid, TextID, this);
+//}
 
-void Player::SendGossipMenu(uint32 TitleTextId, uint64 npcGUID)
-{
-    PlayerTalkClass->SetTextID(TitleTextId);
-    PlayerTalkClass->SendTo(this);
-}
+//void Player::SendGossipMenu(uint32 TitleTextId, uint64 npcGUID)
+//{
+//    PlayerTalkClass->SetTextID(TitleTextId);
+//    PlayerTalkClass->SendTo(this);
+//}
 
 bool Player::IsInCity()
 {

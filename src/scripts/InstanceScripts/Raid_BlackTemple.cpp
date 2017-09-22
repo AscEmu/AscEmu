@@ -22,7 +22,6 @@
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Raid_BlackTemple.h"
-#include "Management/Gossip/GossipMenu.hpp"
 #include "Objects/Faction.h"
 #include "Spell/SpellMgr.h"
 
@@ -4242,43 +4241,40 @@ void SpellFunc_Parasitic(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Un
     }
 }
 
-class SCRIPT_DECL AkamaGossip : public GossipScript
+class SCRIPT_DECL AkamaGossip : public Arcemu::Gossip::Script
 {
     public:
-        void GossipHello(Object* pObject, Player* pPlayer)
+        void OnHello(Object* pObject, Player* pPlayer)
         {
             Creature* pAIOwner = static_cast<Creature*>(pObject);
             if (pAIOwner->GetScript() == NULL)
                 return;
 
             MoonScriptCreatureAI* pAI = static_cast< MoonScriptCreatureAI* >(pAIOwner->GetScript());
-            GossipMenu* Menu;
+
             if (pAI->GetCurrentWaypoint() >= 10)
             {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 229902, pPlayer);
-                Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(444), 2);     // We're ready to face Illidan.
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 229902);
+                menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(444), 2);     // We're ready to face Illidan.
+                menu.Send(pPlayer);
             }
             else
             {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 229901, pPlayer);
-                Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(445), 1);     // I'm ready, Akama.
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 229901);
+                menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(445), 1);     // I'm ready, Akama.
+                menu.Send(pPlayer);
             }
-
-            Menu->SendTo(pPlayer);
         }
 
-        void GossipSelectOption(Object* pObject, Player* pPlayer, uint32 Id, uint32 IntId, const char* EnteredCode)
+        void OnSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* EnteredCode, uint32 gossipId)
         {
             Creature* pAIOwner = static_cast<Creature*>(pObject);
             if (pAIOwner->GetScript() == NULL)
                 return;
 
             MoonScriptCreatureAI* pAI = static_cast< MoonScriptCreatureAI* >(pAIOwner->GetScript());
-            switch (IntId)
+            switch (Id)
             {
-                case 0:
-                    GossipHello(pObject, pPlayer);
-                    break;
                 case 1:
                     pAIOwner->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
                     pAI->ForceWaypointMove(1);
@@ -4289,8 +4285,8 @@ class SCRIPT_DECL AkamaGossip : public GossipScript
                     pAI->SetWieldWeapon(false);
                     break;
             }
+            Arcemu::Gossip::Menu::Complete(pPlayer);
         }
-
 };
 
 /* Akama AI - Creature AI Class */
@@ -6920,8 +6916,8 @@ void SetupBlackTemple(ScriptMgr* mgr)
     //mgr->register_creature_script(CN_SHADE_OF_AKAMA, &ShadeofakamaAI::Create); //test
 
     //Illidan Stormrage related
-    GossipScript* AG = new AkamaGossip();
-    mgr->register_gossip_script(CN_AKAMA, AG);
+    Arcemu::Gossip::Script* AG = new AkamaGossip();
+    mgr->register_creature_gossip(CN_AKAMA, AG);
 
     mgr->register_creature_script(CN_DOOR_EVENT_TRIGGER, &UnselectableTriggerAI::Create);
     mgr->register_creature_script(CN_FACE_TRIGGER, &UnselectableTriggerAI::Create);

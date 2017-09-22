@@ -16,9 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Management/Gossip/Gossip.h"
 #include "Setup.h"
-#include "Management/Gossip/GossipMenu.hpp"
 #include "Objects/ObjectMgr.h"
 #include <Spell/Customization/SpellCustomizations.hpp>
 
@@ -29,25 +27,32 @@ enum UnorderedEntry
     GI_TELE_AMBER_LEDGE = 350   // "Teleport me to Amber Ledge!"
 };
 
-class TiareGossipScript : public GossipScript
+class TiareGossipScript : public Arcemu::Gossip::Script
 {
     public:
 
-        void GossipHello(Object* pObject, Player* Plr)
+        void OnHello(Object* pObject, Player* Plr)
         {
-            GossipMenu* Menu;
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GT_TIARE, Plr);
-            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TELE_AMBER_LEDGE), 1);
-            Menu->SendTo(Plr);
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), GT_TIARE, 0);
+            menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TELE_AMBER_LEDGE), 1);
+            menu.Send(Plr);
         }
 
-        void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32 gossipId)
         {
-            static_cast<Creature*>(pObject)->CastSpell(Plr, sSpellCustomizations.GetSpellInfo(50135), true);
+            switch (Id)
+            {
+                case 1:
+                {
+                    static_cast<Creature*>(pObject)->CastSpell(Plr, sSpellCustomizations.GetSpellInfo(50135), true);
+                    Arcemu::Gossip::Menu::Complete(Plr);
+                } break;
+            }
         }
 };
 
 void SetupBoreanTundraGossip(ScriptMgr* mgr)
 {
-    mgr->register_gossip_script(CN_TIARE, new TiareGossipScript);
+    Arcemu::Gossip::Script* gs = new TiareGossipScript();
+    mgr->register_creature_gossip(CN_TIARE, gs);
 }

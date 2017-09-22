@@ -20,48 +20,36 @@
  */
 
 #include "Setup.h"
-#include "Management/Gossip/GossipMenu.hpp"
 
-class BeatenCorpse : public GossipScript
+class BeatenCorpse : public Arcemu::Gossip::Script
 {
 public:
-    void GossipHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr)
     {
-        GossipMenu* Menu;
-        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3557, plr);
-
         if (plr->HasQuest(4921))
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(498), 1);     // I inspect the body further.
-
-        Menu->SendTo(plr);
-    }
-
-    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
-    {
-        GossipMenu* Menu;
-
-        switch (IntId)
         {
-            case 1:
-            {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3558, plr);
-                Menu->SendTo(plr);
-
-                QuestLogEntry* qle = plr->GetQuestLogForEntry(4921);
-                if (qle == NULL)
-                    return;
-
-                if (qle->GetMobCount(0) != 0)
-                    return;
-
-                qle->SetMobCount(0, 1);
-                qle->SendUpdateAddKill(0);
-                qle->UpdatePlayerFields();
-            }
-            break;
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 3557, plr->GetSession()->language);
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(498), 1);     // I inspect the body further.
+            menu.Send(plr);
         }
     }
 
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
+    {
+        Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 3558, plr);
+        GossipMenu* Menu;
+
+        QuestLogEntry* qle = plr->GetQuestLogForEntry(4921);
+        if (qle == nullptr)
+            return;
+
+        if (qle->GetMobCount(0) != 0)
+            return;
+
+        qle->SetMobCount(0, 1);
+        qle->SendUpdateAddKill(0);
+        qle->UpdatePlayerFields();
+    }
 };
 
 class Wizzlecranks_Shredder : public CreatureAIScript
@@ -142,8 +130,9 @@ public:
 
 void SetupBarrens(ScriptMgr* mgr)
 {
-    GossipScript* gos = new BeatenCorpse;
-    mgr->register_gossip_script(10668, gos);
+    Arcemu::Gossip::Script* gos = new BeatenCorpse();
+    mgr->register_creature_gossip(10668, gos);
+
     mgr->register_creature_script(3439, &Wizzlecranks_Shredder::Create);
     mgr->register_creature_script(3465, &Gilthares_Firebough::Create);
     mgr->register_creature_script(3275, &VerogtheDervish::Create);

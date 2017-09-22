@@ -482,11 +482,6 @@ class SERVER_DECL GossipScript : public Arcemu::Gossip::Script
         virtual void GossipHello(Object* /*pObject*/, Player* /*plr*/) {}
         virtual void GossipSelectOption(Object* /*pObject*/, Player* /*Plr*/, uint32 /*Id*/, uint32 /*IntId*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/) {}
         virtual void GossipEnd(Object* /*pObject*/, Player* /*Plr*/) {}
-
-        //support for Gossip scripts added before r4106
-        virtual void OnHello(Object* pObject, Player* Plr);
-        virtual void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId);
-        virtual void OnEnd(Object* pObject, Player* Plr);
 };
 
 class SERVER_DECL QuestScript

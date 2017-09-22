@@ -18,7 +18,6 @@
  */
 
 #include "Setup.h"
-#include "Management/Gossip/GossipMenu.hpp"
 #include "Management/TaxiMgr.h"
 
 class ScryingOrb : public GameObjectAIScript
@@ -55,41 +54,37 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////// Ayren Cloudbreaker Gossip
-class SCRIPT_DECL AyrenCloudbreaker_Gossip : public GossipScript
+class AyrenCloudbreaker_Gossip : public Arcemu::Gossip::Script
 {
 public:
-    void GossipHello(Object* pObject, Player* pPlayer)
+    void OnHello(Object* pObject, Player* pPlayer)
     {
-        GossipMenu* Menu;
-        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 12252, pPlayer);
-
+        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 12252, pPlayer->GetSession()->language);
         if (pPlayer->HasQuest(11532) || pPlayer->HasQuest(11533))
-            Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(466), 1);     // Speaking of action, I've been ordered to undertake an air strike.
+            menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(466), 1);     // Speaking of action, I've been ordered to undertake an air strike.
 
         if (pPlayer->HasQuest(11543) || pPlayer->HasQuest(11542))
-            Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(467), 2);     // I need to intercept the Dawnblade reinforcements.
+            menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(467), 2);     // I need to intercept the Dawnblade reinforcements.
 
-        Menu->SendTo(pPlayer);
+        menu.Send(pPlayer);
     }
 
-    void GossipSelectOption(Object* pObject, Player* pPlayer, uint32 Id, uint32 IntId, const char* Code)
+    void OnSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* Code, uint32 gossipId)
     {
-        switch (IntId)
+        switch (Id)
         {
             case 1:
             {
                 TaxiPath* pPath = sTaxiMgr.GetTaxiPath(779);
                 pPlayer->TaxiStart(pPath, 22840, 0);
                 pPlayer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
-            }
-            break;
+            } break;
             case 2:
             {
                 TaxiPath* pPath = sTaxiMgr.GetTaxiPath(784);
                 pPlayer->TaxiStart(pPath, 22840, 0);
                 pPlayer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
-            }
-            break;
+            } break;
         }
     }
 };
@@ -97,33 +92,24 @@ public:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////// Unrestrained Dragonhawk Gossip
 
-class SCRIPT_DECL UnrestrainedDragonhawk_Gossip : public GossipScript
+class SCRIPT_DECL UnrestrainedDragonhawk_Gossip : public Arcemu::Gossip::Script
 {
 public:
-    void GossipHello(Object* pObject, Player* pPlayer)
+    void OnHello(Object* pObject, Player* pPlayer)
     {
-        GossipMenu* Menu;
-        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 12371, pPlayer);
+        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 12371, pPlayer->GetSession()->language);
         if (pPlayer->HasQuest(11543) || pPlayer->HasQuest(11542))
-            Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(468), 1);     // <Ride the dragonhawk to Sun's Reach>
+            menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(468), 1);     // <Ride the dragonhawk to Sun's Reach>
 
-        Menu->SendTo(pPlayer);
+        menu.Send(pPlayer);
     }
 
-    void GossipSelectOption(Object* pObject, Player* pPlayer, uint32 Id, uint32 IntId, const char* Code)
+    void OnSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* Code, uint32 gossipId)
     {
-        switch (IntId)
-        {
-            case 1:
-            {
-                TaxiPath* pPath = sTaxiMgr.GetTaxiPath(788);
-                pPlayer->TaxiStart(pPath, 22840, 0);
-                pPlayer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
-            }
-            break;
-        }
+        TaxiPath* pPath = sTaxiMgr.GetTaxiPath(788);
+        pPlayer->TaxiStart(pPath, 22840, 0);
+        pPlayer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
     }
-
 };
 
 // The Battle for the Sun's Reach Armory
@@ -166,8 +152,9 @@ void SetupIsleOfQuelDanas(ScriptMgr* mgr)
     mgr->register_creature_script(25002, &TheBattleForTheSunReachArmory::Create);
 
     //GOSSIP
-    GossipScript* AyrenCloudbreakerGossip = new AyrenCloudbreaker_Gossip;
-    mgr->register_gossip_script(25059, AyrenCloudbreakerGossip);
-    GossipScript* UnrestrainedDragonhawkGossip = new UnrestrainedDragonhawk_Gossip;
-    mgr->register_gossip_script(25236, UnrestrainedDragonhawkGossip);
+    Arcemu::Gossip::Script* AyrenCloudbreakerGossip = new AyrenCloudbreaker_Gossip();
+    mgr->register_creature_gossip(25059, AyrenCloudbreakerGossip);
+
+    Arcemu::Gossip::Script* UnrestrainedDragonhawkGossip = new UnrestrainedDragonhawk_Gossip();
+    mgr->register_creature_gossip(25236, UnrestrainedDragonhawkGossip);
 }

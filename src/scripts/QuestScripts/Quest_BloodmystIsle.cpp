@@ -19,7 +19,6 @@
  */
 
 #include "Setup.h"
-#include "Management/Gossip/GossipMenu.hpp"
 #include <Units/Creatures/Pet.h>
 
 class TheKesselRun : public QuestScript
@@ -35,157 +34,80 @@ public:
     }
 };
 
-class TheKesselRun1 : public GossipScript
+class TheKesselRun1 : public Arcemu::Gossip::Script
 {
 public:
 
-    void GossipHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr)
     {
-        if (!plr)
-            return;
-
-        GossipMenu* Menu;
-        Creature* highchief = static_cast<Creature*>(pObject);
-        if (highchief == NULL)
-            return;
-
-        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
+        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1);
         if (plr->HasQuest(9663))
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(454), 1);     // Warn him
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(454), 1);     // Warn him
 
-        Menu->SendTo(plr);
+        menu.Send(plr);
     }
 
-    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* EnteredCode, uint32 gossipId)
     {
-        if (!plr)
-            return;
-
-        Creature* highchief = static_cast<Creature*>(pObject);
-        if (highchief == NULL)
-            return;
-
-        switch (IntId)
+        QuestLogEntry* en = plr->GetQuestLogForEntry(9663);
+        if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
         {
-            case 0:
-                GossipHello(pObject, plr);
-                break;
-            case 1:
-            {
-                QuestLogEntry* en = plr->GetQuestLogForEntry(9663);
-                if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-                {
-                    en->SetMobCount(0, en->GetMobCount(0) + 1);
-                    en->SendUpdateAddKill(0);
-                    en->UpdatePlayerFields();
-                    return;
-                }
-                break;
-            }
+            en->SetMobCount(0, en->GetMobCount(0) + 1);
+            en->SendUpdateAddKill(0);
+            en->UpdatePlayerFields();
+            return;
         }
     }
 };
 
-class TheKesselRun2 : public GossipScript
+class TheKesselRun2 : public Arcemu::Gossip::Script
 {
 public:
 
-    void GossipHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr)
     {
-        if (!plr)
-            return;
-
-        GossipMenu* Menu;
-        Creature* highchief = static_cast<Creature*>(pObject);
-        if (highchief == NULL)
-            return;
-
-        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
+        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1);
         if (plr->HasQuest(9663))
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(454), 1);     // Warn him
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(454), 1);     // Warn him
 
-        Menu->SendTo(plr);
+        menu.Send(plr);
     }
 
-    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* EnteredCode, uint32 gossipId)
     {
-        if (!plr)
-            return;
-
-        Creature* highchief = static_cast<Creature*>(pObject);
-        if (highchief == NULL)
-            return;
-
-        switch (IntId)
+        QuestLogEntry* en = plr->GetQuestLogForEntry(9663);
+        if (en && en->GetMobCount(1) < en->GetQuest()->required_mob_or_go_count[1])
         {
-            case 0:
-                GossipHello(pObject, plr);
-                break;
-
-            case 1:
-            {
-                QuestLogEntry* en = plr->GetQuestLogForEntry(9663);
-                if (en && en->GetMobCount(1) < en->GetQuest()->required_mob_or_go_count[1])
-                {
-                    en->SetMobCount(1, en->GetMobCount(1) + 1);
-                    en->SendUpdateAddKill(1);
-                    en->UpdatePlayerFields();
-                    return;
-                }
-                break;
-            }
+            en->SetMobCount(1, en->GetMobCount(1) + 1);
+            en->SendUpdateAddKill(1);
+            en->UpdatePlayerFields();
+            return;
         }
     }
 };
 
-class TheKesselRun3 : public GossipScript
+class TheKesselRun3 : public Arcemu::Gossip::Script
 {
 public:
 
-    void GossipHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr)
     {
-        if (!plr)
-            return;
-
-        GossipMenu* Menu;
-        Creature* highchief = static_cast<Creature*>(pObject);
-        if (highchief == NULL)
-            return;
-
-        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
+        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1);
         if (plr->HasQuest(9663))
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(454), 1);     // Warn him
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(454), 1);     // Warn him
 
-        Menu->SendTo(plr);
+        menu.Send(plr);
     }
 
-    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* EnteredCode, uint32 gossipId)
     {
-        if (!plr)
-            return;
-
-        Creature* highchief = static_cast<Creature*>(pObject);
-        if (highchief == NULL)
-            return;
-
-        switch (IntId)
+        QuestLogEntry* en = plr->GetQuestLogForEntry(9663);
+        if (en && en->GetMobCount(2) < en->GetQuest()->required_mob_or_go_count[2])
         {
-            case 0:
-                GossipHello(pObject, plr);
-                break;
-
-            case 1:
-            {
-                QuestLogEntry* en = plr->GetQuestLogForEntry(9663);
-                if (en && en->GetMobCount(2) < en->GetQuest()->required_mob_or_go_count[2])
-                {
-                    en->SetMobCount(2, en->GetMobCount(2) + 1);
-                    en->SendUpdateAddKill(2);
-                    en->UpdatePlayerFields();
-                    return;
-                }
-                break;
-            }
+            en->SetMobCount(2, en->GetMobCount(2) + 1);
+            en->SendUpdateAddKill(2);
+            en->UpdatePlayerFields();
+            return;
         }
     }
 };
@@ -321,9 +243,9 @@ public:
 void SetupBloodmystIsle(ScriptMgr* mgr)
 {
     mgr->register_quest_script(9663, new TheKesselRun());
-    mgr->register_gossip_script(17440, new TheKesselRun1());
-    mgr->register_gossip_script(17116, new TheKesselRun2());
-    mgr->register_gossip_script(17240, new TheKesselRun3());
+    mgr->register_creature_gossip(17440, new TheKesselRun1());
+    mgr->register_creature_gossip(17116, new TheKesselRun2());
+    mgr->register_creature_gossip(17240, new TheKesselRun3());
 
     mgr->register_gameobject_script(181928, &SavingPrincessStillpine::Create);
 

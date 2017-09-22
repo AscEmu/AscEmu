@@ -19,37 +19,29 @@
  */
 
 #include "Setup.h"
-#include "Management/Gossip/GossipMenu.hpp"
 
-class Veronia : public GossipScript
+class Veronia : public Arcemu::Gossip::Script
 {
 public:
-    void GossipHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr)
     {
-        GossipMenu* Menu;
         if (plr->HasQuest(10652))
         {
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(470), 1);     // I'm ready
-            Menu->SendTo(plr);
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1, plr->GetSession()->language);
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(470), 1);     // I'm ready
+            menu.Send(plr);
         }
     }
 
-    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
     {
         Creature* creat = static_cast<Creature*>(pObject);
-        switch (IntId)
-        {
-            case 1:
-                creat->CastSpell(plr, sSpellCustomizations.GetSpellInfo(34905), true);
-                break;
-        }
+        creat->CastSpell(plr, sSpellCustomizations.GetSpellInfo(34905), true);
     }
-
 };
 
 
 void SetupNetherstorm(ScriptMgr* mgr)
 {
-    mgr->register_gossip_script(20162, new Veronia());
+    mgr->register_creature_gossip(20162, new Veronia());
 }

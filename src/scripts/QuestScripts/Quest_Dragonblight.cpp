@@ -29,13 +29,13 @@ public:
     }
 };
 
-class WoodlandWalkerGossip : public GossipScript
+class WoodlandWalkerGossip : public Arcemu::Gossip::Script
 {
 public:
-    void GossipHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr)
     {
-        Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
-        if (pCreature == NULL)
+        Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : nullptr;
+        if (pCreature == nullptr)
             return;
 
         uint32 chance = RandomUInt(1);
@@ -49,9 +49,7 @@ public:
             sEAS.AddItem(36786, plr);
             pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Breaking off a piece of its bark, the Woodlands Walker hands it to you before departing.");
         }
-
     }
-
 };
 
 class WrathGateQuestCinema : public QuestScript
@@ -72,8 +70,8 @@ void SetupDragonblight(ScriptMgr* mgr)
 {
     mgr->register_creature_script(26421, &WoodlandWalker::Create);
 
-    GossipScript* WW = new WoodlandWalkerGossip();
-    mgr->register_gossip_script(26421, WW);
+    Arcemu::Gossip::Script* WW = new WoodlandWalkerGossip();
+    mgr->register_creature_gossip(26421, WW);
 
     QuestScript* WrathGateCinema = new WrathGateQuestCinema();
     mgr->register_quest_script(12499, WrathGateCinema);

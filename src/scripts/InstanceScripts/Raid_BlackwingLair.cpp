@@ -21,7 +21,6 @@
 
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
-#include "Management/Gossip/GossipMenu.hpp"
 
 // --- Death Talon Pack ---
 
@@ -1215,23 +1214,14 @@ class VaelastraszAI : public CreatureAIScript
         uint8 nrspells;
 };
 
-class VaelastraszGossip : public GossipScript
+class VaelastraszGossip : public Arcemu::Gossip::Script
 {
     public:
-        void GossipHello(Object* pObject, Player* Plr)
+        void OnHello(Object* pObject, Player* Plr)
         {
-            GossipMenu* Menu;
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9903, Plr);
-
-            Menu->SendTo(Plr);
-
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 9903, 0);
+            menu.Send(Plr);
         }
-
-        void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId)
-        {
-
-        }
-
 };
 
 
@@ -1294,6 +1284,7 @@ void SetupBlackwingLair(ScriptMgr* mgr)
     mgr->register_creature_script(CN_EBONROC, &EbonrocAI::Create);
     mgr->register_creature_script(CN_FLAMEGOR, &FlamegorAI::Create);
     mgr->register_creature_script(CN_VAELASTRASZ, &VaelastraszAI::Create);
-    GossipScript* vg = new VaelastraszGossip;
-    mgr->register_gossip_script(CN_VAELASTRASZ, vg);        ///\todo  Vael Gossip change the flag to agressive
+
+    Arcemu::Gossip::Script* vg = new VaelastraszGossip();
+    mgr->register_creature_gossip(CN_VAELASTRASZ, vg);        ///\todo  Vael Gossip change the flag to agressive
 }

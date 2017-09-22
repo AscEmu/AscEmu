@@ -4,7 +4,6 @@
  */
 
 #include "Setup.h"
-#include "Management/Gossip/GossipMenu.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //\details <b>Brewfest</b>\n
@@ -27,39 +26,32 @@ const uint32 NPC_MINION = 26776;
 const uint32 SPELL_DISARM = 47310;
 const uint32 SPELL_SUMMON_MINION = 47375;
 
-class SCRIPT_DECL CorenDirebrewGossip : public GossipScript
+class SCRIPT_DECL CorenDirebrewGossip : public Arcemu::Gossip::Script
 {
 public:
-    void GossipHello(Object* pObject, Player* Plr);
-    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* EnteredCode);
-    void GossipEnd(Object* pObject, Player* Plr) { Plr->CloseGossip(); }
+    void OnHello(Object* pObject, Player* Plr);
+    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32 gossipId);
 };
 
-void CorenDirebrewGossip::GossipHello(Object* pObject, Player * Plr)
+void CorenDirebrewGossip::OnHello(Object* pObject, Player * Plr)
 {
-    GossipMenu* Menu;
-    objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), DIREBREW_1, Plr);
-    Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(439), 1);     // Insult Coren Direbrew's brew.
-    Menu->SendTo(Plr);
+    Arcemu::Gossip::Menu menu(pObject->GetGUID(), DIREBREW_1, Plr->GetSession()->language);
+    menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(439), 1);     // Insult Coren Direbrew's brew.
+    menu.Send(Plr);
 }
 
-void CorenDirebrewGossip::GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char * Code)
+void CorenDirebrewGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char * Code, uint32 gossipId)
 {
-    GossipMenu* Menu;
-    objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), DIREBREW_2, Plr);
-
-    if (!pObject->IsCreature())
-        return;
-
     Creature* pCreature = static_cast<Creature*>(pObject);
 
-    switch (IntId)
+    switch (Id)
     {
         case 1:
         {
-            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(440), 1);     // Fight.
-            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(441), 1);     // Apologize.
-            Menu->SendTo(Plr);
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), DIREBREW_2, Plr->GetSession()->language);
+            menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(440), 1);     // Fight.
+            menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(441), 1);     // Apologize.
+            menu.Send(Plr);
         }break;
         case 2:
         {
@@ -81,7 +73,7 @@ public:
 
 void SetupBrewfest(ScriptMgr* mgr)
 {
-    mgr->register_gossip_script(BOSS_DIREBREW, new CorenDirebrewGossip);
+    mgr->register_creature_gossip(BOSS_DIREBREW, new CorenDirebrewGossip());
     //mgr->register_creature_script(BOSS_DIREBREW, CorenDirebrew::Create);
 }
 

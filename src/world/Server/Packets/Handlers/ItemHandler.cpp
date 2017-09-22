@@ -20,7 +20,6 @@
  */
 
 #include "StdAfx.h"
-#include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Item.h"
 #include "Management/Container.h"
 #include "Management/ItemInterface.h"
@@ -1459,9 +1458,7 @@ void WorldSession::HandleListInventoryOpcode(WorldPacket& recv_data)
         SendInventoryList(unit);
     else
     {
-        GossipMenu* pMenu;
-        objmgr.CreateGossipMenuForPlayer(&pMenu, unit->GetGUID(), vendor->cannotbuyattextid, _player);
-        pMenu->SendTo(_player);
+        Arcemu::Gossip::Menu::SendSimpleMenu(unit->GetGUID(), vendor->cannotbuyattextid, _player);
     }
 }
 

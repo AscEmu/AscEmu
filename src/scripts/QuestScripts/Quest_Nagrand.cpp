@@ -20,7 +20,6 @@
  */
 
 #include "Setup.h"
-#include "Management/Gossip/GossipMenu.hpp"
 
 class Quest_The_Ring_of_Blood_The_Final_Challenge : public QuestScript
 {
@@ -290,7 +289,7 @@ public:
         if (_unit->GetHealthPct() < 30)
         {
             Unit* pUnit = _unit->GetAIInterface()->GetMostHated();
-            if (pUnit != NULL && pUnit->IsPlayer())
+            if (pUnit != nullptr && pUnit->IsPlayer())
                 static_cast<Player*>(pUnit)->EventAttackStop();
 
             _unit->SetFaction(35);
@@ -307,44 +306,32 @@ public:
 
 };
 
-class LumpGossipScript : public GossipScript
+class LumpGossipScript : public Arcemu::Gossip::Script
 {
 public:
-    void GossipHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr)
     {
-        GossipMenu* Menu;
-        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(469), 1);     // Why are Boulderfist out this far? You know this is Kurenai territory!
-        Menu->SendTo(plr);
+        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 2, plr->GetSession()->language);
+        menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(469), 1);     // Why are Boulderfist out this far? You know this is Kurenai territory!
+        menu.Send(plr);
     };
 
-    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* EnteredCode, uint32 gossipId)
     {
         Creature* Lump = static_cast<Creature*>(pObject);
-        if (Lump == NULL)
-            return;
 
-        switch (IntId)
+        if (plr->HasQuest(9918))
         {
-            case 0:
-                GossipHello(pObject, plr);
-                break;
-            case 1:
-                if (plr->HasQuest(9918))
-                {
-                    QuestLogEntry* en = plr->GetQuestLogForEntry(9918);
-                    if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-                    {
-                        uint32 newcount = en->GetMobCount(0) + 1;
-                        en->SetMobCount(0, newcount);
-                        en->SendUpdateAddKill(0);
-                        en->UpdatePlayerFields();
-                    }
-                }
-                break;
+            QuestLogEntry* en = plr->GetQuestLogForEntry(9918);
+            if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
+            {
+                uint32 newcount = en->GetMobCount(0) + 1;
+                en->SetMobCount(0, newcount);
+                en->SendUpdateAddKill(0);
+                en->UpdatePlayerFields();
+            }
         }
-    };
-
+    }
 };
 
 
@@ -360,6 +347,6 @@ void SetupNagrand(ScriptMgr* mgr)
     mgr->register_quest_script(9967, new Quest_The_Ring_of_Blood_The_Blue_Brothers());
     mgr->register_quest_script(9962, new Quest_The_Ring_of_Blood_Brokentoe());
 
-    GossipScript* LumpGossip = new LumpGossipScript;
-    mgr->register_gossip_script(18351, LumpGossip);
+    Arcemu::Gossip::Script* LumpGossip = new LumpGossipScript();
+    mgr->register_creature_gossip(18351, LumpGossip);
 }

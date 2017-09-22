@@ -22,7 +22,7 @@
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Instance_WailingCaverns.h"
-#include "Management/Gossip/GossipMenu.hpp"
+
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Wailing Caverns
@@ -342,11 +342,11 @@ static Movement::Location ToNaralex[] =
     { 116.031120f, 236.451187f, -96.007195f, 3.089230f }
 };
 
-class DofNaralexGossip : public GossipScript
+class DofNaralexGossip : public Arcemu::Gossip::Script
 {
     public:
 
-        void GossipHello(Object* pObject, Player* plr)
+        void OnHello(Object* pObject, Player* plr)
         {
             Unit* Fanglord1 = pObject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-151.139008f, 414.367004f, -72.629402f, CN_LORD_COBRAHN);
             Unit* Fanglord2 = pObject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(36.807400f, -241.063995f, -79.498901f, CN_LORD_PYTHAS);
@@ -355,21 +355,19 @@ class DofNaralexGossip : public GossipScript
 
             if ((!Fanglord1 || !Fanglord1->isAlive()) && (!Fanglord2 || !Fanglord2->isAlive()) && (!Fanglord3 || !Fanglord3->isAlive()) && (!Fanglord4 || !Fanglord4->isAlive()))
             {
-                GossipMenu* Menu;
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 699, plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(442), 1);     // Let's go!
-                Menu->SendTo(plr);
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 699, 0);
+                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(442), 1);     // Let's go!
+                menu.Send(plr);
             }
             else
             {
-                GossipMenu* Menu;
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 698, plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(443), 1);     // I will slay those Fanglords
-                Menu->SendTo(plr);
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 698, 0);
+                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(443), 1);     // I will slay those Fanglords
+                menu.Send(plr);
             }
 
         }
-        void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId)
         {
             Creature* pCreature = (pObject->IsCreature()) ? static_cast<Creature*>(pObject) : nullptr;
             if (pCreature == nullptr)
@@ -377,18 +375,13 @@ class DofNaralexGossip : public GossipScript
                 return;
             }
 
-            switch (IntId)
+            switch (Id)
             {
-                case 0: // Return to start
-                {
-                    GossipHello(pCreature, Plr);
-                } break;
                 case 1: // Disciple of Naralex Casts Mark of the Wild on players.
                 {
                     pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Take this! It will be useful for you. I'll be waiting here when you have slain the 4 Fanglords to awake Naralex!");
                     pCreature->CastSpell(Plr, 5232, true);
                     pCreature->Emote(EMOTE_ONESHOT_CHEER);
-                    Plr->Gossip_Complete();
                 } break;
                 case 2: // Start Event
                 {
@@ -401,6 +394,7 @@ class DofNaralexGossip : public GossipScript
                 default:
                     break;
             }
+            Arcemu::Gossip::Menu::Complete(Plr);
         }
 };
 
@@ -557,8 +551,10 @@ void SetupWailingCaverns(ScriptMgr* mgr)
     mgr->register_creature_script(CN_VERDAN_EVERLIVING, &VerdanEverlivingAI::Create);
     mgr->register_creature_script(CN_SKUM, &SkumAI::Create);
     mgr->register_creature_script(CN_MUTANUS, &MutanusAI::Create);
-    GossipScript* DNaralex = new DofNaralexGossip();
-    mgr->register_gossip_script(CN_DIS_NARALEX, DNaralex);
+
+    Arcemu::Gossip::Script* DNaralex = new DofNaralexGossip();
+    mgr->register_creature_gossip(CN_DIS_NARALEX, DNaralex);
+
     mgr->register_creature_script(CN_DIS_NARALEX, &DofNaralexAI::Create);
     mgr->register_creature_script(CN_NARALEX, &Naralex::Create);
 

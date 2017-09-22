@@ -18,7 +18,6 @@
  */
 
 #include "Setup.h"
-#include "Management/Gossip/GossipMenu.hpp"
 
 void GuardsOnSalute(Player* pPlayer, Unit* pUnit)
 {
@@ -84,72 +83,57 @@ void OnEmote(Player* pPlayer, uint32 Emote, Unit* pUnit)
     }
 }
 
-class JeanPierrePoulain : public GossipScript
+class JeanPierrePoulain : public Arcemu::Gossip::Script
 {
 public:
-    void GossipHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr)
     {
-        GossipMenu* Menu;
-        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 14500, plr);
+        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 14500);
         if (plr->HasFinishedQuest(13668) || plr->HasQuest(13668) || plr->HasFinishedQuest(13667) || plr->HasQuest(13667))
         {
-            Menu->SendTo(plr);
+            menu.Send(plr);
         }
         else
         {
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(446), 1);     // I'll take the flight.
-            Menu->SendTo(plr);
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(446), 1);     // I'll take the flight.
+            menu.Send(plr);
         }
     }
 
-    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId)
     {
-        switch (IntId)
-        {
-            case 0:
-                GossipHello(pObject, Plr);
-                break;
-            case 1:
-                Plr->CastSpell(Plr, 64795, true);
-                break;
-        }
-        Plr->Gossip_Complete();
+        Plr->CastSpell(Plr, 64795, true);
+        Arcemu::Gossip::Menu::Complete(Plr);
     }
 };
 
-class Wormhole : public GossipScript
+class Wormhole : public Arcemu::Gossip::Script
 {
 public:
-    void GossipHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr)
     {
         if (plr->_GetSkillLineCurrent(202, false) >= 415)
         {
-            GossipMenu* Menu;
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 14785, plr);
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(447), 1);     // Borean Tundra
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(448), 2);     // Howling Fjord
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(449), 3);     // Sholazar Basin
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(450), 4);     // Icecrown
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(451), 5);     // Storm Peaks
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 14785);
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(447), 1);     // Borean Tundra
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(448), 2);     // Howling Fjord
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(449), 3);     // Sholazar Basin
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(450), 4);     // Icecrown
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(451), 5);     // Storm Peaks
 
             uint8 chance = RandomUInt(1);
 
             if (chance == 1)
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(452), 6);     // Underground...
+                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(452), 6);     // Underground...
 
-            Menu->SendTo(plr);
+            menu.Send(plr);
         }
     }
 
-    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
+    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32 gossipId)
     {
-
-        switch (IntId)
+        switch (Id)
         {
-            case 0:
-                GossipHello(pObject, Plr);
-                return;
-                break;
             case 1:
                 Plr->CastSpell(Plr, 67834, true);
                 break;
@@ -169,7 +153,7 @@ public:
                 Plr->CastSpell(Plr, 68081, true);
                 break;
         }
-        Plr->Gossip_Complete();
+        Arcemu::Gossip::Menu::Complete(Plr);
     }
 };
 
@@ -177,6 +161,10 @@ void SetupRandomScripts(ScriptMgr* mgr)
 {
     // Register Hook Event here
     mgr->register_hook(SERVER_HOOK_EVENT_ON_EMOTE, (void*)&OnEmote);
-    mgr->register_gossip_script(34244, new JeanPierrePoulain);
-    mgr->register_gossip_script(35646, new Wormhole);
+
+    Arcemu::Gossip::Script* jeanPierrePoulain = new JeanPierrePoulain();
+    mgr->register_creature_gossip(34244, jeanPierrePoulain);
+
+    Arcemu::Gossip::Script* wormhole = new Wormhole();
+    mgr->register_creature_gossip(35646, wormhole);
 }

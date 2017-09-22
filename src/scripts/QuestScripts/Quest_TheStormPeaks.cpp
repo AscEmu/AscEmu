@@ -17,7 +17,6 @@
  */
 
 #include "Setup.h"
-#include "Management/Gossip/GossipMenu.hpp"
 
  // The Gifts of Loken
 class LokensFury : public GameObjectAIScript
@@ -62,55 +61,47 @@ public:
 
 };
 
-class SCRIPT_DECL MissingScout_Gossip : public GossipScript
+class MissingScout_Gossip : public Arcemu::Gossip::Script
 {
 public:
-    void GossipHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr)
     {
-        GossipMenu* Menu;
-        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 13611, plr);
         if (plr->HasQuest(12864))
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(499), 1);     // Are you okay? I've come to take you back to Frosthold if you can stand.
-
-        Menu->SendTo(plr);
+        {
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 13612, plr->GetSession()->language);
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(499), 1);     // Are you okay? I've come to take you back to Frosthold if you can stand.
+            menu.Send(plr);
+        }
     }
-    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
-    {
-        Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
-        if (pCreature == NULL)
-            return;
 
-        GossipMenu* Menu;
-        switch (IntId)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
+    {
+        switch (Id)
         {
             case 1:
             {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 13612, plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(500), 2);     // I'm sorry that I didn't get here sooner. What happened?
-                Menu->SendTo(plr);
-            }
-            break;
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 13612, plr->GetSession()->language);
+                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(500), 2);     // I'm sorry that I didn't get here sooner. What happened?
+                menu.Send(plr);
+            } break;
             case 2:
             {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 13613, plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(501), 3);     // I'll go get some help. Hang in there.
-                Menu->SendTo(plr);
-            }
-            break;
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 13613, plr->GetSession()->language);
+                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(501), 3);     // I'll go get some help. Hang in there.
+                menu.Send(plr);
+            } break;
             case 3:
             {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 13614, plr);
-                Menu->SendTo(plr);
+                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13614, plr);
 
                 QuestLogEntry* qle = plr->GetQuestLogForEntry(12864);
-                if (qle == NULL || qle->GetMobCount(0) != 0)
+                if (qle == nullptr || qle->GetMobCount(0) != 0)
                     return;
 
                 qle->SetMobCount(0, 1);
                 qle->SendUpdateAddKill(0);
                 qle->UpdatePlayerFields();
-            }
-            break;
+            } break;
         }
     }
 
@@ -123,6 +114,7 @@ void SetupTheStormPeaks(ScriptMgr* mgr)
     mgr->register_gameobject_script(192120, &LokensFury::Create);
     mgr->register_gameobject_script(192121, &LokensPower::Create);
     mgr->register_gameobject_script(192122, &LokensFavor::Create);
-    GossipScript* MissingScoutGossip = new MissingScout_Gossip;
-    mgr->register_gossip_script(29811, MissingScoutGossip);
+
+    Arcemu::Gossip::Script* MissingScoutGossip = new MissingScout_Gossip();
+    mgr->register_creature_gossip(29811, MissingScoutGossip);
 }

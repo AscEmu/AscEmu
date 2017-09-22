@@ -20,7 +20,6 @@
  */
 
 #include "Setup.h"
-#include "Management/Gossip/GossipMenu.hpp"
 
 class InfiltratingDragonmawFortressQAI : public CreatureAIScript
 {
@@ -273,52 +272,43 @@ public:
 };
 
 
-class NeltharakusTale_Gossip : public GossipScript
+class NeltharakusTale_Gossip : public Arcemu::Gossip::Script
 {
 public:
-    void GossipHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr)
     {
         if (plr->HasQuest(10814))
         {
-            GossipMenu* Menu;
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10613, plr);
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(471), 1);     // I am listening, Dragon
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 10613, plr->GetSession()->language);
+            if (plr->HasQuest(10583))
+                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(471), 1);     // I am listening, Dragon
 
-            Menu->SendTo(plr);
+            menu.Send(plr);
         }
     }
 
-    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
     {
-        if (!pObject->IsCreature())
-            return;
-
-        switch (IntId)
+        switch (Id)
         {
             case 1:
             {
-                GossipMenu* Menu;
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10614, plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(472), 2);     // But you are Dragons! How could orcs do this to you?
-                Menu->SendTo(plr);
-            }
-            break;
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 10614, plr->GetSession()->language);
+                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(472), 2);     // But you are Dragons! How could orcs do this to you?
+                menu.Send(plr);
+            } break;
             case 2:
             {
-                GossipMenu* Menu;
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10615, plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(473), 3);     // Your mate?
-                Menu->SendTo(plr);
-            }
-            break;
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 10615, plr->GetSession()->language);
+                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(473), 3);     // Your mate?
+                menu.Send(plr);
+            } break;
             case 3:
             {
-                GossipMenu* Menu;
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10616, plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(474), 4);     // I have battled many beasts, Dragon. I will help you.
-                Menu->SendTo(plr);
-            }
-            break;
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 10616, plr->GetSession()->language);
+                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(474), 4);     // I have battled many beasts, Dragon. I will help you.
+                menu.Send(plr);
+            } break;
             case 4:
             {
                 QuestLogEntry* pQuest = plr->GetQuestLogForEntry(10814);
@@ -328,11 +318,9 @@ public:
                     pQuest->SendUpdateAddKill(0);
                     pQuest->UpdatePlayerFields();
                 }
-            }
-            break;
+            } break;
         }
     }
-
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -382,53 +370,43 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////// Flanis Swiftwing
-class FlanisSwiftwing_Gossip : public GossipScript
+class FlanisSwiftwing_Gossip : public Arcemu::Gossip::Script
 {
 public:
-    void GossipHello(Object* pObject, Player* Plr);
-    void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId);
-    void GossipEnd(Object* pObject, Player* Plr, Creature* pCreature);
-
+    void OnHello(Object* pObject, Player* Plr);
+    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32 gossipId);
 };
 
-void FlanisSwiftwing_Gossip::GossipHello(Object* pObject, Player* plr)
+void FlanisSwiftwing_Gossip::OnHello(Object* pObject, Player* plr)
 {
-    GossipMenu* Menu;
-    objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 40002, plr);
+    Arcemu::Gossip::Menu menu(pObject->GetGUID(), 40002, plr->GetSession()->language);
     if (plr->HasQuest(10583))
-        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(475), 1);     // Examine the corpse
+        menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(475), 1);     // Examine the corpse
 
-    Menu->SendTo(plr);
+    menu.Send(plr);
 };
 
-void FlanisSwiftwing_Gossip::GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+void FlanisSwiftwing_Gossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32 gossipId)
 {
-    Creature* pCreature = (pObject->IsCreature()) ? static_cast<Creature*>(pObject) : NULL;
-    if (pCreature == NULL)
+    Creature* pCreature = static_cast<Creature*>(pObject);
+
+    Item* item = objmgr.CreateItem(30658, Plr);
+    if (item == nullptr)
         return;
-    if (IntId == 1)
+
+    item->SetStackCount(1);
+    if (!Plr->GetItemInterface()->AddItemToFreeSlot(item))
     {
-        auto item = objmgr.CreateItem(30658, Plr);
-        if (item == nullptr)
-            return;
-        item->SetStackCount(1);
-        if (!Plr->GetItemInterface()->AddItemToFreeSlot(item))
-        {
-            Plr->GetSession()->SendNotification("No free slots were found in your inventory!");
-            item->DeleteMe();
-        }
-        else
-        {
-            Plr->SendItemPushResult(false, true, false, true, Plr->GetItemInterface()->LastSearchResult()->ContainerSlot,
-                Plr->GetItemInterface()->LastSearchResult()->Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(),
-                item->GetItemRandomPropertyId(), item->GetStackCount());
-        }
+        Plr->GetSession()->SendNotification("No free slots were found in your inventory!");
+        item->DeleteMe();
+    }
+    else
+    {
+        Plr->SendItemPushResult(false, true, false, true, Plr->GetItemInterface()->LastSearchResult()->ContainerSlot,
+            Plr->GetItemInterface()->LastSearchResult()->Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(),
+            item->GetItemRandomPropertyId(), item->GetStackCount());
     }
 };
-void FlanisSwiftwing_Gossip::GossipEnd(Object* pObject, Player* Plr, Creature* pCreature)
-{
-    GossipScript::GossipEnd(pObject, Plr);
-}
 
 
 void SetupShadowmoon(ScriptMgr* mgr)
@@ -451,9 +429,9 @@ void SetupShadowmoon(ScriptMgr* mgr)
 
     mgr->register_gameobject_script(185156, &KarynakuChains::Create);
 
-    GossipScript* NeltharakusTaleGossip = new NeltharakusTale_Gossip;
-    mgr->register_gossip_script(21657, NeltharakusTaleGossip);
+    Arcemu::Gossip::Script* NeltharakusTaleGossip = new NeltharakusTale_Gossip();
+    mgr->register_creature_gossip(21657, NeltharakusTaleGossip);
 
-    GossipScript* FlanisSwiftwingGossip = new FlanisSwiftwing_Gossip;
-    mgr->register_gossip_script(21727, FlanisSwiftwingGossip); //Add Flanis' Pack
+    Arcemu::Gossip::Script* FlanisSwiftwingGossip = new FlanisSwiftwing_Gossip();
+    mgr->register_creature_gossip(21727, FlanisSwiftwingGossip); //Add Flanis' Pack
 }

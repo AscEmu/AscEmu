@@ -28,9 +28,6 @@ class CassaCrimsonwing_Gossip : public Arcemu::Gossip::Script
 
         void OnHello(Object* pObject, Player* plr)
         {
-            GossipMenu* Menu;
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 11224, plr);
-
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 11224);
             if (plr->HasQuest(11142))
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THERAMORE_CROMSONWING), 1);
@@ -38,14 +35,16 @@ class CassaCrimsonwing_Gossip : public Arcemu::Gossip::Script
             menu.Send(plr);
         }
 
-        void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)
+        void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
         {
             auto quest_entry = plr->GetQuestLogForEntry(11142);
             if (quest_entry == nullptr)
                 return;
+
             quest_entry->SendQuestComplete();
 
             plr->TaxiStart(sTaxiMgr.GetTaxiPath(724), 1147, 0);     // Gryph
+            Arcemu::Gossip::Menu::Complete(plr);
         }
 
         void Destroy() { delete this; }
@@ -71,7 +70,7 @@ class CaptainGarranVimes_Gossip : public Arcemu::Gossip::Script
             menu.Send(plr);
         }
 
-        void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)
+        void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
         {
             Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 1794, plr);
         }

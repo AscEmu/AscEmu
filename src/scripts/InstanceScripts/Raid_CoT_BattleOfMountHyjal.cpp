@@ -21,7 +21,6 @@
 
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
-#include "Management/Gossip/GossipMenu.hpp"
 #include "Objects/Faction.h"
 #include "Spell/SpellMgr.h"
 #include <Spell/Definitions/PowerType.h>
@@ -95,37 +94,35 @@ class JainaProudmooreAI : public CreatureAIScript
         }
 };
 
-class JainaProudmooreGS : public GossipScript
+class JainaProudmooreGS : public Arcemu::Gossip::Script
 {
     public:
-        void GossipHello(Object* pObject, Player* plr)
+        void OnHello(Object* pObject, Player* plr)
         {
             if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
                 return;
-            GossipMenu* Menu;
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
 
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 2);
             switch (pObject->GetMapMgr()->GetScript()->GetInstanceData(HYJAL_TYPE_BASIC, 0))
             {
                 case HYJAL_PHASE_NOT_STARTED:
-                    Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(435), 1);     // We are ready to defend the Alliance base.
+                    menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(435), 1);     // We are ready to defend the Alliance base.
                     break;
                 case HYJAL_PHASE_RAGE_WINTERCHILL_COMPLETE:
-                    Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(435), 1);     // We are ready to defend the Alliance base.
+                    menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(435), 1);     // We are ready to defend the Alliance base.
                     break;
                 case HYJAL_PHASE_ANETHERON_COMPLETE:
-                    Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(436), 1);     // The defenses are holding up: we can continue.
+                    menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(436), 1);     // The defenses are holding up: we can continue.
                     break;
             }
 
-            Menu->SendTo(plr);
+            menu.Send(plr);
         }
 
-        void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId)
         {
             if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
                 return;
-            Creature* creature = static_cast<Creature*>(pObject);
 
             switch (pObject->GetMapMgr()->GetScript()->GetInstanceData(HYJAL_TYPE_BASIC, 0))
             {
@@ -135,10 +132,8 @@ class JainaProudmooreGS : public GossipScript
                     break;
             }
 
-            creature->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+            pObject->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
         }
-
-        void GossipEnd(Object* pObject, Player* Plr) { GossipScript::GossipEnd(pObject, Plr); }
 };
 
 //Thrall AI & GS
@@ -155,34 +150,32 @@ class ThrallAI : public CreatureAIScript
         }
 };
 
-class ThrallGS : public GossipScript
+class ThrallGS : public Arcemu::Gossip::Script
 {
     public:
-        void GossipHello(Object* pObject, Player* plr)
+        void OnHello(Object* pObject, Player* plr)
         {
             if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
                 return;
-            GossipMenu* Menu;
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
 
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 2);
             switch (pObject->GetMapMgr()->GetScript()->GetInstanceData(HYJAL_TYPE_BASIC, 0))
             {
                 case HYJAL_PHASE_ANETHERON_COMPLETE:
-                    Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(437), 1);     // We're here to help! The Alliance are overrun.
+                    menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(437), 1);     // We're here to help! The Alliance are overrun.
                     break;
                 case HYJAL_PHASE_KAZROGAL_COMPLETE:
-                    Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(438), 1);     // We're okay so far. Let's do this!
+                    menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(438), 1);     // We're okay so far. Let's do this!
                     break;
             }
 
-            Menu->SendTo(plr);
+            menu.Send(plr);
         }
 
-        void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId)
         {
             if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
                 return;
-            Creature* creature = static_cast<Creature*>(pObject);
 
             switch (pObject->GetMapMgr()->GetScript()->GetInstanceData(HYJAL_TYPE_BASIC, 0))
             {
@@ -191,10 +184,8 @@ class ThrallGS : public GossipScript
                     break;
             }
 
-            creature->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+            pObject->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
         }
-
-        void GossipEnd(Object* pObject, Player* Plr) { GossipScript::GossipEnd(pObject, Plr); }
 };
 
 
@@ -1617,10 +1608,10 @@ void SetupBattleOfMountHyjal(ScriptMgr* mgr)
 {
     mgr->register_instance_script(MAP_HYJALPAST, &MountHyjalScript::Create);
 
-    mgr->register_gossip_script(CN_JAINA_PROUDMOORE, new JainaProudmooreGS);
+    mgr->register_creature_gossip(CN_JAINA_PROUDMOORE, new JainaProudmooreGS());
     mgr->register_creature_script(CN_JAINA_PROUDMOORE, &JainaProudmooreAI::Create);
 
-    mgr->register_gossip_script(CN_THRALL, new ThrallGS);
+    mgr->register_creature_gossip(CN_THRALL, new ThrallGS());
     mgr->register_creature_script(CN_THRALL, &ThrallAI::Create);
 
     mgr->register_creature_script(CN_RAGE_WINTERCHILL, &RageWinterchillAI::Create);

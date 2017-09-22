@@ -19,7 +19,6 @@
 
 #include "Setup.h"
 #include "Raid_Ulduar.h"
-#include "Management/Gossip/GossipMenu.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Ulduar Instance
@@ -79,63 +78,47 @@ class UlduarScript : public MoonInstanceScript
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Ulduar Teleporter
-class UlduarTeleporterAI : public GameObjectAIScript
+class UlduarTeleporterGossip : public Arcemu::Gossip::Script
 {
     public:
 
-        UlduarTeleporterAI(GameObject* go) : GameObjectAIScript(go)
-        {
-        }
-
-        ~UlduarTeleporterAI() {}
-
-        static GameObjectAIScript* Create(GameObject* go) { return new UlduarTeleporterAI(go); }
-
-        void OnActivate(Player* player)
+        void OnHello(Object* object, Player* player)
         {
             UlduarScript* pInstance = (UlduarScript*)player->GetMapMgr()->GetScript();
             if (!pInstance)
                 return;
 
-            GossipMenu* menu = NULL;
-            objmgr.CreateGossipMenuForPlayer(&menu, _gameobject->GetGUID(), 14424, player);
-            menu->AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(521), 0);      // Expedition Base Camp.
+            Arcemu::Gossip::Menu menu(object->GetGUID(), 14424, player->GetSession()->language);
+            menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(521), 0);      // Expedition Base Camp.
 
             // Unlock after engaging Flame Leviathan
-            menu->AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(522), 1);      // Formation Grounds
+            menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(522), 1);      // Formation Grounds
 
             if (pInstance->GetInstanceData(Data_EncounterState, CN_FLAME_LEVIATHAN) == State_Finished)
-                menu->AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(523), 2);      // Colossal Forge
+                menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(523), 2);      // Colossal Forge
 
             if (pInstance->GetInstanceData(Data_EncounterState, CN_XT_002_DECONSTRUCTOR) == State_Finished)
             {
-                menu->AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(524), 3);      // Scrapyard
-                menu->AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(525), 4);      // Antechamber of Ulduar
+                menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(524), 3);      // Scrapyard
+                menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(525), 4);      // Antechamber of Ulduar
             }
 
             if (pInstance->GetInstanceData(Data_EncounterState, CN_KOLOGARN) == State_Finished)
-                menu->AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(526), 5);      // Shattered Walkway
+                menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(526), 5);      // Shattered Walkway
 
             if (pInstance->GetInstanceData(Data_EncounterState, CN_AURIAYA) == State_Finished)
-                menu->AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(527), 6);      // Conservatory of Life
+                menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(527), 6);      // Conservatory of Life
 
             if (pInstance->GetInstanceData(Data_EncounterState, CN_MIMIRON) == State_Finished)
-                menu->AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(528), 7);      // Spark of Imagination
+                menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(528), 7);      // Spark of Imagination
 
             if (pInstance->GetInstanceData(Data_EncounterState, CN_GENERAL_VEZAX) == State_Finished)
-                menu->AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(529), 8);      // Prison of Yogg-Saron
+                menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(529), 8);      // Prison of Yogg-Saron
 
-            menu->SendTo(player);
+            menu.Send(player);
         }
-};
 
-class UlduarTeleporterGossip : public GossipScript
-{
-    public:
-
-        UlduarTeleporterGossip() : GossipScript(){}
-
-        void OnSelectOption(Object* object, Player* player, uint32 Id, const char* enteredcode)
+        void OnSelectOption(Object* object, Player* player, uint32 Id, const char* enteredcode, uint32 gossipId)
         {
             Arcemu::Gossip::Menu::Complete(player);
 
@@ -175,6 +158,22 @@ class UlduarTeleporterGossip : public GossipScript
         }
 };
 
+class UlduarTeleporterAI : public GameObjectAIScript
+{
+public:
+
+    UlduarTeleporterAI(GameObject* go) : GameObjectAIScript(go) {}
+    ~UlduarTeleporterAI() {}
+
+    static GameObjectAIScript* Create(GameObject* go) { return new UlduarTeleporterAI(go); }
+
+    void OnActivate(Player* player)
+    {
+        UlduarTeleporterGossip gossip;
+        gossip.OnHello(_gameobject, player);
+    }
+};
+
 void SetupUlduar(ScriptMgr* mgr)
 {
     //Instance
@@ -182,5 +181,5 @@ void SetupUlduar(ScriptMgr* mgr)
 
     //Teleporter
     mgr->register_gameobject_script(194569, &UlduarTeleporterAI::Create);
-    mgr->register_go_gossip_script(194569, new UlduarTeleporterGossip());
+    mgr->register_go_gossip(194569, new UlduarTeleporterGossip());
 };

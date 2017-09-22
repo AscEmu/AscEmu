@@ -21,11 +21,11 @@
 #include "Setup.h"
 #include "Management/TaxiMgr.h"
 
-class GossipScourgeGryphon : public GossipScript
+class GossipScourgeGryphon : public Arcemu::Gossip::Script
 {
 public:
 
-    void GossipHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr)
     {
         if (plr->HasQuest(12670) || plr->HasFinishedQuest(12670))
         {
@@ -148,8 +148,9 @@ public:
 
 void SetupDeathKnight(ScriptMgr* mgr)
 {
-    mgr->register_gossip_script(29488, new GossipScourgeGryphon);
-    mgr->register_gossip_script(29501, new GossipScourgeGryphon);
+    Arcemu::Gossip::Script* scourgeGryphon = new GossipScourgeGryphon();
+    mgr->register_creature_gossip(29488, scourgeGryphon);
+    mgr->register_creature_gossip(29501, scourgeGryphon);
 
     mgr->register_dummy_spell(SPELL_RUNE_I, &PreparationForBattleEffect);
     mgr->register_dummy_spell(SPELL_RUNE_II, &PreparationForBattleEffect);

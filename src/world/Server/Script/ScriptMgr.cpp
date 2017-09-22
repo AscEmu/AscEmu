@@ -23,7 +23,6 @@
 
 #include "WorldConf.h"
 #include "Management/GameEvent.h"
-#include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Item.h"
 #include "Storage/MySQLDataStore.hpp"
 #include <git_version.h>
@@ -783,31 +782,6 @@ void ScriptMgr::UnloadScriptEngines()
                 engine_unloadfunc();
         }
     }
-}
-
-//support for Gossip scripts added before r4106 changes
-// \todo remove this support/update old scripts
-void GossipScript::OnHello(Object* pObject, Player* Plr)
-{
-    GossipHello(pObject, Plr);
-}
-
-void GossipScript::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId)
-{
-    uint32 IntId = Id;
-
-    if (Plr->CurrentGossipMenu != NULL)
-    {
-        GossipMenuItem item = Plr->CurrentGossipMenu->GetItem(Id);
-        IntId = item.IntId;
-    }
-
-    GossipSelectOption(pObject, Plr, Id, IntId, EnteredCode, gossipId);
-}
-
-void GossipScript::OnEnd(Object* pObject, Player* Plr)
-{
-    GossipEnd(pObject, Plr);
 }
 
 /* Hook Implementations */

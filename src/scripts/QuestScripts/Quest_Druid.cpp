@@ -23,7 +23,6 @@
  Edits by : FenixGman
  **********************/
 #include "Setup.h"
-#include "Management/Gossip/GossipMenu.hpp"
 
 
 class Lunaclaw : public CreatureAIScript
@@ -47,48 +46,33 @@ public:
 // Lunaclaw ghost gossip
 #define GOSSIP_GHOST_MOONKIN    "You have fought well, spirit. I ask you to grand me the strenght of your body and the strenght of your heart."
 
-class SCRIPT_DECL MoonkinGhost_Gossip : public GossipScript
+class MoonkinGhost_Gossip : public Arcemu::Gossip::Script
 {
 public:
-    void GossipHello(Object* pObject, Player* plr)
+
+    void OnHello(Object* pObject, Player* plr)
     {
-        GossipMenu* Menu;
-        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4714, plr);
-
+        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 4714, plr->GetSession()->language);
         if (plr->HasQuest(6002))
-        {
-            //Horde
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(455), 1);     // You have fought well, spirit. I ask you to grand me the strenght of your body and the strenght of your heart.
-        }
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(455), 1);     // You have fought well, spirit. I ask you to grand me the strenght of your body and the strenght of your heart.
         else if (plr->HasQuest(6001))
-        {
-            //Ally
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(455), 2);     // You have fought well, spirit. I ask you to grand me the strenght of your body and the strenght of your heart.
-        }
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(455), 2);     // You have fought well, spirit. I ask you to grand me the strenght of your body and the strenght of your heart.
 
-        Menu->SendTo(plr);
+        menu.Send(plr);
     }
 
-    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
     {
-        if (!pObject->IsCreature())
-            return;
         Creature* pCreature = static_cast<Creature*>(pObject);
 
-        GossipMenu* Menu;
-        switch (IntId)
+        switch (Id)
         {
-            case 0: // Return to start
-                GossipHello(pCreature, plr);
-                break;
-
             case 1: //Horde
             {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4715, plr);
-                Menu->SendTo(plr);
+                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 4715, plr);
 
                 QuestLogEntry* qle = plr->GetQuestLogForEntry(6002);
-                if (qle == NULL)
+                if (qle == nullptr)
                     return;
 
                 if (qle->CanBeFinished())
@@ -105,11 +89,10 @@ public:
 
             case 2: //Ally
             {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4715, plr);
-                Menu->SendTo(plr);
-
+                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 4715, plr);
+ 
                 QuestLogEntry* qle = plr->GetQuestLogForEntry(6001);
-                if (qle == NULL)
+                if (qle == nullptr)
                     return;
 
                 if (qle->CanBeFinished())
@@ -129,66 +112,51 @@ public:
 };
 
 
-class SCRIPT_DECL BearGhost_Gossip : public GossipScript
+class SCRIPT_DECL BearGhost_Gossip : public Arcemu::Gossip::Script
 {
 public:
-    void GossipHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr)
     {
-        GossipMenu* Menu;
-        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4719, plr);
-
+        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 4719, plr->GetSession()->language);
         if (plr->HasQuest(5930)) // horde
-        {
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(456), 1);     // What do you represent, spirit?
-        }
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(456), 1);     // What do you represent, spirit?
         else if (plr->HasQuest(5929)) // ally
-        {
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(456), 5);     // What do you represent, spirit?
-        }
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(456), 5);     // What do you represent, spirit?
 
-        Menu->SendTo(plr);
+        menu.Send(plr);
     }
 
-    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
     {
-        Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
-        if (!pObject->IsCreature())
-            return;
-
-        GossipMenu* Menu;
-        switch (IntId)
+        switch (Id)
         {
-            case 0: // Return to start
-                GossipHello(pCreature, plr);
-                break;
             case 1:
             {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4721, plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(457), 2);     // I seek to understand the importance of strength of the body.
-                Menu->SendTo(plr);
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 4721, plr->GetSession()->language);
+                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(457), 2);     // I seek to understand the importance of strength of the body.
+                menu.Send(plr);
                 break;
             }
             case 2:
             {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4733, plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(458), 3);     // I seek to understand the importance of strength of the heart.
-                Menu->SendTo(plr);
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 4733, plr->GetSession()->language);
+                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(458), 3);     // I seek to understand the importance of strength of the heart.
+                menu.Send(plr);
                 break;
             }
             case 3:
             {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4734, plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(459), 4);     // I have heard your words, Great Bear Spirit, and I understand. I now...
-                Menu->SendTo(plr);
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 4734, plr->GetSession()->language);
+                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(459), 4);     // I have heard your words, Great Bear Spirit, and I understand. I now...
+                menu.Send(plr);
                 break;
             }
             case 4:
             {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4735, plr);
-                Menu->SendTo(plr);
+                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 4735, plr);
 
                 QuestLogEntry* qle = plr->GetQuestLogForEntry(5930);
-                if (qle == NULL)
+                if (qle == nullptr)
                     return;
 
                 if (qle->CanBeFinished())
@@ -201,32 +169,31 @@ public:
             }
             case 5:
             {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4721, plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(457), 6);     // I seek to understand the importance of strength of the body.
-                Menu->SendTo(plr);
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 4721, plr->GetSession()->language);
+                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(457), 6);     // I seek to understand the importance of strength of the body.
+                menu.Send(plr);
                 break;
             }
             case 6:
             {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4733, plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(458), 7);     // I seek to understand the importance of strength of the heart.
-                Menu->SendTo(plr);
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 4733, plr->GetSession()->language);
+                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(458), 7);     // I seek to understand the importance of strength of the heart.
+                menu.Send(plr);
                 break;
             }
             case 7:
             {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4734, plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(459), 8);     // I have heard your words, Great Bear Spirit, and I understand. I now...
-                Menu->SendTo(plr);
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 4734, plr->GetSession()->language);
+                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(459), 8);     // I have heard your words, Great Bear Spirit, and I understand. I now...
+                menu.Send(plr);
                 break;
             }
             case 8:
             {
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4735, plr);
-                Menu->SendTo(plr);
+                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 4735, plr);
 
                 QuestLogEntry* qle = plr->GetQuestLogForEntry(5929);
-                if (qle == NULL)
+                if (qle == nullptr)
                     return;
 
                 if (qle->CanBeFinished())
@@ -254,15 +221,15 @@ public:
 
 void SetupDruid(ScriptMgr* mgr)
 {
-
-    GossipScript* MoonkinGhostGossip = new MoonkinGhost_Gossip;
-    GossipScript* BearGhostGossip = new BearGhost_Gossip;
     QuestScript* Moonglade = new MoongladeQuest();
     mgr->register_quest_script(5921, Moonglade);
     mgr->register_quest_script(5922, Moonglade);
     mgr->register_creature_script(12138, &Lunaclaw::Create);
 
     //Register gossip scripts
-    mgr->register_gossip_script(12144, MoonkinGhostGossip); // Ghost of Lunaclaw
-    mgr->register_gossip_script(11956, BearGhostGossip); // Great Bear Spirit
+    Arcemu::Gossip::Script* MoonkinGhostGossip = new MoonkinGhost_Gossip();
+    Arcemu::Gossip::Script* BearGhostGossip = new BearGhost_Gossip();
+
+    mgr->register_creature_gossip(12144, MoonkinGhostGossip); // Ghost of Lunaclaw
+    mgr->register_creature_gossip(11956, BearGhostGossip); // Great Bear Spirit
 }

@@ -20,14 +20,12 @@
  */
 
 #include "Setup.h"
-#include "Management/Gossip/GossipMenu.hpp"
 
-class AncientMarks : public GossipScript
+class AncientMarks : public Arcemu::Gossip::Script
 {
 public:
-    void GossipHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr)
     {
-        GossipMenu* Menu;
         uint32 entry = pObject->GetEntry();
         const char* text = "";
         uint32 TextId = 0;
@@ -43,105 +41,100 @@ public:
             TextId = 9177;
         }
 
-        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), TextId, plr);
-
         if (plr->HasFinishedQuest(9785) || plr->HasQuest(9785))
-            Menu->AddItem(0, text, 1);
-
-        Menu->SendTo(plr);
-    }
-
-    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
-    {
-        if (IntId == 1)
         {
-            QuestLogEntry* en = plr->GetQuestLogForEntry(9785);
-            Creature* casta = (static_cast<Creature*>(pObject));
-            switch (pObject->GetEntry())
-            {
-                case 17900:
-                {
-                    if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-                    {
-                        en->SetMobCount(0, 1);
-                        en->SendUpdateAddKill(0);
-                        en->UpdatePlayerFields();
-                    }
-
-                    if (plr->GetStandingRank(942) == 4)
-                        casta->CastSpell(plr, 31808, true);
-                    else if (plr->GetStandingRank(942) == 5)
-                        casta->CastSpell(plr, 31810, true);
-                    else if (plr->GetStandingRank(942) == 6)
-                        casta->CastSpell(plr, 31811, true);
-                    else if (plr->GetStandingRank(942) == 7)
-                        casta->CastSpell(plr, 31815, true);
-
-                }
-                break;
-                case 17901:
-                {
-                    if (en && en->GetMobCount(1) < en->GetQuest()->required_mob_or_go_count[1])
-                    {
-                        en->SetMobCount(1, 1);
-                        en->SendUpdateAddKill(1);
-                        en->UpdatePlayerFields();
-                    }
-
-                    if (plr->GetStandingRank(942) == 4)
-                        casta->CastSpell(plr, 31807, true);
-                    else if (plr->GetStandingRank(942) == 5)
-                        casta->CastSpell(plr, 31814, true);
-                    else if (plr->GetStandingRank(942) == 6)
-                        casta->CastSpell(plr, 31813, true);
-                    else if (plr->GetStandingRank(942) == 7)
-                        casta->CastSpell(plr, 31812, true);
-
-                }
-                break;
-            }
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), TextId, plr->GetSession()->language);
+            menu.AddItem(GOSSIP_ICON_CHAT, text, 1);
+            menu.Send(plr);
         }
     }
 
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
+    {
+        QuestLogEntry* en = plr->GetQuestLogForEntry(9785);
+        Creature* casta = (static_cast<Creature*>(pObject));
+        switch (pObject->GetEntry())
+        {
+            case 17900:
+            {
+                if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
+                {
+                    en->SetMobCount(0, 1);
+                    en->SendUpdateAddKill(0);
+                    en->UpdatePlayerFields();
+                }
+
+                if (plr->GetStandingRank(942) == 4)
+                    casta->CastSpell(plr, 31808, true);
+                else if (plr->GetStandingRank(942) == 5)
+                    casta->CastSpell(plr, 31810, true);
+                else if (plr->GetStandingRank(942) == 6)
+                    casta->CastSpell(plr, 31811, true);
+                else if (plr->GetStandingRank(942) == 7)
+                    casta->CastSpell(plr, 31815, true);
+
+            } break;
+            case 17901:
+            {
+                if (en && en->GetMobCount(1) < en->GetQuest()->required_mob_or_go_count[1])
+                {
+                    en->SetMobCount(1, 1);
+                    en->SendUpdateAddKill(1);
+                    en->UpdatePlayerFields();
+                }
+
+                if (plr->GetStandingRank(942) == 4)
+                    casta->CastSpell(plr, 31807, true);
+                else if (plr->GetStandingRank(942) == 5)
+                    casta->CastSpell(plr, 31814, true);
+                else if (plr->GetStandingRank(942) == 6)
+                    casta->CastSpell(plr, 31813, true);
+                else if (plr->GetStandingRank(942) == 7)
+                    casta->CastSpell(plr, 31812, true);
+
+            } break;
+        }
+    }
 };
 
-class ElderKuruti : public GossipScript
+class ElderKuruti : public Arcemu::Gossip::Script
 {
 public:
-    void GossipHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr)
     {
-        GossipMenu* Menu;
         if (!plr->GetItemInterface()->GetItemCount(24573, true))
         {
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9226, plr);
-            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(502), 1);     // Offer treat
-            Menu->SendTo(plr);
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 9226, plr->GetSession()->language);
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(502), 1);     // Offer treat
+            menu.Send(plr);
         }
     }
 
-    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
     {
         GossipMenu* Menu;
-        switch (IntId)
+        switch (Id)
         {
             case 1:
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9227, plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(503), 2);     // I'm a messenger for Draenei
-                Menu->SendTo(plr);
-                break;
+            {
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 9227, plr->GetSession()->language);
+                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(503), 2);     // I'm a messenger for Draenei
+                menu.Send(plr);
+            }break;
             case 2:
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9229, plr);
-                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(504), 3);     // Get message
-                Menu->SendTo(plr);
-                break;
+            {
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 9229, plr->GetSession()->language);
+                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(504), 3);     // Get message
+                menu.Send(plr);
+            }break;
             case 3:
+            {
+                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 9231, plr);
+
                 if (!plr->GetItemInterface()->GetItemCount(24573, true))
-                {
                     sEAS.AddItem(24573, plr);
-                }
-                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9231, plr);
-                Menu->SendTo(plr);
-                break;
+
+            }break;
         }
     }
 };
@@ -149,8 +142,9 @@ public:
 
 void SetupZangarmarsh(ScriptMgr* mgr)
 {
-    GossipScript* AMark = new AncientMarks();
-    mgr->register_gossip_script(17900, AMark);    // Ashyen Ancient of Lore
-    mgr->register_gossip_script(17901, AMark);    // Keleth Ancient of War
-    mgr->register_gossip_script(18197, new ElderKuruti());
+    Arcemu::Gossip::Script* AMark = new AncientMarks();
+    mgr->register_creature_gossip(17900, AMark);    // Ashyen Ancient of Lore
+    mgr->register_creature_gossip(17901, AMark);    // Keleth Ancient of War
+
+    mgr->register_creature_gossip(18197, new ElderKuruti());
 }
