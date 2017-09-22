@@ -56,7 +56,7 @@ void CorenDirebrewGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id
         case 2:
         {
             pCreature->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You'll pay for this insult, $c!");
-            Plr->Gossip_Complete();
+            Arcemu::Gossip::Menu::Complete(Plr);
             pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
             pCreature->MoveToWaypoint(1);
         }break;

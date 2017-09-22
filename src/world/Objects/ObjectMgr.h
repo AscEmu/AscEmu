@@ -610,8 +610,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
         void LoadCreatureAIAgents();
 
-        //void CreateGossipMenuForPlayer(GossipMenu** Location, uint64 Guid, uint32 TextID, Player* Plr);
-
         LevelInfo* GetLevelInfo(uint32 Race, uint32 Class, uint32 Level);
         void GenerateLevelUpInfo();
 

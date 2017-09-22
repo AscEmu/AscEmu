@@ -38,7 +38,7 @@ public:
     void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
     {
         plr->CastSpell(plr, sSpellCustomizations.GetSpellInfo(23122), true);
-        plr->Gossip_Complete();
+        Arcemu::Gossip::Menu::Complete(plr);
     }
 };
 

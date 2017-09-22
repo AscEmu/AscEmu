@@ -37,7 +37,6 @@ public:
     void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
     {
         Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 3558, plr);
-        GossipMenu* Menu;
 
         QuestLogEntry* qle = plr->GetQuestLogForEntry(4921);
         if (qle == nullptr)

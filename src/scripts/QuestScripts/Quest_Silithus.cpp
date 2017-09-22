@@ -38,7 +38,6 @@ public:
 
     void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId)
     {
-        GossipMenu* Menu;
         switch (Id)
         {
             case 3:
@@ -113,7 +112,6 @@ public:
 
     void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
     {
-        GossipMenu* Menu;
         switch (IntId)
         {
             case 3:
@@ -234,7 +232,7 @@ public:
             case 7:
             {
                 sEAS.AddItem(19016, player);
-                player->Gossip_Complete();
+                Arcemu::Gossip::Menu::Complete(player);
             } break;
         }
     }

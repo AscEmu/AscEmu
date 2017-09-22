@@ -1710,25 +1710,6 @@ uint32_t ObjectMgr::GetSpellRequired(uint32_t spell_id) const
 }
 #endif
 
-//void ObjectMgr::CreateGossipMenuForPlayer(GossipMenu** Location, uint64 Guid, uint32 TextID, Player* Plr)
-//{
-//    if (TextID == 0)
-//    {
-//        //TextID = 0 will not show the gossip to the player. Using "2" since it's the default value in GossipScript::GossipHello()
-//        LOG_ERROR("Object with GUID " I64FMT " is trying to create a GossipMenu with TextID == 0", Guid);
-//        TextID = 2;
-//    }
-//
-//    GossipMenu* Menu = new GossipMenu(Guid, TextID);
-//    ARCEMU_ASSERT(Menu != NULL);
-//
-//    if (Plr->CurrentGossipMenu != NULL)
-//        delete Plr->CurrentGossipMenu;
-//
-//    Plr->CurrentGossipMenu = Menu;
-//    *Location = Menu;
-//}
-
 //MIT
 void ObjectMgr::createGuardGossipMenuForPlayer(uint64_t senderGuid, uint32_t gossipMenuId, Player* player, uint32_t forcedTextId /*= 0*/)
 {

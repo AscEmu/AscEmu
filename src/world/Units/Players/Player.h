@@ -272,7 +272,6 @@ class Item;
 class Container;
 class WorldSession;
 class ItemInterface;
-class GossipMenu;
 class SpeedCheatDetector;
 struct TaxiPathNode;
 
@@ -1277,19 +1276,8 @@ public:
         void ApplyPlayerRestState(bool apply);
         void UpdateRestState();
 
-        // Gossip
-        GossipMenu* CurrentGossipMenu;
-        void CleanupGossipMenu();
-        void Gossip_Complete();
         int m_lifetapbonus;
         bool m_requiresNoAmmo;
-
-        // scriptdev2
-        GossipMenu* PlayerTalkClass;
-        //void PrepareQuestMenu(uint64 guid);
-        //void SendGossipMenu(uint32 TitleTextId, uint64 npcGUID);
-        void CloseGossip();
-
 
         bool m_bUnlimitedBreath;
         uint32 m_UnderwaterTime;

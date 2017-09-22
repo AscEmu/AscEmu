@@ -68,7 +68,7 @@ void ProspectorAnvilwardGossip::OnSelectOption(Object* pObject, Player* Plr, uin
             Creature* pCreature = static_cast<Creature*>(pObject);
 
             pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, ANVILWARD_SAY_1);
-            Plr->Gossip_Complete();
+            Arcemu::Gossip::Menu::Complete(Plr);
             pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_QUEST);
 
             pCreature->GetAIInterface()->StopMovement(10);

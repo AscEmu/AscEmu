@@ -23,7 +23,7 @@
  * Have fun ~Azolex
  */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
+ // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Instance_OldHillsbradFoothills.h"
 #include "Management/TaxiMgr.h"
@@ -91,150 +91,150 @@ const uint32 MAX_THRALLWP1 = 27;
 
 class OldHilsbradInstance : public MoonInstanceScript
 {
-    private:
+private:
 
-        int32 m_numBarrel;
-        uint32 m_phaseData[OHF_END];
+    int32 m_numBarrel;
+    uint32 m_phaseData[OHF_END];
 
-    public:
+public:
 
-        MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(OldHilsbradInstance, MoonInstanceScript);
-        OldHilsbradInstance(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
+    MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(OldHilsbradInstance, MoonInstanceScript);
+    OldHilsbradInstance(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
+    {
+        m_numBarrel = 0;
+
+        for (uint8 i = 0; i < OHF_END; ++i)
+            m_phaseData[i] = OHF_DATA_NOT_STARTED;
+    };
+
+    void OnPlayerEnter(Player* pPlayer)
+    {
+        if (pPlayer->getGender() == 0)
+            pPlayer->CastSpell(pPlayer, 35482, true);   // Human Male illusion
+        else
+            pPlayer->CastSpell(pPlayer, 35483, true);   // Human Female illusion
+    };
+
+    void SetData(uint32 pIndex, uint32 pData)
+    {
+        if (pIndex >= OHF_END)
+            return;
+
+        if (pIndex == OHF_PHASE_2)
+            mInstance->GetWorldStatesHandler().SetWorldStateForZone(2367, 0, WORLDSTATE_OLD_HILLSBRAD_BARRELS, 0);
+
+        m_phaseData[pIndex] = pData;
+    };
+
+    uint32 GetData(uint32 pIndex)
+    {
+        if (pIndex >= OHF_END)
+            return 0;
+
+        return m_phaseData[pIndex];
+    };
+
+    void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer)
+    {
+        if (pGameObject->GetEntry() != GO_LODGE_ABLAZE || GetData(OHF_PHASE_1) == OHF_DATA_DONE)
+            return;
+
+        pGameObject->Despawn(1000, 0);
+        m_numBarrel++;
+        pGameObject->GetMapMgr()->GetWorldStatesHandler().SetWorldStateForZone(2367, 0, WORLDSTATE_OLD_HILLSBRAD_BARRELS, m_numBarrel);
+        if (m_numBarrel != 5)
+            return;
+
+        SetData(OHF_PHASE_1, OHF_DATA_DONE);
+
+        for (PlayerStorageMap::iterator itr = mInstance->m_PlayerStorage.begin(); itr != mInstance->m_PlayerStorage.end(); ++itr)
         {
-            m_numBarrel = 0;
+            pPlayer = itr->second;
 
-            for (uint8 i = 0; i < OHF_END; ++i)
-                m_phaseData[i] = OHF_DATA_NOT_STARTED;
+            QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(10283);
+            if (!qle)
+                continue;
+
+            qle->SetMobCount(0, qle->GetMobCount(0) + 1);
+            qle->SendUpdateAddKill(0);
+            qle->UpdatePlayerFields();
         };
 
-        void OnPlayerEnter(Player* pPlayer)
+        GameObject* pGO = NULL;
+        for (uint8 i = 0; i < 21; i++)
         {
-            if (pPlayer->getGender() == 0)
-                pPlayer->CastSpell(pPlayer, 35482, true);   // Human Male illusion
-            else
-                pPlayer->CastSpell(pPlayer, 35483, true);   // Human Female illusion
-        };
-
-        void SetData(uint32 pIndex, uint32 pData)
-        {
-            if (pIndex >= OHF_END)
-                return;
-
-            if (pIndex == OHF_PHASE_2)
-                mInstance->GetWorldStatesHandler().SetWorldStateForZone(2367, 0, WORLDSTATE_OLD_HILLSBRAD_BARRELS, 0);
-
-            m_phaseData[pIndex] = pData;
-        };
-
-        uint32 GetData(uint32 pIndex)
-        {
-            if (pIndex >= OHF_END)
-                return 0;
-
-            return m_phaseData[pIndex];
-        };
-
-        void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer)
-        {
-            if (pGameObject->GetEntry() != GO_LODGE_ABLAZE || GetData(OHF_PHASE_1) == OHF_DATA_DONE)
-                return;
-
-            pGameObject->Despawn(1000, 0);
-            m_numBarrel++;
-            pGameObject->GetMapMgr()->GetWorldStatesHandler().SetWorldStateForZone(2367, 0, WORLDSTATE_OLD_HILLSBRAD_BARRELS, m_numBarrel);
-            if (m_numBarrel != 5)
-                return;
-
-            SetData(OHF_PHASE_1, OHF_DATA_DONE);
-
-            for (PlayerStorageMap::iterator itr = mInstance->m_PlayerStorage.begin(); itr != mInstance->m_PlayerStorage.end(); ++itr)
-            {
-                pPlayer = itr->second;
-
-                QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(10283);
-                if (!qle)
-                    continue;
-
-                qle->SetMobCount(0, qle->GetMobCount(0) + 1);
-                qle->SendUpdateAddKill(0);
-                qle->UpdatePlayerFields();
-            };
-
-            GameObject* pGO = NULL;
-            for (uint8 i = 0; i < 21; i++)
-            {
-                pGO = SpawnGameObject(GO_FIRE, Fires[i].x, Fires[i].y, Fires[i].z, Fires[i].o);
-                sEAS.GameobjectDelete(pGO, 10 * 60 * 1000);
-            }
-
-            SpawnCreature(CN_LIEUTENANT_DRAKE, 2118.310303f, 89.565969f, 52.453037f, 2.027089f);
+            pGO = SpawnGameObject(GO_FIRE, Fires[i].x, Fires[i].y, Fires[i].z, Fires[i].o);
+            sEAS.GameobjectDelete(pGO, 10 * 60 * 1000);
         }
+
+        SpawnCreature(CN_LIEUTENANT_DRAKE, 2118.310303f, 89.565969f, 52.453037f, 2.027089f);
+    }
 };
 
 
 class ErozionGossip : public Arcemu::Gossip::Script
 {
-    public:
+public:
 
-        void OnHello(Object* pObject, Player* Plr)
+    void OnHello(Object* pObject, Player* Plr)
+    {
+        OldHilsbradInstance* pInstance = dynamic_cast<OldHilsbradInstance*>(pObject->GetMapMgr()->GetScript());
+        if (!pInstance)
+            return;
+
+        Arcemu::Gossip::Menu menu(pObject->GetGUID(), EROZION_ON_HELLO, 0);
+        if (pInstance->GetData(OHF_PHASE_1) != OHF_DATA_DONE && !Plr->HasItemCount(25853, 1))
+            menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(EROZION_NEED_PACKET), 1);
+
+        // It should give another menu if instance is done id: 10474, NYI
+        menu.Send(Plr);
+    }
+
+    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId)
+    {
+        switch (Id)
         {
-            OldHilsbradInstance* pInstance = dynamic_cast<OldHilsbradInstance*>(pObject->GetMapMgr()->GetScript());
-            if (!pInstance)
-                return;
-
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), EROZION_ON_HELLO, 0);
-            if (pInstance->GetData(OHF_PHASE_1) != OHF_DATA_DONE && !Plr->HasItemCount(25853, 1))
-                menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(EROZION_NEED_PACKET), 1);
-
-            // It should give another menu if instance is done id: 10474, NYI
-            menu.Send(Plr);
+            case 1:
+                Item* pBombs = objmgr.CreateItem(25853, Plr);
+                if (pBombs)
+                    if (!Plr->GetItemInterface()->AddItemToFreeSlot(pBombs))
+                        pBombs->DeleteMe();
+                break;
         }
-
-        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId)
-        {
-            switch (Id)
-            {
-                case 1:
-                    Item* pBombs = objmgr.CreateItem(25853, Plr);
-                    if (pBombs)
-                        if (!Plr->GetItemInterface()->AddItemToFreeSlot(pBombs))
-                            pBombs->DeleteMe();
-                    break;
-            }
-        }
+    }
 };
 
 class BrazenGossip : public Arcemu::Gossip::Script
 {
-    public:
+public:
 
-        void OnHello(Object* pObject, Player* Plr)
-        {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), BRAZAN_ON_HELLO, 0);
-            menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(BRAZAN_DURNHOLDE_KEEP), 1);
-            menu.Send(Plr);
-        }
+    void OnHello(Object* pObject, Player* Plr)
+    {
+        Arcemu::Gossip::Menu menu(pObject->GetGUID(), BRAZAN_ON_HELLO, 0);
+        menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(BRAZAN_DURNHOLDE_KEEP), 1);
+        menu.Send(Plr);
+    }
 
-        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId)
+    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId)
+    {
+        switch (Id)
         {
-            switch (Id)
+            case 1:
             {
-                case 1:
+                if (!Plr->HasItemCount(25853, 1))
                 {
-                    if (!Plr->HasItemCount(25853, 1))
-                    {
-                        Arcemu::Gossip::Menu menu(pObject->GetGUID(), BRAZAN_NEED_ITEM, 0);
-                        menu.Send(Plr);
-                    }
-                    else
-                    {
-                        Plr->TaxiStart(sTaxiMgr.GetTaxiPath(534), 8317, 0);
-                        Plr->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
-                    }
+                    Arcemu::Gossip::Menu menu(pObject->GetGUID(), BRAZAN_NEED_ITEM, 0);
+                    menu.Send(Plr);
                 }
-                break;
+                else
+                {
+                    Plr->TaxiStart(sTaxiMgr.GetTaxiPath(534), 8317, 0);
+                    Plr->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
+                }
             }
+            break;
         }
+    }
 
 };
 
@@ -242,29 +242,29 @@ class LieutenantDrakeAI : public MoonScriptCreatureAI
 {
     OldHilsbradInstance* pInstance;
 
-    public:
+public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(LieutenantDrakeAI, MoonScriptCreatureAI);
-        LieutenantDrakeAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
-        {
-            pInstance = dynamic_cast<OldHilsbradInstance*>(GetInstanceScript());
-        };
+    MOONSCRIPT_FACTORY_FUNCTION(LieutenantDrakeAI, MoonScriptCreatureAI);
+    LieutenantDrakeAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    {
+        pInstance = dynamic_cast<OldHilsbradInstance*>(GetInstanceScript());
+    };
 
-        void OnCombatStart(Unit* pTarget)
-        {
-            if (pInstance)
-                pInstance->SetData(OHF_PHASE_2, OHF_DATA_IN_PROGRESS);
+    void OnCombatStart(Unit* pTarget)
+    {
+        if (pInstance)
+            pInstance->SetData(OHF_PHASE_2, OHF_DATA_IN_PROGRESS);
 
-            ParentClass::OnCombatStart(pTarget);
-        };
+        ParentClass::OnCombatStart(pTarget);
+    };
 
-        void OnCombatStop(Unit* pTarget)
-        {
-            if (pInstance)
-                pInstance->SetData(OHF_PHASE_2, OHF_DATA_PERFORMED);
+    void OnCombatStop(Unit* pTarget)
+    {
+        if (pInstance)
+            pInstance->SetData(OHF_PHASE_2, OHF_DATA_PERFORMED);
 
-            ParentClass::OnCombatStop(pTarget);
-        };
+        ParentClass::OnCombatStop(pTarget);
+    };
 };
 
 class ThrallAI : public MoonScriptCreatureAI // this will be replaced with escortAI
@@ -305,30 +305,21 @@ class ThrallAI : public MoonScriptCreatureAI // this will be replaced with escor
 
 class ThrallGossip : public Arcemu::Gossip::Script
 {
-    public:
+public:
 
-        void OnHello(Object* pObject, Player* Plr)
-        {
-            GossipMenu* Menu;
-            if (!pObject->IsCreature())
-                return;
+    void OnHello(Object* pObject, Player* Plr)
+    {
+        Arcemu::Gossip::Menu menu(pObject->GetGUID(), THRALL_ON_HELLO, 0);
+        menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(THRALL_START_ESCORT), 1);
+        menu.Send(Plr);
+    }
 
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), THRALL_ON_HELLO, 0);
-            menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(THRALL_START_ESCORT), 1);
-            menu.Send(Plr);
-        }
-
-        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32 gossipId)
-        {
-            switch (Id)
-            {
-                case 1:
-                    ThrallAI* pThrall = static_cast< ThrallAI* >(static_cast<Creature*>(pObject)->GetScript());
-                    if (pThrall)
-                        pThrall->StartEscort(Plr);
-                    break;
-            }
-        }
+    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32 gossipId)
+    {
+        ThrallAI* pThrall = static_cast<ThrallAI*>(static_cast<Creature*>(pObject)->GetScript());
+        if (pThrall)
+            pThrall->StartEscort(Plr);
+    }
 };
 
 void SetupOldHillsbradFoothills(ScriptMgr* mgr)

@@ -112,7 +112,6 @@ public:
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
     {
-        GossipMenu* Menu;
         switch (Id)
         {
             case 1:

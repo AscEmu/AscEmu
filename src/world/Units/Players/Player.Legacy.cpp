@@ -159,7 +159,6 @@ Player::Player(uint32 guid)
     waypointunit(NULL),
     m_nextSave(Util::getMSTime() + worldConfig.getIntRate(INTRATE_SAVE)),
     m_lifetapbonus(0),
-    PlayerTalkClass(NULL),
     m_bUnlimitedBreath(false),
     m_UnderwaterTime(180000),
     m_UnderwaterState(0),
@@ -378,7 +377,6 @@ Player::Player(uint32 guid)
         m_questlog[i] = NULL;
 
     m_ItemInterface = new ItemInterface(this);
-    CurrentGossipMenu = NULL;
 
     SDetector = new SpeedCheatDetector;
 
@@ -625,7 +623,6 @@ Player::~Player()
         DuelingWith->DuelingWith = NULL;
     DuelingWith = NULL;
 
-    CleanupGossipMenu();
     ARCEMU_ASSERT(!IsInWorld());
 
     // delete m_talenttree
@@ -8033,38 +8030,6 @@ void Player::SaveEntryPoint(uint32 mapId)
         m_bgEntryPointInstance = 0;
     }
 }
-
-void Player::CleanupGossipMenu()
-{
-    if (CurrentGossipMenu)
-    {
-        delete CurrentGossipMenu;
-        CurrentGossipMenu = NULL;
-    }
-}
-
-void Player::Gossip_Complete()
-{
-    GetSession()->OutPacket(SMSG_GOSSIP_COMPLETE, 0, NULL);
-    CleanupGossipMenu();
-}
-
-void Player::CloseGossip()
-{
-    Gossip_Complete();
-}
-
-//void Player::PrepareQuestMenu(uint64 guid)
-//{
-//    uint32 TextID = 820;
-//    objmgr.CreateGossipMenuForPlayer(&PlayerTalkClass, guid, TextID, this);
-//}
-
-//void Player::SendGossipMenu(uint32 TitleTextId, uint64 npcGUID)
-//{
-//    PlayerTalkClass->SetTextID(TitleTextId);
-//    PlayerTalkClass->SendTo(this);
-//}
 
 bool Player::IsInCity()
 {
