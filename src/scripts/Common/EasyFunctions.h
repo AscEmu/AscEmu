@@ -104,31 +104,6 @@ class SCRIPT_DECL EasyFunctions
             return pCreature;
         }
 
-        Creature* SpawnCreatureExtended(Player* pThis, uint32 entry, float posX, float posY, float posZ, float posO, uint32 faction,
-                                        uint32 duration, bool dis_comb = false, bool dis_mel = false, bool dis_target = false)
-        {
-            if (pThis == NULL)
-                return NULL;
-
-            CreatureProperties const* p = sMySQLStore.getCreatureProperties(entry);
-            if (p == nullptr)
-                return NULL;
-
-            Creature* pCreature = pThis->GetMapMgr()->CreateCreature(entry);
-            pCreature->m_spawn = 0;
-            pCreature->Load(p, posX, posY, posZ);
-            pCreature->SetOrientation(posO);
-            pCreature->GetAIInterface()->disable_combat = dis_comb;
-            pCreature->GetAIInterface()->disable_melee = dis_mel;
-            pCreature->GetAIInterface()->disable_targeting = dis_target;
-            pCreature->PushToWorld(pThis->GetMapMgr());
-            pCreature->Despawn(duration, 0);
-            pCreature->setUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, faction);
-            pCreature->_setFaction();
-
-            return pCreature;
-        }
-
         GameObject* SpawnGameobject(Player* plr, uint32 entry_id, float x, float y, float z, float o, float scale, float orientation1, float orientation2, float orientation3, float orientation4)
         {
             if (plr == NULL)
@@ -139,9 +114,8 @@ class SCRIPT_DECL EasyFunctions
                 return nullptr;
 
             GameObject* pC = plr->GetMapMgr()->CreateGameObject(entry_id);
-            //pC->spawnid=0;
             pC->m_spawn = 0;
-            pC->CreateFromProto(entry_id, plr->GetMapId(), (float)x, (float)y, (float)z, (float)o, float(orientation1), float(orientation2), float(orientation3), float(orientation4));
+            pC->CreateFromProto(entry_id, plr->GetMapId(), x, y, z, o, float(orientation1), float(orientation2), float(orientation3), float(orientation4));
             pC->setFloatValue(OBJECT_FIELD_SCALE_X, (float)scale);
             pC->PushToWorld(plr->GetMapMgr());
 

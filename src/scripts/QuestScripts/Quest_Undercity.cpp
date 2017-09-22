@@ -21,20 +21,20 @@
 
 #include "Setup.h"
 
-class Quest_JourneytoUndercity : public QuestScript // never extend std::tr1::enable_shared_from_this. EVER. :)
+class Quest_JourneytoUndercity : public QuestScript
 {
 public:
 
     void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
     {
         Creature* creat = mTarget->GetMapMgr()->GetSqlIdCreature(19175); //Lady Sylvanas Windrunner - NCDB guid
-        if (creat == NULL) // we still check for equality with == NULL. if we are assigning, we use = NULL/OBJECT/ETC
+        if (creat == nullptr)
             return;
 
-        sEAS.SpawnCreatureExtended(mTarget, 21628, 1295.222656f, 314.253998f, -57.320854f, 2.365611f, 35, 180000, true, true, true);
-        sEAS.SpawnCreatureExtended(mTarget, 21628, 1293.403931f, 311.264465f, -57.320854f, 1.939140f, 35, 180000, true, true, true);
-        sEAS.SpawnCreatureExtended(mTarget, 21628, 1286.532104f, 311.452423f, -57.320854f, 0.592182f, 35, 180000, true, true, true);
-        sEAS.SpawnCreatureExtended(mTarget, 21628, 1284.536011f, 314.496338f, -57.320845f, 0.580401f, 35, 180000, true, true, true);
+        SpawnHighborneLamenter(mTarget, 21628, 1295.222656f, 314.253998f, -57.320854f, 2.365611f);
+        SpawnHighborneLamenter(mTarget, 21628, 1293.403931f, 311.264465f, -57.320854f, 1.939140f);
+        SpawnHighborneLamenter(mTarget, 21628, 1286.532104f, 311.452423f, -57.320854f, 0.592182f);
+        SpawnHighborneLamenter(mTarget, 21628, 1284.536011f, 314.496338f, -57.320845f, 0.580401f);
 
         creat->PlaySoundToSet(10896);
         creat->CastSpell(creat, sSpellCustomizations.GetSpellInfo(36568), false);
@@ -44,6 +44,25 @@ public:
         // Players can't interact with Sylvanas for 180000 ms.
         // Cast creat to an object because the EventSetUInt32Value method is in Object class.
         sEventMgr.AddEvent(static_cast<Object*>(creat), &Object::EventSetUInt32Value, (uint32)UNIT_NPC_FLAGS, (uint32)2, EVENT_SCRIPT_UPDATE_EVENT, 180000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    }
+
+    void SpawnHighborneLamenter(Player* pThis, uint32 entry, float posX, float posY, float posZ, float posO)
+    {
+        CreatureProperties const* p = sMySQLStore.getCreatureProperties(entry);
+        if (p == nullptr)
+            return;
+
+        Creature* creature = pThis->GetMapMgr()->CreateCreature(entry);
+        creature->m_spawn = nullptr;
+        creature->Load(p, posX, posY, posZ);
+        creature->SetOrientation(posO);
+        creature->GetAIInterface()->disable_combat = true;
+        creature->GetAIInterface()->disable_melee = true;
+        creature->GetAIInterface()->disable_targeting = true;
+        creature->PushToWorld(pThis->GetMapMgr());
+        creature->Despawn(180000, 0);
+        creature->setUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, 35);
+        creature->_setFaction();
     }
 };
 
