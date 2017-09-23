@@ -401,7 +401,7 @@ public:
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
     {
-        Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
+        Creature* pCreature = static_cast<Creature*>(pObject);
 
         switch (Id)
         {

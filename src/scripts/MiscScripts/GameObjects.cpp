@@ -1047,7 +1047,7 @@ public:
     void AIUpdate()
     {
         Player* plr = _gameobject->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(_gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ());
-        if (plr != nullptr)
+        if (plr == nullptr)
             return;
 
         if (_gameobject->CalcDistance(_gameobject, plr) <= 1.5f && plr->GetMapId() == 609)
@@ -1072,7 +1072,7 @@ public:
     void AIUpdate()
     {
         Player* plr = _gameobject->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(_gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ());
-        if (plr != nullptr)
+        if (plr == nullptr)
             return;
 
         if (_gameobject->CalcDistance(_gameobject, plr) <= 1.5f && plr->GetMapId() == 609)

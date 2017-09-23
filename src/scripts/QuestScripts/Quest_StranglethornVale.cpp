@@ -38,7 +38,7 @@ public:
 
         plr->GetItemInterface()->RemoveItemAmt(2799, 1);
         doctor->CastSpell(doctor, sSpellCustomizations.GetSpellInfo(12380), true);
-        if (!plr || !plr->GetMapMgr() || !plr->GetMapMgr()->GetInterface())
+        if (!plr->GetMapMgr() || !plr->GetMapMgr()->GetInterface())
             return;
 
         Creature* firstenemy = plr->GetMapMgr()->CreateAndSpawnCreature(1511, -13770.5f, -6.79f, 42.8f, 5.7f);
