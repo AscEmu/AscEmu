@@ -262,7 +262,7 @@ bool ChatHandler::HandlePlayMovie(const char* args, WorldSession* m_session)
 
     uint32 movie = atol(args);
 
-    selected_player->SendTriggerMovie(movie);
+    selected_player->sendMovie(movie);
 
     if (selected_player != m_session->GetPlayer())
         GreenSystemMessage(selected_player->GetSession(), "Movie started for player %s", selected_player->GetName());

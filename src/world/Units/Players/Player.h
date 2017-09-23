@@ -469,6 +469,8 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
     bool isGMFlagSet();
+
+    void sendMovie(uint32_t movieId);
     //MIT End
     //AGPL Start
 
@@ -1538,8 +1540,6 @@ public:
         void SetPersistentInstanceId(Instance* pInstance);
         //Use this method carefully..
         void SetPersistentInstanceId(uint32 mapId, uint8 difficulty, uint32 instanceId);
-
-        void SendTriggerMovie(uint32 movieID);
 
         // DualWield2H (ex: Titan's grip)
         bool DualWield2H;

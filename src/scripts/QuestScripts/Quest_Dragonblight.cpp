@@ -60,7 +60,7 @@ public:
 #if VERSION_STRING > TBC
         // send packet for movie
         uint32 id = 14;
-        mTarget->GetSession()->OutPacket(SMSG_TRIGGER_MOVIE, sizeof(uint32), &id);
+        mTarget->sendMovie(id);
 #endif
     }
 };

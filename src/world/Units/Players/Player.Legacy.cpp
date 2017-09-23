@@ -12104,14 +12104,6 @@ void Player::SetKnownTitle(RankTitles title, bool set)
     m_session->SendPacket(&data);
 }
 
-void Player::SendTriggerMovie(uint32 movieID)
-{
-#if VERSION_STRING > TBC
-    if (m_session)
-        m_session->OutPacket(SMSG_TRIGGER_MOVIE, 4, &movieID);
-#endif
-}
-
 uint32 Player::GetInitialFactionId()
 {
 

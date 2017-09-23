@@ -152,3 +152,10 @@ bool Player::isGMFlagSet()
 {
     return HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM);
 }
+
+void Player::sendMovie(uint32_t movieId)
+{
+    WorldPacket data(SMSG_TRIGGER_MOVIE, 4);
+    data << uint32_t(movieId);
+    m_session->SendPacket(&data);
+}
