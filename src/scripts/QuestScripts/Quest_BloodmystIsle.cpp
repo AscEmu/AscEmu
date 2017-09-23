@@ -172,13 +172,14 @@ public:
             return;
 
         // M4ksiu: I don't think the method is correct, but it can stay the way it was until someone gives proper infos
-        QuestLogEntry* Quest = QuestHolder->GetQuestLogForEntry(9670);
+        QuestLogEntry* qle = QuestHolder->GetQuestLogForEntry(9670);
+        LocationVector pos = _unit->GetPosition();
         Creature* RandomCreature = NULL;
-        if (Quest == NULL)
+        if (qle == nullptr)
         {
             // Creatures from Bloodmyst Isle
             uint32 Id[51] = { 17681, 17887, 17550, 17323, 17338, 17341, 17333, 17340, 17353, 17320, 17339, 17337, 17715, 17322, 17494, 17654, 17342, 17328, 17331, 17325, 17321, 17330, 17522, 17329, 17524, 17327, 17661, 17352, 17334, 17326, 17324, 17673, 17336, 17346, 17589, 17609, 17608, 17345, 17527, 17344, 17347, 17525, 17713, 17523, 17348, 17606, 17604, 17607, 17610, 17358, 17588 };
-            RandomCreature = _unit->GetMapMgr()->GetInterface()->SpawnCreature(Id[RandomUInt(50)], _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), true, false, 0, 0);
+            RandomCreature = _unit->GetMapMgr()->GetInterface()->SpawnCreature(Id[RandomUInt(50)], pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
             if (RandomCreature != NULL)
             {
                 RandomCreature->m_noRespawn = true;
@@ -190,16 +191,14 @@ public:
         else
         {
             uint32 Id[8] = { 17681, 17321, 17330, 17522, 17673, 17336, 17346, 17589 };
-            RandomCreature = _unit->GetMapMgr()->GetInterface()->SpawnCreature(Id[RandomUInt(7)], _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), true, false, 0, 0);
+            RandomCreature = _unit->GetMapMgr()->GetInterface()->SpawnCreature(Id[RandomUInt(7)], pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
             if (RandomCreature != NULL)
             {
                 RandomCreature->m_noRespawn = true;
                 RandomCreature->Despawn(60000, 0);
-                if (RandomCreature->GetEntry() == 17681 && Quest->GetMobCount(0) < Quest->GetQuest()->required_mob_or_go_count[0])
+                if (RandomCreature->GetEntry() == 17681)
                 {
-                    Quest->SetMobCount(0, Quest->GetMobCount(0) + 1);
-                    Quest->SendUpdateAddKill(0);
-                    Quest->UpdatePlayerFields();
+                    QuestHolder->AddQuestKill(9670, 0, 0);
                 }
             }
         }

@@ -66,15 +66,12 @@ public:
     void OnActivate(Player* pPlayer)
     {
         QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10895);
-        if (pQuest != NULL)
+        if (pQuest != nullptr)
         {
-            // M4ksiu - WTF IS THIS FOR? :|
-            float SSX = pPlayer->GetPositionX();
-            float SSY = pPlayer->GetPositionY();
-            float SSZ = pPlayer->GetPositionZ();
+            LocationVector pos = pPlayer->GetPosition();
 
-            GameObject* pBeacon = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(SSX, SSY, SSZ, 184661);
-            if (pBeacon != NULL && pBeacon->GetFlags() > 0)
+            GameObject* pBeacon = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pos.x, pos.y, pos.z, 184661);
+            if (pBeacon != nullptr && pBeacon->GetFlags() > 0)
             {
                 pBeacon->SetFlags((pBeacon->GetFlags() - 1));
             }
@@ -83,11 +80,9 @@ public:
             if (pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mob_or_go_count[0])
             {
                 GameObject* pNorthern = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-820.0f, 2029.0f, 55.0f, 300150);
-                if (pNorthern != NULL && pPlayer->CalcDistance(pPlayer, pNorthern) < 40)      // if reduced the server will crash when out of range
+                if (pNorthern != nullptr && pPlayer->CalcDistance(pPlayer, pNorthern) < 40)      // if reduced the server will crash when out of range
                 {
-                    pQuest->SetMobCount(0, pQuest->GetMobCount(0) + 1);
-                    pQuest->SendUpdateAddKill(0);
-                    pQuest->UpdatePlayerFields();
+                    pPlayer->AddQuestKill(10895, 0, 0);
 
                     GameObject* pGameobject = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(183816, -819.77f, 2029.09f, 55.6082f, 0, 4);
                     if (pGameobject != nullptr)
@@ -103,9 +98,7 @@ public:
                 GameObject* pSouthern = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-1150.0f, 2110.0f, 84.0f, 300150);
                 if (pSouthern != NULL && pPlayer->CalcDistance(pPlayer, pSouthern) < 40)
                 {
-                    pQuest->SetMobCount(1, pQuest->GetMobCount(1) + 1);
-                    pQuest->SendUpdateAddKill(1);
-                    pQuest->UpdatePlayerFields();
+                    pPlayer->AddQuestKill(10895, 1, 0);
 
                     GameObject* pGameobject = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(183816, -1150.53f, 2109.92f, 84.4204f, 0, 4);
                     if (pGameobject != nullptr)
@@ -121,9 +114,7 @@ public:
                 GameObject* pForge = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-893.0f, 1919.0f, 82.0f, 300150);
                 if (pForge != NULL && pPlayer->CalcDistance(pPlayer, pForge) < 40)
                 {
-                    pQuest->SetMobCount(2, pQuest->GetMobCount(2) + 1);
-                    pQuest->SendUpdateAddKill(2);
-                    pQuest->UpdatePlayerFields();
+                    pPlayer->AddQuestKill(10895, 2, 0);
 
                     GameObject* pGameobject = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(183816, -893.499f, 1919.27f, 81.6449f, 0, 4);
                     if (pGameobject != nullptr)
@@ -139,9 +130,7 @@ public:
                 GameObject* pFoothill = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-978.0f, 1879.0f, 111.0f, 300150);
                 if (pFoothill != NULL && pPlayer->CalcDistance(pPlayer, pFoothill) < 40)
                 {
-                    pQuest->SetMobCount(3, pQuest->GetMobCount(3) + 1);
-                    pQuest->SendUpdateAddKill(3);
-                    pQuest->UpdatePlayerFields();
+                    pPlayer->AddQuestKill(10895, 3, 0);
 
                     GameObject* pGameobject = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(183816, -977.713f, 1879.500f, 110.892f, 0, 4);
                     if (pGameobject != nullptr)
@@ -152,7 +141,7 @@ public:
             }
             else
             {
-                pPlayer->BroadcastMessage("You are to far away!");
+                pPlayer->BroadcastMessage("You are too far away!");
             }
         }
         else
