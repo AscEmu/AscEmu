@@ -17,8 +17,14 @@
  */
 
 #include "Setup.h"
-#include "../Common/EasyFunctions.h"
+#include "Units/Creatures/AIInterface.h"
+#include "Management/Item.h"
+#include "Map/MapMgr.h"
+#include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
+#include <Management/QuestLogEntry.hpp>
+#include "Map/MapScriptInterface.h"
+#include <Spell/Customization/SpellCustomizations.hpp>
 #include "Spell/SpellAuras.h"
 #include <Units/Creatures/Pet.h>
 
@@ -1520,24 +1526,27 @@ bool CenarionMoondust(uint32 i, Spell* pSpell) // Body And Heart (Alliance)
     // it dont delete lunaclaw if he is here
     Creature* lunaclaw = p_caster->GetMapMgr()->CreateAndSpawnCreature(12138, pos[0], pos[1], pos[2], pos[3]);
 
-    sEAS.CreateCustomWaypointMap(lunaclaw);
+    if (lunaclaw == nullptr)
+        return true;
+
+    lunaclaw->CreateCustomWaypointMap();
     uint32 md = lunaclaw->GetDisplayId();
 
     //Waypoints
-    sEAS.WaypointCreate(lunaclaw, 6348.3833f, 132.5197f, 21.6042f, 4.19f, 200, Movement::WP_MOVE_TYPE_RUN, md);
+    lunaclaw->WaypointCreate(6348.3833f, 132.5197f, 21.6042f, 4.19f, 200, Movement::WP_MOVE_TYPE_RUN, md);
     //make sure that player dont cheat speed or something
     if (lunaclaw->GetDistance2dSq(p_caster) < 200)   // can be more? - he can speed hack or teleport hack
     {
         LocationVector pos = p_caster->GetPosition();
 
-        sEAS.WaypointCreate(lunaclaw, pos.x, pos.y, pos.z, pos.o + 3, 200, Movement::WP_MOVE_TYPE_RUN, md);
+        lunaclaw->WaypointCreate(pos.x, pos.y, pos.z, pos.o + 3, 200, Movement::WP_MOVE_TYPE_RUN, md);
     }
     else
     {
-        sEAS.WaypointCreate(lunaclaw, 5328.2148f, 94.5505f, 21.4547f, 4.2489f, 200, Movement::WP_MOVE_TYPE_RUN, md);
+        lunaclaw->WaypointCreate(5328.2148f, 94.5505f, 21.4547f, 4.2489f, 200, Movement::WP_MOVE_TYPE_RUN, md);
     }
 
-    sEAS.EnableWaypoints(lunaclaw);
+    lunaclaw->EnableWaypoints();
 
     // Make sure that creature will attack player
     if (!lunaclaw->CombatStatus.IsInCombat())
@@ -1563,25 +1572,27 @@ bool CenarionLunardust(uint32 i, Spell* pSpell)  // Body And Heart (Horde)
     p_caster->GetMapMgr()->CreateAndSpawnGameObject(177644, -2499.54f, -1633.03f, 91.8121f, 0.262894f, 1.0);
 
     Creature* lunaclaw = p_caster->GetMapMgr()->CreateAndSpawnCreature(12138, pos[0], pos[1], pos[2], pos[3]);
+    if (lunaclaw == nullptr)
+        return true;
 
-    sEAS.CreateCustomWaypointMap(lunaclaw);
+    lunaclaw->CreateCustomWaypointMap();
     uint32 md = lunaclaw->GetDisplayId();
 
     // Waypoints
-    sEAS.WaypointCreate(lunaclaw, -2448.2253f, -1625.0148f, 91.89f, 1.913f, 200, Movement::WP_MOVE_TYPE_RUN, md); //First
+    lunaclaw->WaypointCreate(-2448.2253f, -1625.0148f, 91.89f, 1.913f, 200, Movement::WP_MOVE_TYPE_RUN, md); //First
     //make sure that player dont cheat speed or something
     if (lunaclaw->GetDistance2dSq(p_caster) < 200)   // can be more? - he can speed hack or teleport hack
     {
         LocationVector pos = p_caster->GetPosition();
 
-        sEAS.WaypointCreate(lunaclaw, pos.x, pos.y, pos.z, pos.o + 3, 200, Movement::WP_MOVE_TYPE_RUN, md);
+        lunaclaw->WaypointCreate(pos.x, pos.y, pos.z, pos.o + 3, 200, Movement::WP_MOVE_TYPE_RUN, md);
     }
     else
     {
-        sEAS.WaypointCreate(lunaclaw, -2504.2641f, -1630.7354f, 91.93f, 3.2f, 200, Movement::WP_MOVE_TYPE_RUN, md);
+        lunaclaw->WaypointCreate(-2504.2641f, -1630.7354f, 91.93f, 3.2f, 200, Movement::WP_MOVE_TYPE_RUN, md);
     }
 
-    sEAS.EnableWaypoints(lunaclaw);
+    lunaclaw->EnableWaypoints();
 
     // Make sure that creature will attack player
     if (!lunaclaw->CombatStatus.IsInCombat())

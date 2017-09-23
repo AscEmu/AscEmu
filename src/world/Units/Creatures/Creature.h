@@ -369,6 +369,48 @@ class SERVER_DECL Creature : public Unit
     private:
 
         uint32 m_Creature_type;
+
+        // old EasyFunctions.h
+    public:
+
+        void WaypointCreate(float x, float y, float z, float o, uint32 waittime, uint32 flags, uint32 modelid)
+        {
+            if (!m_custom_waypoint_map)
+                m_custom_waypoint_map = new Movement::WayPointMap;
+
+            if (!modelid)
+                modelid = getUInt32Value(UNIT_FIELD_DISPLAYID);
+
+            LoadCustomWaypoint(x, y, z, o, waittime, flags, false, 0, false, 0, modelid, modelid);
+        }
+
+        void EnableWaypoints()
+        {
+            SwitchToCustomWaypoints();
+        }
+
+        void DeleteWaypoints()
+        {
+            if (m_custom_waypoint_map == nullptr)
+                return;
+
+            Movement::WayPointMap::iterator i = m_custom_waypoint_map->begin();
+            for (; i != m_custom_waypoint_map->end(); ++i)
+            {
+                if ((*i) != nullptr)
+                    delete(*i);
+            }
+
+            m_custom_waypoint_map->clear();
+        }
+
+        void CreateCustomWaypointMap()
+        {
+            if (m_custom_waypoint_map == nullptr)
+                m_custom_waypoint_map = new Movement::WayPointMap;
+            else
+                DeleteWaypoints();
+        }
 };
 
 #endif // _WOWSERVER_CREATURE_H

@@ -63,7 +63,7 @@ public:
         {
             _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thank you Young warior!");
             _unit->Despawn(5000, 1000);
-            sEAS.DeleteWaypoints(_unit);
+            _unit->DeleteWaypoints();
             if (_unit->m_escorter == NULL)
                 return;
             Player* plr = _unit->m_escorter;
@@ -89,7 +89,7 @@ public:
         {
             _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Finally, I am rescued");
             _unit->Despawn(5000, 1000);
-            sEAS.DeleteWaypoints(_unit);
+            _unit->DeleteWaypoints();
             if (_unit->m_escorter == NULL)
                 return;
             Player* plr = _unit->m_escorter;

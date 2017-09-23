@@ -32,7 +32,7 @@ public:
         {
             _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Tell your master that this is where Van Cleef is hiding. I'm outta here!");
             _unit->Despawn(5000, 1000);
-            sEAS.DeleteWaypoints(_unit);
+            _unit->DeleteWaypoints();
 
             if (_unit->m_escorter == nullptr)
                 return;

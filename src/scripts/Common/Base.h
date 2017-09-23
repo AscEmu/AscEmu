@@ -20,7 +20,14 @@
 #ifndef _BASE_H
 #define _BASE_H
 
-#include "../Common/EasyFunctions.h"
+#include "Units/Creatures/AIInterface.h"
+#include "Management/Item.h"
+#include "Map/MapMgr.h"
+#include "Management/ItemInterface.h"
+#include "Storage/MySQLDataStore.hpp"
+#include <Management/QuestLogEntry.hpp>
+#include "Map/MapScriptInterface.h"
+#include <Spell/Customization/SpellCustomizations.hpp>
 #include "../Common/Instance_Base.h"
 
 #define MOONSCRIPT_FACTORY_FUNCTION(ClassName, ParentClassName)\

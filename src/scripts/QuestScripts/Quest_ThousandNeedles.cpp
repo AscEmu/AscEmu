@@ -33,7 +33,7 @@ public:
         {
             _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I appreciate the help you have shown Pao'ka. I hope this covers any misfortunes this deed has cost you.");
             _unit->Despawn(5000, 1000);
-            sEAS.DeleteWaypoints(_unit);
+            _unit->DeleteWaypoints();
             if (_unit->m_escorter == NULL)
                 return;
             Player* plr = _unit->m_escorter;

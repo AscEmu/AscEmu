@@ -81,7 +81,7 @@ public:
         {
             _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, I'm outta here!");
             _unit->Despawn(5000, 1000);
-            sEAS.DeleteWaypoints(_unit);
+            _unit->DeleteWaypoints();
             if (_unit->m_escorter == NULL)
                 return;
             auto player = _unit->m_escorter;

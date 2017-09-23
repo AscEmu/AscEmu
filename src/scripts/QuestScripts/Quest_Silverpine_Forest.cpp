@@ -33,7 +33,7 @@ public:
         {
             _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, you helped me to overcome this obstacle");
             _unit->Despawn(5000, 1000);
-            sEAS.DeleteWaypoints(_unit);
+            _unit->DeleteWaypoints();
             if (_unit->m_escorter == NULL)
                 return;
             Player* plr = _unit->m_escorter;

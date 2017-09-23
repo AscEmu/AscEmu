@@ -20,7 +20,14 @@
 
 
 #include "Setup.h"
-#include "../Common/EasyFunctions.h"
+#include "Units/Creatures/AIInterface.h"
+#include "Management/Item.h"
+#include "Map/MapMgr.h"
+#include "Management/ItemInterface.h"
+#include "Storage/MySQLDataStore.hpp"
+#include <Management/QuestLogEntry.hpp>
+#include "Map/MapScriptInterface.h"
+#include <Spell/Customization/SpellCustomizations.hpp>
 
  ///////////////////////////////////////////////////////
  //Quest: The Drwarfen Spy
