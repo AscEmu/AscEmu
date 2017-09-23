@@ -162,7 +162,6 @@ public:
     }
 };
 
-
 class Blacksmithing_Plans_Use : public GameObjectAIScript
 {
 public:
@@ -172,17 +171,12 @@ public:
 
     void OnLootTaken(Player* pLooter, ItemProperties const* pItemInfo)
     {
-        float SSX = pLooter->GetPositionX();
-        float SSY = pLooter->GetPositionY();
-        float SSZ = pLooter->GetPositionZ();
-        float SSO = pLooter->GetOrientation();
-
-        Creature* NewCreature = pLooter->GetMapMgr()->GetInterface()->SpawnCreature(11120, SSX, SSY, SSZ, SSO, true, false, 0, 0);
+        LocationVector pos = pLooter->GetPosition();
+        Creature* NewCreature = pLooter->GetMapMgr()->GetInterface()->SpawnCreature(11120, pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
         if (NewCreature != nullptr)
             NewCreature->Despawn(600000, 0);
     }
 };
-
 
 class GongOfBethekk : public GameObjectAIScript
 {
@@ -199,7 +193,6 @@ public:
     }
 };
 
-
 class TerokksDownfall : public GameObjectAIScript
 {
 public:
@@ -211,12 +204,8 @@ public:
     {
         if (pPlayer->HasQuest(11073) && pPlayer->GetItemInterface()->GetItemCount(32720, 1))
         {
-            float SSX = pPlayer->GetPositionX();
-            float SSY = pPlayer->GetPositionY();
-            float SSZ = pPlayer->GetPositionZ();
-            float SSO = pPlayer->GetOrientation();
-
-            Creature* NewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(21838, SSX, SSY, SSZ, SSO, true, false, 0, 0);
+            LocationVector pos = pPlayer->GetPosition();
+            Creature* NewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(21838, pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
             if (NewCreature != nullptr)
                 NewCreature->Despawn(600000, 0);
         }
@@ -227,7 +216,6 @@ public:
     }
 };
 
-
 class VilebranchKidnapper : public GameObjectAIScript
 {
 public:
@@ -237,25 +225,20 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        float SSX = pPlayer->GetPositionX();
-        float SSY = pPlayer->GetPositionY();
-        float SSZ = pPlayer->GetPositionZ();
-        float SSO = pPlayer->GetOrientation();
-
-        Creature* NewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(14748, SSX + 1, SSY, SSZ, SSO, true, false, 0, 0);
+        LocationVector pos = pPlayer->GetPosition();
+        Creature* NewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(14748, pos.x, pos.y + 1, pos.z, pos.o, true, false, 0, 0);
         if (NewCreature != nullptr)
             NewCreature->Despawn(600000, 0);
 
-        NewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(14748, SSX, SSY, SSZ, SSO, true, false, 0, 0);
+        NewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(14748, pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
         if (NewCreature != nullptr)
             NewCreature->Despawn(600000, 0);
 
-        NewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(14748, SSX - 1, SSY, SSZ, SSO, true, false, 0, 0);
+        NewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(14748, pos.x - 1, pos.y, pos.z, pos.o, true, false, 0, 0);
         if (NewCreature != nullptr)
             NewCreature->Despawn(600000, 0);
     }
 };
-
 
 class GongOfZulFarrak : public GameObjectAIScript
 {
@@ -268,12 +251,8 @@ public:
     {
         if (pPlayer->GetItemInterface()->GetItemCount(9240, 1))
         {
-            float SSX = pPlayer->GetPositionX();
-            float SSY = pPlayer->GetPositionY();
-            float SSZ = pPlayer->GetPositionZ();
-            float SSO = pPlayer->GetOrientation();
-
-            Creature* NewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(7273, SSX + 1, SSY, SSZ, SSO, true, false, 0, 0);
+            LocationVector pos = pPlayer->GetPosition();
+            Creature* NewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(7273, pos.x, pos.y + 1, pos.z, pos.o, true, false, 0, 0);
             if (NewCreature != nullptr)
                 NewCreature->Despawn(1800000, 0);
         }
@@ -283,7 +262,6 @@ public:
         }
     }
 };
-
 
 class Obsidias_Egg : public GameObjectAIScript
 {
@@ -296,12 +274,8 @@ public:
     {
         if (pPlayer->HasQuest(11078))
         {
-            float SSX = pPlayer->GetPositionX();
-            float SSY = pPlayer->GetPositionY();
-            float SSZ = pPlayer->GetPositionZ();
-            float SSO = pPlayer->GetOrientation();
-
-            Creature* NewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(23282, SSX, SSY + 1, SSZ, SSO, true, false, 0, 0);
+            LocationVector pos = pPlayer->GetPosition();
+            Creature* NewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(23282, pos.x, pos.y + 1, pos.z, pos.o, true, false, 0, 0);
             if (NewCreature != nullptr)
                 NewCreature->Despawn(600000, 0);
         }
@@ -311,7 +285,6 @@ public:
         }
     }
 };
-
 
 class Rivendarks_Egg : public GameObjectAIScript
 {
@@ -324,12 +297,8 @@ public:
     {
         if (pPlayer->HasQuest(11078))
         {
-            float SSX = pPlayer->GetPositionX();
-            float SSY = pPlayer->GetPositionY();
-            float SSZ = pPlayer->GetPositionZ();
-            float SSO = pPlayer->GetOrientation();
-
-            Creature* NewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(23061, SSX, SSY + 1, SSZ, SSO, true, false, 0, 0);
+            LocationVector pos = pPlayer->GetPosition();
+            Creature* NewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(23061, pos.x, pos.y + 1, pos.z, pos.o, true, false, 0, 0);
             if (NewCreature != nullptr)
                 NewCreature->Despawn(600000, 0);
         }
@@ -339,7 +308,6 @@ public:
         }
     }
 };
-
 
 class Furywings_Egg : public GameObjectAIScript
 {
@@ -352,12 +320,8 @@ public:
     {
         if (pPlayer->HasQuest(11078))
         {
-            float SSX = pPlayer->GetPositionX();
-            float SSY = pPlayer->GetPositionY();
-            float SSZ = pPlayer->GetPositionZ();
-            float SSO = pPlayer->GetOrientation();
-
-            Creature* NewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(23261, SSX, SSY + 1, SSZ, SSO, true, false, 0, 0);
+            LocationVector pos = pPlayer->GetPosition();
+            Creature* NewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(23261, pos.x, pos.y + 1, pos.z, pos.o, true, false, 0, 0);
             if (NewCreature != nullptr)
                 NewCreature->Despawn(600000, 0);
         }
@@ -367,7 +331,6 @@ public:
         }
     }
 };
-
 
 class Insidions_Egg : public GameObjectAIScript
 {
@@ -380,12 +343,8 @@ public:
     {
         if (pPlayer->HasQuest(11078))
         {
-            float SSX = pPlayer->GetPositionX();
-            float SSY = pPlayer->GetPositionY();
-            float SSZ = pPlayer->GetPositionZ();
-            float SSO = pPlayer->GetOrientation();
-
-            Creature* NewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(23281, SSX, SSY + 1, SSZ, SSO, true, false, 0, 0);
+            LocationVector pos = pPlayer->GetPosition();
+            Creature* NewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(23281, pos.x, pos.y + 1, pos.z, pos.o, true, false, 0, 0);
             if (NewCreature != nullptr)
                 NewCreature->Despawn(600000, 0);
         }
@@ -395,7 +354,6 @@ public:
         }
     }
 };
-
 
 class Corrupt_Minor_Manifestation_Water_Object : public GameObjectAIScript
 {
@@ -408,12 +366,8 @@ public:
     {
         if (pPlayer->HasQuest(63))
         {
-            float SSX = pPlayer->GetPositionX();
-            float SSY = pPlayer->GetPositionY();
-            float SSZ = pPlayer->GetPositionZ();
-            float SSO = pPlayer->GetOrientation();
-
-            Creature* NewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(5894, SSX, SSY + 1, SSZ, SSO, true, false, 0, 0);
+            LocationVector pos = pPlayer->GetPosition();
+            Creature* NewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(5894, pos.x, pos.y + 1, pos.z, pos.o, true, false, 0, 0);
             if (NewCreature != nullptr)
                 NewCreature->Despawn(600000, 0);
         }
@@ -423,7 +377,6 @@ public:
         }
     }
 };
-
 
 class Telathion_the_Impure_Object : public GameObjectAIScript
 {
@@ -436,12 +389,8 @@ public:
     {
         if (pPlayer->HasQuest(9508))
         {
-            float SSX = pPlayer->GetPositionX();
-            float SSY = pPlayer->GetPositionY();
-            float SSZ = pPlayer->GetPositionZ();
-            float SSO = pPlayer->GetOrientation();
-
-            Creature* NewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(17359, SSX, SSY + 1, SSZ, SSO, true, false, 0, 0);
+            LocationVector pos = pPlayer->GetPosition();
+            Creature* NewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(17359, pos.x, pos.y + 1, pos.z, pos.o, true, false, 0, 0);
             if (NewCreature != nullptr)
                 NewCreature->Despawn(600000, 0);
         }
@@ -451,7 +400,6 @@ public:
         }
     }
 };
-
 
 class UlagTheCleaver : public GameObjectAIScript
 {
@@ -480,7 +428,6 @@ public:
     }
 };
 
-
 class DustySpellbooks : public GameObjectAIScript
 {
 public:
@@ -494,17 +441,12 @@ public:
         if (en == nullptr)
             return;
 
-        float SSX = pLooter->GetPositionX();
-        float SSY = pLooter->GetPositionY();
-        float SSZ = pLooter->GetPositionZ();
-        float SSO = pLooter->GetOrientation();
-
-        Creature* NewCreature = pLooter->GetMapMgr()->GetInterface()->SpawnCreature(1770, SSX, SSY, SSZ, SSO, true, false, 0, 0);
+        LocationVector pos = pLooter->GetPosition();
+        Creature* NewCreature = pLooter->GetMapMgr()->GetInterface()->SpawnCreature(1770, pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
         if (NewCreature != nullptr)
             NewCreature->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The Sons of Arugal will rise against all who challenge the power of the Moonrage!");
     }
 };
-
 
 class CatFigurine : public GameObjectAIScript
 {
@@ -518,18 +460,13 @@ public:
         uint32 Chance = RandomUInt(100);
         if (Chance <= 10)
         {
-            float SSX = pPlayer->GetPositionX();
-            float SSY = pPlayer->GetPositionY();
-            float SSZ = pPlayer->GetPositionZ();
-            float SSO = pPlayer->GetOrientation();
-
-            Creature* NewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(3619, SSX, SSY + 1, SSZ, SSO, true, false, 0, 0);
+            LocationVector pos = pPlayer->GetPosition();
+            Creature* NewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(3619, pos.x, pos.y + 1, pos.z, pos.o, true, false, 0, 0);
             if (NewCreature != nullptr)
                 NewCreature->Despawn(600000, 0);
         }
     }
 };
-
 
 class EthereumTransponderZeta : public GameObjectAIScript
 {
@@ -557,7 +494,6 @@ public:
     }
 };
 
-
 class BringMetheEgg : public GameObjectAIScript
 {
 public:
@@ -575,7 +511,6 @@ public:
             pPlayer->CastSpell(pPlayer, 33382, true);
     }
 };
-
 
 class MysteriousEgg : public GameObjectAIScript
 {
@@ -607,7 +542,6 @@ public:
     }
 };
 
-
 class AlterofTidalMastery : public GameObjectAIScript
 {
 public:
@@ -620,7 +554,6 @@ public:
         pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(16292, 7934.343750f, -7637.020996f, 112.694130f, 3.098388f, true, false, 0, 0);
     }
 };
-
 
 class ShrineOfDathRemar : public GameObjectAIScript
 {
@@ -636,7 +569,6 @@ public:
             qle->SendQuestComplete();
     }
 };
-
 
 class APlagueUponThee : public GameObjectAIScript
 {
@@ -660,7 +592,6 @@ public:
     }
 };
 
-
 class SerpentStatue : public GameObjectAIScript
 {
 public:
@@ -679,7 +610,6 @@ public:
             naga->Despawn(6 * 60 * 1000, 0);
     }
 };
-
 
 class CuregosGold : public GameObjectAIScript
 {
@@ -720,7 +650,6 @@ public:
     }
 };
 
-
 class DreadmaulRock : public GameObjectAIScript
 {
 public:
@@ -744,7 +673,6 @@ public:
     }
 };
 
-
 class HandofIruxos : public GameObjectAIScript
 {
 public:
@@ -763,7 +691,6 @@ public:
             demon->Despawn(6 * 60 * 1000, 0);
     }
 };
-
 
 class LegionPortals : public GameObjectAIScript
 {
@@ -787,7 +714,6 @@ public:
         return;
     }
 };
-
 
 class ProphecyofAkida : public GameObjectAIScript
 {
@@ -817,7 +743,6 @@ public:
     }
 };
 
-
 class Razormaw : public GameObjectAIScript
 {
 public:
@@ -837,7 +762,6 @@ public:
     }
 };
 
-
 class TabletoftheSeven : public GameObjectAIScript
 {
 public:
@@ -855,7 +779,6 @@ public:
             pPlayer->GetItemInterface()->AddItemById(11470, 1, 0);
     }
 };
-
 
 class TestofEndurance : public GameObjectAIScript
 {
@@ -885,7 +808,6 @@ public:
     }
 };
 
-
 class TheFallenExarch : public GameObjectAIScript
 {
 public:
@@ -904,7 +826,6 @@ public:
             exarch->Despawn(6 * 60 * 1000, 0);
     }
 };
-
 
 class TheFinalCode : public GameObjectAIScript
 {
@@ -928,7 +849,6 @@ public:
     }
 };
 
-
 class TheRootofAllEvil : public GameObjectAIScript
 {
 public:
@@ -947,7 +867,6 @@ public:
             xandivious->Despawn(6 * 60 * 1000, 0);
     }
 };
-
 
 class TheThunderspike : public GameObjectAIScript
 {
@@ -970,7 +889,6 @@ public:
             spike->Despawn(5 * 60 * 1000, 0);
     }
 };
-
 
 class StrengthofOne : public GameObjectAIScript
 {
@@ -996,7 +914,6 @@ public:
     }
 };
 
-
 class HealingTheLake : public GameObjectAIScript
 {
 public:
@@ -1016,7 +933,6 @@ public:
     }
 };
 
-
 class TheRavensClaw : public GameObjectAIScript
 {
 public:
@@ -1030,7 +946,6 @@ public:
             pPlayer->GetMapMgr()->CreateAndSpawnCreature(23035, -87.3546f, 288.006f, 26.4832f, 0);
     }
 };
-
 
 class DeathGate1 : public GameObjectAIScript
 {
@@ -1057,7 +972,6 @@ public:
     }
 };
 
-
 class DeathGate2 : public GameObjectAIScript
 {
 public:
@@ -1081,7 +995,6 @@ public:
             plr->CastSpell(plr, 54746, true);
     }
 };
-
 
 class DeathGate3 : public GameObjectAIScript
 {
@@ -1111,12 +1024,8 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        float SSX = pPlayer->GetPositionX();
-        float SSY = pPlayer->GetPositionY();
-        float SSZ = pPlayer->GetPositionZ();
-        float SSO = pPlayer->GetOrientation();
-
-        Creature* NewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(10882, SSX, SSY, SSZ, SSO, true, false, 0, 0);
+        LocationVector pos = pPlayer->GetPosition();
+        Creature* NewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(10882, pos.x, pos.y, pos.y, pos.o, true, false, 0, 0);
         if (NewCreature != nullptr)
             NewCreature->Despawn(600000, 0);
     }

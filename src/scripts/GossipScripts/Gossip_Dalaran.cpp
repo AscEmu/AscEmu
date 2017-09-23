@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 #include "Setup.h"
 #include "Objects/GameObject.h"
 #include "Server/Packets/Opcode.h"
@@ -24,10 +24,9 @@
 
 enum UnorderedEntrys
 {
-    GO_DEDICATION_OF_HONOR  = 202443,
-    GT_DEDICATION_OF_HONOR  = 15921,    // "Dedicated to those that fell to the Scourge during the war in the frozen wastes."
-    GI_SEE_FALL_LICH_KING   = 351       // "See the fall of the Lich King."
-
+    GO_DEDICATION_OF_HONOR = 202443,
+    GT_DEDICATION_OF_HONOR = 15921,    // "Dedicated to those that fell to the Scourge during the war in the frozen wastes."
+    GI_SEE_FALL_LICH_KING = 351        // "See the fall of the Lich King."
 };
 
 class DedicationOfHonorGossip : public Arcemu::Gossip::Script
@@ -49,18 +48,20 @@ public:
     }
 };
 
- class DedicationOfHonorAI : public GameObjectAIScript
+class DedicationOfHonorAI : public GameObjectAIScript
 {
-    public:
-        DedicationOfHonorAI(GameObject* go) : GameObjectAIScript(go) {}
-        static GameObjectAIScript* Create(GameObject* GO) { return new DedicationOfHonorAI(GO); };
+public:
 
-        void OnActivate(Player* player)
-        {
-            DedicationOfHonorGossip gossip;
-            gossip.OnHello(_gameobject, player);
-        }
+    DedicationOfHonorAI(GameObject* go) : GameObjectAIScript(go) {}
+    static GameObjectAIScript* Create(GameObject* GO) { return new DedicationOfHonorAI(GO); };
+
+    void OnActivate(Player* player)
+    {
+        DedicationOfHonorGossip gossip;
+        gossip.OnHello(_gameobject, player);
+    }
 };
+
 
 void SetupDalaranGossip(ScriptMgr* mgr)
 {
