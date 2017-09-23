@@ -28,17 +28,7 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        uint32 i = 0;
-        QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(12965);
-        if (!pQuest)
-            return;
-
-        if (pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
-        {
-            pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
-            pQuest->SendUpdateAddKill(i);
-            pQuest->UpdatePlayerFields();
-        }
+        pPlayer->AddQuestKill(12965, 0, 0);
     }
 };
 
@@ -51,17 +41,7 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        uint32 i = 1;
-        QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(12965);
-        if (!pQuest)
-            return;
-
-        if (pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
-        {
-            pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
-            pQuest->SendUpdateAddKill(i);
-            pQuest->UpdatePlayerFields();
-        }
+        pPlayer->AddQuestKill(12965, 1, 0);
     }
 };
 
@@ -74,17 +54,7 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        uint32 i = 2;
-        QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(12965);
-        if (!pQuest)
-            return;
-
-        if (pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
-        {
-            pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
-            pQuest->SendUpdateAddKill(i);
-            pQuest->UpdatePlayerFields();
-        }
+        pPlayer->AddQuestKill(12965, 2, 0);
     }
 };
 
@@ -121,13 +91,7 @@ public:
             {
                 Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13614, plr);
 
-                QuestLogEntry* qle = plr->GetQuestLogForEntry(12864);
-                if (qle == nullptr || qle->GetMobCount(0) != 0)
-                    return;
-
-                qle->SetMobCount(0, 1);
-                qle->SendUpdateAddKill(0);
-                qle->UpdatePlayerFields();
+                plr->AddQuestKill(12864, 0, 0);
             } break;
         }
     }

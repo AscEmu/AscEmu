@@ -31,15 +31,7 @@ public:
     {
         if (mKiller->IsPlayer())
         {
-            QuestLogEntry* en = (static_cast<Player*>(mKiller))->GetQuestLogForEntry(10836);
-            if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-            {
-                uint32 newcount = en->GetMobCount(0) + 1;
-                en->SetMobCount(0, newcount);
-                en->SendUpdateAddKill(0);
-                en->UpdatePlayerFields();
-                return;
-            }
+            static_cast<Player*>(mKiller)->AddQuestKill(10836, 0, 0);
         }
     }
 };
@@ -54,25 +46,9 @@ public:
     {
         if (mKiller->IsPlayer())
         {
-            QuestLogEntry* en = static_cast<Player*>(mKiller)->GetQuestLogForEntry(10703);
-            if (en == NULL)
-            {
-                en = (static_cast<Player*>(mKiller))->GetQuestLogForEntry(10702);
-                if (en == NULL)
-                {
-                    return;
-                }
-            }
-
-            if (en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-            {
-                uint32 newcount = en->GetMobCount(0) + 1;
-                en->SetMobCount(0, newcount);
-                en->SendUpdateAddKill(0);
-                en->UpdatePlayerFields();
-            }
+            static_cast<Player*>(mKiller)->AddQuestKill(10703, 0, 0);
+            static_cast<Player*>(mKiller)->AddQuestKill(10702, 0, 0);
         }
-        return;
     }
 };
 
@@ -311,13 +287,7 @@ public:
             } break;
             case 4:
             {
-                QuestLogEntry* pQuest = plr->GetQuestLogForEntry(10814);
-                if (pQuest && pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mob_or_go_count[0])
-                {
-                    pQuest->SetMobCount(0, 1);
-                    pQuest->SendUpdateAddKill(0);
-                    pQuest->UpdatePlayerFields();
-                }
+                plr->AddQuestKill(10814, 0, 0);
             } break;
         }
     }

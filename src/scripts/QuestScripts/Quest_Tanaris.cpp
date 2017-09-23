@@ -36,17 +36,9 @@ public:
     void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* EnteredCode, uint32 gossipId)
     {
         Creature* spirit = static_cast<Creature*>(pObject);
-
-        QuestLogEntry* en = plr->GetQuestLogForEntry(3520);
-        if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-        {
-            en->SetMobCount(0, en->GetMobCount(0) + 1);
-            en->SendUpdateAddKill(0);
-            en->UpdatePlayerFields();
-        }
-
         spirit->Despawn(1, 0);
-        return;
+
+        plr->AddQuestKill(3520, 0, 0);
     }
 };
 

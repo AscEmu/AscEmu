@@ -34,13 +34,7 @@ public:
     {
         if (mKiller->IsPlayer())
         {
-            QuestLogEntry* pQuest = static_cast<Player*>(mKiller)->GetQuestLogForEntry(10482);
-            if (pQuest != NULL && pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mob_or_go_count[0])
-            {
-                pQuest->SetMobCount(0, pQuest->GetMobCount(0) + 1);
-                pQuest->SendUpdateAddKill(0);
-                pQuest->UpdatePlayerFields();
-            }
+            static_cast<Player*>(mKiller)->AddQuestKill(10482, 0, 0);
         }
     }
 };
@@ -56,13 +50,7 @@ public:
         if (!mKiller->IsPlayer())
             return;
 
-        QuestLogEntry* pQuest = static_cast<Player*>(mKiller)->GetQuestLogForEntry(10255);
-        if (pQuest != NULL && pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mob_or_go_count[0])
-        {
-            pQuest->SetMobCount(0, pQuest->GetMobCount(0) + 1);
-            pQuest->SendUpdateAddKill(0);
-            pQuest->UpdatePlayerFields();
-        }
+        static_cast<Player*>(mKiller)->AddQuestKill(10255, 0, 0);
     }
 };
 
@@ -233,17 +221,11 @@ public:
         if (i == -1)
             return;
 
-        QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10368);
-        if (pQuest != nullptr && pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
-        {
-            pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
-            pQuest->SendUpdateAddKill(i);
-            pQuest->UpdatePlayerFields();
+        pPlayer->AddQuestKill(10368, i, 0);
 
-            pPrisoner->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You've freed me! The winds speak to my people one again and grant us their strength. I thank you, stranger.");
-            pPrisoner->Despawn(5000, 6 * 60 * 1000);
-            pPrisoner->SetStandState(STANDSTATE_STAND);
-        }
+        pPrisoner->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You've freed me! The winds speak to my people one again and grant us their strength. I thank you, stranger.");
+        pPrisoner->Despawn(5000, 6 * 60 * 1000);
+        pPrisoner->SetStandState(STANDSTATE_STAND);
     }
 };
 

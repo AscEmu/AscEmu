@@ -304,29 +304,17 @@ bool WinterWondervolt(uint32 i, Spell* pSpell)
 
 bool ScryingCrystal(uint32 i, Spell* pSpell)
 {
-    QuestLogEntry* en = pSpell->p_caster->GetQuestLogForEntry(9824);
-    if (pSpell->p_caster->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pSpell->p_caster->GetPositionX(),
-        pSpell->p_caster->GetPositionY(), pSpell->p_caster->GetPositionZ(), 300078) && en)
+    Player* player = pSpell->p_caster;
+    LocationVector pos = player->GetPosition();
+    if (player->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pos.x, pos.y, pos.z, 300078))
     {
-
-        if (en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-        {
-            en->SetMobCount(0, 1);
-            en->SendUpdateAddKill(0);
-            en->UpdatePlayerFields();
-            return false;
-        }
+        player->AddQuestKill(9824, 0, 0);
+        return false;
     }
-    else if (pSpell->p_caster->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pSpell->p_caster->GetPositionX(),
-        pSpell->p_caster->GetPositionY(), pSpell->p_caster->GetPositionZ(), 300142) && en)
+    else if (player->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pos.x, pos.y, pos.z, 300142))
     {
-        if (en->GetMobCount(1) < en->GetQuest()->required_mob_or_go_count[1])
-        {
-            en->SetMobCount(1, 1);
-            en->SendUpdateAddKill(1);
-            en->UpdatePlayerFields();
-            return false;
-        }
+        player->AddQuestKill(9824, 1, 0);
+        return false;
     }
     return true;
 }

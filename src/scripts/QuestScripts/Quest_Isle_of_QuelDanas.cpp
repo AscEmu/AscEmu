@@ -123,22 +123,10 @@ public:
     {
         if (pKiller->IsPlayer())
         {
-            QuestLogEntry* qle = (static_cast<Player*>(pKiller))->GetQuestLogForEntry(11537);
-            if (qle == NULL)
-            {
-                qle = (static_cast<Player*>(pKiller))->GetQuestLogForEntry(11538);
-                if (qle == NULL)
-                    return;
-            }
+            Player* player = static_cast<Player*>(pKiller);
 
-            if (qle->GetMobCount(1) < qle->GetQuest()->required_mob_or_go_count[1])
-            {
-                uint32 newcount = qle->GetMobCount(1) + 1;
-                qle->SetMobCount(1, newcount);
-                qle->SendUpdateAddKill(1);
-                qle->UpdatePlayerFields();
-                return;
-            }
+            player->AddQuestKill(11537, 0, 0);
+            player->AddQuestKill(11538, 0, 0);
         }
     }
 };

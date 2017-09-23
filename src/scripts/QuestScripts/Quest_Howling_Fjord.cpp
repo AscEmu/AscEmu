@@ -30,18 +30,7 @@ public:
     {
         if (mKiller->IsPlayer())
         {
-            QuestLogEntry* qle = static_cast<Player*>(mKiller)->GetQuestLogForEntry(11230);
-            if (qle != NULL)
-            {
-                if (qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
-                {
-                    uint32 newcount = qle->GetMobCount(0) + 1;
-                    qle->SetMobCount(0, newcount);
-                    qle->SendUpdateAddKill(0);
-                    qle->UpdatePlayerFields();
-                    return;
-                }
-            }
+            static_cast<Player*>(mKiller)->AddQuestKill(11230, 0, 0);
         }
     }
 };
@@ -55,18 +44,7 @@ public:
     {
         if (mKiller->IsPlayer())
         {
-            QuestLogEntry* qle = static_cast<Player*>(mKiller)->GetQuestLogForEntry(11397);
-            if (qle != NULL)
-            {
-                if (qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
-                {
-                    uint32 newcount = qle->GetMobCount(0) + 1;
-                    qle->SetMobCount(0, newcount);
-                    qle->SendUpdateAddKill(0);
-                    qle->UpdatePlayerFields();
-                    return;
-                }
-            }
+            static_cast<Player*>(mKiller)->AddQuestKill(11397, 0, 0);
         }
     }
 };
@@ -80,18 +58,7 @@ public:
     {
         if (mKiller->IsPlayer())
         {
-            QuestLogEntry* qle = static_cast<Player*>(mKiller)->GetQuestLogForEntry(11283);
-            if (qle != NULL)
-            {
-                if (qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
-                {
-                    uint32 newcount = qle->GetMobCount(0) + 1;
-                    qle->SetMobCount(0, newcount);
-                    qle->SendUpdateAddKill(0);
-                    qle->UpdatePlayerFields();
-                    return;
-                }
-            }
+            static_cast<Player*>(mKiller)->AddQuestKill(11283, 0, 0);
         }
     }
 };

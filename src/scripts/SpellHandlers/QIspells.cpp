@@ -121,24 +121,15 @@ bool CallRexxar(uint32 i, Spell* pSpell)
 bool LayWreath(uint32 i, Spell* pSpell)  //Peace at Last quest
 {
     if (pSpell->p_caster == nullptr)
-    {
         return true;
-    }
 
     Player* pPlayer = pSpell->p_caster;
-    QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(11152);
-    if (pQuest == nullptr || pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mob_or_go_count[0])
-    {
-        return true;
-    }
+
+    pPlayer->AddQuestKill(11152, 0, 0);
 
     GameObject* pWreath = pPlayer->GetMapMgr()->CreateAndSpawnGameObject(501541, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 1);
     if (pWreath != nullptr)
         pWreath->Despawn(2 * 60 * 1000, 0);
-
-    pQuest->SetMobCount(0, 1);
-    pQuest->SendUpdateAddKill(0);
-    pQuest->UpdatePlayerFields();
 
     return true;
 }

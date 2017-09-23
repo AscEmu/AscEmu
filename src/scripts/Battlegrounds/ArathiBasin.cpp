@@ -885,49 +885,24 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
         PlaySoundToAll(Team ? 8212 : 8174);
         if (Team)
         {
-            QuestLogEntry* en = pPlayer->GetQuestLogForEntry(8120);
             switch (Id)
             {
                 case AB_CONTROL_POINT_MINE:
                 {
-                    if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-                    {
-                        en->SetMobCount(0, en->GetMobCount(0) + 1);
-                        en->SendUpdateAddKill(0);
-                        en->UpdatePlayerFields();
-                    }
-                }
-                break;
+                    pPlayer->AddQuestKill(8120, 0, 0);
+                } break;
                 case AB_CONTROL_POINT_LUMBERMILL:
                 {
-                    if (en && en->GetMobCount(1) < en->GetQuest()->required_mob_or_go_count[1])
-                    {
-                        en->SetMobCount(1, en->GetMobCount(1) + 1);
-                        en->SendUpdateAddKill(1);
-                        en->UpdatePlayerFields();
-                    }
-                }
-                break;
+                    pPlayer->AddQuestKill(8120, 1, 0);
+                } break;
                 case AB_CONTROL_POINT_BLACKSMITH:
                 {
-                    if (en && en->GetMobCount(2) < en->GetQuest()->required_mob_or_go_count[2])
-                    {
-                        en->SetMobCount(2, en->GetMobCount(2) + 1);
-                        en->SendUpdateAddKill(2);
-                        en->UpdatePlayerFields();
-                    }
-                }
-                break;
+                    pPlayer->AddQuestKill(8120, 2, 0);
+                } break;
                 case AB_CONTROL_POINT_STABLE:
                 {
-                    if (en && en->GetMobCount(3) < en->GetQuest()->required_mob_or_go_count[3])
-                    {
-                        en->SetMobCount(3, en->GetMobCount(3) + 1);
-                        en->SendUpdateAddKill(3);
-                        en->UpdatePlayerFields();
-                    }
-                }
-                break;
+                    pPlayer->AddQuestKill(8120, 3, 0);
+                } break;
             }
         }
         else
@@ -937,44 +912,20 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
             {
                 case AB_CONTROL_POINT_MINE:
                 {
-                    if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-                    {
-                        en->SetMobCount(0, en->GetMobCount(0) + 1);
-                        en->SendUpdateAddKill(0);
-                        en->UpdatePlayerFields();
-                    }
-                }
-                break;
+                    pPlayer->AddQuestKill(8105, 0, 0);
+                } break;
                 case AB_CONTROL_POINT_LUMBERMILL:
                 {
-                    if (en && en->GetMobCount(1) < en->GetQuest()->required_mob_or_go_count[1])
-                    {
-                        en->SetMobCount(1, en->GetMobCount(1) + 1);
-                        en->SendUpdateAddKill(1);
-                        en->UpdatePlayerFields();
-                    }
-                }
-                break;
+                    pPlayer->AddQuestKill(8105, 1, 0);
+                } break;
                 case AB_CONTROL_POINT_BLACKSMITH:
                 {
-                    if (en && en->GetMobCount(2) < en->GetQuest()->required_mob_or_go_count[2])
-                    {
-                        en->SetMobCount(2, en->GetMobCount(2) + 1);
-                        en->SendUpdateAddKill(2);
-                        en->UpdatePlayerFields();
-                    }
-                }
-                break;
+                    pPlayer->AddQuestKill(8105, 2, 0);
+                } break;
                 case AB_CONTROL_POINT_FARM:
                 {
-                    if (en && en->GetMobCount(3) < en->GetQuest()->required_mob_or_go_count[3])
-                    {
-                        en->SetMobCount(3, en->GetMobCount(3) + 1);
-                        en->SendUpdateAddKill(3);
-                        en->UpdatePlayerFields();
-                    }
-                }
-                break;
+                    pPlayer->AddQuestKill(8105, 3, 0);
+                } break;
             }
         }
         sEventMgr.AddEvent(this, &ArathiBasin::CaptureControlPoint, Id, Team, EVENT_AB_CAPTURE_CP_1 + Id, MSTIME_MINUTE, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);

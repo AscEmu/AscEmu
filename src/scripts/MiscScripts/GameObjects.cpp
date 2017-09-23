@@ -30,20 +30,10 @@ public:
 
     void OnActivate(Player* player)
     {
-        QuestLogEntry* qle = player->GetQuestLogForEntry(5097);
-        if (qle == nullptr)
-        {
-            qle = player->GetQuestLogForEntry(5098);
-            if (qle == nullptr)
-                return;
-        }
-
-        if (qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
-        {
-            qle->SetMobCount(0, qle->GetMobCount(0) + 1);
-            qle->SendUpdateAddKill(0);
-            qle->UpdatePlayerFields();
-        }
+        if (player->IsTeamHorde())
+            player->AddQuestKill(5098, 0, 0);
+        else
+            player->AddQuestKill(5097, 0, 0);
     }
 };
 
@@ -56,21 +46,10 @@ public:
 
     void OnActivate(Player* player)
     {
-        QuestLogEntry* qle = player->GetQuestLogForEntry(5097);
-        if (qle == nullptr)
-        {
-            qle = player->GetQuestLogForEntry(5098);
-            if (qle == nullptr)
-                return;
-        }
-
-        if (qle->GetMobCount(1) < qle->GetQuest()->required_mob_or_go_count[1])
-        {
-            qle->SetMobCount(1, qle->GetMobCount(1) + 1);
-            qle->SendUpdateAddKill(1);
-            qle->UpdatePlayerFields();
-
-        }
+        if (player->IsTeamHorde())
+            player->AddQuestKill(5098, 1, 0);
+        else
+            player->AddQuestKill(5097, 1, 0);
     }
 };
 
@@ -83,20 +62,10 @@ public:
 
     void OnActivate(Player* player)
     {
-        QuestLogEntry* qle = player->GetQuestLogForEntry(5097);
-        if (qle == nullptr)
-        {
-            qle = player->GetQuestLogForEntry(5098);
-            if (qle == nullptr)
-                return;
-        }
-
-        if (qle->GetMobCount(2) < qle->GetQuest()->required_mob_or_go_count[2])
-        {
-            qle->SetMobCount(2, qle->GetMobCount(2) + 1);
-            qle->SendUpdateAddKill(2);
-            qle->UpdatePlayerFields();
-        }
+        if (player->IsTeamHorde())
+            player->AddQuestKill(5098, 2, 0);
+        else
+            player->AddQuestKill(5097, 2, 0);
     }
 };
 
@@ -109,20 +78,10 @@ public:
 
     void OnActivate(Player* player)
     {
-        QuestLogEntry* qle = player->GetQuestLogForEntry(5097);
-        if (qle == nullptr)
-        {
-            qle = player->GetQuestLogForEntry(5098);
-            if (qle == nullptr)
-                return;
-        }
-
-        if (qle->GetMobCount(3) < qle->GetQuest()->required_mob_or_go_count[3])
-        {
-            qle->SetMobCount(3, qle->GetMobCount(3) + 1);
-            qle->SendUpdateAddKill(3);
-            qle->UpdatePlayerFields();
-        }
+        if (player->IsTeamHorde())
+            player->AddQuestKill(5098, 3, 0);
+        else
+            player->AddQuestKill(5097, 3, 0);
     }
 };
 
@@ -509,16 +468,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        QuestLogEntry* qle = player->GetQuestLogForEntry(10111);
-        if (qle == nullptr)
-            return;
-
-        if (qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
-        {
-            qle->SetMobCount(0, qle->GetMobCount(0) + 1);
-            qle->SendUpdateAddKill(0);
-            qle->UpdatePlayerFields();
-        }
+        player->AddQuestKill(10111, 0, 0);
 
         LocationVector pos = player->GetPosition();
         Creature* bird = player->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pos.x, pos.y, pos.z, 19055);
@@ -695,17 +645,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        QuestLogEntry* qle = player->GetQuestLogForEntry(5581);
-        if (qle == nullptr)
-            return;
-
-        if (qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
-        {
-            qle->SetMobCount(0, qle->GetMobCount(0) + 1);
-            qle->SendUpdateAddKill(0);
-            qle->UpdatePlayerFields();
-        }
-        return;
+        player->AddQuestKill(5581, 0, 0);
     }
 };
 
@@ -718,16 +658,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        QuestLogEntry* qle = player->GetQuestLogForEntry(9544);
-        if (qle == nullptr)
-            return;
-
-        if (qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
-        {
-            qle->SetMobCount(0, qle->GetMobCount(0) + 1);
-            qle->SendUpdateAddKill(0);
-            qle->UpdatePlayerFields();
-        }
+        player->AddQuestKill(9544, 0, 0);
 
         LocationVector pos = player->GetPosition();
 
@@ -832,16 +763,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        QuestLogEntry* qle = player->GetQuestLogForEntry(10447);
-        if (qle == nullptr)
-            return;
-
-        if (qle->GetMobCount(1) < qle->GetQuest()->required_mob_or_go_count[1])
-        {
-            qle->SetMobCount(1, qle->GetMobCount(1) + 1);
-            qle->SendUpdateAddKill(1);
-            qle->UpdatePlayerFields();
-        }
+        player->AddQuestKill(10447, 1, 0);
     }
 };
 
@@ -928,13 +850,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        QuestLogEntry* pQuest = player->GetQuestLogForEntry(181433);
-        if (pQuest && pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mob_or_go_count[0])
-        {
-            pQuest->SetMobCount(0, 1);
-            pQuest->SendUpdateAddKill(0);
-            pQuest->UpdatePlayerFields();
-        }
+        player->AddQuestKill(181433, 0, 0);
     }
 };
 

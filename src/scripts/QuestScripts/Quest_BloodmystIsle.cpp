@@ -49,14 +49,7 @@ public:
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* EnteredCode, uint32 gossipId)
     {
-        QuestLogEntry* en = plr->GetQuestLogForEntry(9663);
-        if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-        {
-            en->SetMobCount(0, en->GetMobCount(0) + 1);
-            en->SendUpdateAddKill(0);
-            en->UpdatePlayerFields();
-            return;
-        }
+        plr->AddQuestKill(9663, 0, 0);
     }
 };
 
@@ -75,14 +68,7 @@ public:
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* EnteredCode, uint32 gossipId)
     {
-        QuestLogEntry* en = plr->GetQuestLogForEntry(9663);
-        if (en && en->GetMobCount(1) < en->GetQuest()->required_mob_or_go_count[1])
-        {
-            en->SetMobCount(1, en->GetMobCount(1) + 1);
-            en->SendUpdateAddKill(1);
-            en->UpdatePlayerFields();
-            return;
-        }
+        plr->AddQuestKill(9663, 1, 0);
     }
 };
 
@@ -101,14 +87,7 @@ public:
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* EnteredCode, uint32 gossipId)
     {
-        QuestLogEntry* en = plr->GetQuestLogForEntry(9663);
-        if (en && en->GetMobCount(2) < en->GetQuest()->required_mob_or_go_count[2])
-        {
-            en->SetMobCount(2, en->GetMobCount(2) + 1);
-            en->SendUpdateAddKill(2);
-            en->UpdatePlayerFields();
-            return;
-        }
+        plr->AddQuestKill(9663, 2, 0);
     }
 };
 
@@ -121,23 +100,11 @@ public:
 
     void OnActivate(Player* pPlayer)
     {
-        QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(9667);
-        if (qle == NULL)
-            return;
-
-        if (qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
-        {
-            qle->SetMobCount(0, qle->GetMobCount(0) + 1);
-            qle->SendUpdateAddKill(0);
-            qle->UpdatePlayerFields();
-        }
+        pPlayer->AddQuestKill(9667, 0, 0);
 
         Creature* princess = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17682);
-        if (!princess)
-            return;
-
-        princess->Despawn(1000, 6 * 60 * 1000);
-        return;
+        if (princess != nullptr)
+            princess->Despawn(1000, 6 * 60 * 1000);
     }
 };
 

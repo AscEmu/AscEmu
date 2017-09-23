@@ -71,15 +71,7 @@ public:
     {
         if (mKiller->IsPlayer())
         {
-            QuestLogEntry* en = (static_cast<Player*>(mKiller))->GetQuestLogForEntry(10503);
-            if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-            {
-                uint32 newcount = en->GetMobCount(0) + 1;
-                en->SetMobCount(0, newcount);
-                en->SendUpdateAddKill(0);
-                en->UpdatePlayerFields();
-                return;
-            }
+            static_cast<Player*>(mKiller)->AddQuestKill(10503, 0, 0);
         }
     }
 };
@@ -258,23 +250,11 @@ public:
             return;
 
         Player* pPlayer = static_cast<Player*>(mKiller);
-        QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10502);
-        if (pQuest == nullptr)
-        {
-            pQuest = pPlayer->GetQuestLogForEntry(10505);
-            if (pQuest == nullptr)
-            {
-                return;
-            }
-        }
 
-        if (pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mob_or_go_count[0])
-        {
-            uint32 NewCount = pQuest->GetMobCount(0) + 1;
-            pQuest->SetMobCount(0, NewCount);
-            pQuest->SendUpdateAddKill(0);
-            pQuest->UpdatePlayerFields();
-        }
+        if (pPlayer->IsTeamHorde())
+            pPlayer->AddQuestKill(10505, 0, 0);
+        else
+            pPlayer->AddQuestKill(10502, 0, 0);
     }
 };
 
@@ -398,13 +378,8 @@ public:
             if (plr == nullptr)
                 return;
 
-            QuestLogEntry* qle = plr->GetQuestLogForEntry(10512);
-            if (qle != nullptr && qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
-            {
-                qle->SetMobCount(0, qle->GetMobCount(0) + 1);
-                qle->SendUpdateAddKill(0);
-                qle->UpdatePlayerFields();
-            }
+            plr->AddQuestKill(10512, 0, 0);
+
             Despawn(0, 0);
             return;
         }

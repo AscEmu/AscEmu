@@ -84,13 +84,7 @@ public:
             }break;
             case 10:
             {
-                QuestLogEntry* en = Plr->GetQuestLogForEntry(8304);
-                if (en && en->GetMobCount(1) < en->GetQuest()->required_mob_or_go_count[1])
-                {
-                    en->SetMobCount(1, 1);
-                    en->SendUpdateAddKill(1);
-                    en->UpdatePlayerFields();
-                }
+                Plr->AddQuestKill(8304, 0, 0);
             }break;
         }
     }
@@ -158,13 +152,7 @@ public:
             }break;
             case 10:
             {
-                QuestLogEntry* en = Plr->GetQuestLogForEntry(8304);
-                if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-                {
-                    en->SetMobCount(0, 1);
-                    en->SendUpdateAddKill(0);
-                    en->UpdatePlayerFields();
-                }
+                Plr->AddQuestKill(8304, 0, 0);
             }break;
         }
     }

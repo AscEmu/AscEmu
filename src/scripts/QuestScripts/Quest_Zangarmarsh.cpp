@@ -51,18 +51,12 @@ public:
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
     {
-        QuestLogEntry* en = plr->GetQuestLogForEntry(9785);
         Creature* casta = (static_cast<Creature*>(pObject));
         switch (pObject->GetEntry())
         {
             case 17900:
             {
-                if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-                {
-                    en->SetMobCount(0, 1);
-                    en->SendUpdateAddKill(0);
-                    en->UpdatePlayerFields();
-                }
+                plr->AddQuestKill(9785, 0, 0);
 
                 if (plr->GetStandingRank(942) == 4)
                     casta->CastSpell(plr, 31808, true);
@@ -76,12 +70,7 @@ public:
             } break;
             case 17901:
             {
-                if (en && en->GetMobCount(1) < en->GetQuest()->required_mob_or_go_count[1])
-                {
-                    en->SetMobCount(1, 1);
-                    en->SendUpdateAddKill(1);
-                    en->UpdatePlayerFields();
-                }
+                plr->AddQuestKill(9785, 1, 0);
 
                 if (plr->GetStandingRank(942) == 4)
                     casta->CastSpell(plr, 31807, true);

@@ -320,17 +320,7 @@ public:
     {
         Creature* Lump = static_cast<Creature*>(pObject);
 
-        if (plr->HasQuest(9918))
-        {
-            QuestLogEntry* en = plr->GetQuestLogForEntry(9918);
-            if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-            {
-                uint32 newcount = en->GetMobCount(0) + 1;
-                en->SetMobCount(0, newcount);
-                en->SendUpdateAddKill(0);
-                en->UpdatePlayerFields();
-            }
-        }
+        plr->AddQuestKill(9918, 0, 0);
     }
 };
 

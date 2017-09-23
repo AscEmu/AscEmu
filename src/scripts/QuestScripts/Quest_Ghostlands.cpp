@@ -37,19 +37,10 @@ public:
     {
         Creature* Prisoner12 = static_cast<Creature*>(pObject);
 
-        QuestLogEntry* en = plr->GetQuestLogForEntry(9164);
-        if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-        {
-            en->SetMobCount(0, en->GetMobCount(0) + 1);
-            en->SendUpdateAddKill(0);
-            en->UpdatePlayerFields();
+        plr->AddQuestKill(9164, 0, 0);
 
-            Prisoner12->Despawn(5000, 6 * 60 * 1000);
-            Prisoner12->SetStandState(STANDSTATE_STAND);
-            Prisoner12->SetEmoteState(EMOTE_ONESHOT_EAT);
-            return;
-        }
-
+        Prisoner12->Despawn(5000, 6 * 60 * 1000);
+        Prisoner12->SetStandState(STANDSTATE_STAND);
     }
 };
 
@@ -70,19 +61,11 @@ public:
     {
         Creature* Prisoner22 = static_cast<Creature*>(pObject);
 
-        QuestLogEntry* en = plr->GetQuestLogForEntry(9164);
-        if (en && en->GetMobCount(1) < en->GetQuest()->required_mob_or_go_count[1])
-        {
-            en->SetMobCount(1, en->GetMobCount(1) + 1);
-            en->SendUpdateAddKill(1);
-            en->UpdatePlayerFields();
+        plr->AddQuestKill(9164, 1, 0);
 
-            Prisoner22->Despawn(5000, 6 * 60 * 1000);
-            Prisoner22->SetStandState(STANDSTATE_STAND);
-            Prisoner22->SetEmoteState(EMOTE_ONESHOT_EAT);
-            return;
-        }
-
+        Prisoner22->Despawn(5000, 6 * 60 * 1000);
+        Prisoner22->SetStandState(STANDSTATE_STAND);
+        Prisoner22->SetEmoteState(EMOTE_ONESHOT_EAT);
     }
 };
 
@@ -103,19 +86,11 @@ public:
     {
         Creature* Prisoner32 = static_cast<Creature*>(pObject);
 
-        QuestLogEntry* en = plr->GetQuestLogForEntry(9164);
-        if (en && en->GetMobCount(2) < en->GetQuest()->required_mob_or_go_count[2])
-        {
-            en->SetMobCount(2, en->GetMobCount(2) + 1);
-            en->SendUpdateAddKill(2);
-            en->UpdatePlayerFields();
+        plr->AddQuestKill(9164, 2, 0);
 
-            Prisoner32->Despawn(5000, 6 * 60 * 1000);
-            Prisoner32->SetStandState(STANDSTATE_STAND);
-            Prisoner32->SetEmoteState(EMOTE_ONESHOT_EAT);
-            return;
-        }
-
+        Prisoner32->Despawn(5000, 6 * 60 * 1000);
+        Prisoner32->SetStandState(STANDSTATE_STAND);
+        Prisoner32->SetEmoteState(EMOTE_ONESHOT_EAT);
     }
 };
 

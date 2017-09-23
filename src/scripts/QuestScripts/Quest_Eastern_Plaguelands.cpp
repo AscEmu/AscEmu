@@ -45,15 +45,7 @@ public:
 
     void OnHello(Object* pObject, Player* plr)
     {
-        QuestLogEntry* en = plr->GetQuestLogForEntry(5211);
-        if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-        {
-            uint32 newcount = en->GetMobCount(0) + 1;
-
-            en->SetMobCount(0, newcount);
-            en->SendUpdateAddKill(0);
-            en->UpdatePlayerFields();
-        }
+        plr->AddQuestKill(5211, 0, 0);
 
         Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 3873, plr);
 

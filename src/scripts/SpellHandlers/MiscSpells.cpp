@@ -397,17 +397,9 @@ bool PreparationForBattle(uint32 i, Spell* pSpell)
         return true;
 
     Player* pPlayer = pSpell->p_caster;
-    QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(12842);
-    if (pQuest != NULL)
-    {
-        if (pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mob_or_go_count[0])
-        {
-            pQuest->SetMobCount(0, pQuest->GetMobCount(0) + 1);
-            pQuest->SendUpdateAddKill(0);
-            pQuest->UpdatePlayerFields();
-            pQuest->SendQuestComplete();
-        }
-    }
+
+    pPlayer->AddQuestKill(12842, 0, 0);
+
     return true;
 };
 

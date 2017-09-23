@@ -31,15 +31,7 @@ public:
     {
         if (mKiller->IsPlayer())
         {
-            QuestLogEntry* en = (static_cast<Player*>(mKiller))->GetQuestLogForEntry(11096);
-            if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-            {
-                uint32 newcount = en->GetMobCount(0) + 1;
-                en->SetMobCount(0, newcount);
-                en->SendUpdateAddKill(0);
-                en->UpdatePlayerFields();
-                return;
-            }
+            static_cast<Player*>(mKiller)->AddQuestKill(11096, 0, 0);
         }
     }
 };
@@ -158,16 +150,7 @@ public:
         creat->GetAIInterface()->m_canMove = false;
         creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Finally! I'm free!");
 
-        QuestLogEntry* qle = plr->GetQuestLogForEntry(10873);
-        if (qle == NULL)
-            return;
-
-        if (qle->GetMobCount(0) == qle->GetQuest()->required_mob_or_go_count[0])
-            return;
-
-        qle->SetMobCount(0, qle->GetMobCount(0) + 1);
-        qle->SendUpdateAddKill(0);
-        qle->UpdatePlayerFields();
+        plr->AddQuestKill(10873, 0, 0);
     }
 };
 
@@ -202,13 +185,7 @@ public:
     {
         plr->GetItemInterface()->RemoveItemAmt(2799, 1);
 
-        QuestLogEntry* qle = plr->GetQuestLogForEntry(10201);
-        if (qle && qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
-        {
-            qle->SetMobCount(0, qle->GetMobCount(0) + 1);
-            qle->SendUpdateAddKill(0);
-            qle->UpdatePlayerFields();
-        }
+        plr->AddQuestKill(10201, 0, 0);
     }
 };
 

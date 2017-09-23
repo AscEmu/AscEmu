@@ -46,17 +46,9 @@ public:
     {
         if (pPlayer->HasFinishedQuest(4284))
         {
-            QuestLogEntry* en = pPlayer->GetQuestLogForEntry(4285);
-            if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-            {
-                uint32 newcount = en->GetMobCount(0) + 1;
-                en->SetMobCount(0, newcount);
-                en->SendUpdateAddKill(0);
-                en->UpdatePlayerFields();
-                return;
-            }
+            pPlayer->AddQuestKill(4285, 0, 0);
         }
-        else if (pPlayer->HasFinishedQuest(4284) == false)
+        else
         {
             pPlayer->BroadcastMessage("You need to have completed the quest : Crystals of Power");
         }
@@ -74,17 +66,9 @@ public:
     {
         if (pPlayer->HasFinishedQuest(4284))
         {
-            QuestLogEntry* en = pPlayer->GetQuestLogForEntry(4287);
-            if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-            {
-                uint32 newcount = en->GetMobCount(0) + 1;
-                en->SetMobCount(0, newcount);
-                en->SendUpdateAddKill(0);
-                en->UpdatePlayerFields();
-                return;
-            }
+            pPlayer->AddQuestKill(4287, 0, 0);
         }
-        else if (pPlayer->HasFinishedQuest(4284) == false)
+        else
         {
             pPlayer->BroadcastMessage("You need to have completed the quest : Crystals of Power");
         }
@@ -102,17 +86,9 @@ public:
     {
         if (pPlayer->HasFinishedQuest(4284))
         {
-            QuestLogEntry* en = pPlayer->GetQuestLogForEntry(4288);
-            if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
-            {
-                uint32 newcount = en->GetMobCount(0) + 1;
-                en->SetMobCount(0, newcount);
-                en->SendUpdateAddKill(0);
-                en->UpdatePlayerFields();
-                return;
-            }
+            pPlayer->AddQuestKill(4288, 0, 0);
         }
-        else if (pPlayer->HasFinishedQuest(4284) == false)
+        else
         {
             pPlayer->BroadcastMessage("You need to have completed the quest : Crystals of Power");
         }
