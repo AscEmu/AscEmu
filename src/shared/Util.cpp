@@ -91,7 +91,7 @@ namespace Util
 
     uint32_t getMSTime()
     {
-        auto startTime = std::chrono::high_resolution_clock::now();
+        static const std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
 
         return uint32_t(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - startTime).count());
     }
