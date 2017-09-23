@@ -19,19 +19,16 @@
 *
 */
 
-#ifndef SCRIPTMGR_H
-#define SCRIPTMGR_H
+#pragma once
 
 #include <mutex>
-
 #include "Management/Gossip/Gossip.h"
 #include "Management/GameEventMgr.h"
-
 #include "Units/Unit.h"
 #include "Management/ArenaTeam.h"
 #include "Server/ServerState.h"
 
-#define ADD_CREATURE_FACTORY_FUNCTION(cl) static CreatureAIScript * Create(Creature* c) { return new cl(c); }
+#define ADD_CREATURE_FACTORY_FUNCTION(cl) static CreatureAIScript* Create(Creature* c) { return new cl(c); }
 #define ADD_INSTANCE_FACTORY_FUNCTION(ClassName) static InstanceScript* Create(MapMgr* pMapMgr) { return new ClassName(pMapMgr); };
 
 class Channel;
@@ -78,7 +75,6 @@ enum ServerHookEvents
 enum ScriptTypes
 {
     SCRIPT_TYPE_MISC            = 0x01,
-    SCRIPT_TYPE_INFODUMPER      = 0x02,
     SCRIPT_TYPE_SCRIPT_ENGINE   = 0x20
 };
 
@@ -121,7 +117,6 @@ class Aura;
 class Creature;
 class CreatureAIScript;
 class EventScript;
-class GossipScript;
 class GameObjectAIScript;
 class InstanceScript;
 class ScriptMgr;
@@ -157,9 +152,6 @@ typedef std::set<QuestScript*> QuestScripts;
 typedef std::set<void*> ServerHookList;
 typedef std::list< Arcemu::DynLib* > DynamicLibraryMap;
 
-#define VISIBLE_RANGE (26.46f)
-#define MAX_SCRIPTS 1000
-#define MAX_INSTANCE_SCRIPTS 1000
 
 class SERVER_DECL ScriptMgr : public Singleton<ScriptMgr>
 {
@@ -468,18 +460,6 @@ class SERVER_DECL GameObjectAIScript
         GameObject* _gameobject;
 };
 
-class SERVER_DECL GossipScript : public Arcemu::Gossip::Script
-{
-    public:
-
-        GossipScript() {}
-        virtual ~GossipScript() {}
-
-        virtual void GossipHello(Object* /*pObject*/, Player* /*plr*/) {}
-        virtual void GossipSelectOption(Object* /*pObject*/, Player* /*Plr*/, uint32 /*Id*/, uint32 /*IntId*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/) {}
-        virtual void GossipEnd(Object* /*pObject*/, Player* /*Plr*/) {}
-};
-
 class SERVER_DECL QuestScript
 {
     public:
@@ -589,5 +569,3 @@ class SERVER_DECL HookInterface : public Singleton<HookInterface>
 
 #define sScriptMgr ScriptMgr::getSingleton()
 #define sHookInterface HookInterface::getSingleton()
-
-#endif  //SCRIPTMGR_H
