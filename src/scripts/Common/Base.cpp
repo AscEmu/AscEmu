@@ -583,7 +583,7 @@ SpellDesc* MoonScriptCreatureAI::FindSpellById(uint32 pSpellId)
 {
     for (SpellDescArray::iterator SpellIter = mSpells.begin(); SpellIter != mSpells.end(); ++SpellIter)
     {
-        if ((*SpellIter)->mInfo && (*SpellIter)->mInfo->Id == pSpellId)
+        if ((*SpellIter)->mInfo && (*SpellIter)->mInfo->getId() == pSpellId)
             return (*SpellIter);
     }
     return NULL;

@@ -92,7 +92,7 @@ bool DeathStrike(uint32 i, Spell* pSpell)
             val += val * (aur->GetSpellInfo()->EffectBasePoints[2] + 1) / 100;
 
         if (val > 0)
-            pSpell->u_caster->Heal(pSpell->u_caster, pSpell->GetSpellInfo()->Id, val);
+            pSpell->u_caster->Heal(pSpell->u_caster, pSpell->GetSpellInfo()->getId(), val);
     }
 
     return true;
@@ -346,7 +346,7 @@ bool WillOfTheNecropolis(uint32 i, Spell* spell)
     if (plr == NULL)
         return true;
 
-    switch (spell->GetSpellInfo()->Id)
+    switch (spell->GetSpellInfo()->getId())
     {
         case 49189:
             plr->removeSpell(52285, false, false, 0);

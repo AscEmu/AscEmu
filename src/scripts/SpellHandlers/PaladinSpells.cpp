@@ -32,7 +32,7 @@ bool EyeForAnEye(uint32 i, Aura* pAura, bool apply)
 
     if (apply)
     {
-        target->AddProcTriggerSpell(25997, pAura->GetSpellInfo()->Id, pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_CRIT_HIT_VICTIM | PROC_ON_RANGED_CRIT_ATTACK_VICTIM | PROC_ON_SPELL_CRIT_HIT_VICTIM, 0, NULL, NULL);
+        target->AddProcTriggerSpell(25997, pAura->GetSpellInfo()->getId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_CRIT_HIT_VICTIM | PROC_ON_RANGED_CRIT_ATTACK_VICTIM | PROC_ON_SPELL_CRIT_HIT_VICTIM, 0, NULL, NULL);
     }
     else
     {
@@ -62,7 +62,7 @@ bool HolyShock(uint32 i, Spell* pSpell)
     if (isAttackable(caster, target))
     {
         // Cast offensive Holy Shock
-        switch (pSpell->GetSpellInfo()->Id)
+        switch (pSpell->GetSpellInfo()->getId())
         {
             case 20473: // Rank 1
                 spell_id = 25912;
@@ -87,7 +87,7 @@ bool HolyShock(uint32 i, Spell* pSpell)
                 break;
             default: // Invalid case, spell handler is assigned to wrong spell
             {
-                LOG_ERROR("(Offensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->Id);
+                LOG_ERROR("(Offensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->getId());
                 return true;
             }
         }
@@ -95,7 +95,7 @@ bool HolyShock(uint32 i, Spell* pSpell)
     else
     {
         // Cast healing Holy Shock
-        switch (pSpell->GetSpellInfo()->Id)
+        switch (pSpell->GetSpellInfo()->getId())
         {
             case 20473: // Rank 1
                 spell_id = 25914;
@@ -120,7 +120,7 @@ bool HolyShock(uint32 i, Spell* pSpell)
                 break;
             default: // Invalid case, spell handler is assigned to wrong spell
             {
-                LOG_ERROR("(Defensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->Id);
+                LOG_ERROR("(Defensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->getId());
                 return true;
             }
         }
@@ -259,7 +259,7 @@ bool JudgementLightWisdomJustice(uint32 i, Spell* pSpell)
             break;
         default:
         {
-            LOG_ERROR("JudgementLightWisdomJustice handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->Id);
+            LOG_ERROR("JudgementLightWisdomJustice handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->getId());
             return true;
         }
     }
@@ -280,7 +280,7 @@ bool JudgementLightWisdomJustice(uint32 i, Spell* pSpell)
             break;
         default:
         {
-            LOG_ERROR("JudgementLightWisdomJustice cast spell felt to invalid NameHash id [%u]", pSpell->GetSpellInfo()->Id);
+            LOG_ERROR("JudgementLightWisdomJustice cast spell felt to invalid NameHash id [%u]", pSpell->GetSpellInfo()->getId());
             return true;
         }
     }
@@ -378,7 +378,7 @@ bool RighteousDefense(uint32 i, Spell* s)
 
 bool Illumination(uint32 i, Spell* s)
 {
-    switch (s->m_triggeredByAura == NULL ? s->GetSpellInfo()->Id : s->m_triggeredByAura->GetSpellId())
+    switch (s->m_triggeredByAura == NULL ? s->GetSpellInfo()->getId() : s->m_triggeredByAura->GetSpellId())
     {
         case 20210:
         case 20212:

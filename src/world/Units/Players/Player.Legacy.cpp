@@ -2122,9 +2122,9 @@ void Player::_SavePet(QueryBuffer* buf)
             for (; itr != summon->mSpells.end(); ++itr)
             {
                 if (buf == NULL)
-                    CharacterDatabase.Execute("INSERT INTO playerpetspells VALUES(%u, %u, %u, %u)", GetLowGUID(), pn, itr->first->Id, itr->second);
+                    CharacterDatabase.Execute("INSERT INTO playerpetspells VALUES(%u, %u, %u, %u)", GetLowGUID(), pn, itr->first->getId(), itr->second);
                 else
-                    buf->AddQuery("INSERT INTO playerpetspells VALUES(%u, %u, %u, %u)", GetLowGUID(), pn, itr->first->Id, itr->second);
+                    buf->AddQuery("INSERT INTO playerpetspells VALUES(%u, %u, %u, %u)", GetLowGUID(), pn, itr->first->getId(), itr->second);
             }
         }
     }
@@ -4633,7 +4633,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
             {
                 if (spells->RequiredShapeShift)
                 {
-                    AddShapeShiftSpell(spells->Id);
+                    AddShapeShiftSpell(spells->getId());
                     continue;
                 }
 
@@ -4662,7 +4662,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
                 if (spells != nullptr)
                 {
                     if (spells->RequiredShapeShift)
-                        RemoveShapeShiftSpell(spells->Id);
+                        RemoveShapeShiftSpell(spells->getId());
                     else
                         RemoveAura(item->GetItemProperties()->Spells[k].Id);
                 }
@@ -6290,7 +6290,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
     if (spell_info == nullptr)
         return -1;
 
-    LogDebugFlag(LF_SPELL, "Canshootwithrangedweapon!?!? spell: [%u] %s" , spell_info->Id , spell_info->Name.c_str());
+    LogDebugFlag(LF_SPELL, "Canshootwithrangedweapon!?!? spell: [%u] %s" , spell_info->getId() , spell_info->Name.c_str());
 
     // Check if Morphed
     if (polySpell > 0)
@@ -6464,7 +6464,7 @@ void Player::EventRepeatSpell()
         return;
     }
 
-    int32 f = this->CanShootRangedWeapon(m_AutoShotSpell->Id, target, true);
+    int32 f = this->CanShootRangedWeapon(m_AutoShotSpell->getId(), target, true);
 
     if (f != 0)
     {
@@ -6531,7 +6531,7 @@ void Player::removeSpellByHashName(uint32 hash)
         SpellInfo* e = sSpellCustomizations.GetSpellInfo(SpellID);
         if (e->custom_NameHash == hash)
         {
-            if (info->spell_list.find(e->Id) != info->spell_list.end())
+            if (info->spell_list.find(e->getId()) != info->spell_list.end())
                 continue;
 
             RemoveAura(SpellID, GetGUID());
@@ -6549,7 +6549,7 @@ void Player::removeSpellByHashName(uint32 hash)
         SpellInfo* e = sSpellCustomizations.GetSpellInfo(SpellID);
         if (e->custom_NameHash == hash)
         {
-            if (info->spell_list.find(e->Id) != info->spell_list.end())
+            if (info->spell_list.find(e->getId()) != info->spell_list.end())
                 continue;
 
             RemoveAura(SpellID, GetGUID());
@@ -7590,7 +7590,7 @@ void Player::ClearCooldownForSpell(uint32 spell_id)
         {
             PlayerCooldownMap::iterator itr2 = itr++;
             if ((i == COOLDOWN_TYPE_CATEGORY && itr2->first == spellInfo->Category) ||
-                (i == COOLDOWN_TYPE_SPELL && itr2->first == spellInfo->Id))
+                (i == COOLDOWN_TYPE_SPELL && itr2->first == spellInfo->getId()))
             {
                 m_cooldownMap[i].erase(itr2);
             }
@@ -9492,7 +9492,7 @@ void Player::CompleteLoading()
                 Aura* a = sSpellFactoryMgr.NewAura(sp, (*i).dur, this, this, false);
                 this->AddAura(a);
             }
-            if (m_chargeSpells.find(sp->Id) == m_chargeSpells.end() && !(sp->procFlags & PROC_REMOVEONUSE))
+            if (m_chargeSpells.find(sp->getId()) == m_chargeSpells.end() && !(sp->procFlags & PROC_REMOVEONUSE))
             {
                 SpellCharge charge;
                 if (sp->custom_proc_interval == 0)
@@ -9500,11 +9500,11 @@ void Player::CompleteLoading()
                 else
                     charge.count = sp->procCharges;
 
-                charge.spellId = sp->Id;
+                charge.spellId = sp->getId();
                 charge.ProcFlag = sp->procFlags;
                 charge.lastproc = 0;
                 charge.procdiff = 0;
-                m_chargeSpells.insert(std::make_pair(sp->Id, charge));
+                m_chargeSpells.insert(std::make_pair(sp->getId(), charge));
             }
         }
         this->AddAura(aura);
@@ -10661,7 +10661,7 @@ void Player::_LearnSkillSpells(uint32 SkillLine, uint32 curr_sk)
                     if ((se->custom_NameHash == sp->custom_NameHash) && (se->custom_RankNumber >= sp->custom_RankNumber))
                     {
                         // Stupid profession related spells for "skinning" having the same namehash and not ranked
-                        if (sp->Id != 32605 && sp->Id != 32606 && sp->Id != 49383)
+                        if (sp->getId() != 32605 && sp->getId() != 32606 && sp->getId() != 49383)
                         {
                             // Player already has this spell, or a higher rank. Don't add it.
                             addThisSpell = false;
@@ -11197,7 +11197,7 @@ void Player::UpdatePotionCooldown()
                 if (spellInfo != NULL)
                 {
                     Cooldown_AddItem(proto, i);
-                    SendSpellCooldownEvent(spellInfo->Id);
+                    SendSpellCooldownEvent(spellInfo->getId());
                 }
             }
         }
@@ -11280,7 +11280,7 @@ void Player::Cooldown_Add(SpellInfo* pSpell, Item* pItemCaster)
 {
     uint32 mstime = Util::getMSTime();
     int32 cool_time;
-    uint32 spell_id = pSpell->Id;
+    uint32 spell_id = pSpell->getId();
     uint32 category_id = pSpell->Category;
 
     uint32 spell_category_recovery_time = pSpell->CategoryRecoveryTime;
@@ -11322,9 +11322,9 @@ void Player::Cooldown_AddStart(SpellInfo* pSpell)
         return;
 
     if (pSpell->StartRecoveryCategory && pSpell->StartRecoveryCategory != 133)        // if we have a different cool category to the actual spell category - only used by few spells
-        AddCategoryCooldown(pSpell->StartRecoveryCategory, mstime + atime, pSpell->Id, 0);
+        AddCategoryCooldown(pSpell->StartRecoveryCategory, mstime + atime, pSpell->getId(), 0);
     //else if (pSpell->Category)                // cooldowns are grouped
-    //_Cooldown_Add(COOLDOWN_TYPE_CATEGORY, pSpell->Category, mstime + pSpell->StartRecoveryTime, pSpell->Id, 0);
+    //_Cooldown_Add(COOLDOWN_TYPE_CATEGORY, pSpell->Category, mstime + pSpell->StartRecoveryTime, pSpell->getId(), 0);
     else                                    // no category, so it's a gcd
     {
         //LogDebugFlag(LF_SPELL, "Cooldown Global cooldown adding: %u ms", atime);
@@ -11350,7 +11350,7 @@ bool Player::Cooldown_CanCast(SpellInfo* pSpell)
         }
     }
 
-    itr = m_cooldownMap[COOLDOWN_TYPE_SPELL].find(pSpell->Id);
+    itr = m_cooldownMap[COOLDOWN_TYPE_SPELL].find(pSpell->getId());
     if (itr != m_cooldownMap[COOLDOWN_TYPE_SPELL].end())
     {
         if (mstime < itr->second.ExpireTime)
@@ -12658,7 +12658,7 @@ void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
             }
             //make sure pets that get bonus from owner do not stack it up
             if (getClass() == HUNTER && GetSummon())
-                GetSummon()->RemoveAura(spellInfo->Id);
+                GetSummon()->RemoveAura(spellInfo->getId());
 
             if (rank > 0)
             {
@@ -12675,7 +12675,7 @@ void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
                         return;
                     }
                     if (getClass() == HUNTER && GetSummon())
-                        GetSummon()->RemoveAura(spellInfoReq->Id);
+                        GetSummon()->RemoveAura(spellInfoReq->getId());
                 }
             }
 

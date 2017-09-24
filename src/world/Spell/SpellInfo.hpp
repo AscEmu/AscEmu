@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "SpellDefines.hpp"
 #include "WorldConf.h"
 #include "CommonTypes.hpp"
+#include "../Server/WUtil.h"
 #include <string>
 
 class Player;
@@ -45,10 +46,279 @@ public:
     bool appliesAreaAura(uint32 aura) const;
     uint32 GetAreaAuraEffectId();
 
+    uint32 getId() const { return Id; }
+    void setId(uint32_t value) { Id = value; }
+
+    uint32 getCategory() const { return Category; }
+    uint32 getDispelType() const { return DispelType; }
+    uint32 getMechanicsType() const { return MechanicsType; }
+    uint32 getAttributes() const { return Attributes; }
+    uint32 getAttributesEx() const { return AttributesEx; }
+    uint32 getAttributesExB() const { return AttributesExB; }
+    uint32 getAttributesExC() const { return AttributesExC; }
+    uint32 getAttributesExD() const { return AttributesExD; }
+    uint32 getAttributesExE() const { return AttributesExE; }
+    uint32 getAttributesExF() const { return AttributesExF; }
+    uint32 getAttributesExG() const { return AttributesExG; }
+    uint32 getRequiredShapeShift() const { return RequiredShapeShift; }
+    uint32 getShapeshiftExclude() const { return ShapeshiftExclude; }
+    uint32 getTargets() const { return Targets; }
+    uint32 getTargetCreatureType() const { return TargetCreatureType; }
+    uint32 getRequiresSpellFocus() const { return RequiresSpellFocus; }
+    uint32 getFacingCasterFlags() const { return FacingCasterFlags; }
+    uint32 getCasterAuraState() const { return CasterAuraState; }
+    uint32 getTargetAuraState() const { return TargetAuraState; }
+    uint32 getCasterAuraStateNot() const { return CasterAuraStateNot; }
+    uint32 getTargetAuraStateNot() const { return TargetAuraStateNot; }
+    uint32 getCasterAuraSpell() const { return casterAuraSpell; }
+    uint32 getTargetAuraSpell() const { return targetAuraSpell; }
+    uint32 getCasterAuraSpellNot() const { return casterAuraSpellNot; }
+    uint32 getTargetAuraSpellNot() const { return targetAuraSpellNot; }
+    uint32 getCastingTimeIndex() const { return CastingTimeIndex; }
+    uint32 getRecoveryTime() const { return RecoveryTime; }
+    uint32 getCategoryRecoveryTime() const { return CategoryRecoveryTime; }
+    uint32 getInterruptFlags() const { return InterruptFlags; }
+    uint32 getAuraInterruptFlags() const { return AuraInterruptFlags; }
+    uint32 getChannelInterruptFlags() const { return ChannelInterruptFlags; }
+    uint32 getProcFlags() const { return procFlags; }
+    uint32 getProcChance() const { return procChance; }
+    uint32 getProcCharges() const { return procCharges; }
+    uint32 getMaxLevel() const { return maxLevel; }
+    uint32 getBaseLevel() const { return baseLevel; }
+    uint32 getSpellLevel() const { return spellLevel; }
+    uint32 getDurationIndex() const { return DurationIndex; }
+    int32 getPowerType() const { return powerType; }
+    uint32 getManaCost() const { return manaCost; }
+    uint32 getManaCostPerlevel() const { return manaCostPerlevel; }
+    uint32 getManaPerSecond() const { return manaPerSecond; }
+    uint32 getManaPerSecondPerLevel() const { return manaPerSecondPerLevel; }
+    uint32 getRangeIndex() const { return rangeIndex; }
+    float getSpeed() const { return speed; }
+    uint32 getMaxstack() const { return maxstack; }
+
+    uint32 getTotem(int idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_TOTEMS && idx > 0);
+        return Totem[idx];
+    }
+
+    uint32 getReagent(int idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_REAGENTS && idx > 0);
+        return Reagent[idx];
+    }
+
+    uint32 getReagentCount(int idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_REAGENTS && idx > 0);
+        return ReagentCount[idx];
+    }
+
+    int32 getEquippedItemClass() const { return EquippedItemClass; }
+    int32 getEquippedItemSubClass() const { return EquippedItemSubClass; }
+
+    uint32 getEffect(int idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        return Effect[idx];
+    }
+
+    int32 getEffectDieSides(int idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        return EffectDieSides[idx];
+    }
+
+    float getEffectRealPointsPerLevel(int idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        return EffectRealPointsPerLevel[idx];
+    }
+
+    int32 getEffectBasePoints(int idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        return EffectBasePoints[idx];
+    }
+
+    int32 getEffectMechanic(int idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        return EffectMechanic[idx];
+    }
+
+    uint32 getEffectImplicitTargetA(int idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        return EffectImplicitTargetA[idx];
+    }
+
+    uint32 getEffectImplicitTargetB(int idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        return EffectImplicitTargetB[idx];
+    }
+
+    uint32 getEffectRadiusIndex(int idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        return EffectRadiusIndex[idx];
+    }
+
+    uint32 getEffectApplyAuraName(int idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        return EffectApplyAuraName[idx];
+    }
+
+    uint32 getEffectAmplitude(int idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        return EffectAmplitude[idx];
+    }
+
+    float getEffectMultipleValue(int idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        return EffectMultipleValue[idx];
+    }
+
+    uint32 getEffectChainTarget(int idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        return EffectChainTarget[idx];
+    }
+
+    uint32 getEffectItemType(int idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        return EffectItemType[idx];
+    }
+
+    int32 getEffectMiscValue(int idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        return EffectMiscValue[idx];
+    }
+
+    int32 getEffectMiscValueB(int idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        return EffectMiscValueB[idx];
+    }
+
+    uint32 getEffectTriggerSpell(int idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        return EffectTriggerSpell[idx];
+    }
+
+    float getEffectPointsPerComboPoint(int idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        return EffectPointsPerComboPoint[idx];
+    }
+
+
+    uint32 getSpellVisual() const { return SpellVisual; }
+    uint32 getField114() const { return field114; }
+    uint32 getSpellIconID() const { return spellIconID; }
+    uint32 getActiveIconID() const { return activeIconID; }
+    std::string getName() const { return Name; }
+    std::string getRank() const { return Rank; }
+    std::string getDescription() const { return Description; }
+    std::string getBuffDescription() const { return BuffDescription; }
+    uint32 getManaCostPercentage() const { return ManaCostPercentage; }
+    uint32 getStartRecoveryCategory() const { return StartRecoveryCategory; }
+    uint32 getStartRecoveryTime() const { return StartRecoveryTime; }
+    uint32 getMaxTargetLevel() const { return MaxTargetLevel; }
+    uint32 getSpellFamilyName() const { return SpellFamilyName; }
+
+    uint32 getSpellGroupType(int idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        return SpellGroupType[idx];
+    }
+
+    uint32 getMaxTargets() const { return MaxTargets; }
+    uint32 getSpell_Dmg_Type() const { return Spell_Dmg_Type; }
+    uint32 getPreventionType() const { return PreventionType; }
+
+    float getDmg_multiplier(int idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        return dmg_multiplier[idx];
+    }
+
+
+    uint32 getTotemCategory(int idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_TOTEM_CATEGORIES && idx > 0);
+        return TotemCategory[idx];
+    }
+
+    int32 getRequiresAreaId() const { return RequiresAreaId; }
+    uint32 getSchool() const { return School; }
+    uint32 getRuneCostID() const { return RuneCostID; }
+    uint32 getSpellDifficultyID() const { return SpellDifficultyID; }
+    uint32 getCustom_DiminishStatus() const { return custom_DiminishStatus; }
+    uint32 getCustom_proc_interval() const { return custom_proc_interval; }
+    uint32 getCustom_BGR_one_buff_on_target() const { return custom_BGR_one_buff_on_target; }
+    uint32 getCustom_BGR_one_buff_from_caster_on_self() const { return custom_BGR_one_buff_from_caster_on_self; }
+    uint32 getCustom_c_is_flags() const { return custom_c_is_flags; }
+    uint32 getCustom_RankNumber() const { return custom_RankNumber; }
+    uint32 getCustom_NameHash() const { return custom_NameHash; }
+    uint32 getCustom_ThreatForSpell() const { return custom_ThreatForSpell; }
+    float getCustom_ThreatForSpellCoef() const { return custom_ThreatForSpellCoef; }
+
+    uint32 getCustom_ProcOnNameHash(int idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        return custom_ProcOnNameHash[idx];
+    }
+
+    uint32 getCustom_spell_coef_flags() const { return custom_spell_coef_flags; }
+    float getCustom_base_range_or_radius_sqr() const { return custom_base_range_or_radius_sqr; }
+    float getCone_width() const { return cone_width; }
+    float getCasttime_coef() const { return casttime_coef; }
+    float getFixed_dddhcoef() const { return fixed_dddhcoef; }
+    float getFixed_hotdotcoef() const { return fixed_hotdotcoef; }
+    float getDspell_coef_override() const { return Dspell_coef_override; }
+    float getOTspell_coef_override() const { return OTspell_coef_override; }
+    int getAi_target_type() const { return ai_target_type; }
+    bool getCustom_self_cast_only() const { return custom_self_cast_only; }
+    bool getCustom_apply_on_shapeshift_change() const { return custom_apply_on_shapeshift_change; }
+    bool getCustom_always_apply() const { return custom_always_apply; }
+    bool getCustom_is_melee_spell() const { return custom_is_melee_spell; }
+    bool getCustom_is_ranged_spell() const { return custom_is_ranged_spell; }
+    uint32 getCustom_SchoolMask() const { return custom_SchoolMask; }
+    uint32 getCustomFlags() const { return CustomFlags; }
+
+    uint32 getEffectCustomFlag(int idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        return EffectCustomFlag[idx];
+    }
+
+
 #if VERSION_STRING != Cata
+    uint32 getModalNextSpell() const { return modalNextSpell; }
+    uint32 getRequiredItemFlags() const { return RequiredItemFlags; }
+    uint32_t getEffectSpellClassMask(int idx1, int idx2) const
+    {
+        ARCEMU_ASSERT(idx1 < 3 && idx1 > 0 && idx2 < 3 && idx2 > 0);
+        return EffectSpellClassMask[idx1][idx2];
+    }
+    uint32 getSpellPriority() const { return spellPriority; }
+    int32 getStanceBarOrder() const { return StanceBarOrder; }
+    uint32 getMinFactionID() const { return MinFactionID; }
+    uint32 getMinReputation() const { return MinReputation; }
+    uint32 getRequiredAuraVision() const { return RequiredAuraVision; }
         //////////////////////////////////////////////////////////////////////////////////////////
         // Applied
-        uint32 Id;
+private:
+    uint32 Id;
+public:
         uint32 Category;
         uint32 DispelType;
         uint32 MechanicsType;
@@ -182,6 +452,7 @@ public:
         uint32 CustomFlags;
         uint32 EffectCustomFlag[MAX_SPELL_EFFECTS];
 #else
+
         //////////////////////////////////////////////////////////////////////////////////////////
         // Applied values from DBC
         uint32 Id;

@@ -842,7 +842,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                             break;
                         }
                         default:
-                            LOG_ERROR("AI Agents: Targettype of AI agent spell %u for creature %u not set", spellInfo->Id, static_cast< Creature* >(m_Unit)->GetCreatureProperties()->Id);
+                            LOG_ERROR("AI Agents: Targettype of AI agent spell %u for creature %u not set", spellInfo->getId(), static_cast< Creature* >(m_Unit)->GetCreatureProperties()->Id);
                     }
 
                     // CastSpell(m_Unit, spellInfo, targets);
@@ -2757,7 +2757,7 @@ AI_Spell* AIInterface::getSpell()
                     // cast the buff at requested percent only if we don't have it already
                     if (sp->procChance >= 100 || Rand(sp->procChance))
                     {
-                        if (!m_Unit->HasBuff(sp->spell->Id))
+                        if (!m_Unit->HasBuff(sp->spell->getId()))
                         {
                             return sp;
                         }

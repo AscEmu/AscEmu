@@ -37,7 +37,7 @@ bool Penance(uint32 i, Spell* pSpell)
     uint32 hostileSpell[] = { 0, 0 };
     uint32 friendlySpell[] = { 0, 0 };
 
-    switch (pSpell->GetSpellInfo()->Id)
+    switch (pSpell->GetSpellInfo()->getId())
     {
         case 47540: //Rank 1
             hostileSpell[0] = 47666;
@@ -102,7 +102,7 @@ bool ImprovedDevouringPlague(uint32 i, Aura* pAura, bool apply)
     if (apply)
     {
         static uint32 classMask[3] = { 0x2000000, 0, 0 };
-        target->AddProcTriggerSpell(63675, pAura->GetSpellInfo()->Id, pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_CAST_SPELL, 0, NULL, classMask);
+        target->AddProcTriggerSpell(63675, pAura->GetSpellInfo()->getId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_CAST_SPELL, 0, NULL, classMask);
     }
     else
         target->RemoveProcTriggerSpell(63675, pAura->m_casterGuid);

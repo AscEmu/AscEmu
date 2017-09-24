@@ -205,7 +205,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
                 created_by_spell->HasEffect(SPELL_EFFECT_TAMECREATURE))
                 SetNameForEntry(entry);
 
-            SetCreatedBySpell(created_by_spell->Id);
+            SetCreatedBySpell(created_by_spell->getId());
         }
 
         setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
@@ -278,7 +278,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
         PlayerPet* pp = new PlayerPet;
         pp->number = m_PetNumber;
         pp->stablestate = STABLE_STATE_ACTIVE;
-        pp->spellid = created_by_spell ? created_by_spell->Id : 0;
+        pp->spellid = created_by_spell ? created_by_spell->getId() : 0;
         pp->alive = true;
 
         if (owner->getClass() == HUNTER)
@@ -426,7 +426,7 @@ void Pet::BuildPetSpellList(WorldPacket& data)
         data << uint8(mSpells.size());
         for (PetSpellMap::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
         {
-            data << uint16(itr->first->Id);
+            data << uint16(itr->first->getId());
             data << uint16(itr->second);
         }
     }
@@ -563,7 +563,7 @@ AI_Spell* Pet::CreateAISpell(SpellInfo* info)
     ARCEMU_ASSERT(info != NULL);
 
     // Create an AI_Spell
-    std::map<uint32, AI_Spell*>::iterator itr = m_AISpellStore.find(info->Id);
+    std::map<uint32, AI_Spell*>::iterator itr = m_AISpellStore.find(info->getId());
     if (itr != m_AISpellStore.end())
         return itr->second;
 
@@ -578,7 +578,7 @@ AI_Spell* Pet::CreateAISpell(SpellInfo* info)
     sp->Misc2 = 0;
     sp->procChance = 0;
     sp->spell = info;
-    sp->cooldown = objmgr.GetPetSpellCooldown(info->Id);
+    sp->cooldown = objmgr.GetPetSpellCooldown(info->getId());
     if (sp->cooldown == 0)
         sp->cooldown = info->RecoveryTime;          //still 0 ?
     if (sp->cooldown == 0)
@@ -601,7 +601,7 @@ AI_Spell* Pet::CreateAISpell(SpellInfo* info)
     sp->spelltargetType = static_cast<uint8>(info->ai_target_type);
     sp->autocast_type = GetAutoCastTypeForSpell(info);
     sp->procCount = 0;
-    m_AISpellStore[info->Id] = sp;
+    m_AISpellStore[info->getId()] = sp;
     return sp;
 }
 
@@ -1172,9 +1172,9 @@ void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
                     // replace the action bar
                     for (uint8 i = 0; i < 10; ++i)
                     {
-                        if (ActionBar[i] == itr->first->Id)
+                        if (ActionBar[i] == itr->first->getId())
                         {
-                            ActionBar[i] = sp->Id;
+                            ActionBar[i] = sp->getId();
                             ab_replace = true;
                             break;
                         }
@@ -1204,7 +1204,7 @@ void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
             bool has = false;
             for (uint8 i = 0; i < 10; ++i)
             {
-                if (ActionBar[i] == sp->Id)
+                if (ActionBar[i] == sp->getId())
                 {
                     has = true;
                     break;
@@ -1217,7 +1217,7 @@ void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
                 {
                     if (ActionBar[i] == 0)
                     {
-                        ActionBar[i] = sp->Id;
+                        ActionBar[i] = sp->getId();
                         break;
                     }
                 }
@@ -1248,7 +1248,10 @@ void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
 
 #if VERSION_STRING > TBC
     if (showLearnSpell && m_Owner && m_Owner->GetSession() && !(sp->Attributes & ATTRIBUTES_NO_CAST))
-        m_Owner->GetSession()->OutPacket(SMSG_PET_LEARNED_SPELL, 2, &sp->Id);
+    {
+        auto id = sp->getId();
+        m_Owner->GetSession()->OutPacket(SMSG_PET_LEARNED_SPELL, 2, &id);
+    }
 #endif
     if (IsInWorld())
         SendSpellsToOwner();
@@ -1265,7 +1268,7 @@ void Pet::SetSpellState(SpellInfo* sp, uint16 State)
 
     if (State == AUTOCAST_SPELL_STATE || oldstate == AUTOCAST_SPELL_STATE)
     {
-        AI_Spell* sp2 = GetAISpellForSpellId(sp->Id);
+        AI_Spell* sp2 = GetAISpellForSpellId(sp->getId());
         if (sp2)
         {
             if (State == AUTOCAST_SPELL_STATE)
@@ -1298,7 +1301,7 @@ void Pet::SetDefaultActionbar()
         PetSpellMap::iterator itr = mSpells.begin();
         uint32 pos = 0;
         for (; itr != mSpells.end() && pos < 4; ++itr, ++pos)
-            ActionBar[3 + pos] = itr->first->Id;
+            ActionBar[3 + pos] = itr->first->getId();
     }
 
     ActionBar[7] = PET_SPELL_AGRESSIVE;
@@ -1327,7 +1330,7 @@ void Pet::WipeTalents()
 void Pet::RemoveSpell(SpellInfo* sp, bool showUnlearnSpell)
 {
     mSpells.erase(sp);
-    std::map<uint32, AI_Spell*>::iterator itr = m_AISpellStore.find(sp->Id);
+    std::map<uint32, AI_Spell*>::iterator itr = m_AISpellStore.find(sp->getId());
     if (itr != m_AISpellStore.end())
     {
         if (itr->second->autocast_type != AUTOCAST_EVENT_NONE)
@@ -1372,13 +1375,16 @@ void Pet::RemoveSpell(SpellInfo* sp, bool showUnlearnSpell)
     //Remove spell from action bar as well
     for (uint32 pos = 0; pos < 10; pos++)
     {
-        if (ActionBar[pos] == sp->Id)
+        if (ActionBar[pos] == sp->getId())
             ActionBar[pos] = 0;
     }
 
 #if VERSION_STRING > TBC
     if (showUnlearnSpell && m_Owner && m_Owner->GetSession())
-        m_Owner->GetSession()->OutPacket(SMSG_PET_UNLEARNED_SPELL, 4, &sp->Id);
+    {
+        auto id = sp->getId();
+        m_Owner->GetSession()->OutPacket(SMSG_PET_UNLEARNED_SPELL, 4, &id);
+    }
 #endif
 }
 
@@ -1787,7 +1793,7 @@ void Pet::HandleAutoCastEvent(AutoCastEvents Type)
 
         if (sp->spelltargetType == TTYPE_OWNER)
         {
-            if (!m_Owner->HasAura(sp->spell->Id))
+            if (!m_Owner->HasAura(sp->spell->getId()))
                 CastSpell(m_Owner, sp->spell, false);
         }
         else

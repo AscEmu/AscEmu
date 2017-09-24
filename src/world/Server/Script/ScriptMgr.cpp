@@ -226,16 +226,16 @@ void ScriptMgr::DumpUnimplementedSpells()
         if (!sp->HasEffect(SPELL_EFFECT_DUMMY) && !sp->HasEffect(SPELL_EFFECT_SCRIPT_EFFECT) && !sp->HasEffect(SPELL_EFFECT_SEND_EVENT))
             continue;
 
-        HandleDummySpellMap::iterator sitr = _spells.find(sp->Id);
+        HandleDummySpellMap::iterator sitr = _spells.find(sp->getId());
         if (sitr != _spells.end())
             continue;
 
-        HandleScriptEffectMap::iterator seitr = SpellScriptEffects.find(sp->Id);
+        HandleScriptEffectMap::iterator seitr = SpellScriptEffects.find(sp->getId());
         if (seitr != SpellScriptEffects.end())
             continue;
 
         std::stringstream ss;
-        ss << sp->Id;
+        ss << sp->getId();
         ss << std::endl;
 
         of.write(ss.str().c_str(), ss.str().length());
@@ -263,12 +263,12 @@ void ScriptMgr::DumpUnimplementedSpells()
         if (!sp->appliesAreaAura(SPELL_AURA_DUMMY))
             continue;
 
-        HandleDummyAuraMap::iterator ditr = _auras.find(sp->Id);
+        HandleDummyAuraMap::iterator ditr = _auras.find(sp->getId());
         if (ditr != _auras.end())
             continue;
 
         std::stringstream ss;
-        ss << sp->Id;
+        ss << sp->getId();
         ss << std::endl;
 
         of2.write(ss.str().c_str(), ss.str().length());

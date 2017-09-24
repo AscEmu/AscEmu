@@ -425,7 +425,7 @@ class SERVER_DECL Aura : public EventableObject
         void AddMod(uint32 t, int32 a, uint32 miscValue, uint32 i);
 
         inline SpellInfo* GetSpellInfo() const { return m_spellInfo; }
-        inline uint32 GetSpellId() const { return m_spellInfo->Id; }
+        inline uint32 GetSpellId() const { return m_spellInfo->getId(); }
         inline bool IsPassive() { if (!m_spellInfo) return false; return (m_spellInfo->IsPassive() && !m_areaAura); }
 
         void ResetDuration();

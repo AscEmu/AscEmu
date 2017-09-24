@@ -1214,9 +1214,9 @@ bool ChatHandler::HandleAIAgentDebugContinue(const char* args, WorldSession* m_s
 
         SpellInfo* sp = *aiagent_spells.begin();
         aiagent_spells.erase(aiagent_spells.begin());
-        BlueSystemMessage(m_session, "Casting %u, " MSG_COLOR_SUBWHITE "%u remaining.", sp->Id, aiagent_spells.size());
+        BlueSystemMessage(m_session, "Casting %u, " MSG_COLOR_SUBWHITE "%u remaining.", sp->getId(), aiagent_spells.size());
 
-        std::map<uint32, spell_thingo>::iterator it = aiagent_extra.find(sp->Id);
+        std::map<uint32, spell_thingo>::iterator it = aiagent_extra.find(sp->getId());
         ARCEMU_ASSERT(it != aiagent_extra.end());
 
         SpellCastTargets targets;
@@ -1250,13 +1250,13 @@ bool ChatHandler::HandleAIAgentDebugBegin(const char* args, WorldSession* m_sess
 
     for (std::list<SpellInfo*>::iterator itr = aiagent_spells.begin(); itr != aiagent_spells.end(); ++itr)
     {
-        result = WorldDatabase.Query("SELECT * FROM ai_agents WHERE spell = %u", (*itr)->Id);
+        result = WorldDatabase.Query("SELECT * FROM ai_agents WHERE spell = %u", (*itr)->getId());
         ARCEMU_ASSERT(result != NULL);
         spell_thingo t;
         t.type = result->Fetch()[6].GetUInt32();
         t.target = result->Fetch()[7].GetUInt32();
         delete result;
-        aiagent_extra[(*itr)->Id] = t;
+        aiagent_extra[(*itr)->getId()] = t;
     }
 
     GreenSystemMessage(m_session, "Loaded %u spells for testing.", aiagent_spells.size());

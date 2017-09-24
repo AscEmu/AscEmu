@@ -986,7 +986,7 @@ Unit::~Unit()
     for (std::list<ExtraStrike*>::iterator itx = m_extraStrikeTargets.begin(); itx != m_extraStrikeTargets.end(); ++itx)
     {
         ExtraStrike* es = *itx;
-        LOG_ERROR("ExtraStrike added to Unit %u by Spell ID %u wasn't removed when removing the Aura", GetGUID(), es->spell_info->Id);
+        LOG_ERROR("ExtraStrike added to Unit %u by Spell ID %u wasn't removed when removing the Aura", GetGUID(), es->spell_info->getId());
         delete es;
     }
     m_extraStrikeTargets.clear();
@@ -1294,7 +1294,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
         if (CastingSpell != NULL)
         {
             // A spell cannot proc itself
-            if (CastingSpell->Id == spell_proc->mSpell->Id)
+            if (CastingSpell->getId() == spell_proc->mSpell->getId())
                 continue;
 
             // If this is called by a triggered spell, check if it's allowed
@@ -1314,13 +1314,13 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
         if (flag & PROC_ON_CAST_SPELL && CastingSpell && !spell_proc->CheckClassMask(victim, CastingSpell))
             continue;
 
-        uint32 spellId = spell_proc->mSpell->Id;
+        uint32 spellId = spell_proc->mSpell->getId();
 
         SpellInfo* spe = spell_proc->mSpell;
 
         uint32 origId;
         if (spell_proc->mOrigSpell != NULL)
-            origId = spell_proc->mOrigSpell->Id;
+            origId = spell_proc->mOrigSpell->getId();
         else
             origId = 0;
         SpellInfo* ospinfo = sSpellCustomizations.GetSpellInfo(origId);  //no need to check if exists or not since we were not able to register this trigger if it would not exist :P
@@ -1519,7 +1519,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 break;
                 case 14189: //Seal Fate
                 {
-                    if (!this->IsPlayer() || !CastingSpell || CastingSpell->Id == 14189 || CastingSpell->Id == 16953 || CastingSpell->Id == 16959)
+                    if (!this->IsPlayer() || !CastingSpell || CastingSpell->getId() == 14189 || CastingSpell->getId() == 16953 || CastingSpell->getId() == 16959)
                         continue;
                     if (CastingSpell->Effect[0] != SPELL_EFFECT_ADD_COMBO_POINTS && CastingSpell->Effect[1] != SPELL_EFFECT_ADD_COMBO_POINTS &&
                         CastingSpell->Effect[2] != SPELL_EFFECT_ADD_COMBO_POINTS && CastingSpell->custom_NameHash != SPELL_HASH_MANGLE__CAT_)
@@ -1530,7 +1530,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->Id != 5229)  //enrage
+                    if (CastingSpell->getId() != 5229)  //enrage
                         continue;
                 }
                 break;
@@ -1650,7 +1650,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                         continue;
 
                     if (CastingSpell->custom_NameHash != SPELL_HASH_HEROIC_STRIKE &&
-                        CastingSpell->Id != 23881 &&
+                        CastingSpell->getId() != 23881 &&
                         CastingSpell->custom_NameHash != SPELL_HASH_WHIRLWIND)
                         continue;
                 }
@@ -1811,7 +1811,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     if (CastingSpell == NULL)
                         continue;//this should not occur unless we made a fuckup somewhere
                     //only trigger effect for specified spells
-                    auto skill_line_ability = objmgr.GetSpellSkill(CastingSpell->Id);
+                    auto skill_line_ability = objmgr.GetSpellSkill(CastingSpell->getId());
                     if (!skill_line_ability)
                         continue;
                     if (skill_line_ability->skilline != SKILL_DESTRUCTION)
@@ -2197,7 +2197,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     if (CastingSpell == NULL)
                         continue;
 
-                    if (CastingSpell->Id != 19574)
+                    if (CastingSpell->getId() != 19574)
                         continue;
                 }
                 //Hunter - Thrill of the Hunt
@@ -2278,7 +2278,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->Id != 53408 && CastingSpell->Id != 53407 && CastingSpell->Id != 20271)
+                    if (CastingSpell->getId() != 53408 && CastingSpell->getId() != 53407 && CastingSpell->getId() != 20271)
                         continue;
                 }
                 break;
@@ -2288,7 +2288,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->Id != 53408 && CastingSpell->Id != 53407 && CastingSpell->Id != 20271)
+                    if (CastingSpell->getId() != 53408 && CastingSpell->getId() != 53407 && CastingSpell->getId() != 20271)
                         continue;
                 }
                 break;
@@ -2309,7 +2309,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->Id != 53408 && CastingSpell->Id != 53407 && CastingSpell->Id != 20271 &&
+                    if (CastingSpell->getId() != 53408 && CastingSpell->getId() != 53407 && CastingSpell->getId() != 20271 &&
                         CastingSpell->custom_NameHash != SPELL_HASH_DIVINE_STORM && CastingSpell->custom_NameHash != SPELL_HASH_CRUSADER_STRIKE)
                         continue;
                 }
@@ -2365,7 +2365,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->Id != 53408 && CastingSpell->Id != 53407 && CastingSpell->Id != 20271)
+                    if (CastingSpell->getId() != 53408 && CastingSpell->getId() != 53407 && CastingSpell->getId() != 20271)
                         continue;
                     if (!IsPlayer())
                         continue;
@@ -2453,7 +2453,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     if (CastingSpell->custom_NameHash == SPELL_HASH_LIGHTNING_BOLT || CastingSpell->custom_NameHash == SPELL_HASH_CHAIN_LIGHTNING)
                     {
                         CastSpell(this, 39805, true);
-                        spellId = CastingSpell->Id;
+                        spellId = CastingSpell->getId();
                         origId = 39805;
                     }
                     else continue;
@@ -2565,7 +2565,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 break;
                 case 37517:
                 {
-                    if (!CastingSpell || CastingSpell->Id == 37517 || CastingSpell->custom_NameHash != SPELL_HASH_REVENGE)
+                    if (!CastingSpell || CastingSpell->getId() == 37517 || CastingSpell->custom_NameHash != SPELL_HASH_REVENGE)
                         continue;
                 }
                 break;
@@ -2730,7 +2730,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                         continue;
 
                     //if we did not proc these then we should not remove them
-                    if (CastingSpell->Id == iter2->second.spellId)
+                    if (CastingSpell->getId() == iter2->second.spellId)
                         continue;
 
                     switch (iter2->second.spellId)
@@ -3845,7 +3845,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                 {
                     aproc |= PROC_ON_RANGED_ATTACK;
                     vproc |= PROC_ON_RANGED_ATTACK_VICTIM;
-                    if (ability && ability->Id == 3018 && IsPlayer() && getClass() == HUNTER)
+                    if (ability && ability->getId() == 3018 && IsPlayer() && getClass() == HUNTER)
                         aproc |= PROC_ON_AUTO_SHOT_HIT;
                 }
                 //////////////////////////////////////////////////////////////////////////////////////////
@@ -4255,16 +4255,16 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         if (realdamage > 0)  //\todo FIX ME: add log for miss,block etc for ability and ranged
         {
             // here we send "dmg.resisted_damage" for "AbsorbedDamage", "0" for "ResistedDamage", and "false" for "PhysicalDamage" even though "School" is "SCHOOL_NORMAL"   o_O
-            SendSpellNonMeleeDamageLog(this, pVictim, ability->Id, realdamage, static_cast<uint8>(dmg.school_type), dmg.resisted_damage, 0, false, blocked_damage, ((hit_status & HITSTATUS_CRICTICAL) != 0), true);
+            SendSpellNonMeleeDamageLog(this, pVictim, ability->getId(), realdamage, static_cast<uint8>(dmg.school_type), dmg.resisted_damage, 0, false, blocked_damage, ((hit_status & HITSTATUS_CRICTICAL) != 0), true);
         }
         //FIX ME: add log for miss,block etc for ability and ranged
         //example how it works
-        //SendSpellLog(this,pVictim,ability->Id,SPELL_LOG_MISS);
+        //SendSpellLog(this,pVictim,ability->getId(),SPELL_LOG_MISS);
     }
 
     if (ability && realdamage == 0)
     {
-        SendSpellLog(this, pVictim, ability->Id, SPELL_LOG_RESIST);
+        SendSpellLog(this, pVictim, ability->getId(), SPELL_LOG_RESIST);
     }
     //////////////////////////////////////////////////////////////////////////////////////////
     //Damage Dealing
@@ -4418,7 +4418,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                 if (CalcDistance(*itr) < 5.0f && isAttackable(this, (*itr)) && (*itr)->isInFront(this) && !static_cast<Unit*>(*itr)->IsPacified())
                 {
                     // Sweeping Strikes hits cannot be dodged, missed or parried (from wowhead)
-                    bool skip_hit_check2 = ex->spell_info->Id == 12328 ? true : false;
+                    bool skip_hit_check2 = ex->spell_info->getId() == 12328 ? true : false;
                     //zack : should we use the spell id the registered this extra strike when striking ? It would solve a few proc on proc problems if so ;)
                     //					Strike(TO<Unit*>(*itr), weapon_damage_type, ability, add_damage, pct_dmg_mod, exclusive_damage, false, skip_hit_check);
                     Strike(static_cast<Unit*>(*itr), weapon_damage_type, ex->spell_info, add_damage, pct_dmg_mod, exclusive_damage, false, skip_hit_check2);
@@ -4678,7 +4678,7 @@ void Unit::AddAura(Aura* aur)
                             break;
                         }
                     }
-                    else if ((aur->pSpellId != m_auras[x]->GetSpellInfo()->Id))     // if this is a proc spell then it should not remove it's mother : test with combustion later
+                    else if ((aur->pSpellId != m_auras[x]->GetSpellInfo()->getId()))     // if this is a proc spell then it should not remove it's mother : test with combustion later
                     {
                         // Check for auras by specific type.
                         if (info->custom_BGR_one_buff_on_target > 0 && m_auras[x]->GetSpellInfo()->custom_BGR_one_buff_on_target & info->custom_BGR_one_buff_on_target && maxStack == 0)
@@ -4814,7 +4814,7 @@ void Unit::AddAura(Aura* aur)
                                     // Only apply if both weapons are enchanted and enchantment is poison and enchantment type is different
                                     if (mh_spell && oh_spell && mh_spell != oh_spell && is_mh_deadly_poison != is_oh_deadly_poison)
                                     {
-                                        if (mh_spell != info->Id)
+                                        if (mh_spell != info->getId())
                                             caster->CastSpell(aur->GetTarget(), mh_spell, true);
                                         else
                                             caster->CastSpell(aur->GetTarget(), oh_spell, true);
@@ -6090,7 +6090,7 @@ AuraCheckResponse Unit::AuraCheck(SpellInfo* proto, Object* caster)
                 (aura_sp->Effect[1] == proto->Effect[1] && (aura_sp->Effect[1] != SPELL_EFFECT_APPLY_AURA || aura_sp->EffectApplyAuraName[1] == proto->EffectApplyAuraName[1])) &&
                 (aura_sp->Effect[2] == proto->Effect[2] && (aura_sp->Effect[2] != SPELL_EFFECT_APPLY_AURA || aura_sp->EffectApplyAuraName[2] == proto->EffectApplyAuraName[2])))
             {
-                resp.Misc = aura->GetSpellInfo()->Id;
+                resp.Misc = aura->GetSpellInfo()->getId();
 
                 // compare the rank to our applying spell
                 if (aura_sp->custom_RankNumber > rank)
@@ -6135,7 +6135,7 @@ AuraCheckResponse Unit::AuraCheck(SpellInfo* proto, Aura* aur, Object* caster)
             (aura_sp->Effect[1] == proto->Effect[1] && (aura_sp->Effect[1] != SPELL_EFFECT_APPLY_AURA || aura_sp->EffectApplyAuraName[1] == proto->EffectApplyAuraName[1])) &&
             (aura_sp->Effect[2] == proto->Effect[2] && (aura_sp->Effect[2] != SPELL_EFFECT_APPLY_AURA || aura_sp->EffectApplyAuraName[2] == proto->EffectApplyAuraName[2])))
         {
-            resp.Misc = aur->GetSpellInfo()->Id;
+            resp.Misc = aur->GetSpellInfo()->getId();
 
             // compare the rank to our applying spell
             if (aur->GetSpellInfo()->custom_RankNumber > proto->custom_RankNumber)
@@ -6239,12 +6239,12 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
             continue;
 
         //some spells do not get removed all the time only at specific intervals
-        if ((a->m_spellInfo->AuraInterruptFlags & flag) && (a->m_spellInfo->Id != skip) && a->m_spellInfo->custom_proc_interval == 0)
+        if ((a->m_spellInfo->AuraInterruptFlags & flag) && (a->m_spellInfo->getId() != skip) && a->m_spellInfo->custom_proc_interval == 0)
         {
             //the black sheep's of society
             if (a->m_spellInfo->AuraInterruptFlags & AURA_INTERRUPT_ON_CAST_SPELL)
             {
-                switch (a->GetSpellInfo()->Id)
+                switch (a->GetSpellInfo()->getId())
                 {
                     //priest - surge of light
                     case 33151:
@@ -6314,7 +6314,7 @@ int Unit::HasAurasWithNameHash(uint32 name_hash)
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
     {
         if (m_auras[x] && m_auras[x]->GetSpellInfo()->custom_NameHash == name_hash)
-            return m_auras[x]->m_spellInfo->Id;
+            return m_auras[x]->m_spellInfo->getId();
     }
 
     return 0;
@@ -8158,7 +8158,7 @@ SpellProc* Unit::AddProcTriggerSpell(SpellInfo* spell, SpellInfo* orig_spell, ui
 {
     SpellProc* sp = NULL;
     if (spell != NULL)
-        sp = GetProcTriggerSpell(spell->Id, caster);
+        sp = GetProcTriggerSpell(spell->getId(), caster);
     if (sp != NULL && !sp->mDeleted)
         return sp;
 
@@ -8166,7 +8166,7 @@ SpellProc* Unit::AddProcTriggerSpell(SpellInfo* spell, SpellInfo* orig_spell, ui
     if (sp == NULL)
     {
         if (orig_spell != NULL)
-            LOG_ERROR("Spell id %u tried to add a non-existent spell to Unit %p as SpellProc", orig_spell->Id, this);
+            LOG_ERROR("Spell id %u tried to add a non-existent spell to Unit %p as SpellProc", orig_spell->getId(), this);
         else
             LOG_ERROR("Something tried to add a non-existent spell to Unit %p as SpellProc", this);
         return NULL;
@@ -8191,7 +8191,7 @@ SpellProc* Unit::GetProcTriggerSpell(uint32 spellId, uint64 casterGuid)
     for (std::list<SpellProc*>::iterator itr = m_procSpells.begin(); itr != m_procSpells.end(); ++itr)
     {
         SpellProc* sp = *itr;
-        if (sp->mSpell->Id == spellId && (casterGuid == 0 || sp->mCaster == casterGuid))
+        if (sp->mSpell->getId() == spellId && (casterGuid == 0 || sp->mCaster == casterGuid))
             return sp;
     }
 

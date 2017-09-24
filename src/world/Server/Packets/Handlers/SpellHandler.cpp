@@ -214,14 +214,14 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 
     if (!_player->Cooldown_CanCast(spellInfo))
     {
-        _player->SendCastResult(spellInfo->Id, SPELL_FAILED_NOT_READY, cn, 0);
+        _player->SendCastResult(spellInfo->getId(), SPELL_FAILED_NOT_READY, cn, 0);
         return;
     }
 
 
     if (_player->m_currentSpell)
     {
-        _player->SendCastResult(spellInfo->Id, SPELL_FAILED_SPELL_IN_PROGRESS, cn, 0);
+        _player->SendCastResult(spellInfo->getId(), SPELL_FAILED_SPELL_IN_PROGRESS, cn, 0);
         return;
     }
 
@@ -231,7 +231,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
         {
             if (_player->GetGUID() != targets.m_unitTarget)
             {
-                _player->SendCastResult(spellInfo->Id, SPELL_FAILED_BAD_TARGETS, cn, 0);
+                _player->SendCastResult(spellInfo->getId(), SPELL_FAILED_BAD_TARGETS, cn, 0);
                 return;
             }
         }
@@ -240,7 +240,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 
             if (!_player->GetSummon() || _player->GetSummon()->GetEntry() != (uint32)itemProto->ForcedPetId)
             {
-                _player->SendCastResult(spellInfo->Id, SPELL_FAILED_SPELL_IN_PROGRESS, cn, 0);
+                _player->SendCastResult(spellInfo->getId(), SPELL_FAILED_SPELL_IN_PROGRESS, cn, 0);
                 return;
             }
         }
@@ -389,7 +389,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
         //autoshot 75
         if ((spellInfo->AttributesExB & ATTRIBUTESEXB_ACTIVATE_AUTO_SHOT) /*spellInfo->Attributes == 327698*/)	// auto shot..
         {
-            LogDebugFlag(LF_SPELL, "HandleCastSpellOpcode : Auto Shot-type spell cast (id %u, name %s)" , spellInfo->Id , spellInfo->Name.c_str());
+            LogDebugFlag(LF_SPELL, "HandleCastSpellOpcode : Auto Shot-type spell cast (id %u, name %s)" , spellInfo->getId(), spellInfo->Name.c_str());
             Item* weapon = GetPlayer()->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
             if (!weapon)
                 return;
@@ -414,7 +414,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
             }
 
             if (!spellid)
-                spellid = spellInfo->Id;
+                spellid = spellInfo->getId();
 
             if (!_player->m_onAutoShot)
             {
@@ -449,7 +449,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
             else
             {
                 // send the error message
-                _player->SendCastResult(spellInfo->Id, SPELL_FAILED_SPELL_IN_PROGRESS, cn, 0);
+                _player->SendCastResult(spellInfo->getId(), SPELL_FAILED_SPELL_IN_PROGRESS, cn, 0);
                 return;
             }
         }
@@ -462,7 +462,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
             if (targets.m_unitTarget && targets.m_unitTarget != _player->GetGUID())
             {
                 // send the error message
-                _player->SendCastResult(spellInfo->Id, SPELL_FAILED_BAD_TARGETS, cn, 0);
+                _player->SendCastResult(spellInfo->getId(), SPELL_FAILED_BAD_TARGETS, cn, 0);
                 return;
             }
         }
@@ -499,7 +499,7 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
     if (spellId == 8326 || spellId == 9036)
 		return;
 
-    if (_player->m_currentSpell && _player->m_currentSpell->GetSpellInfo()->Id == spellId)
+    if (_player->m_currentSpell && _player->m_currentSpell->GetSpellInfo()->getId() == spellId)
         _player->m_currentSpell->cancel();
     else
     {
@@ -617,7 +617,7 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
             bool check = false;
             for (std::list<AI_Spell*>::iterator itr = nc->GetAIInterface()->m_spells.begin(); itr != nc->GetAIInterface()->m_spells.end(); ++itr)//.......meh. this is a crappy way of doing this, I bet.
             {
-                if ((*itr)->spell->Id == spellid)
+                if ((*itr)->spell->getId() == spellid)
                 {
                     check = true;
                     break;

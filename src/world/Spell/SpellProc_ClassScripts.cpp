@@ -159,7 +159,7 @@ class FlametongueWeaponSpellProc : public SpellProc
 
     bool CanDelete(uint32 spellId, uint64 casterGuid = 0, uint64 misc = 0)//in this case misc is the item guid.
     {
-        if (mSpell->Id == spellId && mCaster == casterGuid && misc == mItemGUID && !mDeleted)
+        if (mSpell->getId() == spellId && mCaster == casterGuid && misc == mItemGUID && !mDeleted)
             return true;
 
         return false;
@@ -222,7 +222,7 @@ class PoisonSpellProc : public SpellProc
 
     bool CanDelete(uint32 spellId, uint64 casterGuid = 0, uint64 misc = 0)//in this case misc is the item guid.
     {
-        if (mSpell->Id == spellId && mCaster == casterGuid && misc == mItemGUID && !mDeleted)
+        if (mSpell->getId() == spellId && mCaster == casterGuid && misc == mItemGUID && !mDeleted)
             return true;
 
         return false;
@@ -577,7 +577,7 @@ class PrayerOfMendingProc : public SpellProc
 
     bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
-        Aura* aura = mTarget->getAuraWithId(mSpell->Id);
+        Aura* aura = mTarget->getAuraWithId(mSpell->getId());
         if (aura == NULL)
             return true;
 
@@ -592,7 +592,7 @@ class PrayerOfMendingProc : public SpellProc
 
         caster->CastSpell(mTarget, 33110, value, true);
 
-        int32 count = mTarget->GetAuraStackCount(mSpell->Id);
+        int32 count = mTarget->GetAuraStackCount(mSpell->getId());
 
         if (count <= 1)
             return true;

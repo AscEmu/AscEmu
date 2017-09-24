@@ -167,7 +167,7 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
                 if (entry == NULL)
                     return;
 
-                AI_Spell* sp = pPet->GetAISpellForSpellId(entry->Id);
+                AI_Spell* sp = pPet->GetAISpellForSpellId(entry->getId());
                 if (sp != NULL)
                 {
                     // Check the cooldown
@@ -636,7 +636,8 @@ void WorldSession::HandlePetLearnTalent(WorldPacket& recvPacket)
     {
         pPet->AddSpell(sp, true);
         pPet->SetTPs(pPet->GetTPs() - 1);
-        OutPacket(SMSG_PET_LEARNED_SPELL, 4, &sp->Id);
+        auto id = sp->getId();
+        OutPacket(SMSG_PET_LEARNED_SPELL, 4, &id);
     }
 #endif
 

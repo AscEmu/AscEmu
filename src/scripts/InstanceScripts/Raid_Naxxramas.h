@@ -997,7 +997,7 @@ DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : MoonScri
     blood_strike_spell->minrange = GetMinRange(sSpellRangeStore.LookupEntry(blood_strike_spell->spell->rangeIndex));
     blood_strike_spell->spelltargetType = TTYPE_SINGLETARGET;
     blood_strike_spell->spellType = STYPE_DAMAGE;
-    blood_strike_spell->cooldown = objmgr.GetPetSpellCooldown(blood_strike_spell->spell->Id);
+    blood_strike_spell->cooldown = objmgr.GetPetSpellCooldown(blood_strike_spell->spell->getId());
     blood_strike_spell->cooldowntime = 0;
     blood_strike_spell->autocast_type = AUTOCAST_EVENT_NONE;
     blood_strike_spell->floatMisc1 = 0;
@@ -1016,7 +1016,7 @@ DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : MoonScri
     bone_barrier_spell->minrange = GetMinRange(sSpellRangeStore.LookupEntry(bone_barrier_spell->spell->rangeIndex));
     bone_barrier_spell->spelltargetType = TTYPE_CASTER;
     bone_barrier_spell->spellType = STYPE_BUFF;
-    bone_barrier_spell->cooldown = objmgr.GetPetSpellCooldown(bone_barrier_spell->spell->Id);
+    bone_barrier_spell->cooldown = objmgr.GetPetSpellCooldown(bone_barrier_spell->spell->getId());
     bone_barrier_spell->cooldowntime = 0;
     bone_barrier_spell->autocast_type = AUTOCAST_EVENT_NONE;
     bone_barrier_spell->floatMisc1 = 0;
@@ -1035,7 +1035,7 @@ DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : MoonScri
     understudy_taunt_spell->minrange = GetMinRange(sSpellRangeStore.LookupEntry(understudy_taunt_spell->spell->rangeIndex));
     understudy_taunt_spell->spelltargetType = TTYPE_SINGLETARGET;
     understudy_taunt_spell->spellType = STYPE_BUFF;
-    understudy_taunt_spell->cooldown = objmgr.GetPetSpellCooldown(understudy_taunt_spell->spell->Id);
+    understudy_taunt_spell->cooldown = objmgr.GetPetSpellCooldown(understudy_taunt_spell->spell->getId());
     understudy_taunt_spell->cooldowntime = 0;
     understudy_taunt_spell->autocast_type = AUTOCAST_EVENT_NONE;
     understudy_taunt_spell->floatMisc1 = 0;

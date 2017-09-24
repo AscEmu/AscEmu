@@ -89,11 +89,11 @@ void DynamicObject::Create(Unit* caster, Spell* pSpell, float x, float y, float 
         p_caster = pSpell->p_caster;
 
     m_spellProto = pSpell->GetSpellInfo();
-    SetEntry(m_spellProto->Id);
+    SetEntry(m_spellProto->getId());
     setFloatValue(OBJECT_FIELD_SCALE_X, 1);
     setUInt64Value(DYNAMICOBJECT_CASTER, caster->GetGUID());
     setByteFlag(DYNAMICOBJECT_BYTES, 0, type);
-    setUInt32Value(DYNAMICOBJECT_SPELLID, m_spellProto->Id);
+    setUInt32Value(DYNAMICOBJECT_SPELLID, m_spellProto->getId());
     setFloatValue(DYNAMICOBJECT_RADIUS, radius);
     setUInt32Value(DYNAMICOBJECT_CASTTIME,Util::getMSTime());
     m_position.x = x; //m_floatValues[DYNAMICOBJECT_POS_X]  = x;
@@ -203,7 +203,7 @@ void DynamicObject::UpdateTargets()
 
             if ((target != nullptr) && (getDistanceSq(target) > radius))
             {
-                target->RemoveAura(m_spellProto->Id);
+                target->RemoveAura(m_spellProto->getId());
                 targets.erase(jtr2);
             }
         }
@@ -240,7 +240,7 @@ void DynamicObject::Remove()
         target = m_mapMgr->GetUnit(TargetGUID);
 
         if (target != nullptr)
-            target->RemoveAura(m_spellProto->Id);
+            target->RemoveAura(m_spellProto->getId());
     }
 
     WorldPacket data(SMSG_GAMEOBJECT_DESPAWN_ANIM, 8);

@@ -399,7 +399,7 @@ SpellInfo* ObjectMgr::GetNextSpellRank(SpellInfo* sp, uint32 level)
         return nullptr;
     }
 
-    auto skill_line_ability = GetSpellSkill(sp->Id);
+    auto skill_line_ability = GetSpellSkill(sp->getId());
     if (skill_line_ability != nullptr && skill_line_ability->next > 0)
     {
         SpellInfo* sp1 = sSpellCustomizations.GetSpellInfo(skill_line_ability->next);

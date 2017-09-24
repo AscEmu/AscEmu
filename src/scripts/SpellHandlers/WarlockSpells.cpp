@@ -67,10 +67,10 @@ bool LifeTap(uint32 i, Spell* s)
     }
 
     uint32 mod;    // spirit bonus coefficient multiplied by 2
-    if (s->GetSpellInfo()->Id == 1454) mod = 2;
-    else if (s->GetSpellInfo()->Id == 1455) mod = 3;
-    else if (s->GetSpellInfo()->Id == 1456) mod = 4;
-    else if (s->GetSpellInfo()->Id == 11687) mod = 5;
+    if (s->GetSpellInfo()->getId() == 1454) mod = 2;
+    else if (s->GetSpellInfo()->getId() == 1455) mod = 3;
+    else if (s->GetSpellInfo()->getId() == 1456) mod = 4;
+    else if (s->GetSpellInfo()->getId() == 11687) mod = 5;
     else mod = 6;
 
     uint32 damage = s->GetSpellInfo()->EffectBasePoints[i] + 1 + mod * playerTarget->GetStat(STAT_SPIRIT) / 2;
@@ -78,13 +78,13 @@ bool LifeTap(uint32 i, Spell* s)
     if (damage >= playerTarget->GetHealth())
         return false;
 
-    s->p_caster->DealDamage(playerTarget, damage, 0, 0, s->GetSpellInfo()->Id);
+    s->p_caster->DealDamage(playerTarget, damage, 0, 0, s->GetSpellInfo()->getId());
     damage = damage * (100 + playerTarget->m_lifetapbonus) / 100;    // Apply improved life tap
     if (playerTarget->GetPower(POWER_TYPE_MANA) + damage > playerTarget->GetMaxPower(POWER_TYPE_MANA))
         playerTarget->SetPower(POWER_TYPE_MANA, playerTarget->GetMaxPower(POWER_TYPE_MANA));
     else
         playerTarget->SetPower(POWER_TYPE_MANA, playerTarget->GetPower(POWER_TYPE_MANA) + damage);
-    s->SendHealManaSpellOnPlayer(s->p_caster, playerTarget, damage, POWER_TYPE_MANA, s->GetSpellInfo()->Id);
+    s->SendHealManaSpellOnPlayer(s->p_caster, playerTarget, damage, POWER_TYPE_MANA, s->GetSpellInfo()->getId());
 
     return true;
 }

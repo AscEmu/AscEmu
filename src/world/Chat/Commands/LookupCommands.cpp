@@ -578,7 +578,7 @@ bool ChatHandler::HandleLookupSpellCommand(const char* args, WorldSession* m_ses
         Util::StringToLowerCase(y);
         if (Util::findXinYString(x, y))
         {
-            sprintf((char*)itoabuf, "%u", spell->Id);
+            sprintf((char*)itoabuf, "%u", spell->getId());
             recout = (const char*)itoabuf;
             recout += ": |cff71d5ff|Hspell:";
             recout += (const char*)itoabuf;

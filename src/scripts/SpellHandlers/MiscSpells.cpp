@@ -38,14 +38,14 @@ bool FrostWarding(uint32 i, Spell* s)
     if (!unitTarget)
         return false;
 
-    uint32 spellId = s->GetSpellInfo()->Id;
+    uint32 spellId = s->GetSpellInfo()->getId();
 
     unitTarget->RemoveReflect(spellId, true);
 
     ReflectSpellSchool* rss = new ReflectSpellSchool;
 
     rss->chance = s->GetSpellInfo()->procChance;
-    rss->spellId = s->GetSpellInfo()->Id;
+    rss->spellId = s->GetSpellInfo()->getId();
     rss->require_aura_hash = SPELL_HASH_FROST_WARD;
     rss->school = SCHOOL_FROST;
     rss->infront = false;
@@ -63,12 +63,12 @@ bool MoltenShields(uint32 i, Spell* s)
     if (!unitTarget)
         return false;
 
-    unitTarget->RemoveReflect(s->GetSpellInfo()->Id, true);
+    unitTarget->RemoveReflect(s->GetSpellInfo()->getId(), true);
 
     ReflectSpellSchool* rss = new ReflectSpellSchool;
 
     rss->chance = s->GetSpellInfo()->EffectBasePoints[0];
-    rss->spellId = s->GetSpellInfo()->Id;
+    rss->spellId = s->GetSpellInfo()->getId();
     rss->require_aura_hash = SPELL_HASH_FIRE_WARD;
     rss->school = SCHOOL_FIRE;
     rss->infront = false;
@@ -191,7 +191,7 @@ bool NorthRendInscriptionResearch(uint32 i, Spell* s)
     if (Rand(chance))
     {
         // Type 0 = Major, 1 = Minor
-        uint32 glyphType = (s->GetSpellInfo()->Id == 61177) ? 0 : 1;
+        uint32 glyphType = (s->GetSpellInfo()->getId() == 61177) ? 0 : 1;
 
         std::vector<uint32> discoverableGlyphs;
 
@@ -475,10 +475,10 @@ bool TeleportToCoordinates(uint32 i, Spell* s)
     if (s->p_caster == nullptr)
         return true;
 
-    TeleportCoords const* teleport_coord = sMySQLStore.getTeleportCoord(s->GetSpellInfo()->Id);
+    TeleportCoords const* teleport_coord = sMySQLStore.getTeleportCoord(s->GetSpellInfo()->getId());
     if (teleport_coord == nullptr)
     {
-        LogError("Spell %u ( %s ) has a TeleportToCoordinates scripted effect, but has no coordinates to teleport to. ", s->GetSpellInfo()->Id, s->GetSpellInfo()->Name.c_str());
+        LogError("Spell %u ( %s ) has a TeleportToCoordinates scripted effect, but has no coordinates to teleport to. ", s->GetSpellInfo()->getId(), s->GetSpellInfo()->Name.c_str());
         return true;
     }
 

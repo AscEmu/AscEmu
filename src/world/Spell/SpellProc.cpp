@@ -42,7 +42,7 @@ bool SpellProc::CheckProcFlags(uint32 flag)
 
 bool SpellProc::CanDelete(uint32 spellId, uint64 casterGuid, uint64 misc)
 {
-    if (mSpell->Id == spellId && (casterGuid == 0 || mCaster == casterGuid) && !mDeleted)
+    if (mSpell->getId() == spellId && (casterGuid == 0 || mCaster == casterGuid) && !mDeleted)
         return true;
 
     return false;
@@ -99,7 +99,7 @@ void SpellProc::CastSpell(Unit* victim, SpellInfo* CastingSpell, int* dmg_overwr
     spell->ProcedOnSpell = CastingSpell;
 
     if (mOrigSpell != NULL)
-        spell->pSpellId = mOrigSpell->Id;
+        spell->pSpellId = mOrigSpell->getId();
 
     spell->prepare(&targets);
 }
@@ -124,7 +124,7 @@ SpellProc* SpellProcMgr::NewSpellProc(Unit* target, SpellInfo* spell, SpellInfo*
         ptr = itr->second;
     else
     {
-        itr = mSpellProc.find(spell->Id);
+        itr = mSpellProc.find(spell->getId());
         if (itr != mSpellProc.end())
             ptr = itr->second;
     }

@@ -1371,7 +1371,7 @@ bool HunterTamingQuest(uint32 i, Aura* a, bool apply)
 
         if (!p_caster->HasQuest(tamequest->id))
         {
-            p_caster->SendCastResult(triggerspell->Id, SPELL_FAILED_BAD_TARGETS, 0, 0);
+            p_caster->SendCastResult(triggerspell->getId(), SPELL_FAILED_BAD_TARGETS, 0, 0);
         }
         else if (!a->GetTimeLeft())
         {
@@ -1405,7 +1405,7 @@ bool HunterTamingQuest(uint32 i, Aura* a, bool apply)
             }
             else
             {
-                p_caster->SendCastResult(triggerspell->Id, SPELL_FAILED_TRY_AGAIN, 0, 0);
+                p_caster->SendCastResult(triggerspell->getId(), SPELL_FAILED_TRY_AGAIN, 0, 0);
             }
         }
     }
@@ -2834,7 +2834,7 @@ bool Carcass(uint32 i, Spell* pSpell) // Becoming a Shadoweave Tailor
         NetherDrake->CastSpell(NetherDrake, sSpellCustomizations.GetSpellInfo(38502), true);
         NetherDrake->GetAIInterface()->SetFly();
         NetherDrake->GetAIInterface()->MoveTo(pos.x, pos.y + 2, pos.z);
-        
+
         pPlayer->AddQuestKill(10804, 0, 0);
     }
     return true;
@@ -2860,7 +2860,7 @@ bool ForceofNeltharakuSpell(uint32 i, Spell* pSpell) // Becoming a Shadoweave Ta
         if (pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mob_or_go_count[0])
         {
             pTarget->CastSpell(pPlayer, sSpellCustomizations.GetSpellInfo(38775), true);
-            
+
             pPlayer->AddQuestKill(10854, 0, 0);
             pTarget->setMoveRoot(false);
             pTarget->GetAIInterface()->setWaypointToMove(0);

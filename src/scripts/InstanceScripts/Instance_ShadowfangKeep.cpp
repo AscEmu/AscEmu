@@ -99,7 +99,7 @@ class SpringvaleAI : public MoonScriptCreatureAI
 
     void OnCombatStart(Unit* pTarget)
     {
-        if (!GetUnit()->HasAura(DevoAura->mInfo->Id))
+        if (!GetUnit()->HasAura(DevoAura->mInfo->getId()))
             CastSpellNowNoScheduling(DevoAura);
 
         ParentClass::OnCombatStart(pTarget);

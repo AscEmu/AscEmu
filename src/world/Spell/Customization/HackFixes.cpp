@@ -48,7 +48,7 @@ void CreateDummySpell(uint32 id)
     const char* name = "Dummy Trigger";
     SpellInfo* sp = new SpellInfo;
     memset(sp, 0, sizeof(SpellInfo));
-    sp->Id = id;
+    sp->setId(id);
     sp->Attributes = 384;
     sp->AttributesEx = 268435456;
     sp->AttributesExB = 4;
@@ -75,33 +75,33 @@ void Modify_EffectBasePoints(SpellInfo* sp)
     }
 
     //Rogue: Poison time fix for 2.3
-    if (sp->Id == 3408)                 // Crippling Poison && Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY
+    if (sp->getId() == 3408)                 // Crippling Poison && Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY
         sp->EffectBasePoints[0] = 3599;
-    if (sp->Id == 5761)                 // Mind-numbing Poison && Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY
+    if (sp->getId() == 5761)                 // Mind-numbing Poison && Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY
         sp->EffectBasePoints[0] = 3599;
-    if (sp->Id == 8679)                 // Instant Poison && Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY
+    if (sp->getId() == 8679)                 // Instant Poison && Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY
         sp->EffectBasePoints[0] = 3599;
-    if (sp->Id == 2823)                 // Deadly Poison && Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY
+    if (sp->getId() == 2823)                 // Deadly Poison && Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY
         sp->EffectBasePoints[0] = 3599;
-    if (sp->Id == 13219)                // Wound Poison && Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY
+    if (sp->getId() == 13219)                // Wound Poison && Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY
         sp->EffectBasePoints[0] = 3599;
-    if (sp->Id == 26785)                // Anesthetic Poison && Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY
+    if (sp->getId() == 26785)                // Anesthetic Poison && Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY
         sp->EffectBasePoints[0] = 3599;
 
     // Zyres: According to the description the weapon damage gets increased from 2 to 12 (depends on the different spell ids)
-    if (sp->Id == 2828 || sp->Id == 29452 || sp->Id == 29453 || sp->Id == 56308) //Sharpen Blade && Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY
+    if (sp->getId() == 2828 || sp->getId() == 29452 || sp->getId() == 29453 || sp->getId() == 56308) //Sharpen Blade && Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY
         sp->EffectBasePoints[0] = 3599;
 
     // Set the diff. EffectBasePoint from description.
-    if (sp->Id == 11119)     // Ignite Rank 1
+    if (sp->getId() == 11119)     // Ignite Rank 1
         sp->EffectBasePoints[0] = 8;
-    if (sp->Id == 11120)     // Ignite Rank 2
+    if (sp->getId() == 11120)     // Ignite Rank 2
         sp->EffectBasePoints[0] = 16;
-    if (sp->Id == 12846)     // Ignite Rank 3
+    if (sp->getId() == 12846)     // Ignite Rank 3
         sp->EffectBasePoints[0] = 24;
-    if (sp->Id == 12847)     // Ignite Rank 4
+    if (sp->getId() == 12847)     // Ignite Rank 4
         sp->EffectBasePoints[0] = 32;
-    if (sp->Id == 12848)     // Ignite Rank 5
+    if (sp->getId() == 12848)     // Ignite Rank 5
         sp->EffectBasePoints[0] = 40;
 }
 
@@ -119,7 +119,7 @@ void Set_missing_spellLevel(SpellInfo* sp)
         uint32 new_level = 0;
 
         // 16/03/08 Zyres: just replaced name assignes with spell ids. \todo remove not teachable spells.
-        switch (sp->Id)
+        switch (sp->getId())
         {
             // name "Aprentice "
             case 2020:
@@ -481,7 +481,7 @@ void Modify_RecoveryTime(SpellInfo* sp)
     }
 
     // Description includes
-    switch (sp->Id)
+    switch (sp->getId())
     {
         // "Must remain seated" 154 rows o.O
         case 430:
@@ -649,7 +649,7 @@ void Modify_RecoveryTime(SpellInfo* sp)
 
 void ApplyObsoleteNameHash(SpellInfo* sp)
 {
-    switch (sp->Id)
+    switch (sp->getId())
     {
         case 5215:
         case 6783:
@@ -6531,7 +6531,7 @@ void ApplyNormalFixes()
 
         //there are some spells that change the "damage" value of 1 effect to another : devastate = bonus first then damage
         //this is a total bullshit so remove it when spell system supports effect overwriting
-        switch (sp->Id)
+        switch (sp->getId())
         {
             case 20243:     // Devastate Rank 1
             case 30016:     // Devastate Rank 2
@@ -6641,7 +6641,7 @@ void ApplyNormalFixes()
 
 
         //Name includes "" overwrites
-        switch (sp->Id)
+        switch (sp->getId())
         {
         case 70908:
             sp->EffectImplicitTargetA[0] = EFF_TARGET_DYNAMIC_OBJECT;
@@ -6741,7 +6741,7 @@ void ApplyNormalFixes()
 
         //mage - fireball. Only some of the spell has the flags
 
-        switch (sp->Id)
+        switch (sp->getId())
         {
             // SPELL_HASH_SEAL_OF_COMMAND
             case 20375:     // Seal of Command - School/dmg_type
@@ -6985,7 +6985,7 @@ void ApplyNormalFixes()
         }
 
         // DankoDJ: This switch replaces the old NameHash overwrites
-        switch (sp->Id)
+        switch (sp->getId())
         {
             //////////////////////////////////////////////////////////////////////////////////////////
             // SPELL_HASH_SHIELD_OF_RIGHTEOUSNESS
@@ -7406,7 +7406,7 @@ void ApplyNormalFixes()
         sp = Spell::checkAndReturnSpellEntry(thrown_spells[i]);
         if (sp != nullptr && sp->RecoveryTime == 0 && sp->StartRecoveryTime == 0)
         {
-            if (sp->Id == SPELL_RANGED_GENERAL)
+            if (sp->getId() == SPELL_RANGED_GENERAL)
                 sp->RecoveryTime = 500;    // cebernic: hunter general with 0.5s
             else
                 sp->RecoveryTime = 1500; // 1.5cd
@@ -10428,7 +10428,7 @@ void ApplyNormalFixes()
         if (ritOfSumm != NULL)
         {
             memcpy(ritOfSumm, sp, sizeof(SpellInfo));
-            ritOfSumm->Id = ritOfSummId;
+            ritOfSumm->setId(ritOfSummId);
         }
     }
     //Persistent Shield

@@ -150,9 +150,9 @@ void WorldSession::SendTrainerList(Creature* pCreature)
             pSpell = &(*itr);
             Status = TrainerGetSpellStatus(pSpell);
             if (pSpell->pCastRealSpell != NULL)
-                data << pSpell->pCastSpell->Id;
+                data << pSpell->pCastSpell->getId();
             else if (pSpell->pLearnSpell)
-                data << pSpell->pLearnSpell->Id;
+                data << pSpell->pLearnSpell->getId();
             else
                 continue;
 
@@ -201,8 +201,8 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket & recvPacket)
     TrainerSpell* pSpell = NULL;
     for (std::vector<TrainerSpell>::iterator itr = pTrainer->Spells.begin(); itr != pTrainer->Spells.end(); ++itr)
     {
-        if ((itr->pCastSpell && itr->pCastSpell->Id == TeachingSpellID) ||
-            (itr->pLearnSpell && itr->pLearnSpell->Id == TeachingSpellID))
+        if ((itr->pCastSpell && itr->pCastSpell->getId() == TeachingSpellID) ||
+            (itr->pLearnSpell && itr->pLearnSpell->getId() == TeachingSpellID))
         {
             pSpell = &(*itr);
         }
@@ -227,7 +227,7 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket & recvPacket)
 
     if (pSpell->pCastSpell)
     {
-        _player->CastSpell(_player, pSpell->pCastSpell->Id, true);
+        _player->CastSpell(_player, pSpell->pCastSpell->getId(), true);
     }
     else
     {
@@ -236,16 +236,16 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket & recvPacket)
         _player->playSpellVisual(_player->GetGUID(), 362);
 
         // add the spell itself
-        _player->addSpell(pSpell->pLearnSpell->Id);
+        _player->addSpell(pSpell->pLearnSpell->getId());
     }
 
     if (pSpell->DeleteSpell)
     {
         // Remove old spell.
         if (pSpell->pLearnSpell)
-            _player->removeSpell(pSpell->DeleteSpell, true, true, pSpell->pLearnSpell->Id);
+            _player->removeSpell(pSpell->DeleteSpell, true, true, pSpell->pLearnSpell->getId());
         else if (pSpell->pCastSpell)
-            _player->removeSpell(pSpell->DeleteSpell, true, true, pSpell->pCastRealSpell->Id);
+            _player->removeSpell(pSpell->DeleteSpell, true, true, pSpell->pCastRealSpell->getId());
         else
             _player->removeSpell(pSpell->DeleteSpell, true, false, 0);
     }
@@ -263,10 +263,10 @@ uint8 WorldSession::TrainerGetSpellStatus(TrainerSpell* pSpell)
     if (!pSpell->pCastSpell && !pSpell->pLearnSpell)
         return TRAINER_STATUS_NOT_LEARNABLE;
 
-    if (pSpell->pCastRealSpell && (_player->HasSpell(pSpell->pCastRealSpell->Id) || _player->HasDeletedSpell(pSpell->pCastRealSpell->Id)))
+    if (pSpell->pCastRealSpell && (_player->HasSpell(pSpell->pCastRealSpell->getId()) || _player->HasDeletedSpell(pSpell->pCastRealSpell->getId())))
         return TRAINER_STATUS_ALREADY_HAVE;
 
-    if (pSpell->pLearnSpell && (_player->HasSpell(pSpell->pLearnSpell->Id) || _player->HasDeletedSpell(pSpell->pLearnSpell->Id)))
+    if (pSpell->pLearnSpell && (_player->HasSpell(pSpell->pLearnSpell->getId()) || _player->HasDeletedSpell(pSpell->pLearnSpell->getId())))
         return TRAINER_STATUS_ALREADY_HAVE;
 
     if (pSpell->DeleteSpell && _player->HasDeletedSpell(pSpell->DeleteSpell))

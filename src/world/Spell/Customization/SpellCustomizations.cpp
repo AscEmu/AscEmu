@@ -51,7 +51,7 @@ void SpellCustomizations::LoadSpellInfoData()
         {
             uint32 spell_id = dbc_spell_entry->Id;
             SpellInfo& spellInfo = _spellInfoContainerStore[spell_id];
-            spellInfo.Id = spell_id;
+            spellInfo.setId(spell_id);
             spellInfo.Attributes = dbc_spell_entry->Attributes;
             spellInfo.AttributesEx = dbc_spell_entry->AttributesEx;
             spellInfo.AttributesExB = dbc_spell_entry->AttributesExB;
@@ -229,7 +229,7 @@ void SpellCustomizations::LoadSpellInfoData()
         {
             uint32 spell_id = dbc_spell_entry->Id;
             SpellInfo& spellInfo = _spellInfoContainerStore[spell_id];
-            spellInfo.Id = spell_id;
+            spellInfo.setId(spell_id);
             spellInfo.Attributes = dbc_spell_entry->Attributes;
             spellInfo.AttributesEx = dbc_spell_entry->AttributesEx;
             spellInfo.AttributesExB = dbc_spell_entry->AttributesExB;
@@ -699,7 +699,7 @@ void SpellCustomizations::SetEffectAmplitude(SpellInfo* spell_entry)
             {
                 spell_entry->EffectAmplitude[y] = 1000;
 
-                LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::SetEffectAmplitude : EffectAmplitude applied Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->Id);
+                LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::SetEffectAmplitude : EffectAmplitude applied Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->getId());
             }
         }
     }
@@ -728,7 +728,7 @@ void SpellCustomizations::SetAuraFactoryFunc(SpellInfo* spell_entry)
 
     if (spell_aura_factory_functions_loaded)
     {
-        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::SetAuraFactoryFunc : AuraFactoryFunc definitions applied to Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->Id);
+        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::SetAuraFactoryFunc : AuraFactoryFunc definitions applied to Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->getId());
     }
 }
 
@@ -758,7 +758,7 @@ void SpellCustomizations::SetMeleeSpellBool(SpellInfo* spell_entry)
 
     if (spell_entry->custom_is_melee_spell)
     {
-        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::SetMeleeSpellBool : custom_is_melee_spell = true for Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->Id);
+        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::SetMeleeSpellBool : custom_is_melee_spell = true for Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->getId());
     }
 }
 
@@ -774,7 +774,7 @@ void SpellCustomizations::SetRangedSpellBool(SpellInfo* spell_entry)
 
     if (spell_entry->custom_is_ranged_spell)
     {
-        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::SetRangedSpellBool : custom_is_ranged_spell = true for Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->Id);
+        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::SetRangedSpellBool : custom_is_ranged_spell = true for Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->getId());
     }
 }
 
@@ -794,7 +794,7 @@ void SpellCustomizations::SetMissingCIsFlags(SpellInfo* spell_entry)
 void SpellCustomizations::SetCustomFlags(SpellInfo* spell_entry)
 {
     // Currently only set for 781 Disengage
-    if (spell_entry->Id != 781)
+    if (spell_entry->getId() != 781)
     {
         return;
     }
@@ -805,7 +805,7 @@ void SpellCustomizations::SetCustomFlags(SpellInfo* spell_entry)
 void SpellCustomizations::SetOnShapeshiftChange(SpellInfo* spell_entry)
 {
     // Currently only for spell Track Humanoids
-    if (spell_entry->Id != 5225 && spell_entry->Id != 19883)
+    if (spell_entry->getId() != 5225 && spell_entry->getId() != 19883)
     {
         return;
     }
@@ -817,7 +817,7 @@ void SpellCustomizations::SetOnShapeshiftChange(SpellInfo* spell_entry)
 
 void SpellCustomizations::SetAlwaysApply(SpellInfo* spell_entry)
 {
-    switch (spell_entry->Id)
+    switch (spell_entry->getId())
     {
         // SPELL_HASH_BLOOD_FURY
         case 20572:

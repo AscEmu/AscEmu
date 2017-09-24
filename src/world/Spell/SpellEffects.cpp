@@ -461,7 +461,7 @@ void Spell::ApplyAreaAura(uint32 i)
 
 void Spell::SpellEffectNULL(uint32 i)
 {
-    LogDebugFlag(LF_SPELL_EFF, "Unhandled spell effect %u in spell %u.", GetSpellInfo()->Effect[i], GetSpellInfo()->Id);
+    LogDebugFlag(LF_SPELL_EFF, "Unhandled spell effect %u in spell %u.", GetSpellInfo()->Effect[i], GetSpellInfo()->getId());
 }
 
 void Spell::SpellEffectInstantKill(uint32 i)
@@ -495,7 +495,7 @@ void Spell::SpellEffectInstantKill(uint32 i)
     Felhunter: Restores $18792s1% of total Mana every $18792t1 sec.
 
     */
-    uint32 spellId = GetSpellInfo()->Id;
+    uint32 spellId = GetSpellInfo()->getId();
 
     switch (spellId)
     {
@@ -579,7 +579,7 @@ void Spell::SpellEffectInstantKill(uint32 i)
         }
     }
     //instant kill effects don't have a log
-    //m_caster->SpellNonMeleeDamageLog(unitTarget, GetProto()->Id, unitTarget->GetHealth(), true);
+    //m_caster->SpellNonMeleeDamageLog(unitTarget, GetProto()->getId(), unitTarget->GetHealth(), true);
     // cebernic: the value of instant kill must be higher than normal health,cuz anti health regenerated.
     m_caster->DealDamage(unitTarget, unitTarget->getUInt32Value(UNIT_FIELD_HEALTH) << 1, 0, 0, 0);
 }
@@ -601,7 +601,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 
     if (GetSpellInfo()->EffectChainTarget[i])//chain
     {
-        if (GetSpellInfo()->Id == 32445 || GetSpellInfo()->Id == 28883)
+        if (GetSpellInfo()->getId() == 32445 || GetSpellInfo()->getId() == 28883)
         {
             int32 reduce = (int32)(GetSpellInfo()->dmg_multiplier[i] * 100.0f);
             reduce -= 100;
@@ -812,7 +812,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                 break;
         }
 
-        switch (GetSpellInfo()->Id)
+        switch (GetSpellInfo()->getId())
         {
             case 23881:
             {
@@ -900,7 +900,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                     if (unitTarget->IsDazed())
                         for (uint32 i = UNIT_FIELD_AURASTATE; i < AURASTATE_FLAG_REJUVENATE; i)
                         {
-                            switch (m_spellInfo->Id)
+                            switch (m_spellInfo->getId())
                             { // This info isn't in the dbc files.....
                                 case 29707:
                                     dmg = static_cast<uint32>(std::round(81.9));
@@ -1146,13 +1146,13 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 
     if (GetSpellInfo()->speed > 0 && m_triggeredSpell == false)
     {
-        m_caster->SpellNonMeleeDamageLog(unitTarget, GetSpellInfo()->Id, dmg, pSpellId == 0);
+        m_caster->SpellNonMeleeDamageLog(unitTarget, GetSpellInfo()->getId(), dmg, pSpellId == 0);
     }
     else
     {
         if (GetType() == SPELL_DMG_TYPE_MAGIC)
         {
-            m_caster->SpellNonMeleeDamageLog(unitTarget, GetSpellInfo()->Id, dmg, !m_triggeredSpell, static_damage);
+            m_caster->SpellNonMeleeDamageLog(unitTarget, GetSpellInfo()->getId(), dmg, !m_triggeredSpell, static_damage);
         }
         else
         {
@@ -1177,13 +1177,13 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 
 void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 {
-    if (objmgr.CheckforDummySpellScripts(static_cast<Player*>(u_caster), m_spellInfo->Id))
+    if (objmgr.CheckforDummySpellScripts(static_cast<Player*>(u_caster), m_spellInfo->getId()))
         return;
 
-    if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->Id, i, this))
+    if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->getId(), i, this))
         return;
 
-    LogDebugFlag(LF_SPELL_EFF, "Spell ID: %u (%s) has a dummy effect (%u) but no handler for it.", m_spellInfo->Id, m_spellInfo->Name.c_str(), i);
+    LogDebugFlag(LF_SPELL_EFF, "Spell ID: %u (%s) has a dummy effect (%u) but no handler for it.", m_spellInfo->getId(), m_spellInfo->Name.c_str(), i);
 }
 
 void Spell::SpellEffectTeleportUnits(uint32 i)    // Teleport Units
@@ -1191,7 +1191,7 @@ void Spell::SpellEffectTeleportUnits(uint32 i)    // Teleport Units
     if (unitTarget == NULL || m_caster == NULL)
         return;
 
-    uint32 spellId = GetSpellInfo()->Id;
+    uint32 spellId = GetSpellInfo()->getId();
 
     // Portals
     if (m_spellInfo->HasCustomFlagForEffect(i, TELEPORT_TO_COORDINATES))
@@ -1285,10 +1285,10 @@ void Spell::SpellEffectTeleportUnits(uint32 i)    // Teleport Units
     }
 
     // For those special teleport spells
-    if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->Id, i, this))
+    if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->getId(), i, this))
         return;
 
-    LOG_ERROR("Unhandled Teleport effect %u for Spell %u (%s).", i, m_spellInfo->Id, m_spellInfo->Name.c_str());
+    LOG_ERROR("Unhandled Teleport effect %u for Spell %u (%s).", i, m_spellInfo->getId(), m_spellInfo->Name.c_str());
 }
 
 void Spell::SpellEffectApplyAura(uint32 i)  // Apply Aura
@@ -1487,7 +1487,7 @@ void Spell::SpellEffectApplyAura(uint32 i)  // Apply Aura
     {
         pAura = itr->second;
     }
-    switch (m_spellInfo->Id)
+    switch (m_spellInfo->getId())
     {
         case 27907:
         {
@@ -1551,7 +1551,7 @@ void Spell::SpellEffectEnvironmentalDamage(uint32 i)
         return;
     }
     //this is GO, not unit
-    m_caster->SpellNonMeleeDamageLog(playerTarget, GetSpellInfo()->Id, damage, pSpellId == 0);
+    m_caster->SpellNonMeleeDamageLog(playerTarget, GetSpellInfo()->getId(), damage, pSpellId == 0);
     playerTarget->SendEnvironmentalDamageLog(playerTarget->GetGUID(), DAMAGE_FIRE, damage);
 }
 
@@ -1575,7 +1575,7 @@ void Spell::SpellEffectPowerDrain(uint32 i)  // Power Drain
     if (amt > curPower)
         amt = curPower;
     unitTarget->setUInt32Value(powerField, curPower - amt);
-    u_caster->Energize(u_caster, GetSpellInfo()->Id, amt, GetSpellInfo()->EffectMiscValue[i]);
+    u_caster->Energize(u_caster, GetSpellInfo()->getId(), amt, GetSpellInfo()->EffectMiscValue[i]);
 }
 
 void Spell::SpellEffectHealthLeech(uint32 i) // Health Leech
@@ -1589,7 +1589,7 @@ void Spell::SpellEffectHealthLeech(uint32 i) // Health Leech
     {
         amt = curHealth;
     }
-    m_caster->DealDamage(unitTarget, damage, 0, 0, GetSpellInfo()->Id);
+    m_caster->DealDamage(unitTarget, damage, 0, 0, GetSpellInfo()->getId());
 
     if (!u_caster)
         return;
@@ -1651,7 +1651,7 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
     {
         //yep, the usual special case. This one is shaman talent : Nature's guardian
         //health is below 30%, we have a mother spell to get value from
-        switch (GetSpellInfo()->Id)
+        switch (GetSpellInfo()->getId())
         {
             case 31616:
             {
@@ -1933,7 +1933,7 @@ void Spell::SpellEffectBlock(uint32 i)
 
 void Spell::SpellEffectCreateItem(uint32 i)
 {
-    uint32 spellid = m_spellInfo->Id;
+    uint32 spellid = m_spellInfo->getId();
 
     if (playerTarget == nullptr)
     {
@@ -2048,7 +2048,7 @@ void Spell::SpellEffectCreateItem(uint32 i)
             {
 
                 //rate for primal might is lower than for anything else
-                if (m_spellInfo->Id == 29688)
+                if (m_spellInfo->getId() == 29688)
                 {
                     if (p_caster->HasSpell(28672))
                         while (Rand(40) && (count < 5))
@@ -2180,7 +2180,7 @@ void Spell::SpellEffectWeapon(uint32 i)
     uint32 skill = 0;
     uint32 spell = 0;
 
-    switch (this->GetSpellInfo()->Id)
+    switch (this->GetSpellInfo()->getId())
     {
         case 201:    // one-handed swords
         {
@@ -2273,7 +2273,7 @@ void Spell::SpellEffectWeapon(uint32 i)
         default:
         {
             skill = 0;
-            LogDebugFlag(LF_SPELL_EFF, "WARNING: Could not determine skill for spell id %d (SPELL_EFFECT_WEAPON)", this->GetSpellInfo()->Id);
+            LogDebugFlag(LF_SPELL_EFF, "WARNING: Could not determine skill for spell id %d (SPELL_EFFECT_WEAPON)", this->GetSpellInfo()->getId());
         }
         break;
     }
@@ -2388,7 +2388,7 @@ void Spell::SpellEffectPersistentAA(uint32 i) // Persistent Area Aura
         if (GetSpellInfo()->ChannelInterruptFlags > 0)
         {
             u_caster->SetChannelSpellTargetGUID(dynObj->GetGUID());
-            u_caster->SetChannelSpellId(GetSpellInfo()->Id);
+            u_caster->SetChannelSpellId(GetSpellInfo()->getId());
         }
 
     m_AreaAura = true;
@@ -2401,7 +2401,7 @@ void Spell::SpellEffectSummon(uint32 i)
     auto summon_properties = sSummonPropertiesStore.LookupEntry(summonpropid);
     if (summon_properties == nullptr)
     {
-        LOG_ERROR("No SummonPropertiesEntry for Spell %u (%s)", m_spellInfo->Id, m_spellInfo->Name.c_str());
+        LOG_ERROR("No SummonPropertiesEntry for Spell %u (%s)", m_spellInfo->getId(), m_spellInfo->Name.c_str());
         return;
     }
 
@@ -2411,7 +2411,7 @@ void Spell::SpellEffectSummon(uint32 i)
 
     if (cp == nullptr)
     {
-        LOG_ERROR("Spell %u (%s) tried to summon creature %u without database data", m_spellInfo->Id, m_spellInfo->Name.c_str(), entry);
+        LOG_ERROR("Spell %u (%s) tried to summon creature %u without database data", m_spellInfo->getId(), m_spellInfo->Name.c_str(), entry);
         return;
     }
 
@@ -2501,7 +2501,7 @@ void Spell::SpellEffectSummon(uint32 i)
             return;
     }
 
-    LOG_ERROR("Unknown summon type in summon property %u in spell %u %s", summonpropid, m_spellInfo->Id, m_spellInfo->Name.c_str());
+    LOG_ERROR("Unknown summon type in summon property %u in spell %u %s", summonpropid, m_spellInfo->getId(), m_spellInfo->Name.c_str());
 }
 
 void Spell::SpellEffectSummonWild(uint32 i)  // Summon Wild
@@ -2518,7 +2518,7 @@ void Spell::SpellEffectSummonWild(uint32 i)  // Summon Wild
     CreatureProperties const* properties = sMySQLStore.getCreatureProperties(cr_entry);
     if (properties == nullptr)
     {
-        LogError("Warning : Missing summon creature template %u used by spell %u!", cr_entry, GetSpellInfo()->Id);
+        LogError("Warning : Missing summon creature template %u used by spell %u!", cr_entry, GetSpellInfo()->getId());
         return;
     }
     float x, y, z;
@@ -2592,12 +2592,12 @@ void Spell::SpellEffectSummonGuardian(uint32 i, DBC::Structures::SummonPropertie
         if (s == NULL)
             return;
 
-        s->Load(properties_, u_caster, v, m_spellInfo->Id, spe->Slot - 1);
+        s->Load(properties_, u_caster, v, m_spellInfo->getId(), spe->Slot - 1);
         s->GetAIInterface()->SetUnitToFollowAngle(followangle);
         s->PushToWorld(u_caster->GetMapMgr());
 
         if ((p_caster != NULL) && (spe->Slot != 0))
-            p_caster->SendTotemCreated(spe->Slot - 1, s->GetGUID(), GetDuration(), m_spellInfo->Id);
+            p_caster->SendTotemCreated(spe->Slot - 1, s->GetGUID(), GetDuration(), m_spellInfo->getId());
 
         // Lightwell
         if (spe->Type == SUMMON_TYPE_LIGHTWELL)
@@ -2675,13 +2675,13 @@ void Spell::SpellEffectSummonTotem(uint32 i, DBC::Structures::SummonPropertiesEn
     Summon* s = u_caster->GetMapMgr()->CreateSummon(properties_->Id, SUMMONTYPE_TOTEM);
     if (s == NULL)
         return;
-    s->Load(properties_, u_caster, v, m_spellInfo->Id, spe->Slot - 1);
+    s->Load(properties_, u_caster, v, m_spellInfo->getId(), spe->Slot - 1);
     s->SetMaxHealth(damage);
     s->SetHealth(damage);
     s->PushToWorld(u_caster->GetMapMgr());
 
     if (p_caster != NULL)
-        p_caster->SendTotemCreated(spe->Slot - 1, s->GetGUID(), GetDuration(), m_spellInfo->Id);
+        p_caster->SendTotemCreated(spe->Slot - 1, s->GetGUID(), GetDuration(), m_spellInfo->getId());
 
     int32 duration = static_cast<int32>(GetDuration());
     if (duration > 0)
@@ -2705,8 +2705,8 @@ void Spell::SpellEffectSummonPossessed(uint32 i, DBC::Structures::SummonProperti
     v.x += (3 * cos(M_PI_FLOAT / 2 + v.o));
     v.y += (3 * cos(M_PI_FLOAT / 2 + v.o));
 
-    s->Load(properties_, p_caster, v, m_spellInfo->Id, spe->Slot - 1);
-    s->SetCreatedBySpell(m_spellInfo->Id);
+    s->Load(properties_, p_caster, v, m_spellInfo->getId(), spe->Slot - 1);
+    s->SetCreatedBySpell(m_spellInfo->getId());
     s->PushToWorld(p_caster->GetMapMgr());
 
     p_caster->Possess(s, 1000);
@@ -2740,8 +2740,8 @@ void Spell::SpellEffectSummonCompanion(uint32 i, DBC::Structures::SummonProperti
     if (summon == nullptr)
         return;
 
-    summon->Load(properties_, u_caster, v, m_spellInfo->Id, spe->Slot - 1);
-    summon->SetCreatedBySpell(m_spellInfo->Id);
+    summon->Load(properties_, u_caster, v, m_spellInfo->getId(), spe->Slot - 1);
+    summon->SetCreatedBySpell(m_spellInfo->getId());
     summon->GetAIInterface()->SetFollowDistance(GetRadius(i));
     summon->PushToWorld(u_caster->GetMapMgr());
     u_caster->SetSummonedCritterGUID(summon->GetGUID());
@@ -2759,7 +2759,7 @@ void Spell::SpellEffectSummonVehicle(uint32 i, DBC::Structures::SummonProperties
     Creature* c = u_caster->GetMapMgr()->CreateCreature(properties_->Id);
     c->Load(properties_, v.x, v.y, v.z, v.o);
     c->Phase(PHASE_SET, u_caster->GetPhase());
-    c->SetCreatedBySpell(m_spellInfo->Id);
+    c->SetCreatedBySpell(m_spellInfo->getId());
     c->SetCreatedByGUID(u_caster->GetGUID());
     c->SetSummonedByGUID(u_caster->GetGUID());
     c->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
@@ -2812,7 +2812,7 @@ void Spell::SpellEffectEnergize(uint32 i) // Energize
         return;
 
     uint32 modEnergy = 0;
-    switch (GetSpellInfo()->Id)
+    switch (GetSpellInfo()->getId())
     {
         case 30824: // Shamanistic Rage
             modEnergy = damage * GetUnitTarget()->GetAP() / 100;
@@ -2868,7 +2868,7 @@ void Spell::SpellEffectEnergize(uint32 i) // Energize
         modEnergy = uint32(modEnergy * 1.4f);
     }
 
-    u_caster->Energize(unitTarget, GetSpellInfo()->Id, modEnergy, GetSpellInfo()->EffectMiscValue[i]);
+    u_caster->Energize(unitTarget, GetSpellInfo()->getId(), modEnergy, GetSpellInfo()->EffectMiscValue[i]);
 }
 
 void Spell::SpellEffectWeaponDmgPerc(uint32 i) // Weapon Percent damage
@@ -2878,7 +2878,7 @@ void Spell::SpellEffectWeaponDmgPerc(uint32 i) // Weapon Percent damage
     if (GetType() == SPELL_DMG_TYPE_MAGIC)
     {
         uint32 dmg = CalculateDamage(u_caster, unitTarget, MELEE, 0, GetSpellInfo()) * damage / 100;
-        u_caster->SpellNonMeleeDamageLog(unitTarget, GetSpellInfo()->Id, dmg, false, false, false);
+        u_caster->SpellNonMeleeDamageLog(unitTarget, GetSpellInfo()->getId(), dmg, false, false, false);
     }
     else
     {
@@ -2922,14 +2922,14 @@ void Spell::SpellEffectTriggerMissile(uint32 i) // Trigger Missile
     uint32 spellid = GetSpellInfo()->EffectTriggerSpell[i];
     if (spellid == 0)
     {
-        LOG_ERROR("Spell %u (%s) has a trigger missle effect (%u) but no trigger spell ID. Spell needs fixing.", m_spellInfo->Id, m_spellInfo->Name.c_str(), i);
+        LOG_ERROR("Spell %u (%s) has a trigger missle effect (%u) but no trigger spell ID. Spell needs fixing.", m_spellInfo->getId(), m_spellInfo->Name.c_str(), i);
         return;
     }
 
     SpellInfo* spInfo = sSpellCustomizations.GetSpellInfo(spellid);
     if (spInfo == NULL)
     {
-        LOG_ERROR("Spell %u (%s) has a trigger missle effect (%u) but has an invalid trigger spell ID. Spell needs fixing.", m_spellInfo->Id, m_spellInfo->Name.c_str(), i);
+        LOG_ERROR("Spell %u (%s) has a trigger missle effect (%u) but has an invalid trigger spell ID. Spell needs fixing.", m_spellInfo->getId(), m_spellInfo->Name.c_str(), i);
         return;
     }
 
@@ -3243,7 +3243,7 @@ void Spell::SpellEffectLearnSpell(uint32 i) // Learn Spell
         return;
     }
 
-    if (GetSpellInfo()->Id == 483 || GetSpellInfo()->Id == 55884)          // "Learning"
+    if (GetSpellInfo()->getId() == 483 || GetSpellInfo()->getId() == 55884)          // "Learning"
     {
         if (!i_caster || !p_caster) return;
 
@@ -3283,7 +3283,7 @@ void Spell::SpellEffectLearnSpell(uint32 i) // Learn Spell
         //smth is wrong here, first we add this spell to player then we may cast it on player...
         SpellInfo* spellinfo = sSpellCustomizations.GetSpellInfo(spellToLearn);
         //remove specializations
-        switch (spellinfo->Id)
+        switch (spellinfo->getId())
         {
             case 26801: //Shadoweave Tailoring
                 playerTarget->removeSpell(26798, false, false, 0); //Mooncloth Tailoring
@@ -3413,9 +3413,9 @@ void Spell::SpellEffectDispel(uint32 i) // Dispel
             {
                 if (GetSpellInfo()->DispelType == DISPEL_ALL)
                 {
-                    unitTarget->HandleProc(PROC_ON_PRE_DISPELL_AURA_VICTIM, u_caster, GetSpellInfo(), m_triggeredSpell, aursp->Id);
+                    unitTarget->HandleProc(PROC_ON_PRE_DISPELL_AURA_VICTIM, u_caster, GetSpellInfo(), m_triggeredSpell, aursp->getId());
 
-                    dispelledSpells.push_back(aursp->Id);
+                    dispelledSpells.push_back(aursp->getId());
 
                     unitTarget->RemoveAura(aur);
                     AuraRemoved = true;
@@ -3425,11 +3425,11 @@ void Spell::SpellEffectDispel(uint32 i) // Dispel
                 }
                 else if (aursp->DispelType == GetSpellInfo()->EffectMiscValue[i])
                 {
-                    unitTarget->HandleProc(PROC_ON_PRE_DISPELL_AURA_VICTIM, u_caster, GetSpellInfo(), m_triggeredSpell, aursp->Id);
+                    unitTarget->HandleProc(PROC_ON_PRE_DISPELL_AURA_VICTIM, u_caster, GetSpellInfo(), m_triggeredSpell, aursp->getId());
 
-                    dispelledSpells.push_back(aursp->Id);
+                    dispelledSpells.push_back(aursp->getId());
 
-                    unitTarget->RemoveAllAuras(aursp->Id, aur->GetCasterGUID());
+                    unitTarget->RemoveAllAuras(aursp->getId(), aur->GetCasterGUID());
                     AuraRemoved = true;
 
                     if (--damage <= 0)
@@ -3444,7 +3444,7 @@ void Spell::SpellEffectDispel(uint32 i) // Dispel
                         Spell* spell = sSpellFactoryMgr.NewSpell(u_caster, spellInfo, true, NULL);
                         spell->forced_basepoints[0] = (aursp->EffectBasePoints[0] + 1) * 9;   //damage effect
                         spell->ProcedOnSpell = GetSpellInfo();
-                        spell->pSpellId = aursp->Id;
+                        spell->pSpellId = aursp->getId();
                         SpellCastTargets targets;
                         targets.m_unitTarget = u_caster->GetGUID();
                         spell->prepare(&targets);
@@ -3467,7 +3467,7 @@ void Spell::SpellEffectDispel(uint32 i) // Dispel
         WorldPacket data(SMSG_SPELLDISPELLOG, 25 + dispelledSpells.size() * 5);
         data << m_caster->GetNewGUID();
         data << unitTarget->GetNewGUID();
-        data << GetSpellInfo()->Id;
+        data << GetSpellInfo()->getId();
         data << uint8(0);               // unused
         data << uint32(dispelledSpells.size());
         for (std::list< uint32 >::iterator itr = dispelledSpells.begin(); itr != dispelledSpells.end(); ++itr)
@@ -3622,7 +3622,7 @@ void Spell::SpellEffectAddHonor(uint32 i)
 void Spell::SpellEffectSpawn(uint32 i)
 {
     // this effect is mostly for custom teleporting
-    switch (GetSpellInfo()->Id)
+    switch (GetSpellInfo()->getId())
     {
         case 10418: // Arugal spawn-in spell , teleports it to 3 locations randomly sneaking players (bastard ;P)
         {
@@ -3648,7 +3648,7 @@ void Spell::SpellEffectSummonObject(uint32 i)
     GameObjectProperties const* info = sMySQLStore.getGameObjectProperties(entry);
     if (info == nullptr)
     {
-        LogError("Spell %u ( %s ) Effect %u tried to summon a GameObject with ID %u. GameObject is not in the database.", m_spellInfo->Id, m_spellInfo->Name.c_str(), i, entry);
+        LogError("Spell %u ( %s ) Effect %u tried to summon a GameObject with ID %u. GameObject is not in the database.", m_spellInfo->getId(), m_spellInfo->Name.c_str(), i, entry);
         return;
     }
 
@@ -3726,8 +3726,8 @@ void Spell::SpellEffectSummonObject(uint32 i)
 
             GameObject_Ritual* go_ritual = static_cast<GameObject_Ritual*>(go);
 
-            go_ritual->GetRitual()->Setup(p_caster->GetLowGUID(), 0, m_spellInfo->Id);
-            go_ritual->GetRitual()->Setup(p_caster->GetLowGUID(), static_cast< uint32 >(p_caster->GetSelection()), m_spellInfo->Id);
+            go_ritual->GetRitual()->Setup(p_caster->GetLowGUID(), 0, m_spellInfo->getId());
+            go_ritual->GetRitual()->Setup(p_caster->GetLowGUID(), static_cast< uint32 >(p_caster->GetSelection()), m_spellInfo->getId());
         }
     }
 
@@ -3769,7 +3769,7 @@ void Spell::SpellEffectEnchantItem(uint32 i) // Enchant Item Permanent
 
     if (!spell_item_enchant)
     {
-        LOG_ERROR("Invalid enchantment entry %u for Spell %u", GetSpellInfo()->EffectMiscValue[i], GetSpellInfo()->Id);
+        LOG_ERROR("Invalid enchantment entry %u for Spell %u", GetSpellInfo()->EffectMiscValue[i], GetSpellInfo()->getId());
         return;
     }
 
@@ -3800,20 +3800,20 @@ void Spell::SpellEffectEnchantItemTemporary(uint32 i)  // Enchant Item Temporary
 
     if (Duration == 0)
     {
-        LOG_ERROR("Spell %u (%s) has no enchantment duration. Spell needs to be fixed!", m_spellInfo->Id, m_spellInfo->Name.c_str());
+        LOG_ERROR("Spell %u (%s) has no enchantment duration. Spell needs to be fixed!", m_spellInfo->getId(), m_spellInfo->Name.c_str());
         return;
     }
 
     if (EnchantmentID == 0)
     {
-        LOG_ERROR("Spell %u (%s) has no enchantment ID. Spell needs to be fixed!", m_spellInfo->Id, m_spellInfo->Name.c_str());
+        LOG_ERROR("Spell %u (%s) has no enchantment ID. Spell needs to be fixed!", m_spellInfo->getId(), m_spellInfo->Name.c_str());
         return;
     }
 
     auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(EnchantmentID);
     if (spell_item_enchant == nullptr)
     {
-        LOG_ERROR("Invalid enchantment entry %u for Spell %u", EnchantmentID, GetSpellInfo()->Id);
+        LOG_ERROR("Invalid enchantment entry %u for Spell %u", EnchantmentID, GetSpellInfo()->getId());
         return;
     }
 
@@ -3823,7 +3823,7 @@ void Spell::SpellEffectEnchantItemTemporary(uint32 i)  // Enchant Item Temporary
     if (Slot < 0)
         return; // Apply failed
 
-    auto skill_line_ability = objmgr.GetSpellSkill(GetSpellInfo()->Id);
+    auto skill_line_ability = objmgr.GetSpellSkill(GetSpellInfo()->getId());
     if (skill_line_ability != nullptr)
         DetermineSkillUp(skill_line_ability->skilline, itemTarget->GetItemProperties()->ItemLevel);
 }
@@ -3849,7 +3849,7 @@ void Spell::SpellEffectSummonPet(uint32 i) //summon - pet
 {
     if (!p_caster) return;
 
-    if (GetSpellInfo()->Id == 883)  // "Call Pet" spell
+    if (GetSpellInfo()->getId() == 883)  // "Call Pet" spell
     {
         if (p_caster->GetSummon())
         {
@@ -3981,7 +3981,7 @@ void Spell::SpellEffectProficiency(uint32 i)
 {
     uint32 skill = 0;
 
-    auto skill_line_ability = objmgr.GetSpellSkill(GetSpellInfo()->Id);
+    auto skill_line_ability = objmgr.GetSpellSkill(GetSpellInfo()->getId());
     if (skill_line_ability != nullptr)
         skill = skill_line_ability->skilline;
 
@@ -4014,13 +4014,13 @@ void Spell::SpellEffectSendEvent(uint32 i) //Send Event
 {
     //This is mostly used to trigger events on quests or some places
 
-    if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->Id, i, this))
+    if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->getId(), i, this))
         return;
 
-    if (sScriptMgr.HandleScriptedSpellEffect(m_spellInfo->Id, i, this))
+    if (sScriptMgr.HandleScriptedSpellEffect(m_spellInfo->getId(), i, this))
         return;
 
-    LogDebugFlag(LF_SPELL_EFF, "Spell ID: %u (%s) has a scripted effect (%u) but no handler for it.", m_spellInfo->Id, m_spellInfo->Name.c_str(), i);
+    LogDebugFlag(LF_SPELL_EFF, "Spell ID: %u (%s) has a scripted effect (%u) but no handler for it.", m_spellInfo->getId(), m_spellInfo->Name.c_str(), i);
 
 }
 
@@ -4051,7 +4051,7 @@ void Spell::SpellEffectPowerBurn(uint32 i) // power burn
 
     unitTarget->ModPower(POWER_TYPE_MANA, -mana);
 
-    m_caster->SpellNonMeleeDamageLog(unitTarget, GetSpellInfo()->Id, (uint32)(mana * GetSpellInfo()->EffectMultipleValue[i]), pSpellId == 0, true);
+    m_caster->SpellNonMeleeDamageLog(unitTarget, GetSpellInfo()->getId(), (uint32)(mana * GetSpellInfo()->EffectMultipleValue[i]), pSpellId == 0, true);
 }
 
 void Spell::SpellEffectThreat(uint32 i) // Threat
@@ -4074,7 +4074,7 @@ void Spell::SpellEffectClearQuest(uint32 i)
 {
     if (playerTarget == NULL)
     {
-        LOG_ERROR("Spell %u (%s) was not casted on Player, but Spell requires Player to be a target.", m_spellInfo->Id, m_spellInfo->Name.c_str());
+        LOG_ERROR("Spell %u (%s) was not casted on Player, but Spell requires Player to be a target.", m_spellInfo->getId(), m_spellInfo->Name.c_str());
         return;
     }
 
@@ -4122,7 +4122,7 @@ void Spell::SpellEffectHealMaxHealth(uint32 i)   // Heal Max Health
         return;
     }
 
-    SendHealSpellOnPlayer(m_caster, unitTarget, dif, false, 0, pSpellId ? pSpellId : GetSpellInfo()->Id);
+    SendHealSpellOnPlayer(m_caster, unitTarget, dif, false, 0, pSpellId ? pSpellId : GetSpellInfo()->getId());
 
     unitTarget->ModHealth(dif);
 
@@ -4142,7 +4142,7 @@ void Spell::SpellEffectInterruptCast(uint32 i) // Interrupt Cast
     {
         if (u_caster && (u_caster != unitTarget))
         {
-            unitTarget->GetAIInterface()->AttackReaction(u_caster, 1, m_spellInfo->Id);
+            unitTarget->GetAIInterface()->AttackReaction(u_caster, 1, m_spellInfo->getId());
             Creature* c = static_cast< Creature* >(unitTarget);
             if (c->GetCreatureProperties()->modImmunities & 32768)
                 return;
@@ -4328,13 +4328,13 @@ void Spell::SpellEffectSummonObjectWild(uint32 i)
 void Spell::SpellEffectScriptEffect(uint32 i) // Script Effect
 {
     // Try a dummy SpellHandler
-    if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->Id, i, this))
+    if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->getId(), i, this))
         return;
 
-    if (sScriptMgr.HandleScriptedSpellEffect(m_spellInfo->Id, i, this))
+    if (sScriptMgr.HandleScriptedSpellEffect(m_spellInfo->getId(), i, this))
         return;
 
-    LOG_ERROR("Spell ID: %u (%s) has a scripted effect (%u) but no handler for it.", m_spellInfo->Id, m_spellInfo->Name.c_str(), i);
+    LOG_ERROR("Spell ID: %u (%s) has a scripted effect (%u) but no handler for it.", m_spellInfo->getId(), m_spellInfo->Name.c_str(), i);
 }
 
 void Spell::SpellEffectSanctuary(uint32 i) // Stop all attacks made to you
@@ -4365,7 +4365,7 @@ void Spell::SpellEffectAddComboPoints(uint32 i) // Add Combo Points
         return;
 
     //if this is a procspell Ruthlessness (maybe others later)
-    if (pSpellId && (GetSpellInfo()->Id == 14157 || GetSpellInfo()->Id == 70802 || GetSpellInfo()->Id == 14181))
+    if (pSpellId && (GetSpellInfo()->getId() == 14157 || GetSpellInfo()->getId() == 70802 || GetSpellInfo()->getId() == 14181))
     {
         //it seems this combo adding procspell is going to change combopoint count before they will get reset. We add it after the reset
         /* burlex - this is wrong, and exploitable.. :/ if someone uses this they will have unlimited combo points */
@@ -4462,7 +4462,7 @@ void Spell::SpellEffectActivateObject(uint32 i) // Activate Object
 
     if (!gameObjTarget)
     {
-        LOG_ERROR("Spell %u (%s) effect %u not handled because no target was found. ", m_spellInfo->Id, m_spellInfo->Name.c_str(), i);
+        LOG_ERROR("Spell %u (%s) effect %u not handled because no target was found. ", m_spellInfo->getId(), m_spellInfo->Name.c_str(), i);
         return;
     }
 
@@ -4476,7 +4476,7 @@ void Spell::SpellEffectBuildingDamage(uint32 i)
 {
     if (gameObjTarget == NULL)
     {
-        LOG_ERROR("Spell %u (%s) effect %u not handled because no target was found. ", m_spellInfo->Id, m_spellInfo->Name.c_str(), i);
+        LOG_ERROR("Spell %u (%s) effect %u not handled because no target was found. ", m_spellInfo->getId(), m_spellInfo->Name.c_str(), i);
         return;
     }
 
@@ -4497,7 +4497,7 @@ void Spell::SpellEffectBuildingDamage(uint32 i)
 
     // Baaaam
     GameObject_Destructible* dgo = static_cast<GameObject_Destructible*>(gameObjTarget);
-    dgo->Damage(damage, u_caster->GetGUID(), controller->GetGUID(), m_spellInfo->Id);
+    dgo->Damage(damage, u_caster->GetGUID(), controller->GetGUID(), m_spellInfo->getId());
 }
 
 void Spell::SpellEffectEnchantHeldItem(uint32 i)
@@ -4518,7 +4518,7 @@ void Spell::SpellEffectEnchantHeldItem(uint32 i)
 
     if (!spell_item_enchant)
     {
-        LOG_ERROR("Invalid enchantment entry %u for Spell %u", GetSpellInfo()->EffectMiscValue[i], GetSpellInfo()->Id);
+        LOG_ERROR("Invalid enchantment entry %u for Spell %u", GetSpellInfo()->EffectMiscValue[i], GetSpellInfo()->getId());
         return;
     }
 
@@ -4534,7 +4534,7 @@ void Spell::SpellEffectSelfResurrect(uint32 i)
     uint32 health;
     uint32 class_ = unitTarget->getClass();
 
-    switch (GetSpellInfo()->Id)
+    switch (GetSpellInfo()->getId())
     {
         case 3026:
         case 20758:
@@ -4577,7 +4577,7 @@ void Spell::SpellEffectSelfResurrect(uint32 i)
 
     playerTarget->setUInt32Value(PLAYER_SELF_RES_SPELL, 0);
 
-    if (GetSpellInfo()->Id == 21169)
+    if (GetSpellInfo()->getId() == 21169)
         AddCooldown();
 }
 
@@ -4930,7 +4930,7 @@ void Spell::SpellEffectDestroyAllTotems(uint32 i)
     }
 
     p_caster->summonhandler.ExpireSummonsInSlot();
-    p_caster->Energize(p_caster, GetSpellInfo()->Id, RetreivedMana, POWER_TYPE_MANA);
+    p_caster->Energize(p_caster, GetSpellInfo()->getId(), RetreivedMana, POWER_TYPE_MANA);
 }
 
 void Spell::SpellEffectResurrectNew(uint32 i)
@@ -5114,7 +5114,7 @@ void Spell::SpellEffectDummyMelee(uint32 i)   // Normalized Weapon damage +
         //we should also cast sunder armor effect on target with or without dmg
         Spell* spell = sSpellFactoryMgr.NewSpell(u_caster, spellInfo, true, NULL);
         spell->ProcedOnSpell = GetSpellInfo();
-        spell->pSpellId = GetSpellInfo()->Id;
+        spell->pSpellId = GetSpellInfo()->getId();
         SpellCastTargets targets(unitTarget->GetGUID());
         spell->prepare(&targets);
         if (!sunder_count)
@@ -5125,7 +5125,7 @@ void Spell::SpellEffectDummyMelee(uint32 i)   // Normalized Weapon damage +
     if (p_caster && GetSpellInfo()->custom_NameHash == SPELL_HASH_HEMORRHAGE)
         p_caster->AddComboPoints(p_caster->GetSelection(), 1);
 
-    switch (GetSpellInfo()->Id)
+    switch (GetSpellInfo()->getId())
     {
         // AMBUSH
         case 8676:
@@ -5363,13 +5363,13 @@ void Spell::SpellEffectSpellSteal(uint32 i)
             aur = unitTarget->m_auras[x];
             aursp = aur->GetSpellInfo();
 
-            if (aursp->Id != 15007 && !aur->IsPassive()
+            if (aursp->getId() != 15007 && !aur->IsPassive()
                 //              && aur->IsPositive()    // Zack : We are only checking positive auras. There is no meaning to check again
                ) //Nothing can dispel resurrection sickness
             {
                 if (aursp->DispelType == DISPEL_MAGIC)
                 {
-                    stealedSpells.push_back(aursp->Id);
+                    stealedSpells.push_back(aursp->getId());
 
                     uint32 aurdur = (aur->GetDuration() > 120000 ? 120000 : aur->GetDuration());
                     Aura* aura = sSpellFactoryMgr.NewAura(aursp, aurdur, u_caster, u_caster);
@@ -5412,7 +5412,7 @@ void Spell::SpellEffectSpellSteal(uint32 i)
         WorldPacket data(SMSG_SPELLSTEALLOG, 25 + stealedSpells.size() * 5);
         data << m_caster->GetNewGUID();
         data << unitTarget->GetNewGUID();
-        data << GetSpellInfo()->Id;
+        data << GetSpellInfo()->getId();
         data << uint8(0);               // unused
         data << uint32(stealedSpells.size());
         for (std::list< uint32 >::iterator itr = stealedSpells.begin(); itr != stealedSpells.end(); ++itr)
@@ -5482,7 +5482,7 @@ void Spell::SpellEffectPlayMusic(uint32 i)
 
     if (soundid == 0)
     {
-        LOG_ERROR("Spell %u (%s) has no sound ID to play. Spell needs fixing!", m_spellInfo->Id, m_spellInfo->Name.c_str());
+        LOG_ERROR("Spell %u (%s) has no sound ID to play. Spell needs fixing!", m_spellInfo->getId(), m_spellInfo->Name.c_str());
         return;
     }
 
@@ -5496,7 +5496,7 @@ void Spell::SpellEffectForgetSpecialization(uint32 i)
     uint32 spellid = GetSpellInfo()->EffectTriggerSpell[i];
     playerTarget->removeSpell(spellid, false, false, 0);
 
-    LogDebugFlag(LF_SPELL_EFF, "Player %u have forgot spell %u from spell %u (caster: %u)", playerTarget->GetLowGUID(), spellid, GetSpellInfo()->Id, m_caster->GetLowGUID());
+    LogDebugFlag(LF_SPELL_EFF, "Player %u have forgot spell %u from spell %u (caster: %u)", playerTarget->GetLowGUID(), spellid, GetSpellInfo()->getId(), m_caster->GetLowGUID());
 }
 
 void Spell::SpellEffectKillCredit(uint32 i)
@@ -5519,7 +5519,7 @@ void Spell::SpellEffectRestorePowerPct(uint32 i)
     }
 
     uint32 amount = damage * unitTarget->GetMaxPower(power_type) / 100;
-    u_caster->Energize(unitTarget, GetSpellInfo()->Id, amount, power_type);
+    u_caster->Energize(unitTarget, GetSpellInfo()->getId(), amount, power_type);
 }
 
 void Spell::SpellEffectTriggerSpellWithValue(uint32 i)
@@ -5609,7 +5609,7 @@ void Spell::SpellEffectEnchantItemPrismatic(uint32 i)
 
     if (!spell_item_enchant)
     {
-        LOG_ERROR("Invalid enchantment entry %u for Spell %u", GetSpellInfo()->EffectMiscValue[i], GetSpellInfo()->Id);
+        LOG_ERROR("Invalid enchantment entry %u for Spell %u", GetSpellInfo()->EffectMiscValue[i], GetSpellInfo()->getId());
         return;
     }
 
@@ -5705,7 +5705,7 @@ void Spell::SpellEffectRestoreHealthPct(uint32 i)
     else
         unitTarget->ModHealth(modHealth);
 
-    SendHealSpellOnPlayer(m_caster, unitTarget, modHealth, false, overheal, pSpellId ? pSpellId : GetSpellInfo()->Id);
+    SendHealSpellOnPlayer(m_caster, unitTarget, modHealth, false, overheal, pSpellId ? pSpellId : GetSpellInfo()->getId());
 }
 
 void Spell::SpellEffectLearnSpec(uint32 i)
