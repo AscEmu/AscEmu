@@ -1533,20 +1533,19 @@ bool CenarionMoondust(uint32 i, Spell* pSpell) // Body And Heart (Alliance)
     uint32 md = lunaclaw->GetDisplayId();
 
     //Waypoints
-    lunaclaw->WaypointCreate(6348.3833f, 132.5197f, 21.6042f, 4.19f, 200, Movement::WP_MOVE_TYPE_RUN, md);
+    lunaclaw->LoadCustomWaypoint(6348.3833f, 132.5197f, 21.6042f, 4.19f, 200, Movement::WP_MOVE_TYPE_RUN, false, 0, false, 0, md, md);
     //make sure that player dont cheat speed or something
     if (lunaclaw->GetDistance2dSq(p_caster) < 200)   // can be more? - he can speed hack or teleport hack
     {
         LocationVector pos = p_caster->GetPosition();
-
-        lunaclaw->WaypointCreate(pos.x, pos.y, pos.z, pos.o + 3, 200, Movement::WP_MOVE_TYPE_RUN, md);
+        lunaclaw->LoadCustomWaypoint(pos.x, pos.y, pos.z, pos.o + 3, 200, Movement::WP_MOVE_TYPE_RUN, false, 0, false, 0, md, md);
     }
     else
     {
-        lunaclaw->WaypointCreate(5328.2148f, 94.5505f, 21.4547f, 4.2489f, 200, Movement::WP_MOVE_TYPE_RUN, md);
+        lunaclaw->LoadCustomWaypoint(5328.2148f, 94.5505f, 21.4547f, 4.2489f, 200, Movement::WP_MOVE_TYPE_RUN, false, 0, false, 0, md, md);
     }
 
-    lunaclaw->EnableWaypoints();
+    lunaclaw->SwitchToCustomWaypoints();
 
     // Make sure that creature will attack player
     if (!lunaclaw->CombatStatus.IsInCombat())
@@ -1579,20 +1578,19 @@ bool CenarionLunardust(uint32 i, Spell* pSpell)  // Body And Heart (Horde)
     uint32 md = lunaclaw->GetDisplayId();
 
     // Waypoints
-    lunaclaw->WaypointCreate(-2448.2253f, -1625.0148f, 91.89f, 1.913f, 200, Movement::WP_MOVE_TYPE_RUN, md); //First
+    lunaclaw->LoadCustomWaypoint(-2448.2253f, -1625.0148f, 91.89f, 1.913f, 200, Movement::WP_MOVE_TYPE_RUN, false, 0, false, 0, md, md);
     //make sure that player dont cheat speed or something
     if (lunaclaw->GetDistance2dSq(p_caster) < 200)   // can be more? - he can speed hack or teleport hack
     {
         LocationVector pos = p_caster->GetPosition();
-
-        lunaclaw->WaypointCreate(pos.x, pos.y, pos.z, pos.o + 3, 200, Movement::WP_MOVE_TYPE_RUN, md);
+        lunaclaw->LoadCustomWaypoint(pos.x, pos.y, pos.z, pos.o + 3, 200, Movement::WP_MOVE_TYPE_RUN, false, 0, false, 0, md, md);
     }
     else
     {
-        lunaclaw->WaypointCreate(-2504.2641f, -1630.7354f, 91.93f, 3.2f, 200, Movement::WP_MOVE_TYPE_RUN, md);
+        lunaclaw->LoadCustomWaypoint(-2504.2641f, -1630.7354f, 91.93f, 3.2f, 200, Movement::WP_MOVE_TYPE_RUN, false, 0, false, 0, md, md);
     }
 
-    lunaclaw->EnableWaypoints();
+    lunaclaw->SwitchToCustomWaypoints();
 
     // Make sure that creature will attack player
     if (!lunaclaw->CombatStatus.IsInCombat())
