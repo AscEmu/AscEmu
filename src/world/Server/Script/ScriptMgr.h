@@ -31,6 +31,8 @@
 #define ADD_CREATURE_FACTORY_FUNCTION(cl) static CreatureAIScript* Create(Creature* c) { return new cl(c); }
 #define ADD_INSTANCE_FACTORY_FUNCTION(ClassName) static InstanceScript* Create(MapMgr* pMapMgr) { return new ClassName(pMapMgr); };
 
+//#define UseNewMapScriptsProject
+
 class Channel;
 class Guild;
 struct QuestProperties;

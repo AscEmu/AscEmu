@@ -7,10 +7,9 @@ endif()
 
 project(MapScripts CXX)
 
-# include(Example/CMakeLists.txt)
+include(Northrend/IceCrownCitadel/CMakeLists.txt)
 
 set(SRC_BASIC
-#   ${SRC_EXAMPLE_FILES}
    Setup.cpp
    Setup.h
    ../Common/Instance_Base.cpp 
@@ -25,6 +24,7 @@ set(SRC_BASIC
 
 set(sources
    ${SRC_BASIC}
+   ${SRC_NORTHREND_ICC_FILES}
 )
 
 include_directories(

@@ -21,7 +21,7 @@ extern "C" {
 
     SCRIPT_DECL void _exp_script_register(ScriptMgr* scriptMgr)
     {
-        //ExampleScripts(scriptMgr);
+        IcecrownCitadel(scriptMgr);
     }
 }
 

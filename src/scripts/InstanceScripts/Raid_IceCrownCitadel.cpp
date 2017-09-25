@@ -472,6 +472,7 @@ class BoneSpikeAI : public MoonScriptBossAI
 
 void SetupICC(ScriptMgr* mgr)
 {
+#ifndef UseNewMapScriptsProject
     //Instance
     mgr->register_instance_script(MAP_ICECROWNCITADEL, &IceCrownCitadelScript::Create);
 
@@ -499,4 +500,5 @@ void SetupICC(ScriptMgr* mgr)
 
     //Misc
     mgr->register_creature_script(CN_BONE_SPIKE, &BoneSpikeAI::Create);
+#endif
 }
