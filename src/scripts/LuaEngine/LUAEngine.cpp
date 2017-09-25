@@ -1129,7 +1129,7 @@ bool LuaHookOnCastSpell(Player* pPlayer, SpellInfo* pSpell, Spell* spell)
         LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
         LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_CAST_SPELL);
         LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
-        LuaGlobal::instance()->luaEngine()->PUSH_UINT(pSpell->Id);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(pSpell->getId());
         LuaGlobal::instance()->luaEngine()->PushSpell(spell);
         if (LuaGlobal::instance()->luaEngine()->ExecuteCall(4, 1))
         {
@@ -1537,7 +1537,7 @@ bool LuaHookOnResurrect(Player* pPlayer)
 bool LuaOnDummySpell(uint32 effectIndex, Spell* pSpell)
 {
     GET_LOCK
-    LuaGlobal::instance()->luaEngine()->BeginCall(LuaGlobal::instance()->m_luaDummySpells[pSpell->GetSpellInfo()->Id]);
+    LuaGlobal::instance()->luaEngine()->BeginCall(LuaGlobal::instance()->m_luaDummySpells[pSpell->GetSpellInfo()->getId()]);
     LuaGlobal::instance()->luaEngine()->PUSH_UINT(effectIndex);
     LuaGlobal::instance()->luaEngine()->PushSpell(pSpell);
     LuaGlobal::instance()->luaEngine()->ExecuteCall(2);

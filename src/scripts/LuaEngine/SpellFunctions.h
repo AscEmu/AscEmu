@@ -37,7 +37,7 @@ struct LuaSpellEntry
 
 LuaSpellEntry luaSpellVars[] =
 {
-    { "Id", 0, offsetof(SpellInfo, Id) },
+    //{ "Id", 0, offsetof(SpellInfo, Id) },
     { "Category", 0, offsetof(SpellInfo, Category) },
     { "DispelType", 0, offsetof(SpellInfo, DispelType) },
     { "MechanicsType", 0, offsetof(SpellInfo, MechanicsType) },
@@ -220,7 +220,7 @@ namespace LuaSpell
     int GetEntry(lua_State* L, Spell* sp)
     {
         if (!sp) return 0;
-        lua_pushinteger(L, sp->GetSpellInfo()->Id);
+        lua_pushinteger(L, sp->GetSpellInfo()->getId());
         return 1;
     }
 
