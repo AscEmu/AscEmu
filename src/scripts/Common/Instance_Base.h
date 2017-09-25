@@ -175,30 +175,6 @@ class MoonInstanceScript : public InstanceScript
         // Cells
         void SetCellForcedStates(float pMinX, float pMaxX, float pMinY, float pMaxY, bool pActivate = true);
 
-        // Player
-        virtual void OnPlayerDeath(Player* pVictim, Unit* pKiller);
-
-        // Area and AreaTrigger
-        virtual void OnPlayerEnter(Player* pPlayer);
-        virtual void OnAreaTrigger(Player* pPlayer, uint32 pAreaId);
-        virtual void OnZoneChange(Player* pPlayer, uint32 pNewZone, uint32 pOldZone);
-
-        // Data get / set - idea taken from ScriptDev2
-        virtual void SetInstanceData(uint32 pType, uint32 pIndex, uint32 pData);
-        virtual uint32 GetInstanceData(uint32 pType, uint32 pIndex);
-
-        // Creature / GameObject
-        virtual void OnCreatureDeath(Creature* pVictim, Unit* pKiller);
-        virtual void OnCreaturePushToWorld(Creature* pCreature);
-        virtual void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer);
-        virtual void OnGameObjectPushToWorld(GameObject* pGameObject);
-
-        // Reimplemented events
-        virtual GameObject* GetObjectForOpenLock(Player* pCaster, Spell* pSpell, SpellInfo* pSpellEntry);
-        virtual void SetLockOptions(uint32 pEntryId, GameObject* pGameObject);
-        virtual uint32 GetRespawnTimeForCreature(uint32 pEntryId, Creature* pCreature);
-
-        virtual void OnLoad();
         virtual void UpdateEvent();
         virtual void Destroy();
 
