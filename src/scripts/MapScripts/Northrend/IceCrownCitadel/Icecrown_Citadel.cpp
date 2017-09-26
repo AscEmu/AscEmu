@@ -12,13 +12,19 @@ public:
 
     IceCrownCitadel(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
+        generateBossDataState();
     }
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new IceCrownCitadel(pMapMgr); }
 
     void OnPlayerEnter(Player* player)
     {
-        player->BroadcastMessage("WELCOME to Icecrown Citadel.");
+        displayDataStateList(player);
+    }
+
+    void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
+    {
+        setData(pCreature->GetEntry(), Finished);
     }
 };
 
@@ -35,19 +41,19 @@ public:
         Arcemu::Gossip::Menu menu(object->GetGUID(), 15221, player->GetSession()->language);
         menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(515), 0);          // Teleport to Light's Hammer.
 
-        if (pInstance->GetInstanceData(Data_EncounterState, CN_LORD_MARROWGAR) == State_Finished)
+        if (pInstance->isDataStateFinished(CN_LORD_MARROWGAR))
             menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(516), 1);      // Teleport to Oratory of The Damned.
 
-        if (pInstance->GetInstanceData(Data_EncounterState, CN_LADY_DEATHWHISPER) == State_Finished)
+        if (pInstance->isDataStateFinished(CN_LADY_DEATHWHISPER))
             menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(517), 2);      // Teleport to Rampart of Skulls.
 
         // GunshipBattle has to be finished...
         //menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(518), 3);        // Teleport to Deathbringer's Rise.
 
-        if (pInstance->GetInstanceData(Data_EncounterState, CN_VALITHRIA_DREAMWALKER) == State_Finished)
+        if (pInstance->isDataStateFinished(CN_VALITHRIA_DREAMWALKER))
             menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(519), 4);      // Teleport to the Upper Spire.
 
-        if (pInstance->GetInstanceData(Data_EncounterState, CN_COLDFLAME) == State_Finished)
+        if (pInstance->isDataStateFinished(CN_COLDFLAME))
             menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(520), 5);      // Teleport to Sindragosa's Lair.
 
         menu.Send(player);

@@ -31,8 +31,6 @@
 #define ADD_CREATURE_FACTORY_FUNCTION(cl) static CreatureAIScript* Create(Creature* c) { return new cl(c); }
 #define ADD_INSTANCE_FACTORY_FUNCTION(ClassName) static InstanceScript* Create(MapMgr* pMapMgr) { return new ClassName(pMapMgr); };
 
-//#define UseNewMapScriptsProject
-
 class Channel;
 class Guild;
 struct QuestProperties;
@@ -481,6 +479,22 @@ class SERVER_DECL QuestScript
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Instanced class created for each instance of the map, holds all scriptable exports
 //////////////////////////////////////////////////////////////////////////////////////////
+#include "Map/WorldCreator.h"
+
+//#define UseNewMapScriptsProject
+
+enum EncounterStates
+{
+    NotStarted = 0,
+    InProgress = 1,
+    Finished = 2,
+    Performed = 3,
+    PreProgress = 4,
+    InvalidState = 0xff
+};
+
+typedef std::map<uint32_t, uint32_t> InstanceDataMap;
+
 class SERVER_DECL InstanceScript
 {
     public:
@@ -524,7 +538,30 @@ class SERVER_DECL InstanceScript
         // Something to return Instance's MapMgr
         MapMgr* GetInstance() { return mInstance; };
 
+        // MIT start
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // data
+
+        void setData(uint32_t data, uint32_t state);
+        uint32_t getData(uint32_t data);
+        bool isDataStateFinished(uint32_t data);
+
+        //used for debug
+        std::string getDataStateString(uint32_t bossEntry);
+
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // encounters
+
+        void generateBossDataState();
+
+        //used for debug
+        void displayDataStateList(Player* player);
+
     protected:
+
+        InstanceDataMap mInstanceData;
+
+        //MIT end
 
         MapMgr* mInstance;
 };

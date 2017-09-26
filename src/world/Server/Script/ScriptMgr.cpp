@@ -609,6 +609,103 @@ void InstanceScript::RemoveUpdateEvent()
     sEventMgr.RemoveEvents(mInstance, EVENT_SCRIPT_UPDATE_EVENT);
 };
 
+// MIT start
+//////////////////////////////////////////////////////////////////////////////////////////
+// data
+void InstanceScript::setData(uint32_t data, uint32_t state)
+{
+    auto Iter = mInstanceData.find(data);
+    if (Iter == mInstanceData.end())
+        return;
+
+    Iter->second = state;
+};
+
+uint32_t InstanceScript::getData(uint32_t data)
+{
+    auto Iter = mInstanceData.find(data);
+    if (Iter == mInstanceData.end())
+        return InvalidState;
+
+    return Iter->second;
+};
+
+bool InstanceScript::isDataStateFinished(uint32_t data)
+{
+    return getData(data) == Finished;
+}
+
+//used for debug
+std::string InstanceScript::getDataStateString(uint32_t bossEntry)
+{
+    uint32_t eState = NotStarted;
+
+    auto it = mInstanceData.find(bossEntry);
+    if (it != mInstanceData.end())
+        eState = it->second;
+
+    switch (eState)
+    {
+        case NotStarted:
+            return "Not started";
+        case InProgress:
+            return "In Progress";
+        case Finished:
+            return "Finished";
+        case Performed:
+            return "Performed";
+        case PreProgress:
+            return "PreProgress";
+        default:
+            return "Invalid";
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// encounters
+void InstanceScript::generateBossDataState()
+{
+    InstanceBossInfoMap* bossInfoMap = objmgr.m_InstanceBossInfoMap[mInstance->GetMapId()];
+    for (const auto& encounter : *bossInfoMap)
+    {
+        CreatureProperties const* creature = sMySQLStore.getCreatureProperties(encounter.second->creatureid);
+        if (creature == nullptr)
+            LOG_ERROR("Your instance_boss table includes invalid data for boss entry %u!", encounter.second->creatureid);
+        else
+            mInstanceData.insert(std::pair<uint32_t, EncounterStates>(encounter.second->creatureid, NotStarted));
+    }
+
+    for (const auto& killedNpc : mInstance->pInstance->m_killedNpcs)
+    {
+        InstanceBossInfoMap::const_iterator bossInfo = bossInfoMap->find((killedNpc));
+        if (bossInfo != bossInfoMap->end())
+            setData(bossInfo->first, Finished);
+    }
+}
+
+void InstanceScript::displayDataStateList(Player* player)
+{
+    player->BroadcastMessage("=== DataState for instance %s ===", mInstance->GetMapInfo()->name.c_str());
+
+    InstanceBossInfoMap* bossInfoMap = objmgr.m_InstanceBossInfoMap[mInstance->GetMapId()];
+    for (const auto& encounter : mInstanceData)
+    {
+        CreatureProperties const* creature = sMySQLStore.getCreatureProperties(encounter.first);
+        if (creature != nullptr)
+        {
+            player->BroadcastMessage("  Boss '%s' (%u) - State %s", creature->Name.c_str(), encounter.first, getDataStateString(encounter.first).c_str());
+        }
+        else
+        {
+            GameObjectProperties const* gameobject = sMySQLStore.getGameObjectProperties(encounter.first);
+            if (gameobject != nullptr)
+                player->BroadcastMessage("  Object '%s' (%u) - State %s", gameobject->name.c_str(), encounter.second, getDataStateString(encounter.second).c_str());
+        }
+    }
+}
+
+//MIT end
+
 /* Hook Stuff */
 void ScriptMgr::register_hook(ServerHookEvents event, void* function_pointer)
 {
