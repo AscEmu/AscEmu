@@ -551,14 +551,22 @@ static AuthHandler Handlers[MAX_AUTH_CMD] =
 void AuthSocket::OnRead()
 {
     if (readBuffer.GetContiguiousBytes() < 1)
+    {
+        LOG_DEBUG("readBuffer.GetContiguiousBytes() is < 1! Skipped!");
         return;
+    }
 
     uint8 Command = *(uint8*)readBuffer.GetBufferStart();
     last_recv = UNIXTIME;
     if (Command < MAX_AUTH_CMD && Handlers[Command] != NULL)
+    {
+        LOG_DEBUG("Handler %u called", Command);
         (this->*Handlers[Command])();
+    }
     else
-        LOG_DEBUG("AuthSocket", "Unknown cmd %u", Command);
+    {
+        LOG_DEBUG("Unknown handler %u called", Command);
+    }
 }
 
 void AuthSocket::HandleRealmlist()
