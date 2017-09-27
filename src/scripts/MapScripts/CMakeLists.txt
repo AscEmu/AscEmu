@@ -9,6 +9,11 @@ project(MapScripts CXX)
 
 include(Northrend/IceCrownCitadel/CMakeLists.txt)
 
+include(Outland/TempestKeep/TheArcatraz/CMakeLists.txt)
+include(Outland/TempestKeep/TheBotanica/CMakeLists.txt)
+include(Outland/TempestKeep/TheEye/CMakeLists.txt)
+include(Outland/TempestKeep/TheMechanar/CMakeLists.txt)
+
 set(SRC_BASIC
    Setup.cpp
    Setup.h
@@ -25,6 +30,10 @@ set(SRC_BASIC
 set(sources
    ${SRC_BASIC}
    ${SRC_NORTHREND_ICC_FILES}
+   ${SRC_OUTLAND_TK_THEARCATRAZ_FILES}
+   ${SRC_OUTLAND_TK_THEBOTANICA_FILES}
+   ${SRC_OUTLAND_TK_THEEYE_FILES}
+   ${SRC_OUTLAND_TK_THEMECHANAR_FILES}
 )
 
 include_directories(

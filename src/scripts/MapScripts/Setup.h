@@ -19,3 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 void IcecrownCitadel(ScriptMgr* scriptMgr);
 
+void TheArcatrazScripts(ScriptMgr* scriptMgr);
+void TheBotanicaScripts(ScriptMgr* scriptMgr);
+void TheEyeScripts(ScriptMgr* scriptMgr);
+void TheMechanarScripts(ScriptMgr* scriptMgr);

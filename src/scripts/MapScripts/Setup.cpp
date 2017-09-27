@@ -22,6 +22,11 @@ extern "C" {
     SCRIPT_DECL void _exp_script_register(ScriptMgr* scriptMgr)
     {
         IcecrownCitadel(scriptMgr);
+
+        TheArcatrazScripts(scriptMgr);
+        TheBotanicaScripts(scriptMgr);
+        TheEyeScripts(scriptMgr);
+        TheMechanarScripts(scriptMgr);
     }
 }
 
