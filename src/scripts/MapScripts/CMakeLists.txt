@@ -14,6 +14,11 @@ include(Outland/TempestKeep/TheBotanica/CMakeLists.txt)
 include(Outland/TempestKeep/TheEye/CMakeLists.txt)
 include(Outland/TempestKeep/TheMechanar/CMakeLists.txt)
 
+include(Outland/Auchindoun/AuchenaiCrypts/CMakeLists.txt)
+include(Outland/Auchindoun/ManaTombs/CMakeLists.txt)
+include(Outland/Auchindoun/SethekkHalls/CMakeLists.txt)
+include(Outland/Auchindoun/ShadowLabyrinth/CMakeLists.txt)
+
 set(SRC_BASIC
    Setup.cpp
    Setup.h
@@ -34,6 +39,11 @@ set(sources
    ${SRC_OUTLAND_TK_THEBOTANICA_FILES}
    ${SRC_OUTLAND_TK_THEEYE_FILES}
    ${SRC_OUTLAND_TK_THEMECHANAR_FILES}
+   
+   ${SRC_OUTLAND_AU_AUCHENAICRYPTS_FILES}
+   ${SRC_OUTLAND_AU_MANATOMBS_FILES}
+   ${SRC_OUTLAND_AU_SETHEKKHALLS_FILES}
+   ${SRC_OUTLAND_AU_SHADOWLABYRINTH_FILES}
 )
 
 include_directories(

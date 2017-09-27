@@ -23,3 +23,8 @@ void TheArcatrazScripts(ScriptMgr* scriptMgr);
 void TheBotanicaScripts(ScriptMgr* scriptMgr);
 void TheEyeScripts(ScriptMgr* scriptMgr);
 void TheMechanarScripts(ScriptMgr* scriptMgr);
+
+void AuchenaiCryptsScripts(ScriptMgr* scriptMgr);
+void ManaTombsScripts(ScriptMgr* scriptMgr);
+void SethekkHallsScripts(ScriptMgr* scriptMgr);
+void ShadowLabyrinthScripts(ScriptMgr* scriptMgr);

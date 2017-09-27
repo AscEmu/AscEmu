@@ -27,6 +27,11 @@ extern "C" {
         TheBotanicaScripts(scriptMgr);
         TheEyeScripts(scriptMgr);
         TheMechanarScripts(scriptMgr);
+
+        AuchenaiCryptsScripts(scriptMgr);
+        ManaTombsScripts(scriptMgr);
+        SethekkHallsScripts(scriptMgr);
+        ShadowLabyrinthScripts(scriptMgr);
     }
 }
 
