@@ -28,5 +28,3 @@ enum IceCrownCitadelCNentry
    CN_LADY_DEATHWHISPER     = 36855,
    CN_VALITHRIA_DREAMWALKER = 36789,
 };
-
-void IcecrownCitadel(ScriptMgr* scriptMgr);

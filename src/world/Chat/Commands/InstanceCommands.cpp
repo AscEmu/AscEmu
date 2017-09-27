@@ -143,6 +143,8 @@ bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m
     }
     SendMultilineMessage(m_session, ss.str().c_str());
 
+    instance->m_mapMgr->GetScript()->displayDataStateList(plr);
+
     return true;
 }
 

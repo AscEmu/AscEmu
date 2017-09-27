@@ -17,11 +17,6 @@ public:
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new IceCrownCitadel(pMapMgr); }
 
-    void OnPlayerEnter(Player* player)
-    {
-        displayDataStateList(player);
-    }
-
     void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
     {
         setData(pCreature->GetEntry(), Finished);
