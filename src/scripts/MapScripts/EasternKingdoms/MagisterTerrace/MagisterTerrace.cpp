@@ -1,0 +1,32 @@
+/*
+Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+This file is released under the MIT license. See README-MIT for more information.
+*/
+
+#include "Setup.h"
+#include "MagisterTerrace.h"
+
+
+class MagisterTerrace : public InstanceScript
+{
+public:
+
+    MagisterTerrace(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+    {
+        generateBossDataState();
+    }
+
+    static InstanceScript* Create(MapMgr* pMapMgr) { return new MagisterTerrace(pMapMgr); }
+
+    void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
+    {
+        setData(pCreature->GetEntry(), Finished);
+    }
+};
+
+
+void MagisterTerraceScripts(ScriptMgr* scriptMgr)
+{
+    scriptMgr->register_instance_script(585, &MagisterTerrace::Create);
+}
+

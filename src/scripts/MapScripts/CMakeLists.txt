@@ -7,6 +7,27 @@ endif()
 
 project(MapScripts CXX)
 
+include(EasternKingdoms/AlteracValley/CMakeLists.txt)
+include(EasternKingdoms/BlackrockMountain/BlackrockDepths/CMakeLists.txt)
+include(EasternKingdoms/BlackrockMountain/BlackrockSpire/CMakeLists.txt)
+include(EasternKingdoms/BlackrockMountain/BlackwingLair/CMakeLists.txt)
+include(EasternKingdoms/BlackrockMountain/MoltenCore/CMakeLists.txt)
+include(EasternKingdoms/Deadmines/CMakeLists.txt)
+include(EasternKingdoms/Gnomregan/CMakeLists.txt)
+include(EasternKingdoms/Karazhan/CMakeLists.txt)
+include(EasternKingdoms/MagisterTerrace/CMakeLists.txt)
+include(EasternKingdoms/ScarletEnclave/CMakeLists.txt)
+include(EasternKingdoms/ScarletMonastery/CMakeLists.txt)
+include(EasternKingdoms/Scholomance/CMakeLists.txt)
+include(EasternKingdoms/ShadowfangKeep/CMakeLists.txt)
+include(EasternKingdoms/Stratholme/CMakeLists.txt)
+include(EasternKingdoms/SunkenTemple/CMakeLists.txt)
+include(EasternKingdoms/SunwellPlateau/CMakeLists.txt)
+include(EasternKingdoms/TheStockade/CMakeLists.txt)
+include(EasternKingdoms/Uldaman/CMakeLists.txt)
+include(EasternKingdoms/ZulAman/CMakeLists.txt)
+include(EasternKingdoms/ZulGurub/CMakeLists.txt)
+
 include(Kalimdor/BlackfathomDeeps/CMakeLists.txt)
 include(Kalimdor/CavernsOfTime/BattleForMountHyjal/CMakeLists.txt)
 include(Kalimdor/CavernsOfTime/CullingOfStratholm/CMakeLists.txt)
@@ -50,6 +71,27 @@ set(SRC_BASIC
 
 set(sources
    ${SRC_BASIC}
+   
+   ${SRC_EASTERKINGDOMS_ALTERACVALLEY_FILES}
+   ${SRC_EASTERKINGDOMS_BM_BLACKROCKDEPTHS_FILES}
+   ${SRC_EASTERKINGDOMS_BM_BLACKROCKSPIRE_FILES}
+   ${SRC_EASTERKINGDOMS_BM_BLACKWINGLAIR_FILES}
+   ${SRC_EASTERKINGDOMS_BM_MOLTENCORE_FILES}
+   ${SRC_EASTERKINGDOMS_DEADMINES_FILES}
+   ${SRC_EASTERKINGDOMS_GNOMREGAN_FILES}
+   ${SRC_EASTERKINGDOMS_KARAZHAN_FILES}
+   ${SRC_EASTERKINGDOMS_MAGISTERTERRACE_FILES}
+   ${SRC_EASTERKINGDOMS_SCARLETENCLAVE_FILES}
+   ${SRC_EASTERKINGDOMS_SCARLETMONASTERY_FILES}
+   ${SRC_EASTERKINGDOMS_SCHOLOMANCE_FILES}
+   ${SRC_EASTERKINGDOMS_SHADOWFANGKEEP_FILES}
+   ${SRC_EASTERKINGDOMS_STRATHOLME_FILES}
+   ${SRC_EASTERKINGDOMS_SUNKENTEMPLE_FILES}
+   ${SRC_EASTERKINGDOMS_SUNWELLPLATEAU_FILES}
+   ${SRC_EASTERKINGDOMS_THESTOCKADE_FILES}
+   ${SRC_EASTERKINGDOMS_ULDAMAN_FILES}
+   ${SRC_EASTERKINGDOMS_ZULAMAN_FILES}
+   ${SRC_EASTERKINGDOMS_ZULGURUB_FILES}
    
    ${SRC_KALIMDOR_BLACKFATHOMDEEPS_FILES}
    ${SRC_KALIMDOR_COT_BATTLEFORMOUNTHYJAL_FILES}

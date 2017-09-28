@@ -17,6 +17,27 @@ This file is released under the MIT license. See README-MIT for more information
 #include "../Common/Base.h"
 
 
+void AlteracValleyScripts(ScriptMgr* scriptMgr);
+void BlackrockDepthsScripts(ScriptMgr* scriptMgr);
+void BlackrockSpireScripts(ScriptMgr* scriptMgr);
+void BlackwingLairScripts(ScriptMgr* scriptMgr);
+void MoltenCoreScripts(ScriptMgr* scriptMgr);
+void DeadminesScripts(ScriptMgr* scriptMgr);
+void GnomreganScripts(ScriptMgr* scriptMgr);
+void KarazhanScripts(ScriptMgr* scriptMgr);
+void MagisterTerraceScripts(ScriptMgr* scriptMgr);
+void ScarletEnclaveScripts(ScriptMgr* scriptMgr);
+void ScarletMonasteryScripts(ScriptMgr* scriptMgr);
+void ScholomanceScripts(ScriptMgr* scriptMgr);
+void ShadowfangKeepScripts(ScriptMgr* scriptMgr);
+void StratholmeScripts(ScriptMgr* scriptMgr);
+void SunkenTempleScripts(ScriptMgr* scriptMgr);
+void SunwellPlateauScripts(ScriptMgr* scriptMgr);
+void TheStockadeScripts(ScriptMgr* scriptMgr);
+void UldamanScripts(ScriptMgr* scriptMgr);
+void ZulAmanScripts(ScriptMgr* scriptMgr);
+void ZulGurubScripts(ScriptMgr* scriptMgr);
+
 void BlackfathomDeepsScripts(ScriptMgr* scriptMgr);
 void BattleForMountHyjalScripts(ScriptMgr* scriptMgr);
 void CullingOfStratholmScripts(ScriptMgr* scriptMgr);

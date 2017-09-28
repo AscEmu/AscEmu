@@ -21,6 +21,29 @@ extern "C" {
 
     SCRIPT_DECL void _exp_script_register(ScriptMgr* scriptMgr)
     {
+        //EasterKingdoms
+        AlteracValleyScripts(scriptMgr);
+        BlackrockDepthsScripts(scriptMgr);
+        BlackrockSpireScripts(scriptMgr);
+        BlackwingLairScripts(scriptMgr);
+        MoltenCoreScripts(scriptMgr);
+        DeadminesScripts(scriptMgr);
+        GnomreganScripts(scriptMgr);
+        KarazhanScripts(scriptMgr);
+        MagisterTerraceScripts(scriptMgr);
+        ScarletEnclaveScripts(scriptMgr);
+        ScarletMonasteryScripts(scriptMgr);
+        ScholomanceScripts(scriptMgr);
+        ShadowfangKeepScripts(scriptMgr);
+        StratholmeScripts(scriptMgr);
+        SunkenTempleScripts(scriptMgr);
+        SunwellPlateauScripts(scriptMgr);
+        TheStockadeScripts(scriptMgr);
+        UldamanScripts(scriptMgr);
+        ZulAmanScripts(scriptMgr);
+        ZulGurubScripts(scriptMgr);
+
+        //Kalimdor
         BlackfathomDeepsScripts(scriptMgr);
         BattleForMountHyjalScripts(scriptMgr);
         CullingOfStratholmScripts(scriptMgr);
