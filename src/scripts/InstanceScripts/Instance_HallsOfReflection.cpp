@@ -376,8 +376,9 @@ class Falric : public MoonScriptBossAI
 
 void SetupHallsOfReflection(ScriptMgr* mgr)
 {
-    //Instance
+#ifndef UseNewMapScriptsProject
     mgr->register_instance_script(MAP_HALLSOFREFLECTION, &HallsOfReflectionScript::Create);
+#endif
 
     //Bosses
     mgr->register_creature_script(CN_JAINA, &JainaAI::Create);

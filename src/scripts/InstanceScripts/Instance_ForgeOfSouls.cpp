@@ -96,5 +96,7 @@ public:
 
 void SetupForgeOfSouls(ScriptMgr* mgr)
 {
+#ifndef UseNewMapScriptsProject
     mgr->register_instance_script(MAP_FORGE_OF_SOULS, &InstanceForgeOfSoulsScript::Create);
+#endif
 }

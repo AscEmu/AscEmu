@@ -21,64 +21,6 @@
 #include "Setup.h"
 #include "Instance_DrakTharonKeep.h"
 
-//////////////////////////////////////////////////////////////////////////////////////////
-//Drak'Tharon Keep
-class InstanceDrakTharonKeepScript : public MoonInstanceScript
-{
-    public:
-
-        MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(InstanceDrakTharonKeepScript, MoonInstanceScript);
-        InstanceDrakTharonKeepScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
-        {
-            // Way to select bosses
-            BuildEncounterMap();
-            if (mEncounters.size() == 0)
-                return;
-
-            for (EncounterMap::iterator Iter = mEncounters.begin(); Iter != mEncounters.end(); ++Iter)
-            {
-                if ((*Iter).second.mState != State_Finished)
-                    continue;
-            }
-        }
-
-        void OnGameObjectPushToWorld(GameObject* pGameObject) { }
-
-        void SetInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
-        {
-            if (pType != Data_EncounterState || pIndex == 0)
-                return;
-
-            EncounterMap::iterator Iter = mEncounters.find(pIndex);
-            if (Iter == mEncounters.end())
-                return;
-
-            (*Iter).second.mState = (EncounterState)pData;
-        }
-
-        uint32 GetInstanceData(uint32 pType, uint32 pIndex)
-        {
-            if (pType != Data_EncounterState || pIndex == 0)
-                return 0;
-
-            EncounterMap::iterator Iter = mEncounters.find(pIndex);
-            if (Iter == mEncounters.end())
-                return 0;
-
-            return (*Iter).second.mState;
-        }
-
-        void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
-        {
-            EncounterMap::iterator Iter = mEncounters.find(pCreature->GetEntry());
-            if (Iter == mEncounters.end())
-                return;
-
-            (*Iter).second.mState = State_Finished;
-
-            return;
-        }
-};
 
 /*
  Trollgore - TOO EASY!!
@@ -1138,9 +1080,6 @@ class TheProphetTaronjaAI : public CreatureAIScript
 
 void SetupDrakTharonKeep(ScriptMgr* mgr)
 {
-    //Instance
-    mgr->register_instance_script(MAP_DRAK_THARON_KEEP, &InstanceDrakTharonKeepScript::Create);
-
     //Trash Mobs
 
     //Bosses

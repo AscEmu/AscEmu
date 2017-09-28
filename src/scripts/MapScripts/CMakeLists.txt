@@ -44,7 +44,30 @@ include(Kalimdor/TempleOfAhnQiraj/CMakeLists.txt)
 include(Kalimdor/WailingCaverns/CMakeLists.txt)
 include(Kalimdor/ZulFarrak/CMakeLists.txt)
 
+include(Northrend/AzjolNerub/Ahnkahet/CMakeLists.txt)
+include(Northrend/AzjolNerub/AzjolNerub/CMakeLists.txt)
+include(Northrend/ChamberOfAspects/ObsidianSanctum/CMakeLists.txt)
+include(Northrend/ChamberOfAspects/RubySanctum/CMakeLists.txt)
+include(Northrend/CrusadersColiseum/TrialOfTheChampion/CMakeLists.txt)
+include(Northrend/CrusadersColiseum/TrialOfTheCrusader/CMakeLists.txt)
+include(Northrend/DraktharonKeep/CMakeLists.txt)
+include(Northrend/FrozenHalls/ForgeOfSouls/CMakeLists.txt)
+include(Northrend/FrozenHalls/HallsOfReflection/CMakeLists.txt)
+include(Northrend/FrozenHalls/PitOfSaron/CMakeLists.txt)
+include(Northrend/Gundrak/CMakeLists.txt)
 include(Northrend/IceCrownCitadel/CMakeLists.txt)
+include(Northrend/IsleOfConquest/CMakeLists.txt)
+include(Northrend/Naxxramas/CMakeLists.txt)
+include(Northrend/Nexus/EyeOfEternity/CMakeLists.txt)
+include(Northrend/Nexus/Nexus/CMakeLists.txt)
+include(Northrend/Nexus/Oculus/CMakeLists.txt)
+include(Northrend/Ulduar/HallsOfLightning/CMakeLists.txt)
+include(Northrend/Ulduar/HallsOfStone/CMakeLists.txt)
+include(Northrend/Ulduar/Ulduar/CMakeLists.txt)
+include(Northrend/UtgardeKeep/UtgardeKeep/CMakeLists.txt)
+include(Northrend/UtgardeKeep/UtgardePinnacle/CMakeLists.txt)
+include(Northrend/VaultOfArchavon/CMakeLists.txt)
+include(Northrend/VioletHold/CMakeLists.txt)
 
 include(Outland/TempestKeep/TheArcatraz/CMakeLists.txt)
 include(Outland/TempestKeep/TheBotanica/CMakeLists.txt)
@@ -109,7 +132,30 @@ set(sources
    ${SRC_KALIMDOR_WAILINGCAVERNS_FILES}
    ${SRC_KALIMDOR_ZULFARAK_FILES}
    
+   ${SRC_NORTHREND_AN_AHNKAHET_FILES}
+   ${SRC_NORTHREND_AN_AZJOLNERUB_FILES}
+   ${SRC_NORTHREND_COA_OBSIDIANSANCTUM_FILES}
+   ${SRC_NORTHREND_COA_RUBYSANCTUM_FILES}
+   ${SRC_NORTHREND_CC_TRIALOFTHECHAMPION_FILES}
+   ${SRC_NORTHREND_CC_TRIALOFTHECRUSADER_FILES}
+   ${SRC_NORTHREND_DRAKTHARONKEEP_FILES}
+   ${SRC_NORTHREND_FH_FORGEOFSOULS_FILES}
+   ${SRC_NORTHREND_FH_HALLSOFREFLECTION_FILES}
+   ${SRC_NORTHREND_FH_PITOFSARON_FILES}
+   ${SRC_NORTHREND_GUNDRAK_FILES}
    ${SRC_NORTHREND_ICC_FILES}
+   ${SRC_NORTHREND_ISLEOFCONQUEST_FILES}
+   ${SRC_NORTHREND_NAXXRAMAS_FILES}
+   ${SRC_NORTHREND_NX_EYEOFETERNITY_FILES}
+   ${SRC_NORTHREND_NX_NEXUS_FILES}
+   ${SRC_NORTHREND_NX_OCULUS_FILES}
+   ${SRC_NORTHREND_UL_HALLSOFLIGHTNING_FILES}
+   ${SRC_NORTHREND_UL_HALLSOFSTOME_FILES}
+   ${SRC_NORTHREND_UL_ULDUAR_FILES}
+   ${SRC_NORTHREND_UK_UTGARDEKEEP_FILES}
+   ${SRC_NORTHREND_UK_UTGARDEPINNACLE_FILES}
+   ${SRC_NORTHREND_VAULTOFARCHAVON_FILES}
+   ${SRC_NORTHREND_VIOLETHOLD_FILES}
    
    ${SRC_OUTLAND_TK_THEARCATRAZ_FILES}
    ${SRC_OUTLAND_TK_THEBOTANICA_FILES}

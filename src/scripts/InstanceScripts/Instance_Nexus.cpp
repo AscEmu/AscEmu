@@ -796,5 +796,7 @@ void SetupNexus(ScriptMgr* mgr)
     // Keristrasza Encounter
     mgr->register_creature_script(CN_KERISTRASZA, &KeristraszaAI::Create);
 
+#ifndef UseNewMapScriptsProject
     mgr->register_instance_script(MAP_NEXUS, &NexusScript::Create);
+#endif
 }

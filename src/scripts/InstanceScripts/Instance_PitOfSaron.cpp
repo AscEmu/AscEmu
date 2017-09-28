@@ -736,7 +736,9 @@ public:
 
 void SetupPitOfSaron(ScriptMgr* mgr)
 {
+#ifndef UseNewMapScriptsProject
     mgr->register_instance_script(MAP_PIT_OF_SARON, &InstancePitOfSaronScript::Create);
+#endif
     mgr->register_creature_script(CN_FORGEMASTER_GARFROST, &ForgemasterGarfrostAI::Create);
     mgr->register_creature_script(CN_ICK, &IckAI::Create);
     mgr->register_creature_script(CN_KRICK, &KrickAI::Create);

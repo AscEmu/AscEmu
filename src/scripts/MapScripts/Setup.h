@@ -54,7 +54,28 @@ void TempleOfAhnQirajScripts(ScriptMgr* scriptMgr);
 void WailingCavernsScripts(ScriptMgr* scriptMgr);
 void ZulFarrakScripts(ScriptMgr* scriptMgr);
 
+void AhnkahetScripts(ScriptMgr* scriptMgr);
+void AzjolNerubScripts(ScriptMgr* scriptMgr);
+void ObsidianSanctumScripts(ScriptMgr* scriptMgr);
+void TrialOfTheChampionScripts(ScriptMgr* scriptMgr);
+void TrialOfTheCrusaderScripts(ScriptMgr* scriptMgr);
+void DraktharonKeepScripts(ScriptMgr* scriptMgr);
+void ForgeOfSoulsScripts(ScriptMgr* scriptMgr);
+void HallsOfReflectionScripts(ScriptMgr* scriptMgr);
+void PitOfSaronScripts(ScriptMgr* scriptMgr);
+void GundrakScripts(ScriptMgr* scriptMgr);
 void IcecrownCitadel(ScriptMgr* scriptMgr);
+//void IsleOfConquestScripts(ScriptMgr* scriptMgr);
+void NaxxramasScripts(ScriptMgr* scriptMgr);
+void EyeOfEternityScripts(ScriptMgr* scriptMgr);
+void NexusScripts(ScriptMgr* scriptMgr);
+void OculusScripts(ScriptMgr* scriptMgr);
+void HallsOfLightningScripts(ScriptMgr* scriptMgr);
+void HallsOfStoneScripts(ScriptMgr* scriptMgr);
+void UlduarScripts(ScriptMgr* scriptMgr);
+void UtgardeKeepScripts(ScriptMgr* scriptMgr);
+void UtgardePinnacleScripts(ScriptMgr* scriptMgr);
+void VaultOfArchavonScripts(ScriptMgr* scriptMgr);
 
 void TheArcatrazScripts(ScriptMgr* scriptMgr);
 void TheBotanicaScripts(ScriptMgr* scriptMgr);

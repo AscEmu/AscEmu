@@ -2746,7 +2746,9 @@ void PatchwerkAI::AIUpdate()
 
 void SetupNaxxramas(ScriptMgr* pScriptMgr)
 {
+#ifndef UseNewMapScriptsProject
     pScriptMgr->register_instance_script(MAP_NAXXRAMAS, &NaxxramasScript::Create);
+#endif
     /////////////////////////////////////////////////////////////////////////////////
     ////// The Arachnid Quarter
     // ---- Trash ----

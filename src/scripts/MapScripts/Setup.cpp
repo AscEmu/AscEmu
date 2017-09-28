@@ -60,7 +60,29 @@ extern "C" {
         WailingCavernsScripts(scriptMgr);
         ZulFarrakScripts(scriptMgr);
 
+        //Northrend
+        AhnkahetScripts(scriptMgr);
+        AzjolNerubScripts(scriptMgr);
+        ObsidianSanctumScripts(scriptMgr);
+        TrialOfTheChampionScripts(scriptMgr);
+        TrialOfTheCrusaderScripts(scriptMgr);
+        DraktharonKeepScripts(scriptMgr);
+        ForgeOfSoulsScripts(scriptMgr);
+        HallsOfReflectionScripts(scriptMgr);
+        PitOfSaronScripts(scriptMgr);
+        GundrakScripts(scriptMgr);
         IcecrownCitadel(scriptMgr);
+        //IsleOfConquestScripts(scriptMgr);
+        NaxxramasScripts(scriptMgr);
+        EyeOfEternityScripts(scriptMgr);
+        NexusScripts(scriptMgr);
+        OculusScripts(scriptMgr);
+        HallsOfLightningScripts(scriptMgr);
+        HallsOfStoneScripts(scriptMgr);
+        UlduarScripts(scriptMgr);
+        UtgardeKeepScripts(scriptMgr);
+        UtgardePinnacleScripts(scriptMgr);
+        VaultOfArchavonScripts(scriptMgr);
 
         TheArcatrazScripts(scriptMgr);
         TheBotanicaScripts(scriptMgr);

@@ -471,8 +471,9 @@ class GalDarahAI : public MoonScriptCreatureAI
 
 void SetupGundrak(ScriptMgr* mgr)
 {
+#ifndef UseNewMapScriptsProject
     mgr->register_instance_script(MAP_GUNDRAK, &GundrakScript::Create);
-
+#endif
     mgr->register_creature_script(CN_SLADRAN, &SladranAI::Create);
     mgr->register_creature_script(CN_GAL_DARAH, &GalDarahAI::Create);
 };

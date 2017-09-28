@@ -701,7 +701,9 @@ class LokenAI : public MoonScriptCreatureAI
 
 void SetupHallsOfLightning(ScriptMgr* mgr)
 {
+#ifndef UseNewMapScriptsProject
     mgr->register_instance_script(MAP_HALLS_OF_LIGHTNING, &HallsOfLightningScript::Create);
+#endif
     mgr->register_creature_script(CN_GENERAL_BJARNGRIM, &GeneralBjarngrimAI::Create);
 
     mgr->register_creature_script(CN_VOLKHAN, &Volkhan::Create);

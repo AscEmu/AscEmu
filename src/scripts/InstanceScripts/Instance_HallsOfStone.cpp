@@ -21,65 +21,6 @@
 #include "Instance_HallsOfStone.h"
 
 
-//////////////////////////////////////////////////////////////////////////////////////////
-//Halls of Stone
-class InstanceHallsOfStoneScript : public MoonInstanceScript
-{
-    public:
-
-        MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(InstanceHallsOfStoneScript, MoonInstanceScript);
-        InstanceHallsOfStoneScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
-        {
-            // Way to select bosses
-            BuildEncounterMap();
-            if (mEncounters.size() == 0)
-                return;
-
-            for (EncounterMap::iterator Iter = mEncounters.begin(); Iter != mEncounters.end(); ++Iter)
-            {
-                if ((*Iter).second.mState != State_Finished)
-                    continue;
-            }
-        }
-
-        void OnGameObjectPushToWorld(GameObject* pGameObject) { }
-
-        void SetInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
-        {
-            if (pType != Data_EncounterState || pIndex == 0)
-                return;
-
-            EncounterMap::iterator Iter = mEncounters.find(pIndex);
-            if (Iter == mEncounters.end())
-                return;
-
-            (*Iter).second.mState = (EncounterState)pData;
-        }
-
-        uint32 GetInstanceData(uint32 pType, uint32 pIndex)
-        {
-            if (pType != Data_EncounterState || pIndex == 0)
-                return 0;
-
-            EncounterMap::iterator Iter = mEncounters.find(pIndex);
-            if (Iter == mEncounters.end())
-                return 0;
-
-            return (*Iter).second.mState;
-        }
-
-        void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
-        {
-            EncounterMap::iterator Iter = mEncounters.find(pCreature->GetEntry());
-            if (Iter == mEncounters.end())
-                return;
-
-            (*Iter).second.mState = State_Finished;
-
-            return;
-        }
-};
-
 //Dark Rune Stormcaller
 class DarkRuneStormcallerAI : public MoonScriptCreatureAI
 {
@@ -348,9 +289,6 @@ class KrystallusAI : public MoonScriptCreatureAI
 
 void SetupHallsOfStone(ScriptMgr* mgr)
 {
-    //Instance
-    mgr->register_instance_script(MAP_HALLS_OF_STONE, &InstanceHallsOfStoneScript::Create);
-
     //Trash
     mgr->register_creature_script(CN_DR_STORMCALLER, &DarkRuneStormcallerAI::Create);
     mgr->register_creature_script(CN_GOLEM_CUSTODIAN, &IronGolemCustodianAI::Create);
