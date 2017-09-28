@@ -69,15 +69,24 @@ include(Northrend/UtgardeKeep/UtgardePinnacle/CMakeLists.txt)
 include(Northrend/VaultOfArchavon/CMakeLists.txt)
 include(Northrend/VioletHold/CMakeLists.txt)
 
-include(Outland/TempestKeep/TheArcatraz/CMakeLists.txt)
-include(Outland/TempestKeep/TheBotanica/CMakeLists.txt)
-include(Outland/TempestKeep/TheEye/CMakeLists.txt)
-include(Outland/TempestKeep/TheMechanar/CMakeLists.txt)
-
 include(Outland/Auchindoun/AuchenaiCrypts/CMakeLists.txt)
 include(Outland/Auchindoun/ManaTombs/CMakeLists.txt)
 include(Outland/Auchindoun/SethekkHalls/CMakeLists.txt)
 include(Outland/Auchindoun/ShadowLabyrinth/CMakeLists.txt)
+include(Outland/BlackTemple/CMakeLists.txt)
+include(Outland/CoilfangReservoir/SerpentShrine/CMakeLists.txt)
+include(Outland/CoilfangReservoir/SteamVault/CMakeLists.txt)
+include(Outland/CoilfangReservoir/TheSlavePens/CMakeLists.txt)
+include(Outland/CoilfangReservoir/TheUnderbog/CMakeLists.txt)
+include(Outland/GruulsLair/CMakeLists.txt)
+include(Outland/HellfireCitadel/BloodFurnace/CMakeLists.txt)
+include(Outland/HellfireCitadel/HellfireRamparts/CMakeLists.txt)
+include(Outland/HellfireCitadel/MagtheridonsLair/CMakeLists.txt)
+include(Outland/HellfireCitadel/ShatteredHalls/CMakeLists.txt)
+include(Outland/TempestKeep/TheArcatraz/CMakeLists.txt)
+include(Outland/TempestKeep/TheBotanica/CMakeLists.txt)
+include(Outland/TempestKeep/TheEye/CMakeLists.txt)
+include(Outland/TempestKeep/TheMechanar/CMakeLists.txt)
 
 set(SRC_BASIC
    Setup.cpp
@@ -157,14 +166,24 @@ set(sources
    ${SRC_NORTHREND_VAULTOFARCHAVON_FILES}
    ${SRC_NORTHREND_VIOLETHOLD_FILES}
    
-   ${SRC_OUTLAND_TK_THEARCATRAZ_FILES}
-   ${SRC_OUTLAND_TK_THEBOTANICA_FILES}
-   ${SRC_OUTLAND_TK_THEEYE_FILES}
-   ${SRC_OUTLAND_TK_THEMECHANAR_FILES}
    ${SRC_OUTLAND_AU_AUCHENAICRYPTS_FILES}
    ${SRC_OUTLAND_AU_MANATOMBS_FILES}
    ${SRC_OUTLAND_AU_SETHEKKHALLS_FILES}
    ${SRC_OUTLAND_AU_SHADOWLABYRINTH_FILES}
+   ${SRC_OUTLAND_BLACKTEMPLE_FILES}
+   ${SRC_OUTLAND_CR_SERPENTSHRINE_FILES}
+   ${SRC_OUTLAND_CR_STEAMVAULT_FILES}
+   ${SRC_OUTLAND_CR_THESLAVEPENS_FILES}
+   ${SRC_OUTLAND_CR_THEUNDERBOG_FILES}
+   ${SRC_OUTLAND_GRUULSLAIR_FILES}
+   ${SRC_OUTLAND_HC_BLOODFURNANCE_FILES}
+   ${SRC_OUTLAND_HC_HELLFIRERAMPARTS_FILES}
+   ${SRC_OUTLAND_HC_MAGTHERIDONSLAIR_FILES}
+   ${SRC_OUTLAND_HC_SHATTEREDHALLS_FILES}
+   ${SRC_OUTLAND_TK_THEARCATRAZ_FILES}
+   ${SRC_OUTLAND_TK_THEBOTANICA_FILES}
+   ${SRC_OUTLAND_TK_THEEYE_FILES}
+   ${SRC_OUTLAND_TK_THEMECHANAR_FILES}
 )
 
 include_directories(

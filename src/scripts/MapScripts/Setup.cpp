@@ -84,15 +84,26 @@ extern "C" {
         UtgardePinnacleScripts(scriptMgr);
         VaultOfArchavonScripts(scriptMgr);
 
-        TheArcatrazScripts(scriptMgr);
-        TheBotanicaScripts(scriptMgr);
-        TheEyeScripts(scriptMgr);
-        TheMechanarScripts(scriptMgr);
-
+        //Outland
         AuchenaiCryptsScripts(scriptMgr);
         ManaTombsScripts(scriptMgr);
         SethekkHallsScripts(scriptMgr);
         ShadowLabyrinthScripts(scriptMgr);
+        BlackTempleScript(scriptMgr);
+        SerpentShrineScripts(scriptMgr);
+        SteamVaultScripts(scriptMgr);
+        TheSlavePensScripts(scriptMgr);
+        TheUnderbogScripts(scriptMgr);
+        GruulsLairScripts(scriptMgr);
+        BloodFurnaceScripts(scriptMgr);
+        HellfireRampartsScripts(scriptMgr);
+        MagtheridonsLairScripts(scriptMgr);
+        ShatteredHallsScripts(scriptMgr);
+
+        TheArcatrazScripts(scriptMgr);
+        TheBotanicaScripts(scriptMgr);
+        TheEyeScripts(scriptMgr);
+        TheMechanarScripts(scriptMgr);
     }
 }
 

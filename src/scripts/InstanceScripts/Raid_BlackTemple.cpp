@@ -6822,7 +6822,9 @@ void SpellFunc_FlameOfAzzinothCharge(SpellDesc* pThis, MoonScriptCreatureAI* pCr
 
 void SetupBlackTemple(ScriptMgr* mgr)
 {
+#ifndef UseNewMapScriptsProject
     mgr->register_instance_script(MAP_BLACK_TEMPLE, &BlackTempleScript::Create);
+#endif
     //////////////////////////////////////////////////////////////////////////////////////////
     ///////// Mobs
     mgr->register_creature_script(CN_DRAGON_TURTLE, &DragonTurtleAI::Create);

@@ -3044,7 +3044,9 @@ void SetupSerpentshrineCavern(ScriptMgr* mgr)
     mgr->register_gameobject_script(185051, &TaintedCoreGO::Create);
 
     // Serpentsrine Cavern instance script
+#ifndef UseNewMapScriptsProject
     mgr->register_instance_script(MAP_CF_SERPENTSHRINE_CA, &SerpentshrineCavern::Create);
+#endif
 
     //Trash mobs
     mgr->register_creature_script(CN_COILFANG_AMBUSHER, &CoilfangAmbusherAI::Create);

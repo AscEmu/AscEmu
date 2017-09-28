@@ -77,12 +77,22 @@ void UtgardeKeepScripts(ScriptMgr* scriptMgr);
 void UtgardePinnacleScripts(ScriptMgr* scriptMgr);
 void VaultOfArchavonScripts(ScriptMgr* scriptMgr);
 
-void TheArcatrazScripts(ScriptMgr* scriptMgr);
-void TheBotanicaScripts(ScriptMgr* scriptMgr);
-void TheEyeScripts(ScriptMgr* scriptMgr);
-void TheMechanarScripts(ScriptMgr* scriptMgr);
-
 void AuchenaiCryptsScripts(ScriptMgr* scriptMgr);
 void ManaTombsScripts(ScriptMgr* scriptMgr);
 void SethekkHallsScripts(ScriptMgr* scriptMgr);
 void ShadowLabyrinthScripts(ScriptMgr* scriptMgr);
+void BlackTempleScript(ScriptMgr* scriptMgr);
+void SerpentShrineScripts(ScriptMgr* scriptMgr);
+void SteamVaultScripts(ScriptMgr* scriptMgr);
+void TheSlavePensScripts(ScriptMgr* scriptMgr);
+void TheUnderbogScripts(ScriptMgr* scriptMgr);
+void GruulsLairScripts(ScriptMgr* scriptMgr);
+void BloodFurnaceScripts(ScriptMgr* scriptMgr);
+void HellfireRampartsScripts(ScriptMgr* scriptMgr);
+void MagtheridonsLairScripts(ScriptMgr* scriptMgr);
+void ShatteredHallsScripts(ScriptMgr* scriptMgr);
+
+void TheArcatrazScripts(ScriptMgr* scriptMgr);
+void TheBotanicaScripts(ScriptMgr* scriptMgr);
+void TheEyeScripts(ScriptMgr* scriptMgr);
+void TheMechanarScripts(ScriptMgr* scriptMgr);

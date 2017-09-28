@@ -23,64 +23,6 @@
 #include "Instance_TheSlavePens.h"
 #include "Objects/Faction.h"
 
-//////////////////////////////////////////////////////////////////////////////////////////
-//Coilfang: The Slave Pens
-class InstanceTheSlavePensScript : public MoonInstanceScript
-{
-    public:
-
-        MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(InstanceTheSlavePensScript, MoonInstanceScript);
-        InstanceTheSlavePensScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
-        {
-            // Way to select bosses
-            BuildEncounterMap();
-            if (mEncounters.size() == 0)
-                return;
-
-            for (EncounterMap::iterator Iter = mEncounters.begin(); Iter != mEncounters.end(); ++Iter)
-            {
-                if ((*Iter).second.mState != State_Finished)
-                    continue;
-            }
-        }
-
-        void OnGameObjectPushToWorld(GameObject* pGameObject) { }
-
-        void SetInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
-        {
-            if (pType != Data_EncounterState || pIndex == 0)
-                return;
-
-            EncounterMap::iterator Iter = mEncounters.find(pIndex);
-            if (Iter == mEncounters.end())
-                return;
-
-            (*Iter).second.mState = (EncounterState)pData;
-        }
-
-        uint32 GetInstanceData(uint32 pType, uint32 pIndex)
-        {
-            if (pType != Data_EncounterState || pIndex == 0)
-                return 0;
-
-            EncounterMap::iterator Iter = mEncounters.find(pIndex);
-            if (Iter == mEncounters.end())
-                return 0;
-
-            return (*Iter).second.mState;
-        }
-
-        void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
-        {
-            EncounterMap::iterator Iter = mEncounters.find(pCreature->GetEntry());
-            if (Iter == mEncounters.end())
-                return;
-
-            (*Iter).second.mState = State_Finished;
-
-            return;
-        }
-};
 
 // CoilfangChampionAI
 // It should also have effect on other allies of target, but somehow it affects caster too (we can use only this: 38946 as workaround
@@ -1609,9 +1551,6 @@ class QuagmirranAI : public CreatureAIScript
 // Still many NPCs left and I don't have infos if any of those use any spell
 void SetupTheSlavePens(ScriptMgr* mgr)
 {
-    //Instance
-    mgr->register_instance_script(MAP_CF_SLAVE_PENS, &InstanceTheSlavePensScript::Create);
-
     //Creatures
     /*mgr->register_creature_script(CN_COILFANG_CHAMPION, &CoilfangChampionAI::Create);
     mgr->register_creature_script(CN_COILFANG_OBSERVER, &CoilfangObserverAI::Create);
