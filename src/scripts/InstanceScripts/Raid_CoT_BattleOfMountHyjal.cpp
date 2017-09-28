@@ -50,36 +50,36 @@ enum HyjalType
     HYJAL_TYPE_END
 };
 
-class MountHyjalScript : public MoonInstanceScript
-{
-    public:
-        MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(MountHyjalScript, MoonInstanceScript);
-        MountHyjalScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
-        {
-            InstanceData[HYJAL_TYPE_BASIC][0] = HYJAL_PHASE_NOT_STARTED;
-        }
-
-        void SetInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
-        {
-            if (pType >= HYJAL_TYPE_END || pIndex >= 10)
-                return;
-
-            InstanceData[pType][pIndex] = pData;
-        }
-
-        uint32 GetInstanceData(uint32 pType, uint32 pIndex)
-        {
-            if (pType >= HYJAL_TYPE_END || pIndex >= 10)
-                return 0;
-
-            return InstanceData[pType][pIndex];
-        }
-
-    private:
-        uint32 InstanceData[HYJAL_TYPE_END][10]; // Expand this to fit your needs.
-        // Type 0 = Basic Data;
-        //   Index 0 = Current Phase;
-};
+//class MountHyjalScript : public MoonInstanceScript
+//{
+//    public:
+//        MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(MountHyjalScript, MoonInstanceScript);
+//        MountHyjalScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
+//        {
+//            InstanceData[HYJAL_TYPE_BASIC][0] = HYJAL_PHASE_NOT_STARTED;
+//        }
+//
+//        void SetInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
+//        {
+//            if (pType >= HYJAL_TYPE_END || pIndex >= 10)
+//                return;
+//
+//            InstanceData[pType][pIndex] = pData;
+//        }
+//
+//        uint32 GetInstanceData(uint32 pType, uint32 pIndex)
+//        {
+//            if (pType >= HYJAL_TYPE_END || pIndex >= 10)
+//                return 0;
+//
+//            return InstanceData[pType][pIndex];
+//        }
+//
+//    private:
+//        uint32 InstanceData[HYJAL_TYPE_END][10]; // Expand this to fit your needs.
+//        // Type 0 = Basic Data;
+//        //   Index 0 = Current Phase;
+//};
 //Jaina Proudmoore AI & GS
 const uint32 CN_JAINA_PROUDMOORE = 17772;
 
@@ -1606,7 +1606,7 @@ class ArchimondeAI : public CreatureAIScript
 
 void SetupBattleOfMountHyjal(ScriptMgr* mgr)
 {
-    mgr->register_instance_script(MAP_HYJALPAST, &MountHyjalScript::Create);
+    /*mgr->register_instance_script(MAP_HYJALPAST, &MountHyjalScript::Create);*/
 
     mgr->register_creature_gossip(CN_JAINA_PROUDMOORE, new JainaProudmooreGS());
     mgr->register_creature_script(CN_JAINA_PROUDMOORE, &JainaProudmooreAI::Create);

@@ -21,6 +21,22 @@ extern "C" {
 
     SCRIPT_DECL void _exp_script_register(ScriptMgr* scriptMgr)
     {
+        BlackfathomDeepsScripts(scriptMgr);
+        BattleForMountHyjalScripts(scriptMgr);
+        CullingOfStratholmScripts(scriptMgr);
+        TheBlackMorassScripts(scriptMgr);
+        OldHillsbradFoothillsScripts(scriptMgr);
+        DireMaulScripts(scriptMgr);
+        MaraudonScripts(scriptMgr);
+        OnyxiasLairScripts(scriptMgr);
+        RagefireChasmScripts(scriptMgr);
+        RazorfenDownsScripts(scriptMgr);
+        RazorfenKraulScripts(scriptMgr);
+        RuinsOfAhnQirajScripts(scriptMgr);
+        TempleOfAhnQirajScripts(scriptMgr);
+        WailingCavernsScripts(scriptMgr);
+        ZulFarrakScripts(scriptMgr);
+
         IcecrownCitadel(scriptMgr);
 
         TheArcatrazScripts(scriptMgr);

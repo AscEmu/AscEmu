@@ -17,6 +17,22 @@ This file is released under the MIT license. See README-MIT for more information
 #include "../Common/Base.h"
 
 
+void BlackfathomDeepsScripts(ScriptMgr* scriptMgr);
+void BattleForMountHyjalScripts(ScriptMgr* scriptMgr);
+void CullingOfStratholmScripts(ScriptMgr* scriptMgr);
+void TheBlackMorassScripts(ScriptMgr* scriptMgr);
+void OldHillsbradFoothillsScripts(ScriptMgr* scriptMgr);
+void DireMaulScripts(ScriptMgr* scriptMgr);
+void MaraudonScripts(ScriptMgr* scriptMgr);
+void OnyxiasLairScripts(ScriptMgr* scriptMgr);
+void RagefireChasmScripts(ScriptMgr* scriptMgr);
+void RazorfenDownsScripts(ScriptMgr* scriptMgr);
+void RazorfenKraulScripts(ScriptMgr* scriptMgr);
+void RuinsOfAhnQirajScripts(ScriptMgr* scriptMgr);
+void TempleOfAhnQirajScripts(ScriptMgr* scriptMgr);
+void WailingCavernsScripts(ScriptMgr* scriptMgr);
+void ZulFarrakScripts(ScriptMgr* scriptMgr);
+
 void IcecrownCitadel(ScriptMgr* scriptMgr);
 
 void TheArcatrazScripts(ScriptMgr* scriptMgr);

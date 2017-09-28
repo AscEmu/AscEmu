@@ -7,6 +7,22 @@ endif()
 
 project(MapScripts CXX)
 
+include(Kalimdor/BlackfathomDeeps/CMakeLists.txt)
+include(Kalimdor/CavernsOfTime/BattleForMountHyjal/CMakeLists.txt)
+include(Kalimdor/CavernsOfTime/CullingOfStratholm/CMakeLists.txt)
+include(Kalimdor/CavernsOfTime/EscapeFromDurnholdeKeep/CMakeLists.txt)
+include(Kalimdor/CavernsOfTime/TheBlackMorass/CMakeLists.txt)
+include(Kalimdor/DireMaul/CMakeLists.txt)
+include(Kalimdor/Maraudon/CMakeLists.txt)
+include(Kalimdor/OnyxiasLair/CMakeLists.txt)
+include(Kalimdor/RagefireChasm/CMakeLists.txt)
+include(Kalimdor/RazorfenDowns/CMakeLists.txt)
+include(Kalimdor/RazorfenKraul/CMakeLists.txt)
+include(Kalimdor/RuinsOfAhnQiraj/CMakeLists.txt)
+include(Kalimdor/TempleOfAhnQiraj/CMakeLists.txt)
+include(Kalimdor/WailingCaverns/CMakeLists.txt)
+include(Kalimdor/ZulFarrak/CMakeLists.txt)
+
 include(Northrend/IceCrownCitadel/CMakeLists.txt)
 
 include(Outland/TempestKeep/TheArcatraz/CMakeLists.txt)
@@ -34,12 +50,29 @@ set(SRC_BASIC
 
 set(sources
    ${SRC_BASIC}
+   
+   ${SRC_KALIMDOR_BLACKFATHOMDEEPS_FILES}
+   ${SRC_KALIMDOR_COT_BATTLEFORMOUNTHYJAL_FILES}
+   ${SRC_KALIMDOR_COT_CULLINGOFSTRATHOLM_FILES}
+   ${SRC_KALIMDOR_COT_ESCAPEFROMDURNHOLDKEEP_FILES}
+   ${SRC_KALIMDOR_COT_BLACKMORASS_FILES}
+   ${SRC_KALIMDOR_DIREMAUL_FILES}
+   ${SRC_KALIMDOR_MARAUDON_FILES}
+   ${SRC_KALIMDOR_ONYXIASLIAR_FILES}
+   ${SRC_KALIMDOR_RAGEFIRECHASM_FILES}
+   ${SRC_KALIMDOR_RAZORFENDOWNS_FILES}
+   ${SRC_KALIMDOR_RAZORFENKRAUL_FILES}
+   ${SRC_KALIMDOR_RUINSOFAHNQIRAJ_FILES}
+   ${SRC_KALIMDOR_TEMPLEOFAHNQIRAJ_FILES}
+   ${SRC_KALIMDOR_WAILINGCAVERNS_FILES}
+   ${SRC_KALIMDOR_ZULFARAK_FILES}
+   
    ${SRC_NORTHREND_ICC_FILES}
+   
    ${SRC_OUTLAND_TK_THEARCATRAZ_FILES}
    ${SRC_OUTLAND_TK_THEBOTANICA_FILES}
    ${SRC_OUTLAND_TK_THEEYE_FILES}
    ${SRC_OUTLAND_TK_THEMECHANAR_FILES}
-   
    ${SRC_OUTLAND_AU_AUCHENAICRYPTS_FILES}
    ${SRC_OUTLAND_AU_MANATOMBS_FILES}
    ${SRC_OUTLAND_AU_SETHEKKHALLS_FILES}
