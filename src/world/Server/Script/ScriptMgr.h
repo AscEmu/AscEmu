@@ -553,6 +553,7 @@ class SERVER_DECL InstanceScript
         // encounters
 
         void generateBossDataState();
+        void sendUnitEncounter(uint32_t type, Unit* unit = nullptr, uint8_t value_a = 0, uint8_t value_b = 0);
 
         //used for debug
         void displayDataStateList(Player* player);

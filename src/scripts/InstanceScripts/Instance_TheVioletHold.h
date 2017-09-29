@@ -12,7 +12,7 @@ static Movement::LocationWithFlag AttackerWP[] =
     { 1836.152f, 804.7064f, 44.2534f, 0.0f, Movement::WP_MOVE_TYPE_RUN } // Run to door to attack it
 };
 
-const Movement::Location IntroPortals[] =
+const LocationVector IntroPortals[] =
 {
     { 1878.363770f, 845.572144f, 43.333664f, 4.825092f }, // Left portal
     { 1890.527832f, 758.085510f, 47.666927f, 1.714914f }, // Right portal

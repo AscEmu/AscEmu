@@ -683,6 +683,35 @@ void InstanceScript::generateBossDataState()
     }
 }
 
+void InstanceScript::sendUnitEncounter(uint32_t type, Unit* unit, uint8_t value_a, uint8_t value_b)
+{
+    WorldPacket data(SMSG_UPDATE_INSTANCE_ENCOUNTER_UNIT, 16);
+    data << uint32(type);
+
+    if (type == 0 || type == 1 || type == 2)        // engage, disengage, priority upd.
+    {
+        if (unit)
+        {
+            data << unit->GetNewGUID();
+            data << uint8(value_a);
+        }
+    }
+    else if (type == 3 || type == 4 || type == 6)   // add timer, objectives on, objectives off
+    {
+        data << uint8(value_a);
+    }
+    else if (type == 5)                             // objectives upd.
+    {
+        data << uint8(value_a);
+        data << uint8(value_b);
+    }
+
+    // 7 sort encounters
+
+    MapMgr* instance = GetInstance();
+    instance->SendPacketToAllPlayers(&data);
+}
+
 void InstanceScript::displayDataStateList(Player* player)
 {
     player->BroadcastMessage("=== DataState for instance %s ===", mInstance->GetMapInfo()->name.c_str());

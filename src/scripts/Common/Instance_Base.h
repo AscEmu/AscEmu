@@ -103,21 +103,14 @@ class MoonInstanceScript;
 typedef std::map<uint32, BossData> EncounterMap;
 typedef std::map<uint32, GameObjectState> GameObjectEntryMap;
 
-typedef std::vector<uint32> IdVector;
-typedef std::set<uint32> IdSet;
-typedef std::map<uint32, IdVector> EntryIdMap;
-
 typedef std::pair<int32, int32> TimerPair;
 typedef std::vector<TimerPair> TimerArray;
 
 typedef std::unordered_map<uint32, GameObject*> GameObjectMap;
 
-typedef std::set<Unit*> UnitSet;
 typedef std::set<Player*> PlayerSet;
 typedef std::set<Creature*> CreatureSet;
 typedef std::set<GameObject*> GameObjectSet;
-
-typedef std::map<uint32, uint32> WorldStateMap;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Class MoonInstanceScript
@@ -131,9 +124,7 @@ class MoonInstanceScript : public InstanceScript
         Creature* GetCreatureBySqlId(uint32 pSqlId);
         Creature* GetCreatureByGuid(uint32 pGuid);
         Creature* FindClosestCreatureOnMap(uint32 pEntry, float pX, float pY, float pZ);
-        Creature* SpawnCreature(uint32 pEntry, Movement::Location pLocation);
-        Creature* SpawnCreature(uint32 pEntry, float pX, float pY, float pZ, float pO);
-        Creature* SpawnCreature(uint32 pEntry, float pX, float pY, float pZ, float pO, uint32 pFactionId);
+        Creature* SpawnCreature(uint32 pEntry, float pX, float pY, float pZ, float pO, uint32 pFactionId = 0);
         Creature* PushCreature(uint32 pEntry, float pX, float pY, float pZ, float pO, uint32 pFaction = 0);
         CreatureSet FindCreaturesOnMap(uint32 pEntry);
         CreatureSet FindCreaturesOnMap(std::vector<uint32> pEntries);
@@ -145,19 +136,9 @@ class MoonInstanceScript : public InstanceScript
         GameObject* SpawnGameObject(uint32 pEntry, float pX, float pY, float pZ, float pO);
         GameObjectSet FindGameObjectsOnMap(uint32 pEntry);
         void AddGameObjectStateByEntry(uint32 pEntry, GameObjectState pState, bool pUseQuery = false);
-        void AddGameObjectStateById(uint32 pId, GameObjectState pState);
 
         // Distance calculation
-        float GetRangeToObject(Object* pObjectA, Object* pObjectB);
         float GetRangeToObject(Object* pObject, float pX, float pY, float pZ);
-        float GetRangeToObject(float pX1, float pY1, float pZ1, float pX2, float pY2, float pZ2);
-
-        // Player and instance - reimplementation for easier calling
-        bool HasPlayers();
-        size_t GetPlayerCount();
-        Player* GetPlayerByGuid(uint32 pGuid);
-        bool IsCombatInProgress();
-        PlayerTeam GetInstanceTeam() { return mInstanceTeam; }
 
         // Timers - reimplementation from MoonScriptCreatureAI
         int32 AddTimer(int32 pDurationMillisec);
@@ -167,38 +148,24 @@ class MoonInstanceScript : public InstanceScript
         bool IsTimerFinished(int32 pTimerId);
         void CancelAllTimers();
 
-        // Update Event
-        void RegisterScriptUpdateEvent();
-        void SetUpdateEventFreq(uint32 pUpdateFreq);
-        uint32 GetUpdateEventFreq();
-
         // Cells
         void SetCellForcedStates(float pMinX, float pMaxX, float pMinY, float pMaxY, bool pActivate = true);
 
         virtual void UpdateEvent();
         virtual void Destroy();
 
-        void SendUnitEncounter(uint32_t type, Unit* unit = nullptr, uint8_t value_a = 0, uint8_t value_b = 0);
-
     protected:
 
         // Encounter generators
         void BuildEncounterMap();
-        void BuildEncounterMapWithEntries(IdVector pEntries);
-        void BuildEncounterMapWithIds(IdVector pIds);
-        IdVector BuildIdVector(uint32 pCount, ...);
-        IdSet BuildIdSet(uint32 pCount, ...);
 
         EncounterMap mEncounters;
-        WorldStateMap mWorldStates;
         GameObjectEntryMap mGameObjects;
 
         uint32 mUpdateFrequency;
         TimerArray mTimers;
         int32 mTimerIdCounter;
         bool mSpawnsCreated;
-        bool mInstanceTeamSet;
-        PlayerTeam mInstanceTeam;
 };
 
 #endif      // _INSTANCE_BASE_H

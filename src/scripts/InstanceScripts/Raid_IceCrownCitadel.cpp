@@ -305,7 +305,7 @@ class LordMarrowgarAI : public MoonScriptBossAI
 
             // examplecode.... remove me as soon as possible.
             //IceCrownCitadelScript* pInstance = (IceCrownCitadelScript*)_unit->GetMapMgr()->GetScript();
-            //pInstance->SendUnitEncounter(0, _unit);
+            //pInstance->sendUnitEncounter(0, _unit);
         }
 
         void BoneSpike()

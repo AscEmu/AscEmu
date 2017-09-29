@@ -427,14 +427,6 @@ class MoonScriptCreatureAI : public CreatureAIScript
         void SetAIUpdateFreq(uint32 pUpdateFreq);
         uint32 GetAIUpdateFreq();
 
-        //Loot
-        void AddLootToTable(LootTable* pTable, uint32 pItemID, uint32 pChance, uint32 pMinCount, uint32 pMaxCount, uint32 pFFA);
-        void ClearLoot(Unit* pTarget);
-        void AddLootFromTable(Unit* pTarget, LootTable* pTable, uint32 pCount = 1);
-        void SetGoldLoot(Unit* pTarget, uint32 pMinGold, uint32 pMaxGold);
-        void AddLoot(Unit* pTarget, uint32 pItemID, uint32 pMinCount, uint32 pMaxCount, uint32 pFFA);
-        void AddRareLoot(Unit* pTarget, uint32 pItemID, float pPercentChance);
-
         //Reimplemented Events
         virtual void OnCombatStart(Unit* pTarget);
         virtual void OnCombatStop(Unit* pTarget);

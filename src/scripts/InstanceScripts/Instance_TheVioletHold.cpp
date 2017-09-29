@@ -44,7 +44,7 @@ class TheVioletHoldScript : public MoonInstanceScript
             for (uint8 i = 0; i < TVH_END; ++i)
                 m_phaseData[i] = State_NotStarted;
 
-            this->RegisterScriptUpdateEvent();
+            this->RegisterUpdateEvent(1000);
         }
 
         void UpdateEvent()
@@ -111,9 +111,9 @@ class TheVioletHoldScript : public MoonInstanceScript
             {
                 S0_SpawnIntroMobsTimer = 0; // This forces a new timer to be started below
             
-                SpawnCreature(GetRandomIntroMob(), IntroPortals[0]);
-                SpawnCreature(GetRandomIntroMob(), IntroPortals[1]);
-                SpawnCreature(GetRandomIntroMob(), IntroPortals[2]);
+                SpawnCreature(GetRandomIntroMob(), IntroPortals[0].x, IntroPortals[0].y, IntroPortals[0].z, IntroPortals[0].o);
+                SpawnCreature(GetRandomIntroMob(), IntroPortals[1].x, IntroPortals[1].y, IntroPortals[1].z, IntroPortals[1].o);
+                SpawnCreature(GetRandomIntroMob(), IntroPortals[2].x, IntroPortals[2].y, IntroPortals[2].z, IntroPortals[2].o);
             }
 
             // Start another 15s timer
@@ -781,8 +781,9 @@ class MoraggAI : public MoonScriptBossAI
 void SetupTheVioletHold(ScriptMgr* mgr)
 {
     //Instance
+#ifndef UseNewMapScriptsProject
     mgr->register_instance_script(MAP_VIOLET_HOLD, &TheVioletHoldScript::Create);
-
+#endif
     //Sinclari and Guards
     mgr->register_creature_script(CN_LIEUTNANT_SINCLARI, &SinclariAI::Create);
     mgr->register_creature_script(CN_VIOLET_HOLD_GUARD, &VHGuardsAI::Create);

@@ -75,13 +75,6 @@ class InstancePitOfSaronScript : public MoonInstanceScript
 
         void OnPlayerEnter(Player* player)
         {
-            // Set Instance Team
-            if (!mInstanceTeamSet)
-            {
-                mInstanceTeam = player->GetTeamReal();
-                mInstanceTeamSet = true;
-            }
-
             if (!mSpawnsCreated)
             {
                 if (player->GetTeam() == TEAM_ALLIANCE)
@@ -570,6 +563,10 @@ class KrickAI : MoonScriptBossAI
 
     void Outro()
     {
+        Player* pTarget = GetNearestPlayer();
+        if (pTarget == nullptr)
+            return;
+
         if (IsTimerFinished(mOutroTimer))
             ++sequence;
 
@@ -587,8 +584,8 @@ class KrickAI : MoonScriptBossAI
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             _unit->GetAIInterface()->WipeTargetList();
             _unit->GetAIInterface()->WipeHateList();
-            
-            if (mInstance->GetInstanceTeam() == TEAM_HORDE)
+
+            if (pTarget->IsTeamHorde())
                 JainaOrSylvanas = SpawnCreature(CN_SYLVANAS_WINDRUNNER, 816.58f, 111.53f, 510.0f, 0.3825f, false);
             else
                 JainaOrSylvanas = SpawnCreature(CN_JAINA_PROUDMOORE, 816.58f, 111.53f, 510.0f, 0.3825f, false);
@@ -608,7 +605,7 @@ class KrickAI : MoonScriptBossAI
                 case 2:
                     if (JainaOrSylvanas)
                     {
-                        if (mInstance->GetInstanceTeam() == TEAM_ALLIANCE)
+                        if (pTarget->IsTeamAlliance())
                             JainaOrSylvanas->Emote(8776); // SAY_JAYNA_OUTRO_2
                         else
                             JainaOrSylvanas->Emote(8777); // SAY_SYLVANAS_OUTRO_2
@@ -622,7 +619,7 @@ class KrickAI : MoonScriptBossAI
                 case 4:
                     if (JainaOrSylvanas)
                     {
-                        if (mInstance->GetInstanceTeam() == TEAM_ALLIANCE)
+                        if (pTarget->IsTeamAlliance())
                             JainaOrSylvanas->Emote(8779); // SAY_JAYNA_OUTRO_4
                         else
                             JainaOrSylvanas->Emote(8780); // SAY_SYLVANAS_OUTRO_4
@@ -656,7 +653,7 @@ class KrickAI : MoonScriptBossAI
                 case 10:
                     if (JainaOrSylvanas)
                     {
-                        if (mInstance->GetInstanceTeam() == TEAM_ALLIANCE && JainaOrSylvanas)
+                        if (pTarget->IsTeamAlliance() && JainaOrSylvanas)
                             JainaOrSylvanas->Emote(8785); // SAY_JAYNA_OUTRO_10
                         else
                             JainaOrSylvanas->Emote(8786); // SAY_SYLVANAS_OUTRO_10
