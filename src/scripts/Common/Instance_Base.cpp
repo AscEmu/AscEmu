@@ -43,9 +43,21 @@ Creature* MoonInstanceScript::GetCreatureByGuid(uint32 pGuid)
 
 Creature* MoonInstanceScript::SpawnCreature(uint32 pEntry, float pX, float pY, float pZ, float pO, uint32 pFactionId)
 {
+    CreatureProperties const* cp = sMySQLStore.getCreatureProperties(pEntry);
+    if (cp == nullptr)
+    {
+        LOG_ERROR("tried to create a invalid creature with entry %u!", pEntry);
+        return nullptr;
+    }
+
     Creature* NewCreature = mInstance->GetInterface()->SpawnCreature(pEntry, pX, pY, pZ, pO, true, true, 0, 0);
-    if (NewCreature != nullptr)
+    if (NewCreature == nullptr)
+        return nullptr;
+
+    if (pFactionId != 0)
         NewCreature->SetFaction(pFactionId);
+    else
+        NewCreature->SetFaction(cp->Faction);
 
     return NewCreature;
 };
