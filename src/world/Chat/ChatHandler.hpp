@@ -303,6 +303,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
 
         // Instance
         bool HandleCreateInstanceCommand(const char* args, WorldSession* m_session);
+        bool HandleCountCreaturesCommand(const char* args, WorldSession* m_session);
         bool HandleExitInstanceCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleResetAllInstancesCommand(const char* args, WorldSession* m_session);
         bool HandleResetInstanceCommand(const char* args, WorldSession* m_session);

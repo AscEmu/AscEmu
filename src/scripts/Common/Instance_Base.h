@@ -109,7 +109,7 @@ typedef std::vector<TimerPair> TimerArray;
 typedef std::unordered_map<uint32, GameObject*> GameObjectMap;
 
 typedef std::set<Player*> PlayerSet;
-typedef std::set<Creature*> CreatureSet;
+//typedef std::set<Creature*> CreatureSet;
 typedef std::set<GameObject*> GameObjectSet;
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -121,16 +121,11 @@ class MoonInstanceScript : public InstanceScript
         virtual ~MoonInstanceScript();
 
         // Creature
-        Creature* GetCreatureBySqlId(uint32 pSqlId);
         Creature* GetCreatureByGuid(uint32 pGuid);
-        Creature* FindClosestCreatureOnMap(uint32 pEntry, float pX, float pY, float pZ);
         Creature* SpawnCreature(uint32 pEntry, float pX, float pY, float pZ, float pO, uint32 pFactionId = 0);
         Creature* PushCreature(uint32 pEntry, float pX, float pY, float pZ, float pO, uint32 pFaction = 0);
-        CreatureSet FindCreaturesOnMap(uint32 pEntry);
-        CreatureSet FindCreaturesOnMap(std::vector<uint32> pEntries);
 
         // GameObject
-        GameObject* GetGameObjectBySqlId(uint32 pSqlId);
         GameObject* GetGameObjectByGuid(uint32 pGuid);
         GameObject* FindClosestGameObjectOnMap(uint32 pEntry, float pX, float pY, float pZ);
         GameObject* SpawnGameObject(uint32 pEntry, float pX, float pY, float pZ, float pO);

@@ -733,6 +733,60 @@ void InstanceScript::displayDataStateList(Player* player)
     }
 }
 
+Creature* InstanceScript::getCreatureBySpawnId(uint32_t entry)
+{
+    return mInstance->GetSqlIdCreature(entry);
+};
+
+CreatureSet InstanceScript::getCreatureSetForEntry(uint32_t entry, bool debug /*= false*/, Player* player /*= nullptr*/)
+{
+    CreatureSet creatureSet;
+    uint32_t countCreatures = 0;
+    for (auto creature : mInstance->CreatureStorage)
+    {
+        if (creature != nullptr)
+        {
+
+            if (creature->GetEntry() == entry)
+            {
+                creatureSet.insert(creature);
+                ++countCreatures;
+            }
+        }
+    }
+
+    if (debug == true)
+    {
+        if (player != nullptr)
+            player->BroadcastMessage("%u Creatures with entry %u found.", countCreatures, entry);
+    }
+
+    return creatureSet;
+}
+
+CreatureSet InstanceScript::getCreatureSetForEntries(std::vector<uint32_t> entryVector)
+{
+    CreatureSet creatureSet;
+    for (auto creature : mInstance->CreatureStorage)
+    {
+        if (creature != nullptr)
+        {
+            for (auto entry : entryVector)
+            {
+                if (creature->GetEntry() == entry)
+                    creatureSet.insert(creature);
+            }
+        }
+    }
+
+    return creatureSet;
+}
+
+GameObject* InstanceScript::getGameObjectBySpawnId(uint32_t entry)
+{
+    return mInstance->GetSqlIdGameObject(entry);
+};
+
 //MIT end
 
 /* Hook Stuff */

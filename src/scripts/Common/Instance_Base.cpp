@@ -32,13 +32,6 @@ MoonInstanceScript::~MoonInstanceScript()
 {
 };
 
-Creature* MoonInstanceScript::GetCreatureBySqlId(uint32 pSqlId)
-{
-    if (pSqlId == 0)
-        return NULL;
-
-    return mInstance->GetSqlIdCreature(pSqlId);
-};
 
 Creature* MoonInstanceScript::GetCreatureByGuid(uint32 pGuid)
 {
@@ -46,30 +39,6 @@ Creature* MoonInstanceScript::GetCreatureByGuid(uint32 pGuid)
         return NULL;
 
     return mInstance->GetCreature(pGuid);
-};
-
-Creature* MoonInstanceScript::FindClosestCreatureOnMap(uint32 pEntry, float pX, float pY, float pZ)
-{
-    CreatureSet Creatures = FindCreaturesOnMap(pEntry);
-
-    if (Creatures.size() == 0)
-        return NULL;
-    if (Creatures.size() == 1)
-        return *(Creatures.begin());
-
-    Creature* NearestCreature = NULL;
-    float Distance, NearestDistance = 99999;
-    for (CreatureSet::iterator Iter = Creatures.begin(); Iter != Creatures.end(); ++Iter)
-    {
-        Distance = GetRangeToObject(*Iter, pX, pY, pZ);
-        if (Distance < NearestDistance)
-        {
-            NearestDistance = Distance;
-            NearestCreature = (*Iter);
-        };
-    };
-
-    return NearestCreature;
 };
 
 Creature* MoonInstanceScript::SpawnCreature(uint32 pEntry, float pX, float pY, float pZ, float pO, uint32 pFactionId)
@@ -103,30 +72,7 @@ Creature* MoonInstanceScript::PushCreature(uint32 pEntry, float pX, float pY, fl
     return c;
 }
 
-CreatureSet MoonInstanceScript::FindCreaturesOnMap(std::vector<uint32> pEntries)
-{
-    Creature* CurrentCreature = NULL;
-    CreatureSet ReturnSet;
-    for (std::vector< Creature* >::iterator CreatureIter = mInstance->CreatureStorage.begin(); CreatureIter != mInstance->CreatureStorage.end(); ++CreatureIter)
-    {
-        CurrentCreature = (*CreatureIter);
-        if (CurrentCreature != NULL)
-        {
-            for (auto entry : pEntries)
-            {
-                if (CurrentCreature->GetEntry() == entry)
-                    ReturnSet.insert(CurrentCreature);
-            }
-        }
-    }
 
-    return ReturnSet;
-}
-
-CreatureSet MoonInstanceScript::FindCreaturesOnMap(uint32 pEntry)
-{
-    return MoonInstanceScript::FindCreaturesOnMap(std::vector<uint32> { pEntry });
-}
 
 GameObject* MoonInstanceScript::FindClosestGameObjectOnMap(uint32 pEntry, float pX, float pY, float pZ)
 {
@@ -175,14 +121,6 @@ GameObjectSet MoonInstanceScript::FindGameObjectsOnMap(uint32 pEntry)
     return ReturnSet;
 };
 
-GameObject* MoonInstanceScript::GetGameObjectBySqlId(uint32 pSqlId)
-{
-    if (pSqlId == 0)
-        return NULL;
-
-    return mInstance->GetSqlIdGameObject(pSqlId);
-};
-
 GameObject* MoonInstanceScript::GetGameObjectByGuid(uint32 pGuid)
 {
     if (pGuid == 0)
@@ -222,7 +160,7 @@ void MoonInstanceScript::AddGameObjectStateByEntry(uint32 pEntry, GameObjectStat
         {
             do
             {
-                CurrentObject = GetGameObjectBySqlId(Result->Fetch()[0].GetUInt32());
+                CurrentObject = getGameObjectBySpawnId(Result->Fetch()[0].GetUInt32());
                 if (CurrentObject != NULL)
                     CurrentObject->SetState(pState);
             }
@@ -232,39 +170,6 @@ void MoonInstanceScript::AddGameObjectStateByEntry(uint32 pEntry, GameObjectStat
         };
     };
 };
-
-//void MoonInstanceScript::AddGameObjectStateById(uint32 pId, GameObjectState pState)
-//{
-//    if (pId == 0)
-//        return;
-//
-//    GameObject* StateObject = GetGameObjectBySqlId(pId);
-//    GameObjectEntryMap::iterator Iter;
-//    if (StateObject != NULL)
-//    {
-//        StateObject->SetState(pState);
-//        Iter = mGameObjects.find(StateObject->GetEntry());
-//        if (Iter != mGameObjects.end())
-//            (*Iter).second = pState;
-//        else
-//            mGameObjects.insert(GameObjectEntryMap::value_type(StateObject->GetEntry(), pState));
-//    }
-//    else
-//    {
-//        QueryResult* Result = WorldDatabase.Query("SELECT entry FROM gameobject_spawns WHERE id = %u", pId);
-//        if (Result != NULL)
-//        {
-//            uint32 Entry = Result->Fetch()[0].GetUInt32();
-//            Iter = mGameObjects.find(Entry);
-//            if (Iter != mGameObjects.end())
-//                (*Iter).second = pState;
-//            else
-//                mGameObjects.insert(GameObjectEntryMap::value_type(Entry, pState));
-//
-//            delete Result;
-//        };
-//    };
-//};
 
 float MoonInstanceScript::GetRangeToObject(Object* pObject, float pX, float pY, float pZ)
 {

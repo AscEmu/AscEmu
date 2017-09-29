@@ -495,6 +495,8 @@ enum EncounterStates
 
 typedef std::map<uint32_t, uint32_t> InstanceDataMap;
 
+typedef std::set<Creature*> CreatureSet;
+
 class SERVER_DECL InstanceScript
 {
     public:
@@ -557,6 +559,15 @@ class SERVER_DECL InstanceScript
 
         //used for debug
         void displayDataStateList(Player* player);
+
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // misc
+
+        Creature* getCreatureBySpawnId(uint32_t entry);
+        CreatureSet getCreatureSetForEntry(uint32_t entry, bool debug = false, Player* player = nullptr);
+        CreatureSet getCreatureSetForEntries(std::vector<uint32_t> entryVector);
+
+        GameObject* getGameObjectBySpawnId(uint32_t entry);
 
     protected:
 

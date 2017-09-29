@@ -55,6 +55,26 @@ bool ChatHandler::HandleCreateInstanceCommand(const char* args, WorldSession* m_
     return true;
 }
 
+//.instance countcreature
+bool ChatHandler::HandleCountCreaturesCommand(const char* args, WorldSession* m_session)
+{
+    Player* plr = m_session->GetPlayer();
+    if (plr == nullptr)
+        return true;
+
+    uint32 entry;
+    if (sscanf(args, "%u", (unsigned int*)&entry) != 1)
+        return false;
+
+    Instance* instance = sInstanceMgr.GetInstanceByIds(NUM_MAPS, plr->GetInstanceID());
+    if (instance == nullptr)
+        return true;
+
+    instance->m_mapMgr->GetScript()->getCreatureSetForEntry(entry, true, plr);
+
+    return true;
+}
+
 //.instance exit
 bool ChatHandler::HandleExitInstanceCommand(const char* /*args*/, WorldSession* m_session)
 {

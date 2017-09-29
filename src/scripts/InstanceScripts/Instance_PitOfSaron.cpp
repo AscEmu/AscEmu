@@ -301,10 +301,7 @@ class IckAI : MoonScriptBossAI
 
         // Emotes
         // Krick
-        mKrickAI = dynamic_cast<MoonScriptCreatureAI*>(mInstance->GetCreatureBySqlId(CN_KRICK));
-
-        if (!mKrickAI)
-            mKrickAI = SpawnCreature(CN_KRICK, false);
+        mKrickAI = SpawnCreature(CN_KRICK, false);
 
         mKrickAI->AddEmote(Event_OnCombatStart, 8767);
         mKrickAI->AddEmote(Event_OnTargetDied, 8768);

@@ -80,7 +80,7 @@ class TheVioletHoldScript : public MoonInstanceScript
 
         void S0_ReviveGuards()
         {
-            auto guards = this->FindCreaturesOnMap(CN_VIOLET_HOLD_GUARD);
+            auto guards = this->getCreatureSetForEntry(CN_VIOLET_HOLD_GUARD);
             for (auto guard : guards)
             {
                 if (guard == nullptr || guard->isAlive())
@@ -94,7 +94,7 @@ class TheVioletHoldScript : public MoonInstanceScript
 
         void S0_RemoveDeadIntroMobs()
         {
-            auto introMobs = this->FindCreaturesOnMap(std::vector<uint32> { CN_INTRO_AZURE_BINDER_ARCANE, CN_INTRO_AZURE_INVADER_ARMS, CN_INTRO_AZURE_MAGE_SLAYER_MELEE, CN_INTRO_AZURE_SPELLBREAKER_ARCANE });
+            auto introMobs = this->getCreatureSetForEntries(std::vector<uint32> { CN_INTRO_AZURE_BINDER_ARCANE, CN_INTRO_AZURE_INVADER_ARMS, CN_INTRO_AZURE_MAGE_SLAYER_MELEE, CN_INTRO_AZURE_SPELLBREAKER_ARCANE });
             for (auto mob : introMobs)
             {
                 if (mob == nullptr || mob->isAlive())
@@ -138,7 +138,7 @@ class TheVioletHoldScript : public MoonInstanceScript
                 return; // Wait for timer to finish
             }
 
-            auto npcs = this->FindCreaturesOnMap(CN_VIOLET_HOLD_GUARD);
+            auto npcs = this->getCreatureSetForEntry(CN_VIOLET_HOLD_GUARD);
             for (auto guard : npcs)
             {
                 if (!guard->IsInWorld())
@@ -187,7 +187,7 @@ class TheVioletHoldScript : public MoonInstanceScript
 
         void DespawnIntroPortals()
         {
-            auto portals = this->FindCreaturesOnMap(CN_PORTAL_INTRO);
+            auto portals = this->getCreatureSetForEntry(CN_PORTAL_INTRO);
             for (auto portal : portals)
             {
                 portal->Despawn(VH_TIMER_INTRO_PORTAL_DESPAWN_TIME, 0);

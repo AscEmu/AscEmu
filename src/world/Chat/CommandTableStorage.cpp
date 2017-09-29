@@ -825,6 +825,7 @@ void CommandTableStorage::Init()
     static ChatCommand instanceCommandTable[] =
     {
         { "create",         'z', &ChatHandler::HandleCreateInstanceCommand,     "Creates instance by mapid x y z",                                  nullptr, 0, 0, 0 },
+        { "countcreature",  'z', &ChatHandler::HandleCountCreaturesCommand,     "Returns number of creatures with entry x",                         nullptr, 0, 0, 0 },
         { "exit",           'm', &ChatHandler::HandleExitInstanceCommand,       "Exits current instance, return to entry point.",                   nullptr, 0, 0, 0 },
         { "info",           'm', &ChatHandler::HandleGetInstanceInfoCommand,    "Gets info about instance with ID x (default current instance).",   nullptr, 0, 0, 0 },
         { "reset",          'z', &ChatHandler::HandleResetInstanceCommand,      "Removes instance ID x from target player.",                        nullptr, 0, 0, 0 },
