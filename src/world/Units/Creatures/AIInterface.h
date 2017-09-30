@@ -229,6 +229,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         void setupAndMoveToNextWaypoint();
         void generateWaypointScriptCircle();
         void generateWaypointScriptRandom();
+        void generateWaypointScriptForwad();
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // AI Script functions
