@@ -214,12 +214,19 @@ class SERVER_DECL AIInterface : public IUpdatable
     private:
 
         Movement::WaypointMovementScript mWaypointScriptType;
+        bool mUseNewWaypointGenerator;
+        int32_t mNextPoint;
+        bool mWaitTimerSetOnWP;
 
     public:
 
         void setWaypointScriptType(Movement::WaypointMovementScript wp_script) { mWaypointScriptType = wp_script; }
         Movement::WaypointMovementScript getWaypointScriptType() { return mWaypointScriptType; }
         bool isWaypointScriptType(Movement::WaypointMovementScript wp_script) { return wp_script == mWaypointScriptType; }
+
+        void setUseNewWaypointGenerator(bool set) { mUseNewWaypointGenerator = set; }
+
+        void generateWaypointScriptCircle();
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // AI Script functions

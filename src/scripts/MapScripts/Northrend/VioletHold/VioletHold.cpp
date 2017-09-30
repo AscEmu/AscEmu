@@ -41,6 +41,8 @@ public:
     SinclariAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+        //_unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_CIRCLEWP);
+        //_unit->GetAIInterface()->setUseNewWaypointGenerator(true);
     }
 
     static CreatureAIScript* Create(Creature* creature) { return new SinclariAI(creature); }
@@ -66,6 +68,13 @@ public:
                 if (pVioletHoldDoor != nullptr)
                     pVioletHoldDoor->SetState(GO_STATE_CLOSED);
             } break;
+
+            default:
+            {
+                std::stringstream text;
+                text << "Reached wp " << iWaypointId << ".";
+                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, text.str().c_str());
+            }
         }
     }
 
