@@ -76,6 +76,7 @@ void UlduarScripts(ScriptMgr* scriptMgr);
 void UtgardeKeepScripts(ScriptMgr* scriptMgr);
 void UtgardePinnacleScripts(ScriptMgr* scriptMgr);
 void VaultOfArchavonScripts(ScriptMgr* scriptMgr);
+void VioletHoldScripts(ScriptMgr* scriptMgr);
 
 void AuchenaiCryptsScripts(ScriptMgr* scriptMgr);
 void ManaTombsScripts(ScriptMgr* scriptMgr);

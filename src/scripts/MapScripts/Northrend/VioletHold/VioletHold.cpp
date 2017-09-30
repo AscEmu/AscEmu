@@ -13,6 +13,7 @@ public:
     VioletHold(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
         generateBossDataState();
+        addData(608, NotStarted);
     }
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new VioletHold(pMapMgr); }
@@ -21,6 +22,137 @@ public:
     {
         setData(pCreature->GetEntry(), Finished);
     }
+
+    void OnPlayerEnter(Player* player)
+    {
+        player->BroadcastMessage("Welcome to %s", mInstance->GetMapInfo()->name.c_str());
+
+        setData(608, PreProgress);
+    }
+};
+
+#define SINCLARI_SAY_1 "Prison guards, we are leaving! These adventurers are taking over! Go go go!"
+#define SINCLARY_SAY_2 "I'm locking the door. Good luck, and thank you for doing this."
+
+class SinclariAI : public CreatureAIScript
+{
+public:
+
+    SinclariAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+    }
+
+    static CreatureAIScript* Create(Creature* creature) { return new SinclariAI(creature); }
+
+    void OnReachWP(uint32 iWaypointId, bool bForwards)
+    {
+        switch (iWaypointId)
+        {
+            case 2:
+            {
+                OnRescuePrisonGuards();
+            } break;
+            case 4:
+            {
+                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARY_SAY_2);
+                _unit->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+            } break;
+            case 5:
+            {
+                VioletHold* pInstance = (VioletHold*)_unit->GetMapMgr()->GetScript();
+                pInstance->setData(608, InProgress);
+                GameObject* pVioletHoldDoor = pInstance->getClosestGameObjectForPosition(191723, 1822.59f, 803.93f, 44.36f);
+                if (pVioletHoldDoor != nullptr)
+                    pVioletHoldDoor->SetState(GO_STATE_CLOSED);
+            } break;
+        }
+    }
+
+    void OnRescuePrisonGuards()
+    {
+        _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARI_SAY_1);
+        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
+    }
+};
+
+class SinclariGossip : public Arcemu::Gossip::Script
+{
+public:
+
+    void OnHello(Object* pObject, Player* pPlayer)
+    {
+        VioletHold* pInstance = (VioletHold*)pPlayer->GetMapMgr()->GetScript();
+        if (!pInstance)
+            return;
+
+        //Page 1: Textid and first menu item
+        if (pInstance->getData(608) == PreProgress)
+        {
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 13853, 0);
+            menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(600), 1);
+            menu.Send(pPlayer);
+        }
+
+        //If VioletHold is started, Sinclari has this item for people who aould join.
+        if (pInstance->getData(608) == InProgress)
+        {
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 13853, 0);
+            menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(602), 3);
+            menu.Send(pPlayer);
+        }
+    }
+
+    void OnSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* Code, uint32 gossipId)
+    {
+        VioletHold* pInstance = (VioletHold*)pPlayer->GetMapMgr()->GetScript();
+        if (!pInstance)
+            return;
+
+        if (!pObject->IsCreature())
+            return;
+
+        Creature* pCreature = static_cast<Creature*>(pObject);
+
+        switch (Id)
+        {
+            case 1:
+            {
+                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 13854, 0);
+                menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(601), 2);
+                menu.Send(pPlayer);
+            } break;
+            case 2:
+            {
+                static_cast<Creature*>(pObject)->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+                pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+                pCreature->GetAIInterface()->StopMovement(10);
+
+                // New Encounter State included
+                pInstance->SetInstanceData(Data_EncounterState, 608, State_PreProgress);
+            } break;
+            case 3:
+            {
+                Arcemu::Gossip::Menu::Complete(pPlayer);
+                pPlayer->SafeTeleport(pPlayer->GetInstanceID(), 608, 1830.531006f, 803.939758f, 44.340508f, 6.281611f);
+            } break;
+        }
+    }
+};
+
+class VHGuardsAI : public CreatureAIScript
+{
+public:
+
+    VHGuardsAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+    }
+
+    static CreatureAIScript* Create(Creature* creature) { return new VHGuardsAI(creature); }
+
+    //WPs inserted in db.
+
 };
 
 
@@ -28,5 +160,12 @@ void VioletHoldScripts(ScriptMgr* scriptMgr)
 {
 #ifdef UseNewMapScriptsProject
     scriptMgr->register_instance_script(608, &VioletHold::Create);
+
+    scriptMgr->register_creature_script(30659, &VHGuardsAI::Create);
+
+    scriptMgr->register_creature_script(30658, &SinclariAI::Create);
+
+    Arcemu::Gossip::Script* GSinclari = new SinclariGossip();
+    scriptMgr->register_creature_gossip(30658, GSinclari);
 #endif
 }

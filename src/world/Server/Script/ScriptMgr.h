@@ -481,7 +481,7 @@ class SERVER_DECL QuestScript
 //////////////////////////////////////////////////////////////////////////////////////////
 #include "Map/WorldCreator.h"
 
-//#define UseNewMapScriptsProject
+#define UseNewMapScriptsProject
 
 enum EncounterStates
 {
@@ -496,6 +496,7 @@ enum EncounterStates
 typedef std::map<uint32_t, uint32_t> InstanceDataMap;
 
 typedef std::set<Creature*> CreatureSet;
+typedef std::set<GameObject*> GameObjectSet;
 
 class SERVER_DECL InstanceScript
 {
@@ -544,6 +545,7 @@ class SERVER_DECL InstanceScript
         //////////////////////////////////////////////////////////////////////////////////////////
         // data
 
+        void addData(uint32_t data, uint32_t state = NotStarted);
         void setData(uint32_t data, uint32_t state);
         uint32_t getData(uint32_t data);
         bool isDataStateFinished(uint32_t data);
@@ -563,11 +565,16 @@ class SERVER_DECL InstanceScript
         //////////////////////////////////////////////////////////////////////////////////////////
         // misc
 
+        Creature* spawnCreature(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId = 0);
         Creature* getCreatureBySpawnId(uint32_t entry);
         CreatureSet getCreatureSetForEntry(uint32_t entry, bool debug = false, Player* player = nullptr);
         CreatureSet getCreatureSetForEntries(std::vector<uint32_t> entryVector);
 
         GameObject* getGameObjectBySpawnId(uint32_t entry);
+        GameObject* getClosestGameObjectForPosition(uint32 entry, float posX, float posY, float posZ);
+        GameObjectSet getGameObjectsSetForEntry(uint32_t entry);
+
+        float getRangeToObjectForPosition(Object* object, float posX, float posY, float posZ);
 
     protected:
 

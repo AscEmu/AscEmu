@@ -612,22 +612,28 @@ void InstanceScript::RemoveUpdateEvent()
 // MIT start
 //////////////////////////////////////////////////////////////////////////////////////////
 // data
-void InstanceScript::setData(uint32_t data, uint32_t state)
+
+void InstanceScript::addData(uint32_t data, uint32_t state /*= NotStarted*/)
 {
     auto Iter = mInstanceData.find(data);
     if (Iter == mInstanceData.end())
-        return;
+        mInstanceData.insert(std::pair<uint32_t, uint32_t>(data, state));
+};
 
-    Iter->second = state;
+void InstanceScript::setData(uint32_t data, uint32_t state)
+{
+    auto Iter = mInstanceData.find(data);
+    if (Iter != mInstanceData.end())
+        Iter->second = state;
 };
 
 uint32_t InstanceScript::getData(uint32_t data)
 {
     auto Iter = mInstanceData.find(data);
-    if (Iter == mInstanceData.end())
-        return InvalidState;
+    if (Iter != mInstanceData.end())
+        return Iter->second;
 
-    return Iter->second;
+    return InvalidState;
 };
 
 bool InstanceScript::isDataStateFinished(uint32_t data)
@@ -672,7 +678,7 @@ void InstanceScript::generateBossDataState()
         if (creature == nullptr)
             LOG_ERROR("Your instance_boss table includes invalid data for boss entry %u!", encounter.second->creatureid);
         else
-            mInstanceData.insert(std::pair<uint32_t, EncounterStates>(encounter.second->creatureid, NotStarted));
+            mInstanceData.insert(std::pair<uint32_t, uint32_t>(encounter.second->creatureid, NotStarted));
     }
 
     for (const auto& killedNpc : mInstance->pInstance->m_killedNpcs)
@@ -716,21 +722,43 @@ void InstanceScript::displayDataStateList(Player* player)
 {
     player->BroadcastMessage("=== DataState for instance %s ===", mInstance->GetMapInfo()->name.c_str());
 
-    InstanceBossInfoMap* bossInfoMap = objmgr.m_InstanceBossInfoMap[mInstance->GetMapId()];
     for (const auto& encounter : mInstanceData)
     {
         CreatureProperties const* creature = sMySQLStore.getCreatureProperties(encounter.first);
         if (creature != nullptr)
         {
-            player->BroadcastMessage("  Boss '%s' (%u) - State %s", creature->Name.c_str(), encounter.first, getDataStateString(encounter.first).c_str());
+            player->BroadcastMessage("  Boss '%s' (%u) - %s", creature->Name.c_str(), encounter.first, getDataStateString(encounter.first).c_str());
         }
         else
         {
             GameObjectProperties const* gameobject = sMySQLStore.getGameObjectProperties(encounter.first);
             if (gameobject != nullptr)
-                player->BroadcastMessage("  Object '%s' (%u) - State %s", gameobject->name.c_str(), encounter.second, getDataStateString(encounter.second).c_str());
+                player->BroadcastMessage("  Object '%s' (%u) - %s", gameobject->name.c_str(), encounter.first, getDataStateString(encounter.first).c_str());
+            else
+                player->BroadcastMessage("  MiscData %u - %s", encounter.first, getDataStateString(encounter.first).c_str());
         }
     }
+}
+
+Creature* InstanceScript::spawnCreature(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId /* = 0*/)
+{
+    CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(entry);
+    if (creatureProperties == nullptr)
+    {
+        LOG_ERROR("tried to create a invalid creature with entry %u!", entry);
+        return nullptr;
+    }
+
+    Creature* creature = mInstance->GetInterface()->SpawnCreature(entry, posX, posY, posZ, posO, true, true, 0, 0);
+    if (creature == nullptr)
+        return nullptr;
+
+    if (factionId != 0)
+        creature->SetFaction(factionId);
+    else
+        creature->SetFaction(creatureProperties->Faction);
+
+    return creature;
 }
 
 Creature* InstanceScript::getCreatureBySpawnId(uint32_t entry)
@@ -785,6 +813,60 @@ CreatureSet InstanceScript::getCreatureSetForEntries(std::vector<uint32_t> entry
 GameObject* InstanceScript::getGameObjectBySpawnId(uint32_t entry)
 {
     return mInstance->GetSqlIdGameObject(entry);
+};
+
+GameObject* InstanceScript::getClosestGameObjectForPosition(uint32 entry, float posX, float posY, float posZ)
+{
+    GameObjectSet gameObjectSet = getGameObjectsSetForEntry(entry);
+
+    if (gameObjectSet.size() == 0)
+        return nullptr;
+
+    if (gameObjectSet.size() == 1)
+        return *(gameObjectSet.begin());
+
+    float distance = 99999;
+    float nearestDistance = 99999;
+
+    for (auto gameobject : gameObjectSet)
+    {
+        distance = getRangeToObjectForPosition(gameobject, posX, posY, posZ);
+        if (distance < nearestDistance)
+        {
+            nearestDistance = distance;
+            return gameobject;
+        }
+    }
+
+    return nullptr;
+};
+
+GameObjectSet InstanceScript::getGameObjectsSetForEntry(uint32_t entry)
+{
+    GameObjectSet gameobjectSet;
+    for (auto gameobject : mInstance->GOStorage)
+    {
+        if (gameobject != nullptr)
+        {
+            if (gameobject->GetEntry() == entry)
+                gameobjectSet.insert(gameobject);
+        }
+    }
+
+    return gameobjectSet;
+}
+
+float InstanceScript::getRangeToObjectForPosition(Object* object, float posX, float posY, float posZ)
+{
+    if (object == nullptr)
+        return 0.0f;
+
+    LocationVector pos = object->GetPosition();
+    float dX = pos.x - posX;
+    float dY = pos.y - posY;
+    float dZ = pos.z - posZ;
+
+    return sqrtf(dX * dX + dY * dY + dZ * dZ);
 };
 
 //MIT end

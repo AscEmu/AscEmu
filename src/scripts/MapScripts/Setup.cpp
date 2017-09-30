@@ -83,6 +83,7 @@ extern "C" {
         UtgardeKeepScripts(scriptMgr);
         UtgardePinnacleScripts(scriptMgr);
         VaultOfArchavonScripts(scriptMgr);
+        VioletHoldScripts(scriptMgr);
 
         //Outland
         AuchenaiCryptsScripts(scriptMgr);

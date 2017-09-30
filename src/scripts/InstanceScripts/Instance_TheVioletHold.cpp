@@ -111,9 +111,9 @@ class TheVioletHoldScript : public MoonInstanceScript
             {
                 S0_SpawnIntroMobsTimer = 0; // This forces a new timer to be started below
             
-                SpawnCreature(GetRandomIntroMob(), IntroPortals[0].x, IntroPortals[0].y, IntroPortals[0].z, IntroPortals[0].o);
-                SpawnCreature(GetRandomIntroMob(), IntroPortals[1].x, IntroPortals[1].y, IntroPortals[1].z, IntroPortals[1].o);
-                SpawnCreature(GetRandomIntroMob(), IntroPortals[2].x, IntroPortals[2].y, IntroPortals[2].z, IntroPortals[2].o);
+                spawnCreature(GetRandomIntroMob(), IntroPortals[0].x, IntroPortals[0].y, IntroPortals[0].z, IntroPortals[0].o);
+                spawnCreature(GetRandomIntroMob(), IntroPortals[1].x, IntroPortals[1].y, IntroPortals[1].z, IntroPortals[1].o);
+                spawnCreature(GetRandomIntroMob(), IntroPortals[2].x, IntroPortals[2].y, IntroPortals[2].z, IntroPortals[2].o);
             }
 
             // Start another 15s timer
@@ -783,7 +783,7 @@ void SetupTheVioletHold(ScriptMgr* mgr)
     //Instance
 #ifndef UseNewMapScriptsProject
     mgr->register_instance_script(MAP_VIOLET_HOLD, &TheVioletHoldScript::Create);
-#endif
+
     //Sinclari and Guards
     mgr->register_creature_script(CN_LIEUTNANT_SINCLARI, &SinclariAI::Create);
     mgr->register_creature_script(CN_VIOLET_HOLD_GUARD, &VHGuardsAI::Create);
@@ -805,4 +805,5 @@ void SetupTheVioletHold(ScriptMgr* mgr)
 
     Arcemu::Gossip::Script* GSinclari = new SinclariGossip();
     mgr->register_creature_gossip(CN_LIEUTNANT_SINCLARI, GSinclari);
+#endif
 }

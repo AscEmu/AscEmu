@@ -122,7 +122,6 @@ class MoonInstanceScript : public InstanceScript
 
         // Creature
         Creature* GetCreatureByGuid(uint32 pGuid);
-        Creature* SpawnCreature(uint32 pEntry, float pX, float pY, float pZ, float pO, uint32 pFactionId = 0);
         Creature* PushCreature(uint32 pEntry, float pX, float pY, float pZ, float pO, uint32 pFaction = 0);
 
         // GameObject
