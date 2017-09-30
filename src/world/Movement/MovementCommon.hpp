@@ -20,8 +20,8 @@ namespace Movement
     enum WaypointMovementScript
     {
         WP_MOVEMENT_SCRIPT_NONE,
-        WP_MOVEMENT_SCRIPT_RANDOMWP,
-        WP_MOVEMENT_SCRIPT_CIRCLEWP,
+        WP_MOVEMENT_SCRIPT_RANDOMWP,        // reimplemented
+        WP_MOVEMENT_SCRIPT_CIRCLEWP,        // reimplemented
         WP_MOVEMENT_SCRIPT_WANTEDWP,
         WP_MOVEMENT_SCRIPT_DONTMOVEWP,
         WP_MOVEMENT_SCRIPT_QUEST,
