@@ -225,11 +225,13 @@ class SERVER_DECL AIInterface : public IUpdatable
         bool isWaypointScriptType(Movement::WaypointMovementScript wp_script) { return wp_script == mWaypointScriptType; }
 
         void setUseNewWaypointGenerator(bool set) { mUseNewWaypointGenerator = set; }
+        bool useNewWaypointGenerator() { return mUseNewWaypointGenerator; }
 
         void setupAndMoveToNextWaypoint();
         void generateWaypointScriptCircle();
         void generateWaypointScriptRandom();
         void generateWaypointScriptForwad();
+        void generateWaypointScriptWantedWP();
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // AI Script functions
