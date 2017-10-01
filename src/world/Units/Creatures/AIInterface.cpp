@@ -2220,6 +2220,34 @@ Movement::WayPoint* AIInterface::getWayPoint(uint32 wpid)
     return m_waypoints->at(wpid);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Waypoint functions
+void AIInterface::setWaypointScriptType(Movement::WaypointMovementScript wp_script)
+{
+    mWaypointScriptType = wp_script;
+    m_moveTimer = 0;
+}
+
+Movement::WaypointMovementScript AIInterface::getWaypointScriptType()
+{
+    return mWaypointScriptType;
+}
+
+bool AIInterface::isWaypointScriptType(Movement::WaypointMovementScript wp_script)
+{
+    return wp_script == mWaypointScriptType;
+}
+
+void AIInterface::setUseNewWaypointGenerator(bool set)
+{
+    mUseNewWaypointGenerator = set;
+}
+
+bool AIInterface::useNewWaypointGenerator()
+{
+    return mUseNewWaypointGenerator;
+}
+
 void AIInterface::setupAndMoveToNextWaypoint()
 {
     if (!m_moveTimer)
@@ -2275,7 +2303,7 @@ void AIInterface::generateWaypointScriptCircle()
     CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->GetEntry());
     if (creatureProperties != nullptr)
     {
-        LOG_DEBUG("%s (%u) called new Waypoint Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
+        LOG_DEBUG("%s (%u) called new Circle Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
 
         if (MoveDone())
         {
@@ -2337,7 +2365,7 @@ void AIInterface::generateWaypointScriptRandom()
     CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->GetEntry());
     if (creatureProperties != nullptr)
     {
-        LOG_DEBUG("%s (%u) called new Waypoint Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
+        LOG_DEBUG("%s (%u) called new Random Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
 
         if (GetWayPointsCount())
         {
@@ -2430,7 +2458,7 @@ void AIInterface::generateWaypointScriptForwad()
     CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->GetEntry());
     if (creatureProperties != nullptr)
     {
-        LOG_DEBUG("%s (%u) called new Waypoint Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
+        LOG_DEBUG("%s (%u) called new Forwad Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
 
         if (MoveDone())
         {
@@ -2495,7 +2523,7 @@ void AIInterface::generateWaypointScriptWantedWP()
     CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->GetEntry());
     if (creatureProperties != nullptr)
     {
-        LOG_DEBUG("%s (%u) called new Waypoint Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
+        LOG_DEBUG("%s (%u) called new WantedWP Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
 
         if (m_currentWaypoint > 0 && m_currentWaypoint < GetWayPointsCount())
         {
@@ -2507,7 +2535,7 @@ void AIInterface::generateWaypointScriptWantedWP()
                 if (MoveDone())
                 {
                     Movement::WayPoint* wayPoint = getWayPoint(mNextPoint);
-                    setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+                    m_Unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
 
                     CALL_SCRIPT_EVENT(m_Unit, OnReachWP)(wayPoint->id, !m_moveBackward);
 
@@ -2556,7 +2584,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
     {
         if (m_Unit->IsCreature())
         {
-            switch (getWaypointScriptType())
+            switch (m_Unit->GetAIInterface()->getWaypointScriptType())
             {
                 case Movement::WP_MOVEMENT_SCRIPT_NONE:
                     break;
@@ -2565,6 +2593,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                     break;
                 case Movement::WP_MOVEMENT_SCRIPT_RANDOMWP:
                     generateWaypointScriptRandom();
+                    break;
                 case Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP:
                     generateWaypointScriptForwad();
                     break;
@@ -2572,7 +2601,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                     generateWaypointScriptWantedWP();
                     break;
                 default:
-                    LOG_DEBUG("mUseNewWaypointGenerator is true but type %u is not handled!", (uint32_t)getWaypointScriptType());
+                    LOG_DEBUG("mUseNewWaypointGenerator is true but type %u is not handled!", getWaypointScriptType());
                     break;
             }
         }

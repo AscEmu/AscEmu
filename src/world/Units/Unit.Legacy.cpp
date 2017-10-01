@@ -5597,7 +5597,7 @@ void Unit::MoveToWaypoint(uint32 wp_id)
 {
     if (this->m_useAI && this->GetAIInterface() != NULL)
     {
-        AIInterface* ai = GetAIInterface();
+        AIInterface* ai = this->GetAIInterface();
         Movement::WayPoint* wp = ai->getWayPoint(wp_id);
         if (!wp)
         {
@@ -5605,14 +5605,15 @@ void Unit::MoveToWaypoint(uint32 wp_id)
             return;
         }
 
-        ai->m_currentWaypoint = wp_id;
-
         if (ai->useNewWaypointGenerator())
         {
             ai->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+            ai->m_currentWaypoint = wp_id;
         }
         else
         {
+            ai->m_currentWaypoint = wp_id;
+
             if (wp->flags != 0)
             {
                 ai->SetRun();
