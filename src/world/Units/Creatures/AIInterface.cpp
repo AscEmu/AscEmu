@@ -2402,6 +2402,7 @@ void AIInterface::generateWaypointScriptRandom()
                             if (wayPoint)
                             {
                                 CALL_SCRIPT_EVENT(m_Unit, OnReachWP)(wayPoint->id, !m_moveBackward);
+                                static_cast<Creature*>(m_Unit)->HandleMonsterSayEvent(MONSTER_SAY_EVENT_RANDOM_WAYPOINT);
 
                                 if (wayPoint->waittime > 0)
                                 {
@@ -2584,25 +2585,49 @@ void AIInterface::_UpdateMovement(uint32 p_time)
     {
         if (m_Unit->IsCreature())
         {
-            switch (m_Unit->GetAIInterface()->getWaypointScriptType())
+            if (getUnitToFollow() == nullptr)
             {
-                case Movement::WP_MOVEMENT_SCRIPT_NONE:
-                    break;
-                case Movement::WP_MOVEMENT_SCRIPT_CIRCLEWP:
-                    generateWaypointScriptCircle();
-                    break;
-                case Movement::WP_MOVEMENT_SCRIPT_RANDOMWP:
-                    generateWaypointScriptRandom();
-                    break;
-                case Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP:
-                    generateWaypointScriptForwad();
-                    break;
-                case Movement::WP_MOVEMENT_SCRIPT_WANTEDWP:
-                    generateWaypointScriptWantedWP();
-                    break;
-                default:
-                    LOG_DEBUG("mUseNewWaypointGenerator is true but type %u is not handled!", getWaypointScriptType());
-                    break;
+                switch (m_Unit->GetAIInterface()->getWaypointScriptType())
+                {
+                    case Movement::WP_MOVEMENT_SCRIPT_NONE:
+                        break;
+                    case Movement::WP_MOVEMENT_SCRIPT_CIRCLEWP:
+                        generateWaypointScriptCircle();
+                        break;
+                    case Movement::WP_MOVEMENT_SCRIPT_RANDOMWP:
+                        generateWaypointScriptRandom();
+                        break;
+                    case Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP:
+                        generateWaypointScriptForwad();
+                        break;
+                    case Movement::WP_MOVEMENT_SCRIPT_WANTEDWP:
+                        generateWaypointScriptWantedWP();
+                        break;
+                    default:
+                        LOG_DEBUG("mUseNewWaypointGenerator is true but type %u is not handled!", getWaypointScriptType());
+                        break;
+                }
+            }
+            else
+            {
+                if (m_formationLinkSqlId != 0)
+                {
+                    if (m_formationLinkTarget == 0)
+                    {
+                        Creature* creature = static_cast<Creature*>(m_Unit);
+                        if (!creature->haslinkupevent)
+                        {
+                            creature->haslinkupevent = true;
+                            sEventMgr.AddEvent(creature, &Creature::FormationLinkUp, m_formationLinkSqlId, EVENT_CREATURE_FORMATION_LINKUP, 1000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                        }
+                    }
+                    else
+                    {
+                        SetUnitToFollow(m_formationLinkTarget);
+                        FollowDistance = m_formationFollowDistance;
+                        m_fallowAngle = m_formationFollowAngle;
+                    }
+                }
             }
         }
         else
@@ -2715,6 +2740,8 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                     m_fallowAngle = m_formationFollowAngle;
                 }
             }
+
+
             if (getUnitToFollow() == NULL)
             {
                 // no formation, use waypoints
@@ -2723,27 +2750,6 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                 // If creature has no waypoints just wander aimlessly around spawnpoint
                 if (GetWayPointsCount() == 0) //no waypoints
                 {
-                    /*    if (m_moveRandom)
-                    {
-                    if ((rand()%10)== 0)
-                    {
-                    float wanderDistance = rand()%4 + 2;
-                    float wanderX = ((wanderDistance*rand()) / RAND_MAX) - wanderDistance / 2;
-                    float wanderY = ((wanderDistance*rand()) / RAND_MAX) - wanderDistance / 2;
-                    float wanderZ = 0; // FIX ME (I don't know how to get appropriate Z coord, maybe use client height map data)
-
-                    if (m_Unit->CalcDistance(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ(), ((Creature*)m_Unit)->respawn_cord[0], ((Creature*)m_Unit)->respawn_cord[1], ((Creature*)m_Unit)->respawn_cord[2])>15)
-                    {
-                    //return home
-                    MoveTo(((Creature*)m_Unit)->respawn_cord[0],((Creature*)m_Unit)->respawn_cord[1],((Creature*)m_Unit)->respawn_cord[2],false);
-                    }
-                    else
-                    {
-                    MoveTo(m_Unit->GetPositionX() + wanderX, m_Unit->GetPositionY() + wanderY, m_Unit->GetPositionZ() + wanderZ,false);
-                    }
-                    }
-                    }
-                    */
                     return;
                 }
                 else //we do have waypoints
