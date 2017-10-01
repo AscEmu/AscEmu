@@ -633,28 +633,40 @@ class NexusScript : public MoonInstanceScript
 
             if (pData == State_Finished)
             {
-                GameObject* pSphere = NULL;
-
-                /* getCreatureBySpawnId not entry!
                 switch (pIndex)
                 {
                     case NEXUS_ANOMALUS:
-                        pSphere = getGameObjectBySpawnId(ANOMALUS_CS);
-                        break;
+                    {
+                        GameObjectSet sphereSet = getGameObjectsSetForEntry(ANOMALUS_CS);
+                        for (auto goSphere : sphereSet)
+                        {
+                            if (goSphere != nullptr)
+                                goSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                        }
+                    } break;
                     case NEXUS_TELESTRA:
-                        pSphere = getGameObjectBySpawnId(TELESTRA_CS);
-                        break;
+                    {
+                        GameObjectSet sphereSet = getGameObjectsSetForEntry(TELESTRA_CS);
+                        for (auto goSphere : sphereSet)
+                        {
+                            if (goSphere != nullptr)
+                                goSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                        }
+                    } break;
                     case NEXUS_ORMOROK:
-                        pSphere = getGameObjectBySpawnId(ORMOROK_CS);
-                        break;
+                    {
+                        GameObjectSet sphereSet = getGameObjectsSetForEntry(ORMOROK_CS);
+                        for (auto goSphere : sphereSet)
+                        {
+                            if (goSphere != nullptr)
+                                goSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                        }
+                    } break;
                     default:
-                        return;
-                };*/
-
-                if (pSphere != NULL)
-                    pSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
-            };
-        };
+                        break;
+                }
+            }
+        }
 
         uint32 GetInstanceData(uint32 pType, uint32 pIndex)
         {

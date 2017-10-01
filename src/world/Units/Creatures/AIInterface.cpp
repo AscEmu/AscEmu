@@ -2534,11 +2534,14 @@ void AIInterface::generateWaypointScriptWantedWP()
                 if (MoveDone())
                 {
                     Movement::WayPoint* wayPoint = getWayPoint(mNextPoint);
-                    m_Unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+                    if (wayPoint != nullptr)
+                    {
+                        m_Unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
 
-                    CALL_SCRIPT_EVENT(m_Unit, OnReachWP)(wayPoint->id, !m_moveBackward);
+                        CALL_SCRIPT_EVENT(m_Unit, OnReachWP)(wayPoint->id, !m_moveBackward);
 
-                    m_moveTimer = wayPoint->waittime;
+                        m_moveTimer = wayPoint->waittime;
+                    }
                 }
                 else
                 {
