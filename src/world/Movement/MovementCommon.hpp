@@ -25,7 +25,8 @@ namespace Movement
         WP_MOVEMENT_SCRIPT_WANTEDWP,        // reimplemented
         WP_MOVEMENT_SCRIPT_DONTMOVEWP,      //\ not needed
         WP_MOVEMENT_SCRIPT_QUEST,           //\ same as forwardthenstop
-        WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP  // reimplemented
+        WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP, // reimplemented
+        WP_MOVEMENT_SCRIPT_PATROL           // new
     };
 
     struct Point

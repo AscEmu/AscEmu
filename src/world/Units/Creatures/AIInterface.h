@@ -232,6 +232,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         void generateWaypointScriptRandom();
         void generateWaypointScriptForwad();
         void generateWaypointScriptWantedWP();
+        void generateWaypointScriptPatrol();
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // AI Script functions

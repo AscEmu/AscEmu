@@ -2316,9 +2316,8 @@ void AIInterface::generateWaypointScriptCircle()
                     mNextPoint = -1;
                     bool isLastWP = false;
 
-                    // generate circle wap
+                    // 1 -> 2 ... -> 10 then 10 -> 1 -> 2 ... -> 10
                     {
-                        // 1 -> 10 then 1 -> 10
                         ++m_currentWaypoint;
                         if (m_currentWaypoint > GetWayPointsCount())
                         {
@@ -2472,9 +2471,8 @@ void AIInterface::generateWaypointScriptForwad()
                     mNextPoint = -1;
                     bool isLastWP = false;
 
-                    // generate circle wap
+                    // 1 -> 10 then stop
                     {
-                        // 1 -> 10 then stop
                         ++m_currentWaypoint;
                         if (m_currentWaypoint > GetWayPointsCount())
                         {
@@ -2551,6 +2549,74 @@ void AIInterface::generateWaypointScriptWantedWP()
     }
 }
 
+void AIInterface::generateWaypointScriptPatrol()
+{
+    CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->GetEntry());
+    if (creatureProperties != nullptr)
+    {
+        LOG_DEBUG("%s (%u) called new Patrol Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
+
+        if (MoveDone())
+        {
+            if (!m_moveTimer)
+            {
+                //////////////////////////////////////////////////////////////////////////////////////////
+                //init destination point
+                if (mWaitTimerSetOnWP == false)
+                {
+                    mNextPoint = -1;
+                    bool isLastWP = false;
+
+                    // 1 -> 2 ... -> 10 then 10 -> 9 ... -> 1
+                    {
+                        if (m_currentWaypoint > GetWayPointsCount())
+                            m_currentWaypoint = 1;
+
+                        if (m_currentWaypoint == GetWayPointsCount())
+                        {
+                            m_moveBackward = true;
+                            isLastWP = true;
+                        }
+
+                        if (m_currentWaypoint == 1)
+                            m_moveBackward = false;
+
+                        if (m_moveBackward == false)
+                            mNextPoint = ++m_currentWaypoint;
+                        else
+                            mNextPoint = --m_currentWaypoint;
+                    }
+
+                    //////////////////////////////////////////////////////////////////////////////////////////
+                    // calc on reach wp script call
+                    if (mNextPoint != -1 && (m_currentWaypoint > 0 || isLastWP))
+                    {
+                        Movement::WayPoint* wayPoint = getWayPoint(isLastWP ? GetWayPointsCount() : m_moveBackward ? mNextPoint + 1 : mNextPoint - 1);
+                        if (wayPoint)
+                        {
+                            CALL_SCRIPT_EVENT(m_Unit, OnReachWP)(wayPoint->id, !m_moveBackward);
+
+                            if (wayPoint->waittime > 0)
+                            {
+                                mWaitTimerSetOnWP = true;
+                                m_moveTimer = wayPoint->waittime;
+                            }
+                        }
+                    }
+                }
+
+                //////////////////////////////////////////////////////////////////////////////////////////
+                // get next point to move
+                setupAndMoveToNextWaypoint();
+            }
+        }
+        else
+        {
+            LOG_DEBUG("%s (%u) MOVE NOT DONE!", creatureProperties->Name.c_str(), creatureProperties->Id);
+        }
+    }
+}
+
 void AIInterface::_UpdateMovement(uint32 p_time)
 {
     if (!m_Unit->isAlive())
@@ -2602,6 +2668,9 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                         break;
                     case Movement::WP_MOVEMENT_SCRIPT_WANTEDWP:
                         generateWaypointScriptWantedWP();
+                        break;
+                    case Movement::WP_MOVEMENT_SCRIPT_PATROL:
+                        generateWaypointScriptPatrol();
                         break;
                     default:
                         LOG_DEBUG("mUseNewWaypointGenerator is true but type %u is not handled!", getWaypointScriptType());
