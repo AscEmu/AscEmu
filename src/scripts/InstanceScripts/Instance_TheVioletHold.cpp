@@ -292,136 +292,136 @@ class TheVioletHoldScript : public MoonInstanceScript
 
 ///////////////////////////////////////////////////////
 //Lieutnant Sinclari StartEvent
-class SinclariAI : public MoonScriptCreatureAI
-{
-    public:
-
-        MOONSCRIPT_FACTORY_FUNCTION(SinclariAI, MoonScriptCreatureAI);
-        SinclariAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
-        {
-            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-        }
-
-        void OnReachWP(uint32 iWaypointId, bool bForwards)
-        {
-            switch (iWaypointId)
-            {
-                case 2:
-                {
-                    this->OnRescuePrisonGuards();
-                }break;
-                case 4:
-                {
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARY_SAY_2);
-                    _unit->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-                }break;
-                case 5:
-                {
-                    TheVioletHoldScript* pInstance = (TheVioletHoldScript*)_unit->GetMapMgr()->GetScript();
-                    pInstance->SetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD, State_InProgress);
-                    GameObject* pVioletHoldDoor = pInstance->FindClosestGameObjectOnMap(GO_PRISON_SEAL, 1822.59f, 803.93f, 44.36f);
-                    if (pVioletHoldDoor != NULL)
-                        pVioletHoldDoor->SetState(GO_STATE_CLOSED);
-                }break;
-            }
-        }
-
-        void OnRescuePrisonGuards()
-        {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARI_SAY_1);
-            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
-
-        }
-};
+//class SinclariAI : public MoonScriptCreatureAI
+//{
+//    public:
+//
+//        MOONSCRIPT_FACTORY_FUNCTION(SinclariAI, MoonScriptCreatureAI);
+//        SinclariAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+//        {
+//            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+//        }
+//
+//        void OnReachWP(uint32 iWaypointId, bool bForwards)
+//        {
+//            switch (iWaypointId)
+//            {
+//                case 2:
+//                {
+//                    this->OnRescuePrisonGuards();
+//                }break;
+//                case 4:
+//                {
+//                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARY_SAY_2);
+//                    _unit->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+//                }break;
+//                case 5:
+//                {
+//                    TheVioletHoldScript* pInstance = (TheVioletHoldScript*)_unit->GetMapMgr()->GetScript();
+//                    pInstance->SetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD, State_InProgress);
+//                    GameObject* pVioletHoldDoor = pInstance->FindClosestGameObjectOnMap(GO_PRISON_SEAL, 1822.59f, 803.93f, 44.36f);
+//                    if (pVioletHoldDoor != NULL)
+//                        pVioletHoldDoor->SetState(GO_STATE_CLOSED);
+//                }break;
+//            }
+//        }
+//
+//        void OnRescuePrisonGuards()
+//        {
+//            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARI_SAY_1);
+//            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
+//
+//        }
+//};
 
 
 ///////////////////////////////////////////////////////
 //Lieutnant Sinclari Gossip and init events
 //Sinclari Gossip
-class SinclariGossip : public Arcemu::Gossip::Script
-{
-    public:
-
-        void OnHello(Object* pObject, Player* pPlayer)
-        {
-            TheVioletHoldScript* pInstance = (TheVioletHoldScript*)pPlayer->GetMapMgr()->GetScript();
-            if (!pInstance)
-                return;
-
-            //Page 1: Textid and first menu item
-            if (pInstance->GetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD) == State_NotStarted)
-            {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), SINCLARI_ON_HELLO, 0);
-                menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(SINCLARI_ACTIVATE), 1);
-                menu.Send(pPlayer);
-            }
-
-            //If VioletHold is started, Sinclari has this item for people who aould join.
-            if (pInstance->GetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD) == State_InProgress)
-            {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), SINCLARI_ON_HELLO, 0);
-                menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(SINCLARI_SEND_ME_IN), 3);
-                menu.Send(pPlayer);
-            }
-        }
-
-        void OnSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* Code, uint32 gossipId)
-        {
-            TheVioletHoldScript* pInstance = (TheVioletHoldScript*)pPlayer->GetMapMgr()->GetScript();
-            if (!pInstance)
-                return;
-
-            if (!pObject->IsCreature())
-                return;
-
-            Creature* pCreature = static_cast<Creature*>(pObject);
-
-            switch (Id)
-            {
-                case 1:
-                {
-                    Arcemu::Gossip::Menu menu(pObject->GetGUID(), SINCLARI_ON_FINISH, 0);
-                    menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(SINCLARI_GET_SAFETY), 2);
-                    menu.Send(pPlayer);
-
-                }break;
-
-                case 2:
-                {
-                    static_cast<Creature*>(pObject)->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
-                    pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-                    //pCreature->MoveToWaypoint(1);
-                    pCreature->GetAIInterface()->StopMovement(10);
-
-                    // New Encounter State included
-                    pInstance->SetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD, State_PreProgress);
-
-                }break;
-
-                case 3:
-                {
-                    Arcemu::Gossip::Menu::Complete(pPlayer);
-                    pPlayer->SafeTeleport(pPlayer->GetInstanceID(), MAP_VIOLET_HOLD, 1830.531006f, 803.939758f, 44.340508f, 6.281611f);
-                }break;
-            }
-        }
-};
+//class SinclariGossip : public Arcemu::Gossip::Script
+//{
+//    public:
+//
+//        void OnHello(Object* pObject, Player* pPlayer)
+//        {
+//            TheVioletHoldScript* pInstance = (TheVioletHoldScript*)pPlayer->GetMapMgr()->GetScript();
+//            if (!pInstance)
+//                return;
+//
+//            //Page 1: Textid and first menu item
+//            if (pInstance->GetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD) == State_NotStarted)
+//            {
+//                Arcemu::Gossip::Menu menu(pObject->GetGUID(), SINCLARI_ON_HELLO, 0);
+//                menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(SINCLARI_ACTIVATE), 1);
+//                menu.Send(pPlayer);
+//            }
+//
+//            //If VioletHold is started, Sinclari has this item for people who aould join.
+//            if (pInstance->GetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD) == State_InProgress)
+//            {
+//                Arcemu::Gossip::Menu menu(pObject->GetGUID(), SINCLARI_ON_HELLO, 0);
+//                menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(SINCLARI_SEND_ME_IN), 3);
+//                menu.Send(pPlayer);
+//            }
+//        }
+//
+//        void OnSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* Code, uint32 gossipId)
+//        {
+//            TheVioletHoldScript* pInstance = (TheVioletHoldScript*)pPlayer->GetMapMgr()->GetScript();
+//            if (!pInstance)
+//                return;
+//
+//            if (!pObject->IsCreature())
+//                return;
+//
+//            Creature* pCreature = static_cast<Creature*>(pObject);
+//
+//            switch (Id)
+//            {
+//                case 1:
+//                {
+//                    Arcemu::Gossip::Menu menu(pObject->GetGUID(), SINCLARI_ON_FINISH, 0);
+//                    menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(SINCLARI_GET_SAFETY), 2);
+//                    menu.Send(pPlayer);
+//
+//                }break;
+//
+//                case 2:
+//                {
+//                    static_cast<Creature*>(pObject)->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+//                    pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+//                    //pCreature->MoveToWaypoint(1);
+//                    //pCreature->GetAIInterface()->StopMovement(10);
+//
+//                    // New Encounter State included
+//                    pInstance->SetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD, State_PreProgress);
+//
+//                }break;
+//
+//                case 3:
+//                {
+//                    Arcemu::Gossip::Menu::Complete(pPlayer);
+//                    pPlayer->SafeTeleport(pPlayer->GetInstanceID(), MAP_VIOLET_HOLD, 1830.531006f, 803.939758f, 44.340508f, 6.281611f);
+//                }break;
+//            }
+//        }
+//};
 
 ///////////////////////////////////////////////////////
 //VH Guards
-class VHGuardsAI : public MoonScriptCreatureAI
-{
-    public:
-
-        MOONSCRIPT_FACTORY_FUNCTION(VHGuardsAI, MoonScriptCreatureAI);
-        VHGuardsAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
-        {
-            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-        }
-
-        //WPs inserted in db.
-
-};
+//class VHGuardsAI : public MoonScriptCreatureAI
+//{
+//    public:
+//
+//        MOONSCRIPT_FACTORY_FUNCTION(VHGuardsAI, MoonScriptCreatureAI);
+//        VHGuardsAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+//        {
+//            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+//        }
+//
+//        //WPs inserted in db.
+//
+//};
 
 //\TODO: Replace spell casting logic for all instances, this is temp
 class VHCreatureAI : public MoonScriptCreatureAI
@@ -781,29 +781,27 @@ class MoraggAI : public MoonScriptBossAI
 void SetupTheVioletHold(ScriptMgr* mgr)
 {
     //Instance
-#ifndef UseNewMapScriptsProject
-    mgr->register_instance_script(MAP_VIOLET_HOLD, &TheVioletHoldScript::Create);
-
-    //Sinclari and Guards
-    mgr->register_creature_script(CN_LIEUTNANT_SINCLARI, &SinclariAI::Create);
-    mgr->register_creature_script(CN_VIOLET_HOLD_GUARD, &VHGuardsAI::Create);
-
-    // Intro trash
-    mgr->register_creature_script(CN_INTRO_AZURE_BINDER_ARCANE, &VHIntroAzureBinder::Create);
-    mgr->register_creature_script(CN_INTRO_AZURE_INVADER_ARMS, &VHIntroAzureInvader::Create);
-    mgr->register_creature_script(CN_INTRO_AZURE_MAGE_SLAYER_MELEE, &VHIntroAzureMageSlayer::Create);
-    mgr->register_creature_script(CN_INTRO_AZURE_SPELLBREAKER_ARCANE, &VHIntroAzureSpellBreaker::Create);
-
-    //Bosses
-    //mgr->register_creature_script(CN_EREKEM, &ErekemAI::Create);
-    mgr->register_creature_script(CN_MORAGG, &MoraggAI::Create);
-    //mgr->register_creature_script(CN_ICHORON, &IchoronAI::Create);
-    //mgr->register_creature_script(CN_XEVOZZ, &XevozzAI::Create);
-    //mgr->register_creature_script(CN_LAVANTHOR, &LavanthorAI::Create);
-    //mgr->register_creature_script(CN_TURAMAT_THE_OBLITERATOR, &ZuramatTheObliteratorAI::Create);
-    //mgr->register_creature_script(CN_CYANIGOSA, &CyanigosaAI::Create);
-
-    Arcemu::Gossip::Script* GSinclari = new SinclariGossip();
-    mgr->register_creature_gossip(CN_LIEUTNANT_SINCLARI, GSinclari);
-#endif
+//    mgr->register_instance_script(MAP_VIOLET_HOLD, &TheVioletHoldScript::Create);
+//
+//    //Sinclari and Guards
+//    mgr->register_creature_script(CN_LIEUTNANT_SINCLARI, &SinclariAI::Create);
+//    mgr->register_creature_script(CN_VIOLET_HOLD_GUARD, &VHGuardsAI::Create);
+//
+//    // Intro trash
+//    mgr->register_creature_script(CN_INTRO_AZURE_BINDER_ARCANE, &VHIntroAzureBinder::Create);
+//    mgr->register_creature_script(CN_INTRO_AZURE_INVADER_ARMS, &VHIntroAzureInvader::Create);
+//    mgr->register_creature_script(CN_INTRO_AZURE_MAGE_SLAYER_MELEE, &VHIntroAzureMageSlayer::Create);
+//    mgr->register_creature_script(CN_INTRO_AZURE_SPELLBREAKER_ARCANE, &VHIntroAzureSpellBreaker::Create);
+//
+//    //Bosses
+//    //mgr->register_creature_script(CN_EREKEM, &ErekemAI::Create);
+//    mgr->register_creature_script(CN_MORAGG, &MoraggAI::Create);
+//    //mgr->register_creature_script(CN_ICHORON, &IchoronAI::Create);
+//    //mgr->register_creature_script(CN_XEVOZZ, &XevozzAI::Create);
+//    //mgr->register_creature_script(CN_LAVANTHOR, &LavanthorAI::Create);
+//    //mgr->register_creature_script(CN_TURAMAT_THE_OBLITERATOR, &ZuramatTheObliteratorAI::Create);
+//    //mgr->register_creature_script(CN_CYANIGOSA, &CyanigosaAI::Create);
+//
+//    Arcemu::Gossip::Script* GSinclari = new SinclariGossip();
+//    mgr->register_creature_gossip(CN_LIEUTNANT_SINCLARI, GSinclari);
 }

@@ -40,9 +40,7 @@ public:
 
     SinclariAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-        //_unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_CIRCLEWP);
-        //_unit->GetAIInterface()->setUseNewWaypointGenerator(true);
+        _unit->GetAIInterface()->setUseNewWaypointGenerator(true);
     }
 
     static CreatureAIScript* Create(Creature* creature) { return new SinclariAI(creature); }
@@ -68,20 +66,22 @@ public:
                 if (pVioletHoldDoor != nullptr)
                     pVioletHoldDoor->SetState(GO_STATE_CLOSED);
             } break;
-
-            default:
-            {
-                std::stringstream text;
-                text << "Reached wp " << iWaypointId << ".";
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, text.str().c_str());
-            }
         }
     }
 
     void OnRescuePrisonGuards()
     {
         _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARI_SAY_1);
-        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
+
+        VioletHold* pInstance = (VioletHold*)_unit->GetMapMgr()->GetScript();
+        if (!pInstance)
+            return;
+
+        auto guardSet = pInstance->getCreatureSetForEntry(30659);
+        for (auto guard : guardSet)
+        {
+            guard->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
+        }
     }
 };
 
@@ -121,8 +121,7 @@ public:
         if (!pObject->IsCreature())
             return;
 
-        Creature* pCreature = static_cast<Creature*>(pObject);
-
+        Creature* sinclari = static_cast<Creature*>(pObject);
         switch (Id)
         {
             case 1:
@@ -134,11 +133,7 @@ public:
             case 2:
             {
                 static_cast<Creature*>(pObject)->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
-                pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-                pCreature->GetAIInterface()->StopMovement(10);
-
-                // New Encounter State included
-                pInstance->SetInstanceData(Data_EncounterState, 608, State_PreProgress);
+                sinclari->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
             } break;
             case 3:
             {
@@ -155,19 +150,16 @@ public:
 
     VHGuardsAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+        _unit->GetAIInterface()->setUseNewWaypointGenerator(true);
+        //_unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
     }
 
     static CreatureAIScript* Create(Creature* creature) { return new VHGuardsAI(creature); }
-
-    //WPs inserted in db.
-
 };
 
 
 void VioletHoldScripts(ScriptMgr* scriptMgr)
 {
-#ifdef UseNewMapScriptsProject
     scriptMgr->register_instance_script(608, &VioletHold::Create);
 
     scriptMgr->register_creature_script(30659, &VHGuardsAI::Create);
@@ -176,5 +168,4 @@ void VioletHoldScripts(ScriptMgr* scriptMgr)
 
     Arcemu::Gossip::Script* GSinclari = new SinclariGossip();
     scriptMgr->register_creature_gossip(30658, GSinclari);
-#endif
 }

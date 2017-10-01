@@ -481,7 +481,7 @@ class SERVER_DECL QuestScript
 //////////////////////////////////////////////////////////////////////////////////////////
 #include "Map/WorldCreator.h"
 
-#define UseNewMapScriptsProject
+//#define UseNewMapScriptsProject
 
 enum EncounterStates
 {
