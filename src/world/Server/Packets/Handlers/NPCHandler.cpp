@@ -438,34 +438,40 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recv_data)
     recv_data >> option;
 
     LOG_DETAIL("WORLD: CMSG_GOSSIP_SELECT_OPTION GossipId: %u Item: %i senderGuid %.8X", gossipId, option, guid);
-    Arcemu::Gossip::Script* script = NULL;
+
+    Arcemu::Gossip::Script* script = nullptr;
     uint32 guidtype = GET_TYPE_FROM_GUID(guid);
 
-    Object* qst_giver;
+    Object* object;
     if (guidtype == HIGHGUID_TYPE_ITEM)         //Item objects are retrieved differently.
     {
-        qst_giver = GetPlayer()->GetItemInterface()->GetItemByGUID(guid);
-        if (qst_giver != NULL)
-            script = Arcemu::Gossip::Script::GetInterface(static_cast<Item*>(qst_giver));
+        object = GetPlayer()->GetItemInterface()->GetItemByGUID(guid);
+        if (object != nullptr)
+            script = Arcemu::Gossip::Script::GetInterface(static_cast<Item*>(object));
     }
     else
-        qst_giver = GetPlayer()->GetMapMgr()->_GetObject(guid);
-    if (qst_giver != NULL)
+    {
+        object = GetPlayer()->GetMapMgr()->_GetObject(guid);
+    }
+
+    if (object != nullptr)
     {
         if (guidtype == HIGHGUID_TYPE_UNIT)
-            script = Arcemu::Gossip::Script::GetInterface(static_cast<Creature*>(qst_giver));
+            script = Arcemu::Gossip::Script::GetInterface(static_cast<Creature*>(object));
         else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
-            script = Arcemu::Gossip::Script::GetInterface(static_cast<GameObject*>(qst_giver));
+            script = Arcemu::Gossip::Script::GetInterface(static_cast<GameObject*>(object));
     }
-    if (script != NULL)
+
+    if (script != nullptr)
     {
         std::string str;
         if (recv_data.rpos() != recv_data.wpos())
             recv_data >> str;
+
         if (str.length() > 0)
-            script->OnSelectOption(qst_giver, GetPlayer(), option, str.c_str(), gossipId);
+            script->OnSelectOption(object, GetPlayer(), option, str.c_str(), gossipId);
         else
-            script->OnSelectOption(qst_giver, GetPlayer(), option, NULL, gossipId);
+            script->OnSelectOption(object, GetPlayer(), option, NULL, gossipId);
     }
 }
 
