@@ -1101,7 +1101,7 @@ class ArthasAI : public CreatureAIScript
 
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
             phase = 0;
         }
 
@@ -1118,7 +1118,7 @@ class ArthasAI : public CreatureAIScript
                 break;
                 case 7:
                 {
-                    _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+                    _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
                     _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                     _unit->GetAIInterface()->m_canMove = false;
                     _unit->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);

@@ -19,14 +19,14 @@ namespace Movement
 
     enum WaypointMovementScript
     {
-        WP_MOVEMENT_SCRIPT_NONE,
-        WP_MOVEMENT_SCRIPT_RANDOMWP,        // reimplemented
-        WP_MOVEMENT_SCRIPT_CIRCLEWP,        // reimplemented
-        WP_MOVEMENT_SCRIPT_WANTEDWP,        // reimplemented
-        WP_MOVEMENT_SCRIPT_DONTMOVEWP,      //\ not needed
-        WP_MOVEMENT_SCRIPT_QUEST,           //\ same as forwardthenstop
-        WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP, // reimplemented
-        WP_MOVEMENT_SCRIPT_PATROL           // new
+        WP_MOVEMENT_SCRIPT_NONE             = 0,
+        WP_MOVEMENT_SCRIPT_RANDOMWP         = 1,    // reimplemented
+        WP_MOVEMENT_SCRIPT_CIRCLEWP         = 2,    // reimplemented
+        WP_MOVEMENT_SCRIPT_WANTEDWP         = 3,    // reimplemented
+        //WP_MOVEMENT_SCRIPT_DONTMOVEWP     = 4,
+        WP_MOVEMENT_SCRIPT_QUEST            = 5,    //\todo same as foward then stop with returning to position
+        WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP  = 6,    // reimplemented
+        WP_MOVEMENT_SCRIPT_PATROL           = 7     // new
     };
 
     struct Point

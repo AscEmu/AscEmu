@@ -2433,11 +2433,11 @@ void AIInterface::generateWaypointScriptRandom()
                     LocationVector pos = m_Unit->GetPosition();
 
                     float distance = RandomFloat(4.0f) + 2.0f;
-                    float oriantation = RandomFloat(6.283f);
+                    float orientation = RandomFloat(6.283f);
 
                     LocationVector randPos;
-                    randPos.x = pos.x + distance * cosf(oriantation);
-                    randPos.y = pos.y + distance * sinf(oriantation);
+                    randPos.x = pos.x + distance * cosf(orientation);
+                    randPos.y = pos.y + distance * sinf(orientation);
                     randPos.z = m_Unit->GetMapMgr()->GetLandHeight(randPos.x, randPos.y, pos.z + 2);
 
                     VMAP::IVMapManager* vmapMgr = VMAP::VMapFactory::createOrGetVMapManager();
@@ -2722,11 +2722,11 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                     LocationVector pos = unitToFear->GetPosition();     // current position
 
                     float distance = RandomFloat(15.0f) + 5.0f;
-                    float oriantation = RandomFloat(6.283f);
+                    float orientation = RandomFloat(6.283f);
 
                     LocationVector randPos;
-                    randPos.x = pos.x + distance * cosf(oriantation);
-                    randPos.y = pos.y + distance * sinf(oriantation);
+                    randPos.x = pos.x + distance * cosf(orientation);
+                    randPos.y = pos.y + distance * sinf(orientation);
                     randPos.z = unitToFear->GetMapMgr()->GetLandHeight(randPos.x, randPos.y, pos.z + 2);
 
                     VMAP::IVMapManager* vmapMgr = VMAP::VMapFactory::createOrGetVMapManager();
@@ -2760,7 +2760,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                 if (MoveDone())
                 {
                     if (isWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP))//We reached wanted wp stop now
-                        setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+                        setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
 
                     float wayO = 0.0f;
 
@@ -2811,7 +2811,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                     setCreatureState(STOPPED);
                     SetWalk();
 
-                    if (isWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP))
+                    if (isWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE))
                         m_Unit->SetOrientation(wayO);
 
                     m_timeMoved = 0;
@@ -2913,7 +2913,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                         else
                             destpoint = m_currentWaypoint;
                     }
-                    else if (!isWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_QUEST) && !isWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP))//4 Unused
+                    else if (!isWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_QUEST) && !isWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE))//4 Unused
                     {
                         // 1 -> 10 then 10 -> 1
                         if (m_currentWaypoint > GetWayPointsCount())

@@ -4320,7 +4320,7 @@ class AkamaAI : public MoonScriptBossAI
             AddEmote(Event_OnTargetDied, "One step closer!", Text_Yell, 11382);
             AddEmote(Event_OnDied, "Fight on friends! Kill him and end the curse on my people!", Text_Yell, 11391);
 
-            SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+            SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
             SetCanEnterCombat(false);
             SetPhase(1);
 
@@ -4594,7 +4594,7 @@ class AkamaAI : public MoonScriptBossAI
                     SetCanMove(true);
                     SetCanEnterCombat(true);
                     SetBehavior(Behavior_Default);
-                    SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+                    SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
                     SetWaypointToMove(0);
                     RemoveAIUpdateEvent();
                     _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -4896,7 +4896,7 @@ class MaievAI : public MoonScriptBossAI
             _unit->SetHealth(1000000);
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
 
-            SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+            SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
             SetPhase(1);
 
             mYellTimer = mScenePart = mTrapTimer = 0;
@@ -5316,7 +5316,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             SetWieldWeapon(false);
             SetCanMove(false);
             SetFlyMode(false);
-            SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+            SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
             SetPhase(1);
 
             for (uint8 i = 1; i < ILLIDAN_WAYPOINT_SIZE; ++i)
@@ -5373,7 +5373,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
         {
             // General
             _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
-            SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+            SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
             SetTargetToChannel(NULL, 0);
             SetCanEnterCombat(true);
             SetWieldWeapon(true);

@@ -72,7 +72,7 @@ public:
             AddWaypoint(CreateWaypoint(i, 0, WayPoints[i]));
         }
 
-        pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+        pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
     }
 
     void OnReachWP(uint32 iWaypointId, bool bForwards)

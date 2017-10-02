@@ -2089,7 +2089,7 @@ class AlarAI : public CreatureAIScript
 
             _unit->GetAIInterface()->WipeTargetList();
             _unit->GetAIInterface()->WipeHateList();
-            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
             _unit->GetAIInterface()->m_canMove = true;
             Flying = false;
             lasttime = timer;
@@ -2275,7 +2275,7 @@ class AlarAI : public CreatureAIScript
             _unit->GetAIInterface()->setAiState(AI_STATE_ATTACKING);//STATE_IDLE
             NextWP = wp;
             Flying = false;
-            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
             _unit->GetAIInterface()->m_canMove = false;
             lasttime = timer;
         }
@@ -2323,7 +2323,7 @@ class AlarAI : public CreatureAIScript
                             FlameQuills = true;
                             QuillsCount = 0;
                             Flying = false;
-                            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+                            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
                             _unit->GetAIInterface()->m_canMove = false;
                             NextWP = 6;
                             lasttime = timer;
@@ -3047,7 +3047,7 @@ class KaelThasAI : public MoonScriptBossAI
             }
 
             SetCanEnterCombat(true);
-            SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+            SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
             SetCanMove(true);
 
             // Other spells

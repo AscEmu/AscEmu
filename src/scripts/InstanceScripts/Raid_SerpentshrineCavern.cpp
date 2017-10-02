@@ -1822,7 +1822,7 @@ class VashjAI : public CreatureAIScript
             wp->backwardskinid = 0;
 
             _unit->GetAIInterface()->addWayPoint(wp);
-            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
 
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
 
@@ -2419,7 +2419,7 @@ class ToxicSporeBatAI : public CreatureAIScript
             //_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Phase 1 Test!");
             _unit->PlaySoundToSet(11243);
             _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
             CastTime();
             Phase = 1;
             FlameQuills = false;
@@ -2658,7 +2658,7 @@ class ToxicSporeBatAI : public CreatureAIScript
                 case 6:
                     {
                         _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-                        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+                        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
                         _unit->GetAIInterface()->m_canMove = false;
                         switch (FlyWay)
                         {
@@ -2676,7 +2676,7 @@ class ToxicSporeBatAI : public CreatureAIScript
                 case 7:
                     {
                         _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-                        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+                        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
                         _unit->GetAIInterface()->m_canMove = false;
                         switch (FlyWay)
                         {
@@ -2695,7 +2695,7 @@ class ToxicSporeBatAI : public CreatureAIScript
                     {
                         _unit->GetAIInterface()->m_canMove = false;
                         _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-                        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+                        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
                         switch (FlyWay)
                         {
                             case 0:
@@ -2713,7 +2713,7 @@ class ToxicSporeBatAI : public CreatureAIScript
                     {
                         _unit->GetAIInterface()->m_canMove = false;
                         _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-                        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+                        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
                         switch (FlyWay)
                         {
                             case 0:
@@ -2730,7 +2730,7 @@ class ToxicSporeBatAI : public CreatureAIScript
                 case 10:
                     {
                         _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-                        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+                        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
                         if (Phase == 1)
                         {
                             FlameQuills = true;

@@ -859,7 +859,7 @@ void Creature::OnRemoveInRangeObject(Object* pObj)
         // we lost our escorter, return to the spawn.
         m_aiInterface->StopMovement(10000);
         m_escorter = NULL;
-        GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+        GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
         //DestroyCustomWaypointMap(); //function not needed at all, crashing on delete(*int)
         //GetAIInterface()->deleteWaypoints();//this can repleace DestroyCustomWaypointMap, but it's crashing on delete too
         Despawn(1000, 1000);

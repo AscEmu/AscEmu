@@ -39,7 +39,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(KayaFlathoof);
     KayaFlathoof(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+        pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
     }
 
     void OnReachWP(uint32 iWaypointId, bool bForwards)

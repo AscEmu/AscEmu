@@ -778,7 +778,7 @@ public:
         _unit->GetAIInterface()->addWayPoint(CreateWaypoint(3, 0, 0));
         _unit->GetAIInterface()->addWayPoint(CreateWaypoint(4, 0, 0));
 
-        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
         _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -3615,7 +3615,7 @@ public:
         spells[4].perctrigger = 0.0f;
         spells[4].attackstoptimer = 1000;
 
-        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
 
         for (uint8 i = 1; i < 5; i++)
         {
@@ -3641,7 +3641,7 @@ public:
 
     void OnCombatStop(Unit* mTarget)
     {
-        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         _unit->GetAIInterface()->SetAllowedToEnterCombat(true);

@@ -1417,7 +1417,7 @@ class LakkaAI : public MoonScriptCreatureAI
         ADD_CREATURE_FACTORY_FUNCTION(LakkaAI);
         LakkaAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+            SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
 
             //WPs
             for (uint8 i = 1; i < 4; ++i)

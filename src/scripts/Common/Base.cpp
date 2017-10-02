@@ -1003,7 +1003,7 @@ void MoonScriptCreatureAI::StopWaypointMovement()
 {
     SetBehavior(Behavior_Default);
     _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-    SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+    SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
     SetWaypointToMove(0);
 }
 

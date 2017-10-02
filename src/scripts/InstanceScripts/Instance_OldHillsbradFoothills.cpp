@@ -272,7 +272,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //    MOONSCRIPT_FACTORY_FUNCTION(ThrallAI, MoonScriptCreatureAI);
 //    ThrallAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
 //    {
-//        SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+//        SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
 //        for (uint8 i = 1; i < MAX_THRALLWP1; ++i)
 //            AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_WALK, ThrallWP1[i]));
 //

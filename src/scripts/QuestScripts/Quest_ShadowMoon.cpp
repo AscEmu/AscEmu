@@ -100,7 +100,7 @@ public:
                     {
                         pRazuunAI->GetUnit()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
                         pRazuunAI->SetCanEnterCombat(false);
-                        pRazuunAI->SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+                        pRazuunAI->SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
                         pRazuunAI->SetCanMove(false);
                     }
                     _unit->SetStandState(STANDSTATE_KNEEL);

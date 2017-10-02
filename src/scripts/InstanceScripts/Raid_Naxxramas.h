@@ -2889,7 +2889,7 @@ class SapphironAI : public CreatureAIScript
         spells[3].cooldown = 900;
         spells[3].attackstoptimer = 1000;
 
-        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
         _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
         _unit->GetAIInterface()->StopFlying();
         _unit->GetAIInterface()->m_canMove = true;
@@ -2911,7 +2911,7 @@ class SapphironAI : public CreatureAIScript
 
         spells[3].casttime = (uint32)time(NULL) + spells[3].cooldown;
 
-        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
         _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
         _unit->GetAIInterface()->StopFlying();
         _unit->GetAIInterface()->m_canMove = true;
@@ -2958,7 +2958,7 @@ class SapphironAI : public CreatureAIScript
             Waterfall->SetState(GO_STATE_OPEN);
         }
 
-        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
         _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
         _unit->GetAIInterface()->StopFlying();
         _unit->GetAIInterface()->m_canMove = true;
@@ -3057,7 +3057,7 @@ class SapphironAI : public CreatureAIScript
             _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
             _unit->GetAIInterface()->setCurrentAgent(AGENT_SPELL);
             _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
             _unit->GetAIInterface()->setWaypointToMove(0);
         }
 
@@ -3187,7 +3187,7 @@ class SapphironAI : public CreatureAIScript
                 _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
                 _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
                 _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-                _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+                _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
                 _unit->GetAIInterface()->setWaypointToMove(0);
 
                 RemoveAIUpdateEvent();
