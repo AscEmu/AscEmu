@@ -2709,6 +2709,41 @@ void AIInterface::_UpdateMovement(uint32 p_time)
         {
             LOG_DEBUG("Called new Waypoint Generator for Player!");
         }
+
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // fear movement - todo move this to a new function!
+        Unit* unitToFear = getUnitToFear();
+        if (isAiState(AI_STATE_FEAR) || isAiState(AI_STATE_UNFEARED))   // check fear aura instead?
+        {
+            if (Util::getMSTime() > m_FearTimer)
+            {
+                if (MoveDone())                                         // if spline move is done
+                {
+                    LocationVector pos = unitToFear->GetPosition();     // current position
+
+                    float distance = RandomFloat(15.0f) + 5.0f;
+                    float oriantation = RandomFloat(6.283f);
+
+                    LocationVector randPos;
+                    randPos.x = pos.x + distance * cosf(oriantation);
+                    randPos.y = pos.y + distance * sinf(oriantation);
+                    randPos.z = unitToFear->GetMapMgr()->GetLandHeight(randPos.x, randPos.y, pos.z + 2);
+
+                    VMAP::IVMapManager* vmapMgr = VMAP::VMapFactory::createOrGetVMapManager();
+
+                    // change generated x, y, z to a position before hitting the object.
+                    bool isHittingObject = vmapMgr->getObjectHitPos(m_Unit->GetMapId(), pos.x, pos.y, pos.z + 2, randPos.x, randPos.y, randPos.z, randPos.x, randPos.y, randPos.z, -1);
+
+                    MoveTo(randPos.x, randPos.y, randPos.z);
+
+                    m_FearTimer = Util::getMSTime() + RandomUInt(500, 1700);
+                }
+            }
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////
+        //
+
     }
     else
     {
