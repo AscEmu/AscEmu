@@ -456,7 +456,6 @@ class VHCreatureAI : public MoonScriptCreatureAI
             }
             _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
             _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I am alive!");
-            _unit->GetAIInterface()->UpdateMove();
         }
 
         void OnReachWP(uint32 iWaypointId, bool bForwards)

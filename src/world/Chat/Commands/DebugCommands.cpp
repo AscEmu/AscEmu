@@ -27,7 +27,7 @@ bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_sess
     bool in_front_of_creature = m_session->GetPlayer()->isInFront(selected_unit);
     float distance_to_creature = m_session->GetPlayer()->CalcDistance(selected_unit);
 
-    uint32 creature_state = selected_unit->GetAIInterface()->m_creatureState;
+    uint32 creature_state = selected_unit->GetAIInterface()->getCreatureState();
     uint32 ai_state = selected_unit->GetAIInterface()->getAiState();
     uint32 ai_type = selected_unit->GetAIInterface()->getAiScriptType();
     uint32 ai_agent = selected_unit->GetAIInterface()->getCurrentAgent();

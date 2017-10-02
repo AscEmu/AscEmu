@@ -2375,7 +2375,7 @@ class LuaUnit
     {
         if (ptr && ptr->IsCreature())
         {
-            if (ptr->GetAIInterface()->m_creatureState == MOVING)
+            if (ptr->GetAIInterface()->getCreatureState() == MOVING)
                 lua_pushboolean(L, 1);
             else
                 lua_pushboolean(L, 0);

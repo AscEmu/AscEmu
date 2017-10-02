@@ -59,8 +59,9 @@ AIInterface::AIInterface()
     mNextPoint(-1),
     mWaitTimerSetOnWP(false),
 
+    mCreatureState(STOPPED),
+
     onGameobject(false),
-    m_creatureState(STOPPED),
     m_canFlee(false),
     m_canCallForHelp(false),
     m_canRangedAttack(false),
@@ -285,7 +286,7 @@ void AIInterface::Update(unsigned long time_passed)
         }
         else
         {
-            if (m_creatureState == STOPPED)
+            if (getCreatureState() == STOPPED)
             {
                 // return to the home
                 if (m_returnX == 0.0f && m_returnY == 0.0f)
@@ -312,7 +313,7 @@ void AIInterface::Update(unsigned long time_passed)
         }
     }
 
-    if (!getNextTarget() && !m_fleeTimer && m_creatureState == STOPPED && isAiState(AI_STATE_IDLE) && m_Unit->isAlive())
+    if (!getNextTarget() && !m_fleeTimer && getCreatureState() == STOPPED && isAiState(AI_STATE_IDLE) && m_Unit->isAlive())
     {
         if (timed_emote_expire <= time_passed)    // note that creature might go idle and time_passed might get big next time ...We do not skip emotes because of lost time
         {
@@ -676,7 +677,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                     //FIX ME: offhand shit
                     if (m_Unit->isAttackReady(false) && !m_fleeTimer)
                     {
-                        m_creatureState = ATTACKING;
+                        setCreatureState(ATTACKING);
                         bool infront = m_Unit->isInFront(getNextTarget());
 
                         if (!infront) // set InFront
@@ -755,7 +756,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                     //FIX ME: offhand shit
                     if (m_Unit->isAttackReady(false) && !m_fleeTimer)
                     {
-                        m_creatureState = ATTACKING;
+                        setCreatureState(ATTACKING);
                         bool infront = m_Unit->isInFront(getNextTarget());
 
                         if (!infront) // set InFront
@@ -1632,7 +1633,7 @@ void AIInterface::_CalcDestinationAndMove(Unit* target, float dist)
         //avoid eating bandwidth with useless movement packets when target did not move since last position
         //this will work since it turned into a common myth that when you pull mob you should not move :D
         if (abs(m_last_target_x - newx) < DISTANCE_TO_SMALL_TO_WALK
-            && abs(m_last_target_y - newy) < DISTANCE_TO_SMALL_TO_WALK && m_creatureState == MOVING)
+            && abs(m_last_target_y - newy) < DISTANCE_TO_SMALL_TO_WALK && getCreatureState() == MOVING)
             return;
 
         m_last_target_x = newx;
@@ -1778,8 +1779,8 @@ bool AIInterface::MoveTo(float x, float y, float z)
     if (!Move(x, y, z))
         return false;
 
-    if (m_creatureState != MOVING)
-        UpdateMove();
+    if (getCreatureState() != MOVING)
+        setCreatureState(MOVING);
 
     return true;
 }
@@ -1869,11 +1870,6 @@ void AIInterface::StopFlying()
         m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.flying = false;
         SetWalk();
     }
-}
-
-void AIInterface::UpdateMove()
-{
-    m_creatureState = MOVING;
 }
 
 void AIInterface::SendCurrentMove(Player* plyr)
@@ -2715,7 +2711,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
             LOG_DEBUG("%s (%u) called old Waypoint Generator!", cp->Name.c_str(), cp->Id);
         }*/
 
-        if (m_creatureState == MOVING)
+        if (getCreatureState() == MOVING)
         {
             if (!m_moveTimer)
             {
@@ -2770,7 +2766,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                             m_moveTimer = RandomUInt(HasWalkMode(WALKMODE_RUN) ? 5000 : 10000); // wait before next move
                     }
 
-                    m_creatureState = STOPPED;
+                    setCreatureState(STOPPED);
                     SetWalk();
 
                     if (isWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP))
@@ -2781,7 +2777,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                 }
             }
         }
-        else if (m_creatureState == STOPPED 
+        else if (getCreatureState() == STOPPED
             && (isAiState(AI_STATE_IDLE) || isAiState(AI_STATE_SCRIPTMOVE)) 
             && !m_moveTimer 
             && !m_timeToMove 
@@ -2940,7 +2936,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
 
         //Fear Code
         Unit* unitToFear = getUnitToFear();
-        if (isAiState(AI_STATE_FEAR) && unitToFear != NULL && m_creatureState == STOPPED)
+        if (isAiState(AI_STATE_FEAR) && unitToFear != NULL && getCreatureState() == STOPPED)
         {
             if (Util::getMSTime() > m_FearTimer)   // Wait at point for x ms ;)
             {
@@ -3033,7 +3029,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
         }
 
         // Wander AI movement code
-        if (isAiState(AI_STATE_WANDER) && m_creatureState == STOPPED)
+        if (isAiState(AI_STATE_WANDER) && getCreatureState() == STOPPED)
         {
             if (Util::getMSTime() < m_WanderTimer) // is it time to move again?
                 return;
@@ -4031,7 +4027,7 @@ void AIInterface::UpdateMovementSpline()
 
     if (m_Unit->m_movementManager.m_spline.IsSplineMoveDone())
     {
-        m_creatureState = STOPPED;
+        setCreatureState(STOPPED);
         return;
     }
 

@@ -258,6 +258,17 @@ class SERVER_DECL AIInterface : public IUpdatable
         uint32_t getAiState() { return mAiState; }
         bool isAiState(AiState ai_state) { return ai_state == mAiState; }
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Creature State functions
+    private:
+
+        CreatureState mCreatureState;
+
+    public:
+
+        void setCreatureState(CreatureState newState) { mCreatureState = newState; }
+        CreatureState getCreatureState() { return mCreatureState; }
+
 // MIT end
     public:
 
@@ -290,7 +301,6 @@ class SERVER_DECL AIInterface : public IUpdatable
         Unit* getUnitToFear();
         uint64 getUnitToFearGUID() { return m_UnitToFear; }
         Creature* getFormationLinkTarget();
-        void setCreatureState(CreatureState state) { m_creatureState = state; }
 
 
 
@@ -383,7 +393,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         //Movement::Spline::MoveSpline m_spline;
         uint32 m_walkMode;
 
-        void UpdateMove();
+
         void SendCurrentMove(Player* plyr/*uint64 guid*/);
         bool StopMovement(uint32 time);
         uint32 getCurrentWaypoint() { return m_currentWaypoint; }
@@ -429,7 +439,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         uint32 faction_visibility;
 
         bool onGameobject;
-        CreatureState m_creatureState;
+        
         size_t GetWayPointsCount()
         {
             if (m_waypoints && !m_waypoints->empty())
