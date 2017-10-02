@@ -55,7 +55,11 @@ AIInterface::AIInterface()
     m_moveBackward(false),
 
     mWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE),
+#ifdef UseNewWaypointGenerator
+    mUseNewWaypointGenerator(true),
+#else
     mUseNewWaypointGenerator(false),
+#endif
     mNextPoint(-1),
     mWaitTimerSetOnWP(false),
 
@@ -2420,9 +2424,9 @@ void AIInterface::generateWaypointScriptRandom()
         }
         else
         {
-            if (MoveDone())
+            if (!m_moveTimer)
             {
-                if (!m_moveTimer)
+                if (MoveDone())
                 {
                     uint32_t randomMoveTime = RandomUInt(300, 6000);
 
@@ -2650,50 +2654,53 @@ void AIInterface::_UpdateMovement(uint32 p_time)
     {
         if (m_Unit->IsCreature())
         {
-            if (getUnitToFollow() == nullptr)
+            if (!isAiState(AI_STATE_ATTACKING))
             {
-                switch (m_Unit->GetAIInterface()->getWaypointScriptType())
+                if (getUnitToFollow() == nullptr)
                 {
-                    case Movement::WP_MOVEMENT_SCRIPT_NONE:
-                        break;
-                    case Movement::WP_MOVEMENT_SCRIPT_CIRCLEWP:
-                        generateWaypointScriptCircle();
-                        break;
-                    case Movement::WP_MOVEMENT_SCRIPT_RANDOMWP:
-                        generateWaypointScriptRandom();
-                        break;
-                    case Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP:
-                        generateWaypointScriptForwad();
-                        break;
-                    case Movement::WP_MOVEMENT_SCRIPT_WANTEDWP:
-                        generateWaypointScriptWantedWP();
-                        break;
-                    case Movement::WP_MOVEMENT_SCRIPT_PATROL:
-                        generateWaypointScriptPatrol();
-                        break;
-                    default:
-                        LOG_DEBUG("mUseNewWaypointGenerator is true but type %u is not handled!", getWaypointScriptType());
-                        break;
-                }
-            }
-            else
-            {
-                if (m_formationLinkSqlId != 0)
-                {
-                    if (m_formationLinkTarget == 0)
+                    switch (m_Unit->GetAIInterface()->getWaypointScriptType())
                     {
-                        Creature* creature = static_cast<Creature*>(m_Unit);
-                        if (!creature->haslinkupevent)
-                        {
-                            creature->haslinkupevent = true;
-                            sEventMgr.AddEvent(creature, &Creature::FormationLinkUp, m_formationLinkSqlId, EVENT_CREATURE_FORMATION_LINKUP, 1000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-                        }
+                        case Movement::WP_MOVEMENT_SCRIPT_NONE:
+                            break;
+                        case Movement::WP_MOVEMENT_SCRIPT_CIRCLEWP:
+                            generateWaypointScriptCircle();
+                            break;
+                        case Movement::WP_MOVEMENT_SCRIPT_RANDOMWP:
+                            generateWaypointScriptRandom();
+                            break;
+                        case Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP:
+                            generateWaypointScriptForwad();
+                            break;
+                        case Movement::WP_MOVEMENT_SCRIPT_WANTEDWP:
+                            generateWaypointScriptWantedWP();
+                            break;
+                        case Movement::WP_MOVEMENT_SCRIPT_PATROL:
+                            generateWaypointScriptPatrol();
+                            break;
+                        default:
+                            LOG_DEBUG("mUseNewWaypointGenerator is true but type %u is not handled!", getWaypointScriptType());
+                            break;
                     }
-                    else
+                }
+                else
+                {
+                    if (m_formationLinkSqlId != 0)
                     {
-                        SetUnitToFollow(m_formationLinkTarget);
-                        FollowDistance = m_formationFollowDistance;
-                        m_fallowAngle = m_formationFollowAngle;
+                        if (m_formationLinkTarget == 0)
+                        {
+                            Creature* creature = static_cast<Creature*>(m_Unit);
+                            if (!creature->haslinkupevent)
+                            {
+                                creature->haslinkupevent = true;
+                                sEventMgr.AddEvent(creature, &Creature::FormationLinkUp, m_formationLinkSqlId, EVENT_CREATURE_FORMATION_LINKUP, 1000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                            }
+                        }
+                        else
+                        {
+                            SetUnitToFollow(m_formationLinkTarget);
+                            FollowDistance = m_formationFollowDistance;
+                            m_fallowAngle = m_formationFollowAngle;
+                        }
                     }
                 }
             }

@@ -206,6 +206,9 @@ typedef std::unordered_map<uint64, int32> TargetMap;
 typedef std::set<Unit*> AssistTargetSet;
 typedef std::map<uint32, AI_Spell*> SpellMap;
 
+// uncomment it to use new wp generator for all units
+//#define UseNewWaypointGenerator
+
 //MIT start
 class SERVER_DECL AIInterface : public IUpdatable
 {
