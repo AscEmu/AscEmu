@@ -55,11 +55,7 @@ AIInterface::AIInterface()
     m_moveBackward(false),
 
     mWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE),
-#ifdef UseNewWaypointGenerator
-    mUseNewWaypointGenerator(true),
-#else
-    mUseNewWaypointGenerator(false),
-#endif
+
     mNextPoint(-1),
     mWaitTimerSetOnWP(false),
 
@@ -1042,6 +1038,7 @@ void AIInterface::AttackReaction(Unit* pUnit, uint32 damage_dealt, uint32 spellI
     {
         //we're unfeared resume combat
         HandleEvent(EVENT_ENTERCOMBAT, pUnit, 1);
+        removeAiState(AI_STATE_UNFEARED);
     }
 
     HandleEvent(EVENT_DAMAGETAKEN, pUnit, _CalcThreat(damage_dealt, spellId ? sSpellCustomizations.GetSpellInfo(spellId) : NULL, pUnit));
@@ -2238,16 +2235,6 @@ bool AIInterface::isWaypointScriptType(Movement::WaypointMovementScript wp_scrip
     return wp_script == mWaypointScriptType;
 }
 
-void AIInterface::setUseNewWaypointGenerator(bool set)
-{
-    mUseNewWaypointGenerator = set;
-}
-
-bool AIInterface::useNewWaypointGenerator()
-{
-    return mUseNewWaypointGenerator;
-}
-
 void AIInterface::setupAndMoveToNextWaypoint()
 {
     if (!m_moveTimer)
@@ -2620,6 +2607,124 @@ void AIInterface::generateWaypointScriptPatrol()
     }
 }
 
+void AIInterface::setFormationMovement()
+{
+    if (m_formationLinkSqlId != 0)
+    {
+        if (m_formationLinkTarget == 0)
+        {
+            Creature* creature = static_cast<Creature*>(m_Unit);
+            if (!creature->haslinkupevent)
+            {
+                creature->haslinkupevent = true;
+                sEventMgr.AddEvent(creature, &Creature::FormationLinkUp, m_formationLinkSqlId, EVENT_CREATURE_FORMATION_LINKUP, 1000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            }
+        }
+        else
+        {
+            SetUnitToFollow(m_formationLinkTarget);
+            FollowDistance = m_formationFollowDistance;
+            m_fallowAngle = m_formationFollowAngle;
+        }
+    }
+}
+
+void AIInterface::setFearRandomMovement()
+{
+    Unit* unitToFear = getUnitToFear();
+    if (unitToFear != nullptr && isAiState(AI_STATE_FEAR))          // check fear aura instead?
+    {
+        if (Util::getMSTime() > m_FearTimer)
+        {
+            if (MoveDone())
+            {
+                LocationVector pos = unitToFear->GetPosition();     // current position
+
+                float distance = RandomFloat(15.0f) + 5.0f;
+                float orientation = RandomFloat(6.283f);
+
+                LocationVector randPos;
+                randPos.x = pos.x + distance * cosf(orientation);
+                randPos.y = pos.y + distance * sinf(orientation);
+                randPos.z = unitToFear->GetMapMgr()->GetLandHeight(randPos.x, randPos.y, pos.z + 2);
+
+                VMAP::IVMapManager* vmapMgr = VMAP::VMapFactory::createOrGetVMapManager();
+
+                // change generated x, y, z to a position before hitting the object.
+                bool isHittingObject = vmapMgr->getObjectHitPos(m_Unit->GetMapId(), pos.x, pos.y, pos.z + 2, randPos.x, randPos.y, randPos.z, randPos.x, randPos.y, randPos.z, -1);
+
+                MoveTo(randPos.x, randPos.y, randPos.z);
+
+                m_FearTimer = Util::getMSTime() + RandomUInt(500, 1700);
+            }
+        }
+    }
+}
+
+void AIInterface::setPetFollowMovement()
+{
+    Unit* unitToFollow = getUnitToFollow();
+    if (unitToFollow != nullptr)
+    {
+        if (unitToFollow->event_GetCurrentInstanceId() != m_Unit->event_GetCurrentInstanceId())
+        {
+            m_UnitToFollow = 0;
+        }
+        else
+        {
+            if (isAiState(AI_STATE_IDLE) || isAiState(AI_STATE_FOLLOWING))
+            {
+                LocationVector followPos = unitToFollow->GetPosition();
+                LocationVector pos = m_Unit->GetPosition();
+
+                if (m_lastFollowX != followPos.x || m_lastFollowY != followPos.y)
+                {
+                    float distanceX = followPos.x - pos.x;
+                    float distanceY = followPos.y - pos.y;
+
+                    if (distanceY != 0.0f)
+                    {
+                        float angle = atan2(distanceX, distanceY);
+                        m_Unit->SetOrientation(angle);
+                    }
+
+                    m_lastFollowX = followPos.x;
+                    m_lastFollowY = followPos.y;
+                }
+
+                float distanceToTarget = m_Unit->getDistanceSq(unitToFollow);
+                if (distanceToTarget > (FollowDistance * FollowDistance))
+                {
+                    setAiState(AI_STATE_FOLLOWING);
+
+                    if (distanceToTarget > 100.0f)
+                        SetSprint();
+                    else if (distanceToTarget > 30.0f && distanceToTarget < 100.0f)
+                        SetRun();
+                    else
+                        SetWalk();
+
+                    if (isAiScriptType(AI_SCRIPT_PET) || (m_UnitToFollow == m_formationLinkTarget))
+                    {
+                        float followDistance = 3.0f;
+                        float deltaX = followPos.x + (followDistance * (cosf(m_fallowAngle + followPos.o)));
+                        float deltaY = followPos.y + (followDistance * (sinf(m_fallowAngle + followPos.o)));
+
+                        if (m_formationLinkTarget != 0)
+                            followDistance = m_formationFollowDistance;
+
+                        MoveTo(deltaX, deltaY, followPos.z);
+                    }
+                    else
+                    {
+                        _CalcDestinationAndMove(unitToFollow, FollowDistance);
+                    }
+                }
+            }
+        }
+    }
+}
+
 void AIInterface::_UpdateMovement(uint32 p_time)
 {
     if (!m_Unit->isAlive())
@@ -2650,507 +2755,54 @@ void AIInterface::_UpdateMovement(uint32 p_time)
         m_timeMoved = m_timeToMove <= p_time + m_timeMoved ? m_timeToMove : p_time + m_timeMoved;
     }
 
-    if (mUseNewWaypointGenerator == true)
+    if (m_Unit->IsCreature())
     {
-        if (m_Unit->IsCreature())
+        if (!isAiState(AI_STATE_ATTACKING))
         {
-            if (!isAiState(AI_STATE_ATTACKING))
+            if (getUnitToFollow() == nullptr)
             {
-                if (getUnitToFollow() == nullptr)
+                switch (m_Unit->GetAIInterface()->getWaypointScriptType())
                 {
-                    switch (m_Unit->GetAIInterface()->getWaypointScriptType())
-                    {
-                        case Movement::WP_MOVEMENT_SCRIPT_NONE:
-                            break;
-                        case Movement::WP_MOVEMENT_SCRIPT_CIRCLEWP:
-                            generateWaypointScriptCircle();
-                            break;
-                        case Movement::WP_MOVEMENT_SCRIPT_RANDOMWP:
-                            generateWaypointScriptRandom();
-                            break;
-                        case Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP:
-                            generateWaypointScriptForwad();
-                            break;
-                        case Movement::WP_MOVEMENT_SCRIPT_WANTEDWP:
-                            generateWaypointScriptWantedWP();
-                            break;
-                        case Movement::WP_MOVEMENT_SCRIPT_PATROL:
-                            generateWaypointScriptPatrol();
-                            break;
-                        default:
-                            LOG_DEBUG("mUseNewWaypointGenerator is true but type %u is not handled!", getWaypointScriptType());
-                            break;
-                    }
+                    case Movement::WP_MOVEMENT_SCRIPT_NONE:
+                        break;
+                    case Movement::WP_MOVEMENT_SCRIPT_CIRCLEWP:
+                        generateWaypointScriptCircle();
+                        break;
+                    case Movement::WP_MOVEMENT_SCRIPT_RANDOMWP:
+                        generateWaypointScriptRandom();
+                        break;
+                    case Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP:
+                        generateWaypointScriptForwad();
+                        break;
+                    case Movement::WP_MOVEMENT_SCRIPT_WANTEDWP:
+                        generateWaypointScriptWantedWP();
+                        break;
+                    case Movement::WP_MOVEMENT_SCRIPT_PATROL:
+                        generateWaypointScriptPatrol();
+                        break;
+                    default:
+                        LOG_DEBUG("WaypointGenerator is called for invalid type %u", getWaypointScriptType());
+                        break;
                 }
-                else
-                {
-                    if (m_formationLinkSqlId != 0)
-                    {
-                        if (m_formationLinkTarget == 0)
-                        {
-                            Creature* creature = static_cast<Creature*>(m_Unit);
-                            if (!creature->haslinkupevent)
-                            {
-                                creature->haslinkupevent = true;
-                                sEventMgr.AddEvent(creature, &Creature::FormationLinkUp, m_formationLinkSqlId, EVENT_CREATURE_FORMATION_LINKUP, 1000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-                            }
-                        }
-                        else
-                        {
-                            SetUnitToFollow(m_formationLinkTarget);
-                            FollowDistance = m_formationFollowDistance;
-                            m_fallowAngle = m_formationFollowAngle;
-                        }
-                    }
-                }
-            }
-        }
-        else
-        {
-            LOG_DEBUG("Called new Waypoint Generator for Player!");
-        }
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // fear movement - todo move this to a new function!
-        Unit* unitToFear = getUnitToFear();
-        if (isAiState(AI_STATE_FEAR) || isAiState(AI_STATE_UNFEARED))   // check fear aura instead?
-        {
-            if (Util::getMSTime() > m_FearTimer)
-            {
-                if (MoveDone())                                         // if spline move is done
-                {
-                    LocationVector pos = unitToFear->GetPosition();     // current position
-
-                    float distance = RandomFloat(15.0f) + 5.0f;
-                    float orientation = RandomFloat(6.283f);
-
-                    LocationVector randPos;
-                    randPos.x = pos.x + distance * cosf(orientation);
-                    randPos.y = pos.y + distance * sinf(orientation);
-                    randPos.z = unitToFear->GetMapMgr()->GetLandHeight(randPos.x, randPos.y, pos.z + 2);
-
-                    VMAP::IVMapManager* vmapMgr = VMAP::VMapFactory::createOrGetVMapManager();
-
-                    // change generated x, y, z to a position before hitting the object.
-                    bool isHittingObject = vmapMgr->getObjectHitPos(m_Unit->GetMapId(), pos.x, pos.y, pos.z + 2, randPos.x, randPos.y, randPos.z, randPos.x, randPos.y, randPos.z, -1);
-
-                    MoveTo(randPos.x, randPos.y, randPos.z);
-
-                    m_FearTimer = Util::getMSTime() + RandomUInt(500, 1700);
-                }
-            }
-        }
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        //
-
-    }
-    else
-    {
-        /*CreatureProperties const* cp = sMySQLStore.getCreatureProperties(m_Unit->GetEntry());
-        if (cp != nullptr && !isWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE))
-        {
-            LOG_DEBUG("%s (%u) called old Waypoint Generator!", cp->Name.c_str(), cp->Id);
-        }*/
-
-        if (getCreatureState() == MOVING)
-        {
-            if (!m_moveTimer)
-            {
-                if (MoveDone())
-                {
-                    if (isWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP))//We reached wanted wp stop now
-                        setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-
-                    float wayO = 0.0f;
-
-                    if ((GetWayPointsCount() != 0) && (isAiState(AI_STATE_IDLE) || isAiState(AI_STATE_SCRIPTMOVE))) //if we attacking don't use wps
-                    {
-                        Movement::WayPoint* wp = getWayPoint(getCurrentWaypoint());
-                        if (wp)
-                        {
-                            CALL_SCRIPT_EVENT(m_Unit, OnReachWP)(wp->id, !m_moveBackward);
-                            static_cast<Creature*>(m_Unit)->HandleMonsterSayEvent(MONSTER_SAY_EVENT_RANDOM_WAYPOINT);
-
-                            //Lets face to correct orientation
-                            wayO = wp->o;
-                            m_moveTimer = wp->waittime; //wait before next move
-                            if (!m_moveBackward)
-                            {
-                                if (wp->forwardemoteoneshot)
-                                {
-                                    GetUnit()->Emote(EmoteType(wp->forwardemoteid));
-                                }
-                                else
-                                {
-                                    if (GetUnit()->GetEmoteState() != wp->forwardemoteid)
-                                    {
-                                        GetUnit()->SetEmoteState(wp->forwardemoteid);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if (wp->backwardemoteoneshot)
-                                {
-                                    GetUnit()->Emote(EmoteType(wp->backwardemoteid));
-                                }
-                                else
-                                {
-                                    if (GetUnit()->GetEmoteState() != wp->backwardemoteid)
-                                    {
-                                        GetUnit()->SetEmoteState(wp->backwardemoteid);
-                                    }
-                                }
-                            }
-                        }
-                        else
-                            m_moveTimer = RandomUInt(HasWalkMode(WALKMODE_RUN) ? 5000 : 10000); // wait before next move
-                    }
-
-                    setCreatureState(STOPPED);
-                    SetWalk();
-
-                    if (isWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE))
-                        m_Unit->SetOrientation(wayO);
-
-                    m_timeMoved = 0;
-                    m_timeToMove = 0;
-                }
-            }
-        }
-        else if (getCreatureState() == STOPPED
-            && (isAiState(AI_STATE_IDLE) || isAiState(AI_STATE_SCRIPTMOVE)) 
-            && !m_moveTimer 
-            && !m_timeToMove 
-            && getUnitToFollow() == NULL) //creature is stopped and out of Combat
-        {
-            if (m_Unit->GetDisplayId() == 5233) //if Spirit Healer don't move
-                return;
-
-            // do we have a formation?
-            if (m_formationLinkSqlId != 0)
-            {
-                if (m_formationLinkTarget == 0)
-                {
-                    // haven't found our target yet
-                    Creature* c = static_cast<Creature*>(m_Unit);
-                    if (!c->haslinkupevent)
-                    {
-                        // register linkup event
-                        c->haslinkupevent = true;
-                        sEventMgr.AddEvent(c, &Creature::FormationLinkUp, m_formationLinkSqlId, EVENT_CREATURE_FORMATION_LINKUP, 1000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-                    }
-                }
-                else
-                {
-                    // we've got a formation target, set unittofollow to this
-                    SetUnitToFollow(m_formationLinkTarget);
-                    FollowDistance = m_formationFollowDistance;
-                    m_fallowAngle = m_formationFollowAngle;
-                }
-            }
-
-
-            if (getUnitToFollow() == NULL)
-            {
-                // no formation, use waypoints
-                int destpoint = -1;
-
-                // If creature has no waypoints just wander aimlessly around spawnpoint
-                if (GetWayPointsCount() == 0) //no waypoints
-                {
-                    return;
-                }
-                else //we do have waypoints
-                {
-                    if (isWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_RANDOMWP)) //is random move on if so move to a random waypoint
-                    {
-                        if (GetWayPointsCount() > 1)
-                            destpoint = RandomUInt((uint32)GetWayPointsCount());
-                    }
-                    else if (isWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_CIRCLEWP))  //random move is not on lets follow the path in circles
-                    {
-                        // 1 -> 10 then 1 -> 10
-                        m_currentWaypoint++;
-                        if (m_currentWaypoint > GetWayPointsCount())
-                            m_currentWaypoint = 1;  //Happens when you delete last wp seems to continue ticking
-
-                        destpoint = m_currentWaypoint;
-                        m_moveBackward = false;
-                    }
-                    else if (isWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP))//Move to wanted wp
-                    {
-                        if (m_currentWaypoint)
-                        {
-                            if (GetWayPointsCount() > 0)
-                            {
-                                destpoint = m_currentWaypoint;
-                            }
-                            else
-                                destpoint = -1;
-                        }
-                    }
-                    else if (isWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP))// move to end, then stop
-                    {
-                        ++m_currentWaypoint;
-                        if (m_currentWaypoint > GetWayPointsCount())
-                        {
-                            //hmm maybe we should stop being path walker since we are waiting here anyway
-                            destpoint = -1;
-                        }
-                        else
-                            destpoint = m_currentWaypoint;
-                    }
-                    else if (isWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_QUEST))// move to end, then stop
-                    {
-                        ++m_currentWaypoint;
-                        if (m_currentWaypoint > GetWayPointsCount())
-                        {
-                            //hmm maybe we should stop being path walker since we are waiting here anyway
-                            destpoint = -1;
-                        }
-                        else
-                            destpoint = m_currentWaypoint;
-                    }
-                    else if (!isWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_QUEST) && !isWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE))//4 Unused
-                    {
-                        // 1 -> 10 then 10 -> 1
-                        if (m_currentWaypoint > GetWayPointsCount())
-                            m_currentWaypoint = 1;  //Happens when you delete last wp seems to continue ticking
-
-                        if (m_currentWaypoint == GetWayPointsCount())  // Are we on the last waypoint? if so walk back
-                            m_moveBackward = true;
-
-                        if (m_currentWaypoint == 1)  // Are we on the first waypoint? if so lets goto the second waypoint
-                            m_moveBackward = false;
-
-                        if (!m_moveBackward)  // going 1..n
-                            destpoint = ++m_currentWaypoint;
-                        else                // going n..1
-                            destpoint = --m_currentWaypoint;
-                    }
-
-                    if (destpoint != -1)
-                    {
-                        Movement::WayPoint* wp = getWayPoint(destpoint);
-                        if (wp)
-                        {
-                            if (!m_moveBackward)
-                            {
-                                if ((wp->forwardskinid != 0) && (GetUnit()->GetDisplayId() != wp->forwardskinid))
-                                {
-                                    GetUnit()->SetDisplayId(wp->forwardskinid);
-                                    GetUnit()->EventModelChange();
-                                }
-                            }
-                            else
-                            {
-                                if ((wp->backwardskinid != 0) && (GetUnit()->GetDisplayId() != wp->backwardskinid))
-                                {
-                                    GetUnit()->SetDisplayId(wp->backwardskinid);
-                                    GetUnit()->EventModelChange();
-                                }
-                            }
-
-                            switch (wp->flags)
-                            {
-                                case Movement::WP_MOVE_TYPE_FLY:
-                                {
-                                    SetFly();
-                                } break;
-                                case Movement::WP_MOVE_TYPE_RUN:
-                                {
-                                    SetRun();
-                                } break;
-                                default:
-                                {
-                                    SetWalk();
-                                } break;
-                            }
-
-                            MoveTo(wp->x, wp->y, wp->z);
-                        }
-                    }
-                }
-            }
-        }
-
-        //Fear Code
-        Unit* unitToFear = getUnitToFear();
-        if (isAiState(AI_STATE_FEAR) && unitToFear != NULL && getCreatureState() == STOPPED)
-        {
-            if (Util::getMSTime() > m_FearTimer)   // Wait at point for x ms ;)
-            {
-                float Fx;
-                float Fy;
-                float Fz;
-
-                if (worldConfig.server.disableFearMovement)
-                {
-                    if (m_Unit->GetMapId() == 529 || m_Unit->GetMapId() == 566 ||
-                        m_Unit->GetMapId() == 489 || m_Unit->GetMapId() == 572 ||
-                        m_Unit->GetMapId() == 562 || m_Unit->GetMapId() == 559 ||
-                        m_Unit->GetMapId() == 617 || m_Unit->GetMapId() == 618)
-                    {
-                        return;
-                    }
-                }
-                // Calculate new angle to target.
-                float Fo = m_Unit->calcRadAngle(unitToFear->GetPositionX(), unitToFear->GetPositionY(), m_Unit->GetPositionX(), m_Unit->GetPositionY());
-                Fo += RandomFloat(M_PI_FLOAT / 2);
-
-                float dist = m_Unit->CalcDistance(unitToFear);
-                if (dist > 30.0f || (Rand(25) && dist > 10.0f))    // not too far or too close
-                {
-                    if (m_Unit->GetMapId() == 572 || m_Unit->GetMapId() == 562 || m_Unit->GetMapId() == 559 ||
-                        m_Unit->GetMapId() == 617 || m_Unit->GetMapId() == 618)   //GET MAP ID
-                    {
-                        Fx = m_Unit->GetPositionX();
-                        Fy = m_Unit->GetPositionY();
-                    }
-                    else
-                    {
-                        Fx = m_Unit->GetPositionX() - (RandomFloat(15.f) + 5.0f) * cosf(Fo);
-                        Fy = m_Unit->GetPositionY() - (RandomFloat(15.f) + 5.0f) * sinf(Fo);
-                    }
-                }
-                else
-                {
-                    Fx = m_Unit->GetPositionX() + (RandomFloat(20.f) + 5.0f) * cosf(Fo);
-                    Fy = m_Unit->GetPositionY() + (RandomFloat(20.f) + 5.0f) * sinf(Fo);
-                }
-                // Check if this point is in water.
-                float wl = m_Unit->GetMapMgr()->GetLiquidHeight(Fx, Fy);
-                //            uint8 wt = m_Unit->GetMapMgr()->GetWaterType(Fx, Fy);
-
-                if (worldConfig.terrainCollision.isCollisionEnabled)
-                {
-                    VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
-                    Fz = mgr->getHeight(m_Unit->GetMapId(), Fx, Fy, m_Unit->GetPositionZ() + 2.0f, 10000.0f);
-                    if (Fz == NO_WMO_HEIGHT)
-                    {
-                        Fz = m_Unit->GetMapMgr()->GetADTLandHeight(Fx, Fy);
-                    }
-                    else
-                    {
-                        bool isHittingObject = mgr->getObjectHitPos(m_Unit->GetMapId(), m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ() + 2.0f,
-                            Fx, Fy, Fz + 2.0f, Fx, Fy, Fz, -1.0f);
-                    }
-
-                    bool los = mgr->isInLineOfSight(m_Unit->GetMapId(), m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ() + 2.0f, Fx, Fy, Fz);
-
-                    if (fabs(m_Unit->GetPositionZ() - Fz) > 10.0f ||
-                        (wl != 0.0f && Fz < wl))        // in water
-                    {
-                        m_FearTimer = Util::getMSTime() + 500;
-                    }
-                    else if (los)
-                    {
-                        MoveTo(Fx, Fy, Fz);
-                        m_FearTimer = m_totalMoveTime + Util::getMSTime() + 400;
-                    }
-                    else
-                    {
-                        StopMovement(0);
-                    }
-                }
-                else
-                {
-                    Fz = m_Unit->GetMapMgr()->GetADTLandHeight(Fx, Fy);
-                    if (fabs(m_Unit->GetPositionZ() - Fz) > 4 || (Fz != 0.0f && Fz < (wl - 2.0f)))
-                        m_FearTimer = Util::getMSTime() + 100;
-                    else
-                    {
-                        SetRun(); //fear = run bitch run
-                        MoveTo(Fx, Fy, Fz);
-                        m_FearTimer = m_totalMoveTime + Util::getMSTime() + 200;
-                    }
-                }
-            }
-        }
-
-        // Wander AI movement code
-        if (isAiState(AI_STATE_WANDER) && getCreatureState() == STOPPED)
-        {
-            if (Util::getMSTime() < m_WanderTimer) // is it time to move again?
-                return;
-
-            // calculate a random distance and angle to move
-            float wanderD = RandomFloat(2.0f) + 2.0f;
-            float wanderO = RandomFloat(6.283f);
-            float wanderX = m_Unit->GetPositionX() + wanderD * cosf(wanderO);
-            float wanderY = m_Unit->GetPositionY() + wanderD * sinf(wanderO);
-            float wanderZ = m_Unit->GetMapMgr()->GetLandHeight(wanderX, wanderY, m_Unit->GetPositionZ() + 2);
-
-            VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
-            bool isHittingObject = mgr->getObjectHitPos(m_Unit->GetMapId(), m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ() + 2, wanderX, wanderY, wanderZ, wanderX, wanderY, wanderZ, -1);
-            MoveTo(wanderX, wanderY, wanderZ);
-            m_WanderTimer = Util::getMSTime() + m_totalMoveTime + 300; // time till next move (+ pause)
-        }
-
-        //Unit Follow Code
-        Unit* unitToFollow = getUnitToFollow();
-        if (unitToFollow != NULL)
-        {
-            if (unitToFollow->event_GetCurrentInstanceId() != m_Unit->event_GetCurrentInstanceId())
-            {
-                m_UnitToFollow = 0;
             }
             else
             {
-                if (isAiState(AI_STATE_IDLE) || isAiState(AI_STATE_FOLLOWING))
-                {
-                    float dist = m_Unit->getDistanceSq(unitToFollow);
-
-                    // re-calculate orientation based on target's movement
-                    if (m_lastFollowX != unitToFollow->GetPositionX() ||
-                        m_lastFollowY != unitToFollow->GetPositionY())
-                    {
-                        float dx = unitToFollow->GetPositionX() - m_Unit->GetPositionX();
-                        float dy = unitToFollow->GetPositionY() - m_Unit->GetPositionY();
-                        if (dy != 0.0f)
-                        {
-                            float angle = atan2(dx, dy);
-                            m_Unit->SetOrientation(angle);
-                        }
-                        m_lastFollowX = unitToFollow->GetPositionX();
-                        m_lastFollowY = unitToFollow->GetPositionY();
-                    }
-
-                    if (dist > (FollowDistance * FollowDistance)) //if out of range
-                    {
-                        setAiState(AI_STATE_FOLLOWING);
-
-                        if (dist > 25.0f) //25 yard away lets run else we will loose the them
-                            SetRun();
-                        else
-                            SetWalk();
-
-                        if (isAiScriptType(AI_SCRIPT_PET) || (m_UnitToFollow == m_formationLinkTarget)) //Unit is Pet/formation
-                        {
-                            if (dist > 900.0f/*30*/)
-                                SetSprint();
-
-                            float delta_x = unitToFollow->GetPositionX();
-                            float delta_y = unitToFollow->GetPositionY();
-                            float d = 3;
-                            if (m_formationLinkTarget != 0)
-                                d = m_formationFollowDistance;
-
-                            MoveTo(delta_x + (d * (cosf(m_fallowAngle + unitToFollow->GetOrientation()))),
-                                delta_y + (d * (sinf(m_fallowAngle + unitToFollow->GetOrientation()))),
-                                unitToFollow->GetPositionZ());
-                        }
-                        else
-                        {
-                            _CalcDestinationAndMove(unitToFollow, FollowDistance);
-                        }
-                    }
-                }
+                setFormationMovement();
             }
         }
     }
+    else
+    {
+        LOG_DEBUG("Called new Waypoint Generator for Player!");
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // fear movement
+    setFearRandomMovement();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // follow movement
+    setPetFollowMovement();
 }
 
 void AIInterface::CastSpell(Unit* caster, SpellInfo* spellInfo, SpellCastTargets targets)

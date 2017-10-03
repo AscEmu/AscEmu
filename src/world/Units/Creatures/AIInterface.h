@@ -144,19 +144,19 @@ enum AI_SpellTargetType
 
 enum AiState
 {
-    AI_STATE_IDLE,
-    AI_STATE_ATTACKING,
-    AI_STATE_CASTING,
-    AI_STATE_FLEEING,
-    AI_STATE_FOLLOWING,
-    AI_STATE_EVADE,
-    AI_STATE_MOVEWP,
-    AI_STATE_FEAR,
-    AI_STATE_UNFEARED,
-    AI_STATE_WANDER,
-    AI_STATE_STOPPED,
-    AI_STATE_SCRIPTMOVE,
-    AI_STATE_SCRIPTIDLE
+    AI_STATE_IDLE       = 0,
+    AI_STATE_ATTACKING  = 1,
+    AI_STATE_CASTING    = 2,
+    AI_STATE_FLEEING    = 3,
+    AI_STATE_FOLLOWING  = 4,
+    AI_STATE_EVADE      = 5,
+    AI_STATE_MOVEWP     = 6,
+    AI_STATE_FEAR       = 7,
+    AI_STATE_UNFEARED   = 8,
+    AI_STATE_WANDER     = 9,
+    AI_STATE_STOPPED    = 10,
+    AI_STATE_SCRIPTMOVE = 11,
+    AI_STATE_SCRIPTIDLE = 12
 };
 
 enum MovementState
@@ -206,18 +206,15 @@ typedef std::unordered_map<uint64, int32> TargetMap;
 typedef std::set<Unit*> AssistTargetSet;
 typedef std::map<uint32, AI_Spell*> SpellMap;
 
-// uncomment it to use new wp generator for all units
-//#define UseNewWaypointGenerator
 
 //MIT start
 class SERVER_DECL AIInterface : public IUpdatable
 {
     //////////////////////////////////////////////////////////////////////////////////////////
-    // Waypoint functions
+    // Waypoint / movement functions
     private:
 
         Movement::WaypointMovementScript mWaypointScriptType;
-        bool mUseNewWaypointGenerator;
         int32_t mNextPoint;
         bool mWaitTimerSetOnWP;
 
@@ -227,15 +224,16 @@ class SERVER_DECL AIInterface : public IUpdatable
         Movement::WaypointMovementScript getWaypointScriptType();
         bool isWaypointScriptType(Movement::WaypointMovementScript wp_script);
 
-        void setUseNewWaypointGenerator(bool set);
-        bool useNewWaypointGenerator();
-
         void setupAndMoveToNextWaypoint();
         void generateWaypointScriptCircle();
         void generateWaypointScriptRandom();
         void generateWaypointScriptForwad();
         void generateWaypointScriptWantedWP();
         void generateWaypointScriptPatrol();
+
+        void setFormationMovement();
+        void setFearRandomMovement();
+        void setPetFollowMovement();
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // AI Script functions
@@ -253,13 +251,14 @@ class SERVER_DECL AIInterface : public IUpdatable
     // AI State functions
     private:
 
-        AiState mAiState;
+        uint32_t mAiState;
 
     public:
 
-        void setAiState(AiState ai_state) { mAiState = ai_state; }
+        void setAiState(uint32_t ai_state) { mAiState = ai_state; }
+        void removeAiState(uint32_t ai_state) { mAiState &= ~ai_state; }
         uint32_t getAiState() { return mAiState; }
-        bool isAiState(AiState ai_state) { return ai_state == mAiState; }
+        bool isAiState(uint32_t ai_state) { return ai_state == mAiState; }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Creature State functions

@@ -40,7 +40,6 @@ public:
 
     SinclariAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        _unit->GetAIInterface()->setUseNewWaypointGenerator(true);
     }
 
     static CreatureAIScript* Create(Creature* creature) { return new SinclariAI(creature); }
@@ -150,8 +149,6 @@ public:
 
     VHGuardsAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        _unit->GetAIInterface()->setUseNewWaypointGenerator(true);
-        //_unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
     }
 
     static CreatureAIScript* Create(Creature* creature) { return new VHGuardsAI(creature); }
