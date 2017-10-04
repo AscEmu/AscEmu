@@ -996,7 +996,7 @@ void MoonScriptCreatureAI::ForceWaypointMove(uint32 pWaypointId)
 
 void MoonScriptCreatureAI::SetWaypointToMove(uint32 pWaypointId)
 {
-    _unit->GetAIInterface()->setWaypointToMove(pWaypointId);
+    _unit->GetAIInterface()->setWayPointToMove(pWaypointId);
 }
 
 void MoonScriptCreatureAI::StopWaypointMovement()
@@ -1015,17 +1015,17 @@ void MoonScriptCreatureAI::SetWaypointMoveType(Movement::WaypointMovementScript 
 
 uint32 MoonScriptCreatureAI::GetCurrentWaypoint()
 {
-    return _unit->GetAIInterface()->getCurrentWaypoint();
+    return _unit->GetAIInterface()->getCurrentWayPointId();
 }
 
 size_t MoonScriptCreatureAI::GetWaypointCount()
 {
-    return _unit->GetAIInterface()->GetWayPointsCount();
+    return _unit->GetAIInterface()->getWayPointsCount();
 }
 
 bool MoonScriptCreatureAI::HasWaypoints()
 {
-    return _unit->GetAIInterface()->hasWaypoints();
+    return _unit->GetAIInterface()->hasWayPoints();
 }
 
 void MoonScriptCreatureAI::OnCombatStart(Unit* pTarget)

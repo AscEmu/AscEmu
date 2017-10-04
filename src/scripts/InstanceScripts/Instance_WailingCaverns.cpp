@@ -326,7 +326,7 @@ class DofNaralexGossip : public Arcemu::Gossip::Script
                     pCreature->GetAIInterface()->StopMovement(0);
                     pCreature->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                     pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                    pCreature->GetAIInterface()->setWaypointToMove(2);
+                    pCreature->GetAIInterface()->setWayPointToMove(2);
                 } break;
                 default:
                     break;

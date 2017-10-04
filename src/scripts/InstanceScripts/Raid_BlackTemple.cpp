@@ -4812,7 +4812,7 @@ class AkamaAI : public MoonScriptBossAI
                 default:
                     {
                         _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                        _unit->GetAIInterface()->setWaypointToMove(iWaypointId + 1);
+                        _unit->GetAIInterface()->setWayPointToMove(iWaypointId + 1);
                     }
             }
         }

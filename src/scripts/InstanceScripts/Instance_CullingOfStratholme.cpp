@@ -1113,7 +1113,7 @@ class ArthasAI : public CreatureAIScript
                 {
                     _unit->SendScriptTextChatMessage(SAY_ARTHAS_10);
                     _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                    _unit->GetAIInterface()->setWaypointToMove(2);
+                    _unit->GetAIInterface()->setWayPointToMove(2);
                 }
                 break;
                 case 7:
@@ -1136,7 +1136,7 @@ class ArthasAI : public CreatureAIScript
                     if (i > 1 && i < 7)
                     {
                         _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                        _unit->GetAIInterface()->setWaypointToMove(i + 1);
+                        _unit->GetAIInterface()->setWayPointToMove(i + 1);
                     }
                 }
                 break;
@@ -1152,7 +1152,7 @@ class ArthasAI : public CreatureAIScript
                     _unit->GetAIInterface()->StopMovement(0);
                     _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                     _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                    _unit->GetAIInterface()->setWaypointToMove(1);
+                    _unit->GetAIInterface()->setWayPointToMove(1);
                 }
                 break;
                 case 1:

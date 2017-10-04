@@ -210,6 +210,11 @@ typedef std::map<uint32, AI_Spell*> SpellMap;
 //MIT start
 class SERVER_DECL AIInterface : public IUpdatable
 {
+    public:
+
+        AIInterface();
+        virtual ~AIInterface();
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Waypoint / movement functions
     private:
@@ -234,6 +239,44 @@ class SERVER_DECL AIInterface : public IUpdatable
         void setFormationMovement();
         void setFearRandomMovement();
         void setPetFollowMovement();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Waypoint functions
+    private:
+
+        Movement::WayPointMap* mWayPointMap;
+        bool mWaypointMapIsLoadedFromDB;
+        uint32 mCurrentWaypoint;
+        bool mMoveWaypointsBackwards;
+
+        bool mShowWayPoints;
+        bool mShowWayPointsBackwards;
+
+    public:
+
+        // \note wp may point to free'd memory after calling this, use bool addWayPointUnsafe(WayPoint* wp) instead to manually handle possible errors.
+        void addWayPoint(Movement::WayPoint* waypoint);
+        // caller delete wp if it wasn't added.
+        bool addWayPointUnsafe(Movement::WayPoint* waypoint);
+
+        Movement::WayPoint* getWayPoint(uint32_t waypointId);
+        
+        bool saveWayPoints();
+        void deleteWayPointById(uint32_t waypointId);
+        void deleteAllWayPoints();
+
+        bool hasWayPoints();
+        uint32_t getCurrentWayPointId();
+        void changeWayPointId(uint32_t oldWaypointId, uint32_t newWaypointId);
+        size_t getWayPointsCount();
+
+        void setWayPointToMove(uint32_t waypointId);
+
+        bool activateShowWayPoints(Player* player, bool showBackwards);
+        void activateShowWayPointsBackwards(bool set);
+        bool isShowWayPointsActive();
+        bool isShowWayPointsBackwardsActive();
+        bool hideWayPoints(Player* player);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // AI Script functions
@@ -273,9 +316,6 @@ class SERVER_DECL AIInterface : public IUpdatable
 
 // MIT end
     public:
-
-        AIInterface();
-        virtual ~AIInterface();
 
         // Misc
         void Init(Unit* un, AiScriptTypes at, Movement::WaypointMovementScript mt);
@@ -342,8 +382,6 @@ class SERVER_DECL AIInterface : public IUpdatable
         SpellCastTargets setSpellTargets(SpellInfo* spellInfo, Unit* target) const;
         AI_Spell* getSpell();
         void addSpellToList(AI_Spell* sp);
-        ///\todo don't use this until i finish it !!
-        /// void CancelSpellCast();
 
         /// Event Handler
         void HandleEvent(uint32 event, Unit* pUnit, uint32 misc1);
@@ -398,23 +436,7 @@ class SERVER_DECL AIInterface : public IUpdatable
 
         void SendCurrentMove(Player* plyr/*uint64 guid*/);
         bool StopMovement(uint32 time);
-        uint32 getCurrentWaypoint() { return m_currentWaypoint; }
-        void changeWayPointID(uint32 oldwpid, uint32 newwpid);
-        /// \note Adds a WayPoint, handling possible errors occurred when adding it. Pay attention: wp may point to free'd memory after calling this, use bool addWayPoint(WayPoint* wp) instead to manually handle possible errors.
-        void addWayPoint(Movement::WayPoint* wp);
-        /// returns true if the WayPoint was added, false otherwise. The caller MUST delete wp if it wasn't added.
-        bool addWayPointUnsafe(Movement::WayPoint* wp);
-        bool saveWayPoints();
-        bool showWayPoints(Player* pPlayer, bool Backwards);
-        bool hideWayPoints(Player* pPlayer);
-        Movement::WayPoint* getWayPoint(uint32 wpid);
-        void deleteWayPoint(uint32 wpid);
-        void deleteWaypoints();
-        inline bool hasWaypoints() { return m_waypoints != NULL; }
-        //inline void setMoveType(uint32 movetype) { m_moveType = movetype; }
 
-        //inline uint32 getMoveType() { return m_moveType; }
-        void setWaypointToMove(uint32 id) { m_currentWaypoint = id; }
         bool IsFlying();
 
         // Calculation
@@ -429,26 +451,15 @@ class SERVER_DECL AIInterface : public IUpdatable
 
         void CheckTarget(Unit* target);
 
-
-        // Movement
         bool m_canMove;
-        bool m_WayPointsShowing;
-        bool m_WayPointsShowBackwards;
-        uint32 m_currentWaypoint;
-        bool m_moveBackward;
 
         //visibility
         uint32 faction_visibility;
 
         bool onGameobject;
         
-        size_t GetWayPointsCount()
-        {
-            if (m_waypoints && !m_waypoints->empty())
-                return m_waypoints->size() - 1;    /* ignore 0 */
-            else
-                return 0;
-        }
+        
+
         bool m_canFlee;
         bool m_canCallForHelp;
         bool m_canRangedAttack;
@@ -499,7 +510,7 @@ class SERVER_DECL AIInterface : public IUpdatable
 
         /// deletes the old waypoint map as default. In case m_custom_waypoint_map is used, just call SetWaypointMap(NULL): this will delete m_custom_waypoint_map too.
         void SetWaypointMap(Movement::WayPointMap* m, bool delete_old_map = true);
-        inline Movement::WayPointMap* GetWaypointMap() { return m_waypoints; }
+        inline Movement::WayPointMap* GetWaypointMap() { return mWayPointMap; }
         void LoadWaypointMapFromDB(uint32 spawnid);
         bool m_isGuard;
         bool m_isNeutralGuard;
@@ -614,12 +625,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         uint32 m_guardTimer;
         int32 m_currentHighestThreat;
         std::list<spawn_timed_emotes*>::iterator next_timed_emote;
-        uint32 timed_emote_expire;
-    private:
-
-        /// specifies if m_waypoints was loaded from DB, so shared between other AIInterface instances.
-        bool m_waypointsLoadedFromDB;
-        Movement::WayPointMap* m_waypoints;
+        uint32 timed_emote_expire;       
 
     public:
 

@@ -5602,7 +5602,7 @@ void Unit::MoveToWaypoint(uint32 wp_id)
         if (wayPoint != nullptr)
         {
             aiInterface->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-            aiInterface->m_currentWaypoint = wp_id;
+            aiInterface->setWayPointToMove(wp_id);
         }
         else
         {

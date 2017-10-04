@@ -900,7 +900,7 @@ class LuaUnit
     static int DeleteAllWaypoints(lua_State* L, Unit* ptr)
     {
         if (ptr != NULL && ptr->IsCreature())
-            ptr->GetAIInterface()->deleteWaypoints();
+            ptr->GetAIInterface()->deleteAllWayPoints();
         return 0;
     }
 
@@ -911,7 +911,7 @@ class LuaUnit
         if (id)
         {
             ptr->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-            ptr->GetAIInterface()->setWaypointToMove(id);
+            ptr->GetAIInterface()->setWayPointToMove(id);
         }
         return 0;
     }
@@ -4071,7 +4071,7 @@ class LuaUnit
         TEST_UNIT()
         uint32 wp = static_cast<uint32>(luaL_checkinteger(L, 1));
         if (wp)
-            static_cast<Creature*>(ptr)->GetAIInterface()->deleteWayPoint(wp);
+            static_cast<Creature*>(ptr)->GetAIInterface()->deleteWayPointById(wp);
         return 0;
     }
 
@@ -5867,7 +5867,7 @@ class LuaUnit
     static int GetCurrentWaypoint(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-            RET_NUMBER(ptr->GetAIInterface()->getCurrentWaypoint());
+            RET_NUMBER(ptr->GetAIInterface()->getCurrentWayPointId());
     }
     static int DisableMelee(lua_State* L, Unit* ptr)
     {
@@ -6048,7 +6048,7 @@ class LuaUnit
     static int GetNumWaypoints(lua_State* L, Unit* ptr)
     {
         TEST_UNIT();
-        RET_NUMBER(static_cast<lua_Number>(ptr->GetAIInterface()->GetWayPointsCount()));
+        RET_NUMBER(static_cast<lua_Number>(ptr->GetAIInterface()->getWayPointsCount()));
         return 1;
     }
     static int GetMovementType(lua_State* L, Unit* ptr)

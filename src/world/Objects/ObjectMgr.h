@@ -731,7 +731,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         std::unordered_map<uint32, PlayerInfo*> m_playersinfo;
         PlayerNameStringIndexMap m_playersInfoByName;
 
-        std::unordered_map<uint32, Movement::WayPointMap*> m_waypoints;           /// stored by spawnid
+        std::unordered_map<uint32, Movement::WayPointMap*> mWayPointMap;           /// stored by spawnid
         std::unordered_map<uint32, TimedEmoteList*> m_timedemotes;      /// stored by spawnid
 
 

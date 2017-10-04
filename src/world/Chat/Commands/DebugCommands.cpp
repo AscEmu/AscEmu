@@ -32,7 +32,7 @@ bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_sess
     uint32 ai_type = selected_unit->GetAIInterface()->getAiScriptType();
     uint32 ai_agent = selected_unit->GetAIInterface()->getCurrentAgent();
 
-    uint32 current_wp = selected_unit->GetAIInterface()->getCurrentWaypoint();
+    uint32 current_wp = selected_unit->GetAIInterface()->getCurrentWayPointId();
     uint32 wp_script_type = selected_unit->GetAIInterface()->getWaypointScriptType();
 
     uint32 walk_mode = selected_unit->GetAIInterface()->GetWalkMode();

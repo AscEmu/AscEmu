@@ -446,7 +446,6 @@ class VHCreatureAI : public MoonScriptCreatureAI
         VHCreatureAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             //this->CreateWaypoint(1, 0, 0, VH_DOOR_ATTACK_POSITION);
-            //_unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHENSTOP);
             //this->SetWaypointToMove(1);
             //this->MoveTo(VH_DOOR_ATTACK_POSITION.x, VH_DOOR_ATTACK_POSITION.y, VH_DOOR_ATTACK_POSITION.z, true);
             //_unit->GetAIInterface()->UpdateMove();

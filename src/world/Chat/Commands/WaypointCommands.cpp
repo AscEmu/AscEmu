@@ -67,8 +67,8 @@ bool ChatHandler::HandleWayPointAddCommand(const char* args, WorldSession* m_ses
     uint32 BackwardEmoteOneShot = (pBackwardEmoteOneShot) ? atoi(pBackwardEmoteOneShot) : 1;
 
     Movement::WayPoint* waypoint = new Movement::WayPoint;
-    bool showing = ai->m_WayPointsShowing;
-    waypoint->id = uint32(ai->GetWayPointsCount() + 1);
+    bool showing = ai->isShowWayPointsActive();
+    waypoint->id = uint32(ai->getWayPointsCount() + 1);
     waypoint->x = player->GetPositionX();
     waypoint->y = player->GetPositionY();
     waypoint->z = player->GetPositionZ();
@@ -96,7 +96,7 @@ bool ChatHandler::HandleWayPointAddCommand(const char* args, WorldSession* m_ses
     }
 
     if (showing)
-        ai->showWayPoints(player, ai->m_WayPointsShowBackwards);
+        ai->activateShowWayPoints(player, ai->isShowWayPointsBackwardsActive());
 
     return true;
 }
@@ -155,8 +155,8 @@ bool ChatHandler::HandleWayPointAddFlyCommand(const char* args, WorldSession* m_
     uint32 BackwardEmoteOneShot = (pBackwardEmoteOneShot) ? atoi(pBackwardEmoteOneShot) : 1;
 
     Movement::WayPoint* waypoint = new Movement::WayPoint;
-    bool showing = ai->m_WayPointsShowing;
-    waypoint->id = (uint32)ai->GetWayPointsCount() + 1;
+    bool showing = ai->isShowWayPointsActive();
+    waypoint->id = (uint32)ai->getWayPointsCount() + 1;
     waypoint->x = player->GetPositionX();
     waypoint->y = player->GetPositionY();
     waypoint->z = player->GetPositionZ();
@@ -184,7 +184,7 @@ bool ChatHandler::HandleWayPointAddFlyCommand(const char* args, WorldSession* m_
     }
 
     if (showing)
-        ai->showWayPoints(player, ai->m_WayPointsShowBackwards);
+        ai->activateShowWayPoints(player, ai->isShowWayPointsBackwardsActive());
 
     return true;
 }
@@ -209,14 +209,14 @@ bool ChatHandler::HandleWayPointChangeNumberCommand(const char* args, WorldSessi
 
     if (wpid)
     {
-        bool show = ai->m_WayPointsShowing;
+        bool show = ai->isShowWayPointsActive();
         if (show == true)
             ai->hideWayPoints(player);
 
-        ai->changeWayPointID(wpid, NewID);
+        ai->changeWayPointId(wpid, NewID);
 
         if (show == true)
-            ai->showWayPoints(player, ai->m_WayPointsShowBackwards);
+            ai->activateShowWayPoints(player, ai->isShowWayPointsBackwardsActive());
 
         SystemMessage(m_session, "Waypoint %u changed to %u", wpid, NewID);
     }
@@ -243,14 +243,14 @@ bool ChatHandler::HandleWayPointDeleteCommand(const char* /*args*/, WorldSession
 
     if (wpid)
     {
-        bool show = ai->m_WayPointsShowing;
+        bool show = ai->isShowWayPointsActive();
         if (show == true)
             ai->hideWayPoints(player);
 
-        ai->deleteWayPoint(wpid);
+        ai->deleteWayPointById(wpid);
 
         if (show == true)
-            ai->showWayPoints(player, ai->m_WayPointsShowBackwards);
+            ai->activateShowWayPoints(player, ai->isShowWayPointsBackwardsActive());
 
         SystemMessage(m_session, "Waypoint %u deleted.", wpid);
     }
@@ -271,13 +271,13 @@ bool ChatHandler::HandleWayPointDeleteAllCommand(const char* /*args*/, WorldSess
     if (creature_target == nullptr || !creature_target->GetSQL_id())
         return true;
 
-    bool show = ai->m_WayPointsShowing;
+    bool show = ai->isShowWayPointsActive();
     if (show == true)
         ai->hideWayPoints(player);
 
     WorldDatabase.Execute("DELETE FROM creature_waypoints WHERE spawnid=%u", creature_target->GetSQL_id());
 
-    creature_target->GetAIInterface()->deleteWaypoints();
+    creature_target->GetAIInterface()->deleteAllWayPoints();
     SystemMessage(m_session, "Deleted waypoints for creature_spawn %u", creature_target->GetSQL_id());
 
     return true;
@@ -383,7 +383,7 @@ bool ChatHandler::HandleWayPointGenerateCommand(const char* args, WorldSession* 
     if (creature_target == nullptr)
         return true;
 
-    if (creature_target->GetAIInterface()->GetWayPointsCount())
+    if (creature_target->GetAIInterface()->getWayPointsCount())
     {
         SystemMessage(m_session, "The creature already has waypoints");
         return false;
@@ -433,7 +433,7 @@ bool ChatHandler::HandleWayPointGenerateCommand(const char* args, WorldSession* 
         float z = creature_target->GetMapMgr()->GetLandHeight(x, y, creature_target->GetPositionZ() + 3);
 
         Movement::WayPoint* wp = new Movement::WayPoint;
-        wp->id = (uint32)creature_target->GetAIInterface()->GetWayPointsCount() + 1;
+        wp->id = (uint32)creature_target->GetAIInterface()->getWayPointsCount() + 1;
         wp->x = x;
         wp->y = y;
         wp->z = z;
@@ -457,7 +457,7 @@ bool ChatHandler::HandleWayPointGenerateCommand(const char* args, WorldSession* 
     }
 
     m_session->GetPlayer()->waypointunit = creature_target->GetAIInterface();
-    creature_target->GetAIInterface()->showWayPoints(m_session->GetPlayer(), creature_target->GetAIInterface()->m_WayPointsShowBackwards);
+    creature_target->GetAIInterface()->activateShowWayPoints(m_session->GetPlayer(), creature_target->GetAIInterface()->isShowWayPointsBackwardsActive());
 
     return true;
 }
@@ -474,7 +474,7 @@ bool ChatHandler::HandleWayPointHideCommand(const char* /*args*/, WorldSession* 
 
     if (player->waypointunit == ai)
     {
-        if (ai->m_WayPointsShowing == true)
+        if (ai->isShowWayPointsActive() == true)
             player->waypointunit->hideWayPoints(player);
 
         player->waypointunit = nullptr;
@@ -504,7 +504,7 @@ bool ChatHandler::HandleWayPointInfoCommand(const char* /*args*/, WorldSession* 
     }
     std::stringstream ss;
 
-    if ((wpid > 0) && (wpid <= ai->GetWayPointsCount()))
+    if ((wpid > 0) && (wpid <= ai->getWayPointsCount()))
     {
         Movement::WayPoint* waypoint = ai->getWayPoint(wpid);
         if (waypoint != nullptr)
@@ -562,10 +562,10 @@ bool ChatHandler::HandleWayPpointMoveHereCommand(const char* /*args*/, WorldSess
             ai->saveWayPoints();
         }
 
-        if (ai->m_WayPointsShowing == true)
+        if (ai->isShowWayPointsActive() == true)
         {
             ai->hideWayPoints(player);
-            ai->showWayPoints(player, ai->m_WayPointsShowBackwards);
+            ai->activateShowWayPoints(player, ai->isShowWayPointsBackwardsActive());
         }
 
         SystemMessage(m_session, "Waypoint %u has been moved to your position.", wpid);
@@ -615,7 +615,7 @@ bool ChatHandler::HandleWayPointSaveCommand(const char* /*args*/, WorldSession* 
     Player* player = m_session->GetPlayer();
     if (player->waypointunit == creature_target->GetAIInterface())
     {
-        if (creature_target->GetAIInterface()->m_WayPointsShowing)
+        if (creature_target->GetAIInterface()->isShowWayPointsActive())
             player->waypointunit->hideWayPoints(player);
 
         player->waypointunit = nullptr;
@@ -640,7 +640,7 @@ bool ChatHandler::HandleWayPointShowCommand(const char* args, WorldSession* m_se
     Player* player = m_session->GetPlayer();
     if (player->waypointunit != ai)
     {
-        if (ai->m_WayPointsShowing == true)
+        if (ai->isShowWayPointsActive() == true)
         {
             RedSystemMessage(m_session, "Some one else is also Viewing this Creatures WayPoints.");
             RedSystemMessage(m_session, "Viewing WayPoints at the same time as some one else can cause undesireble results.");
@@ -651,17 +651,17 @@ bool ChatHandler::HandleWayPointShowCommand(const char* args, WorldSession* m_se
             player->waypointunit->hideWayPoints(player);
 
         player->waypointunit = ai;
-        ai->showWayPoints(player, Backwards);
-        ai->m_WayPointsShowBackwards = Backwards;
+        ai->activateShowWayPoints(player, Backwards);
+        ai->activateShowWayPointsBackwards(Backwards);
     }
     else
     {
-        if (ai->m_WayPointsShowing == true)
+        if (ai->isShowWayPointsActive() == true)
         {
             SystemMessage(m_session, "Waypoints Already Showing.");
         }
         else
-            ai->showWayPoints(m_session->GetPlayer(), Backwards);
+            ai->activateShowWayPoints(m_session->GetPlayer(), Backwards);
     }
 
     SystemMessage(m_session, "Showing waypoints for creature %u", creature_target->GetSQL_id());

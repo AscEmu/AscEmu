@@ -3025,7 +3025,7 @@ class SapphironAI : public CreatureAIScript
                 _unit->GetAIInterface()->StopMovement(0);
                 _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                 _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                _unit->GetAIInterface()->setWaypointToMove(1);
+                _unit->GetAIInterface()->setWayPointToMove(1);
 
                 return;
             }
@@ -3058,7 +3058,7 @@ class SapphironAI : public CreatureAIScript
             _unit->GetAIInterface()->setCurrentAgent(AGENT_SPELL);
             _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
             _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-            _unit->GetAIInterface()->setWaypointToMove(0);
+            _unit->GetAIInterface()->setWayPointToMove(0);
         }
 
         if (FlightActions < 5)
@@ -3188,7 +3188,7 @@ class SapphironAI : public CreatureAIScript
                 _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
                 _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                 _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-                _unit->GetAIInterface()->setWaypointToMove(0);
+                _unit->GetAIInterface()->setWayPointToMove(0);
 
                 RemoveAIUpdateEvent();
                 RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));

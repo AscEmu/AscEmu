@@ -2863,7 +2863,7 @@ bool ForceofNeltharakuSpell(uint32 i, Spell* pSpell) // Becoming a Shadoweave Ta
 
             pPlayer->AddQuestKill(10854, 0, 0);
             pTarget->setMoveRoot(false);
-            pTarget->GetAIInterface()->setWaypointToMove(0);
+            pTarget->GetAIInterface()->setWayPointToMove(0);
         }
     }
     return true;

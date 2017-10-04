@@ -2021,7 +2021,7 @@ class AlarAI : public CreatureAIScript
             _unit->GetAIInterface()->StopMovement(0);
             _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
             _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-            _unit->GetAIInterface()->setWaypointToMove(1);
+            _unit->GetAIInterface()->setWayPointToMove(1);
             Flying = true;
             CastTime();
 
@@ -2169,7 +2169,7 @@ class AlarAI : public CreatureAIScript
                     _unit->CastSpellAoF(LocationVector(fly[4].x, fly[4].y, fly[4].z), spells[1].info, spells[1].instant);
                     _unit->GetAIInterface()->m_canMove = true;
                     _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                    _unit->GetAIInterface()->setWaypointToMove(NextWP);
+                    _unit->GetAIInterface()->setWayPointToMove(NextWP);
                     FlameQuills = false;
                     Flying = true;
                     lasttime = timer;
@@ -2187,7 +2187,7 @@ class AlarAI : public CreatureAIScript
 
                 _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                 _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                _unit->GetAIInterface()->setWaypointToMove(NextWP);
+                _unit->GetAIInterface()->setWayPointToMove(NextWP);
                 // ugly code, trows compile error if left just null, this should do it ~ azolex
                 uint32 nullfix = 0;
                 _unit->GetAIInterface()->setNextTarget(nullfix);
@@ -2289,7 +2289,7 @@ class AlarAI : public CreatureAIScript
                 else NextWP = iWaypointId % 5 + 1;
                 _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                 _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                _unit->GetAIInterface()->setWaypointToMove(NextWP);
+                _unit->GetAIInterface()->setWayPointToMove(NextWP);
             }
 
             switch (iWaypointId)

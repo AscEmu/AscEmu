@@ -104,7 +104,7 @@ ObjectMgr::~ObjectMgr()
     }
 
     LogNotice("ObjectMgr : Deleting Waypoint Cache...");
-    for (std::unordered_map<uint32, Movement::WayPointMap*>::iterator i = m_waypoints.begin(); i != m_waypoints.end(); ++i)
+    for (std::unordered_map<uint32, Movement::WayPointMap*>::iterator i = mWayPointMap.begin(); i != mWayPointMap.end(); ++i)
     {
         for (Movement::WayPointMap::iterator i2 = i->second->begin(); i2 != i->second->end(); ++i2)
         {
@@ -2512,14 +2512,14 @@ void ObjectMgr::LoadCreatureWaypoints()
         wp->backwardskinid = fields[12].GetUInt32();
 
         std::unordered_map<uint32, Movement::WayPointMap*>::const_iterator i;
-        i = m_waypoints.find(spawnid);
-        if (i == m_waypoints.end())
+        i = mWayPointMap.find(spawnid);
+        if (i == mWayPointMap.end())
         {
             Movement::WayPointMap* m = new Movement::WayPointMap;
             if (m->size() <= wp->id)
                 m->resize(wp->id + 1);
             (*m)[wp->id] = wp;
-            m_waypoints[spawnid] = m;
+            mWayPointMap[spawnid] = m;
         }
         else
         {
@@ -2540,8 +2540,8 @@ void ObjectMgr::LoadCreatureWaypoints()
 Movement::WayPointMap* ObjectMgr::GetWayPointMap(uint32 spawnid)
 {
     std::unordered_map<uint32, Movement::WayPointMap*>::const_iterator i;
-    i = m_waypoints.find(spawnid);
-    if (i != m_waypoints.end())
+    i = mWayPointMap.find(spawnid);
+    if (i != mWayPointMap.end())
     {
         Movement::WayPointMap* m = i->second;
         // we don't wanna erase from the map, because some are used more
