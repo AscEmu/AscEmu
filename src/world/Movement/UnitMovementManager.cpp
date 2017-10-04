@@ -32,7 +32,7 @@ namespace Movement
         return m_lastUpdateTick == 0;
     }
 
-    bool UnitMovementManager::IsFlying()
+    bool UnitMovementManager::isFlying()
     {
         return m_spline.GetSplineFlags()->m_splineFlagsRaw.flying;
     }

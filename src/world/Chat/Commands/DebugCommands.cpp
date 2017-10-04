@@ -35,7 +35,7 @@ bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_sess
     uint32 current_wp = selected_unit->GetAIInterface()->getCurrentWayPointId();
     uint32 wp_script_type = selected_unit->GetAIInterface()->getWaypointScriptType();
 
-    uint32 walk_mode = selected_unit->GetAIInterface()->GetWalkMode();
+    uint32 walk_mode = selected_unit->GetAIInterface()->getWalkMode();
 
     uint32 attackerscount = static_cast<uint32>(selected_unit->GetAIInterface()->getAITargetsCount());
 

@@ -874,7 +874,7 @@ class LeotherasAI : public CreatureAIScript
                     //move if needed
                     if (_unit->GetAIInterface()->getNextTarget()->GetDistance2dSq(_unit) >= 400) //20 yards
                     {
-                        _unit->GetAIInterface()->SetRun();
+                        _unit->GetAIInterface()->setSplineRun();
                         _unit->GetAIInterface()->_CalcDestinationAndMove(_unit->GetAIInterface()->getNextTarget(), 5.0f);
                     }
                 }
@@ -1172,7 +1172,7 @@ class ShadowofLeotherasAI : public CreatureAIScript
                 //move if needed
                 if (_unit->GetAIInterface()->getNextTarget()->GetDistance2dSq(_unit) >= 400) //20 yards
                 {
-                    _unit->GetAIInterface()->SetRun();
+                    _unit->GetAIInterface()->setSplineRun();
                     _unit->GetAIInterface()->_CalcDestinationAndMove(_unit->GetAIInterface()->getNextTarget(), 5.0f);
                 }
             }
@@ -2402,7 +2402,7 @@ class ToxicSporeBatAI : public CreatureAIScript
             Meteor = false;
             PositionChange = RandomUInt(15, 23);
             PhoenixSummon = RandomUInt(17, 23);
-            _unit->GetAIInterface()->SetFly();
+            _unit->GetAIInterface()->setSplineFlying();
             _unit->GetAIInterface()->StopMovement(0);
             _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
             _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);

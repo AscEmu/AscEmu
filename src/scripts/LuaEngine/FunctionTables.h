@@ -188,7 +188,7 @@ RegType<Unit> UnitMethods[] =
 	{ "ModifyWalkSpeed", &LuaUnit::ModifyWalkSpeed },
 	{ "ModifyFlySpeed" , &LuaUnit::ModifyFlySpeed },
 	{ "GetCurrentSpell", &LuaUnit::GetCurrentSpell },
-	{ "IsFlying", &LuaUnit::IsFlying },
+	{ "IsFlying", &LuaUnit::isFlying },
 	{ "SendAIReaction", &LuaUnit::SendAIReaction },
 	{ "SetOrientation", &LuaUnit::SetOrientation },
 	{ "GetSpawnX", &LuaUnit::GetSpawnX },

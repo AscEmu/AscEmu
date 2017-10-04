@@ -93,7 +93,7 @@ class OnyxiaAI : public CreatureAIScript
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
-            _unit->GetAIInterface()->StopFlying();
+            _unit->GetAIInterface()->unsetSplineFlying();
             _unit->GetAIInterface()->m_canMove = true;
             _unit->SetStandState(STANDSTATE_SLEEP);
             /*if (_unit->m_pacified > 0)
@@ -391,7 +391,7 @@ class OnyxiaAI : public CreatureAIScript
             _unit->Emote(EMOTE_ONESHOT_LIFTOFF);
             //Do we need hover really? Check it :D
             //_unit->SetHover(true);
-            _unit->GetAIInterface()->SetFly();
+            _unit->GetAIInterface()->setSplineFlying();
         }
 
         void Land()
@@ -399,7 +399,7 @@ class OnyxiaAI : public CreatureAIScript
             _unit->Emote(EMOTE_ONESHOT_LAND);
             //Do we need hover really? Check it :D
             //_unit->SetHover(false);
-            _unit->GetAIInterface()->StopFlying();
+            _unit->GetAIInterface()->unsetSplineFlying();
         }
 
         void SpellCast(uint32 val)

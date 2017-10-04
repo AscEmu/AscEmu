@@ -279,6 +279,27 @@ class SERVER_DECL AIInterface : public IUpdatable
         bool hideWayPoints(Player* player);
 
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Spline functions
+    private:
+
+        uint32 mWalkMode;
+
+    public:
+
+        void setWalkMode(uint32 mode);
+        bool hasWalkMode(uint32 mode) const;
+        uint32 getWalkMode() const;
+
+        void setSplineFlying() const;
+        bool isFlying();
+        void unsetSplineFlying();
+
+        void setSplineSprint();
+        void setSplineRun();
+        void setSplineWalk();
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////
     // AI Script functions
     private:
 
@@ -411,33 +432,7 @@ class SERVER_DECL AIInterface : public IUpdatable
 
         void _UpdateTotem(uint32 p_time);
 
-        // Movement
-        void SendMoveToPacket();
-        //void SendMoveToSplinesPacket(std::list<Waypoint> wp, bool run);
-        bool MoveTo(float x, float y, float z);
-        void UpdateSpeeds();
-
-        //Move flag updating
-    bool Flying() const;
-    void SetFly() const;
-    void SetSprint();
-    void SetRun();
-    void SetWalk();
-
-    void SetWalkMode(uint32 mode);
-    bool HasWalkMode(uint32 mode) const;
-    uint32 GetWalkMode() const;
-
-    void StopFlying();
-
-        //Movement::Spline::MoveSpline m_spline;
-        uint32 m_walkMode;
-
-
-        void SendCurrentMove(Player* plyr/*uint64 guid*/);
-        bool StopMovement(uint32 time);
-
-        bool IsFlying();
+        
 
         // Calculation
         float _CalcAggroRange(Unit* target);
@@ -457,8 +452,6 @@ class SERVER_DECL AIInterface : public IUpdatable
         uint32 faction_visibility;
 
         bool onGameobject;
-        
-        
 
         bool m_canFlee;
         bool m_canCallForHelp;
@@ -527,16 +520,6 @@ class SERVER_DECL AIInterface : public IUpdatable
         void _UpdateTargets();
         void _UpdateMovement(uint32 p_time);
         void _UpdateTimer(uint32 p_time);
-        void AddSpline(float x, float y, float z);
-        bool Move(float & x, float & y, float & z);
-        void OnMoveCompleted();
-
-        void MoveEvadeReturn();
-
-        bool CreatePath(float x, float y, float z,  bool onlytest = false);
-        dtStatus findSmoothPath(const float* startPos, const float* endPos, const dtPolyRef* polyPath, const uint32 polyPathSize, float* smoothPath, int* smoothPathSize, bool & usedOffmesh, const uint32 maxSmoothPathSize, dtNavMesh* mesh, dtNavMeshQuery* query, dtQueryFilter & filter);
-        bool getSteerTarget(const float* startPos, const float* endPos, const float minTargetDist, const dtPolyRef* path, const uint32 pathSize, float* steerPos, unsigned char & steerPosFlag, dtPolyRef & steerPosRef, dtNavMeshQuery* query);
-        uint32 fixupCorridor(dtPolyRef* path, const uint32 npath, const uint32 maxPath, const dtPolyRef* visited, const uint32 nvisited);
 
         bool m_updateAssist;
         bool m_updateTargets;
@@ -582,19 +565,44 @@ class SERVER_DECL AIInterface : public IUpdatable
         float m_last_target_x;
         float m_last_target_y;
 
+    public:
+        bool Move(float & x, float & y, float & z);
+        bool MoveTo(float x, float y, float z);
+        bool MoveDone() const;
+
+        void SendCurrentMove(Player* plyr/*uint64 guid*/);
+        void SendMoveToPacket();
+        bool StopMovement(uint32 time);
+
+        void AddSpline(float x, float y, float z);
+
+        void UpdateSpeeds();
+
+        void UpdateMovementSpline();
+        void MoveKnockback(float x, float y, float z, float horizontal, float vertical);
+        void MoveJump(float x, float y, float z, float o = 0, float speedZ = 5.0f, bool hugearc = false);
+        void MoveTeleport(float x, float y, float z, float o = 0);
+        void MoveFalling(float x, float y, float z, float o = 0);
+        bool MoveCharge(float x, float y, float z);
+
+        void OnMoveCompleted();
+
+        void MoveEvadeReturn();
+
+        bool CreatePath(float x, float y, float z, bool onlytest = false);
+        dtStatus findSmoothPath(const float* startPos, const float* endPos, const dtPolyRef* polyPath, const uint32 polyPathSize, float* smoothPath, int* smoothPathSize, bool & usedOffmesh, const uint32 maxSmoothPathSize, dtNavMesh* mesh, dtNavMeshQuery* query, dtQueryFilter & filter);
+        bool getSteerTarget(const float* startPos, const float* endPos, const float minTargetDist, const dtPolyRef* path, const uint32 pathSize, float* steerPos, unsigned char & steerPosFlag, dtPolyRef & steerPosRef, dtNavMeshQuery* query);
+        uint32 fixupCorridor(dtPolyRef* path, const uint32 npath, const uint32 maxPath, const dtPolyRef* visited, const uint32 nvisited);
+
+        //Path creation helpers
+        bool CanCreatePath(float x, float y, float z) { return CreatePath(x, y, z, true); }
+
+    protected:
 
         /**
         Splines
         \note First element in the spline (m_currentMoveSpline[0]) is always the position the creature started moving from. Index is always set to 1 when movement is started, as index 0 is referenced for first move.
         */
-        //std::vector<::Movement::Spline::SplinePoint> m_currentMoveSpline;
-        //::Movement::Spline::MoveSpline m_moveSpline;
-        //uint32 m_currentMoveSplineIndex;
-        //uint32 m_currentSplineUpdateCounter;
-        //float m_currentSplineFinalOrientation;
-        //float m_splinetrajectoryVertical;
-        //uint32 m_splinetrajectoryTime;
-        //uint32 m_currentSplineTotalMoveTime;
         uint32 m_splinePriority;
 
         //Return position after attacking a mob
@@ -608,7 +616,6 @@ class SERVER_DECL AIInterface : public IUpdatable
 
         float m_lastFollowX;
         float m_lastFollowY;
-        //typedef std::map<uint32, WayPoint*> WayPointMap;
 
         uint64 m_UnitToFollow;
         uint64 m_UnitToFollow_backup;   /// used unly when forcing creature to wander (blind spell) so when effect wears off we can follow our master again (guardian)
@@ -634,14 +641,7 @@ class SERVER_DECL AIInterface : public IUpdatable
 
         void WipeCurrentTarget();
 
-        void UpdateMovementSpline();
-    bool MoveDone() const;
-        bool CanCreatePath(float x, float y, float z) { return CreatePath(x, y, z, true); }
-        void MoveKnockback(float x, float y, float z, float horizontal, float vertical);
-        void MoveJump(float x, float y, float z, float o = 0, float speedZ = 5.0f, bool hugearc = false);
-        void MoveTeleport(float x, float y, float z, float o = 0);
-        void MoveFalling(float x, float y, float z, float o = 0);
-        bool MoveCharge(float x, float y, float z);
+        
 
         void SetCreatureProtoDifficulty(uint32 entry);
         uint8 GetDifficultyType();

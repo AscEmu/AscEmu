@@ -3645,7 +3645,7 @@ public:
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
-        _unit->GetAIInterface()->StopFlying();
+        _unit->GetAIInterface()->unsetSplineFlying();
         _unit->GetAIInterface()->m_canMove = true;
         RemoveAIUpdateEvent();
     }
@@ -3835,7 +3835,7 @@ public:
 
         _unit->setMoveHover(true);
 
-        _unit->GetAIInterface()->SetFly();
+        _unit->GetAIInterface()->setSplineFlying();
     }
 
     void Land()
@@ -3844,7 +3844,7 @@ public:
 
         _unit->setMoveHover(false);
 
-        _unit->GetAIInterface()->StopFlying();
+        _unit->GetAIInterface()->unsetSplineFlying();
     }
 
     void ResetCastTime()

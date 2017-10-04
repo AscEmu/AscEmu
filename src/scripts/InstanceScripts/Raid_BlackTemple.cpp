@@ -4659,7 +4659,7 @@ class AkamaAI : public MoonScriptBossAI
                     Despawn(0);
                     return;
                 }
-                else if (mIllidanAI->GetUnit()->GetAIInterface()->Flying())
+                else if (mIllidanAI->GetUnit()->GetAIInterface()->isFlying())
                 {
                     SetCanEnterCombat(false);
                     _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -5562,7 +5562,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                     return;
                 }
             }
-            if (_unit->GetAIInterface()->Flying())
+            if (_unit->GetAIInterface()->isFlying())
             {
                 MoonScriptCreatureAI* pAI = SpawnCreature(CN_FACE_TRIGGER, 677.399963f, 305.545044f, 353.192169f, false);
                 if (pAI != NULL)

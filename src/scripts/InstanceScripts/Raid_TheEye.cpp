@@ -2008,7 +2008,7 @@ class AlarAI : public CreatureAIScript
             // Additional Settings
 
             _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
-            _unit->GetAIInterface()->SetFly();
+            _unit->GetAIInterface()->setSplineFlying();
 
             FlameQuills = false;
             Meteor = false;
@@ -2017,7 +2017,7 @@ class AlarAI : public CreatureAIScript
             timer = lasttime = 0;
             _unit->GetAIInterface()->setOutOfCombatRange(200000);
 
-            _unit->GetAIInterface()->SetFly();
+            _unit->GetAIInterface()->setSplineFlying();
             _unit->GetAIInterface()->StopMovement(0);
             _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
             _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);

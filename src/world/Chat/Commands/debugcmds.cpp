@@ -183,9 +183,9 @@ bool ChatHandler::HandleAIMoveCommand(const char* args, WorldSession* m_session)
     float o = m_session->GetPlayer()->GetOrientation();
 
     if (Run)
-        static_cast< Creature* >(obj)->GetAIInterface()->SetRun();
+        static_cast< Creature* >(obj)->GetAIInterface()->setSplineRun();
     else
-        static_cast< Creature* >(obj)->GetAIInterface()->SetWalk();
+        static_cast< Creature* >(obj)->GetAIInterface()->setSplineWalk();
 
     float distance = static_cast< Creature* >(obj)->CalcDistance(x, y, z);
     if (Move == 1)

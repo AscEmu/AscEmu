@@ -139,7 +139,7 @@ AIInterface::AIInterface()
 
     faction_visibility(0),
 
-    m_walkMode(0),
+    mWalkMode(0),
     FollowDistance_backup(0),
     mAiScriptType(AI_SCRIPT_LONER),
     m_walkSpeed(0),
@@ -150,6 +150,17 @@ AIInterface::AIInterface()
     m_spells.clear();
 }
 
+AIInterface::~AIInterface()
+{
+    for (std::list<AI_Spell*>::iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
+    {
+        delete(*itr);
+    }
+
+    m_spells.clear();
+
+    deleteAllWayPoints();
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Waypoint / movement functions
@@ -201,15 +212,15 @@ void AIInterface::setupAndMoveToNextWaypoint()
                 {
                     case Movement::WP_MOVE_TYPE_FLY:
                     {
-                        SetFly();
+                        setSplineFlying();
                     } break;
                     case Movement::WP_MOVE_TYPE_RUN:
                     {
-                        SetRun();
+                        setSplineRun();
                     } break;
                     default:
                     {
-                        SetWalk();
+                        setSplineWalk();
                     } break;
                 }
 
@@ -632,11 +643,11 @@ void AIInterface::setPetFollowMovement()
                     setAiState(AI_STATE_FOLLOWING);
 
                     if (distanceToTarget > 100.0f)
-                        SetSprint();
+                        setSplineSprint();
                     else if (distanceToTarget > 30.0f && distanceToTarget < 100.0f)
-                        SetRun();
+                        setSplineRun();
                     else
-                        SetWalk();
+                        setSplineWalk();
 
                     if (isAiScriptType(AI_SCRIPT_PET) || (m_UnitToFollow == m_formationLinkTarget))
                     {
@@ -952,6 +963,79 @@ bool AIInterface::hideWayPoints(Player* player)
     return true;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Spline functions
+void AIInterface::setWalkMode(uint32 mode)
+{
+    mWalkMode = mode;
+}
+
+bool AIInterface::hasWalkMode(uint32 mode) const
+{
+    return mWalkMode == mode;
+}
+
+uint32 AIInterface::getWalkMode() const
+{
+    return mWalkMode;
+}
+
+void AIInterface::setSplineFlying() const
+{
+    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.flying = true;
+}
+
+bool AIInterface::isFlying()
+{
+    if (m_Unit->IsCreature())
+        return m_Unit->m_movementManager.isFlying();
+
+    if (m_Unit->IsPlayer())
+        return static_cast<Player*>(m_Unit)->FlyCheat;
+
+    return false;
+}
+
+void AIInterface::unsetSplineFlying()
+{
+    if (isFlying())
+    {
+        m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.flying = false;
+        setSplineWalk();
+    }
+}
+
+void AIInterface::setSplineSprint()
+{
+    if (!isFlying())
+    {
+        m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.walkmode = true;
+        setWalkMode(WALKMODE_SPRINT);
+        UpdateSpeeds();
+    }
+}
+
+void AIInterface::setSplineRun()
+{
+    if (!isFlying())
+    {
+        m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.walkmode = true;
+        setWalkMode(WALKMODE_RUN);
+        UpdateSpeeds();
+    }
+}
+
+void AIInterface::setSplineWalk()
+{
+    if (!isFlying())
+    {
+        m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.walkmode = true;
+        setWalkMode(WALKMODE_WALK);
+        UpdateSpeeds();
+    }
+}
+
+
 void AIInterface::EventAiInterfaceParamsetFinish()
 {
     if (timed_emotes && timed_emotes->begin() != timed_emotes->end())
@@ -978,18 +1062,6 @@ void AIInterface::Init(Unit* un, AiScriptTypes at, Movement::WaypointMovementScr
     m_flySpeed = m_Unit->m_currentSpeedFly * 0.001f;
 
     m_guardTimer = Util::getMSTime();
-}
-
-AIInterface::~AIInterface()
-{
-    for (std::list<AI_Spell*>::iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
-    {
-        delete(*itr);
-    }
-
-    m_spells.clear();
-
-    deleteAllWayPoints();
 }
 
 void AIInterface::Init(Unit* un, AiScriptTypes at, Movement::WaypointMovementScript mt, Unit* owner)
@@ -1081,7 +1153,7 @@ void AIInterface::Update(unsigned long time_passed)
             setAiState(AI_STATE_IDLE);
             m_returnX = m_returnY = m_returnZ = 0.0f;
             m_combatResetX = m_combatResetY = m_combatResetZ = 0.0f;
-            SetWalk();
+            setSplineWalk();
 
             if (!isAiScriptType(AI_SCRIPT_PET) && !skip_reset_hp)
                 m_Unit->SetHealth(m_Unit->GetMaxHealth());
@@ -1353,7 +1425,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
     {
         if (m_Unit->GetMapMgr() != NULL && getNextTarget() != NULL)
         {
-            if (!Flying())
+            if (!isFlying())
             {
                 float target_land_z = m_Unit->GetMapMgr()->GetLandHeight(getNextTarget()->GetPositionX(), getNextTarget()->GetPositionY(), getNextTarget()->GetPositionZ());
 
@@ -1540,7 +1612,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                     else
                         dist = getNextTarget()->GetModelHalfSize();
 
-                    SetRun();
+                    setSplineRun();
                     _CalcDestinationAndMove(getNextTarget(), dist);
                 }
             }
@@ -1597,7 +1669,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                     else
                         dist = 20.0f;
 
-                    SetRun();
+                    setSplineRun();
                     _CalcDestinationAndMove(getNextTarget(), dist);
                 }
             }
@@ -1664,7 +1736,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                 else // Target out of Range -> Run to it
                 {
                     //calculate next move
-                    SetRun();
+                    setSplineRun();
                     float close_to_enemy = 0.0f;
                     if (distance > m_nextSpell->maxrange)
                         close_to_enemy = m_nextSpell->maxrange - DISTANCE_TO_SMALL_TO_WALK;
@@ -1680,7 +1752,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
             break;
             case AGENT_FLEE:
             {
-                SetWalk();
+                setSplineWalk();
 
                 if (m_fleeTimer == 0)
                     m_fleeTimer = m_FleeDuration;
@@ -1795,7 +1867,7 @@ void AIInterface::AttackReaction(Unit* pUnit, uint32 damage_dealt, uint32 spellI
     {
         if (m_Unit->GetMapMgr() != nullptr)
         {
-            if (!Flying())
+            if (!isFlying())
             {
                 float target_land_z = m_Unit->GetMapMgr()->GetLandHeight(pUnit->GetPositionX(), pUnit->GetPositionY(), pUnit->GetPositionZ());
 
@@ -2588,91 +2660,16 @@ bool AIInterface::MoveTo(float x, float y, float z)
     return true;
 }
 
-bool AIInterface::IsFlying()
-{
-    if (Flying())
-        return true;
-
-    if (m_Unit->IsPlayer())
-        return static_cast<Player*>(m_Unit)->FlyCheat;
-
-    return false;
-}
-
 void AIInterface::UpdateSpeeds()
 {
-    if (GetWalkMode() == WALKMODE_SPRINT)
+    if (hasWalkMode(WALKMODE_SPRINT))
         m_runSpeed = (m_Unit->m_currentSpeedRun + 5.0f) * 0.001f;
 
-    if (GetWalkMode() == WALKMODE_RUN)
+    if (hasWalkMode(WALKMODE_RUN))
         m_runSpeed = m_Unit->m_currentSpeedRun * 0.001f;
 
     m_walkSpeed = m_Unit->m_currentSpeedWalk * 0.001f;
     m_flySpeed = m_Unit->m_currentSpeedFly * 0.001f;
-}
-
-bool AIInterface::Flying() const
-{
-    return m_Unit->m_movementManager.IsFlying();
-}
-
-void AIInterface::SetFly() const
-{
-    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.flying = true;
-}
-
-void AIInterface::SetSprint()
-{
-    if (Flying())
-        return;
-
-    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.walkmode = true;
-    SetWalkMode(WALKMODE_SPRINT);
-    UpdateSpeeds();
-}
-
-void AIInterface::SetRun()
-{
-    if (Flying())
-        return;
-
-    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.walkmode = true;
-    SetWalkMode(WALKMODE_RUN);
-    UpdateSpeeds();
-}
-
-void AIInterface::SetWalk()
-{
-    if (Flying())
-        return;
-
-    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.walkmode = true;
-    SetWalkMode(WALKMODE_WALK);
-    UpdateSpeeds();
-}
-
-void AIInterface::SetWalkMode(uint32 mode)
-{
-    m_walkMode = mode;
-}
-
-bool AIInterface::HasWalkMode(uint32 mode) const
-{
-    return m_walkMode == mode;
-}
-
-uint32 AIInterface::GetWalkMode() const
-{
-    return m_walkMode;
-}
-
-void AIInterface::StopFlying()
-{
-    if (Flying())
-    {
-        m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.flying = false;
-        SetWalk();
-    }
 }
 
 void AIInterface::SendCurrentMove(Player* plyr)
@@ -3824,7 +3821,7 @@ bool AIInterface::Move(float & x, float & y, float & z)
     //Add new points
     if (worldConfig.terrainCollision.isPathfindingEnabled)
     {
-        if (!Flying())
+        if (!isFlying())
         {
             if (!CreatePath(x, y, z))
             {
@@ -3878,7 +3875,7 @@ void AIInterface::AddSpline(float x, float y, float z)
     }
     else if (m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.walkmode)
     {
-        switch (GetWalkMode())
+        switch (getWalkMode())
         {
             case WALKMODE_SPRINT:
             case WALKMODE_RUN:
@@ -4337,9 +4334,9 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 misc1)
     //reset ProcCount
     //ResetProcCounts();
     if (isWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_QUEST))
-        SetWalk();
+        setSplineWalk();
     else
-        SetSprint();
+        setSplineSprint();
 
     LockAITargets(true);
     m_aiTargets.clear();
@@ -4455,7 +4452,7 @@ void AIInterface::EventFollowOwner(Unit* pUnit, uint32 misc1)
     m_hasCalledForHelp = false;
     m_nextSpell = nullptr;
     resetNextTarget();
-    SetRun();
+    setSplineRun();
 }
 
 void AIInterface::EventFear(Unit* pUnit, uint32 misc1)
@@ -4484,7 +4481,7 @@ void AIInterface::EventFear(Unit* pUnit, uint32 misc1)
     m_hasCalledForHelp = false;
 
     // update speed
-    SetRun();
+    setSplineRun();
     SetNextSpell(nullptr);
     resetNextTarget();
 }
@@ -4530,7 +4527,7 @@ void AIInterface::EventWander(Unit* pUnit, uint32 misc1)
     m_hasCalledForHelp = false;
 
     // update speed
-    SetRun();
+    setSplineRun();
 
     SetNextSpell(nullptr);
     resetNextTarget();
@@ -4663,7 +4660,7 @@ void AIInterface::MoveKnockback(float x, float y, float z, float horizontal, flo
     m_Unit->m_movementManager.m_spline.m_splineTrajectoryTime = 0;
     m_Unit->m_movementManager.m_spline.m_splineTrajectoryVertical = vertical;
 
-    SetRun();
+    setSplineRun();
     m_runSpeed *= 3;
     //lets say vertical being 7.5 would give us 100% of our speed towards target
     //anything higher gets a proportional loss of speed
@@ -4743,7 +4740,7 @@ void AIInterface::MoveJump(float x, float y, float z, float o /*= 0*/, float spe
 	else
         m_Unit->m_movementManager.m_spline.m_splineTrajectoryVertical = speedZ;
 
-    SetRun();
+    setSplineRun();
     m_runSpeed *= 3;
 
     AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
@@ -4788,7 +4785,7 @@ bool AIInterface::MoveCharge(float x, float y, float z)
     m_Unit->m_movementManager.m_spline.ClearSpline();
     m_Unit->m_movementManager.ForceUpdate();
 
-    SetRun();
+    setSplineRun();
 
     m_runSpeed *= 3.5f;
 
@@ -4796,7 +4793,7 @@ bool AIInterface::MoveCharge(float x, float y, float z)
     {
         //LogDebugFlag(LF_SCRIPT_MGR, "Pathfinding is enabled");
 
-        if (!Flying())
+        if (!isFlying())
         {
             if (!CreatePath(x, y, z))
             {

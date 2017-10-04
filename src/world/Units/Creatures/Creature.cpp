@@ -415,7 +415,7 @@ void Creature::SaveToDB()
         m_spawn->Item1SlotDisplay = GetEquippedItem(MELEE);
         m_spawn->Item2SlotDisplay = GetEquippedItem(OFFHAND);
         m_spawn->Item3SlotDisplay = GetEquippedItem(RANGED);
-        if (GetAIInterface()->Flying())
+        if (GetAIInterface()->isFlying())
             m_spawn->CanFly = 1;
         else if (GetAIInterface()->onGameobject)
             m_spawn->CanFly = 2;
@@ -470,7 +470,7 @@ void Creature::SaveToDB()
         << GetEquippedItem(OFFHAND) << ","
         << GetEquippedItem(RANGED) << ",";
 
-    if (GetAIInterface()->Flying())
+    if (GetAIInterface()->isFlying())
         ss << 1 << ",";
     else if (GetAIInterface()->onGameobject)
         ss << 2 << ",";
@@ -1437,7 +1437,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MySQLStructure::MapInfo c
     m_aiInterface->m_FleeHealth = creature_properties->m_fleeHealth;
     m_aiInterface->m_FleeDuration = creature_properties->m_fleeDuration;
 
-    GetAIInterface()->SetWalk();
+    GetAIInterface()->setSplineWalk();
 
     if (isattackable(spawn) && !creature_properties->isTrainingDummy && !IsVehicle())
     {
@@ -1478,7 +1478,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MySQLStructure::MapInfo c
     }
 
     if (spawn->CanFly == 1)
-        GetAIInterface()->SetFly();
+        GetAIInterface()->setSplineFlying();
     else if (spawn->CanFly == 2)
         GetAIInterface()->onGameobject = true;
     // more hacks!
@@ -1662,7 +1662,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     m_aiInterface->m_FleeDuration = creature_properties->m_fleeDuration;
 
     GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-    GetAIInterface()->SetWalk();
+    GetAIInterface()->setSplineWalk();
 
     // load formation data
     m_aiInterface->m_formationLinkSqlId = 0;
@@ -2350,7 +2350,7 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
         GetVehicleComponent()->EjectAllPassengers();
     }
 
-    if (GetAIInterface()->Flying())
+    if (GetAIInterface()->isFlying())
         GetAIInterface()->MoveFalling(GetPositionX(), GetPositionY(), GetMapMgr()->GetADTLandHeight(GetPositionX(), GetPositionY()), 0);
 
     // Creature falls off vehicle on death

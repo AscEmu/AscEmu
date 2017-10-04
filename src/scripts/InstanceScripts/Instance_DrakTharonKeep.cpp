@@ -452,7 +452,7 @@ class NovosTheSummonerAI : public CreatureAIScript
                         Player* p_target = GetRandomPlayerTarget();
                         if (p_target)
                         {
-                            c->GetAIInterface()->SetRun();
+                            c->GetAIInterface()->setSplineRun();
                             c->GetAIInterface()->MoveTo(p_target->GetPositionX(), p_target->GetPositionY(), p_target->GetPositionZ());
                         }
                     }
@@ -483,7 +483,7 @@ class NovosTheSummonerAI : public CreatureAIScript
                             Player* p_target = GetRandomPlayerTarget();
                             if (p_target)
                             {
-                                c->GetAIInterface()->SetRun();
+                                c->GetAIInterface()->setSplineRun();
                                 c->GetAIInterface()->MoveTo(p_target->GetPositionX(), p_target->GetPositionY(), p_target->GetPositionZ());
                             }
                         }

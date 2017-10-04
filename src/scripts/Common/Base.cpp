@@ -136,7 +136,7 @@ void MoonScriptCreatureAI::MoveTo(Unit* pUnit, RangeStatusPair pRangeStatus)
 void MoonScriptCreatureAI::MoveTo(float pX, float pY, float pZ, bool pRun)
 {
     if (pRun)
-        _unit->GetAIInterface()->SetRun();
+        _unit->GetAIInterface()->setSplineRun();
 
     _unit->GetAIInterface()->MoveTo(pX, pY, pZ);
 };
@@ -153,15 +153,15 @@ void MoonScriptCreatureAI::StopMovement()
 
 void MoonScriptCreatureAI::SetFlyMode(bool pValue)
 {
-    if (pValue && !_unit->GetAIInterface()->Flying())
+    if (pValue && !_unit->GetAIInterface()->isFlying())
     {
         _unit->setMoveHover(true);
-        _unit->GetAIInterface()->StopFlying();
+        _unit->GetAIInterface()->unsetSplineFlying();
     }
-    else if (!pValue && _unit->GetAIInterface()->Flying())
+    else if (!pValue && _unit->GetAIInterface()->isFlying())
     {
         _unit->setMoveHover(false);
-        _unit->GetAIInterface()->SetFly();
+        _unit->GetAIInterface()->setSplineFlying();
     }
 }
 

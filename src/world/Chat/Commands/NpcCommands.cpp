@@ -955,9 +955,9 @@ bool ChatHandler::HandleNpcSetCanFlyCommand(const char* args, WorldSession* m_se
     if (m_session->GetPlayer()->SaveAllChangesCommand)
         save_to_db = true;
 
-    if (creature_target->GetAIInterface()->Flying())
+    if (creature_target->GetAIInterface()->isFlying())
     {
-        creature_target->GetAIInterface()->StopFlying();
+        creature_target->GetAIInterface()->unsetSplineFlying();
 
         if (save_to_db)
         {
@@ -972,7 +972,7 @@ bool ChatHandler::HandleNpcSetCanFlyCommand(const char* args, WorldSession* m_se
     }
     else
     {
-        creature_target->GetAIInterface()->SetFly();
+        creature_target->GetAIInterface()->setSplineFlying();
         if (save_to_db)
         {
             WorldDatabase.Execute("UPDATE creature_spawns SET CanFly = 0 WHERE id = %lu", creature_target->spawnid);
@@ -1227,7 +1227,7 @@ bool ChatHandler::HandleNpcSetOnGOCommand(const char* args, WorldSession* m_sess
     if (creature_target == nullptr)
         return true;
 
-    creature_target->GetAIInterface()->StopFlying();
+    creature_target->GetAIInterface()->unsetSplineFlying();
 
     bool old_ongo = creature_target->GetAIInterface()->onGameobject;
     creature_target->GetAIInterface()->onGameobject = !creature_target->GetAIInterface()->onGameobject;

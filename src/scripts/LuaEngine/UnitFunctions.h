@@ -2007,7 +2007,7 @@ class LuaUnit
 
         ptr->setMoveHover(true);
         ptr->GetAIInterface()->disable_melee = true;
-        ptr->GetAIInterface()->SetFly();
+        ptr->GetAIInterface()->setSplineFlying();
         ptr->Emote(EMOTE_ONESHOT_LIFTOFF);
         return 0;
     }
@@ -2018,7 +2018,7 @@ class LuaUnit
             return 0;
 
         ptr->setMoveHover(false);
-        ptr->GetAIInterface()->StopFlying();
+        ptr->GetAIInterface()->unsetSplineFlying();
         ptr->GetAIInterface()->disable_melee = false;
         ptr->Emote(EMOTE_ONESHOT_LAND);
         return 0;
@@ -2416,10 +2416,10 @@ class LuaUnit
         return 0;
     }
 
-    static int IsFlying(lua_State* L, Unit* ptr)
+    static int isFlying(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-            if (ptr->GetAIInterface()->IsFlying())
+            if (ptr->GetAIInterface()->isFlying())
                 lua_pushboolean(L, 1);
             else
                 lua_pushboolean(L, 0);
@@ -3458,9 +3458,9 @@ class LuaUnit
         TEST_UNIT()
             bool enabled = CHECK_BOOL(L, 1);
         if (enabled)
-            ptr->GetAIInterface()->SetFly();
+            ptr->GetAIInterface()->setSplineFlying();
         else
-            ptr->GetAIInterface()->StopFlying();
+            ptr->GetAIInterface()->unsetSplineFlying();
         return 0;
     }
 
@@ -5552,15 +5552,15 @@ class LuaUnit
         int movetype = static_cast<int>(luaL_checkinteger(L, 1)); //0: walk, 1: run, 2: fly.
         if (movetype == 2)
         {
-            ptr->GetAIInterface()->SetFly();
+            ptr->GetAIInterface()->setSplineFlying();
         }
         else if (movetype == 1)
         {
-            ptr->GetAIInterface()->SetRun();
+            ptr->GetAIInterface()->setSplineRun();
         }
         else
         {
-            ptr->GetAIInterface()->SetWalk();
+            ptr->GetAIInterface()->setSplineWalk();
         }
         return 0;
     }
