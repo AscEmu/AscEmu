@@ -309,7 +309,8 @@ class SERVER_DECL AIInterface : public IUpdatable
         void splineMoveFalling(float x, float y, float z, float o = 0);
         void splineMoveCharge(float x, float y, float z);
 
-        bool generateAndSendSplinePath(float& x, float& y, float& z);
+        void sendSplineMoveToPoint(LocationVector pos);
+        bool generateAndSendSplinePath(float x, float y, float z);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // AI Script functions

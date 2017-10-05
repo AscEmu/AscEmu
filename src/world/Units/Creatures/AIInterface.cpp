@@ -1064,10 +1064,6 @@ void AIInterface::splineMoveKnockback(float x, float y, float z, float horizonta
     float speedmod = float(vertical / 7.5);
     m_runSpeed /= speedmod;
 
-
-    AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
-    AddSpline(x, y, z);
-
     m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.trajectory = true;
 #if VERSION_STRING != Cata
     m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.knockback = true;
@@ -1075,14 +1071,7 @@ void AIInterface::splineMoveKnockback(float x, float y, float z, float horizonta
     m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.falling = true;
 #endif
 
-    SendMoveToPacket();
-
-    //reset run speed
-    UpdateSpeeds();
-
-    unsetSpline();
-
-    m_Unit->SetPosition(x, y, z, 0);
+    sendSplineMoveToPoint(LocationVector(x, y, z, 0));
 }
 
 void AIInterface::splineMoveJump(float x, float y, float z, float o /*= 0*/, float speedZ /*= 5.0f */, bool hugearc /*= false*/)
@@ -1105,18 +1094,9 @@ void AIInterface::splineMoveJump(float x, float y, float z, float o /*= 0*/, flo
 
     m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.trajectory = true;
 
-    AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
-    AddSpline(x, y, z);
-
-    SendMoveToPacket();
-
-    //fix run speed
-    UpdateSpeeds();
-
-    unsetSpline();
-
     float orientation = o ? o : m_Unit->calcRadAngle(x, y, m_Unit->GetPositionX(), m_Unit->GetPositionY());
-    m_Unit->SetPosition(x, y, z, orientation);
+
+    sendSplineMoveToPoint(LocationVector(x, y, z, orientation));
 }
 
 void AIInterface::splineMoveFalling(float x, float y, float z, float o /*= 0*/)
@@ -1127,14 +1107,7 @@ void AIInterface::splineMoveFalling(float x, float y, float z, float o /*= 0*/)
 
     m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.done = true;
 
-    AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
-    AddSpline(x, y, z);
-
-    SendMoveToPacket();
-
-    unsetSpline();
-
-    m_Unit->SetPosition(x, y, z, o);
+    sendSplineMoveToPoint(LocationVector(x, y, z, o));
 }
 
 void AIInterface::splineMoveCharge(float x, float y, float z)
@@ -1159,7 +1132,21 @@ void AIInterface::splineMoveCharge(float x, float y, float z)
     m_Unit->SetPosition(x, y, z, orientation);
 }
 
-bool AIInterface::generateAndSendSplinePath(float& x, float& y, float& z)
+void AIInterface::sendSplineMoveToPoint(LocationVector pos)
+{
+    AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
+    AddSpline(pos.x, pos.y, pos.z);
+
+    SendMoveToPacket();
+
+    UpdateSpeeds();
+
+    unsetSpline();
+
+    m_Unit->SetPosition(pos.x, pos.y, pos.z, pos.o);
+}
+
+bool AIInterface::generateAndSendSplinePath(float x, float y, float z)
 {
     if (mSplinePriority > SPLINE_PRIORITY_MOVEMENT)
         return false;
@@ -1177,26 +1164,29 @@ bool AIInterface::generateAndSendSplinePath(float& x, float& y, float& z)
     {
         if (!isFlying())
         {
-            if (!CreatePath(x, y, z))
+            if (CreatePath(x, y, z))
             {
-                StopMovement(0); //old spline is probly still active on client, need to keep in sync
+                SendMoveToPacket();
+                return true;
+            }
+            else
+            {
+                StopMovement(0);
                 return false;
             }
         }
         else
         {
-            AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
-            AddSpline(x, y, z);
+            sendSplineMoveToPoint(LocationVector(x, y, z, 0));
+            return true;
         }
     }
     else
     {
-        AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
-        AddSpline(x, y, z);
+        sendSplineMoveToPoint(LocationVector(x, y, z, 0));
+        return true;
     }
 
-
-    SendMoveToPacket();
     return true;
 }
 
