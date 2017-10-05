@@ -51,8 +51,8 @@
 #define CREATURE_DAZE_MIN_LEVEL 6
 #endif
 
-/// this is required so creature will not try to reposition itself to obtain perfect combat range. Not using this might lead to exploits
-#define DISTANCE_TO_SMALL_TO_WALK 2.0f
+// not try to reposition creature to obtain perfect combat range
+const float minWalkDistance = 2.0f;
 
 //!!! it is in seconds and not Milliseconds
 #define MOB_SPELLCAST_GLOBAL_COOLDOWN 2 //there are individual cooldown and global ones. Global cooldown stops mob from casting 1 instant spell on you per second
@@ -348,6 +348,7 @@ class SERVER_DECL AIInterface : public IUpdatable
     public:
 
         void setCreatureState(CreatureState newState) { mCreatureState = newState; }
+        bool isCreatureState(CreatureState newState) { return mCreatureState == newState; }
         CreatureState getCreatureState() { return mCreatureState; }
 
 // MIT end

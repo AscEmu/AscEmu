@@ -2773,6 +2773,7 @@ void Spell::SpellEffectLeap(uint32 i) // Leap
 {
     if (unitTarget == nullptr)
         return;
+
     float radius = GetRadius(i);
     unitTarget->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN);
 

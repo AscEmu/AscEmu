@@ -235,7 +235,7 @@ void AIInterface::generateWaypointScriptCircle()
     CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->GetEntry());
     if (creatureProperties != nullptr)
     {
-        LOG_DEBUG("%s (%u) called new Circle Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
+        //LOG_DEBUG("%s (%u) called new Circle Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
 
         if (MoveDone())
         {
@@ -286,7 +286,7 @@ void AIInterface::generateWaypointScriptCircle()
         }
         else
         {
-            LOG_DEBUG("%s (%u) MOVE NOT DONE!", creatureProperties->Name.c_str(), creatureProperties->Id);
+            //LOG_DEBUG("%s (%u) MOVE NOT DONE!", creatureProperties->Name.c_str(), creatureProperties->Id);
         }
     }
 }
@@ -296,7 +296,7 @@ void AIInterface::generateWaypointScriptRandom()
     CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->GetEntry());
     if (creatureProperties != nullptr)
     {
-        LOG_DEBUG("%s (%u) called new Random Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
+        //LOG_DEBUG("%s (%u) called new Random Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
 
         if (getWayPointsCount())
         {
@@ -351,7 +351,7 @@ void AIInterface::generateWaypointScriptRandom()
             }
             else
             {
-                LOG_DEBUG("%s (%u) MOVE NOT DONE!", creatureProperties->Name.c_str(), creatureProperties->Id);
+                //LOG_DEBUG("%s (%u) MOVE NOT DONE!", creatureProperties->Name.c_str(), creatureProperties->Id);
             }
         }
         else
@@ -390,7 +390,7 @@ void AIInterface::generateWaypointScriptForwad()
     CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->GetEntry());
     if (creatureProperties != nullptr)
     {
-        LOG_DEBUG("%s (%u) called new Forwad Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
+        //LOG_DEBUG("%s (%u) called new Forwad Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
 
         if (MoveDone())
         {
@@ -444,7 +444,7 @@ void AIInterface::generateWaypointScriptForwad()
         }
         else
         {
-            LOG_DEBUG("%s (%u) MOVE NOT DONE!", creatureProperties->Name.c_str(), creatureProperties->Id);
+            //LOG_DEBUG("%s (%u) MOVE NOT DONE!", creatureProperties->Name.c_str(), creatureProperties->Id);
         }
     }
 }
@@ -454,7 +454,7 @@ void AIInterface::generateWaypointScriptWantedWP()
     CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->GetEntry());
     if (creatureProperties != nullptr)
     {
-        LOG_DEBUG("%s (%u) called new WantedWP Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
+        //LOG_DEBUG("%s (%u) called new WantedWP Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
 
         if (mCurrentWaypoint > 0 && mCurrentWaypoint < getWayPointsCount())
         {
@@ -477,7 +477,7 @@ void AIInterface::generateWaypointScriptWantedWP()
                 }
                 else
                 {
-                    LOG_DEBUG("%s (%u) MOVE NOT DONE!", creatureProperties->Name.c_str(), creatureProperties->Id);
+                    //LOG_DEBUG("%s (%u) MOVE NOT DONE!", creatureProperties->Name.c_str(), creatureProperties->Id);
                 }
             }
         }
@@ -489,7 +489,7 @@ void AIInterface::generateWaypointScriptPatrol()
     CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(m_Unit->GetEntry());
     if (creatureProperties != nullptr)
     {
-        LOG_DEBUG("%s (%u) called new Patrol Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
+        //LOG_DEBUG("%s (%u) called new Patrol Generator!", creatureProperties->Name.c_str(), creatureProperties->Id);
 
         if (MoveDone())
         {
@@ -547,7 +547,7 @@ void AIInterface::generateWaypointScriptPatrol()
         }
         else
         {
-            LOG_DEBUG("%s (%u) MOVE NOT DONE!", creatureProperties->Name.c_str(), creatureProperties->Id);
+            //LOG_DEBUG("%s (%u) MOVE NOT DONE!", creatureProperties->Name.c_str(), creatureProperties->Id);
         }
     }
 }
@@ -1150,9 +1150,7 @@ void AIInterface::generateSplinePathToTarget(Unit* targetUnit, float distance)
 
     LocationVector targetPos = targetUnit->GetPosition();
 
-    if (abs(m_last_target_x - targetPos.x) < DISTANCE_TO_SMALL_TO_WALK
-        && abs(m_last_target_y - targetPos.y) < DISTANCE_TO_SMALL_TO_WALK
-        && getCreatureState() == MOVING)
+    if (abs(m_last_target_x - targetPos.x) < minWalkDistance && abs(m_last_target_y - targetPos.y) < minWalkDistance && isCreatureState(MOVING))
         return;
 
     m_last_target_x = targetPos.x;
@@ -1357,7 +1355,7 @@ void AIInterface::Update(unsigned long time_passed)
         }
         else
         {
-            if (getCreatureState() == STOPPED)
+            if (isCreatureState(STOPPED))
             {
                 // return to the home
                 if (m_returnX == 0.0f && m_returnY == 0.0f)
@@ -1384,7 +1382,7 @@ void AIInterface::Update(unsigned long time_passed)
         }
     }
 
-    if (!getNextTarget() && !m_fleeTimer && getCreatureState() == STOPPED && isAiState(AI_STATE_IDLE) && m_Unit->isAlive())
+    if (!getNextTarget() && !m_fleeTimer && isCreatureState(STOPPED) && isAiState(AI_STATE_IDLE) && m_Unit->isAlive())
     {
         if (timed_emote_expire <= time_passed)    // note that creature might go idle and time_passed might get big next time ...We do not skip emotes because of lost time
         {
@@ -1743,7 +1741,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                 combatReach[0] = getNextTarget()->GetModelHalfSize();
                 combatReach[1] = _CalcCombatRange(getNextTarget(), false);
 
-                if (distance <= combatReach[1] + DISTANCE_TO_SMALL_TO_WALK) // Target is in Range -> Attack
+                if (distance <= combatReach[1] + minWalkDistance) // Target is in Range -> Attack
                 {
                     //FIX ME: offhand shit
                     if (m_Unit->isAttackReady(false) && !m_fleeTimer)
@@ -1936,9 +1934,9 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                     setSplineRun();
                     float close_to_enemy = 0.0f;
                     if (distance > m_nextSpell->maxrange)
-                        close_to_enemy = m_nextSpell->maxrange - DISTANCE_TO_SMALL_TO_WALK;
+                        close_to_enemy = m_nextSpell->maxrange - minWalkDistance;
                     else if (distance < m_nextSpell->minrange)
-                        close_to_enemy = m_nextSpell->minrange + DISTANCE_TO_SMALL_TO_WALK;
+                        close_to_enemy = m_nextSpell->minrange + minWalkDistance;
 
                     if (close_to_enemy < 0)
                         close_to_enemy = 0;
@@ -2704,8 +2702,8 @@ void AIInterface::_CalcDestinationAndMove(Unit* target, float dist)
 
         //avoid eating bandwidth with useless movement packets when target did not move since last position
         //this will work since it turned into a common myth that when you pull mob you should not move :D
-        if (abs(m_last_target_x - newx) < DISTANCE_TO_SMALL_TO_WALK
-            && abs(m_last_target_y - newy) < DISTANCE_TO_SMALL_TO_WALK && getCreatureState() == MOVING)
+        if (abs(m_last_target_x - newx) < minWalkDistance
+            && abs(m_last_target_y - newy) < minWalkDistance && isCreatureState(MOVING))
             return;
 
         m_last_target_x = newx;
@@ -2851,7 +2849,7 @@ bool AIInterface::MoveTo(float x, float y, float z)
     if (!generateAndSendSplinePath(x, y, z))
         return false;
 
-    if (getCreatureState() != MOVING)
+    if (!isCreatureState(MOVING))
         setCreatureState(MOVING);
 
     return true;
