@@ -307,8 +307,10 @@ class SERVER_DECL AIInterface : public IUpdatable
         void splineMoveKnockback(float x, float y, float z, float horizontal, float vertical);
         void splineMoveJump(float x, float y, float z, float o = 0, float speedZ = 5.0f, bool hugearc = false);
         void splineMoveFalling(float x, float y, float z, float o = 0);
-        void splineMoveCharge(float x, float y, float z);
 
+        void splineMoveCharge(Unit* targetUnit, float distance = 3.0f);
+
+        void generateSplinePathToTarget(Unit* targetUnit, float distance);
         void sendSplineMoveToPoint(LocationVector pos);
         bool generateAndSendSplinePath(float x, float y, float z);
 

@@ -1110,8 +1110,11 @@ void AIInterface::splineMoveFalling(float x, float y, float z, float o /*= 0*/)
     sendSplineMoveToPoint(LocationVector(x, y, z, o));
 }
 
-void AIInterface::splineMoveCharge(float x, float y, float z)
+void AIInterface::splineMoveCharge(Unit* targetUnit, float distance /*= 3.0f*/)
 {
+    if (targetUnit == nullptr)
+        return;
+
     mSplinePriority = SPLINE_PRIORITY_MOVEMENT;
 
     unsetSpline();
@@ -1120,16 +1123,55 @@ void AIInterface::splineMoveCharge(float x, float y, float z)
 
     m_runSpeed *= 7.0f;
 
-    generateAndSendSplinePath(x, y, z);
+    generateSplinePathToTarget(targetUnit, distance);
 
-    float orientation = m_Unit->calcRadAngle(x, y, m_Unit->GetPositionX(), m_Unit->GetPositionY());
+    LocationVector targetPos = targetUnit->GetPosition();
+
+    float orientation = m_Unit->calcRadAngle(targetPos.x, targetPos.y, m_Unit->GetPositionX(), m_Unit->GetPositionY());
 
     //reset run speed
     UpdateSpeeds();
 
     unsetSpline();
 
-    m_Unit->SetPosition(x, y, z, orientation);
+    m_Unit->SetPosition(targetPos.x, targetPos.y, targetPos.z, orientation);
+}
+
+void AIInterface::generateSplinePathToTarget(Unit* targetUnit, float distance)
+{
+    if (!m_canMove || m_Unit->IsStunned())
+    {
+        StopMovement(0);
+        return;
+    }
+
+    if (targetUnit == nullptr)
+        return;
+
+    LocationVector targetPos = targetUnit->GetPosition();
+
+    if (abs(m_last_target_x - targetPos.x) < DISTANCE_TO_SMALL_TO_WALK
+        && abs(m_last_target_y - targetPos.y) < DISTANCE_TO_SMALL_TO_WALK
+        && getCreatureState() == MOVING)
+        return;
+
+    m_last_target_x = targetPos.x;
+    m_last_target_y = targetPos.y;
+
+    float angle = m_Unit->calcAngle(m_Unit->GetPositionX(), m_Unit->GetPositionY(), targetPos.x, targetPos.y) * M_PI_FLOAT / 180.0f;
+    float x = distance * cosf(angle);
+    float y = distance * sinf(angle);
+
+    if (targetUnit->IsPlayer() && static_cast<Player*>(targetUnit)->m_isMoving)
+    {
+        x -= cosf(targetPos.o);
+        y -= sinf(targetPos.o);
+    }
+
+    targetPos.x -= x;
+    targetPos.y -= y;
+
+    generateAndSendSplinePath(targetPos.x, targetPos.y, targetPos.z);
 }
 
 void AIInterface::sendSplineMoveToPoint(LocationVector pos)

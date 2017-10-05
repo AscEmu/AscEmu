@@ -4614,29 +4614,10 @@ void Spell::SpellEffectSkinning(uint32 i)
 
 void Spell::SpellEffectCharge(uint32 i)
 {
-    if (unitTarget == NULL || !unitTarget->isAlive())
+    if (unitTarget == nullptr || !unitTarget->isAlive())
         return;
 
-    //\todo Zyres: Check for MovementFlag instead of m_rooted?
-    if (u_caster->IsStunned() || u_caster->isRooted() || u_caster->IsPacified() || u_caster->IsFeared())
-        return;
-
-    float x, y, z;
-    float rad = unitTarget->GetBoundingRadius() - u_caster->GetBoundingRadius();
-
-    float dx = m_caster->GetPositionX() - unitTarget->GetPositionX();
-    float dy = m_caster->GetPositionY() - unitTarget->GetPositionY();
-    if (dx == 0.0f || dy == 0.0f)
-        return;
-    float alpha = atanf(dy / dx);
-    if (dx < 0)
-        alpha += M_PI_FLOAT;
-
-    x = rad * cosf(alpha) + unitTarget->GetPositionX();
-    y = rad * sinf(alpha) + unitTarget->GetPositionY();
-    z = unitTarget->GetPositionZ();
-
-    u_caster->GetAIInterface()->splineMoveCharge(x, y, z);
+    u_caster->GetAIInterface()->splineMoveCharge(unitTarget, u_caster->GetBoundingRadius());
 }
 
 void Spell::SpellEffectKnockBack(uint32 i)

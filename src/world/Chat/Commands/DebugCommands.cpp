@@ -15,9 +15,7 @@ bool ChatHandler::HandleAiChargeCommand(const char* /*args*/, WorldSession* sess
     if (selected_unit == nullptr)
         return true;
 
-    LocationVector pos = session->GetPlayer()->GetPosition();
-
-    selected_unit->GetAIInterface()->splineMoveCharge(pos.x, pos.y, pos.z);
+    selected_unit->GetAIInterface()->splineMoveCharge(session->GetPlayer());
 }
 
 bool ChatHandler::HandleAiKnockbackCommand(const char* /*args*/, WorldSession* session)
