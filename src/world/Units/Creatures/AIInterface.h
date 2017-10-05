@@ -309,6 +309,8 @@ class SERVER_DECL AIInterface : public IUpdatable
         void splineMoveFalling(float x, float y, float z, float o = 0);
         void splineMoveCharge(float x, float y, float z);
 
+        bool generateAndSendSplinePath(float& x, float& y, float& z);
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // AI Script functions
     private:
@@ -576,7 +578,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         float m_last_target_y;
 
     public:
-        bool Move(float & x, float & y, float & z);
+        
         bool MoveTo(float x, float y, float z);
         bool MoveDone() const;
 

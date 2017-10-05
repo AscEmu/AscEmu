@@ -1139,7 +1139,7 @@ void AIInterface::splineMoveFalling(float x, float y, float z, float o /*= 0*/)
 
 void AIInterface::splineMoveCharge(float x, float y, float z)
 {
-    mSplinePriority = SPLINE_PRIORITY_REDIRECTION;
+    mSplinePriority = SPLINE_PRIORITY_MOVEMENT;
 
     unsetSpline();
 
@@ -1147,12 +1147,9 @@ void AIInterface::splineMoveCharge(float x, float y, float z)
 
     m_runSpeed *= 7.0f;
 
-    AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
-    AddSpline(x, y, z);
+    generateAndSendSplinePath(x, y, z);
 
     float orientation = m_Unit->calcRadAngle(x, y, m_Unit->GetPositionX(), m_Unit->GetPositionY());
-
-    SendMoveToPacket();
 
     //reset run speed
     UpdateSpeeds();
@@ -1160,6 +1157,47 @@ void AIInterface::splineMoveCharge(float x, float y, float z)
     unsetSpline();
 
     m_Unit->SetPosition(x, y, z, orientation);
+}
+
+bool AIInterface::generateAndSendSplinePath(float& x, float& y, float& z)
+{
+    if (mSplinePriority > SPLINE_PRIORITY_MOVEMENT)
+        return false;
+
+    //Make sure our position is up to date
+    UpdateMovementSpline();
+
+    //Clear current spline
+    m_Unit->m_movementManager.m_spline.ClearSpline();
+    m_Unit->m_movementManager.ForceUpdate();
+
+
+    //Add new points
+    if (worldConfig.terrainCollision.isPathfindingEnabled)
+    {
+        if (!isFlying())
+        {
+            if (!CreatePath(x, y, z))
+            {
+                StopMovement(0); //old spline is probly still active on client, need to keep in sync
+                return false;
+            }
+        }
+        else
+        {
+            AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
+            AddSpline(x, y, z);
+        }
+    }
+    else
+    {
+        AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
+        AddSpline(x, y, z);
+    }
+
+
+    SendMoveToPacket();
+    return true;
 }
 
 
@@ -2662,7 +2700,7 @@ void AIInterface::_CalcDestinationAndMove(Unit* target, float dist)
         newz = m_Unit->GetPositionZ();
     }
 
-    if (!Move(newx, newy, newz))
+    if (!generateAndSendSplinePath(newx, newy, newz))
     {
         ///\todo enter evade mode if creature, not pet, not totem
     }
@@ -2778,7 +2816,7 @@ bool AIInterface::MoveTo(float x, float y, float z)
         return false;
     }
 
-    if (!Move(x, y, z))
+    if (!generateAndSendSplinePath(x, y, z))
         return false;
 
     if (getCreatureState() != MOVING)
@@ -3926,51 +3964,6 @@ void AIInterface::UpdateMovementSpline()
 bool AIInterface::MoveDone() const
 {
     return m_Unit->m_movementManager.m_spline.IsSplineMoveDone();
-}
-
-bool AIInterface::Move(float & x, float & y, float & z)
-{
-    if (mSplinePriority > SPLINE_PRIORITY_MOVEMENT)
-        return false;
-
-    //Make sure our position is up to date
-    UpdateMovementSpline();
-
-    //Clear current spline
-    m_Unit->m_movementManager.m_spline.ClearSpline();
-    m_Unit->m_movementManager.ForceUpdate();
-    //m_Unit->m_movementManager.m_spline.SetFacing(o);
-    //m_Unit->m_movementManager.m_spline.m_splineFaceType.SetFlag(Movement::Spline::MonsterMoveFacingLocation);
-    //m_Unit->m_movementManager.m_spline.m_splineFaceType.SetX(x);
-    //m_Unit->m_movementManager.m_spline.m_splineFaceType.SetY(y);
-    //m_Unit->m_movementManager.m_spline.m_splineFaceType.SetZ(z);
-
-    //Add new points
-    if (worldConfig.terrainCollision.isPathfindingEnabled)
-    {
-        if (!isFlying())
-        {
-            if (!CreatePath(x, y, z))
-            {
-                StopMovement(0); //old spline is probly still active on client, need to keep in sync
-                return false;
-            }
-        }
-        else
-        {
-            AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
-            AddSpline(x, y, z);
-        }
-    }
-    else
-    {
-        AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
-        AddSpline(x, y, z);
-    }
-
-
-    SendMoveToPacket();
-    return true;
 }
 
 void AIInterface::AddSpline(float x, float y, float z)
