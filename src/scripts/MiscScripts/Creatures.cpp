@@ -33,7 +33,7 @@ class ExplosiveSheep : public CreatureAIScript
 
     void OnCombatStart(Unit* mTarget) // Summons an Explosive Sheep which will charge at a nearby enemy and explode for 135 - 165 damage.
     {
-        _unit->GetAIInterface()->MoveCharge(mTarget->GetPositionX(), mTarget->GetPositionY(), mTarget->GetPositionZ());
+        _unit->GetAIInterface()->splineMoveCharge(mTarget->GetPositionX(), mTarget->GetPositionY(), mTarget->GetPositionZ());
         _unit->CastSpell(_unit, 4050, true);
         _unit->Despawn(1000, 0); //Despawn since we "exploded"
     }

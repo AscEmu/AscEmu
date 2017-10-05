@@ -282,13 +282,17 @@ class SERVER_DECL AIInterface : public IUpdatable
     // Spline functions
     private:
 
-        uint32 mWalkMode;
+        uint32_t mWalkMode;
+
+        //\note First element in the spline (m_currentMoveSpline[0]) is always the position the creature started moving from. 
+        //      Index is always set to 1 when movement is started, as index 0 is referenced for first move.
+        uint32_t mSplinePriority;
 
     public:
 
-        void setWalkMode(uint32 mode);
-        bool hasWalkMode(uint32 mode) const;
-        uint32 getWalkMode() const;
+        void setWalkMode(uint32_t mode);
+        bool hasWalkMode(uint32_t mode) const;
+        uint32_t getWalkMode() const;
 
         void setSplineFlying() const;
         bool isFlying();
@@ -298,6 +302,12 @@ class SERVER_DECL AIInterface : public IUpdatable
         void setSplineRun();
         void setSplineWalk();
 
+        void unsetSpline();
+
+        void splineMoveKnockback(float x, float y, float z, float horizontal, float vertical);
+        void splineMoveJump(float x, float y, float z, float o = 0, float speedZ = 5.0f, bool hugearc = false);
+        void splineMoveFalling(float x, float y, float z, float o = 0);
+        void splineMoveCharge(float x, float y, float z);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // AI Script functions
@@ -579,11 +589,6 @@ class SERVER_DECL AIInterface : public IUpdatable
         void UpdateSpeeds();
 
         void UpdateMovementSpline();
-        void MoveKnockback(float x, float y, float z, float horizontal, float vertical);
-        void MoveJump(float x, float y, float z, float o = 0, float speedZ = 5.0f, bool hugearc = false);
-        void MoveTeleport(float x, float y, float z, float o = 0);
-        void MoveFalling(float x, float y, float z, float o = 0);
-        bool MoveCharge(float x, float y, float z);
 
         void OnMoveCompleted();
 
@@ -598,12 +603,6 @@ class SERVER_DECL AIInterface : public IUpdatable
         bool CanCreatePath(float x, float y, float z) { return CreatePath(x, y, z, true); }
 
     protected:
-
-        /**
-        Splines
-        \note First element in the spline (m_currentMoveSpline[0]) is always the position the creature started moving from. Index is always set to 1 when movement is started, as index 0 is referenced for first move.
-        */
-        uint32 m_splinePriority;
 
         //Return position after attacking a mob
         float m_returnX;

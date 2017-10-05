@@ -8534,7 +8534,7 @@ void Unit::HandleKnockback(Object* caster, float horizontal, float vertical)
 
     float destx, desty, destz;
     if (GetPoint(angle, horizontal, destx, desty, destz, true))
-        GetAIInterface()->MoveKnockback(destx, desty, destz, horizontal, vertical);
+        GetAIInterface()->splineMoveKnockback(destx, desty, destz, horizontal, vertical);
 }
 
 void Unit::BuildPetSpellList(WorldPacket& data)

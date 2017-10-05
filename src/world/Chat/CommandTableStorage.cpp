@@ -349,13 +349,17 @@ void CommandTableStorage::Init()
 
     static ChatCommand debugCommandTable[] =
     {
+        { "aicharge",           'z', &ChatHandler::HandleAiChargeCommand,           "AiCharge test",                                            nullptr, 0, 0, 0 },
+        { "aiknockback",        'z', &ChatHandler::HandleAiKnockbackCommand,        "AiKnockBack test",                                         nullptr, 0, 0, 0 },
+        { "aijump",             'z', &ChatHandler::HandleAiJumpCommand,             "AiJump test",                                              nullptr, 0, 0, 0 },
+        { "aifalling",          'z', &ChatHandler::HandleAiFallingCommand,          "AiFalling test",                                           nullptr, 0, 0, 0 },
         { "dumpmovement",       'd', &ChatHandler::HandleDebugDumpMovementCommand,  "Dumps the player's movement information to chat",          nullptr, 0, 0, 0 },
         { "infront",            'd', &ChatHandler::HandleDebugInFrontCommand,       "",                                                         nullptr, 0, 0, 0 },
         { "showreact",          'd', &ChatHandler::HandleShowReactionCommand,       "",                                                         nullptr, 0, 0, 0 },
         { "aimove",             'd', &ChatHandler::HandleAIMoveCommand,             "",                                                         nullptr, 0, 0, 0 },
         { "dist",               'd', &ChatHandler::HandleDistanceCommand,           "",                                                         nullptr, 0, 0, 0 },
         { "face",               'd', &ChatHandler::HandleFaceCommand,               "",                                                         nullptr, 0, 0, 0 },
-        { "dumpstate",               'd', &ChatHandler::HandleDebugDumpState,               "",                                                         nullptr, 0, 0, 0 },
+        { "dumpstate",          'd', &ChatHandler::HandleDebugDumpState,            "",                                                         nullptr, 0, 0, 0 },
         { "moveinfo",           'd', &ChatHandler::HandleDebugMoveInfo,             "",                                                         nullptr, 0, 0, 0 },
         { "setbytes",           'd', &ChatHandler::HandleSetBytesCommand,           "",                                                         nullptr, 0, 0, 0 },
         { "getbytes",           'd', &ChatHandler::HandleGetBytesCommand,           "",                                                         nullptr, 0, 0, 0 },

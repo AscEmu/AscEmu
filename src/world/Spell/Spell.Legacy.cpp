@@ -6451,9 +6451,9 @@ void Spell::SpellEffectJumpTarget(uint32 i)
     o = unitTarget->calcRadAngle(u_caster->GetPositionX(), u_caster->GetPositionY(), x, y);
 
     if (speedZ <= 0.0f)
-        u_caster->GetAIInterface()->MoveJump(x, y, z, o, GetSpellInfo()->Effect[i] == 145);
+        u_caster->GetAIInterface()->splineMoveJump(x, y, z, o, GetSpellInfo()->Effect[i] == 145);
     else
-        u_caster->GetAIInterface()->MoveJump(x, y, z, o, speedZ, GetSpellInfo()->Effect[i] == 145);
+        u_caster->GetAIInterface()->splineMoveJump(x, y, z, o, speedZ, GetSpellInfo()->Effect[i] == 145);
 }
 
 void Spell::SpellEffectJumpBehindTarget(uint32 i)
@@ -6475,7 +6475,7 @@ void Spell::SpellEffectJumpBehindTarget(uint32 i)
         float o = un->calcRadAngle(x, y, un->GetPositionX(), un->GetPositionY());
 
         if (u_caster->GetAIInterface() != NULL)
-            u_caster->GetAIInterface()->MoveJump(x, y, z, o);
+            u_caster->GetAIInterface()->splineMoveJump(x, y, z, o);
     }
     else if (m_targets.m_targetMask & (TARGET_FLAG_SOURCE_LOCATION | TARGET_FLAG_DEST_LOCATION))
     {
@@ -6498,7 +6498,7 @@ void Spell::SpellEffectJumpBehindTarget(uint32 i)
         }
 
         if (u_caster->GetAIInterface() != NULL)
-            u_caster->GetAIInterface()->MoveJump(x, y, z);
+            u_caster->GetAIInterface()->splineMoveJump(x, y, z);
     }
 }
 

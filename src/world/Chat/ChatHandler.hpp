@@ -191,6 +191,11 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleSendCastFailed(const char* args, WorldSession* m_session);
         // old debugcmds.cpp
         //\todo Rewrite these commands
+        bool HandleAiChargeCommand(const char* /*args*/, WorldSession* session);
+        bool HandleAiKnockbackCommand(const char* /*args*/, WorldSession* session);
+        bool HandleAiJumpCommand(const char* /*args*/, WorldSession* session);
+        bool HandleAiFallingCommand(const char* /*args*/, WorldSession* session);
+
         bool HandleDebugDumpMovementCommand(const char* args, WorldSession* session);
         bool HandleDebugInFrontCommand(const char* args, WorldSession* m_session);
         bool HandleShowReactionCommand(const char* args, WorldSession* m_session);

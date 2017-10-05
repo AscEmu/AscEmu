@@ -9,6 +9,50 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellFailure.h"
 #include "Server/ServerState.h"
 
+bool ChatHandler::HandleAiChargeCommand(const char* /*args*/, WorldSession* session)
+{
+    Unit* selected_unit = GetSelectedUnit(session);
+    if (selected_unit == nullptr)
+        return true;
+
+    LocationVector pos = session->GetPlayer()->GetPosition();
+
+    selected_unit->GetAIInterface()->splineMoveCharge(pos.x, pos.y, pos.z);
+}
+
+bool ChatHandler::HandleAiKnockbackCommand(const char* /*args*/, WorldSession* session)
+{
+    Unit* selected_unit = GetSelectedUnit(session);
+    if (selected_unit == nullptr)
+        return true;
+
+    LocationVector pos = session->GetPlayer()->GetPosition();
+
+    selected_unit->GetAIInterface()->splineMoveKnockback(pos.x, pos.y, pos.z, 10.0f, 5.f);
+}
+
+bool ChatHandler::HandleAiJumpCommand(const char* /*args*/, WorldSession* session)
+{
+    Unit* selected_unit = GetSelectedUnit(session);
+    if (selected_unit == nullptr)
+        return true;
+
+    LocationVector pos = session->GetPlayer()->GetPosition();
+
+    selected_unit->GetAIInterface()->splineMoveJump(pos.x, pos.y, pos.z, 0, 5.0f, false);
+}
+
+bool ChatHandler::HandleAiFallingCommand(const char* /*args*/, WorldSession* session)
+{
+    Unit* selected_unit = GetSelectedUnit(session);
+    if (selected_unit == nullptr)
+        return true;
+
+    LocationVector pos = session->GetPlayer()->GetPosition();
+
+    selected_unit->GetAIInterface()->splineMoveFalling(pos.x, pos.y, pos.z);
+}
+
 bool ChatHandler::HandleDebugDumpState(const char* /*args*/, WorldSession* session)
 {
     auto state = ServerState::instance();

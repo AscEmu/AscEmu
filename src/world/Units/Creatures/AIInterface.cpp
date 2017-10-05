@@ -112,7 +112,7 @@ AIInterface::AIInterface()
     m_flySpeed(0.0f),
     m_last_target_x(0),
     m_last_target_y(0),
-    m_splinePriority(SPLINE_PRIORITY_MOVEMENT),
+    mSplinePriority(SPLINE_PRIORITY_MOVEMENT),
     m_returnX(0),
     m_returnY(0),
     m_returnZ(0),
@@ -965,17 +965,17 @@ bool AIInterface::hideWayPoints(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Spline functions
-void AIInterface::setWalkMode(uint32 mode)
+void AIInterface::setWalkMode(uint32_t mode)
 {
     mWalkMode = mode;
 }
 
-bool AIInterface::hasWalkMode(uint32 mode) const
+bool AIInterface::hasWalkMode(uint32_t mode) const
 {
     return mWalkMode == mode;
 }
 
-uint32 AIInterface::getWalkMode() const
+uint32_t AIInterface::getWalkMode() const
 {
     return mWalkMode;
 }
@@ -1033,6 +1033,133 @@ void AIInterface::setSplineWalk()
         setWalkMode(WALKMODE_WALK);
         UpdateSpeeds();
     }
+}
+
+void AIInterface::unsetSpline()
+{
+    m_Unit->m_movementManager.m_spline.ClearSpline();
+    m_Unit->m_movementManager.ForceUpdate();
+
+    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.trajectory = false;
+
+#if VERSION_STRING != Cata
+    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.knockback = false;
+#else
+    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.falling = false;
+#endif
+}
+
+void AIInterface::splineMoveKnockback(float x, float y, float z, float horizontal, float vertical)
+{
+    mSplinePriority = SPLINE_PRIORITY_REDIRECTION;
+
+    unsetSpline();
+
+    m_Unit->m_movementManager.m_spline.m_splineTrajectoryTime = 0;
+    m_Unit->m_movementManager.m_spline.m_splineTrajectoryVertical = vertical;
+
+    setSplineRun();
+    m_runSpeed *= 3;
+
+    float speedmod = float(vertical / 7.5);
+    m_runSpeed /= speedmod;
+
+
+    AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
+    AddSpline(x, y, z);
+
+    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.trajectory = true;
+#if VERSION_STRING != Cata
+    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.knockback = true;
+#else
+    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.falling = true;
+#endif
+
+    SendMoveToPacket();
+
+    //reset run speed
+    UpdateSpeeds();
+
+    unsetSpline();
+
+    m_Unit->SetPosition(x, y, z, 0);
+}
+
+void AIInterface::splineMoveJump(float x, float y, float z, float o /*= 0*/, float speedZ /*= 5.0f */, bool hugearc /*= false*/)
+{
+    mSplinePriority = SPLINE_PRIORITY_REDIRECTION;
+
+    unsetSpline();
+
+    m_Unit->m_movementManager.m_spline.SetFacing(o);
+
+    m_Unit->m_movementManager.m_spline.m_splineTrajectoryTime = 0;
+
+    if (hugearc)
+        m_Unit->m_movementManager.m_spline.m_splineTrajectoryVertical = 250;
+    else
+        m_Unit->m_movementManager.m_spline.m_splineTrajectoryVertical = speedZ;
+
+    setSplineRun();
+    m_runSpeed *= 3;
+
+    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.trajectory = true;
+
+    AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
+    AddSpline(x, y, z);
+
+    SendMoveToPacket();
+
+    //fix run speed
+    UpdateSpeeds();
+
+    unsetSpline();
+
+    float orientation = o ? o : m_Unit->calcRadAngle(x, y, m_Unit->GetPositionX(), m_Unit->GetPositionY());
+    m_Unit->SetPosition(x, y, z, orientation);
+}
+
+void AIInterface::splineMoveFalling(float x, float y, float z, float o /*= 0*/)
+{
+    unsetSpline();
+
+    m_Unit->m_movementManager.m_spline.SetFacing(o);
+
+    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.done = true;
+
+    AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
+    AddSpline(x, y, z);
+
+    SendMoveToPacket();
+
+    unsetSpline();
+
+    m_Unit->SetPosition(x, y, z, o);
+}
+
+void AIInterface::splineMoveCharge(float x, float y, float z)
+{
+    mSplinePriority = SPLINE_PRIORITY_REDIRECTION;
+
+    unsetSpline();
+
+    setSplineSprint();
+
+    m_runSpeed *= 7.0f;
+
+    AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
+    AddSpline(x, y, z);
+
+    float orientation = m_Unit->calcRadAngle(x, y, m_Unit->GetPositionX(), m_Unit->GetPositionY());
+
+    SendMoveToPacket();
+
+    //reset run speed
+    UpdateSpeeds();
+
+    unsetSpline();
+
+    m_Unit->SetPosition(x, y, z, orientation);
 }
 
 
@@ -2622,7 +2749,7 @@ bool AIInterface::StopMovement(uint32 time)
         return true;
     }
 
-    m_splinePriority = SPLINE_PRIORITY_MOVEMENT;
+    mSplinePriority = SPLINE_PRIORITY_MOVEMENT;
 
     if (m_Unit->GetMapMgr() != nullptr)
     {
@@ -3803,7 +3930,7 @@ bool AIInterface::MoveDone() const
 
 bool AIInterface::Move(float & x, float & y, float & z)
 {
-    if (m_splinePriority > SPLINE_PRIORITY_MOVEMENT)
+    if (mSplinePriority > SPLINE_PRIORITY_MOVEMENT)
         return false;
 
     //Make sure our position is up to date
@@ -4648,43 +4775,6 @@ void AIInterface::EventHostileAction(Unit* pUnit, uint32 misc1)
     m_combatResetZ = m_Unit->GetPositionZ();
 }
 
-void AIInterface::MoveKnockback(float x, float y, float z, float horizontal, float vertical)
-{
-    HandleEvent(EVENT_FORCEREDIRECTED, nullptr, 0);
-    m_splinePriority = SPLINE_PRIORITY_REDIRECTION;
-
-    //Clear current spline
-    m_Unit->m_movementManager.m_spline.ClearSpline();
-    m_Unit->m_movementManager.ForceUpdate();
-
-    m_Unit->m_movementManager.m_spline.m_splineTrajectoryTime = 0;
-    m_Unit->m_movementManager.m_spline.m_splineTrajectoryVertical = vertical;
-
-    setSplineRun();
-    m_runSpeed *= 3;
-    //lets say vertical being 7.5 would give us 100% of our speed towards target
-    //anything higher gets a proportional loss of speed
-    //this is for spells which knock you up high, but for a short distance
-    float speedmod = float(vertical / 7.5);
-    m_runSpeed /= speedmod;
-
-
-    AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
-    AddSpline(x, y, z);
-
-    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.trajectory = true;
-#if VERSION_STRING != Cata
-    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.knockback = true;
-#else
-    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.falling = true;
-#endif
-
-    SendMoveToPacket();
-
-    //fix run speed
-    UpdateSpeeds();
-}
-
 void AIInterface::OnMoveCompleted()
 {
     auto splineFlags = m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw;
@@ -4699,7 +4789,7 @@ void AIInterface::OnMoveCompleted()
 #endif
 
     //reset spline priority so other movements can happen
-    m_splinePriority = SPLINE_PRIORITY_MOVEMENT;
+    mSplinePriority = SPLINE_PRIORITY_MOVEMENT;
 
     //we've been knocked somewhere without entering combat, move back
     if (isAiState(AI_STATE_IDLE) && m_returnX != 0.0f && m_returnY != 0.0f && m_returnZ != 0.0f)
@@ -4711,7 +4801,7 @@ void AIInterface::OnMoveCompleted()
 
 void AIInterface::MoveEvadeReturn()
 {
-    if (!MoveTo(m_returnX, m_returnY, m_returnZ) && m_splinePriority == SPLINE_PRIORITY_MOVEMENT)
+    if (!MoveTo(m_returnX, m_returnY, m_returnZ) && mSplinePriority == SPLINE_PRIORITY_MOVEMENT)
     {
         m_Unit->SetPosition(m_returnX, m_returnY, m_returnZ, m_Unit->GetSpawnO());
         StopMovement(0);
@@ -4722,36 +4812,6 @@ void AIInterface::EventForceRedirected(Unit* pUnit, uint32 misc1)
 {
     if (isAiState(AI_STATE_IDLE))
         SetReturnPosition();
-}
-
-void AIInterface::MoveJump(float x, float y, float z, float o /*= 0*/, float speedZ /*= 5.0f */, bool hugearc)
-{
-    m_splinePriority = SPLINE_PRIORITY_REDIRECTION;
-
-    //Clear current spline
-    m_Unit->m_movementManager.m_spline.ClearSpline();
-    m_Unit->m_movementManager.ForceUpdate();
-    m_Unit->m_movementManager.m_spline.SetFacing(o);
-
-    m_Unit->m_movementManager.m_spline.m_splineTrajectoryTime = 0;
-
-    if (hugearc)
-        m_Unit->m_movementManager.m_spline.m_splineTrajectoryVertical = 250;
-	else
-        m_Unit->m_movementManager.m_spline.m_splineTrajectoryVertical = speedZ;
-
-    setSplineRun();
-    m_runSpeed *= 3;
-
-    AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
-    AddSpline(x, y, z);
-
-    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.trajectory = true;
-
-    SendMoveToPacket();
-
-    //fix run speed
-    UpdateSpeeds();
 }
 
 void AIInterface::SetReturnPosition()
@@ -4775,84 +4835,6 @@ void AIInterface::SetReturnPosition()
         m_returnY = m_Unit->GetSpawnY();
         m_returnZ = m_Unit->GetSpawnZ();
     }
-}
-
-bool AIInterface::MoveCharge(float x, float y, float z)
-{
-    m_splinePriority = SPLINE_PRIORITY_REDIRECTION;
-
-    //Clear current spline
-    m_Unit->m_movementManager.m_spline.ClearSpline();
-    m_Unit->m_movementManager.ForceUpdate();
-
-    setSplineRun();
-
-    m_runSpeed *= 3.5f;
-
-    if (worldConfig.terrainCollision.isPathfindingEnabled)
-    {
-        //LogDebugFlag(LF_SCRIPT_MGR, "Pathfinding is enabled");
-
-        if (!isFlying())
-        {
-            if (!CreatePath(x, y, z))
-            {
-                StopMovement(0); //old spline is probly still active on client, need to keep in sync
-                return false;
-            }
-        }
-        else
-        {
-            AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
-            AddSpline(x, y, z);
-        }
-    }
-    else
-    {
-        AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
-        AddSpline(x, y, z);
-    }
-
-    UpdateSpeeds(); //reset run speed
-
-    SendMoveToPacket();
-    return true;
-}
-
-void AIInterface::MoveTeleport(float x, float y, float z, float o /*= 0*/)
-{
-    m_Unit->m_movementManager.m_spline.ClearSpline();
-    m_Unit->m_movementManager.ForceUpdate();
-    m_Unit->m_movementManager.m_spline.SetFacing(o);
-
-    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.done = true;
-
-    AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
-    AddSpline(x, y, z);
-
-    SendMoveToPacket();
-
-    //complete move
-    m_Unit->m_movementManager.m_spline.ClearSpline();
-    m_Unit->SetPosition(x, y, z, o);
-}
-
-void AIInterface::MoveFalling(float x, float y, float z, float o /*= 0*/)
-{
-    m_Unit->m_movementManager.m_spline.ClearSpline();
-    m_Unit->m_movementManager.ForceUpdate();
-    m_Unit->m_movementManager.m_spline.SetFacing(o);
-
-    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.done = true;
-
-    AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
-    AddSpline(x, y, z);
-
-    SendMoveToPacket();
-
-    //complete move
-    m_Unit->m_movementManager.m_spline.ClearSpline();
-    m_Unit->SetPosition(x, y, z, o);
 }
 
 void AIInterface::SetCreatureProtoDifficulty(uint32 entry)

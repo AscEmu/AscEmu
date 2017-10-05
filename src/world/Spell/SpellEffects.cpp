@@ -2788,7 +2788,7 @@ void Spell::SpellEffectLeap(uint32 i) // Leap
         if (playerTarget != nullptr)
             playerTarget->SafeTeleport(playerTarget->GetMapId(), playerTarget->GetInstanceID(), LocationVector(destx, desty, destz, playerTarget->GetOrientation()));
         else if (unitTarget != nullptr)
-            unitTarget->GetAIInterface()->MoveTeleport(destx, desty, destz, unitTarget->GetOrientation());
+            unitTarget->GetAIInterface()->splineMoveJump(destx, desty, destz, unitTarget->GetOrientation());
     }
     else
     {
@@ -4636,12 +4636,7 @@ void Spell::SpellEffectCharge(uint32 i)
     y = rad * sinf(alpha) + unitTarget->GetPositionY();
     z = unitTarget->GetPositionZ();
 
-    if (!u_caster->GetAIInterface()->MoveCharge(x, y, z))
-    {
-        //failed
-        SendInterrupted(SPELL_FAILED_NOPATH);
-        SendCastResult(SPELL_FAILED_NOPATH);
-    }
+    u_caster->GetAIInterface()->splineMoveCharge(x, y, z);
 }
 
 void Spell::SpellEffectKnockBack(uint32 i)

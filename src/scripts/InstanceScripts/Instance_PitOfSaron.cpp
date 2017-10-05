@@ -180,7 +180,7 @@ class ForgemasterGarfrostAI : MoonScriptBossAI
             Emote(8765);
             _unit->CastSpell(_unit, SPELL_STOMP, false);
             _unit->GetAIInterface()->WipeHateList();
-            _unit->GetAIInterface()->MoveJump(JumpCords[0].x, JumpCords[0].y, JumpCords[0].z);
+            _unit->GetAIInterface()->splineMoveJump(JumpCords[0].x, JumpCords[0].y, JumpCords[0].z);
             
             if (GameObject * pObject = GetNearestGameObject(401006))	//forgemaster's anvil (TEMP)
                 _unit->SetFacing(_unit->calcRadAngle(_unit->GetPositionX(), _unit->GetPositionY(), pObject->GetPositionX(), pObject->GetPositionY()));
@@ -200,7 +200,7 @@ class ForgemasterGarfrostAI : MoonScriptBossAI
             Emote(8766);
             _unit->CastSpell(_unit, SPELL_STOMP, false);
             _unit->GetAIInterface()->WipeHateList();
-            _unit->GetAIInterface()->MoveJump(JumpCords[1].x, JumpCords[1].y, JumpCords[1].z);
+            _unit->GetAIInterface()->splineMoveJump(JumpCords[1].x, JumpCords[1].y, JumpCords[1].z);
 
             if (GameObject * pObject = GetNearestGameObject(401006))	//forgemaster's anvil (TEMP)
                 _unit->SetFacing(_unit->calcRadAngle(_unit->GetPositionX(), _unit->GetPositionY(), pObject->GetPositionX(), pObject->GetPositionY()));
