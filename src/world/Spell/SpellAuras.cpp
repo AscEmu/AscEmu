@@ -8863,8 +8863,23 @@ bool Aura::DotCanCrit()
     {
         if (caster->getClass() == ROGUE)
         {
-            if (spell_info->custom_NameHash == SPELL_HASH_RUPTURE)
-                return true;
+            switch (spell_info->getId())
+            {
+                //SPELL_HASH_RUPTURE
+                case 1943:
+                case 8639:
+                case 8640:
+                case 11273:
+                case 11274:
+                case 11275:
+                case 14874:
+                case 14903:
+                case 15583:
+                case 26867:
+                case 48671:
+                case 48672:
+                    return true;
+            }
         }
     }
 
@@ -8933,12 +8948,26 @@ bool Aura::DotCanCrit()
         switch (caster->getClass())
         {
             case ROGUE:
-
+            {
                 // Rupture can be critical in patch 3.3.3
-                if (sp->custom_NameHash == SPELL_HASH_RUPTURE)
-                    return true;
-
-                break;
+                switch (sp->getId())
+                {
+                    //SPELL_HASH_RUPTURE
+                    case 1943:
+                    case 8639:
+                    case 8640:
+                    case 11273:
+                    case 11274:
+                    case 11275:
+                    case 14874:
+                    case 14903:
+                    case 15583:
+                    case 26867:
+                    case 48671:
+                    case 48672:
+                        return true;
+                }
+            } break;
         }
     }
 

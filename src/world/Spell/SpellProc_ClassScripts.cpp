@@ -853,33 +853,137 @@ void SpellProcMgr::SetupSpellProcClassScripts()
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Rogue
-    AddByNameHash(SPELL_HASH_WOUND_POISON_VII, &WoundPoisonSpellProc::Create);
-    AddByNameHash(SPELL_HASH_WOUND_POISON_VI, &WoundPoisonSpellProc::Create);
-    AddByNameHash(SPELL_HASH_WOUND_POISON_V, &WoundPoisonSpellProc::Create);
-    AddByNameHash(SPELL_HASH_WOUND_POISON_IV, &WoundPoisonSpellProc::Create);
-    AddByNameHash(SPELL_HASH_WOUND_POISON_III, &WoundPoisonSpellProc::Create);
-    AddByNameHash(SPELL_HASH_WOUND_POISON_II, &WoundPoisonSpellProc::Create);
-    AddByNameHash(SPELL_HASH_WOUND_POISON, &WoundPoisonSpellProc::Create);
+    uint32 woundPoison[] =
+    {
+        // SPELL_HASH_WOUND_POISON_VII
+        57975,
+        57978,
+        // SPELL_HASH_WOUND_POISON_VI
+        57974,
+        57977,
+        // SPELL_HASH_WOUND_POISON_V
+        27188,
+        27189,
+        // SPELL_HASH_WOUND_POISON_IV
+        13224,
+        13227,
+        // SPELL_HASH_WOUND_POISON_III
+        13223,
+        13226,
+        // SPELL_HASH_WOUND_POISON_II
+        13222,
+        13225,
+        // SPELL_HASH_WOUND_POISON
+        13218,
+        13219,
+        30984,
+        36974,
+        39665,
+        43461,
+        54074,
+        65962,
+        0
+    };
+    AddById(woundPoison, &WoundPoisonSpellProc::Create);
 
-    AddByNameHash(SPELL_HASH_INSTANT_POISON_IX, &InstantPoisonSpellProc::Create);
-    AddByNameHash(SPELL_HASH_INSTANT_POISON_VIII, &InstantPoisonSpellProc::Create);
-    AddByNameHash(SPELL_HASH_INSTANT_POISON_VII, &InstantPoisonSpellProc::Create);
-    AddByNameHash(SPELL_HASH_INSTANT_POISON_VI, &InstantPoisonSpellProc::Create);
-    AddByNameHash(SPELL_HASH_INSTANT_POISON_V, &InstantPoisonSpellProc::Create);
-    AddByNameHash(SPELL_HASH_INSTANT_POISON_IV, &InstantPoisonSpellProc::Create);
-    AddByNameHash(SPELL_HASH_INSTANT_POISON_III, &InstantPoisonSpellProc::Create);
-    AddByNameHash(SPELL_HASH_INSTANT_POISON_II, &InstantPoisonSpellProc::Create);
-    AddByNameHash(SPELL_HASH_INSTANT_POISON, &InstantPoisonSpellProc::Create);
+    uint32 instantPoison[] =
+    {
+        // SPELL_HASH_INSTANT_POISON_IX
+        57965,
+        57968,
+        // SPELL_HASH_INSTANT_POISON_VIII
+        57964,
+        57967,
+        // SPELL_HASH_INSTANT_POISON_VII
+        26890,
+        26891,
+        // SPELL_HASH_INSTANT_POISON_VI
+        11337,
+        11340,
+        // SPELL_HASH_INSTANT_POISON_V
+        11336,
+        11339,
+        // SPELL_HASH_INSTANT_POISON_IV
+        11335,
+        11338,
+        // SPELL_HASH_INSTANT_POISON_III
+        8688,
+        8689,
+        // SPELL_HASH_INSTANT_POISON_II
+        8685,
+        8686,
+        // SPELL_HASH_INSTANT_POISON
+        8679,
+        8680,
+        28428,
+        41189,
+        59242,
+        0
+    };
+    AddById(instantPoison, &InstantPoisonSpellProc::Create);
 
-    AddByNameHash(SPELL_HASH_DEADLY_POISON_IX, &PoisonSpellProc::Create);
-    AddByNameHash(SPELL_HASH_DEADLY_POISON_VIII, &PoisonSpellProc::Create);
-    AddByNameHash(SPELL_HASH_DEADLY_POISON_VII, &PoisonSpellProc::Create);
-    AddByNameHash(SPELL_HASH_DEADLY_POISON_VI, &PoisonSpellProc::Create);
-    AddByNameHash(SPELL_HASH_DEADLY_POISON_V, &PoisonSpellProc::Create);
-    AddByNameHash(SPELL_HASH_DEADLY_POISON_IV, &PoisonSpellProc::Create);
-    AddByNameHash(SPELL_HASH_DEADLY_POISON_III, &PoisonSpellProc::Create);
-    AddByNameHash(SPELL_HASH_DEADLY_POISON_II, &PoisonSpellProc::Create);
-    AddByNameHash(SPELL_HASH_DEADLY_POISON, &PoisonSpellProc::Create);
+    uint32 deadlyPoison[] =
+    {
+        // SPELL_HASH_DEADLY_POISON_IX
+        57970,
+        57973,
+        // SPELL_HASH_DEADLY_POISON_VIII
+        57969,
+        57972,
+        // SPELL_HASH_DEADLY_POISON_VII
+        27186,
+        27187,
+        // SPELL_HASH_DEADLY_POISON_VI
+        26967,
+        26968,
+        // SPELL_HASH_DEADLY_POISON_V
+        25349,
+        25351,
+        // SPELL_HASH_DEADLY_POISON_IV
+        11354,
+        11356,
+        // SPELL_HASH_DEADLY_POISON_III
+        11353,
+        11355,
+        // SPELL_HASH_DEADLY_POISON_II
+        2819,
+        2824,
+        // SPELL_HASH_DEADLY_POISON
+        2818,
+        2823,
+        3583,
+        10022,
+        13582,
+        21787,
+        21788,
+        32970,
+        32971,
+        34616,
+        34655,
+        34657,
+        36872,
+        38519,
+        38520,
+        41191,
+        41192,
+        41485,
+        43580,
+        43581,
+        56145,
+        56149,
+        59479,
+        59482,
+        63755,
+        63756,
+        67710,
+        67711,
+        68315,
+        72329,
+        72330,
+        0
+    };
+    AddById(deadlyPoison, &PoisonSpellProc::Create);
+
 
     AddByNameHash(SPELL_HASH_CRIPPLING_POISON, &PoisonSpellProc::Create);
     AddByNameHash(SPELL_HASH_MIND_NUMBING_POISON, &PoisonSpellProc::Create);

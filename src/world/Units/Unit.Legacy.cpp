@@ -1494,8 +1494,20 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_DEADLY_THROW)
-                        continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        case 26679:
+                        case 37074:
+                        case 48673:
+                        case 48674:
+                        case 52885:
+                        case 59180:
+                        case 64499:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 case 16959:     //Druid - Primal Fury Proc
@@ -1511,10 +1523,116 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (!IsPlayer() || !CastingSpell)
                         continue;
+
                     Player* p = static_cast<Player*>(this);
-                    if (p->GetShapeShift() != FORM_CAT || (CastingSpell->custom_NameHash != SPELL_HASH_CLAW && CastingSpell->custom_NameHash != SPELL_HASH_RAKE &&
-                        CastingSpell->custom_NameHash != SPELL_HASH_RAVAGE && CastingSpell->custom_NameHash != SPELL_HASH_SHRED))
+                    if (p->GetShapeShift() != FORM_CAT)
                         continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_SHRED
+                        case 3252:
+                        case 5221:
+                        case 6800:
+                        case 8992:
+                        case 9829:
+                        case 9830:
+                        case 27001:
+                        case 27002:
+                        case 27555:
+                        case 48571:
+                        case 48572:
+                        case 49121:
+                        case 49165:
+                        case 61548:
+                        case 61549:
+                        //SPELL_HASH_RAVAGE
+                        case 3242:
+                        case 3446:
+                        case 6785:
+                        case 6787:
+                        case 8391:
+                        case 9866:
+                        case 9867:
+                        case 24213:
+                        case 24333:
+                        case 27005:
+                        case 29906:
+                        case 33781:
+                        case 48578:
+                        case 48579:
+                        case 50518:
+                        case 53558:
+                        case 53559:
+                        case 53560:
+                        case 53561:
+                        case 53562:
+                        //SPELL_HASH_CLAW
+                        case 1082:
+                        case 2975:
+                        case 2976:
+                        case 2977:
+                        case 2980:
+                        case 2981:
+                        case 2982:
+                        case 3009:
+                        case 3010:
+                        case 3029:
+                        case 3666:
+                        case 3667:
+                        case 5201:
+                        case 9849:
+                        case 9850:
+                        case 16827:
+                        case 16828:
+                        case 16829:
+                        case 16830:
+                        case 16831:
+                        case 16832:
+                        case 24187:
+                        case 27000:
+                        case 27049:
+                        case 27347:
+                        case 31289:
+                        case 47468:
+                        case 48569:
+                        case 48570:
+                        case 51772:
+                        case 52471:
+                        case 52472:
+                        case 62225:
+                        case 67774:
+                        case 67793:
+                        case 67879:
+                        case 67980:
+                        case 67981:
+                        case 67982:
+                        case 75159:
+                        //SPELL_HASH_RAKE
+                        case 1822:
+                        case 1823:
+                        case 1824:
+                        case 9904:
+                        case 24331:
+                        case 24332:
+                        case 27003:
+                        case 27556:
+                        case 27638:
+                        case 36332:
+                        case 48573:
+                        case 48574:
+                        case 53499:
+                        case 54668:
+                        case 59881:
+                        case 59882:
+                        case 59883:
+                        case 59884:
+                        case 59885:
+                        case 59886:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 case 14189: //Seal Fate
@@ -1593,10 +1711,45 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     if (CastingSpell == NULL)
                         continue;
 
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_DEVASTATE && CastingSpell->custom_NameHash != SPELL_HASH_REVENGE)
-                        continue;
-                }
-                break;
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_REVENGE
+                        case 6572:
+                        case 6574:
+                        case 7379:
+                        case 11600:
+                        case 11601:
+                        case 12170:
+                        case 19130:
+                        case 25269:
+                        case 25288:
+                        case 28844:
+                        case 30357:
+                        case 37517:
+                        case 40392:
+                        case 57823:
+                        //SPELL_HASH_DEVASTATE
+                        case 20243:
+                        case 30016:
+                        case 30017:
+                        case 30022:
+                        case 36891:
+                        case 36894:
+                        case 38849:
+                        case 38967:
+                        case 44452:
+                        case 47497:
+                        case 47498:
+                        case 57795:
+                        case 60018:
+                        case 62317:
+                        case 69902:
+                            break;
+                        default:
+                            continue;
+                    }
+                } break;
+
                 //Warrior - Safeguard
                 case 46946:
                 case 46947:
@@ -1604,18 +1757,74 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     if (CastingSpell == NULL)
                         continue;
 
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_INTERVENE)
-                        continue;
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_INTERVENE
+                        case 3411:
+                        case 34784:
+                        case 41198:
+                        case 53476:
+                        case 59667:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 //Warrior - Taste for Blood
                 case 60503:
                 {
-                    if (CastingSpell == NULL)
-                        continue;
-
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_REND)
-                        continue;
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_REND
+                        case 772:
+                        case 6546:
+                        case 6547:
+                        case 6548:
+                        case 11572:
+                        case 11573:
+                        case 11574:
+                        case 11977:
+                        case 12054:
+                        case 13318:
+                        case 13443:
+                        case 13445:
+                        case 13738:
+                        case 14087:
+                        case 14118:
+                        case 16393:
+                        case 16403:
+                        case 16406:
+                        case 16509:
+                        case 17153:
+                        case 17504:
+                        case 18075:
+                        case 18078:
+                        case 18106:
+                        case 18200:
+                        case 18202:
+                        case 21949:
+                        case 25208:
+                        case 29574:
+                        case 29578:
+                        case 36965:
+                        case 36991:
+                        case 37662:
+                        case 43246:
+                        case 43931:
+                        case 46845:
+                        case 47465:
+                        case 48880:
+                        case 53317:
+                        case 54703:
+                        case 54708:
+                        case 59239:
+                        case 59343:
+                        case 59691:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 //Warrior - Unbridled Wrath
@@ -1638,9 +1847,29 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     if (CastingSpell == NULL)
                         continue;
 
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_SHIELD_BASH &&
-                        CastingSpell->custom_NameHash != SPELL_HASH_HEROIC_THROW)
-                        continue;
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_SHIELD_BASH
+                        case 72:
+                        case 1671:
+                        case 1672:
+                        case 11972:
+                        case 29704:
+                        case 33871:
+                        case 35178:
+                        case 36988:
+                        case 38233:
+                        case 41180:
+                        case 41197:
+                        case 70964:
+                        case 72194:
+                        case 72196:
+                        //SPELL_HASH_HEROIC_THROW
+                        case 57755:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 //Warrior - Bloodsurge
@@ -1649,12 +1878,134 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     if (CastingSpell == NULL)
                         continue;
 
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_HEROIC_STRIKE &&
-                        CastingSpell->getId() != 23881 &&
-                        CastingSpell->custom_NameHash != SPELL_HASH_WHIRLWIND)
-                        continue;
-                }
-                break;
+                    switch (CastingSpell->getId())
+                    {
+                        case 23881:
+                        //SPELL_HASH_WHIRLWIND
+                        case 1680:
+                        case 8989:
+                        case 9633:
+                        case 13736:
+                        case 15576:
+                        case 15577:
+                        case 15578:
+                        case 15589:
+                        case 17207:
+                        case 24236:
+                        case 26038:
+                        case 26083:
+                        case 26084:
+                        case 26686:
+                        case 28334:
+                        case 28335:
+                        case 29573:
+                        case 29851:
+                        case 29852:
+                        case 31737:
+                        case 31738:
+                        case 31909:
+                        case 31910:
+                        case 33238:
+                        case 33239:
+                        case 33500:
+                        case 36132:
+                        case 36142:
+                        case 36175:
+                        case 36981:
+                        case 36982:
+                        case 37582:
+                        case 37583:
+                        case 37640:
+                        case 37641:
+                        case 37704:
+                        case 38618:
+                        case 38619:
+                        case 39232:
+                        case 40236:
+                        case 40653:
+                        case 40654:
+                        case 41056:
+                        case 41057:
+                        case 41058:
+                        case 41059:
+                        case 41061:
+                        case 41097:
+                        case 41098:
+                        case 41194:
+                        case 41195:
+                        case 41399:
+                        case 41400:
+                        case 43442:
+                        case 44949:
+                        case 45895:
+                        case 45896:
+                        case 46270:
+                        case 46271:
+                        case 48280:
+                        case 48281:
+                        case 49807:
+                        case 50228:
+                        case 50229:
+                        case 50622:
+                        case 52027:
+                        case 52028:
+                        case 52977:
+                        case 54797:
+                        case 55266:
+                        case 55267:
+                        case 55463:
+                        case 55977:
+                        case 56408:
+                        case 59322:
+                        case 59323:
+                        case 59549:
+                        case 59550:
+                        case 61076:
+                        case 61078:
+                        case 61136:
+                        case 61137:
+                        case 61139:
+                        case 63805:
+                        case 63806:
+                        case 63807:
+                        case 63808:
+                        case 65510:
+                        case 67037:
+                        case 67716:
+                        //SPELL_HASH_HEROIC_STRIKE
+                        case 78:
+                        case 284:
+                        case 285:
+                        case 1608:
+                        case 11564:
+                        case 11565:
+                        case 11566:
+                        case 11567:
+                        case 25286:
+                        case 25710:
+                        case 25712:
+                        case 29426:
+                        case 29567:
+                        case 29707:
+                        case 30324:
+                        case 31827:
+                        case 41975:
+                        case 45026:
+                        case 47449:
+                        case 47450:
+                        case 52221:
+                        case 53395:
+                        case 57846:
+                        case 59035:
+                        case 59607:
+                        case 62444:
+                        case 69566:
+                            break;
+                        default:
+                            continue;
+                    }
+                } break;
+
                 ////////////////////////////////////////////////////////////////////////////
                 // Mage ignite talent only for fire dmg
                 case 12654:
@@ -1688,14 +2039,61 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;//this should not occur unless we made a fuckup somewhere
-                    //only trigger effect for specified spells
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_BACKSTAB &&  //backstab
-                        CastingSpell->custom_NameHash != SPELL_HASH_SINISTER_STRIKE && //sinister strike
-                        CastingSpell->custom_NameHash != SPELL_HASH_SHIV) //shiv
-                        continue;
 
+                    //only trigger effect for specified spells
                     switch (CastingSpell->getId())
                     {
+                        //SPELL_HASH_SINISTER_STRIKE
+                        case 1752:
+                        case 1757:
+                        case 1758:
+                        case 1759:
+                        case 1760:
+                        case 8621:
+                        case 11293:
+                        case 11294:
+                        case 14873:
+                        case 15581:
+                        case 15667:
+                        case 19472:
+                        case 26861:
+                        case 26862:
+                        case 46558:
+                        case 48637:
+                        case 48638:
+                        case 57640:
+                        case 59409:
+                        case 60195:
+                        case 69920:
+                        case 71145:
+                        //SPELL_HASH_SHIV
+                        case 5938:
+                        case 5940:
+                        //SPELL_HASH_BACKSTAB
+                        case 53:
+                        case 2589:
+                        case 2590:
+                        case 2591:
+                        case 7159:
+                        case 8721:
+                        case 11279:
+                        case 11280:
+                        case 11281:
+                        case 15582:
+                        case 15657:
+                        case 22416:
+                        case 25300:
+                        case 26863:
+                        case 30992:
+                        case 34614:
+                        case 37685:
+                        case 48656:
+                        case 48657:
+                        case 52540:
+                        case 58471:
+                        case 63754:
+                        case 71410:
+                        case 72427:
                         //SPELL_HASH_GOUGE
                         case 1776:
                         case 1777:
@@ -1722,10 +2120,103 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_PENANCE &&
-                        CastingSpell->custom_NameHash != SPELL_HASH_FLASH_HEAL &&
-                        CastingSpell->custom_NameHash != SPELL_HASH_GREATER_HEAL)
-                        continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_PENANCE
+                        case 47540:
+                        case 47666:
+                        case 47750:
+                        case 47757:
+                        case 47758:
+                        case 52983:
+                        case 52984:
+                        case 52985:
+                        case 52986:
+                        case 52987:
+                        case 52988:
+                        case 52998:
+                        case 52999:
+                        case 53000:
+                        case 53001:
+                        case 53002:
+                        case 53003:
+                        case 53005:
+                        case 53006:
+                        case 53007:
+                        case 54518:
+                        case 54520:
+                        case 66097:
+                        case 66098:
+                        case 68029:
+                        case 68030:
+                        case 68031:
+                        case 69905:
+                        case 69906:
+                        case 71137:
+                        case 71138:
+                        case 71139:
+                        //SPELL_HASH_FLASH_HEAL
+                        case 2061:
+                        case 9472:
+                        case 9473:
+                        case 9474:
+                        case 10915:
+                        case 10916:
+                        case 10917:
+                        case 17137:
+                        case 17138:
+                        case 17843:
+                        case 25233:
+                        case 25235:
+                        case 27608:
+                        case 38588:
+                        case 42420:
+                        case 43431:
+                        case 43516:
+                        case 43575:
+                        case 48070:
+                        case 48071:
+                        case 56331:
+                        case 56919:
+                        case 66104:
+                        case 68023:
+                        case 68024:
+                        case 68025:
+                        case 71595:
+                        case 71782:
+                        case 71783:
+                        //SPELL_HASH_GREATER_HEAL
+                        case 2060:
+                        case 10963:
+                        case 10964:
+                        case 10965:
+                        case 22009:
+                        case 25210:
+                        case 25213:
+                        case 25314:
+                        case 28809:
+                        case 29564:
+                        case 34119:
+                        case 35096:
+                        case 38580:
+                        case 41378:
+                        case 48062:
+                        case 48063:
+                        case 49348:
+                        case 57775:
+                        case 60003:
+                        case 61965:
+                        case 62334:
+                        case 62442:
+                        case 63760:
+                        case 69963:
+                        case 71131:
+                        case 71931:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 //warlock - Improved Shadow Bolt
@@ -1737,11 +2228,171 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;//this should not occur unless we made a fuckup somewhere
+
                     //only trigger effect for specified spells
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_SHADOW_BOLT) //shadow bolt
-                        continue;
-                }
-                break;
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_SHADOW_BOLT
+                        case 686:
+                        case 695:
+                        case 705:
+                        case 1088:
+                        case 1106:
+                        case 7617:
+                        case 7619:
+                        case 7641:
+                        case 9613:
+                        case 11659:
+                        case 11660:
+                        case 11661:
+                        case 12471:
+                        case 12739:
+                        case 13440:
+                        case 13480:
+                        case 14106:
+                        case 14122:
+                        case 15232:
+                        case 15472:
+                        case 15537:
+                        case 16408:
+                        case 16409:
+                        case 16410:
+                        case 16783:
+                        case 16784:
+                        case 17393:
+                        case 17434:
+                        case 17435:
+                        case 17483:
+                        case 17509:
+                        case 18111:
+                        case 18138:
+                        case 18164:
+                        case 18205:
+                        case 18211:
+                        case 18214:
+                        case 18217:
+                        case 19728:
+                        case 19729:
+                        case 20298:
+                        case 20791:
+                        case 20807:
+                        case 20816:
+                        case 20825:
+                        case 21077:
+                        case 21141:
+                        case 22336:
+                        case 22677:
+                        case 24668:
+                        case 25307:
+                        case 26006:
+                        case 27209:
+                        case 29317:
+                        case 29487:
+                        case 29626:
+                        case 29640:
+                        case 29927:
+                        case 30055:
+                        case 30505:
+                        case 30686:
+                        case 31618:
+                        case 31627:
+                        case 32666:
+                        case 32860:
+                        case 33335:
+                        case 34344:
+                        case 36714:
+                        case 36868:
+                        case 36972:
+                        case 36986:
+                        case 36987:
+                        case 38378:
+                        case 38386:
+                        case 38628:
+                        case 38825:
+                        case 38892:
+                        case 39025:
+                        case 39026:
+                        case 39297:
+                        case 39309:
+                        case 40185:
+                        case 41069:
+                        case 41280:
+                        case 41957:
+                        case 43330:
+                        case 43649:
+                        case 43667:
+                        case 45055:
+                        case 45679:
+                        case 45680:
+                        case 47076:
+                        case 47248:
+                        case 47808:
+                        case 47809:
+                        case 49084:
+                        case 50455:
+                        case 51363:
+                        case 51432:
+                        case 51608:
+                        case 52257:
+                        case 52534:
+                        case 53086:
+                        case 53333:
+                        case 54113:
+                        case 55984:
+                        case 56405:
+                        case 57374:
+                        case 57464:
+                        case 57644:
+                        case 57725:
+                        case 58827:
+                        case 59016:
+                        case 59246:
+                        case 59254:
+                        case 59351:
+                        case 59357:
+                        case 59389:
+                        case 59575:
+                        case 60015:
+                        case 61558:
+                        case 61562:
+                        case 65821:
+                        case 68151:
+                        case 68152:
+                        case 68153:
+                        case 69028:
+                        case 69068:
+                        case 69211:
+                        case 69212:
+                        case 69387:
+                        case 69577:
+                        case 69972:
+                        case 70043:
+                        case 70080:
+                        case 70182:
+                        case 70208:
+                        case 70270:
+                        case 70386:
+                        case 70387:
+                        case 71143:
+                        case 71254:
+                        case 71296:
+                        case 71297:
+                        case 71936:
+                        case 72008:
+                        case 72503:
+                        case 72504:
+                        case 72901:
+                        case 72960:
+                        case 72961:
+                        case 75330:
+                        case 75331:
+                        case 75384:
+                            break;
+                        default:
+                            continue;
+                    }
+                } break;
+
                 // warlock - Seed of Corruption
                 case 27285:
                 {
@@ -1781,9 +2432,26 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (!CastingSpell)
                         continue;
+
                     //only trigger effect for specified spells
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_DRAIN_SOUL)
-                        continue;
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_DRAIN_SOUL
+                        case 1120:
+                        case 8288:
+                        case 8289:
+                        case 11675:
+                        case 18371:
+                        case 27217:
+                        case 32862:
+                        case 35839:
+                        case 47855:
+                        case 60452:
+                            break;
+                        default:
+                            continue;
+                    }
+
                     //null check was made before like 2 times already :P
                     dmg_overwrite[0] = (ospinfo->EffectBasePoints[2] + 1) * GetMaxPower(POWER_TYPE_MANA) / 100;
                 }
@@ -1801,10 +2469,109 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;//this should not occur unless we made a fuckup somewhere
+
                     //only trigger effect for specified spells
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_CORRUPTION &&  //Corruption
-                        CastingSpell->custom_NameHash != SPELL_HASH_DRAIN_LIFE) //Drain Life
-                        continue;
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_CORRUPTION
+                        case 172:
+                        case 6222:
+                        case 6223:
+                        case 7648:
+                        case 11671:
+                        case 11672:
+                        case 13530:
+                        case 16402:
+                        case 16985:
+                        case 17510:
+                        case 18088:
+                        case 18376:
+                        case 18656:
+                        case 21068:
+                        case 23642:
+                        case 25311:
+                        case 27216:
+                        case 28829:
+                        case 30938:
+                        case 31405:
+                        case 32063:
+                        case 32197:
+                        case 37113:
+                        case 37961:
+                        case 39212:
+                        case 39621:
+                        case 41988:
+                        case 47782:
+                        case 47812:
+                        case 47813:
+                        case 56898:
+                        case 57645:
+                        case 58811:
+                        case 60016:
+                        case 61563:
+                        case 65810:
+                        case 68133:
+                        case 68134:
+                        case 68135:
+                        case 70602:
+                        case 70904:
+                        case 71937:
+                        //SPELL_HASH_DRAIN_LIFE
+                        case 689:
+                        case 699:
+                        case 709:
+                        case 7651:
+                        case 11699:
+                        case 11700:
+                        case 12693:
+                        case 16375:
+                        case 16414:
+                        case 16608:
+                        case 17173:
+                        case 17238:
+                        case 17620:
+                        case 18084:
+                        case 18557:
+                        case 18815:
+                        case 18817:
+                        case 20743:
+                        case 21170:
+                        case 24300:
+                        case 24435:
+                        case 24585:
+                        case 24618:
+                        case 26693:
+                        case 27219:
+                        case 27220:
+                        case 27994:
+                        case 29155:
+                        case 30412:
+                        case 34107:
+                        case 34696:
+                        case 35748:
+                        case 36224:
+                        case 36655:
+                        case 36825:
+                        case 37992:
+                        case 38817:
+                        case 39676:
+                        case 43417:
+                        case 44294:
+                        case 46155:
+                        case 46291:
+                        case 46466:
+                        case 47857:
+                        case 55646:
+                        case 64159:
+                        case 64160:
+                        case 69066:
+                        case 70213:
+                        case 71838:
+                        case 71839:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 //warlock - Shadow Embrace
@@ -2343,8 +3110,27 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 // Warrior - Improved Revenge
                 case 12798:
                 {
-                    if (!CastingSpell || CastingSpell->custom_NameHash != SPELL_HASH_REVENGE)
-                        continue;
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_REVENGE
+                        case 6572:
+                        case 6574:
+                        case 7379:
+                        case 11600:
+                        case 11601:
+                        case 12170:
+                        case 19130:
+                        case 25269:
+                        case 25288:
+                        case 28844:
+                        case 30357:
+                        case 37517:
+                        case 40392:
+                        case 57823:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 // Warrior - Unrelenting Assault
@@ -2580,14 +3366,51 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 break;
                 case 37529:
                 {
-                    if (!CastingSpell || CastingSpell->custom_NameHash != SPELL_HASH_OVERPOWER)
-                        continue;
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_OVERPOWER
+                        case 7384:
+                        case 7887:
+                        case 11584:
+                        case 11585:
+                        case 14895:
+                        case 17198:
+                        case 24407:
+                        case 32154:
+                        case 37321:
+                        case 37529:
+                        case 43456:
+                        case 58516:
+                        case 65924:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 case 37517:
                 {
-                    if (!CastingSpell || CastingSpell->getId() == 37517 || CastingSpell->custom_NameHash != SPELL_HASH_REVENGE)
-                        continue;
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_REVENGE
+                        case 6572:
+                        case 6574:
+                        case 7379:
+                        case 11600:
+                        case 11601:
+                        case 12170:
+                        case 19130:
+                        case 25269:
+                        case 25288:
+                        case 28844:
+                        case 30357:
+                        case 40392:
+                        case 57823:
+                            break;
+                        case 37517:
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 case 38333: // Ribbon of Sacrifice
@@ -2599,8 +3422,58 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 //http://www.wowhead.com/?item=32493 Ashtongue Talisman of Shadows
                 case 40480:
                 {
-                    if (CastingSpell == NULL || CastingSpell->custom_NameHash != SPELL_HASH_CORRUPTION)
+                    if (CastingSpell == NULL)
                         continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_CORRUPTION
+                        case 172:
+                        case 6222:
+                        case 6223:
+                        case 7648:
+                        case 11671:
+                        case 11672:
+                        case 13530:
+                        case 16402:
+                        case 16985:
+                        case 17510:
+                        case 18088:
+                        case 18376:
+                        case 18656:
+                        case 21068:
+                        case 23642:
+                        case 25311:
+                        case 27216:
+                        case 28829:
+                        case 30938:
+                        case 31405:
+                        case 32063:
+                        case 32197:
+                        case 37113:
+                        case 37961:
+                        case 39212:
+                        case 39621:
+                        case 41988:
+                        case 47782:
+                        case 47812:
+                        case 47813:
+                        case 56898:
+                        case 57645:
+                        case 58811:
+                        case 60016:
+                        case 61563:
+                        case 65810:
+                        case 68133:
+                        case 68134:
+                        case 68135:
+                        case 70602:
+                        case 70904:
+                        case 71937:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
 
@@ -2624,16 +3497,118 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 //http://www.wowhead.com/?item=32487 Ashtongue Talisman of Swiftness
                 case 40487:
                 {
-                    if (CastingSpell == NULL || CastingSpell->custom_NameHash != SPELL_HASH_STEADY_SHOT)
-                        continue;
+                    switch (CastingSpell->getId())
+                    {
+                        // SPELL_HASH_STEADY_SHOT:
+                        case 34120:
+                        case 49051:
+                        case 49052:
+                        case 56641:
+                        case 65867:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
 
                 //http://www.wowhead.com/?item=32485 Ashtongue Talisman of Valor
                 case 40459:
                 {
-                    if (CastingSpell == NULL || (CastingSpell->custom_NameHash != SPELL_HASH_MORTAL_STRIKE && CastingSpell->custom_NameHash != SPELL_HASH_BLOODTHIRST && CastingSpell->custom_NameHash != SPELL_HASH_SHIELD_SLAM))
+                    if (CastingSpell == NULL)
                         continue;
+
+                    switch (CastingSpell->GetAreaAuraEffectId())
+                    {
+                        //SPELL_HASH_SHIELD_SLAM
+                        case 8242:
+                        case 15655:
+                        case 23922:
+                        case 23923:
+                        case 23924:
+                        case 23925:
+                        case 25258:
+                        case 29684:
+                        case 30356:
+                        case 30688:
+                        case 46762:
+                        case 47487:
+                        case 47488:
+                        case 49863:
+                        case 59142:
+                        case 69903:
+                        case 72645:
+                        //SPELL_HASH_BLOODTHIRST
+                        case 23880:
+                        case 23881:
+                        case 23885:
+                        case 23892:
+                        case 23893:
+                        case 23894:
+                        case 25251:
+                        case 30335:
+                        case 30474:
+                        case 30475:
+                        case 30476:
+                        case 31996:
+                        case 31997:
+                        case 31998:
+                        case 33964:
+                        case 35123:
+                        case 35125:
+                        case 35947:
+                        case 35948:
+                        case 35949:
+                        case 39070:
+                        case 39071:
+                        case 39072:
+                        case 40423:
+                        case 55968:
+                        case 55969:
+                        case 55970:
+                        case 57790:
+                        case 57791:
+                        case 57792:
+                        case 60017:
+                        case 71938:
+                        //SPELL_HASH_MORTAL_STRIKE
+                        case 9347:
+                        case 12294:
+                        case 13737:
+                        case 15708:
+                        case 16856:
+                        case 17547:
+                        case 19643:
+                        case 21551:
+                        case 21552:
+                        case 21553:
+                        case 24573:
+                        case 25248:
+                        case 27580:
+                        case 29572:
+                        case 30330:
+                        case 31911:
+                        case 32736:
+                        case 35054:
+                        case 37335:
+                        case 39171:
+                        case 40220:
+                        case 43441:
+                        case 43529:
+                        case 44268:
+                        case 47485:
+                        case 47486:
+                        case 57789:
+                        case 65926:
+                        case 67542:
+                        case 68782:
+                        case 68783:
+                        case 68784:
+                        case 71552:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 case 28804://Epiphany :Each spell you cast can trigger an Epiphany, increasing your mana regeneration by 24 for 30 sec.
@@ -2708,8 +3683,99 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_IMMOLATE && CastingSpell->custom_NameHash != SPELL_HASH_CORRUPTION)
-                        continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_IMMOLATE
+                        case 348:
+                        case 707:
+                        case 1094:
+                        case 2941:
+                        case 8981:
+                        case 9034:
+                        case 9275:
+                        case 9276:
+                        case 11665:
+                        case 11667:
+                        case 11668:
+                        case 11962:
+                        case 11984:
+                        case 12742:
+                        case 15505:
+                        case 15506:
+                        case 15570:
+                        case 15661:
+                        case 15732:
+                        case 15733:
+                        case 17883:
+                        case 18542:
+                        case 20294:
+                        case 20787:
+                        case 20800:
+                        case 20826:
+                        case 25309:
+                        case 27215:
+                        case 29928:
+                        case 36637:
+                        case 36638:
+                        case 37668:
+                        case 38805:
+                        case 38806:
+                        case 41958:
+                        case 44267:
+                        case 44518:
+                        case 46042:
+                        case 46191:
+                        case 47810:
+                        case 47811:
+                        case 75383:
+                        //SPELL_HASH_CORRUPTION
+                        case 172:
+                        case 6222:
+                        case 6223:
+                        case 7648:
+                        case 11671:
+                        case 11672:
+                        case 13530:
+                        case 16402:
+                        case 16985:
+                        case 17510:
+                        case 18088:
+                        case 18376:
+                        case 18656:
+                        case 21068:
+                        case 23642:
+                        case 25311:
+                        case 27216:
+                        case 28829:
+                        case 30938:
+                        case 31405:
+                        case 32063:
+                        case 32197:
+                        case 37113:
+                        case 37961:
+                        case 39212:
+                        case 39621:
+                        case 41988:
+                        case 47782:
+                        case 47812:
+                        case 47813:
+                        case 56898:
+                        case 57645:
+                        case 58811:
+                        case 60016:
+                        case 61563:
+                        case 65810:
+                        case 68133:
+                        case 68134:
+                        case 68135:
+                        case 70602:
+                        case 70904:
+                        case 71937:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
             }
@@ -2792,14 +3858,52 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                         break;
                         case 46916: // Bloodsurge - Slam! effect should dissapear after casting Slam only
                         {
-                            if (CastingSpell->custom_NameHash != SPELL_HASH_SLAM)
-                                continue;
+                            switch (CastingSpell->getId())
+                            {
+                                //SPELL_HASH_SLAM
+                                case 1464:
+                                case 8820:
+                                case 11430:
+                                case 11604:
+                                case 11605:
+                                case 25241:
+                                case 25242:
+                                case 34620:
+                                case 47474:
+                                case 47475:
+                                case 50782:
+                                case 50783:
+                                case 52026:
+                                case 67028:
+                                    break;
+                                default:
+                                    continue;
+                            }
+
                         }
                         break;
                         case 60503: // Taste for Blood should dissapear after casting Overpower
                         {
-                            if (CastingSpell->custom_NameHash != SPELL_HASH_OVERPOWER)
-                                continue;
+                            switch (CastingSpell->getId())
+                            {
+                                //SPELL_HASH_OVERPOWER
+                                case 7384:
+                                case 7887:
+                                case 11584:
+                                case 11585:
+                                case 14895:
+                                case 17198:
+                                case 24407:
+                                case 32154:
+                                case 37321:
+                                case 37529:
+                                case 43456:
+                                case 58516:
+                                case 65924:
+                                    break;
+                                default:
+                                    continue;
+                            }
                         }
                         break;
                         case 23694: // Imp. Hamstring
@@ -2820,8 +3924,61 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                         break;
                         case 65156: // Juggernaut
                         {
-                            if (CastingSpell->custom_NameHash != SPELL_HASH_MORTAL_STRIKE && CastingSpell->custom_NameHash != SPELL_HASH_SLAM)
-                                continue;
+                            switch (CastingSpell->getId())
+                            {
+                                //SPELL_HASH_MORTAL_STRIKE
+                                case 9347:
+                                case 12294:
+                                case 13737:
+                                case 15708:
+                                case 16856:
+                                case 17547:
+                                case 19643:
+                                case 21551:
+                                case 21552:
+                                case 21553:
+                                case 24573:
+                                case 25248:
+                                case 27580:
+                                case 29572:
+                                case 30330:
+                                case 31911:
+                                case 32736:
+                                case 35054:
+                                case 37335:
+                                case 39171:
+                                case 40220:
+                                case 43441:
+                                case 43529:
+                                case 44268:
+                                case 47485:
+                                case 47486:
+                                case 57789:
+                                case 65926:
+                                case 67542:
+                                case 68782:
+                                case 68783:
+                                case 68784:
+                                case 71552:
+                                //SPELL_HASH_SLAM
+                                case 1464:
+                                case 8820:
+                                case 11430:
+                                case 11604:
+                                case 11605:
+                                case 25241:
+                                case 25242:
+                                case 34620:
+                                case 47474:
+                                case 47475:
+                                case 50782:
+                                case 50783:
+                                case 52026:
+                                case 67028:
+                                    break;
+                                default:
+                                    continue;
+                            }
                         }
                         break;
                     }
@@ -4752,17 +5909,64 @@ void Unit::AddAura(Aura* aur)
                     Player* caster = aur->GetPlayerCaster();
                     if (caster != NULL)
                     {
-                        switch (info->custom_NameHash)
+                        switch (info->getId())
                         {
-                            case SPELL_HASH_DEADLY_POISON_IX:
-                            case SPELL_HASH_DEADLY_POISON_VIII:
-                            case SPELL_HASH_DEADLY_POISON_VII:
-                            case SPELL_HASH_DEADLY_POISON_VI:
-                            case SPELL_HASH_DEADLY_POISON_V:
-                            case SPELL_HASH_DEADLY_POISON_IV:
-                            case SPELL_HASH_DEADLY_POISON_III:
-                            case SPELL_HASH_DEADLY_POISON_II:
-                            case SPELL_HASH_DEADLY_POISON:
+                            // SPELL_HASH_DEADLY_POISON_IX:
+                            case 57970:
+                            case 57973:
+                                // SPELL_HASH_DEADLY_POISON_VIII:
+                            case 57969:
+                            case 57972:
+                                // SPELL_HASH_DEADLY_POISON_VII:
+                            case 27186:
+                            case 27187:
+                                // SPELL_HASH_DEADLY_POISON_VI:
+                            case 26967:
+                            case 26968:
+                                // SPELL_HASH_DEADLY_POISON_V:
+                            case 25349:
+                            case 25351:
+                                // SPELL_HASH_DEADLY_POISON_IV:
+                            case 11354:
+                            case 11356:
+                                // SPELL_HASH_DEADLY_POISON_III:
+                            case 11353:
+                            case 11355:
+                                // SPELL_HASH_DEADLY_POISON_II:
+                            case 2819:
+                            case 2824:
+                                // SPELL_HASH_DEADLY_POISON:
+                            case 2818:
+                            case 2823:
+                            case 3583:
+                            case 10022:
+                            case 13582:
+                            case 21787:
+                            case 21788:
+                            case 32970:
+                            case 32971:
+                            case 34616:
+                            case 34655:
+                            case 34657:
+                            case 36872:
+                            case 38519:
+                            case 38520:
+                            case 41191:
+                            case 41192:
+                            case 41485:
+                            case 43580:
+                            case 43581:
+                            case 56145:
+                            case 56149:
+                            case 59479:
+                            case 59482:
+                            case 63755:
+                            case 63756:
+                            case 67710:
+                            case 67711:
+                            case 68315:
+                            case 72329:
+                            case 72330:
                             {
                                 Item* mh = caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                                 Item* oh = caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
@@ -4786,17 +5990,64 @@ void Unit::AddAura(Aura* aur)
                                                 SpellInfo* sp = sSpellCustomizations.GetSpellInfo(Entry->spell[c]);
                                                 if (sp && sp->custom_c_is_flags & SPELL_FLAG_IS_POISON)
                                                 {
-                                                    switch (sp->custom_NameHash)
+                                                    switch (sp->getId())
                                                     {
-                                                        case SPELL_HASH_DEADLY_POISON_IX:
-                                                        case SPELL_HASH_DEADLY_POISON_VIII:
-                                                        case SPELL_HASH_DEADLY_POISON_VII:
-                                                        case SPELL_HASH_DEADLY_POISON_VI:
-                                                        case SPELL_HASH_DEADLY_POISON_V:
-                                                        case SPELL_HASH_DEADLY_POISON_IV:
-                                                        case SPELL_HASH_DEADLY_POISON_III:
-                                                        case SPELL_HASH_DEADLY_POISON_II:
-                                                        case SPELL_HASH_DEADLY_POISON:
+                                                        // SPELL_HASH_DEADLY_POISON_IX:
+                                                        case 57970:
+                                                        case 57973:
+                                                            // SPELL_HASH_DEADLY_POISON_VIII:
+                                                        case 57969:
+                                                        case 57972:
+                                                            // SPELL_HASH_DEADLY_POISON_VII:
+                                                        case 27186:
+                                                        case 27187:
+                                                            // SPELL_HASH_DEADLY_POISON_VI:
+                                                        case 26967:
+                                                        case 26968:
+                                                            // SPELL_HASH_DEADLY_POISON_V:
+                                                        case 25349:
+                                                        case 25351:
+                                                            // SPELL_HASH_DEADLY_POISON_IV:
+                                                        case 11354:
+                                                        case 11356:
+                                                            // SPELL_HASH_DEADLY_POISON_III:
+                                                        case 11353:
+                                                        case 11355:
+                                                            // SPELL_HASH_DEADLY_POISON_II:
+                                                        case 2819:
+                                                        case 2824:
+                                                            // SPELL_HASH_DEADLY_POISON:
+                                                        case 2818:
+                                                        case 2823:
+                                                        case 3583:
+                                                        case 10022:
+                                                        case 13582:
+                                                        case 21787:
+                                                        case 21788:
+                                                        case 32970:
+                                                        case 32971:
+                                                        case 34616:
+                                                        case 34655:
+                                                        case 34657:
+                                                        case 36872:
+                                                        case 38519:
+                                                        case 38520:
+                                                        case 41191:
+                                                        case 41192:
+                                                        case 41485:
+                                                        case 43580:
+                                                        case 43581:
+                                                        case 56145:
+                                                        case 56149:
+                                                        case 59479:
+                                                        case 59482:
+                                                        case 63755:
+                                                        case 63756:
+                                                        case 67710:
+                                                        case 67711:
+                                                        case 68315:
+                                                        case 72329:
+                                                        case 72330:
                                                             is_mh_deadly_poison = true;
                                                             break;
                                                     }
@@ -4819,17 +6070,64 @@ void Unit::AddAura(Aura* aur)
                                                     SpellInfo* sp = sSpellCustomizations.GetSpellInfo(Entry->spell[c]);
                                                     if (sp && sp->custom_c_is_flags & SPELL_FLAG_IS_POISON)
                                                     {
-                                                        switch (sp->custom_NameHash)
+                                                        switch (sp->getId())
                                                         {
-                                                            case SPELL_HASH_DEADLY_POISON_IX:
-                                                            case SPELL_HASH_DEADLY_POISON_VIII:
-                                                            case SPELL_HASH_DEADLY_POISON_VII:
-                                                            case SPELL_HASH_DEADLY_POISON_VI:
-                                                            case SPELL_HASH_DEADLY_POISON_V:
-                                                            case SPELL_HASH_DEADLY_POISON_IV:
-                                                            case SPELL_HASH_DEADLY_POISON_III:
-                                                            case SPELL_HASH_DEADLY_POISON_II:
-                                                            case SPELL_HASH_DEADLY_POISON:
+                                                            // SPELL_HASH_DEADLY_POISON_IX:
+                                                            case 57970:
+                                                            case 57973:
+                                                                // SPELL_HASH_DEADLY_POISON_VIII:
+                                                            case 57969:
+                                                            case 57972:
+                                                                // SPELL_HASH_DEADLY_POISON_VII:
+                                                            case 27186:
+                                                            case 27187:
+                                                                // SPELL_HASH_DEADLY_POISON_VI:
+                                                            case 26967:
+                                                            case 26968:
+                                                                // SPELL_HASH_DEADLY_POISON_V:
+                                                            case 25349:
+                                                            case 25351:
+                                                                // SPELL_HASH_DEADLY_POISON_IV:
+                                                            case 11354:
+                                                            case 11356:
+                                                                // SPELL_HASH_DEADLY_POISON_III:
+                                                            case 11353:
+                                                            case 11355:
+                                                                // SPELL_HASH_DEADLY_POISON_II:
+                                                            case 2819:
+                                                            case 2824:
+                                                                // SPELL_HASH_DEADLY_POISON:
+                                                            case 2818:
+                                                            case 2823:
+                                                            case 3583:
+                                                            case 10022:
+                                                            case 13582:
+                                                            case 21787:
+                                                            case 21788:
+                                                            case 32970:
+                                                            case 32971:
+                                                            case 34616:
+                                                            case 34655:
+                                                            case 34657:
+                                                            case 36872:
+                                                            case 38519:
+                                                            case 38520:
+                                                            case 41191:
+                                                            case 41192:
+                                                            case 41485:
+                                                            case 43580:
+                                                            case 43581:
+                                                            case 56145:
+                                                            case 56149:
+                                                            case 59479:
+                                                            case 59482:
+                                                            case 63755:
+                                                            case 63756:
+                                                            case 67710:
+                                                            case 67711:
+                                                            case 68315:
+                                                            case 72329:
+                                                            case 72330:
                                                                 is_oh_deadly_poison = true;
                                                                 break;
                                                         }
@@ -5459,11 +6757,135 @@ int32 Unit::GetSpellDmgBonus(Unit* pVictim, SpellInfo* spellInfo, int32 base_dmg
             {
                 plus_damage = plus_damage * spellInfo->casttime_coef;
                 float td = static_cast<float>(GetDuration(sSpellDurationStore.LookupEntry(spellInfo->DurationIndex)));
-                if (spellInfo->custom_NameHash == SPELL_HASH_MOONFIRE
-                    || spellInfo->custom_NameHash == SPELL_HASH_IMMOLATE
-                    || spellInfo->custom_NameHash == SPELL_HASH_ICE_LANCE
-                    || spellInfo->custom_NameHash == SPELL_HASH_PYROBLAST)
-                    plus_damage = plus_damage * (1.0f - ((td / 15000.0f) / ((td / 15000.0f))));
+
+                switch (spellInfo->getId())
+                {
+                    //SPELL_HASH_MOONFIRE
+                    case 563:
+                    case 8921:
+                    case 8924:
+                    case 8925:
+                    case 8926:
+                    case 8927:
+                    case 8928:
+                    case 8929:
+                    case 9833:
+                    case 9834:
+                    case 9835:
+                    case 15798:
+                    case 20690:
+                    case 21669:
+                    case 22206:
+                    case 23380:
+                    case 24957:
+                    case 26987:
+                    case 26988:
+                    case 27737:
+                    case 31270:
+                    case 31401:
+                    case 32373:
+                    case 32415:
+                    case 37328:
+                    case 43545:
+                    case 45821:
+                    case 45900:
+                    case 47072:
+                    case 48462:
+                    case 48463:
+                    case 52502:
+                    case 57647:
+                    case 59987:
+                    case 65856:
+                    case 67944:
+                    case 67945:
+                    case 67946:
+                    case 75329:
+                    //SPELL_HASH_PYROBLAST
+                    case 11366:
+                    case 12505:
+                    case 12522:
+                    case 12523:
+                    case 12524:
+                    case 12525:
+                    case 12526:
+                    case 17273:
+                    case 17274:
+                    case 18809:
+                    case 20228:
+                    case 24995:
+                    case 27132:
+                    case 29459:
+                    case 29978:
+                    case 31263:
+                    case 33938:
+                    case 33975:
+                    case 36277:
+                    case 36819:
+                    case 38535:
+                    case 41578:
+                    case 42890:
+                    case 42891:
+                    case 64698:
+                    case 70516:
+                    //SPELL_HASH_ICE_LANCE
+                    case 30455:
+                    case 31766:
+                    case 42913:
+                    case 42914:
+                    case 43427:
+                    case 43571:
+                    case 44176:
+                    case 45906:
+                    case 46194:
+                    case 49906:
+                    case 54261:
+                    //SPELL_HASH_IMMOLATE
+                    case 348:
+                    case 707:
+                    case 1094:
+                    case 2941:
+                    case 8981:
+                    case 9034:
+                    case 9275:
+                    case 9276:
+                    case 11665:
+                    case 11667:
+                    case 11668:
+                    case 11962:
+                    case 11984:
+                    case 12742:
+                    case 15505:
+                    case 15506:
+                    case 15570:
+                    case 15661:
+                    case 15732:
+                    case 15733:
+                    case 17883:
+                    case 18542:
+                    case 20294:
+                    case 20787:
+                    case 20800:
+                    case 20826:
+                    case 25309:
+                    case 27215:
+                    case 29928:
+                    case 36637:
+                    case 36638:
+                    case 37668:
+                    case 38805:
+                    case 38806:
+                    case 41958:
+                    case 44267:
+                    case 44518:
+                    case 46042:
+                    case 46191:
+                    case 47810:
+                    case 47811:
+                    case 75383:
+                        plus_damage = plus_damage * (1.0f - ((td / 15000.0f) / ((td / 15000.0f))));
+                    default:
+                        break;
+                }
             }
         }
     }
@@ -6325,8 +7747,42 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
                     break;
                     case 48108: // Hot Streak
                     {
-                        if (m_currentSpell && m_currentSpell->GetSpellInfo()->custom_NameHash != SPELL_HASH_PYROBLAST)
+                        if (m_currentSpell)
                             continue;
+
+                        switch (m_currentSpell->GetSpellInfo()->getId())
+                        {
+                            //SPELL_HASH_PYROBLAST
+                            case 11366:
+                            case 12505:
+                            case 12522:
+                            case 12523:
+                            case 12524:
+                            case 12525:
+                            case 12526:
+                            case 17273:
+                            case 17274:
+                            case 18809:
+                            case 20228:
+                            case 24995:
+                            case 27132:
+                            case 29459:
+                            case 29978:
+                            case 31263:
+                            case 33938:
+                            case 33975:
+                            case 36277:
+                            case 36819:
+                            case 38535:
+                            case 41578:
+                            case 42890:
+                            case 42891:
+                            case 64698:
+                            case 70516:
+                                break;
+                            default:
+                                continue;
+                        }
                     }
                     break;
                 }

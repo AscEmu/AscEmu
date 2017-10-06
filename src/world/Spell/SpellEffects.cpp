@@ -696,16 +696,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                     dmg = static_cast<uint32>(dmg * _distance);
             }
             break;
-            case SPELL_HASH_ICE_LANCE: // Ice Lance
-            {
-                // Deal triple damage to frozen targets or to those in Deep Freeze
-                if (unitTarget->HasFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_FROZEN) || unitTarget->HasAura(44572))
-                    dmg *= 3;
-                //  if (dmg>300)   //dirty bugfix.
-                //      dmg = (int32)(damage >> 1);
 
-            }
-            break;
             case SPELL_HASH_INCINERATE: // Incinerate -> Deals x-x extra damage if the target is affected by immolate
             {
                 if (unitTarget->HasFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_IMMOLATE))
@@ -742,19 +733,6 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
             }
             break;
 
-            case SPELL_HASH_HEROIC_THROW:   // Heroic Throw
-            {
-                if (u_caster)
-                    dmg = u_caster->GetAP() / 2 + 12;
-                // hardcoded value are faster I guess
-                // GetProto()->EffectBasePoints[0]+1 == 12 future reference
-            }
-            break;
-            case SPELL_HASH_BLOODTHIRST:    // Bloodthirst
-            {
-                dmg = u_caster->GetAP() * (GetSpellInfo()->EffectBasePoints[0] + 1) / 100;
-            }
-            break;
             case SPELL_HASH_SHIELD_OF_RIGHTEOUSNESS: // Shield of Righteousness - a bit like "shield slam", OK for both ranks
             {
                 if (p_caster != NULL)
@@ -763,37 +741,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                 }
             }
             break;
-            case SPELL_HASH_SHIELD_SLAM:    // Shield Slam - damage is increased by block value
-            {
-                if (p_caster != nullptr)
-                {
-                    Item* it = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-                    if (it && it->GetItemProperties()->InventoryType == INVTYPE_SHIELD)
-                    {
-                        float block_multiplier = (100.0f + p_caster->m_modblockabsorbvalue) / 100.0f;
-                        if (block_multiplier < 1.0f)block_multiplier = 1.0f;
 
-                        int32 blockable_damage = float2int32((it->GetItemProperties()->Block + p_caster->m_modblockvaluefromspells + p_caster->getUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_BLOCK) + ((p_caster->GetStat(STAT_STRENGTH) / 2.0f) - 1.0f)) * block_multiplier);
-
-                        /*
-                            3.2.0:
-                            The benefit from additional block value this ability gains is now subject
-                            to diminishing returns. Diminishing returns occur once block value exceeds
-                            30 times the player's level and caps the maximum damage benefit from shield
-                            block value at 34.5 times the player's level.
-                            */
-                        int32 max_blockable_damage = static_cast<int32>(p_caster->getLevel() * 34.5f);
-                        if (blockable_damage > max_blockable_damage)
-                        {
-                            blockable_damage = max_blockable_damage;
-                        }
-
-                        dmg += blockable_damage;
-
-                    }
-                }
-            }
-            break;
             case SPELL_HASH_FIRE_STRIKE:
             case SPELL_HASH_LIGHTNING_STRIKE:
             case SPELL_HASH_MOLTEN_ARMOR:       // fire armor, is static damage
@@ -834,6 +782,125 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 
         switch (GetSpellInfo()->getId())
         {
+            //SPELL_HASH_ICE_LANCE
+            case 30455:
+            case 31766:
+            case 42913:
+            case 42914:
+            case 43427:
+            case 43571:
+            case 44176:
+            case 45906:
+            case 46194:
+            case 49906:
+            case 54261:
+            {
+                // Deal triple damage to frozen targets or to those in Deep Freeze
+                if (unitTarget->HasFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_FROZEN) || unitTarget->HasAura(44572))
+                    dmg *= 3;
+            } break;
+
+            //SPELL_HASH_HEROIC_THROW
+            case 57755:
+            {
+                if (u_caster)
+                    dmg = u_caster->GetAP() / 2 + 12;
+                if (p_caster != nullptr)
+                    dmg = static_cast<uint32>(std::round(p_caster->GetAP() * 0.5));
+            } break;
+
+            //SPELL_HASH_SHIELD_SLAM
+            case 8242:
+            case 15655:
+            case 23922:
+            case 23923:
+            case 23924:
+            case 23925:
+            case 25258:
+            case 29684:
+            case 30356:
+            case 30688:
+            case 46762:
+            case 47487:
+            case 47488:
+            case 49863:
+            case 59142:
+            case 69903:
+            case 72645:
+            {
+                if (p_caster != nullptr)
+                {
+                    Item* it = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+                    if (it && it->GetItemProperties()->InventoryType == INVTYPE_SHIELD)
+                    {
+                        float block_multiplier = (100.0f + p_caster->m_modblockabsorbvalue) / 100.0f;
+                        if (block_multiplier < 1.0f)block_multiplier = 1.0f;
+
+                        int32 blockable_damage = float2int32((it->GetItemProperties()->Block + p_caster->m_modblockvaluefromspells + p_caster->getUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_BLOCK) + ((p_caster->GetStat(STAT_STRENGTH) / 2.0f) - 1.0f)) * block_multiplier);
+
+                        /*
+                        3.2.0:
+                        The benefit from additional block value this ability gains is now subject
+                        to diminishing returns. Diminishing returns occur once block value exceeds
+                        30 times the player's level and caps the maximum damage benefit from shield
+                        block value at 34.5 times the player's level.
+                        */
+                        int32 max_blockable_damage = static_cast<int32>(p_caster->getLevel() * 34.5f);
+                        if (blockable_damage > max_blockable_damage)
+                        {
+                            blockable_damage = max_blockable_damage;
+                        }
+
+                        dmg += blockable_damage;
+
+                    }
+                }
+            } break;
+
+            //SPELL_HASH_BLOODTHIRST
+            case 23880:
+            case 23881:
+            {
+                if (p_caster != NULL)
+                {
+                    dmg = static_cast<uint32>(std::round(p_caster->GetAP() * 0.5));
+                    break;
+                }
+            }
+            case 23885:
+            case 23892:
+            case 23893:
+            case 23894:
+            case 25251:
+            case 30335:
+            case 30474:
+            case 30475:
+            case 30476:
+            case 31996:
+            case 31997:
+            case 31998:
+            case 33964:
+            case 35123:
+            case 35125:
+            case 35947:
+            case 35948:
+            case 35949:
+            case 39070:
+            case 39071:
+            case 39072:
+            case 40423:
+            case 55968:
+            case 55969:
+            case 55970:
+            case 57790:
+            case 57791:
+            case 57792:
+            case 60017:
+            case 71938:
+            {
+                dmg = u_caster->GetAP() * (GetSpellInfo()->EffectBasePoints[0] + 1) / 100;
+            } break;
+
             //SPELL_HASH_CONCUSSION_BLOW
             case 12809:
             case 22427:
@@ -890,11 +957,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                 if (u_caster)
                     dmg = float2int32(u_caster->GetAP() * 0.12f);
             } break;
-            case 23881:
-            {
-                if (p_caster != NULL)
-                    dmg = static_cast<uint32>(std::round(p_caster->GetAP() * 0.5));
-            }break;
+
             case 5308:
             case 20658:
             case 20660:
@@ -908,6 +971,9 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                 if (p_caster != NULL)
                     dmg = p_caster->GetAP() * ((m_spellInfo->EffectBasePoints[0] + 1) / 100);
             }break;
+
+            //SPELL_HASH_SHIELD_SLAM
+            /* Zyres 10/06/2017: Already defined!
             case 23922:
             case 23923:
             case 23924:
@@ -925,7 +991,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                         dmg = p_caster->getUInt32Value(PLAYER_SHIELD_BLOCK);
 #endif
                 }
-            }break;
+            }break;*/
             case 34428:
             {
                 if (p_caster != NULL)
@@ -947,25 +1013,12 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                 if (p_caster != nullptr)
                     dmg = static_cast<uint32>(std::round(p_caster->GetAP() * 0.207));
             }break;
-            case 57755:
-            {
-                if (p_caster != nullptr)
-                    dmg = static_cast<uint32>(std::round(p_caster->GetAP() * 0.5));
-            }break;
+
             case 64382:
                 if (p_caster != nullptr)
                     dmg = static_cast<uint32>(std::round(p_caster->GetAP() * 0.5));
                 break;
-                // Heroic Strike, commented ones don't have bonus.
-                /*case 78:
-                case 284:
-                case 285:
-                case 1608:
-                case 11564:
-                case 11565:
-                case 11566:
-                case 11567:
-                case 25286:*/
+
             case 29707:
             case 30324:
             case 47449:
@@ -2967,20 +3020,44 @@ void Spell::SpellEffectWeaponDmgPerc(uint32 i) // Weapon Percent damage
 
         u_caster->Strike(unitTarget, _type, GetSpellInfo(), add_damage, damage, 0, false, true);
 
-        if (GetSpellInfo()->custom_NameHash == SPELL_HASH_FAN_OF_KNIVES && p_caster != NULL)   // rogue - fan of knives
+        if (p_caster != NULL)   // rogue - fan of knives
         {
-            Item* oit = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-            if (oit != nullptr)
+            switch (GetSpellInfo()->getId())
             {
-                if (oit->GetDurability() != 0)
+                // SPELL_HASH_FAN_OF_KNIVES
+                case 51723:
+                case 52874:
+                case 61739:
+                case 61740:
+                case 61741:
+                case 61742:
+                case 61743:
+                case 61744:
+                case 61745:
+                case 61746:
+                case 63753:
+                case 65955:
+                case 67706:
+                case 68097:
+                case 68098:
+                case 68099:
+                case 69921:
+                case 71128:
                 {
-                    if (oit->GetItemProperties()->Class == 2 && oit->GetItemProperties()->SubClass == 15)   // daggers
-                        damage = 105; //causing 105% weapon damage with daggers
-                    else
-                        damage = GetSpellInfo()->EffectBasePoints[i] + 1;// and 70% weapon damage with all other weapons.
+                    Item* oit = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+                    if (oit != nullptr)
+                    {
+                        if (oit->GetDurability() != 0)
+                        {
+                            if (oit->GetItemProperties()->Class == 2 && oit->GetItemProperties()->SubClass == 15)   // daggers
+                                damage = 105; //causing 105% weapon damage with daggers
+                            else
+                                damage = GetSpellInfo()->EffectBasePoints[i] + 1;// and 70% weapon damage with all other weapons.
 
-                    u_caster->Strike(unitTarget, OFFHAND, GetSpellInfo(), add_damage, damage, 0, false, true);
-                }
+                            u_caster->Strike(unitTarget, OFFHAND, GetSpellInfo(), add_damage, damage, 0, false, true);
+                        }
+                    }
+                } break;
             }
         }
     }
@@ -5141,34 +5218,71 @@ void Spell::SpellEffectDummyMelee(uint32 i)   // Normalized Weapon damage +
     if (!unitTarget || !u_caster)
         return;
 
-    if (GetSpellInfo()->custom_NameHash == SPELL_HASH_OVERPOWER && p_caster)   //warrior : overpower - let us clear the event and the combopoint count
+    switch (GetSpellInfo()->getId())
     {
-        p_caster->NullComboPoints(); //some say that we should only remove 1 point per dodge. Due to cooldown you can't cast it twice anyway..
-        sEventMgr.RemoveEvents(p_caster, EVENT_COMBO_POINT_CLEAR_FOR_TARGET);
-    }
-    else if (GetSpellInfo()->custom_NameHash == SPELL_HASH_DEVASTATE)
-    {
-        //count the number of sunder armors on target
-        uint32 sunder_count = 0;
-        SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(7386);
-        for (uint32 x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_NEGATIVE_AURAS_EXTEDED_END; ++x)
-            if (unitTarget->m_auras[x] && unitTarget->m_auras[x]->GetSpellInfo()->custom_NameHash == SPELL_HASH_SUNDER_ARMOR)
+        //SPELL_HASH_OVERPOWER
+        case 7384:
+        case 7887:
+        case 11584:
+        case 11585:
+        case 14895:
+        case 17198:
+        case 24407:
+        case 32154:
+        case 37321:
+        case 37529:
+        case 43456:
+        case 58516:
+        case 65924:
+        {
+            if (p_caster)   //warrior : overpower - let us clear the event and the combopoint count
             {
-                sunder_count++;
-                spellInfo = unitTarget->m_auras[x]->GetSpellInfo();
+                p_caster->NullComboPoints(); //some say that we should only remove 1 point per dodge. Due to cooldown you can't cast it twice anyway..
+                sEventMgr.RemoveEvents(p_caster, EVENT_COMBO_POINT_CLEAR_FOR_TARGET);
             }
-        if (spellInfo == NULL)
-            return; //omg how did this happen ?
-        //we should also cast sunder armor effect on target with or without dmg
-        Spell* spell = sSpellFactoryMgr.NewSpell(u_caster, spellInfo, true, NULL);
-        spell->ProcedOnSpell = GetSpellInfo();
-        spell->pSpellId = GetSpellInfo()->getId();
-        SpellCastTargets targets(unitTarget->GetGUID());
-        spell->prepare(&targets);
-        if (!sunder_count)
-            return; //no damage = no joy
-        damage = damage * sunder_count;
+        } break;
+        
+        case 20243:
+        case 30016:
+        case 30017:
+        case 30022:
+        case 36891:
+        case 36894:
+        case 38849:
+        case 38967:
+        case 44452:
+        case 47497:
+        case 47498:
+        case 57795:
+        case 60018:
+        case 62317:
+        case 69902:
+        {
+            //count the number of sunder armors on target
+            uint32 sunder_count = 0;
+            SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(7386);
+            for (uint32 x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_NEGATIVE_AURAS_EXTEDED_END; ++x)
+                if (unitTarget->m_auras[x] && unitTarget->m_auras[x]->GetSpellInfo()->custom_NameHash == SPELL_HASH_SUNDER_ARMOR)
+                {
+                    sunder_count++;
+                    spellInfo = unitTarget->m_auras[x]->GetSpellInfo();
+                }
+            if (spellInfo == NULL)
+                return; //omg how did this happen ?
+                        //we should also cast sunder armor effect on target with or without dmg
+            Spell* spell = sSpellFactoryMgr.NewSpell(u_caster, spellInfo, true, NULL);
+            spell->ProcedOnSpell = GetSpellInfo();
+            spell->pSpellId = GetSpellInfo()->getId();
+            SpellCastTargets targets(unitTarget->GetGUID());
+            spell->prepare(&targets);
+            if (!sunder_count)
+                return; //no damage = no joy
+            damage = damage * sunder_count;
+        } break;
+        default:
+            break;
     }
+
     //Hemorrhage
     if (p_caster && GetSpellInfo()->custom_NameHash == SPELL_HASH_HEMORRHAGE)
         p_caster->AddComboPoints(p_caster->GetSelection(), 1);

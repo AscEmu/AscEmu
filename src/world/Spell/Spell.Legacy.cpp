@@ -1217,15 +1217,33 @@ void Spell::castMe(bool check)
 
         if (p_caster)
         {
-            if (GetSpellInfo()->custom_NameHash == SPELL_HASH_SLAM)
+            switch (GetSpellInfo()->getId())
             {
-                /* slam - reset attack timer */
-                p_caster->setAttackTimer(0, true);
-                p_caster->setAttackTimer(0, false);
-            }
-            else if (m_spellInfo->custom_NameHash == SPELL_HASH_VICTORY_RUSH)
-            {
-                p_caster->RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_LASTKILLWITHHONOR);
+                //SPELL_HASH_SLAM
+                case 1464:
+                case 8820:
+                case 11430:
+                case 11604:
+                case 11605:
+                case 25241:
+                case 25242:
+                case 34620:
+                case 47474:
+                case 47475:
+                case 50782:
+                case 50783:
+                case 52026:
+                case 67028:
+                {
+                    p_caster->setAttackTimer(0, true);
+                    p_caster->setAttackTimer(0, false);
+                } break;
+
+                //SPELL_HASH_VICTORY_RUSH
+                case 34428:
+                {
+                    p_caster->RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_LASTKILLWITHHONOR);
+                } break;
             }
 
             if (GetSpellInfo()->custom_NameHash == SPELL_HASH_HOLY_LIGHT || GetSpellInfo()->custom_NameHash == SPELL_HASH_FLASH_OF_LIGHT)
@@ -2567,7 +2585,7 @@ bool Spell::HasPower()
     }
 
     //hackfix for shiv's energy cost
-    if (p_caster != nullptr && m_spellInfo->custom_NameHash == SPELL_HASH_SHIV)
+    if (p_caster != nullptr && (m_spellInfo->getId() == 5938 || m_spellInfo->getId() == 5940))
     {
         Item* it = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
         if (it != nullptr)
@@ -2725,7 +2743,7 @@ bool Spell::TakePower()
     }
 
     //hackfix for shiv's energy cost
-    if (p_caster != nullptr && m_spellInfo->custom_NameHash == SPELL_HASH_SHIV)
+    if (p_caster != nullptr && (m_spellInfo->getId() == 5938 || m_spellInfo->getId() == 5940))
     {
         Item* it = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
         if (it != nullptr)
@@ -3399,8 +3417,106 @@ uint8 Spell::CanCast(bool tolerate)
      */
     if (u_caster)
     {
-        if (u_caster->HasAurasWithNameHash(SPELL_HASH_BLADESTORM) && GetSpellInfo()->custom_NameHash != SPELL_HASH_WHIRLWIND)
-            return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+        if (u_caster->HasAurasWithNameHash(SPELL_HASH_BLADESTORM))
+        {
+            switch (GetSpellInfo()->getId())
+            {
+                //SPELL_HASH_WHIRLWIND
+                case 1680:
+                case 8989:
+                case 9633:
+                case 13736:
+                case 15576:
+                case 15577:
+                case 15578:
+                case 15589:
+                case 17207:
+                case 24236:
+                case 26038:
+                case 26083:
+                case 26084:
+                case 26686:
+                case 28334:
+                case 28335:
+                case 29573:
+                case 29851:
+                case 29852:
+                case 31737:
+                case 31738:
+                case 31909:
+                case 31910:
+                case 33238:
+                case 33239:
+                case 33500:
+                case 36132:
+                case 36142:
+                case 36175:
+                case 36981:
+                case 36982:
+                case 37582:
+                case 37583:
+                case 37640:
+                case 37641:
+                case 37704:
+                case 38618:
+                case 38619:
+                case 39232:
+                case 40236:
+                case 40653:
+                case 40654:
+                case 41056:
+                case 41057:
+                case 41058:
+                case 41059:
+                case 41061:
+                case 41097:
+                case 41098:
+                case 41194:
+                case 41195:
+                case 41399:
+                case 41400:
+                case 43442:
+                case 44949:
+                case 45895:
+                case 45896:
+                case 46270:
+                case 46271:
+                case 48280:
+                case 48281:
+                case 49807:
+                case 50228:
+                case 50229:
+                case 50622:
+                case 52027:
+                case 52028:
+                case 52977:
+                case 54797:
+                case 55266:
+                case 55267:
+                case 55463:
+                case 55977:
+                case 56408:
+                case 59322:
+                case 59323:
+                case 59549:
+                case 59550:
+                case 61076:
+                case 61078:
+                case 61136:
+                case 61137:
+                case 61139:
+                case 63805:
+                case 63806:
+                case 63807:
+                case 63808:
+                case 65510:
+                case 67037:
+                case 67716:
+                    return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+                default:
+                    break;
+            }
+        }
 
         if (hasAttribute(ATTRIBUTES_REQ_OOC) && u_caster->CombatStatus.IsInCombat())
         {
@@ -4111,8 +4227,106 @@ uint8 Spell::CanCast(bool tolerate)
 
             if (p_caster != NULL)
             {
-                if (p_caster->HasAurasWithNameHash(SPELL_HASH_BLADESTORM) && GetSpellInfo()->custom_NameHash != SPELL_HASH_WHIRLWIND)
-                    return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+                if (p_caster->HasAurasWithNameHash(SPELL_HASH_BLADESTORM))
+                {
+                    switch (GetSpellInfo()->getId())
+                    {
+                        //SPELL_HASH_WHIRLWIND
+                        case 1680:
+                        case 8989:
+                        case 9633:
+                        case 13736:
+                        case 15576:
+                        case 15577:
+                        case 15578:
+                        case 15589:
+                        case 17207:
+                        case 24236:
+                        case 26038:
+                        case 26083:
+                        case 26084:
+                        case 26686:
+                        case 28334:
+                        case 28335:
+                        case 29573:
+                        case 29851:
+                        case 29852:
+                        case 31737:
+                        case 31738:
+                        case 31909:
+                        case 31910:
+                        case 33238:
+                        case 33239:
+                        case 33500:
+                        case 36132:
+                        case 36142:
+                        case 36175:
+                        case 36981:
+                        case 36982:
+                        case 37582:
+                        case 37583:
+                        case 37640:
+                        case 37641:
+                        case 37704:
+                        case 38618:
+                        case 38619:
+                        case 39232:
+                        case 40236:
+                        case 40653:
+                        case 40654:
+                        case 41056:
+                        case 41057:
+                        case 41058:
+                        case 41059:
+                        case 41061:
+                        case 41097:
+                        case 41098:
+                        case 41194:
+                        case 41195:
+                        case 41399:
+                        case 41400:
+                        case 43442:
+                        case 44949:
+                        case 45895:
+                        case 45896:
+                        case 46270:
+                        case 46271:
+                        case 48280:
+                        case 48281:
+                        case 49807:
+                        case 50228:
+                        case 50229:
+                        case 50622:
+                        case 52027:
+                        case 52028:
+                        case 52977:
+                        case 54797:
+                        case 55266:
+                        case 55267:
+                        case 55463:
+                        case 55977:
+                        case 56408:
+                        case 59322:
+                        case 59323:
+                        case 59549:
+                        case 59550:
+                        case 61076:
+                        case 61078:
+                        case 61136:
+                        case 61137:
+                        case 61139:
+                        case 63805:
+                        case 63806:
+                        case 63807:
+                        case 63808:
+                        case 65510:
+                        case 67037:
+                        case 67716:
+                            return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+                        default:
+                            break;
+                    }
+                }
 
                 if (GetSpellInfo()->getId() == SPELL_RANGED_THROW)
                 {
@@ -5000,14 +5214,18 @@ bool Spell::HasTarget(const uint64& guid, std::vector<uint64_t>* tmpMap)
 
 int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
 {
-    //2 switch: the first checking namehash, the second checking spell id. If the spell is still not handled in these 2 blocks of code,
-    //3rd block of checks is reached. bool handled is initialized as true and set to false in the default: case of each switch.
+    //1 switch: checking spell id. If the spell is not handled in the first block,
+    //2nd block of checks is reached. bool handled is initialized as true and set to false in the default: case of each switch.
     bool handled = true;
 
-    switch (GetSpellInfo()->custom_NameHash)
+    switch (GetSpellInfo()->getId())
     {
-        // Causes Weapon Damage + Ammo + RAP * 0.1 + EffectBasePoints[0] and additional EffectBasePoints[1] if the target is dazed
-        case SPELL_HASH_STEADY_SHOT:
+        // SPELL_HASH_STEADY_SHOT:
+        case 34120:
+        case 49051:
+        case 49052:
+        case 56641:
+        case 65867:
         {
             if (u_caster != NULL && i == 0)
             {
@@ -5025,9 +5243,53 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                     value += GetSpellInfo()->EffectBasePoints[1];
                 value += (uint32)(u_caster->GetRAP() * 0.1);
             }
-            break;
-        }
-        case SPELL_HASH_REND:
+        } break;
+
+        // SPELL_HASH_REND:
+        case 772:
+        case 6546:
+        case 6547:
+        case 6548:
+        case 11572:
+        case 11573:
+        case 11574:
+        case 11977:
+        case 12054:
+        case 13318:
+        case 13443:
+        case 13445:
+        case 13738:
+        case 14087:
+        case 14118:
+        case 16393:
+        case 16403:
+        case 16406:
+        case 16509:
+        case 17153:
+        case 17504:
+        case 18075:
+        case 18078:
+        case 18106:
+        case 18200:
+        case 18202:
+        case 21949:
+        case 25208:
+        case 29574:
+        case 29578:
+        case 36965:
+        case 36991:
+        case 37662:
+        case 43246:
+        case 43931:
+        case 46845:
+        case 47465:
+        case 48880:
+        case 53317:
+        case 54703:
+        case 54708:
+        case 59239:
+        case 59343:
+        case 59691:
         {
             if (p_caster != NULL)
             {
@@ -5050,9 +5312,23 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                     }
                 }
             }
-            break;
-        }
-        case SPELL_HASH_SLAM:
+        } break;
+
+        // SPELL_HASH_SLAM:
+        case 1464:
+        case 8820:
+        case 11430:
+        case 11604:
+        case 11605:
+        case 25241:
+        case 25242:
+        case 34620:
+        case 47474:
+        case 47475:
+        case 50782:
+        case 50783:
+        case 52026:
+        case 67028:
         {
             if (p_caster != NULL)
             {
@@ -5063,31 +5339,87 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                     value += float2int32((GetSpellInfo()->EffectBasePoints[0] + 1) + avgWeaponDmg);
                 }
             }
-            break;
-        }
-        case SPELL_HASH_EVISCERATE:
+        } break;
+
+        // SPELL_HASH_EVISCERATE:
+        case 2098:
+        case 6760:
+        case 6761:
+        case 6762:
+        case 8623:
+        case 8624:
+        case 11299:
+        case 11300:
+        case 15691:
+        case 15692:
+        case 26865:
+        case 27611:
+        case 31016:
+        case 41177:
+        case 46189:
+        case 48667:
+        case 48668:
+        case 57641:
+        case 60008:
+        case 65957:
+        case 67709:
+        case 68094:
+        case 68095:
+        case 68096:
+        case 68317:
+        case 71933:
         {
             if (p_caster != NULL)
                 value += (uint32)(p_caster->GetAP() * 0.03f * p_caster->m_comboPoints);
-            break;
-        }
-        case SPELL_HASH_FEROCIOUS_BITE:
+        } break;
+
+        // SPELL_HASH_FEROCIOUS_BITE:
+        case 22568:
+        case 22827:
+        case 22828:
+        case 22829:
+        case 24248:
+        case 27557:
+        case 31018:
+        case 48576:
+        case 48577:
         {
             if (p_caster != NULL)
             {
                 value += (uint32)((p_caster->GetAP() * 0.1526f) + (p_caster->GetPower(POWER_TYPE_ENERGY) * GetSpellInfo()->dmg_multiplier[i]));
                 p_caster->SetPower(POWER_TYPE_ENERGY, 0);
             }
-            break;
-        }
-        case SPELL_HASH_VICTORY_RUSH:
+        } break;
+
+        // SPELL_HASH_VICTORY_RUSH:
+        case 34428:
         {
             //causing ${$AP*$m1/100} damage
             if (u_caster != NULL && i == 0)
                 value = (value * u_caster->GetAP()) / 100;
-            break;
-        }
-        case SPELL_HASH_RAKE:
+        } break;
+
+        // SPELL_HASH_RAKE:
+        case 1822:
+        case 1823:
+        case 1824:
+        case 9904:
+        case 24331:
+        case 24332:
+        case 27003:
+        case 27556:
+        case 27638:
+        case 36332:
+        case 48573:
+        case 48574:
+        case 53499:
+        case 54668:
+        case 59881:
+        case 59882:
+        case 59883:
+        case 59884:
+        case 59885:
+        case 59886:
         {
             //Rake the target for ${$AP/100+$m1} bleed damage and an additional ${$m2*3+$AP*0.06} damage over $d.
             if (u_caster != NULL)
@@ -5098,17 +5430,41 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                 else if (i == 1)
                     value += float2int32(ap * 0.06f);
             }
-            break;
-        }
-        case SPELL_HASH_GARROTE:
+        } break;
+
+        // SPELL_HASH_GARROTE:
+        case 703:
+        case 8631:
+        case 8632:
+        case 8633:
+        case 8818:
+        case 11289:
+        case 11290:
+        case 26839:
+        case 26884:
+        case 37066:
+        case 48675:
+        case 48676:
         {
             // WoWWiki says +(0.18 * attack power / number of ticks)
             // Tooltip gives no specific reading, but says ", increased by your attack power.".
             if (u_caster != NULL && i == 0)
                 value += (uint32)ceilf((u_caster->GetAP() * 0.07f) / 6);
-            break;
-        }
-        case SPELL_HASH_RUPTURE:
+        } break;
+
+        // SPELL_HASH_RUPTURE:
+        case 1943:
+        case 8639:
+        case 8640:
+        case 11273:
+        case 11274:
+        case 11275:
+        case 14874:
+        case 14903:
+        case 15583:
+        case 26867:
+        case 48671:
+        case 48672:
         {
             /*
             1pt = Attack Power * 0.04 + x
@@ -5122,43 +5478,120 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                 int8 cp = p_caster->m_comboPoints;
                 value += (uint32)ceilf((u_caster->GetAP() * 0.04f * cp) / ((6 + (cp << 1)) >> 1));
             }
-            break;
-        }
-        case SPELL_HASH_RIP:
+        } break;
+
+        // SPELL_HASH_RIP:
+        case 1079:
+        case 9492:
+        case 9493:
+        case 9752:
+        case 9894:
+        case 9896:
+        case 27008:
+        case 33912:
+        case 36590:
+        case 49799:
+        case 49800:
+        case 57661:
+        case 59989:
+        case 71926:
         {
             if (p_caster != NULL)
                 value += float2int32(p_caster->GetAP() * 0.01f * p_caster->m_comboPoints);
-            break;
-        }
-        case SPELL_HASH_MONGOOSE_BITE:
+        } break;
+
+        // SPELL_HASH_MONGOOSE_BITE:
+        case 1495:
+        case 14269:
+        case 14270:
+        case 14271:
+        case 36916:
+        case 53339:
         {
             // ${$AP*0.2+$m1} damage.
             if (u_caster != NULL)
                 value += u_caster->GetAP() / 5;
-            break;
-        }
-        case SPELL_HASH_SWIPE:
+        } break;
+
+        // SPELL_HASH_SWIPE:
+        case 27554:
+        case 31279:
+        case 50256:
+        case 53498:
+        case 53526:
+        case 53528:
+        case 53529:
+        case 53532:
+        case 53533:
         {
             // ${$AP*0.06+$m1} damage.
             if (u_caster != NULL)
                 value += float2int32(u_caster->GetAP() * 0.06f);
-            break;
-        }
-        case SPELL_HASH_HAMMER_OF_THE_RIGHTEOUS:
+        } break;
+
+        // SPELL_HASH_HAMMER_OF_THE_RIGHTEOUS:
+        case 53595:
+        case 54423:
+        case 66867:
+        case 66903:
+        case 66904:
+        case 66905:
+        case 67680:
         {
             if (p_caster != NULL)
                 //4x 1h weapon-dps ->  4*(mindmg+maxdmg)/speed/2 = 2*(mindmg+maxdmg)/speed
                 value = float2int32((p_caster->GetMinDamage() + p_caster->GetMaxDamage()) / (float(p_caster->GetBaseAttackTime(MELEE)) / 1000.0f)) << 1;
-            break;
-        }
-        case SPELL_HASH_BACKSTAB:  // Egari: spell 31220 is interfering with combopoints
+        } break;
+
+        // SPELL_HASH_BACKSTAB:  // Egari: spell 31220 is interfering with combopoints
+        case 53:
+        case 2589:
+        case 2590:
+        case 2591:
+        case 7159:
+        case 8721:
+        case 11279:
+        case 11280:
+        case 11281:
+        case 15582:
+        case 15657:
+        case 22416:
+        case 25300:
+        case 26863:
+        case 30992:
+        case 34614:
+        case 37685:
+        case 48656:
+        case 48657:
+        case 52540:
+        case 58471:
+        case 63754:
+        case 71410:
+        case 72427:
         {
             if (i == 2)
                 return GetSpellInfo()->EffectBasePoints[i] + 1;
-            break;
-        }
-        
-        case SPELL_HASH_FAN_OF_KNIVES:  // rogue - fan of knives
+        } break;
+
+        // SPELL_HASH_FAN_OF_KNIVES:  // rogue - fan of knives
+        case 51723:
+        case 52874:
+        case 61739:
+        case 61740:
+        case 61741:
+        case 61742:
+        case 61743:
+        case 61744:
+        case 61745:
+        case 61746:
+        case 63753:
+        case 65955:
+        case 67706:
+        case 68097:
+        case 68098:
+        case 68099:
+        case 69921:
+        case 71128:
         {
             if (p_caster != nullptr)
             {
@@ -5169,9 +5602,12 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                         value = 105;
                 }
             }
-            break;
-        }
-        case SPELL_HASH_VAMPIRIC_EMBRACE:
+        } break;
+
+        // SPELL_HASH_VAMPIRIC_EMBRACE:
+        case 15286:
+        case 15290:
+        case 71269:
         {
             value = value * (GetSpellInfo()->EffectBasePoints[i] + 1) / 100;
             if (p_caster != NULL)
@@ -5179,9 +5615,12 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                 spellModFlatIntValue(p_caster->SM_FMiscEffect, &value, GetSpellInfo()->SpellGroupType);
                 spellModPercentageIntValue(p_caster->SM_PMiscEffect, &value, GetSpellInfo()->SpellGroupType);
             }
-            break;
-        }
-        case SPELL_HASH_SEAL_OF_RIGHTEOUSNESS:
+        } break;
+
+        // SPELL_HASH_SEAL_OF_RIGHTEOUSNESS:
+        case 20154:
+        case 21084:
+        case 25742:
         {
             if (p_caster != NULL)
             {
@@ -5189,47 +5628,75 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                 if (mit != NULL)
                     value = (p_caster->GetAP() * 22 + p_caster->GetPosDamageDoneMod(SCHOOL_HOLY) * 44) * mit->GetItemProperties()->Delay / 1000000;
             }
-            break;
-        }
-        case SPELL_HASH_BLOOD_CORRUPTION:
-        case SPELL_HASH_HOLY_VENGEANCE:
+        } break;
+
+        // SPELL_HASH_BLOOD_CORRUPTION:
+        case 53742:
+        // SPELL_HASH_HOLY_VENGEANCE:
+        case 31803:
         {
             if (p_caster != NULL)
                 value = (p_caster->GetAP() * 25 + p_caster->GetPosDamageDoneMod(SCHOOL_HOLY) * 13) / 1000;
-            break;
-        }
-        case SPELL_HASH_JUDGEMENT_OF_LIGHT:
+        } break;
+
+        // SPELL_HASH_JUDGEMENT_OF_LIGHT:
+        case 20185:
+        case 20267:
+        case 20271:
+        case 28775:
+        case 57774:
         {
             if (u_caster != NULL)
                 value = u_caster->GetMaxHealth() * 2 / 100;
-            break;
-        }
-        case SPELL_HASH_JUDGEMENT_OF_WISDOM:
+        } break;
+
+        // SPELL_HASH_JUDGEMENT_OF_WISDOM:
+        case 20186:
+        case 20268:
+        case 53408:
         {
             if (u_caster != NULL)
                 value = u_caster->GetBaseMana() * 2 / 100;
-            break;
-        }
-        case SPELL_HASH_JUDGEMENT:
+        } break;
+
+        // SPELL_HASH_JUDGEMENT:
+        case 10321:
+        case 23590:
+        case 23591:
+        case 35170:
+        case 41467:
+        case 43838:
+        case 54158:
         {
             if (p_caster != NULL)
                 value += (p_caster->GetAP() * 16 + p_caster->GetPosDamageDoneMod(SCHOOL_HOLY) * 25) / 100;
-            break;
-        }
-        case SPELL_HASH_JUDGEMENT_OF_RIGHTEOUSNESS:
+        } break;
+
+        // SPELL_HASH_JUDGEMENT_OF_RIGHTEOUSNESS:
+        case 20187:
         {
             if (p_caster != NULL)
                 value += (p_caster->GetAP() * 2 + p_caster->GetPosDamageDoneMod(SCHOOL_HOLY) * 32) / 100;
-            break;
-        }
-        case SPELL_HASH_JUDGEMENT_OF_VENGEANCE:
-        case SPELL_HASH_JUDGEMENT_OF_CORRUPTION:
+        } break;
+
+        // SPELL_HASH_JUDGEMENT_OF_VENGEANCE:
+        case 31804:
+        // SPELL_HASH_JUDGEMENT_OF_CORRUPTION:
+        case 53733:
         {
             if (p_caster != NULL)
                 value += (p_caster->GetAP() * 14 + p_caster->GetPosDamageDoneMod(SCHOOL_HOLY) * 22) / 100;
-            break;
-        }
-        case SPELL_HASH_ENVENOM:
+        } break;
+
+        // SPELL_HASH_ENVENOM:
+        case 32645:
+        case 32684:
+        case 39967:
+        case 41487:
+        case 41509:
+        case 41510:
+        case 57992:
+        case 57993:
         {
             if (p_caster != NULL && i == 0)
             {
@@ -5237,18 +5704,8 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                 value += (uint32)(p_caster->GetAP() * (0.09f * p_caster->m_comboPoints));
                 m_requiresCP = true;
             }
-            break;
-        }
-        default:
-        {
-            //not handled in this switch
-            handled = false;
-            break;
-        }
-    }
+        } break;
 
-    switch (GetSpellInfo()->getId())
-    {
         //SPELL_HASH_GOUGE
         case 1776:
         case 1777:
@@ -5267,8 +5724,11 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         {
             if (u_caster != NULL && i == 0)
                 value += (uint32)ceilf(u_caster->GetAP() * 0.21f);
-            break;
-        }
+        } break;
+        default:
+        {
+            handled = false;
+        } break;
     }
 
     if (!handled)
@@ -5303,39 +5763,127 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         {
             if (GetSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_POISON && u_caster != NULL)   // poison damage modifier
             {
-                switch (GetSpellInfo()->custom_NameHash)
+                switch (GetSpellInfo()->getId())
                 {
-                    case SPELL_HASH_DEADLY_POISON_IX:
-                    case SPELL_HASH_DEADLY_POISON_VIII:
-                    case SPELL_HASH_DEADLY_POISON_VII:
-                    case SPELL_HASH_DEADLY_POISON_VI:
-                    case SPELL_HASH_DEADLY_POISON_V:
-                    case SPELL_HASH_DEADLY_POISON_IV:
-                    case SPELL_HASH_DEADLY_POISON_III:
-                    case SPELL_HASH_DEADLY_POISON_II:
-                    case SPELL_HASH_DEADLY_POISON:
+                    // SPELL_HASH_DEADLY_POISON_IX:
+                    case 57970:
+                    case 57973:
+                    // SPELL_HASH_DEADLY_POISON_VIII:
+                    case 57969:
+                    case 57972:
+                    // SPELL_HASH_DEADLY_POISON_VII:
+                    case 27186:
+                    case 27187:
+                    // SPELL_HASH_DEADLY_POISON_VI:
+                    case 26967:
+                    case 26968:
+                    // SPELL_HASH_DEADLY_POISON_V:
+                    case 25349:
+                    case 25351:
+                    // SPELL_HASH_DEADLY_POISON_IV:
+                    case 11354:
+                    case 11356:
+                    // SPELL_HASH_DEADLY_POISON_III:
+                    case 11353:
+                    case 11355:
+                    // SPELL_HASH_DEADLY_POISON_II:
+                    case 2819:
+                    case 2824:
+                    // SPELL_HASH_DEADLY_POISON:
+                    case 2818:
+                    case 2823:
+                    case 3583:
+                    case 10022:
+                    case 13582:
+                    case 21787:
+                    case 21788:
+                    case 32970:
+                    case 32971:
+                    case 34616:
+                    case 34655:
+                    case 34657:
+                    case 36872:
+                    case 38519:
+                    case 38520:
+                    case 41191:
+                    case 41192:
+                    case 41485:
+                    case 43580:
+                    case 43581:
+                    case 56145:
+                    case 56149:
+                    case 59479:
+                    case 59482:
+                    case 63755:
+                    case 63756:
+                    case 67710:
+                    case 67711:
+                    case 68315:
+                    case 72329:
+                    case 72330:
                         if (GetSpellInfo()->EffectApplyAuraName[i] == SPELL_AURA_PERIODIC_DAMAGE)
                             value += float2int32(u_caster->GetAP() * 0.03f);
                         break;
-                    case SPELL_HASH_INSTANT_POISON_IX:
-                    case SPELL_HASH_INSTANT_POISON_VIII:
-                    case SPELL_HASH_INSTANT_POISON_VII:
-                    case SPELL_HASH_INSTANT_POISON_VI:
-                    case SPELL_HASH_INSTANT_POISON_V:
-                    case SPELL_HASH_INSTANT_POISON_IV:
-                    case SPELL_HASH_INSTANT_POISON_III:
-                    case SPELL_HASH_INSTANT_POISON_II:
-                    case SPELL_HASH_INSTANT_POISON:
+                    // SPELL_HASH_INSTANT_POISON_IX:
+                    case 57965:
+                    case 57968:
+                    // SPELL_HASH_INSTANT_POISON_VIII:
+                    case 57964:
+                    case 57967:
+                    // SPELL_HASH_INSTANT_POISON_VII:
+                    case 26890:
+                    case 26891:
+                    // SPELL_HASH_INSTANT_POISON_VI:
+                    case 11337:
+                    case 11340:
+                    // SPELL_HASH_INSTANT_POISON_V:
+                    case 11336:
+                    case 11339:
+                    // SPELL_HASH_INSTANT_POISON_IV:
+                    case 11335:
+                    case 11338:
+                    // SPELL_HASH_INSTANT_POISON_III:
+                    case 8688:
+                    case 8689:
+                    // SPELL_HASH_INSTANT_POISON_II:
+                    case 8685:
+                    case 8686:
+                    // SPELL_HASH_INSTANT_POISON:
+                    case 8679:
+                    case 8680:
+                    case 28428:
+                    case 41189:
+                    case 59242:
                         if (GetSpellInfo()->Effect[i] == SPELL_EFFECT_SCHOOL_DAMAGE)
                             value += float2int32(u_caster->GetAP() * 0.10f);
                         break;
-                    case SPELL_HASH_WOUND_POISON_VII:
-                    case SPELL_HASH_WOUND_POISON_VI:
-                    case SPELL_HASH_WOUND_POISON_V:
-                    case SPELL_HASH_WOUND_POISON_IV:
-                    case SPELL_HASH_WOUND_POISON_III:
-                    case SPELL_HASH_WOUND_POISON_II:
-                    case SPELL_HASH_WOUND_POISON:
+                    // SPELL_HASH_WOUND_POISON_VII:
+                    case 57975:
+                    case 57978:
+                    // SPELL_HASH_WOUND_POISON_VI:
+                    case 57974:
+                    case 57977:
+                    // SPELL_HASH_WOUND_POISON_V:
+                    case 27188:
+                    case 27189:
+                    // SPELL_HASH_WOUND_POISON_IV:
+                    case 13224:
+                    case 13227:
+                    // SPELL_HASH_WOUND_POISON_III:
+                    case 13223:
+                    case 13226:
+                    // SPELL_HASH_WOUND_POISON_II:
+                    case 13222:
+                    case 13225:
+                    // SPELL_HASH_WOUND_POISON:
+                    case 13218:
+                    case 13219:
+                    case 30984:
+                    case 36974:
+                    case 39665:
+                    case 43461:
+                    case 54074:
+                    case 65962:
                         if (GetSpellInfo()->Effect[i] == SPELL_EFFECT_SCHOOL_DAMAGE)
                             value += float2int32(u_caster->GetAP() * 0.04f);
                         break;

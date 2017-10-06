@@ -130,6 +130,14 @@ class SpellProcMgr : public Singleton < SpellProcMgr >
             mSpellProc.insert(std::make_pair(spellId, spell_proc));
         }
 
+        void AddById(uint32* spellId, spell_proc_factory_function spell_proc)
+        {
+            for (uint32 y = 0; spellId[y] != 0; y++)
+            {
+                mSpellProc.insert(std::make_pair(spellId[y], spell_proc));
+            }
+        }
+
         void AddByNameHash(uint32 name_hash, spell_proc_factory_function spell_proc)
         {
             mSpellProcNameHash.insert(std::make_pair(name_hash, spell_proc));
