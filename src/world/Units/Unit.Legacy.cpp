@@ -1691,9 +1691,30 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     //only trigger effect for specified spells
                     if (CastingSpell->custom_NameHash != SPELL_HASH_BACKSTAB &&  //backstab
                         CastingSpell->custom_NameHash != SPELL_HASH_SINISTER_STRIKE && //sinister strike
-                        CastingSpell->custom_NameHash != SPELL_HASH_SHIV && //shiv
-                        CastingSpell->custom_NameHash != SPELL_HASH_GOUGE)  //gouge
+                        CastingSpell->custom_NameHash != SPELL_HASH_SHIV) //shiv
                         continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_GOUGE
+                        case 1776:
+                        case 1777:
+                        case 8629:
+                        case 11285:
+                        case 11286:
+                        case 12540:
+                        case 13579:
+                        case 24698:
+                        case 28456:
+                        case 29425:
+                        case 34940:
+                        case 36862:
+                        case 38764:
+                        case 38863:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 //priest - Grace
@@ -2783,8 +2804,18 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                         break;
                         case 23694: // Imp. Hamstring
                         {
-                            if (CastingSpell->custom_NameHash != SPELL_HASH_IMPROVED_HAMSTRING)
-                                continue;
+                            switch (CastingSpell->getId())
+                            {
+                                //SPELL_HASH_IMPROVED_HAMSTRING
+                                case 12289:
+                                case 12668:
+                                case 23694:
+                                case 23695:
+                                case 24428:
+                                    break;
+                                default:
+                                    continue;
+                            }
                         }
                         break;
                         case 65156: // Juggernaut

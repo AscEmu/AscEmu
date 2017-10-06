@@ -955,9 +955,6 @@ bool ArathiBasin::HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpe
 
     if (cpid == AB_NUM_CONTROL_POINTS)
         return false;
-    ///\todo  find a cleaner way to do this that doesn't waste memory.
-        //Stealthed / invisible players can't cap
-        //if(pPlayer->GetStealthLevel() > 0 || pPlayer->HasAurasWithNameHash(SPELL_HASH_PROWL) || pPlayer->HasAurasWithNameHash(SPELL_HASH_SHADOWMELD))
 
     if (pPlayer->IsStealth() || pPlayer->m_invisible)
         return false;

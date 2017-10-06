@@ -51,56 +51,291 @@
 
 uint32 Pet::GetAutoCastTypeForSpell(SpellInfo* ent)
 {
-    switch (ent->custom_NameHash)
+    switch (ent->getId())
     {
         //////////////////////////////////////////////////////////////////////////////////////////
         // Warlock Pet Spells
-        case SPELL_HASH_BLOOD_PACT:             // Blood Pact
-        case SPELL_HASH_FEL_INTELLIGENCE:
-        case SPELL_HASH_AVOIDANCE:
-        case SPELL_HASH_PARANOIA:
+
+        //SPELL_HASH_BLOOD_PACT
+        case 6307:
+        case 7804:
+        case 7805:
+        case 11766:
+        case 11767:
+        case 27268:
+        case 47982:
+        //SPELL_HASH_FEL_INTELLIGENCE
+        case 54424:
+        case 57564:
+        case 57565:
+        case 57566:
+        case 57567:
+        //SPELL_HASH_AVOIDANCE
+        case 32233:
+        case 32234:
+        case 32600:
+        case 62137:
+        case 63623:
+        case 65220:
+        //SPELL_HASH_PARANOIA
+        case 19481:
+        case 20435:
+        case 41002:
             return AUTOCAST_EVENT_ON_SPAWN;
             break;
 
-        case SPELL_HASH_FIRE_SHIELD:            // Fire Shield
+        //SPELL_HASH_FIRE_SHIELD
+        case 134:
+        case 2947:
+        case 2949:
+        case 8316:
+        case 8317:
+        case 8318:
+        case 8319:
+        case 11350:
+        case 11351:
+        case 11770:
+        case 11771:
+        case 11772:
+        case 11773:
+        case 11968:
+        case 13376:
+        case 18968:
+        case 19627:
+        case 20322:
+        case 20323:
+        case 20324:
+        case 20326:
+        case 20327:
+        case 27269:
+        case 27486:
+        case 27489:
+        case 30513:
+        case 30514:
+        case 32749:
+        case 32751:
+        case 35265:
+        case 35266:
+        case 36907:
+        case 37282:
+        case 37283:
+        case 37318:
+        case 37434:
+        case 38732:
+        case 38733:
+        case 38855:
+        case 38893:
+        case 38901:
+        case 38902:
+        case 38933:
+        case 38934:
+        case 47983:
+        case 47998:
+        case 61144:
+        case 63778:
+        case 63779:
+        case 71514:
+        case 71515:
             return AUTOCAST_EVENT_OWNER_ATTACKED;
             break;
 
-        case SPELL_HASH_PHASE_SHIFT:            // Phase Shift
-        case SPELL_HASH_CONSUME_SHADOWS:
-        case SPELL_HASH_LESSER_INVISIBILITY:
+        //SPELL_HASH_PHASE_SHIFT            // Phase Shift
+        case 4511:
+        case 4630:
+        case 8611:
+        case 8612:
+        case 20329:
+        case 29309:
+        case 29315:
+        //SPELL_HASH_CONSUME_SHADOWS
+        case 17767:
+        case 17776:
+        case 17850:
+        case 17851:
+        case 17852:
+        case 17853:
+        case 17854:
+        case 17855:
+        case 17856:
+        case 17857:
+        case 17859:
+        case 17860:
+        case 20387:
+        case 20388:
+        case 20389:
+        case 20390:
+        case 20391:
+        case 20392:
+        case 27272:
+        case 27491:
+        case 36472:
+        case 47987:
+        case 47988:
+        case 48003:
+        case 48004:
+        case 49739:
+        case 54501:
+        //SPELL_HASH_LESSER_INVISIBILITY
+        case 3680:
+        case 7870:
+        case 7880:
+        case 12845:
+        case 20408:
             return AUTOCAST_EVENT_LEAVE_COMBAT;
             break;
 
-        case SPELL_HASH_WAR_STOMP:              // Doomguard spell
-        case SPELL_HASH_SACRIFICE:              // We don't want auto sacrifice :P
+        // SPELL_HASH_WAR_STOMP             // Doomguard spell
+        case 45:
+        case 11876:
+        case 15593:
+        case 16727:
+        case 16740:
+        case 19482:
+        case 20549:
+        case 24375:
+        case 25188:
+        case 27758:
+        case 28125:
+        case 28725:
+        case 31408:
+        case 31480:
+        case 31755:
+        case 33707:
+        case 35238:
+        case 36835:
+        case 38682:
+        case 38750:
+        case 38911:
+        case 39313:
+        case 40936:
+        case 41534:
+        case 46026:
+        case 56427:
+        case 59705:
+        case 60960:
+        case 61065:
+        //SPELL_HASH_SACRIFICE              // We don't want auto sacrifice :P
+        case 1050:
+        case 7812:
+        case 7885:
+        case 19438:
+        case 19439:
+        case 19440:
+        case 19441:
+        case 19442:
+        case 19443:
+        case 19444:
+        case 19445:
+        case 19446:
+        case 19447:
+        case 20381:
+        case 20382:
+        case 20383:
+        case 20384:
+        case 20385:
+        case 20386:
+        case 22651:
+        case 27273:
+        case 27492:
+        case 30115:
+        case 33587:
+        case 34661:
+        case 47985:
+        case 47986:
+        case 48001:
+        case 48002:
             return AUTOCAST_EVENT_NONE;
             break;
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Hunter Pet Spells
-        case SPELL_HASH_THUNDERSTOMP:           // Thunderstomp
-        case SPELL_HASH_FURIOUS_HOWL:           // Furious Howl
-        case SPELL_HASH_DASH:                   // Dash
-        case SPELL_HASH_DIVE:                   // Dive
-        case SPELL_HASH_PROWL:                  // Prowl
-        case SPELL_HASH_SHELL_SHIELD:           // Shell Shield
+
+        // SPELL_HASH_PROWL
+        case 5215:
+        case 6783:
+        case 8152:
+        case 9913:
+        case 24450:
+        case 24451:
+        case 24452:
+        case 24453:
+        case 24454:
+        case 24455:
+        case 42932:
+        //SPELL_HASH_THUNDERSTOMP           // Thunderstomp
+        case 26094:
+        case 26189:
+        case 26190:
+        case 27366:
+        case 34388:
+        case 61580:
+        case 63900:
+        //SPELL_HASH_FURIOUS_HOWL           // Furious Howl
+        case 3149:
+        case 24604:
+        case 30636:
+        case 35942:
+        case 50728:
+        case 59274:
+        case 64491:
+        case 64492:
+        case 64493:
+        case 64494:
+        case 64495:
+        //SPELL_HASH_DASH                   // Dash
+        case 1850:
+        case 9821:
+        case 33357:
+        case 36589:
+        case 43317:
+        case 44029:
+        case 44531:
+        case 61684:
+        //SPELL_HASH_DIVE                   // Dive
+        case 23145:
+        case 23146:
+        case 23149:
+        case 23150:
+        case 29903:
+        case 37156:
+        case 37588:
+        case 40279:
+        case 43187:
+        //SPELL_HASH_SHELL_SHIELD           // Shell Shield
+        case 26064:
+        case 26065:
+        case 40087:
+        case 46327:
             return AUTOCAST_EVENT_NONE;
             break;
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Mage Pet Spells
-        case SPELL_HASH_WATERBOLT:              // Waterbolt
+
+        //SPELL_HASH_WATERBOLT              // Waterbolt
+        case 31707:
+        case 72898:
             return AUTOCAST_EVENT_ATTACK;
             break;
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Shaman Pet Spells
-        case SPELL_HASH_SPIRIT_HUNT:
+
+        //SPELL_HASH_SPIRIT_HUNT
+        case 58877:
+        case 58879:
             return AUTOCAST_EVENT_ON_SPAWN;
             break;
-        case SPELL_HASH_TWIN_HOWL:
-        case SPELL_HASH_BASH:
+        //SPELL_HASH_TWIN_HOWL
+        case 58857:
+        // SPELL_HASH_BASH
+        case 5211:
+        case 6798:
+        case 8983:
+        case 25515:
+        case 43612:
+        case 57094:
+        case 58861:
             return AUTOCAST_EVENT_ATTACK;
             break;
     }
@@ -1238,8 +1473,22 @@ void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
                     SetAutoCast(asp, true);
 
                 // Phase shift gets cast on spawn, right?
-                if (asp->autocast_type == AUTOCAST_EVENT_ON_SPAWN || asp->spell->custom_NameHash == SPELL_HASH_PHASE_SHIFT)
+                if (asp->autocast_type == AUTOCAST_EVENT_ON_SPAWN)
                     CastSpell(this, sp, false);
+
+                switch (asp->spell->getId())
+                {
+                    //SPELL_HASH_PHASE_SHIFT
+                    case 4511:
+                    case 4630:
+                    case 8611:
+                    case 8612:
+                    case 20329:
+                    case 29309:
+                    case 29315:
+                        CastSpell(this, sp, false);
+                        break;
+                }
             }
             else
                 mSpells[sp] = DEFAULT_SPELL_STATE;

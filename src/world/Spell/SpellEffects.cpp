@@ -506,6 +506,7 @@ void Spell::SpellEffectInstantKill(uint32 i)
         }
         break;
         case 18788: //Demonic Sacrifice (508745)
+        {
             uint32 DemonicSacEffectSpellId = 0;
             switch (unitTarget->GetEntry())
             {
@@ -531,11 +532,38 @@ void Spell::SpellEffectInstantKill(uint32 i)
                 if (se && u_caster)
                     u_caster->CastSpell(u_caster, se, true);
             }
-    }
+        } break;
 
-    switch (GetSpellInfo()->custom_NameHash)
-    {
-        case SPELL_HASH_SACRIFICE:
+        //SPELL_HASH_SACRIFICE
+        case 1050:
+        case 7812:
+        case 7885:
+        case 19438:
+        case 19439:
+        case 19440:
+        case 19441:
+        case 19442:
+        case 19443:
+        case 19444:
+        case 19445:
+        case 19446:
+        case 19447:
+        case 20381:
+        case 20382:
+        case 20383:
+        case 20384:
+        case 20385:
+        case 20386:
+        case 22651:
+        case 27273:
+        case 27492:
+        case 30115:
+        case 33587:
+        case 34661:
+        case 47985:
+        case 47986:
+        case 48001:
+        case 48002:
         {
             if (!u_caster || !u_caster->IsPet())
                 return;
@@ -550,8 +578,12 @@ void Spell::SpellEffectInstantKill(uint32 i)
             Spell* sp = sSpellFactoryMgr.NewSpell(static_cast< Pet* >(u_caster)->GetPetOwner(), se, true, 0);
             sp->prepare(&targets);
             return;
-        }
-        break;
+        } break;
+
+    }
+
+    switch (GetSpellInfo()->custom_NameHash)
+    {
         case SPELL_HASH_DEMONIC_SACRIFICE:
         {
             if (!p_caster || !unitTarget || !unitTarget->IsPet())
@@ -702,26 +734,14 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                     dmg = (GetSpellInfo()->EffectBasePoints[0] + 1) + float2int32(u_caster->GetAP() * 0.12f);
             }
             break;
-            case SPELL_HASH_INTERCEPT: // Warrior - Intercept
-            {
-                if (u_caster)
-                    dmg = float2int32(u_caster->GetAP() * 0.12f);
-            }
-            break;
+
             case SPELL_HASH_SHOCKWAVE:      // Shockwave
             {
                 if (u_caster)
                     dmg = u_caster->GetAP() * (GetSpellInfo()->EffectBasePoints[2] + 1) / 100;
             }
             break;
-            case SPELL_HASH_CONCUSSION_BLOW:
-            {
-                //3.2.2
-                //[Concussion Blow]: The damage done by this ability has been reduced by 50%,
-                //but its threat generation will remain approximately the same.
-                dmg = u_caster->GetAP() * (GetSpellInfo()->EffectBasePoints[2] + 1) / 100;
-            }
-            break;
+
             case SPELL_HASH_HEROIC_THROW:   // Heroic Throw
             {
                 if (u_caster)
@@ -814,6 +834,62 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 
         switch (GetSpellInfo()->getId())
         {
+            //SPELL_HASH_CONCUSSION_BLOW
+            case 12809:
+            case 22427:
+            case 32588:
+            case 52719:
+            case 54132:
+            {
+                //3.2.2
+                //[Concussion Blow]: The damage done by this ability has been reduced by 50%,
+                //but its threat generation will remain approximately the same.
+                dmg = u_caster->GetAP() * (GetSpellInfo()->EffectBasePoints[2] + 1) / 100;
+            } break;
+
+            // SPELL_HASH_INTERCEPT
+            case 20252:
+            {
+                if (p_caster != nullptr)
+                {
+                    dmg = static_cast<uint32>(std::round(p_caster->GetAP() * 0.12));
+                    break;
+                }
+            }
+            case 20253:
+            case 20614:
+            case 20615:
+            case 20616:
+            case 20617:
+            case 25272:
+            case 25273:
+            case 25274:
+            case 25275:
+            case 27577:
+            case 27826:
+            case 30151:
+            case 30153:
+            case 30154:
+            case 30194:
+            case 30195:
+            case 30197:
+            case 30198:
+            case 30199:
+            case 30200:
+            case 47995:
+            case 47996:
+            case 50823:
+            case 58743:
+            case 58747:
+            case 58769:
+            case 61490:
+            case 61491:
+            case 67540:
+            case 67573:
+            {
+                if (u_caster)
+                    dmg = float2int32(u_caster->GetAP() * 0.12f);
+            } break;
             case 23881:
             {
                 if (p_caster != NULL)
@@ -974,11 +1050,6 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                     damage = float2int32((m_spellInfo->EffectBasePoints[0] + 1) + u_caster->GetAP() * 0.20f);
             }break;
 
-            case 20252:
-            {
-                if (p_caster != nullptr)
-                    dmg = static_cast<uint32>(std::round(p_caster->GetAP() * 0.12));
-            }break;
             case 31898:
             case 31804:
             case 20187:
