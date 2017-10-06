@@ -846,7 +846,25 @@ void SpellProcMgr::SetupSpellProcClassScripts()
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Shaman
-    AddByNameHash(SPELL_HASH_FROSTBRAND_ATTACK, &FrostBrandAttackSpellProc::Create);
+    // SPELL_HASH_FROSTBRAND_ATTACK
+    uint32 frostbrandAttack[] =
+    {
+        8034,
+        8037,
+        10458,
+        16352,
+        16353,
+        25501,
+        38617,
+        54609,
+        58797,
+        58798,
+        58799,
+        64186,
+        0
+    };
+
+    AddById(frostbrandAttack, &FrostBrandAttackSpellProc::Create);
 
     AddById(10444, &FlametongueWeaponSpellProc::Create);
     AddById(379, &EarthShieldSpellProc::Create);
@@ -1015,7 +1033,7 @@ void SpellProcMgr::SetupSpellProcClassScripts()
     // Paladin
     AddByNameHash(SPELL_HASH_SEAL_OF_COMMAND, &SealOfCommandSpellProc::Create);
     AddByNameHash(SPELL_HASH_EYE_FOR_AN_EYE, &EyeForAnEyeSpellProc::Create);
-    AddByNameHash(SPELL_HASH_GRACE_OF_THE_NAARU, &GraceOfTheNaaruSpellProc::Create);
+    AddById(43742, &GraceOfTheNaaruSpellProc::Create);
     AddByNameHash(SPELL_HASH_SPIRITUAL_ATTUNEMENT, &SpiritualAttunementSpellProc::Create);
 
     AddById(20167, &PaladinSealsSpellProc::Create);

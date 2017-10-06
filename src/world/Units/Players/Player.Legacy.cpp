@@ -4152,7 +4152,7 @@ void Player::OnPushToWorld()
         m_taxiMapChangeNode = 0;
     }
 
-    if (flying_aura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpellwithNameHash(SPELL_HASH_COLD_WEATHER_FLYING) && getDeathState() == ALIVE)))
+    if (flying_aura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpell(54197) && getDeathState() == ALIVE)))
         // can only fly in outlands or northrend (northrend requires cold weather flying)
     {
         RemoveAura(flying_aura);
@@ -8737,7 +8737,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
     if (m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
         m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
 
-    if (flying_aura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpellwithNameHash(SPELL_HASH_COLD_WEATHER_FLYING) && getDeathState() == ALIVE)))
+    if (flying_aura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpell(54197) && getDeathState() == ALIVE)))
         // can only fly in outlands or northrend (northrend requires cold weather flying)
     {
         RemoveAura(flying_aura);
@@ -8826,7 +8826,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
     if (m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
         m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
 
-    if (flying_aura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpellwithNameHash(SPELL_HASH_COLD_WEATHER_FLYING) && getDeathState() == ALIVE)))
+    if (flying_aura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpell(54197) && getDeathState() == ALIVE)))
         // can only fly in outlands or northrend (northrend requires cold weather flying)
     {
         RemoveAura(flying_aura);
@@ -8907,7 +8907,7 @@ void Player::SafeTeleport(MapMgr* mgr, const LocationVector & vec)
 
     SpeedCheatDelay(10000);
 
-    if (flying_aura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpellwithNameHash(SPELL_HASH_COLD_WEATHER_FLYING) && getDeathState() == ALIVE)))
+    if (flying_aura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpell(54197) && getDeathState() == ALIVE)))
         // can only fly in outlands or northrend (northrend requires cold weather flying)
     {
         RemoveAura(flying_aura);

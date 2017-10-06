@@ -433,7 +433,7 @@ bool HeadlessHorsemanMount(uint32 i, Spell* pSpell)
         uint32 newspell = 51621;
         auto pArea = plr->GetArea();
         if (pArea && (plr->_GetSkillLineCurrent(SKILL_RIDING, true) >= 225 && ((pArea->flags & 1024 && plr->GetMapId() != 571) ||
-            (pArea->flags & 1024 && plr->GetMapId() == 571 && plr->HasSpellwithNameHash(SPELL_HASH_COLD_WEATHER_FLYING)))))
+            (pArea->flags & 1024 && plr->GetMapId() == 571 && plr->HasSpell(54197)))))
 
         {
             if (plr->_GetSkillLineCurrent(SKILL_RIDING, true) == 300)
@@ -457,7 +457,7 @@ bool MagicBroomMount(uint32 i, Spell* pSpell)
         auto pArea = plr->GetArea();
         if (pArea && (plr->_GetSkillLineCurrent(SKILL_RIDING, true) >= 225 &&
             ((pArea->flags & 1024 && plr->GetMapId() != 571) ||
-            (pArea->flags & 1024 && plr->GetMapId() == 571 && plr->HasSpellwithNameHash(SPELL_HASH_COLD_WEATHER_FLYING)))))
+            (pArea->flags & 1024 && plr->GetMapId() == 571 && plr->HasSpell(54197)))))
         {
             if (plr->_GetSkillLineCurrent(SKILL_RIDING, true) == 300)
                 newspell = 42668;
@@ -488,7 +488,7 @@ bool Invincible(uint32 i, Spell* pSpell)
         uint32 newspell = 72281;
         auto pArea = plr->GetArea();
         if (pArea && (plr->_GetSkillLineCurrent(SKILL_RIDING, true) >= 225 && ((pArea->flags & 1024 && plr->GetMapId() != 571) ||
-            (pArea->flags & 1024 && plr->GetMapId() == 571 && plr->HasSpellwithNameHash(SPELL_HASH_COLD_WEATHER_FLYING)))))
+            (pArea->flags & 1024 && plr->GetMapId() == 571 && plr->HasSpell(54197)))))
         {
             if (plr->_GetSkillLineCurrent(SKILL_RIDING, true) == 300)
                 newspell = 72284;
@@ -869,7 +869,7 @@ bool X53Mount(uint32 i, Aura *a, bool apply)
         uint32 skill = p->_GetSkillLineCurrent(SKILL_RIDING, true);
 
         if (skill >= 225 && (((area->flags & 1024) && p->GetMapId() != 571) ||
-            ((area->flags & 1024) && p->GetMapId() == 571 && p->HasSpellwithNameHash(SPELL_HASH_COLD_WEATHER_FLYING))))
+            ((area->flags & 1024) && p->GetMapId() == 571 && p->HasSpell(54197))))
         {
             if (skill == 300)
             {

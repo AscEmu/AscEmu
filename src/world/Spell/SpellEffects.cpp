@@ -748,9 +748,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                 static_damage = true;
                 break;
 
-            case SPELL_HASH_CONFLAGRATE:
-                unitTarget->RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_IMMOLATE);
-                break;
+            
 
             case SPELL_HASH_JUDGEMENT_OF_COMMAND:
             {
@@ -782,6 +780,11 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 
         switch (GetSpellInfo()->getId())
         {
+            //SPELL_HASH_CONFLAGRATE
+            case 17962:
+                unitTarget->RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_IMMOLATE);
+                break;
+
             //SPELL_HASH_ICE_LANCE
             case 30455:
             case 31766:

@@ -1283,7 +1283,8 @@ void Spell::castMe(bool check)
                         p_caster->RemoveInvisibility();
                         p_caster->RemoveAllAuraByNameHash(SPELL_HASH_DIVINE_SHIELD);
                         p_caster->RemoveAllAuraByNameHash(SPELL_HASH_DIVINE_PROTECTION);
-                        p_caster->RemoveAllAuraByNameHash(SPELL_HASH_BLESSING_OF_PROTECTION);
+                        //SPELL_HASH_BLESSING_OF_PROTECTION
+                        p_caster->RemoveAllAuraById(41450);
                         break;
                     case 23333:
                     case 23335:
@@ -1293,7 +1294,8 @@ void Spell::castMe(bool check)
                         p_caster->RemoveInvisibility();
                         p_caster->RemoveAllAuraByNameHash(SPELL_HASH_DIVINE_SHIELD);
                         p_caster->RemoveAllAuraByNameHash(SPELL_HASH_DIVINE_PROTECTION);
-                        p_caster->RemoveAllAuraByNameHash(SPELL_HASH_BLESSING_OF_PROTECTION);
+                        //SPELL_HASH_BLESSING_OF_PROTECTION
+                        p_caster->RemoveAllAuraById(41450);
                         break;
                         // cases for stealth - etc
                         // we can cast the spell, but we drop the flag (if we have it)
@@ -1781,11 +1783,188 @@ void Spell::finish(bool successful)
             }
         }
 
-        if (GetSpellInfo()->custom_NameHash == SPELL_HASH_LIGHTNING_BOLT || GetSpellInfo()->custom_NameHash == SPELL_HASH_CHAIN_LIGHTNING)
+        switch (GetSpellInfo()->getId())
         {
-            //Maelstrom Weapon
-            if (u_caster != nullptr)
-                p_caster->RemoveAllAuras(53817, u_caster->GetGUID());
+            //SPELL_HASH_LIGHTNING_BOLT
+            case 403:
+            case 529:
+            case 548:
+            case 915:
+            case 943:
+            case 6041:
+            case 8246:
+            case 9532:
+            case 10391:
+            case 10392:
+            case 12167:
+            case 13482:
+            case 13527:
+            case 14109:
+            case 14119:
+            case 15207:
+            case 15208:
+            case 15234:
+            case 15801:
+            case 16782:
+            case 18081:
+            case 18089:
+            case 19874:
+            case 20295:
+            case 20802:
+            case 20805:
+            case 20824:
+            case 22414:
+            case 23592:
+            case 25448:
+            case 25449:
+            case 26098:
+            case 31764:
+            case 34345:
+            case 35010:
+            case 36152:
+            case 37273:
+            case 37661:
+            case 37664:
+            case 38465:
+            case 39065:
+            case 41184:
+            case 42024:
+            case 43526:
+            case 43903:
+            case 45075:
+            case 45284:
+            case 45286:
+            case 45287:
+            case 45288:
+            case 45289:
+            case 45290:
+            case 45291:
+            case 45292:
+            case 45293:
+            case 45294:
+            case 45295:
+            case 45296:
+            case 48698:
+            case 48895:
+            case 49237:
+            case 49238:
+            case 49239:
+            case 49240:
+            case 49418:
+            case 49454:
+            case 51587:
+            case 51618:
+            case 53044:
+            case 53314:
+            case 54843:
+            case 55044:
+            case 56326:
+            case 56891:
+            case 57780:
+            case 57781:
+            case 59006:
+            case 59024:
+            case 59081:
+            case 59169:
+            case 59199:
+            case 59683:
+            case 59863:
+            case 60009:
+            case 60032:
+            case 61374:
+            case 61893:
+            case 63809:
+            case 64098:
+            case 64696:
+            case 65987:
+            case 68112:
+            case 68113:
+            case 68114:
+            case 69567:
+            case 69970:
+            case 71136:
+            case 71934:
+            //SPELL_HASH_CHAIN_LIGHTNING
+            case 421:
+            case 930:
+            case 2860:
+            case 10605:
+            case 12058:
+            case 15117:
+            case 15305:
+            case 15659:
+            case 16006:
+            case 16033:
+            case 16921:
+            case 20831:
+            case 21179:
+            case 22355:
+            case 23106:
+            case 23206:
+            case 24680:
+            case 25021:
+            case 25439:
+            case 25442:
+            case 27567:
+            case 28167:
+            case 28293:
+            case 28900:
+            case 31330:
+            case 31717:
+            case 32337:
+            case 33643:
+            case 37448:
+            case 39066:
+            case 39945:
+            case 40536:
+            case 41183:
+            case 42441:
+            case 42804:
+            case 43435:
+            case 44318:
+            case 45297:
+            case 45298:
+            case 45299:
+            case 45300:
+            case 45301:
+            case 45302:
+            case 45868:
+            case 46380:
+            case 48140:
+            case 48699:
+            case 49268:
+            case 49269:
+            case 49270:
+            case 49271:
+            case 50830:
+            case 52383:
+            case 54334:
+            case 54531:
+            case 59082:
+            case 59220:
+            case 59223:
+            case 59273:
+            case 59517:
+            case 59716:
+            case 59844:
+            case 61528:
+            case 61879:
+            case 62131:
+            case 63479:
+            case 64213:
+            case 64215:
+            case 64390:
+            case 64758:
+            case 64759:
+            case 67529:
+            case 68319:
+            case 69696:
+            case 75362:
+            {
+                //Maelstrom Weapon
+                if (u_caster != nullptr)
+                    p_caster->RemoveAllAuras(53817, u_caster->GetGUID());
+            } break;
         }
     }
 
@@ -4737,56 +4916,78 @@ uint8 Spell::CanCast(bool tolerate)
                 u_caster->SchoolCastPrevent[GetSpellInfo()->School] = 0;
             else
             {
-                // HACK FIX
-                switch (GetSpellInfo()->custom_NameHash)
+                switch (GetSpellInfo()->getId())
                 {
-                    // This is actually incorrect. school lockouts take precedence over silence.
-                    // So ice block/divine shield are not usable while their schools are locked out,
-                    // but can be used while silenced.
-                    /*case SPELL_HASH_ICE_BLOCK: //Ice Block
-                    case 0x9840A1A6: //Divine Shield
-                    break;
-                    */
-                    case SPELL_HASH_WILL_OF_THE_FORSAKEN:
-                    {
-                        if (u_caster->hasUnitStateFlag(UNIT_STATE_FEAR | UNIT_STATE_CHARM))
-                            break;
-                    }
-                    break;
-
-                    case SPELL_HASH_DEATH_WISH:
-                    case SPELL_HASH_FEAR_WARD:
-                    case SPELL_HASH_BERSERKER_RAGE:
+                    //SPELL_HASH_BERSERKER_RAGE
+                    case 18499:
                     {
                         if (u_caster->hasUnitStateFlag(UNIT_STATE_FEAR))
                             break;
-                    }
-                    break;
+                    } break;
+
+                    //SPELL_HASH_WILL_OF_THE_FORSAKEN
+                    case 7744:
+                    {
+                        if (u_caster->hasUnitStateFlag(UNIT_STATE_FEAR | UNIT_STATE_CHARM))
+                            break;
+                    } break;
 
                     // {Insignia|Medallion} of the {Horde|Alliance}
-                    case SPELL_HASH_PVP_TRINKET:
-                    case SPELL_HASH_EVERY_MAN_FOR_HIMSELF:
-                    case SPELL_HASH_DIVINE_SHIELD:
+                    //SPELL_HASH_PVP_TRINKET
+                    case 42292:
+                    case 65547:
+                    // SPELL_HASH_EVERY_MAN_FOR_HIMSELF:
+                    case 59752:
+                    //SPELL_HASH_DIVINE_SHIELD
+                    case 642:
+                    case 13874:
+                    case 29382:
+                    case 33581:
+                    case 40733:
+                    case 41367:
+                    case 54322:
+                    case 63148:
+                    case 66010:
+                    case 67251:
+                    case 71550:
                     {
                         if (u_caster->hasUnitStateFlag(UNIT_STATE_FEAR | UNIT_STATE_CHARM | UNIT_STATE_STUN | UNIT_STATE_CONFUSE) || u_caster->HasUnitMovementFlag(MOVEFLAG_ROOTED))
                             break;
-                    }
-                    break;
+                    } break;
 
-                    case SPELL_HASH_BARKSKIN:
+                    // SPELL_HASH_DEATH_WISH:
+                    case 12292:
+                    // SPELL_HASH_FEAR_WARD:
+                    case 6346:
+                    {
+                        if (u_caster->hasUnitStateFlag(UNIT_STATE_FEAR))
+                            break;
+                    } break;
+
+                    // SPELL_HASH_BARKSKIN:
+                    case 20655:
+                    case 22812:
+                    case 63408:
+                    case 63409:
+                    case 65860:
                     {
                         // This spell is usable while stunned, frozen, incapacitated, feared or asleep.  Lasts 12 sec.
                         if (u_caster->hasUnitStateFlag(UNIT_STATE_STUN | UNIT_STATE_FEAR))     // Uh, what unit_state is Frozen? (freezing trap...)
                             break;
-                    }
-                    break;
+                    } break;
 
-                    case SPELL_HASH_DISPERSION:
+                    // SPELL_HASH_DISPERSION:
+                    case 47218:
+                    case 47585:
+                    case 49766:
+                    case 49768:
+                    case 60069:
+                    case 63230:
+                    case 65544:
                     {
                         if (u_caster->hasUnitStateFlag(UNIT_STATE_FEAR | UNIT_STATE_STUN | UNIT_STATE_SILENCE))
                             break;
-                    }
-                    break;
+                    } break;
 
                     default:
                         return SPELL_FAILED_SILENCED;
@@ -4797,11 +4998,41 @@ uint8 Spell::CanCast(bool tolerate)
         // can only silence non-physical
         if (u_caster->m_silenced && GetSpellInfo()->School != SCHOOL_NORMAL)
         {
-            switch (GetSpellInfo()->custom_NameHash)
+            switch (GetSpellInfo()->getId())
             {
-                case SPELL_HASH_ICE_BLOCK: //Ice Block
-                case SPELL_HASH_DIVINE_SHIELD: //Divine Shield
-                case SPELL_HASH_DISPERSION:
+                // SPELL_HASH_ICE_BLOCK: //Ice Block
+                case 27619:
+                case 36911:
+                case 41590:
+                case 45438:
+                case 45776:
+                case 46604:
+                case 46882:
+                case 56124:
+                case 56644:
+                case 62766:
+                case 65802:
+                case 69924:
+                // SPELL_HASH_DIVINE_SHIELD: //Divine Shield
+                case 642:
+                case 13874:
+                case 29382:
+                case 33581:
+                case 40733:
+                case 41367:
+                case 54322:
+                case 63148:
+                case 66010:
+                case 67251:
+                case 71550:
+                // SPELL_HASH_DISPERSION:
+                case 47218:
+                case 47585:
+                case 49766:
+                case 49768:
+                case 60069:
+                case 63230:
+                case 65544:
                     break;
 
                 default:
@@ -4836,12 +5067,37 @@ uint8 Spell::CanCast(bool tolerate)
         if (u_caster->IsPacified() && GetSpellInfo()->School == SCHOOL_NORMAL)
         {
             // HACK FIX
-            switch (GetSpellInfo()->custom_NameHash)
+            switch (GetSpellInfo()->getId())
             {
-                case SPELL_HASH_ICE_BLOCK: //Ice Block
-                case SPELL_HASH_DIVINE_SHIELD: //Divine Shield
-                case SPELL_HASH_WILL_OF_THE_FORSAKEN: //Will of the Forsaken
-                case SPELL_HASH_EVERY_MAN_FOR_HIMSELF: // Every Man for Himself
+                // SPELL_HASH_ICE_BLOCK: //Ice Block
+                case 27619:
+                case 36911:
+                case 41590:
+                case 45438:
+                case 45776:
+                case 46604:
+                case 46882:
+                case 56124:
+                case 56644:
+                case 62766:
+                case 65802:
+                case 69924:
+                // SPELL_HASH_DIVINE_SHIELD: //Divine Shield
+                case 642:
+                case 13874:
+                case 29382:
+                case 33581:
+                case 40733:
+                case 41367:
+                case 54322:
+                case 63148:
+                case 66010:
+                case 67251:
+                case 71550:
+                // SPELL_HASH_WILL_OF_THE_FORSAKEN: //Will of the Forsaken
+                case 7744:
+                // SPELL_HASH_EVERY_MAN_FOR_HIMSELF: // Every Man for Himself
+                case 59752:
                 {
                     if (u_caster->hasUnitStateFlag(UNIT_STATE_FEAR | UNIT_STATE_CHARM))
                         break;
@@ -6060,18 +6316,96 @@ void Spell::Heal(int32 amount, bool ForceCrit)
 
         if (p_caster != NULL)
         {
-            if (m_spellInfo->custom_NameHash == SPELL_HASH_LESSER_HEALING_WAVE || m_spellInfo->custom_NameHash == SPELL_HASH_HEALING_WAVE)
+            switch (m_spellInfo->getId())
             {
-                //Tidal Waves
-                p_caster->RemoveAura(53390, p_caster->GetGUID());
-            }
-
-            if (m_spellInfo->custom_NameHash == SPELL_HASH_LESSER_HEALING_WAVE ||
-                m_spellInfo->custom_NameHash == SPELL_HASH_HEALING_WAVE ||
-                m_spellInfo->custom_NameHash == SPELL_HASH_CHAIN_HEAL)
-            {
-                //Maelstrom Weapon
-                p_caster->RemoveAllAuras(53817, p_caster->GetGUID());
+                //SPELL_HASH_LESSER_HEALING_WAVE
+                case 8004:
+                case 8008:
+                case 8010:
+                case 10466:
+                case 10467:
+                case 10468:
+                case 25420:
+                case 27624:
+                case 28849:
+                case 28850:
+                case 44256:
+                case 46181:
+                case 49275:
+                case 49276:
+                case 49309:
+                case 66055:
+                case 68115:
+                case 68116:
+                case 68117:
+                case 75366:
+                //SPELL_HASH_HEALING_WAVE
+                case 331:
+                case 332:
+                case 547:
+                case 913:
+                case 939:
+                case 959:
+                case 8005:
+                case 10395:
+                case 10396:
+                case 11986:
+                case 12491:
+                case 12492:
+                case 15982:
+                case 25357:
+                case 25391:
+                case 25396:
+                case 26097:
+                case 38330:
+                case 43548:
+                case 48700:
+                case 49272:
+                case 49273:
+                case 51586:
+                case 52868:
+                case 55597:
+                case 57785:
+                case 58980:
+                case 59083:
+                case 60012:
+                case 61569:
+                case 67528:
+                case 68318:
+                case 69958:
+                case 71133:
+                case 75382:
+                {
+                    //Tidal Waves
+                    p_caster->RemoveAura(53390, p_caster->GetGUID());
+                }
+                //SPELL_HASH_CHAIN_HEAL
+                case 1064:
+                case 10622:
+                case 10623:
+                case 14900:
+                case 15799:
+                case 16367:
+                case 25422:
+                case 25423:
+                case 33642:
+                case 41114:
+                case 42027:
+                case 42477:
+                case 43527:
+                case 48894:
+                case 54481:
+                case 55458:
+                case 55459:
+                case 59473:
+                case 69923:
+                case 70425:
+                case 71120:
+                case 75370:
+                {
+                    //Maelstrom Weapon
+                    p_caster->RemoveAllAuras(53817, p_caster->GetGUID());
+                } break;
             }
         }
 

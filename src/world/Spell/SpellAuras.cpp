@@ -3232,7 +3232,7 @@ void Aura::SpellAuraModPacify(bool apply)
     // Can't Attack
     if (apply)
     {
-        if (m_spellInfo->getId() == 24937 || m_spellInfo->custom_NameHash == SPELL_HASH_BLESSING_OF_PROTECTION)
+        if (m_spellInfo->getId() == 24937 || m_spellInfo->getId() == 41450) //SPELL_HASH_BLESSING_OF_PROTECTION
             SetPositive();
         else
             SetNegative();
@@ -4020,7 +4020,9 @@ void Aura::SpellAuraModSchoolImmunity(bool apply)
         }
     }
 
-    if (apply && (m_spellInfo->custom_NameHash == SPELL_HASH_DIVINE_SHIELD || m_spellInfo->custom_NameHash == SPELL_HASH_BLESSING_OF_PROTECTION || m_spellInfo->custom_NameHash == SPELL_HASH_ICE_BLOCK))
+    if (apply && (m_spellInfo->custom_NameHash == SPELL_HASH_DIVINE_SHIELD
+        || m_spellInfo->getId() == 41450    //SPELL_HASH_BLESSING_OF_PROTECTION
+        || m_spellInfo->custom_NameHash == SPELL_HASH_ICE_BLOCK))
     {
         m_target->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_INVINCIBLE);
     }
