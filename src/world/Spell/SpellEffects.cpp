@@ -582,34 +582,31 @@ void Spell::SpellEffectInstantKill(uint32 i)
 
     }
 
-    switch (GetSpellInfo()->custom_NameHash)
+    //SPELL_HASH_DEMONIC_SACRIFICE
+    if (GetSpellInfo()->getId() == 18788)
     {
-        case SPELL_HASH_DEMONIC_SACRIFICE:
-        {
-            if (!p_caster || !unitTarget || !unitTarget->IsPet())
-                return;
-
-            //TO< Pet* >(unitTarget)->Dismiss(true);
-
-            SpellInfo* se = sSpellCustomizations.GetSpellInfo(5);
-
-            SpellCastTargets targets(unitTarget->GetGUID());
-            Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, se, true, 0);
-            sp->prepare(&targets);
+        if (!p_caster || !unitTarget || !unitTarget->IsPet())
             return;
-        }
-        break;
 
-        default:
-        {
-            // moar cheaters
-            if (!p_caster || (u_caster && u_caster->IsPet()))
-                return;
+        //TO< Pet* >(unitTarget)->Dismiss(true);
 
-            if (p_caster->GetSession()->GetPermissionCount() == 0)
-                return;
-        }
+        SpellInfo* se = sSpellCustomizations.GetSpellInfo(5);
+
+        SpellCastTargets targets(unitTarget->GetGUID());
+        Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, se, true, 0);
+        sp->prepare(&targets);
+        return;
     }
+    else
+    {
+        // moar cheaters
+        if (!p_caster || (u_caster && u_caster->IsPet()))
+            return;
+
+        if (p_caster->GetSession()->GetPermissionCount() == 0)
+            return;
+    }
+
     //instant kill effects don't have a log
     //m_caster->SpellNonMeleeDamageLog(unitTarget, GetProto()->getId(), unitTarget->GetHealth(), true);
     // cebernic: the value of instant kill must be higher than normal health,cuz anti health regenerated.
@@ -674,30 +671,55 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
     else
     {
         dmg = damage;
-        switch (GetSpellInfo()->custom_NameHash)
+
+        switch (GetSpellInfo()->getId())
         {
-            case SPELL_HASH_METEOR_SLASH:
+            // SPELL_HASH_METEOR_SLASH:
+            case 45150:
             {
                 uint32 splitCount = 0;
                 for (std::set<Object*>::iterator itr = u_caster->GetInRangeOppFactsSetBegin(); itr != u_caster->GetInRangeOppFactsSetEnd(); ++itr)
                 {
                     if ((*itr)->isInFront(u_caster) && u_caster->CalcDistance((*itr)) <= 65)
                         splitCount++;
-                };
+                }
 
                 if (splitCount > 1)
                     dmg = dmg / splitCount;
-            }
-            break;
-            case SPELL_HASH_PULSING_SHOCKWAVE: // loken Pulsing shockwave
+            } break;
+
+            // SPELL_HASH_PULSING_SHOCKWAVE: // loken Pulsing shockwave
+            case 52942:
+            case 52961:
+            case 59836:
+            case 59837:
             {
                 float _distance = u_caster->CalcDistance(unitTarget);
                 if (_distance >= 2.0f)
                     dmg = static_cast<uint32>(dmg * _distance);
-            }
-            break;
+            } break;
 
-            case SPELL_HASH_INCINERATE: // Incinerate -> Deals x-x extra damage if the target is affected by immolate
+            // SPELL_HASH_INCINERATE: // Incinerate -> Deals x-x extra damage if the target is affected by immolate
+            case 19397:
+            case 23308:
+            case 23309:
+            case 29722:
+            case 32231:
+            case 32707:
+            case 36832:
+            case 38401:
+            case 38918:
+            case 39083:
+            case 40239:
+            case 41960:
+            case 43971:
+            case 44519:
+            case 46043:
+            case 47837:
+            case 47838:
+            case 53493:
+            case 69973:
+            case 71135:
             {
                 if (unitTarget->HasFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_IMMOLATE))
                 {
@@ -705,59 +727,185 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                     uint32 extra_dmg = 111 + (GetSpellInfo()->custom_RankNumber * 11) + RandomUInt(GetSpellInfo()->custom_RankNumber * 11);
                     dmg += extra_dmg;
                 }
-            }
-            break;
-            case SPELL_HASH_ARCANE_SHOT: //hunter - arcane shot
+            } break;
+
+            // SPELL_HASH_ARCANE_SHOT: //hunter - arcane shot
+            case 3044:
+            case 14281:
+            case 14282:
+            case 14283:
+            case 14284:
+            case 14285:
+            case 14286:
+            case 14287:
+            case 27019:
+            case 34829:
+            case 35401:
+            case 36293:
+            case 36609:
+            case 36623:
+            case 38807:
+            case 49044:
+            case 49045:
+            case 51742:
+            case 55624:
+            case 58973:
+            case 69989:
+            case 71116:
             {
                 if (u_caster)
                     dmg += float2int32(u_caster->GetRAP() * 0.15f);
                 dmg = float2int32(dmg * (0.9f + RandomFloat(0.2f)));      // randomized damage
-            }
-            break;
-            case SPELL_HASH_GORE: // boar/ravager: Gore (50% chance of double damage)
+
+                if (p_caster != nullptr)
+                {
+                    dmg = static_cast<uint32>(std::round((p_caster->GetRAP() * 0.15) + m_spellInfo->EffectBasePoints[i]));
+                }
+            } break;
+
+            // SPELL_HASH_GORE: // boar/ravager: Gore (50% chance of double damage)
+            case 4102:
+            case 32019:
+            case 35290:
+            case 35291:
+            case 35292:
+            case 35293:
+            case 35294:
+            case 35295:
+            case 35299:
+            case 35300:
+            case 35302:
+            case 35303:
+            case 35304:
+            case 35305:
+            case 35306:
+            case 35307:
+            case 35308:
+            case 48130:
+            case 51751:
+            case 59264:
             {
                 dmg *= Rand(50) ? 2 : 1;
-            }
-            break;
-            case SPELL_HASH_THUNDER_CLAP: // Thunderclap
+            } break;
+
+            // SPELL_HASH_THUNDER_CLAP: // Thunderclap
+            case 6343:
+            case 8198:
+            case 8204:
+            case 8205:
+            case 11580:
+            case 11581:
+            case 13532:
+            case 25264:
+            case 47501:
+            case 47502:
+            case 57832:
+            case 60019:
             {
                 if (u_caster)
                     dmg = (GetSpellInfo()->EffectBasePoints[0] + 1) + float2int32(u_caster->GetAP() * 0.12f);
-            }
-            break;
+            } break;
 
-            case SPELL_HASH_SHOCKWAVE:      // Shockwave
+            // SPELL_HASH_SHOCKWAVE:      // Shockwave
+            case 25425:
+            case 33686:
+            case 46968:
+            case 55636:
+            case 55918:
+            case 57728:
+            case 57741:
+            case 58947:
+            case 58977:
+            case 63783:
+            case 63982:
+            case 72149:
+            case 73499:
+            case 73794:
+            case 73795:
+            case 73796:
+            case 75343:
+            case 75417:
+            case 75418:
             {
                 if (u_caster)
                     dmg = u_caster->GetAP() * (GetSpellInfo()->EffectBasePoints[2] + 1) / 100;
-            }
-            break;
+            } break;
 
-            case SPELL_HASH_SHIELD_OF_RIGHTEOUSNESS: // Shield of Righteousness - a bit like "shield slam", OK for both ranks
+            // SPELL_HASH_JUDGEMENT_OF_COMMAND:
+            case 20425:
+            case 20467:
             {
-                if (p_caster != NULL)
+                if (p_caster != nullptr)
                 {
-                    dmg += float2int32(1.30f * p_caster->getUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_BLOCK) + GetSpellInfo()->EffectBasePoints[0]);
+                    if (!unitTarget->IsStunned())
+                        dmg = dmg >> 1;
+                    if (p_caster->HasAura(34258))
+                        p_caster->CastSpell(static_cast<Unit*>(p_caster), 34260, true);
+                    if ((p_caster->HasAura(53696) || p_caster->HasAura(53695)))
+                        p_caster->CastSpell(static_cast<Unit*>(p_caster), 68055, true);
+                    if (p_caster->HasAura(37186))
+                        dmg = 33;
                 }
-            }
-            break;
-
-            case SPELL_HASH_FIRE_STRIKE:
-            case SPELL_HASH_LIGHTNING_STRIKE:
-            case SPELL_HASH_MOLTEN_ARMOR:       // fire armor, is static damage
-                static_damage = true;
-                break;
-
-            
-
-            case SPELL_HASH_JUDGEMENT_OF_COMMAND:
+            } break;
+            case 29386:
+            case 32778:
+            case 33554:
+            case 41368:
+            case 41470:
+            case 66005:
+            case 68017:
+            case 68018:
+            case 68019:
+            case 71551:
             {
                 if (!unitTarget->IsStunned())
                     dmg = dmg >> 1;
-            }
-            break;
+            } break;
 
-            case SPELL_HASH_EXORCISM:
+            // SPELL_HASH_FIRE_STRIKE:
+            case 7712:
+            case 7714:
+            case 7715:
+            case 7716:
+            case 7717:
+            case 7718:
+            case 7719:
+            // SPELL_HASH_LIGHTNING_STRIKE:
+            case 16614:
+            case 23686:
+            case 23687:
+            case 27983:
+            case 37841:
+            case 52944:
+            case 53062:
+            // SPELL_HASH_MOLTEN_ARMOR:       // fire armor, is static damage
+            case 30482:
+            case 34913:
+            case 35915:
+            case 35916:
+            case 43043:
+            case 43044:
+            case 43045:
+            case 43046:
+            {
+                static_damage = true;
+            } break;
+
+            // SPELL_HASH_EXORCISM:
+            case 879:
+            case 5614:
+            case 5615:
+            case 10312:
+            case 10313:
+            case 10314:
+            case 17147:
+            case 17149:
+            case 27138:
+            case 33632:
+            case 48800:
+            case 48801:
+            case 52445:
+            case 58822:
             {
                 if (p_caster != NULL)
                 {
@@ -771,15 +919,24 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                             force_crit = true;
                     }
                 }
-            }
-            break;
+            } break;
 
-            default:
-                break;
-        }
+            // SPELL_HASH_SHIELD_OF_RIGHTEOUSNESS: // Shield of Righteousness - a bit like "shield slam", OK for both ranks
+            case 53600:
+            case 61411:
+            {
+                if (p_caster != NULL)
+                {
+#if VERSION_STRING != Classic
+                    Item* it = static_cast<Item*>(p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND));
+                    if (it && it->GetItemProperties() && it->GetItemProperties()->InventoryType == INVTYPE_SHIELD)
+                        dmg = float2int32(1.3f * p_caster->getUInt32Value(PLAYER_SHIELD_BLOCK));
+#else
+                    dmg += float2int32(1.30f * p_caster->getUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_BLOCK) + GetSpellInfo()->EffectBasePoints[0]);
+#endif
+                }
+            } break;
 
-        switch (GetSpellInfo()->getId())
-        {
             //SPELL_HASH_CONFLAGRATE
             case 17962:
                 unitTarget->RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_IMMOLATE);
@@ -1092,26 +1249,11 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                         dmg = static_cast<uint32>(std::round(((item->GetItemProperties()->Damage[0].Min + item->GetItemProperties()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]));
                 }
             }break;
-            case 6343:
-            case 8198:
-            case 8204:
-            case 8205:
-            case 11580:
-            case 11581:
-            case 25264:
-            case 47501:
-            case 47502:
-            {
-                if (u_caster)
-                    damage = float2int32((m_spellInfo->EffectBasePoints[0] + 1) + u_caster->GetAP() * 0.20f);
-            }break;
 
             case 31898:
             case 31804:
             case 20187:
             case 53733:
-            case 20425:
-            case 20467:
             case 57774:
             case 20268:
             case 53726:
@@ -1126,18 +1268,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                         dmg = 33;
                 }
             }break;
-            case 53600:
-            case 61411:
-            {
-                if (p_caster != nullptr)
-                {
-#if VERSION_STRING != Classic
-                    Item* it = static_cast<Item*>(p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND));
-                    if (it && it->GetItemProperties() && it->GetItemProperties()->InventoryType == INVTYPE_SHIELD)
-                        dmg = float2int32(1.3f * p_caster->getUInt32Value(PLAYER_SHIELD_BLOCK));
-#endif
-                }
-            }break;
+
             case 25742:
             {
                 if (p_caster != nullptr)
@@ -1152,23 +1283,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                         dmg = (p_caster->getUInt32Value(UNIT_FIELD_MAXHEALTH) / 2);
                 }
             }break;
-            case 3044:
-            case 14281:
-            case 14282:
-            case 14283:
-            case 14284:
-            case 14285:
-            case 14286:
-            case 14287:
-            case 27019:
-            case 49044:
-            case 49045:
-            {
-                if (p_caster != nullptr)
-                {
-                    dmg = static_cast<uint32>(std::round((p_caster->GetRAP() * 0.15) + m_spellInfo->EffectBasePoints[i]));
-                }
-            }break;
+
             case 19434:
             case 20900:
             case 20901:

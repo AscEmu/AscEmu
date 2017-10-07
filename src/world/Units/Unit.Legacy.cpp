@@ -2421,9 +2421,32 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     {
                         if (!CastingSpell)
                             continue;
-                        //only trigger effect for specified spells
-                        if (CastingSpell->custom_NameHash != SPELL_HASH_SEED_OF_CORRUPTION)
-                            continue;
+
+                        switch (CastingSpell->getId())
+                        {
+                            //SPELL_HASH_SEED_OF_CORRUPTION
+                            case 27243:
+                            case 27285:
+                            case 32863:
+                            case 32865:
+                            case 36123:
+                            case 37826:
+                            case 38252:
+                            case 39367:
+                            case 43991:
+                            case 44141:
+                            case 47831:
+                            case 47832:
+                            case 47833:
+                            case 47834:
+                            case 47835:
+                            case 47836:
+                            case 70388:
+                                break;
+                            default:
+                                continue;
+                        }
+
                         //this spell builds up n time
                         spell_proc->mProcCharges += dmg;
                         if ((int32)spell_proc->mProcCharges >= ospinfo->EffectBasePoints[1] &&  //if charge built up
@@ -2604,11 +2627,63 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                         continue;
                     else
                     {
-                        if (CastingSpell->getId() != 184 &&  // Corruption
-                            CastingSpell->custom_NameHash != SPELL_HASH_CURSE_OF_AGONY && //CoA
-                            CastingSpell->custom_NameHash != SPELL_HASH_SIPHON_LIFE && //Siphon Life
-                            CastingSpell->custom_NameHash != SPELL_HASH_SEED_OF_CORRUPTION)  //SoC
-                            continue;
+                        switch (CastingSpell->getId())
+                        {
+                            case 184:       //Corruption
+                            //SPELL_HASH_CURSE_OF_AGONY
+                            case 980:
+                            case 1014:
+                            case 6217:
+                            case 11711:
+                            case 11712:
+                            case 11713:
+                            case 14868:
+                            case 14875:
+                            case 17771:
+                            case 18266:
+                            case 18671:
+                            case 27218:
+                            case 29930:
+                            case 32418:
+                            case 37334:
+                            case 39672:
+                            case 46190:
+                            case 47863:
+                            case 47864:
+                            case 65814:
+                            case 68136:
+                            case 68137:
+                            case 68138:
+                            case 69404:
+                            case 70391:
+                            case 71112:
+                            //SPELL_HASH_SIPHON_LIFE
+                            case 35195:
+                            case 41597:
+                            case 63106:
+                            case 63108:
+                            //SPELL_HASH_SEED_OF_CORRUPTION
+                            case 27243:
+                            case 27285:
+                            case 32863:
+                            case 32865:
+                            case 36123:
+                            case 37826:
+                            case 38252:
+                            case 39367:
+                            case 43991:
+                            case 44141:
+                            case 47831:
+                            case 47832:
+                            case 47833:
+                            case 47834:
+                            case 47835:
+                            case 47836:
+                            case 70388:
+                                break;
+                            default:
+                                continue;
+                        }
                     }
                 }
                 break;
@@ -2617,10 +2692,12 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;//this should not occur unless we made a fuckup somewhere
+
                     //only trigger effect for specified spells
                     auto skill_line_ability = objmgr.GetSpellSkill(CastingSpell->getId());
                     if (!skill_line_ability)
                         continue;
+
                     if (skill_line_ability->skilline != SKILL_DESTRUCTION)
                         continue;
                 }
@@ -2630,6 +2707,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;//this should not occur unless we made a fuckup somewhere
+
                     //only trigger effect for specified spells
                     if (!(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_DAMAGING))
                         continue;
@@ -2899,11 +2977,85 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;//this should not occur unless we made a fuckup somewhere
-                    //only trigger effect for specified spells
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_RAIN_OF_FIRE &&  //Rain of Fire
-                        CastingSpell->custom_NameHash != SPELL_HASH_HELLFIRE_EFFECT && //Hellfire
-                        CastingSpell->custom_NameHash != SPELL_HASH_SOUL_FIRE)  //Soul Fire
-                        continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_RAIN_OF_FIRE
+                        case 4629:
+                        case 5740:
+                        case 6219:
+                        case 11677:
+                        case 11678:
+                        case 11990:
+                        case 16005:
+                        case 19474:
+                        case 19717:
+                        case 20754:
+                        case 24669:
+                        case 27212:
+                        case 28794:
+                        case 31340:
+                        case 31598:
+                        case 33508:
+                        case 33617:
+                        case 33627:
+                        case 33972:
+                        case 34169:
+                        case 34185:
+                        case 34360:
+                        case 34435:
+                        case 36808:
+                        case 37279:
+                        case 37465:
+                        case 38635:
+                        case 38741:
+                        case 39024:
+                        case 39273:
+                        case 39363:
+                        case 39376:
+                        case 42023:
+                        case 42218:
+                        case 42223:
+                        case 42224:
+                        case 42225:
+                        case 42226:
+                        case 42227:
+                        case 43440:
+                        case 47817:
+                        case 47818:
+                        case 47819:
+                        case 47820:
+                        case 49518:
+                        case 54099:
+                        case 54210:
+                        case 57757:
+                        case 58936:
+                        case 59971:
+                        case 69670:
+                        //SPELL_HASH_HELLFIRE_EFFECT
+                        case 5857:
+                        case 11681:
+                        case 11682:
+                        case 27214:
+                        case 30860:
+                        case 47822:
+                        case 65817:
+                        case 68142:
+                        case 68143:
+                        case 68144:
+                        case 69585:
+                        case 70284:
+                        //SPELL_HASH_SOUL_FIRE
+                        case 6353:
+                        case 17924:
+                        case 27211:
+                        case 30545:
+                        case 47824:
+                        case 47825:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 case 54274:
@@ -2923,12 +3075,334 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     if (CastingSpell == NULL)
                         continue;
 
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_ARCANE_BLAST &&
-                        CastingSpell->custom_NameHash != SPELL_HASH_ARCANE_BARRAGE &&
-                        CastingSpell->custom_NameHash != SPELL_HASH_FIREBALL &&
-                        CastingSpell->custom_NameHash != SPELL_HASH_FROSTBOLT &&
-                        CastingSpell->custom_NameHash != SPELL_HASH_FROSTFIRE_BOLT)
-                        continue;
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_ARCANE_BLAST
+                        case 10833:
+                        case 16067:
+                        case 18091:
+                        case 20883:
+                        case 22893:
+                        case 22920:
+                        case 22940:
+                        case 24857:
+                        case 30451:
+                        case 30661:
+                        case 31457:
+                        case 32935:
+                        case 34793:
+                        case 35314:
+                        case 35927:
+                        case 36032:
+                        case 37126:
+                        case 38342:
+                        case 38344:
+                        case 38538:
+                        case 38881:
+                        case 40837:
+                        case 40881:
+                        case 42894:
+                        case 42896:
+                        case 42897:
+                        case 49198:
+                        case 50545:
+                        case 51797:
+                        case 51830:
+                        case 56969:
+                        case 58462:
+                        case 59257:
+                        case 59909:
+                        case 65791:
+                        case 67997:
+                        case 67998:
+                        case 67999:
+                        //SPELL_HASH_ARCANE_BARRAGE
+                        case 44425:
+                        case 44780:
+                        case 44781:
+                        case 50273:
+                        case 50804:
+                        case 56397:
+                        case 58456:
+                        case 59248:
+                        case 59381:
+                        case 63934:
+                        case 64599:
+                        case 64607:
+                        case 65799:
+                        case 67994:
+                        case 67995:
+                        case 67996:
+                        //SPELL_HASH_FIREBALL
+                        case 133:
+                        case 143:
+                        case 145:
+                        case 3140:
+                        case 8400:
+                        case 8401:
+                        case 8402:
+                        case 9053:
+                        case 9487:
+                        case 9488:
+                        case 10148:
+                        case 10149:
+                        case 10150:
+                        case 10151:
+                        case 10578:
+                        case 11839:
+                        case 11921:
+                        case 11985:
+                        case 12466:
+                        case 13140:
+                        case 13375:
+                        case 13438:
+                        case 14034:
+                        case 15228:
+                        case 15242:
+                        case 15536:
+                        case 15662:
+                        case 15665:
+                        case 16101:
+                        case 16412:
+                        case 16413:
+                        case 16415:
+                        case 16788:
+                        case 17290:
+                        case 18082:
+                        case 18105:
+                        case 18108:
+                        case 18199:
+                        case 18392:
+                        case 18796:
+                        case 19391:
+                        case 19816:
+                        case 20420:
+                        case 20678:
+                        case 20692:
+                        case 20714:
+                        case 20793:
+                        case 20797:
+                        case 20808:
+                        case 20811:
+                        case 20815:
+                        case 20823:
+                        case 21072:
+                        case 21159:
+                        case 21162:
+                        case 21402:
+                        case 21549:
+                        case 22088:
+                        case 23024:
+                        case 23411:
+                        case 24374:
+                        case 24611:
+                        case 25306:
+                        case 27070:
+                        case 29456:
+                        case 29925:
+                        case 29953:
+                        case 30218:
+                        case 30534:
+                        case 30691:
+                        case 30943:
+                        case 30967:
+                        case 31262:
+                        case 31620:
+                        case 32363:
+                        case 32369:
+                        case 32414:
+                        case 32491:
+                        case 33417:
+                        case 33793:
+                        case 33794:
+                        case 34083:
+                        case 34348:
+                        case 34653:
+                        case 36711:
+                        case 36805:
+                        case 36920:
+                        case 36971:
+                        case 37111:
+                        case 37329:
+                        case 37463:
+                        case 38641:
+                        case 38692:
+                        case 38824:
+                        case 39267:
+                        case 40554:
+                        case 40598:
+                        case 40877:
+                        case 41383:
+                        case 41484:
+                        case 42802:
+                        case 42832:
+                        case 42833:
+                        case 42834:
+                        case 42853:
+                        case 44189:
+                        case 44202:
+                        case 44237:
+                        case 45580:
+                        case 45595:
+                        case 45748:
+                        case 46164:
+                        case 46988:
+                        case 47074:
+                        case 49512:
+                        case 52282:
+                        case 54094:
+                        case 54095:
+                        case 54096:
+                        case 57628:
+                        case 59994:
+                        case 61567:
+                        case 61909:
+                        case 62796:
+                        case 63789:
+                        case 63815:
+                        case 66042:
+                        case 68310:
+                        case 68926:
+                        case 69570:
+                        case 69583:
+                        case 69668:
+                        case 70282:
+                        case 70409:
+                        case 70754:
+                        case 71153:
+                        case 71500:
+                        case 71501:
+                        case 71504:
+                        case 71748:
+                        case 71928:
+                        case 72023:
+                        case 72024:
+                        case 72163:
+                        case 72164:
+                        //SPELL_HASH_FROSTBOLT
+                        case 116:
+                        case 205:
+                        case 837:
+                        case 7322:
+                        case 8406:
+                        case 8407:
+                        case 8408:
+                        case 9672:
+                        case 10179:
+                        case 10180:
+                        case 10181:
+                        case 11538:
+                        case 12675:
+                        case 12737:
+                        case 13322:
+                        case 13439:
+                        case 15043:
+                        case 15497:
+                        case 15530:
+                        case 16249:
+                        case 16799:
+                        case 17503:
+                        case 20297:
+                        case 20792:
+                        case 20806:
+                        case 20819:
+                        case 20822:
+                        case 21369:
+                        case 23102:
+                        case 23412:
+                        case 24942:
+                        case 25304:
+                        case 27071:
+                        case 27072:
+                        case 28478:
+                        case 28479:
+                        case 29457:
+                        case 29926:
+                        case 29954:
+                        case 30942:
+                        case 31296:
+                        case 31622:
+                        case 32364:
+                        case 32370:
+                        case 32984:
+                        case 34347:
+                        case 35316:
+                        case 36279:
+                        case 36710:
+                        case 36990:
+                        case 37930:
+                        case 38238:
+                        case 38534:
+                        case 38645:
+                        case 38697:
+                        case 38826:
+                        case 39064:
+                        case 40429:
+                        case 40430:
+                        case 41384:
+                        case 41486:
+                        case 42719:
+                        case 42803:
+                        case 42841:
+                        case 42842:
+                        case 43083:
+                        case 43428:
+                        case 44606:
+                        case 44843:
+                        case 46035:
+                        case 46987:
+                        case 49037:
+                        case 50378:
+                        case 50721:
+                        case 54791:
+                        case 55802:
+                        case 55807:
+                        case 56775:
+                        case 56837:
+                        case 57665:
+                        case 57825:
+                        case 58457:
+                        case 58535:
+                        case 59017:
+                        case 59251:
+                        case 59280:
+                        case 59638:
+                        case 59855:
+                        case 61087:
+                        case 61461:
+                        case 61590:
+                        case 61730:
+                        case 61747:
+                        case 62583:
+                        case 62601:
+                        case 63913:
+                        case 65807:
+                        case 68003:
+                        case 68004:
+                        case 68005:
+                        case 69274:
+                        case 69573:
+                        case 70277:
+                        case 70327:
+                        case 71318:
+                        case 71420:
+                        case 72007:
+                        case 72166:
+                        case 72167:
+                        case 72501:
+                        case 72502:
+                        //SPELL_HASH_FROSTFIRE_BOLT
+                        case 44614:
+                        case 47610:
+                        case 51779:
+                        case 69869:
+                        case 69984:
+                        case 70616:
+                        case 71130:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 //mage - Improved Scorch
@@ -2936,9 +3410,56 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;//this should not occur unless we made a fuckup somewhere
+
                     //only trigger effect for specified spells
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_SCORCH)   //Scorch
-                        continue;
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_SCORCH
+                        case 1811:
+                        case 2948:
+                        case 8444:
+                        case 8445:
+                        case 8446:
+                        case 8447:
+                        case 8448:
+                        case 8449:
+                        case 10205:
+                        case 10206:
+                        case 10207:
+                        case 10208:
+                        case 10209:
+                        case 10210:
+                        case 13878:
+                        case 15241:
+                        case 17195:
+                        case 27073:
+                        case 27074:
+                        case 27375:
+                        case 27376:
+                        case 35377:
+                        case 36807:
+                        case 38391:
+                        case 38636:
+                        case 42858:
+                        case 42859:
+                        case 47723:
+                        case 50183:
+                        case 56938:
+                        case 62546:
+                        case 62548:
+                        case 62549:
+                        case 62551:
+                        case 62553:
+                        case 63473:
+                        case 63474:
+                        case 63475:
+                        case 63476:
+                        case 75412:
+                        case 75419:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 //mage - Combustion
@@ -2986,8 +3507,50 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_POWER_WORD__SHIELD)
-                        continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_POWER_WORD__SHIELD
+                        case 17:
+                        case 592:
+                        case 600:
+                        case 3747:
+                        case 6065:
+                        case 6066:
+                        case 10898:
+                        case 10899:
+                        case 10900:
+                        case 10901:
+                        case 11647:
+                        case 11835:
+                        case 11974:
+                        case 17139:
+                        case 20697:
+                        case 22187:
+                        case 25217:
+                        case 25218:
+                        case 27607:
+                        case 29408:
+                        case 32595:
+                        case 35944:
+                        case 36052:
+                        case 41373:
+                        case 44175:
+                        case 44291:
+                        case 46193:
+                        case 48065:
+                        case 48066:
+                        case 66099:
+                        case 68032:
+                        case 68033:
+                        case 68034:
+                        case 71548:
+                        case 71780:
+                        case 71781:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
 
@@ -3093,8 +3656,48 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->custom_NameHash == SPELL_HASH_EARTH_SHIELD)   //Do not proc on Earth Shield crits
-                        continue;
+
+                    //Do not proc on Earth Shield crits
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_EARTH_SHIELD
+                        case 379:
+                        case 974:
+                        case 32593:
+                        case 32594:
+                        case 32734:
+                        case 38590:
+                        case 49283:
+                        case 49284:
+                        case 54479:
+                        case 54480:
+                        case 55599:
+                        case 55600:
+                        case 56451:
+                        case 57802:
+                        case 57803:
+                        case 58981:
+                        case 58982:
+                        case 59471:
+                        case 59472:
+                        case 60013:
+                        case 60014:
+                        case 66063:
+                        case 66064:
+                        case 67530:
+                        case 67537:
+                        case 68320:
+                        case 68592:
+                        case 68593:
+                        case 68594:
+                        case 69568:
+                        case 69569:
+                        case 69925:
+                        case 69926:
+                            continue;
+                        default:
+                            break;
+                    }
                 }
                 //Shaman - Earthliving Weapon
                 case 51940:
@@ -3106,6 +3709,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;
+
                     if (!(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_HEALING))   //healing spell
                         continue;
                 }
@@ -3266,7 +3870,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                         case 58940:
                         case 58971:
                         case 59684:
-                            //SPELL_HASH_FROST_SHOCK
+                        //SPELL_HASH_FROST_SHOCK
                         case 8056:
                         case 8058:
                         case 10472:
@@ -3305,8 +3909,36 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_FLASH_OF_LIGHT)
-                        continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_FLASH_OF_LIGHT
+                        case 19750:
+                        case 19939:
+                        case 19940:
+                        case 19941:
+                        case 19942:
+                        case 19943:
+                        case 25514:
+                        case 27137:
+                        case 33641:
+                        case 37249:
+                        case 37254:
+                        case 37257:
+                        case 48784:
+                        case 48785:
+                        case 57766:
+                        case 59997:
+                        case 66113:
+                        case 66922:
+                        case 68008:
+                        case 68009:
+                        case 68010:
+                        case 71930:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 //Libram of Divine Judgement
@@ -3314,9 +3946,34 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_JUDGEMENT_OF_COMMAND &&
-                        CastingSpell->custom_NameHash != SPELL_HASH_JUDGEMENT)
-                        continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_JUDGEMENT_OF_COMMAND
+                        case 20425:
+                        case 20467:
+                        case 29386:
+                        case 32778:
+                        case 33554:
+                        case 41368:
+                        case 41470:
+                        case 66005:
+                        case 68017:
+                        case 68018:
+                        case 68019:
+                        case 71551:
+                        //SPELL_HASH_JUDGEMENT
+                        case 10321:
+                        case 23590:
+                        case 23591:
+                        case 35170:
+                        case 41467:
+                        case 43838:
+                        case 54158:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 case 16246:
@@ -3658,8 +4315,89 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_BLIZZARD || victim == this)   //Blizzard
+
+                    if (victim == this)
                         continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_BLIZZARD
+                        case 10:
+                        case 1196:
+                        case 6141:
+                        case 6142:
+                        case 8364:
+                        case 8427:
+                        case 8428:
+                        case 10185:
+                        case 10186:
+                        case 10187:
+                        case 10188:
+                        case 10189:
+                        case 10190:
+                        case 15783:
+                        case 19099:
+                        case 20680:
+                        case 21096:
+                        case 21367:
+                        case 25019:
+                        case 26607:
+                        case 27085:
+                        case 27384:
+                        case 27618:
+                        case 29458:
+                        case 29951:
+                        case 30093:
+                        case 31266:
+                        case 31581:
+                        case 33418:
+                        case 33624:
+                        case 33634:
+                        case 34167:
+                        case 34183:
+                        case 34356:
+                        case 37263:
+                        case 37671:
+                        case 38646:
+                        case 39416:
+                        case 41382:
+                        case 41482:
+                        case 42198:
+                        case 42208:
+                        case 42209:
+                        case 42210:
+                        case 42211:
+                        case 42212:
+                        case 42213:
+                        case 42937:
+                        case 42938:
+                        case 42939:
+                        case 42940:
+                        case 44178:
+                        case 46195:
+                        case 47727:
+                        case 49034:
+                        case 50715:
+                        case 56936:
+                        case 58693:
+                        case 59278:
+                        case 59369:
+                        case 59854:
+                        case 61085:
+                        case 62576:
+                        case 62577:
+                        case 62602:
+                        case 62603:
+                        case 62706:
+                        case 64642:
+                        case 64653:
+                        case 70362:
+                        case 70421:
+                        case 71118:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 //mage - Master of Elements
@@ -3727,8 +4465,24 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_LAY_ON_HANDS)
-                        continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_LAY_ON_HANDS
+                        case 633:
+                        case 2800:
+                        case 9257:
+                        case 10310:
+                        case 17233:
+                        case 20233:
+                        case 20236:
+                        case 27154:
+                        case 48788:
+                        case 53778:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 //paladin - Infusion of Light
@@ -3737,8 +4491,43 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_HOLY_SHOCK)
-                        continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_HOLY_SHOCK
+                        case 20473:
+                        case 20929:
+                        case 20930:
+                        case 25902:
+                        case 25903:
+                        case 25911:
+                        case 25912:
+                        case 25913:
+                        case 25914:
+                        case 27174:
+                        case 27175:
+                        case 27176:
+                        case 32771:
+                        case 33072:
+                        case 33073:
+                        case 33074:
+                        case 35160:
+                        case 36340:
+                        case 38921:
+                        case 48820:
+                        case 48821:
+                        case 48822:
+                        case 48823:
+                        case 48824:
+                        case 48825:
+                        case 66114:
+                        case 68014:
+                        case 68015:
+                        case 68016:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 //paladin - Sacred Cleansing
@@ -3746,8 +4535,25 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_CLEANSE)
-                        continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_CLEANSE
+                        case 4987:
+                        case 28787:
+                        case 28788:
+                        case 29380:
+                        case 32400:
+                        case 39078:
+                        case 57767:
+                        case 66116:
+                        case 68621:
+                        case 68622:
+                        case 68623:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 //paladin - Judgements of the Pure
@@ -3777,8 +4583,70 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_FLASH_OF_LIGHT && CastingSpell->custom_NameHash != SPELL_HASH_HOLY_LIGHT)
-                        continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_FLASH_OF_LIGHT
+                        case 19750:
+                        case 19939:
+                        case 19940:
+                        case 19941:
+                        case 19942:
+                        case 19943:
+                        case 25514:
+                        case 27137:
+                        case 33641:
+                        case 37249:
+                        case 37254:
+                        case 37257:
+                        case 48784:
+                        case 48785:
+                        case 57766:
+                        case 59997:
+                        case 66113:
+                        case 66922:
+                        case 68008:
+                        case 68009:
+                        case 68010:
+                        case 71930:
+                        //SPELL_HASH_HOLY_LIGHT
+                        case 635:
+                        case 639:
+                        case 647:
+                        case 1026:
+                        case 1042:
+                        case 3472:
+                        case 10328:
+                        case 10329:
+                        case 13952:
+                        case 15493:
+                        case 25263:
+                        case 25292:
+                        case 27135:
+                        case 27136:
+                        case 29383:
+                        case 29427:
+                        case 29562:
+                        case 31713:
+                        case 32769:
+                        case 37979:
+                        case 43451:
+                        case 44479:
+                        case 46029:
+                        case 48781:
+                        case 48782:
+                        case 52444:
+                        case 56539:
+                        case 58053:
+                        case 66112:
+                        case 68011:
+                        case 68012:
+                        case 68013:
+                            break;
+                        default:
+                            continue;
+                    }
+
                     SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(54203);
                     auto spell_duration = sSpellDurationStore.LookupEntry(spellInfo->DurationIndex);
                     uint32 tickcount = GetDuration(spell_duration) / spellInfo->EffectAmplitude[0];
@@ -3790,9 +4658,33 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->getId() != 53408 && CastingSpell->getId() != 53407 && CastingSpell->getId() != 20271 &&
-                        CastingSpell->custom_NameHash != SPELL_HASH_DIVINE_STORM && CastingSpell->custom_NameHash != SPELL_HASH_CRUSADER_STRIKE)
-                        continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        case 53408:
+                        case 53407:
+                        case 20271:
+                        //SPELL_HASH_CRUSADER_STRIKE
+                        case 14517:
+                        case 14518:
+                        case 17281:
+                        case 35395:
+                        case 35509:
+                        case 36647:
+                        case 50773:
+                        case 65166:
+                        case 66003:
+                        case 71549:
+                        //SPELL_HASH_DIVINE_STORM
+                        case 53385:
+                        case 54171:
+                        case 54172:
+                        case 58127:
+                        case 66006:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
 
@@ -3848,8 +4740,46 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;//this should not occur unless we made a fuckup somewhere
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_HOLY_LIGHT)
-                        continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_HOLY_LIGHT
+                        case 635:
+                        case 639:
+                        case 647:
+                        case 1026:
+                        case 1042:
+                        case 3472:
+                        case 10328:
+                        case 10329:
+                        case 13952:
+                        case 15493:
+                        case 25263:
+                        case 25292:
+                        case 27135:
+                        case 27136:
+                        case 29383:
+                        case 29427:
+                        case 29562:
+                        case 31713:
+                        case 32769:
+                        case 37979:
+                        case 43451:
+                        case 44479:
+                        case 46029:
+                        case 48781:
+                        case 48782:
+                        case 52444:
+                        case 56539:
+                        case 58053:
+                        case 66112:
+                        case 68011:
+                        case 68012:
+                        case 68013:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 //paladin - Blessed Life
@@ -3875,8 +4805,19 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_DIVINE_STORM)
-                        continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_DIVINE_STORM
+                        case 53385:
+                        case 54171:
+                        case 54172:
+                        case 58127:
+                        case 66006:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 //Energized
@@ -4298,8 +5239,67 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_WRATH && CastingSpell->custom_NameHash != SPELL_HASH_STARFIRE)
-                        continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_STARFIRE
+                        case 2912:
+                        case 8949:
+                        case 8950:
+                        case 8951:
+                        case 9875:
+                        case 9876:
+                        case 21668:
+                        case 25298:
+                        case 26986:
+                        case 35243:
+                        case 38935:
+                        case 40344:
+                        case 48464:
+                        case 48465:
+                        case 65854:
+                        case 67947:
+                        case 67948:
+                        case 67949:
+                        case 75332:
+                        //SPELL_HASH_WRATH
+                        case 5176:
+                        case 5177:
+                        case 5178:
+                        case 5179:
+                        case 5180:
+                        case 6780:
+                        case 8905:
+                        case 9739:
+                        case 9912:
+                        case 17144:
+                        case 18104:
+                        case 20698:
+                        case 21667:
+                        case 21807:
+                        case 26984:
+                        case 26985:
+                        case 31784:
+                        case 43619:
+                        case 48459:
+                        case 48461:
+                        case 52501:
+                        case 57648:
+                        case 59986:
+                        case 62793:
+                        case 63259:
+                        case 63569:
+                        case 65862:
+                        case 67951:
+                        case 67952:
+                        case 67953:
+                        case 69968:
+                        case 71148:
+                        case 75327:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 // druid - Celestial Focus
@@ -4307,14 +5307,76 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_STARFIRE)
-                        continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_STARFIRE
+                        case 2912:
+                        case 8949:
+                        case 8950:
+                        case 8951:
+                        case 9875:
+                        case 9876:
+                        case 21668:
+                        case 25298:
+                        case 26986:
+                        case 35243:
+                        case 38935:
+                        case 40344:
+                        case 48464:
+                        case 48465:
+                        case 65854:
+                        case 67947:
+                        case 67948:
+                        case 67949:
+                        case 75332:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 case 37565: //setbonus
                 {
-                    if (!CastingSpell || CastingSpell->custom_NameHash != SPELL_HASH_FLASH_HEAL)
+                    if (!CastingSpell)
                         continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_FLASH_HEAL
+                        case 2061:
+                        case 9472:
+                        case 9473:
+                        case 9474:
+                        case 10915:
+                        case 10916:
+                        case 10917:
+                        case 17137:
+                        case 17138:
+                        case 17843:
+                        case 25233:
+                        case 25235:
+                        case 27608:
+                        case 38588:
+                        case 42420:
+                        case 43431:
+                        case 43516:
+                        case 43575:
+                        case 48070:
+                        case 48071:
+                        case 56331:
+                        case 56919:
+                        case 66104:
+                        case 68023:
+                        case 68024:
+                        case 68025:
+                        case 71595:
+                        case 71782:
+                        case 71783:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 //SETBONUSES
@@ -4461,8 +5523,27 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_LIFE_TAP)
-                        continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_LIFE_TAP
+                        case 1454:
+                        case 1455:
+                        case 1456:
+                        case 4090:
+                        case 11687:
+                        case 11688:
+                        case 11689:
+                        case 27222:
+                        case 28830:
+                        case 31818:
+                        case 32553:
+                        case 57946:
+                        case 63321:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 //Tier 5 Paladin setbonus - Crystalforge Battlegear or Crystalforge Raiment
@@ -4471,18 +5552,113 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (!CastingSpell)
                         continue;
+
                     //CastingSpell->custom_NameHash != SPELL_HASH_JUDGEMENT_OF_THE_CRUSADER &&
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_JUDGEMENT_OF_JUSTICE && CastingSpell->custom_NameHash != SPELL_HASH_JUDGEMENT_OF_LIGHT &&
-                        CastingSpell->custom_NameHash != SPELL_HASH_JUDGEMENT_OF_WISDOM && CastingSpell->custom_NameHash != SPELL_HASH_JUDGEMENT_OF_RIGHTEOUSNESS &&
-                        CastingSpell->custom_NameHash != SPELL_HASH_JUDGEMENT_OF_BLOOD && CastingSpell->getId() != 31804 &&
-                        CastingSpell->custom_NameHash != SPELL_HASH_JUDGEMENT_OF_COMMAND)
-                        continue;
+                    switch (CastingSpell->getId())
+                    {
+                        case 31804:
+                        //SPELL_HASH_JUDGEMENT_OF_JUSTICE
+                        case 20184:
+                        case 53407:
+                        //SPELL_HASH_JUDGEMENT_OF_LIGHT
+                        case 20185:
+                        case 20267:
+                        case 20271:
+                        case 28775:
+                        case 57774:
+                        //SPELL_HASH_JUDGEMENT_OF_WISDOM
+                        case 20186:
+                        case 20268:
+                        case 53408:
+                        //SPELL_HASH_JUDGEMENT_OF_RIGHTEOUSNESS
+                        case 20187:
+                        //SPELL_HASH_JUDGEMENT_OF_BLOOD
+                        case 31898:
+                        case 32220:
+                        case 41461:
+                        //SPELL_HASH_JUDGEMENT_OF_COMMAND
+                        case 20425:
+                        case 20467:
+                        case 29386:
+                        case 32778:
+                        case 33554:
+                        case 41368:
+                        case 41470:
+                        case 66005:
+                        case 68017:
+                        case 68018:
+                        case 68019:
+                        case 71551:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 case 43837:
                 {
-                    if (!CastingSpell || (CastingSpell->custom_NameHash != SPELL_HASH_FLASH_OF_LIGHT && CastingSpell->custom_NameHash != SPELL_HASH_HOLY_LIGHT))
-                        continue;
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_FLASH_OF_LIGHT
+                        case 19750:
+                        case 19939:
+                        case 19940:
+                        case 19941:
+                        case 19942:
+                        case 19943:
+                        case 25514:
+                        case 27137:
+                        case 33641:
+                        case 37249:
+                        case 37254:
+                        case 37257:
+                        case 48784:
+                        case 48785:
+                        case 57766:
+                        case 59997:
+                        case 66113:
+                        case 66922:
+                        case 68008:
+                        case 68009:
+                        case 68010:
+                        case 71930:
+                        //SPELL_HASH_HOLY_LIGHT
+                        case 635:
+                        case 639:
+                        case 647:
+                        case 1026:
+                        case 1042:
+                        case 3472:
+                        case 10328:
+                        case 10329:
+                        case 13952:
+                        case 15493:
+                        case 25263:
+                        case 25292:
+                        case 27135:
+                        case 27136:
+                        case 29383:
+                        case 29427:
+                        case 29562:
+                        case 31713:
+                        case 32769:
+                        case 37979:
+                        case 43451:
+                        case 44479:
+                        case 46029:
+                        case 48781:
+                        case 48782:
+                        case 52444:
+                        case 56539:
+                        case 58053:
+                        case 66112:
+                        case 68011:
+                        case 68012:
+                        case 68013:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 case 37529:
@@ -4754,44 +5930,256 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->custom_NameHash != SPELL_HASH_MANGLE__BEAR_ && CastingSpell->custom_NameHash != SPELL_HASH_MANGLE__CAT_)
-                        continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        // SPELL_HASH_MANGLE__BEAR_
+                        case 33878:
+                        case 33986:
+                        case 33987:
+                        case 48563:
+                        case 48564:
+                        // SPELL_HASH_MANGLE__CAT_
+                        case 33876:
+                        case 33982:
+                        case 33983:
+                        case 48565:
+                        case 48566:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 case 40445: //Starfire has a 25% chance to grant up to 150 spell damage for 8 sec
                 {
-                    if (CastingSpell == NULL || CastingSpell->custom_NameHash != SPELL_HASH_STARFIRE)
+                    if (CastingSpell == NULL)
                         continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_STARFIRE
+                        case 2912:
+                        case 8949:
+                        case 8950:
+                        case 8951:
+                        case 9875:
+                        case 9876:
+                        case 21668:
+                        case 25298:
+                        case 26986:
+                        case 35243:
+                        case 38935:
+                        case 40344:
+                        case 48464:
+                        case 48465:
+                        case 65854:
+                        case 67947:
+                        case 67948:
+                        case 67949:
+                        case 75332:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 case 40446: //Rejuvenation has a 25% chance to grant up to 210 healing for 8 sec
                 {
-                    if (CastingSpell == NULL || CastingSpell->custom_NameHash != SPELL_HASH_REJUVENATION)
+                    if (CastingSpell == NULL)
                         continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_REJUVENATION
+                        case 774:
+                        case 1058:
+                        case 1430:
+                        case 2090:
+                        case 2091:
+                        case 3627:
+                        case 8070:
+                        case 8910:
+                        case 9839:
+                        case 9840:
+                        case 9841:
+                        case 12160:
+                        case 15981:
+                        case 20664:
+                        case 20701:
+                        case 25299:
+                        case 26981:
+                        case 26982:
+                        case 27532:
+                        case 28716:
+                        case 28722:
+                        case 28723:
+                        case 28724:
+                        case 31782:
+                        case 32131:
+                        case 38657:
+                        case 42544:
+                        case 48440:
+                        case 48441:
+                        case 53607:
+                        case 64801:
+                        case 66065:
+                        case 67971:
+                        case 67972:
+                        case 67973:
+                        case 69898:
+                        case 70691:
+                        case 71142:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
 
                 //http://www.wowhead.com/?item=32490 Ashtongue Talisman of Acumen
                 case 40441: //Each time your Shadow Word: Pain deals damage, it has a 10% chance to grant you 220 spell damage for 10 sec
                 {
-                    if (CastingSpell == NULL || CastingSpell->custom_NameHash != SPELL_HASH_SHADOW_WORD__PAIN)
+                    if (CastingSpell == NULL)
                         continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_SHADOW_WORD__PAIN
+                        case 589:
+                        case 594:
+                        case 970:
+                        case 992:
+                        case 2767:
+                        case 10892:
+                        case 10893:
+                        case 10894:
+                        case 11639:
+                        case 14032:
+                        case 15654:
+                        case 17146:
+                        case 19776:
+                        case 23268:
+                        case 23952:
+                        case 24212:
+                        case 25367:
+                        case 25368:
+                        case 27605:
+                        case 30854:
+                        case 30898:
+                        case 34441:
+                        case 34941:
+                        case 34942:
+                        case 37275:
+                        case 41355:
+                        case 46560:
+                        case 48124:
+                        case 48125:
+                        case 57778:
+                        case 59864:
+                        case 60005:
+                        case 60446:
+                        case 65541:
+                        case 68088:
+                        case 68089:
+                        case 68090:
+                        case 72318:
+                        case 72319:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
 
                 //http://www.wowhead.com/?item=32490 Ashtongue Talisman of Acumen
                 case 40440: //Each time your Renew heals, it has a 10% chance to grant you 220 healing for 5 sec
                 {
-                    if (CastingSpell == NULL || CastingSpell->custom_NameHash != SPELL_HASH_RENEW)
+                    if (CastingSpell == NULL)
                         continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_RENEW
+                        case 139:
+                        case 6074:
+                        case 6075:
+                        case 6076:
+                        case 6077:
+                        case 6078:
+                        case 8362:
+                        case 10927:
+                        case 10928:
+                        case 10929:
+                        case 11640:
+                        case 22168:
+                        case 23895:
+                        case 25058:
+                        case 25221:
+                        case 25222:
+                        case 25315:
+                        case 27606:
+                        case 28807:
+                        case 31325:
+                        case 34423:
+                        case 36679:
+                        case 36969:
+                        case 37260:
+                        case 37978:
+                        case 38210:
+                        case 41456:
+                        case 44174:
+                        case 45859:
+                        case 46192:
+                        case 46563:
+                        case 47079:
+                        case 48067:
+                        case 48068:
+                        case 49263:
+                        case 56332:
+                        case 57777:
+                        case 60004:
+                        case 61967:
+                        case 62333:
+                        case 62441:
+                        case 66177:
+                        case 66537:
+                        case 67675:
+                        case 68035:
+                        case 68036:
+                        case 68037:
+                        case 71932:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
 
                 //http://www.wowhead.com/?item=32492 Ashtongue Talisman of Lethality
                 case 37445: //using a mana gem grants you 225 spell damage for 15 sec
                 {
-                    if (!CastingSpell || CastingSpell->custom_NameHash != SPELL_HASH_REPLENISH_MANA)
+                    if (!CastingSpell)
                         continue;
+
+                    switch (CastingSpell->getId())
+                    {
+                        //SPELL_HASH_REPLENISH_MANA
+                        case 5405:
+                        case 10052:
+                        case 10057:
+                        case 10058:
+                        case 18385:
+                        case 27103:
+                        case 33394:
+                        case 42987:
+                        case 42988:
+                        case 71565:
+                        case 71574:
+                            break;
+                        default:
+                            continue;
+                    }
                 }
                 break;
                 case 16886: // druid - Nature's Grace
@@ -8906,14 +10294,71 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
                     //priest - surge of light
                     case 33151:
                     {
-                        //our luck. it got triggered on smite..we do not remove it just yet
-                        if (m_currentSpell && m_currentSpell->GetSpellInfo()->custom_NameHash == SPELL_HASH_SMITE)
-                            continue;
+                        switch (m_currentSpell->GetSpellInfo()->getId())
+                        {
+                            //SPELL_HASH_SMITE
+                            case 585:
+                            case 591:
+                            case 598:
+                            case 984:
+                            case 1004:
+                            case 6060:
+                            case 10933:
+                            case 10934:
+                            case 25363:
+                            case 25364:
+                            case 35155:
+                            case 48122:
+                            case 48123:
+                            case 61923:
+                            case 69967:
+                            case 71146:
+                            case 71546:
+                            case 71547:
+                            case 71778:
+                            case 71779:
+                            case 71841:
+                            case 71842:
+                            {
+                                //our luck. it got triggered on smite..we do not remove it just yet
+                                if (m_currentSpell)
+                                    continue;
+                            }
+                        }
 
                         //this spell gets removed only when casting smite
                         SpellInfo* spi = sSpellCustomizations.GetSpellInfo(skip);
-                        if (spi && spi->custom_NameHash != SPELL_HASH_SMITE)
-                            continue;
+
+                        if (spi)
+                        {
+                            switch (spi->getId())
+                            {
+                                //SPELL_HASH_SMITE
+                                case 585:
+                                case 591:
+                                case 598:
+                                case 984:
+                                case 1004:
+                                case 6060:
+                                case 10933:
+                                case 10934:
+                                case 25363:
+                                case 25364:
+                                case 35155:
+                                case 48122:
+                                case 48123:
+                                case 61923:
+                                case 69967:
+                                case 71146:
+                                case 71546:
+                                case 71547:
+                                case 71778:
+                                case 71779:
+                                case 71841:
+                                case 71842:
+                                    continue;
+                            }
+                        }
                     }
                     break;
                     case 34936:	// Backlash

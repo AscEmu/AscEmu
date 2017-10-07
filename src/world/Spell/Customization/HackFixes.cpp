@@ -1563,200 +1563,6 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
             break;
         }
 
-        case 3408:
-        case 3409:
-        case 25809:
-        case 30981:
-        case 44289:
-        {
-            sp->custom_NameHash = SPELL_HASH_CRIPPLING_POISON;
-            break;
-        }
-
-        case 5760:
-        case 5761:
-        case 25810:
-        case 34615:
-        case 41190:
-        {
-            sp->custom_NameHash = SPELL_HASH_MIND_NUMBING_POISON;
-            break;
-        }
-
-        case 51664:
-        case 51665:
-        case 51667:
-        case 51668:
-        case 51669:
-        {
-            sp->custom_NameHash = SPELL_HASH_CUT_TO_THE_CHASE;
-            break;
-        }
-
-        case 51625:
-        case 51626:
-        {
-            sp->custom_NameHash = SPELL_HASH_DEADLY_BREW;
-            break;
-        }
-
-        case 51692:
-        case 51693:
-        case 51696:
-        {
-            sp->custom_NameHash = SPELL_HASH_WAYLAY;
-            break;
-        }
-
-        case 15337:
-        case 15338:
-        case 49694:
-        case 59000:
-        {
-            sp->custom_NameHash = SPELL_HASH_IMPROVED_SPIRIT_TAP;
-            break;
-        }
-
-        case 34753:
-        case 34754:
-        case 34859:
-        case 34860:
-        case 63724:
-        case 63725:
-        {
-            sp->custom_NameHash = SPELL_HASH_HOLY_CONCENTRATION;
-            break;
-        }
-
-        case 47509:
-        case 47511:
-        case 47515:
-        case 47753:
-        case 54704:
-        {
-            sp->custom_NameHash = SPELL_HASH_DIVINE_AEGIS;
-            break;
-        }
-
-        case 63625:
-        case 63626:
-        case 63627:
-        case 63675:
-        case 75999:
-        {
-            sp->custom_NameHash = SPELL_HASH_IMPROVED_DEVOURING_PLAGUE;
-            break;
-        }
-
-        case 15286:
-        case 15290:
-        case 71269:
-        {
-            sp->custom_NameHash = SPELL_HASH_VAMPIRIC_EMBRACE;
-            break;
-        }
-
-        case 63534:
-        case 63542:
-        case 63543:
-        case 63544:
-        {
-            sp->custom_NameHash = SPELL_HASH_EMPOWERED_RENEW;
-            break;
-        }
-
-        case 33191:
-        case 33192:
-        case 33193:
-        case 33196:
-        case 33197:
-        case 33198:
-        {
-            sp->custom_NameHash = SPELL_HASH_MISERY;
-            break;
-        }
-
-        case 33076:
-        case 33110:
-        case 41635:
-        case 41637:
-        case 44583:
-        case 44586:
-        case 46045:
-        case 48110:
-        case 48111:
-        case 48112:
-        case 48113:
-        {
-            sp->custom_NameHash = SPELL_HASH_PRAYER_OF_MENDING;
-            break;
-        }
-
-        case 15270:
-        case 15271:
-        case 15335:
-        case 15336:
-        {
-            sp->custom_NameHash = SPELL_HASH_SPIRIT_TAP;
-            break;
-        }
-
-        case 20375:
-        case 20424:
-        case 29385:
-        case 33127:
-        case 41469:
-        case 42058:
-        case 57769:
-        case 57770:
-        case 66004:
-        case 68020:
-        case 68021:
-        case 68022:
-        case 69403:
-        {
-            sp->custom_NameHash = SPELL_HASH_SEAL_OF_COMMAND;
-            break;
-        }
-
-        case 9799:
-        case 25988:
-        case 25997:
-        {
-            sp->custom_NameHash = SPELL_HASH_EYE_FOR_AN_EYE;
-            break;
-        }
-
-        case 31785:
-        case 31786:
-        case 33776:
-        {
-            sp->custom_NameHash = SPELL_HASH_SPIRITUAL_ATTUNEMENT;
-            break;
-        }
-
-        case 49182:
-        case 49500:
-        case 49501:
-        case 51789:
-        case 55225:
-        case 55226:
-        case 64855:
-        case 64856:
-        case 64858:
-        case 64859:
-        {
-            sp->custom_NameHash = SPELL_HASH_BLADE_BARRIER;
-            break;
-        }
-
-        case 41434:
-        case 41435:
-        {
-            sp->custom_NameHash = SPELL_HASH_THE_TWIN_BLADES_OF_AZZINOTH;
-            break;
-        }
-
         case 8024:
         case 8027:
         case 8030:
@@ -1770,83 +1576,6 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 65979:
         {
             sp->custom_NameHash = SPELL_HASH_FLAMETONGUE_WEAPON;
-            break;
-        }
-
-        case 10:
-        case 1196:
-        case 6141:
-        case 6142:
-        case 8364:
-        case 8427:
-        case 8428:
-        case 10185:
-        case 10186:
-        case 10187:
-        case 10188:
-        case 10189:
-        case 10190:
-        case 15783:
-        case 19099:
-        case 20680:
-        case 21096:
-        case 21367:
-        case 25019:
-        case 26607:
-        case 27085:
-        case 27384:
-        case 27618:
-        case 29458:
-        case 29951:
-        case 30093:
-        case 31266:
-        case 31581:
-        case 33418:
-        case 33624:
-        case 33634:
-        case 34167:
-        case 34183:
-        case 34356:
-        case 37263:
-        case 37671:
-        case 38646:
-        case 39416:
-        case 41382:
-        case 41482:
-        case 42198:
-        case 42208:
-        case 42209:
-        case 42210:
-        case 42211:
-        case 42212:
-        case 42213:
-        case 42937:
-        case 42938:
-        case 42939:
-        case 42940:
-        case 44178:
-        case 46195:
-        case 47727:
-        case 49034:
-        case 50715:
-        case 56936:
-        case 58693:
-        case 59278:
-        case 59369:
-        case 59854:
-        case 61085:
-        case 62576:
-        case 62577:
-        case 62602:
-        case 62603:
-        case 62706:
-        case 64642:
-        case 64653:
-        case 70362:
-        case 70421:
-        case 71118:
-        {
-            sp->custom_NameHash = SPELL_HASH_BLIZZARD;
             break;
         }
 
@@ -1901,361 +1630,6 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
             break;
         }
 
-        case 116:
-        case 205:
-        case 837:
-        case 7322:
-        case 8406:
-        case 8407:
-        case 8408:
-        case 9672:
-        case 10179:
-        case 10180:
-        case 10181:
-        case 11538:
-        case 12675:
-        case 12737:
-        case 13322:
-        case 13439:
-        case 15043:
-        case 15497:
-        case 15530:
-        case 16249:
-        case 16799:
-        case 17503:
-        case 20297:
-        case 20792:
-        case 20806:
-        case 20819:
-        case 20822:
-        case 21369:
-        case 23102:
-        case 23412:
-        case 24942:
-        case 25304:
-        case 27071:
-        case 27072:
-        case 28478:
-        case 28479:
-        case 29457:
-        case 29926:
-        case 29954:
-        case 30942:
-        case 31296:
-        case 31622:
-        case 32364:
-        case 32370:
-        case 32984:
-        case 34347:
-        case 35316:
-        case 36279:
-        case 36710:
-        case 36990:
-        case 37930:
-        case 38238:
-        case 38534:
-        case 38645:
-        case 38697:
-        case 38826:
-        case 39064:
-        case 40429:
-        case 40430:
-        case 41384:
-        case 41486:
-        case 42719:
-        case 42803:
-        case 42841:
-        case 42842:
-        case 43083:
-        case 43428:
-        case 44606:
-        case 44843:
-        case 46035:
-        case 46987:
-        case 49037:
-        case 50378:
-        case 50721:
-        case 54791:
-        case 55802:
-        case 55807:
-        case 56775:
-        case 56837:
-        case 57665:
-        case 57825:
-        case 58457:
-        case 58535:
-        case 59017:
-        case 59251:
-        case 59280:
-        case 59638:
-        case 59855:
-        case 61087:
-        case 61461:
-        case 61590:
-        case 61730:
-        case 61747:
-        case 62583:
-        case 62601:
-        case 63913:
-        case 65807:
-        case 68003:
-        case 68004:
-        case 68005:
-        case 69274:
-        case 69573:
-        case 70277:
-        case 70327:
-        case 71318:
-        case 71420:
-        case 72007:
-        case 72166:
-        case 72167:
-        case 72501:
-        case 72502:
-        {
-            sp->custom_NameHash = SPELL_HASH_FROSTBOLT;
-            break;
-        }
-
-        case 133:
-        case 143:
-        case 145:
-        case 3140:
-        case 8400:
-        case 8401:
-        case 8402:
-        case 9053:
-        case 9487:
-        case 9488:
-        case 10148:
-        case 10149:
-        case 10150:
-        case 10151:
-        case 10578:
-        case 11839:
-        case 11921:
-        case 11985:
-        case 12466:
-        case 13140:
-        case 13375:
-        case 13438:
-        case 14034:
-        case 15228:
-        case 15242:
-        case 15536:
-        case 15662:
-        case 15665:
-        case 16101:
-        case 16412:
-        case 16413:
-        case 16415:
-        case 16788:
-        case 17290:
-        case 18082:
-        case 18105:
-        case 18108:
-        case 18199:
-        case 18392:
-        case 18796:
-        case 19391:
-        case 19816:
-        case 20420:
-        case 20678:
-        case 20692:
-        case 20714:
-        case 20793:
-        case 20797:
-        case 20808:
-        case 20811:
-        case 20815:
-        case 20823:
-        case 21072:
-        case 21159:
-        case 21162:
-        case 21402:
-        case 21549:
-        case 22088:
-        case 23024:
-        case 23411:
-        case 24374:
-        case 24611:
-        case 25306:
-        case 27070:
-        case 29456:
-        case 29925:
-        case 29953:
-        case 30218:
-        case 30534:
-        case 30691:
-        case 30943:
-        case 30967:
-        case 31262:
-        case 31620:
-        case 32363:
-        case 32369:
-        case 32414:
-        case 32491:
-        case 33417:
-        case 33793:
-        case 33794:
-        case 34083:
-        case 34348:
-        case 34653:
-        case 36711:
-        case 36805:
-        case 36920:
-        case 36971:
-        case 37111:
-        case 37329:
-        case 37463:
-        case 38641:
-        case 38692:
-        case 38824:
-        case 39267:
-        case 40554:
-        case 40598:
-        case 40877:
-        case 41383:
-        case 41484:
-        case 42802:
-        case 42832:
-        case 42833:
-        case 42834:
-        case 42853:
-        case 44189:
-        case 44202:
-        case 44237:
-        case 45580:
-        case 45595:
-        case 45748:
-        case 46164:
-        case 46988:
-        case 47074:
-        case 49512:
-        case 52282:
-        case 54094:
-        case 54095:
-        case 54096:
-        case 57628:
-        case 59994:
-        case 61567:
-        case 61909:
-        case 62796:
-        case 63789:
-        case 63815:
-        case 66042:
-        case 68310:
-        case 68926:
-        case 69570:
-        case 69583:
-        case 69668:
-        case 70282:
-        case 70409:
-        case 70754:
-        case 71153:
-        case 71500:
-        case 71501:
-        case 71504:
-        case 71748:
-        case 71928:
-        case 72023:
-        case 72024:
-        case 72163:
-        case 72164:
-        {
-            sp->custom_NameHash = SPELL_HASH_FIREBALL;
-            break;
-        }
-
-        case 139:
-        case 6074:
-        case 6075:
-        case 6076:
-        case 6077:
-        case 6078:
-        case 8362:
-        case 10927:
-        case 10928:
-        case 10929:
-        case 11640:
-        case 22168:
-        case 23895:
-        case 25058:
-        case 25221:
-        case 25222:
-        case 25315:
-        case 27606:
-        case 28807:
-        case 31325:
-        case 34423:
-        case 36679:
-        case 36969:
-        case 37260:
-        case 37978:
-        case 38210:
-        case 41456:
-        case 44174:
-        case 45859:
-        case 46192:
-        case 46563:
-        case 47079:
-        case 48067:
-        case 48068:
-        case 49263:
-        case 56332:
-        case 57777:
-        case 60004:
-        case 61967:
-        case 62333:
-        case 62441:
-        case 66177:
-        case 66537:
-        case 67675:
-        case 68035:
-        case 68036:
-        case 68037:
-        case 71932:
-        {
-            sp->custom_NameHash = SPELL_HASH_RENEW; break;
-        }
-
-        case 379:
-        case 974:
-        case 32593:
-        case 32594:
-        case 32734:
-        case 38590:
-        case 49283:
-        case 49284:
-        case 54479:
-        case 54480:
-        case 55599:
-        case 55600:
-        case 56451:
-        case 57802:
-        case 57803:
-        case 58981:
-        case 58982:
-        case 59471:
-        case 59472:
-        case 60013:
-        case 60014:
-        case 66063:
-        case 66064:
-        case 67530:
-        case 67537:
-        case 68320:
-        case 68592:
-        case 68593:
-        case 68594:
-        case 69568:
-        case 69569:
-        case 69925:
-        case 69926:
-        {
-            sp->custom_NameHash = SPELL_HASH_EARTH_SHIELD; break;
-        }
-
         case 465:
         case 643:
         case 1032:
@@ -2282,32 +1656,6 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 27779:
         {
             sp->custom_NameHash = SPELL_HASH_DIVINE_PROTECTION; break;
-        }
-
-        case 585:
-        case 591:
-        case 598:
-        case 984:
-        case 1004:
-        case 6060:
-        case 10933:
-        case 10934:
-        case 25363:
-        case 25364:
-        case 35155:
-        case 48122:
-        case 48123:
-        case 61923:
-        case 69967:
-        case 71146:
-        case 71546:
-        case 71547:
-        case 71778:
-        case 71779:
-        case 71841:
-        case 71842:
-        {
-            sp->custom_NameHash = SPELL_HASH_SMITE; break;
         }
 
         case 605:
@@ -2584,79 +1932,6 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
             sp->custom_NameHash = SPELL_HASH_REJUVENATION; break;
         }
 
-        case 879:
-        case 5614:
-        case 5615:
-        case 10312:
-        case 10313:
-        case 10314:
-        case 17147:
-        case 17149:
-        case 27138:
-        case 33632:
-        case 48800:
-        case 48801:
-        case 52445:
-        case 58822:
-        {
-            sp->custom_NameHash = SPELL_HASH_EXORCISM; break;
-        }
-
-        case 980:
-        case 1014:
-        case 6217:
-        case 11711:
-        case 11712:
-        case 11713:
-        case 14868:
-        case 14875:
-        case 17771:
-        case 18266:
-        case 18671:
-        case 27218:
-        case 29930:
-        case 32418:
-        case 37334:
-        case 39672:
-        case 46190:
-        case 47863:
-        case 47864:
-        case 65814:
-        case 68136:
-        case 68137:
-        case 68138:
-        case 69404:
-        case 70391:
-        case 71112:
-        {
-            sp->custom_NameHash = SPELL_HASH_CURSE_OF_AGONY; break;
-        }
-
-        case 34453:
-        case 34454:
-        case 68361:
-        {
-            sp->custom_NameHash = SPELL_HASH_ANIMAL_HANDLER; break;
-        }
-        case 44425:
-        case 44780:
-        case 44781:
-        case 50273:
-        case 50804:
-        case 56397:
-        case 58456:
-        case 59248:
-        case 59381:
-        case 63934:
-        case 64599:
-        case 64607:
-        case 65799:
-        case 67994:
-        case 67995:
-        case 67996:
-        {
-            sp->custom_NameHash = SPELL_HASH_ARCANE_BARRAGE; break;
-        }
         case 24544:
         case 31571:
         case 31572:
@@ -2667,31 +1942,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         {
             sp->custom_NameHash = SPELL_HASH_ARCANE_POTENCY; break;
         }
-        case 3044:
-        case 14281:
-        case 14282:
-        case 14283:
-        case 14284:
-        case 14285:
-        case 14286:
-        case 14287:
-        case 27019:
-        case 34829:
-        case 35401:
-        case 36293:
-        case 36609:
-        case 36623:
-        case 38807:
-        case 49044:
-        case 49045:
-        case 51742:
-        case 55624:
-        case 58973:
-        case 69989:
-        case 71116:
-        {
-            sp->custom_NameHash = SPELL_HASH_ARCANE_SHOT; break;
-        }
+
         case 31850:
         case 31851:
         case 31852:
@@ -2699,12 +1950,6 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 66235:
         {
             sp->custom_NameHash = SPELL_HASH_ARDENT_DEFENDER; break;
-        }
-
-        case 19590:
-        case 19592:
-        {
-            sp->custom_NameHash = SPELL_HASH_BESTIAL_DISCIPLINE; break;
         }
 
         case 13877:
@@ -2739,36 +1984,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         {
             sp->custom_NameHash = SPELL_HASH_BLOOD_FRENZY; break;
         }
-        case 2825:
-        case 6742:
-        case 16170:
-        case 21049:
-        case 23951:
-        case 24185:
-        case 27689:
-        case 28902:
-        case 33555:
-        case 37067:
-        case 37309:
-        case 37310:
-        case 37472:
-        case 37599:
-        case 41185:
-        case 43578:
-        case 45584:
-        case 50730:
-        case 54516:
-        case 65980:
-        {
-            sp->custom_NameHash = SPELL_HASH_BLOODLUST; break;
-        }
 
-        case 34462:
-        case 34464:
-        case 34465:
-        {
-            sp->custom_NameHash = SPELL_HASH_CATLIKE_REFLEXES; break;
-        }
         case 50796:
         case 51287:
         case 59170:
@@ -2780,27 +1996,6 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
             sp->custom_NameHash = SPELL_HASH_CHAOS_BOLT; break;
         }
 
-        case 4987:
-        case 28787:
-        case 28788:
-        case 29380:
-        case 32400:
-        case 39078:
-        case 57767:
-        case 66116:
-        case 68621:
-        case 68622:
-        case 68623:
-        {
-            sp->custom_NameHash = SPELL_HASH_CLEANSE; break;
-        }
-        case 12536:
-        case 16246:
-        case 16870:
-        case 67210:
-        {
-            sp->custom_NameHash = SPELL_HASH_CLEARCASTING; break;
-        }
         case 11129:
         case 28682:
         case 29977:
@@ -2847,69 +2042,12 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
             sp->custom_NameHash = SPELL_HASH_DAZED; break;
         }
 
-        case 17471:
-        case 17698:
-        case 48743:
-        case 51956:
-        {
-            sp->custom_NameHash = SPELL_HASH_DEATH_PACT; break;
-        }
-
-        case 18788:
-        {
-            sp->custom_NameHash = SPELL_HASH_DEMONIC_SACRIFICE; break;
-        }
-
-        case 53385:
-        case 54171:
-        case 54172:
-        case 58127:
-        case 66006:
-        {
-            sp->custom_NameHash = SPELL_HASH_DIVINE_STORM; break;
-        }
-
-        case 19583:
-        case 19584:
-        case 19585:
-        case 19586:
-        case 19587:
-        {
-            sp->custom_NameHash = SPELL_HASH_ENDURANCE_TRAINING; break;
-        }
-
-        case 59752:
-        {
-            sp->custom_NameHash = SPELL_HASH_EVERY_MAN_FOR_HIMSELF; break;
-        }
-
         case 16857:
         case 60089:
         {
             sp->custom_NameHash = SPELL_HASH_FAERIE_FIRE__FERAL_; break;
         }
 
-        case 17002:
-        case 24866:
-        {
-            sp->custom_NameHash = SPELL_HASH_FERAL_SWIFTNESS; break;
-        }
-
-        case 4154:
-        case 16934:
-        case 16935:
-        case 16936:
-        case 16937:
-        case 16938:
-        case 19598:
-        case 19599:
-        case 19600:
-        case 19601:
-        case 19602:
-        case 33667:
-        {
-            sp->custom_NameHash = SPELL_HASH_FEROCITY; break;
-        }
         case 19891:
         case 19899:
         case 19900:
@@ -2918,16 +2056,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         {
             sp->custom_NameHash = SPELL_HASH_FIRE_RESISTANCE_AURA; break;
         }
-        case 7712:
-        case 7714:
-        case 7715:
-        case 7716:
-        case 7717:
-        case 7718:
-        case 7719:
-        {
-            sp->custom_NameHash = SPELL_HASH_FIRE_STRIKE; break;
-        }
+
         case 8050:
         case 8052:
         case 8053:
@@ -2993,41 +2122,6 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
             sp->custom_NameHash = SPELL_HASH_FROST_RESISTANCE_AURA; break;
         }
 
-        case 44614:
-        case 47610:
-        case 51779:
-        case 69869:
-        case 69984:
-        case 70616:
-        case 71130:
-        {
-            sp->custom_NameHash = SPELL_HASH_FROSTFIRE_BOLT; break;
-        }
-
-        case 4102:
-        case 32019:
-        case 35290:
-        case 35291:
-        case 35292:
-        case 35293:
-        case 35294:
-        case 35295:
-        case 35299:
-        case 35300:
-        case 35302:
-        case 35303:
-        case 35304:
-        case 35305:
-        case 35306:
-        case 35307:
-        case 35308:
-        case 48130:
-        case 51751:
-        case 59264:
-        {
-            sp->custom_NameHash = SPELL_HASH_GORE; break;
-        }
-
         case 24239:
         case 24274:
         case 24275:
@@ -3053,29 +2147,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         {
             sp->custom_NameHash = SPELL_HASH_HAUNT; break;
         }
-        case 17003:
-        case 17004:
-        case 17005:
-        case 17006:
-        case 24894:
-        {
-            sp->custom_NameHash = SPELL_HASH_HEART_OF_THE_WILD; break;
-        }
-        case 5857:
-        case 11681:
-        case 11682:
-        case 27214:
-        case 30860:
-        case 47822:
-        case 65817:
-        case 68142:
-        case 68143:
-        case 68144:
-        case 69585:
-        case 70284:
-        {
-            sp->custom_NameHash = SPELL_HASH_HELLFIRE_EFFECT; break;
-        }
+
         case 16511:
         case 17347:
         case 17348:
@@ -3087,18 +2159,6 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 65954:
         {
             sp->custom_NameHash = SPELL_HASH_HEMORRHAGE; break;
-        }
-
-        case 23682:
-        case 23689:
-        case 32182:
-        case 32927:
-        case 32955:
-        case 37471:
-        case 39200:
-        case 65983:
-        {
-            sp->custom_NameHash = SPELL_HASH_HEROISM; break;
         }
 
         case 20473:
@@ -3205,21 +2265,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         {
             sp->custom_NameHash = SPELL_HASH_JUDGEMENT_OF_BLOOD; break;
         }
-        case 20425:
-        case 20467:
-        case 29386:
-        case 32778:
-        case 33554:
-        case 41368:
-        case 41470:
-        case 66005:
-        case 68017:
-        case 68018:
-        case 68019:
-        case 71551:
-        {
-            sp->custom_NameHash = SPELL_HASH_JUDGEMENT_OF_COMMAND; break;
-        }
+
         case 48492:
         case 48494:
         case 48495:
@@ -3248,32 +2294,6 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
             sp->custom_NameHash = SPELL_HASH_LAVA_BURST; break;
         }
 
-        case 1454:
-        case 1455:
-        case 1456:
-        case 4090:
-        case 11687:
-        case 11688:
-        case 11689:
-        case 27222:
-        case 28830:
-        case 31818:
-        case 32553:
-        case 57946:
-        case 63321:
-        {
-            sp->custom_NameHash = SPELL_HASH_LIFE_TAP; break;
-        }
-        case 16614:
-        case 23686:
-        case 23687:
-        case 27983:
-        case 37841:
-        case 52944:
-        case 53062:
-        {
-            sp->custom_NameHash = SPELL_HASH_LIGHTNING_STRIKE; break;
-        }
         case 7001:
         case 27873:
         case 27874:
@@ -3284,22 +2304,6 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         {
             sp->custom_NameHash = SPELL_HASH_LIGHTWELL_RENEW; break;
         }
-        case 5530:
-        case 12284:
-        case 12701:
-        case 12702:
-        case 12703:
-        case 12704:
-        case 13709:
-        case 13800:
-        case 13801:
-        case 13802:
-        case 13803:
-        case 20864:
-        case 59224:
-        {
-            sp->custom_NameHash = SPELL_HASH_MACE_SPECIALIZATION; break;
-        }
 
         case 31221:
         case 31222:
@@ -3308,21 +2312,6 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 31666:
         {
             sp->custom_NameHash = SPELL_HASH_MASTER_OF_SUBTLETY; break;
-        }
-        case 45150:
-        {
-            sp->custom_NameHash = SPELL_HASH_METEOR_SLASH; break;
-        }
-        case 30482:
-        case 34913:
-        case 35915:
-        case 35916:
-        case 43043:
-        case 43044:
-        case 43045:
-        case 43046:
-        {
-            sp->custom_NameHash = SPELL_HASH_MOLTEN_ARMOR; break;
         }
 
         case 1329:
@@ -3357,82 +2346,6 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
             sp->custom_NameHash = SPELL_HASH_OVERKILL; break;
         }
 
-        case 12043:
-        case 29976:
-        {
-            sp->custom_NameHash = SPELL_HASH_PRESENCE_OF_MIND; break;
-        }
-
-        case 52942:
-        case 52961:
-        case 59836:
-        case 59837:
-        {
-            sp->custom_NameHash = SPELL_HASH_PULSING_SHOCKWAVE; break;
-        }
-
-        case 4629:
-        case 5740:
-        case 6219:
-        case 11677:
-        case 11678:
-        case 11990:
-        case 16005:
-        case 19474:
-        case 19717:
-        case 20754:
-        case 24669:
-        case 27212:
-        case 28794:
-        case 31340:
-        case 31598:
-        case 33508:
-        case 33617:
-        case 33627:
-        case 33972:
-        case 34169:
-        case 34185:
-        case 34360:
-        case 34435:
-        case 36808:
-        case 37279:
-        case 37465:
-        case 38635:
-        case 38741:
-        case 39024:
-        case 39273:
-        case 39363:
-        case 39376:
-        case 42023:
-        case 42218:
-        case 42223:
-        case 42224:
-        case 42225:
-        case 42226:
-        case 42227:
-        case 43440:
-        case 47817:
-        case 47818:
-        case 47819:
-        case 47820:
-        case 49518:
-        case 54099:
-        case 54210:
-        case 57757:
-        case 58936:
-        case 59971:
-        case 69670:
-        {
-            sp->custom_NameHash = SPELL_HASH_RAIN_OF_FIRE; break;
-        }
-
-        case 34948:
-        case 34949:
-        case 35098:
-        case 35099:
-        {
-            sp->custom_NameHash = SPELL_HASH_RAPID_KILLING; break;
-        }
         case 53228:
         case 53232:
         case 56654:
@@ -3475,20 +2388,6 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
             sp->custom_NameHash = SPELL_HASH_REGROWTH; break;
         }
 
-        case 5405:
-        case 10052:
-        case 10057:
-        case 10058:
-        case 18385:
-        case 27103:
-        case 33394:
-        case 42987:
-        case 42988:
-        case 71565:
-        case 71574:
-        {
-            sp->custom_NameHash = SPELL_HASH_REPLENISH_MANA; break;
-        }
         case 46699:
         {
             sp->custom_NameHash = SPELL_HASH_REQUIRES_NO_AMMO; break;
@@ -3512,51 +2411,6 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
             sp->custom_NameHash = SPELL_HASH_SACRED_SHIELD; break;
         }
 
-        case 1811:
-        case 2948:
-        case 8444:
-        case 8445:
-        case 8446:
-        case 8447:
-        case 8448:
-        case 8449:
-        case 10205:
-        case 10206:
-        case 10207:
-        case 10208:
-        case 10209:
-        case 10210:
-        case 13878:
-        case 15241:
-        case 17195:
-        case 27073:
-        case 27074:
-        case 27375:
-        case 27376:
-        case 35377:
-        case 36807:
-        case 38391:
-        case 38636:
-        case 42858:
-        case 42859:
-        case 47723:
-        case 50183:
-        case 56938:
-        case 62546:
-        case 62548:
-        case 62549:
-        case 62551:
-        case 62553:
-        case 63473:
-        case 63474:
-        case 63475:
-        case 63476:
-        case 75412:
-        case 75419:
-        {
-            sp->custom_NameHash = SPELL_HASH_SCORCH; break;
-        }
-
         case 5676:
         case 17919:
         case 17920:
@@ -3577,40 +2431,6 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
             sp->custom_NameHash = SPELL_HASH_SEARING_PAIN; break;
         }
 
-        case 27243:
-        case 27285:
-        case 32863:
-        case 32865:
-        case 36123:
-        case 37826:
-        case 38252:
-        case 39367:
-        case 43991:
-        case 44141:
-        case 47831:
-        case 47832:
-        case 47833:
-        case 47834:
-        case 47835:
-        case 47836:
-        case 70388:
-        {
-            sp->custom_NameHash = SPELL_HASH_SEED_OF_CORRUPTION; break;
-        }
-        case 34466:
-        case 34467:
-        case 34468:
-        case 34469:
-        case 34470:
-        {
-            sp->custom_NameHash = SPELL_HASH_SERPENT_S_SWIFTNESS; break;
-        }
-        case 14171:
-        case 14172:
-        case 14173:
-        {
-            sp->custom_NameHash = SPELL_HASH_SERRATED_BLADES; break;
-        }
         case 19876:
         case 19895:
         case 19896:
@@ -3618,74 +2438,6 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 48943:
         {
             sp->custom_NameHash = SPELL_HASH_SHADOW_RESISTANCE_AURA; break;
-        }
-
-        case 53600:
-        case 61411:
-        {
-            sp->custom_NameHash = SPELL_HASH_SHIELD_OF_RIGHTEOUSNESS; break;
-        }
-
-        case 25425:
-        case 33686:
-        case 46968:
-        case 55636:
-        case 55918:
-        case 57728:
-        case 57741:
-        case 58947:
-        case 58977:
-        case 63783:
-        case 63982:
-        case 72149:
-        case 73499:
-        case 73794:
-        case 73795:
-        case 73796:
-        case 75343:
-        case 75417:
-        case 75418:
-        {
-            sp->custom_NameHash = SPELL_HASH_SHOCKWAVE; break;
-        }
-
-        case 35195:
-        case 41597:
-        case 63106:
-        case 63108:
-        {
-            sp->custom_NameHash = SPELL_HASH_SIPHON_LIFE; break;
-        }
-        case 6353:
-        case 17924:
-        case 27211:
-        case 30545:
-        case 47824:
-        case 47825:
-        {
-            sp->custom_NameHash = SPELL_HASH_SOUL_FIRE; break;
-        }
-        case 2912:
-        case 8949:
-        case 8950:
-        case 8951:
-        case 9875:
-        case 9876:
-        case 21668:
-        case 25298:
-        case 26986:
-        case 35243:
-        case 38935:
-        case 40344:
-        case 48464:
-        case 48465:
-        case 65854:
-        case 67947:
-        case 67948:
-        case 67949:
-        case 75332:
-        {
-            sp->custom_NameHash = SPELL_HASH_STARFIRE; break;
         }
 
         case 1784:
@@ -3750,40 +2502,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         {
             sp->custom_NameHash = SPELL_HASH_THE_BEAST_WITHIN; break;
         }
-        case 16929:
-        case 16930:
-        case 16931:
-        case 19609:
-        case 19610:
-        case 19612:
-        case 50502:
-        {
-            sp->custom_NameHash = SPELL_HASH_THICK_HIDE; break;
-        }
-        case 6343:
-        case 8198:
-        case 8204:
-        case 8205:
-        case 11580:
-        case 11581:
-        case 13532:
-        case 25264:
-        case 47501:
-        case 47502:
-        case 57832:
-        case 60019:
-        {
-            sp->custom_NameHash = SPELL_HASH_THUNDER_CLAP; break;
-        }
 
-        case 19616:
-        case 19617:
-        case 19618:
-        case 19619:
-        case 19620:
-        {
-            sp->custom_NameHash = SPELL_HASH_UNLEASHED_FURY; break;
-        }
         case 30108:
         case 30404:
         case 30405:
@@ -3849,43 +2568,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
             sp->custom_NameHash = SPELL_HASH_WINDFURY_WEAPON;
             break;
         }
-        case 5176:
-        case 5177:
-        case 5178:
-        case 5179:
-        case 5180:
-        case 6780:
-        case 8905:
-        case 9739:
-        case 9912:
-        case 17144:
-        case 18104:
-        case 20698:
-        case 21667:
-        case 21807:
-        case 26984:
-        case 26985:
-        case 31784:
-        case 43619:
-        case 48459:
-        case 48461:
-        case 52501:
-        case 57648:
-        case 59986:
-        case 62793:
-        case 63259:
-        case 63569:
-        case 65862:
-        case 67951:
-        case 67952:
-        case 67953:
-        case 69968:
-        case 71148:
-        case 75327:
-        {
-            sp->custom_NameHash = SPELL_HASH_WRATH;
-            break;
-        }
+
         default:
             break;
     }

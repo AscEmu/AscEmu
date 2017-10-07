@@ -123,7 +123,7 @@ class SpellProcMgr : public Singleton < SpellProcMgr >
     private:
 
         SpellProcMap mSpellProc;
-        SpellProcMap mSpellProcNameHash;
+        /*SpellProcMap mSpellProcNameHash;*/
 
         void AddById(uint32 spellId, spell_proc_factory_function spell_proc)
         {
@@ -138,10 +138,10 @@ class SpellProcMgr : public Singleton < SpellProcMgr >
             }
         }
 
-        void AddByNameHash(uint32 name_hash, spell_proc_factory_function spell_proc)
+        /*void AddByNameHash(uint32 name_hash, spell_proc_factory_function spell_proc)
         {
             mSpellProcNameHash.insert(std::make_pair(name_hash, spell_proc));
-        }
+        }*/
 
         void Setup();
 

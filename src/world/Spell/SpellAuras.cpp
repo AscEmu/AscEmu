@@ -2483,18 +2483,39 @@ void Aura::SpellAuraModStun(bool apply)
     {
         // Check Mechanic Immunity
         // Stun is a tricky one... it's used for all different kinds of mechanics as a base Aura
-        if (!IsPositive() && m_spellInfo->custom_NameHash != SPELL_HASH_ICE_BLOCK)    // ice block stuns you, don't want our own spells to ignore stun effects
+        
+        switch (m_spellInfo->getId())
         {
-            if ((m_spellInfo->MechanicsType == MECHANIC_CHARMED &&  m_target->MechanicsDispels[MECHANIC_CHARMED])
-                || (m_spellInfo->MechanicsType == MECHANIC_INCAPACIPATED && m_target->MechanicsDispels[MECHANIC_INCAPACIPATED])
-
-                || (m_spellInfo->MechanicsType == MECHANIC_SAPPED && m_target->MechanicsDispels[MECHANIC_SAPPED])
-                || (m_target->MechanicsDispels[MECHANIC_STUNNED])
-                )
+            //SPELL_HASH_ICE_BLOCK
+            case 27619:
+            case 36911:
+            case 41590:
+            case 45438:
+            case 45776:
+            case 46604:
+            case 46882:
+            case 56124:
+            case 56644:
+            case 62766:
+            case 65802:
+            case 69924:
+                break;
+            default:
             {
-                m_flags |= 1 << mod->i;
-                return;
-            }
+                if (!IsPositive())    // ice block stuns you, don't want our own spells to ignore stun effects
+                {
+                    if ((m_spellInfo->MechanicsType == MECHANIC_CHARMED &&  m_target->MechanicsDispels[MECHANIC_CHARMED])
+                        || (m_spellInfo->MechanicsType == MECHANIC_INCAPACIPATED && m_target->MechanicsDispels[MECHANIC_INCAPACIPATED])
+
+                        || (m_spellInfo->MechanicsType == MECHANIC_SAPPED && m_target->MechanicsDispels[MECHANIC_SAPPED])
+                        || (m_target->MechanicsDispels[MECHANIC_STUNNED])
+                        )
+                    {
+                        m_flags |= 1 << mod->i;
+                        return;
+                    }
+                }
+            } break;
         }
         SetNegative();
 
@@ -2869,7 +2890,8 @@ void Aura::SpellAuraModStealth(bool apply)
                     m_target->m_auras[x]->GetSpellInfo()->EffectApplyAuraName[0] != SPELL_AURA_DUMMY)
                 {
                     uint32 tmp_duration = MSTIME_6SECONDS;
-                    if (m_target->m_auras[x]->GetSpellInfo()->custom_NameHash == SPELL_HASH_OVERKILL)
+                    //SPELL_HASH_OVERKILL
+                    if (m_target->m_auras[x]->GetSpellInfo()->getId() == 58426 || m_target->m_auras[x]->GetSpellInfo()->getId() == 58427)
                         tmp_duration = MSTIME_SECOND * 20;
 
                     m_target->m_auras[x]->SetDuration(tmp_duration);
@@ -4004,27 +4026,89 @@ void Aura::SpellAuraModStateImmunity(bool apply)
 
 void Aura::SpellAuraModSchoolImmunity(bool apply)
 {
-    if (apply && (m_spellInfo->custom_NameHash == SPELL_HASH_DIVINE_SHIELD || m_spellInfo->custom_NameHash == SPELL_HASH_ICE_BLOCK))    // Paladin - Divine Shield
+    switch (m_spellInfo->getId())
     {
-        if (!m_target->isAlive())
-            return;
-
-        Aura* pAura;
-        for (uint32 i = MAX_NEGATIVE_AURAS_EXTEDED_START; i < MAX_NEGATIVE_AURAS_EXTEDED_END; ++i)
+        //SPELL_HASH_DIVINE_SHIELD
+        case 642:
+        case 13874:
+        case 29382:
+        case 33581:
+        case 40733:
+        case 41367:
+        case 54322:
+        case 63148:
+        case 66010:
+        case 67251:
+        case 71550:
+        //SPELL_HASH_ICE_BLOCK
+        case 27619:
+        case 36911:
+        case 41590:
+        case 45438:
+        case 45776:
+        case 46604:
+        case 46882:
+        case 56124:
+        case 56644:
+        case 62766:
+        case 65802:
+        case 69924:
         {
-            pAura = m_target->m_auras[i];
-            if (pAura != this && pAura != NULL && !pAura->IsPassive() && !pAura->IsPositive() && !(pAura->GetSpellInfo()->Attributes & ATTRIBUTES_IGNORE_INVULNERABILITY))
+            if (apply)
             {
-                pAura->Remove();
+                if (!m_target->isAlive())
+                    return;
+
+                Aura* pAura;
+                for (uint32 i = MAX_NEGATIVE_AURAS_EXTEDED_START; i < MAX_NEGATIVE_AURAS_EXTEDED_END; ++i)
+                {
+                    pAura = m_target->m_auras[i];
+                    if (pAura != this &&
+                        pAura != NULL &&
+                        !pAura->IsPassive() &&
+                        !pAura->IsPositive() &&
+                        !(pAura->GetSpellInfo()->Attributes & ATTRIBUTES_IGNORE_INVULNERABILITY))
+                    {
+                        pAura->Remove();
+                    }
+                }
             }
-        }
+        } break;
     }
 
-    if (apply && (m_spellInfo->custom_NameHash == SPELL_HASH_DIVINE_SHIELD
-        || m_spellInfo->getId() == 41450    //SPELL_HASH_BLESSING_OF_PROTECTION
-        || m_spellInfo->custom_NameHash == SPELL_HASH_ICE_BLOCK))
+    switch (m_spellInfo->getId())
     {
-        m_target->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_INVINCIBLE);
+        //SPELL_HASH_DIVINE_SHIELD
+        case 642:
+        case 13874:
+        case 29382:
+        case 33581:
+        case 40733:
+        case 41367:
+        case 54322:
+        case 63148:
+        case 66010:
+        case 67251:
+        case 71550:
+        //SPELL_HASH_BLESSING_OF_PROTECTION
+        case 41450:
+        //SPELL_HASH_ICE_BLOCK
+        case 27619:
+        case 36911:
+        case 41590:
+        case 45438:
+        case 45776:
+        case 46604:
+        case 46882:
+        case 56124:
+        case 56644:
+        case 62766:
+        case 65802:
+        case 69924:
+        {
+            if (apply)
+                m_target->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_INVINCIBLE);
+        } break;
     }
 
     if (apply)
@@ -6753,17 +6837,25 @@ void Aura::SpellAuraModTotalStatPerc(bool apply)
         if (p_target != NULL)
         {
             //druid hearth of the wild should add more features based on form
-            if (m_spellInfo->custom_NameHash == SPELL_HASH_HEART_OF_THE_WILD)
+            switch (m_spellInfo->getId())
             {
-                //we should remove effect first
-                p_target->EventTalentHearthOfWildChange(false);
-                //set new value
-                if (apply)
-                    p_target->SetTalentHearthOfWildPCT(val);
-                else
-                    p_target->SetTalentHearthOfWildPCT(0);   //this happens on a talent reset
-                //reapply
-                p_target->EventTalentHearthOfWildChange(true);
+                //SPELL_HASH_HEART_OF_THE_WILD
+                case 17003:
+                case 17004:
+                case 17005:
+                case 17006:
+                case 24894:
+                {
+                    //we should remove effect first
+                    p_target->EventTalentHearthOfWildChange(false);
+                    //set new value
+                    if (apply)
+                        p_target->SetTalentHearthOfWildPCT(val);
+                    else
+                        p_target->SetTalentHearthOfWildPCT(0);   //this happens on a talent reset
+                                                                 //reapply
+                    p_target->EventTalentHearthOfWildChange(true);
+                } break;
             }
 
             if (mod->m_amount > 0)
@@ -7562,33 +7654,77 @@ void Aura::SpellAuraAddFlatModifier(bool apply)
         Pet* p = static_cast< Player* >(m_target)->GetSummon();
         if (p)
         {
-            switch (GetSpellInfo()->custom_NameHash)
+            switch (GetSpellInfo()->getId())
             {
-                case SPELL_HASH_UNLEASHED_FURY:
+                // SPELL_HASH_UNLEASHED_FURY:
+                case 19616:
+                case 19617:
+                case 19618:
+                case 19619:
+                case 19620:
                     p->LoadPetAuras(0);
                     break;
-                case SPELL_HASH_THICK_HIDE:
+                // SPELL_HASH_THICK_HIDE:
+                case 16929:
+                case 16930:
+                case 16931:
+                case 19609:
+                case 19610:
+                case 19612:
+                case 50502:
                     p->LoadPetAuras(1);
                     break;
-                case SPELL_HASH_ENDURANCE_TRAINING:
+                // SPELL_HASH_ENDURANCE_TRAINING:
+                case 19583:
+                case 19584:
+                case 19585:
+                case 19586:
+                case 19587:
                     p->LoadPetAuras(2);
                     break;
-                case SPELL_HASH_FERAL_SWIFTNESS:
+                // SPELL_HASH_FERAL_SWIFTNESS:
+                case 17002:
+                case 24866:
                     p->LoadPetAuras(3);
                     break;
-                case SPELL_HASH_BESTIAL_DISCIPLINE:
+                // SPELL_HASH_BESTIAL_DISCIPLINE:
+                case 19590:
+                case 19592:
                     p->LoadPetAuras(4);
                     break;
-                case SPELL_HASH_FEROCITY:
+                // SPELL_HASH_FEROCITY:
+                case 4154:
+                case 16934:
+                case 16935:
+                case 16936:
+                case 16937:
+                case 16938:
+                case 19598:
+                case 19599:
+                case 19600:
+                case 19601:
+                case 19602:
+                case 33667:
                     p->LoadPetAuras(5);
                     break;
-                case SPELL_HASH_ANIMAL_HANDLER:
+                // SPELL_HASH_ANIMAL_HANDLER:
+                case 34453:
+                case 34454:
+                case 68361:
                     p->LoadPetAuras(6);
                     break;
-                case SPELL_HASH_CATLIKE_REFLEXES:
+                // SPELL_HASH_CATLIKE_REFLEXES:
+                case 34462:
+                case 34464:
+                case 34465:
                     p->LoadPetAuras(7);
                     break;
-                case SPELL_HASH_SERPENT_S_SWIFTNESS:
+                // SPELL_HASH_SERPENT_S_SWIFTNESS:
+                case 34466:
+                case 34467:
+                case 34468:
+                case 34469:
+                case 34470:
                     p->LoadPetAuras(8);
                     break;
             }
@@ -7685,7 +7821,8 @@ void Aura::SpellAuraModOffhandDamagePCT(bool apply)
 
 void Aura::SpellAuraModPenetration(bool apply) // armor penetration & spell penetration
 {
-    if (m_spellInfo->custom_NameHash == SPELL_HASH_SERRATED_BLADES)
+    //SPELL_HASH_SERRATED_BLADES
+    if (m_spellInfo->getId() == 14171 || m_spellInfo->getId() == 14172 || m_spellInfo->getId() == 14173)
     {
         if (p_target == NULL)
             return;
@@ -7710,6 +7847,7 @@ void Aura::SpellAuraModPenetration(bool apply) // armor penetration & spell pene
         }
         return;
     }
+
     if (apply)
     {
         if (mod->m_amount < 0)
@@ -8730,23 +8868,34 @@ void Aura::SpellAuraIgnoreShapeshift(bool apply)
 
 void Aura::SpellAuraModIgnoreArmorPct(bool apply)
 {
-    if (apply)
+    switch (GetSpellInfo()->getId())
     {
-        if (GetSpellInfo()->custom_NameHash == SPELL_HASH_MACE_SPECIALIZATION)
+        case 5530:
+        case 12284:
+        case 12701:
+        case 12702:
+        case 12703:
+        case 12704:
+        case 13709:
+        case 13800:
+        case 13801:
+        case 13802:
+        case 13803:
+        case 20864:
+        case 59224:
         {
-            m_target->m_ignoreArmorPctMaceSpec += (mod->m_amount / 100.0f);
-        }
-        else
-            m_target->m_ignoreArmorPct += (mod->m_amount / 100.0f);
-    }
-    else
-    {
-        if (GetSpellInfo()->custom_NameHash == SPELL_HASH_MACE_SPECIALIZATION)
+            if (apply)
+                m_target->m_ignoreArmorPctMaceSpec += (mod->m_amount / 100.0f);
+            else
+                m_target->m_ignoreArmorPctMaceSpec -= (mod->m_amount / 100.0f);
+        } break;
+        default:
         {
-            m_target->m_ignoreArmorPctMaceSpec -= (mod->m_amount / 100.0f);
-        }
-        else
-            m_target->m_ignoreArmorPct -= (mod->m_amount / 100.0f);
+            if (apply)
+                m_target->m_ignoreArmorPct += (mod->m_amount / 100.0f);
+            else
+                m_target->m_ignoreArmorPct -= (mod->m_amount / 100.0f);
+        } break;
     }
 }
 

@@ -3174,60 +3174,123 @@ void Spell::HandleAddAura(uint64 guid)
         spellid = 6788;
     else if (GetSpellInfo()->getId() == 45438)  // Cast spell Hypothermia
         spellid = 41425;
-    else if (GetSpellInfo()->custom_NameHash == SPELL_HASH_HEROISM)
-        spellid = 57723;
-    else if (GetSpellInfo()->custom_NameHash == SPELL_HASH_BLOODLUST)
-        spellid = 57724;
-    else if (GetSpellInfo()->custom_NameHash == SPELL_HASH_STEALTH)
+    else
     {
-        if (Target->HasAurasWithNameHash(SPELL_HASH_MASTER_OF_SUBTLETY))
-            spellid = 31665;
-    }
-    else if (GetSpellInfo()->getId() == 62124 && u_caster)
-    {
-        if (u_caster->HasAurasWithNameHash(SPELL_HASH_VINDICATION))
-            spellid = u_caster->FindAuraByNameHash(SPELL_HASH_VINDICATION)->m_spellInfo->custom_RankNumber == 2 ? 26017 : 67;
-    }
-    else if (GetSpellInfo()->getId() == 5229 &&
-        p_caster && (
-        p_caster->GetShapeShift() == FORM_BEAR ||
-        p_caster->GetShapeShift() == FORM_DIREBEAR) &&
-        p_caster->HasAurasWithNameHash(SPELL_HASH_KING_OF_THE_JUNGLE))
-    {
-        SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(51185);
-        if (!spellInfo)
+        switch (GetSpellInfo()->getId())
         {
-            delete aur;
-            DecRef();
-            return;
-        }
+            //SPELL_HASH_HEROISM
+            case 23682:
+            case 23689:
+            case 32182:
+            case 32927:
+            case 32955:
+            case 37471:
+            case 39200:
+            case 65983:
+                spellid = 57723;
+                break;
+            //SPELL_HASH_BLOODLUST
+            case 2825:
+            case 6742:
+            case 16170:
+            case 21049:
+            case 23951:
+            case 24185:
+            case 27689:
+            case 28902:
+            case 33555:
+            case 37067:
+            case 37309:
+            case 37310:
+            case 37472:
+            case 37599:
+            case 41185:
+            case 43578:
+            case 45584:
+            case 50730:
+            case 54516:
+            case 65980:
+                spellid = 57724;
+                break;
+            //SPELL_HASH_STEALTH
+            case 1784:
+            case 1785:
+            case 1786:
+            case 1787:
+            case 8822:
+            case 30831:
+            case 30991:
+            case 31526:
+            case 31621:
+            case 32199:
+            case 32615:
+            case 34189:
+            case 42347:
+            case 42866:
+            case 42943:
+            case 52188:
+            case 58506:
+            {
+                if (Target->HasAurasWithNameHash(SPELL_HASH_MASTER_OF_SUBTLETY))
+                    spellid = 31665;
+            } break;
+            case 62124:
+            {
+                if (u_caster && u_caster->HasAurasWithNameHash(SPELL_HASH_VINDICATION))
+                    spellid = u_caster->FindAuraByNameHash(SPELL_HASH_VINDICATION)->m_spellInfo->custom_RankNumber == 2 ? 26017 : 67;
+            } break;
+            case 5229:
+            {
+                if (p_caster && (p_caster->GetShapeShift() == FORM_BEAR || p_caster->GetShapeShift() == FORM_DIREBEAR) &&
+                    p_caster->HasAurasWithNameHash(SPELL_HASH_KING_OF_THE_JUNGLE))
+                {
+                    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(51185);
+                    if (!spellInfo)
+                    {
+                        delete aur;
+                        DecRef();
+                        return;
+                    }
 
-        Spell* spell = sSpellFactoryMgr.NewSpell(p_caster, spellInfo, true, NULL);
-        spell->forced_basepoints[0] = p_caster->FindAuraByNameHash(SPELL_HASH_KING_OF_THE_JUNGLE)->m_spellInfo->custom_RankNumber * 5;
-        SpellCastTargets targets(p_caster->GetGUID());
-        spell->prepare(&targets);
-    }
-    else if (GetSpellInfo()->getId() == 19574)
-    {
-        if (u_caster != nullptr)
-        {
-            if (u_caster->HasAurasWithNameHash(SPELL_HASH_THE_BEAST_WITHIN))
-                u_caster->CastSpell(u_caster, 34471, true);
-        }
-    }
-    else if (GetSpellInfo()->custom_NameHash == SPELL_HASH_RAPID_KILLING)
-    {
-        if (u_caster != nullptr)
-        {
-            if (u_caster->HasAurasWithNameHash(SPELL_HASH_RAPID_RECUPERATION))
-                spellid = 56654;
+                    Spell* spell = sSpellFactoryMgr.NewSpell(p_caster, spellInfo, true, NULL);
+                    spell->forced_basepoints[0] = p_caster->FindAuraByNameHash(SPELL_HASH_KING_OF_THE_JUNGLE)->m_spellInfo->custom_RankNumber * 5;
+                    SpellCastTargets targets(p_caster->GetGUID());
+                    spell->prepare(&targets);
+                }
+            } break;
+            case 19574:
+            {
+                if (u_caster != nullptr)
+                {
+                    if (u_caster->HasAurasWithNameHash(SPELL_HASH_THE_BEAST_WITHIN))
+                        u_caster->CastSpell(u_caster, 34471, true);
+                }
+            } break;
+            // SPELL_HASH_RAPID_KILLING
+            case 34948:
+            case 34949:
+            case 35098:
+            case 35099:
+            {
+                if (u_caster != nullptr)
+                {
+                    if (u_caster->HasAurasWithNameHash(SPELL_HASH_RAPID_RECUPERATION))
+                        spellid = 56654;
+                }
+            } break;
         }
     }
 
-    switch (GetSpellInfo()->custom_NameHash)
+    switch (GetSpellInfo()->getId())
     {
-        case SPELL_HASH_CLEARCASTING:
-        case SPELL_HASH_PRESENCE_OF_MIND:
+        // SPELL_HASH_CLEARCASTING:
+        case 12536:
+        case 16246:
+        case 16870:
+        case 67210:
+        // SPELL_HASH_PRESENCE_OF_MIND:
+        case 12043:
+        case 29976:
         {
             if (Target->HasAurasWithNameHash(SPELL_HASH_ARCANE_POTENCY))
                 spellid = Target->FindAuraByNameHash(SPELL_HASH_ARCANE_POTENCY)->m_spellInfo->custom_RankNumber == 1 ? 57529 : 57531;
@@ -3351,17 +3414,47 @@ void Spell::DetermineSkillUp()
 
 bool Spell::IsAspect()
 {
-    return (
-        (GetSpellInfo()->getId() == 2596) || (GetSpellInfo()->getId() == 5118) || (GetSpellInfo()->getId() == 14320) || (GetSpellInfo()->getId() == 13159) || (GetSpellInfo()->getId() == 13161) || (GetSpellInfo()->getId() == 20190) ||
-        (GetSpellInfo()->getId() == 20043) || (GetSpellInfo()->getId() == 14322) || (GetSpellInfo()->getId() == 14321) || (GetSpellInfo()->getId() == 13163) || (GetSpellInfo()->getId() == 14319) || (GetSpellInfo()->getId() == 14318) || (GetSpellInfo()->getId() == 13165));
+    switch (GetSpellInfo()->getId())
+    {
+        case 2596:
+        case 5118:
+        case 14320:
+        case 13159:
+        case 13161:
+        case 20190:
+        case 20043:
+        case 14322:
+        case 14321:
+        case 13163:
+        case 14319:
+        case 14318:
+        case 13165:
+            return true;
+        default:
+            return false;
+    }
 }
 
 bool Spell::IsSeal()
 {
-    return (
-        (GetSpellInfo()->getId() == 13903) || (GetSpellInfo()->getId() == 17177) || (GetSpellInfo()->getId() == 20154) || (GetSpellInfo()->getId() == 20164) ||
-        (GetSpellInfo()->getId() == 20165) || (GetSpellInfo()->getId() == 20166) || (GetSpellInfo()->getId() == 20375) || (GetSpellInfo()->getId() == 21084) ||
-        (GetSpellInfo()->getId() == 31801) || (GetSpellInfo()->getId() == 31892) || (GetSpellInfo()->getId() == 53720) || (GetSpellInfo()->getId() == 53736));
+    switch (GetSpellInfo()->getId())
+    {
+        case 13903:
+        case 17177:
+        case 20154:
+        case 20164:
+        case 20165:
+        case 20166:
+        case 20375:
+        case 21084:
+        case 31801:
+        case 31892:
+        case 53720:
+        case 53736:
+            return true;
+        default:
+            return false;
+    }
 }
 
 SpellInfo* Spell::GetSpellInfo()
@@ -3528,11 +3621,33 @@ uint8 Spell::CanCast(bool tolerate)
                 return SPELL_FAILED_BM_OR_INVISGOD;
 
             //you can't mind control someone already mind controlled
-            if (GetSpellInfo()->custom_NameHash == SPELL_HASH_MIND_CONTROL && target->HasAurasWithNameHash(SPELL_HASH_MIND_CONTROL))
-                return SPELL_FAILED_BAD_TARGETS;
-
-            if (GetSpellInfo()->custom_NameHash == SPELL_HASH_DEATH_PACT && target->GetSummonedByGUID() != m_caster->GetGUID())
-                return SPELL_FAILED_BAD_TARGETS;
+            switch (GetSpellInfo()->getId())
+            {
+                //SPELL_HASH_MIND_CONTROL
+                case 605:
+                case 11446:
+                case 15690:
+                case 36797:
+                case 36798:
+                case 43550:
+                case 43871:
+                case 43875:
+                case 45112:
+                case 67229:
+                {
+                    if (target->HasAurasWithNameHash(SPELL_HASH_MIND_CONTROL))
+                        return SPELL_FAILED_BAD_TARGETS;
+                } break;
+                // SPELL_HASH_DEATH_PACT
+                case 17471:
+                case 17698:
+                case 48743:
+                case 51956:
+                {
+                    if (target->GetSummonedByGUID() != m_caster->GetGUID())
+                        return SPELL_FAILED_BAD_TARGETS;
+                } break;
+            }
 
             // Check if we can attack this creature type
             if (target->IsCreature())

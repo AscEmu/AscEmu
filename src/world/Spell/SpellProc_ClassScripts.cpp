@@ -1002,24 +1002,173 @@ void SpellProcMgr::SetupSpellProcClassScripts()
     };
     AddById(deadlyPoison, &PoisonSpellProc::Create);
 
+    uint32 cripplingPoison[] =
+    {
+        //SPELL_HASH_CRIPPLING_POISON
+        3408,
+        3409,
+        25809,
+        30981,
+        44289,
+        0
+    };
+    AddById(cripplingPoison, &PoisonSpellProc::Create);
 
-    AddByNameHash(SPELL_HASH_CRIPPLING_POISON, &PoisonSpellProc::Create);
-    AddByNameHash(SPELL_HASH_MIND_NUMBING_POISON, &PoisonSpellProc::Create);
-    AddByNameHash(SPELL_HASH_CUT_TO_THE_CHASE, &CutToTheChaseSpellProc::Create);
-    AddByNameHash(SPELL_HASH_DEADLY_BREW, &DeadlyBrewSpellProc::Create);
-    AddByNameHash(SPELL_HASH_WAYLAY, &WaylaySpellProc::Create);
+    uint32 mindNumbingPoison[] =
+    {
+        //SPELL_HASH_MIND_NUMBING_POISON
+        5760,
+        5761,
+        25810,
+        34615,
+        41190,
+        0
+    };
+    AddById(mindNumbingPoison, &PoisonSpellProc::Create);
+
+    uint32 cutToTheChase[] =
+    {
+        //SPELL_HASH_CUT_TO_THE_CHASE
+        51664,
+        51665,
+        51667,
+        51668,
+        51669,
+        0
+    };
+    AddById(cutToTheChase, &CutToTheChaseSpellProc::Create);
+
+    uint32 deadlyBrew[] =
+    {
+        //SPELL_HASH_DEADLY_BREW
+        51625,
+        51626,
+        0
+    };
+    AddById(deadlyBrew, &DeadlyBrewSpellProc::Create);
+
+    uint32 waylay[] =
+    {
+        //SPELL_HASH_WAYLAY
+        51692,
+        51693,
+        51696,
+        0
+    };
+    AddById(waylay, &WaylaySpellProc::Create);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Priest
-    AddByNameHash(SPELL_HASH_IMPROVED_SPIRIT_TAP, &ImprovedSpiritTapSpellProc::Create);
-    AddByNameHash(SPELL_HASH_HOLY_CONCENTRATION, &HolyConcentrationSpellProc::Create);
-    AddByNameHash(SPELL_HASH_DIVINE_AEGIS, &DivineAegisSpellProc::Create);
-    AddByNameHash(SPELL_HASH_IMPROVED_DEVOURING_PLAGUE, &ImprovedDevouringPlagueSpellProc::Create);
-    AddByNameHash(SPELL_HASH_VAMPIRIC_EMBRACE, &VampiricEmbraceSpellProc::Create);
-    AddByNameHash(SPELL_HASH_EMPOWERED_RENEW, &EmpoweredRenewSpellProc::Create);
-    AddByNameHash(SPELL_HASH_MISERY, &MiserySpellProc::Create);
-    AddByNameHash(SPELL_HASH_PRAYER_OF_MENDING, &PrayerOfMendingProc::Create);
-    AddByNameHash(SPELL_HASH_SPIRIT_TAP, &SpiritTapSpellProc::Create);
+    uint32 improvedSpiritTap[] =
+    {
+        //SPELL_HASH_IMPROVED_SPIRIT_TAP
+        15337,
+        15338,
+        49694,
+        59000,
+        0
+    };
+    AddById(improvedSpiritTap, &ImprovedSpiritTapSpellProc::Create);
+
+    uint32 holyConcentration[] =
+    {
+        //SPELL_HASH_HOLY_CONCENTRATION
+        34753,
+        34754,
+        34859,
+        34860,
+        63724,
+        63725,
+        0
+    };
+    AddById(holyConcentration, &HolyConcentrationSpellProc::Create);
+
+    uint32 divineAegis[] =
+    {
+        //SPELL_HASH_DIVINE_AEGIS
+        47509,
+        47511,
+        47515,
+        47753,
+        54704,
+        0
+    };
+    AddById(divineAegis, &DivineAegisSpellProc::Create);
+
+    uint32 improvedDevouringPlague[] =
+    {
+        //SPELL_HASH_IMPROVED_DEVOURING_PLAGUE
+        63625,
+        63626,
+        63627,
+        63675,
+        75999,
+        0
+    };
+    AddById(improvedDevouringPlague, &ImprovedDevouringPlagueSpellProc::Create);
+
+    uint32 vampiricEmbrace[] =
+    {
+        //SPELL_HASH_VAMPIRIC_EMBRACE
+        15286,
+        15290,
+        71269,
+        0
+    };
+    AddById(vampiricEmbrace, &VampiricEmbraceSpellProc::Create);
+
+    uint32 empoweredRenew[] =
+    {
+        //SPELL_HASH_EMPOWERED_RENEW
+        63534,
+        63542,
+        63543,
+        63544,
+        0
+    };
+    AddById(empoweredRenew, &EmpoweredRenewSpellProc::Create);
+
+    uint32 misery[] =
+    {
+        //SPELL_HASH_MISERY
+        33191,
+        33192,
+        33193,
+        33196,
+        33197,
+        33198,
+        0
+    };
+    AddById(misery, &MiserySpellProc::Create);
+
+    uint32 prayerOfMending[] =
+    {
+        //SPELL_HASH_PRAYER_OF_MENDING
+        33076,
+        33110,
+        41635,
+        41637,
+        44583,
+        44586,
+        46045,
+        48110,
+        48111,
+        48112,
+        48113,
+        0
+    };
+    AddById(prayerOfMending, &PrayerOfMendingProc::Create);
+
+    uint32 spiritTap[] =
+    {
+        //SPELL_HASH_SPIRIT_TAP
+        15270,
+        15271,
+        15335,
+        15336,
+        0
+    };
+    AddById(spiritTap, &SpiritTapSpellProc::Create);
 
     AddById(34919, &VampiricTouchEnergizeSpellProc::Create);
     AddById(64085, &VampiricTouchDispelDamageSpellProc::Create);
@@ -1031,10 +1180,47 @@ void SpellProcMgr::SetupSpellProcClassScripts()
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Paladin
-    AddByNameHash(SPELL_HASH_SEAL_OF_COMMAND, &SealOfCommandSpellProc::Create);
-    AddByNameHash(SPELL_HASH_EYE_FOR_AN_EYE, &EyeForAnEyeSpellProc::Create);
+    uint32 sealOfCommand[] =
+    {
+        //SPELL_HASH_SEAL_OF_COMMAND
+        20375,
+        20424,
+        29385,
+        33127,
+        41469,
+        42058,
+        57769,
+        57770,
+        66004,
+        68020,
+        68021,
+        68022,
+        69403,
+        0
+    };
+    AddById(sealOfCommand, &SealOfCommandSpellProc::Create);
+
+    uint32 eyeForAnEye[] =
+    {
+        //SPELL_HASH_EYE_FOR_AN_EYE
+        9799,
+        25988,
+        25997,
+        0
+    };
+    AddById(eyeForAnEye, &EyeForAnEyeSpellProc::Create);
+
     AddById(43742, &GraceOfTheNaaruSpellProc::Create);
-    AddByNameHash(SPELL_HASH_SPIRITUAL_ATTUNEMENT, &SpiritualAttunementSpellProc::Create);
+
+    uint32 spiritualAttunement[] =
+    {
+        //SPELL_HASH_SPIRITUAL_ATTUNEMENT
+        31785,
+        31786,
+        33776,
+        0
+    };
+    AddById(spiritualAttunement, &SpiritualAttunementSpellProc::Create);
 
     AddById(20167, &PaladinSealsSpellProc::Create);
     AddById(20168, &PaladinSealsSpellProc::Create);
@@ -1051,5 +1237,20 @@ void SpellProcMgr::SetupSpellProcClassScripts()
     AddById(50163, &ButcherySpellProc::Create);
     AddById(50806, &DeathRuneMasterySpellProc::Create);
 
-    AddByNameHash(SPELL_HASH_BLADE_BARRIER, &BladeBarrierSpellProc::Create);
+    uint32 bladeBarrier[] =
+    {
+        //SPELL_HASH_BLADE_BARRIER
+        49182,
+        49500,
+        49501,
+        51789,
+        55225,
+        55226,
+        64855,
+        64856,
+        64858,
+        64859,
+        0
+    };
+    AddById(bladeBarrier, &BladeBarrierSpellProc::Create);
 }

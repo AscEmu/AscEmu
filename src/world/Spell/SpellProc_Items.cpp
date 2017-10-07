@@ -51,5 +51,12 @@ class TwinBladesOfAzzinothSpellProc : public SpellProc
 
 void SpellProcMgr::SetupItems()
 {
-    AddByNameHash(SPELL_HASH_THE_TWIN_BLADES_OF_AZZINOTH, &TwinBladesOfAzzinothSpellProc::Create);
+    uint32 mindNumbingPoison[] =
+    {
+        //SPELL_HASH_THE_TWIN_BLADES_OF_AZZINOTH
+        41434,
+        41435,
+        0
+    };
+    AddById(mindNumbingPoison, &TwinBladesOfAzzinothSpellProc::Create);
 }
