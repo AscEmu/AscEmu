@@ -23,7 +23,6 @@
 #include "Units/Creatures/Creature.h"
 #include "Units/Summons/Summon.h"
 #include "Management/Item.h"
-#include "Spell/SpellNameHashes.h"
 #include "Management/ItemInterface.h"
 #include "Units/Stats.h"
 #include "Management/Battleground/Battleground.h"

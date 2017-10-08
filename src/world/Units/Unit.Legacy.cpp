@@ -25,7 +25,6 @@
 #include "Server/EventableObject.h"
 #include "Objects/DynamicObject.h"
 #include "Management/Item.h"
-#include "Spell/SpellNameHashes.h"
 #include "Units/Stats.h"
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"

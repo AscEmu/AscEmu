@@ -20,7 +20,6 @@ set(SRC_SPELL_FILES
    ${PATH_PREFIX}/SpellInfo.hpp
    ${PATH_PREFIX}/SpellMgr.cpp
    ${PATH_PREFIX}/SpellMgr.h
-   ${PATH_PREFIX}/SpellNameHashes.h
    ${PATH_PREFIX}/SpellProc.cpp
    ${PATH_PREFIX}/SpellProc.h
    ${PATH_PREFIX}/SpellProc_ClassScripts.cpp

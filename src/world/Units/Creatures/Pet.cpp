@@ -24,7 +24,6 @@
 #include "Units/Unit.h"
 #include "Objects/DynamicObject.h"
 #include "Server/Packets/Handlers/HonorHandler.h"
-#include "Spell/SpellNameHashes.h"
 #include "Units/Stats.h"
 #include "Management/Battleground/Battleground.h"
 #include "Storage/MySQLDataStore.hpp"

@@ -18,7 +18,6 @@
 #include "Setup.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Management/Skill.h"
-#include "Spell/SpellNameHashes.h"
 #include "Management/ItemInterface.h"
 #include "../EventScripts/Setup.h"
 #include "Objects/Faction.h"

@@ -21,7 +21,6 @@
 
 #include "StdAfx.h"
 #include "crc32.h"
-#include "Spell/SpellNameHashes.h"
 #include "Units/Players/PlayerClasses.hpp"
 #include "Server/MainServerDefines.h"
 #include "Spell/SpellAuras.h"
@@ -647,487 +646,6 @@ void Modify_RecoveryTime(SpellInfo* sp)
     }
 }
 
-void ApplyObsoleteNameHash(SpellInfo* sp)
-{
-    switch (sp->getId())
-    {
-        case 32546:
-        case 48119:
-        case 48120:
-        {
-            sp->custom_NameHash = SPELL_HASH_BINDING_HEAL;
-            break;
-        }
-        case 2061:
-        case 9472:
-        case 9473:
-        case 9474:
-        case 10915:
-        case 10916:
-        case 10917:
-        case 17137:
-        case 17138:
-        case 17843:
-        case 25233:
-        case 25235:
-        case 27608:
-        case 38588:
-        case 42420:
-        case 43431:
-        case 43516:
-        case 43575:
-        case 48070:
-        case 48071:
-        case 56331:
-        case 56919:
-        case 66104:
-        case 68023:
-        case 68024:
-        case 68025:
-        case 71595:
-        case 71782:
-        case 71783:
-        {
-            sp->custom_NameHash = SPELL_HASH_FLASH_HEAL;
-            break;
-        }
-        case 10833:
-        case 16067:
-        case 18091:
-        case 20883:
-        case 22893:
-        case 22920:
-        case 22940:
-        case 24857:
-        case 30451:
-        case 30661:
-        case 31457:
-        case 32935:
-        case 34793:
-        case 35314:
-        case 35927:
-        case 36032:
-        case 37126:
-        case 38342:
-        case 38344:
-        case 38538:
-        case 38881:
-        case 40837:
-        case 40881:
-        case 42894:
-        case 42896:
-        case 42897:
-        case 49198:
-        case 50545:
-        case 51797:
-        case 51830:
-        case 56969:
-        case 58462:
-        case 59257:
-        case 59909:
-        case 65791:
-        case 67997:
-        case 67998:
-        case 67999:
-        {
-            sp->custom_NameHash = SPELL_HASH_ARCANE_BLAST;
-            break;
-        }
-        case 2139:
-        case 15122:
-        case 19715:
-        case 20537:
-        case 20788:
-        case 29443:
-        case 29961:
-        case 31596:
-        case 31999:
-        case 37470:
-        case 51610:
-        case 65790:
-        {
-            sp->custom_NameHash = SPELL_HASH_COUNTERSPELL;
-            break;
-        }
-        case 3252:
-        case 5221:
-        case 6800:
-        case 8992:
-        case 9829:
-        case 9830:
-        case 27001:
-        case 27002:
-        case 27555:
-        case 48571:
-        case 48572:
-        case 49121:
-        case 49165:
-        case 61548:
-        case 61549:
-        {
-            sp->custom_NameHash = SPELL_HASH_SHRED;
-            break;
-        }
-        case 6807:
-        case 6808:
-        case 6809:
-        case 7092:
-        case 8972:
-        case 9745:
-        case 9880:
-        case 9881:
-        case 12161:
-        case 15793:
-        case 17156:
-        case 20751:
-        case 26996:
-        case 27553:
-        case 34298:
-        case 48479:
-        case 48480:
-        case 51875:
-        case 52506:
-        case 54459:
-        {
-            sp->custom_NameHash = SPELL_HASH_MAUL;
-            break;
-        }
-        case 19820:
-        case 22689:
-        case 31041:
-        case 33917:
-        case 39164:
-        case 41439:
-        case 42389:
-        case 57657:
-        case 59988:
-        case 71925:
-        {
-            sp->custom_NameHash = SPELL_HASH_MANGLE;
-            break;
-        }
-        case 563:
-        case 8921:
-        case 8924:
-        case 8925:
-        case 8926:
-        case 8927:
-        case 8928:
-        case 8929:
-        case 9833:
-        case 9834:
-        case 9835:
-        case 15798:
-        case 20690:
-        case 21669:
-        case 22206:
-        case 23380:
-        case 24957:
-        case 26987:
-        case 26988:
-        case 27737:
-        case 31270:
-        case 31401:
-        case 32373:
-        case 32415:
-        case 37328:
-        case 43545:
-        case 45821:
-        case 45900:
-        case 47072:
-        case 48462:
-        case 48463:
-        case 52502:
-        case 57647:
-        case 59987:
-        case 65856:
-        case 67944:
-        case 67945:
-        case 67946:
-        case 75329:
-        {
-            sp->custom_NameHash = SPELL_HASH_MOONFIRE;
-            break;
-        }
-        case 33876:
-        case 33982:
-        case 33983:
-        case 48565:
-        case 48566:
-        {
-            sp->custom_NameHash = SPELL_HASH_MANGLE__CAT_;
-            break;
-        }
-        case 33878:
-        case 33986:
-        case 33987:
-        case 48563:
-        case 48564:
-        {
-            sp->custom_NameHash = SPELL_HASH_MANGLE__BEAR_;
-            break;
-        }
-        case 45477:
-        case 49723:
-        case 49896:
-        case 49903:
-        case 49904:
-        case 49909:
-        case 50349:
-        case 52372:
-        case 52378:
-        case 53549:
-        case 55313:
-        case 55331:
-        case 59011:
-        case 59131:
-        case 60952:
-        case 66021:
-        case 67718:
-        case 67881:
-        case 67938:
-        case 67939:
-        case 67940:
-        case 69916:
-        case 70589:
-        case 70591:
-        {
-            sp->custom_NameHash = SPELL_HASH_ICY_TOUCH;
-            break;
-        }
-        case 45902:
-        case 49926:
-        case 49927:
-        case 49928:
-        case 49929:
-        case 49930:
-        case 52374:
-        case 52377:
-        case 59130:
-        case 60945:
-        case 61696:
-        case 66215:
-        case 66975:
-        case 66976:
-        case 66977:
-        case 66978:
-        case 66979:
-        {
-            sp->custom_NameHash = SPELL_HASH_BLOOD_STRIKE;
-            break;
-        }
-        case 55050:
-        case 55258:
-        case 55259:
-        case 55260:
-        case 55261:
-        case 55262:
-        case 55978:
-        {
-            sp->custom_NameHash = SPELL_HASH_HEART_STRIKE;
-            break;
-        }
-        case 45463:
-        case 45469:
-        case 45470:
-        case 49923:
-        case 49924:
-        case 49998:
-        case 49999:
-        case 53639:
-        case 66188:
-        case 66950:
-        case 66951:
-        case 66952:
-        case 66953:
-        case 71489:
-        {
-            sp->custom_NameHash = SPELL_HASH_DEATH_STRIKE;
-            break;
-        }
-        case 43568:
-        case 49143:
-        case 51416:
-        case 51417:
-        case 51418:
-        case 51419:
-        case 55268:
-        case 60951:
-        case 66047:
-        case 66196:
-        case 66958:
-        case 66959:
-        case 66960:
-        case 66961:
-        case 66962:
-        case 67935:
-        case 67936:
-        case 67937:
-        {
-            sp->custom_NameHash = SPELL_HASH_FROST_STRIKE;
-            break;
-        }
-        case 6789:
-        case 17925:
-        case 17926:
-        case 27223:
-        case 28412:
-        case 30500:
-        case 30741:
-        case 32709:
-        case 33130:
-        case 34437:
-        case 35954:
-        case 38065:
-        case 39661:
-        case 41070:
-        case 44142:
-        case 46283:
-        case 47541:
-        case 47632:
-        case 47633:
-        case 47859:
-        case 47860:
-        case 49892:
-        case 49893:
-        case 49894:
-        case 49895:
-        case 50668:
-        case 52375:
-        case 52376:
-        case 53769:
-        case 55209:
-        case 55210:
-        case 55320:
-        case 56362:
-        case 59134:
-        case 60949:
-        case 62900:
-        case 62901:
-        case 62902:
-        case 62903:
-        case 62904:
-        case 65820:
-        case 66019:
-        case 67929:
-        case 67930:
-        case 67931:
-        case 68139:
-        case 68140:
-        case 68141:
-        case 71490:
-        {
-            sp->custom_NameHash = SPELL_HASH_DEATH_COIL;
-            break;
-        }
-        case 10321:
-        case 23590:
-        case 23591:
-        case 35170:
-        case 41467:
-        case 43838:
-        case 54158:
-        {
-            sp->custom_NameHash = SPELL_HASH_JUDGEMENT;
-            break;
-        }
-        case 635:
-        case 639:
-        case 647:
-        case 1026:
-        case 1042:
-        case 3472:
-        case 10328:
-        case 10329:
-        case 13952:
-        case 15493:
-        case 25263:
-        case 25292:
-        case 27135:
-        case 27136:
-        case 29383:
-        case 29427:
-        case 29562:
-        case 31713:
-        case 32769:
-        case 37979:
-        case 43451:
-        case 44479:
-        case 46029:
-        case 48781:
-        case 48782:
-        case 52444:
-        case 56539:
-        case 58053:
-        case 66112:
-        case 68011:
-        case 68012:
-        case 68013:
-        {
-            sp->custom_NameHash = SPELL_HASH_HOLY_LIGHT;
-            break;
-        }
-        case 29964:
-        case 29965:
-        case 31661:
-        case 33041:
-        case 33042:
-        case 33043:
-        case 35250:
-        case 37289:
-        case 42949:
-        case 42950:
-        {
-            sp->custom_NameHash = SPELL_HASH_DRAGON_S_BREATH;
-            break;
-        }
-        case 1831:
-        case 11113:
-        case 13018:
-        case 13019:
-        case 13020:
-        case 13021:
-        case 15091:
-        case 15744:
-        case 16046:
-        case 17145:
-        case 17277:
-        case 20229:
-        case 22424:
-        case 23039:
-        case 23113:
-        case 23331:
-        case 25049:
-        case 27133:
-        case 30092:
-        case 30600:
-        case 33061:
-        case 33933:
-        case 36278:
-        case 38064:
-        case 38536:
-        case 38712:
-        case 39001:
-        case 39038:
-        case 42944:
-        case 42945:
-        case 58970:
-        case 60290:
-        case 61362:
-        case 66044:
-        case 68312:
-        case 70407:
-        case 71151:
-        {
-            sp->custom_NameHash = SPELL_HASH_BLAST_WAVE;
-            break;
-        }
-
-        default:
-            break;
-    }
-}
-
 void ApplyNormalFixes()
 {
     //Updating spell.dbc
@@ -1144,9 +662,6 @@ void ApplyNormalFixes()
             continue;
 
         sp->custom_NameHash = 0;
-
-        //apply custom name hash to spell id
-        ApplyObsoleteNameHash(sp);
 
         float radius = std::max(::GetRadius(sSpellRadiusStore.LookupEntry(sp->EffectRadiusIndex[0])), ::GetRadius(sSpellRadiusStore.LookupEntry(sp->EffectRadiusIndex[1])));
         radius = std::max(::GetRadius(sSpellRadiusStore.LookupEntry(sp->EffectRadiusIndex[2])), radius);
@@ -2649,22 +2164,16 @@ void ApplyNormalFixes()
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->custom_ProcOnNameHash[0] = SPELL_HASH_BINDING_HEAL;
-        sp->custom_ProcOnNameHash[1] = SPELL_HASH_FLASH_HEAL;
     }
     sp = Spell::checkAndReturnSpellEntry(63733);   // Rank 2
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->custom_ProcOnNameHash[0] = SPELL_HASH_BINDING_HEAL;
-        sp->custom_ProcOnNameHash[1] = SPELL_HASH_FLASH_HEAL;
     }
     sp = Spell::checkAndReturnSpellEntry(63737);   // Rank 3
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->custom_ProcOnNameHash[0] = SPELL_HASH_BINDING_HEAL;
-        sp->custom_ProcOnNameHash[1] = SPELL_HASH_FLASH_HEAL;
     }
 
 
@@ -3318,7 +2827,6 @@ void ApplyNormalFixes()
     {
         sp->EffectApplyAuraName[1] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-        sp->custom_ProcOnNameHash[1] = SPELL_HASH_ARCANE_BLAST;
     }
 
     // Arcane Blast
@@ -3327,7 +2835,6 @@ void ApplyNormalFixes()
     {
         sp->EffectApplyAuraName[1] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-        sp->custom_ProcOnNameHash[1] = SPELL_HASH_ARCANE_BLAST;
     }
 
     sp = Spell::checkAndReturnSpellEntry(42896);
@@ -3497,7 +3004,6 @@ void ApplyNormalFixes()
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-        sp->custom_ProcOnNameHash[0] = SPELL_HASH_COUNTERSPELL;
     }
 
     //Improved Counterspell rank 2
@@ -3505,7 +3011,6 @@ void ApplyNormalFixes()
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-        sp->custom_ProcOnNameHash[0] = SPELL_HASH_COUNTERSPELL;
     }
     //////////////////////////////////////////
     // WARLOCK                                //
@@ -4090,27 +3595,18 @@ void ApplyNormalFixes()
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-        sp->custom_ProcOnNameHash[0] = SPELL_HASH_SHRED;
-        sp->custom_ProcOnNameHash[1] = SPELL_HASH_MAUL;
-        sp->custom_ProcOnNameHash[2] = SPELL_HASH_MANGLE;
     }
 
     sp = Spell::checkAndReturnSpellEntry(48484);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-        sp->custom_ProcOnNameHash[0] = SPELL_HASH_SHRED;
-        sp->custom_ProcOnNameHash[1] = SPELL_HASH_MAUL;
-        sp->custom_ProcOnNameHash[2] = SPELL_HASH_MANGLE;
     }
 
     sp = Spell::checkAndReturnSpellEntry(48485);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-        sp->custom_ProcOnNameHash[0] = SPELL_HASH_SHRED;
-        sp->custom_ProcOnNameHash[1] = SPELL_HASH_MAUL;
-        sp->custom_ProcOnNameHash[2] = SPELL_HASH_MANGLE;
     }
 
     // Druid - Bash - Interrupt effect
@@ -4385,20 +3881,11 @@ void ApplyNormalFixes()
         sp->procFlags = PROC_ON_CAST_SPELL;
     }
 
-    //Lunar Grace - Idol of the Unseen Moon proc
-    sp = Spell::checkAndReturnSpellEntry(43740);
-    if (sp != nullptr)
-    {
-        sp->custom_ProcOnNameHash[0] = SPELL_HASH_MOONFIRE;
-    }
-
     //Primal Instinct - Idol of Terror proc
     sp = Spell::checkAndReturnSpellEntry(43738);
     if (sp != nullptr)
     {
         sp->custom_self_cast_only = true;
-        sp->custom_ProcOnNameHash[0] = SPELL_HASH_MANGLE__CAT_;
-        sp->custom_ProcOnNameHash[1] = SPELL_HASH_MANGLE__BEAR_;
     }
 
     //Thunderfury
@@ -4413,7 +3900,6 @@ void ApplyNormalFixes()
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-        sp->custom_ProcOnNameHash[0] = SPELL_HASH_ICY_TOUCH;
         sp->custom_proc_interval = 45000;
     }
 
@@ -4454,8 +3940,6 @@ void ApplyNormalFixes()
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-        sp->custom_ProcOnNameHash[0] = SPELL_HASH_BLOOD_STRIKE;
-        sp->custom_ProcOnNameHash[1] = SPELL_HASH_HEART_STRIKE;
         sp->custom_proc_interval = 45000;
     }
 
@@ -4982,7 +4466,6 @@ void ApplyNormalFixes()
     if (sp != nullptr)
     {
         sp->custom_self_cast_only = true;
-        sp->custom_ProcOnNameHash[0] = SPELL_HASH_JUDGEMENT;
         sp->procChance = 100;
     }
 
@@ -4991,7 +4474,6 @@ void ApplyNormalFixes()
     if (sp != nullptr)
     {
         sp->custom_self_cast_only = true;
-        sp->custom_ProcOnNameHash[0] = SPELL_HASH_JUDGEMENT;
         sp->procChance = 100;
     }
 
@@ -5000,7 +4482,6 @@ void ApplyNormalFixes()
     if (sp != nullptr)
     {
         sp->custom_self_cast_only = true;
-        sp->custom_ProcOnNameHash[0] = SPELL_HASH_HOLY_LIGHT;
         sp->procChance = 100;
     }
 
@@ -5134,15 +4615,11 @@ void ApplyNormalFixes()
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
         sp->procChance = 50;
-        sp->custom_ProcOnNameHash[0] = SPELL_HASH_DRAGON_S_BREATH;
-        sp->custom_ProcOnNameHash[1] = SPELL_HASH_BLAST_WAVE;
     }
     sp = Spell::checkAndReturnSpellEntry(44443);
     if (sp != nullptr)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->custom_ProcOnNameHash[0] = SPELL_HASH_DRAGON_S_BREATH;
-        sp->custom_ProcOnNameHash[1] = SPELL_HASH_BLAST_WAVE;
     }
 }
 

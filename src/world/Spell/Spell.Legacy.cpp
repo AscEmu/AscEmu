@@ -45,7 +45,6 @@
 #include "VMapFactory.h"
 #include "Management/Item.h"
 #include "Objects/DynamicObject.h"
-#include "Spell/SpellNameHashes.h"
 #include "Management/ItemInterface.h"
 #include "Units/Stats.h"
 #include "Management/Battleground/Battleground.h"

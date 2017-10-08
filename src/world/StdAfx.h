@@ -173,7 +173,6 @@
 #include "Objects/Faction.h"
 #include "Management/Skill.h"
 #include "Management/SkillNameMgr.h"
-#include "Spell/SpellNameHashes.h"
 #include "Spell/Spell.h"
 #include "Spell/SpellMgr.h"
 #include "Spell/SpellAuras.h"

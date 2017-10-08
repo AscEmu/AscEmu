@@ -27,7 +27,6 @@
 #include "VMapFactory.h"
 #include "MMapFactory.h"
 #include "TLSObject.h"
-#include "Spell/SpellNameHashes.h"
 #include "Management/ItemInterface.h"
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"

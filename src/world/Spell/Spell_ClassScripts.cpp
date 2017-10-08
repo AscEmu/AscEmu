@@ -20,7 +20,6 @@
  */
 
 #include "StdAfx.h"
-#include "Spell/SpellNameHashes.h"
 #include "Map/MapMgr.h"
 #include "Objects/Faction.h"
 #include "Spell/SpellMgr.h"

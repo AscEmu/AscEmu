@@ -33,7 +33,6 @@
 #include "VMapFactory.h"
 #include "Server/Packets/Handlers/HonorHandler.h"
 #include "Storage/WorldStrings.h"
-#include "Spell/SpellNameHashes.h"
 #include "Management/TaxiMgr.h"
 #include "Management/WeatherMgr.h"
 #include "Management/ItemInterface.h"

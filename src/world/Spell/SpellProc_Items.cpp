@@ -21,7 +21,6 @@
 
 #include "StdAfx.h"
 #include "Management/Item.h"
-#include "Spell/SpellNameHashes.h"
 #include "Management/ItemInterface.h"
 #include "SpellProc.h"
 #include "Units/Unit.h"

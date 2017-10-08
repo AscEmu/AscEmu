@@ -28,7 +28,6 @@
 #include "Server/Packets/Handlers/HonorHandler.h"
 #include "Management/Item.h"
 #include "Management/Container.h"
-#include "Spell/SpellNameHashes.h"
 #include "Management/TaxiMgr.h"
 #include "Management/ItemInterface.h"
 #include "Units/Stats.h"

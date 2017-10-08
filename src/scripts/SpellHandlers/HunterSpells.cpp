@@ -18,7 +18,6 @@
  */
 
 #include "Setup.h"
-#include "Spell/SpellNameHashes.h"
 #include "Spell/SpellAuras.h"
 #include "Server/Script/ScriptMgr.h"
 #include <Spell/Definitions/SpellMechanics.h>
