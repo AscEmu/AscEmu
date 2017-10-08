@@ -1868,14 +1868,31 @@ void Aura::EventPeriodicDamage(uint32 amount)
             if (!amp)
                 amp = event_GetEventPeriod(EVENT_AURA_PERIODIC_DAMAGE);
 
-            if (GetDuration() && GetSpellInfo()->custom_NameHash != SPELL_HASH_IGNITE)    //static damage for Ignite. Need to be reworked when "static DoTs" will be implemented
+            if (GetDuration())
             {
-                int32 spbon = c->GetSpellDmgBonus(m_target, m_spellInfo, amount, true);
-                bonus += (spbon * static_cast<int32>(amp) / GetDuration());
-                res += static_cast<float>(bonus);
+                switch (GetSpellInfo()->getId())
+                {
+                    //SPELL_HASH_IGNITE //static damage for Ignite. Need to be reworked when "static DoTs" will be implemented
+                    case 3261:
+                    case 11119:
+                    case 11120:
+                    case 12654:
+                    case 12846:
+                    case 12847:
+                    case 12848:
+                    case 52210:
+                    case 58438:
+                        break;
+                    default:
+                    {
+                        int32 spbon = c->GetSpellDmgBonus(m_target, m_spellInfo, amount, true);
+                        bonus += (spbon * static_cast<int32>(amp) / GetDuration());
+                        res += static_cast<float>(bonus);
 
-                // damage taken is reduced after bonus damage is calculated and added
-                res += c->CalcSpellDamageReduction(m_target, m_spellInfo, res);
+                        // damage taken is reduced after bonus damage is calculated and added
+                        res += c->CalcSpellDamageReduction(m_target, m_spellInfo, res);
+                    } break;
+                }
             }
 
             if (res < 0.0f)
@@ -2207,17 +2224,86 @@ void Aura::SpellAuraPeriodicHeal(bool apply)
         {
             sEventMgr.AddEvent(this, &Aura::EventPeriodicHeal, (uint32)val, EVENT_AURA_PERIODIC_HEAL, GetSpellInfo()->EffectAmplitude[mod->i], 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-            if (GetSpellInfo()->custom_NameHash == SPELL_HASH_REJUVENATION || GetSpellInfo()->custom_NameHash == SPELL_HASH_REGROWTH)
+            switch (GetSpellInfo()->getId())
             {
-                m_target->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_REJUVENATE);
-                if (!sEventMgr.HasEvent(m_target, EVENT_REJUVENATION_FLAG_EXPIRE))
+                //SPELL_HASH_REJUVENATION
+                case 774:
+                case 1058:
+                case 1430:
+                case 2090:
+                case 2091:
+                case 3627:
+                case 8070:
+                case 8910:
+                case 9839:
+                case 9840:
+                case 9841:
+                case 12160:
+                case 15981:
+                case 20664:
+                case 20701:
+                case 25299:
+                case 26981:
+                case 26982:
+                case 27532:
+                case 28716:
+                case 28722:
+                case 28723:
+                case 28724:
+                case 31782:
+                case 32131:
+                case 38657:
+                case 42544:
+                case 48440:
+                case 48441:
+                case 53607:
+                case 64801:
+                case 66065:
+                case 67971:
+                case 67972:
+                case 67973:
+                case 69898:
+                case 70691:
+                case 71142:
+                //SPELL_HASH_REGROWTH
+                case 8936:
+                case 8938:
+                case 8939:
+                case 8940:
+                case 8941:
+                case 9750:
+                case 9856:
+                case 9857:
+                case 9858:
+                case 16561:
+                case 20665:
+                case 22373:
+                case 22695:
+                case 26980:
+                case 27637:
+                case 28744:
+                case 34361:
+                case 39000:
+                case 39125:
+                case 48442:
+                case 48443:
+                case 66067:
+                case 67968:
+                case 67969:
+                case 67970:
+                case 69882:
+                case 71141:
                 {
-                    sEventMgr.AddEvent(m_target, &Unit::EventAurastateExpire, (uint32)AURASTATE_FLAG_REJUVENATE, EVENT_REJUVENATION_FLAG_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-                }
-                else
-                {
-                    sEventMgr.ModifyEventTimeLeft(m_target, EVENT_REJUVENATION_FLAG_EXPIRE, GetDuration(), 0);
-                }
+                    m_target->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_REJUVENATE);
+                    if (!sEventMgr.HasEvent(m_target, EVENT_REJUVENATION_FLAG_EXPIRE))
+                    {
+                        sEventMgr.AddEvent(m_target, &Unit::EventAurastateExpire, (uint32)AURASTATE_FLAG_REJUVENATE, EVENT_REJUVENATION_FLAG_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                    }
+                    else
+                    {
+                        sEventMgr.ModifyEventTimeLeft(m_target, EVENT_REJUVENATION_FLAG_EXPIRE, GetDuration(), 0);
+                    }
+                } break;
             }
         }
     }
@@ -2357,15 +2443,36 @@ void Aura::EventPeriodicHeal(uint32 amount)
     Unit* u_caster = GetUnitCaster();
     if (u_caster != NULL)
     {
-        if (GetSpellInfo()->custom_NameHash == SPELL_HASH_HEALTH_FUNNEL && add > 0)
+        if (add > 0)
         {
-            dealdamage sdmg;
+            switch (GetSpellInfo()->getId())
+            {
+                //SPELL_HASH_HEALTH_FUNNEL
+                case 755:
+                case 3698:
+                case 3699:
+                case 3700:
+                case 11693:
+                case 11694:
+                case 11695:
+                case 16569:
+                case 27259:
+                case 40671:
+                case 46467:
+                case 47856:
+                case 60829:
+                {
+                    dealdamage sdmg;
 
-            sdmg.full_damage = add;
-            sdmg.resisted_damage = 0;
-            sdmg.school_type = 0;
-            u_caster->DealDamage(u_caster, add, 0, 0, 0);
-            u_caster->SendAttackerStateUpdate(u_caster, u_caster, &sdmg, add, 0, 0, 0, ATTACK);
+                    sdmg.full_damage = add;
+                    sdmg.resisted_damage = 0;
+                    sdmg.school_type = 0;
+                    u_caster->DealDamage(u_caster, add, 0, 0, 0);
+                    u_caster->SendAttackerStateUpdate(u_caster, u_caster, &sdmg, add, 0, 0, 0, ATTACK);
+                } break;
+                default:
+                    break;
+            }
         }
 
         std::vector<Unit*> target_threat;
@@ -2781,11 +2888,56 @@ void Aura::SpellAuraModStealth(bool apply)
         }
 
         SetPositive();
-        if (m_spellInfo->custom_NameHash != SPELL_HASH_VANISH)
-            m_target->SetStealth(GetSpellId());
-
-        if (m_spellInfo->custom_NameHash == SPELL_HASH_STEALTH)
-            m_target->SetFlag(UNIT_FIELD_BYTES_2, 0x1E000000); //sneak anim
+        switch (m_spellInfo->getId())
+        {
+            //SPELL_HASH_VANISH
+            case 1856:
+            case 1857:
+            case 11327:
+            case 11329:
+            case 24223:
+            case 24228:
+            case 24229:
+            case 24230:
+            case 24231:
+            case 24232:
+            case 24233:
+            case 24699:
+            case 26888:
+            case 26889:
+            case 27617:
+            case 29448:
+            case 31619:
+            case 35205:
+            case 39667:
+            case 41476:
+            case 41479:
+            case 44290:
+            case 55964:
+            case 71400:
+                m_target->SetStealth(GetSpellId());
+                break;
+            //SPELL_HASH_STEALTH
+            case 1784:
+            case 1785:
+            case 1786:
+            case 1787:
+            case 8822:
+            case 30831:
+            case 30991:
+            case 31526:
+            case 31621:
+            case 32199:
+            case 32615:
+            case 34189:
+            case 42347:
+            case 42866:
+            case 42943:
+            case 52188:
+            case 58506:
+                m_target->SetFlag(UNIT_FIELD_BYTES_2, 0x1E000000); //sneak anim
+                break;
+        }
 
         m_target->SetFlag(UNIT_FIELD_BYTES_1, 0x020000);
         if (m_target->IsPlayer())
@@ -2795,67 +2947,96 @@ void Aura::SpellAuraModStealth(bool apply)
         m_target->m_stealthLevel += mod->m_amount;
 
         // hack fix for vanish stuff
-        if (m_spellInfo->custom_NameHash == SPELL_HASH_VANISH && m_target->IsPlayer())	   // Vanish
+        if (m_target->IsPlayer())   // Vanish
         {
-
-            for (Object::InRangeSet::iterator iter = m_target->GetInRangeSetBegin(); iter != m_target->GetInRangeSetEnd(); ++iter)
+            switch (m_spellInfo->getId())
             {
-                if ((*iter) == NULL || !(*iter)->IsUnit())
-                    continue;
-
-                Unit* _unit = static_cast< Unit* >(*iter);
-
-                if (!_unit->isAlive())
-                    continue;
-
-                if (_unit->GetCurrentSpell() && _unit->GetCurrentSpell()->GetUnitTarget() == m_target)
-                    _unit->GetCurrentSpell()->cancel();
-
-                if (_unit->GetAIInterface() != NULL)
-                    _unit->GetAIInterface()->RemoveThreatByPtr(m_target);
-            }
-
-            for (uint32 x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; x++)
-            {
-                if (m_target->m_auras[x] != NULL)
+                //SPELL_HASH_VANISH
+                case 1856:
+                case 1857:
+                case 11327:
+                case 11329:
+                case 24223:
+                case 24228:
+                case 24229:
+                case 24230:
+                case 24231:
+                case 24232:
+                case 24233:
+                case 24699:
+                case 26888:
+                case 26889:
+                case 27617:
+                case 29448:
+                case 31619:
+                case 35205:
+                case 39667:
+                case 41476:
+                case 41479:
+                case 44290:
+                case 55964:
+                case 71400:
                 {
-                    if (m_target->m_auras[x]->GetSpellInfo()->MechanicsType == MECHANIC_ROOTED || m_target->m_auras[x]->GetSpellInfo()->MechanicsType == MECHANIC_ENSNARED)   // Remove roots and slow spells
+                    for (Object::InRangeSet::iterator iter = m_target->GetInRangeSetBegin(); iter != m_target->GetInRangeSetEnd(); ++iter)
                     {
-                        m_target->m_auras[x]->Remove();
+                        if ((*iter) == NULL || !(*iter)->IsUnit())
+                            continue;
+
+                        Unit* _unit = static_cast<Unit*>(*iter);
+
+                        if (!_unit->isAlive())
+                            continue;
+
+                        if (_unit->GetCurrentSpell() && _unit->GetCurrentSpell()->GetUnitTarget() == m_target)
+                            _unit->GetCurrentSpell()->cancel();
+
+                        if (_unit->GetAIInterface() != NULL)
+                            _unit->GetAIInterface()->RemoveThreatByPtr(m_target);
                     }
-                    else // if got immunity for slow, remove some that are not in the mechanics
+
+                    for (uint32 x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; x++)
                     {
-                        for (uint8 i = 0; i < 3; i++)
+                        if (m_target->m_auras[x] != NULL)
                         {
-                            uint32 AuraEntry = m_target->m_auras[x]->GetSpellInfo()->EffectApplyAuraName[i];
-                            if (AuraEntry == SPELL_AURA_MOD_DECREASE_SPEED || AuraEntry == SPELL_AURA_MOD_ROOT || AuraEntry == SPELL_AURA_MOD_STALKED)
+                            if (m_target->m_auras[x]->GetSpellInfo()->MechanicsType == MECHANIC_ROOTED || m_target->m_auras[x]->GetSpellInfo()->MechanicsType == MECHANIC_ENSNARED)   // Remove roots and slow spells
                             {
                                 m_target->m_auras[x]->Remove();
-                                break;
+                            }
+                            else // if got immunity for slow, remove some that are not in the mechanics
+                            {
+                                for (uint8 i = 0; i < 3; i++)
+                                {
+                                    uint32 AuraEntry = m_target->m_auras[x]->GetSpellInfo()->EffectApplyAuraName[i];
+                                    if (AuraEntry == SPELL_AURA_MOD_DECREASE_SPEED || AuraEntry == SPELL_AURA_MOD_ROOT || AuraEntry == SPELL_AURA_MOD_STALKED)
+                                    {
+                                        m_target->m_auras[x]->Remove();
+                                        break;
+                                    }
+                                }
                             }
                         }
                     }
-                }
-            }
 
-            // Cast stealth spell/dismount/drop BG flag
-            if (p_target != NULL)
-            {
-                p_target->CastSpell(p_target, 1784, true);
-
-                p_target->Dismount();
-
-                if (p_target->m_bg && p_target->m_bgHasFlag)
-                {
-                    if (p_target->m_bg->GetType() == BATTLEGROUND_WARSONG_GULCH)
+                    // Cast stealth spell/dismount/drop BG flag
+                    if (p_target != NULL)
                     {
-                        p_target->m_bg->HookOnFlagDrop(p_target);
+                        p_target->CastSpell(p_target, 1784, true);
+
+                        p_target->Dismount();
+
+                        if (p_target->m_bg && p_target->m_bgHasFlag)
+                        {
+                            if (p_target->m_bg->GetType() == BATTLEGROUND_WARSONG_GULCH)
+                            {
+                                p_target->m_bg->HookOnFlagDrop(p_target);
+                            }
+                            if (p_target->m_bg->GetType() == BATTLEGROUND_EYE_OF_THE_STORM)
+                            {
+                                p_target->m_bg->HookOnFlagDrop(p_target);
+                            }
+                        }
                     }
-                    if (p_target->m_bg->GetType() == BATTLEGROUND_EYE_OF_THE_STORM)
-                    {
-                        p_target->m_bg->HookOnFlagDrop(p_target);
-                    }
-                }
+                } break;
             }
         }
     }
@@ -2863,43 +3044,95 @@ void Aura::SpellAuraModStealth(bool apply)
     {
         m_target->m_stealthLevel -= mod->m_amount;
 
-        if (m_spellInfo->custom_NameHash != SPELL_HASH_VANISH)
+        switch (m_spellInfo->getId())
         {
-            m_target->SetStealth(0);
-            m_target->RemoveFlag(UNIT_FIELD_BYTES_2, 0x1E000000);
-
-            m_target->RemoveFlag(UNIT_FIELD_BYTES_1, 0x020000);
-
-            if (p_target != NULL)
+            //SPELL_HASH_VANISH
+            case 1856:
+            case 1857:
+            case 11327:
+            case 11329:
+            case 24223:
+            case 24228:
+            case 24229:
+            case 24230:
+            case 24231:
+            case 24232:
+            case 24233:
+            case 24699:
+            case 26888:
+            case 26889:
+            case 27617:
+            case 29448:
+            case 31619:
+            case 35205:
+            case 39667:
+            case 41476:
+            case 41479:
+            case 44290:
+            case 55964:
+            case 71400:
+                break;
+            default:
             {
-                p_target->RemoveFlag(PLAYER_FIELD_BYTES2, 0x2000);
-                p_target->SendSpellCooldownEvent(m_spellInfo->getId());
+                m_target->SetStealth(0);
+                m_target->RemoveFlag(UNIT_FIELD_BYTES_2, 0x1E000000);
 
-                if (p_target->m_outStealthDamageBonusPeriod && p_target->m_outStealthDamageBonusPct)
-                    p_target->m_outStealthDamageBonusTimer = (uint32)UNIXTIME + p_target->m_outStealthDamageBonusPeriod;
-            }
+                m_target->RemoveFlag(UNIT_FIELD_BYTES_1, 0x020000);
+
+                if (p_target != NULL)
+                {
+                    p_target->RemoveFlag(PLAYER_FIELD_BYTES2, 0x2000);
+                    p_target->SendSpellCooldownEvent(m_spellInfo->getId());
+
+                    if (p_target->m_outStealthDamageBonusPeriod && p_target->m_outStealthDamageBonusPct)
+                        p_target->m_outStealthDamageBonusTimer = (uint32)UNIXTIME + p_target->m_outStealthDamageBonusPeriod;
+                }
+            } break;
         }
 
-        if ((m_target->HasAurasWithNameHash(SPELL_HASH_MASTER_OF_SUBTLETY) || m_target->HasAurasWithNameHash(SPELL_HASH_OVERKILL)) && m_spellInfo->custom_NameHash == SPELL_HASH_STEALTH)
+        if (m_target->HasAurasWithNameHash(SPELL_HASH_MASTER_OF_SUBTLETY) || m_target->HasAurasWithNameHash(SPELL_HASH_OVERKILL))
         {
-            for (uint32 x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; x++)
+            switch (m_spellInfo->getId())
             {
-                if (m_target->m_auras[x] &&
-                    (m_target->m_auras[x]->GetSpellInfo()->custom_NameHash == SPELL_HASH_MASTER_OF_SUBTLETY ||
-                    m_target->m_auras[x]->GetSpellInfo()->custom_NameHash == SPELL_HASH_OVERKILL) &&
-                    m_target->m_auras[x]->GetSpellInfo()->EffectApplyAuraName[0] != SPELL_AURA_DUMMY)
+                //SPELL_HASH_STEALTH
+                case 1784:
+                case 1785:
+                case 1786:
+                case 1787:
+                case 8822:
+                case 30831:
+                case 30991:
+                case 31526:
+                case 31621:
+                case 32199:
+                case 32615:
+                case 34189:
+                case 42347:
+                case 42866:
+                case 42943:
+                case 52188:
+                case 58506:
                 {
-                    uint32 tmp_duration = MSTIME_6SECONDS;
-                    //SPELL_HASH_OVERKILL
-                    if (m_target->m_auras[x]->GetSpellInfo()->getId() == 58426 || m_target->m_auras[x]->GetSpellInfo()->getId() == 58427)
-                        tmp_duration = MSTIME_SECOND * 20;
+                    for (uint32 x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; x++)
+                    {
+                        if (m_target->m_auras[x] &&
+                            (m_target->m_auras[x]->GetSpellInfo()->custom_NameHash == SPELL_HASH_MASTER_OF_SUBTLETY ||
+                            m_target->m_auras[x]->GetSpellInfo()->custom_NameHash == SPELL_HASH_OVERKILL) &&
+                            m_target->m_auras[x]->GetSpellInfo()->EffectApplyAuraName[0] != SPELL_AURA_DUMMY)
+                        {
+                            uint32 tmp_duration = MSTIME_6SECONDS;
+                            //SPELL_HASH_OVERKILL
+                            if (m_target->m_auras[x]->GetSpellInfo()->getId() == 58426 || m_target->m_auras[x]->GetSpellInfo()->getId() == 58427)
+                                tmp_duration = MSTIME_SECOND * 20;
 
-                    m_target->m_auras[x]->SetDuration(tmp_duration);
+                            m_target->m_auras[x]->SetDuration(tmp_duration);
 
-                    sEventMgr.ModifyEventTimeLeft(m_target->m_auras[x], EVENT_AURA_REMOVE, tmp_duration);
-                    m_target->ModVisualAuraStackCount(m_target->m_auras[x], 0);
-                    sEventMgr.AddEvent(m_target->m_auras[x], &Aura::Remove, EVENT_AURA_REMOVE, tmp_duration, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT | EVENT_FLAG_DELETES_OBJECT);
-                }
+                            sEventMgr.ModifyEventTimeLeft(m_target->m_auras[x], EVENT_AURA_REMOVE, tmp_duration);
+                            m_target->ModVisualAuraStackCount(m_target->m_auras[x], 0);
+                            sEventMgr.AddEvent(m_target->m_auras[x], &Aura::Remove, EVENT_AURA_REMOVE, tmp_duration, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT | EVENT_FLAG_DELETES_OBJECT);
+                        }
+                    }
+                } break;
             }
         }
     }
@@ -3519,11 +3752,37 @@ void Aura::SpellAuraModDecreaseSpeed(bool apply)
         }
         switch (m_spellInfo->custom_NameHash)
         {
-            case SPELL_HASH_STEALTH:			// Stealth
+            // SPELL_HASH_STEALTH
+            case 1784:
+            case 1785:
+            case 1786:
+            case 1787:
+            case 8822:
+            case 30831:
+            case 30991:
+            case 31526:
+            case 31621:
+            case 32199:
+            case 32615:
+            case 34189:
+            case 42347:
+            case 42866:
+            case 42943:
+            case 52188:
+            case 58506:
                 SetPositive();
                 break;
 
-            case SPELL_HASH_DAZED:			// Dazed
+            // SPELL_HASH_DAZED
+            case 1604:
+            case 5101:
+            case 13496:
+            case 15571:
+            case 29703:
+            case 35955:
+            case 50259:
+            case 50411:
+            case 51372:
                 SetNegative();
                 break;
 
@@ -5818,10 +6077,18 @@ void Aura::SpellAuraModDamagePercTaken(bool apply)
         val = -mod->m_amount / 100.0f;
     }
 
-    if (m_spellInfo->custom_NameHash == SPELL_HASH_ARDENT_DEFENDER)   // Ardent Defender it only applys on 20% hp :/
+    switch (m_spellInfo->getId())   // Ardent Defender it only applys on 20% hp :/
     {
-        m_target->DamageTakenPctModOnHP35 += val;
-        return;
+        //SPELL_HASH_ARDENT_DEFENDER
+        case 31850:
+        case 31851:
+        case 31852:
+        case 66233:
+        case 66235:
+            m_target->DamageTakenPctModOnHP35 += val;
+            break;
+        default:
+            break;
     }
 
     for (uint32 x = 0; x < 7; x++)
@@ -6878,12 +7145,23 @@ void Aura::SpellAuraModTotalStatPerc(bool apply)
 void Aura::SpellAuraModHaste(bool apply)
 {
     //blade flurry - attack a nearby opponent
-    if (m_spellInfo->custom_NameHash == SPELL_HASH_BLADE_FLURRY)
+    switch (m_spellInfo->getId())
     {
-        if (apply)
-            m_target->AddExtraStrikeTarget(GetSpellInfo(), 0);
-        else
-            m_target->RemoveExtraStrikeTarget(GetSpellInfo());
+        //SPELL_HASH_BLADE_FLURRY
+        case 13877:
+        case 22482:
+        case 33735:
+        case 44181:
+        case 51211:
+        case 65956:
+        {
+            if (apply)
+                m_target->AddExtraStrikeTarget(GetSpellInfo(), 0);
+            else
+                m_target->RemoveExtraStrikeTarget(GetSpellInfo());
+        } break;
+        default:
+            break;
     }
 
     if (mod->m_amount < 0)
@@ -8810,16 +9088,29 @@ void Aura::SpellAuraModSpellDamageDOTPct(bool apply)
 {
     int32 val = (apply) ? mod->m_amount : -mod->m_amount;
 
-    if (m_spellInfo->custom_NameHash == SPELL_HASH_HAUNT)
-        m_target->DoTPctIncrease[m_spellInfo->School] += val;
-    else
-        for (uint32 x = 0; x < 7; x++)
+    switch (m_spellInfo->getId())
+    {
+        //SPELL_HASH_HAUNT
+        case 48181:
+        case 48184:
+        case 48210:
+        case 50091:
+        case 59161:
+        case 59163:
+        case 59164:
+            m_target->DoTPctIncrease[m_spellInfo->School] += val;
+            break;
+        default:
         {
-            if (mod->m_miscValue & (((uint32)1) << x))
+            for (uint32 x = 0; x < 7; x++)
             {
-                m_target->DoTPctIncrease[x] += val;
+                if (mod->m_miscValue & (((uint32)1) << x))
+                {
+                    m_target->DoTPctIncrease[x] += val;
+                }
             }
-        }
+        } break;
+    }
 }
 
 void Aura::SpellAuraConsumeNoAmmo(bool apply)

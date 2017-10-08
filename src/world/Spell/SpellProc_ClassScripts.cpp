@@ -73,10 +73,101 @@ class JuggernautSpellProc : public SpellProc
         if (CastingSpell == NULL)
             return false;
 
-        if (CastingSpell->custom_NameHash == SPELL_HASH_CHARGE)
-            return true;
-        else
-            return false;
+        switch (CastingSpell->getId())
+        {
+            //SPELL_HASH_CHARGE
+            case 100:
+            case 6178:
+            case 7370:
+            case 11578:
+            case 20508:
+            case 22120:
+            case 22911:
+            case 24023:
+            case 24193:
+            case 24315:
+            case 24408:
+            case 25821:
+            case 25999:
+            case 26184:
+            case 26185:
+            case 26186:
+            case 26202:
+            case 28343:
+            case 29320:
+            case 29847:
+            case 31426:
+            case 31733:
+            case 32323:
+            case 33709:
+            case 34846:
+            case 35412:
+            case 35570:
+            case 35754:
+            case 36058:
+            case 36140:
+            case 36509:
+            case 37511:
+            case 38461:
+            case 39574:
+            case 40602:
+            case 41581:
+            case 42003:
+            case 43519:
+            case 43651:
+            case 43807:
+            case 44357:
+            case 44884:
+            case 49758:
+            case 50582:
+            case 51492:
+            case 51756:
+            case 51842:
+            case 52538:
+            case 52577:
+            case 52856:
+            case 53148:
+            case 54460:
+            case 55317:
+            case 55530:
+            case 57627:
+            case 58619:
+            case 58991:
+            case 59040:
+            case 59611:
+            case 60067:
+            case 61685:
+            case 62563:
+            case 62613:
+            case 62614:
+            case 62874:
+            case 62960:
+            case 62961:
+            case 62977:
+            case 63003:
+            case 63010:
+            case 63661:
+            case 63665:
+            case 64591:
+            case 64719:
+            case 65927:
+            case 66481:
+            case 68282:
+            case 68284:
+            case 68301:
+            case 68307:
+            case 68321:
+            case 68498:
+            case 68501:
+            case 68762:
+            case 68763:
+            case 68764:
+            case 71553:
+            case 74399:
+                return true;
+            default:
+                return false;
+        }
     }
 };
 
@@ -149,10 +240,26 @@ class FlametongueWeaponSpellProc : public SpellProc
         if (enchant != nullptr)
         {
             SpellInfo* sp = sSpellCustomizations.GetSpellInfo(enchant->Enchantment->spell[0]);
-            if (sp != nullptr && sp->custom_NameHash == SPELL_HASH_FLAMETONGUE_WEAPON__PASSIVE_)
+            if (sp != nullptr)
             {
-                wp_speed = item->GetItemProperties()->Delay;
-                damage = (sp->EffectBasePoints[0] + 1) * wp_speed / 100000;
+                switch (sp->getId())
+                {
+                    //SPELL_HASH_FLAMETONGUE_WEAPON__PASSIVE_
+                    case 10400:
+                    case 15567:
+                    case 15568:
+                    case 15569:
+                    case 16311:
+                    case 16312:
+                    case 16313:
+                    case 58784:
+                    case 58791:
+                    case 58792:
+                    {
+                        wp_speed = item->GetItemProperties()->Delay;
+                        damage = (sp->EffectBasePoints[0] + 1) * wp_speed / 100000;
+                    } break;
+                }
             }
         }
     }
@@ -346,13 +453,99 @@ class ImprovedSpiritTapSpellProc : public SpellProc
         if (CastingSpell == NULL)
             return 0;
 
-        if (CastingSpell->custom_NameHash == SPELL_HASH_MIND_FLAY)
-            return 50;
-
-        if (CastingSpell->custom_NameHash == SPELL_HASH_MIND_BLAST || CastingSpell->custom_NameHash == SPELL_HASH_SHADOW_WORD__DEATH)
-            return 100;
-
-        return 0;
+        switch (CastingSpell->getId())
+        {
+            //SPELL_HASH_MIND_FLAY
+            case 15407:
+            case 16568:
+            case 17165:
+            case 17311:
+            case 17312:
+            case 17313:
+            case 17314:
+            case 18807:
+            case 22919:
+            case 23953:
+            case 25387:
+            case 26044:
+            case 26143:
+            case 28310:
+            case 29407:
+            case 29570:
+            case 32417:
+            case 35507:
+            case 37276:
+            case 37330:
+            case 37621:
+            case 38243:
+            case 40842:
+            case 42396:
+            case 43512:
+            case 46562:
+            case 48155:
+            case 48156:
+            case 52586:
+            case 54339:
+            case 54805:
+            case 57779:
+            case 57941:
+            case 58381:
+            case 59367:
+            case 59974:
+            case 60006:
+            case 60472:
+            case 65488:
+            case 68042:
+            case 68043:
+            case 68044:
+                return 50;
+            //SPELL_HASH_MIND_BLAST
+            case 8092:
+            case 8102:
+            case 8103:
+            case 8104:
+            case 8105:
+            case 8106:
+            case 10945:
+            case 10946:
+            case 10947:
+            case 13860:
+            case 15587:
+            case 17194:
+            case 17287:
+            case 20830:
+            case 25372:
+            case 25375:
+            case 26048:
+            case 31516:
+            case 37531:
+            case 38259:
+            case 41374:
+            case 48126:
+            case 48127:
+            case 52722:
+            case 58850:
+            case 60447:
+            case 60453:
+            case 60500:
+            case 65492:
+            case 68038:
+            case 68039:
+            case 68040:
+            //SPELL_HASH_SHADOW_WORD__DEATH
+            case 32379:
+            case 32409:
+            case 32996:
+            case 41375:
+            case 47697:
+            case 48157:
+            case 48158:
+            case 51818:
+            case 56920:
+                return 100;
+            default:
+                return 0;
+        }
     }
 };
 
@@ -448,8 +641,48 @@ class VampiricTouchEnergizeSpellProc : public SpellProc
     bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
         // Check for Mind Blast hit from this proc caster
-        if (CastingSpell == NULL || CastingSpell->custom_NameHash != SPELL_HASH_MIND_BLAST || mCaster != victim->GetGUID())
+        if (CastingSpell == NULL || mCaster != victim->GetGUID())
             return true;
+
+        switch (CastingSpell->getId())
+        {
+            //SPELL_HASH_MIND_BLAST
+            case 8092:
+            case 8102:
+            case 8103:
+            case 8104:
+            case 8105:
+            case 8106:
+            case 10945:
+            case 10946:
+            case 10947:
+            case 13860:
+            case 15587:
+            case 17194:
+            case 17287:
+            case 20830:
+            case 25372:
+            case 25375:
+            case 26048:
+            case 31516:
+            case 37531:
+            case 38259:
+            case 41374:
+            case 48126:
+            case 48127:
+            case 52722:
+            case 58850:
+            case 60447:
+            case 60453:
+            case 60500:
+            case 65492:
+            case 68038:
+            case 68039:
+            case 68040:
+                break;
+            default:
+                return true;
+        }
 
         // Cast Replenishment
         victim->CastSpell(victim, mReplenishmentSpell, true);
@@ -475,8 +708,30 @@ class VampiricTouchDispelDamageSpellProc : public SpellProc
         // For PROC_ON_PRE_DISPELL_AURA_VICTIM, parameter dmg has aur->GetSpellId()
         SpellInfo* sp = sSpellCustomizations.GetSpellInfo(dmg);
 
-        if (CastingSpell == NULL || sp == NULL || sp->custom_NameHash != SPELL_HASH_VAMPIRIC_TOUCH)
+        if (CastingSpell == NULL || sp == NULL)
             return true;
+
+        switch (sp->getId())
+        {
+            //SPELL_HASH_VAMPIRIC_TOUCH
+            case 34914:
+            case 34916:
+            case 34917:
+            case 34919:
+            case 48159:
+            case 48160:
+            case 52723:
+            case 52724:
+            case 60501:
+            case 64085:
+            case 65490:
+            case 68091:
+            case 68092:
+            case 68093:
+                break;
+            default:
+                return true;
+        }
 
         dmg_overwrite[0] = mDispelDmg;
 

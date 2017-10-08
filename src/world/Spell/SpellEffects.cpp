@@ -1697,8 +1697,21 @@ void Spell::SpellEffectApplyAura(uint32 i)  // Apply Aura
     //if we do not make a check to see if the aura owner is the same as the caster then we will stack the 2 auras and they will not be visible client sided
     if (itr == m_pendingAuras.end())
     {
-        if (GetSpellInfo()->custom_NameHash == SPELL_HASH_BLOOD_FRENZY && ProcedOnSpell)  //Warrior's Blood Frenzy
-            GetSpellInfo()->DurationIndex = ProcedOnSpell->DurationIndex;
+        if (ProcedOnSpell)  //Warrior's Blood Frenzy
+        {
+            switch (GetSpellInfo()->getId())
+            {
+                //SPELL_HASH_BLOOD_FRENZY
+                case 16952:
+                case 16954:
+                case 29836:
+                case 29859:
+                case 30069:
+                case 30070:
+                    GetSpellInfo()->DurationIndex = ProcedOnSpell->DurationIndex;
+                    break;
+            }
+        }
 
         uint32 Duration = GetDuration();
 
@@ -3705,23 +3718,39 @@ void Spell::SpellEffectDispel(uint32 i) // Dispel
 
                 if (AuraRemoved)
                 {
-                    if (aursp->custom_NameHash == SPELL_HASH_UNSTABLE_AFFLICTION)
+                    switch (aursp->getId())
                     {
-                        SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(31117);
-                        Spell* spell = sSpellFactoryMgr.NewSpell(u_caster, spellInfo, true, NULL);
-                        spell->forced_basepoints[0] = (aursp->EffectBasePoints[0] + 1) * 9;   //damage effect
-                        spell->ProcedOnSpell = GetSpellInfo();
-                        spell->pSpellId = aursp->getId();
-                        SpellCastTargets targets;
-                        targets.m_unitTarget = u_caster->GetGUID();
-                        spell->prepare(&targets);
+                        //SPELL_HASH_UNSTABLE_AFFLICTION
+                        case 30108:
+                        case 30404:
+                        case 30405:
+                        case 31117:
+                        case 34438:
+                        case 34439:
+                        case 35183:
+                        case 43522:
+                        case 43523:
+                        case 47841:
+                        case 47843:
+                        case 65812:
+                        case 65813:
+                        case 68154:
+                        case 68155:
+                        case 68156:
+                        case 68157:
+                        case 68158:
+                        case 68159:
+                        {
+                            SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(31117);
+                            Spell* spell = sSpellFactoryMgr.NewSpell(u_caster, spellInfo, true, NULL);
+                            spell->forced_basepoints[0] = (aursp->EffectBasePoints[0] + 1) * 9;   //damage effect
+                            spell->ProcedOnSpell = GetSpellInfo();
+                            spell->pSpellId = aursp->getId();
+                            SpellCastTargets targets;
+                            targets.m_unitTarget = u_caster->GetGUID();
+                            spell->prepare(&targets);
+                        } break;
                     }
-                    /*else if (aur->GetSpellProto()->custom_NameHash == SPELL_HASH_LIFEBLOOM)
-                    {
-                    Spell* spell= sSpellFactoryMgr.NewSpell(aur->GetCaster(), aur->GetSpellProto(), true, NULL);
-                    spell->SetUnitTarget(unitTarget);
-                    spell->Heal(aur->mod->m_amount);
-                    }*/
                 }
             }
             if (finish)
@@ -4393,8 +4422,27 @@ void Spell::SpellEffectHealMaxHealth(uint32 i)   // Heal Max Health
 
     unitTarget->ModHealth(dif);
 
-    if (u_caster != NULL && this->GetSpellInfo()->custom_NameHash == SPELL_HASH_LAY_ON_HANDS)
-        u_caster->CastSpell(unitTarget, 25771, true);
+    if (u_caster != NULL)
+    {
+        switch (this->GetSpellInfo()->getId())
+        {
+            //SPELL_HASH_LAY_ON_HANDS
+            case 633:
+            case 2800:
+            case 9257:
+            case 10310:
+            case 17233:
+            case 20233:
+            case 20236:
+            case 27154:
+            case 48788:
+            case 53778:
+                u_caster->CastSpell(unitTarget, 25771, true);
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 void Spell::SpellEffectInterruptCast(uint32 i) // Interrupt Cast
@@ -4775,11 +4823,39 @@ void Spell::SpellEffectEnchantHeldItem(uint32 i)
     if (!item)
         return;
 
-    uint32 Duration = 1800; // Needs to be found in dbc.. I guess?
+    uint32 Duration = 0; // Needs to be found in dbc.. I guess?
 
-
-    if (GetSpellInfo()->custom_NameHash == SPELL_HASH_WINDFURY_WEAPON || GetSpellInfo()->custom_NameHash == SPELL_HASH_FLAMETONGUE_WEAPON)
-        Duration = 10;
+    switch (GetSpellInfo()->getId())
+    {
+        //SPELL_HASH_FLAMETONGUE_WEAPON
+        case 8024:
+        case 8027:
+        case 8030:
+        case 16339:
+        case 16341:
+        case 16342:
+        case 25489:
+        case 58785:
+        case 58789:
+        case 58790:
+        case 65979:
+        //SPELL_HASH_WINDFURY_WEAPON
+        case 8232:
+        case 8235:
+        case 10486:
+        case 16362:
+        case 25505:
+        case 32911:
+        case 35886:
+        case 58801:
+        case 58803:
+        case 58804:
+            Duration = 10;
+            break;
+        default:
+            Duration = 1800;
+            break;
+    }
 
     auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(GetSpellInfo()->EffectMiscValue[i]);
 
@@ -5401,12 +5477,23 @@ void Spell::SpellEffectDummyMelee(uint32 i)   // Normalized Weapon damage +
             break;
     }
 
-    //Hemorrhage
-    if (p_caster && GetSpellInfo()->custom_NameHash == SPELL_HASH_HEMORRHAGE)
-        p_caster->AddComboPoints(p_caster->GetSelection(), 1);
-
     switch (GetSpellInfo()->getId())
     {
+        //SPELL_HASH_HEMORRHAGE
+        case 16511:
+        case 17347:
+        case 17348:
+        case 26864:
+        case 30478:
+        case 37331:
+        case 45897:
+        case 48660:
+        case 65954:
+        {
+            if (p_caster)
+                p_caster->AddComboPoints(p_caster->GetSelection(), 1);
+        } break;
+
         // AMBUSH
         case 8676:
             add_damage = 77;
@@ -5510,8 +5597,38 @@ void Spell::SpellEffectDummyMelee(uint32 i)   // Normalized Weapon damage +
 
     //rogue - mutilate ads dmg if target is poisoned
     uint32 pct_dmg_mod = 100;
-    if (GetSpellInfo()->custom_NameHash == SPELL_HASH_MUTILATE && unitTarget->IsPoisoned())
-        pct_dmg_mod = 120;
+    if (unitTarget->IsPoisoned())
+    {
+        switch (GetSpellInfo()->getId())
+        {
+            //SPELL_HASH_MUTILATE
+            case 1329:
+            case 5374:
+            case 27576:
+            case 32319:
+            case 32320:
+            case 32321:
+            case 34411:
+            case 34412:
+            case 34413:
+            case 34414:
+            case 34415:
+            case 34416:
+            case 34417:
+            case 34418:
+            case 34419:
+            case 41103:
+            case 48661:
+            case 48662:
+            case 48663:
+            case 48664:
+            case 48665:
+            case 48666:
+            case 60850:
+                pct_dmg_mod = 120;
+                break;
+        }
+    }
 
     uint32 _type;
     if (GetType() == SPELL_DMG_TYPE_RANGED)

@@ -182,7 +182,7 @@ class ChimeraShotAction : public AuraAction
 {
 public:
     void operator()(Aura *a) {
-        uint32 namehash = a->GetSpellInfo()->custom_NameHash;
+        uint32 spellId = a->GetSpellInfo()->getId();
 
         Unit *caster = a->GetUnitCaster();
         Unit *target = a->GetTarget();
@@ -192,21 +192,70 @@ public:
 
         a->Refresh();
 
-        switch (namehash)
+        switch (spellId)
         {
-            case SPELL_HASH_SCORPID_STING:
+            // SPELL_HASH_SCORPID_STING:
+            case 3043:
+            case 18545:
+            case 52604:
                 caster->CastSpell(target, 53359, true);
                 break;
 
-            case SPELL_HASH_WYVERN_STING:
+            // SPELL_HASH_WYVERN_STING:
+            case 19386:
+            case 24131:
+            case 24132:
+            case 24133:
+            case 24134:
+            case 24135:
+            case 24335:
+            case 24336:
+            case 26180:
+            case 26233:
+            case 26748:
+            case 27068:
+            case 27069:
+            case 41186:
+            case 49009:
+            case 49010:
+            case 49011:
+            case 49012:
+            case 65877:
+            case 65878:
                 caster->CastSpell(target, 53366, true);
                 break;
 
-            case SPELL_HASH_SERPENT_STING:
+            // SPELL_HASH_SERPENT_STING:
+            case 1978:
+            case 13549:
+            case 13550:
+            case 13551:
+            case 13552:
+            case 13553:
+            case 13554:
+            case 13555:
+            case 25295:
+            case 27016:
+            case 31975:
+            case 35511:
+            case 36984:
+            case 38859:
+            case 38914:
+            case 39182:
+            case 49000:
+            case 49001:
                 caster->CastSpell(target, 53353, true);
                 break;
 
-            case SPELL_HASH_VIPER_STING:
+            // SPELL_HASH_VIPER_STING:
+            case 3034:
+            case 31407:
+            case 37551:
+            case 39413:
+            case 65881:
+            case 67991:
+            case 67992:
+            case 67993:
                 caster->CastSpell(target, 53358, true);
                 break;
         }

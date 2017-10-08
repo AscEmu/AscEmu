@@ -6970,12 +6970,32 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
 
         // erm. some spells don't use ranged weapon skill but are still a ranged spell and use melee stats instead
         // i.e. hammer of wrath
-        if (ability && ability->custom_NameHash == SPELL_HASH_HAMMER_OF_WRATH)
+        if (ability)
         {
-            it = pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-            hitmodifier += pr->CalcRating(PCR_MELEE_HIT);
-            self_skill = float2int32(pr->CalcRating(PCR_MELEE_MAIN_HAND_SKILL));
+            switch (ability->getId())
+            {
+                //SPELL_HASH_HAMMER_OF_WRATH
+                case 24239:
+                case 24274:
+                case 24275:
+                case 27180:
+                case 32772:
+                case 37251:
+                case 37255:
+                case 37259:
+                case 48805:
+                case 48806:
+                case 51384:
+                {
+                    it = pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                    hitmodifier += pr->CalcRating(PCR_MELEE_HIT);
+                    self_skill = float2int32(pr->CalcRating(PCR_MELEE_MAIN_HAND_SKILL));
+                } break;
+                default:
+                    break;
+            }
         }
+
         if (it)
             SubClassSkill = GetSkillByProto(it->GetItemProperties()->Class, it->GetItemProperties()->SubClass);
         else
@@ -10363,32 +10383,783 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
                     break;
                     case 34936:	// Backlash
                     {
-                        if (m_currentSpell && m_currentSpell->GetSpellInfo()->custom_NameHash == SPELL_HASH_SHADOW_BOLT)
-                            continue;
-                        if (m_currentSpell && m_currentSpell->GetSpellInfo()->custom_NameHash == SPELL_HASH_INCINERATE)
-                            continue;
+                        if (m_currentSpell)
+                        {
+                            switch (m_currentSpell->GetSpellInfo()->getId())
+                            {
+                                //SPELL_HASH_SHADOW_BOLT
+                                case 686:
+                                case 695:
+                                case 705:
+                                case 1088:
+                                case 1106:
+                                case 7617:
+                                case 7619:
+                                case 7641:
+                                case 9613:
+                                case 11659:
+                                case 11660:
+                                case 11661:
+                                case 12471:
+                                case 12739:
+                                case 13440:
+                                case 13480:
+                                case 14106:
+                                case 14122:
+                                case 15232:
+                                case 15472:
+                                case 15537:
+                                case 16408:
+                                case 16409:
+                                case 16410:
+                                case 16783:
+                                case 16784:
+                                case 17393:
+                                case 17434:
+                                case 17435:
+                                case 17483:
+                                case 17509:
+                                case 18111:
+                                case 18138:
+                                case 18164:
+                                case 18205:
+                                case 18211:
+                                case 18214:
+                                case 18217:
+                                case 19728:
+                                case 19729:
+                                case 20298:
+                                case 20791:
+                                case 20807:
+                                case 20816:
+                                case 20825:
+                                case 21077:
+                                case 21141:
+                                case 22336:
+                                case 22677:
+                                case 24668:
+                                case 25307:
+                                case 26006:
+                                case 27209:
+                                case 29317:
+                                case 29487:
+                                case 29626:
+                                case 29640:
+                                case 29927:
+                                case 30055:
+                                case 30505:
+                                case 30686:
+                                case 31618:
+                                case 31627:
+                                case 32666:
+                                case 32860:
+                                case 33335:
+                                case 34344:
+                                case 36714:
+                                case 36868:
+                                case 36972:
+                                case 36986:
+                                case 36987:
+                                case 38378:
+                                case 38386:
+                                case 38628:
+                                case 38825:
+                                case 38892:
+                                case 39025:
+                                case 39026:
+                                case 39297:
+                                case 39309:
+                                case 40185:
+                                case 41069:
+                                case 41280:
+                                case 41957:
+                                case 43330:
+                                case 43649:
+                                case 43667:
+                                case 45055:
+                                case 45679:
+                                case 45680:
+                                case 47076:
+                                case 47248:
+                                case 47808:
+                                case 47809:
+                                case 49084:
+                                case 50455:
+                                case 51363:
+                                case 51432:
+                                case 51608:
+                                case 52257:
+                                case 52534:
+                                case 53086:
+                                case 53333:
+                                case 54113:
+                                case 55984:
+                                case 56405:
+                                case 57374:
+                                case 57464:
+                                case 57644:
+                                case 57725:
+                                case 58827:
+                                case 59016:
+                                case 59246:
+                                case 59254:
+                                case 59351:
+                                case 59357:
+                                case 59389:
+                                case 59575:
+                                case 60015:
+                                case 61558:
+                                case 61562:
+                                case 65821:
+                                case 68151:
+                                case 68152:
+                                case 68153:
+                                case 69028:
+                                case 69068:
+                                case 69211:
+                                case 69212:
+                                case 69387:
+                                case 69577:
+                                case 69972:
+                                case 70043:
+                                case 70080:
+                                case 70182:
+                                case 70208:
+                                case 70270:
+                                case 70386:
+                                case 70387:
+                                case 71143:
+                                case 71254:
+                                case 71296:
+                                case 71297:
+                                case 71936:
+                                case 72008:
+                                case 72503:
+                                case 72504:
+                                case 72901:
+                                case 72960:
+                                case 72961:
+                                case 75330:
+                                case 75331:
+                                case 75384:
+                                //SPELL_HASH_INCINERATE
+                                case 19397:
+                                case 23308:
+                                case 23309:
+                                case 29722:
+                                case 32231:
+                                case 32707:
+                                case 36832:
+                                case 38401:
+                                case 38918:
+                                case 39083:
+                                case 40239:
+                                case 41960:
+                                case 43971:
+                                case 44519:
+                                case 46043:
+                                case 47837:
+                                case 47838:
+                                case 53493:
+                                case 69973:
+                                case 71135:
+                                    continue;
+                                default:
+                                    break;
+                            }
+                        }
+
                         SpellInfo* spi = sSpellCustomizations.GetSpellInfo(skip);
-                        if (spi && spi->custom_NameHash != SPELL_HASH_SHADOW_BOLT && spi->custom_NameHash != SPELL_HASH_INCINERATE)
-                            continue;
+                        if (spi)
+                        {
+                            switch (spi->getId())
+                            {
+                                //SPELL_HASH_SHADOW_BOLT
+                                case 686:
+                                case 695:
+                                case 705:
+                                case 1088:
+                                case 1106:
+                                case 7617:
+                                case 7619:
+                                case 7641:
+                                case 9613:
+                                case 11659:
+                                case 11660:
+                                case 11661:
+                                case 12471:
+                                case 12739:
+                                case 13440:
+                                case 13480:
+                                case 14106:
+                                case 14122:
+                                case 15232:
+                                case 15472:
+                                case 15537:
+                                case 16408:
+                                case 16409:
+                                case 16410:
+                                case 16783:
+                                case 16784:
+                                case 17393:
+                                case 17434:
+                                case 17435:
+                                case 17483:
+                                case 17509:
+                                case 18111:
+                                case 18138:
+                                case 18164:
+                                case 18205:
+                                case 18211:
+                                case 18214:
+                                case 18217:
+                                case 19728:
+                                case 19729:
+                                case 20298:
+                                case 20791:
+                                case 20807:
+                                case 20816:
+                                case 20825:
+                                case 21077:
+                                case 21141:
+                                case 22336:
+                                case 22677:
+                                case 24668:
+                                case 25307:
+                                case 26006:
+                                case 27209:
+                                case 29317:
+                                case 29487:
+                                case 29626:
+                                case 29640:
+                                case 29927:
+                                case 30055:
+                                case 30505:
+                                case 30686:
+                                case 31618:
+                                case 31627:
+                                case 32666:
+                                case 32860:
+                                case 33335:
+                                case 34344:
+                                case 36714:
+                                case 36868:
+                                case 36972:
+                                case 36986:
+                                case 36987:
+                                case 38378:
+                                case 38386:
+                                case 38628:
+                                case 38825:
+                                case 38892:
+                                case 39025:
+                                case 39026:
+                                case 39297:
+                                case 39309:
+                                case 40185:
+                                case 41069:
+                                case 41280:
+                                case 41957:
+                                case 43330:
+                                case 43649:
+                                case 43667:
+                                case 45055:
+                                case 45679:
+                                case 45680:
+                                case 47076:
+                                case 47248:
+                                case 47808:
+                                case 47809:
+                                case 49084:
+                                case 50455:
+                                case 51363:
+                                case 51432:
+                                case 51608:
+                                case 52257:
+                                case 52534:
+                                case 53086:
+                                case 53333:
+                                case 54113:
+                                case 55984:
+                                case 56405:
+                                case 57374:
+                                case 57464:
+                                case 57644:
+                                case 57725:
+                                case 58827:
+                                case 59016:
+                                case 59246:
+                                case 59254:
+                                case 59351:
+                                case 59357:
+                                case 59389:
+                                case 59575:
+                                case 60015:
+                                case 61558:
+                                case 61562:
+                                case 65821:
+                                case 68151:
+                                case 68152:
+                                case 68153:
+                                case 69028:
+                                case 69068:
+                                case 69211:
+                                case 69212:
+                                case 69387:
+                                case 69577:
+                                case 69972:
+                                case 70043:
+                                case 70080:
+                                case 70182:
+                                case 70208:
+                                case 70270:
+                                case 70386:
+                                case 70387:
+                                case 71143:
+                                case 71254:
+                                case 71296:
+                                case 71297:
+                                case 71936:
+                                case 72008:
+                                case 72503:
+                                case 72504:
+                                case 72901:
+                                case 72960:
+                                case 72961:
+                                case 75330:
+                                case 75331:
+                                case 75384:
+                                //SPELL_HASH_INCINERATE
+                                case 19397:
+                                case 23308:
+                                case 23309:
+                                case 29722:
+                                case 32231:
+                                case 32707:
+                                case 36832:
+                                case 38401:
+                                case 38918:
+                                case 39083:
+                                case 40239:
+                                case 41960:
+                                case 43971:
+                                case 44519:
+                                case 46043:
+                                case 47837:
+                                case 47838:
+                                case 53493:
+                                case 69973:
+                                case 71135:
+                                    break;
+                                default:
+                                    continue;
+                            }
+                        }
                     }
                     break;
                     case 59578: // Art of War
                     case 53489:
                     {
-                        if (m_currentSpell && m_currentSpell->m_spellInfo->custom_NameHash == SPELL_HASH_FLASH_OF_LIGHT)
-                            continue;
+                        if (m_currentSpell)
+                        {
+                            switch (m_currentSpell->m_spellInfo->getId())
+                            {
+                                //SPELL_HASH_FLASH_OF_LIGHT
+                                case 19750:
+                                case 19939:
+                                case 19940:
+                                case 19941:
+                                case 19942:
+                                case 19943:
+                                case 25514:
+                                case 27137:
+                                case 33641:
+                                case 37249:
+                                case 37254:
+                                case 37257:
+                                case 48784:
+                                case 48785:
+                                case 57766:
+                                case 59997:
+                                case 66113:
+                                case 66922:
+                                case 68008:
+                                case 68009:
+                                case 68010:
+                                case 71930:
+                                    continue;
+                                default:
+                                    break;
+                            }
+                        }
+
                         SpellInfo* spi = sSpellCustomizations.GetSpellInfo(skip);
-                        if (spi && spi->custom_NameHash != SPELL_HASH_FLASH_OF_LIGHT)
-                            continue;
+                        if (spi)
+                        {
+                            switch (spi->getId())
+                            {
+                                //SPELL_HASH_FLASH_OF_LIGHT
+                                case 19750:
+                                case 19939:
+                                case 19940:
+                                case 19941:
+                                case 19942:
+                                case 19943:
+                                case 25514:
+                                case 27137:
+                                case 33641:
+                                case 37249:
+                                case 37254:
+                                case 37257:
+                                case 48784:
+                                case 48785:
+                                case 57766:
+                                case 59997:
+                                case 66113:
+                                case 66922:
+                                case 68008:
+                                case 68009:
+                                case 68010:
+                                case 71930:
+                                    break;
+                                default:
+                                    continue;
+                            }
+                        }
                     }
                     break;
                     case 17941: //Shadow Trance
                     {
-                        if (m_currentSpell && m_currentSpell->GetSpellInfo()->custom_NameHash == SPELL_HASH_SHADOW_BOLT)
-                            continue;
+                        if (m_currentSpell)
+                        {
+                            switch (m_currentSpell->GetSpellInfo()->getId())
+                            {
+                                //SPELL_HASH_SHADOW_BOLT
+                                case 686:
+                                case 695:
+                                case 705:
+                                case 1088:
+                                case 1106:
+                                case 7617:
+                                case 7619:
+                                case 7641:
+                                case 9613:
+                                case 11659:
+                                case 11660:
+                                case 11661:
+                                case 12471:
+                                case 12739:
+                                case 13440:
+                                case 13480:
+                                case 14106:
+                                case 14122:
+                                case 15232:
+                                case 15472:
+                                case 15537:
+                                case 16408:
+                                case 16409:
+                                case 16410:
+                                case 16783:
+                                case 16784:
+                                case 17393:
+                                case 17434:
+                                case 17435:
+                                case 17483:
+                                case 17509:
+                                case 18111:
+                                case 18138:
+                                case 18164:
+                                case 18205:
+                                case 18211:
+                                case 18214:
+                                case 18217:
+                                case 19728:
+                                case 19729:
+                                case 20298:
+                                case 20791:
+                                case 20807:
+                                case 20816:
+                                case 20825:
+                                case 21077:
+                                case 21141:
+                                case 22336:
+                                case 22677:
+                                case 24668:
+                                case 25307:
+                                case 26006:
+                                case 27209:
+                                case 29317:
+                                case 29487:
+                                case 29626:
+                                case 29640:
+                                case 29927:
+                                case 30055:
+                                case 30505:
+                                case 30686:
+                                case 31618:
+                                case 31627:
+                                case 32666:
+                                case 32860:
+                                case 33335:
+                                case 34344:
+                                case 36714:
+                                case 36868:
+                                case 36972:
+                                case 36986:
+                                case 36987:
+                                case 38378:
+                                case 38386:
+                                case 38628:
+                                case 38825:
+                                case 38892:
+                                case 39025:
+                                case 39026:
+                                case 39297:
+                                case 39309:
+                                case 40185:
+                                case 41069:
+                                case 41280:
+                                case 41957:
+                                case 43330:
+                                case 43649:
+                                case 43667:
+                                case 45055:
+                                case 45679:
+                                case 45680:
+                                case 47076:
+                                case 47248:
+                                case 47808:
+                                case 47809:
+                                case 49084:
+                                case 50455:
+                                case 51363:
+                                case 51432:
+                                case 51608:
+                                case 52257:
+                                case 52534:
+                                case 53086:
+                                case 53333:
+                                case 54113:
+                                case 55984:
+                                case 56405:
+                                case 57374:
+                                case 57464:
+                                case 57644:
+                                case 57725:
+                                case 58827:
+                                case 59016:
+                                case 59246:
+                                case 59254:
+                                case 59351:
+                                case 59357:
+                                case 59389:
+                                case 59575:
+                                case 60015:
+                                case 61558:
+                                case 61562:
+                                case 65821:
+                                case 68151:
+                                case 68152:
+                                case 68153:
+                                case 69028:
+                                case 69068:
+                                case 69211:
+                                case 69212:
+                                case 69387:
+                                case 69577:
+                                case 69972:
+                                case 70043:
+                                case 70080:
+                                case 70182:
+                                case 70208:
+                                case 70270:
+                                case 70386:
+                                case 70387:
+                                case 71143:
+                                case 71254:
+                                case 71296:
+                                case 71297:
+                                case 71936:
+                                case 72008:
+                                case 72503:
+                                case 72504:
+                                case 72901:
+                                case 72960:
+                                case 72961:
+                                case 75330:
+                                case 75331:
+                                case 75384:
+                                    continue;
+                                default:
+                                    break;
+                            }
+                        }
+
                         SpellInfo* spi = sSpellCustomizations.GetSpellInfo(skip);
-                        if (spi && spi->custom_NameHash != SPELL_HASH_SHADOW_BOLT)
-                            continue;
+                        if (spi)
+                        {
+                            switch (spi->getId())
+                            {
+                                //SPELL_HASH_SHADOW_BOLT
+                                case 686:
+                                case 695:
+                                case 705:
+                                case 1088:
+                                case 1106:
+                                case 7617:
+                                case 7619:
+                                case 7641:
+                                case 9613:
+                                case 11659:
+                                case 11660:
+                                case 11661:
+                                case 12471:
+                                case 12739:
+                                case 13440:
+                                case 13480:
+                                case 14106:
+                                case 14122:
+                                case 15232:
+                                case 15472:
+                                case 15537:
+                                case 16408:
+                                case 16409:
+                                case 16410:
+                                case 16783:
+                                case 16784:
+                                case 17393:
+                                case 17434:
+                                case 17435:
+                                case 17483:
+                                case 17509:
+                                case 18111:
+                                case 18138:
+                                case 18164:
+                                case 18205:
+                                case 18211:
+                                case 18214:
+                                case 18217:
+                                case 19728:
+                                case 19729:
+                                case 20298:
+                                case 20791:
+                                case 20807:
+                                case 20816:
+                                case 20825:
+                                case 21077:
+                                case 21141:
+                                case 22336:
+                                case 22677:
+                                case 24668:
+                                case 25307:
+                                case 26006:
+                                case 27209:
+                                case 29317:
+                                case 29487:
+                                case 29626:
+                                case 29640:
+                                case 29927:
+                                case 30055:
+                                case 30505:
+                                case 30686:
+                                case 31618:
+                                case 31627:
+                                case 32666:
+                                case 32860:
+                                case 33335:
+                                case 34344:
+                                case 36714:
+                                case 36868:
+                                case 36972:
+                                case 36986:
+                                case 36987:
+                                case 38378:
+                                case 38386:
+                                case 38628:
+                                case 38825:
+                                case 38892:
+                                case 39025:
+                                case 39026:
+                                case 39297:
+                                case 39309:
+                                case 40185:
+                                case 41069:
+                                case 41280:
+                                case 41957:
+                                case 43330:
+                                case 43649:
+                                case 43667:
+                                case 45055:
+                                case 45679:
+                                case 45680:
+                                case 47076:
+                                case 47248:
+                                case 47808:
+                                case 47809:
+                                case 49084:
+                                case 50455:
+                                case 51363:
+                                case 51432:
+                                case 51608:
+                                case 52257:
+                                case 52534:
+                                case 53086:
+                                case 53333:
+                                case 54113:
+                                case 55984:
+                                case 56405:
+                                case 57374:
+                                case 57464:
+                                case 57644:
+                                case 57725:
+                                case 58827:
+                                case 59016:
+                                case 59246:
+                                case 59254:
+                                case 59351:
+                                case 59357:
+                                case 59389:
+                                case 59575:
+                                case 60015:
+                                case 61558:
+                                case 61562:
+                                case 65821:
+                                case 68151:
+                                case 68152:
+                                case 68153:
+                                case 69028:
+                                case 69068:
+                                case 69211:
+                                case 69212:
+                                case 69387:
+                                case 69577:
+                                case 69972:
+                                case 70043:
+                                case 70080:
+                                case 70182:
+                                case 70208:
+                                case 70270:
+                                case 70386:
+                                case 70387:
+                                case 71143:
+                                case 71254:
+                                case 71296:
+                                case 71297:
+                                case 71936:
+                                case 72008:
+                                case 72503:
+                                case 72504:
+                                case 72901:
+                                case 72960:
+                                case 72961:
+                                case 75330:
+                                case 75331:
+                                case 75384:
+                                    break;
+                                default:
+                                    continue;
+                            }
+                        }
                     }
                     break;
                     case 16166: // [Shaman] Elemental Mastery
@@ -12566,12 +13337,33 @@ bool Unit::IsCriticalDamageForSpell(Object* victim, SpellInfo* spell)
     // HACK!!!
     Aura* fs = NULL;
     if (victim->IsUnit()
-        && spell->custom_NameHash == SPELL_HASH_LAVA_BURST
         && (fs = static_cast<Unit*>(victim)->FindAuraByNameHash(SPELL_HASH_FLAME_SHOCK)) != NULL)
     {
-        result = true;
-        if (!HasAura(55447))            // Glyph of Flame Shock
-            fs->Remove();
+        switch (spell->getId())
+        {
+            //SPELL_HASH_LAVA_BURST
+            case 21158:
+            case 51505:
+            case 53788:
+            case 55659:
+            case 55704:
+            case 56491:
+            case 58972:
+            case 59182:
+            case 59519:
+            case 60043:
+            case 61924:
+            case 64870:
+            case 64991:
+            case 66813:
+            case 67330:
+            case 71824:
+            {
+                result = true;
+                if (!HasAura(55447))            // Glyph of Flame Shock
+                    fs->Remove();
+            } break;
+        }
     }
 
     return result;
@@ -12624,8 +13416,39 @@ bool Unit::IsCriticalHealForSpell(Object* victim, SpellInfo* spell)
     crit_chance = float2int32(this->spellcritperc + this->SpellCritChanceSchool[spell->School]);
 
     //Sacred Shield
-    if (victim->IsUnit() && static_cast<Unit*>(victim)->HasAurasWithNameHash(SPELL_HASH_SACRED_SHIELD) && spell->custom_NameHash == SPELL_HASH_FLASH_OF_LIGHT)
-        crit_chance += 50;
+    if (victim->IsUnit() && static_cast<Unit*>(victim)->HasAurasWithNameHash(SPELL_HASH_SACRED_SHIELD))
+    {
+        switch (spell->getId())
+        {
+            //SPELL_HASH_FLASH_OF_LIGHT
+            case 19750:
+            case 19939:
+            case 19940:
+            case 19941:
+            case 19942:
+            case 19943:
+            case 25514:
+            case 27137:
+            case 33641:
+            case 37249:
+            case 37254:
+            case 37257:
+            case 48784:
+            case 48785:
+            case 57766:
+            case 59997:
+            case 66113:
+            case 66922:
+            case 68008:
+            case 68009:
+            case 68010:
+            case 71930:
+                crit_chance += 50;
+                break;
+            default:
+                break;
+        }
+    }
 
     spellModFlatIntValue(this->SM_CriticalChance, &crit_chance, spell->SpellGroupType);
 

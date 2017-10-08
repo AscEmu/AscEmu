@@ -1244,12 +1244,67 @@ void Spell::castMe(bool check)
                 {
                     p_caster->RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_LASTKILLWITHHONOR);
                 } break;
-            }
 
-            if (GetSpellInfo()->custom_NameHash == SPELL_HASH_HOLY_LIGHT || GetSpellInfo()->custom_NameHash == SPELL_HASH_FLASH_OF_LIGHT)
-            {
-                p_caster->RemoveAura(53672);
-                p_caster->RemoveAura(54149);
+                //SPELL_HASH_HOLY_LIGHT
+                case 635:
+                case 639:
+                case 647:
+                case 1026:
+                case 1042:
+                case 3472:
+                case 10328:
+                case 10329:
+                case 13952:
+                case 15493:
+                case 25263:
+                case 25292:
+                case 27135:
+                case 27136:
+                case 29383:
+                case 29427:
+                case 29562:
+                case 31713:
+                case 32769:
+                case 37979:
+                case 43451:
+                case 44479:
+                case 46029:
+                case 48781:
+                case 48782:
+                case 52444:
+                case 56539:
+                case 58053:
+                case 66112:
+                case 68011:
+                case 68012:
+                case 68013:
+                //SPELL_HASH_FLASH_OF_LIGHT
+                case 19750:
+                case 19939:
+                case 19940:
+                case 19941:
+                case 19942:
+                case 19943:
+                case 25514:
+                case 27137:
+                case 33641:
+                case 37249:
+                case 37254:
+                case 37257:
+                case 48784:
+                case 48785:
+                case 57766:
+                case 59997:
+                case 66113:
+                case 66922:
+                case 68008:
+                case 68009:
+                case 68010:
+                case 71930:
+                {
+                    p_caster->RemoveAura(53672);
+                    p_caster->RemoveAura(54149);
+                } break;
             }
 
             if (p_caster->HasAurasWithNameHash(SPELL_HASH_ARCANE_POTENCY) && GetSpellInfo()->custom_c_is_flags == SPELL_FLAG_IS_DAMAGING)
@@ -4866,8 +4921,43 @@ uint8 Spell::CanCast(bool tolerate)
                 uint32 facing_flags = GetSpellInfo()->FacingCasterFlags;
 
                 // Holy shock need enemies be in front of caster
-                if (GetSpellInfo()->custom_NameHash == SPELL_HASH_HOLY_SHOCK && GetSpellInfo()->Effect[0] == SPELL_EFFECT_DUMMY && !isFriendly(u_caster, target))
-                    facing_flags = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
+                switch (GetSpellInfo()->getId())
+                {
+                    //SPELL_HASH_HOLY_SHOCK
+                    case 20473:
+                    case 20929:
+                    case 20930:
+                    case 25902:
+                    case 25903:
+                    case 25911:
+                    case 25912:
+                    case 25913:
+                    case 25914:
+                    case 27174:
+                    case 27175:
+                    case 27176:
+                    case 32771:
+                    case 33072:
+                    case 33073:
+                    case 33074:
+                    case 35160:
+                    case 36340:
+                    case 38921:
+                    case 48820:
+                    case 48821:
+                    case 48822:
+                    case 48823:
+                    case 48824:
+                    case 48825:
+                    case 66114:
+                    case 68014:
+                    case 68015:
+                    case 68016:
+                    {
+                        if (GetSpellInfo()->Effect[0] == SPELL_EFFECT_DUMMY && !isFriendly(u_caster, target))
+                            facing_flags = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
+                    } break;
+                }
 
                 /* burlex: units are always facing the target! */
                 if (p_caster && facing_flags != SPELL_INFRONT_STATUS_REQUIRE_SKIPCHECK)
@@ -6416,8 +6506,39 @@ void Spell::Heal(int32 amount, bool ForceCrit)
         critchance = float2int32(u_caster->spellcritperc + u_caster->SpellCritChanceSchool[school]);
 
         //Sacred Shield
-        if (unitTarget->HasAurasWithNameHash(SPELL_HASH_SACRED_SHIELD) && m_spellInfo->custom_NameHash == SPELL_HASH_FLASH_OF_LIGHT)
-            critchance += 50;
+        if (unitTarget->HasAurasWithNameHash(SPELL_HASH_SACRED_SHIELD))
+        {
+            switch (m_spellInfo->getId())
+            {
+                //SPELL_HASH_FLASH_OF_LIGHT
+                case 19750:
+                case 19939:
+                case 19940:
+                case 19941:
+                case 19942:
+                case 19943:
+                case 25514:
+                case 27137:
+                case 33641:
+                case 37249:
+                case 37254:
+                case 37257:
+                case 48784:
+                case 48785:
+                case 57766:
+                case 59997:
+                case 66113:
+                case 66922:
+                case 68008:
+                case 68009:
+                case 68010:
+                case 71930:
+                    critchance += 50;
+                    break;
+                default:
+                    break;
+            }
+        }
 
 
         int penalty_pct = 0;
