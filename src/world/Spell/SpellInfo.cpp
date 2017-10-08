@@ -316,7 +316,6 @@ SpellInfo::SpellInfo()
 
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        custom_ProcOnNameHash[i] = 0;
         EffectCustomFlag[i] = 0;
     }
 

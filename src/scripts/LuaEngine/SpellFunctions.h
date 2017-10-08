@@ -159,7 +159,6 @@ LuaSpellEntry luaSpellVars[] =
     { "NameHash", 0, offsetof(SpellInfo, custom_NameHash) },
     { "ThreatForSpell", 0, offsetof(SpellInfo, custom_ThreatForSpell) },
     { "ThreatForSpellCoef", 3, offsetof(SpellInfo, custom_ThreatForSpellCoef) },
-    { "ProcOnNameHash", 0, offsetof(SpellInfo, custom_ProcOnNameHash[0]) },
     { "spell_coef_flags", 0, offsetof(SpellInfo, custom_spell_coef_flags) },
     { "base_range_or_radius_sqr", 3, offsetof(SpellInfo, custom_base_range_or_radius_sqr) },
     { "cone_width", 3, offsetof(SpellInfo, cone_width) },

@@ -6500,20 +6500,6 @@ bool Player::HasSpell(uint32 spell)
     return mSpells.find(spell) != mSpells.end();
 }
 
-bool Player::HasSpellwithNameHash(uint32 hash)
-{
-    SpellSet::iterator it, iter;
-    for (iter = mSpells.begin(); iter != mSpells.end();)
-    {
-        it = iter++;
-        uint32 SpellID = *it;
-        SpellInfo* e = sSpellCustomizations.GetSpellInfo(SpellID);
-        if (e->custom_NameHash == hash)
-            return true;
-    }
-    return false;
-}
-
 bool Player::HasDeletedSpell(uint32 spell)
 {
     return (mDeletedSpells.count(spell) > 0);

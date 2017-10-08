@@ -270,12 +270,6 @@ public:
     uint32 getCustom_ThreatForSpell() const { return custom_ThreatForSpell; }
     float getCustom_ThreatForSpellCoef() const { return custom_ThreatForSpellCoef; }
 
-    uint32 getCustom_ProcOnNameHash(int idx) const
-    {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
-        return custom_ProcOnNameHash[idx];
-    }
-
     uint32 getCustom_spell_coef_flags() const { return custom_spell_coef_flags; }
     float getCustom_base_range_or_radius_sqr() const { return custom_base_range_or_radius_sqr; }
     float getCone_width() const { return cone_width; }
@@ -431,7 +425,6 @@ public:
         uint32 custom_NameHash;
         uint32 custom_ThreatForSpell;
         float custom_ThreatForSpellCoef;
-        uint32 custom_ProcOnNameHash[MAX_SPELL_EFFECTS];
         uint32 custom_spell_coef_flags;
         float custom_base_range_or_radius_sqr;
         float cone_width;
@@ -617,7 +610,6 @@ public:
         uint32 custom_NameHash;
         uint32 custom_ThreatForSpell;
         float custom_ThreatForSpellCoef;
-        uint32 custom_ProcOnNameHash[MAX_SPELL_EFFECTS];
         uint32 custom_spell_coef_flags;
         float custom_base_range_or_radius_sqr;
         float cone_width;

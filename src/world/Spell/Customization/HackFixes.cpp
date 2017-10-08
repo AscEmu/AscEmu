@@ -4363,19 +4363,6 @@ void ApplyNormalFixes()
         sp->Effect[0] = SPELL_EFFECT_PERSISTENT_AREA_AURA;
     }
 
-    // Runic Empowerment
-    /*sp = sSpellCustomizations.GetSpellInfo(81229);
-    if (sp != nullptr)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 81229;
-        sp->custom_ProcOnNameHash[0] = SPELL_HASH_DEATH_STRIKE;
-        sp->custom_ProcOnNameHash[1] = SPELL_HASH_FROST_STRIKE;
-        sp->custom_ProcOnNameHash[2] = SPELL_HASH_DEATH_COIL;
-        sp->procChance = 45;
-    }*/
-
     // Vengeance
     sp = sSpellCustomizations.GetSpellInfo(93099);
     if (sp != nullptr)

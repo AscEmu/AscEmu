@@ -848,7 +848,6 @@ public:
         // Spells
         /////////////////////////////////////////////////////////////////////////////////////////
         bool HasSpell(uint32 spell);
-        bool HasSpellwithNameHash(uint32 hash);
         bool HasDeletedSpell(uint32 spell);
         void smsg_InitialSpells();
         void smsg_TalentsInfo(bool SendPetTalents);
