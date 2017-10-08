@@ -208,11 +208,31 @@ bool JudgementLightWisdomJustice(uint32 i, Spell* pSpell)
 
     // Search for a previous judgement casted by this caster. He can have only 1 judgement active at a time
     uint32 index = 0;
-    uint32 judgements[] = { SPELL_HASH_JUDGEMENT_OF_LIGHT, SPELL_HASH_JUDGEMENT_OF_WISDOM, SPELL_HASH_JUDGEMENT_OF_JUSTICE,
-        SPELL_HASH_JUDGEMENT_OF_VENGEANCE, SPELL_HASH_JUDGEMENT_OF_CORRUPTION, SPELL_HASH_JUDGEMENT_OF_RIGHTEOUSNESS, 0
+    uint32 judgements[] =
+    { 
+        //SPELL_HASH_JUDGEMENT_OF_LIGHT,
+        20185,
+        20267,
+        20271,
+        28775,
+        57774,
+        //SPELL_HASH_JUDGEMENT_OF_WISDOM,
+        20186,
+        20268,
+        53408,
+        //SPELL_HASH_JUDGEMENT_OF_JUSTICE,
+        20184,
+        53407,
+        //SPELL_HASH_JUDGEMENT_OF_VENGEANCE,
+        31804,
+        //SPELL_HASH_JUDGEMENT_OF_CORRUPTION,
+        53733,
+        //SPELL_HASH_JUDGEMENT_OF_RIGHTEOUSNESS,
+        20187,
+        0
     };
 
-    uint64 prev_target = caster->GetCurrentUnitForSingleTargetAura(judgements, &index);
+    uint64 prev_target = caster->getSingleTargetGuidForAura(judgements, &index);
     if (prev_target)
     {
         Unit* t = caster->GetMapMgr()->GetUnit(prev_target);
@@ -221,7 +241,7 @@ bool JudgementLightWisdomJustice(uint32 i, Spell* pSpell)
             t->RemoveAllAuraByNameHash(judgements[index]);
         }
 
-        caster->RemoveCurrentUnitForSingleTargetAura(judgements[index]);
+        caster->removeSingleTargetGuidForAura(judgements[index]);
     }
 
     // Search for seal to unleash its energy
@@ -297,7 +317,7 @@ bool JudgementLightWisdomJustice(uint32 i, Spell* pSpell)
 
     caster->CastSpell(target, id, true);
 
-    caster->SetCurrentUnitForSingleTargetAura(pSpell->GetSpellInfo(), target->GetGUID());
+    caster->setSingleTargetGuidForAura(pSpell->GetSpellInfo()->getId(), target->GetGUID());
 
     return true;
 }

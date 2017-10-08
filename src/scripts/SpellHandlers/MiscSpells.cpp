@@ -46,7 +46,6 @@ bool FrostWarding(uint32 i, Spell* s)
 
     rss->chance = s->GetSpellInfo()->procChance;
     rss->spellId = s->GetSpellInfo()->getId();
-    rss->require_aura_hash = SPELL_HASH_FROST_WARD;
     rss->school = SCHOOL_FROST;
     rss->infront = false;
     rss->charges = 0;
@@ -69,7 +68,6 @@ bool MoltenShields(uint32 i, Spell* s)
 
     rss->chance = s->GetSpellInfo()->EffectBasePoints[0];
     rss->spellId = s->GetSpellInfo()->getId();
-    rss->require_aura_hash = SPELL_HASH_FIRE_WARD;
     rss->school = SCHOOL_FIRE;
     rss->infront = false;
     rss->charges = 0;

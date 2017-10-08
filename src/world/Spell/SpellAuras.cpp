@@ -954,7 +954,7 @@ void Aura::Remove()
 
     // If this aura can affect one target at a time, remove this target from the caster map
     if (caster != NULL && GetSpellInfo()->AttributesExE & ATTRIBUTESEXE_SINGLE_TARGET_AURA && m_target->GetAuraStackCount(GetSpellId()) == 1)
-        caster->RemoveCurrentUnitForSingleTargetAura(GetSpellInfo());
+        caster->removeSingleTargetGuidForAura(GetSpellInfo()->getId());
 
     /* Remove aurastates */
     uint32 flag = 0;
@@ -3018,11 +3018,7 @@ void Aura::SpellAuraModStealth(bool apply)
 
                         if (p_target->m_bg && p_target->m_bgHasFlag)
                         {
-                            if (p_target->m_bg->GetType() == BATTLEGROUND_WARSONG_GULCH)
-                            {
-                                p_target->m_bg->HookOnFlagDrop(p_target);
-                            }
-                            if (p_target->m_bg->GetType() == BATTLEGROUND_EYE_OF_THE_STORM)
+                            if (p_target->m_bg->GetType() == BATTLEGROUND_WARSONG_GULCH || p_target->m_bg->GetType() == BATTLEGROUND_EYE_OF_THE_STORM)
                             {
                                 p_target->m_bg->HookOnFlagDrop(p_target);
                             }
@@ -3082,41 +3078,55 @@ void Aura::SpellAuraModStealth(bool apply)
             } break;
         }
 
-        if (m_target->HasAurasWithNameHash(SPELL_HASH_MASTER_OF_SUBTLETY) || m_target->HasAurasWithNameHash(SPELL_HASH_OVERKILL))
+        switch (m_spellInfo->getId())
         {
-            switch (m_spellInfo->getId())
+            //SPELL_HASH_STEALTH
+            case 1784:
+            case 1785:
+            case 1786:
+            case 1787:
+            case 8822:
+            case 30831:
+            case 30991:
+            case 31526:
+            case 31621:
+            case 32199:
+            case 32615:
+            case 34189:
+            case 42347:
+            case 42866:
+            case 42943:
+            case 52188:
+            case 58506:
             {
-                //SPELL_HASH_STEALTH
-                case 1784:
-                case 1785:
-                case 1786:
-                case 1787:
-                case 8822:
-                case 30831:
-                case 30991:
-                case 31526:
-                case 31621:
-                case 32199:
-                case 32615:
-                case 34189:
-                case 42347:
-                case 42866:
-                case 42943:
-                case 52188:
-                case 58506:
+                for (uint32 x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; x++)
                 {
-                    for (uint32 x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; x++)
+                    if (m_target->m_auras[x] && m_target->m_auras[x]->GetSpellInfo()->EffectApplyAuraName[0] != SPELL_AURA_DUMMY)
                     {
-                        if (m_target->m_auras[x] &&
-                            (m_target->m_auras[x]->GetSpellInfo()->custom_NameHash == SPELL_HASH_MASTER_OF_SUBTLETY ||
-                            m_target->m_auras[x]->GetSpellInfo()->custom_NameHash == SPELL_HASH_OVERKILL) &&
-                            m_target->m_auras[x]->GetSpellInfo()->EffectApplyAuraName[0] != SPELL_AURA_DUMMY)
-                        {
-                            uint32 tmp_duration = MSTIME_6SECONDS;
-                            //SPELL_HASH_OVERKILL
-                            if (m_target->m_auras[x]->GetSpellInfo()->getId() == 58426 || m_target->m_auras[x]->GetSpellInfo()->getId() == 58427)
-                                tmp_duration = MSTIME_SECOND * 20;
+                        uint32 tmp_duration = 0;
 
+                        switch (m_target->m_auras[x]->GetSpellInfo()->getId())
+                        {
+                            //SPELL_HASH_MASTER_OF_SUBTLETY
+                            case 31221:
+                            case 31222:
+                            case 31223:
+                            case 31665:
+                            case 31666:
+                            {
+                                tmp_duration = MSTIME_6SECONDS;
+                            } break;
+
+                            //SPELL_HASH_OVERKILL
+                            case 58426:
+                            case 58427:
+                            {
+                                tmp_duration = MSTIME_SECOND * 20;
+                            } break;
+                        }
+
+                        if (tmp_duration != 0)
+                        {
                             m_target->m_auras[x]->SetDuration(tmp_duration);
 
                             sEventMgr.ModifyEventTimeLeft(m_target->m_auras[x], EVENT_AURA_REMOVE, tmp_duration);
@@ -3124,8 +3134,8 @@ void Aura::SpellAuraModStealth(bool apply)
                             sEventMgr.AddEvent(m_target->m_auras[x], &Aura::Remove, EVENT_AURA_REMOVE, tmp_duration, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT | EVENT_FLAG_DELETES_OBJECT);
                         }
                     }
-                } break;
-            }
+                }
+            } break;
         }
     }
 
@@ -3288,19 +3298,59 @@ void Aura::SpellAuraModResistance(bool apply)
     if (!IsPositive() && caster != NULL && m_target->IsCreature())
         m_target->GetAIInterface()->AttackReaction(caster, 1, GetSpellId());
 
-    if (GetSpellInfo()->custom_NameHash == SPELL_HASH_FAERIE_FIRE || GetSpellInfo()->custom_NameHash == SPELL_HASH_FAERIE_FIRE__FERAL_)
-        m_target->m_can_stealth = !apply;
+    switch (GetSpellInfo()->getId())
+    {
+        //SPELL_HASH_FAERIE_FIRE__FERAL_
+        case 16857:
+        case 60089:
+        //SPELL_HASH_FAERIE_FIRE
+        case 770:
+        case 6950:
+        case 13424:
+        case 13752:
+        case 16498:
+        case 20656:
+        case 21670:
+        case 25602:
+        case 32129:
+        case 65863:
+        {
+            m_target->m_can_stealth = !apply;
+        } break;
+    }
 
     Player* plr = GetPlayerCaster();
-    if (plr != NULL && GetSpellInfo()->custom_NameHash == SPELL_HASH_DEVOTION_AURA)
+    if (plr != NULL)
     {
-        // Increases the armor bonus of your Devotion Aura by %u - HACKY
-        if (plr->HasSpell(20140))     // Improved Devotion Aura Rank 3
-            amt = (int32)(amt * 1.5);
-        else if (plr->HasSpell(20139))     // Improved Devotion Aura Rank 2
-            amt = (int32)(amt * 1.34);
-        else if (plr->HasSpell(20138))     // Improved Devotion Aura Rank 1
-            amt = (int32)(amt * 1.17);
+        switch (GetSpellInfo()->getId())
+        {
+            //SPELL_HASH_DEVOTION_AURA
+            case 465:
+            case 643:
+            case 1032:
+            case 8258:
+            case 10290:
+            case 10291:
+            case 10292:
+            case 10293:
+            case 17232:
+            case 27149:
+            case 41452:
+            case 48941:
+            case 48942:
+            case 52442:
+            case 57740:
+            case 58944:
+            {
+                // Increases the armor bonus of your Devotion Aura by %u - HACKY
+                if (plr->HasSpell(20140))     // Improved Devotion Aura Rank 3
+                    amt = (int32)(amt * 1.5);
+                else if (plr->HasSpell(20139))     // Improved Devotion Aura Rank 2
+                    amt = (int32)(amt * 1.34);
+                else if (plr->HasSpell(20138))     // Improved Devotion Aura Rank 1
+                    amt = (int32)(amt * 1.17);
+            } break;
+        }
     }
 
     if (m_target->IsPlayer())
@@ -3581,7 +3631,6 @@ void Aura::SpellAuraReflectSpells(bool apply)
         rss->chance = mod->m_amount;
         rss->spellId = GetSpellId();
         rss->school = -1;
-        rss->require_aura_hash = 0;
         rss->charges = m_spellInfo->procCharges;
         rss->infront = false;
 
@@ -5521,7 +5570,6 @@ void Aura::SpellAuraReflectSpellsSchool(bool apply)
         ReflectSpellSchool* rss = new ReflectSpellSchool;
         rss->chance = mod->m_amount;
         rss->spellId = GetSpellId();
-        rss->require_aura_hash = 0;
         rss->infront = false;
 
         if (m_spellInfo->Attributes == 0x400D0 && m_spellInfo->AttributesEx == 0)
@@ -9118,13 +9166,22 @@ void Aura::SpellAuraConsumeNoAmmo(bool apply)
     {
         bool other = false;
 
-        // we have Thori'dal too
-        if (m_spellInfo->custom_NameHash != SPELL_HASH_REQUIRES_NO_AMMO && p_target->HasAurasWithNameHash(SPELL_HASH_REQUIRES_NO_AMMO))
-            other = true;
-
-        // We are unequipping Thori'dal but have an aura with no ammo consumption effect
-        if (m_spellInfo->custom_NameHash == SPELL_HASH_REQUIRES_NO_AMMO && p_target->HasAuraWithName(SPELL_AURA_CONSUMES_NO_AMMO))
-            other = true;
+        switch (m_spellInfo->getId())
+        {
+            //SPELL_HASH_REQUIRES_NO_AMMO
+            case 46699:
+            {
+                // We are unequipping Thori'dal but have an aura with no ammo consumption effect
+                if (p_target->HasAuraWithName(SPELL_AURA_CONSUMES_NO_AMMO))
+                    other = true;
+            } break;
+            default:
+            {
+                // we have Thori'dal too
+                if (m_spellInfo->getId() != 46699 && p_target->getAuraWithId(46699))
+                    other = true;
+            }
+        }
 
         // We have more than 1 aura with no ammo consumption effect
         if (p_target->GetAuraCountWithName(SPELL_AURA_CONSUMES_NO_AMMO) >= 2)

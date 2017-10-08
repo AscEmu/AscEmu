@@ -2509,32 +2509,45 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
         vproc |= PROC_ON_ABSORB;
 
     // Incanter's Absorption
-    if (pVictim->IsPlayer() && pVictim->HasAurasWithNameHash(SPELL_HASH_INCANTER_S_ABSORPTION))
+    if (pVictim->IsPlayer())
     {
-        float pctmod = 0.0f;
-        Player* pl = static_cast< Player* >(pVictim);
-        if (pl->HasAura(44394))
-            pctmod = 0.05f;
-        else if (pl->HasAura(44395))
-            pctmod = 0.10f;
-        else if (pl->HasAura(44396))
-            pctmod = 0.15f;
+        uint32 incanterSAbsorption[] =
+        {
+            //SPELL_HASH_INCANTER_S_ABSORPTION
+            44394,
+            44395,
+            44396,
+            44413,
+            0
+        };
 
-        uint32 hp = static_cast< uint32 >(0.05f * pl->getUInt32Value(UNIT_FIELD_MAXHEALTH));
-        uint32 spellpower = static_cast< uint32 >(pctmod * pl->GetPosDamageDoneMod(SCHOOL_NORMAL));
+        if (pVictim->hasAurasWithId(incanterSAbsorption))
+        {
+            float pctmod = 0.0f;
+            Player* pl = static_cast<Player*>(pVictim);
+            if (pl->HasAura(44394))
+                pctmod = 0.05f;
+            else if (pl->HasAura(44395))
+                pctmod = 0.10f;
+            else if (pl->HasAura(44396))
+                pctmod = 0.15f;
 
-        if (spellpower > hp)
-            spellpower = hp;
+            uint32 hp = static_cast<uint32>(0.05f * pl->getUInt32Value(UNIT_FIELD_MAXHEALTH));
+            uint32 spellpower = static_cast<uint32>(pctmod * pl->GetPosDamageDoneMod(SCHOOL_NORMAL));
 
-        SpellInfo* entry = sSpellCustomizations.GetSpellInfo(44413);
-        if (!entry)
-            return;
+            if (spellpower > hp)
+                spellpower = hp;
 
-        Spell* sp = sSpellFactoryMgr.NewSpell(pl, entry, true, NULL);
-        sp->GetSpellInfo()->EffectBasePoints[0] = spellpower;
-        SpellCastTargets targets;
-        targets.m_unitTarget = pl->GetGUID();
-        sp->prepare(&targets);
+            SpellInfo* entry = sSpellCustomizations.GetSpellInfo(44413);
+            if (!entry)
+                return;
+
+            Spell* sp = sSpellFactoryMgr.NewSpell(pl, entry, true, NULL);
+            sp->GetSpellInfo()->EffectBasePoints[0] = spellpower;
+            SpellCastTargets targets;
+            targets.m_unitTarget = pl->GetGUID();
+            sp->prepare(&targets);
+        }
     }
 
     res = static_cast< float >(ress);

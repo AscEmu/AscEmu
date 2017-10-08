@@ -413,7 +413,19 @@ public:
 
     bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
-        Aura* aura = mTarget->FindAuraByNameHash(SPELL_HASH_SLICE_AND_DICE);
+        uint32 sliceAndDice[] =
+        {
+            //SPELL_HASH_SLICE_AND_DICE
+            5171,
+            6434,
+            6774,
+            30470,
+            43547,
+            60847,
+            0
+        };
+
+        Aura* aura = mTarget->getAuraWithId(sliceAndDice);
         if (aura)
         {
             // Duration of 5 combo maximum
@@ -1024,7 +1036,7 @@ public:
 
     bool CanProc(Unit* victim, SpellInfo* CastingSpell)
     {
-        if (victim == NULL || victim->FindAuraCountByHash(SPELL_HASH_BLOOD_CORRUPTION) < 5)
+        if (victim == NULL || victim->getAuraCountForId(53742) < 5)
             return false;
 
         return true;
@@ -1039,7 +1051,7 @@ public:
 
     bool CanProc(Unit* victim, SpellInfo* CastingSpell)
     {
-        if (victim == NULL || victim->FindAuraCountByHash(SPELL_HASH_HOLY_VENGEANCE) < 5)
+        if (victim == NULL || victim->getAuraCountForId(31803) < 5)
             return false;
 
         return true;

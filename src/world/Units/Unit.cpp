@@ -791,6 +791,20 @@ Aura* Unit::getAuraWithId(uint32_t spell_id)
     return nullptr;
 }
 
+bool Unit::hasAurasWithId(uint32_t* auraId)
+{
+    for (int i = 0; auraId[i] != 0; ++i)
+    {
+        for (uint32_t x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
+        {
+            if (m_auras[x] && m_auras[x]->GetSpellInfo()->getId() == auraId[i])
+                return true;
+        }
+    }
+
+    return false;
+}
+
 Aura* Unit::getAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid)
 {
     for (uint32_t i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
@@ -816,4 +830,135 @@ Aura* Unit::getAuraWithAuraEffect(uint32_t aura_effect)
     }
 
     return nullptr;
+}
+
+bool Unit::hasAurasWithId(uint32_t auraId)
+{
+    for (uint32_t x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
+    {
+        if (m_auras[x] && m_auras[x]->GetSpellInfo()->getId() == auraId)
+            return true;
+    }
+
+    return false;
+}
+
+Aura* Unit::getAuraWithId(uint32_t* auraId)
+{
+    for (int i = 0; auraId[i] != 0; ++i)
+    {
+        for (uint32_t x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
+        {
+            if (m_auras[x] && m_auras[x]->GetSpellInfo()->getId() == auraId[i])
+                return m_auras[x];
+        }
+    }
+
+    return nullptr;
+}
+
+uint32_t Unit::getAuraCountForId(uint32_t auraId)
+{
+    uint32_t auraCount = 0;
+
+    for (uint32_t x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
+    {
+        if (m_auras[x] && (m_auras[x]->GetSpellInfo()->getId() == auraId))
+        {
+            ++auraCount;
+        }
+    }
+
+    return auraCount;
+}
+
+Aura* Unit::getAuraWithIdForGuid(uint32_t* auraId, uint64 guid)
+{
+    for (int i = 0; auraId[i] != 0; ++i)
+    {
+        for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
+        {
+            Aura* aura = m_auras[x];
+            if (aura != nullptr && aura->GetSpellInfo()->getId() == auraId[i] && aura->m_casterGuid == guid)
+                return aura;
+        }
+    }
+
+    return nullptr;
+}
+
+void Unit::removeAllAurasById(uint32_t auraId)
+{
+    for (uint32_t x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
+    {
+        if (m_auras[x])
+        {
+            if (m_auras[x]->GetSpellInfo()->getId() == auraId)
+            {
+                m_auras[x]->Remove();
+            }
+        }
+    }
+}
+
+void Unit::removeAllAurasById(uint32_t* auraId)
+{
+    for (int i = 0; auraId[i] != 0; ++i)
+    {
+        for (uint32_t x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
+        {
+            if (m_auras[x])
+            {
+                if (m_auras[x]->GetSpellInfo()->getId() == auraId[i])
+                {
+                    m_auras[x]->Remove();
+                }
+            }
+        }
+    }
+}
+
+uint64_t Unit::getSingleTargetGuidForAura(uint32_t spell)
+{
+    auto itr = m_singleTargetAura.find(spell);
+
+    if (itr != m_singleTargetAura.end())
+        return itr->second;
+    else
+        return 0;
+}
+
+uint64_t Unit::getSingleTargetGuidForAura(uint32_t* spellIds, uint32_t* index)
+{
+    for (uint8 i = 0;; i++)
+    {
+        if (!spellIds[i])
+            return 0;
+
+        auto itr = m_singleTargetAura.find(spellIds[i]);
+
+        if (itr != m_singleTargetAura.end())
+        {
+            *index = i;
+            return itr->second;
+        }
+    }
+}
+
+void Unit::setSingleTargetGuidForAura(uint32_t spellId, uint64_t guid)
+{
+    auto itr = m_singleTargetAura.find(spellId);
+
+    if (itr != m_singleTargetAura.end())
+        itr->second = guid;
+    else
+        m_singleTargetAura.insert(std::make_pair(spellId, guid));
+}
+
+void Unit::removeSingleTargetGuidForAura(uint32_t spellId)
+{
+    auto itr = m_singleTargetAura.find(spellId);
+
+    if (itr != m_singleTargetAura.end())
+        m_singleTargetAura.erase(itr);
 }

@@ -1866,11 +1866,80 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
     if (p_caster != NULL)
     {
         // HACKY but with SM_FEffect2_bonus it doesnt work
+        uint32 fireResistanceAura[] =
+        {
+            //SPELL_HASH_FIRE_RESISTANCE_AURA
+            19891,
+            19899,
+            19900,
+            27153,
+            48947,
+            0
+        };
+
+        uint32 frostResistanceAura[] =
+        {
+            //SPELL_HASH_FROST_RESISTANCE_AURA
+            19888,
+            19897,
+            19898,
+            27152,
+            48945,
+            0
+        };
+
+        uint32 shadowResistanceAura[] =
+        {
+            //SPELL_HASH_SHADOW_RESISTANCE_AURA
+            19876,
+            19895,
+            19896,
+            27151,
+            48943,
+            0
+        };
+
+        uint32 retributionAura[] =
+        {
+            //SPELL_HASH_RETRIBUTION_AURA
+            7294,
+            8990,
+            10298,
+            10299,
+            10300,
+            10301,
+            13008,
+            27150,
+            54043,
+            0
+        };
+
+        uint32 devotionAura[] =
+        {
+            //SPELL_HASH_DEVOTION_AURA
+            465,
+            643,
+            1032,
+            8258,
+            10290,
+            10291,
+            10292,
+            10293,
+            17232,
+            27149,
+            41452,
+            48941,
+            48942,
+            52442,
+            57740,
+            58944,
+            0
+        };
 
         // Apply this only on targets, which have one of paladins auras
-        if (unitTarget && (unitTarget->HasAurasWithNameHash(SPELL_HASH_DEVOTION_AURA) || unitTarget->HasAurasWithNameHash(SPELL_HASH_RETRIBUTION_AURA) ||
-            unitTarget->HasAurasWithNameHash(SPELL_HASH_CONCENTRATION_AURA) || unitTarget->HasAurasWithNameHash(SPELL_HASH_CRUSADER_AURA) || unitTarget->HasAurasWithNameHash(SPELL_HASH_FIRE_RESISTANCE_AURA) ||
-            unitTarget->HasAurasWithNameHash(SPELL_HASH_FROST_RESISTANCE_AURA) || unitTarget->HasAurasWithNameHash(SPELL_HASH_SHADOW_RESISTANCE_AURA)))
+        if (unitTarget && (unitTarget->hasAurasWithId(devotionAura) || unitTarget->hasAurasWithId(retributionAura) ||
+            unitTarget->hasAurasWithId(19746) || unitTarget->hasAurasWithId(32223) || unitTarget->hasAurasWithId(fireResistanceAura) ||
+            unitTarget->hasAurasWithId(frostResistanceAura) || unitTarget->hasAurasWithId(shadowResistanceAura)))
         {
             if (p_caster->HasSpell(20140))     // Improved Devotion Aura Rank 3
                 damage = (int32)(damage * 1.06);
@@ -1985,7 +2054,40 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
                 {
                     uint32 new_dmg = 0;
                     //consume rejuvenetaion and regrowth
-                    Aura* taura = unitTarget->FindAuraByNameHash(SPELL_HASH_REGROWTH);    //Regrowth
+
+                    uint32 regrowth[] =
+                    {
+                        //SPELL_HASH_REGROWTH
+                        8936,
+                        8938,
+                        8939,
+                        8940,
+                        8941,
+                        9750,
+                        9856,
+                        9857,
+                        9858,
+                        16561,
+                        20665,
+                        22373,
+                        22695,
+                        26980,
+                        27637,
+                        28744,
+                        34361,
+                        39000,
+                        39125,
+                        48442,
+                        48443,
+                        66067,
+                        67968,
+                        67969,
+                        67970,
+                        69882,
+                        71141,
+                        0
+                    };
+                    Aura* taura = unitTarget->getAuraWithId(regrowth);    //Regrowth
                     if (taura && taura->GetSpellInfo())
                     {
                         uint32 amplitude = taura->GetSpellInfo()->EffectAmplitude[1] / 1000;
@@ -2002,7 +2104,51 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
                         unitTarget->RemoveAura(taura);
 
                         //do not remove flag if we still can cast it again
-                        if (!unitTarget->HasAurasWithNameHash(SPELL_HASH_REJUVENATION))
+                        uint32 rejuvenation[] =
+                        {
+                            //SPELL_HASH_REJUVENATION
+                            774,
+                            1058,
+                            1430,
+                            2090,
+                            2091,
+                            3627,
+                            8070,
+                            8910,
+                            9839,
+                            9840,
+                            9841,
+                            12160,
+                            15981,
+                            20664,
+                            20701,
+                            25299,
+                            26981,
+                            26982,
+                            27532,
+                            28716,
+                            28722,
+                            28723,
+                            28724,
+                            31782,
+                            32131,
+                            38657,
+                            42544,
+                            48440,
+                            48441,
+                            53607,
+                            64801,
+                            66065,
+                            67971,
+                            67972,
+                            67973,
+                            69898,
+                            70691,
+                            71142,
+                            0
+                        };
+
+                        if (!unitTarget->hasAurasWithId(rejuvenation))
                         {
                             unitTarget->RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_REJUVENATE);
                             sEventMgr.RemoveEvents(unitTarget, EVENT_REJUVENATION_FLAG_EXPIRE);
@@ -2010,7 +2156,51 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
                     }
                     else
                     {
-                        taura = unitTarget->FindAuraByNameHash(SPELL_HASH_REJUVENATION);  //Rejuvenation
+                        uint32 rejuvenation[] =
+                        {
+                            //SPELL_HASH_REJUVENATION
+                            774,
+                            1058,
+                            1430,
+                            2090,
+                            2091,
+                            3627,
+                            8070,
+                            8910,
+                            9839,
+                            9840,
+                            9841,
+                            12160,
+                            15981,
+                            20664,
+                            20701,
+                            25299,
+                            26981,
+                            26982,
+                            27532,
+                            28716,
+                            28722,
+                            28723,
+                            28724,
+                            31782,
+                            32131,
+                            38657,
+                            42544,
+                            48440,
+                            48441,
+                            53607,
+                            64801,
+                            66065,
+                            67971,
+                            67972,
+                            67973,
+                            69898,
+                            70691,
+                            71142,
+                            0
+                        };
+
+                        taura = unitTarget->getAuraWithId(rejuvenation);  //Rejuvenation
                         if (taura  && taura->GetSpellInfo())
                         {
                             uint32 amplitude = taura->GetSpellInfo()->EffectAmplitude[0] / 1000;
@@ -4242,8 +4432,19 @@ void Spell::SpellEffectWeapondamage(uint32 i)   // Weapon damage +
         return;
 
     //Hackfix for Mangle
-    if (GetSpellInfo()->custom_NameHash == SPELL_HASH_MANGLE__CAT_ && p_caster != NULL)
-        p_caster->AddComboPoints(unitTarget->GetGUID(), 1);
+    if (p_caster != NULL)
+    {
+        switch (GetSpellInfo()->getId())
+        {
+            case 33876:
+            case 33982:
+            case 33983:
+            case 48565:
+            case 48566:
+                p_caster->AddComboPoints(unitTarget->GetGUID(), 1);
+                break;
+        }
+    }
 
     // Hacky fix for druid spells where it would "double attack".
     if (GetSpellInfo()->Effect[2] == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE || GetSpellInfo()->Effect[1] == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE)
@@ -5456,11 +5657,49 @@ void Spell::SpellEffectDummyMelee(uint32 i)   // Normalized Weapon damage +
             uint32 sunder_count = 0;
             SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(7386);
             for (uint32 x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_NEGATIVE_AURAS_EXTEDED_END; ++x)
-                if (unitTarget->m_auras[x] && unitTarget->m_auras[x]->GetSpellInfo()->custom_NameHash == SPELL_HASH_SUNDER_ARMOR)
+            {
+                if (unitTarget->m_auras[x])
                 {
-                    sunder_count++;
-                    spellInfo = unitTarget->m_auras[x]->GetSpellInfo();
+                    switch (unitTarget->m_auras[x]->GetSpellInfo()->getId())
+                    {
+                        //SPELL_HASH_SUNDER_ARMOR
+                        case 7386:
+                        case 7405:
+                        case 8380:
+                        case 11596:
+                        case 11597:
+                        case 11971:
+                        case 13444:
+                        case 15502:
+                        case 15572:
+                        case 16145:
+                        case 21081:
+                        case 24317:
+                        case 25051:
+                        case 25225:
+                        case 27991:
+                        case 30901:
+                        case 47467:
+                        case 48893:
+                        case 50370:
+                        case 53618:
+                        case 54188:
+                        case 57807:
+                        case 58461:
+                        case 58567:
+                        case 59350:
+                        case 59608:
+                        case 64978:
+                        case 65936:
+                        case 71554:
+                        {
+                            sunder_count++;
+                            spellInfo = unitTarget->m_auras[x]->GetSpellInfo();
+                        } break;
+                    }
                 }
+            }
+
             if (spellInfo == NULL)
                 return; //omg how did this happen ?
                         //we should also cast sunder armor effect on target with or without dmg

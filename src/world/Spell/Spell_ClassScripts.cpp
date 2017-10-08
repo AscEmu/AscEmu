@@ -297,8 +297,16 @@ class BloodStrikeSpell : public Spell
         if (p_caster == NULL || i != 1)
             return;
 
-        Aura* aur = p_caster->FindAuraByNameHash(SPELL_HASH_SUDDEN_DOOM);
+        uint32 suddenDoom[] =
+        {
+            //SPELL_HASH_SUDDEN_DOOM
+            49018,
+            49529,
+            49530,
+            0
+        };
 
+        Aura* aur = p_caster->getAuraWithId(suddenDoom);
         if (aur == NULL)
             return;
 
@@ -460,8 +468,16 @@ class HeartStrikeSpell : public Spell
         if (p_caster == NULL || i != 1)
             return;
 
-        Aura* aur = p_caster->FindAuraByNameHash(SPELL_HASH_SUDDEN_DOOM);
+        uint32 suddenDoom[] =
+        {
+            //SPELL_HASH_SUDDEN_DOOM
+            49018,
+            49529,
+            49530,
+            0
+        };
 
+        Aura* aur = p_caster->getAuraWithId(suddenDoom);
         if (aur == NULL)
             return;
 

@@ -201,8 +201,52 @@ bool PainAndSufferingProc(uint32 i, Spell* pSpell)
     if (target == NULL)
         return true;
 
-    Aura* aura = target->FindAuraByNameHash(SPELL_HASH_SHADOW_WORD__PAIN, caster->GetGUID());
-    if (aura == NULL)
+    uint32 shadowWordPain[] =
+    {
+        //SPELL_HASH_SHADOW_WORD__PAIN
+        589,
+        594,
+        970,
+        992,
+        2767,
+        10892,
+        10893,
+        10894,
+        11639,
+        14032,
+        15654,
+        17146,
+        19776,
+        23268,
+        23952,
+        24212,
+        25367,
+        25368,
+        27605,
+        30854,
+        30898,
+        34441,
+        34941,
+        34942,
+        37275,
+        41355,
+        46560,
+        48124,
+        48125,
+        57778,
+        59864,
+        60005,
+        60446,
+        65541,
+        68088,
+        68089,
+        68090,
+        72318,
+        72319,
+        0
+    };
+    Aura* aura = target->getAuraWithIdForGuid(shadowWordPain, caster->GetGUID());
+    if (aura == nullptr)
         return true;
 
     // Set new aura's duration, reset event timer and set client visual aura

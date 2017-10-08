@@ -291,31 +291,46 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
     uint32 creature_id = target_unit->GetEntry();
     uint32 cast_spell_id = 0;
 
-    if (!_player->HasAurasWithNameHash(SPELL_HASH_LIGHTWELL_RENEW) && target_unit->RemoveAura(59907))
+    if (target_unit->RemoveAura(59907))
     {
-        SpellClickSpell const* sp = sMySQLStore.getSpellClickSpell(creature_id);
-        if (sp == nullptr)
+        uint32 lightwellRenew[] =
         {
-            if (target_unit->IsCreature())
+            //SPELL_HASH_LIGHTWELL_RENEW
+            7001,
+            27873,
+            27874,
+            28276,
+            48084,
+            48085,
+            60123,
+            0
+        };
+
+        if (!_player->hasAurasWithId(lightwellRenew))
+        {
+            SpellClickSpell const* sp = sMySQLStore.getSpellClickSpell(creature_id);
+            if (sp == nullptr)
             {
-                Creature* c = static_cast< Creature* >(target_unit);
+                if (target_unit->IsCreature())
+                {
+                    Creature* c = static_cast<Creature*>(target_unit);
 
-                sChatHandler.BlueSystemMessage(this, "NPC Id %u (%s) has no spellclick spell associated with it.", c->GetCreatureProperties()->Id, c->GetCreatureProperties()->Name.c_str());
-                LOG_ERROR("Spellclick packet received for creature %u but there is no spell associated with it.", creature_id);
-                return;
+                    sChatHandler.BlueSystemMessage(this, "NPC Id %u (%s) has no spellclick spell associated with it.", c->GetCreatureProperties()->Id, c->GetCreatureProperties()->Name.c_str());
+                    LOG_ERROR("Spellclick packet received for creature %u but there is no spell associated with it.", creature_id);
+                    return;
+                }
             }
+            else
+            {
+                cast_spell_id = sp->SpellID;
+                target_unit->CastSpell(_player, cast_spell_id, true);
+            }
+
+            if (!target_unit->HasAura(59907))
+                static_cast<Creature*>(target_unit)->Despawn(0, 0); //IsCreature() check is not needed, refer to r2387 and r3230
+
+            return;
         }
-        else
-        {
-            cast_spell_id = sp->SpellID;
-            target_unit->CastSpell(_player, cast_spell_id, true);
-        }
-
-
-        if (!target_unit->HasAura(59907))
-            static_cast<Creature*>(target_unit)->Despawn(0, 0); //IsCreature() check is not needed, refer to r2387 and r3230
-
-        return;
     }
 
     SpellClickSpell const* sp = sMySQLStore.getSpellClickSpell(creature_id);

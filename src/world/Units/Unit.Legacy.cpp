@@ -1659,8 +1659,20 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     if (!this->IsPlayer() || !CastingSpell || CastingSpell->getId() == 14189 || CastingSpell->getId() == 16953 || CastingSpell->getId() == 16959)
                         continue;
                     if (CastingSpell->Effect[0] != SPELL_EFFECT_ADD_COMBO_POINTS && CastingSpell->Effect[1] != SPELL_EFFECT_ADD_COMBO_POINTS &&
-                        CastingSpell->Effect[2] != SPELL_EFFECT_ADD_COMBO_POINTS && CastingSpell->custom_NameHash != SPELL_HASH_MANGLE__CAT_)
-                        continue;
+                        CastingSpell->Effect[2] != SPELL_EFFECT_ADD_COMBO_POINTS)
+                    {
+                        switch (CastingSpell->getId())
+                        {
+                            case 33876:
+                            case 33982:
+                            case 33983:
+                            case 48565:
+                            case 48566:
+                                break;
+                            default:
+                                continue;
+                        }
+                    }
                 }
                 break;
                 case 17106: //druid intensity
@@ -3475,7 +3487,20 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                         spell_proc->mProcCharges++;
                         if (spell_proc->mProcCharges >= 3)   //whatch that number cause it depends on original stack count !
                         {
-                            RemoveAllAuraByNameHash(SPELL_HASH_COMBUSTION);
+                            uint32 combastion[] =
+                            {
+                                //SPELL_HASH_COMBUSTION
+                                11129,
+                                28682,
+                                29977,
+                                74630,
+                                75882,
+                                75883,
+                                75884,
+                                0
+                            };
+
+                            removeAllAurasById(combastion);
                             continue;
                         }
                     }
@@ -4434,7 +4459,49 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                         continue;
 
                     //requires Power Word: Shield active
-                    int power_word_id = HasAurasWithNameHash(SPELL_HASH_POWER_WORD__SHIELD);
+                    uint32 powerWordShield[] =
+                    {
+                        //SPELL_HASH_POWER_WORD__SHIELD
+                        17,
+                        592,
+                        600,
+                        3747,
+                        6065,
+                        6066,
+                        10898,
+                        10899,
+                        10900,
+                        10901,
+                        11647,
+                        11835,
+                        11974,
+                        17139,
+                        20697,
+                        22187,
+                        25217,
+                        25218,
+                        27607,
+                        29408,
+                        32595,
+                        35944,
+                        36052,
+                        41373,
+                        44175,
+                        44291,
+                        46193,
+                        48065,
+                        48066,
+                        66099,
+                        68032,
+                        68033,
+                        68034,
+                        71548,
+                        71780,
+                        71781,
+                        0
+                    };
+
+                    int power_word_id = hasAurasWithId(powerWordShield);
                     if (!power_word_id)
                         power_word_id = 17;
                     //make a direct strike then exit rest of handler
@@ -7689,10 +7756,60 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                 if (dmg.school_type != SCHOOL_NORMAL)
                     dmg.full_damage += float2int32(dmg.full_damage * (GetDamageDonePctMod(dmg.school_type) - 1));
 
-                if (ability != NULL && ability->custom_NameHash == SPELL_HASH_SHRED)
-                    dmg.full_damage += float2int32(dmg.full_damage * pVictim->ModDamageTakenByMechPCT[MECHANIC_BLEEDING]);
-                if (ability != NULL && ability->custom_NameHash == SPELL_HASH_MAUL)
-                    dmg.full_damage += float2int32(dmg.full_damage * pVictim->ModDamageTakenByMechPCT[MECHANIC_BLEEDING]);
+                if (ability != NULL)
+                {
+                    switch (ability->getId())
+                    {
+                        //SPELL_HASH_SHRED
+                        case 3252:
+                        case 5221:
+                        case 6800:
+                        case 8992:
+                        case 9829:
+                        case 9830:
+                        case 27001:
+                        case 27002:
+                        case 27555:
+                        case 48571:
+                        case 48572:
+                        case 49121:
+                        case 49165:
+                        case 61548:
+                        case 61549:
+                            dmg.full_damage += float2int32(dmg.full_damage * pVictim->ModDamageTakenByMechPCT[MECHANIC_BLEEDING]);
+                            break;
+                    }
+                }
+
+                if (ability != NULL)
+                {
+                    switch (ability->getId())
+                    {
+                        //SPELL_HASH_MAUL
+                        case 6807:
+                        case 6808:
+                        case 6809:
+                        case 7092:
+                        case 8972:
+                        case 9745:
+                        case 9880:
+                        case 9881:
+                        case 12161:
+                        case 15793:
+                        case 17156:
+                        case 20751:
+                        case 26996:
+                        case 27553:
+                        case 34298:
+                        case 48479:
+                        case 48480:
+                        case 51875:
+                        case 52506:
+                        case 54459:
+                            dmg.full_damage += float2int32(dmg.full_damage * pVictim->ModDamageTakenByMechPCT[MECHANIC_BLEEDING]);
+                            break;
+                    }
+                }
 
                 //pet happiness state dmg modifier
                 if (IsPet() && !static_cast<Pet*>(this)->IsSummonedPet())
@@ -8386,7 +8503,7 @@ void Unit::AddAura(Aura* aur)
 
         if (caster != NULL)
         {
-            prev_target_guid = caster->GetCurrentUnitForSingleTargetAura(aur->GetSpellInfo());
+            prev_target_guid = caster->getSingleTargetGuidForAura(aur->GetSpellInfo()->getId());
 
             if (prev_target_guid && prev_target_guid != aur->GetTarget()->GetGUID())
             {
@@ -8867,8 +8984,43 @@ void Unit::AddAura(Aura* aur)
         {
             pCaster->RemoveStealth();
             pCaster->RemoveInvisibility();
-            pCaster->RemoveAllAuraByNameHash(SPELL_HASH_ICE_BLOCK);
-            pCaster->RemoveAllAuraByNameHash(SPELL_HASH_DIVINE_SHIELD);
+
+            uint32 iceBlock[] =
+            {
+                //SPELL_HASH_ICE_BLOCK
+                27619,
+                36911,
+                41590,
+                45438,
+                45776,
+                46604,
+                46882,
+                56124,
+                56644,
+                62766,
+                65802,
+                69924,
+                0
+            };
+            pCaster->removeAllAurasById(iceBlock);
+
+            uint32 divineShield[] =
+            {
+                //SPELL_HASH_DIVINE_SHIELD
+                642,
+                13874,
+                29382,
+                33581,
+                40733,
+                41367,
+                54322,
+                63148,
+                66010,
+                67251,
+                71550,
+                0
+            };
+            pCaster->removeAllAurasById(divineShield);
             //SPELL_HASH_BLESSING_OF_PROTECTION
             pCaster->RemoveAllAuraById(41450);
         }
@@ -8879,7 +9031,7 @@ void Unit::AddAura(Aura* aur)
     {
         Unit* caster = aur->GetUnitCaster();
         if (caster != NULL)
-            caster->SetCurrentUnitForSingleTargetAura(aur->GetSpellInfo(), this->GetGUID());
+            caster->setSingleTargetGuidForAura(aur->GetSpellInfo()->getId(), this->GetGUID());
     }
 
     /* Set aurastates */
@@ -12831,36 +12983,48 @@ void Unit::RemoveReflect(uint32 spellid, bool apply)
         else
             ++i;
 
-    if (apply && spellid == 23920 && IsPlayer() && HasAurasWithNameHash(SPELL_HASH_IMPROVED_SPELL_REFLECTION))
+
+    if (apply && spellid == 23920 && IsPlayer())
     {
-        Player* pPlayer = static_cast<Player*>(this);
-        Group* pGroup = pPlayer->GetGroup();
-
-        if (pGroup != NULL)
+        uint32 improvedSpellReflection[] =
         {
-            int32 targets = 0;
-            if (pPlayer->HasAura(59088))
-                targets = 2;
-            else if (pPlayer->HasAura(59089))
-                targets = 4;
+            //SPELL_HASH_IMPROVED_SPELL_REFLECTION
+            59088,
+            59089,
+            0
+        };
 
-            pGroup->Lock();
-            for (uint32 i = 0; i < pGroup->GetSubGroupCount(); ++i)
+        if (hasAurasWithId(improvedSpellReflection))
+        {
+            Player* pPlayer = static_cast<Player*>(this);
+            Group* pGroup = pPlayer->GetGroup();
+
+            if (pGroup != NULL)
             {
-                SubGroup* subGroup = pGroup->GetSubGroup(i);
-                for (GroupMembersSet::iterator itr = subGroup->GetGroupMembersBegin(); itr != subGroup->GetGroupMembersEnd() && targets > 0; ++itr)
-                {
-                    Player* member = (*itr)->m_loggedInPlayer;
-                    if (member == NULL || member == pPlayer || !member->IsInWorld() || !member->isAlive() || member->HasAura(59725))
-                        continue;
+                int32 targets = 0;
+                if (pPlayer->HasAura(59088))
+                    targets = 2;
+                else if (pPlayer->HasAura(59089))
+                    targets = 4;
 
-                    if (!member->isInRange(pPlayer, 20))
-                        continue;
-                    pPlayer->CastSpell(member, 59725, true);
-                    targets -= 1;
+                pGroup->Lock();
+                for (uint32 i = 0; i < pGroup->GetSubGroupCount(); ++i)
+                {
+                    SubGroup* subGroup = pGroup->GetSubGroup(i);
+                    for (GroupMembersSet::iterator itr = subGroup->GetGroupMembersBegin(); itr != subGroup->GetGroupMembersEnd() && targets > 0; ++itr)
+                    {
+                        Player* member = (*itr)->m_loggedInPlayer;
+                        if (member == NULL || member == pPlayer || !member->IsInWorld() || !member->isAlive() || member->HasAura(59725))
+                            continue;
+
+                        if (!member->isInRange(pPlayer, 20))
+                            continue;
+                        pPlayer->CastSpell(member, 59725, true);
+                        targets -= 1;
+                    }
                 }
+                pGroup->Unlock();
             }
-            pGroup->Unlock();
         }
     }
 
@@ -13169,65 +13333,6 @@ void Unit::Phase(uint8 command, uint32 newphase)
     UpdateVisibility();
 }
 
-uint64 Unit::GetCurrentUnitForSingleTargetAura(SpellInfo* spell)
-{
-    UniqueAuraTargetMap::iterator itr;
-
-    itr = m_singleTargetAura.find(spell->custom_NameHash);
-
-    if (itr != m_singleTargetAura.end())
-        return itr->second;
-    else
-        return 0;
-}
-
-uint64 Unit::GetCurrentUnitForSingleTargetAura(uint32* name_hashes, uint32* index)
-{
-    UniqueAuraTargetMap::iterator itr;
-    for (uint8 i = 0;; i++)
-    {
-        if (!name_hashes[i])
-            return 0;
-
-        itr = m_singleTargetAura.find(name_hashes[i]);
-
-        if (itr != m_singleTargetAura.end())
-        {
-            *index = i;
-            return itr->second;
-        }
-    }
-}
-
-void Unit::SetCurrentUnitForSingleTargetAura(SpellInfo* spell, uint64 guid)
-{
-    UniqueAuraTargetMap::iterator itr;
-    itr = m_singleTargetAura.find(spell->custom_NameHash);
-
-    if (itr != m_singleTargetAura.end())
-        itr->second = guid;
-    else
-        m_singleTargetAura.insert(std::make_pair(spell->custom_NameHash, guid));
-}
-
-void Unit::RemoveCurrentUnitForSingleTargetAura(SpellInfo* spell)
-{
-    UniqueAuraTargetMap::iterator itr;
-    itr = m_singleTargetAura.find(spell->custom_NameHash);
-
-    if (itr != m_singleTargetAura.end())
-        m_singleTargetAura.erase(itr);
-}
-
-void Unit::RemoveCurrentUnitForSingleTargetAura(uint32 name_hash)
-{
-    UniqueAuraTargetMap::iterator itr;
-    itr = m_singleTargetAura.find(name_hash);
-
-    if (itr != m_singleTargetAura.end())
-        m_singleTargetAura.erase(itr);
-}
-
 bool Unit::InParty(Unit* u)
 {
     Player* p = static_cast<Player*>(GetPlayerOwner());
@@ -13330,8 +13435,42 @@ bool Unit::IsCriticalDamageForSpell(Object* victim, SpellInfo* spell)
 
     // HACK!!!
     Aura* fs = NULL;
+
+    uint32 flameShock[] =
+    {
+        //SPELL_HASH_FLAME_SHOCK
+        8050,
+        8052,
+        8053,
+        10447,
+        10448,
+        13729,
+        15039,
+        15096,
+        15616,
+        16804,
+        22423,
+        23038,
+        25457,
+        29228,
+        32967,
+        34354,
+        39529,
+        39590,
+        41115,
+        43303,
+        49232,
+        49233,
+        51588,
+        55613,
+        58940,
+        58971,
+        59684,
+        0
+    };
+
     if (victim->IsUnit()
-        && (fs = static_cast<Unit*>(victim)->FindAuraByNameHash(SPELL_HASH_FLAME_SHOCK)) != NULL)
+        && (fs = static_cast<Unit*>(victim)->getAuraWithId(flameShock)) != NULL)
     {
         switch (spell->getId())
         {
@@ -13410,37 +13549,48 @@ bool Unit::IsCriticalHealForSpell(Object* victim, SpellInfo* spell)
     crit_chance = float2int32(this->spellcritperc + this->SpellCritChanceSchool[spell->School]);
 
     //Sacred Shield
-    if (victim->IsUnit() && static_cast<Unit*>(victim)->HasAurasWithNameHash(SPELL_HASH_SACRED_SHIELD))
+    if (victim->IsUnit())
     {
-        switch (spell->getId())
+        uint32 sacredShield[] =
         {
-            //SPELL_HASH_FLASH_OF_LIGHT
-            case 19750:
-            case 19939:
-            case 19940:
-            case 19941:
-            case 19942:
-            case 19943:
-            case 25514:
-            case 27137:
-            case 33641:
-            case 37249:
-            case 37254:
-            case 37257:
-            case 48784:
-            case 48785:
-            case 57766:
-            case 59997:
-            case 66113:
-            case 66922:
-            case 68008:
-            case 68009:
-            case 68010:
-            case 71930:
-                crit_chance += 50;
-                break;
-            default:
-                break;
+            //SPELL_HASH_SACRED_SHIELD
+            53601,
+            58597,
+            0
+        };
+
+        if (static_cast<Unit*>(victim)->hasAurasWithId(sacredShield))
+        {
+            switch (spell->getId())
+            {
+                //SPELL_HASH_FLASH_OF_LIGHT
+                case 19750:
+                case 19939:
+                case 19940:
+                case 19941:
+                case 19942:
+                case 19943:
+                case 25514:
+                case 27137:
+                case 33641:
+                case 37249:
+                case 37254:
+                case 37257:
+                case 48784:
+                case 48785:
+                case 57766:
+                case 59997:
+                case 66113:
+                case 66922:
+                case 68008:
+                case 68009:
+                case 68010:
+                case 71930:
+                    crit_chance += 50;
+                    break;
+                default:
+                    break;
+            }
         }
     }
 

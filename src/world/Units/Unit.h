@@ -122,7 +122,6 @@ struct ReflectSpellSchool
     uint32 charges;
     int32 school;
     int32 chance;
-    int32 require_aura_hash;
     bool infront;
 };
 
@@ -292,8 +291,25 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Aura
     Aura* getAuraWithId(uint32_t spell_id);
+    Aura* getAuraWithId(uint32_t* auraId);
+    Aura* getAuraWithIdForGuid(uint32_t* auraId, uint64 guid);
+
     Aura* getAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid);
     Aura* getAuraWithAuraEffect(uint32_t aura_effect);
+
+    bool hasAurasWithId(uint32_t auraId);
+    bool hasAurasWithId(uint32_t* auraId);
+
+    uint32_t getAuraCountForId(uint32_t auraId);
+
+    void removeAllAurasById(uint32_t auraId);
+    void removeAllAurasById(uint32_t* auraId);
+
+    uint64_t getSingleTargetGuidForAura(uint32_t spellId);
+    uint64_t getSingleTargetGuidForAura(uint32_t* spellIds, uint32_t* index);
+
+    void setSingleTargetGuidForAura(uint32_t spellId, uint64_t guid);
+    void removeSingleTargetGuidForAura(uint32_t spellId);
 
 
     // Do not alter anything below this line
@@ -494,13 +510,6 @@ public:
     bool SetAurDuration(uint32 spellId, uint32 duration);
     void DropAurasOnDeath();
     bool IsControlledByPlayer();
-
-    // Auras that can affect only one target at a time
-    uint64 GetCurrentUnitForSingleTargetAura(SpellInfo* spell);
-    uint64 GetCurrentUnitForSingleTargetAura(uint32* name_hashes, uint32* index);
-    void SetCurrentUnitForSingleTargetAura(SpellInfo* spell, uint64 guid);
-    void RemoveCurrentUnitForSingleTargetAura(SpellInfo* spell);
-    void RemoveCurrentUnitForSingleTargetAura(uint32 name_hash);
 
     // ProcTrigger
     std::list<SpellProc*> m_procSpells;

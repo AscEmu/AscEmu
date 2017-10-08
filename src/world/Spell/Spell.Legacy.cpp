@@ -1307,10 +1307,25 @@ void Spell::castMe(bool check)
                 } break;
             }
 
-            if (p_caster->HasAurasWithNameHash(SPELL_HASH_ARCANE_POTENCY) && GetSpellInfo()->custom_c_is_flags == SPELL_FLAG_IS_DAMAGING)
+            if (GetSpellInfo()->custom_c_is_flags == SPELL_FLAG_IS_DAMAGING)
             {
-                p_caster->RemoveAura(57529);
-                p_caster->RemoveAura(57531);
+                uint32 arcanePotency[] =
+                {
+                    //SPELL_HASH_ARCANE_POTENCY
+                    24544,
+                    31571,
+                    31572,
+                    33421,
+                    33713,
+                    57529,
+                    57531,
+                    0
+                };
+                if (p_caster->hasAurasWithId(arcanePotency))
+                {
+                    p_caster->RemoveAura(57529);
+                    p_caster->RemoveAura(57531);
+                }
             }
 
             if (p_caster->IsStealth() && !hasAttributeEx(ATTRIBUTESEX_NOT_BREAK_STEALTH)
@@ -1333,25 +1348,81 @@ void Spell::castMe(bool check)
                 switch (GetSpellInfo()->getId())
                 {
                     case 21651:
+                    {
                         // Arathi Basin opening spell, remove stealth, invisibility, etc.
                         p_caster->RemoveStealth();
                         p_caster->RemoveInvisibility();
-                        p_caster->RemoveAllAuraByNameHash(SPELL_HASH_DIVINE_SHIELD);
-                        p_caster->RemoveAllAuraByNameHash(SPELL_HASH_DIVINE_PROTECTION);
+
+                        uint32 divineShield[] =
+                        {
+                            //SPELL_HASH_DIVINE_SHIELD
+                            642,
+                            13874,
+                            29382,
+                            33581,
+                            40733,
+                            41367,
+                            54322,
+                            63148,
+                            66010,
+                            67251,
+                            71550,
+                            0
+                        };
+                        p_caster->removeAllAurasById(divineShield);
+
+                        uint32 divineProtection[] =
+                        {
+                            //SPELL_HASH_DIVINE_PROTECTION
+                            498,
+                            13007,
+                            27778,
+                            27779,
+                            0
+                        };
+                        p_caster->removeAllAurasById(divineProtection);
                         //SPELL_HASH_BLESSING_OF_PROTECTION
                         p_caster->RemoveAllAuraById(41450);
-                        break;
+                    } break;
                     case 23333:
                     case 23335:
                     case 34976:
+                    {
                         // if we're picking up the flag remove the buffs
                         p_caster->RemoveStealth();
                         p_caster->RemoveInvisibility();
-                        p_caster->RemoveAllAuraByNameHash(SPELL_HASH_DIVINE_SHIELD);
-                        p_caster->RemoveAllAuraByNameHash(SPELL_HASH_DIVINE_PROTECTION);
+
+                        uint32 divineShield[] =
+                        {
+                            //SPELL_HASH_DIVINE_SHIELD
+                            642,
+                            13874,
+                            29382,
+                            33581,
+                            40733,
+                            41367,
+                            54322,
+                            63148,
+                            66010,
+                            67251,
+                            71550,
+                            0
+                        };
+                        p_caster->removeAllAurasById(divineShield);
+
+                        uint32 divineProtection[] =
+                        {
+                            //SPELL_HASH_DIVINE_PROTECTION
+                            498,
+                            13007,
+                            27778,
+                            27779,
+                            0
+                        };
+                        p_caster->removeAllAurasById(divineProtection);
                         //SPELL_HASH_BLESSING_OF_PROTECTION
                         p_caster->RemoveAllAuraById(41450);
-                        break;
+                    } break;
                         // cases for stealth - etc
                         // we can cast the spell, but we drop the flag (if we have it)
                     case 1784:		// Stealth rank 1
@@ -3286,18 +3357,51 @@ void Spell::HandleAddAura(uint64 guid)
             case 52188:
             case 58506:
             {
-                if (Target->HasAurasWithNameHash(SPELL_HASH_MASTER_OF_SUBTLETY))
+                uint32 masterOfSubtlety[] =
+                {
+                    //SPELL_HASH_MASTER_OF_SUBTLETY
+                    31221,
+                    31222,
+                    31223,
+                    31665,
+                    31666,
+                    0
+                };
+
+                if (Target->hasAurasWithId(masterOfSubtlety))
                     spellid = 31665;
             } break;
             case 62124:
             {
-                if (u_caster && u_caster->HasAurasWithNameHash(SPELL_HASH_VINDICATION))
-                    spellid = u_caster->FindAuraByNameHash(SPELL_HASH_VINDICATION)->m_spellInfo->custom_RankNumber == 2 ? 26017 : 67;
+                uint32 vindication[] =
+                {
+                    //SPELL_HASH_VINDICATION
+                    67,
+                    9452,
+                    26016,
+                    26017,
+                    36002,
+                    0
+                };
+
+                if (u_caster && u_caster->hasAurasWithId(vindication))
+                    spellid = u_caster->getAuraWithId(vindication)->m_spellInfo->custom_RankNumber == 2 ? 26017 : 67;
             } break;
             case 5229:
             {
+                uint32 kingOfTheJungle[] =
+                {
+                    //SPELL_HASH_KING_OF_THE_JUNGLE
+                    48492,
+                    48494,
+                    48495,
+                    51178,
+                    51185,
+                    0
+                };
+
                 if (p_caster && (p_caster->GetShapeShift() == FORM_BEAR || p_caster->GetShapeShift() == FORM_DIREBEAR) &&
-                    p_caster->HasAurasWithNameHash(SPELL_HASH_KING_OF_THE_JUNGLE))
+                    p_caster->hasAurasWithId(kingOfTheJungle))
                 {
                     SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(51185);
                     if (!spellInfo)
@@ -3308,7 +3412,19 @@ void Spell::HandleAddAura(uint64 guid)
                     }
 
                     Spell* spell = sSpellFactoryMgr.NewSpell(p_caster, spellInfo, true, NULL);
-                    spell->forced_basepoints[0] = p_caster->FindAuraByNameHash(SPELL_HASH_KING_OF_THE_JUNGLE)->m_spellInfo->custom_RankNumber * 5;
+
+                    uint32 kingOfTheJungle[] =
+                    {
+                        //SPELL_HASH_KING_OF_THE_JUNGLE
+                        48492,
+                        48494,
+                        48495,
+                        51178,
+                        51185,
+                        0
+                    };
+
+                    spell->forced_basepoints[0] = p_caster->getAuraWithId(kingOfTheJungle)->m_spellInfo->custom_RankNumber * 5;
                     SpellCastTargets targets(p_caster->GetGUID());
                     spell->prepare(&targets);
                 }
@@ -3317,7 +3433,18 @@ void Spell::HandleAddAura(uint64 guid)
             {
                 if (u_caster != nullptr)
                 {
-                    if (u_caster->HasAurasWithNameHash(SPELL_HASH_THE_BEAST_WITHIN))
+                    uint32 theBeastWithin[] =
+                    {
+                        //SPELL_HASH_THE_BEAST_WITHIN
+                        34471,
+                        34692,
+                        38373,
+                        50098,
+                        70029,
+                        0
+                    };
+
+                    if (u_caster->hasAurasWithId(theBeastWithin))
                         u_caster->CastSpell(u_caster, 34471, true);
                 }
             } break;
@@ -3329,7 +3456,20 @@ void Spell::HandleAddAura(uint64 guid)
             {
                 if (u_caster != nullptr)
                 {
-                    if (u_caster->HasAurasWithNameHash(SPELL_HASH_RAPID_RECUPERATION))
+                    uint32 rapidRecuperation[] =
+                    {
+                        //SPELL_HASH_RAPID_RECUPERATION
+                        53228,
+                        53232,
+                        56654,
+                        58882,
+                        58883,
+                        64180,
+                        64181,
+                        0
+                    };
+
+                    if (u_caster->hasAurasWithId(rapidRecuperation))
                         spellid = 56654;
                 }
             } break;
@@ -3347,8 +3487,20 @@ void Spell::HandleAddAura(uint64 guid)
         case 12043:
         case 29976:
         {
-            if (Target->HasAurasWithNameHash(SPELL_HASH_ARCANE_POTENCY))
-                spellid = Target->FindAuraByNameHash(SPELL_HASH_ARCANE_POTENCY)->m_spellInfo->custom_RankNumber == 1 ? 57529 : 57531;
+            uint32 arcanePotency[] =
+            {
+                //SPELL_HASH_ARCANE_POTENCY
+                24544,
+                31571,
+                31572,
+                33421,
+                33713,
+                57529,
+                57531,
+                0
+            };
+            if (Target->getAuraWithId(arcanePotency))
+                spellid = Target->getAuraWithId(arcanePotency)->m_spellInfo->custom_RankNumber == 1 ? 57529 : 57531;
         }
         break;
     }
@@ -3365,8 +3517,19 @@ void Spell::HandleAddAura(uint64 guid)
 
         Spell* spell = sSpellFactoryMgr.NewSpell(u_caster, spellInfo, true, NULL);
 
-        if (spellid == 31665 && Target->HasAurasWithNameHash(SPELL_HASH_MASTER_OF_SUBTLETY))
-            spell->forced_basepoints[0] = Target->FindAuraByNameHash(SPELL_HASH_MASTER_OF_SUBTLETY)->m_spellInfo->EffectBasePoints[0];
+        uint32 masterOfSubtlety[] =
+        {
+            //SPELL_HASH_MASTER_OF_SUBTLETY
+            31221,
+            31222,
+            31223,
+            31665,
+            31666,
+            0
+        };
+
+        if (spellid == 31665 && Target->hasAurasWithId(masterOfSubtlety))
+            spell->forced_basepoints[0] = Target->getAuraWithId(masterOfSubtlety)->m_spellInfo->EffectBasePoints[0];
 
         SpellCastTargets targets(Target->GetGUID());
         spell->prepare(&targets);
@@ -3674,7 +3837,23 @@ uint8 Spell::CanCast(bool tolerate)
                 case 45112:
                 case 67229:
                 {
-                    if (target->HasAurasWithNameHash(SPELL_HASH_MIND_CONTROL))
+                    uint32 mindControl[] =
+                    {
+                        //SPELL_HASH_MIND_CONTROL
+                        605,
+                        11446,
+                        15690,
+                        36797,
+                        36798,
+                        43550,
+                        43871,
+                        43875,
+                        45112,
+                        67229,
+                        0
+                    };
+
+                    if (target->hasAurasWithId(mindControl))
                         return SPELL_FAILED_BAD_TARGETS;
                 } break;
                 // SPELL_HASH_DEATH_PACT
@@ -3750,7 +3929,23 @@ uint8 Spell::CanCast(bool tolerate)
      */
     if (u_caster)
     {
-        if (u_caster->HasAurasWithNameHash(SPELL_HASH_BLADESTORM))
+        uint32 bladestorm[] =
+        {
+            //SPELL_HASH_BLADESTORM
+            9632,
+            35131,
+            46924,
+            63784,
+            63785,
+            65946,
+            65947,
+            67541,
+            69652,
+            69653,
+            0
+        };
+
+        if (u_caster->hasAurasWithId(bladestorm))
         {
             switch (GetSpellInfo()->getId())
             {
@@ -4552,7 +4747,23 @@ uint8 Spell::CanCast(bool tolerate)
 
             if (p_caster != NULL)
             {
-                if (p_caster->HasAurasWithNameHash(SPELL_HASH_BLADESTORM))
+                uint32 bladestorm[] =
+                {
+                    //SPELL_HASH_BLADESTORM
+                    9632,
+                    35131,
+                    46924,
+                    63784,
+                    63785,
+                    65946,
+                    65947,
+                    67541,
+                    69652,
+                    69653,
+                    0
+                };
+
+                if (p_caster->hasAurasWithId(bladestorm))
                 {
                     switch (GetSpellInfo()->getId())
                     {
@@ -5080,8 +5291,32 @@ uint8 Spell::CanCast(bool tolerate)
             //check if we are trying to stealth or turn invisible but it is not allowed right now
             if (IsStealthSpell() || IsInvisibilitySpell())
             {
+                uint32 faerieFireFeral[] =
+                {
+                    //SPELL_HASH_FAERIE_FIRE__FERAL_
+                    16857,
+                    60089,
+                    0
+                };
+
                 //if we have Faerie Fire, we cannot stealth or turn invisible
-                if (u_caster->FindAuraByNameHash(SPELL_HASH_FAERIE_FIRE) || u_caster->FindAuraByNameHash(SPELL_HASH_FAERIE_FIRE__FERAL_))
+                uint32 faerieFire[] =
+                {
+                    //SPELL_HASH_FAERIE_FIRE
+                    770,
+                    6950,
+                    13424,
+                    13752,
+                    16498,
+                    20656,
+                    21670,
+                    25602,
+                    32129,
+                    65863,
+                    0
+                };
+
+                if (u_caster->getAuraWithId(faerieFire) || u_caster->hasAurasWithId(faerieFireFeral))
                     return SPELL_FAILED_SPELL_UNAVAILABLE;
             }
         }
@@ -6482,7 +6717,15 @@ void Spell::Heal(int32 amount, bool ForceCrit)
         critchance = float2int32(u_caster->spellcritperc + u_caster->SpellCritChanceSchool[school]);
 
         //Sacred Shield
-        if (unitTarget->HasAurasWithNameHash(SPELL_HASH_SACRED_SHIELD))
+        uint32 sacredShield[] =
+        {
+            //SPELL_HASH_SACRED_SHIELD
+            53601,
+            58597,
+            0
+        };
+
+        if (unitTarget->hasAurasWithId(sacredShield))
         {
             switch (m_spellInfo->getId())
             {
@@ -6994,7 +7237,7 @@ bool Spell::Reflect(Unit* refunit)
             if (Rand((float)(*i)->chance))
             {
                 //the god blessed special case : mage - Frost Warding = is an augmentation to frost warding
-                if ((*i)->require_aura_hash && !refunit->HasAurasWithNameHash((*i)->require_aura_hash))
+                if ((*i)->spellId && !refunit->hasAurasWithId((*i)->spellId))
                     continue;
 
                 if ((*i)->infront == true)

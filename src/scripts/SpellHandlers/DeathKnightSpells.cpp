@@ -87,8 +87,16 @@ bool DeathStrike(uint32 i, Spell* pSpell)
         // Calculate heal amount with diseases on target
         uint32 val = static_cast<uint32>(amt * count);
 
-        Aura* aur = pSpell->p_caster->FindAuraByNameHash(SPELL_HASH_IMPROVED_DEATH_STRIKE);
-        if (aur != NULL)
+        uint32 improvedDeathStrike[] =
+        {
+            //SPELL_HASH_IMPROVED_DEATH_STRIKE
+            62905,
+            62908,
+            0
+        };
+
+        Aura* aur = pSpell->p_caster->getAuraWithId(improvedDeathStrike);
+        if (aur != nullptr)
             val += val * (aur->GetSpellInfo()->EffectBasePoints[2] + 1) / 100;
 
         if (val > 0)
