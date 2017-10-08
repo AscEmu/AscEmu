@@ -2974,7 +2974,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
 
     if (m_Unit->IsCreature())
     {
-        if (!isAiState(AI_STATE_ATTACKING))
+        if (isAiState(AI_STATE_IDLE))
         {
             if (getUnitToFollow() == nullptr)
             {
@@ -4824,11 +4824,7 @@ void AIInterface::OnMoveCompleted()
 
 void AIInterface::MoveEvadeReturn()
 {
-    if (!MoveTo(m_returnX, m_returnY, m_returnZ) && mSplinePriority == SPLINE_PRIORITY_MOVEMENT)
-    {
-        m_Unit->SetPosition(m_returnX, m_returnY, m_returnZ, m_Unit->GetSpawnO());
-        StopMovement(0);
-    }
+    generateAndSendSplinePath(m_returnX, m_returnY, m_returnZ);
 }
 
 void AIInterface::EventForceRedirected(Unit* pUnit, uint32 misc1)
