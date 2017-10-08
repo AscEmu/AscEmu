@@ -3899,7 +3899,7 @@ void Spell::SpellEffectDispel(uint32 i) // Dispel
 
                     dispelledSpells.push_back(aursp->getId());
 
-                    unitTarget->RemoveAllAuras(aursp->getId(), aur->GetCasterGUID());
+                    unitTarget->removeAllAurasByIdForGuid(aursp->getId(), aur->GetCasterGUID());
                     AuraRemoved = true;
 
                     if (--damage <= 0)
@@ -5358,24 +5358,8 @@ void Spell::SpellEffectDispelMechanic(uint32 i)
 {
     if (!unitTarget || !unitTarget->isAlive())
         return;
-    /* this was already working before...
-    uint32 sMisc = GetProto()->EffectMiscValue[i];
 
-    for (uint32 x = 0 ; x<MAX_AURAS ; x++)
-    {
-    if (unitTarget->m_auras[x] && !unitTarget->m_auras[x]->IsPositive())
-    {
-    if (unitTarget->m_auras[x]->GetSpellProto()->MechanicsType == sMisc)
-    unitTarget->m_auras[x]->Remove();
-    }
-    }
-    */
     unitTarget->RemoveAllAurasByMechanic(GetSpellInfo()->EffectMiscValue[i], GetSpellInfo()->EffectBasePoints[i], false);
-
-    /*Shady: if it's about Daze spell - dismount should be done by RemoveAllAurasByMechanic.
-    We don't need useless code or hackfixes here, so commented.*/
-    //if (playerTarget && GetProto()->custom_NameHash == SPELL_HASH_DAZED && playerTarget->IsMounted())
-    //  playerTarget->RemoveAura(playerTarget->m_MountSpellId);
 }
 
 void Spell::SpellEffectSummonDeadPet(uint32 i)
@@ -6009,7 +5993,7 @@ void Spell::SpellEffectSpellSteal(uint32 i)
 
                     uint32 aurdur = (aur->GetDuration() > 120000 ? 120000 : aur->GetDuration());
                     Aura* aura = sSpellFactoryMgr.NewAura(aursp, aurdur, u_caster, u_caster);
-                    uint32 aur_removed = unitTarget->RemoveAllAuraByNameHash(aursp->custom_NameHash);
+                    uint32 aur_removed = unitTarget->removeAllAurasByIdReturnCount(aursp->getId());
                     for (uint8 j = 0; j < 3; j++)
                     {
                         if (aura->GetSpellInfo()->Effect[j])

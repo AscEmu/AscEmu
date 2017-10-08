@@ -63,7 +63,7 @@ void DalaranSewers::HookOnAreaTrigger(Player* plr, uint32 trigger)
     {
         case 5347:
         case 5348:
-            plr->RemoveAllAuraById(48018);      // Demonic Circle
+            plr->removeAllAurasById(48018);      // Demonic Circle
             break;
         default:
             LOG_ERROR("Encountered unhandled areatrigger id %u", trigger);

@@ -1460,15 +1460,6 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
         //these are player talents. Fuckem they pull the emu speed down
         if (IsPlayer())
         {
-            if (ospinfo->custom_ProcOnNameHash[0] != 0)
-            {
-                if (CastingSpell == NULL)
-                    continue;
-
-                if (CastingSpell->custom_NameHash != ospinfo->custom_ProcOnNameHash[0] && CastingSpell->custom_NameHash != ospinfo->custom_ProcOnNameHash[1] && CastingSpell->custom_NameHash != ospinfo->custom_ProcOnNameHash[2])
-                    continue;
-            }
-
             uint32 talentlevel = 0;
             switch (origId)
             {
@@ -5620,7 +5611,6 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     if (!CastingSpell)
                         continue;
 
-                    //CastingSpell->custom_NameHash != SPELL_HASH_JUDGEMENT_OF_THE_CRUSADER &&
                     switch (CastingSpell->getId())
                     {
                         case 31804:
@@ -8509,7 +8499,7 @@ void Unit::AddAura(Aura* aur)
             {
                 Unit* prev_target = this->GetMapMgr()->GetUnit(prev_target_guid);
                 if (prev_target != NULL)
-                    prev_target->RemoveAllAuraByNameHash(aur->GetSpellInfo()->custom_NameHash);
+                    prev_target->removeAllAurasById(aur->GetSpellInfo()->getId());
             }
         }
 
@@ -8520,7 +8510,7 @@ void Unit::AddAura(Aura* aur)
         //  3) attacker A cast on target B, and aura is removed from target A
         //  4) attacker B cast on target A, and aura is not removed from target B, because caster A is now the one that casted on target B
         if (prev_target_guid && prev_target_guid != aur->GetTarget()->GetGUID())
-            RemoveAllAuraByNameHash(aur->GetSpellInfo()->custom_NameHash);
+            removeAllAurasById(aur->GetSpellInfo()->getId());
     }
 
     uint16 AuraSlot = 0xFFFF;
@@ -9022,7 +9012,7 @@ void Unit::AddAura(Aura* aur)
             };
             pCaster->removeAllAurasById(divineShield);
             //SPELL_HASH_BLESSING_OF_PROTECTION
-            pCaster->RemoveAllAuraById(41450);
+            pCaster->removeAllAurasById(41450);
         }
     }
 
@@ -9225,76 +9215,6 @@ bool Unit::RemoveAuraByItemGUID(uint32 spellId, uint64 guid)
     return false;
 }
 
-bool Unit::RemoveAuraByNameHash(uint32 namehash)
-{
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-    {
-        if (m_auras[x])
-        {
-            if (m_auras[x]->GetSpellInfo()->custom_NameHash == namehash)
-            {
-                m_auras[x]->Remove();
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
-bool Unit::RemoveAllAuras(uint32 spellId, uint64 guid)
-{
-    bool res = false;
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-    {
-        if (m_auras[x])
-        {
-            if (m_auras[x]->GetSpellId() == spellId)
-            {
-                if (!guid || m_auras[x]->m_casterGuid == guid)
-                {
-                    m_auras[x]->Remove();
-                    res = true;
-                }
-            }
-        }
-    }
-    return res;
-}
-
-uint32 Unit::RemoveAllAuraByNameHash(uint32 namehash)
-{
-    uint32 res = 0;
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-    {
-        if (m_auras[x])
-        {
-            if (m_auras[x]->GetSpellInfo()->custom_NameHash == namehash)
-            {
-                m_auras[x]->Remove();
-                res++;
-            }
-        }
-    }
-    return res;
-}
-
-uint32 Unit::RemoveAllAuraById(uint32 Id)
-{
-    uint32 res = 0;
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-    {
-        if (m_auras[x])
-        {
-            if (m_auras[x]->GetSpellId() == Id)
-            {
-                m_auras[x]->Remove();
-                res++;
-            }
-        }
-    }
-    return res;
-}
-
 void Unit::RemoveNegativeAuras()
 {
     for (uint32 x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_REMOVABLE_AURAS_END; x++)
@@ -9336,18 +9256,6 @@ void Unit::RemoveAllAuraType(uint32 auratype)
             m_auras[x]->Remove();//remove all morph auras containing to this spell (like wolf morph also gives speed)
 }
 
-//ex:to remove morph spells
-void Unit::RemoveAllAuraFromSelfType2(uint32 auratype, uint32 butskip_hash)
-{
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-        if (m_auras[x])
-        {
-            SpellInfo* proto = m_auras[x]->GetSpellInfo();
-            if (proto->custom_BGR_one_buff_from_caster_on_self == auratype && proto->custom_NameHash != butskip_hash && m_auras[x]->GetCaster() == this)
-                RemoveAura(m_auras[x]->GetSpellId());//remove all morph auras containing to this spell (like wolf morph also gives speed)
-        }
-}
-
 void Unit::RemoveAllAurasByRequiredShapeShift(uint32 mask)
 {
     Aura* aura;
@@ -9387,49 +9295,6 @@ bool Unit::SetAurDuration(uint32 spellId, uint32 duration)
     sEventMgr.ModifyEventTimeLeft(aur, EVENT_AURA_REMOVE, duration);
 
     return true;
-}
-
-Aura* Unit::FindAuraByNameHash(uint32 namehash, uint64 guid)
-{
-    Aura* aura;
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-    {
-        aura = m_auras[x];
-        if (aura != NULL && aura->GetSpellInfo()->custom_NameHash == namehash && aura->m_casterGuid == guid)
-            return aura;
-    }
-    return NULL;
-}
-
-Aura* Unit::FindAuraByNameHash(uint32 namehash)
-{
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-        if (m_auras[x] && m_auras[x]->GetSpellInfo()->custom_NameHash == namehash)
-            return m_auras[x];
-    return NULL;
-}
-
-Aura* Unit::FindAura(uint32* spellId)
-{
-    Aura* aura;
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-    {
-        aura = m_auras[x];
-
-        if (aura == NULL)
-            continue;
-
-        for (uint8 j = 0;; j++)
-        {
-            if (!spellId[j])
-                break;
-
-            if (aura->GetSpellId() == spellId[j])
-                return aura;
-        }
-    }
-
-    return NULL;
 }
 
 void Unit::_UpdateSpells(uint32 time)
@@ -10108,15 +9973,6 @@ bool Unit::HasBuff(uint32 spellid, uint64 guid)
     return false;
 }
 
-bool Unit::HasVisialPosAurasOfNameHashWithCaster(uint32 namehash, Unit* caster)
-{
-    for (uint32 i = MAX_POSITIVE_AURAS_EXTEDED_START; i < MAX_POSITIVE_AURAS_EXTEDED_END; ++i)
-        if (m_auras[i] && m_auras[i]->GetSpellInfo()->custom_NameHash == namehash && m_auras[i]->GetCasterGUID() == caster->GetGUID())
-            return true;
-
-    return false;
-}
-
 uint8 Unit::CastSpell(Unit* Target, SpellInfo* Sp, bool triggered)
 {
     if (Sp == NULL)
@@ -10257,23 +10113,6 @@ bool Unit::HasAurasOfBuffType(uint32 buff_type, const uint64 & guid, uint32 skip
     return false;
 }
 
-uint32 Unit::FindAuraCountByHash(uint32 HashName, uint32 maxcount)
-{
-    uint32 count = 0;
-
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
-    {
-        if (m_auras[x] && (m_auras[x]->GetSpellInfo()->custom_NameHash == HashName))
-        {
-            count++;
-            if (count == maxcount)
-                break;
-        }
-    }
-
-    return count;
-}
-
 AuraCheckResponse Unit::AuraCheck(SpellInfo* proto, Object* caster)
 {
     AuraCheckResponse resp;
@@ -10297,9 +10136,12 @@ AuraCheckResponse Unit::AuraCheck(SpellInfo* proto, Object* caster)
             // but first we check if it has the same effects
             aura_sp = aura->GetSpellInfo();
 
-            if ((aura_sp->Effect[0] == proto->Effect[0] && (aura_sp->Effect[0] != SPELL_EFFECT_APPLY_AURA || aura_sp->EffectApplyAuraName[0] == proto->EffectApplyAuraName[0])) &&
-                (aura_sp->Effect[1] == proto->Effect[1] && (aura_sp->Effect[1] != SPELL_EFFECT_APPLY_AURA || aura_sp->EffectApplyAuraName[1] == proto->EffectApplyAuraName[1])) &&
-                (aura_sp->Effect[2] == proto->Effect[2] && (aura_sp->Effect[2] != SPELL_EFFECT_APPLY_AURA || aura_sp->EffectApplyAuraName[2] == proto->EffectApplyAuraName[2])))
+            if ((aura_sp->Effect[0] == proto->Effect[0] && (aura_sp->Effect[0] != SPELL_EFFECT_APPLY_AURA ||
+                aura_sp->EffectApplyAuraName[0] == proto->EffectApplyAuraName[0])) &&
+                (aura_sp->Effect[1] == proto->Effect[1] && (aura_sp->Effect[1] != SPELL_EFFECT_APPLY_AURA ||
+                aura_sp->EffectApplyAuraName[1] == proto->EffectApplyAuraName[1])) &&
+                (aura_sp->Effect[2] == proto->Effect[2] && (aura_sp->Effect[2] != SPELL_EFFECT_APPLY_AURA ||
+                aura_sp->EffectApplyAuraName[2] == proto->EffectApplyAuraName[2])))
             {
                 resp.Misc = aura->GetSpellInfo()->getId();
 
@@ -10342,9 +10184,12 @@ AuraCheckResponse Unit::AuraCheck(SpellInfo* proto, Aura* aur, Object* caster)
     {
         // we've got an aura with the same name as the one we're trying to apply
         // but first we check if it has the same effects
-        if ((aura_sp->Effect[0] == proto->Effect[0] && (aura_sp->Effect[0] != SPELL_EFFECT_APPLY_AURA || aura_sp->EffectApplyAuraName[0] == proto->EffectApplyAuraName[0])) &&
-            (aura_sp->Effect[1] == proto->Effect[1] && (aura_sp->Effect[1] != SPELL_EFFECT_APPLY_AURA || aura_sp->EffectApplyAuraName[1] == proto->EffectApplyAuraName[1])) &&
-            (aura_sp->Effect[2] == proto->Effect[2] && (aura_sp->Effect[2] != SPELL_EFFECT_APPLY_AURA || aura_sp->EffectApplyAuraName[2] == proto->EffectApplyAuraName[2])))
+        if ((aura_sp->Effect[0] == proto->Effect[0] &&
+            (aura_sp->Effect[0] != SPELL_EFFECT_APPLY_AURA || aura_sp->EffectApplyAuraName[0] == proto->EffectApplyAuraName[0])) &&
+            (aura_sp->Effect[1] == proto->Effect[1] &&
+            (aura_sp->Effect[1] != SPELL_EFFECT_APPLY_AURA || aura_sp->EffectApplyAuraName[1] == proto->EffectApplyAuraName[1])) &&
+            (aura_sp->Effect[2] == proto->Effect[2] &&
+            (aura_sp->Effect[2] != SPELL_EFFECT_APPLY_AURA || aura_sp->EffectApplyAuraName[2] == proto->EffectApplyAuraName[2])))
         {
             resp.Misc = aur->GetSpellInfo()->getId();
 
@@ -11360,17 +11205,6 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
             a->Remove();
         }
     }
-}
-
-int Unit::HasAurasWithNameHash(uint32 name_hash)
-{
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
-    {
-        if (m_auras[x] && m_auras[x]->GetSpellInfo()->custom_NameHash == name_hash)
-            return m_auras[x]->m_spellInfo->getId();
-    }
-
-    return 0;
 }
 
 bool Unit::HasAuraWithName(uint32 name)
@@ -13123,7 +12957,7 @@ void Unit::SetDualWield(bool enabled)
 
     // Titan's grip
     if (!enabled && IsPlayer())
-        RemoveAllAuraById(49152);
+        removeAllAurasById(49152);
 }
 
 void Unit::AddGarbageAura(Aura* aur)

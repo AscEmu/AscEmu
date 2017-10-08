@@ -1382,7 +1382,7 @@ void Spell::castMe(bool check)
                         };
                         p_caster->removeAllAurasById(divineProtection);
                         //SPELL_HASH_BLESSING_OF_PROTECTION
-                        p_caster->RemoveAllAuraById(41450);
+                        p_caster->removeAllAurasById(41450);
                     } break;
                     case 23333:
                     case 23335:
@@ -1421,7 +1421,7 @@ void Spell::castMe(bool check)
                         };
                         p_caster->removeAllAurasById(divineProtection);
                         //SPELL_HASH_BLESSING_OF_PROTECTION
-                        p_caster->RemoveAllAuraById(41450);
+                        p_caster->removeAllAurasById(41450);
                     } break;
                         // cases for stealth - etc
                         // we can cast the spell, but we drop the flag (if we have it)
@@ -2089,7 +2089,7 @@ void Spell::finish(bool successful)
             {
                 //Maelstrom Weapon
                 if (u_caster != nullptr)
-                    p_caster->RemoveAllAuras(53817, u_caster->GetGUID());
+                    p_caster->removeAllAurasByIdForGuid(53817, u_caster->GetGUID());
             } break;
         }
     }
@@ -3769,14 +3769,6 @@ float Spell::GetRadius(uint32 i)
 uint32 Spell::GetBaseThreat(uint32 dmg)
 {
     //there should be a formula to determine what spell cause threat and which don't
-    /*        switch(GetProto()->custom_NameHash)
-            {
-            //hunter's mark
-            case 4287212498:
-            {
-            return 0;
-            }break;
-            }*/
     return dmg;
 }
 
@@ -6859,7 +6851,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
                 case 75370:
                 {
                     //Maelstrom Weapon
-                    p_caster->RemoveAllAuras(53817, p_caster->GetGUID());
+                    p_caster->removeAllAurasByIdForGuid(53817, p_caster->GetGUID());
                 } break;
             }
         }

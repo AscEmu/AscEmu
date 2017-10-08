@@ -4214,12 +4214,6 @@ void ApplyNormalFixes()
     // Restoration
     ////////////////////////////////////////////////////////////
 
-    // Druid - Tree Form Aura
-    /* Zyres: Genius... Delete this! I'm not familiar with this technique, looks awesome. Unfortunately I don't understand the effect of this. SPELL_HASH_TREE_OF_LIFE is not used in any statement...
-    sp = checkAndReturnSpellEntry(34123);
-    if (sp != nullptr)
-        sp->custom_NameHash = 0;*/
-
     // Druid - Natural Shapeshifter
     sp = Spell::checkAndReturnSpellEntry(16833);
     if (sp != nullptr)

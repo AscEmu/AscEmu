@@ -39,7 +39,7 @@ class FirestarterTalent : public Spell
     {
         if (p_caster != NULL && target != NULL && p_caster->HasAura(54741)) // Cronicman: Player has "Firestarter" aura so we remove it AFTER casting Flamestrike.
         {
-            p_caster->RemoveAllAuraById(54741);
+            p_caster->removeAllAurasById(54741);
         }
     }
 };
@@ -52,7 +52,7 @@ class MissileBarrage : public Spell
     {
         if (p_caster != NULL && target != NULL && p_caster->HasAura(44401)) // Player has "Missile Barrage" aura so we remove it AFTER casting arcane missles.
         {
-            p_caster->RemoveAllAuraById(44401);
+            p_caster->removeAllAurasById(44401);
         }
     }
 };

@@ -238,7 +238,7 @@ bool JudgementLightWisdomJustice(uint32 i, Spell* pSpell)
         Unit* t = caster->GetMapMgr()->GetUnit(prev_target);
         if (t != nullptr)
         {
-            t->RemoveAllAuraByNameHash(judgements[index]);
+            t->removeAllAurasById(judgements[index]);
         }
 
         caster->removeSingleTargetGuidForAura(judgements[index]);
@@ -247,7 +247,7 @@ bool JudgementLightWisdomJustice(uint32 i, Spell* pSpell)
     // Search for seal to unleash its energy
     uint32 seals[] = { 20375, 20165, 20164, 21084, 31801, 53736, 20166, 0 };
 
-    Aura* aura = caster->FindAura(seals);
+    Aura* aura = caster->getAuraWithId(seals);
     if (aura == nullptr)
     {
         return true;

@@ -39,19 +39,6 @@ void SpellFactoryMgr::AddSpellById(uint32 spellId, spell_factory_function spell_
     AddSpellByEntry(sSpellCustomizations.GetSpellInfo(spellId), spell_func);
 }
 
-void SpellFactoryMgr::AddSpellByNameHash(uint32 name_hash, spell_factory_function spell_func)
-{
-    for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
-    {
-        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(it->first);
-
-        if (!sp || sp->custom_NameHash != name_hash)
-            continue;
-
-        AddSpellByEntry(sp, spell_func);
-    }
-}
-
 void SpellFactoryMgr::AddAuraByEntry(SpellInfo* info, aura_factory_function aura_func)
 {
     if (info != NULL)
@@ -61,19 +48,6 @@ void SpellFactoryMgr::AddAuraByEntry(SpellInfo* info, aura_factory_function aura
 void SpellFactoryMgr::AddAuraById(uint32 spellId, aura_factory_function aura_func)
 {
     AddAuraByEntry(sSpellCustomizations.GetSpellInfo(spellId), aura_func);
-}
-
-void SpellFactoryMgr::AddAuraByNameHash(uint32 name_hash, aura_factory_function aura_func)
-{
-    for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
-    {
-        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(it->first);
-
-        if (!sp || sp->custom_NameHash != name_hash)
-            continue;
-
-        AddAuraByEntry(sp, aura_func);
-    }
 }
 
 SpellInfo* SpellFactoryMgr::GetSpellEntryByDifficulty(uint32 id, uint8 difficulty)

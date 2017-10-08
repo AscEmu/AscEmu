@@ -11130,14 +11130,14 @@ void Player::EventSummonPet(Pet* new_pet)
         SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(SpellID);
         if (spellInfo->custom_c_is_flags & SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER)
         {
-            this->RemoveAllAuras(SpellID, this->GetGUID());   //this is required since unit::addaura does not check for talent stacking
+            this->removeAllAurasByIdForGuid(SpellID, this->GetGUID());   //this is required since unit::addaura does not check for talent stacking
             SpellCastTargets targets(this->GetGUID());
             Spell* spell = sSpellFactoryMgr.NewSpell(this, spellInfo, true, NULL);    //we cast it as a proc spell, maybe we should not !
             spell->prepare(&targets);
         }
         if (spellInfo->custom_c_is_flags & SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET)
         {
-            this->RemoveAllAuras(SpellID, this->GetGUID());   //this is required since unit::addaura does not check for talent stacking
+            this->removeAllAurasByIdForGuid(SpellID, this->GetGUID());   //this is required since unit::addaura does not check for talent stacking
             SpellCastTargets targets(new_pet->GetGUID());
             Spell* spell = sSpellFactoryMgr.NewSpell(this, spellInfo, true, NULL);    //we cast it as a proc spell, maybe we should not !
             spell->prepare(&targets);

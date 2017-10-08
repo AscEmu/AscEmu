@@ -2817,7 +2817,7 @@ void WorldSession::HandleRemoveGlyph(WorldPacket& recv_data)
         return;
 
     _player->SetGlyph(glyphNum, 0);
-    _player->RemoveAllAuras(glyph_properties->SpellID, 0);
+    _player->removeAllAurasById(glyph_properties->SpellID);
     _player->m_specs[_player->m_talentActiveSpec].glyphs[glyphNum] = 0;
     _player->smsg_TalentsInfo(false);
 }

@@ -918,6 +918,40 @@ void Unit::removeAllAurasById(uint32_t* auraId)
     }
 }
 
+void Unit::removeAllAurasByIdForGuid(uint32_t spellId, uint64_t guid)
+{
+    for (uint32_t x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
+    {
+        if (m_auras[x])
+        {
+            if (m_auras[x]->GetSpellId() == spellId)
+            {
+                if (!guid || m_auras[x]->m_casterGuid == guid)
+                {
+                    m_auras[x]->Remove();
+                }
+            }
+        }
+    }
+}
+
+uint32_t Unit::removeAllAurasByIdReturnCount(uint32_t auraId)
+{
+    uint32_t res = 0;
+    for (uint32_t x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
+    {
+        if (m_auras[x])
+        {
+            if (m_auras[x]->GetSpellInfo()->getId() == auraId)
+            {
+                m_auras[x]->Remove();
+                ++res;
+            }
+        }
+    }
+    return res;
+}
+
 uint64_t Unit::getSingleTargetGuidForAura(uint32_t spell)
 {
     auto itr = m_singleTargetAura.find(spell);

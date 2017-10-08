@@ -267,7 +267,6 @@ public:
     uint32 getCustom_BGR_one_buff_from_caster_on_self() const { return custom_BGR_one_buff_from_caster_on_self; }
     uint32 getCustom_c_is_flags() const { return custom_c_is_flags; }
     uint32 getCustom_RankNumber() const { return custom_RankNumber; }
-    uint32 getCustom_NameHash() const { return custom_NameHash; }
     uint32 getCustom_ThreatForSpell() const { return custom_ThreatForSpell; }
     float getCustom_ThreatForSpellCoef() const { return custom_ThreatForSpellCoef; }
 

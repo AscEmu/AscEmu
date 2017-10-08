@@ -665,7 +665,7 @@ bool DemonicCircleSummon(uint32 i, Aura* a, bool apply)
     }
     else
     {
-        m_target->RemoveAllAuraById(62388);
+        m_target->removeAllAurasById(62388);
     }
 
     return true;

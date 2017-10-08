@@ -901,7 +901,7 @@ public:
         Unit* caster = static_cast<Player*>(aura->GetCaster());
         if (caster == NULL)
         {
-            mTarget->RemoveAuraByNameHash(mSpell->custom_NameHash);
+            mTarget->removeAllAurasById(mSpell->getId());
             return true;
         }
 
@@ -922,7 +922,7 @@ public:
 
         Player* new_plr = grp->GetRandomPlayerInRangeButSkip(plr, 40.0f, plr);
 
-        mTarget->RemoveAllAuraByNameHash(mSpell->custom_NameHash);
+        mTarget->removeAllAurasById(mSpell->getId());
 
         if (new_plr != NULL)
             caster->CastSpell(new_plr, mSpell, value, count - 1, true);

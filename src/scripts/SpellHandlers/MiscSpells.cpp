@@ -612,7 +612,7 @@ bool EyeOfAcherusVisual(uint32 i, Spell* spell)
         return true;
 
     if (player->HasAura(51892))
-        player->RemoveAllAuraById(51892);
+        player->removeAllAurasById(51892);
     return true;
 }
 
@@ -623,7 +623,7 @@ bool RecallEyeOfAcherus(uint32 i, Spell* spell)
     if (player == nullptr)
         return true;
 
-    player->RemoveAllAuraById(51852);
+    player->removeAllAurasById(51852);
     return true;
 }
 

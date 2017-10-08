@@ -95,11 +95,9 @@ class SERVER_DECL SpellFactoryMgr: public Singleton < SpellFactoryMgr >
 
 		void AddSpellByEntry(SpellInfo* info, spell_factory_function spell_func);
 		void AddSpellById(uint32 spellId, spell_factory_function spell_func);
-		void AddSpellByNameHash(uint32 name_hash, spell_factory_function spell_func);
 
 		void AddAuraByEntry(SpellInfo* info, aura_factory_function aura_func);
 		void AddAuraById(uint32 spellId, aura_factory_function aura_func);
-		void AddAuraByNameHash(uint32 name_hash, aura_factory_function aura_func);
 
 		void Setup();
 

@@ -800,9 +800,6 @@ Aura::Aura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool 
 
     if (caster->IsUnit())
     {
-        if (m_spellInfo->custom_BGR_one_buff_from_caster_on_self != 0)
-            static_cast< Unit* >(caster)->RemoveAllAuraFromSelfType2(m_spellInfo->custom_BGR_one_buff_from_caster_on_self, m_spellInfo->custom_NameHash);
-
         if (isAttackable(caster, target))
         {
             SetNegative();
@@ -2361,7 +2358,7 @@ void Aura::EventPeriodicHeal(uint32 amount)
     int amp = m_spellInfo->EffectAmplitude[mod->i];
     if (!amp)
         amp = event_GetEventPeriod(EVENT_AURA_PERIODIC_HEAL);
-    //	if (m_spellProto->custom_NameHash != SPELL_HASH_HEALING_STREAM)// Healing Stream is not a HOT
+    // Healing Stream is not a HOT
     {
         int32 dur = GetDuration();
         //example : Citrine Pendant of Golden Healing is in AA aura that does not have duration. In this case he would have full healbonus benefit
@@ -3791,7 +3788,7 @@ void Aura::SpellAuraModDecreaseSpeed(bool apply)
             m_flags |= 1 << mod->i;
             return;
         }
-        switch (m_spellInfo->custom_NameHash)
+        switch (m_spellInfo->getId())
         {
             // SPELL_HASH_STEALTH
             case 1784:
