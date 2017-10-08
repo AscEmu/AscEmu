@@ -23,13 +23,10 @@
 
 class SpellProc;
 class Object;
+
 #include "SpellInfo.hpp"
 
 class Unit;
-
-#define SPELL_PROC_FACTORY_FUNCTION(T) \
-  public: \
-	static SpellProc* Create() { return new T(); }
 
 typedef SpellProc* (*spell_proc_factory_function)();
 
@@ -123,7 +120,6 @@ class SpellProcMgr : public Singleton < SpellProcMgr >
     private:
 
         SpellProcMap mSpellProc;
-        /*SpellProcMap mSpellProcNameHash;*/
 
         void AddById(uint32 spellId, spell_proc_factory_function spell_proc)
         {
@@ -137,11 +133,6 @@ class SpellProcMgr : public Singleton < SpellProcMgr >
                 mSpellProc.insert(std::make_pair(spellId[y], spell_proc));
             }
         }
-
-        /*void AddByNameHash(uint32 name_hash, spell_proc_factory_function spell_proc)
-        {
-            mSpellProcNameHash.insert(std::make_pair(name_hash, spell_proc));
-        }*/
 
         void Setup();
 

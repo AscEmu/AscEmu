@@ -119,15 +119,9 @@ SpellProc* SpellProcMgr::NewSpellProc(Unit* target, SpellInfo* spell, SpellInfo*
     spell_proc_factory_function ptr = NULL;
 
     // Search for SpellProc in unordered_map
-   /* itr = mSpellProcNameHash.find(spell->custom_NameHash);
-    if (itr != mSpellProcNameHash.end())
+    itr = mSpellProc.find(spell->getId());
+    if (itr != mSpellProc.end())
         ptr = itr->second;
-    else
-    {*/
-        itr = mSpellProc.find(spell->getId());
-        if (itr != mSpellProc.end())
-            ptr = itr->second;
-    //}
 
     if (ptr != NULL)
         result = (*ptr)();      // Found. Create a new object of this specific class

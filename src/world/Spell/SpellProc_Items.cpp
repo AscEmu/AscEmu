@@ -29,7 +29,9 @@
 
 class TwinBladesOfAzzinothSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(TwinBladesOfAzzinothSpellProc);
+public:
+
+    static SpellProc* Create() { return new TwinBladesOfAzzinothSpellProc(); }
 
     void Init(Object* obj)
     {

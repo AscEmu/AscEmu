@@ -40,7 +40,9 @@ using ascemu::World::Spell::Helpers::spellModPercentageIntValue;
 // Warrior ProcScripts
 class DamageShieldSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(DamageShieldSpellProc);
+public:
+
+    static SpellProc* Create() { return new DamageShieldSpellProc(); }
 
     bool CanProc(Unit* victim, SpellInfo* CastingSpell)
     {
@@ -66,7 +68,9 @@ class DamageShieldSpellProc : public SpellProc
 
 class JuggernautSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(JuggernautSpellProc);
+public:
+
+    static SpellProc* Create() { return new JuggernautSpellProc(); }
 
     bool CanProc(Unit* victim, SpellInfo* CastingSpell)
     {
@@ -178,7 +182,9 @@ class JuggernautSpellProc : public SpellProc
 // Shaman ProcScripts
 class FrostBrandAttackSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(FrostBrandAttackSpellProc);
+public:
+
+    static SpellProc* Create() { return new FrostBrandAttackSpellProc(); }
 
     void Init(Object* obj)
     {
@@ -194,7 +200,9 @@ class FrostBrandAttackSpellProc : public SpellProc
 
 class EarthShieldSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(EarthShieldSpellProc);
+public:
+
+    static SpellProc* Create() { return new EarthShieldSpellProc(); }
 
     bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
@@ -219,7 +227,9 @@ class EarthShieldSpellProc : public SpellProc
 
 class FlametongueWeaponSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(FlametongueWeaponSpellProc);
+public:
+
+    static SpellProc* Create() { return new FlametongueWeaponSpellProc(); }
 
     void Init(Object* obj)
     {
@@ -306,7 +316,9 @@ private:
 // Rogue ProcScripts
 class PoisonSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(PoisonSpellProc);
+public:
+
+    static SpellProc* Create() { return new PoisonSpellProc(); }
 
     PoisonSpellProc()
     {
@@ -367,7 +379,9 @@ protected:
 
 class WoundPoisonSpellProc : public PoisonSpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(WoundPoisonSpellProc);
+public:
+
+    static SpellProc* Create() { return new WoundPoisonSpellProc(); }
 
     void Init(Object* obj)
     {
@@ -379,7 +393,9 @@ class WoundPoisonSpellProc : public PoisonSpellProc
 
 class InstantPoisonSpellProc : public PoisonSpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(InstantPoisonSpellProc);
+public:
+
+    static SpellProc* Create() { return new InstantPoisonSpellProc(); }
 
     void Init(Object* obj)
     {
@@ -391,7 +407,9 @@ class InstantPoisonSpellProc : public PoisonSpellProc
 
 class CutToTheChaseSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(CutToTheChaseSpellProc);
+public:
+
+    static SpellProc* Create() { return new CutToTheChaseSpellProc(); }
 
     bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
@@ -416,7 +434,9 @@ class CutToTheChaseSpellProc : public SpellProc
 
 class DeadlyBrewSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(DeadlyBrewSpellProc);
+public:
+
+    static SpellProc* Create() { return new DeadlyBrewSpellProc(); }
 
     bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
@@ -428,7 +448,9 @@ class DeadlyBrewSpellProc : public SpellProc
 
 class WaylaySpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(WaylaySpellProc);
+public:
+
+    static SpellProc* Create() { return new WaylaySpellProc(); }
 
     void Init(Object* obj)
     {
@@ -441,7 +463,9 @@ class WaylaySpellProc : public SpellProc
 // Priest ProcScripts
 class ImprovedSpiritTapSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(ImprovedSpiritTapSpellProc);
+public:
+
+    static SpellProc* Create() { return new ImprovedSpiritTapSpellProc(); }
 
     void Init(Object* obj)
     {
@@ -551,7 +575,9 @@ class ImprovedSpiritTapSpellProc : public SpellProc
 
 class SpiritTapSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(SpiritTapSpellProc);
+public:
+
+    static SpellProc* Create() { return new SpiritTapSpellProc(); }
 
     void Init(Object* obj)
     {
@@ -561,7 +587,9 @@ class SpiritTapSpellProc : public SpellProc
 
 class HolyConcentrationSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(HolyConcentrationSpellProc);
+public:
+
+    static SpellProc* Create() { return new HolyConcentrationSpellProc(); }
 
     void Init(Object* obj)
     {
@@ -574,7 +602,9 @@ class HolyConcentrationSpellProc : public SpellProc
 
 class DivineAegisSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(DivineAegisSpellProc);
+public:
+
+    static SpellProc* Create() { return new DivineAegisSpellProc(); }
 
     bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
@@ -592,7 +622,9 @@ class DivineAegisSpellProc : public SpellProc
 
 class ImprovedDevouringPlagueSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(ImprovedDevouringPlagueSpellProc);
+public:
+
+    static SpellProc* Create() { return new ImprovedDevouringPlagueSpellProc(); }
 
     bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
@@ -610,7 +642,9 @@ class ImprovedDevouringPlagueSpellProc : public SpellProc
 
 class VampiricEmbraceSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(VampiricEmbraceSpellProc);
+public:
+
+    static SpellProc* Create() { return new VampiricEmbraceSpellProc(); }
 
     bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
@@ -631,7 +665,9 @@ class VampiricEmbraceSpellProc : public SpellProc
 
 class VampiricTouchEnergizeSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(VampiricTouchEnergizeSpellProc);
+public:
+
+    static SpellProc* Create() { return new VampiricTouchEnergizeSpellProc(); }
 
     void Init(Object* obj)
     {
@@ -696,7 +732,9 @@ private:
 
 class VampiricTouchDispelDamageSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(VampiricTouchDispelDamageSpellProc);
+public:
+
+    static SpellProc* Create() { return new VampiricTouchDispelDamageSpellProc(); }
 
     void Init(Object* obj)
     {
@@ -744,7 +782,9 @@ private:
 
 class EmpoweredRenewSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(EmpoweredRenewSpellProc);
+public:
+
+    static SpellProc* Create() { return new EmpoweredRenewSpellProc(); }
 
     bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
@@ -777,7 +817,9 @@ class EmpoweredRenewSpellProc : public SpellProc
 
 class ImprovedMindBlastSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(ImprovedMindBlastSpellProc);
+public:
+
+    static SpellProc* Create() { return new ImprovedMindBlastSpellProc(); }
 
     bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
@@ -791,7 +833,9 @@ class ImprovedMindBlastSpellProc : public SpellProc
 
 class BodyAndSoulDummySpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(BodyAndSoulDummySpellProc);
+public:
+
+    static SpellProc* Create() { return new BodyAndSoulDummySpellProc(); }
 
     bool CanProc(Unit* victim, SpellInfo* CastingSpell)
     {
@@ -804,7 +848,9 @@ class BodyAndSoulDummySpellProc : public SpellProc
 
 class BodyAndSoulSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(BodyAndSoulSpellProc);
+public:
+
+    static SpellProc* Create() { return new BodyAndSoulSpellProc(); }
 
     void Init(Object* obj)
     {
@@ -815,7 +861,9 @@ class BodyAndSoulSpellProc : public SpellProc
 
 class MiserySpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(MiserySpellProc);
+public:
+
+    static SpellProc* Create() { return new MiserySpellProc(); }
 
     void Init(Object* obj)
     {
@@ -828,7 +876,9 @@ class MiserySpellProc : public SpellProc
 
 class PrayerOfMendingProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(PrayerOfMendingProc);
+public:
+
+    static SpellProc* Create() { return new PrayerOfMendingProc(); }
 
     bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
@@ -873,7 +923,9 @@ class PrayerOfMendingProc : public SpellProc
 // Paladin ProcScripts
 class SealOfCommandSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(SealOfCommandSpellProc);
+public:
+
+    static SpellProc* Create() { return new SealOfCommandSpellProc(); }
 
     void Init(Object* obj)
     {
@@ -900,7 +952,9 @@ class SealOfCommandSpellProc : public SpellProc
 
 class EyeForAnEyeSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(EyeForAnEyeSpellProc);
+public:
+
+    static SpellProc* Create() { return new EyeForAnEyeSpellProc(); }
 
     bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
@@ -925,7 +979,9 @@ class EyeForAnEyeSpellProc : public SpellProc
 
 class GraceOfTheNaaruSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(GraceOfTheNaaruSpellProc);
+public:
+
+    static SpellProc* Create() { return new GraceOfTheNaaruSpellProc(); }
 
     void Init(Object* obj)
     {
@@ -935,7 +991,9 @@ class GraceOfTheNaaruSpellProc : public SpellProc
 
 class SpiritualAttunementSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(SpiritualAttunementSpellProc);
+public:
+
+    static SpellProc* Create() { return new SpiritualAttunementSpellProc(); }
 
     bool CanProc(Unit* victim, SpellInfo* CastingSpell)
     {
@@ -948,7 +1006,9 @@ class SpiritualAttunementSpellProc : public SpellProc
 
 class PaladinSealsSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(PaladinSealsSpellProc);
+public:
+
+    static SpellProc* Create() { return new PaladinSealsSpellProc(); }
 
     void Init(Object* obj)
     {
@@ -958,7 +1018,9 @@ class PaladinSealsSpellProc : public SpellProc
 
 class SealOfCorruptionSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(SealOfCorruptionSpellProc);
+public:
+
+    static SpellProc* Create() { return new SealOfCorruptionSpellProc(); }
 
     bool CanProc(Unit* victim, SpellInfo* CastingSpell)
     {
@@ -971,7 +1033,9 @@ class SealOfCorruptionSpellProc : public SpellProc
 
 class SealOfVengeanceSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(SealOfVengeanceSpellProc);
+public:
+
+    static SpellProc* Create() { return new SealOfVengeanceSpellProc(); }
 
     bool CanProc(Unit* victim, SpellInfo* CastingSpell)
     {
@@ -986,7 +1050,9 @@ class SealOfVengeanceSpellProc : public SpellProc
 // Mage ProcScripts
 class HotStreakSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(HotStreakSpellProc);
+public:
+
+    static SpellProc* Create() { return new HotStreakSpellProc(); }
 
     void Init(Object* obj)
     {
@@ -1021,7 +1087,9 @@ private:
 // DeathKnight ProcScripts
 class ButcherySpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(ButcherySpellProc);
+public:
+
+    static SpellProc* Create() { return new ButcherySpellProc(); }
 
     bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
@@ -1033,7 +1101,9 @@ class ButcherySpellProc : public SpellProc
 
 class BladeBarrierSpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(BladeBarrierSpellProc);
+public:
+
+    static SpellProc* Create() { return new BladeBarrierSpellProc(); }
 
     void Init(Object* obj)
     {
@@ -1065,7 +1135,9 @@ class BladeBarrierSpellProc : public SpellProc
 
 class DeathRuneMasterySpellProc : public SpellProc
 {
-    SPELL_PROC_FACTORY_FUNCTION(DeathRuneMasterySpellProc);
+public:
+
+    static SpellProc* Create() { return new DeathRuneMasterySpellProc(); }
 
     bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
