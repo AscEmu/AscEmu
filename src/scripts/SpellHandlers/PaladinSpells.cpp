@@ -267,15 +267,25 @@ bool JudgementLightWisdomJustice(uint32 i, Spell* pSpell)
     caster->CastSpell(target, id, true);
 
     // Cast judgement spell
-    switch (pSpell->GetSpellInfo()->custom_NameHash)
+    switch (pSpell->GetSpellInfo()->getId())
     {
-        case SPELL_HASH_JUDGEMENT_OF_JUSTICE:
+        // SPELL_HASH_JUDGEMENT_OF_JUSTICE:
+        case 20184:
+        case 53407:
             id = 20184;
             break;
-        case SPELL_HASH_JUDGEMENT_OF_LIGHT:
+        // SPELL_HASH_JUDGEMENT_OF_LIGHT:
+        case 20185:
+        case 20267:
+        case 20271:
+        case 28775:
+        case 57774:
             id = 20185;
             break;
-        case SPELL_HASH_JUDGEMENT_OF_WISDOM:
+        // SPELL_HASH_JUDGEMENT_OF_WISDOM:
+        case 20186:
+        case 20268:
+        case 53408:
             id = 20186;
             break;
         default:
