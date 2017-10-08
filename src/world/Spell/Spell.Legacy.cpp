@@ -3573,14 +3573,6 @@ uint32 Spell::GetDuration()
             {
                 ascemu::World::Spell::Helpers::spellModFlatIntValue(u_caster->SM_FDur, (int32*)&this->Dur, GetSpellInfo()->SpellGroupType);
                 ascemu::World::Spell::Helpers::spellModPercentageIntValue(u_caster->SM_PDur, (int32*)&this->Dur, GetSpellInfo()->SpellGroupType);
-#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
-                        int spell_flat_modifers = 0;
-                        int spell_pct_modifers = 0;
-                        spellModFlatIntValue(u_caster->SM_FDur, &spell_flat_modifers, GetProto()->SpellGroupType);
-                        spellModFlatIntValue(u_caster->SM_PDur, &spell_pct_modifers, GetProto()->SpellGroupType);
-                        if (spell_flat_modifers != 0 || spell_pct_modifers != 0)
-                            LOG_DEBUG("!!!!!spell duration mod flat %d , spell duration mod pct %d , spell duration %d, spell group %u", spell_flat_modifers, spell_pct_modifers, Dur, GetProto()->SpellGroupType);
-#endif
             }
         }
         else
@@ -3606,14 +3598,6 @@ float Spell::GetRadius(uint32 i)
     {
         ascemu::World::Spell::Helpers::spellModFlatFloatValue(u_caster->SM_FRadius, &Rad[i], GetSpellInfo()->SpellGroupType);
         ascemu::World::Spell::Helpers::spellModPercentageFloatValue(u_caster->SM_PRadius, &Rad[i], GetSpellInfo()->SpellGroupType);
-#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
-                float spell_flat_modifers = 0;
-                float spell_pct_modifers = 1;
-                spellModFlatFloatValue(u_caster->SM_FRadius, &spell_flat_modifers, GetProto()->SpellGroupType);
-                spellModPercentageFloatValue(u_caster->SM_PRadius, &spell_pct_modifers, GetProto()->SpellGroupType);
-                if (spell_flat_modifers != 0 || spell_pct_modifers != 1)
-                    LOG_DEBUG("!!!!!spell radius mod flat %f , spell radius mod pct %f , spell radius %f, spell group %u", spell_flat_modifers, spell_pct_modifers, Rad[i], GetProto()->SpellGroupType);
-#endif
     }
 
     return Rad[i];
@@ -4529,14 +4513,6 @@ uint8 Spell::CanCast(bool tolerate)
     {
         spellModFlatFloatValue(u_caster->SM_FRange, &maxRange, GetSpellInfo()->SpellGroupType);
         spellModPercentageFloatValue(u_caster->SM_PRange, &maxRange, GetSpellInfo()->SpellGroupType);
-#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
-        float spell_flat_modifers = 0;
-        float spell_pct_modifers = 0;
-        spellModFlatFloatValue(u_caster->SM_FRange, &spell_flat_modifers, GetProto()->SpellGroupType);
-        spellModFlatFloatValue(u_caster->SM_PRange, &spell_pct_modifers, GetProto()->SpellGroupType);
-        if (spell_flat_modifers != 0 || spell_pct_modifers != 0)
-            LOG_DEBUG("!!!!!spell range bonus mod flat %f , spell range bonus pct %f , spell range %f, spell group %u", spell_flat_modifers, spell_pct_modifers, maxRange, GetProto()->SpellGroupType);
-#endif
     }
 
     // Targeted Location Checks (AoE spells)

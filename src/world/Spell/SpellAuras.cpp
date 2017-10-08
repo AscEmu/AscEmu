@@ -2356,14 +2356,6 @@ void Aura::EventPeriodicHeal(uint32 amount)
         bonus += penalty_flt;
         */
         spellModPercentageIntValue(c->SM_PPenalty, &bonus, m_spellInfo->SpellGroupType);
-#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
-        int spell_flat_modifers = 0;
-        int spell_pct_modifers = 0;
-        spellModFlatIntValue(c->SM_FPenalty, &spell_flat_modifers, GetSpellProto()->SpellGroupType);
-        spellModFlatIntValue(c->SM_PPenalty, &spell_pct_modifers, GetSpellProto()->SpellGroupType);
-        if (spell_flat_modifers != 0 || spell_pct_modifers != 0)
-            LOG_DEBUG("!!!!!HEAL : spell dmg bonus(p=24) mod flat %d , spell dmg bonus(p=24) pct %d , spell dmg bonus %d, spell group %u", spell_flat_modifers, spell_pct_modifers, bonus, GetSpellProto()->SpellGroupType);
-#endif
     }
 
     int amp = m_spellInfo->EffectAmplitude[mod->i];

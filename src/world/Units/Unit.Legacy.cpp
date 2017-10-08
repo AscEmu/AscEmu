@@ -7080,12 +7080,6 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
     if (ability != nullptr)
     {
         spellModFlatFloatValue(SM_FHitchance, &hitchance, ability->SpellGroupType);
-#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
-        float spell_flat_modifers = 0;
-        spellModFlatFloatValue(SM_FHitchance, &spell_flat_modifers, ability->SpellGroupType);
-        if (spell_flat_modifers != 0)
-            LOG_DEBUG("!!!!!spell resist mod flat %f,  spell resist bonus %f, spell group %u", spell_flat_modifers, hitchance, ability->SpellGroupType);
-#endif
     }
 
     if (ability && ability->Attributes & ATTRIBUTES_CANT_BE_DPB)
