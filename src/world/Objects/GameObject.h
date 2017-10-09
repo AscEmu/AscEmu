@@ -541,6 +541,14 @@ class GameObject_Lootable : public GameObject
 
         virtual bool HasLoot() = 0;
 
+        void resetLoot()
+        {
+            if (loot.items.empty() || !loot.looters.empty() || loot.HasRoll())
+                return;
+
+            lootmgr.FillGOLoot(&loot, gameobject_properties->raw.parameter_1, 0);
+        }
+
         Loot loot;
 };
 

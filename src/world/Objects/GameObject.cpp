@@ -356,6 +356,23 @@ void GameObject::OnPushToWorld()
     CALL_GO_SCRIPT_EVENT(this, OnCreate)();
     CALL_GO_SCRIPT_EVENT(this, OnSpawn)();
     CALL_INSTANCE_SCRIPT_EVENT(m_mapMgr, OnGameObjectPushToWorld)(this);
+
+    if (gameobject_properties->type == GAMEOBJECT_TYPE_CHEST)
+    {
+        //restock on respwn
+        static_cast<GameObject_Lootable*>(this)->resetLoot();
+
+        //close if open (happenes after respawn)
+        if (this->GetState() == GO_STATE_OPEN)
+            this->SetState(GO_STATE_CLOSED);
+
+        // set next loot reset time
+        time_t lootResetTime = 60 * 1000;
+        if (gameobject_properties->chest.restock_time > 60)
+            lootResetTime = gameobject_properties->chest.restock_time * 1000;
+
+        sEventMgr.AddEvent(static_cast<GameObject_Lootable*>(this), &GameObject_Lootable::resetLoot, EVENT_GO_CHEST_RESTOCK, lootResetTime, 0, 0);
+    }
 }
 
 void GameObject::OnRemoveInRangeObject(Object* pObj)
@@ -378,6 +395,7 @@ void GameObject::RemoveFromWorld(bool free_guid)
     data << uint64(GetGUID());
     SendMessageToSet(&data, true);
 
+    sEventMgr.RemoveEvents(this);
     Object::RemoveFromWorld(free_guid);
 }
 

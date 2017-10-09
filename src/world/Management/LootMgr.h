@@ -167,7 +167,7 @@ struct Loot
 
     bool HasRoll()
     {
-        for (std::vector< __LootItem >::iterator itr = items.begin(); itr != items.end(); ++itr)
+        for (std::vector<__LootItem>::iterator itr = items.begin(); itr != items.end(); ++itr)
         {
             if (itr->roll != NULL)
                 return true;
