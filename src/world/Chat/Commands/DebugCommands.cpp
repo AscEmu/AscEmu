@@ -16,6 +16,7 @@ bool ChatHandler::HandleAiChargeCommand(const char* /*args*/, WorldSession* sess
         return true;
 
     selected_unit->GetAIInterface()->splineMoveCharge(session->GetPlayer());
+    return true;
 }
 
 bool ChatHandler::HandleAiKnockbackCommand(const char* /*args*/, WorldSession* session)
@@ -27,6 +28,7 @@ bool ChatHandler::HandleAiKnockbackCommand(const char* /*args*/, WorldSession* s
     LocationVector pos = session->GetPlayer()->GetPosition();
 
     selected_unit->GetAIInterface()->splineMoveKnockback(pos.x, pos.y, pos.z, 10.0f, 5.f);
+    return true;
 }
 
 bool ChatHandler::HandleAiJumpCommand(const char* /*args*/, WorldSession* session)
@@ -38,6 +40,7 @@ bool ChatHandler::HandleAiJumpCommand(const char* /*args*/, WorldSession* sessio
     LocationVector pos = session->GetPlayer()->GetPosition();
 
     selected_unit->GetAIInterface()->splineMoveJump(pos.x, pos.y, pos.z, 0, 5.0f, false);
+    return true;
 }
 
 bool ChatHandler::HandleAiFallingCommand(const char* /*args*/, WorldSession* session)
@@ -49,6 +52,7 @@ bool ChatHandler::HandleAiFallingCommand(const char* /*args*/, WorldSession* ses
     LocationVector pos = session->GetPlayer()->GetPosition();
 
     selected_unit->GetAIInterface()->splineMoveFalling(pos.x, pos.y, pos.z);
+    return true;
 }
 
 bool ChatHandler::HandleDebugDumpState(const char* /*args*/, WorldSession* session)
