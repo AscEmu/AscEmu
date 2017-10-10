@@ -6927,7 +6927,7 @@ void Unit::CalculateResistanceReduction(Unit* pVictim, dealdamage* dmg, SpellInf
             AverageResistance = 0.75f;
 
         // NOT WOWWIKILIKE but i think it's actually to add some fullresist chance from resistances
-        if (!ability || !(ability->Attributes & ATTRIBUTES_IGNORE_INVULNERABILITY))
+        if (!ability || !(ability->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY))
         {
             float Resistchance = (float)pVictim->GetResistance((*dmg).school_type) / (float)pVictim->getLevel();
             Resistchance *= Resistchance;
@@ -7138,7 +7138,7 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
         spellModFlatFloatValue(SM_FHitchance, &hitchance, ability->SpellGroupType);
     }
 
-    if (ability && ability->Attributes & ATTRIBUTES_CANT_BE_DPB)
+    if (ability && ability->getAttributes() & ATTRIBUTES_CANT_BE_DPB)
     {
         dodge = 0.0f;
         parry = 0.0f;
@@ -7175,7 +7175,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
     if (!pVictim || !pVictim->isAlive() || !isAlive() || IsStunned() || IsPacified() || IsFeared())
         return;
 
-    if (!(ability && ability->AttributesEx & ATTRIBUTESEX_IGNORE_IN_FRONT) && !isInFront(pVictim))
+    if (!(ability && ability->getAttributesEx() & ATTRIBUTESEX_IGNORE_IN_FRONT) && !isInFront(pVictim))
     {
         if (IsPlayer())
         {
@@ -7543,14 +7543,14 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         block = 0.0f;
     }
 
-    if (ability != NULL && ability->Attributes & ATTRIBUTES_CANT_BE_DPB)
+    if (ability != NULL && ability->getAttributes() & ATTRIBUTES_CANT_BE_DPB)
     {
         dodge = 0.0f;
         parry = 0.0f;
         block = 0.0f;
     }
 
-    if (ability && ability->AttributesExB & ATTRIBUTESEXB_CANT_CRIT)
+    if (ability && ability->getAttributesExB() & ATTRIBUTESEXB_CANT_CRIT)
         crit = 0.0f;
 
     // by victim state
@@ -7736,7 +7736,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                     dmg.full_damage += pVictim->RangedDamageTaken;
                 }
 
-                if (ability && ability->MechanicsType == MECHANIC_BLEEDING)
+                if (ability && ability->getMechanicsType() == MECHANIC_BLEEDING)
                     disable_dR = true;
 
 
@@ -8484,7 +8484,7 @@ void Unit::AddAura(Aura* aur)
     }
 
     // If this aura can only affect one target at a time
-    if (aur->GetSpellInfo()->AttributesExE & ATTRIBUTESEXE_SINGLE_TARGET_AURA)
+    if (aur->GetSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_SINGLE_TARGET_AURA)
     {
         // remove aura from the previous applied target
         Unit* caster = aur->GetUnitCaster();
@@ -8926,7 +8926,7 @@ void Unit::AddAura(Aura* aur)
 
     uint8 visualslot = 0xFF;
     //search for a visual slot
-    if (!aur->IsPassive() || (aur->m_spellInfo->AttributesEx & 1024))
+    if (!aur->IsPassive() || (aur->m_spellInfo->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
         visualslot = FindVisualSlot(aur->GetSpellId(), aur->IsPositive());
     aur->m_visualSlot = visualslot;
 
@@ -9016,7 +9016,7 @@ void Unit::AddAura(Aura* aur)
     }
 
     // If this aura can only affect one target at a time, store this target GUID for future reference
-    if (aur->GetSpellInfo()->AttributesExE & ATTRIBUTESEXE_SINGLE_TARGET_AURA)
+    if (aur->GetSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_SINGLE_TARGET_AURA)
     {
         Unit* caster = aur->GetUnitCaster();
         if (caster != NULL)
@@ -9025,9 +9025,9 @@ void Unit::AddAura(Aura* aur)
 
     /* Set aurastates */
     uint32 flag = 0;
-    if (aur->GetSpellInfo()->MechanicsType == MECHANIC_ENRAGED && !asc_enraged++)
+    if (aur->GetSpellInfo()->getMechanicsType() == MECHANIC_ENRAGED && !asc_enraged++)
         flag |= AURASTATE_FLAG_ENRAGED;
-    else if (aur->GetSpellInfo()->MechanicsType == MECHANIC_BLEEDING && !asc_bleed++)
+    else if (aur->GetSpellInfo()->getMechanicsType() == MECHANIC_BLEEDING && !asc_bleed++)
         flag |= AURASTATE_FLAG_BLEED;
     if (aur->GetSpellInfo()->custom_BGR_one_buff_on_target & SPELL_TYPE_SEAL && !asc_seal++)
         flag |= AURASTATE_FLAG_JUDGEMENT;
@@ -9541,7 +9541,7 @@ float Unit::CalcSpellDamageReduction(Unit* victim, SpellInfo* spell, float res)
     float reduced_damage = 0;
     reduced_damage += static_cast<float>(victim->DamageTakenMod[spell->School]);
     reduced_damage += res * victim->DamageTakenPctMod[spell->School];
-    reduced_damage += res * victim->ModDamageTakenByMechPCT[spell->MechanicsType];
+    reduced_damage += res * victim->ModDamageTakenByMechPCT[spell->getMechanicsType()];
     return reduced_damage;
 }
 
@@ -11380,7 +11380,7 @@ void Unit::SendAuraUpdate(uint32 AuraSlot, bool remove)
         else
             flags |= AFLAG_NEGATIVE;
 
-        if (aur->GetDuration() != 0 && !(aur->GetSpellInfo()->AttributesExE & ATTRIBUTESEXE_HIDE_DURATION))
+        if (aur->GetDuration() != 0 && !(aur->GetSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_HIDE_DURATION))
             flags |= AFLAG_DURATION;
 
         data << WoWGuid(GetGUID());
@@ -11435,7 +11435,7 @@ void Unit::SendAuraUpdate(uint32 AuraSlot, bool remove)
         else
             flags |= AFLAG_NEGATIVE;
 
-        if (aur->GetDuration() != 0 && !(aur->GetSpellInfo()->AttributesExE & ATTRIBUTESEXE_HIDE_DURATION))
+        if (aur->GetDuration() != 0 && !(aur->GetSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_HIDE_DURATION))
             flags |= AFLAG_DURATION;
 
         data << uint16(flags);
@@ -11495,7 +11495,7 @@ void Unit::RemoveAurasOfSchool(uint32 School, bool Positive, bool Immune)
         if (m_auras[x]
             && m_auras[x]->GetSpellInfo()->School == School
             && (!m_auras[x]->IsPositive() || Positive)
-            && (!Immune && m_auras[x]->GetSpellInfo()->Attributes & ATTRIBUTES_IGNORE_INVULNERABILITY)
+            && (!Immune && m_auras[x]->GetSpellInfo()->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY)
             )
             m_auras[x]->Remove();
 }
@@ -11506,7 +11506,7 @@ bool Unit::IsDazed()
     {
         if (m_auras[x])
         {
-            if (m_auras[x]->GetSpellInfo()->MechanicsType == MECHANIC_ENSNARED)
+            if (m_auras[x]->GetSpellInfo()->getMechanicsType() == MECHANIC_ENSNARED)
                 return true;
             for (uint32 y = 0; y < 3; y++)
                 if (m_auras[x]->GetSpellInfo()->EffectMechanic[y] == MECHANIC_ENSNARED)
@@ -12505,7 +12505,7 @@ bool Unit::RemoveAllAurasByMechanic(uint32 MechanicType, uint32 MaxDispel = -1, 
 
         if (m_auras[x])
         {
-            if (m_auras[x]->GetSpellInfo()->MechanicsType == MechanicType)   // Remove all mechanics of type MechanicType (my english goen boom)
+            if (m_auras[x]->GetSpellInfo()->getMechanicsType() == MechanicType)   // Remove all mechanics of type MechanicType (my english goen boom)
             {
                 LogDebugFlag(LF_AURA, "Removed aura. [AuraSlot %u, SpellId %u]", x, m_auras[x]->GetSpellId());
                 ///\todo Stop moving if fear was removed.
@@ -12535,9 +12535,9 @@ void Unit::RemoveAllMovementImpairing()
     {
         if (m_auras[x] != NULL)
         {
-            if (m_auras[x]->GetSpellInfo()->MechanicsType == MECHANIC_ROOTED
-                || m_auras[x]->GetSpellInfo()->MechanicsType == MECHANIC_ENSNARED
-                || m_auras[x]->GetSpellInfo()->MechanicsType == MECHANIC_DAZED)
+            if (m_auras[x]->GetSpellInfo()->getMechanicsType() == MECHANIC_ROOTED
+                || m_auras[x]->GetSpellInfo()->getMechanicsType() == MECHANIC_ENSNARED
+                || m_auras[x]->GetSpellInfo()->getMechanicsType() == MECHANIC_DAZED)
 
             {
                 m_auras[x]->Remove();
@@ -13456,7 +13456,7 @@ uint32 Unit::GetAuraCountWithDispelType(uint32 dispel_type, uint64 guid)
         if (m_auras[x] == NULL)
             continue;
 
-        if (m_auras[x]->GetSpellInfo()->DispelType == dispel_type && (guid == 0 || m_auras[x]->GetCasterGUID() == guid))
+        if (m_auras[x]->GetSpellInfo()->getDispelType() == dispel_type && (guid == 0 || m_auras[x]->GetCasterGUID() == guid))
             result++;
     }
 

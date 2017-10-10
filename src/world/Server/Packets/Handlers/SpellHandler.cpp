@@ -376,7 +376,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (!_player->isAlive() && _player->GetShapeShift() != FORM_SPIRITOFREDEMPTION && !(spellInfo->Attributes & ATTRIBUTES_DEAD_CASTABLE)) //They're dead, not in spirit of redemption and the spell can't be cast while dead.
+    if (!_player->isAlive() && _player->GetShapeShift() != FORM_SPIRITOFREDEMPTION && !(spellInfo->getAttributes() & ATTRIBUTES_DEAD_CASTABLE)) //They're dead, not in spirit of redemption and the spell can't be cast while dead.
         return;
 
     LogDetail("WORLD: got cast spell packet, spellId - %i (%s), data length = %i", spellId, spellInfo->Name.c_str(), recvPacket.size());
@@ -401,7 +401,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     if (GetPlayer()->GetOnMeleeSpell() != spellId)
     {
         //autoshot 75
-        if ((spellInfo->AttributesExB & ATTRIBUTESEXB_ACTIVATE_AUTO_SHOT) /*spellInfo->Attributes == 327698*/)	// auto shot..
+        if ((spellInfo->getAttributesExB() & ATTRIBUTESEXB_ACTIVATE_AUTO_SHOT) /*spellInfo->Attributes == 327698*/)	// auto shot..
         {
             LogDebugFlag(LF_SPELL, "HandleCastSpellOpcode : Auto Shot-type spell cast (id %u, name %s)" , spellInfo->getId(), spellInfo->Name.c_str());
             Item* weapon = GetPlayer()->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
@@ -526,10 +526,10 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
 		{
 			if (!aura->IsPositive())
 				return;
-			if (info->Attributes & ATTRIBUTES_NEGATIVE)
+			if (info->getAttributes() & ATTRIBUTES_NEGATIVE)
 				return;
 		}
-        if (!(info->Attributes & static_cast<uint32>(ATTRIBUTES_CANT_CANCEL)))
+        if (!(info->getAttributes() & static_cast<uint32>(ATTRIBUTES_CANT_CANCEL)))
         {
             _player->removeAllAurasById(spellId);
             LOG_DEBUG("Removing all auras with ID: %u", spellId);

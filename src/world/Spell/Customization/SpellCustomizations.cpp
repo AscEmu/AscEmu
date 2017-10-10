@@ -30,8 +30,8 @@
 
 initialiseSingleton(SpellCustomizations);
 
-///\brief: This file includes all setted custom values and/or spell.dbc values (overwrite)
-/// Set the values you want based on spell Id (Do not set your values based on some text!)
+//\brief: This file includes all setted custom values and/or spell.dbc values (overwrite)
+// Set the values you want based on spell Id (Do not set your values based on some text!)
 
 SpellCustomizations::SpellCustomizations() {}
 SpellCustomizations::~SpellCustomizations() {}
@@ -52,15 +52,15 @@ void SpellCustomizations::LoadSpellInfoData()
             uint32 spell_id = dbc_spell_entry->Id;
             SpellInfo& spellInfo = _spellInfoContainerStore[spell_id];
             spellInfo.setId(spell_id);
-            spellInfo.Attributes = dbc_spell_entry->Attributes;
-            spellInfo.AttributesEx = dbc_spell_entry->AttributesEx;
-            spellInfo.AttributesExB = dbc_spell_entry->AttributesExB;
-            spellInfo.AttributesExC = dbc_spell_entry->AttributesExC;
-            spellInfo.AttributesExD = dbc_spell_entry->AttributesExD;
-            spellInfo.AttributesExE = dbc_spell_entry->AttributesExE;
-            spellInfo.AttributesExF = dbc_spell_entry->AttributesExF;
+            spellInfo.setAttributes(dbc_spell_entry->Attributes);
+            spellInfo.setAttributesEx(dbc_spell_entry->AttributesEx);
+            spellInfo.setAttributesExB(dbc_spell_entry->AttributesExB);
+            spellInfo.setAttributesExC(dbc_spell_entry->AttributesExC);
+            spellInfo.setAttributesExD(dbc_spell_entry->AttributesExD);
+            spellInfo.setAttributesExE(dbc_spell_entry->AttributesExE);
+            spellInfo.setAttributesExF(dbc_spell_entry->AttributesExF);
 #if VERSION_STRING > TBC
-            spellInfo.AttributesExG = dbc_spell_entry->AttributesExG;
+            spellInfo.setAttributesExG(dbc_spell_entry->AttributesExG);
 #endif
             spellInfo.RequiredShapeShift = dbc_spell_entry->RequiredShapeShift;
             spellInfo.ShapeshiftExclude = dbc_spell_entry->ShapeshiftExclude;

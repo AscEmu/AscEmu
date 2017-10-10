@@ -143,7 +143,7 @@ bool CloakOfShadows(uint32 i, Spell* s)
         pAura = unitTarget->m_auras[j];
         if (pAura != NULL && !pAura->IsPassive()
             && !pAura->IsPositive()
-            && !(pAura->GetSpellInfo()->Attributes & ATTRIBUTES_IGNORE_INVULNERABILITY)
+            && !(pAura->GetSpellInfo()->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY)
             && pAura->GetSpellInfo()->School != 0
             )
             pAura->Remove();

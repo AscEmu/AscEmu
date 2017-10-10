@@ -1404,7 +1404,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                     _type = RANGED;
                 else
                 {
-                    if (GetSpellInfo()->AttributesExC & ATTRIBUTESEXC_TYPE_OFFHAND)
+                    if (GetSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_TYPE_OFFHAND)
                         _type = OFFHAND;
                     else
                         _type = MELEE;
@@ -1567,9 +1567,9 @@ void Spell::SpellEffectApplyAura(uint32 i)  // Apply Aura
             if (c->GetCreatureProperties()->modImmunities)
             {
                 bool immune = false;
-                if (m_spellInfo->MechanicsType)
+                if (m_spellInfo->getMechanicsType())
                 {
-                    switch (m_spellInfo->MechanicsType)
+                    switch (m_spellInfo->getMechanicsType())
                     {
                         case MECHANIC_CHARMED:
                             if (c->GetCreatureProperties()->modImmunities & 1)
@@ -2488,7 +2488,7 @@ void Spell::SpellEffectCreateItem(uint32 i)
             }
 
             //Transmutation Master
-            if (m_spellInfo->Category == 310)
+            if (m_spellInfo->getCategory() == 310)
             {
 
                 //rate for primal might is lower than for anything else
@@ -3332,7 +3332,7 @@ void Spell::SpellEffectWeaponDmgPerc(uint32 i) // Weapon Percent damage
             _type = RANGED;
         else
         {
-            if (GetSpellInfo()->AttributesExC & 0x1000000)
+            if (GetSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_TYPE_OFFHAND)
                 _type = OFFHAND;
             else
                 _type = MELEE;
@@ -3878,9 +3878,9 @@ void Spell::SpellEffectDispel(uint32 i) // Dispel
             aursp = aur->GetSpellInfo();
 
             //Nothing can dispel resurrection sickness;
-            if (!aur->IsPassive() && !(aursp->Attributes & ATTRIBUTES_IGNORE_INVULNERABILITY))
+            if (!aur->IsPassive() && !(aursp->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY))
             {
-                if (GetSpellInfo()->DispelType == DISPEL_ALL)
+                if (GetSpellInfo()->getDispelType() == DISPEL_ALL)
                 {
                     unitTarget->HandleProc(PROC_ON_PRE_DISPELL_AURA_VICTIM, u_caster, GetSpellInfo(), m_triggeredSpell, aursp->getId());
 
@@ -3892,7 +3892,7 @@ void Spell::SpellEffectDispel(uint32 i) // Dispel
                     if (--damage <= 0)
                         finish = true;
                 }
-                else if (aursp->DispelType == GetSpellInfo()->EffectMiscValue[i])
+                else if (aursp->getDispelType() == GetSpellInfo()->EffectMiscValue[i])
                 {
                     unitTarget->HandleProc(PROC_ON_PRE_DISPELL_AURA_VICTIM, u_caster, GetSpellInfo(), m_triggeredSpell, aursp->getId());
 
@@ -4091,7 +4091,7 @@ void Spell::SpellEffectAddHonor(uint32 i)
 
     uint32 val = GetSpellInfo()->EffectBasePoints[i];
 
-    if (GetSpellInfo()->AttributesExB & ATTRIBUTESEXB_UNK4) val /= 10;
+    if (GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_UNK4) val /= 10;
 
     val += 1;
 
@@ -4650,7 +4650,7 @@ void Spell::SpellEffectInterruptCast(uint32 i) // Interrupt Cast
     if (!unitTarget || !unitTarget->isAlive())
         return;
 
-    if (GetSpellInfo()->AttributesExG & ATTRIBUTESEXG_INTERRUPT_NPC && unitTarget->IsPlayer())
+    if (GetSpellInfo()->getAttributesExG() & ATTRIBUTESEXG_INTERRUPT_NPC && unitTarget->IsPlayer())
         return;
 
     if (!playerTarget)
@@ -5857,7 +5857,7 @@ void Spell::SpellEffectDummyMelee(uint32 i)   // Normalized Weapon damage +
         _type = RANGED;
     else
     {
-        if (GetSpellInfo()->AttributesExC & 0x1000000)
+        if (GetSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_TYPE_OFFHAND)
             _type = OFFHAND;
         else
             _type = MELEE;
@@ -5986,7 +5986,7 @@ void Spell::SpellEffectSpellSteal(uint32 i)
                 //              && aur->IsPositive()    // Zack : We are only checking positive auras. There is no meaning to check again
                ) //Nothing can dispel resurrection sickness
             {
-                if (aursp->DispelType == DISPEL_MAGIC)
+                if (aursp->getDispelType() == DISPEL_MAGIC)
                 {
                     stealedSpells.push_back(aursp->getId());
 

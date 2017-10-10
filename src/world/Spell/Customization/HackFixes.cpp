@@ -48,9 +48,9 @@ void CreateDummySpell(uint32 id)
     SpellInfo* sp = new SpellInfo;
     memset(sp, 0, sizeof(SpellInfo));
     sp->setId(id);
-    sp->Attributes = 384;
-    sp->AttributesEx = 268435456;
-    sp->AttributesExB = 4;
+    sp->setAttributes(ATTRIBUTES_NO_CAST | ATTRIBUTES_NO_VISUAL_AURA); //384
+    sp->setAttributesEx(ATTRIBUTESEX_UNK30);    //268435456
+    sp->setAttributesExB(ATTRIBUTESEXB_UNK4);   //4
     sp->CastingTimeIndex = 1;
     sp->procChance = 75;
     sp->rangeIndex = 13;
@@ -776,15 +776,15 @@ void ApplyNormalFixes()
                 CreateDummySpell(sp->EffectTriggerSpell[b]);
             }
 
-            if (sp->Attributes & ATTRIBUTES_ONLY_OUTDOORS && sp->EffectApplyAuraName[b] == SPELL_AURA_MOUNTED)
+            if (sp->getAttributes() & ATTRIBUTES_ONLY_OUTDOORS && sp->EffectApplyAuraName[b] == SPELL_AURA_MOUNTED)
             {
-                sp->Attributes &= ~ATTRIBUTES_ONLY_OUTDOORS;
+                sp->removeAttributes(ATTRIBUTES_ONLY_OUTDOORS);
             }
 
             if (sp->EffectApplyAuraName[b] == SPELL_AURA_PREVENT_RESURRECTION)
 			{
-				sp->Attributes |= ATTRIBUTES_NEGATIVE;
-				sp->AttributesExC |= ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD;
+				sp->addAttributes(ATTRIBUTES_NEGATIVE);
+				sp->addAttributesExC(ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD);
 			}
         }
 
@@ -808,7 +808,7 @@ void ApplyNormalFixes()
         // various flight spells
         // these make vehicles and other charmed stuff fliable
         if (sp->activeIconID == 2158)
-            sp->Attributes |= ATTRIBUTES_PASSIVE;
+            sp->addAttributes(ATTRIBUTES_PASSIVE);
 
 
         //Name includes "" overwrites
@@ -878,31 +878,31 @@ void ApplyNormalFixes()
         }
 
         // Set default mechanics if we don't already have one
-        if (!sp->MechanicsType)
+        if (!sp->getMechanicsType())
         {
             //Set Silencing spells mechanic.
             if (sp->EffectApplyAuraName[0] == SPELL_AURA_MOD_SILENCE ||
                 sp->EffectApplyAuraName[1] == SPELL_AURA_MOD_SILENCE ||
                 sp->EffectApplyAuraName[2] == SPELL_AURA_MOD_SILENCE)
-                sp->MechanicsType = MECHANIC_SILENCED;
+                sp->setMechanicsType(MECHANIC_SILENCED);
 
             //Set Stunning spells mechanic.
             if (sp->EffectApplyAuraName[0] == SPELL_AURA_MOD_STUN ||
                 sp->EffectApplyAuraName[1] == SPELL_AURA_MOD_STUN ||
                 sp->EffectApplyAuraName[2] == SPELL_AURA_MOD_STUN)
-                sp->MechanicsType = MECHANIC_STUNNED;
+                sp->setMechanicsType(MECHANIC_STUNNED);
 
             //Set Fearing spells mechanic
             if (sp->EffectApplyAuraName[0] == SPELL_AURA_MOD_FEAR ||
                 sp->EffectApplyAuraName[1] == SPELL_AURA_MOD_FEAR ||
                 sp->EffectApplyAuraName[2] == SPELL_AURA_MOD_FEAR)
-                sp->MechanicsType = MECHANIC_FLEEING;
+                sp->setMechanicsType(MECHANIC_FLEEING);
 
             //Set Interrupted spells mech
             if (sp->Effect[0] == SPELL_EFFECT_INTERRUPT_CAST ||
                 sp->Effect[1] == SPELL_EFFECT_INTERRUPT_CAST ||
                 sp->Effect[2] == SPELL_EFFECT_INTERRUPT_CAST)
-                sp->MechanicsType = MECHANIC_INTERRUPTED;
+                sp->setMechanicsType(MECHANIC_INTERRUPTED);
         }
 
         if (sp->custom_proc_interval > 0)      // if (sp->custom_proc_interval != 0)
@@ -971,7 +971,7 @@ void ApplyNormalFixes()
             case 67251:
             case 71550:
             {
-                sp->MechanicsType = MECHANIC_INVULNARABLE;
+                sp->setMechanicsType(MECHANIC_INVULNARABLE);
             } break;
             // SPELL_HASH_SHRED
             case 3252:
@@ -1243,7 +1243,7 @@ void ApplyNormalFixes()
             case 68111:
             {
                 //sp->Effect[1] = SPELL_EFFECT_DUMMY;
-                sp->AttributesExC |= ATTRIBUTESEXC_NO_DONE_BONUS;
+                sp->addAttributesExC(ATTRIBUTESEXC_NO_DONE_BONUS);
             } break;
 
             //////////////////////////////////////////////////////////////////////////////////////////
@@ -1290,7 +1290,7 @@ void ApplyNormalFixes()
                 // Frostbrand Weapon - 10% spd coefficient
                 sp->fixed_dddhcoef = 0.1f;
                 // Attributes addition
-                sp->AttributesExC |= ATTRIBUTESEXC_NO_DONE_BONUS;
+                sp->addAttributes(ATTRIBUTESEXC_NO_DONE_BONUS);
             } break;
 
             //////////////////////////////////////////////////////////////////////////////////////////
@@ -1614,19 +1614,19 @@ void ApplyNormalFixes()
     // Warrior - Overpower Rank 1
     sp = Spell::checkAndReturnSpellEntry(7384);
     if (sp != nullptr)
-        sp->Attributes |= ATTRIBUTES_CANT_BE_DPB;
+        sp->addAttributes(ATTRIBUTES_CANT_BE_DPB);
     // Warrior - Overpower Rank 2
     sp = Spell::checkAndReturnSpellEntry(7887);
     if (sp != nullptr)
-        sp->Attributes |= ATTRIBUTES_CANT_BE_DPB;
+        sp->addAttributes(ATTRIBUTES_CANT_BE_DPB);
     // Warrior - Overpower Rank 3
     sp = Spell::checkAndReturnSpellEntry(11584);
     if (sp != nullptr)
-        sp->Attributes |= ATTRIBUTES_CANT_BE_DPB;
+        sp->addAttributes(ATTRIBUTES_CANT_BE_DPB);
     // Warrior - Overpower Rank 4
     sp = Spell::checkAndReturnSpellEntry(11585);
     if (sp != nullptr)
-        sp->Attributes |= ATTRIBUTES_CANT_BE_DPB;
+        sp->addAttributes(ATTRIBUTES_CANT_BE_DPB);
 
     // Warrior - Tactical Mastery Rank 1
     sp = Spell::checkAndReturnSpellEntry(12295);
@@ -1651,28 +1651,28 @@ void ApplyNormalFixes()
     // Warrior - Rend
     sp = Spell::checkAndReturnSpellEntry(772);
     if (sp != nullptr)
-        sp->MechanicsType = MECHANIC_BLEEDING;
+        sp->setMechanicsType(MECHANIC_BLEEDING);
     sp = Spell::checkAndReturnSpellEntry(6546);
     if (sp != nullptr)
-        sp->MechanicsType = MECHANIC_BLEEDING;
+        sp->setMechanicsType(MECHANIC_BLEEDING);
     sp = Spell::checkAndReturnSpellEntry(6547);
     if (sp != nullptr)
-        sp->MechanicsType = MECHANIC_BLEEDING;
+        sp->setMechanicsType(MECHANIC_BLEEDING);
     sp = Spell::checkAndReturnSpellEntry(6548);
     if (sp != nullptr)
-        sp->MechanicsType = MECHANIC_BLEEDING;
+        sp->setMechanicsType(MECHANIC_BLEEDING);
     sp = Spell::checkAndReturnSpellEntry(11572);
     if (sp != nullptr)
-        sp->MechanicsType = MECHANIC_BLEEDING;
+        sp->setMechanicsType(MECHANIC_BLEEDING);
     sp = Spell::checkAndReturnSpellEntry(11573);
     if (sp != nullptr)
-        sp->MechanicsType = MECHANIC_BLEEDING;
+        sp->setMechanicsType(MECHANIC_BLEEDING);
     sp = Spell::checkAndReturnSpellEntry(11574);
     if (sp != nullptr)
-        sp->MechanicsType = MECHANIC_BLEEDING;
+        sp->setMechanicsType(MECHANIC_BLEEDING);
     sp = Spell::checkAndReturnSpellEntry(25208);
     if (sp != nullptr)
-        sp->MechanicsType = MECHANIC_BLEEDING;
+        sp->setMechanicsType(MECHANIC_BLEEDING);
 
     ////////////////////////////////////////////////////////////
     // Fury
@@ -1771,7 +1771,7 @@ void ApplyNormalFixes()
     sp = Spell::checkAndReturnSpellEntry(3411);
     if (sp != nullptr)
     {
-        sp->Attributes |= ATTRIBUTES_STOP_ATTACK;
+        sp->addAttributes(ATTRIBUTES_STOP_ATTACK);
     }
 
     //////////////////////////////////////////
@@ -1854,14 +1854,14 @@ void ApplyNormalFixes()
     sp = Spell::checkAndReturnSpellEntry(61987);
     if (sp != nullptr)
     {
-        sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
+        sp->setAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
     }
 
     //Paladin - Forbearance - Is forced debuff
     sp = Spell::checkAndReturnSpellEntry(25771);
     if (sp != nullptr)
     {
-        sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
+        sp->setAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
     }
 
     //Divine Protection
@@ -2211,7 +2211,7 @@ void ApplyNormalFixes()
     //rogue - Vanish : Second Trigger Spell
     sp = Spell::checkAndReturnSpellEntry(18461);
     if (sp != nullptr)
-        sp->AttributesEx |= ATTRIBUTESEX_NOT_BREAK_STEALTH;
+        sp->addAttributesEx(ATTRIBUTESEX_NOT_BREAK_STEALTH);
 
     // rogue - Blind (Make it able to miss!)
     sp = Spell::checkAndReturnSpellEntry(2094);
@@ -2230,67 +2230,67 @@ void ApplyNormalFixes()
     // Still related to shadowstep - prevent the trigger spells from breaking stealth.
     sp = Spell::checkAndReturnSpellEntry(44373);
     if (sp != nullptr)
-        sp->AttributesEx |= ATTRIBUTESEX_NOT_BREAK_STEALTH;
+        sp->addAttributesEx(ATTRIBUTESEX_NOT_BREAK_STEALTH);
     sp = Spell::checkAndReturnSpellEntry(36563);
     if (sp != nullptr)
-        sp->AttributesEx |= ATTRIBUTESEX_NOT_BREAK_STEALTH;
+        sp->addAttributesEx(ATTRIBUTESEX_NOT_BREAK_STEALTH);
     sp = Spell::checkAndReturnSpellEntry(36554);
     if (sp != nullptr)
-        sp->AttributesEx |= ATTRIBUTESEX_NOT_BREAK_STEALTH;
+        sp->addAttributesEx(ATTRIBUTESEX_NOT_BREAK_STEALTH);
 
     //garrot
     sp = Spell::checkAndReturnSpellEntry(703);
     if (sp != nullptr)
-        sp->MechanicsType = MECHANIC_BLEEDING;
+        sp->setMechanicsType(MECHANIC_BLEEDING);
     sp = Spell::checkAndReturnSpellEntry(8631);
     if (sp != nullptr)
-        sp->MechanicsType = MECHANIC_BLEEDING;
+        sp->setMechanicsType(MECHANIC_BLEEDING);
     sp = Spell::checkAndReturnSpellEntry(8632);
     if (sp != nullptr)
-        sp->MechanicsType = MECHANIC_BLEEDING;
+        sp->setMechanicsType(MECHANIC_BLEEDING);
     sp = Spell::checkAndReturnSpellEntry(8633);
     if (sp != nullptr)
-        sp->MechanicsType = MECHANIC_BLEEDING;
+        sp->setMechanicsType(MECHANIC_BLEEDING);
     sp = Spell::checkAndReturnSpellEntry(11289);
     if (sp != nullptr)
-        sp->MechanicsType = MECHANIC_BLEEDING;
+        sp->setMechanicsType(MECHANIC_BLEEDING);
     sp = Spell::checkAndReturnSpellEntry(11290);
     if (sp != nullptr)
-        sp->MechanicsType = MECHANIC_BLEEDING;
+        sp->setMechanicsType(MECHANIC_BLEEDING);
     sp = Spell::checkAndReturnSpellEntry(26839);
     if (sp != nullptr)
-        sp->MechanicsType = MECHANIC_BLEEDING;
+        sp->setMechanicsType(MECHANIC_BLEEDING);
     sp = Spell::checkAndReturnSpellEntry(26884);
     if (sp != nullptr)
-        sp->MechanicsType = MECHANIC_BLEEDING;
+        sp->setMechanicsType(MECHANIC_BLEEDING);
 
     //rupture
     sp = Spell::checkAndReturnSpellEntry(1943);
     if (sp != nullptr)
-        sp->MechanicsType = MECHANIC_BLEEDING;
+        sp->setMechanicsType(MECHANIC_BLEEDING);
     sp = Spell::checkAndReturnSpellEntry(8639);
     if (sp != nullptr)
-        sp->MechanicsType = MECHANIC_BLEEDING;
+        sp->setMechanicsType(MECHANIC_BLEEDING);
     sp = Spell::checkAndReturnSpellEntry(8640);
     if (sp != nullptr)
-        sp->MechanicsType = MECHANIC_BLEEDING;
+        sp->setMechanicsType(MECHANIC_BLEEDING);
     sp = Spell::checkAndReturnSpellEntry(11273);
     if (sp != nullptr)
-        sp->MechanicsType = MECHANIC_BLEEDING;
+        sp->setMechanicsType(MECHANIC_BLEEDING);
     sp = Spell::checkAndReturnSpellEntry(11274);
     if (sp != nullptr)
-        sp->MechanicsType = MECHANIC_BLEEDING;
+        sp->setMechanicsType(MECHANIC_BLEEDING);
     sp = Spell::checkAndReturnSpellEntry(11275);
     if (sp != nullptr)
-        sp->MechanicsType = MECHANIC_BLEEDING;
+        sp->setMechanicsType(MECHANIC_BLEEDING);
     sp = Spell::checkAndReturnSpellEntry(26867);
     if (sp != nullptr)
-        sp->MechanicsType = MECHANIC_BLEEDING;
+        sp->setMechanicsType(MECHANIC_BLEEDING);
 
     //Rogue - Killing Spree Stealth fix
     sp = Spell::checkAndReturnSpellEntry(51690);
     if (sp != nullptr)
-        sp->AttributesEx |= ATTRIBUTESEX_NOT_BREAK_STEALTH;
+        sp->addAttributesEx(ATTRIBUTESEX_NOT_BREAK_STEALTH);
 
 
     //////////////////////////////////////////
@@ -2370,10 +2370,10 @@ void ApplyNormalFixes()
     // Spirit of Redemption - required spells can be casted while dead
     sp = Spell::checkAndReturnSpellEntry(27795);   // This is casted by shape shift
     if (sp != nullptr)
-        sp->AttributesExC |= ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD;
+        sp->addAttributesExC(ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD);
     sp = Spell::checkAndReturnSpellEntry(27792);   // This is casted by Apply Aura: Spirit of Redemption
     if (sp != nullptr)
-        sp->AttributesExC |= ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD;
+        sp->addAttributesExC(ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD);
 
     //Priest - Wand Specialization
     sp = Spell::checkAndReturnSpellEntry(14524);
@@ -2443,7 +2443,7 @@ void ApplyNormalFixes()
     sp = Spell::checkAndReturnSpellEntry(6788);
     if (sp != nullptr)
     {
-        sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
+        sp->setAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
     }
 
     // Penance
@@ -2564,7 +2564,7 @@ void ApplyNormalFixes()
     sp = Spell::checkAndReturnSpellEntry(57724);
     if (sp != nullptr)
     {
-        sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
+        sp->setAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
     }
 
     ////////////////////////////////////////////////////////////
@@ -2578,23 +2578,23 @@ void ApplyNormalFixes()
     sp = Spell::checkAndReturnSpellEntry(57723);
     if (sp != nullptr)
     {
-        sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
+        sp->setAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
     }
 
     ////////////////////////////////////////////////////////////
     // Purge
     sp = Spell::checkAndReturnSpellEntry(370);
     if (sp != nullptr)
-        sp->DispelType = DISPEL_MAGIC;
+        sp->setDispelType(DISPEL_MAGIC);
     sp = Spell::checkAndReturnSpellEntry(8012);
     if (sp != nullptr)
-        sp->DispelType = DISPEL_MAGIC;
+        sp->setDispelType(DISPEL_MAGIC);
     sp = Spell::checkAndReturnSpellEntry(27626);
     if (sp != nullptr)
-        sp->DispelType = DISPEL_MAGIC;
+        sp->setDispelType(DISPEL_MAGIC);
     sp = Spell::checkAndReturnSpellEntry(33625);
     if (sp != nullptr)
-        sp->DispelType = DISPEL_MAGIC;
+        sp->setDispelType(DISPEL_MAGIC);
 
     //Shaman - Shamanistic Focus
     // needs to be fixed (doesn't need to proc, it now just reduces mana cost always by %)
@@ -2752,7 +2752,7 @@ void ApplyNormalFixes()
     // Rogue - Master of Subtlety
     sp = Spell::checkAndReturnSpellEntry(31665);
     if (sp != nullptr)
-        sp->AttributesEx |= ATTRIBUTESEX_NOT_BREAK_STEALTH;
+        sp->addAttributesEx(ATTRIBUTESEX_NOT_BREAK_STEALTH);
 
     //////////////////////////////////////////
     // MAGE                                    //
@@ -2975,7 +2975,7 @@ void ApplyNormalFixes()
     sp = Spell::checkAndReturnSpellEntry(41425);
     if (sp != nullptr)
     {
-        sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
+        sp->setAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
     }
 
     // Mage - Permafrost Rank 1
@@ -3531,28 +3531,28 @@ void ApplyNormalFixes()
     sp = Spell::checkAndReturnSpellEntry(50796);
     if (sp != nullptr)
     {
-        sp->Attributes |= ATTRIBUTES_IGNORE_INVULNERABILITY;
+        sp->addAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
         sp->School = SCHOOL_FIRE;
     }
 
     sp = Spell::checkAndReturnSpellEntry(59170);
     if (sp != nullptr)
     {
-        sp->Attributes |= ATTRIBUTES_IGNORE_INVULNERABILITY;
+        sp->addAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
         sp->School = SCHOOL_FIRE;
     }
 
     sp = Spell::checkAndReturnSpellEntry(59171);
     if (sp != nullptr)
     {
-        sp->Attributes |= ATTRIBUTES_IGNORE_INVULNERABILITY;
+        sp->addAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
         sp->School = SCHOOL_FIRE;
     }
 
     sp = Spell::checkAndReturnSpellEntry(59172);
     if (sp != nullptr)
     {
-        sp->Attributes |= ATTRIBUTES_IGNORE_INVULNERABILITY;
+        sp->addAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
         sp->School = SCHOOL_FIRE;
     }
     // End Warlock chaos bolt
@@ -4149,7 +4149,7 @@ void ApplyNormalFixes()
     //Figurine - Shadowsong Panther
     sp = Spell::checkAndReturnSpellEntry(46784);        //    http://www.wowhead.com/?item=35702
     if (sp != nullptr)
-        sp->AttributesEx |= ATTRIBUTESEX_NOT_BREAK_STEALTH;
+        sp->addAttributesEx(ATTRIBUTESEX_NOT_BREAK_STEALTH);
 
     // Infernal Protection
     sp = Spell::checkAndReturnSpellEntry(36488);            //    http://www.wowhead.com/?spell=36488
@@ -4386,7 +4386,7 @@ void ApplyNormalFixes()
     sp = Spell::checkAndReturnSpellEntry(56815);
     if (sp != nullptr)
     {
-        sp->Attributes |= ATTRIBUTES_CANT_BE_DPB;
+        sp->addAttributes(ATTRIBUTES_CANT_BE_DPB);
     }
 
     CreateDummySpell(56817);
@@ -4402,32 +4402,32 @@ void ApplyNormalFixes()
     sp = Spell::checkAndReturnSpellEntry(49143);
     if (sp != nullptr)
     {
-        sp->Attributes = ATTRIBUTES_CANT_BE_DPB;
+        sp->setAttributes(ATTRIBUTES_CANT_BE_DPB);
     }
     sp = Spell::checkAndReturnSpellEntry(51416);
     if (sp != nullptr)
     {
-        sp->Attributes = ATTRIBUTES_CANT_BE_DPB;
+        sp->setAttributes(ATTRIBUTES_CANT_BE_DPB);
     }
     sp = Spell::checkAndReturnSpellEntry(51417);
     if (sp != nullptr)
     {
-        sp->Attributes = ATTRIBUTES_CANT_BE_DPB;
+        sp->setAttributes(ATTRIBUTES_CANT_BE_DPB);
     }
     sp = Spell::checkAndReturnSpellEntry(51418);
     if (sp != nullptr)
     {
-        sp->Attributes = ATTRIBUTES_CANT_BE_DPB;
+        sp->setAttributes(ATTRIBUTES_CANT_BE_DPB);
     }
     sp = Spell::checkAndReturnSpellEntry(51419);
     if (sp != nullptr)
     {
-        sp->Attributes = ATTRIBUTES_CANT_BE_DPB;
+        sp->setAttributes(ATTRIBUTES_CANT_BE_DPB);
     }
     sp = Spell::checkAndReturnSpellEntry(55268);
     if (sp != nullptr)
     {
-        sp->Attributes = ATTRIBUTES_CANT_BE_DPB;
+        sp->setAttributes(ATTRIBUTES_CANT_BE_DPB);
     }
 
     // Noggenfogger elixir - reduce size effect
@@ -4476,7 +4476,7 @@ void ApplyNormalFixes()
     sp = Spell::checkAndReturnSpellEntry(11196);
     if (sp != nullptr)
     {
-        sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
+        sp->setAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
     }
 
     sp = Spell::checkAndReturnSpellEntry(44856);        // Bash'ir Phasing Device
@@ -4554,7 +4554,7 @@ void ApplyNormalFixes()
 	if (sp)
 	{
 		sp->EffectTriggerSpell[0] = 26470;
-		sp->Attributes |= ATTRIBUTES_NO_VISUAL_AURA | ATTRIBUTES_PASSIVE;
+		sp->addAttributes(ATTRIBUTES_NO_VISUAL_AURA | ATTRIBUTES_PASSIVE);
 		sp->DurationIndex = 0;
 		sp->procFlags = PROC_ON_CAST_SPELL;
 	}
@@ -4573,7 +4573,7 @@ void ApplyNormalFixes()
 		sp->targetAuraSpell = 0;
 		sp->casterAuraSpellNot = 0;
 		sp->targetAuraSpellNot = 0;
-		sp->Attributes |= ATTRIBUTES_NEGATIVE;
+		sp->addAttributes(ATTRIBUTES_NEGATIVE);
 	}
     // War Stomp
     sp = Spell::checkAndReturnSpellEntry(20549);

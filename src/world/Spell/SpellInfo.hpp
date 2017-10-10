@@ -50,16 +50,41 @@ public:
     void setId(uint32_t value) { Id = value; }
 
     uint32 getCategory() const { return Category; }
+
     uint32 getDispelType() const { return DispelType; }
+    void setDispelType(uint32_t value) { DispelType = value; }              // used only in HackFixes.cpp
+
     uint32 getMechanicsType() const { return MechanicsType; }
+    void setMechanicsType(uint32_t value) { MechanicsType = value; }        // used only in HackFixes.cpp
+
     uint32 getAttributes() const { return Attributes; }
+    void setAttributes(uint32_t value) { Attributes = value; }              // used only in HackFixes.cpp / SpellCustomizations.cpp
+    void addAttributes(uint32_t value) { Attributes |= value; }             // used only in HackFixes.cpp
+    void removeAttributes(uint32_t value) { Attributes &= ~value; }         // used only in HackFixes.cpp
+
     uint32 getAttributesEx() const { return AttributesEx; }
+    void setAttributesEx(uint32_t value) { AttributesEx = value; }          // used only in HackFixes.cpp / SpellCustomizations.cpp
+    void addAttributesEx(uint32_t value) { AttributesEx |= value; }         // used only in HackFixes.cpp
+
     uint32 getAttributesExB() const { return AttributesExB; }
+    void setAttributesExB(uint32_t value) { AttributesExB = value; }        // used only in HackFixes.cpp / SpellCustomizations.cpp
+
     uint32 getAttributesExC() const { return AttributesExC; }
+    void setAttributesExC(uint32_t value) { AttributesExC = value; }        // used only in SpellCustomizations.cpp
+    void addAttributesExC(uint32_t value) { AttributesExC |= value; }       // used only in HackFixes.cpp
+
     uint32 getAttributesExD() const { return AttributesExD; }
+    void setAttributesExD(uint32_t value) { AttributesExD = value; }        // used only in SpellCustomizations.cpp
+
     uint32 getAttributesExE() const { return AttributesExE; }
+    void setAttributesExE(uint32_t value) { AttributesExE = value; }        // used only in SpellCustomizations.cpp
+
     uint32 getAttributesExF() const { return AttributesExF; }
+    void setAttributesExF(uint32_t value) { AttributesExF = value; }        // used only in SpellCustomizations.cpp
+
     uint32 getAttributesExG() const { return AttributesExG; }
+    void setAttributesExG(uint32_t value) { AttributesExG = value; }        // used only in SpellCustomizations.cpp
+
     uint32 getRequiredShapeShift() const { return RequiredShapeShift; }
     uint32 getShapeshiftExclude() const { return ShapeshiftExclude; }
     uint32 getTargets() const { return Targets; }
@@ -311,18 +336,20 @@ public:
         // Applied
 private:
     uint32 Id;
+    uint32 Category;
+    uint32 DispelType;
+    uint32 MechanicsType;
+    uint32 Attributes;
+    uint32 AttributesEx;
+    uint32 AttributesExB;
+    uint32 AttributesExC;
+    uint32 AttributesExD;
+    uint32 AttributesExE;
+    uint32 AttributesExF;
+    uint32 AttributesExG;
+
 public:
-        uint32 Category;
-        uint32 DispelType;
-        uint32 MechanicsType;
-        uint32 Attributes;
-        uint32 AttributesEx;
-        uint32 AttributesExB;
-        uint32 AttributesExC;
-        uint32 AttributesExD;
-        uint32 AttributesExE;
-        uint32 AttributesExF;
-        uint32 AttributesExG;
+        
         uint32 RequiredShapeShift;          // (12-13 Stances[2])
         uint32 ShapeshiftExclude;           // (14-15 StancesExcluded[2])
         uint32 Targets;

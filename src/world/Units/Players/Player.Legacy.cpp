@@ -1235,7 +1235,7 @@ void Player::Update(unsigned long time_passed)
 
                 for (uint32 x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; x++)
                 {
-                    if (m_auras[x] && m_auras[x]->GetSpellInfo()->Attributes & ATTRIBUTES_ONLY_OUTDOORS)
+                    if (m_auras[x] && m_auras[x]->GetSpellInfo()->getAttributes() & ATTRIBUTES_ONLY_OUTDOORS)
                         RemoveAura(m_auras[x]);
                 }
             }
@@ -2417,7 +2417,7 @@ void Player::addSpell(uint32 spell_id)
 
 #if VERSION_STRING > TBC
     m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SPELL, spell_id, 1, 0);
-    if (spell->MechanicsType == MECHANIC_MOUNTED) // Mounts
+    if (spell->getMechanicsType() == MECHANIC_MOUNTED) // Mounts
     {
         // miscvalue1==777 for mounts, 778 for pets
         m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_NUMBER_OF_MOUNTS, 777, 0, 0);
@@ -7574,7 +7574,7 @@ void Player::ClearCooldownForSpell(uint32 spell_id)
         for (PlayerCooldownMap::iterator itr = m_cooldownMap[i].begin(); itr != m_cooldownMap[i].end();)
         {
             PlayerCooldownMap::iterator itr2 = itr++;
-            if ((i == COOLDOWN_TYPE_CATEGORY && itr2->first == spellInfo->Category) ||
+            if ((i == COOLDOWN_TYPE_CATEGORY && itr2->first == spellInfo->getCategory()) ||
                 (i == COOLDOWN_TYPE_SPELL && itr2->first == spellInfo->getId()))
             {
                 m_cooldownMap[i].erase(itr2);
@@ -9900,7 +9900,7 @@ void Player::SaveAuras(std::stringstream & ss)
                 continue;
 
             //we are going to cast passive spells anyway on login so no need to save auras for them
-            if (aur->IsPassive() && !(aur->GetSpellInfo()->AttributesEx & 1024))
+            if (aur->IsPassive() && !(aur->GetSpellInfo()->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
                 continue;
 
             if (charges > 0 && aur->GetSpellId() != m_auras[prevX]->GetSpellId())
@@ -9951,7 +9951,7 @@ void Player::SetShapeShift(uint8 ss)
 
             if (this->getClass() == DRUID)
             {
-                switch (m_auras[x]->GetSpellInfo()->MechanicsType)
+                switch (m_auras[x]->GetSpellInfo()->getMechanicsType())
                 {
                     case MECHANIC_ROOTED: //Rooted
                     case MECHANIC_ENSNARED: //Movement speed
@@ -9979,7 +9979,7 @@ void Player::SetShapeShift(uint8 ss)
         if (sp == nullptr)
             continue;
 
-        if (sp->custom_apply_on_shapeshift_change || sp->Attributes & 64)        // passive/talent
+        if (sp->custom_apply_on_shapeshift_change || sp->getAttributes() & ATTRIBUTES_PASSIVE)        // passive/talent
         {
             if (sp->RequiredShapeShift && ((uint32)1 << (ss - 1)) & sp->RequiredShapeShift)
             {
@@ -11266,7 +11266,7 @@ void Player::Cooldown_Add(SpellInfo* pSpell, Item* pItemCaster)
     uint32 mstime = Util::getMSTime();
     int32 cool_time;
     uint32 spell_id = pSpell->getId();
-    uint32 category_id = pSpell->Category;
+    uint32 category_id = pSpell->getCategory();
 
     uint32 spell_category_recovery_time = pSpell->CategoryRecoveryTime;
     if (spell_category_recovery_time > 0 && category_id)
@@ -11323,9 +11323,9 @@ bool Player::Cooldown_CanCast(SpellInfo* pSpell)
     PlayerCooldownMap::iterator itr;
     uint32 mstime = Util::getMSTime();
 
-    if (pSpell->Category)
+    if (pSpell->getCategory())
     {
-        itr = m_cooldownMap[COOLDOWN_TYPE_CATEGORY].find(pSpell->Category);
+        itr = m_cooldownMap[COOLDOWN_TYPE_CATEGORY].find(pSpell->getCategory());
         if (itr != m_cooldownMap[COOLDOWN_TYPE_CATEGORY].end())
         {
             if (mstime < itr->second.ExpireTime)
@@ -12739,7 +12739,7 @@ void Player::SendPreventSchoolCast(uint32 SpellSchool, uint32 unTimeMs)
         }
 
         // Not send cooldown for this spells
-        if (spellInfo->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN)
+        if (spellInfo->getAttributes() & ATTRIBUTES_TRIGGER_COOLDOWN)
             continue;
 
         if (spellInfo->School == SpellSchool)

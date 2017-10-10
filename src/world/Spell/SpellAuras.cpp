@@ -794,7 +794,7 @@ Aura::Aura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool 
         SetNegative(100);
     if (m_spellInfo->custom_c_is_flags & SPELL_FLAG_IS_FORCEDBUFF)
         SetPositive(100);
-    if (m_spellInfo->Attributes & ATTRIBUTES_NEGATIVE)
+    if (m_spellInfo->getAttributes() & ATTRIBUTES_NEGATIVE)
         SetNegative(100);
 
     if (caster->IsUnit())
@@ -859,7 +859,7 @@ void Aura::Remove()
 
     m_deleted = true;
 
-    if (!IsPassive() || m_spellInfo->AttributesEx & ATTRIBUTES_ON_NEXT_SWING_2)
+    if (!IsPassive() || m_spellInfo->getAttributesEx() & ATTRIBUTES_ON_NEXT_SWING_2)
         m_target->ModVisualAuraStackCount(this, -1);
 
     ApplyModifiers(false);
@@ -949,14 +949,14 @@ void Aura::Remove()
     }
 
     // If this aura can affect one target at a time, remove this target from the caster map
-    if (caster != NULL && GetSpellInfo()->AttributesExE & ATTRIBUTESEXE_SINGLE_TARGET_AURA && m_target->GetAuraStackCount(GetSpellId()) == 1)
+    if (caster != NULL && GetSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_SINGLE_TARGET_AURA && m_target->GetAuraStackCount(GetSpellId()) == 1)
         caster->removeSingleTargetGuidForAura(GetSpellInfo()->getId());
 
     /* Remove aurastates */
     uint32 flag = 0;
-    if (m_spellInfo->MechanicsType == MECHANIC_ENRAGED && !--m_target->asc_enraged)
+    if (m_spellInfo->getMechanicsType() == MECHANIC_ENRAGED && !--m_target->asc_enraged)
         flag |= AURASTATE_FLAG_ENRAGED;
-    else if (m_spellInfo->MechanicsType == MECHANIC_BLEEDING && !--m_target->asc_bleed)
+    else if (m_spellInfo->getMechanicsType() == MECHANIC_BLEEDING && !--m_target->asc_bleed)
         flag |= AURASTATE_FLAG_BLEED;
     if (m_spellInfo->custom_BGR_one_buff_on_target & SPELL_TYPE_SEAL && !--m_target->asc_seal)
         flag |= AURASTATE_FLAG_JUDGEMENT;
@@ -1026,7 +1026,7 @@ void Aura::ApplyModifiers(bool apply)
                     SetNegative(100);
                 if (m_spellInfo->custom_c_is_flags & SPELL_FLAG_IS_FORCEDBUFF)
                     SetPositive(100);
-                if (m_spellInfo->Attributes & ATTRIBUTES_NEGATIVE)
+                if (m_spellInfo->getAttributes() & ATTRIBUTES_NEGATIVE)
                     SetNegative(100);
             }
 
@@ -1717,7 +1717,7 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
 {
     if (apply)
     {
-        if (m_spellInfo->MechanicsType == MECHANIC_BLEEDING && m_target->MechanicsDispels[MECHANIC_BLEEDING])
+        if (m_spellInfo->getMechanicsType() == MECHANIC_BLEEDING && m_target->MechanicsDispels[MECHANIC_BLEEDING])
         {
             m_flags |= 1 << mod->i;
             return;
@@ -1944,7 +1944,7 @@ void Aura::EventPeriodicDamage(uint32 amount)
         if (res <= 0.0f)
             dmg.resisted_damage = dmg.full_damage;
 
-        if (res > 0.0f && c && m_spellInfo->MechanicsType != MECHANIC_BLEEDING)
+        if (res > 0.0f && c && m_spellInfo->getMechanicsType() != MECHANIC_BLEEDING)
         {
             c->CalculateResistanceReduction(m_target, &dmg, m_spellInfo, 0);
             if (static_cast<int32>(dmg.resisted_damage) > dmg.full_damage)
@@ -2003,7 +2003,7 @@ void Aura::SpellAuraModConfuse(bool apply)
 
         // Check Mechanic Immunity
         if (m_target->MechanicsDispels[MECHANIC_DISORIENTED]
-            || (m_spellInfo->MechanicsType == MECHANIC_POLYMORPHED && m_target->MechanicsDispels[MECHANIC_POLYMORPHED])
+            || (m_spellInfo->getMechanicsType() == MECHANIC_POLYMORPHED && m_target->MechanicsDispels[MECHANIC_POLYMORPHED])
             )
         {
             m_flags |= 1 << mod->i;
@@ -2599,10 +2599,10 @@ void Aura::SpellAuraModStun(bool apply)
             {
                 if (!IsPositive())    // ice block stuns you, don't want our own spells to ignore stun effects
                 {
-                    if ((m_spellInfo->MechanicsType == MECHANIC_CHARMED &&  m_target->MechanicsDispels[MECHANIC_CHARMED])
-                        || (m_spellInfo->MechanicsType == MECHANIC_INCAPACIPATED && m_target->MechanicsDispels[MECHANIC_INCAPACIPATED])
+                    if ((m_spellInfo->getMechanicsType() == MECHANIC_CHARMED &&  m_target->MechanicsDispels[MECHANIC_CHARMED])
+                        || (m_spellInfo->getMechanicsType() == MECHANIC_INCAPACIPATED && m_target->MechanicsDispels[MECHANIC_INCAPACIPATED])
 
-                        || (m_spellInfo->MechanicsType == MECHANIC_SAPPED && m_target->MechanicsDispels[MECHANIC_SAPPED])
+                        || (m_spellInfo->getMechanicsType() == MECHANIC_SAPPED && m_target->MechanicsDispels[MECHANIC_SAPPED])
                         || (m_target->MechanicsDispels[MECHANIC_STUNNED])
                         )
                     {
@@ -2986,7 +2986,7 @@ void Aura::SpellAuraModStealth(bool apply)
                     {
                         if (m_target->m_auras[x] != NULL)
                         {
-                            if (m_target->m_auras[x]->GetSpellInfo()->MechanicsType == MECHANIC_ROOTED || m_target->m_auras[x]->GetSpellInfo()->MechanicsType == MECHANIC_ENSNARED)   // Remove roots and slow spells
+                            if (m_target->m_auras[x]->GetSpellInfo()->getMechanicsType() == MECHANIC_ROOTED || m_target->m_auras[x]->GetSpellInfo()->getMechanicsType() == MECHANIC_ENSNARED)   // Remove roots and slow spells
                             {
                                 m_target->m_auras[x]->Remove();
                             }
@@ -4239,7 +4239,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
             {
                 if (m_target->m_auras[x] != NULL)
                 {
-                    if (m_target->m_auras[x]->GetSpellInfo()->MechanicsType == MECHANIC_ROOTED || m_target->m_auras[x]->GetSpellInfo()->MechanicsType == MECHANIC_ENSNARED)   // Remove roots and slow spells
+                    if (m_target->m_auras[x]->GetSpellInfo()->getMechanicsType() == MECHANIC_ROOTED || m_target->m_auras[x]->GetSpellInfo()->getMechanicsType() == MECHANIC_ENSNARED)   // Remove roots and slow spells
                     {
                         m_target->m_auras[x]->Remove();
                     }
@@ -4363,7 +4363,7 @@ void Aura::SpellAuraModSchoolImmunity(bool apply)
                         pAura != NULL &&
                         !pAura->IsPassive() &&
                         !pAura->IsPositive() &&
-                        !(pAura->GetSpellInfo()->Attributes & ATTRIBUTES_IGNORE_INVULNERABILITY))
+                        !(pAura->GetSpellInfo()->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY))
                     {
                         pAura->Remove();
                     }
@@ -4462,7 +4462,7 @@ void Aura::SpellAuraModDispelImmunity(bool apply)
         {
             // HACK FIX FOR: 41425 and 25771
             if (m_target->m_auras[x] && m_target->m_auras[x]->GetSpellId() != 41425 && m_target->m_auras[x]->GetSpellId() != 25771)
-                if (m_target->m_auras[x]->GetSpellInfo()->DispelType == (uint32)mod->m_miscValue)
+                if (m_target->m_auras[x]->GetSpellInfo()->getDispelType() == (uint32)mod->m_miscValue)
                     m_target->m_auras[x]->Remove();
         }
     }
@@ -5568,7 +5568,7 @@ void Aura::SpellAuraReflectSpellsSchool(bool apply)
         rss->spellId = GetSpellId();
         rss->infront = false;
 
-        if (m_spellInfo->Attributes == 0x400D0 && m_spellInfo->AttributesEx == 0)
+        if (m_spellInfo->getAttributes() == 0x400D0 && m_spellInfo->getAttributesEx() == 0)
             rss->school = (int)(log10((float)mod->m_miscValue) / log10((float)2));
         else
             rss->school = m_spellInfo->School;

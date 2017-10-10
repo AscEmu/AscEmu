@@ -181,7 +181,7 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
             LogDebugFlag(LF_SPELL, "[DEBUG][SPELL] Incompatible object type, please report this to the dev's");
             break;
     }
-    if (u_caster && m_spellInfo->AttributesExF & ATTRIBUTESEXF_CAST_BY_CHARMER)
+    if (u_caster && m_spellInfo->getAttributesExF() & ATTRIBUTESEXF_CAST_BY_CHARMER)
     {
         Unit* u = u_caster->GetMapMgrUnit(u_caster->GetCharmedByGUID());
         if (u)
@@ -197,7 +197,7 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
     m_castPositionX = m_castPositionY = m_castPositionZ = 0;
     //TriggerSpellId = 0;
     //TriggerSpellTarget = 0;
-    if (m_spellInfo->AttributesExD & ATTRIBUTESEXD_TRIGGERED)
+    if (m_spellInfo->getAttributesExD() & ATTRIBUTESEXD_TRIGGERED)
         triggered = true;
     m_triggeredSpell = triggered;
     m_AreaAura = false;
@@ -701,7 +701,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
     /*************************************************************************/
     /* Check if the target is immune to this mechanic                        */
     /*************************************************************************/
-    if (m_spellInfo->MechanicsType < MECHANIC_END && u_victim->MechanicsDispels[m_spellInfo->MechanicsType])
+    if (m_spellInfo->getMechanicsType() < MECHANIC_END && u_victim->MechanicsDispels[m_spellInfo->getMechanicsType()])
 
     {
         // Immune - IF, and ONLY IF, there is no damage component!
@@ -729,9 +729,9 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
     /************************************************************************/
     /* Check if the target has a % resistance to this mechanic              */
     /************************************************************************/
-    if (m_spellInfo->MechanicsType < MECHANIC_END)
+    if (m_spellInfo->getMechanicsType() < MECHANIC_END)
     {
-        float res = u_victim->MechanicsResistancesPCT[m_spellInfo->MechanicsType];
+        float res = u_victim->MechanicsResistancesPCT[m_spellInfo->getMechanicsType()];
         if (Rand(res))
             return SPELL_DID_HIT_RESIST;
     }
@@ -761,7 +761,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
     /************************************************************************/
     /* Check if the spell is resisted.                                      */
     /************************************************************************/
-    if (GetSpellInfo()->School == SCHOOL_NORMAL  && GetSpellInfo()->MechanicsType == MECHANIC_NONE)
+    if (GetSpellInfo()->School == SCHOOL_NORMAL  && GetSpellInfo()->getMechanicsType() == MECHANIC_NONE)
         return SPELL_DID_HIT_SUCCESS;
 
     bool pvp = (p_caster && p_victim);
@@ -789,9 +789,9 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
         }
     }
     ///\todo SB@L - This mechanic resist chance is handled twice, once several lines above, then as part of resistchance here check mechanical resistance i have no idea what is the best pace for this code
-    if (GetSpellInfo()->MechanicsType < MECHANIC_END)
+    if (GetSpellInfo()->getMechanicsType() < MECHANIC_END)
     {
-        resistchance += u_victim->MechanicsResistancesPCT[GetSpellInfo()->MechanicsType];
+        resistchance += u_victim->MechanicsResistancesPCT[GetSpellInfo()->getMechanicsType()];
     }
     //rating bonus
     if (p_caster != NULL)
@@ -1587,7 +1587,7 @@ void Spell::castMe(bool check)
 
             // we're much better to remove this here, because otherwise spells that change powers etc,
             // don't get applied.
-            if (u_caster && !m_triggeredSpell && !m_triggeredByAura && !(m_spellInfo->AttributesEx & ATTRIBUTESEX_NOT_BREAK_STEALTH))
+            if (u_caster && !m_triggeredSpell && !m_triggeredByAura && !(m_spellInfo->getAttributesEx() & ATTRIBUTESEX_NOT_BREAK_STEALTH))
             {
                 u_caster->RemoveAurasByInterruptFlagButSkip(AURA_INTERRUPT_ON_CAST_SPELL, GetSpellInfo()->getId());
                 u_caster->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_CAST);
@@ -1653,7 +1653,7 @@ void Spell::castMe(bool check)
             // we're much better to remove this here, because otherwise spells that change powers etc,
             // don't get applied.
 
-            if (u_caster && !m_triggeredSpell && !m_triggeredByAura && !(m_spellInfo->AttributesEx & ATTRIBUTESEX_NOT_BREAK_STEALTH))
+            if (u_caster && !m_triggeredSpell && !m_triggeredByAura && !(m_spellInfo->getAttributesEx() & ATTRIBUTESEX_NOT_BREAK_STEALTH))
             {
                 u_caster->RemoveAurasByInterruptFlagButSkip(AURA_INTERRUPT_ON_CAST_SPELL, GetSpellInfo()->getId());
                 u_caster->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_CAST);
@@ -3208,7 +3208,7 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
     if (m_spellInfo->EffectImplicitTargetB[i] != 0)
         TargetType |= GetTargetType(m_spellInfo->EffectImplicitTargetB[i], i);
 
-    if (u_caster != NULL && unitTarget != NULL && unitTarget->IsCreature() && TargetType & SPELL_TARGET_REQUIRE_ATTACKABLE && !(m_spellInfo->AttributesEx & ATTRIBUTESEX_NO_INITIAL_AGGRO))
+    if (u_caster != NULL && unitTarget != NULL && unitTarget->IsCreature() && TargetType & SPELL_TARGET_REQUIRE_ATTACKABLE && !(m_spellInfo->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
     {
         unitTarget->GetAIInterface()->AttackReaction(u_caster, 1, 0);
         unitTarget->GetAIInterface()->HandleEvent(EVENT_HOSTILEACTION, u_caster, 0);
@@ -3282,7 +3282,7 @@ void Spell::HandleAddAura(uint64 guid)
 
     uint32 spellid = 0;
 
-    if ((GetSpellInfo()->MechanicsType == MECHANIC_INVULNARABLE && GetSpellInfo()->getId() != 25771) || GetSpellInfo()->getId() == 31884)     // Cast spell Forbearance
+    if ((GetSpellInfo()->getMechanicsType() == MECHANIC_INVULNARABLE && GetSpellInfo()->getId() != 25771) || GetSpellInfo()->getId() == 31884)     // Cast spell Forbearance
     {
         if (GetSpellInfo()->getId() != 31884)
             spellid = 25771;
@@ -3293,9 +3293,9 @@ void Spell::HandleAddAura(uint64 guid)
             static_cast<Player*>(Target)->mAvengingWrath = false;
         }
     }
-    else if (GetSpellInfo()->MechanicsType == MECHANIC_HEALING && GetSpellInfo()->getId() != 11196)  // Cast spell Recently Bandaged
+    else if (GetSpellInfo()->getMechanicsType() == MECHANIC_HEALING && GetSpellInfo()->getId() != 11196)  // Cast spell Recently Bandaged
         spellid = 11196;
-    else if (GetSpellInfo()->MechanicsType == MECHANIC_SHIELDED && GetSpellInfo()->getId() != 6788)  // Cast spell Weakened Soul
+    else if (GetSpellInfo()->getMechanicsType() == MECHANIC_SHIELDED && GetSpellInfo()->getId() != 6788)  // Cast spell Weakened Soul
         spellid = 6788;
     else if (GetSpellInfo()->getId() == 45438)  // Cast spell Hypothermia
         spellid = 41425;
@@ -3773,8 +3773,8 @@ uint32 Spell::GetBaseThreat(uint32 dmg)
 
 uint32 Spell::GetMechanic(SpellInfo* sp)
 {
-    if (sp->MechanicsType)
-        return sp->MechanicsType;
+    if (sp->getMechanicsType())
+        return sp->getMechanicsType();
     if (sp->EffectMechanic[2])
         return sp->EffectMechanic[2];
     if (sp->EffectMechanic[1])
@@ -4062,7 +4062,7 @@ uint8 Spell::CanCast(bool tolerate)
          */
         if (worldConfig.terrainCollision.isCollisionEnabled)
         {
-            if (GetSpellInfo()->MechanicsType == MECHANIC_MOUNTED)
+            if (GetSpellInfo()->getMechanicsType() == MECHANIC_MOUNTED)
             {
                 if (!MapManagement::AreaManagement::AreaStorage::IsOutdoor(p_caster->GetMapId(), p_caster->GetPositionNC().x, p_caster->GetPositionNC().y, p_caster->GetPositionNC().z))
                     return SPELL_FAILED_NO_MOUNTS_ALLOWED;
@@ -5252,7 +5252,7 @@ uint8 Spell::CanCast(bool tolerate)
                     }
                 }
 
-                if (GetSpellInfo()->Category == 1131) //Hammer of wrath, requires target to have 20- % of hp
+                if (GetSpellInfo()->getCategory() == 1131) //Hammer of wrath, requires target to have 20- % of hp
                 {
                     if (target->GetHealth() == 0)
                         return SPELL_FAILED_BAD_TARGETS;
@@ -5260,13 +5260,13 @@ uint8 Spell::CanCast(bool tolerate)
                     if (target->GetMaxHealth() / target->GetHealth() < 5)
                         return SPELL_FAILED_BAD_TARGETS;
                 }
-                else if (GetSpellInfo()->Category == 672) //Conflagrate, requires immolation spell on victim
+                else if (GetSpellInfo()->getCategory() == 672) //Conflagrate, requires immolation spell on victim
                 {
                     if (!target->HasAuraVisual(46))
                         return SPELL_FAILED_BAD_TARGETS;
                 }
 
-                if (target->dispels[GetSpellInfo()->DispelType])
+                if (target->dispels[GetSpellInfo()->getDispelType()])
                     return SPELL_FAILED_DAMAGE_IMMUNE;			// hackfix - burlex
 
                 // Removed by Supalosa and moved to 'completed cast'
@@ -5519,19 +5519,19 @@ uint8 Spell::CanCast(bool tolerate)
         /**
          *	Stun check
          */
-        if (u_caster->IsStunned() && (GetSpellInfo()->AttributesExE & ATTRIBUTESEXE_USABLE_WHILE_STUNNED) == 0)
+        if (u_caster->IsStunned() && (GetSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_STUNNED) == 0)
             return SPELL_FAILED_STUNNED;
 
         /**
          *	Fear check
          */
-        if (u_caster->IsFeared() && (GetSpellInfo()->AttributesExE & ATTRIBUTESEXE_USABLE_WHILE_FEARED) == 0)
+        if (u_caster->IsFeared() && (GetSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_FEARED) == 0)
             return SPELL_FAILED_FLEEING;
 
         /**
          *	Confuse check
          */
-        if (u_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED) && (GetSpellInfo()->AttributesExE & ATTRIBUTESEXE_USABLE_WHILE_CONFUSED) == 0)
+        if (u_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED) && (GetSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_CONFUSED) == 0)
             return SPELL_FAILED_CONFUSED;
 
 
@@ -5556,7 +5556,7 @@ uint8 Spell::CanCast(bool tolerate)
     /**
      * Dead pet check
      */
-    if (GetSpellInfo()->AttributesExB & ATTRIBUTESEXB_REQ_DEAD_PET && p_caster != NULL)
+    if (GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_REQ_DEAD_PET && p_caster != NULL)
     {
         Pet* pPet = p_caster->GetSummon();
         if (pPet != NULL && !pPet->IsDead())
@@ -5577,42 +5577,42 @@ bool Spell::HasCustomFlag(uint32 flag)
 
 bool Spell::hasAttribute(SpellAttributes attribute)
 {
-    return (GetSpellInfo()->Attributes & attribute) != 0;
+    return (GetSpellInfo()->getAttributes() & attribute) != 0;
 }
 
 bool Spell::hasAttributeEx(SpellAttributesEx attribute)
 {
-    return (GetSpellInfo()->AttributesEx & attribute) != 0;
+    return (GetSpellInfo()->getAttributesEx() & attribute) != 0;
 }
 
 bool Spell::hasAttributeExB(SpellAttributesExB attribute)
 {
-    return (GetSpellInfo()->AttributesExB & attribute) != 0;
+    return (GetSpellInfo()->getAttributesExB() & attribute) != 0;
 }
 
 bool Spell::hasAttributeExC(SpellAttributesExC attribute)
 {
-    return (GetSpellInfo()->AttributesExC & attribute) != 0;
+    return (GetSpellInfo()->getAttributesExC() & attribute) != 0;
 }
 
 bool Spell::hasAttributeExD(SpellAttributesExD attribute)
 {
-    return (GetSpellInfo()->AttributesExD & attribute) != 0;
+    return (GetSpellInfo()->getAttributesExD() & attribute) != 0;
 }
 
 bool Spell::hasAttributeExE(SpellAttributesExE attribute)
 {
-    return (GetSpellInfo()->AttributesExE & attribute) != 0;
+    return (GetSpellInfo()->getAttributesExE() & attribute) != 0;
 }
 
 bool Spell::hasAttributeExF(SpellAttributesExF attribute)
 {
-    return (GetSpellInfo()->AttributesExF & attribute) != 0;
+    return (GetSpellInfo()->getAttributesExF() & attribute) != 0;
 }
 
 bool Spell::hasAttributeExG(SpellAttributesExG attribute)
 {
-    return (GetSpellInfo()->AttributesExG & attribute) != 0;
+    return (GetSpellInfo()->getAttributesExG() & attribute) != 0;
 }
 
 void Spell::RemoveItems()
@@ -6679,7 +6679,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
     int32 bonus = 0;
     uint32 school = GetSpellInfo()->School;
 
-    if (u_caster != NULL && !(GetSpellInfo()->AttributesExC & ATTRIBUTESEXC_NO_HEALING_BONUS))
+    if (u_caster != NULL && !(GetSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_NO_HEALING_BONUS))
     {
         //Basic bonus
         if (p_caster == NULL ||
@@ -8374,7 +8374,7 @@ void Spell::HandleModeratedEffects(uint64 guid)
     {
         Object* obj = u_caster->GetMapMgr()->_GetObject(guid);
 
-        if (obj != NULL && obj->IsCreature() && !(m_spellInfo->AttributesEx & ATTRIBUTESEX_NO_INITIAL_AGGRO))
+        if (obj != NULL && obj->IsCreature() && !(m_spellInfo->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
         {
             static_cast<Creature*>(obj)->GetAIInterface()->AttackReaction(u_caster, 0, 0);
             static_cast<Creature*>(obj)->GetAIInterface()->HandleEvent(EVENT_HOSTILEACTION, u_caster, 0);
