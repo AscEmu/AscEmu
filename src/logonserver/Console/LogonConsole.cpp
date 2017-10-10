@@ -200,7 +200,6 @@ void LogonConsole::ProcessHelp(char* command)
         printf("    Help, ?: Prints this help text.\n");
         printf("    Account create: Creates a new account\n");
         printf("    Account delete: Deletes an account\n");
-        printf("    Account set gm: Sets gm access to account\n");
         printf("    Account set password: Sets a new password for an account\n");
         printf("    Account change password: Change the current password for an account\n");
         printf("    Info:  shows some information about the server.\n");
