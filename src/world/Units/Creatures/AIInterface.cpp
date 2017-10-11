@@ -1889,7 +1889,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 
                     /* if in range stop moving so we don't interrupt the spell */
                     //do not stop for instant spells
-                    DBC::Structures::SpellCastTimesEntry const* spell_cast_time = sSpellCastTimesStore.LookupEntry(m_nextSpell->spell->CastingTimeIndex);
+                    DBC::Structures::SpellCastTimesEntry const* spell_cast_time = sSpellCastTimesStore.LookupEntry(m_nextSpell->spell->getCastingTimeIndex());
                     if (spell_cast_time && GetCastTime(spell_cast_time) != 0)
                         StopMovement(0);
 

@@ -4674,7 +4674,7 @@ void Spell::SpellEffectInterruptCast(uint32 i) // Interrupt Cast
         // and InterruptFlags of target's casting spell
         if (school
             && (TargetSpell->getState() == SPELL_STATE_CASTING
-            || (TargetSpell->getState() == SPELL_STATE_PREPARING && TargetSpell->GetSpellInfo()->CastingTimeIndex > 0))
+            || (TargetSpell->getState() == SPELL_STATE_PREPARING && TargetSpell->GetSpellInfo()->getCastingTimeIndex() > 0))
             && TargetSpell->GetSpellInfo()->PreventionType == PREVENTION_TYPE_SILENCE
             && ((TargetSpell->GetSpellInfo()->InterruptFlags & CAST_INTERRUPT_ON_INTERRUPT_SCHOOL)
             || (TargetSpell->GetSpellInfo()->ChannelInterruptFlags & CHANNEL_INTERRUPT_ON_4)))

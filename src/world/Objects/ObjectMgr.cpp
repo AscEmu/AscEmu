@@ -3853,7 +3853,7 @@ void ObjectMgr::LoadCreatureAIAgents()
                         int RecoveryTime = sp->spell->RecoveryTime;
                         if (sp->spell->DurationIndex)
                             Dur = ::GetDuration(spell_duration);
-                        Casttime = GetCastTime(sSpellCastTimesStore.LookupEntry(sp->spell->CastingTimeIndex));
+                        Casttime = GetCastTime(sSpellCastTimesStore.LookupEntry(sp->spell->getCastingTimeIndex()));
                         cooldown = Dur + Casttime + RecoveryTime;
                         if (cooldown < 0)
                             sp->cooldown = 2000; //huge value that should not loop while adding some timestamp to it

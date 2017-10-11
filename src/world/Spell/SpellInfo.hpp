@@ -52,54 +52,84 @@ public:
     uint32 getCategory() const { return Category; }
 
     uint32 getDispelType() const { return DispelType; }
-    void setDispelType(uint32_t value) { DispelType = value; }              // used only in HackFixes.cpp
+    void setDispelType(uint32_t value) { DispelType = value; }              // used in HackFixes.cpp
 
     uint32 getMechanicsType() const { return MechanicsType; }
-    void setMechanicsType(uint32_t value) { MechanicsType = value; }        // used only in HackFixes.cpp
+    void setMechanicsType(uint32_t value) { MechanicsType = value; }        // used in HackFixes.cpp
 
     uint32 getAttributes() const { return Attributes; }
-    void setAttributes(uint32_t value) { Attributes = value; }              // used only in HackFixes.cpp / SpellCustomizations.cpp
-    void addAttributes(uint32_t value) { Attributes |= value; }             // used only in HackFixes.cpp
-    void removeAttributes(uint32_t value) { Attributes &= ~value; }         // used only in HackFixes.cpp
+    void setAttributes(uint32_t value) { Attributes = value; }              // used in HackFixes.cpp / SpellCustomizations.cpp
+    void addAttributes(uint32_t value) { Attributes |= value; }             // used in HackFixes.cpp
+    void removeAttributes(uint32_t value) { Attributes &= ~value; }         // used in HackFixes.cpp
 
     uint32 getAttributesEx() const { return AttributesEx; }
-    void setAttributesEx(uint32_t value) { AttributesEx = value; }          // used only in HackFixes.cpp / SpellCustomizations.cpp
-    void addAttributesEx(uint32_t value) { AttributesEx |= value; }         // used only in HackFixes.cpp
+    void setAttributesEx(uint32_t value) { AttributesEx = value; }          // used in HackFixes.cpp / SpellCustomizations.cpp
+    void addAttributesEx(uint32_t value) { AttributesEx |= value; }         // used in HackFixes.cpp
 
     uint32 getAttributesExB() const { return AttributesExB; }
-    void setAttributesExB(uint32_t value) { AttributesExB = value; }        // used only in HackFixes.cpp / SpellCustomizations.cpp
+    void setAttributesExB(uint32_t value) { AttributesExB = value; }        // used in HackFixes.cpp / SpellCustomizations.cpp
 
     uint32 getAttributesExC() const { return AttributesExC; }
-    void setAttributesExC(uint32_t value) { AttributesExC = value; }        // used only in SpellCustomizations.cpp
-    void addAttributesExC(uint32_t value) { AttributesExC |= value; }       // used only in HackFixes.cpp
+    void setAttributesExC(uint32_t value) { AttributesExC = value; }        // used in SpellCustomizations.cpp
+    void addAttributesExC(uint32_t value) { AttributesExC |= value; }       // used in HackFixes.cpp
 
     uint32 getAttributesExD() const { return AttributesExD; }
-    void setAttributesExD(uint32_t value) { AttributesExD = value; }        // used only in SpellCustomizations.cpp
+    void setAttributesExD(uint32_t value) { AttributesExD = value; }        // used in SpellCustomizations.cpp
 
     uint32 getAttributesExE() const { return AttributesExE; }
-    void setAttributesExE(uint32_t value) { AttributesExE = value; }        // used only in SpellCustomizations.cpp
+    void setAttributesExE(uint32_t value) { AttributesExE = value; }        // used in SpellCustomizations.cpp
 
     uint32 getAttributesExF() const { return AttributesExF; }
-    void setAttributesExF(uint32_t value) { AttributesExF = value; }        // used only in SpellCustomizations.cpp
+    void setAttributesExF(uint32_t value) { AttributesExF = value; }        // used in SpellCustomizations.cpp
 
     uint32 getAttributesExG() const { return AttributesExG; }
-    void setAttributesExG(uint32_t value) { AttributesExG = value; }        // used only in SpellCustomizations.cpp
+    void setAttributesExG(uint32_t value) { AttributesExG = value; }        // used in SpellCustomizations.cpp
 
     uint32 getRequiredShapeShift() const { return RequiredShapeShift; }
+    void setRequiredShapeShift(uint32_t value) { RequiredShapeShift = value; } // used in HackFixes.cpp / SpellCustomizations.cpp
+
     uint32 getShapeshiftExclude() const { return ShapeshiftExclude; }
-    uint32 getTargets() const { return Targets; }
+    void setShapeshiftExclude(uint32_t value) { ShapeshiftExclude = value; } // used in SpellCustomizations.cpp
+
+    uint32 getTargets() const { return Targets; }                           // not used!
+    void setTargets(uint32_t value) { Targets = value; }                    // used in SpellCustomizations.cpp
+
     uint32 getTargetCreatureType() const { return TargetCreatureType; }
+    void setTargetCreatureType(uint32_t value) { TargetCreatureType = value; } // used in SpellCustomizations.cpp
+
     uint32 getRequiresSpellFocus() const { return RequiresSpellFocus; }
+    void setRequiresSpellFocus(uint32_t value) { RequiresSpellFocus = value; } // used in SpellCustomizations.cpp
+
     uint32 getFacingCasterFlags() const { return FacingCasterFlags; }
+    void setFacingCasterFlags(uint32_t value) { FacingCasterFlags = value; } // used in HackFixes.cpp / SpellCustomizations.cpp
+
     uint32 getCasterAuraState() const { return CasterAuraState; }
+    void setCasterAuraState(uint32_t value) { CasterAuraState = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
+
     uint32 getTargetAuraState() const { return TargetAuraState; }
+    void setTargetAuraState(uint32_t value) { TargetAuraState = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
+
     uint32 getCasterAuraStateNot() const { return CasterAuraStateNot; }
+    void setCasterAuraStateNot(uint32_t value) { CasterAuraStateNot = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
+
     uint32 getTargetAuraStateNot() const { return TargetAuraStateNot; }
+    void setTargetAuraStateNot(uint32_t value) { TargetAuraStateNot = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
+
     uint32 getCasterAuraSpell() const { return casterAuraSpell; }
+    void setCasterAuraSpell(uint32_t value) { casterAuraSpell = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
+
     uint32 getTargetAuraSpell() const { return targetAuraSpell; }
+    void setTargetAuraSpell(uint32_t value) { targetAuraSpell = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
+
     uint32 getCasterAuraSpellNot() const { return casterAuraSpellNot; }
+    void setCasterAuraSpellNot(uint32_t value) { casterAuraSpellNot = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
+
     uint32 getTargetAuraSpellNot() const { return targetAuraSpellNot; }
+    void setTargetAuraSpellNot(uint32_t value) { targetAuraSpellNot = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
+
     uint32 getCastingTimeIndex() const { return CastingTimeIndex; }
+    void setCastingTimeIndex(uint32_t value) { CastingTimeIndex = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
+
     uint32 getRecoveryTime() const { return RecoveryTime; }
     uint32 getCategoryRecoveryTime() const { return CategoryRecoveryTime; }
     uint32 getInterruptFlags() const { return InterruptFlags; }
@@ -347,24 +377,24 @@ private:
     uint32 AttributesExE;
     uint32 AttributesExF;
     uint32 AttributesExG;
+    uint32 RequiredShapeShift;          // (12-13 Stances[2])
+    uint32 ShapeshiftExclude;           // (14-15 StancesExcluded[2])
+    uint32 Targets;                     // not used!
+    uint32 TargetCreatureType;
+    uint32 RequiresSpellFocus;
+    uint32 FacingCasterFlags;
+    uint32 CasterAuraState;
+    uint32 TargetAuraState;
+    uint32 CasterAuraStateNot;
+    uint32 TargetAuraStateNot;
+    uint32 casterAuraSpell;
+    uint32 targetAuraSpell;
+    uint32 casterAuraSpellNot;
+    uint32 targetAuraSpellNot;
+    uint32 CastingTimeIndex;
 
 public:
-        
-        uint32 RequiredShapeShift;          // (12-13 Stances[2])
-        uint32 ShapeshiftExclude;           // (14-15 StancesExcluded[2])
-        uint32 Targets;
-        uint32 TargetCreatureType;
-        uint32 RequiresSpellFocus;
-        uint32 FacingCasterFlags;
-        uint32 CasterAuraState;
-        uint32 TargetAuraState;
-        uint32 CasterAuraStateNot;
-        uint32 TargetAuraStateNot;
-        uint32 casterAuraSpell;
-        uint32 targetAuraSpell;
-        uint32 casterAuraSpellNot;
-        uint32 targetAuraSpellNot;
-        uint32 CastingTimeIndex;
+
         uint32 RecoveryTime;
         uint32 CategoryRecoveryTime;
         uint32 InterruptFlags;

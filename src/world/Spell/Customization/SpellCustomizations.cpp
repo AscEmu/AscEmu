@@ -62,23 +62,23 @@ void SpellCustomizations::LoadSpellInfoData()
 #if VERSION_STRING > TBC
             spellInfo.setAttributesExG(dbc_spell_entry->AttributesExG);
 #endif
-            spellInfo.RequiredShapeShift = dbc_spell_entry->RequiredShapeShift;
-            spellInfo.ShapeshiftExclude = dbc_spell_entry->ShapeshiftExclude;
-            spellInfo.Targets = dbc_spell_entry->Targets;
-            spellInfo.TargetCreatureType = dbc_spell_entry->TargetCreatureType;
-            spellInfo.RequiresSpellFocus = dbc_spell_entry->RequiresSpellFocus;
-            spellInfo.FacingCasterFlags = dbc_spell_entry->FacingCasterFlags;
-            spellInfo.CasterAuraState = dbc_spell_entry->CasterAuraState;
-            spellInfo.TargetAuraState = dbc_spell_entry->TargetAuraState;
-            spellInfo.CasterAuraStateNot = dbc_spell_entry->CasterAuraStateNot;
-            spellInfo.TargetAuraStateNot = dbc_spell_entry->TargetAuraStateNot;
+            spellInfo.setRequiredShapeShift(dbc_spell_entry->RequiredShapeShift);
+            spellInfo.setShapeshiftExclude(dbc_spell_entry->ShapeshiftExclude);
+            spellInfo.setTargets(dbc_spell_entry->Targets);
+            spellInfo.setTargetCreatureType(dbc_spell_entry->TargetCreatureType);
+            spellInfo.setRequiresSpellFocus(dbc_spell_entry->RequiresSpellFocus);
+            spellInfo.setFacingCasterFlags(dbc_spell_entry->FacingCasterFlags);
+            spellInfo.setCasterAuraState(dbc_spell_entry->CasterAuraState);
+            spellInfo.setTargetAuraState(dbc_spell_entry->TargetAuraState);
+            spellInfo.setCasterAuraStateNot(dbc_spell_entry->CasterAuraStateNot);
+            spellInfo.setTargetAuraStateNot(dbc_spell_entry->TargetAuraStateNot);
 #if VERSION_STRING > TBC
-            spellInfo.casterAuraSpell = dbc_spell_entry->casterAuraSpell;
-            spellInfo.targetAuraSpell = dbc_spell_entry->targetAuraSpell;
-            spellInfo.casterAuraSpellNot = dbc_spell_entry->casterAuraSpellNot;
-            spellInfo.targetAuraSpellNot = dbc_spell_entry->targetAuraSpellNot;
+            spellInfo.setCasterAuraSpell(dbc_spell_entry->casterAuraSpell);
+            spellInfo.setTargetAuraSpell(dbc_spell_entry->targetAuraSpell);
+            spellInfo.setCasterAuraSpellNot(dbc_spell_entry->casterAuraSpellNot);
+            spellInfo.setTargetAuraSpellNot(dbc_spell_entry->targetAuraSpellNot);
 #endif
-            spellInfo.CastingTimeIndex = dbc_spell_entry->CastingTimeIndex;
+            spellInfo.setCastingTimeIndex(dbc_spell_entry->CastingTimeIndex);
             spellInfo.RecoveryTime = dbc_spell_entry->RecoveryTime;
             spellInfo.CategoryRecoveryTime = dbc_spell_entry->CategoryRecoveryTime;
             spellInfo.InterruptFlags = dbc_spell_entry->InterruptFlags;

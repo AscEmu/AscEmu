@@ -6377,7 +6377,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
 
                 if (CastingSpell)
                 {
-                    auto spell_cast_time = sSpellCastTimesStore.LookupEntry(CastingSpell->CastingTimeIndex);
+                    auto spell_cast_time = sSpellCastTimesStore.LookupEntry(CastingSpell->getCastingTimeIndex());
                     if (!spell_cast_time)
                         continue;
 
@@ -9265,7 +9265,7 @@ void Unit::RemoveAllAurasByRequiredShapeShift(uint32 mask)
         if (aura == NULL || !aura->IsPositive())
             continue;
 
-        if (aura->GetSpellInfo()->RequiredShapeShift & mask)
+        if (aura->GetSpellInfo()->getRequiredShapeShift() & mask)
             aura->Remove();
     }
 }

@@ -51,7 +51,7 @@ void CreateDummySpell(uint32 id)
     sp->setAttributes(ATTRIBUTES_NO_CAST | ATTRIBUTES_NO_VISUAL_AURA); //384
     sp->setAttributesEx(ATTRIBUTESEX_UNK30);    //268435456
     sp->setAttributesExB(ATTRIBUTESEXB_UNK4);   //4
-    sp->CastingTimeIndex = 1;
+    sp->setCastingTimeIndex(1);
     sp->procChance = 75;
     sp->rangeIndex = 13;
     sp->EquippedItemClass = uint32(-1);
@@ -693,11 +693,11 @@ void ApplyNormalFixes()
         ARCEMU_ASSERT(sp->School < SCHOOL_COUNT);
 
         // correct caster/target aura states
-        if (sp->CasterAuraState > 1)
-            sp->CasterAuraState = 1 << (sp->CasterAuraState - 1);
+        if (sp->getCasterAuraState() > 1)
+            sp->setCasterAuraState(1 << (sp->getCasterAuraState() - 1));
 
-        if (sp->TargetAuraState > 1)
-            sp->TargetAuraState = 1 << (sp->TargetAuraState - 1);
+        if (sp->getTargetAuraState() > 1)
+            sp->setTargetAuraState(1 << (sp->getTargetAuraState() - 1));
 
 
         //there are some spells that change the "damage" value of 1 effect to another : devastate = bonus first then damage
@@ -1066,7 +1066,7 @@ void ApplyNormalFixes()
             case 53562:     // Ravage Rank 6
             {
                 // FIX ME: needs different flag check
-                sp->FacingCasterFlags = SPELL_INFRONT_STATUS_REQUIRE_INBACK;
+                sp->setFacingCasterFlags(SPELL_INFRONT_STATUS_REQUIRE_INBACK);
             } break;
         }
     }
@@ -1083,7 +1083,7 @@ void ApplyNormalFixes()
             continue;
 
         //Setting Cast Time Coefficient
-        auto spell_cast_time = sSpellCastTimesStore.LookupEntry(sp->CastingTimeIndex);
+        auto spell_cast_time = sSpellCastTimesStore.LookupEntry(sp->getCastingTimeIndex());
         float castaff = float(GetCastTime(spell_cast_time));
         if (castaff < 1500)
             castaff = 1500;
@@ -1485,7 +1485,7 @@ void ApplyNormalFixes()
             case 61684:     // Dash
             {
                 // mask for FORM_CAT(1) = 1 << (1 - 1), which is 1
-                sp->RequiredShapeShift = 1;
+                sp->setRequiredShapeShift(1);
             } break;
             default:
                 break;
@@ -1631,15 +1631,15 @@ void ApplyNormalFixes()
     // Warrior - Tactical Mastery Rank 1
     sp = Spell::checkAndReturnSpellEntry(12295);
     if (sp != nullptr)
-        sp->RequiredShapeShift = 0x00070000;
+        sp->setRequiredShapeShift(0x00070000);
     // Warrior - Tactical Mastery Rank 2
     sp = Spell::checkAndReturnSpellEntry(12676);
     if (sp != nullptr)
-        sp->RequiredShapeShift = 0x00070000;
+        sp->setRequiredShapeShift(0x00070000);
     // Warrior - Tactical Mastery Rank 3
     sp = Spell::checkAndReturnSpellEntry(12677);
     if (sp != nullptr)
-        sp->RequiredShapeShift = 0x00070000;
+        sp->setRequiredShapeShift(0x00070000);
 
     // Warrior - Heroic Throw
     sp = Spell::checkAndReturnSpellEntry(57755);
@@ -1867,27 +1867,27 @@ void ApplyNormalFixes()
     //Divine Protection
     sp = Spell::checkAndReturnSpellEntry(498);
     if (sp != nullptr)
-        sp->targetAuraSpellNot = 25771;
+        sp->setTargetAuraSpellNot(25771);
 
     //Divine Shield
     sp = Spell::checkAndReturnSpellEntry(642);
     if (sp != nullptr)
-        sp->targetAuraSpellNot = 25771;
+        sp->setTargetAuraSpellNot(25771);
 
     //Hand of Protection Rank 1
     sp = Spell::checkAndReturnSpellEntry(1022);
     if (sp != nullptr)
-        sp->targetAuraSpellNot = 25771;
+        sp->setTargetAuraSpellNot(25771);
 
     //Hand of Protection Rank 2
     sp = Spell::checkAndReturnSpellEntry(5599);
     if (sp != nullptr)
-        sp->targetAuraSpellNot = 25771;
+        sp->setTargetAuraSpellNot(25771);
 
     //Hand of Protection Rank 3
     sp = Spell::checkAndReturnSpellEntry(10278);
     if (sp != nullptr)
-        sp->targetAuraSpellNot = 25771;
+        sp->setTargetAuraSpellNot(25771);
 
     //Paladin - Art of War
     sp = Spell::checkAndReturnSpellEntry(53486);
@@ -2558,7 +2558,7 @@ void ApplyNormalFixes()
     //Bloodlust
     sp = Spell::checkAndReturnSpellEntry(2825);
     if (sp != nullptr)
-        sp->casterAuraSpellNot = 57724; //sated debuff
+        sp->setCasterAuraSpellNot(57724); //sated debuff
 
     // Sated - is debuff
     sp = Spell::checkAndReturnSpellEntry(57724);
@@ -2572,7 +2572,7 @@ void ApplyNormalFixes()
     //Heroism
     sp = Spell::checkAndReturnSpellEntry(32182);
     if (sp != nullptr)
-        sp->casterAuraSpellNot = 57723; //sated debuff
+        sp->setCasterAuraSpellNot(57723); //sated debuff
 
     // Sated - is debuff
     sp = Spell::checkAndReturnSpellEntry(57723);
@@ -3687,24 +3687,24 @@ void ApplyNormalFixes()
     // Druid - Primal Fury (talent)
     sp = Spell::checkAndReturnSpellEntry(37116);
     if (sp != nullptr)
-        sp->RequiredShapeShift = 0;
+        sp->setRequiredShapeShift(0);
 
     sp = Spell::checkAndReturnSpellEntry(37117);
     if (sp != nullptr)
-        sp->RequiredShapeShift = 0;
+        sp->setRequiredShapeShift(0);
 
     // Druid - Predatory Strikes
     uint32 mm = decimalToMask(FORM_BEAR) | decimalToMask(FORM_DIREBEAR) | decimalToMask(FORM_MOONKIN) | decimalToMask(FORM_CAT);
 
     sp = Spell::checkAndReturnSpellEntry(16972);
     if (sp != nullptr)
-        sp->RequiredShapeShift = mm;
+        sp->setRequiredShapeShift(mm);
     sp = Spell::checkAndReturnSpellEntry(16974);
     if (sp != nullptr)
-        sp->RequiredShapeShift = mm;
+        sp->setRequiredShapeShift(mm);
     sp = Spell::checkAndReturnSpellEntry(16975);
     if (sp != nullptr)
-        sp->RequiredShapeShift = mm;
+        sp->setRequiredShapeShift(mm);
 
     ////////////////////////////////////////////////////////////
     // Restoration
@@ -4076,19 +4076,19 @@ void ApplyNormalFixes()
     //all Drums
     sp = Spell::checkAndReturnSpellEntry(35474);
     if (sp != nullptr)
-        sp->RequiredShapeShift = 0;
+        sp->setRequiredShapeShift(0);
     sp = Spell::checkAndReturnSpellEntry(35475);
     if (sp != nullptr)
-        sp->RequiredShapeShift = 0;
+        sp->setRequiredShapeShift(0);
     sp = Spell::checkAndReturnSpellEntry(35476);
     if (sp != nullptr)
-        sp->RequiredShapeShift = 0;
+        sp->setRequiredShapeShift(0);
     sp = Spell::checkAndReturnSpellEntry(35477);
     if (sp != nullptr)
-        sp->RequiredShapeShift = 0;
+        sp->setRequiredShapeShift(0);
     sp = Spell::checkAndReturnSpellEntry(35478);
     if (sp != nullptr)
-        sp->RequiredShapeShift = 0;
+        sp->setRequiredShapeShift(0);
 
     //Purify helboar meat
     sp = Spell::checkAndReturnSpellEntry(29200);
@@ -4565,14 +4565,14 @@ void ApplyNormalFixes()
 		sp->EffectBasePoints[0] = 0;
 		sp->Effect[1] = SPELL_EFFECT_NULL;
 		sp->Effect[2] = SPELL_EFFECT_NULL;
-		sp->TargetAuraState = 0;
-		sp->casterAuraSpell = 0;
-		sp->CasterAuraState = 0;
-		sp->CasterAuraStateNot = 0;
-		sp->TargetAuraStateNot = 0;
-		sp->targetAuraSpell = 0;
-		sp->casterAuraSpellNot = 0;
-		sp->targetAuraSpellNot = 0;
+		sp->setTargetAuraState(0);
+		sp->setCasterAuraSpell(0);
+		sp->setCasterAuraState(0);
+		sp->setCasterAuraStateNot(0);
+		sp->setTargetAuraStateNot(0);
+		sp->setTargetAuraSpell(0);
+		sp->setCasterAuraSpellNot(0);
+		sp->setTargetAuraSpellNot(0);
 		sp->addAttributes(ATTRIBUTES_NEGATIVE);
 	}
     // War Stomp

@@ -340,12 +340,12 @@ void Spell::FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float s
         if (!((*itr)->IsUnit()) || !static_cast<Unit*>(*itr)->isAlive())
             continue;
 
-        if (GetSpellInfo()->TargetCreatureType)
+        if (GetSpellInfo()->getTargetCreatureType())
         {
             if (!(*itr)->IsCreature())
                 continue;
             CreatureProperties const* inf = static_cast<Creature*>(*itr)->GetCreatureProperties();
-            if (!(1 << (inf->Type - 1) & GetSpellInfo()->TargetCreatureType))
+            if (!(1 << (inf->Type - 1) & GetSpellInfo()->getTargetCreatureType()))
                 continue;
         }
 
@@ -417,12 +417,12 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
             if (!p_caster->DuelingWith || p_caster->DuelingWith != static_cast<Player*>(*itr))
                 continue;
         }
-        if (GetSpellInfo()->TargetCreatureType)
+        if (GetSpellInfo()->getTargetCreatureType())
         {
             if (!(*itr)->IsCreature())
                 continue;
             CreatureProperties const* inf = static_cast<Creature*>(*itr)->GetCreatureProperties();
-            if (!(1 << (inf->Type - 1) & GetSpellInfo()->TargetCreatureType))
+            if (!(1 << (inf->Type - 1) & GetSpellInfo()->getTargetCreatureType()))
                 continue;
         }
         if (obj->isInRange(srcx, srcy, srcz, r))
@@ -483,12 +483,12 @@ void Spell::FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, 
         if (!((*itr)->IsUnit()) || !static_cast<Unit*>(*itr)->isAlive())
             continue;
 
-        if (GetSpellInfo()->TargetCreatureType)
+        if (GetSpellInfo()->getTargetCreatureType())
         {
             if (!(*itr)->IsCreature())
                 continue;
             CreatureProperties const* inf = static_cast<Creature*>(*itr)->GetCreatureProperties();
-            if (!(1 << (inf->Type - 1) & GetSpellInfo()->TargetCreatureType))
+            if (!(1 << (inf->Type - 1) & GetSpellInfo()->getTargetCreatureType()))
                 continue;
         }
 
@@ -556,12 +556,12 @@ uint64 Spell::GetSinglePossibleEnemy(uint32 i, float prange)
         if (!((*itr)->IsUnit()) || !static_cast<Unit*>(*itr)->isAlive())
             continue;
 
-        if (GetSpellInfo()->TargetCreatureType)
+        if (GetSpellInfo()->getTargetCreatureType())
         {
             if (!(*itr)->IsCreature())
                 continue;
             CreatureProperties const* inf = static_cast<Creature*>(*itr)->GetCreatureProperties();
-            if (!(1 << (inf->Type - 1) & GetSpellInfo()->TargetCreatureType))
+            if (!(1 << (inf->Type - 1) & GetSpellInfo()->getTargetCreatureType()))
                 continue;
         }
         if (obj->isInRange(srcx, srcy, srcz, r))
@@ -610,12 +610,12 @@ uint64 Spell::GetSinglePossibleFriend(uint32 i, float prange)
         auto obj = *itr;
         if (!((*itr)->IsUnit()) || !static_cast<Unit*>(*itr)->isAlive())
             continue;
-        if (GetSpellInfo()->TargetCreatureType)
+        if (GetSpellInfo()->getTargetCreatureType())
         {
             if (!(*itr)->IsCreature())
                 continue;
             CreatureProperties const* inf = static_cast<Creature*>(*itr)->GetCreatureProperties();
-            if (!(1 << (inf->Type - 1) & GetSpellInfo()->TargetCreatureType))
+            if (!(1 << (inf->Type - 1) & GetSpellInfo()->getTargetCreatureType()))
                 continue;
         }
         if (obj->isInRange(srcx, srcy, srcz, r))
@@ -872,7 +872,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
         m_castTime = 0;
     else
     {
-        m_castTime = GetCastTime(sSpellCastTimesStore.LookupEntry(GetSpellInfo()->CastingTimeIndex));
+        m_castTime = GetCastTime(sSpellCastTimesStore.LookupEntry(GetSpellInfo()->getCastingTimeIndex()));
 
         if (m_castTime && u_caster != nullptr)
         {
@@ -988,9 +988,9 @@ uint8 Spell::prepare(SpellCastTargets* targets)
         }
 
         // aura state removal
-        if (GetSpellInfo() && GetSpellInfo()->CasterAuraState != AURASTATE_NONE && GetSpellInfo()->CasterAuraState != AURASTATE_FLAG_JUDGEMENT)
+        if (GetSpellInfo() && GetSpellInfo()->getCasterAuraState() != AURASTATE_NONE && GetSpellInfo()->getCasterAuraState() != AURASTATE_FLAG_JUDGEMENT)
             if (u_caster != nullptr)
-                u_caster->RemoveFlag(UNIT_FIELD_AURASTATE, GetSpellInfo()->CasterAuraState);
+                u_caster->RemoveFlag(UNIT_FIELD_AURASTATE, GetSpellInfo()->getCasterAuraState());
     }
 
     //instant cast(or triggered) and not channeling
@@ -1635,7 +1635,7 @@ void Spell::castMe(bool check)
                         Target->HandleProc(PROC_ON_SPELL_LAND_VICTIM, u_caster, GetSpellInfo(), m_triggeredSpell);
                         p_caster->m_procCounter = 0; //this is required for to be able to count the depth of procs (though i have no idea where/why we use proc on proc)
 
-                        Target->RemoveFlag(UNIT_FIELD_AURASTATE, GetSpellInfo()->TargetAuraState);
+                        Target->RemoveFlag(UNIT_FIELD_AURASTATE, GetSpellInfo()->getTargetAuraState());
                     }
                 }
             }
@@ -2198,7 +2198,7 @@ void Spell::WriteCastResult(WorldPacket& data, Player* caster, uint32 spellInfo,
     switch (result)
     {
         case SPELL_FAILED_REQUIRES_SPELL_FOCUS:
-            data << uint32(GetSpellInfo()->RequiresSpellFocus);
+            data << uint32(GetSpellInfo()->getRequiresSpellFocus());
             break;
 
 #if VERSION_STRING > TBC
@@ -2227,7 +2227,7 @@ void Spell::WriteCastResult(WorldPacket& data, Player* caster, uint32 spellInfo,
                 data << uint32(GetSpellInfo()->Totem[1]);
             break;
         case SPELL_FAILED_ONLY_SHAPESHIFT:
-            data << uint32(GetSpellInfo()->RequiredShapeShift);
+            data << uint32(GetSpellInfo()->getRequiredShapeShift());
             break;
         case SPELL_FAILED_CUSTOM_ERROR:
             data << uint32(extraError);
@@ -3863,7 +3863,7 @@ uint8 Spell::CanCast(bool tolerate)
             {
                 Creature* cp = static_cast<Creature*>(target);
                 uint32 type = cp->GetCreatureProperties()->Type;
-                uint32 targettype = GetSpellInfo()->TargetCreatureType;
+                uint32 targettype = GetSpellInfo()->getTargetCreatureType();
 
                 if (!CanAttackCreatureType(targettype, type))
                     return SPELL_FAILED_BAD_TARGETS;
@@ -4333,7 +4333,7 @@ uint8 Spell::CanCast(bool tolerate)
          */
         float focusRange;
 
-        if (GetSpellInfo()->RequiresSpellFocus)
+        if (GetSpellInfo()->getRequiresSpellFocus())
         {
             bool found = false;
 
@@ -4366,7 +4366,7 @@ uint8 Spell::CanCast(bool tolerate)
                 if (!obj->isInRange(p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ(), (focusRange * focusRange)))
                     continue;
 
-                if (gameobject_info->raw.parameter_0 == GetSpellInfo()->RequiresSpellFocus)
+                if (gameobject_info->raw.parameter_0 == GetSpellInfo()->getRequiresSpellFocus())
                 {
                     found = true;
                     break;
@@ -4403,8 +4403,8 @@ uint8 Spell::CanCast(bool tolerate)
          */
         if (!p_caster->ignoreAuraStateCheck)
         {
-            if ((GetSpellInfo()->CasterAuraState && !p_caster->HasFlag(UNIT_FIELD_AURASTATE, GetSpellInfo()->CasterAuraState))
-                || (GetSpellInfo()->CasterAuraStateNot && p_caster->HasFlag(UNIT_FIELD_AURASTATE, GetSpellInfo()->CasterAuraStateNot))
+            if ((GetSpellInfo()->getCasterAuraState() && !p_caster->HasFlag(UNIT_FIELD_AURASTATE, GetSpellInfo()->getCasterAuraState()))
+                || (GetSpellInfo()->getCasterAuraStateNot() && p_caster->HasFlag(UNIT_FIELD_AURASTATE, GetSpellInfo()->getCasterAuraStateNot()))
                 )
                 return SPELL_FAILED_CASTER_AURASTATE;
         }
@@ -4412,11 +4412,11 @@ uint8 Spell::CanCast(bool tolerate)
         /**
          *	Aura check
          */
-        if (GetSpellInfo()->casterAuraSpell && !p_caster->HasAura(GetSpellInfo()->casterAuraSpell))
+        if (GetSpellInfo()->getCasterAuraSpell() && !p_caster->HasAura(GetSpellInfo()->getCasterAuraSpell()))
         {
             return SPELL_FAILED_NOT_READY;
         }
-        if (GetSpellInfo()->casterAuraSpellNot && p_caster->HasAura(GetSpellInfo()->casterAuraSpellNot))
+        if (GetSpellInfo()->getCasterAuraSpellNot() && p_caster->HasAura(GetSpellInfo()->getCasterAuraSpellNot()))
         {
             return SPELL_FAILED_NOT_READY;
         }
@@ -4869,21 +4869,21 @@ uint8 Spell::CanCast(bool tolerate)
                 }
 
                 // check aurastate
-                if (GetSpellInfo()->TargetAuraState && !target->HasFlag(UNIT_FIELD_AURASTATE, GetSpellInfo()->TargetAuraState) && !p_caster->ignoreAuraStateCheck)
+                if (GetSpellInfo()->getTargetAuraState() && !target->HasFlag(UNIT_FIELD_AURASTATE, GetSpellInfo()->getTargetAuraState()) && !p_caster->ignoreAuraStateCheck)
                 {
                     return SPELL_FAILED_TARGET_AURASTATE;
                 }
-                if (GetSpellInfo()->TargetAuraStateNot && target->HasFlag(UNIT_FIELD_AURASTATE, GetSpellInfo()->TargetAuraStateNot) && !p_caster->ignoreAuraStateCheck)
+                if (GetSpellInfo()->getTargetAuraStateNot() && target->HasFlag(UNIT_FIELD_AURASTATE, GetSpellInfo()->getTargetAuraStateNot()) && !p_caster->ignoreAuraStateCheck)
                 {
                     return SPELL_FAILED_TARGET_AURASTATE;
                 }
 
                 // check aura
-                if (GetSpellInfo()->targetAuraSpell && !target->HasAura(GetSpellInfo()->targetAuraSpell))
+                if (GetSpellInfo()->getTargetAuraSpell() && !target->HasAura(GetSpellInfo()->getTargetAuraSpell()))
                 {
                     return SPELL_FAILED_NOT_READY;
                 }
-                if (GetSpellInfo()->targetAuraSpellNot && target->HasAura(GetSpellInfo()->targetAuraSpellNot))
+                if (GetSpellInfo()->getTargetAuraSpellNot() && target->HasAura(GetSpellInfo()->getTargetAuraSpellNot()))
                 {
                     return SPELL_FAILED_NOT_READY;
                 }
@@ -5096,7 +5096,7 @@ uint8 Spell::CanCast(bool tolerate)
                 *
                 **********************************************************/
 
-                uint32 facing_flags = GetSpellInfo()->FacingCasterFlags;
+                uint32 facing_flags = GetSpellInfo()->getFacingCasterFlags();
 
                 // Holy shock need enemies be in front of caster
                 switch (GetSpellInfo()->getId())
@@ -8165,10 +8165,10 @@ uint8 Spell::GetErrorAtShapeshiftedCast(SpellInfo* spellInfo, uint32 form)
 {
     uint32 stanceMask = (form ? decimalToMask(form) : 0);
 
-    if (spellInfo->ShapeshiftExclude > 0 && spellInfo->ShapeshiftExclude & stanceMask)				// can explicitly not be casted in this stance
+    if (spellInfo->getShapeshiftExclude() > 0 && spellInfo->getShapeshiftExclude() & stanceMask)				// can explicitly not be casted in this stance
         return SPELL_FAILED_NOT_SHAPESHIFT;
 
-    if (spellInfo->RequiredShapeShift == 0 || spellInfo->RequiredShapeShift & stanceMask)			// can explicitly be casted in this stance
+    if (spellInfo->getRequiredShapeShift() == 0 || spellInfo->getRequiredShapeShift() & stanceMask)			// can explicitly be casted in this stance
         return 0;
 
     bool actAsShifted = false;
@@ -8211,7 +8211,7 @@ uint8 Spell::GetErrorAtShapeshiftedCast(SpellInfo* spellInfo, uint32 form)
     else
     {
         // Check if it even requires a shapeshift....
-        if (!hasAttributeExB(ATTRIBUTESEXB_NOT_NEED_SHAPESHIFT) && spellInfo->RequiredShapeShift != 0)
+        if (!hasAttributeExB(ATTRIBUTESEXB_NOT_NEED_SHAPESHIFT) && spellInfo->getRequiredShapeShift() != 0)
             return SPELL_FAILED_ONLY_SHAPESHIFT;
     }
 
