@@ -131,25 +131,67 @@ public:
     void setCastingTimeIndex(uint32_t value) { CastingTimeIndex = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
 
     uint32 getRecoveryTime() const { return RecoveryTime; }
+    void setRecoveryTime(uint32_t value) { RecoveryTime = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp / Spell_ClassScripts.cpp
+
     uint32 getCategoryRecoveryTime() const { return CategoryRecoveryTime; }
+    void setCategoryRecoveryTime(uint32_t value) { CategoryRecoveryTime = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
+
     uint32 getInterruptFlags() const { return InterruptFlags; }
+    void setInterruptFlags(uint32_t value) { InterruptFlags = value; }    // used in SpellCustomizations.cpp
+    void removeInterruptFlags(uint32_t value) { InterruptFlags |= ~value; }    // used in HackFixes.cpp
+
     uint32 getAuraInterruptFlags() const { return AuraInterruptFlags; }
+    void addAuraInterruptFlags(uint32_t value) { AuraInterruptFlags |= value; }    // used in HackFixes.cpp
+    void setAuraInterruptFlags(uint32_t value) { AuraInterruptFlags = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
+
     uint32 getChannelInterruptFlags() const { return ChannelInterruptFlags; }
+    void setChannelInterruptFlags(uint32_t value) { ChannelInterruptFlags = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
+
     uint32 getProcFlags() const { return procFlags; }
+    void setProcFlags(uint32_t value) { procFlags = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
+    void addProcFlags(uint32_t value) { procFlags |= value; }    // used in HackFixes.cpp
+
     uint32 getProcChance() const { return procChance; }
+    void setProcChance(uint32_t value) { procChance = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
+
     uint32 getProcCharges() const { return procCharges; }
+    void setProcCharges(uint32_t value) { procCharges = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
+
     uint32 getMaxLevel() const { return maxLevel; }
+    void setMaxLevel(uint32_t value) { maxLevel = value; }    // used in SpellCustomizations.cpp
+
     uint32 getBaseLevel() const { return baseLevel; }
+    void setBaseLevel(uint32_t value) { baseLevel = value; }    // used in SpellCustomizations.cpp
+
     uint32 getSpellLevel() const { return spellLevel; }
+    void setSpellLevel(uint32_t value) { spellLevel = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
+
     uint32 getDurationIndex() const { return DurationIndex; }
+    void setDurationIndex(uint32_t value) { DurationIndex = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp / SpellEffects.cpp
+
     int32 getPowerType() const { return powerType; }
+    void setPowerType(int32_t value) { powerType = value; }    // used in SpellCustomizations.cpp
+
     uint32 getManaCost() const { return manaCost; }
-    uint32 getManaCostPerlevel() const { return manaCostPerlevel; }
-    uint32 getManaPerSecond() const { return manaPerSecond; }
-    uint32 getManaPerSecondPerLevel() const { return manaPerSecondPerLevel; }
+    void setManaCost(uint32_t value) { manaCost = value; }    // used in SpellCustomizations.cpp
+
+    uint32 getManaCostPerlevel() const { return manaCostPerlevel; }           // not used!
+    void setManaCostPerlevel(uint32_t value) { manaCostPerlevel = value; }    // used in SpellCustomizations.cpp
+
+    uint32 getManaPerSecond() const { return manaPerSecond; }           // not used!
+    void setManaPerSecond(uint32_t value) { manaPerSecond = value; }    // used in SpellCustomizations.cpp
+
+    uint32 getManaPerSecondPerLevel() const { return manaPerSecondPerLevel; }           // not used!
+    void setManaPerSecondPerLevel(uint32_t value) { manaPerSecondPerLevel = value; }    // used in SpellCustomizations.cpp
+
     uint32 getRangeIndex() const { return rangeIndex; }
+    void setRangeIndex(uint32_t value) { rangeIndex = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
+
     float getSpeed() const { return speed; }
+    void setSpeed(float value) { speed = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
+
     uint32 getMaxstack() const { return maxstack; }
+    void setMaxstack(uint32_t value) { maxstack = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
 
     uint32 getTotem(int idx) const
     {
@@ -350,7 +392,9 @@ public:
 
 
 #if VERSION_STRING != Cata
-    uint32 getModalNextSpell() const { return modalNextSpell; }
+    uint32 getModalNextSpell() const { return modalNextSpell; }           // not used!
+    void setModalNextSpell(uint32_t value) { modalNextSpell = value; }    // used in SpellCustomizations.cpp
+
     uint32 getRequiredItemFlags() const { return RequiredItemFlags; }
     uint32_t getEffectSpellClassMask(int idx1, int idx2) const
     {
@@ -392,30 +436,30 @@ private:
     uint32 casterAuraSpellNot;
     uint32 targetAuraSpellNot;
     uint32 CastingTimeIndex;
+    uint32 RecoveryTime;
+    uint32 CategoryRecoveryTime;
+    uint32 InterruptFlags;
+    uint32 AuraInterruptFlags;
+    uint32 ChannelInterruptFlags;
+    uint32 procFlags;
+    uint32 procChance;
+    uint32 procCharges;
+    uint32 maxLevel;
+    uint32 baseLevel;
+    uint32 spellLevel;
+    uint32 DurationIndex;
+    int32 powerType;
+    uint32 manaCost;
+    uint32 manaCostPerlevel;        // not used!
+    uint32 manaPerSecond;           // not used!
+    uint32 manaPerSecondPerLevel;   // not used!
+    uint32 rangeIndex;
+    float speed;
+    uint32 modalNextSpell;          // not used!
+    uint32 maxstack;
 
 public:
 
-        uint32 RecoveryTime;
-        uint32 CategoryRecoveryTime;
-        uint32 InterruptFlags;
-        uint32 AuraInterruptFlags;
-        uint32 ChannelInterruptFlags;
-        uint32 procFlags;
-        uint32 procChance;
-        uint32 procCharges;
-        uint32 maxLevel;
-        uint32 baseLevel;
-        uint32 spellLevel;
-        uint32 DurationIndex;
-        int32 powerType;
-        uint32 manaCost;
-        uint32 manaCostPerlevel;
-        uint32 manaPerSecond;
-        uint32 manaPerSecondPerLevel;
-        uint32 rangeIndex;
-        float speed;
-        uint32 modalNextSpell;
-        uint32 maxstack;
         uint32 Totem[MAX_SPELL_TOTEMS];
         uint32 Reagent[MAX_SPELL_REAGENTS];
         uint32 ReagentCount[MAX_SPELL_REAGENTS];

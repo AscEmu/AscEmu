@@ -79,27 +79,27 @@ void SpellCustomizations::LoadSpellInfoData()
             spellInfo.setTargetAuraSpellNot(dbc_spell_entry->targetAuraSpellNot);
 #endif
             spellInfo.setCastingTimeIndex(dbc_spell_entry->CastingTimeIndex);
-            spellInfo.RecoveryTime = dbc_spell_entry->RecoveryTime;
-            spellInfo.CategoryRecoveryTime = dbc_spell_entry->CategoryRecoveryTime;
-            spellInfo.InterruptFlags = dbc_spell_entry->InterruptFlags;
-            spellInfo.AuraInterruptFlags = dbc_spell_entry->AuraInterruptFlags;
-            spellInfo.ChannelInterruptFlags = dbc_spell_entry->ChannelInterruptFlags;
-            spellInfo.procFlags = dbc_spell_entry->procFlags;
-            spellInfo.procChance = dbc_spell_entry->procChance;
-            spellInfo.procCharges = dbc_spell_entry->procCharges;
-            spellInfo.maxLevel = dbc_spell_entry->maxLevel;
-            spellInfo.baseLevel = dbc_spell_entry->baseLevel;
-            spellInfo.spellLevel = dbc_spell_entry->spellLevel;
-            spellInfo.DurationIndex = dbc_spell_entry->DurationIndex;
-            spellInfo.powerType = dbc_spell_entry->powerType;
-            spellInfo.manaCost = dbc_spell_entry->manaCost;
-            spellInfo.manaCostPerlevel = dbc_spell_entry->manaCostPerlevel;
-            spellInfo.manaPerSecond = dbc_spell_entry->manaPerSecond;
-            spellInfo.manaPerSecondPerLevel = dbc_spell_entry->manaPerSecondPerLevel;
-            spellInfo.rangeIndex = dbc_spell_entry->rangeIndex;
-            spellInfo.speed = dbc_spell_entry->speed;
-            spellInfo.modalNextSpell = dbc_spell_entry->modalNextSpell;
-            spellInfo.maxstack = dbc_spell_entry->maxstack;
+            spellInfo.setRecoveryTime(dbc_spell_entry->RecoveryTime);
+            spellInfo.setCategoryRecoveryTime(dbc_spell_entry->CategoryRecoveryTime);
+            spellInfo.setInterruptFlags(dbc_spell_entry->InterruptFlags);
+            spellInfo.setAuraInterruptFlags(dbc_spell_entry->AuraInterruptFlags);
+            spellInfo.setChannelInterruptFlags(dbc_spell_entry->ChannelInterruptFlags);
+            spellInfo.setProcFlags(dbc_spell_entry->procFlags);
+            spellInfo.setProcChance(dbc_spell_entry->procChance);
+            spellInfo.setProcCharges(dbc_spell_entry->procCharges);
+            spellInfo.setMaxLevel(dbc_spell_entry->maxLevel);
+            spellInfo.setBaseLevel(dbc_spell_entry->baseLevel);
+            spellInfo.setSpellLevel(dbc_spell_entry->spellLevel);
+            spellInfo.setDurationIndex(dbc_spell_entry->DurationIndex);
+            spellInfo.setPowerType(dbc_spell_entry->powerType);
+            spellInfo.setManaCost(dbc_spell_entry->manaCost);
+            spellInfo.setManaCostPerlevel(dbc_spell_entry->manaCostPerlevel);
+            spellInfo.setManaPerSecond(dbc_spell_entry->manaPerSecond);
+            spellInfo.setManaPerSecondPerLevel(dbc_spell_entry->manaPerSecondPerLevel);
+            spellInfo.setRangeIndex(dbc_spell_entry->rangeIndex);
+            spellInfo.setSpeed(dbc_spell_entry->speed);
+            spellInfo.setModalNextSpell(dbc_spell_entry->modalNextSpell);
+            spellInfo.setMaxstack(dbc_spell_entry->maxstack);
 
             for (uint8 i = 0; i < MAX_SPELL_TOTEMS; ++i)
                 spellInfo.Totem[i] = dbc_spell_entry->Totem[i];
@@ -630,14 +630,14 @@ void SpellCustomizations::LoadSpellProcs()
             if (spell_entry != nullptr)
             {
                 if (f[2].GetInt32() >= 0)
-                    spell_entry->procFlags = f[2].GetUInt32();
+                    spell_entry->setProcFlags(f[2].GetUInt32());
 
                 if (f[3].GetBool())
-                    spell_entry->procFlags |= PROC_TARGET_SELF;
+                    spell_entry->addProcFlags(PROC_TARGET_SELF);
                 if (f[4].GetInt32() >= 0)
-                    spell_entry->procChance = f[4].GetUInt32();
+                    spell_entry->setProcChance(f[4].GetUInt32());
                 if (f[5].GetInt32() >= 0)
-                    spell_entry->procCharges = f[5].GetInt32();
+                    spell_entry->setProcCharges(f[5].GetInt32());
 
                 spell_entry->custom_proc_interval = f[6].GetUInt32();
 

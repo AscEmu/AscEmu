@@ -107,7 +107,7 @@ bool CutToTheChase(uint32 i, Aura* pAura, bool apply)
     if (apply)
     {
         static uint32 classMask[3] = { 0x20000, 0x8, 0 };
-        target->AddProcTriggerSpell(pAura->GetSpellInfo(), pAura->GetSpellInfo(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_CAST_SPELL | PROC_TARGET_SELF, 0, NULL, classMask);
+        target->AddProcTriggerSpell(pAura->GetSpellInfo(), pAura->GetSpellInfo(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), PROC_ON_CAST_SPELL | PROC_TARGET_SELF, 0, NULL, classMask);
     }
     else
         target->RemoveProcTriggerSpell(pAura->GetSpellId(), pAura->m_casterGuid);
@@ -122,7 +122,7 @@ bool DeadlyBrew(uint32 i, Aura* pAura, bool apply)
     if (apply)
     {
         static uint32 classMask[3] = { 0x1000A000, 0, 0 };
-        target->AddProcTriggerSpell(pAura->GetSpellInfo(), pAura->GetSpellInfo(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_CAST_SPELL, 0, NULL, classMask);
+        target->AddProcTriggerSpell(pAura->GetSpellInfo(), pAura->GetSpellInfo(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), PROC_ON_CAST_SPELL, 0, NULL, classMask);
     }
     else
         target->RemoveProcTriggerSpell(pAura->GetSpellId(), pAura->m_casterGuid);

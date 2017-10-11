@@ -296,7 +296,7 @@ bool Butchery(uint32 i, Aura* pAura, bool apply)
     Unit* target = pAura->GetTarget();
 
     if (apply)
-        target->AddProcTriggerSpell(50163, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_GAIN_EXPIERIENCE | PROC_TARGET_SELF, 0, NULL, NULL);
+        target->AddProcTriggerSpell(50163, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), PROC_ON_GAIN_EXPIERIENCE | PROC_TARGET_SELF, 0, NULL, NULL);
     else
         target->RemoveProcTriggerSpell(50163, pAura->m_casterGuid);
 
@@ -310,7 +310,7 @@ bool DeathRuneMastery(uint32 i, Aura* pAura, bool apply)
     if (apply)
     {
         static uint32 classMask[3] = { 0x10, 0x20000, 0 };
-        target->AddProcTriggerSpell(50806, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_CAST_SPELL | PROC_TARGET_SELF, 0, NULL, classMask);
+        target->AddProcTriggerSpell(50806, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), PROC_ON_CAST_SPELL | PROC_TARGET_SELF, 0, NULL, classMask);
     }
     else
         target->RemoveProcTriggerSpell(50806, pAura->m_casterGuid);
@@ -323,7 +323,7 @@ bool MarkOfBlood(uint32 i, Aura* pAura, bool apply)
     Unit* target = pAura->GetTarget();
 
     if (apply)
-        target->AddProcTriggerSpell(61607, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, pAura->GetSpellInfo()->procFlags, pAura->GetSpellInfo()->procCharges, NULL, NULL);
+        target->AddProcTriggerSpell(61607, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), pAura->GetSpellInfo()->getProcFlags(), pAura->GetSpellInfo()->getProcCharges(), NULL, NULL);
     else if (target->GetAuraStackCount(49005) <= 1)
         target->RemoveProcTriggerSpell(61607, pAura->m_casterGuid);
 

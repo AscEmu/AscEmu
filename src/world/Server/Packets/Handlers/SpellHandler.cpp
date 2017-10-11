@@ -149,7 +149,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (spellInfo->AuraInterruptFlags & AURA_INTERRUPT_ON_STAND_UP && !_player->IsSitting())
+    if (spellInfo->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP && !_player->IsSitting())
     {
         if (p_User->CombatStatus.IsInCombat() || p_User->IsMounted())
         {
@@ -172,7 +172,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     }*/
 
     // cebernic: remove stealth on using item
-    if (!(spellInfo->AuraInterruptFlags & ATTRIBUTESEX_NOT_BREAK_STEALTH))
+    if (!(spellInfo->getAuraInterruptFlags() & ATTRIBUTESEX_NOT_BREAK_STEALTH))
     {
         if (p_User->IsStealth())
             p_User->RemoveAllAuraType(SPELL_AURA_MOD_STEALTH);

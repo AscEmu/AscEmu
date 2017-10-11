@@ -3039,7 +3039,7 @@ public:
         {
             GetLinkedCreature()->GetUnit()->CastSpellAoF(LocationVector(ranX, ranY, 275.0f), spells[2].info, spells[2].instant); // Shoots the missile
             float dist = GetLinkedCreature()->GetUnit()->CalcDistance(ranX, ranY, 275.0f);
-            uint32 dtime = (uint32)(dist / spells[2].info->speed);
+            uint32 dtime = (uint32)(dist / spells[2].info->getSpeed());
             m_spawn_infernal = (uint32)time(NULL) + dtime + 1;
             m_infernal = true;
         }

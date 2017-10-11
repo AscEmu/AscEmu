@@ -3142,16 +3142,16 @@ AI_Spell* AIInterface::getSpell()
                     if (sp->procChance >= 100 || Rand(sp->procChance))
                     {
                         //focus/mana requirement
-                        switch (sp->spell->powerType)
+                        switch (sp->spell->getPowerType())
                         {
                             case POWER_TYPE_MANA:
                             {
-                                if (m_Unit->GetPower(POWER_TYPE_MANA) < sp->spell->manaCost)
+                                if (m_Unit->GetPower(POWER_TYPE_MANA) < sp->spell->getManaCost())
                                     continue;
                             } break;
                             case POWER_TYPE_FOCUS:
                             {
-                                if (m_Unit->GetPower(POWER_TYPE_FOCUS) < sp->spell->manaCost)
+                                if (m_Unit->GetPower(POWER_TYPE_FOCUS) < sp->spell->getManaCost())
                                     continue;
                             } break;
                         }

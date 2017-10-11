@@ -1301,7 +1301,7 @@ void Player::_EventAttack(bool offhand)
 {
     if (m_currentSpell)
     {
-        if (m_currentSpell->GetSpellInfo()->ChannelInterruptFlags != 0) // this is a channeled spell - ignore the attack event
+        if (m_currentSpell->GetSpellInfo()->getChannelInterruptFlags() != 0) // this is a channeled spell - ignore the attack event
             return;
         m_currentSpell->cancel();
         setAttackTimer(500, offhand);
@@ -6337,7 +6337,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
     // Supalosa - The hunter ability Auto Shot is using Shoot range, which is 5 yards shorter.
     // So we'll use 114, which is the correct 35 yard range used by the other Hunter abilities (arcane shot, concussive shot...)
     uint8 fail = 0;
-    uint32 rIndex = autoshot ? 114 : spell_info->rangeIndex;
+    uint32 rIndex = autoshot ? 114 : spell_info->getRangeIndex();
 
     auto spell_range = sSpellRangeStore.LookupEntry(rIndex);
     float minrange = GetMinRange(spell_range);
@@ -9470,23 +9470,23 @@ void Player::CompleteLoading()
             }
         }
 
-        if (sp->procCharges > 0 && (*i).charges > 0)
+        if (sp->getProcCharges() > 0 && (*i).charges > 0)
         {
             for (uint32 x = 0; x < (*i).charges - 1; x++)
             {
                 Aura* a = sSpellFactoryMgr.NewAura(sp, (*i).dur, this, this, false);
                 this->AddAura(a);
             }
-            if (m_chargeSpells.find(sp->getId()) == m_chargeSpells.end() && !(sp->procFlags & PROC_REMOVEONUSE))
+            if (m_chargeSpells.find(sp->getId()) == m_chargeSpells.end() && !(sp->getProcFlags() & PROC_REMOVEONUSE))
             {
                 SpellCharge charge;
                 if (sp->custom_proc_interval == 0)
                     charge.count = (*i).charges;
                 else
-                    charge.count = sp->procCharges;
+                    charge.count = sp->getProcCharges();
 
                 charge.spellId = sp->getId();
-                charge.ProcFlag = sp->procFlags;
+                charge.ProcFlag = sp->getProcFlags();
                 charge.lastproc = 0;
                 charge.procdiff = 0;
                 m_chargeSpells.insert(std::make_pair(sp->getId(), charge));
@@ -9909,7 +9909,7 @@ void Player::SaveAuras(std::stringstream & ss)
                 charges = 0;
             }
 
-            if (aur->GetSpellInfo()->procCharges == 0)
+            if (aur->GetSpellInfo()->getProcCharges() == 0)
                 ss << aur->GetSpellId() << "," << aur->GetTimeLeft() << "," << aur->IsPositive() << "," << 0 << ",";
             else
                 charges++;
@@ -11268,7 +11268,7 @@ void Player::Cooldown_Add(SpellInfo* pSpell, Item* pItemCaster)
     uint32 spell_id = pSpell->getId();
     uint32 category_id = pSpell->getCategory();
 
-    uint32 spell_category_recovery_time = pSpell->CategoryRecoveryTime;
+    uint32 spell_category_recovery_time = pSpell->getCategoryRecoveryTime();
     if (spell_category_recovery_time > 0 && category_id)
     {
         spellModFlatIntValue(SM_FCooldownTime, &cool_time, pSpell->SpellGroupType);
@@ -11277,7 +11277,7 @@ void Player::Cooldown_Add(SpellInfo* pSpell, Item* pItemCaster)
         AddCategoryCooldown(category_id, spell_category_recovery_time + mstime, spell_id, pItemCaster ? pItemCaster->GetItemProperties()->ItemId : 0);
     }
 
-    uint32 spell_recovery_t = pSpell->RecoveryTime;
+    uint32 spell_recovery_t = pSpell->getRecoveryTime();
     if (spell_recovery_t > 0)
     {
         spellModFlatIntValue(SM_FCooldownTime, &cool_time, pSpell->SpellGroupType);
@@ -13341,7 +13341,7 @@ void Player::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
                 }
             }
 
-            if (spl->GetSpellInfo()->ChannelInterruptFlags == 48140) spl->cancel();
+            if (spl->GetSpellInfo()->getChannelInterruptFlags() == 48140) spl->cancel();
         }
     }
 

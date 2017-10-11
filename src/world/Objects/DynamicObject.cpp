@@ -251,7 +251,7 @@ void DynamicObject::Remove()
     if (IsInWorld())
         RemoveFromWorld(true);
 
-    if (u_caster != nullptr && m_spellProto->ChannelInterruptFlags != 0)
+    if (u_caster != nullptr && m_spellProto->getChannelInterruptFlags() != 0)
     {
         u_caster->SetChannelSpellTargetGUID(0);
         u_caster->SetChannelSpellId(0);

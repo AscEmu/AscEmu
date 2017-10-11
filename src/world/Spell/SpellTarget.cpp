@@ -244,7 +244,7 @@ void Spell::AddChainTargets(uint32 i, uint32 TargetType, float r, uint32 maxtarg
         firstTarget = u_caster;
 
     bool RaidOnly = false;
-    float range = GetMaxRange(sSpellRangeStore.LookupEntry(m_spellInfo->rangeIndex));//this is probably wrong,
+    float range = GetMaxRange(sSpellRangeStore.LookupEntry(m_spellInfo->getRangeIndex()));//this is probably wrong,
     //this is cast distance, not searching distance
     range *= range;
 
@@ -457,7 +457,7 @@ bool Spell::AddTarget(uint32 i, uint32 TargetType, Object* obj)
     }
 
     //final checks, require line of sight unless range/radius is 50000 yards
-    auto spell_range = sSpellRangeStore.LookupEntry(m_spellInfo->rangeIndex);
+    auto spell_range = sSpellRangeStore.LookupEntry(m_spellInfo->getRangeIndex());
     if (spell_range != nullptr)
     {
         if (worldConfig.terrainCollision.isCollisionEnabled && spell_range->maxRange < 50000 && GetRadius(i) < 50000 && !obj->IsItem())

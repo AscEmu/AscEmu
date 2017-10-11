@@ -164,7 +164,7 @@ public:
         p_target->CastSpell(p_target->GetGUID(), 45182, true);
 
         // Better to add custom cooldown procedure then fucking with entry, or not!!
-        dSpell->RecoveryTime = 60000;
+        dSpell->setRecoveryTime(60000);
         p_target->Cooldown_Add(dSpell, NULL);
 
         // Calc abs and applying it
@@ -309,7 +309,7 @@ class BloodStrikeSpell : public Spell
         if (aur == NULL)
             return;
 
-        if (!Rand(aur->GetSpellInfo()->procChance))
+        if (!Rand(aur->GetSpellInfo()->getProcChance()))
             return;
 
         p_caster->CastSpell(target, 47632, false);
@@ -480,7 +480,7 @@ class HeartStrikeSpell : public Spell
         if (aur == NULL)
             return;
 
-        if (!Rand(aur->GetSpellInfo()->procChance))
+        if (!Rand(aur->GetSpellInfo()->getProcChance()))
             return;
 
         p_caster->CastSpell(target, 47632, false);

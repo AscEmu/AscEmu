@@ -403,7 +403,7 @@ SpellInfo* ObjectMgr::GetNextSpellRank(SpellInfo* sp, uint32 level)
     if (skill_line_ability != nullptr && skill_line_ability->next > 0)
     {
         SpellInfo* sp1 = sSpellCustomizations.GetSpellInfo(skill_line_ability->next);
-        if (sp1 && sp1->baseLevel <= level)   // check level
+        if (sp1 && sp1->getBaseLevel() <= level)   // check level
         {
             return GetNextSpellRank(sp1, level);   // recursive for higher ranks
         }
@@ -2390,10 +2390,10 @@ uint32 ObjectMgr::GetPetSpellCooldown(uint32 SpellId)
         return itr->second;
 
     SpellInfo* sp = sSpellCustomizations.GetSpellInfo(SpellId);
-    if (sp->RecoveryTime > sp->CategoryRecoveryTime)
-        return sp->RecoveryTime;
+    if (sp->getRecoveryTime() > sp->getCategoryRecoveryTime())
+        return sp->getRecoveryTime();
     else
-        return sp->CategoryRecoveryTime;
+        return sp->getCategoryRecoveryTime();
 }
 
 void ObjectMgr::SetVendorList(uint32 Entry, std::vector<CreatureItem>* list_)
@@ -3839,19 +3839,19 @@ void ObjectMgr::LoadCreatureAIAgents()
                         continue;
                     }
 
-                    sp->minrange = GetMinRange(sSpellRangeStore.LookupEntry(sp->spell->rangeIndex));
-                    sp->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(sp->spell->rangeIndex));
+                    sp->minrange = GetMinRange(sSpellRangeStore.LookupEntry(sp->spell->getRangeIndex()));
+                    sp->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(sp->spell->getRangeIndex()));
 
                     //omg the poor darling has no clue about making ai_agents
                     if (sp->cooldown == (uint32)-1)
                     {
                         //now this will not be exact cooldown but maybe a bigger one to not make him spam spells to often
                         int cooldown;
-                        auto spell_duration = sSpellDurationStore.LookupEntry(sp->spell->DurationIndex);
+                        auto spell_duration = sSpellDurationStore.LookupEntry(sp->spell->getDurationIndex());
                         int Dur = 0;
                         int Casttime = 0; //most of the time 0
-                        int RecoveryTime = sp->spell->RecoveryTime;
-                        if (sp->spell->DurationIndex)
+                        int RecoveryTime = sp->spell->getRecoveryTime();
+                        if (sp->spell->getDurationIndex())
                             Dur = ::GetDuration(spell_duration);
                         Casttime = GetCastTime(sSpellCastTimesStore.LookupEntry(sp->spell->getCastingTimeIndex()));
                         cooldown = Dur + Casttime + RecoveryTime;

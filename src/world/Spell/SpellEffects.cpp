@@ -1385,7 +1385,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
     if (!dmg)
         return;
 
-    if (GetSpellInfo()->speed > 0 && m_triggeredSpell == false)
+    if (GetSpellInfo()->getSpeed() > 0 && m_triggeredSpell == false)
     {
         m_caster->SpellNonMeleeDamageLog(unitTarget, GetSpellInfo()->getId(), dmg, pSpellId == 0);
     }
@@ -1707,7 +1707,7 @@ void Spell::SpellEffectApplyAura(uint32 i)  // Apply Aura
                 case 29859:
                 case 30069:
                 case 30070:
-                    GetSpellInfo()->DurationIndex = ProcedOnSpell->DurationIndex;
+                    GetSpellInfo()->setDurationIndex(ProcedOnSpell->getDurationIndex());
                     break;
             }
         }
@@ -2423,7 +2423,7 @@ void Spell::SpellEffectCreateItem(uint32 i)
 
     if (countperlevel != 0)
     {
-        uint32 leveldiff = m_spellInfo->maxLevel - m_spellInfo->baseLevel;
+        uint32 leveldiff = m_spellInfo->getMaxLevel() - m_spellInfo->getBaseLevel();
         uint32 countforlevel = leveldiff * countperlevel;
 
         count += countforlevel;
@@ -2829,7 +2829,7 @@ void Spell::SpellEffectPersistentAA(uint32 i) // Persistent Area Aura
     }
 
     if (u_caster)
-        if (GetSpellInfo()->ChannelInterruptFlags > 0)
+        if (GetSpellInfo()->getChannelInterruptFlags() > 0)
         {
             u_caster->SetChannelSpellTargetGUID(dynObj->GetGUID());
             u_caster->SetChannelSpellId(GetSpellInfo()->getId());
@@ -4676,8 +4676,8 @@ void Spell::SpellEffectInterruptCast(uint32 i) // Interrupt Cast
             && (TargetSpell->getState() == SPELL_STATE_CASTING
             || (TargetSpell->getState() == SPELL_STATE_PREPARING && TargetSpell->GetSpellInfo()->getCastingTimeIndex() > 0))
             && TargetSpell->GetSpellInfo()->PreventionType == PREVENTION_TYPE_SILENCE
-            && ((TargetSpell->GetSpellInfo()->InterruptFlags & CAST_INTERRUPT_ON_INTERRUPT_SCHOOL)
-            || (TargetSpell->GetSpellInfo()->ChannelInterruptFlags & CHANNEL_INTERRUPT_ON_4)))
+            && ((TargetSpell->GetSpellInfo()->getInterruptFlags() & CAST_INTERRUPT_ON_INTERRUPT_SCHOOL)
+            || (TargetSpell->GetSpellInfo()->getChannelInterruptFlags() & CHANNEL_INTERRUPT_ON_4)))
         {
             if (unitTarget->IsPlayer())
             {
@@ -5426,7 +5426,7 @@ void Spell::SpellEffectDestroyAllTotems(uint32 i)
             if (sp->ManaCostPercentage != 0)
                 cost = (p_caster->GetBaseMana() * sp->ManaCostPercentage) / 100;
             else
-                cost = sp->manaCost;
+                cost = sp->getManaCost();
 
             RetreivedMana += static_cast<uint32>((cost * refundpercent) / 100.0f);
         }
@@ -6000,7 +6000,7 @@ void Spell::SpellEffectSpellSteal(uint32 i)
                             aura->AddMod(aura->GetSpellInfo()->EffectApplyAuraName[j], aura->GetSpellInfo()->EffectBasePoints[j] + 1, aura->GetSpellInfo()->EffectMiscValue[j], j);
                         }
                     }
-                    if (aura->GetSpellInfo()->procCharges > 0)
+                    if (aura->GetSpellInfo()->getProcChance() > 0)
                     {
                         Aura* aur2;
                         for (uint32 j = 0; j < aur_removed - 1; j++)
@@ -6008,12 +6008,12 @@ void Spell::SpellEffectSpellSteal(uint32 i)
                             aur2 = sSpellFactoryMgr.NewAura(aura->GetSpellInfo(), aurdur, u_caster, u_caster);
                             u_caster->AddAura(aur2);
                         }
-                        if (!(aura->GetSpellInfo()->procFlags & PROC_REMOVEONUSE))
+                        if (!(aura->GetSpellInfo()->getProcFlags() & PROC_REMOVEONUSE))
                         {
                             SpellCharge charge;
                             charge.count = aur_removed;
                             charge.spellId = aura->GetSpellId();
-                            charge.ProcFlag = aura->GetSpellInfo()->procFlags;
+                            charge.ProcFlag = aura->GetSpellInfo()->getProcFlags();
                             charge.lastproc = 0;
                             charge.procdiff = 0;
                             u_caster->m_chargeSpells.insert(std::make_pair(aura->GetSpellId(), charge));

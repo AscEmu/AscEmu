@@ -2399,7 +2399,8 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
                 }
             }
 
-            if (spl->GetSpellInfo()->ChannelInterruptFlags == 48140) spl->cancel();
+            if (spl->GetSpellInfo()->getChannelInterruptFlags() == 48140)
+                spl->cancel();
         }
     }
 

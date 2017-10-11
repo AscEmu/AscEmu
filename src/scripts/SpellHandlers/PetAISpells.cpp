@@ -139,7 +139,7 @@ public:
                 sp1.Misc2 = 0;
                 sp1.procCount = 0;
                 sp1.procChance = 100;
-                range = sSpellRangeStore.LookupEntry(sp1.spell->rangeIndex);
+                range = sSpellRangeStore.LookupEntry(sp1.spell->getRangeIndex());
                 sp1.minrange = GetMinRange(range);
                 sp1.maxrange = GetMaxRange(range);
 
@@ -159,7 +159,7 @@ public:
                 sp2.Misc2 = 0;
                 sp2.procCount = 0;
                 sp2.procChance = 100;
-                range = sSpellRangeStore.LookupEntry(sp2.spell->rangeIndex);
+                range = sSpellRangeStore.LookupEntry(sp2.spell->getRangeIndex());
                 sp2.minrange = GetMinRange(range);
                 sp2.maxrange = GetMaxRange(range);
 
@@ -292,7 +292,7 @@ public:
                 if (!mProc)
                     return;
                 int x = RandomUInt(99);
-                uint32 proc = mProc->procChance;
+                uint32 proc = mProc->getProcChance();
                 if (proc < 1)
                     proc = 10; // Got to be fair :P
 

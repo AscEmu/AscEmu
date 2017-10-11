@@ -780,7 +780,7 @@ Aura::Aura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool 
         SetDuration((GetDuration() * (100 + DurationModifier)) / 100);
     }
 
-    if (GetDuration() > 0 && m_spellInfo->ChannelInterruptFlags != 0 && caster->IsUnit())
+    if (GetDuration() > 0 && m_spellInfo->getChannelInterruptFlags() != 0 && caster->IsUnit())
         SetDuration(GetDuration() * float2int32(static_cast<Unit*>(caster)->GetCastSpeedMod()));
 
     // SetCasterFaction(caster->_getFaction());
@@ -874,14 +874,14 @@ void Aura::Remove()
             // I'm not sure about this! FIX ME!!
             auto spell_entry = sSpellCustomizations.GetSpellInfo(GetSpellInfo()->EffectTriggerSpell[x]);
             if (spell_entry != nullptr)
-                if (spell_entry->DurationIndex < m_spellInfo->DurationIndex)
+                if (spell_entry->getDurationIndex() < m_spellInfo->getDurationIndex())
                     m_target->RemoveAura(GetSpellInfo()->EffectTriggerSpell[x]);
         }
         else if (IsAreaAura() && m_casterGuid == m_target->GetGUID())
             ClearAATargets();
     }
 
-    if (m_spellInfo->procCharges > 0 && m_spellInfo->custom_proc_interval == 0)
+    if (m_spellInfo->getProcCharges() > 0 && m_spellInfo->custom_proc_interval == 0)
     {
         if (m_target->m_chargeSpellsInUse)
         {
@@ -972,7 +972,7 @@ void Aura::Remove()
         m_target->m_auras[m_auraSlot] = NULL;
 
     // only remove channel stuff if caster == target, then it's not removed twice, for example, arcane missiles applies a dummy aura to target
-    if (caster != NULL && caster == m_target && m_spellInfo->ChannelInterruptFlags != 0)
+    if (caster != NULL && caster == m_target && m_spellInfo->getChannelInterruptFlags() != 0)
     {
         caster->SetChannelSpellTargetGUID(0);
         caster->SetChannelSpellId(0);
@@ -2361,9 +2361,9 @@ void Aura::EventPeriodicHeal(uint32 amount)
     {
         int32 dur = GetDuration();
         //example : Citrine Pendant of Golden Healing is in AA aura that does not have duration. In this case he would have full healbonus benefit
-        if ((dur == 0 || dur == -1) && GetSpellInfo()->DurationIndex)
+        if ((dur == 0 || dur == -1) && GetSpellInfo()->getDurationIndex())
         {
-            auto spell_duration = sSpellDurationStore.LookupEntry(GetSpellInfo()->DurationIndex);
+            auto spell_duration = sSpellDurationStore.LookupEntry(GetSpellInfo()->getDurationIndex());
             if (spell_duration != nullptr)
                 dur = ::GetDuration(spell_duration);
         }
@@ -2422,7 +2422,7 @@ void Aura::EventPeriodicHeal(uint32 amount)
 
     m_target->RemoveAurasByHeal();
 
-    if (GetSpellInfo()->AuraInterruptFlags & AURA_INTERRUPT_ON_STAND_UP)
+    if (GetSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
     {
         m_target->Emote(EMOTE_ONESHOT_EAT);
     }
@@ -3224,7 +3224,7 @@ void Aura::EventPeriodicHealPct(float RegenPct)
 
     m_target->SendPeriodicAuraLog(m_casterGuid, m_target->GetNewGUID(), m_spellInfo->getId(), m_spellInfo->School, add, 0, 0, FLAG_PERIODIC_HEAL, false);
 
-    if (GetSpellInfo()->AuraInterruptFlags & AURA_INTERRUPT_ON_STAND_UP)
+    if (GetSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
     {
         m_target->Emote(EMOTE_ONESHOT_EAT);
     }
@@ -3264,7 +3264,7 @@ void Aura::EventPeriodicManaPct(float RegenPct)
     // CAPT
     ///\todo sniff it or disasm wow.exe to find the mana flag
 
-    if (GetSpellInfo()->AuraInterruptFlags & AURA_INTERRUPT_ON_STAND_UP)
+    if (GetSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
     {
         m_target->Emote(EMOTE_ONESHOT_EAT);
     }
@@ -3391,7 +3391,7 @@ void Aura::SpellAuraPeriodicTriggerSpellWithValue(bool apply)
         {
             spellModFlatFloatValue(caster->SM_FAmptitude, &amptitude, m_spellInfo->SpellGroupType);
             spellModPercentageFloatValue(caster->SM_PAmptitude, &amptitude, m_spellInfo->SpellGroupType);
-            if (m_spellInfo->ChannelInterruptFlags != 0)
+            if (m_spellInfo->getChannelInterruptFlags() != 0)
                 amptitude *= caster->GetCastSpeedMod();
         }
 
@@ -3469,7 +3469,7 @@ void Aura::SpellAuraPeriodicTriggerSpell(bool apply)
         {
             spellModFlatFloatValue(caster->SM_FAmptitude, &amptitude, m_spellInfo->SpellGroupType);
             spellModPercentageFloatValue(caster->SM_PAmptitude, &amptitude, m_spellInfo->SpellGroupType);
-            if (m_spellInfo->ChannelInterruptFlags != 0)
+            if (m_spellInfo->getChannelInterruptFlags() != 0)
                 amptitude *= caster->GetCastSpeedMod();
         }
 
@@ -3514,7 +3514,7 @@ void Aura::EventPeriodicEnergize(uint32 amount, uint32 type)
 
     ucaster->Energize(m_target, m_spellInfo->getId(), amount, type);
 
-    if ((GetSpellInfo()->AuraInterruptFlags & AURA_INTERRUPT_ON_STAND_UP) && type == POWER_TYPE_MANA)
+    if ((GetSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP) && type == POWER_TYPE_MANA)
     {
         m_target->Emote(EMOTE_ONESHOT_EAT);
     }
@@ -3627,7 +3627,7 @@ void Aura::SpellAuraReflectSpells(bool apply)
         rss->chance = mod->m_amount;
         rss->spellId = GetSpellId();
         rss->school = -1;
-        rss->charges = m_spellInfo->procCharges;
+        rss->charges = m_spellInfo->getProcCharges();
         rss->infront = false;
 
         m_target->m_reflectSpellSchool.push_back(rss);
@@ -4496,7 +4496,7 @@ void Aura::SpellAuraProcTriggerSpell(bool apply)
 #endif
 
         // Initialize charges
-        charges = GetSpellInfo()->procCharges;
+        charges = GetSpellInfo()->getProcCharges();
         Unit* ucaster = GetUnitCaster();
         if (ucaster != nullptr)
         {
@@ -4504,9 +4504,9 @@ void Aura::SpellAuraProcTriggerSpell(bool apply)
             spellModPercentageIntValue(ucaster->SM_PCharges, &charges, GetSpellInfo()->SpellGroupType);
         }
 
-        m_target->AddProcTriggerSpell(spellId, GetSpellInfo()->getId(), m_casterGuid, GetSpellInfo()->procChance, GetSpellInfo()->procFlags, charges, groupRelation, NULL);
+        m_target->AddProcTriggerSpell(spellId, GetSpellInfo()->getId(), m_casterGuid, GetSpellInfo()->getProcChance(), GetSpellInfo()->getProcFlags(), charges, groupRelation, NULL);
 
-        LogDebugFlag(LF_AURA, "%u is registering %u chance %u flags %u charges %u triggeronself %u interval %u", GetSpellInfo()->getId(), spellId, GetSpellInfo()->procChance, GetSpellInfo()->procFlags & ~PROC_TARGET_SELF, charges, GetSpellInfo()->procFlags & PROC_TARGET_SELF, GetSpellInfo()->custom_proc_interval);
+        LogDebugFlag(LF_AURA, "%u is registering %u chance %u flags %u charges %u triggeronself %u interval %u", GetSpellInfo()->getId(), spellId, GetSpellInfo()->getProcChance(), GetSpellInfo()->getProcFlags() & ~PROC_TARGET_SELF, charges, GetSpellInfo()->getProcFlags() & PROC_TARGET_SELF, GetSpellInfo()->custom_proc_interval);
     }
     else
     {
@@ -4530,10 +4530,10 @@ void Aura::SpellAuraProcTriggerDamage(bool apply)
         ds.m_damage = mod->m_amount;
         ds.m_spellId = GetSpellInfo()->getId();
         ds.m_school = GetSpellInfo()->School;
-        ds.m_flags = m_spellInfo->procFlags;
+        ds.m_flags = m_spellInfo->getProcFlags();
         ds.owner = (void*)this;
         m_target->m_damageShields.push_back(ds);
-        LogDebugFlag(LF_AURA, "registering dmg proc %u, school %u, flags %u, charges at least %u", ds.m_spellId, ds.m_school, ds.m_flags, m_spellInfo->procCharges);
+        LogDebugFlag(LF_AURA, "registering dmg proc %u, school %u, flags %u, charges at least %u", ds.m_spellId, ds.m_school, ds.m_flags, m_spellInfo->getProcCharges());
     }
     else
     {
@@ -6009,7 +6009,7 @@ void Aura::EventPeriodicHeal1(uint32 amount)
     else
         m_target->SetHealth(ch);
 
-    if (GetSpellInfo()->AuraInterruptFlags & AURA_INTERRUPT_ON_STAND_UP)
+    if (GetSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
     {
         m_target->Emote(EMOTE_ONESHOT_EAT);
     }
@@ -6705,7 +6705,7 @@ void Aura::SpellAuraAddClassTargetTrigger(bool apply)
 #endif
 
         // Initialize charges
-        charges = GetSpellInfo()->procCharges;
+        charges = GetSpellInfo()->getProcCharges();
         Unit* ucaster = GetUnitCaster();
         if (ucaster != nullptr)
         {
@@ -6715,7 +6715,7 @@ void Aura::SpellAuraAddClassTargetTrigger(bool apply)
 
         m_target->AddProcTriggerSpell(sp->getId(), GetSpellInfo()->getId(), m_casterGuid, GetSpellInfo()->EffectBasePoints[mod->i] + 1, PROC_ON_CAST_SPELL, charges, groupRelation, procClassMask);
 
-        LogDebugFlag(LF_AURA, "%u is registering %u chance %u flags %u charges %u triggeronself %u interval %u", GetSpellInfo()->getId(), sp->getId(), GetSpellInfo()->procChance, PROC_ON_CAST_SPELL, charges, GetSpellInfo()->procFlags & PROC_TARGET_SELF, GetSpellInfo()->custom_proc_interval);
+        LogDebugFlag(LF_AURA, "%u is registering %u chance %u flags %u charges %u triggeronself %u interval %u", GetSpellInfo()->getId(), sp->getId(), GetSpellInfo()->getProcChance(), PROC_ON_CAST_SPELL, charges, GetSpellInfo()->getProcFlags() & PROC_TARGET_SELF, GetSpellInfo()->custom_proc_interval);
     }
     else
     {

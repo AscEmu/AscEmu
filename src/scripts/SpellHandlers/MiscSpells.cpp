@@ -43,7 +43,7 @@ bool FrostWarding(uint32 i, Spell* s)
 
     ReflectSpellSchool* rss = new ReflectSpellSchool;
 
-    rss->chance = s->GetSpellInfo()->procChance;
+    rss->chance = s->GetSpellInfo()->getProcChance();
     rss->spellId = s->GetSpellInfo()->getId();
     rss->school = SCHOOL_FROST;
     rss->infront = false;

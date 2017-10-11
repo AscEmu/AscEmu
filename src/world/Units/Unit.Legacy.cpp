@@ -2036,7 +2036,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     if (CastingSpell->School != SCHOOL_FIRE)
                         continue;
                     SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);   //we already modified this spell on server loading so it must exist
-                    auto spell_duration = sSpellDurationStore.LookupEntry(spellInfo->DurationIndex);
+                    auto spell_duration = sSpellDurationStore.LookupEntry(spellInfo->getDurationIndex());
                     uint32 tickcount = GetDuration(spell_duration) / spellInfo->EffectAmplitude[0];
                     dmg_overwrite[0] = ospinfo->EffectBasePoints[0] * dmg / (100 * tickcount);
                 }
@@ -4422,7 +4422,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                         continue;
                     if (CastingSpell->School != SCHOOL_FIRE && CastingSpell->School != SCHOOL_FROST) //fire and frost critical's
                         continue;
-                    dmg_overwrite[0] = CastingSpell->manaCost * (ospinfo->EffectBasePoints[0] + 1) / 100;
+                    dmg_overwrite[0] = CastingSpell->getManaCost() * (ospinfo->EffectBasePoints[0] + 1) / 100;
                 }
                 break;
                 //Hunter - The Beast Within
@@ -4439,7 +4439,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    dmg_overwrite[0] = CastingSpell->manaCost * 40 / 100;
+                    dmg_overwrite[0] = CastingSpell->getManaCost() * 40 / 100;
                 }
                 break;
                 //priest - Reflective Shield
@@ -4705,7 +4705,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     }
 
                     SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(54203);
-                    auto spell_duration = sSpellDurationStore.LookupEntry(spellInfo->DurationIndex);
+                    auto spell_duration = sSpellDurationStore.LookupEntry(spellInfo->getDurationIndex());
                     uint32 tickcount = GetDuration(spell_duration) / spellInfo->EffectAmplitude[0];
                     dmg_overwrite[0] = ospinfo->EffectBasePoints[0] * dmg / (100 * tickcount);
                 }
@@ -8532,10 +8532,10 @@ void Unit::AddAura(Aura* aur)
         {
             //uint32 aurName = aur->GetSpellProto()->Name;
             //uint32 aurRank = aur->GetSpellProto()->Rank;
-            uint32 maxStack = aur->GetSpellInfo()->maxstack;
-            if (aur->GetSpellInfo()->procCharges > 0)
+            uint32 maxStack = aur->GetSpellInfo()->getMaxstack();
+            if (aur->GetSpellInfo()->getProcCharges() > 0)
             {
-                int charges = aur->GetSpellInfo()->procCharges;
+                int charges = aur->GetSpellInfo()->getProcCharges();
                 Unit* ucaster = aur->GetUnitCaster();
                 if (ucaster != nullptr)
                 {
@@ -8966,7 +8966,7 @@ void Unit::AddAura(Aura* aur)
         }
     }
 
-    if (aur->GetSpellInfo()->AuraInterruptFlags & AURA_INTERRUPT_ON_INVINCIBLE)
+    if (aur->GetSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_INVINCIBLE)
     {
         Unit* pCaster = aur->GetUnitCaster();
         if (pCaster)
@@ -9382,7 +9382,7 @@ int32 Unit::GetSpellDmgBonus(Unit* pVictim, SpellInfo* spellInfo, int32 base_dmg
             else
             {
                 plus_damage = plus_damage * spellInfo->casttime_coef;
-                float td = static_cast<float>(GetDuration(sSpellDurationStore.LookupEntry(spellInfo->DurationIndex)));
+                float td = static_cast<float>(GetDuration(sSpellDurationStore.LookupEntry(spellInfo->getDurationIndex())));
 
                 switch (spellInfo->getId())
                 {
@@ -9856,7 +9856,7 @@ void Unit::RemoveAurasByInterruptFlag(uint32 flag)
             continue;
 
         //some spells do not get removed all the time only at specific intervals
-        if ((a->m_spellInfo->AuraInterruptFlags & flag) && !(a->m_spellInfo->procFlags & PROC_REMOVEONUSE))
+        if ((a->m_spellInfo->getAuraInterruptFlags() & flag) && !(a->m_spellInfo->getProcFlags() & PROC_REMOVEONUSE))
         {
             a->Remove();
             m_auras[x] = NULL;
@@ -10294,10 +10294,10 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
             continue;
 
         //some spells do not get removed all the time only at specific intervals
-        if ((a->m_spellInfo->AuraInterruptFlags & flag) && (a->m_spellInfo->getId() != skip) && a->m_spellInfo->custom_proc_interval == 0)
+        if ((a->m_spellInfo->getAuraInterruptFlags() & flag) && (a->m_spellInfo->getId() != skip) && a->m_spellInfo->custom_proc_interval == 0)
         {
             //the black sheep's of society
-            if (a->m_spellInfo->AuraInterruptFlags & AURA_INTERRUPT_ON_CAST_SPELL)
+            if (a->m_spellInfo->getAuraInterruptFlags() & AURA_INTERRUPT_ON_CAST_SPELL)
             {
                 switch (a->GetSpellInfo()->getId())
                 {
@@ -12668,7 +12668,7 @@ void Unit::EventStunOrImmobilize(Unit* proc_target, bool is_victim)
         Spell* spell = sSpellFactoryMgr.NewSpell(this, spellInfo, true, NULL);
         SpellCastTargets targets;
 
-        if (spellInfo->procFlags & PROC_TARGET_SELF)
+        if (spellInfo->getProcFlags() & PROC_TARGET_SELF)
             targets.m_unitTarget = GetGUID();
         else if (proc_target)
             targets.m_unitTarget = proc_target->GetGUID();
@@ -12709,7 +12709,7 @@ void Unit::EventChill(Unit* proc_target, bool is_victim)
         Spell* spell = sSpellFactoryMgr.NewSpell(this, spellInfo, true, NULL);
         SpellCastTargets targets;
 
-        if (spellInfo->procFlags & PROC_TARGET_SELF)
+        if (spellInfo->getProcFlags() & PROC_TARGET_SELF)
             targets.m_unitTarget = GetGUID();
         else if (proc_target)
             targets.m_unitTarget = proc_target->GetGUID();
@@ -13081,7 +13081,7 @@ SpellProc* Unit::AddProcTriggerSpell(uint32 spell_id, uint32 orig_spell_id, uint
 
 SpellProc* Unit::AddProcTriggerSpell(SpellInfo* sp, uint64 caster, uint32* groupRelation, uint32* procClassMask, Object* obj)
 {
-    return AddProcTriggerSpell(sp, sp, caster, sp->procChance, sp->procFlags, sp->procCharges, groupRelation, procClassMask, obj);
+    return AddProcTriggerSpell(sp, sp, caster, sp->getProcChance(), sp->getProcFlags(), sp->getProcCharges(), groupRelation, procClassMask, obj);
 }
 
 SpellProc* Unit::GetProcTriggerSpell(uint32 spellId, uint64 casterGuid)

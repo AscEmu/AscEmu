@@ -805,18 +805,18 @@ AI_Spell* Pet::CreateAISpell(SpellInfo* info)
     sp->agent = AGENT_SPELL;
     sp->entryId = GetEntry();
     sp->floatMisc1 = 0;
-    sp->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(info->rangeIndex));
+    sp->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(info->getRangeIndex()));
     if (sp->maxrange < sqrt(info->custom_base_range_or_radius_sqr))
         sp->maxrange = sqrt(info->custom_base_range_or_radius_sqr);
-    sp->minrange = GetMinRange(sSpellRangeStore.LookupEntry(info->rangeIndex));
+    sp->minrange = GetMinRange(sSpellRangeStore.LookupEntry(info->getRangeIndex()));
     sp->Misc2 = 0;
     sp->procChance = 0;
     sp->spell = info;
     sp->cooldown = objmgr.GetPetSpellCooldown(info->getId());
     if (sp->cooldown == 0)
-        sp->cooldown = info->RecoveryTime;          //still 0 ?
+        sp->cooldown = info->getRecoveryTime();          //still 0 ?
     if (sp->cooldown == 0)
-        sp->cooldown = info->CategoryRecoveryTime;
+        sp->cooldown = info->getCategoryRecoveryTime();
     if (sp->cooldown == 0)
         sp->cooldown = info->StartRecoveryTime;     //avoid spell spamming
     if (sp->cooldown == 0)
@@ -1355,7 +1355,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
             if ((skill_line_ability->skilline == s || skill_line_ability->skilline == s2) && skill_line_ability->acquireMethod == 2)
             {
                 sp = sSpellCustomizations.GetSpellInfo(skill_line_ability->spell);
-                if (sp && getLevel() >= sp->baseLevel)
+                if (sp && getLevel() >= sp->getBaseLevel())
                 {
                     // Pet is able to learn this spell; now check if it already has it, or a higher rank of it
                     bool addThisSpell = true;
@@ -1932,7 +1932,7 @@ void Pet::UpdateAP()
 uint32 Pet::CanLearnSpell(SpellInfo* sp)
 {
     // level requirement
-    if (getLevel() < sp->spellLevel)
+    if (getLevel() < sp->getSpellLevel())
         return SPELL_FAILED_LEVEL_REQUIREMENT;
 
     return 0;
@@ -1966,7 +1966,7 @@ AI_Spell* Pet::HandleAutoCastEvent()
         if ((*itr)->autocast_type == AUTOCAST_EVENT_ATTACK)
         {
             // spells still spammed, I think the cooldowntime is being set incorrectly somewhere else
-            if (chance && (*itr)->spell &&Util::getMSTime() >= (*itr)->cooldowntime && GetPower((*itr)->spell->powerType) >= (*itr)->spell->manaCost)
+            if (chance && (*itr)->spell &&Util::getMSTime() >= (*itr)->cooldowntime && GetPower((*itr)->spell->getPowerType()) >= (*itr)->spell->getManaCost())
             {
                 return *itr;
             }
@@ -2402,7 +2402,7 @@ void Pet::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
                 }
             }
 
-            if (spl->GetSpellInfo()->ChannelInterruptFlags == 48140) spl->cancel();
+            if (spl->GetSpellInfo()->getChannelInterruptFlags() == 48140) spl->cancel();
         }
     }
 

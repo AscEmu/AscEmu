@@ -204,7 +204,7 @@ void Arena::OnAddPlayer(Player* plr)
     {
         if (plr->m_auras[x])
         {
-            if (plr->m_auras[x] && !plr->m_auras[x]->GetSpellInfo()->DurationIndex && plr->m_auras[x]->GetSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD)
+            if (plr->m_auras[x] && !plr->m_auras[x]->GetSpellInfo()->getDurationIndex() && plr->m_auras[x]->GetSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD)
                 continue;
             else
             {

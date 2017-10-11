@@ -237,7 +237,7 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
     m_reflectedParent = NULL;
     m_isCasting = false;
     m_glyphslot = 0;
-    m_charges = info->procCharges;
+    m_charges = info->getProcCharges();
 
     UniqueTargets.clear();
     ModeratedTargets.clear();
@@ -268,7 +268,7 @@ Spell::~Spell()
 {
     // If this spell deals with rune power, send spell_go to update client
     // For instance, when Dk cast Empower Rune Weapon, if we don't send spell_go, the client won't update
-    if (GetSpellInfo()->RuneCostID && GetSpellInfo()->powerType == POWER_TYPE_RUNES)
+    if (GetSpellInfo()->RuneCostID && GetSpellInfo()->getPowerType() == POWER_TYPE_RUNES)
         SendSpellGo();
 
     m_caster->m_pendingSpells.erase(this);
@@ -994,7 +994,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
     }
 
     //instant cast(or triggered) and not channeling
-    if (u_caster != NULL && (m_castTime > 0 || GetSpellInfo()->ChannelInterruptFlags) && !m_triggeredSpell)
+    if (u_caster != NULL && (m_castTime > 0 || GetSpellInfo()->getChannelInterruptFlags()) && !m_triggeredSpell)
     {
         m_castPositionX = m_caster->GetPositionX();
         m_castPositionY = m_caster->GetPositionY();
@@ -1485,12 +1485,12 @@ void Spell::castMe(bool check)
                 data << p_caster->GetNewGUID();
                 data << uint8(0); //unk, some flags
                 data << GetSpellInfo()->getId();
-                data << uint32(GetSpellInfo()->RecoveryTime ? GetSpellInfo()->RecoveryTime : 2300);
+                data << uint32(GetSpellInfo()->getRecoveryTime() ? GetSpellInfo()->getRecoveryTime() : 2300);
                 p_caster->GetSession()->SendPacket(&data);
             }
             else
             {
-                if (GetSpellInfo()->ChannelInterruptFlags != 0 && !m_triggeredSpell)
+                if (GetSpellInfo()->getChannelInterruptFlags() != 0 && !m_triggeredSpell)
                 {
                     /*
                     Channeled spells are handled a little differently. The five second rule starts when the spell's channeling starts; i.e. when you pay the mana for it.
@@ -1696,7 +1696,7 @@ void Spell::AddTime(uint32 type)
 {
     if (u_caster != NULL)
     {
-        if (GetSpellInfo()->InterruptFlags & CAST_INTERRUPT_ON_DAMAGE_TAKEN)
+        if (GetSpellInfo()->getInterruptFlags() & CAST_INTERRUPT_ON_DAMAGE_TAKEN)
         {
             cancel();
             return;
@@ -1717,7 +1717,7 @@ void Spell::AddTime(uint32 type)
         if (m_spellState == SPELL_STATE_PREPARING)
         {
             // no pushback for some spells
-            if ((GetSpellInfo()->InterruptFlags & CAST_INTERRUPT_PUSHBACK) == 0)
+            if ((GetSpellInfo()->getInterruptFlags() & CAST_INTERRUPT_PUSHBACK) == 0)
                 return;
             int32 delay = 500; //0.5 second pushback
             ++m_DelayStep;
@@ -1748,7 +1748,7 @@ void Spell::AddTime(uint32 type)
                 p_caster->delayAttackTimer(delay);
             }
         }
-        else if (GetSpellInfo()->ChannelInterruptFlags != 48140)
+        else if (GetSpellInfo()->getChannelInterruptFlags() != 48140)
         {
             int32 delay = GetDuration() / 4; //0.5 second push back
             ++m_DelayStep;
@@ -1772,7 +1772,7 @@ void Spell::Update(unsigned long time_passed)
     ///\todo determine which spells can be cast while moving.
     // Client knows this, so it should be easy once we find the flag.
     // XD, it's already there!
-    if ((GetSpellInfo()->InterruptFlags & CAST_INTERRUPT_ON_MOVEMENT) &&
+    if ((GetSpellInfo()->getInterruptFlags() & CAST_INTERRUPT_ON_MOVEMENT) &&
         ((m_castTime / 1.5f) > m_timer) &&
         //		float(m_castTime)/float(m_timer) >= 2.0f		&&
         (
@@ -1849,7 +1849,7 @@ void Spell::finish(bool successful)
 
         u_caster->m_canMove = true;
         // mana           channeled                                                     power type is mana                             if spell wasn't cast successfully, don't delay mana regeneration
-        if (m_usesMana && (GetSpellInfo()->ChannelInterruptFlags == 0 && !m_triggeredSpell) && u_caster->GetPowerType() == POWER_TYPE_MANA && successful)
+        if (m_usesMana && (GetSpellInfo()->getChannelInterruptFlags() == 0 && !m_triggeredSpell) && u_caster->GetPowerType() == POWER_TYPE_MANA && successful)
         {
             /*
             Five Second Rule
@@ -2139,7 +2139,7 @@ void Spell::finish(bool successful)
     */
     if (u_caster != NULL)
     {
-        if (!m_triggeredSpell && (GetSpellInfo()->ChannelInterruptFlags || m_castTime > 0))
+        if (!m_triggeredSpell && (GetSpellInfo()->getChannelInterruptFlags() || m_castTime > 0))
             u_caster->SetCurrentSpell(NULL);
     }
 
@@ -2450,14 +2450,14 @@ void Spell::SendSpellGo()
     if (ModeratedTargets.size() > 0)
         flags |= SPELL_GO_FLAGS_EXTRA_MESSAGE; // 0x400 TARGET MISSES AND OTHER MESSAGES LIKE "Resist"
 
-    if (p_caster != NULL && GetSpellInfo()->powerType != POWER_TYPE_HEALTH)
+    if (p_caster != NULL && GetSpellInfo()->getPowerType() != POWER_TYPE_HEALTH)
         flags |= SPELL_GO_FLAGS_POWER_UPDATE;
 
     //experiments with rune updates
     uint8 cur_have_runes = 0;
     if (p_caster && p_caster->IsDeathKnight())   //send our rune updates ^^
     {
-        if (GetSpellInfo()->RuneCostID && GetSpellInfo()->powerType == POWER_TYPE_RUNES)
+        if (GetSpellInfo()->RuneCostID && GetSpellInfo()->getPowerType() == POWER_TYPE_RUNES)
             flags |= SPELL_GO_FLAGS_ITEM_CASTER | SPELL_GO_FLAGS_RUNE_UPDATE | SPELL_GO_FLAGS_UNK40000;
         //see what we will have after cast
         cur_have_runes = static_cast<DeathKnight*>(p_caster)->GetRuneFlags();
@@ -2500,7 +2500,7 @@ void Spell::SendSpellGo()
     m_targets.write(data);   // this write is included the target flag
 
     if (flags & SPELL_GO_FLAGS_POWER_UPDATE)
-        data << (uint32)p_caster->GetPower(GetSpellInfo()->powerType);
+        data << (uint32)p_caster->GetPower(GetSpellInfo()->getPowerType());
 
     // er why handle it being null inside if if you can't get into if if its null
     if (GetType() == SPELL_DMG_TYPE_RANGED)
@@ -2792,7 +2792,7 @@ bool Spell::HasPower()
     if (p_caster && p_caster->HasAura(32727))
         return true;
 
-    switch (GetSpellInfo()->powerType)
+    switch (GetSpellInfo()->getPowerType())
     {
         case POWER_TYPE_HEALTH:
         {	powerField = UNIT_FIELD_HEALTH;						}
@@ -2866,7 +2866,7 @@ bool Spell::HasPower()
     {
         if (u_caster != nullptr)
         {
-            if (GetSpellInfo()->powerType == POWER_TYPE_MANA)
+            if (GetSpellInfo()->getPowerType() == POWER_TYPE_MANA)
                 cost = (u_caster->GetBaseMana() * GetSpellInfo()->ManaCostPercentage) / 100;
             else
                 cost = (u_caster->GetBaseHealth() * GetSpellInfo()->ManaCostPercentage) / 100;
@@ -2874,14 +2874,14 @@ bool Spell::HasPower()
     }
     else
     {
-        cost = GetSpellInfo()->manaCost;
+        cost = GetSpellInfo()->getManaCost();
     }
 
-    if ((int32)GetSpellInfo()->powerType == POWER_TYPE_HEALTH)
-        cost -= GetSpellInfo()->baseLevel;//FIX for life tap
+    if ((int32)GetSpellInfo()->getPowerType() == POWER_TYPE_HEALTH)
+        cost -= GetSpellInfo()->getBaseLevel();//FIX for life tap
     else if (u_caster != NULL)
     {
-        if (GetSpellInfo()->powerType == POWER_TYPE_MANA)
+        if (GetSpellInfo()->getPowerType() == POWER_TYPE_MANA)
             cost += u_caster->PowerCostMod[GetSpellInfo()->School];//this is not percent!
         else
             cost += u_caster->PowerCostMod[0];
@@ -2944,7 +2944,7 @@ bool Spell::TakePower()
     if (p_caster && p_caster->HasAura(32727))
         return true;
 
-    switch (GetSpellInfo()->powerType)
+    switch (GetSpellInfo()->getPowerType())
     {
         case POWER_TYPE_HEALTH:
         {	powerField = UNIT_FIELD_HEALTH;						}
@@ -3024,7 +3024,7 @@ bool Spell::TakePower()
     {
         if (u_caster != nullptr)
         {
-            if (GetSpellInfo()->powerType == POWER_TYPE_MANA)
+            if (GetSpellInfo()->getPowerType() == POWER_TYPE_MANA)
                 cost = (u_caster->GetBaseMana() * GetSpellInfo()->ManaCostPercentage) / 100;
             else
                 cost = (u_caster->GetBaseHealth() * GetSpellInfo()->ManaCostPercentage) / 100;
@@ -3032,14 +3032,14 @@ bool Spell::TakePower()
     }
     else
     {
-        cost = GetSpellInfo()->manaCost;
+        cost = GetSpellInfo()->getManaCost();
     }
 
-    if ((int32)GetSpellInfo()->powerType == POWER_TYPE_HEALTH)
-        cost -= GetSpellInfo()->baseLevel;//FIX for life tap
+    if ((int32)GetSpellInfo()->getPowerType() == POWER_TYPE_HEALTH)
+        cost -= GetSpellInfo()->getBaseLevel();//FIX for life tap
     else if (u_caster != NULL)
     {
-        if (GetSpellInfo()->powerType == POWER_TYPE_MANA)
+        if (GetSpellInfo()->getPowerType() == POWER_TYPE_MANA)
             cost += u_caster->PowerCostMod[GetSpellInfo()->School];//this is not percent!
         else
             cost += u_caster->PowerCostMod[0];
@@ -3555,12 +3555,12 @@ void Spell::HandleAddAura(uint64 guid)
             Aura* staur = sSpellFactoryMgr.NewAura(aur->GetSpellInfo(), aur->GetDuration(), aur->GetCaster(), aur->GetTarget(), m_triggeredSpell, i_caster);
             Target->AddAura(staur);
         }
-        if (!(aur->GetSpellInfo()->procFlags & PROC_REMOVEONUSE))
+        if (!(aur->GetSpellInfo()->getProcFlags() & PROC_REMOVEONUSE))
         {
             SpellCharge charge;
             charge.count = charges;
             charge.spellId = aur->GetSpellId();
-            charge.ProcFlag = aur->GetSpellInfo()->procFlags;
+            charge.ProcFlag = aur->GetSpellInfo()->getProcFlags();
             charge.lastproc = 0;
             Target->m_chargeSpells.insert(std::make_pair(aur->GetSpellId(), charge));
         }
@@ -3693,9 +3693,9 @@ uint32 Spell::GetDuration()
     bDurSet = true;
     int32 c_dur = 0;
 
-    if (GetSpellInfo()->DurationIndex)
+    if (GetSpellInfo()->getDurationIndex())
     {
-        auto spell_duration = sSpellDurationStore.LookupEntry(GetSpellInfo()->DurationIndex);
+        auto spell_duration = sSpellDurationStore.LookupEntry(GetSpellInfo()->getDurationIndex());
         if (spell_duration)
         {
             //check for negative and 0 durations.
@@ -3790,7 +3790,7 @@ uint8 Spell::CanCast(bool tolerate)
     uint32 i;
 
     // Check if spell can be casted while player is moving.
-    if ((p_caster != NULL) && p_caster->m_isMoving && (m_spellInfo->InterruptFlags & CAST_INTERRUPT_ON_MOVEMENT) && (m_castTime != 0) && (GetDuration() != 0))
+    if ((p_caster != NULL) && p_caster->m_isMoving && (m_spellInfo->getInterruptFlags() & CAST_INTERRUPT_ON_MOVEMENT) && (m_castTime != 0) && (GetDuration() != 0))
         return SPELL_FAILED_MOVING;
 
     // Check if spell requires caster to be in combat to be casted.
@@ -4360,7 +4360,7 @@ uint8 Spell::CanCast(bool tolerate)
                 if (gameobject_info->raw.parameter_1)
                     focusRange = float(gameobject_info->raw.parameter_1);
                 else
-                    focusRange = GetMaxRange(sSpellRangeStore.LookupEntry(GetSpellInfo()->rangeIndex));
+                    focusRange = GetMaxRange(sSpellRangeStore.LookupEntry(GetSpellInfo()->getRangeIndex()));
 
                 // check if focus object is close enough
                 if (!obj->isInRange(p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ(), (focusRange * focusRange)))
@@ -4500,15 +4500,15 @@ uint8 Spell::CanCast(bool tolerate)
                             return SPELL_FAILED_BAD_TARGETS;
 
                         // You tried to cast wotlk enchant on bad item
-                        if (GetSpellInfo()->baseLevel == 60 && proto->ItemId != 43146)
+                        if (GetSpellInfo()->getBaseLevel() == 60 && proto->ItemId != 43146)
                             return SPELL_FAILED_BAD_TARGETS;
 
                         // you tried to cast tbc enchant on bad item
-                        if (GetSpellInfo()->baseLevel == 35 && proto->ItemId == 39349)
+                        if (GetSpellInfo()->getBaseLevel() == 35 && proto->ItemId == 39349)
                             return SPELL_FAILED_BAD_TARGETS;
 
                         // you tried to cast non-lvl enchant on bad item
-                        if (GetSpellInfo()->baseLevel == 0 && proto->ItemId != 39349)
+                        if (GetSpellInfo()->getBaseLevel() == 0 && proto->ItemId != 39349)
                             return SPELL_FAILED_BAD_TARGETS;
 
                         break;
@@ -4522,15 +4522,15 @@ uint8 Spell::CanCast(bool tolerate)
                             return SPELL_FAILED_BAD_TARGETS;
 
                         // You tried to cast wotlk enchant on bad item
-                        if (GetSpellInfo()->baseLevel == 60 && proto->ItemId != 43145)
+                        if (GetSpellInfo()->getBaseLevel() == 60 && proto->ItemId != 43145)
                             return SPELL_FAILED_BAD_TARGETS;
 
                         // you tried to cast tbc enchant on bad item
-                        if (GetSpellInfo()->baseLevel == 35 && proto->ItemId == 38682)
+                        if (GetSpellInfo()->getBaseLevel() == 35 && proto->ItemId == 38682)
                             return SPELL_FAILED_BAD_TARGETS;
 
                         // you tried to cast non-lvl enchant on bad item
-                        if (GetSpellInfo()->baseLevel == 0 && proto->ItemId != 38682)
+                        if (GetSpellInfo()->getBaseLevel() == 0 && proto->ItemId != 38682)
                             return SPELL_FAILED_BAD_TARGETS;
                     }
 
@@ -4551,7 +4551,7 @@ uint8 Spell::CanCast(bool tolerate)
 #endif
 
                 if (GetSpellInfo()->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM &&
-                    GetSpellInfo()->baseLevel && (GetSpellInfo()->baseLevel > proto->ItemLevel))
+                    GetSpellInfo()->getBaseLevel() && (GetSpellInfo()->getBaseLevel() > proto->ItemLevel))
                     return int8(SPELL_FAILED_BAD_TARGETS); // maybe there is different err code
 
                 if (i_caster && i_caster->GetItemProperties()->Flags == 2097216)
@@ -4656,7 +4656,7 @@ uint8 Spell::CanCast(bool tolerate)
      */
     float maxRange = 0;
 
-    auto spell_range = sSpellRangeStore.LookupEntry(GetSpellInfo()->rangeIndex);
+    auto spell_range = sSpellRangeStore.LookupEntry(GetSpellInfo()->getRangeIndex());
     if (spell_range != nullptr)
     {
         if (m_caster->IsInWorld())
@@ -4929,7 +4929,7 @@ uint8 Spell::CanCast(bool tolerate)
                 {
                     if (GetSpellInfo()->EffectBasePoints[0])  //got level req;
                     {
-                        if ((int32)target->getLevel() > GetSpellInfo()->EffectBasePoints[0] + 1 + int32(p_caster->getLevel() - GetSpellInfo()->spellLevel))
+                        if ((int32)target->getLevel() > GetSpellInfo()->EffectBasePoints[0] + 1 + int32(p_caster->getLevel() - GetSpellInfo()->getSpellLevel()))
                             return SPELL_FAILED_HIGHLEVEL;
                         else if (target->IsCreature())
                         {
@@ -5759,9 +5759,9 @@ exit:
 
     if (u_caster != NULL)
     {
-        int32 diff = -(int32)GetSpellInfo()->baseLevel;
-        if (GetSpellInfo()->maxLevel && u_caster->getLevel() > GetSpellInfo()->maxLevel)
-            diff += GetSpellInfo()->maxLevel;
+        int32 diff = -(int32)GetSpellInfo()->getBaseLevel();
+        if (GetSpellInfo()->getMaxLevel() && u_caster->getLevel() > GetSpellInfo()->getMaxLevel())
+            diff += GetSpellInfo()->getMaxLevel();
         else
             diff += u_caster->getLevel();
         //randomPoints += float2int32(diff * randomPointsPerLevel);
@@ -8234,7 +8234,7 @@ uint32 Spell::GetTargetType(uint32 value, uint32 i)
 
 void Spell::HandleCastEffects(uint64 guid, uint32 i)
 {
-    if (m_spellInfo->speed == 0)  //instant
+    if (m_spellInfo->getSpeed() == 0)  //instant
     {
         AddRef();
         HandleEffects(guid, i);
@@ -8291,7 +8291,7 @@ void Spell::HandleCastEffects(uint64 guid, uint32 i)
             if (m_missileTravelTime != 0)
                 time = static_cast<float>(m_missileTravelTime);
             else
-                time = dist * 1000.0f / m_spellInfo->speed;
+                time = dist * 1000.0f / m_spellInfo->getSpeed();
 
             ///\todo arcemu doesn't support reflected spells
             //if (reflected)
@@ -8305,7 +8305,7 @@ void Spell::HandleCastEffects(uint64 guid, uint32 i)
 
 void Spell::HandleModeratedTarget(uint64 guid)
 {
-    if (m_spellInfo->speed == 0)  //instant
+    if (m_spellInfo->getSpeed() == 0)  //instant
     {
         AddRef();
         HandleModeratedEffects(guid);
@@ -8357,7 +8357,7 @@ void Spell::HandleModeratedTarget(uint64 guid)
         }
         else
         {
-            float time = dist * 1000.0f / m_spellInfo->speed;
+            float time = dist * 1000.0f / m_spellInfo->getSpeed();
             //todo: arcemu doesn't support reflected spells
             //if (reflected)
             //	time *= 1.25; //reflected projectiles move back 4x faster

@@ -38,7 +38,7 @@ bool FlametongueWeaponPassive(uint32 i, Aura* pAura, bool apply)
     {
         // target is always a player
         Item* item = static_cast<Player*>(target)->GetItemInterface()->GetItemByGUID(pAura->itemCasterGUID);
-        target->AddProcTriggerSpell(10444, pAura->GetSpellInfo()->getId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_MELEE_ATTACK, 0, NULL, NULL, item);
+        target->AddProcTriggerSpell(10444, pAura->GetSpellInfo()->getId(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), PROC_ON_MELEE_ATTACK, 0, NULL, NULL, item);
     }
     else
         target->RemoveProcTriggerSpell(10444, pAura->m_casterGuid, pAura->itemCasterGUID);
@@ -88,7 +88,7 @@ bool EarthShieldDummyAura(uint32 i, Aura* pAura, bool apply)
     Unit* m_target = pAura->GetTarget();
 
     if (apply)
-        m_target->AddProcTriggerSpell(379, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, pAura->GetSpellInfo()->procFlags & ~PROC_ON_SPELL_LAND_VICTIM, pAura->GetSpellInfo()->procCharges, NULL, NULL);
+        m_target->AddProcTriggerSpell(379, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), pAura->GetSpellInfo()->getProcFlags() & ~PROC_ON_SPELL_LAND_VICTIM, pAura->GetSpellInfo()->getProcCharges(), NULL, NULL);
     else if (m_target->GetAuraStackCount(pAura->GetSpellId()) == 1)
         m_target->RemoveProcTriggerSpell(379, pAura->m_casterGuid);
 
