@@ -631,7 +631,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
         return true;
     }
 
-    if (!selected_player->GetSession()->HasGMPermissions() && (spell_entry->Effect[0] == SPELL_EFFECT_INSTANT_KILL || spell_entry->Effect[1] == SPELL_EFFECT_INSTANT_KILL || spell_entry->Effect[2] == SPELL_EFFECT_INSTANT_KILL))
+    if (!selected_player->GetSession()->HasGMPermissions() && (spell_entry->getEffect(0) == SPELL_EFFECT_INSTANT_KILL || spell_entry->getEffect(1) == SPELL_EFFECT_INSTANT_KILL || spell_entry->getEffect(2) == SPELL_EFFECT_INSTANT_KILL))
     {
         SystemMessage(m_session, "don't be an idiot and teach players instakill spells. this action has been logged.");
         sGMLog.writefromsession(m_session, "is an idiot and tried to tought player %s instakill spell %u", selected_player->GetName(), spell);

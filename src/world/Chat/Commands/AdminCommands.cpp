@@ -31,7 +31,7 @@ bool ChatHandler::HandleAdminCastAllCommand(const char* args, WorldSession* m_se
 
     for (uint8 i = 0; i < 3; ++i)
     {
-        if (spell_entry->Effect[i] == SPELL_EFFECT_LEARN_SPELL)
+        if (spell_entry->getEffect(i) == SPELL_EFFECT_LEARN_SPELL)
         {
             sGMLog.writefromsession(m_session, "used learn spell stopped %u", spell_id);
             RedSystemMessage(m_session, "Learn spell specified.");

@@ -824,8 +824,8 @@ AI_Spell* Pet::CreateAISpell(SpellInfo* info)
     sp->cooldowntime = 0;
 
     if (/* info->Effect[0] == SPELL_EFFECT_APPLY_AURA || */
-        info->Effect[0] == SPELL_EFFECT_APPLY_GROUP_AREA_AURA
-        || info->Effect[0] == SPELL_EFFECT_APPLY_RAID_AREA_AURA
+        info->getEffect(0) == SPELL_EFFECT_APPLY_GROUP_AREA_AURA
+        || info->getEffect(0) == SPELL_EFFECT_APPLY_RAID_AREA_AURA
         || info->EffectImplicitTargetA[0] == 27     //TARGET_MASTER
         || info->EffectImplicitTargetA[0] == 57)    //TARGET_SINGLE_FRIEND_2
         sp->spellType = STYPE_BUFF;
@@ -2391,7 +2391,7 @@ void Pet::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
 
             for (uint8 i = 0; i < 3; i++)
             {
-                if (spl->GetSpellInfo()->Effect[i] == SPELL_EFFECT_PERSISTENT_AREA_AURA)
+                if (spl->GetSpellInfo()->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {
                     uint64 guid = GetChannelSpellTargetGUID();
                     DynamicObject* dObj = GetMapMgr()->GetDynamicObject(Arcemu::Util::GUID_LOPART(guid));

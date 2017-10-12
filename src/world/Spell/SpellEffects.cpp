@@ -420,7 +420,7 @@ void Spell::ApplyAreaAura(uint32 i)
 
         uint32 eventtype = 0;
 
-        switch (m_spellInfo->Effect[i])
+        switch (m_spellInfo->getEffect(i))
         {
             case SPELL_EFFECT_APPLY_GROUP_AREA_AURA:
                 eventtype = EVENT_GROUP_AREA_AURA_UPDATE;
@@ -460,7 +460,7 @@ void Spell::ApplyAreaAura(uint32 i)
 
 void Spell::SpellEffectNULL(uint32 i)
 {
-    LogDebugFlag(LF_SPELL_EFF, "Unhandled spell effect %u in spell %u.", GetSpellInfo()->Effect[i], GetSpellInfo()->getId());
+    LogDebugFlag(LF_SPELL_EFF, "Unhandled spell effect %u in spell %u.", GetSpellInfo()->getEffect(i), GetSpellInfo()->getId());
 }
 
 void Spell::SpellEffectInstantKill(uint32 i)
@@ -1961,7 +1961,7 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
         }
         else
         {
-            int32 reduce = GetSpellInfo()->EffectDieSides[i] + 1;
+            int32 reduce = GetSpellInfo()->getEffectDieSides(i) + 1;
             if (u_caster != nullptr)
             {
                 spellModFlatIntValue(u_caster->SM_PJumpReduce, &reduce, GetSpellInfo()->SpellGroupType);
@@ -1988,7 +1988,7 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
                         //maybe we should use CalculateEffect(uint32 i) to gain SM benefits
                         int32 value = 0;
                         int32 basePoints = spellInfo->EffectBasePoints[i] + 1; //+(m_caster->getLevel()*basePointsPerLevel);
-                        uint32 randomPoints = spellInfo->EffectDieSides[i];
+                        uint32 randomPoints = spellInfo->getEffectDieSides(i);
                         if (randomPoints <= 1)
                             value = basePoints;
                         else
@@ -2388,7 +2388,7 @@ void Spell::SpellEffectCreateItem(uint32 i)
 
     uint32 itemid = m_spellInfo->EffectItemType[i];
     uint32 count = 0;
-    uint32 basecount = m_spellInfo->EffectDieSides[i];
+    uint32 basecount = m_spellInfo->getEffectDieSides(i);
     uint32 difference = m_spellInfo->EffectBasePoints[i];
 
     if (itemid == 0)
@@ -3270,11 +3270,11 @@ void Spell::SpellEffectEnergize(uint32 i) // Energize
                 {
                     //heal amount from procspell (we only proceed on a heal spell)
                     uint32 healamt = 0;
-                    if (ProcedOnSpell->Effect[0] == SPELL_EFFECT_HEAL || ProcedOnSpell->Effect[0] == SPELL_EFFECT_SCRIPT_EFFECT)
+                    if (ProcedOnSpell->getEffect(0) == SPELL_EFFECT_HEAL || ProcedOnSpell->getEffect(0) == SPELL_EFFECT_SCRIPT_EFFECT)
                         healamt = ProcedOnSpell->EffectBasePoints[0] + 1;
-                    else if (ProcedOnSpell->Effect[1] == SPELL_EFFECT_HEAL || ProcedOnSpell->Effect[1] == SPELL_EFFECT_SCRIPT_EFFECT)
+                    else if (ProcedOnSpell->getEffect(1) == SPELL_EFFECT_HEAL || ProcedOnSpell->getEffect(1) == SPELL_EFFECT_SCRIPT_EFFECT)
                         healamt = ProcedOnSpell->EffectBasePoints[1] + 1;
-                    else if (ProcedOnSpell->Effect[2] == SPELL_EFFECT_HEAL || ProcedOnSpell->Effect[2] == SPELL_EFFECT_SCRIPT_EFFECT)
+                    else if (ProcedOnSpell->getEffect(2) == SPELL_EFFECT_HEAL || ProcedOnSpell->getEffect(2) == SPELL_EFFECT_SCRIPT_EFFECT)
                         healamt = ProcedOnSpell->EffectBasePoints[2] + 1;
                     modEnergy = (motherspell->EffectBasePoints[0] + 1) * (healamt) / 100;
                 }
@@ -3822,9 +3822,9 @@ void Spell::SpellEffectLearnSpell(uint32 i) // Learn Spell
                 break;
         }
         for (uint32 j = 0; j < 3; j++)
-            if (spellinfo->Effect[j] == SPELL_EFFECT_WEAPON ||
-                spellinfo->Effect[j] == SPELL_EFFECT_PROFICIENCY ||
-                spellinfo->Effect[j] == SPELL_EFFECT_DUAL_WIELD)
+            if (spellinfo->getEffect(j) == SPELL_EFFECT_WEAPON ||
+                spellinfo->getEffect(j) == SPELL_EFFECT_PROFICIENCY ||
+                spellinfo->getEffect(j) == SPELL_EFFECT_DUAL_WIELD)
             {
                 Spell* sp = sSpellFactoryMgr.NewSpell(unitTarget, spellinfo, true, NULL);
                 SpellCastTargets targets;
@@ -4446,7 +4446,7 @@ void Spell::SpellEffectWeapondamage(uint32 i)   // Weapon damage +
     }
 
     // Hacky fix for druid spells where it would "double attack".
-    if (GetSpellInfo()->Effect[2] == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE || GetSpellInfo()->Effect[1] == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE)
+    if (GetSpellInfo()->getEffect(2) == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE || GetSpellInfo()->getEffect(1) == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE)
     {
         add_damage += damage;
         return;
@@ -5297,7 +5297,7 @@ void Spell::SpellEffectSummonObjectSlot(uint32 i)
 
     GameObject* GoSummon = NULL;
 
-    uint32 slot = GetSpellInfo()->Effect[i] - SPELL_EFFECT_SUMMON_OBJECT_SLOT1;
+    uint32 slot = GetSpellInfo()->getEffect(i) - SPELL_EFFECT_SUMMON_OBJECT_SLOT1;
     GoSummon = u_caster->m_ObjectSlots[slot] ? u_caster->GetMapMgr()->GetGameObject(u_caster->m_ObjectSlots[slot]) : 0;
     u_caster->m_ObjectSlots[slot] = 0;
 
@@ -5811,7 +5811,7 @@ void Spell::SpellEffectDummyMelee(uint32 i)   // Normalized Weapon damage +
 
     // rogue ambush etc
     for (uint32 x = 0; x < 3; x++)
-        if (GetSpellInfo()->Effect[x] == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE)
+        if (GetSpellInfo()->getEffect(x) == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE)
         {
             add_damage = damage * (GetSpellInfo()->EffectBasePoints[x] + 1) / 100;
             return;
@@ -5995,7 +5995,7 @@ void Spell::SpellEffectSpellSteal(uint32 i)
                     uint32 aur_removed = unitTarget->removeAllAurasByIdReturnCount(aursp->getId());
                     for (uint8 j = 0; j < 3; j++)
                     {
-                        if (aura->GetSpellInfo()->Effect[j])
+                        if (aura->GetSpellInfo()->getEffect(j))
                         {
                             aura->AddMod(aura->GetSpellInfo()->EffectApplyAuraName[j], aura->GetSpellInfo()->EffectBasePoints[j] + 1, aura->GetSpellInfo()->EffectMiscValue[j], j);
                         }

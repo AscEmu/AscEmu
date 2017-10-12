@@ -1415,10 +1415,10 @@ void ObjectMgr::LoadSpellEffectsOverride()
                 if (sp != NULL)
                 {
                     if (seo_Disable)
-                        sp->Effect[seo_EffectId] = SPELL_EFFECT_NULL;
+                        sp->setEffect(SPELL_EFFECT_NULL, seo_EffectId);
 
                     if (seo_Effect)
-                        sp->Effect[seo_EffectId] = seo_Effect;
+                        sp->setEffect(seo_Effect, seo_EffectId);
 
                     if (seo_BasePoints)
                         sp->EffectBasePoints[seo_EffectId] = seo_BasePoints;
@@ -2007,7 +2007,7 @@ void ObjectMgr::LoadTrainers()
                     {
                         for (uint8 k = 0; k < 3; ++k)
                         {
-                            if (ts.pCastSpell->Effect[k] == SPELL_EFFECT_LEARN_SPELL)
+                            if (ts.pCastSpell->getEffect(k) == SPELL_EFFECT_LEARN_SPELL)
                             {
                                 ts.pCastRealSpell = sSpellCustomizations.GetSpellInfo(ts.pCastSpell->EffectTriggerSpell[k]);
                                 if (ts.pCastRealSpell == NULL)
@@ -2045,7 +2045,7 @@ void ObjectMgr::LoadTrainers()
                 ts.RequiredLevel = fields2[7].GetUInt32();
                 ts.DeleteSpell = fields2[8].GetUInt32();
                 //IsProfession is true if the TrainerSpell will teach a primary profession
-                if (ts.RequiredSkillLine == 0 && ts.pCastRealSpell != NULL && ts.pCastRealSpell->Effect[1] == SPELL_EFFECT_SKILL)
+                if (ts.RequiredSkillLine == 0 && ts.pCastRealSpell != NULL && ts.pCastRealSpell->getEffect(1) == SPELL_EFFECT_SKILL)
                 {
                     uint32 skill = ts.pCastRealSpell->EffectMiscValue[1];
                     auto skill_line = sSkillLineStore.LookupEntry(skill);
@@ -3830,8 +3830,8 @@ void ObjectMgr::LoadCreatureAIAgents()
                         continue;
                     }
 
-                    if (sp->spell->Effect[0] == SPELL_EFFECT_LEARN_SPELL || sp->spell->Effect[1] == SPELL_EFFECT_LEARN_SPELL ||
-                        sp->spell->Effect[2] == SPELL_EFFECT_LEARN_SPELL)
+                    if (sp->spell->getEffect(0) == SPELL_EFFECT_LEARN_SPELL || sp->spell->getEffect(1) == SPELL_EFFECT_LEARN_SPELL ||
+                        sp->spell->getEffect(2) == SPELL_EFFECT_LEARN_SPELL)
                     {
                         LogDebugFlag(LF_DB_TABLES, "Teaching spell %u in ai_agent for %u", (unsigned int)fields[6].GetUInt32(), (unsigned int)sp->entryId);
                         delete sp;

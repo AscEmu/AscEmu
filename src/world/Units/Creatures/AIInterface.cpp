@@ -2637,7 +2637,7 @@ float AIInterface::_CalcAggroRange(Unit* target)
         {
             // If nearby miners weren't spotted already we'll give them a little surprise.
             Spell* sp = target->GetCurrentSpell();
-            if (sp->GetSpellInfo()->Effect[0] == SPELL_EFFECT_OPEN_LOCK && sp->GetSpellInfo()->EffectMiscValue[0] == LOCKTYPE_MINING)
+            if (sp->GetSpellInfo()->getEffect(0) == SPELL_EFFECT_OPEN_LOCK && sp->GetSpellInfo()->EffectMiscValue[0] == LOCKTYPE_MINING)
             {
                 isMining = true;
             }

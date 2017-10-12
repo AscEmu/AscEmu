@@ -866,10 +866,10 @@ void Aura::Remove()
 
     for (uint32 x = 0; x < 3; x++)
     {
-        if (!m_spellInfo->Effect[x])
+        if (!m_spellInfo->getEffect(x))
             continue;
 
-        if (m_spellInfo->Effect[x] == SPELL_EFFECT_TRIGGER_SPELL && !m_spellInfo->custom_always_apply)
+        if (m_spellInfo->getEffect(x) == SPELL_EFFECT_TRIGGER_SPELL && !m_spellInfo->custom_always_apply)
         {
             // I'm not sure about this! FIX ME!!
             auto spell_entry = sSpellCustomizations.GetSpellInfo(GetSpellInfo()->EffectTriggerSpell[x]);
@@ -939,7 +939,7 @@ void Aura::Remove()
     {
         uint8 j;
         for (j = 0; j < 3; ++j)
-            if (m_spellInfo->Effect[j] == SPELL_EFFECT_ADD_FARSIGHT)
+            if (m_spellInfo->getEffect(j) == SPELL_EFFECT_ADD_FARSIGHT)
                 break;
 
         if (j != 3)
@@ -3152,7 +3152,7 @@ void Aura::SpellAuraModDetect(bool apply)
 void Aura::SpellAuraModInvisibility(bool apply)
 {
     SetPositive();
-    if (m_spellInfo->Effect[mod->i] == SPELL_EFFECT_APPLY_FRIEND_AREA_AURA)  ///\todo WTF is this crap? TODO clean this
+    if (m_spellInfo->getEffect(mod->i) == SPELL_EFFECT_APPLY_FRIEND_AREA_AURA)  ///\todo WTF is this crap? TODO clean this
         return;
 
     if (apply)
@@ -4669,8 +4669,8 @@ void Aura::SpellAuraModCritPerc(bool apply)
         {
             WeaponModifier md;
             md.value = float(mod->m_amount);
-            md.wclass = GetSpellInfo()->EquippedItemClass;
-            md.subclass = GetSpellInfo()->EquippedItemSubClass;
+            md.wclass = GetSpellInfo()->getEquippedItemClass();
+            md.subclass = GetSpellInfo()->getEquippedItemSubClass();
             p_target->tocritchance.insert(std::make_pair(GetSpellId(), md));
         }
         else
@@ -5780,7 +5780,7 @@ void Aura::SpellAuraModDamagePercDone(bool apply)
     }
     if (p_target != NULL)
     {
-        if (GetSpellInfo()->EquippedItemClass == -1)  //does not depend on weapon
+        if (GetSpellInfo()->getEquippedItemClass() == -1)  //does not depend on weapon
         {
             for (uint8 x = 0; x < SCHOOL_COUNT; x++)
             {
@@ -5797,8 +5797,8 @@ void Aura::SpellAuraModDamagePercDone(bool apply)
             {
                 WeaponModifier md;
                 md.value = val;
-                md.wclass = GetSpellInfo()->EquippedItemClass;
-                md.subclass = GetSpellInfo()->EquippedItemSubClass;
+                md.wclass = GetSpellInfo()->getEquippedItemClass();
+                md.subclass = GetSpellInfo()->getEquippedItemSubClass();
                 p_target->damagedone.insert(std::make_pair(GetSpellId(), md));
             }
             else
@@ -5900,7 +5900,7 @@ void Aura::SpellAuraSplitDamage(bool apply)
     Object* caster = GetCaster();
 
     // We don't want to split our damage with the owner
-    if ((m_spellInfo->Effect[mod->i] == SPELL_EFFECT_APPLY_OWNER_AREA_AURA) &&
+    if ((m_spellInfo->getEffect(mod->i) == SPELL_EFFECT_APPLY_OWNER_AREA_AURA) &&
         (caster != nullptr) &&
         (m_target != nullptr) &&
         caster->IsPet() &&
@@ -8594,7 +8594,7 @@ void Aura::SpellAuraIncreaseRating(bool apply)
     {
         std::map<uint32, uint32>::iterator i;
         for (uint32 y = 0; y < 20; y++)
-            if (m_spellInfo->EquippedItemSubClass & (((uint32)1) << y))
+            if (m_spellInfo->getEquippedItemSubClass() & (((uint32)1) << y))
             {
                 i = static_cast< Player* >(m_target)->m_wratings.find(y);
                 if (i == static_cast< Player* >(m_target)->m_wratings.end())    //no prev

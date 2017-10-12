@@ -41,7 +41,7 @@ SpellInfo::SpellInfo()
 
     CustomFlags = 0;
 
-    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
         EffectCustomFlag[i] = 0;
 
     SpellFactoryFunc = NULL;
@@ -204,7 +204,7 @@ SpellInfo::SpellInfo()
 
     // data from SpellClassOptions.dbc
     SpellFamilyName = 0;
-    for (uint8 i = 0; i < 3; ++i)
+    for (uint8_t i = 0; i < 3; ++i)
         SpellGroupType[i] = 0;
 
     // data from SpellCooldowns.dbc
@@ -235,7 +235,7 @@ SpellInfo::SpellInfo()
     manaPerSecondPerLevel = 0;
 
     // data from SpellReagents.dbc
-    for (uint8 i = 0; i < MAX_SPELL_REAGENTS; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_REAGENTS; ++i)
     {
         Reagent[i] = 0;
         ReagentCount[i] = 0;
@@ -252,14 +252,14 @@ SpellInfo::SpellInfo()
     Targets = 0;
 
     // data from SpellTotems.dbc
-    for (uint8 i = 0; i < MAX_SPELL_TOTEMS; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_TOTEMS; ++i)
     {
         TotemCategory[i] = 0;
         Totem[i] = 0;
     }
 
     // data from SpellEffect.dbc
-    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         Effect[i] = 0;
         EffectMultipleValue[i] = 0;
@@ -314,7 +314,7 @@ SpellInfo::SpellInfo()
     custom_SchoolMask = 0;
     CustomFlags = 0;
 
-    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         EffectCustomFlag[i] = 0;
     }
@@ -327,9 +327,9 @@ SpellInfo::SpellInfo()
 SpellInfo::~SpellInfo() {}
 
 
-bool SpellInfo::HasEffect(uint32 effect) const
+bool SpellInfo::HasEffect(uint32_t effect) const
 {
-    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         if (Effect[i] == effect)
         {
@@ -349,7 +349,7 @@ bool SpellInfo::HasEffectApplyAuraName(uint32_t aura_name)
     return false;
 }
 
-bool SpellInfo::HasCustomFlagForEffect(uint32 effect, uint32 flag)
+bool SpellInfo::HasCustomFlagForEffect(uint32_t effect, uint32_t flag)
 {
     if (effect >= MAX_SPELL_EFFECTS)
         return false;
@@ -644,11 +644,11 @@ bool SpellInfo::IsPassive()
 
 bool SpellInfo::IsProfession()
 {
-    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         if (Effect[i] == SPELL_EFFECT_SKILL)
         {
-            uint32 skill = EffectMiscValue[i];
+            uint32_t skill = EffectMiscValue[i];
 
             //Profession skill
             if (skill == SKILL_FISHING || skill == SKILL_COOKING || skill == SKILL_FIRST_AID)
@@ -663,11 +663,11 @@ bool SpellInfo::IsProfession()
 
 bool SpellInfo::IsPrimaryProfession()
 {
-    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         if (Effect[i] == SPELL_EFFECT_SKILL)
         {
-            uint32 skill = EffectMiscValue[i];
+            uint32_t skill = EffectMiscValue[i];
 
             if (IsPrimaryProfessionSkill(skill))
                 return true;
@@ -676,7 +676,7 @@ bool SpellInfo::IsPrimaryProfession()
     return false;
 }
 
-bool SpellInfo::IsPrimaryProfessionSkill(uint32 skill_id)
+bool SpellInfo::IsPrimaryProfessionSkill(uint32_t skill_id)
 {
     if (DBC::Structures::SkillLineEntry const* skill_line = sSkillLineStore.LookupEntry(skill_id))
         if (skill_line && skill_line->type == SKILL_TYPE_PROFESSION)
@@ -690,9 +690,9 @@ bool SpellInfo::isDeathPersistent() const
     return (AttributesExC & ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD) != 0;
 }
 
-bool SpellInfo::appliesAreaAura(uint32 aura) const
+bool SpellInfo::appliesAreaAura(uint32_t aura) const
 {
-    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         switch (Effect[i])
         {
@@ -716,9 +716,9 @@ bool SpellInfo::appliesAreaAura(uint32 aura) const
     return false;
 }
 
-uint32 SpellInfo::GetAreaAuraEffectId()
+uint32_t SpellInfo::GetAreaAuraEffectId()
 {
-    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         if (Effect[i] == SPELL_EFFECT_APPLY_GROUP_AREA_AURA ||
             Effect[i] == SPELL_EFFECT_APPLY_RAID_AREA_AURA ||

@@ -138,7 +138,7 @@ bool ChatHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession
         return true;
     }
 
-    if (learn_spell->Effect[0] == SPELL_EFFECT_INSTANT_KILL || learn_spell->Effect[1] == SPELL_EFFECT_INSTANT_KILL || learn_spell->Effect[2] == SPELL_EFFECT_INSTANT_KILL)
+    if (learn_spell->getEffect(0) == SPELL_EFFECT_INSTANT_KILL || learn_spell->getEffect(1) == SPELL_EFFECT_INSTANT_KILL || learn_spell->getEffect(2) == SPELL_EFFECT_INSTANT_KILL)
     {
         RedSystemMessage(m_session, "You are not allowed to learn spells with instant kill effect!");
         return true;

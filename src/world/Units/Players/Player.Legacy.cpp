@@ -2422,7 +2422,7 @@ void Player::addSpell(uint32 spell_id)
         // miscvalue1==777 for mounts, 778 for pets
         m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_NUMBER_OF_MOUNTS, 777, 0, 0);
     }
-    else if (spell->Effect[0] == SPELL_EFFECT_SUMMON) // Companion pet?
+    else if (spell->getEffect(0) == SPELL_EFFECT_SUMMON) // Companion pet?
     {
         // miscvalue1==777 for mounts, 778 for pets
         // make sure it's a companion pet, not some other summon-type spell
@@ -2995,40 +2995,40 @@ void Player::_SaveQuestLogEntry(QueryBuffer* buf)
 
 bool Player::canCast(SpellInfo* m_spellInfo)
 {
-    if (m_spellInfo->EquippedItemClass != 0)
+    if (m_spellInfo->getEquippedItemClass() != 0)
     {
         if (this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND))
         {
-            if ((int32)this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND)->GetItemProperties()->Class == m_spellInfo->EquippedItemClass)
+            if ((int32)this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND)->GetItemProperties()->Class == m_spellInfo->getEquippedItemClass())
             {
-                if (m_spellInfo->EquippedItemSubClass != 0)
+                if (m_spellInfo->getEquippedItemSubClass() != 0)
                 {
-                    if (m_spellInfo->EquippedItemSubClass != 173555 && m_spellInfo->EquippedItemSubClass != 96 && m_spellInfo->EquippedItemSubClass != 262156)
+                    if (m_spellInfo->getEquippedItemSubClass() != 173555 && m_spellInfo->getEquippedItemSubClass() != 96 && m_spellInfo->getEquippedItemSubClass() != 262156)
                     {
-                        if (pow(2.0, (this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND)->GetItemProperties()->SubClass) != m_spellInfo->EquippedItemSubClass))
+                        if (pow(2.0, (this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND)->GetItemProperties()->SubClass) != m_spellInfo->getEquippedItemSubClass()))
                             return false;
                     }
                 }
             }
         }
-        else if (m_spellInfo->EquippedItemSubClass == 173555)
+        else if (m_spellInfo->getEquippedItemSubClass() == 173555)
             return false;
 
         if (this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED))
         {
-            if ((int32)this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED)->GetItemProperties()->Class == m_spellInfo->EquippedItemClass)
+            if ((int32)this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED)->GetItemProperties()->Class == m_spellInfo->getEquippedItemClass())
             {
-                if (m_spellInfo->EquippedItemSubClass != 0)
+                if (m_spellInfo->getEquippedItemSubClass() != 0)
                 {
-                    if (m_spellInfo->EquippedItemSubClass != 173555 && m_spellInfo->EquippedItemSubClass != 96 && m_spellInfo->EquippedItemSubClass != 262156)
+                    if (m_spellInfo->getEquippedItemSubClass() != 173555 && m_spellInfo->getEquippedItemSubClass() != 96 && m_spellInfo->getEquippedItemSubClass() != 262156)
                     {
-                        if (pow(2.0, (this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED)->GetItemProperties()->SubClass) != m_spellInfo->EquippedItemSubClass))                            return false;
+                        if (pow(2.0, (this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED)->GetItemProperties()->SubClass) != m_spellInfo->getEquippedItemSubClass()))                            return false;
                     }
                 }
             }
         }
         else if
-            (m_spellInfo->EquippedItemSubClass == 262156)
+            (m_spellInfo->getEquippedItemSubClass() == 262156)
             return false;
 
 
@@ -6715,7 +6715,7 @@ void Player::Reset_Talents()
                 {
                     for (uint8 k = 0; k < 3; ++k)
                     {
-                        if (spellInfo->Effect[k] == SPELL_EFFECT_LEARN_SPELL)
+                        if (spellInfo->getEffect(k) == SPELL_EFFECT_LEARN_SPELL)
                         {
                             // removeSpell(spellInfo->EffectTriggerSpell[k], false, 0, 0);
                             // remove higher ranks of this spell too (like earth shield lvl 1 is talent and the rest is taught from trainer)
@@ -9464,7 +9464,7 @@ void Player::CompleteLoading()
 
         for (uint32 x = 0; x < 3; x++)
         {
-            if (sp->Effect[x] == SPELL_EFFECT_APPLY_AURA)
+            if (sp->getEffect(x) == SPELL_EFFECT_APPLY_AURA)
             {
                 aura->AddMod(sp->EffectApplyAuraName[x], sp->EffectBasePoints[x] + 1, sp->EffectMiscValue[x], x);
             }
@@ -9886,7 +9886,7 @@ void Player::SaveAuras(std::stringstream & ss)
             Aura* aur = m_auras[x];
             for (uint8 i = 0; i < 3; ++i)
             {
-                if (aur->m_spellInfo->Effect[i] == SPELL_EFFECT_APPLY_GROUP_AREA_AURA || aur->m_spellInfo->Effect[i] == SPELL_EFFECT_APPLY_RAID_AREA_AURA || aur->m_spellInfo->Effect[i] == SPELL_EFFECT_ADD_FARSIGHT)
+                if (aur->m_spellInfo->getEffect(i) == SPELL_EFFECT_APPLY_GROUP_AREA_AURA || aur->m_spellInfo->getEffect(i) == SPELL_EFFECT_APPLY_RAID_AREA_AURA || aur->m_spellInfo->getEffect(i) == SPELL_EFFECT_ADD_FARSIGHT)
                 {
                     continue;
                     break;
@@ -11199,7 +11199,7 @@ bool Player::HasSpellWithAuraNameAndBasePoints(uint32 auraname, uint32 basepoint
 
         for (uint8 i = 0; i < 3; ++i)
         {
-            if (sp->Effect[i] == SPELL_EFFECT_APPLY_AURA)
+            if (sp->getEffect(i) == SPELL_EFFECT_APPLY_AURA)
             {
                 if ((sp->EffectApplyAuraName[i] == auraname) && (sp->EffectBasePoints[i] == (basepoints - 1)))
                     return true;
@@ -12117,7 +12117,7 @@ void Player::CalcExpertise()
             entry = m_auras[x]->m_spellInfo;
             val = m_auras[x]->GetModAmountByMod();
 
-            if (entry->EquippedItemSubClass != 0)
+            if (entry->getEquippedItemSubClass() != 0)
             {
                 auto item_mainhand = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                 auto item_offhand = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
@@ -12125,9 +12125,9 @@ void Player::CalcExpertise()
                 uint32 reqskillOH = 0;
 
                 if (item_mainhand)
-                    reqskillMH = entry->EquippedItemSubClass & (((uint32)1) << item_mainhand->GetItemProperties()->SubClass);
+                    reqskillMH = entry->getEquippedItemSubClass() & (((uint32)1) << item_mainhand->GetItemProperties()->SubClass);
                 if (item_offhand)
-                    reqskillOH = entry->EquippedItemSubClass & (((uint32)1) << item_offhand->GetItemProperties()->SubClass);
+                    reqskillOH = entry->getEquippedItemSubClass() & (((uint32)1) << item_offhand->GetItemProperties()->SubClass);
 
                 if (reqskillMH != 0 || reqskillOH != 0)
                     modifier = +val;
@@ -12488,9 +12488,9 @@ void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
                 }
             }
 
-            if (spellInfo->IsPassive() || ((spellInfo->Effect[0] == SPELL_EFFECT_LEARN_SPELL ||
-                spellInfo->Effect[1] == SPELL_EFFECT_LEARN_SPELL ||
-                spellInfo->Effect[2] == SPELL_EFFECT_LEARN_SPELL)
+            if (spellInfo->IsPassive() || ((spellInfo->getEffect(0) == SPELL_EFFECT_LEARN_SPELL ||
+                spellInfo->getEffect(1) == SPELL_EFFECT_LEARN_SPELL ||
+                spellInfo->getEffect(2) == SPELL_EFFECT_LEARN_SPELL)
                 && ((spellInfo->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET) == 0 || ((spellInfo->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET) && GetSummon()))))
             {
                 if (spellInfo->getRequiredShapeShift() && !((uint32)1 << (GetShapeShift() - 1) & spellInfo->getRequiredShapeShift()))
@@ -13330,7 +13330,7 @@ void Player::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
 
             for (uint8 i = 0; i < 3; i++)
             {
-                if (spl->GetSpellInfo()->Effect[i] == SPELL_EFFECT_PERSISTENT_AREA_AURA)
+                if (spl->GetSpellInfo()->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {
                     uint64 guid = GetChannelSpellTargetGUID();
                     DynamicObject* dObj = GetMapMgr()->GetDynamicObject(Arcemu::Util::GUID_LOPART(guid));

@@ -102,23 +102,23 @@ void SpellCustomizations::LoadSpellInfoData()
             spellInfo.setMaxstack(dbc_spell_entry->maxstack);
 
             for (uint8 i = 0; i < MAX_SPELL_TOTEMS; ++i)
-                spellInfo.Totem[i] = dbc_spell_entry->Totem[i];
+                spellInfo.setTotem(dbc_spell_entry->Totem[i], i);
 
             for (uint8 i = 0; i < MAX_SPELL_REAGENTS; ++i)
-                spellInfo.Reagent[i] = dbc_spell_entry->Reagent[i];
+                spellInfo.setReagent(dbc_spell_entry->Reagent[i], i);
 
             for (uint8 i = 0; i < MAX_SPELL_REAGENTS; ++i)
-                spellInfo.ReagentCount[i] = dbc_spell_entry->ReagentCount[i];
+                spellInfo.setReagentCount(dbc_spell_entry->ReagentCount[i], i);
 
-            spellInfo.EquippedItemClass = dbc_spell_entry->EquippedItemClass;
-            spellInfo.EquippedItemSubClass = dbc_spell_entry->EquippedItemSubClass;
-            spellInfo.RequiredItemFlags = dbc_spell_entry->RequiredItemFlags;
+            spellInfo.setEquippedItemClass(dbc_spell_entry->EquippedItemClass);
+            spellInfo.setEquippedItemSubClass(dbc_spell_entry->EquippedItemSubClass);
+            spellInfo.setRequiredItemFlags(dbc_spell_entry->RequiredItemFlags);
+
+            for (int i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                spellInfo.setEffect(dbc_spell_entry->Effect[i], i);
 
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.Effect[i] = dbc_spell_entry->Effect[i];
-
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.EffectDieSides[i] = dbc_spell_entry->EffectDieSides[i];
+                spellInfo.setEffectDieSides(dbc_spell_entry->EffectDieSides[i], i);
 
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
                 spellInfo.EffectRealPointsPerLevel[i] = dbc_spell_entry->EffectRealPointsPerLevel[i];
@@ -680,7 +680,7 @@ void SpellCustomizations::SetEffectAmplitude(SpellInfo* spell_entry)
 {
     for (uint8 y = 0; y < 3; y++)
     {
-        if (spell_entry->Effect[y] != SPELL_EFFECT_APPLY_AURA)
+        if (spell_entry->getEffect(y) != SPELL_EFFECT_APPLY_AURA)
         {
             continue;
         }
@@ -702,7 +702,7 @@ void SpellCustomizations::SetAuraFactoryFunc(SpellInfo* spell_entry)
 
     for (uint8 y = 0; y < 3; y++)
     {
-        if (spell_entry->Effect[y] != SPELL_EFFECT_APPLY_AURA)
+        if (spell_entry->getEffect(y) != SPELL_EFFECT_APPLY_AURA)
         {
             continue;
         }
@@ -727,13 +727,13 @@ void SpellCustomizations::SetMeleeSpellBool(SpellInfo* spell_entry)
 {
     for (uint8 z = 0; z < 3; z++)
     {
-        if (spell_entry->Effect[z] == SPELL_EFFECT_SCHOOL_DAMAGE && spell_entry->Spell_Dmg_Type == SPELL_DMG_TYPE_MELEE)
+        if (spell_entry->getEffect(z) == SPELL_EFFECT_SCHOOL_DAMAGE && spell_entry->Spell_Dmg_Type == SPELL_DMG_TYPE_MELEE)
         {
             spell_entry->custom_is_melee_spell = true;
             continue;
         }
 
-        switch (spell_entry->Effect[z])
+        switch (spell_entry->getEffect(z))
         {
             case SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL:
             case SPELL_EFFECT_WEAPON_DAMAGE:
@@ -757,7 +757,7 @@ void SpellCustomizations::SetRangedSpellBool(SpellInfo* spell_entry)
 {
     for (uint8 z = 0; z < 3; z++)
     {
-        if (spell_entry->Effect[z] == SPELL_EFFECT_SCHOOL_DAMAGE && spell_entry->Spell_Dmg_Type == SPELL_DMG_TYPE_RANGED)
+        if (spell_entry->getEffect(z) == SPELL_EFFECT_SCHOOL_DAMAGE && spell_entry->Spell_Dmg_Type == SPELL_DMG_TYPE_RANGED)
         {
             spell_entry->custom_is_ranged_spell = true;
         }

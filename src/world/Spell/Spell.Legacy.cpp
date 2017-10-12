@@ -688,7 +688,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
     /* Check if the target is immune to this spell school                   */
     /* Unless the spell would actually dispel invulnerabilities             */
     /************************************************************************/
-    int dispelMechanic = GetSpellInfo()->Effect[0] == SPELL_EFFECT_DISPEL_MECHANIC && GetSpellInfo()->EffectMiscValue[0] == MECHANIC_INVULNERABLE;
+    int dispelMechanic = GetSpellInfo()->getEffect(0) == SPELL_EFFECT_DISPEL_MECHANIC && GetSpellInfo()->EffectMiscValue[0] == MECHANIC_INVULNERABLE;
     if (u_victim->SchoolImmunityList[GetSpellInfo()->School] && !dispelMechanic)
         return SPELL_DID_HIT_IMMUNE;
 
@@ -708,12 +708,12 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
         bool no_damage_component = true;
         for (uint8 x = 0; x <= 2; x++)
         {
-            if (GetSpellInfo()->Effect[x] == SPELL_EFFECT_SCHOOL_DAMAGE
-                || GetSpellInfo()->Effect[x] == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE
-                || GetSpellInfo()->Effect[x] == SPELL_EFFECT_WEAPON_DAMAGE
-                || GetSpellInfo()->Effect[x] == SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL
-                || GetSpellInfo()->Effect[x] == SPELL_EFFECT_DUMMY
-                || (GetSpellInfo()->Effect[x] == SPELL_EFFECT_APPLY_AURA &&
+            if (GetSpellInfo()->getEffect(x) == SPELL_EFFECT_SCHOOL_DAMAGE
+                || GetSpellInfo()->getEffect(x) == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE
+                || GetSpellInfo()->getEffect(x) == SPELL_EFFECT_WEAPON_DAMAGE
+                || GetSpellInfo()->getEffect(x) == SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL
+                || GetSpellInfo()->getEffect(x) == SPELL_EFFECT_DUMMY
+                || (GetSpellInfo()->getEffect(x) == SPELL_EFFECT_APPLY_AURA &&
                 (GetSpellInfo()->EffectApplyAuraName[x] == SPELL_AURA_PERIODIC_DAMAGE
                 ))
                 )
@@ -812,7 +812,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
         resistchance += min;
     }
 
-    if (GetSpellInfo()->Effect[effindex] == SPELL_EFFECT_DISPEL)
+    if (GetSpellInfo()->getEffect(effindex) == SPELL_EFFECT_DISPEL)
     {
         spellModFlatFloatValue(u_victim->SM_FRezist_dispell, &resistchance, GetSpellInfo()->SpellGroupType);
         spellModPercentageFloatValue(u_victim->SM_PRezist_dispell, &resistchance, GetSpellInfo()->SpellGroupType);
@@ -1183,7 +1183,7 @@ void Spell::castMe(bool check)
                 }
             }
 
-            if (GetSpellInfo()->Effect[i] && GetSpellInfo()->Effect[i] != SPELL_EFFECT_PERSISTENT_AREA_AURA)
+            if (GetSpellInfo()->getEffect(i) && GetSpellInfo()->getEffect(i) != SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 FillTargetMap(i);
         }
 
@@ -1599,9 +1599,9 @@ void Spell::castMe(bool check)
                 for (uint32 x = 0; x < 3; x++)
                 {
                     // check if we actually have a effect
-                    if (GetSpellInfo()->Effect[x])
+                    if (GetSpellInfo()->getEffect(x))
                     {
-                        isDuelEffect = isDuelEffect || GetSpellInfo()->Effect[x] == SPELL_EFFECT_DUEL;
+                        isDuelEffect = isDuelEffect || GetSpellInfo()->getEffect(x) == SPELL_EFFECT_DUEL;
 
                         if (m_targetUnits[x].size() > 0)
                         {
@@ -2093,9 +2093,9 @@ void Spell::finish(bool successful)
         }
     }
 
-    if (GetSpellInfo()->Effect[0] == SPELL_EFFECT_SUMMON_OBJECT ||
-        GetSpellInfo()->Effect[1] == SPELL_EFFECT_SUMMON_OBJECT ||
-        GetSpellInfo()->Effect[2] == SPELL_EFFECT_SUMMON_OBJECT)
+    if (GetSpellInfo()->getEffect(0) == SPELL_EFFECT_SUMMON_OBJECT ||
+        GetSpellInfo()->getEffect(1) == SPELL_EFFECT_SUMMON_OBJECT ||
+        GetSpellInfo()->getEffect(2) == SPELL_EFFECT_SUMMON_OBJECT)
         if (p_caster != NULL)
             p_caster->SetSummonedObject(NULL);
     /*
@@ -2221,10 +2221,10 @@ void Spell::WriteCastResult(WorldPacket& data, Player* caster, uint32 spellInfo,
             break;
 #endif
         case SPELL_FAILED_TOTEMS:
-            if (GetSpellInfo()->Totem[0])
-                data << uint32(GetSpellInfo()->Totem[0]);
-            if (GetSpellInfo()->Totem[1])
-                data << uint32(GetSpellInfo()->Totem[1]);
+            if (GetSpellInfo()->getTotem(0))
+                data << uint32(GetSpellInfo()->getTotem(0));
+            if (GetSpellInfo()->getTotem(1))
+                data << uint32(GetSpellInfo()->getTotem(1));
             break;
         case SPELL_FAILED_ONLY_SHAPESHIFT:
             data << uint32(GetSpellInfo()->getRequiredShapeShift());
@@ -2406,7 +2406,7 @@ void Spell::SendSpellGo()
     std::vector<uint64_t>::iterator i, j;
     for (uint8 x = 0; x < 3; x++)
     {
-        if (GetSpellInfo()->Effect[x])
+        if (GetSpellInfo()->getEffect(x))
         {
             bool add = true;
             for (i = m_targetUnits[x].begin(); i != m_targetUnits[x].end(); ++i)
@@ -3188,7 +3188,7 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
         }
     }
 
-    uint32 id = GetSpellInfo()->Effect[i];
+    uint32 id = GetSpellInfo()->getEffect(i);
 
     damage = CalculateEffect(i, unitTarget);
 
@@ -4109,8 +4109,8 @@ uint8 Spell::CanCast(bool tolerate)
         {
             for (i = 0; i < 3; ++i)
             {
-                if (GetSpellInfo()->Effect[i] && GetSpellInfo()->Effect[i] != SPELL_EFFECT_APPLY_AURA && GetSpellInfo()->Effect[i] != SPELL_EFFECT_APPLY_PET_AREA_AURA
-                    && GetSpellInfo()->Effect[i] != SPELL_EFFECT_APPLY_GROUP_AREA_AURA && GetSpellInfo()->Effect[i] != SPELL_EFFECT_APPLY_RAID_AREA_AURA)
+                if (GetSpellInfo()->getEffect(i) && GetSpellInfo()->getEffect(i) != SPELL_EFFECT_APPLY_AURA && GetSpellInfo()->getEffect(i) != SPELL_EFFECT_APPLY_PET_AREA_AURA
+                    && GetSpellInfo()->getEffect(i) != SPELL_EFFECT_APPLY_GROUP_AREA_AURA && GetSpellInfo()->getEffect(i) != SPELL_EFFECT_APPLY_RAID_AREA_AURA)
                 {
                     return SPELL_FAILED_TARGET_DUELING;
                 }
@@ -4307,10 +4307,10 @@ uint8 Spell::CanCast(bool tolerate)
             {
                 for (i = 0; i < 8; ++i)
                 {
-                    if (GetSpellInfo()->Reagent[i] == 0 || GetSpellInfo()->ReagentCount[i] == 0)
+                    if (GetSpellInfo()->getReagent(i) == 0 || GetSpellInfo()->getReagentCount(i) == 0)
                         continue;
 
-                    if (p_caster->GetItemInterface()->GetItemCount(GetSpellInfo()->Reagent[i]) < GetSpellInfo()->ReagentCount[i])
+                    if (p_caster->GetItemInterface()->GetItemCount(GetSpellInfo()->getReagent(i)) < GetSpellInfo()->getReagentCount(i))
                         return SPELL_FAILED_ITEM_GONE;
                 }
             }
@@ -4321,9 +4321,9 @@ uint8 Spell::CanCast(bool tolerate)
          */
         for (i = 0; i < 2; ++i)
         {
-            if (GetSpellInfo()->Totem[i] != 0)
+            if (GetSpellInfo()->getTotem(i) != 0)
             {
-                if (p_caster->GetItemInterface()->GetItemCount(GetSpellInfo()->Totem[i]) == 0)
+                if (p_caster->GetItemInterface()->GetItemCount(GetSpellInfo()->getTotem(i)) == 0)
                     return SPELL_FAILED_TOTEMS;
             }
         }
@@ -4432,7 +4432,7 @@ uint8 Spell::CanCast(bool tolerate)
         // check if the targeted item is in the trade box
         if (m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
         {
-            switch (GetSpellInfo()->Effect[0])
+            switch (GetSpellInfo()->getEffect(0))
             {
                 // only lockpicking and enchanting can target items in the trade box
                 case SPELL_EFFECT_OPEN_LOCK:
@@ -4470,7 +4470,7 @@ uint8 Spell::CanCast(bool tolerate)
         ItemProperties const* proto = i_target->GetItemProperties();
 
         // check to make sure the targeted item is acceptable
-        switch (GetSpellInfo()->Effect[0])
+        switch (GetSpellInfo()->getEffect(0))
         {
             // Lock Picking Targeted Item Check
             case SPELL_EFFECT_OPEN_LOCK:
@@ -4484,16 +4484,16 @@ uint8 Spell::CanCast(bool tolerate)
             case SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY:
             case SPELL_EFFECT_ADD_SOCKET:
             {
-                if (GetSpellInfo()->Effect[0] == SPELL_EFFECT_ADD_SOCKET && i_target->GetSocketsCount() >= 3)
+                if (GetSpellInfo()->getEffect(0) == SPELL_EFFECT_ADD_SOCKET && i_target->GetSocketsCount() >= 3)
                     return SPELL_FAILED_MAX_SOCKETS;
 
                 // If enchant is permanent and we are casting on Vellums
-                if (GetSpellInfo()->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM && GetSpellInfo()->EffectItemType[0] != 0 &&
+                if (GetSpellInfo()->getEffect(0) == SPELL_EFFECT_ENCHANT_ITEM && GetSpellInfo()->EffectItemType[0] != 0 &&
                     (proto->ItemId == 38682 || proto->ItemId == 37602 || proto->ItemId == 43145 ||
                     proto->ItemId == 39349 || proto->ItemId == 39350 || proto->ItemId == 43146))
                 {
                     // Weapons enchants
-                    if (GetSpellInfo()->EquippedItemClass == 2)
+                    if (GetSpellInfo()->getEquippedItemClass() == 2)
                     {
                         // These are armor vellums
                         if (proto->ItemId == 38682 || proto->ItemId == 37602 || proto->ItemId == 43145)
@@ -4515,7 +4515,7 @@ uint8 Spell::CanCast(bool tolerate)
                     }
 
                     // Armors enchants
-                    else if (GetSpellInfo()->EquippedItemClass == 4)
+                    else if (GetSpellInfo()->getEquippedItemClass() == 4)
                     {
                         // These are weapon vellums
                         if (proto->ItemId == 39349 || proto->ItemId == 39350 || proto->ItemId == 43146)
@@ -4539,18 +4539,18 @@ uint8 Spell::CanCast(bool tolerate)
                 }
 
                 // check if we have the correct class, subclass, and inventory type of target item
-                if (GetSpellInfo()->EquippedItemClass != (int32)proto->Class)
+                if (GetSpellInfo()->getEquippedItemClass() != (int32)proto->Class)
                     return SPELL_FAILED_BAD_TARGETS;
 
-                if (GetSpellInfo()->EquippedItemSubClass && !(GetSpellInfo()->EquippedItemSubClass & (1 << proto->SubClass)))
+                if (GetSpellInfo()->getEquippedItemSubClass() && !(GetSpellInfo()->getEquippedItemSubClass() & (1 << proto->SubClass)))
                     return SPELL_FAILED_BAD_TARGETS;
 
 #if VERSION_STRING != Cata
-                if (GetSpellInfo()->RequiredItemFlags && !(GetSpellInfo()->RequiredItemFlags & (1 << proto->InventoryType)))
+                if (GetSpellInfo()->getRequiredItemFlags() && !(GetSpellInfo()->getRequiredItemFlags() & (1 << proto->InventoryType)))
                     return SPELL_FAILED_BAD_TARGETS;
 #endif
 
-                if (GetSpellInfo()->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM &&
+                if (GetSpellInfo()->getEffect(0) == SPELL_EFFECT_ENCHANT_ITEM &&
                     GetSpellInfo()->getBaseLevel() && (GetSpellInfo()->getBaseLevel() > proto->ItemLevel))
                     return int8(SPELL_FAILED_BAD_TARGETS); // maybe there is different err code
 
@@ -4908,7 +4908,7 @@ uint8 Spell::CanCast(bool tolerate)
 
                 // pet training
                 if (GetSpellInfo()->EffectImplicitTargetA[0] == EFF_TARGET_PET &&
-                    GetSpellInfo()->Effect[0] == SPELL_EFFECT_LEARN_SPELL)
+                    GetSpellInfo()->getEffect(0) == SPELL_EFFECT_LEARN_SPELL)
                 {
                     Pet* pPet = p_caster->GetSummon();
                     // check if we have a pet
@@ -5132,7 +5132,7 @@ uint8 Spell::CanCast(bool tolerate)
                     case 68015:
                     case 68016:
                     {
-                        if (GetSpellInfo()->Effect[0] == SPELL_EFFECT_DUMMY && !isFriendly(u_caster, target))
+                        if (GetSpellInfo()->getEffect(0) == SPELL_EFFECT_DUMMY && !isFriendly(u_caster, target))
                             facing_flags = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
                     } break;
                 }
@@ -5165,7 +5165,7 @@ uint8 Spell::CanCast(bool tolerate)
                 }
             }
 
-            if (GetSpellInfo()->Effect[0] == SPELL_EFFECT_SKINNING)  // skinning
+            if (GetSpellInfo()->getEffect(0) == SPELL_EFFECT_SKINNING)  // skinning
             {
                 // if target doesn't have skinnable flag, don't let it be skinned
                 if (!target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE))
@@ -5684,9 +5684,9 @@ void Spell::RemoveItems()
         {
             for (uint8 i = 0; i < 8; i++)
             {
-                if (GetSpellInfo()->Reagent[i])
+                if (GetSpellInfo()->getReagent(i))
                 {
-                    p_caster->GetItemInterface()->RemoveItemAmt_ProtectPointer(GetSpellInfo()->Reagent[i], GetSpellInfo()->ReagentCount[i], &i_caster);
+                    p_caster->GetItemInterface()->RemoveItemAmt_ProtectPointer(GetSpellInfo()->getReagent(i), GetSpellInfo()->getReagentCount(i), &i_caster);
                 }
             }
         }
@@ -5751,7 +5751,7 @@ exit:
         basePoints = m_overridenBasePoints[i];
     else
         basePoints = GetSpellInfo()->EffectBasePoints[i] + 1;
-    int32 randomPoints = GetSpellInfo()->EffectDieSides[i];
+    int32 randomPoints = GetSpellInfo()->getEffectDieSides(i);
 
     //added by Zack : some talents inherit their basepoints from the previously cast spell: see mage - Master of Elements
     if (forced_basepoints[i])
@@ -6517,7 +6517,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                     case 28428:
                     case 41189:
                     case 59242:
-                        if (GetSpellInfo()->Effect[i] == SPELL_EFFECT_SCHOOL_DAMAGE)
+                        if (GetSpellInfo()->getEffect(i) == SPELL_EFFECT_SCHOOL_DAMAGE)
                             value += float2int32(u_caster->GetAP() * 0.10f);
                         break;
                     // SPELL_HASH_WOUND_POISON_VII:
@@ -6547,7 +6547,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                     case 43461:
                     case 54074:
                     case 65962:
-                        if (GetSpellInfo()->Effect[i] == SPELL_EFFECT_SCHOOL_DAMAGE)
+                        if (GetSpellInfo()->getEffect(i) == SPELL_EFFECT_SCHOOL_DAMAGE)
                             value += float2int32(u_caster->GetAP() * 0.04f);
                         break;
                 }
@@ -6871,7 +6871,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
                     ++itr2;
                     if ((*itr)->IsUnit() && static_cast<Unit*>(*itr)->isAlive() && obj->isInRange(u_caster, 8) && (u_caster->GetPhase() & (*itr)->GetPhase()))
                     {
-                        did_hit_result = DidHit(sSpellCustomizations.GetSpellInfo(53385)->Effect[0], static_cast<Unit*>(*itr));
+                        did_hit_result = DidHit(sSpellCustomizations.GetSpellInfo(53385)->getEffect(0), static_cast<Unit*>(*itr));
                         if (did_hit_result == SPELL_DID_HIT_SUCCESS)
                             target++;
                     }
@@ -7216,7 +7216,7 @@ bool Spell::Reflect(Unit* refunit)
     // if the spell to reflect is a reflect spell, do nothing.
     for (uint8 i = 0; i < 3; i++)
     {
-        if (GetSpellInfo()->Effect[i] == SPELL_EFFECT_APPLY_AURA && (GetSpellInfo()->EffectApplyAuraName[i] == SPELL_AURA_REFLECT_SPELLS_SCHOOL ||
+        if (GetSpellInfo()->getEffect(i) == SPELL_EFFECT_APPLY_AURA && (GetSpellInfo()->EffectApplyAuraName[i] == SPELL_AURA_REFLECT_SPELLS_SCHOOL ||
             GetSpellInfo()->EffectApplyAuraName[i] == SPELL_AURA_REFLECT_SPELLS))
             return false;
     }
@@ -8455,9 +8455,9 @@ void Spell::SpellEffectJumpTarget(uint32 i)
     o = unitTarget->calcRadAngle(u_caster->GetPositionX(), u_caster->GetPositionY(), x, y);
 
     if (speedZ <= 0.0f)
-        u_caster->GetAIInterface()->splineMoveJump(x, y, z, o, GetSpellInfo()->Effect[i] == 145);
+        u_caster->GetAIInterface()->splineMoveJump(x, y, z, o, GetSpellInfo()->getEffect(i) == 145);
     else
-        u_caster->GetAIInterface()->splineMoveJump(x, y, z, o, speedZ, GetSpellInfo()->Effect[i] == 145);
+        u_caster->GetAIInterface()->splineMoveJump(x, y, z, o, speedZ, GetSpellInfo()->getEffect(i) == 145);
 }
 
 void Spell::SpellEffectJumpBehindTarget(uint32 i)

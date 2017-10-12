@@ -508,7 +508,7 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
 
     for (uint8 i = 0; i < 3; ++i)
     {
-        if (m_spellInfo->Effect[i] == 0)
+        if (m_spellInfo->getEffect(i) == 0)
             continue;
         uint32 TargetType = 0;
         TargetType |= GetTargetType(m_spellInfo->EffectImplicitTargetA[i], i);

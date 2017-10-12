@@ -21,9 +21,9 @@ public:
     ~SpellInfo();
 
     // helper functions
-    bool HasEffect(uint32 effect) const;
+    bool HasEffect(uint32_t effect) const;
     bool HasEffectApplyAuraName(uint32_t aura_name);
-    bool HasCustomFlagForEffect(uint32 effect, uint32 flag);
+    bool HasCustomFlagForEffect(uint32_t effect, uint32_t flag);
 
     bool isDamagingSpell() const;
     bool isHealingSpell() const;
@@ -39,335 +39,368 @@ public:
     bool IsPassive();
     bool IsProfession();
     bool IsPrimaryProfession();
-    bool IsPrimaryProfessionSkill(uint32 skill_id);
+    bool IsPrimaryProfessionSkill(uint32_t skill_id);
 
     bool isDeathPersistent() const;
 
-    bool appliesAreaAura(uint32 aura) const;
-    uint32 GetAreaAuraEffectId();
+    bool appliesAreaAura(uint32_t aura) const;
+    uint32_t GetAreaAuraEffectId();
 
-    uint32 getId() const { return Id; }
+    uint32_t getId() const { return Id; }
     void setId(uint32_t value) { Id = value; }
 
-    uint32 getCategory() const { return Category; }
+    uint32_t getCategory() const { return Category; }
 
-    uint32 getDispelType() const { return DispelType; }
+    uint32_t getDispelType() const { return DispelType; }
     void setDispelType(uint32_t value) { DispelType = value; }              // used in HackFixes.cpp
 
-    uint32 getMechanicsType() const { return MechanicsType; }
+    uint32_t getMechanicsType() const { return MechanicsType; }
     void setMechanicsType(uint32_t value) { MechanicsType = value; }        // used in HackFixes.cpp
 
-    uint32 getAttributes() const { return Attributes; }
+    uint32_t getAttributes() const { return Attributes; }
     void setAttributes(uint32_t value) { Attributes = value; }              // used in HackFixes.cpp / SpellCustomizations.cpp
     void addAttributes(uint32_t value) { Attributes |= value; }             // used in HackFixes.cpp
     void removeAttributes(uint32_t value) { Attributes &= ~value; }         // used in HackFixes.cpp
 
-    uint32 getAttributesEx() const { return AttributesEx; }
+    uint32_t getAttributesEx() const { return AttributesEx; }
     void setAttributesEx(uint32_t value) { AttributesEx = value; }          // used in HackFixes.cpp / SpellCustomizations.cpp
     void addAttributesEx(uint32_t value) { AttributesEx |= value; }         // used in HackFixes.cpp
 
-    uint32 getAttributesExB() const { return AttributesExB; }
+    uint32_t getAttributesExB() const { return AttributesExB; }
     void setAttributesExB(uint32_t value) { AttributesExB = value; }        // used in HackFixes.cpp / SpellCustomizations.cpp
 
-    uint32 getAttributesExC() const { return AttributesExC; }
+    uint32_t getAttributesExC() const { return AttributesExC; }
     void setAttributesExC(uint32_t value) { AttributesExC = value; }        // used in SpellCustomizations.cpp
     void addAttributesExC(uint32_t value) { AttributesExC |= value; }       // used in HackFixes.cpp
 
-    uint32 getAttributesExD() const { return AttributesExD; }
+    uint32_t getAttributesExD() const { return AttributesExD; }
     void setAttributesExD(uint32_t value) { AttributesExD = value; }        // used in SpellCustomizations.cpp
 
-    uint32 getAttributesExE() const { return AttributesExE; }
+    uint32_t getAttributesExE() const { return AttributesExE; }
     void setAttributesExE(uint32_t value) { AttributesExE = value; }        // used in SpellCustomizations.cpp
 
-    uint32 getAttributesExF() const { return AttributesExF; }
+    uint32_t getAttributesExF() const { return AttributesExF; }
     void setAttributesExF(uint32_t value) { AttributesExF = value; }        // used in SpellCustomizations.cpp
 
-    uint32 getAttributesExG() const { return AttributesExG; }
+    uint32_t getAttributesExG() const { return AttributesExG; }
     void setAttributesExG(uint32_t value) { AttributesExG = value; }        // used in SpellCustomizations.cpp
 
-    uint32 getRequiredShapeShift() const { return RequiredShapeShift; }
+    uint32_t getRequiredShapeShift() const { return RequiredShapeShift; }
     void setRequiredShapeShift(uint32_t value) { RequiredShapeShift = value; } // used in HackFixes.cpp / SpellCustomizations.cpp
 
-    uint32 getShapeshiftExclude() const { return ShapeshiftExclude; }
+    uint32_t getShapeshiftExclude() const { return ShapeshiftExclude; }
     void setShapeshiftExclude(uint32_t value) { ShapeshiftExclude = value; } // used in SpellCustomizations.cpp
 
-    uint32 getTargets() const { return Targets; }                           // not used!
+    uint32_t getTargets() const { return Targets; }                           // not used!
     void setTargets(uint32_t value) { Targets = value; }                    // used in SpellCustomizations.cpp
 
-    uint32 getTargetCreatureType() const { return TargetCreatureType; }
+    uint32_t getTargetCreatureType() const { return TargetCreatureType; }
     void setTargetCreatureType(uint32_t value) { TargetCreatureType = value; } // used in SpellCustomizations.cpp
 
-    uint32 getRequiresSpellFocus() const { return RequiresSpellFocus; }
+    uint32_t getRequiresSpellFocus() const { return RequiresSpellFocus; }
     void setRequiresSpellFocus(uint32_t value) { RequiresSpellFocus = value; } // used in SpellCustomizations.cpp
 
-    uint32 getFacingCasterFlags() const { return FacingCasterFlags; }
+    uint32_t getFacingCasterFlags() const { return FacingCasterFlags; }
     void setFacingCasterFlags(uint32_t value) { FacingCasterFlags = value; } // used in HackFixes.cpp / SpellCustomizations.cpp
 
-    uint32 getCasterAuraState() const { return CasterAuraState; }
+    uint32_t getCasterAuraState() const { return CasterAuraState; }
     void setCasterAuraState(uint32_t value) { CasterAuraState = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
 
-    uint32 getTargetAuraState() const { return TargetAuraState; }
+    uint32_t getTargetAuraState() const { return TargetAuraState; }
     void setTargetAuraState(uint32_t value) { TargetAuraState = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
 
-    uint32 getCasterAuraStateNot() const { return CasterAuraStateNot; }
+    uint32_t getCasterAuraStateNot() const { return CasterAuraStateNot; }
     void setCasterAuraStateNot(uint32_t value) { CasterAuraStateNot = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
 
-    uint32 getTargetAuraStateNot() const { return TargetAuraStateNot; }
+    uint32_t getTargetAuraStateNot() const { return TargetAuraStateNot; }
     void setTargetAuraStateNot(uint32_t value) { TargetAuraStateNot = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
 
-    uint32 getCasterAuraSpell() const { return casterAuraSpell; }
+    uint32_t getCasterAuraSpell() const { return casterAuraSpell; }
     void setCasterAuraSpell(uint32_t value) { casterAuraSpell = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
 
-    uint32 getTargetAuraSpell() const { return targetAuraSpell; }
+    uint32_t getTargetAuraSpell() const { return targetAuraSpell; }
     void setTargetAuraSpell(uint32_t value) { targetAuraSpell = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
 
-    uint32 getCasterAuraSpellNot() const { return casterAuraSpellNot; }
+    uint32_t getCasterAuraSpellNot() const { return casterAuraSpellNot; }
     void setCasterAuraSpellNot(uint32_t value) { casterAuraSpellNot = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
 
-    uint32 getTargetAuraSpellNot() const { return targetAuraSpellNot; }
+    uint32_t getTargetAuraSpellNot() const { return targetAuraSpellNot; }
     void setTargetAuraSpellNot(uint32_t value) { targetAuraSpellNot = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
 
-    uint32 getCastingTimeIndex() const { return CastingTimeIndex; }
+    uint32_t getCastingTimeIndex() const { return CastingTimeIndex; }
     void setCastingTimeIndex(uint32_t value) { CastingTimeIndex = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
 
-    uint32 getRecoveryTime() const { return RecoveryTime; }
+    uint32_t getRecoveryTime() const { return RecoveryTime; }
     void setRecoveryTime(uint32_t value) { RecoveryTime = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp / Spell_ClassScripts.cpp
 
-    uint32 getCategoryRecoveryTime() const { return CategoryRecoveryTime; }
+    uint32_t getCategoryRecoveryTime() const { return CategoryRecoveryTime; }
     void setCategoryRecoveryTime(uint32_t value) { CategoryRecoveryTime = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
 
-    uint32 getInterruptFlags() const { return InterruptFlags; }
+    uint32_t getInterruptFlags() const { return InterruptFlags; }
     void setInterruptFlags(uint32_t value) { InterruptFlags = value; }    // used in SpellCustomizations.cpp
     void removeInterruptFlags(uint32_t value) { InterruptFlags |= ~value; }    // used in HackFixes.cpp
 
-    uint32 getAuraInterruptFlags() const { return AuraInterruptFlags; }
+    uint32_t getAuraInterruptFlags() const { return AuraInterruptFlags; }
     void addAuraInterruptFlags(uint32_t value) { AuraInterruptFlags |= value; }    // used in HackFixes.cpp
     void setAuraInterruptFlags(uint32_t value) { AuraInterruptFlags = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
 
-    uint32 getChannelInterruptFlags() const { return ChannelInterruptFlags; }
+    uint32_t getChannelInterruptFlags() const { return ChannelInterruptFlags; }
     void setChannelInterruptFlags(uint32_t value) { ChannelInterruptFlags = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
 
-    uint32 getProcFlags() const { return procFlags; }
+    uint32_t getProcFlags() const { return procFlags; }
     void setProcFlags(uint32_t value) { procFlags = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
     void addProcFlags(uint32_t value) { procFlags |= value; }    // used in HackFixes.cpp
 
-    uint32 getProcChance() const { return procChance; }
+    uint32_t getProcChance() const { return procChance; }
     void setProcChance(uint32_t value) { procChance = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
 
-    uint32 getProcCharges() const { return procCharges; }
+    uint32_t getProcCharges() const { return procCharges; }
     void setProcCharges(uint32_t value) { procCharges = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
 
-    uint32 getMaxLevel() const { return maxLevel; }
+    uint32_t getMaxLevel() const { return maxLevel; }
     void setMaxLevel(uint32_t value) { maxLevel = value; }    // used in SpellCustomizations.cpp
 
-    uint32 getBaseLevel() const { return baseLevel; }
+    uint32_t getBaseLevel() const { return baseLevel; }
     void setBaseLevel(uint32_t value) { baseLevel = value; }    // used in SpellCustomizations.cpp
 
-    uint32 getSpellLevel() const { return spellLevel; }
+    uint32_t getSpellLevel() const { return spellLevel; }
     void setSpellLevel(uint32_t value) { spellLevel = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
 
-    uint32 getDurationIndex() const { return DurationIndex; }
+    uint32_t getDurationIndex() const { return DurationIndex; }
     void setDurationIndex(uint32_t value) { DurationIndex = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp / SpellEffects.cpp
 
-    int32 getPowerType() const { return powerType; }
+    int32_t getPowerType() const { return powerType; }
     void setPowerType(int32_t value) { powerType = value; }    // used in SpellCustomizations.cpp
 
-    uint32 getManaCost() const { return manaCost; }
+    uint32_t getManaCost() const { return manaCost; }
     void setManaCost(uint32_t value) { manaCost = value; }    // used in SpellCustomizations.cpp
 
-    uint32 getManaCostPerlevel() const { return manaCostPerlevel; }           // not used!
+    uint32_t getManaCostPerlevel() const { return manaCostPerlevel; }           // not used!
     void setManaCostPerlevel(uint32_t value) { manaCostPerlevel = value; }    // used in SpellCustomizations.cpp
 
-    uint32 getManaPerSecond() const { return manaPerSecond; }           // not used!
+    uint32_t getManaPerSecond() const { return manaPerSecond; }           // not used!
     void setManaPerSecond(uint32_t value) { manaPerSecond = value; }    // used in SpellCustomizations.cpp
 
-    uint32 getManaPerSecondPerLevel() const { return manaPerSecondPerLevel; }           // not used!
+    uint32_t getManaPerSecondPerLevel() const { return manaPerSecondPerLevel; }           // not used!
     void setManaPerSecondPerLevel(uint32_t value) { manaPerSecondPerLevel = value; }    // used in SpellCustomizations.cpp
 
-    uint32 getRangeIndex() const { return rangeIndex; }
+    uint32_t getRangeIndex() const { return rangeIndex; }
     void setRangeIndex(uint32_t value) { rangeIndex = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
 
     float getSpeed() const { return speed; }
     void setSpeed(float value) { speed = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
 
-    uint32 getMaxstack() const { return maxstack; }
+    uint32_t getMaxstack() const { return maxstack; }
     void setMaxstack(uint32_t value) { maxstack = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
 
-    uint32 getTotem(int idx) const
+    uint32_t getTotem(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_TOTEMS && idx > 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_TOTEMS && idx >= 0);
         return Totem[idx];
     }
 
-    uint32 getReagent(int idx) const
+    void setTotem(uint32_t totemId, uint8_t idx)                      // used in HackFixes.cpp / SpellCustomizations.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_REAGENTS && idx > 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_TOTEMS && idx >= 0);
+        Totem[idx] = totemId;
+    }
+
+    uint32_t getReagent(uint8_t idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_REAGENTS && idx >= 0);
         return Reagent[idx];
     }
 
-    uint32 getReagentCount(int idx) const
+    void setReagent(uint32_t reagentId, uint8_t idx)                      // used in HackFixes.cpp / SpellCustomizations.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_REAGENTS && idx > 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_REAGENTS && idx >= 0);
+        Reagent[idx] = reagentId;
+    }
+
+    uint32_t getReagentCount(uint8_t idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_REAGENTS && idx >= 0);
         return ReagentCount[idx];
     }
 
-    int32 getEquippedItemClass() const { return EquippedItemClass; }
-    int32 getEquippedItemSubClass() const { return EquippedItemSubClass; }
-
-    uint32 getEffect(int idx) const
+    void setReagentCount(uint32_t reagentId, uint8_t idx)                 // used in HackFixes.cpp / SpellCustomizations.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_REAGENTS && idx >= 0);
+        ReagentCount[idx] = reagentId;
+    }
+
+    int32_t getEquippedItemClass() const { return EquippedItemClass; }
+    void setEquippedItemClass(int32_t value) { EquippedItemClass = value; }    // used in HackFixes.cpp / SpellCustomizations.cpp
+
+    int32_t getEquippedItemSubClass() const { return EquippedItemSubClass; }
+    void setEquippedItemSubClass(int32_t value) { EquippedItemSubClass = value; }    // used in SpellCustomizations.cpp
+
+    uint32_t getEffect(uint8_t idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
         return Effect[idx];
     }
 
-    int32 getEffectDieSides(int idx) const
+    void setEffect(uint32_t effectId, uint8_t idx)                          // used in HackFixes.cpp / SpellCustomizations.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        Effect[idx] = effectId;
+    }
+
+    int32_t getEffectDieSides(uint8_t idx) const
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
         return EffectDieSides[idx];
+    }
+
+    void setEffectDieSides(int32_t effecSide, uint8_t idx)                 // used in HackFixes.cpp / SpellCustomizations.cpp
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        EffectDieSides[idx] = effecSide;
     }
 
     float getEffectRealPointsPerLevel(int idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
         return EffectRealPointsPerLevel[idx];
     }
 
-    int32 getEffectBasePoints(int idx) const
+    int32_t getEffectBasePoints(int idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
         return EffectBasePoints[idx];
     }
 
-    int32 getEffectMechanic(int idx) const
+    int32_t getEffectMechanic(int idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
         return EffectMechanic[idx];
     }
 
-    uint32 getEffectImplicitTargetA(int idx) const
+    uint32_t getEffectImplicitTargetA(int idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
         return EffectImplicitTargetA[idx];
     }
 
-    uint32 getEffectImplicitTargetB(int idx) const
+    uint32_t getEffectImplicitTargetB(int idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
         return EffectImplicitTargetB[idx];
     }
 
-    uint32 getEffectRadiusIndex(int idx) const
+    uint32_t getEffectRadiusIndex(int idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
         return EffectRadiusIndex[idx];
     }
 
-    uint32 getEffectApplyAuraName(int idx) const
+    uint32_t getEffectApplyAuraName(int idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
         return EffectApplyAuraName[idx];
     }
 
-    uint32 getEffectAmplitude(int idx) const
+    uint32_t getEffectAmplitude(int idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
         return EffectAmplitude[idx];
     }
 
     float getEffectMultipleValue(int idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
         return EffectMultipleValue[idx];
     }
 
-    uint32 getEffectChainTarget(int idx) const
+    uint32_t getEffectChainTarget(int idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
         return EffectChainTarget[idx];
     }
 
-    uint32 getEffectItemType(int idx) const
+    uint32_t getEffectItemType(int idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
         return EffectItemType[idx];
     }
 
-    int32 getEffectMiscValue(int idx) const
+    int32_t getEffectMiscValue(int idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
         return EffectMiscValue[idx];
     }
 
-    int32 getEffectMiscValueB(int idx) const
+    int32_t getEffectMiscValueB(int idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
         return EffectMiscValueB[idx];
     }
 
-    uint32 getEffectTriggerSpell(int idx) const
+    uint32_t getEffectTriggerSpell(int idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
         return EffectTriggerSpell[idx];
     }
 
     float getEffectPointsPerComboPoint(int idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
         return EffectPointsPerComboPoint[idx];
     }
 
 
-    uint32 getSpellVisual() const { return SpellVisual; }
-    uint32 getField114() const { return field114; }
-    uint32 getSpellIconID() const { return spellIconID; }
-    uint32 getActiveIconID() const { return activeIconID; }
+    uint32_t getSpellVisual() const { return SpellVisual; }
+    uint32_t getField114() const { return field114; }
+    uint32_t getSpellIconID() const { return spellIconID; }
+    uint32_t getActiveIconID() const { return activeIconID; }
     std::string getName() const { return Name; }
     std::string getRank() const { return Rank; }
     std::string getDescription() const { return Description; }
     std::string getBuffDescription() const { return BuffDescription; }
-    uint32 getManaCostPercentage() const { return ManaCostPercentage; }
-    uint32 getStartRecoveryCategory() const { return StartRecoveryCategory; }
-    uint32 getStartRecoveryTime() const { return StartRecoveryTime; }
-    uint32 getMaxTargetLevel() const { return MaxTargetLevel; }
-    uint32 getSpellFamilyName() const { return SpellFamilyName; }
+    uint32_t getManaCostPercentage() const { return ManaCostPercentage; }
+    uint32_t getStartRecoveryCategory() const { return StartRecoveryCategory; }
+    uint32_t getStartRecoveryTime() const { return StartRecoveryTime; }
+    uint32_t getMaxTargetLevel() const { return MaxTargetLevel; }
+    uint32_t getSpellFamilyName() const { return SpellFamilyName; }
 
-    uint32 getSpellGroupType(int idx) const
+    uint32_t getSpellGroupType(int idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
         return SpellGroupType[idx];
     }
 
-    uint32 getMaxTargets() const { return MaxTargets; }
-    uint32 getSpell_Dmg_Type() const { return Spell_Dmg_Type; }
-    uint32 getPreventionType() const { return PreventionType; }
+    uint32_t getMaxTargets() const { return MaxTargets; }
+    uint32_t getSpell_Dmg_Type() const { return Spell_Dmg_Type; }
+    uint32_t getPreventionType() const { return PreventionType; }
 
     float getDmg_multiplier(int idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
         return dmg_multiplier[idx];
     }
 
 
-    uint32 getTotemCategory(int idx) const
+    uint32_t getTotemCategory(int idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_TOTEM_CATEGORIES && idx > 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_TOTEM_CATEGORIES && idx >= 0);
         return TotemCategory[idx];
     }
 
-    int32 getRequiresAreaId() const { return RequiresAreaId; }
-    uint32 getSchool() const { return School; }
-    uint32 getRuneCostID() const { return RuneCostID; }
-    uint32 getSpellDifficultyID() const { return SpellDifficultyID; }
-    uint32 getCustom_DiminishStatus() const { return custom_DiminishStatus; }
-    uint32 getCustom_proc_interval() const { return custom_proc_interval; }
-    uint32 getCustom_BGR_one_buff_on_target() const { return custom_BGR_one_buff_on_target; }
-    uint32 getCustom_BGR_one_buff_from_caster_on_self() const { return custom_BGR_one_buff_from_caster_on_self; }
-    uint32 getCustom_c_is_flags() const { return custom_c_is_flags; }
-    uint32 getCustom_RankNumber() const { return custom_RankNumber; }
-    uint32 getCustom_ThreatForSpell() const { return custom_ThreatForSpell; }
+    int32_t getRequiresAreaId() const { return RequiresAreaId; }
+    uint32_t getSchool() const { return School; }
+    uint32_t getRuneCostID() const { return RuneCostID; }
+    uint32_t getSpellDifficultyID() const { return SpellDifficultyID; }
+    uint32_t getCustom_DiminishStatus() const { return custom_DiminishStatus; }
+    uint32_t getCustom_proc_interval() const { return custom_proc_interval; }
+    uint32_t getCustom_BGR_one_buff_on_target() const { return custom_BGR_one_buff_on_target; }
+    uint32_t getCustom_BGR_one_buff_from_caster_on_self() const { return custom_BGR_one_buff_from_caster_on_self; }
+    uint32_t getCustom_c_is_flags() const { return custom_c_is_flags; }
+    uint32_t getCustom_RankNumber() const { return custom_RankNumber; }
+    uint32_t getCustom_ThreatForSpell() const { return custom_ThreatForSpell; }
     float getCustom_ThreatForSpellCoef() const { return custom_ThreatForSpellCoef; }
 
-    uint32 getCustom_spell_coef_flags() const { return custom_spell_coef_flags; }
+    uint32_t getCustom_spell_coef_flags() const { return custom_spell_coef_flags; }
     float getCustom_base_range_or_radius_sqr() const { return custom_base_range_or_radius_sqr; }
     float getCone_width() const { return cone_width; }
     float getCasttime_coef() const { return casttime_coef; }
@@ -381,152 +414,154 @@ public:
     bool getCustom_always_apply() const { return custom_always_apply; }
     bool getCustom_is_melee_spell() const { return custom_is_melee_spell; }
     bool getCustom_is_ranged_spell() const { return custom_is_ranged_spell; }
-    uint32 getCustom_SchoolMask() const { return custom_SchoolMask; }
-    uint32 getCustomFlags() const { return CustomFlags; }
+    uint32_t getCustom_SchoolMask() const { return custom_SchoolMask; }
+    uint32_t getCustomFlags() const { return CustomFlags; }
 
-    uint32 getEffectCustomFlag(int idx) const
+    uint32_t getEffectCustomFlag(int idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx > 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
         return EffectCustomFlag[idx];
     }
 
 
 #if VERSION_STRING != Cata
-    uint32 getModalNextSpell() const { return modalNextSpell; }           // not used!
+    uint32_t getModalNextSpell() const { return modalNextSpell; }           // not used!
     void setModalNextSpell(uint32_t value) { modalNextSpell = value; }    // used in SpellCustomizations.cpp
 
-    uint32 getRequiredItemFlags() const { return RequiredItemFlags; }
+    uint32_t getRequiredItemFlags() const { return RequiredItemFlags; }
+    void setRequiredItemFlags(uint32_t value) { RequiredItemFlags = value; }    // used in SpellCustomizations.cpp
+
     uint32_t getEffectSpellClassMask(int idx1, int idx2) const
     {
-        ARCEMU_ASSERT(idx1 < 3 && idx1 > 0 && idx2 < 3 && idx2 > 0);
+        ARCEMU_ASSERT(idx1 < 3 && idx1 >= 0 && idx2 < 3 && idx2 >= 0);
         return EffectSpellClassMask[idx1][idx2];
     }
-    uint32 getSpellPriority() const { return spellPriority; }
-    int32 getStanceBarOrder() const { return StanceBarOrder; }
-    uint32 getMinFactionID() const { return MinFactionID; }
-    uint32 getMinReputation() const { return MinReputation; }
-    uint32 getRequiredAuraVision() const { return RequiredAuraVision; }
+    uint32_t getSpellPriority() const { return spellPriority; }
+    int32_t getStanceBarOrder() const { return StanceBarOrder; }
+    uint32_t getMinFactionID() const { return MinFactionID; }
+    uint32_t getMinReputation() const { return MinReputation; }
+    uint32_t getRequiredAuraVision() const { return RequiredAuraVision; }
         //////////////////////////////////////////////////////////////////////////////////////////
         // Applied
 private:
-    uint32 Id;
-    uint32 Category;
-    uint32 DispelType;
-    uint32 MechanicsType;
-    uint32 Attributes;
-    uint32 AttributesEx;
-    uint32 AttributesExB;
-    uint32 AttributesExC;
-    uint32 AttributesExD;
-    uint32 AttributesExE;
-    uint32 AttributesExF;
-    uint32 AttributesExG;
-    uint32 RequiredShapeShift;          // (12-13 Stances[2])
-    uint32 ShapeshiftExclude;           // (14-15 StancesExcluded[2])
-    uint32 Targets;                     // not used!
-    uint32 TargetCreatureType;
-    uint32 RequiresSpellFocus;
-    uint32 FacingCasterFlags;
-    uint32 CasterAuraState;
-    uint32 TargetAuraState;
-    uint32 CasterAuraStateNot;
-    uint32 TargetAuraStateNot;
-    uint32 casterAuraSpell;
-    uint32 targetAuraSpell;
-    uint32 casterAuraSpellNot;
-    uint32 targetAuraSpellNot;
-    uint32 CastingTimeIndex;
-    uint32 RecoveryTime;
-    uint32 CategoryRecoveryTime;
-    uint32 InterruptFlags;
-    uint32 AuraInterruptFlags;
-    uint32 ChannelInterruptFlags;
-    uint32 procFlags;
-    uint32 procChance;
-    uint32 procCharges;
-    uint32 maxLevel;
-    uint32 baseLevel;
-    uint32 spellLevel;
-    uint32 DurationIndex;
-    int32 powerType;
-    uint32 manaCost;
-    uint32 manaCostPerlevel;        // not used!
-    uint32 manaPerSecond;           // not used!
-    uint32 manaPerSecondPerLevel;   // not used!
-    uint32 rangeIndex;
+    uint32_t Id;
+    uint32_t Category;
+    uint32_t DispelType;
+    uint32_t MechanicsType;
+    uint32_t Attributes;
+    uint32_t AttributesEx;
+    uint32_t AttributesExB;
+    uint32_t AttributesExC;
+    uint32_t AttributesExD;
+    uint32_t AttributesExE;
+    uint32_t AttributesExF;
+    uint32_t AttributesExG;
+    uint32_t RequiredShapeShift;          // (12-13 Stances[2])
+    uint32_t ShapeshiftExclude;           // (14-15 StancesExcluded[2])
+    uint32_t Targets;                     // not used!
+    uint32_t TargetCreatureType;
+    uint32_t RequiresSpellFocus;
+    uint32_t FacingCasterFlags;
+    uint32_t CasterAuraState;
+    uint32_t TargetAuraState;
+    uint32_t CasterAuraStateNot;
+    uint32_t TargetAuraStateNot;
+    uint32_t casterAuraSpell;
+    uint32_t targetAuraSpell;
+    uint32_t casterAuraSpellNot;
+    uint32_t targetAuraSpellNot;
+    uint32_t CastingTimeIndex;
+    uint32_t RecoveryTime;
+    uint32_t CategoryRecoveryTime;
+    uint32_t InterruptFlags;
+    uint32_t AuraInterruptFlags;
+    uint32_t ChannelInterruptFlags;
+    uint32_t procFlags;
+    uint32_t procChance;
+    uint32_t procCharges;
+    uint32_t maxLevel;
+    uint32_t baseLevel;
+    uint32_t spellLevel;
+    uint32_t DurationIndex;
+    int32_t powerType;
+    uint32_t manaCost;
+    uint32_t manaCostPerlevel;        // not used!
+    uint32_t manaPerSecond;           // not used!
+    uint32_t manaPerSecondPerLevel;   // not used!
+    uint32_t rangeIndex;
     float speed;
-    uint32 modalNextSpell;          // not used!
-    uint32 maxstack;
+    uint32_t modalNextSpell;          // not used!
+    uint32_t maxstack;
+    uint32_t Totem[MAX_SPELL_TOTEMS];
+    uint32_t Reagent[MAX_SPELL_REAGENTS];
+    uint32_t ReagentCount[MAX_SPELL_REAGENTS];
+    int32_t EquippedItemClass;
+    int32_t EquippedItemSubClass;
+    uint32_t RequiredItemFlags;
+    uint32_t Effect[MAX_SPELL_EFFECTS];
+    int32_t EffectDieSides[MAX_SPELL_EFFECTS];
 
 public:
 
-        uint32 Totem[MAX_SPELL_TOTEMS];
-        uint32 Reagent[MAX_SPELL_REAGENTS];
-        uint32 ReagentCount[MAX_SPELL_REAGENTS];
-        int32 EquippedItemClass;
-        int32 EquippedItemSubClass;
-        uint32 RequiredItemFlags;
-        uint32 Effect[MAX_SPELL_EFFECTS];
-        int32 EffectDieSides[MAX_SPELL_EFFECTS];
         float EffectRealPointsPerLevel[MAX_SPELL_EFFECTS];
-        int32 EffectBasePoints[MAX_SPELL_EFFECTS];
-        int32 EffectMechanic[MAX_SPELL_EFFECTS];
-        uint32 EffectImplicitTargetA[MAX_SPELL_EFFECTS];
-        uint32 EffectImplicitTargetB[MAX_SPELL_EFFECTS];
-        uint32 EffectRadiusIndex[MAX_SPELL_EFFECTS];
-        uint32 EffectApplyAuraName[MAX_SPELL_EFFECTS];
-        uint32 EffectAmplitude[MAX_SPELL_EFFECTS];
+        int32_t EffectBasePoints[MAX_SPELL_EFFECTS];
+        int32_t EffectMechanic[MAX_SPELL_EFFECTS];
+        uint32_t EffectImplicitTargetA[MAX_SPELL_EFFECTS];
+        uint32_t EffectImplicitTargetB[MAX_SPELL_EFFECTS];
+        uint32_t EffectRadiusIndex[MAX_SPELL_EFFECTS];
+        uint32_t EffectApplyAuraName[MAX_SPELL_EFFECTS];
+        uint32_t EffectAmplitude[MAX_SPELL_EFFECTS];
         float EffectMultipleValue[MAX_SPELL_EFFECTS];
-        uint32 EffectChainTarget[MAX_SPELL_EFFECTS];
-        uint32 EffectItemType[MAX_SPELL_EFFECTS];
-        int32 EffectMiscValue[MAX_SPELL_EFFECTS];
-        int32 EffectMiscValueB[MAX_SPELL_EFFECTS];
-        uint32 EffectTriggerSpell[MAX_SPELL_EFFECTS];
+        uint32_t EffectChainTarget[MAX_SPELL_EFFECTS];
+        uint32_t EffectItemType[MAX_SPELL_EFFECTS];
+        int32_t EffectMiscValue[MAX_SPELL_EFFECTS];
+        int32_t EffectMiscValueB[MAX_SPELL_EFFECTS];
+        uint32_t EffectTriggerSpell[MAX_SPELL_EFFECTS];
         float EffectPointsPerComboPoint[MAX_SPELL_EFFECTS];
-        uint32 EffectSpellClassMask[3][3];
-        uint32 SpellVisual;
-        uint32 field114;                                          // (131-132 SpellVisual[2])
-        uint32 spellIconID;
-        uint32 activeIconID;
-        uint32 spellPriority;
+        uint32_t EffectSpellClassMask[3][3];
+        uint32_t SpellVisual;
+        uint32_t field114;                                          // (131-132 SpellVisual[2])
+        uint32_t spellIconID;
+        uint32_t activeIconID;
+        uint32_t spellPriority;
         std::string Name;
         std::string Rank;
         std::string Description;
         std::string BuffDescription;
-        uint32 ManaCostPercentage;
-        uint32 StartRecoveryCategory;
-        uint32 StartRecoveryTime;
-        uint32 MaxTargetLevel;
-        uint32 SpellFamilyName;
-        uint32 SpellGroupType[MAX_SPELL_EFFECTS];
-        uint32 MaxTargets;
-        uint32 Spell_Dmg_Type;
-        uint32 PreventionType;
-        int32 StanceBarOrder;
+        uint32_t ManaCostPercentage;
+        uint32_t StartRecoveryCategory;
+        uint32_t StartRecoveryTime;
+        uint32_t MaxTargetLevel;
+        uint32_t SpellFamilyName;
+        uint32_t SpellGroupType[MAX_SPELL_EFFECTS];
+        uint32_t MaxTargets;
+        uint32_t Spell_Dmg_Type;
+        uint32_t PreventionType;
+        int32_t StanceBarOrder;
         float dmg_multiplier[MAX_SPELL_EFFECTS];
-        uint32 MinFactionID;
-        uint32 MinReputation;
-        uint32 RequiredAuraVision;
-        uint32 TotemCategory[MAX_SPELL_TOTEM_CATEGORIES];
-        int32 RequiresAreaId;
-        uint32 School;
-        uint32 RuneCostID;
-        //uint32 SpellMissileID;
-        //uint32 SpellDescriptionVariable;
-        uint32 SpellDifficultyID;
+        uint32_t MinFactionID;
+        uint32_t MinReputation;
+        uint32_t RequiredAuraVision;
+        uint32_t TotemCategory[MAX_SPELL_TOTEM_CATEGORIES];
+        int32_t RequiresAreaId;
+        uint32_t School;
+        uint32_t RuneCostID;
+        //uint32_t SpellMissileID;
+        //uint32_t SpellDescriptionVariable;
+        uint32_t SpellDifficultyID;
 
         //////////////////////////////////////////////////////////////////////////////////////////
         //custom values
-        uint32 custom_DiminishStatus;
-        uint32 custom_proc_interval;
-        uint32 custom_BGR_one_buff_on_target;
-        uint32 custom_BGR_one_buff_from_caster_on_self;
-        uint32 custom_c_is_flags;
-        uint32 custom_RankNumber;
-        uint32 custom_NameHash;
-        uint32 custom_ThreatForSpell;
+        uint32_t custom_DiminishStatus;
+        uint32_t custom_proc_interval;
+        uint32_t custom_BGR_one_buff_on_target;
+        uint32_t custom_BGR_one_buff_from_caster_on_self;
+        uint32_t custom_c_is_flags;
+        uint32_t custom_RankNumber;
+        uint32_t custom_NameHash;
+        uint32_t custom_ThreatForSpell;
         float custom_ThreatForSpellCoef;
-        uint32 custom_spell_coef_flags;
+        uint32_t custom_spell_coef_flags;
         float custom_base_range_or_radius_sqr;
         float cone_width;
         float casttime_coef;
@@ -540,178 +575,178 @@ public:
         bool custom_always_apply;
         bool custom_is_melee_spell;
         bool custom_is_ranged_spell;
-	    bool CheckLocation(uint32 map_id, uint32 zone_id, uint32 area_id, Player* player = NULL);
-        uint32 custom_SchoolMask;
-        uint32 CustomFlags;
-        uint32 EffectCustomFlag[MAX_SPELL_EFFECTS];
+	    bool CheckLocation(uint32_t map_id, uint32_t zone_id, uint32_t area_id, Player* player = NULL);
+        uint32_t custom_SchoolMask;
+        uint32_t CustomFlags;
+        uint32_t EffectCustomFlag[MAX_SPELL_EFFECTS];
 #else
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Applied values from DBC
-        uint32 Id;
-        uint32 Attributes;
-        uint32 AttributesEx;
-        uint32 AttributesExB;
-        uint32 AttributesExC;
-        uint32 AttributesExD;
-        uint32 AttributesExE;
-        uint32 AttributesExF;
-        uint32 AttributesExG;
-        uint32 AttributesExH;
-        uint32 AttributesExI;
-        uint32 AttributesExJ;
-        uint32 CastingTimeIndex;
-        uint32 DurationIndex;
-        int32 powerType;            // uint32  error: case value evaluates to -2, which cannot be narrowed to type 'uint32' (aka 'unsigned int') [-Wc++11-narrowing]
-        uint32 rangeIndex;
+        uint32_t Id;
+        uint32_t Attributes;
+        uint32_t AttributesEx;
+        uint32_t AttributesExB;
+        uint32_t AttributesExC;
+        uint32_t AttributesExD;
+        uint32_t AttributesExE;
+        uint32_t AttributesExF;
+        uint32_t AttributesExG;
+        uint32_t AttributesExH;
+        uint32_t AttributesExI;
+        uint32_t AttributesExJ;
+        uint32_t CastingTimeIndex;
+        uint32_t DurationIndex;
+        int32_t powerType;            // uint32_t  error: case value evaluates to -2, which cannot be narrowed to type 'uint32' (aka 'unsigned int') [-Wc++11-narrowing]
+        uint32_t rangeIndex;
         float speed;
-        uint32 SpellVisual;
-        uint32 field114;
-        uint32 spellIconID;
-        uint32 activeIconID;
+        uint32_t SpellVisual;
+        uint32_t field114;
+        uint32_t spellIconID;
+        uint32_t activeIconID;
         std::string Name;
         std::string Rank;
         std::string Description;
         std::string BuffDescription;
-        uint32 School;
-        uint32 RuneCostID;
-        //uint32 SpellMissileID;
-        //uint32 spellDescriptionVariableID;
-        uint32 SpellDifficultyID;
+        uint32_t School;
+        uint32_t RuneCostID;
+        //uint32_t SpellMissileID;
+        //uint32_t spellDescriptionVariableID;
+        uint32_t SpellDifficultyID;
 
         //dbc links
-        uint32 SpellScalingId;                              // SpellScaling.dbc
-        uint32 SpellAuraOptionsId;                          // SpellAuraOptions.dbc
-        uint32 SpellAuraRestrictionsId;                     // SpellAuraRestrictions.dbc
-        uint32 SpellCastingRequirementsId;                  // SpellCastingRequirements.dbc
-        uint32 SpellCategoriesId;                           // SpellCategories.dbc
-        uint32 SpellClassOptionsId;                         // SpellClassOptions.dbc
-        uint32 SpellCooldownsId;                            // SpellCooldowns.dbc
-        uint32 SpellEquippedItemsId;                        // SpellEquippedItems.dbc
-        uint32 SpellInterruptsId;                           // SpellInterrupts.dbc
-        uint32 SpellLevelsId;                               // SpellLevels.dbc
-        uint32 SpellPowerId;                                // SpellPower.dbc
-        uint32 SpellReagentsId;                             // SpellReagents.dbc
-        uint32 SpellShapeshiftId;                           // SpellShapeshift.dbc
-        uint32 SpellTargetRestrictionsId;                   // SpellTargetRestrictions.dbc
-        uint32 SpellTotemsId;                               // SpellTotems.dbc
+        uint32_t SpellScalingId;                              // SpellScaling.dbc
+        uint32_t SpellAuraOptionsId;                          // SpellAuraOptions.dbc
+        uint32_t SpellAuraRestrictionsId;                     // SpellAuraRestrictions.dbc
+        uint32_t SpellCastingRequirementsId;                  // SpellCastingRequirements.dbc
+        uint32_t SpellCategoriesId;                           // SpellCategories.dbc
+        uint32_t SpellClassOptionsId;                         // SpellClassOptions.dbc
+        uint32_t SpellCooldownsId;                            // SpellCooldowns.dbc
+        uint32_t SpellEquippedItemsId;                        // SpellEquippedItems.dbc
+        uint32_t SpellInterruptsId;                           // SpellInterrupts.dbc
+        uint32_t SpellLevelsId;                               // SpellLevels.dbc
+        uint32_t SpellPowerId;                                // SpellPower.dbc
+        uint32_t SpellReagentsId;                             // SpellReagents.dbc
+        uint32_t SpellShapeshiftId;                           // SpellShapeshift.dbc
+        uint32_t SpellTargetRestrictionsId;                   // SpellTargetRestrictions.dbc
+        uint32_t SpellTotemsId;                               // SpellTotems.dbc
 
         // data from SpellScaling.dbc
         // data from SpellAuraOptions.dbc
-        uint32 maxstack;
-        uint32 procChance;
-        uint32 procCharges;
-        uint32 procFlags;
+        uint32_t maxstack;
+        uint32_t procChance;
+        uint32_t procCharges;
+        uint32_t procFlags;
 
         // data from SpellAuraRestrictions.dbc
-        uint32 CasterAuraState;
-        uint32 TargetAuraState;
-        uint32 CasterAuraStateNot;
-        uint32 TargetAuraStateNot;
-        uint32 casterAuraSpell;
-        uint32 targetAuraSpell;
-        uint32 casterAuraSpellNot;
-        uint32 targetAuraSpellNot;
+        uint32_t CasterAuraState;
+        uint32_t TargetAuraState;
+        uint32_t CasterAuraStateNot;
+        uint32_t TargetAuraStateNot;
+        uint32_t casterAuraSpell;
+        uint32_t targetAuraSpell;
+        uint32_t casterAuraSpellNot;
+        uint32_t targetAuraSpellNot;
 
         // data from SpellCastingRequirements.dbc
-        uint32 FacingCasterFlags;
-        int32 RequiresAreaId;
-        uint32 RequiresSpellFocus;
+        uint32_t FacingCasterFlags;
+        int32_t RequiresAreaId;
+        uint32_t RequiresSpellFocus;
 
         // data from SpellCategories.dbc
-        uint32 Category;
-        uint32 DispelType;
-        uint32 Spell_Dmg_Type;
-        uint32 MechanicsType;
-        uint32 PreventionType;
-        uint32 StartRecoveryCategory;
+        uint32_t Category;
+        uint32_t DispelType;
+        uint32_t Spell_Dmg_Type;
+        uint32_t MechanicsType;
+        uint32_t PreventionType;
+        uint32_t StartRecoveryCategory;
 
         // data from SpellClassOptions.dbc
-        uint32 SpellGroupType[3];
-        uint32 SpellFamilyName;
+        uint32_t SpellGroupType[3];
+        uint32_t SpellFamilyName;
 
         // data from SpellCooldowns.dbc
-        uint32 CategoryRecoveryTime;
-        uint32 RecoveryTime;
-        uint32 StartRecoveryTime;
+        uint32_t CategoryRecoveryTime;
+        uint32_t RecoveryTime;
+        uint32_t StartRecoveryTime;
 
         // data from SpellEquippedItems.dbc
-        int32 EquippedItemClass;
-        int32 EquippedItemInventoryTypeMask;
-        int32 EquippedItemSubClass;
+        int32_t EquippedItemClass;
+        int32_t EquippedItemInventoryTypeMask;
+        int32_t EquippedItemSubClass;
 
         // data from SpellInterrupts.dbc
-        uint32 AuraInterruptFlags;
-        uint32 ChannelInterruptFlags;
-        uint32 InterruptFlags;
+        uint32_t AuraInterruptFlags;
+        uint32_t ChannelInterruptFlags;
+        uint32_t InterruptFlags;
 
         // data from SpellLevels.dbc
-        uint32 baseLevel;
-        uint32 maxLevel;
-        uint32 spellLevel;
+        uint32_t baseLevel;
+        uint32_t maxLevel;
+        uint32_t spellLevel;
 
         // data from SpellPower.dbc
-        uint32 manaCost;
-        uint32 manaCostPerlevel;
-        uint32 ManaCostPercentage;
-        uint32 manaPerSecond;
-        uint32 manaPerSecondPerLevel;
+        uint32_t manaCost;
+        uint32_t manaCostPerlevel;
+        uint32_t ManaCostPercentage;
+        uint32_t manaPerSecond;
+        uint32_t manaPerSecondPerLevel;
 
         // data from SpellReagents.dbc
-        uint32 Reagent[MAX_SPELL_REAGENTS];
-        uint32 ReagentCount[MAX_SPELL_REAGENTS];
+        uint32_t Reagent[MAX_SPELL_REAGENTS];
+        uint32_t ReagentCount[MAX_SPELL_REAGENTS];
 
         // data from SpellShapeshift.dbc
-        uint32 RequiredShapeShift;
-        uint32 ShapeshiftExclude;
+        uint32_t RequiredShapeShift;
+        uint32_t ShapeshiftExclude;
 
         // data from SpellTargetRestrictions.dbc
-        uint32 MaxTargets;
-        uint32 MaxTargetLevel;
-        uint32 TargetCreatureType;
-        uint32 Targets;
+        uint32_t MaxTargets;
+        uint32_t MaxTargetLevel;
+        uint32_t TargetCreatureType;
+        uint32_t Targets;
 
         // data from SpellTotems.dbc
-        uint32 TotemCategory[MAX_SPELL_TOTEM_CATEGORIES];
-        uint32 Totem[MAX_SPELL_TOTEMS];
+        uint32_t TotemCategory[MAX_SPELL_TOTEM_CATEGORIES];
+        uint32_t Totem[MAX_SPELL_TOTEMS];
 
         // data from SpellEffect.dbc
-        uint32 Effect[MAX_SPELL_EFFECTS];
+        uint32_t Effect[MAX_SPELL_EFFECTS];
         float EffectMultipleValue[MAX_SPELL_EFFECTS];
-        uint32 EffectApplyAuraName[MAX_SPELL_EFFECTS];
-        uint32 EffectAmplitude[MAX_SPELL_EFFECTS];
-        int32 EffectBasePoints[MAX_SPELL_EFFECTS];
+        uint32_t EffectApplyAuraName[MAX_SPELL_EFFECTS];
+        uint32_t EffectAmplitude[MAX_SPELL_EFFECTS];
+        int32_t EffectBasePoints[MAX_SPELL_EFFECTS];
         float EffectBonusMultiplier[MAX_SPELL_EFFECTS];
         float dmg_multiplier[MAX_SPELL_EFFECTS];
-        uint32 EffectChainTarget[MAX_SPELL_EFFECTS];
-        int32 EffectDieSides[MAX_SPELL_EFFECTS];
-        uint32 EffectItemType[MAX_SPELL_EFFECTS];
-        uint32 EffectMechanic[MAX_SPELL_EFFECTS];
-        int32 EffectMiscValue[MAX_SPELL_EFFECTS];
-        int32 EffectMiscValueB[MAX_SPELL_EFFECTS];
+        uint32_t EffectChainTarget[MAX_SPELL_EFFECTS];
+        int32_t EffectDieSides[MAX_SPELL_EFFECTS];
+        uint32_t EffectItemType[MAX_SPELL_EFFECTS];
+        uint32_t EffectMechanic[MAX_SPELL_EFFECTS];
+        int32_t EffectMiscValue[MAX_SPELL_EFFECTS];
+        int32_t EffectMiscValueB[MAX_SPELL_EFFECTS];
         float EffectPointsPerComboPoint[MAX_SPELL_EFFECTS];
-        uint32 EffectRadiusIndex[MAX_SPELL_EFFECTS];
-        uint32 EffectRadiusMaxIndex[MAX_SPELL_EFFECTS];
+        uint32_t EffectRadiusIndex[MAX_SPELL_EFFECTS];
+        uint32_t EffectRadiusMaxIndex[MAX_SPELL_EFFECTS];
         float EffectRealPointsPerLevel[MAX_SPELL_EFFECTS];
-        uint32 EffectSpellClassMask[MAX_SPELL_EFFECTS];
-        uint32 EffectTriggerSpell[MAX_SPELL_EFFECTS];
-        uint32 EffectImplicitTargetA[MAX_SPELL_EFFECTS];
-        uint32 EffectImplicitTargetB[MAX_SPELL_EFFECTS];
-        uint32 EffectSpellId[MAX_SPELL_EFFECTS];
-        uint32 EffectIndex[MAX_SPELL_EFFECTS];
+        uint32_t EffectSpellClassMask[MAX_SPELL_EFFECTS];
+        uint32_t EffectTriggerSpell[MAX_SPELL_EFFECTS];
+        uint32_t EffectImplicitTargetA[MAX_SPELL_EFFECTS];
+        uint32_t EffectImplicitTargetB[MAX_SPELL_EFFECTS];
+        uint32_t EffectSpellId[MAX_SPELL_EFFECTS];
+        uint32_t EffectIndex[MAX_SPELL_EFFECTS];
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // custom values
-        uint32 custom_DiminishStatus;
-        uint32 custom_proc_interval;
-        uint32 custom_BGR_one_buff_on_target;
-        uint32 custom_BGR_one_buff_from_caster_on_self;
-        uint32 custom_c_is_flags;
-        uint32 custom_RankNumber;
-        uint32 custom_NameHash;
-        uint32 custom_ThreatForSpell;
+        uint32_t custom_DiminishStatus;
+        uint32_t custom_proc_interval;
+        uint32_t custom_BGR_one_buff_on_target;
+        uint32_t custom_BGR_one_buff_from_caster_on_self;
+        uint32_t custom_c_is_flags;
+        uint32_t custom_RankNumber;
+        uint32_t custom_NameHash;
+        uint32_t custom_ThreatForSpell;
         float custom_ThreatForSpellCoef;
-        uint32 custom_spell_coef_flags;
+        uint32_t custom_spell_coef_flags;
         float custom_base_range_or_radius_sqr;
         float cone_width;
         float casttime_coef;
@@ -725,10 +760,10 @@ public:
         bool custom_always_apply;
         bool custom_is_melee_spell;
         bool custom_is_ranged_spell;
-        bool CheckLocation(uint32 map_id, uint32 zone_id, uint32 area_id, Player* player = NULL);
-        uint32 custom_SchoolMask;
-        uint32 CustomFlags;
-        uint32 EffectCustomFlag[MAX_SPELL_EFFECTS];
+        bool CheckLocation(uint32_t map_id, uint32_t zone_id, uint32_t area_id, Player* player = NULL);
+        uint32_t custom_SchoolMask;
+        uint32_t CustomFlags;
+        uint32_t EffectCustomFlag[MAX_SPELL_EFFECTS];
 #endif
         void* (*SpellFactoryFunc);
         void* (*AuraFactoryFunc);

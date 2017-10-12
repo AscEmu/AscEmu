@@ -1648,8 +1648,8 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (!this->IsPlayer() || !CastingSpell || CastingSpell->getId() == 14189 || CastingSpell->getId() == 16953 || CastingSpell->getId() == 16959)
                         continue;
-                    if (CastingSpell->Effect[0] != SPELL_EFFECT_ADD_COMBO_POINTS && CastingSpell->Effect[1] != SPELL_EFFECT_ADD_COMBO_POINTS &&
-                        CastingSpell->Effect[2] != SPELL_EFFECT_ADD_COMBO_POINTS)
+                    if (CastingSpell->getEffect(0) != SPELL_EFFECT_ADD_COMBO_POINTS && CastingSpell->getEffect(1) != SPELL_EFFECT_ADD_COMBO_POINTS &&
+                        CastingSpell->getEffect(2) != SPELL_EFFECT_ADD_COMBO_POINTS)
                     {
                         switch (CastingSpell->getId())
                         {
@@ -10135,11 +10135,11 @@ AuraCheckResponse Unit::AuraCheck(SpellInfo* proto, Object* caster)
             // but first we check if it has the same effects
             aura_sp = aura->GetSpellInfo();
 
-            if ((aura_sp->Effect[0] == proto->Effect[0] && (aura_sp->Effect[0] != SPELL_EFFECT_APPLY_AURA ||
+            if ((aura_sp->getEffect(0) == proto->getEffect(0) && (aura_sp->getEffect(0) != SPELL_EFFECT_APPLY_AURA ||
                 aura_sp->EffectApplyAuraName[0] == proto->EffectApplyAuraName[0])) &&
-                (aura_sp->Effect[1] == proto->Effect[1] && (aura_sp->Effect[1] != SPELL_EFFECT_APPLY_AURA ||
+                (aura_sp->getEffect(1) == proto->getEffect(1) && (aura_sp->getEffect(1) != SPELL_EFFECT_APPLY_AURA ||
                 aura_sp->EffectApplyAuraName[1] == proto->EffectApplyAuraName[1])) &&
-                (aura_sp->Effect[2] == proto->Effect[2] && (aura_sp->Effect[2] != SPELL_EFFECT_APPLY_AURA ||
+                (aura_sp->getEffect(2) == proto->getEffect(2) && (aura_sp->getEffect(2) != SPELL_EFFECT_APPLY_AURA ||
                 aura_sp->EffectApplyAuraName[2] == proto->EffectApplyAuraName[2])))
             {
                 resp.Misc = aura->GetSpellInfo()->getId();
@@ -10147,9 +10147,9 @@ AuraCheckResponse Unit::AuraCheck(SpellInfo* proto, Object* caster)
                 // compare the rank to our applying spell
                 if (aura_sp->custom_RankNumber > rank)
                 {
-                    if (proto->Effect[0] == SPELL_EFFECT_TRIGGER_SPELL ||
-                        proto->Effect[1] == SPELL_EFFECT_TRIGGER_SPELL ||
-                        proto->Effect[2] == SPELL_EFFECT_TRIGGER_SPELL)
+                    if (proto->getEffect(0) == SPELL_EFFECT_TRIGGER_SPELL ||
+                        proto->getEffect(1) == SPELL_EFFECT_TRIGGER_SPELL ||
+                        proto->getEffect(2) == SPELL_EFFECT_TRIGGER_SPELL)
                     {
                         resp.Error = AURA_CHECK_RESULT_LOWER_BUFF_PRESENT;
                     }
@@ -10183,12 +10183,12 @@ AuraCheckResponse Unit::AuraCheck(SpellInfo* proto, Aura* aur, Object* caster)
     {
         // we've got an aura with the same name as the one we're trying to apply
         // but first we check if it has the same effects
-        if ((aura_sp->Effect[0] == proto->Effect[0] &&
-            (aura_sp->Effect[0] != SPELL_EFFECT_APPLY_AURA || aura_sp->EffectApplyAuraName[0] == proto->EffectApplyAuraName[0])) &&
-            (aura_sp->Effect[1] == proto->Effect[1] &&
-            (aura_sp->Effect[1] != SPELL_EFFECT_APPLY_AURA || aura_sp->EffectApplyAuraName[1] == proto->EffectApplyAuraName[1])) &&
-            (aura_sp->Effect[2] == proto->Effect[2] &&
-            (aura_sp->Effect[2] != SPELL_EFFECT_APPLY_AURA || aura_sp->EffectApplyAuraName[2] == proto->EffectApplyAuraName[2])))
+        if ((aura_sp->getEffect(0) == proto->getEffect(0) &&
+            (aura_sp->getEffect(0) != SPELL_EFFECT_APPLY_AURA || aura_sp->EffectApplyAuraName[0] == proto->EffectApplyAuraName[0])) &&
+            (aura_sp->getEffect(1) == proto->getEffect(1) &&
+            (aura_sp->getEffect(1) != SPELL_EFFECT_APPLY_AURA || aura_sp->EffectApplyAuraName[1] == proto->EffectApplyAuraName[1])) &&
+            (aura_sp->getEffect(2) == proto->getEffect(2) &&
+            (aura_sp->getEffect(2) != SPELL_EFFECT_APPLY_AURA || aura_sp->EffectApplyAuraName[2] == proto->EffectApplyAuraName[2])))
         {
             resp.Misc = aur->GetSpellInfo()->getId();
 
