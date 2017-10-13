@@ -111,8 +111,6 @@ class SERVER_DECL Spell : public EventableObject
         // Checks the caster is ready for cast
         virtual uint8 CanCast(bool);
 
-    bool HasCustomFlag(uint32 flag);
-
     bool hasAttribute(SpellAttributes attribute);
     bool hasAttributeEx(SpellAttributesEx attribute);
     bool hasAttributeExB(SpellAttributesExB attribute);

@@ -153,7 +153,6 @@ LuaSpellEntry luaSpellVars[] =
     { "DiminishStatus", 0, offsetof(SpellInfo, custom_DiminishStatus) },
     { "proc_interval", 0, offsetof(SpellInfo, custom_proc_interval) },
     { "BGR_one_buff_on_target", 0, offsetof(SpellInfo, custom_BGR_one_buff_on_target) },
-    { "BGR_one_buff_from_caster_on_self", 0, offsetof(SpellInfo, custom_BGR_one_buff_from_caster_on_self) },
     { "c_is_flags", 0, offsetof(SpellInfo, custom_c_is_flags) },
     { "RankNumber", 0, offsetof(SpellInfo, custom_RankNumber) },
     { "NameHash", 0, offsetof(SpellInfo, custom_NameHash) },

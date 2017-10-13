@@ -2911,7 +2911,6 @@ void ApplyNormalFixes()
     if (sp != nullptr)
     {
         sp->setProcFlags(0);
-        // sp->custom_RankNumber = 100;            DankoDJ: Why?
         sp->setAuraInterruptFlags(0);
     }
 
@@ -2919,7 +2918,6 @@ void ApplyNormalFixes()
     if (sp != nullptr)
     {
         sp->setProcFlags(0);
-        // sp->custom_RankNumber = 101;            DankoDJ: Why?
         sp->setAuraInterruptFlags(0);
     }
 
@@ -4292,7 +4290,6 @@ void ApplyNormalFixes()
         sp->setEffectApplyAuraName(SPELL_AURA_MOD_INCREASE_HEALTH_PERCENT, 1);
         sp->setEffectBasePoints(9, 1);
         sp->setEffectApplyAuraName(SPELL_AURA_MOD_DAMAGE_TAKEN, 2);
-        sp->custom_BGR_one_buff_from_caster_on_self = SPELL_TYPE3_DEATH_KNIGHT_AURA;
     }
 
     //    Unholy Presence
@@ -4303,7 +4300,6 @@ void ApplyNormalFixes()
         sp->setEffectBasePoints(14, 0);
         sp->setEffectApplyAuraName(SPELL_AURA_MOD_INCREASE_SPEED, 1);
         sp->setEffectBasePoints(14, 1);
-        sp->custom_BGR_one_buff_from_caster_on_self = SPELL_TYPE3_DEATH_KNIGHT_AURA;
     }
 
     // DEATH AND DECAY

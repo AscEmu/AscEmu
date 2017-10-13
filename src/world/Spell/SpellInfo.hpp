@@ -586,7 +586,6 @@ public:
     uint32_t getCustom_DiminishStatus() const { return custom_DiminishStatus; }
     uint32_t getCustom_proc_interval() const { return custom_proc_interval; }
     uint32_t getCustom_BGR_one_buff_on_target() const { return custom_BGR_one_buff_on_target; }
-    uint32_t getCustom_BGR_one_buff_from_caster_on_self() const { return custom_BGR_one_buff_from_caster_on_self; }
     uint32_t getCustom_c_is_flags() const { return custom_c_is_flags; }
     uint32_t getCustom_RankNumber() const { return custom_RankNumber; }
     uint32_t getCustom_ThreatForSpell() const { return custom_ThreatForSpell; }
@@ -614,6 +613,8 @@ public:
         ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
         return EffectCustomFlag[idx];
     }
+
+    bool CheckLocation(uint32_t map_id, uint32_t zone_id, uint32_t area_id, Player* player = NULL);
         
 private:
 
@@ -729,7 +730,6 @@ public:
         uint32_t custom_DiminishStatus;
         uint32_t custom_proc_interval;
         uint32_t custom_BGR_one_buff_on_target;
-        uint32_t custom_BGR_one_buff_from_caster_on_self;
         uint32_t custom_c_is_flags;
         uint32_t custom_RankNumber;
         uint32_t custom_NameHash;
@@ -749,9 +749,8 @@ public:
         bool custom_always_apply;
         bool custom_is_melee_spell;
         bool custom_is_ranged_spell;
-	    bool CheckLocation(uint32_t map_id, uint32_t zone_id, uint32_t area_id, Player* player = NULL);
         uint32_t custom_SchoolMask;
-        uint32_t CustomFlags;
+        uint32_t CustomFlags;                           // used for spell 781 only - SpellCustomizations::SetCustomFlags
         uint32_t EffectCustomFlag[MAX_SPELL_EFFECTS];
 #else
 
@@ -914,7 +913,6 @@ public:
         uint32_t custom_DiminishStatus;
         uint32_t custom_proc_interval;
         uint32_t custom_BGR_one_buff_on_target;
-        uint32_t custom_BGR_one_buff_from_caster_on_self;
         uint32_t custom_c_is_flags;
         uint32_t custom_RankNumber;
         uint32_t custom_NameHash;

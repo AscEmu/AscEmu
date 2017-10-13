@@ -3794,7 +3794,7 @@ uint8 Spell::CanCast(bool tolerate)
         return SPELL_FAILED_MOVING;
 
     // Check if spell requires caster to be in combat to be casted.
-    if (p_caster != NULL && HasCustomFlag(CUSTOM_FLAG_SPELL_REQUIRES_COMBAT) && !p_caster->CombatStatus.IsInCombat())
+    if (p_caster != NULL && m_spellInfo->CustomFlags & CUSTOM_FLAG_SPELL_REQUIRES_COMBAT && !p_caster->CombatStatus.IsInCombat())
         return SPELL_FAILED_SPELL_UNAVAILABLE;
 
     /**
@@ -5565,14 +5565,6 @@ uint8 Spell::CanCast(bool tolerate)
 
     // no problems found, so we must be ok
     return SPELL_CANCAST_OK;
-}
-
-bool Spell::HasCustomFlag(uint32 flag)
-{
-    if ((GetSpellInfo()->CustomFlags & flag) != 0)
-        return true;
-    else
-        return false;
 }
 
 bool Spell::hasAttribute(SpellAttributes attribute)

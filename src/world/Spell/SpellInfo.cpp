@@ -48,7 +48,6 @@ SpellInfo::SpellInfo()
     AuraFactoryFunc = NULL;
     custom_proc_interval = 0;
     custom_BGR_one_buff_on_target = 0;
-    custom_BGR_one_buff_from_caster_on_self = 0;
     custom_c_is_flags = 0;
     custom_RankNumber = 0;
     custom_NameHash = 0;
@@ -290,7 +289,6 @@ SpellInfo::SpellInfo()
     custom_DiminishStatus = 0;
     custom_proc_interval = 0;
     custom_BGR_one_buff_on_target = 0;
-    custom_BGR_one_buff_from_caster_on_self = 0;
     custom_c_is_flags = 0;
     custom_RankNumber = 0;
     custom_NameHash = 0;
