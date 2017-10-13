@@ -94,7 +94,6 @@ SpellInfo::SpellInfo()
     School = 0;
     RuneCostID = 0;
     SpellDifficultyID = 0;
-    custom_DiminishStatus = 0;
     targetAuraSpellNot = 0;
     CastingTimeIndex = 0;
     RecoveryTime = 0;
@@ -286,7 +285,6 @@ SpellInfo::SpellInfo()
     }
 
     // custom values
-    custom_DiminishStatus = 0;
     custom_proc_interval = 0;
     custom_BGR_one_buff_on_target = 0;
     custom_c_is_flags = 0;

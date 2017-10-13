@@ -813,10 +813,6 @@ void ApplyNormalFixes()
         Modify_AuraInterruptFlags(sp);
         Modify_RecoveryTime(sp);
 
-        // find diminishing status
-        //\todo 16/03/08 Zyres: sql
-        sp->custom_DiminishStatus = Spell::getDiminishingGroup(sp->getId());
-
         // various flight spells
         // these make vehicles and other charmed stuff fliable
         if (sp->getActiveIconID() == 2158)

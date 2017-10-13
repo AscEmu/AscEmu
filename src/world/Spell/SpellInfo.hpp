@@ -583,7 +583,6 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     //custom values
-    uint32_t getCustom_DiminishStatus() const { return custom_DiminishStatus; }
     uint32_t getCustom_proc_interval() const { return custom_proc_interval; }
     uint32_t getCustom_BGR_one_buff_on_target() const { return custom_BGR_one_buff_on_target; }
     uint32_t getCustom_c_is_flags() const { return custom_c_is_flags; }
@@ -727,7 +726,6 @@ public:
 
         //////////////////////////////////////////////////////////////////////////////////////////
         //custom values
-        uint32_t custom_DiminishStatus;
         uint32_t custom_proc_interval;
         uint32_t custom_BGR_one_buff_on_target;
         uint32_t custom_c_is_flags;
@@ -910,7 +908,6 @@ public:
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // custom values
-        uint32_t custom_DiminishStatus;
         uint32_t custom_proc_interval;
         uint32_t custom_BGR_one_buff_on_target;
         uint32_t custom_c_is_flags;

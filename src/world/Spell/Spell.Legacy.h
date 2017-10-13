@@ -479,7 +479,6 @@ class SERVER_DECL Spell : public EventableObject
 
         SpellInfo* m_spellInfo;
         SpellInfo* m_spellInfo_override;   //used by spells that should have dynamic variables in spellentry.
-        static uint32_t getDiminishingGroup(uint32_t id);
         static SpellInfo* checkAndReturnSpellEntry(uint32_t spellid);
 };
 

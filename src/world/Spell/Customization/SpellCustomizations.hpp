@@ -52,6 +52,8 @@ public:
     void SetOnShapeshiftChange(SpellInfo* spell_entry);
     void SetAlwaysApply(SpellInfo* spell_entry);
 
+    uint32_t getDiminishingGroup(uint32_t id);
+
     SpellInfoContainer _spellInfoContainerStore;
 };
 
