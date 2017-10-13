@@ -81,7 +81,7 @@ bool DeathStrike(uint32 i, Spell* pSpell)
         // A deadly attack that deals $s2% weapon damage plus ${$m1*$m2/100}
         // and heals the Death Knight for $F% of $Ghis:her; maximum health for each of $Ghis:her; diseases on the target.
         // $F is dmg_multiplier.
-        float amt = static_cast<float>(pSpell->p_caster->GetMaxHealth()) * pSpell->GetSpellInfo()->dmg_multiplier[0] / 100.0f;
+        float amt = static_cast<float>(pSpell->p_caster->GetMaxHealth()) * pSpell->GetSpellInfo()->getDmg_multiplier(0) / 100.0f;
 
         // Calculate heal amount with diseases on target
         uint32 val = static_cast<uint32>(amt * count);

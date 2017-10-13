@@ -439,20 +439,44 @@ public:
         EffectPointsPerComboPoint[idx] = effectPoints;
     }
 
-
     uint32_t getSpellVisual() const { return SpellVisual; }
+    void setSpellVisual(uint32_t value) { SpellVisual = value; }                 // used in SpellCustomizations.cpp
+
     uint32_t getField114() const { return field114; }
+    void setField114(uint32_t value) { field114 = value; }                       // used in SpellCustomizations.cpp
+
     uint32_t getSpellIconID() const { return spellIconID; }
+    void setSpellIconID(uint32_t value) { spellIconID = value; }                 // used in SpellCustomizations.cpp
+
     uint32_t getActiveIconID() const { return activeIconID; }
+    void setActiveIconID(uint32_t value) { activeIconID = value; }               // used in SpellCustomizations.cpp
+
     std::string getName() const { return Name; }
+    void setName(std::string value) { Name = value; }               // used in SpellCustomizations.cpp
+
     std::string getRank() const { return Rank; }
+    void setRank(std::string value) { Rank = value; }               // used in SpellCustomizations.cpp
+
     std::string getDescription() const { return Description; }
+    void setDescription(std::string value) { Description = value; }               // used in SpellCustomizations.cpp
+
     std::string getBuffDescription() const { return BuffDescription; }
+    void setBuffDescription(std::string value) { BuffDescription = value; }               // used in SpellCustomizations.cpp
+
     uint32_t getManaCostPercentage() const { return ManaCostPercentage; }
+    void setManaCostPercentage(uint32_t value) { ManaCostPercentage = value; }        // used in SpellCustomizations.cpp
+
     uint32_t getStartRecoveryCategory() const { return StartRecoveryCategory; }
+    void setStartRecoveryCategory(uint32_t value) { StartRecoveryCategory = value; }        // used in SpellCustomizations.cpp
+
     uint32_t getStartRecoveryTime() const { return StartRecoveryTime; }
+    void setStartRecoveryTime(uint32_t value) { StartRecoveryTime = value; }        // used in SpellCustomizations.cpp
+
     uint32_t getMaxTargetLevel() const { return MaxTargetLevel; }
+    void setMaxTargetLevel(uint32_t value) { MaxTargetLevel = value; }        // used in SpellCustomizations.cpp
+
     uint32_t getSpellFamilyName() const { return SpellFamilyName; }
+    void setSpellFamilyName(uint32_t value) { SpellFamilyName = value; }        // used in HackFixes.cpp / SpellCustomizations.cpp
 
     uint32_t getSpellGroupType(int idx) const
     {
@@ -460,9 +484,25 @@ public:
         return SpellGroupType[idx];
     }
 
+    uint32_t* getSpellGroupType()
+    {
+        return SpellGroupType;
+    }
+
+    void setSpellGroupType(uint32_t value, int idx)                             // used in HackFixes.cpp / SpellCustomizations.cpp
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        SpellGroupType[idx] = value;
+    }
+
     uint32_t getMaxTargets() const { return MaxTargets; }
+    void setMaxTargets(uint32_t value) { MaxTargets = value; }        // used in HackFixes.cpp / SpellCustomizations.cpp
+
     uint32_t getSpell_Dmg_Type() const { return Spell_Dmg_Type; }
+    void setSpell_Dmg_Type(uint32_t value) { Spell_Dmg_Type = value; }        // used in HackFixes.cpp / SpellCustomizations.cpp
+
     uint32_t getPreventionType() const { return PreventionType; }
+    void setPreventionType(uint32_t value) { PreventionType = value; }        // used in SpellCustomizations.cpp
 
     float getDmg_multiplier(int idx) const
     {
@@ -470,6 +510,11 @@ public:
         return dmg_multiplier[idx];
     }
 
+    void setDmg_multiplier(float dmgMultiplier, int idx)                       // used in HackFixes.cpp / SpellCustomizations.cpp
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        dmg_multiplier[idx] = dmgMultiplier;
+    }
 
     uint32_t getTotemCategory(int idx) const
     {
@@ -477,10 +522,67 @@ public:
         return TotemCategory[idx];
     }
 
+    void setTotemCategory(uint32_t category, int idx)                           // used in SpellCustomizations.cpp
+    {
+        ARCEMU_ASSERT(idx < MAX_SPELL_TOTEM_CATEGORIES && idx >= 0);
+        TotemCategory[idx] = category;
+    }
+
     int32_t getRequiresAreaId() const { return RequiresAreaId; }
+    void setRequiresAreaId(int32_t value) { RequiresAreaId = value; }   // used in SpellCustomizations.cpp
+
     uint32_t getSchool() const { return School; }
+    void setSchool(uint32_t value) { School = value; }                  // used in HackFixes.cpp / SpellCustomizations.cpp
+
     uint32_t getRuneCostID() const { return RuneCostID; }
+    void setRuneCostID(uint32_t value) { RuneCostID = value; }          // used in pellCustomizations.cpp
+
     uint32_t getSpellDifficultyID() const { return SpellDifficultyID; }
+    void setSpellDifficultyID(uint32_t value) { SpellDifficultyID = value; }          // used in pellCustomizations.cpp
+
+#if VERSION_STRING != Cata
+    uint32_t getModalNextSpell() const { return modalNextSpell; }           // not used!
+    void setModalNextSpell(uint32_t value) { modalNextSpell = value; }    // used in SpellCustomizations.cpp
+
+    uint32_t getRequiredItemFlags() const { return RequiredItemFlags; }
+    void setRequiredItemFlags(uint32_t value) { RequiredItemFlags = value; }    // used in SpellCustomizations.cpp
+
+    uint32_t getEffectSpellClassMask(int idx1, int idx2) const
+    {
+        ARCEMU_ASSERT(idx1 < 3 && idx1 >= 0 && idx2 < 3 && idx2 >= 0);
+        return EffectSpellClassMask[idx1][idx2];
+    }
+
+    uint32_t* getEffectSpellClassMask(int idx1)
+    {
+        ARCEMU_ASSERT(idx1 < 3 && idx1 >= 0);
+        return EffectSpellClassMask[idx1];
+    }
+
+    void setEffectSpellClassMask(uint32_t spellClass, int idx1, int idx2)           // used in HackFixes.cpp / SpellCustomizations.cpp
+    {
+        ARCEMU_ASSERT(idx1 < 3 && idx1 >= 0 && idx2 < 3 && idx2 >= 0);
+        EffectSpellClassMask[idx1][idx2] = spellClass;
+    }
+
+    uint32_t getSpellPriority() const { return spellPriority; }
+    void setSpellPriority(uint32_t value) { spellPriority = value; }               // used in SpellCustomizations.cpp
+
+    int32_t getStanceBarOrder() const { return StanceBarOrder; }
+    void setStanceBarOrder(int32_t value) { StanceBarOrder = value; }        // used in HackFixes.cpp / SpellCustomizations.cpp
+
+    uint32_t getMinFactionID() const { return MinFactionID; }
+    void setMinFactionID(uint32_t value) { MinFactionID = value; }        // used in SpellCustomizations.cpp
+
+    uint32_t getMinReputation() const { return MinReputation; }
+    void setMinReputation(uint32_t value) { MinReputation = value; }        // used in SpellCustomizations.cpp
+
+    uint32_t getRequiredAuraVision() const { return RequiredAuraVision; }
+    void setRequiredAuraVision(uint32_t value) { RequiredAuraVision = value; }        // used in SpellCustomizations.cpp
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    //custom values
     uint32_t getCustom_DiminishStatus() const { return custom_DiminishStatus; }
     uint32_t getCustom_proc_interval() const { return custom_proc_interval; }
     uint32_t getCustom_BGR_one_buff_on_target() const { return custom_BGR_one_buff_on_target; }
@@ -512,28 +614,11 @@ public:
         ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
         return EffectCustomFlag[idx];
     }
-
-
-#if VERSION_STRING != Cata
-    uint32_t getModalNextSpell() const { return modalNextSpell; }           // not used!
-    void setModalNextSpell(uint32_t value) { modalNextSpell = value; }    // used in SpellCustomizations.cpp
-
-    uint32_t getRequiredItemFlags() const { return RequiredItemFlags; }
-    void setRequiredItemFlags(uint32_t value) { RequiredItemFlags = value; }    // used in SpellCustomizations.cpp
-
-    uint32_t getEffectSpellClassMask(int idx1, int idx2) const
-    {
-        ARCEMU_ASSERT(idx1 < 3 && idx1 >= 0 && idx2 < 3 && idx2 >= 0);
-        return EffectSpellClassMask[idx1][idx2];
-    }
-    uint32_t getSpellPriority() const { return spellPriority; }
-    int32_t getStanceBarOrder() const { return StanceBarOrder; }
-    uint32_t getMinFactionID() const { return MinFactionID; }
-    uint32_t getMinReputation() const { return MinReputation; }
-    uint32_t getRequiredAuraVision() const { return RequiredAuraVision; }
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // Applied
+        
 private:
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // from dbc files
     uint32_t Id;
     uint32_t Category;
     uint32_t DispelType;
@@ -605,40 +690,39 @@ private:
     int32_t EffectMiscValueB[MAX_SPELL_EFFECTS];                //can be: speed slot-type, summon
     uint32_t EffectTriggerSpell[MAX_SPELL_EFFECTS];
     float EffectPointsPerComboPoint[MAX_SPELL_EFFECTS];
+    uint32_t EffectSpellClassMask[3][3];
+    uint32_t SpellVisual;
+    uint32_t field114;                                          // (131-132 SpellVisual[2])
+    uint32_t spellIconID;
+    uint32_t activeIconID;
+    uint32_t spellPriority;
+    std::string Name;
+    std::string Rank;
+    std::string Description;
+    std::string BuffDescription;
+    uint32_t ManaCostPercentage;
+    uint32_t StartRecoveryCategory;
+    uint32_t StartRecoveryTime;
+    uint32_t MaxTargetLevel;
+    uint32_t SpellFamilyName;
+    uint32_t SpellGroupType[MAX_SPELL_EFFECTS];
+    uint32_t MaxTargets;
+    uint32_t Spell_Dmg_Type;
+    uint32_t PreventionType;
+    int32_t StanceBarOrder;
+    float dmg_multiplier[MAX_SPELL_EFFECTS];
+    uint32_t MinFactionID;          // not used!
+    uint32_t MinReputation;         // not used!
+    uint32_t RequiredAuraVision;    // not used!
+    uint32_t TotemCategory[MAX_SPELL_TOTEM_CATEGORIES];     // not used!
+    int32_t RequiresAreaId;
+    uint32_t School;
+    uint32_t RuneCostID;
+    //uint32_t SpellMissileID;
+    //uint32_t SpellDescriptionVariable;
+    uint32_t SpellDifficultyID;
 
 public:
-
-        uint32_t EffectSpellClassMask[3][3];
-        uint32_t SpellVisual;
-        uint32_t field114;                                          // (131-132 SpellVisual[2])
-        uint32_t spellIconID;
-        uint32_t activeIconID;
-        uint32_t spellPriority;
-        std::string Name;
-        std::string Rank;
-        std::string Description;
-        std::string BuffDescription;
-        uint32_t ManaCostPercentage;
-        uint32_t StartRecoveryCategory;
-        uint32_t StartRecoveryTime;
-        uint32_t MaxTargetLevel;
-        uint32_t SpellFamilyName;
-        uint32_t SpellGroupType[MAX_SPELL_EFFECTS];
-        uint32_t MaxTargets;
-        uint32_t Spell_Dmg_Type;
-        uint32_t PreventionType;
-        int32_t StanceBarOrder;
-        float dmg_multiplier[MAX_SPELL_EFFECTS];
-        uint32_t MinFactionID;
-        uint32_t MinReputation;
-        uint32_t RequiredAuraVision;
-        uint32_t TotemCategory[MAX_SPELL_TOTEM_CATEGORIES];
-        int32_t RequiresAreaId;
-        uint32_t School;
-        uint32_t RuneCostID;
-        //uint32_t SpellMissileID;
-        //uint32_t SpellDescriptionVariable;
-        uint32_t SpellDifficultyID;
 
         //////////////////////////////////////////////////////////////////////////////////////////
         //custom values

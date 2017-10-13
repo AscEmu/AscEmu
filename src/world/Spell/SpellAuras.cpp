@@ -1513,7 +1513,7 @@ void Aura::EventUpdateAreaAura(float r)
     uint32 AreaAuraEffectId = m_spellInfo->GetAreaAuraEffectId();
     if (AreaAuraEffectId == 0)
     {
-        LOG_ERROR("Spell %u (%s) has tried to update Area Aura targets but Spell has no Area Aura effect.", m_spellInfo->getId(), m_spellInfo->Name.c_str());
+        LOG_ERROR("Spell %u (%s) has tried to update Area Aura targets but Spell has no Area Aura effect.", m_spellInfo->getId(), m_spellInfo->getName().c_str());
         ARCEMU_ASSERT(false);
     }
 
@@ -1791,7 +1791,7 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
                 }
             }
         }
-        uint32* gr = GetSpellInfo()->SpellGroupType;
+        uint32* gr = GetSpellInfo()->getSpellGroupType();
         if (gr)
         {
             if (c != nullptr)
@@ -1839,7 +1839,7 @@ void Aura::EventPeriodicDamage(uint32 amount)
     if (!m_target->isAlive())
         return;
 
-    if (m_target->SchoolImmunityList[GetSpellInfo()->School])
+    if (m_target->SchoolImmunityList[GetSpellInfo()->getSchool()])
     {
         if (GetUnitCaster() != NULL)
             SendTickImmune(m_target, GetUnitCaster());
@@ -1849,7 +1849,7 @@ void Aura::EventPeriodicDamage(uint32 amount)
     float res = static_cast<float>(amount);
     uint32 abs_dmg = 0;
     int32 bonus = 0;
-    uint32 school = GetSpellInfo()->School;
+    uint32 school = GetSpellInfo()->getSchool();
     Unit* c = GetUnitCaster();
     uint32 aproc = PROC_ON_ANY_HOSTILE_ACTION;
     uint32 vproc = PROC_ON_ANY_HOSTILE_ACTION | PROC_ON_ANY_DAMAGE_VICTIM;
@@ -1959,7 +1959,7 @@ void Aura::EventPeriodicDamage(uint32 amount)
     SpellInfo* sp = m_spellInfo;
 
     if (m_target->m_damageSplitTarget)
-        res = static_cast<float>(m_target->DoDamageSplitTarget(static_cast<uint32>(res), GetSpellInfo()->School, false));
+        res = static_cast<float>(m_target->DoDamageSplitTarget(static_cast<uint32>(res), GetSpellInfo()->getSchool(), false));
 
     if (c != NULL)
         c->DealDamage(m_target, static_cast<int32>(res), 2, 0, GetSpellId());
@@ -1986,7 +1986,7 @@ void Aura::SpellAuraDummy(bool apply)
     if (sScriptMgr.CallScriptedDummyAura(GetSpellId(), mod->i, this, apply))
         return;
 
-    LogDebugFlag(LF_AURA_EFF, "Aura::SpellAuraDummy : Spell %u (%s) has an apply dummy aura effect, but no handler for it. ", m_spellInfo->getId(), m_spellInfo->Name.c_str());
+    LogDebugFlag(LF_AURA_EFF, "Aura::SpellAuraDummy : Spell %u (%s) has an apply dummy aura effect, but no handler for it. ", m_spellInfo->getId(), m_spellInfo->getName().c_str());
 }
 
 void Aura::SpellAuraModConfuse(bool apply)
@@ -2211,8 +2211,8 @@ void Aura::SpellAuraPeriodicHeal(bool apply)
         Unit* c = GetUnitCaster();
         if (c != nullptr)
         {
-            spellModFlatIntValue(c->SM_FMiscEffect, &val, GetSpellInfo()->SpellGroupType);
-            spellModPercentageIntValue(c->SM_PMiscEffect, &val, GetSpellInfo()->SpellGroupType);
+            spellModFlatIntValue(c->SM_FMiscEffect, &val, GetSpellInfo()->getSpellGroupType());
+            spellModPercentageIntValue(c->SM_PMiscEffect, &val, GetSpellInfo()->getSpellGroupType());
         }
 
         if (val > 0)
@@ -2316,11 +2316,11 @@ void Aura::EventPeriodicHeal(uint32 amount)
 
     if (c != NULL)
     {
-        bonus += c->HealDoneMod[m_spellInfo->School] + m_target->HealTakenMod[m_spellInfo->School];
+        bonus += c->HealDoneMod[m_spellInfo->getSchool()] + m_target->HealTakenMod[m_spellInfo->getSchool()];
         if (c->IsPlayer())
         {
             for (uint32 a = 0; a < 5; a++)
-                bonus += float2int32(static_cast< Player* >(c)->SpellHealDoneByAttribute[a][m_spellInfo->School] * static_cast< Player* >(c)->GetStat(a));
+                bonus += float2int32(static_cast< Player* >(c)->SpellHealDoneByAttribute[a][m_spellInfo->getSchool()] * static_cast< Player* >(c)->GetStat(a));
         }
         //Spell Coefficient
         if (m_spellInfo->OTspell_coef_override >= 0)   //In case we have forced coefficients
@@ -2336,7 +2336,7 @@ void Aura::EventPeriodicHeal(uint32 amount)
                 if (c->IsPlayer())
                 {
                     int durmod = 0;
-                    spellModFlatIntValue(c->SM_FDur, &durmod, m_spellInfo->SpellGroupType);
+                    spellModFlatIntValue(c->SM_FDur, &durmod, m_spellInfo->getSpellGroupType());
                     bonus += bonus * durmod / 15000;
                 }
             }
@@ -2350,7 +2350,7 @@ void Aura::EventPeriodicHeal(uint32 amount)
         spellModFlatIntValue(c->SM_FPenalty, &penalty_flt, GetSpellProto()->SpellGroupType);
         bonus += penalty_flt;
         */
-        spellModPercentageIntValue(c->SM_PPenalty, &bonus, m_spellInfo->SpellGroupType);
+        spellModPercentageIntValue(c->SM_PPenalty, &bonus, m_spellInfo->getSpellGroupType());
     }
 
     int amp = m_spellInfo->getEffectAmplitude(mod->i);
@@ -2394,8 +2394,8 @@ void Aura::EventPeriodicHeal(uint32 amount)
     int add = (bonus + amount > 0) ? bonus + amount : 0;
     if (c != NULL)
     {
-        add += float2int32(add * (m_target->HealTakenPctMod[m_spellInfo->School] + c->HealDonePctMod[GetSpellInfo()->School]));
-        spellModPercentageIntValue(c->SM_PDOT, &add, m_spellInfo->SpellGroupType);
+        add += float2int32(add * (m_target->HealTakenPctMod[m_spellInfo->getSchool()] + c->HealDonePctMod[GetSpellInfo()->getSchool()]));
+        spellModPercentageIntValue(c->SM_PDOT, &add, m_spellInfo->getSpellGroupType());
 
         if (this->DotCanCrit())
         {
@@ -2827,7 +2827,7 @@ void Aura::SpellAuraDamageShield(bool apply)
         DamageProc ds;// = new DamageShield();
         ds.m_damage = mod->m_amount;
         ds.m_spellId = GetSpellInfo()->getId();
-        ds.m_school = GetSpellInfo()->School;
+        ds.m_school = GetSpellInfo()->getSchool();
         ds.m_flags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_MISC; //maybe later we might want to add other flags too here
         ds.owner = (void*)this;
         m_target->m_damageShields.push_back(ds);
@@ -3221,7 +3221,7 @@ void Aura::EventPeriodicHealPct(float RegenPct)
     else
         m_target->SetHealth(m_target->GetMaxHealth());
 
-    m_target->SendPeriodicAuraLog(m_casterGuid, m_target->GetNewGUID(), m_spellInfo->getId(), m_spellInfo->School, add, 0, 0, FLAG_PERIODIC_HEAL, false);
+    m_target->SendPeriodicAuraLog(m_casterGuid, m_target->GetNewGUID(), m_spellInfo->getId(), m_spellInfo->getSchool(), add, 0, 0, FLAG_PERIODIC_HEAL, false);
 
     if (GetSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
     {
@@ -3272,7 +3272,7 @@ void Aura::EventPeriodicManaPct(float RegenPct)
 void Aura::EventPeriodicTriggerDummy()
 {
     if (!sScriptMgr.CallScriptedDummyAura(m_spellInfo->getId(), mod->i, this, true))
-        LOG_ERROR("Spell %u (%s) has an apply periodic trigger dummy aura effect, but no handler for it.", m_spellInfo->getId(), m_spellInfo->Name.c_str());
+        LOG_ERROR("Spell %u (%s) has an apply periodic trigger dummy aura effect, but no handler for it.", m_spellInfo->getId(), m_spellInfo->getName().c_str());
 }
 
 void Aura::SpellAuraModResistance(bool apply)
@@ -3388,8 +3388,8 @@ void Aura::SpellAuraPeriodicTriggerSpellWithValue(bool apply)
         uint32 numticks = m_spellInfo->getSpellDuration(caster) / m_spellInfo->getEffectAmplitude(mod->i);
         if (caster != NULL)
         {
-            spellModFlatFloatValue(caster->SM_FAmptitude, &amptitude, m_spellInfo->SpellGroupType);
-            spellModPercentageFloatValue(caster->SM_PAmptitude, &amptitude, m_spellInfo->SpellGroupType);
+            spellModFlatFloatValue(caster->SM_FAmptitude, &amptitude, m_spellInfo->getSpellGroupType());
+            spellModPercentageFloatValue(caster->SM_PAmptitude, &amptitude, m_spellInfo->getSpellGroupType());
             if (m_spellInfo->getChannelInterruptFlags() != 0)
                 amptitude *= caster->GetCastSpeedMod();
         }
@@ -3466,8 +3466,8 @@ void Aura::SpellAuraPeriodicTriggerSpell(bool apply)
         uint32 numticks = m_spellInfo->getSpellDuration(caster) / m_spellInfo->getEffectAmplitude(mod->i);
         if (caster != NULL)
         {
-            spellModFlatFloatValue(caster->SM_FAmptitude, &amptitude, m_spellInfo->SpellGroupType);
-            spellModPercentageFloatValue(caster->SM_PAmptitude, &amptitude, m_spellInfo->SpellGroupType);
+            spellModFlatFloatValue(caster->SM_FAmptitude, &amptitude, m_spellInfo->getSpellGroupType());
+            spellModPercentageFloatValue(caster->SM_PAmptitude, &amptitude, m_spellInfo->getSpellGroupType());
             if (m_spellInfo->getChannelInterruptFlags() != 0)
                 amptitude *= caster->GetCastSpeedMod();
         }
@@ -3572,7 +3572,7 @@ void Aura::SpellAuraModRoot(bool apply)
             m_target->EventStunOrImmobilize(caster, true);
         }
 
-        if (GetSpellInfo()->School == SCHOOL_FROST && !m_target->asc_frozen++)
+        if (GetSpellInfo()->getSchool() == SCHOOL_FROST && !m_target->asc_frozen++)
             m_target->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_FROZEN);
 
         ///\todo -Supalosa- TODO: Mobs will attack nearest enemy in range on aggro list when rooted. */
@@ -3588,7 +3588,7 @@ void Aura::SpellAuraModRoot(bool apply)
         if (m_target->IsCreature())
             m_target->GetAIInterface()->AttackReaction(GetUnitCaster(), 1, 0);
 
-        if (GetSpellInfo()->School == SCHOOL_FROST && !--m_target->asc_frozen)
+        if (GetSpellInfo()->getSchool() == SCHOOL_FROST && !--m_target->asc_frozen)
             m_target->RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_FROZEN);
     }
 }
@@ -3830,7 +3830,7 @@ void Aura::SpellAuraModDecreaseSpeed(bool apply)
         }
 
         //let's check Mage talents if we proc anything
-        if (m_spellInfo->School == SCHOOL_FROST)
+        if (m_spellInfo->getSchool() == SCHOOL_FROST)
         {
             //yes we are freezing the bastard, so can we proc anything on this ?
             Unit* caster = GetUnitCaster();
@@ -3864,7 +3864,7 @@ void Aura::UpdateAuraModDecreaseSpeed()
     }
 
     //let's check Mage talents if we proc anything
-    if (m_spellInfo->School == SCHOOL_FROST)
+    if (m_spellInfo->getSchool() == SCHOOL_FROST)
     {
         //yes we are freezing the bastard, so can we proc anything on this ?
         Unit* caster = GetUnitCaster();
@@ -4485,9 +4485,9 @@ void Aura::SpellAuraProcTriggerSpell(bool apply)
 
 #if VERSION_STRING != Cata
         // Initialize mask
-        groupRelation[0] = GetSpellInfo()->EffectSpellClassMask[mod->i][0];
-        groupRelation[1] = GetSpellInfo()->EffectSpellClassMask[mod->i][1];
-        groupRelation[2] = GetSpellInfo()->EffectSpellClassMask[mod->i][2];
+        groupRelation[0] = GetSpellInfo()->getEffectSpellClassMask(mod->i, 0);
+        groupRelation[1] = GetSpellInfo()->getEffectSpellClassMask(mod->i, 1);
+        groupRelation[2] = GetSpellInfo()->getEffectSpellClassMask(mod->i, 2);
 #else
         groupRelation[0] = GetSpellInfo()->EffectSpellClassMask[0];
         groupRelation[1] = GetSpellInfo()->EffectSpellClassMask[1];
@@ -4499,8 +4499,8 @@ void Aura::SpellAuraProcTriggerSpell(bool apply)
         Unit* ucaster = GetUnitCaster();
         if (ucaster != nullptr)
         {
-            spellModFlatIntValue(ucaster->SM_FCharges, &charges, GetSpellInfo()->SpellGroupType);
-            spellModPercentageIntValue(ucaster->SM_PCharges, &charges, GetSpellInfo()->SpellGroupType);
+            spellModFlatIntValue(ucaster->SM_FCharges, &charges, GetSpellInfo()->getSpellGroupType());
+            spellModPercentageIntValue(ucaster->SM_PCharges, &charges, GetSpellInfo()->getSpellGroupType());
         }
 
         m_target->AddProcTriggerSpell(spellId, GetSpellInfo()->getId(), m_casterGuid, GetSpellInfo()->getProcChance(), GetSpellInfo()->getProcFlags(), charges, groupRelation, NULL);
@@ -4528,7 +4528,7 @@ void Aura::SpellAuraProcTriggerDamage(bool apply)
         DamageProc ds;
         ds.m_damage = mod->m_amount;
         ds.m_spellId = GetSpellInfo()->getId();
-        ds.m_school = GetSpellInfo()->School;
+        ds.m_school = GetSpellInfo()->getSchool();
         ds.m_flags = m_spellInfo->getProcFlags();
         ds.owner = (void*)this;
         m_target->m_damageShields.push_back(ds);
@@ -4713,7 +4713,7 @@ void Aura::EventPeriodicLeech(uint32 amount)
 
     SpellInfo* sp = GetSpellInfo();
 
-    if (m_target->SchoolImmunityList[sp->School])
+    if (m_target->SchoolImmunityList[sp->getSchool()])
     {
         SendTickImmune(m_target, m_caster);
         return;
@@ -4739,8 +4739,8 @@ void Aura::EventPeriodicLeech(uint32 amount)
 
     amount += bonus;
 
-    spellModFlatIntValue(m_caster->SM_FDOT, (int32*)&amount, sp->SpellGroupType);
-    spellModPercentageIntValue(m_caster->SM_PDOT, (int32*)&amount, sp->SpellGroupType);
+    spellModFlatIntValue(m_caster->SM_FDOT, (int32*)&amount, sp->getSpellGroupType());
+    spellModPercentageIntValue(m_caster->SM_PDOT, (int32*)&amount, sp->getSpellGroupType());
 
 
     if (DotCanCrit())
@@ -4774,7 +4774,7 @@ void Aura::EventPeriodicLeech(uint32 amount)
                 continue;
 
             Aura* aura = m_target->m_auras[x];
-            if (aura->GetSpellInfo()->SpellFamilyName != 5)
+            if (aura->GetSpellInfo()->getSpellFamilyName() != 5)
                 continue;
 
             auto skill_line_ability = objmgr.GetSpellSkill(aura->GetSpellId());
@@ -4825,11 +4825,11 @@ void Aura::EventPeriodicLeech(uint32 amount)
         m_caster->SetHealth(mh);
 
     m_target->SendPeriodicHealAuraLog(m_caster->GetNewGUID(), m_caster->GetNewGUID(), sp->getId(), heal_amount, 0, false);
-    m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), sp->getId(), sp->School, heal_amount, 0, 0, FLAG_PERIODIC_LEECH, is_critical);
+    m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), sp->getId(), sp->getSchool(), heal_amount, 0, 0, FLAG_PERIODIC_LEECH, is_critical);
 
     //deal damage before we add healing bonus to damage
     m_caster->DealDamage(m_target, dmg_amount, 0, 0, sp->getId(), true);
-    m_caster->SendSpellNonMeleeDamageLog(m_caster, m_target, sp->getId(), dmg_amount, (uint8)sp->School, 0, 0, true, 0, is_critical, true);
+    m_caster->SendSpellNonMeleeDamageLog(m_caster, m_target, sp->getId(), dmg_amount, (uint8)sp->getSchool(), 0, 0, true, 0, is_critical, true);
 
     m_caster->HandleProc(aproc, m_target, sp, false, dmg_amount);
     m_caster->m_procCounter = 0;
@@ -4863,8 +4863,8 @@ void Aura::SpellAuraModHitChance(bool apply)
     Unit* c = GetUnitCaster();
     if (c != nullptr)
     {
-        spellModFlatIntValue(c->SM_FMiscEffect, &val, GetSpellInfo()->SpellGroupType);
-        spellModPercentageIntValue(c->SM_PMiscEffect, &val, GetSpellInfo()->SpellGroupType);
+        spellModFlatIntValue(c->SM_FMiscEffect, &val, GetSpellInfo()->getSpellGroupType());
+        spellModPercentageIntValue(c->SM_PMiscEffect, &val, GetSpellInfo()->getSpellGroupType());
     }
 
     if (apply)
@@ -5279,7 +5279,7 @@ void Aura::EventPeriodicHealthFunnel(uint32 amount)
         else
             m_caster->SetHealth(mh);
 
-        m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), m_spellInfo->getId(), m_spellInfo->School, 1000, 0, 0, FLAG_PERIODIC_LEECH, false);
+        m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), m_spellInfo->getId(), m_spellInfo->getSchool(), 1000, 0, 0, FLAG_PERIODIC_LEECH, false);
 
         m_caster->RemoveAurasByHeal();
     }
@@ -5570,7 +5570,7 @@ void Aura::SpellAuraReflectSpellsSchool(bool apply)
         if (m_spellInfo->getAttributes() == 0x400D0 && m_spellInfo->getAttributesEx() == 0)
             rss->school = (int)(log10((float)mod->m_miscValue) / log10((float)2));
         else
-            rss->school = m_spellInfo->School;
+            rss->school = m_spellInfo->getSchool();
 
         rss->charges = 0;
 
@@ -5964,7 +5964,7 @@ void Aura::SpellAuraPeriodicTriggerDummy(bool apply)
     else
     {
         if (!sScriptMgr.CallScriptedDummyAura(m_spellInfo->getId(), mod->i, this, false))
-            LOG_ERROR("Spell %u (%s) has an apply periodic trigger dummy aura effect, but no handler for it.", m_spellInfo->getId(), m_spellInfo->Name.c_str());
+            LOG_ERROR("Spell %u (%s) has an apply periodic trigger dummy aura effect, but no handler for it.", m_spellInfo->getId(), m_spellInfo->getName().c_str());
     }
 }
 
@@ -6179,7 +6179,7 @@ void Aura::EventPeriodicDamagePercent(uint32 amount)
     //DOT
     if (!m_target->isAlive())
         return;
-    if (m_target->SchoolImmunityList[GetSpellInfo()->School])
+    if (m_target->SchoolImmunityList[GetSpellInfo()->getSchool()])
         return;
 
     uint32 damage = float2int32(amount / 100.0f * m_target->GetMaxHealth());
@@ -6188,7 +6188,7 @@ void Aura::EventPeriodicDamagePercent(uint32 amount)
 
     if (m_target->m_damageSplitTarget)
     {
-        damage = m_target->DoDamageSplitTarget(damage, GetSpellInfo()->School, false);
+        damage = m_target->DoDamageSplitTarget(damage, GetSpellInfo()->getSchool(), false);
     }
 
     if (c)
@@ -6464,7 +6464,7 @@ void Aura::SpellAuraAddPctMod(bool apply)
 {
     int32 val = apply ? mod->m_amount : -mod->m_amount;
 #if VERSION_STRING != Cata
-    uint32* AffectedGroups = GetSpellInfo()->EffectSpellClassMask[mod->i];
+    uint32* AffectedGroups = GetSpellInfo()->getEffectSpellClassMask(mod->i);
 #else
     uint32* AffectedGroups = GetSpellInfo()->EffectSpellClassMask;
 #endif
@@ -6629,7 +6629,7 @@ void Aura::SendDummyModifierLog(std::map< SpellInfo*, uint32 >* m, SpellInfo* sp
 {
     int32 v = spellInfo->getEffectBasePoints(i) + 1;
 #if VERSION_STRING != Cata
-    uint32* mask = spellInfo->EffectSpellClassMask[i];
+    uint32* mask = spellInfo->getEffectSpellClassMask(i);
 #else
     uint32* mask = spellInfo->EffectSpellClassMask;
 #endif
@@ -6683,14 +6683,14 @@ void Aura::SpellAuraAddClassTargetTrigger(bool apply)
 
 #if VERSION_STRING != Cata
         // Initialize proc class mask
-        procClassMask[0] = GetSpellInfo()->EffectSpellClassMask[mod->i][0];
-        procClassMask[1] = GetSpellInfo()->EffectSpellClassMask[mod->i][1];
-        procClassMask[2] = GetSpellInfo()->EffectSpellClassMask[mod->i][2];
+        procClassMask[0] = GetSpellInfo()->getEffectSpellClassMask(mod->i, 0);
+        procClassMask[1] = GetSpellInfo()->getEffectSpellClassMask(mod->i, 1);
+        procClassMask[2] = GetSpellInfo()->getEffectSpellClassMask(mod->i, 2);
 
         // Initialize mask
-        groupRelation[0] = sp->EffectSpellClassMask[mod->i][0];
-        groupRelation[1] = sp->EffectSpellClassMask[mod->i][1];
-        groupRelation[2] = sp->EffectSpellClassMask[mod->i][2];
+        groupRelation[0] = sp->getEffectSpellClassMask(mod->i, 0);
+        groupRelation[1] = sp->getEffectSpellClassMask(mod->i, 1);
+        groupRelation[2] = sp->getEffectSpellClassMask(mod->i, 2);
 #else
         // Initialize proc class mask
         procClassMask[0] = GetSpellInfo()->EffectSpellClassMask[0];
@@ -6708,8 +6708,8 @@ void Aura::SpellAuraAddClassTargetTrigger(bool apply)
         Unit* ucaster = GetUnitCaster();
         if (ucaster != nullptr)
         {
-            spellModFlatIntValue(ucaster->SM_FCharges, &charges, GetSpellInfo()->SpellGroupType);
-            spellModPercentageIntValue(ucaster->SM_PCharges, &charges, GetSpellInfo()->SpellGroupType);
+            spellModFlatIntValue(ucaster->SM_FCharges, &charges, GetSpellInfo()->getSpellGroupType());
+            spellModPercentageIntValue(ucaster->SM_PCharges, &charges, GetSpellInfo()->getSpellGroupType());
         }
 
         m_target->AddProcTriggerSpell(sp->getId(), GetSpellInfo()->getId(), m_casterGuid, GetSpellInfo()->getEffectBasePoints(mod->i) + 1, PROC_ON_CAST_SPELL, charges, groupRelation, procClassMask);
@@ -7533,13 +7533,13 @@ void Aura::EventPeriodicBurn(uint32 amount, uint32 misc)
 
     if (m_target->isAlive() && m_caster->isAlive())
     {
-        if (m_target->SchoolImmunityList[GetSpellInfo()->School])
+        if (m_target->SchoolImmunityList[GetSpellInfo()->getSchool()])
             return;
 
         uint32 Amount = (uint32)std::min(amount, m_target->GetPower(misc));
         uint32 newHealth = m_target->GetPower(misc) - Amount;
 
-        m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), m_spellInfo->getId(), m_spellInfo->School, newHealth, 0, 0, FLAG_PERIODIC_DAMAGE, false);
+        m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), m_spellInfo->getId(), m_spellInfo->getSchool(), newHealth, 0, 0, FLAG_PERIODIC_DAMAGE, false);
         m_caster->DealDamage(m_target, Amount, 0, 0, GetSpellInfo()->getId());
     }
 }
@@ -7851,7 +7851,7 @@ void Aura::SpellAuraAddFlatModifier(bool apply)
 {
     int32 val = apply ? mod->m_amount : -mod->m_amount;
 #if VERSION_STRING != Cata
-    uint32* AffectedGroups = GetSpellInfo()->EffectSpellClassMask[mod->i];
+    uint32* AffectedGroups = GetSpellInfo()->getEffectSpellClassMask(mod->i);
 #else
     uint32* AffectedGroups = GetSpellInfo()->EffectSpellClassMask;
 #endif
@@ -9080,7 +9080,7 @@ void Aura::SpellAuraAllowOnlyAbility(bool apply)
         p_target->m_castFilterEnabled = true;
         for (uint32 x = 0; x < 3; x++)
 #if VERSION_STRING != Cata
-            p_target->m_castFilter[x] |= m_spellInfo->EffectSpellClassMask[mod->i][x];
+            p_target->m_castFilter[x] |= m_spellInfo->getEffectSpellClassMask(mod->i, x);
 #else
             p_target->m_castFilter[x] |= m_spellInfo->EffectSpellClassMask[x];
 #endif
@@ -9091,7 +9091,7 @@ void Aura::SpellAuraAllowOnlyAbility(bool apply)
         for (uint32 x = 0; x < 3; x++)
         {
 #if VERSION_STRING != Cata
-            p_target->m_castFilter[x] &= ~m_spellInfo->EffectSpellClassMask[mod->i][x];
+            p_target->m_castFilter[x] &= ~m_spellInfo->getEffectSpellClassMask(mod->i, x);
 #else
             p_target->m_castFilter[x] &= ~m_spellInfo->EffectSpellClassMask[x];
 #endif
@@ -9133,7 +9133,7 @@ void Aura::SpellAuraModSpellDamageDOTPct(bool apply)
         case 59161:
         case 59163:
         case 59164:
-            m_target->DoTPctIncrease[m_spellInfo->School] += val;
+            m_target->DoTPctIncrease[m_spellInfo->getSchool()] += val;
             break;
         default:
         {
@@ -9382,10 +9382,10 @@ bool Aura::DotCanCrit()
         i = 2;
 
 
-    if (aura_spell_info->SpellFamilyName == spell_info->SpellFamilyName &&
-        (aura_spell_info->EffectSpellClassMask[i][0] & spell_info->SpellGroupType[0] ||
-         aura_spell_info->EffectSpellClassMask[i][1] & spell_info->SpellGroupType[1] ||
-         aura_spell_info->EffectSpellClassMask[i][2] & spell_info->SpellGroupType[2]))
+    if (aura_spell_info->getSpellFamilyName() == spell_info->getSpellFamilyName() &&
+        (aura_spell_info->getEffectSpellClassMask(i, 0) & spell_info->getSpellGroupType(0) ||
+         aura_spell_info->getEffectSpellClassMask(i, 1) & spell_info->getSpellGroupType(1) ||
+         aura_spell_info->getEffectSpellClassMask(i, 2) & spell_info->getSpellGroupType(2)))
     {
         return true;
     }
@@ -9509,20 +9509,20 @@ void AbsorbAura::SpellAuraSchoolAbsorb(bool apply)
     Unit* caster = GetUnitCaster();
     if (caster != nullptr)
     {
-        spellModFlatIntValue(caster->SM_FMiscEffect, &val, GetSpellInfo()->SpellGroupType);
-        spellModPercentageIntValue(caster->SM_PMiscEffect, &val, GetSpellInfo()->SpellGroupType);
+        spellModFlatIntValue(caster->SM_FMiscEffect, &val, GetSpellInfo()->getSpellGroupType());
+        spellModPercentageIntValue(caster->SM_PMiscEffect, &val, GetSpellInfo()->getSpellGroupType());
 
         //This will fix talents that affects damage absorbed.
         int flat = 0;
-        spellModFlatIntValue(caster->SM_FMiscEffect, &flat, GetSpellInfo()->SpellGroupType);
+        spellModFlatIntValue(caster->SM_FMiscEffect, &flat, GetSpellInfo()->getSpellGroupType());
         val += val * flat / 100;
 
         //For spells Affected by Bonus Healing we use Dspell_coef_override.
         if (GetSpellInfo()->Dspell_coef_override >= 0)
-            val += float2int32(caster->HealDoneMod[GetSpellInfo()->School] * GetSpellInfo()->Dspell_coef_override);
+            val += float2int32(caster->HealDoneMod[GetSpellInfo()->getSchool()] * GetSpellInfo()->Dspell_coef_override);
         //For spells Affected by Bonus Damage we use OTspell_coef_override.
         else if (GetSpellInfo()->OTspell_coef_override >= 0)
-            val += float2int32(caster->GetDamageDoneMod(GetSpellInfo()->School) * GetSpellInfo()->OTspell_coef_override);
+            val += float2int32(caster->GetDamageDoneMod(GetSpellInfo()->getSchool()) * GetSpellInfo()->OTspell_coef_override);
     }
 
     m_total_amount = val;

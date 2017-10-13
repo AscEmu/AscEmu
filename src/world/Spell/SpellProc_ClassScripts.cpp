@@ -349,7 +349,7 @@ public:
     // Allow proc on ability cast (like eviscerate, envenom, fan of knives, rupture)
     bool CanProcOnTriggered(Unit* victim, SpellInfo* CastingSpell)
     {
-        if (CastingSpell != NULL && (CastingSpell->SpellGroupType[0] & 0x120000 || CastingSpell->SpellGroupType[1] & 0x240008))
+        if (CastingSpell != NULL && (CastingSpell->getSpellGroupType(0) & 0x120000 || CastingSpell->getSpellGroupType(1) & 0x240008))
             return true;
 
         return false;
@@ -430,8 +430,8 @@ public:
             // Duration of 5 combo maximum
             int32 dur = 21 * MSTIME_SECOND;
 
-            spellModFlatIntValue(mTarget->SM_FDur, &dur, aura->GetSpellInfo()->SpellGroupType);
-            spellModPercentageIntValue(mTarget->SM_PDur, &dur, aura->GetSpellInfo()->SpellGroupType);
+            spellModFlatIntValue(mTarget->SM_FDur, &dur, aura->GetSpellInfo()->getSpellGroupType());
+            spellModPercentageIntValue(mTarget->SM_PDur, &dur, aura->GetSpellInfo()->getSpellGroupType());
 
             // Set new aura's duration, reset event timer and set client visual aura
             aura->SetDuration(dur);
@@ -660,7 +660,7 @@ public:
     bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
         // Only proc for damaging shadow spells
-        if (CastingSpell->School != SCHOOL_SHADOW || !CastingSpell->isDamagingSpell())
+        if (CastingSpell->getSchool() != SCHOOL_SHADOW || !CastingSpell->isDamagingSpell())
             return true;
 
         // Only proc for single target spells
@@ -835,7 +835,7 @@ public:
     bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
         // If spell is not Mind Blast (by SpellGroupType) or player is not on shadowform, don't proc
-        if (!(CastingSpell->SpellGroupType[0] & mProcClassMask[0] && mTarget->IsPlayer() && static_cast<Player*>(mTarget)->GetShapeShift() == FORM_SHADOW))
+        if (!(CastingSpell->getSpellGroupType(0) & mProcClassMask[0] && mTarget->IsPlayer() && static_cast<Player*>(mTarget)->GetShapeShift() == FORM_SHADOW))
             return true;
 
         return false;
@@ -1121,9 +1121,9 @@ public:
         mProcFlags = PROC_ON_CAST_SPELL;
 
 #if VERSION_STRING != Cata
-        mProcClassMask[0] = mOrigSpell->EffectSpellClassMask[0][0];
-        mProcClassMask[1] = mOrigSpell->EffectSpellClassMask[0][1];
-        mProcClassMask[2] = mOrigSpell->EffectSpellClassMask[0][2];
+        mProcClassMask[0] = mOrigSpell->getEffectSpellClassMask(0, 0);
+        mProcClassMask[1] = mOrigSpell->getEffectSpellClassMask(0, 1);
+        mProcClassMask[2] = mOrigSpell->getEffectSpellClassMask(0, 2);
 #else
         mProcClassMask[0] = mOrigSpell->EffectSpellClassMask[0];
         mProcClassMask[1] = mOrigSpell->EffectSpellClassMask[1];

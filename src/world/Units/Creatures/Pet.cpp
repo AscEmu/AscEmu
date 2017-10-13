@@ -819,7 +819,7 @@ AI_Spell* Pet::CreateAISpell(SpellInfo* info)
     if (sp->cooldown == 0)
         sp->cooldown = info->getCategoryRecoveryTime();
     if (sp->cooldown == 0)
-        sp->cooldown = info->StartRecoveryTime;     //avoid spell spamming
+        sp->cooldown = info->getStartRecoveryTime();     //avoid spell spamming
     if (sp->cooldown == 0)
         sp->cooldown = PET_SPELL_SPAM_COOLDOWN;     //omg, avoid spamming at least
     sp->cooldowntime = 0;

@@ -2135,7 +2135,7 @@ void AIInterface::HealReaction(Unit* caster, Unit* victim, SpellInfo* sp, uint32
         threat = threat / 2; //Paladins only get 50% threat per heal than other classes
 
     if (sp != nullptr)
-        threat += (threat * caster->GetGeneratedThreatModifyer(sp->School) / 100);
+        threat += (threat * caster->GetGeneratedThreatModifyer(sp->getSchool()) / 100);
 
     if (threat < 1)
         threat = 1;
@@ -3673,8 +3673,8 @@ uint32 AIInterface::_CalcThreat(uint32 damage, SpellInfo* sp, Unit* Attacker)
 
     if (sp != nullptr)
     {
-        ascemu::World::Spell::Helpers::spellModFlatIntValue(Attacker->SM_FThreat, &mod, sp->SpellGroupType);
-        ascemu::World::Spell::Helpers::spellModPercentageIntValue(Attacker->SM_PThreat, &mod, sp->SpellGroupType);
+        ascemu::World::Spell::Helpers::spellModFlatIntValue(Attacker->SM_FThreat, &mod, sp->getSpellGroupType());
+        ascemu::World::Spell::Helpers::spellModPercentageIntValue(Attacker->SM_PThreat, &mod, sp->getSpellGroupType());
     }
 
     if (Attacker->getClass() == ROGUE)
@@ -3682,7 +3682,7 @@ uint32 AIInterface::_CalcThreat(uint32 damage, SpellInfo* sp, Unit* Attacker)
 
     // modify threat by Buffs
     if (sp != nullptr)
-        mod += (mod * Attacker->GetGeneratedThreatModifyer(sp->School) / 100);
+        mod += (mod * Attacker->GetGeneratedThreatModifyer(sp->getSchool()) / 100);
     else
         mod += (mod * Attacker->GetGeneratedThreatModifyer(0) / 100);
 

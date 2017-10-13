@@ -2426,7 +2426,7 @@ void Player::addSpell(uint32 spell_id)
     {
         // miscvalue1==777 for mounts, 778 for pets
         // make sure it's a companion pet, not some other summon-type spell
-        if (strncmp(spell->Description.c_str(), "Right Cl", 8) == 0) // "Right Click to summon and dismiss " ...
+        if (strncmp(spell->getDescription().c_str(), "Right Cl", 8) == 0) // "Right Click to summon and dismiss " ...
         {
             m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_NUMBER_OF_MOUNTS, 778, 0, 0);
         }
@@ -6289,7 +6289,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
     if (spell_info == nullptr)
         return -1;
 
-    LogDebugFlag(LF_SPELL, "Canshootwithrangedweapon!?!? spell: [%u] %s" , spell_info->getId() , spell_info->Name.c_str());
+    LogDebugFlag(LF_SPELL, "Canshootwithrangedweapon!?!? spell: [%u] %s" , spell_info->getId() , spell_info->getName().c_str());
 
     // Check if Morphed
     if (polySpell > 0)
@@ -6344,8 +6344,8 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
     float dist = CalcDistance(this, target);
     float maxr = GetMaxRange(spell_range) + 2.52f;
 
-    spellModFlatFloatValue(this->SM_FRange, &maxr, spell_info->SpellGroupType);
-    spellModPercentageFloatValue(this->SM_PRange, &maxr, spell_info->SpellGroupType);
+    spellModFlatFloatValue(this->SM_FRange, &maxr, spell_info->getSpellGroupType());
+    spellModPercentageFloatValue(this->SM_PRange, &maxr, spell_info->getSpellGroupType());
 
     //float bonusRange = 0;
     // another hackfix: bonus range from hunter talent hawk eye: +2/4/6 yard range to ranged weapons
@@ -11271,8 +11271,8 @@ void Player::Cooldown_Add(SpellInfo* pSpell, Item* pItemCaster)
     uint32 spell_category_recovery_time = pSpell->getCategoryRecoveryTime();
     if (spell_category_recovery_time > 0 && category_id)
     {
-        spellModFlatIntValue(SM_FCooldownTime, &cool_time, pSpell->SpellGroupType);
-        spellModPercentageIntValue(SM_PCooldownTime, &cool_time, pSpell->SpellGroupType);
+        spellModFlatIntValue(SM_FCooldownTime, &cool_time, pSpell->getSpellGroupType());
+        spellModPercentageIntValue(SM_PCooldownTime, &cool_time, pSpell->getSpellGroupType());
 
         AddCategoryCooldown(category_id, spell_category_recovery_time + mstime, spell_id, pItemCaster ? pItemCaster->GetItemProperties()->ItemId : 0);
     }
@@ -11280,8 +11280,8 @@ void Player::Cooldown_Add(SpellInfo* pSpell, Item* pItemCaster)
     uint32 spell_recovery_t = pSpell->getRecoveryTime();
     if (spell_recovery_t > 0)
     {
-        spellModFlatIntValue(SM_FCooldownTime, &cool_time, pSpell->SpellGroupType);
-        spellModPercentageIntValue(SM_PCooldownTime, &cool_time, pSpell->SpellGroupType);
+        spellModFlatIntValue(SM_FCooldownTime, &cool_time, pSpell->getSpellGroupType());
+        spellModPercentageIntValue(SM_PCooldownTime, &cool_time, pSpell->getSpellGroupType());
 
         _Cooldown_Add(COOLDOWN_TYPE_SPELL, spell_id, spell_recovery_t + mstime, spell_id, pItemCaster ? pItemCaster->GetItemProperties()->ItemId : 0);
     }
@@ -11289,25 +11289,25 @@ void Player::Cooldown_Add(SpellInfo* pSpell, Item* pItemCaster)
 
 void Player::Cooldown_AddStart(SpellInfo* pSpell)
 {
-    if (pSpell->StartRecoveryTime == 0)
+    if (pSpell->getStartRecoveryTime() == 0)
         return;
 
     uint32 mstime = Util::getMSTime();
     int32 atime; // = float2int32(float(pSpell->StartRecoveryTime) / SpellHasteRatingBonus);
 
     if (GetCastSpeedMod() >= 1.0f)
-        atime = pSpell->StartRecoveryTime;
+        atime = pSpell->getStartRecoveryTime();
     else
-        atime = float2int32(pSpell->StartRecoveryTime * GetCastSpeedMod());
+        atime = float2int32(pSpell->getStartRecoveryTime() * GetCastSpeedMod());
 
-    spellModFlatIntValue(SM_FGlobalCooldown, &atime, pSpell->SpellGroupType);
-    spellModPercentageIntValue(SM_PGlobalCooldown, &atime, pSpell->SpellGroupType);
+    spellModFlatIntValue(SM_FGlobalCooldown, &atime, pSpell->getSpellGroupType());
+    spellModPercentageIntValue(SM_PGlobalCooldown, &atime, pSpell->getSpellGroupType());
 
     if (atime < 0)
         return;
 
-    if (pSpell->StartRecoveryCategory && pSpell->StartRecoveryCategory != 133)        // if we have a different cool category to the actual spell category - only used by few spells
-        AddCategoryCooldown(pSpell->StartRecoveryCategory, mstime + atime, pSpell->getId(), 0);
+    if (pSpell->getStartRecoveryCategory() && pSpell->getStartRecoveryCategory() != 133)        // if we have a different cool category to the actual spell category - only used by few spells
+        AddCategoryCooldown(pSpell->getStartRecoveryCategory(), mstime + atime, pSpell->getId(), 0);
     //else if (pSpell->Category)                // cooldowns are grouped
     //_Cooldown_Add(COOLDOWN_TYPE_CATEGORY, pSpell->Category, mstime + pSpell->StartRecoveryTime, pSpell->getId(), 0);
     else                                    // no category, so it's a gcd
@@ -11344,7 +11344,7 @@ bool Player::Cooldown_CanCast(SpellInfo* pSpell)
             m_cooldownMap[COOLDOWN_TYPE_SPELL].erase(itr);
     }
 
-    if (pSpell->StartRecoveryTime && m_globalCooldown && !this->CooldownCheat /* cebernic:GCD also cheat :D */)            /* gcd doesn't affect spells without a cooldown it seems */
+    if (pSpell->getStartRecoveryTime() && m_globalCooldown && !this->CooldownCheat /* cebernic:GCD also cheat :D */)            /* gcd doesn't affect spells without a cooldown it seems */
     {
         if (mstime < m_globalCooldown)
             return false;
@@ -12742,7 +12742,7 @@ void Player::SendPreventSchoolCast(uint32 SpellSchool, uint32 unTimeMs)
         if (spellInfo->getAttributes() & ATTRIBUTES_TRIGGER_COOLDOWN)
             continue;
 
-        if (spellInfo->School == SpellSchool)
+        if (spellInfo->getSchool() == SpellSchool)
         {
             data << uint32(SpellId);
             data << uint32(unTimeMs);                       // in m.secs

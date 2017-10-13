@@ -168,52 +168,52 @@ void SpellCustomizations::LoadSpellInfoData()
 #if VERSION_STRING > TBC
             for (uint8 i = 0; i < 3; ++i)
                 for (uint8 j = 0; j < 3; ++j)
-                    spellInfo.EffectSpellClassMask[i][j] = dbc_spell_entry->EffectSpellClassMask[i][j];
+                    spellInfo.setEffectSpellClassMask(dbc_spell_entry->EffectSpellClassMask[i][j], i, j);
 #endif
 
-            spellInfo.SpellVisual = dbc_spell_entry->SpellVisual;
-            spellInfo.field114 = dbc_spell_entry->field114;
-            spellInfo.spellIconID = dbc_spell_entry->spellIconID;
-            spellInfo.activeIconID = dbc_spell_entry->activeIconID;
-            spellInfo.spellPriority = dbc_spell_entry->spellPriority;
-            spellInfo.Name = dbc_spell_entry->Name;
-            spellInfo.Rank = dbc_spell_entry->Rank;
-            spellInfo.Description = dbc_spell_entry->Description;
-            spellInfo.BuffDescription = dbc_spell_entry->BuffDescription;
-            spellInfo.ManaCostPercentage = dbc_spell_entry->ManaCostPercentage;
-            spellInfo.StartRecoveryCategory = dbc_spell_entry->StartRecoveryCategory;
-            spellInfo.StartRecoveryTime = dbc_spell_entry->StartRecoveryTime;
+            spellInfo.setSpellVisual(dbc_spell_entry->SpellVisual);
+            spellInfo.setField114(dbc_spell_entry->field114);
+            spellInfo.setSpellIconID(dbc_spell_entry->spellIconID);
+            spellInfo.setActiveIconID(dbc_spell_entry->activeIconID);
+            spellInfo.setSpellPriority(dbc_spell_entry->spellPriority);
+            spellInfo.setName(dbc_spell_entry->Name);
+            spellInfo.setRank(dbc_spell_entry->Rank);
+            spellInfo.setDescription(dbc_spell_entry->Description);
+            spellInfo.setBuffDescription(dbc_spell_entry->BuffDescription);
+            spellInfo.setManaCostPercentage(dbc_spell_entry->ManaCostPercentage);
+            spellInfo.setStartRecoveryCategory(dbc_spell_entry->StartRecoveryCategory);
+            spellInfo.setStartRecoveryTime(dbc_spell_entry->StartRecoveryTime);
 #if VERSION_STRING > TBC
-            spellInfo.MaxTargetLevel = dbc_spell_entry->MaxTargetLevel;
+            spellInfo.setMaxTargetLevel(dbc_spell_entry->MaxTargetLevel);
 #endif
-            spellInfo.SpellFamilyName = dbc_spell_entry->SpellFamilyName;
+            spellInfo.setSpellFamilyName(dbc_spell_entry->SpellFamilyName);
 
 #if VERSION_STRING > TBC
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.SpellGroupType[i] = dbc_spell_entry->SpellGroupType[i];
+                spellInfo.setSpellGroupType(dbc_spell_entry->SpellGroupType[i], i);
 #endif
 
-            spellInfo.MaxTargets = dbc_spell_entry->MaxTargets;
-            spellInfo.Spell_Dmg_Type = dbc_spell_entry->Spell_Dmg_Type;
-            spellInfo.PreventionType = dbc_spell_entry->PreventionType;
-            spellInfo.StanceBarOrder = dbc_spell_entry->StanceBarOrder;
+            spellInfo.setMaxTargets(dbc_spell_entry->MaxTargets);
+            spellInfo.setSpell_Dmg_Type(dbc_spell_entry->Spell_Dmg_Type);
+            spellInfo.setPreventionType(dbc_spell_entry->PreventionType);
+            spellInfo.setStanceBarOrder(dbc_spell_entry->StanceBarOrder);
 
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.dmg_multiplier[i] = dbc_spell_entry->dmg_multiplier[i];
+                spellInfo.setDmg_multiplier(dbc_spell_entry->dmg_multiplier[i], i);
 
-            spellInfo.MinFactionID = dbc_spell_entry->MinFactionID;
-            spellInfo.MinReputation = dbc_spell_entry->MinReputation;
-            spellInfo.RequiredAuraVision = dbc_spell_entry->RequiredAuraVision;
+            spellInfo.setMinFactionID(dbc_spell_entry->MinFactionID);
+            spellInfo.setMinReputation(dbc_spell_entry->MinReputation);
+            spellInfo.setRequiredAuraVision(dbc_spell_entry->RequiredAuraVision);
 
             for (uint8 i = 0; i < MAX_SPELL_TOTEM_CATEGORIES; ++i)
-                spellInfo.TotemCategory[i] = dbc_spell_entry->TotemCategory[i];
+                spellInfo.setTotemCategory(dbc_spell_entry->TotemCategory[i], i);
 
-            spellInfo.RequiresAreaId = dbc_spell_entry->RequiresAreaId;
-            spellInfo.School = dbc_spell_entry->School;
+            spellInfo.setRequiresAreaId(dbc_spell_entry->RequiresAreaId);
+            spellInfo.setSchool(dbc_spell_entry->School);
 #if VERSION_STRING > TBC
-            spellInfo.RuneCostID = dbc_spell_entry->RuneCostID;
+            spellInfo.setRuneCostID(dbc_spell_entry->RuneCostID);
 
-            spellInfo.SpellDifficultyID = dbc_spell_entry->SpellDifficultyID;
+            spellInfo.setSpellDifficultyID(dbc_spell_entry->SpellDifficultyID);
 #endif
         }
     }
@@ -690,7 +690,7 @@ void SpellCustomizations::SetEffectAmplitude(SpellInfo* spell_entry)
             {
                 spell_entry->setEffectAmplitude(1000, y);
 
-                LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::SetEffectAmplitude : EffectAmplitude applied Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->getId());
+                LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::SetEffectAmplitude : EffectAmplitude applied Spell - %s (%u)", spell_entry->getName().c_str(), spell_entry->getId());
             }
         }
     }
@@ -719,7 +719,7 @@ void SpellCustomizations::SetAuraFactoryFunc(SpellInfo* spell_entry)
 
     if (spell_aura_factory_functions_loaded)
     {
-        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::SetAuraFactoryFunc : AuraFactoryFunc definitions applied to Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->getId());
+        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::SetAuraFactoryFunc : AuraFactoryFunc definitions applied to Spell - %s (%u)", spell_entry->getName().c_str(), spell_entry->getId());
     }
 }
 
@@ -727,7 +727,7 @@ void SpellCustomizations::SetMeleeSpellBool(SpellInfo* spell_entry)
 {
     for (uint8 z = 0; z < 3; z++)
     {
-        if (spell_entry->getEffect(z) == SPELL_EFFECT_SCHOOL_DAMAGE && spell_entry->Spell_Dmg_Type == SPELL_DMG_TYPE_MELEE)
+        if (spell_entry->getEffect(z) == SPELL_EFFECT_SCHOOL_DAMAGE && spell_entry->getSpell_Dmg_Type() == SPELL_DMG_TYPE_MELEE)
         {
             spell_entry->custom_is_melee_spell = true;
             continue;
@@ -749,7 +749,7 @@ void SpellCustomizations::SetMeleeSpellBool(SpellInfo* spell_entry)
 
     if (spell_entry->custom_is_melee_spell)
     {
-        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::SetMeleeSpellBool : custom_is_melee_spell = true for Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->getId());
+        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::SetMeleeSpellBool : custom_is_melee_spell = true for Spell - %s (%u)", spell_entry->getName().c_str(), spell_entry->getId());
     }
 }
 
@@ -757,7 +757,7 @@ void SpellCustomizations::SetRangedSpellBool(SpellInfo* spell_entry)
 {
     for (uint8 z = 0; z < 3; z++)
     {
-        if (spell_entry->getEffect(z) == SPELL_EFFECT_SCHOOL_DAMAGE && spell_entry->Spell_Dmg_Type == SPELL_DMG_TYPE_RANGED)
+        if (spell_entry->getEffect(z) == SPELL_EFFECT_SCHOOL_DAMAGE && spell_entry->getSpell_Dmg_Type() == SPELL_DMG_TYPE_RANGED)
         {
             spell_entry->custom_is_ranged_spell = true;
         }
@@ -765,7 +765,7 @@ void SpellCustomizations::SetRangedSpellBool(SpellInfo* spell_entry)
 
     if (spell_entry->custom_is_ranged_spell)
     {
-        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::SetRangedSpellBool : custom_is_ranged_spell = true for Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->getId());
+        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::SetRangedSpellBool : custom_is_ranged_spell = true for Spell - %s (%u)", spell_entry->getName().c_str(), spell_entry->getId());
     }
 }
 

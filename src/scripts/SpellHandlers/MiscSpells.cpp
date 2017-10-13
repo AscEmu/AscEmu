@@ -251,7 +251,7 @@ bool DeadlyThrowInterrupt(uint32 i, Aura* a, bool apply)
 
     if (m_target->GetCurrentSpell())
     {
-        school = m_target->GetCurrentSpell()->GetSpellInfo()->School;
+        school = m_target->GetCurrentSpell()->GetSpellInfo()->getSchool();
     }
 
     m_target->InterruptSpell();
@@ -475,7 +475,7 @@ bool TeleportToCoordinates(uint32 i, Spell* s)
     TeleportCoords const* teleport_coord = sMySQLStore.getTeleportCoord(s->GetSpellInfo()->getId());
     if (teleport_coord == nullptr)
     {
-        LogError("Spell %u ( %s ) has a TeleportToCoordinates scripted effect, but has no coordinates to teleport to. ", s->GetSpellInfo()->getId(), s->GetSpellInfo()->Name.c_str());
+        LogError("Spell %u ( %s ) has a TeleportToCoordinates scripted effect, but has no coordinates to teleport to. ", s->GetSpellInfo()->getId(), s->GetSpellInfo()->getName().c_str());
         return true;
     }
 

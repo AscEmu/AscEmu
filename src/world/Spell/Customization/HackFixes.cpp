@@ -58,9 +58,9 @@ void CreateDummySpell(uint32 id)
     sp->setEffect(SPELL_EFFECT_DUMMY, 0);
     sp->setEffectImplicitTargetA(EFF_TARGET_DUEL, 0);
     sp->custom_NameHash = crc32((const unsigned char*)name, (unsigned int)strlen(name));
-    sp->dmg_multiplier[0] = 1.0f;
+    sp->setDmg_multiplier(1.0f, 0);
 #if VERSION_STRING != Cata
-    sp->StanceBarOrder = -1;
+    sp->setStanceBarOrder(-1);
 #endif
     sWorld.dummySpellList.push_back(sp);
 }
@@ -680,17 +680,17 @@ void ApplyNormalFixes()
         //SCHOOL_ARCANE = 64
 
         // Save School as custom_SchoolMask, and set School as an index
-        sp->custom_SchoolMask = sp->School;
+        sp->custom_SchoolMask = sp->getSchool();
         for (uint8 i = 0; i < SCHOOL_COUNT; ++i)
         {
-            if (sp->School & (1 << i))
+            if (sp->getSchool() & (1 << i))
             {
-                sp->School = i;
+                sp->setSchool(i);
                 break;
             }
         }
 
-        ARCEMU_ASSERT(sp->School < SCHOOL_COUNT);
+        ARCEMU_ASSERT(sp->getSchool() < SCHOOL_COUNT);
 
         // correct caster/target aura states
         if (sp->getCasterAuraState() > 1)
@@ -819,7 +819,7 @@ void ApplyNormalFixes()
 
         // various flight spells
         // these make vehicles and other charmed stuff fliable
-        if (sp->activeIconID == 2158)
+        if (sp->getActiveIconID() == 2158)
             sp->addAttributes(ATTRIBUTES_PASSIVE);
 
 
@@ -837,7 +837,7 @@ void ApplyNormalFixes()
             case 28593:     // Winter's Chill Rank 3
             case 63094:
             {
-                sp->School = SCHOOL_FROST;
+                sp->setSchool(SCHOOL_FROST);
             } break;
 
             // Name includes "Chain Heal"
@@ -941,8 +941,8 @@ void ApplyNormalFixes()
             case 68022:
             case 69403:
             {
-                sp->School = SCHOOL_HOLY; //the procspells of the original seal of command have physical school instead of holy
-                sp->Spell_Dmg_Type = SPELL_DMG_TYPE_MAGIC; //heh, crazy spell uses melee/ranged/magic dmg type for 1 spell. Now which one is correct ?
+                sp->setSchool(SCHOOL_HOLY); //the procspells of the original seal of command have physical school instead of holy
+                sp->setSpell_Dmg_Type(SPELL_DMG_TYPE_MAGIC); //heh, crazy spell uses melee/ranged/magic dmg type for 1 spell. Now which one is correct ?
             } break;
 
             // SPELL_HASH_JUDGEMENT_OF_COMMAND
@@ -959,7 +959,7 @@ void ApplyNormalFixes()
             case 68019:
             case 71551:
             {
-                sp->Spell_Dmg_Type = SPELL_DMG_TYPE_MAGIC;
+                sp->setSpell_Dmg_Type(SPELL_DMG_TYPE_MAGIC);
             } break;
 
 
@@ -1175,7 +1175,7 @@ void ApplyNormalFixes()
             case 53600:     // Shield of Righteousness Rank 1
             case 61411:     // Shield of Righteousness Rank 2
             {
-                sp->School = SCHOOL_HOLY;
+                sp->setSchool(SCHOOL_HOLY);
                 sp->setEffect(SPELL_EFFECT_DUMMY, 0);
                 sp->setEffect(SPELL_EFFECT_NULL, 1);          //hacks, handling it in Spell::SpellEffectSchoolDMG(uint32 i)
                 sp->setEffect(SPELL_EFFECT_SCHOOL_DAMAGE, 2); //hack
@@ -1203,8 +1203,8 @@ void ApplyNormalFixes()
             case 69930:
             case 71122:
             {
-                sp->School = SCHOOL_HOLY; //Consecration is a holy redirected spell.
-                sp->Spell_Dmg_Type = SPELL_DMG_TYPE_MAGIC; //Speaks for itself.
+                sp->setSchool(SCHOOL_HOLY); //Consecration is a holy redirected spell.
+                sp->setSpell_Dmg_Type(SPELL_DMG_TYPE_MAGIC); //Speaks for itself.
             } break;
 
             //////////////////////////////////////////////////////////////////////////////////////////
@@ -1216,9 +1216,9 @@ void ApplyNormalFixes()
             case 20331:     // Seals of the Pure Rank 4
             case 20332:     // Seals of the Pure Rank 5
             {
-                sp->EffectSpellClassMask[0][0] = 0x08000400;
-                sp->EffectSpellClassMask[0][1] = 0x20000000;
-                sp->EffectSpellClassMask[1][1] = 0x800;
+                sp->setEffectSpellClassMask(0x08000400, 0, 0);
+                sp->setEffectSpellClassMask(0x20000000, 0, 1);
+                sp->setEffectSpellClassMask(0x800, 1, 1);
             } break;
 #endif
 
@@ -1587,7 +1587,7 @@ void ApplyNormalFixes()
     for (uint32 i = 0; thrown_spells[i] != 0; ++i)
     {
         sp = Spell::checkAndReturnSpellEntry(thrown_spells[i]);
-        if (sp != nullptr && sp->getRecoveryTime() == 0 && sp->StartRecoveryTime == 0)
+        if (sp != nullptr && sp->getRecoveryTime() == 0 && sp->getStartRecoveryTime() == 0)
         {
             if (sp->getId() == SPELL_RANGED_GENERAL)
                 sp->setRecoveryTime(500);    // cebernic: hunter general with 0.5s
@@ -1600,7 +1600,7 @@ void ApplyNormalFixes()
     // Wands
     sp = Spell::checkAndReturnSpellEntry(SPELL_RANGED_WAND);
     if (sp != nullptr)
-        sp->Spell_Dmg_Type = SPELL_DMG_TYPE_RANGED;
+        sp->setSpell_Dmg_Type(SPELL_DMG_TYPE_RANGED);
 
 
     //////////////////////////////////////////////////////
@@ -1808,26 +1808,26 @@ void ApplyNormalFixes()
     sp = Spell::checkAndReturnSpellEntry(53720);
     if (sp != nullptr)
     {
-        sp->School = SCHOOL_HOLY;
+        sp->setSchool(SCHOOL_HOLY);
     }
     //Paladin - seal of blood
     sp = Spell::checkAndReturnSpellEntry(31892);
     if (sp != nullptr)
     {
-        sp->School = SCHOOL_HOLY;
+        sp->setSchool(SCHOOL_HOLY);
     }
     sp = Spell::checkAndReturnSpellEntry(53719);
     if (sp != nullptr)
     {
-        sp->School = SCHOOL_HOLY;
-        sp->Spell_Dmg_Type = SPELL_DMG_TYPE_MAGIC;
+        sp->setSchool(SCHOOL_HOLY);
+        sp->setSpell_Dmg_Type(SPELL_DMG_TYPE_MAGIC);
     }
     sp = Spell::checkAndReturnSpellEntry(31893);
     if (sp != nullptr)
     {
         sp->setProcFlags(PROC_ON_PHYSICAL_ATTACK);
-        sp->School = SCHOOL_HOLY;
-        sp->Spell_Dmg_Type = SPELL_DMG_TYPE_MAGIC;
+        sp->setSchool(SCHOOL_HOLY);
+        sp->setSpell_Dmg_Type(SPELL_DMG_TYPE_MAGIC);
     }
 
     //Paladin - Divine Storm
@@ -1840,26 +1840,26 @@ void ApplyNormalFixes()
         sp->setEffectTriggerSpell(54172, 1);
         sp->setProcFlags(PROC_ON_CAST_SPELL);
         sp->setProcChance(100);
-        sp->MaxTargets = 4;
+        sp->setMaxTargets(4);
     }
 
     //Paladin - Judgements of the Wise
     sp = Spell::checkAndReturnSpellEntry(31930);
     if (sp != nullptr)
     {
-        sp->SpellFamilyName = 0;
-        sp->SpellGroupType[0] = 0;
-        sp->SpellGroupType[1] = 0;
-        sp->SpellGroupType[2] = 0;
+        sp->setSpellFamilyName(0);
+        sp->setSpellGroupType(0, 0);
+        sp->setSpellGroupType(0, 1);
+        sp->setSpellGroupType(0, 2);
     }
 
     sp = Spell::checkAndReturnSpellEntry(54180);
     if (sp != nullptr)
     {
-        sp->SpellFamilyName = 0;
-        sp->SpellGroupType[0] = 0;
-        sp->SpellGroupType[1] = 0;
-        sp->SpellGroupType[2] = 0;
+        sp->setSpellFamilyName(0);
+        sp->setSpellGroupType(0, 0);
+        sp->setSpellGroupType(0, 1);
+        sp->setSpellGroupType(0, 2);
     }
 
     //Paladin - Avenging Wrath marker - Is forced debuff
@@ -2217,7 +2217,7 @@ void ApplyNormalFixes()
     sp = Spell::checkAndReturnSpellEntry(2094);
     if (sp != nullptr)
     {
-        sp->Spell_Dmg_Type = SPELL_DMG_TYPE_RANGED;
+        sp->setSpell_Dmg_Type(SPELL_DMG_TYPE_RANGED);
         sp->custom_is_ranged_spell = true;
     }
 
@@ -3044,40 +3044,40 @@ void ApplyNormalFixes()
     sp = Spell::checkAndReturnSpellEntry(47205);
     if (sp != nullptr)
     {
-        sp->EffectSpellClassMask[1][0] = 0x111;
-        sp->EffectSpellClassMask[1][1] = 0;
+        sp->setEffectSpellClassMask(0x111, 1, 0);
+        sp->setEffectSpellClassMask(0, 1, 1);
         sp->setProcFlags(PROC_ON_ANY_HOSTILE_ACTION);
     }
 
     sp = Spell::checkAndReturnSpellEntry(47204);
     if (sp != nullptr)
     {
-        sp->EffectSpellClassMask[1][0] = 0x111;
-        sp->EffectSpellClassMask[1][1] = 0;
+        sp->setEffectSpellClassMask(0x111, 1, 0);
+        sp->setEffectSpellClassMask(0, 1, 1);
         sp->setProcFlags(PROC_ON_ANY_HOSTILE_ACTION);
     }
 
     sp = Spell::checkAndReturnSpellEntry(47203);
     if (sp != nullptr)
     {
-        sp->EffectSpellClassMask[1][0] = 0x111;
-        sp->EffectSpellClassMask[1][1] = 0;
+        sp->setEffectSpellClassMask(0x111, 1, 0);
+        sp->setEffectSpellClassMask(0, 1, 1);
         sp->setProcFlags(PROC_ON_ANY_HOSTILE_ACTION);
     }
 
     sp = Spell::checkAndReturnSpellEntry(47202);
     if (sp != nullptr)
     {
-        sp->EffectSpellClassMask[1][0] = 0x111;
-        sp->EffectSpellClassMask[1][1] = 0;
+        sp->setEffectSpellClassMask(0x111, 1, 0);
+        sp->setEffectSpellClassMask(0, 1, 1);
         sp->setProcFlags(PROC_ON_ANY_HOSTILE_ACTION);
     }
 
     sp = Spell::checkAndReturnSpellEntry(47201);
     if (sp != nullptr)
     {
-        sp->EffectSpellClassMask[1][0] = 0x111;
-        sp->EffectSpellClassMask[1][1] = 0;
+        sp->setEffectSpellClassMask(0x111, 1, 0);
+        sp->setEffectSpellClassMask(0, 1, 1);
     }
 #endif
 
@@ -3516,28 +3516,28 @@ void ApplyNormalFixes()
     if (sp != nullptr)
     {
         sp->addAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
-        sp->School = SCHOOL_FIRE;
+        sp->setSchool(SCHOOL_FIRE);
     }
 
     sp = Spell::checkAndReturnSpellEntry(59170);
     if (sp != nullptr)
     {
         sp->addAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
-        sp->School = SCHOOL_FIRE;
+        sp->setSchool(SCHOOL_FIRE);
     }
 
     sp = Spell::checkAndReturnSpellEntry(59171);
     if (sp != nullptr)
     {
         sp->addAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
-        sp->School = SCHOOL_FIRE;
+        sp->setSchool(SCHOOL_FIRE);
     }
 
     sp = Spell::checkAndReturnSpellEntry(59172);
     if (sp != nullptr)
     {
         sp->addAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
-        sp->School = SCHOOL_FIRE;
+        sp->setSchool(SCHOOL_FIRE);
     }
     // End Warlock chaos bolt
 
@@ -3733,40 +3733,40 @@ void ApplyNormalFixes()
     sp = Spell::checkAndReturnSpellEntry(46097); // Brutal Totem of Survival
     if (sp != nullptr)
     {
-        sp->EffectSpellClassMask[0][0] = 0x00100000 | 0x10000000 | 0x80000000;
-        sp->EffectSpellClassMask[0][1] = 0x08000000;
+        sp->setEffectSpellClassMask(0x00100000 | 0x10000000 | 0x80000000, 0, 0);
+        sp->setEffectSpellClassMask(0x08000000, 0, 1);
         sp->setProcFlags(PROC_ON_CAST_SPELL);
         sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
     }
     sp = Spell::checkAndReturnSpellEntry(43860); // Totem of Survival
     if (sp != nullptr)
     {
-        sp->EffectSpellClassMask[0][0] = 0x00100000 | 0x10000000 | 0x80000000;
-        sp->EffectSpellClassMask[0][1] = 0x08000000;
+        sp->setEffectSpellClassMask(0x00100000 | 0x10000000 | 0x80000000, 0, 0);
+        sp->setEffectSpellClassMask(0x08000000, 0, 1);;
         sp->setProcFlags(PROC_ON_CAST_SPELL);
         sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
     }
     sp = Spell::checkAndReturnSpellEntry(43861); // Merciless Totem of Survival
     if (sp != nullptr)
     {
-        sp->EffectSpellClassMask[0][0] = 0x00100000 | 0x10000000 | 0x80000000;
-        sp->EffectSpellClassMask[0][1] = 0x08000000;
+        sp->setEffectSpellClassMask(0x00100000 | 0x10000000 | 0x80000000, 0, 0);
+        sp->setEffectSpellClassMask(0x08000000, 0, 1);
         sp->setProcFlags(PROC_ON_CAST_SPELL);
         sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
     }
     sp = Spell::checkAndReturnSpellEntry(43862); // Vengeful Totem of Survival
     if (sp != nullptr)
     {
-        sp->EffectSpellClassMask[0][0] = 0x00100000 | 0x10000000 | 0x80000000;
-        sp->EffectSpellClassMask[0][1] = 0x08000000;
+        sp->setEffectSpellClassMask(0x00100000 | 0x10000000 | 0x80000000, 0, 0);
+        sp->setEffectSpellClassMask(0x08000000, 0, 1);
         sp->setProcFlags(PROC_ON_CAST_SPELL);
         sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
     }
     sp = Spell::checkAndReturnSpellEntry(60564); // Savage Gladiator's Totem of Survival
     if (sp != nullptr)
     {
-        sp->EffectSpellClassMask[0][0] = 0x00100000 | 0x10000000 | 0x80000000;
-        sp->EffectSpellClassMask[0][1] = 0x08000000;
+        sp->setEffectSpellClassMask(0x00100000 | 0x10000000 | 0x80000000, 0, 0);
+        sp->setEffectSpellClassMask(0x08000000, 0, 1);
         sp->setProcFlags(PROC_ON_CAST_SPELL);
         sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
         sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
@@ -3775,8 +3775,8 @@ void ApplyNormalFixes()
     sp = Spell::checkAndReturnSpellEntry(60571); // Hateful Gladiator's Totem of Survival
     if (sp != nullptr)
     {
-        sp->EffectSpellClassMask[0][0] = 0x00100000 | 0x10000000 | 0x80000000;
-        sp->EffectSpellClassMask[0][1] = 0x08000000;
+        sp->setEffectSpellClassMask(0x00100000 | 0x10000000 | 0x80000000, 0, 0);
+        sp->setEffectSpellClassMask(0x08000000, 0, 1);
         sp->setProcFlags(PROC_ON_CAST_SPELL);
         sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
         sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
@@ -3785,8 +3785,8 @@ void ApplyNormalFixes()
     sp = Spell::checkAndReturnSpellEntry(60572); // Deadly Gladiator's Totem of Survival
     if (sp != nullptr)
     {
-        sp->EffectSpellClassMask[0][0] = 0x00100000 | 0x10000000 | 0x80000000;
-        sp->EffectSpellClassMask[0][1] = 0x08000000;
+        sp->setEffectSpellClassMask(0x00100000 | 0x10000000 | 0x80000000, 0, 0);
+        sp->setEffectSpellClassMask(0x08000000, 0, 1);
         sp->setProcFlags(PROC_ON_CAST_SPELL);
         sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
         sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
@@ -3799,7 +3799,7 @@ void ApplyNormalFixes()
     if (sp != nullptr)
     {
         sp->setProcFlags(PROC_ON_CAST_SPELL);
-        sp->EffectSpellClassMask[0][0] = 0x00000080;
+        sp->setEffectSpellClassMask(0x00000080, 0, 0);
         sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
         sp->setEffectTriggerSpell(46099, 1); // Brutal Gladiator's Totem of the Third Wind
     }
@@ -3807,7 +3807,7 @@ void ApplyNormalFixes()
     if (sp != nullptr)
     {
         sp->setProcFlags(PROC_ON_CAST_SPELL);
-        sp->EffectSpellClassMask[0][0] = 0x00000080;
+        sp->setEffectSpellClassMask(0x00000080, 0, 0);
         sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
         sp->setEffectTriggerSpell(34132, 1); // Gladiator's Totem of the Third Wind
     }
@@ -3815,7 +3815,7 @@ void ApplyNormalFixes()
     if (sp != nullptr)
     {
         sp->setProcFlags(PROC_ON_CAST_SPELL);
-        sp->EffectSpellClassMask[0][0] = 0x00000080;
+        sp->setEffectSpellClassMask(0x00000080, 0, 0);
         sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
         sp->setEffectTriggerSpell(42371, 1); // Merciless Gladiator's Totem of the Third Wind
     }
@@ -3823,7 +3823,7 @@ void ApplyNormalFixes()
     if (sp != nullptr)
     {
         sp->setProcFlags(PROC_ON_CAST_SPELL);
-        sp->EffectSpellClassMask[0][0] = 0x00000080;
+        sp->setEffectSpellClassMask(0x00000080, 0, 0);
         sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
         sp->setEffectTriggerSpell(43729, 1); // Vengeful Gladiator's Totem of the Third Wind
     }
@@ -4200,14 +4200,14 @@ void ApplyNormalFixes()
     sp = Spell::checkAndReturnSpellEntry(42005);
     if (sp != nullptr)
     {
-        sp->MaxTargets = 5;
+        sp->setMaxTargets(5);
     }
 
     //Doom
     sp = Spell::checkAndReturnSpellEntry(31347);
     if (sp != nullptr)
     {
-        sp->MaxTargets = 1;
+        sp->setMaxTargets(1);
     }
     //Shadow of Death
     sp = Spell::checkAndReturnSpellEntry(40251);

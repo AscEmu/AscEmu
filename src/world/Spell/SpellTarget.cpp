@@ -136,7 +136,7 @@ void Spell::FillTargetMap(uint32 i)
     if (TargetType & SPELL_TARGET_OBJECT_SELF)
         AddTarget(i, TargetType, m_caster);
     if (TargetType & (SPELL_TARGET_AREA | SPELL_TARGET_AREA_SELF))  //targetted aoe
-        AddAOETargets(i, TargetType, GetRadius(i), m_spellInfo->MaxTargets);
+        AddAOETargets(i, TargetType, GetRadius(i), m_spellInfo->getMaxTargets());
     ///\todo arcemu, doesn't support summon slots?
     /*if (TargetType & SPELL_TARGET_OBJECT_CURTOTEMS && u_caster != NULL)
         for (uint32 i=1; i<5; ++i) //totem slots are 1, 2, 3, 4
@@ -157,25 +157,25 @@ void Spell::FillTargetMap(uint32 i)
     if ((TargetType & SPELL_TARGET_AREA_PARTY) && !(TargetType & SPELL_TARGET_AREA_RAID))
     {
         if (p_caster == NULL && !m_caster->IsPet() && (!m_caster->IsCreature() || !m_caster->IsTotem()))
-            AddAOETargets(i, TargetType, GetRadius(i), m_spellInfo->MaxTargets); //npcs
+            AddAOETargets(i, TargetType, GetRadius(i), m_spellInfo->getMaxTargets()); //npcs
         else
-            AddPartyTargets(i, TargetType, GetRadius(i), m_spellInfo->MaxTargets); //players/pets/totems
+            AddPartyTargets(i, TargetType, GetRadius(i), m_spellInfo->getMaxTargets()); //players/pets/totems
     }
     if (TargetType & SPELL_TARGET_AREA_RAID)
     {
         if (p_caster == NULL && !m_caster->IsPet() && (!m_caster->IsCreature() || !m_caster->IsTotem()))
-            AddAOETargets(i, TargetType, GetRadius(i), m_spellInfo->MaxTargets); //npcs
+            AddAOETargets(i, TargetType, GetRadius(i), m_spellInfo->getMaxTargets()); //npcs
         else
-            AddRaidTargets(i, TargetType, GetRadius(i), m_spellInfo->MaxTargets, (TargetType & SPELL_TARGET_AREA_PARTY) ? true : false); //players/pets/totems
+            AddRaidTargets(i, TargetType, GetRadius(i), m_spellInfo->getMaxTargets(), (TargetType & SPELL_TARGET_AREA_PARTY) ? true : false); //players/pets/totems
     }
     if (TargetType & SPELL_TARGET_AREA_CHAIN)
-        AddChainTargets(i, TargetType, GetRadius(i), m_spellInfo->MaxTargets);
+        AddChainTargets(i, TargetType, GetRadius(i), m_spellInfo->getMaxTargets());
     //target cone
     if (TargetType & SPELL_TARGET_AREA_CONE)
-        AddConeTargets(i, TargetType, GetRadius(i), m_spellInfo->MaxTargets);
+        AddConeTargets(i, TargetType, GetRadius(i), m_spellInfo->getMaxTargets());
 
     if (TargetType & SPELL_TARGET_OBJECT_SCRIPTED)
-        AddScriptedOrSpellFocusTargets(i, TargetType, GetRadius(i), m_spellInfo->MaxTargets);
+        AddScriptedOrSpellFocusTargets(i, TargetType, GetRadius(i), m_spellInfo->getMaxTargets());
 }
 
 void Spell::AddScriptedOrSpellFocusTargets(uint32 i, uint32 TargetType, float r, uint32 maxtargets)
@@ -260,7 +260,7 @@ void Spell::AddChainTargets(uint32 i, uint32 TargetType, float r, uint32 maxtarg
     //range
     range /= jumps; //hacky, needs better implementation!
 
-    ascemu::World::Spell::Helpers::spellModFlatIntValue(u_caster->SM_FAdditionalTargets, (int32*)&jumps, m_spellInfo->SpellGroupType);
+    ascemu::World::Spell::Helpers::spellModFlatIntValue(u_caster->SM_FAdditionalTargets, (int32*)&jumps, m_spellInfo->getSpellGroupType());
 
     AddTarget(i, TargetType, firstTarget);
 

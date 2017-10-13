@@ -574,7 +574,7 @@ bool ChatHandler::HandleLookupSpellCommand(const char* args, WorldSession* m_ses
     for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
     {
         SpellInfo* spell = sSpellCustomizations.GetSpellInfo(it->first);
-        std::string y = std::string(spell->Name);
+        std::string y = std::string(spell->getName());
         Util::StringToLowerCase(y);
         if (Util::findXinYString(x, y))
         {
@@ -583,7 +583,7 @@ bool ChatHandler::HandleLookupSpellCommand(const char* args, WorldSession* m_ses
             recout += ": |cff71d5ff|Hspell:";
             recout += (const char*)itoabuf;
             recout += "|h[";
-            recout += spell->Name.c_str();
+            recout += spell->getName().c_str();
             recout += "]|h|r";
 
             std::string::size_type pos = recout.find('%');
