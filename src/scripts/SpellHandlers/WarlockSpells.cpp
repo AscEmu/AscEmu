@@ -73,7 +73,7 @@ bool LifeTap(uint32 i, Spell* s)
     else if (s->GetSpellInfo()->getId() == 11687) mod = 5;
     else mod = 6;
 
-    uint32 damage = s->GetSpellInfo()->EffectBasePoints[i] + 1 + mod * playerTarget->GetStat(STAT_SPIRIT) / 2;
+    uint32 damage = s->GetSpellInfo()->getEffectBasePoints(i) + 1 + mod * playerTarget->GetStat(STAT_SPIRIT) / 2;
 
     if (damage >= playerTarget->GetHealth())
         return false;
@@ -627,7 +627,7 @@ bool SoulStoneResurrection(uint32 i, Aura* a, bool apply)
         return true;
 
     Player* p_target = static_cast<Player*>(u_target);
-    uint32 soulstone = a->GetSpellInfo()->EffectMiscValue[0];
+    uint32 soulstone = a->GetSpellInfo()->getEffectMiscValue(0);
 
     if (apply)
     {

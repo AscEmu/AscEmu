@@ -121,49 +121,49 @@ void SpellCustomizations::LoadSpellInfoData()
                 spellInfo.setEffectDieSides(dbc_spell_entry->EffectDieSides[i], i);
 
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.EffectRealPointsPerLevel[i] = dbc_spell_entry->EffectRealPointsPerLevel[i];
+                spellInfo.setEffectRealPointsPerLevel(dbc_spell_entry->EffectRealPointsPerLevel[i], i);
 
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.EffectBasePoints[i] = dbc_spell_entry->EffectBasePoints[i];
+                spellInfo.setEffectBasePoints(dbc_spell_entry->EffectBasePoints[i], i);
 
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.EffectMechanic[i] = dbc_spell_entry->EffectMechanic[i];
+                spellInfo.setEffectMechanic(dbc_spell_entry->EffectMechanic[i], i);
 
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.EffectImplicitTargetA[i] = dbc_spell_entry->EffectImplicitTargetA[i];
+                spellInfo.setEffectImplicitTargetA(dbc_spell_entry->EffectImplicitTargetA[i], i);
 
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.EffectImplicitTargetB[i] = dbc_spell_entry->EffectImplicitTargetB[i];
+                spellInfo.setEffectImplicitTargetB(dbc_spell_entry->EffectImplicitTargetB[i], i);
 
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.EffectRadiusIndex[i] = dbc_spell_entry->EffectRadiusIndex[i];
+                spellInfo.setEffectRadiusIndex(dbc_spell_entry->EffectRadiusIndex[i], i);
 
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.EffectApplyAuraName[i] = dbc_spell_entry->EffectApplyAuraName[i];
+                spellInfo.setEffectApplyAuraName(dbc_spell_entry->EffectApplyAuraName[i], i);
 
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.EffectAmplitude[i] = dbc_spell_entry->EffectAmplitude[i];
+                spellInfo.setEffectAmplitude(dbc_spell_entry->EffectAmplitude[i], i);
 
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.EffectMultipleValue[i] = dbc_spell_entry->EffectMultipleValue[i];
+                spellInfo.setEffectMultipleValue(dbc_spell_entry->EffectMultipleValue[i], i);
 
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.EffectChainTarget[i] = dbc_spell_entry->EffectChainTarget[i];
+                spellInfo.setEffectChainTarget(dbc_spell_entry->EffectChainTarget[i], i);
 
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.EffectItemType[i] = dbc_spell_entry->EffectItemType[i];
+                spellInfo.setEffectItemType(dbc_spell_entry->EffectItemType[i], i);
 
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.EffectMiscValue[i] = dbc_spell_entry->EffectMiscValue[i];
+                spellInfo.setEffectMiscValue(dbc_spell_entry->EffectMiscValue[i], i);
 
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.EffectMiscValueB[i] = dbc_spell_entry->EffectMiscValueB[i];
+                spellInfo.setEffectMiscValueB(dbc_spell_entry->EffectMiscValueB[i], i);
 
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.EffectTriggerSpell[i] = dbc_spell_entry->EffectTriggerSpell[i];
+                spellInfo.setEffectTriggerSpell(dbc_spell_entry->EffectTriggerSpell[i], i);
 
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.EffectPointsPerComboPoint[i] = dbc_spell_entry->EffectPointsPerComboPoint[i];
+                spellInfo.setEffectPointsPerComboPoint(dbc_spell_entry->EffectPointsPerComboPoint[i], i);
 
 #if VERSION_STRING > TBC
             for (uint8 i = 0; i < 3; ++i)
@@ -642,18 +642,18 @@ void SpellCustomizations::LoadSpellProcs()
                 spell_entry->custom_proc_interval = f[6].GetUInt32();
 
                 if (f[7].GetInt32() >= 0)
-                    spell_entry->EffectTriggerSpell[0] = f[7].GetUInt32();
+                    spell_entry->setEffectTriggerSpell(f[7].GetUInt32(), 0);
                 if (f[8].GetInt32() >= 0)
-                    spell_entry->EffectTriggerSpell[1] = f[8].GetUInt32();
+                    spell_entry->setEffectTriggerSpell(f[8].GetUInt32(), 1);
                 if (f[9].GetInt32() >= 0)
-                    spell_entry->EffectTriggerSpell[2] = f[9].GetUInt32();
+                    spell_entry->setEffectTriggerSpell(f[9].GetUInt32(), 2);
 
-                if (spell_entry->EffectTriggerSpell[0] > 0)
-                    spell_entry->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-                if (spell_entry->EffectTriggerSpell[1] > 0)
-                    spell_entry->EffectApplyAuraName[1] = SPELL_AURA_PROC_TRIGGER_SPELL;
-                if (spell_entry->EffectTriggerSpell[2] > 0)
-                    spell_entry->EffectApplyAuraName[2] = SPELL_AURA_PROC_TRIGGER_SPELL;
+                if (spell_entry->getEffectTriggerSpell(0) > 0)
+                    spell_entry->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
+                if (spell_entry->getEffectTriggerSpell(1) > 0)
+                    spell_entry->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
+                if (spell_entry->getEffectTriggerSpell(2) > 0)
+                    spell_entry->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 2);
 
                 ++spell_procs_count;
             }
@@ -686,9 +686,9 @@ void SpellCustomizations::SetEffectAmplitude(SpellInfo* spell_entry)
         }
         else
         {
-            if ((spell_entry->EffectApplyAuraName[y] == SPELL_AURA_PERIODIC_TRIGGER_SPELL || spell_entry->EffectApplyAuraName[y] == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE) && spell_entry->EffectApplyAuraName[y] == 0)
+            if ((spell_entry->getEffectApplyAuraName(y) == SPELL_AURA_PERIODIC_TRIGGER_SPELL || spell_entry->getEffectApplyAuraName(y) == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE) && spell_entry->getEffectApplyAuraName(y) == 0)
             {
-                spell_entry->EffectAmplitude[y] = 1000;
+                spell_entry->setEffectAmplitude(1000, y);
 
                 LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::SetEffectAmplitude : EffectAmplitude applied Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->getId());
             }
@@ -708,7 +708,7 @@ void SpellCustomizations::SetAuraFactoryFunc(SpellInfo* spell_entry)
         }
         else
         {
-            if (spell_entry->EffectApplyAuraName[y] == SPELL_AURA_SCHOOL_ABSORB && spell_entry->AuraFactoryFunc == NULL)
+            if (spell_entry->getEffectApplyAuraName(y) == SPELL_AURA_SCHOOL_ABSORB && spell_entry->AuraFactoryFunc == NULL)
             {
                 spell_entry->AuraFactoryFunc = (void * (*)) &AbsorbAura::Create;
 

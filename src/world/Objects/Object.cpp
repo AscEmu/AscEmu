@@ -2542,7 +2542,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
                 return;
 
             Spell* sp = sSpellFactoryMgr.NewSpell(pl, entry, true, NULL);
-            sp->GetSpellInfo()->EffectBasePoints[0] = spellpower;
+            sp->GetSpellInfo()->setEffectBasePoints(spellpower, 0);
             SpellCastTargets targets;
             targets.m_unitTarget = pl->GetGUID();
             sp->prepare(&targets);

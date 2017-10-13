@@ -35,6 +35,7 @@
 #include "Spell/Definitions/ProcFlags.h"
 #include <Spell/Definitions/AuraInterruptFlags.h>
 #include "Spell/Definitions/PowerType.h"
+#include "Spell/Definitions/SpellEffectTarget.h"
 #include "Pet.h"
 
 #define WATER_ELEMENTAL         510
@@ -826,8 +827,8 @@ AI_Spell* Pet::CreateAISpell(SpellInfo* info)
     if (/* info->Effect[0] == SPELL_EFFECT_APPLY_AURA || */
         info->getEffect(0) == SPELL_EFFECT_APPLY_GROUP_AREA_AURA
         || info->getEffect(0) == SPELL_EFFECT_APPLY_RAID_AREA_AURA
-        || info->EffectImplicitTargetA[0] == 27     //TARGET_MASTER
-        || info->EffectImplicitTargetA[0] == 57)    //TARGET_SINGLE_FRIEND_2
+        || info->getEffectImplicitTargetA(0) == EFF_TARGET_PET_MASTER
+        || info->getEffectImplicitTargetA(0) == EFF_TARGET_PARTY_MEMBER)
         sp->spellType = STYPE_BUFF;
     else
         sp->spellType = STYPE_DAMAGE;

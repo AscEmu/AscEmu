@@ -138,7 +138,7 @@ public:
             return 0;
 
         // Check for proc chance
-        if (RandomFloat(100.0f) > GetSpellInfo()->EffectBasePoints[0] + 1)
+        if (RandomFloat(100.0f) > GetSpellInfo()->getEffectBasePoints(0) + 1)
             return 0;
 
         // Check if damage will kill player.
@@ -285,7 +285,7 @@ class BloodStrikeSpell : public Spell
         {
             uint32 count = target->GetAuraCountWithDispelType(DISPEL_DISEASE, m_caster->GetGUID());
             if (count)
-                value += value * count * (GetSpellInfo()->EffectBasePoints[2] + 1) / 200;
+                value += value * count * (GetSpellInfo()->getEffectBasePoints(2) + 1) / 200;
         }
 
         return value;
@@ -364,14 +364,14 @@ class AntiMagicShellAura : public AbsorbAura
     {
         Player* caster = GetPlayerCaster();
         if (caster != NULL)
-            return caster->GetMaxHealth() * (GetSpellInfo()->EffectBasePoints[1] + 1) / 100;
+            return caster->GetMaxHealth() * (GetSpellInfo()->getEffectBasePoints(1) + 1) / 100;
         else
             return mod->m_amount;
     }
 
     int32 CalcPctDamage()
     {
-        return GetSpellInfo()->EffectBasePoints[0] + 1;
+        return GetSpellInfo()->getEffectBasePoints(0) + 1;
     }
 };
 
@@ -435,7 +435,7 @@ class WillOfTheNecropolisAura : public AbsorbAura
         // "Damage that would take you below $s1% health or taken while you are at $s1% health is reduced by $52284s1%."
         if ((health_pct > 35 && new_health_pct < 35) || health_pct == 35)
         {
-            uint32 dmg_absorbed = *dmg * (GetSpellInfo()->EffectBasePoints[0] + 1) / 100;
+            uint32 dmg_absorbed = *dmg * (GetSpellInfo()->getEffectBasePoints(0) + 1) / 100;
             *dmg -= dmg_absorbed;
 
             return dmg_absorbed;
@@ -452,7 +452,7 @@ class VampiricBloodSpell : public Spell
     int32 DoCalculateEffect(uint32 i, Unit* target, int32 value)
     {
         if (i == 1 && p_caster != NULL)
-            value = p_caster->GetMaxHealth() * (GetSpellInfo()->EffectBasePoints[i] + 1) / 100;
+            value = p_caster->GetMaxHealth() * (GetSpellInfo()->getEffectBasePoints(i) + 1) / 100;
 
         return value;
     }

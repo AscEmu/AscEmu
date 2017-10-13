@@ -306,7 +306,7 @@ int32 Spell::event_GetInstanceID()
 bool Spell::IsStealthSpell()
 {
     //check if aura name is some stealth aura
-    if (GetSpellInfo()->EffectApplyAuraName[0] == SPELL_AURA_MOD_STEALTH || GetSpellInfo()->EffectApplyAuraName[1] == SPELL_AURA_MOD_STEALTH || GetSpellInfo()->EffectApplyAuraName[2] == SPELL_AURA_MOD_STEALTH)
+    if (GetSpellInfo()->getEffectApplyAuraName(0) == SPELL_AURA_MOD_STEALTH || GetSpellInfo()->getEffectApplyAuraName(1) == SPELL_AURA_MOD_STEALTH || GetSpellInfo()->getEffectApplyAuraName(2) == SPELL_AURA_MOD_STEALTH)
         return true;
     return false;
 }
@@ -315,7 +315,7 @@ bool Spell::IsStealthSpell()
 bool Spell::IsInvisibilitySpell()
 {
     //check if aura name is some invisibility aura
-    if (GetSpellInfo()->EffectApplyAuraName[0] == SPELL_AURA_MOD_INVISIBILITY || GetSpellInfo()->EffectApplyAuraName[1] == SPELL_AURA_MOD_INVISIBILITY || GetSpellInfo()->EffectApplyAuraName[2] == SPELL_AURA_MOD_INVISIBILITY)
+    if (GetSpellInfo()->getEffectApplyAuraName(0) == SPELL_AURA_MOD_INVISIBILITY || GetSpellInfo()->getEffectApplyAuraName(1) == SPELL_AURA_MOD_INVISIBILITY || GetSpellInfo()->getEffectApplyAuraName(2) == SPELL_AURA_MOD_INVISIBILITY)
         return true;
     return false;
 }
@@ -688,7 +688,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
     /* Check if the target is immune to this spell school                   */
     /* Unless the spell would actually dispel invulnerabilities             */
     /************************************************************************/
-    int dispelMechanic = GetSpellInfo()->getEffect(0) == SPELL_EFFECT_DISPEL_MECHANIC && GetSpellInfo()->EffectMiscValue[0] == MECHANIC_INVULNERABLE;
+    int dispelMechanic = GetSpellInfo()->getEffect(0) == SPELL_EFFECT_DISPEL_MECHANIC && GetSpellInfo()->getEffectMiscValue(0) == MECHANIC_INVULNERABLE;
     if (u_victim->SchoolImmunityList[GetSpellInfo()->School] && !dispelMechanic)
         return SPELL_DID_HIT_IMMUNE;
 
@@ -714,7 +714,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
                 || GetSpellInfo()->getEffect(x) == SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL
                 || GetSpellInfo()->getEffect(x) == SPELL_EFFECT_DUMMY
                 || (GetSpellInfo()->getEffect(x) == SPELL_EFFECT_APPLY_AURA &&
-                (GetSpellInfo()->EffectApplyAuraName[x] == SPELL_AURA_PERIODIC_DAMAGE
+                (GetSpellInfo()->getEffectApplyAuraName(x) == SPELL_AURA_PERIODIC_DAMAGE
                 ))
                 )
             {
@@ -1165,11 +1165,11 @@ void Spell::castMe(bool check)
         for (uint8 i = 0; i < 3; i++)
         {
             uint32 TargetType = 0;
-            TargetType |= GetTargetType(m_spellInfo->EffectImplicitTargetA[i], i);
+            TargetType |= GetTargetType(m_spellInfo->getEffectImplicitTargetA(i), i);
 
             //never get info from B if it is 0 :P
-            if (m_spellInfo->EffectImplicitTargetB[i] != 0)
-                TargetType |= GetTargetType(m_spellInfo->EffectImplicitTargetB[i], i);
+            if (m_spellInfo->getEffectImplicitTargetB(i) != EFF_TARGET_NONE)
+                TargetType |= GetTargetType(m_spellInfo->getEffectImplicitTargetB(i), i);
 
             if (TargetType & SPELL_TARGET_AREA_CURTARGET)
             {
@@ -1549,12 +1549,12 @@ void Spell::castMe(bool check)
             // bool canreflect = false, reflected = false;
             for (uint8 j = 0; j < 3; j++)
             {
-                switch (GetSpellInfo()->EffectImplicitTargetA[j])
+                switch (GetSpellInfo()->getEffectImplicitTargetA(j))
                 {
-                    case 6:
-                    case 22:
-                    case 24:
-                    case 25:
+                    case EFF_TARGET_SINGLE_ENEMY:
+                    case EFF_TARGET_ALL_ENEMIES_AROUND_CASTER:
+                    case EFF_TARGET_IN_FRONT_OF_CASTER:
+                    case EFF_TARGET_DUEL:
                         SetCanReflect();
                         break;
                 }
@@ -1784,7 +1784,7 @@ void Spell::Update(unsigned long time_passed)
     {
         if (u_caster != NULL)
         {
-            if (u_caster->HasNoInterrupt() == 0 && GetSpellInfo()->EffectMechanic[1] != 14)
+            if (u_caster->HasNoInterrupt() == 0 && GetSpellInfo()->getEffectMechanic(1) != MECHANIC_INCAPACIPATED)
             {
                 cancel();
                 return;
@@ -3202,11 +3202,11 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
 #endif
 
     uint32 TargetType = 0;
-    TargetType |= GetTargetType(m_spellInfo->EffectImplicitTargetA[i], i);
+    TargetType |= GetTargetType(m_spellInfo->getEffectImplicitTargetA(i), i);
 
     //never get info from B if it is 0 :P
-    if (m_spellInfo->EffectImplicitTargetB[i] != 0)
-        TargetType |= GetTargetType(m_spellInfo->EffectImplicitTargetB[i], i);
+    if (m_spellInfo->getEffectImplicitTargetB(i) != EFF_TARGET_NONE)
+        TargetType |= GetTargetType(m_spellInfo->getEffectImplicitTargetB(i), i);
 
     if (u_caster != NULL && unitTarget != NULL && unitTarget->IsCreature() && TargetType & SPELL_TARGET_REQUIRE_ATTACKABLE && !(m_spellInfo->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
     {
@@ -3528,7 +3528,7 @@ void Spell::HandleAddAura(uint64 guid)
         };
 
         if (spellid == 31665 && Target->hasAurasWithId(masterOfSubtlety))
-            spell->forced_basepoints[0] = Target->getAuraWithId(masterOfSubtlety)->m_spellInfo->EffectBasePoints[0];
+            spell->forced_basepoints[0] = Target->getAuraWithId(masterOfSubtlety)->m_spellInfo->getEffectBasePoints(0);
 
         SpellCastTargets targets(Target->GetGUID());
         spell->prepare(&targets);
@@ -3755,7 +3755,7 @@ float Spell::GetRadius(uint32 i)
     if (bRadSet[i])
         return Rad[i];
     bRadSet[i] = true;
-    Rad[i] = ::GetRadius(sSpellRadiusStore.LookupEntry(GetSpellInfo()->EffectRadiusIndex[i]));
+    Rad[i] = ::GetRadius(sSpellRadiusStore.LookupEntry(GetSpellInfo()->getEffectRadiusIndex(i)));
     if (u_caster != nullptr)
     {
         ascemu::World::Spell::Helpers::spellModFlatFloatValue(u_caster->SM_FRadius, &Rad[i], GetSpellInfo()->SpellGroupType);
@@ -3775,12 +3775,12 @@ uint32 Spell::GetMechanic(SpellInfo* sp)
 {
     if (sp->getMechanicsType())
         return sp->getMechanicsType();
-    if (sp->EffectMechanic[2])
-        return sp->EffectMechanic[2];
-    if (sp->EffectMechanic[1])
-        return sp->EffectMechanic[1];
-    if (sp->EffectMechanic[0])
-        return sp->EffectMechanic[0];
+    if (sp->getEffectMechanic(2))
+        return sp->getEffectMechanic(2);
+    if (sp->getEffectMechanic(1))
+        return sp->getEffectMechanic(1);
+    if (sp->getEffectMechanic(0))
+        return sp->getEffectMechanic(0);
 
     return 0;
 }
@@ -4488,7 +4488,7 @@ uint8 Spell::CanCast(bool tolerate)
                     return SPELL_FAILED_MAX_SOCKETS;
 
                 // If enchant is permanent and we are casting on Vellums
-                if (GetSpellInfo()->getEffect(0) == SPELL_EFFECT_ENCHANT_ITEM && GetSpellInfo()->EffectItemType[0] != 0 &&
+                if (GetSpellInfo()->getEffect(0) == SPELL_EFFECT_ENCHANT_ITEM && GetSpellInfo()->getEffectItemType(0) != 0 &&
                     (proto->ItemId == 38682 || proto->ItemId == 37602 || proto->ItemId == 43145 ||
                     proto->ItemId == 39349 || proto->ItemId == 39350 || proto->ItemId == 43146))
                 {
@@ -4907,7 +4907,7 @@ uint8 Spell::CanCast(bool tolerate)
                 }
 
                 // pet training
-                if (GetSpellInfo()->EffectImplicitTargetA[0] == EFF_TARGET_PET &&
+                if (GetSpellInfo()->getEffectImplicitTargetA(0) == EFF_TARGET_PET &&
                     GetSpellInfo()->getEffect(0) == SPELL_EFFECT_LEARN_SPELL)
                 {
                     Pet* pPet = p_caster->GetSummon();
@@ -4916,7 +4916,7 @@ uint8 Spell::CanCast(bool tolerate)
                         return SPELL_FAILED_NO_PET;
 
                     // other checks
-                    SpellInfo* trig = sSpellCustomizations.GetSpellInfo(GetSpellInfo()->EffectTriggerSpell[0]);
+                    SpellInfo* trig = sSpellCustomizations.GetSpellInfo(GetSpellInfo()->getEffectTriggerSpell(0));
                     if (trig == NULL)
                         return SPELL_FAILED_SPELL_UNAVAILABLE;
 
@@ -4925,11 +4925,11 @@ uint8 Spell::CanCast(bool tolerate)
                         return static_cast<uint8>(status);
                 }
 
-                if (GetSpellInfo()->EffectApplyAuraName[0] == SPELL_AURA_MOD_POSSESS)  //mind control
+                if (GetSpellInfo()->getEffectApplyAuraName(0) == SPELL_AURA_MOD_POSSESS)  //mind control
                 {
-                    if (GetSpellInfo()->EffectBasePoints[0])  //got level req;
+                    if (GetSpellInfo()->getEffectBasePoints(0))  //got level req;
                     {
-                        if ((int32)target->getLevel() > GetSpellInfo()->EffectBasePoints[0] + 1 + int32(p_caster->getLevel() - GetSpellInfo()->getSpellLevel()))
+                        if ((int32)target->getLevel() > GetSpellInfo()->getEffectBasePoints(0) + 1 + int32(p_caster->getLevel() - GetSpellInfo()->getSpellLevel()))
                             return SPELL_FAILED_HIGHLEVEL;
                         else if (target->IsCreature())
                         {
@@ -5177,20 +5177,20 @@ uint8 Spell::CanCast(bool tolerate)
 
             // all spells with target 61 need to be in group or raid
             ///\todo need to research this if its not handled by the client!!!
-            if (GetSpellInfo()->EffectImplicitTargetA[0] == EFF_TARGET_AREAEFFECT_PARTY_AND_CLASS ||
-                GetSpellInfo()->EffectImplicitTargetA[1] == EFF_TARGET_AREAEFFECT_PARTY_AND_CLASS ||
-                GetSpellInfo()->EffectImplicitTargetA[2] == EFF_TARGET_AREAEFFECT_PARTY_AND_CLASS)
+            if (GetSpellInfo()->getEffectImplicitTargetA(0) == EFF_TARGET_AREAEFFECT_PARTY_AND_CLASS ||
+                GetSpellInfo()->getEffectImplicitTargetA(1) == EFF_TARGET_AREAEFFECT_PARTY_AND_CLASS ||
+                GetSpellInfo()->getEffectImplicitTargetA(2) == EFF_TARGET_AREAEFFECT_PARTY_AND_CLASS)
             {
                 if (target->IsPlayer() && !static_cast<Player*>(target)->InGroup())
                     return SPELL_FAILED_TARGET_NOT_IN_PARTY;
             }
 
             // fishing spells
-            if (GetSpellInfo()->EffectImplicitTargetA[0] == EFF_TARGET_SELF_FISHING)  //||
+            if (GetSpellInfo()->getEffectImplicitTargetA(0) == EFF_TARGET_SELF_FISHING)  //||
                 //GetProto()->EffectImplicitTargetA[1] == EFF_TARGET_SELF_FISHING ||
                 //GetProto()->EffectImplicitTargetA[2] == EFF_TARGET_SELF_FISHING)
             {
-                uint32 entry = GetSpellInfo()->EffectMiscValue[0];
+                uint32 entry = GetSpellInfo()->getEffectMiscValue(0);
                 if (entry == GO_FISHING_BOBBER)
                 {
                     //uint32 mapid = p_caster->GetMapId();
@@ -5452,9 +5452,9 @@ uint8 Spell::CanCast(bool tolerate)
         {
             for (i = 0; i < 3; i++)  // if is going to cast a spell that breaks stun remove stun auras, looks a bit hacky but is the best way i can find
             {
-                if (GetSpellInfo()->EffectApplyAuraName[i] == SPELL_AURA_MECHANIC_IMMUNITY)
+                if (GetSpellInfo()->getEffectApplyAuraName(i) == SPELL_AURA_MECHANIC_IMMUNITY)
                 {
-                    target->RemoveAllAurasByMechanic(GetSpellInfo()->EffectMiscValue[i], static_cast<uint32>(-1), true);
+                    target->RemoveAllAurasByMechanic(GetSpellInfo()->getEffectMiscValue(i), static_cast<uint32>(-1), true);
                     // Remove all debuffs of that mechanic type.
                     // This is also done in SpellAuras.cpp - wtf?
                 }
@@ -5543,9 +5543,9 @@ uint8 Spell::CanCast(bool tolerate)
                 return SPELL_FAILED_SPELL_IN_PROGRESS;
             else if (t_spellInfo)
             {
-                if (t_spellInfo->EffectTriggerSpell[0] != GetSpellInfo()->getId() &&
-                    t_spellInfo->EffectTriggerSpell[1] != GetSpellInfo()->getId() &&
-                    t_spellInfo->EffectTriggerSpell[2] != GetSpellInfo()->getId())
+                if (t_spellInfo->getEffectTriggerSpell(0) != GetSpellInfo()->getId() &&
+                    t_spellInfo->getEffectTriggerSpell(1) != GetSpellInfo()->getId() &&
+                    t_spellInfo->getEffectTriggerSpell(2) != GetSpellInfo()->getId())
                 {
                     return SPELL_FAILED_SPELL_IN_PROGRESS;
                 }
@@ -5744,13 +5744,12 @@ int32 Spell::CalculateEffect(uint32 i, Unit* target)
     }
 exit:
 
-    float basePointsPerLevel = GetSpellInfo()->EffectRealPointsPerLevel[i];
-    //float randomPointsPerLevel  = GetProto()->EffectDicePerLevel[i];
+    float basePointsPerLevel = GetSpellInfo()->getEffectRealPointsPerLevel(i);
     int32 basePoints;
     if (m_overrideBasePoints)
         basePoints = m_overridenBasePoints[i];
     else
-        basePoints = GetSpellInfo()->EffectBasePoints[i] + 1;
+        basePoints = GetSpellInfo()->getEffectBasePoints(i) + 1;
     int32 randomPoints = GetSpellInfo()->getEffectDieSides(i);
 
     //added by Zack : some talents inherit their basepoints from the previously cast spell: see mage - Master of Elements
@@ -5773,7 +5772,7 @@ exit:
     else
         value = basePoints + (int32)RandomUInt(randomPoints);
 
-    int32 comboDamage = (int32)GetSpellInfo()->EffectPointsPerComboPoint[i];
+    int32 comboDamage = (int32)GetSpellInfo()->getEffectPointsPerComboPoint(i);
     if (comboDamage && p_caster != NULL)
     {
         m_requiresCP = true;
@@ -5899,11 +5898,11 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                     if (it)
                     {
                         float weapondmg = RandomFloat(1) * (it->GetItemProperties()->Damage[0].Max - it->GetItemProperties()->Damage[0].Min) + it->GetItemProperties()->Damage[0].Min;
-                        value += float2int32(GetSpellInfo()->EffectBasePoints[0] + weapondmg / (it->GetItemProperties()->Delay / 1000.0f) * 2.8f);
+                        value += float2int32(GetSpellInfo()->getEffectBasePoints(0) + weapondmg / (it->GetItemProperties()->Delay / 1000.0f) * 2.8f);
                     }
                 }
                 if (target && target->IsDazed())
-                    value += GetSpellInfo()->EffectBasePoints[1];
+                    value += GetSpellInfo()->getEffectBasePoints(1);
                 value += (uint32)(u_caster->GetRAP() * 0.1);
             }
         } break;
@@ -5999,7 +5998,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                 if (mainHand != nullptr)
                 {
                     float avgWeaponDmg = (mainHand->GetItemProperties()->Damage[0].Max + mainHand->GetItemProperties()->Damage[0].Min) / 2;
-                    value += float2int32((GetSpellInfo()->EffectBasePoints[0] + 1) + avgWeaponDmg);
+                    value += float2int32((GetSpellInfo()->getEffectBasePoints(0) + 1) + avgWeaponDmg);
                 }
             }
         } break;
@@ -6233,7 +6232,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         case 72427:
         {
             if (i == 2)
-                return GetSpellInfo()->EffectBasePoints[i] + 1;
+                return GetSpellInfo()->getEffectBasePoints(i) + 1;
         } break;
 
         // SPELL_HASH_FAN_OF_KNIVES:  // rogue - fan of knives
@@ -6272,7 +6271,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         case 15290:
         case 71269:
         {
-            value = value * (GetSpellInfo()->EffectBasePoints[i] + 1) / 100;
+            value = value * (GetSpellInfo()->getEffectBasePoints(i) + 1) / 100;
             if (p_caster != NULL)
             {
                 spellModFlatIntValue(p_caster->SM_FMiscEffect, &value, GetSpellInfo()->SpellGroupType);
@@ -6484,7 +6483,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                     case 68315:
                     case 72329:
                     case 72330:
-                        if (GetSpellInfo()->EffectApplyAuraName[i] == SPELL_AURA_PERIODIC_DAMAGE)
+                        if (GetSpellInfo()->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_DAMAGE)
                             value += float2int32(u_caster->GetAP() * 0.03f);
                         break;
                     // SPELL_HASH_INSTANT_POISON_IX:
@@ -7216,8 +7215,8 @@ bool Spell::Reflect(Unit* refunit)
     // if the spell to reflect is a reflect spell, do nothing.
     for (uint8 i = 0; i < 3; i++)
     {
-        if (GetSpellInfo()->getEffect(i) == SPELL_EFFECT_APPLY_AURA && (GetSpellInfo()->EffectApplyAuraName[i] == SPELL_AURA_REFLECT_SPELLS_SCHOOL ||
-            GetSpellInfo()->EffectApplyAuraName[i] == SPELL_AURA_REFLECT_SPELLS))
+        if (GetSpellInfo()->getEffect(i) == SPELL_EFFECT_APPLY_AURA && (GetSpellInfo()->getEffectApplyAuraName(i) == SPELL_AURA_REFLECT_SPELLS_SCHOOL ||
+            GetSpellInfo()->getEffectApplyAuraName(i) == SPELL_AURA_REFLECT_SPELLS))
             return false;
     }
 
@@ -8223,7 +8222,7 @@ uint32 Spell::GetTargetType(uint32 value, uint32 i)
     uint32 type = g_spellImplicitTargetFlags[value];
 
     //CHAIN SPELLS ALWAYS CHAIN!
-    uint32 jumps = m_spellInfo->EffectChainTarget[i];
+    uint32 jumps = m_spellInfo->getEffectChainTarget(i);
     if (u_caster != NULL)
         spellModFlatIntValue(u_caster->SM_FAdditionalTargets, (int32*)&jumps, m_spellInfo->SpellGroupType);
     if (jumps != 0)
@@ -8447,10 +8446,10 @@ void Spell::SpellEffectJumpTarget(uint32 i)
 
     float speedZ = 0.0f;
 
-    if (m_spellInfo->EffectMiscValue[i])
-        speedZ = float(m_spellInfo->EffectMiscValue[i]) / 10;
-    else if (m_spellInfo->EffectMiscValueB[i])
-        speedZ = float(m_spellInfo->EffectMiscValueB[i]) / 10;
+    if (m_spellInfo->getEffectMiscValue(i))
+        speedZ = float(m_spellInfo->getEffectMiscValue(i)) / 10;
+    else if (m_spellInfo->getEffectMiscValueB(i))
+        speedZ = float(m_spellInfo->getEffectMiscValueB(i)) / 10;
 
     o = unitTarget->calcRadAngle(u_caster->GetPositionX(), u_caster->GetPositionY(), x, y);
 

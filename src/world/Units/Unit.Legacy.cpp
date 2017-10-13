@@ -42,6 +42,7 @@
 #include "Spell/Definitions/SpellMechanics.h"
 #include "Spell/Definitions/PowerType.h"
 #include "Spell/Definitions/SpellDidHitResult.h"
+#include "Spell/Definitions/SpellEffectTarget.h"
 #include "Spell/SpellHelpers.h"
 #include "Creatures/Pet.h"
 
@@ -1338,7 +1339,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     continue;
                 if (ospinfo->School != CastingSpell->School)
                     continue;
-                if (CastingSpell->EffectImplicitTargetA[0] == 1 || CastingSpell->EffectImplicitTargetA[1] == 1 || CastingSpell->EffectImplicitTargetA[2] == 1)  //Prevents school based procs affecting caster when self buffing
+                if (CastingSpell->getEffectImplicitTargetA(0) == EFF_TARGET_SELF || CastingSpell->getEffectImplicitTargetA(1) == EFF_TARGET_SELF || CastingSpell->getEffectImplicitTargetA(2) == EFF_TARGET_SELF)  //Prevents school based procs affecting caster when self buffing
                     continue;
             }
             else if (spe->spellIconID == 1)
@@ -1445,9 +1446,9 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
         // SPELL_AURA_PROC_TRIGGER_SPELL_WITH_VALUE
         for (uint8 i = 0; i < 3; ++i)
         {
-            if (ospinfo->EffectApplyAuraName[i] == SPELL_AURA_PROC_TRIGGER_SPELL_WITH_VALUE)
+            if (ospinfo->getEffectApplyAuraName(i) == SPELL_AURA_PROC_TRIGGER_SPELL_WITH_VALUE)
             {
-                dmg_overwrite[i] = ospinfo->EffectBasePoints[i] + 1;
+                dmg_overwrite[i] = ospinfo->getEffectBasePoints(i) + 1;
                 spell_proc->DoEffect(victim, CastingSpell, flag, dmg, abs, dmg_overwrite, weapon_damage_type);
             }
         }
@@ -2037,8 +2038,8 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                         continue;
                     SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);   //we already modified this spell on server loading so it must exist
                     auto spell_duration = sSpellDurationStore.LookupEntry(spellInfo->getDurationIndex());
-                    uint32 tickcount = GetDuration(spell_duration) / spellInfo->EffectAmplitude[0];
-                    dmg_overwrite[0] = ospinfo->EffectBasePoints[0] * dmg / (100 * tickcount);
+                    uint32 tickcount = GetDuration(spell_duration) / spellInfo->getEffectAmplitude(0);
+                    dmg_overwrite[0] = ospinfo->getEffectBasePoints(0) * dmg / (100 * tickcount);
                 }
                 break;
                 //druid - Primal Fury
@@ -2451,7 +2452,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
 
                         //this spell builds up n time
                         spell_proc->mProcCharges += dmg;
-                        if ((int32)spell_proc->mProcCharges >= ospinfo->EffectBasePoints[1] &&  //if charge built up
+                        if ((int32)spell_proc->mProcCharges >= ospinfo->getEffectBasePoints(1) &&  //if charge built up
                             dmg < this->getUInt32Value(UNIT_FIELD_HEALTH))    //if this is not a killer blow
                             can_proc_now = true;
                     }
@@ -2497,14 +2498,14 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     }
 
                     //null check was made before like 2 times already :P
-                    dmg_overwrite[0] = (ospinfo->EffectBasePoints[2] + 1) * GetMaxPower(POWER_TYPE_MANA) / 100;
+                    dmg_overwrite[0] = (ospinfo->getEffectBasePoints(2) + 1) * GetMaxPower(POWER_TYPE_MANA) / 100;
                 }
                 break;
                 // warlock - Unstable Affliction
                 case 31117:
                 {
                     //null check was made before like 2 times already :P
-                    dmg_overwrite[0] = (ospinfo->EffectBasePoints[0] + 1) * 9;
+                    dmg_overwrite[0] = (ospinfo->getEffectBasePoints(0) + 1) * 9;
                 }
                 break;
 
@@ -2939,7 +2940,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                         case 69576:
                         case 71108:
                         {
-                            amount = CastingSpell->EffectBasePoints[0] + 1;
+                            amount = CastingSpell->getEffectBasePoints(0) + 1;
                         } break;
 
                         //SPELL_HASH_SHADOWBURN
@@ -2955,7 +2956,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                         case 47826:
                         case 47827:
                         {
-                            amount = CastingSpell->EffectBasePoints[1] + 1;
+                            amount = CastingSpell->getEffectBasePoints(1) + 1;
                         } break;
                         default:
                             amount = 0;
@@ -2968,7 +2969,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
                     Spell* spell = sSpellFactoryMgr.NewSpell(this, spellInfo, true, NULL);
                     spell->SetUnitTarget(this);
-                    spell->Heal(amount * (ospinfo->EffectBasePoints[0] + 1) / 100);
+                    spell->Heal(amount * (ospinfo->getEffectBasePoints(0) + 1) / 100);
                     delete spell;
                     spell = NULL;
                     continue;
@@ -3590,7 +3591,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
                     if (!parentproc || !spellInfo)
                         continue;
-                    int32 val = parentproc->EffectBasePoints[0] + 1;
+                    int32 val = parentproc->getEffectBasePoints(0) + 1;
                     Spell* spell = sSpellFactoryMgr.NewSpell(this, spellInfo, true, NULL);
                     spell->forced_basepoints[0] = (val * dmg) / 300; //per tick
                     SpellCastTargets targets;
@@ -4273,7 +4274,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     //!! The weird thing is that we need the spell that triggered this enchant spell in order to output logs ..we are using oldspell info too
                     //we have to recalc the value of this spell
                     SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(origId);
-                    uint32 AP_owerride = spellInfo->EffectBasePoints[0] + 1;
+                    uint32 AP_owerride = spellInfo->getEffectBasePoints(0) + 1;
                     uint32 dmg2 = static_cast<Player*>(this)->GetMainMeleeDamage(AP_owerride);
                     SpellInfo* sp_for_the_logs = sSpellCustomizations.GetSpellInfo(spellId);
                     Strike(victim, MELEE, sp_for_the_logs, dmg2, 0, 0, true, false);
@@ -4422,7 +4423,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                         continue;
                     if (CastingSpell->School != SCHOOL_FIRE && CastingSpell->School != SCHOOL_FROST) //fire and frost critical's
                         continue;
-                    dmg_overwrite[0] = CastingSpell->getManaCost() * (ospinfo->EffectBasePoints[0] + 1) / 100;
+                    dmg_overwrite[0] = CastingSpell->getManaCost() * (ospinfo->getEffectBasePoints(0) + 1) / 100;
                 }
                 break;
                 //Hunter - The Beast Within
@@ -4495,7 +4496,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     if (!power_word_id)
                         power_word_id = 17;
                     //make a direct strike then exit rest of handler
-                    int tdmg = abs * (ospinfo->EffectBasePoints[0] + 1) / 100;
+                    int tdmg = abs * (ospinfo->getEffectBasePoints(0) + 1) / 100;
                     //somehow we should make this not caused any threat (to be done)
                     SpellNonMeleeDamageLog(victim, power_word_id, tdmg, false, true);
                     continue;
@@ -4706,8 +4707,8 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
 
                     SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(54203);
                     auto spell_duration = sSpellDurationStore.LookupEntry(spellInfo->getDurationIndex());
-                    uint32 tickcount = GetDuration(spell_duration) / spellInfo->EffectAmplitude[0];
-                    dmg_overwrite[0] = ospinfo->EffectBasePoints[0] * dmg / (100 * tickcount);
+                    uint32 tickcount = GetDuration(spell_duration) / spellInfo->getEffectAmplitude(0);
+                    dmg_overwrite[0] = ospinfo->getEffectBasePoints(0) * dmg / (100 * tickcount);
                 }
                 break;
                 case 59578: //Paladin - Art of War
@@ -4788,7 +4789,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     auto idx = CastingSpell->firstBeneficialEffect();
                     if (idx != 1)
                     {
-                        dmg_overwrite[0] = ((CastingSpell->EffectBasePoints[idx] + 1) * (ospinfo->EffectBasePoints[0] + 1) / 100);
+                        dmg_overwrite[0] = ((CastingSpell->getEffectBasePoints(idx) + 1) * (ospinfo->getEffectBasePoints(0) + 1) / 100);
                     }
                 }
                 break;
@@ -8469,7 +8470,7 @@ void Unit::AddAura(Aura* aur)
     {
         for (uint8 i = 0; i < 3; ++i)
         {
-            if (aur->GetSpellInfo()->EffectApplyAuraName[i] == SPELL_AURA_ENABLE_FLIGHT_WITH_UNMOUNTED_SPEED || aur->GetSpellInfo()->EffectApplyAuraName[i] == SPELL_AURA_ENABLE_FLIGHT2)
+            if (aur->GetSpellInfo()->getEffectApplyAuraName(i) == SPELL_AURA_ENABLE_FLIGHT_WITH_UNMOUNTED_SPEED || aur->GetSpellInfo()->getEffectApplyAuraName(i) == SPELL_AURA_ENABLE_FLIGHT2)
             {
                 delete aur;
                 return;
@@ -9113,7 +9114,7 @@ bool Unit::RemoveAurasByHeal()
                 // remove at p% health
                 case 38772:
                 {
-                    uint32 p = m_auras[x]->GetSpellInfo()->EffectBasePoints[1];
+                    uint32 p = m_auras[x]->GetSpellInfo()->getEffectBasePoints(1);
                     if (getUInt32Value(UNIT_FIELD_MAXHEALTH) * p <= getUInt32Value(UNIT_FIELD_HEALTH) * 100)
                     {
                         m_auras[x]->Remove();
@@ -10136,11 +10137,11 @@ AuraCheckResponse Unit::AuraCheck(SpellInfo* proto, Object* caster)
             aura_sp = aura->GetSpellInfo();
 
             if ((aura_sp->getEffect(0) == proto->getEffect(0) && (aura_sp->getEffect(0) != SPELL_EFFECT_APPLY_AURA ||
-                aura_sp->EffectApplyAuraName[0] == proto->EffectApplyAuraName[0])) &&
+                aura_sp->getEffectApplyAuraName(0) == proto->getEffectApplyAuraName(0))) &&
                 (aura_sp->getEffect(1) == proto->getEffect(1) && (aura_sp->getEffect(1) != SPELL_EFFECT_APPLY_AURA ||
-                aura_sp->EffectApplyAuraName[1] == proto->EffectApplyAuraName[1])) &&
+                aura_sp->getEffectApplyAuraName(1) == proto->getEffectApplyAuraName(1))) &&
                 (aura_sp->getEffect(2) == proto->getEffect(2) && (aura_sp->getEffect(2) != SPELL_EFFECT_APPLY_AURA ||
-                aura_sp->EffectApplyAuraName[2] == proto->EffectApplyAuraName[2])))
+                aura_sp->getEffectApplyAuraName(2) == proto->getEffectApplyAuraName(2))))
             {
                 resp.Misc = aura->GetSpellInfo()->getId();
 
@@ -10184,11 +10185,11 @@ AuraCheckResponse Unit::AuraCheck(SpellInfo* proto, Aura* aur, Object* caster)
         // we've got an aura with the same name as the one we're trying to apply
         // but first we check if it has the same effects
         if ((aura_sp->getEffect(0) == proto->getEffect(0) &&
-            (aura_sp->getEffect(0) != SPELL_EFFECT_APPLY_AURA || aura_sp->EffectApplyAuraName[0] == proto->EffectApplyAuraName[0])) &&
+            (aura_sp->getEffect(0) != SPELL_EFFECT_APPLY_AURA || aura_sp->getEffectApplyAuraName(0) == proto->getEffectApplyAuraName(0))) &&
             (aura_sp->getEffect(1) == proto->getEffect(1) &&
-            (aura_sp->getEffect(1) != SPELL_EFFECT_APPLY_AURA || aura_sp->EffectApplyAuraName[1] == proto->EffectApplyAuraName[1])) &&
+            (aura_sp->getEffect(1) != SPELL_EFFECT_APPLY_AURA || aura_sp->getEffectApplyAuraName(1) == proto->getEffectApplyAuraName(1))) &&
             (aura_sp->getEffect(2) == proto->getEffect(2) &&
-            (aura_sp->getEffect(2) != SPELL_EFFECT_APPLY_AURA || aura_sp->EffectApplyAuraName[2] == proto->EffectApplyAuraName[2])))
+            (aura_sp->getEffect(2) != SPELL_EFFECT_APPLY_AURA || aura_sp->getEffectApplyAuraName(2) == proto->getEffectApplyAuraName(2))))
         {
             resp.Misc = aur->GetSpellInfo()->getId();
 
@@ -11509,7 +11510,7 @@ bool Unit::IsDazed()
             if (m_auras[x]->GetSpellInfo()->getMechanicsType() == MECHANIC_ENSNARED)
                 return true;
             for (uint32 y = 0; y < 3; y++)
-                if (m_auras[x]->GetSpellInfo()->EffectMechanic[y] == MECHANIC_ENSNARED)
+                if (m_auras[x]->GetSpellInfo()->getEffectMechanic(y) == MECHANIC_ENSNARED)
                     return true;
         }
     }
@@ -12517,7 +12518,7 @@ bool Unit::RemoveAllAurasByMechanic(uint32 MechanicType, uint32 MaxDispel = -1, 
                 for (uint8 i = 0; i < 3; i++)
                 {
                     // SNARE + ROOT
-                    if (m_auras[x]->GetSpellInfo()->EffectApplyAuraName[i] == SPELL_AURA_MOD_DECREASE_SPEED || m_auras[x]->GetSpellInfo()->EffectApplyAuraName[i] == SPELL_AURA_MOD_ROOT)
+                    if (m_auras[x]->GetSpellInfo()->getEffectApplyAuraName(i) == SPELL_AURA_MOD_DECREASE_SPEED || m_auras[x]->GetSpellInfo()->getEffectApplyAuraName(i) == SPELL_AURA_MOD_ROOT)
                     {
                         m_auras[x]->Remove();
                         break;
@@ -12546,8 +12547,8 @@ void Unit::RemoveAllMovementImpairing()
             {
                 for (uint8 i = 0; i < 3; i++)
                 {
-                    if (m_auras[x]->GetSpellInfo()->EffectApplyAuraName[i] == SPELL_AURA_MOD_DECREASE_SPEED
-                        || m_auras[x]->GetSpellInfo()->EffectApplyAuraName[i] == SPELL_AURA_MOD_ROOT)
+                    if (m_auras[x]->GetSpellInfo()->getEffectApplyAuraName(i) == SPELL_AURA_MOD_DECREASE_SPEED
+                        || m_auras[x]->GetSpellInfo()->getEffectApplyAuraName(i) == SPELL_AURA_MOD_ROOT)
                     {
                         m_auras[x]->Remove();
                         break;

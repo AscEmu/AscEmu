@@ -28,6 +28,7 @@
 #include "Server/World.Legacy.h"
 #include "Definitions/SpellCastTargetFlags.h"
 #include "Definitions/SpellDidHitResult.h"
+#include "Definitions/SpellEffectTarget.h"
 #include "SpellHelpers.h"
 #include "Units/Creatures/Pet.h"
 
@@ -111,11 +112,11 @@ void Spell::FillTargetMap(uint32 i)
     ARCEMU_ASSERT(m_caster->IsInWorld());
 
     uint32 TargetType = 0;
-    TargetType |= GetTargetType(m_spellInfo->EffectImplicitTargetA[i], i);
+    TargetType |= GetTargetType(m_spellInfo->getEffectImplicitTargetA(i), i);
 
     //never get info from B if it is 0 :P
-    if (m_spellInfo->EffectImplicitTargetB[i] != 0)
-        TargetType |= GetTargetType(m_spellInfo->EffectImplicitTargetB[i], i);
+    if (m_spellInfo->getEffectImplicitTargetB(i) != EFF_TARGET_NONE)
+        TargetType |= GetTargetType(m_spellInfo->getEffectImplicitTargetB(i), i);
 
     if (TargetType & SPELL_TARGET_NOT_IMPLEMENTED)
         return;
@@ -254,7 +255,7 @@ void Spell::AddChainTargets(uint32 i, uint32 TargetType, float r, uint32 maxtarg
     if (casterFrom != NULL && pfirstTargetFrom != NULL && casterFrom->GetGroup() == pfirstTargetFrom->GetGroup())
         RaidOnly = true;
 
-    uint32 jumps = m_spellInfo->EffectChainTarget[i];
+    uint32 jumps = m_spellInfo->getEffectChainTarget(i);
 
     //range
     range /= jumps; //hacky, needs better implementation!
@@ -511,11 +512,11 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
         if (m_spellInfo->getEffect(i) == 0)
             continue;
         uint32 TargetType = 0;
-        TargetType |= GetTargetType(m_spellInfo->EffectImplicitTargetA[i], i);
+        TargetType |= GetTargetType(m_spellInfo->getEffectImplicitTargetA(i), i);
 
         //never get info from B if it is 0 :P
-        if (m_spellInfo->EffectImplicitTargetB[i] != 0)
-            TargetType |= GetTargetType(m_spellInfo->EffectImplicitTargetB[i], i);
+        if (m_spellInfo->getEffectImplicitTargetB(i) != EFF_TARGET_NONE)
+            TargetType |= GetTargetType(m_spellInfo->getEffectImplicitTargetB(i), i);
 
         if (TargetType & (SPELL_TARGET_OBJECT_SELF | SPELL_TARGET_AREA_PARTY | SPELL_TARGET_AREA_RAID))
         {

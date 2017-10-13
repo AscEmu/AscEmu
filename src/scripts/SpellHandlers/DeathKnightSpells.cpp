@@ -96,7 +96,7 @@ bool DeathStrike(uint32 i, Spell* pSpell)
 
         Aura* aur = pSpell->p_caster->getAuraWithId(improvedDeathStrike);
         if (aur != nullptr)
-            val += val * (aur->GetSpellInfo()->EffectBasePoints[2] + 1) / 100;
+            val += val * (aur->GetSpellInfo()->getEffectBasePoints(2) + 1) / 100;
 
         if (val > 0)
             pSpell->u_caster->Heal(pSpell->u_caster, pSpell->GetSpellInfo()->getId(), val);
@@ -337,7 +337,7 @@ bool Hysteria(uint32 i, Aura* pAura, bool apply)
 
     Unit* target = pAura->GetTarget();
 
-    uint32 dmg = (uint32)target->GetMaxHealth() * (pAura->GetSpellInfo()->EffectBasePoints[i] + 1) / 100;
+    uint32 dmg = (uint32)target->GetMaxHealth() * (pAura->GetSpellInfo()->getEffectBasePoints(i) + 1) / 100;
     target->DealDamage(target, dmg, 0, 0, 0);
 
     return true;

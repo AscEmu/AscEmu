@@ -28,6 +28,7 @@
 #include "Map/MapMgr.h"
 #include "Faction.h"
 #include "Spell/Definitions/ProcFlags.h"
+#include "Spell/Definitions/SpellEffectTarget.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
 
 GameObject::GameObject(uint64 guid)
@@ -851,7 +852,7 @@ void GameObject_Trap::Update(unsigned long time_passed)
                     return;
                 }
 
-                if (spell->EffectImplicitTargetA[0] == 16 || spell->EffectImplicitTargetB[0] == 16)
+                if (spell->getEffectImplicitTargetA(0) == EFF_TARGET_ALL_ENEMY_IN_AREA_INSTANT || spell->getEffectImplicitTargetA(0) == EFF_TARGET_ALL_ENEMY_IN_AREA_INSTANT)
                 {
                     return;	 // on area don't continue.
                 }

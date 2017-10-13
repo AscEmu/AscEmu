@@ -1353,7 +1353,7 @@ bool HunterTamingQuest(uint32 i, Aura* a, bool apply)
     }
     else
     {
-        uint32 TamingSpellid = a->GetSpellInfo()->EffectMiscValue[1];
+        uint32 TamingSpellid = a->GetSpellInfo()->getEffectMiscValue(1);
 
         SpellInfo* triggerspell = sSpellCustomizations.GetSpellInfo(TamingSpellid);
         if (triggerspell == NULL)
@@ -1362,10 +1362,10 @@ bool HunterTamingQuest(uint32 i, Aura* a, bool apply)
             return true;
         }
 
-        QuestProperties const* tamequest = sMySQLStore.getQuestProperties(triggerspell->EffectMiscValue[1]);
+        QuestProperties const* tamequest = sMySQLStore.getQuestProperties(triggerspell->getEffectMiscValue(1));
         if (tamequest == NULL)
         {
-            LogError("An Aura with spellid %u is calling HunterTamingQuest() with an invalid tamequest id: %u", a->GetSpellId(), triggerspell->EffectMiscValue[1]);
+            LogError("An Aura with spellid %u is calling HunterTamingQuest() with an invalid tamequest id: %u", a->GetSpellId(), triggerspell->getEffectMiscValue(1));
             return true;
         }
 

@@ -268,10 +268,10 @@ bool JudgementLightWisdomJustice(uint32 i, Spell* pSpell)
             id = 20187;
             break;
         case 31801:
-            id = aura->GetSpellInfo()->EffectBasePoints[2];
+            id = aura->GetSpellInfo()->getEffectBasePoints(2);
             break;
         case 53736:
-            id = aura->GetSpellInfo()->EffectBasePoints[2];
+            id = aura->GetSpellInfo()->getEffectBasePoints(2);
             break;
         case 20166:
             id = 54158;

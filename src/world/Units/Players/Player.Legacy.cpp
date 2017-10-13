@@ -6719,7 +6719,7 @@ void Player::Reset_Talents()
                         {
                             // removeSpell(spellInfo->EffectTriggerSpell[k], false, 0, 0);
                             // remove higher ranks of this spell too (like earth shield lvl 1 is talent and the rest is taught from trainer)
-                            spellInfo2 = sSpellCustomizations.GetSpellInfo(spellInfo->EffectTriggerSpell[k]);
+                            spellInfo2 = sSpellCustomizations.GetSpellInfo(spellInfo->getEffectTriggerSpell(k));
                             if (spellInfo2 != NULL)
                             {
                                 removeSpellByHashName(spellInfo2->custom_NameHash);
@@ -9466,7 +9466,7 @@ void Player::CompleteLoading()
         {
             if (sp->getEffect(x) == SPELL_EFFECT_APPLY_AURA)
             {
-                aura->AddMod(sp->EffectApplyAuraName[x], sp->EffectBasePoints[x] + 1, sp->EffectMiscValue[x], x);
+                aura->AddMod(sp->getEffectApplyAuraName(x), sp->getEffectBasePoints(x) + 1, sp->getEffectMiscValue(x), x);
             }
         }
 
@@ -11201,7 +11201,7 @@ bool Player::HasSpellWithAuraNameAndBasePoints(uint32 auraname, uint32 basepoint
         {
             if (sp->getEffect(i) == SPELL_EFFECT_APPLY_AURA)
             {
-                if ((sp->EffectApplyAuraName[i] == auraname) && (sp->EffectBasePoints[i] == (basepoints - 1)))
+                if ((sp->getEffectApplyAuraName(i) == auraname) && (sp->getEffectBasePoints(i) == (basepoints - 1)))
                     return true;
             }
         }

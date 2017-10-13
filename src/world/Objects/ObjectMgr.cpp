@@ -1421,25 +1421,25 @@ void ObjectMgr::LoadSpellEffectsOverride()
                         sp->setEffect(seo_Effect, seo_EffectId);
 
                     if (seo_BasePoints)
-                        sp->EffectBasePoints[seo_EffectId] = seo_BasePoints;
+                        sp->setEffectBasePoints(seo_BasePoints, seo_EffectId);
 
                     if (seo_ApplyAuraName)
-                        sp->EffectApplyAuraName[seo_EffectId] = seo_ApplyAuraName;
+                        sp->setEffectApplyAuraName(seo_ApplyAuraName, seo_EffectId);
 
                     //                    if (seo_SpellGroupRelation)
                     //                        sp->EffectSpellGroupRelation[seo_EffectId] = seo_SpellGroupRelation;
 
                     if (seo_MiscValue)
-                        sp->EffectMiscValue[seo_EffectId] = seo_MiscValue;
+                        sp->setEffectMiscValue(seo_MiscValue, seo_EffectId);
 
                     if (seo_TriggerSpell)
-                        sp->EffectTriggerSpell[seo_EffectId] = seo_TriggerSpell;
+                        sp->setEffectTriggerSpell(seo_TriggerSpell, seo_EffectId);
 
                     if (seo_ImplicitTargetA)
-                        sp->EffectImplicitTargetA[seo_EffectId] = seo_ImplicitTargetA;
+                        sp->setEffectImplicitTargetA(seo_ImplicitTargetA, seo_EffectId);
 
                     if (seo_ImplicitTargetB)
-                        sp->EffectImplicitTargetB[seo_EffectId] = seo_ImplicitTargetB;
+                        sp->setEffectImplicitTargetB(seo_ImplicitTargetB, seo_EffectId);
 
                     if (seo_EffectCustomFlag != 0)
                         sp->EffectCustomFlag[seo_Effect] = seo_EffectCustomFlag;
@@ -2009,7 +2009,7 @@ void ObjectMgr::LoadTrainers()
                         {
                             if (ts.pCastSpell->getEffect(k) == SPELL_EFFECT_LEARN_SPELL)
                             {
-                                ts.pCastRealSpell = sSpellCustomizations.GetSpellInfo(ts.pCastSpell->EffectTriggerSpell[k]);
+                                ts.pCastRealSpell = sSpellCustomizations.GetSpellInfo(ts.pCastSpell->getEffectTriggerSpell(k));
                                 if (ts.pCastRealSpell == NULL)
                                 {
                                     LOG_ERROR("Trainer %u contains cast spell %u that is non-teaching", entry, CastSpellID);
@@ -2047,7 +2047,7 @@ void ObjectMgr::LoadTrainers()
                 //IsProfession is true if the TrainerSpell will teach a primary profession
                 if (ts.RequiredSkillLine == 0 && ts.pCastRealSpell != NULL && ts.pCastRealSpell->getEffect(1) == SPELL_EFFECT_SKILL)
                 {
-                    uint32 skill = ts.pCastRealSpell->EffectMiscValue[1];
+                    uint32 skill = ts.pCastRealSpell->getEffectMiscValue(1);
                     auto skill_line = sSkillLineStore.LookupEntry(skill);
                     ARCEMU_ASSERT(skill_line != NULL);
                     if (skill_line->type == SKILL_TYPE_PROFESSION)

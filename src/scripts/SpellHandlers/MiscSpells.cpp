@@ -65,7 +65,7 @@ bool MoltenShields(uint32 i, Spell* s)
 
     ReflectSpellSchool* rss = new ReflectSpellSchool;
 
-    rss->chance = s->GetSpellInfo()->EffectBasePoints[0];
+    rss->chance = s->GetSpellInfo()->getEffectBasePoints(0);
     rss->spellId = s->GetSpellInfo()->getId();
     rss->school = SCHOOL_FIRE;
     rss->infront = false;
@@ -204,14 +204,14 @@ bool NorthRendInscriptionResearch(uint32 i, Spell* s)
                 SpellInfo* se1 = sSpellCustomizations.GetSpellInfo(skill_line_ability->spell);
                 if (se1 && se1->getEffect(0) == SPELL_EFFECT_CREATE_ITEM)
                 {
-                    ItemProperties const* itm = sMySQLStore.getItemProperties(se1->EffectItemType[0]);
+                    ItemProperties const* itm = sMySQLStore.getItemProperties(se1->getEffectItemType(0));
                     if (itm && (itm->Spells[0].Id != 0))
                     {
                         SpellInfo* se2 = sSpellCustomizations.GetSpellInfo(itm->Spells[0].Id);
                         if (se2 && se2->getEffect(0) == SPELL_EFFECT_USE_GLYPH)
                         {
 #if VERSION_STRING > TBC
-                            auto glyph_properties = sGlyphPropertiesStore.LookupEntry(se2->EffectMiscValue[0]);
+                            auto glyph_properties = sGlyphPropertiesStore.LookupEntry(se2->getEffectMiscValue(0));
                             if (glyph_properties)
                             {
                                 if (glyph_properties->Type == glyphType)
