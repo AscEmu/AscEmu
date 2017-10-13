@@ -64,7 +64,6 @@ SpellInfo::SpellInfo()
     ai_target_type = 0;
     custom_self_cast_only = false;
     custom_apply_on_shapeshift_change = false;
-    custom_always_apply = false;
     custom_is_melee_spell = false;
     custom_is_ranged_spell = false;
 
@@ -304,7 +303,6 @@ SpellInfo::SpellInfo()
 
     custom_self_cast_only = false;
     custom_apply_on_shapeshift_change = false;
-    custom_always_apply = false;
     custom_is_melee_spell = false;
     custom_is_ranged_spell = false;
     custom_SchoolMask = 0;

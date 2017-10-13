@@ -869,7 +869,7 @@ void Aura::Remove()
         if (!m_spellInfo->getEffect(x))
             continue;
 
-        if (m_spellInfo->getEffect(x) == SPELL_EFFECT_TRIGGER_SPELL && !m_spellInfo->custom_always_apply)
+        if (m_spellInfo->getEffect(x) == SPELL_EFFECT_TRIGGER_SPELL && sSpellCustomizations.isAlwaysApply(m_spellInfo) == false)
         {
             // I'm not sure about this! FIX ME!!
             auto spell_entry = sSpellCustomizations.GetSpellInfo(GetSpellInfo()->getEffectTriggerSpell(x));

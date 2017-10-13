@@ -601,7 +601,6 @@ public:
     int getAi_target_type() const { return ai_target_type; }
     bool getCustom_self_cast_only() const { return custom_self_cast_only; }
     bool getCustom_apply_on_shapeshift_change() const { return custom_apply_on_shapeshift_change; }
-    bool getCustom_always_apply() const { return custom_always_apply; }
     bool getCustom_is_melee_spell() const { return custom_is_melee_spell; }
     bool getCustom_is_ranged_spell() const { return custom_is_ranged_spell; }
     uint32_t getCustom_SchoolMask() const { return custom_SchoolMask; }
@@ -744,7 +743,6 @@ public:
         int ai_target_type;
         bool custom_self_cast_only;
         bool custom_apply_on_shapeshift_change;
-        bool custom_always_apply;
         bool custom_is_melee_spell;
         bool custom_is_ranged_spell;
         uint32_t custom_SchoolMask;
@@ -926,7 +924,6 @@ public:
         int ai_target_type;
         bool custom_self_cast_only;
         bool custom_apply_on_shapeshift_change;
-        bool custom_always_apply;
         bool custom_is_melee_spell;
         bool custom_is_ranged_spell;
         bool CheckLocation(uint32_t map_id, uint32_t zone_id, uint32_t area_id, Player* player = NULL);

@@ -491,7 +491,6 @@ void SpellCustomizations::StartSpellCustomization()
             SetMissingCIsFlags(spellentry);
             SetCustomFlags(spellentry);
             SetOnShapeshiftChange(spellentry);
-            SetAlwaysApply(spellentry);
         }
     }
 }
@@ -800,7 +799,7 @@ void SpellCustomizations::SetOnShapeshiftChange(SpellInfo* spell_entry)
     }
 }
 
-void SpellCustomizations::SetAlwaysApply(SpellInfo* spell_entry)
+bool SpellCustomizations::isAlwaysApply(SpellInfo* spell_entry)
 {
     switch (spell_entry->getId())
     {
@@ -833,10 +832,10 @@ void SpellCustomizations::SetAlwaysApply(SpellInfo* spell_entry)
         case 34984:
         case 65545:
         {
-            spell_entry->custom_always_apply = true;
+            return true;
         } break;
         default:
-            break;
+            return false;
     }
 }
 
