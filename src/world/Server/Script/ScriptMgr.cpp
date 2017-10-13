@@ -672,20 +672,23 @@ std::string InstanceScript::getDataStateString(uint32_t bossEntry)
 void InstanceScript::generateBossDataState()
 {
     InstanceBossInfoMap* bossInfoMap = objmgr.m_InstanceBossInfoMap[mInstance->GetMapId()];
-    for (const auto& encounter : *bossInfoMap)
+    if (bossInfoMap != nullptr)
     {
-        CreatureProperties const* creature = sMySQLStore.getCreatureProperties(encounter.second->creatureid);
-        if (creature == nullptr)
-            LOG_ERROR("Your instance_boss table includes invalid data for boss entry %u!", encounter.second->creatureid);
-        else
-            mInstanceData.insert(std::pair<uint32_t, uint32_t>(encounter.second->creatureid, NotStarted));
-    }
+        for (const auto& encounter : *bossInfoMap)
+        {
+            CreatureProperties const* creature = sMySQLStore.getCreatureProperties(encounter.second->creatureid);
+            if (creature == nullptr)
+                LOG_ERROR("Your instance_boss table includes invalid data for boss entry %u!", encounter.second->creatureid);
+            else
+                mInstanceData.insert(std::pair<uint32_t, uint32_t>(encounter.second->creatureid, NotStarted));
+        }
 
-    for (const auto& killedNpc : mInstance->pInstance->m_killedNpcs)
-    {
-        InstanceBossInfoMap::const_iterator bossInfo = bossInfoMap->find((killedNpc));
-        if (bossInfo != bossInfoMap->end())
-            setData(bossInfo->first, Finished);
+        for (const auto& killedNpc : mInstance->pInstance->m_killedNpcs)
+        {
+            InstanceBossInfoMap::const_iterator bossInfo = bossInfoMap->find((killedNpc));
+            if (bossInfo != bossInfoMap->end())
+                setData(bossInfo->first, Finished);
+        }
     }
 }
 
