@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Players/Player.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/DiminishingGroup.h"
+#include "Spell/Customization/SpellCustomizations.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
