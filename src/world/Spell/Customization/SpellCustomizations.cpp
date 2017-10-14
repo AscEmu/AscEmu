@@ -543,7 +543,10 @@ void SpellCustomizations::LoadSpellCustomAssign()
         {
             uint32 spell_id = result->Fetch()[0].GetUInt32();
             uint32 on_target = result->Fetch()[1].GetUInt32();
+
+            // loaded but not used!
             uint32 from_caster_on_self_flag = result->Fetch()[2].GetUInt32();
+
             bool self_cast_only = result->Fetch()[3].GetBool();
             uint32 c_is_flag = result->Fetch()[4].GetUInt32();
 

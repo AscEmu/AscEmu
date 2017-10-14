@@ -725,28 +725,79 @@ public:
 
         //////////////////////////////////////////////////////////////////////////////////////////
         //custom values
+        
+        // from MySQL table spell_proc - 1887 spells
         uint32_t custom_proc_interval;
+
+        // from MySQL table spell_custom_assign - 1970 spells
         uint32_t custom_BGR_one_buff_on_target;
+
+        // from MySQL table spell_custom_assign - 353 spells
+        // also flags added in SpellCustomizations::SetMissingCIsFlags
         uint32_t custom_c_is_flags;
+
+        // from MySQL table spell_ranks - 6546 spells
         uint32_t custom_RankNumber;
+
+        // set in HackFixes.cpp for all Dummy Trigger
         uint32_t custom_NameHash;
-        uint32_t custom_ThreatForSpell;
+
+        // from MySQL table ai_threattospellid - 144 spells
+        int32_t custom_ThreatForSpell;
+
+        // from MySQL table ai_threattospellid - 118 spells
         float custom_ThreatForSpellCoef;
+
+        // from MySQL table spell_coef_flags - 16499 spells
         uint32_t custom_spell_coef_flags;
+
+        // set in HackFixes.cpp for all spells
         float custom_base_range_or_radius_sqr;
+
+        // set in HackFixes.cpp - 1 spell (26029)
         float cone_width;
+
+        // set in HackFixes.cpp for all spells
         float casttime_coef;
+
+        // set in HackFixes.cpp for most spells
         float fixed_dddhcoef;
+
+        // set in HackFixes.cpp for most spells
         float fixed_hotdotcoef;
+
+        // from MySQL table spell_coef_override - 151 spells
         float Dspell_coef_override;
+
+        // from MySQL table spell_coef_override - 151 spells
         float OTspell_coef_override;
+
+        // set in HackFixes.cpp for all spells
+        // check out SpellInfo::aiTargetType
         int ai_target_type;
+
+        // set in Hackfixes.cpp - 5 spells
+        // from MySQL table spell_custom_assign - 6 spells
         bool custom_self_cast_only;
+
+        // SpellCustomizations::SetOnShapeshiftChange - 2 spells
         bool custom_apply_on_shapeshift_change;
+
+        // set in Hackfixes.cpp - 3 spells
+        // set in SpellCustomizations::SetMeleeSpellBool based on school and effect
         bool custom_is_melee_spell;
+
+        // set in Hackfixes.cpp - 1 spells (2094)
+        // set in SpellCustomizations::SetRangedSpellBool based on school and dmg type
         bool custom_is_ranged_spell;
+
+        // set in HackFixes.cpp for all spells, based on school
         uint32_t custom_SchoolMask;
-        uint32_t CustomFlags;                           // used for spell 781 only - SpellCustomizations::SetCustomFlags
+
+        // SpellCustomizations::SetCustomFlags - 1 spell (781)
+        uint32_t CustomFlags;
+
+        // from MySQL table spell_effects_override - 374 spells
         uint32_t EffectCustomFlag[MAX_SPELL_EFFECTS];
 #else
 

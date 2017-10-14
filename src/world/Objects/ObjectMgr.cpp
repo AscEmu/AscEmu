@@ -1364,28 +1364,26 @@ std::vector<CreatureItem>* ObjectMgr::GetVendorList(uint32 entry)
 void ObjectMgr::LoadAIThreatToSpellId()
 {
     QueryResult* result = WorldDatabase.Query("SELECT * FROM ai_threattospellid");
-
-    if (!result)
+    if (result != nullptr)
     {
-        return;
-    }
-
-    do
-    {
-        Field* fields = result->Fetch();
-        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(fields[0].GetUInt32());
-        if (sp != NULL)
+        do
         {
-            sp->custom_ThreatForSpell = fields[1].GetUInt32();
-            sp->custom_ThreatForSpellCoef = fields[2].GetFloat();
-        }
-        else
-            LogDebugFlag(LF_DB_TABLES, "AIThreatSpell : Cannot apply to spell %u; spell is nonexistent.", fields[0].GetUInt32());
+            Field* fields = result->Fetch();
+            SpellInfo* sp = sSpellCustomizations.GetSpellInfo(fields[0].GetUInt32());
+            if (sp != nullptr)
+            {
+                sp->custom_ThreatForSpell = fields[1].GetInt32();
+                sp->custom_ThreatForSpellCoef = fields[2].GetFloat();
+            }
+            else
+            {
+                LogDebugFlag(LF_DB_TABLES, "AIThreatSpell : Cannot apply to spell %u; spell is nonexistent.", fields[0].GetUInt32());
+            }
 
+        } while (result->NextRow());
+
+        delete result;
     }
-    while (result->NextRow());
-
-    delete result;
 }
 
 void ObjectMgr::LoadSpellEffectsOverride()

@@ -1501,14 +1501,13 @@ void ApplyNormalFixes()
     }
     // END OF LOOP
 
-    //Settings for special cases
-    QueryResult* resultx = WorldDatabase.Query("SELECT * FROM spell_coef_override");
-    if (resultx != NULL)
+    //                                                  0    1            2                       3
+    QueryResult* resultx = WorldDatabase.Query("SELECT id, name, Dspell_coef_override, OTspell_coef_override FROM spell_coef_override");
+    if (resultx != nullptr)
     {
         do
         {
-            Field* f;
-            f = resultx->Fetch();
+            Field* f = resultx->Fetch();
             sp = sSpellCustomizations.GetSpellInfo(f[0].GetUInt32());
             if (sp != nullptr)
             {
