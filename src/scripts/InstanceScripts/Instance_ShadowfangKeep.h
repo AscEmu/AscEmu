@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#if VERSION_STRING != Cata
 const uint32 SHADOWFANG_KEEP_MAP = 33;
 
 enum SFK_encounterIndexes : uint8
@@ -123,7 +124,7 @@ enum SFK_spellEntries : uint32
 };
 
 // On death event Arugal summons serveral void walkers
-const uint32 ArugalVoidCount = 4;
+const uint8 ArugalVoidCount = 4;
 static Movement::Location voidwalkerSpawns[ArugalVoidCount] =
 {
     { -154.274368f, 2177.196533f, 128.448517f, 5.760980f },
@@ -171,7 +172,7 @@ const Movement::LocationWithFlag DeathstalkerAdamantWPS[adamantWpCount] =
     { -226.993f, 2111.47f, 76.8892f, 0, Movement::WP_MOVE_TYPE_RUN },    // 28
     { -227.955f, 2112.34f, 76.8895f, 0, Movement::WP_MOVE_TYPE_RUN },    // 39
     { -229.159378f, 2109.524170f, 76.889519f, 0, Movement::WP_MOVE_TYPE_RUN },    // 30
-    {}                                                                   // 31 (unused)
+    { }                                                                  // 31 (unused)
 };
 
 // Sorcerer Ashcrombe (entry: 3850) waypoints
@@ -188,8 +189,10 @@ const Movement::LocationWithFlag SorcererAshcrombeWPS[ashcrombeWpCount] =
     { -237.188f, 2151.95f, 90.624f, 0, Movement::WP_MOVE_TYPE_WALK },             // 8
     { -241.162f, 2153.65f, 90.624f, 0, Movement::WP_MOVE_TYPE_WALK },             // 9
     { -242.24f, 2155.51f, 90.624f, 0,  Movement::WP_MOVE_TYPE_WALK },             // 10
-    {}                                                                            // 11 (unused)
+    { }                                                                           // 11 (unused)
 };
 
 // Arugal intro 2 (event after nendos death)
 const Movement::Location ArugalAtFenrusLoc = { -137.657944f, 2169.928467f, 136.57781f, 2.826001f };
+
+#endif // VERSION_STRING != Cata
