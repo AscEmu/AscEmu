@@ -66,6 +66,17 @@ namespace Util
 
     std::string ByteArrayToHexString(uint8_t const* bytes, uint32_t arrayLength, bool reverseArray = false);
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Random number helper functions
+
+    int getRandomInt(int end);
+    int getRandomInt(int start, int end);
+
+    uint32_t getRandomUInt(uint32_t end);
+    uint32_t getRandomUInt(uint32_t start, uint32_t end);
+
+    float getRandomFloat(float end);
+    float getRandomFloat(float start, float end);
 }
 
 struct SmallTimeTracker
