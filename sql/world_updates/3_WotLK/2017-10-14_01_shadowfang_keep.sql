@@ -1,6 +1,6 @@
 -- Update right cell lever location
-UPDATE `gameobject_spawns` SET `position_x` = '-252.696', `position_y` = '2114.22', `position_z` = '82.8052', `facing` = '-0.190831', 
-`orientation1` = '-0.131892', `orientation2` = '-0.694696', orientation3 = '-0.131892', `orientation4` = '0.694698', `state` = '1' WHERE `entry` = '18900';
+UPDATE `gameobject_spawns` SET `position_x` = '-252.696', `position_y` = '2114.22', `position_z` = '82.8052', `facing` = '-0.190831', `orientation1` = '-0.131892', 
+`orientation2` = '-0.694696', orientation3 = '-0.131892', `orientation4` = '0.694698', `state` = '1' WHERE `entry` = '18900';
 
 -- Update middle cell lever location
 UPDATE `gameobject_spawns` SET `position_x` = '-249.22', `position_y` = '2123.1', `position_z` = '82.8052', `facing` = '-0.190831', `orientation1` = '-0.131892', 
@@ -10,11 +10,11 @@ UPDATE `gameobject_spawns` SET `position_x` = '-249.22', `position_y` = '2123.1'
 UPDATE `gameobject_spawns` SET `position_x` = '-245.598', `position_y` = '2132.32', `position_z` = '82.8052', `facing` = '-0.190831', `orientation1` = '-0.131892',
 `orientation2` = '-0.694696', `orientation3` = '-0.131892', `orientation4` = '0.694698' WHERE `entry` = '101811';
 
--- Update prisoners script texts type from "Yelling" to "Saying"
+-- Update all prisoners script texts type from "Yelling" to "Saying"
 UPDATE `npc_script_text` SET `type` = '12' WHERE `creature_entry` in ('3849', '3850');
 
 -- update ashrombe orientation
-UPDATE creature_spawns SET orientation='2.706567' WHERE entry = '3850';
+UPDATE `creature_spawns` SET `orientation` = '2.706567' WHERE `entry` = '3850';
 
 -- Added missing prisoners script texts
 DELETE FROM `npc_script_text` WHERE `entry` IN ('8787', '8788');
