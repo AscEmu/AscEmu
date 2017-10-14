@@ -10,9 +10,7 @@ const uint32 SHADOWFANG_KEEP_MAP = 33;
 enum SFK_encounterIndexes : uint8
 {
     // Main encounters
-    INDEX_SPRINGVALE    = 0,
-    INDEX_BLINDWATCHER,
-    INDEX_VOIDWALKER,
+    INDEX_VOIDWALKER    = 0,
     INDEX_FENRUS,
     INDEX_ARUGAL,
     INDEX_NANDOS,

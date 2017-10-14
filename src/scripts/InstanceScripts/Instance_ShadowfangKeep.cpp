@@ -556,7 +556,6 @@ public:
                     }break;
                     case 2:
                     {
-                        std::stringstream text;
                         GetUnit()->SendScriptTextChatMessage(SAY_ADAMANT_OPENING);
                         GetUnit()->EventAddEmote(EMOTE_ONESHOT_USESTANDING, 8000);
                         ModifyAIUpdateEvent(8000);
