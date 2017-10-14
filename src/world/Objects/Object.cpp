@@ -3013,6 +3013,11 @@ void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId)
 
                 std::string message;
                 MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(textId);
+                if (npcScriptText == nullptr)
+                {
+                    LOG_ERROR("Invalid textId: %u. This text is send by a script but not in table npc_script_text!", textId);
+                    return;
+                }
 
                 MySQLStructure::LocalesNpcScriptText const* lnpct = (sessionLanguage > 0) ? sMySQLStore.getLocalizedNpcScriptText(textId, sessionLanguage) : nullptr;
                 if (lnpct != nullptr)
