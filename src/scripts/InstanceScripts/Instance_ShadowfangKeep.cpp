@@ -50,6 +50,7 @@ class ShadowfangKeepInstance : public MoonInstanceScript
             go_leftCellLever_GUID(0),
             go_middleCellLever_GUID(0),
             go_rightCellLever_GUID(0),
+            go_courtyarDoor_GUID(0),
 
             // Creatures low guids
             npc_ashcrombe_GUID(0),
@@ -840,7 +841,7 @@ class SpringvaleAI : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(SpringvaleAI, MoonScriptCreatureAI);
         SpringvaleAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            AddSpell(SPELL_HOLY_LIGHT, Target_WoundedFriendly, 10, 2.5f, 0);
+            HolyLight = AddSpell(SPELL_HOLY_LIGHT, Target_WoundedFriendly, 10, 2.5f, 0);
             DevoAura = AddSpell(SPELL_DEVO_AURA, Target_Self, 0, 0, 0);
             DivineProt = AddSpell(SPELL_DIVINE_PROT, Target_Self, 0, 0, 0);
             HammerOfJustice = AddSpell(SPELL_HAMMER_OF_JUSTICE, Target_Current, 12, 0, 60);
@@ -1417,7 +1418,7 @@ class ShadowfangRagetoothAI : public MoonScriptCreatureAI
 
     protected:
 
-        SpellDesc* sWildRage;
+        //SpellDesc* sWildRage;
         bool sWildRageCasted;
 };
 
@@ -1544,13 +1545,12 @@ bool ashrombeTeleportDummyAura(uint32 /*i*/, Aura* pAura, bool /*apply*/)
     {
         return false;
     }
-
-    if (Creature* creatureCaster = static_cast<Creature*>(target))
+    else
     {
+        Creature* creatureCaster = static_cast<Creature*>(target);
         creatureCaster->Despawn(3000, 0);
         return true;
     }
-    return false;
 }
 
 #endif //VERSION_STRING != Cata
