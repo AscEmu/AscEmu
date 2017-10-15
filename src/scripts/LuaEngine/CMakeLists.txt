@@ -36,6 +36,7 @@ set(HEADERS
     ../../world/Server/LazyTimer.cpp
     ../../world/Server/ServerState.cpp
     ../../world/Spell/SpellCastTargets.cpp
+    ../../shared/Util.cpp
 )
 
 include_directories(
@@ -55,7 +56,7 @@ include_directories(
 )
 
 add_library(${PROJECT_NAME} SHARED ${SRCS} ${HEADERS})
-target_link_libraries(${PROJECT_NAME} world lualib shared)
+target_link_libraries(${PROJECT_NAME} world lualib)
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
 unset(sources)

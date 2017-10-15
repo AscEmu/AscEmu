@@ -203,7 +203,7 @@ include_directories(
 
 add_library(${PROJECT_NAME} SHARED ${sources})
 
-target_link_libraries(${PROJECT_NAME} world shared)
+target_link_libraries(${PROJECT_NAME} world)
 
 if(USE_PCH AND PCHSupport_FOUND)
     ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} Setup.h ${CMAKE_CURRENT_SOURCE_DIR}/Setup.cpp)

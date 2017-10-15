@@ -148,6 +148,9 @@ set(headers
     ../Common/Base.h
     ../Common/Instance_Base.h
     ../Common/AITimerCollection.h
+    
+    #Linker
+    ../../shared/Util.cpp
 )
 
 include_directories(
@@ -167,7 +170,7 @@ include_directories(
 
 add_library(${PROJECT_NAME} SHARED ${sources} ${headers})
 
-target_link_libraries(${PROJECT_NAME} world shared)
+target_link_libraries(${PROJECT_NAME} world)
 
 if(USE_PCH AND PCHSupport_FOUND)
     ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} Setup.h ${CMAKE_CURRENT_SOURCE_DIR}/Setup.cpp)

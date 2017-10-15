@@ -23,6 +23,7 @@ set(sources
     ../../world/Server/LazyTimer.cpp
     ../../world/Server/ServerState.cpp
     ../../world/Spell/SpellCastTargets.cpp
+    ../../shared/Util.cpp
 )
 
 set(headers
@@ -46,7 +47,7 @@ include_directories(
 add_library(${PROJECT_NAME} SHARED ${sources} ${headers})
 add_definitions(-DSCRIPTLIB -DSKIP_ALLOCATOR_SHARING)
 
-target_link_libraries(${PROJECT_NAME} world shared)
+target_link_libraries(${PROJECT_NAME} world)
 
 if(USE_PCH AND PCHSupport_FOUND)
     ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} Setup.h ${CMAKE_CURRENT_SOURCE_DIR}/Setup.cpp)
