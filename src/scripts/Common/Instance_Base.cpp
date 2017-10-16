@@ -41,30 +41,6 @@ Creature* MoonInstanceScript::GetCreatureByGuid(uint32 pGuid)
     return mInstance->GetCreature(pGuid);
 };
 
-Creature* MoonInstanceScript::PushCreature(uint32 pEntry, float pX, float pY, float pZ, float pO, uint32 pFaction)
-{
-    CreatureProperties const* cp = sMySQLStore.getCreatureProperties(pEntry);
-    if (cp == nullptr)
-    {
-        LOG_ERROR("PushCreature: tried to push a invalid creature with entry %u!", pEntry);
-        return nullptr;
-    }
-
-    Creature* c = mInstance->CreateCreature(pEntry);
-
-    Arcemu::Util::ArcemuAssert(c != NULL);
-
-    c->Load(cp, pX, pY, pZ, pO);
-
-    if (pFaction != 0)
-        c->SetFaction(pFaction);
-
-    c->PushToWorld(mInstance);
-    return c;
-}
-
-
-
 GameObject* MoonInstanceScript::FindClosestGameObjectOnMap(uint32 pEntry, float pX, float pY, float pZ)
 {
     GameObjectSet GameObjects = FindGameObjectsOnMap(pEntry);

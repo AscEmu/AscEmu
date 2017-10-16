@@ -142,11 +142,11 @@ class IceCrownCitadelScript : public MoonInstanceScript
                 {
                     case TEAM_ALLIANCE:
                         for (uint8 i = 0; i < 13; i++)
-                            PushCreature(AllySpawns[i].entry, AllySpawns[i].x, AllySpawns[i].y, AllySpawns[i].z, AllySpawns[i].o, AllySpawns[i].faction);
+                            spawnCreature(AllySpawns[i].entry, AllySpawns[i].x, AllySpawns[i].y, AllySpawns[i].z, AllySpawns[i].o, AllySpawns[i].faction);
                         break;
                     case TEAM_HORDE:
                         for (uint8 i = 0; i < 13; i++)
-                            PushCreature(HordeSpawns[i].entry, HordeSpawns[i].x, HordeSpawns[i].y, HordeSpawns[i].z, HordeSpawns[i].o, HordeSpawns[i].faction);
+                            spawnCreature(HordeSpawns[i].entry, HordeSpawns[i].x, HordeSpawns[i].y, HordeSpawns[i].z, HordeSpawns[i].o, HordeSpawns[i].faction);
                         break;
                 }
 

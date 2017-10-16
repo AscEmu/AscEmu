@@ -78,15 +78,15 @@ public:
         {
             if (player->GetTeam() == TEAM_ALLIANCE)
             {
-                PushCreature(CN_JAINA_PROUDMOORE, 4900.08f, 2208.45f, 638.73f, 5.48f, 35);
-                PushCreature(CN_ARCHMAGE_ELANDRA, 4899.95f, 2206.149f, 638.73f, 5.37f, 35);
-                PushCreature(CN_ARCHMAGE_KORELN, 4902.95f, 2212.69f, 638.73f, 35);
+                spawnCreature(CN_JAINA_PROUDMOORE, 4900.08f, 2208.45f, 638.73f, 5.48f, 35);
+                spawnCreature(CN_ARCHMAGE_ELANDRA, 4899.95f, 2206.149f, 638.73f, 5.37f, 35);
+                spawnCreature(CN_ARCHMAGE_KORELN, 4902.95f, 2212.69f, 638.73f, 35);
             }
             else // TEAM_HORDE
             {
-                PushCreature(CN_SYLVANAS_WINDRUNNER, 4900.08f, 2208.45f, 638.73f, 5.48f, 35);
-                PushCreature(CN_DARK_RANGER_LORALEN, 4899.95f, 2206.149f, 638.73f, 5.37f, 35);
-                PushCreature(CN_DARK_RANGER_KALIRA, 4902.95f, 2212.69f, 638.73f, 35);
+                spawnCreature(CN_SYLVANAS_WINDRUNNER, 4900.08f, 2208.45f, 638.73f, 5.48f, 35);
+                spawnCreature(CN_DARK_RANGER_LORALEN, 4899.95f, 2206.149f, 638.73f, 5.37f, 35);
+                spawnCreature(CN_DARK_RANGER_KALIRA, 4902.95f, 2212.69f, 638.73f, 35);
             }
 
             mSpawnsCreated = true;
