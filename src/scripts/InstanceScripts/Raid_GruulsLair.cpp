@@ -472,7 +472,7 @@ class GruulTheDragonkillerAI : public MoonScriptCreatureAI
             mHurtfulTimer = AddTimer(8000);
             mGrowthStacks = 0;
 
-            GameObject* pGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(166.897f, 368.226f, 16.9209f, 184662);
+            GameObject* pGate = getNearestGameObject(166.897f, 368.226f, 16.9209f, 184662);
             if (pGate != NULL)
                 pGate->SetState(GO_STATE_CLOSED);
         }
@@ -481,7 +481,7 @@ class GruulTheDragonkillerAI : public MoonScriptCreatureAI
         {
             ParentClass::OnCombatStop(pTarget);
 
-            GameObject* pGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(166.897f, 368.226f, 16.9209f, 184662);
+            GameObject* pGate = getNearestGameObject(166.897f, 368.226f, 16.9209f, 184662);
             if (pGate != NULL)
                 pGate->SetState(GO_STATE_OPEN);
         }
@@ -490,7 +490,7 @@ class GruulTheDragonkillerAI : public MoonScriptCreatureAI
         {
             ParentClass::OnDied(mKiller);
 
-            GameObject* pGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(166.897f, 368.226f, 16.9209f, 184662);
+            GameObject* pGate = getNearestGameObject(166.897f, 368.226f, 16.9209f, 184662);
             if (pGate != NULL)
                 pGate->SetState(GO_STATE_OPEN);
         }

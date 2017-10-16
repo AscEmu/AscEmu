@@ -332,6 +332,14 @@ class SERVER_DECL CreatureAIScript
         virtual void OnEmote(Player* /*pPlayer*/, EmoteType /*Emote*/) {}
         virtual void StringFunctionCall(int) {}
 
+        // MIT start
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // data
+        GameObject* getNearestGameObject(uint32_t entry);
+        GameObject* getNearestGameObject(float posX, float posY, float posZ, uint32_t entry);
+
+        // MIT end
+
         void RegisterAIUpdateEvent(uint32 frequency);
         void ModifyAIUpdateEvent(uint32 newfrequency);
         void RemoveAIUpdateEvent();
@@ -570,8 +578,9 @@ class SERVER_DECL InstanceScript
         CreatureSet getCreatureSetForEntry(uint32_t entry, bool debug = false, Player* player = nullptr);
         CreatureSet getCreatureSetForEntries(std::vector<uint32_t> entryVector);
 
+        GameObject* spawnGameObject(uint32_t entry, float posX, float posY, float posZ, float posO, bool addToWorld = true, uint32_t misc1 = 0, uint32_t phase = 0);
         GameObject* getGameObjectBySpawnId(uint32_t entry);
-        GameObject* getClosestGameObjectForPosition(uint32 entry, float posX, float posY, float posZ);
+        GameObject* getClosestGameObjectForPosition(uint32_t entry, float posX, float posY, float posZ);
         GameObjectSet getGameObjectsSetForEntry(uint32_t entry);
 
         float getRangeToObjectForPosition(Object* object, float posX, float posY, float posZ);

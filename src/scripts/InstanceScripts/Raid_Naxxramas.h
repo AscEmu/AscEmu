@@ -2918,8 +2918,7 @@ class SapphironAI : public CreatureAIScript
 
         _unit->setMoveHover(false);
 
-        GameObject* Waterfall = NULL;
-        Waterfall = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(3536.852783f, -5159.951172f, 143.636139f, FROSTWYRM_WATERFALL_DOOR);
+        GameObject* Waterfall = getNearestGameObject(3536.852783f, -5159.951172f, 143.636139f, FROSTWYRM_WATERFALL_DOOR);
         if (Waterfall != NULL)
         {
             Waterfall->SetState(GO_STATE_CLOSED);
@@ -2943,16 +2942,14 @@ class SapphironAI : public CreatureAIScript
 
         for (uint8 i = 1; i < 21; i++)
         {
-            GameObject* IceBlock = NULL;
-            IceBlock = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(IceBlocks[i].x, IceBlocks[i].y, IceBlocks[i].z, ICE_BLOCK_GO);
+            GameObject* IceBlock = getNearestGameObject(IceBlocks[i].x, IceBlocks[i].y, IceBlocks[i].z, ICE_BLOCK_GO);
             if (IceBlock != NULL)
             {
                 IceBlock->Delete();
             }
         }
 
-        GameObject* Waterfall = NULL;
-        Waterfall = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(3536.852783f, -5159.951172f, 143.636139f, FROSTWYRM_WATERFALL_DOOR);
+        GameObject* Waterfall = getNearestGameObject(3536.852783f, -5159.951172f, 143.636139f, FROSTWYRM_WATERFALL_DOOR);
         if (Waterfall != NULL)
         {
             Waterfall->SetState(GO_STATE_OPEN);
@@ -3164,8 +3161,7 @@ class SapphironAI : public CreatureAIScript
             {
                 for (uint8 i = 1; i < 21; i++)
                 {
-                    GameObject* IceBlock = NULL;
-                    IceBlock = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(IceBlocks[i].x, IceBlocks[i].y, IceBlocks[i].z, ICE_BLOCK_GO);
+                    GameObject* IceBlock = getNearestGameObject(IceBlocks[i].x, IceBlocks[i].y, IceBlocks[i].z, ICE_BLOCK_GO);
                     if (IceBlock != NULL)
                     {
                         IceBlock->Delete();
@@ -3647,7 +3643,7 @@ class KelthuzadAI : public CreatureAIScript
             _unit->SetChannelSpellId(29423);
         }
 
-        GameObject* KelGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(3635.44f, -5090.33f, 143.205f, 181228);
+        GameObject* KelGate = getNearestGameObject(3635.44f, -5090.33f, 143.205f, 181228);
 
         if (KelGate)
             KelGate->SetState(GO_STATE_CLOSED);
@@ -3670,13 +3666,13 @@ class KelthuzadAI : public CreatureAIScript
 
     void OnCombatStop(Unit* mTarget)
     {
-        GameObject* KelGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(3635.44f, -5090.33f, 143.205f, 181228);
+        GameObject* KelGate = getNearestGameObject(3635.44f, -5090.33f, 143.205f, 181228);
         if (KelGate != NULL)
             KelGate->SetState(GO_STATE_OPEN);
 
         for (uint8 i = 0; i < 4; i++)
         {
-            GameObject* WindowGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(Guardians[i].x, Guardians[i].y, Guardians[i].z, 200002);
+            GameObject* WindowGate = getNearestGameObject(Guardians[i].x, Guardians[i].y, Guardians[i].z, 200002);
             if (WindowGate != NULL)
                 WindowGate->SetState(GO_STATE_CLOSED);
         }
@@ -3725,13 +3721,13 @@ class KelthuzadAI : public CreatureAIScript
 
     void OnDied(Unit* mKiller)
     {
-        GameObject* KelGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(3635.44f, -5090.33f, 143.205f, 181228);
+        GameObject* KelGate = getNearestGameObject(3635.44f, -5090.33f, 143.205f, 181228);
         if (KelGate != NULL)
             KelGate->SetState(GO_STATE_OPEN);
 
         for (uint8 i = 0; i < 4; i++)
         {
-            GameObject* WindowGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(Guardians[i].x, Guardians[i].y, Guardians[i].z, 200002);
+            GameObject* WindowGate = getNearestGameObject(Guardians[i].x, Guardians[i].y, Guardians[i].z, 200002);
             if (WindowGate != NULL)
                 WindowGate->SetState(GO_STATE_CLOSED);
         }
@@ -3955,7 +3951,7 @@ class KelthuzadAI : public CreatureAIScript
 
                 for (uint8 i = 0; i < 4; i++)
                 {
-                    GameObject* WindowGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(Guardians[i].x, Guardians[i].y, Guardians[i].z, 200002);
+                    GameObject* WindowGate = getNearestGameObject(Guardians[i].x, Guardians[i].y, Guardians[i].z, 200002);
                     if (WindowGate)
                         WindowGate->SetState(GO_STATE_OPEN);
                 }

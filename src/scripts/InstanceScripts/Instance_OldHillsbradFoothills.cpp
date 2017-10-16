@@ -281,7 +281,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //
 //    void StartEscort(Player* pPlayer)
 //    {
-//        GameObject* pGO = GetNearestGameObject();
+//        GameObject* pGO = getNearestGameObject();
 //        if (pGO)
 //            pGO->SetState(pGO->GetState() == 1 ? 0 : 1);
 //

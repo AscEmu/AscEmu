@@ -4379,7 +4379,7 @@ class AkamaAI : public MoonScriptBossAI
                 mScenePart = -1;
             }
 
-            GameObject* pGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(774.7f, 304.6f, 314.85f, 185905);
+            GameObject* pGate = getNearestGameObject(774.7f, 304.6f, 314.85f, 185905);
             Unit* pDoorTrigger = ForceCreatureFind(CN_DOOR_EVENT_TRIGGER, 771.5f, 304.7f, 319.0f);
             if ((mScenePart <= 15 && pGate == NULL) || mScenePart == -1)
             {
@@ -4580,8 +4580,8 @@ class AkamaAI : public MoonScriptBossAI
                     mIllidanAI->SetWieldWeapon(true);
                     break;
                 case 15:
-                    GameObject* pRightGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(745.07f, 241.802f, 354.292f, 200000);
-                    GameObject* pLeftGate  = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(744.829f, 369.276f, 354.324f, 200001);
+                    GameObject* pRightGate = getNearestGameObject(745.07f, 241.802f, 354.292f, 200000);
+                    GameObject* pLeftGate  = getNearestGameObject(744.829f, 369.276f, 354.324f, 200001);
                     if (pRightGate != NULL)
                     {
                         pRightGate->SetState(GO_STATE_CLOSED);
@@ -5120,8 +5120,8 @@ class MaievAI : public MoonScriptBossAI
                         break;
                     case 4:
                         {
-                            GameObject* pRightGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(745.07f, 241.802f, 354.292f, 200000);
-                            GameObject* pLeftGate  = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(744.829f, 369.276f, 354.324f, 200001);
+                            GameObject* pRightGate = getNearestGameObject(745.07f, 241.802f, 354.292f, 200000);
+                            GameObject* pLeftGate  = getNearestGameObject(744.829f, 369.276f, 354.324f, 200001);
                             if (pRightGate != NULL)
                             {
                                 pRightGate->SetState(GO_STATE_OPEN);
@@ -5350,8 +5350,8 @@ class IllidanStormrageAI : public MoonScriptBossAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            GameObject* pRightGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(745.07f, 241.802f, 354.292f, 200000);
-            GameObject* pLeftGate  = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(744.829f, 369.276f, 354.324f, 200001);
+            GameObject* pRightGate = getNearestGameObject(745.07f, 241.802f, 354.292f, 200000);
+            GameObject* pLeftGate  = getNearestGameObject(744.829f, 369.276f, 354.324f, 200001);
             if (pRightGate != NULL)
             {
                 pRightGate->SetState(GO_STATE_CLOSED);
@@ -5418,8 +5418,8 @@ class IllidanStormrageAI : public MoonScriptBossAI
 
             if (IsAlive())
             {
-                GameObject* pRightGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(745.07f, 241.802f, 354.292f, 200000);
-                GameObject* pLeftGate  = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(744.829f, 369.276f, 354.324f, 200001);
+                GameObject* pRightGate = getNearestGameObject(745.07f, 241.802f, 354.292f, 200000);
+                GameObject* pLeftGate  = getNearestGameObject(744.829f, 369.276f, 354.324f, 200001);
                 if (pRightGate != NULL)
                 {
                     pRightGate->SetState(GO_STATE_OPEN);
@@ -5456,8 +5456,8 @@ class IllidanStormrageAI : public MoonScriptBossAI
             }
             else
             {
-                GameObject* pRightGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(745.07f, 241.802f, 354.292f, 200000);
-                GameObject* pLeftGate  = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(744.829f, 369.276f, 354.324f, 200001);
+                GameObject* pRightGate = getNearestGameObject(745.07f, 241.802f, 354.292f, 200000);
+                GameObject* pLeftGate  = getNearestGameObject(744.829f, 369.276f, 354.324f, 200001);
                 if (pRightGate != NULL)
                 {
                     pRightGate->SetState(GO_STATE_OPEN);
@@ -6408,8 +6408,8 @@ class IllidanStormrageAI : public MoonScriptBossAI
             }
 
             // commented - due to the creature not being in world when this is called, mapmgr == null -> access violation
-            /*        GameObject* pRightGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(745.07f, 241.802f, 354.292f, 200000);
-                    GameObject* pLeftGate  = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(744.829f, 369.276f, 354.324f, 200001);
+            /*        GameObject* pRightGate = getNearestGameObject(745.07f, 241.802f, 354.292f, 200000);
+                    GameObject* pLeftGate  = getNearestGameObject(744.829f, 369.276f, 354.324f, 200001);
                     if (pRightGate != NULL)
                     {
                         pRightGate->SetState(GO_STATE_OPEN);
@@ -6536,7 +6536,7 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
                 IllidanStormrageAI* pAI = static_cast< IllidanStormrageAI* >(static_cast<Creature*>(pIllidan)->GetScript());
                 if (pAI->mMiscEventPart != 0 && mTriggerAIList.size() == 0)
                 {
-                    GameObject* pGameObject = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), GO_CAGE_TRAP);
+                    GameObject* pGameObject = getNearestGameObject(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), GO_CAGE_TRAP);
                     if (pGameObject != NULL)
                     {
                         pGameObject->Despawn(0, 0);
@@ -6590,7 +6590,7 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
                 }
                 else if (mHasTrapped || !pIllidan->isAlive())
                 {
-                    GameObject* pGameObject = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), GO_CAGE_TRAP);
+                    GameObject* pGameObject = getNearestGameObject(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), GO_CAGE_TRAP);
                     if (pGameObject != NULL)
                     {
                         pGameObject->Despawn(0, 0);
@@ -6626,7 +6626,7 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
             }
             else
             {
-                GameObject* pGameObject = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), GO_CAGE_TRAP);
+                GameObject* pGameObject = getNearestGameObject(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), GO_CAGE_TRAP);
                 if (pGameObject != NULL)
                 {
                     pGameObject->Despawn(0, 0);

@@ -182,7 +182,7 @@ class ForgemasterGarfrostAI : MoonScriptBossAI
             _unit->GetAIInterface()->WipeHateList();
             _unit->GetAIInterface()->splineMoveJump(JumpCords[0].x, JumpCords[0].y, JumpCords[0].z);
             
-            if (GameObject * pObject = GetNearestGameObject(401006))	//forgemaster's anvil (TEMP)
+            if (GameObject * pObject = getNearestGameObject(401006))	//forgemaster's anvil (TEMP)
                 _unit->SetFacing(_unit->calcRadAngle(_unit->GetPositionX(), _unit->GetPositionY(), pObject->GetPositionX(), pObject->GetPositionY()));
 
             if (IsHeroic())
@@ -202,7 +202,7 @@ class ForgemasterGarfrostAI : MoonScriptBossAI
             _unit->GetAIInterface()->WipeHateList();
             _unit->GetAIInterface()->splineMoveJump(JumpCords[1].x, JumpCords[1].y, JumpCords[1].z);
 
-            if (GameObject * pObject = GetNearestGameObject(401006))	//forgemaster's anvil (TEMP)
+            if (GameObject * pObject = getNearestGameObject(401006))	//forgemaster's anvil (TEMP)
                 _unit->SetFacing(_unit->calcRadAngle(_unit->GetPositionX(), _unit->GetPositionY(), pObject->GetPositionX(), pObject->GetPositionY()));
             
             if (IsHeroic())

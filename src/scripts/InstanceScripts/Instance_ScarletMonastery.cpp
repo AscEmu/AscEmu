@@ -314,7 +314,7 @@ class MograineAI : public CreatureAIScript
         {
             _unit->SendScriptTextChatMessage(SAY_MORGRAINE_03);
 
-            GameObject* pDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(1173.01f, 1389.91f, 31.9723f, GO_INQUISITORS_DOOR);
+            GameObject* pDoor = getNearestGameObject(1173.01f, 1389.91f, 31.9723f, GO_INQUISITORS_DOOR);
             if (pDoor == 0)
                 return;
 

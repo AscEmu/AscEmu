@@ -96,13 +96,13 @@ static Movement::Location Guards[] =
 //                }break;
 //                case GO_SNEED_DOOR_LEVER:
 //                {
-//                    GameObject* pDoor7 = FindClosestGameObjectOnMap(GO_HEAVY_DOOR, Doors[1].x, Doors[1].y, Doors[1].z);
+//                    GameObject* pDoor7 = getClosestGameObjectForPosition(GO_HEAVY_DOOR, Doors[1].x, Doors[1].y, Doors[1].z);
 //                    if (pDoor7 != NULL)
 //                        pDoor7->SetState(pDoor7->GetState() == State_Inactive ? State_Active : State_Inactive);
 //                }break;
 //                case GO_GILNID_DOOR_LEVER:
 //                {
-//                    GameObject* pDoor8 = FindClosestGameObjectOnMap(GO_HEAVY_DOOR, Doors[0].x, Doors[0].y, Doors[0].z);
+//                    GameObject* pDoor8 = getClosestGameObjectForPosition(GO_HEAVY_DOOR, Doors[0].x, Doors[0].y, Doors[0].z);
 //                    if (pDoor8 != NULL)
 //                        pDoor8->SetState(pDoor8->GetState() == State_Inactive ? State_Active : State_Inactive);
 //                }break;
@@ -124,13 +124,13 @@ static Movement::Location Guards[] =
 //                    break;
 //                case NPC_GILNID:
 //                {
-//                    GameObject* pDoor2 = FindClosestGameObjectOnMap(GO_HEAVY_DOOR, Doors[0].x, Doors[0].y, Doors[0].z);
+//                    GameObject* pDoor2 = getClosestGameObjectForPosition(GO_HEAVY_DOOR, Doors[0].x, Doors[0].y, Doors[0].z);
 //                    if (pDoor2 != NULL)
 //                        pDoor2->SetState(State_Active);
 //                }break;
 //                case NPC_SNEED:
 //                {
-//                    GameObject* pDoor3 = FindClosestGameObjectOnMap(GO_HEAVY_DOOR, Doors[1].x, Doors[1].y, Doors[1].z);
+//                    GameObject* pDoor3 = getClosestGameObjectForPosition(GO_HEAVY_DOOR, Doors[1].x, Doors[1].y, Doors[1].z);
 //                    if (pDoor3 != NULL)
 //                        pDoor3->SetState(State_Active);
 //                }break;

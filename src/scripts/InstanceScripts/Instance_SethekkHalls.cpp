@@ -1609,7 +1609,7 @@ class DarkweaverSythAI : public CreatureAIScript
         {
             _unit->SendScriptTextChatMessage(SAY_DARKW_SYNTH_07);
 
-            GameObject* LakkasCage = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-160.813f, 157.043f, 0.194095f, 183051);
+            GameObject* LakkasCage = getNearestGameObject(-160.813f, 157.043f, 0.194095f, 183051);
             Creature* mLakka = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-160.813f, 157.043f, 0.194095f, 18956);
 
             if (LakkasCage != NULL)
@@ -1826,7 +1826,7 @@ class TalonKingIkissAI : public CreatureAIScript
         {
             _unit->SendScriptTextChatMessage(SAY_TALRON_K_IKISS_07);
 
-            GameObject* IkissDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(43.079f, 149.505f, 0.034f, 183398);
+            GameObject* IkissDoor = getNearestGameObject(43.079f, 149.505f, 0.034f, 183398);
             if (IkissDoor != NULL)
                 IkissDoor->SetState(GO_STATE_OPEN);
 

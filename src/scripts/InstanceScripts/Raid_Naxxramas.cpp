@@ -626,7 +626,7 @@ void GrandWidowFaerlinaAI::OnCombatStart(Unit* pTarget)
     mPoisonVolleyBoltTimer = AddTimer(15000);
     mFrenzyTimer = AddTimer(60000 + RandomUInt(20) * 1000);
 
-    GameObject* WebGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(3318.65f, -3695.85f, 259.094f, 181235);
+    GameObject* WebGate = getNearestGameObject(3318.65f, -3695.85f, 259.094f, 181235);
     if (WebGate != NULL)
         WebGate->SetState(GO_STATE_CLOSED);
 
@@ -646,7 +646,7 @@ void GrandWidowFaerlinaAI::OnCombatStop(Unit* pTarget)
     ParentClass::OnCombatStop(pTarget);
     mPoisonVolleyBoltTimer = mFrenzyTimer = INVALIDATE_TIMER;
 
-    GameObject* WebGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(3318.65f, -3695.85f, 259.094f, 181235);
+    GameObject* WebGate = getNearestGameObject(3318.65f, -3695.85f, 259.094f, 181235);
     if (WebGate != NULL)
         WebGate->SetState(GO_STATE_OPEN);
 
@@ -1283,11 +1283,11 @@ void NothThePlaguebringerAI::OnCombatStart(Unit* pTarget)
 
     if (_unit->GetMapMgr() != NULL && _unit->GetMapMgr()->GetInterface() != NULL)
     {
-        GameObject* Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2740.689209f, -3489.697266f, 262.117767f, 181200);
+        GameObject* Gate = getNearestGameObject(2740.689209f, -3489.697266f, 262.117767f, 181200);
         if (Gate != NULL)
             Gate->SetState(GO_STATE_CLOSED);
 
-        Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2683.670654f, -3556.429688f, 261.823334f, 181201);
+        Gate = getNearestGameObject(2683.670654f, -3556.429688f, 261.823334f, 181201);
         if (Gate != NULL)
             Gate->SetState(GO_STATE_CLOSED);
     };
@@ -1298,11 +1298,11 @@ void NothThePlaguebringerAI::OnCombatStop(Unit* pTarget)
     ParentClass::OnCombatStop(pTarget);
     if (_unit->GetMapMgr() != NULL && _unit->GetMapMgr()->GetInterface() != NULL)
     {
-        GameObject* Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2740.689209f, -3489.697266f, 262.117767f, 181200);
+        GameObject* Gate = getNearestGameObject(2740.689209f, -3489.697266f, 262.117767f, 181200);
         if (Gate != NULL)
             Gate->SetState(GO_STATE_OPEN);
 
-        Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2683.670654f, -3556.429688f, 261.823334f, 181201);
+        Gate = getNearestGameObject(2683.670654f, -3556.429688f, 261.823334f, 181201);
         if (Gate != NULL)
             Gate->SetState(GO_STATE_OPEN);
     };
@@ -1748,11 +1748,11 @@ void HeiganTheUncleanAI::OnCombatStart(Unit* pTarget)
 
     if (_unit->GetMapMgr() != NULL && _unit->GetMapMgr()->GetInterface() != NULL)
     {
-        GameObject* Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2790.709961f, -3708.669922f, 276.584991f, 181202);
+        GameObject* Gate = getNearestGameObject(2790.709961f, -3708.669922f, 276.584991f, 181202);
         if (Gate != NULL)
             Gate->SetState(GO_STATE_CLOSED);
 
-        Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2771.718506f, -3739.965820f, 273.616211f, 181203);
+        Gate = getNearestGameObject(2771.718506f, -3739.965820f, 273.616211f, 181203);
         if (Gate != NULL)
             Gate->SetState(GO_STATE_CLOSED);
 
@@ -1792,11 +1792,11 @@ void HeiganTheUncleanAI::OnCombatStop(Unit* pTarget)
     SetTargetToChannel(NULL, 0);
     if (_unit->GetMapMgr() != NULL && _unit->GetMapMgr()->GetInterface() != NULL)
     {
-        GameObject* Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2790.709961f, -3708.669922f, 276.584991f, 181202);
+        GameObject* Gate = getNearestGameObject(2790.709961f, -3708.669922f, 276.584991f, 181202);
         if (Gate != NULL)
             Gate->SetState(GO_STATE_OPEN);
 
-        Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2771.718506f, -3739.965820f, 273.616211f, 181203);
+        Gate = getNearestGameObject(2771.718506f, -3739.965820f, 273.616211f, 181203);
         if (Gate != NULL)
             Gate->SetState(GO_STATE_OPEN);
     };

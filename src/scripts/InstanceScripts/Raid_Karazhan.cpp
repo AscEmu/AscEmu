@@ -398,8 +398,8 @@ public:
         _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Aarrhhh.");
         RemoveAIUpdateEvent();
 
-        GameObject* DoorLeftO = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10917.1445f, -1774.05f, 90.478f, 184279);
-        GameObject* DoorRightO = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10872.195f, -1779.42f, 90.45f, 184278);
+        GameObject* DoorLeftO = getNearestGameObject(-10917.1445f, -1774.05f, 90.478f, 184279);
+        GameObject* DoorRightO = getNearestGameObject(-10872.195f, -1779.42f, 90.45f, 184278);
 
         if (DoorLeftO)
             DoorLeftO->SetState(GO_STATE_OPEN);
@@ -570,9 +570,9 @@ public:
 
     void OnCombatStop(Unit* mTarget)
     {
-        GameObject* DoorLeft = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10917.1445f, -1774.05f, 90.478f, 184279);
-        GameObject* DoorRight = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10872.195f, -1779.42f, 90.45f, 184278);
-        GameObject* Curtain = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10894.17f, -1774.218f, 90.477f, 183932);
+        GameObject* DoorLeft = getNearestGameObject(-10917.1445f, -1774.05f, 90.478f, 184279);
+        GameObject* DoorRight = getNearestGameObject(-10872.195f, -1779.42f, 90.45f, 184278);
+        GameObject* Curtain = getNearestGameObject(-10894.17f, -1774.218f, 90.477f, 183932);
 
         if (DoorLeft)
             DoorLeft->SetState(GO_STATE_CLOSED);
@@ -591,9 +591,9 @@ public:
 
     void OnDied(Unit* mKiller)
     {
-        GameObject* DoorLeft = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10917.1445f, -1774.05f, 90.478f, 184279);
-        GameObject* DoorRight = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10872.195f, -1779.42f, 90.45f, 184278);
-        GameObject* Curtain = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10894.17f, -1774.218f, 90.477f, 183932);
+        GameObject* DoorLeft = getNearestGameObject(-10917.1445f, -1774.05f, 90.478f, 184279);
+        GameObject* DoorRight = getNearestGameObject(-10872.195f, -1779.42f, 90.45f, 184278);
+        GameObject* Curtain = getNearestGameObject(-10894.17f, -1774.218f, 90.477f, 183932);
 
         if (DoorLeft)
             DoorLeft->SetState(GO_STATE_OPEN);
@@ -849,9 +849,9 @@ public:
 
     void cleanStage()
     {
-        GameObject* DoorLeft = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10917.1445f, -1774.05f, 90.478f, 184279);
-        GameObject* DoorRight = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10872.195f, -1779.42f, 90.45f, 184278);
-        GameObject* Curtain = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10894.17f, -1774.218f, 90.477f, 183932);
+        GameObject* DoorLeft = getNearestGameObject(-10917.1445f, -1774.05f, 90.478f, 184279);
+        GameObject* DoorRight = getNearestGameObject(-10872.195f, -1779.42f, 90.45f, 184278);
+        GameObject* Curtain = getNearestGameObject(-10894.17f, -1774.218f, 90.477f, 183932);
 
         if (DoorLeft)
             DoorLeft->SetState(GO_STATE_CLOSED);
@@ -872,11 +872,11 @@ public:
         Creature* Roar = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-10891.115f, -1756.4898f, 90.476f, 17546);//Roar
         Creature* Tinman = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-10884.501f, -1757.3249f, 90.476f, 17547); //Tinman
 
-        GameObject* House = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10883.0f, -1751.81f, 90.4765f, 183493);
-        GameObject* Tree = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10877.7f, -1763.18f, 90.4771f, 183492);
-        GameObject* Tree2 = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10906.7f, -1750.01f, 90.4765f, 183492);
-        GameObject* Tree3 = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10909.5f, -1761.79f, 90.4773f, 183492);
-        //GameObject* BackDrop = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10890.9f, -1744.06f, 90.4765f, 183491);
+        GameObject* House = getNearestGameObject(-10883.0f, -1751.81f, 90.4765f, 183493);
+        GameObject* Tree = getNearestGameObject(-10877.7f, -1763.18f, 90.4771f, 183492);
+        GameObject* Tree2 = getNearestGameObject(-10906.7f, -1750.01f, 90.4765f, 183492);
+        GameObject* Tree3 = getNearestGameObject(-10909.5f, -1761.79f, 90.4773f, 183492);
+        //GameObject* BackDrop = getNearestGameObject(-10890.9f, -1744.06f, 90.4765f, 183491);
 
         if (Julianne)
             Julianne->Despawn(0, 0);
@@ -925,9 +925,9 @@ public:
 
     void EventWOZ()
     {
-        GameObject* DoorLeft = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10917.1445f, -1774.05f, 90.478f, 184279);
-        GameObject* DoorRight = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10872.195f, -1779.42f, 90.45f, 184278);
-        GameObject* Curtain = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10894.17f, -1774.218f, 90.477f, 183932);
+        GameObject* DoorLeft = getNearestGameObject(-10917.1445f, -1774.05f, 90.478f, 184279);
+        GameObject* DoorRight = getNearestGameObject(-10872.195f, -1779.42f, 90.45f, 184278);
+        GameObject* Curtain = getNearestGameObject(-10894.17f, -1774.218f, 90.477f, 183932);
 
         if (DoorLeft)
             DoorLeft->SetState(GO_STATE_CLOSED);
@@ -962,9 +962,9 @@ public:
 
     void EventRJ()
     {
-        GameObject* DoorLeft = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10917.1445f, -1774.05f, 90.478f, 184279);
-        GameObject* DoorRight = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10872.195f, -1779.42f, 90.45f, 184278);
-        GameObject* Curtain = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10894.17f, -1774.218f, 90.477f, 183932);
+        GameObject* DoorLeft = getNearestGameObject(-10917.1445f, -1774.05f, 90.478f, 184279);
+        GameObject* DoorRight = getNearestGameObject(-10872.195f, -1779.42f, 90.45f, 184278);
+        GameObject* Curtain = getNearestGameObject(-10894.17f, -1774.218f, 90.477f, 183932);
 
         if (DoorLeft)
             DoorLeft->SetState(GO_STATE_CLOSED);
@@ -995,9 +995,9 @@ public:
 
     void EventRed()
     {
-        GameObject* DoorLeft = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10917.1445f, -1774.05f, 90.478f, 184279);
-        GameObject* DoorRight = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10872.195f, -1779.42f, 90.45f, 184278);
-        GameObject* Curtain = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10894.17f, -1774.218f, 90.477f, 183932);
+        GameObject* DoorLeft = getNearestGameObject(-10917.1445f, -1774.05f, 90.478f, 184279);
+        GameObject* DoorRight = getNearestGameObject(-10872.195f, -1779.42f, 90.45f, 184278);
+        GameObject* Curtain = getNearestGameObject(-10894.17f, -1774.218f, 90.477f, 183932);
         /*GameObject* House = _unit->GetMapMgr()->GetInterface()->SpawnGameObject(183493, -10883.0f, -1751.81f, 90.4765f, -1.72788f, false, 0, 0);
         GameObject* Tree = _unit->GetMapMgr()->GetInterface()->SpawnGameObject(183492, -10877.7f, -1763.18f, 90.4771f, -1.6297f, false, 0, 0);
         GameObject* Tree2 = _unit->GetMapMgr()->GetInterface()->SpawnGameObject(183492, -10906.7f, -1750.01f, 90.4765f, -1.69297f, false, 0, 0);
@@ -1512,8 +1512,7 @@ public:
         slow = false;
         LastSuperSpell = RandomUInt(100) % 3;
         // Door closing
-        GameObject* SDoor = NULL;
-        SDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-11190.012f, -1881.016f, 231.95f, 184517);
+        GameObject* SDoor = getNearestGameObject(-11190.012f, -1881.016f, 231.95f, 184517);
         if (SDoor)
         {
             SDoor->SetState(GO_STATE_CLOSED);
@@ -1529,8 +1528,7 @@ public:
         RemoveAIUpdateEvent();
         _unit->setUInt32Value(UNIT_FIELD_POWER1, _unit->GetMaxPower(POWER_TYPE_MANA));
         // Door opening
-        GameObject* SDoor = NULL;
-        SDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-11190.012f, -1881.016f, 231.95f, 184517);
+        GameObject* SDoor = getNearestGameObject(-11190.012f, -1881.016f, 231.95f, 184517);
         if (SDoor)
             SDoor->SetFlags(34);
     }
@@ -1542,8 +1540,7 @@ public:
 
         RemoveAIUpdateEvent();
         // Door opening
-        GameObject* SDoor = NULL;
-        SDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-11190.012f, -1881.016f, 231.95f, 184517);
+        GameObject* SDoor = getNearestGameObject(-11190.012f, -1881.016f, 231.95f, 184517);
         if (SDoor)
             SDoor->SetFlags(34);
     }
@@ -2802,7 +2799,7 @@ public:
 
         RegisterAIUpdateEvent(1000);
 
-        GameObject* MDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-11018.5f, -1967.92f, 276.652f, 185134);
+        GameObject* MDoor = getNearestGameObject(-11018.5f, -1967.92f, 276.652f, 185134);
         if (MDoor != NULL)
         {
             MDoor->SetState(GO_STATE_CLOSED);
@@ -2835,7 +2832,7 @@ public:
         if (GetLinkedCreature() != NULL)
             GetLinkedCreature()->GetUnit()->Despawn(10000, 0);
 
-        GameObject* MDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-11018.5f, -1967.92f, 276.652f, 185134);
+        GameObject* MDoor = getNearestGameObject(-11018.5f, -1967.92f, 276.652f, 185134);
         // Open door
         if (MDoor != NULL)
             MDoor->SetState(GO_STATE_OPEN);
@@ -2861,7 +2858,7 @@ public:
         if (MAxes)
             MAxes->Despawn(1000, 0);
 
-        GameObject* MDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-11018.5f, -1967.92f, 276.652f, 185134);
+        GameObject* MDoor = getNearestGameObject(-11018.5f, -1967.92f, 276.652f, 185134);
         // Open door
         if (MDoor)
             MDoor->SetState(GO_STATE_OPEN);
@@ -3375,7 +3372,7 @@ public:
 
         RegisterAIUpdateEvent(1000);
 
-        GameObject* NDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-11186.2f, -1665.14f, 281.398f, 185521);
+        GameObject* NDoor = getNearestGameObject(-11186.2f, -1665.14f, 281.398f, 185521);
         if (NDoor)
         {
             NDoor->SetState(GO_STATE_CLOSED);
@@ -3391,7 +3388,7 @@ public:
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
 
-        GameObject* NDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-11186.2f, -1665.14f, 281.398f, 185521);
+        GameObject* NDoor = getNearestGameObject(-11186.2f, -1665.14f, 281.398f, 185521);
         if (NDoor)
             NDoor->SetState(GO_STATE_OPEN);
     }
@@ -3400,7 +3397,7 @@ public:
     {
         RemoveAIUpdateEvent();
 
-        GameObject* NDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-11186.2f, -1665.14f, 281.398f, 185521);
+        GameObject* NDoor = getNearestGameObject(-11186.2f, -1665.14f, 281.398f, 185521);
         if (NDoor)
             NDoor->SetState(GO_STATE_OPEN);
     }
@@ -4665,9 +4662,9 @@ public:
     {
         if (_unit->GetHealthPct() > 0)
         {
-            GameObject* DoorLeft = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10917.1445f, -1774.05f, 90.478f, 184279);
-            GameObject* DoorRight = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10872.195f, -1779.42f, 90.45f, 184278);
-            GameObject* Curtain = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10894.17f, -1774.218f, 90.477f, 183932);
+            GameObject* DoorLeft = getNearestGameObject(-10917.1445f, -1774.05f, 90.478f, 184279);
+            GameObject* DoorRight = getNearestGameObject(-10872.195f, -1779.42f, 90.45f, 184278);
+            GameObject* Curtain = getNearestGameObject(-10894.17f, -1774.218f, 90.477f, 183932);
 
             if (DoorLeft)
                 DoorLeft->SetState(GO_STATE_CLOSED);
@@ -4691,9 +4688,9 @@ public:
     {
         _unit->SendScriptTextChatMessage(1991);     // How could you? What a cruel, cruel world...
 
-        GameObject* DoorLeft = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10917.1445f, -1774.05f, 90.478f, 184279);
-        GameObject* DoorRight = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10872.195f, -1779.42f, 90.45f, 184278);
-        GameObject* Curtain = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10894.17f, -1774.218f, 90.477f, 183932);
+        GameObject* DoorLeft = getNearestGameObject(-10917.1445f, -1774.05f, 90.478f, 184279);
+        GameObject* DoorRight = getNearestGameObject(-10872.195f, -1779.42f, 90.45f, 184278);
+        GameObject* Curtain = getNearestGameObject(-10894.17f, -1774.218f, 90.477f, 183932);
 
         if (DoorLeft)
             DoorLeft->SetState(GO_STATE_OPEN);
@@ -4883,9 +4880,9 @@ public:
     {
         if (_unit->GetHealthPct() > 0)
         {
-            GameObject* DoorLeft = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10917.1445f, -1774.05f, 90.478f, 184279);
-            GameObject* DoorRight = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10872.195f, -1779.42f, 90.45f, 184278);
-            GameObject* Curtain = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10894.17f, -1774.218f, 90.477f, 183932);
+            GameObject* DoorLeft = getNearestGameObject(-10917.1445f, -1774.05f, 90.478f, 184279);
+            GameObject* DoorRight = getNearestGameObject(-10872.195f, -1779.42f, 90.45f, 184278);
+            GameObject* Curtain = getNearestGameObject(-10894.17f, -1774.218f, 90.477f, 183932);
 
             if (DoorLeft)
                 DoorLeft->SetState(GO_STATE_CLOSED);
@@ -4916,9 +4913,9 @@ public:
                 break;
         }
 
-        GameObject* DoorLeft = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10917.1445f, -1774.05f, 90.478f, 184279);
-        GameObject* DoorRight = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10872.195f, -1779.42f, 90.45f, 184278);
-        GameObject* Curtain = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10894.17f, -1774.218f, 90.477f, 183932);
+        GameObject* DoorLeft = getNearestGameObject(-10917.1445f, -1774.05f, 90.478f, 184279);
+        GameObject* DoorRight = getNearestGameObject(-10872.195f, -1779.42f, 90.45f, 184278);
+        GameObject* Curtain = getNearestGameObject(-10894.17f, -1774.218f, 90.477f, 183932);
 
         if (DoorLeft)
             DoorLeft->SetState(GO_STATE_OPEN);
@@ -5069,9 +5066,9 @@ public:
     {
         if (_unit->GetHealthPct() > 0)
         {
-            GameObject* DoorLeft = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10917.1445f, -1774.05f, 90.478f, 184279);
-            GameObject* DoorRight = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10872.195f, -1779.42f, 90.45f, 184278);
-            GameObject* Curtain = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10894.17f, -1774.218f, 90.477f, 183932);
+            GameObject* DoorLeft = getNearestGameObject(-10917.1445f, -1774.05f, 90.478f, 184279);
+            GameObject* DoorRight = getNearestGameObject(-10872.195f, -1779.42f, 90.45f, 184278);
+            GameObject* Curtain = getNearestGameObject(-10894.17f, -1774.218f, 90.477f, 183932);
 
             if (DoorLeft)
                 DoorLeft->SetState(GO_STATE_CLOSED);

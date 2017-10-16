@@ -41,53 +41,6 @@ Creature* MoonInstanceScript::GetCreatureByGuid(uint32 pGuid)
     return mInstance->GetCreature(pGuid);
 };
 
-GameObject* MoonInstanceScript::FindClosestGameObjectOnMap(uint32 pEntry, float pX, float pY, float pZ)
-{
-    GameObjectSet GameObjects = FindGameObjectsOnMap(pEntry);
-
-    if (GameObjects.size() == 0)
-        return NULL;
-    if (GameObjects.size() == 1)
-        return *(GameObjects.begin());
-
-    GameObject* NearestObject = NULL;
-    float Distance, NearestDistance = 99999;
-    for (GameObjectSet::iterator Iter = GameObjects.begin(); Iter != GameObjects.end(); ++Iter)
-    {
-        Distance = getRangeToObjectForPosition(*Iter, pX, pY, pZ);
-        if (Distance < NearestDistance)
-        {
-            NearestDistance = Distance;
-            NearestObject = (*Iter);
-        };
-    };
-
-    return NearestObject;
-};
-
-GameObject* MoonInstanceScript::SpawnGameObject(uint32 pEntry, float pX, float pY, float pZ, float pO)
-{
-    GameObject* pNewGO = mInstance->GetInterface()->SpawnGameObject(pEntry, pX, pY, pZ, pO, true, 0, 0);
-    return pNewGO;
-};
-
-GameObjectSet MoonInstanceScript::FindGameObjectsOnMap(uint32 pEntry)
-{
-    GameObject* CurrentObject = NULL;
-    GameObjectSet ReturnSet;
-    for (std::vector< GameObject* >::iterator GOIter = mInstance->GOStorage.begin(); GOIter != mInstance->GOStorage.end(); ++GOIter)
-    {
-        CurrentObject = (*GOIter);
-        if (CurrentObject != NULL)
-        {
-            if (CurrentObject->GetEntry() == pEntry)
-                ReturnSet.insert(CurrentObject);
-        };
-    };
-
-    return ReturnSet;
-};
-
 GameObject* MoonInstanceScript::GetGameObjectByGuid(uint32 pGuid)
 {
     if (pGuid == 0)

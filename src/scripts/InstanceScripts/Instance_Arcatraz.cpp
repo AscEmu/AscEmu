@@ -236,8 +236,7 @@ class DalliahTheDoomsayerAI : public MoonScriptBossAI
         {
             _unit->SendScriptTextChatMessage(7375);     // Now I'm really angry.
 
-            GameObject* door2 = NULL;
-            door2 = GetNearestGameObject(184319);
+            GameObject* door2 = getNearestGameObject(184319);
             if (door2 != NULL)
                 door2->SetState(GO_STATE_OPEN);
 
@@ -287,8 +286,7 @@ class WrathScryerSoccothratesAI : public MoonScriptBossAI
         {
             _unit->SendScriptTextChatMessage(7380);     // Knew this was... the only way out.
 
-            GameObject* door1 = NULL;
-            door1 = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(199.969f, 118.5837f, 22.379f, 184318);
+            GameObject* door1 = getNearestGameObject(199.969f, 118.5837f, 22.379f, 184318);
             if (door1 != NULL)
                 door1->SetState(GO_STATE_OPEN);
 
@@ -412,7 +410,7 @@ class WardenMellicharAI : public MoonScriptBossAI
             SetCanEnterCombat(false);
             _unit->SetEmoteState(EMOTE_ONESHOT_READY1H); // to be replaced for the standstate
 
-            shield = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(445.786f, -169.263f, 43.0466f, 184802);
+            shield = getNearestGameObject(445.786f, -169.263f, 43.0466f, 184802);
             if (shield)
                 shield->SetState(GO_STATE_CLOSED);
 
@@ -441,7 +439,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                 if (Phasepart == 0)
                 {
                     Spawncounter = 0;
-                    orb1 = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(482.929f, -151.114f, 43.654f, 183961);
+                    orb1 = getNearestGameObject(482.929f, -151.114f, 43.654f, 183961);
                     if (orb1)
                         orb1->SetState(GO_STATE_OPEN);
 
@@ -491,7 +489,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                 if (Phasepart == 0)
                 {
                     Spawncounter = 0;
-                    orb2 = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(409.062f, -152.161f, 43.653f, 183963);
+                    orb2 = getNearestGameObject(409.062f, -152.161f, 43.653f, 183963);
                     if (orb2)
                         orb2->SetState(GO_STATE_OPEN);
 
@@ -540,7 +538,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                 if (Phasepart == 0)
                 {
                     Spawncounter = 0;
-                    orb3 = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(415.167f, -174.338f, 43.654f, 183964);
+                    orb3 = getNearestGameObject(415.167f, -174.338f, 43.654f, 183964);
                     if (orb3)
                         orb3->SetState(GO_STATE_OPEN);
 
@@ -598,7 +596,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                 if (Phasepart == 0)
                 {
                     Spawncounter = 0;
-                    orb4 = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(476.422f, -174.517f, 42.748f, 183962);
+                    orb4 = getNearestGameObject(476.422f, -174.517f, 42.748f, 183962);
                     if (orb4)
                         orb4->SetState(GO_STATE_OPEN);
 

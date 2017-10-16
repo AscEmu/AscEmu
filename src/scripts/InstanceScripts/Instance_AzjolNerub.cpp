@@ -77,7 +77,7 @@ class KrikthirAI : public MoonScriptCreatureAI
     {
         _unit->SendScriptTextChatMessage(3911);         // I should be grateful... but I long ago lost the capacity....
 
-        GameObject* Doors = GetNearestGameObject(192395);
+        GameObject* Doors = getNearestGameObject(192395);
         if (Doors != NULL)
             Doors->Despawn(0, 0);
 

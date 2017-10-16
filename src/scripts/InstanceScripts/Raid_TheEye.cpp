@@ -3112,7 +3112,7 @@ class KaelThasAI : public MoonScriptBossAI
 
             for (uint8 i = 0; i < 2; ++i)
             {
-                GameObject* pGameobject = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(Gates[i].x, Gates[i].y, Gates[i].z, Gates[i].addition);
+                GameObject* pGameobject = getNearestGameObject(Gates[i].x, Gates[i].y, Gates[i].z, Gates[i].addition);
                 if (pGameobject != NULL && pGameobject->GetState() == 0)
                 {
                     pGameobject->SetState(GO_STATE_CLOSED);
@@ -3146,7 +3146,7 @@ class KaelThasAI : public MoonScriptBossAI
 
             for (uint8 i = 0; i < 2; ++i)
             {
-                GameObject* pGameobject = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(Gates[i].x, Gates[i].y, Gates[i].z, Gates[i].addition);
+                GameObject* pGameobject = getNearestGameObject(Gates[i].x, Gates[i].y, Gates[i].z, Gates[i].addition);
                 if (pGameobject != NULL && pGameobject->GetState() == 1)
                 {
                     pGameobject->SetState(GO_STATE_OPEN);

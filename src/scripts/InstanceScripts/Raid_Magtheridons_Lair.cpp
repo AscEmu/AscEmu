@@ -300,7 +300,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                         Magtheridon->RemoveAura(BANISH);
 
                     // If Gate is found we close it
-                    GameObject* Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-72.5866f, 1.559f, 0.0f, 183847);
+                    GameObject* Gate = getNearestGameObject(-72.5866f, 1.559f, 0.0f, 183847);
                     if (Gate)
                         Gate->SetState(GO_STATE_CLOSED);
                 }
@@ -386,7 +386,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                         // If less than half of alive channelers is out of combat we open Magtheridon's gate
                         if (AliveInCombat < AliveChannelers.size() / 2)
                         {
-                            GameObject* Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-72.5866f, 1.559f, 0.0f, 183847);
+                            GameObject* Gate = getNearestGameObject(-72.5866f, 1.559f, 0.0f, 183847);
                             if (Gate)
                                 Gate->SetState(GO_STATE_OPEN);
                         }
@@ -1328,7 +1328,7 @@ class MagtheridonAI : public CreatureAIScript
             for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = 0;
 
-            GameObject* Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-72.5866f, 1.559f, 0.0f, 183847);
+            GameObject* Gate = getNearestGameObject(-72.5866f, 1.559f, 0.0f, 183847);
             if (Gate)
                 Gate->SetState(GO_STATE_CLOSED);
         }
@@ -1345,16 +1345,16 @@ class MagtheridonAI : public CreatureAIScript
             GameObject* Gate = NULL;
             for (uint8 i = 0; i < 6; i++)
             {
-                Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(Columns[i].x, Columns[i].y, Columns[i].z, 184634 + i);
+                Gate = getNearestGameObject(Columns[i].x, Columns[i].y, Columns[i].z, 184634 + i);
                 if (Gate)
                     Gate->SetState(GO_STATE_CLOSED);
             }
 
-            Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(0.0f, 0.0f, 0.0f, 184653);
+            Gate = getNearestGameObject(0.0f, 0.0f, 0.0f, 184653);
             if (Gate)
                 Gate->SetState(GO_STATE_CLOSED);
 
-            Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-72.5866f, 1.559f, 0.0f, 183847);
+            Gate = getNearestGameObject(-72.5866f, 1.559f, 0.0f, 183847);
             if (Gate)
                 Gate->SetState(GO_STATE_OPEN);
         }
@@ -1508,12 +1508,12 @@ class MagtheridonAI : public CreatureAIScript
                     GameObject* Gate = NULL;
                     for (uint8 i = 0; i < 6; i++)
                     {
-                        Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(Columns[i].x, Columns[i].y, Columns[i].z, 184634 + i);
+                        Gate = getNearestGameObject(Columns[i].x, Columns[i].y, Columns[i].z, 184634 + i);
                         if (Gate)
                             Gate->SetState(GO_STATE_OPEN);
                     }
 
-                    Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(0.0f, 0.0f, 0.0f, 184653);
+                    Gate = getNearestGameObject(0.0f, 0.0f, 0.0f, 184653);
                     if (Gate)
                         Gate->SetState(GO_STATE_OPEN);
                 }

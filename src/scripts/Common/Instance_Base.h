@@ -125,9 +125,6 @@ class MoonInstanceScript : public InstanceScript
 
         // GameObject
         GameObject* GetGameObjectByGuid(uint32 pGuid);
-        GameObject* FindClosestGameObjectOnMap(uint32 pEntry, float pX, float pY, float pZ);
-        GameObject* SpawnGameObject(uint32 pEntry, float pX, float pY, float pZ, float pO);
-        GameObjectSet FindGameObjectsOnMap(uint32 pEntry);
         void AddGameObjectStateByEntry(uint32 pEntry, GameObjectState pState, bool pUseQuery = false);
 
         // Distance calculation

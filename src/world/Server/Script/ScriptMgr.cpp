@@ -532,6 +532,18 @@ CreatureAIScript::~CreatureAIScript()
         linkedCreatureAI->LinkedCreatureDeleted();
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// data
+GameObject* CreatureAIScript::getNearestGameObject(uint32_t entry)
+{
+    return getNearestGameObject(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), entry);
+}
+
+GameObject* CreatureAIScript::getNearestGameObject(float posX, float posY, float posZ, uint32_t entry)
+{
+    return _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(posX, posY, posZ, entry);
+}
+
 void CreatureAIScript::RegisterAIUpdateEvent(uint32 frequency)
 {
     //sEventMgr.AddEvent(_unit, &Creature::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, frequency, 0,0);
@@ -813,12 +825,18 @@ CreatureSet InstanceScript::getCreatureSetForEntries(std::vector<uint32_t> entry
     return creatureSet;
 }
 
+GameObject* InstanceScript::spawnGameObject(uint32_t entry, float posX, float posY, float posZ, float posO, bool addToWorld /*= true*/, uint32_t misc1 /*= 0*/, uint32_t phase /*= 0*/)
+{
+    GameObject* spawnedGameObject = mInstance->GetInterface()->SpawnGameObject(entry, posX, posY, posZ, posO, addToWorld, misc1, phase);
+    return spawnedGameObject;
+}
+
 GameObject* InstanceScript::getGameObjectBySpawnId(uint32_t entry)
 {
     return mInstance->GetSqlIdGameObject(entry);
 };
 
-GameObject* InstanceScript::getClosestGameObjectForPosition(uint32 entry, float posX, float posY, float posZ)
+GameObject* InstanceScript::getClosestGameObjectForPosition(uint32_t entry, float posX, float posY, float posZ)
 {
     GameObjectSet gameObjectSet = getGameObjectsSetForEntry(entry);
 
@@ -833,11 +851,14 @@ GameObject* InstanceScript::getClosestGameObjectForPosition(uint32 entry, float 
 
     for (auto gameobject : gameObjectSet)
     {
-        distance = getRangeToObjectForPosition(gameobject, posX, posY, posZ);
-        if (distance < nearestDistance)
+        if (gameobject != nullptr)
         {
-            nearestDistance = distance;
-            return gameobject;
+            distance = getRangeToObjectForPosition(gameobject, posX, posY, posZ);
+            if (distance < nearestDistance)
+            {
+                nearestDistance = distance;
+                return gameobject;
+            }
         }
     }
 

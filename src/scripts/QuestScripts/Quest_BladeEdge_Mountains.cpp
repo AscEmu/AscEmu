@@ -369,7 +369,7 @@ public:
             Ogre->GetUnit()->SetFaction(35);
             Ogre->GetUnit()->SetStandState(STANDSTATE_SIT);
 
-            NdGo = GetNearestGameObject(184315);
+            NdGo = getNearestGameObject(184315);
             if (NdGo == nullptr)
                 return;
 

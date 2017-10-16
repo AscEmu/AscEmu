@@ -2244,7 +2244,7 @@ class WarlordKalitreshAI : public CreatureAIScript
             RagePhase = 0;
 
             GameObject* Gate = NULL;
-            Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-95.774361f, -439.608612f, 3.382976f, 183049);
+            Gate = getNearestGameObject(-95.774361f, -439.608612f, 3.382976f, 183049);
             if (Gate)
                 Gate->SetState(GO_STATE_CLOSED);
 
@@ -2282,8 +2282,7 @@ class WarlordKalitreshAI : public CreatureAIScript
 
         void OnCombatStop(Unit* mTarget)
         {
-            GameObject* Gate = NULL;
-            Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-95.774361f, -439.608612f, 3.382976f, 183049);
+            GameObject* Gate = getNearestGameObject(-95.774361f, -439.608612f, 3.382976f, 183049);
             if (Gate)
                 Gate->SetState(GO_STATE_OPEN);
 

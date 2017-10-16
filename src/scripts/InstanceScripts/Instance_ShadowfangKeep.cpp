@@ -1152,7 +1152,7 @@ class ArugalBossAI : public MoonScriptCreatureAI
                 }break;
                 case 1:
                 {
-                    if (GameObject* pGO = GetNearestGameObject(GO_ARUGAL_FOCUS))
+                    if (GameObject* pGO = getNearestGameObject(GO_ARUGAL_FOCUS))
                     {
                         pGO->SetState(GO_STATE_OPEN);
                     }
