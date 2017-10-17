@@ -4380,7 +4380,7 @@ class AkamaAI : public MoonScriptBossAI
             }
 
             GameObject* pGate = getNearestGameObject(774.7f, 304.6f, 314.85f, 185905);
-            Unit* pDoorTrigger = ForceCreatureFind(CN_DOOR_EVENT_TRIGGER, 771.5f, 304.7f, 319.0f);
+            Unit* pDoorTrigger = getNearestCreature(771.5f, 304.7f, 319.0f, CN_DOOR_EVENT_TRIGGER);
             if ((mScenePart <= 15 && pGate == NULL) || mScenePart == -1)
             {
                 Emote("It's strange that Illidan doesn't protect himself against intruders.", Text_Say, 0);
@@ -4509,7 +4509,7 @@ class AkamaAI : public MoonScriptBossAI
         {
             if (mIllidanAI == NULL)
             {
-                Creature* pIllidan = static_cast<Creature*>(ForceCreatureFind(22917, 704.539001f, 305.282013f, 353.919006f));
+                Creature* pIllidan = getNearestCreature(704.539001f, 305.282013f, 353.919006f, 22917);
                 if (pIllidan != NULL && pIllidan->GetScript() != NULL)
                 {
                     mIllidanAI = static_cast< MoonScriptCreatureAI* >(pIllidan->GetScript());
@@ -4758,7 +4758,7 @@ class AkamaAI : public MoonScriptBossAI
                     {
                         Emote("The Light will fill these dismal halls once again. I swear it.", Text_Yell, 11387);
 
-                        Unit* pIllidan = ForceCreatureFind(22917);
+                        Unit* pIllidan = getNearestCreature(22917);
                         if (pIllidan != NULL)
                         {
                             _unit->GetAIInterface()->setNextTarget(pIllidan);
@@ -5142,7 +5142,7 @@ class MaievAI : public MoonScriptBossAI
                     case 6:
                         {
                             Emote("Farewell, champions.", Text_Yell, 11498);
-                            Creature* pAkama = static_cast<Creature*>(ForceCreatureFind(CN_AKAMA, ToIllidan[19].x, ToIllidan[19].y, ToIllidan[19].z));
+                            Creature* pAkama = getNearestCreature(ToIllidan[19].x, ToIllidan[19].y, ToIllidan[19].z, CN_AKAMA);
                             if (pAkama != NULL)
                             {
                                 AkamaAI* pAkamaAI = static_cast< AkamaAI* >(pAkama->GetScript());
@@ -5396,14 +5396,14 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 mFoA2 = NULL;
             }
 
-            Creature* pTrigger = static_cast<Creature*>(ForceCreatureFind(CN_FACE_TRIGGER, 677.399963f, 305.545044f, 353.192169f));
+            Creature* pTrigger = getNearestCreature(677.399963f, 305.545044f, 353.192169f, CN_FACE_TRIGGER);
             if (pTrigger != NULL)
             {
                 pTrigger->Despawn(0, 0);
             }
             for (uint8 i = 0; i < 2; ++i)
             {
-                Creature* pBlade = static_cast<Creature*>(ForceCreatureFind(CN_BLADE_OF_AZZINOTH, UnitPos[i].x, UnitPos[i].y, UnitPos[i].z));
+                Creature* pBlade = getNearestCreature(UnitPos[i].x, UnitPos[i].y, UnitPos[i].z, CN_BLADE_OF_AZZINOTH);
                 if (pBlade != NULL)
                 {
                     pBlade->SetChannelSpellTargetGUID(0);
@@ -5429,7 +5429,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                     pLeftGate->SetState(GO_STATE_OPEN);
                 }
 
-                Creature* pMaiev = static_cast<Creature*>(ForceCreatureFind(CN_MAIEV));
+                Creature* pMaiev = getNearestCreature(CN_MAIEV);
                 if (pMaiev != NULL)
                 {
                     pMaiev->Despawn(0, 0);
@@ -5441,7 +5441,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
 
         void OnDied(Unit* pKiller)
         {
-            Creature* pMaiev = static_cast<Creature*>(ForceCreatureFind(CN_MAIEV));
+            Creature* pMaiev = getNearestCreature(CN_MAIEV);
             if (pMaiev != NULL && pMaiev->isAlive())
             {
                 _unit->SetHealth(1);
@@ -5583,7 +5583,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             }
             else if (GetHealthPercent() <= 65 && !IsCasting())
             {
-                Creature* pAkama = static_cast<Creature*>(ForceCreatureFind(CN_AKAMA));
+                Creature* pAkama = getNearestCreature(CN_AKAMA);
                 if (pAkama != NULL && pAkama->GetScript() != NULL)
                 {
                     AkamaAI* pAkamaAI = static_cast< AkamaAI* >(pAkama->GetScript());
@@ -5666,7 +5666,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                         mFoA2 = SpawnCreature(22997, 673.008667f, 283.813660f, 354.267548f, 6.203853f);
                         if (mFoA1 != NULL)
                         {
-                            Unit* pBlade = ForceCreatureFind(CN_BLADE_OF_AZZINOTH, UnitPos[0].x, UnitPos[0].y, UnitPos[0].z);
+                            Unit* pBlade = getNearestCreature(UnitPos[0].x, UnitPos[0].y, UnitPos[0].z, CN_BLADE_OF_AZZINOTH);
                             if (pBlade != NULL)
                             {
                                 pBlade->SetChannelSpellTargetGUID(mFoA1->GetUnit()->GetGUID());
@@ -5697,7 +5697,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                     case 5:
                         for (uint8 i = 0 ; i < 2; ++i)
                         {
-                            Creature* Blade = static_cast<Creature*>(ForceCreatureFind(CN_BLADE_OF_AZZINOTH, UnitPos[i].x, UnitPos[i].y, UnitPos[i].z));
+                            Creature* Blade = getNearestCreature(UnitPos[i].x, UnitPos[i].y, UnitPos[i].z, CN_BLADE_OF_AZZINOTH);
                             if (Blade != NULL)
                             {
                                 Blade->Despawn(0, 0);
@@ -5721,7 +5721,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                         break;
                     case 8:
                         {
-                            Creature* pTrigger = static_cast<Creature*>(ForceCreatureFind(CN_FACE_TRIGGER, 677.399963f, 305.545044f, 353.192169f));
+                            Creature* pTrigger = getNearestCreature(677.399963f, 305.545044f, 353.192169f, CN_FACE_TRIGGER);
                             if (pTrigger != NULL)
                             {
                                 pTrigger->Despawn(0, 0);
@@ -5760,7 +5760,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             {
                 if (!mFoA1->IsAlive())
                 {
-                    Unit* pBlade = ForceCreatureFind(CN_BLADE_OF_AZZINOTH, UnitPos[0].x, UnitPos[0].y, UnitPos[0].z);
+                    Unit* pBlade = getNearestCreature(UnitPos[0].x, UnitPos[0].y, UnitPos[0].z, CN_BLADE_OF_AZZINOTH);
                     if (pBlade != NULL)
                     {
                         pBlade->SetChannelSpellTargetGUID(0);
@@ -5774,7 +5774,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             {
                 if (!mFoA2->IsAlive())
                 {
-                    Unit* pBlade = ForceCreatureFind(CN_BLADE_OF_AZZINOTH, UnitPos[1].x, UnitPos[1].y, UnitPos[1].z);
+                    Unit* pBlade = getNearestCreature(UnitPos[1].x, UnitPos[1].y, UnitPos[1].z, CN_BLADE_OF_AZZINOTH);
                     if (pBlade != NULL)
                     {
                         pBlade->SetChannelSpellTargetGUID(0);
@@ -5790,7 +5790,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 {
                     if (mFoA1 == NULL && mFoA2 == NULL)
                     {
-                        Unit* pTrigger = ForceCreatureFind(CN_FACE_TRIGGER, 677.399963f, 305.545044f, 353.192169f);
+                        Unit* pTrigger = getNearestCreature(677.399963f, 305.545044f, 353.192169f, CN_FACE_TRIGGER);
                         if (pTrigger != NULL)
                         {
                             _unit->GetAIInterface()->setNextTarget(pTrigger);
@@ -6039,7 +6039,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             MaievAI* pMaievAI = NULL;
             if (mScenePart > 3)
             {
-                Creature* pMaiev = static_cast<Creature*>(ForceCreatureFind(CN_MAIEV));
+                Creature* pMaiev = getNearestCreature(CN_MAIEV);
                 if (pMaiev != NULL && pMaiev->GetScript() != NULL)
                 {
                     pMaievAI = static_cast< MaievAI* >(pMaiev->GetScript());
@@ -6369,7 +6369,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 Unit* pTarget = _unit->GetAIInterface()->getNextTarget();
                 if (pTarget != NULL && (!pTarget->IsCreature() || pTarget->GetEntry() != CN_FACE_TRIGGER))
                 {
-                    Creature* pTrigger = static_cast<Creature*>(ForceCreatureFind(CN_FACE_TRIGGER, 677.399963f, 305.545044f, 353.192169f));
+                    Creature* pTrigger = getNearestCreature(677.399963f, 305.545044f, 353.192169f, CN_FACE_TRIGGER);
                     if (pTrigger != NULL)
                     {
                         _unit->GetAIInterface()->setNextTarget(pTrigger);
@@ -6385,7 +6385,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
 
         void Destroy()
         {
-            Creature* pAkama = static_cast<Creature*>(ForceCreatureFind(CN_AKAMA));
+            Creature* pAkama = getNearestCreature(CN_AKAMA);
             if (pAkama != NULL && pAkama->GetScript() != NULL)
             {
                 AkamaAI* pAI = static_cast< AkamaAI* >(pAkama->GetScript());
@@ -6396,7 +6396,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 }
             }
 
-            Creature* pMaiev = static_cast<Creature*>(ForceCreatureFind(CN_MAIEV));
+            Creature* pMaiev = getNearestCreature(CN_MAIEV);
             if (pMaiev != NULL && pMaiev->GetScript() != NULL)
             {
                 MaievAI* pAI = static_cast< MaievAI* >(pMaiev->GetScript());
@@ -6530,7 +6530,7 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            Unit* pIllidan = ForceCreatureFind(22917);
+            Unit* pIllidan = getNearestCreature(22917);
             if (pIllidan != NULL)
             {
                 IllidanStormrageAI* pAI = static_cast< IllidanStormrageAI* >(static_cast<Creature*>(pIllidan)->GetScript());
@@ -6689,7 +6689,7 @@ class DranaeiSpiritAI : public MoonScriptCreatureAI
 
         void Destroy()
         {
-            Creature* pAkama = static_cast<Creature*>(ForceCreatureFind(22990));
+            Creature* pAkama = getNearestCreature(22990);
             if (pAkama != NULL && pAkama->GetScript() != NULL)
             {
                 AkamaAI* pAI = static_cast< AkamaAI* >(pAkama->GetScript());
@@ -6750,8 +6750,8 @@ class FlameOfAzzinothAI : public MoonScriptCreatureAI
         void AIUpdate()
         {
             // Uh... so ugly, but that's what Wiki says
-            Unit* pBlade1 = ForceCreatureFind(22996, UnitPos[0].x, UnitPos[0].y, UnitPos[0].z);
-            Unit* pBlade2 = ForceCreatureFind(22996, UnitPos[1].x, UnitPos[1].y, UnitPos[1].z);
+            Unit* pBlade1 = getNearestCreature(UnitPos[0].x, UnitPos[0].y, UnitPos[0].z, 22996);
+            Unit* pBlade2 = getNearestCreature(UnitPos[1].x, UnitPos[1].y, UnitPos[1].z, 22996);
             if (pBlade1 != NULL && pBlade2 != NULL && mChargeSpellFunc->mLastCastTime + mChargeSpellFunc->mCooldown <= (uint32)time(NULL))
             {
                 for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
@@ -6774,7 +6774,7 @@ class FlameOfAzzinothAI : public MoonScriptCreatureAI
 
         void Destroy()
         {
-            Creature* pIllidan = static_cast<Creature*>(ForceCreatureFind(22917));
+            Creature* pIllidan = getNearestCreature(22917);
             if (pIllidan != NULL && pIllidan->GetScript() != NULL)
             {
                 IllidanStormrageAI* pAI = static_cast< IllidanStormrageAI* >(pIllidan->GetScript());

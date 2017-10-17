@@ -411,7 +411,7 @@ class ArugalAI : public MoonScriptCreatureAI
                     GetUnit()->SetInvisFlag(INVIS_FLAG_NORMAL);
                     GetUnit()->CastSpell(GetUnit(), SPELL_ARUGAL_SPAWN, true);
                     ModifyAIUpdateEvent(5500);  // call every step after 5.5 seconds
-                    if (Creature* pVincent = static_cast<Creature*>(ForceCreatureFind(CN_DEATHSTALKER_VINCENT, GetUnit()->GetPositionX(), GetUnit()->GetPositionY(), GetUnit()->GetPositionZ())))
+                    if (Creature* pVincent = getNearestCreature(CN_DEATHSTALKER_VINCENT))
                     {
                         pVincent->GetAIInterface()->AttackReaction(GetUnit(), 1);
                         pVincent->GetAIInterface()->disable_melee = true;

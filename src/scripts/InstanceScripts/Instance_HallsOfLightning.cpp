@@ -426,14 +426,14 @@ class Volkhan : public MoonScriptCreatureAI
                     break;
             }
 
-            MoonScriptCreatureAI* pAnvil = GetNearestCreature(CN_VOLKHANS_ANVIL);
+            Creature* pAnvil = getNearestCreature(CN_VOLKHANS_ANVIL);
             if (pAnvil)
-                _unit->CastSpell(pAnvil->GetUnit(), SPELL_TEMPER, true);
+                _unit->CastSpell(pAnvil, SPELL_TEMPER, true);
             else
                 _unit->CastSpell(GetUnit(), SPELL_TEMPER, true);
 
             SetCanEnterCombat(true);
-            _unit->GetAIInterface()->AttackReaction(GetNearestPlayer(), 1);   // hackfix
+            _unit->GetAIInterface()->AttackReaction(getNearestPlayer(), 1);   // hackfix
         }
     }
 

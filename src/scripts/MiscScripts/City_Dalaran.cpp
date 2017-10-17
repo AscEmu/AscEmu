@@ -20,8 +20,7 @@ class SilverCovenantMageGuard : public MoonScriptCreatureAI
 
         void StartDefense()
         {
-            Player* player = GetNearestPlayer();
-
+            Player* player = getNearestPlayer();
             if (player == nullptr)
                 return;
 
@@ -68,8 +67,7 @@ class SunreaversMageGuard : public MoonScriptCreatureAI
 
         void StartDefense()
         {
-            Player* player = GetNearestPlayer();
-
+            Player* player = getNearestPlayer();
             if (player == nullptr)
                 return;
 

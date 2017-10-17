@@ -3091,7 +3091,7 @@ class KaelThasAI : public MoonScriptBossAI
 
             for (uint8 i = 0; i < 4; ++i)
             {
-                Creature* pCreature = static_cast<Creature*>(ForceCreatureFind(Advisors[i].addition, Advisors[i].x, Advisors[i].y, Advisors[i].z));
+                Creature* pCreature = getNearestCreature(Advisors[i].x, Advisors[i].y, Advisors[i].z, Advisors[i].addition);
                 if (pCreature != NULL)
                 {
                     pCreature->Despawn(0, 0);
@@ -3134,7 +3134,7 @@ class KaelThasAI : public MoonScriptBossAI
             {
                 for (uint8 i = 0; i < 4; ++i)
                 {
-                    Creature* pCreature = static_cast<Creature*>(ForceCreatureFind(Advisors[i].addition, Advisors[i].x, Advisors[i].y, Advisors[i].z));
+                    Creature* pCreature = getNearestCreature(Advisors[i].x, Advisors[i].y, Advisors[i].z, Advisors[i].addition);
                     if (pCreature != NULL)
                     {
                         pCreature->Despawn(0, 0);
@@ -3217,7 +3217,7 @@ class KaelThasAI : public MoonScriptBossAI
             if (GetPhase() < 5)
             {
                 uint32 i = GetPhase() > 0 ? GetPhase() - 1 : 0;
-                Creature* pCreature = static_cast<Creature*>(ForceCreatureFind(Advisors[i].addition, Advisors[i].x, Advisors[i].y, Advisors[i].z));
+                Creature* pCreature = getNearestCreature(Advisors[i].x, Advisors[i].y, Advisors[i].z, Advisors[i].addition);
                 if (pCreature == NULL || (!pCreature->isAlive() && mAdvisorPhase != PHASE_ADV_FIGHT))
                 {
                     LocationExtra pCoords;
@@ -3272,7 +3272,7 @@ class KaelThasAI : public MoonScriptBossAI
                         if (mAdvCoords.size() <= (size_t)i)
                             break;
 
-                        Creature* pCreature = static_cast<Creature*>(ForceCreatureFind(mAdvCoords[i].addition, mAdvCoords[i].x, mAdvCoords[i].y, mAdvCoords[i].z));
+                        Creature* pCreature = getNearestCreature(mAdvCoords[i].x, mAdvCoords[i].y, mAdvCoords[i].z, mAdvCoords[i].addition);
                         if (pCreature != NULL && !pCreature->isAlive())
                         {
                             pCreature->Despawn(0, 0);
@@ -3417,7 +3417,7 @@ void SpellFunc_KaelThasFlameStrike(SpellDesc* pThis, MoonScriptCreatureAI* pCrea
         if (pTarget != NULL)
         {
             KaelThas->GetUnit()->CastSpell(pTarget, KAELTHAS_FLAME_STRIKE_SUMMON, true);
-            Creature* pFriendlyTrigger = static_cast<Creature*>(KaelThas->ForceCreatureFind(CN_FLAME_STRIKE_TRIGGER));
+            Creature* pFriendlyTrigger = static_cast<Creature*>(KaelThas->getNearestCreature(CN_FLAME_STRIKE_TRIGGER));
             if (pFriendlyTrigger != NULL && pFriendlyTrigger->IsPet())
             {
                 pFriendlyTrigger->Despawn(0, 0);

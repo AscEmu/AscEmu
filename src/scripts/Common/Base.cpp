@@ -441,11 +441,6 @@ void MoonScriptCreatureAI::CastOnInrangePlayers(float pDistanceMin, float pDista
     };
 };
 
-Player* MoonScriptCreatureAI::GetNearestPlayer()
-{
-    return _unit->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ());
-}
-
 MoonScriptCreatureAI* MoonScriptCreatureAI::GetNearestCreature(uint32 pCreatureId)
 {
     Creature* NearestCreature = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), pCreatureId);
@@ -468,51 +463,6 @@ MoonScriptCreatureAI* MoonScriptCreatureAI::SpawnCreature(uint32 pCreatureId, fl
     }
     return CreatureScriptAI;
 }
-
-Unit* MoonScriptCreatureAI::ForceCreatureFind(uint32 pCreatureId)
-{
-    return ForceCreatureFind(pCreatureId, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ());
-};
-
-Unit* MoonScriptCreatureAI::ForceCreatureFind(uint32 pCreatureId, float pX, float pY, float pZ)
-{
-    Unit* UnitPtr = NULL;
-    MapMgr* Mgr = _unit->GetMapMgr();
-    if (Mgr == NULL)
-        return UnitPtr;
-
-    UnitPtr = Mgr->GetInterface()->GetCreatureNearestCoords(pX, pY, pZ, pCreatureId);
-    if (UnitPtr == NULL)
-    {
-        UnitArray Array;
-        for (std::vector< Creature* >::iterator UnitIter = Mgr->CreatureStorage.begin(); UnitIter != Mgr->CreatureStorage.end(); ++UnitIter)
-        {
-            UnitPtr = static_cast< Unit* >(*UnitIter);
-            if (UnitPtr != NULL)
-            {
-                if (UnitPtr->GetEntry() == pCreatureId && UnitPtr != _unit)
-                    Array.push_back(UnitPtr);
-            };
-        }
-
-        if (Array.size() == 1)
-            return Array[0];
-
-        UnitPtr = NULL;
-        float Distance, NearestDistance = 99999;
-        for (UnitArray::iterator UnitIter = Array.begin(); UnitIter != Array.end(); ++UnitIter)
-        {
-            Distance = _unit->CalcDistance(pX, pY, pZ, (*UnitIter)->GetPositionX(), (*UnitIter)->GetPositionY(), (*UnitIter)->GetPositionZ());
-            if (Distance < NearestDistance)
-            {
-                NearestDistance = Distance;
-                UnitPtr = (*UnitIter);
-            };
-        };
-    };
-
-    return UnitPtr;
-};
 
 void MoonScriptCreatureAI::Despawn(uint32 pDelay, uint32 pRespawnTime)
 {

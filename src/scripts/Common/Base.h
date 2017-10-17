@@ -358,13 +358,10 @@ class MoonScriptCreatureAI : public CreatureAIScript
 
         void CastOnAllInrangePlayers(uint32 pSpellId, bool pTriggered = false);
         void CastOnInrangePlayers(float pDistanceMin, float pDistanceMax, uint32 pSpellId, bool pTriggered = false);
-        Player* GetNearestPlayer();
 
         MoonScriptCreatureAI* GetNearestCreature(uint32 pCreatureId = 0);
         MoonScriptCreatureAI* SpawnCreature(uint32 pCreatureId, bool pForceSameFaction = false);
         MoonScriptCreatureAI* SpawnCreature(uint32 pCreatureId, float pX, float pY, float pZ, float pO = 0, bool pForceSameFaction = false, uint32 pPhase = 1);
-        Unit* ForceCreatureFind(uint32 pCreatureId);
-        Unit* ForceCreatureFind(uint32 pCreatureId, float pX, float pY, float pZ);
         void Despawn(uint32 pDelay = 0, uint32 pRespawnTime = 0);
 
         //Spells

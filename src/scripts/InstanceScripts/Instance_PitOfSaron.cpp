@@ -527,7 +527,7 @@ class KrickAI : MoonScriptBossAI
         Phase = BATTLE;
 
         // Get Ick
-        mIckAI = static_cast<MoonScriptCreatureAI*>(GetNearestCreature(CN_ICK));
+        mIckAI = getNearestCreature(CN_ICK);
 
         // Spell Timers
         mBarrageTimer = AddTimer(2500); // Timer Quessed
@@ -536,7 +536,7 @@ class KrickAI : MoonScriptBossAI
 
     void AIUpdate()
     {
-        if (!mIckAI->IsAlive())
+        if (!mIckAI->isAlive())
             Phase = OUTRO;
 
         if (Phase == BATTLE)
@@ -560,7 +560,7 @@ class KrickAI : MoonScriptBossAI
 
     void Outro()
     {
-        Player* pTarget = GetNearestPlayer();
+        Player* pTarget = getNearestPlayer();
         if (pTarget == nullptr)
             return;
 
@@ -667,7 +667,7 @@ class KrickAI : MoonScriptBossAI
     }
 
     MoonInstanceScript* mInstance;
-    MoonScriptCreatureAI* mIckAI;
+    Creature* mIckAI;
     MoonScriptCreatureAI* JainaOrSylvanas;
     SpellDesc* mBarrageSummon;
     uint8_t sequence;

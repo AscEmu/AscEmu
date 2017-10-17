@@ -610,8 +610,8 @@ class SkarvaldTheConstructorGhostAI : public MoonScriptCreatureAI
         {
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
 
-            Player* pTarget = GetNearestPlayer();
-            if (pTarget != NULL)
+            Player* pTarget = getNearestPlayer();
+            if (pTarget != nullptr)
                 _unit->GetAIInterface()->AttackReaction(pTarget, 50, 0);
 
             ParentClass::OnLoad();
@@ -640,8 +640,8 @@ class DalronnTheControllerGhostAI : public MoonScriptCreatureAI
         {
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
 
-            Player* pTarget = GetNearestPlayer();
-            if (pTarget != NULL)
+            Player* pTarget = getNearestPlayer();
+            if (pTarget != nullptr)
                 _unit->GetAIInterface()->AttackReaction(pTarget, 50, 0);
 
             ParentClass::OnLoad();
@@ -720,7 +720,7 @@ class FrostTombAI : public MoonScriptCreatureAI
         void OnLoad()
         {
             SetCanMove(false);
-            plr = GetNearestPlayer();
+            plr = getNearestPlayer();
             ParentClass::OnLoad();
         };
 
@@ -760,8 +760,8 @@ class SkeletonAddAI : public MoonScriptCreatureAI
 
         void OnLoad()
         {
-            Player* pTarget = GetNearestPlayer();
-            if (pTarget != NULL)
+            Player* pTarget = getNearestPlayer();
+            if (pTarget != nullptr)
                 _unit->GetAIInterface()->AttackReaction(pTarget, 50, 0);
 
             ParentClass::OnLoad();
@@ -862,8 +862,8 @@ class IngvarUndeadAI : public MoonScriptCreatureAI
 
         void OnLoad()
         {
-            Player* pTarget = GetNearestPlayer();
-            if (pTarget != NULL)
+            Player* pTarget = getNearestPlayer();
+            if (pTarget != nullptr)
                 _unit->GetAIInterface()->AttackReaction(pTarget, 50, 0);
         }
 

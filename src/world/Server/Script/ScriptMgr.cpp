@@ -534,6 +534,42 @@ CreatureAIScript::~CreatureAIScript()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // data
+Player* CreatureAIScript::getNearestPlayer()
+{
+    return _unit->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ());
+}
+
+Creature* CreatureAIScript::getNearestCreature(uint32_t entry)
+{
+    return getNearestCreature(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), entry);
+}
+
+Creature* CreatureAIScript::getNearestCreature(float posX, float posY, float posZ, uint32_t entry)
+{
+    return _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(posX, posY, posZ, entry);
+}
+
+Creature* CreatureAIScript::spawnCreature(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId /* = 0*/)
+{
+    CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(entry);
+    if (creatureProperties == nullptr)
+    {
+        LOG_ERROR("tried to create a invalid creature with entry %u!", entry);
+        return nullptr;
+    }
+
+    Creature* creature = _unit->GetMapMgr()->GetInterface()->SpawnCreature(entry, posX, posY, posZ, posO, true, true, 0, 0);
+    if (creature == nullptr)
+        return nullptr;
+
+    if (factionId != 0)
+        creature->SetFaction(factionId);
+    else
+        creature->SetFaction(creatureProperties->Faction);
+
+    return creature;
+}
+
 GameObject* CreatureAIScript::getNearestGameObject(uint32_t entry)
 {
     return getNearestGameObject(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), entry);

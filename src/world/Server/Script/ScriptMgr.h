@@ -335,6 +335,12 @@ class SERVER_DECL CreatureAIScript
         // MIT start
         //////////////////////////////////////////////////////////////////////////////////////////
         // data
+        Player* getNearestPlayer();
+
+        Creature* getNearestCreature(uint32_t entry);
+        Creature* getNearestCreature(float posX, float posY, float posZ, uint32_t entry);
+        Creature* spawnCreature(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId = 0);
+
         GameObject* getNearestGameObject(uint32_t entry);
         GameObject* getNearestGameObject(float posX, float posY, float posZ, uint32_t entry);
 

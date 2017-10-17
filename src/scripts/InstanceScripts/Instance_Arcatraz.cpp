@@ -463,10 +463,10 @@ class WardenMellicharAI : public MoonScriptBossAI
                     if (!NPC_orb1 && NPC_ID_Spawn != 0 && Spawncounter == 0)
                     {
                         ++Spawncounter;
-                        NPC_orb1 = SpawnCreature(NPC_ID_Spawn, 475.672f, -147.086f, 42.567f, 3.184015f);
+                        NPC_orb1 = spawnCreature(NPC_ID_Spawn, 475.672f, -147.086f, 42.567f, 3.184015f);
                         return;
                     }
-                    else if (NPC_orb1 && !NPC_orb1->IsAlive())
+                    else if (NPC_orb1 && !NPC_orb1->isAlive())
                     {
                         _unit->SendScriptTextChatMessage(SAY_MELLICHAR_03);
                         SetPhase(1);
@@ -503,12 +503,12 @@ class WardenMellicharAI : public MoonScriptBossAI
                     if (!NPC_orb2 && Spawncounter == 0)
                     {
                         ++Spawncounter;
-                        NPC_orb2 = SpawnCreature(CN_MILLHOUSE_MANASTORM, 413.192f, -148.586f, 42.569f, 0.024347f);
+                        NPC_orb2 = spawnCreature(CN_MILLHOUSE_MANASTORM, 413.192f, -148.586f, 42.569f, 0.024347f);
                         return;
                     }
-                    else if (NPC_orb2 && NPC_orb2->IsAlive())
+                    else if (NPC_orb2 && NPC_orb2->isAlive())
                     {
-                        Creature* millhouse = static_cast<Creature*>(ForceCreatureFind(CN_MILLHOUSE_MANASTORM));
+                        Creature* millhouse = getNearestCreature(CN_MILLHOUSE_MANASTORM);
                         if (millhouse)
                         {
                             millhouse->SendTimedScriptTextChatMessage(SAY_MILLHOUS_01, 2000);
@@ -564,16 +564,16 @@ class WardenMellicharAI : public MoonScriptBossAI
                         /// \todo investigate.... saying "1"... really?
                         _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "1");
                         ++Spawncounter;
-                        NPC_orb3 = SpawnCreature(NPC_ID_Spawn, 420.050f, -173.500f, 42.580f, 6.110f);
+                        NPC_orb3 = spawnCreature(NPC_ID_Spawn, 420.050f, -173.500f, 42.580f, 6.110f);
                         return;
                     }
                     else if (!NPC_orb3)
                     {
                         /// \todo investigate.... saying "2"... really?
                         _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "2");
-                        NPC_orb3 = GetNearestCreature(NPC_ID_Spawn);
+                        NPC_orb3 = getNearestCreature(NPC_ID_Spawn);
                     }
-                    else if (NPC_orb3 && !NPC_orb3->IsAlive())
+                    else if (NPC_orb3 && !NPC_orb3->isAlive())
                     {
                         _unit->SendScriptTextChatMessage(SAY_MELLICHAR_05);
                         SetPhase(3);
@@ -620,14 +620,14 @@ class WardenMellicharAI : public MoonScriptBossAI
                     if (!NPC_orb4 && NPC_ID_Spawn != 0 && Spawncounter == 0)
                     {
                         ++Spawncounter;
-                        NPC_orb4 = SpawnCreature(NPC_ID_Spawn, 471.153f, -174.715f, 42.589f, 3.097f);
+                        NPC_orb4 = spawnCreature(NPC_ID_Spawn, 471.153f, -174.715f, 42.589f, 3.097f);
                         return;
                     }
                     else if (!NPC_orb4)
                     {
-                        NPC_orb4 = GetNearestCreature(NPC_ID_Spawn);
+                        NPC_orb4 = getNearestCreature(NPC_ID_Spawn);
                     }
-                    else if (NPC_orb4 && !NPC_orb4->IsAlive())
+                    else if (NPC_orb4 && !NPC_orb4->isAlive())
                     {
                         _unit->SendScriptTextChatMessage(SAY_MELLICHAR_06);
                         SetPhase(4);
@@ -677,31 +677,31 @@ class WardenMellicharAI : public MoonScriptBossAI
 
             if (NPC_orb1)
             {
-                NPC_orb1->Despawn(0);
+                NPC_orb1->Despawn(0, 0);
                 NPC_orb1 = NULL;
             }
 
             if (NPC_orb2)
             {
-                NPC_orb2->Despawn(0);
+                NPC_orb2->Despawn(0, 0);
                 NPC_orb2 = NULL;
             }
 
             if (NPC_orb3)
             {
-                NPC_orb3->Despawn(0);
+                NPC_orb3->Despawn(0, 0);
                 NPC_orb3 = NULL;
             }
 
             if (NPC_orb4)
             {
-                NPC_orb4->Despawn(0);
+                NPC_orb4->Despawn(0, 0);
                 NPC_orb4 = NULL;
             }
 
             if (NPC_orb5)
             {
-                NPC_orb5->Despawn(0);
+                NPC_orb5->Despawn(0, 0);
                 NPC_orb5 = NULL;
             }
 
@@ -714,11 +714,11 @@ class WardenMellicharAI : public MoonScriptBossAI
         uint32 Spawncounter;
         int32 Phase_Timer;
 
-        MoonScriptCreatureAI* NPC_orb1;
-        MoonScriptCreatureAI* NPC_orb2;
-        MoonScriptCreatureAI* NPC_orb3;
-        MoonScriptCreatureAI* NPC_orb4;
-        MoonScriptCreatureAI* NPC_orb5;
+        Creature* NPC_orb1;
+        Creature* NPC_orb2;
+        Creature* NPC_orb3;
+        Creature* NPC_orb4;
+        Creature* NPC_orb5;
         GameObject* shield;
         GameObject* orb1;
         GameObject* orb2;

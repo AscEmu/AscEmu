@@ -135,7 +135,7 @@ class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
         if (iWaypointId == uint32(WPCount))   // Reached end
         {
             StopWaypointMovement();
-            if (GetNearestCreature(CN_HEADLESS_HORSEMAN_FIRE) == NULL)     // CASE players win
+            if (getNearestCreature(CN_HEADLESS_HORSEMAN_FIRE) == NULL)     // CASE players win
             {
                 Emote("My flames have died, left not a spark! I shall send you now to the lifeless dark!", Text_Yell, 11968);
                 Despawn(30000, 0); //Despawn after 30 secs
@@ -186,7 +186,7 @@ class HeadlessHorsemanWispInvisAI : public MoonScriptCreatureAI
     MOONSCRIPT_FACTORY_FUNCTION(HeadlessHorsemanWispInvisAI, MoonScriptCreatureAI);
     HeadlessHorsemanWispInvisAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
-        mHeadlessHorseman = 0;
+        mHeadlessHorseman = nullptr;
     }
 
     void AIUpdate()
@@ -197,8 +197,8 @@ class HeadlessHorsemanWispInvisAI : public MoonScriptCreatureAI
         tmPtr = localtime(&tiempo);
         if (tmPtr->tm_min == 0 && (tmPtr->tm_hour % 4) == 0)   // All check for the time
         {
-            mHeadlessHorseman = GetNearestCreature(CN_SHADE_OF_THE_HORSEMAN);
-            if (mHeadlessHorseman == NULL)
+            mHeadlessHorseman = getNearestCreature(CN_SHADE_OF_THE_HORSEMAN);
+            if (mHeadlessHorseman == nullptr)
             {
                 SpawnCreature(CN_SHADE_OF_THE_HORSEMAN, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation());
                 SetAIUpdateFreq(4 * 60 * 1000);
@@ -207,7 +207,7 @@ class HeadlessHorsemanWispInvisAI : public MoonScriptCreatureAI
         ParentClass::AIUpdate();
     }
 
-    MoonScriptCreatureAI* mHeadlessHorseman;
+    Creature* mHeadlessHorseman;
 };
 
 

@@ -120,7 +120,7 @@ class HighKingMaulgarAI : public MoonScriptBossAI
             mLastYell = -1;
             for (uint8 i = 0; i < 4; ++i)
             {
-                Unit* pAdd = ForceCreatureFind(Adds[i]);
+                Unit* pAdd = getNearestCreature(Adds[i]);
                 if (pAdd != NULL && pAdd->isAlive())
                 {
                     Unit* pTarget = GetBestPlayerTarget();
@@ -251,7 +251,7 @@ class KigglerTheCrazedAI : public MoonScriptCreatureAI
         void OnDied(Unit* mKiller)
         {
             ParentClass::OnDied(mKiller);
-            Creature* pMaulgar = static_cast<Creature*>(ForceCreatureFind(CN_HIGH_KING_MAULGAR, 143.048996f, 192.725998f, -11.114700f));
+            Creature* pMaulgar = getNearestCreature(143.048996f, 192.725998f, -11.114700f, CN_HIGH_KING_MAULGAR);
             if (pMaulgar != NULL && pMaulgar->isAlive() && pMaulgar->GetScript())
             {
                 HighKingMaulgarAI* pMaulgarAI = static_cast< HighKingMaulgarAI* >(pMaulgar->GetScript());
@@ -293,7 +293,7 @@ class BlindeyeTheSeerAI : public MoonScriptCreatureAI
         void OnDied(Unit* mKiller)
         {
             ParentClass::OnDied(mKiller);
-            Creature* pMaulgar = static_cast<Creature*>(ForceCreatureFind(CN_HIGH_KING_MAULGAR, 143.048996f, 192.725998f, -11.114700f));
+            Creature* pMaulgar = getNearestCreature(143.048996f, 192.725998f, -11.114700f, CN_HIGH_KING_MAULGAR);
             if (pMaulgar != NULL && pMaulgar->isAlive() && pMaulgar->GetScript())
             {
                 HighKingMaulgarAI* pMaulgarAI = static_cast< HighKingMaulgarAI* >(pMaulgar->GetScript());
@@ -320,7 +320,7 @@ class OlmTheSummonerAI : public MoonScriptCreatureAI
         void OnDied(Unit* mKiller)
         {
             ParentClass::OnDied(mKiller);
-            Creature* pMaulgar = static_cast<Creature*>(ForceCreatureFind(CN_HIGH_KING_MAULGAR, 143.048996f, 192.725998f, -11.114700f));
+            Creature* pMaulgar = getNearestCreature(143.048996f, 192.725998f, -11.114700f, CN_HIGH_KING_MAULGAR);
             if (pMaulgar != NULL && pMaulgar->isAlive() && pMaulgar->GetScript())
             {
                 HighKingMaulgarAI* pMaulgarAI = static_cast< HighKingMaulgarAI* >(pMaulgar->GetScript());
@@ -407,7 +407,7 @@ class KroshFirehandAI : public MoonScriptCreatureAI
         void OnDied(Unit* mKiller)
         {
             ParentClass::OnDied(mKiller);
-            Creature* pMaulgar = static_cast<Creature*>(ForceCreatureFind(CN_HIGH_KING_MAULGAR, 143.048996f, 192.725998f, -11.114700f));
+            Creature* pMaulgar = getNearestCreature(143.048996f, 192.725998f, -11.114700f, CN_HIGH_KING_MAULGAR);
             if (pMaulgar != NULL && pMaulgar->isAlive() && pMaulgar->GetScript())
             {
                 HighKingMaulgarAI* pMaulgarAI = static_cast< HighKingMaulgarAI* >(pMaulgar->GetScript());

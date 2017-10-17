@@ -2277,10 +2277,10 @@ class HeadAI : public MoonScriptCreatureAI
 
     void Destroy()
     {
-        Unit* pUnit = ForceCreatureFind(CN_WARBRINGER_OMROGG);
-        if (pUnit != NULL && static_cast<Creature*>(pUnit)->GetScript() != NULL)
+        Creature* pUnit = getNearestCreature(CN_WARBRINGER_OMROGG);
+        if (pUnit != NULL && pUnit->GetScript() != NULL)
         {
-            WarbringerOmroggAI* pAI = static_cast< WarbringerOmroggAI* >(static_cast<Creature*>(pUnit)->GetScript());
+            WarbringerOmroggAI* pAI = static_cast< WarbringerOmroggAI* >(pUnit->GetScript());
             if (pAI->mLeftHead == (MoonScriptCreatureAI*)(this))
                 pAI->mLeftHead = NULL;
             if (pAI->mRightHead == (MoonScriptCreatureAI*)(this))
