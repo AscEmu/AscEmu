@@ -266,7 +266,7 @@ class LadySacrolashAI : public MoonScriptBossAI
             MoonScriptCreatureAI* mGrandWarlockAlythess = GetNearestCreature(CN_GRAND_WARLOCK_ALYTHESS);
             if (mGrandWarlockAlythess != NULL && mGrandWarlockAlythess->IsAlive())
             {
-                mGrandWarlockAlythess->Emote("Sacrolash!", Text_Yell, 12492);
+                mGrandWarlockAlythess->sendChatMessage(CHAT_MSG_MONSTER_YELL, 12492, "Sacrolash!");
             }
             ParentClass::OnDied(pKiller);
         }
@@ -303,7 +303,7 @@ class GrandWarlockAlythessAI : public MoonScriptBossAI
             MoonScriptCreatureAI* mLadySacrolash = GetNearestCreature(CN_LADY_SACROLASH);
             if (mLadySacrolash != NULL && mLadySacrolash->IsAlive())
             {
-                mLadySacrolash->Emote("Alythess! Your fire burns within me!", Text_Yell, 12488);
+                mLadySacrolash->sendChatMessage(CHAT_MSG_MONSTER_YELL, 12488, "Alythess! Your fire burns within me!");
             }
             ParentClass::OnDied(pKiller);
         }

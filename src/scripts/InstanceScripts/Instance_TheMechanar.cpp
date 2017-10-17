@@ -1897,7 +1897,7 @@ class GatewatcherGyroKillAI : public CreatureAIScript
         {
             CastTime();
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
-            _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_05);
+            sendDBChatMessage(SAY_GW_GYRO_KILL_05);
         }
 
         void CastTime()
@@ -1921,10 +1921,10 @@ class GatewatcherGyroKillAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_06);
+                        sendDBChatMessage(SAY_GW_GYRO_KILL_06);
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_04);
+                        sendDBChatMessage(SAY_GW_GYRO_KILL_04);
                         break;
                 }
             }
@@ -1934,7 +1934,7 @@ class GatewatcherGyroKillAI : public CreatureAIScript
         {
             CastTime();
             RemoveAIUpdateEvent();
-            _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_01);
+            sendDBChatMessage(SAY_GW_GYRO_KILL_01);
         }
 
         void AIUpdate()
@@ -1948,10 +1948,10 @@ class GatewatcherGyroKillAI : public CreatureAIScript
             switch (RandomUInt(5))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_02);
+                    sendDBChatMessage(SAY_GW_GYRO_KILL_02);
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_03);
+                    sendDBChatMessage(SAY_GW_GYRO_KILL_03);
                     break;
                 default:
                     break;
@@ -2065,7 +2065,7 @@ class GatewatcherIronHandAI : public CreatureAIScript
         {
             CastTime();
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
-            _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_01);
+            sendDBChatMessage(SAY_GW_GYRO_KILL_01);
         }
 
         void CastTime()
@@ -2089,10 +2089,10 @@ class GatewatcherIronHandAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_04);
+                        sendDBChatMessage(SAY_GW_GYRO_KILL_04);
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_05);
+                        sendDBChatMessage(SAY_GW_GYRO_KILL_05);
                         break;
                 }
             }
@@ -2102,7 +2102,7 @@ class GatewatcherIronHandAI : public CreatureAIScript
         {
             CastTime();
             RemoveAIUpdateEvent();
-            _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_06);
+            sendDBChatMessage(SAY_GW_GYRO_KILL_06);
         }
 
         void AIUpdate()
@@ -2116,10 +2116,10 @@ class GatewatcherIronHandAI : public CreatureAIScript
             switch (RandomUInt(8))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_02);
+                    sendDBChatMessage(SAY_GW_GYRO_KILL_02);
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_03);
+                    sendDBChatMessage(SAY_GW_GYRO_KILL_03);
                     break;
             }
         }
@@ -2237,7 +2237,7 @@ class MechanoLordCapacitusAI : public CreatureAIScript
         {
             CastTime();
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
-            _unit->SendScriptTextChatMessage(SAY_MECH_LORD_06);
+            sendDBChatMessage(SAY_MECH_LORD_06);
         }
 
         void CastTime()
@@ -2261,10 +2261,10 @@ class MechanoLordCapacitusAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(SAY_MECH_LORD_03);
+                        sendDBChatMessage(SAY_MECH_LORD_03);
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(SAY_MECH_LORD_02);
+                        sendDBChatMessage(SAY_MECH_LORD_02);
                         break;
                 }
             }
@@ -2274,7 +2274,7 @@ class MechanoLordCapacitusAI : public CreatureAIScript
         {
             CastTime();
             RemoveAIUpdateEvent();
-            _unit->SendScriptTextChatMessage(SAY_MECH_LORD_01);
+            sendDBChatMessage(SAY_MECH_LORD_01);
         }
 
         void AIUpdate()
@@ -2390,7 +2390,7 @@ class NethermancerSepethreaAI : public CreatureAIScript
             CastTime();
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
             //_unit->CastSpell(_unit, spells[0].info, spells[0].instant);
-            _unit->SendScriptTextChatMessage(SAY_NETH_SEPETHREA_01);
+            sendDBChatMessage(SAY_NETH_SEPETHREA_01);
         }
 
         void CastTime()
@@ -2415,10 +2415,10 @@ class NethermancerSepethreaAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(SAY_NETH_SEPETHREA_05);
+                        sendDBChatMessage(SAY_NETH_SEPETHREA_05);
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(SAY_NETH_SEPETHREA_06);
+                        sendDBChatMessage(SAY_NETH_SEPETHREA_06);
                         break;
                 }
             }
@@ -2429,7 +2429,7 @@ class NethermancerSepethreaAI : public CreatureAIScript
             SummonTimer = 4;
             CastTime();
             RemoveAIUpdateEvent();
-            _unit->SendScriptTextChatMessage(SAY_NETH_SEPETHREA_07);
+            sendDBChatMessage(SAY_NETH_SEPETHREA_07);
         }
 
         void AIUpdate()
@@ -2439,7 +2439,7 @@ class NethermancerSepethreaAI : public CreatureAIScript
             if (!SummonTimer)
             {
                 _unit->CastSpell(_unit, spells[0].info, spells[0].instant);
-                _unit->SendScriptTextChatMessage(SAY_NETH_SEPETHREA_02);
+                sendDBChatMessage(SAY_NETH_SEPETHREA_02);
             }
 
             float val = RandomFloat(100.0f);
@@ -2451,10 +2451,10 @@ class NethermancerSepethreaAI : public CreatureAIScript
             switch (RandomUInt(8))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(SAY_NETH_SEPETHREA_03);
+                    sendDBChatMessage(SAY_NETH_SEPETHREA_03);
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(SAY_NETH_SEPETHREA_04);
+                    sendDBChatMessage(SAY_NETH_SEPETHREA_04);
                     break;
                 default:
                     break;
@@ -2594,7 +2594,7 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
             SummonTimer = RandomUInt(30, 45);
             CastTime();
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
-            _unit->SendScriptTextChatMessage(SAY_PATHALEON_01);
+            sendDBChatMessage(SAY_PATHALEON_01);
         }
 
         void CastTime()
@@ -2619,10 +2619,10 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(SAY_PATHALEON_06);
+                        sendDBChatMessage(SAY_PATHALEON_06);
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(SAY_PATHALEON_07);
+                        sendDBChatMessage(SAY_PATHALEON_07);
                         break;
                 }
             }
@@ -2633,7 +2633,7 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
             SummonTimer = RandomUInt(30, 45);
             CastTime();
             RemoveAIUpdateEvent();
-            _unit->SendScriptTextChatMessage(SAY_PATHALEON_08);
+            sendDBChatMessage(SAY_PATHALEON_08);
         }
 
         void AIUpdate()
@@ -2647,7 +2647,7 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
                 _unit->CastSpell(_unit, spells[5].info, spells[5].instant);
                 _unit->CastSpell(_unit, spells[6].info, spells[6].instant);
                 SummonTimer = RandomUInt(30, 45);    // 30 - 45
-                _unit->SendScriptTextChatMessage(SAY_PATHALEON_04);
+                sendDBChatMessage(SAY_PATHALEON_04);
             }
 
             float val = RandomFloat(100.0f);
@@ -2659,10 +2659,10 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
             switch (RandomUInt(1))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(SAY_PATHALEON_02);
+                    sendDBChatMessage(SAY_PATHALEON_02);
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(SAY_PATHALEON_03);
+                    sendDBChatMessage(SAY_PATHALEON_03);
                     break;
             }
         }

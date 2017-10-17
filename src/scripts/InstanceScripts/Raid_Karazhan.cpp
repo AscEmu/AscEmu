@@ -107,7 +107,7 @@ class AttumenTheHuntsmanAI : public MoonScriptBossAI
                 SetPhase(2);
                 SetAllowMelee(false);
                 SetAllowSpell(false);
-                Emote("Come Midnight, let's disperse this petty rabble!", Text_Yell, 9168);
+                sendChatMessage(CHAT_MSG_MONSTER_YELL, 9168, "Come Midnight, let's disperse this petty rabble!");
                 MoonScriptBossAI* midnight = static_cast<MoonScriptBossAI*>(GetLinkedCreature());
                 midnight->SetPhase(2);
                 midnight->MoveTo(this);
@@ -136,7 +136,7 @@ class MidnightAI : public MoonScriptBossAI
     {
         if (GetLinkedCreature() && GetLinkedCreature()->IsAlive())
         {
-            static_cast<MoonScriptCreatureAI*>(GetLinkedCreature())->Emote("Well done Midnight!", Text_Yell, 9173);
+            static_cast<MoonScriptCreatureAI*>(GetLinkedCreature())->sendChatMessage(CHAT_MSG_MONSTER_YELL, 9173, "Well done Midnight!");
         }
         ParentClass::OnTargetDied(pTarget);
     }
@@ -147,7 +147,7 @@ class MidnightAI : public MoonScriptBossAI
         {
             if (GetLinkedCreature() == NULL && GetHealthPercent() <= 95 && !IsCasting())
             {
-                Emote("Midnight calls for her master!", Text_Emote);
+                sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "Midnight calls for her master!");
                 CreatureAIScript* attumen = SpawnCreature(CN_ATTUMEN);
                 if (attumen != NULL)
                 {
@@ -164,7 +164,7 @@ class MidnightAI : public MoonScriptBossAI
                 attumen->SetPhase(2);
                 attumen->SetAllowMelee(false);
                 attumen->SetAllowSpell(false);
-                attumen->Emote("Come Midnight, let's disperse this petty rabble!", Text_Yell, 9168);
+                attumen->sendChatMessage(CHAT_MSG_MONSTER_YELL, 9168, "Come Midnight, let's disperse this petty rabble!");
             }
         }
         else if (GetPhase() == 2)
@@ -373,7 +373,7 @@ public:
 
     void OnCombatStart(Unit* mTarget)
     {
-        _unit->SendScriptTextChatMessage(1993);     // The better to own you with!
+        sendDBChatMessage(1993);     // The better to own you with!
 
         for (uint8 i = 0; i < nrspells; i++)
             spells[i].casttime = 0;
@@ -410,7 +410,7 @@ public:
 
     void OnTargetDied(Unit* mTarget)
     {
-        _unit->SendScriptTextChatMessage(1994);     // Mmmm... delicious.
+        sendDBChatMessage(1994);     // Mmmm... delicious.
     }
 
     void AIUpdate()
@@ -564,7 +564,7 @@ public:
     void OnCombatStart(Unit* mTarget)
     {
         CastTime();
-        _unit->SendScriptTextChatMessage(1993);     // The better to own you with!
+        sendDBChatMessage(1993);     // The better to own you with!
         RegisterAIUpdateEvent(1000);
     }
 
@@ -912,7 +912,7 @@ public:
     void BarnesSpeakWOZ()
     {
         // Start text
-        _unit->SendScriptTextChatMessage(2011);     // Good evening, ladies and gentleman. Welcome to this evening's presentation!
+        sendDBChatMessage(2011);     // Good evening, ladies and gentleman. Welcome to this evening's presentation!
         // Timed text 1
         _unit->SendTimedScriptTextChatMessage(2008, 7000);  // Tonight, we plumb the depths of the human soul as we join a lost, lonely girl trying desperately, with the help of her loyal companions, to find her way home.
         // Timed text 2
@@ -949,7 +949,7 @@ public:
     void BarnesSpeakRJ()
     {
         // Start text
-        _unit->SendScriptTextChatMessage(2011);                 // Good evening, ladies and gentleman. Welcome to this evening's presentation!
+        sendDBChatMessage(2011);                 // Good evening, ladies and gentleman. Welcome to this evening's presentation!
         // Timed text 1
         _unit->SendTimedScriptTextChatMessage(2016, 6000);      // Tonight we explore a tale of forbidden love!
         // Timed text 2
@@ -982,7 +982,7 @@ public:
     void BarnesSpeakRed()
     {
         // Start text
-        _unit->SendScriptTextChatMessage(2011);                 // Good evening, ladies and gentleman. Welcome to this evening's presentation!
+        sendDBChatMessage(2011);                 // Good evening, ladies and gentleman. Welcome to this evening's presentation!
         // Timed text 1
         _unit->SendTimedScriptTextChatMessage(2012, 7000);      // Tonight things are not what they seems for tonight your eyes may not be trusted.
         // Timed text 2
@@ -1145,7 +1145,7 @@ public:
 
     void OnCombatStart(Unit* mTarget)
     {
-        _unit->SendScriptTextChatMessage(2062);     // The Menagerie is for guests only.
+        sendDBChatMessage(2062);     // The Menagerie is for guests only.
 
         for (uint8 i = 0; i < nrspells; i++)
             spells[i].casttime = spells[i].cooldown;
@@ -1167,7 +1167,7 @@ public:
 
     void OnDied(Unit* mKiller)
     {
-        _unit->SendScriptTextChatMessage(2069);     // This Curator is no longer op... er... ation... al.
+        sendDBChatMessage(2069);     // This Curator is no longer op... er... ation... al.
         RemoveAIUpdateEvent();
     }
 
@@ -1178,10 +1178,10 @@ public:
             switch (RandomUInt(1))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(2067);     // Do not touch the displays.
+                    sendDBChatMessage(2067);     // Do not touch the displays.
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(2068);     // You are not a guest.
+                    sendDBChatMessage(2068);     // You are not a guest.
                     break;
             }
         }
@@ -1195,14 +1195,14 @@ public:
             {
                 _unit->setMoveRoot(true);
                 _unit->setAttackTimer(spells[1].attackstoptimer, false);
-                _unit->SendScriptTextChatMessage(2065);     // Your request cannot be processed.
+                sendDBChatMessage(2065);     // Your request cannot be processed.
                 _unit->CastSpell(_unit, spells[2].info, spells[2].instant);
                 evocation = true;
             }
             else if (!enrage && _unit->GetHealthPct() <= 16)
             {
                 _unit->CastSpell(_unit, spells[3].info, spells[3].instant);
-                _unit->SendScriptTextChatMessage(2066);     // Failure to comply will result in offensive action.
+                sendDBChatMessage(2066);     // Failure to comply will result in offensive action.
                 enrage = true;
             }
             else
@@ -1257,10 +1257,10 @@ public:
         switch (RandomUInt(1))
         {
             case 0:
-                _unit->SendScriptTextChatMessage(2063);     // Gallery rules will be strictly enforced.
+                sendDBChatMessage(2063);     // Gallery rules will be strictly enforced.
                 break;
             case 1:
-                _unit->SendScriptTextChatMessage(2064);     // This curator is equipped for gallery protection.
+                sendDBChatMessage(2064);     // This curator is equipped for gallery protection.
                 break;
         }
 
@@ -1481,20 +1481,20 @@ public:
 
         if (HasAtiesh)
         {
-            _unit->SendScriptTextChatMessage(2046);     // Where did you get that?! Did HE send you?!
+            sendDBChatMessage(2046);     // Where did you get that?! Did HE send you?!
         }
         else
         {
             switch (RandomUInt(2))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(2031);     // Please, no more. My son... he's gone mad!
+                    sendDBChatMessage(2031);     // Please, no more. My son... he's gone mad!
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(2032);     // I'll not be tortured again!
+                    sendDBChatMessage(2032);     // I'll not be tortured again!
                     break;
                 case 2:
-                    _unit->SendScriptTextChatMessage(2033);     // Who are you? What do you want? Stay away from me!
+                    sendDBChatMessage(2033);     // Who are you? What do you want? Stay away from me!
                     break;
             }
         }
@@ -1536,7 +1536,7 @@ public:
     void OnDied(Unit* mKiller)
     {
         CastTime();
-        _unit->SendScriptTextChatMessage(2045);     // At last... The nightmare is.. over...
+        sendDBChatMessage(2045);     // At last... The nightmare is.. over...
 
         RemoveAIUpdateEvent();
         // Door opening
@@ -1550,11 +1550,11 @@ public:
         switch (RandomUInt(1))
         {
             case 0:
-                _unit->SendScriptTextChatMessage(2042);     // I want this nightmare to be over!
+                sendDBChatMessage(2042);     // I want this nightmare to be over!
                 break;
 
             case 1:
-                _unit->SendScriptTextChatMessage(2043);     // Torment me no more!
+                sendDBChatMessage(2043);     // Torment me no more!
                 break;
         }
     }
@@ -1599,7 +1599,7 @@ public:
                 _unit->CastSpell(_unit, info_summon_elemental_2, true);
                 _unit->CastSpell(_unit, info_summon_elemental_3, true);
 
-                _unit->SendScriptTextChatMessage(2041);     // I'm not finished yet! No, I have a few more tricks up me sleeve.
+                sendDBChatMessage(2041);     // I'm not finished yet! No, I have a few more tricks up me sleeve.
                 summoned = true;
             }
             else if (_unit->GetManaPct() <= 20 && _unit->GetCurrentSpell() == NULL)
@@ -1607,7 +1607,7 @@ public:
                 if (!m_time_pyroblast)
                 {
                     _unit->GetAIInterface()->WipeHateList();
-                    _unit->SendScriptTextChatMessage(2040);     // Surely you would not deny an old man a replenishing drink? No, no I thought not.
+                    sendDBChatMessage(2040);     // Surely you would not deny an old man a replenishing drink? No, no I thought not.
                     m_time_pyroblast = 10;
                     _unit->CastSpell(_unit, info_mass_polymorph, true);
                     _unit->setAttackTimer(2000, false);
@@ -1645,7 +1645,7 @@ public:
         m_time_special--;
         if (!enraged && !m_time_enrage)
         {
-            _unit->SendScriptTextChatMessage(2044);     // You've wasted enough of my time. Let these games be finished!
+            sendDBChatMessage(2044);     // You've wasted enough of my time. Let these games be finished!
 
             float ERX = 5 * cos(RandomFloat(6.28f)) + (_unit->GetPositionX());
             float ERY = 5 * sin(RandomFloat(6.28f)) + (_unit->GetPositionY());
@@ -1679,10 +1679,10 @@ public:
         switch (RandomUInt(1))
         {
             case 0:
-                _unit->SendScriptTextChatMessage(2034);     // I'll show you this beaten dog still has some teeth!
+                sendDBChatMessage(2034);     // I'll show you this beaten dog still has some teeth!
                 break;
             case 1:
-                _unit->SendScriptTextChatMessage(2035);     // Burn you hellish fiends!
+                sendDBChatMessage(2035);     // Burn you hellish fiends!
                 break;
         }
 
@@ -1724,10 +1724,10 @@ public:
         switch (RandomUInt(1))
         {
             case 0:
-                _unit->SendScriptTextChatMessage(2036);     // I'll freeze you all!
+                sendDBChatMessage(2036);     // I'll freeze you all!
                 break;
             case 1:
-                _unit->SendScriptTextChatMessage(2037);     // Back to the cold dark with you!
+                sendDBChatMessage(2037);     // Back to the cold dark with you!
                 break;
         }
 
@@ -1739,10 +1739,10 @@ public:
         switch (RandomUInt(1))
         {
             case 0:
-                _unit->SendScriptTextChatMessage(2038);     // Yes, yes, my son is quite powerful... but I have powers of my own!
+                sendDBChatMessage(2038);     // Yes, yes, my son is quite powerful... but I have powers of my own!
                 break;
             case 1:
-                _unit->SendScriptTextChatMessage(2039);     // I am not some simple jester! I am Nielas Aran!
+                sendDBChatMessage(2039);     // I am not some simple jester! I am Nielas Aran!
                 break;
         }
 
@@ -2084,7 +2084,7 @@ public:
 
     void OnCombatStart(Unit* mTarget)
     {
-        _unit->SendScriptTextChatMessage(2050);     // Ah, you're just in time. The rituals are about to begin.
+        sendDBChatMessage(2050);     // Ah, you're just in time. The rituals are about to begin.
 
         uint32 t = (uint32)time(NULL);
         for (uint8 i = 0; i < nrspells; i++)
@@ -2108,7 +2108,7 @@ public:
     void OnDied(Unit* mKiller)
     {
         clean();
-        _unit->SendScriptTextChatMessage(2049);     // My life, is yours. Oh great one.
+        sendDBChatMessage(2049);     // My life, is yours. Oh great one.
         RemoveAIUpdateEvent();
     }
 
@@ -2128,10 +2128,10 @@ public:
         switch (RandomUInt(1))
         {
             case 0:
-                _unit->SendScriptTextChatMessage(2047);     // Your blood will anoint my circle.
+                sendDBChatMessage(2047);     // Your blood will anoint my circle.
                 break;
             case 1:
-                _unit->SendScriptTextChatMessage(2048);     // The great one will be pleased.
+                sendDBChatMessage(2048);     // The great one will be pleased.
                 break;
         }
     }
@@ -2173,10 +2173,10 @@ public:
         switch (RandomUInt(1))
         {
             case 0:
-                _unit->SendScriptTextChatMessage(2053);     // Come, you dwellers in the dark. Rally to my call!
+                sendDBChatMessage(2053);     // Come, you dwellers in the dark. Rally to my call!
                 break;
             case 1:
-                _unit->SendScriptTextChatMessage(2054);     // Gather, my pets. There is plenty for all.
+                sendDBChatMessage(2054);     // Gather, my pets. There is plenty for all.
                 break;
         }
 
@@ -2189,10 +2189,10 @@ public:
         switch (RandomUInt(1))
         {
             case 0:
-                _unit->SendScriptTextChatMessage(2051);     // Please, accept this humble offering, oh great one.
+                sendDBChatMessage(2051);     // Please, accept this humble offering, oh great one.
                 break;
             case 1:
-                _unit->SendScriptTextChatMessage(2052);     // Let the sacrifice serve his testament to my fealty.
+                sendDBChatMessage(2052);     // Let the sacrifice serve his testament to my fealty.
                 break;
         }
 
@@ -2784,7 +2784,7 @@ public:
 
     void OnCombatStart(Unit* mTarget)
     {
-        _unit->SendScriptTextChatMessage(2019);     // Madness has brought you here to me. I shall be your undoing.
+        sendDBChatMessage(2019);     // Madness has brought you here to me. I shall be your undoing.
 
         for (uint8 i = 0; i < nrspells; i++)
             spells[i].casttime = 0;
@@ -2845,7 +2845,7 @@ public:
 
     void OnDied(Unit* mKiller)
     {
-        _unit->SendScriptTextChatMessage(2030);     // I refuse to concede defeat. I am a prince of the Eredar! I am...
+        sendDBChatMessage(2030);     // I refuse to concede defeat. I am a prince of the Eredar! I am...
 
         RemoveAIUpdateEvent();
 
@@ -2869,13 +2869,13 @@ public:
         switch (RandomUInt(2))
         {
             case 0:
-                _unit->SendScriptTextChatMessage(2027);     // You are, but a plaything, unfit even to amuse.
+                sendDBChatMessage(2027);     // You are, but a plaything, unfit even to amuse.
                 break;
             case 1:
-                _unit->SendScriptTextChatMessage(2026);     // Your greed, your foolishness has brought you to this end.
+                sendDBChatMessage(2026);     // Your greed, your foolishness has brought you to this end.
                 break;
             case 2:
-                _unit->SendScriptTextChatMessage(2025);     // Surely you did not think you could win.
+                sendDBChatMessage(2025);     // Surely you did not think you could win.
                 break;
         }
     }
@@ -2943,7 +2943,7 @@ public:
     {
         if (_unit->GetHealthPct() <= 60 && m_phase == 1)
         {
-            _unit->SendScriptTextChatMessage(2020);     // Time is the fire in which you'll burn!");
+            sendDBChatMessage(2020);     // Time is the fire in which you'll burn!");
 
             uint32 t = (uint32)time(NULL);
             spells[0].casttime = -1;
@@ -2979,7 +2979,7 @@ public:
     {
         if (_unit->GetHealthPct() <= 30 && m_phase == 2)
         {
-            _unit->SendScriptTextChatMessage(2024);     // How can you hope to withstand against such overwhelming power?
+            sendDBChatMessage(2024);     // How can you hope to withstand against such overwhelming power?
 
             uint32 t = (uint32)time(NULL);
 
@@ -3023,10 +3023,10 @@ public:
         switch (RandomUInt(1))
         {
             case 0:
-                _unit->SendScriptTextChatMessage(2029);     // You face not Malchezaar alone, but the legions I command!
+                sendDBChatMessage(2029);     // You face not Malchezaar alone, but the legions I command!
                 break;
             case 1:
-                _unit->SendScriptTextChatMessage(2028);     // All realities, all dimensions are open to me!
+                sendDBChatMessage(2028);     // All realities, all dimensions are open to me!
                 break;
         }
 
@@ -3993,7 +3993,7 @@ public:
 
     void OnCombatStart(Unit* mTarget)
     {
-        _unit->SendScriptTextChatMessage(1978);     // Oh Tito, we simply must find a way home! The old wizard could be our only hope! Strawman, Roar, Tinhead, will you - wait... oh golly, look we have visitors!
+        sendDBChatMessage(1978);     // Oh Tito, we simply must find a way home! The old wizard could be our only hope! Strawman, Roar, Tinhead, will you - wait... oh golly, look we have visitors!
 
         CastTime();
         RegisterAIUpdateEvent(1000);
@@ -4011,7 +4011,7 @@ public:
 
     void OnDied(Unit* mKiller)
     {
-        _unit->SendScriptTextChatMessage(1975);     // Oh at last, at last I can go home!
+        sendDBChatMessage(1975);     // Oh at last, at last I can go home!
 
         //Check to see if we can spawn The Crone now
         Creature* Dorothee = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-10897.650f, -1755.8311f, 90.476f, 17535); //Dorothee
@@ -4055,14 +4055,14 @@ public:
 
         if (titoSpawned && !tito && titoDeadSpeech)
         {
-            _unit->SendScriptTextChatMessage(1977);     // Tito! Oh Tito, no!
+            sendDBChatMessage(1977);     // Tito! Oh Tito, no!
 
             titoDeadSpeech = false;
         }
 
         if (summontito > 20 && !titoSpawned)
         {
-            _unit->SendScriptTextChatMessage(1976);     // Don't let them hurt us Tito! Oh, you won't, will you?
+            sendDBChatMessage(1976);     // Don't let them hurt us Tito! Oh, you won't, will you?
 
             SpawnTito();
             titoSpawned = true;
@@ -4333,7 +4333,7 @@ public:
 
     void OnCombatStart(Unit* mTarget)
     {
-        _unit->SendScriptTextChatMessage(1982);     // Now what should I do with you? I simply can't make up my mind.
+        sendDBChatMessage(1982);     // Now what should I do with you? I simply can't make up my mind.
 
         CastTime();
         RegisterAIUpdateEvent(1000);
@@ -4351,7 +4351,7 @@ public:
 
     void OnDied(Unit* mKiller)
     {
-        _unit->SendScriptTextChatMessage(1983);     // Don't let them make... a mattress outta' me.
+        sendDBChatMessage(1983);     // Don't let them make... a mattress outta' me.
 
         //Check to see if we can spawn The Crone now
         Creature* Dorothee = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-10897.650f, -1755.8311f, 90.476f, 17535);    //Dorothee
@@ -4370,7 +4370,7 @@ public:
 
     void OnTargetDied(Unit* mTarget)
     {
-        _unit->SendScriptTextChatMessage(1984);     // I guess I'm not a failure after all!
+        sendDBChatMessage(1984);     // I guess I'm not a failure after all!
     }
 
     void AIUpdate()
@@ -4474,7 +4474,7 @@ public:
 
     void OnCombatStart(Unit* mTarget)
     {
-        _unit->SendScriptTextChatMessage(1985);     // I could really use a heart. Say, can I have yours?
+        sendDBChatMessage(1985);     // I could really use a heart. Say, can I have yours?
 
         CastTime();
         RegisterAIUpdateEvent(1000);
@@ -4492,7 +4492,7 @@ public:
 
     void OnDied(Unit* mKiller)
     {
-        _unit->SendScriptTextChatMessage(1986);     // Back to being an old rust bucket.
+        sendDBChatMessage(1986);     // Back to being an old rust bucket.
 
         //Check to see if we can spawn The Crone now
         Creature* Dorothee = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-10897.650f, -1755.8311f, 90.476f, 17535);    //Dorothee
@@ -4511,7 +4511,7 @@ public:
 
     void OnTargetDied(Unit* mTarget)
     {
-        _unit->SendScriptTextChatMessage(1987);     // Guess I'm not so rusty after all.
+        sendDBChatMessage(1987);     // Guess I'm not so rusty after all.
     }
 
     void AIUpdate()
@@ -4589,7 +4589,7 @@ public:
 
     void OnCombatStart(Unit* mTarget)
     {
-        _unit->SendScriptTextChatMessage(1979);     // I'm not afraid a' you! Do you wanna' fight? Huh, do ya'? C'mon! I'll fight ya' with both paws behind my back!
+        sendDBChatMessage(1979);     // I'm not afraid a' you! Do you wanna' fight? Huh, do ya'? C'mon! I'll fight ya' with both paws behind my back!
     }
 
     void OnCombatStop(Unit* mTarget)
@@ -4601,7 +4601,7 @@ public:
 
     void OnDied(Unit* mKiller)
     {
-        _unit->SendScriptTextChatMessage(1980);     // You didn't have to go and do that!
+        sendDBChatMessage(1980);     // You didn't have to go and do that!
 
         //Check to see if we can spawn The Crone now
         Creature* Dorothee = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-10897.650f, -1755.8311f, 90.476f, 17535); //Dorothee
@@ -4652,7 +4652,7 @@ public:
 
     void OnCombatStart(Unit* mTarget)
     {
-        _unit->SendScriptTextChatMessage(1989);     // Woe to each and every one of you, my pretties!
+        sendDBChatMessage(1989);     // Woe to each and every one of you, my pretties!
 
         CastTime();
         RegisterAIUpdateEvent(1000);
@@ -4686,7 +4686,7 @@ public:
 
     void OnDied(Unit* mKiller)
     {
-        _unit->SendScriptTextChatMessage(1991);     // How could you? What a cruel, cruel world...
+        sendDBChatMessage(1991);     // How could you? What a cruel, cruel world...
 
         GameObject* DoorLeft = getNearestGameObject(-10917.1445f, -1774.05f, 90.478f, 184279);
         GameObject* DoorRight = getNearestGameObject(-10872.195f, -1779.42f, 90.45f, 184278);
@@ -4708,7 +4708,7 @@ public:
 
     void OnTargetDied(Unit* mTarget)
     {
-        _unit->SendScriptTextChatMessage(1992);     // Fixed you, didn't I?
+        sendDBChatMessage(1992);     // Fixed you, didn't I?
     }
 
     void AIUpdate()
@@ -4822,7 +4822,7 @@ const uint32 SP_POISONED_THRUST = 30822;
 const uint32 SP_DARING = 30841;
 
 //\todo play sound on resurection
-//_unit->SendScriptTextChatMessage(2005);     // Thou detestable maw, thou womb of death; I enforce thy rotten jaws to open!
+//sendDBChatMessage(2005);     // Thou detestable maw, thou womb of death; I enforce thy rotten jaws to open!
 
 class RomuloAI : public CreatureAIScript
 {
@@ -4870,7 +4870,7 @@ public:
 
     void OnCombatStart(Unit* mTarget)
     {
-        _unit->SendScriptTextChatMessage(2002);     // Wilt thou provoke me? Then have at thee, boy!
+        sendDBChatMessage(2002);     // Wilt thou provoke me? Then have at thee, boy!
 
         CastTime();
         RegisterAIUpdateEvent(1000);
@@ -4906,10 +4906,10 @@ public:
         switch (RandomUInt(1))
         {
             case 0:
-                _unit->SendScriptTextChatMessage(2003);     // Thou smilest... upon the stroke that... murders me.
+                sendDBChatMessage(2003);     // Thou smilest... upon the stroke that... murders me.
                 break;
             case 1:
-                _unit->SendScriptTextChatMessage(2004);     // This day's black fate on more days doth depend. This but begins the woe. Others must end.
+                sendDBChatMessage(2004);     // This day's black fate on more days doth depend. This but begins the woe. Others must end.
                 break;
         }
 
@@ -4933,7 +4933,7 @@ public:
 
     void OnTargetDied(Unit* mTarget)
     {
-        _unit->SendScriptTextChatMessage(2006);     // How well my comfort is revived by this!
+        sendDBChatMessage(2006);     // How well my comfort is revived by this!
     }
 
     void AIUpdate()
@@ -5008,7 +5008,7 @@ const uint32 SP_BINDING_PASSION = 30890;
 const uint32 SP_DEVOTION = 30887;
 
 //\todo play sound on resurrection
-//_unit->SendScriptTextChatMessage(2000);     // Come, gentle night; and give me back my Romulo!
+//sendDBChatMessage(2000);     // Come, gentle night; and give me back my Romulo!
 
 class JulianneAI : public CreatureAIScript
 {
@@ -5056,7 +5056,7 @@ public:
 
     void OnCombatStart(Unit* mTarget)
     {
-        _unit->SendScriptTextChatMessage(1996);     // What devil art thou, that dost torment me thus?
+        sendDBChatMessage(1996);     // What devil art thou, that dost torment me thus?
 
         CastTime();
         RegisterAIUpdateEvent(1000);
@@ -5092,10 +5092,10 @@ public:
         switch (RandomUInt(1))
         {
             case 0:
-                _unit->SendScriptTextChatMessage(1998);     // Romulo, I come! Oh... this do I drink to thee!
+                sendDBChatMessage(1998);     // Romulo, I come! Oh... this do I drink to thee!
                 break;
             case 1:
-                _unit->SendScriptTextChatMessage(1997);     // Where is my lord? Where is my Romulo?
+                sendDBChatMessage(1997);     // Where is my lord? Where is my Romulo?
                 break;
         }
 
@@ -5111,7 +5111,7 @@ public:
 
     void OnTargetDied(Unit* mTarget)
     {
-        _unit->SendScriptTextChatMessage(2001);     // Parting is such sweet sorrow.
+        sendDBChatMessage(2001);     // Parting is such sweet sorrow.
     }
 
     void AIUpdate()

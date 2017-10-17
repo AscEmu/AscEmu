@@ -43,7 +43,7 @@ class GortokPalehoofAI : public MoonScriptBossAI
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(SAY_GROTOK_PALEHOOF_01);
+            sendDBChatMessage(SAY_GROTOK_PALEHOOF_01);
         }
 
         void OnTargetDied(Unit* mKiller)
@@ -51,10 +51,10 @@ class GortokPalehoofAI : public MoonScriptBossAI
             switch (RandomUInt(2))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(SAY_GROTOK_PALEHOOF_02);
+                    sendDBChatMessage(SAY_GROTOK_PALEHOOF_02);
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(SAY_GROTOK_PALEHOOF_03);
+                    sendDBChatMessage(SAY_GROTOK_PALEHOOF_03);
                     break;
                 default:
                     break;
@@ -74,7 +74,7 @@ class SkadiTheRuthlessAI : public MoonScriptBossAI
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(SAY_SKADI_RUTHLESS_START);
+            sendDBChatMessage(SAY_SKADI_RUTHLESS_START);
         }
 
         void OnTargetDied(Unit* mKiller)
@@ -82,10 +82,10 @@ class SkadiTheRuthlessAI : public MoonScriptBossAI
             switch (RandomUInt(2))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(SAY_SKADI_RUTHLESS_KILL_01);
+                    sendDBChatMessage(SAY_SKADI_RUTHLESS_KILL_01);
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(SAY_SKADI_RUTHLESS_KILL_02);
+                    sendDBChatMessage(SAY_SKADI_RUTHLESS_KILL_02);
                     break;
                 default:
                     break;
@@ -94,7 +94,7 @@ class SkadiTheRuthlessAI : public MoonScriptBossAI
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(SAY_SKADI_RUTHLESS_DIE);
+            sendDBChatMessage(SAY_SKADI_RUTHLESS_DIE);
         }
 };
 
@@ -110,7 +110,7 @@ class KingYmironAI : public MoonScriptBossAI
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(SAY_KING_YMIRON_START);
+            sendDBChatMessage(SAY_KING_YMIRON_START);
         }
 
         void OnTargetDied(Unit* mKiller)
@@ -118,16 +118,16 @@ class KingYmironAI : public MoonScriptBossAI
             switch (RandomUInt(5))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(SAY_KING_YMIRON_KILL_01);
+                    sendDBChatMessage(SAY_KING_YMIRON_KILL_01);
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(SAY_KING_YMIRON_KILL_02);
+                    sendDBChatMessage(SAY_KING_YMIRON_KILL_02);
                     break;
                 case 2:
-                    _unit->SendScriptTextChatMessage(SAY_KING_YMIRON_KILL_03);
+                    sendDBChatMessage(SAY_KING_YMIRON_KILL_03);
                     break;
                 case 3:
-                    _unit->SendScriptTextChatMessage(SAY_KING_YMIRON_KILL_04);
+                    sendDBChatMessage(SAY_KING_YMIRON_KILL_04);
                     break;
                 default:
                     break;
@@ -136,7 +136,7 @@ class KingYmironAI : public MoonScriptBossAI
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(SAY_KING_YMIRON_DIE);
+            sendDBChatMessage(SAY_KING_YMIRON_DIE);
         }
 };
 

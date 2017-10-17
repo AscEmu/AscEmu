@@ -580,6 +580,20 @@ GameObject* CreatureAIScript::getNearestGameObject(float posX, float posY, float
     return _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(posX, posY, posZ, entry);
 }
 
+void CreatureAIScript::sendChatMessage(uint8_t type, uint32_t soundId, std::string text)
+{
+    if (text.empty() == false)
+        _unit->SendChatMessage(type, LANG_UNIVERSAL, text.c_str());
+
+    if (soundId > 0)
+        _unit->PlaySoundToSet(soundId);
+}
+
+void CreatureAIScript::sendDBChatMessage(uint32_t textId)
+{
+    _unit->SendScriptTextChatMessage(textId);
+}
+
 void CreatureAIScript::RegisterAIUpdateEvent(uint32 frequency)
 {
     //sEventMgr.AddEvent(_unit, &Creature::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, frequency, 0,0);

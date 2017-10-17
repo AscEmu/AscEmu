@@ -38,7 +38,7 @@ public:
         AddSpell(ELIZA_FROSTBOLT, Target_Current, 20, 3, 1);
         mSummonGuard = AddSpell(ELIZA_SUMMON_GUARD, Target_Self, 0, 0, 0);
 
-        Emote("Wait...you are not my husband. But he must have sent you. And you...look..delicious!", Text_Say);
+        sendChatMessage(CHAT_MSG_MONSTER_SAY, 0, "Wait...you are not my husband. But he must have sent you. And you...look..delicious!");
         mElizaCombatTimer = AddTimer(4000);
 
         RegisterAIUpdateEvent(1000);

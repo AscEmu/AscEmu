@@ -58,7 +58,7 @@ class ChronoLordAI : public CreatureAIScript
         void OnCombatStart(Unit* mTarget)
         {
             CastTime();
-            _unit->SendScriptTextChatMessage(SAY_CHRONOLORD_01);
+            sendDBChatMessage(SAY_CHRONOLORD_01);
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
         }
 
@@ -77,10 +77,10 @@ class ChronoLordAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(SAY_CHRONOLORD_02);
+                        sendDBChatMessage(SAY_CHRONOLORD_02);
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(SAY_CHRONOLORD_03);
+                        sendDBChatMessage(SAY_CHRONOLORD_03);
                         break;
                 }
             }
@@ -97,7 +97,7 @@ class ChronoLordAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            _unit->SendScriptTextChatMessage(SAY_CHRONOLORD_04);
+            sendDBChatMessage(SAY_CHRONOLORD_04);
             RemoveAIUpdateEvent();
         }
 
@@ -196,7 +196,7 @@ class TemporusAI : public CreatureAIScript
         void OnCombatStart(Unit* mTarget)
         {
             CastTime();
-            _unit->SendScriptTextChatMessage(SAY_TEMPORUS_01);
+            sendDBChatMessage(SAY_TEMPORUS_01);
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
         }
 
@@ -213,10 +213,10 @@ class TemporusAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(SAY_TEMPORUS_02);
+                        sendDBChatMessage(SAY_TEMPORUS_02);
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(SAY_TEMPORUS_03);
+                        sendDBChatMessage(SAY_TEMPORUS_03);
                         break;
                 }
             }
@@ -233,7 +233,7 @@ class TemporusAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            _unit->SendScriptTextChatMessage(SAY_TEMPORUS_04);
+            sendDBChatMessage(SAY_TEMPORUS_04);
             RemoveAIUpdateEvent();
         }
 
@@ -338,7 +338,7 @@ class AenusAI : public CreatureAIScript
         void OnCombatStart(Unit* mTarget)
         {
             CastTime();
-            _unit->SendScriptTextChatMessage(SAY_AENUS_01);
+            sendDBChatMessage(SAY_AENUS_01);
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
         }
 
@@ -355,10 +355,10 @@ class AenusAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(SAY_AENUS_02);
+                        sendDBChatMessage(SAY_AENUS_02);
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(SAY_AENUS_03);
+                        sendDBChatMessage(SAY_AENUS_03);
                         break;
                 }
             }
@@ -375,7 +375,7 @@ class AenusAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            _unit->SendScriptTextChatMessage(SAY_AENUS_04);
+            sendDBChatMessage(SAY_AENUS_04);
             RemoveAIUpdateEvent();
         }
 

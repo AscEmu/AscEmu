@@ -53,7 +53,7 @@ class KelidanTheBreakerAI : public MoonScriptBossAI
 
     void OnCombatStart(Unit* pTarget)
     {
-        _unit->SendScriptTextChatMessage(4841);     // Who dares interrupt--What is this; what have you done? You'll ruin everything!
+        sendDBChatMessage(4841);     // Who dares interrupt--What is this; what have you done? You'll ruin everything!
 
         mBurningNovaTimer = AddTimer(15000);
         ParentClass::OnCombatStart(pTarget);
@@ -83,17 +83,17 @@ class KelidanTheBreakerAI : public MoonScriptBossAI
         switch (RandomUInt(1))
         {
             case 0:
-                _unit->SendScriptTextChatMessage(4845);     // Just as you deserve!
+                sendDBChatMessage(4845);     // Just as you deserve!
                 break;
             case 1:
-                _unit->SendScriptTextChatMessage(4846);     // Your friends will soon be joining you!
+                sendDBChatMessage(4846);     // Your friends will soon be joining you!
                 break;
         }
     }
 
     void OnDied(Unit* pTarget)
     {
-        _unit->SendScriptTextChatMessage(4848);     // Good...luck. You'll need it.
+        sendDBChatMessage(4848);     // Good...luck. You'll need it.
     }
 
     SpellDesc* mShadowBoltVolley;
@@ -146,13 +146,13 @@ class TheMakerAI : public MoonScriptCreatureAI
             switch (RandomUInt(2))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(4849);     // My work must not be interrupted!
+                    sendDBChatMessage(4849);     // My work must not be interrupted!
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(4850);     // Perhaps I can find a use for you...
+                    sendDBChatMessage(4850);     // Perhaps I can find a use for you...
                     break;
                 case 2:
-                    _unit->SendScriptTextChatMessage(4851);     // Anger...hate... These are tools I can use.
+                    sendDBChatMessage(4851);     // Anger...hate... These are tools I can use.
                     break;
             }
         }
@@ -162,17 +162,17 @@ class TheMakerAI : public MoonScriptCreatureAI
             switch (RandomUInt(1))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(4852);     // Let's see what I can make of you!
+                    sendDBChatMessage(4852);     // Let's see what I can make of you!
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(4853);     // It is pointless to resist.
+                    sendDBChatMessage(4853);     // It is pointless to resist.
                     break;
             }
         }
 
         void OnDied(Unit* pKiller)
         {
-            _unit->SendScriptTextChatMessage(4854);     // Stay away from... Me!
+            sendDBChatMessage(4854);     // Stay away from... Me!
 
             GameObject* pDoor = getNearestGameObject(327.155487f, 149.753418f, 9.559869f, GO_THE_MAKER);
             if (pDoor)

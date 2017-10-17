@@ -108,16 +108,16 @@ void SpellFunc_FlameTsunami(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI,
         switch (RandomUInt(3))
         {
             case 0:
-                pCreatureAI->Emote("Such flammable little insects....", Text_Yell, 14100);
+                pCreatureAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 14100, "Such flammable little insects....");
                 break;
             case 1:
-                pCreatureAI->Emote("Your charred bones will litter the floor!", Text_Yell, 14101);
+                pCreatureAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 14101, "Your charred bones will litter the floor!");
                 break;
             case 2:
-                pCreatureAI->Emote("How much heat can you take?", Text_Yell, 14102);
+                pCreatureAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 14102, "How much heat can you take?");
                 break;
             case 3:
-                pCreatureAI->Emote("All will be reduced to ash!", Text_Yell, 14103);
+                pCreatureAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 14103, "All will be reduced to ash!");
                 break;
         }
 
@@ -257,7 +257,7 @@ class SartharionAI : public MoonScriptBossAI
         {
             if (m_cDrakes[DRAKE_TENEBRON] != NULL && m_cDrakes[DRAKE_TENEBRON]->isAlive())
             {
-                _unit->SendScriptTextChatMessage(3982);     //Tenebron!The eggs are yours to protect as well!
+                sendDBChatMessage(3982);     //Tenebron!The eggs are yours to protect as well!
                 m_cDrakes[DRAKE_TENEBRON]->GetAIInterface()->MoveTo(3254.606689f, 531.867859f, 66.898163f);
                 m_cDrakes[DRAKE_TENEBRON]->SetOrientation(4.215994f);
             };
@@ -268,7 +268,7 @@ class SartharionAI : public MoonScriptBossAI
         {
             if (m_cDrakes[DRAKE_SHADRON] != NULL && m_cDrakes[DRAKE_SHADRON]->isAlive())
             {
-                _unit->SendScriptTextChatMessage(3981);     //Shadron! Come to me! All is at risk!
+                sendDBChatMessage(3981);     //Shadron! Come to me! All is at risk!
                 m_cDrakes[DRAKE_SHADRON]->GetAIInterface()->MoveTo(3254.606689f, 531.867859f, 66.898163f);
                 m_cDrakes[DRAKE_SHADRON]->SetOrientation(4.215994f);
             };
@@ -279,7 +279,7 @@ class SartharionAI : public MoonScriptBossAI
         {
             if (m_cDrakes[DRAKE_VESPERON] != NULL && m_cDrakes[DRAKE_VESPERON]->isAlive())
             {
-                _unit->SendScriptTextChatMessage(3983);     //Vesperon, the clutch is in danger! Assist me!
+                sendDBChatMessage(3983);     //Vesperon, the clutch is in danger! Assist me!
                 m_cDrakes[DRAKE_VESPERON]->GetAIInterface()->MoveTo(3254.606689f, 531.867859f, 66.898163f);
                 m_cDrakes[DRAKE_VESPERON]->SetOrientation(4.215994f);
             };
@@ -288,7 +288,7 @@ class SartharionAI : public MoonScriptBossAI
 
         void OnDied(Unit* pKiller)
         {
-            _unit->SendScriptTextChatMessage(3984);         //Such is the price... of failure...
+            sendDBChatMessage(3984);         //Such is the price... of failure...
 
             RemoveAIUpdateEvent();
             ParentClass::OnDied(pKiller);

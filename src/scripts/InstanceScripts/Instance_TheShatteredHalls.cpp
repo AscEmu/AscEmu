@@ -1682,13 +1682,13 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
                 switch (RandomUInt(2))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_13);
+                        sendDBChatMessage(SAY_GRAND_WARLOCK_13);
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_14);
+                        sendDBChatMessage(SAY_GRAND_WARLOCK_14);
                         break;
                     case 2:
-                        _unit->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_15);
+                        sendDBChatMessage(SAY_GRAND_WARLOCK_15);
                         break;
                 }
 
@@ -1706,10 +1706,10 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_16);
+                        sendDBChatMessage(SAY_GRAND_WARLOCK_16);
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_17);
+                        sendDBChatMessage(SAY_GRAND_WARLOCK_17);
                         break;
                 }
             }
@@ -1726,7 +1726,7 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_18);
+            sendDBChatMessage(SAY_GRAND_WARLOCK_18);
             RemoveAIUpdateEvent();
         }
 
@@ -2062,17 +2062,17 @@ class WarbringerOmroggAI : public MoonScriptCreatureAI
             switch (RandomUInt(2))
             {
                 case 0:
-                    mLeftHead->Emote("If you nice me let you live.", Text_Yell, 10308);
+                    sendChatMessage(CHAT_MSG_MONSTER_YELL, 10308, "If you nice me let you live.");
                     mSpeechTimer = AddTimer(4000);
                     mSpeechId = 1;
                     break;
                 case 1:
-                    mLeftHead->Emote("Me hungry!", Text_Yell, 10309);
+                    sendChatMessage(CHAT_MSG_MONSTER_YELL, 10309, "Me hungry!");
                     mSpeechTimer = AddTimer(2500);
                     mSpeechId = 2;
                     break;
                 case 2:
-                    mLeftHead->Emote("Smash!", Text_Yell, 10306);
+                    sendChatMessage(CHAT_MSG_MONSTER_YELL, 10306, "Smash!");
                     mSpeechTimer = AddTimer(2000);
                     mSpeechId = 3;
                     break;
@@ -2105,10 +2105,10 @@ class WarbringerOmroggAI : public MoonScriptCreatureAI
             switch (RandomUInt(1))
             {
                 case 0:
-                    mLeftHead->Emote("I'm tired. You kill the next one!", Text_Yell, 10320);
+                    sendChatMessage(CHAT_MSG_MONSTER_YELL, 10320, "I'm tired. You kill the next one!");
                     break;
                 case 1:
-                    mLeftHead->Emote("This one die easy!", Text_Yell, 10310);
+                    sendChatMessage(CHAT_MSG_MONSTER_YELL, 10310, "This one die easy!");
                     mSpeechTimer = AddTimer(3000);
                     mSpeechId = 0;
                     break;
@@ -2121,7 +2121,7 @@ class WarbringerOmroggAI : public MoonScriptCreatureAI
             if (mLeftHead == NULL || mRightHead == NULL)
                 return;
 
-            mLeftHead->Emote("This all... your fault!", Text_Yell, 10311);
+            sendChatMessage(CHAT_MSG_MONSTER_YELL, 10311, "This all... your fault!");
             mLeftHead->Despawn(1000);
             mLeftHead = NULL;
             mRightHead->RegisterAIUpdateEvent(3000);
@@ -2142,34 +2142,34 @@ class WarbringerOmroggAI : public MoonScriptCreatureAI
                     switch (mSpeechId)
                     {
                         case 0:
-                            mRightHead->Emote("That's because I do all the hard work!", Text_Yell, 10321);
+                            mRightHead->sendChatMessage(CHAT_MSG_MONSTER_YELL, 10321, "That's because I do all the hard work!");
                             break;
                         case 1:
-                            mRightHead->Emote("No, we will NOT let you live!", Text_Yell, 10318);
+                            mRightHead->sendChatMessage(CHAT_MSG_MONSTER_YELL, 10318, "No, we will NOT let you live!");
                             break;
                         case 2:
-                            mRightHead->Emote("You always hungry. That why we so fat!", Text_Yell, 10319);
+                            mRightHead->sendChatMessage(CHAT_MSG_MONSTER_YELL, 10319, "You always hungry. That why we so fat!");
                             break;
                         case 3:
-                            mRightHead->Emote("Why don't you let me do the talking!", Text_Yell, 10317);
+                            mRightHead->sendChatMessage(CHAT_MSG_MONSTER_YELL, 10317, "Why don't you let me do the talking!");
                             break;
                         case 4:
-                            mRightHead->Emote("I'm not done yet, idiot!", Text_Yell, 10313);
+                            mRightHead->sendChatMessage(CHAT_MSG_MONSTER_YELL, 10313, "I'm not done yet, idiot!");
                             break;
                         case 5:
-                            mRightHead->Emote("Bored, he's almost dead!", Text_Yell, 10316);
+                            mRightHead->sendChatMessage(CHAT_MSG_MONSTER_YELL, 10316, "Bored, he's almost dead!");
                             break;
                         case 6:
-                            mRightHead->Emote("That's not funny!", Text_Yell, 10314);
+                            mRightHead->sendChatMessage(CHAT_MSG_MONSTER_YELL, 10314, "That's not funny!");
                             mSpeechTimer = AddTimer(6000);
                             mSpeechId = 8;
                             ResetSpeech = false;
                             break;
                         case 7:
-                            mRightHead->Emote("What are you doing!?", Text_Yell, 10315);
+                            mRightHead->sendChatMessage(CHAT_MSG_MONSTER_YELL, 10315, "What are you doing!?");
                             break;
                         case 8:
-                            mLeftHead->Emote("Ha ha ha!", Text_Yell, 10304);
+                            mLeftHead->sendChatMessage(CHAT_MSG_MONSTER_YELL, 10304, "Ha ha ha!");
                             break;
                     }
                 }
@@ -2205,31 +2205,31 @@ class WarbringerOmroggAI : public MoonScriptCreatureAI
                 switch (RandomUInt(6))
                 {
                     case 0:
-                        mLeftHead->Emote("We kill his friend!", Text_Yell, 10301);
+                        mLeftHead->sendChatMessage(CHAT_MSG_MONSTER_YELL, 10301, "We kill his friend!");
                         break;
                     case 1:
-                        mLeftHead->Emote("Me not like this one...", Text_Yell, 10300);
+                        mLeftHead->sendChatMessage(CHAT_MSG_MONSTER_YELL, 10300, "Me not like this one...");
                         mSpeechTimer = AddTimer(3000);
                         mSpeechId = 4;
                         break;
                     case 2:
-                        mRightHead->Emote("Hey, you numbskull!", Text_Yell, 10312);
+                        mRightHead->sendChatMessage(CHAT_MSG_MONSTER_YELL, 10312, "Hey, you numbskull!");
                         break;
                     case 3:
-                        mLeftHead->Emote("Me get bored.", Text_Yell, 10305);
+                        mLeftHead->sendChatMessage(CHAT_MSG_MONSTER_YELL, 10305, "Me get bored.");
                         mSpeechTimer = AddTimer(3000);
                         mSpeechId = 5;
                         break;
                     case 4:
-                        mRightHead->Emote("What are you doing!?", Text_Yell, 10315);
+                        mRightHead->sendChatMessage(CHAT_MSG_MONSTER_YELL, 10315, "What are you doing!?");
                         break;
                     case 5:
-                        mLeftHead->Emote("You stay here. Me go kill someone else!", Text_Yell, 10303);
+                        mLeftHead->sendChatMessage(CHAT_MSG_MONSTER_YELL, 10303, "You stay here. Me go kill someone else!");
                         mSpeechTimer = AddTimer(4000);
                         mSpeechId = 6;
                         break;
                     case 6:
-                        mLeftHead->Emote("Me kill someone else!", Text_Yell, 10302);
+                        mLeftHead->sendChatMessage(CHAT_MSG_MONSTER_YELL, 10302, "Me kill someone else!");
                         mSpeechTimer = AddTimer(3000);
                         mSpeechId = 7;
                         break;
@@ -2271,7 +2271,7 @@ class HeadAI : public MoonScriptCreatureAI
         if (_unit->GetEntry() != CN_RIGHT_HEAD)
             return;
 
-        Emote("I... hate... you!", Text_Yell, 10322);
+        sendChatMessage(CHAT_MSG_MONSTER_YELL, 10322, "I... hate... you!");
         RemoveAIUpdateEvent();                                // Dangerous!
     }
 
@@ -2322,13 +2322,13 @@ class WarchiefKargathBladefistAI : public CreatureAIScript
             switch (RandomUInt(2))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(SAY_WARCHIEF_KARGATH_01);
+                    sendDBChatMessage(SAY_WARCHIEF_KARGATH_01);
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(SAY_WARCHIEF_KARGATH_02);
+                    sendDBChatMessage(SAY_WARCHIEF_KARGATH_02);
                     break;
                 case 2:
-                    _unit->SendScriptTextChatMessage(SAY_WARCHIEF_KARGATH_03);
+                    sendDBChatMessage(SAY_WARCHIEF_KARGATH_03);
                     break;
             }
 
@@ -2344,10 +2344,10 @@ class WarchiefKargathBladefistAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(SAY_WARCHIEF_KARGATH_04);
+                        sendDBChatMessage(SAY_WARCHIEF_KARGATH_04);
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(SAY_WARCHIEF_KARGATH_05);
+                        sendDBChatMessage(SAY_WARCHIEF_KARGATH_05);
                         break;
                 }
             }
@@ -2362,7 +2362,7 @@ class WarchiefKargathBladefistAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(SAY_WARCHIEF_KARGATH_06);
+            sendDBChatMessage(SAY_WARCHIEF_KARGATH_06);
             RemoveAIUpdateEvent();
         }
 

@@ -666,7 +666,7 @@ class LashlayerAI : public CreatureAIScript
         void OnCombatStart(Unit* mTarget)
         {
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
-            _unit->SendScriptTextChatMessage(2287);     // None of your kind should be here. You have doomed only yourselves!
+            sendDBChatMessage(2287);     // None of your kind should be here. You have doomed only yourselves!
         }
 
         void OnCombatStop(Unit* mTarget)
@@ -1146,7 +1146,7 @@ class VaelastraszAI : public CreatureAIScript
 
         void OnTargetDied(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(2296);     // Forgive me, your death only adds to my failure.
+            sendDBChatMessage(2296);     // Forgive me, your death only adds to my failure.
         }
 
         void OnDied(Unit* mKiller)
@@ -1160,7 +1160,7 @@ class VaelastraszAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() <= 15 && m_spellcheck[0])
             {
-                _unit->SendScriptTextChatMessage(2295);     // Nefarius' hate has made me stronger than ever before. You should have fled, while you could, mortals! The fury of Blackrock courses through my veins!
+                sendDBChatMessage(2295);     // Nefarius' hate has made me stronger than ever before. You should have fled, while you could, mortals! The fury of Blackrock courses through my veins!
                 m_spellcheck[0] = false;
             }
 

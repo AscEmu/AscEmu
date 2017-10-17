@@ -1128,13 +1128,13 @@ class AmbassadorHellmawAI : public CreatureAIScript
             switch (RandomUInt(2))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(SAY_AMBASSADOR_HELMAW_02);
+                    sendDBChatMessage(SAY_AMBASSADOR_HELMAW_02);
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(SAY_AMBASSADOR_HELMAW_03);
+                    sendDBChatMessage(SAY_AMBASSADOR_HELMAW_03);
                     break;
                 case 2:
-                    _unit->SendScriptTextChatMessage(SAY_AMBASSADOR_HELMAW_04);
+                    sendDBChatMessage(SAY_AMBASSADOR_HELMAW_04);
                     break;
             }
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
@@ -1147,10 +1147,10 @@ class AmbassadorHellmawAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(SAY_AMBASSADOR_HELMAW_06);
+                        sendDBChatMessage(SAY_AMBASSADOR_HELMAW_06);
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(SAY_AMBASSADOR_HELMAW_07);
+                        sendDBChatMessage(SAY_AMBASSADOR_HELMAW_07);
                         break;
                 }
             }
@@ -1166,7 +1166,7 @@ class AmbassadorHellmawAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(SAY_AMBASSADOR_HELMAW_08);
+            sendDBChatMessage(SAY_AMBASSADOR_HELMAW_08);
             RemoveAIUpdateEvent();
         }
 
@@ -1287,13 +1287,13 @@ class BlackheartTheInciterAI : public CreatureAIScript
             switch (RandomUInt(2))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(SAY_BLACKHEART_INCITER_04);
+                    sendDBChatMessage(SAY_BLACKHEART_INCITER_04);
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(SAY_BLACKHEART_INCITER_06);
+                    sendDBChatMessage(SAY_BLACKHEART_INCITER_06);
                     break;
                 case 2:
-                    _unit->SendScriptTextChatMessage(SAY_BLACKHEART_INCITER_05);
+                    sendDBChatMessage(SAY_BLACKHEART_INCITER_05);
                     break;
             }
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
@@ -1306,10 +1306,10 @@ class BlackheartTheInciterAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(SAY_BLACKHEART_INCITER_07);
+                        sendDBChatMessage(SAY_BLACKHEART_INCITER_07);
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(SAY_BLACKHEART_INCITER_08);
+                        sendDBChatMessage(SAY_BLACKHEART_INCITER_08);
                         break;
                 }
             }
@@ -1324,7 +1324,7 @@ class BlackheartTheInciterAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(SAY_BLACKHEART_INCITER_10);
+            sendDBChatMessage(SAY_BLACKHEART_INCITER_10);
             RemoveAIUpdateEvent();
         }
 
@@ -1509,13 +1509,13 @@ class GrandmasterVorpilAI : public CreatureAIScript
             switch (RandomUInt(2))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(SAY_GRD_VORPIL_02);
+                    sendDBChatMessage(SAY_GRD_VORPIL_02);
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(SAY_GRD_VORPIL_03);
+                    sendDBChatMessage(SAY_GRD_VORPIL_03);
                     break;
                 case 2:
-                    _unit->SendScriptTextChatMessage(SAY_GRD_VORPIL_04);
+                    sendDBChatMessage(SAY_GRD_VORPIL_04);
                     break;
             }
             //_unit->CastSpell(_unit, spells[3].info, spells[3].instant);
@@ -1529,10 +1529,10 @@ class GrandmasterVorpilAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(SAY_GRD_VORPIL_06);
+                        sendDBChatMessage(SAY_GRD_VORPIL_06);
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(SAY_GRD_VORPIL_07);
+                        sendDBChatMessage(SAY_GRD_VORPIL_07);
                         break;
                 }
             }
@@ -1548,7 +1548,7 @@ class GrandmasterVorpilAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(SAY_GRD_VORPIL_08);
+            sendDBChatMessage(SAY_GRD_VORPIL_08);
             RemoveAIUpdateEvent();
         }
 

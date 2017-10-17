@@ -373,7 +373,7 @@ class SladranAI : public MoonScriptCreatureAI
 
     void OnCombatStart(Unit* pTarget)
     {
-        _unit->SendScriptTextChatMessage(8754);     // Drakkari gonna kill anybody who trespass on these lands!
+        sendDBChatMessage(8754);     // Drakkari gonna kill anybody who trespass on these lands!
         if (mInstance)
             mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_InProgress);
 
@@ -385,13 +385,13 @@ class SladranAI : public MoonScriptCreatureAI
         switch (RandomUInt(2))
         {
             case 0:
-                _unit->SendScriptTextChatMessage(4217);     // You not breathin'? Good.
+                sendDBChatMessage(4217);     // You not breathin'? Good.
             break;
             case 1:
-                _unit->SendScriptTextChatMessage(4218);     // Ssscared now?
+                sendDBChatMessage(4218);     // Ssscared now?
             break;
             case 2:
-                _unit->SendScriptTextChatMessage(4219);     // I eat you next, mon.
+                sendDBChatMessage(4219);     // I eat you next, mon.
             break;
         }
     }
@@ -406,7 +406,7 @@ class SladranAI : public MoonScriptCreatureAI
 
     void OnDied(Unit* pKiller)
     {
-        _unit->SendScriptTextChatMessage(4220);     // I sssee now... Ssscourge wasss not... our greatessst enemy....
+        sendDBChatMessage(4220);     // I sssee now... Ssscourge wasss not... our greatessst enemy....
     }
 
     MoonInstanceScript* mInstance;
@@ -428,7 +428,7 @@ class GalDarahAI : public MoonScriptCreatureAI
 
     void OnCombatStart(Unit* pTarget)
     {
-        _unit->SendScriptTextChatMessage(4199);     // I'm gonna spill your guts, mon!
+        sendDBChatMessage(4199);     // I'm gonna spill your guts, mon!
 
         if (mInstance)
             mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_InProgress);
@@ -441,13 +441,13 @@ class GalDarahAI : public MoonScriptCreatureAI
         switch (RandomUInt(2))
         {
             case 0:
-                _unit->SendScriptTextChatMessage(4200);     // What a rush!
+                sendDBChatMessage(4200);     // What a rush!
             break;
             case 1:
-                _unit->SendScriptTextChatMessage(4201);     // Who needs gods when we ARE gods?
+                sendDBChatMessage(4201);     // Who needs gods when we ARE gods?
             break;
             case 2:
-                _unit->SendScriptTextChatMessage(4202);     // I told ya so!
+                sendDBChatMessage(4202);     // I told ya so!
             break;
         }
     }
@@ -462,7 +462,7 @@ class GalDarahAI : public MoonScriptCreatureAI
 
     void OnDied(Unit* pKiller)
     {
-        _unit->SendScriptTextChatMessage(4203);     // Even the mighty... can fall.
+        sendDBChatMessage(4203);     // Even the mighty... can fall.
     }
 
     MoonInstanceScript* mInstance;

@@ -344,6 +344,11 @@ class SERVER_DECL CreatureAIScript
         GameObject* getNearestGameObject(uint32_t entry);
         GameObject* getNearestGameObject(float posX, float posY, float posZ, uint32_t entry);
 
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // chat message
+        void sendChatMessage(uint8_t type, uint32_t soundId, std::string text);
+        void sendDBChatMessage(uint32_t textId);
+
         // MIT end
 
         void RegisterAIUpdateEvent(uint32 frequency);

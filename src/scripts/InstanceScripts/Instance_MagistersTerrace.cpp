@@ -235,7 +235,7 @@ class VexallusAI : public MoonScriptBossAI
 
     void OnCombatStart(Unit* pTarget)
     {
-        _unit->SendScriptTextChatMessage(3003);     // Drain... life!
+        sendDBChatMessage(3003);     // Drain... life!
 
         SetPhase(1);
         ParentClass::OnCombatStart(pTarget);
@@ -243,7 +243,7 @@ class VexallusAI : public MoonScriptBossAI
 
     void OnTargetDied(Unit* pTarget)
     {
-        _unit->SendScriptTextChatMessage(3006);     // Con...sume.
+        sendDBChatMessage(3006);     // Con...sume.
     }
 
     void AIUpdate()
@@ -289,7 +289,7 @@ class Priestess_DelrissaAI : public MoonScriptBossAI
 
     void OnCombatStart(Unit* pTarget)
     {
-        _unit->SendScriptTextChatMessage(3022);     // Annihilate them.
+        sendDBChatMessage(3022);     // Annihilate them.
         //AggroRandomUnit();    // Want to aggro random unit ? Set it instead of calling premade
         // method that in this case recursively loops this procedure
 
@@ -304,22 +304,22 @@ class Priestess_DelrissaAI : public MoonScriptBossAI
         ++mKilledPlayers;
 
         if (mKilledPlayers == 1)
-            _unit->SendScriptTextChatMessage(3027);     // I call that a good start.
+            sendDBChatMessage(3027);     // I call that a good start.
         else if (mKilledPlayers == 2)
-            _unit->SendScriptTextChatMessage(3028);     // I could have sworn there were more of you...
+            sendDBChatMessage(3028);     // I could have sworn there were more of you...
         else if (mKilledPlayers == 3)
-            _unit->SendScriptTextChatMessage(3029);     // Not really much of a "group" anymore, is it?
+            sendDBChatMessage(3029);     // Not really much of a "group" anymore, is it?
         else if (mKilledPlayers == 4)
-            _unit->SendScriptTextChatMessage(3030);     // One is such a lonely number.
+            sendDBChatMessage(3030);     // One is such a lonely number.
         else if (mKilledPlayers == 5)
-            _unit->SendScriptTextChatMessage(3031);     // It's been a kick, really.
+            sendDBChatMessage(3031);     // It's been a kick, really.
 
         ParentClass::OnTargetDied(pTarget);
     }
 
     void OnCombatStop(Unit* pTarget)
     {
-        _unit->SendScriptTextChatMessage(3031);     // It's been a kick, really.
+        sendDBChatMessage(3031);     // It's been a kick, really.
         mKilledPlayers = 0;
 
         ParentClass::OnCombatStop(pTarget);
@@ -327,7 +327,7 @@ class Priestess_DelrissaAI : public MoonScriptBossAI
 
     void OnDied(Unit* pKiller)
     {
-        _unit->SendScriptTextChatMessage(3032);     // Not what I had... planned.
+        sendDBChatMessage(3032);     // Not what I had... planned.
     }
 
     void AIUpdate()

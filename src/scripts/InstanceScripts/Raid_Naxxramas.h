@@ -2158,7 +2158,7 @@ class KorthazzAI : public CreatureAIScript
     void OnCombatStart(Unit* mTarget)
     {
         m_attackstart = true;
-        _unit->SendScriptTextChatMessage(4242);     // C'mon an' fight ye wee ninny!
+        sendDBChatMessage(4242);     // C'mon an' fight ye wee ninny!
 
         RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
     }
@@ -2173,12 +2173,12 @@ class KorthazzAI : public CreatureAIScript
 
     void OnTargetDied(Unit* mTarget)
     {
-        _unit->SendScriptTextChatMessage(4247);     // Next time, bring more friends!
+        sendDBChatMessage(4247);     // Next time, bring more friends!
     }
 
     void OnDied(Unit* mKiller)
     {
-        _unit->SendScriptTextChatMessage(4248);     // What a bloody waste this is!
+        sendDBChatMessage(4248);     // What a bloody waste this is!
         _unit->CastSpell(_unit, spells[1].info, spells[1].instant);
         RemoveAIUpdateEvent();
     }
@@ -2194,13 +2194,13 @@ class KorthazzAI : public CreatureAIScript
                 switch (tountcont)
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(4243);     // To arms, ye roustabouts! We've got company!
+                        sendDBChatMessage(4243);     // To arms, ye roustabouts! We've got company!
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(4244);     // I heard about enough of yer sniveling. Shut yer fly trap 'afore I shut it for ye!
+                        sendDBChatMessage(4244);     // I heard about enough of yer sniveling. Shut yer fly trap 'afore I shut it for ye!
                         break;
                     case 2:
-                        _unit->SendScriptTextChatMessage(4245);     // I'm gonna enjoy killin' these slack-jawed daffodils!
+                        sendDBChatMessage(4245);     // I'm gonna enjoy killin' these slack-jawed daffodils!
                         break;
                 }
                 tountcont++;
@@ -2212,7 +2212,7 @@ class KorthazzAI : public CreatureAIScript
 
         if (m_spellcheck[0])
         {
-            _unit->SendScriptTextChatMessage(4246);     // I like my meat extra crispy!
+            sendDBChatMessage(4246);     // I like my meat extra crispy!
         }
 
         float val = RandomFloat(100.0f);
@@ -2336,7 +2336,7 @@ class BlaumeuxAI : public CreatureAIScript
     void OnCombatStart(Unit* mTarget)
     {
         m_attackstart = true;
-        _unit->SendScriptTextChatMessage(4249);     // Defend yourself!
+        sendDBChatMessage(4249);     // Defend yourself!
 
         RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
     }
@@ -2351,12 +2351,12 @@ class BlaumeuxAI : public CreatureAIScript
 
     void OnTargetDied(Unit* mTarget)
     {
-        _unit->SendScriptTextChatMessage(4254);     // Who's next?
+        sendDBChatMessage(4254);     // Who's next?
     }
 
     void OnDied(Unit* mKiller)
     {
-        _unit->SendScriptTextChatMessage(4255);     // Touche...
+        sendDBChatMessage(4255);     // Touche...
         _unit->CastSpell(_unit, spells[1].info, spells[1].instant);
         RemoveAIUpdateEvent();
     }
@@ -2372,13 +2372,13 @@ class BlaumeuxAI : public CreatureAIScript
                 switch (tountcont)
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(4250);     // Come, Zeliek, do not drive them out. Not before we've had our fun!
+                        sendDBChatMessage(4250);     // Come, Zeliek, do not drive them out. Not before we've had our fun!
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(4251);     // I do hope they stay alive long enough for me to... introduce myself.
+                        sendDBChatMessage(4251);     // I do hope they stay alive long enough for me to... introduce myself.
                         break;
                     case 2:
-                        _unit->SendScriptTextChatMessage(4252);     // The first kill goes to me! Anyone care to wager?
+                        sendDBChatMessage(4252);     // The first kill goes to me! Anyone care to wager?
                         break;
                 }
                 tountcont++;
@@ -2390,7 +2390,7 @@ class BlaumeuxAI : public CreatureAIScript
 
         if (m_spellcheck[0])
         {
-            _unit->SendScriptTextChatMessage(4253);     // Your life is mine!
+            sendDBChatMessage(4253);     // Your life is mine!
         }
 
         float val = RandomFloat(100.0f);
@@ -2509,7 +2509,7 @@ class ZeliekAI : public CreatureAIScript
     void OnCombatStart(Unit* mTarget)
     {
         m_attackstart = true;
-        _unit->SendScriptTextChatMessage(4266);     // Flee, before it's too late!
+        sendDBChatMessage(4266);     // Flee, before it's too late!
 
         RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
     }
@@ -2524,12 +2524,12 @@ class ZeliekAI : public CreatureAIScript
 
     void OnTargetDied(Unit* mTarget)
     {
-        _unit->SendScriptTextChatMessage(4271);     // Forgive me!
+        sendDBChatMessage(4271);     // Forgive me!
     }
 
     void OnDied(Unit* mKiller)
     {
-        _unit->SendScriptTextChatMessage(4272);     // It is... as it should be.
+        sendDBChatMessage(4272);     // It is... as it should be.
         _unit->CastSpell(_unit, spells[1].info, spells[1].instant);
         RemoveAIUpdateEvent();
     }
@@ -2545,13 +2545,13 @@ class ZeliekAI : public CreatureAIScript
                 switch (tountcont)
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(4267);     // Invaders, cease this foolish venture at once! Turn away while you still can!
+                        sendDBChatMessage(4267);     // Invaders, cease this foolish venture at once! Turn away while you still can!
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(4268);     // Perhaps they will come to their senses, and run away as fast as they can!");
+                        sendDBChatMessage(4268);     // Perhaps they will come to their senses, and run away as fast as they can!");
                         break;
                     case 2:
-                        _unit->SendScriptTextChatMessage(4269);     // Do not continue! Turn back while there's still time!");
+                        sendDBChatMessage(4269);     // Do not continue! Turn back while there's still time!");
                         break;
 
                 }
@@ -2564,7 +2564,7 @@ class ZeliekAI : public CreatureAIScript
 
         if (m_spellcheck[0])
         {
-            _unit->SendScriptTextChatMessage(4270);     // I have no choice but to obey!
+            sendDBChatMessage(4270);     // I have no choice but to obey!
         }
 
         float val = RandomFloat(100.0f);

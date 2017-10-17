@@ -48,7 +48,7 @@ class AnomalusAI : public MoonScriptBossAI
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(4317);     // Chaos beckons.
+            sendDBChatMessage(4317);     // Chaos beckons.
             mSummon = 0;
             mRift = false;
             mSummonTimer = AddTimer(IsHeroic() ? 14000 : 18000);   // check heroic
@@ -85,7 +85,7 @@ class AnomalusAI : public MoonScriptBossAI
         void SummonRift(bool bToCharge)
         {
             if (!bToCharge)
-                _unit->SendScriptTextChatMessage(4319);     // Reality... unwoven.
+                sendDBChatMessage(4319);     // Reality... unwoven.
 
             Announce("Anomalus opens a Chaotic Rift!");
             //we are linked with CN_CHAOTIC_RIFT.
@@ -100,7 +100,7 @@ class AnomalusAI : public MoonScriptBossAI
         void ChargeRift()
         {
             SummonRift(true);
-            _unit->SendScriptTextChatMessage(4320);     // Indestructible.
+            sendDBChatMessage(4320);     // Indestructible.
             Announce("Anomalus shields himself and diverts his power to the rifts!");
             ApplyAura(47748);   // me immune
             SetCanMove(false);
@@ -111,7 +111,7 @@ class AnomalusAI : public MoonScriptBossAI
 
         void OnDied(Unit* pKiller)
         {
-            _unit->SendScriptTextChatMessage(4318);     // Of course.
+            sendDBChatMessage(4318);     // Of course.
 
             if (mInstance)
                 mInstance->SetInstanceData(Data_EncounterState, NEXUS_ANOMALUS, State_Finished);
@@ -241,10 +241,10 @@ class TelestraBossAI : public MoonScriptBossAI
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(4330);      // There's plenty of me to go around.
+                        sendDBChatMessage(4330);      // There's plenty of me to go around.
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(4331);      // I'll give you more than you can handle!
+                        sendDBChatMessage(4331);      // I'll give you more than you can handle!
                         break;
                 }
 
@@ -279,7 +279,8 @@ class TelestraBossAI : public MoonScriptBossAI
                 if (mAddCount != 0)
                     return;
 
-                Emote("Now to finish the job!", Text_Yell, 13323);
+                sendChatMessage(CHAT_MSG_MONSTER_YELL, 13323, "Now to finish the job!");
+
                 RemoveAura(60191);
                 SetCanMove(true);
                 mPhaseRepeat = 1;
@@ -291,7 +292,7 @@ class TelestraBossAI : public MoonScriptBossAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(4326);      // You know what they say about curiosity....
+            sendDBChatMessage(4326);      // You know what they say about curiosity....
 
             if (mInstance)
                 mInstance->SetInstanceData(Data_EncounterState, NEXUS_TELESTRA, State_InProgress);
@@ -301,7 +302,7 @@ class TelestraBossAI : public MoonScriptBossAI
 
         void OnTargetDied(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(4327);      // Death becomes you.
+            sendDBChatMessage(4327);      // Death becomes you.
         }
 
         void OnCombatStop(Unit* pTarget)
@@ -323,7 +324,7 @@ class TelestraBossAI : public MoonScriptBossAI
 
         void OnDied(Unit* pKiller)
         {
-            _unit->SendScriptTextChatMessage(4328);      // Damn the... luck.
+            sendDBChatMessage(4328);      // Damn the... luck.
 
             for (uint8 i = 0; i < 3; ++i)
             {
@@ -445,7 +446,7 @@ class OrmorokAI : public MoonScriptBossAI
 
     void OnCombatStart(Unit* pTarget)
     {
-        _unit->SendScriptTextChatMessage(1943);     // Noo!
+        sendDBChatMessage(1943);     // Noo!
         mEnraged = false;
         ParentClass::OnCombatStart(pTarget);
     };
@@ -464,7 +465,7 @@ class OrmorokAI : public MoonScriptBossAI
 
     void OnDied(Unit* pKiller)
     {
-        _unit->SendScriptTextChatMessage(1944);     // Aaggh!
+        sendDBChatMessage(1944);     // Aaggh!
 
         if (mInstance)
             mInstance->SetInstanceData(Data_EncounterState, NEXUS_ORMOROK, State_Finished);
@@ -558,17 +559,17 @@ class KeristraszaAI : public MoonScriptBossAI
 
     void OnCombatStart(Unit* pTarget)
     {
-        _unit->SendScriptTextChatMessage(4321);     // Preserve? Why? There's no truth in it. No no no... only in the taking! I see that now!
+        sendDBChatMessage(4321);     // Preserve? Why? There's no truth in it. No no no... only in the taking! I see that now!
     }
 
     void OnTargetDied(Unit* pTarget)
     {
-        _unit->SendScriptTextChatMessage(4322);     // Now we've come to the truth! 
+        sendDBChatMessage(4322);     // Now we've come to the truth! 
     }
 
     void OnDied(Unit* pKiller)
     {
-        _unit->SendScriptTextChatMessage(4324);     // Dragonqueen... Life-Binder... preserve... me.
+        sendDBChatMessage(4324);     // Dragonqueen... Life-Binder... preserve... me.
     }
 
     void AIUpdate()

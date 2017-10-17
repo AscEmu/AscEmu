@@ -48,13 +48,13 @@ class WatchkeeperGargolmarAI : public MoonScriptBossAI
         switch (RandomUInt(2))
         {
             case 0:
-                _unit->SendScriptTextChatMessage(4873);     // What have we here?
+                sendDBChatMessage(4873);     // What have we here?
                 break;
             case 1:
-                _unit->SendScriptTextChatMessage(4874);     // This may hurt a little....
+                sendDBChatMessage(4874);     // This may hurt a little....
                 break;
             case 2:
-                _unit->SendScriptTextChatMessage(4875);     // I'm going to enjoy this...
+                sendDBChatMessage(4875);     // I'm going to enjoy this...
                 break;
         }
     }
@@ -64,17 +64,17 @@ class WatchkeeperGargolmarAI : public MoonScriptBossAI
         switch (RandomUInt(1))
         {
             case 0:
-                _unit->SendScriptTextChatMessage(4876);     // Say farewell!
+                sendDBChatMessage(4876);     // Say farewell!
                 break;
             case 1:
-                _unit->SendScriptTextChatMessage(4877);     // Much too easy.
+                sendDBChatMessage(4877);     // Much too easy.
                 break;
         }
     }
 
     void OnDied(Unit* mKiller)
     {
-        _unit->SendScriptTextChatMessage(4878);      // Hahah.. <cough> ..argh!
+        sendDBChatMessage(4878);      // Hahah.. <cough> ..argh!
         ParentClass::OnDied(mKiller);
     }
 
@@ -82,7 +82,7 @@ class WatchkeeperGargolmarAI : public MoonScriptBossAI
     {
         if (_unit->GetHealthPct() <= 40 && !mCalledForHelp)
         {
-            _unit->SendScriptTextChatMessage(4871);      // Heal me, quickly!
+            sendDBChatMessage(4871);      // Heal me, quickly!
             mCalledForHelp = true;
         };
 
@@ -134,13 +134,13 @@ class OmorTheUnscarredAI : public MoonScriptCreatureAI
             switch (RandomUInt(2))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(4856);     // I will not be defeated!
+                    sendDBChatMessage(4856);     // I will not be defeated!
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(4855);     // You dare stand against ME?
+                    sendDBChatMessage(4855);     // You dare stand against ME?
                     break;
                 case 2:
-                    _unit->SendScriptTextChatMessage(4857);     // Your insolence will be your death!
+                    sendDBChatMessage(4857);     // Your insolence will be your death!
                     break;
             }
             ParentClass::OnCombatStart(pTarget);
@@ -149,12 +149,12 @@ class OmorTheUnscarredAI : public MoonScriptCreatureAI
 
         void OnTargetDied(Unit* pKiller)
         {
-            _unit->SendScriptTextChatMessage(4860);     // Die, weakling!
+            sendDBChatMessage(4860);     // Die, weakling!
         }
 
         void OnDied(Unit* pKiller)
         {
-            _unit->SendScriptTextChatMessage(4861);     // It is... not over.
+            sendDBChatMessage(4861);     // It is... not over.
         }
 
         void OnCombatStop(Unit* pTarget)
@@ -162,7 +162,7 @@ class OmorTheUnscarredAI : public MoonScriptCreatureAI
             ParentClass::OnCombatStop(pTarget);
             if (IsAlive())
             {
-                _unit->SendScriptTextChatMessage(4862);     // I am victorious!
+                sendDBChatMessage(4862);     // I am victorious!
             }
         }
 

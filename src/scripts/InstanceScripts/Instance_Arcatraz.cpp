@@ -48,7 +48,7 @@ class ZerekethAI : public MoonScriptBossAI
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(5496);     // Life energy to... consume.
+            sendDBChatMessage(5496);     // Life energy to... consume.
 
             VoidTimer = AddTimer((RandomUInt(10) + 30) * 1000);
             SpeechTimer = AddTimer((RandomUInt(10) + 40) * 1000);
@@ -61,17 +61,17 @@ class ZerekethAI : public MoonScriptBossAI
             switch (RandomUInt(1))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(5497);     // This vessel is empty.
+                    sendDBChatMessage(5497);     // This vessel is empty.
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(5498);     // No... more... life.
+                    sendDBChatMessage(5498);     // No... more... life.
                     break;
             }
         }
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(5501);     // The Void... beckons.
+            sendDBChatMessage(5501);     // The Void... beckons.
 
             //despawn voids
             Creature* creature = NULL;
@@ -98,10 +98,10 @@ class ZerekethAI : public MoonScriptBossAI
             switch (RandomUInt(1))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(SAY_ZEREKETH_01);
+                    sendDBChatMessage(SAY_ZEREKETH_01);
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(SAY_ZEREKETH_02);
+                    sendDBChatMessage(SAY_ZEREKETH_02);
                     break;
             }
             ResetTimer(SpeechTimer, (RandomUInt(10) + 40) * 1000);
@@ -216,7 +216,7 @@ class DalliahTheDoomsayerAI : public MoonScriptBossAI
 
         void OnEnterCombat(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(7368);     // It is unwise to anger me!
+            sendDBChatMessage(7368);     // It is unwise to anger me!
         }
 
         void OnTargetDied(Unit* mKiller)
@@ -224,17 +224,17 @@ class DalliahTheDoomsayerAI : public MoonScriptBossAI
             switch (RandomUInt(1))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(7369);     // Completely ineffective.  Just like someone else I know.
+                    sendDBChatMessage(7369);     // Completely ineffective.  Just like someone else I know.
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(7370);     // You chose the wrong opponent.
+                    sendDBChatMessage(7370);     // You chose the wrong opponent.
                     break;
             }
         }
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(7375);     // Now I'm really angry.
+            sendDBChatMessage(7375);     // Now I'm really angry.
 
             GameObject* door2 = getNearestGameObject(184319);
             if (door2 != NULL)
@@ -266,7 +266,7 @@ class WrathScryerSoccothratesAI : public MoonScriptBossAI
 
         void OnCombatStart(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(7365);     // At last, a target for my frustrations!
+            sendDBChatMessage(7365);     // At last, a target for my frustrations!
         }
 
         void OnTargetDied(Unit* mKiller)
@@ -274,17 +274,17 @@ class WrathScryerSoccothratesAI : public MoonScriptBossAI
             switch (RandomUInt(1))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(7364);     // Yes, that was quite satisfying.
+                    sendDBChatMessage(7364);     // Yes, that was quite satisfying.
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(8753);     // Ha! Much better!
+                    sendDBChatMessage(8753);     // Ha! Much better!
                     break;
             }
         }
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(7380);     // Knew this was... the only way out.
+            sendDBChatMessage(7380);     // Knew this was... the only way out.
 
             GameObject* door1 = getNearestGameObject(199.969f, 118.5837f, 22.379f, 184318);
             if (door1 != NULL)
@@ -328,7 +328,7 @@ class HarbringerSkyrissAI : public MoonScriptBossAI
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(5034);     // Bear witness to the agent of your demise!
+            sendDBChatMessage(5034);     // Bear witness to the agent of your demise!
 
             IllusionCount = 0;
             ParentClass::OnCombatStart(mTarget);
@@ -339,17 +339,17 @@ class HarbringerSkyrissAI : public MoonScriptBossAI
             switch (RandomUInt(1))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(5035);     // Your fate is written.
+                    sendDBChatMessage(5035);     // Your fate is written.
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(5036);     // The chaos I have sown here is but a taste....
+                    sendDBChatMessage(5036);     // The chaos I have sown here is but a taste....
                     break;
             }
         }
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(5042);     // I am merely one of... infinite multitudes.
+            sendDBChatMessage(5042);     // I am merely one of... infinite multitudes.
         }
 
         void AIUpdate()
@@ -414,7 +414,7 @@ class WardenMellicharAI : public MoonScriptBossAI
             if (shield)
                 shield->SetState(GO_STATE_CLOSED);
 
-            _unit->SendScriptTextChatMessage(SAY_MELLICHAR_01);
+            sendDBChatMessage(SAY_MELLICHAR_01);
             _unit->SendTimedScriptTextChatMessage(SAY_MELLICHAR_02, 27000);
 
             ParentClass::OnCombatStart(mTarget);
@@ -468,7 +468,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                     }
                     else if (NPC_orb1 && !NPC_orb1->isAlive())
                     {
-                        _unit->SendScriptTextChatMessage(SAY_MELLICHAR_03);
+                        sendDBChatMessage(SAY_MELLICHAR_03);
                         SetPhase(1);
                         Phasepart = 0;
                         ResetTimer(Phase_Timer, 6000);
@@ -575,7 +575,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                     }
                     else if (NPC_orb3 && !NPC_orb3->isAlive())
                     {
-                        _unit->SendScriptTextChatMessage(SAY_MELLICHAR_05);
+                        sendDBChatMessage(SAY_MELLICHAR_05);
                         SetPhase(3);
                         Phasepart = 0;
                         ResetTimer(Phase_Timer, 8000);
@@ -629,7 +629,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                     }
                     else if (NPC_orb4 && !NPC_orb4->isAlive())
                     {
-                        _unit->SendScriptTextChatMessage(SAY_MELLICHAR_06);
+                        sendDBChatMessage(SAY_MELLICHAR_06);
                         SetPhase(4);
                         Phasepart = 0;
                         ResetTimer(Phase_Timer, 6000);

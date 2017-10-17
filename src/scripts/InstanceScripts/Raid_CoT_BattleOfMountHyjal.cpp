@@ -250,7 +250,7 @@ class RageWinterchillAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(1590);     // The Legion's final conquest has begun! Once again the subjugation of this world is within our grasp. Let
+            sendDBChatMessage(1590);     // The Legion's final conquest has begun! Once again the subjugation of this world is within our grasp. Let
 
             for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = 0;
@@ -265,16 +265,16 @@ class RageWinterchillAI : public CreatureAIScript
                 switch (RandomUInt(4))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(1586);     // Crumble and rot!
+                        sendDBChatMessage(1586);     // Crumble and rot!
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(1587);     // Ashes to ashes, dust to dust
+                        sendDBChatMessage(1587);     // Ashes to ashes, dust to dust
                         break;
                     case 2:
-                        _unit->SendScriptTextChatMessage(1584);     // All life must perish!");
+                        sendDBChatMessage(1584);     // All life must perish!");
                         break;
                     case 3:
-                        _unit->SendScriptTextChatMessage(1585);     // Victory to the Legion!");
+                        sendDBChatMessage(1585);     // Victory to the Legion!");
                         break;
                     default:
                         break;
@@ -292,7 +292,7 @@ class RageWinterchillAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(1583);     // You have won this battle, but not... the...war
+            sendDBChatMessage(1583);     // You have won this battle, but not... the...war
             RemoveAIUpdateEvent();
         }
 
@@ -473,7 +473,7 @@ class AnetheronAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(1569);     // You are defenders of a doomed world. Flee here and perhaps you will prolong your pathetic lives!
+            sendDBChatMessage(1569);     // You are defenders of a doomed world. Flee here and perhaps you will prolong your pathetic lives!
 
             for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = 0;
@@ -491,13 +491,13 @@ class AnetheronAI : public CreatureAIScript
                 switch (RandomUInt(2))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(1560);     // Your hopes are lost.
+                        sendDBChatMessage(1560);     // Your hopes are lost.
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(1561);     // Scream for me.
+                        sendDBChatMessage(1561);     // Scream for me.
                         break;
                     case 2:
-                        _unit->SendScriptTextChatMessage(1565);     // You look tired
+                        sendDBChatMessage(1565);     // You look tired
                         break;
                 }
             }
@@ -513,7 +513,7 @@ class AnetheronAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(1559);     // The clock... is still...ticking.
+            sendDBChatMessage(1559);     // The clock... is still...ticking.
             RemoveAIUpdateEvent();
         }
 
@@ -698,7 +698,7 @@ class KazrogalAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(1582);     // Cry for mercy! Your meaningless lives will soon be forfeit.
+            sendDBChatMessage(1582);     // Cry for mercy! Your meaningless lives will soon be forfeit.
 
             for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = 0;
@@ -713,16 +713,16 @@ class KazrogalAI : public CreatureAIScript
                 switch (RandomUInt(3))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(1580);     // Your death will be a painful one.
+                        sendDBChatMessage(1580);     // Your death will be a painful one.
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(1581);     // You... are marked
+                        sendDBChatMessage(1581);     // You... are marked
                         break;
                     case 2:
-                        _unit->SendScriptTextChatMessage(1578);     // You... are nothing!
+                        sendDBChatMessage(1578);     // You... are nothing!
                         break;
                     case 3:
-                        _unit->SendScriptTextChatMessage(1579);     // Miserable nuisance!
+                        sendDBChatMessage(1579);     // Miserable nuisance!
                         break;
                 }
             }
@@ -939,7 +939,7 @@ class AzgalorAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(1576);     // Abandon all hope! The legion has returned to finish what was begun so many years ago. This time there will be no escape!
+            sendDBChatMessage(1576);     // Abandon all hope! The legion has returned to finish what was begun so many years ago. This time there will be no escape!
 
             for (uint8 i = 0; i < 3; i++)
                 spells[i].casttime = 0;
@@ -957,13 +957,13 @@ class AzgalorAI : public CreatureAIScript
                 switch (RandomUInt(2))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(1571);     // Reesh, hokta!
+                        sendDBChatMessage(1571);     // Reesh, hokta!
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(1573);     // No one is going to save you!
+                        sendDBChatMessage(1573);     // No one is going to save you!
                         break;
                     case 2:
-                        _unit->SendScriptTextChatMessage(1572);     // Don't fight it
+                        sendDBChatMessage(1572);     // Don't fight it
                         break;
                 }
             }
@@ -979,7 +979,7 @@ class AzgalorAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(1570);     // Your time is almost... up!
+            sendDBChatMessage(1570);     // Your time is almost... up!
             RemoveAIUpdateEvent();
         }
 
@@ -1362,7 +1362,7 @@ class ArchimondeAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(1591);     // Your resistance is insignificant.
+            sendDBChatMessage(1591);     // Your resistance is insignificant.
 
             _unit->SetChannelSpellTargetGUID(0);
             _unit->SetChannelSpellId(0);
@@ -1391,13 +1391,13 @@ class ArchimondeAI : public CreatureAIScript
                 switch (RandomUInt(2))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(1597);     // Your soul will languish for eternity.
+                        sendDBChatMessage(1597);     // Your soul will languish for eternity.
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(1596);     // All creation will be devoured!
+                        sendDBChatMessage(1596);     // All creation will be devoured!
                         break;
                     case 2:
-                        _unit->SendScriptTextChatMessage(1598);     // I am the coming of the end!
+                        sendDBChatMessage(1598);     // I am the coming of the end!
                         break;
                 }
 
@@ -1438,7 +1438,7 @@ class ArchimondeAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(1600);     // No, it cannot be! Nooo!
+            sendDBChatMessage(1600);     // No, it cannot be! Nooo!
             RemoveAIUpdateEvent();
         }
 

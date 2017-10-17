@@ -57,7 +57,7 @@ class KrikthirAI : public MoonScriptCreatureAI
 
     void OnCombatStart(Unit* pTarget)
     {
-        _unit->SendScriptTextChatMessage(3908);     // This kingdom belongs to the Scourge. Only the dead may enter!
+        sendDBChatMessage(3908);     // This kingdom belongs to the Scourge. Only the dead may enter!
     }
 
     void OnTargetDied(Unit* mKiller)
@@ -65,17 +65,17 @@ class KrikthirAI : public MoonScriptCreatureAI
         switch (RandomUInt(1))
         {
             case 0:
-                _unit->SendScriptTextChatMessage(3910);     // As Anub'arak commands!
+                sendDBChatMessage(3910);     // As Anub'arak commands!
                 break;
             case 1:
-                _unit->SendScriptTextChatMessage(3909);     // You were foolish to come.
+                sendDBChatMessage(3909);     // You were foolish to come.
                 break;
         }
     }
 
     void OnDied(Unit* pKiller)
     {
-        _unit->SendScriptTextChatMessage(3911);         // I should be grateful... but I long ago lost the capacity....
+        sendDBChatMessage(3911);         // I should be grateful... but I long ago lost the capacity....
 
         GameObject* Doors = getNearestGameObject(192395);
         if (Doors != NULL)

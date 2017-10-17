@@ -106,7 +106,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
             Enraged = false;
             EnrageTimer = 600;
 
-            _unit->SendScriptTextChatMessage(4749);     // I cannot allow you to interfere!
+            sendDBChatMessage(4749);     // I cannot allow you to interfere!
 
             RegisterAIUpdateEvent(1000);
         }
@@ -131,11 +131,11 @@ class HydrossTheUnstableAI : public CreatureAIScript
                     switch (RandomUInt(1))
                     {
                         case 0:
-                            _unit->SendScriptTextChatMessage(4751);     // They have forced me to this...
+                            sendDBChatMessage(4751);     // They have forced me to this...
                             break;
 
                         case 1:
-                            _unit->SendScriptTextChatMessage(4752);     // I had no choice.");
+                            sendDBChatMessage(4752);     // I had no choice.");
                             break;
                     }
                 }
@@ -144,11 +144,11 @@ class HydrossTheUnstableAI : public CreatureAIScript
                     switch (RandomUInt(1))
                     {
                         case 0:
-                            _unit->SendScriptTextChatMessage(4755);     // I will purge you from this place.
+                            sendDBChatMessage(4755);     // I will purge you from this place.
                             break;
 
                         case 1:
-                            _unit->SendScriptTextChatMessage(4756);     // You are no better than they!
+                            sendDBChatMessage(4756);     // You are no better than they!
                             break;
                     }
                 }
@@ -157,7 +157,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(4757);     // You are the disease, not I..
+            sendDBChatMessage(4757);     // You are the disease, not I..
 
             RemoveAIUpdateEvent();
         }
@@ -218,7 +218,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
                     maxspell = 1;
                     form = true;
                     _unit->SetDisplayId(5498);
-                    _unit->SendScriptTextChatMessage(4754);     // Aaghh, the poison...
+                    sendDBChatMessage(4754);     // Aaghh, the poison...
                     _unit->PlaySoundToSet(11297);
                     const_cast<CreatureProperties*>(_unit->GetCreatureProperties())->attackSchool = 3;
                     _unit->SchoolImmunityList[SCHOOL_FROST] = 0;
@@ -302,7 +302,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
                     maxspell = 0;
                     form = false;
                     _unit->SetDisplayId(20162);
-                    _unit->SendScriptTextChatMessage(4750);     // Better, much better.
+                    sendDBChatMessage(4750);     // Better, much better.
                     _unit->PlaySoundToSet(11290);
                     const_cast<CreatureProperties*>(_unit->GetCreatureProperties())->attackSchool = 4;
                     _unit->SchoolImmunityList[SCHOOL_FROST] = 1;
@@ -671,7 +671,7 @@ class LeotherasAI : public CreatureAIScript
             WhirlwindTimer = 15;
             EnrageTimer = 599; //10 minutes
 
-            _unit->SendScriptTextChatMessage(4772);     // Finally my banishment ends!
+            sendDBChatMessage(4772);     // Finally my banishment ends!
 
             RegisterAIUpdateEvent(1000);
         }
@@ -701,13 +701,13 @@ class LeotherasAI : public CreatureAIScript
                     switch (RandomUInt(2))
                     {
                         case 0:
-                            _unit->SendScriptTextChatMessage(4778);     // Kill! KILL!
+                            sendDBChatMessage(4778);     // Kill! KILL!
                             break;
                         case 1:
-                            _unit->SendScriptTextChatMessage(4779);     // That's right! Yes!
+                            sendDBChatMessage(4779);     // That's right! Yes!
                             break;
                         case 2:
-                            _unit->SendScriptTextChatMessage(4780);     // Who's the master now?
+                            sendDBChatMessage(4780);     // Who's the master now?
                             break;
                     }
                 }
@@ -716,13 +716,13 @@ class LeotherasAI : public CreatureAIScript
                     switch (RandomUInt(2))
                     {
                         case 0:
-                            _unit->SendScriptTextChatMessage(4775);     // I have no equal.
+                            sendDBChatMessage(4775);     // I have no equal.
                             break;
                         case 1:
-                            _unit->SendScriptTextChatMessage(4776);     // Perish, mortal.
+                            sendDBChatMessage(4776);     // Perish, mortal.
                             break;
                         case 2:
-                            _unit->SendScriptTextChatMessage(4777);     // Yes, YES! Ahahah!
+                            sendDBChatMessage(4777);     // Yes, YES! Ahahah!
                             break;
                     }
                 }
@@ -731,7 +731,7 @@ class LeotherasAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(4783);     // You cannot kill me! Fools, I'll be back! I'll... aarghh...
+            sendDBChatMessage(4783);     // You cannot kill me! Fools, I'll be back! I'll... aarghh...
             RemoveAIUpdateEvent();
         }
 
@@ -787,7 +787,7 @@ class LeotherasAI : public CreatureAIScript
                     {
                         //switch to AGENT_SPELL
                         _unit->GetAIInterface()->setCurrentAgent(AGENT_SPELL);
-                        _unit->SendScriptTextChatMessage(4773);     // Be gone trifling elf. I'm in control now
+                        sendDBChatMessage(4773);     // Be gone trifling elf. I'm in control now
                         SwitchToDemonForm();
                         Phase = 1;
                         SwitchTimer = 60; //60 seconds
@@ -810,7 +810,7 @@ class LeotherasAI : public CreatureAIScript
                             _unit->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
                             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
                             _unit->GetAIInterface()->m_canMove = false;
-                            _unit->SendScriptTextChatMessage(4781);     // No... no! What have you done? I am the master! Do you hear me? I am... aaggh! Can't... contain him.
+                            sendDBChatMessage(4781);     // No... no! What have you done? I am the master! Do you hear me? I am... aaggh! Can't... contain him.
                             FinalPhaseTimer = 10;
                             FinalPhaseSubphase++;
                             break;
@@ -1212,7 +1212,7 @@ class KarathressAI : public CreatureAIScript
             CataclysmicBoltTimer = 10;
             EnrageTimer = 600;
             Enraged = false;
-            _unit->SendScriptTextChatMessage(4740);     // Guards, attention!We have visitors ...
+            sendDBChatMessage(4740);     // Guards, attention!We have visitors ...
             RegisterAIUpdateEvent(1000);
         }
 
@@ -1225,7 +1225,7 @@ class KarathressAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(4748);     // Her ... excellency ... awaits!
+            sendDBChatMessage(4748);     // Her ... excellency ... awaits!
             RemoveAIUpdateEvent();
 
             //spawn seer olum and despawn him in 3 minutes
@@ -1237,7 +1237,7 @@ class KarathressAI : public CreatureAIScript
 
         void OnTargetDied(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(4747);     // I am rid of you.
+            sendDBChatMessage(4747);     // I am rid of you.
         }
 
         void AIUpdate()
@@ -1280,7 +1280,7 @@ class KarathressAI : public CreatureAIScript
             {
                 if (BlessingOfTidesCounter < AdvisorsLeft)
                 {
-                    _unit->SendScriptTextChatMessage(4741);     // Your overconfidence will be your undoing! Guards, lend me your strength!
+                    sendDBChatMessage(4741);     // Your overconfidence will be your undoing! Guards, lend me your strength!
                     _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(BLESSING_OF_THE_TIDES), true);
                     BlessingOfTidesCounter++;
                 }
@@ -1512,7 +1512,7 @@ class MorogrimAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(4784);     // Flood of the deep, take you!
+            sendDBChatMessage(4784);     // Flood of the deep, take you!
 
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
 
@@ -1531,7 +1531,7 @@ class MorogrimAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(4792);     // Great... currents of... Ageon.
+            sendDBChatMessage(4792);     // Great... currents of... Ageon.
 
             RemoveAIUpdateEvent();
         }
@@ -1543,13 +1543,13 @@ class MorogrimAI : public CreatureAIScript
                 switch (RandomUInt(2))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(4791);     // Only the strong survive.
+                        sendDBChatMessage(4791);     // Only the strong survive.
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(4790);     // Struggling only makes it worse.
+                        sendDBChatMessage(4790);     // Struggling only makes it worse.
                         break;
                     case 2:
-                        _unit->SendScriptTextChatMessage(4789);     // It is done!
+                        sendDBChatMessage(4789);     // It is done!
                         _unit->PlaySoundToSet(11326);
                         break;
                 }
@@ -1578,10 +1578,10 @@ class MorogrimAI : public CreatureAIScript
                     switch (RandomUInt(1))
                     {
                         case 0:
-                            _unit->SendScriptTextChatMessage(4786);     // Destroy them my subjects!
+                            sendDBChatMessage(4786);     // Destroy them my subjects!
                             break;
                         case 1:
-                            _unit->SendScriptTextChatMessage(4785);     // By the Tides, kill them at once!
+                            sendDBChatMessage(4785);     // By the Tides, kill them at once!
                             break;
                     }
                     _unit->CastSpell(_unit, spells[1].info, spells[1].instant);
@@ -1604,10 +1604,10 @@ class MorogrimAI : public CreatureAIScript
                         switch (RandomUInt(1))
                         {
                             case 0:
-                                _unit->SendScriptTextChatMessage(4788);     // Soon it will be finished.
+                                sendDBChatMessage(4788);     // Soon it will be finished.
                                 break;
                             case 1:
-                                _unit->SendScriptTextChatMessage(4787);     // There is nowhere to hide!
+                                sendDBChatMessage(4787);     // There is nowhere to hide!
                                 break;
                         }
                         _unit->CastSpell(target, spells[3].info, spells[3].instant);
@@ -1855,16 +1855,16 @@ class VashjAI : public CreatureAIScript
             switch (RandomUInt(3))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(4759);     // I'll split you from stem to stern!");
+                    sendDBChatMessage(4759);     // I'll split you from stem to stern!");
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(4760);     // Victory to Lord Illidan!
+                    sendDBChatMessage(4760);     // Victory to Lord Illidan!
                     break;
                 case 2:
-                    _unit->SendScriptTextChatMessage(4761);     // I spit on you, surface filth!
+                    sendDBChatMessage(4761);     // I spit on you, surface filth!
                     break;
                 case 3:
-                    _unit->SendScriptTextChatMessage(4762);     // Death to the outsiders!
+                    sendDBChatMessage(4762);     // Death to the outsiders!
                     break;
             }
 
@@ -1902,7 +1902,7 @@ class VashjAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(4771);     // Lord Illidan, I... I am... sorry.
+            sendDBChatMessage(4771);     // Lord Illidan, I... I am... sorry.
             RemoveAIUpdateEvent();
         }
 
@@ -1911,10 +1911,10 @@ class VashjAI : public CreatureAIScript
             switch (RandomUInt(1))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(4768);     // Your time ends now!
+                    sendDBChatMessage(4768);     // Your time ends now!
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(4769);     // You have failed!
+                    sendDBChatMessage(4769);     // You have failed!
                     break;
             }
         }
@@ -1945,7 +1945,7 @@ class VashjAI : public CreatureAIScript
                     _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                     _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                     _unit->GetAIInterface()->setWayPointToMove(1);
-                    _unit->SendScriptTextChatMessage(4764);     // The time is now! Leave none standing!
+                    sendDBChatMessage(4764);     // The time is now! Leave none standing!
                     _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
                     _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(VASHJ_SHIELD), true);
                     _unit->GetAIInterface()->setOutOfCombatRange(3000);
@@ -2100,7 +2100,7 @@ class VashjAI : public CreatureAIScript
 
                 _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
                 _unit->RemoveAura(VASHJ_SHIELD);
-                _unit->SendScriptTextChatMessage(4765);     // You may want to take cover.
+                sendDBChatMessage(4765);     // You may want to take cover.
                 _unit->GetAIInterface()->m_canMove = true;
                 Phase = 3;
             }
@@ -2121,10 +2121,10 @@ class VashjAI : public CreatureAIScript
             switch (RandomUInt(5))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(4766);     // "Straight to the heart!
+                    sendDBChatMessage(4766);     // "Straight to the heart!
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(4767);     // Seek your mark!
+                    sendDBChatMessage(4767);     // Seek your mark!
                     break;
                 default:
                     break;

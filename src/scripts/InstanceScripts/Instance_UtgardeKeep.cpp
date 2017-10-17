@@ -441,7 +441,7 @@ class SkarvaldTheConstructorAI : public MoonScriptCreatureAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(4471);     // Dalronn! See if you can muster the nerve to join my attack!
+            sendDBChatMessage(4471);     // Dalronn! See if you can muster the nerve to join my attack!
             pDalronn = GetNearestCreature(CN_DALRONN);
             mReplyTimer = AddTimer(2500);
 
@@ -452,7 +452,7 @@ class SkarvaldTheConstructorAI : public MoonScriptCreatureAI
         {
             if (IsTimerFinished(mReplyTimer) && pDalronn != NULL)
             {
-                pDalronn->Emote("By all means, don't assess the situation, you halfwit! Just jump into the fray!", Text_Yell, 13199);
+                pDalronn->sendChatMessage(CHAT_MSG_MONSTER_YELL, 13199, "By all means, don't assess the situation, you halfwit! Just jump into the fray!");
                 RemoveTimer(mReplyTimer);
             };
 
@@ -463,15 +463,15 @@ class SkarvaldTheConstructorAI : public MoonScriptCreatureAI
         {
             if (pDalronn != NULL && pDalronn->IsAlive())
             {
-                Emote("Not... over... yet.", Text_Yell, 0);
-                pDalronn->Emote("Skarvald, you incompetent slug! Return and make yourself useful!", Text_Yell, 13203);
+                sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "Not... over... yet.");
+                pDalronn->sendChatMessage(CHAT_MSG_MONSTER_YELL, 13203, "Skarvald, you incompetent slug! Return and make yourself useful!");
                 SpawnCreature(CN_SKARVALD_GHOST, true);
                 _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
             }
             else if (pDalronn != NULL && !pDalronn->IsAlive())
             {
-                Emote("A warrior's death.", Text_Yell, 13231);
+                sendChatMessage(CHAT_MSG_MONSTER_YELL, 13231, "A warrior's death.");
 
                 pDalronnGhost = GetNearestCreature(CN_DALRONN_GHOST);
 
@@ -553,14 +553,14 @@ class DalronnTheControllerAI : public MoonScriptCreatureAI
         {
             if (pSkarvald != NULL && pSkarvald->IsAlive())
             {
-                Emote("See... you... soon.", Text_Yell, 0);
-                pSkarvald->Emote("Pagh! What sort of necromancer lets death stop him? I knew you were worthless!", Text_Yell, 13233);
+                sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "See... you... soon.");
+                pSkarvald->sendChatMessage(CHAT_MSG_MONSTER_YELL, 13233, "Pagh! What sort of necromancer lets death stop him? I knew you were worthless!");
                 SpawnCreature(CN_DALRONN_GHOST, true);
                 _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             }
             else if (pSkarvald != NULL && !pSkarvald->IsAlive())
             {
-                Emote("There's no... greater... glory.", Text_Yell, 13201);
+                sendChatMessage(CHAT_MSG_MONSTER_YELL, 13201, "There's no... greater... glory.");
 
                 pSkarvaldGhost = GetNearestCreature(CN_SKARVALD_GHOST);
 
@@ -661,7 +661,7 @@ void SpellFunc_KelesethFrostTomb(SpellDesc* pThis, MoonScriptCreatureAI* pCreatu
 
         pCreatureAI->GetUnit()->CastSpell(pTarget, FROST_TOMB_SPELL, true);
         pTarget->GetMapMgr()->GetInterface()->SpawnCreature(CN_FROST_TOMB, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), pTarget->GetOrientation(), true, false, 0, 0);
-        pCreatureAI->Emote("Not so fast.", Text_Yell, 0);
+        pCreatureAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "Not so fast.");
     };
 };
 
@@ -691,7 +691,7 @@ class PrinceKelesethAI : public MoonScriptCreatureAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(500);      // Your blood is mine!
+            sendDBChatMessage(500);      // Your blood is mine!
             CastSpellNowNoScheduling(mAddSummon);
 
             ParentClass::OnCombatStart(pTarget);
@@ -699,7 +699,7 @@ class PrinceKelesethAI : public MoonScriptCreatureAI
 
         void OnTargetDied(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(504);      // I join... the night.
+            sendDBChatMessage(504);      // I join... the night.
         }
 
         SpellDesc* mAddSummon;
@@ -824,17 +824,17 @@ class IngvarThePlundererAI : public MoonScriptCreatureAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(4468);     // I'll paint my face with your blood!
+            sendDBChatMessage(4468);     // I'll paint my face with your blood!
         }
 
         void OnTargetDied(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(4469);     // Mjul orm agn gjor!
+            sendDBChatMessage(4469);     // Mjul orm agn gjor!
         }
 
         void OnDied(Unit* pKiller)
         {
-            _unit->SendScriptTextChatMessage(4470);     // My life for the... death god!
+            sendDBChatMessage(4470);     // My life for the... death god!
 
             //Ressurect event
             SpawnCreature(CN_INGVAR_UNDEAD, true);
@@ -869,7 +869,7 @@ class IngvarUndeadAI : public MoonScriptCreatureAI
 
         void OnDied(Unit* pKiller)
         {
-            _unit->SendScriptTextChatMessage(6986);     // No! I can do... better! I can...
+            sendDBChatMessage(6986);     // No! I can do... better! I can...
 
             if (mInstance)
                 mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_Finished);

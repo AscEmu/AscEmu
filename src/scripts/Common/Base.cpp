@@ -665,28 +665,6 @@ EmoteDesc* MoonScriptCreatureAI::AddEmote(EventType pEventType, uint32_t scriptt
     return NewEmote;
 }
 
-void MoonScriptCreatureAI::RemoveEmote(EventType pEventType, EmoteDesc* pEmote)
-{
-    switch (pEventType)
-    {
-        case Event_OnCombatStart:
-            DeleteItem(mOnCombatStartEmotes, pEmote);
-            break;
-        case Event_OnTargetDied:
-            DeleteItem(mOnTargetDiedEmotes, pEmote);
-            break;
-        case Event_OnDied:
-            DeleteItem(mOnDiedEmotes, pEmote);
-            break;
-        case Event_OnTaunt:
-            DeleteItem(mOnTauntEmotes, pEmote);
-            break;
-        default:
-            LogDebugFlag(LF_SCRIPT_MGR, "MoonScriptCreatureAI::RemoveEmote() : Invalid event type!");
-            break;
-    }
-}
-
 void MoonScriptCreatureAI::RemoveAllEmotes(EventType pEventType)
 {
     switch (pEventType)
@@ -707,39 +685,6 @@ void MoonScriptCreatureAI::RemoveAllEmotes(EventType pEventType)
             LogDebugFlag(LF_SCRIPT_MGR, "MoonScriptCreatureAI::RemoveAllEmotes() : Invalid event type!");
             break;
     }
-}
-
-void MoonScriptCreatureAI::Emote(EmoteDesc* pEmote)
-{
-    if (pEmote) Emote(pEmote->mText.c_str(), pEmote->mType, pEmote->mSoundId);
-}
-
-void MoonScriptCreatureAI::Emote(const char* pText, TextType pType, uint32 pSoundId)
-{
-    if (pText && strlen(pText) > 0)
-    {
-        switch (pType)
-        {
-            case Text_Say:
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, pText);
-                break;
-            case Text_Yell:
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, pText);
-                break;
-            case Text_Emote:
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_EMOTE, LANG_UNIVERSAL, pText);
-                break;
-            default:
-                LogDebugFlag(LF_SCRIPT_MGR, "MoonScriptCreatureAI::Emote() : Invalid text type!");
-                break;
-        }
-    }
-    if (pSoundId > 0) _unit->PlaySoundToSet(pSoundId);
-}
-
-void MoonScriptCreatureAI::Emote(uint32_t scripttext)
-{
-    _unit->SendScriptTextChatMessage(scripttext);
 }
 
 void MoonScriptCreatureAI::Announce(const char* pText)
@@ -1492,8 +1437,25 @@ void MoonScriptCreatureAI::RandomEmote(EmoteArray & pEmoteArray)
     if (ArraySize > 0)
     {
         uint32 Roll = (ArraySize > 1) ? RandomUInt(ArraySize - 1) : 0;
-        Emote(pEmoteArray[Roll]->mText.c_str(), pEmoteArray[Roll]->mType, pEmoteArray[Roll]->mSoundId);
-    };
+        switch (pEmoteArray[Roll]->mType)
+        {
+            case Text_Say:
+                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, pEmoteArray[Roll]->mText.c_str());
+                break;
+            case Text_Yell:
+                _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, pEmoteArray[Roll]->mText.c_str());
+                break;
+            case Text_Emote:
+                _unit->SendChatMessage(CHAT_MSG_MONSTER_EMOTE, LANG_UNIVERSAL, pEmoteArray[Roll]->mText.c_str());
+                break;
+            default:
+                LogDebugFlag(LF_SCRIPT_MGR, "MoonScriptCreatureAI::RandomEmote() : Invalid text type!");
+                break;
+        }
+
+        if (pEmoteArray[Roll]->mSoundId > 0)
+            _unit->PlaySoundToSet(pEmoteArray[Roll]->mSoundId);
+    }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

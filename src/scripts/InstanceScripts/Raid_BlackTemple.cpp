@@ -1238,7 +1238,7 @@ void SpellFunc_BerserkerStance(SpellDesc* pThis, MoonScriptCreatureAI* pCreature
         //SetDisplayWeaponIds(0, 0)    // Sword
         pWeaponMaster->ApplyAura(SHADOWMOON_WEAPON_MASTER_BERSERKER_STANCE);
         pWeaponMaster->ApplyAura(SHADOWMOON_WEAPON_MASTER_BERSEKER_AURA);
-        pWeaponMaster->Emote("Berserker stance! Attack them recklessly!", Text_Say, 0);
+        pWeaponMaster->sendChatMessage(CHAT_MSG_MONSTER_SAY, 0, "Berserker stance! Attack them recklessly!");
     }
 }
 
@@ -1548,7 +1548,7 @@ class NajentusAI : public CreatureAIScript
             spells[2].casttime = t + 60;
             spells[3].casttime = t + 20;
 
-            _unit->SendScriptTextChatMessage(4720);     // You will die in the name of Lady Vashj!
+            sendDBChatMessage(4720);     // You will die in the name of Lady Vashj!
 
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
         }
@@ -1563,7 +1563,7 @@ class NajentusAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(4710);     // Lord Illidan will... crush you!
+            sendDBChatMessage(4710);     // Lord Illidan will... crush you!
 
             RemoveAIUpdateEvent();
         }
@@ -1573,11 +1573,11 @@ class NajentusAI : public CreatureAIScript
             switch (RandomUInt(2))
             {
                 case 1:
-                    _unit->SendScriptTextChatMessage(4705);     // Time for you to go.
+                    sendDBChatMessage(4705);     // Time for you to go.
                     break;
                 default:
                     {
-                        _unit->SendScriptTextChatMessage(4704); // Your success was short-lived!
+                        sendDBChatMessage(4704); // Your success was short-lived!
                     }
             }
         }
@@ -1592,11 +1592,11 @@ class NajentusAI : public CreatureAIScript
                 switch (RandomUInt(2))
                 {
                     case 1:
-                        _unit->SendScriptTextChatMessage(4702);     // Stick around!
+                        sendDBChatMessage(4702);     // Stick around!
                         break;
                     default:
                         {
-                            _unit->SendScriptTextChatMessage(4703); // I'll deal with you later.
+                            sendDBChatMessage(4703); // I'll deal with you later.
                         }
                 }
                 _unit->setAttackTimer(spells[3].attackstoptimer, false);
@@ -1749,7 +1749,7 @@ class SupremusAI : public CreatureAIScript
         void OnCombatStart(Unit* mTarget)
         {
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
-            _unit->SendScriptTextChatMessage(5034);    // Bear witness to the agent of your demise! used when he kills Warden Mellichar
+            sendDBChatMessage(5034);    // Bear witness to the agent of your demise! used when he kills Warden Mellichar
             timer = 0;
         }
 
@@ -1762,7 +1762,7 @@ class SupremusAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(5042);     // I am merely one of... infinite multitudes.
+            sendDBChatMessage(5042);     // I am merely one of... infinite multitudes.
             RemoveAIUpdateEvent();
         }
 
@@ -1773,10 +1773,10 @@ class SupremusAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(5035);     // Your fate is written.
+                        sendDBChatMessage(5035);     // Your fate is written.
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(5036);     // The chaos I have sown here is but a taste....
+                        sendDBChatMessage(5036);     // The chaos I have sown here is but a taste....
                         break;
                 }
             }
@@ -1840,7 +1840,7 @@ class SupremusAI : public CreatureAIScript
 
             if (timer >= 45)
             {
-                _unit->SendScriptTextChatMessage(5041);     // We span the universe, as countless as the stars!
+                sendDBChatMessage(5041);     // We span the universe, as countless as the stars!
                 timer = 0;
                 m_phase = 2;
             }
@@ -1863,7 +1863,7 @@ class SupremusAI : public CreatureAIScript
 
                 else if (m_VolcanicGazer)
                 {
-                    _unit->SendScriptTextChatMessage(4690);     // The ground begins to crack open"
+                    sendDBChatMessage(4690);     // The ground begins to crack open"
                     _unit->CastSpell(_unit, infoVolcanicGazer, false);
                     m_VolcanicGazer = false;
                     return;
@@ -1885,7 +1885,7 @@ class SupremusAI : public CreatureAIScript
 
             if (timer >= 45)
             {
-                _unit->SendScriptTextChatMessage(5041);     // We span the universe, as countless as the stars!
+                sendDBChatMessage(5041);     // We span the universe, as countless as the stars!
                 timer = 0;
                 m_phase = 1;
 
@@ -2034,7 +2034,7 @@ class GurtoggAI : public CreatureAIScript
 
             spells[2].casttime = (uint32)time(NULL) + 10;
 
-            _unit->SendScriptTextChatMessage(4642);     // Horde will crush you!"
+            sendDBChatMessage(4642);     // Horde will crush you!"
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
 
             PhaseTimer = (uint32)time(NULL) + 60;
@@ -2048,7 +2048,7 @@ class GurtoggAI : public CreatureAIScript
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
             if (_unit->isAlive())
-                _unit->SendScriptTextChatMessage(4648);     //I'll rip the meat from your bones!
+                sendDBChatMessage(4648);     //I'll rip the meat from your bones!
 
             RemoveAIUpdateEvent();
 
@@ -2059,7 +2059,7 @@ class GurtoggAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(4649);     // Aaaahrg...
+            sendDBChatMessage(4649);     // Aaaahrg...
 
             RemoveAIUpdateEvent();
         }
@@ -2069,10 +2069,10 @@ class GurtoggAI : public CreatureAIScript
             switch (RandomUInt(2))
             {
                 case 1:
-                    _unit->SendScriptTextChatMessage(4644);     // "More! I want more!"
+                    sendDBChatMessage(4644);     // "More! I want more!"
                     break;
                 case 2:
-                    _unit->SendScriptTextChatMessage(4643);     // Time to feast!"
+                    sendDBChatMessage(4643);     // Time to feast!"
                     break;
             }
         }
@@ -2222,7 +2222,7 @@ class GurtoggAI : public CreatureAIScript
                     switch (RandomUInt(2))
                     {
                         case 1:
-                            _unit->SendScriptTextChatMessage(4648);     // I'll rip the meat from your bones!"
+                            sendDBChatMessage(4648);     // I'll rip the meat from your bones!"
                             break;
                         case 2:
                             _unit->PlaySoundToSet(11437);               // <babbling>
@@ -2389,7 +2389,7 @@ class EssenceOfSufferingAI : public MoonScriptCreatureAI
             AddEmote(Event_OnTargetDied, "The pain is only beginning!", Text_Yell, 11419);
 
             // Freed
-            Emote("Pain and suffering are all that await you.", Text_Yell, 11415);
+            sendChatMessage(CHAT_MSG_MONSTER_YELL, 11415, "Pain and suffering are all that await you.");
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -2444,7 +2444,7 @@ class EssenceOfDesireAI : public MoonScriptCreatureAI
             AddEmote(Event_OnTargetDied, "Your reach exceeds your grasp.", Text_Yell, 11413);
 
             // Freed
-            Emote("You can have anything you desire... for a price.", Text_Yell, 11408);
+            sendChatMessage(CHAT_MSG_MONSTER_YELL, 11408, "You can have anything you desire... for a price.");
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -2501,7 +2501,7 @@ class EssenceOfAngerAI : public MoonScriptCreatureAI
             AddEmote(Event_OnDied, "Beware, cowards!", Text_Yell, 11405);
             AddEmote(Event_OnDied, "I won't be ingored.", Text_Yell, 11404);
 
-            Emote("Beware - I live!", Text_Yell, 11399);
+            sendChatMessage(CHAT_MSG_MONSTER_YELL, 11399, "Beware - I live!");
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -2590,7 +2590,7 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
                             if (pEoS->GetHealthPct() <= 1 && pEoS->CalcDistance(_unit) <= 3)
                             {
                                 _unit->Emote(EMOTE_STATE_STAND);
-                                mEoS->Emote("Now what do I do?!", Text_Yell, 11414);
+                                mEoS->sendChatMessage(CHAT_MSG_MONSTER_YELL, 11414, "Now what do I do?!");
                                 pEoS->Emote(EMOTE_ONESHOT_SUBMERGE);
                                 pEoS->Despawn(100, 0);
                                 Phase = 2;
@@ -2619,7 +2619,7 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
                             if (pEoD->GetHealthPct() <= 1 && pEoD->CalcDistance(_unit) <= 3)
                             {
                                 _unit->Emote(EMOTE_STATE_STAND);
-                                mEoD->Emote("I'll be waiting.", Text_Yell, 11413);
+                                mEoD->sendChatMessage(CHAT_MSG_MONSTER_YELL, 11413, "I'll be waiting.");
                                 pEoD->Emote(EMOTE_ONESHOT_SUBMERGE);
                                 pEoD->Despawn(100, 0);
                                 Phase = 5;
@@ -2798,7 +2798,7 @@ class ShahrazAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(4653);     //So, business... or pleasure?"
+            sendDBChatMessage(4653);     //So, business... or pleasure?"
 
             for (uint8 i = 0; i < 6; i++)
                 spells[i].casttime = 0;
@@ -2820,7 +2820,7 @@ class ShahrazAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(4660);     // I wasn't finished.
+            sendDBChatMessage(4660);     // I wasn't finished.
             RemoveAIUpdateEvent();
         }
 
@@ -2829,10 +2829,10 @@ class ShahrazAI : public CreatureAIScript
             switch (RandomUInt(2))
             {
                 case 1:
-                    _unit->SendScriptTextChatMessage(4658);     // So much for a happy ending.
+                    sendDBChatMessage(4658);     // So much for a happy ending.
                     break;
                 case 2:
-                    _unit->SendScriptTextChatMessage(4657);     // Easy come, easy go.
+                    sendDBChatMessage(4657);     // Easy come, easy go.
                     break;
             }
         }
@@ -2845,13 +2845,13 @@ class ShahrazAI : public CreatureAIScript
                 switch (RandomUInt(3))
                 {
                     case 1:
-                        _unit->SendScriptTextChatMessage(4651);     // I'm not impressed.
+                        sendDBChatMessage(4651);     // I'm not impressed.
                         break;
                     case 2:
-                        _unit->SendScriptTextChatMessage(4652);     // Enjoying yourselves?
+                        sendDBChatMessage(4652);     // Enjoying yourselves?
                         break;
                     default:
-                        _unit->SendScriptTextChatMessage(4650);     // You play, you pay.
+                        sendDBChatMessage(4650);     // You play, you pay.
                         break;
                 }
 
@@ -2860,7 +2860,7 @@ class ShahrazAI : public CreatureAIScript
 
             if (!Enraged && _unit->GetHealthPct() <= 20)
             {
-                _unit->SendScriptTextChatMessage(4659);     // Stop toying with my emotions!
+                sendDBChatMessage(4659);     // Stop toying with my emotions!
                 _unit->CastSpell(_unit, MS_ENRAGE, true);
 
                 Enraged = true;
@@ -3276,7 +3276,7 @@ class TeronGorefiendAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(4692);     // Vengeance is mine!
+            sendDBChatMessage(4692);     // Vengeance is mine!
 
             for (uint8 i = 0; i < 4; i++)
                 spells[i].casttime = 0;
@@ -3295,10 +3295,10 @@ class TeronGorefiendAI : public CreatureAIScript
                 switch (RandomUInt(2))
                 {
                     case 1:
-                        _unit->SendScriptTextChatMessage(4694);     // It gets worse...
+                        sendDBChatMessage(4694);     // It gets worse...
                         break;
                     default:
-                        _unit->SendScriptTextChatMessage(4693);     // I have use for you!
+                        sendDBChatMessage(4693);     // I have use for you!
                         break;
                 }
             }
@@ -3314,7 +3314,7 @@ class TeronGorefiendAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(4700);     // The wheel...spins...again....
+            sendDBChatMessage(4700);     // The wheel...spins...again....
             RemoveAIUpdateEvent();
         }
 
@@ -4383,7 +4383,7 @@ class AkamaAI : public MoonScriptBossAI
             Unit* pDoorTrigger = getNearestCreature(771.5f, 304.7f, 319.0f, CN_DOOR_EVENT_TRIGGER);
             if ((mScenePart <= 15 && pGate == NULL) || mScenePart == -1)
             {
-                Emote("It's strange that Illidan doesn't protect himself against intruders.", Text_Say, 0);
+                sendChatMessage(CHAT_MSG_MONSTER_SAY, 0, "It's strange that Illidan doesn't protect himself against intruders.");
                 SetTargetToChannel(NULL, 0);
                 ForceWaypointMove(7);
 
@@ -4413,7 +4413,7 @@ class AkamaAI : public MoonScriptBossAI
                     _unit->SetFacing(6.248631f);
                     break;
                 case 2:
-                    Emote("The door is all that stands between us and the Betrayer. Stand aside, friends.", Text_Say, 0);
+                    sendChatMessage(CHAT_MSG_MONSTER_SAY, 0, "The door is all that stands between us and the Betrayer. Stand aside, friends.");
                     _unit->Emote(EMOTE_ONESHOT_TALK);
                     break;
                 case 3:
@@ -4427,7 +4427,7 @@ class AkamaAI : public MoonScriptBossAI
                     SetTargetToChannel(NULL, 0);
                     break;
                 case 5:
-                    Emote("I cannot do this alone...", Text_Say, 0);
+                    sendChatMessage(CHAT_MSG_MONSTER_SAY, 0, "I cannot do this alone...");
                     _unit->Emote(EMOTE_ONESHOT_NO);
                     break;
                 case 6:        // summoning two spirits to help Akama with breaking doors
@@ -4440,10 +4440,10 @@ class AkamaAI : public MoonScriptBossAI
                     }
                     break;
                 case 7:
-                    mUdaloAI->Emote("You are not alone, Akama.", Text_Say, 0);
+                    mUdaloAI->sendChatMessage(CHAT_MSG_MONSTER_SAY, 0, "You are not alone, Akama.");
                     break;
                 case 8:
-                    mOlumAI->Emote("Your people will always be with you.", Text_Say, 0);
+                    mOlumAI->sendChatMessage(CHAT_MSG_MONSTER_SAY, 0, "Your people will always be with you.");
                     break;
                 case 9:
                     if (pDoorTrigger != NULL)
@@ -4474,7 +4474,7 @@ class AkamaAI : public MoonScriptBossAI
                     mOlumAI->SetTargetToChannel(NULL, 0);
                     break;
                 case 13:
-                    Emote("I thank you for your aid, my brothers. Our people will be redeemed!", Text_Say, 0);
+                    sendChatMessage(CHAT_MSG_MONSTER_SAY, 0, "I thank you for your aid, my brothers. Our people will be redeemed!");
                     _unit->Emote(EMOTE_ONESHOT_SALUTE);
                     break;
                 case 14:
@@ -4489,7 +4489,7 @@ class AkamaAI : public MoonScriptBossAI
                     RemoveAIUpdateEvent();
                     break;
                 case 16:
-                    Emote("", Text_Say, 11388);
+                    sendChatMessage(CHAT_MSG_MONSTER_SAY, 11388, "");
                     _unit->SetFacing(2.113512f);
                     break;
                 case 17:
@@ -4518,7 +4518,7 @@ class AkamaAI : public MoonScriptBossAI
 
             if (mIllidanAI == NULL || !mIllidanAI->IsAlive())
             {
-                Emote("Not this time my friends.", Text_Say, 0);
+                sendChatMessage(CHAT_MSG_MONSTER_SAY, 0, "Not this time my friends.");
                 CastSpellNowNoScheduling(mDespawn);
                 Despawn(0);
                 return;
@@ -4537,7 +4537,7 @@ class AkamaAI : public MoonScriptBossAI
                     mIllidanAI->RemoveAura(39656);
                     break;
                 case 3:
-                    mIllidanAI->Emote("Akama... your duplicity is hardly surprising. I should have slaughtered you and your malformed brethren long ago.", Text_Yell, 11463);
+                    mIllidanAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 11463, "Akama... your duplicity is hardly surprising. I should have slaughtered you and your malformed brethren long ago.");
                     break;
                 case 4:
                     mIllidanAI->GetUnit()->Emote(EMOTE_ONESHOT_QUESTION);
@@ -4546,7 +4546,7 @@ class AkamaAI : public MoonScriptBossAI
                     mIllidanAI->GetUnit()->Emote(EMOTE_ONESHOT_QUESTION);
                     break;
                 case 6:
-                    Emote("We've come to end your reign, Illidan. My people and all of Outland shall be free!", Text_Yell, 11389);
+                    sendChatMessage(CHAT_MSG_MONSTER_YELL, 11389, "We've come to end your reign, Illidan. My people and all of Outland shall be free!");
                     _unit->Emote(EMOTE_ONESHOT_POINT);
                     break;
                 case 7:
@@ -4556,14 +4556,14 @@ class AkamaAI : public MoonScriptBossAI
                     _unit->Emote(EMOTE_ONESHOT_SALUTE);
                     break;
                 case 9:
-                    mIllidanAI->Emote("Boldly said. But I remain unconvinced.", Text_Yell, 11464);
+                    mIllidanAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 11464, "Boldly said. But I remain unconvinced.");
                     mIllidanAI->GetUnit()->Emote(EMOTE_ONESHOT_QUESTION);
                     break;
                 case 10:
                     mIllidanAI->GetUnit()->Emote(EMOTE_ONESHOT_QUESTION);
                     break;
                 case 11:
-                    Emote("The time has come! The moment is at hand!", Text_Yell, 11380);
+                    sendChatMessage(CHAT_MSG_MONSTER_YELL, 11380, "The time has come! The moment is at hand!");
                     _unit->Emote(EMOTE_ONESHOT_SHOUT);
                     break;
                 case 12:
@@ -4571,7 +4571,7 @@ class AkamaAI : public MoonScriptBossAI
                     _unit->Emote(EMOTE_ONESHOT_ROAR);
                     break;
                 case 13:
-                    mIllidanAI->Emote("You are not prepared!", Text_Yell, 11466);
+                    mIllidanAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 11466, "You are not prepared!");
                     mIllidanAI->GetUnit()->Emote(EMOTE_ONESHOT_CUSTOMSPELL05);
 
                     _unit->SetEmoteState(EMOTE_ONESHOT_READY1H);
@@ -4650,7 +4650,7 @@ class AkamaAI : public MoonScriptBossAI
             {
                 if (mIllidanAI == NULL)
                 {
-                    Emote("Not this time my friends.", Text_Say, 0);
+                    sendChatMessage(CHAT_MSG_MONSTER_SAY, 0, "Not this time my friends.");
                     if (!IsCasting())
                     {
                         CastSpellNowNoScheduling(mDespawn);
@@ -4692,7 +4692,7 @@ class AkamaAI : public MoonScriptBossAI
                 switch (mScenePart)
                 {
                     case 1:
-                        mIllidanAI->Emote("Come, my minions. Deal with this traitor as he deserves!", Text_Yell, 11465);
+                        mIllidanAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 11465, "Come, my minions. Deal with this traitor as he deserves!");
                         break;
                     case 2:
                         if (GetCanEnterCombat())
@@ -4713,7 +4713,7 @@ class AkamaAI : public MoonScriptBossAI
                         mIllidanAI = NULL;
                         break;
                     case 3:
-                        Emote("I will deal with these mongrels! Strike now, friends! Strike at the Betrayer!", Text_Yell, 11390);
+                        sendChatMessage(CHAT_MSG_MONSTER_YELL, 11390, "I will deal with these mongrels! Strike now, friends! Strike at the Betrayer!");
                         _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
                         break;
                     case 4:
@@ -4756,7 +4756,7 @@ class AkamaAI : public MoonScriptBossAI
             {
                 case 1:
                     {
-                        Emote("The Light will fill these dismal halls once again. I swear it.", Text_Yell, 11387);
+                    sendChatMessage(CHAT_MSG_MONSTER_YELL, 11387, "The Light will fill these dismal halls once again. I swear it.");
 
                         Unit* pIllidan = getNearestCreature(22917);
                         if (pIllidan != NULL)
@@ -4976,7 +4976,7 @@ class MaievAI : public MoonScriptBossAI
                 }
                 else if (mSummonTrap)
                 {
-                    Emote("There shall be no prison for you this time!", Text_Yell, 11495);
+                    sendChatMessage(CHAT_MSG_MONSTER_YELL, 11495, "There shall be no prison for you this time!");
                     CastSpellNowNoScheduling(mTrapSummon);
                     ResetTimer(mYellTimer, GetTimer(mYellTimer) + (5 + RandomUInt(10)) * 1000);
                     mSummonTrap = false;
@@ -5001,13 +5001,13 @@ class MaievAI : public MoonScriptBossAI
                     switch (RandomUInt(2))
                     {
                         case 0:
-                            Emote("Bleed as I have bled!", Text_Yell, 11494);
+                            sendChatMessage(CHAT_MSG_MONSTER_YELL, 11494, "Bleed as I have bled!");
                             break;
                         case 1:
-                            Emote("That is for Naisha!", Text_Yell, 11493);
+                            sendChatMessage(CHAT_MSG_MONSTER_YELL, 11493, "That is for Naisha!");
                             break;
                         case 2:                                                            // Not sure if this one should be here
-                            Emote("Meet your end, demon!", Text_Yell, 11500);
+                            sendChatMessage(CHAT_MSG_MONSTER_YELL, 11500, "Meet your end, demon!");
                             break;
                     }
 
@@ -5102,7 +5102,7 @@ class MaievAI : public MoonScriptBossAI
                 switch (mScenePart)
                 {
                     case 1:
-                        Emote("Ah, it is finished. You are beaten.", Text_Yell, 11496);
+                        sendChatMessage(CHAT_MSG_MONSTER_YELL, 11496, "Ah, it is finished. You are beaten.");
 
                         mIllidanAI->GetUnit()->Emote(EMOTE_ONESHOT_CUSTOMSPELL06);
                         if (mIllidanAI->GetUnit()->GetCurrentSpell() != NULL)
@@ -5114,7 +5114,7 @@ class MaievAI : public MoonScriptBossAI
                         _unit->GetAIInterface()->setNextTarget(mIllidanAI->GetUnit());
                         break;
                     case 3:
-                        mIllidanAI->Emote("You have won... Maiev. But the huntress... is nothing without the hunt. You... are nothing... without me.", Text_Yell, 11478);
+                        mIllidanAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 11478, "You have won... Maiev. But the huntress... is nothing without the hunt. You... are nothing... without me.");
                         _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
                         SetWieldWeapon(false);
                         break;
@@ -5137,11 +5137,11 @@ class MaievAI : public MoonScriptBossAI
                         }
                         break;
                     case 5:
-                        Emote("He's right. I feel nothing. I am nothing.", Text_Yell, 11497);
+                        sendChatMessage(CHAT_MSG_MONSTER_YELL, 11497, "He's right. I feel nothing. I am nothing.");
                         break;
                     case 6:
                         {
-                            Emote("Farewell, champions.", Text_Yell, 11498);
+                        sendChatMessage(CHAT_MSG_MONSTER_YELL, 11498, "Farewell, champions.");
                             Creature* pAkama = getNearestCreature(ToIllidan[19].x, ToIllidan[19].y, ToIllidan[19].z, CN_AKAMA);
                             if (pAkama != NULL)
                             {
@@ -5192,7 +5192,7 @@ class MaievAI : public MoonScriptBossAI
 
             else
             {
-                Emote("Farewell, champions.", Text_Yell, 11498);
+                sendChatMessage(CHAT_MSG_MONSTER_YELL, 11498, "Farewell, champions.");
                 Despawn(0);
             }
         }
@@ -5474,10 +5474,10 @@ class IllidanStormrageAI : public MoonScriptBossAI
         // Does not work until it's hooked
         void OnHit(Unit* mVictim, float fAmount)
         {
-            Emote("ON HIT1!", Text_Yell, 0);
+            sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "ON HIT1!");
             if (mVictim->IsCreature() && (mVictim->GetEntry() == CN_MAIEV || mVictim->GetEntry() == CN_AKAMA))
             {
-                Emote("ON HIT2!", Text_Yell, 0);
+                sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "ON HIT2!");
                 Unit* pTarget = _unit->GetAIInterface()->getNextTarget();
                 if (pTarget == NULL || !pTarget->IsPlayer())
                 {
@@ -5603,7 +5603,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                     }
                 }
 
-                Emote("I will not be touched by rabble such as you!", Text_Yell, 11479);
+                sendChatMessage(CHAT_MSG_MONSTER_YELL, 11479, "I will not be touched by rabble such as you!");
                 MoveTo(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ() + 10.0f, false);
                 SetCanEnterCombat(false);
                 SetAllowMelee(false);
@@ -5635,7 +5635,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 {
                     case 0:
                         {
-                            Emote("Behold the flames of Azzinoth!", Text_Yell, 11480);
+                        sendChatMessage(CHAT_MSG_MONSTER_YELL, 11480, "Behold the flames of Azzinoth!");
                             SpellDesc* mGlaiveThrow = FindSpellById(ILLIDAN_THROW_GLAIVE2);
                             if (mGlaiveThrow != NULL)
                             {
@@ -5839,7 +5839,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                         Creature* pTrigger = _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_EYE_BEAM_TRIGGER, EyeBeamPaths[FireWall].x, EyeBeamPaths[FireWall].y, EyeBeamPaths[FireWall].z, EyeBeamPaths[FireWall].o, true, false, 0, 0);
                         if (pTrigger != NULL && pTrigger->GetScript() != NULL)
                         {
-                            Emote("Stare into the eyes of the Betrayer!", Text_Yell, 11481);
+                            sendChatMessage(CHAT_MSG_MONSTER_YELL, 11481, "Stare into the eyes of the Betrayer!");
                             SetTargetToChannel(pTrigger, ILLIDAN_EYE_BLAST1);
                             _unit->CastSpell(pTrigger, ILLIDAN_EYE_BLAST1, true);
                             _unit->GetAIInterface()->setNextTarget(pTrigger);
@@ -5894,7 +5894,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 _unit->Emote((EmoteType)pTransformation[mMiscEventPart - 1].mEmote);
             else
                 _unit->SetEmoteState(pTransformation[mMiscEventPart - 1].mEmote);
-            Emote(pTransformation[mMiscEventPart - 1].mText, Text_Yell, pTransformation[mMiscEventPart - 1].mSoundId);
+            sendChatMessage(CHAT_MSG_MONSTER_YELL, pTransformation[mMiscEventPart - 1].mSoundId, pTransformation[mMiscEventPart - 1].mText);
             ApplyAura(pTransformation[mMiscEventPart - 1].mAura);
             RemoveAura(pTransformation[mMiscEventPart - 1].mUnAura);
             SetWieldWeapon(pTransformation[mMiscEventPart - 1].mEquipWeapons);
@@ -5918,11 +5918,11 @@ class IllidanStormrageAI : public MoonScriptBossAI
                         switch (RandomUInt(2))
                         {
                             case 0:
-                                Emote("You know nothing of power!", Text_Yell, 11469);
+                                sendChatMessage(CHAT_MSG_MONSTER_YELL, 11469, "You know nothing of power!");
                                 mPlaySound = false;
                                 break;
                             case 1:
-                                Emote("Such arrogance!", Text_Yell, 11471);
+                                sendChatMessage(CHAT_MSG_MONSTER_YELL, 11471, "Such arrogance!");
                                 mPlaySound = false;
                                 break;
                         }
@@ -5935,11 +5935,11 @@ class IllidanStormrageAI : public MoonScriptBossAI
                         switch (RandomUInt(2))
                         {
                             case 0:
-                                Emote("You know nothing of power!", Text_Yell, 11469);
+                                sendChatMessage(CHAT_MSG_MONSTER_YELL, 11469, "You know nothing of power!");
                                 mPlaySound = false;
                                 break;
                             case 1:
-                                Emote("Such arrogance!", Text_Yell, 11471);
+                                sendChatMessage(CHAT_MSG_MONSTER_YELL, 11471, "Such arrogance!");
                                 mPlaySound = false;
                                 break;
                         }
@@ -6054,7 +6054,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             switch (mScenePart)
             {
                 case 1:
-                    Emote("Is this it, mortals? Is this all the fury you can muster?", Text_Yell, 11476);
+                    sendChatMessage(CHAT_MSG_MONSTER_YELL, 11476, "Is this it, mortals? Is this all the fury you can muster?");
                     break;
                 case 2:
                     _unit->Emote(EMOTE_ONESHOT_QUESTION);
@@ -6068,7 +6068,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                     _unit->GetAIInterface()->setNextTarget(pMaievAI->GetUnit());
                     break;
                 case 5:
-                    pMaievAI->Emote("Their fury pales before mine, Illidan. We have some unsettled business between us.", Text_Yell, 11491);
+                    pMaievAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 11491, "Their fury pales before mine, Illidan. We have some unsettled business between us.");
                     break;
                 case 6:
                     pMaievAI->SetWieldWeapon(true);
@@ -6079,7 +6079,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                     break;
                 case 8:
                     {
-                        Emote("Maiev... How is it even possible?", Text_Yell, 11477);
+                    sendChatMessage(CHAT_MSG_MONSTER_YELL, 11477, "Maiev... How is it even possible?");
                         pMaievAI->SetDisplayWeapon(true, true);
                     }
                     break;
@@ -6091,7 +6091,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                     }
                     break;
                 case 10:
-                    pMaievAI->Emote("Ah, my long hunt is finally over. Today, Justice will be done!", Text_Yell, 11492);
+                    pMaievAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 11492, "Ah, my long hunt is finally over. Today, Justice will be done!");
                     pMaievAI->GetUnit()->Emote(EMOTE_ONESHOT_EXCLAMATION);
                     pMaievAI->SetDisplayWeapon(false, false);
                     break;
@@ -6210,11 +6210,11 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 switch (RandomUInt(2))
                 {
                     case 0:
-                        Emote("You know nothing of power!", Text_Yell, 11469);
+                        sendChatMessage(CHAT_MSG_MONSTER_YELL, 11469, "You know nothing of power!");
                         mPlaySound = false;
                         break;
                     case 1:
-                        Emote("Such arrogance!", Text_Yell, 11471);
+                        sendChatMessage(CHAT_MSG_MONSTER_YELL, 11471, "Such arrogance!");
                         mPlaySound = false;
                         break;
                 }
@@ -6351,7 +6351,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                     Unit* pTarget = _unit->GetAIInterface()->getNextTarget();
                     if (pTarget->IsCreature() && pTarget->GetEntry() == CN_MAIEV)
                     {
-                        Emote("Feel the hatred of ten thousand years!", Text_Yell, 11470);
+                        sendChatMessage(CHAT_MSG_MONSTER_YELL, 11470, "Feel the hatred of ten thousand years!");
                         mYellTimer = 25000;
                     }
                 }

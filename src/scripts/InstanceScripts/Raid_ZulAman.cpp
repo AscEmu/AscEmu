@@ -100,7 +100,7 @@ class NalorakkAI : public MoonScriptBossAI
                 // 45 Seconds until switch to Bear Form
                 ResetTimer(MorphTimer, 45000);
 
-                Emote("Make way for Nalorakk!", Text_Yell, 12073);
+                sendChatMessage(CHAT_MSG_MONSTER_YELL, 12073, "Make way for Nalorakk!");
             }
         }
 
@@ -154,7 +154,7 @@ class AkilzonAI : public MoonScriptBossAI
                     }
                 }
                 Eagle = NULL;
-                Emote("Feed, me bruddahs!", Text_Yell, 12019);
+                sendChatMessage(CHAT_MSG_MONSTER_YELL, 12019, "Feed, me bruddahs!");
                 // Restart the timer
                 ResetTimer(mSummonTime, 120000);
             }
@@ -288,7 +288,7 @@ class HalazziAI : public MoonScriptBossAI
             {
                 mLynx->Despawn(0, 0);
                 mLynx = NULL;
-                Emote("Spirit, come back to me!", Text_Yell, 12022);
+                sendChatMessage(CHAT_MSG_MONSTER_YELL, 12022, "Spirit, come back to me!");
             }
 
             if (CurrentHealth)

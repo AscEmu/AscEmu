@@ -959,13 +959,13 @@ class PandemoniusAI : public CreatureAIScript
             switch (RandomUInt(2))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(SAY_PANDEMONIUS_01);
+                    sendDBChatMessage(SAY_PANDEMONIUS_01);
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(SAY_PANDEMONIUS_02);
+                    sendDBChatMessage(SAY_PANDEMONIUS_02);
                     break;
                 case 2:
-                    _unit->SendScriptTextChatMessage(SAY_PANDEMONIUS_03);
+                    sendDBChatMessage(SAY_PANDEMONIUS_03);
                     break;
             }
 
@@ -979,10 +979,10 @@ class PandemoniusAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(SAY_PANDEMONIUS_04);
+                        sendDBChatMessage(SAY_PANDEMONIUS_04);
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(SAY_PANDEMONIUS_05);
+                        sendDBChatMessage(SAY_PANDEMONIUS_05);
                         break;
                 }
             }
@@ -998,7 +998,7 @@ class PandemoniusAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(SAY_PANDEMONIUS_06);
+            sendDBChatMessage(SAY_PANDEMONIUS_06);
             RemoveAIUpdateEvent();
         }
 
@@ -1356,13 +1356,13 @@ class NexusPrinceShaffarAI : public CreatureAIScript
             switch (RandomUInt(2))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(SAY_NEXUSPRINCE_02);
+                    sendDBChatMessage(SAY_NEXUSPRINCE_02);
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(SAY_NEXUSPRINCE_03);
+                    sendDBChatMessage(SAY_NEXUSPRINCE_03);
                     break;
                 case 2:
-                    _unit->SendScriptTextChatMessage(SAY_NEXUSPRINCE_04);
+                    sendDBChatMessage(SAY_NEXUSPRINCE_04);
                     break;
             }
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
@@ -1375,10 +1375,10 @@ class NexusPrinceShaffarAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(SAY_NEXUSPRINCE_06);
+                        sendDBChatMessage(SAY_NEXUSPRINCE_06);
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(SAY_NEXUSPRINCE_05);
+                        sendDBChatMessage(SAY_NEXUSPRINCE_05);
                         break;
                 }
             }
@@ -1394,7 +1394,7 @@ class NexusPrinceShaffarAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(SAY_NEXUSPRINCE_08);
+            sendDBChatMessage(SAY_NEXUSPRINCE_08);
             RemoveAIUpdateEvent();
         }
 

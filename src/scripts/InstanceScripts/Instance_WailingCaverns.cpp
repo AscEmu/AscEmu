@@ -102,7 +102,7 @@ class LadyAnacondraAI : public MoonScriptCreatureAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(8755);     // None can stand against the Serpent Lords!
+            sendDBChatMessage(8755);     // None can stand against the Serpent Lords!
         }
 };
 
@@ -122,7 +122,7 @@ class LordCobrahnAI : public MoonScriptCreatureAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(8756);     // You will never wake the dreamer!
+            sendDBChatMessage(8756);     // You will never wake the dreamer!
         }
 
         void AIUpdate()
@@ -161,7 +161,7 @@ class LordPythasAI : public MoonScriptCreatureAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(8757);     // The coils of death... Will crush you!
+            sendDBChatMessage(8757);     // The coils of death... Will crush you!
         }
 };
 
@@ -179,7 +179,7 @@ class LordSerpentisAI : public MoonScriptCreatureAI
 
          void OnCombatStart(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(8758);     // I am the serpent king, i can do anything!
+            sendDBChatMessage(8758);     // I am the serpent king, i can do anything!
         }
 };
 
@@ -208,7 +208,7 @@ class SkumAI : public MoonScriptCreatureAI
         {
             if (GetHealthPercent() <= 10 && GetBehavior() != Behavior_Flee)
             {
-                Emote("Skum tries to run away in fear", Text_Emote);
+                sendChatMessage(CHAT_MSG_MONSTER_EMOTE, 0, "Skum tries to run away in fear");
                 SetBehavior(Behavior_Flee);
                 SetAllowMelee(false);
                 SetAllowRanged(false);
@@ -404,7 +404,7 @@ class DofNaralexAI : public MoonScriptBossAI
                 {
                     SetDisplayId(17089);
                     Naralex->SetDisplayId(17089);
-                    Naralex->Emote("I am awake... at last", Text_Say, 5789);
+                    Naralex->sendChatMessage(CHAT_MSG_MONSTER_SAY, 5789, "I am awake... at last");
                     Naralex->GetUnit()->SetStandState(STANDSTATE_STAND);
                     SetFlyMode(true);
                     Naralex->SetFlyMode(true);

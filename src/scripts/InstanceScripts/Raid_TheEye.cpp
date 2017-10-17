@@ -3159,19 +3159,19 @@ class KaelThasAI : public MoonScriptBossAI
             switch (GetPhase())
             {
                 case 1:
-                    Emote("Let us see how your nerves hold up against the Darkener, Thaladred.", Text_Yell, 11259);
+                    sendChatMessage(CHAT_MSG_MONSTER_YELL, 11259, "Let us see how your nerves hold up against the Darkener, Thaladred.");
                     SetAIUpdateFreq(5000);
                     break;
                 case 2:
-                    Emote("You have persevered against some of my best advisors. But none can withstand the might of the Bloodhammer. Behold, Lord Sanguinar.", Text_Yell, 11260);
+                    sendChatMessage(CHAT_MSG_MONSTER_YELL, 11260, "You have persevered against some of my best advisors. But none can withstand the might of the Bloodhammer. Behold, Lord Sanguinar.");
                     SetAIUpdateFreq(12000);
                     break;
                 case 3:
-                    Emote("Capernian will see to it that your stay here is a short one.", Text_Yell, 11257);
+                    sendChatMessage(CHAT_MSG_MONSTER_YELL, 11257, "Capernian will see to it that your stay here is a short one.");
                     SetAIUpdateFreq(5000);
                     break;
                 case 4:
-                    Emote("Well done. You have proven worthy to test your skills against my Master Engineer, Telonicus.", Text_Yell, 11258);
+                    sendChatMessage(CHAT_MSG_MONSTER_YELL, 11258, "Well done. You have proven worthy to test your skills against my Master Engineer, Telonicus.");
                     SetAIUpdateFreq(8000);
                     break;
             }
@@ -3296,7 +3296,7 @@ class KaelThasAI : public MoonScriptBossAI
                         }
                     }
 
-                    Emote("Perhaps I underestimated you. It would be unfair to make you fight all four Advisors at once, but...fair treatment was never shown to my people. I'm just returning the favor.", Text_Yell, 11262);
+                    sendChatMessage(CHAT_MSG_MONSTER_YELL, 11262, "Perhaps I underestimated you. It would be unfair to make you fight all four Advisors at once, but...fair treatment was never shown to my people. I'm just returning the favor.");
                     ResetTimer(mEventTimer, 180000);
                     SetPhase(6);
                     mAdvCoords.clear();

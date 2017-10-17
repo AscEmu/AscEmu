@@ -113,7 +113,7 @@ class JainaAI : public MoonScriptCreatureAI
             MoveTo(5302.581f, 1994.510f, 707.694f);
             SpawnCreature(37225, 5307.37f, 2000.80f, 709.341f, 4.03f);
             SpawnCreature(37226, 5355.244f, 2052.96f, 707.695f, 3.94f);
-            Emote("Frostmourne! the blade that destroyed our kingdom..", Text_Yell, 16633);
+            sendChatMessage(CHAT_MSG_MONSTER_YELL, 16633, "Frostmourne! the blade that destroyed our kingdom..");
             RegisterAIUpdateEvent(172000);
             InstanceRealStart();
         }
@@ -248,7 +248,7 @@ class Marwyn : public MoonScriptBossAI
 
         void OnCombatStart(Unit* pKiller)
         {
-            _unit->SendScriptTextChatMessage(4105);     // Death is all that you will find here!
+            sendDBChatMessage(4105);     // Death is all that you will find here!
 
             if (mInstance)
                 mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_InProgress);
@@ -260,10 +260,10 @@ class Marwyn : public MoonScriptBossAI
             switch (RandomUInt(1))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(5254);     // I saw the same look in his eyes when he died. Terenas could hardly believe it.
+                    sendDBChatMessage(5254);     // I saw the same look in his eyes when he died. Terenas could hardly believe it.
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(5255);     // Choke on your suffering!
+                    sendDBChatMessage(5255);     // Choke on your suffering!
                     break;
             }
         }
@@ -277,7 +277,7 @@ class Marwyn : public MoonScriptBossAI
 
         void OnDied(Unit* pKiller)
         {
-            _unit->SendScriptTextChatMessage(5256);      // Yes... Run... Run to meet your destiny... Its bitter, cold embrace, awaits you.
+            sendDBChatMessage(5256);      // Yes... Run... Run to meet your destiny... Its bitter, cold embrace, awaits you.
 
             if (mInstance)
                 mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_Finished);
@@ -314,7 +314,7 @@ class Falric : public MoonScriptBossAI
 
         void OnCombatStart(Unit* pKiller)
         {
-            _unit->SendScriptTextChatMessage(4084);      // Men, women, and children... None were spared the master's wrath. Your death will be no different.
+            sendDBChatMessage(4084);      // Men, women, and children... None were spared the master's wrath. Your death will be no different.
 
             if (mInstance)
                 mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_InProgress);
@@ -326,10 +326,10 @@ class Falric : public MoonScriptBossAI
             switch (RandomUInt(1))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(4086);     // The children of Stratholme fought with more ferocity!
+                    sendDBChatMessage(4086);     // The children of Stratholme fought with more ferocity!
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(4085);     // Sniveling maggot!
+                    sendDBChatMessage(4085);     // Sniveling maggot!
                     break;
             }
         }
@@ -343,7 +343,7 @@ class Falric : public MoonScriptBossAI
 
         void OnDied(Unit* pKiller)
         {
-            _unit->SendScriptTextChatMessage(4087);     // Marwyn, finish them...
+            sendDBChatMessage(4087);     // Marwyn, finish them...
 
             if (mInstance)
                 mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_Finished);

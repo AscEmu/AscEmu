@@ -35,7 +35,7 @@ class LadySarevessAI : public MoonScriptCreatureAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(7912);     // You should not be here! Slay them!
+            sendDBChatMessage(7912);     // You should not be here! Slay them!
         }
 };
 
@@ -93,12 +93,12 @@ class KelrisAI : public MoonScriptCreatureAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(3966);     // Who dares disturb my meditation?
+            sendDBChatMessage(3966);     // Who dares disturb my meditation?
         }
 
         void OnTargetDied(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(3968);     // Dust to dust.
+            sendDBChatMessage(3968);     // Dust to dust.
         }
 };
 

@@ -216,19 +216,19 @@ public:
         switch (RandomUInt(3))
         {
             case 0:
-                _unit->SendScriptTextChatMessage(BARK_FLIK_1);
+                sendDBChatMessage(BARK_FLIK_1);
                 break;
 
             case 1:
-                _unit->SendScriptTextChatMessage(BARK_FLIK_2);
+                sendDBChatMessage(BARK_FLIK_2);
                 break;
 
             case 2:
-                _unit->SendScriptTextChatMessage(BARK_FLIK_3);
+                sendDBChatMessage(BARK_FLIK_3);
                 break;
 
             case 3:
-                _unit->SendScriptTextChatMessage(BARK_FLIK_4);
+                sendDBChatMessage(BARK_FLIK_4);
                 break;
         }
 
@@ -281,19 +281,19 @@ public:
         switch (RandomUInt(4))
         {
             case 0:
-                _unit->SendScriptTextChatMessage(BARK_GEVAS_GRIMEGATE_1);
+                sendDBChatMessage(BARK_GEVAS_GRIMEGATE_1);
                 break;
 
             case 1:
-                _unit->SendScriptTextChatMessage(BARK_GEVAS_GRIMEGATE_2);
+                sendDBChatMessage(BARK_GEVAS_GRIMEGATE_2);
                 break;
 
             case 2:
-                _unit->SendScriptTextChatMessage(BARK_GEVAS_GRIMEGATE_3);
+                sendDBChatMessage(BARK_GEVAS_GRIMEGATE_3);
                 break;
 
             case 3:
-                _unit->SendScriptTextChatMessage(BARK_GEVAS_GRIMEGATE_4);
+                sendDBChatMessage(BARK_GEVAS_GRIMEGATE_4);
                 break;
         }
 
@@ -320,19 +320,19 @@ public:
         switch (RandomUInt(4))
         {
             case 0:
-                _unit->SendScriptTextChatMessage(BARK_LHARA_1);
+                sendDBChatMessage(BARK_LHARA_1);
                 break;
 
             case 1:
-                _unit->SendScriptTextChatMessage(BARK_LHARA_2);
+                sendDBChatMessage(BARK_LHARA_2);
                 break;
 
             case 2:
-                _unit->SendScriptTextChatMessage(BARK_LHARA_3);
+                sendDBChatMessage(BARK_LHARA_3);
                 break;
 
             case 3:
-                _unit->SendScriptTextChatMessage(BARK_LHARA_4);
+                sendDBChatMessage(BARK_LHARA_4);
                 break;
         }
 
@@ -375,7 +375,7 @@ public:
 
     void AIUpdate() override
     {
-        _unit->SendScriptTextChatMessage(BARK_MORJA_1);
+        sendDBChatMessage(BARK_MORJA_1);
 
         uint32 rndTimer;
         rndTimer = RandomUInt(240, 360);              // Generate a random value between: 4-6mins
@@ -467,16 +467,16 @@ public:
         switch (RandomUInt(3))
         {
             case 0:
-                _unit->SendScriptTextChatMessage(BARK_PROFESSOR_THADDEUS_PALEO_1);
+                sendDBChatMessage(BARK_PROFESSOR_THADDEUS_PALEO_1);
                 break;
             case 1:
-                _unit->SendScriptTextChatMessage(BARK_PROFESSOR_THADDEUS_PALEO_2);
+                sendDBChatMessage(BARK_PROFESSOR_THADDEUS_PALEO_2);
                 break;
             case 2:
-                _unit->SendScriptTextChatMessage(BARK_PROFESSOR_THADDEUS_PALEO_3);
+                sendDBChatMessage(BARK_PROFESSOR_THADDEUS_PALEO_3);
                 break;
             case 3:
-                _unit->SendScriptTextChatMessage(BARK_PROFESSOR_THADDEUS_PALEO_4);
+                sendDBChatMessage(BARK_PROFESSOR_THADDEUS_PALEO_4);
                 break;
         }
 
@@ -700,19 +700,19 @@ public:
         switch (RandomUInt(3))
         {
             case 0:
-                _unit->SendScriptTextChatMessage(BARK_SAYGE_1);
+                sendDBChatMessage(BARK_SAYGE_1);
                 break;
 
             case 1:
-                _unit->SendScriptTextChatMessage(BARK_SAYGE_2);
+                sendDBChatMessage(BARK_SAYGE_2);
                 break;
 
             case 2:
-                _unit->SendScriptTextChatMessage(BARK_SAYGE_3);
+                sendDBChatMessage(BARK_SAYGE_3);
                 break;
 
             case 3:
-                _unit->SendScriptTextChatMessage(BARK_SAYGE_4);
+                sendDBChatMessage(BARK_SAYGE_4);
                 break;
         }
 
@@ -814,27 +814,27 @@ public:
         switch (RandomUInt(5))
         {
             case 0:
-                _unit->SendScriptTextChatMessage(BARK_SILAS_DARKMOON_1);
+                sendDBChatMessage(BARK_SILAS_DARKMOON_1);
                 break;
 
             case 1:
-                _unit->SendScriptTextChatMessage(BARK_SILAS_DARKMOON_2);
+                sendDBChatMessage(BARK_SILAS_DARKMOON_2);
                 break;
 
             case 2:
-                _unit->SendScriptTextChatMessage(BARK_SILAS_DARKMOON_3);
+                sendDBChatMessage(BARK_SILAS_DARKMOON_3);
                 break;
 
             case 3:
-                _unit->SendScriptTextChatMessage(BARK_SILAS_DARKMOON_4);
+                sendDBChatMessage(BARK_SILAS_DARKMOON_4);
                 break;
 
             case 4:
-                _unit->SendScriptTextChatMessage(BARK_SILAS_DARKMOON_5);
+                sendDBChatMessage(BARK_SILAS_DARKMOON_5);
                 break;
 
             case 5:
-                _unit->SendScriptTextChatMessage(BARK_SILAS_DARKMOON_6);
+                sendDBChatMessage(BARK_SILAS_DARKMOON_6);
                 break;
         }
 
@@ -861,23 +861,23 @@ public:
         switch (RandomUInt(4))
         {
             case 0:
-                _unit->SendScriptTextChatMessage(BARK_STAMP_THUNDERHORN_1);
+                sendDBChatMessage(BARK_STAMP_THUNDERHORN_1);
                 break;
 
             case 1:
-                _unit->SendScriptTextChatMessage(BARK_STAMP_THUNDERHORN_2);
+                sendDBChatMessage(BARK_STAMP_THUNDERHORN_2);
                 break;
 
             case 2:
-                _unit->SendScriptTextChatMessage(BARK_STAMP_THUNDERHORN_3);
+                sendDBChatMessage(BARK_STAMP_THUNDERHORN_3);
                 break;
 
             case 3:
-                _unit->SendScriptTextChatMessage(BARK_STAMP_THUNDERHORN_4);
+                sendDBChatMessage(BARK_STAMP_THUNDERHORN_4);
                 break;
 
             case 4:
-                _unit->SendScriptTextChatMessage(BARK_STAMP_THUNDERHORN_5);
+                sendDBChatMessage(BARK_STAMP_THUNDERHORN_5);
                 break;
         }
 
@@ -904,19 +904,19 @@ public:
         switch (RandomUInt(3))
         {
             case 0:
-                _unit->SendScriptTextChatMessage(BARK_SYLANNIA_1);
+                sendDBChatMessage(BARK_SYLANNIA_1);
                 break;
 
             case 1:
-                _unit->SendScriptTextChatMessage(BARK_SYLANNIA_2);
+                sendDBChatMessage(BARK_SYLANNIA_2);
                 break;
 
             case 2:
-                _unit->SendScriptTextChatMessage(BARK_SYLANNIA_3);
+                sendDBChatMessage(BARK_SYLANNIA_3);
                 break;
 
             case 3:
-                _unit->SendScriptTextChatMessage(BARK_SYLANNIA_4);
+                sendDBChatMessage(BARK_SYLANNIA_4);
                 break;
         }
 

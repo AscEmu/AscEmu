@@ -2572,7 +2572,7 @@ class ClawAI : public CreatureAIScript
                             Swamplord = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 17826);
                             if (Swamplord && Swamplord->isAlive())
                             {
-                                _unit->SendScriptTextChatMessage(1462);
+                                sendDBChatMessage(1462);
                             }
                         }
 
@@ -2708,13 +2708,13 @@ class SwamplordMuselekAI : public CreatureAIScript
             switch (RandomUInt(2))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(SAY_SWAMPLORD_MUSEL_02);
+                    sendDBChatMessage(SAY_SWAMPLORD_MUSEL_02);
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(SAY_SWAMPLORD_MUSEL_03);
+                    sendDBChatMessage(SAY_SWAMPLORD_MUSEL_03);
                     break;
                 case 2:
-                    _unit->SendScriptTextChatMessage(SAY_SWAMPLORD_MUSEL_04);
+                    sendDBChatMessage(SAY_SWAMPLORD_MUSEL_04);
                     break;
             }
 
@@ -2735,10 +2735,10 @@ class SwamplordMuselekAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(SAY_SWAMPLORD_MUSEL_05);
+                        sendDBChatMessage(SAY_SWAMPLORD_MUSEL_05);
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(SAY_SWAMPLORD_MUSEL_06);
+                        sendDBChatMessage(SAY_SWAMPLORD_MUSEL_06);
                         break;
                 }
             }
@@ -2754,7 +2754,7 @@ class SwamplordMuselekAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(SAY_SWAMPLORD_MUSEL_07);
+            sendDBChatMessage(SAY_SWAMPLORD_MUSEL_07);
             RemoveAIUpdateEvent();
         }
 

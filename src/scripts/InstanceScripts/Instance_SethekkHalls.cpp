@@ -1566,13 +1566,13 @@ class DarkweaverSythAI : public CreatureAIScript
             switch (RandomUInt(2))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(SAY_DARKW_SYNTH_02);
+                    sendDBChatMessage(SAY_DARKW_SYNTH_02);
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(SAY_DARKW_SYNTH_03);
+                    sendDBChatMessage(SAY_DARKW_SYNTH_03);
                     break;
                 case 2:
-                    _unit->SendScriptTextChatMessage(SAY_DARKW_SYNTH_04);
+                    sendDBChatMessage(SAY_DARKW_SYNTH_04);
                     break;
             }
 
@@ -1586,10 +1586,10 @@ class DarkweaverSythAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(SAY_DARKW_SYNTH_05);
+                        sendDBChatMessage(SAY_DARKW_SYNTH_05);
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(SAY_DARKW_SYNTH_06);
+                        sendDBChatMessage(SAY_DARKW_SYNTH_06);
                         break;
                 }
             }
@@ -1607,7 +1607,7 @@ class DarkweaverSythAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(SAY_DARKW_SYNTH_07);
+            sendDBChatMessage(SAY_DARKW_SYNTH_07);
 
             GameObject* LakkasCage = getNearestGameObject(-160.813f, 157.043f, 0.194095f, 183051);
             Creature* mLakka = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-160.813f, 157.043f, 0.194095f, 18956);
@@ -1654,7 +1654,7 @@ class DarkweaverSythAI : public CreatureAIScript
 
         void SummonElementalWave()
         {
-            _unit->SendScriptTextChatMessage(SAY_DARKW_SYNTH_01);
+            sendDBChatMessage(SAY_DARKW_SYNTH_01);
 
             _unit->CastSpell(_unit, spells[5].info, spells[5].instant);
             _unit->CastSpell(_unit, spells[6].info, spells[6].instant);
@@ -1785,13 +1785,13 @@ class TalonKingIkissAI : public CreatureAIScript
             switch (RandomUInt(2))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(SAY_TALRON_K_IKISS_02);
+                    sendDBChatMessage(SAY_TALRON_K_IKISS_02);
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(SAY_TALRON_K_IKISS_03);
+                    sendDBChatMessage(SAY_TALRON_K_IKISS_03);
                     break;
                 case 2:
-                    _unit->SendScriptTextChatMessage(SAY_TALRON_K_IKISS_04);
+                    sendDBChatMessage(SAY_TALRON_K_IKISS_04);
                     break;
             }
 
@@ -1805,10 +1805,10 @@ class TalonKingIkissAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(SAY_TALRON_K_IKISS_05);
+                        sendDBChatMessage(SAY_TALRON_K_IKISS_05);
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(SAY_TALRON_K_IKISS_06);
+                        sendDBChatMessage(SAY_TALRON_K_IKISS_06);
                         break;
                 }
             }
@@ -1824,7 +1824,7 @@ class TalonKingIkissAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(SAY_TALRON_K_IKISS_07);
+            sendDBChatMessage(SAY_TALRON_K_IKISS_07);
 
             GameObject* IkissDoor = getNearestGameObject(43.079f, 149.505f, 0.034f, 183398);
             if (IkissDoor != NULL)

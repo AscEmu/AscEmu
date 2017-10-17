@@ -160,7 +160,7 @@ class RhahkZorAI : public MoonScriptCreatureAI
 
     void OnCombatStart(Unit* pTarget)
     {
-        _unit->SendScriptTextChatMessage(5495);     // VanCleef pay big for you heads!
+        sendDBChatMessage(5495);     // VanCleef pay big for you heads!
 
         std::stringstream ss;
         ss << "Timer Init Value: " << debugTimer.getRealDelta();
@@ -199,12 +199,12 @@ class MrSmiteAI : public MoonScriptBossAI
         {
             if (GetHealthPercent() <= 66 && GetPhase() == 1)
             {
-                Emote("You landlubbers are tougher than I thought. I'll have to improvise!", Text_Yell, 5778);
+                sendChatMessage(CHAT_MSG_MONSTER_YELL, 5778, "You landlubbers are tougher than I thought. I'll have to improvise!");
                 SetPhase(2, mStomp);
             }
             else if (GetHealthPercent() <= 33 && GetPhase() == 3)
             {
-                Emote("D'ah! Now you're making me angry!", Text_Yell, 5779);
+                sendChatMessage(CHAT_MSG_MONSTER_YELL, 5779, "D'ah! Now you're making me angry!");
                 SetPhase(4, mStomp);
             }
 
@@ -303,7 +303,7 @@ class VanCleefAI : public MoonScriptBossAI
 
     void OnCombatStart(Unit* pTarget)
     {
-        _unit->SendScriptTextChatMessage(7722);     // None may challenge the Brotherhood!
+        sendDBChatMessage(7722);     // None may challenge the Brotherhood!
     }
 
     void OnTargetDied(Unit* pTarget)
@@ -314,25 +314,25 @@ class VanCleefAI : public MoonScriptBossAI
         else if (pTarget->GetTypeFromGUID() == HIGHGUID_TYPE_PET)
             sprintf(msg, "And stay down, %s.", static_cast<Pet*>(pTarget)->GetName().c_str());
 
-        Emote(msg, Text_Yell, 5781);
+        sendChatMessage(CHAT_MSG_MONSTER_YELL, 5781, msg);
         ParentClass::OnTargetDied(pTarget);
     }
 
     void OnDied(Unit* pKiller)
     {
-        _unit->SendScriptTextChatMessage(7727);     // The Brotherhood shall prevail!
+        sendDBChatMessage(7727);     // The Brotherhood shall prevail!
     }
 
     void AIUpdate()
     {
         if (GetHealthPercent() <= 75 && GetPhase() == 1)
         {
-            _unit->SendScriptTextChatMessage(7723);     // Lapdogs, all of you!
+            sendDBChatMessage(7723);     // Lapdogs, all of you!
             SetPhase(2);
         }
         else if (GetHealthPercent() <= 50 && GetPhase() == 2)
         {
-            _unit->SendScriptTextChatMessage(7725);     // Fools! Our cause is righteous!
+            sendDBChatMessage(7725);     // Fools! Our cause is righteous!
 
             for (uint8 x = 0; x < 2; x++)
             {
@@ -349,7 +349,7 @@ class VanCleefAI : public MoonScriptBossAI
         }
         else if (GetHealthPercent() <= 25 && GetPhase() == 3)
         {
-            _unit->SendScriptTextChatMessage(7727);     // The Brotherhood shall prevail!
+            sendDBChatMessage(7727);     // The Brotherhood shall prevail!
             SetPhase(4);
         }
         ParentClass::AIUpdate();

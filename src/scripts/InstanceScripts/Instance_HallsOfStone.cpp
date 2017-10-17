@@ -188,7 +188,7 @@ class MaidenOfGriefAI : public MoonScriptCreatureAI
 
     void OnCombatStart(Unit* pTarget)
     {
-        _unit->SendScriptTextChatMessage(4367);     // You shouldn't have come... now you will die!
+        sendDBChatMessage(4367);     // You shouldn't have come... now you will die!
 
         mShock->TriggerCooldown();
         ParentClass::OnCombatStart(pTarget);
@@ -199,23 +199,23 @@ class MaidenOfGriefAI : public MoonScriptCreatureAI
         switch (RandomUInt(3))
         {
             case 0:
-                _unit->SendScriptTextChatMessage(4368);     // Why must it be this way?
+                sendDBChatMessage(4368);     // Why must it be this way?
                 break;
             case 1:
-                _unit->SendScriptTextChatMessage(4369);     // You had it coming!
+                sendDBChatMessage(4369);     // You had it coming!
                 break;
             case 2:
-                _unit->SendScriptTextChatMessage(4370);     // My burden grows heavier...
+                sendDBChatMessage(4370);     // My burden grows heavier...
                 break;
             case 3:
-                _unit->SendScriptTextChatMessage(4371);     // This is your fault!
+                sendDBChatMessage(4371);     // This is your fault!
                 break;
         }
     }
 
     void OnDied(Unit* pTarget)
     {
-        _unit->SendScriptTextChatMessage(4372);     // I hope you all rot! I never... wanted... this.
+        sendDBChatMessage(4372);     // I hope you all rot! I never... wanted... this.
     }
 
     protected:
@@ -243,7 +243,7 @@ class KrystallusAI : public MoonScriptCreatureAI
 
     void OnCombatStart(Unit* pTarget)
     {
-        _unit->SendScriptTextChatMessage(4363);      // Crush....
+        sendDBChatMessage(4363);      // Crush....
 
         mStompTimer = AddTimer(STOMP_TIMER);
         ParentClass::OnCombatStart(pTarget);
@@ -269,12 +269,12 @@ class KrystallusAI : public MoonScriptCreatureAI
 
     void OnTargetDied(Unit* pTarget)
     {
-        _unit->SendScriptTextChatMessage(4365);     // Uuuuhhhhhhhhhh......
+        sendDBChatMessage(4365);     // Uuuuhhhhhhhhhh......
     }
 
     void OnDied(Unit* pTarget)
     {
-        _unit->SendScriptTextChatMessage(4364);     // 
+        sendDBChatMessage(4364);     // 
     }
 
     protected:

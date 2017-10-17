@@ -495,7 +495,7 @@ class CommanderSarannisAI : public CreatureAIScript
             GuardAdds = false;
             CastTime();
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
-            _unit->SendScriptTextChatMessage(SAY_COMMANDER_SARANNIS_01);
+            sendDBChatMessage(SAY_COMMANDER_SARANNIS_01);
         }
 
         void CastTime()
@@ -520,10 +520,10 @@ class CommanderSarannisAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(SAY_COMMANDER_SARANNIS_02);
+                        sendDBChatMessage(SAY_COMMANDER_SARANNIS_02);
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(SAY_COMMANDER_SARANNIS_03);
+                        sendDBChatMessage(SAY_COMMANDER_SARANNIS_03);
                         break;
                 }
             }
@@ -534,7 +534,7 @@ class CommanderSarannisAI : public CreatureAIScript
             GuardAdds = false;
             CastTime();
             RemoveAIUpdateEvent();
-            _unit->SendScriptTextChatMessage(SAY_COMMANDER_SARANNIS_07);
+            sendDBChatMessage(SAY_COMMANDER_SARANNIS_07);
         }
 
         void AIUpdate()
@@ -542,7 +542,7 @@ class CommanderSarannisAI : public CreatureAIScript
             if (_unit->GetHealthPct() <= 50 && GuardAdds == false)
             {
                 GuardAdds = true;    // need to add guard spawning =/
-                _unit->SendScriptTextChatMessage(SAY_COMMANDER_SARANNIS_06);
+                sendDBChatMessage(SAY_COMMANDER_SARANNIS_06);
             }
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -553,10 +553,10 @@ class CommanderSarannisAI : public CreatureAIScript
             switch (RandomUInt(1))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(SAY_COMMANDER_SARANNIS_04);
+                    sendDBChatMessage(SAY_COMMANDER_SARANNIS_04);
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(SAY_COMMANDER_SARANNIS_05);
+                    sendDBChatMessage(SAY_COMMANDER_SARANNIS_05);
                     break;
             }
         }
@@ -693,7 +693,7 @@ class HighBotanistFreywinnAI : public CreatureAIScript
             PlantTimer = 10;
             CastTime();
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
-            _unit->SendScriptTextChatMessage(SAY_HIGH_BOTANIS_FREYWIN_04);
+            sendDBChatMessage(SAY_HIGH_BOTANIS_FREYWIN_04);
         }
 
         void CastTime()
@@ -718,10 +718,10 @@ class HighBotanistFreywinnAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(SAY_HIGH_BOTANIS_FREYWIN_03);
+                        sendDBChatMessage(SAY_HIGH_BOTANIS_FREYWIN_03);
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(SAY_HIGH_BOTANIS_FREYWIN_02);
+                        sendDBChatMessage(SAY_HIGH_BOTANIS_FREYWIN_02);
                         break;
                 }
             }
@@ -732,7 +732,7 @@ class HighBotanistFreywinnAI : public CreatureAIScript
             PlantTimer = 10;
             CastTime();
             RemoveAIUpdateEvent();
-            _unit->SendScriptTextChatMessage(SAY_HIGH_BOTANIS_FREYWIN_06);
+            sendDBChatMessage(SAY_HIGH_BOTANIS_FREYWIN_06);
         }
 
         void AIUpdate()
@@ -782,12 +782,12 @@ class HighBotanistFreywinnAI : public CreatureAIScript
             {
                 case 0:
                 {
-                    _unit->SendScriptTextChatMessage(SAY_HIGH_BOTANIS_FREYWIN_01);
+                    sendDBChatMessage(SAY_HIGH_BOTANIS_FREYWIN_01);
                 }
                 break;
                 case 1:
                 {
-                    _unit->SendScriptTextChatMessage(SAY_HIGH_BOTANIS_FREYWIN_05);
+                    sendDBChatMessage(SAY_HIGH_BOTANIS_FREYWIN_05);
                 }
                 break;
             }
@@ -900,7 +900,7 @@ class ThorngrinTheTenderAI : public CreatureAIScript
             Enraged = false;
             CastTime();
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
-            _unit->SendScriptTextChatMessage(SAY_THORNIN_01);
+            sendDBChatMessage(SAY_THORNIN_01);
         }
 
         void CastTime()
@@ -925,10 +925,10 @@ class ThorngrinTheTenderAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(SAY_THORNIN_02);
+                        sendDBChatMessage(SAY_THORNIN_02);
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(SAY_THORNIN_03);
+                        sendDBChatMessage(SAY_THORNIN_03);
                         break;
                 }
             }
@@ -939,7 +939,7 @@ class ThorngrinTheTenderAI : public CreatureAIScript
             Enraged = false;
             CastTime();
             RemoveAIUpdateEvent();
-            _unit->SendScriptTextChatMessage(SAY_THORNIN_08);
+            sendDBChatMessage(SAY_THORNIN_08);
         }
 
         void AIUpdate()
@@ -959,10 +959,10 @@ class ThorngrinTheTenderAI : public CreatureAIScript
             switch (RandomUInt(1))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(SAY_THORNIN_06);
+                    sendDBChatMessage(SAY_THORNIN_06);
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(SAY_THORNIN_07);
+                    sendDBChatMessage(SAY_THORNIN_07);
                     break;
             }
         }
@@ -972,10 +972,10 @@ class ThorngrinTheTenderAI : public CreatureAIScript
             switch (RandomUInt(1))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(SAY_THORNIN_04);
+                    sendDBChatMessage(SAY_THORNIN_04);
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(SAY_THORNIN_05);
+                    sendDBChatMessage(SAY_THORNIN_05);
                     break;
             }
         }
@@ -1243,7 +1243,7 @@ class WarpSplinterAI : public CreatureAIScript
             SummonTimer = 20;
             CastTime();
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
-            _unit->SendScriptTextChatMessage(SAY_WARP_SPLINTER_01);
+            sendDBChatMessage(SAY_WARP_SPLINTER_01);
         }
 
         void CastTime()
@@ -1268,10 +1268,10 @@ class WarpSplinterAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(SAY_WARP_SPLINTER_02);
+                        sendDBChatMessage(SAY_WARP_SPLINTER_02);
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(SAY_WARP_SPLINTER_03);
+                        sendDBChatMessage(SAY_WARP_SPLINTER_03);
                         break;
                 }
             }
@@ -1282,7 +1282,7 @@ class WarpSplinterAI : public CreatureAIScript
             SummonTimer = 20;
             CastTime();
             RemoveAIUpdateEvent();
-            _unit->SendScriptTextChatMessage(SAY_WARP_SPLINTER_06);
+            sendDBChatMessage(SAY_WARP_SPLINTER_06);
         }
 
         void AIUpdate()
@@ -1309,10 +1309,10 @@ class WarpSplinterAI : public CreatureAIScript
             switch (RandomUInt(1))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(SAY_WARP_SPLINTER_04);
+                    sendDBChatMessage(SAY_WARP_SPLINTER_04);
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(SAY_WARP_SPLINTER_05);
+                    sendDBChatMessage(SAY_WARP_SPLINTER_05);
                     break;
             }
         }

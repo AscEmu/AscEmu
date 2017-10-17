@@ -382,11 +382,8 @@ class MoonScriptCreatureAI : public CreatureAIScript
         //Emotes
         EmoteDesc* AddEmote(EventType pEventType, const char* pText, TextType pType, uint32 pSoundId = 0);
         EmoteDesc* AddEmote(EventType pEventType, uint32_t scripttext);
-        void RemoveEmote(EventType pEventType, EmoteDesc* pEmote);
         void RemoveAllEmotes(EventType pEventType);
-        void Emote(EmoteDesc* pEmote);
-        void Emote(const char* pText, TextType pType = Text_Yell, uint32 pSoundId = 0);
-        void Emote(uint32_t scripttext);
+
         void Announce(const char* pText);
 
         //Timers and Events

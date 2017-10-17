@@ -123,7 +123,7 @@ class HamhockAI : public MoonScriptCreatureAI
 
     void OnCombatStart(Unit* pTarget)
     {
-        _unit->SendScriptTextChatMessage(8759);
+        sendDBChatMessage(8759);
         ParentClass::OnCombatStart(pTarget);
     }
 };
@@ -141,7 +141,7 @@ class BazilAI : public MoonScriptCreatureAI
     void OnCombatStart(Unit* pTarget)
     {
         _unit->CastSpell(_unit, 674, false); // Dual Wield
-        _unit->SendScriptTextChatMessage(8760);
+        sendDBChatMessage(8760);
         ParentClass::OnCombatStart(pTarget);
     }
 };

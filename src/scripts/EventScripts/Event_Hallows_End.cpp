@@ -102,7 +102,7 @@ class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
 
         //Emotes
         AddEmote(Event_OnDied, "So eager you are, for my blood to spill. Yet to vanquish me, 'tis my head you must kill!", Text_Yell, 11969);
-        Emote("Prepare yourselves, the bells have tolled! Shelter your weak, your young, and your old! Each of you shall pay the final sum. Cry for mercy, the reckoning has come!", Text_Yell, 11966);    //On Spawn?
+        sendChatMessage(CHAT_MSG_MONSTER_YELL, 11966, "Prepare yourselves, the bells have tolled! Shelter your weak, your young, and your old! Each of you shall pay the final sum. Cry for mercy, the reckoning has come!");    //On Spawn?
 
         WPCount = 0;
         WayPoints = nullptr;
@@ -137,12 +137,12 @@ class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
             StopWaypointMovement();
             if (getNearestCreature(CN_HEADLESS_HORSEMAN_FIRE) == NULL)     // CASE players win
             {
-                Emote("My flames have died, left not a spark! I shall send you now to the lifeless dark!", Text_Yell, 11968);
+                sendChatMessage(CHAT_MSG_MONSTER_YELL, 11968, "My flames have died, left not a spark! I shall send you now to the lifeless dark!");
                 Despawn(30000, 0); //Despawn after 30 secs
             }
             else // CASE players lost
             {
-                Emote("Fire consumes! You've tried and failed. Let there be no doubt, justice prevailed!", Text_Yell, 11967);
+                sendChatMessage(CHAT_MSG_MONSTER_YELL, 11967, "Fire consumes! You've tried and failed. Let there be no doubt, justice prevailed!");
                 Despawn(12000, 0); //Despawn after 12 secs
             }
         }

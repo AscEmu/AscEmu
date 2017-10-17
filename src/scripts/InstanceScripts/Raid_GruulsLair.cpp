@@ -186,10 +186,10 @@ class HighKingMaulgarAI : public MoonScriptBossAI
                     switch (RandomText)
                     {
                         case 0:
-                            Emote("You not kill next one so easy!", Text_Yell, 11369);
+                            sendChatMessage(CHAT_MSG_MONSTER_YELL, 11369, "You not kill next one so easy!");
                             break;
                         case 1:
-                            Emote("Does not prove anything!", Text_Yell, 11370);
+                            sendChatMessage(CHAT_MSG_MONSTER_YELL, 11370, "Does not prove anything!");
                             break;
                     }
 
@@ -197,7 +197,7 @@ class HighKingMaulgarAI : public MoonScriptBossAI
                 }
                 else if (mAliveAdds == 1)
                 {
-                    Emote("Good, now you fight me!", Text_Yell, 0);
+                    sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "Good, now you fight me!");
                     SetCanEnterCombat(true);
                     SetBehavior(Behavior_Default);
                     SetCanMove(true);

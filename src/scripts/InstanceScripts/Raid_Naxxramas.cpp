@@ -609,7 +609,7 @@ GrandWidowFaerlinaAI::GrandWidowFaerlinaAI(Creature* pCreature) : MoonScriptBoss
         AddSpell(GRAND_WIDOW_RAIN_OF_FIRE_NORMAL, Target_RandomPlayerDestination, 7, 0, 10, 0, 40);
     };
 
-    Emote("Your old lives, your mortal desires, mean nothing. You are acolytes of the master now, and you will serve the cause without question! The greatest glory is to die in the master's service!", Text_Yell, 8799);
+    sendChatMessage(CHAT_MSG_MONSTER_YELL, 8799, "Your old lives, your mortal desires, mean nothing. You are acolytes of the master now, and you will serve the cause without question! The greatest glory is to die in the master's service!");
     AddEmote(Event_OnCombatStart, "Slay them in the master's name!", Text_Yell, 8794);
     AddEmote(Event_OnTargetDied, "You have failed!", Text_Yell, 8800);
     AddEmote(Event_OnTargetDied, "Pathetic wretch!", Text_Yell, 8801);
@@ -833,7 +833,7 @@ AnubRekhanAI::AnubRekhanAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
 
     AddSpellFunc(&SpellFunc_AnubRekhanCorpseScarabsPlayer, Target_Self, 8, 0, 20);
     AddSpellFunc(&SpellFunc_AnubRekhanCorpseScarabsCryptGuard, Target_Self, 8, 0, 20);
-    Emote("Ahh... welcome to my parlor.", Text_Yell, 8788);
+    sendChatMessage(CHAT_MSG_MONSTER_YELL, 8788, "Ahh... welcome to my parlor.");
     AddEmote(Event_OnCombatStart, "Just a little taste...", Text_Yell, 8785);
     AddEmote(Event_OnCombatStart, "There is no way out.", Text_Yell, 8786);
     AddEmote(Event_OnCombatStart, "Yes, run! It makes the blood pump faster!", Text_Yell, 8787);
@@ -1401,7 +1401,7 @@ void NothThePlaguebringerAI::AIUpdate()
                 PosTaken[Id] = true;
             };
 
-            Emote("Rise, my soldiers! Rise and fight once more!", Text_Yell, 8851);
+            sendChatMessage(CHAT_MSG_MONSTER_YELL, 8851, "Rise, my soldiers! Rise and fight once more!");
             ResetTimer(mSkeletonTimer, 30000);
             PosTaken[Id] = true;
         };
@@ -1811,7 +1811,7 @@ void HeiganTheUncleanAI::AIUpdate()
         if (!IsCasting() && IsTimerFinished(mPhaseSwitchTimer))
         {
             ApplyAura(HEIGAN_THE_UNCLEAN_TELEPORT);
-            Emote("The end is uppon you!", Text_Yell, 8833);
+            sendChatMessage(CHAT_MSG_MONSTER_YELL, 8833, "The end is uppon you!");
             _unit->SetPosition(2794.235596f, -3707.067627f, 276.545746f, 2.407245f);
             SetTargetToChannel(_unit, HEIGAN_THE_UNCLEAN_PLAGUE_CLOUD_CHANNEL);
             SetBehavior(Behavior_Spell);

@@ -250,7 +250,7 @@ class LordMarrowgarAI : public MoonScriptBossAI
         MOONSCRIPT_FACTORY_FUNCTION(LordMarrowgarAI, MoonScriptBossAI);
         LordMarrowgarAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
         {
-            _unit->SendScriptTextChatMessage(922);      // This is the beginning AND the end, mortals. None may enter the master's sanctum!
+            sendDBChatMessage(922);      // This is the beginning AND the end, mortals. None may enter the master's sanctum!
 
             nrspells = 4;
 
@@ -300,7 +300,7 @@ class LordMarrowgarAI : public MoonScriptBossAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(923);      // The Scourge will wash over this world as a swarm of death and destruction!
+            sendDBChatMessage(923);      // The Scourge will wash over this world as a swarm of death and destruction!
             RegisterAIUpdateEvent(60000);
 
             // examplecode.... remove me as soon as possible.
@@ -313,13 +313,13 @@ class LordMarrowgarAI : public MoonScriptBossAI
             switch (RandomUInt(2))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(925);      // Bound by bone!
+                    sendDBChatMessage(925);      // Bound by bone!
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(926);      // Stick around!
+                    sendDBChatMessage(926);      // Stick around!
                     break;
                 case 2:
-                    _unit->SendScriptTextChatMessage(927);      // The only escape is death!
+                    sendDBChatMessage(927);      // The only escape is death!
                     break;
             }
 
@@ -364,17 +364,17 @@ class LordMarrowgarAI : public MoonScriptBossAI
             switch (RandomUInt(1))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(928);      // More bones for the offering!
+                    sendDBChatMessage(928);      // More bones for the offering!
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(929);      // Languish in damnation!
+                    sendDBChatMessage(929);      // Languish in damnation!
                     break;
             }
         }
 
         void OnDied(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(930);      // I see... Only darkness.
+            sendDBChatMessage(930);      // I see... Only darkness.
         }
 
         void SpellCast(float val)

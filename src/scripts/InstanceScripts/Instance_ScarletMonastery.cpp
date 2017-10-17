@@ -40,12 +40,12 @@ class VishasAI : public MoonScriptCreatureAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(2110);     // Tell me... tell me everything!
+            sendDBChatMessage(2110);     // Tell me... tell me everything!
         }
 
         void OnTargetDied(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(2113);     // Purged by pain!
+            sendDBChatMessage(2113);     // Purged by pain!
         }
 
         void OnCombatStop(Unit* pTarget)
@@ -59,13 +59,13 @@ class VishasAI : public MoonScriptCreatureAI
         {
             if (GetHealthPercent() <= 75 && m_uiSay == 0)
             {
-                _unit->SendScriptTextChatMessage(2111);     // Naughty secrets!
+                sendDBChatMessage(2111);     // Naughty secrets!
                 m_uiSay = 1;
             }
 
             if (GetHealthPercent() <= 25 && m_uiSay == 1)
             {
-                _unit->SendScriptTextChatMessage(2112);     // I'll rip the secrets from your flesh!
+                sendDBChatMessage(2112);     // I'll rip the secrets from your flesh!
                 m_uiSay = 2;
             }
 
@@ -93,12 +93,12 @@ class ThalnosAI : public MoonScriptCreatureAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(2107);     // We hunger for vengeance.
+            sendDBChatMessage(2107);     // We hunger for vengeance.
         }
 
         void OnTargetDied(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(2109);     // More... More souls!
+            sendDBChatMessage(2109);     // More... More souls!
         }
 
         void OnCombatStop(Unit* pTarget)
@@ -112,7 +112,7 @@ class ThalnosAI : public MoonScriptCreatureAI
         {
             if (GetHealthPercent() <= 50 && m_bEmoted == false)
             {
-                _unit->SendScriptTextChatMessage(2108);     // No rest... for the angry dead!
+                sendDBChatMessage(2108);     // No rest... for the angry dead!
                 m_bEmoted = true;
             }
 
@@ -138,7 +138,7 @@ class LokseyAI : public MoonScriptCreatureAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(2086);     // Release the hounds!
+            sendDBChatMessage(2086);     // Release the hounds!
         }
 };
 
@@ -159,7 +159,7 @@ class DoanAI : public MoonScriptCreatureAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(2099);     // You will not defile these mysteries!
+            sendDBChatMessage(2099);     // You will not defile these mysteries!
         }
 
         void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
@@ -171,7 +171,7 @@ class DoanAI : public MoonScriptCreatureAI
         void Shield()
         {
             _unit->CastSpell(_unit, SP_DOAN_SHIELD, true);
-            _unit->SendScriptTextChatMessage(2100);     // Burn in righteous fire!
+            sendDBChatMessage(2100);     // Burn in righteous fire!
             _unit->CastSpell(_unit, SP_DOAN_NOVA, false);
             m_bShielded = true;
         }
@@ -207,12 +207,12 @@ class HerodAI : public MoonScriptCreatureAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(2094);     // Ah - I've been waiting for a real challenge!
+            sendDBChatMessage(2094);     // Ah - I've been waiting for a real challenge!
         }
 
         void OnTargetDied(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(2087);     // Is that all?
+            sendDBChatMessage(2087);     // Is that all?
         }
 
         void OnCombatStop(Unit* pTarget)
@@ -227,7 +227,7 @@ class HerodAI : public MoonScriptCreatureAI
         {
             if (GetHealthPercent() <= 40 && m_bEnraged == false)
             {
-                _unit->SendScriptTextChatMessage(2090);     // Light, give me strength!
+                sendDBChatMessage(2090);     // Light, give me strength!
                 ApplyAura(SP_HEROD_ENRAGESPELL);
             }
 
@@ -283,7 +283,7 @@ class MograineAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(SAY_MORGRAINE_01);
+            sendDBChatMessage(SAY_MORGRAINE_01);
             RegisterAIUpdateEvent(_unit->getUInt32Value(UNIT_FIELD_BASEATTACKTIME));
         }
 
@@ -294,7 +294,7 @@ class MograineAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(SAY_MORGRAINE_02);
+                        sendDBChatMessage(SAY_MORGRAINE_02);
                         break;
                     default:
                         break;
@@ -312,7 +312,7 @@ class MograineAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(SAY_MORGRAINE_03);
+            sendDBChatMessage(SAY_MORGRAINE_03);
 
             GameObject* pDoor = getNearestGameObject(1173.01f, 1389.91f, 31.9723f, GO_INQUISITORS_DOOR);
             if (pDoor == 0)
@@ -434,7 +434,7 @@ class WhitemaneAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(SAY_WHITEMANE_01);
+            sendDBChatMessage(SAY_WHITEMANE_01);
             RegisterAIUpdateEvent(_unit->getUInt32Value(UNIT_FIELD_BASEATTACKTIME));
         }
 
@@ -446,7 +446,7 @@ class WhitemaneAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(SAY_WHITEMANE_02);
+                        sendDBChatMessage(SAY_WHITEMANE_02);
                         break;
                     default:
                         break;
@@ -469,7 +469,7 @@ class WhitemaneAI : public CreatureAIScript
             // Set phase var
             mPhase = 1;
 
-            _unit->SendScriptTextChatMessage(2106);
+            sendDBChatMessage(2106);
             CastSleep();
             CastRes();
         }
@@ -493,7 +493,7 @@ class WhitemaneAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(SAY_WHITEMANE_03);
+            sendDBChatMessage(SAY_WHITEMANE_03);
             RemoveAIUpdateEvent();
         }
 

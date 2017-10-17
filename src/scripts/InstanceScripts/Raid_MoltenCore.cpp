@@ -246,7 +246,7 @@ class RagnarosAI : public CreatureAIScript
 
         void OnTargetDied(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(3053);     // Die, insect!
+            sendDBChatMessage(3053);     // Die, insect!
         }
 
         void OnDied(Unit* mKiller)
@@ -275,7 +275,7 @@ class RagnarosAI : public CreatureAIScript
 
                 if (m_wrath)
                 {
-                    _unit->SendScriptTextChatMessage(3052);     // TASTE THE FLAMES OF SULFURON!
+                    sendDBChatMessage(3052);     // TASTE THE FLAMES OF SULFURON!
                     _unit->CastSpell(_unit, info_wrath, false);
                     m_wrath = false;
                     return;
@@ -283,7 +283,7 @@ class RagnarosAI : public CreatureAIScript
 
                 if (m_hammer)
                 {
-                    _unit->SendScriptTextChatMessage(3051);     // By fire be purged!
+                    sendDBChatMessage(3051);     // By fire be purged!
                     _unit->CastSpell(_unit, info_hammer, false);
                     m_hammer = false;
                     return;

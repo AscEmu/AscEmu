@@ -274,7 +274,7 @@ class NovosTheSummonerAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(SAY_NOVOS_SUMMONER_01);
+            sendDBChatMessage(SAY_NOVOS_SUMMONER_01);
             _unit->CastSpell(_unit, 47346, false);
             //spawn 4 Ritual Crystal
             for (uint8 i = 0; i < 4; i++)
@@ -284,8 +284,8 @@ class NovosTheSummonerAI : public CreatureAIScript
             phase = 1;
             for (uint8 i = 0; i < 7; i++)
                 _unit->SchoolImmunityList[i] = 1;
-            _unit->SendScriptTextChatMessage(SAY_NOVOS_SUMMONER_05);
-            _unit->SendScriptTextChatMessage(SAY_NOVOS_SUMMONER_06);
+            sendDBChatMessage(SAY_NOVOS_SUMMONER_05);
+            sendDBChatMessage(SAY_NOVOS_SUMMONER_06);
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
         }
 
@@ -317,14 +317,14 @@ class NovosTheSummonerAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(SAY_NOVOS_SUMMONER_03);
+            sendDBChatMessage(SAY_NOVOS_SUMMONER_03);
             RemoveAIUpdateEvent();
         }
 
         void OnTargetDied(Unit* mTarget)
         {
             //BUAHAHAHAH
-            _unit->SendScriptTextChatMessage(SAY_NOVOS_SUMMONER_02);
+            sendDBChatMessage(SAY_NOVOS_SUMMONER_02);
         }
 
         void AIUpdate()
@@ -431,7 +431,7 @@ class NovosTheSummonerAI : public CreatureAIScript
         //type: 1 - normal, 0 - handler
         void SpawnInvader(uint32 type)
         {
-            _unit->SendScriptTextChatMessage(SAY_NOVOS_SUMMONER_04);
+            sendDBChatMessage(SAY_NOVOS_SUMMONER_04);
             //x                y                z
             //-379.101227f    -824.835449f    60.0f
             uint32 mob_entry = 0;

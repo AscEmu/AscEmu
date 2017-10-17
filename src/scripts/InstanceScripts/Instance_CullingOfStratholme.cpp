@@ -62,7 +62,7 @@ class MeathookAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(SAY_MEATHOOK_01);
+            sendDBChatMessage(SAY_MEATHOOK_01);
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
         }
 
@@ -76,7 +76,7 @@ class MeathookAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(SAY_MEATHOOK_06);
+            sendDBChatMessage(SAY_MEATHOOK_06);
             RemoveAIUpdateEvent();
         }
 
@@ -85,13 +85,13 @@ class MeathookAI : public CreatureAIScript
             switch (RandomUInt(2))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(SAY_MEATHOOK_02);
+                    sendDBChatMessage(SAY_MEATHOOK_02);
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(SAY_MEATHOOK_03);
+                    sendDBChatMessage(SAY_MEATHOOK_03);
                     break;
                 case 2:
-                    _unit->SendScriptTextChatMessage(SAY_MEATHOOK_04);
+                    sendDBChatMessage(SAY_MEATHOOK_04);
                     break;
             }
         }
@@ -242,7 +242,7 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(SAY_SALRAM_FLESH_01);
+            sendDBChatMessage(SAY_SALRAM_FLESH_01);
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
         }
 
@@ -256,7 +256,7 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(SAY_SALRAM_FLESH_06);
+            sendDBChatMessage(SAY_SALRAM_FLESH_06);
             RemoveAIUpdateEvent();
         }
 
@@ -265,13 +265,13 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
             switch (RandomUInt(2))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(SAY_SALRAM_FLESH_03);
+                    sendDBChatMessage(SAY_SALRAM_FLESH_03);
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(SAY_SALRAM_FLESH_04);
+                    sendDBChatMessage(SAY_SALRAM_FLESH_04);
                     break;
                 case 2:
-                    _unit->SendScriptTextChatMessage(SAY_SALRAM_FLESH_05);
+                    sendDBChatMessage(SAY_SALRAM_FLESH_05);
                     break;
             }
         }
@@ -420,7 +420,7 @@ class ChronoLordEpochAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(SAY_CHRONOLORD_EPOCH_02);
+            sendDBChatMessage(SAY_CHRONOLORD_EPOCH_02);
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
         }
 
@@ -442,13 +442,13 @@ class ChronoLordEpochAI : public CreatureAIScript
             switch (RandomUInt(2))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(SAY_CHRONOLORD_EPOCH_06);
+                    sendDBChatMessage(SAY_CHRONOLORD_EPOCH_06);
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(SAY_CHRONOLORD_EPOCH_07);
+                    sendDBChatMessage(SAY_CHRONOLORD_EPOCH_07);
                     break;
                 case 2:
-                    _unit->SendScriptTextChatMessage(SAY_CHRONOLORD_EPOCH_08);
+                    sendDBChatMessage(SAY_CHRONOLORD_EPOCH_08);
                     break;
             }
         }
@@ -572,7 +572,7 @@ class InfiniteCorruptorAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(SAY_INFINITE_CORRUP_01);
+            sendDBChatMessage(SAY_INFINITE_CORRUP_01);
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
         }
 
@@ -586,7 +586,7 @@ class InfiniteCorruptorAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(SAY_INFINITE_CORRUP_02);
+            sendDBChatMessage(SAY_INFINITE_CORRUP_02);
             RemoveAIUpdateEvent();
         }
 
@@ -728,7 +728,7 @@ class MalganisAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(SAY_MALGANIS_03);
+            sendDBChatMessage(SAY_MALGANIS_03);
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
         }
 
@@ -745,13 +745,13 @@ class MalganisAI : public CreatureAIScript
             switch (RandomUInt(2))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(SAY_MALGANIS_04);
+                    sendDBChatMessage(SAY_MALGANIS_04);
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(SAY_MALGANIS_05);
+                    sendDBChatMessage(SAY_MALGANIS_05);
                     break;
                 case 2:
-                    _unit->SendScriptTextChatMessage(SAY_MALGANIS_06);
+                    sendDBChatMessage(SAY_MALGANIS_06);
                     break;
             }
         }
@@ -769,7 +769,7 @@ class MalganisAI : public CreatureAIScript
                 for (uint8 i = 0; i < 7; i++)
                     _unit->SchoolImmunityList[i] = 1;
                 RemoveAIUpdateEvent();
-                _unit->SendScriptTextChatMessage(SAY_MALGANIS_17);
+                sendDBChatMessage(SAY_MALGANIS_17);
 
                 //spawn a chest and go
                 GameObject* go = _unit->GetMapMgr()->CreateGameObject(190663);
@@ -781,7 +781,7 @@ class MalganisAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(SAY_MALGANIS_16);
+            sendDBChatMessage(SAY_MALGANIS_16);
             RemoveAIUpdateEvent();
         }
 
@@ -1111,7 +1111,7 @@ class ArthasAI : public CreatureAIScript
             {
                 case 1:
                 {
-                    _unit->SendScriptTextChatMessage(SAY_ARTHAS_10);
+                    sendDBChatMessage(SAY_ARTHAS_10);
                     _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                     _unit->GetAIInterface()->setWayPointToMove(2);
                 }
@@ -1126,7 +1126,7 @@ class ArthasAI : public CreatureAIScript
                 break;
                 case 1000://haxxed ;)
                 {
-                    _unit->SendScriptTextChatMessage(SAY_ARTHAS_11);
+                    sendDBChatMessage(SAY_ARTHAS_11);
                     phase++;
                     sEventMgr.AddEvent(_unit, &Creature::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, 12500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 }

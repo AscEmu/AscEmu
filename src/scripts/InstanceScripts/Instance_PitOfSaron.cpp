@@ -177,7 +177,7 @@ class ForgemasterGarfrostAI : MoonScriptBossAI
 
         if (GetPhase() == 1 && GetHealthPercent() <= 66)
         {
-            Emote(8765);
+            sendDBChatMessage(8765);
             _unit->CastSpell(_unit, SPELL_STOMP, false);
             _unit->GetAIInterface()->WipeHateList();
             _unit->GetAIInterface()->splineMoveJump(JumpCords[0].x, JumpCords[0].y, JumpCords[0].z);
@@ -197,7 +197,7 @@ class ForgemasterGarfrostAI : MoonScriptBossAI
 
         if (GetPhase() == 2 && GetHealthPercent() <= 33)
         {
-            Emote(8766);
+            sendDBChatMessage(8766);
             _unit->CastSpell(_unit, SPELL_STOMP, false);
             _unit->GetAIInterface()->WipeHateList();
             _unit->GetAIInterface()->splineMoveJump(JumpCords[1].x, JumpCords[1].y, JumpCords[1].z);
@@ -404,7 +404,7 @@ class IckAI : MoonScriptBossAI
         if (IsTimerFinished(mPoisonNovaTimer))
         {
             if (mKrickAI)
-                mKrickAI->Emote(8770);
+                mKrickAI->sendDBChatMessage(8770);
 
             CastSpell(mPoisonNova);
             RemoveTimer(mPoisonNovaTimer);
@@ -418,13 +418,13 @@ class IckAI : MoonScriptBossAI
                 switch (RandomUInt(2))
                 {
                     case 0:
-                        mKrickAI->Emote(8771);//Chase 1
+                        mKrickAI->sendDBChatMessage(8771);//Chase 1
                         break;
                     case 1:
-                        mKrickAI->Emote(8772);//Chase 2
+                        mKrickAI->sendDBChatMessage(8772);//Chase 2
                         break;
                     case 2:
-                        mKrickAI->Emote(8773);//Chase 3
+                        mKrickAI->sendDBChatMessage(8773);//Chase 3
                         break;
                 }
             }
@@ -447,7 +447,7 @@ class IckAI : MoonScriptBossAI
         {
             if (mKrickAI)
             {
-                mKrickAI->Emote(8774);
+                mKrickAI->sendDBChatMessage(8774);
                 mKrickAI->Announce("Krick begins rapidly conjuring explosive mines!");
                 mKrickAI->CastSpell(mExplosionBarageKrick);
             }
@@ -596,35 +596,35 @@ class KrickAI : MoonScriptBossAI
             switch (sequence)
             {
                 case 1:              
-                    Emote(8775);
+                    sendDBChatMessage(8775);
                     ResetTimer(mOutroTimer, 14000);
                     break;
                 case 2:
                     if (JainaOrSylvanas)
                     {
                         if (pTarget->IsTeamAlliance())
-                            JainaOrSylvanas->Emote(8776); // SAY_JAYNA_OUTRO_2
+                            JainaOrSylvanas->sendDBChatMessage(8776); // SAY_JAYNA_OUTRO_2
                         else
-                            JainaOrSylvanas->Emote(8777); // SAY_SYLVANAS_OUTRO_2
+                            JainaOrSylvanas->sendDBChatMessage(8777); // SAY_SYLVANAS_OUTRO_2
                     }
                     ResetTimer(mOutroTimer, 8500);
                     break;
                 case 3:
-                    Emote(8778); // SAY_KRICK_OUTRO_3
+                    sendDBChatMessage(8778); // SAY_KRICK_OUTRO_3
                     ResetTimer(mOutroTimer, 12000);
                     break;
                 case 4:
                     if (JainaOrSylvanas)
                     {
                         if (pTarget->IsTeamAlliance())
-                            JainaOrSylvanas->Emote(8779); // SAY_JAYNA_OUTRO_4
+                            JainaOrSylvanas->sendDBChatMessage(8779); // SAY_JAYNA_OUTRO_4
                         else
-                            JainaOrSylvanas->Emote(8780); // SAY_SYLVANAS_OUTRO_4
+                            JainaOrSylvanas->sendDBChatMessage(8780); // SAY_SYLVANAS_OUTRO_4
                     }
                     ResetTimer(mOutroTimer, 8000);
                     break;
                 case 5:
-                    Emote(8781); // SAY_KRICK_OUTRO_5
+                    sendDBChatMessage(8781); // SAY_KRICK_OUTRO_5
                     ResetTimer(mOutroTimer, 4000);
                     break;
                 case 6:
@@ -633,27 +633,27 @@ class KrickAI : MoonScriptBossAI
                     ResetTimer(mOutroTimer, 1);
                     break;
                 case 7:
-                    Emote(8782); // SAY_TYRANNUS_OUTRO_7
+                    sendDBChatMessage(8782); // SAY_TYRANNUS_OUTRO_7
                     ResetTimer(mOutroTimer, 7000);
                     break;
                 case 8:
-                    Emote(8783); // SAY_KRICK_OUTRO_8
+                    sendDBChatMessage(8783); // SAY_KRICK_OUTRO_8
                     ResetTimer(mOutroTimer, 6000);
                     break;
                 case 9:
                     // tyrannus kills krick
                     _unit->SetStandState(STANDSTATE_DEAD);
                     _unit->SetHealth(1);
-                    Emote(8784); // SAY_TYRANNUS_OUTRO_9
+                    sendDBChatMessage(8784); // SAY_TYRANNUS_OUTRO_9
                     ResetTimer(mOutroTimer, 12000);
                     break;
                 case 10:
                     if (JainaOrSylvanas)
                     {
                         if (pTarget->IsTeamAlliance() && JainaOrSylvanas)
-                            JainaOrSylvanas->Emote(8785); // SAY_JAYNA_OUTRO_10
+                            JainaOrSylvanas->sendDBChatMessage(8785); // SAY_JAYNA_OUTRO_10
                         else
-                            JainaOrSylvanas->Emote(8786); // SAY_SYLVANAS_OUTRO_10
+                            JainaOrSylvanas->sendDBChatMessage(8786); // SAY_SYLVANAS_OUTRO_10
                     }
                     ResetTimer(mOutroTimer, 8000);
                     break;

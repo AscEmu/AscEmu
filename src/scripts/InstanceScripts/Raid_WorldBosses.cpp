@@ -1497,7 +1497,7 @@ class KazzakAI : public CreatureAIScript
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
 
             //Spawn intro.
-            _unit->SendScriptTextChatMessage(373);      // I remember well the sting of defeat at the conclusion...
+            sendDBChatMessage(373);      // I remember well the sting of defeat at the conclusion...
 
             enrage = 0;
 
@@ -1508,10 +1508,10 @@ class KazzakAI : public CreatureAIScript
             switch (RandomUInt(1))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(374);      // All mortals will perish!
+                    sendDBChatMessage(374);      // All mortals will perish!
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(375);      // The Legion will conquer all!
+                    sendDBChatMessage(375);      // The Legion will conquer all!
                     break;
             }
             CastTime();
@@ -1524,10 +1524,10 @@ class KazzakAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(379);      // Contemptible wretch!
+                        sendDBChatMessage(379);      // Contemptible wretch!
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(378);      // Kirel narak!
+                        sendDBChatMessage(378);      // Kirel narak!
                         break;
                 }
                 _unit->CastSpell(_unit, spells[6].info, spells[6].instant);
@@ -1536,7 +1536,7 @@ class KazzakAI : public CreatureAIScript
 
         void OnCombatStop(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(380);      // The universe will be remade.
+            sendDBChatMessage(380);      // The universe will be remade.
 
             enrage = 0;
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
@@ -1552,7 +1552,7 @@ class KazzakAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(381);      // The Legion... will never... fall.
+            sendDBChatMessage(381);      // The Legion... will never... fall.
 
             RemoveAIUpdateEvent();
             CastTime();
@@ -1563,10 +1563,10 @@ class KazzakAI : public CreatureAIScript
             switch (RandomUInt(20))        // 10% chance should do, he talks a lot tbh =P
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(383);      // Invaders, you dangle upon the precipice of oblivion! The Burning...
+                    sendDBChatMessage(383);      // Invaders, you dangle upon the precipice of oblivion! The Burning...
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(384);      // Impudent whelps, you only delay the inevitable. Where one has fallen, ten shall rise. Such is the will of Kazzak...
+                    sendDBChatMessage(384);      // Impudent whelps, you only delay the inevitable. Where one has fallen, ten shall rise. Such is the will of Kazzak...
                     break;
                 default:
                     break;
@@ -1903,7 +1903,7 @@ class DoomwalkerAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(302);      // Do not proceed. You will be eliminated.
+            sendDBChatMessage(302);      // Do not proceed. You will be eliminated.
             RegisterAIUpdateEvent(1000);
             CastTime();
         }
@@ -1915,13 +1915,13 @@ class DoomwalkerAI : public CreatureAIScript
                 switch (RandomUInt(2))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(307);      // Threat level zero.
+                        sendDBChatMessage(307);      // Threat level zero.
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(308);      // Directive accomplished.
+                        sendDBChatMessage(308);      // Directive accomplished.
                         break;
                     case 2:
-                        _unit->SendScriptTextChatMessage(309);      // Target exterminated.
+                        sendDBChatMessage(309);      // Target exterminated.
                         break;
                 }
                 _unit->CastSpell(mTarget, spells[1].info, spells[1].instant);
@@ -1940,7 +1940,7 @@ class DoomwalkerAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(310);      // System failure in five, f-o-u-r...
+            sendDBChatMessage(310);      // System failure in five, f-o-u-r...
             _unit->RemoveAura(AURA_OF_DEATH);
             RemoveAIUpdateEvent();
             CastTime();
@@ -2005,10 +2005,10 @@ class DoomwalkerAI : public CreatureAIScript
                             switch (RandomUInt(1))
                             {
                                 case 0:
-                                    _unit->SendScriptTextChatMessage(303);      // Tectonic disruption commencing.
+                                    sendDBChatMessage(303);      // Tectonic disruption commencing.
                                     break;
                                 case 1:
-                                    _unit->SendScriptTextChatMessage(304);      // Magnitude set. Release.
+                                    sendDBChatMessage(304);      // Magnitude set. Release.
                                     break;
                             }
                         }
@@ -2018,10 +2018,10 @@ class DoomwalkerAI : public CreatureAIScript
                             switch (RandomUInt(1))
                             {
                                 case 0:
-                                    _unit->SendScriptTextChatMessage(305);      // Trajectory locked.
+                                    sendDBChatMessage(305);      // Trajectory locked.
                                     break;
                                 case 1:
-                                    _unit->SendScriptTextChatMessage(306);      // Engage maximum speed.
+                                    sendDBChatMessage(306);      // Engage maximum speed.
                                     break;
                             }
                         }

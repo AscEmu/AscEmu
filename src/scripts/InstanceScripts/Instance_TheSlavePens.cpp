@@ -1005,13 +1005,13 @@ class MennuTheBetrayerAI : public CreatureAIScript
             switch (RandomUInt(2))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(SAY_MENNU_BETRAYER_01);
+                    sendDBChatMessage(SAY_MENNU_BETRAYER_01);
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(SAY_MENNU_BETRAYER_02);
+                    sendDBChatMessage(SAY_MENNU_BETRAYER_02);
                     break;
                 case 2:
-                    _unit->SendScriptTextChatMessage(SAY_MENNU_BETRAYER_03);
+                    sendDBChatMessage(SAY_MENNU_BETRAYER_03);
                     break;
             }
 
@@ -1025,10 +1025,10 @@ class MennuTheBetrayerAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        _unit->SendScriptTextChatMessage(SAY_MENNU_BETRAYER_04);
+                        sendDBChatMessage(SAY_MENNU_BETRAYER_04);
                         break;
                     case 1:
-                        _unit->SendScriptTextChatMessage(SAY_MENNU_BETRAYER_05);
+                        sendDBChatMessage(SAY_MENNU_BETRAYER_05);
                         break;
                 }
             }
@@ -1044,7 +1044,7 @@ class MennuTheBetrayerAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(SAY_MENNU_BETRAYER_06);
+            sendDBChatMessage(SAY_MENNU_BETRAYER_06);
             RemoveAIUpdateEvent();
         }
 
