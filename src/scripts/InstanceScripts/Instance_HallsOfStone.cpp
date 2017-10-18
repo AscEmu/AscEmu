@@ -254,7 +254,7 @@ class KrystallusAI : public MoonScriptCreatureAI
         if (IsTimerFinished(mStompTimer))
         {
             CastSpellNowNoScheduling(mStomp);
-            SetCanMove(false);
+            setRooted(true);
             ResetTimer(mStompTimer, (STOMP_TIMER + SHATTER_TIMER));
             mShatterTimer = AddTimer(SHATTER_TIMER);
 
@@ -262,7 +262,7 @@ class KrystallusAI : public MoonScriptCreatureAI
         if (IsTimerFinished(mShatterTimer))
         {
             CastSpellNowNoScheduling(mShatter);
-            SetCanMove(true);
+            setRooted(false);
             RemoveTimer(mShatterTimer);
         }
     }

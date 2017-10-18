@@ -317,7 +317,7 @@ class TsunamiAI : public MoonScriptBossAI
             SetFlyMode(true);
             SetCanEnterCombat(false);
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            Despawn(11500, 0);
+            despawn(11500, 0);
 
             ParentClass::OnLoad();
         };
@@ -342,7 +342,7 @@ class CyclonAI : public MoonScriptBossAI
 
         void OnLoad()
         {
-            SetCanMove(false);
+            setRooted(true);
             SetCanEnterCombat(false);
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             ApplyAura(CYCLON_SPELL);
@@ -368,12 +368,12 @@ class LavaBlazeAI : public MoonScriptBossAI
 
         void OnCombatStop(Unit* pTarget)
         {
-            Despawn(1000, 0);
+            despawn(1000, 0);
         };
 
         void OnDied(Unit* pKiller)
         {
-            Despawn(1000, 0);
+            despawn(1000, 0);
         };
 
 };

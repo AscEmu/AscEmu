@@ -336,7 +336,7 @@ public:
     {
         _unit->SetFaction(35);
 
-        SetCanMove(false);
+        setRooted(true);
         NdGo = nullptr;
 
         plr = _unit->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ());
@@ -374,13 +374,13 @@ public:
                 return;
 
             NdGo->Despawn(0, 0);
-            Ogre->Despawn(60 * 1000, 3 * 60 * 1000);
+            Ogre->despawn(60 * 1000, 3 * 60 * 1000);
             if (plr == nullptr)
                 return;
 
             plr->AddQuestKill(10512, 0, 0);
 
-            Despawn(0, 0);
+            despawn(0, 0);
             return;
         }
         ParentClass::AIUpdate();

@@ -2082,16 +2082,16 @@ class WarbringerOmroggAI : public MoonScriptCreatureAI
         void OnCombatStop(Unit* pTarget)
         {
             ParentClass::OnCombatStop(pTarget);
-            if (IsAlive())
+            if (isAlive())
             {
                 if (mLeftHead != NULL)
                 {
-                    mLeftHead->Despawn(1000);
+                    mLeftHead->despawn(1000);
                     mLeftHead = NULL;
                 }
                 if (mRightHead != NULL)
                 {
-                    mRightHead->Despawn(1000);
+                    mRightHead->despawn(1000);
                     mRightHead = NULL;
                 }
             }
@@ -2122,10 +2122,10 @@ class WarbringerOmroggAI : public MoonScriptCreatureAI
                 return;
 
             sendChatMessage(CHAT_MSG_MONSTER_YELL, 10311, "This all... your fault!");
-            mLeftHead->Despawn(1000);
+            mLeftHead->despawn(1000);
             mLeftHead = NULL;
             mRightHead->RegisterAIUpdateEvent(3000);
-            mRightHead->Despawn(4000);
+            mRightHead->despawn(4000);
             mRightHead = NULL;
         }
 

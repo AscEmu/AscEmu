@@ -302,7 +302,6 @@ class MoonScriptCreatureAI : public CreatureAIScript
 
         //Movement
         bool GetCanMove();
-        void SetCanMove(bool pCanMove);
         void MoveTo(MoonScriptCreatureAI* pCreature, RangeStatusPair pRangeStatus = std::make_pair(RangeStatus_TooFar, 0.0f));
         void MoveTo(Unit* pUnit, RangeStatusPair pRangeStatus = std::make_pair(RangeStatus_TooFar, 0.0f));
         void MoveTo(float pX, float pY, float pZ, bool pRun = true);
@@ -362,7 +361,6 @@ class MoonScriptCreatureAI : public CreatureAIScript
         MoonScriptCreatureAI* GetNearestCreature(uint32 pCreatureId = 0);
         MoonScriptCreatureAI* SpawnCreature(uint32 pCreatureId, bool pForceSameFaction = false);
         MoonScriptCreatureAI* SpawnCreature(uint32 pCreatureId, float pX, float pY, float pZ, float pO = 0, bool pForceSameFaction = false, uint32 pPhase = 1);
-        void Despawn(uint32 pDelay = 0, uint32 pRespawnTime = 0);
 
         //Spells
         SpellDesc* AddSpell(uint32 pSpellId, TargetType pTargetType, float pChance, float pCastTime, int32 pCooldown, float pMinRange = 0, float pMaxRange = 0, bool pStrictRange = false, const char* pText = NULL, TextType pTextType = Text_Yell, uint32 pSoundId = 0, const char* pAnnouncement = NULL);

@@ -695,7 +695,7 @@ class FireswornAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            if (mGarr && mGarr->IsAlive() && GetRange(mGarr) > 100)
+            if (mGarr && mGarr->isAlive() && GetRange(mGarr) > 100)
             {
                 CastSpell(mSeparationAnxiety);
             }

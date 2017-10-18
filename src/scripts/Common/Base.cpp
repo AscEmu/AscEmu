@@ -112,14 +112,6 @@ bool MoonScriptCreatureAI::GetCanMove()
     return _unit->GetAIInterface()->m_canMove;
 };
 
-void MoonScriptCreatureAI::SetCanMove(bool pCanMove)
-{
-    if (pCanMove)
-        _unit->setMoveRoot(false);
-    else
-        _unit->setMoveRoot(true);
-};
-
 void MoonScriptCreatureAI::MoveTo(MoonScriptCreatureAI* pCreature, RangeStatusPair pRangeStatus)
 {
     MoveTo(pCreature->_unit, pRangeStatus);
@@ -443,7 +435,7 @@ void MoonScriptCreatureAI::CastOnInrangePlayers(float pDistanceMin, float pDista
 
 MoonScriptCreatureAI* MoonScriptCreatureAI::GetNearestCreature(uint32 pCreatureId)
 {
-    Creature* NearestCreature = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), pCreatureId);
+    Creature* NearestCreature = getNearestCreature(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), pCreatureId);
     return (NearestCreature) ? static_cast< MoonScriptCreatureAI* >(NearestCreature->GetScript()) : NULL;
 }
 
@@ -463,11 +455,6 @@ MoonScriptCreatureAI* MoonScriptCreatureAI::SpawnCreature(uint32 pCreatureId, fl
     }
     return CreatureScriptAI;
 }
-
-void MoonScriptCreatureAI::Despawn(uint32 pDelay, uint32 pRespawnTime)
-{
-    _unit->Despawn(pDelay, pRespawnTime);
-};
 
 SpellDesc* MoonScriptCreatureAI::AddSpell(uint32 pSpellId, TargetType pTargetType, float pChance, float pCastTime, int32 pCooldown, float pMinRange, float pMaxRange,
                                           bool pStrictRange, const char* pText, TextType pTextType, uint32 pSoundId, const char* pAnnouncement)
@@ -876,7 +863,7 @@ void MoonScriptCreatureAI::ForceWaypointMove(uint32 pWaypointId)
     if (GetCanEnterCombat())
         _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
     if (!GetCanMove())
-        SetCanMove(true);
+        setRooted(false);
 
     StopMovement();
     _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
@@ -935,7 +922,8 @@ void MoonScriptCreatureAI::OnCombatStop(Unit* pTarget)
     SetBehavior(Behavior_Default);
     //_unit->GetAIInterface()->SetAIState(STATE_IDLE);                // Fix for stuck mobs that don't regen
     RemoveAIUpdateEvent();
-    if (mDespawnWhenInactive) Despawn(DEFAULT_DESPAWN_TIMER);
+    if (mDespawnWhenInactive)
+        despawn(DEFAULT_DESPAWN_TIMER);
 }
 
 void MoonScriptCreatureAI::OnTargetDied(Unit* pTarget)
@@ -955,7 +943,7 @@ void MoonScriptCreatureAI::OnDied(Unit* pKiller)
     RemoveAllAuras();
     RemoveAIUpdateEvent();
     if (mDespawnWhenInactive)
-        Despawn(DEFAULT_DESPAWN_TIMER);
+        despawn(DEFAULT_DESPAWN_TIMER);
 }
 
 void MoonScriptCreatureAI::AIUpdate()
@@ -1018,7 +1006,7 @@ void MoonScriptCreatureAI::AIUpdate()
                 DelayNextAttack(mAIUpdateFrequency);
                 if (Spell->mCastTime > 0)
                 {
-                    SetCanMove(false);
+                    setRooted(false);
                     SetBehavior(Behavior_Spell);
                 }
             }
@@ -1047,7 +1035,7 @@ void MoonScriptCreatureAI::AIUpdate()
                     DelayNextAttack(mAIUpdateFrequency + CalcSpellAttackTime(Spell));
                     if (Spell->mCastTime > 0)
                     {
-                        SetCanMove(false);
+                        setRooted(true);
                         SetBehavior(Behavior_Spell);
                     }
                 }
@@ -1058,7 +1046,7 @@ void MoonScriptCreatureAI::AIUpdate()
         }
 
         //Go back to default behavior since we didn't decide anything
-        SetCanMove(true);
+        setRooted(false);
         SetBehavior(Behavior_Melee);
 
         //Random taunts
@@ -1207,7 +1195,7 @@ Unit* MoonScriptCreatureAI::GetTargetForSpell(SpellDesc* pSpell)
     switch (pSpell->mTargetType.mTargetGenerator)
     {
         case TargetGen_Self:
-            if (!IsAlive())
+            if (!isAlive())
                 return NULL;
             if ((pSpell->mTargetType.mTargetFilter & TargetFilter_Wounded) && _unit->GetHealthPct() >= 99)
                 return NULL;
@@ -1408,7 +1396,7 @@ void MoonScriptCreatureAI::PushRunToTargetCache(Unit* pTarget, SpellDesc* pSpell
     {
         mRunToTargetCache = pTarget;
         mRunToTargetSpellCache = pSpell;
-        SetCanMove(true);
+        setRooted(false);
         SetAllowMelee(false);
         SetAllowRanged(false);
         SetAllowSpell(false);
@@ -1555,14 +1543,14 @@ void SpellFunc_ClearHateList(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI
 void SpellFunc_Disappear(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
 {
     pCreatureAI->ClearHateList();
-    pCreatureAI->SetCanMove(false);
+    pCreatureAI->setRooted(true);
     pCreatureAI->SetCanEnterCombat(false);
     pCreatureAI->ApplyAura(SPELLFUNC_VANISH);
 }
 
 void SpellFunc_Reappear(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
 {
-    pCreatureAI->SetCanMove(true);
+    pCreatureAI->setRooted(false);
     pCreatureAI->SetCanEnterCombat(true);
     pCreatureAI->RemoveAura(SPELLFUNC_VANISH);
 }

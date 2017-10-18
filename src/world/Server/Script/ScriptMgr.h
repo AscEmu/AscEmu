@@ -332,15 +332,30 @@ class SERVER_DECL CreatureAIScript
         virtual void OnEmote(Player* /*pPlayer*/, EmoteType /*Emote*/) {}
         virtual void StringFunctionCall(int) {}
 
+        virtual void OnEnterVehicle() {}
+        virtual void OnExitVehicle() {}
+        virtual void OnFirstPassengerEntered(Unit* /*passenger*/) {}
+        virtual void OnVehicleFull() {}
+        virtual void OnLastPassengerLeft(Unit* /*passenger*/) {}
+
         // MIT start
         //////////////////////////////////////////////////////////////////////////////////////////
-        // data
+        // player
         Player* getNearestPlayer();
 
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // creature
         Creature* getNearestCreature(uint32_t entry);
         Creature* getNearestCreature(float posX, float posY, float posZ, uint32_t entry);
-        Creature* spawnCreature(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId = 0);
 
+        Creature* spawnCreature(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId = 0);
+        void despawn(uint32_t delay = 2000, uint32_t respawnTime = 0);
+
+        bool isAlive();
+        void setRooted(bool set);
+
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // gameobject
         GameObject* getNearestGameObject(uint32_t entry);
         GameObject* getNearestGameObject(float posX, float posY, float posZ, uint32_t entry);
 
@@ -355,58 +370,12 @@ class SERVER_DECL CreatureAIScript
         void ModifyAIUpdateEvent(uint32 newfrequency);
         void RemoveAIUpdateEvent();
 
-        bool IsAlive();
-
         virtual void Destroy() { delete this; }
         Creature* GetUnit() { return _unit; }
 
         CreatureAIScript* GetLinkedCreature() { return linkedCreatureAI; }
         void SetLinkedCreature(CreatureAIScript* creatureAI);
         void LinkedCreatureDeleted();
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // Vehicle passenger hooks
-        //////////////////////////////////////////////////////////////////////////////////////////
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        /// Called when this passenger enters a vehicle
-        ///
-        /// \param none   \return none
-        //////////////////////////////////////////////////////////////////////////////////////////
-        virtual void OnEnterVehicle(){}
-
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        /// Called when this passenger leaves the vehicle
-        ///
-        /// \param none   \return none
-        //////////////////////////////////////////////////////////////////////////////////////////
-        virtual void OnExitVehicle(){}
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // Vehicle Hooks
-        //////////////////////////////////////////////////////////////////////////////////////////
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        /// Called when the first passenger enters
-        /// \param Unit* passenger  -  The passenger who entered
-        /// \return none
-        //////////////////////////////////////////////////////////////////////////////////////////
-        virtual void OnFirstPassengerEntered(Unit* /*passenger*/) {}
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        /// Called when there are no more free seats
-        /// \param none
-        /// \return none
-        //////////////////////////////////////////////////////////////////////////////////////////
-        virtual void OnVehicleFull() {}
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        /// Called when the last passenger leaves
-        /// \param Unit* passenger  - The passenger who left
-        /// \return none
-        //////////////////////////////////////////////////////////////////////////////////////////
-        virtual void OnLastPassengerLeft(Unit* /*passenger*/) {}
 
     protected:
 

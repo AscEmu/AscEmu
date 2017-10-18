@@ -94,7 +94,7 @@ class AttumenTheHuntsmanAI : public MoonScriptBossAI
 
     void OnCombatStop(Unit* pTarget)
     {
-        Despawn(10000);
+        despawn(10000);
         ParentClass::OnCombatStop(pTarget);
     }
 
@@ -102,7 +102,7 @@ class AttumenTheHuntsmanAI : public MoonScriptBossAI
     {
         if (GetPhase() == 1)
         {
-            if (GetLinkedCreature() && GetLinkedCreature()->IsAlive() && GetHealthPercent() <= 25 && !IsCasting())
+            if (GetLinkedCreature() && GetLinkedCreature()->isAlive() && GetHealthPercent() <= 25 && !IsCasting())
             {
                 SetPhase(2);
                 SetAllowMelee(false);
@@ -134,7 +134,7 @@ class MidnightAI : public MoonScriptBossAI
 
     void OnTargetDied(Unit* pTarget)
     {
-        if (GetLinkedCreature() && GetLinkedCreature()->IsAlive())
+        if (GetLinkedCreature() && GetLinkedCreature()->isAlive())
         {
             static_cast<MoonScriptCreatureAI*>(GetLinkedCreature())->sendChatMessage(CHAT_MSG_MONSTER_YELL, 9173, "Well done Midnight!");
         }
@@ -155,7 +155,7 @@ class MidnightAI : public MoonScriptBossAI
                     attumen->SetLinkedCreature(this);
                 }
             }
-            else if (GetLinkedCreature() && GetLinkedCreature()->IsAlive() && GetHealthPercent() <= 25 && !IsCasting())
+            else if (GetLinkedCreature() && GetLinkedCreature()->isAlive() && GetHealthPercent() <= 25 && !IsCasting())
             {
                 SetPhase(2);
                 MoonScriptBossAI* attumen = static_cast<MoonScriptBossAI*>(GetLinkedCreature());
@@ -169,7 +169,7 @@ class MidnightAI : public MoonScriptBossAI
         }
         else if (GetPhase() == 2)
         {
-            if (GetLinkedCreature() && GetLinkedCreature()->IsAlive())
+            if (GetLinkedCreature() && GetLinkedCreature()->isAlive())
             {
                 MoonScriptBossAI* attumen = static_cast<MoonScriptBossAI*>(GetLinkedCreature());
                 if (GetRange(attumen) <= 15)
@@ -179,7 +179,7 @@ class MidnightAI : public MoonScriptBossAI
                     attumen->ClearHateList();
                     attumen->SetAllowMelee(true);
                     attumen->SetAllowSpell(true);
-                    Despawn();
+                    despawn();
                     return;
                 }
                 else MoveTo(attumen);
@@ -3195,12 +3195,12 @@ public:
 
     void OnLoad()
     {
-        SetCanMove(false);
+        setRooted(true);
         SetCanEnterCombat(false);
         _unit->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         _unit->m_noRespawn = true;
         RegisterAIUpdateEvent(6000);
-        Despawn(175000, 0);
+        despawn(175000, 0);
         _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(HELLFIRE), true);
         ParentClass::OnLoad();
     };

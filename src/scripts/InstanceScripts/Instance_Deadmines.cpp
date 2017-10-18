@@ -186,7 +186,8 @@ class MrSmiteAI : public MoonScriptBossAI
         {
             if (GetPhase() == 4)
                 RemoveAura(SMITES_HAMMER);
-            if (!IsAlive())
+
+            if (!isAlive())
                 SetWieldWeapon(false);
 
             SetPhase(1);

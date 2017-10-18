@@ -195,14 +195,14 @@ WebWrapAI::WebWrapAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
 void WebWrapAI::OnCombatStart(Unit* pTarget)
 {
     SetAllowMelee(false);
-    SetCanMove(false);
+    setRooted(true);
     StopMovement();
 };
 
 void WebWrapAI::OnCombatStop(Unit* pTarget)
 {
     SetAllowMelee(true);
-    SetCanMove(true);
+    setRooted(false);
 };
 
 void WebWrapAI::OnDied(Unit* pKiller)
@@ -231,7 +231,7 @@ void WebWrapAI::AIUpdate()
         {
             mPlayerGuid = 0;
             RemoveAIUpdateEvent();
-            Despawn(1);
+            despawn(1);
         }
     };
 };
@@ -417,7 +417,7 @@ void NaxxramasWorshipperAI::OnDied(Unit* pKiller)
         {
             for (std::set< NaxxramasWorshipperAI* >::iterator Iter = mGrandWidow->mWorshippers.begin(); Iter != mGrandWidow->mWorshippers.end(); ++Iter)
             {
-                if (!(*Iter)->IsAlive())
+                if (!(*Iter)->isAlive())
                     continue;
 
                 // Must check if it does not crash if creature is already casting
@@ -653,8 +653,8 @@ void GrandWidowFaerlinaAI::OnCombatStop(Unit* pTarget)
     for (std::set< NaxxramasWorshipperAI* >::iterator Iter = mWorshippers.begin(); Iter != mWorshippers.end(); ++Iter)
     {
         (*Iter)->mGrandWidow = NULL;
-        if (IsAlive())
-            (*Iter)->Despawn();
+        if (isAlive())
+            (*Iter)->despawn();
     };
 
     mWorshippers.clear();
@@ -662,13 +662,13 @@ void GrandWidowFaerlinaAI::OnCombatStop(Unit* pTarget)
     for (std::set< NaxxramasFollowerAI* >::iterator Iter = mFollowers.begin(); Iter != mFollowers.end(); ++Iter)
     {
         (*Iter)->mGrandWidow = NULL;
-        if (IsAlive())
-            (*Iter)->Despawn();
+        if (isAlive())
+            (*Iter)->despawn();
     };
 
     mFollowers.clear();
 
-    if (IsAlive())
+    if (isAlive())
     {
         MoonScriptCreatureAI* AddAI = NULL;
         for (uint8 i = 0; i < 4; ++i)
@@ -722,7 +722,7 @@ void GrandWidowFaerlinaAI::Destroy()
     for (std::set< NaxxramasWorshipperAI* >::iterator Iter = mWorshippers.begin(); Iter != mWorshippers.end(); ++Iter)
     {
         (*Iter)->mGrandWidow = NULL;
-        (*Iter)->Despawn();
+        (*Iter)->despawn();
     };
 
     mWorshippers.clear();
@@ -730,7 +730,7 @@ void GrandWidowFaerlinaAI::Destroy()
     for (std::set< NaxxramasFollowerAI* >::iterator Iter = mFollowers.begin(); Iter != mFollowers.end(); ++Iter)
     {
         (*Iter)->mGrandWidow = NULL;
-        (*Iter)->Despawn();
+        (*Iter)->despawn();
     };
 
     mFollowers.clear();
@@ -870,8 +870,8 @@ void AnubRekhanAI::OnCombatStop(Unit* pTarget)
     for (std::set< CryptGuardAI* >::iterator Iter = mCryptGuards.begin(); Iter != mCryptGuards.end(); ++Iter)
     {
         (*Iter)->mAnubRekhanAI = NULL;
-        if (IsAlive())
-            (*Iter)->Despawn();
+        if (isAlive())
+            (*Iter)->despawn();
     };
 
     mCryptGuards.clear();
@@ -879,13 +879,13 @@ void AnubRekhanAI::OnCombatStop(Unit* pTarget)
     for (std::set< CorpseScarabAI* >::iterator Iter = mScarabs.begin(); Iter != mScarabs.end(); ++Iter)
     {
         (*Iter)->mAnubRekhanAI = NULL;
-        if (IsAlive())
-            (*Iter)->Despawn();
+        if (isAlive())
+            (*Iter)->despawn();
     };
 
     mScarabs.clear();
 
-    if (IsHeroic() && IsAlive())
+    if (IsHeroic() && isAlive())
     {
         CryptGuardAI* CryptAI = NULL;
         for (uint8 i = 0; i < 2; ++i)
@@ -942,7 +942,7 @@ void AnubRekhanAI::Destroy()
     for (std::set< CryptGuardAI* >::iterator Iter = mCryptGuards.begin(); Iter != mCryptGuards.end(); ++Iter)
     {
         (*Iter)->mAnubRekhanAI = NULL;
-        (*Iter)->Despawn();
+        (*Iter)->despawn();
     };
 
     mCryptGuards.clear();
@@ -950,7 +950,7 @@ void AnubRekhanAI::Destroy()
     for (std::set< CorpseScarabAI* >::iterator Iter = mScarabs.begin(); Iter != mScarabs.end(); ++Iter)
     {
         (*Iter)->mAnubRekhanAI = NULL;
-        (*Iter)->Despawn();
+        (*Iter)->despawn();
     };
 
     mScarabs.clear();
@@ -1153,7 +1153,7 @@ void StoneskinGargoyleAI::AIUpdate()
         CastSpellNowNoScheduling(mStoneskin);
         _unit->SetEmoteState(EMOTE_STATE_SUBMERGED_NEW);
         SetBehavior(Behavior_Spell);
-        SetCanMove(false);
+        setRooted(true);
         StopMovement();
         return;
     };
@@ -1207,7 +1207,7 @@ void EyeStalkerAI::OnCombatStart(Unit* pTarget)
 {
     ParentClass::OnCombatStart(pTarget);
     SetBehavior(Behavior_Spell);
-    SetCanMove(false);
+    setRooted(true);
     StopMovement();
 };
 
@@ -1237,7 +1237,7 @@ void EyeStalkerAI::AIUpdate()
 
     // Meh, reset it in case something went wrong
     SetBehavior(Behavior_Spell);
-    SetCanMove(false);
+    setRooted(true);
     StopMovement();
 };
 
@@ -1310,7 +1310,7 @@ void NothThePlaguebringerAI::OnCombatStop(Unit* pTarget)
     for (std::set< PlaguedWarriorAI* >::iterator Iter = mWarriors.begin(); Iter != mWarriors.end(); ++Iter)
     {
         (*Iter)->mNothAI = NULL;
-        (*Iter)->Despawn();
+        (*Iter)->despawn();
     };
 
     mWarriors.clear();
@@ -1318,7 +1318,7 @@ void NothThePlaguebringerAI::OnCombatStop(Unit* pTarget)
     for (std::set< PlaguedChampionAI* >::iterator Iter = mChampions.begin(); Iter != mChampions.end(); ++Iter)
     {
         (*Iter)->mNothAI = NULL;
-        (*Iter)->Despawn();
+        (*Iter)->despawn();
     };
 
     mChampions.clear();
@@ -1326,7 +1326,7 @@ void NothThePlaguebringerAI::OnCombatStop(Unit* pTarget)
     for (std::set< PlaguedGuardianAI* >::iterator Iter = mGuardians.begin(); Iter != mGuardians.end(); ++Iter)
     {
         (*Iter)->mNothAI = NULL;
-        (*Iter)->Despawn();
+        (*Iter)->despawn();
     };
 
     mGuardians.clear();
@@ -1499,7 +1499,7 @@ void NothThePlaguebringerAI::AIUpdate()
     if (GetPhase() == 2)
     {
         SetBehavior(Behavior_Spell);
-        SetCanMove(false);
+        setRooted(true);
         StopMovement();
     };
 };
@@ -1509,7 +1509,7 @@ void NothThePlaguebringerAI::Destroy()
     for (std::set< PlaguedWarriorAI* >::iterator Iter = mWarriors.begin(); Iter != mWarriors.end(); ++Iter)
     {
         (*Iter)->mNothAI = NULL;
-        (*Iter)->Despawn();
+        (*Iter)->despawn();
     };
 
     mWarriors.clear();
@@ -1517,7 +1517,7 @@ void NothThePlaguebringerAI::Destroy()
     for (std::set< PlaguedChampionAI* >::iterator Iter = mChampions.begin(); Iter != mChampions.end(); ++Iter)
     {
         (*Iter)->mNothAI = NULL;
-        (*Iter)->Despawn();
+        (*Iter)->despawn();
     };
 
     mChampions.clear();
@@ -1525,7 +1525,7 @@ void NothThePlaguebringerAI::Destroy()
     for (std::set< PlaguedGuardianAI* >::iterator Iter = mGuardians.begin(); Iter != mGuardians.end(); ++Iter)
     {
         (*Iter)->mNothAI = NULL;
-        (*Iter)->Despawn();
+        (*Iter)->despawn();
     };
 
     mGuardians.clear();
@@ -1542,7 +1542,7 @@ void SpellFunc_NothToBalconyPhaseSwitch(SpellDesc* pThis, MoonScriptCreatureAI* 
         Noth->ApplyAura(NOTH_THE_PLAGUEBRINGER_BLINK_HEROIC);
         Noth->GetUnit()->SetPosition(2631.051025f, -3529.595703f, 274.037811f, 0.109163f);
         Noth->SetBehavior(Behavior_Spell);
-        Noth->SetCanMove(false);
+        Noth->setRooted(true);
         Noth->StopMovement();
     };
 };
@@ -1553,7 +1553,7 @@ void SpellFunc_NothFromBalconyPhaseSwitch(SpellDesc* pThis, MoonScriptCreatureAI
     if (Noth != NULL)
     {
         Noth->SetBehavior(Behavior_Default);
-        Noth->SetCanMove(true);
+        Noth->setRooted(false);
         Noth->ApplyAura(NOTH_THE_PLAGUEBRINGER_BLINK_HEROIC);
         Noth->GetUnit()->SetPosition(2684.620850f, -3502.447266f, 261.314880f, 0.098174f);
 
@@ -1815,7 +1815,7 @@ void HeiganTheUncleanAI::AIUpdate()
             _unit->SetPosition(2794.235596f, -3707.067627f, 276.545746f, 2.407245f);
             SetTargetToChannel(_unit, HEIGAN_THE_UNCLEAN_PLAGUE_CLOUD_CHANNEL);
             SetBehavior(Behavior_Spell);
-            SetCanMove(false);
+            setRooted(true);
             StopMovement();
             SetPhase(2);
             mEruptionPhase = 3;
@@ -1833,7 +1833,7 @@ void HeiganTheUncleanAI::AIUpdate()
         {
             SetTargetToChannel(NULL, 0);
             SetBehavior(Behavior_Default);
-            SetCanMove(true);
+            setRooted(false);
             SetPhase(1);
             ResetTimer(mPhaseSwitchTimer, 90000);
             return;
@@ -1847,7 +1847,7 @@ void HeiganTheUncleanAI::AIUpdate()
     if (GetPhase() == 2)
     {
         SetBehavior(Behavior_Spell);
-        SetCanMove(false);
+        setRooted(true);
         StopMovement();
     };
 };
@@ -1941,7 +1941,7 @@ void LoathebAI::OnCombatStop(Unit* pTarget)
     for (std::set< SporeAI* >::iterator Iter = mSpores.begin(); Iter != mSpores.end(); ++Iter)
     {
         (*Iter)->mLoathebAI = NULL;
-        (*Iter)->Despawn();
+        (*Iter)->despawn();
     };
 
     mSpores.clear();
@@ -2054,7 +2054,7 @@ void LoathebAI::Destroy()
     for (std::set< SporeAI* >::iterator Iter = mSpores.begin(); Iter != mSpores.end(); ++Iter)
     {
         (*Iter)->mLoathebAI = NULL;
-        (*Iter)->Despawn();
+        (*Iter)->despawn();
     };
 
     mSpores.clear();
@@ -2066,7 +2066,7 @@ void LoathebAI::Destroy()
 ////// Spore
 SporeAI::SporeAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
 {
-    Despawn(90000);
+    despawn(90000);
 
     mLoathebAI = NULL;
 };
@@ -2166,7 +2166,7 @@ void ShadeOfNaxxramasAI::OnDied(Unit* pKiller)
     for (std::set< PortalOfShadowsAI* >::iterator Iter = mPortals.begin(); Iter != mPortals.end(); ++Iter)
     {
         (*Iter)->mShadeAI = NULL;
-        (*Iter)->Despawn();
+        (*Iter)->despawn();
     };
 
     mPortals.clear();
@@ -2177,7 +2177,7 @@ void ShadeOfNaxxramasAI::Destroy()
     for (std::set< PortalOfShadowsAI* >::iterator Iter = mPortals.begin(); Iter != mPortals.end(); ++Iter)
     {
         (*Iter)->mShadeAI = NULL;
-        (*Iter)->Despawn();
+        (*Iter)->despawn();
     };
 
     mPortals.clear();
@@ -2212,7 +2212,7 @@ PortalOfShadowsAI::PortalOfShadowsAI(Creature* pCreature) : MoonScriptCreatureAI
 void PortalOfShadowsAI::OnCombatStart(Unit* pTarget)
 {
     SetBehavior(Behavior_Spell);
-    SetCanMove(false);
+    setRooted(true);
     StopMovement();
 };
 
@@ -2220,7 +2220,7 @@ void PortalOfShadowsAI::OnCombatStop(Unit* pTarget)
 {
     CancelAllSpells();
     CancelAllTimers();
-    SetCanMove(true);
+    setRooted(false);
     SetBehavior(Behavior_Default);
 };
 
@@ -2244,13 +2244,13 @@ void PortalOfShadowsAI::AIUpdate()
     else
     {
         RemoveAIUpdateEvent();
-        Despawn();
+        despawn();
         return;
     };
 
     ParentClass::AIUpdate();
     SetBehavior(Behavior_Spell);
-    SetCanMove(false);
+    setRooted(true);
     StopMovement();
 };
 
@@ -2332,11 +2332,11 @@ void DeathKnightCavalierAI::OnCombatStop(Unit* pTarget)
     ParentClass::OnCombatStop(pTarget);
     if (mChargerAI != NULL)
     {
-        if (IsAlive() && _unit->GetMount() == 0)
+        if (isAlive() && _unit->GetMount() == 0)
             _unit->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID , 25278);
 
         mChargerAI->mDeathKnightAI = NULL;
-        mChargerAI->Despawn();
+        mChargerAI->despawn();
         mChargerAI = NULL;
     };
 
@@ -2362,7 +2362,7 @@ void DeathKnightCavalierAI::Destroy()
     if (mChargerAI != NULL)
     {
         mChargerAI->mDeathKnightAI = NULL;
-        mChargerAI->Despawn();
+        mChargerAI->despawn();
         mChargerAI = NULL;
     };
 
@@ -2398,7 +2398,7 @@ void DeathchargerSteedAI::OnCombatStop(Unit* pTarget)
         {
             mDeathKnightAI->mChargerAI = NULL;
             mDeathKnightAI = NULL;
-            Despawn(1);
+            despawn(1);
         };
     };
 };
@@ -2537,7 +2537,7 @@ void PatchworkGolemAI::OnCombatStart(Unit* pTarget)
 void PatchworkGolemAI::OnCombatStop(Unit* pTarget)
 {
     ParentClass::OnCombatStop(pTarget);
-    if (IsAlive())
+    if (isAlive())
     {
         if (IsHeroic())
             ApplyAura(PATCHWORK_GOLEM_DISEASE_CLOUD_HEROIC);
@@ -2634,14 +2634,14 @@ LightningTotemAI::LightningTotemAI(Creature* pCreature) : MoonScriptCreatureAI(p
         AddSpell(LIGHTNING_TOTEM_SHOCK_NORMAL, Target_Self, 100, 0.5, 2);
 
     _unit->m_noRespawn = true;
-    Despawn(60000);
+    despawn(60000);
 };
 
 void LightningTotemAI::OnCombatStart(Unit* pTarget)
 {
     ParentClass::OnCombatStart(pTarget);
     SetBehavior(Behavior_Spell);
-    SetCanMove(false);
+    setRooted(true);
     StopMovement();
 };
 
@@ -2651,7 +2651,7 @@ void LightningTotemAI::AIUpdate()
 
     // Meh, reset it in case something went wrong
     SetBehavior(Behavior_Spell);
-    SetCanMove(false);
+    setRooted(true);
     StopMovement();
 };
 

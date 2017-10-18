@@ -1457,7 +1457,7 @@ class LakkaAI : public MoonScriptCreatureAI
                 break;
                 case 3:
                 {
-                    Despawn(100, 0);
+                    despawn(100, 0);
                 }
                 break;
                 default:

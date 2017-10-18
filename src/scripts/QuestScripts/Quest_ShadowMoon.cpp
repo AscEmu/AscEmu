@@ -101,7 +101,7 @@ public:
                         pRazuunAI->GetUnit()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
                         pRazuunAI->SetCanEnterCombat(false);
                         pRazuunAI->SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-                        pRazuunAI->SetCanMove(false);
+                        pRazuunAI->setRooted(true);
                     }
                     _unit->SetStandState(STANDSTATE_KNEEL);
                     _unit->Emote(EMOTE_ONESHOT_TALK);
@@ -167,7 +167,7 @@ public:
             break;
             case 4:
             {
-                Despawn(1, 0);
+                despawn(1, 0);
             }
             break;
         }
@@ -234,7 +234,7 @@ public:
                 {
                     mRazuunPhase = -1;
                     RemoveTimer(mRazuunTimer);
-                    Despawn(0, 0);
+                    despawn(0, 0);
                     return;
                 }
                 break;
@@ -304,7 +304,7 @@ public:
     EnslavedNetherwingDrakeAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         Movement::LocationWithFlag WayPoint = { _unit->GetPositionX(), _unit->GetPositionY() + 30, _unit->GetPositionZ() + 100, _unit->GetOrientation(), Movement::WP_MOVE_TYPE_FLY };
-        SetCanMove(false);
+        setRooted(true);
         _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH | UNIT_FLAG_NOT_ATTACKABLE_2);
         AddWaypoint(CreateWaypoint(1, 0, WayPoint));
     }
@@ -313,7 +313,7 @@ public:
     {
         if (iWaypointId == 1)
         {
-            Despawn(0, 3 * 60 * 1000);
+            despawn(0, 3 * 60 * 1000);
         }
     }
 };

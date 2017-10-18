@@ -479,7 +479,7 @@ class MoltenGolem : public MoonScriptCreatureAI
     void OnDied(Unit* pKiller)
     {
         SpawnCreature(CN_BRITTLE_GOLEM);
-        Despawn(1);
+        despawn();
     }
 };
 
@@ -490,7 +490,7 @@ class BrittleGolem : public MoonScriptCreatureAI
     BrittleGolem(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         SetCanEnterCombat(false);
-        SetCanMove(false);
+        setRooted(true);
     };
 };
 
@@ -502,7 +502,7 @@ class VolkhansAnvil : public MoonScriptCreatureAI
     {
         _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
         _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        SetCanMove(false);
+        setRooted(true);
     };
 
 };

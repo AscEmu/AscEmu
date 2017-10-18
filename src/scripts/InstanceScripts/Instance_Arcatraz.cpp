@@ -140,11 +140,11 @@ class ZerekethAI : public MoonScriptBossAI
             VoidZone->GetUnit()->m_noRespawn = true;
             if (!VoidZone->GetUnit()->IsInWorld())
             {
-                VoidZone->Despawn();
+                VoidZone->despawn();
                 return;
             }
             random_target = NULL;
-            VoidZone->Despawn(60000, 0);
+            VoidZone->despawn(60000, 0);
         }
 
         void AIUpdate()
@@ -172,7 +172,7 @@ class VoidZoneARC : public MoonScriptCreatureAI
         VoidZoneARC(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             StopMovement();
-            SetCanMove(false);
+            setRooted(true);
             SetCanEnterCombat(false);
             RegisterAIUpdateEvent(1000);
         }
@@ -382,7 +382,7 @@ class WardenMellicharAI : public MoonScriptBossAI
         MOONSCRIPT_FACTORY_FUNCTION(WardenMellicharAI, MoonScriptBossAI);
         WardenMellicharAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
         {
-            SetCanMove(false);
+            setRooted(true);
             Phase_Timer = -1;
             SetPhase(0);
             Spawncounter = 0;
@@ -404,7 +404,7 @@ class WardenMellicharAI : public MoonScriptBossAI
         {
             SetPhase(0);
             Phasepart = 0;
-            SetCanMove(false);
+            setRooted(true);
             Phase_Timer = AddTimer(55000);
 
             SetCanEnterCombat(false);
@@ -429,7 +429,7 @@ class WardenMellicharAI : public MoonScriptBossAI
         void AIUpdate()
         {
             SetCanEnterCombat(false);
-            SetCanMove(false);
+            setRooted(true);
             SetAllowMelee(false);
             SetAllowSpell(false);
 
@@ -648,14 +648,14 @@ class WardenMellicharAI : public MoonScriptBossAI
             {}
 
             ParentClass::AIUpdate();
-            SetCanMove(false);
+            setRooted(true);
             SetAllowMelee(false);
             SetAllowSpell(false);
         }
 
         void Reset_Event()
         {
-            SetCanMove(true);
+            setRooted(false);
             SetAllowMelee(true);
             SetAllowSpell(true);
             _unit->SetStandState(STANDSTATE_KNEEL);

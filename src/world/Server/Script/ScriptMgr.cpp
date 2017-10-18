@@ -533,12 +533,14 @@ CreatureAIScript::~CreatureAIScript()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// data
+// player
 Player* CreatureAIScript::getNearestPlayer()
 {
     return _unit->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ());
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// creature
 Creature* CreatureAIScript::getNearestCreature(uint32_t entry)
 {
     return getNearestCreature(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), entry);
@@ -570,6 +572,23 @@ Creature* CreatureAIScript::spawnCreature(uint32_t entry, float posX, float posY
     return creature;
 }
 
+void CreatureAIScript::despawn(uint32_t delay /*= 2000*/, uint32_t respawnTime /*= 0*/)
+{
+    _unit->Despawn(delay, respawnTime);
+}
+
+bool CreatureAIScript::isAlive()
+{
+    return _unit->isAlive();
+}
+
+void CreatureAIScript::setRooted(bool set)
+{
+    _unit->setMoveRoot(set);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// gameobject
 GameObject* CreatureAIScript::getNearestGameObject(uint32_t entry)
 {
     return getNearestGameObject(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), entry);
@@ -580,6 +599,8 @@ GameObject* CreatureAIScript::getNearestGameObject(float posX, float posY, float
     return _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(posX, posY, posZ, entry);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// chat message
 void CreatureAIScript::sendChatMessage(uint8_t type, uint32_t soundId, std::string text)
 {
     if (text.empty() == false)
@@ -623,11 +644,6 @@ void CreatureAIScript::SetLinkedCreature(CreatureAIScript* creatureAI)
 
     //link to the new creature
     linkedCreatureAI = creatureAI;
-}
-
-bool CreatureAIScript::IsAlive()
-{
-    return _unit->isAlive();
 }
 
 /* GameObjectAI Stuff */

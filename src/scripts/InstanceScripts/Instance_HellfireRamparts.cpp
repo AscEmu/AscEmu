@@ -144,7 +144,7 @@ class OmorTheUnscarredAI : public MoonScriptCreatureAI
                     break;
             }
             ParentClass::OnCombatStart(pTarget);
-            SetCanMove(false);
+            setRooted(true);
         }
 
         void OnTargetDied(Unit* pKiller)
@@ -160,7 +160,7 @@ class OmorTheUnscarredAI : public MoonScriptCreatureAI
         void OnCombatStop(Unit* pTarget)
         {
             ParentClass::OnCombatStop(pTarget);
-            if (IsAlive())
+            if (isAlive())
             {
                 sendDBChatMessage(4862);     // I am victorious!
             }
@@ -210,7 +210,7 @@ class OmorTheUnscarredAI : public MoonScriptCreatureAI
             }
 
             ParentClass::AIUpdate();
-            SetCanMove(false);
+            setRooted(true);
     }
 };
 

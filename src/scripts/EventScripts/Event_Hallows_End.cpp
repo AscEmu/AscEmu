@@ -138,12 +138,12 @@ class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
             if (getNearestCreature(CN_HEADLESS_HORSEMAN_FIRE) == NULL)     // CASE players win
             {
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 11968, "My flames have died, left not a spark! I shall send you now to the lifeless dark!");
-                Despawn(30000, 0); //Despawn after 30 secs
+                despawn(30000, 0); //Despawn after 30 secs
             }
             else // CASE players lost
             {
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 11967, "Fire consumes! You've tried and failed. Let there be no doubt, justice prevailed!");
-                Despawn(12000, 0); //Despawn after 12 secs
+                despawn(12000, 0); //Despawn after 12 secs
             }
         }
         else

@@ -1162,7 +1162,7 @@ class ArugalBossAI : public MoonScriptCreatureAI
                     {
                         if (MoonScriptCreatureAI* voidwalker = SpawnCreature(CN_VOIDWALKER, voidwalkerSpawns[x].x, voidwalkerSpawns[x].y, voidwalkerSpawns[x].z, voidwalkerSpawns[x].o))
                         {
-                            voidwalker->Despawn(4 * 60 * 1000); // Despawn in 4 mins
+                            voidwalker->despawn(4 * 60 * 1000); // Despawn in 4 mins
                             voidwalker->AggroNearestPlayer();
                         }
                     }
@@ -1215,7 +1215,7 @@ class ArugalBossAI : public MoonScriptCreatureAI
                         ModifyAIUpdateEvent(aiUpdateOriginal);
                         GetUnit()->CastSpell(GetUnit(), SPELL_SHADOW_PORT_STAIRS, true);
                         arugalPosition = ARUGAL_LOC_STAIRS;
-                        SetCanMove(true);
+                        setRooted(false);
                     }
 
                     if (arugalPosition == ARUGAL_LOC_LEDGE)
@@ -1224,7 +1224,7 @@ class ArugalBossAI : public MoonScriptCreatureAI
                         ModifyAIUpdateEvent(3000);
                         GetUnit()->CastSpell(GetUnit(), SPELL_SHADOW_PORT_UPPER_LEDGE, true);
                         arugalPosition = ARUGAL_LOC_UPPER_LEDGE;
-                        SetCanMove(false);
+                        setRooted(true);
                     }
                 }
             }

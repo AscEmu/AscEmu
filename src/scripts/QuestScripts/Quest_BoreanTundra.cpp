@@ -96,8 +96,8 @@ class PurifyingTotemAI : public MoonScriptCreatureAI
     PurifyingTotemAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         SetCanEnterCombat(false);
-        SetCanMove(false);
-        Despawn(8000, 0);
+        setRooted(true);
+        despawn(8000, 0);
     }
 };
 
@@ -127,7 +127,7 @@ class SeaforiumDepthCharge : public MoonScriptCreatureAI
     MOONSCRIPT_FACTORY_FUNCTION(SeaforiumDepthCharge, MoonScriptCreatureAI);
     SeaforiumDepthCharge(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
-        SetCanMove(false);
+        setRooted(true);
         SetCanEnterCombat(false);
         _unit->SetFaction(21);
     }

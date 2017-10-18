@@ -73,7 +73,7 @@ class AnomalusAI : public MoonScriptBossAI
                 ResetTimer(mSummonTimer, IsHeroic() ? 14000 : 18000);
             };
 
-            if (mRift == true && (GetLinkedCreature() == NULL || !GetLinkedCreature()->IsAlive()))
+            if (mRift == true && (GetLinkedCreature() == NULL || !GetLinkedCreature()->isAlive()))
             {
                 RemoveAura(47748);
                 mRift = false;
@@ -103,7 +103,7 @@ class AnomalusAI : public MoonScriptBossAI
             sendDBChatMessage(4320);     // Indestructible.
             Announce("Anomalus shields himself and diverts his power to the rifts!");
             ApplyAura(47748);   // me immune
-            SetCanMove(false);
+            setRooted(true);
 
             mRift = true;
             mSummon += 1;
@@ -155,19 +155,19 @@ class ChaoticRiftAI : public MoonScriptBossAI
         void OnLoad()
         {
             ApplyAura(CHAOTIC_RIFT_AURA);
-            Despawn(40000, 0);
+            despawn(40000, 0);
             ParentClass::OnLoad();
         };
 
         void OnDied(Unit* mKiller)
         {
-            Despawn(2000, 0);
+            despawn(2000, 0);
             ParentClass::OnDied(mKiller);
         };
 
         void OnCombatStop(Unit* pTarget)
         {
-            Despawn(2000, 0);
+            despawn(2000, 0);
             ParentClass::OnCombatStop(pTarget);
         };
 };
@@ -181,13 +181,13 @@ class CraziedManaWrathAI : public MoonScriptBossAI
 
         void OnCombatStop(Unit* pTarget)
         {
-            Despawn(2000, 0);
+            despawn(2000, 0);
             ParentClass::OnCombatStop(pTarget);
         };
 
         void OnDied(Unit* mKiller)
         {
-            Despawn(2000, 0);
+            despawn(2000, 0);
             ParentClass::OnDied(mKiller);
         };
 };
@@ -249,7 +249,7 @@ class TelestraBossAI : public MoonScriptBossAI
                 }
 
                 SetPhase(2);
-                SetCanMove(false);
+                setRooted(true);
                 SetAllowRanged(false);
                 SetAllowSpell(false);
                 SetAllowTargeting(false);
@@ -282,7 +282,7 @@ class TelestraBossAI : public MoonScriptBossAI
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 13323, "Now to finish the job!");
 
                 RemoveAura(60191);
-                SetCanMove(true);
+                setRooted(false);
                 mPhaseRepeat = 1;
                 SetPhase(mHeroic ? 1 : 3);   //3 disables p2
             };
@@ -492,10 +492,10 @@ class CrystalSpikeAI : public MoonScriptBossAI
     void OnLoad()
     {
         SetCanEnterCombat(false);
-        SetCanMove(false);
+        setRooted(true);
         _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
-        Despawn(4500, 0);
+        despawn(4500, 0);
         RegisterAIUpdateEvent(500);
 
         ParentClass::OnLoad();

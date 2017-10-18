@@ -1826,13 +1826,13 @@ void SpellFunc_Solarian_Disappear(SpellDesc* pThis, MoonScriptCreatureAI* pCreat
         //Spawn spot lights, and despawn them after 26sec X(400,460) Y(-340,-400)
         Solarian->mSpawnPositions[0][0] = 400 + RandomFloat(60);
         Solarian->mSpawnPositions[0][1] = -400 + RandomFloat(60);
-        Solarian->SpawnCreature(CN_SOLARIUM_SPOT_LIGHT, Solarian->mSpawnPositions[0][0], Solarian->mSpawnPositions[0][1], 17)->Despawn(26000);
+        Solarian->SpawnCreature(CN_SOLARIUM_SPOT_LIGHT, Solarian->mSpawnPositions[0][0], Solarian->mSpawnPositions[0][1], 17)->despawn(26000);
         Solarian->mSpawnPositions[1][0] = 400 + RandomFloat(60);
         Solarian->mSpawnPositions[1][1] = -400 + RandomFloat(60);
-        Solarian->SpawnCreature(CN_SOLARIUM_SPOT_LIGHT, Solarian->mSpawnPositions[1][0], Solarian->mSpawnPositions[1][1], 17)->Despawn(26000);
+        Solarian->SpawnCreature(CN_SOLARIUM_SPOT_LIGHT, Solarian->mSpawnPositions[1][0], Solarian->mSpawnPositions[1][1], 17)->despawn(26000);
         Solarian->mSpawnPositions[2][0] = 400 + RandomFloat(60);
         Solarian->mSpawnPositions[2][1] = -400 + RandomFloat(60);
-        Solarian->SpawnCreature(CN_SOLARIUM_SPOT_LIGHT, Solarian->mSpawnPositions[2][0], Solarian->mSpawnPositions[2][1], 17)->Despawn(26000);
+        Solarian->SpawnCreature(CN_SOLARIUM_SPOT_LIGHT, Solarian->mSpawnPositions[2][0], Solarian->mSpawnPositions[2][1], 17)->despawn(26000);
     }
 }
 
@@ -2596,7 +2596,7 @@ class DarkenerAI : public MoonScriptCreatureAI
             ParentClass::OnCombatStop(mTarget);
             mCurrentTarget = NULL;
 
-            if (IsAlive())
+            if (isAlive())
             {
                 SetCanEnterCombat(false);
             }
@@ -2669,7 +2669,7 @@ class SanguinarAI : public MoonScriptCreatureAI
         {
             ParentClass::OnCombatStop(mTarget);
 
-            if (IsAlive())
+            if (isAlive())
             {
                 SetCanEnterCombat(false);
             }
@@ -2704,7 +2704,7 @@ class CapernianAI : public MoonScriptCreatureAI
             if (GetRangeToUnit(mTarget) <= 30.0f)
             {
                 SetBehavior(Behavior_Spell);
-                SetCanMove(false);
+                setRooted(true);
             }
         }
 
@@ -2712,7 +2712,7 @@ class CapernianAI : public MoonScriptCreatureAI
         {
             ParentClass::OnCombatStop(mTarget);
 
-            if (IsAlive())
+            if (isAlive())
             {
                 SetCanEnterCombat(false);
             }
@@ -2721,7 +2721,7 @@ class CapernianAI : public MoonScriptCreatureAI
         void AIUpdate()
         {
             SetBehavior(Behavior_Default);
-            SetCanMove(true);
+            setRooted(false);
             Unit* pClosestTarget = GetBestPlayerTarget(TargetFilter_Closest);
             if (pClosestTarget != NULL && GetRangeToUnit(pClosestTarget) <= 6.0f)
             {
@@ -2735,7 +2735,7 @@ class CapernianAI : public MoonScriptCreatureAI
                 if (GetBehavior() != Behavior_Spell)
                 {
                     SetBehavior(Behavior_Spell);
-                    SetCanMove(false);
+                    setRooted(true);
                 }
             }
         }
@@ -2771,7 +2771,7 @@ class TelonicusAI : public MoonScriptCreatureAI
         {
             ParentClass::OnCombatStop(mTarget);
 
-            if (IsAlive())
+            if (isAlive())
             {
                 SetCanEnterCombat(false);
             }
@@ -2793,7 +2793,7 @@ class FlameStrikeAI : public MoonScriptCreatureAI
             RegisterAIUpdateEvent(5000);
             SetCanEnterCombat(false);
             SetAllowMelee(false);
-            SetCanMove(false);
+            setRooted(true);
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         }
 
@@ -2801,7 +2801,7 @@ class FlameStrikeAI : public MoonScriptCreatureAI
         {
             ParentClass::OnDied(mKiller);
             RemoveAura(FLAME_STRIKE_TRIGGER_FLAME_STRIKE_EFFECT);
-            Despawn(500);
+            despawn(500);
         }
 
         void AIUpdate()
@@ -2809,7 +2809,7 @@ class FlameStrikeAI : public MoonScriptCreatureAI
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
             ApplyAura(FLAME_STRIKE_TRIGGER_FLAME_STRIKE);
             RemoveAIUpdateEvent();
-            Despawn(8500);
+            despawn(8500);
         }
 };
 
@@ -2849,7 +2849,7 @@ class PhoenixAI : public MoonScriptCreatureAI
             }
             else
             {
-                Despawn(1, 0);
+                despawn(1, 0);
             }
         }
 
@@ -2858,7 +2858,7 @@ class PhoenixAI : public MoonScriptCreatureAI
             ParentClass::OnDied(mKiller);
             ApplyAura(PHOENIX_REBIRTH);
             SpawnCreature(21364);
-            Despawn(500);
+            despawn(500);
         }
 
         void AIUpdate()
@@ -2874,7 +2874,7 @@ class PhoenixAI : public MoonScriptCreatureAI
             else if (CurrentHP <= PercMaxHP)
             {
                 SpawnCreature(21364);
-                Despawn(500);
+                despawn(500);
                 return;
             }
 
@@ -2896,19 +2896,19 @@ class PhoenixEggAI : public MoonScriptCreatureAI
             RegisterAIUpdateEvent(15000);
             SetCanEnterCombat(false);
             SetAllowMelee(false);
-            SetCanMove(false);
+            setRooted(true);
         }
 
         void OnDied(Unit* mKiller)
         {
             ParentClass::OnDied(mKiller);
-            Despawn(500);
+            despawn(500);
         }
 
         void AIUpdate()
         {
             SpawnCreature(CN_PHOENIX);
-            Despawn(0);
+            despawn(0);
         }
 };
 
@@ -2946,7 +2946,7 @@ class WeaponsAI : public MoonScriptCreatureAI
             }
             else
             {
-                Despawn(1);
+                despawn(1);
             }
         }
 };
@@ -3048,7 +3048,7 @@ class KaelThasAI : public MoonScriptBossAI
 
             SetCanEnterCombat(true);
             SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-            SetCanMove(true);
+            setRooted(false);
 
             // Other spells
             mSummonWeapons = AddSpell(KAELTHAS_SUMMON_WEAPONS, Target_Self, 0, 3, 0);
@@ -3108,7 +3108,7 @@ class KaelThasAI : public MoonScriptBossAI
             SetAIUpdateFreq(24000);
             ParentClass::OnCombatStart(mTarget);
             SetBehavior(Behavior_Spell);
-            SetCanMove(false);
+            setRooted(true);
 
             for (uint8 i = 0; i < 2; ++i)
             {
@@ -3126,11 +3126,11 @@ class KaelThasAI : public MoonScriptBossAI
 
         void OnCombatStop(Unit* mTarget)
         {
-            SetCanMove(true);
+            setRooted(false);
             ParentClass::OnCombatStop(mTarget);
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
 
-            if (IsAlive())
+            if (isAlive())
             {
                 for (uint8 i = 0; i < 4; ++i)
                 {
@@ -3304,7 +3304,7 @@ class KaelThasAI : public MoonScriptBossAI
 
                 ParentClass::AIUpdate();
                 SetBehavior(Behavior_Spell);
-                SetCanMove(false);
+                setRooted(true);
             }
             if (GetPhase() == 6)
             {
@@ -3316,13 +3316,13 @@ class KaelThasAI : public MoonScriptBossAI
                     mFlameStrikeTimer = AddTimer(40000);
                     SetCanEnterCombat(true);
                     SetBehavior(Behavior_Default);
-                    SetCanMove(true);
+                    setRooted(false);
                     SetPhase(7);
                 }
                 else
                 {
                     SetBehavior(Behavior_Spell);
-                    SetCanMove(false);
+                    setRooted(true);
                 }
 
                 return;
@@ -3334,7 +3334,7 @@ class KaelThasAI : public MoonScriptBossAI
                     if (GetBehavior() == Behavior_Spell)
                     {
                         SetBehavior(Behavior_Default);
-                        SetCanMove(true);
+                        setRooted(false);
                     }
                     if (IsTimerFinished(mShockBarrierTimer))
                     {
@@ -3355,7 +3355,7 @@ class KaelThasAI : public MoonScriptBossAI
                 {
                     CastSpellNowNoScheduling(mPyroblast);
                     SetBehavior(Behavior_Spell);
-                    SetCanMove(false);
+                    setRooted(true);
                 }
                 else if (IsTimerFinished(mPhoenixTimer))        // it spawns on caster's place, but should in 20y from him
                 {

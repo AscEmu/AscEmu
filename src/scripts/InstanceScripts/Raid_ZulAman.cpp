@@ -248,7 +248,7 @@ class HalazziAI : public MoonScriptBossAI
                     Totem = SpawnCreature(CN_TOTEM, (_unit->GetPositionX() + RandomFloat(3) - 3), (_unit->GetPositionY() + RandomFloat(3) - 3), _unit->GetPositionZ(), 0, true);
                     if (Totem)
                     {
-                        Totem->Despawn(60000); // Despawn in 60 seconds
+                        Totem->despawn(60000); // Despawn in 60 seconds
                         Totem->AggroNearestPlayer();
                         Totem = NULL;
                     }

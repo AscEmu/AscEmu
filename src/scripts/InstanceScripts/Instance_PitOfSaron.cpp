@@ -659,7 +659,7 @@ class KrickAI : MoonScriptBossAI
                     break;
                 case 11:
                     _unit->Despawn(1, 0);
-                    JainaOrSylvanas->Despawn(1, 0);
+                    JainaOrSylvanas->despawn(1, 0);
                     RemoveTimer(mOutroTimer);
                     break;
             }
