@@ -531,7 +531,7 @@ class VHCreatureAI : public MoonScriptCreatureAI
                     {
                         if (!m_spells[i].instant)
                         {
-                            this->StopMovement();
+                            this->stopMovement();
                         }
 
                         m_spells[i].casttime = m_spells[i].cooldown;

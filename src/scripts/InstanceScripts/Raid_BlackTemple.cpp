@@ -2412,7 +2412,7 @@ class EssenceOfSufferingAI : public MoonScriptCreatureAI
                 RemoveAuraOnPlayers(EOS_AURA_OF_SUFFERING);
                 MoonScriptCreatureAI* mRoS = GetNearestCreature(22856);
                 if (mRoS != NULL && mRoS->isAlive())
-                    MoveTo(mRoS);
+                    moveToUnit(mRoS->GetUnit());
             }
         }
 
@@ -2468,7 +2468,7 @@ class EssenceOfDesireAI : public MoonScriptCreatureAI
                 RemoveAuraOnPlayers(EOD_AURA_OF_DESIRE);
                 MoonScriptCreatureAI* mRoS = GetNearestCreature(22856);
                 if (mRoS != NULL && mRoS->isAlive())
-                    MoveTo(mRoS);
+                    moveToUnit(mRoS->GetUnit());
             }
         }
 
@@ -4063,7 +4063,7 @@ class EyeBeamTriggerAI : public MoonScriptCreatureAI
             }
             else if (mPosition != -2)
             {
-                MoveTo(EyeBeamPaths[7 - mPosition].x, EyeBeamPaths[7 - mPosition].y, EyeBeamPaths[7 - mPosition].z, false);
+                moveTo(EyeBeamPaths[7 - mPosition].x, EyeBeamPaths[7 - mPosition].y, EyeBeamPaths[7 - mPosition].z, false);
 
                 mPosition = -2;
             }
@@ -5148,7 +5148,7 @@ class MaievAI : public MoonScriptBossAI
                                 AkamaAI* pAkamaAI = static_cast< AkamaAI* >(pAkama->GetScript());
                                 //pAkama->m_auracount[SPELL_AURA_MOD_INVISIBILITY] = true;                        // Arc's
                                 pAkama->UpdateVisibility();
-                                if (!pAkamaAI->GetCanMove())
+                                if (pAkamaAI->isRooted())
                                 {
                                     pAkamaAI->setRooted(false);
                                 }
@@ -5604,7 +5604,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 }
 
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 11479, "I will not be touched by rabble such as you!");
-                MoveTo(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ() + 10.0f, false);
+                moveTo(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ() + 10.0f, false);
                 SetCanEnterCombat(false);
                 SetAllowMelee(false);
                 SetFlyMode(true);
@@ -5910,7 +5910,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                         _unit->GetAIInterface()->AttackReaction(pTarget, 5000);
                     }
                     SetBehavior(Behavior_Spell);
-                    StopMovement();                    // readding settings after target switch
+                    stopMovement();                    // readding settings after target switch
                     SetPhase(mPhaseBackup);            // without it he gets back to phase 1 and then immediatly to 2
 
                     if (mPlaySound)
@@ -6159,7 +6159,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             else if (_unit->GetHealthPct() <= 30 && !IsCasting())
             {
 #ifdef USE_SHADOW_PRISON
-                StopMovement();
+                stopMovement();
                 CastSpellNowNoScheduling(mShadowPrison);
 #endif
 
@@ -6181,7 +6181,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             {
                 if (mDemonTimer <= 0)
                 {
-                    StopMovement();
+                    stopMovement();
                     SetBehavior(Behavior_Spell);
                     SetAIUpdateFreq(250);
 
@@ -6238,7 +6238,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             if (mDemonTimer <= 0 || (GetHealthPercent() <= 30 && mPhaseBackup == 3))
             {
                 SetDisplayWeapon(true, true);
-                StopMovement();
+                stopMovement();
                 SetBehavior(Behavior_Spell);
                 SetAIUpdateFreq(250);
 
@@ -6253,7 +6253,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 if (GetRangeToUnit(pTarget) <= 80.0f)
                 {
                     SetBehavior(Behavior_Spell);
-                    StopMovement();
+                    stopMovement();
 
                     if (mShadowDemonsTimer <= 0)
                     {
@@ -6322,7 +6322,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             {
                 if (mDemonTimer <= 0)
                 {
-                    StopMovement();
+                    stopMovement();
                     SetBehavior(Behavior_Spell);
                     SetAIUpdateFreq(250);
 
@@ -6566,7 +6566,7 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
                     pAI->ApplyAura(CAGE_TRAP);
                     pAI->setRooted(true);
                     pAI->SetAllowMelee(false);
-                    pAI->StopMovement();
+                    pAI->stopMovement();
 
                     SetAIUpdateFreq(2500);
                     return;
@@ -6602,7 +6602,7 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
                         pAI->RemoveAura(CAGED1);
                         pAI->setRooted(false);
                         pAI->SetAllowMelee(true);
-                        pAI->StopMovement();
+                        pAI->stopMovement();
                         pAI->SetBehavior(Behavior_Spell);
 
                         pIllidan->SetEmoteState(EMOTE_ONESHOT_NONE);

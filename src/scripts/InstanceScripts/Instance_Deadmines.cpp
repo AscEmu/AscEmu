@@ -230,9 +230,9 @@ class MrSmiteAI : public MoonScriptBossAI
             if (GetCanEnterCombat())
                 _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
 
-            StopMovement();
+            stopMovement();
             _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
-            MoveTo(1.100060f, -780.026367f, 9.811194f);
+            moveTo(1.100060f, -780.026367f, 9.811194f);
         }
 
         void MoveToPlayer()

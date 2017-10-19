@@ -587,6 +587,35 @@ void CreatureAIScript::setRooted(bool set)
     _unit->setMoveRoot(set);
 }
 
+bool CreatureAIScript::isRooted()
+{
+    return _unit->GetAIInterface()->m_canMove;
+}
+
+void CreatureAIScript::moveTo(float posX, float posY, float posZ, bool setRun /*= true*/)
+{
+    if (setRun)
+        _unit->GetAIInterface()->setWalkMode(WALKMODE_RUN);
+
+    _unit->GetAIInterface()->MoveTo(posX, posY, posZ);
+}
+
+void CreatureAIScript::moveToUnit(Unit* unit)
+{
+    if (unit != nullptr)
+        moveTo(unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ());
+}
+
+void CreatureAIScript::moveToSpawn()
+{
+    moveTo(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ());
+}
+
+void CreatureAIScript::stopMovement()
+{
+    _unit->GetAIInterface()->StopMovement(0);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // gameobject
 GameObject* CreatureAIScript::getNearestGameObject(uint32_t entry)

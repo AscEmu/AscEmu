@@ -154,7 +154,7 @@ class SelinFireheartAI : public MoonScriptCreatureAI
         // Not in range
         if (_unit->GetDistance2dSq(FelCrystal) > 100)
         {
-            MoveTo(FelCrystal->GetPositionX(), FelCrystal->GetPositionY(), FelCrystal->GetPositionZ());
+            moveTo(FelCrystal->GetPositionX(), FelCrystal->GetPositionY(), FelCrystal->GetPositionZ());
             FelCrystal = NULL;
             return;
         }
