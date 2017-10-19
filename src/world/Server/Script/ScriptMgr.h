@@ -352,7 +352,14 @@ class SERVER_DECL CreatureAIScript
         void despawn(uint32_t delay = 2000, uint32_t respawnTime = 0);
 
         bool isAlive();
+
         void setRooted(bool set);
+        bool isRooted();
+
+        void moveTo(float posX, float posY, float posZ, bool setRun = true);
+        void moveToUnit(Unit* unit);
+        void moveToSpawn();
+        void stopMovement();
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // gameobject

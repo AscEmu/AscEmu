@@ -107,11 +107,6 @@ MoonScriptCreatureAI::~MoonScriptCreatureAI()
     DeleteArray(mEvents);
 }
 
-bool MoonScriptCreatureAI::GetCanMove()
-{
-    return _unit->GetAIInterface()->m_canMove;
-};
-
 void MoonScriptCreatureAI::MoveTo(MoonScriptCreatureAI* pCreature, RangeStatusPair pRangeStatus)
 {
     MoveTo(pCreature->_unit, pRangeStatus);
@@ -122,26 +117,8 @@ void MoonScriptCreatureAI::MoveTo(Unit* pUnit, RangeStatusPair pRangeStatus)
     if (pRangeStatus.first == RangeStatus_TooClose)
         _unit->GetAIInterface()->_CalcDestinationAndMove(pUnit, pRangeStatus.second);
     else if (pRangeStatus.first == RangeStatus_TooFar)
-        MoveTo(pUnit->GetPositionX(), pUnit->GetPositionY(), pUnit->GetPositionZ());
+        moveTo(pUnit->GetPositionX(), pUnit->GetPositionY(), pUnit->GetPositionZ());
 };
-
-void MoonScriptCreatureAI::MoveTo(float pX, float pY, float pZ, bool pRun)
-{
-    if (pRun)
-        _unit->GetAIInterface()->setSplineRun();
-
-    _unit->GetAIInterface()->MoveTo(pX, pY, pZ);
-};
-
-void MoonScriptCreatureAI::MoveToSpawnOrigin()
-{
-    MoveTo(_unit->GetSpawnX(), _unit->GetSpawnY(), _unit->GetSpawnZ());
-}
-
-void MoonScriptCreatureAI::StopMovement()
-{
-    _unit->GetAIInterface()->StopMovement(0);
-}
 
 void MoonScriptCreatureAI::SetFlyMode(bool pValue)
 {
@@ -862,10 +839,10 @@ void MoonScriptCreatureAI::ForceWaypointMove(uint32 pWaypointId)
 {
     if (GetCanEnterCombat())
         _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-    if (!GetCanMove())
+    if (isRooted())
         setRooted(false);
 
-    StopMovement();
+    stopMovement();
     _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
     SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
     SetWaypointToMove(pWaypointId);
@@ -918,7 +895,6 @@ void MoonScriptCreatureAI::OnCombatStop(Unit* pTarget)
     CancelAllTimers();
     RemoveAllEvents();
     RemoveAllAuras();
-    //SetCanMove(GetCanMove());
     SetBehavior(Behavior_Default);
     //_unit->GetAIInterface()->SetAIState(STATE_IDLE);                // Fix for stuck mobs that don't regen
     RemoveAIUpdateEvent();
@@ -1415,7 +1391,7 @@ void MoonScriptCreatureAI::PopRunToTargetCache()
         SetAllowMelee(true);
         SetAllowRanged(true);
         SetAllowSpell(true);
-        StopMovement();
+        stopMovement();
     };
 };
 

@@ -301,12 +301,8 @@ class MoonScriptCreatureAI : public CreatureAIScript
         virtual ~MoonScriptCreatureAI();
 
         //Movement
-        bool GetCanMove();
         void MoveTo(MoonScriptCreatureAI* pCreature, RangeStatusPair pRangeStatus = std::make_pair(RangeStatus_TooFar, 0.0f));
         void MoveTo(Unit* pUnit, RangeStatusPair pRangeStatus = std::make_pair(RangeStatus_TooFar, 0.0f));
-        void MoveTo(float pX, float pY, float pZ, bool pRun = true);
-        void MoveToSpawnOrigin();
-        void StopMovement();
         void SetFlyMode(bool pValue);
 
         //Attack and Combat State

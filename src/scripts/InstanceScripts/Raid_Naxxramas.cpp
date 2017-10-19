@@ -196,7 +196,7 @@ void WebWrapAI::OnCombatStart(Unit* pTarget)
 {
     SetAllowMelee(false);
     setRooted(true);
-    StopMovement();
+    stopMovement();
 };
 
 void WebWrapAI::OnCombatStop(Unit* pTarget)
@@ -1154,7 +1154,7 @@ void StoneskinGargoyleAI::AIUpdate()
         _unit->SetEmoteState(EMOTE_STATE_SUBMERGED_NEW);
         SetBehavior(Behavior_Spell);
         setRooted(true);
-        StopMovement();
+        stopMovement();
         return;
     };
 
@@ -1208,7 +1208,7 @@ void EyeStalkerAI::OnCombatStart(Unit* pTarget)
     ParentClass::OnCombatStart(pTarget);
     SetBehavior(Behavior_Spell);
     setRooted(true);
-    StopMovement();
+    stopMovement();
 };
 
 void EyeStalkerAI::AIUpdate()
@@ -1238,7 +1238,7 @@ void EyeStalkerAI::AIUpdate()
     // Meh, reset it in case something went wrong
     SetBehavior(Behavior_Spell);
     setRooted(true);
-    StopMovement();
+    stopMovement();
 };
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -1500,7 +1500,7 @@ void NothThePlaguebringerAI::AIUpdate()
     {
         SetBehavior(Behavior_Spell);
         setRooted(true);
-        StopMovement();
+        stopMovement();
     };
 };
 
@@ -1543,7 +1543,7 @@ void SpellFunc_NothToBalconyPhaseSwitch(SpellDesc* pThis, MoonScriptCreatureAI* 
         Noth->GetUnit()->SetPosition(2631.051025f, -3529.595703f, 274.037811f, 0.109163f);
         Noth->SetBehavior(Behavior_Spell);
         Noth->setRooted(true);
-        Noth->StopMovement();
+        Noth->stopMovement();
     };
 };
 
@@ -1816,7 +1816,7 @@ void HeiganTheUncleanAI::AIUpdate()
             SetTargetToChannel(_unit, HEIGAN_THE_UNCLEAN_PLAGUE_CLOUD_CHANNEL);
             SetBehavior(Behavior_Spell);
             setRooted(true);
-            StopMovement();
+            stopMovement();
             SetPhase(2);
             mEruptionPhase = 3;
             ResetTimer(mPhaseSwitchTimer, 45000);
@@ -1848,7 +1848,7 @@ void HeiganTheUncleanAI::AIUpdate()
     {
         SetBehavior(Behavior_Spell);
         setRooted(true);
-        StopMovement();
+        stopMovement();
     };
 };
 
@@ -2213,7 +2213,7 @@ void PortalOfShadowsAI::OnCombatStart(Unit* pTarget)
 {
     SetBehavior(Behavior_Spell);
     setRooted(true);
-    StopMovement();
+    stopMovement();
 };
 
 void PortalOfShadowsAI::OnCombatStop(Unit* pTarget)
@@ -2251,7 +2251,7 @@ void PortalOfShadowsAI::AIUpdate()
     ParentClass::AIUpdate();
     SetBehavior(Behavior_Spell);
     setRooted(true);
-    StopMovement();
+    stopMovement();
 };
 
 void PortalOfShadowsAI::Destroy()
@@ -2642,7 +2642,7 @@ void LightningTotemAI::OnCombatStart(Unit* pTarget)
     ParentClass::OnCombatStart(pTarget);
     SetBehavior(Behavior_Spell);
     setRooted(true);
-    StopMovement();
+    stopMovement();
 };
 
 void LightningTotemAI::AIUpdate()
@@ -2652,7 +2652,7 @@ void LightningTotemAI::AIUpdate()
     // Meh, reset it in case something went wrong
     SetBehavior(Behavior_Spell);
     setRooted(true);
-    StopMovement();
+    stopMovement();
 };
 
 /////////////////////////////////////////////////////////////////////////////////

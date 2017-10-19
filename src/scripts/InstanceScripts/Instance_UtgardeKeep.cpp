@@ -490,7 +490,7 @@ class SkarvaldTheConstructorAI : public MoonScriptCreatureAI
             if (pDalronn != NULL)
             {
                 if (pDalronn->isAlive())
-                    MoveToSpawnOrigin();
+                    moveToSpawn();
                 else
                     SpawnCreature(CN_DALRONN, pDalronn->GetUnit()->GetSpawnX(), pDalronn->GetUnit()->GetSpawnY(), pDalronn->GetUnit()->GetSpawnZ(), pDalronn->GetUnit()->GetSpawnO());
             };
@@ -579,7 +579,7 @@ class DalronnTheControllerAI : public MoonScriptCreatureAI
             if (pSkarvald != NULL)
             {
                 if (pSkarvald->isAlive())
-                    MoveToSpawnOrigin();
+                    moveToSpawn();
                 else
                     SpawnCreature(CN_DALRONN, pSkarvald->GetUnit()->GetSpawnX(), pSkarvald->GetUnit()->GetSpawnY(), pSkarvald->GetUnit()->GetSpawnZ(), pSkarvald->GetUnit()->GetSpawnO());
             };

@@ -110,7 +110,7 @@ class JainaAI : public MoonScriptCreatureAI
 
         void StartInstance()
         {
-            MoveTo(5302.581f, 1994.510f, 707.694f);
+            moveTo(5302.581f, 1994.510f, 707.694f);
             SpawnCreature(37225, 5307.37f, 2000.80f, 709.341f, 4.03f);
             SpawnCreature(37226, 5355.244f, 2052.96f, 707.695f, 3.94f);
             sendChatMessage(CHAT_MSG_MONSTER_YELL, 16633, "Frostmourne! the blade that destroyed our kingdom..");

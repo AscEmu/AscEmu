@@ -110,7 +110,7 @@ class AttumenTheHuntsmanAI : public MoonScriptBossAI
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 9168, "Come Midnight, let's disperse this petty rabble!");
                 MoonScriptBossAI* midnight = static_cast<MoonScriptBossAI*>(GetLinkedCreature());
                 midnight->SetPhase(2);
-                midnight->MoveTo(this);
+                midnight->moveToUnit(_unit);
                 midnight->SetAllowMelee(false);
             }
         }
@@ -159,7 +159,7 @@ class MidnightAI : public MoonScriptBossAI
             {
                 SetPhase(2);
                 MoonScriptBossAI* attumen = static_cast<MoonScriptBossAI*>(GetLinkedCreature());
-                MoveTo(attumen);
+                moveToUnit(attumen->GetUnit());
                 SetAllowMelee(false);
                 attumen->SetPhase(2);
                 attumen->SetAllowMelee(false);
@@ -182,7 +182,8 @@ class MidnightAI : public MoonScriptBossAI
                     despawn();
                     return;
                 }
-                else MoveTo(attumen);
+                else
+                    moveToUnit(attumen->GetUnit());
             }
         }
         ParentClass::AIUpdate();

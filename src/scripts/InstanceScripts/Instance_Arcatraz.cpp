@@ -171,7 +171,7 @@ class VoidZoneARC : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(VoidZoneARC, MoonScriptCreatureAI);
         VoidZoneARC(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            StopMovement();
+            stopMovement();
             setRooted(true);
             SetCanEnterCombat(false);
             RegisterAIUpdateEvent(1000);

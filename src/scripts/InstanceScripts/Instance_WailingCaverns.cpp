@@ -213,7 +213,7 @@ class SkumAI : public MoonScriptCreatureAI
                 SetAllowMelee(false);
                 SetAllowRanged(false);
                 SetAllowSpell(false);
-                MoveTo(-262.829742f, -299.363159f, -68.293579f, true);
+                moveTo(-262.829742f, -299.363159f, -68.293579f, true);
             }
             ParentClass::AIUpdate();
         }
@@ -408,8 +408,8 @@ class DofNaralexAI : public MoonScriptBossAI
                     Naralex->GetUnit()->SetStandState(STANDSTATE_STAND);
                     SetFlyMode(true);
                     Naralex->SetFlyMode(true);
-                    MoveTo(-6.704030f, 200.308838f, -26.938824f);
-                    Naralex->MoveTo(-6.704030f, 200.308838f, -26.938824f);
+                    moveTo(-6.704030f, 200.308838f, -26.938824f);
+                    Naralex->moveTo(-6.704030f, 200.308838f, -26.938824f);
                 }
                 SetPhase(6);
             }

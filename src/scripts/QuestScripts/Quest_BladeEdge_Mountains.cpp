@@ -353,7 +353,7 @@ public:
                 }
             }
         }
-        Ogre->MoveTo(_unit);
+        Ogre->moveToUnit(_unit);
         RegisterAIUpdateEvent(1000);
     }
 
