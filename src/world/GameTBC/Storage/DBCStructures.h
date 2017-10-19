@@ -565,7 +565,7 @@ namespace DBC
         #define MAX_EFFECT_MASK 7
         #define MAX_SPELL_REAGENTS 8
 
-        struct SpellEntry_New
+        struct SpellEntry
         {
             uint32_t Id;                                                // 0
             uint32_t Category;                                          // 1

@@ -43,7 +43,7 @@ void SpellCustomizations::LoadSpellInfoData()
     for (uint32 i = 0; i < MAX_SPELL_ID; ++i)
     {
 
-        DBC::Structures::SpellEntry_New const* dbc_spell_entry = sSpellStore.LookupEntry(i);
+        DBC::Structures::SpellEntry const* dbc_spell_entry = sSpellStore.LookupEntry(i);
         if (dbc_spell_entry == nullptr)
         {
             continue;
