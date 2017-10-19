@@ -1335,9 +1335,9 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
             //this is wrong, dummy is too common to be based on this, we should use spellgroup or something
             if (spe->getSpellIconID() != CastingSpell->getSpellIconID())
             {
-                if (!ospinfo->getSchool())
+                if (ospinfo && !ospinfo->getSchool())
                     continue;
-                if (ospinfo->getSchool() != CastingSpell->getSchool())
+                if (ospinfo && ospinfo->getSchool() != CastingSpell->getSchool())
                     continue;
                 if (CastingSpell->getEffectImplicitTargetA(0) == EFF_TARGET_SELF || CastingSpell->getEffectImplicitTargetA(1) == EFF_TARGET_SELF || CastingSpell->getEffectImplicitTargetA(2) == EFF_TARGET_SELF)  //Prevents school based procs affecting caster when self buffing
                     continue;
@@ -1429,7 +1429,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
             continue;
 
         //check if we can trigger due to time limitation
-        if (ospinfo->custom_proc_interval)
+        if (ospinfo && ospinfo->custom_proc_interval)
         {
             uint32 now_in_ms = Util::getMSTime();
             if (spell_proc->mLastTrigger + ospinfo->custom_proc_interval > now_in_ms)
@@ -2039,7 +2039,9 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);   //we already modified this spell on server loading so it must exist
                     auto spell_duration = sSpellDurationStore.LookupEntry(spellInfo->getDurationIndex());
                     uint32 tickcount = GetDuration(spell_duration) / spellInfo->getEffectAmplitude(0);
-                    dmg_overwrite[0] = ospinfo->getEffectBasePoints(0) * dmg / (100 * tickcount);
+
+                    if (ospinfo)
+                        dmg_overwrite[0] = ospinfo->getEffectBasePoints(0) * dmg / (100 * tickcount);
                 }
                 break;
                 //druid - Primal Fury
@@ -2452,7 +2454,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
 
                         //this spell builds up n time
                         spell_proc->mProcCharges += dmg;
-                        if ((int32)spell_proc->mProcCharges >= ospinfo->getEffectBasePoints(1) &&  //if charge built up
+                        if (ospinfo && (int32)spell_proc->mProcCharges >= ospinfo->getEffectBasePoints(1) &&  //if charge built up
                             dmg < this->getUInt32Value(UNIT_FIELD_HEALTH))    //if this is not a killer blow
                             can_proc_now = true;
                     }
@@ -2498,14 +2500,16 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     }
 
                     //null check was made before like 2 times already :P
-                    dmg_overwrite[0] = (ospinfo->getEffectBasePoints(2) + 1) * GetMaxPower(POWER_TYPE_MANA) / 100;
+                    if (ospinfo)
+                        dmg_overwrite[0] = (ospinfo->getEffectBasePoints(2) + 1) * GetMaxPower(POWER_TYPE_MANA) / 100;
                 }
                 break;
                 // warlock - Unstable Affliction
                 case 31117:
                 {
                     //null check was made before like 2 times already :P
-                    dmg_overwrite[0] = (ospinfo->getEffectBasePoints(0) + 1) * 9;
+                    if (ospinfo)
+                        dmg_overwrite[0] = (ospinfo->getEffectBasePoints(0) + 1) * 9;
                 }
                 break;
 
@@ -2969,7 +2973,8 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
                     Spell* spell = sSpellFactoryMgr.NewSpell(this, spellInfo, true, NULL);
                     spell->SetUnitTarget(this);
-                    spell->Heal(amount * (ospinfo->getEffectBasePoints(0) + 1) / 100);
+                    if (ospinfo)
+                        spell->Heal(amount * (ospinfo->getEffectBasePoints(0) + 1) / 100);
                     delete spell;
                     spell = NULL;
                     continue;
@@ -4423,7 +4428,9 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                         continue;
                     if (CastingSpell->getSchool() != SCHOOL_FIRE && CastingSpell->getSchool() != SCHOOL_FROST) //fire and frost critical's
                         continue;
-                    dmg_overwrite[0] = CastingSpell->getManaCost() * (ospinfo->getEffectBasePoints(0) + 1) / 100;
+
+                    if (ospinfo)
+                        dmg_overwrite[0] = CastingSpell->getManaCost() * (ospinfo->getEffectBasePoints(0) + 1) / 100;
                 }
                 break;
                 //Hunter - The Beast Within
@@ -4496,9 +4503,12 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     if (!power_word_id)
                         power_word_id = 17;
                     //make a direct strike then exit rest of handler
-                    int tdmg = abs * (ospinfo->getEffectBasePoints(0) + 1) / 100;
-                    //somehow we should make this not caused any threat (to be done)
-                    SpellNonMeleeDamageLog(victim, power_word_id, tdmg, false, true);
+                    if (ospinfo)
+                    {
+                        int tdmg = abs * (ospinfo->getEffectBasePoints(0) + 1) / 100;
+                        //somehow we should make this not caused any threat (to be done)
+                        SpellNonMeleeDamageLog(victim, power_word_id, tdmg, false, true);
+                    }
                     continue;
                 }
                 break;
@@ -4708,7 +4718,8 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(54203);
                     auto spell_duration = sSpellDurationStore.LookupEntry(spellInfo->getDurationIndex());
                     uint32 tickcount = GetDuration(spell_duration) / spellInfo->getEffectAmplitude(0);
-                    dmg_overwrite[0] = ospinfo->getEffectBasePoints(0) * dmg / (100 * tickcount);
+                    if (ospinfo)
+                        dmg_overwrite[0] = ospinfo->getEffectBasePoints(0) * dmg / (100 * tickcount);
                 }
                 break;
                 case 59578: //Paladin - Art of War
@@ -4789,7 +4800,8 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     auto idx = CastingSpell->firstBeneficialEffect();
                     if (idx != 1)
                     {
-                        dmg_overwrite[0] = ((CastingSpell->getEffectBasePoints(idx) + 1) * (ospinfo->getEffectBasePoints(0) + 1) / 100);
+                        if (ospinfo)
+                            dmg_overwrite[0] = ((CastingSpell->getEffectBasePoints(idx) + 1) * (ospinfo->getEffectBasePoints(0) + 1) / 100);
                     }
                 }
                 break;
