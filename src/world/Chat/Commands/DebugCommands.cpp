@@ -55,6 +55,33 @@ bool ChatHandler::HandleAiFallingCommand(const char* /*args*/, WorldSession* ses
     return true;
 }
 
+bool ChatHandler::HandleMoveToSpawnCommand(const char* /*args*/, WorldSession* session)
+{
+    Unit* selected_unit = GetSelectedUnit(session);
+    if (selected_unit == nullptr)
+        return true;
+
+    LocationVector spawnPos = selected_unit->GetSpawnPosition();
+    selected_unit->GetAIInterface()->sendSplineMoveToPoint(spawnPos);
+    return true;
+}
+
+bool ChatHandler::HandlePositionCommand(const char* /*args*/, WorldSession* session)
+{
+    Creature* selected_unit = GetSelectedCreature(session);
+    if (selected_unit == nullptr)
+        return true;
+
+    LocationVector spawnPos = selected_unit->GetSpawnPosition();
+
+    SystemMessage(session, "=== Spawn Position ===");
+    SystemMessage(session, "spawnX: %f", spawnPos.x);
+    SystemMessage(session, "spawnY: %f", spawnPos.y);
+    SystemMessage(session, "spawnZ: %f", spawnPos.z);
+    SystemMessage(session, "spawnO: %f", spawnPos.o);
+    return true;
+}
+
 bool ChatHandler::HandleDebugDumpState(const char* /*args*/, WorldSession* session)
 {
     auto state = ServerState::instance();

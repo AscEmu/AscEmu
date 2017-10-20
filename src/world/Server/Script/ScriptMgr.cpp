@@ -608,7 +608,8 @@ void CreatureAIScript::moveToUnit(Unit* unit)
 
 void CreatureAIScript::moveToSpawn()
 {
-    moveTo(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ());
+    LocationVector spawnPos = _unit->GetSpawnPosition();
+    _unit->GetAIInterface()->sendSplineMoveToPoint(spawnPos);
 }
 
 void CreatureAIScript::stopMovement()

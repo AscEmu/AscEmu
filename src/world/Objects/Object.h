@@ -503,6 +503,7 @@ public:
         const float & GetSpawnY() const { return m_spawnLocation.y; }
         const float & GetSpawnZ() const { return m_spawnLocation.z; }
         const float & GetSpawnO() const { return m_spawnLocation.o; }
+        LocationVector GetSpawnPosition() const { return m_spawnLocation; }
 
         ::DBC::Structures::AreaTableEntry const* GetArea();
 
