@@ -965,6 +965,19 @@ bool AIInterface::hideWayPoints(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Spline functions
+void AIInterface::setFacing(float orientation)
+{
+    unsetSpline();
+
+    m_Unit->m_movementManager.m_spline.SetFacing(orientation);
+
+    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.done = true;
+
+    LocationVector pos = m_Unit->GetPosition();
+
+    sendSplineMoveToPoint(pos);
+}
+
 void AIInterface::setWalkMode(uint32_t mode)
 {
     mWalkMode = mode;

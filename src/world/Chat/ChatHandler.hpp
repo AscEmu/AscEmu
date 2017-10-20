@@ -197,6 +197,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleAiFallingCommand(const char* /*args*/, WorldSession* session);
         bool HandleMoveToSpawnCommand(const char* /*args*/, WorldSession* session);
         bool HandlePositionCommand(const char* /*args*/, WorldSession* session);
+        bool HandleSetOrientationCommand(const char* args, WorldSession* session);
 
         bool HandleDebugDumpMovementCommand(const char* args, WorldSession* session);
         bool HandleDebugInFrontCommand(const char* args, WorldSession* m_session);

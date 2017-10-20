@@ -355,6 +355,7 @@ void CommandTableStorage::Init()
         { "aifalling",          'z', &ChatHandler::HandleAiFallingCommand,          "AiFalling test",                                           nullptr, 0, 0, 0 },
         { "movetospawn",        'z', &ChatHandler::HandleMoveToSpawnCommand,        "Move target to spwn",                                      nullptr, 0, 0, 0 },
         { "position",           'z', &ChatHandler::HandlePositionCommand,           "Show position",                                            nullptr, 0, 0, 0 },
+        { "setorientation",     'z', &ChatHandler::HandleSetOrientationCommand,     "Sets orientation on npc",                                  nullptr, 0, 0, 0 },
         { "dumpmovement",       'd', &ChatHandler::HandleDebugDumpMovementCommand,  "Dumps the player's movement information to chat",          nullptr, 0, 0, 0 },
         { "infront",            'd', &ChatHandler::HandleDebugInFrontCommand,       "",                                                         nullptr, 0, 0, 0 },
         { "showreact",          'd', &ChatHandler::HandleShowReactionCommand,       "",                                                         nullptr, 0, 0, 0 },

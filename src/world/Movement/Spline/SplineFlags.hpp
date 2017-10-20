@@ -20,7 +20,7 @@ namespace Movement { namespace Spline {
         bool trajectory : 1; // 12
         bool walkmode : 1;
         bool flying : 1;
-        bool knockback : 1;
+        bool knockback : 1;             // fixed orientation
         bool finalpoint : 1; // 16
         bool finaltarget : 1;
         bool finalangle : 1;

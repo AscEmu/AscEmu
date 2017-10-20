@@ -290,6 +290,8 @@ class SERVER_DECL AIInterface : public IUpdatable
 
     public:
 
+        void setFacing(float orientation);
+
         void setWalkMode(uint32_t mode);
         bool hasWalkMode(uint32_t mode) const;
         uint32_t getWalkMode() const;

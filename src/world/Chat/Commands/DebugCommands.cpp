@@ -73,12 +73,36 @@ bool ChatHandler::HandlePositionCommand(const char* /*args*/, WorldSession* sess
         return true;
 
     LocationVector spawnPos = selected_unit->GetSpawnPosition();
+    LocationVector pos = selected_unit->GetPosition();
 
     SystemMessage(session, "=== Spawn Position ===");
     SystemMessage(session, "spawnX: %f", spawnPos.x);
     SystemMessage(session, "spawnY: %f", spawnPos.y);
     SystemMessage(session, "spawnZ: %f", spawnPos.z);
     SystemMessage(session, "spawnO: %f", spawnPos.o);
+    SystemMessage(session, "=== Packet Position ===");
+    SystemMessage(session, "posX: %f", pos.x);
+    SystemMessage(session, "posY: %f", pos.y);
+    SystemMessage(session, "posZ: %f", pos.z);
+    SystemMessage(session, "posO: %f", pos.o);
+    return true;
+}
+
+bool ChatHandler::HandleSetOrientationCommand(const char* args, WorldSession* session)
+{
+    Creature* selected_unit = GetSelectedCreature(session);
+    if (selected_unit == nullptr)
+        return false;
+
+    float orientation = float(atof(args));
+    if (orientation == 0.0f)
+    {
+        SystemMessage(session, "No orientation set, applying yours on npc.");
+        orientation = session->GetPlayer()->GetOrientation();
+    }
+
+    selected_unit->GetAIInterface()->setFacing(orientation);
+    SystemMessage(session, "Orientation %f set on npc %s", orientation, selected_unit->GetCreatureProperties()->Name.c_str());
     return true;
 }
 
