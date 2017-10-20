@@ -552,6 +552,14 @@ void AIInterface::generateWaypointScriptPatrol()
     }
 }
 
+void AIInterface::updateOrientation()
+{
+    if (MoveDone())
+    {
+        setFacing(m_Unit->GetOrientation());
+    }
+}
+
 void AIInterface::setFormationMovement()
 {
     if (m_formationLinkSqlId != 0)
@@ -967,13 +975,9 @@ bool AIInterface::hideWayPoints(Player* player)
 // Spline functions
 void AIInterface::setFacing(float orientation)
 {
-    unsetSpline();
-
     m_Unit->m_movementManager.m_spline.SetFacing(orientation);
 
-    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.done = true;
-
-    LocationVector pos = m_Unit->GetPosition();
+    LocationVector pos = LocationVector(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ(), orientation);
 
     sendSplineMoveToPoint(pos);
 }
@@ -1199,7 +1203,7 @@ void AIInterface::sendSplineMoveToPoint(LocationVector pos)
     m_Unit->SetPosition(pos.x, pos.y, pos.z, pos.o);
 }
 
-bool AIInterface::generateAndSendSplinePath(float x, float y, float z)
+bool AIInterface::generateAndSendSplinePath(float x, float y, float z, float o /*= 0.0f*/)
 {
     if (mSplinePriority > SPLINE_PRIORITY_MOVEMENT)
         return false;
@@ -1230,13 +1234,13 @@ bool AIInterface::generateAndSendSplinePath(float x, float y, float z)
         }
         else
         {
-            sendSplineMoveToPoint(LocationVector(x, y, z, 0));
+            sendSplineMoveToPoint(LocationVector(x, y, z, o));
             return true;
         }
     }
     else
     {
-        sendSplineMoveToPoint(LocationVector(x, y, z, 0));
+        sendSplineMoveToPoint(LocationVector(x, y, z, o));
         return true;
     }
 
@@ -2993,8 +2997,6 @@ void AIInterface::_UpdateMovement(uint32 p_time)
             {
                 switch (m_Unit->GetAIInterface()->getWaypointScriptType())
                 {
-                    case Movement::WP_MOVEMENT_SCRIPT_NONE:
-                        break;
                     case Movement::WP_MOVEMENT_SCRIPT_CIRCLEWP:
                         generateWaypointScriptCircle();
                         break;
@@ -3011,8 +3013,9 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                         generateWaypointScriptPatrol();
                         break;
                     default:
-                        LOG_DEBUG("WaypointGenerator is called for invalid type %u", getWaypointScriptType());
-                        break;
+                    {
+                        updateOrientation();
+                    } break;
                 }
             }
             else

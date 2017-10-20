@@ -236,6 +236,8 @@ class SERVER_DECL AIInterface : public IUpdatable
         void generateWaypointScriptWantedWP();
         void generateWaypointScriptPatrol();
 
+        void updateOrientation();
+
         void setFormationMovement();
         void setFearRandomMovement();
         void setPetFollowMovement();
@@ -314,7 +316,7 @@ class SERVER_DECL AIInterface : public IUpdatable
 
         void generateSplinePathToTarget(Unit* targetUnit, float distance);
         void sendSplineMoveToPoint(LocationVector pos);
-        bool generateAndSendSplinePath(float x, float y, float z);
+        bool generateAndSendSplinePath(float x, float y, float z, float o = 0.0f);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // AI Script functions
