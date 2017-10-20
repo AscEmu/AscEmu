@@ -62,7 +62,7 @@ bool ChatHandler::HandleMoveToSpawnCommand(const char* /*args*/, WorldSession* s
         return true;
 
     LocationVector spawnPos = selected_unit->GetSpawnPosition();
-    selected_unit->GetAIInterface()->sendSplineMoveToPoint(spawnPos);
+    selected_unit->GetAIInterface()->generateAndSendSplinePath(spawnPos.x, spawnPos.y, spawnPos.z, spawnPos.o);
     return true;
 }
 
@@ -101,7 +101,9 @@ bool ChatHandler::HandleSetOrientationCommand(const char* args, WorldSession* se
         orientation = session->GetPlayer()->GetOrientation();
     }
 
-    selected_unit->GetAIInterface()->setFacing(orientation);
+    //selected_unit->GetAIInterface()->setFacing(orientation);
+    //selected_unit->SetFacing(orientation);
+    selected_unit->SetOrientation(orientation);
     SystemMessage(session, "Orientation %f set on npc %s", orientation, selected_unit->GetCreatureProperties()->Name.c_str());
     return true;
 }
