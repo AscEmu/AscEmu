@@ -2627,7 +2627,7 @@ void Spell::writeSpellMissedTargets(WorldPacket* data)
         }
     }
 }
-
+// Not called
 void Spell::SendLogExecute(uint32 damage, uint64 & targetGuid)
 {
     WorldPacket data(SMSG_SPELLLOGEXECUTE, 37);
