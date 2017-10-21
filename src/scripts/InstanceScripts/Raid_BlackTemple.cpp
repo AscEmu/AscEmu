@@ -5315,7 +5315,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             SetCanEnterCombat(false);
             SetWieldWeapon(false);
             setRooted(true);
-            SetFlyMode(false);
+            setFlyMode(false);
             SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
             SetPhase(1);
 
@@ -5378,7 +5378,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             SetCanEnterCombat(true);
             SetWieldWeapon(true);
             SetAllowMelee(true);
-            SetFlyMode(false);
+            setFlyMode(false);
             setRooted(false);
 
             mAIUpdateFrequency = 1000;
@@ -5607,7 +5607,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 moveTo(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ() + 10.0f, false);
                 SetCanEnterCombat(false);
                 SetAllowMelee(false);
-                SetFlyMode(true);
+                setFlyMode(true);
 
                 _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
                 _unit->Emote(EMOTE_ONESHOT_LIFTOFF);
@@ -5716,7 +5716,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                         }
                         break;
                     case 7:
-                        SetFlyMode(false);
+                        setFlyMode(false);
                         _unit->Emote(EMOTE_ONESHOT_LAND);
                         break;
                     case 8:

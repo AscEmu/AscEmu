@@ -120,20 +120,6 @@ void MoonScriptCreatureAI::MoveTo(Unit* pUnit, RangeStatusPair pRangeStatus)
         moveTo(pUnit->GetPositionX(), pUnit->GetPositionY(), pUnit->GetPositionZ());
 };
 
-void MoonScriptCreatureAI::SetFlyMode(bool pValue)
-{
-    if (pValue && !_unit->GetAIInterface()->isFlying())
-    {
-        _unit->setMoveHover(true);
-        _unit->GetAIInterface()->unsetSplineFlying();
-    }
-    else if (!pValue && _unit->GetAIInterface()->isFlying())
-    {
-        _unit->setMoveHover(false);
-        _unit->GetAIInterface()->setSplineFlying();
-    }
-}
-
 bool MoonScriptCreatureAI::GetCanEnterCombat()
 {
     return _unit->GetAIInterface()->GetAllowedToEnterCombat();

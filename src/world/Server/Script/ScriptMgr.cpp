@@ -587,6 +587,20 @@ void CreatureAIScript::setRooted(bool set)
     _unit->setMoveRoot(set);
 }
 
+void CreatureAIScript::setFlyMode(bool fly)
+{
+    if (fly && !_unit->GetAIInterface()->isFlying())
+    {
+        _unit->setMoveCanFly(true);
+        _unit->GetAIInterface()->setSplineFlying();
+    }
+    else if (!fly && _unit->GetAIInterface()->isFlying())
+    {
+        _unit->setMoveCanFly(false);
+        _unit->GetAIInterface()->unsetSplineFlying();
+    }
+}
+
 bool CreatureAIScript::isRooted()
 {
     return _unit->GetAIInterface()->m_canMove;

@@ -2855,7 +2855,7 @@ bool AIInterface::StopMovement(uint32 time)
     return true;
 }
 
-bool AIInterface::MoveTo(float x, float y, float z)
+bool AIInterface::MoveTo(float x, float y, float z, float o /*= 0.0f*/)
 {
     if (!m_canMove || m_Unit->IsStunned())
     {
@@ -2863,7 +2863,7 @@ bool AIInterface::MoveTo(float x, float y, float z)
         return false;
     }
 
-    if (!generateAndSendSplinePath(x, y, z))
+    if (!generateAndSendSplinePath(x, y, z, o))
         return false;
 
     if (!isCreatureState(MOVING))
