@@ -295,7 +295,7 @@ void WorldSession::loadSpecificHandlers()
     //WorldPacketHandlers[CMSG_EQUIPMENT_SET_USE].handler = &WorldSession::HandleEquipmentSetUse;
     //WorldPacketHandlers[CMSG_EQUIPMENT_SET_DELETE].handler = &WorldSession::HandleEquipmentSetDelete;
 
-    // Spell System / Talent System
+    // Spell System
     WorldPacketHandlers[CMSG_USE_ITEM].handler = &WorldSession::HandleUseItemOpcode;
     WorldPacketHandlers[CMSG_CAST_SPELL].handler = &WorldSession::HandleCastSpellOpcode;
     WorldPacketHandlers[CMSG_SPELLCLICK].handler = &WorldSession::HandleSpellClick;
@@ -304,12 +304,15 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_CANCEL_CHANNELLING].handler = &WorldSession::HandleCancelChannellingOpcode;
     WorldPacketHandlers[CMSG_CANCEL_AUTO_REPEAT_SPELL].handler = &WorldSession::HandleCancelAutoRepeatSpellOpcode;
     WorldPacketHandlers[CMSG_TOTEM_DESTROYED].handler = &WorldSession::HandleCancelTotem;
+    WorldPacketHandlers[CMSG_UPDATE_PROJECTILE_POSITION].handler = &WorldSession::HandleUpdateProjectilePosition;
+
+    // Talent System
     WorldPacketHandlers[CMSG_LEARN_TALENT].handler = &WorldSession::HandleLearnTalentOpcode;
     WorldPacketHandlers[CMSG_LEARN_PREVIEW_TALENTS].handler = &WorldSession::HandleLearnPreviewTalentsOpcode;
     //WorldPacketHandlers[CMSG_LEARN_TALENTS_MULTIPLE].handler = &WorldSession::HandleLearnMultipleTalentsOpcode;
     //WorldPacketHandlers[CMSG_UNLEARN_TALENTS].handler = &WorldSession::HandleUnlearnTalents;
     WorldPacketHandlers[MSG_TALENT_WIPE_CONFIRM].handler = &WorldSession::HandleUnlearnTalents;
-    //WorldPacketHandlers[CMSG_UPDATE_PROJECTILE_POSITION].handler = &WorldSession::HandleUpdateProjectilePosition;
+
     // Combat / Duel
     WorldPacketHandlers[CMSG_ATTACKSWING].handler = &WorldSession::HandleAttackSwingOpcode;
     WorldPacketHandlers[CMSG_ATTACKSTOP].handler = &WorldSession::HandleAttackStopOpcode;
