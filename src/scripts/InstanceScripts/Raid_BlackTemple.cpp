@@ -245,7 +245,7 @@ class IllidariHeartseekerAI : public MoonScriptCreatureAI
         void OnCombatStart(Unit* pTarget)
         {
             ParentClass::OnCombatStart(pTarget);
-            if (GetRangeToUnit(pTarget) <= 30.0f)
+            if (getRangeToObject(pTarget) <= 30.0f)
             {
                 SetBehavior(Behavior_Spell);
                 setRooted(true);
@@ -259,7 +259,7 @@ class IllidariHeartseekerAI : public MoonScriptCreatureAI
             Unit* pTarget = _unit->GetAIInterface()->getNextTarget();
             if (pTarget != NULL)
             {
-                if (GetRangeToUnit(pTarget) <= 30.0f)
+                if (getRangeToObject(pTarget) <= 30.0f)
                 {
                     SetBehavior(Behavior_Spell);
                     setRooted(true);
@@ -418,7 +418,7 @@ class AshtonguePrimalistAI : public MoonScriptCreatureAI
         void OnCombatStart(Unit* pTarget)
         {
             ParentClass::OnCombatStart(pTarget);
-            if (GetRangeToUnit(pTarget) <= 30.0f)
+            if (getRangeToObject(pTarget) <= 30.0f)
             {
                 SetBehavior(Behavior_Spell);
                 setRooted(true);
@@ -432,7 +432,7 @@ class AshtonguePrimalistAI : public MoonScriptCreatureAI
             Unit* pTarget = _unit->GetAIInterface()->getNextTarget();
             if (pTarget != NULL)
             {
-                if (GetRangeToUnit(pTarget) <= 30.0f)
+                if (getRangeToObject(pTarget) <= 30.0f)
                 {
                     SetBehavior(Behavior_Spell);
                     setRooted(true);
@@ -743,7 +743,7 @@ class DragonmawSkyStalkerAI : public MoonScriptCreatureAI
         void OnCombatStart(Unit* pTarget)
         {
             ParentClass::OnCombatStart(pTarget);
-            if (GetRangeToUnit(pTarget) <= 40.0f)
+            if (getRangeToObject(pTarget) <= 40.0f)
             {
                 SetBehavior(Behavior_Spell);
                 setRooted(true);
@@ -757,7 +757,7 @@ class DragonmawSkyStalkerAI : public MoonScriptCreatureAI
             Unit* pTarget = _unit->GetAIInterface()->getNextTarget();
             if (pTarget != NULL)
             {
-                if (GetRangeToUnit(pTarget) <= 40.0f)
+                if (getRangeToObject(pTarget) <= 40.0f)
                 {
                     SetBehavior(Behavior_Spell);
                     setRooted(true);
@@ -781,7 +781,7 @@ class DragonmawWindReaverAI : public MoonScriptCreatureAI
         void OnCombatStart(Unit* pTarget)
         {
             ParentClass::OnCombatStart(pTarget);
-            if (GetRangeToUnit(pTarget) <= 40.0f)
+            if (getRangeToObject(pTarget) <= 40.0f)
             {
                 SetBehavior(Behavior_Spell);
                 setRooted(true);
@@ -795,7 +795,7 @@ class DragonmawWindReaverAI : public MoonScriptCreatureAI
             Unit* pTarget = _unit->GetAIInterface()->getNextTarget();
             if (pTarget != NULL)
             {
-                if (GetRangeToUnit(pTarget) <= 40.0f)
+                if (getRangeToObject(pTarget) <= 40.0f)
                 {
                     SetBehavior(Behavior_Spell);
                     setRooted(true);
@@ -1046,7 +1046,7 @@ class ShadowmoonDeathshaperAI : public MoonScriptCreatureAI
         void OnCombatStart(Unit* pTarget)
         {
             ParentClass::OnCombatStart(pTarget);
-            if (GetRangeToUnit(pTarget) <= 40.0f)
+            if (getRangeToObject(pTarget) <= 40.0f)
             {
                 SetBehavior(Behavior_Spell);
                 setRooted(true);
@@ -1060,7 +1060,7 @@ class ShadowmoonDeathshaperAI : public MoonScriptCreatureAI
             Unit* pTarget = _unit->GetAIInterface()->getNextTarget();
             if (pTarget != NULL)
             {
-                if (GetRangeToUnit(pTarget) <= 40.0f)
+                if (getRangeToObject(pTarget) <= 40.0f)
                 {
                     SetBehavior(Behavior_Spell);
                     setRooted(true);
@@ -1117,7 +1117,7 @@ class ShadowmoonHoundmasterAI : public MoonScriptCreatureAI
         void OnCombatStart(Unit* pTarget)
         {
             ParentClass::OnCombatStart(pTarget);
-            if (GetRangeToUnit(pTarget) <= 30.0f)
+            if (getRangeToObject(pTarget) <= 30.0f)
             {
                 SetBehavior(Behavior_Spell);
                 setRooted(true);
@@ -1130,7 +1130,7 @@ class ShadowmoonHoundmasterAI : public MoonScriptCreatureAI
             Unit* pTarget = _unit->GetAIInterface()->getNextTarget();
             if (pTarget != NULL)
             {
-                if (GetRangeToUnit(pTarget) <= 30.0f)
+                if (getRangeToObject(pTarget) <= 30.0f)
                 {
                     SetBehavior(Behavior_Spell);
                     setRooted(true);
@@ -4132,7 +4132,7 @@ class ShadowDemonAI : public MoonScriptCreatureAI
             Unit* pTarget = _unit->GetAIInterface()->getNextTarget();
             if (pTarget != NULL && GetTargetToChannel() != NULL && pTarget == GetTargetToChannel())
             {
-                if (GetRangeToUnit(pTarget) <= 8.0f)
+                if (getRangeToObject(pTarget) <= 8.0f)
                 {
                     pTarget->RemoveAura(SHADOW_DEMON_PARALYZE);
                     CastSpellNowNoScheduling(mConsumeSoul);
@@ -5055,13 +5055,13 @@ class MaievAI : public MoonScriptBossAI
 
                 return;
             }
-            else if (GetRangeToUnit(mIllidanAI->GetUnit()) < 15.0f)
+            else if (getRangeToObject(mIllidanAI->GetUnit()) < 15.0f)
             {
                 _unit->GetAIInterface()->_CalcDestinationAndMove(mIllidanAI->GetUnit(), 20.0f);
                 SetBehavior(Behavior_Spell);
                 return;
             }
-            else if (GetRangeToUnit(mIllidanAI->GetUnit()) > 35.0f)
+            else if (getRangeToObject(mIllidanAI->GetUnit()) > 35.0f)
             {
                 _unit->GetAIInterface()->_CalcDestinationAndMove(mIllidanAI->GetUnit(), 30.0f);
                 SetBehavior(Behavior_Spell);
@@ -6250,7 +6250,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             else if (_unit->GetAIInterface()->getNextTarget() != NULL)
             {
                 Unit* pTarget = _unit->GetAIInterface()->getNextTarget();
-                if (GetRangeToUnit(pTarget) <= 80.0f)
+                if (getRangeToObject(pTarget) <= 80.0f)
                 {
                     SetBehavior(Behavior_Spell);
                     stopMovement();
@@ -6275,7 +6275,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                             _unit->CastSpell(pUnit, ILLIDAN_FLAME_BURST2, true);
                             if (pAI != NULL)
                             {
-                                float Distance = GetRangeToUnit(pUnit);
+                                float Distance = getRangeToObject(pUnit);
                                 if (Distance == 0.0f)
                                 {
                                     pAI->RegisterAIUpdateEvent(300);        // o'rly?
@@ -6549,7 +6549,7 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
                 if (!mIsActivated)
                     return;
 
-                if (mTriggerAIList.size() == 0 && pIllidan->isAlive() && GetRangeToUnit(pIllidan) <= 5.0f && !pAI->IsCasting())
+                if (mTriggerAIList.size() == 0 && pIllidan->isAlive() && getRangeToObject(pIllidan) <= 5.0f && !pAI->IsCasting())
                 {
                     for (uint8 i = 0; i < 8; ++i)
                     {

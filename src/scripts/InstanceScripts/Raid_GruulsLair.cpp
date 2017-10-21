@@ -241,7 +241,7 @@ class KigglerTheCrazedAI : public MoonScriptCreatureAI
         {
             ParentClass::OnCombatStart(pTarget);
 
-            if (GetRangeToUnit(pTarget) <= 40.0f)
+            if (getRangeToObject(pTarget) <= 40.0f)
             {
                 SetBehavior(Behavior_Spell);
                 setRooted(true);
@@ -266,7 +266,7 @@ class KigglerTheCrazedAI : public MoonScriptCreatureAI
             Unit* pTarget = _unit->GetAIInterface()->getNextTarget();
             if (pTarget != NULL)
             {
-                if (GetRangeToUnit(pTarget) <= 40.0f)
+                if (getRangeToObject(pTarget) <= 40.0f)
                 {
                     SetBehavior(Behavior_Spell);
                     setRooted(true);
@@ -382,7 +382,7 @@ class KroshFirehandAI : public MoonScriptCreatureAI
                 if (mBlastWaveTimer == -1 || IsTimerFinished(mBlastWaveTimer))
                 {
                     Unit* unit = GetBestUnitTarget(TargetFilter_Closest);
-                    if (unit && GetRangeToUnit(unit) < 15.0f)
+                    if (unit && getRangeToObject(unit) < 15.0f)
                     {
                         CastSpellNowNoScheduling(mBlastWave);
                         if (mBlastWaveTimer == -1)
@@ -533,7 +533,7 @@ class GruulTheDragonkillerAI : public MoonScriptCreatureAI
 //                            continue;
                             if (pPlayer->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH))
                                 continue;
-                            if (GetRangeToUnit(pPlayer) > 8.0f)
+                            if (getRangeToObject(pPlayer) > 8.0f)
                                 continue;
                             if (_unit->GetAIInterface()->getThreatByPtr(pPlayer) >= _unit->GetAIInterface()->getThreatByPtr(pCurrentTarget))
                                 continue;

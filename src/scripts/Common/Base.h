@@ -340,9 +340,7 @@ class MoonScriptCreatureAI : public CreatureAIScript
         void SetDisplayWeaponIds(uint32 pItem1Id, uint32 pItem2Id);
 
         //Environment
-        float GetRange(MoonScriptCreatureAI* pCreature);
-        float GetRangeToUnit(Unit* pUnit);
-        float GetRangeToObject(Object* pObject);
+        
 
         //Instances
         bool IsHeroic();

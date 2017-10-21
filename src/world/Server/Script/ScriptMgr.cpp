@@ -551,6 +551,11 @@ Creature* CreatureAIScript::getNearestCreature(float posX, float posY, float pos
     return _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(posX, posY, posZ, entry);
 }
 
+float CreatureAIScript::getRangeToObject(Object* object)
+{
+    return _unit->CalcDistance(object);
+}
+
 Creature* CreatureAIScript::spawnCreature(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId /* = 0*/)
 {
     CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(entry);

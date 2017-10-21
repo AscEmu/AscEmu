@@ -389,7 +389,7 @@ class AstromancerAI : public MoonScriptCreatureAI
                 if (mArcaneBurstTimer == -1 || IsTimerFinished(mArcaneBurstTimer))
                 {
                     Unit* unit = GetBestUnitTarget(TargetFilter_Closest);
-                    if (unit && GetRangeToUnit(unit) <= 10.0f)
+                    if (unit && getRangeToObject(unit) <= 10.0f)
                     {
                         CastSpellNowNoScheduling(mArcaneBurst);
                         if (mArcaneBurstTimer == -1)
@@ -2704,7 +2704,7 @@ class CapernianAI : public MoonScriptCreatureAI
             ParentClass::OnCombatStart(mTarget);
             setCanEnterCombat(true);
 
-            if (GetRangeToUnit(mTarget) <= 30.0f)
+            if (getRangeToObject(mTarget) <= 30.0f)
             {
                 SetBehavior(Behavior_Spell);
                 setRooted(true);
@@ -2726,13 +2726,13 @@ class CapernianAI : public MoonScriptCreatureAI
             SetBehavior(Behavior_Default);
             setRooted(false);
             Unit* pClosestTarget = GetBestPlayerTarget(TargetFilter_Closest);
-            if (pClosestTarget != NULL && GetRangeToUnit(pClosestTarget) <= 6.0f)
+            if (pClosestTarget != NULL && getRangeToObject(pClosestTarget) <= 6.0f)
             {
                 CastSpellNowNoScheduling(mArcaneBurst);
             }
 
             Unit* pTarget = _unit->GetAIInterface()->getNextTarget();
-            if (pTarget != NULL && GetRangeToUnit(pTarget) <= 30.0f)
+            if (pTarget != NULL && getRangeToObject(pTarget) <= 30.0f)
             {
                 ParentClass::AIUpdate();
                 if (GetBehavior() != Behavior_Spell)

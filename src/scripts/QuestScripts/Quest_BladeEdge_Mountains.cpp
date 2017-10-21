@@ -362,7 +362,7 @@ public:
         if (Ogre == nullptr)
             return;
 
-        if (GetRange(Ogre) <= 5)
+        if (getRangeToObject(Ogre->GetUnit()) <= 5)
         {
             Ogre->SetDisplayWeaponIds(28562, 0);
             Ogre->GetUnit()->SetEmoteState(EMOTE_ONESHOT_EAT_NOSHEATHE);

@@ -413,7 +413,7 @@ void NaxxramasWorshipperAI::OnDied(Unit* pKiller)
     ParentClass::OnDied(pKiller);
     if (mGrandWidow != NULL)   //&& !IsHeroic())
     {
-        if (GetRange(static_cast< MoonScriptCreatureAI* >(mGrandWidow)) <= 15.0f)
+        if (getRangeToObject(mGrandWidow->GetUnit()) <= 15.0f)
         {
             for (std::set< NaxxramasWorshipperAI* >::iterator Iter = mGrandWidow->mWorshippers.begin(); Iter != mGrandWidow->mWorshippers.end(); ++Iter)
             {
@@ -1220,10 +1220,10 @@ void EyeStalkerAI::AIUpdate()
         if (IsHeroic())
             MaxRange = 35.0f;
 
-        if (GetRangeToUnit(CurrentTarget) > MaxRange)
+        if (getRangeToObject(CurrentTarget) > MaxRange)
         {
             Unit* NewTarget = GetBestUnitTarget(TargetFilter_Closest);
-            if (NewTarget != NULL && GetRangeToUnit(NewTarget) <= MaxRange)
+            if (NewTarget != NULL && getRangeToObject(NewTarget) <= MaxRange)
             {
                 _unit->GetAIInterface()->setNextTarget(NewTarget);
                 _unit->GetAIInterface()->AttackReaction(NewTarget, 200);

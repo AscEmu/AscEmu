@@ -172,7 +172,7 @@ class MidnightAI : public MoonScriptBossAI
             if (GetLinkedCreature() && GetLinkedCreature()->isAlive())
             {
                 MoonScriptBossAI* attumen = static_cast<MoonScriptBossAI*>(GetLinkedCreature());
-                if (GetRange(attumen) <= 15)
+                if (attumen && getRangeToObject(attumen->GetUnit()) <= 15)
                 {
                     attumen->Regenerate();
                     attumen->SetDisplayId(16040);

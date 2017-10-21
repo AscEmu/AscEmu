@@ -334,21 +334,6 @@ void MoonScriptCreatureAI::SetDisplayWeaponIds(uint32 pItem1Id, uint32 pItem2Id)
     _unit->SetEquippedItem(OFFHAND, pItem2Id);
 }
 
-float MoonScriptCreatureAI::GetRange(MoonScriptCreatureAI* pCreature)
-{
-    return (_unit != pCreature->_unit) ? _unit->CalcDistance(pCreature->_unit) : 0;
-}
-
-float MoonScriptCreatureAI::GetRangeToUnit(Unit* pUnit)
-{
-    return _unit->CalcDistance(pUnit);
-}
-
-float MoonScriptCreatureAI::GetRangeToObject(Object* pObject)
-{
-    return _unit->CalcDistance(pObject);
-}
-
 bool MoonScriptCreatureAI::IsHeroic()
 {
     if (_unit->GetMapMgr() == NULL)
@@ -1126,7 +1111,7 @@ RangeStatusPair MoonScriptCreatureAI::GetSpellRangeStatusToUnit(Unit* pTarget, S
 {
     if (pSpell->mTargetType.mTargetGenerator != TargetGen_Self && pTarget != _unit && (pSpell->mMinRange > 0 || pSpell->mMaxRange > 0))
     {
-        float Range = GetRangeToUnit(pTarget);
+        float Range = getRangeToObject(pTarget);
         if (pSpell->mMinRange > 0 && (Range < pSpell->mMinRange))
             return std::make_pair(RangeStatus_TooClose, pSpell->mMinRange);
         if (pSpell->mMaxRange > 0 && (Range > pSpell->mMaxRange))
@@ -1237,7 +1222,7 @@ Unit* MoonScriptCreatureAI::GetNearestTargetInArray(UnitArray & pTargetArray)
     float Distance, NearestDistance = 99999;
     for (UnitArray::iterator UnitIter = pTargetArray.begin(); UnitIter != pTargetArray.end(); ++UnitIter)
     {
-        Distance = GetRangeToUnit(static_cast<Unit*>(*UnitIter));
+        Distance = getRangeToObject(static_cast<Unit*>(*UnitIter));
         if (Distance < NearestDistance)
         {
             NearestDistance = Distance;
@@ -1311,13 +1296,13 @@ bool MoonScriptCreatureAI::IsValidUnitTarget(Object* pObject, TargetFilter pFilt
             return false;
 
         //Skip targets not in melee range if requested
-        if ((pFilter & TargetFilter_InMeleeRange) && GetRangeToUnit(UnitTarget) > _unit->GetAIInterface()->_CalcCombatRange(UnitTarget, false))
+        if ((pFilter & TargetFilter_InMeleeRange) && getRangeToObject(UnitTarget) > _unit->GetAIInterface()->_CalcCombatRange(UnitTarget, false))
             return false;
 
         //Skip targets not in strict range if requested
         if ((pFilter & TargetFilter_InRangeOnly) && (pMinRange > 0 || pMaxRange > 0))
         {
-            float Range = GetRangeToUnit(UnitTarget);
+            float Range = getRangeToObject(UnitTarget);
             if (pMinRange > 0 && Range < pMinRange)
                 return false;
             if (pMaxRange > 0 && Range > pMaxRange)

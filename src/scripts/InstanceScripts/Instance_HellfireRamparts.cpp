@@ -177,12 +177,12 @@ class OmorTheUnscarredAI : public MoonScriptCreatureAI
             Unit* pTarget = _unit->GetAIInterface()->getNextTarget();
             if (pTarget != NULL)
             {
-                if (GetRangeToUnit(pTarget) > 10.0f)
+                if (getRangeToObject(pTarget) > 10.0f)
                 {
                     pTarget = GetBestPlayerTarget(TargetFilter_Closest);
                     if (pTarget != NULL)
                     {
-                        if (GetRangeToUnit(pTarget) > 10.0f)
+                        if (getRangeToObject(pTarget) > 10.0f)
                         {
                             pTarget = NULL;
                         }
