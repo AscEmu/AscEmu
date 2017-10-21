@@ -303,7 +303,6 @@ class MoonScriptCreatureAI : public CreatureAIScript
         //Movement
         void MoveTo(MoonScriptCreatureAI* pCreature, RangeStatusPair pRangeStatus = std::make_pair(RangeStatus_TooFar, 0.0f));
         void MoveTo(Unit* pUnit, RangeStatusPair pRangeStatus = std::make_pair(RangeStatus_TooFar, 0.0f));
-        void SetFlyMode(bool pValue);
 
         //Attack and Combat State
         bool GetCanEnterCombat();

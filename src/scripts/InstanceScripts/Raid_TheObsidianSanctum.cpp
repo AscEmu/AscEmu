@@ -314,7 +314,7 @@ class TsunamiAI : public MoonScriptBossAI
         void OnLoad()
         {
             RegisterAIUpdateEvent(1000);
-            SetFlyMode(true);
+            setFlyMode(true);
             SetCanEnterCombat(false);
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             despawn(11500, 0);

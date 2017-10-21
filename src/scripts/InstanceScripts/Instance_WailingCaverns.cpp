@@ -406,8 +406,8 @@ class DofNaralexAI : public MoonScriptBossAI
                     Naralex->SetDisplayId(17089);
                     Naralex->sendChatMessage(CHAT_MSG_MONSTER_SAY, 5789, "I am awake... at last");
                     Naralex->GetUnit()->SetStandState(STANDSTATE_STAND);
-                    SetFlyMode(true);
-                    Naralex->SetFlyMode(true);
+                    setFlyMode(true);
+                    Naralex->setFlyMode(true);
                     moveTo(-6.704030f, 200.308838f, -26.938824f);
                     Naralex->moveTo(-6.704030f, 200.308838f, -26.938824f);
                 }

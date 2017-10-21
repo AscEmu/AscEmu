@@ -101,8 +101,6 @@ bool ChatHandler::HandleSetOrientationCommand(const char* args, WorldSession* se
         orientation = session->GetPlayer()->GetOrientation();
     }
 
-    //selected_unit->GetAIInterface()->setFacing(orientation);
-    //selected_unit->SetFacing(orientation);
     selected_unit->SetOrientation(orientation);
     SystemMessage(session, "Orientation %f set on npc %s", orientation, selected_unit->GetCreatureProperties()->Name.c_str());
     return true;
@@ -225,12 +223,14 @@ bool ChatHandler::HandleDebugFly(const char* /*args*/, WorldSession* m_session)
     if (selected_creature->HasUnitMovementFlag(MOVEFLAG_CAN_FLY))
     {
         GreenSystemMessage(m_session, "Unset Fly for creature %s.", selected_creature->GetCreatureProperties()->Name.c_str());
-        selected_creature->setMoveSwim(false);
+        selected_creature->GetAIInterface()->unsetSplineFlying();
+        selected_creature->setMoveCanFly(false);
     }
     else
     {
         GreenSystemMessage(m_session, "Set Fly for creature %s.", selected_creature->GetCreatureProperties()->Name.c_str());
-        selected_creature->setMoveSwim(true);
+        selected_creature->GetAIInterface()->setSplineFlying();
+        selected_creature->setMoveCanFly(true);
     }
 
     return true;

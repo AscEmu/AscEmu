@@ -356,6 +356,8 @@ class SERVER_DECL CreatureAIScript
         void setRooted(bool set);
         bool isRooted();
 
+        void setFlyMode(bool fly);
+
         void moveTo(float posX, float posY, float posZ, bool setRun = true);
         void moveToUnit(Unit* unit);
         void moveToSpawn();
