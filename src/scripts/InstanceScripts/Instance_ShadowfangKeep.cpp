@@ -414,7 +414,7 @@ class ArugalAI : public MoonScriptCreatureAI
                     if (Creature* pVincent = getNearestCreature(CN_DEATHSTALKER_VINCENT))
                     {
                         pVincent->GetAIInterface()->AttackReaction(GetUnit(), 1);
-                        pVincent->GetAIInterface()->disable_melee = true;
+                        pVincent->GetAIInterface()->setMeleeDisabled(true);
                     }
                 }break;
                 case 1:
@@ -1117,7 +1117,7 @@ class ArugalBossAI : public MoonScriptCreatureAI
         void Reset()
         {
             SetBehavior(Behavior_Spell);
-            GetUnit()->GetAIInterface()->disable_melee = true;
+            GetUnit()->GetAIInterface()->setMeleeDisabled(true);
             GetUnit()->PctPowerRegenModifier[POWER_TYPE_MANA] = originalRegen;
         }
 
@@ -1131,7 +1131,7 @@ class ArugalBossAI : public MoonScriptCreatureAI
             originalRegen = GetUnit()->PctPowerRegenModifier[POWER_TYPE_MANA];
 
             // Do not do melee attacks
-            GetUnit()->GetAIInterface()->disable_melee = true;
+            GetUnit()->GetAIInterface()->setMeleeDisabled(true);
         }
 
         void OnCombatStop(Unit* pEnemy)
@@ -1193,13 +1193,13 @@ class ArugalBossAI : public MoonScriptCreatureAI
                 if (GetUnit()->GetManaPct() <= 10 && GetBehavior() == Behavior_Spell)
                 {
                     SetBehavior(Behavior_Melee);
-                    GetUnit()->GetAIInterface()->disable_melee = false;
+                    GetUnit()->GetAIInterface()->setMeleeDisabled(false);
                 }
                 // boss got mana regenerated
                 else
                 {
                     SetBehavior(Behavior_Spell);
-                    GetUnit()->GetAIInterface()->disable_melee = true;
+                    GetUnit()->GetAIInterface()->setMeleeDisabled(true);
                 }
 
                 // Cast void bolt non stop

@@ -72,7 +72,7 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
     switch (ai_type)
     {
         case AGENT_MELEE:
-            creature_target->GetAIInterface()->disable_melee = false;
+            creature_target->GetAIInterface()->setMeleeDisabled(false);
             break;
         case AGENT_RANGED:
             creature_target->GetAIInterface()->m_canRangedAttack = true;

@@ -2166,7 +2166,7 @@ class NagaDistillerAI : public CreatureAIScript
         {
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-            _unit->GetAIInterface()->disable_melee = true;
+            _setMeleeDisabled(true);
             _unit->GetAIInterface()->m_canMove = false;
         }
 

@@ -56,9 +56,9 @@ public:
         creature->m_spawn = nullptr;
         creature->Load(p, posX, posY, posZ);
         creature->SetOrientation(posO);
-        creature->GetAIInterface()->disable_combat = true;
-        creature->GetAIInterface()->disable_melee = true;
-        creature->GetAIInterface()->disable_targeting = true;
+        creature->GetAIInterface()->setCombatDisabled(true);
+        creature->GetAIInterface()->setMeleeDisabled(true);
+        creature->GetAIInterface()->setTargetingDisabled(true);
         creature->PushToWorld(pThis->GetMapMgr());
         creature->Despawn(180000, 0);
         creature->setUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, 35);

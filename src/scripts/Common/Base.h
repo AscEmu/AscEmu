@@ -313,14 +313,7 @@ class MoonScriptCreatureAI : public CreatureAIScript
         //Behavior
         void SetBehavior(BehaviorType pBehavior);
         BehaviorType GetBehavior();
-        void SetAllowMelee(bool pAllow);
-        bool GetAllowMelee();
-        void SetAllowRanged(bool pAllow);
-        bool GetAllowRanged();
-        void SetAllowSpell(bool pAllow);
-        bool GetAllowSpell();
-        void SetAllowTargeting(bool pAllow);
-        bool GetAllowTargeting();
+        
         void AggroNearestUnit(int pInitialThreat = 1);
         void AggroRandomUnit(int pInitialThreat = 1);
         void AggroNearestPlayer(int pInitialThreat = 1);
@@ -338,9 +331,6 @@ class MoonScriptCreatureAI : public CreatureAIScript
         void SetWieldWeapon(bool pValue);
         void SetDisplayWeapon(bool pMainHand, bool pOffHand);
         void SetDisplayWeaponIds(uint32 pItem1Id, uint32 pItem2Id);
-
-        //Environment
-        
 
         //Instances
         bool IsHeroic();

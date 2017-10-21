@@ -37,7 +37,7 @@ void CompanionSummon::Load(CreatureProperties const* properties_, Unit* owner, L
     m_aiInterface->SetUnitToFollow(owner);
     m_aiInterface->SetUnitToFollowAngle(-M_PI_FLOAT / 2);
     m_aiInterface->SetFollowDistance(3.0f);
-    m_aiInterface->disable_melee = true;
+    m_aiInterface->setMeleeDisabled(true);
     bInvincible = true;
 
     RemovePvPFlag();

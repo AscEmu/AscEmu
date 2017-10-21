@@ -355,12 +355,40 @@ class SERVER_DECL AIInterface : public IUpdatable
         bool isCreatureState(CreatureState newState) { return mCreatureState == newState; }
         CreatureState getCreatureState() { return mCreatureState; }
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Combat behavior
+    private:
+
+        bool mIsCombatDisabled;
+        bool mIsMeleeDisabled;
+        bool mIsRangedDisabled;
+        bool mIsCastDisabled;
+        bool mIsTargetingDisabled;
+
+    public:
+
+        void setCombatDisabled(bool disable) { mIsCombatDisabled = disable; }
+        bool isCombatDisabled() { return mIsCombatDisabled; }
+
+        void setMeleeDisabled(bool disable) { mIsMeleeDisabled = disable; }
+        bool isMeleeDisabled() { return mIsMeleeDisabled; }
+
+        void setRangedDisabled(bool disable) { mIsRangedDisabled = disable; }
+        bool isRangedDisabled() { return mIsRangedDisabled; }
+
+        void setCastDisabled(bool disable) { mIsCastDisabled = disable; }
+        bool isCastDisabled() { return mIsCastDisabled; }
+
+        void setTargetingDisabled(bool disable) { mIsTargetingDisabled = disable; }
+        bool isTargetingDisabled() { return mIsTargetingDisabled; }
+
+
 // MIT end
     public:
 
         // Misc
         void Init(Unit* un, AiScriptTypes at, Movement::WaypointMovementScript mt);
-        void Init(Unit* un, AiScriptTypes at, Movement::WaypointMovementScript mt, Unit* owner);   /// used for pets
+        void Init(Unit* un, AiScriptTypes at, Movement::WaypointMovementScript mt, Unit* owner);   // used for pets
         Unit* GetUnit() const;
         Unit* GetPetOwner() const;
         void DismissPet();
@@ -384,8 +412,6 @@ class SERVER_DECL AIInterface : public IUpdatable
         Unit* getUnitToFear();
         uint64 getUnitToFearGUID() { return m_UnitToFear; }
         Creature* getFormationLinkTarget();
-
-
 
         inline uint8 getCurrentAgent() { return static_cast<uint8>(m_aiCurrentAgent); }
         void setCurrentAgent(AI_Agent agent) { m_aiCurrentAgent = agent; }
@@ -424,7 +450,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         AI_Spell* getSpell();
         void addSpellToList(AI_Spell* sp);
 
-        /// Event Handler
+        // Event Handler
         void HandleEvent(uint32 event, Unit* pUnit, uint32 misc1);
 
         void EventForceRedirected(Unit* pUnit, uint32 misc1);
@@ -451,8 +477,6 @@ class SERVER_DECL AIInterface : public IUpdatable
         void SetReturnPosition();
 
         void _UpdateTotem(uint32 p_time);
-
-        
 
         // Calculation
         float _CalcAggroRange(Unit* target);
@@ -502,13 +526,6 @@ class SERVER_DECL AIInterface : public IUpdatable
 
         std::list<AI_Spell*> m_spells;
 
-        bool disable_combat;
-
-        bool disable_melee;
-        bool disable_ranged;
-        bool disable_spell;
-        bool disable_targeting;
-
         bool waiting_for_cooldown;
 
         uint32 next_spell_time;
@@ -521,7 +538,7 @@ class SERVER_DECL AIInterface : public IUpdatable
 
         void ResetProcCounts();
 
-        /// deletes the old waypoint map as default. In case m_custom_waypoint_map is used, just call SetWaypointMap(NULL): this will delete m_custom_waypoint_map too.
+        // deletes the old waypoint map as default. In case m_custom_waypoint_map is used, just call SetWaypointMap(NULL): this will delete m_custom_waypoint_map too.
         void SetWaypointMap(Movement::WayPointMap* m, bool delete_old_map = true);
         inline Movement::WayPointMap* GetWaypointMap() { return mWayPointMap; }
         void LoadWaypointMapFromDB(uint32 spawnid);
@@ -572,9 +589,9 @@ class SERVER_DECL AIInterface : public IUpdatable
 
         AI_Agent m_aiCurrentAgent;
 
-        Unit* tauntedBy;        /// This mob will hit only tauntedBy mob.
+        Unit* tauntedBy;        // This mob will hit only tauntedBy mob.
         bool isTaunted;
-        Unit* soullinkedWith;   /// This mob can be hit only by a soul linked unit
+        Unit* soullinkedWith;   // This mob can be hit only by a soul linked unit
         bool isSoulLinked;
 
         // Movement
@@ -627,7 +644,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         float m_lastFollowY;
 
         uint64 m_UnitToFollow;
-        uint64 m_UnitToFollow_backup;   /// used unly when forcing creature to wander (blind spell) so when effect wears off we can follow our master again (guardian)
+        uint64 m_UnitToFollow_backup;   // used unly when forcing creature to wander (blind spell) so when effect wears off we can follow our master again (guardian)
         uint64 m_UnitToFear;
 
         uint32 m_timeToMove;
@@ -650,12 +667,8 @@ class SERVER_DECL AIInterface : public IUpdatable
 
         void WipeCurrentTarget();
 
-        
-
         void SetCreatureProtoDifficulty(uint32 entry);
         uint8 GetDifficultyType();
-
 };
-
 
 #endif  //WOWSERVER_AIINTERFACE_H

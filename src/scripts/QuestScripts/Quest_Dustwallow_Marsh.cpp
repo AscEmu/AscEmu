@@ -55,7 +55,7 @@ public:
             _unit->GetAIInterface()->WipeTargetList();
             _unit->GetAIInterface()->WipeHateList();
             _unit->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, _unit, 0);
-            _unit->GetAIInterface()->disable_melee = true;
+            _setMeleeDisabled(true);
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             //remove not_selectable flag:
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
@@ -66,7 +66,7 @@ public:
         {
             // set Balos Jacken unfriendly and reset FriendlyTimer
             _unit->SetFaction(14);
-            _unit->GetAIInterface()->disable_melee = false;
+            _setMeleeDisabled(false);
             _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
             friendlyTimer = BALOS_FRIENDLY_TIMER;
             RemoveAIUpdateEvent();
@@ -126,7 +126,7 @@ public:
         _unit->GetAIInterface()->WipeTargetList();
         _unit->GetAIInterface()->WipeHateList();
         _unit->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, _unit, 0);
-        _unit->GetAIInterface()->disable_melee = true;
+        _setMeleeDisabled(true);
         _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
         _unit->setUInt32Value(UNIT_FIELD_FLAGS, 0);
     }
@@ -152,7 +152,7 @@ public:
         say += " wanna fight Overlord Mok'Morokk? Me beat you! Me boss here!";
         Overlord->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
         Overlord->SetFaction(72);
-        Overlord->GetAIInterface()->disable_melee = false;
+        Overlord->GetAIInterface()->setMeleeDisabled(false);
         Overlord->GetAIInterface()->SetAllowedToEnterCombat(true);
     }
 };
@@ -194,7 +194,7 @@ public:
         _unit->GetAIInterface()->WipeTargetList();
         _unit->GetAIInterface()->WipeHateList();
         _unit->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, _unit, 0);
-        _unit->GetAIInterface()->disable_melee = true;
+        _setMeleeDisabled(true);
         _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
         _unit->setUInt32Value(UNIT_FIELD_FLAGS, 0);
     }
@@ -216,7 +216,7 @@ public:
             return;
 
         Dashel->SetFaction(72);
-        Dashel->GetAIInterface()->disable_melee = false;
+        Dashel->GetAIInterface()->setMeleeDisabled(false);
         Dashel->GetAIInterface()->SetAllowedToEnterCombat(true);
     }
 };

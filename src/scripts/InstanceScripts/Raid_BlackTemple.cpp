@@ -2405,8 +2405,8 @@ class EssenceOfSufferingAI : public MoonScriptCreatureAI
             {
                 _unit->SetHealthPct(1);
                 setCanEnterCombat(false);
-                SetAllowMelee(false);
-                SetAllowSpell(false);
+                _setMeleeDisabled(false);
+                _setCastDisabled(true);
                 _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
                 RemoveAllAuras();
                 RemoveAuraOnPlayers(EOS_AURA_OF_SUFFERING);
@@ -2461,8 +2461,8 @@ class EssenceOfDesireAI : public MoonScriptCreatureAI
                 _unit->SetHealthPct(1);
 
                 setCanEnterCombat(false);
-                SetAllowMelee(false);
-                SetAllowSpell(false);
+                _setMeleeDisabled(false);
+                _setCastDisabled(true);
                 _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
                 RemoveAllAuras();
                 RemoveAuraOnPlayers(EOD_AURA_OF_DESIRE);
@@ -2545,8 +2545,8 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
             mSummonDesire = AddSpell(ROS_SUMMON_DESIRE, Target_Self, 0, 0, 0);
             mSummonAnger = AddSpell(ROS_SUMMON_ANGER, Target_Self, 0, 0, 0);
             setCanEnterCombat(true);
-            SetAllowMelee(true);
-            SetAllowRanged(true);
+            _setMeleeDisabled(true);
+            _setRangedDisabled(false);
             setRooted(true);
             Phase = 0;
             mEnslavedSoulTimer = -1;
@@ -2561,8 +2561,8 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
         void OnCombatStart(Unit* mTarget)
         {
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
-            SetAllowMelee(false);
-            SetAllowRanged(false);
+            _setMeleeDisabled(false);
+            _setRangedDisabled(true);
 
             if (Phase == 0)
             {
@@ -3999,7 +3999,7 @@ class GenericTriggerAI : public MoonScriptCreatureAI
             {
                 _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
                 ApplyAura(mSpellId);
-                SetAllowMelee(false);
+                _setMeleeDisabled(false);
                 despawn(mDespawnTimer, 0);
             }
             else
@@ -4013,7 +4013,7 @@ class GenericTriggerAI : public MoonScriptCreatureAI
         {
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
             ApplyAura(mSpellId);
-            SetAllowMelee(false);
+            _setMeleeDisabled(false);
             despawn(mDespawnTimer, 0);
             RemoveAIUpdateEvent();
 
@@ -4041,7 +4041,7 @@ class EyeBeamTriggerAI : public MoonScriptCreatureAI
             _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
             _unit->m_noRespawn = true;
 
-            SetAllowMelee(false);
+            _setMeleeDisabled(false);
             RegisterAIUpdateEvent(1000);
 
             mPosition = -1;
@@ -4668,7 +4668,7 @@ class AkamaAI : public MoonScriptBossAI
                     _unit->GetAIInterface()->setNextTarget(nullfix);
                     _unit->GetAIInterface()->WipeTargetList();
                     _unit->GetAIInterface()->WipeHateList();
-                    SetAllowMelee(false);
+                    _setMeleeDisabled(false);
                     setRooted(true);
                     mIllidanAI->GetUnit()->GetAIInterface()->RemoveThreatByPtr(_unit);
                 }
@@ -4704,7 +4704,7 @@ class AkamaAI : public MoonScriptBossAI
                             _unit->GetAIInterface()->setNextTarget(nullfix);
                             _unit->GetAIInterface()->WipeTargetList();
                             _unit->GetAIInterface()->WipeHateList();
-                            SetAllowMelee(false);
+                            _setMeleeDisabled(false);
                             setRooted(true);
 
                             mIllidanAI->GetUnit()->GetAIInterface()->RemoveThreatByPtr(_unit);
@@ -5377,7 +5377,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             SetTargetToChannel(NULL, 0);
             setCanEnterCombat(true);
             SetWieldWeapon(true);
-            SetAllowMelee(true);
+            _setMeleeDisabled(true);
             setFlyMode(false);
             setRooted(false);
 
@@ -5596,7 +5596,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                         pAkamaAI->GetUnit()->GetAIInterface()->setNextTarget(nullfix);
                         pAkamaAI->GetUnit()->GetAIInterface()->WipeTargetList();
                         pAkamaAI->GetUnit()->GetAIInterface()->WipeHateList();
-                        pAkamaAI->SetAllowMelee(false);
+                        pAkamaAI->_setMeleeDisabled(false);
                         pAkamaAI->setRooted(true);
 
                         _unit->GetAIInterface()->RemoveThreatByPtr(pAkamaAI->GetUnit());
@@ -5606,7 +5606,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 11479, "I will not be touched by rabble such as you!");
                 moveTo(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ() + 10.0f, false);
                 setCanEnterCombat(false);
-                SetAllowMelee(false);
+                _setMeleeDisabled(false);
                 setFlyMode(true);
 
                 _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
@@ -5730,7 +5730,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                             _unit->GetAIInterface()->setNextTarget(GetBestPlayerTarget(TargetFilter_Closest));
                             _unit->SetEmoteState(EMOTE_ONESHOT_READY1H);
                             setCanEnterCombat(true);
-                            SetAllowMelee(true);
+                            _setMeleeDisabled(true);
                             setRooted(false);
                             ClearHateList();
                             SetPhase(3);
@@ -6022,7 +6022,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
         {
             RemoveAuraOnPlayers(ILLIDAN_SHADOW_PRISON);
             setCanEnterCombat(true);
-            SetAllowMelee(true);
+            _setMeleeDisabled(true);
             setRooted(false);
 
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
@@ -6104,7 +6104,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                     break;
                 case 13:
                     setCanEnterCombat(true);
-                    SetAllowMelee(true);
+                    _setMeleeDisabled(true);
                     setRooted(false);
                     SetPhase(5);
 
@@ -6165,7 +6165,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
 
                 setCanEnterCombat(false);
                 SetBehavior(Behavior_Default);
-                SetAllowMelee(false);
+                _setMeleeDisabled(false);
                 setRooted(true);
 
                 _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
@@ -6514,7 +6514,7 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
             _unit->m_noRespawn = true;
 
             RegisterAIUpdateEvent(1000);
-            SetAllowMelee(false);
+            _setMeleeDisabled(false);
             mIsActivated = false;
             mHasTrapped = false;
         }
@@ -6565,7 +6565,7 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
 
                     pAI->ApplyAura(CAGE_TRAP);
                     pAI->setRooted(true);
-                    pAI->SetAllowMelee(false);
+                    pAI->_setMeleeDisabled(false);
                     pAI->stopMovement();
 
                     SetAIUpdateFreq(2500);
@@ -6601,7 +6601,7 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
                     {
                         pAI->RemoveAura(CAGED1);
                         pAI->setRooted(false);
-                        pAI->SetAllowMelee(true);
+                        pAI->_setMeleeDisabled(true);
                         pAI->stopMovement();
                         pAI->SetBehavior(Behavior_Spell);
 

@@ -430,8 +430,8 @@ class WardenMellicharAI : public MoonScriptBossAI
         {
             setCanEnterCombat(false);
             setRooted(true);
-            SetAllowMelee(false);
-            SetAllowSpell(false);
+            _setMeleeDisabled(true);
+            _setCastDisabled(true);
 
             // ORB ONE
             if (IsTimerFinished(Phase_Timer) && GetPhase() == 0)
@@ -649,15 +649,15 @@ class WardenMellicharAI : public MoonScriptBossAI
 
             ParentClass::AIUpdate();
             setRooted(true);
-            SetAllowMelee(false);
-            SetAllowSpell(false);
+            _setMeleeDisabled(true);
+            _setCastDisabled(true);
         }
 
         void Reset_Event()
         {
             setRooted(false);
-            SetAllowMelee(true);
-            SetAllowSpell(true);
+            _setMeleeDisabled(false);
+            _setCastDisabled(false);
             _unit->SetStandState(STANDSTATE_KNEEL);
 
             if (shield)

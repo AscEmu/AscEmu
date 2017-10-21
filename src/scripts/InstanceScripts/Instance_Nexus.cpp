@@ -250,9 +250,9 @@ class TelestraBossAI : public MoonScriptBossAI
 
                 SetPhase(2);
                 setRooted(true);
-                SetAllowRanged(false);
-                SetAllowSpell(false);
-                SetAllowTargeting(false);
+                _setRangedDisabled(true);
+                _setCastDisabled(true);
+                _setTargetingDisabled(true);
                 ApplyAura(60191);
 
                 for (uint8 i = 0; i < 3; ++i)

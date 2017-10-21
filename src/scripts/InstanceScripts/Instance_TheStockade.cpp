@@ -102,9 +102,9 @@ class DeepfuryAI : public MoonScriptBossAI
         if (GetHealthPercent() <= 15 && GetBehavior() != Behavior_Flee)
         {
             SetBehavior(Behavior_Flee);
-            SetAllowMelee(false);
-            SetAllowRanged(false);
-            SetAllowSpell(false);
+            _setMeleeDisabled(false);
+            _setRangedDisabled(true);
+            _setCastDisabled(true);
             moveTo(float(105.693390), float(-58.426674), float(-34.856178), true);
         }
         ParentClass::AIUpdate();

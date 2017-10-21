@@ -70,7 +70,7 @@ public:
         _unit->GetAIInterface()->WipeTargetList();
         _unit->GetAIInterface()->WipeHateList();
         _unit->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, _unit, 0);
-        _unit->GetAIInterface()->disable_melee = true;
+        _setMeleeDisabled(true);
         _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
         _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
     }
@@ -92,7 +92,7 @@ public:
             return;
 
         Dashel->SetFaction(28);
-        Dashel->GetAIInterface()->disable_melee = false;
+        Dashel->GetAIInterface()->setMeleeDisabled(false);
         Dashel->GetAIInterface()->SetAllowedToEnterCombat(true);
     }
 };

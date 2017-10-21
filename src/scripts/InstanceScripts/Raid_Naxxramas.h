@@ -2729,7 +2729,7 @@ class FrostBreathTrigger2AI : public CreatureAIScript
 #else
         _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
 #endif
-        _unit->GetAIInterface()->disable_melee = true;
+        _setMeleeDisabled(true);
         _unit->GetAIInterface()->m_canMove = false;
         _unit->m_noRespawn = true;
         _unit->Despawn(8000, 0);
@@ -2758,7 +2758,7 @@ class FrostBreathTrigger3AI : public CreatureAIScript
     {
         _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
         _unit->CastSpell(_unit, SAPPHIRONS_WING_BUFFET, true);
-        _unit->GetAIInterface()->disable_melee = true;
+        _setMeleeDisabled(true);
         _unit->GetAIInterface()->m_canMove = false;
         _unit->m_noRespawn = true;
 
@@ -2791,7 +2791,7 @@ class ChillTriggerAI : public CreatureAIScript
     {
         _unit->CastSpellAoF(_unit->GetPosition(), sSpellCustomizations.GetSpellInfo(28547), true);
         _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
-        _unit->GetAIInterface()->disable_melee = true;
+        _setMeleeDisabled(true);
         _unit->GetAIInterface()->m_canMove = false;
         _unit->m_noRespawn = true;
         _unit->Despawn(15000, 0);
@@ -3615,7 +3615,7 @@ class KelthuzadAI : public CreatureAIScript
         spells[6].cooldown = 0;
         spells[6].attackstoptimer = 1000;
 
-        _unit->GetAIInterface()->disable_melee = false;
+        _setMeleeDisabled(false);
         _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
         _unit->GetAIInterface()->m_canMove = true;
 
@@ -3649,7 +3649,7 @@ class KelthuzadAI : public CreatureAIScript
             KelGate->SetState(GO_STATE_CLOSED);
 
         _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        _unit->GetAIInterface()->disable_melee = true;
+        _setMeleeDisabled(true);
         _unit->GetAIInterface()->m_canMove = false;
 
         RegisterAIUpdateEvent(1000);
@@ -3681,7 +3681,7 @@ class KelthuzadAI : public CreatureAIScript
         _unit->SetChannelSpellId(0);
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        _unit->GetAIInterface()->disable_melee = false;
+        _setMeleeDisabled(false);
         _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
         _unit->GetAIInterface()->m_canMove = true;
         RemoveAIUpdateEvent();
@@ -3735,7 +3735,7 @@ class KelthuzadAI : public CreatureAIScript
         _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Do not rejoice... your victory is a hollow one... for I shall return with powers beyond your imagining!");
         _unit->PlaySoundToSet(8814);
 
-        _unit->GetAIInterface()->disable_melee = false;
+        _setMeleeDisabled(false);
         _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
         _unit->GetAIInterface()->m_canMove = true;
         RemoveAIUpdateEvent();
@@ -3869,7 +3869,7 @@ class KelthuzadAI : public CreatureAIScript
             {
                 _unit->SetChannelSpellTargetGUID(0);
                 _unit->SetChannelSpellId(0);
-                _unit->GetAIInterface()->disable_melee = false;
+                _setMeleeDisabled(false);
                 _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
                 _unit->GetAIInterface()->m_canMove = true;
 

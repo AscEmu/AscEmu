@@ -165,7 +165,7 @@ public:
         _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
         _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-        _unit->GetAIInterface()->disable_melee = true;
+        _setMeleeDisabled(true);
         _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
         _unit->GetAIInterface()->m_canMove = false;
         i = 1;

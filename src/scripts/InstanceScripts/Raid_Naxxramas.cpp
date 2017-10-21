@@ -194,14 +194,14 @@ WebWrapAI::WebWrapAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
 
 void WebWrapAI::OnCombatStart(Unit* pTarget)
 {
-    SetAllowMelee(false);
+    _setMeleeDisabled(false);
     setRooted(true);
     stopMovement();
 };
 
 void WebWrapAI::OnCombatStop(Unit* pTarget)
 {
-    SetAllowMelee(true);
+    _setMeleeDisabled(true);
     setRooted(false);
 };
 

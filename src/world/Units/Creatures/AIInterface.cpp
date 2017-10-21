@@ -77,11 +77,13 @@ AIInterface::AIInterface()
     m_formationFollowAngle(0.0f),
     m_formationLinkSqlId(0),
     timed_emotes(nullptr),
-    disable_combat(false),
-    disable_melee(false),
-    disable_ranged(false),
-    disable_spell(false),
-    disable_targeting(false),
+
+    mIsCombatDisabled(false),
+    mIsMeleeDisabled(false),
+    mIsRangedDisabled(false),
+    mIsCastDisabled(false),
+    mIsTargetingDisabled(false),
+
     waiting_for_cooldown(false),
     next_spell_time(0),
     m_isGuard(false),
@@ -1459,7 +1461,7 @@ void AIInterface::_UpdateTimer(uint32 p_time)
 
 void AIInterface::_UpdateTargets()
 {
-    if (m_Unit->IsPlayer() || (!isAiScriptType(AI_SCRIPT_PET) && disable_targeting))
+    if (m_Unit->IsPlayer() || (!isAiScriptType(AI_SCRIPT_PET) && mIsTargetingDisabled))
         return;
 
     if (static_cast<Creature*>(m_Unit)->GetCreatureProperties()->Type == UNIT_TYPE_CRITTER && static_cast<Creature*>(m_Unit)->GetType() != CREATURE_TYPE_GUARDIAN)
@@ -1532,7 +1534,7 @@ void AIInterface::_UpdateTargets()
 
         LockAITargets(false);
 
-        if (disable_combat)
+        if (isCombatDisabled())
             return;
 
         if (m_aiTargets.size() == 0
@@ -1561,7 +1563,7 @@ void AIInterface::_UpdateTargets()
                     AttackReaction(target, 1, 0);
             }
         }
-        else if (m_aiTargets.size() == 0 && ((isAiScriptType(AI_SCRIPT_PET) && (m_Unit->IsPet() && static_cast< Pet* >(m_Unit)->GetPetState() == PET_STATE_AGGRESSIVE)) || (!m_Unit->IsPet() && disable_melee == false)))
+        else if (m_aiTargets.size() == 0 && ((isAiScriptType(AI_SCRIPT_PET) && (m_Unit->IsPet() && static_cast< Pet* >(m_Unit)->GetPetState() == PET_STATE_AGGRESSIVE)) || (!m_Unit->IsPet() && mIsMeleeDisabled == false)))
         {
             Unit* target = FindTarget();
             if (target)
@@ -1585,7 +1587,7 @@ void AIInterface::_UpdateTargets()
 /// Updates Combat Status of m_Unit
 void AIInterface::_UpdateCombat(uint32 p_time)
 {
-    if (!isAiScriptType(AI_SCRIPT_PET) && disable_combat)
+    if (!isAiScriptType(AI_SCRIPT_PET) && isCombatDisabled())
         return;
 
     //just make sure we are not hitting self.
@@ -1739,13 +1741,13 @@ void AIInterface::_UpdateCombat(uint32 p_time)
             }
         }
 
-        if (this->disable_melee && agent == AGENT_MELEE)
+        if (this->isMeleeDisabled() && agent == AGENT_MELEE)
             agent = AGENT_NULL;
 
-        if (this->disable_ranged && agent == AGENT_RANGED)
+        if (this->isRangedDisabled() && agent == AGENT_RANGED)
             agent = AGENT_NULL;
 
-        if (this->disable_spell && agent == AGENT_SPELL)
+        if (this->isCastDisabled() && agent == AGENT_SPELL)
             agent = AGENT_NULL;
 
         switch (agent)
@@ -2072,7 +2074,7 @@ void AIInterface::SetUnitToFollowBackup(Unit* un)
 
 void AIInterface::AttackReaction(Unit* pUnit, uint32 damage_dealt, uint32 spellId)
 {
-    if (isAiState(AI_STATE_EVADE) || !pUnit || !pUnit->isAlive() || m_Unit->IsDead() || (m_Unit == pUnit) || isAiScriptType(AI_SCRIPT_PASSIVE) || disable_combat)
+    if (isAiState(AI_STATE_EVADE) || !pUnit || !pUnit->isAlive() || m_Unit->IsDead() || (m_Unit == pUnit) || isAiScriptType(AI_SCRIPT_PASSIVE) || isCombatDisabled())
         return;
 
     if (worldConfig.terrainCollision.isCollisionEnabled && pUnit->IsPlayer())
@@ -3041,7 +3043,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
 void AIInterface::CastSpell(Unit* caster, SpellInfo* spellInfo, SpellCastTargets targets)
 {
     ARCEMU_ASSERT(spellInfo != NULL);
-    if (!isAiScriptType(AI_SCRIPT_PET) && disable_spell)
+    if (!isAiScriptType(AI_SCRIPT_PET) && isCastDisabled())
         return;
 
     // Stop movement while casting.

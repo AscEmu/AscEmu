@@ -55,7 +55,7 @@ class SamAI : public CreatureAIScript
         {
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->m_canMove = false;
-            _unit->GetAIInterface()->disable_melee = true;
+            _setMeleeDisabled(true);
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
             timer = 0;
@@ -127,7 +127,7 @@ class BerAI : public CreatureAIScript
         {
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->m_canMove = false;
-            _unit->GetAIInterface()->disable_melee = true;
+            _setMeleeDisabled(true);
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
             timer = 0;
@@ -195,7 +195,7 @@ class SigAI : public CreatureAIScript
         {
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->m_canMove = false;
-            _unit->GetAIInterface()->disable_melee = true;
+            _setMeleeDisabled(true);
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
@@ -267,7 +267,7 @@ class MaiAI : public CreatureAIScript
         {
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->m_canMove = false;
-            _unit->GetAIInterface()->disable_melee = true;
+            _setMeleeDisabled(true);
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
@@ -337,7 +337,7 @@ class ThuAI : public CreatureAIScript
         {
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->m_canMove = false;
-            _unit->GetAIInterface()->disable_melee = true;
+            _setMeleeDisabled(true);
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
@@ -422,7 +422,7 @@ class UndeadAI : public CreatureAIScript
         {
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->m_canMove = false;
-            _unit->GetAIInterface()->disable_melee = true;
+            _setMeleeDisabled(true);
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
@@ -480,7 +480,7 @@ class Undead2AI : public CreatureAIScript
         {
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->m_canMove = false;
-            _unit->GetAIInterface()->disable_melee = true;
+            _setMeleeDisabled(true);
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
@@ -539,7 +539,7 @@ class Undead3AI : public CreatureAIScript
         {
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->m_canMove = false;
-            _unit->GetAIInterface()->disable_melee = true;
+            _setMeleeDisabled(true);
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
@@ -592,7 +592,7 @@ class TriggerAI : public CreatureAIScript
         {
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->m_canMove = false;
-            _unit->GetAIInterface()->disable_melee = true;
+            _setMeleeDisabled(true);
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
@@ -697,7 +697,7 @@ class Trigger2AI : public CreatureAIScript
         {
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->m_canMove = false;
-            _unit->GetAIInterface()->disable_melee = true;
+            _setMeleeDisabled(true);
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
@@ -795,7 +795,7 @@ class Effectsground : public CreatureAIScript
         {
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->m_canMove = false;
-            _unit->GetAIInterface()->disable_melee = true;
+            _setMeleeDisabled(true);
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
@@ -924,7 +924,7 @@ class Effectsair : public CreatureAIScript
         {
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->m_canMove = false;
-            _unit->GetAIInterface()->disable_melee = true;
+            _setMeleeDisabled(true);
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);

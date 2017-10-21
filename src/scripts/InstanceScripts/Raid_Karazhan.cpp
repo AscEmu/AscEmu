@@ -105,13 +105,13 @@ class AttumenTheHuntsmanAI : public MoonScriptBossAI
             if (GetLinkedCreature() && GetLinkedCreature()->isAlive() && GetHealthPercent() <= 25 && !IsCasting())
             {
                 SetPhase(2);
-                SetAllowMelee(false);
-                SetAllowSpell(false);
+                _setMeleeDisabled(false);
+                _setCastDisabled(true);
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 9168, "Come Midnight, let's disperse this petty rabble!");
                 MoonScriptBossAI* midnight = static_cast<MoonScriptBossAI*>(GetLinkedCreature());
                 midnight->SetPhase(2);
                 midnight->moveToUnit(_unit);
-                midnight->SetAllowMelee(false);
+                midnight->_setMeleeDisabled(false);
             }
         }
         ParentClass::AIUpdate();
@@ -127,8 +127,8 @@ class MidnightAI : public MoonScriptBossAI
 
     void OnCombatStop(Unit* pTarget)
     {
-        SetAllowMelee(true);
-        SetAllowSpell(true);
+        _setMeleeDisabled(true);
+        _setCastDisabled(false);
         ParentClass::OnCombatStop(pTarget);
     }
 
@@ -160,10 +160,10 @@ class MidnightAI : public MoonScriptBossAI
                 SetPhase(2);
                 MoonScriptBossAI* attumen = static_cast<MoonScriptBossAI*>(GetLinkedCreature());
                 moveToUnit(attumen->GetUnit());
-                SetAllowMelee(false);
+                _setMeleeDisabled(false);
                 attumen->SetPhase(2);
-                attumen->SetAllowMelee(false);
-                attumen->SetAllowSpell(false);
+                attumen->_setMeleeDisabled(false);
+                attumen->_setCastDisabled(true);
                 attumen->sendChatMessage(CHAT_MSG_MONSTER_YELL, 9168, "Come Midnight, let's disperse this petty rabble!");
             }
         }
@@ -177,8 +177,8 @@ class MidnightAI : public MoonScriptBossAI
                     attumen->Regenerate();
                     attumen->SetDisplayId(16040);
                     attumen->ClearHateList();
-                    attumen->SetAllowMelee(true);
-                    attumen->SetAllowSpell(true);
+                    attumen->_setMeleeDisabled(true);
+                    attumen->_setCastDisabled(false);
                     despawn();
                     return;
                 }
@@ -1087,7 +1087,7 @@ public:
     StageLight(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         _unit->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        _unit->GetAIInterface()->disable_melee = true;
+        _setMeleeDisabled(true);
         _unit->GetAIInterface()->m_canMove = false;
         _unit->m_noRespawn = true;
         _unit->CastSpell(_unit, 34126, true);
@@ -2640,7 +2640,7 @@ public:
         _unit->setMoveRoot(true);
 
         _unit->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
-        _unit->GetAIInterface()->disable_melee = true;
+        _setMeleeDisabled(true);
         _unit->GetAIInterface()->m_canMove = false;
         _unit->m_noRespawn = true;
 
@@ -3497,7 +3497,7 @@ public:
         _unit->setMoveRoot(true);
         _unit->DisableAI();
         _unit->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
-        _unit->GetAIInterface()->disable_melee = true;
+        _setMeleeDisabled(true);
         _unit->GetAIInterface()->m_canMove = false;
         _unit->m_noRespawn = true;
         _unit->Despawn(30000, 0);
@@ -4788,7 +4788,7 @@ public:
     {
         _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CYCLONE_VISUAL), true);
         _unit->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
-        _unit->GetAIInterface()->disable_melee = true;
+        _setMeleeDisabled(true);
         _unit->GetAIInterface()->m_canMove = false;
         _unit->m_noRespawn = true;
     }

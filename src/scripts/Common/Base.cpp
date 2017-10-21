@@ -185,46 +185,6 @@ BehaviorType MoonScriptCreatureAI::GetBehavior()
     }
 }
 
-void MoonScriptCreatureAI::SetAllowMelee(bool pAllow)
-{
-    _unit->GetAIInterface()->disable_melee = !pAllow;
-}
-
-bool MoonScriptCreatureAI::GetAllowMelee()
-{
-    return !_unit->GetAIInterface()->disable_melee;
-}
-
-void MoonScriptCreatureAI::SetAllowRanged(bool pAllow)
-{
-    _unit->GetAIInterface()->disable_ranged = !pAllow;
-}
-
-bool MoonScriptCreatureAI::GetAllowRanged()
-{
-    return !_unit->GetAIInterface()->disable_ranged;
-}
-
-void MoonScriptCreatureAI::SetAllowSpell(bool pAllow)
-{
-    _unit->GetAIInterface()->disable_spell = !pAllow;
-}
-
-bool MoonScriptCreatureAI::GetAllowSpell()
-{
-    return !_unit->GetAIInterface()->disable_spell;
-}
-
-void MoonScriptCreatureAI::SetAllowTargeting(bool pAllow)
-{
-    _unit->GetAIInterface()->disable_targeting = !pAllow;
-}
-
-bool MoonScriptCreatureAI::GetAllowTargeting()
-{
-    return !_unit->GetAIInterface()->disable_targeting;
-}
-
 void MoonScriptCreatureAI::AggroNearestUnit(int pInitialThreat)
 {
     //Pay attention: if this is called before pushing the Creature to world, OnCombatStart will NOT be called.
@@ -1333,9 +1293,9 @@ void MoonScriptCreatureAI::PushRunToTargetCache(Unit* pTarget, SpellDesc* pSpell
         mRunToTargetCache = pTarget;
         mRunToTargetSpellCache = pSpell;
         setRooted(false);
-        SetAllowMelee(false);
-        SetAllowRanged(false);
-        SetAllowSpell(false);
+        _setMeleeDisabled(true);
+        _setRangedDisabled(true);
+        _setCastDisabled(true);
     };
 
     if (mRunToTargetCache)
@@ -1348,9 +1308,9 @@ void MoonScriptCreatureAI::PopRunToTargetCache()
     {
         mRunToTargetCache = NULL;
         mRunToTargetSpellCache = NULL;
-        SetAllowMelee(true);
-        SetAllowRanged(true);
-        SetAllowSpell(true);
+        _setMeleeDisabled(false);
+        _setRangedDisabled(false);
+        _setCastDisabled(false);
         stopMovement();
     };
 };

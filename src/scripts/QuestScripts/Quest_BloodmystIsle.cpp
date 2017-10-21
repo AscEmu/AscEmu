@@ -149,14 +149,14 @@ public:
 
     void OnCombatStart(Unit* pTarget)
     {
-        _unit->GetAIInterface()->disable_melee = true;
+        _setMeleeDisabled(true);
         _unit->setMoveRoot(true);
         _unit->GetAIInterface()->StopMovement(0);
     }
 
     void OnCombatStop(Unit* pTarget)
     {
-        _unit->GetAIInterface()->disable_melee = false;
+        _setMeleeDisabled(false);
         _unit->setMoveRoot(false);
     }
 

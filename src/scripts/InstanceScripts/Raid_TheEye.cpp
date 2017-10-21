@@ -2795,7 +2795,7 @@ class FlameStrikeAI : public MoonScriptCreatureAI
             ApplyAura(FLAME_STRIKE_TRIGGER_FLAME_STRIKE_EFFECT);
             RegisterAIUpdateEvent(5000);
             setCanEnterCombat(false);
-            SetAllowMelee(false);
+            _setMeleeDisabled(false);
             setRooted(true);
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         }
@@ -2898,7 +2898,7 @@ class PhoenixEggAI : public MoonScriptCreatureAI
         {
             RegisterAIUpdateEvent(15000);
             setCanEnterCombat(false);
-            SetAllowMelee(false);
+            _setMeleeDisabled(false);
             setRooted(true);
         }
 

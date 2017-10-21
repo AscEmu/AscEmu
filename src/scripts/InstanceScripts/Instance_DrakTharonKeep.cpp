@@ -280,7 +280,7 @@ class NovosTheSummonerAI : public CreatureAIScript
             for (uint8 i = 0; i < 4; i++)
                 SpawnCrystal(i);
             handler_timer = Util::getMSTime() + HANDLER_INTERVAL;
-            _unit->GetAIInterface()->disable_melee = true;
+            _setMeleeDisabled(true);
             phase = 1;
             for (uint8 i = 0; i < 7; i++)
                 _unit->SchoolImmunityList[i] = 1;
@@ -292,7 +292,7 @@ class NovosTheSummonerAI : public CreatureAIScript
         void OnLoad()
         {
             //root him and disable melee for him ;)
-            _unit->GetAIInterface()->disable_melee = true;
+            _setMeleeDisabled(true);
             _unit->setMoveRoot(true);
         }
 
@@ -371,7 +371,7 @@ class NovosTheSummonerAI : public CreatureAIScript
                     _unit->InterruptSpell();
                     _unit->RemoveAllAuras();
                     _unit->setMoveRoot(false);
-                    _unit->GetAIInterface()->disable_melee = false;
+                    _setMeleeDisabled(false);
                     phase = 2;
                     for (uint8 i = 0; i < 7; i++)
                         _unit->SchoolImmunityList[i] = 0;

@@ -102,7 +102,7 @@ public:
     void OnLoad()
     {
         _unit->GetAIInterface()->m_canMove = false;
-        _unit->GetAIInterface()->disable_combat = true;
+        _unit->GetAIInterface()->setCombatDisabled(true);
     }
 
     void OnDied(Unit* mKiller)

@@ -648,6 +648,46 @@ void CreatureAIScript::setCanEnterCombat(bool enterCombat)
     _unit->GetAIInterface()->SetAllowedToEnterCombat(enterCombat);
 }
 
+void CreatureAIScript::_setMeleeDisabled(bool disable)
+{
+    _unit->GetAIInterface()->setMeleeDisabled(disable);
+}
+
+bool CreatureAIScript::_isMeleeDisabled()
+{
+    return _unit->GetAIInterface()->isMeleeDisabled();
+}
+
+void CreatureAIScript::_setRangedDisabled(bool disable)
+{
+    _unit->GetAIInterface()->setRangedDisabled(disable);
+}
+
+bool CreatureAIScript::_isRangedDisabled()
+{
+    return _unit->GetAIInterface()->isRangedDisabled();
+}
+
+void CreatureAIScript::_setCastDisabled(bool disable)
+{
+    _unit->GetAIInterface()->setCastDisabled(disable);
+}
+
+bool CreatureAIScript::_isCastDisabled()
+{
+    return _unit->GetAIInterface()->isCastDisabled();
+}
+
+void CreatureAIScript::_setTargetingDisabled(bool disable)
+{
+    _unit->GetAIInterface()->setTargetingDisabled(disable);
+}
+
+bool CreatureAIScript::_isTargetingDisabled()
+{
+    return _unit->GetAIInterface()->isTargetingDisabled();
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // gameobject
 GameObject* CreatureAIScript::getNearestGameObject(uint32_t entry)

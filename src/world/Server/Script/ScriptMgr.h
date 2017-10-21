@@ -368,6 +368,15 @@ class SERVER_DECL CreatureAIScript
         bool canEnterCombat();
         void setCanEnterCombat(bool enterCombat);
 
+        void _setMeleeDisabled(bool disable);
+        bool _isMeleeDisabled();
+        void _setRangedDisabled(bool disable);
+        bool _isRangedDisabled();
+        void _setCastDisabled(bool disable);
+        bool _isCastDisabled();
+        void _setTargetingDisabled(bool disable);
+        bool _isTargetingDisabled();
+
         //////////////////////////////////////////////////////////////////////////////////////////
         // gameobject
         GameObject* getNearestGameObject(uint32_t entry);

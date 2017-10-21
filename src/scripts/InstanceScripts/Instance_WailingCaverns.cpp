@@ -210,9 +210,9 @@ class SkumAI : public MoonScriptCreatureAI
             {
                 sendChatMessage(CHAT_MSG_MONSTER_EMOTE, 0, "Skum tries to run away in fear");
                 SetBehavior(Behavior_Flee);
-                SetAllowMelee(false);
-                SetAllowRanged(false);
-                SetAllowSpell(false);
+                _setMeleeDisabled(false);
+                _setRangedDisabled(true);
+                _setCastDisabled(true);
                 moveTo(-262.829742f, -299.363159f, -68.293579f, true);
             }
             ParentClass::AIUpdate();

@@ -1024,7 +1024,7 @@ void Pet::InitializeMe(bool first)
             ModDamageDone[SCHOOL_FROST] = (uint32)parentfrost;
         }
         else if (GetEntry() == PET_IMP)
-            m_aiInterface->disable_melee = true;
+            m_aiInterface->setMeleeDisabled(true);
         else if (GetEntry() == PET_FELGUARD)
             SetEquippedItem(MELEE, 12784);
 
@@ -1668,7 +1668,7 @@ void Pet::ApplySummonLevelAbilities()
     {
         case PET_IMP:
             stat_index = 0;
-            m_aiInterface->disable_melee = true;
+            m_aiInterface->setMeleeDisabled(true);
             break;
         case PET_VOIDWALKER:
             stat_index = 1;
@@ -1687,7 +1687,7 @@ void Pet::ApplySummonLevelAbilities()
         case WATER_ELEMENTAL:
         case WATER_ELEMENTAL_NEW:
             stat_index = 5;
-            m_aiInterface->disable_melee = true;
+            m_aiInterface->setMeleeDisabled(true);
             break;
         case SHADOWFIEND:
             stat_index = 5;

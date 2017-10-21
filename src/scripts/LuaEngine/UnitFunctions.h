@@ -2006,7 +2006,7 @@ class LuaUnit
             return 0;
 
         ptr->setMoveHover(true);
-        ptr->GetAIInterface()->disable_melee = true;
+        ptr->GetAIInterface()->setMeleeDisabled(true);
         ptr->GetAIInterface()->setSplineFlying();
         ptr->Emote(EMOTE_ONESHOT_LIFTOFF);
         return 0;
@@ -2019,7 +2019,7 @@ class LuaUnit
 
         ptr->setMoveHover(false);
         ptr->GetAIInterface()->unsetSplineFlying();
-        ptr->GetAIInterface()->disable_melee = false;
+        ptr->GetAIInterface()->setMeleeDisabled(false);
         ptr->Emote(EMOTE_ONESHOT_LAND);
         return 0;
     }
@@ -5873,35 +5873,35 @@ class LuaUnit
     {
         TEST_UNIT_RET()
             bool disable = CHECK_BOOL(L, 1);
-        static_cast<Creature*>(ptr)->GetAIInterface()->disable_melee = disable;
+        static_cast<Creature*>(ptr)->GetAIInterface()->setMeleeDisabled(disable);
         RET_BOOL(true)
     }
     static int DisableSpells(lua_State* L, Unit* ptr)
     {
         TEST_UNIT_RET()
             bool disable = CHECK_BOOL(L, 1);
-        static_cast<Creature*>(ptr)->GetAIInterface()->disable_spell = disable;
+        static_cast<Creature*>(ptr)->GetAIInterface()->setCastDisabled(disable);
         RET_BOOL(true)
     }
     static int DisableRanged(lua_State* L, Unit* ptr)
     {
         TEST_UNIT_RET()
             bool disable = CHECK_BOOL(L, 1);
-        static_cast<Creature*>(ptr)->GetAIInterface()->disable_ranged = disable;
+        static_cast<Creature*>(ptr)->GetAIInterface()->setRangedDisabled(disable);
         RET_BOOL(true)
     }
     static int DisableCombat(lua_State* L, Unit* ptr)
     {
         TEST_UNIT_RET()
             bool disable = CHECK_BOOL(L, 1);
-        static_cast<Creature*>(ptr)->GetAIInterface()->disable_combat = disable;
+        static_cast<Creature*>(ptr)->GetAIInterface()->setCombatDisabled(disable);
         RET_BOOL(true)
     }
     static int DisableTargeting(lua_State* L, Unit* ptr)
     {
         TEST_UNIT_RET()
             bool disable = CHECK_BOOL(L, 1);
-        static_cast<Creature*>(ptr)->GetAIInterface()->disable_targeting = disable;
+        static_cast<Creature*>(ptr)->GetAIInterface()->setTargetingDisabled(disable);
         RET_BOOL(true)
     }
     static int IsInGroup(lua_State* L, Unit* ptr)

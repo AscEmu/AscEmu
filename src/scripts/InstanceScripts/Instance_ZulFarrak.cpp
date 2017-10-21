@@ -127,7 +127,7 @@ class AntusulTriggerAI : public CreatureAIScript
         void OnCombatStart(Unit* mTarget)
         {
             _unit->GetAIInterface()->m_canMove = false;
-            _unit->GetAIInterface()->disable_melee = true;
+            _setMeleeDisabled(true);
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
             Unit* antusul = NULL;
@@ -292,7 +292,7 @@ class AntusulAI : public CreatureAIScript
             if (trigger)
             {
                 trigger->GetAIInterface()->m_canMove = true;
-                trigger->GetAIInterface()->disable_melee = false;
+                trigger->GetAIInterface()->setMeleeDisabled(false);
                 trigger->setUInt64Value(UNIT_FIELD_FLAGS, 0);
             }
         }

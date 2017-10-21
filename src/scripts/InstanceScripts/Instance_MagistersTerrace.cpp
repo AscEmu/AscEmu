@@ -182,10 +182,10 @@ class SelinFireheartAI : public MoonScriptCreatureAI
     void PreventActions(bool Allow)
     {
         FelExplosion->mEnabled = Allow;
-        SetAllowMelee(Allow);
-        SetAllowRanged(Allow);
-        SetAllowSpell(Allow);
-        SetAllowTargeting(Allow);
+        _setMeleeDisabled(!Allow);
+        _setRangedDisabled(!Allow);
+        _setCastDisabled(!Allow);
+        _setTargetingDisabled(Allow);
     }
 
     Unit* FindFelCrystal()
