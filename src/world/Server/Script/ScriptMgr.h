@@ -363,6 +363,9 @@ class SERVER_DECL CreatureAIScript
         void moveToSpawn();
         void stopMovement();
 
+        bool canEnterCombat();
+        void setCanEnterCombat(bool enterCombat);
+
         //////////////////////////////////////////////////////////////////////////////////////////
         // gameobject
         GameObject* getNearestGameObject(uint32_t entry);

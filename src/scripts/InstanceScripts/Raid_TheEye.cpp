@@ -1883,7 +1883,10 @@ class SolariumPriestAI : public MoonScriptCreatureAI
 class SolariumSpotLight : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(SolariumSpotLight, MoonScriptCreatureAI);
-        SolariumSpotLight(Creature* pCreature) : MoonScriptCreatureAI(pCreature) { SetCanEnterCombat(false); }
+        SolariumSpotLight(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        {
+            setCanEnterCombat(false);
+        }
 };
 
 // Al'ar AI
@@ -2577,7 +2580,7 @@ class DarkenerAI : public MoonScriptCreatureAI
             AddSpell(DARKENER_SILENCE, Target_Current, 10, 0, 15);
             AddEmote(Event_OnCombatStart, "Prepare yourselves!", Text_Yell, 11203);
             AddEmote(Event_OnDied, "Forgive me, my prince! I have... failed.", Text_Yell, 11204);
-            SetCanEnterCombat(false);
+            setCanEnterCombat(false);
             mCurrentTarget = NULL;
             mGazeSwitchTimer = 0;
         }
@@ -2585,7 +2588,7 @@ class DarkenerAI : public MoonScriptCreatureAI
         void OnCombatStart(Unit* mTarget)
         {
             ParentClass::OnCombatStart(mTarget);
-            SetCanEnterCombat(true);
+            setCanEnterCombat(true);
             SwitchTarget();
 
             mGazeSwitchTimer = AddTimer((RandomUInt(4) + 8) * 1000);
@@ -2598,7 +2601,7 @@ class DarkenerAI : public MoonScriptCreatureAI
 
             if (isAlive())
             {
-                SetCanEnterCombat(false);
+                setCanEnterCombat(false);
             }
         }
 
@@ -2656,13 +2659,13 @@ class SanguinarAI : public MoonScriptCreatureAI
             AddSpell(SANGUINAR_BELLOWING, Target_Self, 100, 0, 30);
             AddEmote(Event_OnCombatStart, "Blood for blood!", Text_Yell, 11152);
             AddEmote(Event_OnDied, "NO! I will... not.", Text_Yell, 11153);
-            SetCanEnterCombat(false);
+            setCanEnterCombat(false);
         }
 
         void OnCombatStart(Unit* mTarget)
         {
             ParentClass::OnCombatStart(mTarget);
-            SetCanEnterCombat(true);
+            setCanEnterCombat(true);
         }
 
         void OnCombatStop(Unit* mTarget)
@@ -2671,7 +2674,7 @@ class SanguinarAI : public MoonScriptCreatureAI
 
             if (isAlive())
             {
-                SetCanEnterCombat(false);
+                setCanEnterCombat(false);
             }
         }
 };
@@ -2693,13 +2696,13 @@ class CapernianAI : public MoonScriptCreatureAI
             mArcaneBurst = AddSpell(CAPERNIAN_ARCANE_BURST, Target_Self, 0, 1, 15);
             AddEmote(Event_OnCombatStart, "The sin'dorei reign supreme!", Text_Yell, 11117);
             AddEmote(Event_OnDied, "This is not over!", Text_Yell, 11118);
-            SetCanEnterCombat(false);
+            setCanEnterCombat(false);
         }
 
         void OnCombatStart(Unit* mTarget)
         {
             ParentClass::OnCombatStart(mTarget);
-            SetCanEnterCombat(true);
+            setCanEnterCombat(true);
 
             if (GetRangeToUnit(mTarget) <= 30.0f)
             {
@@ -2714,7 +2717,7 @@ class CapernianAI : public MoonScriptCreatureAI
 
             if (isAlive())
             {
-                SetCanEnterCombat(false);
+                setCanEnterCombat(false);
             }
         }
 
@@ -2758,13 +2761,13 @@ class TelonicusAI : public MoonScriptCreatureAI
             AddSpell(TELONICUS_REMOTE_TOY, Target_RandomPlayer, 10, 0, 15, 0, 30);
             AddEmote(Event_OnCombatStart, "Anar'alah belore!", Text_Yell, 11157);
             AddEmote(Event_OnDied, "More perlis... await.", Text_Yell, 11158);            // not sure
-            SetCanEnterCombat(false);
+            setCanEnterCombat(false);
         }
 
         void OnCombatStart(Unit* mTarget)
         {
             ParentClass::OnCombatStart(mTarget);
-            SetCanEnterCombat(true);
+            setCanEnterCombat(true);
         }
 
         void OnCombatStop(Unit* mTarget)
@@ -2773,7 +2776,7 @@ class TelonicusAI : public MoonScriptCreatureAI
 
             if (isAlive())
             {
-                SetCanEnterCombat(false);
+                setCanEnterCombat(false);
             }
         }
 };
@@ -2791,7 +2794,7 @@ class FlameStrikeAI : public MoonScriptCreatureAI
         {
             ApplyAura(FLAME_STRIKE_TRIGGER_FLAME_STRIKE_EFFECT);
             RegisterAIUpdateEvent(5000);
-            SetCanEnterCombat(false);
+            setCanEnterCombat(false);
             SetAllowMelee(false);
             setRooted(true);
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
@@ -2894,7 +2897,7 @@ class PhoenixEggAI : public MoonScriptCreatureAI
         PhoenixEggAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             RegisterAIUpdateEvent(15000);
-            SetCanEnterCombat(false);
+            setCanEnterCombat(false);
             SetAllowMelee(false);
             setRooted(true);
         }
@@ -3046,7 +3049,7 @@ class KaelThasAI : public MoonScriptBossAI
                 AddWaypoint(CreateWaypoint(1, 0, Waypoints[i]));
             }
 
-            SetCanEnterCombat(true);
+            setCanEnterCombat(true);
             SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
             setRooted(false);
 
@@ -3314,7 +3317,7 @@ class KaelThasAI : public MoonScriptBossAI
                     mArcaneDisruptionTimer = AddTimer(20000);
                     mShockBarrierTimer = AddTimer(60000);
                     mFlameStrikeTimer = AddTimer(40000);
-                    SetCanEnterCombat(true);
+                    setCanEnterCombat(true);
                     SetBehavior(Behavior_Default);
                     setRooted(false);
                     SetPhase(7);

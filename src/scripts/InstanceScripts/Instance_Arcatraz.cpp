@@ -173,7 +173,7 @@ class VoidZoneARC : public MoonScriptCreatureAI
         {
             stopMovement();
             setRooted(true);
-            SetCanEnterCombat(false);
+            setCanEnterCombat(false);
             RegisterAIUpdateEvent(1000);
         }
 
@@ -407,7 +407,7 @@ class WardenMellicharAI : public MoonScriptBossAI
             setRooted(true);
             Phase_Timer = AddTimer(55000);
 
-            SetCanEnterCombat(false);
+            setCanEnterCombat(false);
             _unit->SetEmoteState(EMOTE_ONESHOT_READY1H); // to be replaced for the standstate
 
             shield = getNearestGameObject(445.786f, -169.263f, 43.0466f, 184802);
@@ -428,7 +428,7 @@ class WardenMellicharAI : public MoonScriptBossAI
 
         void AIUpdate()
         {
-            SetCanEnterCombat(false);
+            setCanEnterCombat(false);
             setRooted(true);
             SetAllowMelee(false);
             SetAllowSpell(false);

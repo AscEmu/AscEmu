@@ -3197,7 +3197,7 @@ public:
     void OnLoad()
     {
         setRooted(true);
-        SetCanEnterCombat(false);
+        setCanEnterCombat(false);
         _unit->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         _unit->m_noRespawn = true;
         RegisterAIUpdateEvent(6000);

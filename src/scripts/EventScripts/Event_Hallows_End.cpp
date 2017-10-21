@@ -95,7 +95,7 @@ class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
     MOONSCRIPT_FACTORY_FUNCTION(ShadeOfTheHorsemanAI, MoonScriptCreatureAI);
     ShadeOfTheHorsemanAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
-        SetCanEnterCombat(false);
+        setCanEnterCombat(false);
         _unit->SetMount(22653);
         ///Spells
         mSummon = AddSpell(SHADE_OF_THE_HORSEMAN_SUMMON, Target_Self, 0, 0, 0);

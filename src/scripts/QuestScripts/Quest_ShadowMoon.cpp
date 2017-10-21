@@ -99,7 +99,7 @@ public:
                     if (pRazuunAI != NULL)
                     {
                         pRazuunAI->GetUnit()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
-                        pRazuunAI->SetCanEnterCombat(false);
+                        pRazuunAI->setCanEnterCombat(false);
                         pRazuunAI->SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
                         pRazuunAI->setRooted(true);
                     }
