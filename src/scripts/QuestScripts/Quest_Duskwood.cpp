@@ -33,7 +33,7 @@ public:
     ElizaAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         mElizaCombatTimer = INVALIDATE_TIMER;
-        SetCanEnterCombat(false);
+        setCanEnterCombat(false);
         AddSpell(ELIZA_FROST_NOVA, Target_Current, 10, 0, 1, 0, 10, true);
         AddSpell(ELIZA_FROSTBOLT, Target_Current, 20, 3, 1);
         mSummonGuard = AddSpell(ELIZA_SUMMON_GUARD, Target_Self, 0, 0, 0);
@@ -49,7 +49,7 @@ public:
         ParentClass::AIUpdate();
         if (IsTimerFinished(mElizaCombatTimer))
         {
-            SetCanEnterCombat(true);
+            setCanEnterCombat(true);
             AggroNearestUnit();
             RemoveTimer(mElizaCombatTimer);
         }

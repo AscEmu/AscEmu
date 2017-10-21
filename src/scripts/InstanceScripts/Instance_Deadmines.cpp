@@ -227,7 +227,7 @@ class MrSmiteAI : public MoonScriptBossAI
 
         void MoveToChest()
         {
-            if (GetCanEnterCombat())
+            if (canEnterCombat())
                 _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
 
             stopMovement();

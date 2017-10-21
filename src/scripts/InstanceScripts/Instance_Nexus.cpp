@@ -491,7 +491,7 @@ class CrystalSpikeAI : public MoonScriptBossAI
 
     void OnLoad()
     {
-        SetCanEnterCombat(false);
+        setCanEnterCombat(false);
         setRooted(true);
         _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
@@ -548,7 +548,7 @@ class KeristraszaAI : public MoonScriptBossAI
         mCrystalize->AddEmote("Stay. Enjoy your final moments.", Text_Yell, 13451);
 
         mEnraged = false;
-        SetCanEnterCombat(false);
+        setCanEnterCombat(false);
     }
 
     void OnLoad()
@@ -583,7 +583,7 @@ class KeristraszaAI : public MoonScriptBossAI
 
     void Release()
     {
-        SetCanEnterCombat(true);
+        setCanEnterCombat(true);
         RemoveAura(47543);
         ApplyAura(INTENSE_COLD);
     }

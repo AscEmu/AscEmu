@@ -315,7 +315,7 @@ class TsunamiAI : public MoonScriptBossAI
         {
             RegisterAIUpdateEvent(1000);
             setFlyMode(true);
-            SetCanEnterCombat(false);
+            setCanEnterCombat(false);
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             despawn(11500, 0);
 
@@ -343,7 +343,7 @@ class CyclonAI : public MoonScriptBossAI
         void OnLoad()
         {
             setRooted(true);
-            SetCanEnterCombat(false);
+            setCanEnterCombat(false);
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             ApplyAura(CYCLON_SPELL);
             ApplyAura(CYCLON_AURA);

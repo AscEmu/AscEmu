@@ -35,19 +35,20 @@ public:\
     ADD_CREATURE_FACTORY_FUNCTION(ClassName);\
     typedef ParentClassName ParentClass;
 
-#define AddDefaultAura(pAuraEntry)\
-    RegisterAIUpdateEvent(500);\
-    AddEvent(1001, 500, &EventFunc_ApplyAura, pAuraEntry);
-
-#define MakeUnattackableFor(pTime)\
-    _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);\
-    RegisterAIUpdateEvent(pTime);\
-    AddEvent(1002, pTime, &EventFunc_RemoveUnitFieldFlags);
-
-#define MakeUnselectableFor(pTime)\
-    _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);\
-    RegisterAIUpdateEvent(pTime);\
-    AddEvent(1003, pTime, &EventFunc_RemoveUnitFieldFlags);
+//Zyres 10/21/2017 - not used, left as example
+//#define AddDefaultAura(pAuraEntry)\
+//    RegisterAIUpdateEvent(500);\
+//    AddEvent(1001, 500, &EventFunc_ApplyAura, pAuraEntry);
+//
+//#define MakeUnattackableFor(pTime)\
+//    _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);\
+//    RegisterAIUpdateEvent(pTime);\
+//    AddEvent(1002, pTime, &EventFunc_RemoveUnitFieldFlags);
+//
+//#define MakeUnselectableFor(pTime)\
+//    _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);\
+//    RegisterAIUpdateEvent(pTime);\
+//    AddEvent(1003, pTime, &EventFunc_RemoveUnitFieldFlags);
 
 
 ///\todo remove old text types
@@ -305,8 +306,6 @@ class MoonScriptCreatureAI : public CreatureAIScript
         void MoveTo(Unit* pUnit, RangeStatusPair pRangeStatus = std::make_pair(RangeStatus_TooFar, 0.0f));
 
         //Attack and Combat State
-        bool GetCanEnterCombat();
-        void SetCanEnterCombat(bool pCanEnterCombat);
         bool IsInCombat();
         void DelayNextAttack(int32 pMilliseconds);
         void SetDespawnWhenInactive(bool pValue);

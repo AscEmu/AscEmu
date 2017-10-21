@@ -432,7 +432,7 @@ class Volkhan : public MoonScriptCreatureAI
             else
                 _unit->CastSpell(GetUnit(), SPELL_TEMPER, true);
 
-            SetCanEnterCombat(true);
+            setCanEnterCombat(true);
             _unit->GetAIInterface()->AttackReaction(getNearestPlayer(), 1);   // hackfix
         }
     }
@@ -489,7 +489,7 @@ class BrittleGolem : public MoonScriptCreatureAI
     MOONSCRIPT_FACTORY_FUNCTION(BrittleGolem, MoonScriptCreatureAI);
     BrittleGolem(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
-        SetCanEnterCombat(false);
+        setCanEnterCombat(false);
         setRooted(true);
     };
 };

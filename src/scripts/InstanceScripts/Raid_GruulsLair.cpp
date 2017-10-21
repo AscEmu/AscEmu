@@ -134,7 +134,7 @@ class HighKingMaulgarAI : public MoonScriptBossAI
             }
             if (mAliveAdds > 1)
             {
-                SetCanEnterCombat(false);
+                setCanEnterCombat(false);
                 SetBehavior(Behavior_Spell);
                 setRooted(true);
             }
@@ -143,7 +143,7 @@ class HighKingMaulgarAI : public MoonScriptBossAI
         void OnCombatStop(Unit* pTarget)
         {
             ParentClass::OnCombatStop(pTarget);
-            SetCanEnterCombat(true);
+            setCanEnterCombat(true);
         }
 
         void OnDied(Unit* mKiller)
@@ -198,7 +198,7 @@ class HighKingMaulgarAI : public MoonScriptBossAI
                 else if (mAliveAdds == 1)
                 {
                     sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "Good, now you fight me!");
-                    SetCanEnterCombat(true);
+                    setCanEnterCombat(true);
                     SetBehavior(Behavior_Default);
                     setRooted(false);
                 }

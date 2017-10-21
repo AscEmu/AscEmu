@@ -631,6 +631,18 @@ void CreatureAIScript::stopMovement()
     _unit->GetAIInterface()->StopMovement(0);
 }
 
+bool CreatureAIScript::canEnterCombat()
+{
+    return _unit->GetAIInterface()->GetAllowedToEnterCombat();
+}
+
+void CreatureAIScript::setCanEnterCombat(bool enterCombat)
+{
+    //Zyres 10/21/2017 creatures can be attackable even if they can not enter combat... the following line is not correct.
+    _unit->setUInt64Value(UNIT_FIELD_FLAGS, (enterCombat) ? 0 : UNIT_FLAG_NOT_ATTACKABLE_9);
+    _unit->GetAIInterface()->SetAllowedToEnterCombat(enterCombat);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // gameobject
 GameObject* CreatureAIScript::getNearestGameObject(uint32_t entry)

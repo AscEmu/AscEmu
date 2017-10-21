@@ -120,17 +120,6 @@ void MoonScriptCreatureAI::MoveTo(Unit* pUnit, RangeStatusPair pRangeStatus)
         moveTo(pUnit->GetPositionX(), pUnit->GetPositionY(), pUnit->GetPositionZ());
 };
 
-bool MoonScriptCreatureAI::GetCanEnterCombat()
-{
-    return _unit->GetAIInterface()->GetAllowedToEnterCombat();
-}
-
-void MoonScriptCreatureAI::SetCanEnterCombat(bool pCanEnterCombat)
-{
-    _unit->setUInt64Value(UNIT_FIELD_FLAGS, (pCanEnterCombat) ? 0 : UNIT_FLAG_NOT_ATTACKABLE_9);
-    _unit->GetAIInterface()->SetAllowedToEnterCombat(pCanEnterCombat);
-}
-
 bool MoonScriptCreatureAI::IsInCombat()
 {
     return _unit->CombatStatus.IsInCombat();
@@ -823,7 +812,7 @@ void MoonScriptCreatureAI::AddWaypoint(Movement::WayPoint* pWayPoint)
 
 void MoonScriptCreatureAI::ForceWaypointMove(uint32 pWaypointId)
 {
-    if (GetCanEnterCombat())
+    if (canEnterCombat())
         _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
     if (isRooted())
         setRooted(false);
@@ -1506,14 +1495,14 @@ void SpellFunc_Disappear(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Un
 {
     pCreatureAI->ClearHateList();
     pCreatureAI->setRooted(true);
-    pCreatureAI->SetCanEnterCombat(false);
+    pCreatureAI->setCanEnterCombat(false);
     pCreatureAI->ApplyAura(SPELLFUNC_VANISH);
 }
 
 void SpellFunc_Reappear(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
 {
     pCreatureAI->setRooted(false);
-    pCreatureAI->SetCanEnterCombat(true);
+    pCreatureAI->setCanEnterCombat(true);
     pCreatureAI->RemoveAura(SPELLFUNC_VANISH);
 }
 

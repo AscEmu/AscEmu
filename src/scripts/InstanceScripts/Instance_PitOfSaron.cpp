@@ -574,7 +574,7 @@ class KrickAI : MoonScriptBossAI
             _unit->setMoveRoot(true);
             ClearHateList();
 
-            SetCanEnterCombat(false);
+            setCanEnterCombat(false);
 
             // Clear Hatelist dont allow Combat and root the Unit
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);

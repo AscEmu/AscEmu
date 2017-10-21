@@ -2404,7 +2404,7 @@ class EssenceOfSufferingAI : public MoonScriptCreatureAI
             if (GetHealthPercent() <= 1)
             {
                 _unit->SetHealthPct(1);
-                SetCanEnterCombat(false);
+                setCanEnterCombat(false);
                 SetAllowMelee(false);
                 SetAllowSpell(false);
                 _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
@@ -2460,7 +2460,7 @@ class EssenceOfDesireAI : public MoonScriptCreatureAI
             {
                 _unit->SetHealthPct(1);
 
-                SetCanEnterCombat(false);
+                setCanEnterCombat(false);
                 SetAllowMelee(false);
                 SetAllowSpell(false);
                 _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
@@ -2544,7 +2544,7 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
             mSummonSuffering = AddSpell(ROS_SUMMON_SUFFERING, Target_Self, 0, 0, 0);
             mSummonDesire = AddSpell(ROS_SUMMON_DESIRE, Target_Self, 0, 0, 0);
             mSummonAnger = AddSpell(ROS_SUMMON_ANGER, Target_Self, 0, 0, 0);
-            SetCanEnterCombat(true);
+            setCanEnterCombat(true);
             SetAllowMelee(true);
             SetAllowRanged(true);
             setRooted(true);
@@ -4321,7 +4321,7 @@ class AkamaAI : public MoonScriptBossAI
             AddEmote(Event_OnDied, "Fight on friends! Kill him and end the curse on my people!", Text_Yell, 11391);
 
             SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-            SetCanEnterCombat(false);
+            setCanEnterCombat(false);
             SetPhase(1);
 
             for (uint8 i = 1; i < AKAMA_WAYPOINT_SIZE; ++i)
@@ -4592,7 +4592,7 @@ class AkamaAI : public MoonScriptBossAI
                     }
 
                     setRooted(false);
-                    SetCanEnterCombat(true);
+                    setCanEnterCombat(true);
                     SetBehavior(Behavior_Default);
                     SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
                     SetWaypointToMove(0);
@@ -4601,7 +4601,7 @@ class AkamaAI : public MoonScriptBossAI
 
                     _unit->GetAIInterface()->AttackReaction(mIllidanAI->GetUnit(), 1, 0);
 
-                    mIllidanAI->SetCanEnterCombat(true);
+                    mIllidanAI->setCanEnterCombat(true);
                     mIllidanAI->setRooted(false);
 
                     Unit* pTarget = FindClosestTargetToUnit(mIllidanAI->GetUnit());
@@ -4661,7 +4661,7 @@ class AkamaAI : public MoonScriptBossAI
                 }
                 else if (mIllidanAI->GetUnit()->GetAIInterface()->isFlying())
                 {
-                    SetCanEnterCombat(false);
+                    setCanEnterCombat(false);
                     _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
                     // azolex to prevent compile error
                     uint32 nullfix = 0;
@@ -4695,9 +4695,9 @@ class AkamaAI : public MoonScriptBossAI
                         mIllidanAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 11465, "Come, my minions. Deal with this traitor as he deserves!");
                         break;
                     case 2:
-                        if (GetCanEnterCombat())
+                        if (canEnterCombat())
                         {
-                            SetCanEnterCombat(false);
+                            setCanEnterCombat(false);
                             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
                             // ugly code, trows compile error if left just null, this should do it ~ azolex
                             uint32 nullfix = 0;
@@ -5312,7 +5312,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             SetEnrageInfo(AddSpell(ILLIDAN_BERSERK, Target_Self, 0, 0, 0), 1500000);
 
             ApplyAura(ILLIDAN_SKULL_INTRO);
-            SetCanEnterCombat(false);
+            setCanEnterCombat(false);
             SetWieldWeapon(false);
             setRooted(true);
             setFlyMode(false);
@@ -5375,7 +5375,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
             SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
             SetTargetToChannel(NULL, 0);
-            SetCanEnterCombat(true);
+            setCanEnterCombat(true);
             SetWieldWeapon(true);
             SetAllowMelee(true);
             setFlyMode(false);
@@ -5445,7 +5445,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             if (pMaiev != NULL && pMaiev->isAlive())
             {
                 _unit->SetHealth(1);
-                SetCanEnterCombat(false);
+                setCanEnterCombat(false);
                 ApplyAura(ILLIDAN_DEATH1);
                 ApplyAura(ILLIDAN_DEATH2);
 
@@ -5587,9 +5587,9 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 if (pAkama != NULL && pAkama->GetScript() != NULL)
                 {
                     AkamaAI* pAkamaAI = static_cast< AkamaAI* >(pAkama->GetScript());
-                    if (pAkamaAI->mScenePart <= 2 && pAkamaAI->GetCanEnterCombat())
+                    if (pAkamaAI->mScenePart <= 2 && pAkamaAI->canEnterCombat())
                     {
-                        pAkamaAI->SetCanEnterCombat(false);
+                        pAkamaAI->setCanEnterCombat(false);
                         pAkamaAI->GetUnit()->GetAIInterface()->setAiState(AI_STATE_IDLE);
                         // ugly code, trows compile error if left just null, this should do it ~ azolex
                         uint32 nullfix = 0;
@@ -5605,7 +5605,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
 
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 11479, "I will not be touched by rabble such as you!");
                 moveTo(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ() + 10.0f, false);
-                SetCanEnterCombat(false);
+                setCanEnterCombat(false);
                 SetAllowMelee(false);
                 setFlyMode(true);
 
@@ -5729,7 +5729,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
 
                             _unit->GetAIInterface()->setNextTarget(GetBestPlayerTarget(TargetFilter_Closest));
                             _unit->SetEmoteState(EMOTE_ONESHOT_READY1H);
-                            SetCanEnterCombat(true);
+                            setCanEnterCombat(true);
                             SetAllowMelee(true);
                             setRooted(false);
                             ClearHateList();
@@ -6021,7 +6021,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
         void UnstuckFromShadowPrison()
         {
             RemoveAuraOnPlayers(ILLIDAN_SHADOW_PRISON);
-            SetCanEnterCombat(true);
+            setCanEnterCombat(true);
             SetAllowMelee(true);
             setRooted(false);
 
@@ -6103,7 +6103,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                     pMaievAI->GetUnit()->Emote(EMOTE_ONESHOT_ROAR);
                     break;
                 case 13:
-                    SetCanEnterCombat(true);
+                    setCanEnterCombat(true);
                     SetAllowMelee(true);
                     setRooted(false);
                     SetPhase(5);
@@ -6114,7 +6114,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                     pMaievAI->mYellTimer = pMaievAI->AddTimer((RandomUInt(20) + 20) * 1000);
                     pMaievAI->mTrapTimer = pMaievAI->AddTimer((RandomUInt(5) + 18) * 1000);
                     pMaievAI->GetUnit()->SetEmoteState(EMOTE_ONESHOT_READY1H);
-                    pMaievAI->SetCanEnterCombat(true);
+                    pMaievAI->setCanEnterCombat(true);
                     pMaievAI->GetUnit()->GetAIInterface()->setCurrentAgent(AGENT_NULL);
                     pMaievAI->GetUnit()->GetAIInterface()->setAiState(AI_STATE_IDLE);
                     pMaievAI->setRooted(false);
@@ -6163,7 +6163,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 CastSpellNowNoScheduling(mShadowPrison);
 #endif
 
-                SetCanEnterCombat(false);
+                setCanEnterCombat(false);
                 SetBehavior(Behavior_Default);
                 SetAllowMelee(false);
                 setRooted(true);
@@ -6683,7 +6683,7 @@ class DranaeiSpiritAI : public MoonScriptCreatureAI
         DranaeiSpiritAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             despawn(45000);
-            SetCanEnterCombat(false);
+            setCanEnterCombat(false);
             _unit->m_noRespawn = true;
         }
 
