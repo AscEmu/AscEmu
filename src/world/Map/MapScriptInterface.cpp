@@ -118,49 +118,52 @@ Creature* MapScriptInterface::SpawnCreature(uint32 Entry, float cX, float cY, fl
 {
     CreatureProperties const* creature_properties = sMySQLStore.getCreatureProperties(Entry);
     if (creature_properties == nullptr)
-    {
-        return 0;
-    }
+        return nullptr;
 
-    CreatureSpawn* sp = new CreatureSpawn;
-    sp->entry = Entry;
+    CreatureSpawn* spawn = new CreatureSpawn;
+    spawn->entry = Entry;
     uint32 DisplayID = 0;
     uint8 Gender = creature_properties->GetGenderAndCreateRandomDisplayID(&DisplayID);
-    sp->displayid = DisplayID;
-    sp->form = 0;
-    sp->id = 0;
-    sp->movetype = 0;
-    sp->x = cX;
-    sp->y = cY;
-    sp->z = cZ;
-    sp->o = cO;
-    sp->emote_state = 0;
-    sp->flags = 0;
-    sp->factionid = creature_properties->Faction;
-    sp->bytes0 = 0;
-    sp->bytes1 = 0;
-    sp->bytes2 = 0;
-    //sp->respawnNpcLink = 0;
-    sp->stand_state = 0;
-    sp->death_state = 0;
-    sp->channel_target_creature = sp->channel_target_go = sp->channel_spell = 0;
-    sp->MountedDisplayID = 0;
-    sp->Item1SlotDisplay = 0;
-    sp->Item2SlotDisplay = 0;
-    sp->Item3SlotDisplay = 0;
-    sp->CanFly = 0;
-    sp->phase = phase;
+    spawn->displayid = DisplayID;
+    spawn->form = 0;
+    spawn->id = 0;
+    spawn->movetype = 0;
+    spawn->x = cX;
+    spawn->y = cY;
+    spawn->z = cZ;
+    spawn->o = cO;
+    spawn->emote_state = 0;
+    spawn->flags = 0;
+    spawn->factionid = creature_properties->Faction;
+    spawn->bytes0 = 0;
+    spawn->bytes1 = 0;
+    spawn->bytes2 = 0;
+    spawn->stand_state = 0;
+    spawn->death_state = 0;
+    spawn->channel_target_creature = 0;
+    spawn->channel_target_go = 0;
+    spawn->channel_spell = 0;
+    spawn->MountedDisplayID = 0;
+    spawn->Item1SlotDisplay = creature_properties->itemslot_1;
+    spawn->Item2SlotDisplay = creature_properties->itemslot_2;
+    spawn->Item3SlotDisplay = creature_properties->itemslot_3;
+    spawn->CanFly = 0;
+    spawn->phase = phase;
 
-    Creature* p = this->mapMgr.CreateCreature(Entry);
-    ARCEMU_ASSERT(p != NULL);
-    p->Load(sp, (uint32)NULL, NULL);
-    p->setGender(Gender);
-    p->spawnid = 0;
-    p->m_spawn = 0;
-    delete sp;
+    Creature* creature = this->mapMgr.CreateCreature(Entry);
+    ARCEMU_ASSERT(creature != nullptr);
+
+    creature->Load(spawn, 0, nullptr);
+    creature->setGender(Gender);
+    creature->spawnid = 0;
+    creature->m_spawn = 0;
+
+    delete spawn;
+
     if (AddToWorld)
-        p->PushToWorld(&mapMgr);
-    return p;
+        creature->PushToWorld(&mapMgr);
+
+    return creature;
 }
 
 Creature* MapScriptInterface::SpawnCreature(CreatureSpawn* sp, bool AddToWorld)
