@@ -200,7 +200,7 @@ class SartharionAI : public MoonScriptBossAI
                 mDrakeTimer = AddTimer(30000);
                 ApplyAura(SARTHARION_AURA);
                 RemoveAuraOnPlayers(SARTHARION_AURA);   // unproper hackfix
-                Regenerate();// Lets heal him as aura increase his hp for 25%
+                _regenerateHealth();// Lets heal him as aura increase his hp for 25%
             };
 
             ParentClass::OnCombatStart(pTarget);
@@ -223,7 +223,7 @@ class SartharionAI : public MoonScriptBossAI
                 };
             };
 
-            if (GetHealthPercent() <= 10 && m_bEnraged == false)   // enrage phase
+            if (_getHealthPercent() <= 10 && m_bEnraged == false)   // enrage phase
             {
                 for (uint8 i = 0; i < 3; ++i)
                     CastSpellNowNoScheduling(mSummonLava);

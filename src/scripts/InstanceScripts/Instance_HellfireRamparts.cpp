@@ -169,7 +169,7 @@ class OmorTheUnscarredAI : public MoonScriptCreatureAI
         void AIUpdate()
         {
             SpellDesc* pShield = FindSpellById(OMOR_DEMONIC_SHIELD);
-            if (GetHealthPercent() <= 20 && pShield != NULL && !pShield->mEnabled)
+            if (_getHealthPercent() <= 20 && pShield != NULL && !pShield->mEnabled)
             {
                 pShield->mEnabled = true;
             }
@@ -188,7 +188,7 @@ class OmorTheUnscarredAI : public MoonScriptCreatureAI
                         }
                         else
                         {
-                            ClearHateList();
+                            _clearHateList();
                             _unit->GetAIInterface()->AttackReaction(pTarget, 500);
                             _unit->GetAIInterface()->setNextTarget(pTarget);
                         }

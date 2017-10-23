@@ -57,13 +57,13 @@ class VishasAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            if (GetHealthPercent() <= 75 && m_uiSay == 0)
+            if (_getHealthPercent() <= 75 && m_uiSay == 0)
             {
                 sendDBChatMessage(2111);     // Naughty secrets!
                 m_uiSay = 1;
             }
 
-            if (GetHealthPercent() <= 25 && m_uiSay == 1)
+            if (_getHealthPercent() <= 25 && m_uiSay == 1)
             {
                 sendDBChatMessage(2112);     // I'll rip the secrets from your flesh!
                 m_uiSay = 2;
@@ -110,7 +110,7 @@ class ThalnosAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            if (GetHealthPercent() <= 50 && m_bEmoted == false)
+            if (_getHealthPercent() <= 50 && m_bEmoted == false)
             {
                 sendDBChatMessage(2108);     // No rest... for the angry dead!
                 m_bEmoted = true;
@@ -164,7 +164,7 @@ class DoanAI : public MoonScriptCreatureAI
 
         void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
         {
-            if (GetHealthPercent() <= 50 && !m_bShielded)
+            if (_getHealthPercent() <= 50 && !m_bShielded)
                 Shield();
         }
 
@@ -225,7 +225,7 @@ class HerodAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            if (GetHealthPercent() <= 40 && m_bEnraged == false)
+            if (_getHealthPercent() <= 40 && m_bEnraged == false)
             {
                 sendDBChatMessage(2090);     // Light, give me strength!
                 ApplyAura(SP_HEROD_ENRAGESPELL);

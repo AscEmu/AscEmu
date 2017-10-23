@@ -49,7 +49,7 @@ class BaronAquanisAI : public MoonScriptCreatureAI
             // Frostbolt
             AddSpell(15043, Target_Current, 20, 3, 0);
             AggroNearestPlayer();
-            SetDespawnWhenInactive(true);
+            _setDespawnWhenInactive(true);
         }
 };
 

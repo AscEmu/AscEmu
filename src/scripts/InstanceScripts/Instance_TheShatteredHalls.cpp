@@ -2195,7 +2195,7 @@ class WarbringerOmroggAI : public MoonScriptCreatureAI
             Unit* pTarget = GetBestPlayerTarget(TargetFilter_NotCurrent);
             if (pTarget != NULL)
             {
-                ClearHateList();
+                _clearHateList();
                 _unit->GetAIInterface()->setNextTarget(pTarget);
                 _unit->GetAIInterface()->modThreatByPtr(pTarget, 1000);
 
@@ -2261,7 +2261,7 @@ class HeadAI : public MoonScriptCreatureAI
     MOONSCRIPT_FACTORY_FUNCTION(HeadAI, MoonScriptCreatureAI);
     HeadAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
-        SetScale(4.0f);
+        _setScale(4.0f);
         _unit->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         _unit->m_noRespawn = true;
     }

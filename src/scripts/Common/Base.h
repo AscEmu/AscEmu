@@ -305,11 +305,6 @@ class MoonScriptCreatureAI : public CreatureAIScript
         void MoveTo(MoonScriptCreatureAI* pCreature, RangeStatusPair pRangeStatus = std::make_pair(RangeStatus_TooFar, 0.0f));
         void MoveTo(Unit* pUnit, RangeStatusPair pRangeStatus = std::make_pair(RangeStatus_TooFar, 0.0f));
 
-        //Attack and Combat State
-        bool IsInCombat();
-        void DelayNextAttack(int32 pMilliseconds);
-        void SetDespawnWhenInactive(bool pValue);
-
         //Behavior
         void SetBehavior(BehaviorType pBehavior);
         BehaviorType GetBehavior();
@@ -318,19 +313,6 @@ class MoonScriptCreatureAI : public CreatureAIScript
         void AggroRandomUnit(int pInitialThreat = 1);
         void AggroNearestPlayer(int pInitialThreat = 1);
         void AggroRandomPlayer(int pInitialThreat = 1);
-
-        //Status
-        void ClearHateList();
-        void WipeHateList();
-        int32 GetHealthPercent();
-        int32 GetManaPercent();
-        void Regenerate();
-        void SetScale(float pScale);
-        float GetScale();
-        void SetDisplayId(uint32 pDisplayId);
-        void SetWieldWeapon(bool pValue);
-        void SetDisplayWeapon(bool pMainHand, bool pOffHand);
-        void SetDisplayWeaponIds(uint32 pItem1Id, uint32 pItem2Id);
 
         //Instances
         bool IsHeroic();
@@ -448,7 +430,6 @@ class MoonScriptCreatureAI : public CreatureAIScript
         uint32 mEventCount;
         uint32 mAIUpdateFrequency;
         uint32 mBaseAttackTime;
-        bool mDespawnWhenInactive;
         EventArray mEvents;
 };
 

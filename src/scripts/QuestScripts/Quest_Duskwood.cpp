@@ -53,7 +53,7 @@ public:
             AggroNearestUnit();
             RemoveTimer(mElizaCombatTimer);
         }
-        if (GetHealthPercent() >= 10 && GetHealthPercent() <= 98 && !IsCasting())
+        if (_getHealthPercent() >= 10 && _getHealthPercent() <= 98 && !IsCasting())
         {
             mElizaGuard = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 1871);
             if (mElizaGuard == NULL)

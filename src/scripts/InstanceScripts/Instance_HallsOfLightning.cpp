@@ -402,7 +402,7 @@ class Volkhan : public MoonScriptCreatureAI
             }
         }
 
-        if (GetHealthPercent() <= (100 - (20 * mPhase)))
+        if (_getHealthPercent() <= (100 - (20 * mPhase)))
         {
             ForceWaypointMove(1);
             Announce("Volkhan runs to his anvil!");
@@ -663,7 +663,7 @@ class LokenAI : public MoonScriptCreatureAI
         if (mSpeech == 4)
             return;
 
-        if (GetHealthPercent() <= (100 - (25 * mSpeech)))
+        if (_getHealthPercent() <= (100 - (25 * mSpeech)))
         {
             switch (mSpeech) //rand() % 2
             {

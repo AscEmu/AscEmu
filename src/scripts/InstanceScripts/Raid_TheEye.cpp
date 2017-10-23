@@ -1757,7 +1757,7 @@ class HighAstromancerSolarianAI : public MoonScriptBossAI
         {
             if (GetPhase() == 1)
             {
-                if (GetHealthPercent() <= 20 && !IsCasting())
+                if (_getHealthPercent() <= 20 && !IsCasting())
                 {
                     SetPhase(3, mVoidForm);
                     CancelAllTimers();
@@ -1855,7 +1855,7 @@ class SolariumAgentAI : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(SolariumAgentAI, MoonScriptCreatureAI);
         SolariumAgentAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            SetDespawnWhenInactive(true);    //despawn creature if it gets out of combat or dead
+            _setDespawnWhenInactive(true);    //despawn creature if it gets out of combat or dead
         }
 
         void OnLoad()
@@ -1871,7 +1871,7 @@ class SolariumPriestAI : public MoonScriptCreatureAI
         {
             AddSpell(SOLARIUMPRIEST_GREATER_HEAL, Target_WoundedFriendly, 20, 2, 0, 0, 40);
             AddSpell(SOLARIUMPRIEST_HOLY_SMITE, Target_Current, 80, 2.5f, 0, 0, 40);
-            SetDespawnWhenInactive(true);    //despawn creature if it gets out of combat or dead
+            _setDespawnWhenInactive(true);    //despawn creature if it gets out of combat or dead
         }
 
         void OnLoad()
@@ -2638,7 +2638,7 @@ class DarkenerAI : public MoonScriptCreatureAI
                 return true;
             }
 
-            WipeHateList();
+            _wipeHateList();
             return false;
         }
 

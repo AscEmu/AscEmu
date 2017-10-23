@@ -520,7 +520,7 @@ bool ScriptMgr::CallScriptedItem(Item* pItem, Player* pPlayer)
 }
 
 /* CreatureAI Stuff */
-CreatureAIScript::CreatureAIScript(Creature* creature) : _unit(creature), linkedCreatureAI(NULL)
+CreatureAIScript::CreatureAIScript(Creature* creature) : _unit(creature), linkedCreatureAI(nullptr), mDespawnWhenInactive(false)
 {
 
 }
@@ -648,6 +648,26 @@ void CreatureAIScript::setCanEnterCombat(bool enterCombat)
     _unit->GetAIInterface()->SetAllowedToEnterCombat(enterCombat);
 }
 
+bool CreatureAIScript::_isInCombat()
+{
+    return _unit->CombatStatus.IsInCombat();
+}
+
+void CreatureAIScript::_delayNextAttack(int32_t milliseconds)
+{
+    _unit->setAttackTimer(milliseconds, false);
+}
+
+void CreatureAIScript::_setDespawnWhenInactive(bool setDespawnWhenInactive)
+{
+    mDespawnWhenInactive = setDespawnWhenInactive;
+}
+
+bool CreatureAIScript::_isDespawnWhenInactiveSet()
+{
+    return mDespawnWhenInactive;
+}
+
 void CreatureAIScript::_setMeleeDisabled(bool disable)
 {
     _unit->GetAIInterface()->setMeleeDisabled(disable);
@@ -686,6 +706,70 @@ void CreatureAIScript::_setTargetingDisabled(bool disable)
 bool CreatureAIScript::_isTargetingDisabled()
 {
     return _unit->GetAIInterface()->isTargetingDisabled();
+}
+
+void CreatureAIScript::_clearHateList()
+{
+    _unit->GetAIInterface()->ClearHateList();
+}
+
+void CreatureAIScript::_wipeHateList()
+{
+    _unit->GetAIInterface()->WipeHateList();
+}
+
+int32_t CreatureAIScript::_getHealthPercent()
+{
+    return _unit->GetHealthPct();
+}
+
+int32_t CreatureAIScript::_getManaPercent()
+{
+    return _unit->GetManaPct();
+}
+
+void CreatureAIScript::_regenerateHealth()
+{
+    _unit->RegenerateHealth();
+    _unit->RegeneratePower(false);
+}
+
+void CreatureAIScript::_setScale(float scale)
+{
+    _unit->setFloatValue(OBJECT_FIELD_SCALE_X, scale);
+}
+
+float CreatureAIScript::_getScale()
+{
+    return _unit->getFloatValue(OBJECT_FIELD_SCALE_X);
+}
+
+void CreatureAIScript::_setDisplayId(uint32_t displayId)
+{
+    _unit->SetDisplayId(displayId);
+}
+
+void CreatureAIScript::_setWieldWeapon(bool setWieldWeapon)
+{
+    if (setWieldWeapon && _unit->getUInt32Value(UNIT_FIELD_BYTES_2) != 1)
+    {
+        _unit->setUInt32Value(UNIT_FIELD_BYTES_2, 1);
+    }
+    else if (!setWieldWeapon && _unit->getUInt32Value(UNIT_FIELD_BYTES_2) != 0)
+    {
+        _unit->setUInt32Value(UNIT_FIELD_BYTES_2, 0);
+    }
+}
+
+void CreatureAIScript::_setDisplayWeapon(bool setMainHand, bool setOffHand)
+{
+    _setDisplayWeaponIds(setMainHand ? _unit->GetEquippedItem(MELEE) : 0, setOffHand ? _unit->GetEquippedItem(OFFHAND) : 0);
+}
+
+void CreatureAIScript::_setDisplayWeaponIds(uint32_t itemId1, uint32_t itemId2)
+{
+    _unit->SetEquippedItem(MELEE, itemId1);
+    _unit->SetEquippedItem(OFFHAND, itemId2);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

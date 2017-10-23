@@ -354,12 +354,12 @@ class HarbringerSkyrissAI : public MoonScriptBossAI
 
         void AIUpdate()
         {
-            if (GetHealthPercent() <= 66 && IllusionCount == 0)
+            if (_getHealthPercent() <= 66 && IllusionCount == 0)
             {
                 IllusionCount = 1;
                 CastSpell(Illusion66);
             }
-            else if (GetHealthPercent() <= 33 && IllusionCount == 1)
+            else if (_getHealthPercent() <= 33 && IllusionCount == 1)
             {
                 IllusionCount = 2;
                 CastSpell(Illusion33);

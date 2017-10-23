@@ -365,8 +365,13 @@ class SERVER_DECL CreatureAIScript
         void moveToSpawn();
         void stopMovement();
 
+        // combat setup
         bool canEnterCombat();
         void setCanEnterCombat(bool enterCombat);
+        bool _isInCombat();
+        void _delayNextAttack(int32_t milliseconds);
+        void _setDespawnWhenInactive(bool setDespawnWhenInactive);
+        bool _isDespawnWhenInactiveSet();
 
         void _setMeleeDisabled(bool disable);
         bool _isMeleeDisabled();
@@ -376,6 +381,20 @@ class SERVER_DECL CreatureAIScript
         bool _isCastDisabled();
         void _setTargetingDisabled(bool disable);
         bool _isTargetingDisabled();
+
+        void _clearHateList();
+        void _wipeHateList();
+        int32_t _getHealthPercent();
+        int32_t _getManaPercent();
+        void _regenerateHealth();
+
+        // appearance
+        void _setScale(float scale);
+        float _getScale();
+        void _setDisplayId(uint32_t displayId);
+        void _setWieldWeapon(bool setWieldWeapon);
+        void _setDisplayWeapon(bool setMainHand, bool setOffHand);
+        void _setDisplayWeaponIds(uint32_t itemId1, uint32_t itemId2);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // gameobject
@@ -403,6 +422,8 @@ class SERVER_DECL CreatureAIScript
     protected:
 
         Creature* _unit;
+
+        bool mDespawnWhenInactive;
 
     private:
 

@@ -99,7 +99,7 @@ class DeepfuryAI : public MoonScriptBossAI
 
     void AIUpdate()
     {
-        if (GetHealthPercent() <= 15 && GetBehavior() != Behavior_Flee)
+        if (_getHealthPercent() <= 15 && GetBehavior() != Behavior_Flee)
         {
             SetBehavior(Behavior_Flee);
             _setMeleeDisabled(false);
@@ -179,7 +179,7 @@ class TargorrTheDreadAI : public MoonScriptCreatureAI
 
     void AIUpdate()
     {
-        if (GetHealthPercent() < 50 && !Enrage)
+        if (_getHealthPercent() < 50 && !Enrage)
         {
             Enrage = true;
             CastSpellNowNoScheduling(Enraged);

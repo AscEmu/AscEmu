@@ -62,7 +62,7 @@ class NalorakkAI : public MoonScriptBossAI
         void OnCombatStop(Unit* pTarget)
         {
             // On leaving combat he changes back to a troll
-            SetDisplayId(21631);
+            _setDisplayId(21631);
 
             ParentClass::OnCombatStop(pTarget);
         }
@@ -70,7 +70,7 @@ class NalorakkAI : public MoonScriptBossAI
         void OnDied(Unit* pKiller)
         {
             // On death he changes back to a troll
-            SetDisplayId(21631);
+            _setDisplayId(21631);
 
             ParentClass::OnDied(pKiller);
         }
@@ -84,7 +84,7 @@ class NalorakkAI : public MoonScriptBossAI
             {
                 SetPhase(2, Morph);
                 // Morph into a bear since the spell doesnt work
-                SetDisplayId(21635);
+                _setDisplayId(21635);
                 // 20 Seconds until switch to Troll Form
                 ResetTimer(MorphTimer, 20000);
             }
@@ -95,7 +95,7 @@ class NalorakkAI : public MoonScriptBossAI
                 // Remove Bear Form
                 RemoveAura(42377);
                 // Transform back into a Troll
-                SetDisplayId(21631);
+                _setDisplayId(21631);
                 SetPhase(1);
                 // 45 Seconds until switch to Bear Form
                 ResetTimer(MorphTimer, 45000);
@@ -150,7 +150,7 @@ class AkilzonAI : public MoonScriptBossAI
                     if (Eagle)
                     {
                         Eagle->AggroNearestUnit();
-                        Eagle->SetDespawnWhenInactive(true);
+                        Eagle->_setDespawnWhenInactive(true);
                     }
                 }
                 Eagle = NULL;
@@ -226,15 +226,15 @@ class HalazziAI : public MoonScriptBossAI
         void AIUpdate()
         {
             // Every 25% Halazzi calls on the lynx
-            if (!mLynx && GetHealthPercent() <= (100 - SplitCount * 25))
+            if (!mLynx && _getHealthPercent() <= (100 - SplitCount * 25))
                 Split();
 
             // Lynx OR Halazzi is at 20% HP Merge them together again
-            if (mLynx && (mLynx->GetHealthPct() <= 20 || GetHealthPercent() <= 20))
+            if (mLynx && (mLynx->GetHealthPct() <= 20 || _getHealthPercent() <= 20))
                 Merge();
 
             // At <25% Phase 3 begins
-            if (GetHealthPercent() < 25 && GetPhase() == 1)
+            if (_getHealthPercent() < 25 && GetPhase() == 1)
             {
                 ResetTimer(mTotemTimer, 30000);
                 SetPhase(3);
@@ -268,7 +268,7 @@ class HalazziAI : public MoonScriptBossAI
         void Split()
         {
             CurrentHealth = GetUnit()->getUInt32Value(UNIT_FIELD_HEALTH);
-            SetDisplayId(24144);
+            _setDisplayId(24144);
             _unit->SetHealth(240000);
             _unit->setUInt32Value(UNIT_FIELD_MAXHEALTH, 240000);
 
@@ -295,7 +295,7 @@ class HalazziAI : public MoonScriptBossAI
                 _unit->SetHealth(CurrentHealth);
             if (MaxHealth)
                 _unit->setUInt32Value(UNIT_FIELD_MAXHEALTH, MaxHealth);
-            SetDisplayId(21632);
+            _setDisplayId(21632);
 
             SplitCount++;
             SetPhase(1);

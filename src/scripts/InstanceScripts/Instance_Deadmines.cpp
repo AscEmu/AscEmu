@@ -179,7 +179,7 @@ class MrSmiteAI : public MoonScriptBossAI
             AddSpell(SMITE_SLAM, Target_Current, 25, 0.0f, 15, 0.0f, 8.0f, true);
             mStomp = AddSpell(SMITE_STOMP, Target_Self, 0, 0, 0);
             mWaitAtChest = INVALIDATE_TIMER;
-            SetWieldWeapon(true);
+            _setWieldWeapon(true);
         }
 
         void OnCombatStop(Unit* pTarget)
@@ -188,7 +188,7 @@ class MrSmiteAI : public MoonScriptBossAI
                 RemoveAura(SMITES_HAMMER);
 
             if (!isAlive())
-                SetWieldWeapon(false);
+                _setWieldWeapon(false);
 
             SetPhase(1);
             SwitchWeapons();
@@ -198,12 +198,12 @@ class MrSmiteAI : public MoonScriptBossAI
 
         void AIUpdate()
         {
-            if (GetHealthPercent() <= 66 && GetPhase() == 1)
+            if (_getHealthPercent() <= 66 && GetPhase() == 1)
             {
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 5778, "You landlubbers are tougher than I thought. I'll have to improvise!");
                 SetPhase(2, mStomp);
             }
-            else if (GetHealthPercent() <= 33 && GetPhase() == 3)
+            else if (_getHealthPercent() <= 33 && GetPhase() == 3)
             {
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 5779, "D'ah! Now you're making me angry!");
                 SetPhase(4, mStomp);
@@ -265,16 +265,16 @@ class MrSmiteAI : public MoonScriptBossAI
             switch (GetPhase())
             {
                 case 1: // Phase 1 (Default)
-                    SetDisplayWeaponIds(5192, 0);
+                    _setDisplayWeaponIds(5192, 0);
                     _unit->SetBaseAttackTime(MELEE, _unit->GetBaseAttackTime(MELEE));    // 1483 is taken from NCDB creature_proto
                     break;
                 case 2: // Phase 2
-                    SetDisplayWeaponIds(5196, 5196);
+                    _setDisplayWeaponIds(5196, 5196);
                     _unit->SetBaseAttackTime(MELEE, _unit->GetBaseAttackTime(MELEE) / 2);
                     break;
                 case 4: // Phase 4
                     // Is base attack time change needed if we use aura ?
-                    SetDisplayWeaponIds(7230, 0);
+                    _setDisplayWeaponIds(7230, 0);
                     _unit->SetBaseAttackTime(MELEE, _unit->GetBaseAttackTime(MELEE) * 2);
                     ApplyAura(SMITES_HAMMER);
                     break;
@@ -326,12 +326,12 @@ class VanCleefAI : public MoonScriptBossAI
 
     void AIUpdate()
     {
-        if (GetHealthPercent() <= 75 && GetPhase() == 1)
+        if (_getHealthPercent() <= 75 && GetPhase() == 1)
         {
             sendDBChatMessage(7723);     // Lapdogs, all of you!
             SetPhase(2);
         }
-        else if (GetHealthPercent() <= 50 && GetPhase() == 2)
+        else if (_getHealthPercent() <= 50 && GetPhase() == 2)
         {
             sendDBChatMessage(7725);     // Fools! Our cause is righteous!
 
@@ -340,7 +340,7 @@ class VanCleefAI : public MoonScriptBossAI
                 MoonScriptCreatureAI* Guard = SpawnCreature(636);
                 if (Guard != NULL)
                 {
-                    Guard->SetDespawnWhenInactive(true);
+                    Guard->_setDespawnWhenInactive(true);
                     Guard->GetUnit()->m_noRespawn = true;
                 }
             }
@@ -348,7 +348,7 @@ class VanCleefAI : public MoonScriptBossAI
             SetPhase(3);
 
         }
-        else if (GetHealthPercent() <= 25 && GetPhase() == 3)
+        else if (_getHealthPercent() <= 25 && GetPhase() == 3)
         {
             sendDBChatMessage(7727);     // The Brotherhood shall prevail!
             SetPhase(4);

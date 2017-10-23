@@ -269,7 +269,7 @@ class DragonflayerMetalworkerAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            if (GetHealthPercent() <= 20 && Enrage)
+            if (_getHealthPercent() <= 20 && Enrage)
             {
                 CastSpell(mDfEnrage);
                 Enrage = false;
@@ -334,7 +334,7 @@ class DragonflayerSpiritualistAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            if (GetHealthPercent() <= 42 && Heal)
+            if (_getHealthPercent() <= 42 && Heal)
             {
                 CastSpell(mHealDf);
                 Heal = false;

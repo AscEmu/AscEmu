@@ -242,7 +242,7 @@ class Marwyn : public MoonScriptBossAI
             {
                 _unit->SetMaxHealth(903227); // SET HP CAUSE ARCEMU DONT SUPPORT HEROIC MODES!
                 _unit->SetHealth(903227); //SET HP CAUSE ARCEMU DONT SUPPORT HEROIC MODES!
-                SetDisplayWeaponIds(51010, 51010); // Just incase DB doesn't have them correctly.
+                _setDisplayWeaponIds(51010, 51010); // Just incase DB doesn't have them correctly.
             }
         }
 
@@ -352,19 +352,19 @@ class Falric : public MoonScriptBossAI
 
         void AIUpdate(Player* Plr)
         {
-            if (GetPhase() == 1 && GetHealthPercent() <= 66)
+            if (GetPhase() == 1 && _getHealthPercent() <= 66)
             {
                 _unit->CastSpell(Plr, 72395, true);
                 SetPhase(2);
             }
 
-            if (GetPhase() == 2 && GetHealthPercent() <= 33)
+            if (GetPhase() == 2 && _getHealthPercent() <= 33)
             {
                 _unit->CastSpell(Plr, 72396, true);
                 SetPhase(3);
             }
 
-            if (GetPhase() == 3 && GetHealthPercent() <= 11)
+            if (GetPhase() == 3 && _getHealthPercent() <= 11)
             {
                 _unit->CastSpell(Plr, 72397, true);
                 SetPhase(4);

@@ -175,7 +175,7 @@ class ForgemasterGarfrostAI : MoonScriptBossAI
     {
         CastSpells();
 
-        if (GetPhase() == 1 && GetHealthPercent() <= 66)
+        if (GetPhase() == 1 && _getHealthPercent() <= 66)
         {
             sendDBChatMessage(8765);
             _unit->CastSpell(_unit, SPELL_STOMP, false);
@@ -195,7 +195,7 @@ class ForgemasterGarfrostAI : MoonScriptBossAI
             SetPhase(2);
         }
 
-        if (GetPhase() == 2 && GetHealthPercent() <= 33)
+        if (GetPhase() == 2 && _getHealthPercent() <= 33)
         {
             sendDBChatMessage(8766);
             _unit->CastSpell(_unit, SPELL_STOMP, false);
@@ -432,7 +432,7 @@ class IckAI : MoonScriptBossAI
             Unit* pTarget = GetBestPlayerTarget(TargetFilter_NotCurrent);
             if (pTarget != NULL)
             {
-                ClearHateList();
+                _clearHateList();
                 _unit->GetAIInterface()->setNextTarget(pTarget);
                 _unit->GetAIInterface()->modThreatByPtr(pTarget, 1000);
                 CastSpellOnTarget(pTarget, TargetGen_Current, mPursue->mInfo, true);
@@ -572,7 +572,7 @@ class KrickAI : MoonScriptBossAI
             GetUnit()->SetPosition(833.19f, 115.79f, 510.0f, 3.42673f, false);
             _unit->CastSpell(_unit, SPELL_STRANGULATE, true);
             _unit->setMoveRoot(true);
-            ClearHateList();
+            _clearHateList();
 
             setCanEnterCombat(false);
 

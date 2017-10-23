@@ -56,7 +56,7 @@ class DruidFangAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            if (GetHealthPercent() <= 50 && SerpentForm->mEnabled == true)
+            if (_getHealthPercent() <= 50 && SerpentForm->mEnabled == true)
             {
                 CastSpellNowNoScheduling(SerpentForm);
                 SerpentForm->mEnabled = false;
@@ -69,7 +69,7 @@ class DruidFangAI : public MoonScriptCreatureAI
                 DruidsSlumber->mEnabled = true;
             }
 
-            if (GetHealthPercent() <= 5 && HealingTouch->mEnabled == true)
+            if (_getHealthPercent() <= 5 && HealingTouch->mEnabled == true)
             {
                 // Remove Serpent Form
                 RemoveAura(8041);
@@ -127,14 +127,14 @@ class LordCobrahnAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            if (GetHealthPercent() <= 20 && SerpentForm->mEnabled == true)
+            if (_getHealthPercent() <= 20 && SerpentForm->mEnabled == true)
             {
                 CastSpellNowNoScheduling(SerpentForm);
                 SerpentForm->mEnabled = false;
                 // Disable Lightning Bolt
                 LightningBolt->mEnabled = false;
             }
-            else if (GetHealthPercent() <= 20 && SerpentForm->mEnabled == false && !GetUnit()->HasAura(7965))
+            else if (_getHealthPercent() <= 20 && SerpentForm->mEnabled == false && !GetUnit()->HasAura(7965))
             {
                 // Enable Lightning Bolt
                 LightningBolt->mEnabled = true;
@@ -206,7 +206,7 @@ class SkumAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            if (GetHealthPercent() <= 10 && GetBehavior() != Behavior_Flee)
+            if (_getHealthPercent() <= 10 && GetBehavior() != Behavior_Flee)
             {
                 sendChatMessage(CHAT_MSG_MONSTER_EMOTE, 0, "Skum tries to run away in fear");
                 SetBehavior(Behavior_Flee);
@@ -402,8 +402,8 @@ class DofNaralexAI : public MoonScriptBossAI
                 MoonScriptCreatureAI* Naralex = GetNearestCreature(3679);
                 if (Naralex && Naralex->isAlive())
                 {
-                    SetDisplayId(17089);
-                    Naralex->SetDisplayId(17089);
+                    _setDisplayId(17089);
+                    Naralex->_setDisplayId(17089);
                     Naralex->sendChatMessage(CHAT_MSG_MONSTER_SAY, 5789, "I am awake... at last");
                     Naralex->GetUnit()->SetStandState(STANDSTATE_STAND);
                     setFlyMode(true);

@@ -312,7 +312,7 @@ void MaexxnaAI::AIUpdate()
             if (Spiderling != NULL)
             {
                 Spiderling->GetUnit()->m_noRespawn = true;
-                Spiderling->SetDespawnWhenInactive(true);
+                Spiderling->_setDespawnWhenInactive(true);
                 Spiderling->AggroRandomPlayer(1000);
             };
         };
@@ -322,7 +322,7 @@ void MaexxnaAI::AIUpdate()
 
     if (!IsCasting())
     {
-        if (!mHasEnraged && GetHealthPercent() <= 30)
+        if (!mHasEnraged && _getHealthPercent() <= 30)
         {
             if (IsHeroic())
                 ApplyAura(MAEXXNA_FRENZY_HEROIC);
@@ -760,7 +760,7 @@ void CryptGuardAI::OnCombatStart(Unit* pTarget)
 
 void CryptGuardAI::AIUpdate()
 {
-    if (!mEnraged && GetHealthPercent() <= 50 && !IsCasting())
+    if (!mEnraged && _getHealthPercent() <= 50 && !IsCasting())
     {
         ApplyAura(CRYPT_GUARD_FRENZY);
         mEnraged = true;
@@ -1106,7 +1106,7 @@ void InfectiousGhoulAI::OnCombatStart(Unit* pTarget)
 
 void InfectiousGhoulAI::AIUpdate()
 {
-    if (!mEnraged && !IsCasting() && GetHealthPercent() <= 50)
+    if (!mEnraged && !IsCasting() && _getHealthPercent() <= 50)
     {
         if (IsHeroic())
             ApplyAura(INFECTIOUS_GHOUL_FRENZY_HEROIC);
@@ -1148,7 +1148,7 @@ void StoneskinGargoyleAI::AIUpdate()
     else if (_unit->GetEmoteState() == EMOTE_STATE_SUBMERGED)
         _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
 
-    if (!IsCasting() && GetHealthPercent() <= 30)
+    if (!IsCasting() && _getHealthPercent() <= 30)
     {
         CastSpellNowNoScheduling(mStoneskin);
         _unit->SetEmoteState(EMOTE_STATE_SUBMERGED_NEW);
@@ -1585,7 +1585,7 @@ void SpellFunc_NothBlink(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Un
         float NewX = Noth->GetUnit()->GetPositionX() + 20.0f * cosf(Angle);
         float NewY = Noth->GetUnit()->GetPositionY() + 20.0f * sinf(Angle);
         Noth->GetUnit()->SetPosition(NewX, NewY, Noth->GetUnit()->GetPositionZ(), Angle);
-        Noth->ClearHateList();
+        Noth->_clearHateList();
         if (pTarget != NULL)
             Noth->GetUnit()->GetAIInterface()->AttackReaction(pTarget, 500);
 
@@ -2159,7 +2159,7 @@ void ShadeOfNaxxramasAI::OnDied(Unit* pKiller)
     if (Ghost != NULL)
     {
         Ghost->GetUnit()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
-        Ghost->SetDespawnWhenInactive(true);
+        Ghost->_setDespawnWhenInactive(true);
         Ghost->AggroNearestPlayer(200);
     };
 
@@ -2234,7 +2234,7 @@ void PortalOfShadowsAI::AIUpdate()
             if (Ghost != NULL)
             {
                 Ghost->GetUnit()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
-                Ghost->SetDespawnWhenInactive(true);
+                Ghost->_setDespawnWhenInactive(true);
                 Ghost->AggroNearestPlayer(200);
             };
 
@@ -2392,7 +2392,7 @@ void DeathchargerSteedAI::OnCombatStop(Unit* pTarget)
     ParentClass::OnCombatStop(pTarget);
     if (mDeathKnightAI != NULL)
     {
-        if (mDeathKnightAI->IsInCombat())
+        if (mDeathKnightAI->_isInCombat())
             AggroNearestUnit(200);
         else
         {
@@ -2450,7 +2450,7 @@ void DarkTouchedWarriorAI::AIUpdate()
 {
     if (!IsCasting() && IsTimerFinished(mResetHateTimer))
     {
-        ClearHateList();
+        _clearHateList();
         mResetHateTimer = AddTimer(8000 + RandomUInt(7) * 1000);
     };
 
@@ -2735,7 +2735,7 @@ PatchwerkAI::PatchwerkAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
 
 void PatchwerkAI::AIUpdate()
 {
-    if (mEnraged == false && GetHealthPercent() <= 5)
+    if (mEnraged == false && _getHealthPercent() <= 5)
     {
         ApplyAura(PATCHWERK_FRENZY);
         GetUnit()->SendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, "Patchwerk goes into a frenzy!");

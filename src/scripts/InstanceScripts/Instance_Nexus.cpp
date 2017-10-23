@@ -61,7 +61,7 @@ class AnomalusAI : public MoonScriptBossAI
 
         void AIUpdate()
         {
-            if ((GetHealthPercent() <= 50 && mSummon == 0))
+            if ((_getHealthPercent() <= 50 && mSummon == 0))
                 mSummon += 1;
 
             if (mSummon == 1)
@@ -236,7 +236,7 @@ class TelestraBossAI : public MoonScriptBossAI
 
         void AIUpdate()
         {
-            if (GetPhase() == 1 && GetHealthPercent() <= (mPhaseRepeat * 25))
+            if (GetPhase() == 1 && _getHealthPercent() <= (mPhaseRepeat * 25))
             {
                 switch (RandomUInt(1))
                 {
@@ -453,7 +453,7 @@ class OrmorokAI : public MoonScriptBossAI
 
     void AIUpdate()
     {
-        if (GetHealthPercent() <= 25 && mEnraged == false)
+        if (_getHealthPercent() <= 25 && mEnraged == false)
         {
             ApplyAura(FRENZY);
             Announce("Ormorok the Tree-Shaper goes into a frenzy!");
@@ -574,7 +574,7 @@ class KeristraszaAI : public MoonScriptBossAI
 
     void AIUpdate()
     {
-        if (mEnraged == false && GetHealthPercent() <= 25)
+        if (mEnraged == false && _getHealthPercent() <= 25)
         {
             ApplyAura(ENRAGE);
             mEnraged = true;

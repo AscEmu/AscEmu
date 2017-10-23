@@ -92,7 +92,6 @@ MoonScriptCreatureAI::MoonScriptCreatureAI(Creature* pCreature) : CreatureAIScri
     mTimerIdCounter = 0;
     mAIUpdateFrequency = DEFAULT_UPDATE_FREQUENCY;
     mBaseAttackTime = _unit->GetBaseAttackTime(MELEE);
-    mDespawnWhenInactive = false;
     mTimerCount = 0;
     mEventCount = 0;
 }
@@ -119,21 +118,6 @@ void MoonScriptCreatureAI::MoveTo(Unit* pUnit, RangeStatusPair pRangeStatus)
     else if (pRangeStatus.first == RangeStatus_TooFar)
         moveTo(pUnit->GetPositionX(), pUnit->GetPositionY(), pUnit->GetPositionZ());
 };
-
-bool MoonScriptCreatureAI::IsInCombat()
-{
-    return _unit->CombatStatus.IsInCombat();
-}
-
-void MoonScriptCreatureAI::DelayNextAttack(int32 pMilliseconds)
-{
-    _unit->setAttackTimer(pMilliseconds, false);
-}
-
-void MoonScriptCreatureAI::SetDespawnWhenInactive(bool pValue)
-{
-    mDespawnWhenInactive = pValue;
-}
 
 void MoonScriptCreatureAI::SetBehavior(BehaviorType pBehavior)
 {
@@ -199,7 +183,7 @@ void MoonScriptCreatureAI::AggroRandomUnit(int pInitialThreat)
     if (RandomTarget)
     {
         _unit->GetAIInterface()->AttackReaction(RandomTarget, pInitialThreat);
-        if (!IsInCombat())
+        if (!_isInCombat())
             OnCombatStart(RandomTarget);    //Patch, for some reason, OnCombatStart isn't called in this case
     }
 }
@@ -210,7 +194,7 @@ void MoonScriptCreatureAI::AggroNearestPlayer(int pInitialThreat)
     if (NearestRandomPlayer)
     {
         _unit->GetAIInterface()->AttackReaction(NearestRandomPlayer, pInitialThreat);
-        if (!IsInCombat())
+        if (!_isInCombat())
             OnCombatStart(NearestRandomPlayer);    //Patch, for some reason, OnCombatStart isn't called in this case
     }
 }
@@ -221,77 +205,9 @@ void MoonScriptCreatureAI::AggroRandomPlayer(int pInitialThreat)
     if (RandomPlayer)
     {
         _unit->GetAIInterface()->AttackReaction(RandomPlayer, pInitialThreat);
-        if (!IsInCombat())
+        if (!_isInCombat())
             OnCombatStart(RandomPlayer);    //Patch, for some reason, OnCombatStart isn't called in this case
     }
-}
-
-void MoonScriptCreatureAI::ClearHateList()
-{
-    _unit->GetAIInterface()->ClearHateList();    //without leaving combat
-}
-
-void MoonScriptCreatureAI::WipeHateList()
-{
-    _unit->GetAIInterface()->WipeHateList();
-}
-
-int32 MoonScriptCreatureAI::GetHealthPercent()
-{
-    return _unit->GetHealthPct();
-}
-
-int32 MoonScriptCreatureAI::GetManaPercent()
-{
-    return _unit->GetManaPct();
-}
-
-void MoonScriptCreatureAI::Regenerate()
-{
-    _unit->RegenerateHealth();
-    _unit->RegeneratePower(false);
-}
-
-void MoonScriptCreatureAI::SetScale(float pScale)
-{
-    _unit->setFloatValue(OBJECT_FIELD_SCALE_X, pScale);
-}
-
-float MoonScriptCreatureAI::GetScale()
-{
-    return _unit->getFloatValue(OBJECT_FIELD_SCALE_X);
-}
-
-void MoonScriptCreatureAI::SetDisplayId(uint32 pDisplayId)
-{
-    _unit->SetDisplayId(pDisplayId);
-}
-
-void MoonScriptCreatureAI::SetWieldWeapon(bool pValue)
-{
-    if (pValue && _unit->getUInt32Value(UNIT_FIELD_BYTES_2) != 1)
-    {
-        _unit->setUInt32Value(UNIT_FIELD_BYTES_2, 1);
-    }
-    else if (!pValue && _unit->getUInt32Value(UNIT_FIELD_BYTES_2) != 0)
-    {
-        _unit->setUInt32Value(UNIT_FIELD_BYTES_2, 0);
-    }
-}
-
-void MoonScriptCreatureAI::SetDisplayWeapon(bool pMainHand, bool pOffHand)
-{
-    SetDisplayWeaponIds(pMainHand ? _unit->GetEquippedItem(MELEE) : 0, pOffHand ? _unit->GetEquippedItem(OFFHAND) : 0);
-}
-
-//change SetDisplayweaponIds to take 2 parameters ? pitem1id,pitem2id
-void MoonScriptCreatureAI::SetDisplayWeaponIds(uint32 pItem1Id, uint32 pItem2Id)
-{
-    //Main Hand
-    _unit->SetEquippedItem(MELEE, pItem1Id);
-
-    //Off Hand
-    _unit->SetEquippedItem(OFFHAND, pItem2Id);
 }
 
 bool MoonScriptCreatureAI::IsHeroic()
@@ -404,7 +320,7 @@ void MoonScriptCreatureAI::CastSpellNowNoScheduling(SpellDesc* pSpell)
 {
     if (CastSpellInternal(pSpell))
     {
-        DelayNextAttack(CalcSpellAttackTime(pSpell));
+        _delayNextAttack(CalcSpellAttackTime(pSpell));
     }
 }
 
@@ -818,13 +734,13 @@ void MoonScriptCreatureAI::OnCombatStop(Unit* pTarget)
     SetBehavior(Behavior_Default);
     //_unit->GetAIInterface()->SetAIState(STATE_IDLE);                // Fix for stuck mobs that don't regen
     RemoveAIUpdateEvent();
-    if (mDespawnWhenInactive)
+    if (_isDespawnWhenInactiveSet())
         despawn(DEFAULT_DESPAWN_TIMER);
 }
 
 void MoonScriptCreatureAI::OnTargetDied(Unit* pTarget)
 {
-    if (GetHealthPercent() > 0)    //Prevent double yelling (OnDied and OnTargetDied)
+    if (_getHealthPercent() > 0)    //Prevent double yelling (OnDied and OnTargetDied)
     {
         RandomEmote(mOnTargetDiedEmotes);
     }
@@ -838,7 +754,7 @@ void MoonScriptCreatureAI::OnDied(Unit* pKiller)
     RemoveAllEvents();
     RemoveAllAuras();
     RemoveAIUpdateEvent();
-    if (mDespawnWhenInactive)
+    if (_isDespawnWhenInactiveSet())
         despawn(DEFAULT_DESPAWN_TIMER);
 }
 
@@ -868,7 +784,7 @@ void MoonScriptCreatureAI::AIUpdate()
         }
     }
 
-    if (!IsInCombat())
+    if (!_isInCombat())
         return;
 
     //Check if we have a spell scheduled to be cast
@@ -899,7 +815,7 @@ void MoonScriptCreatureAI::AIUpdate()
             //Stop melee attack for a short while for scheduled spell cast
             if (Spell->mCastTime >= 0)
             {
-                DelayNextAttack(mAIUpdateFrequency);
+                _delayNextAttack(mAIUpdateFrequency);
                 if (Spell->mCastTime > 0)
                 {
                     setRooted(false);
@@ -928,7 +844,7 @@ void MoonScriptCreatureAI::AIUpdate()
                 //Stop melee attack for a short while for scheduled spell cast
                 if (Spell->mCastTime >= 0)
                 {
-                    DelayNextAttack(mAIUpdateFrequency + CalcSpellAttackTime(Spell));
+                    _delayNextAttack(mAIUpdateFrequency + CalcSpellAttackTime(Spell));
                     if (Spell->mCastTime > 0)
                     {
                         setRooted(true);
@@ -995,7 +911,7 @@ bool MoonScriptCreatureAI::CastSpellInternal(SpellDesc* pSpell, uint32 pCurrentT
         if (pSpell->mTargetType.mTargetFilter & TargetFilter_InRangeOnly || (Status = GetSpellRangeStatusToUnit(Target, pSpell)).first == RangeStatus_Ok)
         {
             //Safe-delay if we got special state flag before
-            DelayNextAttack(CalcSpellAttackTime(pSpell));
+            _delayNextAttack(CalcSpellAttackTime(pSpell));
 
             //If we were running to a target, stop because we're in range now
             PopRunToTargetCache();
@@ -1025,7 +941,7 @@ bool MoonScriptCreatureAI::CastSpellInternal(SpellDesc* pSpell, uint32 pCurrentT
 
     //If we get here, its because the RunToTarget changed type, so its no longer valid, clear it
     PopRunToTargetCache();
-    DelayNextAttack(0);        //Cancel attack delay
+    _delayNextAttack(0);        //Cancel attack delay
     return true;            //No targets possible? Consider spell casted nonetheless
 }
 
@@ -1433,12 +1349,12 @@ const uint32 SPELLFUNC_VANISH = 24699;
 
 void SpellFunc_ClearHateList(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
 {
-    pCreatureAI->ClearHateList();
+    pCreatureAI->_clearHateList();
 }
 
 void SpellFunc_Disappear(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
 {
-    pCreatureAI->ClearHateList();
+    pCreatureAI->_clearHateList();
     pCreatureAI->setRooted(true);
     pCreatureAI->setCanEnterCombat(false);
     pCreatureAI->ApplyAura(SPELLFUNC_VANISH);
@@ -1457,7 +1373,7 @@ void EventFunc_ApplyAura(MoonScriptCreatureAI* pCreatureAI, int32 pMiscVal)
         return;
 
     pCreatureAI->ApplyAura(uint32(pMiscVal));
-    if (!pCreatureAI->IsInCombat() && !pCreatureAI->HasEvents() && pCreatureAI->GetTimerCount() == 0)
+    if (!pCreatureAI->_isInCombat() && !pCreatureAI->HasEvents() && pCreatureAI->GetTimerCount() == 0)
         pCreatureAI->RemoveAIUpdateEvent();
 }
 
@@ -1481,7 +1397,7 @@ void EventFunc_ChangeGoState(MoonScriptCreatureAI* pCreatureAI, int32 pMiscVal)
         }
     }
 
-    if (!pCreatureAI->IsInCombat() && !pCreatureAI->HasEvents() && pCreatureAI->GetTimerCount() == 0)
+    if (!pCreatureAI->_isInCombat() && !pCreatureAI->HasEvents() && pCreatureAI->GetTimerCount() == 0)
         pCreatureAI->RemoveAIUpdateEvent();
 }
 
@@ -1492,6 +1408,6 @@ void EventFunc_RemoveUnitFieldFlags(MoonScriptCreatureAI* pCreatureAI, int32 pMi
 
     pCreatureAI->GetUnit()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
 
-    if (!pCreatureAI->IsInCombat() && !pCreatureAI->HasEvents() && pCreatureAI->GetTimerCount() == 0)
+    if (!pCreatureAI->_isInCombat() && !pCreatureAI->HasEvents() && pCreatureAI->GetTimerCount() == 0)
         pCreatureAI->RemoveAIUpdateEvent();
 }

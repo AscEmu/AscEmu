@@ -125,7 +125,7 @@ class SelinFireheartAI : public MoonScriptCreatureAI
     void AIUpdate()
     {
         // 10% of his mana according to wowhead is 3231 which is whats needed to cast FelExplosion
-        if (GetManaPercent() < 10 || FelExplosion->mEnabled == false)
+        if (_getManaPercent() < 10 || FelExplosion->mEnabled == false)
             Mana();
         else if (!IsCasting())// Mana is greater than 10%
             CastFelExplosion();
@@ -173,7 +173,7 @@ class SelinFireheartAI : public MoonScriptCreatureAI
         _unit->setUInt32Value(UNIT_FIELD_POWER1, mana);
 
         // Re-Enable FelExplosion
-        if (GetManaPercent() >= 100)
+        if (_getManaPercent() >= 100)
             PreventActions(true);
 
         FelCrystal = NULL;
@@ -248,18 +248,18 @@ class VexallusAI : public MoonScriptBossAI
 
     void AIUpdate()
     {
-        if ((GetHealthPercent() <= 85 && mSummon == 0) ||
-            (GetHealthPercent() <= 70 && mSummon == 1) ||
-            (GetHealthPercent() <= 55 && mSummon == 2) ||
-            (GetHealthPercent() <= 40 && mSummon == 3) ||
-            (GetHealthPercent() <= 25 && mSummon == 4))
+        if ((_getHealthPercent() <= 85 && mSummon == 0) ||
+            (_getHealthPercent() <= 70 && mSummon == 1) ||
+            (_getHealthPercent() <= 55 && mSummon == 2) ||
+            (_getHealthPercent() <= 40 && mSummon == 3) ||
+            (_getHealthPercent() <= 25 && mSummon == 4))
         {
             CastSpell(mPureEnergy);
             ++mSummon;
             //SpawnCreature(CN_PURE_ENERGY, 231, -207, 6, 0, true);
         }
 
-        if (GetHealthPercent() <= 10 && GetPhase() == 1)
+        if (_getHealthPercent() <= 10 && GetPhase() == 1)
             SetPhase(2);
 
 
@@ -334,7 +334,7 @@ class Priestess_DelrissaAI : public MoonScriptBossAI
     {
         if (IsTimerFinished(mClearHateList))
         {
-            ClearHateList();
+            _clearHateList();
             AggroRandomUnit();
             ResetTimer(mClearHateList, 15000);
         };

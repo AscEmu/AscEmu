@@ -102,7 +102,7 @@ class AttumenTheHuntsmanAI : public MoonScriptBossAI
     {
         if (GetPhase() == 1)
         {
-            if (GetLinkedCreature() && GetLinkedCreature()->isAlive() && GetHealthPercent() <= 25 && !IsCasting())
+            if (GetLinkedCreature() && GetLinkedCreature()->isAlive() && _getHealthPercent() <= 25 && !IsCasting())
             {
                 SetPhase(2);
                 _setMeleeDisabled(false);
@@ -145,7 +145,7 @@ class MidnightAI : public MoonScriptBossAI
     {
         if (GetPhase() == 1)
         {
-            if (GetLinkedCreature() == NULL && GetHealthPercent() <= 95 && !IsCasting())
+            if (GetLinkedCreature() == NULL && _getHealthPercent() <= 95 && !IsCasting())
             {
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "Midnight calls for her master!");
                 CreatureAIScript* attumen = SpawnCreature(CN_ATTUMEN);
@@ -155,7 +155,7 @@ class MidnightAI : public MoonScriptBossAI
                     attumen->SetLinkedCreature(this);
                 }
             }
-            else if (GetLinkedCreature() && GetLinkedCreature()->isAlive() && GetHealthPercent() <= 25 && !IsCasting())
+            else if (GetLinkedCreature() && GetLinkedCreature()->isAlive() && _getHealthPercent() <= 25 && !IsCasting())
             {
                 SetPhase(2);
                 MoonScriptBossAI* attumen = static_cast<MoonScriptBossAI*>(GetLinkedCreature());
@@ -174,9 +174,9 @@ class MidnightAI : public MoonScriptBossAI
                 MoonScriptBossAI* attumen = static_cast<MoonScriptBossAI*>(GetLinkedCreature());
                 if (attumen && getRangeToObject(attumen->GetUnit()) <= 15)
                 {
-                    attumen->Regenerate();
-                    attumen->SetDisplayId(16040);
-                    attumen->ClearHateList();
+                    attumen->_regenerateHealth();
+                    attumen->_setDisplayId(16040);
+                    attumen->_clearHateList();
                     attumen->_setMeleeDisabled(true);
                     attumen->_setCastDisabled(false);
                     despawn();
@@ -243,7 +243,7 @@ class MoroesAI : public MoonScriptBossAI
     {
         if (GetPhase() == 1)
         {
-            if (mEnrage->mEnabled && GetHealthPercent() <= 30 && !IsCasting())
+            if (mEnrage->mEnabled && _getHealthPercent() <= 30 && !IsCasting())
             {
                 CastSpell(mEnrage);
                 mEnrage->mEnabled = false;
@@ -1328,7 +1328,7 @@ class AstralFlareAI : public MoonScriptCreatureAI
         AddSpell(ASTRAL_FLARE_PASSIVE, Target_Self, 100, 0, 3);
         AddSpell(ASTRAL_FLARE_VISUAL, Target_Self, 100, 0, 6);
         AddSpell(30235, Target_Current, 20, 0, 0);
-        SetDespawnWhenInactive(true);
+        _setDespawnWhenInactive(true);
         AggroNearestPlayer();
     }
 };

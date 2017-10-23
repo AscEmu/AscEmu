@@ -113,7 +113,7 @@ class HighKingMaulgarAI : public MoonScriptBossAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            SetDisplayWeapon(true, true);
+            _setDisplayWeapon(true, true);
             ParentClass::OnCombatStart(pTarget);
 
             mAliveAdds = 0;
@@ -162,7 +162,7 @@ class HighKingMaulgarAI : public MoonScriptBossAI
             if (mAliveAdds > 1)
                 return;
 
-            if (GetPhase() == 1 && GetHealthPercent() <= 50)
+            if (GetPhase() == 1 && _getHealthPercent() <= 50)
             {
                 SetPhase(2, mEnrage);
             }
@@ -216,7 +216,7 @@ void SpellFunc_Maulgar_Enrage(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureA
     if (pMaulgarAI != NULL)
     {
         pMaulgarAI->ApplyAura(HIGH_KING_MAULGAR_FLURRY);
-        pMaulgarAI->SetDisplayWeapon(false, false);
+        pMaulgarAI->_setDisplayWeapon(false, false);
     }
 }
 
