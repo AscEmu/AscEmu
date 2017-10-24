@@ -465,7 +465,7 @@ class SkarvaldTheConstructorAI : public MoonScriptCreatureAI
             {
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "Not... over... yet.");
                 pDalronn->sendChatMessage(CHAT_MSG_MONSTER_YELL, 13203, "Skarvald, you incompetent slug! Return and make yourself useful!");
-                SpawnCreature(CN_SKARVALD_GHOST, true);
+                SpawnCreature(CN_SKARVALD_GHOST, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), true);
                 _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
             }
@@ -555,7 +555,7 @@ class DalronnTheControllerAI : public MoonScriptCreatureAI
             {
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "See... you... soon.");
                 pSkarvald->sendChatMessage(CHAT_MSG_MONSTER_YELL, 13233, "Pagh! What sort of necromancer lets death stop him? I knew you were worthless!");
-                SpawnCreature(CN_DALRONN_GHOST, true);
+                SpawnCreature(CN_DALRONN_GHOST, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), true);
                 _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             }
             else if (pSkarvald != NULL && !pSkarvald->isAlive())
@@ -837,7 +837,7 @@ class IngvarThePlundererAI : public MoonScriptCreatureAI
             sendDBChatMessage(4470);     // My life for the... death god!
 
             //Ressurect event
-            SpawnCreature(CN_INGVAR_UNDEAD, true);
+            SpawnCreature(CN_INGVAR_UNDEAD, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), true);
             _unit->Despawn(1000, 0);
         }
 };

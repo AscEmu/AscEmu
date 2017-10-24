@@ -337,7 +337,7 @@ class VanCleefAI : public MoonScriptBossAI
 
             for (uint8 x = 0; x < 2; x++)
             {
-                MoonScriptCreatureAI* Guard = SpawnCreature(636);
+                MoonScriptCreatureAI* Guard = SpawnCreature(636, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), false);
                 if (Guard != NULL)
                 {
                     Guard->_setDespawnWhenInactive(true);

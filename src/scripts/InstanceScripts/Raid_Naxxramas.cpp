@@ -308,7 +308,7 @@ void MaexxnaAI::AIUpdate()
         MoonScriptCreatureAI* Spiderling = NULL;
         for (uint8 i = 0; i < 8; ++i)
         {
-            Spiderling = SpawnCreature(CN_MAEXXNA_SPIDERLING);
+            Spiderling = SpawnCreature(CN_MAEXXNA_SPIDERLING, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), false);
             if (Spiderling != NULL)
             {
                 Spiderling->GetUnit()->m_noRespawn = true;
@@ -2155,7 +2155,7 @@ ShadeOfNaxxramasAI::ShadeOfNaxxramasAI(Creature* pCreature) : MoonScriptCreature
 
 void ShadeOfNaxxramasAI::OnDied(Unit* pKiller)
 {
-    MoonScriptCreatureAI* Ghost = SpawnCreature(CN_GHOST_OF_NAXXRAMAS, true);
+    MoonScriptCreatureAI* Ghost = SpawnCreature(CN_GHOST_OF_NAXXRAMAS, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), true);
     if (Ghost != NULL)
     {
         Ghost->GetUnit()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
@@ -2230,7 +2230,7 @@ void PortalOfShadowsAI::AIUpdate()
     {
         if (IsTimerFinished(mSpawnTimer))
         {
-            MoonScriptCreatureAI* Ghost = SpawnCreature(CN_GHOST_OF_NAXXRAMAS, true);
+            MoonScriptCreatureAI* Ghost = SpawnCreature(CN_GHOST_OF_NAXXRAMAS, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), true);
             if (Ghost != NULL)
             {
                 Ghost->GetUnit()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);

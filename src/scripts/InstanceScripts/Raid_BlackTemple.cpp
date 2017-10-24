@@ -1352,7 +1352,7 @@ void SpellFunc_SpawnAqueousSpawn(SpellDesc* pThis, MoonScriptCreatureAI* pCreatu
     AqueousLordAI* pAqueousLordAI = (pCreatureAI != NULL) ? static_cast< AqueousLordAI* >(pCreatureAI) : NULL;
     if (pAqueousLordAI != NULL)
     {
-        MoonScriptCreatureAI* pSpawnAI = pAqueousLordAI->SpawnCreature(CN_AQUEOUS_SPAWN);
+        MoonScriptCreatureAI* pSpawnAI = pAqueousLordAI->SpawnCreature(CN_AQUEOUS_SPAWN, pCreatureAI->GetUnit()->GetPositionX(), pCreatureAI->GetUnit()->GetPositionY(), pCreatureAI->GetUnit()->GetPositionZ(), pCreatureAI->GetUnit()->GetOrientation(), false);
         if (pSpawnAI != NULL)
         {
             pSpawnAI->AggroRandomUnit(500);
@@ -2665,7 +2665,7 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
                             MoonScriptCreatureAI* pSpawnedEnsalvedSoul;
                             for (uint8 i = 0; i < 10; i++)
                             {
-                                pSpawnedEnsalvedSoul = SpawnCreature(CN_ENSLAVED_SOUL);
+                                pSpawnedEnsalvedSoul = SpawnCreature(CN_ENSLAVED_SOUL, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), false);
                                 if (pSpawnedEnsalvedSoul)
                                 {
                                     pSpawnedEnsalvedSoul->AggroNearestPlayer();

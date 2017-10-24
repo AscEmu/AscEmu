@@ -302,17 +302,16 @@ class MoonScriptCreatureAI : public CreatureAIScript
         virtual ~MoonScriptCreatureAI();
 
         //Movement
-        void MoveTo(MoonScriptCreatureAI* pCreature, RangeStatusPair pRangeStatus = std::make_pair(RangeStatus_TooFar, 0.0f));
         void MoveTo(Unit* pUnit, RangeStatusPair pRangeStatus = std::make_pair(RangeStatus_TooFar, 0.0f));
 
         //Behavior
         void SetBehavior(BehaviorType pBehavior);
         BehaviorType GetBehavior();
         
-        void AggroNearestUnit(int pInitialThreat = 1);
-        void AggroRandomUnit(int pInitialThreat = 1);
-        void AggroNearestPlayer(int pInitialThreat = 1);
-        void AggroRandomPlayer(int pInitialThreat = 1);
+        void AggroNearestUnit(uint32 pInitialThreat = 1);
+        void AggroRandomUnit(uint32 pInitialThreat = 1);
+        void AggroNearestPlayer(uint32 pInitialThreat = 1);
+        void AggroRandomPlayer(uint32 pInitialThreat = 1);
 
         //Instances
         bool IsHeroic();
@@ -323,7 +322,6 @@ class MoonScriptCreatureAI : public CreatureAIScript
         void CastOnInrangePlayers(float pDistanceMin, float pDistanceMax, uint32 pSpellId, bool pTriggered = false);
 
         MoonScriptCreatureAI* GetNearestCreature(uint32 pCreatureId = 0);
-        MoonScriptCreatureAI* SpawnCreature(uint32 pCreatureId, bool pForceSameFaction = false);
         MoonScriptCreatureAI* SpawnCreature(uint32 pCreatureId, float pX, float pY, float pZ, float pO = 0, bool pForceSameFaction = false, uint32 pPhase = 1);
 
         //Spells

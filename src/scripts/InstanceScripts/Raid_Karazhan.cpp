@@ -148,7 +148,7 @@ class MidnightAI : public MoonScriptBossAI
             if (GetLinkedCreature() == NULL && _getHealthPercent() <= 95 && !IsCasting())
             {
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "Midnight calls for her master!");
-                CreatureAIScript* attumen = SpawnCreature(CN_ATTUMEN);
+                CreatureAIScript* attumen = SpawnCreature(CN_ATTUMEN, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), false);
                 if (attumen != NULL)
                 {
                     SetLinkedCreature(attumen);

@@ -2045,8 +2045,8 @@ class WarbringerOmroggAI : public MoonScriptCreatureAI
             ParentClass::OnCombatStart(pTarget);
             mAggroShiftTimer = AddTimer(20000 + RandomUInt(10) * 1000);
             mBlastWaveTimer = mSpeechTimer = mSpeechId = INVALIDATE_TIMER;
-            mLeftHead = SpawnCreature(19523);
-            mRightHead = SpawnCreature(19524);
+            mLeftHead = SpawnCreature(19523, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), false);
+            mRightHead = SpawnCreature(19524, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), false);
             if (mLeftHead != NULL)
             {
                 mLeftHead->GetUnit()->GetAIInterface()->SetUnitToFollow(_unit);

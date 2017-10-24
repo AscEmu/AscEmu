@@ -301,7 +301,7 @@ class IckAI : MoonScriptBossAI
 
         // Emotes
         // Krick
-        mKrickAI = SpawnCreature(CN_KRICK, false);
+        mKrickAI = SpawnCreature(CN_KRICK, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), false);
 
         mKrickAI->AddEmote(Event_OnCombatStart, 8767);
         mKrickAI->AddEmote(Event_OnTargetDied, 8768);

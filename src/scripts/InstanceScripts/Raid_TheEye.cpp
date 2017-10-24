@@ -2860,7 +2860,7 @@ class PhoenixAI : public MoonScriptCreatureAI
         {
             ParentClass::OnDied(mKiller);
             ApplyAura(PHOENIX_REBIRTH);
-            SpawnCreature(21364);
+            SpawnCreature(21364, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), false);
             despawn(500);
         }
 
@@ -2876,7 +2876,7 @@ class PhoenixAI : public MoonScriptCreatureAI
             }
             else if (CurrentHP <= PercMaxHP)
             {
-                SpawnCreature(21364);
+                SpawnCreature(21364, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), false);
                 despawn(500);
                 return;
             }
@@ -2910,7 +2910,7 @@ class PhoenixEggAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            SpawnCreature(CN_PHOENIX);
+            SpawnCreature(CN_PHOENIX, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), false);
             despawn(0);
         }
 };

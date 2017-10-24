@@ -478,7 +478,7 @@ class MoltenGolem : public MoonScriptCreatureAI
 
     void OnDied(Unit* pKiller)
     {
-        SpawnCreature(CN_BRITTLE_GOLEM);
+        SpawnCreature(CN_BRITTLE_GOLEM, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), false);
         despawn();
     }
 };

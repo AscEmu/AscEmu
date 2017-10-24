@@ -50,7 +50,7 @@ SpellDesc::SpellDesc(SpellInfo* pInfo, SpellFunc pFnc, TargetType pTargetType, f
     mMaxRange = pMaxRange;
     mStrictRange = pStrictRange;
     mEnabled = true;
-    mPredefinedTarget = NULL;
+    mPredefinedTarget = nullptr;
     mLastCastTime = 0;
     AddAnnouncement(pAnnouncement);
     AddEmote(pText, pTextType, pSoundId);
@@ -63,7 +63,7 @@ SpellDesc::~SpellDesc()
 
 EmoteDesc* SpellDesc::AddEmote(const char* pText, TextType pType, uint32 pSoundId)
 {
-    EmoteDesc* NewEmote = NULL;
+    EmoteDesc* NewEmote = nullptr;
     if (pText || pSoundId)
     {
         NewEmote = new EmoteDesc(pText, pType, pSoundId);
@@ -74,7 +74,7 @@ EmoteDesc* SpellDesc::AddEmote(const char* pText, TextType pType, uint32 pSoundI
 
 void SpellDesc::TriggerCooldown(uint32 pCurrentTime)
 {
-    uint32 CurrentTime = (pCurrentTime == 0) ? (uint32)time(NULL) : pCurrentTime;
+    uint32 CurrentTime = (pCurrentTime == 0) ? (uint32)time(nullptr) : pCurrentTime;
     mLastCastTime = CurrentTime;
 }
 
@@ -87,8 +87,8 @@ void SpellDesc::AddAnnouncement(const char* pText)
 //Class MoonScriptCreatureAI
 MoonScriptCreatureAI::MoonScriptCreatureAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
-    mRunToTargetCache = NULL;
-    mRunToTargetSpellCache = NULL;
+    mRunToTargetCache = nullptr;
+    mRunToTargetSpellCache = nullptr;
     mTimerIdCounter = 0;
     mAIUpdateFrequency = DEFAULT_UPDATE_FREQUENCY;
     mBaseAttackTime = _unit->GetBaseAttackTime(MELEE);
@@ -105,11 +105,6 @@ MoonScriptCreatureAI::~MoonScriptCreatureAI()
     DeleteArray(mSpells);
     DeleteArray(mEvents);
 }
-
-void MoonScriptCreatureAI::MoveTo(MoonScriptCreatureAI* pCreature, RangeStatusPair pRangeStatus)
-{
-    MoveTo(pCreature->_unit, pRangeStatus);
-};
 
 void MoonScriptCreatureAI::MoveTo(Unit* pUnit, RangeStatusPair pRangeStatus)
 {
@@ -169,7 +164,7 @@ BehaviorType MoonScriptCreatureAI::GetBehavior()
     }
 }
 
-void MoonScriptCreatureAI::AggroNearestUnit(int pInitialThreat)
+void MoonScriptCreatureAI::AggroNearestUnit(uint32 pInitialThreat)
 {
     //Pay attention: if this is called before pushing the Creature to world, OnCombatStart will NOT be called.
     Unit* NearestRandomTarget = GetBestUnitTarget(TargetFilter_Closest);
@@ -177,7 +172,7 @@ void MoonScriptCreatureAI::AggroNearestUnit(int pInitialThreat)
         _unit->GetAIInterface()->AttackReaction(NearestRandomTarget, pInitialThreat);
 }
 
-void MoonScriptCreatureAI::AggroRandomUnit(int pInitialThreat)
+void MoonScriptCreatureAI::AggroRandomUnit(uint32 pInitialThreat)
 {
     Unit* RandomTarget = GetBestUnitTarget();
     if (RandomTarget)
@@ -188,7 +183,7 @@ void MoonScriptCreatureAI::AggroRandomUnit(int pInitialThreat)
     }
 }
 
-void MoonScriptCreatureAI::AggroNearestPlayer(int pInitialThreat)
+void MoonScriptCreatureAI::AggroNearestPlayer(uint32 pInitialThreat)
 {
     Unit* NearestRandomPlayer = GetBestPlayerTarget(TargetFilter_Closest);
     if (NearestRandomPlayer)
@@ -199,7 +194,7 @@ void MoonScriptCreatureAI::AggroNearestPlayer(int pInitialThreat)
     }
 }
 
-void MoonScriptCreatureAI::AggroRandomPlayer(int pInitialThreat)
+void MoonScriptCreatureAI::AggroRandomPlayer(uint32 pInitialThreat)
 {
     Unit* RandomPlayer = GetBestPlayerTarget();
     if (RandomPlayer)
@@ -212,9 +207,7 @@ void MoonScriptCreatureAI::AggroRandomPlayer(int pInitialThreat)
 
 bool MoonScriptCreatureAI::IsHeroic()
 {
-    if (_unit->GetMapMgr() == NULL)
-        return false;
-    if (_unit->GetMapMgr()->iInstanceMode != MODE_HEROIC)
+    if (_unit->GetMapMgr() == nullptr || _unit->GetMapMgr()->iInstanceMode != MODE_HEROIC)
         return false;
 
     return true;
@@ -223,7 +216,7 @@ bool MoonScriptCreatureAI::IsHeroic()
 MoonInstanceScript* MoonScriptCreatureAI::GetInstanceScript()
 {
     MapMgr* pInstance = _unit->GetMapMgr();
-    return (pInstance) ? static_cast< MoonInstanceScript* >(pInstance->GetScript()) : NULL;
+    return (pInstance) ? static_cast< MoonInstanceScript* >(pInstance->GetScript()) : nullptr;
 };
 
 void MoonScriptCreatureAI::CastOnAllInrangePlayers(uint32 pSpellId, bool pTriggered)
@@ -231,7 +224,7 @@ void MoonScriptCreatureAI::CastOnAllInrangePlayers(uint32 pSpellId, bool pTrigge
     for (std::set< Object* >::iterator PlayerIter = _unit->GetInRangePlayerSetBegin(); PlayerIter != _unit->GetInRangePlayerSetEnd(); ++PlayerIter)
     {
         _unit->CastSpell(static_cast< Player* >(*PlayerIter), pSpellId, pTriggered);
-    };
+    }
 };
 
 void MoonScriptCreatureAI::CastOnInrangePlayers(float pDistanceMin, float pDistanceMax, uint32 pSpellId, bool pTriggered)
@@ -242,25 +235,20 @@ void MoonScriptCreatureAI::CastOnInrangePlayers(float pDistanceMin, float pDista
         if (PlayerDistance >= pDistanceMin && PlayerDistance <= pDistanceMax)
         {
             _unit->CastSpell(static_cast< Player* >(*PlayerIter), pSpellId, pTriggered);
-        };
-    };
+        }
+    }
 };
 
 MoonScriptCreatureAI* MoonScriptCreatureAI::GetNearestCreature(uint32 pCreatureId)
 {
     Creature* NearestCreature = getNearestCreature(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), pCreatureId);
-    return (NearestCreature) ? static_cast< MoonScriptCreatureAI* >(NearestCreature->GetScript()) : NULL;
-}
-
-MoonScriptCreatureAI* MoonScriptCreatureAI::SpawnCreature(uint32 pCreatureId, bool pForceSameFaction)
-{
-    return SpawnCreature(pCreatureId, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), pForceSameFaction);
+    return (NearestCreature) ? static_cast< MoonScriptCreatureAI* >(NearestCreature->GetScript()) : nullptr;
 }
 
 MoonScriptCreatureAI* MoonScriptCreatureAI::SpawnCreature(uint32 pCreatureId, float pX, float pY, float pZ, float pO, bool pForceSameFaction, uint32 pPhase)
 {
     Creature* NewCreature = _unit->GetMapMgr()->GetInterface()->SpawnCreature(pCreatureId, pX, pY, pZ, pO, true, false, 0, 0, pPhase);
-    MoonScriptCreatureAI* CreatureScriptAI = (NewCreature) ? static_cast< MoonScriptCreatureAI* >(NewCreature->GetScript()) : NULL;
+    MoonScriptCreatureAI* CreatureScriptAI = (NewCreature) ? static_cast< MoonScriptCreatureAI* >(NewCreature->GetScript()) : nullptr;
     if (pForceSameFaction && NewCreature)
     {
         uint32 FactionTemplate = _unit->GetFaction();
@@ -275,7 +263,7 @@ SpellDesc* MoonScriptCreatureAI::AddSpell(uint32 pSpellId, TargetType pTargetTyp
     //Cannot add twice same spell id    - M4ksiu: Disabled, until I rewrite SetPhase(...) function to not disable same spells that are in different phases
     //SpellDesc* NewSpell = FindSpellById(pSpellId);
     //if (NewSpell) return NewSpell;
-    SpellDesc* NewSpell = NULL;
+    SpellDesc* NewSpell = nullptr;
 
     //Find spell info from spell id
     SpellInfo* Info = sSpellCustomizations.GetSpellInfo(pSpellId);
@@ -294,7 +282,7 @@ SpellDesc* MoonScriptCreatureAI::AddSpell(uint32 pSpellId, TargetType pTargetTyp
 #endif
 
     //Create new spell
-    NewSpell = new SpellDesc(Info, NULL, pTargetType, pChance, CastTime, Cooldown, MinRange, MaxRange, pStrictRange, pText, pTextType, pSoundId, pAnnouncement);
+    NewSpell = new SpellDesc(Info, 0, pTargetType, pChance, CastTime, Cooldown, MinRange, MaxRange, pStrictRange, pText, pTextType, pSoundId, pAnnouncement);
     mSpells.push_back(NewSpell);
     return NewSpell;
 }
@@ -302,10 +290,11 @@ SpellDesc* MoonScriptCreatureAI::AddSpell(uint32 pSpellId, TargetType pTargetTyp
 SpellDesc* MoonScriptCreatureAI::AddSpellFunc(SpellFunc pFnc, TargetType pTargetType, float pChance, float pCastTime, int32 pCooldown, float pMinRange, float pMaxRange,
                                               bool pStrictRange, const char* pText, TextType pTextType, uint32 pSoundId, const char* pAnnouncement)
 {
-    if (!pFnc) return NULL;
+    if (!pFnc)
+        return nullptr;
 
     //Create new spell
-    SpellDesc* NewSpell = new SpellDesc(NULL, pFnc, pTargetType, pChance, pCastTime, pCooldown, pMinRange, pMaxRange, pStrictRange, pText, pTextType, pSoundId, pAnnouncement);
+    SpellDesc* NewSpell = new SpellDesc(nullptr, pFnc, pTargetType, pChance, pCastTime, pCooldown, pMinRange, pMaxRange, pStrictRange, pText, pTextType, pSoundId, pAnnouncement);
     mSpells.push_back(NewSpell);
     return NewSpell;
 }
@@ -319,9 +308,7 @@ void MoonScriptCreatureAI::CastSpell(SpellDesc* pSpell)
 void MoonScriptCreatureAI::CastSpellNowNoScheduling(SpellDesc* pSpell)
 {
     if (CastSpellInternal(pSpell))
-    {
         _delayNextAttack(CalcSpellAttackTime(pSpell));
-    }
 }
 
 SpellDesc* MoonScriptCreatureAI::FindSpellById(uint32 pSpellId)
@@ -331,7 +318,7 @@ SpellDesc* MoonScriptCreatureAI::FindSpellById(uint32 pSpellId)
         if ((*SpellIter)->mInfo && (*SpellIter)->mInfo->getId() == pSpellId)
             return (*SpellIter);
     }
-    return NULL;
+    return nullptr;
 }
 
 SpellDesc* MoonScriptCreatureAI::FindSpellByFunc(SpellFunc pFnc)
@@ -341,7 +328,7 @@ SpellDesc* MoonScriptCreatureAI::FindSpellByFunc(SpellFunc pFnc)
         if ((*SpellIter)->mSpellFunc == pFnc)
             return (*SpellIter);
     }
-    return NULL;
+    return nullptr;
 }
 
 bool MoonScriptCreatureAI::IsCasting()
@@ -375,7 +362,7 @@ void MoonScriptCreatureAI::RemoveAllAuras()
 
 void MoonScriptCreatureAI::TriggerCooldownOnAllSpells()
 {
-    uint32 CurrentTime = (uint32)time(NULL);
+    uint32 CurrentTime = (uint32)time(nullptr);
     for (SpellDescArray::iterator SpellIter = mSpells.begin(); SpellIter != mSpells.end(); ++SpellIter)
     {
         (*SpellIter)->TriggerCooldown(CurrentTime);
@@ -392,7 +379,7 @@ void MoonScriptCreatureAI::CancelAllCooldowns()
 
 EmoteDesc* MoonScriptCreatureAI::AddEmote(EventType pEventType, const char* pText, TextType pType, uint32 pSoundId)
 {
-    EmoteDesc* NewEmote = NULL;
+    EmoteDesc* NewEmote = nullptr;
     if (pText || pSoundId)
     {
         NewEmote = new EmoteDesc(pText, pType, pSoundId);
@@ -601,7 +588,7 @@ void MoonScriptCreatureAI::RemoveAllEvents()
 
 void MoonScriptCreatureAI::SetTargetToChannel(Unit* pTarget, uint32 pSpellId)
 {
-    if (pTarget == NULL)
+    if (pTarget == nullptr)
         _unit->SetChannelSpellTargetGUID(0);
     else
         _unit->SetChannelSpellTargetGUID(pTarget->GetGUID());
@@ -675,6 +662,7 @@ void MoonScriptCreatureAI::ForceWaypointMove(uint32 pWaypointId)
 {
     if (canEnterCombat())
         _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
+
     if (isRooted())
         setRooted(false);
 
@@ -734,6 +722,7 @@ void MoonScriptCreatureAI::OnCombatStop(Unit* pTarget)
     SetBehavior(Behavior_Default);
     //_unit->GetAIInterface()->SetAIState(STATE_IDLE);                // Fix for stuck mobs that don't regen
     RemoveAIUpdateEvent();
+
     if (_isDespawnWhenInactiveSet())
         despawn(DEFAULT_DESPAWN_TIMER);
 }
@@ -741,9 +730,7 @@ void MoonScriptCreatureAI::OnCombatStop(Unit* pTarget)
 void MoonScriptCreatureAI::OnTargetDied(Unit* pTarget)
 {
     if (_getHealthPercent() > 0)    //Prevent double yelling (OnDied and OnTargetDied)
-    {
         RandomEmote(mOnTargetDiedEmotes);
-    }
 }
 
 void MoonScriptCreatureAI::OnDied(Unit* pKiller)
@@ -754,6 +741,7 @@ void MoonScriptCreatureAI::OnDied(Unit* pKiller)
     RemoveAllEvents();
     RemoveAllAuras();
     RemoveAIUpdateEvent();
+
     if (_isDespawnWhenInactiveSet())
         despawn(DEFAULT_DESPAWN_TIMER);
 }
@@ -761,7 +749,7 @@ void MoonScriptCreatureAI::OnDied(Unit* pKiller)
 void MoonScriptCreatureAI::AIUpdate()
 {
     SpellDesc* Spell;
-    uint32 CurrentTime = (uint32)time(NULL);
+    uint32 CurrentTime = (uint32)time(nullptr);
 
     //Elapse timers
     for (TimerArray::iterator TimerIter = mTimers.begin(); TimerIter != mTimers.end(); ++TimerIter)
@@ -831,8 +819,10 @@ void MoonScriptCreatureAI::AIUpdate()
         for (SpellDescArray::iterator SpellIter = mSpells.begin(); SpellIter != mSpells.end(); ++SpellIter)
         {
             Spell = (*SpellIter);
-            if (Spell->mEnabled == false) continue;
-            if (Spell->mChance == 0) continue;
+            if (Spell->mEnabled == false)
+                continue;
+            if (Spell->mChance == 0)
+                continue;
 
             //Check if spell won the roll
             if ((Spell->mChance == 100 || (ChanceRoll >= ChanceTotal && ChanceRoll < ChanceTotal + Spell->mChance)) &&
@@ -886,7 +876,7 @@ void MoonScriptCreatureAI::CancelAllSpells()
 
 bool MoonScriptCreatureAI::CastSpellInternal(SpellDesc* pSpell, uint32 pCurrentTime)
 {
-    if (pSpell == NULL)
+    if (pSpell == nullptr)
         return false;
 
     //Do not cast if we are already casting
@@ -899,7 +889,7 @@ bool MoonScriptCreatureAI::CastSpellInternal(SpellDesc* pSpell, uint32 pCurrentT
         return false;
 
     //Do not cast if we are in cooldown
-    uint32 CurrentTime = (pCurrentTime == 0) ? (uint32)time(NULL) : pCurrentTime;
+    uint32 CurrentTime = (pCurrentTime == 0) ? (uint32)time(nullptr) : pCurrentTime;
     if (pSpell->mLastCastTime + pSpell->mCooldown > CurrentTime)
         return false;
 
@@ -992,7 +982,7 @@ RangeStatusPair MoonScriptCreatureAI::GetSpellRangeStatusToUnit(Unit* pTarget, S
             return std::make_pair(RangeStatus_TooClose, pSpell->mMinRange);
         if (pSpell->mMaxRange > 0 && (Range > pSpell->mMaxRange))
             return std::make_pair(RangeStatus_TooFar, pSpell->mMaxRange);
-    };
+    }
 
     return std::make_pair(RangeStatus_Ok, 0.0f);
 };
@@ -1008,9 +998,9 @@ Unit* MoonScriptCreatureAI::GetTargetForSpell(SpellDesc* pSpell)
     {
         case TargetGen_Self:
             if (!isAlive())
-                return NULL;
+                return nullptr;
             if ((pSpell->mTargetType.mTargetFilter & TargetFilter_Wounded) && _unit->GetHealthPct() >= 99)
-                return NULL;
+                return nullptr;
 
             return _unit;
         case TargetGen_SecondMostHated:
@@ -1030,8 +1020,8 @@ Unit* MoonScriptCreatureAI::GetTargetForSpell(SpellDesc* pSpell)
             return GetBestUnitTarget(pSpell->mTargetType.mTargetFilter, pSpell->mMinRange, pSpell->mMaxRange);
         default:
             LogDebugFlag(LF_SCRIPT_MGR, "MoonScriptCreatureAI::GetTargetForSpell() : Invalid target type!");
-            return NULL;
-    };
+            return nullptr;
+    }
 };
 
 Unit* MoonScriptCreatureAI::GetBestPlayerTarget(TargetFilter pTargetFilter, float pMinRange, float pMaxRange)
@@ -1042,7 +1032,7 @@ Unit* MoonScriptCreatureAI::GetBestPlayerTarget(TargetFilter pTargetFilter, floa
     {
         if (IsValidUnitTarget(*PlayerIter, pTargetFilter, pMinRange, pMaxRange))
             TargetArray.push_back(static_cast<Unit*>(*PlayerIter));
-    };
+    }
 
     return ChooseBestTargetInArray(TargetArray, pTargetFilter);
 };
@@ -1057,7 +1047,7 @@ Unit* MoonScriptCreatureAI::GetBestUnitTarget(TargetFilter pTargetFilter, float 
         {
             if (IsValidUnitTarget(*ObjectIter, pTargetFilter, pMinRange, pMaxRange))
                 TargetArray.push_back(static_cast<Unit*>(*ObjectIter));
-        };
+        }
 
         if (IsValidUnitTarget(_unit, pTargetFilter))
             TargetArray.push_back(_unit);    //Also add self as possible friendly target
@@ -1068,8 +1058,8 @@ Unit* MoonScriptCreatureAI::GetBestUnitTarget(TargetFilter pTargetFilter, float 
         {
             if (IsValidUnitTarget(*ObjectIter, pTargetFilter, pMinRange, pMaxRange))
                 TargetArray.push_back(static_cast<Unit*>(*ObjectIter));
-        };
-    };
+        }
+    }
 
     return ChooseBestTargetInArray(TargetArray, pTargetFilter);
 };
@@ -1094,7 +1084,7 @@ Unit* MoonScriptCreatureAI::ChooseBestTargetInArray(UnitArray & pTargetArray, Ta
 
 Unit* MoonScriptCreatureAI::GetNearestTargetInArray(UnitArray & pTargetArray)
 {
-    Unit* NearestUnit = NULL;
+    Unit* NearestUnit = nullptr;
     float Distance, NearestDistance = 99999;
     for (UnitArray::iterator UnitIter = pTargetArray.begin(); UnitIter != pTargetArray.end(); ++UnitIter)
     {
@@ -1103,16 +1093,16 @@ Unit* MoonScriptCreatureAI::GetNearestTargetInArray(UnitArray & pTargetArray)
         {
             NearestDistance = Distance;
             NearestUnit = (*UnitIter);
-        };
-    };
+        }
+    }
 
     return NearestUnit;
 };
 
 Unit* MoonScriptCreatureAI::GetSecondMostHatedTargetInArray(UnitArray & pTargetArray)
 {
-    Unit* TargetUnit = NULL;
-    Unit* MostHatedUnit = NULL;
+    Unit* TargetUnit = nullptr;
+    Unit* MostHatedUnit = nullptr;
     Unit* CurrentTarget = static_cast<Unit*>(_unit->GetAIInterface()->getNextTarget());
     uint32 Threat = 0;
     uint32 HighestThreat = 0;
@@ -1183,7 +1173,7 @@ bool MoonScriptCreatureAI::IsValidUnitTarget(Object* pObject, TargetFilter pFilt
                 return false;
             if (pMaxRange > 0 && Range > pMaxRange)
                 return false;
-        };
+        }
 
         //Skip targets not in Line Of Sight if requested
         if ((~pFilter & TargetFilter_IgnoreLineOfSight) && !_unit->IsWithinLOSInMap(UnitTarget))
@@ -1196,8 +1186,8 @@ bool MoonScriptCreatureAI::IsValidUnitTarget(Object* pObject, TargetFilter pFilt
                 return false; //Skip not-in-combat targets if friendly
             if (isHostile(_unit, UnitTarget) || _unit->GetAIInterface()->getThreatByPtr(UnitTarget) > 0)
                 return false;
-        };
-    };
+        }
+    }
 
     return true; //This is a valid unit target
 };
@@ -1212,7 +1202,7 @@ void MoonScriptCreatureAI::PushRunToTargetCache(Unit* pTarget, SpellDesc* pSpell
         _setMeleeDisabled(true);
         _setRangedDisabled(true);
         _setCastDisabled(true);
-    };
+    }
 
     if (mRunToTargetCache)
         MoveTo(mRunToTargetCache, pRangeStatus);
@@ -1222,13 +1212,13 @@ void MoonScriptCreatureAI::PopRunToTargetCache()
 {
     if (mRunToTargetCache)
     {
-        mRunToTargetCache = NULL;
-        mRunToTargetSpellCache = NULL;
+        mRunToTargetCache = nullptr;
+        mRunToTargetSpellCache = nullptr;
         _setMeleeDisabled(false);
         _setRangedDisabled(false);
         _setCastDisabled(false);
         stopMovement();
-    };
+    }
 };
 
 void MoonScriptCreatureAI::RandomEmote(EmoteArray & pEmoteArray)
@@ -1263,7 +1253,7 @@ void MoonScriptCreatureAI::RandomEmote(EmoteArray & pEmoteArray)
 MoonScriptBossAI::MoonScriptBossAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
 {
     mPhaseIndex = -1;
-    mEnrageSpell = NULL;
+    mEnrageSpell = nullptr;
     mEnrageTimerDuration = -1;
     mEnrageTimer = INVALIDATE_TIMER;
 }
@@ -1322,6 +1312,7 @@ void MoonScriptBossAI::OnCombatStart(Unit* pTarget)
     {
         mEnrageTimer = AddTimer(mEnrageTimerDuration);
     }
+
     TriggerCooldownOnAllSpells();
     MoonScriptCreatureAI::OnCombatStart(pTarget);
 }
@@ -1386,7 +1377,7 @@ void EventFunc_ChangeGoState(MoonScriptCreatureAI* pCreatureAI, int32 pMiscVal)
     if (!pInstance)
         return;
 
-    GameObject* pSelectedGO = NULL;
+    GameObject* pSelectedGO = nullptr;
     uint32 pGOEntry = static_cast<uint32>(pMiscVal);
     for (std::vector< GameObject* >::iterator GOIter = pInstance->GOStorage.begin(); GOIter != pInstance->GOStorage.end(); ++GOIter)
     {
