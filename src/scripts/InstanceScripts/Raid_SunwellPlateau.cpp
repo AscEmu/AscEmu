@@ -173,17 +173,17 @@ class BrutallusAI : public MoonScriptBossAI
             AddSpell(BRUTALLUS_STOMP, Target_Current, 25, 0, 30);
 
             //6min Enrage
-            SetEnrageInfo(AddSpell(BRUTALLUS_BERSERK, Target_Self, 0, 0, 0, 0, 0, false, "So much for a real challenge... Die!", Text_Yell, 12470), 360000);
+            SetEnrageInfo(AddSpell(BRUTALLUS_BERSERK, Target_Self, 0, 0, 0, 0, 0, false, "So much for a real challenge... Die!", CHAT_MSG_MONSTER_YELL, 12470), 360000);
 
             //Emotes
-            AddEmote(Event_OnCombatStart, "Ah, more lambs to the slaughter!", Text_Yell, 12463);
-            AddEmote(Event_OnTargetDied, "Perish, insect!", Text_Yell, 12464);
-            AddEmote(Event_OnTargetDied, "You are meat!", Text_Yell, 12465);
-            AddEmote(Event_OnTargetDied, "Too easy!", Text_Yell, 12466);
-            AddEmote(Event_OnDied, "Gah! Well done... Now... this gets... interesting...", Text_Yell, 12471);
-            AddEmote(Event_OnTaunt, "Bring the fight to me!", Text_Yell, 12467);
-            AddEmote(Event_OnTaunt, "Another day, another glorious battle!", Text_Yell, 12468);
-            AddEmote(Event_OnTaunt, "I live for this!", Text_Yell, 12469);
+            AddEmote(Event_OnCombatStart, "Ah, more lambs to the slaughter!", CHAT_MSG_MONSTER_YELL, 12463);
+            AddEmote(Event_OnTargetDied, "Perish, insect!", CHAT_MSG_MONSTER_YELL, 12464);
+            AddEmote(Event_OnTargetDied, "You are meat!", CHAT_MSG_MONSTER_YELL, 12465);
+            AddEmote(Event_OnTargetDied, "Too easy!", CHAT_MSG_MONSTER_YELL, 12466);
+            AddEmote(Event_OnDied, "Gah! Well done... Now... this gets... interesting...", CHAT_MSG_MONSTER_YELL, 12471);
+            AddEmote(Event_OnTaunt, "Bring the fight to me!", CHAT_MSG_MONSTER_YELL, 12467);
+            AddEmote(Event_OnTaunt, "Another day, another glorious battle!", CHAT_MSG_MONSTER_YELL, 12468);
+            AddEmote(Event_OnTaunt, "I live for this!", CHAT_MSG_MONSTER_YELL, 12469);
         }
 };
 
@@ -208,7 +208,7 @@ class FelmystAI : public MoonScriptBossAI
             AddPhaseSpell(1, AddSpell(FELMYST_CLEAVE, Target_Current, 6, 0, 10, 0, 5));
             AddPhaseSpell(1, AddSpell(FELMYST_GAS_NOVA, Target_Self, 25, 1, 18));
             AddPhaseSpell(1, AddSpell(FELMYST_ENCAPSULATE, Target_RandomPlayer, 25, 7, 30, 0, 30));
-            AddPhaseSpell(1, AddSpell(FELMYST_CORROSION, Target_Current, 20, 0.75f, 35, 0, 30, false, "Choke on your final breath!", Text_Yell, 12478));
+            AddPhaseSpell(1, AddSpell(FELMYST_CORROSION, Target_Current, 20, 0.75f, 35, 0, 30, false, "Choke on your final breath!", CHAT_MSG_MONSTER_YELL, 12478));
 
             //Phase 2 spells
             AddPhaseSpell(2, AddSpell(FELMYST_DEMONIC_VAPOR, Target_RandomPlayer, 10, 0, 20));
@@ -218,14 +218,14 @@ class FelmystAI : public MoonScriptBossAI
             //AddSpell(FELMYST_FOG_OF_CORRUPTION, Target_RandomPlayerApplyAura, 15, 0, 20, 0, 10); Does not support by the core.
 
             //10min Enrage
-            SetEnrageInfo(AddSpell(FELMYST_ENRAGE, Target_Self, 0, 0, 0, 0, 0, false, "No more hesitation! Your fates are written!", Text_Yell, 12482), 600000);
+            SetEnrageInfo(AddSpell(FELMYST_ENRAGE, Target_Self, 0, 0, 0, 0, 0, false, "No more hesitation! Your fates are written!", CHAT_MSG_MONSTER_YELL, 12482), 600000);
 
             //Emotes
-            AddEmote(Event_OnCombatStart, "Glory to Kil'jaeden! Death to all who oppose!", Text_Yell, 12477);
-            AddEmote(Event_OnTargetDied, "I kill for the master! ", Text_Yell, 12480);
-            AddEmote(Event_OnTargetDied, "The end has come!", Text_Yell, 12481);
-            AddEmote(Event_OnDied, "Kil'jaeden... will... prevail...", Text_Yell, 12483);
-            AddEmote(Event_OnTaunt, "I am stronger than ever before!", Text_Yell, 12479);
+            AddEmote(Event_OnCombatStart, "Glory to Kil'jaeden! Death to all who oppose!", CHAT_MSG_MONSTER_YELL, 12477);
+            AddEmote(Event_OnTargetDied, "I kill for the master! ", CHAT_MSG_MONSTER_YELL, 12480);
+            AddEmote(Event_OnTargetDied, "The end has come!", CHAT_MSG_MONSTER_YELL, 12481);
+            AddEmote(Event_OnDied, "Kil'jaeden... will... prevail...", CHAT_MSG_MONSTER_YELL, 12483);
+            AddEmote(Event_OnTaunt, "I am stronger than ever before!", CHAT_MSG_MONSTER_YELL, 12479);
         }
 
         void OnCombatStart(Unit* pTarget)
@@ -252,13 +252,13 @@ class LadySacrolashAI : public MoonScriptBossAI
         {
             AddSpell(LADY_SACROLASH_DARK_TOUCHED, Target_RandomPlayerApplyAura, 50, 0, 10, 0, 50);
             AddSpell(LADY_SACROLASH_SHADOW_BLADES, Target_Current, 25, 1.5, 5, 0, 50);
-            AddSpell(LADY_SACROLASH_SHADOW_NOVA, Target_RandomPlayer, 15, 3.5, 20, 0, 50, false, "Shadow to the aid of fire!", Text_Yell, 12485);
+            AddSpell(LADY_SACROLASH_SHADOW_NOVA, Target_RandomPlayer, 15, 3.5, 20, 0, 50, false, "Shadow to the aid of fire!", CHAT_MSG_MONSTER_YELL, 12485);
             AddSpell(LADY_SACROLASH_CONFOUNDING_BLOW, Target_RandomPlayer, 10, 0, 15, 0, 50);
-            SetEnrageInfo(AddSpell(LADY_SACROLASH_ENRAGE, Target_Self, 0, 0, 0, 0, 0, 0, "Time is a luxury you no longer possess!", Text_Yell, 0), 360000); // Wasn't able to find sound for this text
+            SetEnrageInfo(AddSpell(LADY_SACROLASH_ENRAGE, Target_Self, 0, 0, 0, 0, 0, 0, "Time is a luxury you no longer possess!", CHAT_MSG_MONSTER_YELL, 0), 360000); // Wasn't able to find sound for this text
 
             //Emotes
-            AddEmote(Event_OnTargetDied, "Shadows, engulf!", Text_Yell, 12486);
-            AddEmote(Event_OnDied, "I... fade.", Text_Yell, 0); // Wasn't able to find sound for this text
+            AddEmote(Event_OnTargetDied, "Shadows, engulf!", CHAT_MSG_MONSTER_YELL, 12486);
+            AddEmote(Event_OnDied, "I... fade.", CHAT_MSG_MONSTER_YELL, 0); // Wasn't able to find sound for this text
         }
 
         void OnDied(Unit* pKiller)
@@ -288,14 +288,14 @@ class GrandWarlockAlythessAI : public MoonScriptBossAI
         {
             AddSpell(GRAND_WARLOCK_ALYTHESS_PYROGENICS, Target_Self, 100, 0, 10, 0, 50);
             AddSpell(GRAND_WARLOCK_ALYTHESS_FLAME_TOUCHED, Target_RandomPlayerApplyAura, 10, 0, 30, 0, 50);
-            AddSpell(GRAND_WARLOCK_ALYTHESS_CONFLAGRATION, Target_RandomPlayer, 15, 3.5, 25, 0, 50, false, "Fire to the aid of shadow!", Text_Yell, 12489);
+            AddSpell(GRAND_WARLOCK_ALYTHESS_CONFLAGRATION, Target_RandomPlayer, 15, 3.5, 25, 0, 50, false, "Fire to the aid of shadow!", CHAT_MSG_MONSTER_YELL, 12489);
             AddSpell(GRAND_WARLOCK_ALYTHESS_BLAZE, Target_RandomPlayer, 30, 2.5, 0, 0, 50);
             AddSpell(GRAND_WARLOCK_ALYTHESS_FLAME_SEAR, Target_RandomPlayer, 20, 0, 0, 0, 50);
-            SetEnrageInfo(AddSpell(GRAND_WARLOCK_ALYTHESS_ENRAGE, Target_Self, 0, 0, 0, 0, 0, false, "Your luck has run its course!", Text_Yell, 12493), 360000);
+            SetEnrageInfo(AddSpell(GRAND_WARLOCK_ALYTHESS_ENRAGE, Target_Self, 0, 0, 0, 0, 0, false, "Your luck has run its course!", CHAT_MSG_MONSTER_YELL, 12493), 360000);
 
             //Emotes
-            AddEmote(Event_OnTargetDied, "Fire, consume!", Text_Yell, 12490);
-            AddEmote(Event_OnDied, "I... fade.", Text_Yell, 0); // Wasn't able to find sound for this text
+            AddEmote(Event_OnTargetDied, "Fire, consume!", CHAT_MSG_MONSTER_YELL, 12490);
+            AddEmote(Event_OnDied, "I... fade.", CHAT_MSG_MONSTER_YELL, 0); // Wasn't able to find sound for this text
         }
 
         void OnDied(Unit* pKiller)

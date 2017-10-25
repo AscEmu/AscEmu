@@ -30,7 +30,7 @@ class WatchkeeperGargolmarAI : public MoonScriptBossAI
     MOONSCRIPT_FACTORY_FUNCTION(WatchkeeperGargolmarAI, MoonScriptBossAI);
     WatchkeeperGargolmarAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
     {
-        AddSpell(WATCHKEEPER_SURGE, Target_RandomUnit, 20, 0, 15, 5, 40, false, "Back off, pup!", Text_Yell, 10330);
+        AddSpell(WATCHKEEPER_SURGE, Target_RandomUnit, 20, 0, 15, 5, 40, false, "Back off, pup!", CHAT_MSG_MONSTER_YELL, 10330);
         AddSpell(WATCHKEEPER_OVERPOWER, Target_Current, 10, 0, 5);
         mRetaliation = AddSpell(WATCHKEEPER_RETALIATION, Target_Self, 0, 0, 0);
 
@@ -113,19 +113,19 @@ class OmorTheUnscarredAI : public MoonScriptCreatureAI
             SpellDesc* pShield = AddSpell(OMOR_DEMONIC_SHIELD, Target_Self, 30, 0, 25);
             pShield->mEnabled = false;
             SpellDesc* pSummon = AddSpell(OMOR_SUMMON_FIENDISH_HOUND, Target_Self, 8, 1, 20);
-            pSummon->AddEmote("Achor-she-ki! Feast my pet! Eat your fill!", Text_Yell, 10277);
+            pSummon->AddEmote("Achor-she-ki! Feast my pet! Eat your fill!", CHAT_MSG_MONSTER_YELL, 10277);
             AddSpell(OMOR_SHADOW_WHIP, Target_RandomPlayer, 10, 0, 30);
             if (_unit->GetMapMgr()->iInstanceMode != MODE_HEROIC)
             {
                 AddSpell(OMOR_SHADOW_BOLT, Target_RandomPlayer, 8, 3, 15, 10, 60, true);
                 SpellDesc* pAura = AddSpell(OMOR_TREACHEROUS_AURA, Target_RandomPlayer, 8, 2, 35, 0, 60, true);
-                pAura->AddEmote("A-Kreesh!", Text_Yell, 10278);
+                pAura->AddEmote("A-Kreesh!", CHAT_MSG_MONSTER_YELL, 10278);
             }
             else
             {
                 AddSpell(OMOR_SHADOW_BOLT2, Target_RandomPlayer, 8, 3, 15, 10, 60, true);
                 SpellDesc* pAura = AddSpell(OMOR_BANE_OF_TREACHERY, Target_RandomPlayer, 8, 2, 35, 0, 60, true);
-                pAura->AddEmote("A-Kreesh!", Text_Yell, 10278);
+                pAura->AddEmote("A-Kreesh!", CHAT_MSG_MONSTER_YELL, 10278);
             }
         }
 

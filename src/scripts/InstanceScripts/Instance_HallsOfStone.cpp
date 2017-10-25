@@ -183,7 +183,7 @@ class MaidenOfGriefAI : public MoonScriptCreatureAI
         AddSpell(MAIDEN_STORM_OF_GRIEF, Target_RandomPlayerDestination, 100, 0, 19);
         AddSpell(MAIDEN_PILLAR_OF_WOE, Target_RandomPlayerNotCurrent, 30, 0, 8);
         mShock = AddSpell(MAIDEN_SHOCK_OF_SORROW, Target_Self, 20, 0, 18);
-        mShock->AddEmote("So much lost time... that you'll never get back!", Text_Yell, 13492);
+        mShock->AddEmote("So much lost time... that you'll never get back!", CHAT_MSG_MONSTER_YELL, 13492);
     }
 
     void OnCombatStart(Unit* pTarget)
@@ -235,7 +235,7 @@ class KrystallusAI : public MoonScriptCreatureAI
         AddSpell(KRYSTALLUS_BOULDER_TOSS, Target_ClosestPlayer, 35, 1, 4);
         mShatter = AddSpell(KRYSTALLUS_SHATTER, Target_Self, 0, 0, 0);
         mStomp = AddSpell(KRYSTALLUS_STOMP, Target_Self, 0, 0, 0);
-        mShatter->AddEmote("Break.... you....", Text_Yell, 14178);
+        mShatter->AddEmote("Break.... you....", CHAT_MSG_MONSTER_YELL, 14178);
 
         mStompTimer = INVALIDATE_TIMER;
         mShatterTimer = INVALIDATE_TIMER;

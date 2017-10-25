@@ -333,8 +333,8 @@ class Volkhan : public MoonScriptCreatureAI
         AddSpell(HeroicInt(52237, 59529), Target_WoundedFriendly, 15, 1.5f, 15);
         mStomp = AddSpell(HeroicInt(52237, 59529), Target_Self, 0, 3, 0);
 
-        mStomp->AddEmote("I will crush you beneath my boots!", Text_Yell, 13963);
-        mStomp->AddEmote("All my work... undone!", Text_Yell, 13964);
+        mStomp->AddEmote("I will crush you beneath my boots!", CHAT_MSG_MONSTER_YELL, 13963);
+        mStomp->AddEmote("All my work... undone!", CHAT_MSG_MONSTER_YELL, 13964);
 
         m_cVolkhanWP.x = 1328.666870f;
         m_cVolkhanWP.y = -97.022758f;

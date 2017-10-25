@@ -33,21 +33,21 @@ class NalorakkAI : public MoonScriptBossAI
         {
             AddPhaseSpell(1, AddSpell(NALORAKK_BRUTAL_SWIPE, Target_Current, 2, 0, 35));
             AddPhaseSpell(1, AddSpell(NALORAKK_MANGLE, Target_Current, 12, 0, 20));
-            AddPhaseSpell(1, AddSpell(NALORAKK_SURGE, Target_RandomPlayer, 8, 0, 20, 0.0f, 45.0f, true, "I bring da pain!", Text_Yell, 12071));
+            AddPhaseSpell(1, AddSpell(NALORAKK_SURGE, Target_RandomPlayer, 8, 0, 20, 0.0f, 45.0f, true, "I bring da pain!", CHAT_MSG_MONSTER_YELL, 12071));
 
             AddPhaseSpell(2, AddSpell(NALORAKK_LACERATING_SLASH, Target_Current, 12, 0, 20));
             AddPhaseSpell(2, AddSpell(NALORAKK_REND_FLESH, Target_Current, 12, 0, 12));
             AddPhaseSpell(2, AddSpell(NALORAKK_DEAFENING_ROAR, Target_RandomPlayer, 11, 0, 12));
 
-            SetEnrageInfo(AddSpell(NALORAKK_BERSERK, Target_Self, 0, 0, 600, 0, 0, false, "You had your chance, now it be too late!", Text_Yell, 12074), 600000);
+            SetEnrageInfo(AddSpell(NALORAKK_BERSERK, Target_Self, 0, 0, 600, 0, 0, false, "You had your chance, now it be too late!", CHAT_MSG_MONSTER_YELL, 12074), 600000);
 
-            AddEmote(Event_OnCombatStart, "You be dead soon enough!", Text_Yell, 12070);
-            AddEmote(Event_OnTargetDied, "Da Amani gonna rule again!", Text_Yell, 12076);
-            AddEmote(Event_OnTargetDied, "Now whatchoo got to say?", Text_Yell, 12075);
-            AddEmote(Event_OnDied, "I... be waitin' on da udda side....", Text_Yell, 12077);
+            AddEmote(Event_OnCombatStart, "You be dead soon enough!", CHAT_MSG_MONSTER_YELL, 12070);
+            AddEmote(Event_OnTargetDied, "Da Amani gonna rule again!", CHAT_MSG_MONSTER_YELL, 12076);
+            AddEmote(Event_OnTargetDied, "Now whatchoo got to say?", CHAT_MSG_MONSTER_YELL, 12075);
+            AddEmote(Event_OnDied, "I... be waitin' on da udda side....", CHAT_MSG_MONSTER_YELL, 12077);
 
             // Bear Form
-            Morph = AddSpell(42377, Target_Self, 0, 0, 0, 0, 0, false, "You call on da beast, you gonna get more dan you bargain for!", Text_Yell, 12072);
+            Morph = AddSpell(42377, Target_Self, 0, 0, 0, 0, 0, false, "You call on da beast, you gonna get more dan you bargain for!", CHAT_MSG_MONSTER_YELL, 12072);
             MorphTimer = 0;
         }
 
@@ -119,10 +119,10 @@ class AkilzonAI : public MoonScriptBossAI
             AddSpell(AKILZON_GUST_OF_WIND, Target_Current, 0, 0, 0);
             AddSpell(AKILZON_ELECTRICAL_STORM, Target_Self, 1, 0, 0);
 
-            AddEmote(Event_OnCombatStart, "I be da predator! You da prey!", Text_Yell, 12013);
-            AddEmote(Event_OnTargetDied, "Stop your cryin'!", Text_Yell, 12018);
-            AddEmote(Event_OnTargetDied, "Ya got nothin'!", Text_Yell, 12017);
-            AddEmote(Event_OnDied, "You can't... kill... me spirit!", Text_Yell, 12019);
+            AddEmote(Event_OnCombatStart, "I be da predator! You da prey!", CHAT_MSG_MONSTER_YELL, 12013);
+            AddEmote(Event_OnTargetDied, "Stop your cryin'!", CHAT_MSG_MONSTER_YELL, 12018);
+            AddEmote(Event_OnTargetDied, "Ya got nothin'!", CHAT_MSG_MONSTER_YELL, 12017);
+            AddEmote(Event_OnDied, "You can't... kill... me spirit!", CHAT_MSG_MONSTER_YELL, 12019);
 
             mSummonTime = 0;
         }
@@ -181,23 +181,23 @@ class HalazziAI : public MoonScriptBossAI
         MOONSCRIPT_FACTORY_FUNCTION(HalazziAI, MoonScriptBossAI);
         HalazziAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
         {
-            AddPhaseSpell(1, AddSpell(HALAZZI_SABER_LASH, Target_Destination, 0.5, 0, 0, 0, 0, false, "Me gonna carve ya now!", Text_Yell, 12023));
+            AddPhaseSpell(1, AddSpell(HALAZZI_SABER_LASH, Target_Destination, 0.5, 0, 0, 0, 0, false, "Me gonna carve ya now!", CHAT_MSG_MONSTER_YELL, 12023));
 
             AddPhaseSpell(2, AddSpell(HALAZZI_FLAME_SHOCK, Target_Current, 12, 0, 0));
             AddPhaseSpell(2, AddSpell(HALAZZI_EARTH_SHOCK, Target_Current, 12, 0, 0));
 
-            AddPhaseSpell(3, AddSpell(HALAZZI_SABER_LASH, Target_Destination, 0.5, 0, 0, 0, 0, false, "You gonna leave in pieces!", Text_Yell, 12024));
+            AddPhaseSpell(3, AddSpell(HALAZZI_SABER_LASH, Target_Destination, 0.5, 0, 0, 0, 0, false, "You gonna leave in pieces!", CHAT_MSG_MONSTER_YELL, 12024));
             AddPhaseSpell(3, AddSpell(HALAZZI_FLAME_SHOCK, Target_Current, 18, 0, 0));
             AddPhaseSpell(3, AddSpell(HALAZZI_EARTH_SHOCK, Target_Current, 18, 0, 0));
             AddPhaseSpell(3, AddSpell(HALAZZI_ENRAGE, Target_Self, 100, 0, 60));
 
             // Transfigure: 4k aoe damage
-            Transfigure = AddSpell(44054, Target_Self, 0, 0, 0, 0, 0, false, "I fight wit' untamed spirit...", Text_Yell, 12021);
+            Transfigure = AddSpell(44054, Target_Self, 0, 0, 0, 0, 0, false, "I fight wit' untamed spirit...", CHAT_MSG_MONSTER_YELL, 12021);
 
-            AddEmote(Event_OnCombatStart, "Get on your knees and bow to da fang and claw!", Text_Yell, 12020);
-            AddEmote(Event_OnTargetDied, "You cant fight da power...", Text_Yell, 12026);
-            AddEmote(Event_OnTargetDied, "You all gonna fail...", Text_Yell, 12027);
-            AddEmote(Event_OnDied, "Chaga... choka'jinn.", Text_Yell, 12028);
+            AddEmote(Event_OnCombatStart, "Get on your knees and bow to da fang and claw!", CHAT_MSG_MONSTER_YELL, 12020);
+            AddEmote(Event_OnTargetDied, "You cant fight da power...", CHAT_MSG_MONSTER_YELL, 12026);
+            AddEmote(Event_OnTargetDied, "You all gonna fail...", CHAT_MSG_MONSTER_YELL, 12027);
+            AddEmote(Event_OnDied, "Chaga... choka'jinn.", CHAT_MSG_MONSTER_YELL, 12028);
             mLynx = NULL;
 
             mTotemTimer = 0;

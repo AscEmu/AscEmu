@@ -35,29 +35,6 @@ public:\
     ADD_CREATURE_FACTORY_FUNCTION(ClassName);\
     typedef ParentClassName ParentClass;
 
-//Zyres 10/21/2017 - not used, left as example
-//#define AddDefaultAura(pAuraEntry)\
-//    RegisterAIUpdateEvent(500);\
-//    AddEvent(1001, 500, &EventFunc_ApplyAura, pAuraEntry);
-//
-//#define MakeUnattackableFor(pTime)\
-//    _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);\
-//    RegisterAIUpdateEvent(pTime);\
-//    AddEvent(1002, pTime, &EventFunc_RemoveUnitFieldFlags);
-//
-//#define MakeUnselectableFor(pTime)\
-//    _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);\
-//    RegisterAIUpdateEvent(pTime);\
-//    AddEvent(1003, pTime, &EventFunc_RemoveUnitFieldFlags);
-
-
-///\todo remove old text types
-enum TextType
-{
-    Text_Say,
-    Text_Yell,
-    Text_Emote
-};
 
 enum EventType
 {
@@ -79,7 +56,7 @@ enum BehaviorType
 
 struct EmoteDesc
 {
-    EmoteDesc(const char* pText, TextType pType, uint32 pSoundId)
+    EmoteDesc(const char* pText, uint8 pType, uint32 pSoundId)
     {
         mText = (pText && strlen(pText) > 0) ? pText : "";
         mType = pType;
@@ -87,7 +64,7 @@ struct EmoteDesc
     }
 
     std::string mText;
-    TextType mType;
+    uint8 mType;
     uint32 mSoundId;
 };
 
@@ -261,11 +238,11 @@ class SpellDesc
     public:
 
         SpellDesc(SpellInfo* pInfo, SpellFunc pFnc, TargetType pTargetType, float pChance, float pCastTime, int32 pCooldown, float pMinRange, float pMaxRange, 
-                  bool pStrictRange, const char* pText, TextType pTextType, uint32 pSoundId, const char* pAnnouncement);
+                  bool pStrictRange, const char* pText, uint8 pTextType, uint32 pSoundId, const char* pAnnouncement);
 
         virtual ~SpellDesc();
 
-        EmoteDesc* AddEmote(const char* pText, TextType pType = Text_Yell, uint32 pSoundId = 0);
+        EmoteDesc* AddEmote(const char* pText, uint8 pType = CHAT_MSG_MONSTER_YELL, uint32 pSoundId = 0);
 
         void TriggerCooldown(uint32 pCurrentTime = 0);
         void AddAnnouncement(const char* pText);
@@ -325,8 +302,8 @@ class MoonScriptCreatureAI : public CreatureAIScript
         MoonScriptCreatureAI* SpawnCreature(uint32 pCreatureId, float pX, float pY, float pZ, float pO = 0, bool pForceSameFaction = false, uint32 pPhase = 1);
 
         //Spells
-        SpellDesc* AddSpell(uint32 pSpellId, TargetType pTargetType, float pChance, float pCastTime, int32 pCooldown, float pMinRange = 0, float pMaxRange = 0, bool pStrictRange = false, const char* pText = NULL, TextType pTextType = Text_Yell, uint32 pSoundId = 0, const char* pAnnouncement = NULL);
-        SpellDesc* AddSpellFunc(SpellFunc pFnc, TargetType pTargetType, float pChance, float pCastTime, int32 pCooldown, float pMinRange = 0, float pMaxRange = 0, bool pStrictRange = false, const char* pText = NULL, TextType pTextType = Text_Yell, uint32 pSoundId = 0, const char* pAnnouncement = NULL);
+        SpellDesc* AddSpell(uint32 pSpellId, TargetType pTargetType, float pChance, float pCastTime, int32 pCooldown, float pMinRange = 0, float pMaxRange = 0, bool pStrictRange = false, const char* pText = NULL, uint8 pTextType = CHAT_MSG_MONSTER_YELL, uint32 pSoundId = 0, const char* pAnnouncement = NULL);
+        SpellDesc* AddSpellFunc(SpellFunc pFnc, TargetType pTargetType, float pChance, float pCastTime, int32 pCooldown, float pMinRange = 0, float pMaxRange = 0, bool pStrictRange = false, const char* pText = NULL, uint8 pTextType = CHAT_MSG_MONSTER_YELL, uint32 pSoundId = 0, const char* pAnnouncement = NULL);
         void CastSpell(SpellDesc* pSpell);
         void CastSpellNowNoScheduling(SpellDesc* pSpell);
         SpellDesc* FindSpellById(uint32 pSpellId);
@@ -340,7 +317,7 @@ class MoonScriptCreatureAI : public CreatureAIScript
         void CancelAllCooldowns();
 
         //Emotes
-        EmoteDesc* AddEmote(EventType pEventType, const char* pText, TextType pType, uint32 pSoundId = 0);
+        EmoteDesc* AddEmote(EventType pEventType, const char* pText, uint8 pType, uint32 pSoundId = 0);
         EmoteDesc* AddEmote(EventType pEventType, uint32_t scripttext);
         void RemoveAllEmotes(EventType pEventType);
 

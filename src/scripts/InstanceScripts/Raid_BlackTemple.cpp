@@ -2384,9 +2384,9 @@ class EssenceOfSufferingAI : public MoonScriptCreatureAI
             AddSpell(EOS_SOUL_DRAIN, Target_RandomPlayerNotCurrent, 7, 1, 15);
             mAuraOfSuffering = AddSpell(EOS_AURA_OF_SUFFERING, Target_RandomPlayer, 0, 0, 0);
 
-            AddEmote(Event_OnTargetDied, "Look at what you made me do!", Text_Yell, 11417);
-            AddEmote(Event_OnTargetDied, "I didn't ask for this!", Text_Yell, 11418);
-            AddEmote(Event_OnTargetDied, "The pain is only beginning!", Text_Yell, 11419);
+            AddEmote(Event_OnTargetDied, "Look at what you made me do!", CHAT_MSG_MONSTER_YELL, 11417);
+            AddEmote(Event_OnTargetDied, "I didn't ask for this!", CHAT_MSG_MONSTER_YELL, 11418);
+            AddEmote(Event_OnTargetDied, "The pain is only beginning!", CHAT_MSG_MONSTER_YELL, 11419);
 
             // Freed
             sendChatMessage(CHAT_MSG_MONSTER_YELL, 11415, "Pain and suffering are all that await you.");
@@ -2439,9 +2439,9 @@ class EssenceOfDesireAI : public MoonScriptCreatureAI
             AddSpell(EOD_SPIRIT_SHOCK, Target_Current, 100, 1, 15);
             mAuraOfDesire = AddSpell(EOD_AURA_OF_DESIRE, Target_RandomPlayer, 0, 0, 0);
 
-            AddEmote(Event_OnTargetDied, "Fulfilment is at hand.", Text_Yell, 11409);
-            AddEmote(Event_OnTargetDied, "Yes, you'll stay with us now.", Text_Yell, 11410);
-            AddEmote(Event_OnTargetDied, "Your reach exceeds your grasp.", Text_Yell, 11413);
+            AddEmote(Event_OnTargetDied, "Fulfilment is at hand.", CHAT_MSG_MONSTER_YELL, 11409);
+            AddEmote(Event_OnTargetDied, "Yes, you'll stay with us now.", CHAT_MSG_MONSTER_YELL, 11410);
+            AddEmote(Event_OnTargetDied, "Your reach exceeds your grasp.", CHAT_MSG_MONSTER_YELL, 11413);
 
             // Freed
             sendChatMessage(CHAT_MSG_MONSTER_YELL, 11408, "You can have anything you desire... for a price.");
@@ -2492,14 +2492,14 @@ class EssenceOfAngerAI : public MoonScriptCreatureAI
         {
             mTaunt = AddSpell(EOA_SEETHE, Target_Current, 0, 0, 0); // on Taunt
             mSoulScream = AddSpell(EOA_SOUL_SCREAM, Target_Current, 6, 1, 15);
-            mSoulScream->AddEmote("So foolish!", Text_Yell, 11400);
+            mSoulScream->AddEmote("So foolish!", CHAT_MSG_MONSTER_YELL, 11400);
             mSpite = AddSpell(EOA_SPITE, Target_Current, 6, 0, 15);
-            mSpite->AddEmote("On your knees!", Text_Yell, 11403);
+            mSpite->AddEmote("On your knees!", CHAT_MSG_MONSTER_YELL, 11403);
             mAuraOfAnger = AddSpell(EOA_AURA_OF_ANGER, Target_RandomPlayer, 0, 0, 0);
-            AddEmote(Event_OnTargetDied, "", Text_Yell, 11401);
-            AddEmote(Event_OnTargetDied, "Enough, no more!", Text_Yell, 11402);
-            AddEmote(Event_OnDied, "Beware, cowards!", Text_Yell, 11405);
-            AddEmote(Event_OnDied, "I won't be ingored.", Text_Yell, 11404);
+            AddEmote(Event_OnTargetDied, "", CHAT_MSG_MONSTER_YELL, 11401);
+            AddEmote(Event_OnTargetDied, "Enough, no more!", CHAT_MSG_MONSTER_YELL, 11402);
+            AddEmote(Event_OnDied, "Beware, cowards!", CHAT_MSG_MONSTER_YELL, 11405);
+            AddEmote(Event_OnDied, "I won't be ingored.", CHAT_MSG_MONSTER_YELL, 11404);
 
             sendChatMessage(CHAT_MSG_MONSTER_YELL, 11399, "Beware - I live!");
         }
@@ -3058,9 +3058,9 @@ class GathiosAI : public MoonScriptCreatureAI
             AddSpell(BLESSING_OF_SPELL_WARDING, Target_RandomFriendly, 15, 0, 60);
             AddSpell(BLESSING_OF_PROTECTION, Target_RandomFriendly, 15, 0, 60);
 
-            AddEmote(Event_OnTargetDied, "Selama amor'anore!", Text_Yell, 11423);
-            AddEmote(Event_OnCombatStart, "I have better things to do!", Text_Yell, 11422);
-            AddEmote(Event_OnDied, "Lord Illidan... I...", Text_Yell, 11425);
+            AddEmote(Event_OnTargetDied, "Selama amor'anore!", CHAT_MSG_MONSTER_YELL, 11423);
+            AddEmote(Event_OnCombatStart, "I have better things to do!", CHAT_MSG_MONSTER_YELL, 11422);
+            AddEmote(Event_OnDied, "Lord Illidan... I...", CHAT_MSG_MONSTER_YELL, 11425);
         };
 
         void OnCombatStart(Unit* pTarget)
@@ -3121,9 +3121,9 @@ class VerasAI : public MoonScriptCreatureAI
             AddSpell(DEADLY_POISON, Target_RandomPlayer, 15.0f, 0, 20);
             AddSpell(ENVENOM, Target_RandomPlayer, 15.0f, 0, 20);
 
-            AddEmote(Event_OnTargetDied, "Valiant Effort.", Text_Yell, 11525);
-            AddEmote(Event_OnDied, "You got lucky!", Text_Yell, 11527);
-            AddEmote(Event_OnCombatStart, "You wish to test me?", Text_Yell, 11524);
+            AddEmote(Event_OnTargetDied, "Valiant Effort.", CHAT_MSG_MONSTER_YELL, 11525);
+            AddEmote(Event_OnDied, "You got lucky!", CHAT_MSG_MONSTER_YELL, 11527);
+            AddEmote(Event_OnCombatStart, "You wish to test me?", CHAT_MSG_MONSTER_YELL, 11524);
 
             pGethois = static_cast< GathiosAI* >(GetNearestCreature(CN_GATHIOS_THE_SHATTERER));
             if (pGethois != NULL)
@@ -3161,8 +3161,8 @@ class ZerevorAI : public MoonScriptCreatureAI
             AddSpell(DAMPEN_MAGIC, Target_Self, 10, 0, 60);
             AddSpell(ARCANE_EXPLOSION, Target_RandomPlayer, 15, 0, 6);
 
-            AddEmote(Event_OnCombatStart, "Common... such a crude language. Bandal!", Text_Yell, 11440);
-            AddEmote(Event_OnTargetDied, "Shorel'aran.", Text_Yell, 11441);
+            AddEmote(Event_OnCombatStart, "Common... such a crude language. Bandal!", CHAT_MSG_MONSTER_YELL, 11440);
+            AddEmote(Event_OnTargetDied, "Shorel'aran.", CHAT_MSG_MONSTER_YELL, 11441);
 
             pGethois = static_cast< GathiosAI* >(GetNearestCreature(CN_GATHIOS_THE_SHATTERER));
             if (pGethois != NULL)
@@ -3198,9 +3198,9 @@ class MalandeAI : public MoonScriptCreatureAI
             AddSpell(EMPOWERED_SMITE, Target_RandomPlayer, 30, 2.0f, 6);
             AddSpell(CIRCLE_OF_HEALING, Target_RandomFriendly, 30, 2.5f, 18);
 
-            AddEmote(Event_OnCombatStart, "Flee or die!", Text_Yell, 11482);
-            AddEmote(Event_OnDied, "Destiny... awaits!", Text_Yell, 11485);
-            AddEmote(Event_OnTargetDied, "My work is done.", Text_Yell, 11483);
+            AddEmote(Event_OnCombatStart, "Flee or die!", CHAT_MSG_MONSTER_YELL, 11482);
+            AddEmote(Event_OnDied, "Destiny... awaits!", CHAT_MSG_MONSTER_YELL, 11485);
+            AddEmote(Event_OnTargetDied, "My work is done.", CHAT_MSG_MONSTER_YELL, 11483);
 
             pGethois = static_cast< GathiosAI* >(GetNearestCreature(CN_GATHIOS_THE_SHATTERER));
             if (pGethois != NULL)
@@ -4312,13 +4312,13 @@ class AkamaAI : public MoonScriptBossAI
         {
             AddPhaseSpell(2, AddSpell(AKAMA_BLESSING_OF_KINGS, Target_Self, 15, 0, 60));
             mHealingPotion = AddSpell(AKAMA_HEALING_POTION, Target_Self, 0, 0, 0);
-            mHealingPotion->AddEmote("I will not last much longer!", Text_Yell, 11385);
-            mHealingPotion->AddEmote("No! Not yet!", Text_Yell, 11386);
+            mHealingPotion->AddEmote("I will not last much longer!", CHAT_MSG_MONSTER_YELL, 11385);
+            mHealingPotion->AddEmote("No! Not yet!", CHAT_MSG_MONSTER_YELL, 11386);
             mDespawn = AddSpell(AKAMA_DESPAWN, Target_Self, 0, 0.5f, 0);
 
-            AddEmote(Event_OnTargetDied, "Illidan will pay!", Text_Yell, 11381);
-            AddEmote(Event_OnTargetDied, "One step closer!", Text_Yell, 11382);
-            AddEmote(Event_OnDied, "Fight on friends! Kill him and end the curse on my people!", Text_Yell, 11391);
+            AddEmote(Event_OnTargetDied, "Illidan will pay!", CHAT_MSG_MONSTER_YELL, 11381);
+            AddEmote(Event_OnTargetDied, "One step closer!", CHAT_MSG_MONSTER_YELL, 11382);
+            AddEmote(Event_OnDied, "Fight on friends! Kill him and end the curse on my people!", CHAT_MSG_MONSTER_YELL, 11391);
 
             SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
             setCanEnterCombat(false);
@@ -5304,10 +5304,10 @@ class IllidanStormrageAI : public MoonScriptBossAI
             AddPhaseSpell(5, AddSpell(ILLIDAN_DRAW_SOUL, Target_Self, 6, 1.5f, 40));    // Self-kills are bad =/
             AddPhaseSpell(5, AddSpell(ILLIDAN_FLAME_CRASH, Target_Destination, 12, 1.3f, 25));
             AddPhaseSpell(5, AddSpell(ILLIDAN_AGONIZING_FLAMES, Target_RandomDestination, 7, 0, 25, 0, 35, true));
-            mEnrage = AddPhaseSpell(5, AddSpell(ILLIDAN_ENRAGE, Target_Self, 0, 1.3f, 0, 0, 0, true, "You've wasted too much time mortals, now you shall fall!", Text_Yell, 11474));
+            mEnrage = AddPhaseSpell(5, AddSpell(ILLIDAN_ENRAGE, Target_Self, 0, 1.3f, 0, 0, 0, true, "You've wasted too much time mortals, now you shall fall!", CHAT_MSG_MONSTER_YELL, 11474));
 
-            AddEmote(Event_OnTargetDied, "Who shall be next to taste my blades?!", Text_Yell, 11473);
-            AddEmote(Event_OnTargetDied, "This is too easy!", Text_Yell, 11472);
+            AddEmote(Event_OnTargetDied, "Who shall be next to taste my blades?!", CHAT_MSG_MONSTER_YELL, 11473);
+            AddEmote(Event_OnTargetDied, "This is too easy!", CHAT_MSG_MONSTER_YELL, 11472);
 
             SetEnrageInfo(AddSpell(ILLIDAN_BERSERK, Target_Self, 0, 0, 0), 1500000);
 

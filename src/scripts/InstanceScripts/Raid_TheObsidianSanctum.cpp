@@ -167,16 +167,16 @@ class SartharionAI : public MoonScriptBossAI
             AddSpell(SARTHARION_CLEAVE, Target_Current, 24, 0, 8);
 
             SpellDesc* mFlame = AddSpell(HeroicInt(56908, 58956), Target_Self, 18, 2, 16);
-            mFlame->AddEmote("Burn, you miserable wretches!", Text_Yell, 14098);
+            mFlame->AddEmote("Burn, you miserable wretches!", CHAT_MSG_MONSTER_YELL, 14098);
 
             AddSpell(HeroicInt(56910, 58957), Target_Self, 40, 0, 12);
             mFlameTsunami = AddSpellFunc(&SpellFunc_FlameTsunami, Target_Self, 99, 0, 25);
             mSummonLava = AddSpellFunc(&SpellFunc_LavaSpawn, Target_RandomUnitNotCurrent, 25, 0, 8);
 
-            AddEmote(Event_OnTargetDied, "You will make a fine meal for the hatchlings.", Text_Yell, 14094);
-            AddEmote(Event_OnTargetDied, "You are at a grave disadvantage!", Text_Yell, 14096);
-            AddEmote(Event_OnTargetDied, "This is why we call you lesser beings.", Text_Yell, 14097);
-            AddEmote(Event_OnCombatStart, "It is my charge to watch over these eggs. I will see you burn before any harm comes to them!", Text_Yell, 14093);
+            AddEmote(Event_OnTargetDied, "You will make a fine meal for the hatchlings.", CHAT_MSG_MONSTER_YELL, 14094);
+            AddEmote(Event_OnTargetDied, "You are at a grave disadvantage!", CHAT_MSG_MONSTER_YELL, 14096);
+            AddEmote(Event_OnTargetDied, "This is why we call you lesser beings.", CHAT_MSG_MONSTER_YELL, 14097);
+            AddEmote(Event_OnCombatStart, "It is my charge to watch over these eggs. I will see you burn before any harm comes to them!", CHAT_MSG_MONSTER_YELL, 14093);
 
             for (uint8 i = 0; i < OS_DATA_END - 1; i++)
             {

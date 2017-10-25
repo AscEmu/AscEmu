@@ -223,15 +223,15 @@ class Marwyn : public MoonScriptBossAI
             if (IsHeroic() == false) // NORMAL MODE
             {
                 AddSpell(N_SPELL_OBLITERATE, Target_Current, 45, 0, 30); // Timer may be off on this.
-                AddSpell(N_SPELL_WELL, Target_RandomPlayer, 60, 0, 13, 0, 0, false, "Your flesh has decayed before your very eyes!", Text_Yell, 16739);
-                AddSpell(N_SPELL_CORRUPTFLESH, Target_Current, 40, 0, 20, 0, 0, false, "Waste away into nothingness!", Text_Yell, 16740);
+                AddSpell(N_SPELL_WELL, Target_RandomPlayer, 60, 0, 13, 0, 0, false, "Your flesh has decayed before your very eyes!", CHAT_MSG_MONSTER_YELL, 16739);
+                AddSpell(N_SPELL_CORRUPTFLESH, Target_Current, 40, 0, 20, 0, 0, false, "Waste away into nothingness!", CHAT_MSG_MONSTER_YELL, 16740);
                 AddSpell(N_SPELL_SHARED, Target_RandomPlayer, 45, 0, 20);
             }
             else // HEROIC MODE
             {
                 AddSpell(H_SPELL_OBLITERATE, Target_Current, 45, 0, 30); // Timer may be off on this.
-                AddSpell(H_SPELL_WELL, Target_RandomPlayer, 60, 0, 13, 0, 0, false, "Your flesh has decayed before your very eyes!", Text_Yell, 16739);
-                AddSpell(H_SPELL_CORRUPTFLESH, Target_Current, 40, 0, 20, 0, 0, false, "Waste away into nothingness!", Text_Yell, 16740);
+                AddSpell(H_SPELL_WELL, Target_RandomPlayer, 60, 0, 13, 0, 0, false, "Your flesh has decayed before your very eyes!", CHAT_MSG_MONSTER_YELL, 16739);
+                AddSpell(H_SPELL_CORRUPTFLESH, Target_Current, 40, 0, 20, 0, 0, false, "Waste away into nothingness!", CHAT_MSG_MONSTER_YELL, 16740);
                 AddSpell(H_SPELL_SHARED, Target_RandomPlayer, 45, 0, 20);
             }
         }

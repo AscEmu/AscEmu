@@ -352,7 +352,7 @@ class DofNaralexAI : public MoonScriptBossAI
             SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
 
             // Awakening Spell
-            Awakening = AddSpell(6271, Target_Self, 0, 0, 0, 0, 0, false, "Step back and be ready!, I'll try to Awake Naralex", Text_Say);
+            Awakening = AddSpell(6271, Target_Self, 0, 0, 0, 0, 0, false, "Step back and be ready!, I'll try to Awake Naralex", CHAT_MSG_MONSTER_SAY);
 
             SpawnTimer = 0;
         }

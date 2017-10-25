@@ -43,7 +43,7 @@ class KelidanTheBreakerAI : public MoonScriptBossAI
         }
 
         mBurningNova = AddSpell(KELIDAN_BURNING_NOVA, Target_Self, 0, 0, 0);
-        mBurningNova->AddEmote("Closer! Come closer... and burn!", Text_Yell);
+        mBurningNova->AddEmote("Closer! Come closer... and burn!", CHAT_MSG_MONSTER_YELL);
         mVortex = AddSpell(KELIDAN_FIRE_NOVA, Target_Self, 0, 0, 0);
         AddSpell(KELIDAN_CORRUPTION, Target_Current, 15, 0, 10);
 

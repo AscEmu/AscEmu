@@ -100,12 +100,12 @@ class HighKingMaulgarAI : public MoonScriptBossAI
             AddSpell(HIGH_KING_MAULGAR_WHIRLWIND, Target_Self, 7, 15, 25);                    // SpellFunc for range check?
             AddSpell(HIGH_KING_MAULGAR_MIGHTY_BLOW, Target_Current, 7, 0, 20, 0, 5);
             mEnrage = AddSpellFunc(&SpellFunc_Maulgar_Enrage, Target_Self, 0, 0, 0);
-            mEnrage->AddEmote("You will not defeat the hand of Gruul!", Text_Yell, 11368);
-            AddEmote(Event_OnCombatStart, "Gronn are the real power in Outland!", Text_Yell, 11367);
-            AddEmote(Event_OnTargetDied, "You not so tough after all!", Text_Yell, 11373);
-            AddEmote(Event_OnTargetDied, "Maulgar is king!", Text_Yell, 11375);
-            AddEmote(Event_OnTargetDied, "", Text_Emote, 11374);
-            AddEmote(Event_OnDied, "Grull... will crush you!", Text_Yell, 11376);
+            mEnrage->AddEmote("You will not defeat the hand of Gruul!", CHAT_MSG_MONSTER_YELL, 11368);
+            AddEmote(Event_OnCombatStart, "Gronn are the real power in Outland!", CHAT_MSG_MONSTER_YELL, 11367);
+            AddEmote(Event_OnTargetDied, "You not so tough after all!", CHAT_MSG_MONSTER_YELL, 11373);
+            AddEmote(Event_OnTargetDied, "Maulgar is king!", CHAT_MSG_MONSTER_YELL, 11375);
+            AddEmote(Event_OnTargetDied, "", CHAT_MSG_MONSTER_YELL, 11374);
+            AddEmote(Event_OnDied, "Grull... will crush you!", CHAT_MSG_MONSTER_YELL, 11376);
 
             mLastYell = -1;
             mAliveAdds = 0;
@@ -443,22 +443,22 @@ class GruulTheDragonkillerAI : public MoonScriptCreatureAI
         {
             mHurtfulStrike = AddSpell(GRUUL_THE_DRAGONKILLER_HURTFUL_STRIKE, Target_Current, 0, 0, 0, 0, 8);
             mGroundSlam = AddSpell(GRUUL_THE_DRAGONKILLER_GROUND_SLAM, Target_Self, 0, 1, 0);
-            mGroundSlam->AddEmote("Scurry.", Text_Yell, 11356);
-            mGroundSlam->AddEmote("No escape.", Text_Yell, 11357);
+            mGroundSlam->AddEmote("Scurry.", CHAT_MSG_MONSTER_YELL, 11356);
+            mGroundSlam->AddEmote("No escape.", CHAT_MSG_MONSTER_YELL, 11357);
             mGroundSlam2 = AddSpell(GRUUL_THE_DRAGONKILLER_GROUND_SLAM2, Target_Self, 0, 1, 0);
             mStoned = AddSpellFunc(&SpellFunc_Gruul_Stoned, Target_Self, 0, 2, 0);
             mShatter = AddSpellFunc(&SpellFunc_Gruul_Shatter, Target_Self, 0, 3, 0);
             mShatter2 = AddSpell(GRUUL_THE_DRAGONKILLER_SHATTER, Target_Self, 0, 1, 0);
-            mShatter2->AddEmote("Stay...", Text_Yell, 11358);
-            mShatter2->AddEmote("Beg for life.", Text_Yell, 11359);
+            mShatter2->AddEmote("Stay...", CHAT_MSG_MONSTER_YELL, 11358);
+            mShatter2->AddEmote("Beg for life.", CHAT_MSG_MONSTER_YELL, 11359);
             AddSpell(GRUUL_THE_DRAGONKILLER_REVERBERATION, Target_Self, 4, 0, 30);
             AddSpell(GRUUL_THE_DRAGONKILLER_CAVE_IN, Target_RandomPlayerDestination, 7, 0, 25);
             AddSpellFunc(&SpellFunc_Gruul_GroundSlam, Target_Self, 6, 1, 35);
-            AddEmote(Event_OnCombatStart, "Come and die.", Text_Yell, 11355);
-            AddEmote(Event_OnTargetDied, "No more.", Text_Yell, 11360);
-            AddEmote(Event_OnTargetDied, "Unworthy.", Text_Yell, 11361);
-            AddEmote(Event_OnTargetDied, "Die.", Text_Emote, 11362);
-            AddEmote(Event_OnDied, "", Text_Yell, 11363);
+            AddEmote(Event_OnCombatStart, "Come and die.", CHAT_MSG_MONSTER_YELL, 11355);
+            AddEmote(Event_OnTargetDied, "No more.", CHAT_MSG_MONSTER_YELL, 11360);
+            AddEmote(Event_OnTargetDied, "Unworthy.", CHAT_MSG_MONSTER_YELL, 11361);
+            AddEmote(Event_OnTargetDied, "Die.", CHAT_MSG_MONSTER_EMOTE, 11362);
+            AddEmote(Event_OnDied, "", CHAT_MSG_MONSTER_YELL, 11363);
 
             mGrowthTimer = mHurtfulTimer = -1;
             mGrowthStacks = 0;

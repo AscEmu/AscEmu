@@ -38,7 +38,7 @@ TargetType::~TargetType()
 //////////////////////////////////////////////////////////////////////////////////////////
 //Class SpellDesc
 SpellDesc::SpellDesc(SpellInfo* pInfo, SpellFunc pFnc, TargetType pTargetType, float pChance, float pCastTime, int32 pCooldown, float pMinRange, float pMaxRange,
-                     bool pStrictRange, const char* pText, TextType pTextType, uint32 pSoundId, const char* pAnnouncement)
+                     bool pStrictRange, const char* pText, uint8 pTextType, uint32 pSoundId, const char* pAnnouncement)
 {
     mInfo = pInfo;
     mSpellFunc = pFnc;
@@ -61,7 +61,7 @@ SpellDesc::~SpellDesc()
     DeleteArray(mEmotes);
 }
 
-EmoteDesc* SpellDesc::AddEmote(const char* pText, TextType pType, uint32 pSoundId)
+EmoteDesc* SpellDesc::AddEmote(const char* pText, uint8 pType, uint32 pSoundId)
 {
     EmoteDesc* NewEmote = nullptr;
     if (pText || pSoundId)
@@ -258,7 +258,7 @@ MoonScriptCreatureAI* MoonScriptCreatureAI::SpawnCreature(uint32 pCreatureId, fl
 }
 
 SpellDesc* MoonScriptCreatureAI::AddSpell(uint32 pSpellId, TargetType pTargetType, float pChance, float pCastTime, int32 pCooldown, float pMinRange, float pMaxRange,
-                                          bool pStrictRange, const char* pText, TextType pTextType, uint32 pSoundId, const char* pAnnouncement)
+                                          bool pStrictRange, const char* pText, uint8 pTextType, uint32 pSoundId, const char* pAnnouncement)
 {
     //Cannot add twice same spell id    - M4ksiu: Disabled, until I rewrite SetPhase(...) function to not disable same spells that are in different phases
     //SpellDesc* NewSpell = FindSpellById(pSpellId);
@@ -288,7 +288,7 @@ SpellDesc* MoonScriptCreatureAI::AddSpell(uint32 pSpellId, TargetType pTargetTyp
 }
 
 SpellDesc* MoonScriptCreatureAI::AddSpellFunc(SpellFunc pFnc, TargetType pTargetType, float pChance, float pCastTime, int32 pCooldown, float pMinRange, float pMaxRange,
-                                              bool pStrictRange, const char* pText, TextType pTextType, uint32 pSoundId, const char* pAnnouncement)
+                                              bool pStrictRange, const char* pText, uint8 pTextType, uint32 pSoundId, const char* pAnnouncement)
 {
     if (!pFnc)
         return nullptr;
@@ -377,7 +377,7 @@ void MoonScriptCreatureAI::CancelAllCooldowns()
     }
 }
 
-EmoteDesc* MoonScriptCreatureAI::AddEmote(EventType pEventType, const char* pText, TextType pType, uint32 pSoundId)
+EmoteDesc* MoonScriptCreatureAI::AddEmote(EventType pEventType, const char* pText, uint8 pType, uint32 pSoundId)
 {
     EmoteDesc* NewEmote = nullptr;
     if (pText || pSoundId)
@@ -409,24 +409,17 @@ EmoteDesc* MoonScriptCreatureAI::AddEmote(EventType pEventType, uint32_t scriptt
 {
     EmoteDesc* NewEmote = nullptr;
     MySQLStructure::NpcScriptText const* ct = sMySQLStore.getNpcScriptText(scripttext);
-    TextType pType = Text_Say;
+    uint8 pType = CHAT_MSG_MONSTER_SAY;
 
     if (ct != nullptr)
     {
-        switch (ct->type)
+        if (ct->type != CHAT_MSG_MONSTER_SAY && ct->type != CHAT_MSG_MONSTER_YELL && ct->type != CHAT_MSG_MONSTER_EMOTE)
         {
-            case CHAT_MSG_SAY:
-                pType = Text_Say;
-                break;
-            case CHAT_MSG_MONSTER_YELL:
-                pType = Text_Yell;
-                break;
-            case CHAT_MSG_TEXT_EMOTE:
-                pType = Text_Emote;
-                break;
-            default:
-                LogDebugFlag(LF_SCRIPT_MGR, "MoonScriptCreatureAI::AddEmote() : Invalid Message Type: %u !", ct->type);
-                break;
+            LogDebugFlag(LF_SCRIPT_MGR, "MoonScriptCreatureAI::AddEmote() : Invalid Message Type: %u !", ct->type);
+        }
+        else
+        {
+            pType = ct->type;
         }
 
         NewEmote = new EmoteDesc(ct->text.c_str(), pType, ct->sound);
@@ -1227,20 +1220,15 @@ void MoonScriptCreatureAI::RandomEmote(EmoteArray & pEmoteArray)
     if (ArraySize > 0)
     {
         uint32 Roll = (ArraySize > 1) ? RandomUInt(ArraySize - 1) : 0;
-        switch (pEmoteArray[Roll]->mType)
+        uint8 type = pEmoteArray[Roll]->mType;
+        if (type != CHAT_MSG_MONSTER_SAY && type != CHAT_MSG_MONSTER_YELL && type != CHAT_MSG_MONSTER_EMOTE)
         {
-            case Text_Say:
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, pEmoteArray[Roll]->mText.c_str());
-                break;
-            case Text_Yell:
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, pEmoteArray[Roll]->mText.c_str());
-                break;
-            case Text_Emote:
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_EMOTE, LANG_UNIVERSAL, pEmoteArray[Roll]->mText.c_str());
-                break;
-            default:
-                LogDebugFlag(LF_SCRIPT_MGR, "MoonScriptCreatureAI::RandomEmote() : Invalid text type!");
-                break;
+            LogDebugFlag(LF_SCRIPT_MGR, "MoonScriptCreatureAI::RandomEmote() : Invalid text type %u!", type);
+            return;
+        }
+        else
+        {
+            _unit->SendChatMessage(type, LANG_UNIVERSAL, pEmoteArray[Roll]->mText.c_str());
         }
 
         if (pEmoteArray[Roll]->mSoundId > 0)

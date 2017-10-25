@@ -202,12 +202,12 @@ class DalliahTheDoomsayerAI : public MoonScriptBossAI
             AddSpell(GIFT_OF_THE_DOOMSAYER, Target_Current, 8.0f, 0.0f, -1);
 
             SpellDesc* WhirlTemp = AddSpell(WHIRLWIND, Target_Self, 15.0f, 0.0f, -1);
-            WhirlTemp->AddEmote("Reap the Whirlwind!", Text_Yell, 11089);
-            WhirlTemp->AddEmote("I'll cut you to peices!", Text_Yell, 11090);
+            WhirlTemp->AddEmote("Reap the Whirlwind!", CHAT_MSG_MONSTER_YELL, 11089);
+            WhirlTemp->AddEmote("I'll cut you to peices!", CHAT_MSG_MONSTER_YELL, 11090);
 
             SpellDesc* HealTemp = AddSpell(HEAL, Target_Self, 8.0f, 0, -1);
-            HealTemp->AddEmote("That is much better.", Text_Yell, 11091);
-            HealTemp->AddEmote("Ah, just what I needed.", Text_Yell, 11092);
+            HealTemp->AddEmote("That is much better.", CHAT_MSG_MONSTER_YELL, 11091);
+            HealTemp->AddEmote("Ah, just what I needed.", CHAT_MSG_MONSTER_YELL, 11092);
 
             if (IsHeroic())
                 AddSpell(SHADOW_WAVE, Target_Current, 8.0f, 0, -1);
@@ -310,17 +310,17 @@ class HarbringerSkyrissAI : public MoonScriptBossAI
             AddSpell(MIND_REND, Target_Current, 15.0f, 0, -1);
 
             SpellDesc* Fear = AddSpell(FEAR, Target_Current, 8.0f, 0, -1);
-            Fear->AddEmote("Flee in terror!", Text_Yell, 11129);
-            Fear->AddEmote("I will show you horrors undreamed of.", Text_Yell, 11130);
+            Fear->AddEmote("Flee in terror!", CHAT_MSG_MONSTER_YELL, 11129);
+            Fear->AddEmote("I will show you horrors undreamed of.", CHAT_MSG_MONSTER_YELL, 11130);
 
             SpellDesc* Domination = AddSpell(DOMINATION, Target_Current, 6.0f, 0, -1);
-            Domination->AddEmote("You will do my bidding, weakling.", Text_Yell, 11127);
-            Domination->AddEmote("Your will is no longer your own.", Text_Yell, 11128);
+            Domination->AddEmote("You will do my bidding, weakling.", CHAT_MSG_MONSTER_YELL, 11127);
+            Domination->AddEmote("Your will is no longer your own.", CHAT_MSG_MONSTER_YELL, 11128);
 
-            Illusion66 = AddSpell(SUMMON_ILLUSION_66, Target_Self, 0, 0, -1, 0, 0, false, "", Text_Yell, 11131);
+            Illusion66 = AddSpell(SUMMON_ILLUSION_66, Target_Self, 0, 0, -1, 0, 0, false, "", CHAT_MSG_MONSTER_YELL, 11131);
             Illusion66->mEnabled = false;
 
-            Illusion33 = AddSpell(SUMMON_ILLUSION_33, Target_Self, 0, 0, -1, 0, 0, false, "", Text_Yell, 11131);
+            Illusion33 = AddSpell(SUMMON_ILLUSION_33, Target_Self, 0, 0, -1, 0, 0, false, "", CHAT_MSG_MONSTER_YELL, 11131);
             Illusion33->mEnabled = false;
 
             IllusionCount = 0;

@@ -610,13 +610,13 @@ GrandWidowFaerlinaAI::GrandWidowFaerlinaAI(Creature* pCreature) : MoonScriptBoss
     };
 
     sendChatMessage(CHAT_MSG_MONSTER_YELL, 8799, "Your old lives, your mortal desires, mean nothing. You are acolytes of the master now, and you will serve the cause without question! The greatest glory is to die in the master's service!");
-    AddEmote(Event_OnCombatStart, "Slay them in the master's name!", Text_Yell, 8794);
-    AddEmote(Event_OnTargetDied, "You have failed!", Text_Yell, 8800);
-    AddEmote(Event_OnTargetDied, "Pathetic wretch!", Text_Yell, 8801);
-    AddEmote(Event_OnDied, "The master... will avenge me!", Text_Yell, 8798);
-    mFrenzy->AddEmote("You cannot hide from me!", Text_Yell, 8795);
-    mFrenzy->AddEmote("Kneel before me, worm!", Text_Yell, 8796);
-    mFrenzy->AddEmote("Run while you still can!", Text_Yell, 8797);
+    AddEmote(Event_OnCombatStart, "Slay them in the master's name!", CHAT_MSG_MONSTER_YELL, 8794);
+    AddEmote(Event_OnTargetDied, "You have failed!", CHAT_MSG_MONSTER_YELL, 8800);
+    AddEmote(Event_OnTargetDied, "Pathetic wretch!", CHAT_MSG_MONSTER_YELL, 8801);
+    AddEmote(Event_OnDied, "The master... will avenge me!", CHAT_MSG_MONSTER_YELL, 8798);
+    mFrenzy->AddEmote("You cannot hide from me!", CHAT_MSG_MONSTER_YELL, 8795);
+    mFrenzy->AddEmote("Kneel before me, worm!", CHAT_MSG_MONSTER_YELL, 8796);
+    mFrenzy->AddEmote("Run while you still can!", CHAT_MSG_MONSTER_YELL, 8797);
     mPoisonVolleyBoltTimer = mFrenzyTimer = INVALIDATE_TIMER;
 };
 
@@ -834,14 +834,14 @@ AnubRekhanAI::AnubRekhanAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
     AddSpellFunc(&SpellFunc_AnubRekhanCorpseScarabsPlayer, Target_Self, 8, 0, 20);
     AddSpellFunc(&SpellFunc_AnubRekhanCorpseScarabsCryptGuard, Target_Self, 8, 0, 20);
     sendChatMessage(CHAT_MSG_MONSTER_YELL, 8788, "Ahh... welcome to my parlor.");
-    AddEmote(Event_OnCombatStart, "Just a little taste...", Text_Yell, 8785);
-    AddEmote(Event_OnCombatStart, "There is no way out.", Text_Yell, 8786);
-    AddEmote(Event_OnCombatStart, "Yes, run! It makes the blood pump faster!", Text_Yell, 8787);
-    AddEmote(Event_OnTargetDied, "Shhh... it will all be over soon.", Text_Yell, 8789);
-    AddEmote(Event_OnTaunt, "I hear little hearts beating. Yesss... beating faster now. Soon the beating will stop.", Text_Yell, 8790);
-    AddEmote(Event_OnTaunt, "Where to go? What to do? So many choices that all end in pain, end in death.", Text_Yell, 8791);
-    AddEmote(Event_OnTaunt, "Which one shall I eat first? So difficult to choose. They all smell so delicious...", Text_Yell, 8792);
-    AddEmote(Event_OnTaunt, "Closer now... tasty morsels. I've been too long without food. Without blood to drink.", Text_Yell, 8793);
+    AddEmote(Event_OnCombatStart, "Just a little taste...", CHAT_MSG_MONSTER_YELL, 8785);
+    AddEmote(Event_OnCombatStart, "There is no way out.", CHAT_MSG_MONSTER_YELL, 8786);
+    AddEmote(Event_OnCombatStart, "Yes, run! It makes the blood pump faster!", CHAT_MSG_MONSTER_YELL, 8787);
+    AddEmote(Event_OnTargetDied, "Shhh... it will all be over soon.", CHAT_MSG_MONSTER_YELL, 8789);
+    AddEmote(Event_OnTaunt, "I hear little hearts beating. Yesss... beating faster now. Soon the beating will stop.", CHAT_MSG_MONSTER_YELL, 8790);
+    AddEmote(Event_OnTaunt, "Where to go? What to do? So many choices that all end in pain, end in death.", CHAT_MSG_MONSTER_YELL, 8791);
+    AddEmote(Event_OnTaunt, "Which one shall I eat first? So difficult to choose. They all smell so delicious...", CHAT_MSG_MONSTER_YELL, 8792);
+    AddEmote(Event_OnTaunt, "Closer now... tasty morsels. I've been too long without food. Without blood to drink.", CHAT_MSG_MONSTER_YELL, 8793);
     SetEnrageInfo(AddSpell(ANUBREKHAN_BERSERK, Target_Self, 0, 0, 0), 600000);
     mLocustSwarmTimer = mCryptSpawnTimer = INVALIDATE_TIMER;
 };
@@ -1263,12 +1263,12 @@ NothThePlaguebringerAI::NothThePlaguebringerAI(Creature* pCreature) : MoonScript
     mBlinkTimer = mSkeletonTimer = mPhaseSwitchTimer = INVALIDATE_TIMER;
     mPhaseCounter = 0;
 
-    AddEmote(Event_OnCombatStart, "Glory to the master!", Text_Yell, 8845);
-    AddEmote(Event_OnCombatStart, "Your life is forfeit.", Text_Yell, 8846);
-    AddEmote(Event_OnCombatStart, "Die, trespasser!", Text_Yell, 8847);
-    AddEmote(Event_OnDied, "I will serve the master... in death.", Text_Yell, 8848);
-    AddEmote(Event_OnTargetDied, "My task is done!", Text_Yell, 8849);
-    AddEmote(Event_OnTargetDied, "Breathe no more.", Text_Yell, 8850);
+    AddEmote(Event_OnCombatStart, "Glory to the master!", CHAT_MSG_MONSTER_YELL, 8845);
+    AddEmote(Event_OnCombatStart, "Your life is forfeit.", CHAT_MSG_MONSTER_YELL, 8846);
+    AddEmote(Event_OnCombatStart, "Die, trespasser!", CHAT_MSG_MONSTER_YELL, 8847);
+    AddEmote(Event_OnDied, "I will serve the master... in death.", CHAT_MSG_MONSTER_YELL, 8848);
+    AddEmote(Event_OnTargetDied, "My task is done!", CHAT_MSG_MONSTER_YELL, 8849);
+    AddEmote(Event_OnTargetDied, "Breathe no more.", CHAT_MSG_MONSTER_YELL, 8850);
 };
 
 void NothThePlaguebringerAI::OnCombatStart(Unit* pTarget)
@@ -1681,15 +1681,15 @@ HeiganTheUncleanAI::HeiganTheUncleanAI(Creature* pCreature) : MoonScriptBossAI(p
 
     AddPhaseSpell(2, AddSpell(HEIGAN_THE_UNCLEAN_PLAGUE_CLOUD_DAMAGE, Target_Self, 100, 0, 2));
 
-    AddEmote(Event_OnCombatStart, "You are mine now!", Text_Yell, 8825);
-    AddEmote(Event_OnCombatStart, "I see you...", Text_Yell, 8826);
-    AddEmote(Event_OnCombatStart, "You... are next!", Text_Yell, 8827);
-    AddEmote(Event_OnDied, "Arghhaahhhhh!", Text_Yell, 8828);
-    AddEmote(Event_OnTargetDied, "Close your eyes. Sleep.", Text_Yell, 8829);
-    AddEmote(Event_OnTaunt, "The races of the world will perish... it is only a matter of time.", Text_Yell, 8830);
-    AddEmote(Event_OnTaunt, "I see endless suffering... I see torment... I see rage... I see everything.", Text_Yell, 8831);
-    AddEmote(Event_OnTaunt, "Soon... the world will tremble.", Text_Yell, 8832);
-    AddEmote(Event_OnTaunt, "Hungry worms will feast on your rotting flesh.", Text_Yell, 8834);
+    AddEmote(Event_OnCombatStart, "You are mine now!", CHAT_MSG_MONSTER_YELL, 8825);
+    AddEmote(Event_OnCombatStart, "I see you...", CHAT_MSG_MONSTER_YELL, 8826);
+    AddEmote(Event_OnCombatStart, "You... are next!", CHAT_MSG_MONSTER_YELL, 8827);
+    AddEmote(Event_OnDied, "Arghhaahhhhh!", CHAT_MSG_MONSTER_YELL, 8828);
+    AddEmote(Event_OnTargetDied, "Close your eyes. Sleep.", CHAT_MSG_MONSTER_YELL, 8829);
+    AddEmote(Event_OnTaunt, "The races of the world will perish... it is only a matter of time.", CHAT_MSG_MONSTER_YELL, 8830);
+    AddEmote(Event_OnTaunt, "I see endless suffering... I see torment... I see rage... I see everything.", CHAT_MSG_MONSTER_YELL, 8831);
+    AddEmote(Event_OnTaunt, "Soon... the world will tremble.", CHAT_MSG_MONSTER_YELL, 8832);
+    AddEmote(Event_OnTaunt, "Hungry worms will feast on your rotting flesh.", CHAT_MSG_MONSTER_YELL, 8834);
     mPhaseSwitchTimer = mEruptionTimer = INVALIDATE_TIMER;
     mEruptionPhase = 3;
     mClockWiseEruption = true;
@@ -2726,10 +2726,10 @@ PatchwerkAI::PatchwerkAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
     AddSpellFunc(&SpellFunc_PatchwerkHatefulStrike, Target_Self, 50, 0, 3);
     SetEnrageInfo(AddSpell(PATCHWERK_BERSERK, Target_Self, 0, 0, 0), 360000);
 
-    AddEmote(Event_OnCombatStart, "Patchwerk want to play.", Text_Yell, 8909);
-    AddEmote(Event_OnCombatStart, "Kel'Thuzad make Patchwerk his avatar of war!", Text_Yell, 8910);
-    AddEmote(Event_OnTargetDied, "No more play?", Text_Yell, 8911);
-    AddEmote(Event_OnDied, "What happened to... Patch...", Text_Yell, 8912);
+    AddEmote(Event_OnCombatStart, "Patchwerk want to play.", CHAT_MSG_MONSTER_YELL, 8909);
+    AddEmote(Event_OnCombatStart, "Kel'Thuzad make Patchwerk his avatar of war!", CHAT_MSG_MONSTER_YELL, 8910);
+    AddEmote(Event_OnTargetDied, "No more play?", CHAT_MSG_MONSTER_YELL, 8911);
+    AddEmote(Event_OnDied, "What happened to... Patch...", CHAT_MSG_MONSTER_YELL, 8912);
     mEnraged = false;
 };
 

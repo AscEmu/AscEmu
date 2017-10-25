@@ -87,7 +87,7 @@ class KelrisAI : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(KelrisAI, MoonScriptCreatureAI);
         KelrisAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            AddSpell(8399, Target_RandomPlayer, 12, 1.3f, 0, 0, 0, false, "Sleep...", Text_Yell, 5804);    // Sleep
+            AddSpell(8399, Target_RandomPlayer, 12, 1.3f, 0, 0, 0, false, "Sleep...", CHAT_MSG_MONSTER_YELL, 5804);    // Sleep
             AddSpell(15587, Target_Current, 16, 1.5f, 0);    // Mind Blast
         }
 
