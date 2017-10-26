@@ -1,256 +1,292 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2017 AscEmu Team <http://www.ascemu.org/>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "StdAfx.h"
 #include "Management/Item.h"
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.h"
-#include "Storage/MySQLDataStore.hpp"
-#include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
-#include "Spell/SpellAuras.h"
+#include "Server/MainServerDefines.h"
+#include "Spell/Definitions/AuraInterruptFlags.h"
 #include "Spell/Definitions/SpellCastTargetFlags.h"
-#include <Spell/Definitions/AuraInterruptFlags.h>
 #include "Spell/Definitions/SpellRanged.h"
 #include "Spell/Definitions/SpellState.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
+#include "Spell/SpellAuras.h"
+#include "Storage/MySQLDataStore.hpp"
 #include "Units/Creatures/Pet.h"
 
 void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
-    typedef std::list<Aura*> AuraList;
+    uint8_t containerIndex, inventorySlot, castCount, castFlags;
+    uint32_t spellId, glyphIndex;
+    uint64_t itemGuid;
 
-    Player* p_User = GetPlayer();
-    LOG_DETAIL("WORLD: got use Item packet, data length = %i", recvPacket.size());
-    int8 tmp1, slot;
-    uint8 unk; //Alice : added in 3.0.2
-    uint64 item_guid;
-    uint8 cn;
-    uint32 spellId = 0;
-    uint32 glyphIndex;
-    bool found = false;
+    recvPacket >> containerIndex >> inventorySlot >> castCount >> spellId >> itemGuid >> glyphIndex >> castFlags;
 
-    recvPacket >> tmp1;
-    recvPacket >> slot;
-    recvPacket >> cn;
-    recvPacket >> spellId;
-    recvPacket >> item_guid;
-    recvPacket >> glyphIndex;
-    recvPacket >> unk;
+    Item* tmpItem = _player->GetItemInterface()->GetInventoryItem(containerIndex, inventorySlot);
+    if (tmpItem == nullptr)
+    {
+        tmpItem = _player->GetItemInterface()->GetInventoryItem(inventorySlot);
+    }
 
-    Item* tmpItem = nullptr;
-    tmpItem = p_User->GetItemInterface()->GetInventoryItem(tmp1, slot);
-    if (!tmpItem)
-        tmpItem = p_User->GetItemInterface()->GetInventoryItem(slot);
-
-    if (!tmpItem)
+    if (tmpItem == nullptr)
+    {
+        _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_NOT_FOUND);
         return;
+    }
+
+    if (tmpItem->GetGUID() != itemGuid)
+    {
+        _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_NOT_FOUND);
+        return;
+    }
 
     ItemProperties const* itemProto = tmpItem->GetItemProperties();
-
-    // only some consumable items can be used in arenas
-    if ((itemProto->Class == ITEM_CLASS_CONSUMABLE) &&
-        !itemProto->HasFlag(ITEM_FLAG_USEABLE_IN_ARENA) &&
-        (GetPlayer()->m_bg != NULL) &&
-        isArena(GetPlayer()->m_bg->GetType()))
+    if (!itemProto)
     {
-        GetPlayer()->GetItemInterface()->BuildInventoryChangeError(tmpItem, NULL, INV_ERR_NOT_DURING_ARENA_MATCH);
+        _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_NOT_FOUND);
         return;
     }
 
-    if (tmpItem->IsSoulbound())     // SouldBind item will be used after SouldBind()
+    // Equipable items needs to be equipped before use
+    if (itemProto->InventoryType != INVTYPE_NON_EQUIP && !_player->GetItemInterface()->IsEquipped(itemProto->ItemId))
     {
-        if (sScriptMgr.CallScriptedItem(tmpItem, _player))
-            return;
-    }
-
-    if (_player->getDeathState() == CORPSE)
-        return;
-
-    if (itemProto->Bonding == ITEM_BIND_ON_USE)
-        tmpItem->SoulBind();
-
-    if (sScriptMgr.CallScriptedItem(tmpItem, _player))
-        return;
-
-    if (itemProto->InventoryType != 0 && !_player->GetItemInterface()->IsEquipped(itemProto->ItemId))  //Equipable items cannot be used before they're equipped. Prevents exploits
-        return;//Prevents exploits such as keeping an on-use trinket in your bag and using WPE to use it from your bag in mid-combat.
-
-    if (itemProto->QuestId)
-    {
-        // Item Starter
-        QuestProperties const* qst = sMySQLStore.getQuestProperties(itemProto->QuestId);
-        if (!qst)
-            return;
-
-        WorldPacket data;
-        sQuestMgr.BuildQuestDetails(&data, qst, tmpItem, 0, language, _player);
-        SendPacket(&data);
-    }
-
-    // Let's check if the item even has that spell
-    for (uint8 i = 0; i < 5; ++i)
-    {
-        if (itemProto->Spells[i].Trigger == USE && itemProto->Spells[i].Id == spellId)
-        {
-            found = true;
-            break;//found 1 already
-        }
-    }
-
-    // Let's see if it is an onuse spellid
-    if (tmpItem->HasOnUseSpellID(spellId))
-        found = true;
-
-    // We didn't find the spell, so the player is probably trying to cheat
-    // with an edited itemcache.wdb
-    //
-    // Altough this could also happen after a DB update
-    // if he/she didn't delete his/her cache.
-    if (found == false)
-    {
-
-        this->Disconnect();
-        Anticheat_Log->writefromsession(this, "Player tried to use an item with a spell that didn't match the spell in the database.");
-        Anticheat_Log->writefromsession(this, "Possibly corrupted or intentionally altered itemcache.wdb");
-        Anticheat_Log->writefromsession(this, "Itemid: %lu", itemProto->ItemId);
-        Anticheat_Log->writefromsession(this, "Spellid: %lu", spellId);
-        Anticheat_Log->writefromsession(this, "Player was disconnected");
-
+        // todo: is this correct error msg?
+        _player->GetItemInterface()->BuildInventoryChangeError(tmpItem, nullptr, INV_ERR_ITEM_NOT_FOUND);
         return;
     }
 
-    SpellCastTargets targets(recvPacket, _player->GetGUID());
-
-    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
-    if (spellInfo == NULL)
+    if (!_player->isAlive())
     {
-        LOG_ERROR("WORLD: unknown spell id %i", spellId);
+        _player->GetItemInterface()->BuildInventoryChangeError(tmpItem, nullptr, INV_ERR_YOU_ARE_DEAD);
         return;
     }
 
-    if (spellInfo->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP && !_player->IsSitting())
+    if (tmpItem->IsSoulbound() && tmpItem->GetOwnerGUID() != _player->GetGUID() && !tmpItem->IsAccountbound())
     {
-        if (p_User->CombatStatus.IsInCombat() || p_User->IsMounted())
-        {
-            _player->GetItemInterface()->BuildInventoryChangeError(tmpItem, NULL, INV_ERR_CANT_DO_IN_COMBAT);
-            return;
-        }
-        else
-            p_User->SetStandState(STANDSTATE_SIT);
-        // loop through the auras and removing existing eating spells
-    }
-    /*else   // cebernic: why not stand up (because reasons...)
-    {
-        if (!p_User->CombatStatus.IsInCombat() && !p_User->IsMounted())
-        {
-            if (p_User->GetStandState())
-            {
-                p_User->SetStandState(STANDSTATE_STAND);
-            }
-        }
-    }*/
-
-    // cebernic: remove stealth on using item
-    if (!(spellInfo->getAuraInterruptFlags() & ATTRIBUTESEX_NOT_BREAK_STEALTH))
-    {
-        if (p_User->IsStealth())
-            p_User->RemoveAllAuraType(SPELL_AURA_MOD_STEALTH);
+        _player->GetItemInterface()->BuildInventoryChangeError(tmpItem, nullptr, INV_ERR_DONT_OWN_THAT_ITEM);
+        return;
     }
 
-    if (itemProto->RequiredLevel)
+    if ((itemProto->Flags2 & ITEM_FLAG2_HORDE_ONLY) && _player->GetTeam() != TEAM_HORDE ||
+        (itemProto->Flags2 & ITEM_FLAG2_ALLIANCE_ONLY) && _player->GetTeam() != TEAM_ALLIANCE)
     {
-        if (_player->getLevel() < itemProto->RequiredLevel)
-        {
-            _player->GetItemInterface()->BuildInventoryChangeError(tmpItem, NULL, INV_ERR_ITEM_RANK_NOT_ENOUGH);
-            return;
-        }
+        _player->GetItemInterface()->BuildInventoryChangeError(tmpItem, nullptr, INV_ERR_YOU_CAN_NEVER_USE_THAT_ITEM);
+        return;
+    }
+
+    if ((itemProto->AllowableClass & _player->getClassMask()) == 0 || (itemProto->AllowableRace & _player->getRaceMask()) == 0)
+    {
+        _player->GetItemInterface()->BuildInventoryChangeError(tmpItem, nullptr, INV_ERR_YOU_CAN_NEVER_USE_THAT_ITEM);
+        return;
     }
 
     if (itemProto->RequiredSkill)
     {
         if (!_player->_HasSkillLine(itemProto->RequiredSkill))
         {
-            _player->GetItemInterface()->BuildInventoryChangeError(tmpItem, NULL, INV_ERR_ITEM_RANK_NOT_ENOUGH);
+            _player->GetItemInterface()->BuildInventoryChangeError(tmpItem, nullptr, INV_ERR_NO_REQUIRED_PROFICIENCY);
+            return;
+        }
+        else if (_player->_GetSkillLineCurrent(itemProto->RequiredSkill) < itemProto->RequiredSkillRank)
+        {
+            _player->GetItemInterface()->BuildInventoryChangeError(tmpItem, nullptr, INV_ERR_SKILL_ISNT_HIGH_ENOUGH);
+            return;
+        }
+    }
+
+    if (itemProto->RequiredSkillSubRank != 0 && !_player->HasSpell(itemProto->RequiredSkillSubRank))
+    {
+        _player->GetItemInterface()->BuildInventoryChangeError(tmpItem, nullptr, INV_ERR_NO_REQUIRED_PROFICIENCY);
+        return;
+    }
+
+    if (_player->getLevel() < itemProto->RequiredLevel)
+    {
+        _player->GetItemInterface()->BuildInventoryChangeError(tmpItem, nullptr, INV_ERR_YOU_MUST_REACH_LEVEL_N);
+        return;
+    }
+
+    // Learning spells (mounts, companion pets etc)
+    if (itemProto->Spells[0].Id == 483 || itemProto->Spells[0].Id == 55884)
+    {
+        if (_player->HasSpell(itemProto->Spells[1].Id))
+            // No error message, handled elsewhere
+            return;
+    }
+
+    if (itemProto->RequiredFaction && uint32_t(_player->GetStanding(itemProto->RequiredFaction)) < itemProto->RequiredFactionStanding)
+    {
+        _player->GetItemInterface()->BuildInventoryChangeError(tmpItem, nullptr, INV_ERR_ITEM_REPUTATION_NOT_ENOUGH);
+        return;
+    }
+
+    // Arena cases
+    if (_player->m_bg != nullptr && isArena(_player->m_bg->GetType()))
+    {
+        // Not all consumables are usable in arena
+        if (itemProto->Class == ITEM_CLASS_CONSUMABLE && !itemProto->HasFlag(ITEM_FLAG_USEABLE_IN_ARENA))
+        {
+            _player->GetItemInterface()->BuildInventoryChangeError(tmpItem, nullptr, INV_ERR_NOT_DURING_ARENA_MATCH);
             return;
         }
 
-        if (itemProto->RequiredSkillRank)
+        // Not all items are usable in arena
+        if (itemProto->HasFlag(ITEM_FLAG_NOT_USEABLE_IN_ARENA))
         {
-            if (_player->_GetSkillLineCurrent(itemProto->RequiredSkill, false) < itemProto->RequiredSkillRank)
+            _player->GetItemInterface()->BuildInventoryChangeError(tmpItem, nullptr, INV_ERR_NOT_DURING_ARENA_MATCH);
+            return;
+        }
+    }
+
+    if (itemProto->Bonding == ITEM_BIND_ON_USE || itemProto->Bonding == ITEM_BIND_ON_PICKUP || itemProto->Bonding == ITEM_BIND_QUEST)
+    {
+        if (!tmpItem->IsSoulbound())
+            tmpItem->SoulBind();
+    }
+
+    // Combat check
+    if (_player->getcombatstatus()->IsInCombat())
+    {
+        for (int i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
+        {
+            if (SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(itemProto->Spells[i].Id))
             {
-                _player->GetItemInterface()->BuildInventoryChangeError(tmpItem, NULL, INV_ERR_ITEM_RANK_NOT_ENOUGH);
-                return;
+                if (spellInfo->getAttributes() & ATTRIBUTES_REQ_OOC)
+                {
+                    _player->GetItemInterface()->BuildInventoryChangeError(tmpItem, nullptr, INV_ERR_CANT_DO_IN_COMBAT);
+                    return;
+                }
             }
         }
     }
 
-    if ((itemProto->AllowableClass && !(_player->getClassMask() & itemProto->AllowableClass)) || (itemProto->AllowableRace && !(_player->getRaceMask() & itemProto->AllowableRace)))
+    // Start quest
+    if (itemProto->QuestId)
     {
-        _player->GetItemInterface()->BuildInventoryChangeError(tmpItem, NULL, INV_ERR_YOU_CAN_NEVER_USE_THAT_ITEM);
+        QuestProperties const* quest = sMySQLStore.getQuestProperties(itemProto->QuestId);
+        if (!quest)
+            return;
+
+        // Create packet
+        WorldPacket data;
+        sQuestMgr.BuildQuestDetails(&data, quest, tmpItem, 0, language, _player);
+        SendPacket(&data);
+    }
+
+    // Anticheat to prevent WDB editing
+    bool found = false;
+    for (uint8_t i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
+    {
+        if (itemProto->Spells[i].Trigger == USE && itemProto->Spells[i].Id == spellId)
+        {
+            found = true;
+            break;
+        }
+    }
+
+    if (tmpItem->HasOnUseSpellID(spellId))
+        found = true;
+
+    // Item doesn't have this spell, either player is cheating or player's itemcache.wdb doesn't match with database
+    if (!found)
+    {
+        Disconnect();
+        Anticheat_Log->writefromsession(this, "Player tried to use an item with a spell that didn't match the spell in the database.");
+        Anticheat_Log->writefromsession(this, "Possibly corrupted or intentionally altered itemcache.wdb");
+        Anticheat_Log->writefromsession(this, "Itemid: %lu", itemProto->ItemId);
+        Anticheat_Log->writefromsession(this, "Spellid: %lu", spellId);
+        Anticheat_Log->writefromsession(this, "Player was disconnected.");
         return;
     }
 
-    if (!_player->Cooldown_CanCast(spellInfo))
+    // Call item scripts
+    if (sScriptMgr.CallScriptedItem(tmpItem, _player))
+        return;
+
+    SpellCastTargets targets(recvPacket, _player->GetGUID());
+    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
+    if (spellInfo == nullptr)
     {
-        _player->SendCastResult(spellInfo->getId(), SPELL_FAILED_NOT_READY, cn, 0);
+        LogError("WORLD: Unknown spell id %i in ::HandleUseItemOpcode() from item id %i", spellId, itemProto->ItemId);
         return;
     }
 
-
-    if (_player->m_currentSpell)
-    {
-        _player->SendCastResult(spellInfo->getId(), SPELL_FAILED_SPELL_IN_PROGRESS, cn, 0);
-        return;
-    }
-
+    // TODO: remove this and get rid of 'ForcedPetId' hackfix
+    // move the spells from MySQLDataStore.cpp to SpellScript
     if (itemProto->ForcedPetId >= 0)
     {
         if (itemProto->ForcedPetId == 0)
         {
-            if (_player->GetGUID() != targets.m_unitTarget)
+            if (targets.m_unitTarget != _player->GetGUID())
             {
-                _player->SendCastResult(spellInfo->getId(), SPELL_FAILED_BAD_TARGETS, cn, 0);
+                _player->SendCastResult(spellInfo->getId(), SPELL_FAILED_BAD_TARGETS, castCount, 0);
                 return;
             }
         }
         else
         {
-
-            if (!_player->GetSummon() || _player->GetSummon()->GetEntry() != (uint32)itemProto->ForcedPetId)
+            if (!_player->GetSummon() || _player->GetSummon()->GetEntry() != (uint32_t)itemProto->ForcedPetId)
             {
-                _player->SendCastResult(spellInfo->getId(), SPELL_FAILED_SPELL_IN_PROGRESS, cn, 0);
+                _player->SendCastResult(spellInfo->getId(), SPELL_FAILED_BAD_TARGETS, castCount, 0);
                 return;
             }
         }
     }
 
-    Spell* spell = sSpellFactoryMgr.NewSpell(_player, spellInfo, false, NULL);
-    spell->extra_cast_number = cn;
+    // TODO: move this to rewritten canCast() and castMe()
+    if (spellInfo->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP && !_player->IsSitting())
+    {
+        if (_player->CombatStatus.IsInCombat() || _player->IsMounted())
+        {
+            _player->GetItemInterface()->BuildInventoryChangeError(tmpItem, nullptr, INV_ERR_CANT_DO_IN_COMBAT);
+            return;
+        }
+        else
+        {
+            _player->SetStandState(STANDSTATE_SIT);
+        }
+    }
+
+    Spell* spell = sSpellFactoryMgr.NewSpell(_player, spellInfo, false, nullptr);
+    spell->extra_cast_number = castCount;
     spell->i_caster = tmpItem;
     spell->m_glyphslot = glyphIndex;
 
-    //GetPlayer()->setCurrentSpell(spell);
+    // Some spell cast packets include more data
+    if (castFlags & 0x02)
+    {
+        float projectilePitch, projectileSpeed;
+        uint8_t hasMovementData; // 1 or 0
+        recvPacket >> projectilePitch >> projectileSpeed >> hasMovementData;
+
+        LocationVector const spellDestination = targets.destination();
+        LocationVector const spellSource = targets.source();
+        float const deltaX = spellDestination.x - spellSource.y; // Calculate change of x position
+        float const deltaY = spellDestination.y - spellSource.y; // Calculate change of y position
+
+        uint32_t travelTime = 0;
+        if ((projectilePitch != M_PI / 4) && (projectilePitch != -M_PI / 4)) // No division by zero
+        {
+            // Calculate projectile's travel time by using Pythagorean theorem to get distance from delta X and delta Y, and divide that with the projectile's velocity
+            travelTime = static_cast<uint32_t>((sqrtf(deltaX * deltaX + deltaY * deltaY) / (cosf(projectilePitch) * projectileSpeed)) * 1000);
+        }
+
+        if (hasMovementData)
+        {
+            recvPacket.SetOpcode(recvPacket.read<uint32_t>()); // MSG_MOVE_STOP
+            HandleMovementOpcodes(recvPacket);
+        }
+
+        spell->m_missilePitch = projectilePitch;
+        spell->m_missileTravelTime = travelTime;
+    }
+
     spell->prepare(&targets);
 
 #if VERSION_STRING > TBC
@@ -263,99 +299,99 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
-        LOG_DETAIL("WORLD: got CMSG_SPELLCLICK packet, data length = %i", recvPacket.size());
-
-    if (_player->getDeathState() == CORPSE)
-        return;
-
-    uint64 target_guid; // this will store the guid of the object we are going to use it's spell. There must be a dbc that indicates what spells a unit has
-
-    recvPacket >> target_guid;
-
-    //we have only 1 example atm for entry : 28605
-    Unit* target_unit = _player->GetMapMgr()->GetUnit(target_guid);
-
-    if (!target_unit)
-        return;
-
-    if (!_player->isInRange(target_unit, MAX_INTERACTION_RANGE))
-        return;
-
-    if (target_unit->IsVehicle())
+    if (!_player->isAlive())
     {
-        if (target_unit->GetVehicleComponent() != NULL)
-            target_unit->GetVehicleComponent()->AddPassenger(_player);
         return;
     }
 
-    uint32 creature_id = target_unit->GetEntry();
-    uint32 cast_spell_id = 0;
+    // The guid of the unit we clicked
+    uint64_t unitGuid;
+    recvPacket >> unitGuid;
 
-    if (target_unit->RemoveAura(59907))
+    Unit* unitTarget = _player->GetMapMgr()->GetUnit(unitGuid);
+    if (!unitTarget || !unitTarget->IsInWorld() || !unitTarget->IsCreature())
     {
-        uint32 lightwellRenew[] =
+        return;
+    }
+
+    Creature* creatureTarget = static_cast<Creature*>(unitTarget);
+    if (!_player->isInRange(creatureTarget, MAX_INTERACTION_RANGE))
+    {
+        return;
+    }
+
+    // TODO: investigate vehicles more, is this necessary? vehicle enter is handled in ::HandleEnterVehicle() anyway... -Appled
+    if (creatureTarget->IsVehicle())
+    {
+        if (creatureTarget->GetVehicleComponent() != nullptr)
+            creatureTarget->GetVehicleComponent()->AddPassenger(_player);
+        return;
+    }
+
+    // TODO: move this Lightwell 'script' to SpellScript or CreatureScript...
+    // For future reference; seems like the Lightwell npc should actually cast spell 60123 on click
+    // and this 60123 spell has Script Effect, where should be determined which rank of the Lightwell Renew needs to be casted (switch (GetCaster()->GetCreatedBySpell())...)
+
+    // Commented this out for now, it's not even working -Appled
+    /*const uint32_t lightWellCharges = 59907;
+    if (creatureTarget->RemoveAura(lightWellCharges))
+    {
+        uint32_t lightWellRenew[] =
         {
-            //SPELL_HASH_LIGHTWELL_RENEW
             7001,
             27873,
             27874,
             28276,
             48084,
             48085,
-            60123,
             0
         };
 
-        if (!_player->hasAurasWithId(lightwellRenew))
+        if (!_player->hasAurasWithId(lightWellRenew))
         {
-            SpellClickSpell const* sp = sMySQLStore.getSpellClickSpell(creature_id);
-            if (sp == nullptr)
+            if (SpellClickSpell const* clickSpell = sMySQLStore.getSpellClickSpell(creatureTarget->GetEntry()))
             {
-                if (target_unit->IsCreature())
-                {
-                    Creature* c = static_cast<Creature*>(target_unit);
-
-                    sChatHandler.BlueSystemMessage(this, "NPC Id %u (%s) has no spellclick spell associated with it.", c->GetCreatureProperties()->Id, c->GetCreatureProperties()->Name.c_str());
-                    LOG_ERROR("Spellclick packet received for creature %u but there is no spell associated with it.", creature_id);
-                    return;
-                }
+                creatureTarget->CastSpell(_player, clickSpell->SpellID, true);
             }
             else
             {
-                cast_spell_id = sp->SpellID;
-                target_unit->CastSpell(_player, cast_spell_id, true);
+                sChatHandler.BlueSystemMessage(this, "NPC Id %u (%s) has no spellclick spell associated with it.", creatureTarget->GetCreatureProperties()->Id, creatureTarget->GetCreatureProperties()->Name.c_str());
+                LogError("Spellclick packet received for creature %u but there is no spell associated with it.", creatureTarget->GetEntry());
+                return;
             }
 
-            if (!target_unit->HasAura(59907))
-                static_cast<Creature*>(target_unit)->Despawn(0, 0); //IsCreature() check is not needed, refer to r2387 and r3230
-
+            if (!creatureTarget->HasAura(lightWellCharges))
+            {
+                creatureTarget->Despawn(0, 0);
+            }
             return;
         }
-    }
+    }*/
 
-    SpellClickSpell const* sp = sMySQLStore.getSpellClickSpell(creature_id);
-    if (sp == nullptr)
+    SpellClickSpell const* spellClickData = sMySQLStore.getSpellClickSpell(creatureTarget->GetEntry());
+    if (spellClickData != nullptr)
     {
-        if (target_unit->IsCreature())
-        {
-            Creature* c = static_cast< Creature* >(target_unit);
+        // TODO: there are spellclick spells which are friendly only, raid only and party only
+        if (!isFriendly(_player, creatureTarget))
+            return;
 
-            sChatHandler.BlueSystemMessage(this, "NPC Id %u (%s) has no spellclick spell associated with it.", c->GetCreatureProperties()->Id, c->GetCreatureProperties()->Name.c_str());
-            LOG_ERROR("Spellclick packet received for creature %u but there is no spell associated with it.", creature_id);
+        SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellClickData->SpellID);
+        if (spellInfo == nullptr)
+        {
+            LogError("NPC ID %u has spell associated on SpellClick but spell id %u cannot be found.", creatureTarget->GetEntry(), spellClickData->SpellID);
             return;
         }
+
+        // TODO: there are spellclick spells which should be casted on player by npc (i.e. Lightwell spell) but also vice versa
+        Spell* spell = sSpellFactoryMgr.NewSpell(_player, spellInfo, false, nullptr);
+        SpellCastTargets targets(unitGuid);
+        spell->prepare(&targets);
     }
     else
     {
-        cast_spell_id = sp->SpellID;
-
-        SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(cast_spell_id);
-        if (spellInfo == nullptr)
-            return;
-
-        Spell* spell = sSpellFactoryMgr.NewSpell(_player, spellInfo, false, NULL);
-        SpellCastTargets targets(target_guid);
-        spell->prepare(&targets);
+        sChatHandler.BlueSystemMessage(this, "NPC ID %u (%s) has no spellclick spell associated with it.", creatureTarget->GetCreatureProperties()->Id, creatureTarget->GetCreatureProperties()->Name.c_str());
+        LogError("SpellClick packet received for creature %u but there is no spell associated with it.", creatureTarget->GetEntry());
+        return;
     }
 }
 #endif
@@ -365,85 +401,76 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
-    uint32 spellId;
-    uint8 cn, unk; //Alice : Added to 3.0.2
+    uint32_t spellId;
+    uint8_t castCount, castFlags;
 
-    recvPacket >> cn >> spellId >> unk;
-    // check for spell id
+    recvPacket >> castCount >> spellId >> castFlags;
+
     SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
-
-    if (!spellInfo)
+    if (spellInfo == nullptr)
     {
-        LogError("WORLD: unknown spell id %i", spellId);
+        LogError("WORLD: Unknown spell id %u in HandleCastSpellOpcode().", spellId);
         return;
     }
 
-    if (!_player->isAlive() && _player->GetShapeShift() != FORM_SPIRITOFREDEMPTION && !(spellInfo->getAttributes() & ATTRIBUTES_DEAD_CASTABLE)) //They're dead, not in spirit of redemption and the spell can't be cast while dead.
-        return;
-
-    LogDetail("WORLD: got cast spell packet, spellId - %i (%s), data length = %i", spellId, spellInfo->getName().c_str(), recvPacket.size());
-
-    // Cheat Detection only if player and not from an item
-    // this could fuck up things but meh it's needed ALOT of the newbs are using WPE now
-    // WPE allows them to mod the outgoing packet and basically choose what ever spell they want :(
-
-    if (!GetPlayer()->HasSpell(spellId))
+    // Check does player have the spell
+    if (!_player->HasSpell(spellId))
     {
-        sCheatLog.writefromsession(this, "Cast spell %lu but doesn't have that spell.", spellId);
-        LogDetail("WORLD: Spell isn't cast because player \'%s\' is cheating", GetPlayer()->GetName());
+        sCheatLog.writefromsession(this, "WORLD: Player %u tried to cast spell %u but player does not have it.", _player->GetLowGUID(), spellId);
+        LogDetail("WORLD: Player %u tried to cast spell %u but player does not have it.", _player->GetLowGUID(), spellId);
         return;
     }
+
+    // Check is player trying to cast a passive spell
     if (spellInfo->IsPassive())
     {
-        sCheatLog.writefromsession(this, "Cast passive spell %lu.", spellId);
-        LogDetail("WORLD: Spell isn't cast because player \'%s\' is cheating", GetPlayer()->GetName());
+        sCheatLog.writefromsession(this, "WORLD: Player %u tried to cast a passive spell %u, ignored", _player->GetLowGUID(), spellId);
+        LogDetail("WORLD: Player %u tried to cast a passive spell %u, ignored", _player->GetLowGUID(), spellId);
         return;
     }
 
+    // TODO: Autorepeat spells (such as Auto Shot and Shoot (wand)) require full rework. maybe m_currentSpell needs to be rewritten as well...
+    // leaving old Arcemu solution here for now, but I'll try to get back to this sooner or later in spell system rewrite -Appled
     if (GetPlayer()->GetOnMeleeSpell() != spellId)
     {
-        //autoshot 75
-        if ((spellInfo->getAttributesExB() & ATTRIBUTESEXB_ACTIVATE_AUTO_SHOT) /*spellInfo->Attributes == 327698*/)	// auto shot..
+        if ((spellInfo->getAttributesExB() & ATTRIBUTESEXB_ACTIVATE_AUTO_SHOT))	// Auto Shot and Shoot (wand)
         {
-            LogDebugFlag(LF_SPELL, "HandleCastSpellOpcode : Auto Shot-type spell cast (id %u, name %s)" , spellInfo->getId(), spellInfo->getName().c_str());
-            Item* weapon = GetPlayer()->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-            if (!weapon)
+            LogDebug("HandleCastSpellOpcode: Auto Shot-type spell cast (id %u, name %s)", spellInfo->getId(), spellInfo->getName().c_str());
+            Item* rangedWep = GetPlayer()->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+            if (rangedWep == nullptr)
                 return;
 
-            uint32 spellid;
-            switch (weapon->GetItemProperties()->SubClass)
+            uint32_t rangedSpellId;
+            switch (rangedWep->GetItemProperties()->SubClass)
             {
-                case 2:			 // bows
-                case 3:			 // guns
-                case 18:		 // crossbow
-                    spellid = SPELL_RANGED_GENERAL;
+                case 2:			 // Bows
+                case 3:			 // Guns
+                case 18:		 // Crossbows
+                    rangedSpellId = SPELL_RANGED_GENERAL;
                     break;
-                case 16:			// thrown
-                    spellid = SPELL_RANGED_THROW;
+                case 16:		 // Throw
+                    rangedSpellId = SPELL_RANGED_THROW;
                     break;
-                case 19:			// wands
-                    spellid = SPELL_RANGED_WAND;
+                case 19:		 // Wands
+                    rangedSpellId = SPELL_RANGED_WAND;
                     break;
                 default:
-                    spellid = 0;
+                    rangedSpellId = spellInfo->getId();
                     break;
             }
-
-            if (!spellid)
-                spellid = spellInfo->getId();
 
             if (!_player->m_onAutoShot)
             {
                 _player->m_AutoShotTarget = _player->GetSelection();
-                uint32 duration = _player->GetBaseAttackTime(RANGED);
+                uint32_t duration = _player->GetBaseAttackTime(RANGED);
                 SpellCastTargets targets(recvPacket, GetPlayer()->GetGUID());
                 if (!targets.m_unitTarget)
                 {
-                    LogDebugFlag(LF_SPELL, "HandleCastSpellOpcode : Cancelling auto-shot cast because targets.m_unitTarget is null!");
+                    LogDebug("HandleCastSpellOpcode: Cancelling auto-shot cast because targets.m_unitTarget is null!");
                     return;
                 }
-                SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spellid);
 
+                SpellInfo* sp = sSpellCustomizations.GetSpellInfo(rangedSpellId);
                 _player->m_AutoShotSpell = sp;
                 _player->m_AutoShotDuration = duration;
                 //This will fix fast clicks
@@ -451,10 +478,10 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
                     _player->m_AutoShotAttackTimer = 500;
                 _player->m_onAutoShot = true;
             }
-
             return;
         }
 
+        // TODO: move this check to Spell::prepare() or smth
         if (_player->m_currentSpell)
         {
             if (_player->m_currentSpell->getState() == SPELL_STATE_CASTING)
@@ -465,26 +492,44 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
             else
             {
                 // send the error message
-                _player->SendCastResult(spellInfo->getId(), SPELL_FAILED_SPELL_IN_PROGRESS, cn, 0);
+                _player->SendCastResult(spellInfo->getId(), SPELL_FAILED_SPELL_IN_PROGRESS, castCount, 0);
                 return;
             }
         }
 
         SpellCastTargets targets(recvPacket, GetPlayer()->GetGUID());
+        Spell* spell = sSpellFactoryMgr.NewSpell(GetPlayer(), spellInfo, false, nullptr);
+        spell->extra_cast_number = castCount;
 
-        // some anticheat stuff
-        if (spellInfo->custom_self_cast_only)
+        // Some spell cast packets include more data
+        if (castFlags & 0x02)
         {
-            if (targets.m_unitTarget && targets.m_unitTarget != _player->GetGUID())
+            float projectilePitch, projectileSpeed;
+            uint8_t hasMovementData; // 1 or 0
+            recvPacket >> projectilePitch >> projectileSpeed >> hasMovementData;
+
+            LocationVector const spellDestination = targets.destination();
+            LocationVector const spellSource = targets.source();
+            float const deltaX = spellDestination.x - spellSource.y; // Calculate change of x position
+            float const deltaY = spellDestination.y - spellSource.y; // Calculate change of y position
+
+            uint32_t travelTime = 0;
+            if ((projectilePitch != M_PI / 4) && (projectilePitch != -M_PI / 4)) // No division by zero
             {
-                // send the error message
-                _player->SendCastResult(spellInfo->getId(), SPELL_FAILED_BAD_TARGETS, cn, 0);
-                return;
+                // Calculate projectile's travel time by using Pythagorean theorem to get distance from delta X and delta Y, and divide that with the projectile's velocity
+                travelTime = static_cast<uint32_t>((sqrtf(deltaX * deltaX + deltaY * deltaY) / (cosf(projectilePitch) * projectileSpeed)) * 1000);
             }
+
+            if (hasMovementData)
+            {
+                recvPacket.SetOpcode(recvPacket.read<uint32_t>()); // MSG_MOVE_STOP
+                HandleMovementOpcodes(recvPacket);
+            }
+
+            spell->m_missilePitch = projectilePitch;
+            spell->m_missileTravelTime = travelTime;
         }
 
-        Spell* spell = sSpellFactoryMgr.NewSpell(GetPlayer(), spellInfo, false, NULL);
-        spell->extra_cast_number = cn;
         spell->prepare(&targets);
     }
 }
@@ -495,11 +540,17 @@ void WorldSession::HandleCancelCastOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
-    uint32 spellId;
-    recvPacket >> spellId;
+    // Before this was only read in Cata but seems like it was already around in Wotlk
+#if VERSION_STRING > TBC
+    recvPacket.read_skip<uint8_t>(); // Increments with every HandleCancelCast packet, unused
+#endif
+    recvPacket.read_skip<uint32_t>(); // Spell Id, unused
 
-    if (GetPlayer()->m_currentSpell)
-        GetPlayer()->m_currentSpell->cancel();
+    // TODO: rewrite me!
+    if (_player->m_currentSpell)
+    {
+        _player->m_currentSpell->cancel();
+    }
 }
 #endif
 
@@ -508,35 +559,78 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
-    uint32 spellId;
+    uint32_t spellId;
     recvPacket >> spellId;
 
-    // do not cancel ghost auras
-    if (spellId == 8326 || spellId == 9036)
-		return;
-
-    if (_player->m_currentSpell && _player->m_currentSpell->GetSpellInfo()->getId() == spellId)
-        _player->m_currentSpell->cancel();
-    else
+    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
+    if (spellInfo == nullptr)
     {
-        SpellInfo* info = sSpellCustomizations.GetSpellInfo(spellId);
-        if (info == nullptr)
-            return;
-
-        Aura* aura = _player->getAuraWithId(spellId);
-        if (aura)
-		{
-			if (!aura->IsPositive())
-				return;
-			if (info->getAttributes() & ATTRIBUTES_NEGATIVE)
-				return;
-		}
-        if (!(info->getAttributes() & static_cast<uint32>(ATTRIBUTES_CANT_CANCEL)))
-        {
-            _player->removeAllAurasById(spellId);
-            LOG_DEBUG("Removing all auras with ID: %u", spellId);
-        }
+        return;
     }
+
+    if (spellInfo->getAttributes() & ATTRIBUTES_CANT_CANCEL)
+    {
+        return;
+    }
+
+    // You can't cancel a passive aura
+    if (spellInfo->IsPassive())
+    {
+        return;
+    }
+
+    // You can't cancel an aura which is from a channeled spell, unless you are currently channeling it
+    if (spellInfo->getAttributesEx() & (ATTRIBUTESEX_CHANNELED_1 | ATTRIBUTESEX_CHANNELED_2))
+    {
+        // TODO: rewrite me!
+        if (_player->m_currentSpell != nullptr)
+        {
+            if (_player->m_currentSpell->GetSpellInfo()->getAttributesEx() & (ATTRIBUTESEX_CHANNELED_1 | ATTRIBUTESEX_CHANNELED_2))
+            {
+                if (_player->m_currentSpell->GetSpellInfo()->getId() == spellId)
+                    _player->m_currentSpell->cancel();
+            }
+        }
+        return;
+    }
+
+    Aura* spellAura = _player->getAuraWithId(spellId);
+    if (spellAura == nullptr)
+    {
+        return;
+    }
+
+    // You can't cancel non-positive auras
+    // TODO: find better solution for this, currently in SpellAuras some auras are forced to be positive or negative, regardless of what their SpellInfo says
+    // maybe new function under SpellInfo class, somewhat like this:
+    /*{
+        int const NEGATIVE = 1;
+        int const POSITIVE = 0;
+        int val = spellInfo->getAttributes() & ATTRIBUTES_NEGATIVE;
+        // custom fixes to set spell/aura either positive or negative
+        switch (spellInfo->getId())
+        {
+            case 5: // Instakill
+                val = NEGATIVE;
+                break;
+            case 1784: // Stealth
+                val = POSITIVE;
+                break;
+            ...
+        }
+        return val;
+    }*/
+    if (!spellAura->IsPositive())
+    {
+        return;
+    }
+
+    if (spellInfo->getAttributes() & ATTRIBUTES_NEGATIVE)
+    {
+        return;
+    }
+
+    _player->removeAllAurasById(spellId);
 }
 #endif
 
@@ -545,28 +639,23 @@ void WorldSession::HandleCancelChannellingOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
-    uint32 spellId;
-    recvPacket >> spellId;
+    recvPacket.read_skip<uint32_t>(); // Spell Id, unused
 
-    Player* plyr = GetPlayer();
-    if (!plyr)
-        return;
-    if (plyr->m_currentSpell)
+    // TODO: rewrite me!
+    if (_player->m_currentSpell)
     {
-        plyr->m_currentSpell->cancel();
+        _player->m_currentSpell->cancel();
     }
 }
 #endif
 
 #if VERSION_STRING != Cata
-void WorldSession::HandleCancelAutoRepeatSpellOpcode(WorldPacket& recv_data)
+void WorldSession::HandleCancelAutoRepeatSpellOpcode(WorldPacket& /*recvPacket*/)
 {
     CHECK_INWORLD_RETURN
 
-    LogDebugFlag(LF_OPCODE, "Received CMSG_CANCEL_AUTO_REPEAT_SPELL message.");
-    //on original we automatically enter combat when creature got close to us
-    //	GetPlayer()->GetSession()->OutPacket(SMSG_CANCEL_COMBAT);
-    GetPlayer()->m_onAutoShot = false;
+    // TODO: rewrite me!
+    _player->m_onAutoShot = false;
 }
 #endif
 
@@ -574,169 +663,194 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
-    uint64 guid = 0;
-    uint8  castCount = 0;
-    uint32 spellid = 0;
-    uint8  castflags = 0;
-    uint32 targetmask = 0;
+    uint64_t petGuid;
+    uint32_t spellId;
+    uint8_t castCount, castFlags;
 
-    recvPacket >> guid;
-    recvPacket >> castCount;
-    recvPacket >> spellid;
-    recvPacket >> castflags;
+    recvPacket >> petGuid >> castCount >> spellId >> castFlags;
 
-    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spellid);
-    if (sp == NULL)
+    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
+    if (spellInfo == nullptr)
+    {
         return;
-    // Summoned Elemental's Freeze
-    if (spellid == 33395)
-    {
-        if (!_player->GetSummon())
-            return;
-    }
-    else if (guid != _player->m_CurrentCharm)
-    {
-        if (_player->GetCharmedUnitGUID() != guid)
-            return;
     }
 
-    SpellCastTargets targets;
-    targets.read(recvPacket, guid);
-
-    float missilepitch = 0.0f;
-    float missilespeed = 0;
-    uint32 traveltime = 0;
-
-    if (castflags & 2)
+    if (_player->GetSummon() == nullptr && _player->m_CurrentCharm == 0 && _player->GetCharmedUnitGUID() == 0)
     {
-        recvPacket >> missilepitch;
-        recvPacket >> missilespeed;
-
-        auto destination = targets.destination();
-        auto source = targets.source();
-        auto dx = destination.x - source.x;
-        auto dy = destination.y - source.y;
-
-        if ((missilepitch != M_PI / 4) && (missilepitch != -M_PI / 4)) //lets not divide by 0 lul
-            traveltime = static_cast<uint32>((sqrtf(dx * dx + dy * dy) / (cosf(missilepitch) * missilespeed)) * 1000);
+        LogError("HandlePetCastSpell: Received opcode but player %u has no pet.", _player->GetLowGUID());
+        return;
     }
 
-    if (spellid == 33395)	// Summoned Water Elemental's freeze
+    Unit* petUnit = _player->GetMapMgr()->GetUnit(petGuid);
+    if (petUnit == nullptr)
     {
-        Spell* pSpell = sSpellFactoryMgr.NewSpell(_player->GetSummon(), sp, false, 0);
-        pSpell->prepare(&targets);
+        LogError("HandlePetCastSpell: Pet entity cannot be found for player %u.", _player->GetLowGUID());
+        return;
     }
-    else			// trinket?
-    {
-        uint64 charmguid = _player->m_CurrentCharm;
-        if (charmguid == 0)
-            charmguid = _player->GetCharmedUnitGUID();
 
-        Unit* nc = _player->GetMapMgr()->GetUnit(charmguid);
-        if (nc)
+    if (spellInfo->IsPassive())
+    {
+        return;
+    }
+
+    // If pet is summoned by player
+    if (_player->GetSummon() == petUnit)
+    {
+        // Check does the pet have the spell
+        if (!static_cast<Pet*>(petUnit)->HasSpell(spellId))
         {
-            bool check = false;
-            for (std::list<AI_Spell*>::iterator itr = nc->GetAIInterface()->m_spells.begin(); itr != nc->GetAIInterface()->m_spells.end(); ++itr)//.......meh. this is a crappy way of doing this, I bet.
+            return;
+        }
+    }
+    // If pet is charmed or possessed by player
+    else if (_player->m_CurrentCharm == petGuid || _player->GetCharmedUnitGUID() == petGuid)
+    {
+        // TODO: find less uglier way for this... using Arcemu's solution for now
+        bool found = false;
+        for (std::list<AI_Spell*>::iterator itr = petUnit->GetAIInterface()->m_spells.begin(); itr != petUnit->GetAIInterface()->m_spells.end(); ++itr)
+        {
+            if ((*itr)->spell->getId() == spellId)
             {
-                if ((*itr)->spell->getId() == spellid)
-                {
-                    check = true;
-                    break;
-                }
+                found = true;
+                break;
             }
-            
-            if (nc->IsCreature())
+        }
+
+        if (!found && petUnit->IsCreature())
+        {
+            Creature* petCreature = static_cast<Creature*>(petUnit);
+            if (petCreature->GetCreatureProperties()->spelldataid != 0)
             {
-                Creature* c = static_cast< Creature* >(nc);
-
-                if (c->GetCreatureProperties()->spelldataid != 0)
+                if (auto creatureSpellData = sCreatureSpellDataStore.LookupEntry(petCreature->GetCreatureProperties()->spelldataid))
                 {
-                    auto creature_spell_data = sCreatureSpellDataStore.LookupEntry(c->GetCreatureProperties()->spelldataid);
-
-                    if (creature_spell_data != nullptr)
+                    for (int i = 0; i < 3; ++i)
                     {
-                        for (uint8 i = 0; i < 3; i++)
+                        if (creatureSpellData->Spells[i] == spellId)
                         {
-                            if (creature_spell_data->Spells[i] == spellid)
-                            {
-                                check = true;
-                                break;
-                            }
+                            found = true;
+                            break;
                         }
                     }
                 }
+            }
 
-                for (uint8 i = 0; i < 4; ++i)
+            if (!found)
+            {
+                for (int i = 0; i < 4; ++i)
                 {
-                    if (c->GetCreatureProperties()->AISpells[i] == spellid)
+                    if (petCreature->GetCreatureProperties()->AISpells[i] == spellId)
                     {
-                        check = true;
+                        found = true;
                         break;
                     }
                 }
             }
+        }
 
-            if (!check)
-                return;
-
-            Spell* pSpell = sSpellFactoryMgr.NewSpell(nc, sp, false, 0);
-            pSpell->m_missilePitch = missilepitch;
-            pSpell->m_missileTravelTime = traveltime;
-
-            pSpell->prepare(&targets);
+        if (!found)
+        {
+            return;
         }
     }
-}
-
-#if VERSION_STRING != Cata
-void WorldSession::HandleCancelTotem(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    uint8 slot;
-    recv_data >> slot;
-
-    if (slot >= UNIT_SUMMON_SLOTS)
+    else
     {
-        LOG_ERROR("Player %u %s tried to cancel a summon at slot %u, slot number is out of range. (tried to crash the server?)", _player->GetLowGUID(), _player->GetName(), slot);
+        LogError("HandlePetCastSpell: Pet doesn't belong to player %u", _player->GetLowGUID());
         return;
     }
 
-    _player->summonhandler.RemoveSummonFromSlot(slot);
+    SpellCastTargets targets(recvPacket, petGuid);
+    Spell* spell = sSpellFactoryMgr.NewSpell(petUnit, spellInfo, false, nullptr);
+    spell->extra_cast_number = castCount;
+
+    // Some spell cast packets include more data
+    if (castFlags & 0x02)
+    {
+        float projectilePitch, projectileSpeed;
+        uint8_t hasMovementData; // 1 or 0
+        recvPacket >> projectilePitch >> projectileSpeed >> hasMovementData;
+
+        LocationVector const spellDestination = targets.destination();
+        LocationVector const spellSource = targets.source();
+        float const deltaX = spellDestination.x - spellSource.y; // Calculate change of x position
+        float const deltaY = spellDestination.y - spellSource.y; // Calculate change of y position
+
+        uint32_t travelTime = 0;
+        if ((projectilePitch != M_PI / 4) && (projectilePitch != -M_PI / 4)) // No division by zero
+        {
+            // Calculate projectile's travel time by using Pythagorean theorem to get distance from delta X and delta Y, and divide that with the projectile's velocity
+            travelTime = static_cast<uint32_t>((sqrtf(deltaX * deltaX + deltaY * deltaY) / (cosf(projectilePitch) * projectileSpeed)) * 1000);
+        }
+
+        if (hasMovementData)
+        {
+            recvPacket.SetOpcode(recvPacket.read<uint32_t>()); // MSG_MOVE_STOP
+            HandleMovementOpcodes(recvPacket);
+        }
+
+        spell->m_missilePitch = projectilePitch;
+        spell->m_missileTravelTime = travelTime;
+    }
+
+    spell->prepare(&targets);
+}
+
+#if VERSION_STRING != Cata
+void WorldSession::HandleCancelTotem(WorldPacket& recvPacket)
+{
+    CHECK_INWORLD_RETURN
+
+    uint8_t totemSlot;
+    recvPacket >> totemSlot;
+
+    if (totemSlot >= UNIT_SUMMON_SLOTS)
+    {
+        LogError("HandleCancelTotem: Player %u tried to cancel summon from out of range slot %u, ignored.", _player->GetLowGUID(), totemSlot);
+        return;
+    }
+
+    _player->summonhandler.RemoveSummonFromSlot(totemSlot);
 }
 #endif
 
 #if VERSION_STRING != Cata
-void WorldSession::HandleUpdateProjectilePosition(WorldPacket& recv_data)
+void WorldSession::HandleUpdateProjectilePosition(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
-    uint64 casterGuid;          // guid of the caster
-    uint32 spellId;             // spell ID of casted spell
-    uint8 castCount;            // count how many times it is/was cast
-    float x, y, z;              // missile hit position
+    uint64_t casterGuid;
+    uint32_t spellId;
+    uint8_t castCount;
+    float x, y, z; // Projectile hit location
 
-    casterGuid = recv_data.unpackGUID();
-    recv_data >> spellId;
-    recv_data >> castCount;
-    recv_data >> x;
-    recv_data >> y;
-    recv_data >> z;
+    recvPacket >> casterGuid >> spellId >> castCount >> x >> y >> z;
 
-    LogDebugFlag(LF_OPCODE, "Recieved spell: %u, count: %i, position: x(%f) y(%f) z(%f)", spellId, castCount, x, y, z);
-
-    SpellInfo* spell = Spell::checkAndReturnSpellEntry(spellId);
-    if (!spell || spell->ai_target_type == TARGET_FLAG_DEST_LOCATION)
+    Unit* caster = _player->GetMapMgr()->GetUnit(casterGuid);
+    if (caster == nullptr)
+    {
         return;
+    }
+
+    if (caster->m_currentSpell == nullptr || caster->m_currentSpell->GetSpellInfo()->getId() != spellId)
+    {
+        return;
+    }
+
+    if (!caster->m_currentSpell->m_targets.hasDestination())
+    {
+        return;
+    }
+
+    // Relocate spell
+    caster->m_currentSpell->m_targets.setDestination(LocationVector(x, y, z));
 
 #if VERSION_STRING > TBC
     WorldPacket data(SMSG_SET_PROJECTILE_POSITION, 21);
-    data << uint64(casterGuid);
-    data << uint8(castCount);
+    data << uint64_t(casterGuid);
+    data << uint8_t(castCount);
     data << float(x);
     data << float(y);
     data << float(z);
-    SendPacket(&data);
+    caster->SendMessageToSet(&data, true);
 #endif
 }
 #endif

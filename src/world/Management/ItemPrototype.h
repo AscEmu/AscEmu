@@ -497,38 +497,38 @@ enum ITEM_QUALITY
 
 enum ITEM_FLAG
 {
-    ITEM_FLAG_SOULBOUND        = 0x00000001, // not used in proto
-    ITEM_FLAG_CONJURED         = 0x00000002,
-    ITEM_FLAG_LOOTABLE         = 0x00000004,
-    ITEM_FLAG_WRAPPED          = 0x00000008, // not used in proto
-    ITEM_FLAG_BROKEN           = 0x00000010, // many equipable items and bags
-    ITEM_FLAG_INDESTRUCTIBLE   = 0x00000020, // can't destruct this item
-    ITEM_FLAG_UNKNOWN_07       = 0x00000040, // many consumables
-    ITEM_FLAG_UNKNOWN_08       = 0x00000080, // only 1 wand uses this
-    ITEM_FLAG_UNKNOWN_09       = 0x00000100, // some wands & relics
-    ITEM_FLAG_WRAP_GIFT        = 0x00000200,
-    ITEM_FLAG_CREATE_ITEM      = 0x00000400, // probably worng
-    ITEM_FLAG_FREE_FOR_ALL     = 0x00000800, // can be looted ffa
-    ITEM_FLAG_REFUNDABLE       = 0x00001000,
-    ITEM_FLAG_SIGNABLE         = 0x00002000, // charts
-    ITEM_FLAG_READABLE         = 0x00004000, // may be worng
-    ITEM_FLAG_UNKNOWN_16       = 0x00008000,
-    ITEM_FLAG_EVENT_REQ        = 0x00010000, // may be wrong
-    ITEM_FLAG_UNKNOWN_18       = 0x00020000,
-    ITEM_FLAG_PROSPECTABLE     = 0x00040000,
-    ITEM_FLAG_UNIQUE_EQUIP     = 0x00080000,
-    ITEM_FLAG_UNKNOWN_21       = 0x00100000, // not used in proto
-    ITEM_FLAG_USEABLE_IN_ARENA = 0x00200000, // useable in arenas
-    ITEM_FLAG_THROWN           = 0x00400000,
-    ITEM_FLAG_SHAPESHIFT_OK    = 0x00800000,
-    ITEM_FLAG_UNKNOWN_25       = 0x01000000,
-    ITEM_FLAG_UNKNOWN_26       = 0x02000000,
-    ITEM_FLAG_UNKNOWN_27       = 0x04000000,
-    ITEM_FLAG_ACCOUNTBOUND     = 0x08000000,
-    ITEM_FLAG_UNKNOWN_29       = 0x10000000,
-    ITEM_FLAG_MILLABLE         = 0x20000000,
-    ITEM_FLAG_UNKNOWN_31       = 0x40000000,
-    ITEM_FLAG_UNKNOWN_32       = 0x80000000
+    ITEM_FLAG_SOULBOUND             = 0x00000001, // not used in proto
+    ITEM_FLAG_CONJURED              = 0x00000002,
+    ITEM_FLAG_LOOTABLE              = 0x00000004,
+    ITEM_FLAG_WRAPPED               = 0x00000008, // not used in proto
+    ITEM_FLAG_BROKEN                = 0x00000010, // many equipable items and bags
+    ITEM_FLAG_INDESTRUCTIBLE        = 0x00000020, // can't destruct this item
+    ITEM_FLAG_UNKNOWN_07            = 0x00000040, // many consumables
+    ITEM_FLAG_UNKNOWN_08            = 0x00000080, // only 1 wand uses this
+    ITEM_FLAG_UNKNOWN_09            = 0x00000100, // some wands & relics
+    ITEM_FLAG_WRAP_GIFT             = 0x00000200,
+    ITEM_FLAG_CREATE_ITEM           = 0x00000400, // probably worng
+    ITEM_FLAG_FREE_FOR_ALL          = 0x00000800, // can be looted ffa
+    ITEM_FLAG_REFUNDABLE            = 0x00001000,
+    ITEM_FLAG_SIGNABLE              = 0x00002000, // charts
+    ITEM_FLAG_READABLE              = 0x00004000, // may be worng
+    ITEM_FLAG_UNKNOWN_16            = 0x00008000,
+    ITEM_FLAG_EVENT_REQ             = 0x00010000, // may be wrong
+    ITEM_FLAG_UNKNOWN_18            = 0x00020000,
+    ITEM_FLAG_PROSPECTABLE          = 0x00040000,
+    ITEM_FLAG_UNIQUE_EQUIP          = 0x00080000,
+    ITEM_FLAG_UNKNOWN_21            = 0x00100000, // not used in proto
+    ITEM_FLAG_USEABLE_IN_ARENA      = 0x00200000, // useable in arenas
+    ITEM_FLAG_THROWN                = 0x00400000,
+    ITEM_FLAG_SHAPESHIFT_OK         = 0x00800000,
+    ITEM_FLAG_UNKNOWN_25            = 0x01000000,
+    ITEM_FLAG_UNKNOWN_26            = 0x02000000,
+    ITEM_FLAG_NOT_USEABLE_IN_ARENA  = 0x04000000,
+    ITEM_FLAG_ACCOUNTBOUND          = 0x08000000,
+    ITEM_FLAG_UNKNOWN_29            = 0x10000000,
+    ITEM_FLAG_MILLABLE              = 0x20000000,
+    ITEM_FLAG_UNKNOWN_31            = 0x40000000,
+    ITEM_FLAG_UNKNOWN_32            = 0x80000000
 };
 
 enum ITEM_FLAGS2
