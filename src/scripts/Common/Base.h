@@ -308,11 +308,7 @@ class MoonScriptCreatureAI : public CreatureAIScript
         void CastSpellNowNoScheduling(SpellDesc* pSpell);
         SpellDesc* FindSpellById(uint32 pSpellId);
         SpellDesc* FindSpellByFunc(SpellFunc pFnc);
-        bool IsCasting();
-        void ApplyAura(uint32 pSpellId);
-        void RemoveAura(uint32 pSpellId);
-        void RemoveAuraOnPlayers(uint32 pSpellId);
-        void RemoveAllAuras();
+
         void TriggerCooldownOnAllSpells();
         void CancelAllCooldowns();
 

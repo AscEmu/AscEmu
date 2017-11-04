@@ -860,7 +860,7 @@ class SpringvaleAI : public MoonScriptCreatureAI
             ParentClass::OnCombatStop(pTarget);
             // Turn aura OFF!
             if (GetUnit()->HasAura(SPELL_DEVO_AURA))
-                RemoveAura(SPELL_DEVO_AURA);
+                _removeAura(SPELL_DEVO_AURA);
         }
 
         void AIUpdate()
@@ -1147,7 +1147,7 @@ class ArugalBossAI : public MoonScriptCreatureAI
                 case 0:
                 {
                     ModifyAIUpdateEvent(6000);
-                    ApplyAura(SPELL_ARUGAL_SPAWN);
+                    _applyAura(SPELL_ARUGAL_SPAWN);
                     GetUnit()->SendScriptTextChatMessage(YELL_ARUGAL_FENRUS);
                 }break;
                 case 1:

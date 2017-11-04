@@ -72,7 +72,7 @@ class DruidFangAI : public MoonScriptCreatureAI
             if (_getHealthPercent() <= 5 && HealingTouch->mEnabled == true)
             {
                 // Remove Serpent Form
-                RemoveAura(8041);
+                _removeAura(8041);
                 CastSpellNowNoScheduling(HealingTouch);
                 HealingTouch->mEnabled = false;
             }

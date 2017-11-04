@@ -331,35 +331,6 @@ SpellDesc* MoonScriptCreatureAI::FindSpellByFunc(SpellFunc pFnc)
     return nullptr;
 }
 
-bool MoonScriptCreatureAI::IsCasting()
-{
-    return _unit->IsCasting();
-}
-
-void MoonScriptCreatureAI::ApplyAura(uint32 pSpellId)
-{
-    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(pSpellId), true);
-}
-
-void MoonScriptCreatureAI::RemoveAura(uint32 pSpellId)
-{
-    _unit->RemoveAura(pSpellId);
-}
-
-void MoonScriptCreatureAI::RemoveAuraOnPlayers(uint32 pSpellId)
-{
-    for (std::set< Object* >::iterator PlayerIter = _unit->GetInRangePlayerSetBegin(); PlayerIter != _unit->GetInRangePlayerSetEnd(); ++PlayerIter)
-    {
-        // need testing
-        (static_cast< Player* >(*PlayerIter))->RemoveAura(pSpellId);
-    }
-}
-
-void MoonScriptCreatureAI::RemoveAllAuras()
-{
-    _unit->RemoveAllAuras();
-}
-
 void MoonScriptCreatureAI::TriggerCooldownOnAllSpells()
 {
     uint32 CurrentTime = (uint32)time(nullptr);
@@ -711,7 +682,7 @@ void MoonScriptCreatureAI::OnCombatStop(Unit* pTarget)
     CancelAllSpells();
     CancelAllTimers();
     RemoveAllEvents();
-    RemoveAllAuras();
+    _removeAllAuras();
     SetBehavior(Behavior_Default);
     //_unit->GetAIInterface()->SetAIState(STATE_IDLE);                // Fix for stuck mobs that don't regen
     RemoveAIUpdateEvent();
@@ -732,7 +703,7 @@ void MoonScriptCreatureAI::OnDied(Unit* pKiller)
     CancelAllSpells();
     CancelAllTimers();
     RemoveAllEvents();
-    RemoveAllAuras();
+    _removeAllAuras();
     RemoveAIUpdateEvent();
 
     if (_isDespawnWhenInactiveSet())
@@ -784,7 +755,7 @@ void MoonScriptCreatureAI::AIUpdate()
     }
 
     //Do not schedule spell if we are *currently* casting a non-instant cast spell
-    if (!IsCasting() && !mRunToTargetCache)
+    if (!_isCasting() && !mRunToTargetCache)
     {
         //Check if have queued spells that needs to be scheduled before we go back to random casting
         if (!mQueuedSpells.empty())
@@ -873,7 +844,7 @@ bool MoonScriptCreatureAI::CastSpellInternal(SpellDesc* pSpell, uint32 pCurrentT
         return false;
 
     //Do not cast if we are already casting
-    if (IsCasting())
+    if (_isCasting())
         return false;
 
     //We do not cast in special states such as : stunned, feared, silenced, charmed, asleep, confused and if they are not ignored
@@ -1336,14 +1307,14 @@ void SpellFunc_Disappear(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Un
     pCreatureAI->_clearHateList();
     pCreatureAI->setRooted(true);
     pCreatureAI->setCanEnterCombat(false);
-    pCreatureAI->ApplyAura(SPELLFUNC_VANISH);
+    pCreatureAI->_applyAura(SPELLFUNC_VANISH);
 }
 
 void SpellFunc_Reappear(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
 {
     pCreatureAI->setRooted(false);
     pCreatureAI->setCanEnterCombat(true);
-    pCreatureAI->RemoveAura(SPELLFUNC_VANISH);
+    pCreatureAI->_removeAura(SPELLFUNC_VANISH);
 }
 
 void EventFunc_ApplyAura(MoonScriptCreatureAI* pCreatureAI, int32 pMiscVal)
@@ -1351,7 +1322,7 @@ void EventFunc_ApplyAura(MoonScriptCreatureAI* pCreatureAI, int32 pMiscVal)
     if (!pCreatureAI || pMiscVal <= 0)
         return;
 
-    pCreatureAI->ApplyAura(uint32(pMiscVal));
+    pCreatureAI->_applyAura(uint32(pMiscVal));
     if (!pCreatureAI->_isInCombat() && !pCreatureAI->HasEvents() && pCreatureAI->GetTimerCount() == 0)
         pCreatureAI->RemoveAIUpdateEvent();
 }

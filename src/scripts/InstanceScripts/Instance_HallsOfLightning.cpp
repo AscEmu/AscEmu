@@ -282,22 +282,22 @@ class GeneralBjarngrimAI : public MoonScriptBossAI
         switch (pStance)
         {
             case STANCE_BATTLE:
-                ApplyAura(SPELL_BATTLE_AURA);
-                ApplyAura(SPELL_BATTLE_STANCE);
+                _applyAura(SPELL_BATTLE_AURA);
+                _applyAura(SPELL_BATTLE_STANCE);
                 sendDBChatMessage(760);      // Defend yourself, for all the good it will do!
                 Announce("General Bjarngrim switches to Battle Stance!");
                 SetPhase(1);
                 break;
             case STANCE_BERSERKER:
-                ApplyAura(SPELL_BERSERKER_AURA);
-                ApplyAura(SPELL_BERSERKER_STANCE);
+                _applyAura(SPELL_BERSERKER_AURA);
+                _applyAura(SPELL_BERSERKER_STANCE);
                 sendDBChatMessage(761);      // GRAAAAAH! Behold the fury of iron and steel!
                 Announce("General Bjarngrim switches to Berserker Stance!");
                 SetPhase(2);
                 break;
             case STANCE_DEFENSIVE:
-                ApplyAura(SPELL_DEFENSIVE_AURA);
-                ApplyAura(SPELL_DEFENSIVE_STANCE);
+                _applyAura(SPELL_DEFENSIVE_AURA);
+                _applyAura(SPELL_DEFENSIVE_STANCE);
                 sendDBChatMessage(759);      // Give me your worst!
                 Announce("General Bjarngrim switches to Defensive Stance!");
                 SetPhase(3);
@@ -597,7 +597,7 @@ class LokenAI : public MoonScriptCreatureAI
 
         ParentClass::OnCombatStart(pTarget);
         mSpeech = 1;
-        ApplyAura(HeroicInt(52961, 59836));
+        _applyAura(HeroicInt(52961, 59836));
         mNovaTimer = AddTimer(TIMER_NOVA);
         CastOnAllInrangePlayers(PULSING_SHOCKWAVE_AURA);
 
@@ -607,7 +607,7 @@ class LokenAI : public MoonScriptCreatureAI
 
     void OnCombatStop(Unit* pTarget)
     {
-        RemoveAuraOnPlayers(PULSING_SHOCKWAVE_AURA);
+        _removeAuraOnPlayers(PULSING_SHOCKWAVE_AURA);
         ParentClass::OnCombatStop(pTarget);
 
         if (mInstance)
@@ -634,7 +634,7 @@ class LokenAI : public MoonScriptCreatureAI
     {
         sendDBChatMessage(811);      // My death... heralds the end of this world.
 
-        RemoveAuraOnPlayers(PULSING_SHOCKWAVE_AURA);
+        _removeAuraOnPlayers(PULSING_SHOCKWAVE_AURA);
         ParentClass::OnDied(pKiller);
     }
 

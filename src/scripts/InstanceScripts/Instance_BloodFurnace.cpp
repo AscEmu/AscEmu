@@ -61,7 +61,7 @@ class KelidanTheBreakerAI : public MoonScriptBossAI
 
     void AIUpdate()
     {
-        if (!IsCasting())
+        if (!_isCasting())
         {
             if (mBurningNovaTimer == INVALIDATE_TIMER || IsTimerFinished(mBurningNovaTimer))
             {

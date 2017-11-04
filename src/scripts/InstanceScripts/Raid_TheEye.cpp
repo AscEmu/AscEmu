@@ -384,7 +384,7 @@ class AstromancerAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            if (!IsCasting())
+            if (!_isCasting())
             {
                 if (mArcaneBurstTimer == -1 || IsTimerFinished(mArcaneBurstTimer))
                 {
@@ -1757,12 +1757,12 @@ class HighAstromancerSolarianAI : public MoonScriptBossAI
         {
             if (GetPhase() == 1)
             {
-                if (_getHealthPercent() <= 20 && !IsCasting())
+                if (_getHealthPercent() <= 20 && !_isCasting())
                 {
                     SetPhase(3, mVoidForm);
                     CancelAllTimers();
                 }
-                else if (IsTimerFinished(mSplitTimer) && !IsCasting())
+                else if (IsTimerFinished(mSplitTimer) && !_isCasting())
                 {
                     SetPhase(2, mDisappear);
                     ResetTimer(mSplitTimer, 90000);        //Next split in 90sec
@@ -1772,12 +1772,12 @@ class HighAstromancerSolarianAI : public MoonScriptBossAI
             }
             else if (GetPhase() == 2)
             {
-                if (IsTimerFinished(mSolarianTimer) && !IsCasting())
+                if (IsTimerFinished(mSolarianTimer) && !_isCasting())
                 {
                     SetPhase(1, mReappear);
                     RemoveTimer(mSolarianTimer);
                 }
-                else if (IsTimerFinished(mAgentsTimer) && !IsCasting())
+                else if (IsTimerFinished(mAgentsTimer) && !_isCasting())
                 {
                     for (uint8 SpawnIter = 0; SpawnIter < 4; SpawnIter++)
                     {
@@ -2792,7 +2792,7 @@ class FlameStrikeAI : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(FlameStrikeAI, MoonScriptCreatureAI);
         FlameStrikeAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            ApplyAura(FLAME_STRIKE_TRIGGER_FLAME_STRIKE_EFFECT);
+            _applyAura(FLAME_STRIKE_TRIGGER_FLAME_STRIKE_EFFECT);
             RegisterAIUpdateEvent(5000);
             setCanEnterCombat(false);
             _setMeleeDisabled(false);
@@ -2803,14 +2803,14 @@ class FlameStrikeAI : public MoonScriptCreatureAI
         void OnDied(Unit* mKiller)
         {
             ParentClass::OnDied(mKiller);
-            RemoveAura(FLAME_STRIKE_TRIGGER_FLAME_STRIKE_EFFECT);
+            _removeAura(FLAME_STRIKE_TRIGGER_FLAME_STRIKE_EFFECT);
             despawn(500);
         }
 
         void AIUpdate()
         {
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
-            ApplyAura(FLAME_STRIKE_TRIGGER_FLAME_STRIKE);
+            _applyAura(FLAME_STRIKE_TRIGGER_FLAME_STRIKE);
             RemoveAIUpdateEvent();
             despawn(8500);
         }
@@ -2859,7 +2859,7 @@ class PhoenixAI : public MoonScriptCreatureAI
         void OnDied(Unit* mKiller)
         {
             ParentClass::OnDied(mKiller);
-            ApplyAura(PHOENIX_REBIRTH);
+            _applyAura(PHOENIX_REBIRTH);
             SpawnCreature(21364, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), false);
             despawn(500);
         }
@@ -2872,7 +2872,7 @@ class PhoenixAI : public MoonScriptCreatureAI
             {
                 _unit->SetHealth((uint32)(CurrentHP - PercMaxHP));
                 ResetTimer(mBurnTimer, 3000);
-                ApplyAura(PHOENIX_BURN);
+                _applyAura(PHOENIX_BURN);
             }
             else if (CurrentHP <= PercMaxHP)
             {
@@ -3332,7 +3332,7 @@ class KaelThasAI : public MoonScriptBossAI
             }
             if (GetPhase() == 7)
             {
-                if (!IsCasting())
+                if (!_isCasting())
                 {
                     if (GetBehavior() == Behavior_Spell)
                     {

@@ -198,8 +198,8 @@ class SartharionAI : public MoonScriptBossAI
             if (m_iDrakeCount >= 1)   //HardMode!
             {
                 mDrakeTimer = AddTimer(30000);
-                ApplyAura(SARTHARION_AURA);
-                RemoveAuraOnPlayers(SARTHARION_AURA);   // unproper hackfix
+                _applyAura(SARTHARION_AURA);
+                _removeAuraOnPlayers(SARTHARION_AURA);   // unproper hackfix
                 _regenerateHealth();// Lets heal him as aura increase his hp for 25%
             };
 
@@ -324,8 +324,8 @@ class TsunamiAI : public MoonScriptBossAI
 
         void AIUpdate()
         {
-            ApplyAura(TSUNAMI);
-            ApplyAura(TSUNAMI_VISUAL);
+            _applyAura(TSUNAMI);
+            _applyAura(TSUNAMI_VISUAL);
             RegisterAIUpdateEvent(11000);
 
             ParentClass::OnLoad();
@@ -345,8 +345,8 @@ class CyclonAI : public MoonScriptBossAI
             setRooted(true);
             setCanEnterCombat(false);
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            ApplyAura(CYCLON_SPELL);
-            ApplyAura(CYCLON_AURA);
+            _applyAura(CYCLON_SPELL);
+            _applyAura(CYCLON_AURA);
 
             ParentClass::OnLoad();
         };

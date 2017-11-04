@@ -162,19 +162,19 @@ VigilantShadeAI::VigilantShadeAI(Creature* pCreature) : MoonScriptCreatureAI(pCr
     else
         AddSpell(NAXXRAMAS_ACOLYTE_SHADOW_BOLT_VOLLEY_NORMAL, Target_RandomPlayerDestination, 10, 0, 15, 0, 30);
 
-    ApplyAura(VIGILANT_SHADE_INVISIBILITY);
+    _applyAura(VIGILANT_SHADE_INVISIBILITY);
 };
 
 void VigilantShadeAI::OnCombatStart(Unit* pTarget)
 {
     ParentClass::OnCombatStart(pTarget);
-    RemoveAura(VIGILANT_SHADE_INVISIBILITY);
+    _removeAura(VIGILANT_SHADE_INVISIBILITY);
 };
 
 void VigilantShadeAI::OnCombatStop(Unit* pTarget)
 {
     ParentClass::OnCombatStop(pTarget);
-    ApplyAura(VIGILANT_SHADE_INVISIBILITY);
+    _applyAura(VIGILANT_SHADE_INVISIBILITY);
 };
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -320,23 +320,23 @@ void MaexxnaAI::AIUpdate()
         ResetTimer(mAddsSummonTimer, 40000);
     };
 
-    if (!IsCasting())
+    if (!_isCasting())
     {
         if (!mHasEnraged && _getHealthPercent() <= 30)
         {
             if (IsHeroic())
-                ApplyAura(MAEXXNA_FRENZY_HEROIC);
+                _applyAura(MAEXXNA_FRENZY_HEROIC);
             else
-                ApplyAura(MAEXXNA_FRENZY_NORMAL);
+                _applyAura(MAEXXNA_FRENZY_NORMAL);
 
             mHasEnraged = true;
         }
         else if (IsTimerFinished(mWebSprayTimer))
         {
             if (IsHeroic())
-                ApplyAura(MAEXXNA_WEB_SPRAY_HEROIC);
+                _applyAura(MAEXXNA_WEB_SPRAY_HEROIC);
             else
-                ApplyAura(MAEXXNA_WEB_SPRAY_NORMAL);
+                _applyAura(MAEXXNA_WEB_SPRAY_NORMAL);
 
             ResetTimer(mWebSprayTimer, 40000);
         }
@@ -421,7 +421,7 @@ void NaxxramasWorshipperAI::OnDied(Unit* pKiller)
                     continue;
 
                 // Must check if it does not crash if creature is already casting
-                (*Iter)->ApplyAura(NAXXRAMAS_WORSHIPPER_MIND_EXHAUSTION);
+                (*Iter)->_applyAura(NAXXRAMAS_WORSHIPPER_MIND_EXHAUSTION);
             };
 
             // Should be applied on Grand Widow, but is on the enemies - to script ?
@@ -700,7 +700,7 @@ void GrandWidowFaerlinaAI::OnCombatStop(Unit* pTarget)
 
 void GrandWidowFaerlinaAI::AIUpdate()
 {
-    if (!IsCasting())
+    if (!_isCasting())
     {
         if (IsTimerFinished(mPoisonVolleyBoltTimer))
         {
@@ -760,9 +760,9 @@ void CryptGuardAI::OnCombatStart(Unit* pTarget)
 
 void CryptGuardAI::AIUpdate()
 {
-    if (!mEnraged && _getHealthPercent() <= 50 && !IsCasting())
+    if (!mEnraged && _getHealthPercent() <= 50 && !_isCasting())
     {
-        ApplyAura(CRYPT_GUARD_FRENZY);
+        _applyAura(CRYPT_GUARD_FRENZY);
         mEnraged = true;
     };
 
@@ -903,7 +903,7 @@ void AnubRekhanAI::OnCombatStop(Unit* pTarget)
 
 void AnubRekhanAI::AIUpdate()
 {
-    if (!IsCasting())
+    if (!_isCasting())
     {
         if (mCryptSpawnTimer != INVALIDATE_TIMER && IsTimerFinished(mCryptSpawnTimer))
         {
@@ -1106,12 +1106,12 @@ void InfectiousGhoulAI::OnCombatStart(Unit* pTarget)
 
 void InfectiousGhoulAI::AIUpdate()
 {
-    if (!mEnraged && !IsCasting() && _getHealthPercent() <= 50)
+    if (!mEnraged && !_isCasting() && _getHealthPercent() <= 50)
     {
         if (IsHeroic())
-            ApplyAura(INFECTIOUS_GHOUL_FRENZY_HEROIC);
+            _applyAura(INFECTIOUS_GHOUL_FRENZY_HEROIC);
         else
-            ApplyAura(INFECTIOUS_GHOUL_FRENZY_NORMAL);
+            _applyAura(INFECTIOUS_GHOUL_FRENZY_NORMAL);
 
         mEnraged = true;
     };
@@ -1143,12 +1143,12 @@ bool StoneskinGargoyleAI::HasStoneskin()
 void StoneskinGargoyleAI::AIUpdate()
 {
     bool HasAura = HasStoneskin();
-    if (IsCasting() || HasAura)
+    if (_isCasting() || HasAura)
         return;
     else if (_unit->GetEmoteState() == EMOTE_STATE_SUBMERGED)
         _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
 
-    if (!IsCasting() && _getHealthPercent() <= 30)
+    if (!_isCasting() && _getHealthPercent() <= 30)
     {
         CastSpellNowNoScheduling(mStoneskin);
         _unit->SetEmoteState(EMOTE_STATE_SUBMERGED_NEW);
@@ -1178,19 +1178,19 @@ PlagueBeastAI::PlagueBeastAI(Creature* pCreature) : MoonScriptCreatureAI(pCreatu
         AddSpell(PLAGUE_BEAST_PLAGUE_SPLASH_NORMAL, Target_RandomPlayerDestination, 8, 0, 15, 0, 50);
 
     AddSpell(PLAGUE_BEAST_TRAMPLE, Target_Current, 10, 0, 10, 0, 8);
-    ApplyAura(PLAGUE_BEAST_MUTATED_SPORES);
+    _applyAura(PLAGUE_BEAST_MUTATED_SPORES);
 };
 
 void PlagueBeastAI::OnCombatStart(Unit* pTarget)
 {
     ParentClass::OnCombatStart(pTarget);
-    ApplyAura(PLAGUE_BEAST_MUTATED_SPORES);
+    _applyAura(PLAGUE_BEAST_MUTATED_SPORES);
 };
 
 void PlagueBeastAI::OnCombatStop(Unit* pTarget)
 {
     ParentClass::OnCombatStop(pTarget);
-    ApplyAura(PLAGUE_BEAST_MUTATED_SPORES);
+    _applyAura(PLAGUE_BEAST_MUTATED_SPORES);
 };
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -1214,7 +1214,7 @@ void EyeStalkerAI::OnCombatStart(Unit* pTarget)
 void EyeStalkerAI::AIUpdate()
 {
     Unit* CurrentTarget = _unit->GetAIInterface()->getNextTarget();
-    if (!IsCasting() && CurrentTarget != NULL)
+    if (!_isCasting() && CurrentTarget != NULL)
     {
         float MaxRange = 45.0f;
         if (IsHeroic())
@@ -1336,7 +1336,7 @@ void NothThePlaguebringerAI::AIUpdate()
 {
     if (GetPhase() == 1)
     {
-        if (!IsCasting())
+        if (!_isCasting())
         {
             if (mPhaseCounter < 3 && IsTimerFinished(mPhaseSwitchTimer))
             {
@@ -1349,7 +1349,7 @@ void NothThePlaguebringerAI::AIUpdate()
 
             if (mPhaseCounter == 3)
             {
-                ApplyAura(NOTH_THE_PLAGUEBRINGER_BERSERK);
+                _applyAura(NOTH_THE_PLAGUEBRINGER_BERSERK);
                 ++mPhaseCounter;
             };
 
@@ -1408,7 +1408,7 @@ void NothThePlaguebringerAI::AIUpdate()
     }
     else
     {
-        if (!IsCasting() && IsTimerFinished(mPhaseSwitchTimer))
+        if (!_isCasting() && IsTimerFinished(mPhaseSwitchTimer))
         {
             SetPhase(1, mFromBalconySwitch);
             ResetTimer(mPhaseSwitchTimer, 70000);
@@ -1539,7 +1539,7 @@ void SpellFunc_NothToBalconyPhaseSwitch(SpellDesc* pThis, MoonScriptCreatureAI* 
     if (Noth != NULL)
     {
         // Are these coords correct ? Or maybe it should be just disappear / appear thing ? And is this spell correct ? I doubt it ...
-        Noth->ApplyAura(NOTH_THE_PLAGUEBRINGER_BLINK_HEROIC);
+        Noth->_applyAura(NOTH_THE_PLAGUEBRINGER_BLINK_HEROIC);
         Noth->GetUnit()->SetPosition(2631.051025f, -3529.595703f, 274.037811f, 0.109163f);
         Noth->SetBehavior(Behavior_Spell);
         Noth->setRooted(true);
@@ -1554,7 +1554,7 @@ void SpellFunc_NothFromBalconyPhaseSwitch(SpellDesc* pThis, MoonScriptCreatureAI
     {
         Noth->SetBehavior(Behavior_Default);
         Noth->setRooted(false);
-        Noth->ApplyAura(NOTH_THE_PLAGUEBRINGER_BLINK_HEROIC);
+        Noth->_applyAura(NOTH_THE_PLAGUEBRINGER_BLINK_HEROIC);
         Noth->GetUnit()->SetPosition(2684.620850f, -3502.447266f, 261.314880f, 0.098174f);
 
         if (pTarget != NULL)
@@ -1570,7 +1570,7 @@ void SpellFunc_NothCriple(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, U
     if (Noth != NULL)
     {
         // Dunno if target count that should be affected is correct
-        Noth->ApplyAura(NOTH_THE_PLAGUEBRINGER_CRIPLE_HEROIC);
+        Noth->_applyAura(NOTH_THE_PLAGUEBRINGER_CRIPLE_HEROIC);
         Noth->CastSpell(Noth->mBlink);
     };
 };
@@ -1580,7 +1580,7 @@ void SpellFunc_NothBlink(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Un
     NothThePlaguebringerAI* Noth = (pCreatureAI != NULL) ? static_cast< NothThePlaguebringerAI* >(pCreatureAI) : NULL;
     if (Noth != NULL)
     {
-        Noth->ApplyAura(NOTH_THE_PLAGUEBRINGER_BLINK_HEROIC);
+        Noth->_applyAura(NOTH_THE_PLAGUEBRINGER_BLINK_HEROIC);
         float Angle = Noth->GetUnit()->GetOrientation();
         float NewX = Noth->GetUnit()->GetPositionX() + 20.0f * cosf(Angle);
         float NewY = Noth->GetUnit()->GetPositionY() + 20.0f * sinf(Angle);
@@ -1808,9 +1808,9 @@ void HeiganTheUncleanAI::AIUpdate()
 {
     if (GetPhase() == 1)
     {
-        if (!IsCasting() && IsTimerFinished(mPhaseSwitchTimer))
+        if (!_isCasting() && IsTimerFinished(mPhaseSwitchTimer))
         {
-            ApplyAura(HEIGAN_THE_UNCLEAN_TELEPORT);
+            _applyAura(HEIGAN_THE_UNCLEAN_TELEPORT);
             sendChatMessage(CHAT_MSG_MONSTER_YELL, 8833, "The end is uppon you!");
             _unit->SetPosition(2794.235596f, -3707.067627f, 276.545746f, 2.407245f);
             SetTargetToChannel(_unit, HEIGAN_THE_UNCLEAN_PLAGUE_CLOUD_CHANNEL);
@@ -1829,7 +1829,7 @@ void HeiganTheUncleanAI::AIUpdate()
     }
     else
     {
-        if (!IsCasting() && IsTimerFinished(mPhaseSwitchTimer))
+        if (!_isCasting() && IsTimerFinished(mPhaseSwitchTimer))
         {
             SetTargetToChannel(NULL, 0);
             SetBehavior(Behavior_Default);
@@ -1988,14 +1988,14 @@ void LoathebAI::AIUpdate()
         PosTaken[Id] = true;
     }
 
-    if (!IsCasting())
+    if (!_isCasting())
     {
         if (IsTimerFinished(mDoomTimer))
         {
             if (IsHeroic())
-                ApplyAura(LOATHEB_INEVITABLE_DOOM_HEROIC);
+                _applyAura(LOATHEB_INEVITABLE_DOOM_HEROIC);
             else
-                ApplyAura(LOATHEB_INEVITABLE_DOOM_NORMAL);
+                _applyAura(LOATHEB_INEVITABLE_DOOM_NORMAL);
 
             if (mDoomStaticTimer > 36000)
             {
@@ -2035,9 +2035,9 @@ void LoathebAI::AIUpdate()
             else
             {
                 if (IsHeroic())
-                    ApplyAura(LOATHEB_DEATHBLOOM_HEROIC);
+                    _applyAura(LOATHEB_DEATHBLOOM_HEROIC);
                 else
-                    ApplyAura(LOATHEB_DEATHBLOOM_NORMAL);
+                    _applyAura(LOATHEB_DEATHBLOOM_NORMAL);
 
                 ResetTimer(mDeathbloomTimer, 5000);
             };
@@ -2074,7 +2074,7 @@ SporeAI::SporeAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
 void SporeAI::OnDied(Unit* pKiller)
 {
     ParentClass::OnDied(pKiller);
-    ApplyAura(SPORE_FUNGAL_CREEP);
+    _applyAura(SPORE_FUNGAL_CREEP);
 };
 
 void SporeAI::Destroy()
@@ -2110,7 +2110,7 @@ DeathKnightAI::DeathKnightAI(Creature* pCreature) : MoonScriptCreatureAI(pCreatu
 void DeathKnightAI::OnCombatStart(Unit* pTarget)
 {
     ParentClass::OnCombatStart(pTarget);
-    ApplyAura(DEATH_KNIGHT_BLOOD_PRESENCE);
+    _applyAura(DEATH_KNIGHT_BLOOD_PRESENCE);
 };
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -2129,7 +2129,7 @@ DeathKnightCaptainAI::DeathKnightCaptainAI(Creature* pCreature) : MoonScriptCrea
 void DeathKnightCaptainAI::OnCombatStart(Unit* pTarget)
 {
     ParentClass::OnCombatStart(pTarget);
-    ApplyAura(DEATH_KNIGHT_CAPTAIN_UNHOLY_PRESENCE);
+    _applyAura(DEATH_KNIGHT_CAPTAIN_UNHOLY_PRESENCE);
 };
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -2285,7 +2285,7 @@ void SpellFunc_NecroKnightBlink(SpellDesc* pThis, MoonScriptCreatureAI* pCreatur
     NecroKnightAI* NecroKnight = (pCreatureAI != NULL) ? static_cast< NecroKnightAI* >(pCreatureAI) : NULL;
     if (NecroKnight != NULL && pTarget != NULL)
     {
-        NecroKnight->ApplyAura(NECRO_KNIGHT_BLINK);
+        NecroKnight->_applyAura(NECRO_KNIGHT_BLINK);
         NecroKnight->GetUnit()->SetPosition(pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), NecroKnight->GetUnit()->GetOrientation());
         NecroKnight->GetUnit()->GetAIInterface()->AttackReaction(pTarget, 500);
         NecroKnight->GetUnit()->GetAIInterface()->setNextTarget(pTarget);
@@ -2350,7 +2350,7 @@ void DeathKnightCavalierAI::AIUpdate()
     if (mIsMounted && RandomUInt(99) < 2)
     {
         _unit->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID , 0);
-        ApplyAura(DEATH_KNIGHT_CAVALIER_DISMOUNT_DEATHCHARGER);
+        _applyAura(DEATH_KNIGHT_CAVALIER_DISMOUNT_DEATHCHARGER);
         mIsMounted = false;
     };
 
@@ -2448,7 +2448,7 @@ void DarkTouchedWarriorAI::OnCombatStart(Unit* pTarget)
 
 void DarkTouchedWarriorAI::AIUpdate()
 {
-    if (!IsCasting() && IsTimerFinished(mResetHateTimer))
+    if (!_isCasting() && IsTimerFinished(mResetHateTimer))
     {
         _clearHateList();
         mResetHateTimer = AddTimer(8000 + RandomUInt(7) * 1000);
@@ -2515,13 +2515,13 @@ PatchworkGolemAI::PatchworkGolemAI(Creature* pCreature) : MoonScriptCreatureAI(p
     {
         AddSpell(PATCHWORK_GOLEM_EXECUTE_HEROIC, Target_Current, 8, 0, 10, 0, 8);
         AddSpell(PATCHWORK_GOLEM_WAR_STOMP_HEROIC, Target_Self, 8, 0, 15);
-        ApplyAura(PATCHWORK_GOLEM_DISEASE_CLOUD_HEROIC);
+        _applyAura(PATCHWORK_GOLEM_DISEASE_CLOUD_HEROIC);
     }
     else
     {
         AddSpell(PATCHWORK_GOLEM_EXECUTE_NORMAL, Target_Current, 8, 0, 10, 0, 8);
         AddSpell(PATCHWORK_GOLEM_WAR_STOMP_NORMAL, Target_Self, 8, 0, 15);
-        ApplyAura(PATCHWORK_GOLEM_DISEASE_CLOUD_NORMAL);
+        _applyAura(PATCHWORK_GOLEM_DISEASE_CLOUD_NORMAL);
     };
 };
 
@@ -2529,9 +2529,9 @@ void PatchworkGolemAI::OnCombatStart(Unit* pTarget)
 {
     ParentClass::OnCombatStart(pTarget);
     if (IsHeroic())
-        ApplyAura(PATCHWORK_GOLEM_DISEASE_CLOUD_HEROIC);
+        _applyAura(PATCHWORK_GOLEM_DISEASE_CLOUD_HEROIC);
     else
-        ApplyAura(PATCHWORK_GOLEM_DISEASE_CLOUD_NORMAL);
+        _applyAura(PATCHWORK_GOLEM_DISEASE_CLOUD_NORMAL);
 };
 
 void PatchworkGolemAI::OnCombatStop(Unit* pTarget)
@@ -2540,9 +2540,9 @@ void PatchworkGolemAI::OnCombatStop(Unit* pTarget)
     if (isAlive())
     {
         if (IsHeroic())
-            ApplyAura(PATCHWORK_GOLEM_DISEASE_CLOUD_HEROIC);
+            _applyAura(PATCHWORK_GOLEM_DISEASE_CLOUD_HEROIC);
         else
-            ApplyAura(PATCHWORK_GOLEM_DISEASE_CLOUD_NORMAL);
+            _applyAura(PATCHWORK_GOLEM_DISEASE_CLOUD_NORMAL);
     };
 };
 
@@ -2562,38 +2562,38 @@ BileRetcherAI::BileRetcherAI(Creature* pCreature) : MoonScriptCreatureAI(pCreatu
 ////// Sewage Slime
 SewageSlimeAI::SewageSlimeAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
 {
-    ApplyAura(SEWAGE_SLIME_DISEASE_CLOUD);
+    _applyAura(SEWAGE_SLIME_DISEASE_CLOUD);
 };
 
 void SewageSlimeAI::OnCombatStart(Unit* pTarget)
 {
     ParentClass::OnCombatStart(pTarget);
-    ApplyAura(SEWAGE_SLIME_DISEASE_CLOUD);
+    _applyAura(SEWAGE_SLIME_DISEASE_CLOUD);
 };
 
 void SewageSlimeAI::OnCombatStop(Unit* pTarget)
 {
     ParentClass::OnCombatStop(pTarget);
-    ApplyAura(SEWAGE_SLIME_DISEASE_CLOUD);
+    _applyAura(SEWAGE_SLIME_DISEASE_CLOUD);
 };
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Embalming Slime
 EmbalmingSlimeAI::EmbalmingSlimeAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
 {
-    ApplyAura(EMBALMING_SLIME_EMBALMING_CLOUD);
+    _applyAura(EMBALMING_SLIME_EMBALMING_CLOUD);
 };
 
 void EmbalmingSlimeAI::OnCombatStart(Unit* pTarget)
 {
     ParentClass::OnCombatStart(pTarget);
-    ApplyAura(EMBALMING_SLIME_EMBALMING_CLOUD);
+    _applyAura(EMBALMING_SLIME_EMBALMING_CLOUD);
 };
 
 void EmbalmingSlimeAI::OnCombatStop(Unit* pTarget)
 {
     ParentClass::OnCombatStop(pTarget);
-    ApplyAura(EMBALMING_SLIME_EMBALMING_CLOUD);
+    _applyAura(EMBALMING_SLIME_EMBALMING_CLOUD);
 };
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -2676,7 +2676,7 @@ void StitchedColossusAI::AIUpdate()
 {
     if (!mEnraged && RandomUInt(99) == 0)
     {
-        ApplyAura(STITCHED_COLOSSUS_UNSTOPPABLE_ENRAGE);
+        _applyAura(STITCHED_COLOSSUS_UNSTOPPABLE_ENRAGE);
         mEnraged = true;
     };
 
@@ -2737,7 +2737,7 @@ void PatchwerkAI::AIUpdate()
 {
     if (mEnraged == false && _getHealthPercent() <= 5)
     {
-        ApplyAura(PATCHWERK_FRENZY);
+        _applyAura(PATCHWERK_FRENZY);
         GetUnit()->SendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, "Patchwerk goes into a frenzy!");
         mEnraged = true;
     };

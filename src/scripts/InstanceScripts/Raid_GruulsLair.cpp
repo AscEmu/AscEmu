@@ -215,7 +215,7 @@ void SpellFunc_Maulgar_Enrage(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureA
     HighKingMaulgarAI* pMaulgarAI = (pCreatureAI != NULL) ? static_cast< HighKingMaulgarAI* >(pCreatureAI) : NULL;
     if (pMaulgarAI != NULL)
     {
-        pMaulgarAI->ApplyAura(HIGH_KING_MAULGAR_FLURRY);
+        pMaulgarAI->_applyAura(HIGH_KING_MAULGAR_FLURRY);
         pMaulgarAI->_setDisplayWeapon(false, false);
     }
 }
@@ -377,7 +377,7 @@ class KroshFirehandAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            if (!IsCasting())
+            if (!_isCasting())
             {
                 if (mBlastWaveTimer == -1 || IsTimerFinished(mBlastWaveTimer))
                 {
@@ -497,13 +497,13 @@ class GruulTheDragonkillerAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            if (!IsCasting())
+            if (!_isCasting())
             {
                 if (IsTimerFinished(mGrowthTimer))
                 {
                     if (mGrowthStacks == 30)
                     {
-                        RemoveAura(GRUUL_THE_DRAGONKILLER_GROWTH);
+                        _removeAura(GRUUL_THE_DRAGONKILLER_GROWTH);
                         mGrowthStacks = 0;
                     }
                     if (mGrowthStacks != 29)
@@ -515,7 +515,7 @@ class GruulTheDragonkillerAI : public MoonScriptCreatureAI
                         ResetTimer(mGrowthTimer, 300000);
                     }
 
-                    ApplyAura(GRUUL_THE_DRAGONKILLER_GROWTH);
+                    _applyAura(GRUUL_THE_DRAGONKILLER_GROWTH);
                     ++mGrowthStacks;
                 }
                 else if (IsTimerFinished(mHurtfulTimer))

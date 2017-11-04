@@ -127,7 +127,7 @@ class SelinFireheartAI : public MoonScriptCreatureAI
         // 10% of his mana according to wowhead is 3231 which is whats needed to cast FelExplosion
         if (_getManaPercent() < 10 || FelExplosion->mEnabled == false)
             Mana();
-        else if (!IsCasting())// Mana is greater than 10%
+        else if (!_isCasting())// Mana is greater than 10%
             CastFelExplosion();
 
         ParentClass::AIUpdate();

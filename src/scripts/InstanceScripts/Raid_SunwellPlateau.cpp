@@ -230,7 +230,7 @@ class FelmystAI : public MoonScriptBossAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            ApplyAura(FELMYST_NOXIOUS_FUME);
+            _applyAura(FELMYST_NOXIOUS_FUME);
             ParentClass::OnCombatStart(pTarget);
         }
 };

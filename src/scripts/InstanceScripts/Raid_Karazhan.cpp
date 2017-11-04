@@ -102,7 +102,7 @@ class AttumenTheHuntsmanAI : public MoonScriptBossAI
     {
         if (GetPhase() == 1)
         {
-            if (GetLinkedCreature() && GetLinkedCreature()->isAlive() && _getHealthPercent() <= 25 && !IsCasting())
+            if (GetLinkedCreature() && GetLinkedCreature()->isAlive() && _getHealthPercent() <= 25 && !_isCasting())
             {
                 SetPhase(2);
                 _setMeleeDisabled(false);
@@ -145,7 +145,7 @@ class MidnightAI : public MoonScriptBossAI
     {
         if (GetPhase() == 1)
         {
-            if (GetLinkedCreature() == NULL && _getHealthPercent() <= 95 && !IsCasting())
+            if (GetLinkedCreature() == NULL && _getHealthPercent() <= 95 && !_isCasting())
             {
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "Midnight calls for her master!");
                 CreatureAIScript* attumen = SpawnCreature(CN_ATTUMEN, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), false);
@@ -155,7 +155,7 @@ class MidnightAI : public MoonScriptBossAI
                     attumen->SetLinkedCreature(this);
                 }
             }
-            else if (GetLinkedCreature() && GetLinkedCreature()->isAlive() && _getHealthPercent() <= 25 && !IsCasting())
+            else if (GetLinkedCreature() && GetLinkedCreature()->isAlive() && _getHealthPercent() <= 25 && !_isCasting())
             {
                 SetPhase(2);
                 MoonScriptBossAI* attumen = static_cast<MoonScriptBossAI*>(GetLinkedCreature());
@@ -235,7 +235,7 @@ class MoroesAI : public MoonScriptBossAI
 
     void OnDied(Unit* pKiller)
     {
-        RemoveAuraOnPlayers(MOROES_GARROTE);
+        _removeAuraOnPlayers(MOROES_GARROTE);
         ParentClass::OnDied(pKiller);
     }
 
@@ -243,12 +243,12 @@ class MoroesAI : public MoonScriptBossAI
     {
         if (GetPhase() == 1)
         {
-            if (mEnrage->mEnabled && _getHealthPercent() <= 30 && !IsCasting())
+            if (mEnrage->mEnabled && _getHealthPercent() <= 30 && !_isCasting())
             {
                 CastSpell(mEnrage);
                 mEnrage->mEnabled = false;
             }
-            else if (IsTimerFinished(mVanishTimer) && !IsCasting())
+            else if (IsTimerFinished(mVanishTimer) && !_isCasting())
             {
                 SetPhase(2, mVanish);
                 mGarroteTimer = AddTimer(12000);
@@ -257,10 +257,10 @@ class MoroesAI : public MoonScriptBossAI
         }
         else if (GetPhase() == 2)
         {
-            if (IsTimerFinished(mGarroteTimer) && !IsCasting())
+            if (IsTimerFinished(mGarroteTimer) && !_isCasting())
             {
                 SetPhase(1, mGarrote);
-                RemoveAura(MOROES_VANISH);
+                _removeAura(MOROES_VANISH);
                 RemoveTimer(mGarroteTimer);
             }
         }

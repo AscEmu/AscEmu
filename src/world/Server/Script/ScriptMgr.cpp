@@ -734,6 +734,11 @@ void CreatureAIScript::_regenerateHealth()
     _unit->RegeneratePower(false);
 }
 
+bool CreatureAIScript::_isCasting()
+{
+    return _unit->IsCasting();
+}
+
 void CreatureAIScript::_setScale(float scale)
 {
     _unit->setFloatValue(OBJECT_FIELD_SCALE_X, scale);
@@ -770,6 +775,30 @@ void CreatureAIScript::_setDisplayWeaponIds(uint32_t itemId1, uint32_t itemId2)
 {
     _unit->SetEquippedItem(MELEE, itemId1);
     _unit->SetEquippedItem(OFFHAND, itemId2);
+}
+
+void CreatureAIScript::_applyAura(uint32_t spellId)
+{
+    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(spellId), true);
+}
+
+void CreatureAIScript::_removeAura(uint32_t spellId)
+{
+    _unit->RemoveAura(spellId);
+}
+
+void CreatureAIScript::_removeAuraOnPlayers(uint32_t spellId)
+{
+    for (auto object : *_unit->GetInRangePlayerSet())
+    {
+        if (object != nullptr)
+            static_cast<Player*>(object)->RemoveAura(spellId);
+    }
+}
+
+void CreatureAIScript::_removeAllAuras()
+{
+    _unit->RemoveAllAuras();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

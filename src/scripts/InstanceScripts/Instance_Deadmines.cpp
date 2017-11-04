@@ -185,7 +185,7 @@ class MrSmiteAI : public MoonScriptBossAI
         void OnCombatStop(Unit* pTarget)
         {
             if (GetPhase() == 4)
-                RemoveAura(SMITES_HAMMER);
+                _removeAura(SMITES_HAMMER);
 
             if (!isAlive())
                 _setWieldWeapon(false);
@@ -276,7 +276,7 @@ class MrSmiteAI : public MoonScriptBossAI
                     // Is base attack time change needed if we use aura ?
                     _setDisplayWeaponIds(7230, 0);
                     _unit->SetBaseAttackTime(MELEE, _unit->GetBaseAttackTime(MELEE) * 2);
-                    ApplyAura(SMITES_HAMMER);
+                    _applyAura(SMITES_HAMMER);
                     break;
             }
 

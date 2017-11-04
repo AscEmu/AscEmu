@@ -93,7 +93,7 @@ class NalorakkAI : public MoonScriptBossAI
             else if (IsTimerFinished(MorphTimer) && GetPhase() == 2)
             {
                 // Remove Bear Form
-                RemoveAura(42377);
+                _removeAura(42377);
                 // Transform back into a Troll
                 _setDisplayId(21631);
                 SetPhase(1);

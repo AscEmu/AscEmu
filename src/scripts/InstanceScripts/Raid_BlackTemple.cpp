@@ -477,7 +477,7 @@ class AshtongueStalkerAI : public MoonScriptCreatureAI
             AddSpell(ASHTONGUE_STALKER_BLIND, Target_RandomPlayer, 7, 1, 25);                // Should be Blind - > Attack Next Target?
             AddSpell(ASHTONGUE_STALKER_INSTANT_POISON, Target_Current, 10, 0, 20, 0, 10);
             AddSpell(ASHTONGUE_STALKER_MINDNUMBING_POISON, Target_RandomPlayer, 8, 0, 20);
-            ApplyAura(ASHTONGUE_STALKER_STEATH);
+            _applyAura(ASHTONGUE_STALKER_STEATH);
         }
 
         void OnCombatStart(Unit* pTarget)
@@ -495,7 +495,7 @@ class AshtongueStalkerAI : public MoonScriptCreatureAI
             ParentClass::OnCombatStop(pTarget);
             if (isAlive())
             {
-                ApplyAura(ASHTONGUE_STALKER_STEATH);
+                _applyAura(ASHTONGUE_STALKER_STEATH);
             }
         }
 };
@@ -876,7 +876,7 @@ class IllidariArchonAI : public MoonScriptCreatureAI
                 case 1:
                     AddSpell(ILLIDARI_ARCHON_MIND_BLAST, Target_Current, 8, 1.5, 25, 0, 30);
                     AddSpell(ILLIDARI_ARCHON_SHADOW_WORD_DEATH, Target_RandomPlayer, 7, 0, 35);
-                    ApplyAura(ILLIDARI_ARCHON_SHADOWFORM);
+                    _applyAura(ILLIDARI_ARCHON_SHADOWFORM);
                     mIsShadowPriest = true;
                     break;
             }
@@ -887,7 +887,7 @@ class IllidariArchonAI : public MoonScriptCreatureAI
             ParentClass::OnCombatStop(pTarget);
             if (mIsShadowPriest && isAlive())
             {
-                ApplyAura(ILLIDARI_ARCHON_SHADOWFORM);
+                _applyAura(ILLIDARI_ARCHON_SHADOWFORM);
             }
         }
 
@@ -1179,8 +1179,8 @@ class ShadowmoonWeaponMasterAI : public MoonScriptBossAI
             mDefensiveStance = AddSpellFunc(&SpellFunc_DefensiveStance, Target_Self, 0, 0, 0);
             mBerserkerStance = AddSpellFunc(&SpellFunc_BerserkerStance, Target_Self, 0, 0, 0);
             //SetDisplayWeaponIds(0, 0)    // Sword
-            ApplyAura(SHADOWMOON_WEAPON_MASTER_BATTLE_STANCE);
-            ApplyAura(SHADOWMOON_WEAPON_MASTER_BATTLE_AURA);
+            _applyAura(SHADOWMOON_WEAPON_MASTER_BATTLE_STANCE);
+            _applyAura(SHADOWMOON_WEAPON_MASTER_BATTLE_AURA);
         }
 
         void OnCombatStop(Unit* pTarget)
@@ -1189,11 +1189,11 @@ class ShadowmoonWeaponMasterAI : public MoonScriptBossAI
 
             if (isAlive())
             {
-                RemoveAura(SHADOWMOON_WEAPON_MASTER_DEFENSIVE_AURA);
-                RemoveAura(SHADOWMOON_WEAPON_MASTER_BERSEKER_AURA);
+                _removeAura(SHADOWMOON_WEAPON_MASTER_DEFENSIVE_AURA);
+                _removeAura(SHADOWMOON_WEAPON_MASTER_BERSEKER_AURA);
                 //SetDisplayWeaponIds(0, 0)    // Sword
-                ApplyAura(SHADOWMOON_WEAPON_MASTER_BATTLE_STANCE);
-                ApplyAura(SHADOWMOON_WEAPON_MASTER_BATTLE_AURA);
+                _applyAura(SHADOWMOON_WEAPON_MASTER_BATTLE_STANCE);
+                _applyAura(SHADOWMOON_WEAPON_MASTER_BATTLE_AURA);
             }
         }
 
@@ -1222,10 +1222,10 @@ void SpellFunc_DefensiveStance(SpellDesc* pThis, MoonScriptCreatureAI* pCreature
     ShadowmoonWeaponMasterAI* pWeaponMaster = (pCreatureAI != NULL) ? static_cast< ShadowmoonWeaponMasterAI* >(pCreatureAI) : NULL;
     if (pWeaponMaster != NULL)
     {
-        pWeaponMaster->RemoveAura(SHADOWMOON_WEAPON_MASTER_BATTLE_AURA);
+        pWeaponMaster->_removeAura(SHADOWMOON_WEAPON_MASTER_BATTLE_AURA);
         //SetDisplayWeaponIds(0, 0)    // Axe + Shield
-        pWeaponMaster->ApplyAura(SHADOWMOON_WEAPON_MASTER_DEFENSIVE_STANCE);
-        pWeaponMaster->ApplyAura(SHADOWMOON_WEAPON_MASTER_DEFENSIVE_AURA);
+        pWeaponMaster->_applyAura(SHADOWMOON_WEAPON_MASTER_DEFENSIVE_STANCE);
+        pWeaponMaster->_applyAura(SHADOWMOON_WEAPON_MASTER_DEFENSIVE_AURA);
     }
 }
 
@@ -1234,10 +1234,10 @@ void SpellFunc_BerserkerStance(SpellDesc* pThis, MoonScriptCreatureAI* pCreature
     ShadowmoonWeaponMasterAI* pWeaponMaster = (pCreatureAI != NULL) ? static_cast< ShadowmoonWeaponMasterAI* >(pCreatureAI) : NULL;
     if (pWeaponMaster != NULL)
     {
-        pWeaponMaster->RemoveAura(SHADOWMOON_WEAPON_MASTER_DEFENSIVE_AURA);
+        pWeaponMaster->_removeAura(SHADOWMOON_WEAPON_MASTER_DEFENSIVE_AURA);
         //SetDisplayWeaponIds(0, 0)    // Sword
-        pWeaponMaster->ApplyAura(SHADOWMOON_WEAPON_MASTER_BERSERKER_STANCE);
-        pWeaponMaster->ApplyAura(SHADOWMOON_WEAPON_MASTER_BERSEKER_AURA);
+        pWeaponMaster->_applyAura(SHADOWMOON_WEAPON_MASTER_BERSERKER_STANCE);
+        pWeaponMaster->_applyAura(SHADOWMOON_WEAPON_MASTER_BERSEKER_AURA);
         pWeaponMaster->sendChatMessage(CHAT_MSG_MONSTER_SAY, 0, "Berserker stance! Attack them recklessly!");
     }
 }
@@ -1407,7 +1407,7 @@ class EnslavedSoulAI : public MoonScriptCreatureAI
 
         void OnDied(Unit* mKiller)
         {
-            ApplyAura(ENSLAVED_SOUL_SOUL_RELEASE);            // beg core to support OnDied casts
+            _applyAura(ENSLAVED_SOUL_SOUL_RELEASE);            // beg core to support OnDied casts
             despawn(120000, 0);
             ParentClass::OnDied(mKiller);
         }
@@ -1419,7 +1419,7 @@ class HungeringSoulFragmentAI : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(HungeringSoulFragmentAI, MoonScriptCreatureAI);
         HungeringSoulFragmentAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            ApplyAura(HUNGERING_SOUL_FRAGMENT_CONSUMING_STRIKES);
+            _applyAura(HUNGERING_SOUL_FRAGMENT_CONSUMING_STRIKES);
         }
 
         void OnCombatStop(Unit* pTarget)
@@ -1427,7 +1427,7 @@ class HungeringSoulFragmentAI : public MoonScriptCreatureAI
             ParentClass::OnCombatStop(pTarget);
             if (isAlive())
             {
-                ApplyAura(HUNGERING_SOUL_FRAGMENT_CONSUMING_STRIKES);
+                _applyAura(HUNGERING_SOUL_FRAGMENT_CONSUMING_STRIKES);
             }
         }
 };
@@ -2408,8 +2408,8 @@ class EssenceOfSufferingAI : public MoonScriptCreatureAI
                 _setMeleeDisabled(false);
                 _setCastDisabled(true);
                 _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
-                RemoveAllAuras();
-                RemoveAuraOnPlayers(EOS_AURA_OF_SUFFERING);
+                _removeAllAuras();
+                _removeAuraOnPlayers(EOS_AURA_OF_SUFFERING);
                 MoonScriptCreatureAI* mRoS = GetNearestCreature(22856);
                 if (mRoS != NULL && mRoS->isAlive())
                     moveToUnit(mRoS->GetUnit());
@@ -2464,8 +2464,8 @@ class EssenceOfDesireAI : public MoonScriptCreatureAI
                 _setMeleeDisabled(false);
                 _setCastDisabled(true);
                 _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
-                RemoveAllAuras();
-                RemoveAuraOnPlayers(EOD_AURA_OF_DESIRE);
+                _removeAllAuras();
+                _removeAuraOnPlayers(EOD_AURA_OF_DESIRE);
                 MoonScriptCreatureAI* mRoS = GetNearestCreature(22856);
                 if (mRoS != NULL && mRoS->isAlive())
                     moveToUnit(mRoS->GetUnit());
@@ -2512,7 +2512,7 @@ class EssenceOfAngerAI : public MoonScriptCreatureAI
         void OnDied(Unit* mKiller)
         {
             ParentClass::OnDied(mKiller);
-            RemoveAuraOnPlayers(EOD_AURA_OF_DESIRE);
+            _removeAuraOnPlayers(EOD_AURA_OF_DESIRE);
         }
 
         void AIUpdate()
@@ -3065,7 +3065,7 @@ class GathiosAI : public MoonScriptCreatureAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            ApplyAura(DEVOTION_AURA);
+            _applyAura(DEVOTION_AURA);
             ParentClass::OnCombatStart(pTarget);
         };
 
@@ -3998,7 +3998,7 @@ class GenericTriggerAI : public MoonScriptCreatureAI
             if (OnSpawn)
             {
                 _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
-                ApplyAura(mSpellId);
+                _applyAura(mSpellId);
                 _setMeleeDisabled(false);
                 despawn(mDespawnTimer, 0);
             }
@@ -4012,7 +4012,7 @@ class GenericTriggerAI : public MoonScriptCreatureAI
         void AIUpdate()
         {
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
-            ApplyAura(mSpellId);
+            _applyAura(mSpellId);
             _setMeleeDisabled(false);
             despawn(mDespawnTimer, 0);
             RemoveAIUpdateEvent();
@@ -4068,7 +4068,7 @@ class EyeBeamTriggerAI : public MoonScriptCreatureAI
                 mPosition = -2;
             }
 
-            ApplyAura(EYE_BLAST);
+            _applyAura(EYE_BLAST);
         }
 
         int32    mPosition;
@@ -4100,7 +4100,7 @@ class ShadowDemonAI : public MoonScriptCreatureAI
                 _unit->GetAIInterface()->AttackReaction(pTarget, 200000);
                 SetTargetToChannel(pTarget, SHADOW_DEMON_PURPLE_BEAM);
                 CastSpellNowNoScheduling(mParalyze);
-                ApplyAura(SHADOW_DEMON_PASSIVE);
+                _applyAura(SHADOW_DEMON_PASSIVE);
                 RegisterAIUpdateEvent(1000);
             }
             else
@@ -4171,7 +4171,7 @@ class ParasiticShadowfiendAI : public MoonScriptCreatureAI
             mParasitic = AddSpellFunc(&SpellFunc_Parasitic, Target_Current, 0, 0, 0);
 
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            ApplyAura(PARASITIC_SHADOWFIEND_PASSIVE);
+            _applyAura(PARASITIC_SHADOWFIEND_PASSIVE);
             _unit->m_noRespawn = true;
             _setDespawnWhenInactive(true);
             _setScale(0.0f);
@@ -4419,7 +4419,7 @@ class AkamaAI : public MoonScriptBossAI
                 case 3:
                     if (pDoorTrigger != NULL)
                     {
-                        ApplyAura(AKAMA_DOOR_FAIL);
+                        _applyAura(AKAMA_DOOR_FAIL);
                         SetTargetToChannel(pDoorTrigger, AKAMA_DOOR_FAIL);
                     }
                     break;
@@ -4448,16 +4448,16 @@ class AkamaAI : public MoonScriptBossAI
                 case 9:
                     if (pDoorTrigger != NULL)
                     {
-                        ApplyAura(AKAMA_DOOR_OPEN);
+                        _applyAura(AKAMA_DOOR_OPEN);
                         SetTargetToChannel(pDoorTrigger, AKAMA_DOOR_OPEN);
                     }
                     break;
                 case 10:
                     if (pDoorTrigger != NULL)
                     {
-                        mUdaloAI->ApplyAura(DEATHSWORN_DOOR_OPEN);
+                        mUdaloAI->_applyAura(DEATHSWORN_DOOR_OPEN);
                         mUdaloAI->SetTargetToChannel(pDoorTrigger, DEATHSWORN_DOOR_OPEN);
-                        mOlumAI->ApplyAura(DEATHSWORN_DOOR_OPEN);
+                        mOlumAI->_applyAura(DEATHSWORN_DOOR_OPEN);
                         mOlumAI->SetTargetToChannel(pDoorTrigger, DEATHSWORN_DOOR_OPEN);
                     }
                     break;
@@ -4534,7 +4534,7 @@ class AkamaAI : public MoonScriptBossAI
                     _unit->SetFacing(3.126680f);
                     break;
                 case 2:
-                    mIllidanAI->RemoveAura(39656);
+                    mIllidanAI->_removeAura(39656);
                     break;
                 case 3:
                     mIllidanAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 11463, "Akama... your duplicity is hardly surprising. I should have slaughtered you and your malformed brethren long ago.");
@@ -4638,7 +4638,7 @@ class AkamaAI : public MoonScriptBossAI
 
         void FightWithIllidan()
         {
-            if (_getHealthPercent() <= 15 && !IsCasting())
+            if (_getHealthPercent() <= 15 && !_isCasting())
             {
                 CastSpellNowNoScheduling(mHealingPotion);
             }
@@ -4651,7 +4651,7 @@ class AkamaAI : public MoonScriptBossAI
                 if (mIllidanAI == NULL)
                 {
                     sendChatMessage(CHAT_MSG_MONSTER_SAY, 0, "Not this time my friends.");
-                    if (!IsCasting())
+                    if (!_isCasting())
                     {
                         CastSpellNowNoScheduling(mDespawn);
                     }
@@ -4916,7 +4916,7 @@ class MaievAI : public MoonScriptBossAI
             //OnCombatStop(pTarget);        // causes crashes
             CancelAllSpells();
             CancelAllTimers();
-            RemoveAllAuras();
+            _removeAllAuras();
             SetBehavior(Behavior_Default);
             //_unit->GetAIInterface()->SetAIState(STATE_IDLE);
             _setWieldWeapon(false);
@@ -5311,7 +5311,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
 
             SetEnrageInfo(AddSpell(ILLIDAN_BERSERK, Target_Self, 0, 0, 0), 1500000);
 
-            ApplyAura(ILLIDAN_SKULL_INTRO);
+            _applyAura(ILLIDAN_SKULL_INTRO);
             setCanEnterCombat(false);
             _setWieldWeapon(false);
             setRooted(true);
@@ -5414,7 +5414,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
 
             // Phase 4
             _setDisplayWeapon(true, true);
-            RemoveAura(ILLIDAN_DEMON_FORM);
+            _removeAura(ILLIDAN_DEMON_FORM);
 
             if (isAlive())
             {
@@ -5446,8 +5446,8 @@ class IllidanStormrageAI : public MoonScriptBossAI
             {
                 _unit->SetHealth(1);
                 setCanEnterCombat(false);
-                ApplyAura(ILLIDAN_DEATH1);
-                ApplyAura(ILLIDAN_DEATH2);
+                _applyAura(ILLIDAN_DEATH1);
+                _applyAura(ILLIDAN_DEATH2);
 
                 pMaiev->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
                 pMaiev->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -5581,7 +5581,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 mAllow = false;
                 return;
             }
-            else if (_getHealthPercent() <= 65 && !IsCasting())
+            else if (_getHealthPercent() <= 65 && !_isCasting())
             {
                 Creature* pAkama = getNearestCreature(CN_AKAMA);
                 if (pAkama != NULL && pAkama->GetScript() != NULL)
@@ -5710,8 +5710,8 @@ class IllidanStormrageAI : public MoonScriptBossAI
                             if (mGlaiveReturns != NULL)
                                 CastSpellNowNoScheduling(mGlaiveReturns);
 
-                            ApplyAura(ILLIDAN_RAKE);
-                            RemoveAura(ILLIDAN_RAKE);
+                            _applyAura(ILLIDAN_RAKE);
+                            _removeAura(ILLIDAN_RAKE);
                             _setWieldWeapon(true);
                         }
                         break;
@@ -5784,7 +5784,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                     mFoA2 = NULL;
                 }
             }
-            if (_unit->GetAIInterface()->getWaypointScriptType() != Movement::WP_MOVEMENT_SCRIPT_WANTEDWP && !IsCasting())
+            if (_unit->GetAIInterface()->getWaypointScriptType() != Movement::WP_MOVEMENT_SCRIPT_WANTEDWP && !_isCasting())
             {
                 if (_unit->GetChannelSpellId() == 0)
                 {
@@ -5865,7 +5865,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                     else if (mMiscEventPart == 2 && mFireWallTimer <= 0)
                     {
                         SetTargetToChannel(NULL, 0);
-                        RemoveAura(ILLIDAN_EYE_BLAST1);
+                        _removeAura(ILLIDAN_EYE_BLAST1);
                         _unit->GetAIInterface()->setNextTarget(GetBestPlayerTarget(TargetFilter_Closest));
 
                         mFireWallTimer = 30000;
@@ -5895,8 +5895,8 @@ class IllidanStormrageAI : public MoonScriptBossAI
             else
                 _unit->SetEmoteState(pTransformation[mMiscEventPart - 1].mEmote);
             sendChatMessage(CHAT_MSG_MONSTER_YELL, pTransformation[mMiscEventPart - 1].mSoundId, pTransformation[mMiscEventPart - 1].mText);
-            ApplyAura(pTransformation[mMiscEventPart - 1].mAura);
-            RemoveAura(pTransformation[mMiscEventPart - 1].mUnAura);
+            _applyAura(pTransformation[mMiscEventPart - 1].mAura);
+            _removeAura(pTransformation[mMiscEventPart - 1].mUnAura);
             _setWieldWeapon(pTransformation[mMiscEventPart - 1].mEquipWeapons);
 
             if (pTransformation == Ascend)
@@ -6020,7 +6020,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
 
         void UnstuckFromShadowPrison()
         {
-            RemoveAuraOnPlayers(ILLIDAN_SHADOW_PRISON);
+            _removeAuraOnPlayers(ILLIDAN_SHADOW_PRISON);
             setCanEnterCombat(true);
             _setMeleeDisabled(true);
             setRooted(false);
@@ -6064,7 +6064,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                         return;
                     break;
                 case 4:
-                    pMaievAI->ApplyAura(MAIEV_TELEPORT);
+                    pMaievAI->_applyAura(MAIEV_TELEPORT);
                     _unit->GetAIInterface()->setNextTarget(pMaievAI->GetUnit());
                     break;
                 case 5:
@@ -6156,7 +6156,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 MaievScene();
                 return;
             }
-            else if (_unit->GetHealthPct() <= 30 && !IsCasting())
+            else if (_unit->GetHealthPct() <= 30 && !_isCasting())
             {
 #ifdef USE_SHADOW_PRISON
                 stopMovement();
@@ -6177,7 +6177,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
 
             mDemonTimer -= mAIUpdateFrequency;
             mParasiticTimer -= mAIUpdateFrequency;
-            if (!IsCasting())
+            if (!_isCasting())
             {
                 if (mDemonTimer <= 0)
                 {
@@ -6223,7 +6223,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             mDemonTimer -= mAIUpdateFrequency;
             mFlameBurstTimer -= mAIUpdateFrequency;
             mShadowDemonsTimer -= mAIUpdateFrequency;
-            if (IsCasting())
+            if (_isCasting())
             {
                 mPlaySound = false;
                 return;
@@ -6318,7 +6318,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             {
                 mEnrageTimer = 120000;
             }
-            else if (!IsCasting())
+            else if (!_isCasting())
             {
                 if (mDemonTimer <= 0)
                 {
@@ -6549,7 +6549,7 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
                 if (!mIsActivated)
                     return;
 
-                if (mTriggerAIList.size() == 0 && pIllidan->isAlive() && getRangeToObject(pIllidan) <= 5.0f && !pAI->IsCasting())
+                if (mTriggerAIList.size() == 0 && pIllidan->isAlive() && getRangeToObject(pIllidan) <= 5.0f && !pAI->_isCasting())
                 {
                     for (uint8 i = 0; i < 8; ++i)
                     {
@@ -6563,7 +6563,7 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
                         }
                     }
 
-                    pAI->ApplyAura(CAGE_TRAP);
+                    pAI->_applyAura(CAGE_TRAP);
                     pAI->setRooted(true);
                     pAI->_setMeleeDisabled(false);
                     pAI->stopMovement();
@@ -6573,8 +6573,8 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
                 }
                 else if (pIllidan->isAlive() && !mHasTrapped && mTriggerAIList.size() != 0)
                 {
-                    pAI->RemoveAura(ILLIDAN_ENRAGE);
-                    pAI->ApplyAura(CAGED1);
+                    pAI->_removeAura(ILLIDAN_ENRAGE);
+                    pAI->_applyAura(CAGED1);
                     SetAIUpdateFreq(14000);
 
                     for (size_t i = 0; i < mTriggerAIList.size() / 2; ++i)
@@ -6599,7 +6599,7 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
                     // Immediatly Illidan, after trap expires, becomes Demon
                     if (pIllidan->isAlive())
                     {
-                        pAI->RemoveAura(CAGED1);
+                        pAI->_removeAura(CAGED1);
                         pAI->setRooted(false);
                         pAI->_setMeleeDisabled(true);
                         pAI->stopMovement();

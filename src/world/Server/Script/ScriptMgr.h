@@ -388,6 +388,8 @@ class SERVER_DECL CreatureAIScript
         int32_t _getManaPercent();
         void _regenerateHealth();
 
+        bool _isCasting();
+
         // appearance
         void _setScale(float scale);
         float _getScale();
@@ -395,6 +397,12 @@ class SERVER_DECL CreatureAIScript
         void _setWieldWeapon(bool setWieldWeapon);
         void _setDisplayWeapon(bool setMainHand, bool setOffHand);
         void _setDisplayWeaponIds(uint32_t itemId1, uint32_t itemId2);
+
+        // spell
+        void _applyAura(uint32_t spellId);
+        void _removeAura(uint32_t spellId);
+        void _removeAuraOnPlayers(uint32_t spellId);
+        void _removeAllAuras();
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // gameobject

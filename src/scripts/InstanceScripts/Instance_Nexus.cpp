@@ -75,7 +75,7 @@ class AnomalusAI : public MoonScriptBossAI
 
             if (mRift == true && (GetLinkedCreature() == NULL || !GetLinkedCreature()->isAlive()))
             {
-                RemoveAura(47748);
+                _removeAura(47748);
                 mRift = false;
             };
 
@@ -102,7 +102,7 @@ class AnomalusAI : public MoonScriptBossAI
             SummonRift(true);
             sendDBChatMessage(4320);     // Indestructible.
             Announce("Anomalus shields himself and diverts his power to the rifts!");
-            ApplyAura(47748);   // me immune
+            _applyAura(47748);   // me immune
             setRooted(true);
 
             mRift = true;
@@ -154,7 +154,7 @@ class ChaoticRiftAI : public MoonScriptBossAI
 
         void OnLoad()
         {
-            ApplyAura(CHAOTIC_RIFT_AURA);
+            _applyAura(CHAOTIC_RIFT_AURA);
             despawn(40000, 0);
             ParentClass::OnLoad();
         };
@@ -253,7 +253,7 @@ class TelestraBossAI : public MoonScriptBossAI
                 _setRangedDisabled(true);
                 _setCastDisabled(true);
                 _setTargetingDisabled(true);
-                ApplyAura(60191);
+                _applyAura(60191);
 
                 for (uint8 i = 0; i < 3; ++i)
                 {
@@ -281,7 +281,7 @@ class TelestraBossAI : public MoonScriptBossAI
 
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 13323, "Now to finish the job!");
 
-                RemoveAura(60191);
+                _removeAura(60191);
                 setRooted(false);
                 mPhaseRepeat = 1;
                 SetPhase(mHeroic ? 1 : 3);   //3 disables p2
@@ -455,7 +455,7 @@ class OrmorokAI : public MoonScriptBossAI
     {
         if (_getHealthPercent() <= 25 && mEnraged == false)
         {
-            ApplyAura(FRENZY);
+            _applyAura(FRENZY);
             Announce("Ormorok the Tree-Shaper goes into a frenzy!");
             mEnraged = true;
         };
@@ -553,7 +553,7 @@ class KeristraszaAI : public MoonScriptBossAI
 
     void OnLoad()
     {
-        ApplyAura(47543);   // frozen prison
+        _applyAura(47543);   // frozen prison
         ParentClass::OnLoad();
     }
 
@@ -576,7 +576,7 @@ class KeristraszaAI : public MoonScriptBossAI
     {
         if (mEnraged == false && _getHealthPercent() <= 25)
         {
-            ApplyAura(ENRAGE);
+            _applyAura(ENRAGE);
             mEnraged = true;
         }
     }
@@ -584,8 +584,8 @@ class KeristraszaAI : public MoonScriptBossAI
     void Release()
     {
         setCanEnterCombat(true);
-        RemoveAura(47543);
-        ApplyAura(INTENSE_COLD);
+        _removeAura(47543);
+        _applyAura(INTENSE_COLD);
     }
 
     private:
