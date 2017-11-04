@@ -33,37 +33,13 @@ class BlackTempleScript : public MoonInstanceScript
         MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(BlackTempleScript, MoonInstanceScript);
         BlackTempleScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
         {
-            // Way to select bosses
-            BuildEncounterMap();
-            if (mEncounters.size() == 0)
-                return;
-
-            for (EncounterMap::iterator Iter = mEncounters.begin(); Iter != mEncounters.end(); ++Iter)
-            {
-                if ((*Iter).second.mState != State_Finished)
-                    continue;
-
-                switch ((*Iter).first)
-                {
-                    case CN_SUPREMUS:
-                        AddGameObjectStateByEntry(185882, State_Active);    // Gate to Black Temple behind Supremus
-                        break;
-                    default:
-                        continue;
-                }
-            }
+            if (getData(CN_SUPREMUS) == Finished)
+                AddGameObjectStateByEntry(185882, State_Active);    // Gate to Black Temple behind Supremus
         }
 
         void OnCreatureDeath(Creature* pVictim, Unit* pKiller)
         {
-            if (pVictim->GetCreatureProperties()->Rank != ELITE_WORLDBOSS)
-                return;
-
-            EncounterMap::iterator Iter = mEncounters.find(pVictim->GetEntry());
-            if (Iter == mEncounters.end())
-                return;
-
-            (*Iter).second.mState = State_Finished;
+            setData(pVictim->GetEntry(), Finished);
 
             // You don't have to use additional scripts to open any gates / doors
             switch (pVictim->GetEntry())

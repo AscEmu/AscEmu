@@ -26,51 +26,6 @@ class InstancePitOfSaronScript : public MoonInstanceScript
         MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(InstancePitOfSaronScript, MoonInstanceScript);
         InstancePitOfSaronScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
         {
-            // Way to select bosses
-            BuildEncounterMap();
-            if (mEncounters.size() == 0)
-                return;
-
-            for (EncounterMap::iterator Iter = mEncounters.begin(); Iter != mEncounters.end(); ++Iter)
-            {
-                if ((*Iter).second.mState != State_Finished)
-                    continue;
-            }
-        }
-
-        void OnGameObjectPushToWorld(GameObject* pGameObject) { }
-
-        void SetInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
-        {
-            if (pType != Data_EncounterState || pIndex == 0)
-                return;
-
-            EncounterMap::iterator Iter = mEncounters.find(pIndex);
-            if (Iter == mEncounters.end())
-                return;
-
-            (*Iter).second.mState = (EncounterState)pData;
-        }
-
-        uint32 GetInstanceData(uint32 pType, uint32 pIndex)
-        {
-            if (pType != Data_EncounterState || pIndex == 0)
-                return 0;
-
-            EncounterMap::iterator Iter = mEncounters.find(pIndex);
-            if (Iter == mEncounters.end())
-                return 0;
-
-            return (*Iter).second.mState;
-        }
-
-        void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
-        {
-            EncounterMap::iterator Iter = mEncounters.find(pCreature->GetEntry());
-            if (Iter == mEncounters.end())
-                return;
-
-            (*Iter).second.mState = State_Finished;
         }
 
         void OnPlayerEnter(Player* player)
@@ -144,7 +99,7 @@ class ForgemasterGarfrostAI : MoonScriptBossAI
         mDeepFreezeTimer = AddTimer(10000);
 
         if (mInstance)
-            mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_InProgress);
+            mInstance->setData(_unit->GetEntry(), InProgress);
 
         MoonScriptBossAI::OnCombatStart(pTarget);
     }
@@ -156,7 +111,7 @@ class ForgemasterGarfrostAI : MoonScriptBossAI
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
         if (mInstance)
-            mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_Performed);
+            mInstance->setData(_unit->GetEntry(), Performed);
 
         MoonScriptBossAI::OnCombatStop(mTarget);
     }
@@ -325,7 +280,7 @@ class IckAI : MoonScriptBossAI
         mShadowBoltTimer = AddTimer(15000);
 
         if (mInstance)
-            mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_InProgress);
+            mInstance->setData(_unit->GetEntry(), InProgress);
 
         ParentClass::OnCombatStart(pTarget);
     }
@@ -333,7 +288,7 @@ class IckAI : MoonScriptBossAI
     void OnCombatStop(Unit* pTarget)
     {
         if (mInstance)
-            mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_Performed);
+            mInstance->setData(_unit->GetEntry(), Performed);
 
         Phase = OUTRO;
 

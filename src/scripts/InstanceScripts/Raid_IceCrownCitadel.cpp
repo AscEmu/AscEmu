@@ -53,71 +53,40 @@ class IceCrownCitadelScript : public MoonInstanceScript
         MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(IceCrownCitadelScript, MoonInstanceScript);
         IceCrownCitadelScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
         {
-            // Way to select bosses
-            BuildEncounterMap();
-            if (mEncounters.size() == 0)
-                return;
-
-            for (EncounterMap::iterator Iter = mEncounters.begin(); Iter != mEncounters.end(); ++Iter)
+            if (getData(CN_LORD_MARROWGAR) == Finished)
             {
-                if ((*Iter).second.mState != State_Finished)
-                    continue;
-
-                switch ((*Iter).first)
-                {
-                    case CN_LORD_MARROWGAR:
-                        AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_1, State_Inactive);    // Icewall 1
-                        AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_2, State_Inactive);    // Icewall 2
-                        AddGameObjectStateByEntry(GO_MARROWGAR_DOOR, State_Inactive);         // Door
-                        break;
-                    default:
-                        continue;
-                }
+                AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_1, State_Inactive);    // Icewall 1
+                AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_2, State_Inactive);    // Icewall 2
+                AddGameObjectStateByEntry(GO_MARROWGAR_DOOR, State_Inactive);         // Door
             }
         }
 
         void OnGameObjectPushToWorld(GameObject* pGameObject)
         {
             // Gos which are not visible by killing a boss needs a second check...
-            if (GetInstanceData(Data_EncounterState, CN_LORD_MARROWGAR) == State_Finished)
+            if (getData(CN_LORD_MARROWGAR) == Finished)
             {
                 AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_1, State_Active);    // Icewall 1
                 AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_2, State_Active);    // Icewall 2
                 AddGameObjectStateByEntry(GO_MARROWGAR_DOOR, State_Active);         // Door
             }
-        }
 
-        void SetInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
-        {
-            if (pType != Data_EncounterState || pIndex == 0)
-                return;
-
-            EncounterMap::iterator Iter = mEncounters.find(pIndex);
-            if (Iter == mEncounters.end())
-                return;
-
-            (*Iter).second.mState = (EncounterState)pData;
-        }
-
-        uint32 GetInstanceData(uint32 pType, uint32 pIndex)
-        {
-            if (pType != Data_EncounterState || pIndex == 0)
-                return 0;
-
-            EncounterMap::iterator Iter = mEncounters.find(pIndex);
-            if (Iter == mEncounters.end())
-                return 0;
-
-            return (*Iter).second.mState;
+            switch (pGameObject->GetEntry())
+            {
+                case GO_TELE_1:
+                case GO_TELE_2:
+                case GO_TELE_3:
+                case GO_TELE_4:
+                case GO_TELE_5:
+                {
+                    pGameObject->SetFlags(0);
+                } break;
+            }
         }
 
         void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
         {
-            EncounterMap::iterator Iter = mEncounters.find(pCreature->GetEntry());
-            if (Iter == mEncounters.end())
-                return;
-
-            (*Iter).second.mState = State_Finished;
+            setData(pCreature->GetEntry(), Finished);
 
             switch (pCreature->GetEntry())
             {
@@ -170,19 +139,19 @@ public:
         Arcemu::Gossip::Menu menu(object->GetGUID(), 15221, player->GetSession()->language);
         menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(515), 0);     // Teleport to Light's Hammer.
 
-        if (pInstance->GetInstanceData(Data_EncounterState, CN_LORD_MARROWGAR) == State_Finished)
+        if (pInstance->getData(CN_LORD_MARROWGAR) == Finished)
             menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(516), 1);      // Teleport to Oratory of The Damned.
 
-        if (pInstance->GetInstanceData(Data_EncounterState, CN_LADY_DEATHWHISPER) == State_Finished)
+        if (pInstance->getData(CN_LADY_DEATHWHISPER) == Finished)
             menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(517), 2);      // Teleport to Rampart of Skulls.
 
         // GunshipBattle has to be finished...
         //menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(518), 3);        // Teleport to Deathbringer's Rise.
 
-        if (pInstance->GetInstanceData(Data_EncounterState, CN_VALITHRIA_DREAMWALKER) == State_Finished)
+        if (pInstance->getData(CN_VALITHRIA_DREAMWALKER) == Finished)
             menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(519), 4);      // Teleport to the Upper Spire.
 
-        if (pInstance->GetInstanceData(Data_EncounterState, CN_COLDFLAME) == State_Finished)
+        if (pInstance->getData(CN_COLDFLAME) == Finished)
             menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(520), 5);      // Teleport to Sindragosa's Lair.
 
         menu.Send(player);

@@ -917,6 +917,7 @@ void GameObjectAIScript::RegisterAIUpdateEvent(uint32 frequency)
 
 InstanceScript::InstanceScript(MapMgr* pMapMgr) : mInstance(pMapMgr)
 {
+    generateBossDataState();
 };
 
 void InstanceScript::RegisterUpdateEvent(uint32 pFrequency)
@@ -941,6 +942,8 @@ void InstanceScript::addData(uint32_t data, uint32_t state /*= NotStarted*/)
     auto Iter = mInstanceData.find(data);
     if (Iter == mInstanceData.end())
         mInstanceData.insert(std::pair<uint32_t, uint32_t>(data, state));
+    else
+        LOG_DEBUG("tried to set state for entry %u. The entry is already available with a state!", data);
 };
 
 void InstanceScript::setData(uint32_t data, uint32_t state)
@@ -948,6 +951,8 @@ void InstanceScript::setData(uint32_t data, uint32_t state)
     auto Iter = mInstanceData.find(data);
     if (Iter != mInstanceData.end())
         Iter->second = state;
+    else
+        LOG_DEBUG("tried to set state for entry %u on map %u. The entry is not defined in table instance_bosses or manually to handle states!", data, mInstance->GetMapId());
 };
 
 uint32_t InstanceScript::getData(uint32_t data)
@@ -1013,6 +1018,8 @@ void InstanceScript::generateBossDataState()
                 setData(bossInfo->first, Finished);
         }
     }
+
+    LOG_DEBUG("Boss State generated for map %u.", mInstance->GetMapId());
 }
 
 void InstanceScript::sendUnitEncounter(uint32_t type, Unit* unit, uint8_t value_a, uint8_t value_b)

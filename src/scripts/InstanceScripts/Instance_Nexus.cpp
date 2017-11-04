@@ -56,7 +56,7 @@ class AnomalusAI : public MoonScriptBossAI
             ParentClass::OnCombatStart(mTarget);
 
             if (mInstance)
-                mInstance->SetInstanceData(Data_EncounterState, NEXUS_ANOMALUS, State_InProgress);
+                mInstance->setData(NEXUS_ANOMALUS, InProgress);
         }
 
         void AIUpdate()
@@ -114,7 +114,16 @@ class AnomalusAI : public MoonScriptBossAI
             sendDBChatMessage(4318);     // Of course.
 
             if (mInstance)
-                mInstance->SetInstanceData(Data_EncounterState, NEXUS_ANOMALUS, State_Finished);
+            {
+                mInstance->setData(NEXUS_ANOMALUS, Finished);
+
+                GameObjectSet sphereSet = mInstance->getGameObjectsSetForEntry(ANOMALUS_CS);
+                for (auto goSphere : sphereSet)
+                {
+                    if (goSphere != nullptr)
+                        goSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                }
+            }
 
             ParentClass::OnDied(pKiller);
         }
@@ -122,7 +131,7 @@ class AnomalusAI : public MoonScriptBossAI
         void OnCombatStop(Unit* pTarget)
         {
             if (mInstance)
-                mInstance->SetInstanceData(Data_EncounterState, NEXUS_ANOMALUS, State_Performed);
+                mInstance->setData(NEXUS_ANOMALUS, Performed);
 
             ParentClass::OnCombatStop(pTarget);
         }
@@ -294,7 +303,7 @@ class TelestraBossAI : public MoonScriptBossAI
             sendDBChatMessage(4326);      // You know what they say about curiosity....
 
             if (mInstance)
-                mInstance->SetInstanceData(Data_EncounterState, NEXUS_TELESTRA, State_InProgress);
+                mInstance->setData(NEXUS_TELESTRA, InProgress);
 
             ParentClass::OnCombatStart(pTarget);
         }
@@ -318,7 +327,7 @@ class TelestraBossAI : public MoonScriptBossAI
             ParentClass::OnCombatStop(pTarget);
 
             if (mInstance)
-                mInstance->SetInstanceData(Data_EncounterState, NEXUS_TELESTRA, State_Performed);
+                mInstance->setData(NEXUS_TELESTRA, Performed);
         }
 
         void OnDied(Unit* pKiller)
@@ -335,7 +344,15 @@ class TelestraBossAI : public MoonScriptBossAI
             }
 
             if (mInstance)
-                mInstance->SetInstanceData(Data_EncounterState, NEXUS_TELESTRA, State_Finished);
+            {
+                mInstance->setData(NEXUS_TELESTRA, Finished);
+                GameObjectSet sphereSet = mInstance->getGameObjectsSetForEntry(TELESTRA_CS);
+                for (auto goSphere : sphereSet)
+                {
+                    if (goSphere != nullptr)
+                        goSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                }
+            }
 
             ParentClass::OnDied(pKiller);
         }
@@ -466,7 +483,15 @@ class OrmorokAI : public MoonScriptBossAI
         sendDBChatMessage(1944);     // Aaggh!
 
         if (mInstance)
-            mInstance->SetInstanceData(Data_EncounterState, NEXUS_ORMOROK, State_Finished);
+        {
+            mInstance->setData(NEXUS_ORMOROK, Finished);
+            GameObjectSet sphereSet = mInstance->getGameObjectsSetForEntry(ORMOROK_CS);
+            for (auto goSphere : sphereSet)
+            {
+                if (goSphere != nullptr)
+                    goSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+            }
+        }
 
         ParentClass::OnDied(pKiller);
     }
@@ -618,58 +643,41 @@ class NexusScript : public MoonInstanceScript
 
             for (uint8 i = 0; i < NEXUS_END; ++i)
                 m_uiEncounters[i] = State_NotStarted;
+
+            PrepareGameObjectsForState();
         }
 
-        void SetInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
+        void PrepareGameObjectsForState()
         {
-            if (pType != Data_EncounterState)
-                return;
-
-            if (pIndex >= NEXUS_END)
-                return;
-
-            m_uiEncounters[pIndex] = pData;
-
-            if (pData == State_Finished)
+            if (getData(NEXUS_ANOMALUS) == Finished)
             {
-                switch (pIndex)
+                GameObjectSet sphereSet = getGameObjectsSetForEntry(ANOMALUS_CS);
+                for (auto goSphere : sphereSet)
                 {
-                    case NEXUS_ANOMALUS:
-                    {
-                        GameObjectSet sphereSet = getGameObjectsSetForEntry(ANOMALUS_CS);
-                        for (auto goSphere : sphereSet)
-                        {
-                            if (goSphere != nullptr)
-                                goSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
-                        }
-                    } break;
-                    case NEXUS_TELESTRA:
-                    {
-                        GameObjectSet sphereSet = getGameObjectsSetForEntry(TELESTRA_CS);
-                        for (auto goSphere : sphereSet)
-                        {
-                            if (goSphere != nullptr)
-                                goSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
-                        }
-                    } break;
-                    case NEXUS_ORMOROK:
-                    {
-                        GameObjectSet sphereSet = getGameObjectsSetForEntry(ORMOROK_CS);
-                        for (auto goSphere : sphereSet)
-                        {
-                            if (goSphere != nullptr)
-                                goSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
-                        }
-                    } break;
-                    default:
-                        break;
+                    if (goSphere != nullptr)
+                        goSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
                 }
             }
-        }
 
-        uint32 GetInstanceData(uint32 pType, uint32 pIndex)
-        {
-            return m_uiEncounters[pIndex];
+            if (getData(NEXUS_TELESTRA) == Finished)
+            {
+                GameObjectSet sphereSet = getGameObjectsSetForEntry(TELESTRA_CS);
+                for (auto goSphere : sphereSet)
+                {
+                    if (goSphere != nullptr)
+                        goSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                }
+            }
+
+            if (getData(NEXUS_ORMOROK) == Finished)
+            {
+                GameObjectSet sphereSet = getGameObjectsSetForEntry(ORMOROK_CS);
+                for (auto goSphere : sphereSet)
+                {
+                    if (goSphere != nullptr)
+                        goSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                }
+            }
         }
 
         void OnCreaturePushToWorld(Creature* pCreature)

@@ -12,7 +12,6 @@ public:
 
     VioletHold(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
-        generateBossDataState();
         addData(608, NotStarted);
     }
 

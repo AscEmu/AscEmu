@@ -107,27 +107,6 @@ class HallsOfLightningScript : public MoonInstanceScript
             ParentClass::OnGameObjectPushToWorld(pGameObject);
         }
 
-        void SetInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
-        {
-            EncounterMap::iterator Iter = mEncounters.find(pIndex);
-            if (Iter == mEncounters.end())
-                return;
-
-            (*Iter).second.mState = (EncounterState)pData;
-        }
-
-        uint32 GetInstanceData(uint32 pType, uint32 pIndex)
-        {
-            if (pType != Data_EncounterState || pIndex == 0)
-                return 0;
-
-            EncounterMap::iterator Iter = mEncounters.find(pIndex);
-            if (Iter == mEncounters.end())
-                return 0;
-
-            return (*Iter).second.mState;
-        }
-
         void OnCreatureDeath(Creature* pVictim, Unit* pKiller)
         {
             EncounterMap::iterator Iter = mEncounters.find(pVictim->GetEntry());
@@ -141,7 +120,7 @@ class HallsOfLightningScript : public MoonInstanceScript
             {
                 case CN_GENERAL_BJARNGRIM:
                 {
-                    SetInstanceData(Data_EncounterState, CN_GENERAL_BJARNGRIM, State_Finished);
+                    setData(CN_GENERAL_BJARNGRIM, Finished);
                     pDoors = GetGameObjectByGuid(mGeneralDoorsGUID);
                     if (pDoors)
                         pDoors->SetState(GO_STATE_OPEN);
@@ -149,7 +128,7 @@ class HallsOfLightningScript : public MoonInstanceScript
                 break;
                 case CN_VOLKHAN:
                 {
-                    SetInstanceData(Data_EncounterState, CN_VOLKHAN, State_Finished);
+                    setData(CN_VOLKHAN, Finished);
                     pDoors = GetGameObjectByGuid(mVolkhanDoorsGUID);
                     if (pDoors)
                         pDoors->SetState(GO_STATE_OPEN);
@@ -157,7 +136,7 @@ class HallsOfLightningScript : public MoonInstanceScript
                 break;
                 case CN_LOKEN:
                 {
-                    SetInstanceData(Data_EncounterState, CN_LOKEN, State_Finished);
+                    setData(CN_LOKEN, Finished);
                     pDoors = GetGameObjectByGuid(mLokenDoorsGUID);
                     if (pDoors)
                         pDoors->SetState(GO_STATE_OPEN);
@@ -165,7 +144,7 @@ class HallsOfLightningScript : public MoonInstanceScript
                 break;
                 case CN_IONAR:
                 {
-                    SetInstanceData(Data_EncounterState, CN_IONAR, State_Finished);
+                    setData(CN_IONAR, Finished);
                     pDoors = GetGameObjectByGuid(mIonarDoors1GUID);
                     if (pDoors)
                         pDoors->SetState(GO_STATE_OPEN);
@@ -221,7 +200,7 @@ class GeneralBjarngrimAI : public MoonScriptBossAI
         ParentClass::OnCombatStart(pTarget);
 
         if (mInstance)
-            mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_InProgress);
+            mInstance->setData(_unit->GetEntry(), InProgress);
     }
 
     void OnTargetDied(Unit* pTarget)
@@ -240,7 +219,7 @@ class GeneralBjarngrimAI : public MoonScriptBossAI
     void OnCombatStop(Unit* pTarget)
     {
         if (mInstance)
-            mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_Performed);
+            mInstance->setData(_unit->GetEntry(), Performed);
 
         ParentClass::OnCombatStop(pTarget);
     }
@@ -365,7 +344,7 @@ class Volkhan : public MoonScriptCreatureAI
         ParentClass::OnCombatStart(pTarget);
 
         if (mInstance)
-            mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_InProgress);
+            mInstance->setData(_unit->GetEntry(), InProgress);
     }
 
     void OnTargetDied(Unit* pTarget)
@@ -387,7 +366,7 @@ class Volkhan : public MoonScriptCreatureAI
     void OnCombatStop(Unit* pTarget)
     {
         if (mInstance)
-            mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_Performed);
+            mInstance->setData(_unit->GetEntry(), Performed);
 
         ParentClass::OnCombatStop(pTarget);
     }
@@ -553,7 +532,7 @@ class IonarAI : public MoonScriptBossAI
         ParentClass::OnCombatStart(pTarget);
 
         if (mInstance)
-            mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_InProgress);
+            mInstance->setData(_unit->GetEntry(), InProgress);
     }
 
     void OnTargetDied(Unit* pTarget)
@@ -577,7 +556,7 @@ class IonarAI : public MoonScriptBossAI
         ParentClass::OnCombatStop(pTarget);
 
         if (mInstance)
-            mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_Performed);
+            mInstance->setData(_unit->GetEntry(), Performed);
     }
 
     void OnDied(Unit* pKiller)
@@ -635,7 +614,7 @@ class LokenAI : public MoonScriptCreatureAI
         _castOnInrangePlayers(PULSING_SHOCKWAVE_AURA);
 
         if (mInstance)
-            mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_InProgress);
+            mInstance->setData(_unit->GetEntry(), InProgress);
     }
 
     void OnCombatStop(Unit* pTarget)
@@ -644,7 +623,7 @@ class LokenAI : public MoonScriptCreatureAI
         ParentClass::OnCombatStop(pTarget);
 
         if (mInstance)
-            mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_Performed);
+            mInstance->setData(_unit->GetEntry(), Performed);
     }
 
     void OnTargetDied(Unit* pTarget)

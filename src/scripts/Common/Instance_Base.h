@@ -147,7 +147,7 @@ class MoonInstanceScript : public InstanceScript
     protected:
 
         // Encounter generators
-        void BuildEncounterMap();
+        /*void BuildEncounterMap();*/
 
         EncounterMap mEncounters;
         GameObjectEntryMap mGameObjects;

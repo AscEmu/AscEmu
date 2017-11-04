@@ -153,7 +153,7 @@ class UtgardeKeepScript : public MoonInstanceScript
             }
         };
 
-        void SetInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
+        void SetLocaleInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
         {
             switch (pIndex)
             {
@@ -212,20 +212,20 @@ class DragonflayerForgeMasterAI : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(DragonflayerForgeMasterAI, MoonScriptCreatureAI);
         DragonflayerForgeMasterAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            mInstance = GetInstanceScript();
+            pInstance = (UtgardeKeepScript*)_unit->GetMapMgr()->GetScript();
 
             AddSpell(DRAGONFLAYER_FORGE_MASTER_BURNING_BRAND, Target_Current, 8, 0, 40, 0, 30);
         }
 
         void OnDied(Unit* pKiller)
         {
-            if (mInstance)
-                mInstance->SetInstanceData(Data_UnspecifiedType, UTGARDE_FORGE_MASTER, 0);
+            if (pInstance)
+                pInstance->SetLocaleInstanceData(Data_UnspecifiedType, UTGARDE_FORGE_MASTER, 0);
 
             ParentClass::OnDied(pKiller);
         };
 
-        MoonInstanceScript* mInstance;
+        UtgardeKeepScript* pInstance;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -872,7 +872,7 @@ class IngvarUndeadAI : public MoonScriptCreatureAI
             sendDBChatMessage(6986);     // No! I can do... better! I can...
 
             if (mInstance)
-                mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_Finished);
+                mInstance->setData(_unit->GetEntry(), Finished);
 
             ParentClass::OnDied(pKiller);
         }

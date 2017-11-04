@@ -63,7 +63,7 @@ class ShadowfangKeepInstance : public MoonInstanceScript
             memset(m_encounterData, State_NotStarted, sizeof(m_encounterData));
         }
 
-        void SetInstanceData(uint32 /*pType*/, uint32 pIndex, uint32 pData)
+        void SetLocaleInstanceData(uint32 /*pType*/, uint32 pIndex, uint32 pData)
         {
             if (pIndex >= INDEX_MAX)
                 return;
@@ -172,7 +172,7 @@ class ShadowfangKeepInstance : public MoonInstanceScript
                 {
                     if (pData == State_Finished)
                     {
-                        SetInstanceData(0, INDEX_VOIDWALKER, State_InProgress);
+                        SetLocaleInstanceData(0, INDEX_VOIDWALKER, State_InProgress);
                         GameObject* pGate = GetGameObjectByGuid(go_sorcererGate_GUID);
                         if (pGate != nullptr && pGate->GetState() == GO_STATE_CLOSED)
                         {
@@ -304,15 +304,15 @@ class ShadowfangKeepInstance : public MoonInstanceScript
             {
                 case CN_NANDOS:
                 {
-                    SetInstanceData(0, INDEX_NANDOS, State_Finished);
+                    SetLocaleInstanceData(0, INDEX_NANDOS, State_Finished);
                 }break;
                 case CN_RETHILGORE:
                 {
-                    SetInstanceData(0, INDEX_RETHILGORE, State_Finished);
+                    SetLocaleInstanceData(0, INDEX_RETHILGORE, State_Finished);
                 }break;
                 case CN_FENRUS:
                 {
-                    SetInstanceData(0, INDEX_FENRUS, State_Finished);
+                    SetLocaleInstanceData(0, INDEX_FENRUS, State_Finished);
                 }break;
                 default:
                     break;
@@ -395,7 +395,7 @@ class ArugalAI : public MoonScriptCreatureAI
             if (SFK_Instance && SFK_Instance->GetInstanceData(0, INDEX_ARUGAL_INTRO) == State_NotStarted)
             {
                 RegisterAIUpdateEvent(500);
-                SFK_Instance->SetInstanceData(0, INDEX_ARUGAL_INTRO, State_InProgress);
+                SFK_Instance->SetLocaleInstanceData(0, INDEX_ARUGAL_INTRO, State_InProgress);
             }
         }
 
@@ -460,7 +460,7 @@ class ArugalAI : public MoonScriptCreatureAI
                 case 9:
                 {
                     GetUnit()->CastSpell(GetUnit(), SPELL_ARUGAL_SPAWN, true);
-                    SFK_Instance->SetInstanceData(0, INDEX_ARUGAL_INTRO, State_Finished);
+                    SFK_Instance->SetLocaleInstanceData(0, INDEX_ARUGAL_INTRO, State_Finished);
                     GetUnit()->SetInvisFlag(INVIS_FLAG_TOTAL);
                     RemoveAIUpdateEvent();
                 }break;
@@ -573,7 +573,7 @@ class AdamantAI : public MoonScriptCreatureAI
                         case 3:
                         {
                             GetUnit()->SendScriptTextChatMessage(SAY_ADAMANT_AFTER_OPEN);
-                            SFK_instance->SetInstanceData(0, INDEX_PRISONER_EVENT, State_Performed);
+                            SFK_instance->SetLocaleInstanceData(0, INDEX_PRISONER_EVENT, State_Performed);
                             ModifyAIUpdateEvent(4000);
                         }break;
                         case 4:
@@ -582,7 +582,7 @@ class AdamantAI : public MoonScriptCreatureAI
                         }break;
                         case 5:
                         {
-                            SFK_instance->SetInstanceData(0, INDEX_PRISONER_EVENT, State_Finished);
+                            SFK_instance->SetLocaleInstanceData(0, INDEX_PRISONER_EVENT, State_Finished);
                             SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                             SetWaypointToMove(12);  // Lets run
                             RemoveAIUpdateEvent();
@@ -638,7 +638,7 @@ class AdamantGossip : public Arcemu::Gossip::Script
                     pPrisoner->GetUnit()->EventAddEmote(EMOTE_ONESHOT_CHEER, 4000);
                     pPrisoner->eventStarted = true;
                     if (ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->GetMapMgr()->GetScript()))
-                        pInstance->SetInstanceData(0, INDEX_PRISONER_EVENT, State_InProgress);
+                        pInstance->SetLocaleInstanceData(0, INDEX_PRISONER_EVENT, State_InProgress);
                 }
             }
             Arcemu::Gossip::Menu::Complete(plr);
@@ -752,7 +752,7 @@ class AshcrombeAI : public MoonScriptCreatureAI
                         {
                             GetUnit()->CastSpell(GetUnit(), SPELL_ASHCROMBE_FIRE, true);
                             GetUnit()->SendScriptTextChatMessage(SAY_ASHCROMBE_VANISH);
-                            SFK_instance->SetInstanceData(0, INDEX_PRISONER_EVENT, State_Finished);
+                            SFK_instance->SetLocaleInstanceData(0, INDEX_PRISONER_EVENT, State_Finished);
                             RemoveAIUpdateEvent();
                         }break;
                         default:
@@ -814,7 +814,7 @@ class AshcrombeGossip : public Arcemu::Gossip::Script
                     pPrisoner->GetUnit()->Emote(EMOTE_ONESHOT_POINT);
                     pPrisoner->eventStarted = true;
                     if (ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->GetMapMgr()->GetScript()))
-                        pInstance->SetInstanceData(0, INDEX_PRISONER_EVENT, State_InProgress);
+                        pInstance->SetLocaleInstanceData(0, INDEX_PRISONER_EVENT, State_InProgress);
                 }
             }
             Arcemu::Gossip::Menu::Complete(plr);
@@ -932,7 +932,7 @@ class NandosAI : public MoonScriptCreatureAI
             sCallSlaveringWorg_Timer = AddTimer(RandomUInt(1) ? 45400 : 51700);
             sCallLupineHorror_Timer = AddTimer(69500);
             if (SFK_instance)
-                SFK_instance->SetInstanceData(0, INDEX_NANDOS, State_InProgress);
+                SFK_instance->SetLocaleInstanceData(0, INDEX_NANDOS, State_InProgress);
         }
 
         void OnCombatStop(Unit* mEnemy)
@@ -940,7 +940,7 @@ class NandosAI : public MoonScriptCreatureAI
             ParentClass::OnCombatStop(mEnemy);
             // Battle has failed
             if (SFK_instance)
-                SFK_instance->SetInstanceData(0, INDEX_NANDOS, State_InvalidState);
+                SFK_instance->SetLocaleInstanceData(0, INDEX_NANDOS, State_InvalidState);
 
             Reset();
         }
@@ -1172,7 +1172,7 @@ class ArugalBossAI : public MoonScriptCreatureAI
 
                     // sanctum32: not sure if it is correct spell id
                     GetUnit()->CastSpell(GetUnit(), SPELL_ASHCROMBE_FIRE, true);
-                    SFK_instance->SetInstanceData(0, INDEX_VOIDWALKER, State_Finished);
+                    SFK_instance->SetLocaleInstanceData(0, INDEX_VOIDWALKER, State_Finished);
                     RemoveAIUpdateEvent();
                 }break;
             }
