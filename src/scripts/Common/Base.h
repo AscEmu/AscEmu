@@ -293,9 +293,6 @@ class MoonScriptCreatureAI : public CreatureAIScript
         //Instances
         MoonInstanceScript* GetInstanceScript();
 
-        void CastOnAllInrangePlayers(uint32 pSpellId, bool pTriggered = false);
-        void CastOnInrangePlayers(float pDistanceMin, float pDistanceMax, uint32 pSpellId, bool pTriggered = false);
-
         MoonScriptCreatureAI* GetNearestCreature(uint32 pCreatureId = 0);
         MoonScriptCreatureAI* SpawnCreature(uint32 pCreatureId, float pX, float pY, float pZ, float pO = 0, bool pForceSameFaction = false, uint32 pPhase = 1);
 

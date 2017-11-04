@@ -211,26 +211,6 @@ MoonInstanceScript* MoonScriptCreatureAI::GetInstanceScript()
     return (pInstance) ? static_cast< MoonInstanceScript* >(pInstance->GetScript()) : nullptr;
 };
 
-void MoonScriptCreatureAI::CastOnAllInrangePlayers(uint32 pSpellId, bool pTriggered)
-{
-    for (std::set< Object* >::iterator PlayerIter = _unit->GetInRangePlayerSetBegin(); PlayerIter != _unit->GetInRangePlayerSetEnd(); ++PlayerIter)
-    {
-        _unit->CastSpell(static_cast< Player* >(*PlayerIter), pSpellId, pTriggered);
-    }
-};
-
-void MoonScriptCreatureAI::CastOnInrangePlayers(float pDistanceMin, float pDistanceMax, uint32 pSpellId, bool pTriggered)
-{
-    for (std::set< Object* >::iterator PlayerIter = _unit->GetInRangePlayerSetBegin(); PlayerIter != _unit->GetInRangePlayerSetEnd(); ++PlayerIter)
-    {
-        float PlayerDistance = (*PlayerIter)->GetDistance2dSq(this->GetUnit());
-        if (PlayerDistance >= pDistanceMin && PlayerDistance <= pDistanceMax)
-        {
-            _unit->CastSpell(static_cast< Player* >(*PlayerIter), pSpellId, pTriggered);
-        }
-    }
-};
-
 MoonScriptCreatureAI* MoonScriptCreatureAI::GetNearestCreature(uint32 pCreatureId)
 {
     Creature* NearestCreature = getNearestCreature(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), pCreatureId);

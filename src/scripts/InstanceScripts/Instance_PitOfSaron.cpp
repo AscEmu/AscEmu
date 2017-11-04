@@ -545,7 +545,7 @@ class KrickAI : MoonScriptBossAI
             {
                 if (IsTimerFinished(mBarrageTimer))
                 {
-                    CastOnInrangePlayers(0, 60.0f, SPELL_EXPLOSIVE_BARRAGE_SUMMON, true);
+                    _castOnInrangePlayersWithinDist(0, 60.0f, SPELL_EXPLOSIVE_BARRAGE_SUMMON, true);
                     ResetTimer(mBarrageTimer, 2500);
                 }
             }

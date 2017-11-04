@@ -632,7 +632,7 @@ class LokenAI : public MoonScriptCreatureAI
             _applyAura(52961);
 
         mNovaTimer = AddTimer(TIMER_NOVA);
-        CastOnAllInrangePlayers(PULSING_SHOCKWAVE_AURA);
+        _castOnInrangePlayers(PULSING_SHOCKWAVE_AURA);
 
         if (mInstance)
             mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_InProgress);

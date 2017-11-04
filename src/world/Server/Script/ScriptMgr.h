@@ -403,8 +403,11 @@ class SERVER_DECL CreatureAIScript
         // spell
         void _applyAura(uint32_t spellId);
         void _removeAura(uint32_t spellId);
-        void _removeAuraOnPlayers(uint32_t spellId);
         void _removeAllAuras();
+
+        void _removeAuraOnPlayers(uint32_t spellId);
+        void _castOnInrangePlayers(uint32_t spellId, bool triggered = false);
+        void _castOnInrangePlayersWithinDist(float minDistance, float maxDistance, uint32_t spellId, bool triggered = false);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // gameobject

@@ -796,6 +796,11 @@ void CreatureAIScript::_removeAura(uint32_t spellId)
     _unit->RemoveAura(spellId);
 }
 
+void CreatureAIScript::_removeAllAuras()
+{
+    _unit->RemoveAllAuras();
+}
+
 void CreatureAIScript::_removeAuraOnPlayers(uint32_t spellId)
 {
     for (auto object : *_unit->GetInRangePlayerSet())
@@ -805,9 +810,26 @@ void CreatureAIScript::_removeAuraOnPlayers(uint32_t spellId)
     }
 }
 
-void CreatureAIScript::_removeAllAuras()
+void CreatureAIScript::_castOnInrangePlayers(uint32_t spellId, bool triggered)
 {
-    _unit->RemoveAllAuras();
+    for (auto object : *_unit->GetInRangePlayerSet())
+    {
+        if (object != nullptr)
+            _unit->CastSpell(static_cast<Player*>(object), spellId, triggered);
+    }
+}
+
+void CreatureAIScript::_castOnInrangePlayersWithinDist(float minDistance, float maxDistance, uint32_t spellId, bool triggered)
+{
+    for (auto object : *_unit->GetInRangePlayerSet())
+    {
+        if (object != nullptr)
+        {
+            float distanceToPlayer = object->GetDistance2dSq(this->GetUnit());
+            if (distanceToPlayer >= minDistance && distanceToPlayer <= maxDistance)
+                _unit->CastSpell(static_cast<Player*>(object), spellId, triggered);
+        }
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
