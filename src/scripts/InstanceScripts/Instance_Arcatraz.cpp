@@ -39,7 +39,7 @@ class ZerekethAI : public MoonScriptBossAI
             SpeechTimer = 0;
             VoidTimer = 0;
 
-            if (!IsHeroic())
+            if (!_isHeroic())
                 AddSpell(SHADOW_NOVA, Target_Self, 15, 2, 15);
             else
                 AddSpell(SHADOW_NOVA_H, Target_Self, 15, 2, 15);
@@ -181,7 +181,7 @@ class VoidZoneARC : public MoonScriptCreatureAI
         {
             // M4ksiu: I'm not sure if it should be cast once, on start
             uint32 SpellId = CONSUMPTION;
-            if (IsHeroic())
+            if (_isHeroic())
                 SpellId = CONSUMPTION_H;
 
             _unit->CastSpell(_unit, SpellId, true);
@@ -209,7 +209,7 @@ class DalliahTheDoomsayerAI : public MoonScriptBossAI
             HealTemp->AddEmote("That is much better.", CHAT_MSG_MONSTER_YELL, 11091);
             HealTemp->AddEmote("Ah, just what I needed.", CHAT_MSG_MONSTER_YELL, 11092);
 
-            if (IsHeroic())
+            if (_isHeroic())
                 AddSpell(SHADOW_WAVE, Target_Current, 8.0f, 0, -1);
 
         }

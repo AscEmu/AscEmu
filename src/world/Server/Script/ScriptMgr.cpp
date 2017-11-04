@@ -739,6 +739,15 @@ bool CreatureAIScript::_isCasting()
     return _unit->IsCasting();
 }
 
+bool CreatureAIScript::_isHeroic()
+{
+    MapMgr* mapMgr = _unit->GetMapMgr();
+    if (mapMgr == nullptr || mapMgr->iInstanceMode != MODE_HEROIC)
+        return false;
+
+    return true;
+};
+
 void CreatureAIScript::_setScale(float scale)
 {
     _unit->setFloatValue(OBJECT_FIELD_SCALE_X, scale);

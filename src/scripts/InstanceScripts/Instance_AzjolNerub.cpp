@@ -30,7 +30,7 @@ class KrikthirAI : public MoonScriptCreatureAI
     MOONSCRIPT_FACTORY_FUNCTION(KrikthirAI, MoonScriptCreatureAI);
     KrikthirAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
-        if (!IsHeroic())
+        if (!_isHeroic())
         {
             AddSpell(KRIKTHIR_CURSEOFFATIGUE, Target_Self, 100, 0, 10);
             AddSpell(KRIKTHIR_MINDFLAY, Target_RandomPlayer, 100, 0, 7, 0, 30);
@@ -93,7 +93,7 @@ class HadronoxAI : public MoonScriptCreatureAI
     MOONSCRIPT_FACTORY_FUNCTION(HadronoxAI, MoonScriptCreatureAI);
     HadronoxAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
-        if (!IsHeroic())
+        if (!_isHeroic())
         {
             AddSpell(HADRONOX_WEBGRAB, Target_RandomPlayer, 22, 0, 14, 0, 0);
             AddSpell(HADRONOX_LEECHPOISON, Target_Self, 14, 0, 25, 0, 20);

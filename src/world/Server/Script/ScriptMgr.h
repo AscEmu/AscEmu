@@ -390,6 +390,8 @@ class SERVER_DECL CreatureAIScript
 
         bool _isCasting();
 
+        bool _isHeroic();
+
         // appearance
         void _setScale(float scale);
         float _getScale();

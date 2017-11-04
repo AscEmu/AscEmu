@@ -514,7 +514,7 @@ class DalronnTheControllerAI : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(DalronnTheControllerAI, MoonScriptCreatureAI);
         DalronnTheControllerAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            if (IsHeroic())
+            if (_isHeroic())
             {
                 AddSpell(SHADOW_BOLT_HC, Target_RandomPlayer, 85, 2, 3);
                 AddSpell(DEBILITATE, Target_RandomPlayer, 25, 0, 12);
@@ -624,7 +624,7 @@ class DalronnTheControllerGhostAI : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(DalronnTheControllerGhostAI, MoonScriptCreatureAI);
         DalronnTheControllerGhostAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            if (IsHeroic())
+            if (_isHeroic())
             {
                 AddSpell(SHADOW_BOLT_HC, Target_RandomPlayer, 85, 2, 3);
                 AddSpell(DEBILITATE, Target_RandomPlayer, 25, 0, 12);
@@ -682,7 +682,7 @@ class PrinceKelesethAI : public MoonScriptCreatureAI
             mFrostTomb = AddSpellFunc(&SpellFunc_KelesethFrostTomb, Target_RandomPlayer, 25, 0, 15, 0, 20);
             mAddSummon = AddSpellFunc(&SpellFunc_KelesethAddSummon, Target_Self, 0, 0, 0);
 
-            if (IsHeroic())
+            if (_isHeroic())
                 mShadowBolt = AddSpell(KELESETH_SHADOW_BOLT_HC, Target_Current, 100, 2, 2);
             else
                 mShadowBolt = AddSpell(KELESETH_SHADOW_BOLT, Target_Current, 100, 2, 2);
@@ -752,11 +752,11 @@ class SkeletonAddAI : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(SkeletonAddAI, MoonScriptCreatureAI);
         SkeletonAddAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            if (IsHeroic())
+            if (_isHeroic())
                 AddSpell(DECREPIFY_HC, Target_Current, 8, 0, 40);
             else
                 AddSpell(DECREPIFY, Target_Current, 8, 0, 40);
-        };
+        }
 
         void OnLoad()
         {
@@ -765,17 +765,17 @@ class SkeletonAddAI : public MoonScriptCreatureAI
                 _unit->GetAIInterface()->AttackReaction(pTarget, 50, 0);
 
             ParentClass::OnLoad();
-        };
+        }
 
         void OnCombatStop(Unit* pTarget)
         {
             despawn(1);
-        };
+        }
 
         void OnDied(Unit* pKiller)
         {
             despawn(1);
-        };
+        }
 
 };
 
@@ -796,7 +796,7 @@ void SpellFunc_ShadowAxe(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Un
 
         pShadowAxe->CastSpell(pShadowAxe, SHADOW_AXE_SPELL, true);
         pShadowAxe->Despawn(10000, 0);
-    };
+    }
 };
 
 class IngvarThePlundererAI : public MoonScriptCreatureAI
@@ -806,7 +806,7 @@ class IngvarThePlundererAI : public MoonScriptCreatureAI
         {
             AddSpell(INGVAR_CLEAVE, Target_Current, 24, 0, 6);
 
-            if (IsHeroic())
+            if (_isHeroic())
             {
                 AddSpell(INGVAR_ENRAGE_HC, Target_Self, 45, 0, 4);
                 AddSpell(INGVAR_SMASH_HC, Target_Self, 25, 3, 18);
@@ -852,7 +852,7 @@ class IngvarUndeadAI : public MoonScriptCreatureAI
             AddSpellFunc(&SpellFunc_ShadowAxe, Target_RandomPlayerNotCurrent, 15, 0, 21);
             AddSpell(INGVAR_DARK_SMASH, Target_Self, 12, 3, 16);
 
-            if (IsHeroic())
+            if (_isHeroic())
             {
                 AddSpell(INGVAR_DREADFUL_ROAR, Target_Self, 25, 2, 10);
                 AddSpell(INGVAR_WOE_STRIKE, Target_ClosestUnit, 18, 0, 16);

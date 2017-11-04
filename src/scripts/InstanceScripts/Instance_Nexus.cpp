@@ -35,7 +35,7 @@ class AnomalusAI : public MoonScriptBossAI
         {
             mInstance = GetInstanceScript();
 
-            if (IsHeroic())
+            if (_isHeroic())
                 AddSpell(SPARK_HC, Target_RandomPlayer, 80, 0, 3);
             else
                 AddSpell(SPARK, Target_RandomPlayer, 80, 0, 3);
@@ -51,7 +51,7 @@ class AnomalusAI : public MoonScriptBossAI
             sendDBChatMessage(4317);     // Chaos beckons.
             mSummon = 0;
             mRift = false;
-            mSummonTimer = AddTimer(IsHeroic() ? 14000 : 18000);   // check heroic
+            mSummonTimer = AddTimer(_isHeroic() ? 14000 : 18000);   // check heroic
 
             ParentClass::OnCombatStart(mTarget);
 
@@ -70,7 +70,7 @@ class AnomalusAI : public MoonScriptBossAI
             if (IsTimerFinished(mSummonTimer) && mRift == false)
             {
                 SummonRift(false);
-                ResetTimer(mSummonTimer, IsHeroic() ? 14000 : 18000);
+                ResetTimer(mSummonTimer, _isHeroic() ? 14000 : 18000);
             }
 
             if (mRift == true && (GetLinkedCreature() == NULL || !GetLinkedCreature()->isAlive()))
@@ -212,8 +212,7 @@ class TelestraBossAI : public MoonScriptBossAI
         {
             mInstance = GetInstanceScript();
 
-            mHeroic = IsHeroic();
-            if (mHeroic)
+            if (_isHeroic())
             {
                 AddSpell(ICE_NOVA_HC, Target_Self, 25, 2.0, 15);
                 AddSpell(FIREBOMB_HC, Target_RandomPlayer, 35, 1.5, 5);
@@ -284,7 +283,7 @@ class TelestraBossAI : public MoonScriptBossAI
                 _removeAura(60191);
                 setRooted(false);
                 mPhaseRepeat = 1;
-                SetPhase(mHeroic ? 1 : 3);   //3 disables p2
+                SetPhase(_isHeroic() ? 1 : 3);   //3 disables p2
             }
 
             ParentClass::AIUpdate();
@@ -344,7 +343,6 @@ class TelestraBossAI : public MoonScriptBossAI
     private:
 
         Creature* mAddArray[3];
-        bool mHeroic;
 
         int32 mPhaseRepeat;
         int32 mAddCount;
@@ -359,7 +357,7 @@ class TelestraFireAI : public MoonScriptBossAI
         MOONSCRIPT_FACTORY_FUNCTION(TelestraFireAI, MoonScriptBossAI);
         TelestraFireAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
         {
-            if (IsHeroic())
+            if (_isHeroic())
             {
                 AddSpell(FIRE_BLAST_HC, Target_RandomPlayer, 30, 0, 14);
                 AddSpell(SCORCH_HC, Target_Current, 100, 1, 3);
@@ -385,7 +383,7 @@ class TelestraFrostAI : public MoonScriptBossAI
         MOONSCRIPT_FACTORY_FUNCTION(TelestraFrostAI, MoonScriptBossAI);
         TelestraFrostAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
         {
-            if (IsHeroic())
+            if (_isHeroic())
             {
                 AddSpell(BLIZZARD_HC, Target_RandomPlayerDestination, 20, 0, 20);
                 AddSpell(ICE_BARB_HC, Target_RandomPlayer, 25, 0.5, 6);
@@ -432,7 +430,7 @@ class OrmorokAI : public MoonScriptBossAI
     {
         mInstance = GetInstanceScript();
 
-        if (IsHeroic())
+        if (_isHeroic())
             AddSpell(TRAMPLE_H, Target_Current, 30, 0, 9);
         else
             AddSpell(TRAMPLE, Target_Current, 30, 0, 9);
@@ -511,7 +509,7 @@ class CrystalSpikeAI : public MoonScriptBossAI
         }
         else if (m_part == 5)
         {
-            if (IsHeroic())
+            if (_isHeroic())
             {
                 _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELL_CRYSTAL_SPIKE_H), true);
             }
@@ -536,7 +534,7 @@ class KeristraszaAI : public MoonScriptBossAI
     MOONSCRIPT_FACTORY_FUNCTION(KeristraszaAI, MoonScriptBossAI);
     KeristraszaAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
     {
-        if (IsHeroic())
+        if (_isHeroic())
             AddSpell(CRYSTALFIRE_BREATH_HC, Target_Self, 30, 1, 14);
         else
             AddSpell(CRYSTALFIRE_BREATH, Target_Self, 30, 1, 14);

@@ -166,10 +166,21 @@ class SartharionAI : public MoonScriptBossAI
 
             AddSpell(SARTHARION_CLEAVE, Target_Current, 24, 0, 8);
 
-            SpellDesc* mFlame = AddSpell(HeroicInt(56908, 58956), Target_Self, 18, 2, 16);
-            mFlame->AddEmote("Burn, you miserable wretches!", CHAT_MSG_MONSTER_YELL, 14098);
+            SpellDesc* mFlame = nullptr;
+            if (_isHeroic())
+            {
+                mFlame = AddSpell(58956, Target_Self, 18, 2, 16);
+                AddSpell(58957, Target_Self, 40, 0, 12);
+            }
+            else
+            {
+                mFlame = AddSpell(56908, Target_Self, 18, 2, 16);
+                AddSpell(56910, Target_Self, 40, 0, 12);
+            }
 
-            AddSpell(HeroicInt(56910, 58957), Target_Self, 40, 0, 12);
+            if (mFlame != nullptr)
+                mFlame->AddEmote("Burn, you miserable wretches!", CHAT_MSG_MONSTER_YELL, 14098);
+            
             mFlameTsunami = AddSpellFunc(&SpellFunc_FlameTsunami, Target_Self, 99, 0, 25);
             mSummonLava = AddSpellFunc(&SpellFunc_LavaSpawn, Target_RandomUnitNotCurrent, 25, 0, 8);
 

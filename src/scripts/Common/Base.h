@@ -291,8 +291,6 @@ class MoonScriptCreatureAI : public CreatureAIScript
         void AggroRandomPlayer(uint32 pInitialThreat = 1);
 
         //Instances
-        bool IsHeroic();
-        uint32 HeroicInt(uint32 pNormal, uint32 pHeroic) { return IsHeroic() ? pHeroic : pNormal; }
         MoonInstanceScript* GetInstanceScript();
 
         void CastOnAllInrangePlayers(uint32 pSpellId, bool pTriggered = false);

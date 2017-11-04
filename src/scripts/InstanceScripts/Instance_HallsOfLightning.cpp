@@ -330,8 +330,16 @@ class Volkhan : public MoonScriptCreatureAI
     {
         mInstance = GetInstanceScript();
 
-        AddSpell(HeroicInt(52237, 59529), Target_WoundedFriendly, 15, 1.5f, 15);
-        mStomp = AddSpell(HeroicInt(52237, 59529), Target_Self, 0, 3, 0);
+        if (_isHeroic())
+        {
+            AddSpell(59529, Target_WoundedFriendly, 15, 1.5f, 15);
+            mStomp = AddSpell(59529, Target_Self, 0, 3, 0);
+        }
+        else
+        {
+            AddSpell(52237, Target_WoundedFriendly, 15, 1.5f, 15);
+            mStomp = AddSpell(52237, Target_Self, 0, 3, 0);
+        }
 
         mStomp->AddEmote("I will crush you beneath my boots!", CHAT_MSG_MONSTER_YELL, 13963);
         mStomp->AddEmote("All my work... undone!", CHAT_MSG_MONSTER_YELL, 13964);
@@ -444,7 +452,10 @@ class Volkhan : public MoonScriptCreatureAI
             if ((*itr) && (*itr)->IsCreature() && (*itr)->GetEntry() == CN_BRITTLE_GOLEM)
             {
                 Creature* pCreature = static_cast< Creature* >((*itr));
-                pCreature->CastSpell(pCreature, HeroicInt(52429, 59527), true);
+                if (_isHeroic())
+                    pCreature->CastSpell(pCreature, 59527, true);
+                else
+                    pCreature->CastSpell(pCreature, 52429, true);
 
                 pCreature->Despawn(1000, 0);
             }
@@ -473,7 +484,11 @@ class MoltenGolem : public MoonScriptCreatureAI
     MoltenGolem(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         AddSpell(SPELL_BLAST_WAVE, Target_Self, 25, 0, 20);
-        AddSpell(HeroicInt(52433, 59530), Target_Current, 15, 0, 15);
+
+        if (_isHeroic())
+            AddSpell(59530, Target_Current, 15, 0, 15);
+        else
+            AddSpell(52433, Target_Current, 15, 0, 15);
     }
 
     void OnDied(Unit* pKiller)
@@ -519,8 +534,16 @@ class IonarAI : public MoonScriptBossAI
     {
         mInstance = GetInstanceScript();
 
-        AddSpell(HeroicInt(52780, 59800), Target_RandomPlayerNotCurrent, 20, 1.5f, 5);
-        AddSpell(HeroicInt(52658, 59795), Target_RandomPlayerNotCurrent, 15, 0, 12);
+        if (_isHeroic())
+        {
+            AddSpell(59800, Target_RandomPlayerNotCurrent, 20, 1.5f, 5);
+            AddSpell(59795, Target_RandomPlayerNotCurrent, 15, 0, 12);
+        }
+        else
+        {
+            AddSpell(52780, Target_RandomPlayerNotCurrent, 20, 1.5f, 5);
+            AddSpell(52658, Target_RandomPlayerNotCurrent, 15, 0, 12);
+        }
     }
 
     void OnCombatStart(Unit* pTarget)
@@ -580,7 +603,12 @@ class LokenAI : public MoonScriptCreatureAI
     LokenAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         mInstance = GetInstanceScript();
-        mNova = AddSpell(HeroicInt(52960, 59835), Target_Self, 0, 4.0f, 0);
+
+        if (_isHeroic())
+            mNova = AddSpell(59835, Target_Self, 0, 4.0f, 0);
+        else
+            mNova = AddSpell(52960, Target_Self, 0, 4.0f, 0);
+        
         AddSpell(ARC_LIGHTNING, Target_RandomPlayer, 25, 0, 6);
 
         sendChatMessage(CHAT_MSG_MONSTER_YELL, 14160, "I have witnessed the rise and fall of empires. The birth and extinction of entire species. Over countless millennia the foolishness of mortals has remained the only constant. Your presence here confirms this.");
@@ -597,7 +625,12 @@ class LokenAI : public MoonScriptCreatureAI
 
         ParentClass::OnCombatStart(pTarget);
         mSpeech = 1;
-        _applyAura(HeroicInt(52961, 59836));
+
+        if (_isHeroic())
+            _applyAura(59836);
+        else
+            _applyAura(52961);
+
         mNovaTimer = AddTimer(TIMER_NOVA);
         CastOnAllInrangePlayers(PULSING_SHOCKWAVE_AURA);
 

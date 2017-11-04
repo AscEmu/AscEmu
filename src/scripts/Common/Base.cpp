@@ -205,14 +205,6 @@ void MoonScriptCreatureAI::AggroRandomPlayer(uint32 pInitialThreat)
     }
 }
 
-bool MoonScriptCreatureAI::IsHeroic()
-{
-    if (_unit->GetMapMgr() == nullptr || _unit->GetMapMgr()->iInstanceMode != MODE_HEROIC)
-        return false;
-
-    return true;
-};
-
 MoonInstanceScript* MoonScriptCreatureAI::GetInstanceScript()
 {
     MapMgr* pInstance = _unit->GetMapMgr();

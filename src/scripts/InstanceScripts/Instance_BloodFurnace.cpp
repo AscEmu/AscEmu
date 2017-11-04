@@ -31,7 +31,7 @@ class KelidanTheBreakerAI : public MoonScriptBossAI
     KelidanTheBreakerAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
     {
         //spells
-        if (IsHeroic())
+        if (_isHeroic())
         {
             mShadowBoltVolley = AddSpell(KELIDAN_SHADOW_BOLT_VOLLEY_H, Target_Self, 25, 0, 6);
             mFireNova = AddSpell(KELIDAN_FIRE_NOVA_H, Target_Current, 15, 0, 12);
@@ -65,7 +65,7 @@ class KelidanTheBreakerAI : public MoonScriptBossAI
         {
             if (mBurningNovaTimer == INVALIDATE_TIMER || IsTimerFinished(mBurningNovaTimer))
             {
-                if (IsHeroic())
+                if (_isHeroic())
                     CastSpell(mVortex);
                 CastSpell(mBurningNova);
 

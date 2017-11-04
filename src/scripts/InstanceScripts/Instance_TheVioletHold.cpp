@@ -738,7 +738,7 @@ class MoraggAI : public MoonScriptBossAI
     MoraggAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
     {
         // Spells
-        if (IsHeroic())
+        if (_isHeroic())
         {
             AddSpell(MORAGG_SPELL_RAY_OF_SUFFERING_H, Target_Current, 100, 0, 0, 0, 45);
             AddSpell(MORAGG_SPELL_RAY_OF_PAIN_H, Target_Current, 100, 0, 0, 0 , 45);

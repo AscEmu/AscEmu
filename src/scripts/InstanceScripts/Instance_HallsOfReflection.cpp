@@ -220,7 +220,7 @@ class Marwyn : public MoonScriptBossAI
         {
             mInstance = GetInstanceScript();
 
-            if (IsHeroic() == false) // NORMAL MODE
+            if (_isHeroic() == false) // NORMAL MODE
             {
                 AddSpell(N_SPELL_OBLITERATE, Target_Current, 45, 0, 30); // Timer may be off on this.
                 AddSpell(N_SPELL_WELL, Target_RandomPlayer, 60, 0, 13, 0, 0, false, "Your flesh has decayed before your very eyes!", CHAT_MSG_MONSTER_YELL, 16739);
@@ -238,7 +238,7 @@ class Marwyn : public MoonScriptBossAI
 
         void OnLoad()
         {
-            if (IsHeroic() == true) // HEROIC MODE
+            if (_isHeroic() == true) // HEROIC MODE
             {
                 _unit->SetMaxHealth(903227); // SET HP CAUSE ARCEMU DONT SUPPORT HEROIC MODES!
                 _unit->SetHealth(903227); //SET HP CAUSE ARCEMU DONT SUPPORT HEROIC MODES!
@@ -297,7 +297,7 @@ class Falric : public MoonScriptBossAI
         {
             mInstance = GetInstanceScript();
 
-            if (IsHeroic() == false) // NORMAL MODE
+            if (_isHeroic() == false) // NORMAL MODE
             {
                 AddSpell(N_SPELL_QSTRIKE, Target_Current, 45, 0, 23);
                 AddSpell(N_SPELL_IMPEND, Target_Current, 60, 0, 9);

@@ -34,7 +34,7 @@ class WatchkeeperGargolmarAI : public MoonScriptBossAI
         AddSpell(WATCHKEEPER_OVERPOWER, Target_Current, 10, 0, 5);
         mRetaliation = AddSpell(WATCHKEEPER_RETALIATION, Target_Self, 0, 0, 0);
 
-        if (IsHeroic())
+        if (_isHeroic())
             AddSpell(WATCHKEEPER_MORTAL_WOUND_H, Target_Current, 15, 0, 12);
         else
             AddSpell(WATCHKEEPER_MORTAL_WOUND, Target_Current, 15, 0, 12);

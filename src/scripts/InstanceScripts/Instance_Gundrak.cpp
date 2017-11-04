@@ -364,11 +364,24 @@ class SladranAI : public MoonScriptCreatureAI
     {
         mInstance = GetInstanceScript();
 
-        SpellDesc* sdPoisonNova = AddSpell(HeroicInt(55081, 59842), Target_Self, 10, 3.5f, 16);
-        sdPoisonNova->AddAnnouncement("Slad'ran begins to cast Poison Nova!");
+        SpellDesc* sdPoisonNova = nullptr;
+        if (_isHeroic())
+        {
+            AddSpell(59840, Target_Current, 25, 0, 6);
+            AddSpell(59839, Target_RandomPlayerNotCurrent, 18, 1.5f, 8);
 
-        AddSpell(HeroicInt(48287, 59840), Target_Current, 25, 0, 6);
-        AddSpell(HeroicInt(54970, 59839), Target_RandomPlayerNotCurrent, 18, 1.5f, 8);
+            sdPoisonNova = AddSpell(59842, Target_Self, 10, 3.5f, 16);
+        }
+        else
+        {
+            AddSpell(48287, Target_Current, 25, 0, 6);
+            AddSpell(54970, Target_RandomPlayerNotCurrent, 18, 1.5f, 8);
+
+            sdPoisonNova = AddSpell(55081, Target_Self, 10, 3.5f, 16);
+        }
+
+        if (sdPoisonNova != nullptr)
+            sdPoisonNova->AddAnnouncement("Slad'ran begins to cast Poison Nova!");
     }
 
     void OnCombatStart(Unit* pTarget)
@@ -423,7 +436,10 @@ class GalDarahAI : public MoonScriptCreatureAI
     {
         mInstance = GetInstanceScript();
 
-        AddSpell(HeroicInt(55250, 59824), Target_Self, 20, 0, 12);
+        if (_isHeroic())
+            AddSpell(59824, Target_Self, 20, 0, 12);
+        else
+            AddSpell(55250, Target_Self, 20, 0, 12);
     }
 
     void OnCombatStart(Unit* pTarget)

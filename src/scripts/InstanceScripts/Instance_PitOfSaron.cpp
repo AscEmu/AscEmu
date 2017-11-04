@@ -109,7 +109,7 @@ class ForgemasterGarfrostAI : MoonScriptBossAI
         mSaronite = AddSpell(SPELL_THROWSARONITE, Target_RandomPlayerDestination, 20, 2, 15);
         mPermafrost = AddSpell(SPELL_PERMAFROST, Target_Self, 0, 0, 0);
 
-        if (IsHeroic())
+        if (_isHeroic())
         {
             // Phased Spells
             mChllingWave = AddPhaseSpell(2, AddSpell(H_SPELL_CHILLING_WAVE, Target_Current, 25, 0, 14));
@@ -185,7 +185,7 @@ class ForgemasterGarfrostAI : MoonScriptBossAI
             if (GameObject * pObject = getNearestGameObject(401006))	//forgemaster's anvil (TEMP)
                 _unit->SetFacing(_unit->calcRadAngle(_unit->GetPositionX(), _unit->GetPositionY(), pObject->GetPositionX(), pObject->GetPositionY()));
 
-            if (IsHeroic())
+            if (_isHeroic())
                 _unit->CastSpell(_unit, H_SPELL_FORGE_BLADE, false);
             else
                 _unit->CastSpell(_unit, SPELL_FROZEBLADE, false);
@@ -205,7 +205,7 @@ class ForgemasterGarfrostAI : MoonScriptBossAI
             if (GameObject * pObject = getNearestGameObject(401006))	//forgemaster's anvil (TEMP)
                 _unit->SetFacing(_unit->calcRadAngle(_unit->GetPositionX(), _unit->GetPositionY(), pObject->GetPositionX(), pObject->GetPositionY()));
             
-            if (IsHeroic())
+            if (_isHeroic())
                 _unit->CastSpell(_unit, H_SPELL_FORGE_MACE, false);
             else
                 _unit->CastSpell(_unit, SPELL_FROZEMACE, false);
@@ -278,7 +278,7 @@ class IckAI : MoonScriptBossAI
         mConfusion = AddSpell(SPELL_CONFUSION, Target_Self, 0, 0, 0);
         mExplosionBarageKrick = AddSpell(SPELL_EXPLOSIVE_BARRAGE_KRICK, Target_Self, 0, 0, 0);
 
-        if (IsHeroic())
+        if (_isHeroic())
         {
             mToxicWaste = AddSpell(H_SPELL_TOXIC_WASTE, Target_Current, 0, 0, 0);
             mPoisonNova = AddSpell(H_SPELL_POISON_NOVA, Target_Self, 0, 5000, 0);
