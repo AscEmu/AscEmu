@@ -2154,7 +2154,7 @@ class AlarAI : public CreatureAIScript
                 default:
                     {
                         SetPhase(0);
-                    };
+                    }
             }
         }
 

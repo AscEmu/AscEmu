@@ -195,12 +195,12 @@ class TrollgoreAI : public CreatureAIScript
             {
                 if (spells[i] != NULL)
                     delete spells[i];
-            };
+            }
 
             spells.clear();
 
             delete this;
-        };
+        }
 
     protected:
 
@@ -546,12 +546,12 @@ class NovosTheSummonerAI : public CreatureAIScript
             {
                 if (spells[i] != NULL)
                     delete spells[i];
-            };
+            }
 
             spells.clear();
 
             delete this;
-        };
+        }
 
     protected:
 
@@ -686,12 +686,12 @@ class CrystalHandlerAI : public CreatureAIScript
             {
                 if (spells[i] != NULL)
                     delete spells[i];
-            };
+            }
 
             spells.clear();
 
             delete this;
-        };
+        }
 
     protected:
 
@@ -839,12 +839,12 @@ class KingDreadAI : public CreatureAIScript
             {
                 if (spells[i] != NULL)
                     delete spells[i];
-            };
+            }
 
             spells.clear();
 
             delete this;
-        };
+        }
 
     protected:
 
@@ -1062,12 +1062,12 @@ class TheProphetTaronjaAI : public CreatureAIScript
             {
                 if (spells[i] != NULL)
                     delete spells[i];
-            };
+            }
 
             spells.clear();
 
             delete this;
-        };
+        }
 
     protected:
 

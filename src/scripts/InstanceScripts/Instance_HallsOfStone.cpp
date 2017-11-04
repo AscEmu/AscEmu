@@ -29,7 +29,7 @@ class DarkRuneStormcallerAI : public MoonScriptCreatureAI
     {
         AddSpell(STORMCALLER_LIGHTNINGBOLT, Target_RandomPlayer, 60, 3, 6);
         AddSpell(STORMCALLER_SHADOWWORD, Target_RandomPlayer, 16, 0, 12);
-    };
+    }
 
 };
 
@@ -41,7 +41,7 @@ class IronGolemCustodianAI : public MoonScriptCreatureAI
     {
         AddSpell(CUSTODIAN_CRUSH_ARMOR, Target_Current, 50, 0, 5);
         AddSpell(CUSTODIAN_GROUND_SMASH, Target_ClosestPlayer, 20, 0, 14);
-    };
+    }
 
 };
 
@@ -53,7 +53,7 @@ class DarkRuneProtectorAI : public MoonScriptCreatureAI
     {
         AddSpell(PROTECTOR_CHARGE, Target_RandomPlayerNotCurrent, 20, 0, 14, 10);
         AddSpell(PROTECTOR_CLAVE, Target_Current, 35, 0, 8);
-    };
+    }
 
 };
 
@@ -64,7 +64,7 @@ class LesserAirElementalAI : public MoonScriptCreatureAI
     LesserAirElementalAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         AddSpell(ELEMENTAL_LIGHTNING_BOLT, Target_RandomPlayerNotCurrent, 20, 3, 14);
-    };
+    }
 
 };
 
@@ -76,7 +76,7 @@ class DarkRuneWorkerAI : public MoonScriptCreatureAI
     {
         AddSpell(WORKER_ENRAGE, Target_Self, 5, 0, 60, 10);
         AddSpell(WORKER_PIERCE_ARMOR, Target_Current, 35, 0, 45);
-    };
+    }
 
 };
 
@@ -88,7 +88,7 @@ class DarkRuneWarriorAI : public MoonScriptCreatureAI
     {
         AddSpell(WARRIOR_CLAVE, Target_Current, 15, 0, 8);
         AddSpell(WARRIOR_HEROIC_STRIKE, Target_Current, 35, 0, 12);
-    };
+    }
 
 };
 
@@ -101,7 +101,7 @@ class DarkRuneTheurgistAI : public MoonScriptCreatureAI
         AddSpell(THEURGIST_BLAST_WAVE, Target_Self, 22, 0, 25);
         AddSpell(THEURGIST_FIREBOLT, Target_RandomPlayer, 40, 3, 6);
         AddSpell(THEURGIST_IRON_MIGHT, Target_Self, 5, 0, 60);
-    };
+    }
 
 };
 
@@ -112,7 +112,7 @@ class DarkRuneShaperAI : public MoonScriptCreatureAI
     DarkRuneShaperAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         AddSpell(SHAPER_RAY, Target_RandomPlayer, 35, 1.5, 12);
-    };
+    }
 
 };
 
@@ -123,7 +123,7 @@ class DarkRuneScholarAI : public MoonScriptCreatureAI
     DarkRuneScholarAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         AddSpell(SCHOLAR_SILANCE, Target_RandomPlayerNotCurrent, 35, 2.5, 12);
-    };
+    }
 
 };
 
@@ -135,7 +135,7 @@ class DarkRuneGiantAI : public MoonScriptCreatureAI
     {
         AddSpell(GIANT_FIST, Target_Self, 3, 2, 40);
         AddSpell(GIANT_STOMP, Target_RandomPlayer, 35, 0, 14, 0, 10);
-    };
+    }
 
 };
 
@@ -147,7 +147,7 @@ class DarkRuneConstructAI : public MoonScriptCreatureAI
     {
         AddSpell(RAGING_POTENT_JOLT, Target_Self, 95, 0, 8);
         AddSpell(RAGING_CLAVE, Target_Current, 30, 0, 9, 0, 10);
-    };
+    }
 
 };
 
@@ -159,7 +159,7 @@ class DarkLightningConstructAI : public MoonScriptCreatureAI
     {
         AddSpell(LIGHTN_ELECTRICAL_OVERLOAD, Target_Self, 5, 1.5, 14);
         AddSpell(LIGHTN_CHAIN_LIGHTNING, Target_Current, 30, 3, 8, 0, 30);
-    };
+    }
 
 };
 
@@ -170,7 +170,7 @@ class ForgedIronTroggAI : public MoonScriptCreatureAI
     ForgedIronTroggAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         AddSpell(LIGHTN_CHAIN_LIGHTNING, Target_RandomPlayer, 30, 2, 8, 0, 10);
-    };
+    }
 
 };
 
@@ -247,7 +247,7 @@ class KrystallusAI : public MoonScriptCreatureAI
 
         mStompTimer = AddTimer(STOMP_TIMER);
         ParentClass::OnCombatStart(pTarget);
-    };
+    }
 
     void AIUpdate()
     {

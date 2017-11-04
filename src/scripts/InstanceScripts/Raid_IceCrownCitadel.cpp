@@ -72,8 +72,8 @@ class IceCrownCitadelScript : public MoonInstanceScript
                         break;
                     default:
                         continue;
-                };
-            };
+                }
+            }
         }
 
         void OnGameObjectPushToWorld(GameObject* pGameObject)
@@ -97,7 +97,7 @@ class IceCrownCitadelScript : public MoonInstanceScript
                 return;
 
             (*Iter).second.mState = (EncounterState)pData;
-        };
+        }
 
         uint32 GetInstanceData(uint32 pType, uint32 pIndex)
         {
@@ -109,7 +109,7 @@ class IceCrownCitadelScript : public MoonInstanceScript
                 return 0;
 
             return (*Iter).second.mState;
-        };
+        }
 
         void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
         {

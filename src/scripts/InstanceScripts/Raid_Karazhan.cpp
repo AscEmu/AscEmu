@@ -3204,13 +3204,13 @@ public:
         despawn(175000, 0);
         _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(HELLFIRE), true);
         ParentClass::OnLoad();
-    };
+    }
 
     void AIUpdate()
     {
         _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(HELLFIRE), true);
         ParentClass::AIUpdate();
-    };
+    }
 
 };
 
@@ -3698,7 +3698,7 @@ public:
                 _unit->GetAIInterface()->setWayPointToMove(iWaypointId + 1);
             }
             break;
-        };
+        }
     }
 
     void FlyPhase()

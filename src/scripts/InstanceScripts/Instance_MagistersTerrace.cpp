@@ -285,7 +285,7 @@ class Priestess_DelrissaAI : public MoonScriptBossAI
 
         mClearHateList = AddTimer(15000);
         mKilledPlayers = 0;
-    };
+    }
 
     void OnCombatStart(Unit* pTarget)
     {
@@ -294,7 +294,7 @@ class Priestess_DelrissaAI : public MoonScriptBossAI
         // method that in this case recursively loops this procedure
 
         ParentClass::OnCombatStart(pTarget);
-    };
+    }
 
     void OnTargetDied(Unit* pTarget)
     {
@@ -337,10 +337,10 @@ class Priestess_DelrissaAI : public MoonScriptBossAI
             _clearHateList();
             AggroRandomUnit();
             ResetTimer(mClearHateList, 15000);
-        };
+        }
 
         ParentClass::AIUpdate();
-    };
+    }
 
     protected:
 

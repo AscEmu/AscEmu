@@ -174,7 +174,7 @@ class MeathookAI : public CreatureAIScript
             spells.clear();
 
             delete this;
-        };
+        }
 
     protected:
 
@@ -362,7 +362,7 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
             spells.clear();
 
             delete this;
-        };
+        }
 
     protected:
 
@@ -533,7 +533,7 @@ class ChronoLordEpochAI : public CreatureAIScript
             spells.clear();
 
             delete this;
-        };
+        }
 
     protected:
 
@@ -665,12 +665,12 @@ class InfiniteCorruptorAI : public CreatureAIScript
             {
                 if (spells[i] != NULL)
                     delete spells[i];
-            };
+            }
 
             spells.clear();
 
             delete this;
-        };
+        }
 
     protected:
 
@@ -890,12 +890,12 @@ class MalganisAI : public CreatureAIScript
             {
                 if (spells[i] != NULL)
                     delete spells[i];
-            };
+            }
 
             spells.clear();
 
             delete this;
-        };
+        }
 
     protected:
 

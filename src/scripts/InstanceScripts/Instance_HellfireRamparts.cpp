@@ -84,17 +84,17 @@ class WatchkeeperGargolmarAI : public MoonScriptBossAI
         {
             sendDBChatMessage(4871);      // Heal me, quickly!
             mCalledForHelp = true;
-        };
+        }
 
         if (_unit->GetHealthPct() <= 20 && !_retaliation)
         {
             _retaliation = true;
             _unit->setAttackTimer(1500, false);
             CastSpellNowNoScheduling(mRetaliation);
-        };
+        }
 
         ParentClass::AIUpdate();
-    };
+    }
 
     bool mCalledForHelp;
     bool _retaliation;

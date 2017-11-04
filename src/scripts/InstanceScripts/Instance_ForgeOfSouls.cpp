@@ -91,7 +91,7 @@ public:
 
             mSpawnsCreated = true;
         }
-	};
+	}
 };
 
 void SetupForgeOfSouls(ScriptMgr* mgr)

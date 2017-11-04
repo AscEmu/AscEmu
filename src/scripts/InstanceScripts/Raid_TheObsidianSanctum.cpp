@@ -154,7 +154,7 @@ void SpellFunc_LavaSpawn(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Un
     {
         uint32 j = RandomUInt(5);
         pCreatureAI->SpawnCreature(CN_LAVA_BLAZE, pTarget->GetPositionX() + j, pTarget->GetPositionY() + j, pTarget->GetPositionZ(), pTarget->GetOrientation(), true);
-    };
+    }
 };
 
 class SartharionAI : public MoonScriptBossAI
@@ -187,7 +187,7 @@ class SartharionAI : public MoonScriptBossAI
             mDrakeTimer = 0;
             m_bEnraged = false;
             m_iDrakeCount = 0;
-        };
+        }
 
         void OnCombatStart(Unit* pTarget)
         {
@@ -201,10 +201,10 @@ class SartharionAI : public MoonScriptBossAI
                 _applyAura(SARTHARION_AURA);
                 _removeAuraOnPlayers(SARTHARION_AURA);   // unproper hackfix
                 _regenerateHealth();// Lets heal him as aura increase his hp for 25%
-            };
+            }
 
             ParentClass::OnCombatStart(pTarget);
-        };
+        }
 
         void AIUpdate()
         {
@@ -220,8 +220,8 @@ class SartharionAI : public MoonScriptBossAI
                         CallVesperon();
 
                     ResetTimer(mDrakeTimer, 45000);
-                };
-            };
+                }
+            }
 
             if (_getHealthPercent() <= 10 && m_bEnraged == false)   // enrage phase
             {
@@ -229,10 +229,10 @@ class SartharionAI : public MoonScriptBossAI
                     CastSpellNowNoScheduling(mSummonLava);
 
                 m_bEnraged = true;
-            };
+            }
 
             ParentClass::AIUpdate();
-        };
+        }
 
         void CheckDrakes()
         {
@@ -249,9 +249,9 @@ class SartharionAI : public MoonScriptBossAI
                     m_bDrakes[i] = true;
                     m_iDrakeCount++;
                     mInstance->DoDrakeAura(i);
-                };
-            };
-        };
+                }
+            }
+        }
 
         void CallTenebron()
         {
@@ -260,9 +260,9 @@ class SartharionAI : public MoonScriptBossAI
                 sendDBChatMessage(3982);     //Tenebron!The eggs are yours to protect as well!
                 m_cDrakes[DRAKE_TENEBRON]->GetAIInterface()->MoveTo(3254.606689f, 531.867859f, 66.898163f);
                 m_cDrakes[DRAKE_TENEBRON]->SetOrientation(4.215994f);
-            };
+            }
             m_bDrakes[DRAKE_TENEBRON] = false;
-        };
+        }
 
         void CallShadron()
         {
@@ -271,9 +271,9 @@ class SartharionAI : public MoonScriptBossAI
                 sendDBChatMessage(3981);     //Shadron! Come to me! All is at risk!
                 m_cDrakes[DRAKE_SHADRON]->GetAIInterface()->MoveTo(3254.606689f, 531.867859f, 66.898163f);
                 m_cDrakes[DRAKE_SHADRON]->SetOrientation(4.215994f);
-            };
+            }
             m_bDrakes[DRAKE_SHADRON] = false;
-        };
+        }
 
         void CallVesperon()
         {
@@ -282,9 +282,9 @@ class SartharionAI : public MoonScriptBossAI
                 sendDBChatMessage(3983);     //Vesperon, the clutch is in danger! Assist me!
                 m_cDrakes[DRAKE_VESPERON]->GetAIInterface()->MoveTo(3254.606689f, 531.867859f, 66.898163f);
                 m_cDrakes[DRAKE_VESPERON]->SetOrientation(4.215994f);
-            };
+            }
             m_bDrakes[DRAKE_VESPERON] = false;
-        };
+        }
 
         void OnDied(Unit* pKiller)
         {
@@ -292,7 +292,7 @@ class SartharionAI : public MoonScriptBossAI
 
             RemoveAIUpdateEvent();
             ParentClass::OnDied(pKiller);
-        };
+        }
 
     private:
         bool m_bDrakes[OS_DATA_END - 1];
@@ -320,7 +320,7 @@ class TsunamiAI : public MoonScriptBossAI
             despawn(11500, 0);
 
             ParentClass::OnLoad();
-        };
+        }
 
         void AIUpdate()
         {
@@ -329,7 +329,7 @@ class TsunamiAI : public MoonScriptBossAI
             RegisterAIUpdateEvent(11000);
 
             ParentClass::OnLoad();
-        };
+        }
 
 };
 
@@ -338,7 +338,7 @@ class CyclonAI : public MoonScriptBossAI
     public:
         MOONSCRIPT_FACTORY_FUNCTION(CyclonAI, MoonScriptBossAI);
         CyclonAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
-        {};
+        {}
 
         void OnLoad()
         {
@@ -349,7 +349,7 @@ class CyclonAI : public MoonScriptBossAI
             _applyAura(CYCLON_AURA);
 
             ParentClass::OnLoad();
-        };
+        }
 
 };
 
@@ -358,23 +358,23 @@ class LavaBlazeAI : public MoonScriptBossAI
     public:
         MOONSCRIPT_FACTORY_FUNCTION(LavaBlazeAI, MoonScriptBossAI);
         LavaBlazeAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
-        {};
+        {}
 
         void OnLoad()
         {
             AggroNearestPlayer(1);
             ParentClass::OnLoad();
-        };
+        }
 
         void OnCombatStop(Unit* pTarget)
         {
             despawn(1000, 0);
-        };
+        }
 
         void OnDied(Unit* pKiller)
         {
             despawn(1000, 0);
-        };
+        }
 
 };
 

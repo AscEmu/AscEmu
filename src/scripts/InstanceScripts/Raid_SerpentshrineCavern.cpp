@@ -2323,10 +2323,10 @@ class TaintedElementalAI : public CreatureAIScript
             {
                 delete spell_poison_spit;
                 spell_poison_spit = NULL;
-            };
+            }
 
             delete this;
-        };
+        }
 
     private:
         AI_Spell* spell_poison_spit;
@@ -2522,8 +2522,8 @@ class ToxicSporeBatAI : public CreatureAIScript
                     default:
                         {
                             Phase = 0;
-                        };
-                };
+                        }
+                }
             }
             //float val = RandomFloat(100.0f);
             //SpellCast(val);
@@ -2990,7 +2990,7 @@ class SerpentshrineCavern : public MoonInstanceScript
                     mBridgePart[2] = pGameObject->GetLowGUID();
                     break;
             }
-        };
+        }
 
         void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer)
         {
@@ -3004,7 +3004,7 @@ class SerpentshrineCavern : public MoonInstanceScript
                 pBridgePart = GetGameObjectByGuid(mBridgePart[i]);
                 if (pBridgePart != NULL)
                     pBridgePart->SetState(GO_STATE_OPEN);
-            };
+            }
 
 
             pGameObject->SetState(GO_STATE_OPEN);

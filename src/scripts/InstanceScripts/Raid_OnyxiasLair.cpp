@@ -173,7 +173,7 @@ class OnyxiaAI : public CreatureAIScript
                         //_unit->m_pacified--;
                     }
                     break;
-            };
+            }
         }
 
         void AIUpdate()
@@ -198,8 +198,8 @@ class OnyxiaAI : public CreatureAIScript
                 default:
                     {
                         m_phase = 1;
-                    };
-            };
+                    }
+            }
         }
 
         void PhaseOne()

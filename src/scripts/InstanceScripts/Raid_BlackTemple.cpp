@@ -2670,8 +2670,8 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
                                 {
                                     pSpawnedEnsalvedSoul->AggroNearestPlayer();
                                     pSpawnedEnsalvedSoul = NULL;
-                                };
-                            };
+                                }
+                            }
                             RemoveTimer(mEnslavedSoulTimer);
                         }
                         if (SpawnedEnsalvedSoul)
@@ -3061,23 +3061,23 @@ class GathiosAI : public MoonScriptCreatureAI
             AddEmote(Event_OnTargetDied, "Selama amor'anore!", CHAT_MSG_MONSTER_YELL, 11423);
             AddEmote(Event_OnCombatStart, "I have better things to do!", CHAT_MSG_MONSTER_YELL, 11422);
             AddEmote(Event_OnDied, "Lord Illidan... I...", CHAT_MSG_MONSTER_YELL, 11425);
-        };
+        }
 
         void OnCombatStart(Unit* pTarget)
         {
             _applyAura(DEVOTION_AURA);
             ParentClass::OnCombatStart(pTarget);
-        };
+        }
 
         void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
         {
             DealDamageToFriends(fAmount, _unit->GetEntry());
-        };
+        }
 
         void AddEncounterCreature(Creature* pCreature)
         {
             mEncounterVector.push_back(pCreature);
-        };
+        }
 
         void DealDamageToFriends(uint32 val, uint32 pCreatureEntry)
         {
@@ -3086,18 +3086,18 @@ class GathiosAI : public MoonScriptCreatureAI
                 if ((*itr) && (*itr)->isAlive() && (*itr)->GetEntry() != pCreatureEntry)
                 {
                     (*itr)->DealDamage((*itr), val, 0, 0, 0);
-                };
-            };
+                }
+            }
 
             if (isAlive() && _unit->GetEntry() != pCreatureEntry)
                 _unit->DealDamage(_unit, val, 0, 0, 0);
-        };
+        }
 
         void Destroy()
         {
             mEncounterVector.clear();
             delete this;
-        };
+        }
 
     private:
         EncounterVector mEncounterVector;
@@ -3128,12 +3128,12 @@ class VerasAI : public MoonScriptCreatureAI
             pGethois = static_cast< GathiosAI* >(GetNearestCreature(CN_GATHIOS_THE_SHATTERER));
             if (pGethois != NULL)
                 pGethois->AddEncounterCreature(_unit);
-        };
+        }
 
         void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
         {
             pGethois->DealDamageToFriends(fAmount, _unit->GetEntry());
-        };
+        }
 
         GathiosAI* pGethois;
 };
@@ -3167,12 +3167,12 @@ class ZerevorAI : public MoonScriptCreatureAI
             pGethois = static_cast< GathiosAI* >(GetNearestCreature(CN_GATHIOS_THE_SHATTERER));
             if (pGethois != NULL)
                 pGethois->AddEncounterCreature(_unit);
-        };
+        }
 
         void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
         {
             pGethois->DealDamageToFriends(fAmount, _unit->GetEntry());
-        };
+        }
 
         GathiosAI* pGethois;
 };
@@ -3205,13 +3205,13 @@ class MalandeAI : public MoonScriptCreatureAI
             pGethois = static_cast< GathiosAI* >(GetNearestCreature(CN_GATHIOS_THE_SHATTERER));
             if (pGethois != NULL)
                 pGethois->AddEncounterCreature(_unit);
-        };
+        }
 
         void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
         {
             if (pGethois != NULL)
                 pGethois->DealDamageToFriends(fAmount, _unit->GetEntry());
-        };
+        }
 
         GathiosAI* pGethois;
 };
