@@ -30,12 +30,6 @@
 class GundrakScript : public MoonInstanceScript
 {
     public:
-        uint32        mSkadranGUID;
-        uint32        mColossusGUID;
-        uint32        mMoorabiGUID;
-        uint32        mEckGUID;
-        uint32        mGalDarahGUID;
-
         uint32        mSladranAltarGUID;
         uint32        mSladranStatueGUID;
         uint32        mColossusAltarGUID;
@@ -57,12 +51,6 @@ class GundrakScript : public MoonInstanceScript
         MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(GundrakScript, MoonInstanceScript);
         GundrakScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
         {
-            mSkadranGUID = 0;
-            mColossusGUID = 0;
-            mMoorabiGUID = 0;
-            mEckGUID = 0;
-            mGalDarahGUID = 0;
-
             mSladranAltarGUID = 0;
             mSladranStatueGUID = 0;
             mColossusAltarGUID = 0;
@@ -80,47 +68,7 @@ class GundrakScript : public MoonInstanceScript
             mDoor2GUID = 0;
 
             mStatueCount = 0;
-        };
-
-        void OnCreaturePushToWorld(Creature* pCreature)
-        {
-            switch (pCreature->GetEntry())
-            {
-                case CN_SLADRAN:
-                {
-                    mSkadranGUID = pCreature->GetLowGUID();
-                    mEncounters.insert(EncounterMap::value_type(CN_SLADRAN, BossData(0, mSkadranGUID)));
-                }
-                break;
-                case CN_MOORABI:
-                {
-                    mMoorabiGUID = pCreature->GetLowGUID();
-                    mEncounters.insert(EncounterMap::value_type(CN_MOORABI, BossData(0, mMoorabiGUID)));
-                }
-                break;
-                case CN_GAL_DARAH:
-                {
-                    mGalDarahGUID = pCreature->GetLowGUID();
-                    mEncounters.insert(EncounterMap::value_type(CN_GAL_DARAH, BossData(0, mGalDarahGUID)));
-                }
-                break;
-                case CN_DRAKKARI_COLOSSUS:
-                {
-                    mColossusGUID = pCreature->GetLowGUID();
-                    mEncounters.insert(EncounterMap::value_type(CN_DRAKKARI_COLOSSUS, BossData(0, mColossusGUID)));
-                }
-                break;
-                case CN_ECK:
-                {
-                    if (mInstance->iInstanceMode == MODE_HEROIC)
-                    {
-                        mEckGUID = pCreature->GetLowGUID();
-                        mEncounters.insert(EncounterMap::value_type(CN_ECK, BossData(0, mEckGUID)));
-                    };
-                }
-                break;
-            };
-        };
+        }
 
         void OnGameObjectPushToWorld(GameObject* pGameObject)
         {
@@ -197,7 +145,7 @@ class GundrakScript : public MoonInstanceScript
                     mCombatDoorsGUID = pGameObject->GetLowGUID();
                     break;
             }
-        };
+        }
 
         void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer)
         {
@@ -233,7 +181,7 @@ class GundrakScript : public MoonInstanceScript
                     mStatueCount++;
                 }
                 break;
-            };
+            }
 
             if (mStatueCount < 3)
                 return;
@@ -248,20 +196,12 @@ class GundrakScript : public MoonInstanceScript
 
         void OnCreatureDeath(Creature* pVictim, Unit* pKiller)
         {
-            EncounterMap::iterator Iter = mEncounters.find(pVictim->GetEntry());
-            if (Iter == mEncounters.end())
-                return;
-
-            (*Iter).second.mState = State_Finished;
-
             GameObject* pDoors = NULL;
             GameObject* pAltar = NULL;
             switch (pVictim->GetEntry())
             {
                 case CN_MOORABI:
                 {
-                    setData(CN_MOORABI, Finished);
-
                     pAltar = GetGameObjectByGuid(mMoorabiAltarGUID);
                     if (pAltar)
                         pAltar->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
@@ -276,8 +216,6 @@ class GundrakScript : public MoonInstanceScript
                 break;
                 case CN_GAL_DARAH:
                 {
-                    setData(CN_GAL_DARAH, Finished);
-
                     pDoors = GetGameObjectByGuid(mDoor1GUID);
                     if (pDoors)
                         pDoors->SetState(GO_STATE_OPEN);
@@ -289,8 +227,6 @@ class GundrakScript : public MoonInstanceScript
                 break;
                 case CN_SLADRAN:
                 {
-                    setData(CN_SLADRAN, Finished);
-
                     pAltar = GetGameObjectByGuid(mSladranAltarGUID);
                     if (pAltar)
                         pAltar->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
@@ -298,16 +234,9 @@ class GundrakScript : public MoonInstanceScript
                 break;
                 case CN_DRAKKARI_COLOSSUS:
                 {
-                    setData(CN_DRAKKARI_COLOSSUS, Finished);
-
                     pAltar = GetGameObjectByGuid(mColossusAltarGUID);
                     if (pAltar)
                         pAltar->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
-                }
-                break;
-                case CN_ECK:
-                {
-                    setData(CN_ECK, Finished);
                 }
                 break;
             }

@@ -26,11 +26,6 @@
 class HallsOfLightningScript : public MoonInstanceScript
 {
     public:
-        uint32        mGeneralGUID;
-        uint32        mVolkhanGUID;
-        uint32        mLokenGUID;
-        uint32        mIonarGUID;
-
         uint32        mGeneralDoorsGUID;
         uint32        mVolkhanDoorsGUID;
         uint32        mLokenDoorsGUID;
@@ -40,47 +35,11 @@ class HallsOfLightningScript : public MoonInstanceScript
         MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(HallsOfLightningScript, MoonInstanceScript);
         HallsOfLightningScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
         {
-            mGeneralGUID = 0;
-            mVolkhanGUID = 0;
-            mLokenGUID = 0;
-            mIonarGUID = 0;
-
             mGeneralDoorsGUID = 0;
             mVolkhanDoorsGUID = 0;
             mLokenDoorsGUID = 0;
             mIonarDoors1GUID = 0;
             mIonarDoors2GUID = 0;
-        }
-
-        void OnCreaturePushToWorld(Creature* pCreature)
-        {
-            switch (pCreature->GetEntry())
-            {
-                case CN_GENERAL_BJARNGRIM:
-                {
-                    mGeneralGUID = pCreature->GetLowGUID();
-                    mEncounters.insert(EncounterMap::value_type(CN_GENERAL_BJARNGRIM, BossData(0, mGeneralGUID)));
-                }
-                break;
-                case CN_VOLKHAN:
-                {
-                    mVolkhanGUID = pCreature->GetLowGUID();
-                    mEncounters.insert(EncounterMap::value_type(CN_VOLKHAN, BossData(0, mVolkhanGUID)));
-                }
-                break;
-                case CN_LOKEN:
-                {
-                    mLokenGUID = pCreature->GetLowGUID();
-                    mEncounters.insert(EncounterMap::value_type(CN_LOKEN, BossData(0, mLokenGUID)));
-                }
-                break;
-                case CN_IONAR:
-                {
-                    mIonarGUID = pCreature->GetLowGUID();
-                    mEncounters.insert(EncounterMap::value_type(CN_IONAR, BossData(0, mIonarGUID)));
-                }
-                break;
-            }
         }
 
         void OnGameObjectPushToWorld(GameObject* pGameObject)
@@ -109,18 +68,11 @@ class HallsOfLightningScript : public MoonInstanceScript
 
         void OnCreatureDeath(Creature* pVictim, Unit* pKiller)
         {
-            EncounterMap::iterator Iter = mEncounters.find(pVictim->GetEntry());
-            if (Iter == mEncounters.end())
-                return;
-
-            (*Iter).second.mState = State_Finished;
-
             GameObject* pDoors = NULL;
             switch (pVictim->GetEntry())
             {
                 case CN_GENERAL_BJARNGRIM:
                 {
-                    setData(CN_GENERAL_BJARNGRIM, Finished);
                     pDoors = GetGameObjectByGuid(mGeneralDoorsGUID);
                     if (pDoors)
                         pDoors->SetState(GO_STATE_OPEN);
@@ -128,7 +80,6 @@ class HallsOfLightningScript : public MoonInstanceScript
                 break;
                 case CN_VOLKHAN:
                 {
-                    setData(CN_VOLKHAN, Finished);
                     pDoors = GetGameObjectByGuid(mVolkhanDoorsGUID);
                     if (pDoors)
                         pDoors->SetState(GO_STATE_OPEN);
@@ -136,7 +87,6 @@ class HallsOfLightningScript : public MoonInstanceScript
                 break;
                 case CN_LOKEN:
                 {
-                    setData(CN_LOKEN, Finished);
                     pDoors = GetGameObjectByGuid(mLokenDoorsGUID);
                     if (pDoors)
                         pDoors->SetState(GO_STATE_OPEN);
@@ -144,7 +94,6 @@ class HallsOfLightningScript : public MoonInstanceScript
                 break;
                 case CN_IONAR:
                 {
-                    setData(CN_IONAR, Finished);
                     pDoors = GetGameObjectByGuid(mIonarDoors1GUID);
                     if (pDoors)
                         pDoors->SetState(GO_STATE_OPEN);

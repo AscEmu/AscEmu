@@ -4723,7 +4723,12 @@ void AIInterface::EventUnitDied(Unit* pUnit, uint32 misc1)
 
     CALL_SCRIPT_EVENT(m_Unit, OnDied)(pUnit);
     if (m_Unit->IsCreature())
+    {
         CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), OnCreatureDeath)(static_cast<Creature*>(m_Unit), pUnit);
+
+        // set encounter state to finished
+        CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(static_cast<Creature*>(m_Unit)->GetEntry(), 2);    //2 = Finished
+    }
 
     setAiState(AI_STATE_IDLE);
 

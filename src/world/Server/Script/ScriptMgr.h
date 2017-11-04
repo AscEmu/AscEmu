@@ -563,10 +563,6 @@ class SERVER_DECL InstanceScript
         virtual void OnAreaTrigger(Player* /*pPlayer*/, uint32 /*pAreaId*/) {};
         virtual void OnZoneChange(Player* /*pPlayer*/, uint32 /*pNewZone*/, uint32 /*pOldZone*/) {};
 
-        // Data get / set - idea taken from ScriptDev2
-        //virtual void SetInstanceData(uint32 /*pType*/, uint32 /*pIndex*/, uint32 /*pData*/) {};
-        //virtual uint32 GetInstanceData(uint32 /*pType*/, uint32 /*pIndex*/) { return 0; };
-
         // Creature / GameObject - part of it is simple reimplementation for easier use Creature / GO < --- > Script
         virtual void OnCreatureDeath(Creature* /*pVictim*/, Unit* /*pKiller*/) {};
         virtual void OnCreaturePushToWorld(Creature* /*pCreature*/) {};
@@ -591,6 +587,7 @@ class SERVER_DECL InstanceScript
         // data
 
         void addData(uint32_t data, uint32_t state = NotStarted);
+
         void setData(uint32_t data, uint32_t state);
         uint32_t getData(uint32_t data);
         bool isDataStateFinished(uint32_t data);
@@ -601,6 +598,7 @@ class SERVER_DECL InstanceScript
         //////////////////////////////////////////////////////////////////////////////////////////
         // encounters
 
+        // called for all initialized instancescripts!
         void generateBossDataState();
         void sendUnitEncounter(uint32_t type, Unit* unit = nullptr, uint8_t value_a = 0, uint8_t value_b = 0);
 

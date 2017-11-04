@@ -12,15 +12,9 @@ This file is released under the MIT license. See README-MIT for more information
 //
 //    IsleOfConquest(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
 //    {
-//        generateBossDataState();
 //    }
 //
 //    static InstanceScript* Create(MapMgr* pMapMgr) { return new IsleOfConquest(pMapMgr); }
-//
-//    void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
-//    {
-//        setData(pCreature->GetEntry(), Finished);
-//    }
 //};
 //
 //

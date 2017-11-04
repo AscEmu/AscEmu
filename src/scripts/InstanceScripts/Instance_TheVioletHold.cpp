@@ -44,6 +44,8 @@ class TheVioletHoldScript : public MoonInstanceScript
             for (uint8 i = 0; i < TVH_END; ++i)
                 m_phaseData[i] = State_NotStarted;
 
+            addData(MAP_VIOLET_HOLD);
+
             this->RegisterUpdateEvent(1000);
         }
 
@@ -52,7 +54,7 @@ class TheVioletHoldScript : public MoonInstanceScript
             // Call original update function to elapse timers
             MoonInstanceScript::UpdateEvent();
 
-            auto state = GetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD);
+            auto state = getData(MAP_VIOLET_HOLD);
 
             if (state != m_lastState)
             {
@@ -217,45 +219,6 @@ class TheVioletHoldScript : public MoonInstanceScript
             }
         }
 
-        uint32 GetInstanceData(uint32 pType, uint32 pIndex)
-        {
-            if (pType != Data_EncounterState || pIndex == 0)
-                return 0;
-
-            EncounterMap::iterator Iter = mEncounters.find(pIndex);
-            if (Iter == mEncounters.end())
-                return 0;
-
-            return (*Iter).second.mState;
-        }
-
-        /*
-        void SetData(uint32 pIndex, uint32 pData)
-        {
-            if (pIndex >= TVH_END)
-                return;
-
-            // If Data = MainEvent, set state "PreProgress". Gossip Sinclar 1 + 2
-            if (pIndex == TVH_PHASE_1)
-                mInstance->GetWorldStatesHandler().SetWorldStateForZone(0, AREA_VIOLET_HOLD, WORLDSTATE_VH, State_PreProgress);
-
-            // If Data = second event, set state "InProgress". Gossip Sinclari Case 3
-            if (pIndex == TVH_PHASE_2)
-                mInstance->GetWorldStatesHandler().SetWorldStateForZone(0, AREA_VIOLET_HOLD, WORLDSTATE_VH, State_InProgress);
-
-            m_phaseData[pIndex] = pData;
-        }
-
-        uint32 GetData(uint32 pIndex)
-        {
-            // If Phase = End/finishes, reset the Phases to 0
-            if (pIndex >= TVH_END)
-                return 0;
-
-            return m_phaseData[pIndex];
-        }
-        */
-
         void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer)
         {
 
@@ -267,9 +230,9 @@ class TheVioletHoldScript : public MoonInstanceScript
             if (!pInstance)
                 return;
 
-            if (pInstance->GetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD) == State_NotStarted)
+            if (pInstance->getData(MAP_VIOLET_HOLD) == NotStarted)
             {
-                mEncounters.insert(EncounterMap::value_type(MAP_VIOLET_HOLD, State_NotStarted));
+                setData(MAP_VIOLET_HOLD, PreProgress);
             }
 
         }

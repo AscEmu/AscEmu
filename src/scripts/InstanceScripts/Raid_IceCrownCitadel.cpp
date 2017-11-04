@@ -86,8 +86,6 @@ class IceCrownCitadelScript : public MoonInstanceScript
 
         void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
         {
-            setData(pCreature->GetEntry(), Finished);
-
             switch (pCreature->GetEntry())
             {
                 case CN_LORD_MARROWGAR:
@@ -99,7 +97,6 @@ class IceCrownCitadelScript : public MoonInstanceScript
                 default:
                     break;
             }
-            return;
         }
 
         void OnPlayerEnter(Player* player)

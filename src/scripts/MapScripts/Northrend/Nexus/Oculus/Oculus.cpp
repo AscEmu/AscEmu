@@ -12,15 +12,9 @@ public:
 
     Oculus(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
-        generateBossDataState();
     }
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new Oculus(pMapMgr); }
-
-    void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
-    {
-        setData(pCreature->GetEntry(), Finished);
-    }
 };
 
 

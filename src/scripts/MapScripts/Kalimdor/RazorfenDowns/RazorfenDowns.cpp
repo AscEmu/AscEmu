@@ -13,15 +13,9 @@ public:
 
     RazorfenDowns(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
-        generateBossDataState();
     }
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new RazorfenDowns(pMapMgr); }
-
-    void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
-    {
-        setData(pCreature->GetEntry(), Finished);
-    }
 };
 
 

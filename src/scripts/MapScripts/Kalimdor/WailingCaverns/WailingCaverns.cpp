@@ -13,15 +13,9 @@ public:
 
     WailingCaverns(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
-        generateBossDataState();
     }
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new WailingCaverns(pMapMgr); }
-
-    void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
-    {
-        setData(pCreature->GetEntry(), Finished);
-    }
 };
 
 

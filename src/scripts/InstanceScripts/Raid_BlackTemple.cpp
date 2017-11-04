@@ -39,8 +39,6 @@ class BlackTempleScript : public MoonInstanceScript
 
         void OnCreatureDeath(Creature* pVictim, Unit* pKiller)
         {
-            setData(pVictim->GetEntry(), Finished);
-
             // You don't have to use additional scripts to open any gates / doors
             switch (pVictim->GetEntry())
             {

@@ -12,15 +12,9 @@ public:
 
     IceCrownCitadel(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
-        generateBossDataState();
     }
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new IceCrownCitadel(pMapMgr); }
-
-    void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
-    {
-        setData(pCreature->GetEntry(), Finished);
-    }
 };
 
 class ICCTeleporterGossip : public Arcemu::Gossip::Script

@@ -13,15 +13,9 @@ public:
 
     ScarletEnclave(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
     {
-        generateBossDataState();
     }
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new ScarletEnclave(pMapMgr); }
-
-    void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
-    {
-        setData(pCreature->GetEntry(), Finished);
-    }
 };
 
 

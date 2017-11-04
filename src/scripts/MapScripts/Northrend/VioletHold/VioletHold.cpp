@@ -17,11 +17,6 @@ public:
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new VioletHold(pMapMgr); }
 
-    void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
-    {
-        setData(pCreature->GetEntry(), Finished);
-    }
-
     void OnPlayerEnter(Player* player)
     {
         player->BroadcastMessage("Welcome to %s", mInstance->GetMapInfo()->name.c_str());
