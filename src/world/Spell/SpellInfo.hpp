@@ -261,7 +261,7 @@ public:
 
     float getEffectRealPointsPerLevel(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         return EffectRealPointsPerLevel[idx];
     }
 
@@ -273,169 +273,169 @@ public:
 
     int32_t getEffectBasePoints(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         return EffectBasePoints[idx];
     }
 
     void setEffectBasePoints(int32_t pointsPerLevel, uint8_t idx)               // used in HackFixes.cpp / SpellCustomizations.cpp / ObjectMgr.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         EffectBasePoints[idx] = pointsPerLevel;
     }
 
     int32_t getEffectMechanic(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         return EffectMechanic[idx];
     }
 
     void setEffectMechanic(int32_t mechanic, uint8_t idx)                       // used in HackFixes.cpp / SpellCustomizations.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         EffectMechanic[idx] = mechanic;
     }
 
     uint32_t getEffectImplicitTargetA(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         return EffectImplicitTargetA[idx];
     }
 
     void setEffectImplicitTargetA(uint32_t targetA, uint8_t idx)                // used in HackFixes.cpp / SpellCustomizations.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         EffectImplicitTargetA[idx] = targetA;
     }
 
     uint32_t getEffectImplicitTargetB(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         return EffectImplicitTargetB[idx];
     }
 
     void setEffectImplicitTargetB(uint32_t targetB, uint8_t idx)                // used in HackFixes.cpp / SpellCustomizations.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         EffectImplicitTargetB[idx] = targetB;
     }
 
     uint32_t getEffectRadiusIndex(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         return EffectRadiusIndex[idx];
     }
 
     void setEffectRadiusIndex(uint32_t radiusIndex, uint8_t idx)                // used in HackFixes.cpp / SpellCustomizations.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         EffectRadiusIndex[idx] = radiusIndex;
     }
 
     uint32_t getEffectApplyAuraName(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         return EffectApplyAuraName[idx];
     }
 
     void setEffectApplyAuraName(uint32_t auraName, uint8_t idx)                 // used in HackFixes.cpp / SpellCustomizations.cpp / ObjectMgr.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         EffectApplyAuraName[idx] = auraName;
     }
 
     uint32_t getEffectAmplitude(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         return EffectAmplitude[idx];
     }
 
     void setEffectAmplitude(uint32_t amplitude, uint8_t idx)                    // used in HackFixes.cpp / SpellCustomizations.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         EffectAmplitude[idx] = amplitude;
     }
 
     float getEffectMultipleValue(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         return EffectMultipleValue[idx];
     }
 
     void setEffectMultipleValue(float multiply, uint8_t idx)                   // used in HackFixes.cpp / SpellCustomizations.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         EffectMultipleValue[idx] = multiply;
     }
 
     uint32_t getEffectChainTarget(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         return EffectChainTarget[idx];
     }
 
     void setEffectChainTarget(uint32_t chainTarget, uint8_t idx)                // used in HackFixes.cpp / SpellCustomizations.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         EffectChainTarget[idx] = chainTarget;
     }
 
     uint32_t getEffectItemType(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         return EffectItemType[idx];
     }
 
     void setEffectItemType(uint32_t itemEntryId, uint8_t idx)                   // used in SpellCustomizations.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         EffectItemType[idx] = itemEntryId;
     }
 
     int32_t getEffectMiscValue(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         return EffectMiscValue[idx];
     }
 
     void setEffectMiscValue(int32_t misc, uint8_t idx)                          // used in HackFixes.cpp / SpellCustomizations.cpp / ObjectMgr.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         EffectMiscValue[idx] = misc;
     }
 
     int32_t getEffectMiscValueB(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         return EffectMiscValueB[idx];
     }
 
     void setEffectMiscValueB(int32_t miscB, uint8_t idx)                        // used in SpellCustomizations.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         EffectMiscValueB[idx] = miscB;
     }
 
     uint32_t getEffectTriggerSpell(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         return EffectTriggerSpell[idx];
     }
 
     void setEffectTriggerSpell(uint32_t spell, uint8_t idx)                     // used in SpellCustomizations.cpp / ObjectMgr.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         EffectTriggerSpell[idx] = spell;
     }
 
     float getEffectPointsPerComboPoint(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         return EffectPointsPerComboPoint[idx];
     }
 
     void setEffectPointsPerComboPoint(float effectPoints, uint8_t idx)          // used in HackFixes.cpp / SpellCustomizations.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         EffectPointsPerComboPoint[idx] = effectPoints;
     }
 
@@ -478,7 +478,7 @@ public:
     uint32_t getSpellFamilyName() const { return SpellFamilyName; }
     void setSpellFamilyName(uint32_t value) { SpellFamilyName = value; }        // used in HackFixes.cpp / SpellCustomizations.cpp
 
-    uint32_t getSpellGroupType(int idx) const
+    uint32_t getSpellGroupType(uint8_t idx) const
     {
         ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
         return SpellGroupType[idx];
@@ -489,7 +489,7 @@ public:
         return SpellGroupType;
     }
 
-    void setSpellGroupType(uint32_t value, int idx)                             // used in HackFixes.cpp / SpellCustomizations.cpp
+    void setSpellGroupType(uint32_t value, uint8_t idx)                             // used in HackFixes.cpp / SpellCustomizations.cpp
     {
         ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
         SpellGroupType[idx] = value;
@@ -504,27 +504,27 @@ public:
     uint32_t getPreventionType() const { return PreventionType; }
     void setPreventionType(uint32_t value) { PreventionType = value; }        // used in SpellCustomizations.cpp
 
-    float getDmg_multiplier(int idx) const
+    float getDmg_multiplier(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         return dmg_multiplier[idx];
     }
 
-    void setDmg_multiplier(float dmgMultiplier, int idx)                       // used in HackFixes.cpp / SpellCustomizations.cpp
+    void setDmg_multiplier(float dmgMultiplier, uint8_t idx)                       // used in HackFixes.cpp / SpellCustomizations.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         dmg_multiplier[idx] = dmgMultiplier;
     }
 
-    uint32_t getTotemCategory(int idx) const
+    uint32_t getTotemCategory(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_TOTEM_CATEGORIES && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_TOTEM_CATEGORIES);
         return TotemCategory[idx];
     }
 
-    void setTotemCategory(uint32_t category, int idx)                           // used in SpellCustomizations.cpp
+    void setTotemCategory(uint32_t category, uint8_t idx)                           // used in SpellCustomizations.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_TOTEM_CATEGORIES && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_TOTEM_CATEGORIES);
         TotemCategory[idx] = category;
     }
 
@@ -547,21 +547,21 @@ public:
     uint32_t getRequiredItemFlags() const { return RequiredItemFlags; }
     void setRequiredItemFlags(uint32_t value) { RequiredItemFlags = value; }    // used in SpellCustomizations.cpp
 
-    uint32_t getEffectSpellClassMask(int idx1, int idx2) const
+    uint32_t getEffectSpellClassMask(uint8_t idx1, uint8_t idx2) const
     {
-        ARCEMU_ASSERT(idx1 < 3 && idx1 >= 0 && idx2 < 3 && idx2 >= 0);
+        ARCEMU_ASSERT(idx1 < MAX_SPELL_EFFECTS && idx2 < MAX_SPELL_EFFECTS);
         return EffectSpellClassMask[idx1][idx2];
     }
 
-    uint32_t* getEffectSpellClassMask(int idx1)
+    uint32_t* getEffectSpellClassMask(uint8_t idx1)
     {
-        ARCEMU_ASSERT(idx1 < 3 && idx1 >= 0);
+        ARCEMU_ASSERT(idx1 < MAX_SPELL_EFFECTS);
         return EffectSpellClassMask[idx1];
     }
 
-    void setEffectSpellClassMask(uint32_t spellClass, int idx1, int idx2)           // used in HackFixes.cpp / SpellCustomizations.cpp
+    void setEffectSpellClassMask(uint32_t spellClass, uint8_t idx1, uint8_t idx2)           // used in HackFixes.cpp / SpellCustomizations.cpp
     {
-        ARCEMU_ASSERT(idx1 < 3 && idx1 >= 0 && idx2 < 3 && idx2 >= 0);
+        ARCEMU_ASSERT(idx1 < MAX_SPELL_EFFECTS && idx2 < MAX_SPELL_EFFECTS);
         EffectSpellClassMask[idx1][idx2] = spellClass;
     }
 
@@ -606,9 +606,9 @@ public:
     uint32_t getCustom_SchoolMask() const { return custom_SchoolMask; }
     uint32_t getCustomFlags() const { return CustomFlags; }
 
-    uint32_t getEffectCustomFlag(int idx) const
+    uint32_t getEffectCustomFlag(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         return EffectCustomFlag[idx];
     }
 
