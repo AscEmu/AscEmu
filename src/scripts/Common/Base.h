@@ -44,16 +44,6 @@ enum EventType
     Event_OnTaunt
 };
 
-enum BehaviorType
-{
-    Behavior_Default,
-    Behavior_Melee,
-    Behavior_Ranged,
-    Behavior_Spell,
-    Behavior_Flee,
-    Behavior_CallForHelp
-};
-
 struct EmoteDesc
 {
     EmoteDesc(const char* pText, uint8 pType, uint32 pSoundId)
@@ -278,10 +268,6 @@ class MoonScriptCreatureAI : public CreatureAIScript
 
         //Movement
         void MoveTo(Unit* pUnit, RangeStatusPair pRangeStatus = std::make_pair(RangeStatus_TooFar, 0.0f));
-
-        //Behavior
-        void SetBehavior(BehaviorType pBehavior);
-        BehaviorType GetBehavior();
         
         void AggroNearestUnit(uint32 pInitialThreat = 1);
         void AggroRandomUnit(uint32 pInitialThreat = 1);
@@ -315,18 +301,6 @@ class MoonScriptCreatureAI : public CreatureAIScript
         void RemoveAllEvents();
         bool HasEvents() { return mEventCount > 0 ? true : false; }
         uint32 GetEventCount() { return mEventCount; }
-
-        //Waypoints
-        Movement::WayPoint* CreateWaypoint(int pId, uint32 pWaittime, uint32 pMoveFlag, Movement::Location pCoords);
-        Movement::WayPoint* CreateWaypoint(int pId, uint32 pWaittime, Movement::LocationWithFlag wp_info);
-        void AddWaypoint(Movement::WayPoint* pWayPoint);
-        void ForceWaypointMove(uint32 pWaypointId);
-        void SetWaypointToMove(uint32 pWaypointId);
-        void StopWaypointMovement();
-        void SetWaypointMoveType(Movement::WaypointMovementScript wp_move_script_type);
-        uint32 GetCurrentWaypoint();
-        size_t GetWaypointCount();
-        bool HasWaypoints();
 
         //Others
         void SetTargetToChannel(Unit* pTarget, uint32 pSpellId);

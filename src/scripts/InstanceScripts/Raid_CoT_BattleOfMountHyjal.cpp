@@ -286,7 +286,7 @@ class RageWinterchillAI : public CreatureAIScript
 
         void OnCombatStop(Unit* mTarget)
         {
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
             RemoveAIUpdateEvent();
@@ -507,7 +507,7 @@ class AnetheronAI : public CreatureAIScript
 
         void OnCombatStop(Unit* mTarget)
         {
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
             RemoveAIUpdateEvent();
@@ -732,7 +732,7 @@ class KazrogalAI : public CreatureAIScript
 
         void OnCombatStop(Unit* mTarget)
         {
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
             RemoveAIUpdateEvent();
@@ -973,7 +973,7 @@ class AzgalorAI : public CreatureAIScript
 
         void OnCombatStop(Unit* mTarget)
         {
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
             RemoveAIUpdateEvent();
@@ -1423,7 +1423,7 @@ class ArchimondeAI : public CreatureAIScript
 
         void OnCombatStop(Unit* mTarget)
         {
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
             if (Trigger && Trigger->IsInWorld() && _unit->isAlive())
@@ -1446,7 +1446,7 @@ class ArchimondeAI : public CreatureAIScript
 
         void AIUpdate()
         {
-            //_unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            //setAIAgent(AGENT_NULL);
 
             uint32 t = (uint32)time(NULL);
             if (t > spells[3].casttime && _unit->GetCurrentSpell() == NULL)
@@ -1467,7 +1467,7 @@ class ArchimondeAI : public CreatureAIScript
                     {
                         if (FingerOfDeath())
                         {
-                            _unit->GetAIInterface()->setCurrentAgent(AGENT_SPELL);
+                            setAIAgent(AGENT_SPELL);
                             _unit->GetAIInterface()->StopMovement(2000);
 
                             if (_unit->GetCurrentSpell() == NULL)

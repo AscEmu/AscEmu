@@ -55,7 +55,7 @@ class ThekaAI : public CreatureAIScript
 
         void OnCombatStop(Unit* mTarget)
         {
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             morphcheck = false;
             plaguecount = 0;
@@ -175,7 +175,7 @@ class AntusulAI : public CreatureAIScript
             spawns = spawns2 = attack = firstspawn = secondspawn = false;
 
             secondspawncount = 0;
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
             resettrigger();

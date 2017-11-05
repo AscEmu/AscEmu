@@ -587,6 +587,17 @@ bool CreatureAIScript::isAlive()
     return _unit->isAlive();
 }
 
+void CreatureAIScript::setAIAgent(AI_Agent agent)
+{
+    if (agent <= AGENT_CALLFORHELP)
+        _unit->GetAIInterface()->setCurrentAgent(agent);
+}
+
+uint8_t CreatureAIScript::getAIAgent()
+{
+    return _unit->GetAIInterface()->getCurrentAgent();
+}
+
 void CreatureAIScript::setRooted(bool set)
 {
     _unit->setMoveRoot(set);
@@ -634,6 +645,100 @@ void CreatureAIScript::moveToSpawn()
 void CreatureAIScript::stopMovement()
 {
     _unit->GetAIInterface()->StopMovement(0);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// wp movement
+
+Movement::WayPoint* CreatureAIScript::CreateWaypoint(int pId, uint32 pWaittime, uint32 pMoveFlag, Movement::Location pCoords)
+{
+    Movement::WayPoint* wp = _unit->CreateWaypointStruct();
+    wp->id = pId;
+    wp->x = pCoords.x;
+    wp->y = pCoords.y;
+    wp->z = pCoords.z;
+    wp->o = pCoords.o;
+    wp->waittime = pWaittime;
+    wp->flags = pMoveFlag;
+    wp->forwardemoteoneshot = false;
+    wp->forwardemoteid = 0;
+    wp->backwardemoteoneshot = false;
+    wp->backwardemoteid = 0;
+    wp->forwardskinid = 0;
+    wp->backwardskinid = 0;
+    return wp;
+}
+
+Movement::WayPoint* CreatureAIScript::CreateWaypoint(int pId, uint32 pWaittime, Movement::LocationWithFlag wp_info)
+{
+    Movement::WayPoint* wp = _unit->CreateWaypointStruct();
+    wp->id = pId;
+    wp->x = wp_info.wp_location.x;
+    wp->y = wp_info.wp_location.y;
+    wp->z = wp_info.wp_location.z;
+    wp->o = wp_info.wp_location.o;
+    wp->waittime = pWaittime;
+    wp->flags = wp_info.wp_flag;
+    wp->forwardemoteoneshot = false;
+    wp->forwardemoteid = 0;
+    wp->backwardemoteoneshot = false;
+    wp->backwardemoteid = 0;
+    wp->forwardskinid = 0;
+    wp->backwardskinid = 0;
+    return wp;
+}
+
+void CreatureAIScript::AddWaypoint(Movement::WayPoint* pWayPoint)
+{
+    _unit->GetAIInterface()->addWayPoint(pWayPoint);
+}
+
+void CreatureAIScript::ForceWaypointMove(uint32 pWaypointId)
+{
+    if (canEnterCombat())
+        _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
+
+    if (isRooted())
+        setRooted(false);
+
+    stopMovement();
+    _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
+    SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+    SetWaypointToMove(pWaypointId);
+}
+
+void CreatureAIScript::SetWaypointToMove(uint32 pWaypointId)
+{
+    _unit->GetAIInterface()->setWayPointToMove(pWaypointId);
+}
+
+void CreatureAIScript::StopWaypointMovement()
+{
+    setAIAgent(AGENT_NULL);
+    _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
+    SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+    SetWaypointToMove(0);
+}
+
+void CreatureAIScript::SetWaypointMoveType(Movement::WaypointMovementScript wp_move_script_type)
+{
+    _unit->GetAIInterface()->setWaypointScriptType(wp_move_script_type);
+
+}
+
+uint32 CreatureAIScript::GetCurrentWaypoint()
+{
+    return _unit->GetAIInterface()->getCurrentWayPointId();
+}
+
+size_t CreatureAIScript::GetWaypointCount()
+{
+    return _unit->GetAIInterface()->getWayPointsCount();
+}
+
+bool CreatureAIScript::HasWaypoints()
+{
+    return _unit->GetAIInterface()->hasWayPoints();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

@@ -135,7 +135,7 @@ class HighKingMaulgarAI : public MoonScriptBossAI
             if (mAliveAdds > 1)
             {
                 setCanEnterCombat(false);
-                SetBehavior(Behavior_Spell);
+                setAIAgent(AGENT_SPELL);
                 setRooted(true);
             }
         }
@@ -199,7 +199,7 @@ class HighKingMaulgarAI : public MoonScriptBossAI
                 {
                     sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "Good, now you fight me!");
                     setCanEnterCombat(true);
-                    SetBehavior(Behavior_Default);
+                    setAIAgent(AGENT_NULL);
                     setRooted(false);
                 }
             }
@@ -243,7 +243,7 @@ class KigglerTheCrazedAI : public MoonScriptCreatureAI
 
             if (getRangeToObject(pTarget) <= 40.0f)
             {
-                SetBehavior(Behavior_Spell);
+                setAIAgent(AGENT_SPELL);
                 setRooted(true);
             }
         }
@@ -268,7 +268,7 @@ class KigglerTheCrazedAI : public MoonScriptCreatureAI
             {
                 if (getRangeToObject(pTarget) <= 40.0f)
                 {
-                    SetBehavior(Behavior_Spell);
+                    setAIAgent(AGENT_SPELL);
                     setRooted(true);
                 }
             }

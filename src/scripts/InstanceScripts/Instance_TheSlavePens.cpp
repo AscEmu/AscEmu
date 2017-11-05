@@ -71,7 +71,7 @@ class CoilfangChampionAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             CastTime();
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
@@ -186,7 +186,7 @@ class CoilfangObserverAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             CastTime();
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
@@ -305,7 +305,7 @@ class CoilfangDefenderAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             CastTime();
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
@@ -438,7 +438,7 @@ class CoilfangScaleHealerAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             CastTime();
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
@@ -554,7 +554,7 @@ class CoilfangSoothsayerAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             CastTime();
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
@@ -678,7 +678,7 @@ class CoilfangTechnicianAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             CastTime();
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
@@ -793,7 +793,7 @@ class CoilfangRayAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             CastTime();
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
@@ -906,7 +906,7 @@ class TotemsAI : public CreatureAIScript
             if (AIUpdate != 0)
                 RegisterAIUpdateEvent(AIUpdate);
 
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_SPELL);
+            setAIAgent(AGENT_SPELL);
             _unit->Despawn(Despawn, 0);
             _unit->m_noRespawn = true;
 
@@ -1036,7 +1036,7 @@ class MennuTheBetrayerAI : public CreatureAIScript
 
         void OnCombatStop(Unit* mTarget)
         {
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
             RemoveAIUpdateEvent();
@@ -1229,7 +1229,7 @@ class RokmarTheCracklerAI : public CreatureAIScript
 
         void OnCombatStop(Unit* mTarget)
         {
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
             RemoveAIUpdateEvent();
@@ -1414,7 +1414,7 @@ class QuagmirranAI : public CreatureAIScript
 
         void OnCombatStop(Unit* mTarget)
         {
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
             RemoveAIUpdateEvent();

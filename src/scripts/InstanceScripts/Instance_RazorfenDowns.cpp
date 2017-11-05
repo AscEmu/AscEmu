@@ -86,7 +86,7 @@ class AmnennarTheColdbringerAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             CastTime();
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
@@ -245,7 +245,7 @@ class PlaguemawTheRottingAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             CastTime();
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
@@ -369,7 +369,7 @@ class RagglesnoutAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             CastTime();
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
@@ -494,7 +494,7 @@ class TutenKashAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             CastTime();
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }

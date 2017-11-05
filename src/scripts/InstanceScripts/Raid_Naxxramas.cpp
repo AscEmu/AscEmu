@@ -1154,7 +1154,7 @@ void StoneskinGargoyleAI::AIUpdate()
     {
         CastSpellNowNoScheduling(mStoneskin);
         _unit->SetEmoteState(EMOTE_STATE_SUBMERGED_NEW);
-        SetBehavior(Behavior_Spell);
+        setAIAgent(AGENT_SPELL);
         setRooted(true);
         stopMovement();
         return;
@@ -1208,7 +1208,7 @@ EyeStalkerAI::EyeStalkerAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature
 void EyeStalkerAI::OnCombatStart(Unit* pTarget)
 {
     ParentClass::OnCombatStart(pTarget);
-    SetBehavior(Behavior_Spell);
+    setAIAgent(AGENT_SPELL);
     setRooted(true);
     stopMovement();
 };
@@ -1238,7 +1238,7 @@ void EyeStalkerAI::AIUpdate()
     ParentClass::AIUpdate();
 
     // Meh, reset it in case something went wrong
-    SetBehavior(Behavior_Spell);
+    setAIAgent(AGENT_SPELL);
     setRooted(true);
     stopMovement();
 };
@@ -1500,7 +1500,7 @@ void NothThePlaguebringerAI::AIUpdate()
     ParentClass::AIUpdate();
     if (GetPhase() == 2)
     {
-        SetBehavior(Behavior_Spell);
+        setAIAgent(AGENT_SPELL);
         setRooted(true);
         stopMovement();
     }
@@ -1543,7 +1543,7 @@ void SpellFunc_NothToBalconyPhaseSwitch(SpellDesc* pThis, MoonScriptCreatureAI* 
         // Are these coords correct ? Or maybe it should be just disappear / appear thing ? And is this spell correct ? I doubt it ...
         Noth->_applyAura(NOTH_THE_PLAGUEBRINGER_BLINK_HEROIC);
         Noth->GetUnit()->SetPosition(2631.051025f, -3529.595703f, 274.037811f, 0.109163f);
-        Noth->SetBehavior(Behavior_Spell);
+        Noth->setAIAgent(AGENT_SPELL);
         Noth->setRooted(true);
         Noth->stopMovement();
     }
@@ -1554,7 +1554,7 @@ void SpellFunc_NothFromBalconyPhaseSwitch(SpellDesc* pThis, MoonScriptCreatureAI
     NothThePlaguebringerAI* Noth = (pCreatureAI != NULL) ? static_cast< NothThePlaguebringerAI* >(pCreatureAI) : NULL;
     if (Noth != NULL)
     {
-        Noth->SetBehavior(Behavior_Default);
+        Noth->setAIAgent(AGENT_NULL);
         Noth->setRooted(false);
         Noth->_applyAura(NOTH_THE_PLAGUEBRINGER_BLINK_HEROIC);
         Noth->GetUnit()->SetPosition(2684.620850f, -3502.447266f, 261.314880f, 0.098174f);
@@ -1816,7 +1816,7 @@ void HeiganTheUncleanAI::AIUpdate()
             sendChatMessage(CHAT_MSG_MONSTER_YELL, 8833, "The end is uppon you!");
             _unit->SetPosition(2794.235596f, -3707.067627f, 276.545746f, 2.407245f);
             SetTargetToChannel(_unit, HEIGAN_THE_UNCLEAN_PLAGUE_CLOUD_CHANNEL);
-            SetBehavior(Behavior_Spell);
+            setAIAgent(AGENT_SPELL);
             setRooted(true);
             stopMovement();
             SetPhase(2);
@@ -1834,7 +1834,7 @@ void HeiganTheUncleanAI::AIUpdate()
         if (!_isCasting() && _isTimerFinished(mPhaseSwitchTimer))
         {
             SetTargetToChannel(NULL, 0);
-            SetBehavior(Behavior_Default);
+            setAIAgent(AGENT_NULL);
             setRooted(false);
             SetPhase(1);
             _resetTimer(mPhaseSwitchTimer, 90000);
@@ -1848,7 +1848,7 @@ void HeiganTheUncleanAI::AIUpdate()
     ParentClass::AIUpdate();
     if (GetPhase() == 2)
     {
-        SetBehavior(Behavior_Spell);
+        setAIAgent(AGENT_SPELL);
         setRooted(true);
         stopMovement();
     }
@@ -2213,7 +2213,7 @@ PortalOfShadowsAI::PortalOfShadowsAI(Creature* pCreature) : MoonScriptCreatureAI
 
 void PortalOfShadowsAI::OnCombatStart(Unit* pTarget)
 {
-    SetBehavior(Behavior_Spell);
+    setAIAgent(AGENT_SPELL);
     setRooted(true);
     stopMovement();
 };
@@ -2223,7 +2223,7 @@ void PortalOfShadowsAI::OnCombatStop(Unit* pTarget)
     CancelAllSpells();
     _cancelAllTimers();
     setRooted(false);
-    SetBehavior(Behavior_Default);
+    setAIAgent(AGENT_NULL);
 };
 
 void PortalOfShadowsAI::AIUpdate()
@@ -2251,7 +2251,7 @@ void PortalOfShadowsAI::AIUpdate()
     }
 
     ParentClass::AIUpdate();
-    SetBehavior(Behavior_Spell);
+    setAIAgent(AGENT_SPELL);
     setRooted(true);
     stopMovement();
 };
@@ -2642,7 +2642,7 @@ LightningTotemAI::LightningTotemAI(Creature* pCreature) : MoonScriptCreatureAI(p
 void LightningTotemAI::OnCombatStart(Unit* pTarget)
 {
     ParentClass::OnCombatStart(pTarget);
-    SetBehavior(Behavior_Spell);
+    setAIAgent(AGENT_SPELL);
     setRooted(true);
     stopMovement();
 };
@@ -2652,7 +2652,7 @@ void LightningTotemAI::AIUpdate()
     ParentClass::AIUpdate();
 
     // Meh, reset it in case something went wrong
-    SetBehavior(Behavior_Spell);
+    setAIAgent(AGENT_SPELL);
     setRooted(true);
     stopMovement();
 };

@@ -1096,7 +1096,7 @@ class ArugalBossAI : public MoonScriptCreatureAI
             AddEmote(Event_OnCombatStart, YELL_ARUGAL_AGROO);
             AddEmote(Event_OnTargetDied, YELL_ARUGAL_ENEMY_DEATH);
             AddEmote(Event_OnTaunt, YELL_ARUGAL_COMBAT);
-            SetBehavior(Behavior_Spell);
+            setAIAgent(AGENT_SPELL);
 
             aiUpdateOriginal = GetAIUpdateFreq();
             originalRegen = GetUnit()->PctPowerRegenModifier[POWER_TYPE_MANA];
@@ -1112,7 +1112,7 @@ class ArugalBossAI : public MoonScriptCreatureAI
 
         void Reset()
         {
-            SetBehavior(Behavior_Spell);
+            setAIAgent(AGENT_SPELL);
             GetUnit()->GetAIInterface()->setMeleeDisabled(true);
             GetUnit()->PctPowerRegenModifier[POWER_TYPE_MANA] = originalRegen;
         }
@@ -1186,20 +1186,20 @@ class ArugalBossAI : public MoonScriptCreatureAI
             if (_isInCombat())
             {
                 // if mana is out - do melee attacks
-                if (GetUnit()->GetManaPct() <= 10 && GetBehavior() == Behavior_Spell)
+                if (GetUnit()->GetManaPct() <= 10 && getAIAgent() == AGENT_SPELL)
                 {
-                    SetBehavior(Behavior_Melee);
+                    setAIAgent(AGENT_MELEE);
                     GetUnit()->GetAIInterface()->setMeleeDisabled(false);
                 }
                 // boss got mana regenerated
                 else
                 {
-                    SetBehavior(Behavior_Spell);
+                    setAIAgent(AGENT_SPELL);
                     GetUnit()->GetAIInterface()->setMeleeDisabled(true);
                 }
 
                 // Cast void bolt non stop
-                if (GetBehavior() == Behavior_Spell)
+                if (getAIAgent() == AGENT_SPELL)
                 {
                     CastSpellNowNoScheduling(sVoidBolt);
                 }
@@ -1504,9 +1504,9 @@ class WorlfguardWorgAI : public MoonScriptCreatureAI
         void AIUpdate()
         {
             ParentClass::AIUpdate();
-            if (_getHealthPercent() <= 15 && GetBehavior() != Behavior_Flee)
+            if (_getHealthPercent() <= 15 && getAIAgent() != AGENT_FLEE)
             {
-                SetBehavior(Behavior_Flee);
+                setAIAgent(AGENT_FLEE);
             }
         }
 };

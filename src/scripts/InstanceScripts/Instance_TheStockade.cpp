@@ -52,9 +52,9 @@ class DeepfuryAI : public MoonScriptBossAI
 
     void AIUpdate()
     {
-        if (_getHealthPercent() <= 15 && GetBehavior() != Behavior_Flee)
+        if (_getHealthPercent() <= 15 && getAIAgent() != AGENT_FLEE)
         {
-            SetBehavior(Behavior_Flee);
+            setAIAgent(AGENT_FLEE);
             _setMeleeDisabled(false);
             _setRangedDisabled(true);
             _setCastDisabled(true);

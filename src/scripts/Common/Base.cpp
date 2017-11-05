@@ -112,56 +112,6 @@ void MoonScriptCreatureAI::MoveTo(Unit* pUnit, RangeStatusPair pRangeStatus)
         moveTo(pUnit->GetPositionX(), pUnit->GetPositionY(), pUnit->GetPositionZ());
 };
 
-void MoonScriptCreatureAI::SetBehavior(BehaviorType pBehavior)
-{
-    switch (pBehavior)
-    {
-        case Behavior_Default:
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            break;
-        case Behavior_Melee:
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_MELEE);
-            break;
-        case Behavior_Ranged:
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_RANGED);
-            break;
-        case Behavior_Spell:
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_SPELL);
-            break;
-        case Behavior_Flee:
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_FLEE);
-            break;
-        case Behavior_CallForHelp:
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_CALLFORHELP);
-            break;
-        default:
-            LogDebugFlag(LF_SCRIPT_MGR, "MoonScriptCreatureAI::SetBehavior() : Invalid behavior type!");
-            break;
-    }
-}
-
-BehaviorType MoonScriptCreatureAI::GetBehavior()
-{
-    switch (_unit->GetAIInterface()->getCurrentAgent())
-    {
-        case AGENT_NULL:
-            return Behavior_Default;
-        case AGENT_MELEE:
-            return Behavior_Melee;
-        case AGENT_RANGED:
-            return Behavior_Ranged;
-        case AGENT_FLEE:
-            return Behavior_Flee;
-        case AGENT_SPELL:
-            return Behavior_Spell;
-        case AGENT_CALLFORHELP:
-            return Behavior_CallForHelp;
-        default:
-            LogDebugFlag(LF_SCRIPT_MGR, "MoonScriptCreatureAI::SetBehavior() : Invalid behavior type!");
-            return Behavior_Default;
-    }
-}
-
 void MoonScriptCreatureAI::AggroNearestUnit(uint32 pInitialThreat)
 {
     //Pay attention: if this is called before pushing the Creature to world, OnCombatStart will NOT be called.
@@ -479,101 +429,10 @@ uint32 MoonScriptCreatureAI::GetAIUpdateFreq()
     return mAIUpdateFrequency;
 }
 
-Movement::WayPoint* MoonScriptCreatureAI::CreateWaypoint(int pId, uint32 pWaittime, uint32 pMoveFlag, Movement::Location pCoords)
-{
-    Movement::WayPoint* wp = _unit->CreateWaypointStruct();
-    wp->id = pId;
-    wp->x = pCoords.x;
-    wp->y = pCoords.y;
-    wp->z = pCoords.z;
-    wp->o = pCoords.o;
-    wp->waittime = pWaittime;
-    wp->flags = pMoveFlag;
-    wp->forwardemoteoneshot = false;
-    wp->forwardemoteid = 0;
-    wp->backwardemoteoneshot = false;
-    wp->backwardemoteid = 0;
-    wp->forwardskinid = 0;
-    wp->backwardskinid = 0;
-    return wp;
-}
-
-Movement::WayPoint* MoonScriptCreatureAI::CreateWaypoint(int pId, uint32 pWaittime, Movement::LocationWithFlag wp_info)
-{
-    Movement::WayPoint* wp = _unit->CreateWaypointStruct();
-    wp->id = pId;
-    wp->x = wp_info.wp_location.x;
-    wp->y = wp_info.wp_location.y;
-    wp->z = wp_info.wp_location.z;
-    wp->o = wp_info.wp_location.o;
-    wp->waittime = pWaittime;
-    wp->flags = wp_info.wp_flag;
-    wp->forwardemoteoneshot = false;
-    wp->forwardemoteid = 0;
-    wp->backwardemoteoneshot = false;
-    wp->backwardemoteid = 0;
-    wp->forwardskinid = 0;
-    wp->backwardskinid = 0;
-    return wp;
-}
-
-void MoonScriptCreatureAI::AddWaypoint(Movement::WayPoint* pWayPoint)
-{
-    _unit->GetAIInterface()->addWayPoint(pWayPoint);
-}
-
-void MoonScriptCreatureAI::ForceWaypointMove(uint32 pWaypointId)
-{
-    if (canEnterCombat())
-        _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-
-    if (isRooted())
-        setRooted(false);
-
-    stopMovement();
-    _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
-    SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-    SetWaypointToMove(pWaypointId);
-}
-
-void MoonScriptCreatureAI::SetWaypointToMove(uint32 pWaypointId)
-{
-    _unit->GetAIInterface()->setWayPointToMove(pWaypointId);
-}
-
-void MoonScriptCreatureAI::StopWaypointMovement()
-{
-    SetBehavior(Behavior_Default);
-    _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-    SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-    SetWaypointToMove(0);
-}
-
-void MoonScriptCreatureAI::SetWaypointMoveType(Movement::WaypointMovementScript wp_move_script_type)
-{
-    _unit->GetAIInterface()->setWaypointScriptType(wp_move_script_type);
-
-}
-
-uint32 MoonScriptCreatureAI::GetCurrentWaypoint()
-{
-    return _unit->GetAIInterface()->getCurrentWayPointId();
-}
-
-size_t MoonScriptCreatureAI::GetWaypointCount()
-{
-    return _unit->GetAIInterface()->getWayPointsCount();
-}
-
-bool MoonScriptCreatureAI::HasWaypoints()
-{
-    return _unit->GetAIInterface()->hasWayPoints();
-}
-
 void MoonScriptCreatureAI::OnCombatStart(Unit* pTarget)
 {
     RandomEmote(mOnCombatStartEmotes);
-    SetBehavior(Behavior_Melee);
+    setAIAgent(AGENT_MELEE);
     RegisterAIUpdateEvent(mAIUpdateFrequency);
 }
 
@@ -583,7 +442,7 @@ void MoonScriptCreatureAI::OnCombatStop(Unit* pTarget)
     _cancelAllTimers();
     RemoveAllEvents();
     _removeAllAuras();
-    SetBehavior(Behavior_Default);
+    setAIAgent(AGENT_NULL);
     //_unit->GetAIInterface()->SetAIState(STATE_IDLE);                // Fix for stuck mobs that don't regen
     RemoveAIUpdateEvent();
 
@@ -665,7 +524,7 @@ void MoonScriptCreatureAI::AIUpdate()
                 if (Spell->mCastTime > 0)
                 {
                     setRooted(false);
-                    SetBehavior(Behavior_Spell);
+                    setAIAgent(AGENT_SPELL);
                 }
             }
             return;    //Scheduling one spell at a time, exit now
@@ -696,7 +555,7 @@ void MoonScriptCreatureAI::AIUpdate()
                     if (Spell->mCastTime > 0)
                     {
                         setRooted(true);
-                        SetBehavior(Behavior_Spell);
+                        setAIAgent(AGENT_SPELL);
                     }
                 }
                 return;    //Scheduling one spell at a time, exit now
@@ -707,7 +566,7 @@ void MoonScriptCreatureAI::AIUpdate()
 
         //Go back to default behavior since we didn't decide anything
         setRooted(false);
-        SetBehavior(Behavior_Melee);
+        setAIAgent(AGENT_MELEE);
 
         //Random taunts
         if (ChanceRoll >= 95)

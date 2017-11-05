@@ -206,10 +206,10 @@ class SkumAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            if (_getHealthPercent() <= 10 && GetBehavior() != Behavior_Flee)
+            if (_getHealthPercent() <= 10 && getAIAgent() != AGENT_FLEE)
             {
                 sendChatMessage(CHAT_MSG_MONSTER_EMOTE, 0, "Skum tries to run away in fear");
-                SetBehavior(Behavior_Flee);
+                setAIAgent(AGENT_FLEE);
                 _setMeleeDisabled(false);
                 _setRangedDisabled(true);
                 _setCastDisabled(true);

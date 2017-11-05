@@ -315,7 +315,7 @@ class VHCreatureAI : public MoonScriptCreatureAI
         void OnCombatStop(Unit* mTarget)
         {
             PutAllSpellsOnCooldown();
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }

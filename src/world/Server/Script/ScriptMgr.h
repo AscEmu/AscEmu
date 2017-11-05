@@ -355,15 +355,33 @@ class SERVER_DECL CreatureAIScript
 
         bool isAlive();
 
+        // AIAgent
+        void setAIAgent(AI_Agent agent);
+        uint8_t getAIAgent();
+
+        // movement
         void setRooted(bool set);
         bool isRooted();
 
         void setFlyMode(bool fly);
 
+        // single point movement
         void moveTo(float posX, float posY, float posZ, bool setRun = true);
         void moveToUnit(Unit* unit);
         void moveToSpawn();
         void stopMovement();
+
+        // wp movement
+        Movement::WayPoint* CreateWaypoint(int pId, uint32 pWaittime, uint32 pMoveFlag, Movement::Location pCoords);
+        Movement::WayPoint* CreateWaypoint(int pId, uint32 pWaittime, Movement::LocationWithFlag wp_info);
+        void AddWaypoint(Movement::WayPoint* pWayPoint);
+        void ForceWaypointMove(uint32 pWaypointId);
+        void SetWaypointToMove(uint32 pWaypointId);
+        void StopWaypointMovement();
+        void SetWaypointMoveType(Movement::WaypointMovementScript wp_move_script_type);
+        uint32 GetCurrentWaypoint();
+        size_t GetWaypointCount();
+        bool HasWaypoints();
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // combat setup

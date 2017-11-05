@@ -79,7 +79,7 @@ class AStarScryerAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             CastTime();
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
@@ -243,7 +243,7 @@ class StarScryerAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             CastTime();
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
@@ -473,7 +473,7 @@ class AstromancerLordAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             CastTime();
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
@@ -645,7 +645,7 @@ class BloodVindicatorAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             CastTime();
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
@@ -817,7 +817,7 @@ class BloodLegionnareAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             CastTime();
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
@@ -989,7 +989,7 @@ class BloodMarshalAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             CastTime();
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
@@ -1163,7 +1163,7 @@ class PhoenixHawkAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             CastTime();
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
@@ -1335,7 +1335,7 @@ class CrystalSentinelAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             CastTime();
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
@@ -1500,7 +1500,7 @@ class CrystalMechanicAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             CastTime();
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
@@ -2184,7 +2184,7 @@ class AlarAI : public CreatureAIScript
                 //_unit->CastSpell(_unit, spells[2].info, spells[2].instant);
                 lasttime = timer + RandomUInt(9);
                 _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-                _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+                setAIAgent(AGENT_NULL);
                 _unit->GetAIInterface()->StopMovement(0);
                 _unit->GetAIInterface()->m_canMove = true;
 
@@ -2426,7 +2426,7 @@ class EmberAlarAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             CastTime();
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
@@ -2526,7 +2526,7 @@ class PatchAlarAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             CastTime();
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
@@ -2706,7 +2706,7 @@ class CapernianAI : public MoonScriptCreatureAI
 
             if (getRangeToObject(mTarget) <= 30.0f)
             {
-                SetBehavior(Behavior_Spell);
+                setAIAgent(AGENT_SPELL);
                 setRooted(true);
             }
         }
@@ -2723,7 +2723,7 @@ class CapernianAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            SetBehavior(Behavior_Default);
+            setAIAgent(AGENT_NULL);
             setRooted(false);
             Unit* pClosestTarget = GetBestPlayerTarget(TargetFilter_Closest);
             if (pClosestTarget != NULL && getRangeToObject(pClosestTarget) <= 6.0f)
@@ -2735,9 +2735,9 @@ class CapernianAI : public MoonScriptCreatureAI
             if (pTarget != NULL && getRangeToObject(pTarget) <= 30.0f)
             {
                 ParentClass::AIUpdate();
-                if (GetBehavior() != Behavior_Spell)
+                if (getAIAgent() != AGENT_SPELL)
                 {
-                    SetBehavior(Behavior_Spell);
+                    setAIAgent(AGENT_SPELL);
                     setRooted(true);
                 }
             }
@@ -3110,7 +3110,7 @@ class KaelThasAI : public MoonScriptBossAI
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
             SetAIUpdateFreq(24000);
             ParentClass::OnCombatStart(mTarget);
-            SetBehavior(Behavior_Spell);
+            setAIAgent(AGENT_SPELL);
             setRooted(true);
 
             for (uint8 i = 0; i < 2; ++i)
@@ -3306,7 +3306,7 @@ class KaelThasAI : public MoonScriptBossAI
                 }
 
                 ParentClass::AIUpdate();
-                SetBehavior(Behavior_Spell);
+                setAIAgent(AGENT_SPELL);
                 setRooted(true);
             }
             if (GetPhase() == 6)
@@ -3318,13 +3318,13 @@ class KaelThasAI : public MoonScriptBossAI
                     mShockBarrierTimer = _addTimer(60000);
                     mFlameStrikeTimer = _addTimer(40000);
                     setCanEnterCombat(true);
-                    SetBehavior(Behavior_Default);
+                    setAIAgent(AGENT_NULL);
                     setRooted(false);
                     SetPhase(7);
                 }
                 else
                 {
-                    SetBehavior(Behavior_Spell);
+                    setAIAgent(AGENT_SPELL);
                     setRooted(true);
                 }
 
@@ -3334,9 +3334,9 @@ class KaelThasAI : public MoonScriptBossAI
             {
                 if (!_isCasting())
                 {
-                    if (GetBehavior() == Behavior_Spell)
+                    if (getAIAgent() == AGENT_SPELL)
                     {
-                        SetBehavior(Behavior_Default);
+                        setAIAgent(AGENT_NULL);
                         setRooted(false);
                     }
                     if (_isTimerFinished(mShockBarrierTimer))
@@ -3357,7 +3357,7 @@ class KaelThasAI : public MoonScriptBossAI
                 if (_unit->HasAura(KAELTHAS_SHOCK_BARRIER))
                 {
                     CastSpellNowNoScheduling(mPyroblast);
-                    SetBehavior(Behavior_Spell);
+                    setAIAgent(AGENT_SPELL);
                     setRooted(true);
                 }
                 else if (_isTimerFinished(mPhoenixTimer))        // it spawns on caster's place, but should in 20y from him

@@ -222,7 +222,7 @@ class IllidariHeartseekerAI : public MoonScriptCreatureAI
             ParentClass::OnCombatStart(pTarget);
             if (getRangeToObject(pTarget) <= 30.0f)
             {
-                SetBehavior(Behavior_Spell);
+                setAIAgent(AGENT_SPELL);
                 setRooted(true);
             }
         }
@@ -236,7 +236,7 @@ class IllidariHeartseekerAI : public MoonScriptCreatureAI
             {
                 if (getRangeToObject(pTarget) <= 30.0f)
                 {
-                    SetBehavior(Behavior_Spell);
+                    setAIAgent(AGENT_SPELL);
                     setRooted(true);
                 }
             }
@@ -395,7 +395,7 @@ class AshtonguePrimalistAI : public MoonScriptCreatureAI
             ParentClass::OnCombatStart(pTarget);
             if (getRangeToObject(pTarget) <= 30.0f)
             {
-                SetBehavior(Behavior_Spell);
+                setAIAgent(AGENT_SPELL);
                 setRooted(true);
             }
         }
@@ -409,7 +409,7 @@ class AshtonguePrimalistAI : public MoonScriptCreatureAI
             {
                 if (getRangeToObject(pTarget) <= 30.0f)
                 {
-                    SetBehavior(Behavior_Spell);
+                    setAIAgent(AGENT_SPELL);
                     setRooted(true);
                 }
             }
@@ -720,7 +720,7 @@ class DragonmawSkyStalkerAI : public MoonScriptCreatureAI
             ParentClass::OnCombatStart(pTarget);
             if (getRangeToObject(pTarget) <= 40.0f)
             {
-                SetBehavior(Behavior_Spell);
+                setAIAgent(AGENT_SPELL);
                 setRooted(true);
             }
         }
@@ -734,7 +734,7 @@ class DragonmawSkyStalkerAI : public MoonScriptCreatureAI
             {
                 if (getRangeToObject(pTarget) <= 40.0f)
                 {
-                    SetBehavior(Behavior_Spell);
+                    setAIAgent(AGENT_SPELL);
                     setRooted(true);
                 }
             }
@@ -758,7 +758,7 @@ class DragonmawWindReaverAI : public MoonScriptCreatureAI
             ParentClass::OnCombatStart(pTarget);
             if (getRangeToObject(pTarget) <= 40.0f)
             {
-                SetBehavior(Behavior_Spell);
+                setAIAgent(AGENT_SPELL);
                 setRooted(true);
             }
         }
@@ -772,7 +772,7 @@ class DragonmawWindReaverAI : public MoonScriptCreatureAI
             {
                 if (getRangeToObject(pTarget) <= 40.0f)
                 {
-                    SetBehavior(Behavior_Spell);
+                    setAIAgent(AGENT_SPELL);
                     setRooted(true);
                 }
             }
@@ -1023,7 +1023,7 @@ class ShadowmoonDeathshaperAI : public MoonScriptCreatureAI
             ParentClass::OnCombatStart(pTarget);
             if (getRangeToObject(pTarget) <= 40.0f)
             {
-                SetBehavior(Behavior_Spell);
+                setAIAgent(AGENT_SPELL);
                 setRooted(true);
             }
         }
@@ -1037,7 +1037,7 @@ class ShadowmoonDeathshaperAI : public MoonScriptCreatureAI
             {
                 if (getRangeToObject(pTarget) <= 40.0f)
                 {
-                    SetBehavior(Behavior_Spell);
+                    setAIAgent(AGENT_SPELL);
                     setRooted(true);
                 }
             }
@@ -1094,7 +1094,7 @@ class ShadowmoonHoundmasterAI : public MoonScriptCreatureAI
             ParentClass::OnCombatStart(pTarget);
             if (getRangeToObject(pTarget) <= 30.0f)
             {
-                SetBehavior(Behavior_Spell);
+                setAIAgent(AGENT_SPELL);
                 setRooted(true);
             }
         }
@@ -1107,7 +1107,7 @@ class ShadowmoonHoundmasterAI : public MoonScriptCreatureAI
             {
                 if (getRangeToObject(pTarget) <= 30.0f)
                 {
-                    SetBehavior(Behavior_Spell);
+                    setAIAgent(AGENT_SPELL);
                     setRooted(true);
                 }
             }
@@ -1530,7 +1530,7 @@ class NajentusAI : public CreatureAIScript
 
         void OnCombatStop(Unit* mTarget)
         {
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
             RemoveAIUpdateEvent();
@@ -1730,7 +1730,7 @@ class SupremusAI : public CreatureAIScript
 
         void OnCombatStop(Unit* mTarget)
         {
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
@@ -2019,7 +2019,7 @@ class GurtoggAI : public CreatureAIScript
 
         void OnCombatStop(Unit* mTarget)
         {
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
             if (_unit->isAlive())
@@ -2787,7 +2787,7 @@ class ShahrazAI : public CreatureAIScript
 
         void OnCombatStop(Unit* mTarget)
         {
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
             RemoveAIUpdateEvent();
@@ -3281,7 +3281,7 @@ class TeronGorefiendAI : public CreatureAIScript
 
         void OnCombatStop(Unit* mTarget)
         {
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
             RemoveAIUpdateEvent();
@@ -3478,7 +3478,7 @@ class ShadeofakamaAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             hm = 100;
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
@@ -4024,7 +4024,7 @@ class EyeBeamTriggerAI : public MoonScriptCreatureAI
 
         void OnCombatStop(Unit* mTarget)
         {
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 
@@ -4321,7 +4321,7 @@ class AkamaAI : public MoonScriptBossAI
 
         void OnCombatStop(Unit* pTarget)
         {
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             _setWieldWeapon(false);
         }
@@ -4568,7 +4568,7 @@ class AkamaAI : public MoonScriptBossAI
 
                     setRooted(false);
                     setCanEnterCombat(true);
-                    SetBehavior(Behavior_Default);
+                    setAIAgent(AGENT_NULL);
                     SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
                     SetWaypointToMove(0);
                     RemoveAIUpdateEvent();
@@ -4892,7 +4892,7 @@ class MaievAI : public MoonScriptBossAI
             CancelAllSpells();
             _cancelAllTimers();
             _removeAllAuras();
-            SetBehavior(Behavior_Default);
+            setAIAgent(AGENT_NULL);
             //_unit->GetAIInterface()->SetAIState(STATE_IDLE);
             _setWieldWeapon(false);
             if (mIllidanAI != NULL)
@@ -5013,7 +5013,7 @@ class MaievAI : public MoonScriptBossAI
             {
                 if (mIllidanAI->isAlive())
                 {
-                    SetBehavior(Behavior_Default);
+                    setAIAgent(AGENT_NULL);
                     _setDisplayWeapon(true, false);
                     _setWieldWeapon(true);
                     _resetTimer(mTrapTimer, (RandomUInt(5) + 20) * 1000);
@@ -5033,13 +5033,13 @@ class MaievAI : public MoonScriptBossAI
             else if (getRangeToObject(mIllidanAI->GetUnit()) < 15.0f)
             {
                 _unit->GetAIInterface()->_CalcDestinationAndMove(mIllidanAI->GetUnit(), 20.0f);
-                SetBehavior(Behavior_Spell);
+                setAIAgent(AGENT_SPELL);
                 return;
             }
             else if (getRangeToObject(mIllidanAI->GetUnit()) > 35.0f)
             {
                 _unit->GetAIInterface()->_CalcDestinationAndMove(mIllidanAI->GetUnit(), 30.0f);
-                SetBehavior(Behavior_Spell);
+                setAIAgent(AGENT_SPELL);
                 return;
             }
 
@@ -5056,7 +5056,7 @@ class MaievAI : public MoonScriptBossAI
                 _unit->SetFacing(Facing);
             }
 
-            SetBehavior(Behavior_Spell);
+            setAIAgent(AGENT_SPELL);
         }
 
         void DeathScene()
@@ -5884,7 +5884,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                     {
                         _unit->GetAIInterface()->AttackReaction(pTarget, 5000);
                     }
-                    SetBehavior(Behavior_Spell);
+                    setAIAgent(AGENT_SPELL);
                     stopMovement();                    // readding settings after target switch
                     SetPhase(mPhaseBackup);            // without it he gets back to phase 1 and then immediatly to 2
 
@@ -5942,7 +5942,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 }
                 else if (mMiscEventPart == 6)
                 {
-                    SetBehavior(Behavior_Default);
+                    setAIAgent(AGENT_NULL);
                     SetPhase(mPhaseBackup);
                     if (mPhaseBackup == 5)
                     {
@@ -6139,7 +6139,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
 #endif
 
                 setCanEnterCombat(false);
-                SetBehavior(Behavior_Default);
+                setAIAgent(AGENT_NULL);
                 _setMeleeDisabled(false);
                 setRooted(true);
 
@@ -6157,7 +6157,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 if (mDemonTimer <= 0)
                 {
                     stopMovement();
-                    SetBehavior(Behavior_Spell);
+                    setAIAgent(AGENT_SPELL);
                     SetAIUpdateFreq(250);
 
                     _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
@@ -6214,7 +6214,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             {
                 _setDisplayWeapon(true, true);
                 stopMovement();
-                SetBehavior(Behavior_Spell);
+                setAIAgent(AGENT_SPELL);
                 SetAIUpdateFreq(250);
 
                 _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
@@ -6227,7 +6227,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 Unit* pTarget = _unit->GetAIInterface()->getNextTarget();
                 if (getRangeToObject(pTarget) <= 80.0f)
                 {
-                    SetBehavior(Behavior_Spell);
+                    setAIAgent(AGENT_SPELL);
                     stopMovement();
 
                     if (mShadowDemonsTimer <= 0)
@@ -6272,7 +6272,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 }
                 else
                 {
-                    SetBehavior(Behavior_Default);
+                    setAIAgent(AGENT_NULL);
                 }
             }
         }
@@ -6298,7 +6298,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 if (mDemonTimer <= 0)
                 {
                     stopMovement();
-                    SetBehavior(Behavior_Spell);
+                    setAIAgent(AGENT_SPELL);
                     SetAIUpdateFreq(250);
 
                     _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
@@ -6499,7 +6499,7 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
 
         void OnCombatStop(Unit* pTarget)
         {
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 
@@ -6578,7 +6578,7 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
                         pAI->setRooted(false);
                         pAI->_setMeleeDisabled(true);
                         pAI->stopMovement();
-                        pAI->SetBehavior(Behavior_Spell);
+                        pAI->setAIAgent(AGENT_SPELL);
 
                         pIllidan->SetEmoteState(EMOTE_ONESHOT_NONE);
 

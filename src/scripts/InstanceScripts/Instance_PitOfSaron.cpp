@@ -108,7 +108,7 @@ class ForgemasterGarfrostAI : MoonScriptBossAI
     void OnCombatStop(Unit* mTarget)
     {
         // Clear Agent and Ai State
-        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
         if (mInstance)

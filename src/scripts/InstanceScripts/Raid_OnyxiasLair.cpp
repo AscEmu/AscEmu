@@ -90,7 +90,7 @@ class OnyxiaAI : public CreatureAIScript
         {
             _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
             _unit->GetAIInterface()->setWayPointToMove(0);
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
             _unit->GetAIInterface()->unsetSplineFlying();
@@ -137,7 +137,7 @@ class OnyxiaAI : public CreatureAIScript
                     {
                         _unit->GetAIInterface()->m_canMove = false;
                         _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
-                        _unit->GetAIInterface()->setCurrentAgent(AGENT_SPELL);
+                        setAIAgent(AGENT_SPELL);
                         //_unit->m_pacified--;
                         _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                         _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
@@ -150,7 +150,7 @@ class OnyxiaAI : public CreatureAIScript
                 case 8:
                     {
                         _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
-                        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+                        setAIAgent(AGENT_NULL);
                         _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                         _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
                         _unit->GetAIInterface()->setWayPointToMove(0);

@@ -387,7 +387,7 @@ public:
 
     void OnCombatStop(Unit* mTarget)
     {
-        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
@@ -585,7 +585,7 @@ public:
             Curtain->SetState(GO_STATE_CLOSED);
 
         CastTime();
-        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
@@ -781,7 +781,7 @@ public:
 
         _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
         _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
         WayStartBBW[_unit->GetInstanceID()] = 1;
@@ -1161,7 +1161,7 @@ public:
 
     void OnCombatStop(Unit* mTarget)
     {
-        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
@@ -1500,7 +1500,7 @@ public:
             }
         }
 
-        _unit->GetAIInterface()->setCurrentAgent(AGENT_SPELL);
+        setAIAgent(AGENT_SPELL);
         RegisterAIUpdateEvent(1000);
         m_time_enrage = 900;
         m_time_special = (uint32)RandomUInt(5) + 25;
@@ -1524,7 +1524,7 @@ public:
     void OnCombatStop(Unit* mTarget)
     {
         CastTime();
-        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
         _unit->setUInt32Value(UNIT_FIELD_POWER1, _unit->GetMaxPower(POWER_TYPE_MANA));
@@ -1943,7 +1943,7 @@ public:
 
     void OnCombatStop(Unit* mTarget)
     {
-        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
@@ -1988,7 +1988,7 @@ public:
 
     void OnCombatStop(Unit* mTarget)
     {
-        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         _unit->Despawn(10000, 0);
         RemoveAIUpdateEvent();
@@ -2101,7 +2101,7 @@ public:
     void OnCombatStop(Unit* mTarget)
     {
         clean();
-        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
@@ -2318,7 +2318,7 @@ public:
 
     void OnCombatStop(Unit* mTarget)
     {
-        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
@@ -2472,7 +2472,7 @@ public:
 
         if (_unit->GetDistance2dSq(mTarget) <= 1225.0f)
         {
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_SPELL);
+            setAIAgent(AGENT_SPELL);
         }
 
         RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
@@ -2480,7 +2480,7 @@ public:
 
     void OnCombatStop(Unit* mTarget)
     {
-        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
 
@@ -2495,10 +2495,10 @@ public:
 
     void AIUpdate()
     {
-        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        setAIAgent(AGENT_NULL);
         if (_unit->GetAIInterface()->getNextTarget() && _unit->GetDistance2dSq(_unit->GetAIInterface()->getNextTarget()) <= 1225.0f)
         {
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_SPELL);
+            setAIAgent(AGENT_SPELL);
             if (_unit->GetCurrentSpell() == NULL && RandomUInt(10) > 2)
             {
                 _unit->setAttackTimer(spells[0].attackstoptimer, false);
@@ -2614,7 +2614,7 @@ public:
 
     void OnCombatStop(Unit* mTarget)
     {
-        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         if (_unit->GetHealthPct() > 0)
             _unit->Despawn(10000, 0);
@@ -2810,7 +2810,7 @@ public:
 
     void OnCombatStop(Unit* mTarget)
     {
-        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
 
@@ -3293,7 +3293,7 @@ public:
 
     void OnCombatStop(Unit* mTarget)
     {
-        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
@@ -3385,7 +3385,7 @@ public:
     {
         _unit->RemoveAura(NETHERBURN);
 
-        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
 
@@ -3640,7 +3640,7 @@ public:
     void OnCombatStop(Unit* mTarget)
     {
         _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
         _unit->GetAIInterface()->unsetSplineFlying();
@@ -4003,7 +4003,7 @@ public:
     void OnCombatStop(Unit* mTarget)
     {
         CastTime();
-        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
 
@@ -4220,7 +4220,7 @@ public:
     void OnCombatStop(Unit* mTarget)
     {
         CastTime();
-        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
 
@@ -4343,7 +4343,7 @@ public:
     void OnCombatStop(Unit* mTarget)
     {
         CastTime();
-        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
 
@@ -4484,7 +4484,7 @@ public:
     void OnCombatStop(Unit* mTarget)
     {
         CastTime();
-        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
 
@@ -4595,7 +4595,7 @@ public:
 
     void OnCombatStop(Unit* mTarget)
     {
-        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         _unit->Despawn(1, 0);
     }
@@ -4678,7 +4678,7 @@ public:
         }
 
         CastTime();
-        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
 
@@ -4896,7 +4896,7 @@ public:
         }
 
         CastTime();
-        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
         _unit->Despawn(1, 0);
@@ -5082,7 +5082,7 @@ public:
         }
 
         CastTime();
-        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
         _unit->Despawn(1, 0);
