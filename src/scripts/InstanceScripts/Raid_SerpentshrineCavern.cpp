@@ -2963,18 +2963,19 @@ class CoilfangStriderAI : public MoonScriptCreatureAI
 };
 
 // Serpentshrine Cavern Instance Script
-class SerpentshrineCavern : public MoonInstanceScript
+class SerpentshrineCavern : public InstanceScript
 {
     public:
         // Console & Bridge parts
         uint32 mBridgePart[3];
 
-        MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(SerpentshrineCavern, MoonInstanceScript);
-        SerpentshrineCavern(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
+        SerpentshrineCavern(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
         {
             for (uint8 i = 0; i < 3; ++i)
                 mBridgePart[i] = 0;
         }
+
+        static InstanceScript* Create(MapMgr* pMapMgr) { return new SerpentshrineCavern(pMapMgr); }
 
         void OnGameObjectPushToWorld(GameObject* pGameObject)
         {

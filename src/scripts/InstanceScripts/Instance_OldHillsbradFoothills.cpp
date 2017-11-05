@@ -89,7 +89,7 @@ static Movement::Location ThrallWP1[] = // pre 2nd boss
 const uint32 MAX_THRALLWP1 = 27;
 
 
-//class OldHilsbradInstance : public MoonInstanceScript
+//class OldHilsbradInstance : public InstanceScript
 //{
 //private:
 //
@@ -98,14 +98,15 @@ const uint32 MAX_THRALLWP1 = 27;
 //
 //public:
 //
-//    MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(OldHilsbradInstance, MoonInstanceScript);
-//    OldHilsbradInstance(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
+//    OldHilsbradInstance(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
 //    {
 //        m_numBarrel = 0;
 //
 //        for (uint8 i = 0; i < OHF_END; ++i)
 //            m_phaseData[i] = OHF_DATA_NOT_STARTED;
 //    }
+//
+//    static InstanceScript* Create(MapMgr* pMapMgr) { return new OldHilsbradInstance(pMapMgr); }
 //
 //    void OnPlayerEnter(Player* pPlayer)
 //    {

@@ -27,7 +27,7 @@
 /////////////////////////////////////////////////////////////////////////////////
 /// Gundrak Instance Script
 // Status: Finished
-class GundrakScript : public MoonInstanceScript
+class GundrakScript : public InstanceScript
 {
     public:
         uint32        mSladranAltarGUID;
@@ -48,8 +48,7 @@ class GundrakScript : public MoonInstanceScript
 
         uint8        mStatueCount;
 
-        MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(GundrakScript, MoonInstanceScript);
-        GundrakScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
+        GundrakScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
         {
             mSladranAltarGUID = 0;
             mSladranStatueGUID = 0;
@@ -69,6 +68,8 @@ class GundrakScript : public MoonInstanceScript
 
             mStatueCount = 0;
         }
+
+        static InstanceScript* Create(MapMgr* pMapMgr) { return new GundrakScript(pMapMgr); }
 
         void OnGameObjectPushToWorld(GameObject* pGameObject)
         {
@@ -301,7 +302,7 @@ class SladranAI : public MoonScriptCreatureAI
     void OnCombatStop(Unit* pTarget)
     {
         if (mInstance)
-            mInstance->setData(_unit->GetEntry(), State_Performed);
+            mInstance->setData(_unit->GetEntry(), Performed);
 
         ParentClass::OnCombatStop(pTarget);
     }
@@ -336,7 +337,7 @@ class GalDarahAI : public MoonScriptCreatureAI
         sendDBChatMessage(4199);     // I'm gonna spill your guts, mon!
 
         if (mInstance)
-            mInstance->setData(_unit->GetEntry(), State_InProgress);
+            mInstance->setData(_unit->GetEntry(), InProgress);
 
         ParentClass::OnCombatStart(pTarget);
     }
@@ -360,7 +361,7 @@ class GalDarahAI : public MoonScriptCreatureAI
     void OnCombatStop(Unit* pTarget)
     {
         if (mInstance)
-            mInstance->setData(_unit->GetEntry(), State_Performed);
+            mInstance->setData(_unit->GetEntry(), Performed);
 
         ParentClass::OnCombatStop(pTarget);
     }

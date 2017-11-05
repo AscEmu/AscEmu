@@ -2036,6 +2036,7 @@ void MapMgr::CallScriptUpdate()
 {
     ARCEMU_ASSERT(mInstanceScript != NULL);
     mInstanceScript->UpdateEvent();
+    mInstanceScript->updateTimers();
 };
 
 const uint16 MapMgr::GetAreaFlag(float x, float y, float z, bool *is_outdoors /* = nullptr */)

@@ -23,7 +23,7 @@
 
 /////////////////////////////////////////////////////////////////////////////////
 /// Halls of Lightning Instance
-class HallsOfLightningScript : public MoonInstanceScript
+class HallsOfLightningScript : public InstanceScript
 {
     public:
         uint32        mGeneralDoorsGUID;
@@ -32,8 +32,7 @@ class HallsOfLightningScript : public MoonInstanceScript
         uint32        mIonarDoors1GUID;
         uint32        mIonarDoors2GUID;
 
-        MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(HallsOfLightningScript, MoonInstanceScript);
-        HallsOfLightningScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
+        HallsOfLightningScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
         {
             mGeneralDoorsGUID = 0;
             mVolkhanDoorsGUID = 0;
@@ -41,6 +40,8 @@ class HallsOfLightningScript : public MoonInstanceScript
             mIonarDoors1GUID = 0;
             mIonarDoors2GUID = 0;
         }
+
+        static InstanceScript* Create(MapMgr* pMapMgr) { return new HallsOfLightningScript(pMapMgr); }
 
         void OnGameObjectPushToWorld(GameObject* pGameObject)
         {
@@ -62,8 +63,6 @@ class HallsOfLightningScript : public MoonInstanceScript
                     mIonarDoors2GUID = pGameObject->GetLowGUID();
                     break;
             }
-
-            ParentClass::OnGameObjectPushToWorld(pGameObject);
         }
 
         void OnCreatureDeath(Creature* pVictim, Unit* pKiller)
@@ -656,7 +655,7 @@ class LokenAI : public MoonScriptCreatureAI
     InstanceScript* mInstance;
 
     int32 mNovaTimer;
-    int32 mRespondTimer;
+    uint32 mRespondTimer;
     uint8 mSpeech;
 };
 

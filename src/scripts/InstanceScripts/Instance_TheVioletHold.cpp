@@ -21,14 +21,14 @@ enum DataIndex
 
 ///////////////////////////////////////////////////////
 //TheVioletHold Instance
-class TheVioletHoldScript : public MoonInstanceScript
+class TheVioletHoldScript : public InstanceScript
 {
     friend class SinclariGossip; // Friendship forever ;-)
 
     private:
 
         uint32 m_phaseData[TVH_END];
-        uint32 m_lastState = State_InvalidState;
+        uint32 m_lastState = InvalidState;
 
         // NotStarted
         int32 S0_SpawnIntroMobsTimer = 0;   // Spawn mobs every 15s
@@ -38,20 +38,18 @@ class TheVioletHoldScript : public MoonInstanceScript
 
     public:
 
-        MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(TheVioletHoldScript, MoonInstanceScript);
-        TheVioletHoldScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
+        TheVioletHoldScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
         {
             for (uint8 i = 0; i < TVH_END; ++i)
-                m_phaseData[i] = State_NotStarted;
+                m_phaseData[i] = NotStarted;
 
             addData(MAP_VIOLET_HOLD);
         }
 
+        static InstanceScript* Create(MapMgr* pMapMgr) { return new TheVioletHoldScript(pMapMgr); }
+
         void UpdateEvent()
         {
-            // Call original update function to elapse timers
-            MoonInstanceScript::UpdateEvent();
-
             auto state = getData(MAP_VIOLET_HOLD);
 
             if (state != m_lastState)
@@ -62,17 +60,17 @@ class TheVioletHoldScript : public MoonInstanceScript
 
             switch (state)
             {
-                case State_NotStarted:
+                case NotStarted:
                     S0_ReviveGuards();
                     S0_SpawnIntroMobs();
                     S0_RemoveDeadIntroMobs();
                     break;
-                case State_InProgress:
+                case InProgress:
                     S2_SpawnPortals();
                     break;
-                case State_Finished: printf("State: %s\n", "State_Finished"); break;
-                case State_Performed: printf("State: %s\n", "State_Performed"); break;
-                case State_PreProgress:
+                case Finished: printf("State: %s\n", "State_Finished"); break;
+                case Performed: printf("State: %s\n", "State_Performed"); break;
+                case PreProgress:
                     S1_ActivateCrystalFleeRoom();
                     break;
             }
@@ -211,7 +209,7 @@ class TheVioletHoldScript : public MoonInstanceScript
         {
             switch (pNewState)
             {
-                case State_PreProgress:
+                case PreProgress:
                     DespawnIntroPortals();
                     break;
             }

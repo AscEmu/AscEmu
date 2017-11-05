@@ -618,7 +618,7 @@ class KeristraszaAI : public MoonScriptBossAI
 };
 
 // Nexus Instance script
-class NexusScript : public MoonInstanceScript
+class NexusScript : public InstanceScript
 {
     public:
 
@@ -631,8 +631,7 @@ class NexusScript : public MoonInstanceScript
 
         uint32 m_uiEncounters[NEXUS_END];
 
-        MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(NexusScript, MoonInstanceScript);
-        NexusScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
+        NexusScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
         {
             mAnomalusGUID = 0;
             mTelestraGUID = 0;
@@ -642,10 +641,12 @@ class NexusScript : public MoonInstanceScript
             mCSCount = 0;
 
             for (uint8 i = 0; i < NEXUS_END; ++i)
-                m_uiEncounters[i] = State_NotStarted;
+                m_uiEncounters[i] = NotStarted;
 
             PrepareGameObjectsForState();
         }
+
+        static InstanceScript* Create(MapMgr* pMapMgr) { return new NexusScript(pMapMgr); }
 
         void PrepareGameObjectsForState()
         {

@@ -410,7 +410,7 @@ void MoonScriptCreatureAI::Announce(const char* pText)
         _unit->SendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, pText);
 }
 
-int32 MoonScriptCreatureAI::AddTimer(int32 pDurationMillisec)
+uint32 MoonScriptCreatureAI::AddTimer(uint32 pDurationMillisec)
 {
     int32 Index = mTimerIdCounter++;
     mTimers.push_back(std::make_pair(Index, pDurationMillisec));
@@ -418,7 +418,7 @@ int32 MoonScriptCreatureAI::AddTimer(int32 pDurationMillisec)
     return Index;
 }
 
-int32 MoonScriptCreatureAI::GetTimer(int32 pTimerId)
+uint32 MoonScriptCreatureAI::GetTimer(uint32 pTimerId)
 {
     for (TimerArray::iterator TimerIter = mTimers.begin(); TimerIter != mTimers.end(); ++TimerIter)
     {
@@ -431,7 +431,7 @@ int32 MoonScriptCreatureAI::GetTimer(int32 pTimerId)
     return 0;
 }
 
-void MoonScriptCreatureAI::RemoveTimer(int32 & pTimerId)
+void MoonScriptCreatureAI::RemoveTimer(uint32 & pTimerId)
 {
     for (TimerArray::iterator TimerIter = mTimers.begin(); TimerIter != mTimers.end(); ++TimerIter)
     {
@@ -445,7 +445,7 @@ void MoonScriptCreatureAI::RemoveTimer(int32 & pTimerId)
     }
 }
 
-void MoonScriptCreatureAI::ResetTimer(int32 pTimerId, int32 pDurationMillisec)
+void MoonScriptCreatureAI::ResetTimer(uint32 pTimerId, uint32 pDurationMillisec)
 {
     for (TimerArray::iterator TimerIter = mTimers.begin(); TimerIter != mTimers.end(); ++TimerIter)
     {
@@ -457,7 +457,7 @@ void MoonScriptCreatureAI::ResetTimer(int32 pTimerId, int32 pDurationMillisec)
     }
 }
 
-bool MoonScriptCreatureAI::IsTimerFinished(int32 pTimerId)
+bool MoonScriptCreatureAI::IsTimerFinished(uint32 pTimerId)
 {
     for (TimerArray::iterator TimerIter = mTimers.begin(); TimerIter != mTimers.end(); ++TimerIter)
     {

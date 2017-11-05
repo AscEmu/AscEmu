@@ -312,13 +312,14 @@ class MoonScriptCreatureAI : public CreatureAIScript
         void Announce(const char* pText);
 
         //Timers and Events
-        int32 AddTimer(int32 pDurationMillisec);
-        int32 GetTimer(int32 pTimerId);
-        void RemoveTimer(int32 & pTimerId);
-        void ResetTimer(int32 pTimerId, int32 pDurationMillisec);
-        bool IsTimerFinished(int32 pTimerId);
+        uint32 AddTimer(uint32 pDurationMillisec);
+        uint32 GetTimer(uint32 pTimerId);
+        void RemoveTimer(uint32 & pTimerId);
+        void ResetTimer(uint32 pTimerId, uint32 pDurationMillisec);
+        bool IsTimerFinished(uint32 pTimerId);
         void CancelAllTimers();
         uint32 GetTimerCount() { return mTimerCount; }
+
         int32 AddEvent(uint32 pEventId, int32 pTriggerTimer, EventFunc pEvent, int32 pMiscVal = 0, bool pRepeatable = false);
         void ResetEvent(uint32 pEventId, int32 pNewTriggerTimer, bool pRepeatable = false);
         void RemoveEvent(uint32 pEventId);
@@ -423,7 +424,7 @@ class MoonScriptBossAI : public MoonScriptCreatureAI
         PhaseSpellArray mPhaseSpells;
         SpellDesc* mEnrageSpell;
         int32 mEnrageTimerDuration;
-        int32 mEnrageTimer;
+        uint32_t mEnrageTimer;
 };
 
 

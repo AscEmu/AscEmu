@@ -18,14 +18,14 @@
 #include "Setup.h"
 #include "Instance_ForgeOfSouls.h"
 
-class InstanceForgeOfSoulsScript : public MoonInstanceScript
+class InstanceForgeOfSoulsScript : public InstanceScript
 {
 public:
 
-	MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(InstanceForgeOfSoulsScript, MoonInstanceScript);
-	InstanceForgeOfSoulsScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
-	{
-	}
+	InstanceForgeOfSoulsScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+	{}
+
+    static InstanceScript* Create(MapMgr* pMapMgr) { return new InstanceForgeOfSoulsScript(pMapMgr); }
 
 	void OnPlayerEnter(Player* player)
 	{

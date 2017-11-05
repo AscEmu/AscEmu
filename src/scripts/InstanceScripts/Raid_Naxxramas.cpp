@@ -27,11 +27,13 @@
 
 const uint32 CN_THADDIUS = 15928;
 
-class NaxxramasScript : public MoonInstanceScript
+class NaxxramasScript : public InstanceScript
 {
     public:
-        MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(NaxxramasScript, MoonInstanceScript);
-        NaxxramasScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr) {};
+
+        NaxxramasScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr) {}
+
+        static InstanceScript* Create(MapMgr* pMapMgr) { return new NaxxramasScript(pMapMgr); }
 
         void OnCreatureDeath(Creature* pVictim, Unit* pKiller)
         {
@@ -48,22 +50,22 @@ class NaxxramasScript : public MoonInstanceScript
                     }
                     break;
                 case CN_PATCHWERK:
-                    setGameObjectStateForEntry(181123, State_Active);
+                    setGameObjectStateForEntry(181123, GO_STATE_OPEN);
                     break;
                 case CN_GLUTH:
                     {
-                    setGameObjectStateForEntry(181120, State_Active);
-                    setGameObjectStateForEntry(181121, State_Active);
+                    setGameObjectStateForEntry(181120, GO_STATE_OPEN);
+                    setGameObjectStateForEntry(181121, GO_STATE_OPEN);
                     }
                     break;
                 case CN_ANUBREKHAN:
                     {
-                    setGameObjectStateForEntry(181195, State_Active);
-                    setGameObjectStateForEntry(194022, State_Active);
+                    setGameObjectStateForEntry(181195, GO_STATE_OPEN);
+                    setGameObjectStateForEntry(194022, GO_STATE_OPEN);
                     }
                     break;
                 case CN_GRAND_WIDOW_FAERLINA:
-                    setGameObjectStateForEntry(181209, State_Active);
+                    setGameObjectStateForEntry(181209, GO_STATE_OPEN);
                     break;
             }
         }

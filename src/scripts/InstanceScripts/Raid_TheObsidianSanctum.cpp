@@ -20,16 +20,17 @@
 #include "Setup.h"
 #include "Raid_TheObsidianSanctum.h"
 
-class ObsidianSanctumScript : public MoonInstanceScript
+class ObsidianSanctumScript : public InstanceScript
 {
     public:
         uint32 m_creatureGuid[OS_DATA_END];
 
-        MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(ObsidianSanctumScript, MoonInstanceScript);
-        ObsidianSanctumScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
+        ObsidianSanctumScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
         {
             memset(m_creatureGuid, 0, sizeof(m_creatureGuid));
         }
+
+        static InstanceScript* Create(MapMgr* pMapMgr) { return new ObsidianSanctumScript(pMapMgr); }
 
         void OnCreaturePushToWorld(Creature* pCreature)
         {

@@ -1130,6 +1130,21 @@ void InstanceScript::cancelAllTimers()
     mTimerCount = 0;
 }
 
+void InstanceScript::updateTimers()
+{
+    for (auto& TimerIter : mTimers)
+    {
+        if (TimerIter.second > 0)
+        {
+            int leftTime = TimerIter.second - getUpdateFrequency();
+            if (leftTime > 0)
+                TimerIter.second -= getUpdateFrequency();
+            else
+                TimerIter.second = 0;
+        }
+    }
+}
+
 void InstanceScript::displayTimerList(Player* player)
 {
     player->BroadcastMessage("=== Timers for instance %s ===", mInstance->GetMapInfo()->name.c_str());
@@ -1169,6 +1184,40 @@ void InstanceScript::removeUpdateEvent()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // misc
+
+void InstanceScript::setCellForcedStates(float xMin, float xMax, float yMin, float yMax, bool forceActive /*true*/)
+{
+    if (xMin == xMax || yMin == yMax)
+        return;
+
+    float Y = yMin;
+    while (xMin < xMax)
+    {
+        while (yMin < yMax)
+        {
+            MapCell* CurrentCell = mInstance->GetCellByCoords(xMin, yMin);
+            if (forceActive && CurrentCell == nullptr)
+            {
+                CurrentCell = mInstance->CreateByCoords(xMin, yMin);
+                if (CurrentCell != nullptr)
+                    CurrentCell->Init(mInstance->GetPosX(xMin), mInstance->GetPosY(yMin), mInstance);
+            }
+
+            if (CurrentCell != nullptr)
+            {
+                if (forceActive)
+                    mInstance->AddForcedCell(CurrentCell);
+                else
+                    mInstance->RemoveForcedCell(CurrentCell);
+            }
+
+            yMin += 40.0f;
+        }
+
+        yMin = Y;
+        xMin += 40.0f;
+    }
+}
 
 Creature* InstanceScript::spawnCreature(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId /* = 0*/)
 {

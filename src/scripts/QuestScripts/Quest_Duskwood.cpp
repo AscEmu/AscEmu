@@ -63,7 +63,7 @@ public:
         }
     }
 
-    int32 mElizaCombatTimer;
+    uint32 mElizaCombatTimer;
     SpellDesc*  mSummonGuard;
     Creature* mElizaGuard;
 };

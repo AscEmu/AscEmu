@@ -25,15 +25,14 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Hellfire Citadel: The Shattered Halls
-class InstanceTheShatteredHallsScript : public MoonInstanceScript
+class InstanceTheShatteredHallsScript : public InstanceScript
 {
     public:
 
-        MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(InstanceTheShatteredHallsScript, MoonInstanceScript);
-        InstanceTheShatteredHallsScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
-        {
-        }
+        InstanceTheShatteredHallsScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+        {}
 
+        static InstanceScript* Create(MapMgr* pMapMgr) { return new InstanceTheShatteredHallsScript(pMapMgr); }
 };
 
 // FelOrcConvertAI
@@ -2194,8 +2193,8 @@ class WarbringerOmroggAI : public MoonScriptCreatureAI
         MoonScriptCreatureAI* mLeftHead;
         MoonScriptCreatureAI* mRightHead;
         int32 mAggroShiftTimer;
-        int32 mBlastWaveTimer;
-        int32 mSpeechTimer;
+        uint32 mBlastWaveTimer;
+        uint32 mSpeechTimer;
         int32 mSpeechId;
         SpellDesc* mBlastWave;
 };

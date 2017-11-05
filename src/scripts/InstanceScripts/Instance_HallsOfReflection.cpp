@@ -23,14 +23,14 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Halls of Reflection
-class HallsOfReflectionScript : public MoonInstanceScript
+class HallsOfReflectionScript : public InstanceScript
 {
     public:
 
-        ADD_INSTANCE_FACTORY_FUNCTION(HallsOfReflectionScript)
-        HallsOfReflectionScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
-        {
-        }
+        HallsOfReflectionScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+        {}
+
+        static InstanceScript* Create(MapMgr* pMapMgr) { return new HallsOfReflectionScript(pMapMgr); }
 
         void OnPlayerEnter(Player* pPlayer)
         {

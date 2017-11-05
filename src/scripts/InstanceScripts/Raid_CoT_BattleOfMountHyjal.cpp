@@ -50,14 +50,16 @@ enum HyjalType
     HYJAL_TYPE_END
 };
 
-class MountHyjalScript : public MoonInstanceScript
+class MountHyjalScript : public InstanceScript
 {
     public:
-        MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(MountHyjalScript, MoonInstanceScript);
-        MountHyjalScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
+
+        MountHyjalScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
         {
             InstanceData[HYJAL_TYPE_BASIC][0] = HYJAL_PHASE_NOT_STARTED;
         }
+
+        static InstanceScript* Create(MapMgr* pMapMgr) { return new MountHyjalScript(pMapMgr); }
 
         void SetLocaleInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
         {

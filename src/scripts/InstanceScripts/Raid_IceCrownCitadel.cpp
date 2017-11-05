@@ -44,24 +44,30 @@ enum IceCrown_Encounters
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //IceCrownCitadel Instance
-class IceCrownCitadelScript : public MoonInstanceScript
+class IceCrownCitadelScript : public InstanceScript
 {
     public:
 
-        MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(IceCrownCitadelScript, MoonInstanceScript);
-        IceCrownCitadelScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
+        IceCrownCitadelScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
         {
             if (getData(CN_LORD_MARROWGAR) == Finished)
             {
-                setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_1, State_Inactive);    // Icewall 1
-                setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_2, State_Inactive);    // Icewall 2
-                setGameObjectStateForEntry(GO_MARROWGAR_DOOR, State_Inactive);         // Door
+                setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_1, GO_STATE_CLOSED);    // Icewall 1
+                setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_2, GO_STATE_CLOSED);    // Icewall 2
+                setGameObjectStateForEntry(GO_MARROWGAR_DOOR, GO_STATE_CLOSED);         // Door
             }
 
             //test timers
-            /*addTimer(75000);
+            addTimer(75000);
             addTimer(5000);
-            addTimer(35000);*/
+            addTimer(35000);
+        }
+
+        static InstanceScript* Create(MapMgr* pMapMgr) { return new IceCrownCitadelScript(pMapMgr); }
+
+        void UpdateEvent()
+        {
+            LOG_DEBUG("called.");
         }
 
         void OnGameObjectPushToWorld(GameObject* pGameObject)
@@ -69,9 +75,9 @@ class IceCrownCitadelScript : public MoonInstanceScript
             // Gos which are not visible by killing a boss needs a second check...
             if (getData(CN_LORD_MARROWGAR) == Finished)
             {
-                setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_1, State_Active);    // Icewall 1
-                setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_2, State_Active);    // Icewall 2
-                setGameObjectStateForEntry(GO_MARROWGAR_DOOR, State_Active);         // Door
+                setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_1, GO_STATE_OPEN);    // Icewall 1
+                setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_2, GO_STATE_OPEN);    // Icewall 2
+                setGameObjectStateForEntry(GO_MARROWGAR_DOOR, GO_STATE_OPEN);         // Door
             }
 
             switch (pGameObject->GetEntry())
@@ -93,9 +99,9 @@ class IceCrownCitadelScript : public MoonInstanceScript
             {
                 case CN_LORD_MARROWGAR:
                 {
-                    setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_1, State_Active);    // Icewall 1
-                    setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_2, State_Active);    // Icewall 2
-                    setGameObjectStateForEntry(GO_MARROWGAR_DOOR, State_Active);         // Door
+                    setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_1, GO_STATE_OPEN);    // Icewall 1
+                    setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_2, GO_STATE_OPEN);    // Icewall 2
+                    setGameObjectStateForEntry(GO_MARROWGAR_DOOR, GO_STATE_OPEN);         // Door
                 }break;
                 default:
                     break;

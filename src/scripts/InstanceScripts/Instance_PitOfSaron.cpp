@@ -19,14 +19,14 @@
 #include "Setup.h"
 #include "Instance_PitOfSaron.h"
 
-class InstancePitOfSaronScript : public MoonInstanceScript
+class InstancePitOfSaronScript : public InstanceScript
 {
     public:
 
-        MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(InstancePitOfSaronScript, MoonInstanceScript);
-        InstancePitOfSaronScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
-        {
-        }
+        InstancePitOfSaronScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+        {}
+
+        static InstanceScript* Create(MapMgr* pMapMgr) { return new InstancePitOfSaronScript(pMapMgr); }
 
         void OnPlayerEnter(Player* player)
         {
@@ -431,10 +431,10 @@ class IckAI : MoonScriptBossAI
     InstanceScript* mInstance;
     MoonScriptCreatureAI* mKrickAI;
     int32_t mMightyKickTimer;
-    int32_t mPursueTimer;
-    int32_t mPoisonNovaTimer;
-    int32_t mExplosionBarageTimer;
-    int32_t mExplosionBarageEndTimer;
+    uint32_t mPursueTimer;
+    uint32_t mPoisonNovaTimer;
+    uint32_t mExplosionBarageTimer;
+    uint32_t mExplosionBarageEndTimer;
     int32_t mToxicWasteTimer;
     int32_t mShadowBoltTimer;
     int32_t mSpecialAttackTimer;
@@ -627,7 +627,7 @@ class KrickAI : MoonScriptBossAI
     MoonScriptCreatureAI* JainaOrSylvanas;
     SpellDesc* mBarrageSummon;
     uint8_t sequence;
-    int32_t mOutroTimer;
+    uint32_t mOutroTimer;
     int32_t mBarrageTimer;
     bool mOutroTimerStarted;
     BattlePhases Phase;

@@ -25,14 +25,14 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Magister's Terrace
-class InstanceMagistersTerraceScript : public MoonInstanceScript
+class InstanceMagistersTerraceScript : public InstanceScript
 {
     public:
 
-        MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(InstanceMagistersTerraceScript, MoonInstanceScript);
-        InstanceMagistersTerraceScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
-        {
-        }
+        InstanceMagistersTerraceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+        {}
+
+        static InstanceScript* Create(MapMgr* pMapMgr) { return new InstanceMagistersTerraceScript(pMapMgr); }
 };
 
 // Selin Firehart Encounter

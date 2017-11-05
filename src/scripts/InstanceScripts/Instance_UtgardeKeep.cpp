@@ -51,7 +51,7 @@ struct ForgeMasterData
     uint32 mAnvil;
 };
 
-class UtgardeKeepScript : public MoonInstanceScript
+class UtgardeKeepScript : public InstanceScript
 {
     public:
         uint32        mKelesethGUID;
@@ -65,8 +65,7 @@ class UtgardeKeepScript : public MoonInstanceScript
 
         uint8        mUtgardeData[UTGARDE_DATA_END];
 
-        MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(UtgardeKeepScript, MoonInstanceScript);
-        UtgardeKeepScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
+        UtgardeKeepScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
         {
             mKelesethGUID = 0;
             mSkarvaldGUID = 0;
@@ -89,7 +88,9 @@ class UtgardeKeepScript : public MoonInstanceScript
             {
                 mUtgardeData[i] = 0;
             }
-        };
+        }
+
+        static InstanceScript* Create(MapMgr* pMapMgr) { return new UtgardeKeepScript(pMapMgr); }
 
         void OnCreaturePushToWorld(Creature* pCreature)
         {
@@ -108,7 +109,7 @@ class UtgardeKeepScript : public MoonInstanceScript
                     mIngvarGUID = pCreature->GetLowGUID();
                     break;
             }
-        };
+        }
 
         void OnGameObjectPushToWorld(GameObject* pGameObject)
         {
@@ -151,7 +152,7 @@ class UtgardeKeepScript : public MoonInstanceScript
                     mIngvarDoors[1] = pGameObject->GetLowGUID();
                     break;
             }
-        };
+        }
 
         void SetLocaleInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
         {
@@ -166,7 +167,7 @@ class UtgardeKeepScript : public MoonInstanceScript
                 {
                     mUtgardeData[UTGARDE_INGVAR] = pData;
 
-                    if (pData == State_Finished)
+                    if (pData == Finished)
                     {
                         GameObject* pGO = nullptr;
                         for (uint8 i = 0; i < 2; ++i)
@@ -180,7 +181,7 @@ class UtgardeKeepScript : public MoonInstanceScript
                     }
                 } break;
             }
-        };
+        }
 
         void HandleForge()
         {
@@ -202,7 +203,7 @@ class UtgardeKeepScript : public MoonInstanceScript
             {
                 pGO->SetState(pGO->GetState() == 1 ? 0 : 1);
             }
-        };
+        }
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -220,7 +221,7 @@ class DragonflayerForgeMasterAI : public MoonScriptCreatureAI
         void OnDied(Unit* pKiller)
         {
             if (pInstance)
-                pInstance->SetLocaleInstanceData(Data_UnspecifiedType, UTGARDE_FORGE_MASTER, 0);
+                pInstance->SetLocaleInstanceData(0, UTGARDE_FORGE_MASTER, 0);
 
             ParentClass::OnDied(pKiller);
         };
@@ -503,7 +504,7 @@ class SkarvaldTheConstructorAI : public MoonScriptCreatureAI
         };
 
     private:
-        int32 mReplyTimer;
+        uint32 mReplyTimer;
         MoonScriptCreatureAI* pDalronn;
         MoonScriptCreatureAI* pDalronnGhost;
 };

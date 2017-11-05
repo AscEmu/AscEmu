@@ -1681,7 +1681,7 @@ class VoidReaverAI : public MoonScriptBossAI
             ParentClass::AIUpdate();
         }
 
-        int32 mArcaneOrbTimer;
+        uint32 mArcaneOrbTimer;
         SpellDesc* mArcaneOrb;
 };
 
@@ -1795,8 +1795,8 @@ class HighAstromancerSolarianAI : public MoonScriptBossAI
         SpellDesc* mDisappear;
         SpellDesc* mReappear;
         int32 mSplitTimer;
-        int32 mAgentsTimer;
-        int32 mSolarianTimer;
+        uint32 mAgentsTimer;
+        uint32 mSolarianTimer;
         float mSpawnPositions[3][2];
 };
 
@@ -3390,7 +3390,7 @@ class KaelThasAI : public MoonScriptBossAI
         int32 mArcaneDisruptionTimer;
         int32 mShockBarrierTimer;
         int32 mFlameStrikeTimer;
-        int32 mPhoenixTimer;
+        uint32 mPhoenixTimer;
         int32 mEventTimer;
 
         std::vector<LocationExtra> mAdvCoords;

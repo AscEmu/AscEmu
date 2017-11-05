@@ -40,12 +40,11 @@ static Movement::Location Guards[] =
     { -89.6744f, -694.063f, 8.43202f, 0 }  //Parrot
 };
 
-//class DeadminesInstanceScript : public MoonInstanceScript
+//class DeadminesInstanceScript : public InstanceScript
 //{
 //    public:
 //
-//        MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(DeadminesInstanceScript, MoonInstanceScript);
-//        DeadminesInstanceScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
+//        DeadminesInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
 //        {
 //            mFactoryDoor_GUID = 0;
 //            mDefiasCannon_GUID = 0;
@@ -54,6 +53,8 @@ static Movement::Location Guards[] =
 //            mIronCladDoor_GUID = 0;
 //            InstanceEncounter = 0;
 //        }
+//
+//        static InstanceScript* Create(MapMgr* pMapMgr) { return new DeadminesInstanceScript(pMapMgr); }
 //
 //        void OnGameObjectPushToWorld(GameObject* pGameObject)
 //        {
@@ -289,7 +290,7 @@ class MrSmiteAI : public MoonScriptBossAI
     protected:
 
         SpellDesc* mStomp;
-        int mWaitAtChest;
+        uint32 mWaitAtChest;
 };
 
 

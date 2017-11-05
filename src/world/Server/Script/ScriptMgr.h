@@ -583,20 +583,7 @@ class SERVER_DECL InstanceScript
 
         // Standard virtual methods
         virtual void OnLoad() {}
-        virtual void UpdateEvent()
-        {
-            for (auto& TimerIter : mTimers)
-            {
-                if (TimerIter.second > 0)
-                {
-                    int leftTime = TimerIter.second - getUpdateFrequency();
-                    if (leftTime > 0)
-                        TimerIter.second -= getUpdateFrequency();
-                    else
-                        TimerIter.second = 0;
-                }
-            }
-        }
+        virtual void UpdateEvent() {}
 
         virtual void Destroy() {}
 
@@ -643,6 +630,9 @@ class SERVER_DECL InstanceScript
         bool isTimerFinished(uint32_t timerId);
         void cancelAllTimers();
 
+        //only for internal use!
+        void updateTimers();
+
         //used for debug
         void displayTimerList(Player* player);
 
@@ -665,6 +655,8 @@ class SERVER_DECL InstanceScript
         //////////////////////////////////////////////////////////////////////////////////////////
         // misc
 
+        void setCellForcedStates(float xMin, float xMax, float yMin, float yMax, bool forceActive = true);
+
         Creature* spawnCreature(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId = 0);
         Creature* getCreatureBySpawnId(uint32_t entry);
         Creature* GetCreatureByGuid(uint32_t guid);
@@ -684,12 +676,14 @@ class SERVER_DECL InstanceScript
 
         void setGameObjectStateForEntry(uint32_t entry, uint8_t state);
 
-        bool spawnsCreated() { return mSpawnsCreated; }
-        void setSpawnsCreated(bool created = true) { mSpawnsCreated = created; }
-
     private:
 
         bool mSpawnsCreated;
+
+    public:
+
+        bool spawnsCreated() { return mSpawnsCreated; }
+        void setSpawnsCreated(bool created = true) { mSpawnsCreated = created; }
 
     protected:
 

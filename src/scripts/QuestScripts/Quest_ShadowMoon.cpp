@@ -173,7 +173,7 @@ public:
         }
     }
 
-    int32    mJovaanTimer;
+    uint32    mJovaanTimer;
     int32    mJovaanPhase;
 };
 
@@ -243,7 +243,7 @@ public:
         ParentClass::AIUpdate();
     }
 
-    int32 mRazuunTimer;
+    uint32 mRazuunTimer;
     int32 mRazuunPhase;
 };
 

@@ -24,14 +24,14 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Stormwind Stockade
-class InstanceStormwindStockadeScript : public MoonInstanceScript
+class InstanceStormwindStockadeScript : public InstanceScript
 {
     public:
 
-        MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(InstanceStormwindStockadeScript, MoonInstanceScript);
-        InstanceStormwindStockadeScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
-        {
-        }
+        InstanceStormwindStockadeScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
+        {}
+
+        static InstanceScript* Create(MapMgr* pMapMgr) { return new InstanceStormwindStockadeScript(pMapMgr); }
 };
 
 // DeepfuryAI

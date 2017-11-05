@@ -26,16 +26,17 @@
 #include "Spell/SpellMgr.h"
 
 
-class BlackTempleScript : public MoonInstanceScript
+class BlackTempleScript : public InstanceScript
 {
     public:
 
-        MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(BlackTempleScript, MoonInstanceScript);
-        BlackTempleScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
+        BlackTempleScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
         {
             if (getData(CN_SUPREMUS) == Finished)
-                setGameObjectStateForEntry(185882, State_Active);    // Gate to Black Temple behind Supremus
+                setGameObjectStateForEntry(185882, GO_STATE_OPEN);    // Gate to Black Temple behind Supremus
         }
+
+        static InstanceScript* Create(MapMgr* pMapMgr) { return new BlackTempleScript(pMapMgr); }
 
         void OnCreatureDeath(Creature* pVictim, Unit* pKiller)
         {
@@ -43,7 +44,7 @@ class BlackTempleScript : public MoonInstanceScript
             switch (pVictim->GetEntry())
             {
                 case CN_SUPREMUS:
-                    setGameObjectStateForEntry(185882, State_Active);    // Gate to Black Temple behind Supremus
+                    setGameObjectStateForEntry(185882, GO_STATE_OPEN);    // Gate to Black Temple behind Supremus
                     break;
                 default:
                     break;
@@ -2675,7 +2676,7 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
         bool SpawnedEnsalvedSoul;
         int Phase;                  // do we have negative phase?
         int DeadSoulCount;          // negative count?
-        int32 mEnslavedSoulTimer;   // negative timer?
+        uint32 mEnslavedSoulTimer;   // negative timer?
         MoonScriptCreatureAI* mEoS;
         MoonScriptCreatureAI* mEoD;
         MoonScriptCreatureAI* mEoA;
