@@ -142,7 +142,7 @@ class GeneralBjarngrimAI : public MoonScriptBossAI
     {
         sendDBChatMessage(758);      // I am the greatest of my father's sons! Your end has come!
 
-        mStanceTimer = AddTimer(TIMER_STANCE_CHANGE + (RandomUInt(7) * 1000));
+        mStanceTimer = _addTimer(TIMER_STANCE_CHANGE + (RandomUInt(7) * 1000));
         switchStance(RandomUInt(2));
 
         ParentClass::OnCombatStart(pTarget);
@@ -174,7 +174,7 @@ class GeneralBjarngrimAI : public MoonScriptBossAI
 
     void AIUpdate()
     {
-        if (IsTimerFinished(mStanceTimer))
+        if (_isTimerFinished(mStanceTimer))
         {
             switch (GetPhase())
             {
@@ -193,7 +193,7 @@ class GeneralBjarngrimAI : public MoonScriptBossAI
             }
 
 
-            ResetTimer(mStanceTimer, TIMER_STANCE_CHANGE + (RandomUInt(7) * 1000));
+            _resetTimer(mStanceTimer, TIMER_STANCE_CHANGE + (RandomUInt(7) * 1000));
         }
 
         ParentClass::AIUpdate();
@@ -286,7 +286,7 @@ class Volkhan : public MoonScriptCreatureAI
     void OnCombatStart(Unit* pTarget)
     {
         sendDBChatMessage(769);      // It is you who have destroyed my children? You... shall... pay!
-        mStompTimer = AddTimer(TIMER_STOMP + (RandomUInt(6) * 1000));
+        mStompTimer = _addTimer(TIMER_STOMP + (RandomUInt(6) * 1000));
         mPhase = 0;
 
         ParentClass::OnCombatStart(pTarget);
@@ -321,19 +321,19 @@ class Volkhan : public MoonScriptCreatureAI
 
     void AIUpdate()
     {
-        if (IsTimerFinished(mStompTimer))
+        if (_isTimerFinished(mStompTimer))
         {
             if (m_bStomp == false)
             {
                 m_bStomp = true;
                 Announce("Volkhan prepares to shatter his Brittle Golems!");
                 CastSpellNowNoScheduling(mStomp);
-                ResetTimer(mStompTimer, 3000);
+                _resetTimer(mStompTimer, 3000);
             }
             else
             {
                 DoStomp();
-                ResetTimer(mStompTimer, TIMER_STOMP + (RandomUInt(6) * 1000));
+                _resetTimer(mStompTimer, TIMER_STOMP + (RandomUInt(6) * 1000));
             }
         }
 
@@ -541,7 +541,7 @@ class LokenAI : public MoonScriptCreatureAI
         sendChatMessage(CHAT_MSG_MONSTER_YELL, 14160, "I have witnessed the rise and fall of empires. The birth and extinction of entire species. Over countless millennia the foolishness of mortals has remained the only constant. Your presence here confirms this.");
 
         mNovaTimer = INVALIDATE_TIMER;
-        mRespondTimer = AddTimer(TIMER_RESPOND);
+        mRespondTimer = _addTimer(TIMER_RESPOND);
         RegisterAIUpdateEvent(1000);
         mSpeech = 1;
     }
@@ -558,7 +558,7 @@ class LokenAI : public MoonScriptCreatureAI
         else
             _applyAura(52961);
 
-        mNovaTimer = AddTimer(TIMER_NOVA);
+        mNovaTimer = _addTimer(TIMER_NOVA);
         _castOnInrangePlayers(PULSING_SHOCKWAVE_AURA);
 
         if (mInstance)
@@ -600,7 +600,7 @@ class LokenAI : public MoonScriptCreatureAI
 
     void AIUpdate()
     {
-        if (IsTimerFinished(mNovaTimer))
+        if (_isTimerFinished(mNovaTimer))
         {
             switch (RandomUInt(2))
             {
@@ -617,7 +617,7 @@ class LokenAI : public MoonScriptCreatureAI
 
             Announce("Loken begins to cast Lightning Nova!");
             CastSpellNowNoScheduling(mNova);
-            ResetTimer(mNovaTimer, TIMER_NOVA + (RandomUInt(8) * 1000));
+            _resetTimer(mNovaTimer, TIMER_NOVA + (RandomUInt(8) * 1000));
         }
 
         if (mSpeech == 4)
@@ -641,10 +641,10 @@ class LokenAI : public MoonScriptCreatureAI
             ++mSpeech;
         }
 
-        if (IsTimerFinished(mRespondTimer))
+        if (_isTimerFinished(mRespondTimer))
         {
             sendDBChatMessage(800);      // My master has shown me the future, and you have no place in it. Azeroth..
-            RemoveTimer(mRespondTimer);
+            _removeTimer(mRespondTimer);
             RemoveAIUpdateEvent();
         }
 

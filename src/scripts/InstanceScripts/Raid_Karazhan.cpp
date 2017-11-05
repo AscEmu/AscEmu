@@ -229,7 +229,7 @@ class MoroesAI : public MoonScriptBossAI
     void OnCombatStart(Unit* pTarget)
     {
         mEnrage->mEnabled = true;
-        mVanishTimer = AddTimer(35000);    //First vanish after 35sec
+        mVanishTimer = _addTimer(35000);    //First vanish after 35sec
         ParentClass::OnCombatStart(pTarget);
     }
 
@@ -248,20 +248,20 @@ class MoroesAI : public MoonScriptBossAI
                 CastSpell(mEnrage);
                 mEnrage->mEnabled = false;
             }
-            else if (IsTimerFinished(mVanishTimer) && !_isCasting())
+            else if (_isTimerFinished(mVanishTimer) && !_isCasting())
             {
                 SetPhase(2, mVanish);
-                mGarroteTimer = AddTimer(12000);
-                ResetTimer(mVanishTimer, 35000);
+                mGarroteTimer = _addTimer(12000);
+                _resetTimer(mVanishTimer, 35000);
             }
         }
         else if (GetPhase() == 2)
         {
-            if (IsTimerFinished(mGarroteTimer) && !_isCasting())
+            if (_isTimerFinished(mGarroteTimer) && !_isCasting())
             {
                 SetPhase(1, mGarrote);
                 _removeAura(MOROES_VANISH);
-                RemoveTimer(mGarroteTimer);
+                _removeTimer(mGarroteTimer);
             }
         }
         ParentClass::AIUpdate();

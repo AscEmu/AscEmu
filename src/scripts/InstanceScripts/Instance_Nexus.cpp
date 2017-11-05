@@ -51,7 +51,7 @@ class AnomalusAI : public MoonScriptBossAI
             sendDBChatMessage(4317);     // Chaos beckons.
             mSummon = 0;
             mRift = false;
-            mSummonTimer = AddTimer(_isHeroic() ? 14000 : 18000);   // check heroic
+            mSummonTimer = _addTimer(_isHeroic() ? 14000 : 18000);   // check heroic
 
             ParentClass::OnCombatStart(mTarget);
 
@@ -67,10 +67,10 @@ class AnomalusAI : public MoonScriptBossAI
             if (mSummon == 1)
                 ChargeRift();
 
-            if (IsTimerFinished(mSummonTimer) && mRift == false)
+            if (_isTimerFinished(mSummonTimer) && mRift == false)
             {
                 SummonRift(false);
-                ResetTimer(mSummonTimer, _isHeroic() ? 14000 : 18000);
+                _resetTimer(mSummonTimer, _isHeroic() ? 14000 : 18000);
             }
 
             if (mRift == true && (GetLinkedCreature() == NULL || !GetLinkedCreature()->isAlive()))

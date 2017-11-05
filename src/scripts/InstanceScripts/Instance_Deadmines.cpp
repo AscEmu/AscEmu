@@ -193,7 +193,7 @@ class MrSmiteAI : public MoonScriptBossAI
 
             SetPhase(1);
             SwitchWeapons();
-            RemoveTimer(mWaitAtChest);
+            _removeTimer(mWaitAtChest);
             ParentClass::OnCombatStop(pTarget);
         }
 
@@ -220,7 +220,7 @@ class MrSmiteAI : public MoonScriptBossAI
                 }
             }
 
-            if (IsTimerFinished(mWaitAtChest))
+            if (_isTimerFinished(mWaitAtChest))
                 MoveToPlayer();
 
             ParentClass::AIUpdate();
@@ -283,7 +283,7 @@ class MrSmiteAI : public MoonScriptBossAI
 
             // Wait at the chest for 4.5seconds -- Still needs work
             _unit->setAttackTimer(4500, false);
-            mWaitAtChest = AddTimer(4500);
+            mWaitAtChest = _addTimer(4500);
             SetPhase(GetPhase() + 1);
         }
 

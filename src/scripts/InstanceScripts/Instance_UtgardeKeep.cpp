@@ -444,17 +444,17 @@ class SkarvaldTheConstructorAI : public MoonScriptCreatureAI
         {
             sendDBChatMessage(4471);     // Dalronn! See if you can muster the nerve to join my attack!
             pDalronn = GetNearestCreature(CN_DALRONN);
-            mReplyTimer = AddTimer(2500);
+            mReplyTimer = _addTimer(2500);
 
             ParentClass::OnCombatStart(pTarget);
         };
 
         void AIUpdate()
         {
-            if (IsTimerFinished(mReplyTimer) && pDalronn != NULL)
+            if (_isTimerFinished(mReplyTimer) && pDalronn != NULL)
             {
                 pDalronn->sendChatMessage(CHAT_MSG_MONSTER_YELL, 13199, "By all means, don't assess the situation, you halfwit! Just jump into the fray!");
-                RemoveTimer(mReplyTimer);
+                _removeTimer(mReplyTimer);
             };
 
             ParentClass::AIUpdate();
@@ -519,13 +519,13 @@ class DalronnTheControllerAI : public MoonScriptCreatureAI
             {
                 AddSpell(SHADOW_BOLT_HC, Target_RandomPlayer, 85, 2, 3);
                 AddSpell(DEBILITATE, Target_RandomPlayer, 25, 0, 12);
-                mSummonTimer = AddTimer(15000);
+                mSummonTimer = _addTimer(15000);
             }
             else
             {
                 AddSpell(SHADOW_BOLT, Target_RandomPlayer, 35, 2, 8);
                 AddSpell(DEBILITATE, Target_RandomPlayer, 25, 0, 12);
-                mSummonTimer = AddTimer(15000);
+                mSummonTimer = _addTimer(15000);
             }
             pSkarvald = NULL;
             pSkarvaldGhost = NULL;
@@ -540,11 +540,11 @@ class DalronnTheControllerAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            if (IsTimerFinished(mSummonTimer))
+            if (_isTimerFinished(mSummonTimer))
             {
                 SpawnCreature(SKELETON_ADD, _unit->GetPositionX() + 6, _unit->GetPositionY() + 4, _unit->GetPositionZ(), 0, true);
                 SpawnCreature(SKELETON_ADD, _unit->GetPositionX() - 6, _unit->GetPositionY() + 4, _unit->GetPositionZ(), 0, true);
-                ResetTimer(mSummonTimer, 15000);
+                _resetTimer(mSummonTimer, 15000);
             };
 
             ParentClass::AIUpdate();

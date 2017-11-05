@@ -160,8 +160,6 @@ typedef std::vector<SpellDesc*> SpellDescArray;
 typedef std::list<SpellDesc*> SpellDescList;
 typedef std::pair<int32, SpellDesc*> PhaseSpellPair;
 typedef std::vector<PhaseSpellPair> PhaseSpellArray;
-typedef std::pair<int32, int32> TimerPair;
-typedef std::vector<TimerPair> TimerArray;
 typedef std::vector<LootDesc> LootTable;
 typedef std::pair<RangeStatus, float> RangeStatusPair;
 typedef std::vector<EventStruct*> EventArray;
@@ -311,15 +309,6 @@ class MoonScriptCreatureAI : public CreatureAIScript
 
         void Announce(const char* pText);
 
-        //Timers and Events
-        uint32 AddTimer(uint32 pDurationMillisec);
-        uint32 GetTimer(uint32 pTimerId);
-        void RemoveTimer(uint32 & pTimerId);
-        void ResetTimer(uint32 pTimerId, uint32 pDurationMillisec);
-        bool IsTimerFinished(uint32 pTimerId);
-        void CancelAllTimers();
-        uint32 GetTimerCount() { return mTimerCount; }
-
         int32 AddEvent(uint32 pEventId, int32 pTriggerTimer, EventFunc pEvent, int32 pMiscVal = 0, bool pRepeatable = false);
         void ResetEvent(uint32 pEventId, int32 pNewTriggerTimer, bool pRepeatable = false);
         void RemoveEvent(uint32 pEventId);
@@ -388,9 +377,6 @@ class MoonScriptCreatureAI : public CreatureAIScript
         EmoteArray mOnDiedEmotes;
         EmoteArray mOnTauntEmotes;
 
-        TimerArray mTimers;
-        int32 mTimerIdCounter;
-        uint32 mTimerCount;
         uint32 mEventCount;
         uint32 mAIUpdateFrequency;
         uint32 mBaseAttackTime;

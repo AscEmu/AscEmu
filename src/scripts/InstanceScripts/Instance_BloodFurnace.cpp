@@ -55,7 +55,7 @@ class KelidanTheBreakerAI : public MoonScriptBossAI
     {
         sendDBChatMessage(4841);     // Who dares interrupt--What is this; what have you done? You'll ruin everything!
 
-        mBurningNovaTimer = AddTimer(15000);
+        mBurningNovaTimer = _addTimer(15000);
         ParentClass::OnCombatStart(pTarget);
     }
 
@@ -63,13 +63,13 @@ class KelidanTheBreakerAI : public MoonScriptBossAI
     {
         if (!_isCasting())
         {
-            if (mBurningNovaTimer == INVALIDATE_TIMER || IsTimerFinished(mBurningNovaTimer))
+            if (mBurningNovaTimer == INVALIDATE_TIMER || _isTimerFinished(mBurningNovaTimer))
             {
                 if (_isHeroic())
                     CastSpell(mVortex);
                 CastSpell(mBurningNova);
 
-                ResetTimer(mBurningNovaTimer, 30000);
+                _resetTimer(mBurningNovaTimer, 30000);
 
                 ParentClass::AIUpdate();
             }

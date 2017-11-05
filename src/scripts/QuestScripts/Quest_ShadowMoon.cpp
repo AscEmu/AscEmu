@@ -89,7 +89,7 @@ public:
 
     void AIUpdate()
     {
-        if (IsTimerFinished(mJovaanTimer))
+        if (_isTimerFinished(mJovaanTimer))
         {
             switch (mJovaanPhase)
             {
@@ -107,7 +107,7 @@ public:
                     _unit->Emote(EMOTE_ONESHOT_TALK);
                     _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Everything is in readiness, warbringer.");
                     mJovaanPhase = 1;
-                    ResetTimer(mJovaanTimer, 6000);
+                    _resetTimer(mJovaanTimer, 6000);
                 }
                 break;
                 case 1:
@@ -115,14 +115,14 @@ public:
                     _unit->Emote(EMOTE_ONESHOT_TALK);
                     _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Warbringer, that will require the use of all the hold's infernals. It may leave us vulnerable to a counterattack.");
                     mJovaanPhase = 2;
-                    ResetTimer(mJovaanTimer, 11000);
+                    _resetTimer(mJovaanTimer, 11000);
                 }
                 break;
                 case 2:
                 {
                     _unit->SetStandState(STANDSTATE_STAND);
                     mJovaanPhase = 3;
-                    ResetTimer(mJovaanTimer, 1000);
+                    _resetTimer(mJovaanTimer, 1000);
                 }
                 break;
                 case 3:
@@ -130,7 +130,7 @@ public:
                     _unit->Emote(EMOTE_ONESHOT_SALUTE);
                     _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "It shall be as you say, warbringer. One last question, if I may...");
                     mJovaanPhase = 4;
-                    ResetTimer(mJovaanTimer, 10000);
+                    _resetTimer(mJovaanTimer, 10000);
                 }
                 break;
                 case 4:
@@ -138,14 +138,14 @@ public:
                     _unit->Emote(EMOTE_ONESHOT_QUESTION);
                     _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "What's in the crate?");
                     mJovaanPhase = 5;
-                    ResetTimer(mJovaanTimer, 10000);
+                    _resetTimer(mJovaanTimer, 10000);
                 }
                 break;
                 case 5:
                 {
                     _unit->Emote(EMOTE_ONESHOT_SALUTE);
                     mJovaanPhase = -1;
-                    RemoveTimer(mJovaanTimer);
+                    _removeTimer(mJovaanTimer);
                 }
                 break;
             }
@@ -162,7 +162,7 @@ public:
                 RegisterAIUpdateEvent(1000);
                 _unit->Emote(EMOTE_ONESHOT_POINT);
                 mJovaanPhase = 0;
-                mJovaanTimer = AddTimer(1500);
+                mJovaanTimer = _addTimer(1500);
             }
             break;
             case 4:
@@ -188,13 +188,13 @@ public:
     WarbringerRazuunAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         RegisterAIUpdateEvent(1000);
-        mRazuunTimer = AddTimer(800);
+        mRazuunTimer = _addTimer(800);
         mRazuunPhase = 0;
     }
 
     void AIUpdate()
     {
-        if (IsTimerFinished(mRazuunTimer))
+        if (_isTimerFinished(mRazuunTimer))
         {
             switch (mRazuunPhase)
             {
@@ -203,7 +203,7 @@ public:
                     _unit->Emote(EMOTE_ONESHOT_TALK);
                     _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Doom Lord Kazzak will be pleased. You are to increase the pace of your attacks. Destroy the orcish and dwarven strongholds with all haste.");
                     mRazuunPhase = 1;
-                    ResetTimer(mRazuunTimer, 9000);
+                    _resetTimer(mRazuunTimer, 9000);
                 }
                 break;
                 case 1:
@@ -211,7 +211,7 @@ public:
                     _unit->Emote(EMOTE_ONESHOT_TALK);
                     _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Don't worry about that. I've increased production at the Deathforge. You'll have all the infernals you need to carry out your orders. Don't fail, Jovaan.");
                     mRazuunPhase = 2;
-                    ResetTimer(mRazuunTimer, 15000);
+                    _resetTimer(mRazuunTimer, 15000);
                 }
                 break;
                 case 2:
@@ -219,7 +219,7 @@ public:
                     _unit->Emote(EMOTE_ONESHOT_QUESTION);
                     _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Yes?");
                     mRazuunPhase = 3;
-                    ResetTimer(mRazuunTimer, 8000);
+                    _resetTimer(mRazuunTimer, 8000);
                 }
                 break;
                 case 3:
@@ -227,13 +227,13 @@ public:
                     _unit->Emote(EMOTE_ONESHOT_QUESTION);
                     _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Crate? I didn't send you a crate, Jovaan. Don't you have more important things to worry about? Go see to them!");
                     mRazuunPhase = 4;
-                    ResetTimer(mRazuunTimer, 5000);
+                    _resetTimer(mRazuunTimer, 5000);
                 }
                 break;
                 case 4:
                 {
                     mRazuunPhase = -1;
-                    RemoveTimer(mRazuunTimer);
+                    _removeTimer(mRazuunTimer);
                     despawn(0, 0);
                     return;
                 }

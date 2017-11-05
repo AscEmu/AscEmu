@@ -392,6 +392,26 @@ class SERVER_DECL CreatureAIScript
 
         bool _isHeroic();
 
+        // timers
+        //\NOTE timers are stored and updated in InstanceScript every second and is no longer bound to AIUpdate().
+        //      they require a active InstanceScript. In case of Questscripts use AIInterface functions!
+        //      this solution works fine, most custom AIUpdate frequencies can be replaced by these timers.
+    private:
+
+        typedef std::list<uint32_t> creatureTimerIds;
+        creatureTimerIds mCreatureTimerIds;
+
+    public:
+
+        uint32 _addTimer(uint32 pDurationMillisec);
+        uint32 _getTimeForTimer(uint32 pTimerId);
+        void _removeTimer(uint32 & pTimerId);
+        void _resetTimer(uint32 pTimerId, uint32 pDurationMillisec);
+        bool _isTimerFinished(uint32 pTimerId);
+        void _cancelAllTimers();
+
+        uint32 _getTimerCount() { return mCreatureTimerIds.size(); }
+
         // appearance
         void _setScale(float scale);
         float _getScale();

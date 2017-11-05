@@ -245,25 +245,25 @@ class KrystallusAI : public MoonScriptCreatureAI
     {
         sendDBChatMessage(4363);      // Crush....
 
-        mStompTimer = AddTimer(STOMP_TIMER);
+        mStompTimer = _addTimer(STOMP_TIMER);
         ParentClass::OnCombatStart(pTarget);
     }
 
     void AIUpdate()
     {
-        if (IsTimerFinished(mStompTimer))
+        if (_isTimerFinished(mStompTimer))
         {
             CastSpellNowNoScheduling(mStomp);
             setRooted(true);
-            ResetTimer(mStompTimer, (STOMP_TIMER + SHATTER_TIMER));
-            mShatterTimer = AddTimer(SHATTER_TIMER);
+            _resetTimer(mStompTimer, (STOMP_TIMER + SHATTER_TIMER));
+            mShatterTimer = _addTimer(SHATTER_TIMER);
 
         }
-        if (IsTimerFinished(mShatterTimer))
+        if (_isTimerFinished(mShatterTimer))
         {
             CastSpellNowNoScheduling(mShatter);
             setRooted(false);
-            RemoveTimer(mShatterTimer);
+            _removeTimer(mShatterTimer);
         }
     }
 

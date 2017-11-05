@@ -54,7 +54,7 @@ class NalorakkAI : public MoonScriptBossAI
         void OnCombatStart(Unit* pTarget)
         {
             // 45 Seconds until switch to Bear Form
-            MorphTimer = AddTimer(45000);
+            MorphTimer = _addTimer(45000);
 
             ParentClass::OnCombatStart(pTarget);
         }
@@ -80,17 +80,17 @@ class NalorakkAI : public MoonScriptBossAI
             ParentClass::AIUpdate();
 
             // Bear Form
-            if (IsTimerFinished(MorphTimer) && GetPhase() == 1)
+            if (_isTimerFinished(MorphTimer) && GetPhase() == 1)
             {
                 SetPhase(2, Morph);
                 // Morph into a bear since the spell doesnt work
                 _setDisplayId(21635);
                 // 20 Seconds until switch to Troll Form
-                ResetTimer(MorphTimer, 20000);
+                _resetTimer(MorphTimer, 20000);
             }
 
             // Troll Form
-            else if (IsTimerFinished(MorphTimer) && GetPhase() == 2)
+            else if (_isTimerFinished(MorphTimer) && GetPhase() == 2)
             {
                 // Remove Bear Form
                 _removeAura(42377);
@@ -98,7 +98,7 @@ class NalorakkAI : public MoonScriptBossAI
                 _setDisplayId(21631);
                 SetPhase(1);
                 // 45 Seconds until switch to Bear Form
-                ResetTimer(MorphTimer, 45000);
+                _resetTimer(MorphTimer, 45000);
 
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 12073, "Make way for Nalorakk!");
             }
@@ -130,7 +130,7 @@ class AkilzonAI : public MoonScriptBossAI
         void OnCombatStart(Unit* pTarget)
         {
             // 2 Minute timer till Soaring Eagles are spawned
-            mSummonTime = AddTimer(120000);
+            mSummonTime = _addTimer(120000);
 
             ParentClass::OnCombatStart(pTarget);
         }
@@ -139,7 +139,7 @@ class AkilzonAI : public MoonScriptBossAI
         {
             ParentClass::AIUpdate();
 
-            if (IsTimerFinished(mSummonTime))
+            if (_isTimerFinished(mSummonTime))
             {
                 MoonScriptCreatureAI* Eagle = NULL;
                 // Spawn 3 Soaring Eagles
@@ -156,7 +156,7 @@ class AkilzonAI : public MoonScriptBossAI
                 Eagle = NULL;
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 12019, "Feed, me bruddahs!");
                 // Restart the timer
-                ResetTimer(mSummonTime, 120000);
+                _resetTimer(mSummonTime, 120000);
             }
         }
 
@@ -208,7 +208,7 @@ class HalazziAI : public MoonScriptBossAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            mTotemTimer = AddTimer(5000); // Just to make the Timer ID
+            mTotemTimer = _addTimer(5000); // Just to make the Timer ID
             SplitCount = 1;
             MaxHealth = _unit->getUInt32Value(UNIT_FIELD_MAXHEALTH);
             mLynx = NULL;
@@ -236,13 +236,13 @@ class HalazziAI : public MoonScriptBossAI
             // At <25% Phase 3 begins
             if (_getHealthPercent() < 25 && GetPhase() == 1)
             {
-                ResetTimer(mTotemTimer, 30000);
+                _resetTimer(mTotemTimer, 30000);
                 SetPhase(3);
             }
 
             if (GetPhase() == 2 || GetPhase() == 3)
             {
-                if (IsTimerFinished(mTotemTimer))
+                if (_isTimerFinished(mTotemTimer))
                 {
                     MoonScriptCreatureAI* Totem = NULL;
                     Totem = SpawnCreature(CN_TOTEM, (_unit->GetPositionX() + RandomFloat(3) - 3), (_unit->GetPositionY() + RandomFloat(3) - 3), _unit->GetPositionZ(), 0, true);
@@ -255,10 +255,10 @@ class HalazziAI : public MoonScriptBossAI
                     switch (GetPhase())
                     {
                         case 2:
-                            ResetTimer(mTotemTimer, 60000);
+                            _resetTimer(mTotemTimer, 60000);
                             break;
                         case 3:
-                            ResetTimer(mTotemTimer, 30000);
+                            _resetTimer(mTotemTimer, 30000);
                             break; // Spawn them faster then phase 2
                     }
                 }

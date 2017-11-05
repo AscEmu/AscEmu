@@ -289,9 +289,9 @@ MaexxnaAI::MaexxnaAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
 void MaexxnaAI::OnCombatStart(Unit* pTarget)
 {
     ParentClass::OnCombatStart(pTarget);
-    mAddsSummonTimer = AddTimer(30000);
-    mWebSprayTimer = AddTimer(40000);
-    mWebWrapTimer = AddTimer(20000);
+    mAddsSummonTimer = _addTimer(30000);
+    mWebSprayTimer = _addTimer(40000);
+    mWebWrapTimer = _addTimer(20000);
     mHasEnraged = false;
     if (RandomUInt(1) == 1)
         mLeftWall = !mLeftWall;
@@ -300,12 +300,12 @@ void MaexxnaAI::OnCombatStart(Unit* pTarget)
 void MaexxnaAI::OnCombatStop(Unit* pTarget)
 {
     ParentClass::OnCombatStop(pTarget);
-    RemoveTimer(mWebWrapTimer);
+    _removeTimer(mWebWrapTimer);
 };
 
 void MaexxnaAI::AIUpdate()
 {
-    if (IsTimerFinished(mAddsSummonTimer))
+    if (_isTimerFinished(mAddsSummonTimer))
     {
         MoonScriptCreatureAI* Spiderling = NULL;
         for (uint8 i = 0; i < 8; ++i)
@@ -319,7 +319,7 @@ void MaexxnaAI::AIUpdate()
             }
         }
 
-        ResetTimer(mAddsSummonTimer, 40000);
+        _resetTimer(mAddsSummonTimer, 40000);
     }
 
     if (!_isCasting())
@@ -333,22 +333,22 @@ void MaexxnaAI::AIUpdate()
 
             mHasEnraged = true;
         }
-        else if (IsTimerFinished(mWebSprayTimer))
+        else if (_isTimerFinished(mWebSprayTimer))
         {
             if (_isHeroic())
                 _applyAura(MAEXXNA_WEB_SPRAY_HEROIC);
             else
                 _applyAura(MAEXXNA_WEB_SPRAY_NORMAL);
 
-            ResetTimer(mWebSprayTimer, 40000);
+            _resetTimer(mWebSprayTimer, 40000);
         }
-        else if (IsTimerFinished(mWebWrapTimer))
+        else if (_isTimerFinished(mWebWrapTimer))
         {
             if (_isHeroic())
                 CastSpellNowNoScheduling(mWebWrapProc);
 
             CastSpellNowNoScheduling(mWebWrapProc);
-            ResetTimer(mWebWrapTimer, 40000);
+            _resetTimer(mWebWrapTimer, 40000);
         }
     }
 
@@ -433,18 +433,18 @@ void NaxxramasWorshipperAI::OnDied(Unit* pKiller)
             _unit->AddAura(WidowEmbrace);
 
             // Not sure about new Frenzy Timer
-            mGrandWidow->ResetTimer(mGrandWidow->mFrenzyTimer, 60000 + RandomUInt(20) * 1000);
+            mGrandWidow->_resetTimer(mGrandWidow->mFrenzyTimer, 60000 + RandomUInt(20) * 1000);
             if (mGrandWidow->GetUnit()->HasAura(GRAND_WIDOW_FAERLINA_FRENZY_NORMAL))
                 mGrandWidow->GetUnit()->RemoveAura(GRAND_WIDOW_FAERLINA_FRENZY_NORMAL);    // Really needed ?
             else if (mGrandWidow->GetUnit()->HasAura(GRAND_WIDOW_FAERLINA_FRENZY_HEROIC))
                 mGrandWidow->GetUnit()->RemoveAura(GRAND_WIDOW_FAERLINA_FRENZY_HEROIC);    // Really needed ?
             else
             {
-                mGrandWidow->ResetTimer(mGrandWidow->mPoisonVolleyBoltTimer, 30000);
+                mGrandWidow->_resetTimer(mGrandWidow->mPoisonVolleyBoltTimer, 30000);
                 return;
             }
 
-            mGrandWidow->ResetTimer(mGrandWidow->mPoisonVolleyBoltTimer, 60000);
+            mGrandWidow->_resetTimer(mGrandWidow->mPoisonVolleyBoltTimer, 60000);
         }
     }
 };
@@ -625,8 +625,8 @@ GrandWidowFaerlinaAI::GrandWidowFaerlinaAI(Creature* pCreature) : MoonScriptBoss
 void GrandWidowFaerlinaAI::OnCombatStart(Unit* pTarget)
 {
     ParentClass::OnCombatStart(pTarget);
-    mPoisonVolleyBoltTimer = AddTimer(15000);
-    mFrenzyTimer = AddTimer(60000 + RandomUInt(20) * 1000);
+    mPoisonVolleyBoltTimer = _addTimer(15000);
+    mFrenzyTimer = _addTimer(60000 + RandomUInt(20) * 1000);
 
     GameObject* WebGate = getNearestGameObject(3318.65f, -3695.85f, 259.094f, 181235);
     if (WebGate != NULL)
@@ -704,15 +704,15 @@ void GrandWidowFaerlinaAI::AIUpdate()
 {
     if (!_isCasting())
     {
-        if (IsTimerFinished(mPoisonVolleyBoltTimer))
+        if (_isTimerFinished(mPoisonVolleyBoltTimer))
         {
             CastSpellNowNoScheduling(mPoisonVolleyBolt);
-            ResetTimer(mPoisonVolleyBoltTimer, 15000);
+            _resetTimer(mPoisonVolleyBoltTimer, 15000);
         }
-        else if (IsTimerFinished(mFrenzyTimer))
+        else if (_isTimerFinished(mFrenzyTimer))
         {
             CastSpellNowNoScheduling(mFrenzy);
-            ResetTimer(mFrenzyTimer, 60000 + RandomUInt(20) * 1000);
+            _resetTimer(mFrenzyTimer, 60000 + RandomUInt(20) * 1000);
         }
     }
 
@@ -851,7 +851,7 @@ AnubRekhanAI::AnubRekhanAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
 void AnubRekhanAI::OnCombatStart(Unit* pTarget)
 {
     ParentClass::OnCombatStart(pTarget);
-    mLocustSwarmTimer = AddTimer(70000 + RandomUInt(50) * 1000);
+    mLocustSwarmTimer = _addTimer(70000 + RandomUInt(50) * 1000);
 
     if (_isHeroic())
     {
@@ -861,7 +861,7 @@ void AnubRekhanAI::OnCombatStart(Unit* pTarget)
         }
     }
     else
-        mCryptSpawnTimer = AddTimer(20000);
+        mCryptSpawnTimer = _addTimer(20000);
 };
 
 void AnubRekhanAI::OnCombatStop(Unit* pTarget)
@@ -907,9 +907,9 @@ void AnubRekhanAI::AIUpdate()
 {
     if (!_isCasting())
     {
-        if (mCryptSpawnTimer != INVALIDATE_TIMER && IsTimerFinished(mCryptSpawnTimer))
+        if (mCryptSpawnTimer != INVALIDATE_TIMER && _isTimerFinished(mCryptSpawnTimer))
         {
-            RemoveTimer(mCryptSpawnTimer);
+            _removeTimer(mCryptSpawnTimer);
             CryptGuardAI* CryptAI = static_cast< CryptGuardAI* >(SpawnCreature(CN_CRYPT_GUARD, CryptGuards[2].x, CryptGuards[2].y, CryptGuards[2].z, CryptGuards[2].o));
             if (CryptAI != NULL)
             {
@@ -920,7 +920,7 @@ void AnubRekhanAI::AIUpdate()
             }
         }
 
-        if (IsTimerFinished(mLocustSwarmTimer))
+        if (_isTimerFinished(mLocustSwarmTimer))
         {
             CryptGuardAI* CryptAI = static_cast< CryptGuardAI* >(SpawnCreature(CN_CRYPT_GUARD, CryptGuards[2].x, CryptGuards[2].y, CryptGuards[2].z, CryptGuards[2].o));
             if (CryptAI != NULL)
@@ -932,7 +932,7 @@ void AnubRekhanAI::AIUpdate()
             }
 
             CastSpellNowNoScheduling(mLocustSwarm);
-            mLocustSwarmTimer = AddTimer(70000 + RandomUInt(50) * 1000);
+            mLocustSwarmTimer = _addTimer(70000 + RandomUInt(50) * 1000);
         }
     }
 
@@ -1277,10 +1277,10 @@ void NothThePlaguebringerAI::OnCombatStart(Unit* pTarget)
 {
     ParentClass::OnCombatStart(pTarget);
     if (_isHeroic())
-        mBlinkTimer = AddTimer(28000 + RandomUInt(12) * 1000);
+        mBlinkTimer = _addTimer(28000 + RandomUInt(12) * 1000);
 
-    mPhaseSwitchTimer = AddTimer(110000);
-    mSkeletonTimer = AddTimer(8000);
+    mPhaseSwitchTimer = _addTimer(110000);
+    mSkeletonTimer = _addTimer(8000);
     mPhaseCounter = 0;
 
     if (_unit->GetMapMgr() != NULL && _unit->GetMapMgr()->GetInterface() != NULL)
@@ -1340,11 +1340,11 @@ void NothThePlaguebringerAI::AIUpdate()
     {
         if (!_isCasting())
         {
-            if (mPhaseCounter < 3 && IsTimerFinished(mPhaseSwitchTimer))
+            if (mPhaseCounter < 3 && _isTimerFinished(mPhaseSwitchTimer))
             {
                 SetPhase(2, mToBalconySwitch);
-                ResetTimer(mPhaseSwitchTimer, 70000);
-                ResetTimer(mSkeletonTimer, 0);
+                _resetTimer(mPhaseSwitchTimer, 70000);
+                _resetTimer(mSkeletonTimer, 0);
                 ++mPhaseCounter;
                 return;
             }
@@ -1355,14 +1355,14 @@ void NothThePlaguebringerAI::AIUpdate()
                 ++mPhaseCounter;
             }
 
-            if (_isHeroic() && IsTimerFinished(mBlinkTimer))
+            if (_isHeroic() && _isTimerFinished(mBlinkTimer))
             {
                 CastSpellNowNoScheduling(mCriple);
-                ResetTimer(mBlinkTimer, 28000 + (RandomUInt(1, 12) * 1000));
+                _resetTimer(mBlinkTimer, 28000 + (RandomUInt(1, 12) * 1000));
             }
         }
 
-        if (IsTimerFinished(mSkeletonTimer))
+        if (_isTimerFinished(mSkeletonTimer))
         {
             uint32 SkelLimit = 2;
             if (_isHeroic())
@@ -1404,24 +1404,24 @@ void NothThePlaguebringerAI::AIUpdate()
             }
 
             sendChatMessage(CHAT_MSG_MONSTER_YELL, 8851, "Rise, my soldiers! Rise and fight once more!");
-            ResetTimer(mSkeletonTimer, 30000);
+            _resetTimer(mSkeletonTimer, 30000);
             PosTaken[Id] = true;
         }
     }
     else
     {
-        if (!_isCasting() && IsTimerFinished(mPhaseSwitchTimer))
+        if (!_isCasting() && _isTimerFinished(mPhaseSwitchTimer))
         {
             SetPhase(1, mFromBalconySwitch);
-            ResetTimer(mPhaseSwitchTimer, 70000);
-            ResetTimer(mSkeletonTimer, 8000);
+            _resetTimer(mPhaseSwitchTimer, 70000);
+            _resetTimer(mSkeletonTimer, 8000);
             if (_isHeroic())
-                ResetTimer(mBlinkTimer, 28000 + (RandomUInt(12)) * 1000);
+                _resetTimer(mBlinkTimer, 28000 + (RandomUInt(12)) * 1000);
 
             return;
         }
 
-        if (IsTimerFinished(mSkeletonTimer))
+        if (_isTimerFinished(mSkeletonTimer))
         {
             uint32 SpawnLimit = 2;
             if (_isHeroic())
@@ -1492,7 +1492,7 @@ void NothThePlaguebringerAI::AIUpdate()
                 }
             }
 
-            ResetTimer(mSkeletonTimer, 35000);
+            _resetTimer(mSkeletonTimer, 35000);
             PosTaken[Id] = true;
         }
     }
@@ -1728,7 +1728,7 @@ void HeiganTheUncleanAI::CallEruptionEvent(int32 pTimerId, int32 pNewTime)
         }
     }
 
-    ResetTimer(pTimerId, pNewTime);
+    _resetTimer(pTimerId, pNewTime);
     if (mEruptionPhase == 0)
         mClockWiseEruption = false;
     else if (mEruptionPhase == 3)
@@ -1743,8 +1743,8 @@ void HeiganTheUncleanAI::CallEruptionEvent(int32 pTimerId, int32 pNewTime)
 void HeiganTheUncleanAI::OnCombatStart(Unit* pTarget)
 {
     ParentClass::OnCombatStart(pTarget);
-    mPhaseSwitchTimer = AddTimer(90000);
-    mEruptionTimer = AddTimer(8000);
+    mPhaseSwitchTimer = _addTimer(90000);
+    mEruptionTimer = _addTimer(8000);
     mEruptionPhase = 3;
     mClockWiseEruption = true;
 
@@ -1810,7 +1810,7 @@ void HeiganTheUncleanAI::AIUpdate()
 {
     if (GetPhase() == 1)
     {
-        if (!_isCasting() && IsTimerFinished(mPhaseSwitchTimer))
+        if (!_isCasting() && _isTimerFinished(mPhaseSwitchTimer))
         {
             _applyAura(HEIGAN_THE_UNCLEAN_TELEPORT);
             sendChatMessage(CHAT_MSG_MONSTER_YELL, 8833, "The end is uppon you!");
@@ -1821,27 +1821,27 @@ void HeiganTheUncleanAI::AIUpdate()
             stopMovement();
             SetPhase(2);
             mEruptionPhase = 3;
-            ResetTimer(mPhaseSwitchTimer, 45000);
-            ResetTimer(mEruptionTimer, 3000);
+            _resetTimer(mPhaseSwitchTimer, 45000);
+            _resetTimer(mEruptionTimer, 3000);
             return;
         }
 
-        if (IsTimerFinished(mEruptionTimer))
+        if (_isTimerFinished(mEruptionTimer))
             CallEruptionEvent(mEruptionTimer, 8000);
     }
     else
     {
-        if (!_isCasting() && IsTimerFinished(mPhaseSwitchTimer))
+        if (!_isCasting() && _isTimerFinished(mPhaseSwitchTimer))
         {
             SetTargetToChannel(NULL, 0);
             SetBehavior(Behavior_Default);
             setRooted(false);
             SetPhase(1);
-            ResetTimer(mPhaseSwitchTimer, 90000);
+            _resetTimer(mPhaseSwitchTimer, 90000);
             return;
         }
 
-        if (IsTimerFinished(mEruptionTimer))
+        if (_isTimerFinished(mEruptionTimer))
             CallEruptionEvent(mEruptionTimer, 3000);
     }
 
@@ -1931,9 +1931,9 @@ void LoathebAI::OnCombatStart(Unit* pTarget)
 {
     ParentClass::OnCombatStart(pTarget);
     mDoomStaticTimer = 120000;
-    mSporeTimer = AddTimer(30000);
-    mDoomTimer = AddTimer(mDoomStaticTimer);
-    mDeathbloomTimer = AddTimer(30000);
+    mSporeTimer = _addTimer(30000);
+    mDoomTimer = _addTimer(mDoomStaticTimer);
+    mDeathbloomTimer = _addTimer(30000);
     mDeathbloomDamagePhase = false;
 };
 
@@ -1951,7 +1951,7 @@ void LoathebAI::OnCombatStop(Unit* pTarget)
 
 void LoathebAI::AIUpdate()
 {
-    if (IsTimerFinished(mSporeTimer))
+    if (_isTimerFinished(mSporeTimer))
     {
         bool PosTaken[4];
         for (uint8 i = 0; i < 4; ++i)
@@ -1986,13 +1986,13 @@ void LoathebAI::AIUpdate()
             }
         }
 
-        ResetTimer(mSporeTimer, 30000);
+        _resetTimer(mSporeTimer, 30000);
         PosTaken[Id] = true;
     }
 
     if (!_isCasting())
     {
-        if (IsTimerFinished(mDoomTimer))
+        if (_isTimerFinished(mDoomTimer))
         {
             if (_isHeroic())
                 _applyAura(LOATHEB_INEVITABLE_DOOM_HEROIC);
@@ -2007,9 +2007,9 @@ void LoathebAI::AIUpdate()
                     mDoomStaticTimer -= 21000;
             }
 
-            ResetTimer(mDoomTimer, mDoomStaticTimer);
+            _resetTimer(mDoomTimer, mDoomStaticTimer);
         }
-        else if (IsTimerFinished(mDeathbloomTimer))
+        else if (_isTimerFinished(mDeathbloomTimer))
         {
             if (mDeathbloomDamagePhase)
             {
@@ -2032,7 +2032,7 @@ void LoathebAI::AIUpdate()
                         PlayerPtr->CastSpell(PlayerPtr, LOATHEB_DEATHBLOOM_DAMAGE_NORMAL, true);
                 }
 
-                ResetTimer(mDeathbloomTimer, 25000);
+                _resetTimer(mDeathbloomTimer, 25000);
             }
             else
             {
@@ -2041,7 +2041,7 @@ void LoathebAI::AIUpdate()
                 else
                     _applyAura(LOATHEB_DEATHBLOOM_NORMAL);
 
-                ResetTimer(mDeathbloomTimer, 5000);
+                _resetTimer(mDeathbloomTimer, 5000);
             }
 
             mDeathbloomDamagePhase = !mDeathbloomDamagePhase;
@@ -2192,7 +2192,7 @@ void ShadeOfNaxxramasAI::Destroy()
 PortalOfShadowsAI::PortalOfShadowsAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
 {
     RegisterAIUpdateEvent(1000);
-    mSpawnTimer = AddTimer(15000);
+    mSpawnTimer = _addTimer(15000);
     mShadeAI = NULL;
 
     // We do not consider using a spell that summons these portals by anyone else than Shade of Naxxramas.
@@ -2221,7 +2221,7 @@ void PortalOfShadowsAI::OnCombatStart(Unit* pTarget)
 void PortalOfShadowsAI::OnCombatStop(Unit* pTarget)
 {
     CancelAllSpells();
-    CancelAllTimers();
+    _cancelAllTimers();
     setRooted(false);
     SetBehavior(Behavior_Default);
 };
@@ -2230,7 +2230,7 @@ void PortalOfShadowsAI::AIUpdate()
 {
     if (mShadeAI != NULL && mShadeAI->GetUnit()->GetAIInterface()->getNextTarget() != NULL)
     {
-        if (IsTimerFinished(mSpawnTimer))
+        if (_isTimerFinished(mSpawnTimer))
         {
             MoonScriptCreatureAI* Ghost = SpawnCreature(CN_GHOST_OF_NAXXRAMAS, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), true);
             if (Ghost != NULL)
@@ -2240,7 +2240,7 @@ void PortalOfShadowsAI::AIUpdate()
                 Ghost->AggroNearestPlayer(200);
             }
 
-            ResetTimer(mSpawnTimer, 15000);
+            _resetTimer(mSpawnTimer, 15000);
         }
     }
     else
@@ -2445,15 +2445,15 @@ DarkTouchedWarriorAI::DarkTouchedWarriorAI(Creature* pCreature) : MoonScriptCrea
 void DarkTouchedWarriorAI::OnCombatStart(Unit* pTarget)
 {
     ParentClass::OnCombatStart(pTarget);
-    mResetHateTimer = AddTimer(8000 + RandomUInt(7) * 1000);
+    mResetHateTimer = _addTimer(8000 + RandomUInt(7) * 1000);
 };
 
 void DarkTouchedWarriorAI::AIUpdate()
 {
-    if (!_isCasting() && IsTimerFinished(mResetHateTimer))
+    if (!_isCasting() && _isTimerFinished(mResetHateTimer))
     {
         _clearHateList();
-        mResetHateTimer = AddTimer(8000 + RandomUInt(7) * 1000);
+        mResetHateTimer = _addTimer(8000 + RandomUInt(7) * 1000);
     }
 
     ParentClass::AIUpdate();

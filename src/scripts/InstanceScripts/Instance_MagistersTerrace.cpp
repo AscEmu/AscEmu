@@ -236,7 +236,7 @@ class Priestess_DelrissaAI : public MoonScriptBossAI
         AddSpell(PRIESTESS_DELRISSA_POWERWORD_SHIELD, Target_RandomFriendly, 32, 0, 15, 0, 40);
         AddSpell(PRIESTESS_DELRISSA_RENEW, Target_RandomFriendly, 30, 0, 18, 0, 40);
 
-        mClearHateList = AddTimer(15000);
+        mClearHateList = _addTimer(15000);
         mKilledPlayers = 0;
     }
 
@@ -285,11 +285,11 @@ class Priestess_DelrissaAI : public MoonScriptBossAI
 
     void AIUpdate()
     {
-        if (IsTimerFinished(mClearHateList))
+        if (_isTimerFinished(mClearHateList))
         {
             _clearHateList();
             AggroRandomUnit();
-            ResetTimer(mClearHateList, 15000);
+            _resetTimer(mClearHateList, 15000);
         }
 
         ParentClass::AIUpdate();

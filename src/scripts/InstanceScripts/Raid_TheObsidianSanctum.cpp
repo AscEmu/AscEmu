@@ -209,7 +209,7 @@ class SartharionAI : public MoonScriptBossAI
 
             if (m_iDrakeCount >= 1)   //HardMode!
             {
-                mDrakeTimer = AddTimer(30000);
+                mDrakeTimer = _addTimer(30000);
                 _applyAura(SARTHARION_AURA);
                 _removeAuraOnPlayers(SARTHARION_AURA);   // unproper hackfix
                 _regenerateHealth();// Lets heal him as aura increase his hp for 25%
@@ -222,7 +222,7 @@ class SartharionAI : public MoonScriptBossAI
         {
             if (m_iDrakeCount >= 1)
             {
-                if (IsTimerFinished(mDrakeTimer))
+                if (_isTimerFinished(mDrakeTimer))
                 {
                     if (m_bDrakes[DRAKE_TENEBRON] == true)
                         CallTenebron();
@@ -231,7 +231,7 @@ class SartharionAI : public MoonScriptBossAI
                     else if (m_bDrakes[DRAKE_VESPERON] == true)
                         CallVesperon();
 
-                    ResetTimer(mDrakeTimer, 45000);
+                    _resetTimer(mDrakeTimer, 45000);
                 }
             }
 

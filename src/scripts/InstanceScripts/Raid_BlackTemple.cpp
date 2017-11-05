@@ -806,15 +806,15 @@ class EnslavedServantAI : public MoonScriptCreatureAI
         void OnCombatStart(Unit* pTarget)
         {
             ParentClass::OnCombatStart(pTarget);
-            mHealthResetTimer = AddTimer(45000);    // to check
+            mHealthResetTimer = _addTimer(45000);    // to check
         }
 
         void AIUpdate()
         {
-            if (IsTimerFinished(mHealthResetTimer))
+            if (_isTimerFinished(mHealthResetTimer))
             {
                 _unit->SetHealth(_unit->getUInt32Value(UNIT_FIELD_MAXHEALTH));    // Found such note about this mob
-                ResetTimer(mHealthResetTimer, 45000);
+                _resetTimer(mHealthResetTimer, 45000);
             }
 
             ParentClass::AIUpdate();
@@ -2569,7 +2569,7 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
                                 pEoS->Emote(EMOTE_ONESHOT_SUBMERGE);
                                 pEoS->Despawn(100, 0);
                                 Phase = 2;
-                                mEnslavedSoulTimer = AddTimer(5000);
+                                mEnslavedSoulTimer = _addTimer(5000);
                             }
                         }
                     }
@@ -2598,7 +2598,7 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
                                 pEoD->Emote(EMOTE_ONESHOT_SUBMERGE);
                                 pEoD->Despawn(100, 0);
                                 Phase = 5;
-                                mEnslavedSoulTimer = AddTimer(5000);
+                                mEnslavedSoulTimer = _addTimer(5000);
                             }
                             else
                             {
@@ -2633,9 +2633,9 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
                 case 5:
                     {
                         _unit->Emote(EMOTE_STATE_STAND);
-                        if (IsTimerFinished(mEnslavedSoulTimer) && !SpawnedEnsalvedSoul)
+                        if (_isTimerFinished(mEnslavedSoulTimer) && !SpawnedEnsalvedSoul)
                         {
-                            RemoveTimer(mEnslavedSoulTimer);
+                            _removeTimer(mEnslavedSoulTimer);
                             SpawnedEnsalvedSoul = true;
                             MoonScriptCreatureAI* pSpawnedEnsalvedSoul;
                             for (uint8 i = 0; i < 10; i++)
@@ -2647,7 +2647,7 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
                                     pSpawnedEnsalvedSoul = NULL;
                                 }
                             }
-                            RemoveTimer(mEnslavedSoulTimer);
+                            _removeTimer(mEnslavedSoulTimer);
                         }
                         if (SpawnedEnsalvedSoul)
                         {
@@ -4890,7 +4890,7 @@ class MaievAI : public MoonScriptBossAI
         {
             //OnCombatStop(pTarget);        // causes crashes
             CancelAllSpells();
-            CancelAllTimers();
+            _cancelAllTimers();
             _removeAllAuras();
             SetBehavior(Behavior_Default);
             //_unit->GetAIInterface()->SetAIState(STATE_IDLE);
@@ -4953,11 +4953,11 @@ class MaievAI : public MoonScriptBossAI
                 {
                     sendChatMessage(CHAT_MSG_MONSTER_YELL, 11495, "There shall be no prison for you this time!");
                     CastSpellNowNoScheduling(mTrapSummon);
-                    ResetTimer(mYellTimer, GetTimer(mYellTimer) + (5 + RandomUInt(10)) * 1000);
+                    _resetTimer(mYellTimer, _getTimeForTimer(mYellTimer) + (5 + RandomUInt(10)) * 1000);
                     mSummonTrap = false;
                     return;
                 }
-                else if (IsTimerFinished(mTrapTimer))
+                else if (_isTimerFinished(mTrapTimer))
                 {
                     Unit* pTarget = GetBestPlayerTarget();
                     if (pTarget != NULL)
@@ -4967,11 +4967,11 @@ class MaievAI : public MoonScriptBossAI
                         _unit->GetAIInterface()->StopMovement(2500);
                     }
 
-                    ResetTimer(mTrapTimer, ((RandomUInt(5) + 25) * 1000));
+                    _resetTimer(mTrapTimer, ((RandomUInt(5) + 25) * 1000));
                     mSummonTrap = true;
                     return;
                 }
-                else if (IsTimerFinished(mYellTimer))
+                else if (_isTimerFinished(mYellTimer))
                 {
                     switch (RandomUInt(2))
                     {
@@ -4986,7 +4986,7 @@ class MaievAI : public MoonScriptBossAI
                             break;
                     }
 
-                    ResetTimer(mYellTimer, (RandomUInt(20) + 20) * 1000);
+                    _resetTimer(mYellTimer, (RandomUInt(20) + 20) * 1000);
                 }
 
                 ParentClass::AIUpdate();
@@ -5016,7 +5016,7 @@ class MaievAI : public MoonScriptBossAI
                     SetBehavior(Behavior_Default);
                     _setDisplayWeapon(true, false);
                     _setWieldWeapon(true);
-                    ResetTimer(mTrapTimer, (RandomUInt(5) + 20) * 1000);
+                    _resetTimer(mTrapTimer, (RandomUInt(5) + 20) * 1000);
                     SetPhase(1);
                     FightWithIllidan();
                 }
@@ -6086,8 +6086,8 @@ class IllidanStormrageAI : public MoonScriptBossAI
                     _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
 
                     pMaievAI->RegisterAIUpdateEvent(1000);
-                    pMaievAI->mYellTimer = pMaievAI->AddTimer((RandomUInt(20) + 20) * 1000);
-                    pMaievAI->mTrapTimer = pMaievAI->AddTimer((RandomUInt(5) + 18) * 1000);
+                    pMaievAI->mYellTimer = pMaievAI->_addTimer((RandomUInt(20) + 20) * 1000);
+                    pMaievAI->mTrapTimer = pMaievAI->_addTimer((RandomUInt(5) + 18) * 1000);
                     pMaievAI->GetUnit()->SetEmoteState(EMOTE_ONESHOT_READY1H);
                     pMaievAI->setCanEnterCombat(true);
                     pMaievAI->GetUnit()->GetAIInterface()->setCurrentAgent(AGENT_NULL);

@@ -256,6 +256,11 @@ class LordMarrowgarAI : public MoonScriptBossAI
             spells[3].cooldown = 20;
             spells[3].perctrigger = 50.0f;
             spells[3].attackstoptimer = 12000;
+
+            /* Testcode - remove me please
+            exampleTimer1 = 0;
+            exampleTimer2 = 0;
+            exampleTimer3 = 0;*/
         }
 
         void AIUpdate()
@@ -277,6 +282,16 @@ class LordMarrowgarAI : public MoonScriptBossAI
         {
             sendDBChatMessage(923);      // The Scourge will wash over this world as a swarm of death and destruction!
             RegisterAIUpdateEvent(60000);
+
+            /* Testcode - remove me please
+            exampleTimer1 = _addTimer(30000);
+            exampleTimer2 = _addTimer(120000);
+
+            if (pTarget->IsPlayer())
+            {
+                static_cast<Player*>(pTarget)->BroadcastMessage("Morrowgar Timer 1 = %u", _getTimeForTimer(exampleTimer1));
+                static_cast<Player*>(pTarget)->BroadcastMessage("Morrowgar Timer 2 = %u", _getTimeForTimer(exampleTimer2));
+            }*/
         }
 
         void BoneSpike()
@@ -346,6 +361,9 @@ class LordMarrowgarAI : public MoonScriptBossAI
         void OnDied(Unit* pTarget)
         {
             sendDBChatMessage(930);      // I see... Only darkness.
+
+            /* Testcode - remove me please
+            _cancelAllTimers();*/
         }
 
         void SpellCast(float val)
@@ -390,12 +408,20 @@ class LordMarrowgarAI : public MoonScriptBossAI
 
                 RemoveAIUpdateEvent();
                 RegisterAIUpdateEvent(50000);
+
+                /* Testcode - remove me please
+                exampleTimer3 = _addTimer(50000);*/
             }
         }
 
     protected:
 
         uint8 nrspells;
+
+        /* Testcode - remove me please
+        uint32_t exampleTimer1;
+        uint32_t exampleTimer2;
+        uint32_t exampleTimer3;*/
 };
 
 const uint32 IMPALED = 69065;

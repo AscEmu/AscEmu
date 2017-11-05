@@ -50,8 +50,8 @@ class ZerekethAI : public MoonScriptBossAI
         {
             sendDBChatMessage(5496);     // Life energy to... consume.
 
-            VoidTimer = AddTimer((RandomUInt(10) + 30) * 1000);
-            SpeechTimer = AddTimer((RandomUInt(10) + 40) * 1000);
+            VoidTimer = _addTimer((RandomUInt(10) + 30) * 1000);
+            SpeechTimer = _addTimer((RandomUInt(10) + 40) * 1000);
 
             ParentClass::OnCombatStart(mTarget);
         }
@@ -104,12 +104,12 @@ class ZerekethAI : public MoonScriptBossAI
                     sendDBChatMessage(SAY_ZEREKETH_02);
                     break;
             }
-            ResetTimer(SpeechTimer, (RandomUInt(10) + 40) * 1000);
+            _resetTimer(SpeechTimer, (RandomUInt(10) + 40) * 1000);
         }
 
         void VoidZoneArc()
         {
-            ResetTimer(VoidTimer, (RandomUInt(10) + 30) * 1000);
+            _resetTimer(VoidTimer, (RandomUInt(10) + 30) * 1000);
 
             std::vector<Player*> TargetTable;
             std::set< Object* >::iterator Itr = _unit->GetInRangePlayerSetBegin();
@@ -149,10 +149,10 @@ class ZerekethAI : public MoonScriptBossAI
 
         void AIUpdate()
         {
-            if (IsTimerFinished(SpeechTimer))
+            if (_isTimerFinished(SpeechTimer))
                 Speech();
 
-            if (IsTimerFinished(VoidTimer))
+            if (_isTimerFinished(VoidTimer))
                 VoidZoneArc();
 
             ParentClass::AIUpdate();
@@ -405,7 +405,7 @@ class WardenMellicharAI : public MoonScriptBossAI
             SetPhase(0);
             Phasepart = 0;
             setRooted(true);
-            Phase_Timer = AddTimer(55000);
+            Phase_Timer = _addTimer(55000);
 
             setCanEnterCombat(false);
             _unit->SetEmoteState(EMOTE_ONESHOT_READY1H); // to be replaced for the standstate
@@ -434,7 +434,7 @@ class WardenMellicharAI : public MoonScriptBossAI
             _setCastDisabled(true);
 
             // ORB ONE
-            if (IsTimerFinished(Phase_Timer) && GetPhase() == 0)
+            if (_isTimerFinished(Phase_Timer) && GetPhase() == 0)
             {
                 if (Phasepart == 0)
                 {
@@ -453,7 +453,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                             NPC_ID_Spawn = CN_WARP_STALKER;
                             break;
                     }
-                    ResetTimer(Phase_Timer, 8000);
+                    _resetTimer(Phase_Timer, 8000);
                     Phasepart = 1;
                     return;
                 }
@@ -471,7 +471,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                         sendDBChatMessage(SAY_MELLICHAR_03);
                         SetPhase(1);
                         Phasepart = 0;
-                        ResetTimer(Phase_Timer, 6000);
+                        _resetTimer(Phase_Timer, 6000);
                         return;
                     }
                     else
@@ -484,7 +484,7 @@ class WardenMellicharAI : public MoonScriptBossAI
             }
 
             // ORB TWO
-            else if (IsTimerFinished(Phase_Timer) && GetPhase() == 1)
+            else if (_isTimerFinished(Phase_Timer) && GetPhase() == 1)
             {
                 if (Phasepart == 0)
                 {
@@ -493,7 +493,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                     if (orb2)
                         orb2->SetState(GO_STATE_OPEN);
 
-                    ResetTimer(Phase_Timer, 8000);
+                    _resetTimer(Phase_Timer, 8000);
                     Phasepart = 1;
                     return;
                 }
@@ -519,7 +519,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                         }
                         SetPhase(2);
                         Phasepart = 0;
-                        ResetTimer(Phase_Timer, 25000);
+                        _resetTimer(Phase_Timer, 25000);
                         return;
                     }
                     else
@@ -533,7 +533,7 @@ class WardenMellicharAI : public MoonScriptBossAI
             }
 
             // ORB THREE
-            else if (IsTimerFinished(Phase_Timer) && GetPhase() == 2)
+            else if (_isTimerFinished(Phase_Timer) && GetPhase() == 2)
             {
                 if (Phasepart == 0)
                 {
@@ -552,7 +552,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                             NPC_ID_Spawn = CN_AKKIRIS_LIGHTNING_WAKER;
                             break;
                     }
-                    ResetTimer(Phase_Timer, 8000);
+                    _resetTimer(Phase_Timer, 8000);
                     Phasepart = 1;
                     return;
                 }
@@ -578,7 +578,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                         sendDBChatMessage(SAY_MELLICHAR_05);
                         SetPhase(3);
                         Phasepart = 0;
-                        ResetTimer(Phase_Timer, 8000);
+                        _resetTimer(Phase_Timer, 8000);
                         return;
                     }
                     else
@@ -591,7 +591,7 @@ class WardenMellicharAI : public MoonScriptBossAI
             }
 
             // ORB FOUR
-            else if (IsTimerFinished(Phase_Timer) && GetPhase() == 3)
+            else if (_isTimerFinished(Phase_Timer) && GetPhase() == 3)
             {
                 if (Phasepart == 0)
                 {
@@ -610,7 +610,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                             NPC_ID_Spawn = CN_BLACKWING_DRAKONAAR;
                             break;
                     }
-                    ResetTimer(Phase_Timer, 8000);
+                    _resetTimer(Phase_Timer, 8000);
                     Phasepart = 1;
                     return;
                 }
@@ -632,7 +632,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                         sendDBChatMessage(SAY_MELLICHAR_06);
                         SetPhase(4);
                         Phasepart = 0;
-                        ResetTimer(Phase_Timer, 6000);
+                        _resetTimer(Phase_Timer, 6000);
                         return;
                     }
                     else
@@ -644,7 +644,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                 //return;
             }
 
-            else if (IsTimerFinished(Phase_Timer) && GetPhase() == 4)
+            else if (_isTimerFinished(Phase_Timer) && GetPhase() == 4)
             {}
 
             ParentClass::AIUpdate();

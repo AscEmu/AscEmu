@@ -522,7 +522,7 @@ bool ScriptMgr::CallScriptedItem(Item* pItem, Player* pPlayer)
 /* CreatureAI Stuff */
 CreatureAIScript::CreatureAIScript(Creature* creature) : _unit(creature), linkedCreatureAI(nullptr), mDespawnWhenInactive(false)
 {
-
+    mCreatureTimerIds.clear();
 }
 
 CreatureAIScript::~CreatureAIScript()
@@ -746,7 +746,66 @@ bool CreatureAIScript::_isHeroic()
         return false;
 
     return true;
-};
+}
+
+// timers
+uint32 CreatureAIScript::_addTimer(uint32 pDurationMillisec)
+{
+    if (InstanceScript* inScript = getInstanceScript())
+    {
+        uint32_t timerId = inScript->addTimer(pDurationMillisec);
+        mCreatureTimerIds.push_back(timerId);
+
+        return timerId;
+    }
+
+    return 0;
+}
+
+uint32 CreatureAIScript::_getTimeForTimer(uint32 pTimerId)
+{
+    if (InstanceScript* inScript = getInstanceScript())
+        return inScript->getTimeForTimer(pTimerId);
+
+    return 0;
+}
+
+void CreatureAIScript::_removeTimer(uint32& pTimerId)
+{
+    if (InstanceScript* inScript = getInstanceScript())
+    {
+        uint32_t timerId = pTimerId;
+        inScript->removeTimer(pTimerId);
+        if (pTimerId == 0)
+            mCreatureTimerIds.remove(timerId);
+    }
+}
+
+void CreatureAIScript::_resetTimer(uint32 pTimerId, uint32 pDurationMillisec)
+{
+    if (InstanceScript* inScript = getInstanceScript())
+        inScript->resetTimer(pTimerId, pDurationMillisec);
+}
+
+bool CreatureAIScript::_isTimerFinished(uint32 pTimerId)
+{
+    if (InstanceScript* inScript = getInstanceScript())
+        return inScript->isTimerFinished(pTimerId);
+
+    return false;
+}
+
+void CreatureAIScript::_cancelAllTimers()
+{
+    for (auto& timer : mCreatureTimerIds)
+        _removeTimer(timer);
+
+    mCreatureTimerIds.clear();
+
+    LOG_DEBUG("all cleared!");
+}
+
+// appearance
 
 void CreatureAIScript::_setScale(float scale)
 {

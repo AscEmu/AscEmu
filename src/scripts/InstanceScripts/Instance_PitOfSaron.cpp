@@ -94,10 +94,10 @@ class ForgemasterGarfrostAI : MoonScriptBossAI
     void OnCombatStart(Unit* pTarget)
     {
         // Seting up Timers
-        mSaroniteTimer = AddTimer(45000);
-        mPermafrostTimer = AddTimer(2000);
-        mChllingWaveTimer = AddTimer(10000);
-        mDeepFreezeTimer = AddTimer(10000);
+        mSaroniteTimer = _addTimer(45000);
+        mPermafrostTimer = _addTimer(2000);
+        mChllingWaveTimer = _addTimer(10000);
+        mDeepFreezeTimer = _addTimer(10000);
 
         if (mInstance)
             mInstance->setData(_unit->GetEntry(), InProgress);
@@ -175,33 +175,33 @@ class ForgemasterGarfrostAI : MoonScriptBossAI
 
     void CastSpells()
     {
-        if (IsTimerFinished(mSaroniteTimer))
+        if (_isTimerFinished(mSaroniteTimer))
         {
             // Casting Saronite Boulder every 45 secs.
             Unit* unit = GetBestUnitTarget(TargetFilter_None);
             CastSpellOnTarget(unit, TargetGen_RandomPlayer, mSaronite->mInfo, true);
-            ResetTimer(mSaroniteTimer, 45000);
+            _resetTimer(mSaroniteTimer, 45000);
         }
 
-        if (IsTimerFinished(mPermafrostTimer))
+        if (_isTimerFinished(mPermafrostTimer))
         {
             // Cast Permafrost every 2 secs.
             CastSpellNowNoScheduling(mPermafrost);
-            ResetTimer(mPermafrostTimer, 2000);
+            _resetTimer(mPermafrostTimer, 2000);
         }
 
-        if (IsTimerFinished(mChllingWaveTimer) && GetPhase() == 2)
+        if (_isTimerFinished(mChllingWaveTimer) && GetPhase() == 2)
         {
             // Cast Chilling Wave every 10 secs.
             CastSpell(mChllingWave);
-            ResetTimer(mChllingWaveTimer, 10000);
+            _resetTimer(mChllingWaveTimer, 10000);
         }
 
-        if (IsTimerFinished(mDeepFreezeTimer) && GetPhase() == 3)
+        if (_isTimerFinished(mDeepFreezeTimer) && GetPhase() == 3)
         {
             // Cast Deep Freeze every 10 secs.
             CastSpell(mDeepFreeze);
-            ResetTimer(mDeepFreezeTimer, 10000);
+            _resetTimer(mDeepFreezeTimer, 10000);
         }
     }
 
@@ -275,10 +275,10 @@ class IckAI : MoonScriptBossAI
         Phase = BATTLE;
 
         // Setip Timers
-        mMightyKickTimer = AddTimer(20000);
-        mSpecialAttackTimer = AddTimer(35000);
-        mToxicWasteTimer = AddTimer(5000);
-        mShadowBoltTimer = AddTimer(15000);
+        mMightyKickTimer = _addTimer(20000);
+        mSpecialAttackTimer = _addTimer(35000);
+        mToxicWasteTimer = _addTimer(5000);
+        mShadowBoltTimer = _addTimer(15000);
 
         if (mInstance)
             mInstance->setData(_unit->GetEntry(), InProgress);
@@ -318,56 +318,56 @@ class IckAI : MoonScriptBossAI
     void CastSpells()
     {
         // Mighty Kick
-        if (IsTimerFinished(mMightyKickTimer))
+        if (_isTimerFinished(mMightyKickTimer))
         {
             CastSpell(mMightyKick);
-            ResetTimer(mMightyKickTimer, 25000);
+            _resetTimer(mMightyKickTimer, 25000);
         }
 
         // Toxic Waste
-        if (IsTimerFinished(mToxicWasteTimer))
+        if (_isTimerFinished(mToxicWasteTimer))
         {
             CastSpell(mToxicWaste);
-            ResetTimer(mToxicWasteTimer, 5000);
+            _resetTimer(mToxicWasteTimer, 5000);
         }
 
         // Shadow Bolt
-        if (IsTimerFinished(mShadowBoltTimer))
+        if (_isTimerFinished(mShadowBoltTimer))
         {
             CastSpell(mShadowBolt);
-            ResetTimer(mShadowBoltTimer, 15000);
+            _resetTimer(mShadowBoltTimer, 15000);
         }
 
         // Special Attack
-        if (IsTimerFinished(mSpecialAttackTimer))
+        if (_isTimerFinished(mSpecialAttackTimer))
         {
             switch (RandomUInt(2))
             {
                 case 0:
-                    mPursueTimer = AddTimer(1000);
+                    mPursueTimer = _addTimer(1000);
                     break;
                 case 1:
-                    mPoisonNovaTimer = AddTimer(1000);
+                    mPoisonNovaTimer = _addTimer(1000);
                     break;
                 case 2:
-                    mExplosionBarageTimer = AddTimer(1000);
+                    mExplosionBarageTimer = _addTimer(1000);
                     break;
             }
-            ResetTimer(mSpecialAttackTimer, 28000);
+            _resetTimer(mSpecialAttackTimer, 28000);
         }
 
         // Poison Nova
-        if (IsTimerFinished(mPoisonNovaTimer))
+        if (_isTimerFinished(mPoisonNovaTimer))
         {
             if (mKrickAI)
                 mKrickAI->sendDBChatMessage(8770);
 
             CastSpell(mPoisonNova);
-            RemoveTimer(mPoisonNovaTimer);
+            _removeTimer(mPoisonNovaTimer);
         }
 
         // Pursue
-        if (IsTimerFinished(mPursueTimer))
+        if (_isTimerFinished(mPursueTimer))
         {
             if (mKrickAI)
             {
@@ -395,11 +395,11 @@ class IckAI : MoonScriptBossAI
             }
 
             CastSpell(mConfusion);
-            RemoveTimer(mPursueTimer);
+            _removeTimer(mPursueTimer);
         }
 
         // Explosive Barage
-        if (IsTimerFinished(mExplosionBarageTimer))
+        if (_isTimerFinished(mExplosionBarageTimer))
         {
             if (mKrickAI)
             {
@@ -411,20 +411,20 @@ class IckAI : MoonScriptBossAI
             _unit->setMoveRoot(true);
             CastSpell(mExplosionBarage);
 
-            mExplosionBarageEndTimer = AddTimer(20000);
+            mExplosionBarageEndTimer = _addTimer(20000);
 
-            ResetTimer(mSpecialAttackTimer, GetTimer(mSpecialAttackTimer) + 20000);
-            ResetTimer(mMightyKickTimer, GetTimer(mMightyKickTimer) + 20000);
-            ResetTimer(mToxicWasteTimer, GetTimer(mToxicWasteTimer) + 20000);
-            ResetTimer(mShadowBoltTimer, GetTimer(mShadowBoltTimer) + 20000);
-            RemoveTimer(mExplosionBarageTimer);
+            _resetTimer(mSpecialAttackTimer, _getTimeForTimer(mSpecialAttackTimer) + 20000);
+            _resetTimer(mMightyKickTimer, _getTimeForTimer(mMightyKickTimer) + 20000);
+            _resetTimer(mToxicWasteTimer, _getTimeForTimer(mToxicWasteTimer) + 20000);
+            _resetTimer(mShadowBoltTimer, _getTimeForTimer(mShadowBoltTimer) + 20000);
+            _removeTimer(mExplosionBarageTimer);
         }
 
         // Explosive Barage End
-        if (IsTimerFinished(mExplosionBarageEndTimer))
+        if (_isTimerFinished(mExplosionBarageEndTimer))
         {
             _unit->setMoveRoot(false);
-            RemoveTimer(mExplosionBarageEndTimer);
+            _removeTimer(mExplosionBarageEndTimer);
         }
     }
 
@@ -486,7 +486,7 @@ class KrickAI : MoonScriptBossAI
         mIckAI = getNearestCreature(CN_ICK);
 
         // Spell Timers
-        mBarrageTimer = AddTimer(2500); // Timer Quessed
+        mBarrageTimer = _addTimer(2500); // Timer Quessed
         ParentClass::OnCombatStart(pTarget);
     }
 
@@ -499,10 +499,10 @@ class KrickAI : MoonScriptBossAI
         {
             if (_unit->HasAura(SPELL_EXPLOSIVE_BARRAGE_KRICK))
             {
-                if (IsTimerFinished(mBarrageTimer))
+                if (_isTimerFinished(mBarrageTimer))
                 {
                     _castOnInrangePlayersWithinDist(0, 60.0f, SPELL_EXPLOSIVE_BARRAGE_SUMMON, true);
-                    ResetTimer(mBarrageTimer, 2500);
+                    _resetTimer(mBarrageTimer, 2500);
                 }
             }
         }
@@ -520,7 +520,7 @@ class KrickAI : MoonScriptBossAI
         if (pTarget == nullptr)
             return;
 
-        if (IsTimerFinished(mOutroTimer))
+        if (_isTimerFinished(mOutroTimer))
             ++sequence;
 
         if (!mOutroTimerStarted)
@@ -544,16 +544,16 @@ class KrickAI : MoonScriptBossAI
                 JainaOrSylvanas = SpawnCreature(CN_JAINA_PROUDMOORE, 816.58f, 111.53f, 510.0f, 0.3825f, false);
 
             mOutroTimerStarted = true;
-            mOutroTimer = AddTimer(2000);
+            mOutroTimer = _addTimer(2000);
         }
 
-        if (IsTimerFinished(mOutroTimer))
+        if (_isTimerFinished(mOutroTimer))
         {
             switch (sequence)
             {
                 case 1:              
                     sendDBChatMessage(8775);
-                    ResetTimer(mOutroTimer, 14000);
+                    _resetTimer(mOutroTimer, 14000);
                     break;
                 case 2:
                     if (JainaOrSylvanas)
@@ -563,11 +563,11 @@ class KrickAI : MoonScriptBossAI
                         else
                             JainaOrSylvanas->sendDBChatMessage(8777); // SAY_SYLVANAS_OUTRO_2
                     }
-                    ResetTimer(mOutroTimer, 8500);
+                    _resetTimer(mOutroTimer, 8500);
                     break;
                 case 3:
                     sendDBChatMessage(8778); // SAY_KRICK_OUTRO_3
-                    ResetTimer(mOutroTimer, 12000);
+                    _resetTimer(mOutroTimer, 12000);
                     break;
                 case 4:
                     if (JainaOrSylvanas)
@@ -577,31 +577,31 @@ class KrickAI : MoonScriptBossAI
                         else
                             JainaOrSylvanas->sendDBChatMessage(8780); // SAY_SYLVANAS_OUTRO_4
                     }
-                    ResetTimer(mOutroTimer, 8000);
+                    _resetTimer(mOutroTimer, 8000);
                     break;
                 case 5:
                     sendDBChatMessage(8781); // SAY_KRICK_OUTRO_5
-                    ResetTimer(mOutroTimer, 4000);
+                    _resetTimer(mOutroTimer, 4000);
                     break;
                 case 6:
                     // TODO spawn Tyrannus at some distance and MovePoint near-by (flying on rimefang)
                     // Adjust timer so tyrannus has time to come
-                    ResetTimer(mOutroTimer, 1);
+                    _resetTimer(mOutroTimer, 1);
                     break;
                 case 7:
                     sendDBChatMessage(8782); // SAY_TYRANNUS_OUTRO_7
-                    ResetTimer(mOutroTimer, 7000);
+                    _resetTimer(mOutroTimer, 7000);
                     break;
                 case 8:
                     sendDBChatMessage(8783); // SAY_KRICK_OUTRO_8
-                    ResetTimer(mOutroTimer, 6000);
+                    _resetTimer(mOutroTimer, 6000);
                     break;
                 case 9:
                     // tyrannus kills krick
                     _unit->SetStandState(STANDSTATE_DEAD);
                     _unit->SetHealth(1);
                     sendDBChatMessage(8784); // SAY_TYRANNUS_OUTRO_9
-                    ResetTimer(mOutroTimer, 12000);
+                    _resetTimer(mOutroTimer, 12000);
                     break;
                 case 10:
                     if (JainaOrSylvanas)
@@ -611,12 +611,12 @@ class KrickAI : MoonScriptBossAI
                         else
                             JainaOrSylvanas->sendDBChatMessage(8786); // SAY_SYLVANAS_OUTRO_10
                     }
-                    ResetTimer(mOutroTimer, 8000);
+                    _resetTimer(mOutroTimer, 8000);
                     break;
                 case 11:
                     _unit->Despawn(1, 0);
                     JainaOrSylvanas->despawn(1, 0);
-                    RemoveTimer(mOutroTimer);
+                    _removeTimer(mOutroTimer);
                     break;
             }
         }

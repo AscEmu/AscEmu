@@ -924,9 +924,9 @@ class NandosAI : public MoonScriptCreatureAI
         void OnCombatStart(Unit* mEnemy)
         {
             ParentClass::OnCombatStart(mEnemy);
-            sCallBleakWorg_Timer = AddTimer(RandomUInt(1) ? 33700 : 48800);
-            sCallSlaveringWorg_Timer = AddTimer(RandomUInt(1) ? 45400 : 51700);
-            sCallLupineHorror_Timer = AddTimer(69500);
+            sCallBleakWorg_Timer = _addTimer(RandomUInt(1) ? 33700 : 48800);
+            sCallSlaveringWorg_Timer = _addTimer(RandomUInt(1) ? 45400 : 51700);
+            sCallLupineHorror_Timer = _addTimer(69500);
             if (SFK_instance)
                 SFK_instance->SetLocaleInstanceData(0, INDEX_NANDOS, InProgress);
         }
@@ -946,24 +946,24 @@ class NandosAI : public MoonScriptCreatureAI
             ParentClass::AIUpdate();
             if (_getHealthPercent() <= 80)
             {
-                if (IsTimerFinished(sCallBleakWorg_Timer) && sCallBleakWord->mEnabled)
+                if (_isTimerFinished(sCallBleakWorg_Timer) && sCallBleakWord->mEnabled)
                 {
                     CastSpell(sCallBleakWord);
-                    RemoveTimer(sCallBleakWorg_Timer);
+                    _removeTimer(sCallBleakWorg_Timer);
                     sCallBleakWord->mEnabled = false;
                 }
 
-                if (IsTimerFinished(sCallSlaveringWorg_Timer) && sCallSlaveringWorg->mEnabled)
+                if (_isTimerFinished(sCallSlaveringWorg_Timer) && sCallSlaveringWorg->mEnabled)
                 {
                     CastSpell(sCallSlaveringWorg);
-                    RemoveTimer(sCallSlaveringWorg_Timer);
+                    _removeTimer(sCallSlaveringWorg_Timer);
                     sCallSlaveringWorg->mEnabled = false;
                 }
 
-                if (IsTimerFinished(sCallLupineHorror_Timer) && sCallLupineHorror->mEnabled)
+                if (_isTimerFinished(sCallLupineHorror_Timer) && sCallLupineHorror->mEnabled)
                 {
                     CastSpell(sCallLupineHorror);
-                    RemoveTimer(sCallLupineHorror_Timer);
+                    _removeTimer(sCallLupineHorror_Timer);
                     sCallLupineHorror->mEnabled = false;
                 }
             }
