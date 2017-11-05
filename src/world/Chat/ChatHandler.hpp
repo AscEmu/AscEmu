@@ -317,6 +317,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleResetInstanceCommand(const char* args, WorldSession* m_session);
         bool HandleShutdownInstanceCommand(const char* args, WorldSession* m_session);
         bool HandleGetInstanceInfoCommand(const char* args, WorldSession* m_session);
+        bool HandleShowTimersCommand(const char* /*args*/, WorldSession* m_session);
 
         // Lookups
         bool HandleLookupAchievementCommand(const char* args, WorldSession* m_session);

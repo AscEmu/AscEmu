@@ -923,24 +923,10 @@ void GameObjectAIScript::RegisterAIUpdateEvent(uint32 frequency)
 
 /* InstanceAI Stuff */
 
-InstanceScript::InstanceScript(MapMgr* pMapMgr) : mInstance(pMapMgr)
+InstanceScript::InstanceScript(MapMgr* pMapMgr) : mInstance(pMapMgr), mSpawnsCreated(false), mTimerCount(0), mUpdateFrequency(defaultUpdateFrequency)
 {
     generateBossDataState();
-}
-
-void InstanceScript::RegisterUpdateEvent(uint32 pFrequency)
-{
-    sEventMgr.AddEvent(mInstance, &MapMgr::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, pFrequency, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-}
-
-void InstanceScript::ModifyUpdateEvent(uint32 pNewFrequency)
-{
-    sEventMgr.ModifyEventTimeAndTimeLeft(mInstance, EVENT_SCRIPT_UPDATE_EVENT, pNewFrequency);
-}
-
-void InstanceScript::RemoveUpdateEvent()
-{
-    sEventMgr.RemoveEvents(mInstance, EVENT_SCRIPT_UPDATE_EVENT);
+    registerUpdateEvent();
 }
 
 // MIT start
@@ -1083,6 +1069,107 @@ void InstanceScript::displayDataStateList(Player* player)
     }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// timers
+
+uint32_t InstanceScript::addTimer(uint32_t durationInMs)
+{
+    uint32_t timerId = ++mTimerCount;
+    mTimers.push_back(std::make_pair(timerId, durationInMs));
+
+    return timerId;
+}
+
+uint32_t InstanceScript::getTimeForTimer(uint32_t timerId)
+{
+    for (const auto& intTimer : mTimers)
+    {
+        if (intTimer.first == timerId)
+            return intTimer.second;
+    }
+
+    return 0;
+}
+
+void InstanceScript::removeTimer(uint32_t& timerId)
+{
+    for (InstanceTimerArray::iterator intTimer = mTimers.begin(); intTimer != mTimers.end(); ++intTimer)
+    {
+        if (intTimer->first == timerId)
+        {
+            mTimers.erase(intTimer);
+            timerId = 0;
+            break;
+        }
+    }
+}
+
+void InstanceScript::resetTimer(uint32_t timerId, uint32_t durationInMs)
+{
+    for (auto& intTimer : mTimers)
+    {
+        if (intTimer.first == timerId)
+            intTimer.second = durationInMs;
+    }
+}
+
+bool InstanceScript::isTimerFinished(uint32_t timerId)
+{
+    for (const auto& intTimer : mTimers)
+    {
+        if (intTimer.first == timerId)
+            return intTimer.second == 0;
+    }
+
+    return false;
+}
+
+void InstanceScript::cancelAllTimers()
+{
+    mTimers.clear();
+    mTimerCount = 0;
+}
+
+void InstanceScript::displayTimerList(Player* player)
+{
+    player->BroadcastMessage("=== Timers for instance %s ===", mInstance->GetMapInfo()->name.c_str());
+
+    if (mTimers.empty())
+    {
+        player->BroadcastMessage("  No Timers set!");
+    }
+    else
+    {
+        for (const auto& intTimer : mTimers)
+            player->BroadcastMessage("  Timer %u - %i", intTimer.first, intTimer.second);
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// instance update
+
+void InstanceScript::registerUpdateEvent()
+{
+    sEventMgr.AddEvent(mInstance, &MapMgr::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, getUpdateFrequency(), 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+}
+
+void InstanceScript::modifyUpdateEvent(uint32_t frequencyInMs)
+{
+    if (getUpdateFrequency() != frequencyInMs)
+    {
+        setUpdateFrequency(frequencyInMs);
+        sEventMgr.ModifyEventTimeAndTimeLeft(mInstance, EVENT_SCRIPT_UPDATE_EVENT, getUpdateFrequency());
+    }
+}
+
+void InstanceScript::removeUpdateEvent()
+{
+    sEventMgr.RemoveEvents(mInstance, EVENT_SCRIPT_UPDATE_EVENT);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// misc
+
 Creature* InstanceScript::spawnCreature(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId /* = 0*/)
 {
     CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(entry);
@@ -1107,6 +1194,11 @@ Creature* InstanceScript::spawnCreature(uint32_t entry, float posX, float posY, 
 Creature* InstanceScript::getCreatureBySpawnId(uint32_t entry)
 {
     return mInstance->GetSqlIdCreature(entry);
+}
+
+Creature* InstanceScript::GetCreatureByGuid(uint32_t guid)
+{
+    return mInstance->GetCreature(guid);
 }
 
 CreatureSet InstanceScript::getCreatureSetForEntry(uint32_t entry, bool debug /*= false*/, Player* player /*= nullptr*/)
@@ -1162,6 +1254,11 @@ GameObject* InstanceScript::spawnGameObject(uint32_t entry, float posX, float po
 GameObject* InstanceScript::getGameObjectBySpawnId(uint32_t entry)
 {
     return mInstance->GetSqlIdGameObject(entry);
+}
+
+GameObject* InstanceScript::GetGameObjectByGuid(uint32_t guid)
+{
+    return mInstance->GetGameObject(guid);
 }
 
 GameObject* InstanceScript::getClosestGameObjectForPosition(uint32_t entry, float posX, float posY, float posZ)

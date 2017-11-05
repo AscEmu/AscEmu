@@ -30,7 +30,7 @@ class InstancePitOfSaronScript : public MoonInstanceScript
 
         void OnPlayerEnter(Player* player)
         {
-            if (!mSpawnsCreated)
+            if (!spawnsCreated())
             {
                 if (player->GetTeam() == TEAM_ALLIANCE)
                 {
@@ -44,7 +44,8 @@ class InstancePitOfSaronScript : public MoonInstanceScript
                     spawnCreature(CN_DARK_RANGER_LORALEN, 440.35f, 211.154f, 528.71f, 6.15f, 35);
                     spawnCreature(CN_DARK_RANGER_KALIRA, 439.26f, 215.89f, 528.71f, 0.02f, 35);
                 }
-                mSpawnsCreated = true;
+
+                setSpawnsCreated();
             }
         }
 };

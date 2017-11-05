@@ -547,44 +547,61 @@ typedef std::map<uint32_t, uint32_t> InstanceDataMap;
 typedef std::set<Creature*> CreatureSet;
 typedef std::set<GameObject*> GameObjectSet;
 
+typedef std::pair<uint32_t, uint32_t> InstanceTimerPair;
+typedef std::vector<InstanceTimerPair> InstanceTimerArray;
+
+const int32 INVALIDATE_TIMER = -1;
+const uint32 DEFAULT_DESPAWN_TIMER = 2000;      //milliseconds
+
+const uint32_t defaultUpdateFrequency = 1000;
+
 class SERVER_DECL InstanceScript
 {
     public:
 
         InstanceScript(MapMgr* pMapMgr);
-        virtual ~InstanceScript() {};
+        virtual ~InstanceScript() {}
 
         // Procedures that had been here before
-        virtual GameObject* GetObjectForOpenLock(Player* /*pCaster*/, Spell* /*pSpell*/, SpellInfo* /*pSpellEntry*/) { return NULL; };
-        virtual void SetLockOptions(uint32 /*pEntryId*/, GameObject* /*pGameObject*/) {};
-        virtual uint32 GetRespawnTimeForCreature(uint32 /*pEntryId*/, Creature* /*pCreature*/) { return 240000; };
+        virtual GameObject* GetObjectForOpenLock(Player* /*pCaster*/, Spell* /*pSpell*/, SpellInfo* /*pSpellEntry*/) { return NULL; }
+        virtual void SetLockOptions(uint32 /*pEntryId*/, GameObject* /*pGameObject*/) {}
+        virtual uint32 GetRespawnTimeForCreature(uint32 /*pEntryId*/, Creature* /*pCreature*/) { return 240000; }
 
         // Player
-        virtual void OnPlayerDeath(Player* /*pVictim*/, Unit* /*pKiller*/) {};
+        virtual void OnPlayerDeath(Player* /*pVictim*/, Unit* /*pKiller*/) {}
 
         // Area and AreaTrigger
-        virtual void OnPlayerEnter(Player* /*pPlayer*/) {};
-        virtual void OnAreaTrigger(Player* /*pPlayer*/, uint32 /*pAreaId*/) {};
-        virtual void OnZoneChange(Player* /*pPlayer*/, uint32 /*pNewZone*/, uint32 /*pOldZone*/) {};
+        virtual void OnPlayerEnter(Player* /*pPlayer*/) {}
+        virtual void OnAreaTrigger(Player* /*pPlayer*/, uint32 /*pAreaId*/) {}
+        virtual void OnZoneChange(Player* /*pPlayer*/, uint32 /*pNewZone*/, uint32 /*pOldZone*/) {}
 
         // Creature / GameObject - part of it is simple reimplementation for easier use Creature / GO < --- > Script
-        virtual void OnCreatureDeath(Creature* /*pVictim*/, Unit* /*pKiller*/) {};
-        virtual void OnCreaturePushToWorld(Creature* /*pCreature*/) {};
-        virtual void OnGameObjectActivate(GameObject* /*pGameObject*/, Player* /*pPlayer*/) {};
-        virtual void OnGameObjectPushToWorld(GameObject* /*pGameObject*/) {};
+        virtual void OnCreatureDeath(Creature* /*pVictim*/, Unit* /*pKiller*/) {}
+        virtual void OnCreaturePushToWorld(Creature* /*pCreature*/) {}
+        virtual void OnGameObjectActivate(GameObject* /*pGameObject*/, Player* /*pPlayer*/) {}
+        virtual void OnGameObjectPushToWorld(GameObject* /*pGameObject*/) {}
 
         // Standard virtual methods
-        virtual void OnLoad() {};
-        virtual void UpdateEvent() {};
-        virtual void Destroy() {};
+        virtual void OnLoad() {}
+        virtual void UpdateEvent()
+        {
+            for (auto& TimerIter : mTimers)
+            {
+                if (TimerIter.second > 0)
+                {
+                    int leftTime = TimerIter.second - getUpdateFrequency();
+                    if (leftTime > 0)
+                        TimerIter.second -= getUpdateFrequency();
+                    else
+                        TimerIter.second = 0;
+                }
+            }
+        }
 
-        // UpdateEvent
-        void RegisterUpdateEvent(uint32 pFrequency);
-        void ModifyUpdateEvent(uint32 pNewFrequency);
-        void RemoveUpdateEvent();
+        virtual void Destroy() {}
 
         // Something to return Instance's MapMgr
-        MapMgr* GetInstance() { return mInstance; };
+        MapMgr* GetInstance() { return mInstance; }
 
         // MIT start
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -610,21 +627,69 @@ class SERVER_DECL InstanceScript
         void displayDataStateList(Player* player);
 
         //////////////////////////////////////////////////////////////////////////////////////////
+        // timers
+
+    private:
+
+        InstanceTimerArray mTimers;
+        uint32_t mTimerCount;
+
+    public:
+
+        uint32_t addTimer(uint32_t durationInMs);
+        uint32_t getTimeForTimer(uint32_t timerId);
+        void removeTimer(uint32_t& timerId);
+        void resetTimer(uint32_t timerId, uint32_t durationInMs);
+        bool isTimerFinished(uint32_t timerId);
+        void cancelAllTimers();
+
+        //used for debug
+        void displayTimerList(Player* player);
+
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // instance update
+
+    private:
+
+        uint32_t mUpdateFrequency;
+
+    public:
+
+        uint32_t getUpdateFrequency() { return mUpdateFrequency; }
+        void setUpdateFrequency(uint32_t frequencyInMs) { mUpdateFrequency = frequencyInMs; }
+
+        void registerUpdateEvent();
+        void modifyUpdateEvent(uint32_t frequencyInMs);
+        void removeUpdateEvent();
+
+        //////////////////////////////////////////////////////////////////////////////////////////
         // misc
 
         Creature* spawnCreature(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId = 0);
         Creature* getCreatureBySpawnId(uint32_t entry);
+        Creature* GetCreatureByGuid(uint32_t guid);
+
         CreatureSet getCreatureSetForEntry(uint32_t entry, bool debug = false, Player* player = nullptr);
         CreatureSet getCreatureSetForEntries(std::vector<uint32_t> entryVector);
 
         GameObject* spawnGameObject(uint32_t entry, float posX, float posY, float posZ, float posO, bool addToWorld = true, uint32_t misc1 = 0, uint32_t phase = 0);
         GameObject* getGameObjectBySpawnId(uint32_t entry);
+        GameObject* GetGameObjectByGuid(uint32_t guid);
+
         GameObject* getClosestGameObjectForPosition(uint32_t entry, float posX, float posY, float posZ);
+
         GameObjectSet getGameObjectsSetForEntry(uint32_t entry);
 
         float getRangeToObjectForPosition(Object* object, float posX, float posY, float posZ);
 
         void setGameObjectStateForEntry(uint32_t entry, uint8_t state);
+
+        bool spawnsCreated() { return mSpawnsCreated; }
+        void setSpawnsCreated(bool created = true) { mSpawnsCreated = created; }
+
+    private:
+
+        bool mSpawnsCreated;
 
     protected:
 

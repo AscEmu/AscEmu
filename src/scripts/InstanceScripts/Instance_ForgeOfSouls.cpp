@@ -29,7 +29,7 @@ public:
 
 	void OnPlayerEnter(Player* player)
 	{
-        if (!mSpawnsCreated)
+        if (!spawnsCreated())
         {
             if (player->GetTeam() == TEAM_ALLIANCE)
             {
@@ -44,7 +44,7 @@ public:
                 spawnCreature(CN_DARK_RANGER_KALIRA, 4902.95f, 2212.69f, 638.73f, 35);
             }
 
-            mSpawnsCreated = true;
+            setSpawnsCreated();
         }
 	}
 };

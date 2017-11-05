@@ -340,3 +340,22 @@ bool ChatHandler::HandleShutdownInstanceCommand(const char* args, WorldSession* 
 
     return true;
 }
+
+//.instance showtimers
+bool ChatHandler::HandleShowTimersCommand(const char* /*args*/, WorldSession* m_session)
+{
+    Player* player = m_session->GetPlayer();
+    if (player == nullptr)
+        return true;
+
+    uint32_t instanceId = player->GetInstanceID();
+    if (instanceId == 0)
+        return true;
+
+    Instance* instance = sInstanceMgr.GetInstanceByIds(NUM_MAPS, instanceId);
+
+    if (instance && instance->m_mapMgr != nullptr && instance->m_mapMgr->GetScript() != nullptr)
+        instance->m_mapMgr->GetScript()->displayTimerList(player);
+
+    return true;
+}

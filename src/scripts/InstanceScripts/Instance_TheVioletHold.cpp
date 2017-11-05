@@ -45,8 +45,6 @@ class TheVioletHoldScript : public MoonInstanceScript
                 m_phaseData[i] = State_NotStarted;
 
             addData(MAP_VIOLET_HOLD);
-
-            this->RegisterUpdateEvent(1000);
         }
 
         void UpdateEvent()
@@ -109,7 +107,7 @@ class TheVioletHoldScript : public MoonInstanceScript
 
         void S0_SpawnIntroMobs()
         {
-            if (IsTimerFinished(S0_SpawnIntroMobsTimer))
+            if (isTimerFinished(S0_SpawnIntroMobsTimer))
             {
                 S0_SpawnIntroMobsTimer = 0; // This forces a new timer to be started below
             
@@ -119,9 +117,9 @@ class TheVioletHoldScript : public MoonInstanceScript
             }
 
             // Start another 15s timer
-            if (GetTimer(S0_SpawnIntroMobsTimer) <= 0)
+            if (getTimeForTimer(S0_SpawnIntroMobsTimer) <= 0)
             {
-                S0_SpawnIntroMobsTimer = AddTimer(VH_TIMER_SPAWN_INTRO_MOB);
+                S0_SpawnIntroMobsTimer = addTimer(VH_TIMER_SPAWN_INTRO_MOB);
             }
         }
 
@@ -131,11 +129,11 @@ class TheVioletHoldScript : public MoonInstanceScript
 
             if (S1_GuardFleeTimer == -1)
             {
-                S1_GuardFleeTimer = AddTimer(VH_TIMER_GUARD_FLEE_DELAY); // arbitrary time
+                S1_GuardFleeTimer = addTimer(VH_TIMER_GUARD_FLEE_DELAY); // arbitrary time
 
             }
 
-            if (GetTimer(S1_GuardFleeTimer) > 0)
+            if (getTimeForTimer(S1_GuardFleeTimer) > 0)
             {
                 return; // Wait for timer to finish
             }

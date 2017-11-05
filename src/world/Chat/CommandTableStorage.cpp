@@ -838,6 +838,7 @@ void CommandTableStorage::Init()
         { "reset",          'z', &ChatHandler::HandleResetInstanceCommand,      "Removes instance ID x from target player.",                        nullptr, 0, 0, 0 },
         { "resetall",       'm', &ChatHandler::HandleResetAllInstancesCommand,  "Removes all instance IDs from target player.",                     nullptr, 0, 0, 0 },
         { "shutdown",       'z', &ChatHandler::HandleShutdownInstanceCommand,   "Shutdown instance with ID x (default is current instance).",       nullptr, 0, 0, 0 },
+        { "showtimers",     'm', &ChatHandler::HandleShowTimersCommand,         "Show timers for current instance.",                                nullptr, 0, 0, 0 },
         { nullptr,          '0', nullptr,                                       "",                                                                 nullptr, 0, 0, 0 }
     };
     dupe_command_table(instanceCommandTable, _instanceCommandTable);

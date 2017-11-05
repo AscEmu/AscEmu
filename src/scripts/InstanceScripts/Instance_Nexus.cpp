@@ -751,7 +751,7 @@ class NexusScript : public MoonInstanceScript
 
         void OnPlayerEnter(Player* player)
         {
-            if (!mSpawnsCreated)
+            if (!spawnsCreated())
             {
                 // team spawns
                 if (player->GetTeam() == TEAM_ALLIANCE)
@@ -790,7 +790,8 @@ class NexusScript : public MoonInstanceScript
                             break;
                     }
                 }
-                mSpawnsCreated = true;
+
+                setSpawnsCreated();
             }
         }
 };

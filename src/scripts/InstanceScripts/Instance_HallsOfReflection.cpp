@@ -36,7 +36,7 @@ class HallsOfReflectionScript : public MoonInstanceScript
         {
             // Fixes a bug where you enter the instance and you run so far and teleports you out, changed DB coords still not working so this is a solution.
             pPlayer->SafeTeleport(MAP_HALLSOFREFLECTION, pPlayer->GetInstanceID(), 5260.970f, 1956.850f, 707.692f, 1.08f);
-            if (!mSpawnsCreated)
+            if (!spawnsCreated())
             {
                 if (pPlayer->GetTeam() == TEAM_ALLIANCE)
                 {
@@ -47,7 +47,8 @@ class HallsOfReflectionScript : public MoonInstanceScript
                 {
                     spawnCreature(CN_SYLVANAS_WINDRUNNER, 5266.77f, 1953.52f, 707.69f, 0.74f, 35);
                 }
-                mSpawnsCreated = true;
+
+                setSpawnsCreated();
             }
         }
 };

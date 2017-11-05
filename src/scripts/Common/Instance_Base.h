@@ -22,10 +22,6 @@
 
 #include "Map/WorldCreatorDefines.hpp"
 
-const int32 INVALIDATE_TIMER = -1;
-const uint32 DEFAULT_UPDATE_FREQUENCY = 1000;    //milliseconds
-const uint32 DEFAULT_DESPAWN_TIMER = 2000;      //milliseconds
-
 #define MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(ClassName, ParentClassName) \
 public:\
     ADD_INSTANCE_FACTORY_FUNCTION(ClassName);\
@@ -73,45 +69,6 @@ enum GameObjectState
     State_Inactive  = 1
 };
 
-struct BossData
-{
-    BossData(EncounterState pState)
-    {
-        mSqlId = 0;
-        mGuid = 0;
-        mState = pState;
-    };
-
-    BossData(uint32 pId = 0, uint64 pGuid = 0, EncounterState pState = State_NotStarted)
-    {
-        mSqlId = pId;
-        mGuid = pGuid;
-        mState = pState;
-    };
-
-    ~BossData()
-    {
-    };
-
-    uint32 mSqlId;
-    uint64 mGuid;
-    EncounterState mState;
-};
-
-class MoonInstanceScript;
-
-typedef std::map<uint32, BossData> EncounterMap;
-typedef std::map<uint32, GameObjectState> GameObjectEntryMap;
-
-typedef std::pair<int32, int32> TimerPair;
-typedef std::vector<TimerPair> TimerArray;
-
-typedef std::unordered_map<uint32, GameObject*> GameObjectMap;
-
-typedef std::set<Player*> PlayerSet;
-//typedef std::set<Creature*> CreatureSet;
-typedef std::set<GameObject*> GameObjectSet;
-
 //////////////////////////////////////////////////////////////////////////////////////////
 //Class MoonInstanceScript
 class MoonInstanceScript : public InstanceScript
@@ -120,35 +77,10 @@ class MoonInstanceScript : public InstanceScript
         MoonInstanceScript(MapMgr* pMapMgr);
         virtual ~MoonInstanceScript();
 
-        // Creature
-        Creature* GetCreatureByGuid(uint32 pGuid);
-
-        // GameObject
-        GameObject* GetGameObjectByGuid(uint32 pGuid);
-
-        // Distance calculation
-        float GetRangeToObject(Object* pObject, float pX, float pY, float pZ);
-
-        // Timers - reimplementation from MoonScriptCreatureAI
-        int32 AddTimer(int32 pDurationMillisec);
-        int32 GetTimer(int32 pTimerId);
-        void RemoveTimer(int32 & pTimerId);
-        void ResetTimer(int32 pTimerId, int32 pDurationMillisec);
-        bool IsTimerFinished(int32 pTimerId);
-        void CancelAllTimers();
-
         // Cells
         void SetCellForcedStates(float pMinX, float pMaxX, float pMinY, float pMaxY, bool pActivate = true);
 
-        virtual void UpdateEvent();
         virtual void Destroy();
-
-    protected:
-
-        uint32 mUpdateFrequency;
-        TimerArray mTimers;
-        int32 mTimerIdCounter;
-        bool mSpawnsCreated;
 };
 
 #endif      // _INSTANCE_BASE_H

@@ -57,6 +57,11 @@ class IceCrownCitadelScript : public MoonInstanceScript
                 setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_2, State_Inactive);    // Icewall 2
                 setGameObjectStateForEntry(GO_MARROWGAR_DOOR, State_Inactive);         // Door
             }
+
+            //test timers
+            /*addTimer(75000);
+            addTimer(5000);
+            addTimer(35000);*/
         }
 
         void OnGameObjectPushToWorld(GameObject* pGameObject)
@@ -99,7 +104,7 @@ class IceCrownCitadelScript : public MoonInstanceScript
 
         void OnPlayerEnter(Player* player)
         {
-            if (!mSpawnsCreated)
+            if (!spawnsCreated())
             {
                 // setup only the npcs with the correct team...
                 switch (player->GetTeam())
@@ -114,7 +119,7 @@ class IceCrownCitadelScript : public MoonInstanceScript
                         break;
                 }
 
-                mSpawnsCreated = true;
+                setSpawnsCreated();
             }
         }
 

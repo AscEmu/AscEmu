@@ -23,103 +23,10 @@
 
 MoonInstanceScript::MoonInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
 {
-    mUpdateFrequency = DEFAULT_UPDATE_FREQUENCY;
-    mTimerIdCounter = 0;
-    mSpawnsCreated = false;
 };
 
 MoonInstanceScript::~MoonInstanceScript()
 {
-};
-
-
-Creature* MoonInstanceScript::GetCreatureByGuid(uint32 pGuid)
-{
-    if (pGuid == 0)
-        return NULL;
-
-    return mInstance->GetCreature(pGuid);
-};
-
-GameObject* MoonInstanceScript::GetGameObjectByGuid(uint32 pGuid)
-{
-    if (pGuid == 0)
-        return NULL;
-
-    return mInstance->GetGameObject(pGuid);
-};
-
-float MoonInstanceScript::GetRangeToObject(Object* pObject, float pX, float pY, float pZ)
-{
-    if (pObject == NULL)
-        return 0.0f;
-
-    LocationVector pos = pObject->GetPosition();
-    float dX = pos.x - pX;
-    float dY = pos.y - pY;
-    float dZ = pos.z - pZ;
-
-    return sqrtf(dX * dX + dY * dY + dZ * dZ);
-};
-
-int32 MoonInstanceScript::AddTimer(int32 pDurationMillisec)
-{
-    int32 Index = mTimerIdCounter++;
-    mTimers.push_back(std::make_pair(Index, pDurationMillisec));
-    return Index;
-}
-
-int32 MoonInstanceScript::GetTimer(int32 pTimerId)
-{
-    for (TimerArray::iterator TimerIter = mTimers.begin(); TimerIter != mTimers.end(); ++TimerIter)
-    {
-        if (TimerIter->first == pTimerId)
-            return TimerIter->second;
-    };
-
-    return 0;
-};
-
-void MoonInstanceScript::RemoveTimer(int32 & pTimerId)
-{
-    for (TimerArray::iterator TimerIter = mTimers.begin(); TimerIter != mTimers.end(); ++TimerIter)
-    {
-        if (TimerIter->first == pTimerId)
-        {
-            mTimers.erase(TimerIter);
-            pTimerId = INVALIDATE_TIMER;
-            break;
-        };
-    };
-};
-
-void MoonInstanceScript::ResetTimer(int32 pTimerId, int32 pDurationMillisec)
-{
-    for (TimerArray::iterator TimerIter = mTimers.begin(); TimerIter != mTimers.end(); ++TimerIter)
-    {
-        if (TimerIter->first == pTimerId)
-        {
-            TimerIter->second = pDurationMillisec;
-            break;
-        };
-    };
-};
-
-bool MoonInstanceScript::IsTimerFinished(int32 pTimerId)
-{
-    for (TimerArray::iterator TimerIter = mTimers.begin(); TimerIter != mTimers.end(); ++TimerIter)
-    {
-        if (TimerIter->first == pTimerId)
-            return (TimerIter->second <= 0) ? true : false;
-    };
-
-    return false;
-};
-
-void MoonInstanceScript::CancelAllTimers()
-{
-    mTimers.clear();
-    mTimerIdCounter = 0;
 };
 
 void MoonInstanceScript::SetCellForcedStates(float pMinX, float pMaxX, float pMinY, float pMaxY, bool pActivate)
@@ -153,15 +60,6 @@ void MoonInstanceScript::SetCellForcedStates(float pMinX, float pMaxX, float pMi
 
         pMinY = Y;
         pMinX += 40.0f;
-    };
-};
-
-void MoonInstanceScript::UpdateEvent()
-{
-    //uint32 CurrentTime = static_cast< uint32 >(time(NULL));
-    for (TimerArray::iterator TimerIter = mTimers.begin(); TimerIter != mTimers.end(); ++TimerIter)
-    {
-        TimerIter->second -= mUpdateFrequency;
     };
 };
 
