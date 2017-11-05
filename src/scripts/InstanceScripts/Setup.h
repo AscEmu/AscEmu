@@ -24,7 +24,7 @@
 #include <Management/QuestLogEntry.hpp>
 #include "Map/MapScriptInterface.h"
 #include <Spell/Customization/SpellCustomizations.hpp>
-#include "../Common/Instance_Base.h"
+#include "Map/WorldCreatorDefines.hpp"
 #include "../Common/Base.h"
 
 #ifndef _INSTANCE_SCRIPTS_SETUP_H

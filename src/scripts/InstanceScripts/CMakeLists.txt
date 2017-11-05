@@ -72,7 +72,6 @@ set(sources
     Raid_ZulGurub.cpp 
     Raid_WorldBosses.cpp 
     Raid_ZulAman.cpp 
-    ../Common/Instance_Base.cpp 
     ../Common/Base.cpp
     ../Common/AITimerCollection.cpp
     Setup.cpp
@@ -146,7 +145,6 @@ set(headers
     Raid_ZulAman.h
     Setup.h
     ../Common/Base.h
-    ../Common/Instance_Base.h
     ../Common/AITimerCollection.h
     
     #Linker

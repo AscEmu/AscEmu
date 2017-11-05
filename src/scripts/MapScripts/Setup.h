@@ -13,7 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Management/QuestLogEntry.hpp>
 #include "Map/MapScriptInterface.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
-#include "../Common/Instance_Base.h"
+#include "Map/WorldCreatorDefines.hpp"
 #include "../Common/Base.h"
 
 

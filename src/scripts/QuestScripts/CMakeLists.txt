@@ -71,7 +71,6 @@ SET(sources
 set(headers
    Setup.h
    ../Common/Base.h
-   ../Common/Instance_Base.h
    )
 
 include_directories(

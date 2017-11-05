@@ -91,8 +91,6 @@ include(Outland/TempestKeep/TheMechanar/CMakeLists.txt)
 set(SRC_BASIC
    Setup.cpp
    Setup.h
-   ../Common/Instance_Base.cpp 
-   ../Common/Instance_Base.h
    ../Common/Base.cpp
    ../Common/Base.h
    ../Common/AITimerCollection.cpp

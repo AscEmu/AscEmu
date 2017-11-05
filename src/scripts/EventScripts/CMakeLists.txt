@@ -51,7 +51,6 @@ set(headers
    Event_Nights.h
    Setup.h
    ../Common/Base.h
-   ../Common/Instance_Base.h
 )
 
 include_directories(
