@@ -125,7 +125,6 @@ class MoonInstanceScript : public InstanceScript
 
         // GameObject
         GameObject* GetGameObjectByGuid(uint32 pGuid);
-        void AddGameObjectStateByEntry(uint32 pEntry, GameObjectState pState, bool pUseQuery = false);
 
         // Distance calculation
         float GetRangeToObject(Object* pObject, float pX, float pY, float pZ);
@@ -145,8 +144,6 @@ class MoonInstanceScript : public InstanceScript
         virtual void Destroy();
 
     protected:
-
-        GameObjectEntryMap mGameObjects;
 
         uint32 mUpdateFrequency;
         TimerArray mTimers;

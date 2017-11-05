@@ -123,7 +123,7 @@ class GeneralBjarngrimAI : public MoonScriptBossAI
     MOONSCRIPT_FACTORY_FUNCTION(GeneralBjarngrimAI, MoonScriptBossAI);
     GeneralBjarngrimAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
     {
-        mInstance = GetInstanceScript();
+        mInstance = getInstanceScript();
         // Battle Stance
         AddPhaseSpell(1, AddSpell(SPELL_MORTAL_STRIKE, Target_Current, 25, 0, 5));
         AddPhaseSpell(1, AddSpell(SPELL_WHIRLWIND, Target_Self, 90, 8, 30));
@@ -236,7 +236,7 @@ class GeneralBjarngrimAI : public MoonScriptBossAI
     private:
 
         int32 mStanceTimer;
-        MoonInstanceScript* mInstance;
+        InstanceScript* mInstance;
 };
 
 
@@ -256,7 +256,7 @@ class Volkhan : public MoonScriptCreatureAI
     MOONSCRIPT_FACTORY_FUNCTION(Volkhan, MoonScriptCreatureAI);
     Volkhan(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
-        mInstance = GetInstanceScript();
+        mInstance = getInstanceScript();
 
         if (_isHeroic())
         {
@@ -402,7 +402,7 @@ class Volkhan : public MoonScriptCreatureAI
     bool m_bStomp;
     int32 mStompTimer;
     int32 mPhase;
-    MoonInstanceScript* mInstance;
+    InstanceScript* mInstance;
 };
 
 
@@ -460,7 +460,7 @@ class IonarAI : public MoonScriptBossAI
     MOONSCRIPT_FACTORY_FUNCTION(IonarAI, MoonScriptBossAI);
     IonarAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
     {
-        mInstance = GetInstanceScript();
+        mInstance = getInstanceScript();
 
         if (_isHeroic())
         {
@@ -513,7 +513,7 @@ class IonarAI : public MoonScriptBossAI
         sendDBChatMessage(744);      // Master... you have guests.
     }
 
-    MoonInstanceScript* mInstance;
+    InstanceScript* mInstance;
 };
 
 
@@ -530,7 +530,7 @@ class LokenAI : public MoonScriptCreatureAI
     MOONSCRIPT_FACTORY_FUNCTION(LokenAI, MoonScriptCreatureAI);
     LokenAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
-        mInstance = GetInstanceScript();
+        mInstance = getInstanceScript();
 
         if (_isHeroic())
             mNova = AddSpell(59835, Target_Self, 0, 4.0f, 0);
@@ -653,7 +653,7 @@ class LokenAI : public MoonScriptCreatureAI
     }
 
     SpellDesc* mNova;
-    MoonInstanceScript* mInstance;
+    InstanceScript* mInstance;
 
     int32 mNovaTimer;
     int32 mRespondTimer;

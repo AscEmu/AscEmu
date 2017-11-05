@@ -171,7 +171,7 @@ class Marwyn : public MoonScriptBossAI
         MOONSCRIPT_FACTORY_FUNCTION(Marwyn, MoonScriptBossAI);
         Marwyn(Creature* pCreature) : MoonScriptBossAI(pCreature)
         {
-            mInstance = GetInstanceScript();
+            mInstance = getInstanceScript();
 
             if (_isHeroic() == false) // NORMAL MODE
             {
@@ -236,7 +236,9 @@ class Marwyn : public MoonScriptBossAI
                 mInstance->setData(_unit->GetEntry(), Finished);
             ParentClass::OnDied(pKiller);
         }
-        MoonInstanceScript* mInstance;
+
+    private:
+        InstanceScript* mInstance;
 };
 
 
@@ -248,7 +250,7 @@ class Falric : public MoonScriptBossAI
         MOONSCRIPT_FACTORY_FUNCTION(Falric, MoonScriptBossAI);
         Falric(Creature* pCreature) : MoonScriptBossAI(pCreature)
         {
-            mInstance = GetInstanceScript();
+            mInstance = getInstanceScript();
 
             if (_isHeroic() == false) // NORMAL MODE
             {
@@ -324,7 +326,9 @@ class Falric : public MoonScriptBossAI
             }
 
         }
-        MoonInstanceScript* mInstance;
+
+    private:
+        InstanceScript* mInstance;
 };
 
 void SetupHallsOfReflection(ScriptMgr* mgr)

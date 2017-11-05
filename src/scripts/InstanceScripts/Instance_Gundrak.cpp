@@ -251,7 +251,7 @@ class SladranAI : public MoonScriptCreatureAI
     MOONSCRIPT_FACTORY_FUNCTION(SladranAI, MoonScriptCreatureAI);
     SladranAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
-        mInstance = GetInstanceScript();
+        mInstance = getInstanceScript();
 
         SpellDesc* sdPoisonNova = nullptr;
         if (_isHeroic())
@@ -311,7 +311,7 @@ class SladranAI : public MoonScriptCreatureAI
         sendDBChatMessage(4220);     // I sssee now... Ssscourge wasss not... our greatessst enemy....
     }
 
-    MoonInstanceScript* mInstance;
+    InstanceScript* mInstance;
 };
 
 
@@ -323,7 +323,7 @@ class GalDarahAI : public MoonScriptCreatureAI
     MOONSCRIPT_FACTORY_FUNCTION(GalDarahAI, MoonScriptCreatureAI);
     GalDarahAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
-        mInstance = GetInstanceScript();
+        mInstance = getInstanceScript();
 
         if (_isHeroic())
             AddSpell(59824, Target_Self, 20, 0, 12);
@@ -370,7 +370,7 @@ class GalDarahAI : public MoonScriptCreatureAI
         sendDBChatMessage(4203);     // Even the mighty... can fall.
     }
 
-    MoonInstanceScript* mInstance;
+    InstanceScript* mInstance;
 };
 
 

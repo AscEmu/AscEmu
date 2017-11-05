@@ -419,6 +419,10 @@ class SERVER_DECL CreatureAIScript
         void sendChatMessage(uint8_t type, uint32_t soundId, std::string text);
         void sendDBChatMessage(uint32_t textId);
 
+        // instance
+
+        InstanceScript* getInstanceScript();
+
         // MIT end
 
         void RegisterAIUpdateEvent(uint32 frequency);
@@ -619,6 +623,8 @@ class SERVER_DECL InstanceScript
         GameObjectSet getGameObjectsSetForEntry(uint32_t entry);
 
         float getRangeToObjectForPosition(Object* object, float posX, float posY, float posZ);
+
+        void setGameObjectStateForEntry(uint32_t entry, uint8_t state);
 
     protected:
 

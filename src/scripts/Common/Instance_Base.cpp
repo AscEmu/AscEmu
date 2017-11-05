@@ -49,48 +49,6 @@ GameObject* MoonInstanceScript::GetGameObjectByGuid(uint32 pGuid)
     return mInstance->GetGameObject(pGuid);
 };
 
-void MoonInstanceScript::AddGameObjectStateByEntry(uint32 pEntry, GameObjectState pState, bool pUseQuery)
-{
-    if (pEntry == 0)
-        return;
-
-    GameObjectEntryMap::iterator Iter = mGameObjects.find(pEntry);
-    if (Iter != mGameObjects.end())
-        (*Iter).second = pState;
-    else
-        mGameObjects.insert(GameObjectEntryMap::value_type(pEntry, pState));
-
-    GameObject* CurrentObject = NULL;
-    if (!pUseQuery)
-    {
-        for (std::vector< GameObject* >::iterator GOIter = mInstance->GOStorage.begin(); GOIter != mInstance->GOStorage.end(); ++GOIter)
-        {
-            CurrentObject = (*GOIter);
-            if (CurrentObject != NULL)
-            {
-                if (CurrentObject->GetEntry() == pEntry)
-                    CurrentObject->SetState(pState);
-            };
-        };
-    }
-    else
-    {
-        QueryResult* Result = WorldDatabase.Query("SELECT id FROM gameobject_spawns WHERE entry = %u", pEntry);
-        if (Result != NULL)
-        {
-            do
-            {
-                CurrentObject = getGameObjectBySpawnId(Result->Fetch()[0].GetUInt32());
-                if (CurrentObject != NULL)
-                    CurrentObject->SetState(pState);
-            }
-            while (Result->NextRow());
-
-            delete Result;
-        };
-    };
-};
-
 float MoonInstanceScript::GetRangeToObject(Object* pObject, float pX, float pY, float pZ)
 {
     if (pObject == NULL)

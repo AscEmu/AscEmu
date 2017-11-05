@@ -205,12 +205,6 @@ void MoonScriptCreatureAI::AggroRandomPlayer(uint32 pInitialThreat)
     }
 }
 
-MoonInstanceScript* MoonScriptCreatureAI::GetInstanceScript()
-{
-    MapMgr* pInstance = _unit->GetMapMgr();
-    return (pInstance) ? static_cast< MoonInstanceScript* >(pInstance->GetScript()) : nullptr;
-};
-
 MoonScriptCreatureAI* MoonScriptCreatureAI::GetNearestCreature(uint32 pCreatureId)
 {
     Creature* NearestCreature = getNearestCreature(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), pCreatureId);

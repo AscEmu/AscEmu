@@ -58,7 +58,7 @@ class ForgemasterGarfrostAI : MoonScriptBossAI
     ForgemasterGarfrostAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
     {
         // Instance Script
-        mInstance = GetInstanceScript();
+        mInstance = getInstanceScript();
 
         // Normal Spells
         mSaronite = AddSpell(SPELL_THROWSARONITE, Target_RandomPlayerDestination, 20, 2, 15);
@@ -212,7 +212,7 @@ class ForgemasterGarfrostAI : MoonScriptBossAI
     int32_t mPermafrostTimer;
     int32_t mChllingWaveTimer;
     int32_t mDeepFreezeTimer;
-    MoonInstanceScript* mInstance;
+    InstanceScript* mInstance;
 };
 
 // Ick and Krick
@@ -223,7 +223,7 @@ class IckAI : MoonScriptBossAI
     IckAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
     {
         // Instance Script
-        mInstance = GetInstanceScript();
+        mInstance = getInstanceScript();
 
         // Spells
         mMightyKick = AddSpell(SPELL_MIGHTY_KICK, Target_Current, 25, 0, 0);
@@ -427,7 +427,7 @@ class IckAI : MoonScriptBossAI
         }
     }
 
-    MoonInstanceScript* mInstance;
+    InstanceScript* mInstance;
     MoonScriptCreatureAI* mKrickAI;
     int32_t mMightyKickTimer;
     int32_t mPursueTimer;
@@ -454,7 +454,7 @@ class KrickAI : MoonScriptBossAI
     KrickAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
     {
         // Get Instance Script
-        mInstance = GetInstanceScript();
+        mInstance = getInstanceScript();
 
         // Timer
         mOutroTimer = INVALIDATE_TIMER;
@@ -621,7 +621,7 @@ class KrickAI : MoonScriptBossAI
         }
     }
 
-    MoonInstanceScript* mInstance;
+    InstanceScript* mInstance;
     Creature* mIckAI;
     MoonScriptCreatureAI* JainaOrSylvanas;
     SpellDesc* mBarrageSummon;

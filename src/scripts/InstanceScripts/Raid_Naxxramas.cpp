@@ -48,22 +48,22 @@ class NaxxramasScript : public MoonInstanceScript
                     }
                     break;
                 case CN_PATCHWERK:
-                    AddGameObjectStateByEntry(181123, State_Active);
+                    setGameObjectStateForEntry(181123, State_Active);
                     break;
                 case CN_GLUTH:
                     {
-                        AddGameObjectStateByEntry(181120, State_Active);
-                        AddGameObjectStateByEntry(181121, State_Active);
+                    setGameObjectStateForEntry(181120, State_Active);
+                    setGameObjectStateForEntry(181121, State_Active);
                     }
                     break;
                 case CN_ANUBREKHAN:
                     {
-                        AddGameObjectStateByEntry(181195, State_Active);
-                        AddGameObjectStateByEntry(194022, State_Active);
+                    setGameObjectStateForEntry(181195, State_Active);
+                    setGameObjectStateForEntry(194022, State_Active);
                     }
                     break;
                 case CN_GRAND_WIDOW_FAERLINA:
-                    AddGameObjectStateByEntry(181209, State_Active);
+                    setGameObjectStateForEntry(181209, State_Active);
                     break;
             }
         }

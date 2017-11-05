@@ -33,7 +33,7 @@ class AnomalusAI : public MoonScriptBossAI
         MOONSCRIPT_FACTORY_FUNCTION(AnomalusAI, MoonScriptBossAI);
         AnomalusAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
         {
-            mInstance = GetInstanceScript();
+            mInstance = getInstanceScript();
 
             if (_isHeroic())
                 AddSpell(SPARK_HC, Target_RandomPlayer, 80, 0, 3);
@@ -141,7 +141,7 @@ class AnomalusAI : public MoonScriptBossAI
         int32 mSummonTimer;
         uint8 mSummon;
         bool mRift;
-        MoonInstanceScript* mInstance;
+        InstanceScript* mInstance;
 };
 
 class ChaoticRiftAI : public MoonScriptBossAI
@@ -219,7 +219,7 @@ class TelestraBossAI : public MoonScriptBossAI
         MOONSCRIPT_FACTORY_FUNCTION(TelestraBossAI, MoonScriptBossAI);
         TelestraBossAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
         {
-            mInstance = GetInstanceScript();
+            mInstance = getInstanceScript();
 
             if (_isHeroic())
             {
@@ -364,7 +364,7 @@ class TelestraBossAI : public MoonScriptBossAI
         int32 mPhaseRepeat;
         int32 mAddCount;
 
-        MoonInstanceScript* mInstance;
+        InstanceScript* mInstance;
 };
 
 class TelestraFireAI : public MoonScriptBossAI
@@ -445,7 +445,7 @@ class OrmorokAI : public MoonScriptBossAI
     MOONSCRIPT_FACTORY_FUNCTION(OrmorokAI, MoonScriptBossAI);
     OrmorokAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
     {
-        mInstance = GetInstanceScript();
+        mInstance = getInstanceScript();
 
         if (_isHeroic())
             AddSpell(TRAMPLE_H, Target_Current, 30, 0, 9);
@@ -501,7 +501,7 @@ class OrmorokAI : public MoonScriptBossAI
         SpellDesc* mCrystalSpikes;
         bool mEnraged;
 
-        MoonInstanceScript* mInstance;
+        InstanceScript* mInstance;
 };
 
 class CrystalSpikeAI : public MoonScriptBossAI

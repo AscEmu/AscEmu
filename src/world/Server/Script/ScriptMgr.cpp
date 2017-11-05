@@ -860,6 +860,14 @@ void CreatureAIScript::sendDBChatMessage(uint32_t textId)
     _unit->SendScriptTextChatMessage(textId);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// instance
+InstanceScript* CreatureAIScript::getInstanceScript()
+{
+    MapMgr* mapMgr = _unit->GetMapMgr();
+    return (mapMgr) ? mapMgr->GetScript() : nullptr;
+}
+
 void CreatureAIScript::RegisterAIUpdateEvent(uint32 frequency)
 {
     //sEventMgr.AddEvent(_unit, &Creature::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, frequency, 0,0);
@@ -918,20 +926,22 @@ void GameObjectAIScript::RegisterAIUpdateEvent(uint32 frequency)
 InstanceScript::InstanceScript(MapMgr* pMapMgr) : mInstance(pMapMgr)
 {
     generateBossDataState();
-};
+}
 
 void InstanceScript::RegisterUpdateEvent(uint32 pFrequency)
 {
     sEventMgr.AddEvent(mInstance, &MapMgr::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, pFrequency, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-};
+}
+
 void InstanceScript::ModifyUpdateEvent(uint32 pNewFrequency)
 {
     sEventMgr.ModifyEventTimeAndTimeLeft(mInstance, EVENT_SCRIPT_UPDATE_EVENT, pNewFrequency);
-};
+}
+
 void InstanceScript::RemoveUpdateEvent()
 {
     sEventMgr.RemoveEvents(mInstance, EVENT_SCRIPT_UPDATE_EVENT);
-};
+}
 
 // MIT start
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -944,7 +954,7 @@ void InstanceScript::addData(uint32_t data, uint32_t state /*= NotStarted*/)
         mInstanceData.insert(std::pair<uint32_t, uint32_t>(data, state));
     else
         LOG_DEBUG("tried to set state for entry %u. The entry is already available with a state!", data);
-};
+}
 
 void InstanceScript::setData(uint32_t data, uint32_t state)
 {
@@ -953,7 +963,7 @@ void InstanceScript::setData(uint32_t data, uint32_t state)
         Iter->second = state;
     else
         LOG_DEBUG("tried to set state for entry %u on map %u. The entry is not defined in table instance_bosses or manually to handle states!", data, mInstance->GetMapId());
-};
+}
 
 uint32_t InstanceScript::getData(uint32_t data)
 {
@@ -962,7 +972,7 @@ uint32_t InstanceScript::getData(uint32_t data)
         return Iter->second;
 
     return InvalidState;
-};
+}
 
 bool InstanceScript::isDataStateFinished(uint32_t data)
 {
@@ -1097,7 +1107,7 @@ Creature* InstanceScript::spawnCreature(uint32_t entry, float posX, float posY, 
 Creature* InstanceScript::getCreatureBySpawnId(uint32_t entry)
 {
     return mInstance->GetSqlIdCreature(entry);
-};
+}
 
 CreatureSet InstanceScript::getCreatureSetForEntry(uint32_t entry, bool debug /*= false*/, Player* player /*= nullptr*/)
 {
@@ -1152,7 +1162,7 @@ GameObject* InstanceScript::spawnGameObject(uint32_t entry, float posX, float po
 GameObject* InstanceScript::getGameObjectBySpawnId(uint32_t entry)
 {
     return mInstance->GetSqlIdGameObject(entry);
-};
+}
 
 GameObject* InstanceScript::getClosestGameObjectForPosition(uint32_t entry, float posX, float posY, float posZ)
 {
@@ -1181,7 +1191,7 @@ GameObject* InstanceScript::getClosestGameObjectForPosition(uint32_t entry, floa
     }
 
     return nullptr;
-};
+}
 
 GameObjectSet InstanceScript::getGameObjectsSetForEntry(uint32_t entry)
 {
@@ -1209,7 +1219,24 @@ float InstanceScript::getRangeToObjectForPosition(Object* object, float posX, fl
     float dZ = pos.z - posZ;
 
     return sqrtf(dX * dX + dY * dY + dZ * dZ);
-};
+}
+
+void InstanceScript::setGameObjectStateForEntry(uint32_t entry, uint8_t state)
+{
+    if (entry == 0)
+        return;
+
+    GameObjectSet gameObjectSet = getGameObjectsSetForEntry(entry);
+
+    if (gameObjectSet.size() == 0)
+        return;
+
+    for (auto gameobject : gameObjectSet)
+    {
+        if (gameobject != nullptr)
+            gameobject->SetState(state);
+    }
+}
 
 //MIT end
 

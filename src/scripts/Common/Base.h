@@ -290,9 +290,6 @@ class MoonScriptCreatureAI : public CreatureAIScript
         void AggroNearestPlayer(uint32 pInitialThreat = 1);
         void AggroRandomPlayer(uint32 pInitialThreat = 1);
 
-        //Instances
-        MoonInstanceScript* GetInstanceScript();
-
         MoonScriptCreatureAI* GetNearestCreature(uint32 pCreatureId = 0);
         MoonScriptCreatureAI* SpawnCreature(uint32 pCreatureId, float pX, float pY, float pZ, float pO = 0, bool pForceSameFaction = false, uint32 pPhase = 1);
 

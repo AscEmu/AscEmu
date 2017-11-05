@@ -46,8 +46,6 @@ enum IceCrown_Encounters
 //IceCrownCitadel Instance
 class IceCrownCitadelScript : public MoonInstanceScript
 {
-    friend class ICCTeleporterAI; // Friendship forever ;-)
-
     public:
 
         MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(IceCrownCitadelScript, MoonInstanceScript);
@@ -55,9 +53,9 @@ class IceCrownCitadelScript : public MoonInstanceScript
         {
             if (getData(CN_LORD_MARROWGAR) == Finished)
             {
-                AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_1, State_Inactive);    // Icewall 1
-                AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_2, State_Inactive);    // Icewall 2
-                AddGameObjectStateByEntry(GO_MARROWGAR_DOOR, State_Inactive);         // Door
+                setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_1, State_Inactive);    // Icewall 1
+                setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_2, State_Inactive);    // Icewall 2
+                setGameObjectStateForEntry(GO_MARROWGAR_DOOR, State_Inactive);         // Door
             }
         }
 
@@ -66,9 +64,9 @@ class IceCrownCitadelScript : public MoonInstanceScript
             // Gos which are not visible by killing a boss needs a second check...
             if (getData(CN_LORD_MARROWGAR) == Finished)
             {
-                AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_1, State_Active);    // Icewall 1
-                AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_2, State_Active);    // Icewall 2
-                AddGameObjectStateByEntry(GO_MARROWGAR_DOOR, State_Active);         // Door
+                setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_1, State_Active);    // Icewall 1
+                setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_2, State_Active);    // Icewall 2
+                setGameObjectStateForEntry(GO_MARROWGAR_DOOR, State_Active);         // Door
             }
 
             switch (pGameObject->GetEntry())
@@ -90,9 +88,9 @@ class IceCrownCitadelScript : public MoonInstanceScript
             {
                 case CN_LORD_MARROWGAR:
                 {
-                    AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_1, State_Active);    // Icewall 1
-                    AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_2, State_Active);    // Icewall 2
-                    AddGameObjectStateByEntry(GO_MARROWGAR_DOOR, State_Active);         // Door
+                    setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_1, State_Active);    // Icewall 1
+                    setGameObjectStateForEntry(GO_MARROWGAR_ICEWALL_2, State_Active);    // Icewall 2
+                    setGameObjectStateForEntry(GO_MARROWGAR_DOOR, State_Active);         // Door
                 }break;
                 default:
                     break;
@@ -129,7 +127,7 @@ class ICCTeleporterGossip : public Arcemu::Gossip::Script
 public:
     void OnHello(Object* object, Player* player)
     {
-        IceCrownCitadelScript* pInstance = (IceCrownCitadelScript*)player->GetMapMgr()->GetScript();
+        InstanceScript* pInstance = player->GetMapMgr()->GetScript();
         if (!pInstance)
             return;
 
@@ -268,10 +266,6 @@ class LordMarrowgarAI : public MoonScriptBossAI
         {
             sendDBChatMessage(923);      // The Scourge will wash over this world as a swarm of death and destruction!
             RegisterAIUpdateEvent(60000);
-
-            // examplecode.... remove me as soon as possible.
-            //IceCrownCitadelScript* pInstance = (IceCrownCitadelScript*)_unit->GetMapMgr()->GetScript();
-            //pInstance->sendUnitEncounter(0, _unit);
         }
 
         void BoneSpike()

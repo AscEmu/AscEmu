@@ -162,7 +162,7 @@ class SartharionAI : public MoonScriptBossAI
         MOONSCRIPT_FACTORY_FUNCTION(SartharionAI, MoonScriptBossAI);
         SartharionAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
         {
-            mInstance = dynamic_cast<ObsidianSanctumScript*>(GetInstanceScript());
+            mInstance = dynamic_cast<ObsidianSanctumScript*>(getInstanceScript());
 
             AddSpell(SARTHARION_CLEAVE, Target_Current, 24, 0, 8);
 

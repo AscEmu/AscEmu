@@ -34,7 +34,7 @@ class BlackTempleScript : public MoonInstanceScript
         BlackTempleScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
         {
             if (getData(CN_SUPREMUS) == Finished)
-                AddGameObjectStateByEntry(185882, State_Active);    // Gate to Black Temple behind Supremus
+                setGameObjectStateForEntry(185882, State_Active);    // Gate to Black Temple behind Supremus
         }
 
         void OnCreatureDeath(Creature* pVictim, Unit* pKiller)
@@ -43,7 +43,7 @@ class BlackTempleScript : public MoonInstanceScript
             switch (pVictim->GetEntry())
             {
                 case CN_SUPREMUS:
-                    AddGameObjectStateByEntry(185882, State_Active);    // Gate to Black Temple behind Supremus
+                    setGameObjectStateForEntry(185882, State_Active);    // Gate to Black Temple behind Supremus
                     break;
                 default:
                     break;

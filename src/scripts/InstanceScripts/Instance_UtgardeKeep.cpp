@@ -847,7 +847,7 @@ class IngvarUndeadAI : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(IngvarUndeadAI, MoonScriptCreatureAI);
         IngvarUndeadAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            mInstance = GetInstanceScript();
+            mInstance = getInstanceScript();
 
             AddSpellFunc(&SpellFunc_ShadowAxe, Target_RandomPlayerNotCurrent, 15, 0, 21);
             AddSpell(INGVAR_DARK_SMASH, Target_Self, 12, 3, 16);
@@ -877,7 +877,8 @@ class IngvarUndeadAI : public MoonScriptCreatureAI
             ParentClass::OnDied(pKiller);
         }
 
-        MoonInstanceScript* mInstance;
+    private:
+        InstanceScript* mInstance;
 };
 
 void SetupUtgardeKeep(ScriptMgr* mgr)
