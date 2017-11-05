@@ -636,6 +636,9 @@ void CreatureAIScript::stopMovement()
     _unit->GetAIInterface()->StopMovement(0);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// combat setup
+
 bool CreatureAIScript::canEnterCombat()
 {
     return _unit->GetAIInterface()->GetAllowedToEnterCombat();
@@ -748,12 +751,14 @@ bool CreatureAIScript::_isHeroic()
     return true;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
 // timers
-uint32 CreatureAIScript::_addTimer(uint32 pDurationMillisec)
+
+uint32 CreatureAIScript::_addTimer(uint32_t durationInMs)
 {
     if (InstanceScript* inScript = getInstanceScript())
     {
-        uint32_t timerId = inScript->addTimer(pDurationMillisec);
+        uint32_t timerId = inScript->addTimer(durationInMs);
         mCreatureTimerIds.push_back(timerId);
 
         return timerId;
@@ -762,35 +767,35 @@ uint32 CreatureAIScript::_addTimer(uint32 pDurationMillisec)
     return 0;
 }
 
-uint32 CreatureAIScript::_getTimeForTimer(uint32 pTimerId)
+uint32_t CreatureAIScript::_getTimeForTimer(uint32_t timerId)
 {
     if (InstanceScript* inScript = getInstanceScript())
-        return inScript->getTimeForTimer(pTimerId);
+        return inScript->getTimeForTimer(timerId);
 
     return 0;
 }
 
-void CreatureAIScript::_removeTimer(uint32& pTimerId)
+void CreatureAIScript::_removeTimer(uint32_t& timerId)
 {
     if (InstanceScript* inScript = getInstanceScript())
     {
-        uint32_t timerId = pTimerId;
-        inScript->removeTimer(pTimerId);
-        if (pTimerId == 0)
+        uint32_t timerId = timerId;
+        inScript->removeTimer(timerId);
+        if (timerId == 0)
             mCreatureTimerIds.remove(timerId);
     }
 }
 
-void CreatureAIScript::_resetTimer(uint32 pTimerId, uint32 pDurationMillisec)
+void CreatureAIScript::_resetTimer(uint32_t timerId, uint32_t durationInMs)
 {
     if (InstanceScript* inScript = getInstanceScript())
-        inScript->resetTimer(pTimerId, pDurationMillisec);
+        inScript->resetTimer(timerId, durationInMs);
 }
 
-bool CreatureAIScript::_isTimerFinished(uint32 pTimerId)
+bool CreatureAIScript::_isTimerFinished(uint32_t timerId)
 {
     if (InstanceScript* inScript = getInstanceScript())
-        return inScript->isTimerFinished(pTimerId);
+        return inScript->isTimerFinished(timerId);
 
     return false;
 }
@@ -805,6 +810,7 @@ void CreatureAIScript::_cancelAllTimers()
     LOG_DEBUG("all cleared!");
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
 // appearance
 
 void CreatureAIScript::_setScale(float scale)
@@ -844,6 +850,9 @@ void CreatureAIScript::_setDisplayWeaponIds(uint32_t itemId1, uint32_t itemId2)
     _unit->SetEquippedItem(MELEE, itemId1);
     _unit->SetEquippedItem(OFFHAND, itemId2);
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// spell
 
 void CreatureAIScript::_applyAura(uint32_t spellId)
 {
@@ -893,6 +902,7 @@ void CreatureAIScript::_castOnInrangePlayersWithinDist(float minDistance, float 
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // gameobject
+
 GameObject* CreatureAIScript::getNearestGameObject(uint32_t entry)
 {
     return getNearestGameObject(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), entry);
@@ -905,6 +915,7 @@ GameObject* CreatureAIScript::getNearestGameObject(float posX, float posY, float
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // chat message
+
 void CreatureAIScript::sendChatMessage(uint8_t type, uint32_t soundId, std::string text)
 {
     if (text.empty() == false)
@@ -921,6 +932,7 @@ void CreatureAIScript::sendDBChatMessage(uint32_t textId)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // instance
+
 InstanceScript* CreatureAIScript::getInstanceScript()
 {
     MapMgr* mapMgr = _unit->GetMapMgr();

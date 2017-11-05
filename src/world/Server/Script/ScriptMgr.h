@@ -365,6 +365,7 @@ class SERVER_DECL CreatureAIScript
         void moveToSpawn();
         void stopMovement();
 
+        //////////////////////////////////////////////////////////////////////////////////////////
         // combat setup
         bool canEnterCombat();
         void setCanEnterCombat(bool enterCombat);
@@ -392,6 +393,7 @@ class SERVER_DECL CreatureAIScript
 
         bool _isHeroic();
 
+        //////////////////////////////////////////////////////////////////////////////////////////
         // timers
         //\NOTE timers are stored and updated in InstanceScript every second and is no longer bound to AIUpdate().
         //      they require a active InstanceScript. In case of Questscripts use AIInterface functions!
@@ -403,15 +405,16 @@ class SERVER_DECL CreatureAIScript
 
     public:
 
-        uint32 _addTimer(uint32 pDurationMillisec);
-        uint32 _getTimeForTimer(uint32 pTimerId);
-        void _removeTimer(uint32 & pTimerId);
-        void _resetTimer(uint32 pTimerId, uint32 pDurationMillisec);
-        bool _isTimerFinished(uint32 pTimerId);
+        uint32_t _addTimer(uint32_t durationInMs);
+        uint32_t _getTimeForTimer(uint32_t timerId);
+        void _removeTimer(uint32_t& timerId);
+        void _resetTimer(uint32_t timerId, uint32_t durationInMs);
+        bool _isTimerFinished(uint32_t timerId);
         void _cancelAllTimers();
 
-        uint32 _getTimerCount() { return mCreatureTimerIds.size(); }
+        uint32_t _getTimerCount() { return mCreatureTimerIds.size(); }
 
+        //////////////////////////////////////////////////////////////////////////////////////////
         // appearance
         void _setScale(float scale);
         float _getScale();
@@ -420,6 +423,7 @@ class SERVER_DECL CreatureAIScript
         void _setDisplayWeapon(bool setMainHand, bool setOffHand);
         void _setDisplayWeaponIds(uint32_t itemId1, uint32_t itemId2);
 
+        //////////////////////////////////////////////////////////////////////////////////////////
         // spell
         void _applyAura(uint32_t spellId);
         void _removeAura(uint32_t spellId);
@@ -439,6 +443,7 @@ class SERVER_DECL CreatureAIScript
         void sendChatMessage(uint8_t type, uint32_t soundId, std::string text);
         void sendDBChatMessage(uint32_t textId);
 
+        //////////////////////////////////////////////////////////////////////////////////////////
         // instance
 
         InstanceScript* getInstanceScript();
