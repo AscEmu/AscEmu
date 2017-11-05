@@ -53,7 +53,7 @@ class SelinFireheartAI : public MoonScriptCreatureAI
     {
         AddSpell(SF_DRAINLIFE, Target_RandomPlayer, 8, 0, 35);
 
-        if (_unit->GetMapMgr()->iInstanceMode == MODE_HEROIC)
+        if (_isHeroic())
             AddSpell(SF_DRAINMANA, Target_RandomPlayer, 8, 0, 35);
 
         ManaRage = sSpellCustomizations.GetSpellInfo(FC_MANARAGE);

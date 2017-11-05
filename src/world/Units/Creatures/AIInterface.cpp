@@ -4362,6 +4362,12 @@ void AIInterface::EventEnterCombat(Unit* pUnit, uint32 misc1)
 
         CALL_SCRIPT_EVENT(m_Unit, OnCombatStart)(pUnit);
 
+        if (m_Unit->IsCreature())
+        {
+            // set encounter state = InProgress
+            CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(static_cast<Creature*>(m_Unit)->GetEntry(), 1);
+        }
+
         if (creature->m_spawn && (creature->m_spawn->channel_target_go || creature->m_spawn->channel_target_creature))
         {
             m_Unit->SetChannelSpellId(0);
@@ -4553,7 +4559,13 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 misc1)
             aiowner->UnTag();
             aiowner->setUInt32Value(UNIT_DYNAMIC_FLAGS, aiowner->getUInt32Value(UNIT_DYNAMIC_FLAGS) & ~(U_DYN_FLAG_TAGGED_BY_OTHER | U_DYN_FLAG_LOOTABLE));
         }
+
         CALL_SCRIPT_EVENT(m_Unit, OnCombatStop)(SavedFollow);
+        if (m_Unit->IsCreature())
+        {
+            // set encounter state back to NotStarted
+            CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), setData)(static_cast<Creature*>(m_Unit)->GetEntry(), 0);
+        }
     }
 
     if (m_Unit->GetMapMgr() && m_Unit->GetMapMgr()->GetMapInfo() && m_Unit->GetMapMgr()->GetMapInfo()->type == INSTANCE_RAID)

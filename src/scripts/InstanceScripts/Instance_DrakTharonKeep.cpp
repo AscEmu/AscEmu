@@ -41,7 +41,6 @@ class TrollgoreAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(TrollgoreAI);
         TrollgoreAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            heroic = (_unit->GetMapMgr()->iInstanceMode == MODE_HEROIC);
             invastion_timer = 0;
             spells.clear();
 
@@ -160,7 +159,7 @@ class TrollgoreAI : public CreatureAIScript
         void CastScriptSpell(ScriptSpell* spell)
         {
             _unit->setMoveRoot(true);
-            uint32 spellid = heroic ? spell->heroic_spellid : spell->normal_spellid;
+            uint32 spellid = _isHeroic() ? spell->heroic_spellid : spell->normal_spellid;
             Unit* spelltarget = NULL;
             switch (spell->target)
             {
@@ -204,7 +203,6 @@ class TrollgoreAI : public CreatureAIScript
 
     protected:
 
-        bool heroic;
         uint32 invastion_timer;
         std::vector< ScriptSpell* > spells;
 };
@@ -229,7 +227,6 @@ class NovosTheSummonerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(NovosTheSummonerAI);
         NovosTheSummonerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            heroic = (_unit->GetMapMgr()->iInstanceMode == MODE_HEROIC);
             phase = 0;
             invasion_timer = 0;
             handler_timer = 0;
@@ -399,7 +396,7 @@ class NovosTheSummonerAI : public CreatureAIScript
         void CastScriptSpell(ScriptSpell* spell)
         {
             _unit->setMoveRoot(true);
-            uint32 spellid = heroic ? spell->heroic_spellid : spell->normal_spellid;
+            uint32 spellid = _isHeroic() ? spell->heroic_spellid : spell->normal_spellid;
             Unit* spelltarget = NULL;
             switch (spell->target)
             {
@@ -555,7 +552,6 @@ class NovosTheSummonerAI : public CreatureAIScript
 
     protected:
 
-        bool heroic;
         std::vector< ScriptSpell* > spells;
         uint32 invasion_timer;
         uint32 handler_timer;
@@ -571,7 +567,6 @@ class CrystalHandlerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(CrystalHandlerAI);
         CrystalHandlerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            heroic = (_unit->GetMapMgr()->iInstanceMode == MODE_HEROIC);
             spells.clear();
 
             ScriptSpell* FlashofDarkness = new ScriptSpell;
@@ -651,7 +646,7 @@ class CrystalHandlerAI : public CreatureAIScript
         void CastScriptSpell(ScriptSpell* spell)
         {
             _unit->setMoveRoot(true);
-            uint32 spellid = heroic ? spell->heroic_spellid : spell->normal_spellid;
+            uint32 spellid = _isHeroic() ? spell->heroic_spellid : spell->normal_spellid;
             Unit* spelltarget = NULL;
             switch (spell->target)
             {
@@ -695,7 +690,6 @@ class CrystalHandlerAI : public CreatureAIScript
 
     protected:
 
-        bool heroic;
         std::vector< ScriptSpell* > spells;
 };
 
@@ -709,7 +703,6 @@ class KingDreadAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(KingDreadAI);
         KingDreadAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            heroic = (_unit->GetMapMgr()->iInstanceMode == MODE_HEROIC);
             spells.clear();
 
             ScriptSpell* BellowingRoar = new ScriptSpell;
@@ -804,7 +797,7 @@ class KingDreadAI : public CreatureAIScript
         void CastScriptSpell(ScriptSpell* spell)
         {
             _unit->setMoveRoot(true);
-            uint32 spellid = heroic ? spell->heroic_spellid : spell->normal_spellid;
+            uint32 spellid = _isHeroic() ? spell->heroic_spellid : spell->normal_spellid;
             Unit* spelltarget = NULL;
             switch (spell->target)
             {
@@ -848,7 +841,6 @@ class KingDreadAI : public CreatureAIScript
 
     protected:
 
-        bool heroic;
         std::vector< ScriptSpell* > spells;
 };
 
@@ -871,7 +863,6 @@ class TheProphetTaronjaAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(TheProphetTaronjaAI);
         TheProphetTaronjaAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            heroic = (_unit->GetMapMgr()->iInstanceMode == MODE_HEROIC);
             spells.clear();
             phase_timer = 0;
             phase_length = 0;
@@ -1027,7 +1018,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
         void CastScriptSpell(ScriptSpell* spell)
         {
             _unit->setMoveRoot(true);
-            uint32 spellid = heroic ? spell->heroic_spellid : spell->normal_spellid;
+            uint32 spellid = _isHeroic() ? spell->heroic_spellid : spell->normal_spellid;
             Unit* spelltarget = NULL;
             switch (spell->target)
             {
@@ -1071,7 +1062,6 @@ class TheProphetTaronjaAI : public CreatureAIScript
 
     protected:
 
-        bool heroic;
         std::vector< ScriptSpell* > spells;
         uint32 phase_timer;
         uint32 phase_length;

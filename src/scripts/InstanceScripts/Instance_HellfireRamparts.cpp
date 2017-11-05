@@ -115,7 +115,7 @@ class OmorTheUnscarredAI : public MoonScriptCreatureAI
             SpellDesc* pSummon = AddSpell(OMOR_SUMMON_FIENDISH_HOUND, Target_Self, 8, 1, 20);
             pSummon->AddEmote("Achor-she-ki! Feast my pet! Eat your fill!", CHAT_MSG_MONSTER_YELL, 10277);
             AddSpell(OMOR_SHADOW_WHIP, Target_RandomPlayer, 10, 0, 30);
-            if (_unit->GetMapMgr()->iInstanceMode != MODE_HEROIC)
+            if (!_isHeroic())
             {
                 AddSpell(OMOR_SHADOW_BOLT, Target_RandomPlayer, 8, 3, 15, 10, 60, true);
                 SpellDesc* pAura = AddSpell(OMOR_TREACHEROUS_AURA, Target_RandomPlayer, 8, 2, 35, 0, 60, true);
