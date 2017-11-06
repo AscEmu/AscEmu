@@ -135,16 +135,17 @@ class ZerekethAI : public MoonScriptBossAI
             float vzX = RandomUInt(5) * cos(RandomFloat(6.28f)) + random_target->GetPositionX();
             float vzY = RandomUInt(5) * cos(RandomFloat(6.28f)) + random_target->GetPositionY();
             float vzZ = random_target->GetPositionZ();
-            MoonScriptCreatureAI* VoidZone = SpawnCreature(CN_VOIDZONEARC, vzX, vzY, vzZ);
-            VoidZone->GetUnit()->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
-            VoidZone->GetUnit()->m_noRespawn = true;
-            if (!VoidZone->GetUnit()->IsInWorld())
+
+            Creature* VoidZone = spawnCreature(CN_VOIDZONEARC, vzX, vzY, vzZ, 0.0f);
+            VoidZone->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            VoidZone->m_noRespawn = true;
+            if (!VoidZone->IsInWorld())
             {
-                VoidZone->despawn();
+                VoidZone->Despawn(0, 0);
                 return;
             }
             random_target = NULL;
-            VoidZone->despawn(60000, 0);
+            VoidZone->Despawn(60000, 0);
         }
 
         void AIUpdate()

@@ -336,11 +336,7 @@ class LordMarrowgarAI : public MoonScriptBossAI
 
             TargetTable.clear();
 
-            float dcX = random_target->GetPositionX();
-            float dcY = random_target->GetPositionY();
-            float dcZ = random_target->GetPositionZ();
-
-            _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_BONE_SPIKE, dcX, dcY, dcZ, 0, true, false, 0, 0);
+            spawnCreature(CN_BONE_SPIKE, random_target->GetPosition());
 
             TargetTable.clear();
         }

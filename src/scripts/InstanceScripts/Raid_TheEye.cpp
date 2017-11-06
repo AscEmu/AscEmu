@@ -2180,7 +2180,7 @@ class AlarAI : public CreatureAIScript
             }
             else if (lasttime + 35 == timer)
             {
-                _unit->GetMapMgr()->GetInterface()->SpawnCreature(19551, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 0, true, false, 0, 0);
+                spawnCreature(19551, _unit->GetPosition());
                 //_unit->CastSpell(_unit, spells[2].info, spells[2].instant);
                 lasttime = timer + RandomUInt(9);
                 _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -2209,11 +2209,12 @@ class AlarAI : public CreatureAIScript
                 if (target != NULL)
                 {
                     auto pos = target->GetPosition();
-                    patch = _unit->GetMapMgr()->GetInterface()->SpawnCreature(20602, pos.x, pos.y, pos.z, 0, true, false, _unit->GetFaction(), 0);
+                    patch = spawnCreature(20602, pos.x, pos.y, pos.z, 0);
                     if (patch != NULL)
                     {
                         patch->SetDisplayId(16946);
                         patch->SetNativeDisplayId(16946);
+                        patch->SetFaction(_unit->GetFaction());
                     }
                 }
             }
@@ -2222,8 +2223,8 @@ class AlarAI : public CreatureAIScript
             }
             if (lasttime + 35 == timer)
             {
-                _unit->GetMapMgr()->GetInterface()->SpawnCreature(19551, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 0, true, false, 0, 0);
-                _unit->GetMapMgr()->GetInterface()->SpawnCreature(19551, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 0, true, false, 0, 0);
+                spawnCreature(19551, _unit->GetPosition());
+                spawnCreature(19551, _unit->GetPosition());
                 lasttime = timer;
             }
         }
@@ -2454,7 +2455,7 @@ class EmberAlarAI : public CreatureAIScript
             CastTime();
 
             Unit* Alar = NULL;
-            //Alar=_unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 19514);
+            //Alar=getNearestCreature(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 19514);
 
             Alar = GetAlar();
             if (Alar == NULL)
@@ -3420,13 +3421,13 @@ void SpellFunc_KaelThasFlameStrike(SpellDesc* pThis, MoonScriptCreatureAI* pCrea
         if (pTarget != NULL)
         {
             KaelThas->GetUnit()->CastSpell(pTarget, KAELTHAS_FLAME_STRIKE_SUMMON, true);
-            Creature* pFriendlyTrigger = static_cast<Creature*>(KaelThas->getNearestCreature(CN_FLAME_STRIKE_TRIGGER));
+            Creature* pFriendlyTrigger = KaelThas->getNearestCreature(CN_FLAME_STRIKE_TRIGGER);
             if (pFriendlyTrigger != NULL && pFriendlyTrigger->IsPet())
             {
                 pFriendlyTrigger->Despawn(0, 0);
             }
 
-            KaelThas->SpawnCreature(CN_FLAME_STRIKE_TRIGGER, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), pTarget->GetOrientation());
+            KaelThas->spawnCreature(CN_FLAME_STRIKE_TRIGGER, pTarget->GetPosition());
             uint32 TimerAdd = (3 + RandomUInt(5)) * 1000;
             KaelThas->mPhoenixTimer = KaelThas->_addTimer(TimerAdd);
             KaelThas->_resetTimer(KaelThas->mFlameStrikeTimer, TimerAdd + 40000);

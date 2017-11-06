@@ -1610,7 +1610,7 @@ class DarkweaverSythAI : public CreatureAIScript
             sendDBChatMessage(SAY_DARKW_SYNTH_07);
 
             GameObject* LakkasCage = getNearestGameObject(-160.813f, 157.043f, 0.194095f, 183051);
-            Creature* mLakka = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-160.813f, 157.043f, 0.194095f, 18956);
+            Creature* mLakka = getNearestCreature(-160.813f, 157.043f, 0.194095f, 18956);
 
             if (LakkasCage != NULL)
             {

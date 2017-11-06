@@ -556,6 +556,11 @@ float CreatureAIScript::getRangeToObject(Object* object)
     return _unit->CalcDistance(object);
 }
 
+Creature* CreatureAIScript::spawnCreature(uint32_t entry, LocationVector pos, uint32_t factionId /*= 0*/)
+{
+    return spawnCreature(entry, pos.x, pos.y, pos.z, pos.o, factionId);
+}
+
 Creature* CreatureAIScript::spawnCreature(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId /* = 0*/)
 {
     CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(entry);

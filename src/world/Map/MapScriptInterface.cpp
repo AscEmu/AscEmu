@@ -114,6 +114,7 @@ GameObject* MapScriptInterface::SpawnGameObject(GameobjectSpawn* gs, bool AddToW
     return pGameObject;
 }
 
+// Zyres 11/06/2017 - bool tmplate not used!
 Creature* MapScriptInterface::SpawnCreature(uint32 Entry, float cX, float cY, float cZ, float cO, bool AddToWorld, bool tmplate, uint32 Misc1, uint32 Misc2, uint32 phase)
 {
     CreatureProperties const* creature_properties = sMySQLStore.getCreatureProperties(Entry);

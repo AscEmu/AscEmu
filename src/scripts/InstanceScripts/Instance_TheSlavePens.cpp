@@ -1126,7 +1126,7 @@ class MennuTheBetrayerAI : public CreatureAIScript
                     {
                         if (!SummonedTotems[i])
                         {
-                            _unit->GetMapMgr()->GetInterface()->SpawnCreature(Totems[i], _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), true, false, 0, 0);
+                            spawnCreature(Totems[i], _unit->GetPosition());
                             _unit->CastSpell(_unit, spells[i + 1].info, spells[i + 1].instant);
 
                             SummonedTotems[i] = true;
@@ -1143,7 +1143,7 @@ class MennuTheBetrayerAI : public CreatureAIScript
                     Counter++;
                 else
                 {
-                    _unit->GetMapMgr()->GetInterface()->SpawnCreature(Totems[i], _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), true, false, 0, 0);
+                    spawnCreature(Totems[i], _unit->GetPosition());
                     _unit->CastSpell(_unit, spells[i + 1].info, spells[i + 1].instant);
 
                     SummonedTotems[i] = true;

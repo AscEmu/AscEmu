@@ -2516,7 +2516,7 @@ class WarlordKalitreshAI : public CreatureAIScript
 
             for (uint8 i = 1; i < 5; i++)
             {
-                Unit2Check = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(Distiller[i].x, Distiller[i].y, Distiller[i].z, 17954);
+                Unit2Check = getNearestCreature(Distiller[i].x, Distiller[i].y, Distiller[i].z, 17954);
                 if (!Unit2Check)
                     continue;
 

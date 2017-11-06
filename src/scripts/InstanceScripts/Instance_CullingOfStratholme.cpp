@@ -340,7 +340,7 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
                 break;
                 case SPELL_TARGET_CUSTOM:
                 {
-                    spelltarget = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 27733);
+                    spelltarget = getNearestCreature(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 27733);
                 }
                 break;
             }
@@ -988,8 +988,8 @@ class UtherAI : public CreatureAIScript
             if (i == 3 && check)
             {
                 check = false;
-                Creature* Arthas = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), CN_ARTHAS);
-                Creature* Jaina = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), CN_JAINA);
+                Creature* Arthas = getNearestCreature(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), CN_ARTHAS);
+                Creature* Jaina = getNearestCreature(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), CN_JAINA);
                 if (Arthas && Jaina)  //Show must go on!
                 {
                     //we add 0,5s per speech
@@ -1148,13 +1148,13 @@ class ArthasAI : public CreatureAIScript
                 case 1:
                 {
                     _unit->SendTimedScriptTextChatMessage(SAY_ARTHAS_12, 300);
-                    Creature* citizen = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 28167);
+                    Creature* citizen = getNearestCreature(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 28167);
                     if (citizen)
                     {
                         _unit->GetAIInterface()->MoveTo(citizen->GetPositionX(), citizen->GetPositionY(), citizen->GetPositionZ());
                         _unit->DealDamage(citizen, citizen->getUInt32Value(UNIT_FIELD_HEALTH), 0, 0, 0);
                     }
-                    citizen = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 28169);
+                    citizen = getNearestCreature(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 28169);
                     if (citizen)
                     {
                         _unit->GetAIInterface()->MoveTo(citizen->GetPositionX(), citizen->GetPositionY(), citizen->GetPositionZ());

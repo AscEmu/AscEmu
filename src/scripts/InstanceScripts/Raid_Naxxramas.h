@@ -2936,7 +2936,7 @@ class SapphironAI : public CreatureAIScript
     void OnCombatStop(Unit* mTarget)
     {
         Creature* BreathTrigger = NULL;
-        BreathTrigger = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z, CN_FROST_BREATH_TRIGGER3);
+        BreathTrigger = getNearestCreature(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z, CN_FROST_BREATH_TRIGGER3);
         if (BreathTrigger != NULL)
             BreathTrigger->Despawn(0, 0);
 
@@ -3033,7 +3033,7 @@ class SapphironAI : public CreatureAIScript
             ChillCounter--;
             if (ChillTarget != NULL)
             {
-                _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_CHILL_TRIGGER, ChillTarget->GetPositionX(), ChillTarget->GetPositionY(), ChillTarget->GetPositionZ(), ChillTarget->GetOrientation(), true, false, 0, 0);
+                spawnCreature(CN_CHILL_TRIGGER, ChillTarget->GetPosition());
             }
 
             if (ChillCounter == 0)
@@ -3140,19 +3140,19 @@ class SapphironAI : public CreatureAIScript
             if (FlightActions == 5)
             {
                 Unit* FlyingFrostBreath = NULL;
-                FlyingFrostBreath = _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_FROST_BREATH_TRIGGER, PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z + 18.0f, _unit->GetOrientation(), true, false, 0, 0);
+                FlyingFrostBreath = spawnCreature(CN_FROST_BREATH_TRIGGER, PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z + 18.0f, _unit->GetOrientation());
                 if (FlyingFrostBreath != NULL)
                 {
                     FlyingFrostBreath->GetAIInterface()->MoveTo(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z);
                 }
 
-                _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_FROST_BREATH_TRIGGER2, PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z, _unit->GetOrientation(), true, false, 0, 0);
+                spawnCreature(CN_FROST_BREATH_TRIGGER2, PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z, _unit->GetOrientation());
 
                 RemoveAIUpdateEvent();
                 RegisterAIUpdateEvent(10000);
 
                 Creature* BreathTrigger = NULL;
-                BreathTrigger = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z, CN_FROST_BREATH_TRIGGER3);
+                BreathTrigger = getNearestCreature(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z, CN_FROST_BREATH_TRIGGER3);
                 if (BreathTrigger != NULL)
                     BreathTrigger->Despawn(0, 0);
             }
@@ -3313,7 +3313,7 @@ class SapphironAI : public CreatureAIScript
     {
         if (iWaypointId == 1)
         {
-            _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_FROST_BREATH_TRIGGER3, PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z, _unit->GetOrientation(), true, false, 0, 0);
+            spawnCreature(CN_FROST_BREATH_TRIGGER3, PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z, _unit->GetOrientation());
             _unit->GetAIInterface()->setSplineFlying();
             _unit->Emote(EMOTE_ONESHOT_LIFTOFF);
 
@@ -3636,7 +3636,7 @@ class KelthuzadAI : public CreatureAIScript
         _unit->PlaySoundToSet(8819);
 
         Unit* TheLichKing = NULL;
-        TheLichKing = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(3767.58f, -5117.15f, 174.49f, CN_THE_LICH_KING);
+        TheLichKing = getNearestCreature(3767.58f, -5117.15f, 174.49f, CN_THE_LICH_KING);
         if (TheLichKing != NULL)
         {
             _unit->SetChannelSpellTargetGUID(TheLichKing->GetGUID());
@@ -3785,7 +3785,7 @@ class KelthuzadAI : public CreatureAIScript
                             for (uint8 x = 0; x < 10; x++)
                             {
                                 uint32 SpawnID = 10 * i + x;
-                                _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_SOLDIER_OF_THE_FROZEN_WASTES, SFrozenWastes[SpawnID].x, SFrozenWastes[SpawnID].y, SFrozenWastes[SpawnID].z, SFrozenWastes[SpawnID].o, true, false, 0, 0);
+                                spawnCreature(CN_SOLDIER_OF_THE_FROZEN_WASTES, SFrozenWastes[SpawnID].x, SFrozenWastes[SpawnID].y, SFrozenWastes[SpawnID].z, SFrozenWastes[SpawnID].o);
                             }
 
                             FrozenWastes[i] = true;
@@ -3797,7 +3797,7 @@ class KelthuzadAI : public CreatureAIScript
                             for (uint8 x = 0; x < 3; x++)
                             {
                                 uint32 SpawnID = 3 * i + x;
-                                _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_UNSTOPPABLE_ABOMINATION, Abomination[SpawnID].x, Abomination[SpawnID].y, Abomination[SpawnID].z, Abomination[SpawnID].o, true, false, 0, 0);
+                                spawnCreature(CN_UNSTOPPABLE_ABOMINATION, Abomination[SpawnID].x, Abomination[SpawnID].y, Abomination[SpawnID].z, Abomination[SpawnID].o);
                             }
 
                             Abominations[i] = true;
@@ -3807,7 +3807,7 @@ class KelthuzadAI : public CreatureAIScript
                         if (SoulWeavers[i] == false && ((RandomUInt(3) == 0 && Counter < 2) || Counter == 0 || SpawnCounter > 0))
                         {
                             uint32 SpawnID = i;
-                            _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_SOUL_WEAVER, SoulWeaver[SpawnID].x, SoulWeaver[SpawnID].y, SoulWeaver[SpawnID].z, SoulWeaver[SpawnID].o, true, false, 0, 0);
+                            spawnCreature(CN_SOUL_WEAVER, SoulWeaver[SpawnID].x, SoulWeaver[SpawnID].y, SoulWeaver[SpawnID].z, SoulWeaver[SpawnID].o);
 
                             SoulWeavers[i] = true;
                             Counter++;
@@ -3916,7 +3916,7 @@ class KelthuzadAI : public CreatureAIScript
                     }
                 }
 
-                _unit->GetMapMgr()->GetInterface()->SpawnCreature(UnitType, Waves[SpawnPoint].x, Waves[SpawnPoint].y, Waves[SpawnPoint].z, Waves[SpawnPoint].o, true, false, 0, 0);
+                spawnCreature(UnitType, Waves[SpawnPoint].x, Waves[SpawnPoint].y, Waves[SpawnPoint].z, Waves[SpawnPoint].o);
                 WaveTimer = RandomUInt(11, 20);
             }
         }
@@ -3936,7 +3936,7 @@ class KelthuzadAI : public CreatureAIScript
             if (HelpDialog == 4)
             {
                 Unit* TheLichKing = NULL;
-                TheLichKing = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(3767.58f, -5117.15f, 174.49f, CN_THE_LICH_KING);
+                TheLichKing = getNearestCreature(3767.58f, -5117.15f, 174.49f, CN_THE_LICH_KING);
                 if (TheLichKing != NULL)
                 {
                     TheLichKing->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Very well... warriors of the frozen wastes, rise up, I command you to fight, kill, and die for your master. Let none survive...");
@@ -3961,7 +3961,7 @@ class KelthuzadAI : public CreatureAIScript
             {
                 Unit* Guardian = NULL;
                 uint32 i = RandomUInt(3);
-                Guardian = _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_GUARDIAN_OF_ICECROWN, Guardians[i].x, Guardians[i].y, Guardians[i].z, Guardians[i].o, true, false, 0, 0);
+                Guardian = spawnCreature(CN_GUARDIAN_OF_ICECROWN, Guardians[i].x, Guardians[i].y, Guardians[i].z, Guardians[i].o);
                 if (Guardian != NULL)
                 {
                     if (Guardian->GetAIInterface()->getNextTarget() != NULL)
@@ -4188,7 +4188,7 @@ class SoldierOfTheFrozenWastesAI : public CreatureAIScript
     void AIUpdate()
     {
         Creature* Kelthuzad = NULL;
-        Kelthuzad = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(3749.950195f, -5113.451660f, 141.288635f, 15990);
+        Kelthuzad = getNearestCreature(3749.950195f, -5113.451660f, 141.288635f, 15990);
         if (Kelthuzad == NULL || !Kelthuzad->isAlive())
         {
             _unit->Despawn(0, 0);
@@ -4317,7 +4317,7 @@ class UnstoppableAbominationAI : public CreatureAIScript
     void AIUpdate()
     {
         Creature* Kelthuzad = NULL;
-        Kelthuzad = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(3749.950195f, -5113.451660f, 141.288635f, 15990);
+        Kelthuzad = getNearestCreature(3749.950195f, -5113.451660f, 141.288635f, 15990);
         if (Kelthuzad == NULL || !Kelthuzad->isAlive())
         {
             _unit->Despawn(0, 0);
@@ -4489,7 +4489,7 @@ class SoulWeaverAI : public CreatureAIScript
     void AIUpdate()
     {
         Creature* Kelthuzad = NULL;
-        Kelthuzad = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(3749.950195f, -5113.451660f, 141.288635f, 15990);
+        Kelthuzad = getNearestCreature(3749.950195f, -5113.451660f, 141.288635f, 15990);
         if (Kelthuzad == NULL || !Kelthuzad->isAlive())
         {
             _unit->Despawn(0, 0);
@@ -4662,7 +4662,7 @@ class GuardianOfIcecrownAI : public CreatureAIScript
     void AIUpdate()
     {
         Unit* Kelthuzad = NULL;
-        Kelthuzad = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(3715.950195f, -5106.451660f, 141.288635f, 15990);
+        Kelthuzad = getNearestCreature(3715.950195f, -5106.451660f, 141.288635f, 15990);
         if (Kelthuzad && !Kelthuzad->isAlive())
         {
             _unit->Despawn(0, 0);

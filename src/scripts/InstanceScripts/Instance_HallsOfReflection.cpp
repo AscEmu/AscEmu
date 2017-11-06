@@ -65,8 +65,8 @@ class JainaAI : public MoonScriptCreatureAI
         void StartInstance()
         {
             moveTo(5302.581f, 1994.510f, 707.694f);
-            SpawnCreature(37225, 5307.37f, 2000.80f, 709.341f, 4.03f);
-            SpawnCreature(37226, 5355.244f, 2052.96f, 707.695f, 3.94f);
+            spawnCreature(37225, 5307.37f, 2000.80f, 709.341f, 4.03f);
+            spawnCreature(37226, 5355.244f, 2052.96f, 707.695f, 3.94f);
             sendChatMessage(CHAT_MSG_MONSTER_YELL, 16633, "Frostmourne! the blade that destroyed our kingdom..");
             RegisterAIUpdateEvent(172000);
             InstanceRealStart();
@@ -74,8 +74,8 @@ class JainaAI : public MoonScriptCreatureAI
 
         void InstanceRealStart()
         {
-            Creature* Uther = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(5307.370f, 2000.80f, 709.341f, CN_UTHER);
-            Creature* Lich = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(5355.244f, 2052.96f, 707.695f, CN_LICH);
+            Creature* Uther = getNearestCreature(5307.370f, 2000.80f, 709.341f, CN_UTHER);
+            Creature* Lich = getNearestCreature(5355.244f, 2052.96f, 707.695f, CN_LICH);
             if (Uther && Lich)
             {
                 Lich->SetDisplayId(11686); // HACK FIX makes invisible till needed
@@ -131,7 +131,7 @@ class JainaAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            Creature* Lich = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(5355.244f, 2052.96f, 707.695f, CN_LICH);
+            Creature* Lich = getNearestCreature(5355.244f, 2052.96f, 707.695f, CN_LICH);
             if (!Lich)
                 return;
 

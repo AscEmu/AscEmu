@@ -2340,7 +2340,7 @@ class TendrisWarpwood : public CreatureAIScript
             RemoveAIUpdateEvent();
 
             //spawn Ancient Equine Spirit
-            _unit->GetMapMgr()->GetInterface()->SpawnCreature(14566, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 0, true, false, 0, 0);
+            spawnCreature(14566, _unit->GetPosition());
         }
 
         void AIUpdate()

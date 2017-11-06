@@ -433,8 +433,7 @@ class GythAI : public CreatureAIScript
         {
             if (!HasSummoned && _unit->GetHealthPct() <= 8)
             {
-                Unit* Warchief = NULL;
-                Warchief = _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_REND_BLACKHAND, 157.366516f, -419.779358f, 110.472336f, 3.056772f, true, false, 0, 0);
+                Unit* Warchief = spawnCreature(CN_REND_BLACKHAND, 157.366516f, -419.779358f, 110.472336f, 3.056772f);
                 if (Warchief != NULL)
                 {
                     if (_unit->GetAIInterface()->getNextTarget() != NULL)
@@ -1423,8 +1422,7 @@ class HalyconAI : public CreatureAIScript
         {
             if (!HasSummoned && _unit->GetHealthPct() <= 25)
             {
-                Unit* cGizrul = NULL;
-                cGizrul = _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_GIZRUL, -195.100006f, -321.970001f, 65.424400f, 0.016500f, true, false, 0, 0);
+                Unit* cGizrul = spawnCreature(CN_GIZRUL, -195.100006f, -321.970001f, 65.424400f, 0.016500f);
                 if (cGizrul != NULL)
                 {
                     if (_unit->GetAIInterface()->getNextTarget() != NULL)
@@ -1562,10 +1560,8 @@ class OverlordWyrmthalakAI : public CreatureAIScript
         {
             if (!HasSummoned && _unit->GetHealthPct() <= 50)
             {
-                Unit* Warlord1 = NULL;
-                Unit* Warlord2 = NULL;
-                Warlord1 = _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_SPIRESTONE_WARLORD, -30.675352f, -493.231750f, 90.610725f, 3.123542f, true, false, 0, 0); //This line makes the unit spawn a creature
-                Warlord2 = _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_SPIRESTONE_WARLORD, -30.433489f, -479.833923f, 90.535606f, 3.123542f, true, false, 0, 0); //This line makes the unit spawn a creature
+                Unit* Warlord1 = spawnCreature(CN_SPIRESTONE_WARLORD, -30.675352f, -493.231750f, 90.610725f, 3.123542f);
+                Unit* Warlord2 = spawnCreature(CN_SPIRESTONE_WARLORD, -30.433489f, -479.833923f, 90.535606f, 3.123542f);
                 if (_unit->GetAIInterface()->getNextTarget() != NULL)
                 {
                     if (Warlord1 != NULL)

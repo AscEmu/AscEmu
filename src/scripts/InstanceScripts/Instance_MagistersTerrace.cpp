@@ -149,7 +149,7 @@ class SelinFireheartAI : public MoonScriptCreatureAI
         Unit* FC = NULL;
         for (uint8 x = 0; x < 5; x++)
         {
-            FC = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(FelCrystals[x].x, FelCrystals[x].y, FelCrystals[x].z, FelCrystals[x].addition);
+            FC = getNearestCreature(FelCrystals[x].x, FelCrystals[x].y, FelCrystals[x].z, FelCrystals[x].addition);
             if (!FC || !FC->isAlive() || FC->GetInstanceID() != _unit->GetInstanceID())
                 FC = NULL;
             else
@@ -209,7 +209,7 @@ class VexallusAI : public MoonScriptBossAI
         {
             CastSpell(mPureEnergy);
             ++mSummon;
-            //SpawnCreature(CN_PURE_ENERGY, 231, -207, 6, 0, true);
+            //spawnCreature(CN_PURE_ENERGY, 231, -207, 6, 0, true);
         }
 
         if (_getHealthPercent() <= 10 && GetPhase() == 1)

@@ -168,7 +168,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //                pGO->Despawn(10 * 60 * 1000, 0);
 //        }
 //
-//        SpawnCreature(CN_LIEUTENANT_DRAKE, 2118.310303f, 89.565969f, 52.453037f, 2.027089f);
+//        spawnCreature(CN_LIEUTENANT_DRAKE, 2118.310303f, 89.565969f, 52.453037f, 2.027089f);
 //    }
 //};
 //

@@ -131,7 +131,7 @@ class AntusulTriggerAI : public CreatureAIScript
             _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
             Unit* antusul = NULL;
-            antusul = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1815.030029f, 686.817017f, 14.519000f, 8127);
+            antusul = getNearestCreature(1815.030029f, 686.817017f, 14.519000f, 8127);
             if (antusul)
             {
                 if (antusul->isAlive())
@@ -188,7 +188,7 @@ class AntusulAI : public CreatureAIScript
 
             secondspawncount = 0;
             RemoveAIUpdateEvent();
-            trigger = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1811.943726f, 714.839417f, 12.897189f, 133337);
+            trigger = getNearestCreature(1811.943726f, 714.839417f, 12.897189f, 133337);
             if (trigger)
                 trigger->Despawn(100, 0);
         }
@@ -268,27 +268,27 @@ class AntusulAI : public CreatureAIScript
 
         void spawnadds()
         {
-            _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_SULLITHUZ_BROODLING, 1777.753540f, 741.063538f, 16.439308f, 6.197119f, true, false, 0, 0);
-            _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_SULLITHUZ_BROODLING, 1782.193481f, 751.190002f, 16.620836f, 5.174994f, true, false, 0, 0);
-            _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_SULLITHUZ_BROODLING, 1790.956299f, 754.666809f, 14.195786f, 5.174208f, true, false, 0, 0);
-            _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_SULLITHUZ_BROODLING, 1800.902710f, 755.723267f, 15.642491f, 4.545889f, true, false, 0, 0);
-            _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_SULLITHUZ_BROODLING, 1809.339722f, 749.212402f, 16.910545f, 4.109208f, true, false, 0, 0);
-            _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_SULLITHUZ_BROODLING, 1818.182129f, 744.702820f, 17.801855f, 3.899507f, true, false, 0, 0);
+            spawnCreature(CN_SULLITHUZ_BROODLING, 1777.753540f, 741.063538f, 16.439308f, 6.197119f);
+            spawnCreature(CN_SULLITHUZ_BROODLING, 1782.193481f, 751.190002f, 16.620836f, 5.174994f);
+            spawnCreature(CN_SULLITHUZ_BROODLING, 1790.956299f, 754.666809f, 14.195786f, 5.174208f);
+            spawnCreature(CN_SULLITHUZ_BROODLING, 1800.902710f, 755.723267f, 15.642491f, 4.545889f);
+            spawnCreature(CN_SULLITHUZ_BROODLING, 1809.339722f, 749.212402f, 16.910545f, 4.109208f);
+            spawnCreature(CN_SULLITHUZ_BROODLING, 1818.182129f, 744.702820f, 17.801855f, 3.899507f);
         }
 
         void addsdefine()
         {
-            add1 = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1777.753540f, 741.063538f, 16.439308f, CN_SULLITHUZ_BROODLING);
-            add2 = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1782.193481f, 751.190002f, 16.620836f, CN_SULLITHUZ_BROODLING);
-            add3 = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1790.956299f, 754.666809f, 14.195786f, CN_SULLITHUZ_BROODLING);
-            add4 = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1800.902710f, 755.723267f, 15.642491f, CN_SULLITHUZ_BROODLING);
-            add5 = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1809.339722f, 749.212402f, 16.910545f, CN_SULLITHUZ_BROODLING);
-            add6 = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1818.182129f, 744.702820f, 17.801855f, CN_SULLITHUZ_BROODLING);
+            add1 = getNearestCreature(1777.753540f, 741.063538f, 16.439308f, CN_SULLITHUZ_BROODLING);
+            add2 = getNearestCreature(1782.193481f, 751.190002f, 16.620836f, CN_SULLITHUZ_BROODLING);
+            add3 = getNearestCreature(1790.956299f, 754.666809f, 14.195786f, CN_SULLITHUZ_BROODLING);
+            add4 = getNearestCreature(1800.902710f, 755.723267f, 15.642491f, CN_SULLITHUZ_BROODLING);
+            add5 = getNearestCreature(1809.339722f, 749.212402f, 16.910545f, CN_SULLITHUZ_BROODLING);
+            add6 = getNearestCreature(1818.182129f, 744.702820f, 17.801855f, CN_SULLITHUZ_BROODLING);
         }
 
         void resettrigger()
         {
-            trigger = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1811.943726f, 714.839417f, 12.897189f, TRIGGER_ANTUSUL);
+            trigger = getNearestCreature(1811.943726f, 714.839417f, 12.897189f, TRIGGER_ANTUSUL);
             if (trigger)
             {
                 trigger->GetAIInterface()->m_canMove = true;

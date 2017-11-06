@@ -297,20 +297,14 @@ class OnyxiaAI : public CreatureAIScript
                 Creature* cre = NULL;
                 for (uint8 i = 0; i < 6; i++)
                 {
-                    cre = _unit->GetMapMgr()->GetInterface()->SpawnCreature(11262,
-                            whelpCoords[i].x, whelpCoords[i].y,
-                            whelpCoords[i].z, whelpCoords[i].o,
-                            true, false, 0, 0);
+                    cre = spawnCreature(11262, whelpCoords[i].x, whelpCoords[i].y, whelpCoords[i].z, whelpCoords[i].o);
                     if (cre)
                     {
                         cre->GetAIInterface()->MoveTo(14.161f, -177.874f, -85.649f);
                         cre->SetOrientation(0.23f);
                         cre->GetAIInterface()->setOutOfCombatRange(100000);
                     }
-                    cre = _unit->GetMapMgr()->GetInterface()->SpawnCreature(11262,
-                            whelpCoords[5 - i].x, whelpCoords[5 - i].y,
-                            whelpCoords[5 - i].z, whelpCoords[5 - i].o,
-                            true, false, 0, 0);
+                    cre = spawnCreature(11262, whelpCoords[5 - i].x, whelpCoords[5 - i].y, whelpCoords[5 - i].z, whelpCoords[5 - i].o);
                     if (cre)
                     {
                         cre->GetAIInterface()->MoveTo(27.133f, -232.030f, -84.188f);
@@ -339,20 +333,14 @@ class OnyxiaAI : public CreatureAIScript
                 Creature* cre = NULL;
                 for (uint8 i = 0; i < 6; i++)
                 {
-                    cre = _unit->GetMapMgr()->GetInterface()->SpawnCreature(11262,
-                            whelpCoords[i].x, whelpCoords[i].y,
-                            whelpCoords[i].z, whelpCoords[i].o,
-                            true, false, 0, 0);
+                    cre = spawnCreature(11262, whelpCoords[i].x, whelpCoords[i].y, whelpCoords[i].z, whelpCoords[i].o);
                     if (cre)
                     {
                         cre->GetAIInterface()->MoveTo(14.161f, -177.874f, -85.649f);
                         cre->SetOrientation(0.23f);
                         cre->GetAIInterface()->setOutOfCombatRange(100000);
                     }
-                    cre = _unit->GetMapMgr()->GetInterface()->SpawnCreature(11262,
-                            whelpCoords[5 - i].x, whelpCoords[5 - i].y,
-                            whelpCoords[5 - i].z, whelpCoords[5 - i].o,
-                            true, false, 0, 0);
+                    cre = spawnCreature(11262, whelpCoords[5 - i].x, whelpCoords[5 - i].y, whelpCoords[5 - i].z, whelpCoords[5 - i].o);
                     if (cre)
                     {
                         cre->GetAIInterface()->MoveTo(27.133f, -232.030f, -84.188f);

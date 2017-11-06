@@ -265,7 +265,7 @@ class TelestraBossAI : public MoonScriptBossAI
 
                 for (uint8 i = 0; i < 3; ++i)
                 {
-                    mAddArray[i] = _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_TELESTRA_FIRE + i, FormSpawns[i].x, FormSpawns[i].y, FormSpawns[i].z, FormSpawns[i].o, true, true, 0, 0);
+                    mAddArray[i] = spawnCreature(CN_TELESTRA_FIRE + i, FormSpawns[i].x, FormSpawns[i].y, FormSpawns[i].z, FormSpawns[i].o);
                     if (mAddArray[i] != NULL)
                         ++mAddCount;
                 }

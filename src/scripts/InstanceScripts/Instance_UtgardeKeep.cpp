@@ -466,7 +466,7 @@ class SkarvaldTheConstructorAI : public MoonScriptCreatureAI
             {
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "Not... over... yet.");
                 pDalronn->sendChatMessage(CHAT_MSG_MONSTER_YELL, 13203, "Skarvald, you incompetent slug! Return and make yourself useful!");
-                SpawnCreature(CN_SKARVALD_GHOST, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), true);
+                spawnCreature(CN_SKARVALD_GHOST, _unit->GetPosition());
                 _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
             }
@@ -493,7 +493,7 @@ class SkarvaldTheConstructorAI : public MoonScriptCreatureAI
                 if (pDalronn->isAlive())
                     moveToSpawn();
                 else
-                    SpawnCreature(CN_DALRONN, pDalronn->GetUnit()->GetSpawnX(), pDalronn->GetUnit()->GetSpawnY(), pDalronn->GetUnit()->GetSpawnZ(), pDalronn->GetUnit()->GetSpawnO());
+                    spawnCreature(CN_DALRONN, pDalronn->GetUnit()->GetSpawnPosition());
             };
 
             if (pDalronnGhost != NULL && pDalronnGhost->isAlive())
@@ -542,8 +542,8 @@ class DalronnTheControllerAI : public MoonScriptCreatureAI
         {
             if (_isTimerFinished(mSummonTimer))
             {
-                SpawnCreature(SKELETON_ADD, _unit->GetPositionX() + 6, _unit->GetPositionY() + 4, _unit->GetPositionZ(), 0, true);
-                SpawnCreature(SKELETON_ADD, _unit->GetPositionX() - 6, _unit->GetPositionY() + 4, _unit->GetPositionZ(), 0, true);
+                spawnCreature(SKELETON_ADD, _unit->GetPositionX() + 6, _unit->GetPositionY() + 4, _unit->GetPositionZ(), 0);
+                spawnCreature(SKELETON_ADD, _unit->GetPositionX() - 6, _unit->GetPositionY() + 4, _unit->GetPositionZ(), 0);
                 _resetTimer(mSummonTimer, 15000);
             };
 
@@ -556,7 +556,7 @@ class DalronnTheControllerAI : public MoonScriptCreatureAI
             {
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "See... you... soon.");
                 pSkarvald->sendChatMessage(CHAT_MSG_MONSTER_YELL, 13233, "Pagh! What sort of necromancer lets death stop him? I knew you were worthless!");
-                SpawnCreature(CN_DALRONN_GHOST, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), true);
+                spawnCreature(CN_DALRONN_GHOST, _unit->GetPosition());
                 _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             }
             else if (pSkarvald != NULL && !pSkarvald->isAlive())
@@ -582,7 +582,7 @@ class DalronnTheControllerAI : public MoonScriptCreatureAI
                 if (pSkarvald->isAlive())
                     moveToSpawn();
                 else
-                    SpawnCreature(CN_DALRONN, pSkarvald->GetUnit()->GetSpawnX(), pSkarvald->GetUnit()->GetSpawnY(), pSkarvald->GetUnit()->GetSpawnZ(), pSkarvald->GetUnit()->GetSpawnO());
+                    spawnCreature(CN_DALRONN, pSkarvald->GetUnit()->GetSpawnPosition());
             };
 
             if (pSkarvaldGhost != NULL && pSkarvaldGhost->isAlive())

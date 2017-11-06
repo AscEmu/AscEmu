@@ -117,7 +117,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
             {
                 // If Magtheridon can be found we let him yell one of six different texts
                 Unit* Magtheridon = NULL;
-                Magtheridon = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-22.657900f, 2.159050f, -0.345542f, 17257);
+                Magtheridon = getNearestCreature(-22.657900f, 2.159050f, -0.345542f, 17257);
                 if (Magtheridon)
                 {
                     switch (RandomUInt(6))
@@ -155,14 +155,14 @@ class MagtheridonTriggerAI : public CreatureAIScript
                 // In order to recreate channeler "list" we need ot look for them in hardcoded spawn positions
                 for (uint8 i = 0; i < 5; i++)
                 {
-                    Unit* Channeler = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(Channelers[i].x, Channelers[i].y, Channelers[i].z, 17256);
+                    Unit* Channeler = getNearestCreature(Channelers[i].x, Channelers[i].y, Channelers[i].z, 17256);
                     if (!Channeler)
                         continue;
                     // If Channeler was found we push him at the end of our "list"
                     ChannelersTable.push_back(Channeler);
                     // If Magtheridon is spawned we tell channeler to cast spell on Pit Lord
                     Unit* Magtheridon = NULL;
-                    Magtheridon = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-22.657900f, 2.159050f, -0.345542f, 17257);
+                    Magtheridon = getNearestCreature(-22.657900f, 2.159050f, -0.345542f, 17257);
                     if (Magtheridon && Channeler->isAlive() && !Channeler->GetAIInterface()->getNextTarget())
                     {
                         Channeler->SetChannelSpellTargetGUID(Magtheridon->GetGUID());
@@ -230,7 +230,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
             if (!ChannelersTable.size() && !Phase)
             {
                 Unit* Magtheridon = NULL;
-                Magtheridon = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-22.657900f, 2.159050f, -0.345542f, 17257);
+                Magtheridon = getNearestCreature(-22.657900f, 2.159050f, -0.345542f, 17257);
                 if (Magtheridon)
                 {
                     Magtheridon->GetAIInterface()->SetAllowedToEnterCombat(true);
@@ -295,7 +295,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                     }
                     // If Magtheridon is found we remove Banish aura from him
                     Unit* Magtheridon = NULL;
-                    Magtheridon = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-22.657900f, 2.159050f, -0.345542f, 17257);
+                    Magtheridon = getNearestCreature(-22.657900f, 2.159050f, -0.345542f, 17257);
                     if (Magtheridon)
                         Magtheridon->RemoveAura(BANISH);
 
@@ -314,7 +314,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                     if (PhaseOneTimer == BANISH_TIMER - 2)
                     {
                         Creature* Magtheridon = NULL;
-                        Magtheridon = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-22.657900f, 2.159050f, -0.345542f, 17257);
+                        Magtheridon = getNearestCreature(-22.657900f, 2.159050f, -0.345542f, 17257);
                         if (Magtheridon)
                         {
                             if (RandomUInt(4) == 1)
@@ -336,7 +336,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                     if (PhaseOneTimer == BANISH_TIMER)
                     {
                         Unit* Magtheridon = NULL;
-                        Magtheridon = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-22.657900f, 2.159050f, -0.345542f, 17257);
+                        Magtheridon = getNearestCreature(-22.657900f, 2.159050f, -0.345542f, 17257);
                         if (Magtheridon)
                         {
                             Magtheridon->GetAIInterface()->SetAllowedToEnterCombat(true);
@@ -351,7 +351,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                     {
                         // We check if any of channelers casts banish spell on Magtheridon and then we reset timer and setting
                         Unit* Magtheridon = NULL;
-                        Magtheridon = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-22.657900f, 2.159050f, -0.345542f, 17257);
+                        Magtheridon = getNearestCreature(-22.657900f, 2.159050f, -0.345542f, 17257);
                         if (Magtheridon)
                         {
                             Aura* aura = Magtheridon->getAuraWithId(BANISH);
@@ -933,11 +933,11 @@ class HellfireChannelerAI : public CreatureAIScript
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
 
-            if (_unit->isAlive())
+            if (isAlive())
             {
 
                 Unit* Magtheridon = NULL;
-                Magtheridon = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-22.657900f, 2.159050f, -0.345542f, 17257);
+                Magtheridon = getNearestCreature(-22.657900f, 2.159050f, -0.345542f, 17257);
                 if (Magtheridon && Magtheridon->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9))
                 {
                     _unit->SetChannelSpellTargetGUID(Magtheridon->GetGUID());
@@ -1403,7 +1403,7 @@ class MagtheridonAI : public CreatureAIScript
 
                     for (uint8 i = 0; i < 6; i++)
                     {
-                        Unit* Trigger = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(CaveInPos[i].x, CaveInPos[i].y, CaveInPos[i].z, 17474);
+                        Unit* Trigger = getNearestCreature(CaveInPos[i].x, CaveInPos[i].y, CaveInPos[i].z, 17474);
                         if (Trigger)
                         {
                             Trigger->CastSpell(Trigger, spells[3].info, spells[3].instant);
@@ -1461,7 +1461,7 @@ class MagtheridonAI : public CreatureAIScript
 
                     for (uint8 i = 0; i < 6; i++)
                     {
-                        Unit* Trigger = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(CaveInPos[i].x, CaveInPos[i].y, CaveInPos[i].z, 17474);
+                        Unit* Trigger = getNearestCreature(CaveInPos[i].x, CaveInPos[i].y, CaveInPos[i].z, 17474);
                         if (Trigger)
                         {
                             Trigger->CastSpell(Trigger, spells[3].info, spells[3].instant);
@@ -1522,7 +1522,7 @@ class MagtheridonAI : public CreatureAIScript
                 {
                     for (uint8 i = 0; i < 6; i++)
                     {
-                        Unit* Trigger = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(CaveInPos[i].x, CaveInPos[i].y, CaveInPos[i].z, 17474);
+                        Unit* Trigger = getNearestCreature(CaveInPos[i].x, CaveInPos[i].y, CaveInPos[i].z, 17474);
                         if (Trigger)
                         {
                             Trigger->CastSpellAoF(LocationVector(CaveInPos[i].x, CaveInPos[i].y, CaveInPos[i].z), spells[5].info, spells[5].instant);

@@ -2569,7 +2569,7 @@ class ClawAI : public CreatureAIScript
                         if (i == 1)
                         {
                             Unit* Swamplord = NULL;
-                            Swamplord = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 17826);
+                            Swamplord = getNearestCreature(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 17826);
                             if (Swamplord && Swamplord->isAlive())
                             {
                                 sendDBChatMessage(1462);
@@ -2719,7 +2719,7 @@ class SwamplordMuselekAI : public CreatureAIScript
             }
 
             Unit* Bear = NULL;
-            Bear = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 17827);
+            Bear = getNearestCreature(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 17827);
             if (Bear && Bear->isAlive())
             {
                 Bear->GetAIInterface()->AttackReaction(mTarget, 1, 0);

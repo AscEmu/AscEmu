@@ -397,7 +397,7 @@ class DofNaralexAI : public MoonScriptBossAI
                         break;
                 }
             }
-            if (GetPhase() == 5 && (!Mutanus || !Mutanus->GetUnit()->isAlive()))
+            if (GetPhase() == 5 && (!Mutanus || !Mutanus->isAlive()))
             {
                 MoonScriptCreatureAI* Naralex = GetNearestCreature(3679);
                 if (Naralex && Naralex->isAlive())
@@ -418,30 +418,30 @@ class DofNaralexAI : public MoonScriptBossAI
 
         void Moccasin()
         {
-            SpawnCreature(5762, 134.249207f, 242.194839f, -98.375496f, 3.325373f);
-            SpawnCreature(5762, 124.917931f, 255.066635f, -97.796837f, 4.176745f);
-            SpawnCreature(5762, 113.077148f, 258.880157f, -97.190590f, 4.688039f);
+            spawnCreature(5762, 134.249207f, 242.194839f, -98.375496f, 3.325373f);
+            spawnCreature(5762, 124.917931f, 255.066635f, -97.796837f, 4.176745f);
+            spawnCreature(5762, 113.077148f, 258.880157f, -97.190590f, 4.688039f);
         }
 
         void Ectoplasm()
         {
-            SpawnCreature(5763, 134.249207f, 242.194839f, -98.375496f, 3.325373f);
-            SpawnCreature(5763, 124.917931f, 255.066635f, -97.796837f, 4.176745f);
-            SpawnCreature(5763, 113.077148f, 258.880157f, -97.190590f, 4.688039f);
-            SpawnCreature(5763, 138.794693f, 228.224976f, -100.174332f, 2.471645f);
-            SpawnCreature(5763, 128.170364f, 225.190247f, -99.392830f, 2.411169f);
-            SpawnCreature(5763, 136.762009f, 242.685669f, -98.564545f, 3.344223f);
-            SpawnCreature(5763, 122.403961f, 259.438354f, -98.153984f, 4.366811f);
+            spawnCreature(5763, 134.249207f, 242.194839f, -98.375496f, 3.325373f);
+            spawnCreature(5763, 124.917931f, 255.066635f, -97.796837f, 4.176745f);
+            spawnCreature(5763, 113.077148f, 258.880157f, -97.190590f, 4.688039f);
+            spawnCreature(5763, 138.794693f, 228.224976f, -100.174332f, 2.471645f);
+            spawnCreature(5763, 128.170364f, 225.190247f, -99.392830f, 2.411169f);
+            spawnCreature(5763, 136.762009f, 242.685669f, -98.564545f, 3.344223f);
+            spawnCreature(5763, 122.403961f, 259.438354f, -98.153984f, 4.366811f);
         }
 
         void BMutanus()
         {
-            Mutanus = SpawnCreature(CN_MUTANUS, 136.337006f, 263.769989f, -102.666000f, 4.002330f);
+            Mutanus = spawnCreature(CN_MUTANUS, 136.337006f, 263.769989f, -102.666000f, 4.002330f);
         }
 
         int32 SpawnTimer;
         SpellDesc* Awakening;
-        MoonScriptCreatureAI* Mutanus;
+        Creature* Mutanus;
 };
 // Deviate Moccasin
 class DeviateMoccasinAI : public MoonScriptCreatureAI
