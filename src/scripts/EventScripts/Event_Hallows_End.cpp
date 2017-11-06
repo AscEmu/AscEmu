@@ -19,38 +19,38 @@ class BlackCat : public MoonScriptCreatureAI
 };
 
 // HEADLESS HORSEMAN ENCOUNTER
-static Movement::LocationWithFlag WaypointGoldshire[] =
+static Movement::Location WaypointGoldshire[] =
 {
-    { -9502.733398f, 31.395960f, 60.433193f, 1.217366f, Movement::WP_MOVE_TYPE_FLY }, // 0
-    { -9493.925781f, 55.272415f, 60.433193f, 0.781469f, Movement::WP_MOVE_TYPE_FLY },
-    { -9483.589844f, 63.685684f, 60.433193f, 6.224273f, Movement::WP_MOVE_TYPE_FLY },
-    { -9463.258789f, 62.515587f, 60.433193f, 6.204639f, Movement::WP_MOVE_TYPE_FLY },
-    { -9457.368164f, 48.343132f, 66.931587f, 4.641701f, Movement::WP_MOVE_TYPE_FLY },
-    { -9458.772461f, 27.414370f, 77.199722f, 4.001603f, Movement::WP_MOVE_TYPE_FLY },
-    { -9473.457031f, 29.496262f, 77.199722f, 1.394081f, Movement::WP_MOVE_TYPE_FLY },
-    { -9471.234275f, 44.239151f, 75.393852f, 1.241714f, Movement::WP_MOVE_TYPE_FLY },
-    { -9459.474609f, 81.118446f, 71.725540f, 1.720021f, Movement::WP_MOVE_TYPE_FLY },
-    { -9467.220703f, 88.311104f, 71.786453f, 2.572178f, Movement::WP_MOVE_TYPE_FLY }, // 9
-    { -9486.188477f, 83.939690f, 82.718826f, 3.569634f, Movement::WP_MOVE_TYPE_FLY }, // 10 Starting round (3 rounds left)
-    { -9506.228516f, 36.876194f, 89.180916f, 6.167746f, Movement::WP_MOVE_TYPE_FLY },
-    { -9437.569396f, 34.403599f, 75.426025f, 1.270783f, Movement::WP_MOVE_TYPE_FLY },
-    { -9448.488281f, 85.930862f, 75.290497f, 2.909909f, Movement::WP_MOVE_TYPE_FLY },
-    { -9477.427734f, 86.952667f, 70.950249f, 3.318317f, Movement::WP_MOVE_TYPE_FLY }, // 14
-    { -9486.188477f, 83.939690f, 82.718826f, 3.569634f, Movement::WP_MOVE_TYPE_FLY }, // 15 Next round (2 rounds left)
-    { -9506.228516f, 36.876194f, 89.180916f, 6.167746f, Movement::WP_MOVE_TYPE_FLY },
-    { -9437.569396f, 34.403599f, 75.426025f, 1.270783f, Movement::WP_MOVE_TYPE_FLY },
-    { -9448.488281f, 85.930862f, 75.290497f, 2.909909f, Movement::WP_MOVE_TYPE_FLY },
-    { -9477.427734f, 86.952667f, 70.950249f, 3.318317f, Movement::WP_MOVE_TYPE_FLY }, // 19
-    { -9486.188477f, 83.939690f, 82.718826f, 3.569634f, Movement::WP_MOVE_TYPE_FLY }, // 20 Next round (1 rounds left)
-    { -9506.228516f, 36.876194f, 89.180916f, 6.167746f, Movement::WP_MOVE_TYPE_FLY },
-    { -9437.569396f, 34.403599f, 75.426025f, 1.270783f, Movement::WP_MOVE_TYPE_FLY },
-    { -9448.488281f, 85.930862f, 75.290497f, 2.909909f, Movement::WP_MOVE_TYPE_FLY },
-    { -9477.427734f, 86.952667f, 70.950249f, 3.318317f, Movement::WP_MOVE_TYPE_FLY }, // 24
-    { -9486.188477f, 83.939690f, 82.718826f, 3.569634f, Movement::WP_MOVE_TYPE_FLY }, // 25 Next round (0 rounds left)
-    { -9506.228516f, 36.876194f, 89.180916f, 6.167746f, Movement::WP_MOVE_TYPE_FLY },
-    { -9437.569396f, 34.403599f, 75.426025f, 1.270783f, Movement::WP_MOVE_TYPE_FLY },
-    { -9448.488281f, 85.930862f, 75.290497f, 2.909909f, Movement::WP_MOVE_TYPE_FLY },
-    { -9477.427734f, 86.952667f, 70.950249f, 3.318317f, Movement::WP_MOVE_TYPE_FLY }  // 29
+    { -9502.733398f, 31.395960f, 60.433193f, 1.217366f }, // 0
+    { -9493.925781f, 55.272415f, 60.433193f, 0.781469f },
+    { -9483.589844f, 63.685684f, 60.433193f, 6.224273f },
+    { -9463.258789f, 62.515587f, 60.433193f, 6.204639f },
+    { -9457.368164f, 48.343132f, 66.931587f, 4.641701f },
+    { -9458.772461f, 27.414370f, 77.199722f, 4.001603f },
+    { -9473.457031f, 29.496262f, 77.199722f, 1.394081f },
+    { -9471.234275f, 44.239151f, 75.393852f, 1.241714f },
+    { -9459.474609f, 81.118446f, 71.725540f, 1.720021f },
+    { -9467.220703f, 88.311104f, 71.786453f, 2.572178f }, // 9
+    { -9486.188477f, 83.939690f, 82.718826f, 3.569634f }, // 10 Starting round (3 rounds left)
+    { -9506.228516f, 36.876194f, 89.180916f, 6.167746f },
+    { -9437.569396f, 34.403599f, 75.426025f, 1.270783f },
+    { -9448.488281f, 85.930862f, 75.290497f, 2.909909f },
+    { -9477.427734f, 86.952667f, 70.950249f, 3.318317f }, // 14
+    { -9486.188477f, 83.939690f, 82.718826f, 3.569634f }, // 15 Next round (2 rounds left)
+    { -9506.228516f, 36.876194f, 89.180916f, 6.167746f },
+    { -9437.569396f, 34.403599f, 75.426025f, 1.270783f },
+    { -9448.488281f, 85.930862f, 75.290497f, 2.909909f },
+    { -9477.427734f, 86.952667f, 70.950249f, 3.318317f }, // 19
+    { -9486.188477f, 83.939690f, 82.718826f, 3.569634f }, // 20 Next round (1 rounds left)
+    { -9506.228516f, 36.876194f, 89.180916f, 6.167746f },
+    { -9437.569396f, 34.403599f, 75.426025f, 1.270783f },
+    { -9448.488281f, 85.930862f, 75.290497f, 2.909909f },
+    { -9477.427734f, 86.952667f, 70.950249f, 3.318317f }, // 24
+    { -9486.188477f, 83.939690f, 82.718826f, 3.569634f }, // 25 Next round (0 rounds left)
+    { -9506.228516f, 36.876194f, 89.180916f, 6.167746f },
+    { -9437.569396f, 34.403599f, 75.426025f, 1.270783f },
+    { -9448.488281f, 85.930862f, 75.290497f, 2.909909f },
+    { -9477.427734f, 86.952667f, 70.950249f, 3.318317f }  // 29
 };
 
 // Headless HorsemanAI
@@ -105,7 +105,6 @@ class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
         sendChatMessage(CHAT_MSG_MONSTER_YELL, 11966, "Prepare yourselves, the bells have tolled! Shelter your weak, your young, and your old! Each of you shall pay the final sum. Cry for mercy, the reckoning has come!");    //On Spawn?
 
         WPCount = 0;
-        WayPoints = nullptr;
 
         auto area = _unit->GetArea();
         if (area != nullptr)
@@ -115,10 +114,9 @@ class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
                 case 87: // Goldshire
                 {
                     WPCount = 29;
-                    WayPoints = WaypointGoldshire;
                     for (uint8 i = 0; i <= WPCount; ++i)
                     {
-                        AddWaypoint(CreateWaypoint(i, 0, WayPoints[i].wp_flag, WayPoints[i].wp_location));
+                        AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_FLY, WaypointGoldshire[i]));
                     }
                 } break;
                 default:
@@ -174,7 +172,6 @@ class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
     }
 
     int8 WPCount;
-    Movement::LocationWithFlag* WayPoints;
     SpellDesc* mSummon;
 };
 

@@ -177,18 +177,18 @@ const Movement::LocationWithFlag DeathstalkerAdamantWPS[adamantWpCount] =
 
 // Sorcerer Ashcrombe (entry: 3850) waypoints
 const uint8 ashcrombeWpCount = 11;
-const Movement::LocationWithFlag SorcererAshcrombeWPS[ashcrombeWpCount] =
+const Movement::Location SorcererAshcrombeWPS[ashcrombeWpCount] =
 {
-    { -252.528229f, 2126.949951f, 81.179657f, 0, Movement::WP_MOVE_TYPE_WALK },   // 1
-    { -253.898f, 2130.87f, 81.179f, 0, Movement::WP_MOVE_TYPE_WALK },             // 2
-    { -249.889f, 2142.31f, 86.972f, 0, Movement::WP_MOVE_TYPE_WALK },             // 3
-    { -248.205f, 2144.02f, 87.013f, 0, Movement::WP_MOVE_TYPE_WALK },             // 4
-    { -240.553f, 2140.55f, 87.012f, 0, Movement::WP_MOVE_TYPE_WALK },             // 5
-    { -237.514f, 2142.07f, 87.012f, 0, Movement::WP_MOVE_TYPE_WALK },             // 6
-    { -235.638f, 2149.23f, 90.587f, 0, Movement::WP_MOVE_TYPE_WALK },             // 7
-    { -237.188f, 2151.95f, 90.624f, 0, Movement::WP_MOVE_TYPE_WALK },             // 8
-    { -241.162f, 2153.65f, 90.624f, 0, Movement::WP_MOVE_TYPE_WALK },             // 9
-    { -242.24f, 2155.51f, 90.624f, 0,  Movement::WP_MOVE_TYPE_WALK },             // 10
+    { -252.528229f, 2126.949951f, 81.179657f, 0 },   // 1
+    { -253.898f, 2130.87f, 81.179f, 0 },             // 2
+    { -249.889f, 2142.31f, 86.972f, 0 },             // 3
+    { -248.205f, 2144.02f, 87.013f, 0 },             // 4
+    { -240.553f, 2140.55f, 87.012f, 0 },             // 5
+    { -237.514f, 2142.07f, 87.012f, 0 },             // 6
+    { -235.638f, 2149.23f, 90.587f, 0 },             // 7
+    { -237.188f, 2151.95f, 90.624f, 0 },             // 8
+    { -241.162f, 2153.65f, 90.624f, 0 },             // 9
+    { -242.24f, 2155.51f, 90.624f, 0 },             // 10
     { }                                                                           // 11 (unused)
 };
 

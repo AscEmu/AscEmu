@@ -666,18 +666,18 @@ class AshcrombeAI : public MoonScriptCreatureAI
                 float runSpeed = GetUnit()->GetCreatureProperties()->run_speed;
                 if (i == 0) // first waypoint
                 {
-                    distanceX = (SorcererAshcrombeWPS[i].wp_location.x - GetUnit()->GetPositionX())*(SorcererAshcrombeWPS[i].wp_location.x - GetUnit()->GetPositionX());
-                    distanceY = (SorcererAshcrombeWPS[i].wp_location.y - GetUnit()->GetPositionY())*(SorcererAshcrombeWPS[i].wp_location.y - GetUnit()->GetPositionY());
+                    distanceX = (SorcererAshcrombeWPS[i].x - GetUnit()->GetPositionX())*(SorcererAshcrombeWPS[i].x - GetUnit()->GetPositionX());
+                    distanceY = (SorcererAshcrombeWPS[i].y - GetUnit()->GetPositionY())*(SorcererAshcrombeWPS[i].y - GetUnit()->GetPositionY());
                     distance = std::sqrt(distanceX - distanceY);
                 }
                 else if (i != ashcrombeWpCount-1)
                 {
-                    distanceX = (SorcererAshcrombeWPS[i].wp_location.x - SorcererAshcrombeWPS[i-1].wp_location.x)*(SorcererAshcrombeWPS[i].wp_location.x - SorcererAshcrombeWPS[i-1].wp_location.x);
-                    distanceY = (SorcererAshcrombeWPS[i].wp_location.y - SorcererAshcrombeWPS[i-1].wp_location.y)*(SorcererAshcrombeWPS[i].wp_location.y - SorcererAshcrombeWPS[i-1].wp_location.y);
+                    distanceX = (SorcererAshcrombeWPS[i].x - SorcererAshcrombeWPS[i-1].x)*(SorcererAshcrombeWPS[i].x - SorcererAshcrombeWPS[i-1].x);
+                    distanceY = (SorcererAshcrombeWPS[i].y - SorcererAshcrombeWPS[i-1].y)*(SorcererAshcrombeWPS[i].y - SorcererAshcrombeWPS[i-1].y);
                     distance = std::sqrt(distanceX + distanceY);
                 }
-                waitTime = 300.0f + (1000 * std::abs(SorcererAshcrombeWPS[i].wp_flag == Movement::WP_MOVE_TYPE_WALK ? distance / walkSpeed : distance / runSpeed));
-                AddWaypoint(CreateWaypoint(i + 1, static_cast<uint32>(waitTime), (uint32)SorcererAshcrombeWPS[i].wp_flag, SorcererAshcrombeWPS[i].wp_location));
+                waitTime = 300.0f + (1000 * std::abs(distance / walkSpeed));
+                AddWaypoint(CreateWaypoint(i + 1, static_cast<uint32>(waitTime), Movement::WP_MOVE_TYPE_WALK, SorcererAshcrombeWPS[i]));
             }
 
             SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);

@@ -59,17 +59,17 @@ const uint32 CN_DEATHBRINGER_JOVAAN = 21633;
 //WP Coords Wait Times
 struct WPWaitTimes
 {
-    Movement::LocationWithFlag mCoords;
+    Movement::Location mCoords;
     uint32 WaitTime;
 };
 
 const WPWaitTimes DeathbringerJovaanWP[] =
 {
     { { }, 0},
-    { { -3310.743896f, 2951.929199f, 171.132538f, 5.054039f, Movement::WP_MOVE_TYPE_WALK }, 0 },
-    { { -3308.501221f, 2940.098389f, 171.025772f, 5.061895f, Movement::WP_MOVE_TYPE_WALK }, 0 },
-    { { -3306.261203f, 2933.843210f, 170.934145f, 5.474234f, Movement::WP_MOVE_TYPE_WALK }, 44000 },
-    { { -3310.743896f, 2951.929199f, 171.132538f, 1.743588f, Movement::WP_MOVE_TYPE_WALK }, 0 }
+    { { -3310.743896f, 2951.929199f, 171.132538f, 5.054039f }, 0 },
+    { { -3308.501221f, 2940.098389f, 171.025772f, 5.061895f }, 0 },
+    { { -3306.261203f, 2933.843210f, 170.934145f, 5.474234f }, 44000 },
+    { { -3310.743896f, 2951.929199f, 171.132538f, 1.743588f }, 0 }
 };
 
 class DeathbringerJovaanAI : public MoonScriptCreatureAI
@@ -82,9 +82,7 @@ public:
         mJovaanPhase = -1;
 
         for (int i = 1; i < 5; ++i)
-        {
-            AddWaypoint(CreateWaypoint(i, DeathbringerJovaanWP[i].WaitTime, DeathbringerJovaanWP[i].mCoords.wp_flag, DeathbringerJovaanWP[i].mCoords.wp_location));
-        }
+            AddWaypoint(CreateWaypoint(i, DeathbringerJovaanWP[i].WaitTime, Movement::WP_MOVE_TYPE_WALK, DeathbringerJovaanWP[i].mCoords));
     }
 
     void AIUpdate()

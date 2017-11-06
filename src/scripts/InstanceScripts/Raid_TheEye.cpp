@@ -1950,7 +1950,6 @@ class AlarAI : public CreatureAIScript
                 AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_FLY, fly[i]));
 
             // Spells
-
             nrspells = 7;
             for (uint8 i = 0; i < nrspells; i++)
             {

@@ -45,16 +45,16 @@ public:
 };
 
 // Miran Waypoints
-static Movement::LocationWithFlag WaypointsMiran[] =
+static Movement::Location WaypointsMiran[] =
 {
     {},
-    { -5753.780762f, -3433.290039f, 301.628387f, 4.834769f, Movement::WP_MOVE_TYPE_RUN }, //1
-    { -5744.062500f, -3476.653564f, 302.269287f, 5.580896f, Movement::WP_MOVE_TYPE_RUN },
-    { -5674.703125f, -3543.583984f, 303.273682f, 4.775867f, Movement::WP_MOVE_TYPE_RUN },
-    { -5670.187500f, -3595.618164f, 311.888153f, 4.791576f, Movement::WP_MOVE_TYPE_RUN },
-    { -5664.515625f, -3687.601563f, 317.954590f, 4.131842f, Movement::WP_MOVE_TYPE_RUN },
-    { -5705.745117f, -3755.254150f, 321.452118f, 4.457779f, Movement::WP_MOVE_TYPE_RUN },
-    { -5711.766113f, -3778.145752f, 322.827942f, 4.473486f, Movement::WP_MOVE_TYPE_RUN }  //7
+    { -5753.780762f, -3433.290039f, 301.628387f, 4.834769f }, //1
+    { -5744.062500f, -3476.653564f, 302.269287f, 5.580896f },
+    { -5674.703125f, -3543.583984f, 303.273682f, 4.775867f },
+    { -5670.187500f, -3595.618164f, 311.888153f, 4.791576f },
+    { -5664.515625f, -3687.601563f, 317.954590f, 4.131842f },
+    { -5705.745117f, -3755.254150f, 321.452118f, 4.457779f },
+    { -5711.766113f, -3778.145752f, 322.827942f, 4.473486f }  //7
 };
 
 class Miran : public MoonScriptCreatureAI
@@ -65,12 +65,9 @@ public:
     Miran(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         WPCount = 7;
-        WayPoints = WaypointsMiran;
 
         for (uint8 i = 1; i <= WPCount; ++i)
-        {
-            AddWaypoint(CreateWaypoint(i, 0, WayPoints[i].wp_flag, WayPoints[i].wp_location));
-        }
+            AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_RUN, WaypointsMiran[i]));
 
         pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
     }
@@ -95,7 +92,6 @@ public:
     }
 
     uint8 WPCount;
-    Movement::LocationWithFlag* WayPoints;
 };
 
 
