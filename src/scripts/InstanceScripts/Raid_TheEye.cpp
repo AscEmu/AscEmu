@@ -1947,9 +1947,7 @@ class AlarAI : public CreatureAIScript
         {
             // Waypoints
             for (uint8 i = 1; i < 12; i++)
-            {
-                _unit->GetAIInterface()->addWayPoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_FLY));
-            }
+                AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_FLY, fly[i]));
 
             // Spells
 
@@ -2342,30 +2340,9 @@ class AlarAI : public CreatureAIScript
 
                     }
                     break;
-
                 default:
-                    {
-                    }
+                    break;
             }
-        }
-
-        inline Movement::WayPoint* CreateWaypoint(int id, uint32 waittime, uint32 flags)
-        {
-            Movement::WayPoint* wp = _unit->CreateWaypointStruct();
-            wp->id = id;
-            wp->x = fly[id].x;
-            wp->y = fly[id].y;
-            wp->z = fly[id].z;
-            wp->o = fly[id].o;
-            wp->waittime = waittime;
-            wp->flags = flags;
-            wp->forwardemoteoneshot = false;
-            wp->forwardemoteid = 0;
-            wp->backwardemoteoneshot = false;
-            wp->backwardemoteid = 0;
-            wp->forwardskinid = 0;
-            wp->backwardskinid = 0;
-            return wp;
         }
 
     protected:
@@ -3047,7 +3024,7 @@ class KaelThasAI : public MoonScriptBossAI
         {
             for (uint8 i = 1; i < 4; ++i)
             {
-                AddWaypoint(CreateWaypoint(1, 0, Waypoints[i]));
+                AddWaypoint(CreateWaypoint(1, 0, Waypoints[i].wp_flag, Waypoints[i].wp_location));
             }
 
             setCanEnterCombat(true);

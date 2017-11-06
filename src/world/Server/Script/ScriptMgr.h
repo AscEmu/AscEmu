@@ -374,7 +374,6 @@ class SERVER_DECL CreatureAIScript
 
         // wp movement
         Movement::WayPoint* CreateWaypoint(int pId, uint32 pWaittime, uint32 pMoveFlag, Movement::Location pCoords);
-        Movement::WayPoint* CreateWaypoint(int pId, uint32 pWaittime, Movement::LocationWithFlag wp_info);
         void AddWaypoint(Movement::WayPoint* pWayPoint);
         void ForceWaypointMove(uint32 pWaypointId);
         void SetWaypointToMove(uint32 pWaypointId);

@@ -83,7 +83,7 @@ public:
 
         for (int i = 1; i < 5; ++i)
         {
-            AddWaypoint(CreateWaypoint(i, DeathbringerJovaanWP[i].WaitTime, DeathbringerJovaanWP[i].mCoords));
+            AddWaypoint(CreateWaypoint(i, DeathbringerJovaanWP[i].WaitTime, DeathbringerJovaanWP[i].mCoords.wp_flag, DeathbringerJovaanWP[i].mCoords.wp_location));
         }
     }
 
@@ -306,7 +306,7 @@ public:
         Movement::LocationWithFlag WayPoint = { _unit->GetPositionX(), _unit->GetPositionY() + 30, _unit->GetPositionZ() + 100, _unit->GetOrientation(), Movement::WP_MOVE_TYPE_FLY };
         setRooted(true);
         _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH | UNIT_FLAG_NOT_ATTACKABLE_2);
-        AddWaypoint(CreateWaypoint(1, 0, WayPoint));
+        AddWaypoint(CreateWaypoint(1, 0, WayPoint.wp_flag, WayPoint.wp_location));
     }
 
     void OnReachWP(uint32 iWaypointId, bool bForwards)

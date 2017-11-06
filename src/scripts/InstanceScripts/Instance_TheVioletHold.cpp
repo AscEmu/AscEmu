@@ -266,7 +266,7 @@ class VHCreatureAI : public MoonScriptCreatureAI
             //_unit->GetAIInterface()->UpdateMove();
             for (int i = 1; i < 3; ++i)
             {
-                AddWaypoint(CreateWaypoint(i, 0, AttackerWP[i]));
+                AddWaypoint(CreateWaypoint(i, 0, AttackerWP[i].wp_flag, AttackerWP[i].wp_location));
             }
             _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
             _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I am alive!");

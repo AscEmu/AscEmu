@@ -2844,7 +2844,8 @@ class SapphironAI : public CreatureAIScript
 
     SapphironAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 3000, Movement::WP_MOVE_TYPE_RUN));
+        SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+        AddWaypoint(CreateWaypoint(1, 3000, Movement::WP_MOVE_TYPE_RUN, PhaseTwoWP[1]));
 
         nrspells = 2;
         for (uint8 i = 0; i < nrspells; i++)
@@ -2889,7 +2890,6 @@ class SapphironAI : public CreatureAIScript
         spells[3].cooldown = 900;
         spells[3].attackstoptimer = 1000;
 
-        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
         _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
         _unit->GetAIInterface()->unsetSplineFlying();
         _unit->GetAIInterface()->m_canMove = true;
@@ -3327,25 +3327,6 @@ class SapphironAI : public CreatureAIScript
             ChillCounter = 0;
             m_phase = 2;
         }
-    }
-
-    inline Movement::WayPoint* CreateWaypoint(int id, uint32 waittime, uint32 flags)
-    {
-        Movement::WayPoint* wp = _unit->CreateWaypointStruct();
-        wp->id = id;
-        wp->x = PhaseTwoWP[id].x;
-        wp->y = PhaseTwoWP[id].y;
-        wp->z = PhaseTwoWP[id].z;
-        wp->o = PhaseTwoWP[id].o;
-        wp->waittime = waittime;
-        wp->flags = flags;
-        wp->forwardemoteoneshot = false;
-        wp->forwardemoteid = 0;
-        wp->backwardemoteoneshot = false;
-        wp->backwardemoteid = 0;
-        wp->forwardskinid = 0;
-        wp->backwardskinid = 0;
-        return wp;
     }
 
     protected:

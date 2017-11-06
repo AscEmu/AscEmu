@@ -774,12 +774,12 @@ public:
 
     BarnesAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 0, 0));
-        _unit->GetAIInterface()->addWayPoint(CreateWaypoint(2, 43000, 0));
-        _unit->GetAIInterface()->addWayPoint(CreateWaypoint(3, 0, 0));
-        _unit->GetAIInterface()->addWayPoint(CreateWaypoint(4, 0, 0));
+        SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+        AddWaypoint(CreateWaypoint(1, 0, Movement::WP_MOVE_TYPE_WALK, Barnes[1]));
+        AddWaypoint(CreateWaypoint(2, 43000, Movement::WP_MOVE_TYPE_WALK, Barnes[2]));
+        AddWaypoint(CreateWaypoint(3, 0, Movement::WP_MOVE_TYPE_WALK, Barnes[3]));
+        AddWaypoint(CreateWaypoint(4, 0, Movement::WP_MOVE_TYPE_WALK, Barnes[4]));
 
-        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
         _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
         setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -1060,25 +1060,6 @@ public:
         _unit->SetDisplayId(16616);
         spawnCreature(17603, -10891.582f, -1755.5177f, 90.476f, 4.61f);
 
-    }
-
-    inline Movement::WayPoint* CreateWaypoint(int id, uint32 waittime, uint32 flags)
-    {
-        Movement::WayPoint* wp = _unit->CreateWaypointStruct();
-        wp->id = id;
-        wp->x = Barnes[id].x;
-        wp->y = Barnes[id].y;
-        wp->z = Barnes[id].z;
-        wp->o = Barnes[id].o;
-        wp->waittime = waittime;
-        wp->flags = flags;
-        wp->forwardemoteoneshot = false;
-        wp->forwardemoteid = 0;
-        wp->backwardemoteoneshot = false;
-        wp->backwardemoteid = 0;
-        wp->forwardskinid = 0;
-        wp->backwardskinid = 0;
-        return wp;
     }
 
 protected:
@@ -3220,28 +3201,16 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(InfernalDummyAI);
     InfernalDummyAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 0, 768));
-    }
+        SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
 
-    inline Movement::WayPoint* CreateWaypoint(int id, uint32 waittime, uint32 flags)
-    {
-        Movement::WayPoint* wp = _unit->CreateWaypointStruct();
-        wp->id = id;
-        wp->x = -10938.56f;
-        wp->y = -2041.26f;
-        wp->z = 305.132f;
-        wp->o = 0;
-        wp->waittime = waittime;
-        wp->flags = flags;
-        wp->forwardemoteoneshot = false;
-        wp->forwardemoteid = 0;
-        wp->backwardemoteoneshot = false;
-        wp->backwardemoteid = 0;
-        wp->forwardskinid = 0;
-        wp->backwardskinid = 0;
-        return wp;
-    }
+        Movement::Location loc;
+        loc.x = -10938.56f;
+        loc.y = -2041.26f;
+        loc.z = 305.132f;
+        loc.o = 0;
 
+        AddWaypoint(CreateWaypoint(1, 0, Movement::WP_MOVE_TYPE_FLY, loc));
+    }
 };
 
 class MAxesAI : public CreatureAIScript
@@ -3613,11 +3582,11 @@ public:
         spells[4].perctrigger = 0.0f;
         spells[4].attackstoptimer = 1000;
 
-        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+        SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
 
         for (uint8 i = 1; i < 5; i++)
         {
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_FLY));
+            AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_FLY, coords[i]));
         }
 
         m_phase = 0;
@@ -3806,25 +3775,6 @@ public:
 
         float val = RandomFloat(100.0f);
         SpellCast(val);
-    }
-
-    inline Movement::WayPoint* CreateWaypoint(int id, uint32 waittime, uint32 flags)
-    {
-        Movement::WayPoint* wp = _unit->CreateWaypointStruct();
-        wp->id = id;
-        wp->x = coords[id].x;
-        wp->y = coords[id].y;
-        wp->z = coords[id].z;
-        wp->o = coords[id].o;
-        wp->waittime = waittime;
-        wp->flags = flags;
-        wp->forwardemoteoneshot = false;
-        wp->forwardemoteid = 0;
-        wp->backwardemoteoneshot = false;
-        wp->backwardemoteid = 0;
-        wp->forwardskinid = 0;
-        wp->backwardskinid = 0;
-        return wp;
     }
 
     void Fly()

@@ -1422,7 +1422,7 @@ class LakkaAI : public MoonScriptCreatureAI
             //WPs
             for (uint8 i = 1; i < 4; ++i)
             {
-                AddWaypoint(CreateWaypoint(i, 0, LakkaWaypoint[i]));
+                AddWaypoint(CreateWaypoint(i, 0, LakkaWaypoint[i].wp_flag, LakkaWaypoint[i].wp_location));
             }
         }
 

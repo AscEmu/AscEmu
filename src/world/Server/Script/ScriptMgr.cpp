@@ -674,25 +674,6 @@ Movement::WayPoint* CreatureAIScript::CreateWaypoint(int pId, uint32 pWaittime, 
     return wp;
 }
 
-Movement::WayPoint* CreatureAIScript::CreateWaypoint(int pId, uint32 pWaittime, Movement::LocationWithFlag wp_info)
-{
-    Movement::WayPoint* wp = _unit->CreateWaypointStruct();
-    wp->id = pId;
-    wp->x = wp_info.wp_location.x;
-    wp->y = wp_info.wp_location.y;
-    wp->z = wp_info.wp_location.z;
-    wp->o = wp_info.wp_location.o;
-    wp->waittime = pWaittime;
-    wp->flags = wp_info.wp_flag;
-    wp->forwardemoteoneshot = false;
-    wp->forwardemoteid = 0;
-    wp->backwardemoteoneshot = false;
-    wp->backwardemoteid = 0;
-    wp->forwardskinid = 0;
-    wp->backwardskinid = 0;
-    return wp;
-}
-
 void CreatureAIScript::AddWaypoint(Movement::WayPoint* pWayPoint)
 {
     _unit->GetAIInterface()->addWayPoint(pWayPoint);

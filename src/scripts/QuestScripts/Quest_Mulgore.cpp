@@ -60,7 +60,7 @@ public:
 
         for (uint8 i = 1; i < WPCount; ++i)
         {
-            AddWaypoint(CreateWaypoint(i, 0, WayPoints[i]));
+            AddWaypoint(CreateWaypoint(i, 0, WayPoints[i].wp_flag, WayPoints[i].wp_location));
         }
     }
 

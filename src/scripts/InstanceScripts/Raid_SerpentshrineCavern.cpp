@@ -2367,21 +2367,10 @@ class ToxicSporeBatAI : public CreatureAIScript
         {
             // Waypoints
             m_entry = pCreature->GetEntry();
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(0, 0, Movement::WP_MOVE_TYPE_FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 0, Movement::WP_MOVE_TYPE_FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(2, 0, Movement::WP_MOVE_TYPE_FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(3, 0, Movement::WP_MOVE_TYPE_FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(4, 0, Movement::WP_MOVE_TYPE_FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(5, 0, Movement::WP_MOVE_TYPE_FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(6, 0, Movement::WP_MOVE_TYPE_FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(7, 0, Movement::WP_MOVE_TYPE_FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(8, 0, Movement::WP_MOVE_TYPE_FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(9, 0, Movement::WP_MOVE_TYPE_FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(10, 0, Movement::WP_MOVE_TYPE_FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(11, 0, Movement::WP_MOVE_TYPE_FLY));
+            for (uint8_t i = 0; i < 12; i++)
+                AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_FLY, fly[i]));
 
             // Spells
-
             nrspells = 1;
             for (uint8 i = 0; i < nrspells; i++)
             {
@@ -2746,26 +2735,6 @@ class ToxicSporeBatAI : public CreatureAIScript
                     break;
             }
         }
-
-        inline Movement::WayPoint* CreateWaypoint(int id, uint32 waittime, uint32 flags)
-        {
-            Movement::WayPoint* wp = _unit->CreateWaypointStruct();
-            wp->id = id;
-            wp->x = fly[id].x;
-            wp->y = fly[id].y;
-            wp->z = fly[id].z;
-            wp->o = fly[id].o;
-            wp->waittime = waittime;
-            wp->flags = flags;
-            wp->forwardemoteoneshot = false;
-            wp->forwardemoteid = 0;
-            wp->backwardemoteoneshot = false;
-            wp->backwardemoteid = 0;
-            wp->forwardskinid = 0;
-            wp->backwardskinid = 0;
-            return wp;
-        }
-
 
     protected:
         bool FlameQuills;
