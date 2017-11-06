@@ -2466,7 +2466,7 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
             charmer->UnPossess();
     }
 
-    if (m_mapMgr->m_battleground != NULL)
+    if (m_mapMgr != nullptr && m_mapMgr->m_battleground != nullptr)
         m_mapMgr->m_battleground->HookOnUnitDied(this);
 }
 
