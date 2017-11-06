@@ -32,7 +32,11 @@
  // Mage Scripts
 class FirestarterTalent : public Spell
 {
-    SPELL_FACTORY_FUNCTION(FirestarterTalent);
+public:
+
+    FirestarterTalent(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
+
+    static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new FirestarterTalent(Caster, info, triggered, aur); }
 
     void DoAfterHandleEffect(Unit* target, uint32 i)
     {
@@ -45,7 +49,11 @@ class FirestarterTalent : public Spell
 
 class MissileBarrage : public Spell
 {
-    SPELL_FACTORY_FUNCTION(MissileBarrage);
+public:
+
+    MissileBarrage(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
+
+    static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new MissileBarrage(Caster, info, triggered, aur); }
 
     void DoAfterHandleEffect(Unit* target, uint32 i)
     {
@@ -66,7 +74,12 @@ class MissileBarrage : public Spell
 // Shaman Scripts
 class FireNova : public Spell
 {
-    SPELL_FACTORY_FUNCTION(FireNova);
+public:
+
+    FireNova(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
+
+    static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new FireNova(Caster, info, triggered, aur); }
+
     bool HasFireTotem = false;
     uint8 CanCast(bool tolerate)
     {
@@ -123,12 +136,15 @@ class CheatDeathAura : public AbsorbAura
 {
 public:
 
-    static Aura* Create(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) { return new CheatDeathAura(proto, duration, caster, target, temporary, i_caster); }
-
-    CheatDeathAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL)
+    CheatDeathAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
         : AbsorbAura(proto, duration, caster, target, temporary, i_caster)
     {
         dSpell = sSpellCustomizations.GetSpellInfo(31231);
+    }
+
+    static Aura* Create(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
+    {
+        return new CheatDeathAura(proto, duration, caster, target, temporary, i_caster);
     }
 
     uint32 AbsorbDamage(uint32 School, uint32* dmg)
@@ -184,7 +200,11 @@ private:
 // Priest Scripts
 class DispersionSpell : public Spell
 {
-    SPELL_FACTORY_FUNCTION(DispersionSpell);
+public:
+
+    DispersionSpell(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
+
+    static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new DispersionSpell(Caster, info, triggered, aur); }
 
     void DoAfterHandleEffect(Unit* target, uint32 i)
     {
@@ -202,7 +222,11 @@ class DispersionSpell : public Spell
 // Druid Scripts
 class InnervateSpell : public Spell
 {
-    SPELL_FACTORY_FUNCTION(InnervateSpell);
+public:
+
+    InnervateSpell(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
+
+    static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new InnervateSpell(Caster, info, triggered, aur); }
 
     int32 DoCalculateEffect(uint32 i, Unit* target, int32 value)
     {
@@ -217,7 +241,11 @@ class InnervateSpell : public Spell
 // DeathKnight Scripts
 class BloodPlagueSpell : public Spell
 {
-    SPELL_FACTORY_FUNCTION(BloodPlagueSpell);
+public:
+
+    BloodPlagueSpell(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
+
+    static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new BloodPlagueSpell(Caster, info, triggered, aur); }
 
     int32 DoCalculateEffect(uint32 i, Unit* target, int32 value)
     {
@@ -230,7 +258,11 @@ class BloodPlagueSpell : public Spell
 
 class IcyTouchSpell : public Spell
 {
-    SPELL_FACTORY_FUNCTION(IcyTouchSpell);
+public:
+
+    IcyTouchSpell(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
+
+    static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new IcyTouchSpell(Caster, info, triggered, aur); }
 
     int32 DoCalculateEffect(uint32 i, Unit* target, int32 value)
     {
@@ -243,7 +275,11 @@ class IcyTouchSpell : public Spell
 
 class FrostFeverSpell : public Spell
 {
-    SPELL_FACTORY_FUNCTION(FrostFeverSpell);
+public:
+
+    FrostFeverSpell(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
+
+    static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new FrostFeverSpell(Caster, info, triggered, aur); }
 
     int32 DoCalculateEffect(uint32 i, Unit* target, int32 value)
     {
@@ -256,7 +292,11 @@ class FrostFeverSpell : public Spell
 
 class BloodBoilSpell : public Spell
 {
-    SPELL_FACTORY_FUNCTION(BloodBoilSpell);
+public:
+
+    BloodBoilSpell(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
+
+    static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new BloodBoilSpell(Caster, info, triggered, aur); }
 
     int32 DoCalculateEffect(uint32 i, Unit* target, int32 value)
     {
@@ -277,7 +317,11 @@ class BloodBoilSpell : public Spell
 
 class BloodStrikeSpell : public Spell
 {
-    SPELL_FACTORY_FUNCTION(BloodStrikeSpell);
+public:
+
+    BloodStrikeSpell(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
+
+    static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new BloodStrikeSpell(Caster, info, triggered, aur); }
 
     int32 DoCalculateEffect(uint32 i, Unit* target, int32 value)
     {
@@ -318,7 +362,11 @@ class BloodStrikeSpell : public Spell
 
 class DeathCoilSpell : public Spell
 {
-    SPELL_FACTORY_FUNCTION(DeathCoilSpell);
+public:
+
+    DeathCoilSpell(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
+
+    static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new DeathCoilSpell(Caster, info, triggered, aur); }
 
     uint8 CanCast(bool tolerate)
     {
@@ -341,7 +389,11 @@ class DeathCoilSpell : public Spell
 
 class RuneStrileSpell : public Spell
 {
-    SPELL_FACTORY_FUNCTION(RuneStrileSpell);
+public:
+
+    RuneStrileSpell(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
+
+    static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new RuneStrileSpell(Caster, info, triggered, aur); }
 
     void HandleEffects(uint64 guid, uint32 i)
     {
@@ -354,11 +406,15 @@ class RuneStrileSpell : public Spell
 
 class AntiMagicShellAura : public AbsorbAura
 {
-    public:
-    static Aura* Create(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) { return new AntiMagicShellAura(proto, duration, caster, target, temporary, i_caster); }
+public:
 
-    AntiMagicShellAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL)
+    AntiMagicShellAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
         : AbsorbAura(proto, duration, caster, target, temporary, i_caster) {}
+
+    static Aura* Create(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
+    {
+        return new AntiMagicShellAura(proto, duration, caster, target, temporary, i_caster);
+    }
 
     int32 CalcAbsorbAmount()
     {
@@ -377,11 +433,15 @@ class AntiMagicShellAura : public AbsorbAura
 
 class SpellDeflectionAura : public AbsorbAura
 {
-    public:
-    static Aura* Create(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) { return new SpellDeflectionAura(proto, duration, caster, target, temporary, i_caster); }
+public:
 
-    SpellDeflectionAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL)
+    SpellDeflectionAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
         : AbsorbAura(proto, duration, caster, target, temporary, i_caster) {}
+
+    static Aura* Create(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
+    {
+        return new SpellDeflectionAura(proto, duration, caster, target, temporary, i_caster);
+    }
 
     uint32 AbsorbDamage(uint32 School, uint32* dmg)
     {
@@ -405,7 +465,11 @@ class SpellDeflectionAura : public AbsorbAura
 
 class BloodwormSpell : public Spell
 {
-    SPELL_FACTORY_FUNCTION(BloodwormSpell);
+public:
+
+    BloodwormSpell(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
+
+    static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new BloodwormSpell(Caster, info, triggered, aur); }
 
     int32 DoCalculateEffect(uint32 i, Unit* target, int32 value)
     {
@@ -415,11 +479,15 @@ class BloodwormSpell : public Spell
 
 class WillOfTheNecropolisAura : public AbsorbAura
 {
-    public:
-    static Aura* Create(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) { return new WillOfTheNecropolisAura(proto, duration, caster, target, temporary, i_caster); }
+public:
 
-    WillOfTheNecropolisAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL)
+    WillOfTheNecropolisAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
         : AbsorbAura(proto, duration, caster, target, temporary, i_caster) {}
+
+    static Aura* Create(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
+    {
+        return new WillOfTheNecropolisAura(proto, duration, caster, target, temporary, i_caster);
+    }
 
     uint32 AbsorbDamage(uint32 School, uint32* dmg)
     {
@@ -447,7 +515,11 @@ class WillOfTheNecropolisAura : public AbsorbAura
 
 class VampiricBloodSpell : public Spell
 {
-    SPELL_FACTORY_FUNCTION(VampiricBloodSpell);
+public:
+
+    VampiricBloodSpell(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
+
+    static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new VampiricBloodSpell(Caster, info, triggered, aur); }
 
     int32 DoCalculateEffect(uint32 i, Unit* target, int32 value)
     {
@@ -460,7 +532,11 @@ class VampiricBloodSpell : public Spell
 
 class HeartStrikeSpell : public Spell
 {
-    SPELL_FACTORY_FUNCTION(HeartStrikeSpell);
+public:
+
+    HeartStrikeSpell(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
+
+    static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new HeartStrikeSpell(Caster, info, triggered, aur); }
 
     void DoAfterHandleEffect(Unit* target, uint32 i)
     {

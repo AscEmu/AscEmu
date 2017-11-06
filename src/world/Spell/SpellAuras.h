@@ -827,18 +827,17 @@ class SERVER_DECL Aura : public EventableObject
         inline bool IsInterrupted() { return (m_interrupted >= 0); }
 };
 
-#ifndef AURA_FACTORY_FUNCTION
-#define AURA_FACTORY_FUNCTION(T) \
-  public: \
-  static Aura* Create(SpellEntry *proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) { return new T(proto, duration, caster, target, temporary, i_caster); } \
-  T(SpellEntry *proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) : Aura(proto, duration, caster, target, temporary, i_caster) {}
-#endif
-
 class AbsorbAura : public Aura
 {
     public:
-
-        AURA_FACTORY_FUNCTION(AbsorbAura);
+    
+        AbsorbAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr) : 
+            Aura(proto, duration, caster, target, temporary, i_caster), m_total_amount(0), m_amount(0), m_pct_damage(0) {}
+        
+        static Aura* Create(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
+        {
+            return new AbsorbAura(proto, duration, caster, target, temporary, i_caster);
+        }
 
         virtual uint32 AbsorbDamage(uint32 School, uint32* dmg);
 
