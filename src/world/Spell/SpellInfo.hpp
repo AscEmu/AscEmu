@@ -480,7 +480,7 @@ public:
 
     uint32_t getSpellGroupType(uint8_t idx) const
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         return SpellGroupType[idx];
     }
 
@@ -491,7 +491,7 @@ public:
 
     void setSpellGroupType(uint32_t value, uint8_t idx)                             // used in HackFixes.cpp / SpellCustomizations.cpp
     {
-        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS && idx >= 0);
+        ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         SpellGroupType[idx] = value;
     }
 

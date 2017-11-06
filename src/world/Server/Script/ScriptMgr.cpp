@@ -884,10 +884,10 @@ void CreatureAIScript::_removeTimer(uint32_t& timerId)
 {
     if (InstanceScript* inScript = getInstanceScript())
     {
-        uint32_t timerId = timerId;
+        uint32_t mTimerId = timerId;
         inScript->removeTimer(timerId);
         if (timerId == 0)
-            mCreatureTimerIds.remove(timerId);
+            mCreatureTimerIds.remove(mTimerId);
     }
 }
 

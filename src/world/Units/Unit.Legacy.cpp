@@ -1446,7 +1446,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
         // SPELL_AURA_PROC_TRIGGER_SPELL_WITH_VALUE
         for (uint8 i = 0; i < 3; ++i)
         {
-            if (ospinfo->getEffectApplyAuraName(i) == SPELL_AURA_PROC_TRIGGER_SPELL_WITH_VALUE)
+            if (ospinfo && ospinfo->getEffectApplyAuraName(i) == SPELL_AURA_PROC_TRIGGER_SPELL_WITH_VALUE)
             {
                 dmg_overwrite[i] = ospinfo->getEffectBasePoints(i) + 1;
                 spell_proc->DoEffect(victim, CastingSpell, flag, dmg, abs, dmg_overwrite, weapon_damage_type);
