@@ -2442,32 +2442,35 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
 
     SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DEAD);
 
-    if ((GetCreatedByGUID() == 0) && (GetTaggerGUID() != 0))
+    if (m_mapMgr != nullptr)
     {
-        Unit* owner = m_mapMgr->GetUnit(GetTaggerGUID());
+        if ((GetCreatedByGUID() == 0) && (GetTaggerGUID() != 0))
+        {
+            Unit* owner = m_mapMgr->GetUnit(GetTaggerGUID());
 
-        if (owner != NULL)
-            generateLoot();
+            if (owner != NULL)
+                generateLoot();
+        }
+
+        if (GetCharmedByGUID())
+        {
+            //remove owner warlock soul link from caster
+            Unit* owner = GetMapMgr()->GetUnit(GetCharmedByGUID());
+
+            if (owner != NULL && owner->IsPlayer())
+                static_cast<Player*>(owner)->EventDismissPet();
+        }
+
+        if (GetCharmedByGUID() != 0)
+        {
+            Unit* charmer = m_mapMgr->GetUnit(GetCharmedByGUID());
+            if (charmer != NULL)
+                charmer->UnPossess();
+        }
+
+        if (m_mapMgr->m_battleground != nullptr)
+            m_mapMgr->m_battleground->HookOnUnitDied(this);
     }
-
-    if (GetCharmedByGUID())
-    {
-        //remove owner warlock soul link from caster
-        Unit* owner = GetMapMgr()->GetUnit(GetCharmedByGUID());
-
-        if (owner != NULL && owner->IsPlayer())
-            static_cast<Player*>(owner)->EventDismissPet();
-    }
-
-    if (GetCharmedByGUID() != 0)
-    {
-        Unit* charmer = m_mapMgr->GetUnit(GetCharmedByGUID());
-        if (charmer != NULL)
-            charmer->UnPossess();
-    }
-
-    if (m_mapMgr != nullptr && m_mapMgr->m_battleground != nullptr)
-        m_mapMgr->m_battleground->HookOnUnitDied(this);
 }
 
 void Creature::SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 delay)
