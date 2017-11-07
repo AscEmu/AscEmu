@@ -91,7 +91,6 @@ MoonScriptCreatureAI::MoonScriptCreatureAI(Creature* pCreature) : CreatureAIScri
     mRunToTargetSpellCache = nullptr;
     mAIUpdateFrequency = defaultUpdateFrequency;
     mBaseAttackTime = _unit->GetBaseAttackTime(MELEE);
-    mEventCount = 0;
 }
 
 MoonScriptCreatureAI::~MoonScriptCreatureAI()
@@ -101,7 +100,6 @@ MoonScriptCreatureAI::~MoonScriptCreatureAI()
     DeleteArray(mOnCombatStartEmotes);
     DeleteArray(mOnTauntEmotes);
     DeleteArray(mSpells);
-    DeleteArray(mEvents);
 }
 
 void MoonScriptCreatureAI::MoveTo(Unit* pUnit, RangeStatusPair pRangeStatus)
@@ -358,48 +356,6 @@ void MoonScriptCreatureAI::Announce(const char* pText)
         _unit->SendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, pText);
 }
 
-int32 MoonScriptCreatureAI::AddEvent(uint32 pEventId, int32 pTriggerTimer, EventFunc pEvent, int32 pMiscVal, bool pRepeatable)
-{
-    EventStruct* newEvent = new EventStruct(pEventId, pTriggerTimer, pEvent, pRepeatable, false, pTriggerTimer, pMiscVal);
-    mEvents.push_back(newEvent);
-    ++mEventCount;
-    return newEvent->mEventId;
-}
-
-void MoonScriptCreatureAI::ResetEvent(uint32 pEventId, int32 pNewTriggerTimer, bool pRepeatable)
-{
-    for (EventArray::iterator EventIter = mEvents.begin(); EventIter != mEvents.end(); ++EventIter)
-    {
-        if ((*EventIter)->mEventId == int32(pEventId))
-        {
-            (*EventIter)->mEventTimer = pNewTriggerTimer;
-            (*EventIter)->mEventTimerConst = pNewTriggerTimer;
-            (*EventIter)->mFinished = false;
-            (*EventIter)->mRepeatable = pRepeatable; // dont repeat if someone cares for it!
-            break;
-        }
-    }
-}
-
-void MoonScriptCreatureAI::RemoveEvent(uint32 pEventId)
-{
-    for (EventArray::iterator EventIter = mEvents.begin(); EventIter != mEvents.end(); ++EventIter)
-    {
-        if ((*EventIter)->mEventId == int32(pEventId))
-        {
-            mEvents.erase(EventIter);
-            --mEventCount;
-            break;
-        }
-    }
-}
-
-void MoonScriptCreatureAI::RemoveAllEvents()
-{
-    mEvents.clear();
-    mEventCount = 0;
-}
-
 void MoonScriptCreatureAI::SetTargetToChannel(Unit* pTarget, uint32 pSpellId)
 {
     if (pTarget == nullptr)
@@ -440,10 +396,8 @@ void MoonScriptCreatureAI::OnCombatStop(Unit* pTarget)
 {
     CancelAllSpells();
     _cancelAllTimers();
-    RemoveAllEvents();
     _removeAllAuras();
     setAIAgent(AGENT_NULL);
-    //_unit->GetAIInterface()->SetAIState(STATE_IDLE);                // Fix for stuck mobs that don't regen
     RemoveAIUpdateEvent();
 
     if (_isDespawnWhenInactiveSet())
@@ -460,34 +414,12 @@ void MoonScriptCreatureAI::OnDied(Unit* pKiller)
 {
     RandomEmote(mOnDiedEmotes);
     CancelAllSpells();
-    //_cancelAllTimers();
-    RemoveAllEvents();
-    //_removeAllAuras();
-    //RemoveAIUpdateEvent();
-
-    //if (_isDespawnWhenInactiveSet())
-    //    despawn(DEFAULT_DESPAWN_TIMER);
 }
 
 void MoonScriptCreatureAI::AIUpdate()
 {
     SpellDesc* Spell;
     uint32 CurrentTime = (uint32)time(nullptr);
-
-    // update events
-    for (EventArray::iterator EventIter = mEvents.begin(); EventIter != mEvents.end(); ++EventIter)
-    {
-        (*EventIter)->mEventTimer -= mAIUpdateFrequency;
-        if ((*EventIter)->mEventTimer < static_cast<int32>(mAIUpdateFrequency))
-        {
-            (*EventIter)->mEvent(this, (*EventIter)->mMiscVal);
-
-            if ((*EventIter)->mRepeatable)
-                ResetEvent((*EventIter)->mEventId, (*EventIter)->mEventTimerConst, (*EventIter)->mRepeatable);
-            else
-                RemoveEvent((*EventIter)->mEventId);
-        }
-    }
 
     if (!_isInCombat())
         return;
@@ -1076,7 +1008,7 @@ void EventFunc_ApplyAura(MoonScriptCreatureAI* pCreatureAI, int32 pMiscVal)
         return;
 
     pCreatureAI->_applyAura(uint32(pMiscVal));
-    if (!pCreatureAI->_isInCombat() && !pCreatureAI->HasEvents() && pCreatureAI->_getTimerCount() == 0)
+    if (!pCreatureAI->_isInCombat() && pCreatureAI->_getTimerCount() == 0)
         pCreatureAI->RemoveAIUpdateEvent();
 }
 
@@ -1100,7 +1032,7 @@ void EventFunc_ChangeGoState(MoonScriptCreatureAI* pCreatureAI, int32 pMiscVal)
         }
     }
 
-    if (!pCreatureAI->_isInCombat() && !pCreatureAI->HasEvents() && pCreatureAI->_getTimerCount() == 0)
+    if (!pCreatureAI->_isInCombat() && pCreatureAI->_getTimerCount() == 0)
         pCreatureAI->RemoveAIUpdateEvent();
 }
 
@@ -1111,6 +1043,6 @@ void EventFunc_RemoveUnitFieldFlags(MoonScriptCreatureAI* pCreatureAI, int32 pMi
 
     pCreatureAI->GetUnit()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
 
-    if (!pCreatureAI->_isInCombat() && !pCreatureAI->HasEvents() && pCreatureAI->_getTimerCount() == 0)
+    if (!pCreatureAI->_isInCombat() && pCreatureAI->_getTimerCount() == 0)
         pCreatureAI->RemoveAIUpdateEvent();
 }
