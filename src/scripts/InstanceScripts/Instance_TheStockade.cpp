@@ -46,7 +46,7 @@ class DeepfuryAI : public MoonScriptBossAI
 
     void OnCombatStart(Unit* pTarget)
     {
-        _unit->CastSpell(_unit, 7164, false); // Defensive Stance
+        getCreature()->CastSpell(getCreature(), 7164, false); // Defensive Stance
         ParentClass::OnCombatStart(pTarget);
     }
 
@@ -93,7 +93,7 @@ class BazilAI : public MoonScriptCreatureAI
 
     void OnCombatStart(Unit* pTarget)
     {
-        _unit->CastSpell(_unit, 674, false); // Dual Wield
+        getCreature()->CastSpell(getCreature(), 674, false); // Dual Wield
         sendDBChatMessage(8760);
         ParentClass::OnCombatStart(pTarget);
     }
@@ -111,7 +111,7 @@ class DextrenAI : public MoonScriptCreatureAI
 
     void OnCombatStart(Unit* pTarget)
     {
-        _unit->CastSpell(_unit, 7165, false); // Battle Stance
+        getCreature()->CastSpell(getCreature(), 7165, false); // Battle Stance
         ParentClass::OnCombatStart(pTarget);
     }
 };
@@ -152,7 +152,7 @@ class InmateAI : public MoonScriptCreatureAI
 
     void OnCombatStart(Unit* pTarget)
     {
-        _unit->CastSpell(_unit, 7165, false); // Battle Stance
+        getCreature()->CastSpell(getCreature(), 7165, false); // Battle Stance
         ParentClass::OnCombatStart(pTarget);
     }
 };
@@ -168,7 +168,7 @@ class InsurgentAI : public MoonScriptCreatureAI
 
     void OnCombatStart(Unit* pTarget)
     {
-        _unit->CastSpell(_unit, 9128, false); // Battle Shout
+        getCreature()->CastSpell(getCreature(), 9128, false); // Battle Shout
         ParentClass::OnCombatStart(pTarget);
     }
 };
@@ -185,7 +185,7 @@ class PrisonerAI : public MoonScriptCreatureAI
 
     void OnCombatStart(Unit* pTarget)
     {
-        _unit->CastSpell(_unit, 7165, false); // Battle Stance
+        getCreature()->CastSpell(getCreature(), 7165, false); // Battle Stance
         ParentClass::OnCombatStart(pTarget);
     }
 };
@@ -201,7 +201,7 @@ class ConvictAI : public MoonScriptCreatureAI
 
     void OnCombatStart(Unit* pTarget)
     {
-        _unit->CastSpell(_unit, 674, false); // Dual Wield
+        getCreature()->CastSpell(getCreature(), 674, false); // Dual Wield
         ParentClass::OnCombatStart(pTarget);
     }
 };

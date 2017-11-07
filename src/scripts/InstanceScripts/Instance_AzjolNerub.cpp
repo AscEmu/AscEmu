@@ -46,7 +46,7 @@ class KrikthirAI : public MoonScriptCreatureAI
 
     void AIUpdate()
     {
-        if (_unit->GetHealthPct() <= 10 && mEnraged == false)
+        if (getCreature()->GetHealthPct() <= 10 && mEnraged == false)
         {
             _applyAura(KRIKTHIR_ENRAGE);
             mEnraged = true;

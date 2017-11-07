@@ -35,7 +35,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(ArmyOfTheDeadGhoulAI);
     ArmyOfTheDeadGhoulAI(Creature* c) : CreatureAIScript(c)
     {
-        _unit->GetAIInterface()->m_canMove = false;
+        getCreature()->GetAIInterface()->m_canMove = false;
     }
 
     void OnLoad()
@@ -43,9 +43,9 @@ public:
 
         RegisterAIUpdateEvent(200);
 
-        if (_unit->IsSummon())
+        if (getCreature()->IsSummon())
         {
-            Summon* s = static_cast<Summon*>(_unit);
+            Summon* s = static_cast<Summon*>(getCreature());
 
             float parent_bonus = s->GetOwner()->GetDamageDoneMod(SCHOOL_NORMAL) * 0.04f;
 
@@ -56,9 +56,9 @@ public:
 
     void AIUpdate()
     {
-        _unit->CastSpell(_unit->GetGUID(), 20480, false);
+        getCreature()->CastSpell(getCreature()->GetGUID(), 20480, false);
         RemoveAIUpdateEvent();
-        _unit->GetAIInterface()->m_canMove = true;
+        getCreature()->GetAIInterface()->m_canMove = true;
     }
 };
 
@@ -73,9 +73,9 @@ public:
 
     void OnLoad()
     {
-        if (_unit->IsPet())
+        if (getCreature()->IsPet())
         {
-            Pet* s = static_cast<Pet*>(_unit);
+            Pet* s = static_cast<Pet*>(getCreature());
             Player* owner = s->GetPetOwner();
 
             float owner_bonus = static_cast<float>(owner->GetDamageDoneMod(SCHOOL_SHADOW) * 0.375f); // 37.5%
@@ -107,21 +107,21 @@ public:
 
     void OnLoad()
     {
-        if (_unit->IsSummon())
+        if (getCreature()->IsSummon())
         {
-            Summon* s = static_cast<Summon*>(_unit);
+            Summon* s = static_cast<Summon*>(getCreature());
             Unit* owner = s->GetOwner();
 
-            owner->CastSpell(_unit, 45204, true);   // clone me
-            owner->CastSpell(_unit, 58838, true);   // inherit threat list
+            owner->CastSpell(getCreature(), 45204, true);   // clone me
+            owner->CastSpell(getCreature(), 58838, true);   // inherit threat list
 
             // Mage mirror image spell
-            if (_unit->GetCreatedBySpell() == 58833)
+            if (getCreature()->GetCreatedBySpell() == 58833)
             {
-                _unit->SetMaxHealth(2500);
-                _unit->SetHealth(2500);
-                _unit->SetMaxPower(POWER_TYPE_MANA, owner->GetMaxPower(POWER_TYPE_MANA));
-                _unit->SetPower(POWER_TYPE_MANA, owner->GetPower(POWER_TYPE_MANA));
+                getCreature()->SetMaxHealth(2500);
+                getCreature()->SetHealth(2500);
+                getCreature()->SetMaxPower(POWER_TYPE_MANA, owner->GetMaxPower(POWER_TYPE_MANA));
+                getCreature()->SetPower(POWER_TYPE_MANA, owner->GetPower(POWER_TYPE_MANA));
 
                 DBC::Structures::SpellRangeEntry const* range = NULL;
 
@@ -143,7 +143,7 @@ public:
                 sp1.minrange = GetMinRange(range);
                 sp1.maxrange = GetMaxRange(range);
 
-                _unit->GetAIInterface()->addSpellToList(&sp1);
+                getCreature()->GetAIInterface()->addSpellToList(&sp1);
 
                 AI_Spell sp2;
                 sp2.entryId = 59637;
@@ -163,7 +163,7 @@ public:
                 sp2.minrange = GetMinRange(range);
                 sp2.maxrange = GetMaxRange(range);
 
-                _unit->GetAIInterface()->addSpellToList(&sp2);
+                getCreature()->GetAIInterface()->addSpellToList(&sp2);
             }
         }
     }
@@ -183,12 +183,12 @@ public:
 
     void OnLoad()
     {
-        _unit->SetDisplayId(_unit->GetCreatureProperties()->Female_DisplayID);
-        _unit->SetBaseAttackTime(MELEE, 2000);
+        getCreature()->SetDisplayId(getCreature()->GetCreatureProperties()->Female_DisplayID);
+        getCreature()->SetBaseAttackTime(MELEE, 2000);
 
-        if (_unit->IsSummon())
+        if (getCreature()->IsSummon())
         {
-            Summon* s = static_cast<Summon*>(_unit);
+            Summon* s = static_cast<Summon*>(getCreature());
             Unit* owner = s->GetOwner();
 
             if (owner->IsPlayer())
@@ -221,7 +221,7 @@ public:
 
     void OnCombatStart(Unit* mTarget)
     {
-        RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
     }
 
     void OnCombatStop(Unit* mTarget)
@@ -232,8 +232,8 @@ public:
 
     void AIUpdate()
     {
-        Unit* curtarget = _unit->GetAIInterface()->getNextTarget();
-        if (_unit->GetCurrentSpell() == NULL && curtarget)
+        Unit* curtarget = getCreature()->GetAIInterface()->getNextTarget();
+        if (getCreature()->GetCurrentSpell() == NULL && curtarget)
         {
             switch (dpsCycle)
             {
@@ -272,7 +272,7 @@ public:
 
             SpellInfo* MyNextSpell = sSpellCustomizations.GetSpellInfo(dpsSpell);
             if (MyNextSpell != NULL)
-                _unit->CastSpell(curtarget, MyNextSpell, true);
+                getCreature()->CastSpell(curtarget, MyNextSpell, true);
 
         }
     }
@@ -293,8 +293,8 @@ public:
 
                 if ((uint32)x <= proc)
                 {
-                    Unit* Vic = mProc->custom_self_cast_only ? _unit : mTarget;
-                    _unit->CastSpell(Vic, mProc, true);
+                    Unit* Vic = mProc->custom_self_cast_only ? getCreature() : mTarget;
+                    getCreature()->CastSpell(Vic, mProc, true);
                 }
             }
         }
@@ -317,13 +317,13 @@ public:
 
     void OnLoad()
     {
-        _unit->setByteValue(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
+        getCreature()->setByteValue(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
     }
 
     void OnLastPassengerLeft(Unit *passenger)
     {
-        if (_unit->GetSummonedByGUID() == passenger->GetGUID())
-            _unit->Despawn(1 * 1000, 0);
+        if (getCreature()->GetSummonedByGUID() == passenger->GetGUID())
+            getCreature()->Despawn(1 * 1000, 0);
     }
 };
 

@@ -81,41 +81,41 @@ class JainaAI : public MoonScriptCreatureAI
                 Lich->SetDisplayId(11686); // HACK FIX makes invisible till needed
                 Lich->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
                 // 8 second delay from first chat..
-                _unit->SendTimedScriptTextChatMessage(SAY_JAINA_01, 8000);
+                getCreature()->SendTimedScriptTextChatMessage(SAY_JAINA_01, 8000);
 
                 // Uther talks about 12 seconds.
                 Uther->SendTimedScriptTextChatMessage(SAY_UTHER_01, 12500);
 
                 // Jaina wait about 9-10 secs
-                _unit->SendTimedScriptTextChatMessage(SAY_JAINA_05, 21000);
+                getCreature()->SendTimedScriptTextChatMessage(SAY_JAINA_05, 21000);
                 // Uther wait about 9-11 secs
                 Uther->SendTimedScriptTextChatMessage(SAY_UTHER_02, 27000);
                 // Jaina wait about 9-10 sec.
-                _unit->SendTimedScriptTextChatMessage(SAY_JAINA_06, 37000);
+                getCreature()->SendTimedScriptTextChatMessage(SAY_JAINA_06, 37000);
                 // Uther wait about 6 seconds to chat.
                 Uther->SendTimedScriptTextChatMessage(SAY_UTHER_03, 44000);
                 // Jaina with a 15 sec delay.
-                _unit->SendTimedScriptTextChatMessage(SAY_JAINA_07, 59000);
+                getCreature()->SendTimedScriptTextChatMessage(SAY_JAINA_07, 59000);
                 // Uther with a 8.5 sec delay chat
                 Uther->SendTimedScriptTextChatMessage(SAY_UTHER_04, 67500);
                 // Jaina with a 16 sec delay
-                _unit->SendTimedScriptTextChatMessage(SAY_JAINA_08, 83500);
+                getCreature()->SendTimedScriptTextChatMessage(SAY_JAINA_08, 83500);
                 // Uther with a 7 sec delay
                 Uther->SendTimedScriptTextChatMessage(SAY_UTHER_05, 90500);
                 // Jaina delay with a 15 sec.
-                _unit->SendTimedScriptTextChatMessage(SAY_JAINA_09, 105500);
+                getCreature()->SendTimedScriptTextChatMessage(SAY_JAINA_09, 105500);
                 // Uther delay with a 17 sec delay.
                 Uther->SendTimedScriptTextChatMessage(SAY_UTHER_06, 122500);
                 // Uther with a 17 sec delay
                 Uther->SendTimedScriptTextChatMessage(SAY_UTHER_07, 139500);
                 // Jaina with a 7 sec delay.
-                _unit->SendTimedScriptTextChatMessage(SAY_JAINA_10, 146500);
+                getCreature()->SendTimedScriptTextChatMessage(SAY_JAINA_10, 146500);
                 // Uther with a 4 sec delay.
                 Uther->SendChatMessage(CHAT_MSG_EMOTE, LANG_UNIVERSAL, "shakes his head.", 150500); // WHAT
                 // Uther with a 4 sec delay
                 Uther->SendTimedScriptTextChatMessage(SAY_UTHER_08, 154500);
                 // Jaina wuith a 14 sec delay.
-                _unit->SendTimedScriptTextChatMessage(SAY_JAINA_11, 168500);
+                getCreature()->SendTimedScriptTextChatMessage(SAY_JAINA_11, 168500);
                 // Uther says nonono when lich king appear than despawns ;D 7 sec delay
                 Uther->SendTimedScriptTextChatMessage(SAY_UTHER_09, 175500);
                 Uther->Despawn(188000, 0); // Uther gets sent to the "frostmourne" when LK comes in and silences him ;P        
@@ -194,8 +194,8 @@ class Marwyn : public MoonScriptBossAI
         {
             if (_isHeroic() == true) // HEROIC MODE
             {
-                _unit->SetMaxHealth(903227); // SET HP CAUSE ARCEMU DONT SUPPORT HEROIC MODES!
-                _unit->SetHealth(903227); //SET HP CAUSE ARCEMU DONT SUPPORT HEROIC MODES!
+                getCreature()->SetMaxHealth(903227); // SET HP CAUSE ARCEMU DONT SUPPORT HEROIC MODES!
+                getCreature()->SetHealth(903227); //SET HP CAUSE ARCEMU DONT SUPPORT HEROIC MODES!
                 _setDisplayWeaponIds(51010, 51010); // Just incase DB doesn't have them correctly.
             }
         }
@@ -205,7 +205,7 @@ class Marwyn : public MoonScriptBossAI
             sendDBChatMessage(4105);     // Death is all that you will find here!
 
             if (mInstance)
-                mInstance->setData(_unit->GetEntry(), InProgress);
+                mInstance->setData(getCreature()->GetEntry(), InProgress);
             ParentClass::OnCombatStart(pKiller);
         }
 
@@ -225,7 +225,7 @@ class Marwyn : public MoonScriptBossAI
         void OnCombatStop(Unit* Target)
         {
             if (mInstance)
-                mInstance->setData(_unit->GetEntry(), Performed);
+                mInstance->setData(getCreature()->GetEntry(), Performed);
             ParentClass::OnCombatStop(Target);
         }
 
@@ -234,7 +234,7 @@ class Marwyn : public MoonScriptBossAI
             sendDBChatMessage(5256);      // Yes... Run... Run to meet your destiny... Its bitter, cold embrace, awaits you.
 
             if (mInstance)
-                mInstance->setData(_unit->GetEntry(), Finished);
+                mInstance->setData(getCreature()->GetEntry(), Finished);
             ParentClass::OnDied(pKiller);
         }
 
@@ -273,7 +273,7 @@ class Falric : public MoonScriptBossAI
             sendDBChatMessage(4084);      // Men, women, and children... None were spared the master's wrath. Your death will be no different.
 
             if (mInstance)
-                mInstance->setData(_unit->GetEntry(), InProgress);
+                mInstance->setData(getCreature()->GetEntry(), InProgress);
             ParentClass::OnCombatStart(pKiller);
         }
 
@@ -293,7 +293,7 @@ class Falric : public MoonScriptBossAI
         void OnCombatStop(Unit* Target)
         {
             if (mInstance)
-                mInstance->setData(_unit->GetEntry(), Performed);
+                mInstance->setData(getCreature()->GetEntry(), Performed);
             ParentClass::OnCombatStop(Target);
         }
 
@@ -302,7 +302,7 @@ class Falric : public MoonScriptBossAI
             sendDBChatMessage(4087);     // Marwyn, finish them...
 
             if (mInstance)
-                mInstance->setData(_unit->GetEntry(), Finished);
+                mInstance->setData(getCreature()->GetEntry(), Finished);
             ParentClass::OnDied(pKiller);
         }
 
@@ -310,19 +310,19 @@ class Falric : public MoonScriptBossAI
         {
             if (GetPhase() == 1 && _getHealthPercent() <= 66)
             {
-                _unit->CastSpell(Plr, 72395, true);
+                getCreature()->CastSpell(Plr, 72395, true);
                 SetPhase(2);
             }
 
             if (GetPhase() == 2 && _getHealthPercent() <= 33)
             {
-                _unit->CastSpell(Plr, 72396, true);
+                getCreature()->CastSpell(Plr, 72396, true);
                 SetPhase(3);
             }
 
             if (GetPhase() == 3 && _getHealthPercent() <= 11)
             {
-                _unit->CastSpell(Plr, 72397, true);
+                getCreature()->CastSpell(Plr, 72397, true);
                 SetPhase(4);
             }
 

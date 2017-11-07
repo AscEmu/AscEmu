@@ -51,17 +51,17 @@ public:
 
     void OnLoad()
     {
-        if (!_unit)
+        if (!getCreature())
             return;
 
-        Creature* cialo = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 5307);
+        Creature* cialo = getCreature()->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), 5307);
         if (!cialo)
             return;
 
         if (!cialo->isAlive())
             cialo->Despawn(1, 6 * 60 * 1000);
 
-        _unit->Despawn(60 * 1000, 0);
+        getCreature()->Despawn(60 * 1000, 0);
     }
 };
 

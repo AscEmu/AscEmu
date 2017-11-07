@@ -40,7 +40,7 @@ public:
     void AIUpdate()
     {
         // Let's see if we are netted
-        Aura* a = _unit->getAuraWithId(51959);
+        Aura* a = getCreature()->getAuraWithId(51959);
         if (a != NULL)
         {
             Unit* Caster = a->GetUnitCaster();
@@ -56,8 +56,8 @@ public:
                 if (qle != NULL)
                 {
                     // casting the spell that will create the item for the player
-                    _unit->CastSpell(Caster, 51037, true);
-                    _unit->Despawn(1000, 360000);
+                    getCreature()->CastSpell(Caster, 51037, true);
+                    getCreature()->Despawn(1000, 360000);
                 }
             }
         }

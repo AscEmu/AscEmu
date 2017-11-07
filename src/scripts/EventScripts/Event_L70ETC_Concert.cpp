@@ -53,11 +53,11 @@ class SamAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(SamAI);
         SamAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-            _unit->GetAIInterface()->m_canMove = false;
+            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+            getCreature()->GetAIInterface()->m_canMove = false;
             _setMeleeDisabled(true);
-            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
+            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -70,13 +70,13 @@ class SamAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             setAIAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
         void OnSpawn()
         {
-            _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
+            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
         void OnDespawn()
@@ -88,23 +88,23 @@ class SamAI : public CreatureAIScript
         {
             switch (timer)
             {
-                case 1:  _unit->PlaySoundToSet(11803); break;
-                case 2:  _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true); break;
-                case 19:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL05); break;
-                case 30:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-                case 65:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-                case 70:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-                case 84:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
-                case 112: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SINGERSLIGHT), true); break;
-                case 123: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-                case 137: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
-                case 142: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
-                case 180: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
-                case 229: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL02); break;
-                case 239: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
-                case 259: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
-                case 279: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true); break;
-                case 280: _unit->Despawn(1000, 300000); break;
+                case 1:  getCreature()->PlaySoundToSet(11803); break;
+                case 2:  getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true); break;
+                case 19:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL05); break;
+                case 30:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+                case 65:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+                case 70:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+                case 84:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
+                case 112: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SINGERSLIGHT), true); break;
+                case 123: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+                case 137: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
+                case 142: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
+                case 180: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
+                case 229: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL02); break;
+                case 239: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
+                case 259: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
+                case 279: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true); break;
+                case 280: getCreature()->Despawn(1000, 300000); break;
             }
             timer++;
         }
@@ -120,11 +120,11 @@ class BerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(BerAI);
         BerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-            _unit->GetAIInterface()->m_canMove = false;
+            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+            getCreature()->GetAIInterface()->m_canMove = false;
             _setMeleeDisabled(true);
-            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
+            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -137,13 +137,13 @@ class BerAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             setAIAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
         void OnSpawn()
         {
-            _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
+            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
         void OnDespawn()
@@ -155,20 +155,20 @@ class BerAI : public CreatureAIScript
         {
             switch (timer)
             {
-                case 0: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true); break;
-                case 10:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-                case 30:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-                case 34:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-                case 38:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-                case 104: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
-                case 123: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
-                case 140: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPOTLIGHT), true); break;
-                case 145: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-                case 168: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
-                case 229: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL02); break;
-                case 230: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
-                case 279: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true); break;
-                case 280: _unit->Despawn(1000, 300050); break;
+                case 0: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true); break;
+                case 10:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+                case 30:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+                case 34:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+                case 38:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+                case 104: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
+                case 123: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
+                case 140: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPOTLIGHT), true); break;
+                case 145: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+                case 168: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
+                case 229: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL02); break;
+                case 230: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
+                case 279: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true); break;
+                case 280: getCreature()->Despawn(1000, 300050); break;
             }
             timer++;
         }
@@ -183,10 +183,10 @@ class SigAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(SigAI);
         SigAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-            _unit->GetAIInterface()->m_canMove = false;
+            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+            getCreature()->GetAIInterface()->m_canMove = false;
             _setMeleeDisabled(true);
-            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -199,13 +199,13 @@ class SigAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             setAIAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
         void OnSpawn()
         {
-            _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
+            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
         void OnDespawn()
@@ -217,24 +217,24 @@ class SigAI : public CreatureAIScript
         {
             switch (timer)
             {
-                case 0: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true); break;
-                case 10:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-                case 30:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-                case 34:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-                case 38:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-                case 70:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
-                case 85:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
-                case 123: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
-                case 140: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
-                case 165: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPOTLIGHT), true); break;
-                case 166: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL02); break;
-                case 168: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-                case 180: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-                case 193: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-                case 229: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
-                case 259: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-                case 279: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true); break;
-                case 280: _unit->Despawn(1000, 300050); break;
+                case 0: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true); break;
+                case 10:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+                case 30:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+                case 34:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+                case 38:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+                case 70:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
+                case 85:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
+                case 123: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
+                case 140: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
+                case 165: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPOTLIGHT), true); break;
+                case 166: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL02); break;
+                case 168: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+                case 180: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+                case 193: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+                case 229: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
+                case 259: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+                case 279: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true); break;
+                case 280: getCreature()->Despawn(1000, 300050); break;
             }
             timer++;
         }
@@ -250,10 +250,10 @@ class MaiAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(MaiAI);
         MaiAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-            _unit->GetAIInterface()->m_canMove = false;
+            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+            getCreature()->GetAIInterface()->m_canMove = false;
             _setMeleeDisabled(true);
-            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -265,13 +265,13 @@ class MaiAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             setAIAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
         void OnSpawn()
         {
-            _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
+            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
         void OnDespawn()
@@ -283,22 +283,22 @@ class MaiAI : public CreatureAIScript
         {
             switch (timer)
             {
-                case 0: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true); break;
-                case 10:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-                case 30:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-                case 45:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-                case 70:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-                case 85:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
-                case 95:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
-                case 102: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
-                case 115: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
-                case 123: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL02); break;
-                case 165: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPOTLIGHT), true); break;
-                case 192: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-                case 203: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-                case 229: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-                case 279: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true); break;
-                case 280: _unit->Despawn(1000, 300050); break;
+                case 0: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true); break;
+                case 10:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+                case 30:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+                case 45:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+                case 70:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+                case 85:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
+                case 95:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
+                case 102: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
+                case 115: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
+                case 123: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL02); break;
+                case 165: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPOTLIGHT), true); break;
+                case 192: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+                case 203: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+                case 229: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+                case 279: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true); break;
+                case 280: getCreature()->Despawn(1000, 300050); break;
             }
             timer++;
         }
@@ -315,10 +315,10 @@ class ThuAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(ThuAI);
         ThuAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-            _unit->GetAIInterface()->m_canMove = false;
+            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+            getCreature()->GetAIInterface()->m_canMove = false;
             _setMeleeDisabled(true);
-            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -331,53 +331,53 @@ class ThuAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             setAIAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
         void OnSpawn()
         {
-            _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
+            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
         void OnDespawn()
         {
             RemoveAIUpdateEvent();
-            _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
+            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
         void AIUpdate()
         {
             switch (timer)
             {
-                case 2: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true); break;
-                case 3:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-                case 14:  _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "ARE YOU READY TO ROCK?!?!"); break;
-                case 17:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-                case 42:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-                case 55:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
-                case 62:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-                case 63:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-                case 64:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-                case 75:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-                case 76:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-                case 77:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-                case 88:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-                case 99:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-                case 110: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-                case 137: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL02); break;
-                case 140: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-                case 142: _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "WERE GANA ROCK YOU CRAAAAAAZY!!!"); break;
-                case 313: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-                case 194: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+                case 2: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true); break;
+                case 3:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+                case 14:  getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "ARE YOU READY TO ROCK?!?!"); break;
+                case 17:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+                case 42:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+                case 55:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
+                case 62:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+                case 63:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+                case 64:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+                case 75:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+                case 76:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+                case 77:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+                case 88:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+                case 99:  getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+                case 110: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+                case 137: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL02); break;
+                case 140: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+                case 142: getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "WERE GANA ROCK YOU CRAAAAAAZY!!!"); break;
+                case 313: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
+                case 194: getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
                 case 200:
                 {
-                    _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL01);
-                    _unit->setUInt32Value(UNIT_NPC_EMOTESTATE, 401);
+                    getCreature()->Emote(EMOTE_ONESHOT_CUSTOMSPELL01);
+                    getCreature()->setUInt32Value(UNIT_NPC_EMOTESTATE, 401);
                     break;
                 }
-                case 279: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true); break;
-                case 281: _unit->Despawn(1000, 301000); break;
+                case 279: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true); break;
+                case 281: getCreature()->Despawn(1000, 301000); break;
             }
             timer++;
         }
@@ -395,10 +395,10 @@ class UndeadAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(UndeadAI);
         UndeadAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-            _unit->GetAIInterface()->m_canMove = false;
+            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+            getCreature()->GetAIInterface()->m_canMove = false;
             _setMeleeDisabled(true);
-            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -410,28 +410,28 @@ class UndeadAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             setAIAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
         void OnSpawn()
         {
-            _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
+            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
         void OnDespawn()
         {
             RemoveAIUpdateEvent();
-            _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
+            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
         void AIUpdate()
         {
             switch (timer)
             {
-                case 2:  _unit->setUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_DANCE); break;
-                case 280: _unit->Emote(EMOTE_ONESHOT_APPLAUD); break;
-                case 281: _unit->Despawn(1000, 301000); break;
+                case 2:  getCreature()->setUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_DANCE); break;
+                case 280: getCreature()->Emote(EMOTE_ONESHOT_APPLAUD); break;
+                case 281: getCreature()->Despawn(1000, 301000); break;
             }
             timer++;
         }
@@ -448,10 +448,10 @@ class Undead2AI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(Undead2AI);
         Undead2AI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-            _unit->GetAIInterface()->m_canMove = false;
+            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+            getCreature()->GetAIInterface()->m_canMove = false;
             _setMeleeDisabled(true);
-            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -463,29 +463,29 @@ class Undead2AI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             setAIAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
         void OnSpawn()
         {
-            _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
+            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
         void OnDespawn()
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "THAT WAS GREAT!");
+            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "THAT WAS GREAT!");
             RemoveAIUpdateEvent();
-            _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
+            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
         void AIUpdate()
         {
             switch (timer)
             {
-                case 2:  _unit->setUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_DANCE); break;
-                case 280: _unit->Emote(EMOTE_ONESHOT_CHEER); break;
-                case 281: _unit->Despawn(1000, 301000); break;
+                case 2:  getCreature()->setUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_DANCE); break;
+                case 280: getCreature()->Emote(EMOTE_ONESHOT_CHEER); break;
+                case 281: getCreature()->Despawn(1000, 301000); break;
             }
             timer++;
         }
@@ -502,10 +502,10 @@ class Undead3AI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(Undead3AI);
         Undead3AI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-            _unit->GetAIInterface()->m_canMove = false;
+            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+            getCreature()->GetAIInterface()->m_canMove = false;
             _setMeleeDisabled(true);
-            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -518,22 +518,22 @@ class Undead3AI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             setAIAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
         void OnSpawn()
         {
-            _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
+            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
         void AIUpdate()
         {
             switch (timer)
             {
-                case 2:  _unit->setUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_DANCE); break;
-                case 279: _unit->Emote(EMOTE_ONESHOT_CHEER); break;
-                case 280: _unit->Despawn(1000, 301000); break;
+                case 2:  getCreature()->setUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_DANCE); break;
+                case 279: getCreature()->Emote(EMOTE_ONESHOT_CHEER); break;
+                case 280: getCreature()->Despawn(1000, 301000); break;
             }
             timer++;
         }
@@ -550,10 +550,10 @@ class TriggerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(TriggerAI);
         TriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-            _unit->GetAIInterface()->m_canMove = false;
+            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+            getCreature()->GetAIInterface()->m_canMove = false;
             _setMeleeDisabled(true);
-            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -566,74 +566,74 @@ class TriggerAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             setAIAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
         void OnSpawn()
         {
-            _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
+            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
         void OnDespawn()
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "THAT WAS GREAT!");
+            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "THAT WAS GREAT!");
             RemoveAIUpdateEvent();
-            _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
+            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
         void AIUpdate()
         {
             switch (timer)
             {
-                case 1: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 8: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 15: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 21: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 28: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 35: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 41: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 48: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 55: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 62: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 69: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 76: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 81: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 89: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 96: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 101: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 108: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 115: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 121: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 128: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 135: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 141: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 148: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 155: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 162: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 169: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 176: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 181: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 189: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 196: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 201: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 208: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 215: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 221: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 228: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 235: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 241: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 248: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 255: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 262: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 269: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 276: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 1: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 8: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 15: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 21: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 28: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 35: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 41: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 48: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 55: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 62: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 69: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 76: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 81: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 89: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 96: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 101: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 108: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 115: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 121: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 128: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 135: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 141: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 148: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 155: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 162: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 169: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 176: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 181: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 189: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 196: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 201: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 208: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 215: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 221: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 228: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 235: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 241: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 248: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 255: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 262: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 269: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 276: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
                 case 281:
                 {
                     setAIAgent(AGENT_NULL);
-                    _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+                    getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
                     RemoveAIUpdateEvent();
-                    _unit->Despawn(1000, 301000); break;
+                    getCreature()->Despawn(1000, 301000); break;
                 }
             }
             timer++;
@@ -650,10 +650,10 @@ class Trigger2AI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(Trigger2AI);
         Trigger2AI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-            _unit->GetAIInterface()->m_canMove = false;
+            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+            getCreature()->GetAIInterface()->m_canMove = false;
             _setMeleeDisabled(true);
-            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -666,68 +666,68 @@ class Trigger2AI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             setAIAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
         void OnSpawn()
         {
-            _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
+            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
         void OnDespawn()
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "THAT WAS GREAT!");
+            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "THAT WAS GREAT!");
             RemoveAIUpdateEvent();
-            _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
+            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
         void AIUpdate()
         {
             switch (timer)
             {
-                case 3: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 10: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 18: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 24: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 22: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 38: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 44: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 52: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 58: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 68: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 69: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 76: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 85: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 90: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 96: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 107: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 109: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 125: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 127: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 129: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 132: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 144: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 149: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 159: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 166: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 169: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 176: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 183: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 186: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 194: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 204: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 209: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 218: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 223: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 228: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 235: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 241: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 248: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 252: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 263: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 266: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 274: _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
-                case 281: _unit->Despawn(1000, 301000); break;
+                case 3: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 10: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 18: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 24: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 22: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 38: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 44: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 52: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 58: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 68: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 69: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 76: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 85: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 90: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 96: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 107: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 109: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 125: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 127: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 129: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 132: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 144: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 149: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 159: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 166: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 169: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 176: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 183: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 186: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 194: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 204: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 209: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 218: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 223: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 228: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 235: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 241: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 248: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 252: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 263: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 266: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 274: getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CONSECRATION), true); break;
+                case 281: getCreature()->Despawn(1000, 301000); break;
             }
             timer++;
         }
@@ -743,10 +743,10 @@ class Effectsground : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(Effectsground);
         Effectsground(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-            _unit->GetAIInterface()->m_canMove = false;
+            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+            getCreature()->GetAIInterface()->m_canMove = false;
             _setMeleeDisabled(true);
-            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -759,13 +759,13 @@ class Effectsground : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             setAIAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
         void OnSpawn()
         {
-            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
         }
 
@@ -780,76 +780,76 @@ class Effectsground : public CreatureAIScript
             {
                 case 2:
                 {
-                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLLLIGHTNING), true);
-                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLLLIGHTNING2), true);
+                    getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLLLIGHTNING), true);
+                    getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLLLIGHTNING2), true);
                 }break;
                 case 6:
                 {
-                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLEARTH), true);
+                    getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLEARTH), true);
                 }break;
                 case 8:
                 {
-                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFIRE), true);
+                    getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFIRE), true);
                 }break;
                 case 72:
                 {
-                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLLLIGHTNING), true);
-                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLLLIGHTNING2), true);
+                    getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLLLIGHTNING), true);
+                    getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLLLIGHTNING2), true);
                 }break;
                 case 76:
                 {
-                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLEARTH), true);
+                    getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLEARTH), true);
                 }break;
                 case 78:
                 {
-                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFIRE), true);
+                    getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFIRE), true);
                 }break;
                 case 125:
                 {
-                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLLLIGHTNING), true);
-                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLLLIGHTNING2), true);
+                    getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLLLIGHTNING), true);
+                    getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLLLIGHTNING2), true);
                 }break;
                 case 128:
                 {
-                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLEARTH), true);
+                    getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLEARTH), true);
                 }break;
                 case 132:
                 {
-                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFIRE), true);
+                    getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFIRE), true);
                 }break;
                 case 232:
                 {
-                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLLLIGHTNING), true);
-                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLLLIGHTNING2), true);
+                    getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLLLIGHTNING), true);
+                    getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLLLIGHTNING2), true);
                 }break;
                 case 236:
                 {
-                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLEARTH), true);
+                    getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLEARTH), true);
                 }break;
                 case 238:
                 {
-                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFIRE), true);
+                    getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFIRE), true);
                 }break;
                 case 245:
                 {
-                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLLLIGHTNING), true);
-                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLLLIGHTNING2), true);
+                    getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLLLIGHTNING), true);
+                    getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLLLIGHTNING2), true);
                 }break;
                 case 249:
                 {
-                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLEARTH), true);
+                    getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLEARTH), true);
                 }break;
                 case 251:
                 {
-                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFIRE), true);
+                    getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFIRE), true);
                 }break;
                 case 279:
                 {
-                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
+                    getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
                 }break;
                 case 280:
                 {
-                    _unit->Despawn(1000, 300000);
+                    getCreature()->Despawn(1000, 300000);
                 }break;
 
             }
@@ -867,10 +867,10 @@ class Effectsair : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(Effectsair);
         Effectsair(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-            _unit->GetAIInterface()->m_canMove = false;
+            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+            getCreature()->GetAIInterface()->m_canMove = false;
             _setMeleeDisabled(true);
-            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -882,14 +882,14 @@ class Effectsair : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             setAIAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
         void OnSpawn()
         {
             timer = 0;
-            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         }
 
         void OnDespawn()
@@ -903,27 +903,27 @@ class Effectsair : public CreatureAIScript
             {
                 case 1:
                 {
-                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLSTORM), true);
+                    getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLSTORM), true);
                 }break;
                 case 70:
                 {
-                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLSTORM), true);
+                    getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLSTORM), true);
                 }break;
                 case 123:
                 {
-                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLSTORM), true);
+                    getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLSTORM), true);
                 }break;
                 case 230:
                 {
-                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLSTORM), true);
+                    getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLSTORM), true);
                 }break;
                 case 243:
                 {
-                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLSTORM), true);
+                    getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLSTORM), true);
                 }break;
                 case 280:
                 {
-                    _unit->Despawn(1000, 300000);
+                    getCreature()->Despawn(1000, 300000);
                 }break;
             }
             timer++;

@@ -32,7 +32,7 @@ public:
         if (!mKiller->IsPlayer())
             return;
 
-        Creature* creat = _unit->GetMapMgr()->GetInterface()->SpawnCreature(11064, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), true, false, 0, 0);
+        Creature* creat = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(11064, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true, false, 0, 0);
         if (creat)
             creat->Despawn(60000, 0);
     }
@@ -67,7 +67,7 @@ public:
         if (!mKiller->IsPlayer())
             return;
 
-        GameObject* go = mKiller->GetMapMgr()->CreateAndSpawnGameObject(177241, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), 1);
+        GameObject* go = mKiller->GetMapMgr()->CreateAndSpawnGameObject(177241, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), 1);
         if (go != nullptr)
             go->Despawn(60 * 1000, 0);
     }

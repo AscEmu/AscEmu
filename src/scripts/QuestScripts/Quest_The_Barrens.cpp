@@ -61,13 +61,13 @@ public:
     {
         if (iWaypointId == 195)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thank you Young warior!");
-            _unit->Despawn(5000, 1000);
-            _unit->DeleteWaypoints();
-            if (_unit->m_escorter == NULL)
+            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thank you Young warior!");
+            getCreature()->Despawn(5000, 1000);
+            getCreature()->DeleteWaypoints();
+            if (getCreature()->m_escorter == NULL)
                 return;
-            Player* plr = _unit->m_escorter;
-            _unit->m_escorter = NULL;
+            Player* plr = getCreature()->m_escorter;
+            getCreature()->m_escorter = NULL;
 
             auto quest_entry = plr->GetQuestLogForEntry(863);
             if (quest_entry == nullptr)
@@ -87,13 +87,13 @@ public:
     {
         if (iWaypointId == 100)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Finally, I am rescued");
-            _unit->Despawn(5000, 1000);
-            _unit->DeleteWaypoints();
-            if (_unit->m_escorter == NULL)
+            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Finally, I am rescued");
+            getCreature()->Despawn(5000, 1000);
+            getCreature()->DeleteWaypoints();
+            if (getCreature()->m_escorter == NULL)
                 return;
-            Player* plr = _unit->m_escorter;
-            _unit->m_escorter = NULL;
+            Player* plr = getCreature()->m_escorter;
+            getCreature()->m_escorter = NULL;
 
             auto quest_entry = plr->GetQuestLogForEntry(898);
             if (quest_entry == nullptr)
@@ -118,9 +118,9 @@ public:
 
             if (kolkarskilled > 8 && mPlayer->HasQuest(851))
             {
-                _unit->GetMapMgr()->GetInterface()->SpawnCreature(3395, -1209.8f, -2729.84f, 106.33f, 4.8f, true, false, 0, 0)->Despawn(600000, 0);
+                getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(3395, -1209.8f, -2729.84f, 106.33f, 4.8f, true, false, 0, 0)->Despawn(600000, 0);
                 kolkarskilled = 0;
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I am slain! Summon Verog!");
+                getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I am slain! Summon Verog!");
             }
         }
     }

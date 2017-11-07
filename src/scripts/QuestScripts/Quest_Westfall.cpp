@@ -30,15 +30,15 @@ public:
     {
         if (iWaypointId == 19)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Tell your master that this is where Van Cleef is hiding. I'm outta here!");
-            _unit->Despawn(5000, 1000);
-            _unit->DeleteWaypoints();
+            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Tell your master that this is where Van Cleef is hiding. I'm outta here!");
+            getCreature()->Despawn(5000, 1000);
+            getCreature()->DeleteWaypoints();
 
-            if (_unit->m_escorter == nullptr)
+            if (getCreature()->m_escorter == nullptr)
                 return;
 
-            Player* plr = _unit->m_escorter;
-            _unit->m_escorter = nullptr;
+            Player* plr = getCreature()->m_escorter;
+            getCreature()->m_escorter = nullptr;
 
             auto quest_entry = plr->GetQuestLogForEntry(155);
             if (quest_entry == nullptr)

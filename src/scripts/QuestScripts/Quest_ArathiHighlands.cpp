@@ -31,15 +31,15 @@ public:
     {
         if (iWaypointId == 15)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, I found the fact that, it searched");
-            _unit->Despawn(5000, 1000);
-            _unit->DeleteWaypoints();
+            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, I found the fact that, it searched");
+            getCreature()->Despawn(5000, 1000);
+            getCreature()->DeleteWaypoints();
 
-            if (_unit->m_escorter == nullptr)
+            if (getCreature()->m_escorter == nullptr)
                 return;
 
-            Player* plr = _unit->m_escorter;
-            _unit->m_escorter = nullptr;
+            Player* plr = getCreature()->m_escorter;
+            getCreature()->m_escorter = nullptr;
 
             auto quest_entry = plr->GetQuestLogForEntry(665);
             if (quest_entry == nullptr)

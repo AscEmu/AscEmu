@@ -75,14 +75,14 @@ class Chicken : public CreatureAIScript
 
         void OnLoad()
         {
-            _unit->SetFaction(12);
-            _unit->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
+            getCreature()->SetFaction(12);
+            getCreature()->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
             RegisterAIUpdateEvent(120000);
         }
 
         void AIUpdate()
         {
-            if(_unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER))
+            if(getCreature()->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER))
                 OnLoad();
         }
 };
@@ -95,7 +95,7 @@ class Kaliri : public CreatureAIScript
 
         void OnLoad()
         {
-            _unit->SetFaction(35);
+            getCreature()->SetFaction(35);
         }
 };
 

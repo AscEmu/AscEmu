@@ -29,9 +29,9 @@ public:
 
     void OnLoad()
     {
-        _unit->SetStandState(STANDSTATE_DEAD);
-        _unit->setDeathState(CORPSE);
-        _unit->GetAIInterface()->m_canMove = false;
+        getCreature()->SetStandState(STANDSTATE_DEAD);
+        getCreature()->setDeathState(CORPSE);
+        getCreature()->GetAIInterface()->m_canMove = false;
     }
 };
 
@@ -106,13 +106,13 @@ public:
     {
         if (iWaypointId == 28)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Tr..........");
-            _unit->Despawn(5000, 1000);
-            _unit->DeleteWaypoints();
-            if (_unit->m_escorter == NULL)
+            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Tr..........");
+            getCreature()->Despawn(5000, 1000);
+            getCreature()->DeleteWaypoints();
+            if (getCreature()->m_escorter == NULL)
                 return;
-            Player* plr = _unit->m_escorter;
-            _unit->m_escorter = NULL;
+            Player* plr = getCreature()->m_escorter;
+            getCreature()->m_escorter = NULL;
 
             auto quest_entry = plr->GetQuestLogForEntry(4245);
             if (quest_entry == nullptr)

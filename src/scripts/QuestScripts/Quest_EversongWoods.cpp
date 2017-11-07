@@ -96,15 +96,15 @@ public:
     {
         if (iWaypointId == 9)
         {
-            _unit->SetFaction(38);
-            _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
-            _unit->Despawn(10 * 60 * 1000, 1000); //if failed allow other players to do quest from beggining
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, ANVILWARD_SAY_2);
-            _unit->GetAIInterface()->getNextTarget();
+            getCreature()->SetFaction(38);
+            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
+            getCreature()->Despawn(10 * 60 * 1000, 1000); //if failed allow other players to do quest from beggining
+            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, ANVILWARD_SAY_2);
+            getCreature()->GetAIInterface()->getNextTarget();
         }
         if (iWaypointId == 10)
         {
-            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+            getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
         }
     }
 };

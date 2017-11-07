@@ -67,7 +67,7 @@ class SelinFireheartAI : public MoonScriptCreatureAI
             Selin Fireheart starts with 0 mana and drains it from the felcrystals in the room
             \todo  Set it so mana regen is off
             */
-        _unit->setUInt32Value(UNIT_FIELD_POWER1, 0);
+        getCreature()->setUInt32Value(UNIT_FIELD_POWER1, 0);
         ParentClass::OnCombatStart(pTarget);
     }
 
@@ -105,25 +105,25 @@ class SelinFireheartAI : public MoonScriptCreatureAI
         }
 
         // Not in range
-        if (_unit->GetDistance2dSq(FelCrystal) > 100)
+        if (getCreature()->GetDistance2dSq(FelCrystal) > 100)
         {
             moveTo(FelCrystal->GetPositionX(), FelCrystal->GetPositionY(), FelCrystal->GetPositionZ());
             FelCrystal = NULL;
             return;
         }
 
-        _unit->GetAIInterface()->StopMovement(0);
+        getCreature()->GetAIInterface()->StopMovement(0);
 
         if (!FelCrystal->GetCurrentSpell())
-            FelCrystal->CastSpell(_unit, ManaRage, false);
+            FelCrystal->CastSpell(getCreature(), ManaRage, false);
 
         // Mana Rage giving of mana doesnt work so we give 10%(3231) / AIUpdate() Event.
         CastSpellNowNoScheduling(ManaRageTrigger);
-        uint32 mana = _unit->GetPower(POWER_TYPE_MANA) + 3231;
-        if (mana >= _unit->GetMaxPower(POWER_TYPE_MANA))
-            mana = _unit->GetMaxPower(POWER_TYPE_MANA);
+        uint32 mana = getCreature()->GetPower(POWER_TYPE_MANA) + 3231;
+        if (mana >= getCreature()->GetMaxPower(POWER_TYPE_MANA))
+            mana = getCreature()->GetMaxPower(POWER_TYPE_MANA);
 
-        _unit->setUInt32Value(UNIT_FIELD_POWER1, mana);
+        getCreature()->setUInt32Value(UNIT_FIELD_POWER1, mana);
 
         // Re-Enable FelExplosion
         if (_getManaPercent() >= 100)
@@ -150,7 +150,7 @@ class SelinFireheartAI : public MoonScriptCreatureAI
         for (uint8 x = 0; x < 5; x++)
         {
             FC = getNearestCreature(FelCrystals[x].x, FelCrystals[x].y, FelCrystals[x].z, FelCrystals[x].addition);
-            if (!FC || !FC->isAlive() || FC->GetInstanceID() != _unit->GetInstanceID())
+            if (!FC || !FC->isAlive() || FC->GetInstanceID() != getCreature()->GetInstanceID())
                 FC = NULL;
             else
                 break;
@@ -163,7 +163,7 @@ class SelinFireheartAI : public MoonScriptCreatureAI
         CastSpellNowNoScheduling(FelExplosion);
 
         // No Idea why the mana isnt taken when the spell is cast so had to manually take it -_-
-        _unit->setUInt32Value(UNIT_FIELD_POWER1, _unit->GetPower(POWER_TYPE_MANA) - 3231);
+        getCreature()->setUInt32Value(UNIT_FIELD_POWER1, getCreature()->GetPower(POWER_TYPE_MANA) - 3231);
     }
 
     SpellInfo* ManaRage;

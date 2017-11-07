@@ -39,17 +39,17 @@ public:
 
     void OnLoad()
     {
-        _unit->SetFaction(68);
-        _unit->SetStandState(STANDSTATE_STAND);
+        getCreature()->SetFaction(68);
+        getCreature()->SetStandState(STANDSTATE_STAND);
     }
 
     void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
     {
-        if (_unit->GetHealthPct() < 10)
+        if (getCreature()->GetHealthPct() < 10)
         {
             if (mAttacker->IsPlayer())
             {
-                _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 RegisterAIUpdateEvent(1000);
                 QuestLogEntry* qle = (static_cast<Player*>(mAttacker))->GetQuestLogForEntry(590);
                 if (!qle)
@@ -61,18 +61,18 @@ public:
 
     void AIUpdate()
     {
-        _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay, okay! Enough fighting.");
-        _unit->RemoveNegativeAuras();
-        _unit->SetFaction(68);
-        _unit->SetStandState(STANDSTATE_SIT);
-        _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(433), true);
-        sEventMgr.AddEvent(static_cast<Unit*>(_unit), &Unit::SetStandState, (uint8)STANDSTATE_STAND, EVENT_CREATURE_UPDATE, 18000, 0, 1);
-        _unit->GetAIInterface()->WipeTargetList();
-        _unit->GetAIInterface()->WipeHateList();
-        _unit->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, _unit, 0);
+        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay, okay! Enough fighting.");
+        getCreature()->RemoveNegativeAuras();
+        getCreature()->SetFaction(68);
+        getCreature()->SetStandState(STANDSTATE_SIT);
+        getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(433), true);
+        sEventMgr.AddEvent(static_cast<Unit*>(getCreature()), &Unit::SetStandState, (uint8)STANDSTATE_STAND, EVENT_CREATURE_UPDATE, 18000, 0, 1);
+        getCreature()->GetAIInterface()->WipeTargetList();
+        getCreature()->GetAIInterface()->WipeHateList();
+        getCreature()->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
         _setMeleeDisabled(true);
-        _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-        _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
     }
 };
 
@@ -105,16 +105,16 @@ public:
 
     void OnReachWP(uint32 iWaypointId, bool bForwards)
     {
-        if (!_unit->HasAura(3287))
+        if (!getCreature()->HasAura(3287))
             return;
         if (iWaypointId == 2)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "My mind. . .me flesh. . .I'm. . .rotting. . . .!");
+            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "My mind. . .me flesh. . .I'm. . .rotting. . . .!");
         }
 
         if (iWaypointId == 7)
         {
-            _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(5), true);
+            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(5), true);
         }
     }
 };

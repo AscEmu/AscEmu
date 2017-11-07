@@ -30,13 +30,13 @@ public:
     {
         if (iWaypointId == 13)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, these orcs wanted me to weld in the boiler");
-            _unit->Despawn(5000, 1000);
-            _unit->DeleteWaypoints();
-            if (_unit->m_escorter == NULL)
+            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, these orcs wanted me to weld in the boiler");
+            getCreature()->Despawn(5000, 1000);
+            getCreature()->DeleteWaypoints();
+            if (getCreature()->m_escorter == NULL)
                 return;
-            Player* plr = _unit->m_escorter;
-            _unit->m_escorter = NULL;
+            Player* plr = getCreature()->m_escorter;
+            getCreature()->m_escorter = NULL;
 
             auto quest_entry = plr->GetQuestLogForEntry(1440);
             if (quest_entry == nullptr)

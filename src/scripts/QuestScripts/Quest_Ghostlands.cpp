@@ -102,8 +102,8 @@ public:
 
     void OnLoad()
     {
-        _unit->SetStandState(STANDSTATE_DEAD);
-        _unit->GetAIInterface()->m_canMove = false;
+        getCreature()->SetStandState(STANDSTATE_DEAD);
+        getCreature()->GetAIInterface()->m_canMove = false;
     }
 };
 

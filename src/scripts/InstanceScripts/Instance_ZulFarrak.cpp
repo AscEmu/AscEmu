@@ -56,7 +56,7 @@ class ThekaAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             setAIAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             morphcheck = false;
             plaguecount = 0;
             RemoveAIUpdateEvent();
@@ -72,18 +72,18 @@ class ThekaAI : public CreatureAIScript
         {
             plaguecount++;
             randomplague = 16 + RandomUInt(3);
-            if (plaguecount >= randomplague && _unit->GetAIInterface()->getNextTarget())
+            if (plaguecount >= randomplague && getCreature()->GetAIInterface()->getNextTarget())
             {
                 plaguecount = 0;
                 Unit* target = NULL;
-                target = _unit->GetAIInterface()->getNextTarget();
-                _unit->CastSpell(target, plague, true);
+                target = getCreature()->GetAIInterface()->getNextTarget();
+                getCreature()->CastSpell(target, plague, true);
             }
-            else if (_unit->GetHealthPct() <= 30 && morphcheck)
+            else if (getCreature()->GetHealthPct() <= 30 && morphcheck)
             {
                 morphcheck = false;
 
-                _unit->CastSpell(_unit, morph, false);
+                getCreature()->CastSpell(getCreature(), morph, false);
             }
         }
 
@@ -125,9 +125,9 @@ class AntusulTriggerAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->GetAIInterface()->m_canMove = false;
+            getCreature()->GetAIInterface()->m_canMove = false;
             _setMeleeDisabled(true);
-            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
             Unit* antusul = NULL;
             antusul = getNearestCreature(1815.030029f, 686.817017f, 14.519000f, 8127);
@@ -175,7 +175,7 @@ class AntusulAI : public CreatureAIScript
 
             secondspawncount = 0;
             setAIAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
             resettrigger();
             deletespawns();
@@ -193,33 +193,33 @@ class AntusulAI : public CreatureAIScript
 
         void AIUpdate()
         {
-            if (_unit->GetHealthPct() <= 75 && firstspawn)
+            if (getCreature()->GetHealthPct() <= 75 && firstspawn)
             {
                 firstspawn = false;
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Rise and defend your master!");
-                _unit->CastSpell(_unit, servant, true);
+                getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Rise and defend your master!");
+                getCreature()->CastSpell(getCreature(), servant, true);
             }
-            if (_unit->GetHealthPct() <= 25)
+            if (getCreature()->GetHealthPct() <= 25)
             {
                 secondspawncount++;
                 if (secondspawn)
                 {
                     secondspawn = false;
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The children of sul will protect their master. Rise once more Sul'lithuz!");
-                    _unit->CastSpell(_unit, servant, true);
+                    getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The children of sul will protect their master. Rise once more Sul'lithuz!");
+                    getCreature()->CastSpell(getCreature(), servant, true);
                 }
                 if (secondspawncount >= 15)
                 {
                     secondspawncount = 0;
-                    _unit->CastSpell(_unit, servant, true);
+                    getCreature()->CastSpell(getCreature(), servant, true);
                 }
 
             }
             if (attack)
             {
                 Unit* Target = NULL;
-                Target = _unit->GetAIInterface()->getNextTarget();
-                if (_unit->GetAIInterface()->getNextTarget())
+                Target = getCreature()->GetAIInterface()->getNextTarget();
+                if (getCreature()->GetAIInterface()->getNextTarget())
                 {
                     if (add1 && Target)
                     {

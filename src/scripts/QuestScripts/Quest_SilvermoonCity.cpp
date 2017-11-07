@@ -46,10 +46,10 @@ public:
 
     void OnLoad()
     {
-        _unit->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-        _unit->SetStandState(STANDSTATE_DEAD);
-        _unit->setDeathState(CORPSE);
-        _unit->GetAIInterface()->m_canMove = false;
+        getCreature()->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+        getCreature()->SetStandState(STANDSTATE_DEAD);
+        getCreature()->setDeathState(CORPSE);
+        getCreature()->GetAIInterface()->m_canMove = false;
     }
 };
 

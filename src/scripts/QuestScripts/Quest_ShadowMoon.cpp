@@ -96,52 +96,52 @@ public:
                     MoonScriptCreatureAI* pRazuunAI = SpawnCreature(21502, -3300.47f, 2927.22f, 173.870f, 2.42924f, false);    // Spawn Razuun
                     if (pRazuunAI != NULL)
                     {
-                        pRazuunAI->GetUnit()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+                        pRazuunAI->getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
                         pRazuunAI->setCanEnterCombat(false);
                         pRazuunAI->SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
                         pRazuunAI->setRooted(true);
                     }
-                    _unit->SetStandState(STANDSTATE_KNEEL);
-                    _unit->Emote(EMOTE_ONESHOT_TALK);
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Everything is in readiness, warbringer.");
+                    getCreature()->SetStandState(STANDSTATE_KNEEL);
+                    getCreature()->Emote(EMOTE_ONESHOT_TALK);
+                    getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Everything is in readiness, warbringer.");
                     mJovaanPhase = 1;
                     _resetTimer(mJovaanTimer, 6000);
                 }
                 break;
                 case 1:
                 {
-                    _unit->Emote(EMOTE_ONESHOT_TALK);
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Warbringer, that will require the use of all the hold's infernals. It may leave us vulnerable to a counterattack.");
+                    getCreature()->Emote(EMOTE_ONESHOT_TALK);
+                    getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Warbringer, that will require the use of all the hold's infernals. It may leave us vulnerable to a counterattack.");
                     mJovaanPhase = 2;
                     _resetTimer(mJovaanTimer, 11000);
                 }
                 break;
                 case 2:
                 {
-                    _unit->SetStandState(STANDSTATE_STAND);
+                    getCreature()->SetStandState(STANDSTATE_STAND);
                     mJovaanPhase = 3;
                     _resetTimer(mJovaanTimer, 1000);
                 }
                 break;
                 case 3:
                 {
-                    _unit->Emote(EMOTE_ONESHOT_SALUTE);
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "It shall be as you say, warbringer. One last question, if I may...");
+                    getCreature()->Emote(EMOTE_ONESHOT_SALUTE);
+                    getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "It shall be as you say, warbringer. One last question, if I may...");
                     mJovaanPhase = 4;
                     _resetTimer(mJovaanTimer, 10000);
                 }
                 break;
                 case 4:
                 {
-                    _unit->Emote(EMOTE_ONESHOT_QUESTION);
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "What's in the crate?");
+                    getCreature()->Emote(EMOTE_ONESHOT_QUESTION);
+                    getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "What's in the crate?");
                     mJovaanPhase = 5;
                     _resetTimer(mJovaanTimer, 10000);
                 }
                 break;
                 case 5:
                 {
-                    _unit->Emote(EMOTE_ONESHOT_SALUTE);
+                    getCreature()->Emote(EMOTE_ONESHOT_SALUTE);
                     mJovaanPhase = -1;
                     _removeTimer(mJovaanTimer);
                 }
@@ -158,7 +158,7 @@ public:
             case 3:
             {
                 RegisterAIUpdateEvent(1000);
-                _unit->Emote(EMOTE_ONESHOT_POINT);
+                getCreature()->Emote(EMOTE_ONESHOT_POINT);
                 mJovaanPhase = 0;
                 mJovaanTimer = _addTimer(1500);
             }
@@ -198,32 +198,32 @@ public:
             {
                 case 0:
                 {
-                    _unit->Emote(EMOTE_ONESHOT_TALK);
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Doom Lord Kazzak will be pleased. You are to increase the pace of your attacks. Destroy the orcish and dwarven strongholds with all haste.");
+                    getCreature()->Emote(EMOTE_ONESHOT_TALK);
+                    getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Doom Lord Kazzak will be pleased. You are to increase the pace of your attacks. Destroy the orcish and dwarven strongholds with all haste.");
                     mRazuunPhase = 1;
                     _resetTimer(mRazuunTimer, 9000);
                 }
                 break;
                 case 1:
                 {
-                    _unit->Emote(EMOTE_ONESHOT_TALK);
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Don't worry about that. I've increased production at the Deathforge. You'll have all the infernals you need to carry out your orders. Don't fail, Jovaan.");
+                    getCreature()->Emote(EMOTE_ONESHOT_TALK);
+                    getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Don't worry about that. I've increased production at the Deathforge. You'll have all the infernals you need to carry out your orders. Don't fail, Jovaan.");
                     mRazuunPhase = 2;
                     _resetTimer(mRazuunTimer, 15000);
                 }
                 break;
                 case 2:
                 {
-                    _unit->Emote(EMOTE_ONESHOT_QUESTION);
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Yes?");
+                    getCreature()->Emote(EMOTE_ONESHOT_QUESTION);
+                    getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Yes?");
                     mRazuunPhase = 3;
                     _resetTimer(mRazuunTimer, 8000);
                 }
                 break;
                 case 3:
                 {
-                    _unit->Emote(EMOTE_ONESHOT_QUESTION);
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Crate? I didn't send you a crate, Jovaan. Don't you have more important things to worry about? Go see to them!");
+                    getCreature()->Emote(EMOTE_ONESHOT_QUESTION);
+                    getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Crate? I didn't send you a crate, Jovaan. Don't you have more important things to worry about? Go see to them!");
                     mRazuunPhase = 4;
                     _resetTimer(mRazuunTimer, 5000);
                 }
@@ -301,9 +301,9 @@ public:
     MOONSCRIPT_FACTORY_FUNCTION(EnslavedNetherwingDrakeAI, MoonScriptCreatureAI);
     EnslavedNetherwingDrakeAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
-        Movement::LocationWithFlag WayPoint = { _unit->GetPositionX(), _unit->GetPositionY() + 30, _unit->GetPositionZ() + 100, _unit->GetOrientation(), Movement::WP_MOVE_TYPE_FLY };
+        Movement::LocationWithFlag WayPoint = { getCreature()->GetPositionX(), getCreature()->GetPositionY() + 30, getCreature()->GetPositionZ() + 100, getCreature()->GetOrientation(), Movement::WP_MOVE_TYPE_FLY };
         setRooted(true);
-        _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH | UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH | UNIT_FLAG_NOT_ATTACKABLE_2);
         AddWaypoint(CreateWaypoint(1, 0, WayPoint.wp_flag, WayPoint.wp_location));
     }
 

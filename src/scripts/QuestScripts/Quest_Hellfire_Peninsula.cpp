@@ -228,9 +228,9 @@ public:
 
     void OnLoad()
     {
-        _unit->SetStandState(STANDSTATE_SIT);
-        _unit->setDeathState(CORPSE);
-        _unit->GetAIInterface()->m_canMove = false;
+        getCreature()->SetStandState(STANDSTATE_SIT);
+        getCreature()->setDeathState(CORPSE);
+        getCreature()->GetAIInterface()->m_canMove = false;
     }
 };
 
@@ -244,7 +244,7 @@ public:
     AncestralSpiritWolf(Creature* c) : CreatureAIScript(c) {}
     void OnLoad()
     {
-        _unit->CastSpell(_unit, 29938, false);
+        getCreature()->CastSpell(getCreature(), 29938, false);
     }
 };
 
@@ -259,9 +259,9 @@ public:
 
     void OnLoad()
     {
-        _unit->SetStandState(STANDSTATE_DEAD);
-        _unit->setDeathState(CORPSE);
-        _unit->GetAIInterface()->m_canMove = false;
+        getCreature()->SetStandState(STANDSTATE_DEAD);
+        getCreature()->setDeathState(CORPSE);
+        getCreature()->GetAIInterface()->m_canMove = false;
     }
 };
 

@@ -33,12 +33,12 @@ public:
     void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
     {
         // If Balos Jacken HP - fAmount < 20%
-        if (_unit->getUInt32Value(UNIT_FIELD_HEALTH) - fAmount <= _unit->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.2f)
+        if (getCreature()->getUInt32Value(UNIT_FIELD_HEALTH) - fAmount <= getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.2f)
         {
             //Missing: modify fAmount to prevent Balos Jacken death.
             //{...}
             //force player to loose target and stop melee auto-attack:
-            _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             //start AIUpdate
             RegisterAIUpdateEvent(1000);
         }
@@ -49,25 +49,25 @@ public:
         if (friendlyTimer == BALOS_FRIENDLY_TIMER)
         {
             // set Balos Jacken friendly and start friendlyTimer cooldown
-            _unit->RemoveNegativeAuras();
-            _unit->SetFaction(35);
-            _unit->SetHealthPct(100);
-            _unit->GetAIInterface()->WipeTargetList();
-            _unit->GetAIInterface()->WipeHateList();
-            _unit->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, _unit, 0);
+            getCreature()->RemoveNegativeAuras();
+            getCreature()->SetFaction(35);
+            getCreature()->SetHealthPct(100);
+            getCreature()->GetAIInterface()->WipeTargetList();
+            getCreature()->GetAIInterface()->WipeHateList();
+            getCreature()->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
             _setMeleeDisabled(true);
-            _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
+            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             //remove not_selectable flag:
-            _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
             // decrease timer
             friendlyTimer--;
         }
         else if (friendlyTimer == 0)
         {
             // set Balos Jacken unfriendly and reset FriendlyTimer
-            _unit->SetFaction(14);
+            getCreature()->SetFaction(14);
             _setMeleeDisabled(false);
-            _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
+            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
             friendlyTimer = BALOS_FRIENDLY_TIMER;
             RemoveAIUpdateEvent();
         }
@@ -94,7 +94,7 @@ public:
 
     void OnLoad()
     {
-        _unit->SetStandState(STANDSTATE_STAND);
+        getCreature()->SetStandState(STANDSTATE_STAND);
     }
 
     void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
@@ -102,13 +102,13 @@ public:
         uint32 chance = RandomUInt(100);
         if (chance < 25)
         {
-            _unit->CastSpell(mAttacker, sSpellCustomizations.GetSpellInfo(6749), true);
+            getCreature()->CastSpell(mAttacker, sSpellCustomizations.GetSpellInfo(6749), true);
         }
-        if (_unit->getUInt32Value(UNIT_FIELD_HEALTH) - fAmount <= _unit->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.3f)
+        if (getCreature()->getUInt32Value(UNIT_FIELD_HEALTH) - fAmount <= getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.3f)
         {
             if (mAttacker->IsPlayer())
             {
-                _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 RegisterAIUpdateEvent(1000);
                 QuestLogEntry* qle = (static_cast<Player*>(mAttacker))->GetQuestLogForEntry(1173);
                 if (!qle)
@@ -120,15 +120,15 @@ public:
 
     void AIUpdate()
     {
-        _unit->RemoveNegativeAuras();
-        _unit->SetFaction(29);
-        _unit->SetHealthPct(100);
-        _unit->GetAIInterface()->WipeTargetList();
-        _unit->GetAIInterface()->WipeHateList();
-        _unit->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, _unit, 0);
+        getCreature()->RemoveNegativeAuras();
+        getCreature()->SetFaction(29);
+        getCreature()->SetHealthPct(100);
+        getCreature()->GetAIInterface()->WipeTargetList();
+        getCreature()->GetAIInterface()->WipeHateList();
+        getCreature()->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
         _setMeleeDisabled(true);
-        _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-        _unit->setUInt32Value(UNIT_FIELD_FLAGS, 0);
+        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, 0);
     }
 };
 
@@ -165,17 +165,17 @@ public:
 
     void OnLoad()
     {
-        _unit->SetFaction(12);
-        _unit->SetStandState(STANDSTATE_STAND);
+        getCreature()->SetFaction(12);
+        getCreature()->SetStandState(STANDSTATE_STAND);
     }
 
     void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
     {
-        if (_unit->getUInt32Value(UNIT_FIELD_HEALTH) - fAmount <= _unit->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.37f)
+        if (getCreature()->getUInt32Value(UNIT_FIELD_HEALTH) - fAmount <= getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.37f)
         {
             if (mAttacker->IsPlayer())
             {
-                _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 RegisterAIUpdateEvent(1000);
                 QuestLogEntry* qle = (static_cast<Player*>(mAttacker))->GetQuestLogForEntry(1324);
                 if (!qle)
@@ -187,16 +187,16 @@ public:
 
     void AIUpdate()
     {
-        _unit->Emote(EMOTE_STATE_KNEEL);
-        _unit->RemoveNegativeAuras();
-        _unit->SetFaction(12);
-        _unit->SetHealthPct(100);
-        _unit->GetAIInterface()->WipeTargetList();
-        _unit->GetAIInterface()->WipeHateList();
-        _unit->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, _unit, 0);
+        getCreature()->Emote(EMOTE_STATE_KNEEL);
+        getCreature()->RemoveNegativeAuras();
+        getCreature()->SetFaction(12);
+        getCreature()->SetHealthPct(100);
+        getCreature()->GetAIInterface()->WipeTargetList();
+        getCreature()->GetAIInterface()->WipeHateList();
+        getCreature()->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
         _setMeleeDisabled(true);
-        _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-        _unit->setUInt32Value(UNIT_FIELD_FLAGS, 0);
+        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, 0);
     }
 };
 

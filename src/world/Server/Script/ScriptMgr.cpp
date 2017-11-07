@@ -520,7 +520,7 @@ bool ScriptMgr::CallScriptedItem(Item* pItem, Player* pPlayer)
 }
 
 /* CreatureAI Stuff */
-CreatureAIScript::CreatureAIScript(Creature* creature) : _unit(creature), linkedCreatureAI(nullptr), mDespawnWhenInactive(false)
+CreatureAIScript::CreatureAIScript(Creature* creature) : _creature(creature), linkedCreatureAI(nullptr), mDespawnWhenInactive(false)
 {
     mCreatureTimerIds.clear();
 }
@@ -550,24 +550,24 @@ void CreatureAIScript::_internalOnDiedCleanup()
 // player
 Player* CreatureAIScript::getNearestPlayer()
 {
-    return _unit->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ());
+    return _creature->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(_creature->GetPositionX(), _creature->GetPositionY(), _creature->GetPositionZ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // creature
 Creature* CreatureAIScript::getNearestCreature(uint32_t entry)
 {
-    return getNearestCreature(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), entry);
+    return getNearestCreature(_creature->GetPositionX(), _creature->GetPositionY(), _creature->GetPositionZ(), entry);
 }
 
 Creature* CreatureAIScript::getNearestCreature(float posX, float posY, float posZ, uint32_t entry)
 {
-    return _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(posX, posY, posZ, entry);
+    return _creature->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(posX, posY, posZ, entry);
 }
 
 float CreatureAIScript::getRangeToObject(Object* object)
 {
-    return _unit->CalcDistance(object);
+    return _creature->CalcDistance(object);
 }
 
 Creature* CreatureAIScript::spawnCreature(uint32_t entry, LocationVector pos, uint32_t factionId /*= 0*/)
@@ -584,7 +584,7 @@ Creature* CreatureAIScript::spawnCreature(uint32_t entry, float posX, float posY
         return nullptr;
     }
 
-    Creature* creature = _unit->GetMapMgr()->GetInterface()->SpawnCreature(entry, posX, posY, posZ, posO, true, true, 0, 0);
+    Creature* creature = _creature->GetMapMgr()->GetInterface()->SpawnCreature(entry, posX, posY, posZ, posO, true, true, 0, 0);
     if (creature == nullptr)
         return nullptr;
 
@@ -598,55 +598,55 @@ Creature* CreatureAIScript::spawnCreature(uint32_t entry, float posX, float posY
 
 void CreatureAIScript::despawn(uint32_t delay /*= 2000*/, uint32_t respawnTime /*= 0*/)
 {
-    _unit->Despawn(delay, respawnTime);
+    _creature->Despawn(delay, respawnTime);
 }
 
 bool CreatureAIScript::isAlive()
 {
-    return _unit->isAlive();
+    return _creature->isAlive();
 }
 
 void CreatureAIScript::setAIAgent(AI_Agent agent)
 {
     if (agent <= AGENT_CALLFORHELP)
-        _unit->GetAIInterface()->setCurrentAgent(agent);
+        _creature->GetAIInterface()->setCurrentAgent(agent);
 }
 
 uint8_t CreatureAIScript::getAIAgent()
 {
-    return _unit->GetAIInterface()->getCurrentAgent();
+    return _creature->GetAIInterface()->getCurrentAgent();
 }
 
 void CreatureAIScript::setRooted(bool set)
 {
-    _unit->setMoveRoot(set);
+    _creature->setMoveRoot(set);
 }
 
 void CreatureAIScript::setFlyMode(bool fly)
 {
-    if (fly && !_unit->GetAIInterface()->isFlying())
+    if (fly && !_creature->GetAIInterface()->isFlying())
     {
-        _unit->setMoveCanFly(true);
-        _unit->GetAIInterface()->setSplineFlying();
+        _creature->setMoveCanFly(true);
+        _creature->GetAIInterface()->setSplineFlying();
     }
-    else if (!fly && _unit->GetAIInterface()->isFlying())
+    else if (!fly && _creature->GetAIInterface()->isFlying())
     {
-        _unit->setMoveCanFly(false);
-        _unit->GetAIInterface()->unsetSplineFlying();
+        _creature->setMoveCanFly(false);
+        _creature->GetAIInterface()->unsetSplineFlying();
     }
 }
 
 bool CreatureAIScript::isRooted()
 {
-    return _unit->GetAIInterface()->m_canMove;
+    return _creature->GetAIInterface()->m_canMove;
 }
 
 void CreatureAIScript::moveTo(float posX, float posY, float posZ, bool setRun /*= true*/)
 {
     if (setRun)
-        _unit->GetAIInterface()->setWalkMode(WALKMODE_RUN);
+        _creature->GetAIInterface()->setWalkMode(WALKMODE_RUN);
 
-    _unit->GetAIInterface()->MoveTo(posX, posY, posZ);
+    _creature->GetAIInterface()->MoveTo(posX, posY, posZ);
 }
 
 void CreatureAIScript::moveToUnit(Unit* unit)
@@ -657,13 +657,13 @@ void CreatureAIScript::moveToUnit(Unit* unit)
 
 void CreatureAIScript::moveToSpawn()
 {
-    LocationVector spawnPos = _unit->GetSpawnPosition();
-    _unit->GetAIInterface()->sendSplineMoveToPoint(spawnPos);
+    LocationVector spawnPos = _creature->GetSpawnPosition();
+    _creature->GetAIInterface()->sendSplineMoveToPoint(spawnPos);
 }
 
 void CreatureAIScript::stopMovement()
 {
-    _unit->GetAIInterface()->StopMovement(0);
+    _creature->GetAIInterface()->StopMovement(0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -671,7 +671,7 @@ void CreatureAIScript::stopMovement()
 
 Movement::WayPoint* CreatureAIScript::CreateWaypoint(int pId, uint32 pWaittime, uint32 pMoveFlag, Movement::Location pCoords)
 {
-    Movement::WayPoint* wp = _unit->CreateWaypointStruct();
+    Movement::WayPoint* wp = _creature->CreateWaypointStruct();
     wp->id = pId;
     wp->x = pCoords.x;
     wp->y = pCoords.y;
@@ -690,55 +690,55 @@ Movement::WayPoint* CreatureAIScript::CreateWaypoint(int pId, uint32 pWaittime, 
 
 void CreatureAIScript::AddWaypoint(Movement::WayPoint* pWayPoint)
 {
-    _unit->GetAIInterface()->addWayPoint(pWayPoint);
+    _creature->GetAIInterface()->addWayPoint(pWayPoint);
 }
 
 void CreatureAIScript::ForceWaypointMove(uint32 pWaypointId)
 {
     if (canEnterCombat())
-        _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
+        _creature->GetAIInterface()->SetAllowedToEnterCombat(false);
 
     if (isRooted())
         setRooted(false);
 
     stopMovement();
-    _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
+    _creature->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
     SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
     SetWaypointToMove(pWaypointId);
 }
 
 void CreatureAIScript::SetWaypointToMove(uint32 pWaypointId)
 {
-    _unit->GetAIInterface()->setWayPointToMove(pWaypointId);
+    _creature->GetAIInterface()->setWayPointToMove(pWaypointId);
 }
 
 void CreatureAIScript::StopWaypointMovement()
 {
     setAIAgent(AGENT_NULL);
-    _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
+    _creature->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
     SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
     SetWaypointToMove(0);
 }
 
 void CreatureAIScript::SetWaypointMoveType(Movement::WaypointMovementScript wp_move_script_type)
 {
-    _unit->GetAIInterface()->setWaypointScriptType(wp_move_script_type);
+    _creature->GetAIInterface()->setWaypointScriptType(wp_move_script_type);
 
 }
 
 uint32 CreatureAIScript::GetCurrentWaypoint()
 {
-    return _unit->GetAIInterface()->getCurrentWayPointId();
+    return _creature->GetAIInterface()->getCurrentWayPointId();
 }
 
 size_t CreatureAIScript::GetWaypointCount()
 {
-    return _unit->GetAIInterface()->getWayPointsCount();
+    return _creature->GetAIInterface()->getWayPointsCount();
 }
 
 bool CreatureAIScript::HasWaypoints()
 {
-    return _unit->GetAIInterface()->hasWayPoints();
+    return _creature->GetAIInterface()->hasWayPoints();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -746,24 +746,24 @@ bool CreatureAIScript::HasWaypoints()
 
 bool CreatureAIScript::canEnterCombat()
 {
-    return _unit->GetAIInterface()->GetAllowedToEnterCombat();
+    return _creature->GetAIInterface()->GetAllowedToEnterCombat();
 }
 
 void CreatureAIScript::setCanEnterCombat(bool enterCombat)
 {
     //Zyres 10/21/2017 creatures can be attackable even if they can not enter combat... the following line is not correct.
-    _unit->setUInt64Value(UNIT_FIELD_FLAGS, (enterCombat) ? 0 : UNIT_FLAG_NOT_ATTACKABLE_9);
-    _unit->GetAIInterface()->SetAllowedToEnterCombat(enterCombat);
+    _creature->setUInt64Value(UNIT_FIELD_FLAGS, (enterCombat) ? 0 : UNIT_FLAG_NOT_ATTACKABLE_9);
+    _creature->GetAIInterface()->SetAllowedToEnterCombat(enterCombat);
 }
 
 bool CreatureAIScript::_isInCombat()
 {
-    return _unit->CombatStatus.IsInCombat();
+    return _creature->CombatStatus.IsInCombat();
 }
 
 void CreatureAIScript::_delayNextAttack(int32_t milliseconds)
 {
-    _unit->setAttackTimer(milliseconds, false);
+    _creature->setAttackTimer(milliseconds, false);
 }
 
 void CreatureAIScript::_setDespawnWhenInactive(bool setDespawnWhenInactive)
@@ -778,78 +778,78 @@ bool CreatureAIScript::_isDespawnWhenInactiveSet()
 
 void CreatureAIScript::_setMeleeDisabled(bool disable)
 {
-    _unit->GetAIInterface()->setMeleeDisabled(disable);
+    _creature->GetAIInterface()->setMeleeDisabled(disable);
 }
 
 bool CreatureAIScript::_isMeleeDisabled()
 {
-    return _unit->GetAIInterface()->isMeleeDisabled();
+    return _creature->GetAIInterface()->isMeleeDisabled();
 }
 
 void CreatureAIScript::_setRangedDisabled(bool disable)
 {
-    _unit->GetAIInterface()->setRangedDisabled(disable);
+    _creature->GetAIInterface()->setRangedDisabled(disable);
 }
 
 bool CreatureAIScript::_isRangedDisabled()
 {
-    return _unit->GetAIInterface()->isRangedDisabled();
+    return _creature->GetAIInterface()->isRangedDisabled();
 }
 
 void CreatureAIScript::_setCastDisabled(bool disable)
 {
-    _unit->GetAIInterface()->setCastDisabled(disable);
+    _creature->GetAIInterface()->setCastDisabled(disable);
 }
 
 bool CreatureAIScript::_isCastDisabled()
 {
-    return _unit->GetAIInterface()->isCastDisabled();
+    return _creature->GetAIInterface()->isCastDisabled();
 }
 
 void CreatureAIScript::_setTargetingDisabled(bool disable)
 {
-    _unit->GetAIInterface()->setTargetingDisabled(disable);
+    _creature->GetAIInterface()->setTargetingDisabled(disable);
 }
 
 bool CreatureAIScript::_isTargetingDisabled()
 {
-    return _unit->GetAIInterface()->isTargetingDisabled();
+    return _creature->GetAIInterface()->isTargetingDisabled();
 }
 
 void CreatureAIScript::_clearHateList()
 {
-    _unit->GetAIInterface()->ClearHateList();
+    _creature->GetAIInterface()->ClearHateList();
 }
 
 void CreatureAIScript::_wipeHateList()
 {
-    _unit->GetAIInterface()->WipeHateList();
+    _creature->GetAIInterface()->WipeHateList();
 }
 
 int32_t CreatureAIScript::_getHealthPercent()
 {
-    return _unit->GetHealthPct();
+    return _creature->GetHealthPct();
 }
 
 int32_t CreatureAIScript::_getManaPercent()
 {
-    return _unit->GetManaPct();
+    return _creature->GetManaPct();
 }
 
 void CreatureAIScript::_regenerateHealth()
 {
-    _unit->RegenerateHealth();
-    _unit->RegeneratePower(false);
+    _creature->RegenerateHealth();
+    _creature->RegeneratePower(false);
 }
 
 bool CreatureAIScript::_isCasting()
 {
-    return _unit->IsCasting();
+    return _creature->IsCasting();
 }
 
 bool CreatureAIScript::_isHeroic()
 {
-    MapMgr* mapMgr = _unit->GetMapMgr();
+    MapMgr* mapMgr = _creature->GetMapMgr();
     if (mapMgr == nullptr || mapMgr->iInstanceMode != MODE_HEROIC)
         return false;
 
@@ -920,40 +920,40 @@ void CreatureAIScript::_cancelAllTimers()
 
 void CreatureAIScript::_setScale(float scale)
 {
-    _unit->setFloatValue(OBJECT_FIELD_SCALE_X, scale);
+    _creature->setFloatValue(OBJECT_FIELD_SCALE_X, scale);
 }
 
 float CreatureAIScript::_getScale()
 {
-    return _unit->getFloatValue(OBJECT_FIELD_SCALE_X);
+    return _creature->getFloatValue(OBJECT_FIELD_SCALE_X);
 }
 
 void CreatureAIScript::_setDisplayId(uint32_t displayId)
 {
-    _unit->SetDisplayId(displayId);
+    _creature->SetDisplayId(displayId);
 }
 
 void CreatureAIScript::_setWieldWeapon(bool setWieldWeapon)
 {
-    if (setWieldWeapon && _unit->getUInt32Value(UNIT_FIELD_BYTES_2) != 1)
+    if (setWieldWeapon && _creature->getUInt32Value(UNIT_FIELD_BYTES_2) != 1)
     {
-        _unit->setUInt32Value(UNIT_FIELD_BYTES_2, 1);
+        _creature->setUInt32Value(UNIT_FIELD_BYTES_2, 1);
     }
-    else if (!setWieldWeapon && _unit->getUInt32Value(UNIT_FIELD_BYTES_2) != 0)
+    else if (!setWieldWeapon && _creature->getUInt32Value(UNIT_FIELD_BYTES_2) != 0)
     {
-        _unit->setUInt32Value(UNIT_FIELD_BYTES_2, 0);
+        _creature->setUInt32Value(UNIT_FIELD_BYTES_2, 0);
     }
 }
 
 void CreatureAIScript::_setDisplayWeapon(bool setMainHand, bool setOffHand)
 {
-    _setDisplayWeaponIds(setMainHand ? _unit->GetEquippedItem(MELEE) : 0, setOffHand ? _unit->GetEquippedItem(OFFHAND) : 0);
+    _setDisplayWeaponIds(setMainHand ? _creature->GetEquippedItem(MELEE) : 0, setOffHand ? _creature->GetEquippedItem(OFFHAND) : 0);
 }
 
 void CreatureAIScript::_setDisplayWeaponIds(uint32_t itemId1, uint32_t itemId2)
 {
-    _unit->SetEquippedItem(MELEE, itemId1);
-    _unit->SetEquippedItem(OFFHAND, itemId2);
+    _creature->SetEquippedItem(MELEE, itemId1);
+    _creature->SetEquippedItem(OFFHAND, itemId2);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -961,22 +961,22 @@ void CreatureAIScript::_setDisplayWeaponIds(uint32_t itemId1, uint32_t itemId2)
 
 void CreatureAIScript::_applyAura(uint32_t spellId)
 {
-    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(spellId), true);
+    _creature->CastSpell(_creature, sSpellCustomizations.GetSpellInfo(spellId), true);
 }
 
 void CreatureAIScript::_removeAura(uint32_t spellId)
 {
-    _unit->RemoveAura(spellId);
+    _creature->RemoveAura(spellId);
 }
 
 void CreatureAIScript::_removeAllAuras()
 {
-    _unit->RemoveAllAuras();
+    _creature->RemoveAllAuras();
 }
 
 void CreatureAIScript::_removeAuraOnPlayers(uint32_t spellId)
 {
-    for (auto object : *_unit->GetInRangePlayerSet())
+    for (auto object : *_creature->GetInRangePlayerSet())
     {
         if (object != nullptr)
             static_cast<Player*>(object)->RemoveAura(spellId);
@@ -985,22 +985,22 @@ void CreatureAIScript::_removeAuraOnPlayers(uint32_t spellId)
 
 void CreatureAIScript::_castOnInrangePlayers(uint32_t spellId, bool triggered)
 {
-    for (auto object : *_unit->GetInRangePlayerSet())
+    for (auto object : *_creature->GetInRangePlayerSet())
     {
         if (object != nullptr)
-            _unit->CastSpell(static_cast<Player*>(object), spellId, triggered);
+            _creature->CastSpell(static_cast<Player*>(object), spellId, triggered);
     }
 }
 
 void CreatureAIScript::_castOnInrangePlayersWithinDist(float minDistance, float maxDistance, uint32_t spellId, bool triggered)
 {
-    for (auto object : *_unit->GetInRangePlayerSet())
+    for (auto object : *_creature->GetInRangePlayerSet())
     {
         if (object != nullptr)
         {
-            float distanceToPlayer = object->GetDistance2dSq(this->GetUnit());
+            float distanceToPlayer = object->GetDistance2dSq(this->getCreature());
             if (distanceToPlayer >= minDistance && distanceToPlayer <= maxDistance)
-                _unit->CastSpell(static_cast<Player*>(object), spellId, triggered);
+                _creature->CastSpell(static_cast<Player*>(object), spellId, triggered);
         }
     }
 }
@@ -1010,12 +1010,12 @@ void CreatureAIScript::_castOnInrangePlayersWithinDist(float minDistance, float 
 
 GameObject* CreatureAIScript::getNearestGameObject(uint32_t entry)
 {
-    return getNearestGameObject(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), entry);
+    return getNearestGameObject(_creature->GetPositionX(), _creature->GetPositionY(), _creature->GetPositionZ(), entry);
 }
 
 GameObject* CreatureAIScript::getNearestGameObject(float posX, float posY, float posZ, uint32_t entry)
 {
-    return _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(posX, posY, posZ, entry);
+    return _creature->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(posX, posY, posZ, entry);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1024,15 +1024,15 @@ GameObject* CreatureAIScript::getNearestGameObject(float posX, float posY, float
 void CreatureAIScript::sendChatMessage(uint8_t type, uint32_t soundId, std::string text)
 {
     if (text.empty() == false)
-        _unit->SendChatMessage(type, LANG_UNIVERSAL, text.c_str());
+        _creature->SendChatMessage(type, LANG_UNIVERSAL, text.c_str());
 
     if (soundId > 0)
-        _unit->PlaySoundToSet(soundId);
+        _creature->PlaySoundToSet(soundId);
 }
 
 void CreatureAIScript::sendDBChatMessage(uint32_t textId)
 {
-    _unit->SendScriptTextChatMessage(textId);
+    _creature->SendScriptTextChatMessage(textId);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1040,24 +1040,24 @@ void CreatureAIScript::sendDBChatMessage(uint32_t textId)
 
 InstanceScript* CreatureAIScript::getInstanceScript()
 {
-    MapMgr* mapMgr = _unit->GetMapMgr();
+    MapMgr* mapMgr = _creature->GetMapMgr();
     return (mapMgr) ? mapMgr->GetScript() : nullptr;
 }
 
 void CreatureAIScript::RegisterAIUpdateEvent(uint32 frequency)
 {
     //sEventMgr.AddEvent(_unit, &Creature::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, frequency, 0,0);
-    sEventMgr.AddEvent(_unit, &Creature::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, frequency, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(_creature, &Creature::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, frequency, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void CreatureAIScript::ModifyAIUpdateEvent(uint32 newfrequency)
 {
-    sEventMgr.ModifyEventTimeAndTimeLeft(_unit, EVENT_SCRIPT_UPDATE_EVENT, newfrequency);
+    sEventMgr.ModifyEventTimeAndTimeLeft(_creature, EVENT_SCRIPT_UPDATE_EVENT, newfrequency);
 }
 
 void CreatureAIScript::RemoveAIUpdateEvent()
 {
-    sEventMgr.RemoveEvents(_unit, EVENT_SCRIPT_UPDATE_EVENT);
+    sEventMgr.RemoveEvents(_creature, EVENT_SCRIPT_UPDATE_EVENT);
 }
 
 void CreatureAIScript::LinkedCreatureDeleted()

@@ -268,8 +268,8 @@ class VHCreatureAI : public MoonScriptCreatureAI
             {
                 AddWaypoint(CreateWaypoint(i, 0, AttackerWP[i].wp_flag, AttackerWP[i].wp_location));
             }
-            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I am alive!");
+            getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
+            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I am alive!");
         }
 
         void OnReachWP(uint32 iWaypointId, bool bForwards)
@@ -277,15 +277,15 @@ class VHCreatureAI : public MoonScriptCreatureAI
             switch (iWaypointId)
             {
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Reached wp 1!");
+                    getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Reached wp 1!");
                     SetWaypointToMove(2);
                     break;
                 case 2:
                 {
                     if (m_isIntroMob)
                     {
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Reached wp 2!");
-                        _unit->Despawn(500, 0);
+                        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Reached wp 2!");
+                        getCreature()->Despawn(500, 0);
                     }
                     else
                     {
@@ -299,7 +299,7 @@ class VHCreatureAI : public MoonScriptCreatureAI
         void OnCombatStart(Unit* mTarget)
         {
             PutAllSpellsOnCooldown();
-            RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
+            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
         void PutAllSpellsOnCooldown()
@@ -316,7 +316,7 @@ class VHCreatureAI : public MoonScriptCreatureAI
         {
             PutAllSpellsOnCooldown();
             setAIAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -333,7 +333,7 @@ class VHCreatureAI : public MoonScriptCreatureAI
     
         void SpellCast(float randomValue)
         {
-            if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+            if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
@@ -349,25 +349,25 @@ class VHCreatureAI : public MoonScriptCreatureAI
                         }
 
                         m_spells[i].casttime = m_spells[i].cooldown;
-                        target = _unit->GetAIInterface()->getNextTarget();
+                        target = getCreature()->GetAIInterface()->getNextTarget();
                         switch (m_spells[i].targettype)
                         {
                         case TARGET_SELF:
                         case TARGET_VARIOUS:
-                            _unit->CastSpell(_unit, m_spells[i].info, m_spells[i].instant);
+                            getCreature()->CastSpell(getCreature(), m_spells[i].info, m_spells[i].instant);
                             break;
                         case TARGET_ATTACKING:
-                            _unit->CastSpell(target, m_spells[i].info, m_spells[i].instant);
+                            getCreature()->CastSpell(target, m_spells[i].info, m_spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPosition(), m_spells[i].info, m_spells[i].instant);
+                            getCreature()->CastSpellAoF(target->GetPosition(), m_spells[i].info, m_spells[i].instant);
                             break;
                         }
 
                         if (m_spells[i].speech != "")
                         {
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, m_spells[i].speech.c_str());
-                            _unit->PlaySoundToSet(m_spells[i].soundid);
+                            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, m_spells[i].speech.c_str());
+                            getCreature()->PlaySoundToSet(m_spells[i].soundid);
                         }
 
                         m_spellsEnabled[i] = false;
@@ -376,7 +376,7 @@ class VHCreatureAI : public MoonScriptCreatureAI
 
                     if ((randomValue > comulativeperc && randomValue <= (comulativeperc + m_spells[i].perctrigger)) || !m_spells[i].casttime)
                     {
-                        _unit->setAttackTimer(m_spells[i].attackstoptimer, false);
+                        getCreature()->setAttackTimer(m_spells[i].attackstoptimer, false);
                         m_spellsEnabled[i] = true;
                     }
                     comulativeperc += m_spells[i].perctrigger;

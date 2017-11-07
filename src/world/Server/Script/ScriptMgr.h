@@ -467,6 +467,16 @@ class SERVER_DECL CreatureAIScript
         void sendDBChatMessage(uint32_t textId);
 
         //////////////////////////////////////////////////////////////////////////////////////////
+        // basic
+    private:
+
+        Creature* _creature;
+
+    public:
+
+        Creature* getCreature() { return _creature; }
+
+        //////////////////////////////////////////////////////////////////////////////////////////
         // instance
 
         InstanceScript* getInstanceScript();
@@ -478,15 +488,12 @@ class SERVER_DECL CreatureAIScript
         void RemoveAIUpdateEvent();
 
         virtual void Destroy() { delete this; }
-        Creature* GetUnit() { return _unit; }
 
         CreatureAIScript* GetLinkedCreature() { return linkedCreatureAI; }
         void SetLinkedCreature(CreatureAIScript* creatureAI);
         void LinkedCreatureDeleted();
 
     protected:
-
-        Creature* _unit;
 
         bool mDespawnWhenInactive;
 

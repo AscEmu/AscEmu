@@ -250,8 +250,8 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(mogorQAI);
     mogorQAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
-        _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
     };
 
 };
@@ -265,7 +265,7 @@ public:
     void OnCombatStart(Unit* mTarget)
     {
         RegisterAIUpdateEvent(1000);
-        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "In Nagrand, food hunt ogre!");
+        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "In Nagrand, food hunt ogre!");
     };
 
     void OnCombatStop()
@@ -280,25 +280,25 @@ public:
 
     void OnLoad()
     {
-        _unit->SetFaction(14);
+        getCreature()->SetFaction(14);
         RemoveAIUpdateEvent();
     };
 
     void AIUpdate()
     {
-        if (_unit->GetHealthPct() < 30)
+        if (getCreature()->GetHealthPct() < 30)
         {
-            Unit* pUnit = _unit->GetAIInterface()->GetMostHated();
+            Unit* pUnit = getCreature()->GetAIInterface()->GetMostHated();
             if (pUnit != nullptr && pUnit->IsPlayer())
                 static_cast<Player*>(pUnit)->EventAttackStop();
 
-            _unit->SetFaction(35);
-            _unit->GetAIInterface()->WipeHateList();
-            _unit->GetAIInterface()->WipeTargetList();
-            _unit->SetStandState(STANDSTATE_SIT);
-            _unit->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+            getCreature()->SetFaction(35);
+            getCreature()->GetAIInterface()->WipeHateList();
+            getCreature()->GetAIInterface()->WipeTargetList();
+            getCreature()->SetStandState(STANDSTATE_SIT);
+            getCreature()->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
 
-            _unit->Despawn(180000, 0);
+            getCreature()->Despawn(180000, 0);
 
             RemoveAIUpdateEvent();
         };

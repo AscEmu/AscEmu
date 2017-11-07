@@ -110,7 +110,7 @@ class AttumenTheHuntsmanAI : public MoonScriptBossAI
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 9168, "Come Midnight, let's disperse this petty rabble!");
                 MoonScriptBossAI* midnight = static_cast<MoonScriptBossAI*>(GetLinkedCreature());
                 midnight->SetPhase(2);
-                midnight->moveToUnit(_unit);
+                midnight->moveToUnit(getCreature());
                 midnight->_setMeleeDisabled(false);
             }
         }
@@ -148,7 +148,7 @@ class MidnightAI : public MoonScriptBossAI
             if (GetLinkedCreature() == NULL && _getHealthPercent() <= 95 && !_isCasting())
             {
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "Midnight calls for her master!");
-                CreatureAIScript* attumen = SpawnCreature(CN_ATTUMEN, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), false);
+                CreatureAIScript* attumen = SpawnCreature(CN_ATTUMEN, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), false);
                 if (attumen != NULL)
                 {
                     SetLinkedCreature(attumen);
@@ -159,7 +159,7 @@ class MidnightAI : public MoonScriptBossAI
             {
                 SetPhase(2);
                 MoonScriptBossAI* attumen = static_cast<MoonScriptBossAI*>(GetLinkedCreature());
-                moveToUnit(attumen->GetUnit());
+                moveToUnit(attumen->getCreature());
                 _setMeleeDisabled(false);
                 attumen->SetPhase(2);
                 attumen->_setMeleeDisabled(false);
@@ -172,7 +172,7 @@ class MidnightAI : public MoonScriptBossAI
             if (GetLinkedCreature() && GetLinkedCreature()->isAlive())
             {
                 MoonScriptBossAI* attumen = static_cast<MoonScriptBossAI*>(GetLinkedCreature());
-                if (attumen && getRangeToObject(attumen->GetUnit()) <= 15)
+                if (attumen && getRangeToObject(attumen->getCreature()) <= 15)
                 {
                     attumen->_regenerateHealth();
                     attumen->_setDisplayId(16040);
@@ -183,7 +183,7 @@ class MidnightAI : public MoonScriptBossAI
                     return;
                 }
                 else
-                    moveToUnit(attumen->GetUnit());
+                    moveToUnit(attumen->getCreature());
             }
         }
         ParentClass::AIUpdate();
@@ -388,15 +388,15 @@ public:
     void OnCombatStop(Unit* mTarget)
     {
         setAIAgent(AGENT_NULL);
-        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
 
     void OnDied(Unit* mKiller)
     {
         ///\todo not in db
-        _unit->PlaySoundToSet(9275);
-        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Aarrhhh.");
+        getCreature()->PlaySoundToSet(9275);
+        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Aarrhhh.");
 
         GameObject* DoorLeftO = getNearestGameObject(-10917.1445f, -1774.05f, 90.478f, 184279);
         GameObject* DoorRightO = getNearestGameObject(-10872.195f, -1779.42f, 90.45f, 184278);
@@ -421,7 +421,7 @@ public:
         }
         else if (!m_threattimer)
         {
-            _unit->GetAIInterface()->taunt(RTarget, false);
+            getCreature()->GetAIInterface()->taunt(RTarget, false);
             ThreatAdd = false;
             m_threattimer = 19;
         }
@@ -432,7 +432,7 @@ public:
 
     void SpellCast(float val)
     {
-        if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
         {
             float comulativeperc = 0;
             Unit* target = NULL;
@@ -442,25 +442,25 @@ public:
 
                 if (m_spellcheck[i])
                 {
-                    target = _unit->GetAIInterface()->getNextTarget();
+                    target = getCreature()->GetAIInterface()->getNextTarget();
                     switch (spells[i].targettype)
                     {
                         case TARGET_SELF:
                         case TARGET_VARIOUS:
-                            _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
                             break;
                         case TARGET_ATTACKING:
-                            _unit->CastSpell(target, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
+                            getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                         case TARGET_RANDOM_SINGLE:
                         {
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Red Riding Hood cast");
+                            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Red Riding Hood cast");
                             std::vector<Player* > TargetTable;
-                            for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin();
-                                itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+                            for (std::set< Object* >::iterator itr = getCreature()->GetInRangePlayerSetBegin();
+                                itr != getCreature()->GetInRangePlayerSetEnd(); ++itr)
                             {
                                 Player* RandomTarget = NULL;
                                 RandomTarget = static_cast<Player*>(*itr);
@@ -478,8 +478,8 @@ public:
                             if (!RTarget)
                                 return;
 
-                            _unit->CastSpell(RTarget, spells[2].info, spells[2].instant);
-                            _unit->GetAIInterface()->taunt(RTarget, true);
+                            getCreature()->CastSpell(RTarget, spells[2].info, spells[2].instant);
+                            getCreature()->GetAIInterface()->taunt(RTarget, true);
                             ThreatAdd = true;
                             m_threattimer = 19;
                         }
@@ -488,8 +488,8 @@ public:
 
                     if (spells[i].speech != "")
                     {
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
-                        _unit->PlaySoundToSet(spells[i].soundid);
+                        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
+                        getCreature()->PlaySoundToSet(spells[i].soundid);
                     }
 
                     m_spellcheck[i] = false;
@@ -499,7 +499,7 @@ public:
                 uint32 t = (uint32)time(NULL);
                 if (val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger) && t > spells[i].casttime)
                 {
-                    _unit->setAttackTimer(spells[i].attackstoptimer, false);
+                    getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
                     spells[i].casttime = t + spells[i].cooldown;
                     m_spellcheck[i] = true;
                 }
@@ -585,7 +585,7 @@ public:
 
         CastTime();
         setAIAgent(AGENT_NULL);
-        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
 
@@ -606,14 +606,14 @@ public:
             Curtain->SetState(GO_STATE_OPEN);
 
         CastTime();
-        _unit->PlaySoundToSet(9275);
-        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "AArrhhh.");
+        getCreature()->PlaySoundToSet(9275);
+        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "AArrhhh.");
     }
 
     void OnTargetDied(Unit* mTarget)
     {
-        _unit->PlaySoundToSet(9277);
-        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Mmmm... delicious.");
+        getCreature()->PlaySoundToSet(9277);
+        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Mmmm... delicious.");
     }
 
     void AIUpdate()
@@ -630,7 +630,7 @@ public:
 
     void SpellCast(float val)
     {
-        if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
         {
             float comulativeperc = 0;
             Unit* target = NULL;
@@ -641,25 +641,25 @@ public:
                 if (m_spellcheck[i])
                 {
                     spells[i].casttime = spells[i].cooldown;
-                    target = _unit->GetAIInterface()->getNextTarget();
+                    target = getCreature()->GetAIInterface()->getNextTarget();
                     switch (spells[i].targettype)
                     {
                         case TARGET_SELF:
                         case TARGET_VARIOUS:
-                            _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
                             break;
                         case TARGET_ATTACKING:
-                            _unit->CastSpell(target, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
+                            getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                     }
 
                     if (spells[i].speech != "")
                     {
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
-                        _unit->PlaySoundToSet(spells[i].soundid);
+                        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
+                        getCreature()->PlaySoundToSet(spells[i].soundid);
                     }
 
                     m_spellcheck[i] = false;
@@ -668,7 +668,7 @@ public:
 
                 if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
                 {
-                    _unit->setAttackTimer(spells[i].attackstoptimer, false);
+                    getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
                     m_spellcheck[i] = true;
                 }
                 comulativeperc += spells[i].perctrigger;
@@ -778,11 +778,11 @@ public:
         AddWaypoint(CreateWaypoint(3, 0, Movement::WP_MOVE_TYPE_WALK, Barnes[3]));
         AddWaypoint(CreateWaypoint(4, 0, Movement::WP_MOVE_TYPE_WALK, Barnes[4]));
 
-        _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         setAIAgent(AGENT_NULL);
-        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
-        WayStartBBW[_unit->GetInstanceID()] = 1;
+        WayStartBBW[getCreature()->GetInstanceID()] = 1;
 
         eventRand = 0;
         switch (RandomUInt(2))
@@ -805,18 +805,18 @@ public:
         {
             case 0:
             {
-                _unit->GetAIInterface()->setWayPointToMove(1);
-                WayStartBBW[_unit->GetInstanceID()] = 3;
+                getCreature()->GetAIInterface()->setWayPointToMove(1);
+                WayStartBBW[getCreature()->GetInstanceID()] = 3;
             } break;
             case 2:
             {
                 cleanStage();
-                WayStartBBW[_unit->GetInstanceID()] = 4;
+                WayStartBBW[getCreature()->GetInstanceID()] = 4;
                 Creature* spotlight = spawnCreature(19525, Barnes[2].x, Barnes[2].y, Barnes[2].z, Barnes[2].o);
                 if (spotlight)
                     spotlight->Despawn(43000, 0);
 
-                _unit->SetFacing(4.5f);
+                getCreature()->SetFacing(4.5f);
                 switch (eventRand)
                 {
                     case 0:
@@ -844,8 +844,8 @@ public:
                         EventWOZ();
                         break;
                 }
-                _unit->setUInt32Value(UNIT_FIELD_FLAGS, 1);
-                WayStartBBW[_unit->GetInstanceID()] = 5;
+                getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, 1);
+                WayStartBBW[getCreature()->GetInstanceID()] = 5;
             } break;
             default:
                 break;
@@ -919,13 +919,13 @@ public:
         // Start text
         sendDBChatMessage(2011);     // Good evening, ladies and gentleman. Welcome to this evening's presentation!
         // Timed text 1
-        _unit->SendTimedScriptTextChatMessage(2008, 7000);  // Tonight, we plumb the depths of the human soul as we join a lost, lonely girl trying desperately, with the help of her loyal companions, to find her way home.
+        getCreature()->SendTimedScriptTextChatMessage(2008, 7000);  // Tonight, we plumb the depths of the human soul as we join a lost, lonely girl trying desperately, with the help of her loyal companions, to find her way home.
         // Timed text 2
-        _unit->SendTimedScriptTextChatMessage(2009, 23000); // But she is pursued by a wicked, malevolent crone!", 23000);
+        getCreature()->SendTimedScriptTextChatMessage(2009, 23000); // But she is pursued by a wicked, malevolent crone!", 23000);
         // Timed text 3
-        _unit->SendTimedScriptTextChatMessage(2010, 32000); // Will she survive? Will she prevail? Only time will tell. And now: On with the show!", 32000);
+        getCreature()->SendTimedScriptTextChatMessage(2010, 32000); // Will she survive? Will she prevail? Only time will tell. And now: On with the show!", 32000);
         // Applause
-        sEventMgr.AddEvent(static_cast<Object*>(_unit), &Object::PlaySoundToSet, (uint32)9332, EVENT_UNK, 41000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(static_cast<Object*>(getCreature()), &Object::PlaySoundToSet, (uint32)9332, EVENT_UNK, 41000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 
     void EventWOZ()
@@ -943,7 +943,7 @@ public:
         if (Curtain)
             Curtain->SetState(GO_STATE_OPEN);
 
-        _unit->SetDisplayId(16616);
+        getCreature()->SetDisplayId(16616);
 
         spawnCreature(17535, -10897.650f, -1755.8311f, 90.476f, 4.61f); //Dorothee
         spawnCreature(17543, -10904.088f, -1754.8988f, 90.476f, 4.61f); //Strawman
@@ -956,13 +956,13 @@ public:
         // Start text
         sendDBChatMessage(2011);                 // Good evening, ladies and gentleman. Welcome to this evening's presentation!
         // Timed text 1
-        _unit->SendTimedScriptTextChatMessage(2016, 6000);      // Tonight we explore a tale of forbidden love!
+        getCreature()->SendTimedScriptTextChatMessage(2016, 6000);      // Tonight we explore a tale of forbidden love!
         // Timed text 2
-        _unit->SendTimedScriptTextChatMessage(2016, 19300);     // But beware, for not all love stories end happily. As you may find out, sometimes love pricks like a thorn.
+        getCreature()->SendTimedScriptTextChatMessage(2016, 19300);     // But beware, for not all love stories end happily. As you may find out, sometimes love pricks like a thorn.
         // Timed text 3
-        _unit->SendTimedScriptTextChatMessage(2018, 32000);     // But don't take it from me. See for yourself what tragedy lies ahead when the paths of star-crossed lovers meet. And now: On with the show!
+        getCreature()->SendTimedScriptTextChatMessage(2018, 32000);     // But don't take it from me. See for yourself what tragedy lies ahead when the paths of star-crossed lovers meet. And now: On with the show!
         // Applause
-        sEventMgr.AddEvent(static_cast<Object*>(_unit), &Object::PlaySoundToSet, (uint32)9332, EVENT_UNK, 41000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(static_cast<Object*>(getCreature()), &Object::PlaySoundToSet, (uint32)9332, EVENT_UNK, 41000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 
     void EventRJ()
@@ -980,7 +980,7 @@ public:
         if (Curtain)
             Curtain->SetState(GO_STATE_OPEN);
 
-        _unit->SetDisplayId(16616);
+        getCreature()->SetDisplayId(16616);
         spawnCreature(17534, -10891.582f, -1755.5177f, 90.476f, 4.61f); //Spawn Julianne
     }
 
@@ -989,13 +989,13 @@ public:
         // Start text
         sendDBChatMessage(2011);                 // Good evening, ladies and gentleman. Welcome to this evening's presentation!
         // Timed text 1
-        _unit->SendTimedScriptTextChatMessage(2012, 7000);      // Tonight things are not what they seems for tonight your eyes may not be trusted.
+        getCreature()->SendTimedScriptTextChatMessage(2012, 7000);      // Tonight things are not what they seems for tonight your eyes may not be trusted.
         // Timed text 2
-        _unit->SendTimedScriptTextChatMessage(2013, 17000);     // Take for instance this quiet elderly woman waiting for a visit from her granddaughter. Surely there is nothing to fear from this sweet gray-haired old lady.
+        getCreature()->SendTimedScriptTextChatMessage(2013, 17000);     // Take for instance this quiet elderly woman waiting for a visit from her granddaughter. Surely there is nothing to fear from this sweet gray-haired old lady.
         // Timed text 3
-        _unit->SendTimedScriptTextChatMessage(2014, 32000);     // But don't let me pull the wool over your eyes. See for yourself what lies beneath those covers. And now: On with the show!
+        getCreature()->SendTimedScriptTextChatMessage(2014, 32000);     // But don't let me pull the wool over your eyes. See for yourself what lies beneath those covers. And now: On with the show!
         // Applause
-        sEventMgr.AddEvent(static_cast<Object*>(_unit), &Object::PlaySoundToSet, (uint32)9332, EVENT_UNK, 41000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(static_cast<Object*>(getCreature()), &Object::PlaySoundToSet, (uint32)9332, EVENT_UNK, 41000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 
     void EventRed()
@@ -1055,7 +1055,7 @@ public:
             BackDrop->SetFloatValue(GAMEOBJECT_ROTATION_03, -0.669131f);
         }*/
 
-        _unit->SetDisplayId(16616);
+        getCreature()->SetDisplayId(16616);
         spawnCreature(17603, -10891.582f, -1755.5177f, 90.476f, 4.61f);
 
     }
@@ -1071,11 +1071,11 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(StageLight);
     StageLight(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        _unit->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         _setMeleeDisabled(true);
-        _unit->GetAIInterface()->m_canMove = false;
-        _unit->m_noRespawn = true;
-        _unit->CastSpell(_unit, 34126, true);
+        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->m_noRespawn = true;
+        getCreature()->CastSpell(getCreature(), 34126, true);
     }
 
 };
@@ -1147,7 +1147,7 @@ public:
     void OnCombatStop(Unit* mTarget)
     {
         setAIAgent(AGENT_NULL);
-        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
 
@@ -1158,7 +1158,7 @@ public:
 
     void OnTargetDied(Unit* mTarget)
     {
-        if (_unit->GetHealthPct() > 0)
+        if (getCreature()->GetHealthPct() > 0)
         {
             switch (RandomUInt(1))
             {
@@ -1176,26 +1176,26 @@ public:
     {
         if (!evocation)
         {
-            if (_unit->GetManaPct() <= 10)
+            if (getCreature()->GetManaPct() <= 10)
             {
-                _unit->setMoveRoot(true);
-                _unit->setAttackTimer(spells[1].attackstoptimer, false);
+                getCreature()->setMoveRoot(true);
+                getCreature()->setAttackTimer(spells[1].attackstoptimer, false);
                 sendDBChatMessage(2065);     // Your request cannot be processed.
-                _unit->CastSpell(_unit, spells[2].info, spells[2].instant);
+                getCreature()->CastSpell(getCreature(), spells[2].info, spells[2].instant);
                 evocation = true;
             }
-            else if (!enrage && _unit->GetHealthPct() <= 16)
+            else if (!enrage && getCreature()->GetHealthPct() <= 16)
             {
-                _unit->CastSpell(_unit, spells[3].info, spells[3].instant);
+                getCreature()->CastSpell(getCreature(), spells[3].info, spells[3].instant);
                 sendDBChatMessage(2066);     // Failure to comply will result in offensive action.
                 enrage = true;
             }
             else
                 Trigger();
         }
-        else if (_unit->GetManaPct() > 94)
+        else if (getCreature()->GetManaPct() > 94)
         {
-            _unit->setMoveRoot(false);
+            getCreature()->setMoveRoot(false);
             evocation = false;
         }
     }
@@ -1203,15 +1203,15 @@ public:
     void Trigger()
     {
         uint32 t = (uint32)time(NULL);
-        if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget() && t > spells[0].casttime)
+        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget() && t > spells[0].casttime)
         {
-            Unit* target = _unit->GetAIInterface()->GetSecondHated();
-            _unit->CastSpell(target, spells[0].info, spells[0].instant);
+            Unit* target = getCreature()->GetAIInterface()->GetSecondHated();
+            getCreature()->CastSpell(target, spells[0].info, spells[0].instant);
             target = NULL;
             spells[0].casttime = t + spells[0].cooldown;
         }
-        else if (_unit->GetAIInterface()->getNextTarget() && !enrage && !evocation && t > Timer &&
-            _unit->GetMaxPower(POWER_TYPE_MANA) != 0)
+        else if (getCreature()->GetAIInterface()->getNextTarget() && !enrage && !evocation && t > Timer &&
+            getCreature()->GetMaxPower(POWER_TYPE_MANA) != 0)
         {
             AstralSpawn();
             Timer = t + 10;
@@ -1221,12 +1221,12 @@ public:
     void AstralSpawn()
     {
         std::vector<Player*> Target_List;
-        for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin();
-            itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+        for (std::set< Object* >::iterator itr = getCreature()->GetInRangePlayerSetBegin();
+            itr != getCreature()->GetInRangePlayerSetEnd(); ++itr)
         {
             Player* RandomTarget = NULL;
             RandomTarget = static_cast<Player*>(*itr);
-            if (RandomTarget && RandomTarget->isAlive() && isHostile(_unit, (*itr)))
+            if (RandomTarget && RandomTarget->isAlive() && isHostile(getCreature(), (*itr)))
                 Target_List.push_back(RandomTarget);
             RandomTarget = NULL;
         }
@@ -1249,36 +1249,36 @@ public:
                 break;
         }
 
-        _unit->setUInt32Value(UNIT_FIELD_POWER1, _unit->GetPower(POWER_TYPE_MANA) - (_unit->GetMaxPower(POWER_TYPE_MANA) / 10));
-        float dX = _unit->GetPositionX();
-        float dY = _unit->GetPositionY();
+        getCreature()->setUInt32Value(UNIT_FIELD_POWER1, getCreature()->GetPower(POWER_TYPE_MANA) - (getCreature()->GetMaxPower(POWER_TYPE_MANA) / 10));
+        float dX = getCreature()->GetPositionX();
+        float dY = getCreature()->GetPositionY();
         Creature* AstralFlare = NULL;
         switch (RandomUInt(3))
         {
             case 0:
             {
-                AstralFlare = spawnCreature(CN_ASTRALFLARE, dX + 3, dY + 3, _unit->GetPositionZ(), 0);
+                AstralFlare = spawnCreature(CN_ASTRALFLARE, dX + 3, dY + 3, getCreature()->GetPositionZ(), 0);
                 AstralFlare->GetAIInterface()->AttackReaction(random_target, 1, 0);
                 AstralFlare = NULL;
             }
             break;
             case 1:
             {
-                AstralFlare = spawnCreature(CN_ASTRALFLARE, dX + 3, dY - 3, _unit->GetPositionZ(), 0);
+                AstralFlare = spawnCreature(CN_ASTRALFLARE, dX + 3, dY - 3, getCreature()->GetPositionZ(), 0);
                 AstralFlare->GetAIInterface()->AttackReaction(random_target, 1, 0);
                 AstralFlare = NULL;
             }
             break;
             case 2:
             {
-                AstralFlare = spawnCreature(CN_ASTRALFLARE, dX - 3, dY - 3, _unit->GetPositionZ(), 0);
+                AstralFlare = spawnCreature(CN_ASTRALFLARE, dX - 3, dY - 3, getCreature()->GetPositionZ(), 0);
                 AstralFlare->GetAIInterface()->AttackReaction(random_target, 1, 0);
                 AstralFlare = NULL;
             }
             break;
             case 3:
             {
-                AstralFlare = spawnCreature(CN_ASTRALFLARE, dX - 3, dY + 3, _unit->GetPositionZ(), 0);
+                AstralFlare = spawnCreature(CN_ASTRALFLARE, dX - 3, dY + 3, getCreature()->GetPositionZ(), 0);
                 AstralFlare->GetAIInterface()->AttackReaction(random_target, 1, 0);
                 AstralFlare = NULL;
             }
@@ -1443,7 +1443,7 @@ public:
         bool HasAtiesh = false;
         if (mTarget->IsPlayer())
         {
-            for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+            for (std::set< Object* >::iterator itr = getCreature()->GetInRangePlayerSetBegin(); itr != getCreature()->GetInRangePlayerSetEnd(); ++itr)
             {
                 if (*itr)
                 {
@@ -1505,9 +1505,9 @@ public:
     {
         CastTime();
         setAIAgent(AGENT_NULL);
-        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
-        _unit->setUInt32Value(UNIT_FIELD_POWER1, _unit->GetMaxPower(POWER_TYPE_MANA));
+        getCreature()->setUInt32Value(UNIT_FIELD_POWER1, getCreature()->GetMaxPower(POWER_TYPE_MANA));
         // Door opening
         GameObject* SDoor = getNearestGameObject(-11190.012f, -1881.016f, 231.95f, 184517);
         if (SDoor)
@@ -1549,8 +1549,8 @@ public:
                 if (!FlameWreathTarget[i])
                     continue;
 
-                Unit* pTarget = _unit->GetMapMgr()->GetUnit(FlameWreathTarget[i]);
-                if (pTarget && pTarget->getDistanceSq(FWTargPosX[i], FWTargPosY[i], _unit->GetPositionZ()) > 3)
+                Unit* pTarget = getCreature()->GetMapMgr()->GetUnit(FlameWreathTarget[i]);
+                if (pTarget && pTarget->getDistanceSq(FWTargPosX[i], FWTargPosY[i], getCreature()->GetPositionZ()) > 3)
                 {
                     pTarget->CastSpell(pTarget, 20476, true);
                     FlameWreathTarget[i] = 0;
@@ -1564,55 +1564,55 @@ public:
             {
                 if (slow)
                 {
-                    _unit->CastSpell(_unit, info_massslow, true);
+                    getCreature()->CastSpell(getCreature(), info_massslow, true);
                     slow = false;
                 }
                 else
                 {
-                    _unit->CastSpell(_unit, info_aexplosion, false);
+                    getCreature()->CastSpell(getCreature(), info_aexplosion, false);
                     explode = false;
                 }
             }
-            else if (summoned == false && _unit->GetHealthPct() <= 40)
+            else if (summoned == false && getCreature()->GetHealthPct() <= 40)
             {
-                _unit->CastSpell(_unit, info_summon_elemental_1, true);
-                _unit->CastSpell(_unit, info_summon_elemental_2, true);
-                _unit->CastSpell(_unit, info_summon_elemental_3, true);
+                getCreature()->CastSpell(getCreature(), info_summon_elemental_1, true);
+                getCreature()->CastSpell(getCreature(), info_summon_elemental_2, true);
+                getCreature()->CastSpell(getCreature(), info_summon_elemental_3, true);
 
                 sendDBChatMessage(2041);     // I'm not finished yet! No, I have a few more tricks up me sleeve.
                 summoned = true;
             }
-            else if (_unit->GetManaPct() <= 20 && _unit->GetCurrentSpell() == NULL)
+            else if (getCreature()->GetManaPct() <= 20 && getCreature()->GetCurrentSpell() == NULL)
             {
                 if (!m_time_pyroblast)
                 {
-                    _unit->GetAIInterface()->WipeHateList();
+                    getCreature()->GetAIInterface()->WipeHateList();
                     sendDBChatMessage(2040);     // Surely you would not deny an old man a replenishing drink? No, no I thought not.
                     m_time_pyroblast = 10;
-                    _unit->CastSpell(_unit, info_mass_polymorph, true);
-                    _unit->setAttackTimer(2000, false);
+                    getCreature()->CastSpell(getCreature(), info_mass_polymorph, true);
+                    getCreature()->setAttackTimer(2000, false);
                 }
-                else if (_unit->GetStandState() != STANDSTATE_SIT)
+                else if (getCreature()->GetStandState() != STANDSTATE_SIT)
                 {
-                    _unit->setAttackTimer(3000, false);
-                    _unit->CastSpell(_unit, info_conjure, false);
-                    _unit->SetStandState(STANDSTATE_SIT);
-                    _unit->setEmoteState(EMOTE_ONESHOT_EAT);
+                    getCreature()->setAttackTimer(3000, false);
+                    getCreature()->CastSpell(getCreature(), info_conjure, false);
+                    getCreature()->SetStandState(STANDSTATE_SIT);
+                    getCreature()->setEmoteState(EMOTE_ONESHOT_EAT);
                 }
                 else
-                    _unit->CastSpell(_unit, info_drink, true);
+                    getCreature()->CastSpell(getCreature(), info_drink, true);
             }
             else
                 SpellTrigger();
         }
-        else if (_unit->GetCurrentSpell() == NULL)
+        else if (getCreature()->GetCurrentSpell() == NULL)
         {
             m_time_pyroblast--;
             if (!m_time_pyroblast)
             {
-                _unit->SetStandState(STANDSTATE_STAND);
-                _unit->setEmoteState(EMOTE_ONESHOT_NONE);
-                _unit->CastSpell(_unit, info_pyroblast, false);
+                getCreature()->SetStandState(STANDSTATE_STAND);
+                getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
+                getCreature()->CastSpell(getCreature(), info_pyroblast, false);
                 drinking = false;
             }
 
@@ -1627,9 +1627,9 @@ public:
         {
             sendDBChatMessage(2044);     // You've wasted enough of my time. Let these games be finished!
 
-            float ERX = 5 * cos(RandomFloat(6.28f)) + (_unit->GetPositionX());
-            float ERY = 5 * sin(RandomFloat(6.28f)) + (_unit->GetPositionY());
-            float ERZ = _unit->GetPositionZ();
+            float ERX = 5 * cos(RandomFloat(6.28f)) + (getCreature()->GetPositionX());
+            float ERY = 5 * sin(RandomFloat(6.28f)) + (getCreature()->GetPositionY());
+            float ERZ = getCreature()->GetPositionZ();
 
             for (uint8 i = 0; i < 4; i++)
             {
@@ -1672,13 +1672,13 @@ public:
         FlameWreathTarget[2] = 0;
 
         std::vector<Player*> Targets;
-        std::set< Object* >::iterator hostileItr = _unit->GetInRangePlayerSetBegin();
-        for (; hostileItr != _unit->GetInRangePlayerSetEnd(); ++hostileItr)
+        std::set< Object* >::iterator hostileItr = getCreature()->GetInRangePlayerSetBegin();
+        for (; hostileItr != getCreature()->GetInRangePlayerSetEnd(); ++hostileItr)
         {
             Player* RandomTarget = NULL;
             RandomTarget = static_cast<Player*>(*hostileItr);
 
-            if (RandomTarget && RandomTarget->isAlive() && _unit->GetAIInterface()->getThreatByPtr(RandomTarget) > 0)
+            if (RandomTarget && RandomTarget->isAlive() && getCreature()->GetAIInterface()->getThreatByPtr(RandomTarget) > 0)
                 Targets.push_back(RandomTarget);
         }
 
@@ -1693,7 +1693,7 @@ public:
                 FlameWreathTarget[i] = (*itr)->GetGUID();
                 FWTargPosX[i] = (*itr)->GetPositionX();
                 FWTargPosY[i] = (*itr)->GetPositionY();
-                _unit->CastSpell((*itr), FLAME_WREATH, true);
+                getCreature()->CastSpell((*itr), FLAME_WREATH, true);
             }
         }
 
@@ -1711,7 +1711,7 @@ public:
                 break;
         }
 
-        _unit->CastSpell(_unit, info_blizzard, true);
+        getCreature()->CastSpell(getCreature(), info_blizzard, true);
     }
 
     void AoEExplosion()
@@ -1726,8 +1726,8 @@ public:
                 break;
         }
 
-        _unit->CastSpell(_unit, info_blink_center, true);
-        _unit->CastSpell(_unit, info_magnetic_pull, true);
+        getCreature()->CastSpell(getCreature(), info_blink_center, true);
+        getCreature()->CastSpell(getCreature(), info_magnetic_pull, true);
         explode = true;
         slow = true;
     }
@@ -1783,7 +1783,7 @@ public:
 
     void SpellCast(float val)
     {
-        if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
         {
             float comulativeperc = 0;
             Unit* target = NULL;
@@ -1794,18 +1794,18 @@ public:
                 if (m_spellcheck[i])
                 {
                     spells[i].casttime = spells[i].cooldown;
-                    target = _unit->GetAIInterface()->getNextTarget();
+                    target = getCreature()->GetAIInterface()->getNextTarget();
                     switch (spells[i].targettype)
                     {
                         case TARGET_SELF:
                         case TARGET_VARIOUS:
-                            _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
                             break;
                         case TARGET_ATTACKING:
-                            _unit->CastSpell(target, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
+                            getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                         case TARGET_RANDOM_SINGLE:
                         case TARGET_RANDOM_DESTINATION:
@@ -1815,8 +1815,8 @@ public:
 
                     if (spells[i].speech != "")
                     {
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
-                        _unit->PlaySoundToSet(spells[i].soundid);
+                        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
+                        getCreature()->PlaySoundToSet(spells[i].soundid);
                     }
 
                     m_spellcheck[i] = false;
@@ -1825,7 +1825,7 @@ public:
 
                 if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
                 {
-                    _unit->setAttackTimer(spells[i].attackstoptimer, false);
+                    getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
                     m_spellcheck[i] = true;
                 }
                 comulativeperc += spells[i].perctrigger;
@@ -1838,15 +1838,15 @@ public:
         if (!maxdist2cast) maxdist2cast = 100.0f;
         if (!maxhp2cast) maxhp2cast = 100;
 
-        if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
         {
             std::vector<Player* > TargetTable;
-            for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+            for (std::set< Object* >::iterator itr = getCreature()->GetInRangePlayerSetBegin(); itr != getCreature()->GetInRangePlayerSetEnd(); ++itr)
             {
                 Player* RandomTarget = NULL;
                 RandomTarget = static_cast<Player*>(*itr);
 
-                if ((RandomTarget->isAlive() && _unit->GetDistance2dSq(RandomTarget) >= mindist2cast * mindist2cast && _unit->GetDistance2dSq(RandomTarget) <= maxdist2cast * maxdist2cast) || (_unit->GetAIInterface()->getThreatByPtr(RandomTarget) > 0 && isHostile(_unit, RandomTarget)))
+                if ((RandomTarget->isAlive() && getCreature()->GetDistance2dSq(RandomTarget) >= mindist2cast * mindist2cast && getCreature()->GetDistance2dSq(RandomTarget) <= maxdist2cast * maxdist2cast) || (getCreature()->GetAIInterface()->getThreatByPtr(RandomTarget) > 0 && isHostile(getCreature(), RandomTarget)))
                     TargetTable.push_back(RandomTarget);
             }
 
@@ -1862,10 +1862,10 @@ public:
             switch (spells[i].targettype)
             {
                 case TARGET_RANDOM_SINGLE:
-                    _unit->CastSpell(random_target, spells[i].info, spells[i].instant);
+                    getCreature()->CastSpell(random_target, spells[i].info, spells[i].instant);
                     break;
                 case TARGET_RANDOM_DESTINATION:
-                    _unit->CastSpellAoF(random_target->GetPosition(), spells[i].info, spells[i].instant);
+                    getCreature()->CastSpellAoF(random_target->GetPosition(), spells[i].info, spells[i].instant);
                     break;
             }
 
@@ -1923,13 +1923,13 @@ public:
     void OnCombatStop(Unit* mTarget)
     {
         setAIAgent(AGENT_NULL);
-        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
 
     void OnDied(Unit* mKiller)
     {
-        _unit->Despawn(20000, 0);
+        getCreature()->Despawn(20000, 0);
     }
 
     void AIUpdate()
@@ -1937,10 +1937,10 @@ public:
         WaterBolt--;
         if (!WaterBolt)
         {
-            _unit->setAttackTimer(2000, false);
-            Unit* target = _unit->GetAIInterface()->getNextTarget();
+            getCreature()->setAttackTimer(2000, false);
+            Unit* target = getCreature()->GetAIInterface()->getNextTarget();
             if (target)
-                _unit->CastSpell(target, WATERBOLT, true);
+                getCreature()->CastSpell(target, WATERBOLT, true);
         }
     }
 
@@ -1967,14 +1967,14 @@ public:
     void OnCombatStop(Unit* mTarget)
     {
         setAIAgent(AGENT_NULL);
-        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        _unit->Despawn(10000, 0);
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        getCreature()->Despawn(10000, 0);
         RemoveAIUpdateEvent();
     }
 
     void OnDied(Unit* mKiller)
     {
-        _unit->Despawn(5000, 0);
+        getCreature()->Despawn(5000, 0);
     }
 
     void AIUpdate()
@@ -1982,9 +1982,9 @@ public:
         ShadowPyro--;
         if (!ShadowPyro)
         {
-            Unit* target = _unit->GetAIInterface()->getNextTarget();
+            Unit* target = getCreature()->GetAIInterface()->getNextTarget();
             if (target != NULL)
-                _unit->CastSpell(target, SHADOWPYRO, true);
+                getCreature()->CastSpell(target, SHADOWPYRO, true);
         }
     }
 
@@ -2079,7 +2079,7 @@ public:
     {
         clean();
         setAIAgent(AGENT_NULL);
-        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
 
@@ -2119,7 +2119,7 @@ public:
         SpellCast(val);
 
         uint32 t = (uint32)time(NULL);
-        if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
         {
             if (t > ImpTimer)
             {
@@ -2131,7 +2131,7 @@ public:
                 DemonChain = t + 45;
                 PlrSacrifice();
             }
-            if (_unit->HasAura(BROKEN_PACT) && !ReSummon)
+            if (getCreature()->HasAura(BROKEN_PACT) && !ReSummon)
             {
                 ReSummon = true;
                 ReKilrek = t + 45;
@@ -2139,8 +2139,8 @@ public:
             else if (ReSummon && t > ReKilrek)
             {
                 ReSummon = false;
-                _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(S_KILREK), true);
-                _unit->RemoveAura(BROKEN_PACT);
+                getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(S_KILREK), true);
+                getCreature()->RemoveAura(BROKEN_PACT);
             }
         }
     }
@@ -2174,15 +2174,15 @@ public:
         }
 
         std::vector<Player* > TargetTable;
-        std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin();
+        std::set< Object* >::iterator itr = getCreature()->GetInRangePlayerSetBegin();
 
-        for (; itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+        for (; itr != getCreature()->GetInRangePlayerSetEnd(); ++itr)
         {
-            if (isHostile(_unit, (*itr)))
+            if (isHostile(getCreature(), (*itr)))
             {
                 Player* RandomTarget = NULL;
                 RandomTarget = static_cast<Player*>(*itr);
-                if (RandomTarget && RandomTarget->isAlive() && isHostile(_unit, RandomTarget))
+                if (RandomTarget && RandomTarget->isAlive() && isHostile(getCreature(), RandomTarget))
                     TargetTable.push_back(RandomTarget);
             }
         }
@@ -2195,7 +2195,7 @@ public:
         if (random_target == nullptr)
             return;
 
-        _unit->CastSpell(random_target, sSpellCustomizations.GetSpellInfo(SACRIFICE), false);
+        getCreature()->CastSpell(random_target, sSpellCustomizations.GetSpellInfo(SACRIFICE), false);
 
         TargetTable.clear();
 
@@ -2207,7 +2207,7 @@ public:
 
     void SpellCast(float val)
     {
-        if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
         {
             float comulativeperc = 0;
             Unit* target = NULL;
@@ -2217,18 +2217,18 @@ public:
 
                 if (m_spellcheck[i])
                 {
-                    target = _unit->GetAIInterface()->getNextTarget();
+                    target = getCreature()->GetAIInterface()->getNextTarget();
                     switch (spells[i].targettype)
                     {
                         case TARGET_SELF:
                         case TARGET_VARIOUS:
-                            _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
                             break;
                         case TARGET_ATTACKING:
-                            _unit->CastSpell(target, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
+                            getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                     }
 
@@ -2239,7 +2239,7 @@ public:
                 uint32 t = (uint32)time(NULL);
                 if (val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger) && t > spells[i].casttime)
                 {
-                    _unit->setAttackTimer(spells[i].attackstoptimer, false);
+                    getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
                     spells[i].casttime = t + spells[i].cooldown;
                     m_spellcheck[i] = true;
                 }
@@ -2295,13 +2295,13 @@ public:
     void OnCombatStop(Unit* mTarget)
     {
         setAIAgent(AGENT_NULL);
-        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
 
     void OnDied(Unit* mKiller)
     {
-        Unit* Illhoof = getNearestCreature(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 15688);
+        Unit* Illhoof = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), 15688);
         if (Illhoof != NULL && Illhoof->isAlive())
             Illhoof->CastSpell(Illhoof, spells[1].info, spells[1].instant);
     }
@@ -2314,7 +2314,7 @@ public:
 
     void SpellCast(float val)
     {
-        if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
         {
             float comulativeperc = 0;
             Unit* target = NULL;
@@ -2324,18 +2324,18 @@ public:
 
                 if (m_spellcheck[i])
                 {
-                    target = _unit->GetAIInterface()->getNextTarget();
+                    target = getCreature()->GetAIInterface()->getNextTarget();
                     switch (spells[i].targettype)
                     {
                         case TARGET_SELF:
                         case TARGET_VARIOUS:
-                            _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
                             break;
                         case TARGET_ATTACKING:
-                            _unit->CastSpell(target, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
+                            getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                         case TARGET_RANDOM_FRIEND:
                         case TARGET_RANDOM_SINGLE:
@@ -2351,7 +2351,7 @@ public:
                 uint32 t = (uint32)time(NULL);
                 if (val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger) && t > spells[i].casttime)
                 {
-                    _unit->setAttackTimer(spells[i].attackstoptimer, false);
+                    getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
                     spells[i].casttime = t + spells[i].cooldown;
                     m_spellcheck[i] = true;
                 }
@@ -2365,17 +2365,17 @@ public:
         if (!maxdist2cast) maxdist2cast = 100.0f;
         if (!maxhp2cast) maxhp2cast = 100;
 
-        if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
         {
             std::vector<Unit* > TargetTable;
-            for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+            for (std::set<Object*>::iterator itr = getCreature()->GetInRangeSetBegin(); itr != getCreature()->GetInRangeSetEnd(); ++itr)
             {
-                if ((*itr) != _unit && isHostile(_unit, (*itr)) && (*itr)->IsUnit())
+                if ((*itr) != getCreature() && isHostile(getCreature(), (*itr)) && (*itr)->IsUnit())
                 {
                     Unit* RandomTarget = NULL;
                     RandomTarget = static_cast<Unit*>(*itr);
 
-                    if (RandomTarget->isAlive() && _unit->GetAIInterface()->getThreatByPtr(RandomTarget) > 0)
+                    if (RandomTarget->isAlive() && getCreature()->GetAIInterface()->getThreatByPtr(RandomTarget) > 0)
                         TargetTable.push_back(RandomTarget);
                 }
             }
@@ -2392,10 +2392,10 @@ public:
             switch (spells[i].targettype)
             {
                 case TARGET_RANDOM_SINGLE:
-                    _unit->CastSpell(random_target, spells[i].info, spells[i].instant);
+                    getCreature()->CastSpell(random_target, spells[i].info, spells[i].instant);
                     break;
                 case TARGET_RANDOM_DESTINATION:
-                    _unit->CastSpellAoF(random_target->GetPosition(), spells[i].info, spells[i].instant);
+                    getCreature()->CastSpellAoF(random_target->GetPosition(), spells[i].info, spells[i].instant);
                     break;
             }
 
@@ -2435,51 +2435,51 @@ public:
         target = FindTargetForSpell();
         if (target != NULL)
         {
-            _unit->GetAIInterface()->AttackReaction(target, 2500, 0);
+            getCreature()->GetAIInterface()->AttackReaction(target, 2500, 0);
         }
     }
 
     void OnCombatStart(Unit* mTarget)
     {
-        _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
-        _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
+        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
 
-        if (_unit->GetDistance2dSq(mTarget) <= 1225.0f)
+        if (getCreature()->GetDistance2dSq(mTarget) <= 1225.0f)
         {
             setAIAgent(AGENT_SPELL);
         }
 
-        RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
+        RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
     }
 
     void OnCombatStop(Unit* mTarget)
     {
         setAIAgent(AGENT_NULL);
-        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
 
-        _unit->Despawn(1, 0);
+        getCreature()->Despawn(1, 0);
     }
 
     void OnDied(Unit* mKiller)
     {
-        _unit->Despawn(1, 0);
+        getCreature()->Despawn(1, 0);
     }
 
     void AIUpdate()
     {
         setAIAgent(AGENT_NULL);
-        if (_unit->GetAIInterface()->getNextTarget() && _unit->GetDistance2dSq(_unit->GetAIInterface()->getNextTarget()) <= 1225.0f)
+        if (getCreature()->GetAIInterface()->getNextTarget() && getCreature()->GetDistance2dSq(getCreature()->GetAIInterface()->getNextTarget()) <= 1225.0f)
         {
             setAIAgent(AGENT_SPELL);
-            if (_unit->GetCurrentSpell() == NULL && RandomUInt(10) > 2)
+            if (getCreature()->GetCurrentSpell() == NULL && RandomUInt(10) > 2)
             {
-                _unit->setAttackTimer(spells[0].attackstoptimer, false);
+                getCreature()->setAttackTimer(spells[0].attackstoptimer, false);
 
                 Unit* target = NULL;
-                target = _unit->GetAIInterface()->getNextTarget();
+                target = getCreature()->GetAIInterface()->getNextTarget();
 
-                _unit->CastSpell(target, spells[0].info, spells[0].instant);
+                getCreature()->CastSpell(target, spells[0].info, spells[0].instant);
                 return;
             }
         }
@@ -2490,7 +2490,7 @@ public:
 
     void SpellCast(float val)
     {
-        if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
         {
             float comulativeperc = 0;
             Unit* target = NULL;
@@ -2500,21 +2500,21 @@ public:
 
                 if (m_spellcheck[i])
                 {
-                    target = _unit->GetAIInterface()->getNextTarget();
+                    target = getCreature()->GetAIInterface()->getNextTarget();
                     if (!spells[i].instant)
-                        _unit->GetAIInterface()->StopMovement(1);
+                        getCreature()->GetAIInterface()->StopMovement(1);
 
                     switch (spells[i].targettype)
                     {
                         case TARGET_SELF:
                         case TARGET_VARIOUS:
-                            _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
                             break;
                         case TARGET_ATTACKING:
-                            _unit->CastSpell(target, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
+                            getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                     }
                     m_spellcheck[i] = false;
@@ -2524,7 +2524,7 @@ public:
                 uint32 t = (uint32)time(NULL);
                 if (val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger) && t > spells[i].casttime)
                 {
-                    _unit->setAttackTimer(spells[i].attackstoptimer, false);
+                    getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
                     spells[i].casttime = t + spells[i].cooldown;
                     m_spellcheck[i] = true;
                 }
@@ -2541,7 +2541,7 @@ public:
         Unit* pUnit;
         float dist;
 
-        for (std::set<Object*>::iterator itr = _unit->GetInRangeOppFactsSetBegin(); itr != _unit->GetInRangeOppFactsSetEnd(); ++itr)
+        for (std::set<Object*>::iterator itr = getCreature()->GetInRangeOppFactsSetBegin(); itr != getCreature()->GetInRangeOppFactsSetEnd(); ++itr)
         {
             if (!(*itr)->IsUnit())
                 continue;
@@ -2554,10 +2554,10 @@ public:
             //            if (pUnit->m_auracount[SPELL_AURA_MOD_INVISIBILITY])
             //                continue;
 
-            if (!pUnit->isAlive() || _unit == pUnit)
+            if (!pUnit->isAlive() || getCreature() == pUnit)
                 continue;
 
-            dist = _unit->GetDistance2dSq(pUnit);
+            dist = getCreature()->GetDistance2dSq(pUnit);
 
             if (dist > distance * distance)
                 continue;
@@ -2580,27 +2580,27 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(DemonChains);
     DemonChains(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CHAINS_VISUAL), true);
-        _unit->setMoveRoot(true);
-        _unit->DisableAI();
+        getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CHAINS_VISUAL), true);
+        getCreature()->setMoveRoot(true);
+        getCreature()->DisableAI();
     }
 
     void OnCombatStop(Unit* mTarget)
     {
         setAIAgent(AGENT_NULL);
-        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        if (_unit->GetHealthPct() > 0)
-            _unit->Despawn(10000, 0);
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        if (getCreature()->GetHealthPct() > 0)
+            getCreature()->Despawn(10000, 0);
     }
 
     void OnDied(Unit* mKiller)
     {
-        Unit* uIllhoof = getNearestCreature(_unit->GetPositionX(), _unit->GetPositionY(),
-            _unit->GetPositionZ(), CN_ILLHOOF);
+        Unit* uIllhoof = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(),
+            getCreature()->GetPositionZ(), CN_ILLHOOF);
         if (uIllhoof != NULL && uIllhoof->isAlive())
             uIllhoof->RemoveAura(SACRIFICE);
 
-        _unit->Despawn(10000, 0);
+        getCreature()->Despawn(10000, 0);
     }
 };
 
@@ -2610,19 +2610,19 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(FiendPortal);
     FiendPortal(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        _unit->setMoveRoot(true);
+        getCreature()->setMoveRoot(true);
 
-        _unit->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
         _setMeleeDisabled(true);
-        _unit->GetAIInterface()->m_canMove = false;
-        _unit->m_noRespawn = true;
+        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->m_noRespawn = true;
 
         RegisterAIUpdateEvent(10000);
     }
 
     void AIUpdate()
     {
-        spawnCreature(CN_FIENDISH_IMP, _unit->GetPosition());
+        spawnCreature(CN_FIENDISH_IMP, getCreature()->GetPosition());
     }
 
 };
@@ -2782,27 +2782,27 @@ public:
     void OnCombatStop(Unit* mTarget)
     {
         setAIAgent(AGENT_NULL);
-        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
 
         // Reset weapon
-        _unit->SetEquippedItem(MELEE, 0);
+        getCreature()->SetEquippedItem(MELEE, 0);
 
         // Off hand weapon
-        _unit->SetEquippedItem(OFFHAND, 0);
+        getCreature()->SetEquippedItem(OFFHAND, 0);
 
         CreatureProperties const* cp = sMySQLStore.getCreatureProperties(CN_MALCHEZAAR);
         if (cp == nullptr)
             return;
 
-        _unit->SetMinDamage(cp->MinDamage);
-        _unit->SetMaxDamage(cp->MaxDamage);
+        getCreature()->SetMinDamage(cp->MinDamage);
+        getCreature()->SetMaxDamage(cp->MaxDamage);
 
         for (uint8 i = 0; i < 5; ++i)
             Enfeeble_Targets[i] = 0;
 
         if (GetLinkedCreature() != NULL)
-            GetLinkedCreature()->GetUnit()->Despawn(10000, 0);
+            GetLinkedCreature()->getCreature()->Despawn(10000, 0);
 
         GameObject* MDoor = getNearestGameObject(-11018.5f, -1967.92f, 276.652f, 185134);
         // Open door
@@ -2810,7 +2810,7 @@ public:
             MDoor->SetState(GO_STATE_OPEN);
 
         Creature* MAxes = NULL;
-        MAxes = getNearestCreature(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), CN_AXES);
+        MAxes = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), CN_AXES);
         if (MAxes != NULL)
             MAxes->Despawn(1000, 0);
     }
@@ -2820,11 +2820,11 @@ public:
         sendDBChatMessage(2030);     // I refuse to concede defeat. I am a prince of the Eredar! I am...
 
         if (GetLinkedCreature() != NULL)
-            GetLinkedCreature()->GetUnit()->Despawn(10000, 0);
+            GetLinkedCreature()->getCreature()->Despawn(10000, 0);
 
         Creature* MAxes = NULL;
-        MAxes = getNearestCreature(_unit->GetPositionX(), _unit->GetPositionY(),
-            _unit->GetPositionZ(), CN_AXES);
+        MAxes = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(),
+            getCreature()->GetPositionZ(), CN_AXES);
         if (MAxes)
             MAxes->Despawn(1000, 0);
 
@@ -2855,12 +2855,12 @@ public:
         switch (m_phase)
         {
             case 1:
-                if (_unit->GetHealthPct() <= 60)
+                if (getCreature()->GetHealthPct() <= 60)
                     PhaseTwo();
                 break;
             case 2:
                 PhaseTwo();
-                if (_unit->GetHealthPct() <= 30)
+                if (getCreature()->GetHealthPct() <= 30)
                     PhaseThree();
                 break;
             case 3:
@@ -2871,22 +2871,22 @@ public:
                 break;
         }
         uint32 t = (uint32)time(NULL);
-        if (t > spells[1].casttime && _unit->GetAIInterface()->getNextTarget() && _unit->GetCurrentSpell() == NULL)
+        if (t > spells[1].casttime && getCreature()->GetAIInterface()->getNextTarget() && getCreature()->GetCurrentSpell() == NULL)
         {
             Enfeebler();
             spells[1].casttime = t + spells[1].cooldown;
             spells[5].casttime = t + spells[5].cooldown;
         }
-        else if (t > m_spawn_infernal && m_infernal == true && _unit->GetAIInterface()->getNextTarget())
+        else if (t > m_spawn_infernal && m_infernal == true && getCreature()->GetAIInterface()->getNextTarget())
         {
             spawnCreature(CN_INFERNAL, ranX, ranY, 276.0f, 0);
             m_spawn_infernal = 0;
             m_infernal = false;
         }
-        else if (t > spells[5].casttime && _unit->GetAIInterface()->getNextTarget() && _unit->GetCurrentSpell() == NULL)
+        else if (t > spells[5].casttime && getCreature()->GetAIInterface()->getNextTarget() && getCreature()->GetCurrentSpell() == NULL)
         {
             spells[5].casttime = -1;
-            _unit->CastSpell(_unit, spells[5].info, spells[5].instant);
+            getCreature()->CastSpell(getCreature(), spells[5].info, spells[5].instant);
             m_enfeebleoff = t + 3;
         }
         else if (t > m_enfeebleoff)
@@ -2911,7 +2911,7 @@ public:
 
     void PhaseTwo()
     {
-        if (_unit->GetHealthPct() <= 60 && m_phase == 1)
+        if (getCreature()->GetHealthPct() <= 60 && m_phase == 1)
         {
             sendDBChatMessage(2020);     // Time is the fire in which you'll burn!");
 
@@ -2920,21 +2920,21 @@ public:
             spells[3].casttime = t + spells[3].cooldown;
             spells[3].perctrigger = 50.0f;
 
-            _unit->CastSpell(_unit, spells[6].info, spells[6].instant);
-            _unit->CastSpell(_unit, spells[7].info, spells[6].instant);
+            getCreature()->CastSpell(getCreature(), spells[6].info, spells[6].instant);
+            getCreature()->CastSpell(getCreature(), spells[7].info, spells[6].instant);
 
             // Main hand weapon
-            _unit->SetEquippedItem(MELEE, AXE_ITEM_MODEL);
+            getCreature()->SetEquippedItem(MELEE, AXE_ITEM_MODEL);
 
             //Off Hand
-            _unit->SetEquippedItem(OFFHAND, AXE_ITEM_MODEL);
+            getCreature()->SetEquippedItem(OFFHAND, AXE_ITEM_MODEL);
 
             CreatureProperties const* cp = sMySQLStore.getCreatureProperties(CN_MALCHEZAAR);
             if (cp == nullptr)
                 return;
 
-            _unit->SetMinDamage(1.5f * cp->MinDamage);
-            _unit->SetMaxDamage(1.5f * cp->MaxDamage);
+            getCreature()->SetMinDamage(1.5f * cp->MinDamage);
+            getCreature()->SetMaxDamage(1.5f * cp->MaxDamage);
 
             m_phase = 2;
         }
@@ -2947,7 +2947,7 @@ public:
 
     void PhaseThree()
     {
-        if (_unit->GetHealthPct() <= 30 && m_phase == 2)
+        if (getCreature()->GetHealthPct() <= 30 && m_phase == 2)
         {
             sendDBChatMessage(2024);     // How can you hope to withstand against such overwhelming power?
 
@@ -2962,23 +2962,23 @@ public:
             spells[4].casttime = t + spells[4].cooldown;
             spells[4].perctrigger = 50.0f;
 
-            _unit->CastSpell(_unit, spells[8].info, spells[8].instant);
+            getCreature()->CastSpell(getCreature(), spells[8].info, spells[8].instant);
 
-            _unit->RemoveAura(THRASH_AURA);
-            _unit->RemoveAura(WIELD_AXES);
+            getCreature()->RemoveAura(THRASH_AURA);
+            getCreature()->RemoveAura(WIELD_AXES);
 
             // Main hand weapon
-            _unit->SetEquippedItem(MELEE, 0);
+            getCreature()->SetEquippedItem(MELEE, 0);
 
             //Off Hand
-            _unit->SetEquippedItem(OFFHAND, 0);
+            getCreature()->SetEquippedItem(OFFHAND, 0);
 
             CreatureProperties const* cp = sMySQLStore.getCreatureProperties(CN_MALCHEZAAR);
             if (cp == nullptr)
                 return;
 
-            _unit->SetMinDamage(cp->MinDamage);
-            _unit->SetMaxDamage(cp->MaxDamage);
+            getCreature()->SetMinDamage(cp->MinDamage);
+            getCreature()->SetMaxDamage(cp->MaxDamage);
             m_phase = 3;
         }
         else
@@ -3004,8 +3004,8 @@ public:
         ranY = RandomFloat(36.951f) - 2011.549f;
         if (GetLinkedCreature() != NULL)
         {
-            GetLinkedCreature()->GetUnit()->CastSpellAoF(LocationVector(ranX, ranY, 275.0f), spells[2].info, spells[2].instant); // Shoots the missile
-            float dist = GetLinkedCreature()->GetUnit()->CalcDistance(ranX, ranY, 275.0f);
+            GetLinkedCreature()->getCreature()->CastSpellAoF(LocationVector(ranX, ranY, 275.0f), spells[2].info, spells[2].instant); // Shoots the missile
+            float dist = GetLinkedCreature()->getCreature()->CalcDistance(ranX, ranY, 275.0f);
             uint32 dtime = (uint32)(dist / spells[2].info->getSpeed());
             m_spawn_infernal = (uint32)time(NULL) + dtime + 1;
             m_infernal = true;
@@ -3015,11 +3015,11 @@ public:
     void Enfeebler()
     {
         std::vector<Player*> Targets;
-        std::set< Object* >::iterator Itr = _unit->GetInRangePlayerSetBegin();
+        std::set< Object* >::iterator Itr = getCreature()->GetInRangePlayerSetBegin();
 
-        for (; Itr != _unit->GetInRangePlayerSetEnd(); ++Itr)
+        for (; Itr != getCreature()->GetInRangePlayerSetEnd(); ++Itr)
         {
-            if (isHostile(_unit, (*Itr)))
+            if (isHostile(getCreature(), (*Itr)))
             {
                 Player* RandomTarget = static_cast<Player*>(*Itr);
 
@@ -3034,12 +3034,12 @@ public:
         int i = 0;
         for (std::vector<Player*>::iterator E_Itr = Targets.begin(); E_Itr != Targets.end(); ++E_Itr)
         {
-            if ((*E_Itr)->GetGUID() != _unit->GetAIInterface()->GetMostHated()->GetGUID())
+            if ((*E_Itr)->GetGUID() != getCreature()->GetAIInterface()->GetMostHated()->GetGUID())
             {
                 Enfeeble_Targets[i] = (*E_Itr)->GetGUID();
                 Enfeeble_Health[i] = (*E_Itr)->getUInt32Value(UNIT_FIELD_HEALTH);
 
-                _unit->CastSpell((*E_Itr), spells[1].info, spells[1].instant);
+                getCreature()->CastSpell((*E_Itr), spells[1].info, spells[1].instant);
                 (*E_Itr)->SetHealth(1);
                 i++;
             }
@@ -3050,7 +3050,7 @@ public:
     {
         for (uint8 i = 0; i < 5; ++i)
         {
-            Unit* ETarget = _unit->GetMapMgr()->GetUnit(Enfeeble_Targets[i]);
+            Unit* ETarget = getCreature()->GetMapMgr()->GetUnit(Enfeeble_Targets[i]);
             if (ETarget && ETarget->isAlive())
                 ETarget->setUInt64Value(UNIT_FIELD_HEALTH, Enfeeble_Health[i]);
             Enfeeble_Targets[i] = 0;
@@ -3060,7 +3060,7 @@ public:
 
     void SpellCast(float val)
     {
-        if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
         {
             float comulativeperc = 0;
             Unit* target = NULL;
@@ -3070,18 +3070,18 @@ public:
 
                 if (m_spellcheck[i])
                 {
-                    target = _unit->GetAIInterface()->getNextTarget();
+                    target = getCreature()->GetAIInterface()->getNextTarget();
                     switch (spells[i].targettype)
                     {
                         case TARGET_SELF:
                         case TARGET_VARIOUS:
-                            _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
                             break;
                         case TARGET_ATTACKING:
-                            _unit->CastSpell(target, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
+                            getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                         case TARGET_RANDOM_FRIEND:
                         case TARGET_RANDOM_SINGLE:
@@ -3096,7 +3096,7 @@ public:
                 uint32 t = (uint32)time(NULL);
                 if (val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger) && t > spells[i].casttime)
                 {
-                    _unit->setAttackTimer(spells[i].attackstoptimer, false);
+                    getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
                     spells[i].casttime = t + spells[i].cooldown;
                     m_spellcheck[i] = true;
                 }
@@ -3110,15 +3110,15 @@ public:
         if (!maxdist2cast) maxdist2cast = 100.0f;
         if (!maxhp2cast) maxhp2cast = 100;
 
-        if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
         {
             std::vector<Player* > TargetTable;
-            for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+            for (std::set< Object* >::iterator itr = getCreature()->GetInRangePlayerSetBegin(); itr != getCreature()->GetInRangePlayerSetEnd(); ++itr)
             {
                 Player* RandomTarget = NULL;
                 RandomTarget = static_cast<Player*>(*itr);
 
-                if (RandomTarget && RandomTarget->isAlive() && _unit->GetDistance2dSq(RandomTarget) >= mindist2cast * mindist2cast && _unit->GetDistance2dSq(RandomTarget) <= maxdist2cast * maxdist2cast)
+                if (RandomTarget && RandomTarget->isAlive() && getCreature()->GetDistance2dSq(RandomTarget) >= mindist2cast * mindist2cast && getCreature()->GetDistance2dSq(RandomTarget) <= maxdist2cast * maxdist2cast)
                     TargetTable.push_back(RandomTarget);
             }
 
@@ -3134,10 +3134,10 @@ public:
             switch (spells[i].targettype)
             {
                 case TARGET_RANDOM_SINGLE:
-                    _unit->CastSpell(random_target, spells[i].info, spells[i].instant);
+                    getCreature()->CastSpell(random_target, spells[i].info, spells[i].instant);
                     break;
                 case TARGET_RANDOM_DESTINATION:
-                    _unit->CastSpellAoF(random_target->GetPosition(), spells[i].info, spells[i].instant);
+                    getCreature()->CastSpellAoF(random_target->GetPosition(), spells[i].info, spells[i].instant);
                     break;
             }
 
@@ -3167,17 +3167,17 @@ public:
     {
         setRooted(true);
         setCanEnterCombat(false);
-        _unit->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        _unit->m_noRespawn = true;
+        getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        getCreature()->m_noRespawn = true;
         RegisterAIUpdateEvent(6000);
         despawn(175000, 0);
-        _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(HELLFIRE), true);
+        getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(HELLFIRE), true);
         ParentClass::OnLoad();
     }
 
     void AIUpdate()
     {
-        _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(HELLFIRE), true);
+        getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(HELLFIRE), true);
         ParentClass::AIUpdate();
     }
 
@@ -3209,7 +3209,7 @@ public:
 
     MAxesAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        _unit->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
 
         spells[0].info = sSpellCustomizations.GetSpellInfo(DEMONIC_FRENZY);
         spells[0].targettype = TARGET_SELF;
@@ -3224,14 +3224,14 @@ public:
         spells[0].casttime = (uint32)time(NULL) + spells[0].cooldown;
 
         std::vector<Unit* > TargetTable;
-        for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+        for (std::set< Object* >::iterator itr = getCreature()->GetInRangePlayerSetBegin(); itr != getCreature()->GetInRangePlayerSetEnd(); ++itr)
         {
-            if (isHostile(_unit, (*itr)) && (static_cast<Player*>(*itr))->isAlive())
+            if (isHostile(getCreature(), (*itr)) && (static_cast<Player*>(*itr))->isAlive())
             {
                 Player* RandomTarget = NULL;
                 RandomTarget = static_cast<Player*>(*itr);
 
-                if (RandomTarget && RandomTarget->isAlive() && isHostile(_unit, RandomTarget))
+                if (RandomTarget && RandomTarget->isAlive() && isHostile(getCreature(), RandomTarget))
                     TargetTable.push_back(RandomTarget);
             }
         }
@@ -3245,13 +3245,13 @@ public:
         if (random_target == nullptr)
             return;
 
-        _unit->GetAIInterface()->taunt(random_target, true);
+        getCreature()->GetAIInterface()->taunt(random_target, true);
     }
 
     void OnCombatStop(Unit* mTarget)
     {
         setAIAgent(AGENT_NULL);
-        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
 
@@ -3260,7 +3260,7 @@ public:
         uint32 t = (uint32)time(NULL);
         if (t > spells[0].casttime)
         {
-            _unit->CastSpell(_unit, spells[0].info, spells[0].instant);
+            getCreature()->CastSpell(getCreature(), spells[0].info, spells[0].instant);
             spells[0].casttime = t + spells[0].cooldown;
         }
     }
@@ -3321,7 +3321,7 @@ public:
 
         uint32 t = (uint32)time(NULL);
         VoidTimer = t + 25;
-        _unit->CastSpell(_unit, spells[2].info, spells[2].instant);
+        getCreature()->CastSpell(getCreature(), spells[2].info, spells[2].instant);
 
         RegisterAIUpdateEvent(1000);
 
@@ -3335,10 +3335,10 @@ public:
 
     void OnCombatStop(Unit* mTarget)
     {
-        _unit->RemoveAura(NETHERBURN);
+        getCreature()->RemoveAura(NETHERBURN);
 
         setAIAgent(AGENT_NULL);
-        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
 
         GameObject* NDoor = getNearestGameObject(-11186.2f, -1665.14f, 281.398f, 185521);
@@ -3356,16 +3356,16 @@ public:
     void AIUpdate()
     {
         uint32 t = (uint32)time(NULL);
-        if (t > VoidTimer && _unit->GetAIInterface()->getNextTarget())
+        if (t > VoidTimer && getCreature()->GetAIInterface()->getNextTarget())
         {
             VoidTimer = t + 20;
             std::vector<Unit* > TargetTable;
-            for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+            for (std::set< Object* >::iterator itr = getCreature()->GetInRangePlayerSetBegin(); itr != getCreature()->GetInRangePlayerSetEnd(); ++itr)
             {
                 Unit* RandomTarget = NULL;
                 RandomTarget = static_cast<Unit*>(*itr);
 
-                if (RandomTarget && RandomTarget->isAlive() && isHostile(_unit, (*itr)))
+                if (RandomTarget && RandomTarget->isAlive() && isHostile(getCreature(), (*itr)))
                     TargetTable.push_back(RandomTarget);
             }
 
@@ -3391,7 +3391,7 @@ public:
 
     void SpellCast(float val)
     {
-        if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
         {
             float comulativeperc = 0;
             Unit* target = NULL;
@@ -3401,18 +3401,18 @@ public:
 
                 if (m_spellcheck[i])
                 {
-                    target = _unit->GetAIInterface()->getNextTarget();
+                    target = getCreature()->GetAIInterface()->getNextTarget();
                     switch (spells[i].targettype)
                     {
                         case TARGET_SELF:
                         case TARGET_VARIOUS:
-                            _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
                             break;
                         case TARGET_ATTACKING:
-                            _unit->CastSpell(target, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
+                            getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                     }
                     m_spellcheck[i] = false;
@@ -3422,7 +3422,7 @@ public:
                 uint32 t = (uint32)time(NULL);
                 if (val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger) && t > spells[i].casttime)
                 {
-                    _unit->setAttackTimer(spells[i].attackstoptimer, false);
+                    getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
                     spells[i].casttime = t + spells[i].cooldown;
                     m_spellcheck[i] = true;
                 }
@@ -3444,13 +3444,13 @@ public:
 
     VoidZoneAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        _unit->setMoveRoot(true);
-        _unit->DisableAI();
-        _unit->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->setMoveRoot(true);
+        getCreature()->DisableAI();
+        getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
         _setMeleeDisabled(true);
-        _unit->GetAIInterface()->m_canMove = false;
-        _unit->m_noRespawn = true;
-        _unit->Despawn(30000, 0);
+        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->m_noRespawn = true;
+        getCreature()->Despawn(30000, 0);
 
         RegisterAIUpdateEvent(2000);
 
@@ -3459,7 +3459,7 @@ public:
         spells[0].cooldown = 2;
         spells[0].casttime = (uint32)time(NULL) + spells[0].cooldown;
 
-        _unit->CastSpell(_unit, spells[0].info, spells[0].instant);
+        getCreature()->CastSpell(getCreature(), spells[0].info, spells[0].instant);
     }
 
     void AIUpdate()
@@ -3467,7 +3467,7 @@ public:
         uint32 t = (uint32)time(NULL);
         if (t > spells[0].casttime)
         {
-            _unit->CastSpell(_unit, spells[0].casttime, spells[0].instant);
+            getCreature()->CastSpell(getCreature(), spells[0].casttime, spells[0].instant);
             spells[0].casttime = t + spells[0].cooldown;
         }
     }
@@ -3589,12 +3589,12 @@ public:
 
     void OnCombatStop(Unit* mTarget)
     {
-        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+        getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
         setAIAgent(AGENT_NULL);
-        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
-        _unit->GetAIInterface()->unsetSplineFlying();
-        _unit->GetAIInterface()->m_canMove = true;
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
+        getCreature()->GetAIInterface()->unsetSplineFlying();
+        getCreature()->GetAIInterface()->m_canMove = true;
         RemoveAIUpdateEvent();
     }
 
@@ -3622,16 +3622,16 @@ public:
         {
             case 1: //casting point
             {
-                _unit->GetAIInterface()->m_canMove = false;
-                _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
-                _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
+                getCreature()->GetAIInterface()->m_canMove = false;
+                getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
+                getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                 m_currentWP = 1;
             }
             break;
             case 4: //ground point
             {
-                _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
-                _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
+                getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
+                getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                 Land();
                 m_currentWP = 4;
             }
@@ -3639,8 +3639,8 @@ public:
             default:
             {
                 //move to the next waypoint
-                _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                _unit->GetAIInterface()->setWayPointToMove(iWaypointId + 1);
+                getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+                getCreature()->GetAIInterface()->setWayPointToMove(iWaypointId + 1);
             }
             break;
         }
@@ -3654,15 +3654,15 @@ public:
         m_FlyPhaseTimer--;
         if (!m_FlyPhaseTimer)
         {
-            if (_unit->GetCurrentSpell() != NULL)
-                _unit->GetCurrentSpell()->cancel();
+            if (getCreature()->GetCurrentSpell() != NULL)
+                getCreature()->GetCurrentSpell()->cancel();
 
-            _unit->GetAIInterface()->m_canMove = true;
-            _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-            _unit->GetAIInterface()->StopMovement(0);
-            _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
-            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-            _unit->GetAIInterface()->setWayPointToMove(2);
+            getCreature()->GetAIInterface()->m_canMove = true;
+            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+            getCreature()->GetAIInterface()->StopMovement(0);
+            getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
+            getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+            getCreature()->GetAIInterface()->setWayPointToMove(2);
             m_phase++;
             return;
         }
@@ -3683,23 +3683,23 @@ public:
         }
 
         //Shoots powerful Smoking Blast every second for approximately 15 seconds.
-        if (_unit->GetAIInterface()->getNextTarget() != NULL)
+        if (getCreature()->GetAIInterface()->getNextTarget() != NULL)
         {
-            target = _unit->GetAIInterface()->getNextTarget();
-            _unit->CastSpell(target, sSpellCustomizations.GetSpellInfo(SMOKING_BLAST), true);
+            target = getCreature()->GetAIInterface()->getNextTarget();
+            getCreature()->CastSpell(target, sSpellCustomizations.GetSpellInfo(SMOKING_BLAST), true);
         }
 
         target = NULL;
         //fireball barrage check
-        for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+        for (std::set<Object*>::iterator itr = getCreature()->GetInRangeSetBegin(); itr != getCreature()->GetInRangeSetEnd(); ++itr)
         {
             if ((*itr)->IsPlayer())
             {
                 target = static_cast<Unit*>(*itr);
 
-                if (_unit->GetDistance2dSq(target) > 2025) //45 yards
+                if (getCreature()->GetDistance2dSq(target) > 2025) //45 yards
                 {
-                    _unit->CastSpellAoF(target->GetPosition(), sSpellCustomizations.GetSpellInfo(FIREBALL_BARRAGE), true);
+                    getCreature()->CastSpellAoF(target->GetPosition(), sSpellCustomizations.GetSpellInfo(FIREBALL_BARRAGE), true);
                     break; //stop
                 }
             }
@@ -3712,18 +3712,18 @@ public:
             return;
 
         //Switch if needed
-        if ((m_phase == 0 && _unit->GetHealthPct() <= 75)
-            || (m_phase == 2 && _unit->GetHealthPct() <= 50)
-            || (m_phase == 4 && _unit->GetHealthPct() <= 25))
+        if ((m_phase == 0 && getCreature()->GetHealthPct() <= 75)
+            || (m_phase == 2 && getCreature()->GetHealthPct() <= 50)
+            || (m_phase == 4 && getCreature()->GetHealthPct() <= 25))
         {
-            if (_unit->GetCurrentSpell() != NULL)
-                _unit->GetCurrentSpell()->cancel();
+            if (getCreature()->GetCurrentSpell() != NULL)
+                getCreature()->GetCurrentSpell()->cancel();
 
-            _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-            _unit->GetAIInterface()->StopMovement(0);
-            _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
-            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-            _unit->GetAIInterface()->setWayPointToMove(1);
+            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+            getCreature()->GetAIInterface()->StopMovement(0);
+            getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
+            getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+            getCreature()->GetAIInterface()->setWayPointToMove(1);
             Fly();
             m_FlyPhaseTimer = 17;
             m_phase++;
@@ -3735,15 +3735,15 @@ public:
         if (!mTailSweepTimer)
         {
             Unit* target = NULL;
-            for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+            for (std::set<Object*>::iterator itr = getCreature()->GetInRangeSetBegin(); itr != getCreature()->GetInRangeSetEnd(); ++itr)
             {
                 if ((*itr)->IsPlayer())
                 {
                     target = static_cast<Unit*>(*itr);
 
                     //cone behind the boss
-                    if (target->isAlive() && target->isInBack(_unit))
-                        _unit->CastSpell(target, sSpellCustomizations.GetSpellInfo(TAIL_SWEEP), true);
+                    if (target->isAlive() && target->isInBack(getCreature()))
+                        getCreature()->CastSpell(target, sSpellCustomizations.GetSpellInfo(TAIL_SWEEP), true);
                 }
             }
             mTailSweepTimer = 25;
@@ -3755,20 +3755,20 @@ public:
 
     void Fly()
     {
-        _unit->Emote(EMOTE_ONESHOT_LIFTOFF);
+        getCreature()->Emote(EMOTE_ONESHOT_LIFTOFF);
 
-        _unit->setMoveHover(true);
+        getCreature()->setMoveHover(true);
 
-        _unit->GetAIInterface()->setSplineFlying();
+        getCreature()->GetAIInterface()->setSplineFlying();
     }
 
     void Land()
     {
-        _unit->Emote(EMOTE_ONESHOT_LAND);
+        getCreature()->Emote(EMOTE_ONESHOT_LAND);
 
-        _unit->setMoveHover(false);
+        getCreature()->setMoveHover(false);
 
-        _unit->GetAIInterface()->unsetSplineFlying();
+        getCreature()->GetAIInterface()->unsetSplineFlying();
     }
 
     void ResetCastTime()
@@ -3779,7 +3779,7 @@ public:
 
     void SpellCast(float val)
     {
-        if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
         {
             float comulativeperc = 0;
             Unit* target = NULL;
@@ -3790,18 +3790,18 @@ public:
                 if (m_spellcheck[i])
                 {
                     spells[i].casttime = spells[i].cooldown;
-                    target = _unit->GetAIInterface()->getNextTarget();
+                    target = getCreature()->GetAIInterface()->getNextTarget();
                     switch (spells[i].targettype)
                     {
                         case TARGET_SELF:
                         case TARGET_VARIOUS:
-                            _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
                             break;
                         case TARGET_ATTACKING:
-                            _unit->CastSpell(target, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
+                            getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                         case TARGET_RANDOM_SINGLE:
                             CastSpellOnRandomTarget(i, 0, 0);
@@ -3814,7 +3814,7 @@ public:
 
                 if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
                 {
-                    _unit->setAttackTimer(spells[i].attackstoptimer, false);
+                    getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
                     m_spellcheck[i] = true;
                 }
                 comulativeperc += spells[i].perctrigger;
@@ -3826,17 +3826,17 @@ public:
     {
         if (!maxdist2cast) maxdist2cast = 100.0f;
 
-        if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
         {
             std::vector<Unit*> TargetTable;        // From M4ksiu - Big THX to Capt
-            for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+            for (std::set<Object*>::iterator itr = getCreature()->GetInRangeSetBegin(); itr != getCreature()->GetInRangeSetEnd(); ++itr)
             {
                 if ((*itr)->IsUnit())
                 {
                     Unit* RandomTarget = NULL;
                     RandomTarget = static_cast<Unit*>(*itr);
 
-                    if (RandomTarget->isAlive() && _unit->GetDistance2dSq(RandomTarget) >= mindist2cast * mindist2cast && _unit->GetDistance2dSq(RandomTarget) <= maxdist2cast * maxdist2cast && _unit->GetAIInterface()->getThreatByPtr(RandomTarget) > 0 && isHostile(_unit, RandomTarget))
+                    if (RandomTarget->isAlive() && getCreature()->GetDistance2dSq(RandomTarget) >= mindist2cast * mindist2cast && getCreature()->GetDistance2dSq(RandomTarget) <= maxdist2cast * maxdist2cast && getCreature()->GetAIInterface()->getThreatByPtr(RandomTarget) > 0 && isHostile(getCreature(), RandomTarget))
                     {
                         TargetTable.push_back(RandomTarget);
                     }
@@ -3855,10 +3855,10 @@ public:
             switch (spells[i].targettype)
             {
                 case TARGET_RANDOM_SINGLE:
-                    _unit->CastSpell(random_target, spells[i].info, spells[i].instant);
+                    getCreature()->CastSpell(random_target, spells[i].info, spells[i].instant);
                     break;
                 case TARGET_RANDOM_DESTINATION:
-                    _unit->CastSpellAoF(random_target->GetPosition(), spells[i].info, spells[i].instant);
+                    getCreature()->CastSpellAoF(random_target->GetPosition(), spells[i].info, spells[i].instant);
                     break;
             }
 
@@ -3930,10 +3930,10 @@ public:
     {
         CastTime();
         setAIAgent(AGENT_NULL);
-        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
 
-        _unit->Despawn(1, 0);
+        getCreature()->Despawn(1, 0);
     }
 
     void OnDied(Unit* mKiller)
@@ -3969,10 +3969,10 @@ public:
         if (RandomUInt(1) == 1)
             ychange *= -1;
 
-        float newposx = _unit->GetPositionX() + xchange;
-        float newposy = _unit->GetPositionY() + ychange;
+        float newposx = getCreature()->GetPositionX() + xchange;
+        float newposy = getCreature()->GetPositionY() + ychange;
 
-        tito = spawnCreature(17548, newposx, newposy, _unit->GetPositionZ() + 0.5f, 2.177125f);
+        tito = spawnCreature(17548, newposx, newposy, getCreature()->GetPositionZ() + 0.5f, 2.177125f);
     }
     void AIUpdate()
     {
@@ -4009,28 +4009,28 @@ public:
         if (!maxdist2cast) maxdist2cast = 100.0f;
         if (!maxhp2cast) maxhp2cast = 100;
 
-        if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
         {
             std::vector<Unit*> TargetTable;
-            for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+            for (std::set<Object*>::iterator itr = getCreature()->GetInRangeSetBegin(); itr != getCreature()->GetInRangeSetEnd(); ++itr)
             {
-                if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
+                if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(getCreature(), (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(getCreature(), (*itr)) && (*itr) != getCreature())) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
                 {
                     Unit* RandomTarget = NULL;
                     RandomTarget = static_cast<Unit*>(*itr);
 
-                    if (RandomTarget == _unit->GetAIInterface()->GetMostHated())
+                    if (RandomTarget == getCreature()->GetAIInterface()->GetMostHated())
                         continue;
 
-                    if (RandomTarget->isAlive() && _unit->GetDistance2dSq(RandomTarget) >= mindist2cast * mindist2cast && _unit->GetDistance2dSq(RandomTarget) <= maxdist2cast * maxdist2cast && ((RandomTarget->GetHealthPct() >= minhp2cast && RandomTarget->GetHealthPct() <= maxhp2cast && spells[i].targettype == TARGET_RANDOM_FRIEND) || (_unit->GetAIInterface()->getThreatByPtr(RandomTarget) > 0 && isHostile(_unit, RandomTarget))))
+                    if (RandomTarget->isAlive() && getCreature()->GetDistance2dSq(RandomTarget) >= mindist2cast * mindist2cast && getCreature()->GetDistance2dSq(RandomTarget) <= maxdist2cast * maxdist2cast && ((RandomTarget->GetHealthPct() >= minhp2cast && RandomTarget->GetHealthPct() <= maxhp2cast && spells[i].targettype == TARGET_RANDOM_FRIEND) || (getCreature()->GetAIInterface()->getThreatByPtr(RandomTarget) > 0 && isHostile(getCreature(), RandomTarget))))
                     {
                         TargetTable.push_back(RandomTarget);
                     }
                 }
             }
 
-            if (_unit->GetHealthPct() >= minhp2cast && _unit->GetHealthPct() <= maxhp2cast && spells[i].targettype == TARGET_RANDOM_FRIEND)
-                TargetTable.push_back(_unit);
+            if (getCreature()->GetHealthPct() >= minhp2cast && getCreature()->GetHealthPct() <= maxhp2cast && spells[i].targettype == TARGET_RANDOM_FRIEND)
+                TargetTable.push_back(getCreature());
 
             if (!TargetTable.size())
                 return;
@@ -4047,7 +4047,7 @@ public:
 
     void SpellCast(float val)
     {
-        if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
         {
             float comulativeperc = 0;
             Unit* target = NULL;
@@ -4058,18 +4058,18 @@ public:
                 if (m_spellcheck[i])
                 {
                     spells[i].casttime = spells[i].cooldown;
-                    target = _unit->GetAIInterface()->getNextTarget();
+                    target = getCreature()->GetAIInterface()->getNextTarget();
                     switch (spells[i].targettype)
                     {
                         case TARGET_SELF:
                         case TARGET_VARIOUS:
-                            _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
                             break;
                         case TARGET_ATTACKING:
-                            _unit->CastSpell(target, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
+                            getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                         case TARGET_RANDOM_FRIEND:
                         case TARGET_RANDOM_SINGLE:
@@ -4080,8 +4080,8 @@ public:
 
                     if (spells[i].speech != "")
                     {
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
-                        _unit->PlaySoundToSet(spells[i].soundid);
+                        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
+                        getCreature()->PlaySoundToSet(spells[i].soundid);
                     }
 
                     m_spellcheck[i] = false;
@@ -4090,7 +4090,7 @@ public:
 
                 if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
                 {
-                    _unit->setAttackTimer(spells[i].attackstoptimer, false);
+                    getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
                     m_spellcheck[i] = true;
                 }
                 comulativeperc += spells[i].perctrigger;
@@ -4133,7 +4133,7 @@ public:
         spells[0].perctrigger = 15.0f;
         spells[0].attackstoptimer = 1000;
 
-        _unit->m_noRespawn = true;
+        getCreature()->m_noRespawn = true;
     }
 
     void OnCombatStart(Unit* mTarget)
@@ -4146,10 +4146,10 @@ public:
     {
         CastTime();
         setAIAgent(AGENT_NULL);
-        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
 
-        _unit->Despawn(1, 0);
+        getCreature()->Despawn(1, 0);
     }
 
     void OnDied(Unit* mKiller)
@@ -4171,7 +4171,7 @@ public:
 
     void SpellCast(float val)
     {
-        if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
         {
             float comulativeperc = 0;
             Unit* target = NULL;
@@ -4182,25 +4182,25 @@ public:
                 if (m_spellcheck[i])
                 {
                     spells[i].casttime = spells[i].cooldown;
-                    target = _unit->GetAIInterface()->getNextTarget();
+                    target = getCreature()->GetAIInterface()->getNextTarget();
                     switch (spells[i].targettype)
                     {
                         case TARGET_SELF:
                         case TARGET_VARIOUS:
-                            _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
                             break;
                         case TARGET_ATTACKING:
-                            _unit->CastSpell(target, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
+                            getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                     }
 
                     if (spells[i].speech != "")
                     {
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
-                        _unit->PlaySoundToSet(spells[i].soundid);
+                        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
+                        getCreature()->PlaySoundToSet(spells[i].soundid);
                     }
 
                     m_spellcheck[i] = false;
@@ -4209,7 +4209,7 @@ public:
 
                 if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
                 {
-                    _unit->setAttackTimer(spells[i].attackstoptimer, false);
+                    getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
                     m_spellcheck[i] = true;
                 }
                 comulativeperc += spells[i].perctrigger;
@@ -4268,10 +4268,10 @@ public:
     {
         CastTime();
         setAIAgent(AGENT_NULL);
-        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
 
-        _unit->Despawn(1, 0);
+        getCreature()->Despawn(1, 0);
     }
 
     void OnDied(Unit* mKiller)
@@ -4311,7 +4311,7 @@ public:
 
     void SpellCast(float val)
     {
-        if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
         {
             float comulativeperc = 0;
             Unit* target = NULL;
@@ -4322,25 +4322,25 @@ public:
                 if (m_spellcheck[i])
                 {
                     spells[i].casttime = spells[i].cooldown;
-                    target = _unit->GetAIInterface()->getNextTarget();
+                    target = getCreature()->GetAIInterface()->getNextTarget();
                     switch (spells[i].targettype)
                     {
                         case TARGET_SELF:
                         case TARGET_VARIOUS:
-                            _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
                             break;
                         case TARGET_ATTACKING:
-                            _unit->CastSpell(target, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
+                            getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                     }
 
                     if (spells[i].speech != "")
                     {
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
-                        _unit->PlaySoundToSet(spells[i].soundid);
+                        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
+                        getCreature()->PlaySoundToSet(spells[i].soundid);
                     }
 
                     m_spellcheck[i] = false;
@@ -4349,7 +4349,7 @@ public:
 
                 if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
                 {
-                    _unit->setAttackTimer(spells[i].attackstoptimer, false);
+                    getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
                     m_spellcheck[i] = true;
                 }
                 comulativeperc += spells[i].perctrigger;
@@ -4408,10 +4408,10 @@ public:
     {
         CastTime();
         setAIAgent(AGENT_NULL);
-        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
 
-        _unit->Despawn(1, 0);
+        getCreature()->Despawn(1, 0);
     }
 
     void OnDied(Unit* mKiller)
@@ -4451,7 +4451,7 @@ public:
 
     void SpellCast(float val)
     {
-        if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
         {
             float comulativeperc = 0;
             Unit* target = NULL;
@@ -4462,25 +4462,25 @@ public:
                 if (m_spellcheck[i])
                 {
                     spells[i].casttime = spells[i].cooldown;
-                    target = _unit->GetAIInterface()->getNextTarget();
+                    target = getCreature()->GetAIInterface()->getNextTarget();
                     switch (spells[i].targettype)
                     {
                         case TARGET_SELF:
                         case TARGET_VARIOUS:
-                            _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
                             break;
                         case TARGET_ATTACKING:
-                            _unit->CastSpell(target, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
+                            getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                     }
 
                     if (spells[i].speech != "")
                     {
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
-                        _unit->PlaySoundToSet(spells[i].soundid);
+                        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
+                        getCreature()->PlaySoundToSet(spells[i].soundid);
                     }
 
                     m_spellcheck[i] = false;
@@ -4489,7 +4489,7 @@ public:
 
                 if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
                 {
-                    _unit->setAttackTimer(spells[i].attackstoptimer, false);
+                    getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
                     m_spellcheck[i] = true;
                 }
                 comulativeperc += spells[i].perctrigger;
@@ -4518,8 +4518,8 @@ public:
     void OnCombatStop(Unit* mTarget)
     {
         setAIAgent(AGENT_NULL);
-        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        _unit->Despawn(1, 0);
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        getCreature()->Despawn(1, 0);
     }
 
     void OnDied(Unit* mKiller)
@@ -4583,7 +4583,7 @@ public:
 
     void OnCombatStop(Unit* mTarget)
     {
-        if (_unit->GetHealthPct() > 0)
+        if (getCreature()->GetHealthPct() > 0)
         {
             GameObject* DoorLeft = getNearestGameObject(-10917.1445f, -1774.05f, 90.478f, 184279);
             GameObject* DoorRight = getNearestGameObject(-10872.195f, -1779.42f, 90.45f, 184278);
@@ -4601,10 +4601,10 @@ public:
 
         CastTime();
         setAIAgent(AGENT_NULL);
-        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
 
-        _unit->Despawn(1, 0);
+        getCreature()->Despawn(1, 0);
     }
 
     void OnDied(Unit* mKiller)
@@ -4647,7 +4647,7 @@ public:
 
     void SpellCast(float val)
     {
-        if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
         {
             float comulativeperc = 0;
             Unit* target = NULL;
@@ -4658,25 +4658,25 @@ public:
                 if (m_spellcheck[i])
                 {
                     spells[i].casttime = spells[i].cooldown;
-                    target = _unit->GetAIInterface()->getNextTarget();
+                    target = getCreature()->GetAIInterface()->getNextTarget();
                     switch (spells[i].targettype)
                     {
                         case TARGET_SELF:
                         case TARGET_VARIOUS:
-                            _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
                             break;
                         case TARGET_ATTACKING:
-                            _unit->CastSpell(target, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
+                            getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                     }
 
                     if (spells[i].speech != "")
                     {
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
-                        _unit->PlaySoundToSet(spells[i].soundid);
+                        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
+                        getCreature()->PlaySoundToSet(spells[i].soundid);
                     }
 
                     m_spellcheck[i] = false;
@@ -4685,7 +4685,7 @@ public:
 
                 if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
                 {
-                    _unit->setAttackTimer(spells[i].attackstoptimer, false);
+                    getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
                     m_spellcheck[i] = true;
                 }
                 comulativeperc += spells[i].perctrigger;
@@ -4707,11 +4707,11 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(CycloneOZ);
     CycloneOZ(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CYCLONE_VISUAL), true);
-        _unit->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CYCLONE_VISUAL), true);
+        getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
         _setMeleeDisabled(true);
-        _unit->GetAIInterface()->m_canMove = false;
-        _unit->m_noRespawn = true;
+        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->m_noRespawn = true;
     }
 
     void OnCombatStart(Unit* mTarget)
@@ -4726,7 +4726,7 @@ public:
 
     void AIUpdate()
     {
-        _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CYCLONE_KNOCK), true);
+        getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CYCLONE_KNOCK), true);
     }
 };
 
@@ -4795,7 +4795,7 @@ public:
 
     void OnCombatStop(Unit* mTarget)
     {
-        if (_unit->GetHealthPct() > 0)
+        if (getCreature()->GetHealthPct() > 0)
         {
             GameObject* DoorLeft = getNearestGameObject(-10917.1445f, -1774.05f, 90.478f, 184279);
             GameObject* DoorRight = getNearestGameObject(-10872.195f, -1779.42f, 90.45f, 184278);
@@ -4813,9 +4813,9 @@ public:
 
         CastTime();
         setAIAgent(AGENT_NULL);
-        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
-        _unit->Despawn(1, 0);
+        getCreature()->Despawn(1, 0);
     }
 
     void OnDied(Unit* mKiller)
@@ -4866,7 +4866,7 @@ public:
 
     void SpellCast(float val)
     {
-        if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
         {
             float comulativeperc = 0;
             Unit* target = NULL;
@@ -4877,25 +4877,25 @@ public:
                 if (m_spellcheck[i])
                 {
                     spells[i].casttime = spells[i].cooldown;
-                    target = _unit->GetAIInterface()->getNextTarget();
+                    target = getCreature()->GetAIInterface()->getNextTarget();
                     switch (spells[i].targettype)
                     {
                         case TARGET_SELF:
                         case TARGET_VARIOUS:
-                            _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
                             break;
                         case TARGET_ATTACKING:
-                            _unit->CastSpell(target, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
+                            getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                     }
 
                     if (spells[i].speech != "")
                     {
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
-                        _unit->PlaySoundToSet(spells[i].soundid);
+                        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
+                        getCreature()->PlaySoundToSet(spells[i].soundid);
                     }
 
                     m_spellcheck[i] = false;
@@ -4904,7 +4904,7 @@ public:
 
                 if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
                 {
-                    _unit->setAttackTimer(spells[i].attackstoptimer, false);
+                    getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
                     m_spellcheck[i] = true;
                 }
                 comulativeperc += spells[i].perctrigger;
@@ -4980,7 +4980,7 @@ public:
 
     void OnCombatStop(Unit* mTarget)
     {
-        if (_unit->GetHealthPct() > 0)
+        if (getCreature()->GetHealthPct() > 0)
         {
             GameObject* DoorLeft = getNearestGameObject(-10917.1445f, -1774.05f, 90.478f, 184279);
             GameObject* DoorRight = getNearestGameObject(-10872.195f, -1779.42f, 90.45f, 184278);
@@ -4998,9 +4998,9 @@ public:
 
         CastTime();
         setAIAgent(AGENT_NULL);
-        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
-        _unit->Despawn(1, 0);
+        getCreature()->Despawn(1, 0);
     }
 
     void OnDied(Unit* mKiller)
@@ -5043,7 +5043,7 @@ public:
 
     void SpellCast(float val)
     {
-        if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
         {
             float comulativeperc = 0;
             Unit* target = NULL;
@@ -5054,25 +5054,25 @@ public:
                 if (m_spellcheck[i])
                 {
                     spells[i].casttime = spells[i].cooldown;
-                    target = _unit->GetAIInterface()->getNextTarget();
+                    target = getCreature()->GetAIInterface()->getNextTarget();
                     switch (spells[i].targettype)
                     {
                         case TARGET_SELF:
                         case TARGET_VARIOUS:
-                            _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
                             break;
                         case TARGET_ATTACKING:
-                            _unit->CastSpell(target, spells[i].info, spells[i].instant);
+                            getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
+                            getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                     }
 
                     if (spells[i].speech != "")
                     {
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
-                        _unit->PlaySoundToSet(spells[i].soundid);
+                        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
+                        getCreature()->PlaySoundToSet(spells[i].soundid);
                     }
 
                     m_spellcheck[i] = false;
@@ -5081,7 +5081,7 @@ public:
 
                 if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
                 {
-                    _unit->setAttackTimer(spells[i].attackstoptimer, false);
+                    getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
                     m_spellcheck[i] = true;
                 }
                 comulativeperc += spells[i].perctrigger;

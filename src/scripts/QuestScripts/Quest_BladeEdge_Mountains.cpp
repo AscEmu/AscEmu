@@ -37,7 +37,7 @@ public:
     void AIUpdate()
     {
         // Let's see if we are netted
-        Aura* a = _unit->getAuraWithId(38177);
+        Aura* a = getCreature()->getAuraWithId(38177);
         if (a != nullptr)
         {
             Unit* Caster = a->GetUnitCaster();
@@ -51,8 +51,8 @@ public:
                 if (qle != nullptr)
                 {
                     // casting the spell that will create the item for the player
-                    _unit->CastSpell(Caster, 38178, true);
-                    _unit->Despawn(1000, 360000);
+                    getCreature()->CastSpell(Caster, 38178, true);
+                    getCreature()->Despawn(1000, 360000);
                 }
             }
         }
@@ -99,7 +99,7 @@ public:
 
     void OnLoad()
     {
-        _unit->CastSpell(_unit, 37136, true);
+        getCreature()->CastSpell(getCreature(), 37136, true);
     }
 };
 
@@ -162,12 +162,12 @@ public:
     void OnLoad()
     {
         RegisterAIUpdateEvent(5000);
-        _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
-        _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         setAIAgent(AGENT_NULL);
         _setMeleeDisabled(true);
-        _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
-        _unit->GetAIInterface()->m_canMove = false;
+        getCreature()->SetEmoteState(EMOTE_ONESHOT_NONE);
+        getCreature()->GetAIInterface()->m_canMove = false;
         i = 1;
     }
 
@@ -176,17 +176,17 @@ public:
         switch (i)
         {
             case 1:
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Muahahahahaha! You fool! you've released me from my banishment in the interstices between space and time!");
+                getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Muahahahahaha! You fool! you've released me from my banishment in the interstices between space and time!");
                 break;
             case 2:
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "All of Draenor shall quake beneath my feet! i Will destroy this world and reshape it in my immage!");
+                getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "All of Draenor shall quake beneath my feet! i Will destroy this world and reshape it in my immage!");
                 break;
             case 3:
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Where shall i Begin? i cannot bother myself with a worm such as yourself. Theres a World to be Conquered!");
+                getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Where shall i Begin? i cannot bother myself with a worm such as yourself. Theres a World to be Conquered!");
                 break;
             case 4:
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "No doubt the fools that banished me are long dead. i shall take the wing and survey my new demense, Pray to whatever gods you hold dear that we do not meet again.");
-                _unit->Despawn(5000, 0);
+                getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "No doubt the fools that banished me are long dead. i shall take the wing and survey my new demense, Pray to whatever gods you hold dear that we do not meet again.");
+                getCreature()->Despawn(5000, 0);
                 break;
         }
 
@@ -267,7 +267,7 @@ public:
     Thuk_the_DefiantAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
     void OnLoad()
     {
-        _unit->setFloatValue(OBJECT_FIELD_SCALE_X, 0.4f);
+        getCreature()->setFloatValue(OBJECT_FIELD_SCALE_X, 0.4f);
     }
 
     void OnDied(Unit* mKiller)
@@ -277,8 +277,8 @@ public:
 
     void OnTargetDied(Unit* mTarget)
     {
-        _unit->SetFaction(35);
-        _unit->setFloatValue(OBJECT_FIELD_SCALE_X, 0.4f);
+        getCreature()->SetFaction(35);
+        getCreature()->setFloatValue(OBJECT_FIELD_SCALE_X, 0.4f);
     }
 };
 
@@ -334,12 +334,12 @@ public:
     MOONSCRIPT_FACTORY_FUNCTION(BrutebaneStoutTriggerAI, MoonScriptCreatureAI);
     BrutebaneStoutTriggerAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
-        _unit->SetFaction(35);
+        getCreature()->SetFaction(35);
 
         setRooted(true);
         NdGo = nullptr;
 
-        plr = _unit->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ());
+        plr = getCreature()->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ());
         Ogre = GetNearestCreature(CN_BLADESPIRE_OGRE_1);
         if (Ogre == nullptr)
         {
@@ -353,7 +353,7 @@ public:
                 }
             }
         }
-        Ogre->moveToUnit(_unit);
+        Ogre->moveToUnit(getCreature());
         RegisterAIUpdateEvent(1000);
     }
 
@@ -362,12 +362,12 @@ public:
         if (Ogre == nullptr)
             return;
 
-        if (getRangeToObject(Ogre->GetUnit()) <= 5)
+        if (getRangeToObject(Ogre->getCreature()) <= 5)
         {
             Ogre->_setDisplayWeaponIds(28562, 0);
-            Ogre->GetUnit()->SetEmoteState(EMOTE_ONESHOT_EAT_NOSHEATHE);
-            Ogre->GetUnit()->SetFaction(35);
-            Ogre->GetUnit()->SetStandState(STANDSTATE_SIT);
+            Ogre->getCreature()->SetEmoteState(EMOTE_ONESHOT_EAT_NOSHEATHE);
+            Ogre->getCreature()->SetFaction(35);
+            Ogre->getCreature()->SetStandState(STANDSTATE_SIT);
 
             NdGo = getNearestGameObject(184315);
             if (NdGo == nullptr)

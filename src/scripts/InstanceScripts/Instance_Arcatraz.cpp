@@ -75,7 +75,7 @@ class ZerekethAI : public MoonScriptBossAI
 
             //despawn voids
             Creature* creature = NULL;
-            for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd();)
+            for (std::set<Object*>::iterator itr = getCreature()->GetInRangeSetBegin(); itr != getCreature()->GetInRangeSetEnd();)
             {
                 Object* obj = *itr;
                 ++itr;
@@ -112,14 +112,14 @@ class ZerekethAI : public MoonScriptBossAI
             _resetTimer(VoidTimer, (RandomUInt(10) + 30) * 1000);
 
             std::vector<Player*> TargetTable;
-            std::set< Object* >::iterator Itr = _unit->GetInRangePlayerSetBegin();
-            for (; Itr != _unit->GetInRangePlayerSetEnd(); ++Itr)
+            std::set< Object* >::iterator Itr = getCreature()->GetInRangePlayerSetBegin();
+            for (; Itr != getCreature()->GetInRangePlayerSetEnd(); ++Itr)
             {
                 Player* RandomTarget = NULL;
                 if (!(*Itr)->IsPlayer())
                     continue;
                 RandomTarget = static_cast< Player* >(*Itr);
-                if (RandomTarget && RandomTarget->isAlive() && isHostile(*Itr, _unit))
+                if (RandomTarget && RandomTarget->isAlive() && isHostile(*Itr, getCreature()))
                     TargetTable.push_back(RandomTarget);
             }
 
@@ -185,7 +185,7 @@ class VoidZoneARC : public MoonScriptCreatureAI
             if (_isHeroic())
                 SpellId = CONSUMPTION_H;
 
-            _unit->CastSpell(_unit, SpellId, true);
+            getCreature()->CastSpell(getCreature(), SpellId, true);
             RemoveAIUpdateEvent();
         }
 };
@@ -409,14 +409,14 @@ class WardenMellicharAI : public MoonScriptBossAI
             Phase_Timer = _addTimer(55000);
 
             setCanEnterCombat(false);
-            _unit->SetEmoteState(EMOTE_ONESHOT_READY1H); // to be replaced for the standstate
+            getCreature()->SetEmoteState(EMOTE_ONESHOT_READY1H); // to be replaced for the standstate
 
             shield = getNearestGameObject(445.786f, -169.263f, 43.0466f, 184802);
             if (shield)
                 shield->SetState(GO_STATE_CLOSED);
 
             sendDBChatMessage(SAY_MELLICHAR_01);
-            _unit->SendTimedScriptTextChatMessage(SAY_MELLICHAR_02, 27000);
+            getCreature()->SendTimedScriptTextChatMessage(SAY_MELLICHAR_02, 27000);
 
             ParentClass::OnCombatStart(mTarget);
         }
@@ -514,7 +514,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                         {
                             millhouse->SendTimedScriptTextChatMessage(SAY_MILLHOUS_01, 2000);
 
-                            _unit->SendTimedScriptTextChatMessage(SAY_MELLICHAR_04, 13000);
+                            getCreature()->SendTimedScriptTextChatMessage(SAY_MELLICHAR_04, 13000);
 
                             millhouse->SendTimedScriptTextChatMessage(SAY_MILLHOUS_02, 22000);
                         }
@@ -563,7 +563,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                     if (!NPC_orb3 && NPC_ID_Spawn != 0 && Spawncounter == 0)
                     {
                         /// \todo investigate.... saying "1"... really?
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "1");
+                        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "1");
                         ++Spawncounter;
                         NPC_orb3 = spawnCreature(NPC_ID_Spawn, 420.050f, -173.500f, 42.580f, 6.110f);
                         return;
@@ -571,7 +571,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                     else if (!NPC_orb3)
                     {
                         /// \todo investigate.... saying "2"... really?
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "2");
+                        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "2");
                         NPC_orb3 = getNearestCreature(NPC_ID_Spawn);
                     }
                     else if (NPC_orb3 && !NPC_orb3->isAlive())
@@ -659,7 +659,7 @@ class WardenMellicharAI : public MoonScriptBossAI
             setRooted(false);
             _setMeleeDisabled(false);
             _setCastDisabled(false);
-            _unit->SetStandState(STANDSTATE_KNEEL);
+            getCreature()->SetStandState(STANDSTATE_KNEEL);
 
             if (shield)
                 shield->SetState(GO_STATE_OPEN);

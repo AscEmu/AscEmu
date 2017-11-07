@@ -54,7 +54,7 @@ public:
     The_Plains_Vision(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         WPCount = 22;
-        _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
 
         for (uint8 i = 1; i < WPCount; ++i)
             AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_RUN, WaypointPlainVision[i]));
@@ -63,12 +63,12 @@ public:
     void OnReachWP(uint32 iWaypointId, bool bForwards)
     {
         if (iWaypointId == 1)
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You follow me.");
+            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You follow me.");
         if (iWaypointId == 22)
         {
 
-            _unit->DeleteWaypoints();
-            _unit->Despawn(500, 0);
+            getCreature()->DeleteWaypoints();
+            getCreature()->Despawn(500, 0);
         }
     }
 

@@ -278,7 +278,7 @@ class SladranAI : public MoonScriptCreatureAI
     {
         sendDBChatMessage(8754);     // Drakkari gonna kill anybody who trespass on these lands!
         if (mInstance)
-            mInstance->setData(_unit->GetEntry(), InProgress);
+            mInstance->setData(getCreature()->GetEntry(), InProgress);
 
         ParentClass::OnCombatStart(pTarget);
     }
@@ -302,7 +302,7 @@ class SladranAI : public MoonScriptCreatureAI
     void OnCombatStop(Unit* pTarget)
     {
         if (mInstance)
-            mInstance->setData(_unit->GetEntry(), Performed);
+            mInstance->setData(getCreature()->GetEntry(), Performed);
 
         ParentClass::OnCombatStop(pTarget);
     }
@@ -337,7 +337,7 @@ class GalDarahAI : public MoonScriptCreatureAI
         sendDBChatMessage(4199);     // I'm gonna spill your guts, mon!
 
         if (mInstance)
-            mInstance->setData(_unit->GetEntry(), InProgress);
+            mInstance->setData(getCreature()->GetEntry(), InProgress);
 
         ParentClass::OnCombatStart(pTarget);
     }
@@ -361,7 +361,7 @@ class GalDarahAI : public MoonScriptCreatureAI
     void OnCombatStop(Unit* pTarget)
     {
         if (mInstance)
-            mInstance->setData(_unit->GetEntry(), Performed);
+            mInstance->setData(getCreature()->GetEntry(), Performed);
 
         ParentClass::OnCombatStop(pTarget);
     }

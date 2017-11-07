@@ -129,15 +129,15 @@ class SeaforiumDepthCharge : public MoonScriptCreatureAI
     {
         setRooted(true);
         setCanEnterCombat(false);
-        _unit->SetFaction(21);
+        getCreature()->SetFaction(21);
     }
 
     void OnLoad()
     {
-        if (!_unit->IsSummon())
+        if (!getCreature()->IsSummon())
             return;
 
-        Unit* summoner = static_cast<Summon*>(_unit)->GetOwner();
+        Unit* summoner = static_cast<Summon*>(getCreature())->GetOwner();
 
         if (summoner != NULL)
         {
@@ -149,7 +149,7 @@ class SeaforiumDepthCharge : public MoonScriptCreatureAI
                     GameObject* pSinkhole = p->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(p->GetPositionX(), p->GetPositionY(), p->GetPositionZ(), 300171);
                     if (pSinkhole != NULL)
                     {
-                        _unit->CastSpell(_unit, 45502, true);
+                        getCreature()->CastSpell(getCreature(), 45502, true);
 
                         float posX = pSinkhole->GetPositionX();
                         if (posX == 2657.13f)
@@ -175,7 +175,7 @@ class SeaforiumDepthCharge : public MoonScriptCreatureAI
                 }
             }
         }
-        _unit->Despawn(500, 0);
+        getCreature()->Despawn(500, 0);
     }
 };
 
@@ -488,9 +488,9 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(GearmasterMechazodAI);
     GearmasterMechazodAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        _unit->SetEquippedItem(0, 28487);       // Mainhand
-        _unit->SetEquippedItem(1, 11587);       // Offhand
-        _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->SetEquippedItem(0, 28487);       // Mainhand
+        getCreature()->SetEquippedItem(1, 11587);       // Offhand
+        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         RegisterAIUpdateEvent(100);
         phase = 0;
     }
@@ -502,32 +502,32 @@ public:
             case 0:
             {
                 RemoveAIUpdateEvent();
-                _unit->SendScriptTextChatMessage(8736);
+                getCreature()->SendScriptTextChatMessage(8736);
                 RegisterAIUpdateEvent(7000);
                 phase = 1;
             }break;
             case 1:
             {
-                _unit->SendScriptTextChatMessage(8737);
+                getCreature()->SendScriptTextChatMessage(8737);
 
                 phase = 2;
             }break;
             case 2:
             {
-                _unit->SendScriptTextChatMessage(8738);
+                getCreature()->SendScriptTextChatMessage(8738);
 
                 phase = 3;
             }break;
             case 3:
             {
-                _unit->SendScriptTextChatMessage(8739);
+                getCreature()->SendScriptTextChatMessage(8739);
 
                 phase = 4;
             }break;
             case 4:
             {
-                _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
-                _unit->GetAIInterface()->m_canMove = true;
+                getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
+                getCreature()->GetAIInterface()->m_canMove = true;
                 RemoveAIUpdateEvent();          // Remove Update, now we are in OnCombatStart
             }break;
             default:
@@ -655,9 +655,9 @@ public:
 
     void OnLoad()
     {
-        _unit->setMoveRoot(true);
-        _unit->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
-        _unit->Die(_unit, _unit->GetHealth(), 0);
+        getCreature()->setMoveRoot(true);
+        getCreature()->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->Die(getCreature(), getCreature()->GetHealth(), 0);
     }
 };
 

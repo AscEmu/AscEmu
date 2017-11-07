@@ -1552,16 +1552,13 @@ class LuaCreature : public CreatureAIScript
         LuaCreature(Creature* creature) : CreatureAIScript(creature), m_binding(nullptr) {}
         ~LuaCreature()
         {}
-        inline void SetUnit(Creature* ncrc)
-        {
-            _unit = ncrc;
-        }
+
         void OnCombatStart(Unit* mTarget)
         {
             CHECK_BINDING_ACQUIRELOCK
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_ENTER_COMBAT]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_ENTER_COMBAT);
             LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
             LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
@@ -1574,7 +1571,7 @@ class LuaCreature : public CreatureAIScript
             CHECK_BINDING_ACQUIRELOCK
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_LEAVE_COMBAT]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_LEAVE_COMBAT);
             LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
             LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
@@ -1587,7 +1584,7 @@ class LuaCreature : public CreatureAIScript
             CHECK_BINDING_ACQUIRELOCK
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_DIED]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_TARGET_DIED);
             LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
             LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
@@ -1600,7 +1597,7 @@ class LuaCreature : public CreatureAIScript
             CHECK_BINDING_ACQUIRELOCK
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_DIED]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_DIED);
             LuaGlobal::instance()->luaEngine()->PushUnit(mKiller);
             LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
@@ -1612,7 +1609,7 @@ class LuaCreature : public CreatureAIScript
             CHECK_BINDING_ACQUIRELOCK
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_PARRIED]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_TARGET_PARRIED);
             LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
             LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
@@ -1624,7 +1621,7 @@ class LuaCreature : public CreatureAIScript
             CHECK_BINDING_ACQUIRELOCK
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_DODGED]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_TARGET_DODGED);
             LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
             LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
@@ -1636,7 +1633,7 @@ class LuaCreature : public CreatureAIScript
             CHECK_BINDING_ACQUIRELOCK
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_BLOCKED]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_TARGET_BLOCKED);
             LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
             LuaGlobal::instance()->luaEngine()->PUSH_INT(iAmount);
@@ -1649,7 +1646,7 @@ class LuaCreature : public CreatureAIScript
             CHECK_BINDING_ACQUIRELOCK
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_CRIT_HIT]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_TARGET_CRIT_HIT);
             LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
             LuaGlobal::instance()->luaEngine()->PUSH_INT(fAmount);
@@ -1661,7 +1658,7 @@ class LuaCreature : public CreatureAIScript
             CHECK_BINDING_ACQUIRELOCK
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_PARRY]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_PARRY);
             LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
             LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
@@ -1673,7 +1670,7 @@ class LuaCreature : public CreatureAIScript
             CHECK_BINDING_ACQUIRELOCK
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_DODGED]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_DODGED);
             LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
             LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
@@ -1684,7 +1681,7 @@ class LuaCreature : public CreatureAIScript
             CHECK_BINDING_ACQUIRELOCK
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_BLOCKED]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_BLOCKED);
             LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
             LuaGlobal::instance()->luaEngine()->PUSH_INT(iAmount);
@@ -1696,7 +1693,7 @@ class LuaCreature : public CreatureAIScript
             CHECK_BINDING_ACQUIRELOCK
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_CRIT_HIT]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_CRIT_HIT);
             LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
             LuaGlobal::instance()->luaEngine()->PUSH_INT(fAmount);
@@ -1708,7 +1705,7 @@ class LuaCreature : public CreatureAIScript
             CHECK_BINDING_ACQUIRELOCK
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_HIT]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_HIT);
             LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
             LuaGlobal::instance()->luaEngine()->PUSH_FLOAT(fAmount);
@@ -1722,7 +1719,7 @@ class LuaCreature : public CreatureAIScript
             CHECK_BINDING_ACQUIRELOCK
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_ASSIST_TARGET_DIED]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_ASSIST_TARGET_DIED);
             LuaGlobal::instance()->luaEngine()->PushUnit(mAssistTarget);
             LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
@@ -1734,7 +1731,7 @@ class LuaCreature : public CreatureAIScript
             CHECK_BINDING_ACQUIRELOCK
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_FEAR]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_FEAR);
             LuaGlobal::instance()->luaEngine()->PushUnit(mFeared);
             LuaGlobal::instance()->luaEngine()->PUSH_UINT(iSpellId);
@@ -1747,7 +1744,7 @@ class LuaCreature : public CreatureAIScript
             CHECK_BINDING_ACQUIRELOCK
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_FLEE]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_FLEE);
             LuaGlobal::instance()->luaEngine()->PushUnit(mFlee);
             LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
@@ -1759,7 +1756,7 @@ class LuaCreature : public CreatureAIScript
             CHECK_BINDING_ACQUIRELOCK
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_CALL_FOR_HELP]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_CALL_FOR_HELP);
             LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
 
@@ -1770,26 +1767,26 @@ class LuaCreature : public CreatureAIScript
             CHECK_BINDING_ACQUIRELOCK
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_LOAD]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_LOAD);
             LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
 
             RELEASE_LOCK
-                uint32 iid = _unit->GetInstanceID();
-            if (_unit->GetMapMgr() == nullptr || _unit->GetMapMgr()->GetMapInfo()->type == INSTANCE_NULL)
+                uint32 iid = getCreature()->GetInstanceID();
+            if (getCreature()->GetMapMgr() == nullptr || getCreature()->GetMapMgr()->GetMapInfo()->type == INSTANCE_NULL)
             {
                 iid = 0;
             }
-            LuaGlobal::instance()->m_onLoadInfo.push_back(_unit->GetMapId());
+            LuaGlobal::instance()->m_onLoadInfo.push_back(getCreature()->GetMapId());
             LuaGlobal::instance()->m_onLoadInfo.push_back(iid);
-            LuaGlobal::instance()->m_onLoadInfo.push_back(GET_LOWGUID_PART(_unit->GetGUID()));
+            LuaGlobal::instance()->m_onLoadInfo.push_back(GET_LOWGUID_PART(getCreature()->GetGUID()));
         }
         void OnReachWP(uint32 iWaypointId, bool bForwards)
         {
             CHECK_BINDING_ACQUIRELOCK
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_REACH_WP]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_REACH_WP);
             LuaGlobal::instance()->luaEngine()->PUSH_UINT(iWaypointId);
             LuaGlobal::instance()->luaEngine()->PUSH_BOOL(bForwards);
@@ -1802,7 +1799,7 @@ class LuaCreature : public CreatureAIScript
             CHECK_BINDING_ACQUIRELOCK
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_LOOT_TAKEN]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_LOOT_TAKEN);
             LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
             LuaGlobal::instance()->luaEngine()->PUSH_UINT(pItemPrototype->ItemId);
@@ -1814,7 +1811,7 @@ class LuaCreature : public CreatureAIScript
             CHECK_BINDING_ACQUIRELOCK
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_AIUPDATE]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_AIUPDATE);
             LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
 
@@ -1825,7 +1822,7 @@ class LuaCreature : public CreatureAIScript
             CHECK_BINDING_ACQUIRELOCK
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_EMOTE]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_EMOTE);
             LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
             LuaGlobal::instance()->luaEngine()->PUSH_INT((int32)Emote);
@@ -1838,7 +1835,7 @@ class LuaCreature : public CreatureAIScript
             CHECK_BINDING_ACQUIRELOCK
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_DAMAGE_TAKEN]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_DAMAGE_TAKEN);
             LuaGlobal::instance()->luaEngine()->PushUnit(mAttacker);
             LuaGlobal::instance()->luaEngine()->PUSH_UINT(fAmount);
@@ -1851,7 +1848,7 @@ class LuaCreature : public CreatureAIScript
             CHECK_BINDING_ACQUIRELOCK;
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_ENTER_VEHICLE]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
 
             RELEASE_LOCK;
@@ -1862,7 +1859,7 @@ class LuaCreature : public CreatureAIScript
             CHECK_BINDING_ACQUIRELOCK;
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_EXIT_VEHICLE]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
 
             RELEASE_LOCK;
@@ -1873,7 +1870,7 @@ class LuaCreature : public CreatureAIScript
             CHECK_BINDING_ACQUIRELOCK;
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_FIRST_PASSENGER_ENTERED]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->PushUnit(passenger);
             LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
 
@@ -1885,7 +1882,7 @@ class LuaCreature : public CreatureAIScript
             CHECK_BINDING_ACQUIRELOCK;
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_VEHICLE_FULL]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
 
             RELEASE_LOCK;
@@ -1896,7 +1893,7 @@ class LuaCreature : public CreatureAIScript
             CHECK_BINDING_ACQUIRELOCK;
 
             LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_LAST_PASSENGER_LEFT]);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->PushUnit(passenger);
             LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
 
@@ -1908,7 +1905,7 @@ class LuaCreature : public CreatureAIScript
 
             CHECK_BINDING_ACQUIRELOCK
             LuaGlobal::instance()->luaEngine()->BeginCall(fRef);
-            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
             RELEASE_LOCK
         }
@@ -1917,8 +1914,8 @@ class LuaCreature : public CreatureAIScript
             {
                 typedef std::multimap<uint32, LuaCreature*> CMAP;
                 CMAP& cMap = LuaGlobal::instance()->luaEngine()->getLuCreatureMap();
-                CMAP::iterator itr = cMap.find(_unit->GetEntry());
-                CMAP::iterator itend = cMap.upper_bound(_unit->GetEntry());
+                CMAP::iterator itr = cMap.find(getCreature()->GetEntry());
+                CMAP::iterator itend = cMap.upper_bound(getCreature()->GetEntry());
                 CMAP::iterator it;
                 for (; itr != cMap.end() && itr != itend;)
                 {
@@ -1932,14 +1929,14 @@ class LuaCreature : public CreatureAIScript
             {
                 //Function Ref clean up
                 std::map< uint64, std::set<int> >& objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
-                std::map< uint64, std::set<int> >::iterator itr = objRefs.find(_unit->GetGUID());
+                std::map< uint64, std::set<int> >::iterator itr = objRefs.find(getCreature()->GetGUID());
                 if (itr != objRefs.end())
                 {
                     std::set<int>& refs = itr->second;
                     for (std::set<int>::iterator it = refs.begin(); it != refs.end(); ++it)
                     {
                         luaL_unref(LuaGlobal::instance()->luaEngine()->getluState(), LUA_REGISTRYINDEX, (*it));
-                        sEventMgr.RemoveEvents(_unit, (*it) + EVENT_LUA_CREATURE_EVENTS);
+                        sEventMgr.RemoveEvents(getCreature(), (*it) + EVENT_LUA_CREATURE_EVENTS);
                     }
                     refs.clear();
                 }

@@ -57,7 +57,7 @@ public:
             {
                 if (Rand(90))
                 {
-                    switch (_unit->GetEntry())
+                    switch (getCreature()->GetEntry())
                     {
                         case 22307:
                             min = 4; max = 11;
@@ -69,14 +69,14 @@ public:
 
                     finall = min + RandomUInt(max - min);
 
-                    float SSX = _unit->GetPositionX();
-                    float SSY = _unit->GetPositionY();
-                    float SSZ = _unit->GetPositionZ();
-                    float SSO = _unit->GetOrientation();
+                    float SSX = getCreature()->GetPositionX();
+                    float SSY = getCreature()->GetPositionY();
+                    float SSZ = getCreature()->GetPositionZ();
+                    float SSO = getCreature()->GetOrientation();
 
                     for (uint8 i = 0; i < finall; i++)
                     {
-                        Creature * NewCreature = _unit->GetMapMgr()->GetInterface()->SpawnCreature(22419, SSX + RandomFloat(3.0f), SSY + RandomFloat(3.0f), SSZ, SSO + RandomFloat(1.0f), true, false, 0, 0);
+                        Creature * NewCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(22419, SSX + RandomFloat(3.0f), SSY + RandomFloat(3.0f), SSZ, SSO + RandomFloat(1.0f), true, false, 0, 0);
                         if (NewCreature != NULL)
                             NewCreature->Despawn(120000, 0);
                     }
@@ -101,8 +101,8 @@ public:
 
     void OnLoad()
     {
-        _unit->GetAIInterface()->m_canMove = false;
-        _unit->GetAIInterface()->setCombatDisabled(true);
+        getCreature()->GetAIInterface()->m_canMove = false;
+        getCreature()->GetAIInterface()->setCombatDisabled(true);
     }
 
     void OnDied(Unit* mKiller)
@@ -138,7 +138,7 @@ public:
                 break;
         }
 
-        Creature* creat = plr->GetMapMgr()->CreateAndSpawnCreature(spawn, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 0);
+        Creature* creat = plr->GetMapMgr()->CreateAndSpawnCreature(spawn, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), 0);
         if (creat == nullptr)
             return;
 
@@ -163,9 +163,9 @@ public:
 
     void OnLoad()
     {
-        _unit->SetStandState(STANDSTATE_DEAD);
-        _unit->setDeathState(CORPSE);
-        _unit->GetAIInterface()->m_canMove = false;
+        getCreature()->SetStandState(STANDSTATE_DEAD);
+        getCreature()->setDeathState(CORPSE);
+        getCreature()->GetAIInterface()->m_canMove = false;
     }
 };
 

@@ -14,7 +14,7 @@ class SilverCovenantMageGuard : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(SilverCovenantMageGuard, MoonScriptCreatureAI);
         SilverCovenantMageGuard(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            _unit->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            getCreature()->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
             RegisterAIUpdateEvent(1500);
         }
 
@@ -36,18 +36,18 @@ class SilverCovenantMageGuard : public MoonScriptCreatureAI
             // the guards should cast the spell if someone is behind them...
             if (player_x < 5761.9f && player_x >5738.68f && player_y < 732.12f && player_y >712.09f && player_z > 635.0f)
             {
-                _unit->SetTargetGUID(player->GetGUID());
-                _unit->EventCastSpell(player, sSpellCustomizations.GetSpellInfo(54028));
+                getCreature()->SetTargetGUID(player->GetGUID());
+                getCreature()->EventCastSpell(player, sSpellCustomizations.GetSpellInfo(54028));
             }
             else
             {
-                _unit->SetTargetGUID(0); //Reset target... ugly
+                getCreature()->SetTargetGUID(0); //Reset target... ugly
             }
         }
 
         void AIUpdate()
         {
-            if (_unit->GetInRangePlayersCount() > 0)
+            if (getCreature()->GetInRangePlayersCount() > 0)
                 StartDefense();
         }
 };
@@ -61,7 +61,7 @@ class SunreaversMageGuard : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(SunreaversMageGuard, MoonScriptCreatureAI);
         SunreaversMageGuard(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            _unit->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            getCreature()->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
             RegisterAIUpdateEvent(1500);
         }
 
@@ -83,18 +83,18 @@ class SunreaversMageGuard : public MoonScriptCreatureAI
             // the guards should cast the spell if someone is behind them...
             if (player_x < 5891.88f && player_x >5858.89f && player_y < 594.99f && player_y >565.51f && player_z > 635.0f)
             {
-                _unit->SetTargetGUID(player->GetGUID());
-                _unit->EventCastSpell(player, sSpellCustomizations.GetSpellInfo(54029));
+                getCreature()->SetTargetGUID(player->GetGUID());
+                getCreature()->EventCastSpell(player, sSpellCustomizations.GetSpellInfo(54029));
             }
             else
             {
-                _unit->SetTargetGUID(0); //Reset target... ugly
+                getCreature()->SetTargetGUID(0); //Reset target... ugly
             }
         }
 
         void AIUpdate()
         {
-            if (_unit->GetInRangePlayersCount() > 0)
+            if (getCreature()->GetInRangePlayersCount() > 0)
                 StartDefense();
         }
 };
@@ -107,17 +107,17 @@ public:
     FactionInvisible(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         // 0 = all (default), 1 = horde, 2 = alliance
-        switch (_unit->spawnid)
+        switch (getCreature()->spawnid)
         {
             case 128959:
             case 129859:
             case 129346:
-                _unit->GetAIInterface()->faction_visibility = 2;
+                getCreature()->GetAIInterface()->faction_visibility = 2;
                 break;
             case 128960:
             case 129860:
             case 129347:
-                _unit->GetAIInterface()->faction_visibility = 1;
+                getCreature()->GetAIInterface()->faction_visibility = 1;
                 break;
             default:
                 break;

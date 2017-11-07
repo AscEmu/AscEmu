@@ -31,13 +31,13 @@ public:
     {
         if (iWaypointId == 72)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I appreciate the help you have shown Pao'ka. I hope this covers any misfortunes this deed has cost you.");
-            _unit->Despawn(5000, 1000);
-            _unit->DeleteWaypoints();
-            if (_unit->m_escorter == NULL)
+            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I appreciate the help you have shown Pao'ka. I hope this covers any misfortunes this deed has cost you.");
+            getCreature()->Despawn(5000, 1000);
+            getCreature()->DeleteWaypoints();
+            if (getCreature()->m_escorter == NULL)
                 return;
-            Player* plr = _unit->m_escorter;
-            _unit->m_escorter = NULL;
+            Player* plr = getCreature()->m_escorter;
+            getCreature()->m_escorter = NULL;
 
             if (plr->HasQuest(4770))
             {

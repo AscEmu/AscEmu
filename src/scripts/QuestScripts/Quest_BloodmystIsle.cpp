@@ -127,9 +127,9 @@ public:
 
             if (fulborgskilled > 8 && mPlayer->HasQuest(9667))
             {
-                _unit->GetMapMgr()->GetInterface()->SpawnCreature(17702, -2419, -12166, 33, 3.45f, true, false, 0, 0)->Despawn(18000000, 0);
+                getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(17702, -2419, -12166, 33, 3.45f, true, false, 0, 0)->Despawn(18000000, 0);
                 fulborgskilled = 0;
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Chief, we need your help!");
+                getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Chief, we need your help!");
             }
         }
     }
@@ -150,14 +150,14 @@ public:
     void OnCombatStart(Unit* pTarget)
     {
         _setMeleeDisabled(true);
-        _unit->setMoveRoot(true);
-        _unit->GetAIInterface()->StopMovement(0);
+        getCreature()->setMoveRoot(true);
+        getCreature()->GetAIInterface()->StopMovement(0);
     }
 
     void OnCombatStop(Unit* pTarget)
     {
         _setMeleeDisabled(false);
-        _unit->setMoveRoot(false);
+        getCreature()->setMoveRoot(false);
     }
 
     void OnDied(Unit* pKiller)
@@ -173,13 +173,13 @@ public:
 
         // M4ksiu: I don't think the method is correct, but it can stay the way it was until someone gives proper infos
         QuestLogEntry* qle = QuestHolder->GetQuestLogForEntry(9670);
-        LocationVector pos = _unit->GetPosition();
+        LocationVector pos = getCreature()->GetPosition();
         Creature* RandomCreature = NULL;
         if (qle == nullptr)
         {
             // Creatures from Bloodmyst Isle
             uint32 Id[51] = { 17681, 17887, 17550, 17323, 17338, 17341, 17333, 17340, 17353, 17320, 17339, 17337, 17715, 17322, 17494, 17654, 17342, 17328, 17331, 17325, 17321, 17330, 17522, 17329, 17524, 17327, 17661, 17352, 17334, 17326, 17324, 17673, 17336, 17346, 17589, 17609, 17608, 17345, 17527, 17344, 17347, 17525, 17713, 17523, 17348, 17606, 17604, 17607, 17610, 17358, 17588 };
-            RandomCreature = _unit->GetMapMgr()->GetInterface()->SpawnCreature(Id[RandomUInt(50)], pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
+            RandomCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(Id[RandomUInt(50)], pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
             if (RandomCreature != NULL)
             {
                 RandomCreature->m_noRespawn = true;
@@ -191,7 +191,7 @@ public:
         else
         {
             uint32 Id[8] = { 17681, 17321, 17330, 17522, 17673, 17336, 17346, 17589 };
-            RandomCreature = _unit->GetMapMgr()->GetInterface()->SpawnCreature(Id[RandomUInt(7)], pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
+            RandomCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(Id[RandomUInt(7)], pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
             if (RandomCreature != NULL)
             {
                 RandomCreature->m_noRespawn = true;

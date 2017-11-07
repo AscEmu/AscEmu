@@ -89,7 +89,7 @@ class AnomalusAI : public MoonScriptBossAI
 
             Announce("Anomalus opens a Chaotic Rift!");
             //we are linked with CN_CHAOTIC_RIFT.
-            CreatureAIScript* chaoticRift = SpawnCreature(CN_CHAOTIC_RIFT, _unit->GetPositionX() + 13.5f, _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), false);
+            CreatureAIScript* chaoticRift = SpawnCreature(CN_CHAOTIC_RIFT, getCreature()->GetPositionX() + 13.5f, getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), false);
             if (chaoticRift != NULL)
             {
                 SetLinkedCreature(chaoticRift);
@@ -151,7 +151,7 @@ class ChaoticRiftAI : public MoonScriptBossAI
         MOONSCRIPT_FACTORY_FUNCTION(ChaoticRiftAI, MoonScriptBossAI);
         ChaoticRiftAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
         {
-            _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
+            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             auto spell_mana_wrath = sSpellCustomizations.GetSpellInfo(SUMMON_MANA_WRAITH);
             if (spell_mana_wrath != nullptr)
                 AddSpell(SUMMON_MANA_WRAITH, Target_Self, 30, 0, spell_mana_wrath->getRecoveryTime());
@@ -516,7 +516,7 @@ class CrystalSpikeAI : public MoonScriptBossAI
     {
         setCanEnterCombat(false);
         setRooted(true);
-        _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
         despawn(4500, 0);
         RegisterAIUpdateEvent(500);
@@ -530,17 +530,17 @@ class CrystalSpikeAI : public MoonScriptBossAI
 
         if (m_part == 1)
         {
-            _unit->CastSpell(_unit, SPELL_CRYSTAL_SPIKE_VISUAL, true);
+            getCreature()->CastSpell(getCreature(), SPELL_CRYSTAL_SPIKE_VISUAL, true);
         }
         else if (m_part == 5)
         {
             if (_isHeroic())
             {
-                _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELL_CRYSTAL_SPIKE_H), true);
+                getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELL_CRYSTAL_SPIKE_H), true);
             }
             else
             {
-                _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELL_CRYSTAL_SPIKE), true);
+                getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELL_CRYSTAL_SPIKE), true);
             }
         }
     }

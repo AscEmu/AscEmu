@@ -29,9 +29,9 @@ public:
 
     void OnLoad()
     {
-        _unit->SetStandState(STANDSTATE_DEAD);
-        _unit->setDeathState(CORPSE);
-        _unit->GetAIInterface()->m_canMove = false;
+        getCreature()->SetStandState(STANDSTATE_DEAD);
+        getCreature()->setDeathState(CORPSE);
+        getCreature()->GetAIInterface()->m_canMove = false;
     }
 };
 

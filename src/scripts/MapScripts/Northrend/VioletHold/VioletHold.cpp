@@ -48,12 +48,12 @@ public:
             } break;
             case 4:
             {
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARY_SAY_2);
-                _unit->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARY_SAY_2);
+                getCreature()->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
             } break;
             case 5:
             {
-                VioletHold* pInstance = (VioletHold*)_unit->GetMapMgr()->GetScript();
+                VioletHold* pInstance = (VioletHold*)getCreature()->GetMapMgr()->GetScript();
                 pInstance->setData(608, InProgress);
                 GameObject* pVioletHoldDoor = pInstance->getClosestGameObjectForPosition(191723, 1822.59f, 803.93f, 44.36f);
                 if (pVioletHoldDoor != nullptr)
@@ -64,9 +64,9 @@ public:
 
     void OnRescuePrisonGuards()
     {
-        _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARI_SAY_1);
+        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARI_SAY_1);
 
-        VioletHold* pInstance = (VioletHold*)_unit->GetMapMgr()->GetScript();
+        VioletHold* pInstance = (VioletHold*)getCreature()->GetMapMgr()->GetScript();
         if (!pInstance)
             return;
 

@@ -71,7 +71,7 @@ public:
         }
         else
         {
-            Player* mPlayer = _unit->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ());
+            Player* mPlayer = getCreature()->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ());
             if (mPlayer)
             {
                 Creature* beka1 = mPlayer->GetMapMgr()->CreateAndSpawnCreature(1516, -13770.5f, -6.79f, 42.8f, 5.7f);
@@ -107,7 +107,7 @@ public:
         }
         else
         {
-            Player* mPlayer = _unit->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ());
+            Player* mPlayer = getCreature()->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ());
             if (mPlayer)
             {
                 Creature* beka1 = mPlayer->GetMapMgr()->CreateAndSpawnCreature(1514, -13770.5f, -6.79f, 42.8f, 5.7f);
@@ -295,7 +295,7 @@ public:
     }
     void OnDied(Unit* mKiller)
     {
-        _unit->Despawn(180000, 0);
+        getCreature()->Despawn(180000, 0);
         RemoveAIUpdateEvent();
     }
 };

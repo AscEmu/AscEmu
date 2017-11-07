@@ -46,26 +46,26 @@ public:
 
     void OnLoad()
     {
-        _unit->setUInt32Value(UNIT_FIELD_BYTES_0, 16777472);
-        _unit->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        _unit->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_COMBAT);
-        _unit->setUInt32Value(UNIT_FIELD_BYTES_1, 7);
+        getCreature()->setUInt32Value(UNIT_FIELD_BYTES_0, 16777472);
+        getCreature()->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        getCreature()->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_COMBAT);
+        getCreature()->setUInt32Value(UNIT_FIELD_BYTES_1, 7);
 
-        uint32 sid = _unit->GetEntry();
+        uint32 sid = getCreature()->GetEntry();
 
         switch (sid)
         {
             case 12923:
             case 12938:
-                _unit->SetHealthPct(75);
+                getCreature()->SetHealthPct(75);
                 break;
             case 12924:
             case 12936:
-                _unit->SetHealthPct(50);
+                getCreature()->SetHealthPct(50);
                 break;
             case 12925:
             case 12937:
-                _unit->SetHealthPct(25);
+                getCreature()->SetHealthPct(25);
                 break;
         }
 

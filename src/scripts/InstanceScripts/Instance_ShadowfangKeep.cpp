@@ -404,42 +404,42 @@ class ArugalAI : public MoonScriptCreatureAI
                 {
                 case 0:
                 {
-                    GetUnit()->SetInvisFlag(INVIS_FLAG_NORMAL);
-                    GetUnit()->CastSpell(GetUnit(), SPELL_ARUGAL_SPAWN, true);
+                    getCreature()->SetInvisFlag(INVIS_FLAG_NORMAL);
+                    getCreature()->CastSpell(getCreature(), SPELL_ARUGAL_SPAWN, true);
                     ModifyAIUpdateEvent(5500);  // call every step after 5.5 seconds
                     if (Creature* pVincent = getNearestCreature(CN_DEATHSTALKER_VINCENT))
                     {
-                        pVincent->GetAIInterface()->AttackReaction(GetUnit(), 1);
+                        pVincent->GetAIInterface()->AttackReaction(getCreature(), 1);
                         pVincent->GetAIInterface()->setMeleeDisabled(true);
                     }
                 }break;
                 case 1:
                 {
-                    GetUnit()->SendScriptTextChatMessage(SAY_ARUGAL_INTRO1);
+                    getCreature()->SendScriptTextChatMessage(SAY_ARUGAL_INTRO1);
                 }break;
                 case 2:
                 {
-                    GetUnit()->Emote(EMOTE_ONESHOT_POINT);
+                    getCreature()->Emote(EMOTE_ONESHOT_POINT);
                 }break;
                 case 3:
                 {
-                    GetUnit()->SendScriptTextChatMessage(SAY_ARUGAL_INTRO2);
+                    getCreature()->SendScriptTextChatMessage(SAY_ARUGAL_INTRO2);
                 }break;
                 case 4:
                 {
-                    GetUnit()->Emote(EMOTE_ONESHOT_EXCLAMATION);
+                    getCreature()->Emote(EMOTE_ONESHOT_EXCLAMATION);
                 }break;
                 case 5:
                 {
-                    GetUnit()->SendScriptTextChatMessage(SAY_ARUGAL_INTRO3);
+                    getCreature()->SendScriptTextChatMessage(SAY_ARUGAL_INTRO3);
                 }break;
                 case 6:
                 {
-                    GetUnit()->Emote(EMOTE_ONESHOT_LAUGH);
+                    getCreature()->Emote(EMOTE_ONESHOT_LAUGH);
                 }break;
                 case 7:
                 {
-                    if (Creature* pVincent = GetUnit()->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(GetUnit()->GetPositionX(), GetUnit()->GetPositionY(), GetUnit()->GetPositionZ(), CN_DEATHSTALKER_VINCENT))
+                    if (Creature* pVincent = getCreature()->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), CN_DEATHSTALKER_VINCENT))
                     {
                         // Make him look like dead
                         pVincent->SendScriptTextChatMessage(SAY_VINCENT_DEATH);
@@ -451,13 +451,13 @@ class ArugalAI : public MoonScriptCreatureAI
                 }break;
                 case 8:
                 {
-                    GetUnit()->SendScriptTextChatMessage(SAY_ARUGAL_INTRO4);
+                    getCreature()->SendScriptTextChatMessage(SAY_ARUGAL_INTRO4);
                 }break;
                 case 9:
                 {
-                    GetUnit()->CastSpell(GetUnit(), SPELL_ARUGAL_SPAWN, true);
+                    getCreature()->CastSpell(getCreature(), SPELL_ARUGAL_SPAWN, true);
                     SFK_Instance->SetLocaleInstanceData(0, INDEX_ARUGAL_INTRO, Finished);
-                    GetUnit()->SetInvisFlag(INVIS_FLAG_TOTAL);
+                    getCreature()->SetInvisFlag(INVIS_FLAG_TOTAL);
                     RemoveAIUpdateEvent();
                 }break;
                 }
@@ -483,7 +483,7 @@ class AdamantAI : public MoonScriptCreatureAI
             stage(0),
             eventStarted(false)
         {
-            SFK_instance = static_cast<ShadowfangKeepInstance*>(GetUnit()->GetMapMgr()->GetScript());
+            SFK_instance = static_cast<ShadowfangKeepInstance*>(getCreature()->GetMapMgr()->GetScript());
 
             for (uint8 i = 0; i < adamantWpCount; ++i)
             {
@@ -491,14 +491,14 @@ class AdamantAI : public MoonScriptCreatureAI
                 float distanceX = 0;
                 float distanceY = 0;
                 float distance = 0;
-                float walkSpeed = GetUnit()->GetCreatureProperties()->walk_speed;
-                float runSpeed = GetUnit()->GetCreatureProperties()->run_speed;
+                float walkSpeed = getCreature()->GetCreatureProperties()->walk_speed;
+                float runSpeed = getCreature()->GetCreatureProperties()->run_speed;
                 // first waypoint
                 if (i == 0)
                 {
                     // (currentWP - perviousLocation) *(currentWP - perviousLocation)
-                    distanceX = (DeathstalkerAdamantWPS[i].wp_location.x - GetUnit()->GetPositionX()) * (DeathstalkerAdamantWPS[i].wp_location.x - GetUnit()->GetPositionX());
-                    distanceY = (DeathstalkerAdamantWPS[i].wp_location.y - GetUnit()->GetPositionY()) * (DeathstalkerAdamantWPS[i].wp_location.y - GetUnit()->GetPositionY());
+                    distanceX = (DeathstalkerAdamantWPS[i].wp_location.x - getCreature()->GetPositionX()) * (DeathstalkerAdamantWPS[i].wp_location.x - getCreature()->GetPositionX());
+                    distanceY = (DeathstalkerAdamantWPS[i].wp_location.y - getCreature()->GetPositionY()) * (DeathstalkerAdamantWPS[i].wp_location.y - getCreature()->GetPositionY());
                     distance = sqrt(distanceX - distanceY);
                 }
                 else if (i != adamantWpCount - 1)
@@ -529,7 +529,7 @@ class AdamantAI : public MoonScriptCreatureAI
                 }break;
                 case 30:
                 {
-                    GetUnit()->Despawn(2000, 0);
+                    getCreature()->Despawn(2000, 0);
                 }break;
                 default:
                 {
@@ -551,30 +551,30 @@ class AdamantAI : public MoonScriptCreatureAI
                     {
                         case 0:
                         {
-                            GetUnit()->SetEmoteState(EMOTE_STATE_NONE);
+                            getCreature()->SetEmoteState(EMOTE_STATE_NONE);
                             SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                             SetWaypointToMove(1);
                             RemoveAIUpdateEvent();
                         }break;
                         case 1:
                         {
-                            GetUnit()->SendScriptTextChatMessage(SAY_ADAMANT_BEFORE_OPEN);
+                            getCreature()->SendScriptTextChatMessage(SAY_ADAMANT_BEFORE_OPEN);
                         }break;
                         case 2:
                         {
-                            GetUnit()->SendScriptTextChatMessage(SAY_ADAMANT_OPENING);
-                            GetUnit()->EventAddEmote(EMOTE_ONESHOT_USESTANDING, 8000);
+                            getCreature()->SendScriptTextChatMessage(SAY_ADAMANT_OPENING);
+                            getCreature()->EventAddEmote(EMOTE_ONESHOT_USESTANDING, 8000);
                             ModifyAIUpdateEvent(8000);
                         }break;
                         case 3:
                         {
-                            GetUnit()->SendScriptTextChatMessage(SAY_ADAMANT_AFTER_OPEN);
+                            getCreature()->SendScriptTextChatMessage(SAY_ADAMANT_AFTER_OPEN);
                             SFK_instance->SetLocaleInstanceData(0, INDEX_PRISONER_EVENT, Performed);
                             ModifyAIUpdateEvent(4000);
                         }break;
                         case 4:
                         {
-                            GetUnit()->SendScriptTextChatMessage(SAY_ADAMANT_BYE);
+                            getCreature()->SendScriptTextChatMessage(SAY_ADAMANT_BYE);
                         }break;
                         case 5:
                         {
@@ -626,12 +626,12 @@ class AdamantGossip : public Arcemu::Gossip::Script
             {
                 if (AdamantAI* pPrisoner = static_cast<AdamantAI*>(static_cast<Creature*>(pObject)->GetScript()))
                 {
-                    pPrisoner->GetUnit()->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-                    pPrisoner->GetUnit()->SendScriptTextChatMessage(SAY_ADAMANT_FOLLOW);
+                    pPrisoner->getCreature()->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                    pPrisoner->getCreature()->SendScriptTextChatMessage(SAY_ADAMANT_FOLLOW);
                     pPrisoner->RegisterAIUpdateEvent(5000);
-                    pPrisoner->GetUnit()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
-                    pPrisoner->GetUnit()->GetAIInterface()->SetAllowedToEnterCombat(false);
-                    pPrisoner->GetUnit()->EventAddEmote(EMOTE_ONESHOT_CHEER, 4000);
+                    pPrisoner->getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+                    pPrisoner->getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+                    pPrisoner->getCreature()->EventAddEmote(EMOTE_ONESHOT_CHEER, 4000);
                     pPrisoner->eventStarted = true;
                     if (ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->GetMapMgr()->GetScript()))
                         pInstance->SetLocaleInstanceData(0, INDEX_PRISONER_EVENT, InProgress);
@@ -654,7 +654,7 @@ class AshcrombeAI : public MoonScriptCreatureAI
             argued(false),
             eventStarted(false)
         {
-            SFK_instance = static_cast<ShadowfangKeepInstance*>(GetUnit()->GetMapMgr()->GetScript());
+            SFK_instance = static_cast<ShadowfangKeepInstance*>(getCreature()->GetMapMgr()->GetScript());
 
             for (uint8 i = 0; i < ashcrombeWpCount; ++i)
             {
@@ -662,12 +662,12 @@ class AshcrombeAI : public MoonScriptCreatureAI
                 float distanceX = 0;
                 float distanceY = 0;
                 float distance = 0;
-                float walkSpeed = GetUnit()->GetCreatureProperties()->walk_speed;
-                float runSpeed = GetUnit()->GetCreatureProperties()->run_speed;
+                float walkSpeed = getCreature()->GetCreatureProperties()->walk_speed;
+                float runSpeed = getCreature()->GetCreatureProperties()->run_speed;
                 if (i == 0) // first waypoint
                 {
-                    distanceX = (SorcererAshcrombeWPS[i].x - GetUnit()->GetPositionX())*(SorcererAshcrombeWPS[i].x - GetUnit()->GetPositionX());
-                    distanceY = (SorcererAshcrombeWPS[i].y - GetUnit()->GetPositionY())*(SorcererAshcrombeWPS[i].y - GetUnit()->GetPositionY());
+                    distanceX = (SorcererAshcrombeWPS[i].x - getCreature()->GetPositionX())*(SorcererAshcrombeWPS[i].x - getCreature()->GetPositionX());
+                    distanceY = (SorcererAshcrombeWPS[i].y - getCreature()->GetPositionY())*(SorcererAshcrombeWPS[i].y - getCreature()->GetPositionY());
                     distance = std::sqrt(distanceX - distanceY);
                 }
                 else if (i != ashcrombeWpCount-1)
@@ -717,7 +717,7 @@ class AshcrombeAI : public MoonScriptCreatureAI
                         // Starting movement
                         case 0:
                         {
-                            GetUnit()->SetEmoteState(EMOTE_STATE_NONE);
+                            getCreature()->SetEmoteState(EMOTE_STATE_NONE);
                             SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                             SetWaypointToMove(1);
                             RemoveAIUpdateEvent();
@@ -725,29 +725,29 @@ class AshcrombeAI : public MoonScriptCreatureAI
                         // Face him to doors
                         case 1:
                         {
-                            GetUnit()->SetFacing(1.33f);
+                            getCreature()->SetFacing(1.33f);
                         }break;
                         // Preparing to cast spell
                         case 2:
                         {
-                            GetUnit()->SendScriptTextChatMessage(SAY_ASHCROMBE_OPEN_DOOR);
+                            getCreature()->SendScriptTextChatMessage(SAY_ASHCROMBE_OPEN_DOOR);
                         }break;
                         // Casting unlock spell and calling next events every 6 seconds
                         case 3:
                         {
                             ModifyAIUpdateEvent(6000);
-                            GetUnit()->CastSpell(GetUnit(), SPELL_ASHCROMBE_UNLOCK, false);
+                            getCreature()->CastSpell(getCreature(), SPELL_ASHCROMBE_UNLOCK, false);
                         }break;
                         // Setting instance data to finished
                         case 4:
                         {
-                            GetUnit()->SendScriptTextChatMessage(SAY_ASHCROMBE_BYE);
+                            getCreature()->SendScriptTextChatMessage(SAY_ASHCROMBE_BYE);
                         }break;
                         // Final stage - casting spell which despawns Ashcrombe Sorcerer
                         case 5:
                         {
-                            GetUnit()->CastSpell(GetUnit(), SPELL_ASHCROMBE_FIRE, true);
-                            GetUnit()->SendScriptTextChatMessage(SAY_ASHCROMBE_VANISH);
+                            getCreature()->CastSpell(getCreature(), SPELL_ASHCROMBE_FIRE, true);
+                            getCreature()->SendScriptTextChatMessage(SAY_ASHCROMBE_VANISH);
                             SFK_instance->SetLocaleInstanceData(0, INDEX_PRISONER_EVENT, Finished);
                             RemoveAIUpdateEvent();
                         }break;
@@ -760,7 +760,7 @@ class AshcrombeAI : public MoonScriptCreatureAI
 
             if (!argued)
             {
-                GetUnit()->SendScriptTextChatMessage(SAY_ASHCROMBE_BOSS_DEATH);
+                getCreature()->SendScriptTextChatMessage(SAY_ASHCROMBE_BOSS_DEATH);
                 RemoveAIUpdateEvent();
                 argued = true;
             }
@@ -802,12 +802,12 @@ class AshcrombeGossip : public Arcemu::Gossip::Script
             {
                 if (AshcrombeAI* pPrisoner = static_cast<AshcrombeAI*>(static_cast<Creature*>(pObject)->GetScript()))
                 {
-                    pPrisoner->GetUnit()->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-                    pPrisoner->GetUnit()->SendScriptTextChatMessage(SAY_ASHCROMBE_FOLLOW);
+                    pPrisoner->getCreature()->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                    pPrisoner->getCreature()->SendScriptTextChatMessage(SAY_ASHCROMBE_FOLLOW);
                     pPrisoner->RegisterAIUpdateEvent(4000);
-                    pPrisoner->GetUnit()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
-                    pPrisoner->GetUnit()->GetAIInterface()->SetAllowedToEnterCombat(false);
-                    pPrisoner->GetUnit()->Emote(EMOTE_ONESHOT_POINT);
+                    pPrisoner->getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+                    pPrisoner->getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+                    pPrisoner->getCreature()->Emote(EMOTE_ONESHOT_POINT);
                     pPrisoner->eventStarted = true;
                     if (ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->GetMapMgr()->GetScript()))
                         pInstance->SetLocaleInstanceData(0, INDEX_PRISONER_EVENT, InProgress);
@@ -847,7 +847,7 @@ class SpringvaleAI : public MoonScriptCreatureAI
         {
             ParentClass::OnCombatStart(pTarget);
             // Turn aura ON!
-            if (!GetUnit()->HasAura(SPELL_DEVO_AURA))
+            if (!getCreature()->HasAura(SPELL_DEVO_AURA))
                 CastSpellNowNoScheduling(DevoAura);
         }
 
@@ -855,7 +855,7 @@ class SpringvaleAI : public MoonScriptCreatureAI
         {
             ParentClass::OnCombatStop(pTarget);
             // Turn aura OFF!
-            if (GetUnit()->HasAura(SPELL_DEVO_AURA))
+            if (getCreature()->HasAura(SPELL_DEVO_AURA))
                 _removeAura(SPELL_DEVO_AURA);
         }
 
@@ -1020,17 +1020,17 @@ class BlindWatcherAI : public MoonScriptCreatureAI
         void AIUpdate()
         {
             ParentClass::AIUpdate();
-            if (_getHealthPercent() <= 75 && !GetUnit()->HasAura(ODO_HOWLING_RAGE1) && mPhase == 0)
+            if (_getHealthPercent() <= 75 && !getCreature()->HasAura(ODO_HOWLING_RAGE1) && mPhase == 0)
             {
                 CastSpell(HowlingRage1);
                 ++mPhase;
             }
-            else if (_getHealthPercent() <= 45 && !GetUnit()->HasAura(ODO_HOWLING_RAGE2) && mPhase == 1)
+            else if (_getHealthPercent() <= 45 && !getCreature()->HasAura(ODO_HOWLING_RAGE2) && mPhase == 1)
             {
                 CastSpell(HowlingRage2);
                 ++mPhase;
             }
-            else if (_getHealthPercent() <= 20 && !GetUnit()->HasAura(ODO_HOWLING_RAGE2) && mPhase == 2)
+            else if (_getHealthPercent() <= 20 && !getCreature()->HasAura(ODO_HOWLING_RAGE2) && mPhase == 2)
             {
                 CastSpell(HowlingRage3);
                 ++mPhase;
@@ -1099,22 +1099,22 @@ class ArugalBossAI : public MoonScriptCreatureAI
             setAIAgent(AGENT_SPELL);
 
             aiUpdateOriginal = GetAIUpdateFreq();
-            originalRegen = GetUnit()->PctPowerRegenModifier[POWER_TYPE_MANA];
+            originalRegen = getCreature()->PctPowerRegenModifier[POWER_TYPE_MANA];
         }
 
         void OnCastSpell(uint32 spellId)
         {
             if (spellId == SPELL_ARUGALS_CURSE)
             {
-                GetUnit()->SendScriptTextChatMessage(YELL_ARUGAL_COMBAT);
+                getCreature()->SendScriptTextChatMessage(YELL_ARUGAL_COMBAT);
             }
         }
 
         void Reset()
         {
             setAIAgent(AGENT_SPELL);
-            GetUnit()->GetAIInterface()->setMeleeDisabled(true);
-            GetUnit()->PctPowerRegenModifier[POWER_TYPE_MANA] = originalRegen;
+            getCreature()->GetAIInterface()->setMeleeDisabled(true);
+            getCreature()->PctPowerRegenModifier[POWER_TYPE_MANA] = originalRegen;
         }
 
         void OnCombatStart(Unit* pEnemy)
@@ -1122,12 +1122,12 @@ class ArugalBossAI : public MoonScriptCreatureAI
             ParentClass::OnCombatStart(pEnemy);
 
             // do not regen mana
-            GetUnit()->PctPowerRegenModifier[POWER_TYPE_MANA] = 0.3f;
+            getCreature()->PctPowerRegenModifier[POWER_TYPE_MANA] = 0.3f;
             aiUpdateOriginal = GetAIUpdateFreq();
-            originalRegen = GetUnit()->PctPowerRegenModifier[POWER_TYPE_MANA];
+            originalRegen = getCreature()->PctPowerRegenModifier[POWER_TYPE_MANA];
 
             // Do not do melee attacks
-            GetUnit()->GetAIInterface()->setMeleeDisabled(true);
+            getCreature()->GetAIInterface()->setMeleeDisabled(true);
         }
 
         void OnCombatStop(Unit* pEnemy)
@@ -1144,7 +1144,7 @@ class ArugalBossAI : public MoonScriptCreatureAI
                 {
                     ModifyAIUpdateEvent(6000);
                     _applyAura(SPELL_ARUGAL_SPAWN);
-                    GetUnit()->SendScriptTextChatMessage(YELL_ARUGAL_FENRUS);
+                    getCreature()->SendScriptTextChatMessage(YELL_ARUGAL_FENRUS);
                 }break;
                 case 1:
                 {
@@ -1162,12 +1162,12 @@ class ArugalBossAI : public MoonScriptCreatureAI
                             voidwalker->AggroNearestPlayer();
                         }
                     }
-                    GetUnit()->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
-                    GetUnit()->GetAIInterface()->SetAllowedToEnterCombat(true);
-                    GetUnit()->GetAIInterface()->m_canMove = true;
+                    getCreature()->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+                    getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
+                    getCreature()->GetAIInterface()->m_canMove = true;
 
                     // sanctum32: not sure if it is correct spell id
-                    GetUnit()->CastSpell(GetUnit(), SPELL_ASHCROMBE_FIRE, true);
+                    getCreature()->CastSpell(getCreature(), SPELL_ASHCROMBE_FIRE, true);
                     SFK_instance->SetLocaleInstanceData(0, INDEX_VOIDWALKER, Finished);
                     RemoveAIUpdateEvent();
                 }break;
@@ -1186,16 +1186,16 @@ class ArugalBossAI : public MoonScriptCreatureAI
             if (_isInCombat())
             {
                 // if mana is out - do melee attacks
-                if (GetUnit()->GetManaPct() <= 10 && getAIAgent() == AGENT_SPELL)
+                if (getCreature()->GetManaPct() <= 10 && getAIAgent() == AGENT_SPELL)
                 {
                     setAIAgent(AGENT_MELEE);
-                    GetUnit()->GetAIInterface()->setMeleeDisabled(false);
+                    getCreature()->GetAIInterface()->setMeleeDisabled(false);
                 }
                 // boss got mana regenerated
                 else
                 {
                     setAIAgent(AGENT_SPELL);
-                    GetUnit()->GetAIInterface()->setMeleeDisabled(true);
+                    getCreature()->GetAIInterface()->setMeleeDisabled(true);
                 }
 
                 // Cast void bolt non stop
@@ -1209,7 +1209,7 @@ class ArugalBossAI : public MoonScriptCreatureAI
                     if (arugalPosition == ARUGAL_LOC_UPPER_LEDGE)
                     {
                         ModifyAIUpdateEvent(aiUpdateOriginal);
-                        GetUnit()->CastSpell(GetUnit(), SPELL_SHADOW_PORT_STAIRS, true);
+                        getCreature()->CastSpell(getCreature(), SPELL_SHADOW_PORT_STAIRS, true);
                         arugalPosition = ARUGAL_LOC_STAIRS;
                         setRooted(false);
                     }
@@ -1218,7 +1218,7 @@ class ArugalBossAI : public MoonScriptCreatureAI
                     {
                         aiUpdateOriginal = GetAIUpdateFreq();
                         ModifyAIUpdateEvent(3000);
-                        GetUnit()->CastSpell(GetUnit(), SPELL_SHADOW_PORT_UPPER_LEDGE, true);
+                        getCreature()->CastSpell(getCreature(), SPELL_SHADOW_PORT_UPPER_LEDGE, true);
                         arugalPosition = ARUGAL_LOC_UPPER_LEDGE;
                         setRooted(true);
                     }
@@ -1405,9 +1405,9 @@ class ShadowfangRagetoothAI : public MoonScriptCreatureAI
         {
             ParentClass::AIUpdate();
             // Cast Wild rage at 30% health
-            if (_getHealthPercent() <= 30 && !GetUnit()->HasAura(SPELL_WILD_RAGE) && !sWildRageCasted)
+            if (_getHealthPercent() <= 30 && !getCreature()->HasAura(SPELL_WILD_RAGE) && !sWildRageCasted)
             {
-                GetUnit()->CastSpell(GetUnit(), SPELL_WILD_RAGE, true);
+                getCreature()->CastSpell(getCreature(), SPELL_WILD_RAGE, true);
                 sWildRageCasted = true;
             }
         }

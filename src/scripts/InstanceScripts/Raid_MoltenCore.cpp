@@ -42,13 +42,13 @@ class CoreRagerAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
+            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
         void OnCombatStop(Unit* mTarget)
         {
             setAIAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -60,19 +60,19 @@ class CoreRagerAI : public CreatureAIScript
 
         void SpellCast(uint32 val)
         {
-            if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
+            if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
             {
                 //Unit* target = _unit->GetAIInterface()->GetNextTarget();
                 if (m_mangle)
                 {
-                    _unit->CastSpell(_unit, info_mangle, false);
+                    getCreature()->CastSpell(getCreature(), info_mangle, false);
                     m_mangle = false;
                     return;
                 }
 
                 if (val >= 100 && val <= 220)
                 {
-                    _unit->setAttackTimer(9000, false);
+                    getCreature()->setAttackTimer(9000, false);
                     m_mangle = true;
                 }
             }
@@ -107,13 +107,13 @@ class SulfuronAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
+            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
         void OnCombatStop(Unit* mTarget)
         {
             setAIAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -125,46 +125,46 @@ class SulfuronAI : public CreatureAIScript
 
         void SpellCast(uint32 val)
         {
-            if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
+            if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
             {
                 //Unit* target = _unit->GetAIInterface()->GetNextTarget();
 
                 if (m_demoralizingshout)
                 {
-                    _unit->CastSpell(_unit, info_demoralizingshout, false);
+                    getCreature()->CastSpell(getCreature(), info_demoralizingshout, false);
                     m_demoralizingshout = false;
                     return;
                 }
 
                 if (m_inspire)
                 {
-                    _unit->CastSpell(_unit, info_inspire, false);
+                    getCreature()->CastSpell(getCreature(), info_inspire, false);
                     m_inspire = false;
                     return;
                 }
 
                 if (m_flamespear)
                 {
-                    _unit->CastSpell(_unit, info_flamespear, false);
+                    getCreature()->CastSpell(getCreature(), info_flamespear, false);
                     m_flamespear = false;
                     return;
                 }
 
                 if (val >= 100 && val <= 180)
                 {
-                    _unit->setAttackTimer(1000, false);
+                    getCreature()->setAttackTimer(1000, false);
                     m_inspire = true;
                 }
 
                 if (val > 180 && val <= 260)
                 {
-                    _unit->setAttackTimer(1000, false);
+                    getCreature()->setAttackTimer(1000, false);
                     m_demoralizingshout = true;
                 }
 
                 if (val > 260 && val <= 320)
                 {
-                    _unit->setAttackTimer(1000, false);
+                    getCreature()->setAttackTimer(1000, false);
                     m_flamespear = true;
                 }
             }
@@ -218,19 +218,19 @@ class RagnarosAI : public CreatureAIScript
             info_hammer = sSpellCustomizations.GetSpellInfo(HAMMER_OF_RAGNAROS);
             info_meltweapon = sSpellCustomizations.GetSpellInfo(MELT_WEAPON);
             info_summonsons = sSpellCustomizations.GetSpellInfo(SUMMON_SONS_OF_FLAMES);
-            _unit->setMoveRoot(true);
+            getCreature()->setMoveRoot(true);
         }
 
         void OnCombatStart(Unit* mTarget)
         {
-            RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
-            _unit->GetAIInterface()->skip_reset_hp = true;
+            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+            getCreature()->GetAIInterface()->skip_reset_hp = true;
         }
 
         void OnCombatStop(Unit* mTarget)
         {
             setAIAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -247,13 +247,13 @@ class RagnarosAI : public CreatureAIScript
 
         void SpellCast(uint32 val)
         {
-            if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
+            if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
             {
-                Unit* target = _unit->GetAIInterface()->getNextTarget();
+                Unit* target = getCreature()->GetAIInterface()->getNextTarget();
 
                 if (m_elementalfire)
                 {
-                    _unit->CastSpell(target, info_elementalfire, false);
+                    getCreature()->CastSpell(target, info_elementalfire, false);
                     m_elementalfire = false;
                     return;
                 }
@@ -261,7 +261,7 @@ class RagnarosAI : public CreatureAIScript
                 if (m_wrath)
                 {
                     sendDBChatMessage(3052);     // TASTE THE FLAMES OF SULFURON!
-                    _unit->CastSpell(_unit, info_wrath, false);
+                    getCreature()->CastSpell(getCreature(), info_wrath, false);
                     m_wrath = false;
                     return;
                 }
@@ -269,38 +269,38 @@ class RagnarosAI : public CreatureAIScript
                 if (m_hammer)
                 {
                     sendDBChatMessage(3051);     // By fire be purged!
-                    _unit->CastSpell(_unit, info_hammer, false);
+                    getCreature()->CastSpell(getCreature(), info_hammer, false);
                     m_hammer = false;
                     return;
                 }
 
                 if (m_meltweapon)
                 {
-                    _unit->CastSpell(target, info_meltweapon, false);
+                    getCreature()->CastSpell(target, info_meltweapon, false);
                     m_meltweapon = false;
                     return;
                 }
 
                 if (val >= 100 && val <= 160)
                 {
-                    _unit->setAttackTimer(1000, false);
+                    getCreature()->setAttackTimer(1000, false);
                     m_elementalfire = true;
                 }
 
                 if (val > 160 && val <= 220)
                 {
-                    _unit->setAttackTimer(1000, false);
+                    getCreature()->setAttackTimer(1000, false);
                     m_wrath = true;
                 }
 
                 if (val > 220 && val <= 280)
                 {
-                    _unit->setAttackTimer(1000, false);
+                    getCreature()->setAttackTimer(1000, false);
                     m_hammer = true;
                 }
                 if (val > 340 && val <= 400)
                 {
-                    _unit->setAttackTimer(1000, false);
+                    getCreature()->setAttackTimer(1000, false);
                     m_meltweapon = true;
                 }
 
@@ -680,7 +680,7 @@ class FireswornAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            if (mGarr && mGarr->isAlive() && getRangeToObject(mGarr->GetUnit()) > 100)
+            if (mGarr && mGarr->isAlive() && getRangeToObject(mGarr->getCreature()) > 100)
             {
                 CastSpell(mSeparationAnxiety);
             }

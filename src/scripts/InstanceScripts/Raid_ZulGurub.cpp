@@ -100,25 +100,25 @@ class JeklikAI : public CreatureAIScript
         {
             sendDBChatMessage(3201);     // Lord Hir'eek, grant me wings of vengeance!
 
-            RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
+            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
             // bat transform
-            _unit->CastSpell(_unit, spells[0].info, spells[0].instant);
+            getCreature()->CastSpell(getCreature(), spells[0].info, spells[0].instant);
         }
 
         void OnCombatStop(Unit* mTarget)
         {
             setAIAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
-            _unit->RemoveAura(TRANSFORM_BAT);
+            getCreature()->RemoveAura(TRANSFORM_BAT);
         }
 
         void AIUpdate()
         {
-            if (_unit->GetHealthPct() <= 50 && m_spellcheck[0])
+            if (getCreature()->GetHealthPct() <= 50 && m_spellcheck[0])
             {
                 m_spellcheck[0] = false;
-                _unit->RemoveAura(TRANSFORM_BAT);
+                getCreature()->RemoveAura(TRANSFORM_BAT);
             }
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -126,7 +126,7 @@ class JeklikAI : public CreatureAIScript
 
         void SpellCast(float val)
         {
-            if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+            if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
@@ -135,22 +135,22 @@ class JeklikAI : public CreatureAIScript
                     if (!spells[i].perctrigger) continue;
 
                     // do another set of spells on transform
-                    if (_unit->GetHealthPct() <= 50 && i < 3) continue;
+                    if (getCreature()->GetHealthPct() <= 50 && i < 3) continue;
 
                     if (m_spellcheck[i])
                     {
-                        target = _unit->GetAIInterface()->getNextTarget();
+                        target = getCreature()->GetAIInterface()->getNextTarget();
                         switch (spells[i].targettype)
                         {
                             case TARGET_SELF:
                             case TARGET_VARIOUS:
-                                _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                                getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
                                 break;
                             case TARGET_ATTACKING:
-                                _unit->CastSpell(target, spells[i].info, spells[i].instant);
+                                getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
                                 break;
                             case TARGET_DESTINATION:
-                                _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
+                                getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                                 break;
                         }
                         m_spellcheck[i] = false;
@@ -159,7 +159,7 @@ class JeklikAI : public CreatureAIScript
 
                     if (val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger))
                     {
-                        _unit->setAttackTimer(spells[i].attackstoptimer, false);
+                        getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
                         m_spellcheck[i] = true;
                     }
                     comulativeperc += spells[i].perctrigger;
@@ -241,23 +241,23 @@ class VenoxisAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
+            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
         void OnCombatStop(Unit* mTarget)
         {
             setAIAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
+            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
-            _unit->RemoveAura(TRANSFORM_SNAKE);
+            getCreature()->RemoveAura(TRANSFORM_SNAKE);
         }
 
         void AIUpdate()
         {
-            if (_unit->GetHealthPct() <= 50 && m_spellcheck[0])
+            if (getCreature()->GetHealthPct() <= 50 && m_spellcheck[0])
             {
                 //cast snake transform
-                _unit->CastSpell(_unit, spells[0].info, spells[0].instant);
+                getCreature()->CastSpell(getCreature(), spells[0].info, spells[0].instant);
                 m_spellcheck[0] = false;
             }
 
@@ -267,7 +267,7 @@ class VenoxisAI : public CreatureAIScript
 
         void SpellCast(float val)
         {
-            if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+            if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
@@ -276,22 +276,22 @@ class VenoxisAI : public CreatureAIScript
                     if (!spells[i].perctrigger) continue;
 
                     // do another set of spells on transform
-                    if (_unit->GetHealthPct() <= 50 && i < 3) continue;
+                    if (getCreature()->GetHealthPct() <= 50 && i < 3) continue;
 
                     if (m_spellcheck[i])
                     {
-                        target = _unit->GetAIInterface()->getNextTarget();
+                        target = getCreature()->GetAIInterface()->getNextTarget();
                         switch (spells[i].targettype)
                         {
                             case TARGET_SELF:
                             case TARGET_VARIOUS:
-                                _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                                getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
                                 break;
                             case TARGET_ATTACKING:
-                                _unit->CastSpell(target, spells[i].info, spells[i].instant);
+                                getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
                                 break;
                             case TARGET_DESTINATION:
-                                _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
+                                getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                                 break;
                         }
                         m_spellcheck[i] = false;
@@ -300,7 +300,7 @@ class VenoxisAI : public CreatureAIScript
 
                     if (val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger))
                     {
-                        _unit->setAttackTimer(spells[i].attackstoptimer, false);
+                        getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
                         m_spellcheck[i] = true;
                     }
                     comulativeperc += spells[i].perctrigger;

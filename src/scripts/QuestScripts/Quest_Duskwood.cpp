@@ -55,7 +55,7 @@ public:
         }
         if (_getHealthPercent() >= 10 && _getHealthPercent() <= 98 && !_isCasting())
         {
-            mElizaGuard = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 1871);
+            mElizaGuard = getCreature()->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), 1871);
             if (mElizaGuard == NULL)
             {
                 CastSpellNowNoScheduling(mSummonGuard);

@@ -61,7 +61,7 @@ class OnyxiaAI : public CreatureAIScript
                     || !infoKAway || !infoSFireball || !infoWBuffet || !infoDeepBreath)
                 m_useSpell = false;
 
-            _unit->GetAIInterface()->setOutOfCombatRange(200000);
+            getCreature()->GetAIInterface()->setOutOfCombatRange(200000);
 
             m_fBreath = false;
             m_kAway = false;
@@ -75,11 +75,11 @@ class OnyxiaAI : public CreatureAIScript
             m_phase = 1;
             m_eFlamesCooldown = 1;
             m_whelpCooldown = 7;
-            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-            _unit->SetStandState(STANDSTATE_STAND);
+            getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+            getCreature()->SetStandState(STANDSTATE_STAND);
             sendDBChatMessage(1725);     //How fortuitous, usually I must leave my lair to feed!
             if (m_useSpell)
-                RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
+                RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
 
             m_fBreath = false;
             m_kAway = false;
@@ -89,14 +89,14 @@ class OnyxiaAI : public CreatureAIScript
 
         void OnCombatStop(Unit* mTarget)
         {
-            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-            _unit->GetAIInterface()->setWayPointToMove(0);
+            getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+            getCreature()->GetAIInterface()->setWayPointToMove(0);
             setAIAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
-            _unit->GetAIInterface()->unsetSplineFlying();
-            _unit->GetAIInterface()->m_canMove = true;
-            _unit->SetStandState(STANDSTATE_SLEEP);
+            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
+            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
+            getCreature()->GetAIInterface()->unsetSplineFlying();
+            getCreature()->GetAIInterface()->m_canMove = true;
+            getCreature()->SetStandState(STANDSTATE_SLEEP);
             /*if (_unit->m_pacified > 0)
                 _unit->m_pacified--;*/
             if (m_useSpell)
@@ -116,54 +116,54 @@ class OnyxiaAI : public CreatureAIScript
             {
                 case 1:
                     {
-                        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                        _unit->GetAIInterface()->setWayPointToMove(2);
+                        getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+                        getCreature()->GetAIInterface()->setWayPointToMove(2);
                         Fly();
                     }
                     break;
                 case 2:
                     {
-                        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                        _unit->GetAIInterface()->setWayPointToMove(3);
+                        getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+                        getCreature()->GetAIInterface()->setWayPointToMove(3);
                     }
                     break;
                 case 3:
                     {
-                        _unit->GetAIInterface()->m_canMove = false;
-                        _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
+                        getCreature()->GetAIInterface()->m_canMove = false;
+                        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
                         setAIAgent(AGENT_SPELL);
                         //_unit->m_pacified--;
-                        _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-                        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-                        _unit->GetAIInterface()->setWayPointToMove(0);
+                        getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
+                        getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+                        getCreature()->GetAIInterface()->setWayPointToMove(0);
 
-                        _unit->setMoveHover(true);
+                        getCreature()->setMoveHover(true);
                         m_currentWP = 3;
                     }
                     break;
                 case 8:
                     {
-                        _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
+                        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
                         setAIAgent(AGENT_NULL);
-                        _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-                        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-                        _unit->GetAIInterface()->setWayPointToMove(0);
+                        getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
+                        getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+                        getCreature()->GetAIInterface()->setWayPointToMove(0);
                         /*_unit->m_pacified--;
                         if (_unit->m_pacified > 0)
                             _unit->m_pacified--;*/
-                        _unit->setMoveHover(false);
+                        getCreature()->setMoveHover(false);
                         Land();
                     }
                     break;
                 default:
                     {
-                        _unit->GetAIInterface()->m_canMove = false;
-                        _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
-                        _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
-                        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-                        _unit->GetAIInterface()->setWayPointToMove(0);
+                        getCreature()->GetAIInterface()->m_canMove = false;
+                        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
+                        getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
+                        getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+                        getCreature()->GetAIInterface()->setWayPointToMove(0);
 
-                        _unit->setMoveHover(true);
+                        getCreature()->setMoveHover(true);
                         //_unit->m_pacified--;
                     }
                     break;
@@ -198,19 +198,19 @@ class OnyxiaAI : public CreatureAIScript
 
         void PhaseOne()
         {
-            if (_unit->GetHealthPct() <= 65)
+            if (getCreature()->GetHealthPct() <= 65)
             {
                 m_phase = 2;
-                _unit->SetCastSpeedMod(0.01f);
-                if (_unit->GetCurrentSpell() != NULL)
-                    _unit->GetCurrentSpell()->cancel();
+                getCreature()->SetCastSpeedMod(0.01f);
+                if (getCreature()->GetCurrentSpell() != NULL)
+                    getCreature()->GetCurrentSpell()->cancel();
 
-                _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
+                getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
                 //_unit->m_pacified++;
-                _unit->GetAIInterface()->StopMovement(0);
-                _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
-                _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                _unit->GetAIInterface()->setWayPointToMove(1);
+                getCreature()->GetAIInterface()->StopMovement(0);
+                getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
+                getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+                getCreature()->GetAIInterface()->setWayPointToMove(1);
 
                 return;
             }
@@ -220,28 +220,28 @@ class OnyxiaAI : public CreatureAIScript
 
         void PhaseTwo()
         {
-            if (_unit->GetHealthPct() <= 40)
+            if (getCreature()->GetHealthPct() <= 40)
             {
                 m_phase = 3;
-                _unit->SetCastSpeedMod(1.0f);
-                if (_unit->GetCurrentSpell() != NULL)
-                    _unit->GetCurrentSpell()->cancel();
-                _unit->GetAIInterface()->m_canMove = true;
-                _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
+                getCreature()->SetCastSpeedMod(1.0f);
+                if (getCreature()->GetCurrentSpell() != NULL)
+                    getCreature()->GetCurrentSpell()->cancel();
+                getCreature()->GetAIInterface()->m_canMove = true;
+                getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
                 //_unit->m_pacified++;
-                _unit->GetAIInterface()->StopMovement(0);
-                _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
-                _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                _unit->GetAIInterface()->setWayPointToMove(8);
+                getCreature()->GetAIInterface()->StopMovement(0);
+                getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
+                getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+                getCreature()->GetAIInterface()->setWayPointToMove(8);
 
                 return;
             }
-            if (_unit->GetAIInterface()->getWaypointScriptType() == Movement::WP_MOVEMENT_SCRIPT_WANTEDWP)
+            if (getCreature()->GetAIInterface()->getWaypointScriptType() == Movement::WP_MOVEMENT_SCRIPT_WANTEDWP)
                 return;
             m_eFlamesCooldown--;
-            if (!m_eFlamesCooldown && _unit->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
+            if (!m_eFlamesCooldown && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
             {
-                _unit->CastSpell(_unit->GetAIInterface()->getNextTarget(), infoSFireball, false);//(_unit->getAttackTarget(),
+                getCreature()->CastSpell(getCreature()->GetAIInterface()->getNextTarget(), infoSFireball, false);//(_unit->getAttackTarget(),
                 m_eFlamesCooldown = 4;
                 m_fCastCount--;
             }
@@ -254,12 +254,12 @@ class OnyxiaAI : public CreatureAIScript
                     if (m_currentWP >= 8)
                         m_currentWP = 3;
 
-                    _unit->GetAIInterface()->m_canMove = true;
-                    _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
+                    getCreature()->GetAIInterface()->m_canMove = true;
+                    getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
                     //_unit->m_pacified++;
-                    _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
-                    _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                    _unit->GetAIInterface()->setWayPointToMove(m_currentWP);
+                    getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
+                    getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+                    getCreature()->GetAIInterface()->setWayPointToMove(m_currentWP);
                     m_fCastCount = 5;
                 }
                 else if (val > 1000)//Move right
@@ -268,18 +268,18 @@ class OnyxiaAI : public CreatureAIScript
                     if (m_currentWP < 3)
                         m_currentWP = 7;
 
-                    _unit->GetAIInterface()->m_canMove = true;
-                    _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
+                    getCreature()->GetAIInterface()->m_canMove = true;
+                    getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
                     //_unit->m_pacified++;
-                    _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
-                    _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                    _unit->GetAIInterface()->setWayPointToMove(m_currentWP);
+                    getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
+                    getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+                    getCreature()->GetAIInterface()->setWayPointToMove(m_currentWP);
                     m_fCastCount = 5;
                 }
                 else if (val < 350)
                 {
                     //Deep breath
-                    _unit->CastSpell(_unit, infoDeepBreath, false);
+                    getCreature()->CastSpell(getCreature(), infoDeepBreath, false);
                     m_fCastCount = 5;
                 }
                 else
@@ -314,7 +314,7 @@ class OnyxiaAI : public CreatureAIScript
         {
             if (!m_aoeFearCooldown)
             {
-                _unit->CastSpell(_unit, infoFear, false);//(_unit->getAttackTarget(),
+                getCreature()->CastSpell(getCreature(), infoFear, false);//(_unit->getAttackTarget(),
                 m_aoeFearCooldown = 30;
                 return;
             }
@@ -348,70 +348,70 @@ class OnyxiaAI : public CreatureAIScript
 
         void Fly()
         {
-            _unit->Emote(EMOTE_ONESHOT_LIFTOFF);
+            getCreature()->Emote(EMOTE_ONESHOT_LIFTOFF);
             //Do we need hover really? Check it :D
             //_unit->SetHover(true);
-            _unit->GetAIInterface()->setSplineFlying();
+            getCreature()->GetAIInterface()->setSplineFlying();
         }
 
         void Land()
         {
-            _unit->Emote(EMOTE_ONESHOT_LAND);
+            getCreature()->Emote(EMOTE_ONESHOT_LAND);
             //Do we need hover really? Check it :D
             //_unit->SetHover(false);
-            _unit->GetAIInterface()->unsetSplineFlying();
+            getCreature()->GetAIInterface()->unsetSplineFlying();
         }
 
         void SpellCast(uint32 val)
         {
-            if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
+            if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
             {
                 if (m_fBreath)
                 {
-                    _unit->CastSpell(_unit, infoFBreath, false);
+                    getCreature()->CastSpell(getCreature(), infoFBreath, false);
                     m_fBreath = false;
                     return;
                 }
                 else if (m_kAway)
                 {
-                    _unit->CastSpell(_unit->GetAIInterface()->getNextTarget(), infoKAway, false);
+                    getCreature()->CastSpell(getCreature()->GetAIInterface()->getNextTarget(), infoKAway, false);
                     m_kAway = false;
                     return;
                 }
                 else if (m_wBuffet)
                 {
-                    _unit->CastSpell(_unit, infoWBuffet, false);
+                    getCreature()->CastSpell(getCreature(), infoWBuffet, false);
                     m_wBuffet = false;
                     return;
                 }
                 else if (m_Cleave)
                 {
-                    _unit->CastSpell(_unit->GetAIInterface()->getNextTarget(), infoCleave, false);
+                    getCreature()->CastSpell(getCreature()->GetAIInterface()->getNextTarget(), infoCleave, false);
                     m_Cleave = false;
                     return;
                 }
 
                 if (val >= 100 && val <= 225)
                 {
-                    _unit->setAttackTimer(6000, false);//6000
+                    getCreature()->setAttackTimer(6000, false);//6000
                     m_fBreath = true;
                     //_unit->CastSpell(_unit, infoFBreath, false);
                 }
                 else if (val > 225 && val <= 300)
                 {
-                    _unit->setAttackTimer(4000, false);//2000
+                    getCreature()->setAttackTimer(4000, false);//2000
                     m_kAway = true;
                     //_unit->CastSpell(_unit->GetAIInterface()->GetNextTarget(), infoKAway, false);
                 }
                 else if (val > 300 && val <= 375)
                 {
-                    _unit->setAttackTimer(4000, false);//3000
+                    getCreature()->setAttackTimer(4000, false);//3000
                     m_wBuffet = true;
                     //_unit->CastSpell(_unit, infoWBuffet, false);
                 }
                 else if (val > 375 && val < 450)
                 {
-                    _unit->setAttackTimer(4000, false);//2000
+                    getCreature()->setAttackTimer(4000, false);//2000
                     m_Cleave = true;
                     // _unit->CastSpell(_unit->GetAIInterface()->GetNextTarget(), infoCleave, false);
                 }

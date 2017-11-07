@@ -65,17 +65,17 @@ public:
 
     void OnLoad()
     {
-        _unit->SetFaction(11);
-        _unit->setEmoteState(EMOTE_ONESHOT_EAT);
+        getCreature()->SetFaction(11);
+        getCreature()->setEmoteState(EMOTE_ONESHOT_EAT);
     }
 
     void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
     {
-        if (_unit->getUInt32Value(UNIT_FIELD_HEALTH) - fAmount <= _unit->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.37f)
+        if (getCreature()->getUInt32Value(UNIT_FIELD_HEALTH) - fAmount <= getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.37f)
         {
             if (mAttacker->IsPlayer())
             {
-                _unit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 RegisterAIUpdateEvent(1000);
                 QuestLogEntry* qle = (static_cast<Player*>(mAttacker))->GetQuestLogForEntry(1640);
                 if (!qle)
@@ -87,15 +87,15 @@ public:
 
     void AIUpdate()
     {
-        _unit->RemoveNegativeAuras();
-        _unit->SetFaction(11);
-        _unit->SetHealthPct(100);
-        _unit->GetAIInterface()->WipeTargetList();
-        _unit->GetAIInterface()->WipeHateList();
-        _unit->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, _unit, 0);
+        getCreature()->RemoveNegativeAuras();
+        getCreature()->SetFaction(11);
+        getCreature()->SetHealthPct(100);
+        getCreature()->GetAIInterface()->WipeTargetList();
+        getCreature()->GetAIInterface()->WipeHateList();
+        getCreature()->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
         _setMeleeDisabled(true);
-        _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-        _unit->setUInt32Value(UNIT_FIELD_FLAGS, 0);
+        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, 0);
     }
 
     void OnDied(Unit* mKiller)

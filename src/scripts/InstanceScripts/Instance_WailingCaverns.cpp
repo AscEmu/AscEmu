@@ -63,7 +63,7 @@ class DruidFangAI : public MoonScriptCreatureAI
                 LightningBolt->mEnabled = false;
                 DruidsSlumber->mEnabled = false;
             } // If they dont have serpent form aura then re-enable normal spells
-            else if (SerpentForm->mEnabled == false && !GetUnit()->HasAura(8041))
+            else if (SerpentForm->mEnabled == false && !getCreature()->HasAura(8041))
             {
                 LightningBolt->mEnabled = true;
                 DruidsSlumber->mEnabled = true;
@@ -134,7 +134,7 @@ class LordCobrahnAI : public MoonScriptCreatureAI
                 // Disable Lightning Bolt
                 LightningBolt->mEnabled = false;
             }
-            else if (_getHealthPercent() <= 20 && SerpentForm->mEnabled == false && !GetUnit()->HasAura(7965))
+            else if (_getHealthPercent() <= 20 && SerpentForm->mEnabled == false && !getCreature()->HasAura(7965))
             {
                 // Enable Lightning Bolt
                 LightningBolt->mEnabled = true;
@@ -362,7 +362,7 @@ class DofNaralexAI : public MoonScriptBossAI
             ForceWaypointMove(iWaypointId + 1);
             if (GetPhase() == 1 && GetCurrentWaypoint() == 39)
             {
-                _unit->Emote(EMOTE_ONESHOT_TALK);
+                getCreature()->Emote(EMOTE_ONESHOT_TALK);
                 SetPhase(2, Awakening);
                 SpawnTimer = _addTimer(100000);
             }
@@ -405,7 +405,7 @@ class DofNaralexAI : public MoonScriptBossAI
                     _setDisplayId(17089);
                     Naralex->_setDisplayId(17089);
                     Naralex->sendChatMessage(CHAT_MSG_MONSTER_SAY, 5789, "I am awake... at last");
-                    Naralex->GetUnit()->SetStandState(STANDSTATE_STAND);
+                    Naralex->getCreature()->SetStandState(STANDSTATE_STAND);
                     setFlyMode(true);
                     Naralex->setFlyMode(true);
                     moveTo(-6.704030f, 200.308838f, -26.938824f);
@@ -468,8 +468,8 @@ class Naralex : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(Naralex, MoonScriptCreatureAI);
         Naralex(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            _unit->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            _unit->SetStandState(STANDSTATE_SLEEP);
+            getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->SetStandState(STANDSTATE_SLEEP);
         }
 };
 

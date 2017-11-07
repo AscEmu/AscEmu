@@ -80,16 +80,16 @@ class WatchkeeperGargolmarAI : public MoonScriptBossAI
 
     void AIUpdate()
     {
-        if (_unit->GetHealthPct() <= 40 && !mCalledForHelp)
+        if (getCreature()->GetHealthPct() <= 40 && !mCalledForHelp)
         {
             sendDBChatMessage(4871);      // Heal me, quickly!
             mCalledForHelp = true;
         }
 
-        if (_unit->GetHealthPct() <= 20 && !_retaliation)
+        if (getCreature()->GetHealthPct() <= 20 && !_retaliation)
         {
             _retaliation = true;
-            _unit->setAttackTimer(1500, false);
+            getCreature()->setAttackTimer(1500, false);
             CastSpellNowNoScheduling(mRetaliation);
         }
 
@@ -174,7 +174,7 @@ class OmorTheUnscarredAI : public MoonScriptCreatureAI
                 pShield->mEnabled = true;
             }
 
-            Unit* pTarget = _unit->GetAIInterface()->getNextTarget();
+            Unit* pTarget = getCreature()->GetAIInterface()->getNextTarget();
             if (pTarget != NULL)
             {
                 if (getRangeToObject(pTarget) > 10.0f)
@@ -189,8 +189,8 @@ class OmorTheUnscarredAI : public MoonScriptCreatureAI
                         else
                         {
                             _clearHateList();
-                            _unit->GetAIInterface()->AttackReaction(pTarget, 500);
-                            _unit->GetAIInterface()->setNextTarget(pTarget);
+                            getCreature()->GetAIInterface()->AttackReaction(pTarget, 500);
+                            getCreature()->GetAIInterface()->setNextTarget(pTarget);
                         }
                     }
                     else

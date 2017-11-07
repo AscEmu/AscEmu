@@ -48,11 +48,11 @@ public:
         {
             case 15:
             {
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks for your help. I'll continue from here!");
-                if (_unit->m_escorter == NULL)
+                getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks for your help. I'll continue from here!");
+                if (getCreature()->m_escorter == NULL)
                     return;
-                Player* plr = _unit->m_escorter;
-                _unit->m_escorter = NULL;
+                Player* plr = getCreature()->m_escorter;
+                getCreature()->m_escorter = NULL;
 
                 auto quest_entry = plr->GetQuestLogForEntry(6523);
                 if (quest_entry == nullptr)
@@ -61,17 +61,17 @@ public:
             }break;
             case 17:
             {
-                _unit->Despawn(5000, 1000);
+                getCreature()->Despawn(5000, 1000);
             }break;
         }
     }
 
     void OnDied(Unit* mKiller)
     {
-        if (_unit->m_escorter == NULL)
+        if (getCreature()->m_escorter == NULL)
             return;
-        Player* plr = _unit->m_escorter;
-        _unit->m_escorter = NULL;
+        Player* plr = getCreature()->m_escorter;
+        getCreature()->m_escorter = NULL;
 
         auto quest_entry = plr->GetQuestLogForEntry(6523);
         if (quest_entry != nullptr)
