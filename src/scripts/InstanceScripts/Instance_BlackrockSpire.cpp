@@ -81,11 +81,6 @@ class GeneralDrakkisathAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -194,11 +189,6 @@ class PyroguardEmbersserAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -304,11 +294,6 @@ class RendBlackhandAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -421,11 +406,6 @@ class GythAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -549,11 +529,6 @@ class TheBeastAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -689,11 +664,6 @@ class HighlordOmokkAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -799,11 +769,6 @@ class ShadowHunterVoshAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -933,11 +898,6 @@ class WarMasterVooneAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -1049,11 +1009,6 @@ class MotherSmolderwebAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -1189,11 +1144,6 @@ class UrokDoomhowlAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -1302,11 +1252,6 @@ class QuartermasterZigrisAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -1410,11 +1355,6 @@ class HalyconAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -1548,11 +1488,6 @@ class OverlordWyrmthalakAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 

@@ -66,7 +66,6 @@ class ThekaAI : public CreatureAIScript
         {
             morphcheck = false;
             plaguecount = 0;
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -187,7 +186,6 @@ class AntusulAI : public CreatureAIScript
             spawns = spawns2 = attack = firstspawn = secondspawn = false;
 
             secondspawncount = 0;
-            RemoveAIUpdateEvent();
             trigger = getNearestCreature(1811.943726f, 714.839417f, 12.897189f, 133337);
             if (trigger)
                 trigger->Despawn(100, 0);

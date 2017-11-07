@@ -78,7 +78,6 @@ class DoctorTheolenKrastinovAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             FRENZY_LIMITER = 0;
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -204,11 +203,6 @@ class InstructorMaliciaAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -313,11 +307,6 @@ class TheRavenianAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -431,11 +420,6 @@ class LadyIlluciaBarovAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -559,11 +543,6 @@ class RasForstwhisperAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -662,11 +641,6 @@ class JandiceBarovAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -769,11 +743,6 @@ class KormokAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -885,7 +854,6 @@ class VectusAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             FRENZY_LIMITER = 0;
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -996,11 +964,6 @@ class LordAlexeiBarovAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -1108,11 +1071,6 @@ class LorekeeperPolkeltAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -1212,11 +1170,6 @@ class DarkmasterGandlingAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 

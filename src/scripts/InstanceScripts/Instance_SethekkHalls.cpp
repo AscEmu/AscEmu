@@ -64,11 +64,6 @@ class AvianDarkhawkAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -155,11 +150,6 @@ class AvianRipperAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -265,11 +255,6 @@ class AvianWarhawkAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -371,11 +356,6 @@ class CobaltSerpentAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -467,11 +447,6 @@ class TimeLostControllerAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -569,11 +544,6 @@ class TimeLostScryerAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -660,11 +630,6 @@ class TimeLostShadowmageAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -762,11 +727,6 @@ class SethekkGuardAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -852,11 +812,6 @@ class SethekkInitiateAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -954,11 +909,6 @@ class SethekkOracleAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -1050,11 +1000,6 @@ class SethekkProphetAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -1152,11 +1097,6 @@ class SethekkRavenguardAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -1242,11 +1182,6 @@ class SethekkShamanAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -1341,11 +1276,6 @@ class SethekkTalonLordAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -1626,8 +1556,6 @@ class DarkweaverSythAI : public CreatureAIScript
                 pLakkaAI->SetWaypointToMove(1);
                 pLakkaAI->setAIAgent(AGENT_NULL);
             }
-
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1829,8 +1757,6 @@ class TalonKingIkissAI : public CreatureAIScript
             GameObject* IkissDoor = getNearestGameObject(43.079f, 149.505f, 0.034f, 183398);
             if (IkissDoor != NULL)
                 IkissDoor->SetState(GO_STATE_OPEN);
-
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -2075,11 +2001,6 @@ class ANZUAI : public CreatureAIScript
 
             Banished = false;
             Summon = 0;
-        }
-
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()

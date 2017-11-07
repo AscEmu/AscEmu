@@ -67,11 +67,6 @@ class EtherealDarkcasterAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -164,11 +159,6 @@ class EtherealPriestAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -266,11 +256,6 @@ class EtherealTheurgistAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -357,11 +342,6 @@ class EtherealSorcererAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -465,11 +445,6 @@ class NexusStalkerAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -555,11 +530,6 @@ class NexusTerrorAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -655,7 +625,6 @@ class ManaLeechAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             _unit->CastSpell(_unit, spells[0].info, spells[0].instant);
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -763,11 +732,6 @@ class EtherealSpellbinderAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -854,11 +818,6 @@ class EtherealWraithAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -999,7 +958,6 @@ class PandemoniusAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(SAY_PANDEMONIUS_06);
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1169,11 +1127,6 @@ class TavarokAI : public CreatureAIScript
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -1395,7 +1348,6 @@ class NexusPrinceShaffarAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(SAY_NEXUSPRINCE_08);
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1577,11 +1529,6 @@ class YorAI : public CreatureAIScript
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 

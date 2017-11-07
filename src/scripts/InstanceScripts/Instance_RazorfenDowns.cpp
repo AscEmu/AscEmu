@@ -94,7 +94,6 @@ class AmnennarTheColdbringerAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -253,7 +252,6 @@ class PlaguemawTheRottingAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -377,7 +375,6 @@ class RagglesnoutAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -502,7 +499,6 @@ class TutenKashAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()

@@ -84,11 +84,6 @@ class TrollgoreAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
         {
             /*if (mAttacker->IsCreature() && TO_CREATURE(mAttacker)->GetProto()->Id == DRAKKARI_INVADER_ENTRY)
@@ -315,7 +310,6 @@ class NovosTheSummonerAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(SAY_NOVOS_SUMMONER_03);
-            RemoveAIUpdateEvent();
         }
 
         void OnTargetDied(Unit* mTarget)
@@ -593,7 +587,6 @@ class CrystalHandlerAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            RemoveAIUpdateEvent();
             Unit* Novos = _unit->GetMapMgr()->GetUnit(_unit->GetSummonedByGUID());
             if (Novos)
                 for (uint8 i = 0; i < 4; i++)
@@ -751,11 +744,6 @@ class KingDreadAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -946,11 +934,6 @@ class TheProphetTaronjaAI : public CreatureAIScript
             phase_timer = 0;
             phase_length = 0;
             _unit->SetDisplayId(_unit->GetNativeDisplayId());
-        }
-
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
         }
 
         void OnDamageTaken(Unit* mAttacker, uint32 fAmount)

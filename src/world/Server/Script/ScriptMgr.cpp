@@ -533,6 +533,20 @@ CreatureAIScript::~CreatureAIScript()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// Event default management
+void CreatureAIScript::_internalOnDiedCleanup()
+{
+    LogDebugFlag(LF_SCRIPT_MGR, "CreatureAIScript::_internalOnDiedCleanup() called");
+
+    _cancelAllTimers();
+    _removeAllAuras();
+    RemoveAIUpdateEvent();
+
+    if (_isDespawnWhenInactiveSet())
+        despawn(DEFAULT_DESPAWN_TIMER);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // player
 Player* CreatureAIScript::getNearestPlayer()
 {

@@ -158,8 +158,6 @@ class HydrossTheUnstableAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(4757);     // You are the disease, not I..
-
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -517,16 +515,6 @@ class LurkerAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
-        void OnTargetDied(Unit* mTarget)
-        {
-
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -732,7 +720,6 @@ class LeotherasAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(4783);     // You cannot kill me! Fools, I'll be back! I'll... aarghh...
-            RemoveAIUpdateEvent();
         }
 
         void SwitchToHumanForm()
@@ -1226,7 +1213,6 @@ class KarathressAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(4748);     // Her ... excellency ... awaits!
-            RemoveAIUpdateEvent();
 
             //spawn seer olum and despawn him in 3 minutes
             Creature* olum = NULL;
@@ -1532,8 +1518,6 @@ class MorogrimAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(4792);     // Great... currents of... Ageon.
-
-            RemoveAIUpdateEvent();
         }
 
         void OnTargetDied(Unit* mTarget)
@@ -1903,7 +1887,6 @@ class VashjAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(4771);     // Lord Illidan, I... I am... sorry.
-            RemoveAIUpdateEvent();
         }
 
         void OnTargetDied(Unit* mTarget)
@@ -2462,7 +2445,6 @@ class ToxicSporeBatAI : public CreatureAIScript
             PositionChange = RandomUInt(15, 23);
             PhoenixSummon = RandomUInt(17, 23);
             CastTime();
-            //RemoveAIUpdateEvent();
         }
 
         void AIUpdate()

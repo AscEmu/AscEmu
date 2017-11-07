@@ -86,11 +86,6 @@ class SHIRRAKTHEDEADWATCHERAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -258,11 +253,6 @@ class AvatarOfTheMartyredAI : public CreatureAIScript
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             //RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -437,8 +427,6 @@ class EXARCHMALADAARAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(SAY_MALADAAR_06);
-
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()

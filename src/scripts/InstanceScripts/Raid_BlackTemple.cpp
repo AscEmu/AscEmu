@@ -1052,11 +1052,11 @@ void SpellFunc_RaiseDead(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Un
     if (pDeathshaper != NULL)
     {
         pDeathshaper->CastSpellNowNoScheduling(pDeathshaper->mRaiseDead);
-        MoonScriptCreatureAI* pAI = pDeathshaper->SpawnCreature(23371, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), pTarget->GetOrientation());
+        Creature* pAI = pDeathshaper->spawnCreature(23371, pTarget->GetPosition());
         if (pAI != NULL)
         {
-            pAI->GetUnit()->GetAIInterface()->StopMovement(2500);
-            pAI->_delayNextAttack(2500);
+            pAI->GetAIInterface()->StopMovement(2500);
+            pAI->setAttackTimer(2500, false);
         }
 
         static_cast<Creature*>(pTarget)->Despawn(3000, 0);
@@ -1539,8 +1539,6 @@ class NajentusAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(4710);     // Lord Illidan will... crush you!
-
-            RemoveAIUpdateEvent();
         }
 
         void OnTargetDied(Unit* mTarget)
@@ -1738,7 +1736,6 @@ class SupremusAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(5042);     // I am merely one of... infinite multitudes.
-            RemoveAIUpdateEvent();
         }
 
         void OnTargetDied(Unit* mTarget)
@@ -2035,8 +2032,6 @@ class GurtoggAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(4649);     // Aaaahrg...
-
-            RemoveAIUpdateEvent();
         }
 
         void OnTargetDied(Unit* mTarget)
@@ -2796,7 +2791,6 @@ class ShahrazAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(4660);     // I wasn't finished.
-            RemoveAIUpdateEvent();
         }
 
         void OnTargetDied(Unit* mTarget)
@@ -3290,7 +3284,6 @@ class TeronGorefiendAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(4700);     // The wheel...spins...again....
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -3489,8 +3482,6 @@ class ShadeofakamaAI : public CreatureAIScript
             _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I don't want to go back!");
             _unit->PlaySoundToSet(11420);
             cre = spawnCreature(22990, 643.741f, 305.852f, 271.689f, 0.00628f);
-            //cre->GetAIInterface()->setOutOfCombatRange(30000);
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -6484,10 +6475,10 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            Unit* pIllidan = getNearestCreature(22917);
+            Creature* pIllidan = getNearestCreature(22917);
             if (pIllidan != NULL)
             {
-                IllidanStormrageAI* pAI = static_cast< IllidanStormrageAI* >(static_cast<Creature*>(pIllidan)->GetScript());
+                IllidanStormrageAI* pAI = static_cast< IllidanStormrageAI* >(pIllidan->GetScript());
                 if (pAI->mMiscEventPart != 0 && mTriggerAIList.size() == 0)
                 {
                     GameObject* pGameObject = getNearestGameObject(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), GO_CAGE_TRAP);

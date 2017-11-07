@@ -397,7 +397,6 @@ public:
         ///\todo not in db
         _unit->PlaySoundToSet(9275);
         _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Aarrhhh.");
-        RemoveAIUpdateEvent();
 
         GameObject* DoorLeftO = getNearestGameObject(-10917.1445f, -1774.05f, 90.478f, 184279);
         GameObject* DoorRightO = getNearestGameObject(-10872.195f, -1779.42f, 90.45f, 184278);
@@ -609,7 +608,6 @@ public:
         CastTime();
         _unit->PlaySoundToSet(9275);
         _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "AArrhhh.");
-        RemoveAIUpdateEvent();
     }
 
     void OnTargetDied(Unit* mTarget)
@@ -1156,7 +1154,6 @@ public:
     void OnDied(Unit* mKiller)
     {
         sendDBChatMessage(2069);     // This Curator is no longer op... er... ation... al.
-        RemoveAIUpdateEvent();
     }
 
     void OnTargetDied(Unit* mTarget)
@@ -1522,7 +1519,6 @@ public:
         CastTime();
         sendDBChatMessage(2045);     // At last... The nightmare is.. over...
 
-        RemoveAIUpdateEvent();
         // Door opening
         GameObject* SDoor = getNearestGameObject(-11190.012f, -1881.016f, 231.95f, 184517);
         if (SDoor)
@@ -1933,7 +1929,6 @@ public:
 
     void OnDied(Unit* mKiller)
     {
-        RemoveAIUpdateEvent();
         _unit->Despawn(20000, 0);
     }
 
@@ -1979,7 +1974,6 @@ public:
 
     void OnDied(Unit* mKiller)
     {
-        RemoveAIUpdateEvent();
         _unit->Despawn(5000, 0);
     }
 
@@ -2093,7 +2087,6 @@ public:
     {
         clean();
         sendDBChatMessage(2049);     // My life, is yours. Oh great one.
-        RemoveAIUpdateEvent();
     }
 
     void clean()
@@ -2308,8 +2301,6 @@ public:
 
     void OnDied(Unit* mKiller)
     {
-        RemoveAIUpdateEvent();
-
         Unit* Illhoof = getNearestCreature(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 15688);
         if (Illhoof != NULL && Illhoof->isAlive())
             Illhoof->CastSpell(Illhoof, spells[1].info, spells[1].instant);
@@ -2472,7 +2463,6 @@ public:
 
     void OnDied(Unit* mKiller)
     {
-        RemoveAIUpdateEvent();
         _unit->Despawn(1, 0);
     }
 
@@ -2828,8 +2818,6 @@ public:
     void OnDied(Unit* mKiller)
     {
         sendDBChatMessage(2030);     // I refuse to concede defeat. I am a prince of the Eredar! I am...
-
-        RemoveAIUpdateEvent();
 
         if (GetLinkedCreature() != NULL)
             GetLinkedCreature()->GetUnit()->Despawn(10000, 0);
@@ -3267,11 +3255,6 @@ public:
         RemoveAIUpdateEvent();
     }
 
-    void OnDied(Unit* mKiller)
-    {
-        RemoveAIUpdateEvent();
-    }
-
     void AIUpdate()
     {
         uint32 t = (uint32)time(NULL);
@@ -3365,8 +3348,6 @@ public:
 
     void OnDied(Unit* mKiller)
     {
-        RemoveAIUpdateEvent();
-
         GameObject* NDoor = getNearestGameObject(-11186.2f, -1665.14f, 281.398f, 185521);
         if (NDoor)
             NDoor->SetState(GO_STATE_OPEN);
@@ -3614,11 +3595,6 @@ public:
         _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
         _unit->GetAIInterface()->unsetSplineFlying();
         _unit->GetAIInterface()->m_canMove = true;
-        RemoveAIUpdateEvent();
-    }
-
-    void OnDied(Unit* mKiller)
-    {
         RemoveAIUpdateEvent();
     }
 
@@ -3976,7 +3952,6 @@ public:
         }
 
         CastTime();
-        RemoveAIUpdateEvent();
     }
 
     void OnTargetDied(Unit* mTarget)
@@ -4180,7 +4155,6 @@ public:
     void OnDied(Unit* mKiller)
     {
         CastTime();
-        RemoveAIUpdateEvent();
     }
 
     void AIUpdate()
@@ -4316,7 +4290,6 @@ public:
         }
 
         CastTime();
-        RemoveAIUpdateEvent();
     }
 
     void OnTargetDied(Unit* mTarget)
@@ -4457,7 +4430,6 @@ public:
         }
 
         CastTime();
-        RemoveAIUpdateEvent();
     }
 
     void OnTargetDied(Unit* mTarget)
@@ -4654,7 +4626,6 @@ public:
             Curtain->SetState(GO_STATE_OPEN);
 
         CastTime();
-        RemoveAIUpdateEvent();
     }
 
     void OnTargetDied(Unit* mTarget)
@@ -4749,11 +4720,6 @@ public:
     }
 
     void OnCombatStop(Unit* mTarget)
-    {
-        RemoveAIUpdateEvent();
-    }
-
-    void OnDied(Unit* mKiller)
     {
         RemoveAIUpdateEvent();
     }
@@ -4879,7 +4845,6 @@ public:
             Curtain->SetState(GO_STATE_OPEN);
 
         CastTime();
-        RemoveAIUpdateEvent();
     }
 
     void OnTargetDied(Unit* mTarget)
@@ -5057,7 +5022,6 @@ public:
         //_unit->setEmoteState(EMOTE_STATE_DEAD);
 
         CastTime();
-        RemoveAIUpdateEvent();
     }
 
     void OnTargetDied(Unit* mTarget)

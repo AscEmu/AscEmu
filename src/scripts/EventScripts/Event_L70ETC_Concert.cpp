@@ -74,11 +74,6 @@ class SamAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void OnSpawn()
         {
             _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
@@ -146,11 +141,6 @@ class BerAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void OnSpawn()
         {
             _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
@@ -210,11 +200,6 @@ class SigAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -284,11 +269,6 @@ class MaiAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void OnSpawn()
         {
             _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
@@ -352,11 +332,6 @@ class ThuAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -439,11 +414,6 @@ class UndeadAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void OnSpawn()
         {
             _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
@@ -494,11 +464,6 @@ class Undead2AI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -557,11 +522,6 @@ class Undead3AI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void OnSpawn()
         {
             _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
@@ -607,11 +567,6 @@ class TriggerAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -715,11 +670,6 @@ class Trigger2AI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void OnSpawn()
         {
             _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
@@ -810,11 +760,6 @@ class Effectsground : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -938,11 +883,6 @@ class Effectsair : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 

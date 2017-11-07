@@ -460,13 +460,13 @@ void MoonScriptCreatureAI::OnDied(Unit* pKiller)
 {
     RandomEmote(mOnDiedEmotes);
     CancelAllSpells();
-    _cancelAllTimers();
+    //_cancelAllTimers();
     RemoveAllEvents();
-    _removeAllAuras();
-    RemoveAIUpdateEvent();
+    //_removeAllAuras();
+    //RemoveAIUpdateEvent();
 
-    if (_isDespawnWhenInactiveSet())
-        despawn(DEFAULT_DESPAWN_TIMER);
+    //if (_isDespawnWhenInactiveSet())
+    //    despawn(DEFAULT_DESPAWN_TIMER);
 }
 
 void MoonScriptCreatureAI::AIUpdate()

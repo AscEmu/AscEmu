@@ -323,7 +323,6 @@ class VHCreatureAI : public MoonScriptCreatureAI
         void OnDied(Unit* mKiller)
         {
             PutAllSpellsOnCooldown();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()

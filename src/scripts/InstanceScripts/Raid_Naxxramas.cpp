@@ -219,7 +219,6 @@ void WebWrapAI::OnDied(Unit* pKiller)
             PlayerPtr->setMoveRoot(false);
         }
 
-        RemoveAIUpdateEvent();
         mPlayerGuid = 0;
     }
 };
@@ -2201,10 +2200,10 @@ PortalOfShadowsAI::PortalOfShadowsAI(Creature* pCreature) : MoonScriptCreatureAI
     if (_unit->GetSummonedByGUID() != 0 && _unit->GetMapMgr() != NULL && _unit->GetMapMgr()->GetInterface() != NULL)
     {
         //mShadeAI = static_cast< ShadeOfNaxxramasAI* >(GetNearestCreature(CN_SHADE_OF_NAXXRAMAS));
-        Unit* UnitPtr = getNearestCreature(CN_SHADE_OF_NAXXRAMAS);
+        Creature* UnitPtr = getNearestCreature(CN_SHADE_OF_NAXXRAMAS);
         if (UnitPtr != NULL)
         {
-            mShadeAI = static_cast< ShadeOfNaxxramasAI* >(static_cast<Creature*>(UnitPtr)->GetScript());
+            mShadeAI = static_cast< ShadeOfNaxxramasAI* >(UnitPtr->GetScript());
             if (mShadeAI != NULL)
                 mShadeAI->mPortals.insert(this);
         }

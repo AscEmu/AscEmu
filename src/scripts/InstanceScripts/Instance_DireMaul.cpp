@@ -94,7 +94,6 @@ class AlzzinTheWildshaper : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -219,7 +218,6 @@ class CaptainKromcrush : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -344,7 +342,6 @@ class ChoRushTheObserver : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -487,7 +484,6 @@ class GuardFengus : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -621,7 +617,6 @@ class GuardMolDar : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -755,7 +750,6 @@ class GuardSlipKik : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -889,7 +883,6 @@ class Hydrospawn : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -998,7 +991,6 @@ class MassiveGeyser : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1123,7 +1115,6 @@ class IllyanaRavenoak : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1257,7 +1248,6 @@ class Immolthar : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1366,7 +1356,6 @@ class EyeOfImmolThar : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1472,7 +1461,6 @@ class KingGordok : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1597,7 +1585,6 @@ class Lethtendris : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1705,7 +1692,6 @@ class LordHelNurath : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1819,7 +1805,6 @@ class MagisterKalendris : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1944,7 +1929,6 @@ class PrinceTortheldrin : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -2078,7 +2062,6 @@ class Pusillin : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -2203,7 +2186,6 @@ class SkarrTheUnbreakable : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -2337,7 +2319,6 @@ class TendrisWarpwood : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
 
             //spawn Ancient Equine Spirit
             spawnCreature(14566, _unit->GetPosition());
@@ -2465,7 +2446,6 @@ class ZevrimThornhoof : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -2608,7 +2588,6 @@ class GordokMageLord : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -2733,7 +2712,6 @@ class GordokReaver : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -2867,7 +2845,6 @@ class GordokBrute : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -2992,7 +2969,6 @@ class FelLash : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()

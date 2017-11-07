@@ -732,11 +732,6 @@ class HellfireWarderAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -956,8 +951,6 @@ class HellfireChannelerAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            RemoveAIUpdateEvent();
-
             _unit->SetChannelSpellTargetGUID(0);
             _unit->SetChannelSpellId(0);
         }
@@ -1121,11 +1114,6 @@ class BurningAbyssalAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -1362,8 +1350,6 @@ class MagtheridonAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(8750);     // The Legion... will consume you... all....
-
-            RemoveAIUpdateEvent();
         }
 
         void OnTargetDied(Unit* mTarget)

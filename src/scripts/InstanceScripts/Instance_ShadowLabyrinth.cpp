@@ -68,11 +68,6 @@ class CabalAcolyteAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -172,11 +167,6 @@ class CabalDeathswornAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -262,11 +252,6 @@ class CabalFanaticAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -364,11 +349,6 @@ class CabalShadowPriestAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -460,11 +440,6 @@ class CabalSpellbinderAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -562,11 +537,6 @@ class CabalWarlockAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -658,11 +628,6 @@ class CabalZealotAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -797,11 +762,6 @@ class CabalRitualistAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -920,7 +880,6 @@ class FelOverseerAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             HealCooldown = 1;
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1024,11 +983,6 @@ class MaliciousInstructorAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -1167,7 +1121,6 @@ class AmbassadorHellmawAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(SAY_AMBASSADOR_HELMAW_08);
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1325,7 +1278,6 @@ class BlackheartTheInciterAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(SAY_BLACKHEART_INCITER_10);
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1549,7 +1501,6 @@ class GrandmasterVorpilAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(SAY_GRD_VORPIL_08);
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1701,11 +1652,6 @@ class MurmurAI : public CreatureAIScript
                 _unit->SetHealthPct(40);
             }
 
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 

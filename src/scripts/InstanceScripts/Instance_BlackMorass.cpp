@@ -98,7 +98,6 @@ class ChronoLordAI : public CreatureAIScript
         {
             CastTime();
             sendDBChatMessage(SAY_CHRONOLORD_04);
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -234,7 +233,6 @@ class TemporusAI : public CreatureAIScript
         {
             CastTime();
             sendDBChatMessage(SAY_TEMPORUS_04);
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -376,7 +374,6 @@ class AenusAI : public CreatureAIScript
         {
             CastTime();
             sendDBChatMessage(SAY_AENUS_04);
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()

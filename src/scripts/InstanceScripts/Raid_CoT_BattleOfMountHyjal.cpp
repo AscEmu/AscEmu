@@ -295,7 +295,6 @@ class RageWinterchillAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(1583);     // You have won this battle, but not... the...war
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -516,7 +515,6 @@ class AnetheronAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(1559);     // The clock... is still...ticking.
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -743,8 +741,6 @@ class KazrogalAI : public CreatureAIScript
             ///\todo move this to db
             _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "hahahahaa aahaah");
             _unit->PlaySoundToSet(11018);
-
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -982,7 +978,6 @@ class AzgalorAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(1570);     // Your time is almost... up!
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1441,7 +1436,6 @@ class ArchimondeAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(1600);     // No, it cannot be! Nooo!
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()

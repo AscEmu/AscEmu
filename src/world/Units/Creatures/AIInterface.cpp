@@ -4734,6 +4734,8 @@ void AIInterface::EventUnitDied(Unit* pUnit, uint32 misc1)
         static_cast< Creature* >(m_Unit)->HandleMonsterSayEvent(MONSTER_SAY_EVENT_ON_DIED);
 
     CALL_SCRIPT_EVENT(m_Unit, OnDied)(pUnit);
+    CALL_SCRIPT_EVENT(m_Unit, _internalOnDiedCleanup)();
+
     if (m_Unit->IsCreature())
     {
         CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), OnCreatureDeath)(static_cast<Creature*>(m_Unit), pUnit);

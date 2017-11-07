@@ -320,8 +320,6 @@ class MograineAI : public CreatureAIScript
 
             // Open the door
             pDoor->SetState(GO_STATE_OPEN);
-
-            RemoveAIUpdateEvent();
         }
 
 
@@ -494,9 +492,7 @@ class WhitemaneAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(SAY_WHITEMANE_03);
-            RemoveAIUpdateEvent();
         }
-
 
         void AIUpdate()
         {
@@ -621,12 +617,6 @@ class FairbanksAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
-
             RemoveAIUpdateEvent();
         }
 

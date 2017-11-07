@@ -76,7 +76,6 @@ class MeathookAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(SAY_MEATHOOK_06);
-            RemoveAIUpdateEvent();
         }
 
         void OnTargetDied(Unit* mTarget)
@@ -254,7 +253,6 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(SAY_SALRAM_FLESH_06);
-            RemoveAIUpdateEvent();
         }
 
         void OnTargetDied(Unit* mTarget)
@@ -427,11 +425,6 @@ class ChronoLordEpochAI : public CreatureAIScript
             _unit->RemoveAllAuras();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void OnTargetDied(Unit* mTarget)
         {
             switch (RandomUInt(2))
@@ -580,7 +573,6 @@ class InfiniteCorruptorAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(SAY_INFINITE_CORRUP_02);
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -773,7 +765,6 @@ class MalganisAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(SAY_MALGANIS_16);
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()

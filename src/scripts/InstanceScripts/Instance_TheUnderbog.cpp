@@ -98,7 +98,6 @@ class BOGGIANTAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -230,7 +229,6 @@ class CLAWAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -357,7 +355,6 @@ class UNDERBATAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -469,7 +466,6 @@ class FENRAYAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -589,7 +585,6 @@ class LYKULSTINGERAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -727,7 +722,6 @@ class LYKULWASPAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -874,7 +868,6 @@ class WRATHFINWARRIORAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1002,7 +995,6 @@ class WRATHFINSENTRYAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1114,7 +1106,6 @@ class WRATHFINMYRMIDONAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1233,7 +1224,6 @@ class UNDERBOGLORDAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1367,7 +1357,6 @@ class MURKBLOODSPEARMANAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1535,7 +1524,6 @@ class MURKBLOODORACLEAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1671,7 +1659,6 @@ class MURKBLOODHEALERAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1798,7 +1785,6 @@ class MURKBLOODTRIBESMANAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1941,7 +1927,6 @@ class UNDERBOGSHAMBLERAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -2054,7 +2039,6 @@ class UNDERBOGFRENZYAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -2147,7 +2131,6 @@ class UNDERBOGLURKERAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -2248,8 +2231,6 @@ class HungarfenAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             FourSpores = false;
-
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -2385,11 +2366,6 @@ class GhazanAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             if (_unit->GetHealthPct() <= 20 && !Enraged && _unit->GetCurrentSpell() == NULL)
@@ -2520,11 +2496,6 @@ class ClawAI : public CreatureAIScript
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -2755,7 +2726,6 @@ class SwamplordMuselekAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(SAY_SWAMPLORD_MUSEL_07);
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -2931,11 +2901,6 @@ class TheBlackStalkerAI : public CreatureAIScript
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 

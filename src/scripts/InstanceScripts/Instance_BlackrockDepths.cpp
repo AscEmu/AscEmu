@@ -68,7 +68,6 @@ class AmbassadorFlamelash : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -174,7 +173,6 @@ class AnubShiah : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -299,7 +297,6 @@ class BaelGar : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -433,7 +430,6 @@ class EmperorDagranThaurissan : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -558,7 +554,6 @@ class Eviscerator : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -683,7 +678,6 @@ class FineousDarkvire : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -817,7 +811,6 @@ class GeneralAngerforge : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -951,7 +944,6 @@ class GolemLordArgelmach : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1076,7 +1068,6 @@ class GoroshTheDervish : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1201,7 +1192,6 @@ class Grizzle : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1335,7 +1325,6 @@ class HedrumTheCreeper : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1468,7 +1457,6 @@ class HighInterrogatorGerstahn : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1592,7 +1580,6 @@ class HoundmasterGrebmar : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1726,7 +1713,6 @@ class HurleyBlackbreath : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1860,7 +1846,6 @@ class LordIncendius : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1994,7 +1979,6 @@ class LordRoccor : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -2118,7 +2102,6 @@ class Magmus : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -2242,7 +2225,6 @@ class OkThorTheBreaker : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -2375,7 +2357,6 @@ class Phalanx : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -2499,7 +2480,6 @@ class PrincessMoiraBronzebeard : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -2623,7 +2603,6 @@ class PyromancerLoregrain : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()

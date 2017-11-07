@@ -139,11 +139,6 @@ class EmerissAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             // M4ksiu: Someone who wrote this hadn't thought about it much, so it should be rewritten
@@ -331,7 +326,6 @@ class TaerarAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            RemoveAIUpdateEvent();
             Shades = false;
             Shade_timer = 0;
         }
@@ -508,7 +502,6 @@ class ShadeofTaerarAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            RemoveAIUpdateEvent();
             CastTime();
         }
 
@@ -672,7 +665,6 @@ class YsondreAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -812,7 +804,6 @@ class DementedDruidSpiritAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -978,7 +969,6 @@ class LethonAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1110,11 +1100,6 @@ class ShadeofLethonAI : public CreatureAIScript
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
             _unit->Despawn(15, 0);
-        }
-
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
         }
 
         void CheckDist()
@@ -1298,7 +1283,6 @@ class KruulAI : public CreatureAIScript
             hounds_timer = 45;
             enrage = 0;
             _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Ha! This place is not yet worthy of my infliction.");
-            RemoveAIUpdateEvent();
             CastTime();
         }
 
@@ -1553,8 +1537,6 @@ class KazzakAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(381);      // The Legion... will never... fall.
-
-            RemoveAIUpdateEvent();
             CastTime();
         }
 
@@ -1746,7 +1728,6 @@ class AzuregosAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             masstele = 60;
-            RemoveAIUpdateEvent();
             CastTime();
         }
 
@@ -1942,7 +1923,6 @@ class DoomwalkerAI : public CreatureAIScript
         {
             sendDBChatMessage(310);      // System failure in five, f-o-u-r...
             _unit->RemoveAura(AURA_OF_DEATH);
-            RemoveAIUpdateEvent();
             CastTime();
         }
 
@@ -2109,7 +2089,6 @@ class TeremusAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            RemoveAIUpdateEvent();
             CastTime();
         }
 

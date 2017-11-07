@@ -52,11 +52,6 @@ class CoreRagerAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             uint32 val = RandomUInt(1000);
@@ -119,11 +114,6 @@ class SulfuronAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -247,11 +237,6 @@ class RagnarosAI : public CreatureAIScript
         void OnTargetDied(Unit* mTarget)
         {
             sendDBChatMessage(3053);     // Die, insect!
-        }
-
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()

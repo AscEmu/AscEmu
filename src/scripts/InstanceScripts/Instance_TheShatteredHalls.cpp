@@ -83,7 +83,6 @@ class FelOrcConvertAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -202,7 +201,6 @@ class ShatteredHandHeathenAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -326,7 +324,6 @@ class ShatteredHandLegionnaireAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -451,7 +448,6 @@ class ShatteredHandSavageAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -588,7 +584,6 @@ class ShadowmoonAcolyteAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -718,7 +713,6 @@ class ShatteredHandAssassinAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -828,7 +822,6 @@ class ShatteredHandGladiatorAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -939,7 +932,6 @@ class ShatteredHandHoundmasterAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1066,7 +1058,6 @@ class ShatteredHandReaverAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1183,7 +1174,6 @@ class ShatteredHandSentryAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1314,11 +1304,6 @@ class ShatteredHandSharpshooterAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             setAIAgent(AGENT_NULL);
@@ -1418,7 +1403,6 @@ class ShatteredHandBrawlerAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1680,7 +1664,6 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(SAY_GRAND_WARLOCK_18);
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1917,7 +1900,6 @@ class BloodGuardPorungAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -2316,7 +2298,6 @@ class WarchiefKargathBladefistAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(SAY_WARCHIEF_KARGATH_06);
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()

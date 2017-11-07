@@ -301,8 +301,6 @@ class SartharionAI : public MoonScriptBossAI
         void OnDied(Unit* pKiller)
         {
             sendDBChatMessage(3984);         //Such is the price... of failure...
-
-            RemoveAIUpdateEvent();
             ParentClass::OnDied(pKiller);
         }
 

@@ -140,15 +140,15 @@ bool ChatHandler::HandleDistanceCommand(const char* args, WorldSession* m_sessio
 
 bool ChatHandler::HandleAIMoveCommand(const char* args, WorldSession* m_session)
 {
-    Object* obj = NULL;
+    Creature* creature = nullptr;
 
     uint64 guid = m_session->GetPlayer()->GetSelection();
     if (guid != 0)
     {
-        obj = m_session->GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+        creature = m_session->GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
     }
 
-    if (obj == NULL)
+    if (creature == nullptr)
     {
         SystemMessage(m_session, "You should select a creature.");
         return true;
@@ -183,67 +183,67 @@ bool ChatHandler::HandleAIMoveCommand(const char* args, WorldSession* m_session)
     float o = m_session->GetPlayer()->GetOrientation();
 
     if (Run)
-        static_cast< Creature* >(obj)->GetAIInterface()->setSplineRun();
+        creature->GetAIInterface()->setSplineRun();
     else
-        static_cast< Creature* >(obj)->GetAIInterface()->setSplineWalk();
+        creature->GetAIInterface()->setSplineWalk();
 
-    float distance = static_cast< Creature* >(obj)->CalcDistance(x, y, z);
+    float distance = creature->CalcDistance(x, y, z);
     if (Move == 1)
     {
         if (Meth == 1)
         {
             float q = distance - 0.5f;
-            x = (static_cast< Creature* >(obj)->GetPositionX() + x * q) / (1 + q);
-            y = (static_cast< Creature* >(obj)->GetPositionY() + y * q) / (1 + q);
-            z = (static_cast< Creature* >(obj)->GetPositionZ() + z * q) / (1 + q);
+            x = (creature->GetPositionX() + x * q) / (1 + q);
+            y = (creature->GetPositionY() + y * q) / (1 + q);
+            z = (creature->GetPositionZ() + z * q) / (1 + q);
         }
         else if (Meth == 2)
         {
             float q = distance - 1;
-            x = (static_cast< Creature* >(obj)->GetPositionX() + x * q) / (1 + q);
-            y = (static_cast< Creature* >(obj)->GetPositionY() + y * q) / (1 + q);
-            z = (static_cast< Creature* >(obj)->GetPositionZ() + z * q) / (1 + q);
+            x = (creature->GetPositionX() + x * q) / (1 + q);
+            y = (creature->GetPositionY() + y * q) / (1 + q);
+            z = (creature->GetPositionZ() + z * q) / (1 + q);
         }
         else if (Meth == 3)
         {
             float q = distance - 2;
-            x = (static_cast< Creature* >(obj)->GetPositionX() + x * q) / (1 + q);
-            y = (static_cast< Creature* >(obj)->GetPositionY() + y * q) / (1 + q);
-            z = (static_cast< Creature* >(obj)->GetPositionZ() + z * q) / (1 + q);
+            x = (creature->GetPositionX() + x * q) / (1 + q);
+            y = (creature->GetPositionY() + y * q) / (1 + q);
+            z = (creature->GetPositionZ() + z * q) / (1 + q);
         }
         else if (Meth == 4)
         {
             float q = distance - 2.5f;
-            x = (static_cast< Creature* >(obj)->GetPositionX() + x * q) / (1 + q);
-            y = (static_cast< Creature* >(obj)->GetPositionY() + y * q) / (1 + q);
-            z = (static_cast< Creature* >(obj)->GetPositionZ() + z * q) / (1 + q);
+            x = (creature->GetPositionX() + x * q) / (1 + q);
+            y = (creature->GetPositionY() + y * q) / (1 + q);
+            z = (creature->GetPositionZ() + z * q) / (1 + q);
         }
         else if (Meth == 5)
         {
             float q = distance - 3;
-            x = (static_cast< Creature* >(obj)->GetPositionX() + x * q) / (1 + q);
-            y = (static_cast< Creature* >(obj)->GetPositionY() + y * q) / (1 + q);
-            z = (static_cast< Creature* >(obj)->GetPositionZ() + z * q) / (1 + q);
+            x = (creature->GetPositionX() + x * q) / (1 + q);
+            y = (creature->GetPositionY() + y * q) / (1 + q);
+            z = (creature->GetPositionZ() + z * q) / (1 + q);
         }
         else if (Meth == 6)
         {
             float q = distance - 3.5f;
-            x = (static_cast< Creature* >(obj)->GetPositionX() + x * q) / (1 + q);
-            y = (static_cast< Creature* >(obj)->GetPositionY() + y * q) / (1 + q);
-            z = (static_cast< Creature* >(obj)->GetPositionZ() + z * q) / (1 + q);
+            x = (creature->GetPositionX() + x * q) / (1 + q);
+            y = (creature->GetPositionY() + y * q) / (1 + q);
+            z = (creature->GetPositionZ() + z * q) / (1 + q);
         }
         else
         {
             float q = distance - 4;
-            x = (static_cast< Creature* >(obj)->GetPositionX() + x * q) / (1 + q);
-            y = (static_cast< Creature* >(obj)->GetPositionY() + y * q) / (1 + q);
-            z = (static_cast< Creature* >(obj)->GetPositionZ() + z * q) / (1 + q);
+            x = (creature->GetPositionX() + x * q) / (1 + q);
+            y = (creature->GetPositionY() + y * q) / (1 + q);
+            z = (creature->GetPositionZ() + z * q) / (1 + q);
         }
-        static_cast< Creature* >(obj)->GetAIInterface()->MoveTo(x, y, z);
+        creature->GetAIInterface()->MoveTo(x, y, z);
     }
     else
     {
-        static_cast<Creature*>(obj)->GetAIInterface()->MoveTo(x, y, z);
+        creature->GetAIInterface()->MoveTo(x, y, z);
     }
 
     return true;

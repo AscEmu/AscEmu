@@ -224,7 +224,7 @@ class DragonflayerForgeMasterAI : public MoonScriptCreatureAI
                 pInstance->SetLocaleInstanceData(0, UTGARDE_FORGE_MASTER, 0);
 
             ParentClass::OnDied(pKiller);
-        };
+        }
 
         UtgardeKeepScript* pInstance;
 };
@@ -438,7 +438,7 @@ class SkarvaldTheConstructorAI : public MoonScriptCreatureAI
             mReplyTimer = INVALIDATE_TIMER;
             pDalronn = NULL;
             pDalronnGhost = NULL;
-        };
+        }
 
         void OnCombatStart(Unit* pTarget)
         {
@@ -447,7 +447,7 @@ class SkarvaldTheConstructorAI : public MoonScriptCreatureAI
             mReplyTimer = _addTimer(2500);
 
             ParentClass::OnCombatStart(pTarget);
-        };
+        }
 
         void AIUpdate()
         {
@@ -455,10 +455,10 @@ class SkarvaldTheConstructorAI : public MoonScriptCreatureAI
             {
                 pDalronn->sendChatMessage(CHAT_MSG_MONSTER_YELL, 13199, "By all means, don't assess the situation, you halfwit! Just jump into the fray!");
                 _removeTimer(mReplyTimer);
-            };
+            }
 
             ParentClass::AIUpdate();
-        };
+        }
 
         void OnDied(Unit* pKiller)
         {
@@ -484,7 +484,7 @@ class SkarvaldTheConstructorAI : public MoonScriptCreatureAI
             }
 
             ParentClass::OnDied(pKiller);
-        };
+        }
 
         void OnCombatStop(Unit* pTarget)
         {
@@ -494,14 +494,14 @@ class SkarvaldTheConstructorAI : public MoonScriptCreatureAI
                     moveToSpawn();
                 else
                     spawnCreature(CN_DALRONN, pDalronn->GetUnit()->GetSpawnPosition());
-            };
+            }
 
             if (pDalronnGhost != NULL && pDalronnGhost->isAlive())
             {
                 pDalronnGhost->despawn();
                 pDalronnGhost = NULL;
             }
-        };
+        }
 
     private:
         uint32 mReplyTimer;
@@ -529,14 +529,14 @@ class DalronnTheControllerAI : public MoonScriptCreatureAI
             }
             pSkarvald = NULL;
             pSkarvaldGhost = NULL;
-        };
+        }
 
         void OnCombatStart(Unit* pTarget)
         {
             pSkarvald = GetNearestCreature(CN_SKARVALD);
 
             ParentClass::OnCombatStart(pTarget);
-        };
+        }
 
         void AIUpdate()
         {
@@ -545,10 +545,10 @@ class DalronnTheControllerAI : public MoonScriptCreatureAI
                 spawnCreature(SKELETON_ADD, _unit->GetPositionX() + 6, _unit->GetPositionY() + 4, _unit->GetPositionZ(), 0);
                 spawnCreature(SKELETON_ADD, _unit->GetPositionX() - 6, _unit->GetPositionY() + 4, _unit->GetPositionZ(), 0);
                 _resetTimer(mSummonTimer, 15000);
-            };
+            }
 
             ParentClass::AIUpdate();
-        };
+        }
 
         void OnDied(Unit* pKiller)
         {
@@ -573,7 +573,7 @@ class DalronnTheControllerAI : public MoonScriptCreatureAI
             }
 
             ParentClass::OnDied(pKiller);
-        };
+        }
 
         void OnCombatStop(Unit* pTarget)
         {
@@ -583,14 +583,14 @@ class DalronnTheControllerAI : public MoonScriptCreatureAI
                     moveToSpawn();
                 else
                     spawnCreature(CN_DALRONN, pSkarvald->GetUnit()->GetSpawnPosition());
-            };
+            }
 
             if (pSkarvaldGhost != NULL && pSkarvaldGhost->isAlive())
             {
                 pSkarvaldGhost->despawn();
                 pSkarvaldGhost = NULL;
             }
-        };
+        }
 
     private:
         int32 mSummonTimer;
@@ -605,7 +605,7 @@ class SkarvaldTheConstructorGhostAI : public MoonScriptCreatureAI
         {
             AddSpell(SKARVALD_CHARGE, Target_RandomPlayerNotCurrent, 35, 0, 8);
             AddSpell(STONE_STRIKE, Target_ClosestPlayer, 25, 0, 10);
-        };
+        }
 
         void OnLoad()
         {
@@ -616,8 +616,7 @@ class SkarvaldTheConstructorGhostAI : public MoonScriptCreatureAI
                 _unit->GetAIInterface()->AttackReaction(pTarget, 50, 0);
 
             ParentClass::OnLoad();
-        };
-
+        }
 };
 
 class DalronnTheControllerGhostAI : public MoonScriptCreatureAI
@@ -635,7 +634,7 @@ class DalronnTheControllerGhostAI : public MoonScriptCreatureAI
                 AddSpell(SHADOW_BOLT, Target_RandomPlayer, 35, 2, 8);
                 AddSpell(DEBILITATE, Target_RandomPlayer, 25, 0, 12);
             }
-        };
+        }
 
         void OnLoad()
         {
@@ -646,8 +645,7 @@ class DalronnTheControllerGhostAI : public MoonScriptCreatureAI
                 _unit->GetAIInterface()->AttackReaction(pTarget, 50, 0);
 
             ParentClass::OnLoad();
-        };
-
+        }
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -663,9 +661,8 @@ void SpellFunc_KelesethFrostTomb(SpellDesc* pThis, MoonScriptCreatureAI* pCreatu
         pCreatureAI->GetUnit()->CastSpell(pTarget, FROST_TOMB_SPELL, true);
         pTarget->GetMapMgr()->GetInterface()->SpawnCreature(CN_FROST_TOMB, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), pTarget->GetOrientation(), true, false, 0, 0);
         pCreatureAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "Not so fast.");
-    };
-};
-
+    }
+}
 
 void SpellFunc_KelesethAddSummon(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
 {
@@ -673,8 +670,9 @@ void SpellFunc_KelesethAddSummon(SpellDesc* pThis, MoonScriptCreatureAI* pCreatu
     {
         for (uint8 i = 0; i < 5; ++i)
             pCreatureAI->SpawnCreature(KELESETH_SKELETON_ADD, 163.376f + i + 4, 252.901f - i + 5, 42.868f, 0, true);
-    };
-};
+    }
+}
+
 class PrinceKelesethAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(PrinceKelesethAI, MoonScriptCreatureAI);
@@ -716,21 +714,21 @@ class FrostTombAI : public MoonScriptCreatureAI
         {
             SetAIUpdateFreq(1000);
             plr = nullptr;
-        };
+        }
 
         void OnLoad()
         {
             setRooted(true);
             plr = getNearestPlayer();
             ParentClass::OnLoad();
-        };
+        }
 
         void AIUpdate()
         {
             ParentClass::AIUpdate();
             if (plr == nullptr || plr->IsDead() || !plr->HasAura(FROST_TOMB_SPELL))
                 despawn();
-        };
+        }
 
         void OnDied(Unit* pKilled)
         {
@@ -742,7 +740,7 @@ class FrostTombAI : public MoonScriptCreatureAI
             ParentClass::OnDied(pKilled);
 
             despawn(1);
-        };
+        }
 
     private:
         Player* plr;

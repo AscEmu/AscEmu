@@ -65,11 +65,6 @@ class BloodProtectorAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -171,11 +166,6 @@ class BloodGreenkeeperAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             float val = RandomFloat(100.0f);
@@ -272,11 +262,6 @@ class SunchemistAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -389,11 +374,6 @@ class SunResearcherAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
             RemoveAIUpdateEvent();
         }
 
@@ -533,7 +513,6 @@ class CommanderSarannisAI : public CreatureAIScript
         {
             GuardAdds = false;
             CastTime();
-            RemoveAIUpdateEvent();
             sendDBChatMessage(SAY_COMMANDER_SARANNIS_07);
         }
 
@@ -731,7 +710,6 @@ class HighBotanistFreywinnAI : public CreatureAIScript
         {
             PlantTimer = 10;
             CastTime();
-            RemoveAIUpdateEvent();
             sendDBChatMessage(SAY_HIGH_BOTANIS_FREYWIN_06);
         }
 
@@ -938,7 +916,6 @@ class ThorngrinTheTenderAI : public CreatureAIScript
         {
             Enraged = false;
             CastTime();
-            RemoveAIUpdateEvent();
             sendDBChatMessage(SAY_THORNIN_08);
         }
 
@@ -1123,7 +1100,6 @@ class LajAI : public CreatureAIScript
         {
             TeleportTimer = 20;
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1281,7 +1257,6 @@ class WarpSplinterAI : public CreatureAIScript
         {
             SummonTimer = 20;
             CastTime();
-            RemoveAIUpdateEvent();
             sendDBChatMessage(SAY_WARP_SPLINTER_06);
         }
 

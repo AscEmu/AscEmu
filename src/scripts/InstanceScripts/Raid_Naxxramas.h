@@ -1274,11 +1274,6 @@ class StickedSpewerAI : public CreatureAIScript
         RemoveAIUpdateEvent();
     }
 
-    void OnDied(Unit* mKiller)
-    {
-        RemoveAIUpdateEvent();
-    }
-
     void AIUpdate()
     {
         float val = RandomFloat(100.0f);
@@ -1374,11 +1369,6 @@ class SurgicalAssistantAI : public CreatureAIScript
     {
         setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        RemoveAIUpdateEvent();
-    }
-
-    void OnDied(Unit* mKiller)
-    {
         RemoveAIUpdateEvent();
     }
 
@@ -1483,11 +1473,6 @@ class SludgeBelcherAI : public CreatureAIScript
     {
         setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        RemoveAIUpdateEvent();
-    }
-
-    void OnDied(Unit* mKiller)
-    {
         RemoveAIUpdateEvent();
     }
 
@@ -1599,11 +1584,6 @@ class GrobbulusAI : public CreatureAIScript
     {
         setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        RemoveAIUpdateEvent();
-    }
-
-    void OnDied(Unit* mKiller)
-    {
         RemoveAIUpdateEvent();
     }
 
@@ -1723,11 +1703,6 @@ class GluthAI : public CreatureAIScript
     {
     }
 
-    void OnDied(Unit* mKiller)
-    {
-        RemoveAIUpdateEvent();
-    }
-
     void AIUpdate()
     {
         float val = RandomFloat(100.0f);
@@ -1827,11 +1802,6 @@ class BonyConstructAI : public CreatureAIScript
         RemoveAIUpdateEvent();
     }
 
-    void OnDied(Unit* mKiller)
-    {
-        RemoveAIUpdateEvent();
-    }
-
     void AIUpdate()
     {
         float val = RandomFloat(100.0f);
@@ -1927,11 +1897,6 @@ class DeathLordAI : public CreatureAIScript
     {
         setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        RemoveAIUpdateEvent();
-    }
-
-    void OnDied(Unit* mKiller)
-    {
         RemoveAIUpdateEvent();
     }
 
@@ -2056,7 +2021,6 @@ class RazuviousAI : public CreatureAIScript
     {
         _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "An honorable... death...");
         _unit->PlaySoundToSet(8860);
-        RemoveAIUpdateEvent();
     }
 
     void AIUpdate()
@@ -2180,7 +2144,6 @@ class KorthazzAI : public CreatureAIScript
     {
         sendDBChatMessage(4248);     // What a bloody waste this is!
         _unit->CastSpell(_unit, spells[1].info, spells[1].instant);
-        RemoveAIUpdateEvent();
     }
 
     void AIUpdate()
@@ -2358,7 +2321,6 @@ class BlaumeuxAI : public CreatureAIScript
     {
         sendDBChatMessage(4255);     // Touche...
         _unit->CastSpell(_unit, spells[1].info, spells[1].instant);
-        RemoveAIUpdateEvent();
     }
 
     void AIUpdate()
@@ -2531,7 +2493,6 @@ class ZeliekAI : public CreatureAIScript
     {
         sendDBChatMessage(4272);     // It is... as it should be.
         _unit->CastSpell(_unit, spells[1].info, spells[1].instant);
-        RemoveAIUpdateEvent();
     }
 
     void AIUpdate()
@@ -2696,11 +2657,6 @@ class FrostBreathTriggerAI : public CreatureAIScript
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
     }
 
-    void OnDied(Unit* mKiller)
-    {
-        RemoveAIUpdateEvent();
-    }
-
     void AIUpdate()
     {
         _unit->CastSpell(_unit, FROST_BREATH_EFFECT, true);
@@ -2742,11 +2698,6 @@ class FrostBreathTrigger2AI : public CreatureAIScript
         setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
     }
-
-    void OnDied(Unit* mKiller)
-    {
-        RemoveAIUpdateEvent();
-    }
 };
 
 class FrostBreathTrigger3AI : public CreatureAIScript
@@ -2769,11 +2720,6 @@ class FrostBreathTrigger3AI : public CreatureAIScript
     {
         setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-    }
-
-    void OnDied(Unit* mKiller)
-    {
-        RemoveAIUpdateEvent();
     }
 
     void AIUpdate()
@@ -2975,8 +2921,6 @@ class SapphironAI : public CreatureAIScript
     void OnDied(Unit* mKiller)
     {
         _unit->CastSpell(_unit, SAPPHIRON_DIES, true);
-
-        RemoveAIUpdateEvent();
     }
 
     void AIUpdate()
@@ -3719,7 +3663,6 @@ class KelthuzadAI : public CreatureAIScript
         _setMeleeDisabled(false);
         _unit->setUInt64Value(UNIT_FIELD_FLAGS, 0);
         _unit->GetAIInterface()->m_canMove = true;
-        RemoveAIUpdateEvent();
 
         EventStart = false;
         SpawnCounter = 0;
@@ -4149,21 +4092,12 @@ class SoldierOfTheFrozenWastesAI : public CreatureAIScript
         LastPosX = _unit->GetPositionX();
         LastPosY = _unit->GetPositionY();
         LastPosZ = _unit->GetPositionZ();
-
-        //RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
     }
 
     void OnCombatStop(Unit* mTarget)
     {
         setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-
-        //RemoveAIUpdateEvent();
-    }
-
-    void OnDied(Unit* mKiller)
-    {
-        RemoveAIUpdateEvent();
     }
 
     void AIUpdate()
@@ -4276,8 +4210,6 @@ class UnstoppableAbominationAI : public CreatureAIScript
         LastPosY = _unit->GetPositionY();
         LastPosZ = _unit->GetPositionZ();
 
-        //RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
-
         for (uint8 i = 0; i < nrspells; i++)
             spells[i].casttime = 0;
     }
@@ -4286,13 +4218,6 @@ class UnstoppableAbominationAI : public CreatureAIScript
     {
         setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-
-        //RemoveAIUpdateEvent();
-    }
-
-    void OnDied(Unit* mKiller)
-    {
-        RemoveAIUpdateEvent();
     }
 
     void AIUpdate()
@@ -4458,13 +4383,6 @@ class SoulWeaverAI : public CreatureAIScript
     {
         setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-
-        //RemoveAIUpdateEvent();
-    }
-
-    void OnDied(Unit* mKiller)
-    {
-        RemoveAIUpdateEvent();
     }
 
     void AIUpdate()
@@ -4623,21 +4541,12 @@ class GuardianOfIcecrownAI : public CreatureAIScript
         LastPosX = _unit->GetPositionX();
         LastPosY = _unit->GetPositionY();
         LastPosZ = _unit->GetPositionZ();
-
-        //RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
     }
 
     void OnCombatStop(Unit* mTarget)
     {
         setAIAgent(AGENT_NULL);
         _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
-
-        //RemoveAIUpdateEvent();
-    }
-
-    void OnDied(Unit* mKiller)
-    {
-        RemoveAIUpdateEvent();
     }
 
     void AIUpdate()

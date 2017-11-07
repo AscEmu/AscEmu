@@ -340,6 +340,11 @@ class SERVER_DECL CreatureAIScript
 
         // MIT start
         //////////////////////////////////////////////////////////////////////////////////////////
+        // Event default management
+        //\NOTE: These functions are called internal for script events. Do NOT use them in your scripts!
+        void _internalOnDiedCleanup();
+
+        //////////////////////////////////////////////////////////////////////////////////////////
         // player
         Player* getNearestPlayer();
 

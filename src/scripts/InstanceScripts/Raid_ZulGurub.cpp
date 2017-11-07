@@ -113,11 +113,6 @@ class JeklikAI : public CreatureAIScript
             _unit->RemoveAura(TRANSFORM_BAT);
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
         void AIUpdate()
         {
             if (_unit->GetHealthPct() <= 50 && m_spellcheck[0])
@@ -255,11 +250,6 @@ class VenoxisAI : public CreatureAIScript
             _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
             _unit->RemoveAura(TRANSFORM_SNAKE);
-        }
-
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()

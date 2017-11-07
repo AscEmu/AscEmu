@@ -122,11 +122,6 @@ class ForgemasterGarfrostAI : MoonScriptBossAI
         MoonScriptBossAI::OnTargetDied(pTarget);
     }
 
-    void OnDied(Unit* mKiller)
-    {
-        RemoveAIUpdateEvent();
-    }
-
     void AIUpdate()
     {
         CastSpells();
@@ -299,11 +294,6 @@ class IckAI : MoonScriptBossAI
     void OnTargetDied(Unit* pTarget)
     {
         MoonScriptBossAI::OnTargetDied(pTarget);
-    }
-
-    void OnDied(Unit* mKiller)
-    {
-        RemoveAIUpdateEvent();
     }
 
     void AIUpdate()

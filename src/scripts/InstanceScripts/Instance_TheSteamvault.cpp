@@ -83,7 +83,6 @@ class CoilfangEngineerAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -212,7 +211,6 @@ class CoilfangOracleAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -333,7 +331,6 @@ class CoilfangWarriorAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -462,7 +459,6 @@ class CoilfangSirenAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -604,7 +600,6 @@ class BogOverlordAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -732,7 +727,6 @@ class CoilfangSorceressAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -895,7 +889,6 @@ class CoilfangLeperAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1017,7 +1010,6 @@ class CoilfangSlavemasterAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1131,7 +1123,6 @@ class CoilfangWaterElementalAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1259,7 +1250,6 @@ class CoilfangMyrmidonAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1382,7 +1372,6 @@ class TidalSurgerAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1496,7 +1485,6 @@ class SteamSurgerAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1655,7 +1643,6 @@ class HydromancerThespiaAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(SAY_HYDROMACER_THESPIA_07);
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1814,8 +1801,6 @@ class SteamriggerMechanicAI : public CreatureAIScript
         {
             _unit->GetAIInterface()->ResetUnitToFollow();
             _unit->GetAIInterface()->SetUnitToFollowAngle(0.0f);
-
-            RemoveAIUpdateEvent();
         }
 
         void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
@@ -1952,7 +1937,6 @@ class MekgineerSteamriggerAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(SAY_MEKGINEER_STEAMRIGGER_09);
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -2315,7 +2299,6 @@ class WarlordKalitreshAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             sendDBChatMessage(SAY_WARLORD_KALITRESH_08);
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()

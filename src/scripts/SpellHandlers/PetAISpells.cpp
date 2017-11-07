@@ -219,11 +219,6 @@ public:
         }
     }
 
-    void OnDied(Unit* mKiller)
-    {
-        RemoveAIUpdateEvent();
-    }
-
     void OnCombatStart(Unit* mTarget)
     {
         RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));

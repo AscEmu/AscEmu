@@ -105,16 +105,9 @@ class OnyxiaAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            if (m_useSpell)
-                RemoveAIUpdateEvent();
-
             m_phase = 1;
             m_eFlamesCooldown = 1;
             m_whelpCooldown = 7;
-
-            /*Add Loot?
-            mKiller->
-            */
         }
 
         void OnReachWP(uint32 iWaypointId, bool bForwards)

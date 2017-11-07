@@ -81,7 +81,6 @@ class ArcaneServantAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -224,7 +223,6 @@ class BloodwarderCenturionAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -360,7 +358,6 @@ class BloodwarderPhysicianAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -502,7 +499,6 @@ class BloodwarderSlayerAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -616,7 +612,6 @@ class MechanarCrusherAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -751,7 +746,6 @@ class MechanarDrillerAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -887,7 +881,6 @@ class MechanarTinkererAI : public CreatureAIScript
         {
             _unit->CastSpell(_unit, spells[3].info, spells[3].instant);
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1015,7 +1008,6 @@ class MechanarWreckerAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1136,7 +1128,6 @@ class RagingFlamesAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1271,7 +1262,6 @@ class SunseekerAstromageAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1406,7 +1396,6 @@ class SunseekerEngineerAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1547,7 +1536,6 @@ class SunseekerNetherbinderAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1667,7 +1655,6 @@ class TempestForgeDestroyerAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1787,7 +1774,6 @@ class TempestForgePatrollerAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
@@ -1933,7 +1919,6 @@ class GatewatcherGyroKillAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
             sendDBChatMessage(SAY_GW_GYRO_KILL_01);
         }
 
@@ -2101,7 +2086,6 @@ class GatewatcherIronHandAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
             sendDBChatMessage(SAY_GW_GYRO_KILL_06);
         }
 
@@ -2273,7 +2257,6 @@ class MechanoLordCapacitusAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            RemoveAIUpdateEvent();
             sendDBChatMessage(SAY_MECH_LORD_01);
         }
 
@@ -2428,7 +2411,6 @@ class NethermancerSepethreaAI : public CreatureAIScript
         {
             SummonTimer = 4;
             CastTime();
-            RemoveAIUpdateEvent();
             sendDBChatMessage(SAY_NETH_SEPETHREA_07);
         }
 
@@ -2632,7 +2614,6 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
         {
             SummonTimer = RandomUInt(30, 45);
             CastTime();
-            RemoveAIUpdateEvent();
             sendDBChatMessage(SAY_PATHALEON_08);
         }
 
