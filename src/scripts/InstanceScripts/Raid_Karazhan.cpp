@@ -747,9 +747,9 @@ public:
             case 1:
             {
                 static_cast<Creature*>(pObject)->Despawn(100, 0);
-                Creature* pop = pObject->GetMapMgr()->GetInterface()->SpawnCreature(17521, pObject->GetPositionX(), pObject->GetPositionY(),
-                    pObject->GetPositionZ(), 0, true, true, 0, 0);
-                pop->GetAIInterface()->AttackReaction(Plr, 1, 0);
+                Creature* pop = pObject->GetMapMgr()->GetInterface()->SpawnCreature(17521, pObject->GetPositionX(), pObject->GetPositionY(), pObject->GetPositionZ(), 0, true, true, 0, 0);
+                if (pop)
+                    pop->GetAIInterface()->AttackReaction(Plr, 1, 0);
                 break;
             }
         }
