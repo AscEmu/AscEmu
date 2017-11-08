@@ -26,10 +26,10 @@
 ///\todo move AddEmote to database
 
 //NalorakkAI
-class NalorakkAI : public MoonScriptBossAI
+class NalorakkAI : public MoonScriptCreatureAI
 {
-        MOONSCRIPT_FACTORY_FUNCTION(NalorakkAI, MoonScriptBossAI);
-        NalorakkAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(NalorakkAI, MoonScriptCreatureAI);
+        NalorakkAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             AddPhaseSpell(1, AddSpell(NALORAKK_BRUTAL_SWIPE, Target_Current, 2, 0, 35));
             AddPhaseSpell(1, AddSpell(NALORAKK_MANGLE, Target_Current, 12, 0, 20));
@@ -109,10 +109,10 @@ class NalorakkAI : public MoonScriptBossAI
 };
 
 //Akil'zon <Eagle Avatar>
-class AkilzonAI : public MoonScriptBossAI
+class AkilzonAI : public MoonScriptCreatureAI
 {
-        MOONSCRIPT_FACTORY_FUNCTION(AkilzonAI, MoonScriptBossAI);
-        AkilzonAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(AkilzonAI, MoonScriptCreatureAI);
+        AkilzonAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             AddSpell(AKILZON_STATIC_DISRUPTION, Target_Self, 2, 0, 60);
             AddSpell(AKILZON_CALL_LIGHTING, Target_Current, 2, 0, 0);
@@ -176,10 +176,10 @@ class SoaringEagleAI : public MoonScriptCreatureAI
 
 
 //Halazzi <Lynx Avatar>
-class HalazziAI : public MoonScriptBossAI
+class HalazziAI : public MoonScriptCreatureAI
 {
-        MOONSCRIPT_FACTORY_FUNCTION(HalazziAI, MoonScriptBossAI);
-        HalazziAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(HalazziAI, MoonScriptCreatureAI);
+        HalazziAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             AddPhaseSpell(1, AddSpell(HALAZZI_SABER_LASH, Target_Destination, 0.5, 0, 0, 0, 0, false, "Me gonna carve ya now!", CHAT_MSG_MONSTER_YELL, 12023));
 

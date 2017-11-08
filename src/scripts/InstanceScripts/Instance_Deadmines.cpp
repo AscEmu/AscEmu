@@ -170,12 +170,12 @@ class RhahkZorAI : public MoonScriptCreatureAI
 };
 
 
-class MrSmiteAI : public MoonScriptBossAI
+class MrSmiteAI : public MoonScriptCreatureAI
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(MrSmiteAI, MoonScriptBossAI);
-        MrSmiteAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(MrSmiteAI, MoonScriptCreatureAI);
+        MrSmiteAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             AddSpell(SMITE_SLAM, Target_Current, 25, 0.0f, 15, 0.0f, 8.0f, true);
             mStomp = AddSpell(SMITE_STOMP, Target_Self, 0, 0, 0);
@@ -295,10 +295,10 @@ class MrSmiteAI : public MoonScriptBossAI
 
 
 // VanCleef
-class VanCleefAI : public MoonScriptBossAI
+class VanCleefAI : public MoonScriptCreatureAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(VanCleefAI, MoonScriptBossAI);
-    VanCleefAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+    MOONSCRIPT_FACTORY_FUNCTION(VanCleefAI, MoonScriptCreatureAI);
+    VanCleefAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         AddSpell(3391, Target_Self, 25, 0, 0);    //Thrash (Gives the caster 2 extra attacks.)
     }

@@ -266,7 +266,7 @@ MaexxnaSpiderlingAI::MaexxnaSpiderlingAI(Creature* pCreature) : MoonScriptCreatu
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Maexxna
-MaexxnaAI::MaexxnaAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+MaexxnaAI::MaexxnaAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
 {
     if (_isHeroic())
     {
@@ -572,7 +572,7 @@ void SpellFunc_NaxxramasFollowerCharge(SpellDesc* pThis, MoonScriptCreatureAI* p
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Grand Widow Faerlina
-GrandWidowFaerlinaAI::GrandWidowFaerlinaAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+GrandWidowFaerlinaAI::GrandWidowFaerlinaAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
 {
     MoonScriptCreatureAI* AddAI = NULL;
     for (uint8 i = 0; i < 4; ++i)
@@ -807,7 +807,7 @@ void CorpseScarabAI::Destroy()
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Anub'Rekhan
-AnubRekhanAI::AnubRekhanAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+AnubRekhanAI::AnubRekhanAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
 {
     if (_isHeroic())
     {
@@ -1244,7 +1244,7 @@ void EyeStalkerAI::AIUpdate()
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Noth the Plaguebringer
-NothThePlaguebringerAI::NothThePlaguebringerAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+NothThePlaguebringerAI::NothThePlaguebringerAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
 {
     if (_isHeroic())
     {
@@ -1672,7 +1672,7 @@ void PlaguedGuardianAI::Destroy()
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Heigan the Unclean
-HeiganTheUncleanAI::HeiganTheUncleanAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+HeiganTheUncleanAI::HeiganTheUncleanAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
 {
     AddPhaseSpell(1, AddSpell(HEIGAN_THE_UNCLEAN_SPELL_DISRUPTION, Target_Self, 100, 0, 5));
     if (_isHeroic())
@@ -1913,7 +1913,7 @@ void PlagueFissureGO::Destroy()
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Loatheb
-LoathebAI::LoathebAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+LoathebAI::LoathebAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
 {
     AddSpell(LOATHEB_NECROTIC_AURA, Target_Self, 100, 0, 20);
     if (_isHeroic())
@@ -2722,7 +2722,7 @@ void SpellFunc_PatchwerkHatefulStrike(SpellDesc* pThis, MoonScriptCreatureAI* pC
         pCreatureAI->getCreature()->CastSpell(pBestTarget, PATCHWERK_HATEFUL_STRIKE_10, true);
 };
 
-PatchwerkAI::PatchwerkAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+PatchwerkAI::PatchwerkAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
 {
     AddSpellFunc(&SpellFunc_PatchwerkHatefulStrike, Target_Self, 50, 0, 3);
     SetEnrageInfo(AddSpell(PATCHWERK_BERSERK, Target_Self, 0, 0, 0), 360000);

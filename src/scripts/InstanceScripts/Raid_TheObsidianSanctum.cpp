@@ -158,10 +158,10 @@ void SpellFunc_LavaSpawn(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Un
     }
 };
 
-class SartharionAI : public MoonScriptBossAI
+class SartharionAI : public MoonScriptCreatureAI
 {
-        MOONSCRIPT_FACTORY_FUNCTION(SartharionAI, MoonScriptBossAI);
-        SartharionAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(SartharionAI, MoonScriptCreatureAI);
+        SartharionAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             mInstance = dynamic_cast<ObsidianSanctumScript*>(getInstanceScript());
 
@@ -316,10 +316,10 @@ class SartharionAI : public MoonScriptBossAI
         SpellDesc* mFlameTsunami, *mSummonLava;
 };
 
-class TsunamiAI : public MoonScriptBossAI
+class TsunamiAI : public MoonScriptCreatureAI
 {
-        MOONSCRIPT_FACTORY_FUNCTION(TsunamiAI, MoonScriptBossAI);
-        TsunamiAI(Creature* pCreature) : MoonScriptBossAI(pCreature) {};
+        MOONSCRIPT_FACTORY_FUNCTION(TsunamiAI, MoonScriptCreatureAI);
+        TsunamiAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature) {};
 
         void OnLoad()
         {
@@ -343,11 +343,11 @@ class TsunamiAI : public MoonScriptBossAI
 
 };
 
-class CyclonAI : public MoonScriptBossAI
+class CyclonAI : public MoonScriptCreatureAI
 {
     public:
-        MOONSCRIPT_FACTORY_FUNCTION(CyclonAI, MoonScriptBossAI);
-        CyclonAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(CyclonAI, MoonScriptCreatureAI);
+        CyclonAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {}
 
         void OnLoad()
@@ -363,11 +363,11 @@ class CyclonAI : public MoonScriptBossAI
 
 };
 
-class LavaBlazeAI : public MoonScriptBossAI
+class LavaBlazeAI : public MoonScriptCreatureAI
 {
     public:
-        MOONSCRIPT_FACTORY_FUNCTION(LavaBlazeAI, MoonScriptBossAI);
-        LavaBlazeAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(LavaBlazeAI, MoonScriptCreatureAI);
+        LavaBlazeAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {}
 
         void OnLoad()

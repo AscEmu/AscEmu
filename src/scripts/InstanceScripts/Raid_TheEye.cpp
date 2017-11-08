@@ -1625,11 +1625,11 @@ const uint32 VOID_REAVER_ARCANE_ORB_TRIGGER = 34172;
 const uint32 VOID_REAVER_KNOCK_AWAY = 25778;
 const uint32 VOID_REAVER_ENRAGE = 27680; // Needs checking (as it can be wrong [or maybe IS wrong])
 
-class VoidReaverAI : public MoonScriptBossAI
+class VoidReaverAI : public MoonScriptCreatureAI
 {
     public:
-        MOONSCRIPT_FACTORY_FUNCTION(VoidReaverAI, MoonScriptBossAI);
-        VoidReaverAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(VoidReaverAI, MoonScriptCreatureAI);
+        VoidReaverAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             SpellDesc* pPounding = AddSpell(VOID_REAVER_POUNDING, Target_Self, 100, 0, 12);
             if (pPounding != NULL)
@@ -1704,10 +1704,10 @@ bool Dummy_Solarian_WrathOfTheAstromancer(uint32 pEffectIndex, Spell* pSpell);
 void SpellFunc_Solarian_Disappear(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 void SpellFunc_Solarian_Reappear(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
-class HighAstromancerSolarianAI : public MoonScriptBossAI
+class HighAstromancerSolarianAI : public MoonScriptCreatureAI
 {
-        MOONSCRIPT_FACTORY_FUNCTION(HighAstromancerSolarianAI, MoonScriptBossAI);
-        HighAstromancerSolarianAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(HighAstromancerSolarianAI, MoonScriptCreatureAI);
+        HighAstromancerSolarianAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             //Initialize timers
             mSplitTimer = mAgentsTimer = mSolarianTimer = INVALIDATE_TIMER;
@@ -3005,11 +3005,11 @@ enum AdvisorPhase
 void SpellFunc_KaelThasArcaneDisruption(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 void SpellFunc_KaelThasFlameStrike(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
-class KaelThasAI : public MoonScriptBossAI
+class KaelThasAI : public MoonScriptCreatureAI
 {
     public:
-        MOONSCRIPT_FACTORY_FUNCTION(KaelThasAI, MoonScriptBossAI);
-        KaelThasAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(KaelThasAI, MoonScriptCreatureAI);
+        KaelThasAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             for (uint8 i = 1; i < 4; ++i)
             {

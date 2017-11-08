@@ -21,23 +21,23 @@
 
 
 //SvalaSorrowgrave
-class SvalaSorrowgraveAI : public MoonScriptBossAI
+class SvalaSorrowgraveAI : public MoonScriptCreatureAI
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(SvalaSorrowgraveAI, MoonScriptBossAI);
-        SvalaSorrowgraveAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(SvalaSorrowgraveAI, MoonScriptCreatureAI);
+        SvalaSorrowgraveAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
         }
 };
 
 //GortokPalehoof
-class GortokPalehoofAI : public MoonScriptBossAI
+class GortokPalehoofAI : public MoonScriptCreatureAI
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(GortokPalehoofAI, MoonScriptBossAI);
-        GortokPalehoofAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(GortokPalehoofAI, MoonScriptCreatureAI);
+        GortokPalehoofAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
         }
 
@@ -63,12 +63,12 @@ class GortokPalehoofAI : public MoonScriptBossAI
 };
 
 //SkadiTheRuthless
-class SkadiTheRuthlessAI : public MoonScriptBossAI
+class SkadiTheRuthlessAI : public MoonScriptCreatureAI
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(SkadiTheRuthlessAI, MoonScriptBossAI);
-        SkadiTheRuthlessAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(SkadiTheRuthlessAI, MoonScriptCreatureAI);
+        SkadiTheRuthlessAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
         }
 
@@ -99,12 +99,12 @@ class SkadiTheRuthlessAI : public MoonScriptBossAI
 };
 
 //KingYmiron
-class KingYmironAI : public MoonScriptBossAI
+class KingYmironAI : public MoonScriptCreatureAI
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(KingYmironAI, MoonScriptBossAI);
-        KingYmironAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(KingYmironAI, MoonScriptCreatureAI);
+        KingYmironAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
         }
 

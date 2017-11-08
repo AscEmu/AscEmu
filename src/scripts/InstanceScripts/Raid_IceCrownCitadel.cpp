@@ -215,15 +215,15 @@ const uint32 BONE_SPIKE = 69057;       // Not shure about this
 const uint32 BONE_STORM = 69076;
 const uint32 SOUL_FEAST = 71203;       // Needs a script
 
-class LordMarrowgarAI : public MoonScriptBossAI
+class LordMarrowgarAI : public MoonScriptCreatureAI
 {
     public:
 
         bool m_spellcheck[4];
         SP_AI_Spell spells[4];
 
-        MOONSCRIPT_FACTORY_FUNCTION(LordMarrowgarAI, MoonScriptBossAI);
-        LordMarrowgarAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(LordMarrowgarAI, MoonScriptCreatureAI);
+        LordMarrowgarAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             sendDBChatMessage(922);      // This is the beginning AND the end, mortals. None may enter the master's sanctum!
 
@@ -422,12 +422,12 @@ class LordMarrowgarAI : public MoonScriptBossAI
 
 const uint32 IMPALED = 69065;
 
-class BoneSpikeAI : public MoonScriptBossAI
+class BoneSpikeAI : public MoonScriptCreatureAI
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(BoneSpikeAI, MoonScriptBossAI);
-        BoneSpikeAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(BoneSpikeAI, MoonScriptCreatureAI);
+        BoneSpikeAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);  // On wowhead they said "kill them not just looking at them".
             getCreature()->Despawn(8000, 0);

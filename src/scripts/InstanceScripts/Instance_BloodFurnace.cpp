@@ -25,10 +25,10 @@
 
 
 // Keli'dan the BreakerAI
-class KelidanTheBreakerAI : public MoonScriptBossAI
+class KelidanTheBreakerAI : public MoonScriptCreatureAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(KelidanTheBreakerAI, MoonScriptBossAI);
-    KelidanTheBreakerAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+    MOONSCRIPT_FACTORY_FUNCTION(KelidanTheBreakerAI, MoonScriptCreatureAI);
+    KelidanTheBreakerAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         //spells
         if (_isHeroic())

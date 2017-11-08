@@ -136,7 +136,7 @@ enum RangeStatus
 class TargetType;
 class SpellDesc;
 class MoonScriptCreatureAI;
-class MoonScriptBossAI;
+class MoonScriptCreatureAI;
 class Unit;
 struct SpellEntry;
 
@@ -321,28 +321,16 @@ class MoonScriptCreatureAI : public CreatureAIScript
 
         uint32 mAIUpdateFrequency;
         uint32 mBaseAttackTime;
-};
 
-
-//////////////////////////////////////////////////////////////////////////////////////////
-//Class MoonScriptBossAI
-class MoonScriptBossAI : public MoonScriptCreatureAI
-{
+        //////////////////////////////////////////////////////////////////////////////////////////
+        //MoonScriptBossAI
     public:
-
-        MoonScriptBossAI(Creature* pCreature);
-        virtual ~MoonScriptBossAI();
 
         //Basic Interface
         SpellDesc* AddPhaseSpell(int32 pPhase, SpellDesc* pSpell);
         int32 GetPhase();
         void SetPhase(int32 pPhase, SpellDesc* pPhaseChangeSpell = NULL);
         void SetEnrageInfo(SpellDesc* pSpell, int32 pTriggerMilliseconds);
-
-        //Reimplemented Events
-        virtual void OnCombatStart(Unit* pTarget);
-        virtual void OnCombatStop(Unit* pTarget);
-        virtual void AIUpdate();
 
     protected:
 

@@ -1139,10 +1139,10 @@ class ShadowmoonSoldierAI : public MoonScriptCreatureAI
 void SpellFunc_DefensiveStance(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 void SpellFunc_BerserkerStance(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
-class ShadowmoonWeaponMasterAI : public MoonScriptBossAI
+class ShadowmoonWeaponMasterAI : public MoonScriptCreatureAI
 {
-        MOONSCRIPT_FACTORY_FUNCTION(ShadowmoonWeaponMasterAI, MoonScriptBossAI);
-        ShadowmoonWeaponMasterAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(ShadowmoonWeaponMasterAI, MoonScriptCreatureAI);
+        ShadowmoonWeaponMasterAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             AddPhaseSpell(1, AddSpell(SHADOWMOON_WEAPON_MASTER_KNOCK_AWAY, Target_Current, 9, 0, 25, 0, 10));
             AddPhaseSpell(1, AddSpell(SHADOWMOON_WEAPON_MASTER_MUTILATE, Target_Current, 8, 0, 30, 0, 10));
@@ -4250,10 +4250,10 @@ const uint32 GATE_FAILURE = 10390;
 
 const uint32 AKAMA_WAYPOINT_SIZE = 20;
 
-class AkamaAI : public MoonScriptBossAI
+class AkamaAI : public MoonScriptCreatureAI
 {
-        MOONSCRIPT_FACTORY_FUNCTION(AkamaAI, MoonScriptBossAI);
-        AkamaAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(AkamaAI, MoonScriptCreatureAI);
+        AkamaAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             AddPhaseSpell(2, AddSpell(AKAMA_BLESSING_OF_KINGS, Target_Self, 15, 0, 60));
             mHealingPotion = AddSpell(AKAMA_HEALING_POTION, Target_Self, 0, 0, 0);
@@ -4825,10 +4825,10 @@ const uint32 MAIEV_SHADOW_STRIKE = 40685;
 const uint32 MAIEV_THROW_DAGGER = 41152;
 const uint32 MAIEV_CAGE_TRAP_SUMMON = 40694;
 
-class MaievAI : public MoonScriptBossAI
+class MaievAI : public MoonScriptCreatureAI
 {
-        MOONSCRIPT_FACTORY_FUNCTION(MaievAI, MoonScriptBossAI);
-        MaievAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(MaievAI, MoonScriptCreatureAI);
+        MaievAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             AddPhaseSpell(1, AddSpell(MAIEV_SHADOW_STRIKE, Target_Current, 10, 0, 30));
             AddPhaseSpell(2, AddSpell(MAIEV_THROW_DAGGER, Target_Current, 50, 1, 0, 15, 40));
@@ -5217,10 +5217,10 @@ const uint32 ILLIDAN_WAYPOINT_SIZE = 5;
 
 void SpellFunc_Illidan_Parasitic(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
-class IllidanStormrageAI : public MoonScriptBossAI
+class IllidanStormrageAI : public MoonScriptCreatureAI
 {
-        MOONSCRIPT_FACTORY_FUNCTION(IllidanStormrageAI, MoonScriptBossAI);
-        IllidanStormrageAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(IllidanStormrageAI, MoonScriptCreatureAI);
+        IllidanStormrageAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             //Phase 1 spells
             AddPhaseSpell(1, AddSpell(ILLIDAN_SHEAR, Target_Current, 12, 1.5f, 15));

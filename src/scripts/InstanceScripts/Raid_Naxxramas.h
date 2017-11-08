@@ -198,9 +198,9 @@ static Movement::Location WebWrapPos[] =
 
 void SpellFunc_MaexxnaWebWrap(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
-class MaexxnaAI : public MoonScriptBossAI
+class MaexxnaAI : public MoonScriptCreatureAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(MaexxnaAI, MoonScriptBossAI);
+    MOONSCRIPT_FACTORY_FUNCTION(MaexxnaAI, MoonScriptCreatureAI);
     MaexxnaAI(Creature* pCreature);
 
     void OnCombatStart(Unit* pTarget);
@@ -282,9 +282,9 @@ static Movement::Location Followers[2] =
     { 6.0f, 0, 0, 0 }
 };
 
-class GrandWidowFaerlinaAI : public MoonScriptBossAI
+class GrandWidowFaerlinaAI : public MoonScriptCreatureAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(GrandWidowFaerlinaAI, MoonScriptBossAI);
+    MOONSCRIPT_FACTORY_FUNCTION(GrandWidowFaerlinaAI, MoonScriptCreatureAI);
     GrandWidowFaerlinaAI(Creature* pCreature);
 
     void OnCombatStart(Unit* pTarget);
@@ -358,9 +358,9 @@ static Movement::Location CryptGuards[] =
 void SpellFunc_AnubRekhanCorpseScarabsPlayer(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 void SpellFunc_AnubRekhanCorpseScarabsCryptGuard(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
-class AnubRekhanAI : public MoonScriptBossAI
+class AnubRekhanAI : public MoonScriptCreatureAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(AnubRekhanAI, MoonScriptBossAI);
+    MOONSCRIPT_FACTORY_FUNCTION(AnubRekhanAI, MoonScriptCreatureAI);
     AnubRekhanAI(Creature* pCreature);
 
     void OnCombatStart(Unit* pTarget);
@@ -490,9 +490,9 @@ void SpellFunc_NothFromBalconyPhaseSwitch(SpellDesc* pThis, MoonScriptCreatureAI
 void SpellFunc_NothCriple(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 void SpellFunc_NothBlink(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
-class NothThePlaguebringerAI : public MoonScriptBossAI
+class NothThePlaguebringerAI : public MoonScriptCreatureAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(NothThePlaguebringerAI, MoonScriptBossAI);
+    MOONSCRIPT_FACTORY_FUNCTION(NothThePlaguebringerAI, MoonScriptCreatureAI);
     NothThePlaguebringerAI(Creature* pCreature);
     friend class PlaguedWarriorAI;
     friend class PlaguedChampionAI;
@@ -586,9 +586,9 @@ const float HeiganEruptionSlope[3] =
     (-3637 - HeiganPos[1]) / (2771 - HeiganPos[0]),
 };
 
-class HeiganTheUncleanAI : public MoonScriptBossAI
+class HeiganTheUncleanAI : public MoonScriptCreatureAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(HeiganTheUncleanAI, MoonScriptBossAI);
+    MOONSCRIPT_FACTORY_FUNCTION(HeiganTheUncleanAI, MoonScriptCreatureAI);
     HeiganTheUncleanAI(Creature* pCreature);
     friend class PlagueFissureGO;
 
@@ -647,9 +647,9 @@ static Movement::Location Spores[] =
     { 2879.754883f, -3968.288574f, 273.633698f, 5.525566f }
 };
 
-class LoathebAI : public MoonScriptBossAI
+class LoathebAI : public MoonScriptCreatureAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(LoathebAI, MoonScriptBossAI);
+    MOONSCRIPT_FACTORY_FUNCTION(LoathebAI, MoonScriptCreatureAI);
     LoathebAI(Creature* pCreature);
     friend class SporeAI;
 
@@ -926,9 +926,9 @@ const uint32 INSTRUCTOR_RAZUVIOUS_JAGGED_KNIFE = 55550;
 const uint32 INSTRUCTOR_RAZUVIOUS_UNBALANCING_STRIKE = 55470;
 const uint32 INSTRUCTOR_RAZUVIOUS_HOPELESS = 29125;
 
-class InstructorRazuviousAI : public MoonScriptBossAI
+class InstructorRazuviousAI : public MoonScriptCreatureAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(InstructorRazuviousAI, MoonScriptBossAI);
+    MOONSCRIPT_FACTORY_FUNCTION(InstructorRazuviousAI, MoonScriptCreatureAI);
     InstructorRazuviousAI(Creature* pCreature);
     friend class DeathKnightUnderstudyAI;
 
@@ -940,7 +940,7 @@ class InstructorRazuviousAI : public MoonScriptBossAI
     std::set< DeathKnightUnderstudyAI* >    mStudents;
 };
 
-InstructorRazuviousAI::InstructorRazuviousAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+InstructorRazuviousAI::InstructorRazuviousAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
 {
 };
 
@@ -1210,9 +1210,9 @@ const uint32 PATCHWERK_BERSERK = 26662;
 const uint32 PATCHWERK_HATEFUL_STRIKE_10 = 41926;
 const uint32 PATCHWERK_HATEFUL_STRIKE_25 = 59192;
 
-class PatchwerkAI : public MoonScriptBossAI
+class PatchwerkAI : public MoonScriptCreatureAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(PatchwerkAI, MoonScriptBossAI);
+    MOONSCRIPT_FACTORY_FUNCTION(PatchwerkAI, MoonScriptCreatureAI);
     PatchwerkAI(Creature* pCreature);
 
     void AIUpdate();

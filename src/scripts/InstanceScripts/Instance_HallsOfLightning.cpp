@@ -117,10 +117,10 @@ enum GENERAL_STANCES
 
 /////////////////////////////////////////////////////////////////////////////////
 /// General Bjarnrim Script
-class GeneralBjarngrimAI : public MoonScriptBossAI
+class GeneralBjarngrimAI : public MoonScriptCreatureAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(GeneralBjarngrimAI, MoonScriptBossAI);
-    GeneralBjarngrimAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+    MOONSCRIPT_FACTORY_FUNCTION(GeneralBjarngrimAI, MoonScriptCreatureAI);
+    GeneralBjarngrimAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         mInstance = getInstanceScript();
         // Battle Stance
@@ -454,10 +454,10 @@ const uint32 SPELL_SUMMON_SPARK = 52746;
 /////////////////////////////////////////////////////////////////////////////////
 /// Ionar
 // Status: Basic script, missing spark phase
-class IonarAI : public MoonScriptBossAI
+class IonarAI : public MoonScriptCreatureAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(IonarAI, MoonScriptBossAI);
-    IonarAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+    MOONSCRIPT_FACTORY_FUNCTION(IonarAI, MoonScriptCreatureAI);
+    IonarAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         mInstance = getInstanceScript();
 

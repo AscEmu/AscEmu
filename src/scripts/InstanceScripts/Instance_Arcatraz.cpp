@@ -27,12 +27,12 @@
 // VOID_ZONE 36119    // DBC: 36119; it's not fully functionl without additional core support (for dmg and random place targeting).
 
 // Zereketh the UnboundAI
-class ZerekethAI : public MoonScriptBossAI
+class ZerekethAI : public MoonScriptCreatureAI
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(ZerekethAI, MoonScriptBossAI);
-        ZerekethAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(ZerekethAI, MoonScriptCreatureAI);
+        ZerekethAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             AddSpell(SEED_OF_C, Target_RandomPlayer, 6.0f, 2, 20, 0, 100.0f);
 
@@ -193,12 +193,12 @@ class VoidZoneARC : public MoonScriptCreatureAI
 
 // Dalliah the DoomsayerAI
 // sounds missing related to Wrath... (look on script below this one)
-class DalliahTheDoomsayerAI : public MoonScriptBossAI
+class DalliahTheDoomsayerAI : public MoonScriptCreatureAI
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(DalliahTheDoomsayerAI, MoonScriptBossAI);
-        DalliahTheDoomsayerAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(DalliahTheDoomsayerAI, MoonScriptCreatureAI);
+        DalliahTheDoomsayerAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             AddSpell(GIFT_OF_THE_DOOMSAYER, Target_Current, 8.0f, 0.0f, -1);
 
@@ -251,12 +251,12 @@ class DalliahTheDoomsayerAI : public MoonScriptBossAI
 // CHARGE_TARGETING 36038 ?
 // There are more sounds connected with Dalliah and some spells, but I don't know situation in which they are used
 // so haven't added them.
-class WrathScryerSoccothratesAI : public MoonScriptBossAI
+class WrathScryerSoccothratesAI : public MoonScriptCreatureAI
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(WrathScryerSoccothratesAI, MoonScriptBossAI);
-        WrathScryerSoccothratesAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(WrathScryerSoccothratesAI, MoonScriptCreatureAI);
+        WrathScryerSoccothratesAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             AddSpell(IMMOLATION, Target_Self, 10.0f, 0, -1);
             AddSpell(FELFIRE_SHOCK, Target_Current, 8.0f, 0, -1);
@@ -301,12 +301,12 @@ class WrathScryerSoccothratesAI : public MoonScriptBossAI
 // BLINK_VISUAL 36937 ?
 // SIMPLE_TELEPORT 12980 ?
 // Add sounds related to his dialog with mind controlled guy
-class HarbringerSkyrissAI : public MoonScriptBossAI
+class HarbringerSkyrissAI : public MoonScriptCreatureAI
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(HarbringerSkyrissAI, MoonScriptBossAI);
-        HarbringerSkyrissAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(HarbringerSkyrissAI, MoonScriptCreatureAI);
+        HarbringerSkyrissAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             AddSpell(MIND_REND, Target_Current, 15.0f, 0, -1);
 
@@ -377,11 +377,11 @@ class HarbringerSkyrissAI : public MoonScriptBossAI
 
 
 // Warden MellicharAI
-class WardenMellicharAI : public MoonScriptBossAI
+class WardenMellicharAI : public MoonScriptCreatureAI
 {
     public:
-        MOONSCRIPT_FACTORY_FUNCTION(WardenMellicharAI, MoonScriptBossAI);
-        WardenMellicharAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(WardenMellicharAI, MoonScriptCreatureAI);
+        WardenMellicharAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             setRooted(true);
             Phase_Timer = -1;

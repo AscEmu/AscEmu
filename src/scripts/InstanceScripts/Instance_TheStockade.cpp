@@ -35,10 +35,10 @@ class InstanceStormwindStockadeScript : public InstanceScript
 };
 
 // DeepfuryAI
-class DeepfuryAI : public MoonScriptBossAI
+class DeepfuryAI : public MoonScriptCreatureAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(DeepfuryAI, MoonScriptBossAI);
-    DeepfuryAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+    MOONSCRIPT_FACTORY_FUNCTION(DeepfuryAI, MoonScriptCreatureAI);
+    DeepfuryAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         AddSpell(SHIELD_SLAM, Target_Current, 100, 0, 8);
         AddSpell(IMPROVED_BLOCKING, Target_Self, 100, 0, 20);

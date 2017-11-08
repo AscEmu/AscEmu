@@ -547,10 +547,10 @@ const uint32 LUCIFRON_IMPEDING_DOOM = 19702;
 const uint32 LUCIFRON_LUCIFRONS_CURSE = 19703;
 const uint32 LUCIFRON_SHADOW_SHOCK = 20603;
 
-class LucifronAI : public MoonScriptBossAI
+class LucifronAI : public MoonScriptCreatureAI
 {
-        MOONSCRIPT_FACTORY_FUNCTION(LucifronAI, MoonScriptBossAI);
-        LucifronAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(LucifronAI, MoonScriptCreatureAI);
+        LucifronAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             AddSpell(LUCIFRON_IMPEDING_DOOM, Target_Self, 8, 0, 0);
             AddSpell(LUCIFRON_LUCIFRONS_CURSE, Target_Self, 8, 0, 0);
@@ -582,10 +582,10 @@ const uint32 MAGMADAR_LAVA_BREATH = 19272;   //to verify
 const uint32 MAGMADAR_PANIC = 19408;
 const uint32 MAGMADAR_LAVA_BOMB = 19411;    //need dummy spell
 
-class MagmadarAI : public MoonScriptBossAI
+class MagmadarAI : public MoonScriptCreatureAI
 {
-        MOONSCRIPT_FACTORY_FUNCTION(MagmadarAI, MoonScriptBossAI);
-        MagmadarAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(MagmadarAI, MoonScriptCreatureAI);
+        MagmadarAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             AddSpell(MAGMADAR_MAGMA_SPIT, Target_Self, 8, 0, 0);
             AddSpell(MAGMADAR_LAVA_BREATH, Target_Self, 8, 0, 0);
@@ -601,10 +601,10 @@ const uint32 GEHENNAS_SHADOW_BOLT = 29317;   //to verify
 const uint32 GEHENNAS_GEHENNAS_CURSE = 19716;
 const uint32 GEHENNAS_RAIN_OF_FIRE = 19717;
 
-class GehennasAI : public MoonScriptBossAI
+class GehennasAI : public MoonScriptCreatureAI
 {
-        MOONSCRIPT_FACTORY_FUNCTION(GehennasAI, MoonScriptBossAI);
-        GehennasAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(GehennasAI, MoonScriptCreatureAI);
+        GehennasAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             AddSpell(GEHENNAS_SHADOW_BOLT, Target_RandomPlayer, 8, 0, 0, 0, 45);
             AddSpell(GEHENNAS_GEHENNAS_CURSE, Target_Self, 8, 0, 0);
@@ -636,10 +636,10 @@ const uint32 CN_GARR = 12057;
 const uint32 GARR_ANTIMAGIC_PULSE = 19492;
 const uint32 GARR_MAGMA_SHACKES = 19496;
 
-class GarrAI : public MoonScriptBossAI
+class GarrAI : public MoonScriptCreatureAI
 {
-        MOONSCRIPT_FACTORY_FUNCTION(GarrAI, MoonScriptBossAI);
-        GarrAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(GarrAI, MoonScriptCreatureAI);
+        GarrAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             AddSpell(GARR_ANTIMAGIC_PULSE, Target_Self, 10, 0, 0);
             AddSpell(GARR_MAGMA_SHACKES, Target_Self, 10, 0, 0);
@@ -668,7 +668,7 @@ class FireswornAI : public MoonScriptCreatureAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            mGarr = static_cast< MoonScriptBossAI* >(GetNearestCreature(CN_GARR));
+            mGarr = static_cast< MoonScriptCreatureAI* >(GetNearestCreature(CN_GARR));
             ParentClass::OnCombatStart(pTarget);
         }
 
@@ -689,7 +689,7 @@ class FireswornAI : public MoonScriptCreatureAI
 
         SpellDesc* mEruption;
         SpellDesc* mSeparationAnxiety;
-        MoonScriptBossAI* mGarr;
+        MoonScriptCreatureAI* mGarr;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -699,10 +699,10 @@ const uint32 BARONGEDDON_INFERNO = 19698;    //35268
 const uint32 BARONGEDDON_IGNITE_MANA = 19659;
 const uint32 BARONGEDDON_LIVING_BOMB = 20475;
 
-class BaronGeddonAI : public MoonScriptBossAI
+class BaronGeddonAI : public MoonScriptCreatureAI
 {
-        MOONSCRIPT_FACTORY_FUNCTION(BaronGeddonAI, MoonScriptBossAI);
-        BaronGeddonAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(BaronGeddonAI, MoonScriptCreatureAI);
+        BaronGeddonAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             AddSpell(BARONGEDDON_INFERNO, Target_Self, 8, 0, 0);
             AddSpell(BARONGEDDON_IGNITE_MANA, Target_Self, 8, 0, 0);
@@ -721,10 +721,10 @@ const uint32 SHAZZRAH_BLINK = 29883;    //dummy spell, need to be coded in core
 
 void SpellFunc_ShazzrahBlinkArcaneExplosions(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
-class ShazzrahAI : public MoonScriptBossAI
+class ShazzrahAI : public MoonScriptCreatureAI
 {
-        MOONSCRIPT_FACTORY_FUNCTION(ShazzrahAI, MoonScriptBossAI);
-        ShazzrahAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(ShazzrahAI, MoonScriptCreatureAI);
+        ShazzrahAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             AddSpell(SHAZZRAH_SHAZZRAHS_CURSE, Target_Self, 8, 0, 0);
             AddSpell(SHAZZRAH_MAGIC_GROUNDING, Target_Self, 6, 0, 0);
@@ -759,10 +759,10 @@ const uint32 GOLEMAGG_MAGMA_SPLASH = 13880;
 const uint32 GOLEMAGG_PYROBLAST = 20228;
 const uint32 GOLEMAGG_EARTHQUAKE = 19798;
 
-class GolemaggAI : public MoonScriptBossAI
+class GolemaggAI : public MoonScriptCreatureAI
 {
-        MOONSCRIPT_FACTORY_FUNCTION(GolemaggAI, MoonScriptBossAI);
-        GolemaggAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(GolemaggAI, MoonScriptCreatureAI);
+        GolemaggAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             AddSpell(GOLEMAGG_GOLEMAGGS_TRUST, Target_Self, 8, 0, 0);
             AddSpell(GOLEMAGG_MAGMA_SPLASH, Target_Self, 8, 0, 0);

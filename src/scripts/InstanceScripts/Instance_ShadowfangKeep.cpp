@@ -982,13 +982,13 @@ class NandosAI : public MoonScriptCreatureAI
 
 // Creature entry: 3887
 
-class BaronSilverlaineAI : public MoonScriptBossAI
+class BaronSilverlaineAI : public MoonScriptCreatureAI
 {
         const uint32 SPELL_VEIL_OF_SHADOW = 7068;
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(BaronSilverlaineAI, MoonScriptBossAI);
-        BaronSilverlaineAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(BaronSilverlaineAI, MoonScriptCreatureAI);
+        BaronSilverlaineAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             AddSpell(SPELL_VEIL_OF_SHADOW, Target_Current, 10.0f, 0, 2);
         }

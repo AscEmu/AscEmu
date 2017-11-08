@@ -336,10 +336,10 @@ class DofNaralexGossip : public Arcemu::Gossip::Script
 };
 
 // Disciple of Naralex AI
-class DofNaralexAI : public MoonScriptBossAI
+class DofNaralexAI : public MoonScriptCreatureAI
 {
-        MOONSCRIPT_FACTORY_FUNCTION(DofNaralexAI, MoonScriptBossAI);
-        DofNaralexAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(DofNaralexAI, MoonScriptCreatureAI);
+        DofNaralexAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             // --- Initialization ---
             Mutanus = nullptr;

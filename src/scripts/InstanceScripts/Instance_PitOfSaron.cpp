@@ -53,10 +53,10 @@ class InstancePitOfSaronScript : public InstanceScript
 // BOSSES
 // Forgemaster Garfrost
 
-class ForgemasterGarfrostAI : MoonScriptBossAI
+class ForgemasterGarfrostAI : public MoonScriptCreatureAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(ForgemasterGarfrostAI, MoonScriptBossAI);
-    ForgemasterGarfrostAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+    MOONSCRIPT_FACTORY_FUNCTION(ForgemasterGarfrostAI, MoonScriptCreatureAI);
+    ForgemasterGarfrostAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         // Instance Script
         mInstance = getInstanceScript();
@@ -101,8 +101,6 @@ class ForgemasterGarfrostAI : MoonScriptBossAI
 
         if (mInstance)
             mInstance->setData(getCreature()->GetEntry(), InProgress);
-
-        MoonScriptBossAI::OnCombatStart(pTarget);
     }
 
     void OnCombatStop(Unit* mTarget)
@@ -113,13 +111,6 @@ class ForgemasterGarfrostAI : MoonScriptBossAI
 
         if (mInstance)
             mInstance->setData(getCreature()->GetEntry(), Performed);
-
-        MoonScriptBossAI::OnCombatStop(mTarget);
-    }
-
-    void OnTargetDied(Unit* pTarget)
-    {
-        MoonScriptBossAI::OnTargetDied(pTarget);
     }
 
     void AIUpdate()
@@ -213,10 +204,10 @@ class ForgemasterGarfrostAI : MoonScriptBossAI
 
 // Ick and Krick
 
-class IckAI : MoonScriptBossAI
+class IckAI : public MoonScriptCreatureAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(IckAI, MoonScriptBossAI);
-    IckAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+    MOONSCRIPT_FACTORY_FUNCTION(IckAI, MoonScriptCreatureAI);
+    IckAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         // Instance Script
         mInstance = getInstanceScript();
@@ -289,11 +280,6 @@ class IckAI : MoonScriptBossAI
         Phase = OUTRO;
 
         ParentClass::OnCombatStop(pTarget);
-    }
-
-    void OnTargetDied(Unit* pTarget)
-    {
-        MoonScriptBossAI::OnTargetDied(pTarget);
     }
 
     void AIUpdate()
@@ -439,10 +425,10 @@ class IckAI : MoonScriptBossAI
     BattlePhases Phase;
 };
 
-class KrickAI : MoonScriptBossAI
+class KrickAI : public MoonScriptCreatureAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(KrickAI, MoonScriptBossAI);
-    KrickAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+    MOONSCRIPT_FACTORY_FUNCTION(KrickAI, MoonScriptCreatureAI);
+    KrickAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         // Get Instance Script
         mInstance = getInstanceScript();
@@ -624,11 +610,11 @@ class KrickAI : MoonScriptBossAI
 };
 
 // Barrage Spell Creature
-class BarrageAI : public MoonScriptBossAI
+class BarrageAI : public MoonScriptCreatureAI
 {
     public:
-        MOONSCRIPT_FACTORY_FUNCTION(BarrageAI, MoonScriptBossAI);
-        BarrageAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(BarrageAI, MoonScriptCreatureAI);
+        BarrageAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
             getCreature()->CastSpell(getCreature(), SPELL_EXPLODING_ORB, false);
@@ -654,20 +640,20 @@ class BarrageAI : public MoonScriptBossAI
         }
 };
 
-class SylvanasAI : public MoonScriptBossAI
+class SylvanasAI : public MoonScriptCreatureAI
 {
 public:
-    MOONSCRIPT_FACTORY_FUNCTION(SylvanasAI, MoonScriptBossAI);
-    SylvanasAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+    MOONSCRIPT_FACTORY_FUNCTION(SylvanasAI, MoonScriptCreatureAI);
+    SylvanasAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
     }
 };
 
-class JainaAI : public MoonScriptBossAI
+class JainaAI : public MoonScriptCreatureAI
 {
 public:
-    MOONSCRIPT_FACTORY_FUNCTION(JainaAI, MoonScriptBossAI);
-    JainaAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+    MOONSCRIPT_FACTORY_FUNCTION(JainaAI, MoonScriptCreatureAI);
+    JainaAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
     }
 };

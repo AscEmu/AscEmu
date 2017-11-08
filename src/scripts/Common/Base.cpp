@@ -87,6 +87,11 @@ void SpellDesc::AddAnnouncement(const char* pText)
 //Class MoonScriptCreatureAI
 MoonScriptCreatureAI::MoonScriptCreatureAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
+    mPhaseIndex = -1;
+    mEnrageSpell = nullptr;
+    mEnrageTimerDuration = -1;
+    mEnrageTimer = INVALIDATE_TIMER;
+
     mRunToTargetCache = nullptr;
     mRunToTargetSpellCache = nullptr;
     mAIUpdateFrequency = defaultUpdateFrequency;
@@ -95,6 +100,8 @@ MoonScriptCreatureAI::MoonScriptCreatureAI(Creature* pCreature) : CreatureAIScri
 
 MoonScriptCreatureAI::~MoonScriptCreatureAI()
 {
+    mPhaseSpells.clear();
+
     DeleteArray(mOnDiedEmotes);
     DeleteArray(mOnTargetDiedEmotes);
     DeleteArray(mOnCombatStartEmotes);
@@ -387,6 +394,14 @@ uint32 MoonScriptCreatureAI::GetAIUpdateFreq()
 
 void MoonScriptCreatureAI::OnCombatStart(Unit* pTarget)
 {
+    SetPhase(1);
+    if (mEnrageSpell && mEnrageTimerDuration > 0)
+    {
+        mEnrageTimer = _addTimer(mEnrageTimerDuration);
+    }
+
+    TriggerCooldownOnAllSpells();
+
     RandomEmote(mOnCombatStartEmotes);
     setAIAgent(AGENT_MELEE);
     RegisterAIUpdateEvent(mAIUpdateFrequency);
@@ -394,6 +409,9 @@ void MoonScriptCreatureAI::OnCombatStart(Unit* pTarget)
 
 void MoonScriptCreatureAI::OnCombatStop(Unit* pTarget)
 {
+    SetPhase(1);
+    _removeTimer(mEnrageTimer);
+
     CancelAllSpells();
     _cancelAllTimers();
     _removeAllAuras();
@@ -418,6 +436,12 @@ void MoonScriptCreatureAI::OnDied(Unit* pKiller)
 
 void MoonScriptCreatureAI::AIUpdate()
 {
+    if (mEnrageSpell && mEnrageTimerDuration > 0 && _isTimerFinished(mEnrageTimer))
+    {
+        CastSpell(mEnrageSpell);
+        _removeTimer(mEnrageTimer);
+    }
+
     SpellDesc* Spell;
     uint32 CurrentTime = (uint32)time(nullptr);
 
@@ -893,32 +917,20 @@ void MoonScriptCreatureAI::RandomEmote(EmoteArray & pEmoteArray)
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-//Class MoonScriptBossAI
-MoonScriptBossAI::MoonScriptBossAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
-{
-    mPhaseIndex = -1;
-    mEnrageSpell = nullptr;
-    mEnrageTimerDuration = -1;
-    mEnrageTimer = INVALIDATE_TIMER;
-}
+//MoonScriptBossAI
 
-MoonScriptBossAI::~MoonScriptBossAI()
-{
-    mPhaseSpells.clear();
-}
-
-SpellDesc* MoonScriptBossAI::AddPhaseSpell(int32 pPhase, SpellDesc* pSpell)
+SpellDesc* MoonScriptCreatureAI::AddPhaseSpell(int32 pPhase, SpellDesc* pSpell)
 {
     mPhaseSpells.push_back(std::make_pair(pPhase, pSpell));
     return pSpell;
 }
 
-int32 MoonScriptBossAI::GetPhase()
+int32 MoonScriptCreatureAI::GetPhase()
 {
     return mPhaseIndex;
 }
 
-void MoonScriptBossAI::SetPhase(int32 pPhase, SpellDesc* pPhaseChangeSpell)
+void MoonScriptCreatureAI::SetPhase(int32 pPhase, SpellDesc* pPhaseChangeSpell)
 {
     if (mPhaseIndex != pPhase)
     {
@@ -943,40 +955,12 @@ void MoonScriptBossAI::SetPhase(int32 pPhase, SpellDesc* pPhaseChangeSpell)
     }
 }
 
-void MoonScriptBossAI::SetEnrageInfo(SpellDesc* pSpell, int32 pTriggerMilliseconds)
+void MoonScriptCreatureAI::SetEnrageInfo(SpellDesc* pSpell, int32 pTriggerMilliseconds)
 {
     mEnrageSpell = pSpell;
     mEnrageTimerDuration = pTriggerMilliseconds;
 }
 
-void MoonScriptBossAI::OnCombatStart(Unit* pTarget)
-{
-    SetPhase(1);
-    if (mEnrageSpell && mEnrageTimerDuration > 0)
-    {
-        mEnrageTimer = _addTimer(mEnrageTimerDuration);
-    }
-
-    TriggerCooldownOnAllSpells();
-    MoonScriptCreatureAI::OnCombatStart(pTarget);
-}
-
-void MoonScriptBossAI::OnCombatStop(Unit* pTarget)
-{
-    SetPhase(1);
-    _removeTimer(mEnrageTimer);
-    MoonScriptCreatureAI::OnCombatStop(pTarget);
-}
-
-void MoonScriptBossAI::AIUpdate()
-{
-    if (mEnrageSpell && mEnrageTimerDuration > 0 && _isTimerFinished(mEnrageTimer))
-    {
-        CastSpell(mEnrageSpell);
-        _removeTimer(mEnrageTimer);
-    }
-    MoonScriptCreatureAI::AIUpdate();
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Premade Spell Functions

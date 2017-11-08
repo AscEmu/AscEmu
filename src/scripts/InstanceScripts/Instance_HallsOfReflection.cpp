@@ -165,12 +165,12 @@ class Jaina_Gossip : public Arcemu::Gossip::Script
 
 
 //Marwyn
-class Marwyn : public MoonScriptBossAI
+class Marwyn : public MoonScriptCreatureAI
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(Marwyn, MoonScriptBossAI);
-        Marwyn(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(Marwyn, MoonScriptCreatureAI);
+        Marwyn(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             mInstance = getInstanceScript();
 
@@ -244,12 +244,12 @@ class Marwyn : public MoonScriptBossAI
 
 
 //Falric
-class Falric : public MoonScriptBossAI
+class Falric : public MoonScriptCreatureAI
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(Falric, MoonScriptBossAI);
-        Falric(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        MOONSCRIPT_FACTORY_FUNCTION(Falric, MoonScriptCreatureAI);
+        Falric(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             mInstance = getInstanceScript();
 

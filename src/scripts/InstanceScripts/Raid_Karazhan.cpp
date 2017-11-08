@@ -64,10 +64,10 @@ const uint32 ATTUMEN_SHADOW_CLEAVE = 29832;
 const uint32 ATTUMEN_BERSERKER_CHARGE = 22886;
 const uint32 ATTUMEN_INTANGIBLE_PRESENCE = 29833;
 
-class AttumenTheHuntsmanAI : public MoonScriptBossAI
+class AttumenTheHuntsmanAI : public MoonScriptCreatureAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(AttumenTheHuntsmanAI, MoonScriptBossAI);
-    AttumenTheHuntsmanAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+    MOONSCRIPT_FACTORY_FUNCTION(AttumenTheHuntsmanAI, MoonScriptCreatureAI);
+    AttumenTheHuntsmanAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         //All phase spells
         AddSpell(ATTUMEN_SHADOW_CLEAVE, Target_Current, 15, 0, 6, 0, 5, true);
@@ -108,7 +108,7 @@ class AttumenTheHuntsmanAI : public MoonScriptBossAI
                 _setMeleeDisabled(false);
                 _setCastDisabled(true);
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 9168, "Come Midnight, let's disperse this petty rabble!");
-                MoonScriptBossAI* midnight = static_cast<MoonScriptBossAI*>(GetLinkedCreature());
+                MoonScriptCreatureAI* midnight = static_cast<MoonScriptCreatureAI*>(GetLinkedCreature());
                 midnight->SetPhase(2);
                 midnight->moveToUnit(getCreature());
                 midnight->_setMeleeDisabled(false);
@@ -118,10 +118,10 @@ class AttumenTheHuntsmanAI : public MoonScriptBossAI
     }
 };
 
-class MidnightAI : public MoonScriptBossAI
+class MidnightAI : public MoonScriptCreatureAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(MidnightAI, MoonScriptBossAI);
-    MidnightAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+    MOONSCRIPT_FACTORY_FUNCTION(MidnightAI, MoonScriptCreatureAI);
+    MidnightAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
     }
 
@@ -158,7 +158,7 @@ class MidnightAI : public MoonScriptBossAI
             else if (GetLinkedCreature() && GetLinkedCreature()->isAlive() && _getHealthPercent() <= 25 && !_isCasting())
             {
                 SetPhase(2);
-                MoonScriptBossAI* attumen = static_cast<MoonScriptBossAI*>(GetLinkedCreature());
+                MoonScriptCreatureAI* attumen = static_cast<MoonScriptCreatureAI*>(GetLinkedCreature());
                 moveToUnit(attumen->getCreature());
                 _setMeleeDisabled(false);
                 attumen->SetPhase(2);
@@ -171,7 +171,7 @@ class MidnightAI : public MoonScriptBossAI
         {
             if (GetLinkedCreature() && GetLinkedCreature()->isAlive())
             {
-                MoonScriptBossAI* attumen = static_cast<MoonScriptBossAI*>(GetLinkedCreature());
+                MoonScriptCreatureAI* attumen = static_cast<MoonScriptCreatureAI*>(GetLinkedCreature());
                 if (attumen && getRangeToObject(attumen->getCreature()) <= 15)
                 {
                     attumen->_regenerateHealth();
@@ -199,10 +199,10 @@ const uint32 MOROES_BLIND = 34654;
 const uint32 MOROES_ENRAGE = 37023;
 const uint32 MOROES_GARROTE = 37066;
 
-class MoroesAI : public MoonScriptBossAI
+class MoroesAI : public MoonScriptCreatureAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(MoroesAI, MoonScriptBossAI);
-    MoroesAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+    MOONSCRIPT_FACTORY_FUNCTION(MoroesAI, MoonScriptCreatureAI);
+    MoroesAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         //Initialize timers
         mVanishTimer = mGarroteTimer = INVALIDATE_TIMER;
@@ -282,10 +282,10 @@ const uint32 MAIDENOFVIRTUE_HOLY_GROUND = 29512;
 const uint32 MAIDENOFVIRTUE_HOLY_FIRE = 29522;
 const uint32 MAIDENOFVIRTUE_HOLY_WRATH = 32445;
 
-class MaidenOfVirtueAI : public MoonScriptBossAI
+class MaidenOfVirtueAI : public MoonScriptCreatureAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(MaidenOfVirtueAI, MoonScriptBossAI);
-    MaidenOfVirtueAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+    MOONSCRIPT_FACTORY_FUNCTION(MaidenOfVirtueAI, MoonScriptCreatureAI);
+    MaidenOfVirtueAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         //Spells
         AddSpell(MAIDENOFVIRTUE_HOLY_GROUND, Target_Self, 100, 0, 3);
@@ -3157,11 +3157,11 @@ protected:
     uint64 Enfeeble_Health[5];
 };
 
-class NetherInfernalAI : public MoonScriptBossAI
+class NetherInfernalAI : public MoonScriptCreatureAI
 {
 public:
-    MOONSCRIPT_FACTORY_FUNCTION(NetherInfernalAI, MoonScriptBossAI);
-    NetherInfernalAI(Creature* pCreature) : MoonScriptBossAI(pCreature) {};
+    MOONSCRIPT_FACTORY_FUNCTION(NetherInfernalAI, MoonScriptCreatureAI);
+    NetherInfernalAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature) {};
 
     void OnLoad()
     {

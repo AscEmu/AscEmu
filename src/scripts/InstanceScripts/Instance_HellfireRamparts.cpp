@@ -25,10 +25,10 @@
 
 // Watchkeeper GargolmarAI
 /// \todo "Do you smell that? Fresh meat has somehow breached our citadel. Be wary of any intruders." should be on some areatrigger
-class WatchkeeperGargolmarAI : public MoonScriptBossAI
+class WatchkeeperGargolmarAI : public MoonScriptCreatureAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(WatchkeeperGargolmarAI, MoonScriptBossAI);
-    WatchkeeperGargolmarAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+    MOONSCRIPT_FACTORY_FUNCTION(WatchkeeperGargolmarAI, MoonScriptCreatureAI);
+    WatchkeeperGargolmarAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         AddSpell(WATCHKEEPER_SURGE, Target_RandomUnit, 20, 0, 15, 5, 40, false, "Back off, pup!", CHAT_MSG_MONSTER_YELL, 10330);
         AddSpell(WATCHKEEPER_OVERPOWER, Target_Current, 10, 0, 5);

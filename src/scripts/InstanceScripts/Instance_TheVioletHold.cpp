@@ -546,10 +546,10 @@ class VHIntroAzureSpellBreaker : VHCreatureAI
 //Boss: Moragg
 //class MoraggAI : public CreatureAIScript
 
-class MoraggAI : public MoonScriptBossAI
+class MoraggAI : public MoonScriptCreatureAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(MoraggAI, MoonScriptBossAI);
-    MoraggAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+    MOONSCRIPT_FACTORY_FUNCTION(MoraggAI, MoonScriptCreatureAI);
+    MoraggAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         // Spells
         if (_isHeroic())
