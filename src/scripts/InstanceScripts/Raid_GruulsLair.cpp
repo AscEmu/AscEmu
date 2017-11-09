@@ -101,11 +101,12 @@ class HighKingMaulgarAI : public MoonScriptCreatureAI
             AddSpell(HIGH_KING_MAULGAR_MIGHTY_BLOW, Target_Current, 7, 0, 20, 0, 5);
             mEnrage = AddSpellFunc(&SpellFunc_Maulgar_Enrage, Target_Self, 0, 0, 0);
             mEnrage->AddEmote("You will not defeat the hand of Gruul!", CHAT_MSG_MONSTER_YELL, 11368);
-            AddEmote(Event_OnCombatStart, "Gronn are the real power in Outland!", CHAT_MSG_MONSTER_YELL, 11367);
-            AddEmote(Event_OnTargetDied, "You not so tough after all!", CHAT_MSG_MONSTER_YELL, 11373);
-            AddEmote(Event_OnTargetDied, "Maulgar is king!", CHAT_MSG_MONSTER_YELL, 11375);
-            AddEmote(Event_OnTargetDied, "", CHAT_MSG_MONSTER_YELL, 11374);
-            AddEmote(Event_OnDied, "Grull... will crush you!", CHAT_MSG_MONSTER_YELL, 11376);
+
+            addEmoteForEvent(Event_OnCombatStart, 8806);
+            addEmoteForEvent(Event_OnTargetDied, 8807);
+            addEmoteForEvent(Event_OnTargetDied, 8808);
+            addEmoteForEvent(Event_OnTargetDied, 8809);
+            addEmoteForEvent(Event_OnDied, 8810);
 
             mLastYell = -1;
             mAliveAdds = 0;
@@ -454,11 +455,12 @@ class GruulTheDragonkillerAI : public MoonScriptCreatureAI
             AddSpell(GRUUL_THE_DRAGONKILLER_REVERBERATION, Target_Self, 4, 0, 30);
             AddSpell(GRUUL_THE_DRAGONKILLER_CAVE_IN, Target_RandomPlayerDestination, 7, 0, 25);
             AddSpellFunc(&SpellFunc_Gruul_GroundSlam, Target_Self, 6, 1, 35);
-            AddEmote(Event_OnCombatStart, "Come and die.", CHAT_MSG_MONSTER_YELL, 11355);
-            AddEmote(Event_OnTargetDied, "No more.", CHAT_MSG_MONSTER_YELL, 11360);
-            AddEmote(Event_OnTargetDied, "Unworthy.", CHAT_MSG_MONSTER_YELL, 11361);
-            AddEmote(Event_OnTargetDied, "Die.", CHAT_MSG_MONSTER_EMOTE, 11362);
-            AddEmote(Event_OnDied, "", CHAT_MSG_MONSTER_YELL, 11363);
+
+            addEmoteForEvent(Event_OnCombatStart, 8811);
+            addEmoteForEvent(Event_OnTargetDied, 8812);
+            addEmoteForEvent(Event_OnTargetDied, 8813);
+            addEmoteForEvent(Event_OnTargetDied, 8814);
+            addEmoteForEvent(Event_OnDied, 8815);
 
             mGrowthTimer = mHurtfulTimer = -1;
             mGrowthStacks = 0;

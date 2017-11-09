@@ -85,10 +85,10 @@ class ForgemasterGarfrostAI : public MoonScriptCreatureAI
         mDeepFreezeTimer = INVALIDATE_TIMER;
 
         // Emotes
-        AddEmote(Event_OnCombatStart, 8761);
-        AddEmote(Event_OnTargetDied, 8762);
-        AddEmote(Event_OnTargetDied, 8763);
-        AddEmote(Event_OnDied, 8764);
+        addEmoteForEvent(Event_OnCombatStart, 8761);
+        addEmoteForEvent(Event_OnTargetDied, 8762);
+        addEmoteForEvent(Event_OnTargetDied, 8763);
+        addEmoteForEvent(Event_OnDied, 8764);
     }
 
     void OnCombatStart(Unit* pTarget)
@@ -245,9 +245,9 @@ class IckAI : public MoonScriptCreatureAI
         // Krick
         mKrickAI = SpawnCreature(CN_KRICK, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), false);
 
-        mKrickAI->AddEmote(Event_OnCombatStart, 8767);
-        mKrickAI->AddEmote(Event_OnTargetDied, 8768);
-        mKrickAI->AddEmote(Event_OnTargetDied, 8769);
+        mKrickAI->addEmoteForEvent(Event_OnCombatStart, 8767);
+        mKrickAI->addEmoteForEvent(Event_OnTargetDied, 8768);
+        mKrickAI->addEmoteForEvent(Event_OnTargetDied, 8769);
 
         // Ick Spell Announcements
         mPursue->AddAnnouncement("Ick is chasing you!");

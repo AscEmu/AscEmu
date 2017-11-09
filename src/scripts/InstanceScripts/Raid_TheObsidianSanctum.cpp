@@ -185,10 +185,10 @@ class SartharionAI : public MoonScriptCreatureAI
             mFlameTsunami = AddSpellFunc(&SpellFunc_FlameTsunami, Target_Self, 99, 0, 25);
             mSummonLava = AddSpellFunc(&SpellFunc_LavaSpawn, Target_RandomUnitNotCurrent, 25, 0, 8);
 
-            AddEmote(Event_OnTargetDied, "You will make a fine meal for the hatchlings.", CHAT_MSG_MONSTER_YELL, 14094);
-            AddEmote(Event_OnTargetDied, "You are at a grave disadvantage!", CHAT_MSG_MONSTER_YELL, 14096);
-            AddEmote(Event_OnTargetDied, "This is why we call you lesser beings.", CHAT_MSG_MONSTER_YELL, 14097);
-            AddEmote(Event_OnCombatStart, "It is my charge to watch over these eggs. I will see you burn before any harm comes to them!", CHAT_MSG_MONSTER_YELL, 14093);
+            addEmoteForEvent(Event_OnTargetDied, 8851);
+            addEmoteForEvent(Event_OnTargetDied, 8852);
+            addEmoteForEvent(Event_OnTargetDied, 8853);
+            addEmoteForEvent(Event_OnCombatStart, 8854);
 
             for (uint8 i = 0; i < OS_DATA_END - 1; i++)
             {

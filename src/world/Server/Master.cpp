@@ -59,10 +59,10 @@ ConfigMgr Config;
 // DB version
 #if VERSION_STRING != Cata
 static const char* REQUIRED_CHAR_DB_VERSION = "2017-09-13_01_account_permissions";
-static const char* REQUIRED_WORLD_DB_VERSION = "2017-10-14_01_shadowfang_keep";
+static const char* REQUIRED_WORLD_DB_VERSION = "2017-11-09_01_npc_script_text";
 #else
 static const char* REQUIRED_CHAR_DB_VERSION = "2017-09-13_01_account_permissions";
-static const char* REQUIRED_WORLD_DB_VERSION = "2017-09-20_01_gossip_menu_tables";
+static const char* REQUIRED_WORLD_DB_VERSION = "2017-11-09_01_npc_script_text";
 #endif
 
 void Master::_OnSignal(int s)

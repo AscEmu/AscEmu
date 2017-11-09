@@ -1642,11 +1642,11 @@ class VoidReaverAI : public MoonScriptCreatureAI
             AddSpell(VOID_REAVER_KNOCK_AWAY, Target_Current, 100, 0, 20, 0, 12);    // 12 is experimental value
             SetEnrageInfo(AddSpell(VOID_REAVER_ENRAGE, Target_Self, 0, 0, 0), 600000);
 
-            AddEmote(Event_OnCombatStart, "Alert, you are marked for extermination!", CHAT_MSG_MONSTER_YELL, 11213);
-            AddEmote(Event_OnTargetDied, "Extermination, successful.", CHAT_MSG_MONSTER_YELL, 11215);
-            AddEmote(Event_OnTargetDied, "Imbecile life form, no longer functional.", CHAT_MSG_MONSTER_YELL, 11216);
-            AddEmote(Event_OnTargetDied, "Threat neutralized.", CHAT_MSG_MONSTER_YELL, 11217);
-            AddEmote(Event_OnDied, "Systems... shutting... down...", CHAT_MSG_MONSTER_YELL, 11214);
+            addEmoteForEvent(Event_OnCombatStart, 8867);
+            addEmoteForEvent(Event_OnTargetDied, 8868);
+            addEmoteForEvent(Event_OnTargetDied, 8869);
+            addEmoteForEvent(Event_OnTargetDied, 8870);
+            addEmoteForEvent(Event_OnDied, 8871);
 
             mArcaneOrbTimer = INVALIDATE_TIMER;
         }
@@ -1731,11 +1731,11 @@ class HighAstromancerSolarianAI : public MoonScriptCreatureAI
             mVoidForm->AddEmote("I become ONE... with the VOID!", CHAT_MSG_MONSTER_YELL);
 
             //Emotes
-            AddEmote(Event_OnCombatStart, "Tal anu'men no sin'dorei!", CHAT_MSG_MONSTER_YELL, 11134);
-            AddEmote(Event_OnDied, "The warmth of the sun... awaits.", CHAT_MSG_MONSTER_YELL, 11135);
-            AddEmote(Event_OnTargetDied, "Your soul belongs to the Abyss!", CHAT_MSG_MONSTER_YELL, 11136);
-            AddEmote(Event_OnTargetDied, "By the blood of the Highborne!", CHAT_MSG_MONSTER_YELL, 11137);
-            AddEmote(Event_OnTargetDied, "For the Sunwell!", CHAT_MSG_MONSTER_YELL, 11138);
+            addEmoteForEvent(Event_OnCombatStart, 8872);
+            addEmoteForEvent(Event_OnDied, 8873);
+            addEmoteForEvent(Event_OnTargetDied, 8874);
+            addEmoteForEvent(Event_OnTargetDied, 8875);
+            addEmoteForEvent(Event_OnTargetDied, 8876);
         }
 
         void OnCombatStart(Unit* pTarget)
@@ -2545,8 +2545,8 @@ class DarkenerAI : public MoonScriptCreatureAI
         {
             AddSpell(DARKENER_PSYCHIC_BLOW, Target_Current, 10, 0, 20);
             AddSpell(DARKENER_SILENCE, Target_Current, 10, 0, 15);
-            AddEmote(Event_OnCombatStart, "Prepare yourselves!", CHAT_MSG_MONSTER_YELL, 11203);
-            AddEmote(Event_OnDied, "Forgive me, my prince! I have... failed.", CHAT_MSG_MONSTER_YELL, 11204);
+            addEmoteForEvent(Event_OnCombatStart, 8877);
+            addEmoteForEvent(Event_OnDied, 8878);
             setCanEnterCombat(false);
             mCurrentTarget = NULL;
             mGazeSwitchTimer = 0;
@@ -2624,8 +2624,8 @@ class SanguinarAI : public MoonScriptCreatureAI
         SanguinarAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             AddSpell(SANGUINAR_BELLOWING, Target_Self, 100, 0, 30);
-            AddEmote(Event_OnCombatStart, "Blood for blood!", CHAT_MSG_MONSTER_YELL, 11152);
-            AddEmote(Event_OnDied, "NO! I will... not.", CHAT_MSG_MONSTER_YELL, 11153);
+            addEmoteForEvent(Event_OnCombatStart, 8879);
+            addEmoteForEvent(Event_OnDied, 8880);
             setCanEnterCombat(false);
         }
 
@@ -2661,8 +2661,8 @@ class CapernianAI : public MoonScriptCreatureAI
             AddSpell(CAPERNIAN_CONFLAGRATION, Target_RandomPlayer, 7, 0, 10, 0, 30, true);
             AddSpell(CAPERNIAN_FIREBALL, Target_Current, 73, 2, 0);
             mArcaneBurst = AddSpell(CAPERNIAN_ARCANE_BURST, Target_Self, 0, 1, 15);
-            AddEmote(Event_OnCombatStart, "The sin'dorei reign supreme!", CHAT_MSG_MONSTER_YELL, 11117);
-            AddEmote(Event_OnDied, "This is not over!", CHAT_MSG_MONSTER_YELL, 11118);
+            addEmoteForEvent(Event_OnCombatStart, 8881);
+            addEmoteForEvent(Event_OnDied, 8882);
             setCanEnterCombat(false);
         }
 
@@ -2726,8 +2726,8 @@ class TelonicusAI : public MoonScriptCreatureAI
         {
             AddSpell(TELONICUS_BOMB, Target_RandomPlayerDestination, 10, 1.5f, 15, 0, 30);
             AddSpell(TELONICUS_REMOTE_TOY, Target_RandomPlayer, 10, 0, 15, 0, 30);
-            AddEmote(Event_OnCombatStart, "Anar'alah belore!", CHAT_MSG_MONSTER_YELL, 11157);
-            AddEmote(Event_OnDied, "More perlis... await.", CHAT_MSG_MONSTER_YELL, 11158);            // not sure
+            addEmoteForEvent(Event_OnCombatStart, 8883);
+            addEmoteForEvent(Event_OnDied, 8884);            // not sure
             setCanEnterCombat(false);
         }
 
@@ -3045,11 +3045,11 @@ class KaelThasAI : public MoonScriptCreatureAI
             // After powering up + Nether Vapor + Additional spells
             mNetherBeam = AddPhaseSpell(8, AddSpell(KAELTHAS_NETHER_BEAM, Target_RandomPlayer, 0, 0, 0));
 
-            AddEmote(Event_OnCombatStart, "Energy. Power. My people are addicted to it. Their dependence made manifest after the Sunwell was destroyed. Welcome to the future...a pity you're too late to stop it. No one can stop me now. Selama ashal'anore.", CHAT_MSG_MONSTER_YELL, 11256);
-            AddEmote(Event_OnTargetDied, "You will not prevail.", CHAT_MSG_MONSTER_YELL, 11270);
-            AddEmote(Event_OnTargetDied, "You gambled...and lost.", CHAT_MSG_MONSTER_YELL, 11271);
-            AddEmote(Event_OnTargetDied, "This was child's play.", CHAT_MSG_MONSTER_YELL, 11272);
-            AddEmote(Event_OnDied, "For...Quel...thalas!", CHAT_MSG_MONSTER_YELL, 11274);
+            addEmoteForEvent(Event_OnCombatStart, 8885);
+            addEmoteForEvent(Event_OnTargetDied, 8886);
+            addEmoteForEvent(Event_OnTargetDied, 8887);
+            addEmoteForEvent(Event_OnTargetDied, 8888);
+            addEmoteForEvent(Event_OnDied, 8889);
             mAIUpdateFrequency = 30000;
 
             mArcaneDisruptionTimer = 0;

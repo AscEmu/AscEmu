@@ -77,14 +77,14 @@ class AttumenTheHuntsmanAI : public MoonScriptCreatureAI
         AddPhaseSpell(2, AddSpell(ATTUMEN_BERSERKER_CHARGE, Target_RandomPlayerNotCurrent, 15, 0, 6, 15, 40, true));
 
         //Emotes
-        AddEmote(Event_OnCombatStart, "Cowards! Wretches!", CHAT_MSG_MONSTER_YELL, 9167);
-        AddEmote(Event_OnCombatStart, "Who dares attack the steed of the Huntsman?", CHAT_MSG_MONSTER_YELL, 9298);
-        AddEmote(Event_OnCombatStart, "Perhaps you would rather test yourselves against a more formidable opponent!", CHAT_MSG_MONSTER_YELL, 9299);
-        AddEmote(Event_OnTargetDied, "It was... inevitable.", CHAT_MSG_MONSTER_YELL, 9169);
-        AddEmote(Event_OnTargetDied, "Another trophy to add to my collection!", CHAT_MSG_MONSTER_YELL, 9300);
-        AddEmote(Event_OnDied, "Always knew... someday I would become... the hunted.", CHAT_MSG_MONSTER_YELL, 9165);
-        AddEmote(Event_OnTaunt, "Such easy sport.", CHAT_MSG_MONSTER_YELL, 9170);
-        AddEmote(Event_OnTaunt, "Amatures! Do not think you can best me! I kill for a living.", CHAT_MSG_MONSTER_YELL, 9304);
+        addEmoteForEvent(Event_OnCombatStart, 8816);
+        addEmoteForEvent(Event_OnCombatStart, 8817);
+        addEmoteForEvent(Event_OnTargetDied, 8818);
+        addEmoteForEvent(Event_OnTargetDied, 8819);
+        addEmoteForEvent(Event_OnTargetDied, 8820);
+        addEmoteForEvent(Event_OnDied, 8821);
+        addEmoteForEvent(Event_OnTaunt, 8822);
+        addEmoteForEvent(Event_OnTaunt, 8823);
     }
 
     void OnLoad()
@@ -219,11 +219,11 @@ class MoroesAI : public MoonScriptCreatureAI
         mGarrote = AddSpell(MOROES_GARROTE, Target_RandomPlayer, 0, 0, 0);
 
         //Emotes
-        AddEmote(Event_OnCombatStart, "Hm, unannounced visitors. Preparations must be made...", CHAT_MSG_MONSTER_YELL, 9211);
-        AddEmote(Event_OnDied, "How terribly clumsy of me...", CHAT_MSG_MONSTER_YELL, 9213);
-        AddEmote(Event_OnTargetDied, "One more for dinner this evening.", CHAT_MSG_MONSTER_YELL, 9214);
-        AddEmote(Event_OnTargetDied, "Time... Never enough time.", CHAT_MSG_MONSTER_YELL, 9314);
-        AddEmote(Event_OnTargetDied, "I've gone and made a mess.", CHAT_MSG_MONSTER_YELL, 9315);
+        addEmoteForEvent(Event_OnCombatStart, 8824);
+        addEmoteForEvent(Event_OnDied, 8825);
+        addEmoteForEvent(Event_OnTargetDied, 8826);
+        addEmoteForEvent(Event_OnTargetDied, 8827);
+        addEmoteForEvent(Event_OnTargetDied, 8828);
     }
 
     void OnCombatStart(Unit* pTarget)
@@ -296,11 +296,11 @@ class MaidenOfVirtueAI : public MoonScriptCreatureAI
         mRepentance->AddEmote("Your impurity must be cleansed.", CHAT_MSG_MONSTER_YELL, 9208);
 
         //Emotes
-        AddEmote(Event_OnCombatStart, "Your behavior will not be tolerated.", CHAT_MSG_MONSTER_YELL, 9204);
-        AddEmote(Event_OnTargetDied, "Ah ah ah...", CHAT_MSG_MONSTER_YELL, 9207);
-        AddEmote(Event_OnTargetDied, "This is for the best.", CHAT_MSG_MONSTER_YELL, 9312);
-        AddEmote(Event_OnTargetDied, "Impure thoughts lead to profane actions.", CHAT_MSG_MONSTER_YELL, 9311);
-        AddEmote(Event_OnDied, "Death comes. Will your conscience be clear?", CHAT_MSG_MONSTER_YELL, 9206);
+        addEmoteForEvent(Event_OnCombatStart, 8829);
+        addEmoteForEvent(Event_OnTargetDied, 8830);
+        addEmoteForEvent(Event_OnTargetDied, 8831);
+        addEmoteForEvent(Event_OnTargetDied, 8832);
+        addEmoteForEvent(Event_OnDied, 8833);
     }
 
     void OnCombatStart(Unit* pTarget)

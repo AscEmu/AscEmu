@@ -101,8 +101,8 @@ class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
         mSummon = AddSpell(SHADE_OF_THE_HORSEMAN_SUMMON, Target_Self, 0, 0, 0);
 
         //Emotes
-        AddEmote(Event_OnDied, "So eager you are, for my blood to spill. Yet to vanquish me, 'tis my head you must kill!", CHAT_MSG_MONSTER_YELL, 11969);
-        sendChatMessage(CHAT_MSG_MONSTER_YELL, 11966, "Prepare yourselves, the bells have tolled! Shelter your weak, your young, and your old! Each of you shall pay the final sum. Cry for mercy, the reckoning has come!");    //On Spawn?
+        addEmoteForEvent(Event_OnDied, 8802);
+        sendDBChatMessage(8803);    //On Spawn?
 
         WPCount = 0;
 
@@ -135,12 +135,12 @@ class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
             StopWaypointMovement();
             if (getNearestCreature(CN_HEADLESS_HORSEMAN_FIRE) == NULL)     // CASE players win
             {
-                sendChatMessage(CHAT_MSG_MONSTER_YELL, 11968, "My flames have died, left not a spark! I shall send you now to the lifeless dark!");
+                sendDBChatMessage(8804);
                 despawn(30000, 0); //Despawn after 30 secs
             }
             else // CASE players lost
             {
-                sendChatMessage(CHAT_MSG_MONSTER_YELL, 11967, "Fire consumes! You've tried and failed. Let there be no doubt, justice prevailed!");
+                sendDBChatMessage(8805);
                 despawn(12000, 0); //Despawn after 12 secs
             }
         }

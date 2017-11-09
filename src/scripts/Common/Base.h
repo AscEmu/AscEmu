@@ -263,11 +263,6 @@ class MoonScriptCreatureAI : public CreatureAIScript
         void TriggerCooldownOnAllSpells();
         void CancelAllCooldowns();
 
-        //Emotes
-        EmoteDesc* AddEmote(EventType pEventType, const char* pText, uint8 pType, uint32 pSoundId = 0);
-        EmoteDesc* AddEmote(EventType pEventType, uint32_t scripttext);
-        void RemoveAllEmotes(EventType pEventType);
-
         void Announce(const char* pText);
 
         //Others
@@ -281,7 +276,6 @@ class MoonScriptCreatureAI : public CreatureAIScript
         //Reimplemented Events
         virtual void OnCombatStart(Unit* pTarget);
         virtual void OnCombatStop(Unit* pTarget);
-        virtual void OnTargetDied(Unit* pTarget);
         virtual void OnDied(Unit* pKiller);
         virtual void AIUpdate();
         virtual void Destroy();
@@ -313,11 +307,6 @@ class MoonScriptCreatureAI : public CreatureAIScript
 
         Unit* mRunToTargetCache;
         SpellDesc* mRunToTargetSpellCache;
-
-        EmoteArray mOnCombatStartEmotes;
-        EmoteArray mOnTargetDiedEmotes;
-        EmoteArray mOnDiedEmotes;
-        EmoteArray mOnTauntEmotes;
 
         uint32 mAIUpdateFrequency;
         uint32 mBaseAttackTime;

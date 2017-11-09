@@ -534,16 +534,59 @@ CreatureAIScript::~CreatureAIScript()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Event default management
-void CreatureAIScript::_internalOnDiedCleanup()
+void CreatureAIScript::_internalOnDied()
 {
-    LogDebugFlag(LF_SCRIPT_MGR, "CreatureAIScript::_internalOnDiedCleanup() called");
+    LogDebugFlag(LF_SCRIPT_MGR, "CreatureAIScript::_internalOnDied() called");
 
     _cancelAllTimers();
     _removeAllAuras();
     RemoveAIUpdateEvent();
+    sendRandomDBChatMessage(mEmotesOnDied);
 
     if (_isDespawnWhenInactiveSet())
         despawn(DEFAULT_DESPAWN_TIMER);
+}
+
+void CreatureAIScript::_internalOnTargetDied()
+{
+    LogDebugFlag(LF_SCRIPT_MGR, "CreatureAIScript::_internalOnTargetDied() called");
+
+    sendRandomDBChatMessage(mEmotesOnTargetDied);
+}
+
+void CreatureAIScript::_internalOnCombatStart()
+{
+    LogDebugFlag(LF_SCRIPT_MGR, "CreatureAIScript::_internalOnEnterCombat() called");
+    
+    setAIAgent(AGENT_MELEE);
+    sendRandomDBChatMessage(mEmotesOnCombatStart);
+}
+
+void CreatureAIScript::_internalOnCombatStop()
+{
+    LogDebugFlag(LF_SCRIPT_MGR, "CreatureAIScript::_internalOnCombatStop() called");
+
+    _cancelAllTimers();
+    _removeAllAuras();
+    setAIAgent(AGENT_NULL);
+    RemoveAIUpdateEvent();
+
+    if (_isDespawnWhenInactiveSet())
+        despawn(DEFAULT_DESPAWN_TIMER);
+}
+
+void CreatureAIScript::_internalAIUpdate()
+{
+    LogDebugFlag(LF_SCRIPT_MGR, "CreatureAIScript::_internalAIUpdate() called");
+
+    if (!_isCasting())
+    {
+        setRooted(false);
+        setAIAgent(AGENT_MELEE);
+
+        if (Util::getRandomUInt(100) >= 95)
+            sendRandomDBChatMessage(mEmotesOnCombatStart);
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1033,6 +1076,46 @@ void CreatureAIScript::sendChatMessage(uint8_t type, uint32_t soundId, std::stri
 void CreatureAIScript::sendDBChatMessage(uint32_t textId)
 {
     _creature->SendScriptTextChatMessage(textId);
+}
+
+void CreatureAIScript::sendRandomDBChatMessage(std::vector<uint32_t> emoteVector)
+{
+    if (!emoteVector.empty())
+    {
+        uint32_t randomUInt = (emoteVector.size() > 1) ? Util::getRandomUInt(emoteVector.size() - 1) : 0;
+
+        sendDBChatMessage(emoteVector[randomUInt]);
+    }
+}
+
+void CreatureAIScript::addEmoteForEvent(uint32_t eventType, uint32_t scriptTextId)
+{
+    MySQLStructure::NpcScriptText const* ct = sMySQLStore.getNpcScriptText(scriptTextId);
+    if (ct != nullptr)
+    {
+        switch (eventType)
+        {
+            case 0:
+                mEmotesOnCombatStart.push_back(scriptTextId);
+                break;
+            case 1:
+                mEmotesOnTargetDied.push_back(scriptTextId);
+                break;
+            case 2:
+                mEmotesOnDied.push_back(scriptTextId);
+                break;
+            case 3:
+                mEmotesOnTaunt.push_back(scriptTextId);
+                break;
+            default:
+                LogDebugFlag(LF_SCRIPT_MGR, "CreatureAIScript::addEmoteForEvent : Invalid event type: %u !", eventType);
+                break;
+        }
+    }
+    else
+    {
+        LogDebugFlag(LF_SCRIPT_MGR, "CreatureAIScript::addEmoteForEvent : id: %u is not available in table npc_script_text!", scriptTextId);
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

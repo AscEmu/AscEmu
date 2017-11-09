@@ -102,10 +102,6 @@ MoonScriptCreatureAI::~MoonScriptCreatureAI()
 {
     mPhaseSpells.clear();
 
-    DeleteArray(mOnDiedEmotes);
-    DeleteArray(mOnTargetDiedEmotes);
-    DeleteArray(mOnCombatStartEmotes);
-    DeleteArray(mOnTauntEmotes);
     DeleteArray(mSpells);
 }
 
@@ -267,96 +263,6 @@ void MoonScriptCreatureAI::CancelAllCooldowns()
     }
 }
 
-EmoteDesc* MoonScriptCreatureAI::AddEmote(EventType pEventType, const char* pText, uint8 pType, uint32 pSoundId)
-{
-    EmoteDesc* NewEmote = nullptr;
-    if (pText || pSoundId)
-    {
-        NewEmote = new EmoteDesc(pText, pType, pSoundId);
-        switch (pEventType)
-        {
-            case Event_OnCombatStart:
-                mOnCombatStartEmotes.push_back(NewEmote);
-                break;
-            case Event_OnTargetDied:
-                mOnTargetDiedEmotes.push_back(NewEmote);
-                break;
-            case Event_OnDied:
-                mOnDiedEmotes.push_back(NewEmote);
-                break;
-            case Event_OnTaunt:
-                mOnTauntEmotes.push_back(NewEmote);
-                break;
-            default:
-                LogDebugFlag(LF_SCRIPT_MGR, "MoonScriptCreatureAI::AddEmote() : Invalid event type!");
-                break;
-        }
-    }
-    return NewEmote;
-}
-
-EmoteDesc* MoonScriptCreatureAI::AddEmote(EventType pEventType, uint32_t scripttext)
-{
-    EmoteDesc* NewEmote = nullptr;
-    MySQLStructure::NpcScriptText const* ct = sMySQLStore.getNpcScriptText(scripttext);
-    uint8 pType = CHAT_MSG_MONSTER_SAY;
-
-    if (ct != nullptr)
-    {
-        if (ct->type != CHAT_MSG_MONSTER_SAY && ct->type != CHAT_MSG_MONSTER_YELL && ct->type != CHAT_MSG_MONSTER_EMOTE)
-        {
-            LogDebugFlag(LF_SCRIPT_MGR, "MoonScriptCreatureAI::AddEmote() : Invalid Message Type: %u !", ct->type);
-        }
-        else
-        {
-            pType = ct->type;
-        }
-
-        NewEmote = new EmoteDesc(ct->text.c_str(), pType, ct->sound);
-        switch (pEventType)
-        {
-            case Event_OnCombatStart:
-                mOnCombatStartEmotes.push_back(NewEmote);
-                break;
-            case Event_OnTargetDied:
-                mOnTargetDiedEmotes.push_back(NewEmote);
-                break;
-            case Event_OnDied:
-                mOnDiedEmotes.push_back(NewEmote);
-                break;
-            case Event_OnTaunt:
-                mOnTauntEmotes.push_back(NewEmote);
-                break;
-            default:
-                LogDebugFlag(LF_SCRIPT_MGR, "MoonScriptCreatureAI::AddEmote() : Invalid event type: %u !", pEventType);
-                break;
-        }
-    }
-    return NewEmote;
-}
-
-void MoonScriptCreatureAI::RemoveAllEmotes(EventType pEventType)
-{
-    switch (pEventType)
-    {
-        case Event_OnCombatStart:
-            DeleteArray(mOnCombatStartEmotes);
-            break;
-        case Event_OnTargetDied:
-            DeleteArray(mOnTargetDiedEmotes);
-            break;
-        case Event_OnDied:
-            DeleteArray(mOnDiedEmotes);
-            break;
-        case Event_OnTaunt:
-            DeleteArray(mOnTauntEmotes);
-            break;
-        default:
-            LogDebugFlag(LF_SCRIPT_MGR, "MoonScriptCreatureAI::RemoveAllEmotes() : Invalid event type!");
-            break;
-    }
-}
-
 void MoonScriptCreatureAI::Announce(const char* pText)
 {
     if (pText && strlen(pText) > 0)
@@ -402,8 +308,6 @@ void MoonScriptCreatureAI::OnCombatStart(Unit* pTarget)
 
     TriggerCooldownOnAllSpells();
 
-    RandomEmote(mOnCombatStartEmotes);
-    setAIAgent(AGENT_MELEE);
     RegisterAIUpdateEvent(mAIUpdateFrequency);
 }
 
@@ -413,24 +317,10 @@ void MoonScriptCreatureAI::OnCombatStop(Unit* pTarget)
     _removeTimer(mEnrageTimer);
 
     CancelAllSpells();
-    _cancelAllTimers();
-    _removeAllAuras();
-    setAIAgent(AGENT_NULL);
-    RemoveAIUpdateEvent();
-
-    if (_isDespawnWhenInactiveSet())
-        despawn(DEFAULT_DESPAWN_TIMER);
-}
-
-void MoonScriptCreatureAI::OnTargetDied(Unit* pTarget)
-{
-    if (_getHealthPercent() > 0)    //Prevent double yelling (OnDied and OnTargetDied)
-        RandomEmote(mOnTargetDiedEmotes);
 }
 
 void MoonScriptCreatureAI::OnDied(Unit* pKiller)
 {
-    RandomEmote(mOnDiedEmotes);
     CancelAllSpells();
 }
 
@@ -519,14 +409,6 @@ void MoonScriptCreatureAI::AIUpdate()
             else if (Spell->mChance != 100)
                 ChanceTotal += Spell->mChance;    //Only add spells that aren't 100% chance of casting
         }
-
-        //Go back to default behavior since we didn't decide anything
-        setRooted(false);
-        setAIAgent(AGENT_MELEE);
-
-        //Random taunts
-        if (ChanceRoll >= 95)
-            RandomEmote(mOnTauntEmotes);
     }
 }
 

@@ -342,7 +342,11 @@ class SERVER_DECL CreatureAIScript
         //////////////////////////////////////////////////////////////////////////////////////////
         // Event default management
         //\NOTE: These functions are called internal for script events. Do NOT use them in your scripts!
-        void _internalOnDiedCleanup();
+        void _internalOnDied();
+        void _internalOnTargetDied();
+        void _internalOnCombatStart();
+        void _internalOnCombatStop();
+        void _internalAIUpdate();
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // player
@@ -463,8 +467,23 @@ class SERVER_DECL CreatureAIScript
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // chat message
+
+    private:
+
+        typedef std::vector<uint32_t> definedEmoteVector;
+        definedEmoteVector mEmotesOnCombatStart;
+        definedEmoteVector mEmotesOnTargetDied;
+        definedEmoteVector mEmotesOnDied;
+        definedEmoteVector mEmotesOnTaunt;
+
+    public:
+
         void sendChatMessage(uint8_t type, uint32_t soundId, std::string text);
         void sendDBChatMessage(uint32_t textId);
+
+        void sendRandomDBChatMessage(std::vector<uint32_t> emoteVector);
+
+        void addEmoteForEvent(uint32_t eventType, uint32_t scriptTextId);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // basic

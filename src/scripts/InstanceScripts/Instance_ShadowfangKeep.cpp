@@ -1093,9 +1093,9 @@ class ArugalBossAI : public MoonScriptCreatureAI
             AddSpell(SPELL_THUNDER_SHOCK, Target_Self, 10.0f, 0, 0, 0, 5.0f);
             AddSpell(SPELL_ARUGALS_CURSE, Target_RandomPlayer, 5.0f, 0, 0);
 
-            AddEmote(Event_OnCombatStart, YELL_ARUGAL_AGROO);
-            AddEmote(Event_OnTargetDied, YELL_ARUGAL_ENEMY_DEATH);
-            AddEmote(Event_OnTaunt, YELL_ARUGAL_COMBAT);
+            addEmoteForEvent(Event_OnCombatStart, YELL_ARUGAL_AGROO);
+            addEmoteForEvent(Event_OnTargetDied, YELL_ARUGAL_ENEMY_DEATH);
+            addEmoteForEvent(Event_OnTaunt, YELL_ARUGAL_COMBAT);
             setAIAgent(AGENT_SPELL);
 
             aiUpdateOriginal = GetAIUpdateFreq();
