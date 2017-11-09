@@ -263,12 +263,6 @@ class MoonScriptCreatureAI : public CreatureAIScript
         void TriggerCooldownOnAllSpells();
         void CancelAllCooldowns();
 
-        void Announce(const char* pText);
-
-        //Others
-        void SetTargetToChannel(Unit* pTarget, uint32 pSpellId);
-        Unit* GetTargetToChannel();
-
         //Options
         void SetAIUpdateFreq(uint32 pUpdateFreq);
         uint32 GetAIUpdateFreq();

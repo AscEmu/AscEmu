@@ -263,27 +263,6 @@ void MoonScriptCreatureAI::CancelAllCooldowns()
     }
 }
 
-void MoonScriptCreatureAI::Announce(const char* pText)
-{
-    if (pText && strlen(pText) > 0)
-        getCreature()->SendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, pText);
-}
-
-void MoonScriptCreatureAI::SetTargetToChannel(Unit* pTarget, uint32 pSpellId)
-{
-    if (pTarget == nullptr)
-        getCreature()->SetChannelSpellTargetGUID(0);
-    else
-        getCreature()->SetChannelSpellTargetGUID(pTarget->GetGUID());
-
-    getCreature()->SetChannelSpellId(pSpellId);
-}
-
-Unit* MoonScriptCreatureAI::GetTargetToChannel()
-{
-    return getCreature()->GetMapMgr()->GetUnit(getCreature()->getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT));
-}
-
 void MoonScriptCreatureAI::SetAIUpdateFreq(uint32 pUpdateFreq)
 {
     if (mAIUpdateFrequency != pUpdateFreq)
@@ -463,7 +442,7 @@ bool MoonScriptCreatureAI::CastSpellInternal(SpellDesc* pSpell, uint32 pCurrentT
 
             //Do emote associated with this spell
             RandomEmote(pSpell->mEmotes);
-            Announce(pSpell->mAnnouncement);
+            sendAnnouncement(pSpell->mAnnouncement);
 
             //Cast spell now
             if (pSpell->mInfo)

@@ -87,7 +87,7 @@ class AnomalusAI : public MoonScriptCreatureAI
             if (!bToCharge)
                 sendDBChatMessage(4319);     // Reality... unwoven.
 
-            Announce("Anomalus opens a Chaotic Rift!");
+            sendAnnouncement("Anomalus opens a Chaotic Rift!");
             //we are linked with CN_CHAOTIC_RIFT.
             CreatureAIScript* chaoticRift = SpawnCreature(CN_CHAOTIC_RIFT, getCreature()->GetPositionX() + 13.5f, getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), false);
             if (chaoticRift != NULL)
@@ -101,7 +101,7 @@ class AnomalusAI : public MoonScriptCreatureAI
         {
             SummonRift(true);
             sendDBChatMessage(4320);     // Indestructible.
-            Announce("Anomalus shields himself and diverts his power to the rifts!");
+            sendAnnouncement("Anomalus shields himself and diverts his power to the rifts!");
             _applyAura(47748);   // me immune
             setRooted(true);
 
@@ -471,7 +471,7 @@ class OrmorokAI : public MoonScriptCreatureAI
         if (_getHealthPercent() <= 25 && mEnraged == false)
         {
             _applyAura(FRENZY);
-            Announce("Ormorok the Tree-Shaper goes into a frenzy!");
+            sendAnnouncement("Ormorok the Tree-Shaper goes into a frenzy!");
             mEnraged = true;
         }
 

@@ -460,6 +460,10 @@ class SERVER_DECL CreatureAIScript
         void _castOnInrangePlayers(uint32_t spellId, bool triggered = false);
         void _castOnInrangePlayersWithinDist(float minDistance, float maxDistance, uint32_t spellId, bool triggered = false);
 
+        void _setTargetToChannel(Unit* target, uint32_t spellId);
+        void _unsetTargetToChannel();
+        Unit* _getTargetToChannel();
+
         //////////////////////////////////////////////////////////////////////////////////////////
         // gameobject
         GameObject* getNearestGameObject(uint32_t entry);
@@ -484,6 +488,8 @@ class SERVER_DECL CreatureAIScript
         void sendRandomDBChatMessage(std::vector<uint32_t> emoteVector);
 
         void addEmoteForEvent(uint32_t eventType, uint32_t scriptTextId);
+
+        void sendAnnouncement(std::string stringAnnounce);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // basic

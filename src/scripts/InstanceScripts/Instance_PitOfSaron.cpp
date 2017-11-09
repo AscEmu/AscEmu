@@ -380,7 +380,7 @@ class IckAI : public MoonScriptCreatureAI
             if (mKrickAI)
             {
                 mKrickAI->sendDBChatMessage(8774);
-                mKrickAI->Announce("Krick begins rapidly conjuring explosive mines!");
+                mKrickAI->sendAnnouncement("Krick begins rapidly conjuring explosive mines!");
                 mKrickAI->CastSpell(mExplosionBarageKrick);
             }
             

@@ -4043,7 +4043,7 @@ class ShadowDemonAI : public MoonScriptCreatureAI
             if (pTarget != NULL)
             {
                 getCreature()->GetAIInterface()->AttackReaction(pTarget, 200000);
-                SetTargetToChannel(pTarget, SHADOW_DEMON_PURPLE_BEAM);
+                _setTargetToChannel(pTarget, SHADOW_DEMON_PURPLE_BEAM);
                 CastSpellNowNoScheduling(mParalyze);
                 _applyAura(SHADOW_DEMON_PASSIVE);
                 RegisterAIUpdateEvent(1000);
@@ -4056,9 +4056,9 @@ class ShadowDemonAI : public MoonScriptCreatureAI
 
         void OnDied(Unit* pKiller)
         {
-            if (GetTargetToChannel() != NULL)
+            if (_getTargetToChannel() != NULL)
             {
-                Unit* pUnit = GetTargetToChannel();
+                Unit* pUnit = _getTargetToChannel();
                 pUnit->RemoveAura(SHADOW_DEMON_PARALYZE);
             }
 
@@ -4075,7 +4075,7 @@ class ShadowDemonAI : public MoonScriptCreatureAI
         {
             // Ugly code :P
             Unit* pTarget = getCreature()->GetAIInterface()->getNextTarget();
-            if (pTarget != NULL && GetTargetToChannel() != NULL && pTarget == GetTargetToChannel())
+            if (pTarget != NULL && _getTargetToChannel() != NULL && pTarget == _getTargetToChannel())
             {
                 if (getRangeToObject(pTarget) <= 8.0f)
                 {
@@ -4329,17 +4329,14 @@ class AkamaAI : public MoonScriptCreatureAI
             if ((mScenePart <= 15 && pGate == NULL) || mScenePart == -1)
             {
                 sendChatMessage(CHAT_MSG_MONSTER_SAY, 0, "It's strange that Illidan doesn't protect himself against intruders.");
-                SetTargetToChannel(NULL, 0);
+                _unsetTargetToChannel();
                 ForceWaypointMove(7);
 
                 if (mUdaloAI != NULL)
-                {
-                    mUdaloAI->SetTargetToChannel(NULL, 0);
-                }
+                    _unsetTargetToChannel();
+
                 if (mOlumAI != NULL)
-                {
-                    mOlumAI->SetTargetToChannel(NULL, 0);
-                }
+                    _unsetTargetToChannel();
 
                 RemoveAIUpdateEvent();
                 mUdaloAI = mOlumAI = NULL;
@@ -4365,11 +4362,11 @@ class AkamaAI : public MoonScriptCreatureAI
                     if (pDoorTrigger != NULL)
                     {
                         _applyAura(AKAMA_DOOR_FAIL);
-                        SetTargetToChannel(pDoorTrigger, AKAMA_DOOR_FAIL);
+                        _setTargetToChannel(pDoorTrigger, AKAMA_DOOR_FAIL);
                     }
                     break;
                 case 4:
-                    SetTargetToChannel(NULL, 0);
+                    _unsetTargetToChannel();
                     break;
                 case 5:
                     sendChatMessage(CHAT_MSG_MONSTER_SAY, 0, "I cannot do this alone...");
@@ -4394,16 +4391,16 @@ class AkamaAI : public MoonScriptCreatureAI
                     if (pDoorTrigger != NULL)
                     {
                         _applyAura(AKAMA_DOOR_OPEN);
-                        SetTargetToChannel(pDoorTrigger, AKAMA_DOOR_OPEN);
+                        _setTargetToChannel(pDoorTrigger, AKAMA_DOOR_OPEN);
                     }
                     break;
                 case 10:
                     if (pDoorTrigger != NULL)
                     {
                         mUdaloAI->_applyAura(DEATHSWORN_DOOR_OPEN);
-                        mUdaloAI->SetTargetToChannel(pDoorTrigger, DEATHSWORN_DOOR_OPEN);
+                        mUdaloAI->_setTargetToChannel(pDoorTrigger, DEATHSWORN_DOOR_OPEN);
                         mOlumAI->_applyAura(DEATHSWORN_DOOR_OPEN);
-                        mOlumAI->SetTargetToChannel(pDoorTrigger, DEATHSWORN_DOOR_OPEN);
+                        mOlumAI->_setTargetToChannel(pDoorTrigger, DEATHSWORN_DOOR_OPEN);
                     }
                     break;
                 case 11:
@@ -4414,9 +4411,9 @@ class AkamaAI : public MoonScriptCreatureAI
                     }
                     break;
                 case 12:
-                    SetTargetToChannel(NULL, 0);
-                    mUdaloAI->SetTargetToChannel(NULL, 0);
-                    mOlumAI->SetTargetToChannel(NULL, 0);
+                    _unsetTargetToChannel();
+                    mUdaloAI->_unsetTargetToChannel();
+                    mOlumAI->_unsetTargetToChannel();
                     break;
                 case 13:
                     sendChatMessage(CHAT_MSG_MONSTER_SAY, 0, "I thank you for your aid, my brothers. Our people will be redeemed!");
@@ -5319,7 +5316,7 @@ class IllidanStormrageAI : public MoonScriptCreatureAI
             // General
             getCreature()->SetEmoteState(EMOTE_ONESHOT_NONE);
             SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-            SetTargetToChannel(NULL, 0);
+            _unsetTargetToChannel();
             setCanEnterCombat(true);
             _setWieldWeapon(true);
             _setMeleeDisabled(true);
@@ -5785,7 +5782,7 @@ class IllidanStormrageAI : public MoonScriptCreatureAI
                         if (pTrigger != NULL && pTrigger->GetScript() != NULL)
                         {
                             sendChatMessage(CHAT_MSG_MONSTER_YELL, 11481, "Stare into the eyes of the Betrayer!");
-                            SetTargetToChannel(pTrigger, ILLIDAN_EYE_BLAST1);
+                            _setTargetToChannel(pTrigger, ILLIDAN_EYE_BLAST1);
                             getCreature()->CastSpell(pTrigger, ILLIDAN_EYE_BLAST1, true);
                             getCreature()->GetAIInterface()->setNextTarget(pTrigger);
 
@@ -5809,7 +5806,7 @@ class IllidanStormrageAI : public MoonScriptCreatureAI
                     }
                     else if (mMiscEventPart == 2 && mFireWallTimer <= 0)
                     {
-                        SetTargetToChannel(NULL, 0);
+                        _unsetTargetToChannel();
                         _removeAura(ILLIDAN_EYE_BLAST1);
                         getCreature()->GetAIInterface()->setNextTarget(GetBestPlayerTarget(TargetFilter_Closest));
 
@@ -6526,8 +6523,8 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
                     {
                         MoonScriptCreatureAI* pTriggerAI1 = mTriggerAIList[i];
                         MoonScriptCreatureAI* pTriggerAI2 = mTriggerAIList[mTriggerAIList.size() - i - 1];
-                        pTriggerAI1->SetTargetToChannel(pTriggerAI2->getCreature(), 40708);//CAGED2);
-                        pTriggerAI2->SetTargetToChannel(pTriggerAI1->getCreature(), 40709);//CAGED2);
+                        pTriggerAI1->_setTargetToChannel(pTriggerAI2->getCreature(), 40708);//CAGED2);
+                        pTriggerAI2->_setTargetToChannel(pTriggerAI1->getCreature(), 40709);//CAGED2);
                     }
 
                     mHasTrapped = true;
@@ -6559,7 +6556,7 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
                     for (size_t i = 0; i < mTriggerAIList.size(); ++i)
                     {
                         MoonScriptCreatureAI* pTriggerAI = mTriggerAIList[i];
-                        pTriggerAI->SetTargetToChannel(NULL, 0);
+                        pTriggerAI->_setTargetToChannel(NULL, 0);
                         pTriggerAI->despawn(0);
                     }
 

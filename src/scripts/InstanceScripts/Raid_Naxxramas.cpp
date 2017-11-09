@@ -1791,7 +1791,7 @@ void HeiganTheUncleanAI::OnCombatStart(Unit* pTarget)
 void HeiganTheUncleanAI::OnCombatStop(Unit* pTarget)
 {
     ParentClass::OnCombatStop(pTarget);
-    SetTargetToChannel(NULL, 0);
+    _unsetTargetToChannel();
     if (getCreature()->GetMapMgr() != NULL && getCreature()->GetMapMgr()->GetInterface() != NULL)
     {
         GameObject* Gate = getNearestGameObject(2790.709961f, -3708.669922f, 276.584991f, 181202);
@@ -1815,7 +1815,7 @@ void HeiganTheUncleanAI::AIUpdate()
             _applyAura(HEIGAN_THE_UNCLEAN_TELEPORT);
             sendChatMessage(CHAT_MSG_MONSTER_YELL, 8833, "The end is uppon you!");
             getCreature()->SetPosition(2794.235596f, -3707.067627f, 276.545746f, 2.407245f);
-            SetTargetToChannel(getCreature(), HEIGAN_THE_UNCLEAN_PLAGUE_CLOUD_CHANNEL);
+            _setTargetToChannel(getCreature(), HEIGAN_THE_UNCLEAN_PLAGUE_CLOUD_CHANNEL);
             setAIAgent(AGENT_SPELL);
             setRooted(true);
             stopMovement();
@@ -1833,7 +1833,7 @@ void HeiganTheUncleanAI::AIUpdate()
     {
         if (!_isCasting() && _isTimerFinished(mPhaseSwitchTimer))
         {
-            SetTargetToChannel(NULL, 0);
+            _unsetTargetToChannel();
             setAIAgent(AGENT_NULL);
             setRooted(false);
             SetPhase(1);

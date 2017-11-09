@@ -1048,6 +1048,30 @@ void CreatureAIScript::_castOnInrangePlayersWithinDist(float minDistance, float 
     }
 }
 
+void CreatureAIScript::_setTargetToChannel(Unit* target, uint32_t spellId)
+{
+    if (target != nullptr)
+    {
+        _creature->SetChannelSpellTargetGUID(target->GetGUID());
+        _creature->SetChannelSpellId(spellId);
+    }
+    else
+    {
+        _unsetTargetToChannel();
+    }
+}
+
+void CreatureAIScript::_unsetTargetToChannel()
+{
+    _creature->SetChannelSpellTargetGUID(0);
+    _creature->SetChannelSpellId(0);
+}
+
+Unit* CreatureAIScript::_getTargetToChannel()
+{
+    return _creature->GetMapMgr()->GetUnit(_creature->getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT));
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // gameobject
 
@@ -1116,6 +1140,12 @@ void CreatureAIScript::addEmoteForEvent(uint32_t eventType, uint32_t scriptTextI
     {
         LogDebugFlag(LF_SCRIPT_MGR, "CreatureAIScript::addEmoteForEvent : id: %u is not available in table npc_script_text!", scriptTextId);
     }
+}
+
+void CreatureAIScript::sendAnnouncement(std::string stringAnnounce)
+{
+    if (!stringAnnounce.empty())
+        _creature->SendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, stringAnnounce.c_str());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

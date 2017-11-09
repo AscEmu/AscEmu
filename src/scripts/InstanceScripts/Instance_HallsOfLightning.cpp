@@ -212,21 +212,21 @@ class GeneralBjarngrimAI : public MoonScriptCreatureAI
                 _applyAura(SPELL_BATTLE_AURA);
                 _applyAura(SPELL_BATTLE_STANCE);
                 sendDBChatMessage(760);      // Defend yourself, for all the good it will do!
-                Announce("General Bjarngrim switches to Battle Stance!");
+                sendAnnouncement("General Bjarngrim switches to Battle Stance!");
                 SetPhase(1);
                 break;
             case STANCE_BERSERKER:
                 _applyAura(SPELL_BERSERKER_AURA);
                 _applyAura(SPELL_BERSERKER_STANCE);
                 sendDBChatMessage(761);      // GRAAAAAH! Behold the fury of iron and steel!
-                Announce("General Bjarngrim switches to Berserker Stance!");
+                sendAnnouncement("General Bjarngrim switches to Berserker Stance!");
                 SetPhase(2);
                 break;
             case STANCE_DEFENSIVE:
                 _applyAura(SPELL_DEFENSIVE_AURA);
                 _applyAura(SPELL_DEFENSIVE_STANCE);
                 sendDBChatMessage(759);      // Give me your worst!
-                Announce("General Bjarngrim switches to Defensive Stance!");
+                sendAnnouncement("General Bjarngrim switches to Defensive Stance!");
                 SetPhase(3);
                 break;
         }
@@ -326,7 +326,7 @@ class Volkhan : public MoonScriptCreatureAI
             if (m_bStomp == false)
             {
                 m_bStomp = true;
-                Announce("Volkhan prepares to shatter his Brittle Golems!");
+                sendAnnouncement("Volkhan prepares to shatter his Brittle Golems!");
                 CastSpellNowNoScheduling(mStomp);
                 _resetTimer(mStompTimer, 3000);
             }
@@ -340,7 +340,7 @@ class Volkhan : public MoonScriptCreatureAI
         if (_getHealthPercent() <= (100 - (20 * mPhase)))
         {
             ForceWaypointMove(1);
-            Announce("Volkhan runs to his anvil!");
+            sendAnnouncement("Volkhan runs to his anvil!");
             ++mPhase;
         }
 
@@ -615,7 +615,7 @@ class LokenAI : public MoonScriptCreatureAI
                     break;
             }
 
-            Announce("Loken begins to cast Lightning Nova!");
+            sendAnnouncement("Loken begins to cast Lightning Nova!");
             CastSpellNowNoScheduling(mNova);
             _resetTimer(mNovaTimer, TIMER_NOVA + (RandomUInt(8) * 1000));
         }
