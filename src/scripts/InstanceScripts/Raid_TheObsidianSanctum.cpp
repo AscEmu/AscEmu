@@ -141,7 +141,7 @@ void SpellFunc_FlameTsunami(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI,
             }
         }
     }
-};
+}
 
 void SpellFunc_LavaSpawn(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
 {
@@ -153,7 +153,7 @@ void SpellFunc_LavaSpawn(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Un
         uint32 j = RandomUInt(5);
         pCreatureAI->spawnCreature(CN_LAVA_BLAZE, pTarget->GetPositionX() + j, pTarget->GetPositionY() + j, pTarget->GetPositionZ(), pTarget->GetOrientation(), pCreatureAI->getCreature()->GetFaction());
     }
-};
+}
 
 class SartharionAI : public MoonScriptCreatureAI
 {
@@ -357,7 +357,6 @@ class CyclonAI : public MoonScriptCreatureAI
 
             ParentClass::OnLoad();
         }
-
 };
 
 class LavaBlazeAI : public MoonScriptCreatureAI
@@ -382,7 +381,6 @@ class LavaBlazeAI : public MoonScriptCreatureAI
         {
             despawn(1000, 0);
         }
-
 };
 
 void SetupTheObsidianSanctum(ScriptMgr* mgr)
@@ -397,5 +395,4 @@ void SetupTheObsidianSanctum(ScriptMgr* mgr)
     //////////////////////////////////////////////////////////////////////////////////////////
     ///////// Instance
     mgr->register_instance_script(MAP_OBSIDIAN_SANCTUM, &ObsidianSanctumScript::Create);
-};
-
+}

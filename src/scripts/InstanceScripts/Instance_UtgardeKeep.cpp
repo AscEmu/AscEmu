@@ -919,4 +919,4 @@ void SetupUtgardeKeep(ScriptMgr* mgr)
     // Ingvar the Plunderer Encounter
     mgr->register_creature_script(CN_INGVAR, &IngvarThePlundererAI::Create);
     mgr->register_creature_script(CN_INGVAR_UNDEAD, &IngvarUndeadAI::Create);
-};
+}

@@ -635,7 +635,7 @@ Creature* CreatureAIScript::spawnCreature(uint32_t entry, float posX, float posY
     CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(entry);
     if (creatureProperties == nullptr)
     {
-        LOG_ERROR("tried to create a invalid creature with entry %u!", entry);
+        LOG_ERROR("tried to create an invalid creature with entry %u!", entry);
         return nullptr;
     }
 
@@ -967,7 +967,7 @@ void CreatureAIScript::_cancelAllTimers()
 
     mCreatureTimerIds.clear();
 
-    LOG_DEBUG("all cleared!");
+    LogDebugFlag(LF_SCRIPT_MGR, "CreatureAIScript::_cancelAllTimers() - all cleared!");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1240,7 +1240,7 @@ void InstanceScript::addData(uint32_t data, uint32_t state /*= NotStarted*/)
     if (Iter == mInstanceData.end())
         mInstanceData.insert(std::pair<uint32_t, uint32_t>(data, state));
     else
-        LOG_DEBUG("tried to set state for entry %u. The entry is already available with a state!", data);
+        LogDebugFlag(LF_SCRIPT_MGR, "InstanceScript::addData - tried to set state for entry %u. The entry is already available with a state!", data);
 }
 
 void InstanceScript::setData(uint32_t data, uint32_t state)
@@ -1249,7 +1249,7 @@ void InstanceScript::setData(uint32_t data, uint32_t state)
     if (Iter != mInstanceData.end())
         Iter->second = state;
     else
-        LOG_DEBUG("tried to set state for entry %u on map %u. The entry is not defined in table instance_bosses or manually to handle states!", data, mInstance->GetMapId());
+        LogDebugFlag(LF_SCRIPT_MGR, "InstanceScript::setData - tried to set state for entry %u on map %u. The entry is not defined in table instance_bosses or manually to handle states!", data, mInstance->GetMapId());
 }
 
 uint32_t InstanceScript::getData(uint32_t data)
@@ -1316,7 +1316,7 @@ void InstanceScript::generateBossDataState()
         }
     }
 
-    LOG_DEBUG("Boss State generated for map %u.", mInstance->GetMapId());
+    LogDebugFlag(LF_SCRIPT_MGR, "InstanceScript::generateBossDataState() - Boss State generated for map %u.", mInstance->GetMapId());
 }
 
 void InstanceScript::sendUnitEncounter(uint32_t type, Unit* unit, uint8_t value_a, uint8_t value_b)
