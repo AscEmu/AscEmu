@@ -4360,8 +4360,8 @@ void AIInterface::EventEnterCombat(Unit* pUnit, uint32 misc1)
         Creature* creature = static_cast<Creature*>(m_Unit);
         creature->HandleMonsterSayEvent(MONSTER_SAY_EVENT_ENTER_COMBAT);
 
-        CALL_SCRIPT_EVENT(m_Unit, OnCombatStart)(pUnit);
         CALL_SCRIPT_EVENT(m_Unit, _internalOnCombatStart)();
+        CALL_SCRIPT_EVENT(m_Unit, OnCombatStart)(pUnit);
 
         if (m_Unit->IsCreature())
         {
@@ -4561,6 +4561,7 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 misc1)
             aiowner->setUInt32Value(UNIT_DYNAMIC_FLAGS, aiowner->getUInt32Value(UNIT_DYNAMIC_FLAGS) & ~(U_DYN_FLAG_TAGGED_BY_OTHER | U_DYN_FLAG_LOOTABLE));
         }
 
+        CALL_SCRIPT_EVENT(m_Unit, _internalOnCombatStop)();
         CALL_SCRIPT_EVENT(m_Unit, OnCombatStop)(SavedFollow);
         if (m_Unit->IsCreature())
         {
@@ -4734,8 +4735,8 @@ void AIInterface::EventUnitDied(Unit* pUnit, uint32 misc1)
     if (m_Unit->IsCreature())
         static_cast< Creature* >(m_Unit)->HandleMonsterSayEvent(MONSTER_SAY_EVENT_ON_DIED);
 
-    CALL_SCRIPT_EVENT(m_Unit, OnDied)(pUnit);
     CALL_SCRIPT_EVENT(m_Unit, _internalOnDied)();
+    CALL_SCRIPT_EVENT(m_Unit, OnDied)(pUnit);
 
     if (m_Unit->IsCreature())
     {

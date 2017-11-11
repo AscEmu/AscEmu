@@ -299,7 +299,6 @@ class MoonScriptCreatureAI : public CreatureAIScript
         Unit* mRunToTargetCache;
         SpellDesc* mRunToTargetSpellCache;
 
-        uint32 mAIUpdateFrequency;
         uint32 mBaseAttackTime;
 
         //////////////////////////////////////////////////////////////////////////////////////////

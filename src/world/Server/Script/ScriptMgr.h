@@ -462,6 +462,11 @@ class SERVER_DECL CreatureAIScript
         uint32_t _getTimerCount() { return mCreatureTimerIds.size(); }
 
         //////////////////////////////////////////////////////////////////////////////////////////
+        // ai upodate frequency
+
+        uint32_t mAIUpdateFrequency;
+
+        //////////////////////////////////////////////////////////////////////////////////////////
         // appearance
         void _setScale(float scale);
         float _getScale();

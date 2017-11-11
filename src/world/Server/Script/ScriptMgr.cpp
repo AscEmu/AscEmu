@@ -520,7 +520,7 @@ bool ScriptMgr::CallScriptedItem(Item* pItem, Player* pPlayer)
 }
 
 /* CreatureAI Stuff */
-CreatureAIScript::CreatureAIScript(Creature* creature) : _creature(creature), linkedCreatureAI(nullptr), mDespawnWhenInactive(false), mScriptPhase(0)
+CreatureAIScript::CreatureAIScript(Creature* creature) : _creature(creature), linkedCreatureAI(nullptr), mDespawnWhenInactive(false), mScriptPhase(0), mAIUpdateFrequency(defaultUpdateFrequency)
 {
     mCreatureTimerIds.clear();
 }
@@ -587,9 +587,6 @@ void CreatureAIScript::_internalAIUpdate()
     {
         setRooted(false);
         setAIAgent(AGENT_MELEE);
-
-        if (Util::getRandomUInt(100) >= 95)
-            sendRandomDBChatMessage(mEmotesOnCombatStart);
     }
 }
 
@@ -1199,7 +1196,6 @@ InstanceScript* CreatureAIScript::getInstanceScript()
 
 void CreatureAIScript::RegisterAIUpdateEvent(uint32 frequency)
 {
-    //sEventMgr.AddEvent(_unit, &Creature::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, frequency, 0,0);
     sEventMgr.AddEvent(_creature, &Creature::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, frequency, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 

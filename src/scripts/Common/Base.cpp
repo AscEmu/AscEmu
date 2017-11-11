@@ -93,7 +93,7 @@ MoonScriptCreatureAI::MoonScriptCreatureAI(Creature* pCreature) : CreatureAIScri
 
     mRunToTargetCache = nullptr;
     mRunToTargetSpellCache = nullptr;
-    mAIUpdateFrequency = defaultUpdateFrequency;
+
     mBaseAttackTime = getCreature()->GetBaseAttackTime(MELEE);
 }
 

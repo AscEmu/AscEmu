@@ -1129,8 +1129,8 @@ void Creature::CallScriptUpdate()
     if (!IsInWorld())
         return;
 
-    _myScriptClass->AIUpdate();
     _myScriptClass->_internalAIUpdate();
+    _myScriptClass->AIUpdate();
 }
 
 CreatureProperties const* Creature::GetCreatureProperties()
@@ -2432,8 +2432,8 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
 
     RemoveAllNonPersistentAuras();
 
-    CALL_SCRIPT_EVENT(pAttacker, OnTargetDied)(this);
     CALL_SCRIPT_EVENT(pAttacker, _internalOnTargetDied)();
+    CALL_SCRIPT_EVENT(pAttacker, OnTargetDied)(this);
 
     pAttacker->smsg_AttackStop(this);
 
