@@ -352,6 +352,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         //Zyres: not only for selected creature... players too!
         bool HandlePossessCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleUnPossessCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleNpcShowTimersCommand(const char* /*args*/, WorldSession* m_session);
 
         //NPC set commands
         bool HandleNpcSetCanFlyCommand(const char* args, WorldSession* m_session);

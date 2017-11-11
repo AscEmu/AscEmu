@@ -44,6 +44,7 @@ set(sources
     # Required for linker
     ../../world/Server/LazyTimer.cpp
     ../../world/Server/ServerState.cpp
+    ../../shared/Util.cpp
 )
 
 set(headers

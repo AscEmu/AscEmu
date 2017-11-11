@@ -520,9 +520,11 @@ bool ScriptMgr::CallScriptedItem(Item* pItem, Player* pPlayer)
 }
 
 /* CreatureAI Stuff */
-CreatureAIScript::CreatureAIScript(Creature* creature) : _creature(creature), linkedCreatureAI(nullptr), mDespawnWhenInactive(false), mScriptPhase(0), mAIUpdateFrequency(defaultUpdateFrequency)
+CreatureAIScript::CreatureAIScript(Creature* creature) : _creature(creature), linkedCreatureAI(nullptr), mDespawnWhenInactive(false), mScriptPhase(0), mAIUpdateFrequency(defaultUpdateFrequency),
+    mCreatureTimerCount(0)
 {
     mCreatureTimerIds.clear();
+    mCreatureTimer.clear();
 }
 
 CreatureAIScript::~CreatureAIScript()
@@ -581,13 +583,15 @@ void CreatureAIScript::_internalOnCombatStop()
 
 void CreatureAIScript::_internalAIUpdate()
 {
-    LogDebugFlag(LF_SCRIPT_MGR, "CreatureAIScript::_internalAIUpdate() called");
+    //LogDebugFlag(LF_SCRIPT_MGR, "CreatureAIScript::_internalAIUpdate() called");
 
     if (!_isCasting())
     {
         setRooted(false);
         setAIAgent(AGENT_MELEE);
     }
+
+    updateAITimers();
 }
 
 void CreatureAIScript::_internalOnScriptPhaseChange()
@@ -960,14 +964,29 @@ uint32 CreatureAIScript::_addTimer(uint32_t durationInMs)
 
         return timerId;
     }
+    else
+    {
+        uint32_t timerId = ++mCreatureTimerCount;
+        mCreatureTimer.push_back(std::make_pair(timerId, durationInMs));
 
-    return 0;
+        return timerId;
+    }
 }
 
 uint32_t CreatureAIScript::_getTimeForTimer(uint32_t timerId)
 {
     if (InstanceScript* inScript = getInstanceScript())
+    {
         return inScript->getTimeForTimer(timerId);
+    }
+    else
+    {
+        for (const auto& intTimer : mCreatureTimer)
+        {
+            if (intTimer.first == timerId)
+                return intTimer.second;
+        }
+    }
 
     return 0;
 }
@@ -981,30 +1000,115 @@ void CreatureAIScript::_removeTimer(uint32_t& timerId)
         if (timerId == 0)
             mCreatureTimerIds.remove(mTimerId);
     }
+    else
+    {
+        for (CreatureTimerArray::iterator intTimer = mCreatureTimer.begin(); intTimer != mCreatureTimer.end(); ++intTimer)
+        {
+            if (intTimer->first == timerId)
+            {
+                mCreatureTimer.erase(intTimer);
+                timerId = 0;
+                break;
+            }
+        }
+    }
 }
 
 void CreatureAIScript::_resetTimer(uint32_t timerId, uint32_t durationInMs)
 {
     if (InstanceScript* inScript = getInstanceScript())
+    {
         inScript->resetTimer(timerId, durationInMs);
+    }
+    else
+    {
+        for (auto& intTimer : mCreatureTimer)
+        {
+            if (intTimer.first == timerId)
+                intTimer.second = durationInMs;
+        }
+    }
 }
 
 bool CreatureAIScript::_isTimerFinished(uint32_t timerId)
 {
     if (InstanceScript* inScript = getInstanceScript())
+    {
         return inScript->isTimerFinished(timerId);
+    }
+    else
+    {
+        for (const auto& intTimer : mCreatureTimer)
+        {
+            if (intTimer.first == timerId)
+                return intTimer.second == 0;
+        }
+    }
 
     return false;
 }
 
 void CreatureAIScript::_cancelAllTimers()
 {
-    for (auto& timer : mCreatureTimerIds)
-        _removeTimer(timer);
+    if (InstanceScript* inScript = getInstanceScript())
+    {
+        for (auto& timer : mCreatureTimerIds)
+            _removeTimer(timer);
 
-    mCreatureTimerIds.clear();
+        mCreatureTimerIds.clear();
+    }
+    else
+    {
+        mCreatureTimer.clear();
+    }
 
     LogDebugFlag(LF_SCRIPT_MGR, "CreatureAIScript::_cancelAllTimers() - all cleared!");
+}
+
+uint32_t CreatureAIScript::_getTimerCount()
+{
+    if (InstanceScript* inScript = getInstanceScript())
+        return mCreatureTimerIds.size();
+    else
+        return mCreatureTimer.size();
+}
+
+void CreatureAIScript::updateAITimers()
+{
+    for (auto& TimerIter : mCreatureTimer)
+    {
+        if (TimerIter.second > 0)
+        {
+            int leftTime = TimerIter.second - mAIUpdateFrequency;
+            if (leftTime > 0)
+                TimerIter.second -= mAIUpdateFrequency;
+            else
+                TimerIter.second = 0;
+        }
+    }
+}
+
+void CreatureAIScript::displayCreatureTimerList(Player* player)
+{
+    player->BroadcastMessage("=== Timers for creature %s ===", getCreature()->GetCreatureProperties()->Name.c_str());
+
+    if (mCreatureTimerIds.empty() && mCreatureTimer.empty())
+    {
+        player->BroadcastMessage("  No Timers available!");
+    }
+    else
+    {
+        if (InstanceScript* inScript = getInstanceScript())
+        {
+            for (const auto& intTimer : mCreatureTimerIds)
+                player->BroadcastMessage("  TimerId (%u)  %u ms left", intTimer, _getTimeForTimer(intTimer));
+        }
+        else
+        {
+            for (const auto& intTimer : mCreatureTimer)
+                player->BroadcastMessage("  TimerId (%u)  %u ms left", intTimer.first, intTimer.second);
+        }
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1488,12 +1592,12 @@ void InstanceScript::displayTimerList(Player* player)
 
     if (mTimers.empty())
     {
-        player->BroadcastMessage("  No Timers set!");
+        player->BroadcastMessage("  No Timers available!");
     }
     else
     {
         for (const auto& intTimer : mTimers)
-            player->BroadcastMessage("  Timer %u - %i", intTimer.first, intTimer.second);
+            player->BroadcastMessage("  TimerId (%u)  %u ms left", intTimer.first, intTimer.second);
     }
 }
 

@@ -445,13 +445,22 @@ class SERVER_DECL CreatureAIScript
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // timers
-        //\brief: timers are stored and updated in InstanceScript every second and is no longer bound to AIUpdate().
-        //        they require a active InstanceScript. In case of Questscripts use AIInterface functions!
-        //        this solution works fine, most custom AIUpdate frequencies can be replaced by these timers.
+        //\brief: timers are stored and updated in InstanceScript if a instance script is
+        //        available (instanceUpdateFrequency). If the creature is on a map without a
+        //        instance script, the timer gets updated locale (AIUpdateFrequency).
     private:
 
+        //reference to instance time - used for creatures located on a map with a instance script.
         typedef std::list<uint32_t> creatureTimerIds;
         creatureTimerIds mCreatureTimerIds;
+
+        //creature timer - used for creatures located on a map with NO instance script.
+        typedef std::pair<uint32_t, uint32_t> CreatureTimerPair;
+        typedef std::vector<CreatureTimerPair> CreatureTimerArray;
+
+        CreatureTimerArray mCreatureTimer;
+
+        uint32_t mCreatureTimerCount;
 
     public:
 
@@ -462,7 +471,13 @@ class SERVER_DECL CreatureAIScript
         bool _isTimerFinished(uint32_t timerId);
         void _cancelAllTimers();
 
-        uint32_t _getTimerCount() { return mCreatureTimerIds.size(); }
+        uint32_t _getTimerCount();
+
+        //only for internal use!
+        void updateAITimers();
+
+        //used for debug
+        void displayCreatureTimerList(Player* player);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // ai upodate frequency

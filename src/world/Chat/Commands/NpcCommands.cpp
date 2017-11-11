@@ -941,6 +941,19 @@ bool ChatHandler::HandleUnPossessCommand(const char* /*args*/, WorldSession* m_s
     return true;
 }
 
+//.npc showtimers
+bool ChatHandler::HandleNpcShowTimersCommand(const char* /*args*/, WorldSession* m_session)
+{
+    Creature* creature_target = GetSelectedCreature(m_session, true);
+    if (creature_target == nullptr)
+        return true;
+
+    if (CreatureAIScript* creatureScript = creature_target->GetScript())
+        creatureScript->displayCreatureTimerList(m_session->GetPlayer());
+
+    return true;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // .npc set commands
 //.npc set canfly

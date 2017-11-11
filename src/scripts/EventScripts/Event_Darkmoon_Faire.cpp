@@ -208,35 +208,36 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(Flik_Bark);
     Flik_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        RegisterAIUpdateEvent(180000);             // Start initial update after: 3mins
+        RegisterAIUpdateEvent(1000);
+        rendomSayTimer = _addTimer(180000);
     }
 
-    void AIUpdate() override
+    void AIUpdate()
     {
-        switch (RandomUInt(3))
+        if (_isTimerFinished(rendomSayTimer))
         {
-            case 0:
-                sendDBChatMessage(BARK_FLIK_1);
-                break;
+            switch (Util::getRandomUInt(3))
+            {
+                case 0:
+                    sendDBChatMessage(BARK_FLIK_1);
+                    break;
+                case 1:
+                    sendDBChatMessage(BARK_FLIK_2);
+                    break;
+                case 2:
+                    sendDBChatMessage(BARK_FLIK_3);
+                    break;
+                case 3:
+                    sendDBChatMessage(BARK_FLIK_4);
+                    break;
+            }
 
-            case 1:
-                sendDBChatMessage(BARK_FLIK_2);
-                break;
-
-            case 2:
-                sendDBChatMessage(BARK_FLIK_3);
-                break;
-
-            case 3:
-                sendDBChatMessage(BARK_FLIK_4);
-                break;
+            _resetTimer(rendomSayTimer, Util::getRandomUInt(120000, 240000));
         }
-
-        uint32 rndTimer;
-        rndTimer = RandomUInt(120, 240);              // Generate a random value between: 2-4mins
-        rndTimer = rndTimer * 1000;                 // Convert to milliseconds
-        ModifyAIUpdateEvent(rndTimer);              // Modify timer to new random value
     }
+
+private:
+    uint32_t rendomSayTimer;
 };
 
 
@@ -273,35 +274,36 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(GelvasGrimegate_Bark);
     GelvasGrimegate_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        RegisterAIUpdateEvent(60000);             // Start initial update after: 1mins
+        RegisterAIUpdateEvent(1000);
+        rendomSayTimer = _addTimer(60000);
     }
 
-    void AIUpdate() override
+    void AIUpdate()
     {
-        switch (RandomUInt(4))
+        if (_isTimerFinished(rendomSayTimer))
         {
-            case 0:
-                sendDBChatMessage(BARK_GEVAS_GRIMEGATE_1);
-                break;
+            switch (Util::getRandomUInt(4))
+            {
+                case 0:
+                    sendDBChatMessage(BARK_GEVAS_GRIMEGATE_1);
+                    break;
+                case 1:
+                    sendDBChatMessage(BARK_GEVAS_GRIMEGATE_2);
+                    break;
+                case 2:
+                    sendDBChatMessage(BARK_GEVAS_GRIMEGATE_3);
+                    break;
+                case 3:
+                    sendDBChatMessage(BARK_GEVAS_GRIMEGATE_4);
+                    break;
+            }
 
-            case 1:
-                sendDBChatMessage(BARK_GEVAS_GRIMEGATE_2);
-                break;
-
-            case 2:
-                sendDBChatMessage(BARK_GEVAS_GRIMEGATE_3);
-                break;
-
-            case 3:
-                sendDBChatMessage(BARK_GEVAS_GRIMEGATE_4);
-                break;
+            _resetTimer(rendomSayTimer, Util::getRandomUInt(180000, 300000));
         }
-
-        uint32 rndTimer;
-        rndTimer = RandomUInt(180, 300);             // Generate a random value between: 3-5mins
-        rndTimer = rndTimer * 1000;             // Convert to milliseconds
-        ModifyAIUpdateEvent(rndTimer);             // Modify timer to new random value
     }
+
+private:
+    uint32_t rendomSayTimer;
 };
 
 
@@ -312,35 +314,36 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(Lhara_Bark);
     Lhara_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        RegisterAIUpdateEvent(90000);             // Start initial update after: 1.5mins
+        RegisterAIUpdateEvent(1000);
+        rendomSayTimer = _addTimer(90000);
     }
 
-    void AIUpdate() override
+    void AIUpdate()
     {
-        switch (RandomUInt(4))
+        if (_isTimerFinished(rendomSayTimer))
         {
-            case 0:
-                sendDBChatMessage(BARK_LHARA_1);
-                break;
+            switch (Util::getRandomUInt(4))
+            {
+                case 0:
+                    sendDBChatMessage(BARK_LHARA_1);
+                    break;
+                case 1:
+                    sendDBChatMessage(BARK_LHARA_2);
+                    break;
+                case 2:
+                    sendDBChatMessage(BARK_LHARA_3);
+                    break;
+                case 3:
+                    sendDBChatMessage(BARK_LHARA_4);
+                    break;
+            }
 
-            case 1:
-                sendDBChatMessage(BARK_LHARA_2);
-                break;
-
-            case 2:
-                sendDBChatMessage(BARK_LHARA_3);
-                break;
-
-            case 3:
-                sendDBChatMessage(BARK_LHARA_4);
-                break;
+            _resetTimer(rendomSayTimer, Util::getRandomUInt(240000, 360000));
         }
-
-        uint32 rndTimer;
-        rndTimer = RandomUInt(240, 360);             // Generate a random value between: 4-6mins
-        rndTimer = rndTimer * 1000;             // Convert to milliseconds
-        ModifyAIUpdateEvent(rndTimer);             // Modify timer to new random value
     }
+
+private:
+    uint32_t rendomSayTimer;
 };
 
 
@@ -370,18 +373,22 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(Morja_Bark);
     Morja_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        RegisterAIUpdateEvent(240000);              // Start initial update after: 4mins
+        RegisterAIUpdateEvent(1000);
+        rendomSayTimer = _addTimer(240000);
     }
 
-    void AIUpdate() override
+    void AIUpdate()
     {
-        sendDBChatMessage(BARK_MORJA_1);
+        if (_isTimerFinished(rendomSayTimer))
+        {
+            sendDBChatMessage(BARK_MORJA_1);
 
-        uint32 rndTimer;
-        rndTimer = RandomUInt(240, 360);              // Generate a random value between: 4-6mins
-        rndTimer = rndTimer * 1000;                 // Convert to milliseconds
-        ModifyAIUpdateEvent(rndTimer);              // Modify timer to new random value
+            _resetTimer(rendomSayTimer, Util::getRandomUInt(240000, 360000));
+        }
     }
+
+private:
+    uint32_t rendomSayTimer;
 };
 
 
@@ -459,32 +466,36 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(ProfessorThaddeusPaleo_Bark);
     ProfessorThaddeusPaleo_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        RegisterAIUpdateEvent(210000);             // Start initial update after: 3.5mins
+        RegisterAIUpdateEvent(1000);
+        rendomSayTimer = _addTimer(210000);
     }
 
-    void AIUpdate() override
+    void AIUpdate()
     {
-        switch (RandomUInt(3))
+        if (_isTimerFinished(rendomSayTimer))
         {
-            case 0:
-                sendDBChatMessage(BARK_PROFESSOR_THADDEUS_PALEO_1);
-                break;
-            case 1:
-                sendDBChatMessage(BARK_PROFESSOR_THADDEUS_PALEO_2);
-                break;
-            case 2:
-                sendDBChatMessage(BARK_PROFESSOR_THADDEUS_PALEO_3);
-                break;
-            case 3:
-                sendDBChatMessage(BARK_PROFESSOR_THADDEUS_PALEO_4);
-                break;
-        }
+            switch (Util::getRandomUInt(3))
+            {
+                case 0:
+                    sendDBChatMessage(BARK_PROFESSOR_THADDEUS_PALEO_1);
+                    break;
+                case 1:
+                    sendDBChatMessage(BARK_PROFESSOR_THADDEUS_PALEO_2);
+                    break;
+                case 2:
+                    sendDBChatMessage(BARK_PROFESSOR_THADDEUS_PALEO_3);
+                    break;
+                case 3:
+                    sendDBChatMessage(BARK_PROFESSOR_THADDEUS_PALEO_4);
+                    break;
+            }
 
-        uint32 rndTimer;
-        rndTimer = RandomUInt(180, 360);             // Generate a random value between: 3-5mins
-        rndTimer = rndTimer * 1000;             // Convert to milliseconds
-        ModifyAIUpdateEvent(rndTimer);             // Modify timer to new random value
+            _resetTimer(rendomSayTimer, Util::getRandomUInt(180000, 360000));
+        }
     }
+
+private:
+    uint32_t rendomSayTimer;
 };
 
 
@@ -692,35 +703,36 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(Sayge_Bark);
     Sayge_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        RegisterAIUpdateEvent(135000);             // Start initial update after: 2.25mins
+        RegisterAIUpdateEvent(1000);
+        rendomSayTimer = _addTimer(135000);
     }
 
-    void AIUpdate() override
+    void AIUpdate()
     {
-        switch (RandomUInt(3))
+        if (_isTimerFinished(rendomSayTimer))
         {
-            case 0:
-                sendDBChatMessage(BARK_SAYGE_1);
-                break;
+            switch (Util::getRandomUInt(3))
+            {
+                case 0:
+                    sendDBChatMessage(BARK_SAYGE_1);
+                    break;
+                case 1:
+                    sendDBChatMessage(BARK_SAYGE_2);
+                    break;
+                case 2:
+                    sendDBChatMessage(BARK_SAYGE_3);
+                    break;
+                case 3:
+                    sendDBChatMessage(BARK_SAYGE_4);
+                    break;
+            }
 
-            case 1:
-                sendDBChatMessage(BARK_SAYGE_2);
-                break;
-
-            case 2:
-                sendDBChatMessage(BARK_SAYGE_3);
-                break;
-
-            case 3:
-                sendDBChatMessage(BARK_SAYGE_4);
-                break;
+            _resetTimer(rendomSayTimer, Util::getRandomUInt(180000, 360000));
         }
-
-        uint32 rndTimer;
-        rndTimer = RandomUInt(180, 360);             // Generate a random value between: 3-5mins
-        rndTimer = rndTimer * 1000;             // Convert to milliseconds
-        ModifyAIUpdateEvent(rndTimer);             // Modify timer to new random value
     }
+
+private:
+    uint32_t rendomSayTimer;
 };
 
 
@@ -806,43 +818,42 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(SilasDarkmoon_Bark);
     SilasDarkmoon_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        RegisterAIUpdateEvent(180000);             // Start initial update after: 3mins
+        RegisterAIUpdateEvent(1000);
+        rendomSayTimer = _addTimer(180000);
     }
 
-    void AIUpdate() override
+    void AIUpdate()
     {
-        switch (RandomUInt(5))
+        if (_isTimerFinished(rendomSayTimer))
         {
-            case 0:
-                sendDBChatMessage(BARK_SILAS_DARKMOON_1);
-                break;
+            switch (Util::getRandomUInt(5))
+            {
+                case 0:
+                    sendDBChatMessage(BARK_SILAS_DARKMOON_1);
+                    break;
+                case 1:
+                    sendDBChatMessage(BARK_SILAS_DARKMOON_2);
+                    break;
+                case 2:
+                    sendDBChatMessage(BARK_SILAS_DARKMOON_3);
+                    break;
+                case 3:
+                    sendDBChatMessage(BARK_SILAS_DARKMOON_4);
+                    break;
+                case 4:
+                    sendDBChatMessage(BARK_SILAS_DARKMOON_5);
+                    break;
+                case 5:
+                    sendDBChatMessage(BARK_SILAS_DARKMOON_6);
+                    break;
+            }
 
-            case 1:
-                sendDBChatMessage(BARK_SILAS_DARKMOON_2);
-                break;
-
-            case 2:
-                sendDBChatMessage(BARK_SILAS_DARKMOON_3);
-                break;
-
-            case 3:
-                sendDBChatMessage(BARK_SILAS_DARKMOON_4);
-                break;
-
-            case 4:
-                sendDBChatMessage(BARK_SILAS_DARKMOON_5);
-                break;
-
-            case 5:
-                sendDBChatMessage(BARK_SILAS_DARKMOON_6);
-                break;
+            _resetTimer(rendomSayTimer, Util::getRandomUInt(240000, 360000));
         }
-
-        uint32 rndTimer;
-        rndTimer = RandomUInt(240, 360);             // Generate a random value between: 3-5mins
-        rndTimer = rndTimer * 1000;             // Convert to milliseconds
-        ModifyAIUpdateEvent(rndTimer);             // Modify timer to new random value
     }
+
+private:
+    uint32_t rendomSayTimer;
 };
 
 
@@ -853,39 +864,39 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(StampThunderhorn_Bark);
     StampThunderhorn_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        RegisterAIUpdateEvent(180000);             // Start initial update after: 3mins
+        RegisterAIUpdateEvent(1000);
+        rendomSayTimer = _addTimer(180000);
     }
 
-    void AIUpdate() override
+    void AIUpdate()
     {
-        switch (RandomUInt(4))
+        if (_isTimerFinished(rendomSayTimer))
         {
-            case 0:
-                sendDBChatMessage(BARK_STAMP_THUNDERHORN_1);
-                break;
+            switch (Util::getRandomUInt(4))
+            {
+                case 0:
+                    sendDBChatMessage(BARK_STAMP_THUNDERHORN_1);
+                    break;
+                case 1:
+                    sendDBChatMessage(BARK_STAMP_THUNDERHORN_2);
+                    break;
+                case 2:
+                    sendDBChatMessage(BARK_STAMP_THUNDERHORN_3);
+                    break;
+                case 3:
+                    sendDBChatMessage(BARK_STAMP_THUNDERHORN_4);
+                    break;
+                case 4:
+                    sendDBChatMessage(BARK_STAMP_THUNDERHORN_5);
+                    break;
+            }
 
-            case 1:
-                sendDBChatMessage(BARK_STAMP_THUNDERHORN_2);
-                break;
-
-            case 2:
-                sendDBChatMessage(BARK_STAMP_THUNDERHORN_3);
-                break;
-
-            case 3:
-                sendDBChatMessage(BARK_STAMP_THUNDERHORN_4);
-                break;
-
-            case 4:
-                sendDBChatMessage(BARK_STAMP_THUNDERHORN_5);
-                break;
+            _resetTimer(rendomSayTimer, Util::getRandomUInt(180000, 360000));
         }
-
-        uint32 rndTimer;
-        rndTimer = RandomUInt(180, 360);             // Generate a random value between: 3-5mins
-        rndTimer = rndTimer * 1000;             // Convert to milliseconds
-        ModifyAIUpdateEvent(rndTimer);             // Modify timer to new random value
     }
+
+private:
+    uint32_t rendomSayTimer;
 };
 
 
@@ -896,35 +907,36 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(Sylannia_Bark);
     Sylannia_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        RegisterAIUpdateEvent(120000);             // Start initial update after: 2mins
+        RegisterAIUpdateEvent(1000);
+        rendomSayTimer = _addTimer(120000);
     }
 
-    void AIUpdate() override
+    void AIUpdate()
     {
-        switch (RandomUInt(3))
+        if (_isTimerFinished(rendomSayTimer))
         {
-            case 0:
-                sendDBChatMessage(BARK_SYLANNIA_1);
-                break;
+            switch (Util::getRandomUInt(3))
+            {
+                case 0:
+                    sendDBChatMessage(BARK_SYLANNIA_1);
+                    break;
+                case 1:
+                    sendDBChatMessage(BARK_SYLANNIA_2);
+                    break;
+                case 2:
+                    sendDBChatMessage(BARK_SYLANNIA_3);
+                    break;
+                case 3:
+                    sendDBChatMessage(BARK_SYLANNIA_4);
+                    break;
+            }
 
-            case 1:
-                sendDBChatMessage(BARK_SYLANNIA_2);
-                break;
-
-            case 2:
-                sendDBChatMessage(BARK_SYLANNIA_3);
-                break;
-
-            case 3:
-                sendDBChatMessage(BARK_SYLANNIA_4);
-                break;
+            _resetTimer(rendomSayTimer, Util::getRandomUInt(180000, 360000));
         }
-
-        uint32 rndTimer;
-        rndTimer = RandomUInt(180, 360);             // Generate a random value between: 3-6mins
-        rndTimer = rndTimer * 1000;             // Convert to milliseconds
-        ModifyAIUpdateEvent(rndTimer);             // Modify timer to new random value
     }
+
+private:
+    uint32_t rendomSayTimer;
 };
 
 
