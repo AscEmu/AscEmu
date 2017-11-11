@@ -385,7 +385,6 @@ class WardenMellicharAI : public MoonScriptCreatureAI
         {
             setRooted(true);
             Phase_Timer = -1;
-            SetPhase(0);
             Spawncounter = 0;
             NPC_orb1 = NULL;
             NPC_orb2 = NULL;
@@ -403,7 +402,6 @@ class WardenMellicharAI : public MoonScriptCreatureAI
 
         void OnCombatStart(Unit* mTarget)
         {
-            SetPhase(0);
             Phasepart = 0;
             setRooted(true);
             Phase_Timer = _addTimer(55000);
@@ -435,7 +433,7 @@ class WardenMellicharAI : public MoonScriptCreatureAI
             _setCastDisabled(true);
 
             // ORB ONE
-            if (_isTimerFinished(Phase_Timer) && GetPhase() == 0)
+            if (_isTimerFinished(Phase_Timer) && isScriptPhase(1))
             {
                 if (Phasepart == 0)
                 {
@@ -470,7 +468,7 @@ class WardenMellicharAI : public MoonScriptCreatureAI
                     else if (NPC_orb1 && !NPC_orb1->isAlive())
                     {
                         sendDBChatMessage(SAY_MELLICHAR_03);
-                        SetPhase(1);
+                        SetPhase(2);
                         Phasepart = 0;
                         _resetTimer(Phase_Timer, 6000);
                         return;
@@ -485,7 +483,7 @@ class WardenMellicharAI : public MoonScriptCreatureAI
             }
 
             // ORB TWO
-            else if (_isTimerFinished(Phase_Timer) && GetPhase() == 1)
+            else if (_isTimerFinished(Phase_Timer) && isScriptPhase(2))
             {
                 if (Phasepart == 0)
                 {
@@ -518,7 +516,7 @@ class WardenMellicharAI : public MoonScriptCreatureAI
 
                             millhouse->SendTimedScriptTextChatMessage(SAY_MILLHOUS_02, 22000);
                         }
-                        SetPhase(2);
+                        SetPhase(3);
                         Phasepart = 0;
                         _resetTimer(Phase_Timer, 25000);
                         return;
@@ -534,7 +532,7 @@ class WardenMellicharAI : public MoonScriptCreatureAI
             }
 
             // ORB THREE
-            else if (_isTimerFinished(Phase_Timer) && GetPhase() == 2)
+            else if (_isTimerFinished(Phase_Timer) && isScriptPhase(3))
             {
                 if (Phasepart == 0)
                 {
@@ -577,7 +575,7 @@ class WardenMellicharAI : public MoonScriptCreatureAI
                     else if (NPC_orb3 && !NPC_orb3->isAlive())
                     {
                         sendDBChatMessage(SAY_MELLICHAR_05);
-                        SetPhase(3);
+                        SetPhase(4);
                         Phasepart = 0;
                         _resetTimer(Phase_Timer, 8000);
                         return;
@@ -592,7 +590,7 @@ class WardenMellicharAI : public MoonScriptCreatureAI
             }
 
             // ORB FOUR
-            else if (_isTimerFinished(Phase_Timer) && GetPhase() == 3)
+            else if (_isTimerFinished(Phase_Timer) && isScriptPhase(4))
             {
                 if (Phasepart == 0)
                 {
@@ -631,7 +629,7 @@ class WardenMellicharAI : public MoonScriptCreatureAI
                     else if (NPC_orb4 && !NPC_orb4->isAlive())
                     {
                         sendDBChatMessage(SAY_MELLICHAR_06);
-                        SetPhase(4);
+                        SetPhase(5);
                         Phasepart = 0;
                         _resetTimer(Phase_Timer, 6000);
                         return;
@@ -645,7 +643,7 @@ class WardenMellicharAI : public MoonScriptCreatureAI
                 //return;
             }
 
-            else if (_isTimerFinished(Phase_Timer) && GetPhase() == 4)
+            else if (_isTimerFinished(Phase_Timer) && isScriptPhase(4))
             {}
 
             ParentClass::AIUpdate();

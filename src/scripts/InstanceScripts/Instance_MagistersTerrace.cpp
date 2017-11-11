@@ -212,7 +212,7 @@ class VexallusAI : public MoonScriptCreatureAI
             //spawnCreature(CN_PURE_ENERGY, 231, -207, 6, 0, true);
         }
 
-        if (_getHealthPercent() <= 10 && GetPhase() == 1)
+        if (_getHealthPercent() <= 10 && isScriptPhase(1))
             SetPhase(2);
 
 

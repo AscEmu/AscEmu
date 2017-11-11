@@ -100,7 +100,7 @@ class AttumenTheHuntsmanAI : public MoonScriptCreatureAI
 
     void AIUpdate()
     {
-        if (GetPhase() == 1)
+        if (isScriptPhase(1))
         {
             if (GetLinkedCreature() && GetLinkedCreature()->isAlive() && _getHealthPercent() <= 25 && !_isCasting())
             {
@@ -143,7 +143,7 @@ class MidnightAI : public MoonScriptCreatureAI
 
     void AIUpdate()
     {
-        if (GetPhase() == 1)
+        if (isScriptPhase(1))
         {
             if (GetLinkedCreature() == nullptr && _getHealthPercent() <= 95 && !_isCasting())
             {
@@ -167,7 +167,7 @@ class MidnightAI : public MoonScriptCreatureAI
                 attumen->sendChatMessage(CHAT_MSG_MONSTER_YELL, 9168, "Come Midnight, let's disperse this petty rabble!");
             }
         }
-        else if (GetPhase() == 2)
+        else if (isScriptPhase(2))
         {
             if (GetLinkedCreature() && GetLinkedCreature()->isAlive())
             {
@@ -241,7 +241,7 @@ class MoroesAI : public MoonScriptCreatureAI
 
     void AIUpdate()
     {
-        if (GetPhase() == 1)
+        if (isScriptPhase(1))
         {
             if (mEnrage->mEnabled && _getHealthPercent() <= 30 && !_isCasting())
             {
@@ -255,7 +255,7 @@ class MoroesAI : public MoonScriptCreatureAI
                 _resetTimer(mVanishTimer, 35000);
             }
         }
-        else if (GetPhase() == 2)
+        else if (isScriptPhase(2))
         {
             if (_isTimerFinished(mGarroteTimer) && !_isCasting())
             {

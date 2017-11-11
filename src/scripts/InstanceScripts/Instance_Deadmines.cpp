@@ -185,7 +185,7 @@ class MrSmiteAI : public MoonScriptCreatureAI
 
         void OnCombatStop(Unit* pTarget)
         {
-            if (GetPhase() == 4)
+            if (isScriptPhase(4))
                 _removeAura(SMITES_HAMMER);
 
             if (!isAlive())
@@ -199,18 +199,18 @@ class MrSmiteAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            if (_getHealthPercent() <= 66 && GetPhase() == 1)
+            if (_getHealthPercent() <= 66 && isScriptPhase(1))
             {
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 5778, "You landlubbers are tougher than I thought. I'll have to improvise!");
                 SetPhase(2, mStomp);
             }
-            else if (_getHealthPercent() <= 33 && GetPhase() == 3)
+            else if (_getHealthPercent() <= 33 && isScriptPhase(3))
             {
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 5779, "D'ah! Now you're making me angry!");
                 SetPhase(4, mStomp);
             }
 
-            if (GetPhase() == 2 || GetPhase() == 4)
+            if (isScriptPhase(2) || isScriptPhase(4))
             {
                 if (NearChest())
                     SwitchWeapons();
@@ -263,7 +263,7 @@ class MrSmiteAI : public MoonScriptCreatureAI
         void SwitchWeapons()
         {
             // CREDITS to Skyboat on ascentemu.com/forums  he had some of this info on one of his releases
-            switch (GetPhase())
+            switch (getScriptPhase())
             {
                 case 1: // Phase 1 (Default)
                     _setDisplayWeaponIds(5192, 0);
@@ -284,7 +284,7 @@ class MrSmiteAI : public MoonScriptCreatureAI
             // Wait at the chest for 4.5seconds -- Still needs work
             getCreature()->setAttackTimer(4500, false);
             mWaitAtChest = _addTimer(4500);
-            SetPhase(GetPhase() + 1);
+            SetPhase(getScriptPhase() + 1);
         }
 
     protected:
@@ -327,12 +327,12 @@ class VanCleefAI : public MoonScriptCreatureAI
 
     void AIUpdate()
     {
-        if (_getHealthPercent() <= 75 && GetPhase() == 1)
+        if (_getHealthPercent() <= 75 && isScriptPhase(1))
         {
             sendDBChatMessage(7723);     // Lapdogs, all of you!
             SetPhase(2);
         }
-        else if (_getHealthPercent() <= 50 && GetPhase() == 2)
+        else if (_getHealthPercent() <= 50 && isScriptPhase(2))
         {
             sendDBChatMessage(7725);     // Fools! Our cause is righteous!
 
@@ -348,7 +348,7 @@ class VanCleefAI : public MoonScriptCreatureAI
             SetPhase(3);
 
         }
-        else if (_getHealthPercent() <= 25 && GetPhase() == 3)
+        else if (_getHealthPercent() <= 25 && isScriptPhase(3))
         {
             sendDBChatMessage(7727);     // The Brotherhood shall prevail!
             SetPhase(4);

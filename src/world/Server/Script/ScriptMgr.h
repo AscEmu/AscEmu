@@ -341,7 +341,7 @@ class SERVER_DECL CreatureAIScript
         // MIT start
         //////////////////////////////////////////////////////////////////////////////////////////
         // Event default management
-        //\NOTE: These functions are called internal for script events. Do NOT use them in your scripts!
+        //\brief: These functions are called internal for script events. Do NOT use them in your scripts!
         void _internalOnDied();
         void _internalOnTargetDied();
         void _internalOnCombatStart();
@@ -426,10 +426,25 @@ class SERVER_DECL CreatureAIScript
         bool _isHeroic();
 
         //////////////////////////////////////////////////////////////////////////////////////////
+        // script phase
+        //\brief: script phase is reset to 0 in _internalOnDied() and _internalOnCombatStop()
+        //         it is set to 1 in MoonScriptCreatureAI OnCombatStart
+    private:
+
+        uint32_t mScriptPhase;
+
+    public:
+
+        uint32_t getScriptPhase();
+        void setScriptPhase(uint32_t scriptPhase);
+        void resetScriptPhase();
+        bool isScriptPhase(uint32_t scriptPhase);
+
+        //////////////////////////////////////////////////////////////////////////////////////////
         // timers
-        //\NOTE timers are stored and updated in InstanceScript every second and is no longer bound to AIUpdate().
-        //      they require a active InstanceScript. In case of Questscripts use AIInterface functions!
-        //      this solution works fine, most custom AIUpdate frequencies can be replaced by these timers.
+        //\brief: timers are stored and updated in InstanceScript every second and is no longer bound to AIUpdate().
+        //        they require a active InstanceScript. In case of Questscripts use AIInterface functions!
+        //        this solution works fine, most custom AIUpdate frequencies can be replaced by these timers.
     private:
 
         typedef std::list<uint32_t> creatureTimerIds;

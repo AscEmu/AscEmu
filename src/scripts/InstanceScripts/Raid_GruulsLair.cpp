@@ -163,7 +163,7 @@ class HighKingMaulgarAI : public MoonScriptCreatureAI
             if (mAliveAdds > 1)
                 return;
 
-            if (GetPhase() == 1 && _getHealthPercent() <= 50)
+            if (isScriptPhase(1) && _getHealthPercent() <= 50)
             {
                 SetPhase(2, mEnrage);
             }

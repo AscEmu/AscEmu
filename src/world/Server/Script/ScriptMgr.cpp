@@ -520,7 +520,7 @@ bool ScriptMgr::CallScriptedItem(Item* pItem, Player* pPlayer)
 }
 
 /* CreatureAI Stuff */
-CreatureAIScript::CreatureAIScript(Creature* creature) : _creature(creature), linkedCreatureAI(nullptr), mDespawnWhenInactive(false)
+CreatureAIScript::CreatureAIScript(Creature* creature) : _creature(creature), linkedCreatureAI(nullptr), mDespawnWhenInactive(false), mScriptPhase(0)
 {
     mCreatureTimerIds.clear();
 }
@@ -545,6 +545,8 @@ void CreatureAIScript::_internalOnDied()
 
     if (_isDespawnWhenInactiveSet())
         despawn(DEFAULT_DESPAWN_TIMER);
+
+    resetScriptPhase();
 }
 
 void CreatureAIScript::_internalOnTargetDied()
@@ -573,6 +575,8 @@ void CreatureAIScript::_internalOnCombatStop()
 
     if (_isDespawnWhenInactiveSet())
         despawn(DEFAULT_DESPAWN_TIMER);
+
+    resetScriptPhase();
 }
 
 void CreatureAIScript::_internalAIUpdate()
@@ -909,6 +913,30 @@ bool CreatureAIScript::_isHeroic()
         return false;
 
     return true;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// script phase
+
+uint32_t CreatureAIScript::getScriptPhase()
+{
+    return mScriptPhase;
+}
+
+void CreatureAIScript::setScriptPhase(uint32_t scriptPhase)
+{
+    if (isScriptPhase(scriptPhase) == false)
+        mScriptPhase = scriptPhase;
+}
+
+void CreatureAIScript::resetScriptPhase()
+{
+    setScriptPhase(0);
+}
+
+bool CreatureAIScript::isScriptPhase(uint32_t scriptPhase)
+{
+    return (getScriptPhase() == scriptPhase);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

@@ -308,19 +308,19 @@ class Falric : public MoonScriptCreatureAI
 
         void AIUpdate(Player* Plr)
         {
-            if (GetPhase() == 1 && _getHealthPercent() <= 66)
+            if (isScriptPhase(1) && _getHealthPercent() <= 66)
             {
                 getCreature()->CastSpell(Plr, 72395, true);
                 SetPhase(2);
             }
 
-            if (GetPhase() == 2 && _getHealthPercent() <= 33)
+            if (isScriptPhase(2) && _getHealthPercent() <= 33)
             {
                 getCreature()->CastSpell(Plr, 72396, true);
                 SetPhase(3);
             }
 
-            if (GetPhase() == 3 && _getHealthPercent() <= 11)
+            if (isScriptPhase(3) && _getHealthPercent() <= 11)
             {
                 getCreature()->CastSpell(Plr, 72397, true);
                 SetPhase(4);

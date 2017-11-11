@@ -176,7 +176,7 @@ class GeneralBjarngrimAI : public MoonScriptCreatureAI
     {
         if (_isTimerFinished(mStanceTimer))
         {
-            switch (GetPhase())
+            switch (getScriptPhase())
             {
                 case STANCE_BATTLE:
                     switchStance(RandomUInt(1) + 2);

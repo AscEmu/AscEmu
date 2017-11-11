@@ -360,7 +360,7 @@ class DofNaralexAI : public MoonScriptCreatureAI
         void OnReachWP(uint32 iWaypointId, bool bForwards)
         {
             ForceWaypointMove(iWaypointId + 1);
-            if (GetPhase() == 1 && GetCurrentWaypoint() == 39)
+            if (isScriptPhase(1) && GetCurrentWaypoint() == 39)
             {
                 getCreature()->Emote(EMOTE_ONESHOT_TALK);
                 SetPhase(2, Awakening);
@@ -373,7 +373,7 @@ class DofNaralexAI : public MoonScriptCreatureAI
         {
             if (SpawnTimer && _isTimerFinished(SpawnTimer))
             {
-                switch (GetPhase())
+                switch (getScriptPhase())
                 {
                     case 2:
                     {
@@ -397,7 +397,7 @@ class DofNaralexAI : public MoonScriptCreatureAI
                         break;
                 }
             }
-            if (GetPhase() == 5 && (!Mutanus || !Mutanus->isAlive()))
+            if (isScriptPhase(5) && (!Mutanus || !Mutanus->isAlive()))
             {
                 CreatureAIScript* Naralex = getNearestCreatureAI(3679);
                 if (Naralex && Naralex->isAlive())

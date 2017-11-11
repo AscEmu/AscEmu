@@ -147,7 +147,7 @@ typedef std::vector<Player*> PlayerArray;
 typedef std::vector<Unit*> UnitArray;
 typedef std::vector<SpellDesc*> SpellDescArray;
 typedef std::list<SpellDesc*> SpellDescList;
-typedef std::pair<int32, SpellDesc*> PhaseSpellPair;
+typedef std::pair<uint32, SpellDesc*> PhaseSpellPair;
 typedef std::vector<PhaseSpellPair> PhaseSpellArray;
 typedef std::vector<LootDesc> LootTable;
 typedef std::pair<RangeStatus, float> RangeStatusPair;
@@ -307,14 +307,12 @@ class MoonScriptCreatureAI : public CreatureAIScript
     public:
 
         //Basic Interface
-        SpellDesc* AddPhaseSpell(int32 pPhase, SpellDesc* pSpell);
-        int32 GetPhase();
-        void SetPhase(int32 pPhase, SpellDesc* pPhaseChangeSpell = NULL);
-        void SetEnrageInfo(SpellDesc* pSpell, int32 pTriggerMilliseconds);
+        SpellDesc* AddPhaseSpell(uint32 pPhase, SpellDesc* pSpell);
+        void SetPhase(uint32 pPhase, SpellDesc* pPhaseChangeSpell = NULL);
+        void SetEnrageInfo(SpellDesc* pSpell, uint32 pTriggerMilliseconds);
 
     protected:
 
-        int32 mPhaseIndex;
         PhaseSpellArray mPhaseSpells;
         SpellDesc* mEnrageSpell;
         int32 mEnrageTimerDuration;

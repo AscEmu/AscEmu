@@ -1174,12 +1174,12 @@ class ShadowmoonWeaponMasterAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            if (GetPhase() == 1 && _getHealthPercent() <= 85)
+            if (isScriptPhase(1) && _getHealthPercent() <= 85)
             {
                 SetPhase(2, mDefensiveStance);
                 return;
             }
-            if (GetPhase() == 2 && _getHealthPercent() <= 35)
+            if (isScriptPhase(2) && _getHealthPercent() <= 35)
             {
                 SetPhase(3, mBerserkerStance);
                 return;
@@ -4303,7 +4303,7 @@ class AkamaAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            switch (GetPhase())
+            switch (getScriptPhase())
             {
                 case 1:
                     WayToIllidan();
@@ -4885,7 +4885,7 @@ class MaievAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            switch (GetPhase())
+            switch (getScriptPhase())
             {
                 case 1:
                     FightWithIllidan();
@@ -5464,7 +5464,7 @@ class IllidanStormrageAI : public MoonScriptCreatureAI
             if (!mAllow)
                 return;
 
-            switch (GetPhase())
+            switch (getScriptPhase())
             {
                 case 1:
                     PhaseOne();

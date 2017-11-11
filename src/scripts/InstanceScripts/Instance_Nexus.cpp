@@ -244,7 +244,7 @@ class TelestraBossAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            if (GetPhase() == 1 && _getHealthPercent() <= (mPhaseRepeat * 25))
+            if (isScriptPhase(1) && _getHealthPercent() <= (mPhaseRepeat * 25))
             {
                 switch (RandomUInt(1))
                 {
@@ -272,7 +272,7 @@ class TelestraBossAI : public MoonScriptCreatureAI
 
             }
 
-            if (GetPhase() == 2)
+            if (isScriptPhase(2))
             {
                 for (uint8 i = 0; i < 3; ++i)
                 {

@@ -80,7 +80,7 @@ class NalorakkAI : public MoonScriptCreatureAI
             ParentClass::AIUpdate();
 
             // Bear Form
-            if (_isTimerFinished(MorphTimer) && GetPhase() == 1)
+            if (_isTimerFinished(MorphTimer) && isScriptPhase(1))
             {
                 SetPhase(2, Morph);
                 // Morph into a bear since the spell doesnt work
@@ -90,7 +90,7 @@ class NalorakkAI : public MoonScriptCreatureAI
             }
 
             // Troll Form
-            else if (_isTimerFinished(MorphTimer) && GetPhase() == 2)
+            else if (_isTimerFinished(MorphTimer) && isScriptPhase(2))
             {
                 // Remove Bear Form
                 _removeAura(42377);
@@ -233,13 +233,13 @@ class HalazziAI : public MoonScriptCreatureAI
                 Merge();
 
             // At <25% Phase 3 begins
-            if (_getHealthPercent() < 25 && GetPhase() == 1)
+            if (_getHealthPercent() < 25 && isScriptPhase(1))
             {
                 _resetTimer(mTotemTimer, 30000);
                 SetPhase(3);
             }
 
-            if (GetPhase() == 2 || GetPhase() == 3)
+            if (isScriptPhase(2) || isScriptPhase(3))
             {
                 if (_isTimerFinished(mTotemTimer))
                 {
@@ -250,7 +250,7 @@ class HalazziAI : public MoonScriptCreatureAI
                         static_cast<MoonScriptCreatureAI*>(Totem)->AggroNearestPlayer();
                     }
 
-                    switch (GetPhase())
+                    switch (getScriptPhase())
                     {
                         case 2:
                             _resetTimer(mTotemTimer, 60000);

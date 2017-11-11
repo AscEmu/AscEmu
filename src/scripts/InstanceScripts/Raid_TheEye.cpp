@@ -1746,7 +1746,7 @@ class HighAstromancerSolarianAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            if (GetPhase() == 1)
+            if (isScriptPhase(1))
             {
                 if (_getHealthPercent() <= 20 && !_isCasting())
                 {
@@ -1761,7 +1761,7 @@ class HighAstromancerSolarianAI : public MoonScriptCreatureAI
                     mSolarianTimer = _addTimer(22000);    //Solarian with 2 priests spawns 22sec after split
                 }
             }
-            else if (GetPhase() == 2)
+            else if (isScriptPhase(2))
             {
                 if (_isTimerFinished(mSolarianTimer) && !_isCasting())
                 {
@@ -3126,7 +3126,7 @@ class KaelThasAI : public MoonScriptCreatureAI
 
         void SendAdvisorEmote()
         {
-            switch (GetPhase())
+            switch (getScriptPhase())
             {
                 case 1:
                     sendChatMessage(CHAT_MSG_MONSTER_YELL, 11259, "Let us see how your nerves hold up against the Darkener, Thaladred.");
@@ -3176,7 +3176,7 @@ class KaelThasAI : public MoonScriptCreatureAI
                 pCoords.addition = pCreature->GetEntry();
 
                 SetAIUpdateFreq(5000);
-                SetPhase(GetPhase() + 1);
+                SetPhase(getScriptPhase() + 1);
                 mAdvCoords.push_back(pCoords);
                 mAdvisorPhase = PHASE_SPEECH;
             }
@@ -3184,9 +3184,9 @@ class KaelThasAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            if (GetPhase() < 5)
+            if (getScriptPhase() < 5)
             {
-                uint32 i = GetPhase() > 0 ? GetPhase() - 1 : 0;
+                uint32 i = getScriptPhase() > 0 ? getScriptPhase() - 1 : 0;
                 Creature* pCreature = getNearestCreature(Advisors[i].x, Advisors[i].y, Advisors[i].z, Advisors[i].addition);
                 if (pCreature == NULL || (!pCreature->isAlive() && mAdvisorPhase != PHASE_ADV_FIGHT))
                 {
@@ -3198,7 +3198,7 @@ class KaelThasAI : public MoonScriptCreatureAI
                     pCoords.addition = Advisors[i].addition;
                     mAdvCoords.push_back(pCoords);
 
-                    SetPhase(GetPhase() + 1);
+                    SetPhase(getScriptPhase() + 1);
                     mAdvisorPhase = PHASE_SPEECH;
                     return;
                 }
@@ -3215,7 +3215,7 @@ class KaelThasAI : public MoonScriptCreatureAI
                         break;
                 }
             }
-            if (GetPhase() == 5)
+            if (isScriptPhase(5))
             {
                 if (mEventTimer == -1)
                 {
@@ -3277,7 +3277,7 @@ class KaelThasAI : public MoonScriptCreatureAI
                 setAIAgent(AGENT_SPELL);
                 setRooted(true);
             }
-            if (GetPhase() == 6)
+            if (isScriptPhase(6))
             {
                 ParentClass::AIUpdate();
                 if (_isTimerFinished(mEventTimer))
@@ -3298,7 +3298,7 @@ class KaelThasAI : public MoonScriptCreatureAI
 
                 return;
             }
-            if (GetPhase() == 7)
+            if (isScriptPhase(7))
             {
                 if (!_isCasting())
                 {

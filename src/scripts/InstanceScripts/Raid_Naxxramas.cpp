@@ -1329,7 +1329,7 @@ void NothThePlaguebringerAI::OnCombatStop(Unit* pTarget)
 
 void NothThePlaguebringerAI::AIUpdate()
 {
-    if (GetPhase() == 1)
+    if (isScriptPhase(1))
     {
         if (!_isCasting())
         {
@@ -1488,7 +1488,7 @@ void NothThePlaguebringerAI::AIUpdate()
     }
 
     ParentClass::AIUpdate();
-    if (GetPhase() == 2)
+    if (isScriptPhase(2))
     {
         setAIAgent(AGENT_SPELL);
         setRooted(true);
@@ -1798,7 +1798,7 @@ void HeiganTheUncleanAI::OnCombatStop(Unit* pTarget)
 
 void HeiganTheUncleanAI::AIUpdate()
 {
-    if (GetPhase() == 1)
+    if (isScriptPhase(1))
     {
         if (!_isCasting() && _isTimerFinished(mPhaseSwitchTimer))
         {
@@ -1836,7 +1836,7 @@ void HeiganTheUncleanAI::AIUpdate()
     }
 
     ParentClass::AIUpdate();
-    if (GetPhase() == 2)
+    if (isScriptPhase(2))
     {
         setAIAgent(AGENT_SPELL);
         setRooted(true);

@@ -117,7 +117,7 @@ class ForgemasterGarfrostAI : public MoonScriptCreatureAI
     {
         CastSpells();
 
-        if (GetPhase() == 1 && _getHealthPercent() <= 66)
+        if (isScriptPhase(1) && _getHealthPercent() <= 66)
         {
             sendDBChatMessage(8765);
             getCreature()->CastSpell(getCreature(), SPELL_STOMP, false);
@@ -137,7 +137,7 @@ class ForgemasterGarfrostAI : public MoonScriptCreatureAI
             SetPhase(2);
         }
 
-        if (GetPhase() == 2 && _getHealthPercent() <= 33)
+        if (isScriptPhase(2) && _getHealthPercent() <= 33)
         {
             sendDBChatMessage(8766);
             getCreature()->CastSpell(getCreature(), SPELL_STOMP, false);
@@ -176,14 +176,14 @@ class ForgemasterGarfrostAI : public MoonScriptCreatureAI
             _resetTimer(mPermafrostTimer, 2000);
         }
 
-        if (_isTimerFinished(mChllingWaveTimer) && GetPhase() == 2)
+        if (_isTimerFinished(mChllingWaveTimer) && isScriptPhase(2))
         {
             // Cast Chilling Wave every 10 secs.
             CastSpell(mChllingWave);
             _resetTimer(mChllingWaveTimer, 10000);
         }
 
-        if (_isTimerFinished(mDeepFreezeTimer) && GetPhase() == 3)
+        if (_isTimerFinished(mDeepFreezeTimer) && isScriptPhase(3))
         {
             // Cast Deep Freeze every 10 secs.
             CastSpell(mDeepFreeze);
