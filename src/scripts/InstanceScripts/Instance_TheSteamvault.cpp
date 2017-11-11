@@ -1993,7 +1993,7 @@ class MekgineerSteamriggerAI : public CreatureAIScript
                 Unit* Gnome = NULL;
                 for (uint8 i = 0; i < 3; i++)
                 {
-                    Gnome = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(CN_STEAMRIGGER_MECHANIC, SpawnCoords[i].x, SpawnCoords[i].y, SpawnCoords[i].z, SpawnCoords[i].o, true, false, getCreature()->GetFaction(), 50);
+                    Gnome = spawnCreature(CN_STEAMRIGGER_MECHANIC, SpawnCoords[i].x, SpawnCoords[i].y, SpawnCoords[i].z, SpawnCoords[i].o, getCreature()->GetFaction());
                     if (Gnome)
                     {
                         Gnome->GetAIInterface()->SetUnitToFollow(getCreature());

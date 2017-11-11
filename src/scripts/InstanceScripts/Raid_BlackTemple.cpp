@@ -1327,10 +1327,10 @@ void SpellFunc_SpawnAqueousSpawn(SpellDesc* pThis, MoonScriptCreatureAI* pCreatu
     AqueousLordAI* pAqueousLordAI = (pCreatureAI != NULL) ? static_cast< AqueousLordAI* >(pCreatureAI) : NULL;
     if (pAqueousLordAI != NULL)
     {
-        MoonScriptCreatureAI* pSpawnAI = pAqueousLordAI->SpawnCreature(CN_AQUEOUS_SPAWN, pCreatureAI->getCreature()->GetPositionX(), pCreatureAI->getCreature()->GetPositionY(), pCreatureAI->getCreature()->GetPositionZ(), pCreatureAI->getCreature()->GetOrientation(), false);
-        if (pSpawnAI != NULL)
+        CreatureAIScript* pSpawnAI = pAqueousLordAI->spawnCreatureAndGetAIScript(CN_AQUEOUS_SPAWN, pCreatureAI->getCreature()->GetPositionX(), pCreatureAI->getCreature()->GetPositionY(), pCreatureAI->getCreature()->GetPositionZ(), pCreatureAI->getCreature()->GetOrientation());
+        if (pSpawnAI != nullptr)
         {
-            pSpawnAI->AggroRandomUnit(500);
+            static_cast<MoonScriptCreatureAI*>(pSpawnAI)->AggroRandomUnit(500);
             pSpawnAI->_setDespawnWhenInactive(true);
         }
     }
@@ -2380,8 +2380,9 @@ class EssenceOfSufferingAI : public MoonScriptCreatureAI
                 getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
                 _removeAllAuras();
                 _removeAuraOnPlayers(EOS_AURA_OF_SUFFERING);
-                MoonScriptCreatureAI* mRoS = GetNearestCreature(22856);
-                if (mRoS != NULL && mRoS->isAlive())
+
+                CreatureAIScript* mRoS = getNearestCreatureAI(22856);
+                if (mRoS != nullptr && mRoS->isAlive())
                     moveToUnit(mRoS->getCreature());
             }
         }
@@ -2436,8 +2437,9 @@ class EssenceOfDesireAI : public MoonScriptCreatureAI
                 getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
                 _removeAllAuras();
                 _removeAuraOnPlayers(EOD_AURA_OF_DESIRE);
-                MoonScriptCreatureAI* mRoS = GetNearestCreature(22856);
-                if (mRoS != NULL && mRoS->isAlive())
+
+                CreatureAIScript* mRoS = getNearestCreatureAI(22856);
+                if (mRoS != nullptr && mRoS->isAlive())
                     moveToUnit(mRoS->getCreature());
             }
         }
@@ -2553,7 +2555,7 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
                     {
 
                         getCreature()->Emote(EMOTE_STATE_SUBMERGED_NEW);
-                        mEoS = GetNearestCreature(CN_ESSENCEOFSUFFERING);
+                        mEoS = getNearestCreatureAI(CN_ESSENCEOFSUFFERING);
                         if (mEoS && mEoS->getCreature() && mEoS->isAlive())
                         {
                             Creature* pEoS = mEoS->getCreature();
@@ -2571,7 +2573,7 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
                     break;
                 case 3:
                     {
-                        mEoD = GetNearestCreature(CN_ESSENCEOFDESIRE);
+                        mEoD = getNearestCreatureAI(CN_ESSENCEOFDESIRE);
                         if (!mEoD || !mEoD->getCreature())
                         {
                             getCreature()->Emote(EMOTE_ONESHOT_SUBMERGE);
@@ -2582,7 +2584,7 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
                     break;
                 case 4:
                     {
-                        mEoD = GetNearestCreature(CN_ESSENCEOFDESIRE);
+                        mEoD = getNearestCreatureAI(CN_ESSENCEOFDESIRE);
                         if (mEoD && mEoD->getCreature() && mEoD->isAlive())
                         {
                             Creature* pEoD = mEoD->getCreature();
@@ -2604,7 +2606,7 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
                     break;
                 case 6:
                     {
-                        mEoA = GetNearestCreature(CN_ESSENCEOFANGER);
+                        mEoA = getNearestCreatureAI(CN_ESSENCEOFANGER);
                         if (!mEoA || !mEoA->getCreature())
                         {
                             CastSpellNowNoScheduling(mSummonAnger);
@@ -2616,7 +2618,7 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
                 case 7:
                     {
                         getCreature()->Emote(EMOTE_STATE_SUBMERGED_NEW);
-                        mEoA = GetNearestCreature(CN_ESSENCEOFANGER);
+                        mEoA = getNearestCreatureAI(CN_ESSENCEOFANGER);
                         if (mEoA && mEoA->getCreature() && !mEoA->getCreature()->isAlive())
                         {
                             despawn(100, 0);
@@ -2632,14 +2634,12 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
                         {
                             _removeTimer(mEnslavedSoulTimer);
                             SpawnedEnsalvedSoul = true;
-                            MoonScriptCreatureAI* pSpawnedEnsalvedSoul;
                             for (uint8 i = 0; i < 10; i++)
                             {
-                                pSpawnedEnsalvedSoul = SpawnCreature(CN_ENSLAVED_SOUL, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), false);
+                                CreatureAIScript* pSpawnedEnsalvedSoul = spawnCreatureAndGetAIScript(CN_ENSLAVED_SOUL, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation());
                                 if (pSpawnedEnsalvedSoul)
                                 {
-                                    pSpawnedEnsalvedSoul->AggroNearestPlayer();
-                                    pSpawnedEnsalvedSoul = NULL;
+                                    static_cast<MoonScriptCreatureAI*>(pSpawnedEnsalvedSoul)->AggroNearestPlayer();
                                 }
                             }
                             _removeTimer(mEnslavedSoulTimer);
@@ -2672,9 +2672,9 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
         int Phase;                  // do we have negative phase?
         int DeadSoulCount;          // negative count?
         uint32 mEnslavedSoulTimer;   // negative timer?
-        MoonScriptCreatureAI* mEoS;
-        MoonScriptCreatureAI* mEoD;
-        MoonScriptCreatureAI* mEoA;
+        CreatureAIScript* mEoS;
+        CreatureAIScript* mEoD;
+        CreatureAIScript* mEoA;
         SpellDesc* mSummonAnger;
         SpellDesc* mSummonDesire;
         SpellDesc* mSummonSuffering;
@@ -3094,7 +3094,7 @@ class VerasAI : public MoonScriptCreatureAI
             addEmoteForEvent(Event_OnDied, 8902);
             addEmoteForEvent(Event_OnCombatStart, 8903);
 
-            pGethois = static_cast< GathiosAI* >(GetNearestCreature(CN_GATHIOS_THE_SHATTERER));
+            pGethois = static_cast< GathiosAI* >(getNearestCreatureAI(CN_GATHIOS_THE_SHATTERER));
             if (pGethois != NULL)
                 pGethois->AddEncounterCreature(getCreature());
         }
@@ -3133,7 +3133,7 @@ class ZerevorAI : public MoonScriptCreatureAI
             addEmoteForEvent(Event_OnCombatStart, 8904);
             addEmoteForEvent(Event_OnTargetDied, 8905);
 
-            pGethois = static_cast< GathiosAI* >(GetNearestCreature(CN_GATHIOS_THE_SHATTERER));
+            pGethois = static_cast< GathiosAI* >(getNearestCreatureAI(CN_GATHIOS_THE_SHATTERER));
             if (pGethois != NULL)
                 pGethois->AddEncounterCreature(getCreature());
         }
@@ -3171,7 +3171,7 @@ class MalandeAI : public MoonScriptCreatureAI
             addEmoteForEvent(Event_OnDied, 8907);
             addEmoteForEvent(Event_OnTargetDied, 8908);
 
-            pGethois = static_cast< GathiosAI* >(GetNearestCreature(CN_GATHIOS_THE_SHATTERER));
+            pGethois = static_cast< GathiosAI* >(getNearestCreatureAI(CN_GATHIOS_THE_SHATTERER));
             if (pGethois != NULL)
                 pGethois->AddEncounterCreature(getCreature());
         }
@@ -4373,9 +4373,9 @@ class AkamaAI : public MoonScriptCreatureAI
                     getCreature()->Emote(EMOTE_ONESHOT_NO);
                     break;
                 case 6:        // summoning two spirits to help Akama with breaking doors
-                    mUdaloAI = SpawnCreature(23410, 751.884705f, 311.270050f, 312.121185f, 0.047113f);
-                    mOlumAI  = SpawnCreature(23411, 751.687744f, 297.408600f, 312.124817f, 0.054958f);
-                    if (mUdaloAI == NULL || mOlumAI == NULL)
+                    mUdaloAI = spawnCreatureAndGetAIScript(23410, 751.884705f, 311.270050f, 312.121185f, 0.047113f);
+                    mOlumAI  = spawnCreatureAndGetAIScript(23411, 751.687744f, 297.408600f, 312.124817f, 0.054958f);
+                    if (mUdaloAI == nullptr || mOlumAI == nullptr)
                     {
                         pGate->SetState(GO_STATE_OPEN);
                         break;
@@ -4803,9 +4803,9 @@ class AkamaAI : public MoonScriptCreatureAI
         SpellDesc* mDespawn;
 
         // AIs
-        MoonScriptCreatureAI* mIllidanAI;
-        MoonScriptCreatureAI* mUdaloAI;
-        MoonScriptCreatureAI* mOlumAI;
+        CreatureAIScript* mIllidanAI;
+        CreatureAIScript* mUdaloAI;
+        CreatureAIScript* mOlumAI;
 
         // Other variables
         int32 mScenePart;
@@ -5604,21 +5604,21 @@ class IllidanStormrageAI : public MoonScriptCreatureAI
                         }
                         break;
                     case 3:
-                        mFoA1 = SpawnCreature(22997, 672.039246f, 326.748322f, 354.206390f, 0.207343f);
-                        mFoA2 = SpawnCreature(22997, 673.008667f, 283.813660f, 354.267548f, 6.203853f);
-                        if (mFoA1 != NULL)
+                        mFoA1 = spawnCreatureAndGetAIScript(22997, 672.039246f, 326.748322f, 354.206390f, 0.207343f);
+                        mFoA2 = spawnCreatureAndGetAIScript(22997, 673.008667f, 283.813660f, 354.267548f, 6.203853f);
+                        if (mFoA1 != nullptr)
                         {
                             Unit* pBlade = getNearestCreature(UnitPos[0].x, UnitPos[0].y, UnitPos[0].z, CN_BLADE_OF_AZZINOTH);
-                            if (pBlade != NULL)
+                            if (pBlade != nullptr)
                             {
                                 pBlade->SetChannelSpellTargetGUID(mFoA1->getCreature()->GetGUID());
                                 pBlade->SetChannelSpellId(TEAR_OF_AZZINOTH_CHANNEL);
                             }
                         }
-                        if (mFoA2 != NULL)
+                        if (mFoA2 != nullptr)
                         {
                             Unit* pBlade = getNearestCreature(UnitPos[1].x, UnitPos[1].y, UnitPos[1].z, CN_BLADE_OF_AZZINOTH);
-                            if (pBlade != NULL)
+                            if (pBlade != nullptr)
                             {
                                 pBlade->SetChannelSpellTargetGUID(mFoA2->getCreature()->GetGUID());
                                 pBlade->SetChannelSpellId(TEAR_OF_AZZINOTH_CHANNEL);
@@ -5949,8 +5949,8 @@ class IllidanStormrageAI : public MoonScriptCreatureAI
             float newposx = getCreature()->GetPositionX() + xchange;
             float newposy = getCreature()->GetPositionY() + ychange;
 
-            MoonScriptCreatureAI* pMaievAI = SpawnCreature(CN_MAIEV, newposx, newposy, getCreature()->GetPositionZ() + 0.5f, 2.177125f);
-            if (pMaievAI == NULL)
+            CreatureAIScript* pMaievAI = spawnCreatureAndGetAIScript(CN_MAIEV, newposx, newposy, getCreature()->GetPositionZ() + 0.5f, 2.177125f);
+            if (pMaievAI == nullptr)
             {
                 UnstuckFromShadowPrison();
                 return false;
@@ -6200,9 +6200,9 @@ class IllidanStormrageAI : public MoonScriptCreatureAI
                     if (mShadowDemonsTimer <= 0)
                     {
                         CastSpellNowNoScheduling(mShadowDemons);
-                        SpawnCreature(CN_SHADOW_DEMON, getCreature()->GetPositionX() + RandomFloat(5), getCreature()->GetPositionY() + RandomFloat(5), getCreature()->GetPositionZ() + 2.0f, 0, true);
-                        SpawnCreature(CN_SHADOW_DEMON, getCreature()->GetPositionX() - RandomFloat(5), getCreature()->GetPositionY() + RandomFloat(5), getCreature()->GetPositionZ() + 2.0f, 0, true);
-                        SpawnCreature(CN_SHADOW_DEMON, getCreature()->GetPositionX() + RandomFloat(5), getCreature()->GetPositionY() - RandomFloat(5), getCreature()->GetPositionZ() + 2.0f, 0, true);
+                        spawnCreature(CN_SHADOW_DEMON, getCreature()->GetPositionX() + RandomFloat(5), getCreature()->GetPositionY() + RandomFloat(5), getCreature()->GetPositionZ() + 2.0f, 0);
+                        spawnCreature(CN_SHADOW_DEMON, getCreature()->GetPositionX() - RandomFloat(5), getCreature()->GetPositionY() + RandomFloat(5), getCreature()->GetPositionZ() + 2.0f, 0);
+                        spawnCreature(CN_SHADOW_DEMON, getCreature()->GetPositionX() + RandomFloat(5), getCreature()->GetPositionY() - RandomFloat(5), getCreature()->GetPositionZ() + 2.0f, 0);
 
                         mShadowDemonsTimer = 120000;
                         return;
@@ -6213,9 +6213,9 @@ class IllidanStormrageAI : public MoonScriptCreatureAI
                         for (std::set< Object* >::iterator itr = getCreature()->GetInRangePlayerSetBegin(); itr != getCreature()->GetInRangePlayerSetEnd(); ++itr)
                         {
                             Unit* pUnit = static_cast< Unit* >(*itr);
-                            MoonScriptCreatureAI* pAI = SpawnCreature(CN_FLAME_BURST, (*itr)->GetPositionX(), (*itr)->GetPositionY(), (*itr)->GetPositionZ(), 0, true);
+                            CreatureAIScript* pAI = spawnCreatureAndGetAIScript(CN_FLAME_BURST, (*itr)->GetPositionX(), (*itr)->GetPositionY(), (*itr)->GetPositionZ(), 0, getCreature()->GetFaction());
                             getCreature()->CastSpell(pUnit, ILLIDAN_FLAME_BURST2, true);
-                            if (pAI != NULL)
+                            if (pAI != nullptr)
                             {
                                 float Distance = getRangeToObject(pUnit);
                                 if (Distance == 0.0f)
@@ -6376,8 +6376,8 @@ class IllidanStormrageAI : public MoonScriptCreatureAI
         SpellDesc* mParasitic;
 
         // Phase 2 variables
-        MoonScriptCreatureAI* mFoA1;
-        MoonScriptCreatureAI* mFoA2;
+        CreatureAIScript* mFoA1;
+        CreatureAIScript* mFoA2;
         int32 mMovementTimer;
         int32 mFireWallTimer;
         int32 mLastFireWall;
@@ -6415,8 +6415,8 @@ void SpellFunc_Illidan_Parasitic(SpellDesc* pThis, MoonScriptCreatureAI* pCreatu
         if (pTarget != NULL)                        // not sure if target is really added here
         {
             // Workaround - we will spawn 2 Parasitic Shadowfiends on that player place
-            Illidan->SpawnCreature(CN_PARASITIC_SHADOWFIEND, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), pTarget->GetOrientation(), false);
-            Illidan->SpawnCreature(CN_PARASITIC_SHADOWFIEND, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), pTarget->GetOrientation(), false);
+            Illidan->spawnCreature(CN_PARASITIC_SHADOWFIEND, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), pTarget->GetOrientation());
+            Illidan->spawnCreature(CN_PARASITIC_SHADOWFIEND, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), pTarget->GetOrientation());
         }
     }
 }
@@ -6495,8 +6495,8 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
                 {
                     for (uint8 i = 0; i < 8; ++i)
                     {
-                        MoonScriptCreatureAI* pTriggerAI = SpawnCreature(CN_CAGE_TRAP_TRIGGER, getCreature()->GetPositionX() + PositionAdds[i][0], getCreature()->GetPositionY() + PositionAdds[i][1], getCreature()->GetPositionZ(), getCreature()->GetOrientation());
-                        if (pTriggerAI != NULL)
+                        CreatureAIScript* pTriggerAI = spawnCreatureAndGetAIScript(CN_CAGE_TRAP_TRIGGER, getCreature()->GetPositionX() + PositionAdds[i][0], getCreature()->GetPositionY() + PositionAdds[i][1], getCreature()->GetPositionZ(), getCreature()->GetOrientation());
+                        if (pTriggerAI != nullptr)
                         {
                             pTriggerAI->getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                             pTriggerAI->getCreature()->GetAIInterface()->m_canMove = false;
@@ -6521,8 +6521,8 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
 
                     for (size_t i = 0; i < mTriggerAIList.size() / 2; ++i)
                     {
-                        MoonScriptCreatureAI* pTriggerAI1 = mTriggerAIList[i];
-                        MoonScriptCreatureAI* pTriggerAI2 = mTriggerAIList[mTriggerAIList.size() - i - 1];
+                        CreatureAIScript* pTriggerAI1 = mTriggerAIList[i];
+                        CreatureAIScript* pTriggerAI2 = mTriggerAIList[mTriggerAIList.size() - i - 1];
                         pTriggerAI1->_setTargetToChannel(pTriggerAI2->getCreature(), 40708);//CAGED2);
                         pTriggerAI2->_setTargetToChannel(pTriggerAI1->getCreature(), 40709);//CAGED2);
                     }
@@ -6555,7 +6555,7 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
                     }
                     for (size_t i = 0; i < mTriggerAIList.size(); ++i)
                     {
-                        MoonScriptCreatureAI* pTriggerAI = mTriggerAIList[i];
+                        CreatureAIScript* pTriggerAI = mTriggerAIList[i];
                         pTriggerAI->_setTargetToChannel(NULL, 0);
                         pTriggerAI->despawn(0);
                     }
@@ -6576,7 +6576,7 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
 
                 for (size_t i = 0; i < mTriggerAIList.size(); ++i)
                 {
-                    MoonScriptCreatureAI* pTriggerAI = mTriggerAIList[i];
+                    CreatureAIScript* pTriggerAI = mTriggerAIList[i];
                     pTriggerAI->despawn(0);
                 }
 
@@ -6586,7 +6586,7 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
             }
         }
 
-        std::vector<MoonScriptCreatureAI*>    mTriggerAIList;
+        std::vector<CreatureAIScript*>    mTriggerAIList;
         bool                                mIsActivated;
         bool                                mHasTrapped;
 };
@@ -6748,7 +6748,7 @@ void SpellFunc_FlameOfAzzinothFlameBlast(SpellDesc* pThis, MoonScriptCreatureAI*
     if (FlameOfAzzinoth)
     {
         FlameOfAzzinoth->CastSpell(FlameOfAzzinoth->mFlameBlast);
-        FlameOfAzzinoth->SpawnCreature(CN_BLAZE_EFFECT, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), pTarget->GetOrientation());
+        FlameOfAzzinoth->spawnCreature(CN_BLAZE_EFFECT, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), pTarget->GetOrientation());
     }
 }
 

@@ -306,15 +306,14 @@ void MaexxnaAI::AIUpdate()
 {
     if (_isTimerFinished(mAddsSummonTimer))
     {
-        MoonScriptCreatureAI* Spiderling = NULL;
         for (uint8 i = 0; i < 8; ++i)
         {
-            Spiderling = SpawnCreature(CN_MAEXXNA_SPIDERLING, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), false);
-            if (Spiderling != NULL)
+            CreatureAIScript* Spiderling = spawnCreatureAndGetAIScript(CN_MAEXXNA_SPIDERLING, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation());
+            if (Spiderling != nullptr)
             {
                 Spiderling->getCreature()->m_noRespawn = true;
                 Spiderling->_setDespawnWhenInactive(true);
-                Spiderling->AggroRandomPlayer(1000);
+                static_cast<MoonScriptCreatureAI*>(Spiderling)->AggroRandomPlayer(1000);
             }
         }
 
@@ -367,7 +366,7 @@ void SpellFunc_MaexxnaWebWrap(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureA
         if (!Maexxna->mLeftWall)
             Id += 3;
 
-        WebWrapAI* WebWrap = static_cast< WebWrapAI* >(Maexxna->SpawnCreature(CN_WEB_WRAP, WebWrapPos[Id].x, WebWrapPos[Id].y, WebWrapPos[Id].z, pTarget->GetOrientation()));
+        WebWrapAI* WebWrap = static_cast< WebWrapAI* >(Maexxna->spawnCreatureAndGetAIScript(CN_WEB_WRAP, WebWrapPos[Id].x, WebWrapPos[Id].y, WebWrapPos[Id].z, pTarget->GetOrientation()));
         if (WebWrap == NULL)
             return;
 
@@ -574,15 +573,14 @@ void SpellFunc_NaxxramasFollowerCharge(SpellDesc* pThis, MoonScriptCreatureAI* p
 ////// Grand Widow Faerlina
 GrandWidowFaerlinaAI::GrandWidowFaerlinaAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
 {
-    MoonScriptCreatureAI* AddAI = NULL;
     for (uint8 i = 0; i < 4; ++i)
     {
-        AddAI = SpawnCreature(CN_NAXXRAMAS_WORSHIPPER, 3353.364502f + Worshippers[i].x, -3620.322998f, 260.996857f, 4.725017f);
-        if (AddAI != NULL)
+        CreatureAIScript* whorshipper = spawnCreatureAndGetAIScript(CN_NAXXRAMAS_WORSHIPPER, 3353.364502f + Worshippers[i].x, -3620.322998f, 260.996857f, 4.725017f);
+        if (whorshipper != nullptr)
         {
-            AddAI->getCreature()->m_noRespawn = true;
-            static_cast< NaxxramasWorshipperAI* >(AddAI)->mGrandWidow = this;
-            mWorshippers.insert(static_cast< NaxxramasWorshipperAI* >(AddAI));
+            whorshipper->getCreature()->m_noRespawn = true;
+            static_cast< NaxxramasWorshipperAI* >(whorshipper)->mGrandWidow = this;
+            mWorshippers.insert(static_cast< NaxxramasWorshipperAI* >(whorshipper));
         }
     }
 
@@ -590,12 +588,12 @@ GrandWidowFaerlinaAI::GrandWidowFaerlinaAI(Creature* pCreature) : MoonScriptCrea
     {
         for (uint8 i = 0; i < 2; ++i)
         {
-            AddAI = SpawnCreature(CN_NAXXRAMAS_FOLLOWER, 3353.364502f + Followers[i].x, -3620.322998f, 260.996857f, 4.725017f);
-            if (AddAI != NULL)
+            CreatureAIScript* follower = spawnCreatureAndGetAIScript(CN_NAXXRAMAS_FOLLOWER, 3353.364502f + Followers[i].x, -3620.322998f, 260.996857f, 4.725017f);
+            if (follower != nullptr)
             {
-                AddAI->getCreature()->m_noRespawn = true;
-                static_cast< NaxxramasFollowerAI* >(AddAI)->mGrandWidow = this;
-                mFollowers.insert(static_cast< NaxxramasFollowerAI* >(AddAI));
+                follower->getCreature()->m_noRespawn = true;
+                static_cast< NaxxramasFollowerAI* >(follower)->mGrandWidow = this;
+                mFollowers.insert(static_cast< NaxxramasFollowerAI* >(follower));
             }
         }
 
@@ -671,15 +669,14 @@ void GrandWidowFaerlinaAI::OnCombatStop(Unit* pTarget)
 
     if (isAlive())
     {
-        MoonScriptCreatureAI* AddAI = NULL;
         for (uint8 i = 0; i < 4; ++i)
         {
-            AddAI = SpawnCreature(CN_NAXXRAMAS_WORSHIPPER, 3353.364502f + Worshippers[i].x, -3620.322998f, 260.996857f, 4.725017f);
-            if (AddAI != NULL)
+            CreatureAIScript* whorshipper = spawnCreatureAndGetAIScript(CN_NAXXRAMAS_WORSHIPPER, 3353.364502f + Worshippers[i].x, -3620.322998f, 260.996857f, 4.725017f);
+            if (whorshipper != nullptr)
             {
-                AddAI->getCreature()->m_noRespawn = true;
-                static_cast< NaxxramasWorshipperAI* >(AddAI)->mGrandWidow = this;
-                mWorshippers.insert(static_cast< NaxxramasWorshipperAI* >(AddAI));
+                whorshipper->getCreature()->m_noRespawn = true;
+                static_cast< NaxxramasWorshipperAI* >(whorshipper)->mGrandWidow = this;
+                mWorshippers.insert(static_cast< NaxxramasWorshipperAI* >(whorshipper));
             }
         }
 
@@ -687,12 +684,12 @@ void GrandWidowFaerlinaAI::OnCombatStop(Unit* pTarget)
         {
             for (uint8 i = 0; i < 2; ++i)
             {
-                AddAI = SpawnCreature(CN_NAXXRAMAS_FOLLOWER, 3353.364502f + Followers[i].x, -3620.322998f, 260.996857f, 4.725017f);
-                if (AddAI != NULL)
+                CreatureAIScript* follower = spawnCreatureAndGetAIScript(CN_NAXXRAMAS_FOLLOWER, 3353.364502f + Followers[i].x, -3620.322998f, 260.996857f, 4.725017f);
+                if (follower != nullptr)
                 {
-                    AddAI->getCreature()->m_noRespawn = true;
-                    static_cast< NaxxramasFollowerAI* >(AddAI)->mGrandWidow = this;
-                    mFollowers.insert(static_cast< NaxxramasFollowerAI* >(AddAI));
+                    follower->getCreature()->m_noRespawn = true;
+                    static_cast< NaxxramasFollowerAI* >(follower)->mGrandWidow = this;
+                    mFollowers.insert(static_cast< NaxxramasFollowerAI* >(follower));
                 }
             }
         }
@@ -811,11 +808,10 @@ AnubRekhanAI::AnubRekhanAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature
 {
     if (_isHeroic())
     {
-        CryptGuardAI* CryptAI = NULL;
         for (uint8 i = 0; i < 2; ++i)
         {
-            CryptAI = static_cast< CryptGuardAI* >(SpawnCreature(CN_CRYPT_GUARD, CryptGuards[i].x, CryptGuards[i].y, CryptGuards[i].z, CryptGuards[i].o));
-            if (CryptAI != NULL)
+            CryptGuardAI* CryptAI = static_cast< CryptGuardAI* >(spawnCreatureAndGetAIScript(CN_CRYPT_GUARD, CryptGuards[i].x, CryptGuards[i].y, CryptGuards[i].z, CryptGuards[i].o));
+            if (CryptAI != nullptr)
             {
                 CryptAI->getCreature()->m_noRespawn = true;
                 CryptAI->mAnubRekhanAI = this;
@@ -889,11 +885,10 @@ void AnubRekhanAI::OnCombatStop(Unit* pTarget)
 
     if (_isHeroic() && isAlive())
     {
-        CryptGuardAI* CryptAI = NULL;
         for (uint8 i = 0; i < 2; ++i)
         {
-            CryptAI = static_cast< CryptGuardAI* >(SpawnCreature(CN_CRYPT_GUARD, CryptGuards[i].x, CryptGuards[i].y, CryptGuards[i].z, CryptGuards[i].o));
-            if (CryptAI != NULL)
+            CryptGuardAI* CryptAI = static_cast< CryptGuardAI* >(spawnCreatureAndGetAIScript(CN_CRYPT_GUARD, CryptGuards[i].x, CryptGuards[i].y, CryptGuards[i].z, CryptGuards[i].o));
+            if (CryptAI != nullptr)
             {
                 CryptAI->getCreature()->m_noRespawn = true;
                 CryptAI->mAnubRekhanAI = this;
@@ -910,8 +905,8 @@ void AnubRekhanAI::AIUpdate()
         if (mCryptSpawnTimer != INVALIDATE_TIMER && _isTimerFinished(mCryptSpawnTimer))
         {
             _removeTimer(mCryptSpawnTimer);
-            CryptGuardAI* CryptAI = static_cast< CryptGuardAI* >(SpawnCreature(CN_CRYPT_GUARD, CryptGuards[2].x, CryptGuards[2].y, CryptGuards[2].z, CryptGuards[2].o));
-            if (CryptAI != NULL)
+            CryptGuardAI* CryptAI = static_cast< CryptGuardAI* >(spawnCreatureAndGetAIScript(CN_CRYPT_GUARD, CryptGuards[2].x, CryptGuards[2].y, CryptGuards[2].z, CryptGuards[2].o));
+            if (CryptAI != nullptr)
             {
                 CryptAI->getCreature()->m_noRespawn = true;
                 CryptAI->mAnubRekhanAI = this;
@@ -922,8 +917,8 @@ void AnubRekhanAI::AIUpdate()
 
         if (_isTimerFinished(mLocustSwarmTimer))
         {
-            CryptGuardAI* CryptAI = static_cast< CryptGuardAI* >(SpawnCreature(CN_CRYPT_GUARD, CryptGuards[2].x, CryptGuards[2].y, CryptGuards[2].z, CryptGuards[2].o));
-            if (CryptAI != NULL)
+            CryptGuardAI* CryptAI = static_cast< CryptGuardAI* >(spawnCreatureAndGetAIScript(CN_CRYPT_GUARD, CryptGuards[2].x, CryptGuards[2].y, CryptGuards[2].z, CryptGuards[2].o));
+            if (CryptAI != nullptr)
             {
                 CryptAI->getCreature()->m_noRespawn = true;
                 CryptAI->mAnubRekhanAI = this;
@@ -1016,11 +1011,10 @@ void SpellFunc_AnubRekhanCorpseScarabsPlayer(SpellDesc* pThis, MoonScriptCreatur
             PlayerPtr = PlayerCorpses[Id].first;
             AnubRekhan->mUsedCorpseGuids.insert(static_cast<uint32>(PlayerPtr->GetGUID()));
 
-            CorpseScarabAI* ScarabAI = NULL;
             for (uint8 i = 0; i < 5; ++i)
             {
-                ScarabAI = static_cast< CorpseScarabAI* >(AnubRekhan->SpawnCreature(CN_CORPSE_SCARAB, PlayerCorpses[Id].second.x, PlayerCorpses[Id].second.y, PlayerCorpses[Id].second.z, PlayerCorpses[Id].second.o));
-                if (ScarabAI != NULL)
+                CorpseScarabAI* ScarabAI = static_cast< CorpseScarabAI* >(AnubRekhan->spawnCreatureAndGetAIScript(CN_CORPSE_SCARAB, PlayerCorpses[Id].second.x, PlayerCorpses[Id].second.y, PlayerCorpses[Id].second.z, PlayerCorpses[Id].second.o));
+                if (ScarabAI != nullptr)
                 {
                     ScarabAI->getCreature()->m_noRespawn = true;
                     ScarabAI->mAnubRekhanAI = AnubRekhan;
@@ -1068,11 +1062,10 @@ void SpellFunc_AnubRekhanCorpseScarabsCryptGuard(SpellDesc* pThis, MoonScriptCre
             Z = CreaturePtr->GetPositionZ();
             O = CreaturePtr->GetOrientation();
 
-            CorpseScarabAI* ScarabAI = NULL;
             for (uint8 i = 0; i < 10; ++i)
             {
-                ScarabAI = static_cast< CorpseScarabAI* >(AnubRekhan->SpawnCreature(CN_CORPSE_SCARAB, X, Y, Z, O));
-                if (ScarabAI != NULL)
+                CorpseScarabAI* ScarabAI = static_cast< CorpseScarabAI* >(AnubRekhan->spawnCreatureAndGetAIScript(CN_CORPSE_SCARAB, X, Y, Z, O));
+                if (ScarabAI != nullptr)
                 {
                     ScarabAI->getCreature()->m_noRespawn = true;
                     ScarabAI->mAnubRekhanAI = AnubRekhan;
@@ -1375,7 +1368,6 @@ void NothThePlaguebringerAI::AIUpdate()
             }
 
             uint32 Id = 0;
-            PlaguedWarriorAI* WarriorAI = NULL;
             for (uint8 i = 0; i < SkelLimit; ++i)
             {
                 Id = RandomUInt(0, (SkelLimit - 1));    // SkellPosPhase1 is 0-indexed
@@ -1391,8 +1383,8 @@ void NothThePlaguebringerAI::AIUpdate()
                     }
                 }
 
-                WarriorAI = static_cast< PlaguedWarriorAI* >(SpawnCreature(CN_PLAGUED_WARRIOR, SkelPosPhase1[Id].x, SkelPosPhase1[Id].y, SkelPosPhase1[Id].z, SkelPosPhase1[Id].o));
-                if (WarriorAI != NULL)
+                PlaguedWarriorAI* WarriorAI = static_cast< PlaguedWarriorAI* >(spawnCreatureAndGetAIScript(CN_PLAGUED_WARRIOR, SkelPosPhase1[Id].x, SkelPosPhase1[Id].y, SkelPosPhase1[Id].z, SkelPosPhase1[Id].o));
+                if (WarriorAI != nullptr)
                 {
                     WarriorAI->getCreature()->m_noRespawn = true;
                     WarriorAI->AggroNearestPlayer(200);
@@ -1438,7 +1430,6 @@ void NothThePlaguebringerAI::AIUpdate()
                 PosTaken[i] = false;
             }
 
-            PlaguedChampionAI* ChampionAI = NULL;
             for (uint8 i = 0; i < Champions; ++i)
             {
                 Id = RandomUInt(1, 3);
@@ -1454,8 +1445,8 @@ void NothThePlaguebringerAI::AIUpdate()
                     }
                 }
 
-                ChampionAI = static_cast< PlaguedChampionAI* >(SpawnCreature(CN_PLAGUED_CHAMPION, SkelPosPhase2[Id].x, SkelPosPhase2[Id].y, SkelPosPhase2[Id].z, SkelPosPhase2[Id].o));
-                if (ChampionAI != NULL)
+                PlaguedChampionAI* ChampionAI = static_cast< PlaguedChampionAI* >(spawnCreatureAndGetAIScript(CN_PLAGUED_CHAMPION, SkelPosPhase2[Id].x, SkelPosPhase2[Id].y, SkelPosPhase2[Id].z, SkelPosPhase2[Id].o));
+                if (ChampionAI != nullptr)
                 {
                     ChampionAI->getCreature()->m_noRespawn = true;
                     ChampionAI->AggroNearestPlayer(200);
@@ -1466,7 +1457,6 @@ void NothThePlaguebringerAI::AIUpdate()
                 PosTaken[Id] = true;
             }
 
-            PlaguedGuardianAI* GuardianAI = NULL;
             for (uint8 i = 0; i < SpawnLimit - Champions; ++i)
             {
                 Id = RandomUInt(1, 3);
@@ -1482,8 +1472,8 @@ void NothThePlaguebringerAI::AIUpdate()
                     }
                 }
 
-                GuardianAI = static_cast< PlaguedGuardianAI* >(SpawnCreature(CN_PLAGUED_GUARDIAN, SkelPosPhase2[Id].x, SkelPosPhase2[Id].y, SkelPosPhase2[Id].z, SkelPosPhase2[Id].o));
-                if (GuardianAI != NULL)
+                PlaguedGuardianAI* GuardianAI = static_cast< PlaguedGuardianAI* >(spawnCreatureAndGetAIScript(CN_PLAGUED_GUARDIAN, SkelPosPhase2[Id].x, SkelPosPhase2[Id].y, SkelPosPhase2[Id].z, SkelPosPhase2[Id].o));
+                if (GuardianAI != nullptr)
                 {
                     GuardianAI->getCreature()->m_noRespawn = true;
                     GuardianAI->AggroNearestPlayer(200);
@@ -1960,7 +1950,6 @@ void LoathebAI::AIUpdate()
         }
 
         uint32 Id = 0;
-        SporeAI* Spore = NULL;
         for (uint8 i = 0; i < 3; ++i)
         {
             Id = RandomUInt(3);
@@ -1976,8 +1965,8 @@ void LoathebAI::AIUpdate()
                 }
             }
 
-            Spore = static_cast< SporeAI* >(SpawnCreature(CN_SPORE, Spores[Id].x, Spores[Id].y, Spores[Id].z, Spores[Id].o, true));
-            if (Spore != NULL)
+            SporeAI* Spore = static_cast< SporeAI* >(spawnCreatureAndGetAIScript(CN_SPORE, Spores[Id].x, Spores[Id].y, Spores[Id].z, Spores[Id].o));
+            if (Spore != nullptr)
             {
                 Spore->getCreature()->m_noRespawn = true;
                 Spore->AggroRandomPlayer(200);
@@ -2157,12 +2146,12 @@ ShadeOfNaxxramasAI::ShadeOfNaxxramasAI(Creature* pCreature) : MoonScriptCreature
 
 void ShadeOfNaxxramasAI::OnDied(Unit* pKiller)
 {
-    MoonScriptCreatureAI* Ghost = SpawnCreature(CN_GHOST_OF_NAXXRAMAS, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true);
-    if (Ghost != NULL)
+    CreatureAIScript* Ghost = spawnCreatureAndGetAIScript(CN_GHOST_OF_NAXXRAMAS, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->GetFaction());
+    if (Ghost != nullptr)
     {
         Ghost->getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
         Ghost->_setDespawnWhenInactive(true);
-        Ghost->AggroNearestPlayer(200);
+        static_cast<MoonScriptCreatureAI*>(Ghost)->AggroNearestPlayer(200);
     }
 
     for (std::set< PortalOfShadowsAI* >::iterator Iter = mPortals.begin(); Iter != mPortals.end(); ++Iter)
@@ -2209,7 +2198,7 @@ PortalOfShadowsAI::PortalOfShadowsAI(Creature* pCreature) : MoonScriptCreatureAI
                 mShadeAI->mPortals.insert(this);
         }
     }
-};
+}
 
 void PortalOfShadowsAI::OnCombatStart(Unit* pTarget)
 {
@@ -2228,16 +2217,16 @@ void PortalOfShadowsAI::OnCombatStop(Unit* pTarget)
 
 void PortalOfShadowsAI::AIUpdate()
 {
-    if (mShadeAI != NULL && mShadeAI->getCreature()->GetAIInterface()->getNextTarget() != NULL)
+    if (mShadeAI != nullptr && mShadeAI->getCreature()->GetAIInterface()->getNextTarget() != nullptr)
     {
         if (_isTimerFinished(mSpawnTimer))
         {
-            MoonScriptCreatureAI* Ghost = SpawnCreature(CN_GHOST_OF_NAXXRAMAS, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true);
-            if (Ghost != NULL)
+            CreatureAIScript* Ghost = spawnCreatureAndGetAIScript(CN_GHOST_OF_NAXXRAMAS, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->GetFaction());
+            if (Ghost != nullptr)
             {
                 Ghost->getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
                 Ghost->_setDespawnWhenInactive(true);
-                Ghost->AggroNearestPlayer(200);
+                static_cast<MoonScriptCreatureAI*>(Ghost)->AggroNearestPlayer(200);
             }
 
             _resetTimer(mSpawnTimer, 15000);
@@ -2258,13 +2247,13 @@ void PortalOfShadowsAI::AIUpdate()
 
 void PortalOfShadowsAI::Destroy()
 {
-    if (mShadeAI != NULL)
+    if (mShadeAI != nullptr)
     {
         std::set< PortalOfShadowsAI* >::iterator Iter = mShadeAI->mPortals.find(this);
         if (Iter != mShadeAI->mPortals.end())
             mShadeAI->mPortals.erase(Iter);
 
-        mShadeAI = NULL;
+        mShadeAI = nullptr;
     }
 
     delete this;
@@ -2383,7 +2372,7 @@ DeathchargerSteedAI::DeathchargerSteedAI(Creature* pCreature) : MoonScriptCreatu
     // I don't like this method anyway.
     if (getCreature()->GetSummonedByGUID() != 0 && getCreature()->GetMapMgr() != NULL && getCreature()->GetMapMgr()->GetInterface() != NULL)
     {
-        mDeathKnightAI = static_cast< DeathKnightCavalierAI* >(GetNearestCreature(CN_DEATH_KNIGHT_CAVALIER));
+        mDeathKnightAI = static_cast< DeathKnightCavalierAI* >(getNearestCreatureAI(CN_DEATH_KNIGHT_CAVALIER));
         if (mDeathKnightAI != NULL && mDeathKnightAI->mChargerAI == NULL)
             mDeathKnightAI->mChargerAI = this;
     }

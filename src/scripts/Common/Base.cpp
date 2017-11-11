@@ -154,24 +154,6 @@ void MoonScriptCreatureAI::AggroRandomPlayer(uint32 pInitialThreat)
     }
 }
 
-MoonScriptCreatureAI* MoonScriptCreatureAI::GetNearestCreature(uint32 pCreatureId)
-{
-    Creature* NearestCreature = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), pCreatureId);
-    return (NearestCreature) ? static_cast< MoonScriptCreatureAI* >(NearestCreature->GetScript()) : nullptr;
-}
-
-MoonScriptCreatureAI* MoonScriptCreatureAI::SpawnCreature(uint32 pCreatureId, float pX, float pY, float pZ, float pO, bool pForceSameFaction, uint32 pPhase)
-{
-    Creature* NewCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(pCreatureId, pX, pY, pZ, pO, true, false, 0, 0, pPhase);
-    MoonScriptCreatureAI* CreatureScriptAI = (NewCreature) ? static_cast< MoonScriptCreatureAI* >(NewCreature->GetScript()) : nullptr;
-    if (pForceSameFaction && NewCreature)
-    {
-        uint32 FactionTemplate = getCreature()->GetFaction();
-        NewCreature->SetFaction(FactionTemplate);
-    }
-    return CreatureScriptAI;
-}
-
 SpellDesc* MoonScriptCreatureAI::AddSpell(uint32 pSpellId, TargetType pTargetType, float pChance, float pCastTime, int32 pCooldown, float pMinRange, float pMaxRange,
                                           bool pStrictRange, const char* pText, uint8 pTextType, uint32 pSoundId, const char* pAnnouncement)
 {

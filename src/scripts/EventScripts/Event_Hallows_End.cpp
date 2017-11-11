@@ -197,7 +197,7 @@ class HeadlessHorsemanWispInvisAI : public MoonScriptCreatureAI
             mHeadlessHorseman = getNearestCreature(CN_SHADE_OF_THE_HORSEMAN);
             if (mHeadlessHorseman == nullptr)
             {
-                SpawnCreature(CN_SHADE_OF_THE_HORSEMAN, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation());
+                spawnCreature(CN_SHADE_OF_THE_HORSEMAN, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation());
                 SetAIUpdateFreq(4 * 60 * 1000);
             }
         }

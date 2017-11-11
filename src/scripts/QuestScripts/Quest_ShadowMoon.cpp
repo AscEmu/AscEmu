@@ -93,8 +93,8 @@ public:
             {
                 case 0:
                 {
-                    MoonScriptCreatureAI* pRazuunAI = SpawnCreature(21502, -3300.47f, 2927.22f, 173.870f, 2.42924f, false);    // Spawn Razuun
-                    if (pRazuunAI != NULL)
+                    CreatureAIScript* pRazuunAI = spawnCreatureAndGetAIScript(21502, -3300.47f, 2927.22f, 173.870f, 2.42924f);    // Spawn Razuun
+                    if (pRazuunAI != nullptr)
                     {
                         pRazuunAI->getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
                         pRazuunAI->setCanEnterCombat(false);

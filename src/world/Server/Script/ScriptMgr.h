@@ -354,10 +354,15 @@ class SERVER_DECL CreatureAIScript
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // creature
+
+        CreatureAIScript* getNearestCreatureAI(uint32_t entry);
+
         Creature* getNearestCreature(uint32_t entry);
         Creature* getNearestCreature(float posX, float posY, float posZ, uint32_t entry);
 
         float getRangeToObject(Object* object);
+
+        CreatureAIScript* spawnCreatureAndGetAIScript(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId = 0);
 
         Creature* spawnCreature(uint32_t entry, LocationVector pos, uint32_t factionId = 0);
         Creature* spawnCreature(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId = 0);

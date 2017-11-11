@@ -338,11 +338,10 @@ class VanCleefAI : public MoonScriptCreatureAI
 
             for (uint8 x = 0; x < 2; x++)
             {
-                MoonScriptCreatureAI* Guard = SpawnCreature(636, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), false);
-                if (Guard != NULL)
+                Creature* Guard = spawnCreature(636, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation());
+                if (Guard != nullptr)
                 {
-                    Guard->_setDespawnWhenInactive(true);
-                    Guard->getCreature()->m_noRespawn = true;
+                    Guard->m_noRespawn = true;
                 }
             }
 

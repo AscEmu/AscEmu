@@ -249,9 +249,6 @@ class MoonScriptCreatureAI : public CreatureAIScript
         void AggroNearestPlayer(uint32 pInitialThreat = 1);
         void AggroRandomPlayer(uint32 pInitialThreat = 1);
 
-        MoonScriptCreatureAI* GetNearestCreature(uint32 pCreatureId = 0);
-        MoonScriptCreatureAI* SpawnCreature(uint32 pCreatureId, float pX, float pY, float pZ, float pO = 0, bool pForceSameFaction = false, uint32 pPhase = 1);
-
         //Spells
         SpellDesc* AddSpell(uint32 pSpellId, TargetType pTargetType, float pChance, float pCastTime, int32 pCooldown, float pMinRange = 0, float pMaxRange = 0, bool pStrictRange = false, const char* pText = NULL, uint8 pTextType = CHAT_MSG_MONSTER_YELL, uint32 pSoundId = 0, const char* pAnnouncement = NULL);
         SpellDesc* AddSpellFunc(SpellFunc pFnc, TargetType pTargetType, float pChance, float pCastTime, int32 pCooldown, float pMinRange = 0, float pMaxRange = 0, bool pStrictRange = false, const char* pText = NULL, uint8 pTextType = CHAT_MSG_MONSTER_YELL, uint32 pSoundId = 0, const char* pAnnouncement = NULL);

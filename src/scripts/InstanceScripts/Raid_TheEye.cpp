@@ -1772,9 +1772,9 @@ class HighAstromancerSolarianAI : public MoonScriptCreatureAI
                 {
                     for (uint8 SpawnIter = 0; SpawnIter < 4; SpawnIter++)
                     {
-                        SpawnCreature(CN_SOLARIUMAGENT, mSpawnPositions[0][0], mSpawnPositions[0][1], 17, 0, true);
-                        SpawnCreature(CN_SOLARIUMAGENT, mSpawnPositions[1][0], mSpawnPositions[1][1], 17, 0, true);
-                        SpawnCreature(CN_SOLARIUMAGENT, mSpawnPositions[2][0], mSpawnPositions[2][1], 17, 0, true);
+                        spawnCreature(CN_SOLARIUMAGENT, mSpawnPositions[0][0], mSpawnPositions[0][1], 17, 0, getCreature()->GetFaction());
+                        spawnCreature(CN_SOLARIUMAGENT, mSpawnPositions[1][0], mSpawnPositions[1][1], 17, 0, getCreature()->GetFaction());
+                        spawnCreature(CN_SOLARIUMAGENT, mSpawnPositions[2][0], mSpawnPositions[2][1], 17, 0, getCreature()->GetFaction());
                     }
                     _removeTimer(mAgentsTimer);
                 }
@@ -1817,13 +1817,13 @@ void SpellFunc_Solarian_Disappear(SpellDesc* pThis, MoonScriptCreatureAI* pCreat
         //Spawn spot lights, and despawn them after 26sec X(400,460) Y(-340,-400)
         Solarian->mSpawnPositions[0][0] = 400 + RandomFloat(60);
         Solarian->mSpawnPositions[0][1] = -400 + RandomFloat(60);
-        Solarian->SpawnCreature(CN_SOLARIUM_SPOT_LIGHT, Solarian->mSpawnPositions[0][0], Solarian->mSpawnPositions[0][1], 17)->despawn(26000);
+        Solarian->spawnCreatureAndGetAIScript(CN_SOLARIUM_SPOT_LIGHT, Solarian->mSpawnPositions[0][0], Solarian->mSpawnPositions[0][1], 17, 0)->despawn(26000);
         Solarian->mSpawnPositions[1][0] = 400 + RandomFloat(60);
         Solarian->mSpawnPositions[1][1] = -400 + RandomFloat(60);
-        Solarian->SpawnCreature(CN_SOLARIUM_SPOT_LIGHT, Solarian->mSpawnPositions[1][0], Solarian->mSpawnPositions[1][1], 17)->despawn(26000);
+        Solarian->spawnCreatureAndGetAIScript(CN_SOLARIUM_SPOT_LIGHT, Solarian->mSpawnPositions[1][0], Solarian->mSpawnPositions[1][1], 17, 0)->despawn(26000);
         Solarian->mSpawnPositions[2][0] = 400 + RandomFloat(60);
         Solarian->mSpawnPositions[2][1] = -400 + RandomFloat(60);
-        Solarian->SpawnCreature(CN_SOLARIUM_SPOT_LIGHT, Solarian->mSpawnPositions[2][0], Solarian->mSpawnPositions[2][1], 17)->despawn(26000);
+        Solarian->spawnCreatureAndGetAIScript(CN_SOLARIUM_SPOT_LIGHT, Solarian->mSpawnPositions[2][0], Solarian->mSpawnPositions[2][1], 17, 0)->despawn(26000);
     }
 }
 
@@ -1833,8 +1833,8 @@ void SpellFunc_Solarian_Reappear(SpellDesc* pThis, MoonScriptCreatureAI* pCreatu
     if (Solarian)
     {
         //Spawn two priest friend to help Solarian
-        Solarian->SpawnCreature(CN_SOLARIUMPRIEST, Solarian->mSpawnPositions[0][0], Solarian->mSpawnPositions[0][1], 17);
-        Solarian->SpawnCreature(CN_SOLARIUMPRIEST, Solarian->mSpawnPositions[1][0], Solarian->mSpawnPositions[1][1], 17);
+        Solarian->spawnCreatureAndGetAIScript(CN_SOLARIUMPRIEST, Solarian->mSpawnPositions[0][0], Solarian->mSpawnPositions[0][1], 17, 0);
+        Solarian->spawnCreatureAndGetAIScript(CN_SOLARIUMPRIEST, Solarian->mSpawnPositions[1][0], Solarian->mSpawnPositions[1][1], 17, 0);
         //Solarian->MoveTo(Solarian->mSpawnPositions[2][0], Solarian->mSpawnPositions[2][1], 17);    //Doesn't work quite right yet
 
         SpellFunc_Reappear(pThis, pCreatureAI, pTarget, pType);
@@ -2827,7 +2827,7 @@ class PhoenixAI : public MoonScriptCreatureAI
         {
             ParentClass::OnDied(mKiller);
             _applyAura(PHOENIX_REBIRTH);
-            SpawnCreature(21364, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), false);
+            spawnCreature(21364, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation());
             despawn(500);
         }
 
@@ -2843,7 +2843,7 @@ class PhoenixAI : public MoonScriptCreatureAI
             }
             else if (CurrentHP <= PercMaxHP)
             {
-                SpawnCreature(21364, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), false);
+                spawnCreature(21364, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation());
                 despawn(500);
                 return;
             }
@@ -2877,7 +2877,7 @@ class PhoenixEggAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            SpawnCreature(CN_PHOENIX, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), false);
+            spawnCreature(CN_PHOENIX, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation());
             despawn(0);
         }
 };
@@ -3067,7 +3067,7 @@ class KaelThasAI : public MoonScriptCreatureAI
                     pCreature->Despawn(0, 0);
                 }
 
-                SpawnCreature(Advisors[i].addition, Advisors[i].x, Advisors[i].y, Advisors[i].z, Advisors[i].o);
+                spawnCreature(Advisors[i].addition, Advisors[i].x, Advisors[i].y, Advisors[i].z, Advisors[i].o);
             }
 
         }
@@ -3110,7 +3110,7 @@ class KaelThasAI : public MoonScriptCreatureAI
                         pCreature->Despawn(0, 0);
                     }
 
-                    SpawnCreature(Advisors[i].addition, Advisors[i].x, Advisors[i].y, Advisors[i].z, Advisors[i].o);
+                    spawnCreature(Advisors[i].addition, Advisors[i].x, Advisors[i].y, Advisors[i].z, Advisors[i].o);
                 }
             }
 
@@ -3228,7 +3228,7 @@ class KaelThasAI : public MoonScriptCreatureAI
                 {
                     for (uint8 i = 0; i < 7; ++i)
                     {
-                        SpawnCreature(KaelthasWeapons[i].addition, KaelthasWeapons[i].x, KaelthasWeapons[i].y, KaelthasWeapons[i].z, KaelthasWeapons[i].o);
+                        spawnCreature(KaelthasWeapons[i].addition, KaelthasWeapons[i].x, KaelthasWeapons[i].y, KaelthasWeapons[i].z, KaelthasWeapons[i].o);
                     }
 
                     SetAIUpdateFreq(1000);
@@ -3248,18 +3248,19 @@ class KaelThasAI : public MoonScriptCreatureAI
                             pCreature->Despawn(0, 0);
                         }
 
-                        MoonScriptCreatureAI* pAI = SpawnCreature(mAdvCoords[i].addition, mAdvCoords[i].x, mAdvCoords[i].y, mAdvCoords[i].z, false);
-                        if (pAI != NULL)
+                        CreatureAIScript* pAI = spawnCreatureAndGetAIScript(mAdvCoords[i].addition, mAdvCoords[i].x, mAdvCoords[i].y, mAdvCoords[i].z, 0);
+                        if (pAI != nullptr)
                         {
                             pCreature = pAI->getCreature();
                         }
-                        else continue;
+                        else
+                            continue;
 
-                        if (pCreature != NULL)
+                        if (pCreature != nullptr)
                         {
                             pCreature->GetAIInterface()->SetAllowedToEnterCombat(true);
                             pCreature->setUInt64Value(UNIT_FIELD_FLAGS, 0);
-                            if (pCreature->GetScript() != NULL)
+                            if (pCreature->GetScript() != nullptr)
                             {
                                 static_cast< MoonScriptCreatureAI* >(pCreature->GetScript())->AggroNearestUnit(200);
                             }

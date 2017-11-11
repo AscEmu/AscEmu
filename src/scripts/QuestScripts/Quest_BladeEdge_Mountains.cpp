@@ -340,13 +340,13 @@ public:
         NdGo = nullptr;
 
         plr = getCreature()->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ());
-        Ogre = GetNearestCreature(CN_BLADESPIRE_OGRE_1);
+        Ogre = getNearestCreatureAI(CN_BLADESPIRE_OGRE_1);
         if (Ogre == nullptr)
         {
-            Ogre = GetNearestCreature(CN_BLADESPIRE_OGRE_2);
+            Ogre = getNearestCreatureAI(CN_BLADESPIRE_OGRE_2);
             if (Ogre == nullptr)
             {
-                Ogre = GetNearestCreature(CN_BLADESPIRE_OGRE_3);
+                Ogre = getNearestCreatureAI(CN_BLADESPIRE_OGRE_3);
                 if (Ogre == nullptr)
                 {
                     return;
@@ -388,7 +388,7 @@ public:
 
     Player* plr;
     GameObject* NdGo;
-    MoonScriptCreatureAI* Ogre;
+    CreatureAIScript* Ogre;
 };
 
 

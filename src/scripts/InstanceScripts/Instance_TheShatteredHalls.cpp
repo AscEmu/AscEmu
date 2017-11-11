@@ -1972,7 +1972,8 @@ class WarbringerOmroggAI : public MoonScriptCreatureAI
             AddSpellFunc(&SpellFunc_Warbringer_BurningMaul, Target_Self, 100, 0, 30);
             mBlastWave = AddSpell(SP_WARBRINGER_OMROGG_BLAST_WAVE, Target_Self, 0, 1, 0);
             mBlastWaveTimer = mSpeechTimer = mSpeechId = mAggroShiftTimer = INVALIDATE_TIMER;
-            mRightHead = mLeftHead = NULL;
+            mRightHead = nullptr;
+            mLeftHead = nullptr;
         }
 
         void OnCombatStart(Unit* pTarget)
@@ -1980,19 +1981,15 @@ class WarbringerOmroggAI : public MoonScriptCreatureAI
             ParentClass::OnCombatStart(pTarget);
             mAggroShiftTimer = _addTimer(20000 + RandomUInt(10) * 1000);
             mBlastWaveTimer = mSpeechTimer = mSpeechId = INVALIDATE_TIMER;
-            mLeftHead = SpawnCreature(19523, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), false);
-            mRightHead = SpawnCreature(19524, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), false);
-            if (mLeftHead != NULL)
-            {
-                mLeftHead->getCreature()->GetAIInterface()->SetUnitToFollow(getCreature());
-            }
-            if (mRightHead != NULL)
-            {
-                mRightHead->getCreature()->GetAIInterface()->SetUnitToFollow(getCreature());
-            }
 
-            if (mLeftHead == NULL || mRightHead == NULL)
+            mLeftHead = spawnCreatureAndGetAIScript(19523, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation());
+            mRightHead = spawnCreatureAndGetAIScript(19524, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation());
+            
+            if (mLeftHead == nullptr || mRightHead == nullptr)
                 return;
+            
+            mLeftHead->getCreature()->GetAIInterface()->SetUnitToFollow(getCreature());
+            mRightHead->getCreature()->GetAIInterface()->SetUnitToFollow(getCreature());
 
             switch (RandomUInt(2))
             {
@@ -2019,22 +2016,23 @@ class WarbringerOmroggAI : public MoonScriptCreatureAI
             ParentClass::OnCombatStop(pTarget);
             if (isAlive())
             {
-                if (mLeftHead != NULL)
+                if (mLeftHead != nullptr)
                 {
                     mLeftHead->despawn(1000);
-                    mLeftHead = NULL;
+                    mLeftHead = nullptr;
                 }
-                if (mRightHead != NULL)
+
+                if (mRightHead != nullptr)
                 {
                     mRightHead->despawn(1000);
-                    mRightHead = NULL;
+                    mRightHead = nullptr;
                 }
             }
         }
 
         void OnTargetDied(Unit* pTarget)
         {
-            if (mLeftHead == NULL || mRightHead == NULL || mSpeechTimer != INVALIDATE_TIMER)
+            if (mLeftHead == nullptr || mRightHead == nullptr || mSpeechTimer != INVALIDATE_TIMER)
                 return;
 
             switch (RandomUInt(1))
@@ -2053,15 +2051,15 @@ class WarbringerOmroggAI : public MoonScriptCreatureAI
         void OnDied(Unit* pKiller)
         {
             ParentClass::OnDied(pKiller);
-            if (mLeftHead == NULL || mRightHead == NULL)
+            if (mLeftHead == nullptr || mRightHead == nullptr)
                 return;
 
             sendChatMessage(CHAT_MSG_MONSTER_YELL, 10311, "This all... your fault!");
             mLeftHead->despawn(1000);
-            mLeftHead = NULL;
+            mLeftHead = nullptr;
             mRightHead->RegisterAIUpdateEvent(3000);
             mRightHead->despawn(4000);
-            mRightHead = NULL;
+            mRightHead = nullptr;
         }
 
         void AIUpdate()
@@ -2072,7 +2070,7 @@ class WarbringerOmroggAI : public MoonScriptCreatureAI
             {
                 bool ResetSpeech = true;
                 _removeTimer(mSpeechTimer);
-                if (mLeftHead != NULL && mRightHead != NULL)
+                if (mLeftHead != nullptr && mRightHead != nullptr)
                 {
                     switch (mSpeechId)
                     {
@@ -2128,13 +2126,13 @@ class WarbringerOmroggAI : public MoonScriptCreatureAI
         void ShiftAggro()
         {
             Unit* pTarget = GetBestPlayerTarget(TargetFilter_NotCurrent);
-            if (pTarget != NULL)
+            if (pTarget != nullptr)
             {
                 _clearHateList();
                 getCreature()->GetAIInterface()->setNextTarget(pTarget);
                 getCreature()->GetAIInterface()->modThreatByPtr(pTarget, 1000);
 
-                if (mLeftHead == NULL || mRightHead == NULL || mSpeechTimer != INVALIDATE_TIMER)
+                if (mLeftHead == nullptr || mRightHead == nullptr || mSpeechTimer != INVALIDATE_TIMER)
                     return;
 
                 switch (RandomUInt(6))
@@ -2172,8 +2170,8 @@ class WarbringerOmroggAI : public MoonScriptCreatureAI
             }
         }
 
-        MoonScriptCreatureAI* mLeftHead;
-        MoonScriptCreatureAI* mRightHead;
+        CreatureAIScript* mLeftHead;
+        CreatureAIScript* mRightHead;
         int32 mAggroShiftTimer;
         uint32 mBlastWaveTimer;
         uint32 mSpeechTimer;

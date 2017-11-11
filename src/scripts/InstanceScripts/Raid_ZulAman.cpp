@@ -141,19 +141,18 @@ class AkilzonAI : public MoonScriptCreatureAI
 
             if (_isTimerFinished(mSummonTime))
             {
-                MoonScriptCreatureAI* Eagle = NULL;
                 // Spawn 3 Soaring Eagles
                 for (uint8 x = 0; x < 3; x++)
                 {
-                    Eagle = SpawnCreature(CN_SOARING_EAGLE, (getCreature()->GetPositionX() + RandomFloat(12) - 10), (getCreature()->GetPositionY() + RandomFloat(12) - 15),
-                                          getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true);
+                    CreatureAIScript* Eagle = spawnCreatureAndGetAIScript(CN_SOARING_EAGLE, (getCreature()->GetPositionX() + RandomFloat(12) - 10), (getCreature()->GetPositionY() + RandomFloat(12) - 15),
+                                          getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->GetFaction());
                     if (Eagle)
                     {
-                        Eagle->AggroNearestUnit();
+                        static_cast<MoonScriptCreatureAI*>(Eagle)->AggroNearestUnit();
                         Eagle->_setDespawnWhenInactive(true);
                     }
                 }
-                Eagle = NULL;
+
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 12019, "Feed, me bruddahs!");
                 // Restart the timer
                 _resetTimer(mSummonTime, 120000);
@@ -244,14 +243,13 @@ class HalazziAI : public MoonScriptCreatureAI
             {
                 if (_isTimerFinished(mTotemTimer))
                 {
-                    MoonScriptCreatureAI* Totem = NULL;
-                    Totem = SpawnCreature(CN_TOTEM, (getCreature()->GetPositionX() + RandomFloat(3) - 3), (getCreature()->GetPositionY() + RandomFloat(3) - 3), getCreature()->GetPositionZ(), 0, true);
+                    CreatureAIScript* Totem = spawnCreatureAndGetAIScript(CN_TOTEM, (getCreature()->GetPositionX() + RandomFloat(3) - 3), (getCreature()->GetPositionY() + RandomFloat(3) - 3), getCreature()->GetPositionZ(), 0, getCreature()->GetFaction());
                     if (Totem)
                     {
                         Totem->despawn(60000); // Despawn in 60 seconds
-                        Totem->AggroNearestPlayer();
-                        Totem = NULL;
+                        static_cast<MoonScriptCreatureAI*>(Totem)->AggroNearestPlayer();
                     }
+
                     switch (GetPhase())
                     {
                         case 2:
@@ -272,7 +270,7 @@ class HalazziAI : public MoonScriptCreatureAI
             getCreature()->SetHealth(240000);
             getCreature()->setUInt32Value(UNIT_FIELD_MAXHEALTH, 240000);
 
-            mLynx = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(CN_LYNX_SPIRIT, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true, false, 0, 0);
+            mLynx = spawnCreature(CN_LYNX_SPIRIT, getCreature()->GetPosition());
             if (mLynx)
             {
                 mLynx->GetAIInterface()->AttackReaction(getCreature()->GetAIInterface()->getNextTarget(), 1);

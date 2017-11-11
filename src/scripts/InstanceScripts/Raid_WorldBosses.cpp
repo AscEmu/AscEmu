@@ -332,7 +332,7 @@ class TaerarAI : public CreatureAIScript
 
         void SummonShades(Unit* mTarget)
         {
-            Summoned = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(CN_SHADESTAERAR, mTarget->GetPositionX(), mTarget->GetPositionY(), mTarget->GetPositionZ(), 0, true, false, getCreature()->GetFaction(), 50);
+            Summoned = spawnCreature(CN_SHADESTAERAR, mTarget->GetPosition(), getCreature()->GetFaction());
             Summoned->GetAIInterface()->setNextTarget(mTarget);
         }
 
@@ -1310,7 +1310,7 @@ class KruulAI : public CreatureAIScript
                     break;
             }
             Rand = 0;
-            Summoned = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(CN_HOUNDS, (float)RandX, (float)RandY, 0, 0, true, false, getCreature()->GetFaction(), 50);
+            Summoned = spawnCreature(CN_HOUNDS, (float)RandX, (float)RandY, 0, 0, getCreature()->GetFaction());
             Summoned->GetAIInterface()->setNextTarget(mTarget);
         }
 

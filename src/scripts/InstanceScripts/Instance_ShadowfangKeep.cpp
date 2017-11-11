@@ -1156,10 +1156,10 @@ class ArugalBossAI : public MoonScriptCreatureAI
                     // Spawn Arugal's Voidwalkers
                     for (uint8 x = 0; x < ArugalVoidCount; x++)
                     {
-                        if (MoonScriptCreatureAI* voidwalker = SpawnCreature(CN_VOIDWALKER, voidwalkerSpawns[x].x, voidwalkerSpawns[x].y, voidwalkerSpawns[x].z, voidwalkerSpawns[x].o))
+                        if (CreatureAIScript* voidwalker = spawnCreatureAndGetAIScript(CN_VOIDWALKER, voidwalkerSpawns[x].x, voidwalkerSpawns[x].y, voidwalkerSpawns[x].z, voidwalkerSpawns[x].o))
                         {
                             voidwalker->despawn(4 * 60 * 1000); // Despawn in 4 mins
-                            voidwalker->AggroNearestPlayer();
+                            static_cast<MoonScriptCreatureAI*>(voidwalker)->AggroNearestPlayer();
                         }
                     }
                     getCreature()->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);

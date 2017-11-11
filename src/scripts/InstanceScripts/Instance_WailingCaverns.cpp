@@ -399,7 +399,7 @@ class DofNaralexAI : public MoonScriptCreatureAI
             }
             if (GetPhase() == 5 && (!Mutanus || !Mutanus->isAlive()))
             {
-                MoonScriptCreatureAI* Naralex = GetNearestCreature(3679);
+                CreatureAIScript* Naralex = getNearestCreatureAI(3679);
                 if (Naralex && Naralex->isAlive())
                 {
                     _setDisplayId(17089);

@@ -145,11 +145,11 @@ class MidnightAI : public MoonScriptCreatureAI
     {
         if (GetPhase() == 1)
         {
-            if (GetLinkedCreature() == NULL && _getHealthPercent() <= 95 && !_isCasting())
+            if (GetLinkedCreature() == nullptr && _getHealthPercent() <= 95 && !_isCasting())
             {
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "Midnight calls for her master!");
-                CreatureAIScript* attumen = SpawnCreature(CN_ATTUMEN, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), false);
-                if (attumen != NULL)
+                CreatureAIScript* attumen = spawnCreatureAndGetAIScript(CN_ATTUMEN, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation());
+                if (attumen != nullptr)
                 {
                     SetLinkedCreature(attumen);
                     attumen->SetLinkedCreature(this);
@@ -2740,8 +2740,9 @@ public:
         float dumX = -10938.56f;
         float dumY = -2041.26f;
         float dumZ = 305.132f;
-        CreatureAIScript* infernalDummy = SpawnCreature(CN_DUMMY, dumX, dumY, dumZ);
-        if (infernalDummy != NULL)
+
+        CreatureAIScript* infernalDummy = spawnCreatureAndGetAIScript(CN_DUMMY, dumX, dumY, dumZ, 0);
+        if (infernalDummy != nullptr)
         {
             SetLinkedCreature(infernalDummy);
             infernalDummy->SetLinkedCreature(this);

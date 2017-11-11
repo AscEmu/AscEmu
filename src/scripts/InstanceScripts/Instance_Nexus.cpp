@@ -89,8 +89,8 @@ class AnomalusAI : public MoonScriptCreatureAI
 
             sendAnnouncement("Anomalus opens a Chaotic Rift!");
             //we are linked with CN_CHAOTIC_RIFT.
-            CreatureAIScript* chaoticRift = SpawnCreature(CN_CHAOTIC_RIFT, getCreature()->GetPositionX() + 13.5f, getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), false);
-            if (chaoticRift != NULL)
+            CreatureAIScript* chaoticRift = spawnCreatureAndGetAIScript(CN_CHAOTIC_RIFT, getCreature()->GetPositionX() + 13.5f, getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation());
+            if (chaoticRift != nullptr)
             {
                 SetLinkedCreature(chaoticRift);
                 chaoticRift->SetLinkedCreature(this);

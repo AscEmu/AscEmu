@@ -658,7 +658,7 @@ class FireswornAI : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(FireswornAI, MoonScriptCreatureAI);
         FireswornAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            mGarr = NULL;
+            mGarr = nullptr;
 
             //Spells
             AddSpell(FIRESWORN_IMMOLATE, Target_Current, 10, 0, 0, 0, 40);
@@ -668,7 +668,7 @@ class FireswornAI : public MoonScriptCreatureAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            mGarr = static_cast< MoonScriptCreatureAI* >(GetNearestCreature(CN_GARR));
+            mGarr = getNearestCreatureAI(CN_GARR);
             ParentClass::OnCombatStart(pTarget);
         }
 
@@ -689,7 +689,7 @@ class FireswornAI : public MoonScriptCreatureAI
 
         SpellDesc* mEruption;
         SpellDesc* mSeparationAnxiety;
-        MoonScriptCreatureAI* mGarr;
+        CreatureAIScript* mGarr;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

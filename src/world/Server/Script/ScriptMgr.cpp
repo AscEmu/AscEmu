@@ -598,6 +598,12 @@ Player* CreatureAIScript::getNearestPlayer()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // creature
+CreatureAIScript* CreatureAIScript::getNearestCreatureAI(uint32_t entry)
+{
+    Creature* creature = getNearestCreature(entry);
+    return (creature ? creature->GetScript() : nullptr);
+}
+
 Creature* CreatureAIScript::getNearestCreature(uint32_t entry)
 {
     return getNearestCreature(_creature->GetPositionX(), _creature->GetPositionY(), _creature->GetPositionZ(), entry);
@@ -611,6 +617,12 @@ Creature* CreatureAIScript::getNearestCreature(float posX, float posY, float pos
 float CreatureAIScript::getRangeToObject(Object* object)
 {
     return _creature->CalcDistance(object);
+}
+
+CreatureAIScript* CreatureAIScript::spawnCreatureAndGetAIScript(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId /* = 0*/)
+{
+    Creature* creature = spawnCreature(entry, posX, posY, posZ, posO, factionId);
+    return (creature ? creature->GetScript() : nullptr);
 }
 
 Creature* CreatureAIScript::spawnCreature(uint32_t entry, LocationVector pos, uint32_t factionId /*= 0*/)

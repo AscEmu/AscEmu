@@ -443,7 +443,9 @@ class SkarvaldTheConstructorAI : public MoonScriptCreatureAI
         void OnCombatStart(Unit* pTarget)
         {
             sendDBChatMessage(4471);     // Dalronn! See if you can muster the nerve to join my attack!
-            pDalronn = GetNearestCreature(CN_DALRONN);
+
+            pDalronn = getNearestCreatureAI(CN_DALRONN);
+
             mReplyTimer = _addTimer(2500);
 
             ParentClass::OnCombatStart(pTarget);
@@ -451,7 +453,7 @@ class SkarvaldTheConstructorAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            if (_isTimerFinished(mReplyTimer) && pDalronn != NULL)
+            if (_isTimerFinished(mReplyTimer) && pDalronn != nullptr)
             {
                 pDalronn->sendChatMessage(CHAT_MSG_MONSTER_YELL, 13199, "By all means, don't assess the situation, you halfwit! Just jump into the fray!");
                 _removeTimer(mReplyTimer);
@@ -462,7 +464,7 @@ class SkarvaldTheConstructorAI : public MoonScriptCreatureAI
 
         void OnDied(Unit* pKiller)
         {
-            if (pDalronn != NULL && pDalronn->isAlive())
+            if (pDalronn != nullptr && pDalronn->isAlive())
             {
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "Not... over... yet.");
                 pDalronn->sendChatMessage(CHAT_MSG_MONSTER_YELL, 13203, "Skarvald, you incompetent slug! Return and make yourself useful!");
@@ -470,16 +472,16 @@ class SkarvaldTheConstructorAI : public MoonScriptCreatureAI
                 getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
             }
-            else if (pDalronn != NULL && !pDalronn->isAlive())
+            else if (pDalronn != nullptr && !pDalronn->isAlive())
             {
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 13231, "A warrior's death.");
 
-                pDalronnGhost = GetNearestCreature(CN_DALRONN_GHOST);
+                pDalronnGhost = getNearestCreatureAI(CN_DALRONN_GHOST);
 
-                if (pDalronnGhost != NULL)
+                if (pDalronnGhost != nullptr)
                 {
                     pDalronnGhost->despawn(1000, 0);
-                    pDalronnGhost = NULL;
+                    pDalronnGhost = nullptr;
                 }
             }
 
@@ -488,7 +490,7 @@ class SkarvaldTheConstructorAI : public MoonScriptCreatureAI
 
         void OnCombatStop(Unit* pTarget)
         {
-            if (pDalronn != NULL)
+            if (pDalronn != nullptr)
             {
                 if (pDalronn->isAlive())
                     moveToSpawn();
@@ -496,17 +498,17 @@ class SkarvaldTheConstructorAI : public MoonScriptCreatureAI
                     spawnCreature(CN_DALRONN, pDalronn->getCreature()->GetSpawnPosition());
             }
 
-            if (pDalronnGhost != NULL && pDalronnGhost->isAlive())
+            if (pDalronnGhost != nullptr && pDalronnGhost->isAlive())
             {
                 pDalronnGhost->despawn();
-                pDalronnGhost = NULL;
+                pDalronnGhost = nullptr;
             }
         }
 
     private:
         uint32 mReplyTimer;
-        MoonScriptCreatureAI* pDalronn;
-        MoonScriptCreatureAI* pDalronnGhost;
+        CreatureAIScript* pDalronn;
+        CreatureAIScript* pDalronnGhost;
 };
 
 // Dalronn the Controller
@@ -527,13 +529,13 @@ class DalronnTheControllerAI : public MoonScriptCreatureAI
                 AddSpell(DEBILITATE, Target_RandomPlayer, 25, 0, 12);
                 mSummonTimer = _addTimer(15000);
             }
-            pSkarvald = NULL;
-            pSkarvaldGhost = NULL;
+            pSkarvald = nullptr;
+            pSkarvaldGhost = nullptr;
         }
 
         void OnCombatStart(Unit* pTarget)
         {
-            pSkarvald = GetNearestCreature(CN_SKARVALD);
+            pSkarvald = getNearestCreatureAI(CN_SKARVALD);
 
             ParentClass::OnCombatStart(pTarget);
         }
@@ -552,23 +554,23 @@ class DalronnTheControllerAI : public MoonScriptCreatureAI
 
         void OnDied(Unit* pKiller)
         {
-            if (pSkarvald != NULL && pSkarvald->isAlive())
+            if (pSkarvald != nullptr && pSkarvald->isAlive())
             {
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "See... you... soon.");
                 pSkarvald->sendChatMessage(CHAT_MSG_MONSTER_YELL, 13233, "Pagh! What sort of necromancer lets death stop him? I knew you were worthless!");
                 spawnCreature(CN_DALRONN_GHOST, getCreature()->GetPosition());
                 getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             }
-            else if (pSkarvald != NULL && !pSkarvald->isAlive())
+            else if (pSkarvald != nullptr && !pSkarvald->isAlive())
             {
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 13201, "There's no... greater... glory.");
 
-                pSkarvaldGhost = GetNearestCreature(CN_SKARVALD_GHOST);
+                pSkarvaldGhost = getNearestCreatureAI(CN_SKARVALD_GHOST);
 
-                if (pSkarvaldGhost != NULL)
+                if (pSkarvaldGhost != nullptr)
                 {
                     pSkarvaldGhost->despawn(1000, 0);
-                    pSkarvaldGhost = NULL;
+                    pSkarvaldGhost = nullptr;
                 }
             }
 
@@ -577,7 +579,7 @@ class DalronnTheControllerAI : public MoonScriptCreatureAI
 
         void OnCombatStop(Unit* pTarget)
         {
-            if (pSkarvald != NULL)
+            if (pSkarvald != nullptr)
             {
                 if (pSkarvald->isAlive())
                     moveToSpawn();
@@ -585,17 +587,17 @@ class DalronnTheControllerAI : public MoonScriptCreatureAI
                     spawnCreature(CN_DALRONN, pSkarvald->getCreature()->GetSpawnPosition());
             }
 
-            if (pSkarvaldGhost != NULL && pSkarvaldGhost->isAlive())
+            if (pSkarvaldGhost != nullptr && pSkarvaldGhost->isAlive())
             {
                 pSkarvaldGhost->despawn();
-                pSkarvaldGhost = NULL;
+                pSkarvaldGhost = nullptr;
             }
         }
 
     private:
         int32 mSummonTimer;
-        MoonScriptCreatureAI* pSkarvald;
-        MoonScriptCreatureAI* pSkarvaldGhost;
+        CreatureAIScript* pSkarvald;
+        CreatureAIScript* pSkarvaldGhost;
 };
 
 class SkarvaldTheConstructorGhostAI : public MoonScriptCreatureAI
@@ -659,7 +661,7 @@ void SpellFunc_KelesethFrostTomb(SpellDesc* pThis, MoonScriptCreatureAI* pCreatu
             return;
 
         pCreatureAI->getCreature()->CastSpell(pTarget, FROST_TOMB_SPELL, true);
-        pTarget->GetMapMgr()->GetInterface()->SpawnCreature(CN_FROST_TOMB, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), pTarget->GetOrientation(), true, false, 0, 0);
+        pCreatureAI->spawnCreature(CN_FROST_TOMB, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), pTarget->GetOrientation());
         pCreatureAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "Not so fast.");
     }
 }
@@ -669,7 +671,7 @@ void SpellFunc_KelesethAddSummon(SpellDesc* pThis, MoonScriptCreatureAI* pCreatu
     if (pCreatureAI != NULL)
     {
         for (uint8 i = 0; i < 5; ++i)
-            pCreatureAI->SpawnCreature(KELESETH_SKELETON_ADD, 163.376f + i + 4, 252.901f - i + 5, 42.868f, 0, true);
+            pCreatureAI->spawnCreature(KELESETH_SKELETON_ADD, 163.376f + i + 4, 252.901f - i + 5, 42.868f, 0, pCreatureAI->getCreature()->GetFaction());
     }
 }
 
@@ -788,9 +790,8 @@ void SpellFunc_ShadowAxe(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Un
         if (pTarget == NULL || !pTarget->IsPlayer() || pTarget->IsDead())
             return;
 
-        Creature* pShadowAxe = pTarget->GetMapMgr()->GetInterface()->SpawnCreature(CN_SHADOW_AXE, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), pTarget->GetOrientation(), true, false, 0, 0);
-
-        if (pShadowAxe == NULL)
+        Creature* pShadowAxe = pCreatureAI->spawnCreature(CN_SHADOW_AXE, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), pTarget->GetOrientation());
+        if (pShadowAxe == nullptr)
             return;
 
         pShadowAxe->CastSpell(pShadowAxe, SHADOW_AXE_SPELL, true);
@@ -836,8 +837,8 @@ class IngvarThePlundererAI : public MoonScriptCreatureAI
             sendDBChatMessage(4470);     // My life for the... death god!
 
             //Ressurect event
-            SpawnCreature(CN_INGVAR_UNDEAD, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true);
-            getCreature()->Despawn(1000, 0);
+            spawnCreature(CN_INGVAR_UNDEAD, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->GetFaction());
+            despawn(1000, 0);
         }
 };
 

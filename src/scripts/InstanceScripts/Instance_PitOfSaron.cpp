@@ -243,7 +243,7 @@ class IckAI : public MoonScriptCreatureAI
 
         // Emotes
         // Krick
-        mKrickAI = SpawnCreature(CN_KRICK, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), false);
+        mKrickAI = spawnCreatureAndGetAIScript(CN_KRICK, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation());
 
         mKrickAI->addEmoteForEvent(Event_OnCombatStart, 8767);
         mKrickAI->addEmoteForEvent(Event_OnTargetDied, 8768);
@@ -381,7 +381,7 @@ class IckAI : public MoonScriptCreatureAI
             {
                 mKrickAI->sendDBChatMessage(8774);
                 mKrickAI->sendAnnouncement("Krick begins rapidly conjuring explosive mines!");
-                mKrickAI->CastSpell(mExplosionBarageKrick);
+                static_cast<MoonScriptCreatureAI*>(mKrickAI)->CastSpell(mExplosionBarageKrick);
             }
             
             getCreature()->setMoveRoot(true);
@@ -405,7 +405,7 @@ class IckAI : public MoonScriptCreatureAI
     }
 
     InstanceScript* mInstance;
-    MoonScriptCreatureAI* mKrickAI;
+    CreatureAIScript* mKrickAI;
     int32_t mMightyKickTimer;
     uint32_t mPursueTimer;
     uint32_t mPoisonNovaTimer;
@@ -515,9 +515,9 @@ class KrickAI : public MoonScriptCreatureAI
             getCreature()->GetAIInterface()->WipeHateList();
 
             if (pTarget->IsTeamHorde())
-                JainaOrSylvanas = SpawnCreature(CN_SYLVANAS_WINDRUNNER, 816.58f, 111.53f, 510.0f, 0.3825f, false);
+                JainaOrSylvanas = spawnCreatureAndGetAIScript(CN_SYLVANAS_WINDRUNNER, 816.58f, 111.53f, 510.0f, 0.3825f);
             else
-                JainaOrSylvanas = SpawnCreature(CN_JAINA_PROUDMOORE, 816.58f, 111.53f, 510.0f, 0.3825f, false);
+                JainaOrSylvanas = spawnCreatureAndGetAIScript(CN_JAINA_PROUDMOORE, 816.58f, 111.53f, 510.0f, 0.3825f);
 
             mOutroTimerStarted = true;
             mOutroTimer = _addTimer(2000);
@@ -600,7 +600,7 @@ class KrickAI : public MoonScriptCreatureAI
 
     InstanceScript* mInstance;
     Creature* mIckAI;
-    MoonScriptCreatureAI* JainaOrSylvanas;
+    CreatureAIScript* JainaOrSylvanas;
     SpellDesc* mBarrageSummon;
     uint8_t sequence;
     uint32_t mOutroTimer;

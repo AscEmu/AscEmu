@@ -263,8 +263,8 @@ class LadySacrolashAI : public MoonScriptCreatureAI
 
         void OnDied(Unit* pKiller)
         {
-            MoonScriptCreatureAI* mGrandWarlockAlythess = GetNearestCreature(CN_GRAND_WARLOCK_ALYTHESS);
-            if (mGrandWarlockAlythess != NULL && mGrandWarlockAlythess->isAlive())
+            CreatureAIScript* mGrandWarlockAlythess = getNearestCreatureAI(CN_GRAND_WARLOCK_ALYTHESS);
+            if (mGrandWarlockAlythess != nullptr && mGrandWarlockAlythess->isAlive())
             {
                 mGrandWarlockAlythess->sendChatMessage(CHAT_MSG_MONSTER_YELL, 12492, "Sacrolash!");
             }
@@ -300,8 +300,8 @@ class GrandWarlockAlythessAI : public MoonScriptCreatureAI
 
         void OnDied(Unit* pKiller)
         {
-            MoonScriptCreatureAI* mLadySacrolash = GetNearestCreature(CN_LADY_SACROLASH);
-            if (mLadySacrolash != NULL && mLadySacrolash->isAlive())
+            CreatureAIScript* mLadySacrolash = getNearestCreatureAI(CN_LADY_SACROLASH);
+            if (mLadySacrolash != nullptr && mLadySacrolash->isAlive())
             {
                 mLadySacrolash->sendChatMessage(CHAT_MSG_MONSTER_YELL, 12488, "Alythess! Your fire burns within me!");
             }
