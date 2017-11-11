@@ -209,35 +209,15 @@ public:
     Flik_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
-        rendomSayTimer = _addTimer(180000);
+
+        addEmoteForEvent(Event_OnIdle, BARK_FLIK_1);
+        addEmoteForEvent(Event_OnIdle, BARK_FLIK_2);
+        addEmoteForEvent(Event_OnIdle, BARK_FLIK_3);
+        addEmoteForEvent(Event_OnIdle, BARK_FLIK_4);
+
+        enableOnIdleEmote(true, 180000);
+        setRandomIdleEmoteTime(120000, 240000);
     }
-
-    void AIUpdate()
-    {
-        if (_isTimerFinished(rendomSayTimer))
-        {
-            switch (Util::getRandomUInt(3))
-            {
-                case 0:
-                    sendDBChatMessage(BARK_FLIK_1);
-                    break;
-                case 1:
-                    sendDBChatMessage(BARK_FLIK_2);
-                    break;
-                case 2:
-                    sendDBChatMessage(BARK_FLIK_3);
-                    break;
-                case 3:
-                    sendDBChatMessage(BARK_FLIK_4);
-                    break;
-            }
-
-            _resetTimer(rendomSayTimer, Util::getRandomUInt(120000, 240000));
-        }
-    }
-
-private:
-    uint32_t rendomSayTimer;
 };
 
 
@@ -275,35 +255,15 @@ public:
     GelvasGrimegate_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
-        rendomSayTimer = _addTimer(60000);
+
+        addEmoteForEvent(Event_OnIdle, BARK_GEVAS_GRIMEGATE_1);
+        addEmoteForEvent(Event_OnIdle, BARK_GEVAS_GRIMEGATE_2);
+        addEmoteForEvent(Event_OnIdle, BARK_GEVAS_GRIMEGATE_3);
+        addEmoteForEvent(Event_OnIdle, BARK_GEVAS_GRIMEGATE_4);
+
+        enableOnIdleEmote(true, 60000);
+        setRandomIdleEmoteTime(180000, 300000);
     }
-
-    void AIUpdate()
-    {
-        if (_isTimerFinished(rendomSayTimer))
-        {
-            switch (Util::getRandomUInt(4))
-            {
-                case 0:
-                    sendDBChatMessage(BARK_GEVAS_GRIMEGATE_1);
-                    break;
-                case 1:
-                    sendDBChatMessage(BARK_GEVAS_GRIMEGATE_2);
-                    break;
-                case 2:
-                    sendDBChatMessage(BARK_GEVAS_GRIMEGATE_3);
-                    break;
-                case 3:
-                    sendDBChatMessage(BARK_GEVAS_GRIMEGATE_4);
-                    break;
-            }
-
-            _resetTimer(rendomSayTimer, Util::getRandomUInt(180000, 300000));
-        }
-    }
-
-private:
-    uint32_t rendomSayTimer;
 };
 
 
@@ -315,35 +275,15 @@ public:
     Lhara_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
-        rendomSayTimer = _addTimer(90000);
+
+        addEmoteForEvent(Event_OnIdle, BARK_LHARA_1);
+        addEmoteForEvent(Event_OnIdle, BARK_LHARA_2);
+        addEmoteForEvent(Event_OnIdle, BARK_LHARA_3);
+        addEmoteForEvent(Event_OnIdle, BARK_LHARA_4);
+
+        enableOnIdleEmote(true, 90000);
+        setRandomIdleEmoteTime(240000, 360000);
     }
-
-    void AIUpdate()
-    {
-        if (_isTimerFinished(rendomSayTimer))
-        {
-            switch (Util::getRandomUInt(4))
-            {
-                case 0:
-                    sendDBChatMessage(BARK_LHARA_1);
-                    break;
-                case 1:
-                    sendDBChatMessage(BARK_LHARA_2);
-                    break;
-                case 2:
-                    sendDBChatMessage(BARK_LHARA_3);
-                    break;
-                case 3:
-                    sendDBChatMessage(BARK_LHARA_4);
-                    break;
-            }
-
-            _resetTimer(rendomSayTimer, Util::getRandomUInt(240000, 360000));
-        }
-    }
-
-private:
-    uint32_t rendomSayTimer;
 };
 
 
@@ -374,21 +314,12 @@ public:
     Morja_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
-        rendomSayTimer = _addTimer(240000);
+
+        addEmoteForEvent(Event_OnIdle, BARK_MORJA_1);
+
+        enableOnIdleEmote(true, 240000);
+        setRandomIdleEmoteTime(240000, 360000);
     }
-
-    void AIUpdate()
-    {
-        if (_isTimerFinished(rendomSayTimer))
-        {
-            sendDBChatMessage(BARK_MORJA_1);
-
-            _resetTimer(rendomSayTimer, Util::getRandomUInt(240000, 360000));
-        }
-    }
-
-private:
-    uint32_t rendomSayTimer;
 };
 
 
@@ -467,35 +398,15 @@ public:
     ProfessorThaddeusPaleo_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
-        rendomSayTimer = _addTimer(210000);
+
+        addEmoteForEvent(Event_OnIdle, BARK_PROFESSOR_THADDEUS_PALEO_1);
+        addEmoteForEvent(Event_OnIdle, BARK_PROFESSOR_THADDEUS_PALEO_2);
+        addEmoteForEvent(Event_OnIdle, BARK_PROFESSOR_THADDEUS_PALEO_3);
+        addEmoteForEvent(Event_OnIdle, BARK_PROFESSOR_THADDEUS_PALEO_4);
+
+        enableOnIdleEmote(true, 210000);
+        setRandomIdleEmoteTime(180000, 360000);
     }
-
-    void AIUpdate()
-    {
-        if (_isTimerFinished(rendomSayTimer))
-        {
-            switch (Util::getRandomUInt(3))
-            {
-                case 0:
-                    sendDBChatMessage(BARK_PROFESSOR_THADDEUS_PALEO_1);
-                    break;
-                case 1:
-                    sendDBChatMessage(BARK_PROFESSOR_THADDEUS_PALEO_2);
-                    break;
-                case 2:
-                    sendDBChatMessage(BARK_PROFESSOR_THADDEUS_PALEO_3);
-                    break;
-                case 3:
-                    sendDBChatMessage(BARK_PROFESSOR_THADDEUS_PALEO_4);
-                    break;
-            }
-
-            _resetTimer(rendomSayTimer, Util::getRandomUInt(180000, 360000));
-        }
-    }
-
-private:
-    uint32_t rendomSayTimer;
 };
 
 
@@ -704,35 +615,15 @@ public:
     Sayge_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
-        rendomSayTimer = _addTimer(135000);
+
+        addEmoteForEvent(Event_OnIdle, BARK_SAYGE_1);
+        addEmoteForEvent(Event_OnIdle, BARK_SAYGE_2);
+        addEmoteForEvent(Event_OnIdle, BARK_SAYGE_3);
+        addEmoteForEvent(Event_OnIdle, BARK_SAYGE_4);
+
+        enableOnIdleEmote(true, 135000);
+        setRandomIdleEmoteTime(180000, 360000);
     }
-
-    void AIUpdate()
-    {
-        if (_isTimerFinished(rendomSayTimer))
-        {
-            switch (Util::getRandomUInt(3))
-            {
-                case 0:
-                    sendDBChatMessage(BARK_SAYGE_1);
-                    break;
-                case 1:
-                    sendDBChatMessage(BARK_SAYGE_2);
-                    break;
-                case 2:
-                    sendDBChatMessage(BARK_SAYGE_3);
-                    break;
-                case 3:
-                    sendDBChatMessage(BARK_SAYGE_4);
-                    break;
-            }
-
-            _resetTimer(rendomSayTimer, Util::getRandomUInt(180000, 360000));
-        }
-    }
-
-private:
-    uint32_t rendomSayTimer;
 };
 
 
@@ -819,41 +710,17 @@ public:
     SilasDarkmoon_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
-        rendomSayTimer = _addTimer(180000);
+
+        addEmoteForEvent(Event_OnIdle, BARK_SILAS_DARKMOON_1);
+        addEmoteForEvent(Event_OnIdle, BARK_SILAS_DARKMOON_2);
+        addEmoteForEvent(Event_OnIdle, BARK_SILAS_DARKMOON_3);
+        addEmoteForEvent(Event_OnIdle, BARK_SILAS_DARKMOON_4);
+        addEmoteForEvent(Event_OnIdle, BARK_SILAS_DARKMOON_5);
+        addEmoteForEvent(Event_OnIdle, BARK_SILAS_DARKMOON_6);
+
+        enableOnIdleEmote(true, 180000);
+        setRandomIdleEmoteTime(240000, 360000);
     }
-
-    void AIUpdate()
-    {
-        if (_isTimerFinished(rendomSayTimer))
-        {
-            switch (Util::getRandomUInt(5))
-            {
-                case 0:
-                    sendDBChatMessage(BARK_SILAS_DARKMOON_1);
-                    break;
-                case 1:
-                    sendDBChatMessage(BARK_SILAS_DARKMOON_2);
-                    break;
-                case 2:
-                    sendDBChatMessage(BARK_SILAS_DARKMOON_3);
-                    break;
-                case 3:
-                    sendDBChatMessage(BARK_SILAS_DARKMOON_4);
-                    break;
-                case 4:
-                    sendDBChatMessage(BARK_SILAS_DARKMOON_5);
-                    break;
-                case 5:
-                    sendDBChatMessage(BARK_SILAS_DARKMOON_6);
-                    break;
-            }
-
-            _resetTimer(rendomSayTimer, Util::getRandomUInt(240000, 360000));
-        }
-    }
-
-private:
-    uint32_t rendomSayTimer;
 };
 
 
@@ -865,38 +732,16 @@ public:
     StampThunderhorn_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
-        rendomSayTimer = _addTimer(180000);
+
+        addEmoteForEvent(Event_OnIdle, BARK_STAMP_THUNDERHORN_1);
+        addEmoteForEvent(Event_OnIdle, BARK_STAMP_THUNDERHORN_2);
+        addEmoteForEvent(Event_OnIdle, BARK_STAMP_THUNDERHORN_3);
+        addEmoteForEvent(Event_OnIdle, BARK_STAMP_THUNDERHORN_4);
+        addEmoteForEvent(Event_OnIdle, BARK_STAMP_THUNDERHORN_5);
+
+        enableOnIdleEmote(true, 180000);
+        setRandomIdleEmoteTime(180000, 360000);
     }
-
-    void AIUpdate()
-    {
-        if (_isTimerFinished(rendomSayTimer))
-        {
-            switch (Util::getRandomUInt(4))
-            {
-                case 0:
-                    sendDBChatMessage(BARK_STAMP_THUNDERHORN_1);
-                    break;
-                case 1:
-                    sendDBChatMessage(BARK_STAMP_THUNDERHORN_2);
-                    break;
-                case 2:
-                    sendDBChatMessage(BARK_STAMP_THUNDERHORN_3);
-                    break;
-                case 3:
-                    sendDBChatMessage(BARK_STAMP_THUNDERHORN_4);
-                    break;
-                case 4:
-                    sendDBChatMessage(BARK_STAMP_THUNDERHORN_5);
-                    break;
-            }
-
-            _resetTimer(rendomSayTimer, Util::getRandomUInt(180000, 360000));
-        }
-    }
-
-private:
-    uint32_t rendomSayTimer;
 };
 
 
@@ -908,35 +753,15 @@ public:
     Sylannia_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
-        rendomSayTimer = _addTimer(120000);
+
+        addEmoteForEvent(Event_OnIdle, BARK_SYLANNIA_1);
+        addEmoteForEvent(Event_OnIdle, BARK_SYLANNIA_2);
+        addEmoteForEvent(Event_OnIdle, BARK_SYLANNIA_3);
+        addEmoteForEvent(Event_OnIdle, BARK_SYLANNIA_4);
+
+        enableOnIdleEmote(true, 120000);
+        setRandomIdleEmoteTime(180000, 360000);
     }
-
-    void AIUpdate()
-    {
-        if (_isTimerFinished(rendomSayTimer))
-        {
-            switch (Util::getRandomUInt(3))
-            {
-                case 0:
-                    sendDBChatMessage(BARK_SYLANNIA_1);
-                    break;
-                case 1:
-                    sendDBChatMessage(BARK_SYLANNIA_2);
-                    break;
-                case 2:
-                    sendDBChatMessage(BARK_SYLANNIA_3);
-                    break;
-                case 3:
-                    sendDBChatMessage(BARK_SYLANNIA_4);
-                    break;
-            }
-
-            _resetTimer(rendomSayTimer, Util::getRandomUInt(180000, 360000));
-        }
-    }
-
-private:
-    uint32_t rendomSayTimer;
 };
 
 

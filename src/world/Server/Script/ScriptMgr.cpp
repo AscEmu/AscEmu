@@ -521,7 +521,7 @@ bool ScriptMgr::CallScriptedItem(Item* pItem, Player* pPlayer)
 
 /* CreatureAI Stuff */
 CreatureAIScript::CreatureAIScript(Creature* creature) : _creature(creature), linkedCreatureAI(nullptr), mDespawnWhenInactive(false), mScriptPhase(0), mAIUpdateFrequency(defaultUpdateFrequency),
-    mCreatureTimerCount(0)
+    mCreatureTimerCount(0), isIdleEmoteEnabled(false), idleEmoteTimerId(0), idleEmoteTimeMin(0), idleEmoteTimeMax(0)
 {
     mCreatureTimerIds.clear();
     mCreatureTimer.clear();
@@ -539,6 +539,8 @@ CreatureAIScript::~CreatureAIScript()
 void CreatureAIScript::_internalOnDied()
 {
     LogDebugFlag(LF_SCRIPT_MGR, "CreatureAIScript::_internalOnDied() called");
+
+    enableOnIdleEmote(false);
 
     _cancelAllTimers();
     _removeAllAuras();
@@ -562,7 +564,10 @@ void CreatureAIScript::_internalOnCombatStart()
 {
     LogDebugFlag(LF_SCRIPT_MGR, "CreatureAIScript::_internalOnEnterCombat() called");
     
+    enableOnIdleEmote(false);
+
     setAIAgent(AGENT_MELEE);
+
     sendRandomDBChatMessage(mEmotesOnCombatStart);
 }
 
@@ -579,6 +584,7 @@ void CreatureAIScript::_internalOnCombatStop()
         despawn(DEFAULT_DESPAWN_TIMER);
 
     resetScriptPhase();
+    enableOnIdleEmote(true);
 }
 
 void CreatureAIScript::_internalAIUpdate()
@@ -592,6 +598,15 @@ void CreatureAIScript::_internalAIUpdate()
     }
 
     updateAITimers();
+
+    if (isIdleEmoteEnabled)
+    {
+        if (_isTimerFinished(getIdleEmoteTimerId()))
+        {
+            sendRandomDBChatMessage(mEmotesOnIdle);
+            generateNextRandomIdleEmoteTime();
+        }
+    }
 }
 
 void CreatureAIScript::_internalOnScriptPhaseChange()
@@ -1272,17 +1287,20 @@ void CreatureAIScript::addEmoteForEvent(uint32_t eventType, uint32_t scriptTextI
     {
         switch (eventType)
         {
-            case 0:
+            case Event_OnCombatStart:
                 mEmotesOnCombatStart.push_back(scriptTextId);
                 break;
-            case 1:
+            case Event_OnTargetDied:
                 mEmotesOnTargetDied.push_back(scriptTextId);
                 break;
-            case 2:
+            case Event_OnDied:
                 mEmotesOnDied.push_back(scriptTextId);
                 break;
-            case 3:
+            case Event_OnTaunt:
                 mEmotesOnTaunt.push_back(scriptTextId);
+                break;
+            case Event_OnIdle:
+                mEmotesOnIdle.push_back(scriptTextId);
                 break;
             default:
                 LogDebugFlag(LF_SCRIPT_MGR, "CreatureAIScript::addEmoteForEvent : Invalid event type: %u !", eventType);
@@ -1299,6 +1317,56 @@ void CreatureAIScript::sendAnnouncement(std::string stringAnnounce)
 {
     if (!stringAnnounce.empty())
         _creature->SendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, stringAnnounce.c_str());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// idle emote timer
+
+void CreatureAIScript::enableOnIdleEmote(bool enable, uint32_t durationInMs /*= 0*/)
+{
+    if (enable && mEmotesOnIdle.empty())
+    {
+        LogDebugFlag(LF_SCRIPT_MGR, "CreatureAIScript::enableOnIdleEmote : no IdleEvents available!");
+        return;
+    }
+
+    isIdleEmoteEnabled = enable;
+
+    if (isIdleEmoteEnabled)
+    {
+        setIdleEmoteTimerId(_addTimer(durationInMs));
+    }
+    else
+    {
+        uint32_t idleTimerId = getIdleEmoteTimerId();
+        _removeTimer(idleTimerId);
+    }
+}
+
+void CreatureAIScript::setIdleEmoteTimerId(uint32_t timerId)
+{
+    idleEmoteTimerId = timerId;
+}
+
+uint32_t CreatureAIScript::getIdleEmoteTimerId()
+{
+    return idleEmoteTimerId;
+}
+
+void CreatureAIScript::resetIdleEmoteTime(uint32_t durationInMs)
+{
+    _resetTimer(idleEmoteTimerId, durationInMs);
+}
+
+void CreatureAIScript::setRandomIdleEmoteTime(uint32_t minTime, uint32_t maxTime)
+{
+    idleEmoteTimeMin = minTime;
+    idleEmoteTimeMax = maxTime;
+}
+
+void CreatureAIScript::generateNextRandomIdleEmoteTime()
+{
+    resetIdleEmoteTime(Util::getRandomUInt(idleEmoteTimeMin, idleEmoteTimeMax));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

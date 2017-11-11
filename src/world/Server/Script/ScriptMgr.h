@@ -298,6 +298,15 @@ class SERVER_DECL ScriptMgr : public Singleton<ScriptMgr>
         GossipMap creaturegossip_, gogossip_, itemgossip_;
 };
 
+enum EmoteEventType
+{
+    Event_OnCombatStart = 0,
+    Event_OnTargetDied  = 1,
+    Event_OnDied        = 2,
+    Event_OnTaunt       = 3,
+    Event_OnIdle        = 4     // new not part of db definitions!
+};
+
 class SERVER_DECL CreatureAIScript
 {
     public:
@@ -522,6 +531,7 @@ class SERVER_DECL CreatureAIScript
         definedEmoteVector mEmotesOnTargetDied;
         definedEmoteVector mEmotesOnDied;
         definedEmoteVector mEmotesOnTaunt;
+        definedEmoteVector mEmotesOnIdle;
 
     public:
 
@@ -533,6 +543,29 @@ class SERVER_DECL CreatureAIScript
         void addEmoteForEvent(uint32_t eventType, uint32_t scriptTextId);
 
         void sendAnnouncement(std::string stringAnnounce);
+
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // idle emote timer
+        //\brief: idle timer is seperated from custom timers. If isIdleEmoteEnabled is true,
+        //        a random chat message is send by _internalAIUpdate stored in mEmotesOnIdle
+
+    private:
+
+        bool isIdleEmoteEnabled;
+        uint32_t idleEmoteTimerId;
+
+        uint32_t idleEmoteTimeMin;
+        uint32_t idleEmoteTimeMax;
+
+    public:
+
+        void enableOnIdleEmote(bool enable, uint32_t durationInMs = 0);
+        void setIdleEmoteTimerId(uint32_t timerId);
+        uint32_t getIdleEmoteTimerId();
+        void resetIdleEmoteTime(uint32_t durationInMs);
+
+        void setRandomIdleEmoteTime(uint32_t minTime, uint32_t maxTime);
+        void generateNextRandomIdleEmoteTime();
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // basic

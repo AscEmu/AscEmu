@@ -36,14 +36,6 @@ public:\
     typedef ParentClassName ParentClass;
 
 
-enum EventType
-{
-    Event_OnCombatStart,
-    Event_OnTargetDied,
-    Event_OnDied,
-    Event_OnTaunt
-};
-
 struct EmoteDesc
 {
     EmoteDesc(const char* pText, uint8 pType, uint32 pSoundId)
