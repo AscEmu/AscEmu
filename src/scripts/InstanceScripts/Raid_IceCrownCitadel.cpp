@@ -278,6 +278,15 @@ class LordMarrowgarAI : public MoonScriptCreatureAI
             }
         }
 
+        /* Testcode - remove me please
+        void OnScriptPhaseChange(uint32_t scriptPhase)
+        {
+            std::stringstream ss;
+            ss << "My scriptPhase is now " << scriptPhase;
+
+            sendAnnouncement(ss.str());
+        }*/
+
         void OnCombatStart(Unit* pTarget)
         {
             sendDBChatMessage(923);      // The Scourge will wash over this world as a swarm of death and destruction!

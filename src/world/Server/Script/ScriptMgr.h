@@ -339,6 +339,8 @@ class SERVER_DECL CreatureAIScript
         virtual void OnLastPassengerLeft(Unit* /*passenger*/) {}
 
         // MIT start
+        virtual void OnScriptPhaseChange(uint32_t /*phaseId*/) {}
+
         //////////////////////////////////////////////////////////////////////////////////////////
         // Event default management
         //\brief: These functions are called internal for script events. Do NOT use them in your scripts!
@@ -347,6 +349,7 @@ class SERVER_DECL CreatureAIScript
         void _internalOnCombatStart();
         void _internalOnCombatStop();
         void _internalAIUpdate();
+        void _internalOnScriptPhaseChange();
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // player

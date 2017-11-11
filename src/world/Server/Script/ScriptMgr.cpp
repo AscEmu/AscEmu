@@ -590,6 +590,13 @@ void CreatureAIScript::_internalAIUpdate()
     }
 }
 
+void CreatureAIScript::_internalOnScriptPhaseChange()
+{
+    LogDebugFlag(LF_SCRIPT_MGR, "CreatureAIScript::_internalOnScriptPhaseChange() called");
+
+    getCreature()->GetScript()->OnScriptPhaseChange(getScriptPhase());
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // player
 Player* CreatureAIScript::getNearestPlayer()
@@ -923,7 +930,12 @@ uint32_t CreatureAIScript::getScriptPhase()
 void CreatureAIScript::setScriptPhase(uint32_t scriptPhase)
 {
     if (isScriptPhase(scriptPhase) == false)
+    {
         mScriptPhase = scriptPhase;
+
+        if (getScriptPhase() != 0)
+            _internalOnScriptPhaseChange();
+    }
 }
 
 void CreatureAIScript::resetScriptPhase()
