@@ -76,7 +76,7 @@ class SERVER_DECL ByteBuffer
         template <typename T> void append(T value)
         {
             flushBits();
-            append((uint8_t *)&value, sizeof(value));
+            append(reinterpret_cast<uint8_t *>(&value), sizeof(value));
         }
 
         void flushBits()
@@ -84,7 +84,7 @@ class SERVER_DECL ByteBuffer
             if (_bitpos == 8)
                 return;
 
-            append((uint8_t *)&_curbitval, sizeof(uint8_t));
+            append(static_cast<uint8_t *>(&_curbitval), sizeof(uint8_t));
             _curbitval = 0;
             _bitpos = 8;
         }
@@ -98,7 +98,7 @@ class SERVER_DECL ByteBuffer
             if (_bitpos == 0)
             {
                 _bitpos = 8;
-                append((uint8_t *)&_curbitval, sizeof(_curbitval));
+                append(static_cast<uint8_t *>(&_curbitval), sizeof(_curbitval));
                 _curbitval = 0;
             }
 
@@ -128,7 +128,7 @@ class SERVER_DECL ByteBuffer
             if (!length)
                 return std::string();
             char* buffer = new char[length + 1]();
-            read((uint8_t*)buffer, length);
+            read(reinterpret_cast<uint8_t*>(buffer), length);
             std::string retval = buffer;
             delete[] buffer;
             return retval;
@@ -190,12 +190,12 @@ class SERVER_DECL ByteBuffer
 
         template <typename T> void put(size_t pos, T value)
         {
-            put(pos, (uint8_t*)&value, sizeof(value));
+            put(pos, reinterpret_cast<uint8_t*>(&value), sizeof(value));
         }
 
         ByteBuffer& operator << (bool value)
         {
-            append<char>((char)value);
+            append<char>(static_cast<char>(value));
             return *this;
         }
 
@@ -262,21 +262,21 @@ class SERVER_DECL ByteBuffer
         ByteBuffer& operator << (const std::string& value)
         {
             append((uint8_t*)value.c_str(), value.length());
-            append((uint8_t)0);
+            append(static_cast<uint8_t>(0));
             return *this;
         }
 
         ByteBuffer& operator << (const char* str)
         {
             append((uint8_t*)str, strlen(str));
-            append((uint8_t)0);
+            append(static_cast<uint8_t>(0));
             return *this;
         }
 
         ByteBuffer& operator << (const WoWGuid& value)
         {
             append<uint8_t>(value.GetNewGuidMask());
-            append((uint8_t*)value.GetNewGuid(), value.GetNewGuidLen());
+            append(const_cast<uint8_t*>(value.GetNewGuid()), value.GetNewGuidLen());
             return *this;
         }
 
@@ -378,11 +378,11 @@ class SERVER_DECL ByteBuffer
 
         ByteBuffer& operator >> (WoWGuid& value)
         {
-            uint8_t field, mask = read<uint8_t>();
-            value.Init((uint8_t)mask);
+            uint8_t mask = read<uint8_t>();
+            value.Init(static_cast<uint8_t>(mask));
             for (int i = 0; i < BitCount8(mask); i++)
             {
-                field = read<uint8_t>();
+                uint8_t field = read<uint8_t>();
                 value.AppendField(field);
             }
             return *this;
@@ -396,13 +396,13 @@ class SERVER_DECL ByteBuffer
         size_t rpos()
         {
             return _rpos;
-        };
+        }
 
         size_t rpos(size_t rpos)
         {
             _rpos = rpos;
             return _rpos;
-        };
+        }
 
         void rfinish()
         {
@@ -425,12 +425,12 @@ class SERVER_DECL ByteBuffer
             T r = read<T>(_rpos);
             _rpos += sizeof(T);
             return r;
-        };
+        }
 
         template <typename T> T read(size_t pos) const
         {
             if (pos + sizeof(T) > size())
-                return (T)0;
+                return static_cast<T>(0);
             else
                 return *((T*)&_storage[pos]);
         }
@@ -473,12 +473,12 @@ class SERVER_DECL ByteBuffer
         const uint8_t* contents() const
         {
             return &_storage[0];
-        };
+        }
 
         inline size_t size() const
         {
             return _storage.size();
-        };
+        }
 
         bool isEmpty() const
         {
@@ -490,22 +490,17 @@ class SERVER_DECL ByteBuffer
             _storage.resize(newsize);
             _rpos = 0;
             _wpos = size();
-        };
+        }
 
         void reserve(size_t ressize)
         {
             if (ressize > size())
                 _storage.reserve(ressize);
-        };
-
-        void append(const std::string & str)
-        {
-            append((uint8_t*)str.c_str(), str.size() + 1);
         }
 
         void append(const char* src, size_t cnt)
         {
-            return append((const uint8_t*)src, cnt);
+            return append(reinterpret_cast<const uint8_t*>(src), cnt);
         }
 
         void append(const uint8_t* src, size_t cnt)
@@ -537,7 +532,7 @@ class SERVER_DECL ByteBuffer
                 if (guid & 0xFF)
                 {
                     _storage[mask_position] |= (1 << i);
-                    *this << ((uint8_t)(guid & 0xFF));
+                    *this << uint8_t(guid & 0xFF);
                 }
 
                 guid >>= 8;
@@ -570,7 +565,7 @@ class SERVER_DECL ByteBuffer
         void hexlike()
         {
             uint32_t j = 1, k = 1;
-            printf("STORAGE_SIZE: %u\n", (unsigned int)size());
+            printf("STORAGE_SIZE: %u\n", static_cast<unsigned int>(size()));
             for (uint32_t i = 0; i < size(); i++)
             {
                 if ((i == (j * 8)) && ((i != (k * 16))))
@@ -1149,7 +1144,7 @@ class SERVER_DECL ByteBuffer
 
 template <typename T> ByteBuffer & operator<<(ByteBuffer & b, std::vector<T> v)
 {
-    b << (uint32)v.size();
+    b << reinterpret_cast<uint32>(v.size());
     for (typename std::vector<T>::iterator i = v.begin(); i != v.end(); ++i)
     {
         b << *i;
@@ -1173,7 +1168,7 @@ template <typename T> ByteBuffer & operator>>(ByteBuffer & b, std::vector<T> &v)
 
 template <typename T> ByteBuffer & operator<<(ByteBuffer & b, std::list<T> v)
 {
-    b << (uint32)v.size();
+    b << reinterpret_cast<uint32>(v.size());
     for (typename std::list<T>::iterator i = v.begin(); i != v.end(); ++i)
     {
         b << *i;
@@ -1197,7 +1192,7 @@ template <typename T> ByteBuffer & operator>>(ByteBuffer & b, std::list<T> &v)
 
 template <typename K, typename V> ByteBuffer & operator<<(ByteBuffer & b, std::map<K, V> &m)
 {
-    b << (uint32)m.size();
+    b << reinterpret_cast<uint32>(m.size());
     for (typename std::map<K, V>::iterator i = m.begin(); i != m.end(); ++i)
     {
         b << i->first << i->second;
