@@ -11,6 +11,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/MapMgr.h"
 #include "Units/Creatures/Pet.h"
 #include "GameCata/Management/GuildMgr.h"
+#include "Server/Script/ScriptMgr.h"
+#include "Chat/ChatHandler.hpp"
+#include "Spell/SpellAuras.h"
+#include "Objects/ObjectMgr.h"
 
 extern std::string LogFileName;
 extern bool bLogChat;

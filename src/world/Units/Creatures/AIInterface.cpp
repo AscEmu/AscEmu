@@ -41,6 +41,7 @@
 #include "Spell/SpellHelpers.h"
 #include "Pet.h"
 #include "Spell/SpellEffects.h"
+#include "Objects/ObjectMgr.h"
 
 #ifndef UNIX
 #include <cmath>

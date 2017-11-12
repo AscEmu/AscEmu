@@ -40,6 +40,7 @@
 #include "Pet.h"
 #include "Spell/SpellEffects.h"
 #include "Storage/MySQLStructures.h"
+#include "Objects/ObjectMgr.h"
 
 Creature::Creature(uint64 guid)
 {

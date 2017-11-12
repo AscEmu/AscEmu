@@ -17,6 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellAuras.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Units/Creatures/Pet.h"
+#include "Objects/Faction.h"
 
 void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 {

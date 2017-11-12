@@ -32,6 +32,10 @@
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
+#include "Objects/ObjectMgr.h"
+#include "ScriptMgr.h"
+#include "Map/MapScriptInterface.h"
+#include "Objects/Faction.h"
 
 initialiseSingleton(ScriptMgr);
 initialiseSingleton(HookInterface);

@@ -25,6 +25,7 @@
 #include "Chat/ChatHandler.hpp"
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
+#include "Objects/ObjectMgr.h"
 
 #define  SENDSURVEY "\x03"
 #ifdef GM_TICKET_MY_MASTER_COMPATIBLE

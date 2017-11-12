@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Spell/SpellFailure.h"
 #include "Server/ServerState.h"
+#include "Objects/ObjectMgr.h"
 
 bool ChatHandler::HandleSetScriptPhaseCommand(const char* args, WorldSession* session)
 {

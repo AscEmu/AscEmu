@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Server/Definitions.h"
+#include <stdint.h>
+#include <string>
 
 // related to table areatriggers
 enum AreaTriggerType
@@ -414,9 +416,9 @@ namespace MySQLStructure
     //professiondiscoveries
     struct ProfessionDiscovery
     {
-        uint32 SpellId;
-        uint32 SpellToDiscover;
-        uint32 SkillValue;
+        uint32_t SpellId;
+        uint32_t SpellToDiscover;
+        uint32_t SkillValue;
         float Chance;
     };
 

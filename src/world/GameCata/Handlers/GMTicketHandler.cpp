@@ -8,6 +8,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/ObjectMgr.h"
 #include "Server/MainServerDefines.h"
 #include "Config/Config.h"
+#include "zlib.h"
+#include "Management/Channel.h"
+#include "Management/ChannelMgr.h"
+#include "Units/Players/Player.h"
 
 enum GMTicketResults
 {

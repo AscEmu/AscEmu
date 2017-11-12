@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "crc32.h"
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
+#include "Objects/ObjectMgr.h"
 
 
 bool handleSendChatAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient)
