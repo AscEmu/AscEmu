@@ -90,10 +90,10 @@ public:
 // Neutralizing the Cauldrons
 const uint32 CN_PURIFYING_TOTEM = 25494;
 
-class PurifyingTotemAI : public MoonScriptCreatureAI
+class PurifyingTotemAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(PurifyingTotemAI, MoonScriptCreatureAI);
-    PurifyingTotemAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(PurifyingTotemAI);
+    PurifyingTotemAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setCanEnterCombat(false);
         setRooted(true);
@@ -122,10 +122,10 @@ public:
 
 
 // Bury Those Cockroaches!
-class SeaforiumDepthCharge : public MoonScriptCreatureAI
+class SeaforiumDepthCharge : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(SeaforiumDepthCharge, MoonScriptCreatureAI);
-    SeaforiumDepthCharge(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(SeaforiumDepthCharge);
+    SeaforiumDepthCharge(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setRooted(true);
         setCanEnterCombat(false);

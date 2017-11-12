@@ -30,19 +30,5 @@
 #include <Spell/Customization/SpellCustomizations.hpp>
 #include "Map/WorldCreatorDefines.hpp"
 
-#define MOONSCRIPT_FACTORY_FUNCTION(ClassName, ParentClassName)\
-public:\
-    ADD_CREATURE_FACTORY_FUNCTION(ClassName);\
-    typedef ParentClassName ParentClass;
-
-
-//////////////////////////////////////////////////////////////////////////////////////////
-//Class MoonScriptCreatureAI
-class MoonScriptCreatureAI : public CreatureAIScript
-{
-    public:
-        MoonScriptCreatureAI(Creature* pCreature);
-        virtual ~MoonScriptCreatureAI();
-};
 
 #endif // _BASE_H

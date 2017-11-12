@@ -72,11 +72,11 @@ const WPWaitTimes DeathbringerJovaanWP[] =
     { { -3310.743896f, 2951.929199f, 171.132538f, 1.743588f }, 0 }
 };
 
-class DeathbringerJovaanAI : public MoonScriptCreatureAI
+class DeathbringerJovaanAI : public CreatureAIScript
 {
 public:
-    MOONSCRIPT_FACTORY_FUNCTION(DeathbringerJovaanAI, MoonScriptCreatureAI);
-    DeathbringerJovaanAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(DeathbringerJovaanAI);
+    DeathbringerJovaanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mJovaanTimer = INVALIDATE_TIMER;
         mJovaanPhase = -1;
@@ -148,7 +148,7 @@ public:
                 break;
             }
         }
-        ParentClass::AIUpdate();
+        
     }
 
     void OnReachWP(uint32 iWaypointId, bool bForwards)
@@ -179,11 +179,11 @@ public:
 /////// Warbringer Razuun
 #define CN_WARBRINGER_RAZUUN    21502
 
-class WarbringerRazuunAI : public MoonScriptCreatureAI
+class WarbringerRazuunAI : public CreatureAIScript
 {
 public:
-    MOONSCRIPT_FACTORY_FUNCTION(WarbringerRazuunAI, MoonScriptCreatureAI);
-    WarbringerRazuunAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(WarbringerRazuunAI);
+    WarbringerRazuunAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         RegisterAIUpdateEvent(1000);
         mRazuunTimer = _addTimer(800);
@@ -238,7 +238,7 @@ public:
                 break;
             }
         }
-        ParentClass::AIUpdate();
+        
     }
 
     uint32 mRazuunTimer;
@@ -295,11 +295,11 @@ public:
 /////// Warbringer Razuun
 const uint32 CN_ENSLAVED_NETHERWING_DRAKE = 21722;
 
-class EnslavedNetherwingDrakeAI : public MoonScriptCreatureAI
+class EnslavedNetherwingDrakeAI : public CreatureAIScript
 {
 public:
-    MOONSCRIPT_FACTORY_FUNCTION(EnslavedNetherwingDrakeAI, MoonScriptCreatureAI);
-    EnslavedNetherwingDrakeAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(EnslavedNetherwingDrakeAI);
+    EnslavedNetherwingDrakeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         Movement::LocationWithFlag WayPoint = { getCreature()->GetPositionX(), getCreature()->GetPositionY() + 30, getCreature()->GetPositionZ() + 100, getCreature()->GetOrientation(), Movement::WP_MOVE_TYPE_FLY };
         setRooted(true);

@@ -1770,7 +1770,7 @@ bool CreatureAIScript::CastSpellInternal(SpellDesc* pSpell, uint32_t pCurrentTim
             else if
                 (pSpell->mSpellFunc) pSpell->mSpellFunc(pSpell, this, Target, pSpell->mTargetType);
             else
-                LogDebugFlag(LF_SCRIPT_MGR, "MoonScriptCreatureAI::CastSpellInternal() : Invalid spell!");
+                LogDebugFlag(LF_SCRIPT_MGR, "CreatureAIScript::CastSpellInternal() : Invalid spell!");
 
             //Store cast time for cooldown
             pSpell->mLastCastTime = CurrentTime;
@@ -1813,7 +1813,7 @@ void CreatureAIScript::CastSpellOnTarget(Unit* pTarget, TargetType pType, SpellI
             break;
 
         default:
-            LogDebugFlag(LF_SCRIPT_MGR, "MoonScriptCreatureAI::CastSpellOnTarget() : Invalid target type!");
+            LogDebugFlag(LF_SCRIPT_MGR, "CreatureAIScript::CastSpellOnTarget() : Invalid target type!");
             break;
     };
 };
@@ -1869,7 +1869,7 @@ Unit* CreatureAIScript::GetTargetForSpell(SpellDesc* pSpell)
         case TargetGen_RandomUnitDestination:
             return GetBestUnitTarget(pSpell->mTargetType.mTargetFilter, pSpell->mMinRange, pSpell->mMaxRange);
         default:
-            LogDebugFlag(LF_SCRIPT_MGR, "MoonScriptCreatureAI::GetTargetForSpell() : Invalid target type!");
+            LogDebugFlag(LF_SCRIPT_MGR, "CreatureAIScript::GetTargetForSpell() : Invalid target type!");
             return nullptr;
     }
 };

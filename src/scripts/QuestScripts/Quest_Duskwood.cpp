@@ -26,11 +26,11 @@ const uint32 ELIZA_FROST_NOVA = 11831;
 const uint32 ELIZA_FROSTBOLT = 20819;
 const uint32 ELIZA_SUMMON_GUARD = 3107;
 
-class ElizaAI : public MoonScriptCreatureAI
+class ElizaAI : public CreatureAIScript
 {
 public:
-    MOONSCRIPT_FACTORY_FUNCTION(ElizaAI, MoonScriptCreatureAI);
-    ElizaAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(ElizaAI);
+    ElizaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mElizaCombatTimer = INVALIDATE_TIMER;
         setCanEnterCombat(false);
@@ -46,7 +46,7 @@ public:
     }
     void AIUpdate()
     {
-        ParentClass::AIUpdate();
+        
         if (_isTimerFinished(mElizaCombatTimer))
         {
             setCanEnterCombat(true);

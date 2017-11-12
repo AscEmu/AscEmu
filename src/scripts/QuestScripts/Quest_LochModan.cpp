@@ -57,12 +57,12 @@ static Movement::Location WaypointsMiran[] =
     { -5711.766113f, -3778.145752f, 322.827942f, 4.473486f }  //7
 };
 
-class Miran : public MoonScriptCreatureAI
+class Miran : public CreatureAIScript
 {
 
 public:
-    MOONSCRIPT_FACTORY_FUNCTION(Miran, MoonScriptCreatureAI);
-    Miran(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(Miran);
+    Miran(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         WPCount = 7;
 

@@ -1340,12 +1340,12 @@ static Movement::LocationWithFlag LakkaWaypoint[] =
     { -73.749f, 173.171f, 0.009f, 6.234f, Movement::WP_MOVE_TYPE_WALK },
 };
 
-class LakkaAI : public MoonScriptCreatureAI
+class LakkaAI : public CreatureAIScript
 {
     public:
 
         ADD_CREATURE_FACTORY_FUNCTION(LakkaAI);
-        LakkaAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        LakkaAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
 
@@ -1550,7 +1550,7 @@ class DarkweaverSythAI : public CreatureAIScript
 
             if (mLakka != NULL && mLakka->GetScript())
             {
-                MoonScriptCreatureAI* pLakkaAI = static_cast< MoonScriptCreatureAI* >(mLakka->GetScript());
+                CreatureAIScript* pLakkaAI = static_cast< CreatureAIScript* >(mLakka->GetScript());
                 mLakka->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                 pLakkaAI->SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                 pLakkaAI->SetWaypointToMove(1);

@@ -7,12 +7,12 @@
 
 // Alliance guard
 // Cast spell 54028 on horde player if he is in the alliance area
-class SilverCovenantMageGuard : public MoonScriptCreatureAI
+class SilverCovenantMageGuard : public CreatureAIScript
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(SilverCovenantMageGuard, MoonScriptCreatureAI);
-        SilverCovenantMageGuard(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(SilverCovenantMageGuard);
+        SilverCovenantMageGuard(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             getCreature()->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
             RegisterAIUpdateEvent(1500);
@@ -54,12 +54,12 @@ class SilverCovenantMageGuard : public MoonScriptCreatureAI
 
 // Horde guard
 // Cast spell 54029 on alliance player if he is in the horde area
-class SunreaversMageGuard : public MoonScriptCreatureAI
+class SunreaversMageGuard : public CreatureAIScript
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(SunreaversMageGuard, MoonScriptCreatureAI);
-        SunreaversMageGuard(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(SunreaversMageGuard);
+        SunreaversMageGuard(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             getCreature()->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
             RegisterAIUpdateEvent(1500);
@@ -99,12 +99,12 @@ class SunreaversMageGuard : public MoonScriptCreatureAI
         }
 };
 
-class FactionInvisible : public MoonScriptCreatureAI
+class FactionInvisible : public CreatureAIScript
 {
 public:
 
-    MOONSCRIPT_FACTORY_FUNCTION(FactionInvisible, MoonScriptCreatureAI);
-    FactionInvisible(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(FactionInvisible);
+    FactionInvisible(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         // 0 = all (default), 1 = horde, 2 = alliance
         switch (getCreature()->spawnid)

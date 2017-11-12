@@ -247,10 +247,10 @@ class GundrakScript : public InstanceScript
 /////////////////////////////////////////////////////////////////////////////////
 // Slad'ran encounter
 // Status: 50% done, missing add related stuff and maybe correct timers
-class SladranAI : public MoonScriptCreatureAI
+class SladranAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(SladranAI, MoonScriptCreatureAI);
-    SladranAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(SladranAI);
+    SladranAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mInstance = getInstanceScript();
 
@@ -280,7 +280,7 @@ class SladranAI : public MoonScriptCreatureAI
         if (mInstance)
             mInstance->setData(getCreature()->GetEntry(), InProgress);
 
-        ParentClass::OnCombatStart(pTarget);
+        
     }
 
     void OnTargetDied(Unit* pTarget)
@@ -304,7 +304,7 @@ class SladranAI : public MoonScriptCreatureAI
         if (mInstance)
             mInstance->setData(getCreature()->GetEntry(), Performed);
 
-        ParentClass::OnCombatStop(pTarget);
+        
     }
 
     void OnDied(Unit* pKiller)
@@ -319,10 +319,10 @@ class SladranAI : public MoonScriptCreatureAI
 /////////////////////////////////////////////////////////////////////////////////
 // Gal'darah encounter
 // Status: 20% done, missing rihno part, need vehicle support for that, missing stampade script
-class GalDarahAI : public MoonScriptCreatureAI
+class GalDarahAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(GalDarahAI, MoonScriptCreatureAI);
-    GalDarahAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(GalDarahAI);
+    GalDarahAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mInstance = getInstanceScript();
 
@@ -339,7 +339,7 @@ class GalDarahAI : public MoonScriptCreatureAI
         if (mInstance)
             mInstance->setData(getCreature()->GetEntry(), InProgress);
 
-        ParentClass::OnCombatStart(pTarget);
+        
     }
 
     void OnTargetDied(Unit* pTarget)
@@ -363,7 +363,7 @@ class GalDarahAI : public MoonScriptCreatureAI
         if (mInstance)
             mInstance->setData(getCreature()->GetEntry(), Performed);
 
-        ParentClass::OnCombatStop(pTarget);
+        
     }
 
     void OnDied(Unit* pKiller)

@@ -155,10 +155,10 @@ void SpellFunc_LavaSpawn(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* 
     }
 }
 
-class SartharionAI : public MoonScriptCreatureAI
+class SartharionAI : public CreatureAIScript
 {
-        MOONSCRIPT_FACTORY_FUNCTION(SartharionAI, MoonScriptCreatureAI);
-        SartharionAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(SartharionAI);
+        SartharionAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             mInstance = dynamic_cast<ObsidianSanctumScript*>(getInstanceScript());
 
@@ -212,7 +212,7 @@ class SartharionAI : public MoonScriptCreatureAI
                 _regenerateHealth();// Lets heal him as aura increase his hp for 25%
             }
 
-            ParentClass::OnCombatStart(pTarget);
+            
         }
 
         void AIUpdate()
@@ -240,7 +240,7 @@ class SartharionAI : public MoonScriptCreatureAI
                 m_bEnraged = true;
             }
 
-            ParentClass::AIUpdate();
+            
         }
 
         void CheckDrakes()
@@ -298,7 +298,7 @@ class SartharionAI : public MoonScriptCreatureAI
         void OnDied(Unit* pKiller)
         {
             sendDBChatMessage(3984);         //Such is the price... of failure...
-            ParentClass::OnDied(pKiller);
+            
         }
 
     private:
@@ -313,10 +313,10 @@ class SartharionAI : public MoonScriptCreatureAI
         SpellDesc* mFlameTsunami, *mSummonLava;
 };
 
-class TsunamiAI : public MoonScriptCreatureAI
+class TsunamiAI : public CreatureAIScript
 {
-        MOONSCRIPT_FACTORY_FUNCTION(TsunamiAI, MoonScriptCreatureAI);
-        TsunamiAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature) {};
+        ADD_CREATURE_FACTORY_FUNCTION(TsunamiAI);
+        TsunamiAI(Creature* pCreature) : CreatureAIScript(pCreature) {};
 
         void OnLoad()
         {
@@ -326,7 +326,7 @@ class TsunamiAI : public MoonScriptCreatureAI
             getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             despawn(11500, 0);
 
-            ParentClass::OnLoad();
+            
         }
 
         void AIUpdate()
@@ -335,16 +335,16 @@ class TsunamiAI : public MoonScriptCreatureAI
             _applyAura(TSUNAMI_VISUAL);
             RegisterAIUpdateEvent(11000);
 
-            ParentClass::OnLoad();
+            
         }
 
 };
 
-class CyclonAI : public MoonScriptCreatureAI
+class CyclonAI : public CreatureAIScript
 {
     public:
-        MOONSCRIPT_FACTORY_FUNCTION(CyclonAI, MoonScriptCreatureAI);
-        CyclonAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(CyclonAI);
+        CyclonAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {}
 
         void OnLoad()
@@ -355,21 +355,21 @@ class CyclonAI : public MoonScriptCreatureAI
             _applyAura(CYCLON_SPELL);
             _applyAura(CYCLON_AURA);
 
-            ParentClass::OnLoad();
+            
         }
 };
 
-class LavaBlazeAI : public MoonScriptCreatureAI
+class LavaBlazeAI : public CreatureAIScript
 {
     public:
-        MOONSCRIPT_FACTORY_FUNCTION(LavaBlazeAI, MoonScriptCreatureAI);
-        LavaBlazeAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(LavaBlazeAI);
+        LavaBlazeAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {}
 
         void OnLoad()
         {
             AggroNearestPlayer(1);
-            ParentClass::OnLoad();
+            
         }
 
         void OnCombatStop(Unit* pTarget)

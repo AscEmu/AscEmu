@@ -35,10 +35,10 @@ class InstanceStormwindStockadeScript : public InstanceScript
 };
 
 // DeepfuryAI
-class DeepfuryAI : public MoonScriptCreatureAI
+class DeepfuryAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(DeepfuryAI, MoonScriptCreatureAI);
-    DeepfuryAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(DeepfuryAI);
+    DeepfuryAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddSpell(SHIELD_SLAM, Target_Current, 100, 0, 8);
         AddSpell(IMPROVED_BLOCKING, Target_Self, 100, 0, 20);
@@ -47,7 +47,7 @@ class DeepfuryAI : public MoonScriptCreatureAI
     void OnCombatStart(Unit* pTarget)
     {
         getCreature()->CastSpell(getCreature(), 7164, false); // Defensive Stance
-        ParentClass::OnCombatStart(pTarget);
+        
     }
 
     void AIUpdate()
@@ -60,15 +60,15 @@ class DeepfuryAI : public MoonScriptCreatureAI
             _setCastDisabled(true);
             moveTo(float(105.693390), float(-58.426674), float(-34.856178), true);
         }
-        ParentClass::AIUpdate();
+        
     }
 };
 
 // HamhockAI
-class HamhockAI : public MoonScriptCreatureAI
+class HamhockAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(HamhockAI, MoonScriptCreatureAI);
-    HamhockAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(HamhockAI);
+    HamhockAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddSpell(BLOODLUST, Target_RandomFriendly, 100, 0, 60);
         AddSpell(CHAINLIGHT, Target_Current, 50, 2, 7);
@@ -77,15 +77,15 @@ class HamhockAI : public MoonScriptCreatureAI
     void OnCombatStart(Unit* pTarget)
     {
         sendDBChatMessage(8759);
-        ParentClass::OnCombatStart(pTarget);
+        
     }
 };
 
 // BazilAI
-class BazilAI : public MoonScriptCreatureAI
+class BazilAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(BazilAI, MoonScriptCreatureAI);
-    BazilAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(BazilAI);
+    BazilAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddSpell(SMOKE_BOMB, Target_Current, 100, 9, 15);
         AddSpell(BATTLE_SHOUT, Target_Self, 100, 3, 30);
@@ -95,15 +95,15 @@ class BazilAI : public MoonScriptCreatureAI
     {
         getCreature()->CastSpell(getCreature(), 674, false); // Dual Wield
         sendDBChatMessage(8760);
-        ParentClass::OnCombatStart(pTarget);
+        
     }
 };
 
 // DextrenAI
-class DextrenAI : public MoonScriptCreatureAI
+class DextrenAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(DextrenAI, MoonScriptCreatureAI);
-    DextrenAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(DextrenAI);
+    DextrenAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddSpell(FRIGHTENING_SHOUT, Target_Current, 33, 8, 30);
         AddSpell(STRIKE, Target_Self, 33, 0, 10);
@@ -112,18 +112,18 @@ class DextrenAI : public MoonScriptCreatureAI
     void OnCombatStart(Unit* pTarget)
     {
         getCreature()->CastSpell(getCreature(), 7165, false); // Battle Stance
-        ParentClass::OnCombatStart(pTarget);
+        
     }
 };
 
 // TargorrTheDreadAI
-class TargorrTheDreadAI : public MoonScriptCreatureAI
+class TargorrTheDreadAI : public CreatureAIScript
 {
     bool Enrage = false;
     SpellDesc *Enraged;
 
-    MOONSCRIPT_FACTORY_FUNCTION(TargorrTheDreadAI, MoonScriptCreatureAI);
-    TargorrTheDreadAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(TargorrTheDreadAI);
+    TargorrTheDreadAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         Enraged = AddSpell(ENRAGE, Target_Self, 0, 0, 0);
         AddSpell(THRASH, Target_Self, 50, 0, 8);
@@ -137,15 +137,15 @@ class TargorrTheDreadAI : public MoonScriptCreatureAI
             Enrage = true;
             CastSpellNowNoScheduling(Enraged);
         }
-        ParentClass::AIUpdate();
+        
     }
 };
 
 // InmateAI
-class InmateAI : public MoonScriptCreatureAI
+class InmateAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(InmateAI, MoonScriptCreatureAI);
-    InmateAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(InmateAI);
+    InmateAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddSpell(REND, Target_Current, 100, 5, 16);
     }
@@ -153,15 +153,15 @@ class InmateAI : public MoonScriptCreatureAI
     void OnCombatStart(Unit* pTarget)
     {
         getCreature()->CastSpell(getCreature(), 7165, false); // Battle Stance
-        ParentClass::OnCombatStart(pTarget);
+        
     }
 };
 
 // InsurgentAI
-class InsurgentAI : public MoonScriptCreatureAI
+class InsurgentAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(InsurgentAI, MoonScriptCreatureAI);
-    InsurgentAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(InsurgentAI);
+    InsurgentAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddSpell(DEMORALIZING_SHOUT, Target_Self, 100, 7, 25);
     }
@@ -169,15 +169,15 @@ class InsurgentAI : public MoonScriptCreatureAI
     void OnCombatStart(Unit* pTarget)
     {
         getCreature()->CastSpell(getCreature(), 9128, false); // Battle Shout
-        ParentClass::OnCombatStart(pTarget);
+        
     }
 };
 
 // PrisonerAI
-class PrisonerAI : public MoonScriptCreatureAI
+class PrisonerAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(PrisonerAI, MoonScriptCreatureAI);
-    PrisonerAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(PrisonerAI);
+    PrisonerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddSpell(KICK, Target_Current, 100, 5, 16);
         AddSpell(DISARM, Target_Current, 100, 10, 14);
@@ -186,15 +186,15 @@ class PrisonerAI : public MoonScriptCreatureAI
     void OnCombatStart(Unit* pTarget)
     {
         getCreature()->CastSpell(getCreature(), 7165, false); // Battle Stance
-        ParentClass::OnCombatStart(pTarget);
+        
     }
 };
 
 // ConvictAI
-class ConvictAI : public MoonScriptCreatureAI
+class ConvictAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(ConvictAI, MoonScriptCreatureAI);
-    ConvictAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(ConvictAI);
+    ConvictAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddSpell(BACKHAND, Target_Current, 100, 5, 12);
     }
@@ -202,7 +202,7 @@ class ConvictAI : public MoonScriptCreatureAI
     void OnCombatStart(Unit* pTarget)
     {
         getCreature()->CastSpell(getCreature(), 674, false); // Dual Wield
-        ParentClass::OnCombatStart(pTarget);
+        
     }
 };
 

@@ -25,10 +25,10 @@
 
 
 // Keli'dan the BreakerAI
-class KelidanTheBreakerAI : public MoonScriptCreatureAI
+class KelidanTheBreakerAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(KelidanTheBreakerAI, MoonScriptCreatureAI);
-    KelidanTheBreakerAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(KelidanTheBreakerAI);
+    KelidanTheBreakerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //spells
         if (_isHeroic())
@@ -56,7 +56,6 @@ class KelidanTheBreakerAI : public MoonScriptCreatureAI
         sendDBChatMessage(4841);     // Who dares interrupt--What is this; what have you done? You'll ruin everything!
 
         mBurningNovaTimer = _addTimer(15000);
-        ParentClass::OnCombatStart(pTarget);
     }
 
     void AIUpdate()
@@ -70,12 +69,8 @@ class KelidanTheBreakerAI : public MoonScriptCreatureAI
                 CastSpell(mBurningNova);
 
                 _resetTimer(mBurningNovaTimer, 30000);
-
-                ParentClass::AIUpdate();
             }
         }
-
-        ParentClass::AIUpdate();
     }
 
     void OnTargetDied(Unit* pTarget)
@@ -105,12 +100,12 @@ class KelidanTheBreakerAI : public MoonScriptCreatureAI
 
 
 // Broggok
-class BroggokAI : public MoonScriptCreatureAI
+class BroggokAI : public CreatureAIScript
 {
     public:
 
         ADD_CREATURE_FACTORY_FUNCTION(BroggokAI);
-        BroggokAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        BroggokAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             AddSpell(POISON_BOLT, Target_Self, 12.0f, 0, 15);
             AddSpell(POISON_CLOUD, Target_RandomPlayerDestination, 8.0f, 0, 40, 0, 40);
@@ -123,18 +118,18 @@ class BroggokAI : public MoonScriptCreatureAI
             if (pDoor)
                 pDoor->SetState(GO_STATE_OPEN);
 
-            MoonScriptCreatureAI::OnDied(pKiller);
+            CreatureAIScript::OnDied(pKiller);
         }
 };
 
 
 // The Maker
-class TheMakerAI : public MoonScriptCreatureAI
+class TheMakerAI : public CreatureAIScript
 {
     public:
 
         ADD_CREATURE_FACTORY_FUNCTION(TheMakerAI);
-        TheMakerAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        TheMakerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             AddSpell(DOMINATION, Target_RandomPlayer, 8.0f, 0, 30);
             AddSpell(ACID_SPRAY, Target_Self, 10.0f, 0, 20);
@@ -178,7 +173,7 @@ class TheMakerAI : public MoonScriptCreatureAI
             if (pDoor)
                 pDoor->SetState(GO_STATE_OPEN);
 
-            MoonScriptCreatureAI::OnDied(pKiller);
+            CreatureAIScript::OnDied(pKiller);
         }
 };
 

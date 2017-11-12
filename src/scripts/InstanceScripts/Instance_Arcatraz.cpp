@@ -27,12 +27,12 @@
 // VOID_ZONE 36119    // DBC: 36119; it's not fully functionl without additional core support (for dmg and random place targeting).
 
 // Zereketh the UnboundAI
-class ZerekethAI : public MoonScriptCreatureAI
+class ZerekethAI : public CreatureAIScript
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(ZerekethAI, MoonScriptCreatureAI);
-        ZerekethAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(ZerekethAI);
+        ZerekethAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             AddSpell(SEED_OF_C, Target_RandomPlayer, 6.0f, 2, 20, 0, 100.0f);
 
@@ -52,8 +52,6 @@ class ZerekethAI : public MoonScriptCreatureAI
 
             VoidTimer = _addTimer((RandomUInt(10) + 30) * 1000);
             SpeechTimer = _addTimer((RandomUInt(10) + 40) * 1000);
-
-            ParentClass::OnCombatStart(mTarget);
         }
 
         void OnTargetDied(Unit* mKiller)
@@ -89,8 +87,6 @@ class ZerekethAI : public MoonScriptCreatureAI
                     }
                 }
             }
-
-            ParentClass::OnDied(mKiller);
         }
 
         void Speech()
@@ -155,8 +151,6 @@ class ZerekethAI : public MoonScriptCreatureAI
 
             if (_isTimerFinished(VoidTimer))
                 VoidZoneArc();
-
-            ParentClass::AIUpdate();
         }
 
     protected:
@@ -165,12 +159,12 @@ class ZerekethAI : public MoonScriptCreatureAI
         int32 VoidTimer;
 };
 
-class VoidZoneARC : public MoonScriptCreatureAI
+class VoidZoneARC : public CreatureAIScript
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(VoidZoneARC, MoonScriptCreatureAI);
-        VoidZoneARC(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(VoidZoneARC);
+        VoidZoneARC(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             stopMovement();
             setRooted(true);
@@ -193,12 +187,12 @@ class VoidZoneARC : public MoonScriptCreatureAI
 
 // Dalliah the DoomsayerAI
 // sounds missing related to Wrath... (look on script below this one)
-class DalliahTheDoomsayerAI : public MoonScriptCreatureAI
+class DalliahTheDoomsayerAI : public CreatureAIScript
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(DalliahTheDoomsayerAI, MoonScriptCreatureAI);
-        DalliahTheDoomsayerAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(DalliahTheDoomsayerAI);
+        DalliahTheDoomsayerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             AddSpell(GIFT_OF_THE_DOOMSAYER, Target_Current, 8.0f, 0.0f, -1);
 
@@ -240,8 +234,6 @@ class DalliahTheDoomsayerAI : public MoonScriptCreatureAI
             GameObject* door2 = getNearestGameObject(184319);
             if (door2 != NULL)
                 door2->SetState(GO_STATE_OPEN);
-
-            ParentClass::OnDied(mKiller);
         }
 
 };
@@ -251,12 +243,12 @@ class DalliahTheDoomsayerAI : public MoonScriptCreatureAI
 // CHARGE_TARGETING 36038 ?
 // There are more sounds connected with Dalliah and some spells, but I don't know situation in which they are used
 // so haven't added them.
-class WrathScryerSoccothratesAI : public MoonScriptCreatureAI
+class WrathScryerSoccothratesAI : public CreatureAIScript
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(WrathScryerSoccothratesAI, MoonScriptCreatureAI);
-        WrathScryerSoccothratesAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(WrathScryerSoccothratesAI);
+        WrathScryerSoccothratesAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             AddSpell(IMMOLATION, Target_Self, 10.0f, 0, -1);
             AddSpell(FELFIRE_SHOCK, Target_Current, 8.0f, 0, -1);
@@ -290,8 +282,6 @@ class WrathScryerSoccothratesAI : public MoonScriptCreatureAI
             GameObject* door1 = getNearestGameObject(199.969f, 118.5837f, 22.379f, 184318);
             if (door1 != NULL)
                 door1->SetState(GO_STATE_OPEN);
-
-            ParentClass::OnDied(mKiller);
         }
 
 };
@@ -301,12 +291,12 @@ class WrathScryerSoccothratesAI : public MoonScriptCreatureAI
 // BLINK_VISUAL 36937 ?
 // SIMPLE_TELEPORT 12980 ?
 // Add sounds related to his dialog with mind controlled guy
-class HarbringerSkyrissAI : public MoonScriptCreatureAI
+class HarbringerSkyrissAI : public CreatureAIScript
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(HarbringerSkyrissAI, MoonScriptCreatureAI);
-        HarbringerSkyrissAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(HarbringerSkyrissAI);
+        HarbringerSkyrissAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             AddSpell(MIND_REND, Target_Current, 15.0f, 0, -1);
 
@@ -332,7 +322,6 @@ class HarbringerSkyrissAI : public MoonScriptCreatureAI
             sendDBChatMessage(5034);     // Bear witness to the agent of your demise!
 
             IllusionCount = 0;
-            ParentClass::OnCombatStart(mTarget);
         }
 
         void OnTargetDied(Unit* mKiller)
@@ -365,7 +354,6 @@ class HarbringerSkyrissAI : public MoonScriptCreatureAI
                 IllusionCount = 2;
                 CastSpell(Illusion33);
             }
-            ParentClass::AIUpdate();
         }
 
     protected:
@@ -377,11 +365,11 @@ class HarbringerSkyrissAI : public MoonScriptCreatureAI
 
 
 // Warden MellicharAI
-class WardenMellicharAI : public MoonScriptCreatureAI
+class WardenMellicharAI : public CreatureAIScript
 {
     public:
-        MOONSCRIPT_FACTORY_FUNCTION(WardenMellicharAI, MoonScriptCreatureAI);
-        WardenMellicharAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(WardenMellicharAI);
+        WardenMellicharAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             setRooted(true);
             Phase_Timer = -1;
@@ -415,14 +403,11 @@ class WardenMellicharAI : public MoonScriptCreatureAI
 
             sendDBChatMessage(SAY_MELLICHAR_01);
             getCreature()->SendTimedScriptTextChatMessage(SAY_MELLICHAR_02, 27000);
-
-            ParentClass::OnCombatStart(mTarget);
         }
 
         void OnCombatStop(Unit* mTarget)
         {
             Reset_Event();
-            ParentClass::OnCombatStop(mTarget);
         }
 
         void AIUpdate()
@@ -646,7 +631,6 @@ class WardenMellicharAI : public MoonScriptCreatureAI
             else if (_isTimerFinished(Phase_Timer) && isScriptPhase(4))
             {}
 
-            ParentClass::AIUpdate();
             setRooted(true);
             _setMeleeDisabled(true);
             _setCastDisabled(true);

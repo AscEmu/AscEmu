@@ -21,13 +21,3 @@
 #include "Objects/Faction.h"
 
 
-//////////////////////////////////////////////////////////////////////////////////////////
-//Class MoonScriptCreatureAI
-MoonScriptCreatureAI::MoonScriptCreatureAI(Creature* pCreature) : CreatureAIScript(pCreature)
-{
-}
-
-MoonScriptCreatureAI::~MoonScriptCreatureAI()
-{
-}
-

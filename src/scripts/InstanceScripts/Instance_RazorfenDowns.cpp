@@ -156,10 +156,10 @@ class AmnennarTheColdbringerAI : public CreatureAIScript
 };
 
 
-class GluttonAI : public MoonScriptCreatureAI
+class GluttonAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(GluttonAI, MoonScriptCreatureAI);
-    GluttonAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(GluttonAI);
+    GluttonAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //spells
         mDiseaseCloud = AddSpell(SP_GLUTTON_DISEASE_CLOUD, Target_Self, 0, 0, 0, 0, 0);
@@ -171,7 +171,7 @@ class GluttonAI : public MoonScriptCreatureAI
     {
         CastSpellNowNoScheduling(mDiseaseCloud);
 
-        ParentClass::OnCombatStart(pTarget);
+        
     }
 
     SpellDesc* mDiseaseCloud;
@@ -179,10 +179,10 @@ class GluttonAI : public MoonScriptCreatureAI
 };
 
 
-class MordreshFireEyeAI : public MoonScriptCreatureAI
+class MordreshFireEyeAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(MordreshFireEyeAI, MoonScriptCreatureAI);
-    MordreshFireEyeAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(MordreshFireEyeAI);
+    MordreshFireEyeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //spells
         AddSpell(SP_MORDRESH_FIRE_NOVA, Target_Self, 10, 2, 0);

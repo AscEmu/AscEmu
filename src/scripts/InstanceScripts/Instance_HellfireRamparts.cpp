@@ -25,10 +25,10 @@
 
 // Watchkeeper GargolmarAI
 /// \todo "Do you smell that? Fresh meat has somehow breached our citadel. Be wary of any intruders." should be on some areatrigger
-class WatchkeeperGargolmarAI : public MoonScriptCreatureAI
+class WatchkeeperGargolmarAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(WatchkeeperGargolmarAI, MoonScriptCreatureAI);
-    WatchkeeperGargolmarAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(WatchkeeperGargolmarAI);
+    WatchkeeperGargolmarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddSpell(WATCHKEEPER_SURGE, Target_RandomUnit, 20, 0, 15, 5, 40, false, "Back off, pup!", CHAT_MSG_MONSTER_YELL, 10330);
         AddSpell(WATCHKEEPER_OVERPOWER, Target_Current, 10, 0, 5);
@@ -75,7 +75,7 @@ class WatchkeeperGargolmarAI : public MoonScriptCreatureAI
     void OnDied(Unit* mKiller)
     {
         sendDBChatMessage(4878);      // Hahah.. <cough> ..argh!
-        ParentClass::OnDied(mKiller);
+        
     }
 
     void AIUpdate()
@@ -93,7 +93,7 @@ class WatchkeeperGargolmarAI : public MoonScriptCreatureAI
             CastSpellNowNoScheduling(mRetaliation);
         }
 
-        ParentClass::AIUpdate();
+        
     }
 
     bool mCalledForHelp;
@@ -103,12 +103,12 @@ class WatchkeeperGargolmarAI : public MoonScriptCreatureAI
 
 
 //Omor the Unscarred
-class OmorTheUnscarredAI : public MoonScriptCreatureAI
+class OmorTheUnscarredAI : public CreatureAIScript
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(OmorTheUnscarredAI, MoonScriptCreatureAI);
-        OmorTheUnscarredAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(OmorTheUnscarredAI);
+        OmorTheUnscarredAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             SpellDesc* pShield = AddSpell(OMOR_DEMONIC_SHIELD, Target_Self, 30, 0, 25);
             pShield->mEnabled = false;
@@ -143,7 +143,7 @@ class OmorTheUnscarredAI : public MoonScriptCreatureAI
                     sendDBChatMessage(4857);     // Your insolence will be your death!
                     break;
             }
-            ParentClass::OnCombatStart(pTarget);
+            
             setRooted(true);
         }
 
@@ -159,7 +159,7 @@ class OmorTheUnscarredAI : public MoonScriptCreatureAI
 
         void OnCombatStop(Unit* pTarget)
         {
-            ParentClass::OnCombatStop(pTarget);
+            
             if (isAlive())
             {
                 sendDBChatMessage(4862);     // I am victorious!
@@ -209,7 +209,7 @@ class OmorTheUnscarredAI : public MoonScriptCreatureAI
                 }
             }
 
-            ParentClass::AIUpdate();
+            
             setRooted(true);
     }
 };

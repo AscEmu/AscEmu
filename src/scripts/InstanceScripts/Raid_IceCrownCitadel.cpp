@@ -446,12 +446,12 @@ class LordMarrowgarAI : public CreatureAIScript
 
 const uint32 IMPALED = 69065;
 
-class BoneSpikeAI : public MoonScriptCreatureAI
+class BoneSpikeAI : public CreatureAIScript
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(BoneSpikeAI, MoonScriptCreatureAI);
-        BoneSpikeAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(BoneSpikeAI);
+        BoneSpikeAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);  // On wowhead they said "kill them not just looking at them".
             getCreature()->Despawn(8000, 0);

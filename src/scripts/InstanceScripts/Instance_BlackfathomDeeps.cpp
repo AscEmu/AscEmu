@@ -22,11 +22,11 @@
 
 
 // LadySarevessAI
-class LadySarevessAI : public MoonScriptCreatureAI
+class LadySarevessAI : public CreatureAIScript
 {
     public:
-        MOONSCRIPT_FACTORY_FUNCTION(LadySarevessAI, MoonScriptCreatureAI);
-        LadySarevessAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(LadySarevessAI);
+        LadySarevessAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             AddSpell(8435, Target_Current, 10, 2, 0);    // Forked Lightning
             AddSpell(865, Target_Self, 15, 0, 25);        // Frost Nova
@@ -40,11 +40,11 @@ class LadySarevessAI : public MoonScriptCreatureAI
 };
 
 // BaronAquanisAI
-class BaronAquanisAI : public MoonScriptCreatureAI
+class BaronAquanisAI : public CreatureAIScript
 {
     public:
-        MOONSCRIPT_FACTORY_FUNCTION(BaronAquanisAI, MoonScriptCreatureAI);
-        BaronAquanisAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(BaronAquanisAI);
+        BaronAquanisAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             // Frostbolt
             AddSpell(15043, Target_Current, 20, 3, 0);
@@ -81,11 +81,11 @@ class FathomStone : public GameObjectAIScript
 };
 
 // KelrisAI
-class KelrisAI : public MoonScriptCreatureAI
+class KelrisAI : public CreatureAIScript
 {
     public:
-        MOONSCRIPT_FACTORY_FUNCTION(KelrisAI, MoonScriptCreatureAI);
-        KelrisAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(KelrisAI);
+        KelrisAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             AddSpell(8399, Target_RandomPlayer, 12, 1.3f, 0, 0, 0, false, "Sleep...", CHAT_MSG_MONSTER_YELL, 5804);    // Sleep
             AddSpell(15587, Target_Current, 16, 1.5f, 0);    // Mind Blast
@@ -103,11 +103,11 @@ class KelrisAI : public MoonScriptCreatureAI
 };
 
 // AkumaiAI
-class AkumaiAI : public MoonScriptCreatureAI
+class AkumaiAI : public CreatureAIScript
 {
     public:
-        MOONSCRIPT_FACTORY_FUNCTION(AkumaiAI, MoonScriptCreatureAI);
-        AkumaiAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(AkumaiAI);
+        AkumaiAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             AddSpell(3490, Target_Self, 12, 0, 0);    // Frenzied Rage
             AddSpell(3815, Target_Self, 16, 0, 45);    // Poison Cloud

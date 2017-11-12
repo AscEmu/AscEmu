@@ -22,10 +22,10 @@
 
 
 //Dark Rune Stormcaller
-class DarkRuneStormcallerAI : public MoonScriptCreatureAI
+class DarkRuneStormcallerAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(DarkRuneStormcallerAI, MoonScriptCreatureAI);
-    DarkRuneStormcallerAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(DarkRuneStormcallerAI);
+    DarkRuneStormcallerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddSpell(STORMCALLER_LIGHTNINGBOLT, Target_RandomPlayer, 60, 3, 6);
         AddSpell(STORMCALLER_SHADOWWORD, Target_RandomPlayer, 16, 0, 12);
@@ -34,10 +34,10 @@ class DarkRuneStormcallerAI : public MoonScriptCreatureAI
 };
 
 //Iron Golem Custodian
-class IronGolemCustodianAI : public MoonScriptCreatureAI
+class IronGolemCustodianAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(IronGolemCustodianAI, MoonScriptCreatureAI);
-    IronGolemCustodianAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(IronGolemCustodianAI);
+    IronGolemCustodianAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddSpell(CUSTODIAN_CRUSH_ARMOR, Target_Current, 50, 0, 5);
         AddSpell(CUSTODIAN_GROUND_SMASH, Target_ClosestPlayer, 20, 0, 14);
@@ -46,10 +46,10 @@ class IronGolemCustodianAI : public MoonScriptCreatureAI
 };
 
 //Dark Rune Protector
-class DarkRuneProtectorAI : public MoonScriptCreatureAI
+class DarkRuneProtectorAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(DarkRuneProtectorAI, MoonScriptCreatureAI);
-    DarkRuneProtectorAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(DarkRuneProtectorAI);
+    DarkRuneProtectorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddSpell(PROTECTOR_CHARGE, Target_RandomPlayerNotCurrent, 20, 0, 14, 10);
         AddSpell(PROTECTOR_CLAVE, Target_Current, 35, 0, 8);
@@ -58,10 +58,10 @@ class DarkRuneProtectorAI : public MoonScriptCreatureAI
 };
 
 //Lesser Air Elemental
-class LesserAirElementalAI : public MoonScriptCreatureAI
+class LesserAirElementalAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(LesserAirElementalAI, MoonScriptCreatureAI);
-    LesserAirElementalAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(LesserAirElementalAI);
+    LesserAirElementalAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddSpell(ELEMENTAL_LIGHTNING_BOLT, Target_RandomPlayerNotCurrent, 20, 3, 14);
     }
@@ -69,10 +69,10 @@ class LesserAirElementalAI : public MoonScriptCreatureAI
 };
 
 //Dark Rune Worker
-class DarkRuneWorkerAI : public MoonScriptCreatureAI
+class DarkRuneWorkerAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(DarkRuneWorkerAI, MoonScriptCreatureAI);
-    DarkRuneWorkerAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(DarkRuneWorkerAI);
+    DarkRuneWorkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddSpell(WORKER_ENRAGE, Target_Self, 5, 0, 60, 10);
         AddSpell(WORKER_PIERCE_ARMOR, Target_Current, 35, 0, 45);
@@ -81,10 +81,10 @@ class DarkRuneWorkerAI : public MoonScriptCreatureAI
 };
 
 //Dark Rune Warrior
-class DarkRuneWarriorAI : public MoonScriptCreatureAI
+class DarkRuneWarriorAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(DarkRuneWarriorAI, MoonScriptCreatureAI);
-    DarkRuneWarriorAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(DarkRuneWarriorAI);
+    DarkRuneWarriorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddSpell(WARRIOR_CLAVE, Target_Current, 15, 0, 8);
         AddSpell(WARRIOR_HEROIC_STRIKE, Target_Current, 35, 0, 12);
@@ -93,10 +93,10 @@ class DarkRuneWarriorAI : public MoonScriptCreatureAI
 };
 
 //Dark Rune Theurgist
-class DarkRuneTheurgistAI : public MoonScriptCreatureAI
+class DarkRuneTheurgistAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(DarkRuneTheurgistAI, MoonScriptCreatureAI);
-    DarkRuneTheurgistAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(DarkRuneTheurgistAI);
+    DarkRuneTheurgistAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddSpell(THEURGIST_BLAST_WAVE, Target_Self, 22, 0, 25);
         AddSpell(THEURGIST_FIREBOLT, Target_RandomPlayer, 40, 3, 6);
@@ -106,10 +106,10 @@ class DarkRuneTheurgistAI : public MoonScriptCreatureAI
 };
 
 //Dark Rune Shaper
-class DarkRuneShaperAI : public MoonScriptCreatureAI
+class DarkRuneShaperAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(DarkRuneShaperAI, MoonScriptCreatureAI);
-    DarkRuneShaperAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(DarkRuneShaperAI);
+    DarkRuneShaperAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddSpell(SHAPER_RAY, Target_RandomPlayer, 35, 1.5, 12);
     }
@@ -117,10 +117,10 @@ class DarkRuneShaperAI : public MoonScriptCreatureAI
 };
 
 //Dark Rune Scholar
-class DarkRuneScholarAI : public MoonScriptCreatureAI
+class DarkRuneScholarAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(DarkRuneScholarAI, MoonScriptCreatureAI);
-    DarkRuneScholarAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(DarkRuneScholarAI);
+    DarkRuneScholarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddSpell(SCHOLAR_SILANCE, Target_RandomPlayerNotCurrent, 35, 2.5, 12);
     }
@@ -128,10 +128,10 @@ class DarkRuneScholarAI : public MoonScriptCreatureAI
 };
 
 //Dark Rune Giant
-class DarkRuneGiantAI : public MoonScriptCreatureAI
+class DarkRuneGiantAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(DarkRuneGiantAI, MoonScriptCreatureAI);
-    DarkRuneGiantAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(DarkRuneGiantAI);
+    DarkRuneGiantAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddSpell(GIANT_FIST, Target_Self, 3, 2, 40);
         AddSpell(GIANT_STOMP, Target_RandomPlayer, 35, 0, 14, 0, 10);
@@ -140,10 +140,10 @@ class DarkRuneGiantAI : public MoonScriptCreatureAI
 };
 
 //Raging Construct
-class DarkRuneConstructAI : public MoonScriptCreatureAI
+class DarkRuneConstructAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(DarkRuneConstructAI, MoonScriptCreatureAI);
-    DarkRuneConstructAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(DarkRuneConstructAI);
+    DarkRuneConstructAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddSpell(RAGING_POTENT_JOLT, Target_Self, 95, 0, 8);
         AddSpell(RAGING_CLAVE, Target_Current, 30, 0, 9, 0, 10);
@@ -152,10 +152,10 @@ class DarkRuneConstructAI : public MoonScriptCreatureAI
 };
 
 //Lightning Construct
-class DarkLightningConstructAI : public MoonScriptCreatureAI
+class DarkLightningConstructAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(DarkLightningConstructAI, MoonScriptCreatureAI);
-    DarkLightningConstructAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(DarkLightningConstructAI);
+    DarkLightningConstructAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddSpell(LIGHTN_ELECTRICAL_OVERLOAD, Target_Self, 5, 1.5, 14);
         AddSpell(LIGHTN_CHAIN_LIGHTNING, Target_Current, 30, 3, 8, 0, 30);
@@ -164,10 +164,10 @@ class DarkLightningConstructAI : public MoonScriptCreatureAI
 };
 
 //Forged Iron Trogg
-class ForgedIronTroggAI : public MoonScriptCreatureAI
+class ForgedIronTroggAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(ForgedIronTroggAI, MoonScriptCreatureAI);
-    ForgedIronTroggAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(ForgedIronTroggAI);
+    ForgedIronTroggAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddSpell(LIGHTN_CHAIN_LIGHTNING, Target_RandomPlayer, 30, 2, 8, 0, 10);
     }
@@ -175,10 +175,10 @@ class ForgedIronTroggAI : public MoonScriptCreatureAI
 };
 
 //Maiden of Grief
-class MaidenOfGriefAI : public MoonScriptCreatureAI
+class MaidenOfGriefAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(MaidenOfGriefAI, MoonScriptCreatureAI);
-    MaidenOfGriefAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(MaidenOfGriefAI);
+    MaidenOfGriefAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddSpell(MAIDEN_STORM_OF_GRIEF, Target_RandomPlayerDestination, 100, 0, 19);
         AddSpell(MAIDEN_PILLAR_OF_WOE, Target_RandomPlayerNotCurrent, 30, 0, 8);
@@ -191,7 +191,7 @@ class MaidenOfGriefAI : public MoonScriptCreatureAI
         sendDBChatMessage(4367);     // You shouldn't have come... now you will die!
 
         mShock->TriggerCooldown();
-        ParentClass::OnCombatStart(pTarget);
+        
     }
 
     void OnTargetDied(Unit* pTarget)
@@ -227,10 +227,10 @@ class MaidenOfGriefAI : public MoonScriptCreatureAI
 const uint32 STOMP_TIMER = 35000;
 const uint32 SHATTER_TIMER = 4500;
 
-class KrystallusAI : public MoonScriptCreatureAI
+class KrystallusAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(KrystallusAI, MoonScriptCreatureAI);
-    KrystallusAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(KrystallusAI);
+    KrystallusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddSpell(KRYSTALLUS_BOULDER_TOSS, Target_ClosestPlayer, 35, 1, 4);
         mShatter = AddSpell(KRYSTALLUS_SHATTER, Target_Self, 0, 0, 0);
@@ -246,7 +246,7 @@ class KrystallusAI : public MoonScriptCreatureAI
         sendDBChatMessage(4363);      // Crush....
 
         mStompTimer = _addTimer(STOMP_TIMER);
-        ParentClass::OnCombatStart(pTarget);
+        
     }
 
     void AIUpdate()

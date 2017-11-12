@@ -6,15 +6,15 @@
 #include "Setup.h"
 
 // Black Cat
-class BlackCat : public MoonScriptCreatureAI
+class BlackCat : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(BlackCat, MoonScriptCreatureAI);
-    BlackCat(Creature* pCreature) : MoonScriptCreatureAI(pCreature) {}
+public:
+    static CreatureAIScript* Create(Creature* c) { return new BlackCat(c); }
+    BlackCat(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
     void OnDied(Unit* pKiller)
     {
         pKiller->CastSpell(pKiller, 39477, true);
-        ParentClass::OnDied(pKiller);
     }
 };
 
@@ -57,10 +57,11 @@ static Movement::Location WaypointGoldshire[] =
 const uint32 CN_HEADLESS_HORSEMAN = 23682;
 const uint32 HEADLESS_HORSEMAN_CLEAVE = 42587;
 const uint32 HEADLESS_HORSEMAN_CONFLAGRATION = 42380;
-class HeadlessHorsemanAI : public MoonScriptCreatureAI
+class HeadlessHorsemanAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(HeadlessHorsemanAI, MoonScriptCreatureAI);
-    HeadlessHorsemanAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new HeadlessHorsemanAI(c); }
+    HeadlessHorsemanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         //Scarlet Monastery Boss
     }
@@ -69,10 +70,11 @@ class HeadlessHorsemanAI : public MoonScriptCreatureAI
 
 // Headless Horseman - Fire
 const uint32 CN_HEADLESS_HORSEMAN_FIRE = 23537;
-class HeadlessHorsemanFireAI : public MoonScriptCreatureAI
+class HeadlessHorsemanFireAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(HeadlessHorsemanFireAI, MoonScriptCreatureAI);
-    HeadlessHorsemanFireAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new HeadlessHorsemanFireAI(c); }
+    HeadlessHorsemanFireAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->CastSpell(getCreature(), 42971, true);
     }
@@ -90,10 +92,11 @@ const uint32 SHADE_OF_THE_HORSEMAN_SUMMON = 42394;  //Don't think this one is th
 * I guess this is the target of the water spells
 * \todo Need to check all visual auras for these http://www.wowhead.com/?search=horseman#uncategorized-spells
 */
-class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
+class ShadeOfTheHorsemanAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(ShadeOfTheHorsemanAI, MoonScriptCreatureAI);
-    ShadeOfTheHorsemanAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new ShadeOfTheHorsemanAI(c); }
+    ShadeOfTheHorsemanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         setCanEnterCombat(false);
         getCreature()->SetMount(22653);
@@ -159,7 +162,6 @@ class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
                     break;
             }
         }
-        ParentClass::OnReachWP(iWaypointId, bForwards);
     }
 
     void OnDied(Unit* pKiller)
@@ -167,8 +169,6 @@ class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
         GameObject* Pumpkin = pKiller->GetMapMgr()->CreateAndSpawnGameObject(2883, getCreature()->GetPositionX() + RandomFloat(5.0f), getCreature()->GetPositionY() + RandomFloat(5.0f), getCreature()->GetPositionZ(), 0, 1);
         if (Pumpkin != nullptr)
             getCreature()->CastSpell(Pumpkin->GetGUID(), 42277, true);
-
-        ParentClass::OnDied(pKiller);
     }
 
     int8 WPCount;
@@ -178,10 +178,11 @@ class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
 
 // Headless Horseman - Wisp Invis
 const uint32 CN_HEADLESS_HORSEMAN_WISP_INVIS = 24034;    // 42394
-class HeadlessHorsemanWispInvisAI : public MoonScriptCreatureAI
+class HeadlessHorsemanWispInvisAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(HeadlessHorsemanWispInvisAI, MoonScriptCreatureAI);
-    HeadlessHorsemanWispInvisAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+public:
+    static CreatureAIScript* Create(Creature* c) { return new HeadlessHorsemanWispInvisAI(c); }
+    HeadlessHorsemanWispInvisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         mHeadlessHorseman = nullptr;
     }
@@ -201,7 +202,6 @@ class HeadlessHorsemanWispInvisAI : public MoonScriptCreatureAI
                 SetAIUpdateFreq(4 * 60 * 1000);
             }
         }
-        ParentClass::AIUpdate();
     }
 
     Creature* mHeadlessHorseman;

@@ -46,12 +46,12 @@ static Movement::Location WaypointPlainVision[] =
     { -1513.968506f, 355.759338f, 63.064487f, 1.119193f } //22
 };
 
-class The_Plains_Vision : public MoonScriptCreatureAI
+class The_Plains_Vision : public CreatureAIScript
 {
 public:
 
-    MOONSCRIPT_FACTORY_FUNCTION(The_Plains_Vision, MoonScriptCreatureAI);
-    The_Plains_Vision(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(The_Plains_Vision);
+    The_Plains_Vision(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         WPCount = 22;
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);

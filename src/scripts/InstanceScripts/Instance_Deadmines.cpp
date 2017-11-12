@@ -148,13 +148,13 @@ static Movement::Location Guards[] =
 //        uint32 InstanceEncounter;
 //};
 
-class RhahkZorAI : public MoonScriptCreatureAI
+class RhahkZorAI : public CreatureAIScript
 {
     // Just for testing
     LazyTimer debugTimer;
 
-    MOONSCRIPT_FACTORY_FUNCTION(RhahkZorAI, MoonScriptCreatureAI);
-    RhahkZorAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature), debugTimer(1500)
+    ADD_CREATURE_FACTORY_FUNCTION(RhahkZorAI);
+    RhahkZorAI(Creature* pCreature) : CreatureAIScript(pCreature), debugTimer(1500)
     {
         AddSpell(6304, Target_Current, 8, 0, 3);    // Rhahk'Zor Slam
     }
@@ -170,12 +170,12 @@ class RhahkZorAI : public MoonScriptCreatureAI
 };
 
 
-class MrSmiteAI : public MoonScriptCreatureAI
+class MrSmiteAI : public CreatureAIScript
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(MrSmiteAI, MoonScriptCreatureAI);
-        MrSmiteAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(MrSmiteAI);
+        MrSmiteAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             AddSpell(SMITE_SLAM, Target_Current, 25, 0.0f, 15, 0.0f, 8.0f, true);
             mStomp = AddSpell(SMITE_STOMP, Target_Self, 0, 0, 0);
@@ -194,7 +194,7 @@ class MrSmiteAI : public MoonScriptCreatureAI
             setScriptPhase(1);
             SwitchWeapons();
             _removeTimer(mWaitAtChest);
-            ParentClass::OnCombatStop(pTarget);
+            
         }
 
         void AIUpdate()
@@ -217,7 +217,7 @@ class MrSmiteAI : public MoonScriptCreatureAI
             if (_isTimerFinished(mWaitAtChest))
                 MoveToPlayer();
 
-            ParentClass::AIUpdate();
+            
         }
 
         void OnScriptPhaseChange(uint32_t phaseId)
@@ -306,10 +306,10 @@ class MrSmiteAI : public MoonScriptCreatureAI
 
 
 // VanCleef
-class VanCleefAI : public MoonScriptCreatureAI
+class VanCleefAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(VanCleefAI, MoonScriptCreatureAI);
-    VanCleefAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(VanCleefAI);
+    VanCleefAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddSpell(3391, Target_Self, 25, 0, 0);    //Thrash (Gives the caster 2 extra attacks.)
     }
@@ -328,7 +328,7 @@ class VanCleefAI : public MoonScriptCreatureAI
             sprintf(msg, "And stay down, %s.", static_cast<Pet*>(pTarget)->GetName().c_str());
 
         sendChatMessage(CHAT_MSG_MONSTER_YELL, 5781, msg);
-        ParentClass::OnTargetDied(pTarget);
+        
     }
 
     void OnDied(Unit* pKiller)
@@ -364,7 +364,7 @@ class VanCleefAI : public MoonScriptCreatureAI
             sendDBChatMessage(7727);     // The Brotherhood shall prevail!
             setScriptPhase(4);
         }
-        ParentClass::AIUpdate();
+        
     }
 };
 

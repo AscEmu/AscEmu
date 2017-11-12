@@ -1960,12 +1960,12 @@ class BloodGuardPorungAI : public CreatureAIScript
 // Maybe timer for 'afterspeech' should be added too?
 void SpellFunc_Warbringer_BurningMaul(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
 
-class WarbringerOmroggAI : public MoonScriptCreatureAI
+class WarbringerOmroggAI : public CreatureAIScript
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(WarbringerOmroggAI, MoonScriptCreatureAI);
-        WarbringerOmroggAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(WarbringerOmroggAI);
+        WarbringerOmroggAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             AddSpell(SP_WARBRINGER_OMROGG_THUNDERCLAP, Target_Self, 25, 1, 12);
             AddSpell(SP_WARBRINGER_OMROGG_FEAR, Target_Self, 7, 0, 20);
@@ -1978,7 +1978,7 @@ class WarbringerOmroggAI : public MoonScriptCreatureAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            ParentClass::OnCombatStart(pTarget);
+            
             mAggroShiftTimer = _addTimer(20000 + RandomUInt(10) * 1000);
             mBlastWaveTimer = mSpeechTimer = mSpeechId = INVALIDATE_TIMER;
 
@@ -2013,7 +2013,7 @@ class WarbringerOmroggAI : public MoonScriptCreatureAI
 
         void OnCombatStop(Unit* pTarget)
         {
-            ParentClass::OnCombatStop(pTarget);
+            
             if (isAlive())
             {
                 if (mLeftHead != nullptr)
@@ -2050,7 +2050,7 @@ class WarbringerOmroggAI : public MoonScriptCreatureAI
 
         void OnDied(Unit* pKiller)
         {
-            ParentClass::OnDied(pKiller);
+            
             if (mLeftHead == nullptr || mRightHead == nullptr)
                 return;
 
@@ -2064,7 +2064,7 @@ class WarbringerOmroggAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            ParentClass::AIUpdate();
+            
 
             if (mSpeechTimer != INVALIDATE_TIMER && _isTimerFinished(mSpeechTimer))
             {
@@ -2189,10 +2189,10 @@ void SpellFunc_Warbringer_BurningMaul(SpellDesc* pThis, CreatureAIScript* pCreat
     }
 }
 
-class HeadAI : public MoonScriptCreatureAI
+class HeadAI : public CreatureAIScript
 {
-    MOONSCRIPT_FACTORY_FUNCTION(HeadAI, MoonScriptCreatureAI);
-    HeadAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(HeadAI);
+    HeadAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         _setScale(4.0f);
         getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
@@ -2214,9 +2214,9 @@ class HeadAI : public MoonScriptCreatureAI
         if (pUnit != NULL && pUnit->GetScript() != NULL)
         {
             WarbringerOmroggAI* pAI = static_cast< WarbringerOmroggAI* >(pUnit->GetScript());
-            if (pAI->mLeftHead == (MoonScriptCreatureAI*)(this))
+            if (pAI->mLeftHead == (CreatureAIScript*)(this))
                 pAI->mLeftHead = NULL;
-            if (pAI->mRightHead == (MoonScriptCreatureAI*)(this))
+            if (pAI->mRightHead == (CreatureAIScript*)(this))
                 pAI->mRightHead = NULL;
         }
     }

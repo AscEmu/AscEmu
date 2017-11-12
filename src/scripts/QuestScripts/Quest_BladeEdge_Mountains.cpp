@@ -327,12 +327,12 @@ enum CreatureEntry
 
 //////////////////////////////////////////////////////////////////////////
 /////// Bloodmaul Brutebane Stout Trigger
-class BrutebaneStoutTriggerAI : public MoonScriptCreatureAI
+class BrutebaneStoutTriggerAI : public CreatureAIScript
 {
 public:
 
-    MOONSCRIPT_FACTORY_FUNCTION(BrutebaneStoutTriggerAI, MoonScriptCreatureAI);
-    BrutebaneStoutTriggerAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    ADD_CREATURE_FACTORY_FUNCTION(BrutebaneStoutTriggerAI);
+    BrutebaneStoutTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->SetFaction(35);
 
@@ -383,7 +383,7 @@ public:
             despawn(0, 0);
             return;
         }
-        ParentClass::AIUpdate();
+        
     }
 
     Player* plr;

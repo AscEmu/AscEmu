@@ -21,23 +21,23 @@
 
 
 //SvalaSorrowgrave
-class SvalaSorrowgraveAI : public MoonScriptCreatureAI
+class SvalaSorrowgraveAI : public CreatureAIScript
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(SvalaSorrowgraveAI, MoonScriptCreatureAI);
-        SvalaSorrowgraveAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(SvalaSorrowgraveAI);
+        SvalaSorrowgraveAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
         }
 };
 
 //GortokPalehoof
-class GortokPalehoofAI : public MoonScriptCreatureAI
+class GortokPalehoofAI : public CreatureAIScript
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(GortokPalehoofAI, MoonScriptCreatureAI);
-        GortokPalehoofAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(GortokPalehoofAI);
+        GortokPalehoofAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
         }
 
@@ -63,12 +63,12 @@ class GortokPalehoofAI : public MoonScriptCreatureAI
 };
 
 //SkadiTheRuthless
-class SkadiTheRuthlessAI : public MoonScriptCreatureAI
+class SkadiTheRuthlessAI : public CreatureAIScript
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(SkadiTheRuthlessAI, MoonScriptCreatureAI);
-        SkadiTheRuthlessAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(SkadiTheRuthlessAI);
+        SkadiTheRuthlessAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
         }
 
@@ -99,12 +99,12 @@ class SkadiTheRuthlessAI : public MoonScriptCreatureAI
 };
 
 //KingYmiron
-class KingYmironAI : public MoonScriptCreatureAI
+class KingYmironAI : public CreatureAIScript
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(KingYmironAI, MoonScriptCreatureAI);
-        KingYmironAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(KingYmironAI);
+        KingYmironAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
         }
 

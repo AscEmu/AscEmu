@@ -239,14 +239,14 @@ const uint32 MAX_THRALLWP1 = 27;
 //
 //};
 //
-//class LieutenantDrakeAI : public MoonScriptCreatureAI
+//class LieutenantDrakeAI : public CreatureAIScript
 //{
 //    OldHilsbradInstance* pInstance;
 //
 //public:
 //
-//    MOONSCRIPT_FACTORY_FUNCTION(LieutenantDrakeAI, MoonScriptCreatureAI);
-//    LieutenantDrakeAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+//    ADD_CREATURE_FACTORY_FUNCTION(LieutenantDrakeAI);
+//    LieutenantDrakeAI(Creature* pCreature) : CreatureAIScript(pCreature)
 //    {
 //        pInstance = dynamic_cast<OldHilsbradInstance*>(GetInstanceScript());
 //    }
@@ -256,7 +256,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //        if (pInstance)
 //            pInstance->SetData(OHF_PHASE_2, OHF_DATA_IN_PROGRESS);
 //
-//        ParentClass::OnCombatStart(pTarget);
+//        
 //    }
 //
 //    void OnCombatStop(Unit* pTarget)
@@ -264,14 +264,14 @@ const uint32 MAX_THRALLWP1 = 27;
 //        if (pInstance)
 //            pInstance->SetData(OHF_PHASE_2, OHF_DATA_PERFORMED);
 //
-//        ParentClass::OnCombatStop(pTarget);
+//        
 //    }
 //};
 //
-//class ThrallAI : public MoonScriptCreatureAI // this will be replaced with escortAI
+//class ThrallAI : public CreatureAIScript // this will be replaced with escortAI
 //{
-//    MOONSCRIPT_FACTORY_FUNCTION(ThrallAI, MoonScriptCreatureAI);
-//    ThrallAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+//    ADD_CREATURE_FACTORY_FUNCTION(ThrallAI);
+//    ThrallAI(Creature* pCreature) : CreatureAIScript(pCreature)
 //    {
 //        SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
 //        for (uint8 i = 1; i < MAX_THRALLWP1; ++i)
@@ -292,7 +292,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //
 //    void OnCombatStop(Unit* pTarget)
 //    {
-//        ParentClass::OnCombatStop(pTarget);
+//        
 //        SetWaypointToMove(m_currentWp);
 //    }
 //

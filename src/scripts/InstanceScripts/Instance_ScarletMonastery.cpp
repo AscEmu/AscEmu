@@ -26,12 +26,12 @@
 // Graveyard
 
 // Interrogator Vishas
-class VishasAI : public MoonScriptCreatureAI
+class VishasAI : public CreatureAIScript
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(VishasAI, MoonScriptCreatureAI);
-        VishasAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(VishasAI);
+        VishasAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             AddSpell(SP_VISHAS_SHADOW_WORD, Target_RandomPlayer, 20, 0, 8);
 
@@ -52,7 +52,7 @@ class VishasAI : public MoonScriptCreatureAI
         {
             m_uiSay = 0;
 
-            ParentClass::OnCombatStop(pTarget);
+            
         }
 
         void AIUpdate()
@@ -69,7 +69,7 @@ class VishasAI : public MoonScriptCreatureAI
                 m_uiSay = 2;
             }
 
-            ParentClass::AIUpdate();
+            
         }
 
     private:
@@ -78,12 +78,12 @@ class VishasAI : public MoonScriptCreatureAI
 };
 
 // Bloodmage Thalnos
-class ThalnosAI : public MoonScriptCreatureAI
+class ThalnosAI : public CreatureAIScript
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(ThalnosAI, MoonScriptCreatureAI);
-        ThalnosAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(ThalnosAI);
+        ThalnosAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             AddSpell(SP_THALNOS_SHADOW_BOLT, Target_RandomPlayer, 20, 3.0f, 2);
             AddSpell(SP_THALNOS_FLAME_SPIKE, Target_RandomPlayerDestination, 20, 3.0f, 14);
@@ -105,7 +105,7 @@ class ThalnosAI : public MoonScriptCreatureAI
         {
             m_bEmoted = false;
 
-            ParentClass::OnCombatStop(pTarget);
+            
         }
 
         void AIUpdate()
@@ -116,7 +116,7 @@ class ThalnosAI : public MoonScriptCreatureAI
                 m_bEmoted = true;
             }
 
-            ParentClass::AIUpdate();
+            
         }
 
     private:
@@ -126,12 +126,12 @@ class ThalnosAI : public MoonScriptCreatureAI
 
 // Library
 //Houndmaster Loksey
-class LokseyAI : public MoonScriptCreatureAI
+class LokseyAI : public CreatureAIScript
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(LokseyAI, MoonScriptCreatureAI);
-        LokseyAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(LokseyAI);
+        LokseyAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             AddSpell(SP_LOKSEY_BLOODLUST, Target_Self, 5, 0, 40);
         }
@@ -143,12 +143,12 @@ class LokseyAI : public MoonScriptCreatureAI
 };
 
 // Arcanist Doan
-class DoanAI : public MoonScriptCreatureAI
+class DoanAI : public CreatureAIScript
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(DoanAI, MoonScriptCreatureAI);
-        DoanAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(DoanAI);
+        DoanAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             AddSpell(SP_DOAN_SILENCE, Target_Self, 25, 1.5f, 14);
             AddSpell(SP_DOAN_POLY, Target_SecondMostHated, 15, 1.5f, 10);
@@ -180,7 +180,7 @@ class DoanAI : public MoonScriptCreatureAI
         {
             m_bShielded = false;
 
-            ParentClass::OnCombatStop(pTarget);
+            
         }
 
     private:
@@ -192,12 +192,12 @@ class DoanAI : public MoonScriptCreatureAI
 
 // Armory
 // Herod
-class HerodAI : public MoonScriptCreatureAI
+class HerodAI : public CreatureAIScript
 {
     public:
 
-        MOONSCRIPT_FACTORY_FUNCTION(HerodAI, MoonScriptCreatureAI);
-        HerodAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(HerodAI);
+        HerodAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             AddSpell(SP_HEROD_WHIRLWINDSPELL, Target_Self, 12, 0, 12)->AddEmote("Blades of Light!", CHAT_MSG_MONSTER_YELL, 5832);
             AddSpell(SP_HEROD_CHARGE, Target_RandomPlayer, 6, 0, 20);
@@ -220,7 +220,7 @@ class HerodAI : public MoonScriptCreatureAI
             m_bEnraged = false;
             _removeAura(SP_HEROD_ENRAGESPELL);
 
-            ParentClass::OnCombatStop(pTarget);
+            
         }
 
         void AIUpdate()
@@ -231,7 +231,7 @@ class HerodAI : public MoonScriptCreatureAI
                 _applyAura(SP_HEROD_ENRAGESPELL);
             }
 
-            ParentClass::AIUpdate();
+            
         }
 
         bool    m_bEnraged;
