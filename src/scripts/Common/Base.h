@@ -299,7 +299,7 @@ class MoonScriptCreatureAI : public CreatureAIScript
 
         //Basic Interface
         SpellDesc* AddPhaseSpell(uint32 pPhase, SpellDesc* pSpell);
-        void SetPhase(uint32 pPhase, SpellDesc* pPhaseChangeSpell = NULL);
+        void SetPhase(uint32 pPhase);
         void SetEnrageInfo(SpellDesc* pSpell, uint32 pTriggerMilliseconds);
 
     protected:

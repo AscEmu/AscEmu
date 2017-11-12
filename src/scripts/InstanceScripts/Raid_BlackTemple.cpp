@@ -1176,16 +1176,31 @@ class ShadowmoonWeaponMasterAI : public MoonScriptCreatureAI
         {
             if (isScriptPhase(1) && _getHealthPercent() <= 85)
             {
-                SetPhase(2, mDefensiveStance);
+                SetPhase(2);
                 return;
             }
             if (isScriptPhase(2) && _getHealthPercent() <= 35)
             {
-                SetPhase(3, mBerserkerStance);
+                SetPhase(3);
                 return;
             }
 
             ParentClass::AIUpdate();
+        }
+
+        void OnScriptPhaseChange(uint32_t phaseId)
+        {
+            switch (phaseId)
+            {
+                case 2:
+                    CastSpellNowNoScheduling(mDefensiveStance);
+                    break;
+                case 3:
+                    CastSpellNowNoScheduling(mBerserkerStance);
+                    break;
+                default:
+                    break;
+            }
         }
 
         SpellDesc* mDefensiveStance;

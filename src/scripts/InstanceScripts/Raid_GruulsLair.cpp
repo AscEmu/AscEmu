@@ -164,11 +164,21 @@ class HighKingMaulgarAI : public MoonScriptCreatureAI
                 return;
 
             if (isScriptPhase(1) && _getHealthPercent() <= 50)
-            {
-                SetPhase(2, mEnrage);
-            }
+                SetPhase(2);
 
             ParentClass::AIUpdate();
+        }
+
+        void OnScriptPhaseChange(uint32_t phaseId)
+        {
+            switch (phaseId)
+            {
+                case 2:
+                    CastSpellNowNoScheduling(mEnrage);
+                    break;
+                default:
+                    break;
+            }
         }
 
         void OnAddDied()

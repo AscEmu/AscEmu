@@ -766,7 +766,7 @@ SpellDesc* MoonScriptCreatureAI::AddPhaseSpell(uint32 pPhase, SpellDesc* pSpell)
     return pSpell;
 }
 
-void MoonScriptCreatureAI::SetPhase(uint32 pPhase, SpellDesc* pPhaseChangeSpell)
+void MoonScriptCreatureAI::SetPhase(uint32 pPhase)
 {
     if (isScriptPhase(pPhase) == false)
     {
@@ -784,10 +784,6 @@ void MoonScriptCreatureAI::SetPhase(uint32 pPhase, SpellDesc* pPhaseChangeSpell)
 
         //Remember phase index
         setScriptPhase(pPhase);
-
-        //Cast phase change spell now if available
-        if (pPhaseChangeSpell)
-            CastSpellNowNoScheduling(pPhaseChangeSpell);
     }
 }
 

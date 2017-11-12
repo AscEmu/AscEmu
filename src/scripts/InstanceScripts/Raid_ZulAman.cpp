@@ -82,7 +82,7 @@ class NalorakkAI : public MoonScriptCreatureAI
             // Bear Form
             if (_isTimerFinished(MorphTimer) && isScriptPhase(1))
             {
-                SetPhase(2, Morph);
+                SetPhase(2);
                 // Morph into a bear since the spell doesnt work
                 _setDisplayId(21635);
                 // 20 Seconds until switch to Troll Form
@@ -277,7 +277,7 @@ class HalazziAI : public MoonScriptCreatureAI
                 mLynx->m_noRespawn = true;
             }
 
-            SetPhase(2, Transfigure);
+            SetPhase(2);
         }
 
         void Merge()
@@ -297,6 +297,18 @@ class HalazziAI : public MoonScriptCreatureAI
 
             SplitCount++;
             SetPhase(1);
+        }
+
+        void OnScriptPhaseChange(uint32_t phaseId)
+        {
+            switch (phaseId)
+            {
+                case 2:
+                    CastSpellNowNoScheduling(Transfigure);
+                    break;
+                default:
+                    break;
+            }
         }
 
         Creature* mLynx;

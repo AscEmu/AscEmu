@@ -1335,7 +1335,7 @@ void NothThePlaguebringerAI::AIUpdate()
         {
             if (mPhaseCounter < 3 && _isTimerFinished(mPhaseSwitchTimer))
             {
-                SetPhase(2, mToBalconySwitch);
+                SetPhase(2);
                 _resetTimer(mPhaseSwitchTimer, 70000);
                 _resetTimer(mSkeletonTimer, 0);
                 ++mPhaseCounter;
@@ -1404,7 +1404,7 @@ void NothThePlaguebringerAI::AIUpdate()
     {
         if (!_isCasting() && _isTimerFinished(mPhaseSwitchTimer))
         {
-            SetPhase(1, mFromBalconySwitch);
+            SetPhase(1);
             _resetTimer(mPhaseSwitchTimer, 70000);
             _resetTimer(mSkeletonTimer, 8000);
             if (_isHeroic())
@@ -1493,6 +1493,21 @@ void NothThePlaguebringerAI::AIUpdate()
         setAIAgent(AGENT_SPELL);
         setRooted(true);
         stopMovement();
+    }
+}
+
+void NothThePlaguebringerAI::OnScriptPhaseChange(uint32_t phaseId)
+{
+    switch (phaseId)
+    {
+        case 1:
+            CastSpellNowNoScheduling(mFromBalconySwitch);
+            break;
+        case 2:
+            CastSpellNowNoScheduling(mToBalconySwitch);
+            break;
+        default:
+            break;
     }
 }
 

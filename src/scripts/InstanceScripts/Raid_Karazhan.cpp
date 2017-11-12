@@ -250,21 +250,41 @@ class MoroesAI : public MoonScriptCreatureAI
             }
             else if (_isTimerFinished(mVanishTimer) && !_isCasting())
             {
-                SetPhase(2, mVanish);
-                mGarroteTimer = _addTimer(12000);
-                _resetTimer(mVanishTimer, 35000);
+                SetPhase(2);
             }
         }
         else if (isScriptPhase(2))
         {
             if (_isTimerFinished(mGarroteTimer) && !_isCasting())
             {
-                SetPhase(1, mGarrote);
-                _removeAura(MOROES_VANISH);
-                _removeTimer(mGarroteTimer);
+                SetPhase(1);
             }
         }
         ParentClass::AIUpdate();
+    }
+
+    void OnScriptPhaseChange(uint32_t phaseId)
+    {
+        switch (phaseId)
+        {
+            case 1:
+            {
+                if (_isTimerFinished(mGarroteTimer))
+                {
+                    CastSpellNowNoScheduling(mGarrote);
+                    _removeAura(MOROES_VANISH);
+                    _removeTimer(mGarroteTimer);
+                }
+
+            } break;
+            case 2:
+                CastSpellNowNoScheduling(mVanish);
+                mGarroteTimer = _addTimer(12000);
+                _resetTimer(mVanishTimer, 35000);
+                break;
+            default:
+                break;
+        }
     }
 
     SpellDesc* mVanish;

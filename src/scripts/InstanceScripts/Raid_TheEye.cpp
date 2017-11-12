@@ -1736,6 +1736,8 @@ class HighAstromancerSolarianAI : public MoonScriptCreatureAI
             addEmoteForEvent(Event_OnTargetDied, 8874);
             addEmoteForEvent(Event_OnTargetDied, 8875);
             addEmoteForEvent(Event_OnTargetDied, 8876);
+
+            isNotInitialPhase = false;
         }
 
         void OnCombatStart(Unit* pTarget)
@@ -1750,12 +1752,12 @@ class HighAstromancerSolarianAI : public MoonScriptCreatureAI
             {
                 if (_getHealthPercent() <= 20 && !_isCasting())
                 {
-                    SetPhase(3, mVoidForm);
+                    SetPhase(3);
                     _cancelAllTimers();
                 }
                 else if (_isTimerFinished(mSplitTimer) && !_isCasting())
                 {
-                    SetPhase(2, mDisappear);
+                    SetPhase(2);
                     _resetTimer(mSplitTimer, 90000);        //Next split in 90sec
                     mAgentsTimer = _addTimer(6000);        //Agents spawns 6sec after the split
                     mSolarianTimer = _addTimer(22000);    //Solarian with 2 priests spawns 22sec after split
@@ -1765,7 +1767,8 @@ class HighAstromancerSolarianAI : public MoonScriptCreatureAI
             {
                 if (_isTimerFinished(mSolarianTimer) && !_isCasting())
                 {
-                    SetPhase(1, mReappear);
+                    isNotInitialPhase = true;
+                    SetPhase(1);
                     _removeTimer(mSolarianTimer);
                 }
                 else if (_isTimerFinished(mAgentsTimer) && !_isCasting())
@@ -1782,6 +1785,25 @@ class HighAstromancerSolarianAI : public MoonScriptCreatureAI
             ParentClass::AIUpdate();
         }
 
+        void OnScriptPhaseChange(uint32_t phaseId)
+        {
+            switch (phaseId)
+            {
+                case 1:
+                    if (isNotInitialPhase)
+                        CastSpellNowNoScheduling(mReappear);
+                    break;
+                case 2:
+                    CastSpellNowNoScheduling(mDisappear);
+                    break;
+                case 3:
+                    CastSpellNowNoScheduling(mVoidForm);
+                    break;
+                default:
+                    break;
+            }
+        }
+
         SpellDesc* mVoidForm;
         SpellDesc* mDisappear;
         SpellDesc* mReappear;
@@ -1789,6 +1811,7 @@ class HighAstromancerSolarianAI : public MoonScriptCreatureAI
         uint32 mAgentsTimer;
         uint32 mSolarianTimer;
         float mSpawnPositions[3][2];
+        bool isNotInitialPhase;
 };
 
 bool Dummy_Solarian_WrathOfTheAstromancer(uint32 pEffectIndex, Spell* pSpell)
@@ -2003,7 +2026,7 @@ class AlarAI : public CreatureAIScript
 
             FlameQuills = false;
             Meteor = false;
-            SetPhase(0);
+            SetLocalePhase(0);
             nDeath = 0;
             timer = lasttime = 0;
             getCreature()->GetAIInterface()->setOutOfCombatRange(200000);
@@ -2048,7 +2071,7 @@ class AlarAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void SetPhase(uint32 ph)
+        void SetLocalePhase(uint32 ph)
         {
             Phase = ph;
             getCreature()->SetBaseMana(Phase);
@@ -2060,7 +2083,7 @@ class AlarAI : public CreatureAIScript
 
             FlameQuills = false;
             Meteor = false;
-            SetPhase(0);
+            SetLocalePhase(0);
 
             RemoveAIUpdateEvent();
         }
@@ -2068,7 +2091,7 @@ class AlarAI : public CreatureAIScript
         void Rebirth()
         {
             //_unit->SetPosition(fly[11].x, fly[11].y, fly[11].z, fly[11].o);
-            SetPhase(2);
+            SetLocalePhase(2);
             getCreature()->CastSpell(getCreature(), spells[6].info, spells[6].instant);
             getCreature()->setUInt64Value(UNIT_FIELD_HEALTH, getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH));
             getCreature()->setDeathState(ALIVE);
@@ -2089,7 +2112,7 @@ class AlarAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             nDeath++;
-            SetPhase(0);
+            SetLocalePhase(0);
             nDeath = 0;
             FlameQuills = false;
             Meteor = false;
@@ -2140,7 +2163,7 @@ class AlarAI : public CreatureAIScript
                     break;
                 default:
                     {
-                        SetPhase(0);
+                    SetLocalePhase(0);
                     }
             }
         }

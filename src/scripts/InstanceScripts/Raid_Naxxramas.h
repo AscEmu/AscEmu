@@ -501,6 +501,7 @@ class NothThePlaguebringerAI : public MoonScriptCreatureAI
     void OnCombatStart(Unit* pTarget);
     void OnCombatStop(Unit* pTarget);
     void AIUpdate();
+    void OnScriptPhaseChange(uint32_t phaseId);
     void Destroy();
 
     std::set<PlaguedWarriorAI*> mWarriors;

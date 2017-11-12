@@ -200,15 +200,9 @@ class MrSmiteAI : public MoonScriptCreatureAI
         void AIUpdate()
         {
             if (_getHealthPercent() <= 66 && isScriptPhase(1))
-            {
-                sendChatMessage(CHAT_MSG_MONSTER_YELL, 5778, "You landlubbers are tougher than I thought. I'll have to improvise!");
-                SetPhase(2, mStomp);
-            }
+                SetPhase(2);
             else if (_getHealthPercent() <= 33 && isScriptPhase(3))
-            {
-                sendChatMessage(CHAT_MSG_MONSTER_YELL, 5779, "D'ah! Now you're making me angry!");
-                SetPhase(4, mStomp);
-            }
+                SetPhase(4);
 
             if (isScriptPhase(2) || isScriptPhase(4))
             {
@@ -224,6 +218,23 @@ class MrSmiteAI : public MoonScriptCreatureAI
                 MoveToPlayer();
 
             ParentClass::AIUpdate();
+        }
+
+        void OnScriptPhaseChange(uint32_t phaseId)
+        {
+            switch (phaseId)
+            {
+                case 2:
+                    sendChatMessage(CHAT_MSG_MONSTER_YELL, 5778, "You landlubbers are tougher than I thought. I'll have to improvise!");
+                    CastSpellNowNoScheduling(mStomp);
+                    break;
+                case 4:
+                    sendChatMessage(CHAT_MSG_MONSTER_YELL, 5779, "D'ah! Now you're making me angry!");
+                    CastSpellNowNoScheduling(mStomp);
+                    break;
+                default:
+                    break;
+            }
         }
 
         void MoveToChest()

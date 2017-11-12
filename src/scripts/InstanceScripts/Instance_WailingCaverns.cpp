@@ -361,12 +361,23 @@ class DofNaralexAI : public MoonScriptCreatureAI
         {
             ForceWaypointMove(iWaypointId + 1);
             if (isScriptPhase(1) && GetCurrentWaypoint() == 39)
-            {
-                getCreature()->Emote(EMOTE_ONESHOT_TALK);
-                SetPhase(2, Awakening);
-                SpawnTimer = _addTimer(100000);
-            }
+                SetPhase(2);
+
             ParentClass::OnReachWP(iWaypointId, bForwards);
+        }
+
+        void OnScriptPhaseChange(uint32_t phaseId)
+        {
+            switch (phaseId)
+            {
+                case 2:
+                    getCreature()->Emote(EMOTE_ONESHOT_TALK);
+                    CastSpellNowNoScheduling(Awakening);
+                    SpawnTimer = _addTimer(100000);
+                    break;
+                default:
+                    break;
+            }
         }
 
         void AIUpdate()
