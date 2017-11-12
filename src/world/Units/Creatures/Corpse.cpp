@@ -23,7 +23,6 @@
 #include "Server/MainServerDefines.h"
 #include "Map/MapCell.h"
 #include "Corpse.h"
-#include "../../../scripts/Common/Base.h"
 
 Corpse::Corpse(uint32 high, uint32 low)
 {

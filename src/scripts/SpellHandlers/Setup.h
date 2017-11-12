@@ -30,12 +30,7 @@ void SetupRogueSpells(ScriptMgr* mgr);
 void SetupPriestSpells(ScriptMgr* mgr);
 void SetupDruidSpells(ScriptMgr* mgr);
 void SetupDeathKnightSpells(ScriptMgr* mgr);
-
-void SetupOldSpellCPPSuff(ScriptMgr* mgr);
 void SetupPetAISpells(ScriptMgr* mgr);
 void SetupQuestItems(ScriptMgr* mgr);
 void SetupItemSpells_1(ScriptMgr* mgr);
 void SetupMiscSpellhandlers(ScriptMgr* mgr);
-
-//Instance spells (mainly scripted targets)
-void SetupRaidBlackTempleSpells(ScriptMgr* mgr);

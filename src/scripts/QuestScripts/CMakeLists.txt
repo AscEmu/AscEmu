@@ -10,7 +10,6 @@ project(QuestScripts CXX)
 
 SET(sources
     Setup.cpp 
-    ../Common/Base.cpp 
     Quest_ArathiHighlands.cpp 
     Quest_Azuremyst_Isle.cpp 
     Quest_BladeEdge_Mountains.cpp 
@@ -70,7 +69,6 @@ SET(sources
 
 set(headers
    Setup.h
-   ../Common/Base.h
    )
 
 include_directories(

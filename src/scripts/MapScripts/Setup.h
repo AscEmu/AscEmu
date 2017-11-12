@@ -10,11 +10,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/MapMgr.h"
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
-#include <Management/QuestLogEntry.hpp>
+#include "Management/QuestLogEntry.hpp"
 #include "Map/MapScriptInterface.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Map/WorldCreatorDefines.hpp"
-#include "../Common/Base.h"
 
 
 void AlteracValleyScripts(ScriptMgr* scriptMgr);

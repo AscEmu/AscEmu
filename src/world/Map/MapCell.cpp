@@ -28,7 +28,6 @@
 #include "WorldCreator.h"
 #include "Units/Creatures/Creature.h"
 #include "Objects/GameObject.h"
-#include "../../scripts/Common/Base.h"
 
 #define MAX_MAP 800
 

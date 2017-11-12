@@ -2563,7 +2563,7 @@ const uint32 DARKENER_SILENCE = 29943;
 class DarkenerAI : public CreatureAIScript
 {
     public:
-        ADD_CREATURE_FACTORY_FUNCTION(DarkenerAI, CreatureAIScript)
+        ADD_CREATURE_FACTORY_FUNCTION(DarkenerAI);
         DarkenerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             AddSpell(DARKENER_PSYCHIC_BLOW, Target_Current, 10, 0, 20);
@@ -2642,7 +2642,7 @@ const uint32 SANGUINAR_BELLOWING = 36922;
 class SanguinarAI : public CreatureAIScript
 {
     public:
-        ADD_CREATURE_FACTORY_FUNCTION(SanguinarAI, CreatureAIScript)
+        ADD_CREATURE_FACTORY_FUNCTION(SanguinarAI);
         SanguinarAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             AddSpell(SANGUINAR_BELLOWING, Target_Self, 100, 0, 30);

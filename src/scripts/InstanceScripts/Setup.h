@@ -1,36 +1,20 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+This file is released under the MIT license. See README-MIT for more information.
+*/
+
+#pragma once
 
 #include "Units/Creatures/AIInterface.h"
 #include "Management/Item.h"
 #include "Map/MapMgr.h"
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
-#include <Management/QuestLogEntry.hpp>
+#include "Management/QuestLogEntry.hpp"
 #include "Map/MapScriptInterface.h"
-#include <Spell/Customization/SpellCustomizations.hpp>
+#include "Spell/Customization/SpellCustomizations.hpp"
 #include "Map/WorldCreatorDefines.hpp"
-#include "../Common/Base.h"
 
-#ifndef _INSTANCE_SCRIPTS_SETUP_H
-#define _INSTANCE_SCRIPTS_SETUP_H
-
-//Instances
 void SetupArcatraz(ScriptMgr* mgr);
 void SetupAuchenaiCrypts(ScriptMgr* mgr);
 void SetupAzjolNerub(ScriptMgr* mgr);
@@ -274,5 +258,3 @@ enum InstanceAreas
 {
     AREA_VIOLET_HOLD = 4415
 };
-
-#endif      // _INSTANCE_SCRIPTS_SETUP_H

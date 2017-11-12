@@ -18,8 +18,7 @@
  */
 
 #include "Setup.h"
-#define SKIP_ALLOCATOR_SHARING 1
-#include <Server/Script/ScriptSetup.h>
+#include "Server/Script/ScriptSetup.h"
 
 extern "C" SCRIPT_DECL void _exp_set_serverstate_singleton(ServerState* state)
 {
@@ -31,26 +30,18 @@ extern "C" SCRIPT_DECL uint32 _exp_get_script_type()
     return SCRIPT_TYPE_MISC;
 }
 
-extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)    // Comment any script to disable it
+extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
 {
     SetupGoHandlers(mgr);
     SetupRandomScripts(mgr);
     SetupMiscCreatures(mgr);
-
-    // Sets up gossip scripts for gameobjects in the (optional)
-    // gameobject_teleports table. If the table doesn't exist the
-    // initialization will quietly fail.
     InitializeGameObjectTeleportTable(mgr);
-
-    //AscEmu
     SetupCityDalaran(mgr);
 }
 
 #ifdef WIN32
-
-BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
-{
-    return TRUE;
-}
-
+    BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
+    {
+        return TRUE;
+    }
 #endif

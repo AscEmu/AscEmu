@@ -19,11 +19,7 @@
  */
 
 #include "Setup.h"
-
-#define SKIP_ALLOCATOR_SHARING 1
-
-#include <Server/Script/ScriptSetup.h>
-
+#include "Server/Script/ScriptSetup.h"
 #include "AlteracValley.h"
 #include "ArathiBasin.h"
 #include "CircleOfBlood.h"
@@ -76,10 +72,8 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
 }
 
 #ifdef WIN32
-
-BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
-{
-    return TRUE;
-}
-
+    BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
+    {
+        return TRUE;
+    }
 #endif

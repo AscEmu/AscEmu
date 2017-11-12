@@ -31,7 +31,6 @@
 #include "Map/MapMgr.h"
 #include "Objects/Faction.h"
 #include "Spell/SpellAuras.h"
-#include "../../scripts/Common/Base.h"
 #include "Spell/Definitions/SpellLog.h"
 #include "Spell/Definitions/SpellCastTargetFlags.h"
 #include "Spell/Definitions/ProcFlags.h"

@@ -16,7 +16,6 @@ set(sources
     GameObjectTeleportTable.cpp
     RandomScripts.cpp
     Setup.cpp
-    ../Common/Base.cpp
     # Required for linker
     ../../world/Server/LazyTimer.cpp
     ../../world/Server/ServerState.cpp
@@ -24,7 +23,6 @@ set(sources
 
 set(headers
    Setup.h
-   ../Common/Base.h
 )
 
 include_directories(

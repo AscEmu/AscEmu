@@ -1,34 +1,23 @@
 /*
- * Moon++ Scripts for Ascent MMORPG Server
- * Copyright (C) 2005-2007 Ascent Team
- * Copyright (C) 2007-2015 Moon++ Team <http://www.moonplusplus.info/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-#include "../Common/Base.h"
+#pragma once
 
-#ifndef MISC_SCRIPTS_SETUP_H
-#define MISC_SCRIPTS_SETUP_H
+#include "Units/Creatures/AIInterface.h"
+#include "Management/Item.h"
+#include "Map/MapMgr.h"
+#include "Management/ItemInterface.h"
+#include "Storage/MySQLDataStore.hpp"
+#include "Management/QuestLogEntry.hpp"
+#include "Map/MapScriptInterface.h"
+#include "Spell/Customization/SpellCustomizations.hpp""
+#include "Map/WorldCreatorDefines.hpp"
 
 void SetupGoHandlers(ScriptMgr* mgr);
 void SetupQDGoHandlers(ScriptMgr* mgr);
 void SetupRandomScripts(ScriptMgr* mgr);
 void SetupMiscCreatures(ScriptMgr* mgr);
 void InitializeGameObjectTeleportTable(ScriptMgr* mgr);
-
-//AscEmu
 void SetupCityDalaran(ScriptMgr* mgr);
-
-#endif

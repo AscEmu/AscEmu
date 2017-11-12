@@ -27,9 +27,6 @@
 
 #include <git_version.h>
 
-#ifndef SKIP_ALLOCATOR_SHARING
-#include "CoreMemoryAllocator.cpp"
-#endif
 
 extern "C" SCRIPT_DECL const char* _exp_get_version()
 {

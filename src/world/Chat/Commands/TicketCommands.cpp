@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/MainServerDefines.h"
 #include "Chat/ChatHandler.hpp"
 #include "Server/WorldSession.h"
-#include "../../../scripts/Common/Base.h"
 
 bool ChatHandler::HandleTicketListCommand(const char* /*args*/, WorldSession* m_session)
 {
