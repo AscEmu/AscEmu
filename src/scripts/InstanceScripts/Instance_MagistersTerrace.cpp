@@ -190,7 +190,7 @@ class VexallusAI : public MoonScriptCreatureAI
     {
         sendDBChatMessage(3003);     // Drain... life!
 
-        SetPhase(1);
+        setScriptPhase(1);
         ParentClass::OnCombatStart(pTarget);
     }
 
@@ -213,7 +213,7 @@ class VexallusAI : public MoonScriptCreatureAI
         }
 
         if (_getHealthPercent() <= 10 && isScriptPhase(1))
-            SetPhase(2);
+            setScriptPhase(2);
 
 
         ParentClass::AIUpdate();

@@ -468,7 +468,7 @@ class WardenMellicharAI : public MoonScriptCreatureAI
                     else if (NPC_orb1 && !NPC_orb1->isAlive())
                     {
                         sendDBChatMessage(SAY_MELLICHAR_03);
-                        SetPhase(2);
+                        setScriptPhase(2);
                         Phasepart = 0;
                         _resetTimer(Phase_Timer, 6000);
                         return;
@@ -516,7 +516,7 @@ class WardenMellicharAI : public MoonScriptCreatureAI
 
                             millhouse->SendTimedScriptTextChatMessage(SAY_MILLHOUS_02, 22000);
                         }
-                        SetPhase(3);
+                        setScriptPhase(3);
                         Phasepart = 0;
                         _resetTimer(Phase_Timer, 25000);
                         return;
@@ -575,7 +575,7 @@ class WardenMellicharAI : public MoonScriptCreatureAI
                     else if (NPC_orb3 && !NPC_orb3->isAlive())
                     {
                         sendDBChatMessage(SAY_MELLICHAR_05);
-                        SetPhase(4);
+                        setScriptPhase(4);
                         Phasepart = 0;
                         _resetTimer(Phase_Timer, 8000);
                         return;
@@ -629,7 +629,7 @@ class WardenMellicharAI : public MoonScriptCreatureAI
                     else if (NPC_orb4 && !NPC_orb4->isAlive())
                     {
                         sendDBChatMessage(SAY_MELLICHAR_06);
-                        SetPhase(5);
+                        setScriptPhase(5);
                         Phasepart = 0;
                         _resetTimer(Phase_Timer, 6000);
                         return;

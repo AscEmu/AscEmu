@@ -120,7 +120,7 @@ namespace MapManagement
 
             if (wmoEntry)
             {
-                LOG_DEBUG("Got WMOAreaTableEntry! flag %u, areaid %u", wmoEntry->flags, wmoEntry->areaId);
+                LogDebugFlag(LF_MAP, "Got WMOAreaTableEntry! flag %u, areaid %u", wmoEntry->flags, wmoEntry->areaId);
                 atEntry = sAreaStore.LookupEntry(wmoEntry->areaId);
             }
 

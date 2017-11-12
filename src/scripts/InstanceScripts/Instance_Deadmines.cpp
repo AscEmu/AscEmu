@@ -191,7 +191,7 @@ class MrSmiteAI : public MoonScriptCreatureAI
             if (!isAlive())
                 _setWieldWeapon(false);
 
-            SetPhase(1);
+            setScriptPhase(1);
             SwitchWeapons();
             _removeTimer(mWaitAtChest);
             ParentClass::OnCombatStop(pTarget);
@@ -200,9 +200,9 @@ class MrSmiteAI : public MoonScriptCreatureAI
         void AIUpdate()
         {
             if (_getHealthPercent() <= 66 && isScriptPhase(1))
-                SetPhase(2);
+                setScriptPhase(2);
             else if (_getHealthPercent() <= 33 && isScriptPhase(3))
-                SetPhase(4);
+                setScriptPhase(4);
 
             if (isScriptPhase(2) || isScriptPhase(4))
             {
@@ -295,7 +295,7 @@ class MrSmiteAI : public MoonScriptCreatureAI
             // Wait at the chest for 4.5seconds -- Still needs work
             getCreature()->setAttackTimer(4500, false);
             mWaitAtChest = _addTimer(4500);
-            SetPhase(getScriptPhase() + 1);
+            setScriptPhase(getScriptPhase() + 1);
         }
 
     protected:
@@ -341,7 +341,7 @@ class VanCleefAI : public MoonScriptCreatureAI
         if (_getHealthPercent() <= 75 && isScriptPhase(1))
         {
             sendDBChatMessage(7723);     // Lapdogs, all of you!
-            SetPhase(2);
+            setScriptPhase(2);
         }
         else if (_getHealthPercent() <= 50 && isScriptPhase(2))
         {
@@ -356,13 +356,13 @@ class VanCleefAI : public MoonScriptCreatureAI
                 }
             }
 
-            SetPhase(3);
+            setScriptPhase(3);
 
         }
         else if (_getHealthPercent() <= 25 && isScriptPhase(3))
         {
             sendDBChatMessage(7727);     // The Brotherhood shall prevail!
-            SetPhase(4);
+            setScriptPhase(4);
         }
         ParentClass::AIUpdate();
     }

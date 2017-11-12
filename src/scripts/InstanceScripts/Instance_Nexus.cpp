@@ -256,7 +256,7 @@ class TelestraBossAI : public MoonScriptCreatureAI
                         break;
                 }
 
-                SetPhase(2);
+                setScriptPhase(2);
                 setRooted(true);
                 _setRangedDisabled(true);
                 _setCastDisabled(true);
@@ -292,7 +292,7 @@ class TelestraBossAI : public MoonScriptCreatureAI
                 _removeAura(60191);
                 setRooted(false);
                 mPhaseRepeat = 1;
-                SetPhase(_isHeroic() ? 1 : 3);   //3 disables p2
+                setScriptPhase(_isHeroic() ? 1 : 3);   //3 disables p2
             }
 
             ParentClass::AIUpdate();

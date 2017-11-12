@@ -196,7 +196,7 @@ static Movement::Location WebWrapPos[] =
     { 3523.486572f, -3946.144287f, 309.651611f, 1.973552f }
 };
 
-void SpellFunc_MaexxnaWebWrap(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
+void SpellFunc_MaexxnaWebWrap(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
 
 class MaexxnaAI : public MoonScriptCreatureAI
 {
@@ -244,7 +244,7 @@ const uint32 CN_NAXXRAMAS_FOLLOWER = 16505;
 const uint32 NAXXRAMAS_FOLLOWER_BERSERKER_CHARGE_HEROIC = 56107;
 const uint32 NAXXRAMAS_FOLLOWER_SILENCE_HEROIC = 54093;
 
-void SpellFunc_NaxxramasFollowerCharge(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
+void SpellFunc_NaxxramasFollowerCharge(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
 
 class NaxxramasFollowerAI : public MoonScriptCreatureAI
 {
@@ -355,8 +355,8 @@ static Movement::Location CryptGuards[] =
     { 3332.591797f, -3476.102539f, 287.073425f, 0.015707f }
 };
 
-void SpellFunc_AnubRekhanCorpseScarabsPlayer(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
-void SpellFunc_AnubRekhanCorpseScarabsCryptGuard(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
+void SpellFunc_AnubRekhanCorpseScarabsPlayer(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
+void SpellFunc_AnubRekhanCorpseScarabsCryptGuard(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
 
 class AnubRekhanAI : public MoonScriptCreatureAI
 {
@@ -485,10 +485,10 @@ static Movement::Location SkelPosPhase2[] =
     { 2717.878906f, -3518.062988f, 261.905945f, 3.177050f }
 };
 
-void SpellFunc_NothToBalconyPhaseSwitch(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
-void SpellFunc_NothFromBalconyPhaseSwitch(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
-void SpellFunc_NothCriple(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
-void SpellFunc_NothBlink(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
+void SpellFunc_NothToBalconyPhaseSwitch(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
+void SpellFunc_NothFromBalconyPhaseSwitch(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
+void SpellFunc_NothCriple(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
+void SpellFunc_NothBlink(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
 
 class NothThePlaguebringerAI : public MoonScriptCreatureAI
 {
@@ -780,7 +780,7 @@ const uint32 NECRO_KNIGHT_CONE_OF_COLD = 30095;
 const uint32 NECRO_KNIGHT_FLAMESTRIKE = 30091;
 const uint32 NECRO_KNIGHT_FROST_NOVA = 30094;
 
-void SpellFunc_NecroKnightBlink(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
+void SpellFunc_NecroKnightBlink(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
 
 class NecroKnightAI : public MoonScriptCreatureAI
 {
@@ -835,7 +835,7 @@ class DeathKnightCavalierAI : public MoonScriptCreatureAI
 const uint32 CN_DEATHCHARGER_STEED = 29818;
 const uint32 DEATHCHARGER_STEED_CHARGE = 55317;
 
-void SpellFunc_DeathchargerSteedCharge(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
+void SpellFunc_DeathchargerSteedCharge(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
 
 class DeathchargerSteedAI : public MoonScriptCreatureAI
 {
@@ -1203,7 +1203,7 @@ class MaraudingGeistAI : public MoonScriptCreatureAI
 /////////////////////////////////////////////////////////////////////////////////
 ////// Patchwerk
 
-void SpellFunc_PatchwerkHatefulStrike(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
+void SpellFunc_PatchwerkHatefulStrike(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
 
 const uint32 CN_PATCHWERK = 16028;
 const uint32 PATCHWERK_FRENZY = 28131;

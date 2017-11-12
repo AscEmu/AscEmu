@@ -653,7 +653,7 @@ class DalronnTheControllerGhostAI : public MoonScriptCreatureAI
 ////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////// Prince Keleseth ///////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
-void SpellFunc_KelesethFrostTomb(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_KelesethFrostTomb(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
 {
     if (pCreatureAI != NULL)
     {
@@ -666,7 +666,7 @@ void SpellFunc_KelesethFrostTomb(SpellDesc* pThis, MoonScriptCreatureAI* pCreatu
     }
 }
 
-void SpellFunc_KelesethAddSummon(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_KelesethAddSummon(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
 {
     if (pCreatureAI != NULL)
     {
@@ -783,7 +783,7 @@ class SkeletonAddAI : public MoonScriptCreatureAI
 ////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// Ingvar the Plunderer //////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
-void SpellFunc_ShadowAxe(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_ShadowAxe(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
 {
     if (pCreatureAI != NULL)
     {

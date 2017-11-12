@@ -353,7 +353,7 @@ void MaexxnaAI::AIUpdate()
     ParentClass::AIUpdate();
 }
 
-void SpellFunc_MaexxnaWebWrap(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_MaexxnaWebWrap(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
 {
     MaexxnaAI* Maexxna = (pCreatureAI != NULL) ? static_cast< MaexxnaAI* >(pCreatureAI) : NULL;
     if (Maexxna != NULL)
@@ -552,7 +552,7 @@ void NaxxramasFollowerAI::Destroy()
     delete this;
 }
 
-void SpellFunc_NaxxramasFollowerCharge(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_NaxxramasFollowerCharge(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
 {
     NaxxramasFollowerAI* NaxxramasFollower = (pCreatureAI != NULL) ? static_cast< NaxxramasFollowerAI* >(pCreatureAI) : NULL;
     if (NaxxramasFollower != NULL)
@@ -955,7 +955,7 @@ void AnubRekhanAI::Destroy()
     delete this;
 }
 
-void SpellFunc_AnubRekhanCorpseScarabsPlayer(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_AnubRekhanCorpseScarabsPlayer(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
 {
     AnubRekhanAI* AnubRekhan = (pCreatureAI != NULL) ? static_cast< AnubRekhanAI* >(pCreatureAI) : NULL;
     if (AnubRekhan != NULL)
@@ -1026,7 +1026,7 @@ void SpellFunc_AnubRekhanCorpseScarabsPlayer(SpellDesc* pThis, MoonScriptCreatur
     }
 }
 
-void SpellFunc_AnubRekhanCorpseScarabsCryptGuard(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_AnubRekhanCorpseScarabsCryptGuard(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
 {
     AnubRekhanAI* AnubRekhan = (pCreatureAI != NULL) ? static_cast< AnubRekhanAI* >(pCreatureAI) : NULL;
     if (AnubRekhan != NULL)
@@ -1335,7 +1335,7 @@ void NothThePlaguebringerAI::AIUpdate()
         {
             if (mPhaseCounter < 3 && _isTimerFinished(mPhaseSwitchTimer))
             {
-                SetPhase(2);
+                setScriptPhase(2);
                 _resetTimer(mPhaseSwitchTimer, 70000);
                 _resetTimer(mSkeletonTimer, 0);
                 ++mPhaseCounter;
@@ -1404,7 +1404,7 @@ void NothThePlaguebringerAI::AIUpdate()
     {
         if (!_isCasting() && _isTimerFinished(mPhaseSwitchTimer))
         {
-            SetPhase(1);
+            setScriptPhase(1);
             _resetTimer(mPhaseSwitchTimer, 70000);
             _resetTimer(mSkeletonTimer, 8000);
             if (_isHeroic())
@@ -1540,7 +1540,7 @@ void NothThePlaguebringerAI::Destroy()
     delete this;
 }
 
-void SpellFunc_NothToBalconyPhaseSwitch(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_NothToBalconyPhaseSwitch(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
 {
     NothThePlaguebringerAI* Noth = (pCreatureAI != NULL) ? static_cast< NothThePlaguebringerAI* >(pCreatureAI) : NULL;
     if (Noth != NULL)
@@ -1554,7 +1554,7 @@ void SpellFunc_NothToBalconyPhaseSwitch(SpellDesc* pThis, MoonScriptCreatureAI* 
     }
 }
 
-void SpellFunc_NothFromBalconyPhaseSwitch(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_NothFromBalconyPhaseSwitch(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
 {
     NothThePlaguebringerAI* Noth = (pCreatureAI != NULL) ? static_cast< NothThePlaguebringerAI* >(pCreatureAI) : NULL;
     if (Noth != NULL)
@@ -1571,7 +1571,7 @@ void SpellFunc_NothFromBalconyPhaseSwitch(SpellDesc* pThis, MoonScriptCreatureAI
     }
 }
 
-void SpellFunc_NothCriple(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_NothCriple(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
 {
     NothThePlaguebringerAI* Noth = (pCreatureAI != NULL) ? static_cast< NothThePlaguebringerAI* >(pCreatureAI) : NULL;
     if (Noth != NULL)
@@ -1582,7 +1582,7 @@ void SpellFunc_NothCriple(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, U
     }
 }
 
-void SpellFunc_NothBlink(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_NothBlink(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
 {
     NothThePlaguebringerAI* Noth = (pCreatureAI != NULL) ? static_cast< NothThePlaguebringerAI* >(pCreatureAI) : NULL;
     if (Noth != NULL)
@@ -1824,7 +1824,7 @@ void HeiganTheUncleanAI::AIUpdate()
             setAIAgent(AGENT_SPELL);
             setRooted(true);
             stopMovement();
-            SetPhase(2);
+            setScriptPhase(2);
             mEruptionPhase = 3;
             _resetTimer(mPhaseSwitchTimer, 45000);
             _resetTimer(mEruptionTimer, 3000);
@@ -1841,7 +1841,7 @@ void HeiganTheUncleanAI::AIUpdate()
             _unsetTargetToChannel();
             setAIAgent(AGENT_NULL);
             setRooted(false);
-            SetPhase(1);
+            setScriptPhase(1);
             _resetTimer(mPhaseSwitchTimer, 90000);
             return;
         }
@@ -2286,7 +2286,7 @@ NecroKnightAI::NecroKnightAI(Creature* pCreature) : MoonScriptCreatureAI(pCreatu
     AddSpellFunc(&SpellFunc_NecroKnightBlink, Target_RandomPlayerNotCurrent, 5, 0, 20, 0, 30);
 }
 
-void SpellFunc_NecroKnightBlink(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_NecroKnightBlink(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
 {
     NecroKnightAI* NecroKnight = (pCreatureAI != NULL) ? static_cast< NecroKnightAI* >(pCreatureAI) : NULL;
     if (NecroKnight != NULL && pTarget != NULL)
@@ -2420,7 +2420,7 @@ void DeathchargerSteedAI::Destroy()
     delete this;
 }
 
-void SpellFunc_DeathchargerSteedCharge(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_DeathchargerSteedCharge(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
 {
     DeathchargerSteedAI* Deathcharger = (pCreatureAI != NULL) ? static_cast< DeathchargerSteedAI* >(pCreatureAI) : NULL;
     if (Deathcharger != NULL)
@@ -2699,7 +2699,7 @@ MaraudingGeistAI::MaraudingGeistAI(Creature* pCreature) : MoonScriptCreatureAI(p
 /////////////////////////////////////////////////////////////////////////////////
 ////// Patchwerk
 
-void SpellFunc_PatchwerkHatefulStrike(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_PatchwerkHatefulStrike(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
 {
     if (!pThis || !pCreatureAI)
         return;

@@ -311,19 +311,19 @@ class Falric : public MoonScriptCreatureAI
             if (isScriptPhase(1) && _getHealthPercent() <= 66)
             {
                 getCreature()->CastSpell(Plr, 72395, true);
-                SetPhase(2);
+                setScriptPhase(2);
             }
 
             if (isScriptPhase(2) && _getHealthPercent() <= 33)
             {
                 getCreature()->CastSpell(Plr, 72396, true);
-                SetPhase(3);
+                setScriptPhase(3);
             }
 
             if (isScriptPhase(3) && _getHealthPercent() <= 11)
             {
                 getCreature()->CastSpell(Plr, 72397, true);
-                SetPhase(4);
+                setScriptPhase(4);
             }
 
         }

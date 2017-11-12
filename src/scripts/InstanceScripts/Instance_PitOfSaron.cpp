@@ -134,7 +134,7 @@ class ForgemasterGarfrostAI : public MoonScriptCreatureAI
 
             getCreature()->SetEquippedItem(MELEE, EQUIP_ID_SWORD);
             getCreature()->SetEquippedItem(OFFHAND, 0);
-            SetPhase(2);
+            setScriptPhase(2);
         }
 
         if (isScriptPhase(2) && _getHealthPercent() <= 33)
@@ -153,7 +153,7 @@ class ForgemasterGarfrostAI : public MoonScriptCreatureAI
                 getCreature()->CastSpell(getCreature(), SPELL_FROZEMACE, false);
             
             getCreature()->SetEquippedItem(MELEE, EQUIP_ID_MACE);
-            SetPhase(3);
+            setScriptPhase(3);
         }
 
         ParentClass::AIUpdate();

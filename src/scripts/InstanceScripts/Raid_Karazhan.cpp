@@ -104,12 +104,12 @@ class AttumenTheHuntsmanAI : public MoonScriptCreatureAI
         {
             if (GetLinkedCreature() && GetLinkedCreature()->isAlive() && _getHealthPercent() <= 25 && !_isCasting())
             {
-                SetPhase(2);
+                setScriptPhase(2);
                 _setMeleeDisabled(false);
                 _setCastDisabled(true);
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 9168, "Come Midnight, let's disperse this petty rabble!");
                 MoonScriptCreatureAI* midnight = static_cast<MoonScriptCreatureAI*>(GetLinkedCreature());
-                midnight->SetPhase(2);
+                midnight->setScriptPhase(2);
                 midnight->moveToUnit(getCreature());
                 midnight->_setMeleeDisabled(false);
             }
@@ -157,11 +157,11 @@ class MidnightAI : public MoonScriptCreatureAI
             }
             else if (GetLinkedCreature() && GetLinkedCreature()->isAlive() && _getHealthPercent() <= 25 && !_isCasting())
             {
-                SetPhase(2);
+                setScriptPhase(2);
                 MoonScriptCreatureAI* attumen = static_cast<MoonScriptCreatureAI*>(GetLinkedCreature());
                 moveToUnit(attumen->getCreature());
                 _setMeleeDisabled(false);
-                attumen->SetPhase(2);
+                attumen->setScriptPhase(2);
                 attumen->_setMeleeDisabled(false);
                 attumen->_setCastDisabled(true);
                 attumen->sendChatMessage(CHAT_MSG_MONSTER_YELL, 9168, "Come Midnight, let's disperse this petty rabble!");
@@ -250,14 +250,14 @@ class MoroesAI : public MoonScriptCreatureAI
             }
             else if (_isTimerFinished(mVanishTimer) && !_isCasting())
             {
-                SetPhase(2);
+                setScriptPhase(2);
             }
         }
         else if (isScriptPhase(2))
         {
             if (_isTimerFinished(mGarroteTimer) && !_isCasting())
             {
-                SetPhase(1);
+                setScriptPhase(1);
             }
         }
         ParentClass::AIUpdate();

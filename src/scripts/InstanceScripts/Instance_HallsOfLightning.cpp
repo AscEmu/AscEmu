@@ -213,21 +213,21 @@ class GeneralBjarngrimAI : public MoonScriptCreatureAI
                 _applyAura(SPELL_BATTLE_STANCE);
                 sendDBChatMessage(760);      // Defend yourself, for all the good it will do!
                 sendAnnouncement("General Bjarngrim switches to Battle Stance!");
-                SetPhase(1);
+                setScriptPhase(1);
                 break;
             case STANCE_BERSERKER:
                 _applyAura(SPELL_BERSERKER_AURA);
                 _applyAura(SPELL_BERSERKER_STANCE);
                 sendDBChatMessage(761);      // GRAAAAAH! Behold the fury of iron and steel!
                 sendAnnouncement("General Bjarngrim switches to Berserker Stance!");
-                SetPhase(2);
+                setScriptPhase(2);
                 break;
             case STANCE_DEFENSIVE:
                 _applyAura(SPELL_DEFENSIVE_AURA);
                 _applyAura(SPELL_DEFENSIVE_STANCE);
                 sendDBChatMessage(759);      // Give me your worst!
                 sendAnnouncement("General Bjarngrim switches to Defensive Stance!");
-                SetPhase(3);
+                setScriptPhase(3);
                 break;
         }
     }

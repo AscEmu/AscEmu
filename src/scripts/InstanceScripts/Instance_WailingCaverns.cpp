@@ -361,7 +361,7 @@ class DofNaralexAI : public MoonScriptCreatureAI
         {
             ForceWaypointMove(iWaypointId + 1);
             if (isScriptPhase(1) && GetCurrentWaypoint() == 39)
-                SetPhase(2);
+                setScriptPhase(2);
 
             ParentClass::OnReachWP(iWaypointId, bForwards);
         }
@@ -390,19 +390,19 @@ class DofNaralexAI : public MoonScriptCreatureAI
                     {
                         Moccasin();
                         _resetTimer(SpawnTimer, 100000);
-                        SetPhase(3);
+                        setScriptPhase(3);
                     } break;
                     case 3:
                     {
                         Ectoplasm();
                         _resetTimer(SpawnTimer, 100000);
-                        SetPhase(4);
+                        setScriptPhase(4);
                     } break;
                     case 4:
                     {
                         BMutanus();
                         _resetTimer(SpawnTimer, 100000);
-                        SetPhase(5);
+                        setScriptPhase(5);
                     } break;
                     default:
                         break;
@@ -422,7 +422,7 @@ class DofNaralexAI : public MoonScriptCreatureAI
                     moveTo(-6.704030f, 200.308838f, -26.938824f);
                     Naralex->moveTo(-6.704030f, 200.308838f, -26.938824f);
                 }
-                SetPhase(6);
+                setScriptPhase(6);
             }
             ParentClass::AIUpdate();
         }

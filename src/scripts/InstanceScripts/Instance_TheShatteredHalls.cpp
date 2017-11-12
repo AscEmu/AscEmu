@@ -1958,7 +1958,7 @@ class BloodGuardPorungAI : public CreatureAIScript
 
 // WarbringerOmroggAI
 // Maybe timer for 'afterspeech' should be added too?
-void SpellFunc_Warbringer_BurningMaul(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
+void SpellFunc_Warbringer_BurningMaul(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
 
 class WarbringerOmroggAI : public MoonScriptCreatureAI
 {
@@ -2179,7 +2179,7 @@ class WarbringerOmroggAI : public MoonScriptCreatureAI
         SpellDesc* mBlastWave;
 };
 
-void SpellFunc_Warbringer_BurningMaul(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_Warbringer_BurningMaul(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
 {
     WarbringerOmroggAI* Warbringer = (pCreatureAI) ? static_cast< WarbringerOmroggAI* >(pCreatureAI) : NULL;
     if (Warbringer != NULL)

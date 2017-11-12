@@ -1701,8 +1701,8 @@ const uint32 SOLARIUMPRIEST_GREATER_HEAL = 38580;    //Heals 23125 to 26875 any 
 const uint32 SOLARIUMPRIEST_HOLY_SMITE = 31740;   //Deals 553 to 747 holy damage
 
 bool Dummy_Solarian_WrathOfTheAstromancer(uint32 pEffectIndex, Spell* pSpell);
-void SpellFunc_Solarian_Disappear(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
-void SpellFunc_Solarian_Reappear(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
+void SpellFunc_Solarian_Disappear(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
+void SpellFunc_Solarian_Reappear(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
 
 class HighAstromancerSolarianAI : public MoonScriptCreatureAI
 {
@@ -1752,12 +1752,12 @@ class HighAstromancerSolarianAI : public MoonScriptCreatureAI
             {
                 if (_getHealthPercent() <= 20 && !_isCasting())
                 {
-                    SetPhase(3);
+                    setScriptPhase(3);
                     _cancelAllTimers();
                 }
                 else if (_isTimerFinished(mSplitTimer) && !_isCasting())
                 {
-                    SetPhase(2);
+                    setScriptPhase(2);
                     _resetTimer(mSplitTimer, 90000);        //Next split in 90sec
                     mAgentsTimer = _addTimer(6000);        //Agents spawns 6sec after the split
                     mSolarianTimer = _addTimer(22000);    //Solarian with 2 priests spawns 22sec after split
@@ -1768,7 +1768,7 @@ class HighAstromancerSolarianAI : public MoonScriptCreatureAI
                 if (_isTimerFinished(mSolarianTimer) && !_isCasting())
                 {
                     isNotInitialPhase = true;
-                    SetPhase(1);
+                    setScriptPhase(1);
                     _removeTimer(mSolarianTimer);
                 }
                 else if (_isTimerFinished(mAgentsTimer) && !_isCasting())
@@ -1830,7 +1830,7 @@ bool Dummy_Solarian_WrathOfTheAstromancer(uint32 pEffectIndex, Spell* pSpell)
     return true;
 }
 
-void SpellFunc_Solarian_Disappear(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_Solarian_Disappear(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
 {
     HighAstromancerSolarianAI* Solarian = (pCreatureAI) ? static_cast< HighAstromancerSolarianAI* >(pCreatureAI) : NULL;
     if (Solarian)
@@ -1850,7 +1850,7 @@ void SpellFunc_Solarian_Disappear(SpellDesc* pThis, MoonScriptCreatureAI* pCreat
     }
 }
 
-void SpellFunc_Solarian_Reappear(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_Solarian_Reappear(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
 {
     HighAstromancerSolarianAI* Solarian = (pCreatureAI) ? static_cast< HighAstromancerSolarianAI* >(pCreatureAI) : NULL;
     if (Solarian)
@@ -3025,8 +3025,8 @@ enum AdvisorPhase
     PHASE_ADV_FIGHT,
 };
 
-void SpellFunc_KaelThasArcaneDisruption(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
-void SpellFunc_KaelThasFlameStrike(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
+void SpellFunc_KaelThasArcaneDisruption(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
+void SpellFunc_KaelThasFlameStrike(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
 
 class KaelThasAI : public MoonScriptCreatureAI
 {
@@ -3073,7 +3073,6 @@ class KaelThasAI : public MoonScriptCreatureAI
             addEmoteForEvent(Event_OnTargetDied, 8887);
             addEmoteForEvent(Event_OnTargetDied, 8888);
             addEmoteForEvent(Event_OnDied, 8889);
-            mAIUpdateFrequency = 30000;
 
             mArcaneDisruptionTimer = 0;
             mShockBarrierTimer = 0;
@@ -3199,7 +3198,7 @@ class KaelThasAI : public MoonScriptCreatureAI
                 pCoords.addition = pCreature->GetEntry();
 
                 SetAIUpdateFreq(5000);
-                SetPhase(getScriptPhase() + 1);
+                setScriptPhase(getScriptPhase() + 1);
                 mAdvCoords.push_back(pCoords);
                 mAdvisorPhase = PHASE_SPEECH;
             }
@@ -3221,7 +3220,7 @@ class KaelThasAI : public MoonScriptCreatureAI
                     pCoords.addition = Advisors[i].addition;
                     mAdvCoords.push_back(pCoords);
 
-                    SetPhase(getScriptPhase() + 1);
+                    setScriptPhase(getScriptPhase() + 1);
                     mAdvisorPhase = PHASE_SPEECH;
                     return;
                 }
@@ -3292,7 +3291,7 @@ class KaelThasAI : public MoonScriptCreatureAI
 
                     sendChatMessage(CHAT_MSG_MONSTER_YELL, 11262, "Perhaps I underestimated you. It would be unfair to make you fight all four Advisors at once, but...fair treatment was never shown to my people. I'm just returning the favor.");
                     _resetTimer(mEventTimer, 180000);
-                    SetPhase(6);
+                    setScriptPhase(6);
                     mAdvCoords.clear();
                 }
 
@@ -3311,7 +3310,7 @@ class KaelThasAI : public MoonScriptCreatureAI
                     setCanEnterCombat(true);
                     setAIAgent(AGENT_NULL);
                     setRooted(false);
-                    SetPhase(7);
+                    setScriptPhase(7);
                 }
                 else
                 {
@@ -3387,7 +3386,7 @@ class KaelThasAI : public MoonScriptCreatureAI
         std::vector<LocationExtra> mAdvCoords;
 };
 
-void SpellFunc_KaelThasArcaneDisruption(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_KaelThasArcaneDisruption(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
 {
     KaelThasAI* KaelThas = (pCreatureAI) ? static_cast< KaelThasAI* >(pCreatureAI) : NULL;
     if (KaelThas != NULL)
@@ -3403,7 +3402,7 @@ void SpellFunc_KaelThasArcaneDisruption(SpellDesc* pThis, MoonScriptCreatureAI* 
     }
 }
 
-void SpellFunc_KaelThasFlameStrike(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_KaelThasFlameStrike(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
 {
     KaelThasAI* KaelThas = (pCreatureAI) ? static_cast< KaelThasAI* >(pCreatureAI) : NULL;
     if (KaelThas != NULL)

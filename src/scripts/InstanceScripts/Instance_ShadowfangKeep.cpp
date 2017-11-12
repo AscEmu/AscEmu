@@ -1082,10 +1082,7 @@ class ArugalBossAI : public MoonScriptCreatureAI
     public:
 
         MOONSCRIPT_FACTORY_FUNCTION(ArugalBossAI, MoonScriptCreatureAI);
-        ArugalBossAI(Creature* pCreature) :
-            MoonScriptCreatureAI(pCreature),
-            stage(0),
-            arugalPosition(ARUGAL_LOC_LEDGE)
+        ArugalBossAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature), stage(0), arugalPosition(ARUGAL_LOC_LEDGE)
         {
             SFK_instance = static_cast<ShadowfangKeepInstance*>(pCreature->GetMapMgr()->GetScript());
 

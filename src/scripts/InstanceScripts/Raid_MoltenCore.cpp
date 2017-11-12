@@ -719,7 +719,7 @@ const uint32 SHAZZRAH_MAGIC_GROUNDING = 19714;
 const uint32 SHAZZRAH_COUNTERSPELL = 19715;
 const uint32 SHAZZRAH_BLINK = 29883;    //dummy spell, need to be coded in core
 
-void SpellFunc_ShazzrahBlinkArcaneExplosions(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
+void SpellFunc_ShazzrahBlinkArcaneExplosions(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
 
 class ShazzrahAI : public MoonScriptCreatureAI
 {
@@ -739,7 +739,7 @@ class ShazzrahAI : public MoonScriptCreatureAI
         SpellDesc* mArcaneExplosion;
 };
 
-void SpellFunc_ShazzrahBlinkArcaneExplosions(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_ShazzrahBlinkArcaneExplosions(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
 {
     ShazzrahAI* Shazzrah = (pCreatureAI) ? static_cast< ShazzrahAI* >(pCreatureAI) : NULL;
     if (Shazzrah)
