@@ -21,11 +21,11 @@ This file is released under the MIT license. See README-MIT for more information
 void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 {
     uint32_t spellId;
-    uint8_t cn;
+    uint8_t castCount;
     uint32_t glyphSlot;
     uint8_t missileflag;
 
-    recvPacket >> cn;
+    recvPacket >> castCount;
     recvPacket >> spellId;
     recvPacket >> glyphSlot;
     recvPacket >> missileflag;
@@ -126,7 +126,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
             else
             {
                 // send the error message
-                _player->SendCastResult(spellInfo->Id, SPELL_FAILED_SPELL_IN_PROGRESS, cn, 0);
+                _player->SendCastResult(spellInfo->Id, SPELL_FAILED_SPELL_IN_PROGRESS, castCount, 0);
                 return;
             }
         }
@@ -139,13 +139,13 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
             if (targets.m_unitTarget && targets.m_unitTarget != _player->GetGUID())
             {
                 // send the error message
-                _player->SendCastResult(spellInfo->Id, SPELL_FAILED_BAD_TARGETS, cn, 0);
+                _player->SendCastResult(spellInfo->Id, SPELL_FAILED_BAD_TARGETS, castCount, 0);
                 return;
             }
         }
 
-        Spell* spell = sSpellFactoryMgr.NewSpell(GetPlayer(), spellInfo, false, NULL);
-        spell->extra_cast_number = cn;
+        Spell* spell = sSpellFactoryMgr.NewSpell(GetPlayer(), spellInfo, false, nullptr);
+        spell->extra_cast_number = castCount;
         spell->m_glyphslot = glyphSlot;
         spell->prepare(&targets);
     }
@@ -159,30 +159,30 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
     if (_player->getDeathState() == CORPSE)
         return;
 
-    uint64_t target_guid; // this will store the guid of the object we are going to use it's spell. There must be a dbc that indicates what spells a unit has
+    uint64_t unitGuid; // this will store the guid of the object we are going to use it's spell. There must be a dbc that indicates what spells a unit has
 
-    recvPacket >> target_guid;
+    recvPacket >> unitGuid;
 
     //we have only 1 example atm for entry : 28605
-    Unit* target_unit = _player->GetMapMgr()->GetUnit(target_guid);
+    Unit* unitTarget = _player->GetMapMgr()->GetUnit(unitGuid);
 
-    if (!target_unit)
+    if (!unitTarget)
         return;
 
-    if (!_player->isInRange(target_unit, MAX_INTERACTION_RANGE))
+    if (!_player->isInRange(unitTarget, MAX_INTERACTION_RANGE))
         return;
 
-    if (target_unit->IsVehicle())
+    if (unitTarget->IsVehicle())
     {
-        if (target_unit->GetVehicleComponent() != NULL)
-            target_unit->GetVehicleComponent()->AddPassenger(_player);
+        if (unitTarget->GetVehicleComponent() != nullptr)
+            unitTarget->GetVehicleComponent()->AddPassenger(_player);
         return;
     }
 
-    uint32_t creature_id = target_unit->GetEntry();
+    uint32_t creature_id = unitTarget->GetEntry();
     uint32_t cast_spell_id = 0;
 
-    if (target_unit->RemoveAura(59907))
+    if (unitTarget->RemoveAura(59907))
     {
         uint32 lightwellRenew[] =
         {
@@ -202,9 +202,9 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
             SpellClickSpell const* sp = sMySQLStore.getSpellClickSpell(creature_id);
             if (sp == nullptr)
             {
-                if (target_unit->IsCreature())
+                if (unitTarget->IsCreature())
                 {
-                    Creature* c = static_cast<Creature*>(target_unit);
+                    Creature* c = static_cast<Creature*>(unitTarget);
 
                     sChatHandler.BlueSystemMessage(this, "NPC Id %u (%s) has no spellclick spell associated with it.", c->GetCreatureProperties()->Id, c->GetCreatureProperties()->Name.c_str());
                     LOG_ERROR("Spellclick packet received for creature %u but there is no spell associated with it.", creature_id);
@@ -214,11 +214,11 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
             else
             {
                 cast_spell_id = sp->SpellID;
-                target_unit->CastSpell(_player, cast_spell_id, true);
+                unitTarget->CastSpell(_player, cast_spell_id, true);
             }
 
-            if (!target_unit->HasAura(59907))
-                static_cast<Creature*>(target_unit)->Despawn(0, 0); //IsCreature() check is not needed, refer to r2387 and r3230
+            if (!unitTarget->HasAura(59907))
+                static_cast<Creature*>(unitTarget)->Despawn(0, 0); //IsCreature() check is not needed, refer to r2387 and r3230
 
             return;
         }
@@ -227,9 +227,9 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
     SpellClickSpell const* sp = sMySQLStore.getSpellClickSpell(creature_id);
     if (sp == nullptr)
     {
-        if (target_unit->IsCreature())
+        if (unitTarget->IsCreature())
         {
-            Creature* c = static_cast< Creature* >(target_unit);
+            Creature* c = static_cast< Creature* >(unitTarget);
 
             sChatHandler.BlueSystemMessage(this, "NPC Id %u (%s) has no spellclick spell associated with it.", c->GetCreatureProperties()->Id, c->GetCreatureProperties()->Name.c_str());
             LOG_ERROR("Spellclick packet received for creature %u but there is no spell associated with it.", creature_id);
@@ -244,8 +244,8 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
         if (spellInfo == nullptr)
             return;
 
-        Spell* spell = sSpellFactoryMgr.NewSpell(_player, spellInfo, false, NULL);
-        SpellCastTargets targets(target_guid);
+        Spell* spell = sSpellFactoryMgr.NewSpell(_player, spellInfo, false, nullptr);
+        SpellCastTargets targets(unitGuid);
         spell->prepare(&targets);
     }
 }
