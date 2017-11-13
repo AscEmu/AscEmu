@@ -71,7 +71,12 @@ void WorldPacketLog::disablePacketLog()
 
 SessionLog::SessionLog(const char* filename, bool open)
 {
+#if defined(linux) || defined(__linux)
+    mFileName = strdup(filename);
+#else
     mFileName = _strdup(filename);
+#endif
+    
     mSessionLogFile = nullptr;
     if (open)
     {
@@ -485,6 +490,10 @@ void AscEmuLog::ConsoleLogMajorError(std::string line1, std::string line2, std::
     std::cout << sstream.str() << std::endl;
     SetConsoleColor(CONSOLE_COLOR_NORMAL);
 
+#if defined(linux) || defined(__linux)
+    WriteFile(error_log_file, strdup(sstream.str().c_str()));
+#else
     WriteFile(error_log_file, _strdup(sstream.str().c_str()));
+#endif
 }
 
