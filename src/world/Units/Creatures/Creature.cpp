@@ -1131,7 +1131,6 @@ void Creature::CallScriptUpdate()
         return;
 
     _myScriptClass->_internalAIUpdate();
-    _myScriptClass->AIUpdate();
 }
 
 CreatureProperties const* Creature::GetCreatureProperties()

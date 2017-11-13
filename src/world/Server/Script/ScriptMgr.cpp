@@ -538,6 +538,10 @@ CreatureAIScript::CreatureAIScript(Creature* creature) : _creature(creature), li
     mRunToTargetSpellCache = nullptr;
 
     mBaseAttackTime = getCreature()->GetBaseAttackTime(MELEE);
+
+    mCustomAIUpdateDelayTimerId = 0;
+    mCustomAIUpdateDelay = 0;
+    registerAiUpdateFrequency();
 }
 
 CreatureAIScript::~CreatureAIScript()
@@ -561,6 +565,9 @@ void CreatureAIScript::_internalOnDied()
 
     _cancelAllTimers();
     _removeAllAuras();
+
+    removeAiUpdateFrequency();
+
     CancelAllSpells();
     RemoveAIUpdateEvent();
     sendRandomDBChatMessage(mEmotesOnDied);
@@ -625,108 +632,129 @@ void CreatureAIScript::_internalAIUpdate()
 
     updateAITimers();
 
-    if (mEnrageSpell && mEnrageTimerDuration > 0 && _isTimerFinished(mEnrageTimer))
+    // old AIUpdate stuff is now handled by customAIUpdateTimer. Keep this until all scripts are updated to new logic.
+    if (mCustomAIUpdateDelayTimerId != 0)
     {
-        CastSpell(mEnrageSpell);
-        _removeTimer(mEnrageTimer);
-    }
-
-    SpellDesc* Spell;
-    uint32 CurrentTime = (uint32)time(nullptr);
-
-    if (!_isInCombat())
-    {
-        if (isIdleEmoteEnabled)
-        {
-            if (_isTimerFinished(getIdleEmoteTimerId()))
-            {
-                sendRandomDBChatMessage(mEmotesOnIdle);
-                generateNextRandomIdleEmoteTime();
-            }
-        }
-
-        return;
-    }
-
-    //Check if we have a spell scheduled to be cast
-    for (SpellDescList::iterator SpellIter = mScheduledSpells.begin(); SpellIter != mScheduledSpells.end();)
-    {
-        Spell = (*SpellIter);
-        if (CastSpellInternal(Spell, CurrentTime))    //Can fail if we are already casting a spell, or if the spell is on cooldown
-        {
-            if (!mScheduledSpells.empty())            // \todo temporary crashfix, we should use mutax here, but it needs more investigation
-                mScheduledSpells.erase(SpellIter);
-
-            break;
-        }
+        if (!_isTimerFinished(mCustomAIUpdateDelayTimerId))
+            return;
         else
-            ++SpellIter;
+            _resetTimer(mCustomAIUpdateDelayTimerId, mCustomAIUpdateDelay);
     }
 
-    //Do not schedule spell if we are *currently* casting a non-instant cast spell
-    if (!_isCasting() && !mRunToTargetCache)
+    // idleemotes
+    if (!_isInCombat() && isIdleEmoteEnabled)
     {
-        //Check if have queued spells that needs to be scheduled before we go back to random casting
-        if (!mQueuedSpells.empty())
+        if (_isTimerFinished(getIdleEmoteTimerId()))
         {
-            Spell = mQueuedSpells.front();
-            mScheduledSpells.push_back(Spell);
-            mQueuedSpells.pop_front();
+            sendRandomDBChatMessage(mEmotesOnIdle);
+            generateNextRandomIdleEmoteTime();
+        }
+    }
 
-            //Stop melee attack for a short while for scheduled spell cast
-            if (Spell->mCastTime >= 0)
+    AIUpdate();
+
+    // combat setup
+    if (!_isInCombat())
+        return;
+
+    // SP_AI_Spell here
+
+    // MoonScript spell handling...
+    if (mSpells.size() > 0)
+    {
+        // enrage automation not implemented correct yet
+        /*if (mEnrageSpell && mEnrageTimerDuration > 0 && _isTimerFinished(mEnrageTimer))
+        {
+            CastSpell(mEnrageSpell);
+            _removeTimer(mEnrageTimer);
+        }*/
+
+        SpellDesc* Spell;
+        uint32 CurrentTime = (uint32)time(nullptr);
+
+        //Check if we have a spell scheduled to be cast
+        if (!_isCasting())
+        {
+            for (SpellDescList::iterator SpellIter = mScheduledSpells.begin(); SpellIter != mScheduledSpells.end();)
             {
-                _delayNextAttack(mAIUpdateFrequency);
-                if (Spell->mCastTime > 0)
+                Spell = (*SpellIter);
+                if (CastSpellInternal(Spell, CurrentTime))    //Can fail if we are already casting a spell, or if the spell is on cooldown
                 {
-                    setRooted(false);
-                    setAIAgent(AGENT_SPELL);
+                    if (!mScheduledSpells.empty())            // \todo temporary crashfix, we should use mutax here, but it needs more investigation
+                        mScheduledSpells.erase(SpellIter);
+
+                    break;
                 }
+                else
+                    ++SpellIter;
             }
-            return;    //Scheduling one spell at a time, exit now
         }
 
-        //Try our chance at casting a spell (Will actually be cast on next ai update, so we just
-        //schedule it. This is needed to avoid next dealt melee damage while we cast the spell.)
-        float ChanceRoll = RandomFloat(100), ChanceTotal = 0;
-        for (SpellDescArray::iterator SpellIter = mSpells.begin(); SpellIter != mSpells.end(); ++SpellIter)
+        //Do not schedule spell if we are *currently* casting a non-instant cast spell
+        if (!_isCasting() && !mRunToTargetCache)
         {
-            Spell = (*SpellIter);
-            if (Spell->mEnabled == false)
-                continue;
-            if (Spell->mChance == 0)
-                continue;
-
-            //Check if spell won the roll
-            if ((Spell->mChance == 100 || (ChanceRoll >= ChanceTotal && ChanceRoll < ChanceTotal + Spell->mChance)) &&
-                (Spell->mLastCastTime + Spell->mCooldown <= CurrentTime) &&
-                !IsSpellScheduled(Spell))
+            //Check if have queued spells that needs to be scheduled before we go back to random casting
+            if (!mQueuedSpells.empty())
             {
+                Spell = mQueuedSpells.front();
                 mScheduledSpells.push_back(Spell);
+                mQueuedSpells.pop_front();
 
                 //Stop melee attack for a short while for scheduled spell cast
                 if (Spell->mCastTime >= 0)
                 {
-                    _delayNextAttack(mAIUpdateFrequency + CalcSpellAttackTime(Spell));
+                    _delayNextAttack(mAIUpdateFrequency);
                     if (Spell->mCastTime > 0)
                     {
-                        setRooted(true);
+                        setRooted(false);
                         setAIAgent(AGENT_SPELL);
                     }
                 }
                 return;    //Scheduling one spell at a time, exit now
             }
-            else if (Spell->mChance != 100)
-                ChanceTotal += Spell->mChance;    //Only add spells that aren't 100% chance of casting
+
+            //Try our chance at casting a spell (Will actually be cast on next ai update, so we just
+            //schedule it. This is needed to avoid next dealt melee damage while we cast the spell.)
+            float ChanceRoll = RandomFloat(100), ChanceTotal = 0;
+            for (SpellDescArray::iterator SpellIter = mSpells.begin(); SpellIter != mSpells.end(); ++SpellIter)
+            {
+                Spell = (*SpellIter);
+                if (Spell->mEnabled == false)
+                    continue;
+                if (Spell->mChance == 0)
+                    continue;
+
+                //Check if spell won the roll
+                if ((Spell->mChance == 100 || (ChanceRoll >= ChanceTotal && ChanceRoll < ChanceTotal + Spell->mChance)) &&
+                    (Spell->mLastCastTime + Spell->mCooldown <= CurrentTime) &&
+                    !IsSpellScheduled(Spell))
+                {
+                    mScheduledSpells.push_back(Spell);
+
+                    //Stop melee attack for a short while for scheduled spell cast
+                    if (Spell->mCastTime >= 0)
+                    {
+                        _delayNextAttack(mAIUpdateFrequency + CalcSpellAttackTime(Spell));
+                        if (Spell->mCastTime > 0)
+                        {
+                            setRooted(true);
+                            setAIAgent(AGENT_SPELL);
+                        }
+                    }
+                    return;    //Scheduling one spell at a time, exit now
+                }
+                else if (Spell->mChance != 100)
+                    ChanceTotal += Spell->mChance;    //Only add spells that aren't 100% chance of casting
+            }
+
+            //Go back to default behavior since we didn't decide anything
+            setRooted(false);
+            setAIAgent(AGENT_MELEE);
+
+            //Random taunts
+            if (ChanceRoll >= 95)
+                sendRandomDBChatMessage(mEmotesOnTaunt);
         }
-
-        //Go back to default behavior since we didn't decide anything
-        setRooted(false);
-        setAIAgent(AGENT_MELEE);
-
-        //Random taunts
-        if (ChanceRoll >= 95)
-            sendRandomDBChatMessage(mEmotesOnTaunt);
     }
 }
 
@@ -1258,12 +1286,23 @@ void CreatureAIScript::displayCreatureTimerList(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // ai upodate frequency
+void CreatureAIScript::registerAiUpdateFrequency()
+{
+    sEventMgr.AddEvent(_creature, &Creature::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, mAIUpdateFrequency, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+}
+
+void CreatureAIScript::removeAiUpdateFrequency()
+{
+    sEventMgr.RemoveEvents(_creature, EVENT_SCRIPT_UPDATE_EVENT);
+}
+
+// old stuff
 void CreatureAIScript::SetAIUpdateFreq(uint32 pUpdateFreq)
 {
-    if (mAIUpdateFrequency != pUpdateFreq)
+    if (mCustomAIUpdateDelay != pUpdateFreq)
     {
-        mAIUpdateFrequency = pUpdateFreq;
-        ModifyAIUpdateEvent(mAIUpdateFrequency);
+        mCustomAIUpdateDelay = pUpdateFreq;
+        _resetTimer(mCustomAIUpdateDelayTimerId, mCustomAIUpdateDelay);
     }
 }
 
@@ -1274,17 +1313,32 @@ uint32 CreatureAIScript::GetAIUpdateFreq()
 
 void CreatureAIScript::RegisterAIUpdateEvent(uint32 frequency)
 {
-    sEventMgr.AddEvent(_creature, &Creature::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, frequency, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    if (mCustomAIUpdateDelayTimerId == 0)
+    {
+        mCustomAIUpdateDelayTimerId = _addTimer(frequency);
+        mCustomAIUpdateDelay = frequency;
+    }
+    else
+    {
+        ModifyAIUpdateEvent(frequency);
+    }
 }
 
 void CreatureAIScript::ModifyAIUpdateEvent(uint32 newfrequency)
 {
-    sEventMgr.ModifyEventTimeAndTimeLeft(_creature, EVENT_SCRIPT_UPDATE_EVENT, newfrequency);
+    if (mCustomAIUpdateDelayTimerId != 0)
+    {
+        _resetTimer(mCustomAIUpdateDelayTimerId, newfrequency);
+        mCustomAIUpdateDelay = newfrequency;
+    }
 }
 
 void CreatureAIScript::RemoveAIUpdateEvent()
 {
-    sEventMgr.RemoveEvents(_creature, EVENT_SCRIPT_UPDATE_EVENT);
+    if (mCustomAIUpdateDelayTimerId != 0)
+    {
+        _removeTimer(mCustomAIUpdateDelayTimerId);
+    }
 }
 
 

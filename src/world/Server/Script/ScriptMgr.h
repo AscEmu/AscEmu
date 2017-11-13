@@ -679,7 +679,15 @@ class SERVER_DECL CreatureAIScript
 
         uint32_t mAIUpdateFrequency;
 
+        uint32_t mCustomAIUpdateDelayTimerId;
+        uint32_t mCustomAIUpdateDelay;
     public:
+
+        //new
+        void registerAiUpdateFrequency();
+        void removeAiUpdateFrequency();
+
+        //old stuff
 
         void SetAIUpdateFreq(uint32 pUpdateFreq);
         uint32 GetAIUpdateFreq();
