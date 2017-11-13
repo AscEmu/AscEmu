@@ -80,7 +80,7 @@ namespace VMAP
             bool LoadMapTile(uint32 tileX, uint32 tileY, VMapManager2* vm);
             void UnloadMapTile(uint32 tileX, uint32 tileY, VMapManager2* vm);
             bool isTiled() const { return iIsTiled; }
-            uint32 numLoadedTiles() const { return iLoadedTiles.size(); }
+            uint32_t numLoadedTiles() const { return static_cast<uint32_t>(iLoadedTiles.size()); }
             void getModelInstances(ModelInstance* &models, uint32 &count);
 
         private:

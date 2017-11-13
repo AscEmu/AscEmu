@@ -29,7 +29,7 @@ class Master : public Singleton<Master>
         void ShutdownThreadPools(bool listnersockcreate);
         void ShutdownLootSystem();
         bool m_ShutdownEvent;
-        uint32 m_ShutdownTimer;
+        uint32_t m_ShutdownTimer;
 
         static volatile bool m_stopEvent;
         bool m_restartEvent;

@@ -226,7 +226,7 @@ class SERVER_DECL Guild
         void deleteMember(uint64_t guid, bool isDisbanding = false, bool isKicked = false);
         bool changeMemberRank(uint64_t guid, uint8_t newRank);
         bool isMember(uint64_t guid) const;
-        uint32_t getMembersCount() { return _guildMembersStore.size(); }
+        uint32_t getMembersCount() { return static_cast<uint32_t>(_guildMembersStore.size()); }
 
         void swapItems(Player* player, uint8_t tabId, uint8_t slotId, uint8_t destTabId, uint8_t destSlotId, uint32_t splitedAmount);
         void swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, uint8_t slotId, uint8_t playerBag, uint8_t playerSlotId, uint32_t splitedAmount);

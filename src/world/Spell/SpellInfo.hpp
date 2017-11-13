@@ -265,7 +265,7 @@ public:
         return EffectRealPointsPerLevel[idx];
     }
 
-    void setEffectRealPointsPerLevel(int32_t pointsPerLevel, uint8_t idx)   // used in HackFixes.cpp / SpellCustomizations.cpp
+    void setEffectRealPointsPerLevel(float pointsPerLevel, uint8_t idx)   // used in HackFixes.cpp / SpellCustomizations.cpp
     {
         ARCEMU_ASSERT(idx < MAX_SPELL_EFFECTS);
         EffectRealPointsPerLevel[idx] = pointsPerLevel;

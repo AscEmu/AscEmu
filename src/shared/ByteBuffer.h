@@ -174,8 +174,21 @@ class SERVER_DECL ByteBuffer
             if (b != 0)
                 append<uint8_t>(b ^ 1);
         }
-
+        /*
         uint32_t readBits(size_t bits)
+        {
+            uint32_t value = 0;
+            for (int32_t i = bits - 1; i >= 0; --i)
+            {
+                if (readBit())
+                {
+                    value |= (1 << i);
+                }
+            }
+            return value;
+        }*/
+
+        uint32_t readBits(int32_t bits)
         {
             uint32_t value = 0;
             for (int32_t i = bits - 1; i >= 0; --i)
