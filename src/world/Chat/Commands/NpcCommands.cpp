@@ -618,11 +618,12 @@ bool ChatHandler::HandleNpcReturnCommand(const char* /*args*/, WorldSession* m_s
     float x = creature_target->m_spawn->x;
     float y = creature_target->m_spawn->y;
     float z = creature_target->m_spawn->z;
+    float o = creature_target->m_spawn->o;
 
     creature_target->GetAIInterface()->setAiState(AI_STATE_IDLE);
     creature_target->GetAIInterface()->WipeHateList();
     creature_target->GetAIInterface()->WipeTargetList();
-    creature_target->GetAIInterface()->MoveTo(x, y, z);
+    creature_target->GetAIInterface()->MoveTo(x, y, z, o);
 
     sGMLog.writefromsession(m_session, "returned NPC %s (%u)", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
 
