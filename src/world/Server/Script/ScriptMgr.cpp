@@ -1442,20 +1442,6 @@ void CreatureAIScript::sendRandomDBChatMessage(std::vector<uint32_t> emoteVector
     }
 }
 
-void CreatureAIScript::sendRandomChatMessage(EmoteArray pEmoteArray)
-{
-    if (!pEmoteArray.empty())
-    {
-        LogDebugFlag(LF_SCRIPT_MGR, "CreatureAIScript::sendRandomChatMessage() : called");
-
-        uint32_t randomUInt = (pEmoteArray.size() > 1) ? Util::getRandomUInt(pEmoteArray.size() - 1) : 0;
-        getCreature()->SendChatMessage(pEmoteArray[randomUInt].mType, LANG_UNIVERSAL, pEmoteArray[randomUInt].mText.c_str());
-
-        if (pEmoteArray[randomUInt].mSoundId != 0)
-            getCreature()->PlaySoundToSet(pEmoteArray[randomUInt].mSoundId);
-    }
-}
-
 void CreatureAIScript::addEmoteForEvent(uint32_t eventType, uint32_t scriptTextId)
 {
     MySQLStructure::NpcScriptText const* ct = sMySQLStore.getNpcScriptText(scriptTextId);
@@ -1624,35 +1610,39 @@ void CreatureAIScript::AggroRandomPlayer(uint32_t pInitialThreat)
 SpellDesc* CreatureAIScript::AddSpell(uint32_t pSpellId, TargetType pTargetType, float pChance, float pCastTime, int32_t pCooldown, float pMinRange, float pMaxRange,
     bool pStrictRange, std::string pText, uint8_t pTextType, uint32_t pSoundId, std::string pAnnouncement)
 {
-    //Cannot add twice same spell id    - M4ksiu: Disabled, until I rewrite SetPhase(...) function to not disable same spells that are in different phases
-    //SpellDesc* NewSpell = FindSpellById(pSpellId);
-    //if (NewSpell) return NewSpell;
-    SpellDesc* NewSpell = nullptr;
+    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(pSpellId);
+    if (spellInfo != nullptr)
+    {
+        float CastTime = pCastTime;
+        int32 Cooldown = pCooldown;
+        float MinRange = pMinRange;
+        float MaxRange = pMaxRange;
 
-    //Find spell info from spell id
-    SpellInfo* Info = sSpellCustomizations.GetSpellInfo(pSpellId);
-
-    float CastTime = pCastTime;
-    int32 Cooldown = pCooldown;
-    float MinRange = pMinRange;
-    float MaxRange = pMaxRange;
-
-    //Create new spell
-    NewSpell = new SpellDesc(Info, 0, pTargetType, pChance, CastTime, Cooldown, MinRange, MaxRange, pStrictRange, pText, pTextType, pSoundId, pAnnouncement);
-    mSpells.push_back(NewSpell);
-    return NewSpell;
+        SpellDesc* newSpellDesc = new SpellDesc(spellInfo, 0, pTargetType, pChance, CastTime, Cooldown, MinRange, MaxRange, pStrictRange, pText, pTextType, pSoundId, pAnnouncement);
+        mSpells.push_back(newSpellDesc);
+        return newSpellDesc;
+    }
+    else
+    {
+        LOG_ERROR("tried to create spell with invalid id %u", pSpellId);
+        return nullptr;
+    }
 }
 
 SpellDesc* CreatureAIScript::AddSpellFunc(SpellFunc pFnc, TargetType pTargetType, float pChance, float pCastTime, int32_t pCooldown, float pMinRange, float pMaxRange,
     bool pStrictRange, std::string pText, uint8_t pTextType, uint32_t pSoundId, std::string pAnnouncement)
 {
     if (!pFnc)
+    {
+        LOG_ERROR("tried to create spell with invalid SpellFunc");
         return nullptr;
-
-    //Create new spell
-    SpellDesc* NewSpell = new SpellDesc(nullptr, pFnc, pTargetType, pChance, pCastTime, pCooldown, pMinRange, pMaxRange, pStrictRange, pText, pTextType, pSoundId, pAnnouncement);
-    mSpells.push_back(NewSpell);
-    return NewSpell;
+    }
+    else
+    {
+        SpellDesc* newSpellDesc = new SpellDesc(nullptr, pFnc, pTargetType, pChance, pCastTime, pCooldown, pMinRange, pMaxRange, pStrictRange, pText, pTextType, pSoundId, pAnnouncement);
+        mSpells.push_back(newSpellDesc);
+        return newSpellDesc;
+    }
 }
 
 void CreatureAIScript::CastSpell(SpellDesc* pSpell)
@@ -1704,7 +1694,7 @@ void CreatureAIScript::TriggerCooldownOnAllSpells()
     {
         if (creatureSpell)
         {
-            creatureSpell->TriggerCooldown(currentTime);
+            creatureSpell->setTriggerCooldown(currentTime);
         }
     }
 }
@@ -1765,7 +1755,7 @@ bool CreatureAIScript::CastSpellInternal(SpellDesc* pSpell, uint32_t pCurrentTim
             PopRunToTargetCache();
 
             //Do emote associated with this spell
-            sendRandomChatMessage(pSpell->mEmotes);
+            pSpell->sendRandomEmote(this);
             sendAnnouncement(pSpell->mAnnouncement);
 
             //Cast spell now
@@ -2123,8 +2113,8 @@ SpellDesc::SpellDesc(SpellInfo* pInfo, SpellFunc pFnc, TargetType pTargetType, f
     mEnabled = true;
     mPredefinedTarget = nullptr;
     mLastCastTime = 0;
-    AddAnnouncement(pAnnouncement);
-    AddEmote(pText, pTextType, pSoundId);
+    addAnnouncement(pAnnouncement);
+    addEmote(pText, pTextType, pSoundId);
 }
 
 SpellDesc::~SpellDesc()
@@ -2132,19 +2122,33 @@ SpellDesc::~SpellDesc()
     mEmotes.clear();
 }
 
-void SpellDesc::AddEmote(std::string pText, uint8_t pType, uint32_t pSoundId)
+void SpellDesc::addEmote(std::string pText, uint8_t pType, uint32_t pSoundId)
 {
     if (!pText.empty() || pSoundId)
         mEmotes.push_back(EmoteDesc(pText, pType, pSoundId));
 }
 
-void SpellDesc::TriggerCooldown(uint32_t pCurrentTime)
+void SpellDesc::sendRandomEmote(CreatureAIScript* creatureAI)
+{
+    if (!mEmotes.empty() && creatureAI != nullptr)
+    {
+        LogDebugFlag(LF_SCRIPT_MGR, "SpellDesc::SendRandomEmote() : called");
+
+        uint32_t randomUInt = (mEmotes.size() > 1) ? Util::getRandomUInt(mEmotes.size() - 1) : 0;
+        creatureAI->getCreature()->SendChatMessage(mEmotes[randomUInt].mType, LANG_UNIVERSAL, mEmotes[randomUInt].mText.c_str());
+
+        if (mEmotes[randomUInt].mSoundId != 0)
+            creatureAI->getCreature()->PlaySoundToSet(mEmotes[randomUInt].mSoundId);
+    }
+}
+
+void SpellDesc::setTriggerCooldown(uint32_t pCurrentTime)
 {
     uint32_t CurrentTime = (pCurrentTime == 0) ? static_cast<uint32_t>(time(nullptr)) : pCurrentTime;
     mLastCastTime = CurrentTime;
 }
 
-void SpellDesc::AddAnnouncement(std::string pText)
+void SpellDesc::addAnnouncement(std::string pText)
 {
     mAnnouncement = (!pText.empty() ? pText : "");
 }

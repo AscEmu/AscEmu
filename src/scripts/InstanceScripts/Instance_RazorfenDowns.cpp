@@ -164,7 +164,7 @@ class GluttonAI : public CreatureAIScript
         //spells
         mDiseaseCloud = AddSpell(SP_GLUTTON_DISEASE_CLOUD, Target_Self, 0, 0, 0, 0, 0);
         mFrenzy = AddSpell(SP_GLUTTON_FRENZY, Target_Self, 10, 0, 20, 0, 0);
-        mFrenzy->AddEmote("Glutton is getting hungry!", CHAT_MSG_MONSTER_YELL);
+        mFrenzy->addEmote("Glutton is getting hungry!", CHAT_MSG_MONSTER_YELL);
     }
 
     void OnCombatStart(Unit* pTarget)

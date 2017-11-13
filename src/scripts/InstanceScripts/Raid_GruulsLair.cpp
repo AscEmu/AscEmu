@@ -100,7 +100,7 @@ class HighKingMaulgarAI : public CreatureAIScript
             AddSpell(HIGH_KING_MAULGAR_WHIRLWIND, Target_Self, 7, 15, 25);                    // SpellFunc for range check?
             AddSpell(HIGH_KING_MAULGAR_MIGHTY_BLOW, Target_Current, 7, 0, 20, 0, 5);
             mEnrage = AddSpellFunc(&SpellFunc_Maulgar_Enrage, Target_Self, 0, 0, 0);
-            mEnrage->AddEmote("You will not defeat the hand of Gruul!", CHAT_MSG_MONSTER_YELL, 11368);
+            mEnrage->addEmote("You will not defeat the hand of Gruul!", CHAT_MSG_MONSTER_YELL, 11368);
 
             addEmoteForEvent(Event_OnCombatStart, 8806);
             addEmoteForEvent(Event_OnTargetDied, 8807);
@@ -454,14 +454,14 @@ class GruulTheDragonkillerAI : public CreatureAIScript
         {
             mHurtfulStrike = AddSpell(GRUUL_THE_DRAGONKILLER_HURTFUL_STRIKE, Target_Current, 0, 0, 0, 0, 8);
             mGroundSlam = AddSpell(GRUUL_THE_DRAGONKILLER_GROUND_SLAM, Target_Self, 0, 1, 0);
-            mGroundSlam->AddEmote("Scurry.", CHAT_MSG_MONSTER_YELL, 11356);
-            mGroundSlam->AddEmote("No escape.", CHAT_MSG_MONSTER_YELL, 11357);
+            mGroundSlam->addEmote("Scurry.", CHAT_MSG_MONSTER_YELL, 11356);
+            mGroundSlam->addEmote("No escape.", CHAT_MSG_MONSTER_YELL, 11357);
             mGroundSlam2 = AddSpell(GRUUL_THE_DRAGONKILLER_GROUND_SLAM2, Target_Self, 0, 1, 0);
             mStoned = AddSpellFunc(&SpellFunc_Gruul_Stoned, Target_Self, 0, 2, 0);
             mShatter = AddSpellFunc(&SpellFunc_Gruul_Shatter, Target_Self, 0, 3, 0);
             mShatter2 = AddSpell(GRUUL_THE_DRAGONKILLER_SHATTER, Target_Self, 0, 1, 0);
-            mShatter2->AddEmote("Stay...", CHAT_MSG_MONSTER_YELL, 11358);
-            mShatter2->AddEmote("Beg for life.", CHAT_MSG_MONSTER_YELL, 11359);
+            mShatter2->addEmote("Stay...", CHAT_MSG_MONSTER_YELL, 11358);
+            mShatter2->addEmote("Beg for life.", CHAT_MSG_MONSTER_YELL, 11359);
             AddSpell(GRUUL_THE_DRAGONKILLER_REVERBERATION, Target_Self, 4, 0, 30);
             AddSpell(GRUUL_THE_DRAGONKILLER_CAVE_IN, Target_RandomPlayerDestination, 7, 0, 25);
             AddSpellFunc(&SpellFunc_Gruul_GroundSlam, Target_Self, 6, 1, 35);

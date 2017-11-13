@@ -2479,9 +2479,9 @@ class EssenceOfAngerAI : public CreatureAIScript
         {
             mTaunt = AddSpell(EOA_SEETHE, Target_Current, 0, 0, 0); // on Taunt
             mSoulScream = AddSpell(EOA_SOUL_SCREAM, Target_Current, 6, 1, 15);
-            mSoulScream->AddEmote("So foolish!", CHAT_MSG_MONSTER_YELL, 11400);
+            mSoulScream->addEmote("So foolish!", CHAT_MSG_MONSTER_YELL, 11400);
             mSpite = AddSpell(EOA_SPITE, Target_Current, 6, 0, 15);
-            mSpite->AddEmote("On your knees!", CHAT_MSG_MONSTER_YELL, 11403);
+            mSpite->addEmote("On your knees!", CHAT_MSG_MONSTER_YELL, 11403);
             mAuraOfAnger = AddSpell(EOA_AURA_OF_ANGER, Target_RandomPlayer, 0, 0, 0);
             addEmoteForEvent(Event_OnTargetDied, 8896);
             addEmoteForEvent(Event_OnTargetDied, 8897);
@@ -4272,8 +4272,8 @@ class AkamaAI : public CreatureAIScript
         {
             AddPhaseSpell(2, AddSpell(AKAMA_BLESSING_OF_KINGS, Target_Self, 15, 0, 60));
             mHealingPotion = AddSpell(AKAMA_HEALING_POTION, Target_Self, 0, 0, 0);
-            mHealingPotion->AddEmote("I will not last much longer!", CHAT_MSG_MONSTER_YELL, 11385);
-            mHealingPotion->AddEmote("No! Not yet!", CHAT_MSG_MONSTER_YELL, 11386);
+            mHealingPotion->addEmote("I will not last much longer!", CHAT_MSG_MONSTER_YELL, 11385);
+            mHealingPotion->addEmote("No! Not yet!", CHAT_MSG_MONSTER_YELL, 11386);
             mDespawn = AddSpell(AKAMA_DESPAWN, Target_Self, 0, 0.5f, 0);
 
             addEmoteForEvent(Event_OnTargetDied, 8909);

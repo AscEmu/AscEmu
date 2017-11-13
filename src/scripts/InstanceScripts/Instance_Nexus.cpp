@@ -454,7 +454,7 @@ class OrmorokAI : public CreatureAIScript
 
         AddSpell(SPELL_REFLECTION, Target_Self, 35, 2.0f, 15);
         mCrystalSpikes = AddSpell(CRYSTAL_SPIKES, Target_Self, 25, 0, 12);
-        mCrystalSpikes->AddEmote("Bleed!", CHAT_MSG_MONSTER_YELL, 13332);
+        mCrystalSpikes->addEmote("Bleed!", CHAT_MSG_MONSTER_YELL, 13332);
 
         mEnraged = false;
     }
@@ -568,7 +568,7 @@ class KeristraszaAI : public CreatureAIScript
         AddSpell(TAIL_SWEEP, Target_Self, 40, 0, 8);
 
         mCrystalize = AddSpell(CRYSTALLIZE, Target_Self, 25, 0, 22);
-        mCrystalize->AddEmote("Stay. Enjoy your final moments.", CHAT_MSG_MONSTER_YELL, 13451);
+        mCrystalize->addEmote("Stay. Enjoy your final moments.", CHAT_MSG_MONSTER_YELL, 13451);
 
         mEnraged = false;
         setCanEnterCombat(false);

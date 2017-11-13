@@ -271,7 +271,7 @@ class SladranAI : public CreatureAIScript
         }
 
         if (sdPoisonNova != nullptr)
-            sdPoisonNova->AddAnnouncement("Slad'ran begins to cast Poison Nova!");
+            sdPoisonNova->addAnnouncement("Slad'ran begins to cast Poison Nova!");
     }
 
     void OnCombatStart(Unit* pTarget)

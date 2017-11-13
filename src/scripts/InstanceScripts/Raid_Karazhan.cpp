@@ -211,8 +211,8 @@ class MoroesAI : public CreatureAIScript
         AddPhaseSpell(1, AddSpell(MOROES_GOUGE, Target_Current, 20, 0, 10, 0, 5));
         AddPhaseSpell(1, AddSpell(MOROES_BLIND, Target_ClosestPlayerNotCurrent, 20, 0, 10, 0, 10, true));
         mVanish = AddSpell(MOROES_VANISH, Target_Self, 0, 12, 0);
-        mVanish->AddEmote("Now, where was I? Oh yes...", CHAT_MSG_MONSTER_YELL, 9215);
-        mVanish->AddEmote("You rang?", CHAT_MSG_MONSTER_YELL, 9316);
+        mVanish->addEmote("Now, where was I? Oh yes...", CHAT_MSG_MONSTER_YELL, 9215);
+        mVanish->addEmote("You rang?", CHAT_MSG_MONSTER_YELL, 9316);
         mEnrage = AddSpell(MOROES_ENRAGE, Target_Self, 0, 0, 0);
 
         //Phase 2 spells
@@ -312,8 +312,8 @@ class MaidenOfVirtueAI : public CreatureAIScript
         AddSpell(MAIDENOFVIRTUE_HOLY_FIRE, Target_RandomPlayer, 25, 1, 15, 0, 50);
         AddSpell(MAIDENOFVIRTUE_HOLY_WRATH, Target_RandomPlayer, 25, 0, 20, 0, 100);
         mRepentance = AddSpell(MAIDENOFVIRTUE_REPENTANCE, Target_Self, 25, 0.6f, 30);
-        mRepentance->AddEmote("Cast out your corrupt thoughts.", CHAT_MSG_MONSTER_YELL, 9313);
-        mRepentance->AddEmote("Your impurity must be cleansed.", CHAT_MSG_MONSTER_YELL, 9208);
+        mRepentance->addEmote("Cast out your corrupt thoughts.", CHAT_MSG_MONSTER_YELL, 9313);
+        mRepentance->addEmote("Your impurity must be cleansed.", CHAT_MSG_MONSTER_YELL, 9208);
 
         //Emotes
         addEmoteForEvent(Event_OnCombatStart, 8829);
@@ -325,7 +325,7 @@ class MaidenOfVirtueAI : public CreatureAIScript
 
     void OnCombatStart(Unit* pTarget)
     {
-        mRepentance->TriggerCooldown();    //No repentance at the beginning of the fight
+        mRepentance->setTriggerCooldown();    //No repentance at the beginning of the fight
         
     }
 

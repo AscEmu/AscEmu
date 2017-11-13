@@ -250,8 +250,8 @@ class IckAI : public CreatureAIScript
         mKrickAI->addEmoteForEvent(Event_OnTargetDied, 8769);
 
         // Ick Spell Announcements
-        mPursue->AddAnnouncement("Ick is chasing you!");
-        mPoisonNova->AddAnnouncement("Ick begins to unleash a toxic poison cloud!");
+        mPursue->addAnnouncement("Ick is chasing you!");
+        mPoisonNova->addAnnouncement("Ick begins to unleash a toxic poison cloud!");
 
         Phase = BATTLE;
     }

@@ -268,8 +268,8 @@ class Volkhan : public CreatureAIScript
             mStomp = AddSpell(52237, Target_Self, 0, 3, 0);
         }
 
-        mStomp->AddEmote("I will crush you beneath my boots!", CHAT_MSG_MONSTER_YELL, 13963);
-        mStomp->AddEmote("All my work... undone!", CHAT_MSG_MONSTER_YELL, 13964);
+        mStomp->addEmote("I will crush you beneath my boots!", CHAT_MSG_MONSTER_YELL, 13963);
+        mStomp->addEmote("All my work... undone!", CHAT_MSG_MONSTER_YELL, 13964);
 
         m_cVolkhanWP.x = 1328.666870f;
         m_cVolkhanWP.y = -97.022758f;

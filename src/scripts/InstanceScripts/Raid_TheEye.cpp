@@ -1634,8 +1634,8 @@ class VoidReaverAI : public CreatureAIScript
             SpellDesc* pPounding = AddSpell(VOID_REAVER_POUNDING, Target_Self, 100, 0, 12);
             if (pPounding != NULL)
             {
-                pPounding->AddEmote("Alternative measure commencing...", CHAT_MSG_MONSTER_YELL, 11218);
-                pPounding->AddEmote("Calculating force parameters...", CHAT_MSG_MONSTER_YELL, 11219);
+                pPounding->addEmote("Alternative measure commencing...", CHAT_MSG_MONSTER_YELL, 11218);
+                pPounding->addEmote("Calculating force parameters...", CHAT_MSG_MONSTER_YELL, 11219);
             }
 
             mArcaneOrb = AddSpell(VOID_REAVER_ARCANE_ORB_TRIGGER, Target_RandomPlayerDestination, 100, 0, 3);
@@ -1717,8 +1717,8 @@ class HighAstromancerSolarianAI : public CreatureAIScript
             AddPhaseSpell(1, AddSpell(SOLARIAN_WRATH_OF_THE_ASTROMANCER, Target_RandomPlayerNotCurrent, 20, 0, 6, 0, 50000));
             AddPhaseSpell(1, AddSpell(SOLARIAN_BLINDING_LIGHT, Target_Self, 20, 0, 20, 0, 50));
             mDisappear = AddSpellFunc(&SpellFunc_Solarian_Disappear, Target_Self, 0, 22, 0);
-            mDisappear->AddEmote("You are hopelessly outmatched!", CHAT_MSG_MONSTER_YELL, 11139);
-            mDisappear->AddEmote("I will crush your delusions of grandeur!", CHAT_MSG_MONSTER_YELL, 11140);
+            mDisappear->addEmote("You are hopelessly outmatched!", CHAT_MSG_MONSTER_YELL, 11139);
+            mDisappear->addEmote("I will crush your delusions of grandeur!", CHAT_MSG_MONSTER_YELL, 11140);
 
             //Phase 2 spells
             mReappear = AddSpellFunc(&SpellFunc_Solarian_Reappear, Target_Self, 0, 0, 0);
@@ -1727,8 +1727,8 @@ class HighAstromancerSolarianAI : public CreatureAIScript
             AddPhaseSpell(3, AddSpell(SOLARIAN_VOID_BOLT, Target_Current, 100, 3, 10, 0, 100));
             AddPhaseSpell(3, AddSpell(SOLARIAN_PSYCHIC_SCREAM, Target_Self, 10, 0, 0));
             mVoidForm = AddSpell(SOLARIAN_SOLARIANS_TRANSFORM, Target_Self, 0, 0, 0);
-            mVoidForm->AddEmote("Enough of this! Now I call upon the fury of the cosmos itself.", CHAT_MSG_MONSTER_YELL);
-            mVoidForm->AddEmote("I become ONE... with the VOID!", CHAT_MSG_MONSTER_YELL);
+            mVoidForm->addEmote("Enough of this! Now I call upon the fury of the cosmos itself.", CHAT_MSG_MONSTER_YELL);
+            mVoidForm->addEmote("I become ONE... with the VOID!", CHAT_MSG_MONSTER_YELL);
 
             //Emotes
             addEmoteForEvent(Event_OnCombatStart, 8872);
@@ -3037,7 +3037,7 @@ class KaelThasAI : public CreatureAIScript
 
             // Other spells
             mSummonWeapons = AddSpell(KAELTHAS_SUMMON_WEAPONS, Target_Self, 0, 3, 0);
-            mSummonWeapons->AddEmote("As you see, I have many weapons in my arsenal...", CHAT_MSG_MONSTER_YELL, 11261);
+            mSummonWeapons->addEmote("As you see, I have many weapons in my arsenal...", CHAT_MSG_MONSTER_YELL, 11261);
 
             // Common spells
             mArcaneDisruption = AddSpell(KAELTHAS_ARCANE_DISRUPTION, Target_Self, 0, 0, 0);
@@ -3049,13 +3049,13 @@ class KaelThasAI : public CreatureAIScript
             // 1st phase
             mPyroblast = AddSpell(KAELTHAS_PYROBLAST, Target_Current, 0, 4, 0);
             SpellDesc* mMindControl = AddPhaseSpell(7, AddSpell(KAELTHAS_MIND_CONTROL, Target_Self, 100, 0, 30));
-            mMindControl->AddEmote("Obey me.", CHAT_MSG_MONSTER_YELL, 11268);
-            mMindControl->AddEmote("Bow to my will.", CHAT_MSG_MONSTER_YELL, 11269);
+            mMindControl->addEmote("Obey me.", CHAT_MSG_MONSTER_YELL, 11268);
+            mMindControl->addEmote("Bow to my will.", CHAT_MSG_MONSTER_YELL, 11269);
             mFlameStrike = AddSpell(KAELTHAS_FLAME_STRIKE_SUMMON, Target_RandomPlayerNotCurrent, 0, 0, 0);
             mFlameStrikeFunc = AddSpellFunc(&SpellFunc_KaelThasFlameStrike, Target_RandomPlayerNotCurrent, 0, 0, 0);
             mPhoenix = AddSpell(KAELTHAS_PHOENIX, Target_Self, 0, 0, 0);
-            mPhoenix->AddEmote("Anara'nel belore!", CHAT_MSG_MONSTER_YELL, 11267);
-            mPhoenix->AddEmote("By the power of the sun!", CHAT_MSG_MONSTER_YELL, 11266);
+            mPhoenix->addEmote("Anara'nel belore!", CHAT_MSG_MONSTER_YELL, 11267);
+            mPhoenix->addEmote("By the power of the sun!", CHAT_MSG_MONSTER_YELL, 11266);
 
             // After powering up + Nether Vapor + Additional spells
             mNetherBeam = AddPhaseSpell(8, AddSpell(KAELTHAS_NETHER_BEAM, Target_RandomPlayer, 0, 0, 0));

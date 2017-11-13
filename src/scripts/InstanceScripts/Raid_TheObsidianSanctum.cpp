@@ -177,7 +177,7 @@ class SartharionAI : public CreatureAIScript
             }
 
             if (mFlame != nullptr)
-                mFlame->AddEmote("Burn, you miserable wretches!", CHAT_MSG_MONSTER_YELL, 14098);
+                mFlame->addEmote("Burn, you miserable wretches!", CHAT_MSG_MONSTER_YELL, 14098);
             
             mFlameTsunami = AddSpellFunc(&SpellFunc_FlameTsunami, Target_Self, 99, 0, 25);
             mSummonLava = AddSpellFunc(&SpellFunc_LavaSpawn, Target_RandomUnitNotCurrent, 25, 0, 8);
@@ -201,7 +201,7 @@ class SartharionAI : public CreatureAIScript
         void OnCombatStart(Unit* pTarget)
         {
             m_bEnraged = false;
-            mFlameTsunami->TriggerCooldown();
+            mFlameTsunami->setTriggerCooldown();
             CheckDrakes();
 
             if (m_iDrakeCount >= 1)   //HardMode!

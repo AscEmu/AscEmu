@@ -246,7 +246,7 @@ class LordMarrowgarAI : public CreatureAIScript
             spells[1].attackstoptimer = 60000;*/
 
             SpellDesc* bonestorm = AddSpell(BONE_STORM, Target_RandomDestination, 75.0f, 0.0f, 60);
-            bonestorm->AddEmote("bonestorm", CHAT_MSG_MONSTER_YELL, 0);
+            bonestorm->addEmote("bonestorm", CHAT_MSG_MONSTER_YELL, 0);
 
             /*spells[2].info = sSpellCustomizations.GetSpellInfo(LM_BERSERK);
             spells[2].targettype = TARGET_ATTACKING;

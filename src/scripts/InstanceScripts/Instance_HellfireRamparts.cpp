@@ -113,19 +113,19 @@ class OmorTheUnscarredAI : public CreatureAIScript
             SpellDesc* pShield = AddSpell(OMOR_DEMONIC_SHIELD, Target_Self, 30, 0, 25);
             pShield->mEnabled = false;
             SpellDesc* pSummon = AddSpell(OMOR_SUMMON_FIENDISH_HOUND, Target_Self, 8, 1, 20);
-            pSummon->AddEmote("Achor-she-ki! Feast my pet! Eat your fill!", CHAT_MSG_MONSTER_YELL, 10277);
+            pSummon->addEmote("Achor-she-ki! Feast my pet! Eat your fill!", CHAT_MSG_MONSTER_YELL, 10277);
             AddSpell(OMOR_SHADOW_WHIP, Target_RandomPlayer, 10, 0, 30);
             if (!_isHeroic())
             {
                 AddSpell(OMOR_SHADOW_BOLT, Target_RandomPlayer, 8, 3, 15, 10, 60, true);
                 SpellDesc* pAura = AddSpell(OMOR_TREACHEROUS_AURA, Target_RandomPlayer, 8, 2, 35, 0, 60, true);
-                pAura->AddEmote("A-Kreesh!", CHAT_MSG_MONSTER_YELL, 10278);
+                pAura->addEmote("A-Kreesh!", CHAT_MSG_MONSTER_YELL, 10278);
             }
             else
             {
                 AddSpell(OMOR_SHADOW_BOLT2, Target_RandomPlayer, 8, 3, 15, 10, 60, true);
                 SpellDesc* pAura = AddSpell(OMOR_BANE_OF_TREACHERY, Target_RandomPlayer, 8, 2, 35, 0, 60, true);
-                pAura->AddEmote("A-Kreesh!", CHAT_MSG_MONSTER_YELL, 10278);
+                pAura->addEmote("A-Kreesh!", CHAT_MSG_MONSTER_YELL, 10278);
             }
         }
 

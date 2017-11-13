@@ -613,9 +613,9 @@ GrandWidowFaerlinaAI::GrandWidowFaerlinaAI(Creature* pCreature) : CreatureAIScri
     addEmoteForEvent(Event_OnTargetDied, 8916);
     addEmoteForEvent(Event_OnTargetDied, 8917);
     addEmoteForEvent(Event_OnDied, 8918);
-    mFrenzy->AddEmote("You cannot hide from me!", CHAT_MSG_MONSTER_YELL, 8795);
-    mFrenzy->AddEmote("Kneel before me, worm!", CHAT_MSG_MONSTER_YELL, 8796);
-    mFrenzy->AddEmote("Run while you still can!", CHAT_MSG_MONSTER_YELL, 8797);
+    mFrenzy->addEmote("You cannot hide from me!", CHAT_MSG_MONSTER_YELL, 8795);
+    mFrenzy->addEmote("Kneel before me, worm!", CHAT_MSG_MONSTER_YELL, 8796);
+    mFrenzy->addEmote("Run while you still can!", CHAT_MSG_MONSTER_YELL, 8797);
     mPoisonVolleyBoltTimer = mFrenzyTimer = INVALIDATE_TIMER;
 }
 

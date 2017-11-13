@@ -199,7 +199,7 @@ class HerodAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(HerodAI);
         HerodAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(SP_HEROD_WHIRLWINDSPELL, Target_Self, 12, 0, 12)->AddEmote("Blades of Light!", CHAT_MSG_MONSTER_YELL, 5832);
+            AddSpell(SP_HEROD_WHIRLWINDSPELL, Target_Self, 12, 0, 12)->addEmote("Blades of Light!", CHAT_MSG_MONSTER_YELL, 5832);
             AddSpell(SP_HEROD_CHARGE, Target_RandomPlayer, 6, 0, 20);
 
             m_bEnraged = false;
