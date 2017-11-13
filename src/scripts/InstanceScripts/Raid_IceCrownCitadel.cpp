@@ -436,7 +436,7 @@ class LordMarrowgarAI : public CreatureAIScript
 
     protected:
 
-        uint8 nrspells;
+        //uint8 nrspells;
 
         /* Testcode - remove me please
         uint32_t exampleTimer1;

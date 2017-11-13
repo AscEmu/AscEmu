@@ -23,7 +23,9 @@ bool ChatHandler::HandleSetScriptPhaseCommand(const char* args, WorldSession* se
         creatureScript->setScriptPhase(scriptPhase);
         SystemMessage(session, "ScriptPhase %u set for Creature %s", scriptPhase, selected_unit->GetCreatureProperties()->Name.c_str());
     }
+    return true;
 }
+
 bool ChatHandler::HandleAiChargeCommand(const char* /*args*/, WorldSession* session)
 {
     Unit* selected_unit = GetSelectedUnit(session);
