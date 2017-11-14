@@ -490,6 +490,82 @@ public:
     uint32_t mLastCastTime;         //Last time at which the spell casted (used to implement cooldown), set to 0
 };
 
+//\brief: Used originally for SP_AI_Spell targettype and new for CreatureAISpells
+enum
+{
+    TARGET_SELF,
+    TARGET_VARIOUS,
+    TARGET_ATTACKING,
+    TARGET_DESTINATION,
+    TARGET_SOURCE,
+    TARGET_RANDOM_FRIEND,    // doesn't work yet
+    TARGET_RANDOM_SINGLE,
+    TARGET_RANDOM_DESTINATION
+};
+
+#include "Spell/Customization/SpellCustomizations.hpp"
+
+//\brief: created by Zyres 11/13/2017 - This should replace SP_AI_Spell, ScriptSpell and SpellDesc
+class SERVER_DECL CreatureAISpells
+{
+    public:
+        CreatureAISpells(SpellInfo* spellInfo, float castChance, uint32_t targetType, uint32_t duration, uint32_t cooldown)
+        {
+            mSpellInfo = spellInfo;
+            mCastChance = castChance;
+            mTargetType = targetType;
+            mDuration = duration;
+
+            mDurationTimerId = 0;
+
+            mCooldown = cooldown;
+            mCooldownTimerId = 0;
+        }
+
+        ~CreatureAISpells()
+        {
+        }
+
+        SpellInfo* mSpellInfo;
+        float mCastChance;
+        uint32_t mTargetType;
+        uint32_t mDuration;
+
+        void setdurationTimer(uint32_t durationTimer)
+        {
+            mDurationTimerId = durationTimer;
+        }
+
+        uint32_t mDurationTimerId;
+
+        void setCooldownTimerId(uint32_t cooldownTimer)
+        {
+            mCooldownTimerId = cooldownTimer;
+        }
+
+        uint32_t mCooldown;
+        uint32_t mCooldownTimerId;
+
+        struct AISpellEmotes
+        {
+            AISpellEmotes(std::string pText, uint8_t pType, uint32_t pSoundId)
+            {
+                mText = (!pText.empty() ? pText : "");
+                mType = pType;
+                mSoundId = pSoundId;
+            }
+
+            std::string mText;
+            uint8_t mType;
+            uint32_t mSoundId;
+        };
+        typedef std::vector<AISpellEmotes> AISpellEmoteArray;
+        AISpellEmoteArray mAISpellEmote;
+
+        void addEmote(std::string pText, uint8_t pType = CHAT_MSG_MONSTER_YELL, uint32_t pSoundId = 0);
+
+        void sendRandomEmote(CreatureAIScript* creatureAI);
+};
 
 class SERVER_DECL CreatureAIScript
 {
@@ -707,6 +783,51 @@ class SERVER_DECL CreatureAIScript
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // spell
+        //\brief: created by Zyres 11/13/2017 - This should replace AP_AI_Spell and SpellDesc
+
+        typedef std::vector<CreatureAISpells*> CreatureAISpellsArray;
+        CreatureAISpellsArray mCreatureAISpells;
+
+    private:
+
+    public:
+
+        uint32_t mSpellWaitTimerId;
+        bool enableCreatureAISpellSystem;
+
+        //addAISpell(spellID, Chance, TargetType, Duration (s), waitBeforeNextCast (s))
+        CreatureAISpells* addAISpell(uint32_t spellId, float castChance, uint32_t targetType, uint32_t duration = 0, uint32_t cooldown = 0)
+        {
+            SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
+            if (spellInfo != nullptr)
+            {
+                uint32_t spellDuration = duration * 1000;
+                if (spellDuration == 0)
+                    spellDuration = spellInfo->getSpellDuration(nullptr);
+
+                CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, targetType, spellDuration, cooldown * 1000);
+
+                mCreatureAISpells.push_back(newAISpell);
+
+                newAISpell->setdurationTimer(_addTimer(spellDuration));
+                newAISpell->setCooldownTimerId(_addTimer(0));
+
+                return newAISpell;
+            }
+            else
+            {
+                LOG_ERROR("tried to add invalid spell with id %u", spellId);
+                return nullptr;
+            }
+        }
+
+        // only for internal use
+        void newAIUpdateSpellSystem();
+        void oldAIUpdateSpellSystem();
+
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // spell <deprecated>
+        //\brief: the following functions are marked as deprecated. Do not use them for new scripts!
         void _applyAura(uint32_t spellId);
         void _removeAura(uint32_t spellId);
         void _removeAllAuras();

@@ -229,7 +229,7 @@ class LordMarrowgarAI : public CreatureAIScript
 
             nrspells = 5;
 
-            spells[0].info = sSpellCustomizations.GetSpellInfo(BONE_SLICE);
+            /*spells[0].info = sSpellCustomizations.GetSpellInfo(BONE_SLICE);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = 15;
@@ -263,7 +263,7 @@ class LordMarrowgarAI : public CreatureAIScript
             spells[4].cooldown = 0;
             spells[4].casttime = 3;
             spells[4].perctrigger = 25.0f;
-            spells[4].attackstoptimer = 1000;
+            spells[4].attackstoptimer = 1000;*/
 
             /* Testcode Timers - remove me please
             exampleTimer1 = 0;
@@ -282,10 +282,28 @@ class LordMarrowgarAI : public CreatureAIScript
             SpellDesc* WhirlTemp = AddSpell(36175, Target_Self, 50.0f, 0.0f, 60);
             WhirlTemp->addEmote("Reap the Whirlwind!", CHAT_MSG_MONSTER_YELL, 11089);
             WhirlTemp->addEmote("I'll cut you to peices!", CHAT_MSG_MONSTER_YELL, 11090);*/
+
+            enableCreatureAISpellSystem = true;
+
+            auto boneslice = addAISpell(BONE_SLICE, 60.0f, TARGET_ATTACKING, 0, 60);
+            boneslice->addEmote("boneslice", CHAT_MSG_MONSTER_YELL, 0);
+
+            auto bonestorm = addAISpell(BONE_STORM, 30.0f, TARGET_DESTINATION, 30, 40);
+            bonestorm->addEmote("bonestorm", CHAT_MSG_MONSTER_YELL, 0);
+
+            auto berserk = addAISpell(LM_BERSERK, 50.0f, TARGET_ATTACKING, 30, 40);
+            berserk->addEmote("berserk", CHAT_MSG_MONSTER_YELL, 0);
+
+            auto souldFest = addAISpell(SOUL_FEAST, 50.0f, TARGET_RANDOM_SINGLE, 0, 60);
+            souldFest->addEmote("Your soul is fest", CHAT_MSG_MONSTER_YELL, 0);
+
+            auto bonespike = addAISpell(BONE_SPIKE, 100.0f, TARGET_RANDOM_SINGLE, 0, 60);
+            bonespike->addEmote("bonespike", CHAT_MSG_MONSTER_YELL, 0);
         }
 
         void AIUpdate()
         {
+            
         }
 
         void OnCastSpell(uint32 spellId)
@@ -329,7 +347,7 @@ class LordMarrowgarAI : public CreatureAIScript
                     break;
             }
 
-            std::vector<Player*> TargetTable;
+            /*std::vector<Player*> TargetTable;
             std::set<Object*>::iterator itr = getCreature()->GetInRangePlayerSetBegin();
 
             for (; itr != getCreature()->GetInRangePlayerSetEnd(); ++itr)
@@ -358,7 +376,7 @@ class LordMarrowgarAI : public CreatureAIScript
 
             spawnCreature(CN_BONE_SPIKE, random_target->GetPosition());
 
-            TargetTable.clear();
+            TargetTable.clear();*/
         }
 
         void OnTargetDied(Unit* pTarget)
@@ -392,7 +410,7 @@ class LordMarrowgarAI : public CreatureAIScript
 
                     if (m_spellcheck[i])
                     {
-                        target = getCreature()->GetAIInterface()->getNextTarget();
+                        /*target = getCreature()->GetAIInterface()->getNextTarget();
                         switch (spells[i].targettype)
                         {
                             case TARGET_SELF:
@@ -406,17 +424,17 @@ class LordMarrowgarAI : public CreatureAIScript
                             case TARGET_DESTINATION:
                                 getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                                 break;
-                        }
+                        }*/
                         m_spellcheck[i] = false;
                         return;
                     }
 
-                    if (val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger))
+                    /*if (val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger))
                     {
                         getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
                         m_spellcheck[i] = true;
                     }
-                    comulativeperc += spells[i].perctrigger;
+                    comulativeperc += spells[i].perctrigger;*/
                 }
 
             }

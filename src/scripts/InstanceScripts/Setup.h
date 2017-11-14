@@ -80,7 +80,7 @@ void SetupSunwellPlateau(ScriptMgr* pScriptMgr);
 void SetupWorldBosses(ScriptMgr* mgr);
 void SetupZulAman(ScriptMgr* mgr);
 
-
+// Zyres 11/14/2017 Marked as deprecated
 struct ScriptSpell
 {
     uint32 normal_spellid;
@@ -92,7 +92,8 @@ struct ScriptSpell
     uint32 phase;
 };
 
-enum SPELL_TARGETS
+// Zyres 11/14/2017 Marked as deprecated
+enum SPELL_TARGETS  // used for structure ScriptSpell
 {
     SPELL_TARGET_SELF,
     SPELL_TARGET_CURRENT_ENEMY,
@@ -104,6 +105,7 @@ enum SPELL_TARGETS
     SPELL_TARGET_CUSTOM
 };
 
+// Zyres 11/14/2017 Marked as deprecated
 struct SP_AI_Spell
 {
     SP_AI_Spell();
@@ -124,17 +126,19 @@ struct SP_AI_Spell
     int maxhp2cast;         // max hp amount of victim to perform cast on it (health <= maxhp2cast)
 };
 
-enum
-{
-    TARGET_SELF,
-    TARGET_VARIOUS,
-    TARGET_ATTACKING,
-    TARGET_DESTINATION,
-    TARGET_SOURCE,
-    TARGET_RANDOM_FRIEND,    // doesn't work yet
-    TARGET_RANDOM_SINGLE,
-    TARGET_RANDOM_DESTINATION
-};
+// Zyres 11/14/2017 Moved to ScriptMgr.h
+// used for struct SP_AI_SPELL
+//enum
+//{
+//    TARGET_SELF,
+//    TARGET_VARIOUS,
+//    TARGET_ATTACKING,
+//    TARGET_DESTINATION,
+//    TARGET_SOURCE,
+//    TARGET_RANDOM_FRIEND,    // doesn't work yet
+//    TARGET_RANDOM_SINGLE,
+//    TARGET_RANDOM_DESTINATION
+//};
 
 ///\todo create for all instance scripts for these maps... best example how encounter states work ->Raid_IceCrownCitadel.cpp
 enum InstanceMaps
