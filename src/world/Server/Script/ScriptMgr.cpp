@@ -1327,7 +1327,7 @@ void CreatureAIScript::newAIUpdateSpellSystem()
         if (AISpell != nullptr)
         {
             // stop spells and remove aura in case of duration
-            if (_isTimerFinished(AISpell->mDurationTimerId))
+            if (_isTimerFinished(AISpell->mDurationTimerId) && AISpell->mForceRemoveAura)
             {
                 getCreature()->InterruptSpell();
                 _removeAura(AISpell->mSpellInfo->getId());
@@ -1350,6 +1350,10 @@ void CreatureAIScript::newAIUpdateSpellSystem()
                 if (!_isTimerFinished(AISpell->mCooldownTimerId))
                     continue;
 
+                // aura stacking
+                if (getCreature()->getAuraCountForId(AISpell->mSpellInfo->getId()) >= AISpell->getMaxStackCount())
+                    continue;
+
                 // random chance for shuffeld array should do the job
                 if (randomChance < AISpell->mCastChance)
                 {
@@ -1366,14 +1370,14 @@ void CreatureAIScript::newAIUpdateSpellSystem()
             {
                 case TARGET_SELF:
                 case TARGET_VARIOUS:
-                    getCreature()->CastSpell(getCreature(), usedSpell->mSpellInfo, true);
+                    getCreature()->CastSpell(getCreature(), usedSpell->mSpellInfo, usedSpell->mIsTriggered);
                     break;
                 case TARGET_RANDOM_SINGLE:
                 case TARGET_ATTACKING:
-                    getCreature()->CastSpell(target, usedSpell->mSpellInfo, true);
+                    getCreature()->CastSpell(target, usedSpell->mSpellInfo, usedSpell->mIsTriggered);
                     break;
                 case TARGET_DESTINATION:
-                    getCreature()->CastSpellAoF(target->GetPosition(), usedSpell->mSpellInfo, true);
+                    getCreature()->CastSpellAoF(target->GetPosition(), usedSpell->mSpellInfo, usedSpell->mIsTriggered);
                     break;
                 case TARGET_RANDOM_FRIEND:
                     //case TARGET_RANDOM_SINGLE:

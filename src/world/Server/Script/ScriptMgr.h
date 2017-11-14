@@ -509,7 +509,7 @@ enum
 class SERVER_DECL CreatureAISpells
 {
     public:
-        CreatureAISpells(SpellInfo* spellInfo, float castChance, uint32_t targetType, uint32_t duration, uint32_t cooldown)
+        CreatureAISpells(SpellInfo* spellInfo, float castChance, uint32_t targetType, uint32_t duration, uint32_t cooldown, bool forceRemove, bool isTriggered)
         {
             mSpellInfo = spellInfo;
             mCastChance = castChance;
@@ -520,6 +520,10 @@ class SERVER_DECL CreatureAISpells
 
             mCooldown = cooldown;
             mCooldownTimerId = 0;
+            mForceRemoveAura = forceRemove;
+            mIsTriggered = isTriggered;
+
+            mMaxStackCount = 1;
         }
 
         ~CreatureAISpells()
@@ -546,6 +550,9 @@ class SERVER_DECL CreatureAISpells
         uint32_t mCooldown;
         uint32_t mCooldownTimerId;
 
+        bool mForceRemoveAura;
+        bool mIsTriggered;
+
         struct AISpellEmotes
         {
             AISpellEmotes(std::string pText, uint8_t pType, uint32_t pSoundId)
@@ -565,6 +572,11 @@ class SERVER_DECL CreatureAISpells
         void addEmote(std::string pText, uint8_t pType = CHAT_MSG_MONSTER_YELL, uint32_t pSoundId = 0);
 
         void sendRandomEmote(CreatureAIScript* creatureAI);
+
+        uint32_t mMaxStackCount;
+
+        void setMaxStackCount(uint32_t stackCount) { mMaxStackCount = stackCount; }
+        uint32_t getMaxStackCount() { return mMaxStackCount; }
 };
 
 class SERVER_DECL CreatureAIScript
@@ -796,7 +808,7 @@ class SERVER_DECL CreatureAIScript
         bool enableCreatureAISpellSystem;
 
         //addAISpell(spellID, Chance, TargetType, Duration (s), waitBeforeNextCast (s))
-        CreatureAISpells* addAISpell(uint32_t spellId, float castChance, uint32_t targetType, uint32_t duration = 0, uint32_t cooldown = 0)
+        CreatureAISpells* addAISpell(uint32_t spellId, float castChance, uint32_t targetType, uint32_t duration = 0, uint32_t cooldown = 0, bool forceRemove = false, bool isTriggered = true)
         {
             SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
             if (spellInfo != nullptr)
@@ -805,7 +817,7 @@ class SERVER_DECL CreatureAIScript
                 if (spellDuration == 0)
                     spellDuration = spellInfo->getSpellDuration(nullptr);
 
-                CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, targetType, spellDuration, cooldown * 1000);
+                CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, targetType, spellDuration, cooldown * 1000, forceRemove, isTriggered);
 
                 mCreatureAISpells.push_back(newAISpell);
 
