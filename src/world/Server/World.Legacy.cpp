@@ -127,7 +127,7 @@ Task* TaskList::GetTask()
 void TaskList::spawn()
 {
     running = true;
-    thread_count.SetVal(0);
+    thread_count = 0;
 
     uint32 threadcount;
     if (worldConfig.startup.enableMultithreadedLoading)
@@ -220,7 +220,7 @@ bool TaskExecutor::runThread()
 
 void TaskList::waitForThreadsToExit()
 {
-    while (thread_count.GetVal())
+    while (thread_count)
     {
         Arcemu::Sleep(20);
     }

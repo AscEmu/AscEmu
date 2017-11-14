@@ -18,7 +18,7 @@ class SERVER_DECL SocketMgr : public Singleton<SocketMgr>
     HANDLE m_completionPort;
     std::set<Socket*> _sockets;
     Mutex socketLock;
-    Arcemu::Threading::AtomicCounter socket_count;
+    std::atomic<unsigned long> socket_count;
 
     public:
 
@@ -29,7 +29,7 @@ class SERVER_DECL SocketMgr : public Singleton<SocketMgr>
         void SpawnWorkerThreads();
         void CloseAll();
         void ShowStatus();
-        uint32 GetSocketCount() { return socket_count.GetVal(); }
+        uint32 GetSocketCount() { return socket_count; }
         void AddSocket(Socket* s)
         {
             socketLock.Acquire();

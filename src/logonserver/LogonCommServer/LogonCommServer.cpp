@@ -24,7 +24,7 @@
 LogonCommServerSocket::LogonCommServerSocket(SOCKET fd) : Socket(fd, 65536, 524288)
 {
     // do nothing
-    last_ping.SetVal((uint32)UNIXTIME);
+    last_ping = (uint32)UNIXTIME;
     remaining = opcode = 0;
     removed = true;
 
@@ -262,7 +262,7 @@ void LogonCommServerSocket::HandlePing(WorldPacket & recvData)
 {
     WorldPacket data(LRSMSG_LOGON_PING_RESULT, 4);
     SendPacket(&data);
-    last_ping.SetVal((uint32)time(NULL));
+    last_ping = (uint32)time(NULL);
 }
 
 void LogonCommServerSocket::SendPacket(WorldPacket* data)

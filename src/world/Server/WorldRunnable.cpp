@@ -52,7 +52,7 @@ bool WorldRunnable::runThread()
             if (GetThreadState() == THREADSTATE_TERMINATE)
                 break;
 
-            ThreadState.SetVal(THREADSTATE_BUSY);
+            ThreadState = THREADSTATE_BUSY;
 
             ServerState::instance()->update();
 
@@ -92,7 +92,7 @@ bool WorldRunnable::runThread()
             if (GetThreadState() == THREADSTATE_TERMINATE)
                 break;
 
-            ThreadState.SetVal(THREADSTATE_SLEEPING);
+            ThreadState = THREADSTATE_SLEEPING;
 
             /*This is execution time compensating system
                 if execution took more than default delay

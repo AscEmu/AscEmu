@@ -337,7 +337,7 @@ void GameEventMgr::GameEventMgrThread::Update()
 void GameEventMgr::GameEventMgrThread::onShutdown()
 {
     LogNotice("GameEventMgr : Shutdown!");
-    ThreadState.SetVal(THREADSTATE_TERMINATE);
+    ThreadState = THREADSTATE_TERMINATE;
 }
 
 void GameEventMgr::GameEventMgrThread::CleanupEntities()
@@ -398,13 +398,13 @@ bool GameEventMgr::GameEventMgrThread::runThread()
         if (GetThreadState() == THREADSTATE_TERMINATE)
             break;
 
-        ThreadState.SetVal(THREADSTATE_BUSY);
+        ThreadState = THREADSTATE_BUSY;
         Update();
 
         if (GetThreadState() == THREADSTATE_TERMINATE)
             break;
 
-        ThreadState.SetVal(THREADSTATE_SLEEPING);
+        ThreadState = THREADSTATE_SLEEPING;
         Arcemu::Sleep(1 * 1000); // 1 second
     }
 

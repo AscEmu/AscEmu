@@ -61,7 +61,7 @@ class LogonCommServerSocket : public Socket
 
         void RefreshRealmsPop();
 
-        Arcemu::Threading::AtomicCounter last_ping;
+        std::atomic<unsigned long> last_ping;
         bool removed;
         std::set<uint32> server_ids;
 };

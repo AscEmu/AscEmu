@@ -151,7 +151,7 @@ public:
 
     void wait();
     void waitForThreadsToExit();
-    Arcemu::Threading::AtomicCounter thread_count;
+    std::atomic<unsigned long> thread_count;
     bool running;
 };
 

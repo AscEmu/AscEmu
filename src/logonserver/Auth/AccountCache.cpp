@@ -590,7 +590,7 @@ void InformationCore::TimeoutSockets()
         LogonCommServerSocket* s = *itr;
         ++itr;
 
-        uint32 last_ping = s->last_ping.GetVal();
+        uint32 last_ping = s->last_ping;
         if (last_ping < now && ((now - last_ping) > 300))
         {
             for (std::set< uint32 >::iterator RealmITR = s->server_ids.begin(); RealmITR != s->server_ids.end(); ++RealmITR)

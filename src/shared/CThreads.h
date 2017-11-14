@@ -23,7 +23,7 @@
 #define _C_THREADS_H
 
 #include "Threading/ThreadBase.h"
-#include "Threading/AtomicCounter.h"
+#include <atomic>
 
 class MapMgr;
 class Player;
@@ -55,10 +55,10 @@ class SERVER_DECL CThread : public ThreadBase
         CThread();
         ~CThread();
 
-        inline void SetThreadState(CThreadState thread_state) { ThreadState.SetVal(thread_state); }
+        inline void SetThreadState(CThreadState thread_state) { ThreadState = thread_state; }
         inline CThreadState GetThreadState()
         {
-            unsigned long val = ThreadState.GetVal();
+            unsigned long val = ThreadState;
             return static_cast<CThreadState>(val);
         }
         int GetThreadId() { return ThreadId; }
@@ -72,11 +72,11 @@ class SERVER_DECL CThread : public ThreadBase
         {
             this->start_time = other.start_time;
             this->ThreadId = other.ThreadId;
-            this->ThreadState.SetVal(other.ThreadState.GetVal());
+            this->ThreadState = other.ThreadState.load();
             return *this;
         }
 
-        Arcemu::Threading::AtomicCounter ThreadState;
+        std::atomic<unsigned long> ThreadState;
         time_t start_time;
         int ThreadId;
 };

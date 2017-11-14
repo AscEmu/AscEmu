@@ -31,7 +31,7 @@ class AuctionMgr : public Singleton <AuctionMgr>
         AuctionMgr()
         {
             loopcount = 0;
-            maxId.SetVal(1);
+            maxId = 1;
         }
 
         ~AuctionMgr()
@@ -58,7 +58,7 @@ class AuctionMgr : public Singleton <AuctionMgr>
         std::unordered_map<uint32, AuctionHouse*> auctionHouseEntryMap;
         std::vector<AuctionHouse*> auctionHouses;
 
-        Arcemu::Threading::AtomicCounter maxId;
+        std::atomic<unsigned long> maxId;
 
         uint32 loopcount;
 };

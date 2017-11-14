@@ -244,12 +244,12 @@ enum class ScriptCommands : uint8
     SCRIPT_COMMAND_FLAG_REMOVE          = 5,
     SCRIPT_COMMAND_TELEPORT_TO          = 6,
     SCRIPT_COMMAND_QUEST_EXPLORED       = 7,
-    SCRIPT_COMMAND_KILL_CREDIT          = 8,       //Implemented (   data_1 (spellid), data_2 (quest id), data_3 (targettype 0 Creature/ 1 Gameobject), data_4 (target id), data_5 (killcredit), delay (when script needs to start ( in ms), next_event (next event_id when you want to add more )        
-    SCRIPT_COMMAND_RESPAWN_GAMEOBJECT   = 9,       //Implemented (   data_1 (GoId), data_2 (respawntime), delay (when script needs to start ( in ms), next_event (next event_id when you want to add more )                
+    SCRIPT_COMMAND_KILL_CREDIT          = 8,       //Implemented (   data_1 (spellid), data_2 (quest id), data_3 (targettype 0 Creature/ 1 Gameobject), data_4 (target id), data_5 (killcredit), delay (when script needs to start ( in ms), next_event (next event_id when you want to add more )
+    SCRIPT_COMMAND_RESPAWN_GAMEOBJECT   = 9,       //Implemented (   data_1 (GoId), data_2 (respawntime), delay (when script needs to start ( in ms), next_event (next event_id when you want to add more )
     SCRIPT_COMMAND_TEMP_SUMMON_CREATURE = 10,
     SCRIPT_COMMAND_OPEN_DOOR            = 11,
     SCRIPT_COMMAND_CLOSE_DOOR           = 12,
-    SCRIPT_COMMAND_ACTIVATE_OBJECT      = 13,      // Implemented ( data_1 (Go id),  when dont wanna use get pos then type in x y z the coords, delay (when script needs to start ( in ms), next_event (next event_id when you want to add more )                
+    SCRIPT_COMMAND_ACTIVATE_OBJECT      = 13,      // Implemented ( data_1 (Go id),  when dont wanna use get pos then type in x y z the coords, delay (when script needs to start ( in ms), next_event (next event_id when you want to add more )
     SCRIPT_COMMAND_REMOVE_AURA          = 14,
     SCRIPT_COMMAND_CAST_SPELL           = 15,
     SCRIPT_COMMAND_PLAY_SOUND           = 16,
@@ -415,7 +415,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         // Map typedef's
         typedef std::map<uint32, LevelInfo*>                            LevelMap;
         typedef std::map<std::pair<uint32, uint32>, LevelMap*>          LevelInfoMap;
-        
+
         typedef std::map<uint32, uint32>                                PetSpellCooldownMap;
         typedef std::multimap <uint32, uint32>                          BCEntryStorage;
         typedef std::map<uint32, SpellTargetConstraint*>                SpellTargetConstraintMap;
@@ -577,7 +577,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         // Loads Transporters on Continents
         void LoadTransports();
 
-        // Load Transport in Instance	
+        // Load Transport in Instance
         Transporter*LoadTransportInInstance(MapMgr *instance, uint32 goEntry, uint32 period);
 
         // Unloads Transporter from MapMgr
@@ -585,7 +585,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
         // Add Transporter
         void AddTransport(Transporter* transport);
- 
+
         TransportMap m_Transports;
 
         TransporterSet m_Transporters;
@@ -702,20 +702,20 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         RWLock playernamelock;
 
         // highest GUIDs, used for creating new objects
-        Arcemu::Threading::AtomicCounter m_hiItemGuid;
-        Arcemu::Threading::AtomicCounter m_hiGroupId;
-        Arcemu::Threading::AtomicCounter m_hiCharterId;
-        Arcemu::Threading::AtomicCounter m_hiCreatureSpawnId;
-        Arcemu::Threading::AtomicCounter m_hiGameObjectSpawnId;
-        Arcemu::Threading::AtomicCounter m_mailid;
-        Arcemu::Threading::AtomicCounter m_reportID;
-        Arcemu::Threading::AtomicCounter m_ticketid;
-        Arcemu::Threading::AtomicCounter m_setGUID;
-        Arcemu::Threading::AtomicCounter m_hiCorpseGuid;
-        Arcemu::Threading::AtomicCounter m_hiGuildId;
-        Arcemu::Threading::AtomicCounter m_hiPetGuid;
-        Arcemu::Threading::AtomicCounter m_hiArenaTeamId;
-        Arcemu::Threading::AtomicCounter m_hiPlayerGuid;
+        std::atomic<unsigned long> m_hiItemGuid;
+        std::atomic<unsigned long> m_hiGroupId;
+        std::atomic<unsigned long> m_hiCharterId;
+        std::atomic<unsigned long> m_hiCreatureSpawnId;
+        std::atomic<unsigned long> m_hiGameObjectSpawnId;
+        std::atomic<unsigned long> m_mailid;
+        std::atomic<unsigned long> m_reportID;
+        std::atomic<unsigned long> m_ticketid;
+        std::atomic<unsigned long> m_setGUID;
+        std::atomic<unsigned long> m_hiCorpseGuid;
+        std::atomic<unsigned long> m_hiGuildId;
+        std::atomic<unsigned long> m_hiPetGuid;
+        std::atomic<unsigned long> m_hiArenaTeamId;
+        std::atomic<unsigned long> m_hiPlayerGuid;
 
         RWLock m_charterLock;
 

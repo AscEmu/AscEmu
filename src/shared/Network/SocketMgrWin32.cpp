@@ -143,7 +143,7 @@ void SocketMgr::ShutdownThreads()
 
 void SocketMgr::ShowStatus()
 {
-    LogDefault("sockets count = %u", socket_count.GetVal());
+    LogDefault("sockets count = %u", socket_count.load());
 }
 
 #endif

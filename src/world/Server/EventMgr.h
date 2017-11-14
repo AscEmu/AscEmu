@@ -22,7 +22,6 @@
 #define EVENTMGR_H
 
 #include "Threading/RWLock.h"
-#include "Threading/AtomicCounter.h"
 #include "CallBack.h"
 #include "Singleton.h"
 #include <map>
@@ -268,7 +267,7 @@ struct SERVER_DECL TimedEvent
     uint16 repeats;
     bool deleted;
     int instanceId;
-    Arcemu::Threading::AtomicCounter ref;
+    std::atomic<unsigned long> ref;
 
     static TimedEvent* Allocate(void* object, CallbackBase* callback, uint32 flags, time_t time, uint32 repeat);
 

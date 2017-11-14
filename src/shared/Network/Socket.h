@@ -125,16 +125,17 @@ class SERVER_DECL Socket
         inline void DecSendLock() { --m_writeLock; }
         inline bool AcquireSendLock()
         {
-            if(m_writeLock.SetVal(1) != 0)
+            if (m_writeLock != 0)
                 return false;
-            else
-                return true;
+
+            m_writeLock = 1;
+            return true;
         }
 
     private:
 
         // Write lock, stops multiple write events from being posted.
-        Arcemu::Threading::AtomicCounter m_writeLock;
+        std::atomic<unsigned long> m_writeLock;
 
         /* Win32 - IOCP Specific Calls */
 #ifdef CONFIG_USE_IOCP

@@ -20,6 +20,7 @@
 
 #ifndef _CREFCOUNTER_H
 #define _CREFCOUNTER_H
+#include <atomic>
 
 namespace Arcemu
 {
@@ -35,7 +36,7 @@ namespace Arcemu
         {
             public:
 
-                CRefCounter() { Counter.SetVal(1); }
+                CRefCounter() { Counter = 1; }
 
                 virtual ~CRefCounter() {}
 
@@ -69,7 +70,7 @@ namespace Arcemu
 
             private:
 
-                Arcemu::Threading::AtomicCounter Counter;
+                std::atomic<unsigned long> Counter;
 
         };
     }

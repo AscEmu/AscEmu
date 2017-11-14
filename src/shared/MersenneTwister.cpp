@@ -22,11 +22,12 @@
 #include "MersenneTwister.h"
 #include "Util.hpp"
 #include <stdexcept>
+#include <atomic>
 
 #define NUMBER_OF_GENERATORS 5
 Mutex* m_locks[NUMBER_OF_GENERATORS];
 CRandomMersenne* m_generators[NUMBER_OF_GENERATORS];
-Arcemu::Threading::AtomicCounter counter;
+std::atomic<unsigned long> counter;
 
 uint32 generate_seed()
 {
@@ -67,7 +68,7 @@ double RandomDouble()
     uint32 c;
     for(;;)
     {
-        c = counter.GetVal() % NUMBER_OF_GENERATORS;
+        c = counter % NUMBER_OF_GENERATORS;
         if(m_locks[c]->AttemptAcquire())
         {
             ret = m_generators[c]->Random();
@@ -85,7 +86,7 @@ uint32 RandomUInt(uint32 n)
     uint32 c;
     for(;;)
     {
-        c = counter.GetVal() % NUMBER_OF_GENERATORS;
+        c = counter % NUMBER_OF_GENERATORS;
         if(m_locks[c]->AttemptAcquire())
         {
             ret = m_generators[c]->IRandom(0, n);
@@ -103,7 +104,7 @@ uint32 RandomUInt(uint32 n1, uint32 n2)
     uint32 c;
     for (;;)
     {
-        c = counter.GetVal() % NUMBER_OF_GENERATORS;
+        c = counter % NUMBER_OF_GENERATORS;
         if (m_locks[c]->AttemptAcquire())
         {
             ret = m_generators[c]->IRandom(n1, n2);
@@ -136,7 +137,7 @@ uint32 RandomUInt()
     uint32 c;
     for(;;)
     {
-        c = counter.GetVal() % NUMBER_OF_GENERATORS;
+        c = counter % NUMBER_OF_GENERATORS;
         if(m_locks[c]->AttemptAcquire())
         {
             ret = m_generators[c]->IRandom(0, RAND_MAX);

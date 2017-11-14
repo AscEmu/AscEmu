@@ -155,7 +155,6 @@ enum MsTimeVariables
 
 #include "Threading/AtomicULong.h"
 #include "Threading/AtomicFloat.h"
-#include "Threading/AtomicCounter.h"
 #include "Threading/ConditionVariable.h"
 
 #include "CRefcounter.h"

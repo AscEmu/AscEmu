@@ -1220,7 +1220,7 @@ bool MapMgr::Do()
     t_currentMapContext.set(this);
 
     thread_running = true;
-    ThreadState.SetVal(THREADSTATE_BUSY);
+    ThreadState = THREADSTATE_BUSY;
     SetThreadName("Map mgr - M%u|I%u", this->_mapId, this->m_instanceID);
 
     uint32 last_exec = Util::getMSTime();
