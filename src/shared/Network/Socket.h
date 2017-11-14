@@ -125,6 +125,7 @@ class SERVER_DECL Socket
         inline void DecSendLock() { --m_writeLock; }
         inline bool AcquireSendLock()
         {
+
             if (m_writeLock != 0)
                 return false;
 
@@ -166,7 +167,7 @@ class SERVER_DECL Socket
         inline bool HasSendLock()
         {
             bool res;
-            res = (m_writeLock.GetVal() != 0);
+            res = (m_writeLock.load() != 0);
             return res;
         }
 #endif
@@ -179,7 +180,7 @@ class SERVER_DECL Socket
         inline bool HasSendLock()
         {
             bool res;
-            res = (m_writeLock.GetVal() != 0);
+            res = (m_writeLock.load() != 0);
             return res;
         }
 #endif

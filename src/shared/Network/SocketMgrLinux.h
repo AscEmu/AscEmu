@@ -11,6 +11,7 @@
 #define SOCKETMGR_LINUX_H
 
 #include "SocketDefines.h"
+#include <atomic>
 
 #ifdef CONFIG_USE_EPOLL
 
@@ -35,7 +36,7 @@ class SocketMgr : public Singleton<SocketMgr>
         ListenSocketBase* listenfds[SOCKET_HOLDER_SIZE];
 
         /// socket counter
-        Arcemu::Threading::AtomicCounter socket_count;
+        std::atomic<unsigned long> socket_count;
 
         int max_fd;
 
@@ -80,7 +81,7 @@ class SocketMgr : public Singleton<SocketMgr>
         /// closes all sockets
         void CloseAll();
 
-        uint32 GetSocketCount() { return socket_count.GetVal(); }
+        uint32 GetSocketCount() { return socket_count.load(); }
 
         /// spawns worker threads
         void SpawnWorkerThreads();
