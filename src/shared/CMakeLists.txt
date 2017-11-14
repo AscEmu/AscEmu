@@ -18,7 +18,6 @@ set(sources
     Network/CircularBuffer.cpp
     Network/Socket.cpp
 
-    Threading/AtomicULong.cpp
     Threading/ConditionVariable.cpp
     Threading/Mutex.cpp
     Threading/Threading.h
@@ -105,7 +104,6 @@ set(headers
 	Network/SocketMgrWin32.h
 	Network/SocketOps.h
 	Network/SocketDefines.h
-	Threading/AtomicULong.h
 	Threading/ConditionVariable.h
 	Threading/Guard.h
 	Threading/LockedQueue.h

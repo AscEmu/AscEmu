@@ -153,7 +153,6 @@ enum MsTimeVariables
 #include <cassert>
 #include "Threading/Threading.h"
 
-#include "Threading/AtomicULong.h"
 #include "Threading/ConditionVariable.h"
 
 #include "CRefcounter.h"
