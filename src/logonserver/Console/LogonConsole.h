@@ -33,7 +33,7 @@ enum checkType
 class LogonConsoleThread : public ThreadBase
 {
     public:
-    Arcemu::Threading::AtomicBoolean kill;
+    std::atomic<bool> kill;
     LogonConsoleThread();
     ~LogonConsoleThread();
     bool runThread();

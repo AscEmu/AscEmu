@@ -23,7 +23,7 @@
 #include "LogonServerDefines.hpp"
 #include "../shared/AscemuServerDefines.hpp"
 
-extern Arcemu::Threading::AtomicBoolean mrunning;
+extern std::atomic<bool> mrunning;
 class AuthSocket;
 extern std::set<AuthSocket*> _authSockets;
 extern Mutex _authSocketLock;

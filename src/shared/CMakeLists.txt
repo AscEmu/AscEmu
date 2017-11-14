@@ -18,7 +18,6 @@ set(sources
     Network/CircularBuffer.cpp
     Network/Socket.cpp
 
-    Threading/AtomicBoolean.cpp
     Threading/AtomicCounter.cpp
     Threading/AtomicFloat.cpp
     Threading/AtomicULong.cpp
@@ -108,7 +107,6 @@ set(headers
 	Network/SocketMgrWin32.h
 	Network/SocketOps.h
 	Network/SocketDefines.h
-	Threading/AtomicBoolean.h
 	Threading/AtomicCounter.h
 	Threading/AtomicFloat.h
 	Threading/AtomicULong.h

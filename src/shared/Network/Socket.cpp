@@ -72,7 +72,7 @@ void Socket::_OnConnect()
     SocketOps::DisableBuffering(m_fd);
     /*    SocketOps::SetRecvBufferSize(m_fd, m_writeBufferSize);
         SocketOps::SetSendBufferSize(m_fd, m_writeBufferSize);*/
-    m_connected.SetVal(true);
+    m_connected = true;
 
     // IOCP stuff
 #ifdef CONFIG_USE_IOCP
@@ -116,8 +116,10 @@ std::string Socket::GetRemoteIP()
 void Socket::Disconnect()
 {
     //if returns false it means it's already disconnected
-    if(!m_connected.SetVal(false))
+    if (!m_connected)
         return;
+
+    m_connected = false;
 
     LogDetail("Socket::Disconnect on socket %u", m_fd);
 
@@ -134,8 +136,10 @@ void Socket::Disconnect()
 void Socket::Delete()
 {
     //if returns true it means it's already delete
-    if(m_deleted.SetVal(true))
+    if (m_connected)
         return;
+
+    m_connected = true;
 
     LogDebug("Socket::Delete() on socket %u", m_fd);
 

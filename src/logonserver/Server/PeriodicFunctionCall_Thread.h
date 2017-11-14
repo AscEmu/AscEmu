@@ -39,7 +39,7 @@ class PeriodicFunctionCaller : public ThreadBase
         {
             cb = new CallbackP0<T>(callback, method);
             interval = Interval;
-            running.SetVal(true);
+            running = true;
         }
 
         ~PeriodicFunctionCaller()
@@ -79,7 +79,7 @@ class PeriodicFunctionCaller : public ThreadBase
                 if (hEvent)
                     WaitForSingleObject(hEvent, interval);
 
-                if (!running.GetVal())
+                if (!running)
                     break;    /* we got killed */
 
                 /* times up */
@@ -94,7 +94,7 @@ class PeriodicFunctionCaller : public ThreadBase
 
         void kill()
         {
-            running.SetVal(false);
+            running = false;
 #ifdef WIN32
             /* push the event */
             SetEvent(hEvent);
@@ -114,7 +114,7 @@ class PeriodicFunctionCaller : public ThreadBase
 
         CallbackBase* cb;
         uint32 interval;
-        Arcemu::Threading::AtomicBoolean running;
+        std::atomic<bool> running;
 #ifdef WIN32
         bool thread_active;
         HANDLE hEvent;
