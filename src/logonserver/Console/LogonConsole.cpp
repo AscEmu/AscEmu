@@ -84,7 +84,7 @@ bool LogonConsoleThread::runThread()
         FD_SET(STDIN_FILENO, &fds);
         if(select(1, &fds, NULL, NULL, &tv) <= 0)
         {
-            if(!kill.GetVal()) // timeout
+            if(!kill.load()) // timeout
                 continue;
             else
                 break;
