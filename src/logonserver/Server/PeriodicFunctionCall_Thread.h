@@ -57,7 +57,7 @@ class PeriodicFunctionCaller : public ThreadBase
             pthread_mutex_init(&abortmutex, NULL);
             pthread_cond_init(&abortcond, NULL);
 
-            while (running.GetVal() && mrunning.GetVal())
+            while (running.load() && mrunning.load())
             {
                 if (Util::getMSTime() > next)
                 {
