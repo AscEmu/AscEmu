@@ -25,6 +25,7 @@
 #include "../Threading/Queue.h"
 #include "../CallBack.h"
 #include <string>
+#include "Threading/AEThread.h"
 
 class QueryResult;
 class QueryThread;
@@ -70,10 +71,28 @@ class SERVER_DECL QueryBuffer
         void AddQueryStr(const std::string & str);
 };
 
-class SERVER_DECL Database : public CThread
+class SERVER_DECL Database
 {
     friend class QueryThread;
     friend class AsyncQuery;
+
+    DatabaseConnection* m_dbConnection;
+    void createDbConnection();
+    void destroyDbConnection();
+
+    DatabaseConnection* m_queryBufferConnection;
+    void createQueryBufferConnection();
+    void destroyQueryBufferConnection();
+
+    std::unique_ptr<AscEmu::Threading::AEThread> m_dbThread;
+    void dbThreadRunner(AscEmu::Threading::AEThread& thread);
+    void dbThreadShutdown();
+    void dbRunAllQueries();
+
+    std::unique_ptr<AscEmu::Threading::AEThread> m_queryBufferThread;
+    void queryBufferThreadRunner(AscEmu::Threading::AEThread& thread);
+    void queryBufferThreadShutdown();
+    void queryBufferRunAllQueries();
 
     public:
 
@@ -105,7 +124,7 @@ class SERVER_DECL Database : public CThread
         virtual bool ExecuteNA(const char* QueryString);
 
         // Initialized on load: Database::Database() : CThread()
-        bool ThreadRunning;
+        //bool ThreadRunning;
 
         inline const std::string & GetHostName() { return mHostname; }
         inline const std::string & GetDatabaseName() { return mDatabaseName; }
@@ -118,7 +137,6 @@ class SERVER_DECL Database : public CThread
         void QueueAsyncQuery(AsyncQuery* query);
         void EndThreads();
 
-        void thread_proc_query();
         void FreeQueryResult(QueryResult* p);
 
         DatabaseConnection* GetFreeConnection();
@@ -185,19 +203,6 @@ class SERVER_DECL QueryResult
         uint32 mFieldCount;
         uint32 mRowCount;
         Field* mCurrentRow;
-};
-
-class SERVER_DECL QueryThread : public CThread
-{
-    friend class Database;
-
-    Database* db;
-
-    public:
-
-        QueryThread(Database* d) : CThread(), db(d) {}
-        ~QueryThread();
-        bool runThread();
 };
 
 #endif      //_DATABASE_H

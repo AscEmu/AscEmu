@@ -43,7 +43,7 @@ namespace AscEmu { namespace Threading
         unsigned int getId() const;
 
         bool isKilled() const;
-        void kill();
+        void requestKill();
         void join();
 
         void reboot();

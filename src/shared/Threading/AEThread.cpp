@@ -1,5 +1,4 @@
 #include "AEThread.h"
-#include <iostream>
 #include <algorithm>
 
 using std::atomic;
@@ -8,7 +7,9 @@ using std::mutex;
 using std::string;
 using std::thread;
 using std::chrono::duration_cast;
+using std::chrono::steady_clock;
 using std::chrono::milliseconds;
+using std::this_thread::sleep_for;
 
 namespace AscEmu { namespace Threading
 {
@@ -16,13 +17,11 @@ namespace AscEmu { namespace Threading
 
     void AEThread::threadRunner()
     {
-        std::cout << "[" << m_name.c_str() << "] Hello" << std::endl;
-
         m_done = false;
 
         while (!m_killed)
         {
-            auto begin = std::chrono::steady_clock::now();
+            auto begin = steady_clock::now();
 
             m_func(*this);
 
@@ -31,20 +30,18 @@ namespace AscEmu { namespace Threading
             // We use this instead of sleep_until so we can interrupt
             while (!m_killed)
             {
-                auto now = std::chrono::steady_clock::now();
+                auto now = steady_clock::now();
                 if (now > target)
                     break;
 
                 auto distance = duration_cast<milliseconds>(target - now);
 
                 if (m_longSleep)
-                    std::this_thread::sleep_for(milliseconds(std::min(static_cast<long long>(distance.count()), m_longSleepDelay)));
+                    sleep_for(milliseconds(std::min(static_cast<long long>(distance.count()), m_longSleepDelay)));
                 else
-                    std::this_thread::sleep_for(milliseconds(1));
+                    sleep_for(milliseconds(1));
             }
         }
-
-        std::cout << "[" << m_name.c_str() << "] Goodbye" << std::endl;
 
         m_done = true;
     }
@@ -88,7 +85,7 @@ namespace AscEmu { namespace Threading
 
     bool AEThread::isKilled() const { return m_killed; }
 
-    void AEThread::kill()
+    void AEThread::requestKill()
     {
         if (m_killed)
             return;
@@ -98,7 +95,7 @@ namespace AscEmu { namespace Threading
 
     void AEThread::join()
     {
-        kill();
+        requestKill();
         if (m_thread.joinable())
             m_thread.join();
     }

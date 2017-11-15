@@ -30,19 +30,62 @@
 #include <string>
 #include <vector>
 
+using AscEmu::Threading::AEThread;
+using std::unique_ptr;
+using std::make_unique;
+
 SQLCallbackBase::~SQLCallbackBase()
 {
 
 }
 
-Database::Database() : CThread()
+void Database::createDbConnection()
+{
+    if (m_dbConnection == nullptr)
+        m_dbConnection = GetFreeConnection();
+}
+
+void Database::destroyDbConnection()
+{
+    if (m_dbConnection)
+    {
+        m_dbConnection->Busy.Release();
+        m_dbConnection = nullptr;
+    }
+}
+
+void Database::createQueryBufferConnection()
+{
+    if (m_queryBufferConnection == nullptr)
+        m_queryBufferConnection = GetFreeConnection();
+}
+
+void Database::dbThreadRunner(AEThread& thread)
+{
+    dbRunAllQueries();
+}
+
+void Database::dbThreadShutdown()
+{
+    // Shut down thread
+    m_dbThread->join();
+
+    // Execute remaining queries
+    dbRunAllQueries();
+    destroyDbConnection();
+}
+
+Database::Database()
 {
     _counter = 0;
     Connections = NULL;
     mConnectionCount = -1;   // Not connected.
-    ThreadRunning = true;
+    //ThreadRunning = true;
     mPort = 3306;
     qt = nullptr;
+
+    m_dbConnection = nullptr;
+    m_queryBufferConnection = nullptr;
 }
 
 Database::~Database()
@@ -52,12 +95,15 @@ Database::~Database()
 
 void Database::_Initialize()
 {
-    // Spawn Database thread
-    ThreadPool.ExecuteTask(this);
+    if (m_dbThread == nullptr)
+        m_dbThread = std::make_unique<AEThread>("DatabaseThread", [this](AEThread& thread) { this->dbThreadRunner(thread); }, std::chrono::milliseconds(10));
+    else
+        m_dbThread->reboot();
 
-    // launch the query thread
-    qt = new QueryThread(this);
-    ThreadPool.ExecuteTask(qt);
+    if (m_queryBufferThread == nullptr)
+        m_queryBufferThread = std::make_unique<AEThread>("QueryBufferThread", [this](AEThread& thread) { this->queryBufferThreadRunner(thread); }, std::chrono::milliseconds(10));
+    else
+        m_queryBufferThread->reboot();
 }
 
 DatabaseConnection* Database::GetFreeConnection()
@@ -69,9 +115,6 @@ DatabaseConnection* Database::GetFreeConnection()
         if (con->Busy.AttemptAcquire())
             return con;
     }
-
-    // shouldn't be reached
-    return NULL;
 }
 
 // Use this when we request data that can return a value (not async)
@@ -173,6 +216,46 @@ void QueryBuffer::AddQueryNA(const char* str)
     queries.push_back(pBuffer);
 }
 
+void Database::destroyQueryBufferConnection()
+{
+    if (m_queryBufferConnection)
+    {
+        m_queryBufferConnection->Busy.Release();
+        m_queryBufferConnection = nullptr;
+    }
+}
+
+void Database::dbRunAllQueries()
+{
+    while (auto query = queries_queue.pop())
+    {
+        createDbConnection();
+        _SendQuery(m_dbConnection, query, false);
+        delete[] query;
+    }
+}
+
+void Database::queryBufferThreadRunner(AEThread& thread)
+{
+    queryBufferRunAllQueries();
+}
+
+void Database::queryBufferThreadShutdown() {
+    m_queryBufferThread->join();
+    queryBufferRunAllQueries();
+    destroyQueryBufferConnection();
+}
+
+void Database::queryBufferRunAllQueries()
+{
+    while (auto query = query_buffer.pop())
+    {
+        createQueryBufferConnection();
+        PerformQueryBuffer(query, m_queryBufferConnection);
+        delete query;
+    }
+}
+
 void QueryBuffer::AddQueryStr(const std::string & str)
 {
     size_t len = str.size();
@@ -214,7 +297,7 @@ bool Database::Execute(const char* QueryString, ...)
     vsnprintf(query, 16384, QueryString, vlist);
     va_end(vlist);
 
-    if (!ThreadRunning)
+    if (m_dbThread->isKilled())
         return WaitExecuteNA(query);
 
     size_t len = strlen(query);
@@ -227,7 +310,7 @@ bool Database::Execute(const char* QueryString, ...)
 
 bool Database::ExecuteNA(const char* QueryString)
 {
-    if (!ThreadRunning)
+    if (m_dbThread->isKilled())
         return WaitExecuteNA(QueryString);
 
     size_t len = strlen(QueryString);
@@ -259,54 +342,6 @@ bool Database::WaitExecuteNA(const char* QueryString)
     bool Result = _SendQuery(con, QueryString, false);
     con->Busy.Release();
     return Result;
-}
-
-bool Database::runThread()
-{
-    SetThreadName("Database Execute Thread");
-    SetThreadState(THREADSTATE_BUSY);
-    ThreadRunning = true;
-    char* query = queries_queue.pop();
-    DatabaseConnection* con = GetFreeConnection();
-    while (true)
-    {
-        if (query != NULL)
-        {
-            if (con == NULL)
-                con = GetFreeConnection();
-            _SendQuery(con, query, false);
-            delete[] query;
-        }
-
-        if (GetThreadState() == THREADSTATE_TERMINATE)
-            break;
-        query = queries_queue.pop();
-
-        if (query == NULL)
-        {
-            if (con != NULL)
-                con->Busy.Release();
-            con = NULL;
-            Arcemu::Sleep(10);
-        }
-    }
-
-    if (con != NULL)
-        con->Busy.Release();
-
-    // execute all the remaining queries
-    query = queries_queue.pop();
-    while (query)
-    {
-        con = GetFreeConnection();
-        _SendQuery(con, query, false);
-        con->Busy.Release();
-        delete[] query;
-        query = queries_queue.pop();
-    }
-
-    ThreadRunning = false;
-    return false;
 }
 
 void AsyncQuery::AddQuery(const char* format, ...)
@@ -353,88 +388,19 @@ AsyncQuery::~AsyncQuery()
 
 void Database::EndThreads()
 {
-    //these 2 loops spin until theres nothing left
-    while (true)
-    {
-        QueryBuffer* buf = query_buffer.pop();
-        if (buf == NULL)
-            break;
-        query_buffer.push(buf);
-    }
-    while (true)
-    {
-        char* buf = queries_queue.pop();
-        if (buf == NULL)
-            break;
-        queries_queue.push(buf);
-    }
+    if (m_dbThread)
+        m_dbThread->requestKill();
+    if (m_queryBufferThread)
+        m_queryBufferThread->requestKill();
 
-    SetThreadState(THREADSTATE_TERMINATE);
-
-    while (ThreadRunning || qt)
-    {
-        Arcemu::Sleep(100);
-        if (!ThreadRunning)
-            break;
-    }
+    dbThreadShutdown();
+    queryBufferThreadShutdown();
 }
 
-bool QueryThread::runThread()
-{
-    db->thread_proc_query();
-    return true;
-}
-
-QueryThread::~QueryThread()
-{
-    db->qt = NULL;
-}
-
-void Database::thread_proc_query()
-{
-    QueryBuffer* q;
-    DatabaseConnection* con = GetFreeConnection();
-
-    q = query_buffer.pop();
-    while (true)
-    {
-        if (q != NULL)
-        {
-            PerformQueryBuffer(q, con);
-            delete q;
-        }
-
-        if (GetThreadState() == THREADSTATE_TERMINATE)
-            break;
-
-        q = query_buffer.pop();
-        if (q == NULL)
-            Arcemu::Sleep(10);
-    }
-
-    con->Busy.Release();
-
-    // kill any queries
-    q = query_buffer.pop();
-    while (q != NULL)
-    {
-        PerformQueryBuffer(q, NULL);
-        delete q;
-
-        q = query_buffer.pop();
-    }
-}
 
 void Database::QueueAsyncQuery(AsyncQuery* query)
 {
     query->db = this;
-    /*if(qt == NULL)
-    {
-        query->Perform();
-        return;
-    }
-
-    qqueries_queue.push(query);*/
     query->Perform();
 }
 
