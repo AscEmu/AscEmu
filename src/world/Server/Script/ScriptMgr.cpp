@@ -1350,6 +1350,10 @@ void CreatureAIScript::newAIUpdateSpellSystem()
                 if (!_isTimerFinished(AISpell->mCooldownTimerId))
                     continue;
 
+                // is bound to a specific phase (all greater than 0)
+                if (!AISpell->isAvailableForScriptPhase(getScriptPhase()))
+                    continue;
+
                 // aura stacking
                 if (getCreature()->getAuraCountForId(AISpell->mSpellInfo->getId()) >= AISpell->getMaxStackCount())
                     continue;

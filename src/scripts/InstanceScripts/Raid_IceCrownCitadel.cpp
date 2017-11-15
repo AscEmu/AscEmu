@@ -287,20 +287,24 @@ class LordMarrowgarAI : public CreatureAIScript
 
             auto boneslice = addAISpell(BONE_SLICE, 60.0f, TARGET_ATTACKING, 0, 120);
             boneslice->addEmote("boneslice", CHAT_MSG_MONSTER_YELL, 0);
+            boneslice->setAvailableForScriptPhase({ 1 });
 
             auto bonestorm = addAISpell(BONE_STORM, 30.0f, TARGET_DESTINATION, 30, 300, true);
             bonestorm->addEmote("bonestorm", CHAT_MSG_MONSTER_YELL, 0);
+            bonestorm->setAvailableForScriptPhase({ 4 });
 
             auto berserk = addAISpell(LM_BERSERK, 50.0f, TARGET_SELF, 30, 240);
             berserk->addEmote("berserk", CHAT_MSG_MONSTER_YELL, 0);
             berserk->setMaxStackCount(1);
             berserk->setMinMaxHp(0.0f, 50.0f);
+            berserk->setAvailableForScriptPhase({ 3, 5 });
 
             auto souldFest = addAISpell(SOUL_FEAST, 50.0f, TARGET_RANDOM_SINGLE, 0, 20);
             souldFest->addEmote("Your soul is fest", CHAT_MSG_MONSTER_YELL, 0);
 
             auto bonespike = addAISpell(BONE_SPIKE, 100.0f, TARGET_RANDOM_SINGLE, 0, 90);
             bonespike->addEmote("bonespike", CHAT_MSG_MONSTER_YELL, 0);
+            bonespike->setAvailableForScriptPhase({ 2 });
         }
 
         void AIUpdate()

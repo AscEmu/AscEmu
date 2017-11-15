@@ -618,6 +618,31 @@ class SERVER_DECL CreatureAISpells
             mMinHpRangeToCast = minHp;
             mMaxHpRangeToCast = maxHp;
         }
+
+        typedef std::vector<uint32_t> ScriptPhaseList;
+        ScriptPhaseList mPhaseList;
+
+        void setAvailableForScriptPhase(std::vector<uint32_t> phaseVector)
+        {
+            for (const auto& phase : phaseVector)
+            {
+                mPhaseList.push_back(phase);
+            }
+        }
+
+        bool isAvailableForScriptPhase(uint32_t scriptPhase)
+        {
+            if (mPhaseList.empty())
+                return true;
+
+            for (const auto& availablePhase : mPhaseList)
+            {
+                if (availablePhase == scriptPhase)
+                    return true;
+            }
+
+            return false;
+        }
 };
 
 class SERVER_DECL CreatureAIScript
