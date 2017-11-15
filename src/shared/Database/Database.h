@@ -25,6 +25,7 @@
 #include "../Threading/Queue.h"
 #include "../CallBack.h"
 #include <string>
+#include "Threading/AEThread.h"
 
 class QueryResult;
 class QueryThread;

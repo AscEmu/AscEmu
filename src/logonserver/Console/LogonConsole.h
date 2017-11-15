@@ -43,6 +43,12 @@ class LogonConsole : public Singleton < LogonConsole >
 {
     friend class LogonConsoleThread;
 
+    AscEmu::Threading::AEThread* m_demoThread;
+    int m_demoCounter = 0;
+
+    void demoTicker(AscEmu::Threading::AEThread& thread);
+    void threadDemoCmd(char* str);
+
     public:
 
         void Kill();

@@ -21,7 +21,9 @@ set(sources
     Threading/ConditionVariable.cpp
     Threading/Mutex.cpp
     Threading/LegacyThreading.h
-    Threading/LegacyThreadPool.cpp
+	Threading/LegacyThreadPool.cpp
+
+	Threading/AEThread.cpp
 
     ascemu_getopt.cpp
     CrashHandler.cpp
@@ -38,7 +40,7 @@ set(sources
     printStackTrace.cpp
     SysInfo.cpp
     TextFile.cpp
-    Util.cpp
+	Util.cpp
 )
 
 set(headers
@@ -113,6 +115,9 @@ set(headers
 	Threading/Mutex.h
 	Threading/Queue.h
 	Threading/RWLock.h
+
+	Threading/AEThread.h
+	Threading/ThreadState.h
 	
 	Common.hpp
 	Log.hpp

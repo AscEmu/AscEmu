@@ -29,6 +29,25 @@ void LogonConsole::TranslateRehash(char* str)
         LogDefault("Rehashing config file finished succesfull!");
 }
 
+void LogonConsole::demoTicker(AscEmu::Threading::AEThread& thread) {
+    std::cout << "Thread ticker: " << m_demoCounter << std::endl;
+    ++m_demoCounter;
+}
+
+void LogonConsole::threadDemoCmd(char* str) {
+    std::cout << "Thread Demo init" << std::endl;
+
+    if (m_demoCounter != 0)
+    {
+        std::cout << "Existing thread found, rebooting" << std::endl;
+        m_demoThread->reboot();
+        return;
+    }
+
+    std::function<void(AscEmu::Threading::AEThread&)> f = [this](AscEmu::Threading::AEThread& thread) { this->demoTicker(thread); };
+    m_demoThread = new AscEmu::Threading::AEThread(std::string("DemoThread"), f, std::chrono::milliseconds(500));
+}
+
 void LogonConsole::Kill()
 {
     if (_thread != nullptr)
@@ -128,6 +147,7 @@ void LogonConsole::ProcessCmd(char* cmd)
     SCmd cmds[] =
     {
         { "?", &LogonConsole::TranslateHelp },
+        { "z", &LogonConsole::threadDemoCmd },
         { "help", &LogonConsole::TranslateHelp },
         { "account create", &LogonConsole::AccountCreate },
         { "account delete", &LogonConsole::AccountDelete },
