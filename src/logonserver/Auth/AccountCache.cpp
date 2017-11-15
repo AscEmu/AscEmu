@@ -252,6 +252,7 @@ void AccountMgr::ReloadAccountsCallback()
 {
     ReloadAccounts(true);
 }
+
 BAN_STATUS IPBanner::CalculateBanStatus(in_addr ip_address)
 {
     Guard lguard(listBusy);

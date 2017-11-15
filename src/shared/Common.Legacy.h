@@ -151,7 +151,7 @@ enum MsTimeVariables
 
 // Include all threading files
 #include <cassert>
-#include "Threading/Threading.h"
+#include "Threading/LegacyThreading.h"
 
 #include "Threading/ConditionVariable.h"
 

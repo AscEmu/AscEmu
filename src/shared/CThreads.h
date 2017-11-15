@@ -22,7 +22,7 @@
 #ifndef _C_THREADS_H
 #define _C_THREADS_H
 
-#include "Threading/ThreadBase.h"
+#include "Threading/LegacyThreadBase.h"
 #include <atomic>
 
 class MapMgr;

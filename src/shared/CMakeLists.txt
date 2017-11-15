@@ -20,8 +20,8 @@ set(sources
 
     Threading/ConditionVariable.cpp
     Threading/Mutex.cpp
-    Threading/Threading.h
-    Threading/ThreadPool.cpp
+    Threading/LegacyThreading.h
+    Threading/LegacyThreadPool.cpp
 
     ascemu_getopt.cpp
     CrashHandler.cpp
@@ -106,13 +106,13 @@ set(headers
 	Network/SocketDefines.h
 	Threading/ConditionVariable.h
 	Threading/Guard.h
+	Threading/LegacyThreading.h
+	Threading/LegacyThreadPool.h
+	Threading/LegacyThreadBase.h
 	Threading/LockedQueue.h
 	Threading/Mutex.h
 	Threading/Queue.h
 	Threading/RWLock.h
-	Threading/Threading.h
-	Threading/ThreadPool.h
-	Threading/ThreadBase.h
 	
 	Common.hpp
 	Log.hpp

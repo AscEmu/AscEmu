@@ -17,7 +17,7 @@
  *
  */
 
-#include "ThreadPool.h"
+#include "LegacyThreadPool.h"
 #include "../Log.hpp"
 #include "Util.hpp"
 

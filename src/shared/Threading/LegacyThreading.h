@@ -31,13 +31,13 @@
 #include "Guard.h"
 
 // Platform Specific Thread Base
-#include "ThreadBase.h"
+#include "LegacyThreadBase.h"
 
 // Platform independant locked queue
 #include "LockedQueue.h"
 
 // Thread Pool
-#include "ThreadPool.h"
+#include "LegacyThreadPool.h"
 
 #endif
 

@@ -12,7 +12,7 @@
 
 #ifdef CONFIG_USE_IOCP
 
-#include "../Threading/ThreadPool.h"
+#include "../Threading/LegacyThreadPool.h"
 
 template<class T>
 class SERVER_DECL ListenSocket : public ThreadBase
