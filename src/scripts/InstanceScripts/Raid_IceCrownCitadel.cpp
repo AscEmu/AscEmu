@@ -214,75 +214,16 @@ const uint32 BONE_SPIKE = 69057;       // Not shure about this
 const uint32 BONE_STORM = 69076;
 const uint32 SOUL_FEAST = 71203;       // Needs a script
 
-
 class LordMarrowgarAI : public CreatureAIScript
 {
     public:
-
-        bool m_spellcheck[5];
-        SP_AI_Spell spells[5];
 
         static CreatureAIScript* Create(Creature* c) { return new LordMarrowgarAI(c); }
         LordMarrowgarAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             sendDBChatMessage(922);      // This is the beginning AND the end, mortals. None may enter the master's sanctum!
 
-            nrspells = 5;
-
-            /*spells[0].info = sSpellCustomizations.GetSpellInfo(BONE_SLICE);
-            spells[0].targettype = TARGET_ATTACKING;
-            spells[0].instant = true;
-            spells[0].cooldown = 15;
-            spells[0].perctrigger = 50.0f;
-            spells[0].attackstoptimer = 10000;
-
-            spells[1].info = sSpellCustomizations.GetSpellInfo(BONE_STORM);
-            spells[1].targettype = TARGET_VARIOUS;
-            spells[1].instant = true;
-            spells[1].cooldown = 60000;
-            spells[1].perctrigger = 75.0f;
-            spells[1].attackstoptimer = 60000;
-
-            spells[2].info = sSpellCustomizations.GetSpellInfo(LM_BERSERK);
-            spells[2].targettype = TARGET_ATTACKING;
-            spells[2].instant = true;
-            spells[2].cooldown = 15;
-            spells[2].perctrigger = 50.0f;
-            spells[2].attackstoptimer = 10000;            
-
-            spells[3].info = sSpellCustomizations.GetSpellInfo(SOUL_FEAST);
-            spells[3].targettype = TARGET_RANDOM_SINGLE;
-            spells[3].instant = true;
-            spells[3].cooldown = 20;
-            spells[3].perctrigger = 50.0f;
-            spells[3].attackstoptimer = 12000;
-
-            spells[4].info = sSpellCustomizations.GetSpellInfo(BONE_SPIKE);
-            spells[4].targettype = TARGET_RANDOM_SINGLE;
-            spells[4].instant = true;
-            spells[4].cooldown = 0;
-            spells[4].casttime = 3;
-            spells[4].perctrigger = 25.0f;
-            spells[4].attackstoptimer = 1000;*/
-
-            /* Testcode Timers - remove me please
-            exampleTimer1 = 0;
-            exampleTimer2 = 0;
-            exampleTimer3 = 0;*/
-
-            /* Testcode MoonScript Spell handling - remove me please*/
-            /*SpellDesc* boneslice = AddSpell(BONE_SLICE, Target_Current, 60.0f, 0.0f, 15);
-            boneslice->addEmote("boneslice", CHAT_MSG_MONSTER_YELL, 0);
-            SpellDesc* bonestorm = AddSpell(BONE_STORM, Target_RandomDestination, 75.0f, 0.0f, 60);
-            bonestorm->addEmote("bonestorm", CHAT_MSG_MONSTER_YELL, 0);
-            SpellDesc* berserk = AddSpell(LM_BERSERK, Target_Current, 50.0f, 0.0f, 15);
-            berserk->addEmote("berserk", CHAT_MSG_MONSTER_YELL, 0);
-            SpellDesc* souldFest = AddSpell(SOUL_FEAST, Target_RandomPlayer, 50.0f, 0.0f, 20);
-            souldFest->addEmote("Your soul is fest", CHAT_MSG_MONSTER_YELL, 0);
-            SpellDesc* WhirlTemp = AddSpell(36175, Target_Self, 50.0f, 0.0f, 60);
-            WhirlTemp->addEmote("Reap the Whirlwind!", CHAT_MSG_MONSTER_YELL, 11089);
-            WhirlTemp->addEmote("I'll cut you to peices!", CHAT_MSG_MONSTER_YELL, 11090);*/
-
+            // examplecode for spell setup
             enableCreatureAISpellSystem = true;
 
             auto boneslice = addAISpell(BONE_SLICE, 60.0f, TARGET_ATTACKING, 0, 120);
@@ -304,28 +245,30 @@ class LordMarrowgarAI : public CreatureAIScript
 
             auto bonespike = addAISpell(BONE_SPIKE, 100.0f, TARGET_RANDOM_SINGLE, 0, 90);
             bonespike->addEmote("bonespike", CHAT_MSG_MONSTER_YELL, 0);
+            bonespike->addDBEmote(925);      // Bound by bone!
+            bonespike->addDBEmote(926);      // Stick around!
+            bonespike->addDBEmote(927);      // The only escape is death!
             bonespike->setAvailableForScriptPhase({ 2 });
+
+            // example for random message on event
+            addEmoteForEvent(Event_OnCombatStart, 923);     // The Scourge will wash over this world as a swarm of death and destruction!
+            addEmoteForEvent(Event_OnTargetDied, 928);      // More bones for the offering!
+            addEmoteForEvent(Event_OnTargetDied, 929);      // Languish in damnation!
+            addEmoteForEvent(Event_OnDied, 930);            // I see... Only darkness.
         }
 
         void AIUpdate()
         {
-            
         }
 
         void OnCastSpell(uint32 spellId)
         {
-            switch (spellId)
-            {
-                case BONE_SPIKE:
-                {
-                    BoneSpike();
-                } break;
-            }
         }
 
         // Testcode - remove me please
         void OnScriptPhaseChange(uint32_t scriptPhase)
         {
+            // Testcode - remove me please
             std::stringstream ss;
             ss << "My scriptPhase is now " << scriptPhase;
 
@@ -334,121 +277,15 @@ class LordMarrowgarAI : public CreatureAIScript
 
         void OnCombatStart(Unit* pTarget)
         {
-            sendDBChatMessage(923);      // The Scourge will wash over this world as a swarm of death and destruction!
-            //RegisterAIUpdateEvent(4000);
-        }
-
-        void BoneSpike()
-        {
-            switch (RandomUInt(2))
-            {
-                case 0:
-                    sendDBChatMessage(925);      // Bound by bone!
-                    break;
-                case 1:
-                    sendDBChatMessage(926);      // Stick around!
-                    break;
-                case 2:
-                    sendDBChatMessage(927);      // The only escape is death!
-                    break;
-            }
-
-            /*std::vector<Player*> TargetTable;
-            std::set<Object*>::iterator itr = getCreature()->GetInRangePlayerSetBegin();
-
-            for (; itr != getCreature()->GetInRangePlayerSetEnd(); ++itr)
-            {
-                if (isHostile(getCreature(), (*itr)))
-                {
-                    Player* RandomTarget = NULL;
-                    RandomTarget = static_cast<Player*>(*itr);
-                    if (RandomTarget && RandomTarget->isAlive() && isHostile(getCreature(), RandomTarget))
-                        TargetTable.push_back(RandomTarget);
-                }
-            }
-
-            if (!TargetTable.size())
-                return;
-
-            auto random_index = RandomUInt(0, uint32(TargetTable.size() - 1));
-            auto random_target = TargetTable[random_index];
-
-            if (random_target == nullptr)
-                return;
-
-            getCreature()->CastSpell(random_target, sSpellCustomizations.GetSpellInfo(BONE_SPIKE), false);
-
-            TargetTable.clear();
-
-            spawnCreature(CN_BONE_SPIKE, random_target->GetPosition());
-
-            TargetTable.clear();*/
         }
 
         void OnTargetDied(Unit* pTarget)
         {
-            switch (RandomUInt(1))
-            {
-                case 0:
-                    sendDBChatMessage(928);      // More bones for the offering!
-                    break;
-                case 1:
-                    sendDBChatMessage(929);      // Languish in damnation!
-                    break;
-            }
         }
 
         void OnDied(Unit* pTarget)
         {
-            sendDBChatMessage(930);      // I see... Only darkness.
         }
-
-        void SpellCast(float val)
-        {
-            if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
-            {
-                float comulativeperc = 0;
-                Unit* target = NULL;
-                for (uint8 i = 0; i < nrspells; i++)
-                {
-                    if (!spells[i].perctrigger)
-                        continue;
-
-                    if (m_spellcheck[i])
-                    {
-                        /*target = getCreature()->GetAIInterface()->getNextTarget();
-                        switch (spells[i].targettype)
-                        {
-                            case TARGET_SELF:
-                            case TARGET_VARIOUS:
-                                getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_RANDOM_SINGLE:
-                            case TARGET_ATTACKING:
-                                getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_DESTINATION:
-                                getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
-                                break;
-                        }*/
-                        m_spellcheck[i] = false;
-                        return;
-                    }
-
-                    /*if (val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger))
-                    {
-                        getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
-                        m_spellcheck[i] = true;
-                    }
-                    comulativeperc += spells[i].perctrigger;*/
-                }
-
-            }
-        }
-
-    protected:
-
-        uint8 nrspells;
 };
 
 const uint32 IMPALED = 69065;

@@ -559,6 +559,7 @@ class SERVER_DECL CreatureAISpells
         bool mForceRemoveAura;
         bool mIsTriggered;
 
+        // non db script messages
         struct AISpellEmotes
         {
             AISpellEmotes(std::string pText, uint8_t pType, uint32_t pSoundId)
@@ -575,6 +576,7 @@ class SERVER_DECL CreatureAISpells
         typedef std::vector<AISpellEmotes> AISpellEmoteArray;
         AISpellEmoteArray mAISpellEmote;
 
+        void addDBEmote(uint32_t textId);
         void addEmote(std::string pText, uint8_t pType = CHAT_MSG_MONSTER_YELL, uint32_t pSoundId = 0);
 
         void sendRandomEmote(CreatureAIScript* creatureAI);

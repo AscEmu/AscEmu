@@ -1299,6 +1299,15 @@ void CreatureAIScript::_setDisplayWeaponIds(uint32_t itemId1, uint32_t itemId2)
 //////////////////////////////////////////////////////////////////////////////////////////
 // spell
 
+void CreatureAISpells::addDBEmote(uint32_t textId)
+{
+    MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(textId);
+    if (npcScriptText != nullptr)
+        addEmote(npcScriptText->text, npcScriptText->type, npcScriptText->sound);
+    else
+        LogDebugFlag(LF_SCRIPT_MGR, "A script tried to add a spell emote with %u! Id is not available in table npc_script_text.", textId);
+}
+
 void CreatureAISpells::addEmote(std::string pText, uint8_t pType, uint32_t pSoundId)
 {
     if (!pText.empty() || pSoundId)
