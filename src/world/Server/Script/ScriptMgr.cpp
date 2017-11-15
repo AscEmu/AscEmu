@@ -1371,6 +1371,10 @@ void CreatureAIScript::newAIUpdateSpellSystem()
                 if (!AISpell->isHpInRange(getCreature()->GetHealthPct()))
                     continue;
 
+                // no random chance (cast in script)
+                if (AISpell->mCastChance == 0.0f)
+                    continue;
+
                 // random chance for shuffeld array should do the job
                 if (randomChance < AISpell->mCastChance)
                 {
@@ -1401,6 +1405,10 @@ void CreatureAIScript::newAIUpdateSpellSystem()
                     castSpellOnRandomTarget(usedSpell);
                     break;
             }
+
+            // override attack stop timer if needed
+            if (usedSpell->getAttackStopTimer() != 0)
+                getCreature()->setAttackTimer(usedSpell->getAttackStopTimer(), false);
 
             usedSpell->sendRandomEmote(this);
             // reset cast wait timer for CreatureAIScript - Important for _internalAIUpdate

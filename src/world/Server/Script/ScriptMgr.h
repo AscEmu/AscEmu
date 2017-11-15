@@ -530,6 +530,8 @@ class SERVER_DECL CreatureAISpells
 
             mMinHpRangeToCast = 0.0f;
             mMaxHpRangeToCast = 100.0f;
+
+            mAttackStopTimer = 0;
         }
 
         ~CreatureAISpells()
@@ -644,6 +646,18 @@ class SERVER_DECL CreatureAISpells
             }
 
             return false;
+        }
+
+        uint32_t mAttackStopTimer;
+
+        void setAttackStopTimer(uint32_t attackStopTime)
+        {
+            mAttackStopTimer = attackStopTime;
+        }
+
+        uint32_t getAttackStopTimer()
+        {
+            return mAttackStopTimer;
         }
 };
 
@@ -885,7 +899,11 @@ class SERVER_DECL CreatureAIScript
                 if (spellDuration == 0)
                     spellDuration = spellInfo->getSpellDuration(nullptr);
 
-                CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, targetType, spellDuration, cooldown * 1000, forceRemove, isTriggered);
+                uint32_t spellCooldown = cooldown * 1000;
+                if (spellCooldown == 0)
+                    spellCooldown = spellInfo->getSpellDuration(nullptr);
+
+                CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, targetType, spellDuration, spellCooldown, forceRemove, isTriggered);
 
                 mCreatureAISpells.push_back(newAISpell);
 
@@ -897,19 +915,13 @@ class SERVER_DECL CreatureAIScript
             else
             {
                 LOG_ERROR("tried to add invalid spell with id %u", spellId);
+
+                // assert spellInfo can not be nullptr!
+                ARCEMU_ASSERT(spellInfo != nullptr);
                 return nullptr;
             }
         }
 
-        // only for internal use
-        void newAIUpdateSpellSystem();
-        void castSpellOnRandomTarget(CreatureAISpells* AiSpell);
-
-        void oldAIUpdateSpellSystem();
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // spell <deprecated>
-        //\brief: the following functions are marked as deprecated. Do not use them for new scripts!
         void _applyAura(uint32_t spellId);
         void _removeAura(uint32_t spellId);
         void _removeAllAuras();
@@ -921,6 +933,12 @@ class SERVER_DECL CreatureAIScript
         void _setTargetToChannel(Unit* target, uint32_t spellId);
         void _unsetTargetToChannel();
         Unit* _getTargetToChannel();
+
+        // only for internal use
+        void newAIUpdateSpellSystem();
+        void castSpellOnRandomTarget(CreatureAISpells* AiSpell);
+
+        void oldAIUpdateSpellSystem();
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // gameobject

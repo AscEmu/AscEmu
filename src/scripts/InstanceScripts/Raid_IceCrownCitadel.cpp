@@ -233,6 +233,7 @@ class LordMarrowgarAI : public CreatureAIScript
             auto bonestorm = addAISpell(BONE_STORM, 30.0f, TARGET_DESTINATION, 30, 300, true);
             bonestorm->addEmote("bonestorm", CHAT_MSG_MONSTER_YELL, 0);
             bonestorm->setAvailableForScriptPhase({ 4 });
+            bonestorm->setAttackStopTimer(3000);
 
             auto berserk = addAISpell(LM_BERSERK, 50.0f, TARGET_SELF, 30, 240);
             berserk->addEmote("berserk", CHAT_MSG_MONSTER_YELL, 0);
