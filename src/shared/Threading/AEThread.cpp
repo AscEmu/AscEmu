@@ -38,7 +38,7 @@ namespace AscEmu { namespace Threading
                 auto distance = duration_cast<milliseconds>(target - now);
 
                 if (m_longSleep)
-                    std::this_thread::sleep_for(milliseconds(std::min(distance.count(), m_longSleepDelay)));
+                    std::this_thread::sleep_for(milliseconds(std::min(static_cast<long long>(distance.count()), m_longSleepDelay)));
                 else
                     std::this_thread::sleep_for(milliseconds(1));
             }
