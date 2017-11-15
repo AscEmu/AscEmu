@@ -1372,7 +1372,6 @@ void CreatureAIScript::newAIUpdateSpellSystem()
                 case TARGET_VARIOUS:
                     getCreature()->CastSpell(getCreature(), usedSpell->mSpellInfo, usedSpell->mIsTriggered);
                     break;
-                case TARGET_RANDOM_SINGLE:
                 case TARGET_ATTACKING:
                     getCreature()->CastSpell(target, usedSpell->mSpellInfo, usedSpell->mIsTriggered);
                     break;
@@ -1380,9 +1379,9 @@ void CreatureAIScript::newAIUpdateSpellSystem()
                     getCreature()->CastSpellAoF(target->GetPosition(), usedSpell->mSpellInfo, usedSpell->mIsTriggered);
                     break;
                 case TARGET_RANDOM_FRIEND:
-                    //case TARGET_RANDOM_SINGLE:
+                case TARGET_RANDOM_SINGLE:
                 case TARGET_RANDOM_DESTINATION:
-                    LogDebugFlag(LF_SCRIPT_MGR, "Random Spell targets not implemented yet");
+                    castSpellOnRandomTarget(usedSpell);
                     break;
             }
 
@@ -1399,6 +1398,87 @@ void CreatureAIScript::newAIUpdateSpellSystem()
         {
             _resetTimer(mSpellWaitTimerId, 8000);
         }
+    }
+}
+
+void CreatureAIScript::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
+{
+    if (AiSpell == nullptr)
+        return;
+
+    // helper for following code
+    bool isTargetRandFriend = (AiSpell->mTargetType == TARGET_RANDOM_FRIEND ? true : false);
+
+    // if we already cast a spell, do not set/cast another one!
+    if (getCreature()->GetCurrentSpell() == nullptr
+        && getCreature()->GetAIInterface()->getNextTarget())
+    {
+        // set up targets in range by position, relation and hp range
+        std::vector<Unit*> possibleUnitTargets;
+
+        bool isTargetPositionInRange = false;
+        bool isTargetHpInRange = false;
+
+        for (const auto& itr : getCreature()->GetInRangeSet())
+        {
+            if (((isTargetRandFriend && isFriendly(getCreature(), itr))
+                || (!isTargetRandFriend && isHostile(getCreature(), itr) && itr != getCreature())) && itr->IsUnit())
+            {
+                Unit* targetInRangeSet = static_cast<Unit*>(itr);
+
+                if (getCreature()->GetDistance2dSq(targetInRangeSet) >= AiSpell->mMinPositionRangeToCast
+                    && getCreature()->GetDistance2dSq(targetInRangeSet) <= AiSpell->mMaxPositionRangeToCast)
+                    isTargetPositionInRange = true;
+
+                if (targetInRangeSet->GetHealthPct() >= AiSpell->mMinHpRangeToCast
+                    && targetInRangeSet->GetHealthPct() <= AiSpell->mMaxHpRangeToCast)
+                    isTargetHpInRange = true;
+
+                if (targetInRangeSet->isAlive()
+                    && isTargetPositionInRange
+                    && ((isTargetHpInRange && isTargetRandFriend) || 
+                    (getCreature()->GetAIInterface()->getThreatByPtr(targetInRangeSet) > 0
+                    && isHostile(getCreature(), targetInRangeSet))))
+                {
+                    possibleUnitTargets.push_back(targetInRangeSet);
+                }
+            }
+        }
+
+        // add us as a friendly target.
+        bool areWeInHpRange = false;
+
+        if (getCreature()->GetHealthPct() >= AiSpell->mMinHpRangeToCast
+            && getCreature()->GetHealthPct() <= AiSpell->mMaxHpRangeToCast)
+            areWeInHpRange = true;
+
+        if (areWeInHpRange
+            && isTargetRandFriend)
+            possibleUnitTargets.push_back(getCreature());
+
+        // no targets in our range for hp range and firendly targets
+        if (possibleUnitTargets.empty())
+            return;
+
+        // get a random target
+        uint32_t randomIndex = Util::getRandomUInt(0, static_cast<uint32_t>(possibleUnitTargets.size() - 1));
+        Unit* randomTarget = possibleUnitTargets[randomIndex];
+
+        if (randomTarget == nullptr)
+            return;
+
+        switch (AiSpell->mTargetType)
+        {
+            case TARGET_RANDOM_FRIEND:
+            case TARGET_RANDOM_SINGLE:
+                getCreature()->CastSpell(randomTarget, AiSpell->mSpellInfo, AiSpell->mIsTriggered);
+                break;
+            case TARGET_RANDOM_DESTINATION:
+                getCreature()->CastSpellAoF(randomTarget->GetPosition(), AiSpell->mSpellInfo, AiSpell->mIsTriggered);
+                break;
+        }
+
+        possibleUnitTargets.clear();
     }
 }
 

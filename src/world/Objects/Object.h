@@ -686,6 +686,9 @@ public:
 
         size_t GetInRangeCount() { return m_objectsInRange.size(); }
         size_t GetInRangePlayersCount() { return m_inRangePlayers.size(); }
+
+        auto GetInRangeSet() { return m_objectsInRange; }
+
         InRangeSet::iterator GetInRangeSetBegin() { return m_objectsInRange.begin(); }
         InRangeSet::iterator GetInRangeSetEnd() { return m_objectsInRange.end(); }
         InRangeSet::iterator FindInRangeSet(Object* obj) { return m_objectsInRange.find(obj); }

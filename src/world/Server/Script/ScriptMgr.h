@@ -524,6 +524,12 @@ class SERVER_DECL CreatureAISpells
             mIsTriggered = isTriggered;
 
             mMaxStackCount = 1;
+
+            mMinPositionRangeToCast = 0.0f;
+            mMaxPositionRangeToCast = 100.0f;
+
+            mMinHpRangeToCast = 0.0f;
+            mMaxHpRangeToCast = 100.0f;
         }
 
         ~CreatureAISpells()
@@ -577,6 +583,12 @@ class SERVER_DECL CreatureAISpells
 
         void setMaxStackCount(uint32_t stackCount) { mMaxStackCount = stackCount; }
         uint32_t getMaxStackCount() { return mMaxStackCount; }
+
+        float mMinPositionRangeToCast;
+        float mMaxPositionRangeToCast;
+
+        float mMinHpRangeToCast;
+        float mMaxHpRangeToCast;
 };
 
 class SERVER_DECL CreatureAIScript
@@ -835,6 +847,8 @@ class SERVER_DECL CreatureAIScript
 
         // only for internal use
         void newAIUpdateSpellSystem();
+        void castSpellOnRandomTarget(CreatureAISpells* AiSpell);
+
         void oldAIUpdateSpellSystem();
 
         //////////////////////////////////////////////////////////////////////////////////////////

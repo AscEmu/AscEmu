@@ -295,7 +295,7 @@ class LordMarrowgarAI : public CreatureAIScript
             berserk->addEmote("berserk", CHAT_MSG_MONSTER_YELL, 0);
             berserk->setMaxStackCount(1);
 
-            auto souldFest = addAISpell(SOUL_FEAST, 50.0f, TARGET_RANDOM_SINGLE, 0, 120);
+            auto souldFest = addAISpell(SOUL_FEAST, 50.0f, TARGET_RANDOM_SINGLE, 0, 20);
             souldFest->addEmote("Your soul is fest", CHAT_MSG_MONSTER_YELL, 0);
 
             auto bonespike = addAISpell(BONE_SPIKE, 100.0f, TARGET_RANDOM_SINGLE, 0, 90);
