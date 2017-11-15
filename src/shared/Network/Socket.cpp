@@ -136,14 +136,15 @@ void Socket::Disconnect()
 void Socket::Delete()
 {
     //if returns true it means it's already delete
-    if (m_connected)
+    if (m_deleted)
         return;
 
-    m_connected = true;
+    m_deleted = true;
 
     LogDebug("Socket::Delete() on socket %u", m_fd);
 
-    if(IsConnected()) Disconnect();
+    if (IsConnected())
+        Disconnect();
 
     SocketOps::CloseSocket(m_fd);
 
