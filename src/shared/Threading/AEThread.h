@@ -31,7 +31,7 @@ namespace AscEmu { namespace Threading
         void threadRunner();
         void killThread();
     public:
-        AEThread(std::string name, ThreadFunc func, std::chrono::milliseconds intervalMs, bool autostart = false);
+        AEThread(std::string name, ThreadFunc func, std::chrono::milliseconds intervalMs, bool autostart = true);
         ~AEThread();
 
         std::chrono::milliseconds getInterval() const;
