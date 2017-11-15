@@ -10,6 +10,28 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/ServerState.h"
 #include "Objects/ObjectMgr.h"
 
+bool ChatHandler::HandleDoPercentDamageCommand(const char* args, WorldSession* session)
+{
+    Creature* selected_unit = GetSelectedCreature(session);
+    if (selected_unit == nullptr)
+        return false;
+
+    uint32_t percentDamage = uint32_t(atoi(args));
+    if (percentDamage == 0)
+        return true;
+
+    uint32_t health = selected_unit->GetHealth();
+
+    uint32_t calculatedDamage = static_cast<uint32_t>((health / 100) * percentDamage);
+
+
+    selected_unit->TakeDamage(session->GetPlayer(), calculatedDamage, 0, false);
+
+    SystemMessage(session, "Send damage percent: %u (%u hp) for Creature %s", percentDamage, calculatedDamage, selected_unit->GetCreatureProperties()->Name.c_str());
+
+    return true;
+}
+
 bool ChatHandler::HandleSetScriptPhaseCommand(const char* args, WorldSession* session)
 {
     Creature* selected_unit = GetSelectedCreature(session);

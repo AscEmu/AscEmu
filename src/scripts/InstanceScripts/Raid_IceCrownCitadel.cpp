@@ -291,9 +291,10 @@ class LordMarrowgarAI : public CreatureAIScript
             auto bonestorm = addAISpell(BONE_STORM, 30.0f, TARGET_DESTINATION, 30, 300, true);
             bonestorm->addEmote("bonestorm", CHAT_MSG_MONSTER_YELL, 0);
 
-            auto berserk = addAISpell(LM_BERSERK, 50.0f, TARGET_ATTACKING, 30, 240);
+            auto berserk = addAISpell(LM_BERSERK, 50.0f, TARGET_SELF, 30, 240);
             berserk->addEmote("berserk", CHAT_MSG_MONSTER_YELL, 0);
             berserk->setMaxStackCount(1);
+            berserk->setMinMaxHp(0.0f, 50.0f);
 
             auto souldFest = addAISpell(SOUL_FEAST, 50.0f, TARGET_RANDOM_SINGLE, 0, 20);
             souldFest->addEmote("Your soul is fest", CHAT_MSG_MONSTER_YELL, 0);

@@ -587,8 +587,37 @@ class SERVER_DECL CreatureAISpells
         float mMinPositionRangeToCast;
         float mMaxPositionRangeToCast;
 
+        bool isDistanceInRange(float targetDistance)
+        {
+            if (targetDistance >= mMinPositionRangeToCast && targetDistance <= mMaxPositionRangeToCast)
+                return true;
+
+            return false;
+        }
+        void setMinMaxDistance(float minDistance, float maxDistance)
+        {
+            mMinPositionRangeToCast = minDistance;
+            mMaxPositionRangeToCast = maxDistance;
+        }
+
+        // if it is not a random target type it sets the hp range when the creature can cast this spell
+        // if it is a random target it controles when the spell can be cast based on the target hp
         float mMinHpRangeToCast;
         float mMaxHpRangeToCast;
+
+        bool isHpInRange(float targetHp)
+        {
+            if (targetHp >= mMinHpRangeToCast && targetHp <= mMaxHpRangeToCast)
+                return true;
+
+            return false;
+        }
+
+        void setMinMaxHp(float minHp, float maxHp)
+        {
+            mMinHpRangeToCast = minHp;
+            mMaxHpRangeToCast = maxHp;
+        }
 };
 
 class SERVER_DECL CreatureAIScript

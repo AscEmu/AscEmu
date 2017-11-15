@@ -1354,6 +1354,10 @@ void CreatureAIScript::newAIUpdateSpellSystem()
                 if (getCreature()->getAuraCountForId(AISpell->mSpellInfo->getId()) >= AISpell->getMaxStackCount())
                     continue;
 
+                // hp range
+                if (!AISpell->isHpInRange(getCreature()->GetHealthPct()))
+                    continue;
+
                 // random chance for shuffeld array should do the job
                 if (randomChance < AISpell->mCastChance)
                 {
@@ -1416,44 +1420,25 @@ void CreatureAIScript::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
         // set up targets in range by position, relation and hp range
         std::vector<Unit*> possibleUnitTargets;
 
-        bool isTargetPositionInRange = false;
-        bool isTargetHpInRange = false;
-
-        for (const auto& itr : getCreature()->GetInRangeSet())
+        for (const auto& inRangeObject : getCreature()->GetInRangeSet())
         {
-            if (((isTargetRandFriend && isFriendly(getCreature(), itr))
-                || (!isTargetRandFriend && isHostile(getCreature(), itr) && itr != getCreature())) && itr->IsUnit())
+            if (((isTargetRandFriend && isFriendly(getCreature(), inRangeObject))
+                || (!isTargetRandFriend && isHostile(getCreature(), inRangeObject) && inRangeObject != getCreature())) && inRangeObject->IsUnit())
             {
-                Unit* targetInRangeSet = static_cast<Unit*>(itr);
+                Unit* inRangeTarget = static_cast<Unit*>(inRangeObject);
 
-                if (getCreature()->GetDistance2dSq(targetInRangeSet) >= AiSpell->mMinPositionRangeToCast
-                    && getCreature()->GetDistance2dSq(targetInRangeSet) <= AiSpell->mMaxPositionRangeToCast)
-                    isTargetPositionInRange = true;
-
-                if (targetInRangeSet->GetHealthPct() >= AiSpell->mMinHpRangeToCast
-                    && targetInRangeSet->GetHealthPct() <= AiSpell->mMaxHpRangeToCast)
-                    isTargetHpInRange = true;
-
-                if (targetInRangeSet->isAlive()
-                    && isTargetPositionInRange
-                    && ((isTargetHpInRange && isTargetRandFriend) || 
-                    (getCreature()->GetAIInterface()->getThreatByPtr(targetInRangeSet) > 0
-                    && isHostile(getCreature(), targetInRangeSet))))
+                if (
+                    inRangeTarget->isAlive() && AiSpell->isDistanceInRange(getCreature()->GetDistance2dSq(inRangeTarget)) 
+                    && ((AiSpell->isHpInRange(inRangeTarget->GetHealthPct()) && isTargetRandFriend)
+                    || (getCreature()->GetAIInterface()->getThreatByPtr(inRangeTarget) > 0 && isHostile(getCreature(), inRangeTarget))))
                 {
-                    possibleUnitTargets.push_back(targetInRangeSet);
+                    possibleUnitTargets.push_back(inRangeTarget);
                 }
             }
         }
 
         // add us as a friendly target.
-        bool areWeInHpRange = false;
-
-        if (getCreature()->GetHealthPct() >= AiSpell->mMinHpRangeToCast
-            && getCreature()->GetHealthPct() <= AiSpell->mMaxHpRangeToCast)
-            areWeInHpRange = true;
-
-        if (areWeInHpRange
-            && isTargetRandFriend)
+        if (AiSpell->isHpInRange(getCreature()->GetHealthPct()) && isTargetRandFriend)
             possibleUnitTargets.push_back(getCreature());
 
         // no targets in our range for hp range and firendly targets

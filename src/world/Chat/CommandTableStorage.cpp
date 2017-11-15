@@ -349,6 +349,7 @@ void CommandTableStorage::Init()
 
     static ChatCommand debugCommandTable[] =
     {
+        { "dopctdamage",        'z', &ChatHandler::HandleDoPercentDamageCommand,    "Do percent damage to creature target",                     nullptr, 0, 0, 0 },
         { "setscriptphase",     'z', &ChatHandler::HandleSetScriptPhaseCommand,     "ScriptPhase test",                                         nullptr, 0, 0, 0 },
         { "aicharge",           'z', &ChatHandler::HandleAiChargeCommand,           "AiCharge test",                                            nullptr, 0, 0, 0 },
         { "aiknockback",        'z', &ChatHandler::HandleAiKnockbackCommand,        "AiKnockBack test",                                         nullptr, 0, 0, 0 },
