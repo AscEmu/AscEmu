@@ -22,6 +22,7 @@
 
 #include "Common.hpp"
 #include "CThreads.h"
+#include <Threading/AEThread.h>
 
 enum checkType
 {

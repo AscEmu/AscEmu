@@ -45,7 +45,7 @@ void LogonConsole::threadDemoCmd(char* str) {
     }
 
     std::function<void(AscEmu::Threading::AEThread&)> f = [this](AscEmu::Threading::AEThread& thread) { this->demoTicker(thread); };
-    m_demoThread = new AscEmu::Threading::AEThread(std::string("DemoThread"), f, std::chrono::milliseconds(500));
+    m_demoThread = new AscEmu::Threading::AEThread(std::string("DemoThread"), f, std::chrono::milliseconds(100));
 }
 
 void LogonConsole::Kill()

@@ -1,16 +1,18 @@
 #include "AEThread.h"
 #include <iostream>
+#include <algorithm>
 
 using std::atomic;
 using std::lock_guard;
 using std::mutex;
 using std::string;
 using std::thread;
+using std::chrono::duration_cast;
 using std::chrono::milliseconds;
 
 namespace AscEmu { namespace Threading
 {
-    atomic<unsigned int> AEThread::ThreadIdCounter = 0;
+    atomic<unsigned int> AEThread::ThreadIdCounter(0);
 
     void AEThread::threadRunner()
     {
@@ -26,12 +28,20 @@ namespace AscEmu { namespace Threading
 
             auto target = begin + m_interval;
 
-            do
+            // We use this instead of sleep_until so we can interrupt
+            while (!m_killed)
             {
-                // We use this instead of sleep_until so we can interrupt
-                std::this_thread::sleep_for(milliseconds(64));
+                auto now = std::chrono::steady_clock::now();
+                if (now > target)
+                    break;
+
+                auto distance = duration_cast<milliseconds>(target - now);
+
+                if (m_longSleep)
+                    std::this_thread::sleep_for(milliseconds(std::min(distance.count(), m_longSleepDelay)));
+                else
+                    std::this_thread::sleep_for(milliseconds(1));
             }
-            while (!m_killed && std::chrono::steady_clock::now() < target);
         }
 
         std::cout << "[" << m_name.c_str() << "] Goodbye" << std::endl;
@@ -44,9 +54,10 @@ namespace AscEmu { namespace Threading
         m_id = ThreadIdCounter++;
         m_name = name;
         m_func = func;
-        m_interval = interval;
         m_killed = false;
         m_done = true;
+
+        unsafeSetInterval(interval);
         reboot();
     }
 
@@ -60,6 +71,7 @@ namespace AscEmu { namespace Threading
 
     milliseconds AEThread::unsafeSetInterval(milliseconds interval)
     {
+        m_longSleep = interval > milliseconds(m_longSleepDelay);
         auto old_value = m_interval;
         m_interval = interval;
         return old_value;

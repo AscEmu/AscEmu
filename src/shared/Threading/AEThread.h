@@ -13,6 +13,7 @@ namespace AscEmu { namespace Threading
         typedef std::function<void(AEThread&)> ThreadFunc;
 
         static std::atomic<unsigned int> ThreadIdCounter;
+        const long long m_longSleepDelay = 64;
 
         // Meta
         std::string m_name;
@@ -25,6 +26,7 @@ namespace AscEmu { namespace Threading
         std::thread m_thread;
         bool m_killed;
         bool m_done;
+        bool m_longSleep;
 
         void threadRunner();
         void killThread();
