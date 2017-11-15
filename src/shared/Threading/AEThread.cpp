@@ -46,7 +46,7 @@ namespace AscEmu { namespace Threading
         m_done = true;
     }
 
-    AEThread::AEThread(string name, ThreadFunc func, milliseconds interval)
+    AEThread::AEThread(string name, ThreadFunc func, milliseconds interval, bool autostart)
     {
         m_id = ThreadIdCounter++;
         m_name = name;
@@ -55,7 +55,8 @@ namespace AscEmu { namespace Threading
         m_done = true;
 
         unsafeSetInterval(interval);
-        reboot();
+        if (autostart)
+            reboot();
     }
 
     AEThread::~AEThread() { killThread(); }

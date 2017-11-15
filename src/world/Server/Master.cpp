@@ -52,8 +52,6 @@ SERVER_DECL SessionLog* Player_Log;
 // threads
 extern DayWatcherThread* dw;
 
-extern BroadcastMgr* bcmgr;
-
 ConfigMgr Config;
 
 // DB version
@@ -353,10 +351,6 @@ bool Master::Run(int argc, char** argv)
     LogNotice("DayWatcherThread : Exiting...");
     dw->terminate();
     dw = NULL;
-
-    LogNotice("BroadcastMgr : Exiting...");
-    bcmgr->terminate();
-    bcmgr = nullptr;
 
     ls->Close();
 

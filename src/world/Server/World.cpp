@@ -39,7 +39,7 @@ initialiseSingleton(World);
 
 DayWatcherThread* dw = nullptr;
 
-BroadcastMgr* bcmgr = nullptr;
+std::unique_ptr<BroadcastMgr> broadcastMgr = nullptr;
 
 extern void ApplyNormalFixes();
 extern void LoadGameObjectModelList(std::string const& dataPath);
@@ -110,7 +110,7 @@ World::~World()
 #if VERSION_STRING == Cata
     LogNotice("GuildMgr", "~GuildMgr()");
     delete GuildMgr::getSingletonPtr();
-    
+
     LogNotice("GuildFinderMgr", "~GuildFinderMgr()");
     delete GuildFinderMgr::getSingletonPtr();
 #endif
@@ -808,8 +808,7 @@ bool World::setInitialWorldSettings()
     dw = new DayWatcherThread();
     ThreadPool.ExecuteTask(dw);
 
-    bcmgr = new BroadcastMgr();
-    ThreadPool.ExecuteTask(bcmgr);
+    broadcastMgr = std::move(std::make_unique<BroadcastMgr>());
 
     ThreadPool.ExecuteTask(new CharacterLoaderThread());
 

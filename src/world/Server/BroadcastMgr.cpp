@@ -1,11 +1,5 @@
-/*
-Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
-This file is released under the MIT license. See README-MIT for more information.
-*/
-
 #include "StdAfx.h"
 
-#include <string>
 #include <cstdint>
 
 #include "BroadcastMgr.h"
@@ -15,11 +9,33 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Log.hpp"
 
-BroadcastMgr::BroadcastMgr() : mIsRunning(true)
-{};
+using AscEmu::Threading::AEThread;
+using std::chrono::milliseconds;
+using std::make_unique;
 
-BroadcastMgr::~BroadcastMgr()
-{};
+void BroadcastMgr::threadRunner(AEThread& thread) { sendBroadcast(); }
+
+void BroadcastMgr::threadInit()
+{
+    if (sMySQLStore.getWorldBroadcastStore()->empty())
+    {
+        worldConfig.broadcast.isSystemEnabled = false;
+    }
+    else
+    {
+        LogNotice("BroadcastMgr : Started");
+    }
+
+    m_thread->reboot();
+}
+
+BroadcastMgr::BroadcastMgr()
+{
+    m_thread = make_unique<AEThread>("BroadcastThread", [this](AEThread& thread) { this->threadRunner(thread); }, milliseconds(2500), false);
+    this->threadInit();
+}
+
+BroadcastMgr::~BroadcastMgr() { m_thread->join(); }
 
 void BroadcastMgr::sendBroadcast()
 {
@@ -36,41 +52,4 @@ void BroadcastMgr::sendBroadcast()
             itr->second.nextUpdate = randomMins + intervalMins + (uint32_t)UNIXTIME;
         }
     }
-}
-
-bool BroadcastMgr::runThread()
-{
-    if (sMySQLStore.getWorldBroadcastStore()->empty())
-    {
-        worldConfig.broadcast.isSystemEnabled = false;
-    }
-    else
-    {
-        LogNotice("BroadcastMgr : Started");
-    }
-
-    while (GetThreadState() != THREADSTATE_TERMINATE)
-    {
-        sendBroadcast();
-
-        if (GetThreadState() == THREADSTATE_TERMINATE)
-        {
-            break;
-        }
-
-        condition.Wait(2500);
-
-        if (mIsRunning == false)
-        {
-            break;
-        }
-    }
-
-    return true;
-}
-
-void BroadcastMgr::terminate()
-{
-    mIsRunning = false;
-    condition.Signal();
 }
