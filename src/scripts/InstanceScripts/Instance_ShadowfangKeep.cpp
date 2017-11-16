@@ -193,7 +193,7 @@ class ShadowfangKeepInstance : public InstanceScript
         }
 
         // Objects handling
-        void OnGameObjectPushToWorld(GameObject* pGameObject)
+        void OnGameObjectPushToWorld(GameObject* pGameObject) override
         {
             switch (pGameObject->GetEntry())
             {
@@ -262,7 +262,7 @@ class ShadowfangKeepInstance : public InstanceScript
             }
         }
 
-        void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer)
+        void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer) override
         {
             switch (pGameObject->GetEntry())
             {
@@ -295,7 +295,7 @@ class ShadowfangKeepInstance : public InstanceScript
             }
         }
 
-        void OnCreatureDeath(Creature* pCreature, Unit* pKiller)
+        void OnCreatureDeath(Creature* pCreature, Unit* pKiller) override
         {
             switch (pCreature->GetEntry())
             {
@@ -316,7 +316,7 @@ class ShadowfangKeepInstance : public InstanceScript
             }
         }
 
-        void OnCreaturePushToWorld(Creature* pCreature)
+        void OnCreaturePushToWorld(Creature* pCreature) override
         {
             switch (pCreature->GetEntry())
             {
@@ -380,12 +380,8 @@ class ShadowfangKeepInstance : public InstanceScript
 
 class ArugalAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(ArugalAI);
-        ArugalAI(Creature* pCreature) :
-            CreatureAIScript(pCreature),
-            stage(0)
+        ArugalAI(Creature* pCreature) : CreatureAIScript(pCreature), stage(0)
         {
             SFK_Instance = static_cast<ShadowfangKeepInstance*>(pCreature->GetMapMgr()->GetScript());
             if (SFK_Instance && SFK_Instance->GetInstanceData(0, INDEX_ARUGAL_INTRO) == NotStarted)
@@ -395,71 +391,71 @@ class ArugalAI : public CreatureAIScript
             }
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             
             if (SFK_Instance && SFK_Instance->GetInstanceData(0, INDEX_ARUGAL_INTRO) == InProgress)
             {
                 switch (stage)
                 {
-                case 0:
-                {
-                    getCreature()->SetInvisFlag(INVIS_FLAG_NORMAL);
-                    getCreature()->CastSpell(getCreature(), SPELL_ARUGAL_SPAWN, true);
-                    ModifyAIUpdateEvent(5500);  // call every step after 5.5 seconds
-                    if (Creature* pVincent = getNearestCreature(CN_DEATHSTALKER_VINCENT))
+                    case 0:
                     {
-                        pVincent->GetAIInterface()->AttackReaction(getCreature(), 1);
-                        pVincent->GetAIInterface()->setMeleeDisabled(true);
-                    }
-                }break;
-                case 1:
-                {
-                    getCreature()->SendScriptTextChatMessage(SAY_ARUGAL_INTRO1);
-                }break;
-                case 2:
-                {
-                    getCreature()->Emote(EMOTE_ONESHOT_POINT);
-                }break;
-                case 3:
-                {
-                    getCreature()->SendScriptTextChatMessage(SAY_ARUGAL_INTRO2);
-                }break;
-                case 4:
-                {
-                    getCreature()->Emote(EMOTE_ONESHOT_EXCLAMATION);
-                }break;
-                case 5:
-                {
-                    getCreature()->SendScriptTextChatMessage(SAY_ARUGAL_INTRO3);
-                }break;
-                case 6:
-                {
-                    getCreature()->Emote(EMOTE_ONESHOT_LAUGH);
-                }break;
-                case 7:
-                {
-                    if (Creature* pVincent = getCreature()->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), CN_DEATHSTALKER_VINCENT))
+                        getCreature()->SetInvisFlag(INVIS_FLAG_NORMAL);
+                        getCreature()->CastSpell(getCreature(), SPELL_ARUGAL_SPAWN, true);
+                        ModifyAIUpdateEvent(5500);  // call every step after 5.5 seconds
+                        if (Creature* pVincent = getNearestCreature(CN_DEATHSTALKER_VINCENT))
+                        {
+                            pVincent->GetAIInterface()->AttackReaction(getCreature(), 1);
+                            pVincent->GetAIInterface()->setMeleeDisabled(true);
+                        }
+                    }break;
+                    case 1:
                     {
-                        // Make him look like dead
-                        pVincent->SendScriptTextChatMessage(SAY_VINCENT_DEATH);
-                        pVincent->SetStandState(STANDSTATE_DEAD);
-                        pVincent->setDeathState(CORPSE);
-                        pVincent->GetAIInterface()->m_canMove = false;
-                        pVincent->SetFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_DEAD);
-                    }
-                }break;
-                case 8:
-                {
-                    getCreature()->SendScriptTextChatMessage(SAY_ARUGAL_INTRO4);
-                }break;
-                case 9:
-                {
-                    getCreature()->CastSpell(getCreature(), SPELL_ARUGAL_SPAWN, true);
-                    SFK_Instance->SetLocaleInstanceData(0, INDEX_ARUGAL_INTRO, Finished);
-                    getCreature()->SetInvisFlag(INVIS_FLAG_TOTAL);
-                    RemoveAIUpdateEvent();
-                }break;
+                        getCreature()->SendScriptTextChatMessage(SAY_ARUGAL_INTRO1);
+                    }break;
+                    case 2:
+                    {
+                        getCreature()->Emote(EMOTE_ONESHOT_POINT);
+                    }break;
+                    case 3:
+                    {
+                        getCreature()->SendScriptTextChatMessage(SAY_ARUGAL_INTRO2);
+                    }break;
+                    case 4:
+                    {
+                        getCreature()->Emote(EMOTE_ONESHOT_EXCLAMATION);
+                    }break;
+                    case 5:
+                    {
+                        getCreature()->SendScriptTextChatMessage(SAY_ARUGAL_INTRO3);
+                    }break;
+                    case 6:
+                    {
+                        getCreature()->Emote(EMOTE_ONESHOT_LAUGH);
+                    }break;
+                    case 7:
+                    {
+                        if (Creature* pVincent = getCreature()->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), CN_DEATHSTALKER_VINCENT))
+                        {
+                            // Make him look like dead
+                            pVincent->SendScriptTextChatMessage(SAY_VINCENT_DEATH);
+                            pVincent->SetStandState(STANDSTATE_DEAD);
+                            pVincent->setDeathState(CORPSE);
+                            pVincent->GetAIInterface()->m_canMove = false;
+                            pVincent->SetFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_DEAD);
+                        }
+                    }break;
+                    case 8:
+                    {
+                        getCreature()->SendScriptTextChatMessage(SAY_ARUGAL_INTRO4);
+                    }break;
+                    case 9:
+                    {
+                        getCreature()->CastSpell(getCreature(), SPELL_ARUGAL_SPAWN, true);
+                        SFK_Instance->SetLocaleInstanceData(0, INDEX_ARUGAL_INTRO, Finished);
+                        getCreature()->SetInvisFlag(INVIS_FLAG_TOTAL);
+                        RemoveAIUpdateEvent();
+                    }break;
                 }
                 ++stage;
             }
@@ -475,13 +471,8 @@ class ArugalAI : public CreatureAIScript
 
 class AdamantAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(AdamantAI);
-        AdamantAI(Creature* pCreature) : 
-            CreatureAIScript(pCreature),
-            stage(0),
-            eventStarted(false)
+        AdamantAI(Creature* pCreature) : CreatureAIScript(pCreature), stage(0), eventStarted(false)
         {
             SFK_instance = static_cast<ShadowfangKeepInstance*>(getCreature()->GetMapMgr()->GetScript());
 
@@ -519,7 +510,7 @@ class AdamantAI : public CreatureAIScript
             pCreature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
         }
 
-        void OnReachWP(uint32 iWaypointId, bool /*bForwards*/)
+        void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
         {
             switch (iWaypointId)
             {
@@ -539,9 +530,8 @@ class AdamantAI : public CreatureAIScript
             }
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
-            
             if (SFK_instance && (SFK_instance->GetInstanceData(0, INDEX_PRISONER_EVENT) == InProgress 
                 || SFK_instance->GetInstanceData(0, INDEX_PRISONER_EVENT) == Performed))
             {
@@ -606,7 +596,7 @@ class AdamantGossip : public Arcemu::Gossip::Script
 {
     public:
 
-        void OnHello(Object* pObject, Player* plr)
+        void OnHello(Object* pObject, Player* plr) override
         {
             //TODO: correct text id
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), sMySQLStore.getGossipTextIdForNpc(pObject->GetEntry()));
@@ -620,7 +610,7 @@ class AdamantGossip : public Arcemu::Gossip::Script
             menu.Send(plr);
         }
 
-        void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/)
+        void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
         {
             if (Id == 1)
             {
@@ -648,11 +638,7 @@ class AshcrombeAI : public CreatureAIScript
     public:
 
         ADD_CREATURE_FACTORY_FUNCTION(AshcrombeAI);
-        AshcrombeAI(Creature* pCreature) : 
-            CreatureAIScript(pCreature),
-            stage(0),
-            argued(false),
-            eventStarted(false)
+        AshcrombeAI(Creature* pCreature) : CreatureAIScript(pCreature), stage(0), argued(false), eventStarted(false)
         {
             SFK_instance = static_cast<ShadowfangKeepInstance*>(getCreature()->GetMapMgr()->GetScript());
 
@@ -687,7 +673,7 @@ class AshcrombeAI : public CreatureAIScript
             pCreature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
         }
 
-        void OnReachWP(uint32 iWaypointId, bool /*bForwards*/)
+        void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
         {
             if (iWaypointId == 10)
             {
@@ -702,10 +688,8 @@ class AshcrombeAI : public CreatureAIScript
             }
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
-            
-
             if (SFK_instance 
                 && (SFK_instance->GetInstanceData(0, INDEX_PRISONER_EVENT) == InProgress
                 || SFK_instance->GetInstanceData(0, INDEX_PRISONER_EVENT) == Performed))
@@ -784,7 +768,7 @@ class AshcrombeGossip : public Arcemu::Gossip::Script
 {
     public:
 
-        void OnHello(Object* pObject, Player* plr)
+        void OnHello(Object* pObject, Player* plr) override
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), sMySQLStore.getGossipTextIdForNpc(pObject->GetEntry()));
 
@@ -796,7 +780,7 @@ class AshcrombeGossip : public Arcemu::Gossip::Script
             menu.Send(plr);
         }
 
-        void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/)
+        void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
         {
             if (Id == 1)
             {
@@ -832,8 +816,6 @@ class SpringvaleAI : public CreatureAIScript
             SPELL_DIVINE_PROT          = 13007
         };
 
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(SpringvaleAI);
         SpringvaleAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -843,25 +825,22 @@ class SpringvaleAI : public CreatureAIScript
             HammerOfJustice = AddSpell(SPELL_HAMMER_OF_JUSTICE, Target_Current, 12, 0, 60);
         }
 
-        void OnCombatStart(Unit* pTarget)
+        void OnCombatStart(Unit* pTarget) override
         {
-            
             // Turn aura ON!
             if (!getCreature()->HasAura(SPELL_DEVO_AURA))
                 CastSpellNowNoScheduling(DevoAura);
         }
 
-        void OnCombatStop(Unit* pTarget)
+        void OnCombatStop(Unit* pTarget) override
         {
-            
             // Turn aura OFF!
             if (getCreature()->HasAura(SPELL_DEVO_AURA))
                 _removeAura(SPELL_DEVO_AURA);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
-            
             if (_getHealthPercent() <= 20 && DivineProt->mEnabled)
             {
                 CastSpellNowNoScheduling(DivineProt);
@@ -882,7 +861,6 @@ class SpringvaleAI : public CreatureAIScript
 class RethilgoreAI : public CreatureAIScript
 {
     const uint32 SPELL_SOUL_DRAIN = 7295;
-    public:
 
         ADD_CREATURE_FACTORY_FUNCTION(RethilgoreAI);
         RethilgoreAI(Creature* pCreature) : CreatureAIScript(pCreature)
@@ -902,8 +880,6 @@ class NandosAI : public CreatureAIScript
             SPELL_CALLLUPINE_HORROR      = 7489
         };
 
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(NandosAI);
         NandosAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -921,7 +897,7 @@ class NandosAI : public CreatureAIScript
             sCallLupineHorror_Timer     = -1;
         }
 
-        void OnCombatStart(Unit* mEnemy)
+        void OnCombatStart(Unit* mEnemy) override
         {
             
             sCallBleakWorg_Timer = _addTimer(RandomUInt(1) ? 33700 : 48800);
@@ -931,7 +907,7 @@ class NandosAI : public CreatureAIScript
                 SFK_instance->SetLocaleInstanceData(0, INDEX_NANDOS, InProgress);
         }
 
-        void OnCombatStop(Unit* mEnemy)
+        void OnCombatStop(Unit* mEnemy) override
         {
             // Battle has failed
             if (SFK_instance)
@@ -940,9 +916,8 @@ class NandosAI : public CreatureAIScript
             Reset();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
-            
             if (_getHealthPercent() <= 80)
             {
                 if (_isTimerFinished(sCallBleakWorg_Timer) && sCallBleakWord->mEnabled)
@@ -984,7 +959,6 @@ class NandosAI : public CreatureAIScript
 class BaronSilverlaineAI : public CreatureAIScript
 {
         const uint32 SPELL_VEIL_OF_SHADOW = 7068;
-    public:
 
         ADD_CREATURE_FACTORY_FUNCTION(BaronSilverlaineAI);
         BaronSilverlaineAI(Creature* pCreature) : CreatureAIScript(pCreature)
@@ -1003,7 +977,6 @@ class BlindWatcherAI : public CreatureAIScript
             ODO_HOWLING_RAGE2 = 7483,
             ODO_HOWLING_RAGE3 = 7484
         };
-    public:
 
         ADD_CREATURE_FACTORY_FUNCTION(BlindWatcherAI);
         BlindWatcherAI(Creature* pCreature) : CreatureAIScript(pCreature), mPhase(0)
@@ -1016,9 +989,8 @@ class BlindWatcherAI : public CreatureAIScript
             HowlingRage3 = AddSpell(ODO_HOWLING_RAGE3, Target_Self, 0, 1.5f, 0);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
-            
             if (_getHealthPercent() <= 75 && !getCreature()->HasAura(ODO_HOWLING_RAGE1) && mPhase == 0)
             {
                 CastSpell(HowlingRage1);
@@ -1049,7 +1021,7 @@ class BlindWatcherAI : public CreatureAIScript
 class FenrusAI : public CreatureAIScript
 {
         const uint32 SPELL_TOXIC_SALIVA = 7125;
-    public:
+
         ADD_CREATURE_FACTORY_FUNCTION(FenrusAI);
         FenrusAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -1078,7 +1050,6 @@ class ArugalBossAI : public CreatureAIScript
             ARUGAL_LOC_STAIRS       = 2     // Stairs
         };
 
-    public:
 
         ADD_CREATURE_FACTORY_FUNCTION(ArugalBossAI);
         ArugalBossAI(Creature* pCreature) : CreatureAIScript(pCreature), stage(0), arugalPosition(ARUGAL_LOC_LEDGE)
@@ -1098,7 +1069,7 @@ class ArugalBossAI : public CreatureAIScript
             originalRegen = getCreature()->PctPowerRegenModifier[POWER_TYPE_MANA];
         }
 
-        void OnCastSpell(uint32 spellId)
+        void OnCastSpell(uint32 spellId) override
         {
             if (spellId == SPELL_ARUGALS_CURSE)
             {
@@ -1113,7 +1084,7 @@ class ArugalBossAI : public CreatureAIScript
             getCreature()->PctPowerRegenModifier[POWER_TYPE_MANA] = originalRegen;
         }
 
-        void OnCombatStart(Unit* pEnemy)
+        void OnCombatStart(Unit* pEnemy) override
         {
             // do not regen mana
             getCreature()->PctPowerRegenModifier[POWER_TYPE_MANA] = 0.3f;
@@ -1124,7 +1095,7 @@ class ArugalBossAI : public CreatureAIScript
             getCreature()->GetAIInterface()->setMeleeDisabled(true);
         }
 
-        void OnCombatStop(Unit* pEnemy)
+        void OnCombatStop(Unit* pEnemy) override
         {
             Reset();
         }
@@ -1167,9 +1138,8 @@ class ArugalBossAI : public CreatureAIScript
             }
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
-            
             if (SFK_instance && SFK_instance->GetInstanceData(0, INDEX_VOIDWALKER) == InProgress)
             {
                 FenrusEvent(stage);
@@ -1234,7 +1204,6 @@ class ArugalBossAI : public CreatureAIScript
 class RazorclawTheButcherAI : public CreatureAIScript
 {
         const uint32 SPELL_BUTCHER_DRAIN = 7485;
-    public:
 
         ADD_CREATURE_FACTORY_FUNCTION(RazorclawTheButcherAI);
         RazorclawTheButcherAI(Creature* pCreature) : CreatureAIScript(pCreature)
@@ -1256,7 +1225,6 @@ class VileBatAI : public CreatureAIScript
             SPELL_DIVING_SWEEP  = 7145,
             SPELL_DISARM        = 6713
         };
-    public:
 
         ADD_CREATURE_FACTORY_FUNCTION(VileBatAI);
         VileBatAI(Creature* pCreature) : CreatureAIScript(pCreature)
@@ -1271,7 +1239,6 @@ class VileBatAI : public CreatureAIScript
 class BloodSeekerAI : public CreatureAIScript
 {
         const uint32 SPELL_EXPOSE_WEAKNESS = 7140;
-    public:
 
         ADD_CREATURE_FACTORY_FUNCTION(BloodSeekerAI);
         BloodSeekerAI(Creature* pCreature) : CreatureAIScript(pCreature)
@@ -1285,8 +1252,6 @@ class BloodSeekerAI : public CreatureAIScript
 
 class VoidWalkerAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(VoidWalkerAI);
         VoidWalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -1299,8 +1264,6 @@ class VoidWalkerAI : public CreatureAIScript
 
 class BleakWorgAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(BleakWorgAI);
         BleakWorgAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -1313,8 +1276,6 @@ class BleakWorgAI : public CreatureAIScript
 
 class LupineHorrorAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(LupineHorrorAI);
         LupineHorrorAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -1327,8 +1288,6 @@ class LupineHorrorAI : public CreatureAIScript
 
 class SonOfArugalAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(SonOfArugalAI);
         SonOfArugalAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -1341,8 +1300,6 @@ class SonOfArugalAI : public CreatureAIScript
 
 class ShadowfangMoonwalkerAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(ShadowfangMoonwalkerAI);
         ShadowfangMoonwalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -1355,8 +1312,6 @@ class ShadowfangMoonwalkerAI : public CreatureAIScript
 
 class ShadowfangDarksoulAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(ShadowfangDarksoulAI);
         ShadowfangDarksoulAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -1372,8 +1327,6 @@ class ShadowfangDarksoulAI : public CreatureAIScript
 
 class ShadowfangGluttonAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(ShadowfangGluttonAI);
         ShadowfangGluttonAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -1387,16 +1340,14 @@ class ShadowfangGluttonAI : public CreatureAIScript
 class ShadowfangRagetoothAI : public CreatureAIScript
 {
         const uint32 SPELL_WILD_RAGE = 7072;
-    public:
 
         ADD_CREATURE_FACTORY_FUNCTION(ShadowfangRagetoothAI);
         ShadowfangRagetoothAI(Creature* pCreature) : CreatureAIScript(pCreature), sWildRageCasted(false)
         {
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
-            
             // Cast Wild rage at 30% health
             if (_getHealthPercent() <= 30 && !getCreature()->HasAura(SPELL_WILD_RAGE) && !sWildRageCasted)
             {
@@ -1415,8 +1366,6 @@ class ShadowfangRagetoothAI : public CreatureAIScript
 
 class FelSteedAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(FelSteedAI);
         FelSteedAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -1429,8 +1378,6 @@ class FelSteedAI : public CreatureAIScript
 
 class DeathswornCaptainAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(DeathswornCaptainAI);
         DeathswornCaptainAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -1446,8 +1393,6 @@ class DeathswornCaptainAI : public CreatureAIScript
 
 class TormentedOfficerAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(TormentedOfficerAI);
         TormentedOfficerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -1460,8 +1405,6 @@ class TormentedOfficerAI : public CreatureAIScript
 
 class HauntedServitorAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(HauntedServitorAI);
         HauntedServitorAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -1474,8 +1417,6 @@ class HauntedServitorAI : public CreatureAIScript
 
 class WaillingGuardsmanAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(WaillingGuardsmanAI);
         WaillingGuardsmanAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -1487,16 +1428,13 @@ class WaillingGuardsmanAI : public CreatureAIScript
 // Creature entry: 3877
 class WorlfguardWorgAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(WorlfguardWorgAI);
         WorlfguardWorgAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
-            
             if (_getHealthPercent() <= 15 && getAIAgent() != AGENT_FLEE)
             {
                 setAIAgent(AGENT_FLEE);

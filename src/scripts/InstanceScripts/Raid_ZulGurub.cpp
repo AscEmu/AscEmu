@@ -38,7 +38,6 @@ const uint32 GREAT_HEAL = 29564;
 
 class JeklikAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(JeklikAI);
         SP_AI_Spell spells[6];
         bool m_spellcheck[6];
@@ -93,10 +92,9 @@ class JeklikAI : public CreatureAIScript
             spells[5].instant = false;
             spells[5].perctrigger = 10.0f;
             spells[5].attackstoptimer = 10000; // 1sec
-
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             sendDBChatMessage(3201);     // Lord Hir'eek, grant me wings of vengeance!
 
@@ -105,7 +103,7 @@ class JeklikAI : public CreatureAIScript
             getCreature()->CastSpell(getCreature(), spells[0].info, spells[0].instant);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -113,7 +111,7 @@ class JeklikAI : public CreatureAIScript
             getCreature()->RemoveAura(TRANSFORM_BAT);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (getCreature()->GetHealthPct() <= 50 && m_spellcheck[0])
             {
@@ -191,7 +189,6 @@ const uint32 SPIT_POISON = 24688; // various targets
 
 class VenoxisAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(VenoxisAI);
         SP_AI_Spell spells[4];
         bool m_spellcheck[4];
@@ -234,17 +231,14 @@ class VenoxisAI : public CreatureAIScript
             spells[3].instant = false;
             spells[3].perctrigger = 10.0f;
             spells[3].attackstoptimer = 2000; // 2sec
-
-            // ----------------------------------------------------------
-
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -252,7 +246,7 @@ class VenoxisAI : public CreatureAIScript
             getCreature()->RemoveAura(TRANSFORM_SNAKE);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (getCreature()->GetHealthPct() <= 50 && m_spellcheck[0])
             {

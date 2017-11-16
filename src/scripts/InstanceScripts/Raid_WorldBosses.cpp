@@ -43,7 +43,6 @@ const uint32 TELEPORT = 15734;
 
 class EmerissAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(EmerissAI);
         SP_AI_Spell spells[7];
         bool m_spellcheck[7];
@@ -105,17 +104,16 @@ class EmerissAI : public CreatureAIScript
             spells[6].cooldown = -1;
             spells[6].perctrigger = 0.0f;
             spells[6].attackstoptimer = 1000;
-
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Hope is a DISEASE of the soul! This land shall wither and die!");
             RegisterAIUpdateEvent(1000); //Attack time is to slow on this boss
             CastTime();
         }
 
-        void OnTargetDied(Unit* mTarget)
+        void OnTargetDied(Unit* mTarget) override
         {
             if (getCreature()->GetHealthPct() > 0)
             {
@@ -125,7 +123,7 @@ class EmerissAI : public CreatureAIScript
             }
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -139,7 +137,7 @@ class EmerissAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             // M4ksiu: Someone who wrote this hadn't thought about it much, so it should be rewritten
             Unit* Target = getCreature()->GetAIInterface()->getNextTarget();
@@ -222,7 +220,6 @@ const uint32 SUMMON_SHADE = 24843;
 
 class TaerarAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(TaerarAI);
         SP_AI_Spell spells[7];
         bool m_spellcheck[7];
@@ -288,10 +285,9 @@ class TaerarAI : public CreatureAIScript
             Shades = false;
             Shade_timer = 0;
             Summoned = 0;
-
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             Shades = false;
             Shade_timer = 0;
@@ -300,7 +296,7 @@ class TaerarAI : public CreatureAIScript
             CastTime();
         }
 
-        void OnTargetDied(Unit* mTarget)
+        void OnTargetDied(Unit* mTarget) override
         {
             if (getCreature()->GetHealthPct() > 0)
             {
@@ -308,7 +304,7 @@ class TaerarAI : public CreatureAIScript
             }
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             Shades = false;
             Shade_timer = 0;
@@ -324,7 +320,7 @@ class TaerarAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             Shades = false;
             Shade_timer = 0;
@@ -336,7 +332,7 @@ class TaerarAI : public CreatureAIScript
             Summoned->GetAIInterface()->setNextTarget(mTarget);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             // M4ksiu: Someone who wrote this hadn't thought about it much, so it should be rewritten
             Unit* Target = getCreature()->GetAIInterface()->getNextTarget();
@@ -445,7 +441,6 @@ const uint32 POSION_BREATH = 20667;
 
 class ShadeofTaerarAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(ShadeofTaerarAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
@@ -471,21 +466,20 @@ class ShadeofTaerarAI : public CreatureAIScript
             spells[1].cooldown = -1;
             spells[1].perctrigger = 16.0f;
             spells[1].attackstoptimer = 2000;
-
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnTargetDied(Unit* mTarget)
+        void OnTargetDied(Unit* mTarget) override
         {
             //You died kek
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             getCreature()->Despawn(15, 0);
             setAIAgent(AGENT_NULL);
@@ -500,12 +494,12 @@ class ShadeofTaerarAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -575,7 +569,6 @@ const uint32 SUMMON_DRUIDS = 24795; // Summon Demented Druid Spirit
 
 class YsondreAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(YsondreAI);
         SP_AI_Spell spells[6];
         bool m_spellcheck[6];
@@ -630,17 +623,16 @@ class YsondreAI : public CreatureAIScript
             spells[5].cooldown = -1;
             spells[5].perctrigger = 0.0f;
             spells[5].attackstoptimer = 1000;
-
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             CastTime();
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The strands of LIFE have been severed! The Dreamers must be avenged!");
             RegisterAIUpdateEvent(1000); //Attack time is to slow on this boss
         }
 
-        void OnTargetDied(Unit* mTarget)
+        void OnTargetDied(Unit* mTarget) override
         {
             if (getCreature()->GetHealthPct() > 0)
             {
@@ -648,7 +640,7 @@ class YsondreAI : public CreatureAIScript
             }
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -662,12 +654,12 @@ class YsondreAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             // M4ksiu: Someone who wrote this hadn't thought about it much, so it should be rewritten
             Unit* Target = getCreature()->GetAIInterface()->getNextTarget();
@@ -753,7 +745,6 @@ const uint32 MOONFIRE = 27737;
 
 class DementedDruidSpiritAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(DementedDruidSpiritAI);
         SP_AI_Spell spells[1];
         bool m_spellcheck[1];
@@ -775,18 +766,13 @@ class DementedDruidSpiritAI : public CreatureAIScript
 
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-            //You died kek
-        }
-
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             CastTime();
             getCreature()->Despawn(15, 0);
@@ -801,12 +787,12 @@ class DementedDruidSpiritAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -873,7 +859,6 @@ const uint32 SUMMON_SHADES = 24810;
 
 class LethonAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(LethonAI);
         SP_AI_Spell spells[6];
         bool m_spellcheck[6];
@@ -934,14 +919,14 @@ class LethonAI : public CreatureAIScript
             Shade3 = false;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             CastTime();
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I can sense the SHADOW on your hearts. There can be no rest for the wicked!");
             RegisterAIUpdateEvent(1000); //Attack time is to slow on this boss
         }
 
-        void OnTargetDied(Unit* mTarget)
+        void OnTargetDied(Unit* mTarget) override
         {
             if (getCreature()->GetHealthPct() > 0)
             {
@@ -949,7 +934,7 @@ class LethonAI : public CreatureAIScript
             }
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             Shade1 = false;
             Shade2 = false;
@@ -966,12 +951,12 @@ class LethonAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             std::list<Player*> mTargets;
             // \todo Someone who wrote this hadn't thought about it much, so it should be rewritten
@@ -1075,26 +1060,16 @@ const uint32 CN_LSHADE = 15261;
 
 class ShadeofLethonAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(ShadeofLethonAI);
+        ShadeofLethonAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        ShadeofLethonAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-
-        }
-
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             CheckDist();
             RegisterAIUpdateEvent(1000); //they cant attack anyway, update every sec instead
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-            //Will nevah happenz! haha
-        }
-
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -1127,12 +1102,11 @@ class ShadeofLethonAI : public CreatureAIScript
             }
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             //Repeat this, if they move Lethon while the ghosts move, they need to update his position
             CheckDist();
         }
-
 };
 
 
@@ -1155,7 +1129,6 @@ const uint32 CAPTURE_SOUL = 21053;
 
 class KruulAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(KruulAI);
         SP_AI_Spell spells[7];
         bool m_spellcheck[7];
@@ -1226,7 +1199,7 @@ class KruulAI : public CreatureAIScript
             Summoned = 0;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             hounds_timer = 45;
             enrage = 0;
@@ -1253,7 +1226,7 @@ class KruulAI : public CreatureAIScript
             CastTime();
         }
 
-        void OnTargetDied(Unit* mTarget)
+        void OnTargetDied(Unit* mTarget) override
         {
             if (getCreature()->GetHealthPct() > 0)
             {
@@ -1262,7 +1235,7 @@ class KruulAI : public CreatureAIScript
             }
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             hounds_timer = 45;
             enrage = 0;
@@ -1278,7 +1251,7 @@ class KruulAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             hounds_timer = 45;
             enrage = 0;
@@ -1314,7 +1287,7 @@ class KruulAI : public CreatureAIScript
             Summoned->GetAIInterface()->setNextTarget(mTarget);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (hounds_timer == 0)
             {
@@ -1409,7 +1382,6 @@ const uint32 MARK_OF_KAZZAK = 21056;
 
 class KazzakAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(KazzakAI);
         SP_AI_Spell spells[8];
         bool m_spellcheck[8];
@@ -1484,10 +1456,9 @@ class KazzakAI : public CreatureAIScript
             sendDBChatMessage(373);      // I remember well the sting of defeat at the conclusion...
 
             enrage = 0;
-
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             switch (RandomUInt(1))
             {
@@ -1501,7 +1472,7 @@ class KazzakAI : public CreatureAIScript
             CastTime();
         }
 
-        void OnTargetDied(Unit* mTarget)
+        void OnTargetDied(Unit* mTarget) override
         {
             if (getCreature()->GetHealthPct() > 0)
             {
@@ -1518,7 +1489,7 @@ class KazzakAI : public CreatureAIScript
             }
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             sendDBChatMessage(380);      // The universe will be remade.
 
@@ -1534,7 +1505,7 @@ class KazzakAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             sendDBChatMessage(381);      // The Legion... will never... fall.
             CastTime();
@@ -1555,7 +1526,7 @@ class KazzakAI : public CreatureAIScript
             }
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (getCreature()->CombatStatus.IsInCombat())
             {
@@ -1647,7 +1618,6 @@ const uint32 MASS_TELEPORT = 16807;
 // give me all your money and you won't get hurt!
 class AzuregosAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(AzuregosAI);
         SP_AI_Spell spells[5];
         bool m_spellcheck[5];
@@ -1699,7 +1669,7 @@ class AzuregosAI : public CreatureAIScript
             masstele = 0;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "This Place is under my Protection! The mysteries of the arcane shall remain untouched.");
             masstele = 60;
@@ -1707,7 +1677,7 @@ class AzuregosAI : public CreatureAIScript
             CastTime();
         }
 
-        void OnTargetDied(Unit* mTarget)
+        void OnTargetDied(Unit* mTarget) override
         {
             if (getCreature()->GetHealthPct() > 0)
             {
@@ -1716,7 +1686,7 @@ class AzuregosAI : public CreatureAIScript
             }
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             masstele = 60;
             setAIAgent(AGENT_NULL);
@@ -1725,7 +1695,7 @@ class AzuregosAI : public CreatureAIScript
             CastTime();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             masstele = 60;
             CastTime();
@@ -1738,11 +1708,10 @@ class AzuregosAI : public CreatureAIScript
         }
 
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (masstele == 0)
             {
-
                 getCreature()->CastSpell(getCreature()->GetAIInterface()->getNextTarget(), MASS_TELEPORT, true);
                 getCreature()->GetAIInterface()->WipeHateList();
                 masstele = 60;
@@ -1823,7 +1792,6 @@ const uint32 SUNDER_ARMOR = 33661;
 
 class DoomwalkerAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(DoomwalkerAI);
         SP_AI_Spell spells[6];
         bool m_spellcheck[6];
@@ -1882,14 +1850,14 @@ class DoomwalkerAI : public CreatureAIScript
             enraged = false;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             sendDBChatMessage(302);      // Do not proceed. You will be eliminated.
             RegisterAIUpdateEvent(1000);
             CastTime();
         }
 
-        void OnTargetDied(Unit* mTarget)
+        void OnTargetDied(Unit* mTarget) override
         {
             if (getCreature()->GetHealthPct() > 0)
             {
@@ -1909,7 +1877,7 @@ class DoomwalkerAI : public CreatureAIScript
             }
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             getCreature()->RemoveAura(AURA_OF_DEATH);
             enraged = false;
@@ -1919,7 +1887,7 @@ class DoomwalkerAI : public CreatureAIScript
             CastTime();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             sendDBChatMessage(310);      // System failure in five, f-o-u-r...
             getCreature()->RemoveAura(AURA_OF_DEATH);
@@ -1933,7 +1901,7 @@ class DoomwalkerAI : public CreatureAIScript
         }
 
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (getCreature()->GetHealthPct() == 20 && enraged == false)  //if he stays to long on 20% it could double activate without this check?
             {
@@ -2036,7 +2004,6 @@ const uint32 RESIST_ALL = 18114;
 
 class TeremusAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(TeremusAI);
         SP_AI_Spell spells[3];
         bool m_spellcheck[3];
@@ -2066,20 +2033,15 @@ class TeremusAI : public CreatureAIScript
             spells[2].instant = false;
             spells[2].perctrigger = 5.0f;
             spells[2].attackstoptimer = 1000;
-
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(1000);
             CastTime();
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-
-        }
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -2087,7 +2049,7 @@ class TeremusAI : public CreatureAIScript
             CastTime();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             CastTime();
         }
@@ -2098,8 +2060,7 @@ class TeremusAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);

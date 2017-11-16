@@ -228,10 +228,9 @@ class FelmystAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTaunt, 8846);
         }
 
-        void OnCombatStart(Unit* pTarget)
+        void OnCombatStart(Unit* pTarget) override
         {
             _applyAura(FELMYST_NOXIOUS_FUME);
-            
         }
 };
 
@@ -261,14 +260,13 @@ class LadySacrolashAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, 8848); // Wasn't able to find sound for this text
         }
 
-        void OnDied(Unit* pKiller)
+        void OnDied(Unit* pKiller) override
         {
             CreatureAIScript* mGrandWarlockAlythess = getNearestCreatureAI(CN_GRAND_WARLOCK_ALYTHESS);
             if (mGrandWarlockAlythess != nullptr && mGrandWarlockAlythess->isAlive())
             {
                 mGrandWarlockAlythess->sendChatMessage(CHAT_MSG_MONSTER_YELL, 12492, "Sacrolash!");
             }
-            
         }
 };
 
@@ -298,14 +296,13 @@ class GrandWarlockAlythessAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, 8850); // Wasn't able to find sound for this text
         }
 
-        void OnDied(Unit* pKiller)
+        void OnDied(Unit* pKiller) override
         {
             CreatureAIScript* mLadySacrolash = getNearestCreatureAI(CN_LADY_SACROLASH);
             if (mLadySacrolash != nullptr && mLadySacrolash->isAlive())
             {
                 mLadySacrolash->sendChatMessage(CHAT_MSG_MONSTER_YELL, 12488, "Alythess! Your fire burns within me!");
             }
-            
         }
 };
 

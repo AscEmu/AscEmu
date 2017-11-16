@@ -54,7 +54,7 @@ class DruidFangAI : public CreatureAIScript
             DruidsSlumber = AddSpell(8040, Target_RandomPlayerNotCurrent, 20, 2.5, 0);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (_getHealthPercent() <= 50 && SerpentForm->mEnabled == true)
             {
@@ -76,8 +76,6 @@ class DruidFangAI : public CreatureAIScript
                 CastSpellNowNoScheduling(HealingTouch);
                 HealingTouch->mEnabled = false;
             }
-
-            
         }
 
         SpellDesc* SerpentForm;
@@ -98,11 +96,8 @@ class LadyAnacondraAI : public CreatureAIScript
             AddSpell(9532, Target_Current, 30, 3, 0);
             // Sleep
             AddSpell(700, Target_RandomPlayerNotCurrent, 10, 1.5, 20);
-        }
 
-        void OnCombatStart(Unit* pTarget)
-        {
-            sendDBChatMessage(8755);     // None can stand against the Serpent Lords!
+            addEmoteForEvent(Event_OnCombatStart, 8755);     // None can stand against the Serpent Lords
         }
 };
 
@@ -118,14 +113,11 @@ class LordCobrahnAI : public CreatureAIScript
             AddSpell(34969, Target_Current, 15, 0, 0);
             // Cobrahn Serpent Form
             SerpentForm = AddSpell(7965, Target_Self, 0, 0, 0);
+
+            addEmoteForEvent(Event_OnCombatStart, 8756);     // You will never wake the dreamer!
         }
 
-        void OnCombatStart(Unit* pTarget)
-        {
-            sendDBChatMessage(8756);     // You will never wake the dreamer!
-        }
-
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (_getHealthPercent() <= 20 && SerpentForm->mEnabled == true)
             {
@@ -157,11 +149,8 @@ class LordPythasAI : public CreatureAIScript
             AddSpell(700, Target_RandomPlayer, 10, 1.5, 0);
             // Thunderclap
             AddSpell(8147, Target_Self, 20, 0, 5);
-        }
 
-        void OnCombatStart(Unit* pTarget)
-        {
-            sendDBChatMessage(8757);     // The coils of death... Will crush you!
+            addEmoteForEvent(Event_OnCombatStart, 8757);     // The coils of death... Will crush you!
         }
 };
 
@@ -175,11 +164,8 @@ class LordSerpentisAI : public CreatureAIScript
             AddSpell(9532, Target_Current, 30, 3, 0);
             // Sleep
             AddSpell(700, Target_RandomPlayer, 10, 1.5, 0);
-        }
 
-         void OnCombatStart(Unit* pTarget)
-        {
-            sendDBChatMessage(8758);     // I am the serpent king, i can do anything!
+            addEmoteForEvent(Event_OnCombatStart, 8758);     // I am the serpent king, i can do anything!
         }
 };
 
@@ -204,7 +190,7 @@ class SkumAI : public CreatureAIScript
             AddSpell(6254, Target_Current, 50, 1.8f, 0);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (_getHealthPercent() <= 10 && getAIAgent() != AGENT_FLEE)
             {
@@ -215,7 +201,6 @@ class SkumAI : public CreatureAIScript
                 _setCastDisabled(true);
                 moveTo(-262.829742f, -299.363159f, -68.293579f, true);
             }
-            
         }
 };
 
@@ -283,7 +268,7 @@ class DofNaralexGossip : public Arcemu::Gossip::Script
 {
     public:
 
-        void OnHello(Object* pObject, Player* plr)
+        void OnHello(Object* pObject, Player* plr) override
         {
             Unit* Fanglord1 = pObject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-151.139008f, 414.367004f, -72.629402f, CN_LORD_COBRAHN);
             Unit* Fanglord2 = pObject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(36.807400f, -241.063995f, -79.498901f, CN_LORD_PYTHAS);
@@ -304,7 +289,7 @@ class DofNaralexGossip : public Arcemu::Gossip::Script
             }
 
         }
-        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId)
+        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId) override
         {
             Creature* pCreature = (pObject->IsCreature()) ? static_cast<Creature*>(pObject) : nullptr;
             if (pCreature == nullptr)
@@ -357,14 +342,14 @@ class DofNaralexAI : public CreatureAIScript
             SpawnTimer = 0;
         }
 
-        void OnReachWP(uint32 iWaypointId, bool bForwards)
+        void OnReachWP(uint32 iWaypointId, bool bForwards) override
         {
             ForceWaypointMove(iWaypointId + 1);
             if (isScriptPhase(1) && GetCurrentWaypoint() == 39)
                 setScriptPhase(2);
         }
 
-        void OnScriptPhaseChange(uint32_t phaseId)
+        void OnScriptPhaseChange(uint32_t phaseId) override
         {
             switch (phaseId)
             {
@@ -378,7 +363,7 @@ class DofNaralexAI : public CreatureAIScript
             }
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (SpawnTimer && _isTimerFinished(SpawnTimer))
             {

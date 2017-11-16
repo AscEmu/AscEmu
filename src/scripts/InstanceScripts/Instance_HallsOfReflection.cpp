@@ -32,7 +32,7 @@ class HallsOfReflectionScript : public InstanceScript
 
         static InstanceScript* Create(MapMgr* pMapMgr) { return new HallsOfReflectionScript(pMapMgr); }
 
-        void OnPlayerEnter(Player* pPlayer)
+        void OnPlayerEnter(Player* pPlayer) override
         {
             // Fixes a bug where you enter the instance and you run so far and teleports you out, changed DB coords still not working so this is a solution.
             pPlayer->SafeTeleport(MAP_HALLSOFREFLECTION, pPlayer->GetInstanceID(), 5260.970f, 1956.850f, 707.692f, 1.08f);
@@ -129,7 +129,7 @@ class JainaAI : public CreatureAIScript
 
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             Creature* Lich = getNearestCreature(5355.244f, 2052.96f, 707.695f, CN_LICH);
             if (!Lich)
@@ -148,12 +148,12 @@ class Jaina_Gossip : public Arcemu::Gossip::Script
 {
     public:
 
-        void OnHello(Object* pObject, Player* plr)
+        void OnHello(Object* pObject, Player* plr) override
         {
             Arcemu::Gossip::Menu::SendQuickMenu(pObject->GetGUID(), 1, plr, 1, GOSSIP_ICON_CHAT, "Can you remove the sword?");
         }
 
-        void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)
+        static void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)
         {
             if (JainaAI* pJaina = static_cast< JainaAI* >(static_cast<Creature*>(pObject)->GetScript()))
                 pJaina->StartInstance();
@@ -192,7 +192,7 @@ class Marwyn : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, 5256);      // Yes... Run... Run to meet your destiny... Its bitter, cold embrace, awaits you.
         }
 
-        void OnLoad()
+        void OnLoad() override
         {
             if (_isHeroic() == true) // HEROIC MODE
             {
@@ -231,6 +231,7 @@ class Falric : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, 4087);     // Marwyn, finish them...
         }
 
+        //\todo what the hell
         void AIUpdate(Player* Plr)
         {
             if (isScriptPhase(1) && _getHealthPercent() <= 66)

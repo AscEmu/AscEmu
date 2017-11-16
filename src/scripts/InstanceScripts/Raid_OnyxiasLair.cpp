@@ -27,7 +27,6 @@
 // This script covers Onyxia's mind
 class OnyxiaAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(OnyxiaAI);
         OnyxiaAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -70,7 +69,7 @@ class OnyxiaAI : public CreatureAIScript
             m_currentWP = 0;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             m_phase = 1;
             m_eFlamesCooldown = 1;
@@ -87,7 +86,7 @@ class OnyxiaAI : public CreatureAIScript
             m_Cleave = false;
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
             getCreature()->GetAIInterface()->setWayPointToMove(0);
@@ -103,14 +102,14 @@ class OnyxiaAI : public CreatureAIScript
                 RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             m_phase = 1;
             m_eFlamesCooldown = 1;
             m_whelpCooldown = 7;
         }
 
-        void OnReachWP(uint32 iWaypointId, bool bForwards)
+        void OnReachWP(uint32 iWaypointId, bool bForwards) override
         {
             switch (iWaypointId)
             {
@@ -170,7 +169,7 @@ class OnyxiaAI : public CreatureAIScript
             }
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             switch (m_phase)
             {

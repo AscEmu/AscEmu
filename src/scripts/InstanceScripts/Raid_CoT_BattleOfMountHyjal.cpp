@@ -87,9 +87,7 @@ const uint32 CN_JAINA_PROUDMOORE = 17772;
 
 class JainaProudmooreAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(JainaProudmooreAI);
-
         JainaProudmooreAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             getCreature()->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
@@ -99,7 +97,7 @@ class JainaProudmooreAI : public CreatureAIScript
 class JainaProudmooreGS : public Arcemu::Gossip::Script
 {
     public:
-        void OnHello(Object* pObject, Player* plr)
+        void OnHello(Object* pObject, Player* plr) override
         {
             if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
                 return;
@@ -121,7 +119,7 @@ class JainaProudmooreGS : public Arcemu::Gossip::Script
             menu.Send(plr);
         }
 
-        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId)
+        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId) override
         {
             if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
                 return;
@@ -143,9 +141,7 @@ const uint32 CN_THRALL = 17852;
 
 class ThrallAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(ThrallAI);
-
         ThrallAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             getCreature()->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
@@ -155,7 +151,7 @@ class ThrallAI : public CreatureAIScript
 class ThrallGS : public Arcemu::Gossip::Script
 {
     public:
-        void OnHello(Object* pObject, Player* plr)
+        void OnHello(Object* pObject, Player* plr) override
         {
             if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
                 return;
@@ -174,7 +170,7 @@ class ThrallGS : public Arcemu::Gossip::Script
             menu.Send(plr);
         }
 
-        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId)
+        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId) override
         {
             if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
                 return;
@@ -201,7 +197,6 @@ const uint32 FROST_ARMOR = 31256;
 
 class RageWinterchillAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(RageWinterchillAI);
         SP_AI_Spell spells[4];
         bool m_spellcheck[4];
@@ -212,7 +207,6 @@ class RageWinterchillAI : public CreatureAIScript
             for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
-
             }
 
             spells[0].info = sSpellCustomizations.GetSpellInfo(FROSTBOLT);
@@ -250,7 +244,7 @@ class RageWinterchillAI : public CreatureAIScript
             spells[3].cooldown = 10;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             sendDBChatMessage(1590);     // The Legion's final conquest has begun! Once again the subjugation of this world is within our grasp. Let
 
@@ -260,7 +254,7 @@ class RageWinterchillAI : public CreatureAIScript
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnTargetDied(Unit* mTarget)
+        void OnTargetDied(Unit* mTarget) override
         {
             if (getCreature()->GetHealthPct() > 0)
             {
@@ -284,7 +278,7 @@ class RageWinterchillAI : public CreatureAIScript
             }
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -292,12 +286,12 @@ class RageWinterchillAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             sendDBChatMessage(1583);     // You have won this battle, but not... the...war
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -416,7 +410,6 @@ const uint32 BERSERK = 26662;
 
 class AnetheronAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(AnetheronAI);
         SP_AI_Spell spells[5];
         bool m_spellcheck[5];
@@ -427,7 +420,6 @@ class AnetheronAI : public CreatureAIScript
             for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
-
             }
 
             spells[0].info = sSpellCustomizations.GetSpellInfo(CARRION_SWARM);
@@ -472,7 +464,7 @@ class AnetheronAI : public CreatureAIScript
             spells[4].cooldown = 600;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             sendDBChatMessage(1569);     // You are defenders of a doomed world. Flee here and perhaps you will prolong your pathetic lives!
 
@@ -485,7 +477,7 @@ class AnetheronAI : public CreatureAIScript
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnTargetDied(Unit* mTarget)
+        void OnTargetDied(Unit* mTarget) override
         {
             if (getCreature()->GetHealthPct() > 0)
             {
@@ -504,7 +496,7 @@ class AnetheronAI : public CreatureAIScript
             }
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -512,12 +504,12 @@ class AnetheronAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             sendDBChatMessage(1559);     // The clock... is still...ticking.
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             uint32 t = (uint32)time(NULL);
             if (t > spells[4].casttime)
@@ -654,7 +646,6 @@ const uint32 MARK_OF_KAZROGAL2 = 31463;   // should it be scripted to attack fri
 
 class KazrogalAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(KazrogalAI);
         SP_AI_Spell spells[4];
         bool m_spellcheck[4];
@@ -665,7 +656,6 @@ class KazrogalAI : public CreatureAIScript
             for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
-
             }
 
             spells[0].info = sSpellCustomizations.GetSpellInfo(K_CLEAVE);
@@ -696,7 +686,7 @@ class KazrogalAI : public CreatureAIScript
             MarkDeto = 0;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             sendDBChatMessage(1582);     // Cry for mercy! Your meaningless lives will soon be forfeit.
 
@@ -706,7 +696,7 @@ class KazrogalAI : public CreatureAIScript
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnTargetDied(Unit* mTarget)
+        void OnTargetDied(Unit* mTarget) override
         {
             if (getCreature()->GetHealthPct() > 0)
             {
@@ -728,7 +718,7 @@ class KazrogalAI : public CreatureAIScript
             }
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -736,14 +726,14 @@ class KazrogalAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             ///\todo move this to db
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "hahahahaa aahaah");
             getCreature()->PlaySoundToSet(11018);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (MarkDeto)
                 MarkCast();
@@ -890,7 +880,6 @@ const uint32 DOOM = 31347;    // it's applied, but doesn't do anything more - sh
 
 class AzgalorAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(AzgalorAI);
         SP_AI_Spell spells[4];
         bool m_spellcheck[4];
@@ -901,7 +890,6 @@ class AzgalorAI : public CreatureAIScript
             for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
-
             }
 
             spells[0].info = sSpellCustomizations.GetSpellInfo(CLEAVE);
@@ -935,7 +923,7 @@ class AzgalorAI : public CreatureAIScript
             spells[3].maxdist2cast = 50.0f;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             sendDBChatMessage(1576);     // Abandon all hope! The legion has returned to finish what was begun so many years ago. This time there will be no escape!
 
@@ -948,7 +936,7 @@ class AzgalorAI : public CreatureAIScript
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnTargetDied(Unit* mTarget)
+        void OnTargetDied(Unit* mTarget) override
         {
             if (getCreature()->GetHealthPct() > 0)
             {
@@ -967,7 +955,7 @@ class AzgalorAI : public CreatureAIScript
             }
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -975,12 +963,12 @@ class AzgalorAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             sendDBChatMessage(1570);     // Your time is almost... up!
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             uint32 t = (uint32)time(NULL);
             if (t > spells[3].casttime)
@@ -1114,9 +1102,7 @@ const uint32 DRAIN_WORLD_TREE_VISUAL2 = 39141;
 
 class ArchimondeTriggerAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(ArchimondeTriggerAI);
-
         ArchimondeTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
@@ -1138,9 +1124,7 @@ const uint32 CN_DOOMFIRE = 18095;
 
 class DoomfireAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(DoomfireAI);
-
         DoomfireAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
@@ -1153,7 +1137,7 @@ class DoomfireAI : public CreatureAIScript
             DirChange = 0;
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             DespawnTimer++;
             if (DespawnTimer >= 27)
@@ -1281,7 +1265,6 @@ const uint32 SOUL_CHARGEG = 32057;
 
 class ArchimondeAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(ArchimondeAI);
         SP_AI_Spell spells[7];
         bool m_spellcheck[7];
@@ -1357,7 +1340,7 @@ class ArchimondeAI : public CreatureAIScript
             }
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             sendDBChatMessage(1591);     // Your resistance is insignificant.
 
@@ -1381,7 +1364,7 @@ class ArchimondeAI : public CreatureAIScript
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnTargetDied(Unit* mTarget)
+        void OnTargetDied(Unit* mTarget) override
         {
             if (getCreature()->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
@@ -1416,7 +1399,7 @@ class ArchimondeAI : public CreatureAIScript
             }
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -1433,12 +1416,12 @@ class ArchimondeAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             sendDBChatMessage(1600);     // No, it cannot be! Nooo!
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             //setAIAgent(AGENT_NULL);
 

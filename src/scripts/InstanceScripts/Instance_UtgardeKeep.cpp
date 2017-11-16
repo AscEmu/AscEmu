@@ -92,7 +92,7 @@ class UtgardeKeepScript : public InstanceScript
 
         static InstanceScript* Create(MapMgr* pMapMgr) { return new UtgardeKeepScript(pMapMgr); }
 
-        void OnCreaturePushToWorld(Creature* pCreature)
+        void OnCreaturePushToWorld(Creature* pCreature) override
         {
             switch (pCreature->GetEntry())
             {
@@ -111,7 +111,7 @@ class UtgardeKeepScript : public InstanceScript
             }
         }
 
-        void OnGameObjectPushToWorld(GameObject* pGameObject)
+        void OnGameObjectPushToWorld(GameObject* pGameObject) override
         {
             switch (pGameObject->GetEntry())
             {
@@ -218,7 +218,7 @@ class DragonflayerForgeMasterAI : public CreatureAIScript
             AddSpell(DRAGONFLAYER_FORGE_MASTER_BURNING_BRAND, Target_Current, 8, 0, 40, 0, 30);
         }
 
-        void OnDied(Unit* pKiller)
+        void OnDied(Unit* pKiller) override
         {
             if (pInstance)
                 pInstance->SetLocaleInstanceData(0, UTGARDE_FORGE_MASTER, 0);
@@ -268,7 +268,7 @@ class DragonflayerMetalworkerAI : public CreatureAIScript
             Enrage = true;
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (_getHealthPercent() <= 20 && Enrage)
             {
@@ -333,7 +333,7 @@ class DragonflayerSpiritualistAI : public CreatureAIScript
             Heal = true;
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (_getHealthPercent() <= 42 && Heal)
             {
@@ -438,31 +438,27 @@ class SkarvaldTheConstructorAI : public CreatureAIScript
             mReplyTimer = INVALIDATE_TIMER;
             pDalronn = NULL;
             pDalronnGhost = NULL;
+
+            addEmoteForEvent(Event_OnCombatStart, 4471);     // Dalronn! See if you can muster the nerve to join my attack!
         }
 
-        void OnCombatStart(Unit* pTarget)
+        void OnCombatStart(Unit* pTarget) override
         {
-            sendDBChatMessage(4471);     // Dalronn! See if you can muster the nerve to join my attack!
-
             pDalronn = getNearestCreatureAI(CN_DALRONN);
 
             mReplyTimer = _addTimer(2500);
-
-            
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (_isTimerFinished(mReplyTimer) && pDalronn != nullptr)
             {
                 pDalronn->sendChatMessage(CHAT_MSG_MONSTER_YELL, 13199, "By all means, don't assess the situation, you halfwit! Just jump into the fray!");
                 _removeTimer(mReplyTimer);
             }
-
-            
         }
 
-        void OnDied(Unit* pKiller)
+        void OnDied(Unit* pKiller) override
         {
             if (pDalronn != nullptr && pDalronn->isAlive())
             {
@@ -470,7 +466,6 @@ class SkarvaldTheConstructorAI : public CreatureAIScript
                 pDalronn->sendChatMessage(CHAT_MSG_MONSTER_YELL, 13203, "Skarvald, you incompetent slug! Return and make yourself useful!");
                 spawnCreature(CN_SKARVALD_GHOST, getCreature()->GetPosition());
                 getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-
             }
             else if (pDalronn != nullptr && !pDalronn->isAlive())
             {
@@ -484,11 +479,9 @@ class SkarvaldTheConstructorAI : public CreatureAIScript
                     pDalronnGhost = nullptr;
                 }
             }
-
-            
         }
 
-        void OnCombatStop(Unit* pTarget)
+        void OnCombatStop(Unit* pTarget) override
         {
             if (pDalronn != nullptr)
             {
@@ -533,14 +526,14 @@ class DalronnTheControllerAI : public CreatureAIScript
             pSkarvaldGhost = nullptr;
         }
 
-        void OnCombatStart(Unit* pTarget)
+        void OnCombatStart(Unit* pTarget) override
         {
             pSkarvald = getNearestCreatureAI(CN_SKARVALD);
 
             
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (_isTimerFinished(mSummonTimer))
             {
@@ -552,7 +545,7 @@ class DalronnTheControllerAI : public CreatureAIScript
             
         }
 
-        void OnDied(Unit* pKiller)
+        void OnDied(Unit* pKiller) override
         {
             if (pSkarvald != nullptr && pSkarvald->isAlive())
             {
@@ -577,7 +570,7 @@ class DalronnTheControllerAI : public CreatureAIScript
             
         }
 
-        void OnCombatStop(Unit* pTarget)
+        void OnCombatStop(Unit* pTarget) override
         {
             if (pSkarvald != nullptr)
             {
@@ -609,7 +602,7 @@ class SkarvaldTheConstructorGhostAI : public CreatureAIScript
             AddSpell(STONE_STRIKE, Target_ClosestPlayer, 25, 0, 10);
         }
 
-        void OnLoad()
+        void OnLoad() override
         {
             getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
 
@@ -638,7 +631,7 @@ class DalronnTheControllerGhostAI : public CreatureAIScript
             }
         }
 
-        void OnLoad()
+        void OnLoad() override
         {
             getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
 
@@ -688,19 +681,13 @@ class PrinceKelesethAI : public CreatureAIScript
             else
                 mShadowBolt = AddSpell(KELESETH_SHADOW_BOLT, Target_Current, 100, 2, 2);
 
+            addEmoteForEvent(Event_OnCombatStart, 500);      // Your blood is mine!
+            addEmoteForEvent(Event_OnTargetDied, 504);      // I join... the night.
         }
 
-        void OnCombatStart(Unit* pTarget)
+        void OnCombatStart(Unit* pTarget) override
         {
-            sendDBChatMessage(500);      // Your blood is mine!
             CastSpellNowNoScheduling(mAddSummon);
-
-            
-        }
-
-        void OnTargetDied(Unit* pTarget)
-        {
-            sendDBChatMessage(504);      // I join... the night.
         }
 
         SpellDesc* mAddSummon;
@@ -718,21 +705,21 @@ class FrostTombAI : public CreatureAIScript
             plr = nullptr;
         }
 
-        void OnLoad()
+        void OnLoad() override
         {
             setRooted(true);
             plr = getNearestPlayer();
             
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             
             if (plr == nullptr || plr->IsDead() || !plr->HasAura(FROST_TOMB_SPELL))
                 despawn();
         }
 
-        void OnDied(Unit* pKilled)
+        void OnDied(Unit* pKilled) override
         {
             if (plr != nullptr && plr->HasAura(FROST_TOMB_SPELL))
             {
@@ -757,7 +744,7 @@ class SkeletonAddAI : public CreatureAIScript
                 AddSpell(DECREPIFY, Target_Current, 8, 0, 40);
         }
 
-        void OnLoad()
+        void OnLoad() override
         {
             Player* pTarget = getNearestPlayer();
             if (pTarget != nullptr)
@@ -766,12 +753,12 @@ class SkeletonAddAI : public CreatureAIScript
             
         }
 
-        void OnCombatStop(Unit* pTarget)
+        void OnCombatStop(Unit* pTarget) override
         {
             despawn(1);
         }
 
-        void OnDied(Unit* pKiller)
+        void OnDied(Unit* pKiller) override
         {
             despawn(1);
         }
@@ -818,22 +805,14 @@ class IngvarThePlundererAI : public CreatureAIScript
             }
 
             SetAIUpdateFreq(1000);
+
+            addEmoteForEvent(Event_OnCombatStart, 4468);     // I'll paint my face with your blood!
+            addEmoteForEvent(Event_OnTargetDied, 4469);     // Mjul orm agn gjor!
+            addEmoteForEvent(Event_OnDied, 4470);     // My life for the... death god!
         }
 
-        void OnCombatStart(Unit* pTarget)
+        void OnDied(Unit* pKiller) override
         {
-            sendDBChatMessage(4468);     // I'll paint my face with your blood!
-        }
-
-        void OnTargetDied(Unit* pTarget)
-        {
-            sendDBChatMessage(4469);     // Mjul orm agn gjor!
-        }
-
-        void OnDied(Unit* pKiller)
-        {
-            sendDBChatMessage(4470);     // My life for the... death god!
-
             //Ressurect event
             spawnCreature(CN_INGVAR_UNDEAD, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->GetFaction());
             despawn(1000, 0);
@@ -845,8 +824,6 @@ class IngvarUndeadAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(IngvarUndeadAI);
         IngvarUndeadAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            mInstance = getInstanceScript();
-
             AddSpellFunc(&SpellFunc_ShadowAxe, Target_RandomPlayerNotCurrent, 15, 0, 21);
             AddSpell(INGVAR_DARK_SMASH, Target_Self, 12, 3, 16);
 
@@ -856,27 +833,15 @@ class IngvarUndeadAI : public CreatureAIScript
                 AddSpell(INGVAR_WOE_STRIKE, Target_ClosestUnit, 18, 0, 16);
             }
 
+            addEmoteForEvent(Event_OnDied, 6986);
         }
 
-        void OnLoad()
+        void OnLoad() override
         {
             Player* pTarget = getNearestPlayer();
             if (pTarget != nullptr)
                 getCreature()->GetAIInterface()->AttackReaction(pTarget, 50, 0);
         }
-
-        void OnDied(Unit* pKiller)
-        {
-            sendDBChatMessage(6986);     // No! I can do... better! I can...
-
-            if (mInstance)
-                mInstance->setData(getCreature()->GetEntry(), Finished);
-
-            
-        }
-
-    private:
-        InstanceScript* mInstance;
 };
 
 void SetupUtgardeKeep(ScriptMgr* mgr)

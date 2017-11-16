@@ -51,34 +51,23 @@ class NalorakkAI : public CreatureAIScript
             MorphTimer = 0;
         }
 
-        void OnCombatStart(Unit* pTarget)
+        void OnCombatStart(Unit* pTarget) override
         {
-            // 45 Seconds until switch to Bear Form
             MorphTimer = _addTimer(45000);
-
-            
         }
 
-        void OnCombatStop(Unit* pTarget)
+        void OnCombatStop(Unit* pTarget) override
         {
-            // On leaving combat he changes back to a troll
+            _setDisplayId(21631); 
+        }
+
+        void OnDied(Unit* pKiller) override
+        {
             _setDisplayId(21631);
-
-            
         }
 
-        void OnDied(Unit* pKiller)
+        void AIUpdate() override
         {
-            // On death he changes back to a troll
-            _setDisplayId(21631);
-
-            
-        }
-
-        void AIUpdate()
-        {
-            
-
             // Bear Form
             if (_isTimerFinished(MorphTimer) && isScriptPhase(1))
             {
@@ -127,18 +116,13 @@ class AkilzonAI : public CreatureAIScript
             mSummonTime = 0;
         }
 
-        void OnCombatStart(Unit* pTarget)
+        void OnCombatStart(Unit* pTarget) override
         {
-            // 2 Minute timer till Soaring Eagles are spawned
             mSummonTime = _addTimer(120000);
-
-            
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
-            
-
             if (_isTimerFinished(mSummonTime))
             {
                 // Spawn 3 Soaring Eagles
@@ -205,24 +189,20 @@ class HalazziAI : public CreatureAIScript
             SplitCount = 0;
         }
 
-        void OnCombatStart(Unit* pTarget)
+        void OnCombatStart(Unit* pTarget) override
         {
             mTotemTimer = _addTimer(5000); // Just to make the Timer ID
             SplitCount = 1;
             MaxHealth = getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH);
             mLynx = NULL;
-
-            
         }
 
-        void OnCombatStop(Unit* pTarget)
+        void OnCombatStop(Unit* pTarget) override
         {
             Merge();
-
-            
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             // Every 25% Halazzi calls on the lynx
             if (!mLynx && _getHealthPercent() <= (100 - SplitCount * 25))
@@ -299,7 +279,7 @@ class HalazziAI : public CreatureAIScript
             setScriptPhase(1);
         }
 
-        void OnScriptPhaseChange(uint32_t phaseId)
+        void OnScriptPhaseChange(uint32_t phaseId) override
         {
             switch (phaseId)
             {

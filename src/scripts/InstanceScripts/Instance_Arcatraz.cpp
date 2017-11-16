@@ -49,23 +49,22 @@ class ZerekethAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, 5501);            // The Void... beckons.
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             VoidTimer = _addTimer((RandomUInt(10) + 30) * 1000);
             SpeechTimer = _addTimer((RandomUInt(10) + 40) * 1000);
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             //despawn voids
-            Creature* creature = NULL;
             for (std::set<Object*>::iterator itr = getCreature()->GetInRangeSetBegin(); itr != getCreature()->GetInRangeSetEnd();)
             {
                 Object* obj = *itr;
                 ++itr;
                 if (obj->IsCreature())
                 {
-                    creature = static_cast<Creature*>(obj);
+                    auto creature = static_cast<Creature*>(obj);
 
                     if (creature->GetCreatureProperties()->Id == 21101 && creature->isAlive())
                     {
@@ -130,7 +129,7 @@ class ZerekethAI : public CreatureAIScript
             VoidZone->Despawn(60000, 0);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (_isTimerFinished(SpeechTimer))
                 Speech();
@@ -156,7 +155,7 @@ class VoidZoneARC : public CreatureAIScript
             RegisterAIUpdateEvent(1000);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             // M4ksiu: I'm not sure if it should be cast once, on start
             uint32 SpellId = CONSUMPTION;
@@ -194,16 +193,14 @@ class DalliahTheDoomsayerAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTargetDied, 7369);     // Completely ineffective.  Just like someone else I know.
             addEmoteForEvent(Event_OnTargetDied, 7370);     // You chose the wrong opponent.
             addEmoteForEvent(Event_OnDied, 7375);           // Now I'm really angry.
-
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             GameObject* door2 = getNearestGameObject(184319);
             if (door2 != NULL)
                 door2->SetState(GO_STATE_OPEN);
         }
-
 };
 
 // Wrath-Scryer SoccothratesAI
@@ -229,13 +226,12 @@ class WrathScryerSoccothratesAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, 7380);           // Knew this was... the only way out.
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             GameObject* door1 = getNearestGameObject(199.969f, 118.5837f, 22.379f, 184318);
             if (door1 != NULL)
                 door1->SetState(GO_STATE_OPEN);
         }
-
 };
 
 // Harbinger SkyrissAI
@@ -245,8 +241,6 @@ class WrathScryerSoccothratesAI : public CreatureAIScript
 // Add sounds related to his dialog with mind controlled guy
 class HarbringerSkyrissAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(HarbringerSkyrissAI);
         HarbringerSkyrissAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -275,12 +269,12 @@ class HarbringerSkyrissAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, 5042);           // I am merely one of... infinite multitudes.
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             IllusionCount = 0;
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (_getHealthPercent() <= 66 && IllusionCount == 0)
             {
@@ -325,7 +319,7 @@ class WardenMellicharAI : public CreatureAIScript
             NPC_ID_Spawn = 0;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             Phasepart = 0;
             setRooted(true);
@@ -342,12 +336,12 @@ class WardenMellicharAI : public CreatureAIScript
             getCreature()->SendTimedScriptTextChatMessage(SAY_MELLICHAR_02, 27000);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             Reset_Event();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             setCanEnterCombat(false);
             setRooted(true);
@@ -379,7 +373,7 @@ class WardenMellicharAI : public CreatureAIScript
                     return;
                 }
 
-                else if (Phasepart == 1)
+                if (Phasepart == 1)
                 {
                     if (!NPC_orb1 && NPC_ID_Spawn != 0 && Spawncounter == 0)
                     {
@@ -387,7 +381,8 @@ class WardenMellicharAI : public CreatureAIScript
                         NPC_orb1 = spawnCreature(NPC_ID_Spawn, 475.672f, -147.086f, 42.567f, 3.184015f);
                         return;
                     }
-                    else if (NPC_orb1 && !NPC_orb1->isAlive())
+
+                    if (NPC_orb1 && !NPC_orb1->isAlive())
                     {
                         sendDBChatMessage(SAY_MELLICHAR_03);
                         setScriptPhase(2);
@@ -395,13 +390,7 @@ class WardenMellicharAI : public CreatureAIScript
                         _resetTimer(Phase_Timer, 6000);
                         return;
                     }
-                    else
-                    {
-                        return;
-                    }
-                    return;
                 }
-                //return;
             }
 
             // ORB TWO
@@ -419,7 +408,7 @@ class WardenMellicharAI : public CreatureAIScript
                     return;
                 }
 
-                else if (Phasepart == 1)
+                if (Phasepart == 1)
                 {
                     if (!NPC_orb2 && Spawncounter == 0)
                     {
@@ -427,7 +416,8 @@ class WardenMellicharAI : public CreatureAIScript
                         NPC_orb2 = spawnCreature(CN_MILLHOUSE_MANASTORM, 413.192f, -148.586f, 42.569f, 0.024347f);
                         return;
                     }
-                    else if (NPC_orb2 && NPC_orb2->isAlive())
+
+                    if (NPC_orb2 && NPC_orb2->isAlive())
                     {
                         Creature* millhouse = getNearestCreature(CN_MILLHOUSE_MANASTORM);
                         if (millhouse)
@@ -443,14 +433,7 @@ class WardenMellicharAI : public CreatureAIScript
                         _resetTimer(Phase_Timer, 25000);
                         return;
                     }
-                    else
-                    {
-                        return;
-                    }
-                    return;
-
                 }
-                //return;
             }
 
             // ORB THREE
@@ -478,7 +461,7 @@ class WardenMellicharAI : public CreatureAIScript
                     return;
                 }
 
-                else if (Phasepart == 1)
+                if (Phasepart == 1)
                 {
                     if (!NPC_orb3 && NPC_ID_Spawn != 0 && Spawncounter == 0)
                     {
@@ -488,7 +471,8 @@ class WardenMellicharAI : public CreatureAIScript
                         NPC_orb3 = spawnCreature(NPC_ID_Spawn, 420.050f, -173.500f, 42.580f, 6.110f);
                         return;
                     }
-                    else if (!NPC_orb3)
+
+                    if (!NPC_orb3)
                     {
                         /// \todo investigate.... saying "2"... really?
                         getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "2");
@@ -506,9 +490,7 @@ class WardenMellicharAI : public CreatureAIScript
                     {
                         return;
                     }
-                    return;
                 }
-                //return;
             }
 
             // ORB FOUR
@@ -536,7 +518,7 @@ class WardenMellicharAI : public CreatureAIScript
                     return;
                 }
 
-                else if (Phasepart == 1)
+                if (Phasepart == 1)
                 {
                     if (!NPC_orb4 && NPC_ID_Spawn != 0 && Spawncounter == 0)
                     {
@@ -544,7 +526,8 @@ class WardenMellicharAI : public CreatureAIScript
                         NPC_orb4 = spawnCreature(NPC_ID_Spawn, 471.153f, -174.715f, 42.589f, 3.097f);
                         return;
                     }
-                    else if (!NPC_orb4)
+
+                    if (!NPC_orb4)
                     {
                         NPC_orb4 = getNearestCreature(NPC_ID_Spawn);
                     }
@@ -560,13 +543,8 @@ class WardenMellicharAI : public CreatureAIScript
                     {
                         return;
                     }
-                    return;
                 }
-                //return;
             }
-
-            else if (_isTimerFinished(Phase_Timer) && isScriptPhase(4))
-            {}
 
             setRooted(true);
             _setMeleeDisabled(true);
@@ -624,7 +602,6 @@ class WardenMellicharAI : public CreatureAIScript
                 NPC_orb5->Despawn(0, 0);
                 NPC_orb5 = NULL;
             }
-
         }
 
     protected:

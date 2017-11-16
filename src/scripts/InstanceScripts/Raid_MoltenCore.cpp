@@ -31,7 +31,6 @@ const uint32 MANGLE = 19820; // 1 target
 // Golemagg AI
 class CoreRagerAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(CoreRagerAI);
         CoreRagerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -40,19 +39,19 @@ class CoreRagerAI : public CreatureAIScript
             info_mangle = sSpellCustomizations.GetSpellInfo(MANGLE);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             uint32 val = RandomUInt(1000);
             SpellCast(val);
@@ -94,7 +93,6 @@ const uint32 FLAME_SPEAR = 19781;
 // Sulfuron Harbringer AI
 class SulfuronAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(SulfuronAI);
         SulfuronAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -105,19 +103,19 @@ class SulfuronAI : public CreatureAIScript
             info_flamespear = sSpellCustomizations.GetSpellInfo(FLAME_SPEAR);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             uint32 val = RandomUInt(1000);
             SpellCast(val);
@@ -207,7 +205,6 @@ const uint32 SUMMON_SONS_OF_FLAMES = 21108; //\todo  DUMMY :P summon the sons of
 // Ragnaros AI
 class RagnarosAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(RagnarosAI);
         RagnarosAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -221,25 +218,25 @@ class RagnarosAI : public CreatureAIScript
             getCreature()->setMoveRoot(true);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
             getCreature()->GetAIInterface()->skip_reset_hp = true;
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void OnTargetDied(Unit* mTarget)
+        void OnTargetDied(Unit* mTarget) override
         {
             sendDBChatMessage(3053);     // Die, insect!
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             uint32 val = RandomUInt(1000);
             SpellCast(val);
@@ -513,10 +510,9 @@ class FlameguardAI : public CreatureAIScript
             mFlames = AddSpell(FLAMEGUARD_FLAMES, Target_Self, 0, 0, 0);
         }
 
-        void OnDied(Unit* pKiller)
+        void OnDied(Unit* pKiller) override
         {
             CastSpellNowNoScheduling(mFlames);
-            
         }
 
         SpellDesc* mFlames;
@@ -666,25 +662,22 @@ class FireswornAI : public CreatureAIScript
             mSeparationAnxiety = AddSpell(FIRESWORN_SEPARATION_ANXIETY, Target_Self, 0, 5, 5);
         }
 
-        void OnCombatStart(Unit* pTarget)
+        void OnCombatStart(Unit* pTarget) override
         {
             mGarr = getNearestCreatureAI(CN_GARR);
-            
         }
 
-        void OnDied(Unit* pKiller)
+        void OnDied(Unit* pKiller) override
         {
             CastSpellNowNoScheduling(mEruption);
-            
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (mGarr && mGarr->isAlive() && getRangeToObject(mGarr->getCreature()) > 100)
             {
                 CastSpell(mSeparationAnxiety);
             }
-            
         }
 
         SpellDesc* mEruption;

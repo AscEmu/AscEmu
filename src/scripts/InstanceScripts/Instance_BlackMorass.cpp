@@ -58,7 +58,7 @@ class ChronoLordAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, SAY_CHRONOLORD_04);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
@@ -72,7 +72,7 @@ class ChronoLordAI : public CreatureAIScript
             }
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -80,12 +80,12 @@ class ChronoLordAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -148,8 +148,6 @@ class ChronoLordAI : public CreatureAIScript
 // TemporusAI
 class TemporusAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(TemporusAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
@@ -180,10 +178,9 @@ class TemporusAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTargetDied, SAY_TEMPORUS_02);
             addEmoteForEvent(Event_OnTargetDied, SAY_TEMPORUS_03);
             addEmoteForEvent(Event_OnDied, SAY_TEMPORUS_04);
-
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
@@ -195,7 +192,7 @@ class TemporusAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -203,12 +200,12 @@ class TemporusAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -310,7 +307,7 @@ class AenusAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, SAY_AENUS_04);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
@@ -322,7 +319,7 @@ class AenusAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -330,12 +327,12 @@ class AenusAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);

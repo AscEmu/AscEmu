@@ -51,7 +51,6 @@ const uint32 PURIFY_ELEMENTAL = 36461;
 
 class HydrossTheUnstableAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(HydrossTheUnstableAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
@@ -95,7 +94,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             ResetCastTime();
             MarkCount = 0;
@@ -111,7 +110,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             getCreature()->SetDisplayId(20162);
             getCreature()->SchoolImmunityList[SCHOOL_FROST] = 1;
@@ -122,7 +121,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnTargetDied(Unit* mTarget)
+        void OnTargetDied(Unit* mTarget) override
         {
             if (getCreature()->GetHealthPct() > 0)
             {
@@ -155,12 +154,12 @@ class HydrossTheUnstableAI : public CreatureAIScript
             }
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             sendDBChatMessage(4757);     // You are the disease, not I..
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (!form) //water form
             {
@@ -454,7 +453,6 @@ const uint32 SUBMERGE = 37433; // Didn't find the spell id
 
 class LurkerAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(LurkerAI);
         SP_AI_Spell spells[4];
         bool m_spellcheck[4];
@@ -503,19 +501,19 @@ class LurkerAI : public CreatureAIScript
             spells[3].attackstoptimer = 2000; // 2sec
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -585,7 +583,6 @@ uint32 LeotherasEventGreyheartToKill[1000000];
 
 class LeotherasAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(LeotherasAI);
         SP_AI_Spell spells[1];
         bool m_spellcheck[1];
@@ -650,7 +647,7 @@ class LeotherasAI : public CreatureAIScript
             }
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             if (LeotherasEventGreyheartToKill[getCreature()->GetInstanceID()] != 0)
                 return;
@@ -664,7 +661,7 @@ class LeotherasAI : public CreatureAIScript
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             //despawn shadow of leotheras
             Creature* shadow = NULL;
@@ -680,7 +677,7 @@ class LeotherasAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnTargetDied(Unit* mTarget)
+        void OnTargetDied(Unit* mTarget) override
         {
             if (getCreature()->GetHealthPct() > 0)
             {
@@ -717,7 +714,7 @@ class LeotherasAI : public CreatureAIScript
             }
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             sendDBChatMessage(4783);     // You cannot kill me! Fools, I'll be back! I'll... aarghh...
         }
@@ -736,7 +733,7 @@ class LeotherasAI : public CreatureAIScript
             getCreature()->SetEquippedItem(OFFHAND, 0);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (Phase == 0 || Phase == 3) //nightelf phase
             {
@@ -944,7 +941,6 @@ class LeotherasAI : public CreatureAIScript
 
 class GreyheartSpellbinderAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(GreyheartSpellbinderAI);
         SP_AI_Spell spells[1];
         bool m_spellcheck[1];
@@ -969,7 +965,7 @@ class GreyheartSpellbinderAI : public CreatureAIScript
             }
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             getCreature()->SetChannelSpellTargetGUID(0);
             getCreature()->SetChannelSpellId(0);
@@ -977,7 +973,7 @@ class GreyheartSpellbinderAI : public CreatureAIScript
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -985,13 +981,13 @@ class GreyheartSpellbinderAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             LeotherasEventGreyheartToKill[getCreature()->GetInstanceID()]--;
 
@@ -1116,9 +1112,7 @@ class GreyheartSpellbinderAI : public CreatureAIScript
 
 class ShadowofLeotherasAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(ShadowofLeotherasAI);
-
         ShadowofLeotherasAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             info_chaos_blast = sSpellCustomizations.GetSpellInfo(CHAOS_BLAST_ANIMATION);
@@ -1132,18 +1126,18 @@ class ShadowofLeotherasAI : public CreatureAIScript
             sEventMgr.AddEvent(static_cast<Object*>(getCreature()), &Object::EventSetUInt32Value, (uint32)UNIT_FIELD_FLAGS, (uint32)0, EVENT_CREATURE_UPDATE, 7500, 0, 1);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             setAIAgent(AGENT_SPELL);
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             //Chaos Blast
             if (getCreature()->GetAIInterface()->getNextTarget())
@@ -1180,9 +1174,7 @@ const uint32 KARATHRESS_ENRAGE = 39249;
 
 class KarathressAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(KarathressAI);
-
         KarathressAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             info_cataclysmic_bolt = sSpellCustomizations.GetSpellInfo(CATACLYSMIC_BOLT);
@@ -1194,7 +1186,7 @@ class KarathressAI : public CreatureAIScript
             CataclysmicBoltTimer = 0;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             CataclysmicBoltTimer = 10;
             EnrageTimer = 600;
@@ -1203,14 +1195,14 @@ class KarathressAI : public CreatureAIScript
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             sendDBChatMessage(4748);     // Her ... excellency ... awaits!
 
@@ -1221,12 +1213,12 @@ class KarathressAI : public CreatureAIScript
                 olum->Despawn(180000, 0);
         }
 
-        void OnTargetDied(Unit* mTarget)
+        void OnTargetDied(Unit* mTarget) override
         {
             sendDBChatMessage(4747);     // I am rid of you.
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             //Cataclysmic Bolt
             CataclysmicBoltTimer--;
@@ -1301,7 +1293,6 @@ const uint32 THE_BEAST_WITHIN = 38373;
 
 class FathomGuardSharkissAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(FathomGuardSharkissAI);
         FathomGuardSharkissAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -1313,7 +1304,7 @@ class FathomGuardSharkissAI : public CreatureAIScript
             SummonPetTimer = 0;
         }
 
-        void OnCombatStart(Unit* pTarget)
+        void OnCombatStart(Unit* pTarget) override
         {
             CurrentPet = NULL;
             SummonPetTimer = 5;
@@ -1321,7 +1312,7 @@ class FathomGuardSharkissAI : public CreatureAIScript
             CreatureAIScript::OnCombatStart(pTarget);
         }
 
-        void OnDied(Unit* pKiller)
+        void OnDied(Unit* pKiller) override
         {
             Creature* FLK = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), CN_FATHOM_LORD_KARATHRESS);
             if (FLK)
@@ -1336,7 +1327,7 @@ class FathomGuardSharkissAI : public CreatureAIScript
             CreatureAIScript::OnDied(pKiller);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             //Summon Pet
             if (!CurrentPet || !CurrentPet->isAlive())
@@ -1357,8 +1348,6 @@ class FathomGuardSharkissAI : public CreatureAIScript
                     SummonPetTimer = 5;
                 }
             }
-
-            CreatureAIScript::AIUpdate();
         }
 
     private:
@@ -1375,7 +1364,6 @@ const uint32 WINDFURY = 38229;
 
 class FathomGuardTidalvessAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(FathomGuardTidalvessAI);
         FathomGuardTidalvessAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -1388,7 +1376,7 @@ class FathomGuardTidalvessAI : public CreatureAIScript
             AddSpell(WINDFURY, Target_Current, 10.0f, 0, 0);
         }
 
-        void OnDied(Unit* pKiller)
+        void OnDied(Unit* pKiller) override
         {
             Creature* FLK = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), CN_FATHOM_LORD_KARATHRESS);
             if (FLK)
@@ -1399,8 +1387,6 @@ class FathomGuardTidalvessAI : public CreatureAIScript
                     static_cast< KarathressAI* >(FLK->GetScript())->AdvisorsLeft--;
                 FLK->RemoveAura(BLESSING_OF_THE_TIDES);
             }
-
-            CreatureAIScript::OnDied(pKiller);
         }
 };
 
@@ -1420,32 +1406,12 @@ class FathomGuardCaribdisAI : public CreatureAIScript
             HealingWaveTimer = 0;
         }
 
-        void OnCombatStart(Unit* pTarget)
+        void OnCombatStart(Unit* pTarget) override
         {
             HealingWaveTimer = 15;
-
-            CreatureAIScript::OnCombatStart(pTarget);
         }
 
-        void AIUpdate()
-        {
-            /*HealingWaveTimer--;
-            if (!HealingWaveTimer)
-            {
-                vector<Unit*> TargetTable;
-                for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
-                {
-                    if ((*itr)->GetTypeId() == TYPEID_UNIT && isFriendly(_unit, (*itr)))
-                        TargetTable.push_back(TO_UNIT(*itr));
-                }
-
-                HealingWaveTimer = 15;
-            }*/
-
-            CreatureAIScript::AIUpdate();
-        }
-
-        void OnDied(Unit* pKiller)
+        void OnDied(Unit* pKiller) override
         {
             Creature* FLK = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), CN_FATHOM_LORD_KARATHRESS);
             if (FLK)
@@ -1456,7 +1422,6 @@ class FathomGuardCaribdisAI : public CreatureAIScript
                     static_cast< KarathressAI* >(FLK->GetScript())->AdvisorsLeft--;
                 FLK->RemoveAura(BLESSING_OF_THE_TIDES);
             }
-            CreatureAIScript::OnDied(pKiller);
         }
 
     private:
@@ -1474,7 +1439,6 @@ const uint32 SUMMON_WATER_GLOBULE = 37854;
 
 class MorogrimAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(MorogrimAI);
         SP_AI_Spell spells[4];
 
@@ -1496,7 +1460,7 @@ class MorogrimAI : public CreatureAIScript
             spells[3].cooldown = 30;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             sendDBChatMessage(4784);     // Flood of the deep, take you!
 
@@ -1507,7 +1471,7 @@ class MorogrimAI : public CreatureAIScript
                 spells[i].casttime = t + spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -1515,12 +1479,12 @@ class MorogrimAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             sendDBChatMessage(4792);     // Great... currents of... Ageon.
         }
 
-        void OnTargetDied(Unit* mTarget)
+        void OnTargetDied(Unit* mTarget) override
         {
             if (getCreature()->GetHealthPct() > 0)
             {
@@ -1540,7 +1504,7 @@ class MorogrimAI : public CreatureAIScript
             }
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (getCreature()->GetAIInterface()->getNextTarget() != NULL && getCreature()->GetCurrentSpell() == NULL)
             {
@@ -1612,15 +1576,12 @@ class MorogrimAI : public CreatureAIScript
                 }
             }
         }
-
 };
 
 //CN_TIDEWALKER_LURKER
 class TidewalkerLurkerAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(TidewalkerLurkerAI);
-
         TidewalkerLurkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             Unit* target = FindTargetForSpell();
@@ -1630,12 +1591,12 @@ class TidewalkerLurkerAI : public CreatureAIScript
             }
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             getCreature()->Despawn(1, 0);
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             getCreature()->Despawn(1, 0);
         }
@@ -1675,7 +1636,6 @@ class TidewalkerLurkerAI : public CreatureAIScript
 
             return target;
         }
-
 };
 
 //------------------------------------
@@ -1703,9 +1663,7 @@ const uint32 SHOCK_BLAST = 38509;
 
 class EnchantedElementalAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(EnchantedElementalAI);
-
         EnchantedElementalAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -1720,7 +1678,7 @@ class EnchantedElementalAI : public CreatureAIScript
             }
         }
 
-        void OnReachWP(uint32 iWaypointId, bool bForwards)
+        void OnReachWP(uint32 iWaypointId, bool bForwards) override
         {
             switch (iWaypointId)
             {
@@ -1744,12 +1702,10 @@ class EnchantedElementalAI : public CreatureAIScript
                     break;
             }
         }
-
 };
 
 class VashjAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(VashjAI);
         SP_AI_Spell spells[4];
         bool m_spellcheck[4];
@@ -1825,7 +1781,7 @@ class VashjAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             ResetCastTime();
             Phase = 1;
@@ -1855,7 +1811,7 @@ class VashjAI : public CreatureAIScript
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             //despawn enchanted elemental, tainted elemental, coilfang elite, coilfang strider
             Creature* creature = NULL;
@@ -1884,12 +1840,12 @@ class VashjAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             sendDBChatMessage(4771);     // Lord Illidan, I... I am... sorry.
         }
 
-        void OnTargetDied(Unit* mTarget)
+        void OnTargetDied(Unit* mTarget) override
         {
             switch (RandomUInt(1))
             {
@@ -1902,7 +1858,7 @@ class VashjAI : public CreatureAIScript
             }
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             switch (Phase)
             {
@@ -2114,7 +2070,7 @@ class VashjAI : public CreatureAIScript
             }
         }
 
-        void OnReachWP(uint32 iWaypointId, bool bForwards)
+        void OnReachWP(uint32 iWaypointId, bool bForwards) override
         {
             switch (iWaypointId)
             {
@@ -2242,9 +2198,7 @@ class VashjAI : public CreatureAIScript
 
 class TaintedElementalAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(TaintedElementalAI);
-
         TaintedElementalAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             spell_poison_spit = new AI_Spell();
@@ -2269,18 +2223,18 @@ class TaintedElementalAI : public CreatureAIScript
                 delete this->spell_poison_spit;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             setAIAgent(AGENT_SPELL);
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             Creature* Vashj = NULL;
             Vashj = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), CN_LADY_VASHJ);
@@ -2291,14 +2245,14 @@ class TaintedElementalAI : public CreatureAIScript
             }
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             ///\todo  Despawn after 15 secs
             if (getCreature()->GetCurrentSpell() == NULL)
                 getCreature()->GetAIInterface()->SetNextSpell(spell_poison_spit);
         }
 
-        void Destroy()
+        void Destroy() override
         {
             // Could someone confirm it's nowhere saved, so we won't have any crashes related
             // to using deleted pointers ?
@@ -2322,7 +2276,7 @@ class TaintedCoreGO : public GameObjectAIScript
         {
         }
 
-        void OnActivate(Player* pPlayer)
+        void OnActivate(Player* pPlayer) override
         {
             Creature* Vashj = NULL;
             Vashj = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(29.798161f, -923.358276f, 42.900517f, CN_LADY_VASHJ);
@@ -2341,7 +2295,6 @@ class TaintedCoreGO : public GameObjectAIScript
 
 class ToxicSporeBatAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(ToxicSporeBatAI);
         SP_AI_Spell spells[1];
         bool m_spellcheck[1];
@@ -2386,7 +2339,7 @@ class ToxicSporeBatAI : public CreatureAIScript
             FlyWay = 0;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             //_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Phase 1 Test!");
             getCreature()->PlaySoundToSet(11243);
@@ -2420,7 +2373,7 @@ class ToxicSporeBatAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             Phase = 0;
             FlameQuills = false;
@@ -2437,7 +2390,7 @@ class ToxicSporeBatAI : public CreatureAIScript
             //RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             Phase = 0;
             FlameQuills = false;
@@ -2447,7 +2400,7 @@ class ToxicSporeBatAI : public CreatureAIScript
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (FlameQuills == true)
             {
@@ -2471,10 +2424,7 @@ class ToxicSporeBatAI : public CreatureAIScript
                 getCreature()->CastSpell(getCreature(), spells[0].info, spells[0].instant);
             }
 
-            if (Meteor == true)
-            {
-            }
-            else
+            if (Meteor != true)
             {
                 switch (Phase)
                 {
@@ -2496,8 +2446,6 @@ class ToxicSporeBatAI : public CreatureAIScript
                         }
                 }
             }
-            //float val = RandomFloat(100.0f);
-            //SpellCast(val);
         }
 
         void PhaseOne()
@@ -2589,7 +2537,7 @@ class ToxicSporeBatAI : public CreatureAIScript
             }
         }
 
-        void OnReachWP(uint32 iWaypointId, bool bForwards)
+        void OnReachWP(uint32 iWaypointId, bool bForwards) override
         {
             if (Phase == 1)
             {
@@ -2741,7 +2689,6 @@ const uint32 CA_MULTI_SHOT = 27021;
 
 class CoilfangAmbusherAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(CoilfangAmbusherAI);
         CoilfangAmbusherAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -2755,7 +2702,6 @@ const uint32 WHIRLWIND_KNOCKBACK = 34109;
 
 class CoilfangFathomWitchAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(CoilfangFathomWitchAI);
         CoilfangFathomWitchAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -2769,7 +2715,6 @@ const uint32 CLEAVE = 38260;
 
 class CoilfangGuardianAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(CoilfangGuardianAI);
         CoilfangGuardianAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -2784,7 +2729,6 @@ const uint32 SPIRIT_OF_REDEMPTION = 35618;
 
 class CoilfangPriestessAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(CoilfangPriestessAI);
         CoilfangPriestessAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -2805,7 +2749,6 @@ const uint32 PARASITE = 39044;
 
 class UnderbogColossusAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(UnderbogColossusAI);
         UnderbogColossusAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -2828,7 +2771,7 @@ class UnderbogColossusAI : public CreatureAIScript
             }
         }
 
-        void OnDied(Unit* pKiller)
+        void OnDied(Unit* pKiller) override
         {
             //There will also be a choice of abilities he might use as he dies:
             switch (RandomUInt(2))
@@ -2848,8 +2791,6 @@ class UnderbogColossusAI : public CreatureAIScript
                     ///\todo Many small adds
                     ///\todo Refreshing mist
             }
-
-            CreatureAIScript::OnDied(pKiller);
         }
 };
 
@@ -2860,7 +2801,6 @@ const uint32 TW_FRENZY = 37605;
 
 class TidewalkerWarriorAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(TidewalkerWarriorAI);
         TidewalkerWarriorAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -2877,7 +2817,6 @@ const uint32 CSERP_DEVOTION = 38603;
 
 class CoilfangSerpentguardAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(CoilfangSerpentguardAI);
         CoilfangSerpentguardAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -2892,7 +2831,6 @@ const uint32 CSHATT_ARMOR = 38591;
 
 class CoilfangShattererAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(CoilfangShattererAI);
         CoilfangShattererAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -2905,7 +2843,6 @@ const uint32 CSTRID_SCREAM = 10890;
 
 class CoilfangStriderAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(CoilfangStriderAI);
         CoilfangStriderAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -2928,7 +2865,7 @@ class SerpentshrineCavern : public InstanceScript
 
         static InstanceScript* Create(MapMgr* pMapMgr) { return new SerpentshrineCavern(pMapMgr); }
 
-        void OnGameObjectPushToWorld(GameObject* pGameObject)
+        void OnGameObjectPushToWorld(GameObject* pGameObject) override
         {
             switch (pGameObject->GetEntry())
             {
@@ -2944,7 +2881,7 @@ class SerpentshrineCavern : public InstanceScript
             }
         }
 
-        void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer)
+        void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer) override
         {
             if (pGameObject->GetGameObjectProperties()->entry != 184568)
                 return;
@@ -2958,10 +2895,8 @@ class SerpentshrineCavern : public InstanceScript
                     pBridgePart->SetState(GO_STATE_OPEN);
             }
 
-
             pGameObject->SetState(GO_STATE_OPEN);
         }
-
 };
 
 void SetupSerpentshrineCavern(ScriptMgr* mgr)

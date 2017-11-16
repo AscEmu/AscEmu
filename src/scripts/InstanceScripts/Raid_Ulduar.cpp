@@ -112,7 +112,7 @@ public:
 
     static GameObjectAIScript* Create(GameObject* go) { return new UlduarTeleporterAI(go); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         /*UlduarTeleporterGossip gossip;
         gossip.OnHello(_gameobject, player);*/

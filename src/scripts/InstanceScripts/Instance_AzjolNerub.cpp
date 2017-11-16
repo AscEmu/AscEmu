@@ -50,7 +50,7 @@ class KrikthirAI : public CreatureAIScript
         addEmoteForEvent(Event_OnDied, 3911);           // I should be grateful... but I long ago lost the capacity....
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         // case for scriptphase
         if (getCreature()->GetHealthPct() <= 10 && mEnraged == false)
@@ -60,13 +60,12 @@ class KrikthirAI : public CreatureAIScript
         }
     }
 
-    void OnDied(Unit* pKiller)
+    void OnDied(Unit* pKiller) override
     {
         GameObject* Doors = getNearestGameObject(192395);
         if (Doors != NULL)
             Doors->Despawn(0, 0);
     }
-
     bool mEnraged;
 };
 
@@ -91,7 +90,6 @@ class HadronoxAI : public CreatureAIScript
 
         AddSpell(HADRONOX_PIERCEARMOR, Target_ClosestPlayer, 20, 0, 5, 0, 0);
     }
-
 };
 
 //Watcher Gashra
@@ -103,7 +101,6 @@ class GashraAI : public CreatureAIScript
         AddSpell(GASHRA_WEBWRAP, Target_RandomPlayer, 22, 0, 35, 0, 0);
         AddSpell(GASHRA_INFECTEDBITE, Target_ClosestPlayer, 35, 0, 12, 0, 0);
     }
-
 };
 
 //Watcher Narjil
@@ -116,7 +113,6 @@ class NarjilAI : public CreatureAIScript
         AddSpell(NARJIL_INFECTEDBITE, Target_ClosestPlayer, 35, 0, 12, 0, 0);
         AddSpell(NARJIL_BLINDINGWEBS, Target_ClosestPlayer, 16, 0, 9, 0, 0);
     }
-
 };
 
 //Watcher Silthik
@@ -129,7 +125,6 @@ class SilthikAI : public CreatureAIScript
         AddSpell(NARJIL_INFECTEDBITE, Target_ClosestPlayer, 35, 0, 12, 0, 0);
         AddSpell(SILTHIK_POISONSPRAY, Target_RandomPlayer, 30, 0, 15, 0, 0);
     }
-
 };
 
 //Anub'ar Shadowcaster (anub shadowcaster)
@@ -141,7 +136,6 @@ class AnubShadowcasterAI : public CreatureAIScript
         AddSpell(SHADOWCASTER_SHADOWBOLT, Target_RandomPlayer, 36, 0, 8);
         AddSpell(SHADOWCASTER_SHADOW_NOVA, Target_Self, 22, 0, 15);
     }
-
 };
 
 void SetupAzjolNerub(ScriptMgr* mgr)

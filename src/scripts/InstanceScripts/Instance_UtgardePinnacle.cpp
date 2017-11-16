@@ -20,123 +20,48 @@
 #include "Instance_UtgardePinnacle.h"
 
 
-//SvalaSorrowgrave
 class SvalaSorrowgraveAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(SvalaSorrowgraveAI);
         SvalaSorrowgraveAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
         }
 };
 
-//GortokPalehoof
 class GortokPalehoofAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(GortokPalehoofAI);
         GortokPalehoofAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-        }
-
-        void OnCombatStart(Unit* mTarget)
-        {
-            sendDBChatMessage(SAY_GROTOK_PALEHOOF_01);
-        }
-
-        void OnTargetDied(Unit* mKiller)
-        {
-            switch (RandomUInt(2))
-            {
-                case 0:
-                    sendDBChatMessage(SAY_GROTOK_PALEHOOF_02);
-                    break;
-                case 1:
-                    sendDBChatMessage(SAY_GROTOK_PALEHOOF_03);
-                    break;
-                default:
-                    break;
-            }
+            addEmoteForEvent(Event_OnCombatStart, SAY_GROTOK_PALEHOOF_01);
+            addEmoteForEvent(Event_OnTargetDied, SAY_GROTOK_PALEHOOF_02);
+            addEmoteForEvent(Event_OnTargetDied, SAY_GROTOK_PALEHOOF_03);
         }
 };
 
-//SkadiTheRuthless
 class SkadiTheRuthlessAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(SkadiTheRuthlessAI);
         SkadiTheRuthlessAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-        }
-
-        void OnCombatStart(Unit* mTarget)
-        {
-            sendDBChatMessage(SAY_SKADI_RUTHLESS_START);
-        }
-
-        void OnTargetDied(Unit* mKiller)
-        {
-            switch (RandomUInt(2))
-            {
-                case 0:
-                    sendDBChatMessage(SAY_SKADI_RUTHLESS_KILL_01);
-                    break;
-                case 1:
-                    sendDBChatMessage(SAY_SKADI_RUTHLESS_KILL_02);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        void OnDied(Unit* mKiller)
-        {
-            sendDBChatMessage(SAY_SKADI_RUTHLESS_DIE);
+            addEmoteForEvent(Event_OnCombatStart, SAY_SKADI_RUTHLESS_START);
+            addEmoteForEvent(Event_OnTargetDied, SAY_SKADI_RUTHLESS_KILL_01);
+            addEmoteForEvent(Event_OnTargetDied, SAY_SKADI_RUTHLESS_KILL_02);
+            addEmoteForEvent(Event_OnDied, SAY_SKADI_RUTHLESS_DIE);
         }
 };
 
-//KingYmiron
 class KingYmironAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(KingYmironAI);
         KingYmironAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-        }
-
-        void OnCombatStart(Unit* mTarget)
-        {
-            sendDBChatMessage(SAY_KING_YMIRON_START);
-        }
-
-        void OnTargetDied(Unit* mKiller)
-        {
-            switch (RandomUInt(5))
-            {
-                case 0:
-                    sendDBChatMessage(SAY_KING_YMIRON_KILL_01);
-                    break;
-                case 1:
-                    sendDBChatMessage(SAY_KING_YMIRON_KILL_02);
-                    break;
-                case 2:
-                    sendDBChatMessage(SAY_KING_YMIRON_KILL_03);
-                    break;
-                case 3:
-                    sendDBChatMessage(SAY_KING_YMIRON_KILL_04);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        void OnDied(Unit* mKiller)
-        {
-            sendDBChatMessage(SAY_KING_YMIRON_DIE);
+            addEmoteForEvent(Event_OnCombatStart, SAY_KING_YMIRON_START);
+            addEmoteForEvent(Event_OnTargetDied, SAY_KING_YMIRON_KILL_01);
+            addEmoteForEvent(Event_OnTargetDied, SAY_KING_YMIRON_KILL_02);
+            addEmoteForEvent(Event_OnTargetDied, SAY_KING_YMIRON_KILL_03);
+            addEmoteForEvent(Event_OnTargetDied, SAY_KING_YMIRON_KILL_04);
+            addEmoteForEvent(Event_OnDied, SAY_KING_YMIRON_DIE);
         }
 };
 

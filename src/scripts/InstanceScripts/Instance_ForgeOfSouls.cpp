@@ -27,7 +27,7 @@ public:
 
     static InstanceScript* Create(MapMgr* pMapMgr) { return new InstanceForgeOfSoulsScript(pMapMgr); }
 
-	void OnPlayerEnter(Player* player)
+	void OnPlayerEnter(Player* player) override
 	{
         if (!spawnsCreated())
         {

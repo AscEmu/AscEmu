@@ -25,8 +25,6 @@
 // Arcane ServantAI
 class ArcaneServantAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(ArcaneServantAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
@@ -51,10 +49,9 @@ class ArcaneServantAI : public CreatureAIScript
             spells[1].cooldown = -1;
             spells[1].perctrigger = 15.0f;
             spells[1].attackstoptimer = 1000;
-
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
@@ -66,11 +63,7 @@ class ArcaneServantAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-        }
-
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -78,12 +71,12 @@ class ArcaneServantAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -145,8 +138,6 @@ class ArcaneServantAI : public CreatureAIScript
 // Bloodwarder CenturionAI
 class BloodwarderCenturionAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(BloodwarderCenturionAI);
         SP_AI_Spell spells[5];
         bool m_spellcheck[5];
@@ -192,10 +183,9 @@ class BloodwarderCenturionAI : public CreatureAIScript
             spells[4].cooldown = -1;
             spells[4].perctrigger = 0.0f;
             spells[4].attackstoptimer = 1000;
-
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             getCreature()->CastSpell(getCreature(), spells[4].info, spells[4].instant);
             CastTime();
@@ -208,11 +198,7 @@ class BloodwarderCenturionAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-        }
-
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -220,12 +206,12 @@ class BloodwarderCenturionAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -287,8 +273,6 @@ class BloodwarderCenturionAI : public CreatureAIScript
 // Bloodwarder PhysicianAI
 class BloodwarderPhysicianAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(BloodwarderPhysicianAI);
         SP_AI_Spell spells[4];
         bool m_spellcheck[4];
@@ -327,10 +311,9 @@ class BloodwarderPhysicianAI : public CreatureAIScript
             spells[3].cooldown = -1;
             spells[3].perctrigger = 0.0f;
             spells[3].attackstoptimer = 1000;
-
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             getCreature()->CastSpell(getCreature(), spells[3].info, spells[3].instant);
             CastTime();
@@ -343,11 +326,7 @@ class BloodwarderPhysicianAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-        }
-
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -355,12 +334,12 @@ class BloodwarderPhysicianAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -422,8 +401,6 @@ class BloodwarderPhysicianAI : public CreatureAIScript
 // Bloodwarder SlayerAI
 class BloodwarderSlayerAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(BloodwarderSlayerAI);
         SP_AI_Spell spells[5];
         bool m_spellcheck[5];
@@ -469,10 +446,9 @@ class BloodwarderSlayerAI : public CreatureAIScript
             spells[4].cooldown = -1;
             spells[4].perctrigger = 10.0f;
             spells[4].attackstoptimer = 1000;
-
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
@@ -484,11 +460,7 @@ class BloodwarderSlayerAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-        }
-
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -496,12 +468,12 @@ class BloodwarderSlayerAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -563,8 +535,6 @@ class BloodwarderSlayerAI : public CreatureAIScript
 // Mechanar CrusherAI
 class MechanarCrusherAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(MechanarCrusherAI);
         SP_AI_Spell spells[1];
         bool m_spellcheck[1];
@@ -582,10 +552,9 @@ class MechanarCrusherAI : public CreatureAIScript
             spells[0].cooldown = -1;
             spells[0].perctrigger = 8.0f;
             spells[0].attackstoptimer = 1000;
-
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
@@ -597,11 +566,7 @@ class MechanarCrusherAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-        }
-
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -609,12 +574,12 @@ class MechanarCrusherAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -676,8 +641,6 @@ class MechanarCrusherAI : public CreatureAIScript
 // Mechanar DrillerAI
 class MechanarDrillerAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(MechanarDrillerAI);
         SP_AI_Spell spells[4];
         bool m_spellcheck[4];
@@ -716,10 +679,9 @@ class MechanarDrillerAI : public CreatureAIScript
             spells[3].cooldown = -1;
             spells[3].perctrigger = 10.0f;
             spells[3].attackstoptimer = 1000;
-
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
@@ -731,11 +693,7 @@ class MechanarDrillerAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-        }
-
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -743,12 +701,12 @@ class MechanarDrillerAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -810,8 +768,6 @@ class MechanarDrillerAI : public CreatureAIScript
 // Mechanar TinkererAI
 class MechanarTinkererAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(MechanarTinkererAI);
         SP_AI_Spell spells[4];
         bool m_spellcheck[4];
@@ -850,10 +806,9 @@ class MechanarTinkererAI : public CreatureAIScript
             spells[3].cooldown = -1;
             spells[3].perctrigger = 0.0f;
             spells[3].attackstoptimer = 1000;
-
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
@@ -865,11 +820,7 @@ class MechanarTinkererAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-        }
-
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -877,13 +828,13 @@ class MechanarTinkererAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             getCreature()->CastSpell(getCreature(), spells[3].info, spells[3].instant);
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -945,8 +896,6 @@ class MechanarTinkererAI : public CreatureAIScript
 // Mechanar WreckerAI
 class MechanarWreckerAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(MechanarWreckerAI);
         SP_AI_Spell spells[3];
         bool m_spellcheck[3];
@@ -978,10 +927,9 @@ class MechanarWreckerAI : public CreatureAIScript
             spells[2].cooldown = -1;
             spells[2].perctrigger = 6.0f;
             spells[2].attackstoptimer = 1000;
-
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
@@ -993,11 +941,7 @@ class MechanarWreckerAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-        }
-
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -1005,12 +949,12 @@ class MechanarWreckerAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -1072,8 +1016,6 @@ class MechanarWreckerAI : public CreatureAIScript
 // Raging FlamesAI
 class RagingFlamesAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(RagingFlamesAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
@@ -1098,10 +1040,9 @@ class RagingFlamesAI : public CreatureAIScript
             spells[1].cooldown = -1;
             spells[1].perctrigger = 9.0f;
             spells[1].attackstoptimer = 1000;
-
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
@@ -1113,11 +1054,7 @@ class RagingFlamesAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-        }
-
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -1125,12 +1062,12 @@ class RagingFlamesAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -1192,8 +1129,6 @@ class RagingFlamesAI : public CreatureAIScript
 // Sunseeker AstromageAI
 class SunseekerAstromageAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(SunseekerAstromageAI);
         SP_AI_Spell spells[4];
         bool m_spellcheck[4];
@@ -1234,7 +1169,7 @@ class SunseekerAstromageAI : public CreatureAIScript
             spells[3].attackstoptimer = 1000;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             getCreature()->CastSpell(getCreature(), spells[3].info, spells[3].instant);
             CastTime();
@@ -1247,11 +1182,7 @@ class SunseekerAstromageAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-        }
-
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -1259,12 +1190,12 @@ class SunseekerAstromageAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -1326,8 +1257,6 @@ class SunseekerAstromageAI : public CreatureAIScript
 // Sunseeker EngineerAI
 class SunseekerEngineerAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(SunseekerEngineerAI);
         SP_AI_Spell spells[4];
         bool m_spellcheck[4];
@@ -1368,7 +1297,7 @@ class SunseekerEngineerAI : public CreatureAIScript
             spells[3].attackstoptimer = 1000;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             getCreature()->CastSpell(getCreature(), spells[3].info, spells[3].instant);
             CastTime();
@@ -1381,11 +1310,7 @@ class SunseekerEngineerAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-        }
-
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -1393,12 +1318,12 @@ class SunseekerEngineerAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -1460,8 +1385,6 @@ class SunseekerEngineerAI : public CreatureAIScript
 // Sunseeker NetherbinderAI
 class SunseekerNetherbinderAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(SunseekerNetherbinderAI);
         SP_AI_Spell spells[5];
         bool m_spellcheck[5];
@@ -1509,7 +1432,7 @@ class SunseekerNetherbinderAI : public CreatureAIScript
             spells[4].attackstoptimer = 1000;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
@@ -1521,11 +1444,7 @@ class SunseekerNetherbinderAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-        }
-
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -1533,12 +1452,12 @@ class SunseekerNetherbinderAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -1600,8 +1519,6 @@ class SunseekerNetherbinderAI : public CreatureAIScript
 // Tempest-Forge DestroyerAI
 class TempestForgeDestroyerAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(TempestForgeDestroyerAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
@@ -1628,7 +1545,7 @@ class TempestForgeDestroyerAI : public CreatureAIScript
             spells[1].attackstoptimer = 1000;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
@@ -1640,11 +1557,7 @@ class TempestForgeDestroyerAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-        }
-
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -1652,12 +1565,12 @@ class TempestForgeDestroyerAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -1719,8 +1632,6 @@ class TempestForgeDestroyerAI : public CreatureAIScript
 // Tempest-Forge PatrollerAI
 class TempestForgePatrollerAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(TempestForgePatrollerAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
@@ -1747,7 +1658,7 @@ class TempestForgePatrollerAI : public CreatureAIScript
             spells[1].attackstoptimer = 1000;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
@@ -1759,11 +1670,7 @@ class TempestForgePatrollerAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-        }
-
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -1771,12 +1678,12 @@ class TempestForgePatrollerAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -1842,8 +1749,6 @@ class TempestForgePatrollerAI : public CreatureAIScript
 // Gatewatcher Gyro-Kill AI
 class GatewatcherGyroKillAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(GatewatcherGyroKillAI);
         SP_AI_Spell spells[3];
         bool m_spellcheck[3];
@@ -1877,13 +1782,16 @@ class GatewatcherGyroKillAI : public CreatureAIScript
             spells[2].perctrigger = 9.0f;
             spells[2].attackstoptimer = 1000;
 
+            addEmoteForEvent(Event_OnCombatStart, SAY_GW_GYRO_KILL_05);
+            addEmoteForEvent(Event_OnTargetDied, SAY_GW_GYRO_KILL_06);
+            addEmoteForEvent(Event_OnTargetDied, SAY_GW_GYRO_KILL_04);
+            addEmoteForEvent(Event_OnDied, SAY_GW_GYRO_KILL_01);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
-            sendDBChatMessage(SAY_GW_GYRO_KILL_05);
         }
 
         void CastTime()
@@ -1892,7 +1800,7 @@ class GatewatcherGyroKillAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -1900,29 +1808,7 @@ class GatewatcherGyroKillAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-            if (getCreature()->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
-            {
-                switch (RandomUInt(1))
-                {
-                    case 0:
-                        sendDBChatMessage(SAY_GW_GYRO_KILL_06);
-                        break;
-                    case 1:
-                        sendDBChatMessage(SAY_GW_GYRO_KILL_04);
-                        break;
-                }
-            }
-        }
-
-        void OnDied(Unit* mKiller)
-        {
-            CastTime();
-            sendDBChatMessage(SAY_GW_GYRO_KILL_01);
-        }
-
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -2002,8 +1888,6 @@ class GatewatcherGyroKillAI : public CreatureAIScript
 // Gatewatcher Iron-Hand AI
 class GatewatcherIronHandAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(GatewatcherIronHandAI);
         SP_AI_Spell spells[4];
         bool m_spellcheck[4];
@@ -2044,13 +1928,16 @@ class GatewatcherIronHandAI : public CreatureAIScript
             spells[3].perctrigger = 5.0f;
             spells[3].attackstoptimer = 1000;
 
+            addEmoteForEvent(Event_OnCombatStart, SAY_GW_GYRO_KILL_01);
+            addEmoteForEvent(Event_OnTargetDied, SAY_GW_GYRO_KILL_04);
+            addEmoteForEvent(Event_OnTargetDied, SAY_GW_GYRO_KILL_05);
+            addEmoteForEvent(Event_OnDied, SAY_GW_GYRO_KILL_06);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
-            sendDBChatMessage(SAY_GW_GYRO_KILL_01);
         }
 
         void CastTime()
@@ -2059,7 +1946,7 @@ class GatewatcherIronHandAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -2067,34 +1954,13 @@ class GatewatcherIronHandAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-            if (getCreature()->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
-            {
-                switch (RandomUInt(1))
-                {
-                    case 0:
-                        sendDBChatMessage(SAY_GW_GYRO_KILL_04);
-                        break;
-                    case 1:
-                        sendDBChatMessage(SAY_GW_GYRO_KILL_05);
-                        break;
-                }
-            }
-        }
-
-        void OnDied(Unit* mKiller)
-        {
-            CastTime();
-            sendDBChatMessage(SAY_GW_GYRO_KILL_06);
-        }
-
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
         }
 
+    // spell emote
         void HammerSound()
         {
             switch (RandomUInt(8))
@@ -2169,8 +2035,6 @@ class GatewatcherIronHandAI : public CreatureAIScript
 // Mechano-Lord Capacitus AI
 class MechanoLordCapacitusAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(MechanoLordCapacitusAI);
         SP_AI_Spell spells[4];
         bool m_spellcheck[4];
@@ -2215,13 +2079,16 @@ class MechanoLordCapacitusAI : public CreatureAIScript
             spells[3].perctrigger = 5.0f;
             spells[3].attackstoptimer = 1000;
 
+            addEmoteForEvent(Event_OnCombatStart, SAY_MECH_LORD_06);
+            addEmoteForEvent(Event_OnTargetDied, SAY_MECH_LORD_03);
+            addEmoteForEvent(Event_OnTargetDied, SAY_MECH_LORD_02);
+            addEmoteForEvent(Event_OnDied, SAY_MECH_LORD_01);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
-            sendDBChatMessage(SAY_MECH_LORD_06);
         }
 
         void CastTime()
@@ -2230,7 +2097,7 @@ class MechanoLordCapacitusAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -2238,29 +2105,12 @@ class MechanoLordCapacitusAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-            if (getCreature()->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
-            {
-                switch (RandomUInt(1))
-                {
-                    case 0:
-                        sendDBChatMessage(SAY_MECH_LORD_03);
-                        break;
-                    case 1:
-                        sendDBChatMessage(SAY_MECH_LORD_02);
-                        break;
-                }
-            }
-        }
-
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             CastTime();
-            sendDBChatMessage(SAY_MECH_LORD_01);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -2322,8 +2172,6 @@ class MechanoLordCapacitusAI : public CreatureAIScript
 // Nethermancer Sepethrea AI
 class NethermancerSepethreaAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(NethermancerSepethreaAI);
         SP_AI_Spell spells[4];
         bool m_spellcheck[4];
@@ -2365,15 +2213,17 @@ class NethermancerSepethreaAI : public CreatureAIScript
             spells[3].perctrigger = 8.0f;
             spells[3].attackstoptimer = 1000;
 
+            addEmoteForEvent(Event_OnCombatStart, SAY_NETH_SEPETHREA_01);
+            addEmoteForEvent(Event_OnTargetDied, SAY_NETH_SEPETHREA_05);
+            addEmoteForEvent(Event_OnTargetDied, SAY_NETH_SEPETHREA_06);
+            addEmoteForEvent(Event_OnDied, SAY_NETH_SEPETHREA_07);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             SummonTimer = 4;
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
-            //_unit->CastSpell(_unit, spells[0].info, spells[0].instant);
-            sendDBChatMessage(SAY_NETH_SEPETHREA_01);
         }
 
         void CastTime()
@@ -2382,7 +2232,7 @@ class NethermancerSepethreaAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             SummonTimer = 4;
             CastTime();
@@ -2391,30 +2241,13 @@ class NethermancerSepethreaAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-            if (getCreature()->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
-            {
-                switch (RandomUInt(1))
-                {
-                    case 0:
-                        sendDBChatMessage(SAY_NETH_SEPETHREA_05);
-                        break;
-                    case 1:
-                        sendDBChatMessage(SAY_NETH_SEPETHREA_06);
-                        break;
-                }
-            }
-        }
-
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             SummonTimer = 4;
             CastTime();
-            sendDBChatMessage(SAY_NETH_SEPETHREA_07);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             SummonTimer--;
 
@@ -2428,6 +2261,7 @@ class NethermancerSepethreaAI : public CreatureAIScript
             SpellCast(val);
         }
 
+    // spell emote
         void DragonsBreathSound()
         {
             switch (RandomUInt(8))
@@ -2506,8 +2340,6 @@ class NethermancerSepethreaAI : public CreatureAIScript
 // before adding weapon switching =/    (Sound: 11199; speech: "I prefer to be hands-on...";)
 class PathaleonTheCalculatorAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(PathaleonTheCalculatorAI);
         SP_AI_Spell spells[7];
         bool m_spellcheck[7];
@@ -2569,14 +2401,18 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
             spells[6].cooldown = -1;
             spells[6].perctrigger = 0.0f;
             spells[6].attackstoptimer = 1000;
+
+            addEmoteForEvent(Event_OnCombatStart, SAY_PATHALEON_01);
+            addEmoteForEvent(Event_OnTargetDied, SAY_PATHALEON_06);
+            addEmoteForEvent(Event_OnTargetDied, SAY_PATHALEON_07);
+            addEmoteForEvent(Event_OnDied, SAY_PATHALEON_08);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             SummonTimer = RandomUInt(30, 45);
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
-            sendDBChatMessage(SAY_PATHALEON_01);
         }
 
         void CastTime()
@@ -2585,7 +2421,7 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             SummonTimer = RandomUInt(30, 45);
             CastTime();
@@ -2594,30 +2430,13 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-            if (getCreature()->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
-            {
-                switch (RandomUInt(1))
-                {
-                    case 0:
-                        sendDBChatMessage(SAY_PATHALEON_06);
-                        break;
-                    case 1:
-                        sendDBChatMessage(SAY_PATHALEON_07);
-                        break;
-                }
-            }
-        }
-
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             SummonTimer = RandomUInt(30, 45);
             CastTime();
-            sendDBChatMessage(SAY_PATHALEON_08);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             SummonTimer--;
 
@@ -2635,6 +2454,7 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
             SpellCast(val);
         }
 
+        // spell emote
         void DominationSound()
         {
             switch (RandomUInt(1))

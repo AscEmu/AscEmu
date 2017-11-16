@@ -28,7 +28,7 @@ class InstancePitOfSaronScript : public InstanceScript
 
         static InstanceScript* Create(MapMgr* pMapMgr) { return new InstancePitOfSaronScript(pMapMgr); }
 
-        void OnPlayerEnter(Player* player)
+        void OnPlayerEnter(Player* player) override
         {
             if (!spawnsCreated())
             {
@@ -91,29 +91,23 @@ class ForgemasterGarfrostAI : public CreatureAIScript
         addEmoteForEvent(Event_OnDied, 8764);
     }
 
-    void OnCombatStart(Unit* pTarget)
+    void OnCombatStart(Unit* pTarget) override
     {
         // Seting up Timers
         mSaroniteTimer = _addTimer(45000);
         mPermafrostTimer = _addTimer(2000);
         mChllingWaveTimer = _addTimer(10000);
         mDeepFreezeTimer = _addTimer(10000);
-
-        if (mInstance)
-            mInstance->setData(getCreature()->GetEntry(), InProgress);
     }
 
-    void OnCombatStop(Unit* mTarget)
+    void OnCombatStop(Unit* mTarget) override
     {
         // Clear Agent and Ai State
         setAIAgent(AGENT_NULL);
         getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-
-        if (mInstance)
-            mInstance->setData(getCreature()->GetEntry(), Performed);
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         CastSpells();
 
@@ -155,8 +149,6 @@ class ForgemasterGarfrostAI : public CreatureAIScript
             getCreature()->SetEquippedItem(MELEE, EQUIP_ID_MACE);
             setScriptPhase(3);
         }
-
-        
     }
 
     void CastSpells()
@@ -256,7 +248,7 @@ class IckAI : public CreatureAIScript
         Phase = BATTLE;
     }
 
-    void OnCombatStart(Unit* pTarget)
+    void OnCombatStart(Unit* pTarget) override
     {
         Phase = BATTLE;
 
@@ -265,30 +257,18 @@ class IckAI : public CreatureAIScript
         mSpecialAttackTimer = _addTimer(35000);
         mToxicWasteTimer = _addTimer(5000);
         mShadowBoltTimer = _addTimer(15000);
-
-        if (mInstance)
-            mInstance->setData(getCreature()->GetEntry(), InProgress);
-
-        
     }
 
-    void OnCombatStop(Unit* pTarget)
+    void OnCombatStop(Unit* pTarget) override
     {
-        if (mInstance)
-            mInstance->setData(getCreature()->GetEntry(), Performed);
-
         Phase = OUTRO;
-
-        
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         if (Phase == BATTLE)
             if (!getCreature()->IsCasting())
                 CastSpells();
-
-        
     }
 
     void CastSpells()
@@ -453,7 +433,7 @@ class KrickAI : public CreatureAIScript
         Phase = BATTLE;
     }
 
-    void OnCombatStart(Unit* pTarget)
+    void OnCombatStart(Unit* pTarget) override
     {
         // Set Battle
         Phase = BATTLE;
@@ -466,7 +446,7 @@ class KrickAI : public CreatureAIScript
         
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         if (!mIckAI->isAlive())
             Phase = OUTRO;
@@ -486,8 +466,6 @@ class KrickAI : public CreatureAIScript
         {
             Outro();
         }
-
-        
     }
 
     void Outro()
@@ -627,7 +605,7 @@ class BarrageAI : public CreatureAIScript
             RegisterAIUpdateEvent(500);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (getCreature()->HasAura(SPELL_HASTY_GROW))
             {

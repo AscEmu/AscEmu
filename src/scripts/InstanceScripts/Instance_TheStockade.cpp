@@ -44,13 +44,13 @@ class DeepfuryAI : public CreatureAIScript
         AddSpell(IMPROVED_BLOCKING, Target_Self, 100, 0, 20);
     }
 
-    void OnCombatStart(Unit* pTarget)
+    void OnCombatStart(Unit* pTarget) override
     {
         getCreature()->CastSpell(getCreature(), 7164, false); // Defensive Stance
         
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         if (_getHealthPercent() <= 15 && getAIAgent() != AGENT_FLEE)
         {
@@ -72,12 +72,9 @@ class HamhockAI : public CreatureAIScript
     {
         AddSpell(BLOODLUST, Target_RandomFriendly, 100, 0, 60);
         AddSpell(CHAINLIGHT, Target_Current, 50, 2, 7);
-    }
 
-    void OnCombatStart(Unit* pTarget)
-    {
-        sendDBChatMessage(8759);
-        
+        // new
+        addEmoteForEvent(Event_OnCombatStart, 8759);
     }
 };
 
@@ -89,13 +86,14 @@ class BazilAI : public CreatureAIScript
     {
         AddSpell(SMOKE_BOMB, Target_Current, 100, 9, 15);
         AddSpell(BATTLE_SHOUT, Target_Self, 100, 3, 30);
+
+        // new
+        addEmoteForEvent(Event_OnCombatStart, 8760);
     }
 
-    void OnCombatStart(Unit* pTarget)
+    void OnCombatStart(Unit* pTarget) override
     {
         getCreature()->CastSpell(getCreature(), 674, false); // Dual Wield
-        sendDBChatMessage(8760);
-        
     }
 };
 
@@ -109,10 +107,9 @@ class DextrenAI : public CreatureAIScript
         AddSpell(STRIKE, Target_Self, 33, 0, 10);
     }
 
-    void OnCombatStart(Unit* pTarget)
+    void OnCombatStart(Unit* pTarget) override
     {
         getCreature()->CastSpell(getCreature(), 7165, false); // Battle Stance
-        
     }
 };
 
@@ -130,14 +127,13 @@ class TargorrTheDreadAI : public CreatureAIScript
         Enrage = false;
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         if (_getHealthPercent() < 50 && !Enrage)
         {
             Enrage = true;
             CastSpellNowNoScheduling(Enraged);
         }
-        
     }
 };
 
@@ -150,10 +146,9 @@ class InmateAI : public CreatureAIScript
         AddSpell(REND, Target_Current, 100, 5, 16);
     }
 
-    void OnCombatStart(Unit* pTarget)
+    void OnCombatStart(Unit* pTarget) override
     {
         getCreature()->CastSpell(getCreature(), 7165, false); // Battle Stance
-        
     }
 };
 
@@ -166,10 +161,9 @@ class InsurgentAI : public CreatureAIScript
         AddSpell(DEMORALIZING_SHOUT, Target_Self, 100, 7, 25);
     }
 
-    void OnCombatStart(Unit* pTarget)
+    void OnCombatStart(Unit* pTarget) override
     {
         getCreature()->CastSpell(getCreature(), 9128, false); // Battle Shout
-        
     }
 };
 
@@ -183,10 +177,9 @@ class PrisonerAI : public CreatureAIScript
         AddSpell(DISARM, Target_Current, 100, 10, 14);
     }
 
-    void OnCombatStart(Unit* pTarget)
+    void OnCombatStart(Unit* pTarget) override
     {
         getCreature()->CastSpell(getCreature(), 7165, false); // Battle Stance
-        
     }
 };
 
@@ -199,10 +192,9 @@ class ConvictAI : public CreatureAIScript
         AddSpell(BACKHAND, Target_Current, 100, 5, 12);
     }
 
-    void OnCombatStart(Unit* pTarget)
+    void OnCombatStart(Unit* pTarget) override
     {
         getCreature()->CastSpell(getCreature(), 674, false); // Dual Wield
-        
     }
 };
 

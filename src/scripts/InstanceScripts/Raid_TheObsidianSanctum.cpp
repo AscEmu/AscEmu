@@ -32,7 +32,7 @@ class ObsidianSanctumScript : public InstanceScript
 
         static InstanceScript* Create(MapMgr* pMapMgr) { return new ObsidianSanctumScript(pMapMgr); }
 
-        void OnCreaturePushToWorld(Creature* pCreature)
+        void OnCreaturePushToWorld(Creature* pCreature) override
         {
             switch (pCreature->GetEntry())
             {
@@ -53,7 +53,7 @@ class ObsidianSanctumScript : public InstanceScript
             }
         }
 
-        void OnCreatureDeath(Creature* pVictim, Unit* pKiller)
+        void OnCreatureDeath(Creature* pVictim, Unit* pKiller) override
         {
             switch (pVictim->GetEntry())
             {
@@ -198,7 +198,7 @@ class SartharionAI : public CreatureAIScript
             m_iDrakeCount = 0;
         }
 
-        void OnCombatStart(Unit* pTarget)
+        void OnCombatStart(Unit* pTarget) override
         {
             m_bEnraged = false;
             mFlameTsunami->setTriggerCooldown();
@@ -211,11 +211,9 @@ class SartharionAI : public CreatureAIScript
                 _removeAuraOnPlayers(SARTHARION_AURA);   // unproper hackfix
                 _regenerateHealth();// Lets heal him as aura increase his hp for 25%
             }
-
-            
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (m_iDrakeCount >= 1)
             {
@@ -239,8 +237,6 @@ class SartharionAI : public CreatureAIScript
 
                 m_bEnraged = true;
             }
-
-            
         }
 
         void CheckDrakes()
@@ -295,10 +291,9 @@ class SartharionAI : public CreatureAIScript
             m_bDrakes[DRAKE_VESPERON] = false;
         }
 
-        void OnDied(Unit* pKiller)
+        void OnDied(Unit* pKiller) override
         {
             sendDBChatMessage(3984);         //Such is the price... of failure...
-            
         }
 
     private:
@@ -318,26 +313,21 @@ class TsunamiAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(TsunamiAI);
         TsunamiAI(Creature* pCreature) : CreatureAIScript(pCreature) {};
 
-        void OnLoad()
+        void OnLoad() override
         {
             RegisterAIUpdateEvent(1000);
             setFlyMode(true);
             setCanEnterCombat(false);
             getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             despawn(11500, 0);
-
-            
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             _applyAura(TSUNAMI);
             _applyAura(TSUNAMI_VISUAL);
             RegisterAIUpdateEvent(11000);
-
-            
         }
-
 };
 
 class CyclonAI : public CreatureAIScript
@@ -347,37 +337,33 @@ class CyclonAI : public CreatureAIScript
         CyclonAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {}
 
-        void OnLoad()
+        void OnLoad() override
         {
             setRooted(true);
             setCanEnterCombat(false);
             getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             _applyAura(CYCLON_SPELL);
             _applyAura(CYCLON_AURA);
-
-            
         }
 };
 
 class LavaBlazeAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(LavaBlazeAI);
         LavaBlazeAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {}
 
-        void OnLoad()
+        void OnLoad() override
         {
             AggroNearestPlayer(1);
-            
         }
 
-        void OnCombatStop(Unit* pTarget)
+        void OnCombatStop(Unit* pTarget) override
         {
             despawn(1000, 0);
         }
 
-        void OnDied(Unit* pKiller)
+        void OnDied(Unit* pKiller) override
         {
             despawn(1000, 0);
         }

@@ -28,8 +28,6 @@
 ///Anomalus
 class AnomalusAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(AnomalusAI);
         AnomalusAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -44,22 +42,19 @@ class AnomalusAI : public CreatureAIScript
             mRift = false;
             mSummonTimer = 0;
 
+            // new
+            addEmoteForEvent(Event_OnCombatStart, 4317);     // Chaos beckons.
+            addEmoteForEvent(Event_OnDied, 4318);     // Of course.
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
-            sendDBChatMessage(4317);     // Chaos beckons.
             mSummon = 0;
             mRift = false;
             mSummonTimer = _addTimer(_isHeroic() ? 14000 : 18000);   // check heroic
-
-            
-
-            if (mInstance)
-                mInstance->setData(NEXUS_ANOMALUS, InProgress);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if ((_getHealthPercent() <= 50 && mSummon == 0))
                 mSummon += 1;
@@ -78,8 +73,6 @@ class AnomalusAI : public CreatureAIScript
                 _removeAura(47748);
                 mRift = false;
             }
-
-            
         }
 
         void SummonRift(bool bToCharge)
@@ -109,14 +102,10 @@ class AnomalusAI : public CreatureAIScript
             mSummon += 1;
         }
 
-        void OnDied(Unit* pKiller)
+        void OnDied(Unit* pKiller) override
         {
-            sendDBChatMessage(4318);     // Of course.
-
             if (mInstance)
             {
-                mInstance->setData(NEXUS_ANOMALUS, Finished);
-
                 GameObjectSet sphereSet = mInstance->getGameObjectsSetForEntry(ANOMALUS_CS);
                 for (auto goSphere : sphereSet)
                 {
@@ -124,16 +113,6 @@ class AnomalusAI : public CreatureAIScript
                         goSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
                 }
             }
-
-            
-        }
-
-        void OnCombatStop(Unit* pTarget)
-        {
-            if (mInstance)
-                mInstance->setData(NEXUS_ANOMALUS, Performed);
-
-            
         }
 
     private:
@@ -146,8 +125,6 @@ class AnomalusAI : public CreatureAIScript
 
 class ChaoticRiftAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(ChaoticRiftAI);
         ChaoticRiftAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -161,23 +138,20 @@ class ChaoticRiftAI : public CreatureAIScript
                 AddSpell(CHAOTIC_ENERGY_BURST, Target_RandomPlayer, 30, 0, spell_energy_burst->getRecoveryTime());
         }
 
-        void OnLoad()
+        void OnLoad() override
         {
             _applyAura(CHAOTIC_RIFT_AURA);
             despawn(40000, 0);
-            
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             despawn(2000, 0);
-            
         }
 
-        void OnCombatStop(Unit* pTarget)
+        void OnCombatStop(Unit* pTarget) override
         {
             despawn(2000, 0);
-            
         }
 };
 
@@ -188,16 +162,14 @@ class CraziedManaWrathAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(CraziedManaWrathAI);
         CraziedManaWrathAI(Creature* pCreature) : CreatureAIScript(pCreature) {};
 
-        void OnCombatStop(Unit* pTarget)
+        void OnCombatStop(Unit* pTarget) override
         {
             despawn(2000, 0);
-            
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             despawn(2000, 0);
-            
         }
 };
 
@@ -214,8 +186,6 @@ static Movement::Location FormSpawns[] =
 
 class TelestraBossAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(TelestraBossAI);
         TelestraBossAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -240,9 +210,14 @@ class TelestraBossAI : public CreatureAIScript
             mPhaseRepeat = 2;
 
             mAddArray[0] = mAddArray[1] = mAddArray[2] = NULL;
+
+            // new
+            addEmoteForEvent(Event_OnCombatStart, 4326);      // You know what they say about curiosity....
+            addEmoteForEvent(Event_OnTargetDied, 4327);      // Death becomes you.
+            addEmoteForEvent(Event_OnDied, 4328);      // Damn the... luck.
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (isScriptPhase(1) && _getHealthPercent() <= (mPhaseRepeat * 25))
             {
@@ -269,7 +244,6 @@ class TelestraBossAI : public CreatureAIScript
                     if (mAddArray[i] != NULL)
                         ++mAddCount;
                 }
-
             }
 
             if (isScriptPhase(2))
@@ -294,26 +268,9 @@ class TelestraBossAI : public CreatureAIScript
                 mPhaseRepeat = 1;
                 setScriptPhase(_isHeroic() ? 1 : 3);   //3 disables p2
             }
-
-            
         }
 
-        void OnCombatStart(Unit* pTarget)
-        {
-            sendDBChatMessage(4326);      // You know what they say about curiosity....
-
-            if (mInstance)
-                mInstance->setData(NEXUS_TELESTRA, InProgress);
-
-            
-        }
-
-        void OnTargetDied(Unit* pTarget)
-        {
-            sendDBChatMessage(4327);      // Death becomes you.
-        }
-
-        void OnCombatStop(Unit* pTarget)
+        void OnCombatStop(Unit* pTarget) override
         {
             for (uint8 i = 0; i < 3; ++i)
             {
@@ -323,17 +280,10 @@ class TelestraBossAI : public CreatureAIScript
                     mAddArray[i] = NULL;
                 }
             }
-
-            
-
-            if (mInstance)
-                mInstance->setData(NEXUS_TELESTRA, Performed);
         }
 
-        void OnDied(Unit* pKiller)
+        void OnDied(Unit* pKiller) override
         {
-            sendDBChatMessage(4328);      // Damn the... luck.
-
             for (uint8 i = 0; i < 3; ++i)
             {
                 if (mAddArray[i] != NULL)
@@ -353,8 +303,6 @@ class TelestraBossAI : public CreatureAIScript
                         goSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
                 }
             }
-
-            
         }
 
     private:
@@ -369,8 +317,6 @@ class TelestraBossAI : public CreatureAIScript
 
 class TelestraFireAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(TelestraFireAI);
         TelestraFireAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -386,17 +332,14 @@ class TelestraFireAI : public CreatureAIScript
             }
         }
 
-        void OnLoad()
+        void OnLoad() override
         {
             AggroNearestUnit();
-            
         }
 };
 
 class TelestraFrostAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(TelestraFrostAI);
         TelestraFrostAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -412,17 +355,14 @@ class TelestraFrostAI : public CreatureAIScript
             }
         }
 
-        void OnLoad()
+        void OnLoad() override
         {
             AggroNearestUnit();
-            
         }
 };
 
 class TelestraArcaneAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(TelestraArcaneAI);
         TelestraArcaneAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -430,10 +370,9 @@ class TelestraArcaneAI : public CreatureAIScript
             AddSpell(CRITTER, Target_RandomPlayer, 25, 0, 20);
         }
 
-        void OnLoad()
+        void OnLoad() override
         {
             AggroNearestUnit();
-            
         }
 };
 
@@ -457,16 +396,18 @@ class OrmorokAI : public CreatureAIScript
         mCrystalSpikes->addEmote("Bleed!", CHAT_MSG_MONSTER_YELL, 13332);
 
         mEnraged = false;
+
+        // new
+        addEmoteForEvent(Event_OnCombatStart, 1943);     // Noo!
+        addEmoteForEvent(Event_OnDied, 1944);     // Aaggh!
     }
 
-    void OnCombatStart(Unit* pTarget)
+    void OnCombatStart(Unit* pTarget) override
     {
-        sendDBChatMessage(1943);     // Noo!
         mEnraged = false;
-        
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         if (_getHealthPercent() <= 25 && mEnraged == false)
         {
@@ -474,17 +415,12 @@ class OrmorokAI : public CreatureAIScript
             sendAnnouncement("Ormorok the Tree-Shaper goes into a frenzy!");
             mEnraged = true;
         }
-
-        
     }
 
-    void OnDied(Unit* pKiller)
+    void OnDied(Unit* pKiller) override
     {
-        sendDBChatMessage(1944);     // Aaggh!
-
         if (mInstance)
         {
-            mInstance->setData(NEXUS_ORMOROK, Finished);
             GameObjectSet sphereSet = mInstance->getGameObjectsSetForEntry(ORMOROK_CS);
             for (auto goSphere : sphereSet)
             {
@@ -492,8 +428,6 @@ class OrmorokAI : public CreatureAIScript
                     goSphere->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
             }
         }
-
-        
     }
 
     private:
@@ -512,7 +446,7 @@ class CrystalSpikeAI : public CreatureAIScript
         m_part = 0;
     }
 
-    void OnLoad()
+    void OnLoad() override
     {
         setCanEnterCombat(false);
         setRooted(true);
@@ -520,11 +454,9 @@ class CrystalSpikeAI : public CreatureAIScript
 
         despawn(4500, 0);
         RegisterAIUpdateEvent(500);
-
-        
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         m_part += 1;
 
@@ -572,30 +504,19 @@ class KeristraszaAI : public CreatureAIScript
 
         mEnraged = false;
         setCanEnterCombat(false);
+
+        // new
+        addEmoteForEvent(Event_OnCombatStart, 4321);     // Preserve? Why? There's no truth in it. No no no... only in the taking! I see that now!
+        addEmoteForEvent(Event_OnTargetDied, 4322);     // Now we've come to the truth! )
+        addEmoteForEvent(Event_OnDied, 4324);     // Dragonqueen... Life-Binder... preserve... me.
     }
 
-    void OnLoad()
+    void OnLoad() override
     {
         _applyAura(47543);   // frozen prison
-        
     }
 
-    void OnCombatStart(Unit* pTarget)
-    {
-        sendDBChatMessage(4321);     // Preserve? Why? There's no truth in it. No no no... only in the taking! I see that now!
-    }
-
-    void OnTargetDied(Unit* pTarget)
-    {
-        sendDBChatMessage(4322);     // Now we've come to the truth! 
-    }
-
-    void OnDied(Unit* pKiller)
-    {
-        sendDBChatMessage(4324);     // Dragonqueen... Life-Binder... preserve... me.
-    }
-
-    void AIUpdate()
+    void AIUpdate() override
     {
         if (mEnraged == false && _getHealthPercent() <= 25)
         {
@@ -681,7 +602,7 @@ class NexusScript : public InstanceScript
             }
         }
 
-        void OnCreaturePushToWorld(Creature* pCreature)
+        void OnCreaturePushToWorld(Creature* pCreature) override
         {
             switch (pCreature->GetEntry())
             {
@@ -700,7 +621,7 @@ class NexusScript : public InstanceScript
             }
         }
 
-        void OnGameObjectPushToWorld(GameObject* pGameObject)
+        void OnGameObjectPushToWorld(GameObject* pGameObject) override
         {
             switch (pGameObject->GetEntry())
             {
@@ -716,7 +637,7 @@ class NexusScript : public InstanceScript
             }
         }
 
-        void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer)
+        void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer) override
         {
             switch (pGameObject->GetEntry())
             {
@@ -750,7 +671,7 @@ class NexusScript : public InstanceScript
             }
         }
 
-        void OnPlayerEnter(Player* player)
+        void OnPlayerEnter(Player* player) override
         {
             if (!spawnsCreated())
             {

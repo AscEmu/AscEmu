@@ -61,7 +61,7 @@ class SelinFireheartAI : public CreatureAIScript
         FelExplosion = AddSpell(SF_FELEXPLOSION, Target_Self, 0, 0, 0);
     }
 
-    void OnCombatStart(Unit* pTarget)
+    void OnCombatStart(Unit* pTarget) override
     {
         /*
             Selin Fireheart starts with 0 mana and drains it from the felcrystals in the room
@@ -75,7 +75,7 @@ class SelinFireheartAI : public CreatureAIScript
         During the AIUpdate() Selin will spam FelExplosion until hes out of mana
         He will then attempt to gain mana from a FelCrystal thats in the room by running to them
         */
-    void AIUpdate()
+    void AIUpdate() override
     {
         // 10% of his mana according to wowhead is 3231 which is whats needed to cast FelExplosion
         if (_getManaPercent() < 10 || FelExplosion->mEnabled == false)
@@ -184,22 +184,14 @@ class VexallusAI : public CreatureAIScript
         mPureEnergy = AddSpell(VEXALLUS_SUMMON_PURE_ENERGY, Target_Self, 85, 0, 3);
 
         mSummon = 0;
+
+        // new
+        addEmoteForEvent(Event_OnCombatStart, 3003);     // Drain... life!
+        addEmoteForEvent(Event_OnTargetDied, 3006);     // Con...sume.
+        addEmoteForEvent(Event_OnDied, 4861);     // It is... not over.
     }
 
-    void OnCombatStart(Unit* pTarget)
-    {
-        sendDBChatMessage(3003);     // Drain... life!
-
-        setScriptPhase(1);
-        
-    }
-
-    void OnTargetDied(Unit* pTarget)
-    {
-        sendDBChatMessage(3006);     // Con...sume.
-    }
-
-    void AIUpdate()
+    void AIUpdate() override
     {
         if ((_getHealthPercent() <= 85 && mSummon == 0) ||
             (_getHealthPercent() <= 70 && mSummon == 1) ||
@@ -214,9 +206,6 @@ class VexallusAI : public CreatureAIScript
 
         if (_getHealthPercent() <= 10 && isScriptPhase(1))
             setScriptPhase(2);
-
-
-        
     }
 
     SpellDesc* mPureEnergy;
@@ -238,18 +227,13 @@ class Priestess_DelrissaAI : public CreatureAIScript
 
         mClearHateList = _addTimer(15000);
         mKilledPlayers = 0;
+
+        // new
+        addEmoteForEvent(Event_OnCombatStart, 3022);     // Annihilate them.
+        addEmoteForEvent(Event_OnDied, 3032);     // Not what I had... planned.
     }
 
-    void OnCombatStart(Unit* pTarget)
-    {
-        sendDBChatMessage(3022);     // Annihilate them.
-        //AggroRandomUnit();    // Want to aggro random unit ? Set it instead of calling premade
-        // method that in this case recursively loops this procedure
-
-        
-    }
-
-    void OnTargetDied(Unit* pTarget)
+    void OnTargetDied(Unit* pTarget) override
     {
         if (!pTarget || !pTarget->IsPlayer())
             return;
@@ -265,25 +249,16 @@ class Priestess_DelrissaAI : public CreatureAIScript
         else if (mKilledPlayers == 4)
             sendDBChatMessage(3030);     // One is such a lonely number.
         else if (mKilledPlayers == 5)
-            sendDBChatMessage(3031);     // It's been a kick, really.
-
-        
+            sendDBChatMessage(3031);     // It's been a kick, really.  
     }
 
-    void OnCombatStop(Unit* pTarget)
+    void OnCombatStop(Unit* pTarget) override
     {
         sendDBChatMessage(3031);     // It's been a kick, really.
         mKilledPlayers = 0;
-
-        
     }
 
-    void OnDied(Unit* pKiller)
-    {
-        sendDBChatMessage(3032);     // Not what I had... planned.
-    }
-
-    void AIUpdate()
+    void AIUpdate() override
     {
         if (_isTimerFinished(mClearHateList))
         {
@@ -291,8 +266,6 @@ class Priestess_DelrissaAI : public CreatureAIScript
             AggroRandomUnit();
             _resetTimer(mClearHateList, 15000);
         }
-
-        
     }
 
     protected:
@@ -325,7 +298,6 @@ class EllrysDuskhallowAI : public CreatureAIScript
         AddSpell(ELLRYS_CURSE_OF_AGONY, Target_RandomPlayer, 75, 0, 4, 0, 30);
         AddSpell(ELLRYS_FEAR, Target_RandomPlayer, 75, 1.5, 9, 0, 20);
     }
-
 };
 
 //Eramas Brightblaze
@@ -337,7 +309,6 @@ class EramasBrightblazeAI : public CreatureAIScript
         AddSpell(ERAMAS_KNOCKDOWN, Target_Current, 25, 0, 5, 0, 5);
         AddSpell(ERAMAS_SNAP_KICK, Target_SecondMostHated, 40, 0, 2, 0, 5);
     }
-
 };
 
 //Yazzai
@@ -352,7 +323,6 @@ class YazzaiAI : public CreatureAIScript
         AddSpell(YAZZAI_CONE_OF_COLD, Target_Self, 10, 0, 19, 0, 1);
         AddSpell(YAZZAI_FROSTBOLT, Target_RandomPlayer, 80, 3, 14, 0, 40);
     }
-
 };
 
 //Warlord Salaris
@@ -369,7 +339,6 @@ class WarlordSalarisAI : public CreatureAIScript
         AddSpell(SALARIS_HAMSTRING, Target_ClosestPlayer, 10, 0, 20, 0, 5);
         AddSpell(SALARIS_MORTAL_STRIKE, Target_Current, 100, 0, 6, 0, 5);
     }
-
 };
 
 //Geraxxas
@@ -384,7 +353,6 @@ class GaraxxasAI : public CreatureAIScript
         AddSpell(GARAXXAS_MULTI_SHOT, Target_RandomPlayer, 25, 0, 12, 5, 30);
         AddSpell(GARAXXAS_WING_CLIP, Target_Current, 30, 0, 9, 0, 5);
     }
-
 };
 
 //Apoko
@@ -397,7 +365,6 @@ class ApokoAI : public CreatureAIScript
         AddSpell(APOKO_LESSER_HEALING_WAVE, Target_RandomFriendly, 50, 1.5, 10, 0, 40);
         AddSpell(APOKO_PURGE, Target_RandomUnit, 20, 0, 40, 0, 30);
     }
-
 };
 
 //Zelfan
@@ -410,7 +377,6 @@ class ZelfanAI : public CreatureAIScript
         AddSpell(ZELFAN_HIGH_EXPLOSIV_SHEEP, Target_Self, 90, 2, 80);
         AddSpell(ZELFAN_ROCKET_LAUNCH, Target_RandomPlayer, 99, 3.5, 60, 0, 45);
     }
-
 };
 
 //Trash mobs
@@ -426,7 +392,6 @@ class CoilskarWitchAI : public CreatureAIScript
         AddSpell(COILSKAR_WITCH_MANA_SHIELD, Target_Self, 6, 0, 40, 0, 0);
         AddSpell(COILSKAR_WITCH_SHOOT, Target_RandomPlayer, 75, 1.5, 4, 5, 30);
     }
-
 };
 
 //Sister of Torment
@@ -438,7 +403,6 @@ class SisterOfTormentAI : public CreatureAIScript
         AddSpell(SISTER_OF_TORMENT_LASH_OF_PAIN, Target_Current, 60, 0, 8, 0, 5);
         AddSpell(SISTER_OF_TORMENT_DEADLY_EMBRACE, Target_RandomPlayer, 20, 1.5, 16, 0, 20);
     }
-
 };
 
 //Sunblade Blood Knight
@@ -451,7 +415,6 @@ class SunbladeBloodKnightAI : public CreatureAIScript
         AddSpell(BLOOD_KNIGHT_SEAL_OF_WRATH, Target_Self, 99, 0, 30, 0, 0);
         AddSpell(BLOOD_KNIGHT_HOLY_LIGHT, Target_Self, 10, 2, 30, 0, 40);
     }
-
 };
 
 //Sunblade Imp
@@ -462,7 +425,6 @@ class SunbladeImpAI : public CreatureAIScript
     {
         AddSpell(IMP_FIREBOLT, Target_Current, 100, 2, (int32)2.5, 0, 30);
     }
-
 };
 
 //Sunblade Mage Guard
@@ -474,7 +436,6 @@ class SunbladeMageGuardAI : public CreatureAIScript
         AddSpell(MAGE_GUARD_GLAVE_THROW, Target_Current, 60, 0, 25, 0, 5);
         AddSpell(MAGE_GUARD_MAGIC_DAMPENING_FIELD, Target_RandomPlayer, 20, 1, 35, 0, 20);
     }
-
 };
 
 //Sunblade Magister
@@ -486,7 +447,6 @@ class SunbladeMagisterAI : public CreatureAIScript
         AddSpell(MAGISTER_FROSTBOLT, Target_Current, 65, 2, 4, 0, 30);
         AddSpell(MAGISTER_ARCANE_NOVA, Target_Self, 12, 1.5, 40, 0, 0);
     }
-
 };
 
 void SetupMagistersTerrace(ScriptMgr* mgr)

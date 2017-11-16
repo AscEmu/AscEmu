@@ -41,44 +41,18 @@ class WatchkeeperGargolmarAI : public CreatureAIScript
 
         mCalledForHelp = 0;
         _retaliation = false;
+
+        // new
+        addEmoteForEvent(Event_OnCombatStart, 4873);     // What have we here?
+        addEmoteForEvent(Event_OnCombatStart, 4874);     // This may hurt a little....
+        addEmoteForEvent(Event_OnCombatStart, 4875);     // I'm going to enjoy this...
+        addEmoteForEvent(Event_OnTargetDied, 4876);     // Say farewell!
+        addEmoteForEvent(Event_OnTargetDied, 4877);     // Much too easy.
+        addEmoteForEvent(Event_OnDied, 4878);      // Hahah.. <cough> ..argh!
     }
 
-    void OnCombatStart(Unit* pTarget)
-    {
-        switch (RandomUInt(2))
-        {
-            case 0:
-                sendDBChatMessage(4873);     // What have we here?
-                break;
-            case 1:
-                sendDBChatMessage(4874);     // This may hurt a little....
-                break;
-            case 2:
-                sendDBChatMessage(4875);     // I'm going to enjoy this...
-                break;
-        }
-    }
-
-    void OnTargetDied(Unit* pTarget)
-    {
-        switch (RandomUInt(1))
-        {
-            case 0:
-                sendDBChatMessage(4876);     // Say farewell!
-                break;
-            case 1:
-                sendDBChatMessage(4877);     // Much too easy.
-                break;
-        }
-    }
-
-    void OnDied(Unit* mKiller)
-    {
-        sendDBChatMessage(4878);      // Hahah.. <cough> ..argh!
-        
-    }
-
-    void AIUpdate()
+    //case for scriptPhase
+    void AIUpdate() override
     {
         if (getCreature()->GetHealthPct() <= 40 && !mCalledForHelp)
         {
@@ -105,8 +79,6 @@ class WatchkeeperGargolmarAI : public CreatureAIScript
 //Omor the Unscarred
 class OmorTheUnscarredAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(OmorTheUnscarredAI);
         OmorTheUnscarredAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -127,46 +99,29 @@ class OmorTheUnscarredAI : public CreatureAIScript
                 SpellDesc* pAura = AddSpell(OMOR_BANE_OF_TREACHERY, Target_RandomPlayer, 8, 2, 35, 0, 60, true);
                 pAura->addEmote("A-Kreesh!", CHAT_MSG_MONSTER_YELL, 10278);
             }
+
+            // new
+            addEmoteForEvent(Event_OnCombatStart, 4856);     // I will not be defeated!
+            addEmoteForEvent(Event_OnCombatStart, 4855);     // You dare stand against ME?
+            addEmoteForEvent(Event_OnCombatStart, 4857);     // Your insolence will be your death!
+            addEmoteForEvent(Event_OnTargetDied, 4860);     // Die, weakling!
+            addEmoteForEvent(Event_OnDied, 4861);     // It is... not over.
         }
 
-        void OnCombatStart(Unit* pTarget)
-        {
-            switch (RandomUInt(2))
-            {
-                case 0:
-                    sendDBChatMessage(4856);     // I will not be defeated!
-                    break;
-                case 1:
-                    sendDBChatMessage(4855);     // You dare stand against ME?
-                    break;
-                case 2:
-                    sendDBChatMessage(4857);     // Your insolence will be your death!
-                    break;
-            }
-            
+        void OnCombatStart(Unit* pTarget) override
+        {           
             setRooted(true);
         }
 
-        void OnTargetDied(Unit* pKiller)
+        void OnCombatStop(Unit* pTarget) override
         {
-            sendDBChatMessage(4860);     // Die, weakling!
-        }
-
-        void OnDied(Unit* pKiller)
-        {
-            sendDBChatMessage(4861);     // It is... not over.
-        }
-
-        void OnCombatStop(Unit* pTarget)
-        {
-            
             if (isAlive())
             {
                 sendDBChatMessage(4862);     // I am victorious!
             }
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             SpellDesc* pShield = FindSpellById(OMOR_DEMONIC_SHIELD);
             if (_getHealthPercent() <= 20 && pShield != NULL && !pShield->mEnabled)

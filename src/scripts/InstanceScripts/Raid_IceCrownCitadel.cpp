@@ -65,11 +65,11 @@ class IceCrownCitadelScript : public InstanceScript
 
         static InstanceScript* Create(MapMgr* pMapMgr) { return new IceCrownCitadelScript(pMapMgr); }
 
-        void UpdateEvent()
+        void UpdateEvent() override
         {
         }
 
-        void OnGameObjectPushToWorld(GameObject* pGameObject)
+        void OnGameObjectPushToWorld(GameObject* pGameObject) override
         {
             // Gos which are not visible by killing a boss needs a second check...
             if (getData(CN_LORD_MARROWGAR) == Finished)
@@ -92,7 +92,7 @@ class IceCrownCitadelScript : public InstanceScript
             }
         }
 
-        void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
+        void OnCreatureDeath(Creature* pCreature, Unit* pUnit) override
         {
             switch (pCreature->GetEntry())
             {
@@ -107,7 +107,7 @@ class IceCrownCitadelScript : public InstanceScript
             }
         }
 
-        void OnPlayerEnter(Player* player)
+        void OnPlayerEnter(Player* player) override
         {
             if (!spawnsCreated())
             {
@@ -135,7 +135,7 @@ class IceCrownCitadelScript : public InstanceScript
 class ICCTeleporterGossip : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player) override
     {
         InstanceScript* pInstance = player->GetMapMgr()->GetScript();
         if (!pInstance)
@@ -162,7 +162,7 @@ public:
         menu.Send(player);
     }
 
-    void OnSelectOption(Object* object, Player* player, uint32 Id, const char* enteredcode, uint32 gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 Id, const char* enteredcode, uint32 gossipId) override
     {
         switch (Id)
         {
@@ -199,7 +199,7 @@ public:
 
     static GameObjectAIScript* Create(GameObject* go) { return new ICCTeleporterAI(go); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         ICCTeleporterGossip gossip;
         gossip.OnHello(_gameobject, player);
@@ -258,16 +258,16 @@ class LordMarrowgarAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, 930);            // I see... Only darkness.
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
         }
 
-        void OnCastSpell(uint32 spellId)
+        void OnCastSpell(uint32 spellId) override
         {
         }
 
         // Testcode - remove me please
-        void OnScriptPhaseChange(uint32_t scriptPhase)
+        void OnScriptPhaseChange(uint32_t scriptPhase) override
         {
             // Testcode - remove me please
             std::stringstream ss;
@@ -276,15 +276,15 @@ class LordMarrowgarAI : public CreatureAIScript
             sendAnnouncement(ss.str());
         }
 
-        void OnCombatStart(Unit* pTarget)
+        void OnCombatStart(Unit* pTarget) override
         {
         }
 
-        void OnTargetDied(Unit* pTarget)
+        void OnTargetDied(Unit* pTarget) override
         {
         }
 
-        void OnDied(Unit* pTarget)
+        void OnDied(Unit* pTarget) override
         {
         }
 };
@@ -293,8 +293,6 @@ const uint32 IMPALED = 69065;
 
 class BoneSpikeAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(BoneSpikeAI);
         BoneSpikeAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {

@@ -593,7 +593,7 @@ class HeiganTheUncleanAI : public CreatureAIScript
     HeiganTheUncleanAI(Creature* pCreature);
     friend class PlagueFissureGO;
 
-    uint32    CalculateTriggerArea(float pPosX, float pPosY);
+    static uint32 CalculateTriggerArea(float pPosX, float pPosY);
     void    CallEruptionEvent(int32 pTimerId, int32 pNewTime);
     void    OnCombatStart(Unit* pTarget);
     void    OnCombatStop(Unit* pTarget);

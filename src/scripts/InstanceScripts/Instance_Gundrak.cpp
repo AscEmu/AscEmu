@@ -71,7 +71,7 @@ class GundrakScript : public InstanceScript
 
         static InstanceScript* Create(MapMgr* pMapMgr) { return new GundrakScript(pMapMgr); }
 
-        void OnGameObjectPushToWorld(GameObject* pGameObject)
+        void OnGameObjectPushToWorld(GameObject* pGameObject) override
         {
             switch (pGameObject->GetEntry())
             {
@@ -148,7 +148,7 @@ class GundrakScript : public InstanceScript
             }
         }
 
-        void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer)
+        void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer) override
         {
             switch (pGameObject->GetEntry())
             {
@@ -195,7 +195,7 @@ class GundrakScript : public InstanceScript
                 pCoilision->SetState(pCoilision->GetState() == 1 ? 0 : 1);
         }
 
-        void OnCreatureDeath(Creature* pVictim, Unit* pKiller)
+        void OnCreatureDeath(Creature* pVictim, Unit* pKiller) override
         {
             GameObject* pDoors = NULL;
             GameObject* pAltar = NULL;

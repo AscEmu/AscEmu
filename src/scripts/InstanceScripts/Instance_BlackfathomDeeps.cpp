@@ -39,7 +39,6 @@ class LadySarevessAI : public CreatureAIScript
 // BaronAquanisAI
 class BaronAquanisAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(BaronAquanisAI);
         BaronAquanisAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -54,7 +53,6 @@ class BaronAquanisAI : public CreatureAIScript
 class FathomStone : public GameObjectAIScript
 {
     public:
-
         FathomStone(GameObject* goinstance) : GameObjectAIScript(goinstance)
         {
             SpawnBaronAquanis = true;
@@ -62,7 +60,7 @@ class FathomStone : public GameObjectAIScript
 
         static GameObjectAIScript* Create(GameObject* GO) { return new FathomStone(GO); }
 
-        void OnActivate(Player* pPlayer)
+        void OnActivate(Player* pPlayer) override
         {
             if (pPlayer->IsTeamHorde() && SpawnBaronAquanis == true) // Horde
             {
@@ -95,7 +93,6 @@ class KelrisAI : public CreatureAIScript
 // AkumaiAI
 class AkumaiAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(AkumaiAI);
         AkumaiAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -107,9 +104,7 @@ class AkumaiAI : public CreatureAIScript
 // MorriduneGossip
 class MorriduneGossip : public Arcemu::Gossip::Script
 {
-    public:
-
-        void OnHello(Object* pObject, Player* pPlayer)
+        void OnHello(Object* pObject, Player* pPlayer) override
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), MORRIDUNE_ON_HELLO, 0);
             if (pPlayer->IsTeamAlliance())
@@ -120,7 +115,7 @@ class MorriduneGossip : public Arcemu::Gossip::Script
             menu.Send(pPlayer);
         }
 
-        void OnSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* Code, uint32 gossipId)
+        void OnSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* Code, uint32 gossipId) override
         {
             switch (Id)
             {

@@ -28,34 +28,24 @@
 // Interrogator Vishas
 class VishasAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(VishasAI);
         VishasAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             AddSpell(SP_VISHAS_SHADOW_WORD, Target_RandomPlayer, 20, 0, 8);
 
             m_uiSay = 0;
+
+            // new
+            addEmoteForEvent(Event_OnCombatStart, 2110);     // Tell me... tell me everything!
+            addEmoteForEvent(Event_OnTargetDied, 2113);     // Purged by pain!
         }
 
-        void OnCombatStart(Unit* pTarget)
-        {
-            sendDBChatMessage(2110);     // Tell me... tell me everything!
-        }
-
-        void OnTargetDied(Unit* pTarget)
-        {
-            sendDBChatMessage(2113);     // Purged by pain!
-        }
-
-        void OnCombatStop(Unit* pTarget)
+        void OnCombatStop(Unit* pTarget) override
         {
             m_uiSay = 0;
-
-            
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (_getHealthPercent() <= 75 && m_uiSay == 0)
             {
@@ -68,8 +58,6 @@ class VishasAI : public CreatureAIScript
                 sendDBChatMessage(2112);     // I'll rip the secrets from your flesh!
                 m_uiSay = 2;
             }
-
-            
         }
 
     private:
@@ -80,8 +68,6 @@ class VishasAI : public CreatureAIScript
 // Bloodmage Thalnos
 class ThalnosAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(ThalnosAI);
         ThalnosAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -89,34 +75,24 @@ class ThalnosAI : public CreatureAIScript
             AddSpell(SP_THALNOS_FLAME_SPIKE, Target_RandomPlayerDestination, 20, 3.0f, 14);
 
             m_bEmoted = false;
+
+            // new
+            addEmoteForEvent(Event_OnCombatStart, 2107);     // We hunger for vengeance.
+            addEmoteForEvent(Event_OnTargetDied, 2109);     // More... More souls!
         }
 
-        void OnCombatStart(Unit* pTarget)
-        {
-            sendDBChatMessage(2107);     // We hunger for vengeance.
-        }
-
-        void OnTargetDied(Unit* pTarget)
-        {
-            sendDBChatMessage(2109);     // More... More souls!
-        }
-
-        void OnCombatStop(Unit* pTarget)
+        void OnCombatStop(Unit* pTarget) override
         {
             m_bEmoted = false;
-
-            
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (_getHealthPercent() <= 50 && m_bEmoted == false)
             {
                 sendDBChatMessage(2108);     // No rest... for the angry dead!
                 m_bEmoted = true;
-            }
-
-            
+            } 
         }
 
     private:
@@ -128,25 +104,17 @@ class ThalnosAI : public CreatureAIScript
 //Houndmaster Loksey
 class LokseyAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(LokseyAI);
         LokseyAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             AddSpell(SP_LOKSEY_BLOODLUST, Target_Self, 5, 0, 40);
-        }
-
-        void OnCombatStart(Unit* pTarget)
-        {
-            sendDBChatMessage(2086);     // Release the hounds!
+            addEmoteForEvent(Event_OnCombatStart, 2086);     // Release the hounds!
         }
 };
 
 // Arcanist Doan
 class DoanAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(DoanAI);
         DoanAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -155,14 +123,11 @@ class DoanAI : public CreatureAIScript
             AddSpell(SP_DOAN_ARCANE_EXP, Target_Self, 20, 0, 10);
 
             m_bShielded = false;
+
+            addEmoteForEvent(Event_OnCombatStart, 2099);     // You will not defile these mysteries!
         }
 
-        void OnCombatStart(Unit* pTarget)
-        {
-            sendDBChatMessage(2099);     // You will not defile these mysteries!
-        }
-
-        void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
+        void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
         {
             if (_getHealthPercent() <= 50 && !m_bShielded)
                 Shield();
@@ -176,11 +141,9 @@ class DoanAI : public CreatureAIScript
             m_bShielded = true;
         }
 
-        void OnCombatStop(Unit* pTarget)
+        void OnCombatStop(Unit* pTarget) override
         {
             m_bShielded = false;
-
-            
         }
 
     private:
@@ -194,8 +157,6 @@ class DoanAI : public CreatureAIScript
 // Herod
 class HerodAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(HerodAI);
         HerodAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -203,35 +164,24 @@ class HerodAI : public CreatureAIScript
             AddSpell(SP_HEROD_CHARGE, Target_RandomPlayer, 6, 0, 20);
 
             m_bEnraged = false;
+
+            addEmoteForEvent(Event_OnCombatStart, 2094);     // Ah - I've been waiting for a real challenge!
+            addEmoteForEvent(Event_OnTargetDied, 2087);     // Is that all?
         }
 
-        void OnCombatStart(Unit* pTarget)
-        {
-            sendDBChatMessage(2094);     // Ah - I've been waiting for a real challenge!
-        }
-
-        void OnTargetDied(Unit* pTarget)
-        {
-            sendDBChatMessage(2087);     // Is that all?
-        }
-
-        void OnCombatStop(Unit* pTarget)
+        void OnCombatStop(Unit* pTarget) override
         {
             m_bEnraged = false;
-            _removeAura(SP_HEROD_ENRAGESPELL);
-
-            
+            _removeAura(SP_HEROD_ENRAGESPELL); 
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (_getHealthPercent() <= 40 && m_bEnraged == false)
             {
                 sendDBChatMessage(2090);     // Light, give me strength!
                 _applyAura(SP_HEROD_ENRAGESPELL);
             }
-
-            
         }
 
         bool    m_bEnraged;
@@ -242,8 +192,6 @@ class HerodAI : public CreatureAIScript
 // Scarlet Commander Mograine
 class MograineAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(MograineAI);
 
         SP_AI_Spell spells[3];
@@ -279,41 +227,26 @@ class MograineAI : public CreatureAIScript
             spells[2].attackstoptimer = 1000;
             Timer = 0;
 
+            // new
+            addEmoteForEvent(Event_OnCombatStart, SAY_MORGRAINE_01);
+            addEmoteForEvent(Event_OnTargetDied, SAY_MORGRAINE_02);
+            addEmoteForEvent(Event_OnDied, SAY_MORGRAINE_03);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
-            sendDBChatMessage(SAY_MORGRAINE_01);
             RegisterAIUpdateEvent(getCreature()->getUInt32Value(UNIT_FIELD_BASEATTACKTIME));
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-            if (getCreature()->GetHealthPct() > 0)
-            {
-                switch (RandomUInt(1))
-                {
-                    case 0:
-                        sendDBChatMessage(SAY_MORGRAINE_02);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-
-
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
-            sendDBChatMessage(SAY_MORGRAINE_03);
-
             GameObject* pDoor = getNearestGameObject(1173.01f, 1389.91f, 31.9723f, GO_INQUISITORS_DOOR);
             if (pDoor == 0)
                 return;
@@ -322,8 +255,7 @@ class MograineAI : public CreatureAIScript
             pDoor->SetState(GO_STATE_OPEN);
         }
 
-
-        void AIUpdate()
+        void AIUpdate() override
         {
             Timer = Timer + 1;
 
@@ -392,8 +324,6 @@ class MograineAI : public CreatureAIScript
 // High Inquisitor Whitemane
 class WhitemaneAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(WhitemaneAI);
         SP_AI_Spell spells[3];
         bool m_spellcheck[3];
@@ -428,31 +358,19 @@ class WhitemaneAI : public CreatureAIScript
             spells[2].soundid = SAY_SOUND_RESTALK2;
             spells[2].speech = "Arise, my champion!";
             Timer = 0;
+
+            // new
+            addEmoteForEvent(Event_OnCombatStart, SAY_WHITEMANE_01);
+            addEmoteForEvent(Event_OnTargetDied, SAY_WHITEMANE_02);
+            addEmoteForEvent(Event_OnDied, SAY_WHITEMANE_03);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
-            sendDBChatMessage(SAY_WHITEMANE_01);
             RegisterAIUpdateEvent(getCreature()->getUInt32Value(UNIT_FIELD_BASEATTACKTIME));
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-
-            if (getCreature()->GetHealthPct() > 0)
-            {
-                switch (RandomUInt(1))
-                {
-                    case 0:
-                        sendDBChatMessage(SAY_WHITEMANE_02);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-
-        void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
+        void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
         {
             if (fAmount < 5) return;
             // <50% hp -> We go to phase 1
@@ -482,19 +400,14 @@ class WhitemaneAI : public CreatureAIScript
             getCreature()->CastSpell(getCreature(), spells[2].info, spells[2].instant);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            sendDBChatMessage(SAY_WHITEMANE_03);
-        }
-
-        void AIUpdate()
+        void AIUpdate() override
         {
             Timer = Timer + 1;
 
@@ -561,8 +474,6 @@ class WhitemaneAI : public CreatureAIScript
 // High Inquisitor Fairbanks
 class FairbanksAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(FairbanksAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
@@ -590,14 +501,13 @@ class FairbanksAI : public CreatureAIScript
             Timer = 0;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->getUInt32Value(UNIT_FIELD_BASEATTACKTIME));
         }
 
-        void OnTargetDied(Unit* mTarget)
+        void OnTargetDied(Unit* mTarget) override
         {
-
             if (getCreature()->GetHealthPct() > 0)
             {
                 switch (RandomUInt(1))
@@ -612,15 +522,14 @@ class FairbanksAI : public CreatureAIScript
             }
         }
 
-
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             Timer = Timer + 1;
 
@@ -698,7 +607,7 @@ class ScarletTorch : public GameObjectAIScript
         ScarletTorch(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
         static GameObjectAIScript* Create(GameObject* GO) { return new ScarletTorch(GO); }
 
-        void OnActivate(Player* pPlayer)
+        void OnActivate(Player* pPlayer) override
         {
             GameObject* SecretDoor = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(1167.79f, 1347.26f, 31.5494f, GO_SCARLET_SECRET_DOOR);
             if (SecretDoor != NULL)
@@ -718,7 +627,7 @@ class ArmoryLever : public GameObjectAIScript
         ArmoryLever(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
         static GameObjectAIScript* Create(GameObject* GO) { return new ArmoryLever(GO); }
 
-        void OnActivate(Player* pPlayer)
+        void OnActivate(Player* pPlayer) override
         {
             GameObject* ArmoryDoor = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2886.31f, -827.261f, 160.336f, GO_ARMORY_DOOR);
             if (ArmoryDoor != NULL)
@@ -738,7 +647,7 @@ class CathedralLever : public GameObjectAIScript
         CathedralLever(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
         static GameObjectAIScript* Create(GameObject* GO) { return new CathedralLever(GO); }
 
-        void OnActivate(Player* pPlayer)
+        void OnActivate(Player* pPlayer) override
         {
             GameObject* CathedralDoor = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2908.18f, -818.203f, 160.332f, GO_CATHEDRAL_DOOR);
             if (CathedralDoor != NULL)

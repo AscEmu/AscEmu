@@ -43,7 +43,7 @@ class HallsOfLightningScript : public InstanceScript
 
         static InstanceScript* Create(MapMgr* pMapMgr) { return new HallsOfLightningScript(pMapMgr); }
 
-        void OnGameObjectPushToWorld(GameObject* pGameObject)
+        void OnGameObjectPushToWorld(GameObject* pGameObject) override
         {
             switch (pGameObject->GetEntry())
             {
@@ -65,7 +65,7 @@ class HallsOfLightningScript : public InstanceScript
             }
         }
 
-        void OnCreatureDeath(Creature* pVictim, Unit* pKiller)
+        void OnCreatureDeath(Creature* pVictim, Unit* pKiller) override
         {
             GameObject* pDoors = NULL;
             switch (pVictim->GetEntry())
@@ -143,13 +143,13 @@ class GeneralBjarngrimAI : public CreatureAIScript
         addEmoteForEvent(Event_OnDied, 765);      // How can it be...? Flesh is not... stronger!
     }
 
-    void OnCombatStart(Unit* pTarget)
+    void OnCombatStart(Unit* pTarget) override
     {
         mStanceTimer = _addTimer(TIMER_STANCE_CHANGE + (RandomUInt(7) * 1000));
         switchStance(RandomUInt(2));
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         if (_isTimerFinished(mStanceTimer))
         {
@@ -256,13 +256,13 @@ class Volkhan : public CreatureAIScript
         addEmoteForEvent(Event_OnDied, 777);      // The master was right... to be concerned.
     }
 
-    void OnCombatStart(Unit* pTarget)
+    void OnCombatStart(Unit* pTarget) override
     {
         mStompTimer = _addTimer(TIMER_STOMP + (RandomUInt(6) * 1000));
         mPhase = 0;
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         if (_isTimerFinished(mStompTimer))
         {
@@ -290,7 +290,7 @@ class Volkhan : public CreatureAIScript
         
     }
 
-    void OnReachWP(uint32 iWaypointId, bool bForwards)
+    void OnReachWP(uint32 iWaypointId, bool bForwards) override
     {
         if (iWaypointId == 1)
         {
@@ -355,7 +355,7 @@ class MoltenGolem : public CreatureAIScript
             AddSpell(52433, Target_Current, 15, 0, 15);
     }
 
-    void OnDied(Unit* pKiller)
+    void OnDied(Unit* pKiller) override
     {
         spawnCreature(CN_BRITTLE_GOLEM, getCreature()->GetPosition());
         despawn();
@@ -452,7 +452,7 @@ class LokenAI : public CreatureAIScript
         addEmoteForEvent(Event_OnDied, 811);      // My death... heralds the end of this world.
     }
 
-    void OnCombatStart(Unit* pTarget)
+    void OnCombatStart(Unit* pTarget) override
     {
         mSpeech = 1;
 
@@ -465,18 +465,18 @@ class LokenAI : public CreatureAIScript
         _castOnInrangePlayers(PULSING_SHOCKWAVE_AURA);
     }
 
-    void OnCombatStop(Unit* pTarget)
+    void OnCombatStop(Unit* pTarget) override
     {
         _removeAuraOnPlayers(PULSING_SHOCKWAVE_AURA);
     }
 
 
-    void OnDied(Unit* pKiller)
+    void OnDied(Unit* pKiller) override
     {
         _removeAuraOnPlayers(PULSING_SHOCKWAVE_AURA);
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         // spell emote
         if (_isTimerFinished(mNovaTimer))

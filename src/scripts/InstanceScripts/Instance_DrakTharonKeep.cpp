@@ -36,8 +36,6 @@ const uint32 INVADERS_PER_INVASION = 1;
 
 class TrollgoreAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(TrollgoreAI);
         TrollgoreAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -72,30 +70,19 @@ class TrollgoreAI : public CreatureAIScript
             spells.push_back(Consume);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
-        {
-            /*if (mAttacker->IsCreature() && TO_CREATURE(mAttacker)->GetProto()->Id == DRAKKARI_INVADER_ENTRY)
-            {
-            uint32 spellid = heroic ? 59809 : 49618;
-            //corpse cannot have aura, cannot cast spell, so we have to change this
-            //also if he cast that spells, no players are being affected, target any player
-            _unit->CastSpell(GetRandomPlayerTarget(), spellid, true);
-            }*/
-        }
-
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (spells.size() > 0)
             {
@@ -183,7 +170,7 @@ class TrollgoreAI : public CreatureAIScript
             getCreature()->setMoveRoot(false);
         }
 
-        void Destroy()
+        void Destroy() override
         {
             for (uint8 i = 0; i < spells.size(); ++i)
             {
@@ -217,8 +204,6 @@ const uint32 ELITE_CHANCE = 20; //how much chance for elite we've got each invas
 
 class NovosTheSummonerAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(NovosTheSummonerAI);
         NovosTheSummonerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -269,7 +254,7 @@ class NovosTheSummonerAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, SAY_NOVOS_SUMMONER_03);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             getCreature()->CastSpell(getCreature(), 47346, false);
             //spawn 4 Ritual Crystal
@@ -285,14 +270,14 @@ class NovosTheSummonerAI : public CreatureAIScript
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnLoad()
+        void OnLoad() override
         {
             //root him and disable melee for him ;)
             _setMeleeDisabled(true);
             getCreature()->setMoveRoot(true);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -311,7 +296,7 @@ class NovosTheSummonerAI : public CreatureAIScript
             getCreature()->RemoveAllAuras();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             //we are not using any abilities in first phase
             if (phase == 2 && spells.size() > 0)
@@ -365,7 +350,6 @@ class NovosTheSummonerAI : public CreatureAIScript
 
         Player* GetRandomPlayerTarget()
         {
-
             std::vector< uint32 > possible_targets;
             for (std::set< Object* >::iterator iter = getCreature()->GetInRangePlayerSetBegin(); iter != getCreature()->GetInRangePlayerSetEnd(); ++iter)
             {
@@ -526,7 +510,7 @@ class NovosTheSummonerAI : public CreatureAIScript
             getCreature()->m_ObjectSlots[id] = go->GetUIdFromGUID();
         }
 
-        void Destroy()
+        void Destroy() override
         {
             for (uint8 i = 0; i < spells.size(); ++i)
             {
@@ -551,8 +535,6 @@ class NovosTheSummonerAI : public CreatureAIScript
 //CrystalHandlerAI
 class CrystalHandlerAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(CrystalHandlerAI);
         CrystalHandlerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -568,19 +550,19 @@ class CrystalHandlerAI : public CreatureAIScript
             spells.push_back(FlashofDarkness);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             Unit* Novos = getCreature()->GetMapMgr()->GetUnit(getCreature()->GetSummonedByGUID());
             if (Novos)
@@ -596,7 +578,7 @@ class CrystalHandlerAI : public CreatureAIScript
                     }
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (spells.size() > 0)
             {
@@ -616,7 +598,6 @@ class CrystalHandlerAI : public CreatureAIScript
 
         Player* GetRandomPlayerTarget()
         {
-
             std::vector< uint32 > possible_targets;
             for (std::set< Object* >::iterator iter = getCreature()->GetInRangePlayerSetBegin(); iter != getCreature()->GetInRangePlayerSetEnd(); ++iter)
             {
@@ -663,7 +644,7 @@ class CrystalHandlerAI : public CreatureAIScript
             getCreature()->setMoveRoot(false);
         }
 
-        void Destroy()
+        void Destroy() override
         {
             for (uint8 i = 0; i < spells.size(); ++i)
             {
@@ -686,8 +667,6 @@ class CrystalHandlerAI : public CreatureAIScript
 // \todo King Dred Call nearby friends
 class KingDreadAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(KingDreadAI);
         KingDreadAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -730,19 +709,19 @@ class KingDreadAI : public CreatureAIScript
             spells.push_back(PiercingSlash);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (spells.size() > 0)
             {
@@ -762,7 +741,6 @@ class KingDreadAI : public CreatureAIScript
 
         Player* GetRandomPlayerTarget()
         {
-
             std::vector< uint32 > possible_targets;
             for (std::set< Object* >::iterator iter = getCreature()->GetInRangePlayerSetBegin(); iter != getCreature()->GetInRangePlayerSetEnd(); ++iter)
             {
@@ -809,7 +787,7 @@ class KingDreadAI : public CreatureAIScript
             getCreature()->setMoveRoot(false);
         }
 
-        void Destroy()
+        void Destroy() override
         {
             for (uint8 i = 0; i < spells.size(); ++i)
             {
@@ -841,8 +819,6 @@ const uint32 PHASES_COUNT = 2;
 
 class TheProphetTaronjaAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(TheProphetTaronjaAI);
         TheProphetTaronjaAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -912,7 +888,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
             spells.push_back(EyeBeam);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
             phase = 1;
@@ -920,7 +896,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
             phase_timer = Util::getMSTime() + WINDSERPENT_PHASE_INTERVAL;
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -931,7 +907,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
             getCreature()->SetDisplayId(getCreature()->GetNativeDisplayId());
         }
 
-        void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
+        void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
         {
             if (getCreature()->GetHealthPct() < 2 && phase == 2)
             {
@@ -942,7 +918,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
             }
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (phase == 1 && phase_timer <Util::getMSTime())
             {
@@ -978,7 +954,6 @@ class TheProphetTaronjaAI : public CreatureAIScript
 
         Player* GetRandomPlayerTarget()
         {
-
             std::vector< uint32 > possible_targets;
             for (std::set< Object* >::iterator iter = getCreature()->GetInRangePlayerSetBegin(); iter != getCreature()->GetInRangePlayerSetEnd(); ++iter)
             {
@@ -1025,7 +1000,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
             getCreature()->setMoveRoot(false);
         }
 
-        void Destroy()
+        void Destroy() override
         {
             for (uint8 i = 0; i < spells.size(); ++i)
             {

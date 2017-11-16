@@ -24,8 +24,6 @@
 //MeathookAA
 class MeathookAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(MeathookAI);
         MeathookAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -66,12 +64,12 @@ class MeathookAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, SAY_MEATHOOK_06);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -79,7 +77,7 @@ class MeathookAI : public CreatureAIScript
             getCreature()->RemoveAllAuras();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (spells.size() > 0)
             {
@@ -146,7 +144,7 @@ class MeathookAI : public CreatureAIScript
             getCreature()->setMoveRoot(false);
         }
 
-        void Destroy()
+        void Destroy() override
         {
             for (uint32 i = 0; i < spells.size(); ++i)
             {
@@ -167,10 +165,7 @@ class MeathookAI : public CreatureAIScript
 //SalramTheFleshcrafterAI
 class SalramTheFleshcrafterAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(SalramTheFleshcrafterAI);
-
         SalramTheFleshcrafterAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             spells.clear();
@@ -228,12 +223,12 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, SAY_SALRAM_FLESH_06);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -241,7 +236,7 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
             getCreature()->RemoveAllAuras();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (spells.size() > 0)
             {
@@ -316,7 +311,7 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
             getCreature()->setMoveRoot(false);
         }
 
-        void Destroy()
+        void Destroy() override
         {
             for (uint32 i = 0; i < spells.size(); ++i)
             {
@@ -337,8 +332,6 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
 //ChronoLordEpochAI
 class ChronoLordEpochAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(ChronoLordEpochAI);
         ChronoLordEpochAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -387,12 +380,12 @@ class ChronoLordEpochAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTargetDied, SAY_CHRONOLORD_EPOCH_08);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -400,7 +393,7 @@ class ChronoLordEpochAI : public CreatureAIScript
             getCreature()->RemoveAllAuras();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (spells.size() > 0)
             {
@@ -469,7 +462,7 @@ class ChronoLordEpochAI : public CreatureAIScript
             getCreature()->setMoveRoot(false);
         }
 
-        void Destroy()
+        void Destroy() override
         {
             for (uint32 i = 0; i < spells.size(); ++i)
             {
@@ -490,8 +483,6 @@ class ChronoLordEpochAI : public CreatureAIScript
 
 class InfiniteCorruptorAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(InfiniteCorruptorAI);
         InfiniteCorruptorAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -519,12 +510,12 @@ class InfiniteCorruptorAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, SAY_INFINITE_CORRUP_02);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -532,7 +523,7 @@ class InfiniteCorruptorAI : public CreatureAIScript
             getCreature()->RemoveAllAuras();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (spells.size() > 0)
             {
@@ -601,7 +592,7 @@ class InfiniteCorruptorAI : public CreatureAIScript
             getCreature()->setMoveRoot(false);
         }
 
-        void Destroy()
+        void Destroy() override
         {
             for (uint32 i = 0; i < spells.size(); ++i)
             {
@@ -622,8 +613,6 @@ class InfiniteCorruptorAI : public CreatureAIScript
 
 class MalganisAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(MalganisAI);
         MalganisAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -673,12 +662,12 @@ class MalganisAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, SAY_MALGANIS_16);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -686,7 +675,7 @@ class MalganisAI : public CreatureAIScript
             getCreature()->RemoveAllAuras();
         }
 
-        void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
+        void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
         {
             if (getCreature()->HasAura(52723))    //handling a dummy :)
             {
@@ -709,7 +698,7 @@ class MalganisAI : public CreatureAIScript
             }
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (!scene && spells.size() > 0)
             {
@@ -808,7 +797,7 @@ class MalganisAI : public CreatureAIScript
             getCreature()->setMoveRoot(false);
         }
 
-        void Destroy()
+        void Destroy() override
         {
             for (uint32 i = 0; i < spells.size(); ++i)
             {
@@ -832,12 +821,13 @@ class Quest_Dispelling_Illusions : public QuestScript
 {
     public:
 
-        void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+        void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry) override
         {
             for (uint8 i = 0; i < 5; i++)
                 SpawnCrates(i, mTarget->GetMapMgr());
         }
-        void SpawnCrates(uint32 id, MapMgr* pMapMgr)
+
+        static void SpawnCrates(uint32 id, MapMgr* pMapMgr)
         {
             uint32 entry = 190094;
             float x = 0.0f, y = 0.0f, z = 0.0f, o = 0.0f;
@@ -887,6 +877,7 @@ class Quest_Dispelling_Illusions : public QuestScript
             GameObject* crate = pMapMgr->GetInterface()->GetGameObjectNearestCoords(x, y, z, 190094);
             if (crate)
                 crate->Despawn(0, 0);
+
             GameObject* go = pMapMgr->CreateGameObject(entry);
             go->CreateFromProto(entry, pMapMgr->GetMapId(), x, y, z, o, 0.0f, 0.0f, 0.0f, 0.0f);
             go->PushToWorld(pMapMgr);
@@ -905,8 +896,6 @@ static Movement::Location walk[] =
 //UtherAI
 class UtherAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(UtherAI);
         UtherAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -916,7 +905,7 @@ class UtherAI : public CreatureAIScript
             check = true;
         }
 
-        void OnReachWP(uint32 i, bool usl)
+        void OnReachWP(uint32 i, bool usl) override
         {
             if (i == 3 && check)
             {
@@ -990,8 +979,6 @@ static Movement::Location ArthasWalk[] =
 //ArthasAI
 class ArthasAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(ArthasAI);
         ArthasAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -1009,7 +996,7 @@ class ArthasAI : public CreatureAIScript
             phase = 0;
         }
 
-        void OnReachWP(uint32 i, bool usl)
+        void OnReachWP(uint32 i, bool usl) override
         {
             switch (i)
             {
@@ -1047,7 +1034,7 @@ class ArthasAI : public CreatureAIScript
             }
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             switch (phase)
             {
@@ -1131,7 +1118,7 @@ class ArthasGossip : public Arcemu::Gossip::Script
 {
     public:
 
-        void OnHello(Object* pObject, Player* Plr)
+        void OnHello(Object* pObject, Player* Plr) override
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1, 0);
 
@@ -1140,7 +1127,7 @@ class ArthasGossip : public Arcemu::Gossip::Script
             menu.Send(Plr);
         }
 
-        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId)
+        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId) override
         {
             switch (Id)
             {

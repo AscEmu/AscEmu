@@ -26,7 +26,6 @@
 // General Drakkisath AI by Soulshifter
 class GeneralDrakkisathAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(GeneralDrakkisathAI);
         SP_AI_Spell spells[4];
         bool m_spellcheck[4];
@@ -69,19 +68,19 @@ class GeneralDrakkisathAI : public CreatureAIScript
             spells[3].attackstoptimer = 1000; // 1sec
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -139,8 +138,6 @@ class GeneralDrakkisathAI : public CreatureAIScript
 // Pyroguard Embersser AI by Soulshifter
 class PyroguardEmbersserAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(PyroguardEmbersserAI);
         SP_AI_Spell spells[3];
         bool m_spellcheck[3];
@@ -177,19 +174,19 @@ class PyroguardEmbersserAI : public CreatureAIScript
             spells[2].attackstoptimer = 1000; // 1sec
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -247,8 +244,6 @@ class PyroguardEmbersserAI : public CreatureAIScript
 ///\todo  PHASES. D:
 class RendBlackhandAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(RendBlackhandAI);
         SP_AI_Spell spells[3];
         bool m_spellcheck[3];
@@ -285,19 +280,19 @@ class RendBlackhandAI : public CreatureAIScript
             spells[2].attackstoptimer = 1000; // 1sec
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -355,8 +350,6 @@ class RendBlackhandAI : public CreatureAIScript
 // Gyth AI by Soulshifter
 class GythAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(GythAI);
         SP_AI_Spell spells[3];
         bool m_spellcheck[3];
@@ -395,21 +388,21 @@ class GythAI : public CreatureAIScript
             HasSummoned = false;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
 
             HasSummoned = false;
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (!HasSummoned && getCreature()->GetHealthPct() <= 8)
             {
@@ -482,8 +475,6 @@ class GythAI : public CreatureAIScript
 // The Beast AI by Soulshifter
 class TheBeastAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(TheBeastAI);
         SP_AI_Spell spells[3];
         bool m_spellcheck[3];
@@ -520,19 +511,19 @@ class TheBeastAI : public CreatureAIScript
             spells[2].attackstoptimer = 1000; // 1sec
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -590,8 +581,6 @@ class TheBeastAI : public CreatureAIScript
 // Highlord Omokk AI by Soulshifter
 class HighlordOmokkAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(HighlordOmokkAI);
         SP_AI_Spell spells[7];
         bool m_spellcheck[7];
@@ -652,19 +641,19 @@ class HighlordOmokkAI : public CreatureAIScript
             spells[6].attackstoptimer = 1000; // 1sec
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -722,8 +711,6 @@ class HighlordOmokkAI : public CreatureAIScript
 // Shadow Hunter Vosh'gajin AI by Soulshifter
 class ShadowHunterVoshAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(ShadowHunterVoshAI);
         SP_AI_Spell spells[3];
         bool m_spellcheck[3];
@@ -760,19 +747,19 @@ class ShadowHunterVoshAI : public CreatureAIScript
             spells[2].attackstoptimer = 1000; // 1sec
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -830,8 +817,6 @@ class ShadowHunterVoshAI : public CreatureAIScript
 // War Master Voone AI by Soulshifter
 class WarMasterVooneAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(WarMasterVooneAI);
         SP_AI_Spell spells[6];
         bool m_spellcheck[6];
@@ -886,19 +871,19 @@ class WarMasterVooneAI : public CreatureAIScript
             spells[5].attackstoptimer = 1000; // 1sec
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -956,8 +941,6 @@ class WarMasterVooneAI : public CreatureAIScript
 // Mother Smolderweb AI by Soulshifter
 class MotherSmolderwebAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(MotherSmolderwebAI);
         SP_AI_Spell spells[4];
         bool m_spellcheck[4];
@@ -1000,19 +983,19 @@ class MotherSmolderwebAI : public CreatureAIScript
             spells[3].attackstoptimer = 1000; // 1sec
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -1070,8 +1053,6 @@ class MotherSmolderwebAI : public CreatureAIScript
 // Urok Doomhowl AI by Soulshifter
 class UrokDoomhowlAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(UrokDoomhowlAI);
         SP_AI_Spell spells[7];
         bool m_spellcheck[7];
@@ -1132,19 +1113,19 @@ class UrokDoomhowlAI : public CreatureAIScript
             spells[6].attackstoptimer = 1000; // 1sec
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -1202,8 +1183,6 @@ class UrokDoomhowlAI : public CreatureAIScript
 // Quartermaster Zigris AI by Soulshifter
 class QuartermasterZigrisAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(QuartermasterZigrisAI);
         SP_AI_Spell spells[3];
         bool m_spellcheck[3];
@@ -1240,19 +1219,19 @@ class QuartermasterZigrisAI : public CreatureAIScript
             spells[2].attackstoptimer = 1000; // 1sec
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -1310,8 +1289,6 @@ class QuartermasterZigrisAI : public CreatureAIScript
 // Halycon AI by Soulshifter
 class HalyconAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(HalyconAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
@@ -1344,21 +1321,21 @@ class HalyconAI : public CreatureAIScript
             HasSummoned = false;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
 
             HasSummoned = false;
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (!HasSummoned && getCreature()->GetHealthPct() <= 25)
             {
@@ -1431,8 +1408,6 @@ class HalyconAI : public CreatureAIScript
 // Overlord Wyrmthalak AI by Soulshifter
 class OverlordWyrmthalakAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(OverlordWyrmthalakAI);
         SP_AI_Spell spells[4];
         bool m_spellcheck[4];
@@ -1477,21 +1452,21 @@ class OverlordWyrmthalakAI : public CreatureAIScript
             HasSummoned = false;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
 
             HasSummoned = false;
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (!HasSummoned && getCreature()->GetHealthPct() <= 50)
             {

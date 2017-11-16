@@ -86,7 +86,6 @@ const uint32 SHADOW_GRASP2 = 30410;
 
 class MagtheridonTriggerAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(MagtheridonTriggerAI);
         std::vector<Unit*> ChannelersTable;    // Vector "list" of Channelers
         bool KilledChanneler[5];            // Bool that says if channeler died or not
@@ -109,7 +108,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
             RegisterAIUpdateEvent(1000);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             // Magtheridon yells when raid progresses, but during fight with himself
             YellTimer--;
@@ -429,7 +428,7 @@ class ManticronCubeGO : public GameObjectAIScript
             Channeler = 0;
         }
 
-        void OnActivate(Player* pPlayer)
+        void OnActivate(Player* pPlayer) override
         {
             // We check if player has aura that prevents anyone from using this GO
             Aura* aura = pPlayer->getAuraWithId(MIND_EXHAUSTION);
@@ -488,7 +487,7 @@ class ManticronCubeGO : public GameObjectAIScript
             RegisterAIUpdateEvent(1000);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             // Channeler settings check
             // We check if pointer has Channeler data and if so we check if that channeler is alive, in world and if channels Cube
@@ -611,9 +610,7 @@ const uint32 CN_CUBE_TRIGGER = 17376;
 
 class CubeTriggerAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(CubeTriggerAI);
-
         CubeTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
@@ -634,7 +631,6 @@ const uint32 SHADOW_BURST = 34436;
 
 class HellfireWarderAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(HellfireWarderAI);
         SP_AI_Spell spells[7];
         bool m_spellcheck[7];
@@ -717,7 +713,7 @@ class HellfireWarderAI : public CreatureAIScript
             spells[6].attackstoptimer = 8;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
 
@@ -725,14 +721,14 @@ class HellfireWarderAI : public CreatureAIScript
                 spells[i].casttime = 0;
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -850,7 +846,6 @@ const uint32 BURNING_ABYSSAL = 30511;
 
 class HellfireChannelerAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(HellfireChannelerAI);
         SP_AI_Spell spells[5];
         bool m_spellcheck[5];
@@ -911,7 +906,7 @@ class HellfireChannelerAI : public CreatureAIScript
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
 
@@ -922,7 +917,7 @@ class HellfireChannelerAI : public CreatureAIScript
                 spells[i].casttime = 0;
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -943,19 +938,19 @@ class HellfireChannelerAI : public CreatureAIScript
             }
         }
 
-        void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
+        void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
         {
             if (!getCreature()->GetAIInterface()->GetAllowedToEnterCombat())
                 getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             getCreature()->SetChannelSpellTargetGUID(0);
             getCreature()->SetChannelSpellId(0);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -1074,7 +1069,6 @@ const uint32 FIRE_BLAST = 37110;
 
 class BurningAbyssalAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(BurningAbyssalAI);
         SP_AI_Spell spells[1];
         bool m_spellcheck[1];
@@ -1102,7 +1096,7 @@ class BurningAbyssalAI : public CreatureAIScript
             getCreature()->m_noRespawn = true;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
 
@@ -1110,14 +1104,14 @@ class BurningAbyssalAI : public CreatureAIScript
                 spells[i].casttime = 0;
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -1242,7 +1236,6 @@ const uint32 ENRAGE = 34624;    // dunno if it's correct spell    -- 20 min afte
 
 class MagtheridonAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(MagtheridonAI);
         SP_AI_Spell spells[7];
         bool m_spellcheck[7];
@@ -1306,7 +1299,7 @@ class MagtheridonAI : public CreatureAIScript
             PhaseSwitch = false;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             timer_quake = timer_enrage = timer_blastNova = timer_caveIn = 0;
             PhaseSwitch = false;
@@ -1321,7 +1314,7 @@ class MagtheridonAI : public CreatureAIScript
                 Gate->SetState(GO_STATE_CLOSED);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -1347,12 +1340,12 @@ class MagtheridonAI : public CreatureAIScript
                 Gate->SetState(GO_STATE_OPEN);
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             sendDBChatMessage(8750);     // The Legion... will consume you... all....
         }
 
-        void OnTargetDied(Unit* mTarget)
+        void OnTargetDied(Unit* mTarget) override
         {
             if (getCreature()->GetHealthPct() > 0)
             {
@@ -1360,7 +1353,7 @@ class MagtheridonAI : public CreatureAIScript
             }
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (PhaseSwitch)
                 PhaseThree();

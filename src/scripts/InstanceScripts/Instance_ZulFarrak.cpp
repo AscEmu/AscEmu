@@ -33,9 +33,7 @@ Fevered Plague 16186 =  Inflicts 72 to 78 Nature damage to an enemy, then an add
 
 class ThekaAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(ThekaAI);
-
         ThekaAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             morph = sSpellCustomizations.GetSpellInfo(SP_THEKA_TRANSFORM);
@@ -46,14 +44,14 @@ class ThekaAI : public CreatureAIScript
             morphcheck = false;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             morphcheck = true;
             plaguecount = 0;
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -62,13 +60,13 @@ class ThekaAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             morphcheck = false;
             plaguecount = 0;
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             plaguecount++;
             randomplague = 16 + RandomUInt(3);
@@ -118,12 +116,10 @@ he summons Servant of antu'sul 8156 25% with spell 11894 each 15 second
 */
 class AntusulTriggerAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(AntusulTriggerAI);
-
         AntusulTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             getCreature()->GetAIInterface()->m_canMove = false;
             _setMeleeDisabled(true);
@@ -140,16 +136,13 @@ class AntusulTriggerAI : public CreatureAIScript
                 }
             }
         }
-
 };
 
 
 /// \note healing ward and earthgrab ward commented out since they need time and work wich i dont have right now
 class AntusulAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(AntusulAI);
-
         AntusulAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             add1 = add2 = add3 = add4 = add5 = add6 = trigger = NULL;
@@ -159,7 +152,7 @@ class AntusulAI : public CreatureAIScript
             secondspawncount = 0;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             add1 = add2 = add3 = add4 = add5 = add6 = trigger = NULL;
             spawns = firstspawn = secondspawn = true;
@@ -169,7 +162,7 @@ class AntusulAI : public CreatureAIScript
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             spawns = spawns2 = attack = firstspawn = secondspawn = false;
 
@@ -181,7 +174,7 @@ class AntusulAI : public CreatureAIScript
             deletespawns();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             spawns = spawns2 = attack = firstspawn = secondspawn = false;
 
@@ -191,7 +184,7 @@ class AntusulAI : public CreatureAIScript
                 trigger->Despawn(100, 0);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (getCreature()->GetHealthPct() <= 75 && firstspawn)
             {
@@ -336,10 +329,7 @@ class AntusulAI : public CreatureAIScript
         Creature* trigger;
 
         SpellInfo* servant;
-        //SpellEntry* healing_ward;
-        //SpellEntry* earthgrab_ward;
 };
-
 
 void SetupZulFarrak(ScriptMgr* mgr)
 {

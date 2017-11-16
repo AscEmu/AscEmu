@@ -25,7 +25,6 @@
 
 class AmnennarTheColdbringerAI : public CreatureAIScript
 {
-    public:
 
         ADD_CREATURE_FACTORY_FUNCTION(AmnennarTheColdbringerAI);
         SP_AI_Spell spells[3];
@@ -47,7 +46,6 @@ class AmnennarTheColdbringerAI : public CreatureAIScript
             spells[0].attackstoptimer = 3000;
             m_spellcheck[0] = true;
 
-
             spells[1].info = sSpellCustomizations.GetSpellInfo(22645);
             spells[1].cooldown = 10;
             spells[1].targettype = TARGET_ATTACKING;
@@ -56,7 +54,6 @@ class AmnennarTheColdbringerAI : public CreatureAIScript
             spells[1].attackstoptimer = 3000;
             m_spellcheck[1] = true;
 
-
             spells[2].info = sSpellCustomizations.GetSpellInfo(13009);
             spells[2].cooldown = 10;
             spells[2].targettype = TARGET_ATTACKING;
@@ -64,10 +61,9 @@ class AmnennarTheColdbringerAI : public CreatureAIScript
             spells[2].perctrigger = RandomFloat(20.0f);
             spells[2].attackstoptimer = 3000;
             m_spellcheck[2] = true;
-
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
@@ -79,11 +75,7 @@ class AmnennarTheColdbringerAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-        }
-
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -91,12 +83,12 @@ class AmnennarTheColdbringerAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -167,11 +159,9 @@ class GluttonAI : public CreatureAIScript
         mFrenzy->addEmote("Glutton is getting hungry!", CHAT_MSG_MONSTER_YELL);
     }
 
-    void OnCombatStart(Unit* pTarget)
+    void OnCombatStart(Unit* pTarget) override
     {
         CastSpellNowNoScheduling(mDiseaseCloud);
-
-        
     }
 
     SpellDesc* mDiseaseCloud;
@@ -214,7 +204,6 @@ class PlaguemawTheRottingAI : public CreatureAIScript
             spells[0].attackstoptimer = 3000;
             m_spellcheck[0] = true;
 
-
             spells[1].info = sSpellCustomizations.GetSpellInfo(12946);
             spells[1].cooldown = 10;
             spells[1].targettype = TARGET_ATTACKING;
@@ -222,10 +211,9 @@ class PlaguemawTheRottingAI : public CreatureAIScript
             spells[1].perctrigger = RandomFloat(20.0f);
             spells[1].attackstoptimer = 3000;
             m_spellcheck[1] = true;
-
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
@@ -237,11 +225,7 @@ class PlaguemawTheRottingAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-        }
-
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -249,12 +233,12 @@ class PlaguemawTheRottingAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -315,8 +299,6 @@ class PlaguemawTheRottingAI : public CreatureAIScript
 
 class RagglesnoutAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(RagglesnoutAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
@@ -337,7 +319,6 @@ class RagglesnoutAI : public CreatureAIScript
             spells[0].attackstoptimer = 3000;
             m_spellcheck[0] = true;
 
-
             spells[1].info = sSpellCustomizations.GetSpellInfo(11659);
             spells[1].cooldown = 10;
             spells[1].targettype = TARGET_ATTACKING;
@@ -345,10 +326,9 @@ class RagglesnoutAI : public CreatureAIScript
             spells[1].perctrigger = RandomFloat(20.0f);
             spells[1].attackstoptimer = 3000;
             m_spellcheck[1] = true;
-
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
@@ -360,11 +340,7 @@ class RagglesnoutAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-        }
-
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -372,12 +348,12 @@ class RagglesnoutAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -439,8 +415,6 @@ class RagglesnoutAI : public CreatureAIScript
 
 class TutenKashAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(TutenKashAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
@@ -461,7 +435,6 @@ class TutenKashAI : public CreatureAIScript
             spells[0].attackstoptimer = 3000;
             m_spellcheck[0] = true;
 
-
             spells[1].info = sSpellCustomizations.GetSpellInfo(12252);
             spells[1].cooldown = 10;
             spells[1].targettype = TARGET_ATTACKING;
@@ -469,10 +442,9 @@ class TutenKashAI : public CreatureAIScript
             spells[1].perctrigger = RandomFloat(20.0f);
             spells[1].attackstoptimer = 3000;
             m_spellcheck[1] = true;
-
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
@@ -484,11 +456,7 @@ class TutenKashAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-        }
-
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -496,12 +464,12 @@ class TutenKashAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);

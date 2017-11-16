@@ -28,7 +28,7 @@
 class Berthold : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* Plr)
+    void OnHello(Object* pObject, Player* Plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->GetGUID(), 11224);
         menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(428), 1);     // What is this place?
@@ -43,7 +43,7 @@ public:
         menu.Send(Plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId)
+    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId) override
     {
         switch (Id)
         {
@@ -87,18 +87,17 @@ class AttumenTheHuntsmanAI : public CreatureAIScript
         addEmoteForEvent(Event_OnTaunt, 8823);
     }
 
-    void OnLoad()
+    void OnLoad() override
     {
         AggroNearestUnit(); //Aggro on spawn
     }
 
-    void OnCombatStop(Unit* pTarget)
+    void OnCombatStop(Unit* pTarget) override
     {
         despawn(10000);
-        
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         if (isScriptPhase(1))
         {
@@ -125,23 +124,21 @@ class MidnightAI : public CreatureAIScript
     {
     }
 
-    void OnCombatStop(Unit* pTarget)
+    void OnCombatStop(Unit* pTarget) override
     {
         _setMeleeDisabled(true);
         _setCastDisabled(false);
-        
     }
 
-    void OnTargetDied(Unit* pTarget)
+    void OnTargetDied(Unit* pTarget) override
     {
         if (GetLinkedCreature() && GetLinkedCreature()->isAlive())
         {
             static_cast<CreatureAIScript*>(GetLinkedCreature())->sendChatMessage(CHAT_MSG_MONSTER_YELL, 9173, "Well done Midnight!");
         }
-        
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         if (isScriptPhase(1))
         {
@@ -226,20 +223,18 @@ class MoroesAI : public CreatureAIScript
         addEmoteForEvent(Event_OnTargetDied, 8828);
     }
 
-    void OnCombatStart(Unit* pTarget)
+    void OnCombatStart(Unit* pTarget) override
     {
         mEnrage->mEnabled = true;
         mVanishTimer = _addTimer(35000);    //First vanish after 35sec
-        
     }
 
-    void OnDied(Unit* pKiller)
+    void OnDied(Unit* pKiller) override
     {
         _removeAuraOnPlayers(MOROES_GARROTE);
-        
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         if (isScriptPhase(1))
         {
@@ -260,10 +255,9 @@ class MoroesAI : public CreatureAIScript
                 setScriptPhase(1);
             }
         }
-        
     }
 
-    void OnScriptPhaseChange(uint32_t phaseId)
+    void OnScriptPhaseChange(uint32_t phaseId) override
     {
         switch (phaseId)
         {
@@ -323,10 +317,9 @@ class MaidenOfVirtueAI : public CreatureAIScript
         addEmoteForEvent(Event_OnDied, 8833);
     }
 
-    void OnCombatStart(Unit* pTarget)
+    void OnCombatStart(Unit* pTarget) override
     {
         mRepentance->setTriggerCooldown();    //No repentance at the beginning of the fight
-        
     }
 
     SpellDesc* mRepentance;
@@ -344,7 +337,6 @@ const uint32 PBS_TAUNT = 30755;    // Picnic Basket Smell (taunt)
 
 class BigBadWolfAI : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(BigBadWolfAI);
     bool m_spellcheck[4];
     SP_AI_Spell spells[4];
@@ -392,7 +384,7 @@ public:
         RTarget = NULL;
     }
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
         sendDBChatMessage(1993);     // The better to own you with!
 
@@ -405,14 +397,14 @@ public:
         RegisterAIUpdateEvent(1000);
     }
 
-    void OnCombatStop(Unit* mTarget)
+    void OnCombatStop(Unit* mTarget) override
     {
         setAIAgent(AGENT_NULL);
         getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         ///\todo not in db
         getCreature()->PlaySoundToSet(9275);
@@ -428,12 +420,12 @@ public:
             DoorRightO->SetState(GO_STATE_OPEN);
     }
 
-    void OnTargetDied(Unit* mTarget)
+    void OnTargetDied(Unit* mTarget) override
     {
         sendDBChatMessage(1994);     // Mmmm... delicious.
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         if (ThreatAdd == true)
         {
@@ -543,7 +535,6 @@ const uint32 DEBUFF_LITTLE_RED_RIDING_HOOD = 30756;
 
 class THEBIGBADWOLFAI : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(THEBIGBADWOLFAI);
     bool m_spellcheck[3];
     SP_AI_Spell spells[3];
@@ -581,14 +572,14 @@ public:
         spells[2].speech = "Run away little girl, run away!";
     }
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
         CastTime();
         sendDBChatMessage(1993);     // The better to own you with!
         RegisterAIUpdateEvent(1000);
     }
 
-    void OnCombatStop(Unit* mTarget)
+    void OnCombatStop(Unit* mTarget) override
     {
         GameObject* DoorLeft = getNearestGameObject(-10917.1445f, -1774.05f, 90.478f, 184279);
         GameObject* DoorRight = getNearestGameObject(-10872.195f, -1779.42f, 90.45f, 184278);
@@ -609,7 +600,7 @@ public:
         RemoveAIUpdateEvent();
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         GameObject* DoorLeft = getNearestGameObject(-10917.1445f, -1774.05f, 90.478f, 184279);
         GameObject* DoorRight = getNearestGameObject(-10872.195f, -1779.42f, 90.45f, 184278);
@@ -630,13 +621,13 @@ public:
         getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "AArrhhh.");
     }
 
-    void OnTargetDied(Unit* mTarget)
+    void OnTargetDied(Unit* mTarget) override
     {
         getCreature()->PlaySoundToSet(9277);
         getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Mmmm... delicious.");
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         float val = RandomFloat(100.0f);
         SpellCast(val);
@@ -705,7 +696,7 @@ uint32 WayStartBBW[1000000];
 class BarnesGS : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* Plr)
+    void OnHello(Object* pObject, Player* Plr) override
     {
         if (WayStartBBW[pObject->GetInstanceID()] == 5)
         {
@@ -720,7 +711,7 @@ public:
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId)
+    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId) override
     {
         switch (Id)
         {
@@ -753,14 +744,14 @@ public:
 class GrandMother : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* Plr)
+    void OnHello(Object* pObject, Player* Plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->GetGUID(), 7245, 0);         // Don't get too close, $N. I'm liable to fumble and bash your brains open with the face of my hammer.
         menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(434), 1);         // What phat lewts you have Grandmother!
         menu.Send(Plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId)
+    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId) override
     {
         switch (Id)
         {
@@ -787,7 +778,6 @@ static Movement::Location Barnes[] =
 
 class BarnesAI : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(BarnesAI);
 
     BarnesAI(Creature* pCreature) : CreatureAIScript(pCreature)
@@ -819,7 +809,7 @@ public:
         }
     }
 
-    void OnReachWP(uint32 iWaypointId, bool bForwards)
+    void OnReachWP(uint32 iWaypointId, bool bForwards) override
     {
         switch (iWaypointId)
         {
@@ -1111,7 +1101,6 @@ const uint32 BERSERK = 26662;
 
 class CuratorAI : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(CuratorAI);
     bool m_spellcheck[4];
     SP_AI_Spell spells[4];
@@ -1149,7 +1138,7 @@ public:
         Timer = 0;
     }
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
         sendDBChatMessage(2062);     // The Menagerie is for guests only.
 
@@ -1164,19 +1153,19 @@ public:
         RegisterAIUpdateEvent(1000);
     }
 
-    void OnCombatStop(Unit* mTarget)
+    void OnCombatStop(Unit* mTarget) override
     {
         setAIAgent(AGENT_NULL);
         getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         sendDBChatMessage(2069);     // This Curator is no longer op... er... ation... al.
     }
 
-    void OnTargetDied(Unit* mTarget)
+    void OnTargetDied(Unit* mTarget) override
     {
         if (getCreature()->GetHealthPct() > 0)
         {
@@ -1192,7 +1181,7 @@ public:
         }
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         if (!evocation)
         {
@@ -1374,7 +1363,6 @@ enum SUPERSPELL
 
 class ShadeofAranAI : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(ShadeofAranAI);
     bool m_spellcheck[6];
     SP_AI_Spell spells[6];
@@ -1457,7 +1445,7 @@ public:
         FlameWreathTimer = 0;
     }
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
         //Atiesh check
         bool HasAtiesh = false;
@@ -1521,7 +1509,7 @@ public:
         }
     }
 
-    void OnCombatStop(Unit* mTarget)
+    void OnCombatStop(Unit* mTarget) override
     {
         CastTime();
         setAIAgent(AGENT_NULL);
@@ -1534,7 +1522,7 @@ public:
             SDoor->SetFlags(34);
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         CastTime();
         sendDBChatMessage(2045);     // At last... The nightmare is.. over...
@@ -1545,7 +1533,7 @@ public:
             SDoor->SetFlags(34);
     }
 
-    void OnTargetDied(Unit* mTarget)
+    void OnTargetDied(Unit* mTarget) override
     {
         switch (RandomUInt(1))
         {
@@ -1559,7 +1547,7 @@ public:
         }
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         if (FlameWreathTimer)
         {
@@ -1926,33 +1914,31 @@ protected:
 
 class WaterEleAI : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(WaterEleAI);
-
     WaterEleAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         WaterBolt = 0;
     }
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
         WaterBolt = (RandomUInt(3) + 5);
         RegisterAIUpdateEvent(1250);
     }
 
-    void OnCombatStop(Unit* mTarget)
+    void OnCombatStop(Unit* mTarget) override
     {
         setAIAgent(AGENT_NULL);
         getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         getCreature()->Despawn(20000, 0);
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         WaterBolt--;
         if (!WaterBolt)
@@ -1970,21 +1956,19 @@ protected:
 
 class ShadowofAranAI : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(ShadowofAranAI);
-
     ShadowofAranAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         ShadowPyro = 0;
     }
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
         ShadowPyro = (RandomUInt(2) + 4);
         RegisterAIUpdateEvent(1250);
     }
 
-    void OnCombatStop(Unit* mTarget)
+    void OnCombatStop(Unit* mTarget) override
     {
         setAIAgent(AGENT_NULL);
         getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -1992,12 +1976,12 @@ public:
         RemoveAIUpdateEvent();
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         getCreature()->Despawn(5000, 0);
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         ShadowPyro--;
         if (!ShadowPyro)
@@ -2040,7 +2024,6 @@ const uint32 CN_FPORTAL = 17265;
 
 class IllhoofAI : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(IllhoofAI);
     bool m_spellcheck[2];
     SP_AI_Spell spells[2];
@@ -2064,23 +2047,14 @@ public:
         spells[1].cooldown = 600;
         spells[1].perctrigger = 0.0f;
         spells[1].attackstoptimer = 1000;
-        /*
-                spells[2].info = sSpellCustomizations.GetSpellInfo(S_DEMONCHAINS);
-                spells[2].targettype = TARGET_VARIOUS;
-                spells[2].instant = true;
-                spells[2].cooldown = 45;
-                spells[2].perctrigger = 0.0f;
-                spells[2].attackstoptimer = 1000;
-        */
 
         ReSummon = false;
         ImpTimer = 0;
         ReKilrek = 0;
         DemonChain = 0;
-
     }
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
         sendDBChatMessage(2050);     // Ah, you're just in time. The rituals are about to begin.
 
@@ -2095,7 +2069,7 @@ public:
         RegisterAIUpdateEvent(1000);
     }
 
-    void OnCombatStop(Unit* mTarget)
+    void OnCombatStop(Unit* mTarget) override
     {
         clean();
         setAIAgent(AGENT_NULL);
@@ -2103,7 +2077,7 @@ public:
         RemoveAIUpdateEvent();
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         clean();
         sendDBChatMessage(2049);     // My life, is yours. Oh great one.
@@ -2120,7 +2094,7 @@ public:
             portal2->Despawn(0, 0);
     }
 
-    void OnTargetDied(Unit* mTarget)
+    void OnTargetDied(Unit* mTarget) override
     {
         switch (RandomUInt(1))
         {
@@ -2133,7 +2107,7 @@ public:
         }
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         float val = RandomFloat(100.0f);
         SpellCast(val);
@@ -2280,7 +2254,6 @@ protected:
 // Kil'Rek
 class KilrekAI : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(KilrekAI);
     bool m_spellcheck[2];
     SP_AI_Spell spells[2];
@@ -2305,28 +2278,28 @@ public:
         spells[1].instant = true;
     }
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
         spells[0].casttime = (uint32)time(NULL) + spells[0].cooldown;
 
         RegisterAIUpdateEvent(1000);
     }
 
-    void OnCombatStop(Unit* mTarget)
+    void OnCombatStop(Unit* mTarget) override
     {
         setAIAgent(AGENT_NULL);
         getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         Unit* Illhoof = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), 15688);
         if (Illhoof != NULL && Illhoof->isAlive())
             Illhoof->CastSpell(Illhoof, spells[1].info, spells[1].instant);
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         float val = RandomFloat(100.0f);
         SpellCast(val);
@@ -2430,7 +2403,6 @@ protected:
 // Fiendish Imp
 class FiendishImpAI : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(FiendishImpAI);
     SP_AI_Spell spells[1];
     bool m_spellcheck[1];
@@ -2459,7 +2431,7 @@ public:
         }
     }
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
         getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
@@ -2472,7 +2444,7 @@ public:
         RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
     }
 
-    void OnCombatStop(Unit* mTarget)
+    void OnCombatStop(Unit* mTarget) override
     {
         setAIAgent(AGENT_NULL);
         getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -2481,12 +2453,12 @@ public:
         getCreature()->Despawn(1, 0);
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         getCreature()->Despawn(1, 0);
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         setAIAgent(AGENT_NULL);
         if (getCreature()->GetAIInterface()->getNextTarget() && getCreature()->GetDistance2dSq(getCreature()->GetAIInterface()->getNextTarget()) <= 1225.0f)
@@ -2596,7 +2568,6 @@ protected:
 
 class DemonChains : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(DemonChains);
     DemonChains(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -2605,7 +2576,7 @@ public:
         getCreature()->DisableAI();
     }
 
-    void OnCombatStop(Unit* mTarget)
+    void OnCombatStop(Unit* mTarget) override
     {
         setAIAgent(AGENT_NULL);
         getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -2613,7 +2584,7 @@ public:
             getCreature()->Despawn(10000, 0);
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         Unit* uIllhoof = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(),
             getCreature()->GetPositionZ(), CN_ILLHOOF);
@@ -2626,7 +2597,6 @@ public:
 
 class FiendPortal : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(FiendPortal);
     FiendPortal(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -2640,7 +2610,7 @@ public:
         RegisterAIUpdateEvent(10000);
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         spawnCreature(CN_FIENDISH_IMP, getCreature()->GetPosition());
     }
@@ -2678,7 +2648,6 @@ AXETOSS2? - 9317
 
 class MalchezaarAI : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(MalchezaarAI);
     bool m_spellcheck[9];
     SP_AI_Spell spells[9];
@@ -2775,7 +2744,7 @@ public:
         m_spawn_infernal = 0;
     }
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
         sendDBChatMessage(2019);     // Madness has brought you here to me. I shall be your undoing.
 
@@ -2800,7 +2769,7 @@ public:
         }
     }
 
-    void OnCombatStop(Unit* mTarget)
+    void OnCombatStop(Unit* mTarget) override
     {
         setAIAgent(AGENT_NULL);
         getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -2836,7 +2805,7 @@ public:
             MAxes->Despawn(1000, 0);
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         sendDBChatMessage(2030);     // I refuse to concede defeat. I am a prince of the Eredar! I am...
 
@@ -2855,7 +2824,7 @@ public:
             MDoor->SetState(GO_STATE_OPEN);
     }
 
-    void OnTargetDied(Unit* mTarget)
+    void OnTargetDied(Unit* mTarget) override
     {
         switch (RandomUInt(2))
         {
@@ -2871,7 +2840,7 @@ public:
         }
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         switch (m_phase)
         {
@@ -3180,11 +3149,10 @@ protected:
 
 class NetherInfernalAI : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(NetherInfernalAI);
     NetherInfernalAI(Creature* pCreature) : CreatureAIScript(pCreature) {};
 
-    void OnLoad()
+    void OnLoad() override
     {
         setRooted(true);
         setCanEnterCombat(false);
@@ -3193,20 +3161,17 @@ public:
         RegisterAIUpdateEvent(6000);
         despawn(175000, 0);
         getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(HELLFIRE), true);
-        
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(HELLFIRE), true);
-        
     }
 
 };
 
 class InfernalDummyAI : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(InfernalDummyAI);
     InfernalDummyAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -3224,7 +3189,6 @@ public:
 
 class MAxesAI : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(MAxesAI);
     SP_AI_Spell spells[1];
 
@@ -3238,7 +3202,7 @@ public:
         spells[0].cooldown = 1;
     }
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
         RegisterAIUpdateEvent(6000);
 
@@ -3269,14 +3233,14 @@ public:
         getCreature()->GetAIInterface()->taunt(random_target, true);
     }
 
-    void OnCombatStop(Unit* mTarget)
+    void OnCombatStop(Unit* mTarget) override
     {
         setAIAgent(AGENT_NULL);
         getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         uint32 t = (uint32)time(NULL);
         if (t > spells[0].casttime)
@@ -3285,7 +3249,6 @@ public:
             spells[0].casttime = t + spells[0].cooldown;
         }
     }
-
 };
 
 // Netherspite
@@ -3301,7 +3264,6 @@ const uint32 NETHERBURN = 30522;
 
 class NetherspiteAI : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(NetherspiteAI);
     bool m_spellcheck[3];
     SP_AI_Spell spells[3];
@@ -3335,7 +3297,7 @@ public:
         VoidTimer = 0;
     }
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
         for (uint8 i = 0; i < nrspells; i++)
             spells[i].casttime = spells[i].cooldown;
@@ -3354,7 +3316,7 @@ public:
         }
     }
 
-    void OnCombatStop(Unit* mTarget)
+    void OnCombatStop(Unit* mTarget) override
     {
         getCreature()->RemoveAura(NETHERBURN);
 
@@ -3367,14 +3329,14 @@ public:
             NDoor->SetState(GO_STATE_OPEN);
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         GameObject* NDoor = getNearestGameObject(-11186.2f, -1665.14f, 281.398f, 185521);
         if (NDoor)
             NDoor->SetState(GO_STATE_OPEN);
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         uint32 t = (uint32)time(NULL);
         if (t > VoidTimer && getCreature()->GetAIInterface()->getNextTarget())
@@ -3459,7 +3421,6 @@ protected:
 
 class VoidZoneAI : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(VoidZoneAI);
     SP_AI_Spell spells[1];
 
@@ -3483,7 +3444,7 @@ public:
         getCreature()->CastSpell(getCreature(), spells[0].info, spells[0].instant);
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         uint32 t = (uint32)time(NULL);
         if (t > spells[0].casttime)
@@ -3492,7 +3453,6 @@ public:
             spells[0].casttime = t + spells[0].cooldown;
         }
     }
-
 };
 
 //------------------------------------
@@ -3535,7 +3495,6 @@ static Movement::Location coords[] =
 
 class NightbaneAI : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(NightbaneAI);
     bool m_spellcheck[5];
     SP_AI_Spell spells[5];
@@ -3597,7 +3556,7 @@ public:
         m_FlyPhaseTimer = 0;
     }
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
         ResetCastTime();
         m_phase = 0;
@@ -3608,7 +3567,7 @@ public:
         RegisterAIUpdateEvent(1000);
     }
 
-    void OnCombatStop(Unit* mTarget)
+    void OnCombatStop(Unit* mTarget) override
     {
         getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
         setAIAgent(AGENT_NULL);
@@ -3619,7 +3578,7 @@ public:
         RemoveAIUpdateEvent();
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         switch (m_phase)
         {
@@ -3637,7 +3596,7 @@ public:
         }
     }
 
-    void OnReachWP(uint32 iWaypointId, bool bForwards)
+    void OnReachWP(uint32 iWaypointId, bool bForwards) override
     {
         switch (iWaypointId)
         {
@@ -3905,12 +3864,10 @@ const uint32 SP_SUMMON_TITO = 31014;
 
 class DorotheeAI : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(DorotheeAI);
     bool m_spellcheck[2];
     SP_AI_Spell spells[2];
     uint32 summontito;
-
 
     DorotheeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -3939,7 +3896,7 @@ public:
         titoDeadSpeech = false;
     }
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
         sendDBChatMessage(1978);     // Oh Tito, we simply must find a way home! The old wizard could be our only hope! Strawman, Roar, Tinhead, will you - wait... oh golly, look we have visitors!
 
@@ -3947,7 +3904,7 @@ public:
         RegisterAIUpdateEvent(1000);
     }
 
-    void OnCombatStop(Unit* mTarget)
+    void OnCombatStop(Unit* mTarget) override
     {
         CastTime();
         setAIAgent(AGENT_NULL);
@@ -3957,7 +3914,7 @@ public:
         getCreature()->Despawn(1, 0);
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         sendDBChatMessage(1975);     // Oh at last, at last I can go home!
 
@@ -3974,9 +3931,6 @@ public:
 
         CastTime();
     }
-
-    void OnTargetDied(Unit* mTarget)
-    { }
 
     void SpawnTito()    // Lacking in collision checks!
     {
@@ -3995,7 +3949,8 @@ public:
 
         tito = spawnCreature(17548, newposx, newposy, getCreature()->GetPositionZ() + 0.5f, 2.177125f);
     }
-    void AIUpdate()
+
+    void AIUpdate() override
     {
         float val = RandomFloat(100.0f);
         SpellCast(val);
@@ -4134,11 +4089,9 @@ const uint32 SP_ANNOYING_YIPPING = 31015;
 
 class TitoAI : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(TitoAI);
     bool m_spellcheck[1];
     SP_AI_Spell spells[1];
-
 
     TitoAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -4157,13 +4110,13 @@ public:
         getCreature()->m_noRespawn = true;
     }
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
         CastTime();
         RegisterAIUpdateEvent(1000);
     }
 
-    void OnCombatStop(Unit* mTarget)
+    void OnCombatStop(Unit* mTarget) override
     {
         CastTime();
         setAIAgent(AGENT_NULL);
@@ -4173,12 +4126,12 @@ public:
         getCreature()->Despawn(1, 0);
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         CastTime();
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         float val = RandomFloat(100.0f);
         SpellCast(val);
@@ -4249,7 +4202,6 @@ const uint32 SP_BRAIN_BASH = 31046;
 
 class StrawmanAI : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(StrawmanAI);
     bool m_spellcheck[2];
     SP_AI_Spell spells[2];
@@ -4274,10 +4226,9 @@ public:
         spells[1].cooldown = 8; //not sure about this
         spells[1].perctrigger = 0.0f;
         spells[1].attackstoptimer = 1000;
-
     }
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
         sendDBChatMessage(1982);     // Now what should I do with you? I simply can't make up my mind.
 
@@ -4285,7 +4236,7 @@ public:
         RegisterAIUpdateEvent(1000);
     }
 
-    void OnCombatStop(Unit* mTarget)
+    void OnCombatStop(Unit* mTarget) override
     {
         CastTime();
         setAIAgent(AGENT_NULL);
@@ -4295,7 +4246,7 @@ public:
         getCreature()->Despawn(1, 0);
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         sendDBChatMessage(1983);     // Don't let them make... a mattress outta' me.
 
@@ -4313,12 +4264,12 @@ public:
         CastTime();
     }
 
-    void OnTargetDied(Unit* mTarget)
+    void OnTargetDied(Unit* mTarget) override
     {
         sendDBChatMessage(1984);     // I guess I'm not a failure after all!
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         float val = RandomFloat(100.0f);
         SpellCast(val);
@@ -4390,7 +4341,6 @@ const uint32 SP_RUST = 31086;
 
 class TinheadAI : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(TinheadAI);
     bool m_spellcheck[2];
     SP_AI_Spell spells[2];
@@ -4417,7 +4367,7 @@ public:
         spells[1].attackstoptimer = 1000;
     }
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
         sendDBChatMessage(1985);     // I could really use a heart. Say, can I have yours?
 
@@ -4425,7 +4375,7 @@ public:
         RegisterAIUpdateEvent(1000);
     }
 
-    void OnCombatStop(Unit* mTarget)
+    void OnCombatStop(Unit* mTarget) override
     {
         CastTime();
         setAIAgent(AGENT_NULL);
@@ -4435,7 +4385,7 @@ public:
         getCreature()->Despawn(1, 0);
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         sendDBChatMessage(1986);     // Back to being an old rust bucket.
 
@@ -4453,12 +4403,12 @@ public:
         CastTime();
     }
 
-    void OnTargetDied(Unit* mTarget)
+    void OnTargetDied(Unit* mTarget) override
     {
         sendDBChatMessage(1987);     // Guess I'm not so rusty after all.
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         float val = RandomFloat(100.0f);
         SpellCast(val);
@@ -4531,19 +4481,19 @@ public:
 
     RoarAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
         sendDBChatMessage(1979);     // I'm not afraid a' you! Do you wanna' fight? Huh, do ya'? C'mon! I'll fight ya' with both paws behind my back!
     }
 
-    void OnCombatStop(Unit* mTarget)
+    void OnCombatStop(Unit* mTarget) override
     {
         setAIAgent(AGENT_NULL);
         getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         getCreature()->Despawn(1, 0);
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         sendDBChatMessage(1980);     // You didn't have to go and do that!
 
@@ -4558,7 +4508,6 @@ public:
             spawnCreature(18168, -10884.501f, -1757.3249f, 90.476f, 0.0f);
         }
     }
-
 };
 
 const uint32 CN_CRONE = 18168;
@@ -4568,7 +4517,6 @@ const uint32 SP_CHAIN_LIGHTNING = 32337;
 
 class CroneAI : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(CroneAI);
     bool m_spellcheck[2];
     SP_AI_Spell spells[2];
@@ -4594,7 +4542,7 @@ public:
         spells[1].attackstoptimer = 1000;
     }
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
         sendDBChatMessage(1989);     // Woe to each and every one of you, my pretties!
 
@@ -4602,7 +4550,7 @@ public:
         RegisterAIUpdateEvent(1000);
     }
 
-    void OnCombatStop(Unit* mTarget)
+    void OnCombatStop(Unit* mTarget) override
     {
         if (getCreature()->GetHealthPct() > 0)
         {
@@ -4628,7 +4576,7 @@ public:
         getCreature()->Despawn(1, 0);
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         sendDBChatMessage(1991);     // How could you? What a cruel, cruel world...
 
@@ -4649,12 +4597,12 @@ public:
         CastTime();
     }
 
-    void OnTargetDied(Unit* mTarget)
+    void OnTargetDied(Unit* mTarget) override
     {
         sendDBChatMessage(1992);     // Fixed you, didn't I?
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         float val = RandomFloat(100.0f);
         SpellCast(val);
@@ -4724,7 +4672,6 @@ const uint32 CYCLONE_KNOCK = 38517;
 
 class CycloneOZ : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(CycloneOZ);
     CycloneOZ(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -4735,17 +4682,17 @@ public:
         getCreature()->m_noRespawn = true;
     }
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
         RegisterAIUpdateEvent(1000);
     }
 
-    void OnCombatStop(Unit* mTarget)
+    void OnCombatStop(Unit* mTarget) override
     {
         RemoveAIUpdateEvent();
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CYCLONE_KNOCK), true);
     }
@@ -4764,7 +4711,6 @@ const uint32 SP_DARING = 30841;
 
 class RomuloAI : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(RomuloAI);
     bool m_spellcheck[4];
     SP_AI_Spell spells[4];
@@ -4806,7 +4752,7 @@ public:
         spells[3].attackstoptimer = 1000;
     }
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
         sendDBChatMessage(2002);     // Wilt thou provoke me? Then have at thee, boy!
 
@@ -4814,7 +4760,7 @@ public:
         RegisterAIUpdateEvent(1000);
     }
 
-    void OnCombatStop(Unit* mTarget)
+    void OnCombatStop(Unit* mTarget) override
     {
         if (getCreature()->GetHealthPct() > 0)
         {
@@ -4839,7 +4785,7 @@ public:
         getCreature()->Despawn(1, 0);
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         switch (RandomUInt(1))
         {
@@ -4868,12 +4814,12 @@ public:
         CastTime();
     }
 
-    void OnTargetDied(Unit* mTarget)
+    void OnTargetDied(Unit* mTarget) override
     {
         sendDBChatMessage(2006);     // How well my comfort is revived by this!
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         float val = RandomFloat(100.0f);
         SpellCast(val);
@@ -4949,7 +4895,6 @@ const uint32 SP_DEVOTION = 30887;
 
 class JulianneAI : public CreatureAIScript
 {
-public:
     ADD_CREATURE_FACTORY_FUNCTION(JulianneAI);
     bool m_spellcheck[4];
     SP_AI_Spell spells[4];
@@ -4991,7 +4936,7 @@ public:
         spells[3].attackstoptimer = 1000;
     }
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* mTarget) override
     {
         sendDBChatMessage(1996);     // What devil art thou, that dost torment me thus?
 
@@ -4999,7 +4944,7 @@ public:
         RegisterAIUpdateEvent(1000);
     }
 
-    void OnCombatStop(Unit* mTarget)
+    void OnCombatStop(Unit* mTarget) override
     {
         if (getCreature()->GetHealthPct() > 0)
         {
@@ -5024,7 +4969,7 @@ public:
         getCreature()->Despawn(1, 0);
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         switch (RandomUInt(1))
         {
@@ -5045,12 +4990,12 @@ public:
         CastTime();
     }
 
-    void OnTargetDied(Unit* mTarget)
+    void OnTargetDied(Unit* mTarget) override
     {
         sendDBChatMessage(2001);     // Parting is such sweet sorrow.
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         float val = RandomFloat(100.0f);
         SpellCast(val);

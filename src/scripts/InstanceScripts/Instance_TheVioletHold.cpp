@@ -25,7 +25,6 @@ class TheVioletHoldScript : public InstanceScript
 {
     friend class SinclariGossip; // Friendship forever ;-)
 
-    private:
 
         uint32 m_phaseData[TVH_END];
         uint32 m_lastState = InvalidState;
@@ -48,7 +47,7 @@ class TheVioletHoldScript : public InstanceScript
 
         static InstanceScript* Create(MapMgr* pMapMgr) { return new TheVioletHoldScript(pMapMgr); }
 
-        void UpdateEvent()
+        void UpdateEvent() override
         {
             auto state = getData(MAP_VIOLET_HOLD);
 
@@ -146,36 +145,36 @@ class TheVioletHoldScript : public InstanceScript
             }
         }
 
-        void S2_SpawnPortals()
+        static void S2_SpawnPortals()
         {
 
         // TODO: Spawn any portals that are missing
         }
 
-        void S2_SpawnMobs()
+        static void S2_SpawnMobs()
         {
             // TODO: Spawn any mobs that are missing
             // TODO: Move this logic to the portals
         }
 
-        void S2_UpdateDoorDamage()
+        static void S2_UpdateDoorDamage()
         {
             // TODO: Update damage done to the door
             // TODO: Move this logic to the mobs
         }
 
-        void S3_UnlockDoorAndMoveNPCs()
+        static void S3_UnlockDoorAndMoveNPCs()
         {
             // TODO: Open door
             // TODO: Move NPCs into room
         }
 
-        void S3_SpawnGuards()
+        static void S3_SpawnGuards()
         {
             // TODO: Respawn guards that are missing
         }
 
-        void ActivateCrystal()
+        static void ActivateCrystal()
         {
             // get all mobs
             // play GO anim
@@ -192,7 +191,7 @@ class TheVioletHoldScript : public InstanceScript
             }
         }
 
-        int GetRandomIntroMob()
+        int GetRandomIntroMob() const
         {
             auto rnd = RandomFloat(100.0f);
             if (rnd < 25.0f)
@@ -215,12 +214,7 @@ class TheVioletHoldScript : public InstanceScript
             }
         }
 
-        void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer)
-        {
-
-        }
-
-        void OnPlayerEnter(Player* pPlayer)
+        void OnPlayerEnter(Player* pPlayer) override
         {
             TheVioletHoldScript* pInstance = (TheVioletHoldScript*)pPlayer->GetMapMgr()->GetScript();
             if (!pInstance)
@@ -230,7 +224,6 @@ class TheVioletHoldScript : public InstanceScript
             {
                 setData(MAP_VIOLET_HOLD, PreProgress);
             }
-
         }
 };
 
@@ -272,7 +265,7 @@ class VHCreatureAI : public CreatureAIScript
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I am alive!");
         }
 
-        void OnReachWP(uint32 iWaypointId, bool bForwards)
+        void OnReachWP(uint32 iWaypointId, bool bForwards) override
         {
             switch (iWaypointId)
             {
@@ -296,7 +289,7 @@ class VHCreatureAI : public CreatureAIScript
         }
 
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             PutAllSpellsOnCooldown();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
@@ -308,11 +301,7 @@ class VHCreatureAI : public CreatureAIScript
                 m_spells[i].casttime = m_spells[i].cooldown;
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-        }
-
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             PutAllSpellsOnCooldown();
             setAIAgent(AGENT_NULL);
@@ -320,12 +309,12 @@ class VHCreatureAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             PutAllSpellsOnCooldown();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             auto randomValue = RandomFloat(100.0f);
             SpellCast(randomValue);
@@ -387,11 +376,9 @@ class VHCreatureAI : public CreatureAIScript
 
 class VHIntroAzureBinder : VHCreatureAI
 {
-    private:
 
         const int SPELL_ARCANE_BARRAGE = 58456;
         const int SPELL_ARCANE_EXPLOSION = 58455;
-    public:
 
         ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureBinder);
         VHIntroAzureBinder(Creature* pCreature) : VHCreatureAI(pCreature)
@@ -427,12 +414,8 @@ class VHIntroAzureBinder : VHCreatureAI
 
 class VHIntroAzureInvader : VHCreatureAI
 {
-    private:
-
         const int SPELL_CLEAVE = 15496;
         const int SPELL_IMPALE = 58459;
-
-    public:
 
         ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureInvader);
         VHIntroAzureInvader(Creature* pCreature) : VHCreatureAI(pCreature)
@@ -468,11 +451,7 @@ class VHIntroAzureInvader : VHCreatureAI
 
 class VHIntroAzureMageSlayer : VHCreatureAI
 {
-    private:
-
         const int SPELL_ARCANE_EMPOWERMENT = 58469;
-
-    public:
 
         ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureMageSlayer);
         VHIntroAzureMageSlayer(Creature* pCreature) : VHCreatureAI(pCreature)
@@ -498,12 +477,8 @@ class VHIntroAzureMageSlayer : VHCreatureAI
 
 class VHIntroAzureSpellBreaker : VHCreatureAI
 {
-    private:
-
         const int SPELL_ARCANE_BLAST = 58462;
         const int SPELL_SLOW = 25603;
-
-    public:
 
         ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureSpellBreaker);
         VHIntroAzureSpellBreaker(Creature* pCreature) : VHCreatureAI(pCreature)

@@ -27,8 +27,6 @@
 // Doctor Theolen KrastinovAI
 class DoctorTheolenKrastinovAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(DoctorTheolenKrastinovAI);
         SP_AI_Spell spells[3];
         bool m_spellcheck[3];
@@ -40,7 +38,6 @@ class DoctorTheolenKrastinovAI : public CreatureAIScript
             for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
-
             }
 
             spells[0].info = sSpellCustomizations.GetSpellInfo(SP_DR_THEOL_REND);
@@ -61,13 +58,14 @@ class DoctorTheolenKrastinovAI : public CreatureAIScript
             spells[2].perctrigger = 0.0f;
             spells[2].attackstoptimer = 1000;
         }
-        void OnCombatStart(Unit* mTarget)
+
+        void OnCombatStart(Unit* mTarget) override
         {
             FRENZY_LIMITER = 0;
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             FRENZY_LIMITER = 0;
             setAIAgent(AGENT_NULL);
@@ -75,12 +73,12 @@ class DoctorTheolenKrastinovAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             FRENZY_LIMITER = 0;
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (getCreature()->GetHealthPct() <= 50 && FRENZY_LIMITER == 0)
             {
@@ -145,8 +143,6 @@ class DoctorTheolenKrastinovAI : public CreatureAIScript
 // Instructor MaliciaAI
 class InstructorMaliciaAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(InstructorMaliciaAI);
         SP_AI_Spell spells[5];
         bool m_spellcheck[5];
@@ -157,7 +153,6 @@ class InstructorMaliciaAI : public CreatureAIScript
             for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
-
             }
 
             spells[0].info = sSpellCustomizations.GetSpellInfo(SP_MALICIA_CALL_OF_GRAVE);
@@ -191,19 +186,19 @@ class InstructorMaliciaAI : public CreatureAIScript
             spells[4].attackstoptimer = 1000;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -258,8 +253,6 @@ class InstructorMaliciaAI : public CreatureAIScript
 // The RavenianAI
 class TheRavenianAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(TheRavenianAI);
         SP_AI_Spell spells[4];
         bool m_spellcheck[4];
@@ -270,7 +263,6 @@ class TheRavenianAI : public CreatureAIScript
             for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
-
             }
 
             spells[0].info = sSpellCustomizations.GetSpellInfo(SP_RAVENIAN_TRAMPLE);
@@ -298,19 +290,19 @@ class TheRavenianAI : public CreatureAIScript
             spells[3].attackstoptimer = 1000;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -365,8 +357,6 @@ class TheRavenianAI : public CreatureAIScript
 // Lady Illucia BarovAI
 class LadyIlluciaBarovAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(LadyIlluciaBarovAI);
         SP_AI_Spell spells[5];
         bool m_spellcheck[5];
@@ -377,7 +367,6 @@ class LadyIlluciaBarovAI : public CreatureAIScript
             for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
-
             }
 
             spells[0].info = sSpellCustomizations.GetSpellInfo(SP_ILLUCIA_CURSE_OF_AGONY);
@@ -411,19 +400,19 @@ class LadyIlluciaBarovAI : public CreatureAIScript
             spells[4].attackstoptimer = 1000;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -478,8 +467,6 @@ class LadyIlluciaBarovAI : public CreatureAIScript
 // Ras ForstwhisperAI
 class RasForstwhisperAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(RasForstwhisperAI);
         SP_AI_Spell spells[6];
         bool m_spellcheck[6];
@@ -490,7 +477,6 @@ class RasForstwhisperAI : public CreatureAIScript
             for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
-
             }
 
             spells[0].info = sSpellCustomizations.GetSpellInfo(SP_RAS_FORTH_FROSTBOLT);
@@ -530,20 +516,20 @@ class RasForstwhisperAI : public CreatureAIScript
             spells[5].attackstoptimer = 2000;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
             getCreature()->CastSpell(getCreature(), spells[1].info, spells[1].instant);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -598,8 +584,6 @@ class RasForstwhisperAI : public CreatureAIScript
 // Jandice BarovAI
 class JandiceBarovAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(JandiceBarovAI);
         SP_AI_Spell spells[3];
         bool m_spellcheck[3];
@@ -610,7 +594,6 @@ class JandiceBarovAI : public CreatureAIScript
             for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
-
             }
 
             spells[0].info = sSpellCustomizations.GetSpellInfo(SP_JANDICE_CURSE_OF_BLOOD);
@@ -632,19 +615,19 @@ class JandiceBarovAI : public CreatureAIScript
             spells[2].attackstoptimer = 1000;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -699,8 +682,6 @@ class JandiceBarovAI : public CreatureAIScript
 // KormokAI
 class KormokAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(KormokAI);
         SP_AI_Spell spells[3];
         bool m_spellcheck[3];
@@ -711,7 +692,6 @@ class KormokAI : public CreatureAIScript
             for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
-
             }
 
             spells[0].info = sSpellCustomizations.GetSpellInfo(SP_KORMOK_SHADOW_B_VOLLEY);
@@ -733,20 +713,20 @@ class KormokAI : public CreatureAIScript
             spells[2].attackstoptimer = 1000;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
             getCreature()->CastSpell(getCreature(), spells[1].info, spells[1].instant);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -801,8 +781,6 @@ class KormokAI : public CreatureAIScript
 // VectusAI
 class VectusAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(VectusAI);
         SP_AI_Spell spells[3];
         bool m_spellcheck[3];
@@ -814,7 +792,6 @@ class VectusAI : public CreatureAIScript
             for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
-
             }
 
             spells[0].info = sSpellCustomizations.GetSpellInfo(SP_VECTUS_BLAST_WAVE);
@@ -836,14 +813,14 @@ class VectusAI : public CreatureAIScript
             spells[2].attackstoptimer = 1000;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             FRENZY_LIMITER = 0;
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
             getCreature()->CastSpell(getCreature(), spells[1].info, spells[1].instant);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             FRENZY_LIMITER = 0;
             setAIAgent(AGENT_NULL);
@@ -851,12 +828,12 @@ class VectusAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             FRENZY_LIMITER = 0;
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (getCreature()->GetHealthPct() <= 25 && !FRENZY_LIMITER)
             {
@@ -917,8 +894,6 @@ class VectusAI : public CreatureAIScript
 // Lord Alexei BarovAI
 class LordAlexeiBarovAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(LordAlexeiBarovAI);
         SP_AI_Spell spells[3];
         bool m_spellcheck[3];
@@ -929,7 +904,6 @@ class LordAlexeiBarovAI : public CreatureAIScript
             for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
-
             }
 
             spells[0].info = sSpellCustomizations.GetSpellInfo(SP_ALEXEI_UNHOLY_AURA);
@@ -951,20 +925,20 @@ class LordAlexeiBarovAI : public CreatureAIScript
             spells[2].attackstoptimer = 2000;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
             getCreature()->CastSpell(getCreature(), spells[0].info, spells[0].instant);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -1019,8 +993,6 @@ class LordAlexeiBarovAI : public CreatureAIScript
 // Lorekeeper PolkeltAI
 class LorekeeperPolkeltAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(LorekeeperPolkeltAI);
         SP_AI_Spell spells[4];
         bool m_spellcheck[4];
@@ -1031,7 +1003,6 @@ class LorekeeperPolkeltAI : public CreatureAIScript
             for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
-
             }
 
             spells[0].info = sSpellCustomizations.GetSpellInfo(SP_LORE_VOLATILE_INFECTION);
@@ -1059,19 +1030,19 @@ class LorekeeperPolkeltAI : public CreatureAIScript
             spells[3].attackstoptimer = 1000;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -1126,8 +1097,6 @@ class LorekeeperPolkeltAI : public CreatureAIScript
 // Darkmaster GandlingAI
 class DarkmasterGandlingAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(DarkmasterGandlingAI);
         SP_AI_Spell spells[3];
         bool m_spellcheck[3];
@@ -1138,7 +1107,6 @@ class DarkmasterGandlingAI : public CreatureAIScript
             for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
-
             }
 
             spells[0].info = sSpellCustomizations.GetSpellInfo(SP_GANDLING_ARCANE_MISSILES); //VOLATILEINFECTION ???????? :|
@@ -1160,20 +1128,20 @@ class DarkmasterGandlingAI : public CreatureAIScript
             spells[2].attackstoptimer = 1000;
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
             getCreature()->CastSpell(getCreature(), spells[2].info, spells[2].instant);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);

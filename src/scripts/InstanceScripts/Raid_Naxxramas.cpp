@@ -35,7 +35,7 @@ class NaxxramasScript : public InstanceScript
 
         static InstanceScript* Create(MapMgr* pMapMgr) { return new NaxxramasScript(pMapMgr); }
 
-        void OnCreatureDeath(Creature* pVictim, Unit* pKiller)
+        void OnCreatureDeath(Creature* pVictim, Unit* pKiller) override
         {
             Creature* KelThuzad = NULL;
             switch (pVictim->GetEntry())
@@ -169,13 +169,11 @@ VigilantShadeAI::VigilantShadeAI(Creature* pCreature) : CreatureAIScript(pCreatu
 
 void VigilantShadeAI::OnCombatStart(Unit* pTarget)
 {
-    
     _removeAura(VIGILANT_SHADE_INVISIBILITY);
 }
 
 void VigilantShadeAI::OnCombatStop(Unit* pTarget)
 {
-    
     _applyAura(VIGILANT_SHADE_INVISIBILITY);
 }
 
@@ -287,7 +285,6 @@ MaexxnaAI::MaexxnaAI(Creature* pCreature) : CreatureAIScript(pCreature)
 
 void MaexxnaAI::OnCombatStart(Unit* pTarget)
 {
-    
     mAddsSummonTimer = _addTimer(30000);
     mWebSprayTimer = _addTimer(40000);
     mWebWrapTimer = _addTimer(20000);
@@ -298,7 +295,6 @@ void MaexxnaAI::OnCombatStart(Unit* pTarget)
 
 void MaexxnaAI::OnCombatStop(Unit* pTarget)
 {
-    
     _removeTimer(mWebWrapTimer);
 }
 
@@ -349,8 +345,6 @@ void MaexxnaAI::AIUpdate()
             _resetTimer(mWebWrapTimer, 40000);
         }
     }
-
-    
 }
 
 void SpellFunc_MaexxnaWebWrap(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
@@ -398,19 +392,10 @@ NaxxramasWorshipperAI::NaxxramasWorshipperAI(Creature* pCreature) : CreatureAISc
 
 void NaxxramasWorshipperAI::OnCastSpell(uint32 pSpellId)
 {
-    /*if (pSpellId == NAXXRAMAS_WORSHIPPER_WIDOW_EMBRACE && IsAlive())
-    {
-        _unit->DealDamage(_unit, _unit->GetUInt32Value(UNIT_FIELD_HEALTH), 0, 0, NAXXRAMAS_WORSHIPPER_WIDOW_EMBRACE);
-        uint8 Buffer[100];
-        StackPacket DataPacket(SMSG_SPELLINSTAKILLLOG, Buffer, 100);
-        DataPacket << _unit->GetGUID() << _unit->GetGUID() << NAXXRAMAS_WORSHIPPER_WIDOW_EMBRACE;
-        _unit->SendMessageToSet(&DataPacket, true);
-    }*/
 }
 
 void NaxxramasWorshipperAI::OnDied(Unit* pKiller)
 {
-    
     if (mGrandWidow != NULL)   //&& !IsHeroic())
     {
         if (getRangeToObject(mGrandWidow->getCreature()) <= 15.0f)
@@ -449,68 +434,6 @@ void NaxxramasWorshipperAI::OnDied(Unit* pKiller)
 
 void NaxxramasWorshipperAI::AIUpdate()
 {
-    /*if (!mPossessed && _unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED_CREATURE))
-    {
-        Player* PlayerPtr = objmgr.GetPlayer(_unit->GetUInt64Value(UNIT_FIELD_CHARMEDBY));
-        if (PlayerPtr != NULL)
-        {
-            AI_Spell* NewSpell = new AI_Spell;
-            NewSpell->entryId = _unit->GetEntry();
-            NewSpell->minrange = 0;
-            NewSpell->maxrange = 15;
-            NewSpell->spell = sSpellCustomizations.GetSpellInfo(NAXXRAMAS_WORSHIPPER_WIDOW_EMBRACE);
-            NewSpell->spelltargetType = TTYPE_SOURCE;
-            NewSpell->cooldown = NewSpell->cooldowntime = 0;
-            NewSpell->autocast_type = 0;
-            NewSpell->first_use = true;
-            NewSpell->custom_pointer = false;
-            NewSpell->floatMisc1 = NewSpell->Misc2 = 0;
-            NewSpell->procChance = NewSpell->procCount = NewSpell->procCounter = 0;
-            NewSpell->spellType = STYPE_DEBUFF;
-            NewSpell->agent = AGENT_SPELL;
-            _unit->GetAIInterface()->m_spells.push_back(NewSpell);
-
-            list< uint32 > Spells;
-            Spells.push_back(NAXXRAMAS_WORSHIPPER_WIDOW_EMBRACE);
-            list< uint32 >::iterator Iter = Spells.begin();
-
-            WorldPacket DataPacket(SMSG_PET_SPELLS, _unit->GetAIInterface()->m_spells.size() * 4 + 20);
-            DataPacket << _unit->GetGUID();
-            DataPacket << static_cast< uint32 >(0x00000000);    //unk1
-            DataPacket << static_cast< uint32 >(0x00000101);    //unk2
-            DataPacket << static_cast< uint32 >(0x00000000);    //unk3
-            DataPacket << static_cast< uint32 >(PET_SPELL_ATTACK);
-
-            for (uint8 i = 1; i < 10; ++i)
-            {
-                if (Iter != Spells.end())
-                {
-                    DataPacket << static_cast< uint16 >(*Iter) << static_cast< uint16 >(DEFAULT_SPELL_STATE);
-                    ++Iter;
-                }
-                else
-                    DataPacket << static_cast< uint16 >(0) << static_cast< uint8 >(0) << static_cast< uint8 >(i + 5);
-            }
-
-            // Send the rest of the spells.
-            DataPacket << static_cast< uint8 >(Spells.size());
-            for (Iter = Spells.begin(); Iter != Spells.end(); ++Iter)
-            {
-                DataPacket << static_cast< uint16 >(*Iter) << static_cast< uint16 >(DEFAULT_SPELL_STATE);
-            }
-
-            DataPacket << static_cast< uint64 >(0);
-            PlayerPtr->GetSession()->SendPacket(&DataPacket);
-            mPossessed = true;
-        }
-    }
-    else if (mPossessed && !_unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED_CREATURE))
-        mPossessed = false;
-
-    if (mPossessed)
-        return;*/
-
-    
 }
 
 void NaxxramasWorshipperAI::Destroy()
@@ -621,7 +544,6 @@ GrandWidowFaerlinaAI::GrandWidowFaerlinaAI(Creature* pCreature) : CreatureAIScri
 
 void GrandWidowFaerlinaAI::OnCombatStart(Unit* pTarget)
 {
-    
     mPoisonVolleyBoltTimer = _addTimer(15000);
     mFrenzyTimer = _addTimer(60000 + RandomUInt(20) * 1000);
 
@@ -642,7 +564,6 @@ void GrandWidowFaerlinaAI::OnCombatStart(Unit* pTarget)
 
 void GrandWidowFaerlinaAI::OnCombatStop(Unit* pTarget)
 {
-    
     mPoisonVolleyBoltTimer = mFrenzyTimer = INVALIDATE_TIMER;
 
     GameObject* WebGate = getNearestGameObject(3318.65f, -3695.85f, 259.094f, 181235);
@@ -711,8 +632,6 @@ void GrandWidowFaerlinaAI::AIUpdate()
             _resetTimer(mFrenzyTimer, 60000 + RandomUInt(20) * 1000);
         }
     }
-
-    
 }
 
 void GrandWidowFaerlinaAI::Destroy()
@@ -752,7 +671,6 @@ CryptGuardAI::CryptGuardAI(Creature* pCreature) : CreatureAIScript(pCreature)
 
 void CryptGuardAI::OnCombatStart(Unit* pTarget)
 {
-    
     mEnraged = false;
 }
 
@@ -763,8 +681,6 @@ void CryptGuardAI::AIUpdate()
         _applyAura(CRYPT_GUARD_FRENZY);
         mEnraged = true;
     }
-
-    
 }
 
 void CryptGuardAI::Destroy()
@@ -846,7 +762,6 @@ AnubRekhanAI::AnubRekhanAI(Creature* pCreature) : CreatureAIScript(pCreature)
 
 void AnubRekhanAI::OnCombatStart(Unit* pTarget)
 {
-    
     mLocustSwarmTimer = _addTimer(70000 + RandomUInt(50) * 1000);
 
     if (_isHeroic())
@@ -862,7 +777,6 @@ void AnubRekhanAI::OnCombatStart(Unit* pTarget)
 
 void AnubRekhanAI::OnCombatStop(Unit* pTarget)
 {
-    
     mLocustSwarmTimer = mCryptSpawnTimer = INVALIDATE_TIMER;
 
     for (std::set< CryptGuardAI* >::iterator Iter = mCryptGuards.begin(); Iter != mCryptGuards.end(); ++Iter)
@@ -930,8 +844,6 @@ void AnubRekhanAI::AIUpdate()
             mLocustSwarmTimer = _addTimer(70000 + RandomUInt(50) * 1000);
         }
     }
-
-    
 }
 
 void AnubRekhanAI::Destroy()
@@ -1095,7 +1007,6 @@ InfectiousGhoulAI::InfectiousGhoulAI(Creature* pCreature) : CreatureAIScript(pCr
 
 void InfectiousGhoulAI::OnCombatStart(Unit* pTarget)
 {
-    
     mEnraged = false;
 }
 
@@ -1110,8 +1021,6 @@ void InfectiousGhoulAI::AIUpdate()
 
         mEnraged = true;
     }
-
-    
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -1152,8 +1061,6 @@ void StoneskinGargoyleAI::AIUpdate()
         stopMovement();
         return;
     }
-
-    
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -1178,13 +1085,11 @@ PlagueBeastAI::PlagueBeastAI(Creature* pCreature) : CreatureAIScript(pCreature)
 
 void PlagueBeastAI::OnCombatStart(Unit* pTarget)
 {
-    
     _applyAura(PLAGUE_BEAST_MUTATED_SPORES);
 }
 
 void PlagueBeastAI::OnCombatStop(Unit* pTarget)
 {
-    
     _applyAura(PLAGUE_BEAST_MUTATED_SPORES);
 }
 
@@ -1200,7 +1105,6 @@ EyeStalkerAI::EyeStalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
 
 void EyeStalkerAI::OnCombatStart(Unit* pTarget)
 {
-    
     setAIAgent(AGENT_SPELL);
     setRooted(true);
     stopMovement();
@@ -1227,8 +1131,6 @@ void EyeStalkerAI::AIUpdate()
             getCreature()->GetAIInterface()->RemoveThreatByPtr(CurrentTarget);
         }
     }
-
-    
 
     // Meh, reset it in case something went wrong
     setAIAgent(AGENT_SPELL);
@@ -1268,7 +1170,6 @@ NothThePlaguebringerAI::NothThePlaguebringerAI(Creature* pCreature) : CreatureAI
 
 void NothThePlaguebringerAI::OnCombatStart(Unit* pTarget)
 {
-    
     if (_isHeroic())
         mBlinkTimer = _addTimer(28000 + RandomUInt(12) * 1000);
 
@@ -1290,7 +1191,6 @@ void NothThePlaguebringerAI::OnCombatStart(Unit* pTarget)
 
 void NothThePlaguebringerAI::OnCombatStop(Unit* pTarget)
 {
-    
     if (getCreature()->GetMapMgr() != NULL && getCreature()->GetMapMgr()->GetInterface() != NULL)
     {
         GameObject* Gate = getNearestGameObject(2740.689209f, -3489.697266f, 262.117767f, 181200);
@@ -1487,7 +1387,6 @@ void NothThePlaguebringerAI::AIUpdate()
         }
     }
 
-    
     if (isScriptPhase(2))
     {
         setAIAgent(AGENT_SPELL);
@@ -1747,7 +1646,6 @@ void HeiganTheUncleanAI::CallEruptionEvent(int32 pTimerId, int32 pNewTime)
 
 void HeiganTheUncleanAI::OnCombatStart(Unit* pTarget)
 {
-    
     mPhaseSwitchTimer = _addTimer(90000);
     mEruptionTimer = _addTimer(8000);
     mEruptionPhase = 3;
@@ -1795,7 +1693,6 @@ void HeiganTheUncleanAI::OnCombatStart(Unit* pTarget)
 
 void HeiganTheUncleanAI::OnCombatStop(Unit* pTarget)
 {
-    
     _unsetTargetToChannel();
     if (getCreature()->GetMapMgr() != NULL && getCreature()->GetMapMgr()->GetInterface() != NULL)
     {
@@ -1850,7 +1747,6 @@ void HeiganTheUncleanAI::AIUpdate()
             CallEruptionEvent(mEruptionTimer, 3000);
     }
 
-    
     if (isScriptPhase(2))
     {
         setAIAgent(AGENT_SPELL);
@@ -1934,7 +1830,6 @@ LoathebAI::LoathebAI(Creature* pCreature) : CreatureAIScript(pCreature)
 
 void LoathebAI::OnCombatStart(Unit* pTarget)
 {
-    
     mDoomStaticTimer = 120000;
     mSporeTimer = _addTimer(30000);
     mDoomTimer = _addTimer(mDoomStaticTimer);
@@ -1944,7 +1839,6 @@ void LoathebAI::OnCombatStart(Unit* pTarget)
 
 void LoathebAI::OnCombatStop(Unit* pTarget)
 {
-    
     for (std::set< SporeAI* >::iterator Iter = mSpores.begin(); Iter != mSpores.end(); ++Iter)
     {
         (*Iter)->mLoathebAI = NULL;
@@ -2051,8 +1945,6 @@ void LoathebAI::AIUpdate()
             mDeathbloomDamagePhase = !mDeathbloomDamagePhase;
         }
     }
-
-    
 }
 
 void LoathebAI::Destroy()
@@ -2073,13 +1965,11 @@ void LoathebAI::Destroy()
 SporeAI::SporeAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
     despawn(90000);
-
     mLoathebAI = NULL;
 }
 
 void SporeAI::OnDied(Unit* pKiller)
 {
-    
     _applyAura(SPORE_FUNGAL_CREEP);
 }
 
@@ -2115,7 +2005,6 @@ DeathKnightAI::DeathKnightAI(Creature* pCreature) : CreatureAIScript(pCreature)
 
 void DeathKnightAI::OnCombatStart(Unit* pTarget)
 {
-    
     _applyAura(DEATH_KNIGHT_BLOOD_PRESENCE);
 }
 
@@ -2134,7 +2023,6 @@ DeathKnightCaptainAI::DeathKnightCaptainAI(Creature* pCreature) : CreatureAIScri
 
 void DeathKnightCaptainAI::OnCombatStart(Unit* pTarget)
 {
-    
     _applyAura(DEATH_KNIGHT_CAPTAIN_UNHOLY_PRESENCE);
 }
 
@@ -2254,7 +2142,6 @@ void PortalOfShadowsAI::AIUpdate()
         return;
     }
 
-    
     setAIAgent(AGENT_SPELL);
     setRooted(true);
     stopMovement();
@@ -2335,7 +2222,6 @@ DeathKnightCavalierAI::DeathKnightCavalierAI(Creature* pCreature) : CreatureAISc
 
 void DeathKnightCavalierAI::OnCombatStop(Unit* pTarget)
 {
-    
     if (mChargerAI != NULL)
     {
         if (isAlive() && getCreature()->GetMount() == 0)
@@ -2359,8 +2245,6 @@ void DeathKnightCavalierAI::AIUpdate()
         _applyAura(DEATH_KNIGHT_CAVALIER_DISMOUNT_DEATHCHARGER);
         mIsMounted = false;
     }
-
-    
 }
 
 void DeathKnightCavalierAI::Destroy()
@@ -2395,7 +2279,6 @@ DeathchargerSteedAI::DeathchargerSteedAI(Creature* pCreature) : CreatureAIScript
 
 void DeathchargerSteedAI::OnCombatStop(Unit* pTarget)
 {
-    
     if (mDeathKnightAI != NULL)
     {
         if (mDeathKnightAI->_isInCombat())
@@ -2448,7 +2331,6 @@ DarkTouchedWarriorAI::DarkTouchedWarriorAI(Creature* pCreature) : CreatureAIScri
 
 void DarkTouchedWarriorAI::OnCombatStart(Unit* pTarget)
 {
-    
     mResetHateTimer = _addTimer(8000 + RandomUInt(7) * 1000);
 }
 
@@ -2459,8 +2341,6 @@ void DarkTouchedWarriorAI::AIUpdate()
         _clearHateList();
         mResetHateTimer = _addTimer(8000 + RandomUInt(7) * 1000);
     }
-
-    
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -2533,7 +2413,6 @@ PatchworkGolemAI::PatchworkGolemAI(Creature* pCreature) : CreatureAIScript(pCrea
 
 void PatchworkGolemAI::OnCombatStart(Unit* pTarget)
 {
-    
     if (_isHeroic())
         _applyAura(PATCHWORK_GOLEM_DISEASE_CLOUD_HEROIC);
     else
@@ -2542,7 +2421,6 @@ void PatchworkGolemAI::OnCombatStart(Unit* pTarget)
 
 void PatchworkGolemAI::OnCombatStop(Unit* pTarget)
 {
-    
     if (isAlive())
     {
         if (_isHeroic())
@@ -2573,13 +2451,11 @@ SewageSlimeAI::SewageSlimeAI(Creature* pCreature) : CreatureAIScript(pCreature)
 
 void SewageSlimeAI::OnCombatStart(Unit* pTarget)
 {
-    
     _applyAura(SEWAGE_SLIME_DISEASE_CLOUD);
 }
 
 void SewageSlimeAI::OnCombatStop(Unit* pTarget)
 {
-    
     _applyAura(SEWAGE_SLIME_DISEASE_CLOUD);
 }
 
@@ -2592,13 +2468,11 @@ EmbalmingSlimeAI::EmbalmingSlimeAI(Creature* pCreature) : CreatureAIScript(pCrea
 
 void EmbalmingSlimeAI::OnCombatStart(Unit* pTarget)
 {
-    
     _applyAura(EMBALMING_SLIME_EMBALMING_CLOUD);
 }
 
 void EmbalmingSlimeAI::OnCombatStop(Unit* pTarget)
 {
-    
     _applyAura(EMBALMING_SLIME_EMBALMING_CLOUD);
 }
 
@@ -2645,7 +2519,6 @@ LightningTotemAI::LightningTotemAI(Creature* pCreature) : CreatureAIScript(pCrea
 
 void LightningTotemAI::OnCombatStart(Unit* pTarget)
 {
-    
     setAIAgent(AGENT_SPELL);
     setRooted(true);
     stopMovement();
@@ -2653,8 +2526,6 @@ void LightningTotemAI::OnCombatStart(Unit* pTarget)
 
 void LightningTotemAI::AIUpdate()
 {
-    
-
     // Meh, reset it in case something went wrong
     setAIAgent(AGENT_SPELL);
     setRooted(true);
@@ -2675,7 +2546,6 @@ StitchedColossusAI::StitchedColossusAI(Creature* pCreature) : CreatureAIScript(p
 
 void StitchedColossusAI::OnCombatStart(Unit* pTarget)
 {
-    
 }
 
 void StitchedColossusAI::AIUpdate()
@@ -2685,8 +2555,6 @@ void StitchedColossusAI::AIUpdate()
         _applyAura(STITCHED_COLOSSUS_UNSTOPPABLE_ENRAGE);
         mEnraged = true;
     }
-
-    
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -2747,8 +2615,6 @@ void PatchwerkAI::AIUpdate()
         getCreature()->SendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, "Patchwerk goes into a frenzy!");
         mEnraged = true;
     }
-
-    
 }
 
 void SetupNaxxramas(ScriptMgr* pScriptMgr)

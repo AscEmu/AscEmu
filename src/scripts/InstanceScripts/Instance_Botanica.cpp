@@ -51,19 +51,19 @@ class BloodProtectorAI : public CreatureAIScript
 
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -150,19 +150,19 @@ class BloodGreenkeeperAI : public CreatureAIScript
 
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -247,19 +247,19 @@ class SunchemistAI : public CreatureAIScript
             spells[1].attackstoptimer = 2000; // 1sec
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -356,20 +356,20 @@ class SunResearcherAI : public CreatureAIScript
             spells[3].attackstoptimer = 2000; // 1sec
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
             getCreature()->CastSpell(getCreature(), spells[0].info, spells[0].instant);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -463,10 +463,9 @@ class CommanderSarannisAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTargetDied, SAY_COMMANDER_SARANNIS_02);
             addEmoteForEvent(Event_OnTargetDied, SAY_COMMANDER_SARANNIS_03);
             addEmoteForEvent(Event_OnDied, SAY_COMMANDER_SARANNIS_07);
-
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             GuardAdds = false;
             CastTime();
@@ -479,7 +478,7 @@ class CommanderSarannisAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             GuardAdds = false;
             CastTime();
@@ -488,13 +487,13 @@ class CommanderSarannisAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             GuardAdds = false;
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             // case for scriptPhase
             if (getCreature()->GetHealthPct() <= 50 && GuardAdds == false)
@@ -648,7 +647,7 @@ class HighBotanistFreywinnAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, SAY_HIGH_BOTANIS_FREYWIN_06);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             PlantTimer = 10;
             CastTime();
@@ -661,7 +660,7 @@ class HighBotanistFreywinnAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             PlantTimer = 10;
             CastTime();
@@ -670,13 +669,13 @@ class HighBotanistFreywinnAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             PlantTimer = 10;
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             PlantTimer--;
             if (!PlantTimer)
@@ -839,7 +838,7 @@ class ThorngrinTheTenderAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, SAY_THORNIN_08);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             Enraged = false;
             CastTime();
@@ -852,7 +851,7 @@ class ThorngrinTheTenderAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             Enraged = false;
             CastTime();
@@ -861,13 +860,13 @@ class ThorngrinTheTenderAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             Enraged = false;
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (getCreature()->GetHealthPct() <= 20 && Enraged == false)
             {
@@ -1015,10 +1014,9 @@ class LajAI : public CreatureAIScript
             spells[3].cooldown = -1; // will take this spell separately as it needs additional coding for changing position
             spells[3].perctrigger = 0.0f;
             spells[3].attackstoptimer = 1000;
-
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             TeleportTimer = 20;
             CastTime();
@@ -1031,7 +1029,7 @@ class LajAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             TeleportTimer = 20;
             CastTime();
@@ -1040,17 +1038,13 @@ class LajAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnTargetDied(Unit* mTarget)
-        {
-        }
-
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             TeleportTimer = 20;
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             TeleportTimer--;
 
@@ -1163,10 +1157,9 @@ class WarpSplinterAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTargetDied, SAY_WARP_SPLINTER_02);
             addEmoteForEvent(Event_OnTargetDied, SAY_WARP_SPLINTER_03);
             addEmoteForEvent(Event_OnDied, SAY_WARP_SPLINTER_06);
-
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* mTarget) override
         {
             SummonTimer = 20;
             CastTime();
@@ -1179,7 +1172,7 @@ class WarpSplinterAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* mTarget) override
         {
             SummonTimer = 20;
             CastTime();
@@ -1188,13 +1181,13 @@ class WarpSplinterAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
             SummonTimer = 20;
             CastTime();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             SummonTimer--;
 

@@ -112,11 +112,10 @@ class HighKingMaulgarAI : public CreatureAIScript
             mAliveAdds = 0;
         }
 
-        void OnCombatStart(Unit* pTarget)
+        void OnCombatStart(Unit* pTarget) override
         {
             _setDisplayWeapon(true, true);
             
-
             mAliveAdds = 0;
             mLastYell = -1;
             for (uint8 i = 0; i < 4; ++i)
@@ -141,16 +140,13 @@ class HighKingMaulgarAI : public CreatureAIScript
             }
         }
 
-        void OnCombatStop(Unit* pTarget)
+        void OnCombatStop(Unit* pTarget) override
         {
-            
             setCanEnterCombat(true);
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
-            
-
             GameObject* pDoor = mKiller->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(95.26f, 251.836f, 0.47f, 183817);
             if (pDoor != NULL)
             {
@@ -158,18 +154,16 @@ class HighKingMaulgarAI : public CreatureAIScript
             }
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (mAliveAdds > 1)
                 return;
 
             if (isScriptPhase(1) && _getHealthPercent() <= 50)
                 setScriptPhase(2);
-
-            
         }
 
-        void OnScriptPhaseChange(uint32_t phaseId)
+        void OnScriptPhaseChange(uint32_t phaseId) override
         {
             switch (phaseId)
             {
@@ -248,10 +242,8 @@ class KigglerTheCrazedAI : public CreatureAIScript
             AddSpell(KIGGLER_THE_CRAZED_ARCANE_SHOCK, Target_RandomPlayer, 10, 0, 15, 0, 30);
         }
 
-        void OnCombatStart(Unit* pTarget)
+        void OnCombatStart(Unit* pTarget) override
         {
-            
-
             if (getRangeToObject(pTarget) <= 40.0f)
             {
                 setAIAgent(AGENT_SPELL);
@@ -259,9 +251,8 @@ class KigglerTheCrazedAI : public CreatureAIScript
             }
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
-            
             Creature* pMaulgar = getNearestCreature(143.048996f, 192.725998f, -11.114700f, CN_HIGH_KING_MAULGAR);
             if (pMaulgar != NULL && pMaulgar->isAlive() && pMaulgar->GetScript())
             {
@@ -270,10 +261,8 @@ class KigglerTheCrazedAI : public CreatureAIScript
             }
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
-            
-
             Unit* pTarget = getCreature()->GetAIInterface()->getNextTarget();
             if (pTarget != NULL)
             {
@@ -301,9 +290,8 @@ class BlindeyeTheSeerAI : public CreatureAIScript
             AddSpell(BLINDEYE_THE_SEER_HEAL, Target_WoundedFriendly, 8, 1.5, 25);
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
-            
             Creature* pMaulgar = getNearestCreature(143.048996f, 192.725998f, -11.114700f, CN_HIGH_KING_MAULGAR);
             if (pMaulgar != NULL && pMaulgar->isAlive() && pMaulgar->GetScript())
             {
@@ -328,9 +316,8 @@ class OlmTheSummonerAI : public CreatureAIScript
             AddSpell(OLM_THE_SUMMONER_DARK_DECAY, Target_RandomPlayer, 10, 0, 6);
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
-            
             Creature* pMaulgar = getNearestCreature(143.048996f, 192.725998f, -11.114700f, CN_HIGH_KING_MAULGAR);
             if (pMaulgar != NULL && pMaulgar->isAlive() && pMaulgar->GetScript())
             {
@@ -379,14 +366,12 @@ class KroshFirehandAI : public CreatureAIScript
             SetAIUpdateFreq(250);
         }
 
-        void OnCombatStart(Unit* pTarget)
+        void OnCombatStart(Unit* pTarget) override
         {
-            CastSpellNowNoScheduling(mSpellShield);
-
-            
+            CastSpellNowNoScheduling(mSpellShield); 
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (!_isCasting())
             {
@@ -411,13 +396,10 @@ class KroshFirehandAI : public CreatureAIScript
                     CastSpellNowNoScheduling(mSpellShield);
                 }
             }
-
-            
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
-            
             Creature* pMaulgar = getNearestCreature(143.048996f, 192.725998f, -11.114700f, CN_HIGH_KING_MAULGAR);
             if (pMaulgar != NULL && pMaulgar->isAlive() && pMaulgar->GetScript())
             {
@@ -476,10 +458,8 @@ class GruulTheDragonkillerAI : public CreatureAIScript
             mGrowthStacks = 0;
         }
 
-        void OnCombatStart(Unit* pTarget)
+        void OnCombatStart(Unit* pTarget) override
         {
-            
-
             mGrowthTimer = _addTimer(30000);
             mHurtfulTimer = _addTimer(8000);
             mGrowthStacks = 0;
@@ -489,25 +469,21 @@ class GruulTheDragonkillerAI : public CreatureAIScript
                 pGate->SetState(GO_STATE_CLOSED);
         }
 
-        void OnCombatStop(Unit* pTarget)
+        void OnCombatStop(Unit* pTarget) override
         {
-            
-
             GameObject* pGate = getNearestGameObject(166.897f, 368.226f, 16.9209f, 184662);
             if (pGate != NULL)
                 pGate->SetState(GO_STATE_OPEN);
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* mKiller) override
         {
-            
-
             GameObject* pGate = getNearestGameObject(166.897f, 368.226f, 16.9209f, 184662);
             if (pGate != NULL)
                 pGate->SetState(GO_STATE_OPEN);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             if (!_isCasting())
             {
@@ -562,8 +538,6 @@ class GruulTheDragonkillerAI : public CreatureAIScript
                     _resetTimer(mHurtfulTimer, 8000);
                 }
             }
-
-            
         }
 
         UnitArray GetInRangePlayers()
