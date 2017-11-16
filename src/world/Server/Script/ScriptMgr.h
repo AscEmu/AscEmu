@@ -301,16 +301,6 @@ class SERVER_DECL ScriptMgr : public Singleton<ScriptMgr>
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Base.h stuff
-
-enum EmoteEventType
-{
-    Event_OnCombatStart = 0,
-    Event_OnTargetDied  = 1,
-    Event_OnDied        = 2,
-    Event_OnTaunt       = 3,
-    Event_OnIdle        = 4     // new not part of db definitions!
-};
-
 struct LocationExtra
 {
     float x;
@@ -659,6 +649,9 @@ class SERVER_DECL CreatureAISpells
         {
             return mAttackStopTimer;
         }
+
+        std::string mAnnouncement;
+        void sendAnnouncement(CreatureAIScript* creatureAI);
 };
 
 class SERVER_DECL CreatureAIScript
@@ -947,6 +940,15 @@ class SERVER_DECL CreatureAIScript
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // chat message
+
+        enum EmoteEventType
+        {
+            Event_OnCombatStart = 0,
+            Event_OnTargetDied = 1,
+            Event_OnDied = 2,
+            Event_OnTaunt = 3,
+            Event_OnIdle = 4     // new not part of db definitions!
+        };
 
     private:
 

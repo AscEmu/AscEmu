@@ -1308,8 +1308,6 @@ class FathomGuardSharkissAI : public CreatureAIScript
         {
             CurrentPet = NULL;
             SummonPetTimer = 5;
-
-            CreatureAIScript::OnCombatStart(pTarget);
         }
 
         void OnDied(Unit* pKiller) override
@@ -1323,8 +1321,6 @@ class FathomGuardSharkissAI : public CreatureAIScript
                     static_cast< KarathressAI* >(FLK->GetScript())->AdvisorsLeft--;
                 FLK->RemoveAura(BLESSING_OF_THE_TIDES);
             }
-
-            CreatureAIScript::OnDied(pKiller);
         }
 
         void AIUpdate() override

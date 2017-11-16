@@ -1328,6 +1328,16 @@ void CreatureAISpells::sendRandomEmote(CreatureAIScript* creatureAI)
     }
 }
 
+void CreatureAISpells::sendAnnouncement(CreatureAIScript* creatureAI)
+{
+    if (!mAnnouncement.empty() && creatureAI != nullptr)
+    {
+        LogDebugFlag(LF_SCRIPT_MGR, "AISpellEmotes::sendAnnouncement() : called");
+
+        creatureAI->getCreature()->SendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, mAnnouncement.c_str());
+    }
+}
+
 void CreatureAIScript::newAIUpdateSpellSystem()
 {
     // cleanup exeeded spells
@@ -1411,6 +1421,10 @@ void CreatureAIScript::newAIUpdateSpellSystem()
                 getCreature()->setAttackTimer(usedSpell->getAttackStopTimer(), false);
 
             usedSpell->sendRandomEmote(this);
+
+            //\todo: announcements are send before cast time
+            usedSpell->sendAnnouncement(this);
+
             // reset cast wait timer for CreatureAIScript - Important for _internalAIUpdate
             _resetTimer(mSpellWaitTimerId, usedSpell->mDuration);
 
