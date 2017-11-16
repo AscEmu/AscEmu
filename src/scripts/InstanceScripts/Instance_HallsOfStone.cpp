@@ -184,38 +184,19 @@ class MaidenOfGriefAI : public CreatureAIScript
         AddSpell(MAIDEN_PILLAR_OF_WOE, Target_RandomPlayerNotCurrent, 30, 0, 8);
         mShock = AddSpell(MAIDEN_SHOCK_OF_SORROW, Target_Self, 20, 0, 18);
         mShock->addEmote("So much lost time... that you'll never get back!", CHAT_MSG_MONSTER_YELL, 13492);
+
+        // new
+        addEmoteForEvent(Event_OnCombatStart, 4367);     // You shouldn't have come... now you will die!
+        addEmoteForEvent(Event_OnTargetDied, 4368);     // Why must it be this way?
+        addEmoteForEvent(Event_OnTargetDied, 4369);     // You had it coming!
+        addEmoteForEvent(Event_OnTargetDied, 4370);     // My burden grows heavier...
+        addEmoteForEvent(Event_OnTargetDied, 4371);     // This is your fault!
+        addEmoteForEvent(Event_OnDied, 4372);     // I hope you all rot! I never... wanted... this.
     }
 
     void OnCombatStart(Unit* pTarget)
     {
-        sendDBChatMessage(4367);     // You shouldn't have come... now you will die!
-
         mShock->setTriggerCooldown();
-        
-    }
-
-    void OnTargetDied(Unit* pTarget)
-    {
-        switch (RandomUInt(3))
-        {
-            case 0:
-                sendDBChatMessage(4368);     // Why must it be this way?
-                break;
-            case 1:
-                sendDBChatMessage(4369);     // You had it coming!
-                break;
-            case 2:
-                sendDBChatMessage(4370);     // My burden grows heavier...
-                break;
-            case 3:
-                sendDBChatMessage(4371);     // This is your fault!
-                break;
-        }
-    }
-
-    void OnDied(Unit* pTarget)
-    {
-        sendDBChatMessage(4372);     // I hope you all rot! I never... wanted... this.
     }
 
     protected:
@@ -239,14 +220,16 @@ class KrystallusAI : public CreatureAIScript
 
         mStompTimer = INVALIDATE_TIMER;
         mShatterTimer = INVALIDATE_TIMER;
+
+        // new
+        addEmoteForEvent(Event_OnCombatStart, 4363);      // Crush....
+        addEmoteForEvent(Event_OnTargetDied, 4365);     // Uuuuhhhhhhhhhh......
+        addEmoteForEvent(Event_OnDied, 4364);     //
     }
 
     void OnCombatStart(Unit* pTarget)
     {
-        sendDBChatMessage(4363);      // Crush....
-
         mStompTimer = _addTimer(STOMP_TIMER);
-        
     }
 
     void AIUpdate()
@@ -265,16 +248,6 @@ class KrystallusAI : public CreatureAIScript
             setRooted(false);
             _removeTimer(mShatterTimer);
         }
-    }
-
-    void OnTargetDied(Unit* pTarget)
-    {
-        sendDBChatMessage(4365);     // Uuuuhhhhhhhhhh......
-    }
-
-    void OnDied(Unit* pTarget)
-    {
-        sendDBChatMessage(4364);     // 
     }
 
     protected:

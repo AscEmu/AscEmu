@@ -252,8 +252,6 @@ class SladranAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(SladranAI);
     SladranAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        mInstance = getInstanceScript();
-
         SpellDesc* sdPoisonNova = nullptr;
         if (_isHeroic())
         {
@@ -272,47 +270,14 @@ class SladranAI : public CreatureAIScript
 
         if (sdPoisonNova != nullptr)
             sdPoisonNova->addAnnouncement("Slad'ran begins to cast Poison Nova!");
+
+        //new
+        addEmoteForEvent(Event_OnCombatStart, 8754);     // Drakkari gonna kill anybody who trespass on these lands!
+        addEmoteForEvent(Event_OnTargetDied, 4217);     // You not breathin'? Good.
+        addEmoteForEvent(Event_OnTargetDied, 4218);     // Ssscared now?
+        addEmoteForEvent(Event_OnTargetDied, 4219);     // I eat you next, mon.
+        addEmoteForEvent(Event_OnDied, 4220);     // I sssee now... Ssscourge wasss not... our greatessst enemy....
     }
-
-    void OnCombatStart(Unit* pTarget)
-    {
-        sendDBChatMessage(8754);     // Drakkari gonna kill anybody who trespass on these lands!
-        if (mInstance)
-            mInstance->setData(getCreature()->GetEntry(), InProgress);
-
-        
-    }
-
-    void OnTargetDied(Unit* pTarget)
-    {
-        switch (RandomUInt(2))
-        {
-            case 0:
-                sendDBChatMessage(4217);     // You not breathin'? Good.
-            break;
-            case 1:
-                sendDBChatMessage(4218);     // Ssscared now?
-            break;
-            case 2:
-                sendDBChatMessage(4219);     // I eat you next, mon.
-            break;
-        }
-    }
-
-    void OnCombatStop(Unit* pTarget)
-    {
-        if (mInstance)
-            mInstance->setData(getCreature()->GetEntry(), Performed);
-
-        
-    }
-
-    void OnDied(Unit* pKiller)
-    {
-        sendDBChatMessage(4220);     // I sssee now... Ssscourge wasss not... our greatessst enemy....
-    }
-
-    InstanceScript* mInstance;
 };
 
 
@@ -324,54 +289,18 @@ class GalDarahAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(GalDarahAI);
     GalDarahAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        mInstance = getInstanceScript();
-
         if (_isHeroic())
             AddSpell(59824, Target_Self, 20, 0, 12);
         else
             AddSpell(55250, Target_Self, 20, 0, 12);
+
+        // new
+        addEmoteForEvent(Event_OnCombatStart, 4199);     // I'm gonna spill your guts, mon!
+        addEmoteForEvent(Event_OnTargetDied, 4200);     // What a rush!
+        addEmoteForEvent(Event_OnTargetDied, 4201);     // Who needs gods when we ARE gods?
+        addEmoteForEvent(Event_OnTargetDied, 4202);     // I told ya so!
+        addEmoteForEvent(Event_OnDied, 4203);     // Even the mighty... can fall.
     }
-
-    void OnCombatStart(Unit* pTarget)
-    {
-        sendDBChatMessage(4199);     // I'm gonna spill your guts, mon!
-
-        if (mInstance)
-            mInstance->setData(getCreature()->GetEntry(), InProgress);
-
-        
-    }
-
-    void OnTargetDied(Unit* pTarget)
-    {
-        switch (RandomUInt(2))
-        {
-            case 0:
-                sendDBChatMessage(4200);     // What a rush!
-            break;
-            case 1:
-                sendDBChatMessage(4201);     // Who needs gods when we ARE gods?
-            break;
-            case 2:
-                sendDBChatMessage(4202);     // I told ya so!
-            break;
-        }
-    }
-
-    void OnCombatStop(Unit* pTarget)
-    {
-        if (mInstance)
-            mInstance->setData(getCreature()->GetEntry(), Performed);
-
-        
-    }
-
-    void OnDied(Unit* pKiller)
-    {
-        sendDBChatMessage(4203);     // Even the mighty... can fall.
-    }
-
-    InstanceScript* mInstance;
 };
 
 

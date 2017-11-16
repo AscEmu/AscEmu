@@ -167,13 +167,9 @@ class Jaina_Gossip : public Arcemu::Gossip::Script
 //Marwyn
 class Marwyn : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(Marwyn);
         Marwyn(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            mInstance = getInstanceScript();
-
             if (_isHeroic() == false) // NORMAL MODE
             {
                 AddSpell(N_SPELL_OBLITERATE, Target_Current, 45, 0, 30); // Timer may be off on this.
@@ -188,6 +184,12 @@ class Marwyn : public CreatureAIScript
                 AddSpell(H_SPELL_CORRUPTFLESH, Target_Current, 40, 0, 20, 0, 0, false, "Waste away into nothingness!", CHAT_MSG_MONSTER_YELL, 16740);
                 AddSpell(H_SPELL_SHARED, Target_RandomPlayer, 45, 0, 20);
             }
+
+            // new
+            addEmoteForEvent(Event_OnCombatStart, 4105);     // Death is all that you will find here!
+            addEmoteForEvent(Event_OnTargetDied, 5254);     // I saw the same look in his eyes when he died. Terenas could hardly believe it.
+            addEmoteForEvent(Event_OnTargetDied, 5255);     // Choke on your suffering!
+            addEmoteForEvent(Event_OnDied, 5256);      // Yes... Run... Run to meet your destiny... Its bitter, cold embrace, awaits you.
         }
 
         void OnLoad()
@@ -199,60 +201,15 @@ class Marwyn : public CreatureAIScript
                 _setDisplayWeaponIds(51010, 51010); // Just incase DB doesn't have them correctly.
             }
         }
-
-        void OnCombatStart(Unit* pKiller)
-        {
-            sendDBChatMessage(4105);     // Death is all that you will find here!
-
-            if (mInstance)
-                mInstance->setData(getCreature()->GetEntry(), InProgress);
-            
-        }
-
-        void OnTargetDied(Unit* pTarget)
-        {
-            switch (RandomUInt(1))
-            {
-                case 0:
-                    sendDBChatMessage(5254);     // I saw the same look in his eyes when he died. Terenas could hardly believe it.
-                    break;
-                case 1:
-                    sendDBChatMessage(5255);     // Choke on your suffering!
-                    break;
-            }
-        }
-
-        void OnCombatStop(Unit* Target)
-        {
-            if (mInstance)
-                mInstance->setData(getCreature()->GetEntry(), Performed);
-            
-        }
-
-        void OnDied(Unit* pKiller)
-        {
-            sendDBChatMessage(5256);      // Yes... Run... Run to meet your destiny... Its bitter, cold embrace, awaits you.
-
-            if (mInstance)
-                mInstance->setData(getCreature()->GetEntry(), Finished);
-            
-        }
-
-    private:
-        InstanceScript* mInstance;
 };
 
 
 //Falric
 class Falric : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(Falric);
         Falric(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            mInstance = getInstanceScript();
-
             if (_isHeroic() == false) // NORMAL MODE
             {
                 AddSpell(N_SPELL_QSTRIKE, Target_Current, 45, 0, 23);
@@ -266,44 +223,12 @@ class Falric : public CreatureAIScript
                 AddSpell(H_SPELL_HORROR, Target_Current, 40, 0, 20);
                 AddSpell(H_SPELL_SHARED, Target_RandomPlayer, 45, 0, 20);
             }
-        }
 
-        void OnCombatStart(Unit* pKiller)
-        {
-            sendDBChatMessage(4084);      // Men, women, and children... None were spared the master's wrath. Your death will be no different.
-
-            if (mInstance)
-                mInstance->setData(getCreature()->GetEntry(), InProgress);
-            
-        }
-
-        void OnTargetDied(Unit* pTarget)
-        {
-            switch (RandomUInt(1))
-            {
-                case 0:
-                    sendDBChatMessage(4086);     // The children of Stratholme fought with more ferocity!
-                    break;
-                case 1:
-                    sendDBChatMessage(4085);     // Sniveling maggot!
-                    break;
-            }
-        }
-
-        void OnCombatStop(Unit* Target)
-        {
-            if (mInstance)
-                mInstance->setData(getCreature()->GetEntry(), Performed);
-            
-        }
-
-        void OnDied(Unit* pKiller)
-        {
-            sendDBChatMessage(4087);     // Marwyn, finish them...
-
-            if (mInstance)
-                mInstance->setData(getCreature()->GetEntry(), Finished);
-            
+            // new
+            addEmoteForEvent(Event_OnCombatStart, 4084);      // Men, women, and children... None were spared the master's wrath. Your death will be no different.
+            addEmoteForEvent(Event_OnTargetDied, 4086);     // The children of Stratholme fought with more ferocity!
+            addEmoteForEvent(Event_OnTargetDied, 4085);     // Sniveling maggot!
+            addEmoteForEvent(Event_OnDied, 4087);     // Marwyn, finish them...
         }
 
         void AIUpdate(Player* Plr)
@@ -327,9 +252,6 @@ class Falric : public CreatureAIScript
             }
 
         }
-
-    private:
-        InstanceScript* mInstance;
 };
 
 void SetupHallsOfReflection(ScriptMgr* mgr)

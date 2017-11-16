@@ -262,11 +262,15 @@ class NovosTheSummonerAI : public CreatureAIScript
             WrathOfMisery->time = 0;
             WrathOfMisery->target = SPELL_TARGET_RANDOM_PLAYER;
             spells.push_back(WrathOfMisery);
+
+            //new
+            addEmoteForEvent(Event_OnCombatStart, SAY_NOVOS_SUMMONER_01);
+            addEmoteForEvent(Event_OnTargetDied, SAY_NOVOS_SUMMONER_02);
+            addEmoteForEvent(Event_OnDied, SAY_NOVOS_SUMMONER_03);
         }
 
         void OnCombatStart(Unit* mTarget)
         {
-            sendDBChatMessage(SAY_NOVOS_SUMMONER_01);
             getCreature()->CastSpell(getCreature(), 47346, false);
             //spawn 4 Ritual Crystal
             for (uint8 i = 0; i < 4; i++)
@@ -305,17 +309,6 @@ class NovosTheSummonerAI : public CreatureAIScript
             getCreature()->setMoveRoot(true);
             getCreature()->InterruptSpell();
             getCreature()->RemoveAllAuras();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
-            sendDBChatMessage(SAY_NOVOS_SUMMONER_03);
-        }
-
-        void OnTargetDied(Unit* mTarget)
-        {
-            //BUAHAHAHAH
-            sendDBChatMessage(SAY_NOVOS_SUMMONER_02);
         }
 
         void AIUpdate()
@@ -419,6 +412,8 @@ class NovosTheSummonerAI : public CreatureAIScript
             if (phase == 2)
                 getCreature()->setMoveRoot(false);
         }
+        
+        // scriptPhase
         //type: 1 - normal, 0 - handler
         void SpawnInvader(uint32 type)
         {

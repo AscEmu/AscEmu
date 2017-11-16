@@ -312,12 +312,12 @@ class VanCleefAI : public CreatureAIScript
     VanCleefAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         AddSpell(3391, Target_Self, 25, 0, 0);    //Thrash (Gives the caster 2 extra attacks.)
+
+        // new
+        addEmoteForEvent(Event_OnCombatStart, 7722);     // None may challenge the Brotherhood!
+        addEmoteForEvent(Event_OnDied, 7727);            // The Brotherhood shall prevail!
     }
 
-    void OnCombatStart(Unit* pTarget)
-    {
-        sendDBChatMessage(7722);     // None may challenge the Brotherhood!
-    }
 
     void OnTargetDied(Unit* pTarget)
     {
@@ -331,13 +331,9 @@ class VanCleefAI : public CreatureAIScript
         
     }
 
-    void OnDied(Unit* pKiller)
-    {
-        sendDBChatMessage(7727);     // The Brotherhood shall prevail!
-    }
-
     void AIUpdate()
     {
+        // case for scriptPhase
         if (_getHealthPercent() <= 75 && isScriptPhase(1))
         {
             sendDBChatMessage(7723);     // Lapdogs, all of you!

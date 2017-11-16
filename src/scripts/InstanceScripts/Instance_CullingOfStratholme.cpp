@@ -57,11 +57,17 @@ class MeathookAI : public CreatureAIScript
             Frenzy->time = 0;
             Frenzy->target = SPELL_TARGET_SELF;
             spells.push_back(Frenzy);
+
+            // new
+            addEmoteForEvent(Event_OnCombatStart, SAY_MEATHOOK_01);
+            addEmoteForEvent(Event_OnTargetDied, SAY_MEATHOOK_02);
+            addEmoteForEvent(Event_OnTargetDied, SAY_MEATHOOK_03);
+            addEmoteForEvent(Event_OnTargetDied, SAY_MEATHOOK_04);
+            addEmoteForEvent(Event_OnDied, SAY_MEATHOOK_06);
         }
 
         void OnCombatStart(Unit* mTarget)
         {
-            sendDBChatMessage(SAY_MEATHOOK_01);
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
@@ -71,27 +77,6 @@ class MeathookAI : public CreatureAIScript
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
             getCreature()->RemoveAllAuras();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
-            sendDBChatMessage(SAY_MEATHOOK_06);
-        }
-
-        void OnTargetDied(Unit* mTarget)
-        {
-            switch (RandomUInt(2))
-            {
-                case 0:
-                    sendDBChatMessage(SAY_MEATHOOK_02);
-                    break;
-                case 1:
-                    sendDBChatMessage(SAY_MEATHOOK_03);
-                    break;
-                case 2:
-                    sendDBChatMessage(SAY_MEATHOOK_04);
-                    break;
-            }
         }
 
         void AIUpdate()
@@ -234,11 +219,17 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
             ExplodeGhoul->time = 0;
             ExplodeGhoul->target = SPELL_TARGET_CUSTOM;
             spells.push_back(ExplodeGhoul);
+
+            // new
+            addEmoteForEvent(Event_OnCombatStart, SAY_SALRAM_FLESH_01);
+            addEmoteForEvent(Event_OnTargetDied, SAY_SALRAM_FLESH_03);
+            addEmoteForEvent(Event_OnTargetDied, SAY_SALRAM_FLESH_04);
+            addEmoteForEvent(Event_OnTargetDied, SAY_SALRAM_FLESH_05);
+            addEmoteForEvent(Event_OnDied, SAY_SALRAM_FLESH_06);
         }
 
         void OnCombatStart(Unit* mTarget)
         {
-            sendDBChatMessage(SAY_SALRAM_FLESH_01);
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
@@ -248,27 +239,6 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
             getCreature()->RemoveAllAuras();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
-            sendDBChatMessage(SAY_SALRAM_FLESH_06);
-        }
-
-        void OnTargetDied(Unit* mTarget)
-        {
-            switch (RandomUInt(2))
-            {
-                case 0:
-                    sendDBChatMessage(SAY_SALRAM_FLESH_03);
-                    break;
-                case 1:
-                    sendDBChatMessage(SAY_SALRAM_FLESH_04);
-                    break;
-                case 2:
-                    sendDBChatMessage(SAY_SALRAM_FLESH_05);
-                    break;
-            }
         }
 
         void AIUpdate()
@@ -409,11 +379,16 @@ class ChronoLordEpochAI : public CreatureAIScript
             TimeStop->time = 0;
             TimeStop->target = SPELL_TARGET_CURRENT_ENEMY;
             spells.push_back(TimeStop);
+
+            // new
+            addEmoteForEvent(Event_OnCombatStart, SAY_CHRONOLORD_EPOCH_02);
+            addEmoteForEvent(Event_OnTargetDied, SAY_CHRONOLORD_EPOCH_06);
+            addEmoteForEvent(Event_OnTargetDied, SAY_CHRONOLORD_EPOCH_07);
+            addEmoteForEvent(Event_OnTargetDied, SAY_CHRONOLORD_EPOCH_08);
         }
 
         void OnCombatStart(Unit* mTarget)
         {
-            sendDBChatMessage(SAY_CHRONOLORD_EPOCH_02);
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
@@ -423,22 +398,6 @@ class ChronoLordEpochAI : public CreatureAIScript
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
             getCreature()->RemoveAllAuras();
-        }
-
-        void OnTargetDied(Unit* mTarget)
-        {
-            switch (RandomUInt(2))
-            {
-                case 0:
-                    sendDBChatMessage(SAY_CHRONOLORD_EPOCH_06);
-                    break;
-                case 1:
-                    sendDBChatMessage(SAY_CHRONOLORD_EPOCH_07);
-                    break;
-                case 2:
-                    sendDBChatMessage(SAY_CHRONOLORD_EPOCH_08);
-                    break;
-            }
         }
 
         void AIUpdate()
@@ -554,11 +513,14 @@ class InfiniteCorruptorAI : public CreatureAIScript
             CorruptingBlight->time = 0;
             CorruptingBlight->target = SPELL_TARGET_RANDOM_PLAYER;
             spells.push_back(CorruptingBlight);
+
+            // new
+            addEmoteForEvent(Event_OnCombatStart, SAY_INFINITE_CORRUP_01);
+            addEmoteForEvent(Event_OnDied, SAY_INFINITE_CORRUP_02);
         }
 
         void OnCombatStart(Unit* mTarget)
         {
-            sendDBChatMessage(SAY_INFINITE_CORRUP_01);
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
@@ -568,11 +530,6 @@ class InfiniteCorruptorAI : public CreatureAIScript
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
             getCreature()->RemoveAllAuras();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
-            sendDBChatMessage(SAY_INFINITE_CORRUP_02);
         }
 
         void AIUpdate()
@@ -707,11 +664,17 @@ class MalganisAI : public CreatureAIScript
             VampiricTouch->time = 0;
             VampiricTouch->target = SPELL_TARGET_SELF;
             spells.push_back(VampiricTouch);
+
+            // new
+            addEmoteForEvent(Event_OnCombatStart, SAY_MALGANIS_03);
+            addEmoteForEvent(Event_OnTargetDied, SAY_MALGANIS_04);
+            addEmoteForEvent(Event_OnTargetDied, SAY_MALGANIS_05);
+            addEmoteForEvent(Event_OnTargetDied, SAY_MALGANIS_06);
+            addEmoteForEvent(Event_OnDied, SAY_MALGANIS_16);
         }
 
         void OnCombatStart(Unit* mTarget)
         {
-            sendDBChatMessage(SAY_MALGANIS_03);
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
@@ -721,22 +684,6 @@ class MalganisAI : public CreatureAIScript
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
             getCreature()->RemoveAllAuras();
-        }
-
-        void OnTargetDied(Unit* mTarget)
-        {
-            switch (RandomUInt(2))
-            {
-                case 0:
-                    sendDBChatMessage(SAY_MALGANIS_04);
-                    break;
-                case 1:
-                    sendDBChatMessage(SAY_MALGANIS_05);
-                    break;
-                case 2:
-                    sendDBChatMessage(SAY_MALGANIS_06);
-                    break;
-            }
         }
 
         void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
@@ -760,11 +707,6 @@ class MalganisAI : public CreatureAIScript
                 go->PushToWorld(getCreature()->GetMapMgr());
                 getCreature()->Despawn(1, 0);
             }
-        }
-
-        void OnDied(Unit* mKiller)
-        {
-            sendDBChatMessage(SAY_MALGANIS_16);
         }
 
         void AIUpdate()
