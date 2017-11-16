@@ -42,10 +42,17 @@ class KrikthirAI : public CreatureAIScript
         }
 
         mEnraged = false;
+
+        // new
+        addEmoteForEvent(Event_OnCombatStart, 3908);    // This kingdom belongs to the Scourge. Only the dead may enter!
+        addEmoteForEvent(Event_OnTargetDied, 3910);     // As Anub'arak commands!
+        addEmoteForEvent(Event_OnTargetDied, 3909);     // You were foolish to come.
+        addEmoteForEvent(Event_OnDied, 3911);           // I should be grateful... but I long ago lost the capacity....
     }
 
     void AIUpdate()
     {
+        // case for scriptphase
         if (getCreature()->GetHealthPct() <= 10 && mEnraged == false)
         {
             _applyAura(KRIKTHIR_ENRAGE);
@@ -53,28 +60,8 @@ class KrikthirAI : public CreatureAIScript
         }
     }
 
-    void OnCombatStart(Unit* pTarget)
-    {
-        sendDBChatMessage(3908);     // This kingdom belongs to the Scourge. Only the dead may enter!
-    }
-
-    void OnTargetDied(Unit* mKiller)
-    {
-        switch (RandomUInt(1))
-        {
-            case 0:
-                sendDBChatMessage(3910);     // As Anub'arak commands!
-                break;
-            case 1:
-                sendDBChatMessage(3909);     // You were foolish to come.
-                break;
-        }
-    }
-
     void OnDied(Unit* pKiller)
     {
-        sendDBChatMessage(3911);         // I should be grateful... but I long ago lost the capacity....
-
         GameObject* Doors = getNearestGameObject(192395);
         if (Doors != NULL)
             Doors->Despawn(0, 0);

@@ -26,8 +26,6 @@
 // ChronoLordAI
 class ChronoLordAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(ChronoLordAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
@@ -53,12 +51,16 @@ class ChronoLordAI : public CreatureAIScript
             spells[1].perctrigger = 0.0f;
             spells[1].attackstoptimer = 1000;
 
+            // new
+            addEmoteForEvent(Event_OnCombatStart, SAY_CHRONOLORD_01);
+            addEmoteForEvent(Event_OnTargetDied, SAY_CHRONOLORD_02);
+            addEmoteForEvent(Event_OnTargetDied, SAY_CHRONOLORD_03);
+            addEmoteForEvent(Event_OnDied, SAY_CHRONOLORD_04);
         }
 
         void OnCombatStart(Unit* mTarget)
         {
             CastTime();
-            sendDBChatMessage(SAY_CHRONOLORD_01);
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
@@ -67,22 +69,6 @@ class ChronoLordAI : public CreatureAIScript
             for (int i = 0; i < nrspells; ++i)
             {
                 spells[i].casttime = spells[i].cooldown;
-            }
-        }
-
-        void OnTargetDied(Unit* mTarget)
-        {
-            if (getCreature()->GetHealthPct() > 0)
-            {
-                switch (RandomUInt(1))
-                {
-                    case 0:
-                        sendDBChatMessage(SAY_CHRONOLORD_02);
-                        break;
-                    case 1:
-                        sendDBChatMessage(SAY_CHRONOLORD_03);
-                        break;
-                }
             }
         }
 
@@ -97,7 +83,6 @@ class ChronoLordAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            sendDBChatMessage(SAY_CHRONOLORD_04);
         }
 
         void AIUpdate()
@@ -190,12 +175,17 @@ class TemporusAI : public CreatureAIScript
             spells[1].perctrigger = 0.0f;
             spells[1].attackstoptimer = 1000;
 
+            // new
+            addEmoteForEvent(Event_OnCombatStart, SAY_TEMPORUS_01);
+            addEmoteForEvent(Event_OnTargetDied, SAY_TEMPORUS_02);
+            addEmoteForEvent(Event_OnTargetDied, SAY_TEMPORUS_03);
+            addEmoteForEvent(Event_OnDied, SAY_TEMPORUS_04);
+
         }
 
         void OnCombatStart(Unit* mTarget)
         {
             CastTime();
-            sendDBChatMessage(SAY_TEMPORUS_01);
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
@@ -203,22 +193,6 @@ class TemporusAI : public CreatureAIScript
         {
             for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
-        }
-
-        void OnTargetDied(Unit* mTarget)
-        {
-            if (getCreature()->GetHealthPct() > 0)
-            {
-                switch (RandomUInt(1))
-                {
-                    case 0:
-                        sendDBChatMessage(SAY_TEMPORUS_02);
-                        break;
-                    case 1:
-                        sendDBChatMessage(SAY_TEMPORUS_03);
-                        break;
-                }
-            }
         }
 
         void OnCombatStop(Unit* mTarget)
@@ -232,7 +206,6 @@ class TemporusAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            sendDBChatMessage(SAY_TEMPORUS_04);
         }
 
         void AIUpdate()
@@ -298,8 +271,6 @@ class TemporusAI : public CreatureAIScript
 //AenusAI
 class AenusAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(AenusAI);
         SP_AI_Spell spells[3];
         bool m_spellcheck[3];
@@ -331,12 +302,17 @@ class AenusAI : public CreatureAIScript
             spells[2].cooldown = 8;
             spells[2].perctrigger = 0.0f;
             spells[2].attackstoptimer = 1000;
+
+            // new
+            addEmoteForEvent(Event_OnCombatStart, SAY_AENUS_01);
+            addEmoteForEvent(Event_OnTargetDied, SAY_AENUS_02);
+            addEmoteForEvent(Event_OnTargetDied, SAY_AENUS_03);
+            addEmoteForEvent(Event_OnDied, SAY_AENUS_04);
         }
 
         void OnCombatStart(Unit* mTarget)
         {
             CastTime();
-            sendDBChatMessage(SAY_AENUS_01);
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
@@ -344,22 +320,6 @@ class AenusAI : public CreatureAIScript
         {
             for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
-        }
-
-        void OnTargetDied(Unit* mTarget)
-        {
-            if (getCreature()->GetHealthPct() > 0)
-            {
-                switch (RandomUInt(1))
-                {
-                    case 0:
-                        sendDBChatMessage(SAY_AENUS_02);
-                        break;
-                    case 1:
-                        sendDBChatMessage(SAY_AENUS_03);
-                        break;
-                }
-            }
         }
 
         void OnCombatStop(Unit* mTarget)
@@ -373,7 +333,6 @@ class AenusAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            sendDBChatMessage(SAY_AENUS_04);
         }
 
         void AIUpdate()

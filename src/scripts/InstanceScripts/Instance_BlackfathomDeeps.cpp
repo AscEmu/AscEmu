@@ -24,18 +24,15 @@
 // LadySarevessAI
 class LadySarevessAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(LadySarevessAI);
         LadySarevessAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             AddSpell(8435, Target_Current, 10, 2, 0);    // Forked Lightning
             AddSpell(865, Target_Self, 15, 0, 25);        // Frost Nova
             AddSpell(246, Target_Current, 15, 0, 10);    // Slow
-        }
 
-        void OnCombatStart(Unit* pTarget)
-        {
-            sendDBChatMessage(7912);     // You should not be here! Slay them!
+            //new
+            addEmoteForEvent(Event_OnCombatStart, 7912);     // You should not be here! Slay them!
         }
 };
 
@@ -83,22 +80,15 @@ class FathomStone : public GameObjectAIScript
 // KelrisAI
 class KelrisAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(KelrisAI);
         KelrisAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             AddSpell(8399, Target_RandomPlayer, 12, 1.3f, 0, 0, 0, false, "Sleep...", CHAT_MSG_MONSTER_YELL, 5804);    // Sleep
             AddSpell(15587, Target_Current, 16, 1.5f, 0);    // Mind Blast
-        }
 
-        void OnCombatStart(Unit* pTarget)
-        {
-            sendDBChatMessage(3966);     // Who dares disturb my meditation?
-        }
-
-        void OnTargetDied(Unit* pTarget)
-        {
-            sendDBChatMessage(3968);     // Dust to dust.
+            // new
+            addEmoteForEvent(Event_OnCombatStart, 3966);     // Who dares disturb my meditation?
+            addEmoteForEvent(Event_OnTargetDied, 3968);      // Dust to dust.
         }
 };
 

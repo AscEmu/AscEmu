@@ -372,6 +372,14 @@ class EXARCHMALADAARAI : public CreatureAIScript
             spells[3].cooldown = -1;
 
             Avatar = false;
+
+            // new
+            addEmoteForEvent(Event_OnCombatStart, SAY_MALADAAR_01);
+            addEmoteForEvent(Event_OnCombatStart, SAY_MALADAAR_02);
+            addEmoteForEvent(Event_OnCombatStart, SAY_MALADAAR_03);
+            addEmoteForEvent(Event_OnTargetDied, SAY_MALADAAR_04);
+            addEmoteForEvent(Event_OnTargetDied, SAY_MALADAAR_05);
+            addEmoteForEvent(Event_OnDied, SAY_MALADAAR_06);
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -381,37 +389,7 @@ class EXARCHMALADAARAI : public CreatureAIScript
 
             Avatar = false;
 
-            switch (RandomUInt(2))
-            {
-                case 0:
-                    sendDBChatMessage(SAY_MALADAAR_01);
-                    break;
-                case 1:
-                    sendDBChatMessage(SAY_MALADAAR_02);
-                    break;
-                case 2:
-                    sendDBChatMessage(SAY_MALADAAR_03);
-                    break;
-            }
-
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
-        }
-
-        void OnTargetDied(Unit* mTarget)
-        {
-            if (getCreature()->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
-            {
-                switch (RandomUInt(1))
-                {
-                    case 0:
-                        sendDBChatMessage(SAY_MALADAAR_04);
-                        break;
-                    case 1:
-                        sendDBChatMessage(SAY_MALADAAR_05);
-                        break;
-                }
-            }
-
         }
 
         void OnCombatStop(Unit* mTarget)
@@ -424,13 +402,9 @@ class EXARCHMALADAARAI : public CreatureAIScript
             Avatar = false;
         }
 
-        void OnDied(Unit* mKiller)
-        {
-            sendDBChatMessage(SAY_MALADAAR_06);
-        }
-
         void AIUpdate()
         {
+            // case for scriptphase
             if (getCreature()->GetHealthPct() <= 25 && !Avatar && !getCreature()->IsStunned())
             {
                 sendDBChatMessage(SAY_MALADAAR_07);

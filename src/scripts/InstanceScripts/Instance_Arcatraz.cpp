@@ -29,8 +29,6 @@
 // Zereketh the UnboundAI
 class ZerekethAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(ZerekethAI);
         ZerekethAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -44,33 +42,21 @@ class ZerekethAI : public CreatureAIScript
             else
                 AddSpell(SHADOW_NOVA_H, Target_Self, 15, 2, 15);
 
+            // new
+            addEmoteForEvent(Event_OnCombatStart, 5496);     // Life energy to... consume.
+            addEmoteForEvent(Event_OnTargetDied, 5497);      // This vessel is empty.
+            addEmoteForEvent(Event_OnTargetDied, 5498);      // No... more... life.
+            addEmoteForEvent(Event_OnDied, 5501);            // The Void... beckons.
         }
 
         void OnCombatStart(Unit* mTarget)
         {
-            sendDBChatMessage(5496);     // Life energy to... consume.
-
             VoidTimer = _addTimer((RandomUInt(10) + 30) * 1000);
             SpeechTimer = _addTimer((RandomUInt(10) + 40) * 1000);
         }
 
-        void OnTargetDied(Unit* mKiller)
-        {
-            switch (RandomUInt(1))
-            {
-                case 0:
-                    sendDBChatMessage(5497);     // This vessel is empty.
-                    break;
-                case 1:
-                    sendDBChatMessage(5498);     // No... more... life.
-                    break;
-            }
-        }
-
         void OnDied(Unit* mKiller)
         {
-            sendDBChatMessage(5501);     // The Void... beckons.
-
             //despawn voids
             Creature* creature = NULL;
             for (std::set<Object*>::iterator itr = getCreature()->GetInRangeSetBegin(); itr != getCreature()->GetInRangeSetEnd();)
@@ -161,8 +147,6 @@ class ZerekethAI : public CreatureAIScript
 
 class VoidZoneARC : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(VoidZoneARC);
         VoidZoneARC(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -189,8 +173,6 @@ class VoidZoneARC : public CreatureAIScript
 // sounds missing related to Wrath... (look on script below this one)
 class DalliahTheDoomsayerAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(DalliahTheDoomsayerAI);
         DalliahTheDoomsayerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -207,30 +189,16 @@ class DalliahTheDoomsayerAI : public CreatureAIScript
             if (_isHeroic())
                 AddSpell(SHADOW_WAVE, Target_Current, 8.0f, 0, -1);
 
-        }
+            // new
+            addEmoteForEvent(Event_OnCombatStart, 7368);    // It is unwise to anger me!
+            addEmoteForEvent(Event_OnTargetDied, 7369);     // Completely ineffective.  Just like someone else I know.
+            addEmoteForEvent(Event_OnTargetDied, 7370);     // You chose the wrong opponent.
+            addEmoteForEvent(Event_OnDied, 7375);           // Now I'm really angry.
 
-        void OnEnterCombat(Unit* mKiller)
-        {
-            sendDBChatMessage(7368);     // It is unwise to anger me!
-        }
-
-        void OnTargetDied(Unit* mKiller)
-        {
-            switch (RandomUInt(1))
-            {
-                case 0:
-                    sendDBChatMessage(7369);     // Completely ineffective.  Just like someone else I know.
-                    break;
-                case 1:
-                    sendDBChatMessage(7370);     // You chose the wrong opponent.
-                    break;
-            }
         }
 
         void OnDied(Unit* mKiller)
         {
-            sendDBChatMessage(7375);     // Now I'm really angry.
-
             GameObject* door2 = getNearestGameObject(184319);
             if (door2 != NULL)
                 door2->SetState(GO_STATE_OPEN);
@@ -245,8 +213,6 @@ class DalliahTheDoomsayerAI : public CreatureAIScript
 // so haven't added them.
 class WrathScryerSoccothratesAI : public CreatureAIScript
 {
-    public:
-
         ADD_CREATURE_FACTORY_FUNCTION(WrathScryerSoccothratesAI);
         WrathScryerSoccothratesAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -255,30 +221,16 @@ class WrathScryerSoccothratesAI : public CreatureAIScript
             AddSpell(FELFIRE_LINE_UP, Target_Self, 8.0f, 0, -1);
             AddSpell(KNOCK_AWAY, Target_Destination, 6.0f, 0, -1);
             AddSpell(CHARGE, Target_Current, 4.0f, 0, -1);
-        }
 
-        void OnCombatStart(Unit* mKiller)
-        {
-            sendDBChatMessage(7365);     // At last, a target for my frustrations!
-        }
-
-        void OnTargetDied(Unit* mKiller)
-        {
-            switch (RandomUInt(1))
-            {
-                case 0:
-                    sendDBChatMessage(7364);     // Yes, that was quite satisfying.
-                    break;
-                case 1:
-                    sendDBChatMessage(8753);     // Ha! Much better!
-                    break;
-            }
+            // new
+            addEmoteForEvent(Event_OnCombatStart, 7365);    // At last, a target for my frustrations!
+            addEmoteForEvent(Event_OnTargetDied, 7364);     // Yes, that was quite satisfying.
+            addEmoteForEvent(Event_OnTargetDied, 8753);     // Ha! Much better!
+            addEmoteForEvent(Event_OnDied, 7380);           // Knew this was... the only way out.
         }
 
         void OnDied(Unit* mKiller)
         {
-            sendDBChatMessage(7380);     // Knew this was... the only way out.
-
             GameObject* door1 = getNearestGameObject(199.969f, 118.5837f, 22.379f, 184318);
             if (door1 != NULL)
                 door1->SetState(GO_STATE_OPEN);
@@ -315,31 +267,17 @@ class HarbringerSkyrissAI : public CreatureAIScript
             Illusion33->mEnabled = false;
 
             IllusionCount = 0;
+
+            // new
+            addEmoteForEvent(Event_OnCombatStart, 5034);    // Bear witness to the agent of your demise!
+            addEmoteForEvent(Event_OnTargetDied, 5035);     // Your fate is written.
+            addEmoteForEvent(Event_OnTargetDied, 5036);     // The chaos I have sown here is but a taste....
+            addEmoteForEvent(Event_OnDied, 5042);           // I am merely one of... infinite multitudes.
         }
 
         void OnCombatStart(Unit* mTarget)
         {
-            sendDBChatMessage(5034);     // Bear witness to the agent of your demise!
-
             IllusionCount = 0;
-        }
-
-        void OnTargetDied(Unit* mKiller)
-        {
-            switch (RandomUInt(1))
-            {
-                case 0:
-                    sendDBChatMessage(5035);     // Your fate is written.
-                    break;
-                case 1:
-                    sendDBChatMessage(5036);     // The chaos I have sown here is but a taste....
-                    break;
-            }
-        }
-
-        void OnDied(Unit* mKiller)
-        {
-            sendDBChatMessage(5042);     // I am merely one of... infinite multitudes.
         }
 
         void AIUpdate()
@@ -367,7 +305,6 @@ class HarbringerSkyrissAI : public CreatureAIScript
 // Warden MellicharAI
 class WardenMellicharAI : public CreatureAIScript
 {
-    public:
         ADD_CREATURE_FACTORY_FUNCTION(WardenMellicharAI);
         WardenMellicharAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {

@@ -1857,12 +1857,16 @@ class KorthazzAI : public CreatureAIScript
         spells[1].perctrigger = 15.0f;
         spells[1].attackstoptimer = 3000; // 1sec
 
+        // new
+        addEmoteForEvent(Event_OnCombatStart, 4242);     // C'mon an' fight ye wee ninny!
+        addEmoteForEvent(Event_OnTargetDied, 4247);      // Next time, bring more friends!
+        addEmoteForEvent(Event_OnDied, 4248);            // What a bloody waste this is!
+
     }
 
     void OnCombatStart(Unit* mTarget)
     {
         m_attackstart = true;
-        sendDBChatMessage(4242);     // C'mon an' fight ye wee ninny!
 
         RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
     }
@@ -1875,14 +1879,8 @@ class KorthazzAI : public CreatureAIScript
         RemoveAIUpdateEvent();
     }
 
-    void OnTargetDied(Unit* mTarget)
-    {
-        sendDBChatMessage(4247);     // Next time, bring more friends!
-    }
-
     void OnDied(Unit* mKiller)
     {
-        sendDBChatMessage(4248);     // What a bloody waste this is!
         getCreature()->CastSpell(getCreature(), spells[1].info, spells[1].instant);
     }
 
@@ -2034,13 +2032,15 @@ class BlaumeuxAI : public CreatureAIScript
         spells[1].perctrigger = 15.0f;
         spells[1].attackstoptimer = 3000; // 1sec
 
+        // new
+        addEmoteForEvent(Event_OnCombatStart, 4249);     // Defend yourself!
+        addEmoteForEvent(Event_OnTargetDied, 4254);      // Who's next?
+        addEmoteForEvent(Event_OnDied, 4255);            // Touche...
     }
 
     void OnCombatStart(Unit* mTarget)
     {
         m_attackstart = true;
-        sendDBChatMessage(4249);     // Defend yourself!
-
         RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
     }
 
@@ -2052,14 +2052,8 @@ class BlaumeuxAI : public CreatureAIScript
         RemoveAIUpdateEvent();
     }
 
-    void OnTargetDied(Unit* mTarget)
-    {
-        sendDBChatMessage(4254);     // Who's next?
-    }
-
     void OnDied(Unit* mKiller)
     {
-        sendDBChatMessage(4255);     // Touche...
         getCreature()->CastSpell(getCreature(), spells[1].info, spells[1].instant);
     }
 
@@ -2206,12 +2200,15 @@ class ZeliekAI : public CreatureAIScript
         spells[1].perctrigger = 15.0f;
         spells[1].attackstoptimer = 1000; // 1sec
 
+        // new
+        addEmoteForEvent(Event_OnCombatStart, 4266);     // Flee, before it's too late!
+        addEmoteForEvent(Event_OnTargetDied, 4271);      // Forgive me!
+        addEmoteForEvent(Event_OnDied, 4272);            // It is... as it should be.
     }
 
     void OnCombatStart(Unit* mTarget)
     {
         m_attackstart = true;
-        sendDBChatMessage(4266);     // Flee, before it's too late!
 
         RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
     }
@@ -2224,14 +2221,8 @@ class ZeliekAI : public CreatureAIScript
         RemoveAIUpdateEvent();
     }
 
-    void OnTargetDied(Unit* mTarget)
-    {
-        sendDBChatMessage(4271);     // Forgive me!
-    }
-
     void OnDied(Unit* mKiller)
     {
-        sendDBChatMessage(4272);     // It is... as it should be.
         getCreature()->CastSpell(getCreature(), spells[1].info, spells[1].instant);
     }
 
