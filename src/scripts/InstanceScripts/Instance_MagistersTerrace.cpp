@@ -114,7 +114,7 @@ class SelinFireheartAI : public CreatureAIScript
 
         getCreature()->GetAIInterface()->StopMovement(0);
 
-        if (!FelCrystal->GetCurrentSpell())
+        if (!FelCrystal->isCastingNonMeleeSpell())
             FelCrystal->CastSpell(getCreature(), ManaRage, false);
 
         // Mana Rage giving of mana doesnt work so we give 10%(3231) / AIUpdate() Event.

@@ -247,15 +247,25 @@ bool DeadlyThrowInterrupt(uint32 i, Aura* a, bool apply)
 
     Unit* m_target = a->GetTarget();
 
-    uint32 school = 0;
-
-    if (m_target->GetCurrentSpell())
+    // Interrupt target's current casted spell (either channeled or generic spell with cast time)
+    if (m_target->isCastingNonMeleeSpell(true, false, true))
     {
-        school = m_target->GetCurrentSpell()->GetSpellInfo()->getSchool();
-    }
+        uint32_t school = 0;
 
-    m_target->InterruptSpell();
-    m_target->SchoolCastPrevent[school] = 3000 + Util::getMSTime();
+        if (m_target->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr && m_target->getCurrentSpell(CURRENT_CHANNELED_SPELL)->getCastTimeLeft() > 0)
+        {
+            school = m_target->getCurrentSpell(CURRENT_CHANNELED_SPELL)->GetSpellInfo()->getSchool();
+            m_target->interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
+        }
+        // No need to check cast time for generic spells, checked already in Object::isCastingNonMeleeSpell()
+        else if (m_target->getCurrentSpell(CURRENT_GENERIC_SPELL) != nullptr)
+        {
+            school = m_target->getCurrentSpell(CURRENT_GENERIC_SPELL)->GetSpellInfo()->getSchool();
+            m_target->interruptSpellWithSpellType(CURRENT_GENERIC_SPELL);
+        }
+
+        m_target->SchoolCastPrevent[school] = 3000 + Util::getMSTime();
+    }
 
     return true;
 }

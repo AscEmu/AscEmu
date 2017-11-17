@@ -710,8 +710,10 @@ void Creature::setDeathState(DeathState s)
         if (m_enslaveSpell)
             RemoveEnslave();
 
-        if (m_currentSpell)
-            m_currentSpell->cancel();
+        for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
+        {
+            interruptSpellWithSpellType(CurrentSpellType(i));
+        }
 
         // if it's not a Pet, and not a summon and it has skinningloot then we will allow skinning
         if ((GetCreatedByGUID() == 0) && (GetSummonedByGUID() == 0) && lootmgr.IsSkinnable(creature_properties->Id))
@@ -2389,7 +2391,7 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     if (GetChannelSpellTargetGUID() != 0)
     {
 
-        Spell* spl = GetCurrentSpell();
+        Spell* spl = getCurrentSpell(CURRENT_CHANNELED_SPELL);
 
         if (spl != NULL)
         {
@@ -2408,7 +2410,7 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
             }
 
             if (spl->GetSpellInfo()->getChannelInterruptFlags() == 48140)
-                spl->cancel();
+                interruptSpell(spl->GetSpellInfo()->getId());
         }
     }
 
@@ -2417,10 +2419,14 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     {
         Unit* attacker = static_cast< Unit* >(*itr);
 
-        if (attacker->GetCurrentSpell() != NULL)
+        if (attacker->isCastingNonMeleeSpell())
         {
-            if (attacker->GetCurrentSpell()->m_targets.m_unitTarget == GetGUID())
-                attacker->GetCurrentSpell()->cancel();
+            for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
+            {
+                Spell* curSpell = attacker->getCurrentSpell(CurrentSpellType(i));
+                if (curSpell != nullptr && curSpell->m_targets.m_unitTarget == GetGUID())
+                    attacker->interruptSpellWithSpellType(CurrentSpellType(i));
+            }
         }
     }
 

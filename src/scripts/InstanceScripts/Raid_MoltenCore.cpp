@@ -60,7 +60,7 @@ class CoreRagerAI : public CreatureAIScript
 
         void SpellCast(uint32 val)
         {
-            if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
+            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
             {
                 //Unit* target = _unit->GetAIInterface()->GetNextTarget();
                 if (m_mangle)
@@ -125,7 +125,7 @@ class SulfuronAI : public CreatureAIScript
 
         void SpellCast(uint32 val)
         {
-            if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
+            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
             {
                 //Unit* target = _unit->GetAIInterface()->GetNextTarget();
 
@@ -247,7 +247,7 @@ class RagnarosAI : public CreatureAIScript
 
         void SpellCast(uint32 val)
         {
-            if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
+            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
             {
                 Unit* target = getCreature()->GetAIInterface()->getNextTarget();
 

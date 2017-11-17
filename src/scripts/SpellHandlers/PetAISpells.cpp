@@ -233,7 +233,7 @@ public:
     void AIUpdate()
     {
         Unit* curtarget = getCreature()->GetAIInterface()->getNextTarget();
-        if (getCreature()->GetCurrentSpell() == NULL && curtarget)
+        if (!getCreature()->isCastingNonMeleeSpell() && curtarget)
         {
             switch (dpsCycle)
             {

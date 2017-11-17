@@ -154,7 +154,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     // Combat check
     if (_player->getcombatstatus()->IsInCombat())
     {
-        for (int i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
+        for (uint8_t i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
         {
             if (SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(itemProto->Spells[i].Id))
             {
@@ -430,109 +430,54 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    // TODO: Autorepeat spells (such as Auto Shot and Shoot (wand)) require full rework. maybe m_currentSpell needs to be rewritten as well...
-    // leaving old Arcemu solution here for now, but I'll try to get back to this sooner or later in spell system rewrite -Appled
-    if (GetPlayer()->GetOnMeleeSpell() != spellId)
+    // Check are we already casting this autorepeat spell
+    if ((spellInfo->getAttributesExB() & ATTRIBUTESEXB_AUTOREPEAT) && _player->getCurrentSpell(CURRENT_AUTOREPEAT_SPELL) != nullptr
+       && spellInfo == _player->getCurrentSpell(CURRENT_AUTOREPEAT_SPELL)->GetSpellInfo())
     {
-        if ((spellInfo->getAttributesExB() & ATTRIBUTESEXB_ACTIVATE_AUTO_SHOT))	// Auto Shot and Shoot (wand)
-        {
-            LogDebug("HandleCastSpellOpcode: Auto Shot-type spell cast (id %u, name %s)", spellInfo->getId(), spellInfo->getName().c_str());
-            Item* rangedWep = GetPlayer()->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-            if (rangedWep == nullptr)
-                return;
-
-            uint32_t rangedSpellId;
-            switch (rangedWep->GetItemProperties()->SubClass)
-            {
-                case 2:			 // Bows
-                case 3:			 // Guns
-                case 18:		 // Crossbows
-                    rangedSpellId = SPELL_RANGED_GENERAL;
-                    break;
-                case 16:		 // Throw
-                    rangedSpellId = SPELL_RANGED_THROW;
-                    break;
-                case 19:		 // Wands
-                    rangedSpellId = SPELL_RANGED_WAND;
-                    break;
-                default:
-                    rangedSpellId = spellInfo->getId();
-                    break;
-            }
-
-            if (!_player->m_onAutoShot)
-            {
-                _player->m_AutoShotTarget = _player->GetSelection();
-                uint32_t duration = _player->GetBaseAttackTime(RANGED);
-                SpellCastTargets targets(recvPacket, GetPlayer()->GetGUID());
-                if (!targets.m_unitTarget)
-                {
-                    LogDebug("HandleCastSpellOpcode: Cancelling auto-shot cast because targets.m_unitTarget is null!");
-                    return;
-                }
-
-                SpellInfo* sp = sSpellCustomizations.GetSpellInfo(rangedSpellId);
-                _player->m_AutoShotSpell = sp;
-                _player->m_AutoShotDuration = duration;
-                //This will fix fast clicks
-                if (_player->m_AutoShotAttackTimer < 500)
-                    _player->m_AutoShotAttackTimer = 500;
-                _player->m_onAutoShot = true;
-            }
-            return;
-        }
-
-        // TODO: move this check to Spell::prepare() or smth
-        if (_player->m_currentSpell)
-        {
-            if (_player->m_currentSpell->getState() == SPELL_STATE_CASTING)
-            {
-                // cancel the existing channel spell, cast this one
-                _player->m_currentSpell->cancel();
-            }
-            else
-            {
-                // send the error message
-                _player->SendCastResult(spellInfo->getId(), SPELL_FAILED_SPELL_IN_PROGRESS, castCount, 0);
-                return;
-            }
-        }
-
-        SpellCastTargets targets(recvPacket, GetPlayer()->GetGUID());
-        Spell* spell = sSpellFactoryMgr.NewSpell(GetPlayer(), spellInfo, false, nullptr);
-        spell->extra_cast_number = castCount;
-
-        // Some spell cast packets include more data
-        if (castFlags & 0x02)
-        {
-            float projectilePitch, projectileSpeed;
-            uint8_t hasMovementData; // 1 or 0
-            recvPacket >> projectilePitch >> projectileSpeed >> hasMovementData;
-
-            LocationVector const spellDestination = targets.destination();
-            LocationVector const spellSource = targets.source();
-            float const deltaX = spellDestination.x - spellSource.y; // Calculate change of x position
-            float const deltaY = spellDestination.y - spellSource.y; // Calculate change of y position
-
-            uint32_t travelTime = 0;
-            if ((projectilePitch != M_PI / 4) && (projectilePitch != -M_PI / 4)) // No division by zero
-            {
-                // Calculate projectile's travel time by using Pythagorean theorem to get distance from delta X and delta Y, and divide that with the projectile's velocity
-                travelTime = static_cast<uint32_t>((sqrtf(deltaX * deltaX + deltaY * deltaY) / (cosf(projectilePitch) * projectileSpeed)) * 1000);
-            }
-
-            if (hasMovementData)
-            {
-                recvPacket.SetOpcode(recvPacket.read<uint32_t>()); // MSG_MOVE_STOP
-                HandleMovementOpcodes(recvPacket);
-            }
-
-            spell->m_missilePitch = projectilePitch;
-            spell->m_missileTravelTime = travelTime;
-        }
-
-        spell->prepare(&targets);
+        return;
     }
+
+    // TODO: move this check to new Spell::prepare() and clean it
+    if (_player->isCastingNonMeleeSpell(false, true, true, spellInfo->getId() == 75))
+    {
+        _player->SendCastResult(spellId, SPELL_FAILED_SPELL_IN_PROGRESS, castCount, 0);
+        return;
+    }
+
+    SpellCastTargets targets(recvPacket, GetPlayer()->GetGUID());
+    Spell* spell = sSpellFactoryMgr.NewSpell(GetPlayer(), spellInfo, false, nullptr);
+    spell->extra_cast_number = castCount;
+
+    // Some spell cast packets include more data
+    if (castFlags & 0x02)
+    {
+        float projectilePitch, projectileSpeed;
+        uint8_t hasMovementData; // 1 or 0
+        recvPacket >> projectilePitch >> projectileSpeed >> hasMovementData;
+
+        LocationVector const spellDestination = targets.destination();
+        LocationVector const spellSource = targets.source();
+        float const deltaX = spellDestination.x - spellSource.y; // Calculate change of x position
+        float const deltaY = spellDestination.y - spellSource.y; // Calculate change of y position
+
+        uint32_t travelTime = 0;
+        if ((projectilePitch != M_PI / 4) && (projectilePitch != -M_PI / 4)) // No division by zero
+        {
+            // Calculate projectile's travel time by using Pythagorean theorem to get distance from delta X and delta Y, and divide that with the projectile's velocity
+            travelTime = static_cast<uint32_t>((sqrtf(deltaX * deltaX + deltaY * deltaY) / (cosf(projectilePitch) * projectileSpeed)) * 1000);
+        }
+
+        if (hasMovementData)
+        {
+            recvPacket.SetOpcode(recvPacket.read<uint32_t>()); // MSG_MOVE_STOP
+            HandleMovementOpcodes(recvPacket);
+        }
+
+        spell->m_missilePitch = projectilePitch;
+        spell->m_missileTravelTime = travelTime;
+    }
+
+    spell->prepare(&targets);
 }
 #endif
 
@@ -541,16 +486,15 @@ void WorldSession::HandleCancelCastOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
-    // Before this was only read in Cata but seems like it was already around in Wotlk
+    uint32_t spellId;
 #if VERSION_STRING > TBC
     recvPacket.read_skip<uint8_t>(); // Increments with every HandleCancelCast packet, unused
 #endif
-    recvPacket.read_skip<uint32_t>(); // Spell Id, unused
+    recvPacket >> spellId;
 
-    // TODO: rewrite me!
-    if (_player->m_currentSpell)
+    if (_player->isCastingNonMeleeSpell(false))
     {
-        _player->m_currentSpell->cancel();
+        _player->interruptSpell(spellId, false, false);
     }
 }
 #endif
@@ -583,14 +527,10 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
     // You can't cancel an aura which is from a channeled spell, unless you are currently channeling it
     if (spellInfo->getAttributesEx() & (ATTRIBUTESEX_CHANNELED_1 | ATTRIBUTESEX_CHANNELED_2))
     {
-        // TODO: rewrite me!
-        if (_player->m_currentSpell != nullptr)
+        if (_player->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr)
         {
-            if (_player->m_currentSpell->GetSpellInfo()->getAttributesEx() & (ATTRIBUTESEX_CHANNELED_1 | ATTRIBUTESEX_CHANNELED_2))
-            {
-                if (_player->m_currentSpell->GetSpellInfo()->getId() == spellId)
-                    _player->m_currentSpell->cancel();
-            }
+            if (_player->getCurrentSpell(CURRENT_CHANNELED_SPELL)->GetSpellInfo()->getId() == spellId)
+                _player->interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
         }
         return;
     }
@@ -642,11 +582,7 @@ void WorldSession::HandleCancelChannellingOpcode(WorldPacket& recvPacket)
 
     recvPacket.read_skip<uint32_t>(); // Spell Id, unused
 
-    // TODO: rewrite me!
-    if (_player->m_currentSpell)
-    {
-        _player->m_currentSpell->cancel();
-    }
+    _player->interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
 }
 #endif
 
@@ -655,8 +591,7 @@ void WorldSession::HandleCancelAutoRepeatSpellOpcode(WorldPacket& /*recvPacket*/
 {
     CHECK_INWORLD_RETURN
 
-    // TODO: rewrite me!
-    _player->m_onAutoShot = false;
+    _player->interruptSpellWithSpellType(CURRENT_AUTOREPEAT_SPELL);
 }
 #endif
 
@@ -724,7 +659,7 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
             {
                 if (auto creatureSpellData = sCreatureSpellDataStore.LookupEntry(petCreature->GetCreatureProperties()->spelldataid))
                 {
-                    for (int i = 0; i < 3; ++i)
+                    for (uint8_t i = 0; i < 3; ++i)
                     {
                         if (creatureSpellData->Spells[i] == spellId)
                         {
@@ -737,7 +672,7 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
 
             if (!found)
             {
-                for (int i = 0; i < 4; ++i)
+                for (uint8_t i = 0; i < 4; ++i)
                 {
                     if (petCreature->GetCreatureProperties()->AISpells[i] == spellId)
                     {
@@ -831,18 +766,14 @@ void WorldSession::HandleUpdateProjectilePosition(WorldPacket& recvPacket)
         return;
     }
 
-    if (caster->m_currentSpell == nullptr || caster->m_currentSpell->GetSpellInfo()->getId() != spellId)
-    {
-        return;
-    }
-
-    if (!caster->m_currentSpell->m_targets.hasDestination())
+    Spell* curSpell = _player->findCurrentCastedSpellBySpellId(spellId);
+    if (curSpell == nullptr || !curSpell->m_targets.hasDestination())
     {
         return;
     }
 
     // Relocate spell
-    caster->m_currentSpell->m_targets.setDestination(LocationVector(x, y, z));
+    curSpell->m_targets.setDestination(LocationVector(x, y, z));
 
 #if VERSION_STRING > TBC
     WorldPacket data(SMSG_SET_PROJECTILE_POSITION, 21);

@@ -439,10 +439,13 @@ void WorldSession::HandleDestroyItemOpcode(WorldPacket& recv_data)
         if (!pItem)
             return;
 
-        if (_player->GetCurrentSpell() && _player->GetCurrentSpell()->i_caster == pItem)
+        for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
         {
-            _player->GetCurrentSpell()->i_caster = NULL;
-            _player->GetCurrentSpell()->cancel();
+            if (_player->getCurrentSpell(CurrentSpellType(i)) != nullptr && _player->getCurrentSpell(CurrentSpellType(i))->i_caster == pItem)
+            {
+                _player->getCurrentSpell(CurrentSpellType(i))->i_caster = nullptr;
+                _player->interruptSpellWithSpellType(CurrentSpellType(i));
+            }
         }
 
         pItem->DeleteFromDB();
@@ -964,8 +967,7 @@ void WorldSession::HandleSellItemOpcode(WorldPacket& recv_data)
     recv_data >> itemguid;
     recv_data >> amount;
 
-    if (_player->IsCasting())
-        _player->InterruptSpell();
+    _player->interruptSpell();
 
     // Check if item exists
     if (!itemguid)
@@ -1083,8 +1085,7 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recv_data)   // drag &
     if (amount < 1)
         amount = 1;
 
-    if (_player->IsCasting())
-        _player->InterruptSpell();
+    _player->interruptSpell();
 
     Creature* unit = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(srcguid));
     if (unit == NULL || !unit->HasItems())

@@ -2629,12 +2629,10 @@ void Aura::SpellAuraModStun(bool apply)
         if (m_target->IsCreature())
             m_target->GetAIInterface()->resetNextTarget();
 
-        // remove the current spell (for channalers)
-        if (m_target->m_currentSpell && m_target->GetGUID() != m_casterGuid &&
-            m_target->m_currentSpell->getState() == SPELL_STATE_CASTING)
+        // remove the current spell
+        if (m_target->isCastingNonMeleeSpell())
         {
-            m_target->m_currentSpell->cancel();
-            m_target->m_currentSpell = 0;
+            m_target->interruptSpell();
         }
 
         //warrior talent - second wind triggers on stun and immobilize. This is not used as proc to be triggered always !
@@ -2644,8 +2642,6 @@ void Aura::SpellAuraModStun(bool apply)
             caster->EventStunOrImmobilize(m_target);
             m_target->EventStunOrImmobilize(caster, true);
         }
-        if (m_target->IsCasting())
-            m_target->CancelSpell(NULL); //cancel spells.
     }
     else if ((m_flags & (1 << mod->i)) == 0)   //add these checks to mods where immunity can cancel only 1 mod and not whole spell
     {
@@ -2974,8 +2970,17 @@ void Aura::SpellAuraModStealth(bool apply)
                         if (!_unit->isAlive())
                             continue;
 
-                        if (_unit->GetCurrentSpell() && _unit->GetCurrentSpell()->GetUnitTarget() == m_target)
-                            _unit->GetCurrentSpell()->cancel();
+                        if (_unit->isCastingNonMeleeSpell())
+                        {
+                            for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
+                            {
+                                Spell* curSpell = _unit->getCurrentSpell(CurrentSpellType(i));
+                                if (curSpell != nullptr && curSpell->GetUnitTarget() == m_target)
+                                {
+                                    _unit->interruptSpellWithSpellType(CurrentSpellType(i));
+                                }
+                            }
+                        }
 
                         if (_unit->GetAIInterface() != NULL)
                             _unit->GetAIInterface()->RemoveThreatByPtr(m_target);
@@ -3601,8 +3606,19 @@ void Aura::SpellAuraModSilence(bool apply)
         m_target->addUnitStateFlag(UNIT_STATE_SILENCE);
         m_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SILENCED);
 
-        if (m_target->GetCurrentSpell() != NULL)
-            m_target->GetCurrentSpell()->cancel();
+        // Interrupt target's current casted spell (either channeled or generic spell with cast time)
+        if (m_target->isCastingNonMeleeSpell(true, false, true))
+        {
+            if (m_target->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr && m_target->getCurrentSpell(CURRENT_CHANNELED_SPELL)->getCastTimeLeft() > 0)
+            {
+                m_target->interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
+            }
+            // No need to check cast time for generic spells, checked already in Object::isCastingNonMeleeSpell()
+            else if (m_target->getCurrentSpell(CURRENT_GENERIC_SPELL) != nullptr)
+            {
+                m_target->interruptSpellWithSpellType(CURRENT_GENERIC_SPELL);
+            }
+        }
     }
     else
     {
@@ -4266,9 +4282,15 @@ void Aura::SpellAuraModShapeshift(bool apply)
         if (shapeshift_form->id != FORM_STEALTH)
             m_target->RemoveAllAurasByRequiredShapeShift(ascemu::World::Spell::Helpers::decimalToMask(mod->m_miscValue));
 
-        if (m_target->IsCasting() && m_target->m_currentSpell && m_target->m_currentSpell->GetSpellInfo()
-            && (m_target->m_currentSpell->GetSpellInfo()->getRequiredShapeShift() & decimalToMask(mod->m_miscValue)))
-            m_target->InterruptSpell();
+        if (m_target->isCastingNonMeleeSpell())
+        {
+            for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
+            {
+                Spell* curSpell = m_target->getCurrentSpell(CurrentSpellType(i));
+                if (curSpell != nullptr && (curSpell->GetSpellInfo()->getRequiredShapeShift() & decimalToMask(mod->m_miscValue)))
+                    m_target->interruptSpellWithSpellType(CurrentSpellType(i));
+            }
+        }
 
         //execute before changing shape back
         if (p_target != NULL)
@@ -5082,12 +5104,10 @@ void Aura::SpellAuraTransform(bool apply)
 
                 m_target->SetDisplayId(displayId);
 
-                // remove the current spell (for channalers)
-                if (m_target->m_currentSpell && m_target->GetGUID() != m_casterGuid &&
-                    m_target->m_currentSpell->getState() == SPELL_STATE_CASTING)
+                // remove the current spell
+                if (m_target->isCastingNonMeleeSpell())
                 {
-                    m_target->m_currentSpell->cancel();
-                    m_target->m_currentSpell = 0;
+                    m_target->interruptSpell();
                 }
 
                 sEventMgr.AddEvent(this, &Aura::EventPeriodicHeal1, (uint32)1000, EVENT_AURA_PERIODIC_HEAL, 1000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -5214,11 +5234,9 @@ void Aura::SpellAuraPacifySilence(bool apply)
         m_target->addUnitStateFlag(UNIT_STATE_PACIFY | UNIT_STATE_SILENCE);
         m_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED | UNIT_FLAG_SILENCED);
 
-        if (m_target->m_currentSpell && m_target->GetGUID() != m_casterGuid &&
-            m_target->m_currentSpell->getState() == SPELL_STATE_CASTING)
+        if (m_target->isCastingNonMeleeSpell())
         {
-            m_target->m_currentSpell->cancel();
-            m_target->m_currentSpell = 0;
+            m_target->interruptSpell();
         }
     }
     else
@@ -5397,8 +5415,8 @@ void Aura::SpellAuraFeignDeath(bool apply)
                     {
                         Player* plr = static_cast< Player* >(*itr);
 
-                        if (plr->IsCasting() && plr->GetSelection() == p_target->GetGUID())
-                            plr->CancelSpell(NULL);   //cancel current casting spell
+                        if (plr->isCastingNonMeleeSpell())
+                            plr->interruptSpell(); // cancel current casting spell
 
                         plr->GetSession()->SendPacket(&data);
                     }

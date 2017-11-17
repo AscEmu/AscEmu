@@ -107,7 +107,7 @@ enum SpellAttributesExB
     ATTRIBUTESEXB_UNK4                              = 0x00000004,   // 3 request pet maybe
     ATTRIBUTESEXB_UNK5                              = 0x00000008,   // 4 something todo with temp enchanted items
     ATTRIBUTESEXB_PARTY_EFFECTING_AURA              = 0x00000010,   // 5 Party affecting aura's
-    ATTRIBUTESEXB_ACTIVATE_AUTO_SHOT                = 0x00000020,   // 6 spell that enable's auto shoot
+    ATTRIBUTESEXB_AUTOREPEAT                        = 0x00000020,   // 6 Autorepeat spells (Auto Shot, Shoot wand)
     ATTRIBUTESEXB_UNK8                              = 0x00000040,   // 7 Polymorph spells
     ATTRIBUTESEXB_UNK9                              = 0x00000080,   // 8
     ATTRIBUTESEXB_UNUSED1                           = 0x00000100,   // 9 not set in 3.0.3
@@ -119,7 +119,7 @@ enum SpellAttributesExB
     ATTRIBUTESEXB_SPELL_PLAYER_EVENT                = 0x00004000,   // 15 Player event's like logging in, finishing quests, triggering cinematic, being adored, Heartbroken etc
     ATTRIBUTESEXB_UNUSED3                           = 0x00008000,   // 16 not set in 3.0.3
     ATTRIBUTESEXB_CONTROL_UNIT                      = 0x00010000,   // 17 PvP Controller, RC, Creature taming, Taming Lesson
-    ATTRIBUTESEXB_REQ_RANGED_WEAPON                 = 0x00020000,   // 18 used by hunters shot and stings... Possibly triggers autoshot?
+    ATTRIBUTESEXB_NOT_RESET_AUTO_ATTACKS            = 0x00020000,   // 18 Doesn't reset timers for melee or ranged autoattacks
     ATTRIBUTESEXB_REQ_DEAD_PET                      = 0x00040000,   // 19
     ATTRIBUTESEXB_NOT_NEED_SHAPESHIFT               = 0x00080000,   // 20 does not necessarily need shapeshift
     ATTRIBUTESEXB_REQ_BEHIND_TARGET                 = 0x00100000,   // 21

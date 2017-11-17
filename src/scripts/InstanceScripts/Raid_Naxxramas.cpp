@@ -374,8 +374,8 @@ void SpellFunc_MaexxnaWebWrap(SpellDesc* pThis, CreatureAIScript* pCreatureAI, U
         WebWrap->RegisterAIUpdateEvent(5000);
         WebWrap->mPlayerGuid = static_cast<Player*>(pTarget)->GetGUID();
 
-        if (pTarget->GetCurrentSpell() != NULL)
-            pTarget->GetCurrentSpell()->cancel();
+        if (pTarget->isCastingNonMeleeSpell())
+            pTarget->interruptSpell();
 
         // Somewhy root does not apply at all
         static_cast<Player*>(pTarget)->SafeTeleport(Maexxna->getCreature()->GetMapId(), Maexxna->getCreature()->GetInstanceID(), LocationVector(WebWrapPos[Id].x, WebWrapPos[Id].y, WebWrapPos[Id].z));

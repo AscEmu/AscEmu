@@ -615,7 +615,6 @@ Unit::Unit() : m_currentSpeedWalk(2.5f),
 
     m_diminishActive = false;
     dynObj = 0;
-    pLastSpell = 0;
     m_flyspeedModifier = 0;
     bInvincible = false;
     m_redirectSpellPackets = 0;
@@ -965,10 +964,12 @@ Unit::~Unit()
     delete m_aiInterface;
     m_aiInterface = NULL;
 
-    if (m_currentSpell)
+    for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
     {
-        m_currentSpell->cancel();
-        m_currentSpell = NULL;
+        if (getCurrentSpell(CurrentSpellType(i)) != nullptr)
+        {
+            interruptSpellWithSpellType(CurrentSpellType(i));
+        }
     }
 
     if (m_damageSplitTarget)
@@ -6726,11 +6727,6 @@ void Unit::HandleProcDmgShield(uint32 flag, Unit* attacker)
     m_damgeShieldsInUse = false;
 }
 
-bool Unit::IsCasting()
-{
-    return (m_currentSpell != NULL);
-}
-
 bool Unit::IsInInstance()
 {
     MySQLStructure::MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(this->GetMapId());
@@ -8196,8 +8192,13 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
             //pVictim->HandleProcDmgShield(PROC_ON_MELEE_ATTACK_VICTIM,this);
             //		HandleProcDmgShield(PROC_ON_MELEE_ATTACK_VICTIM,pVictim);
 
-            if (pVictim->GetCurrentSpell())
-                pVictim->GetCurrentSpell()->AddTime(0);
+            if (pVictim->isCastingNonMeleeSpell())
+            {
+                if (pVictim->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr && pVictim->getCurrentSpell(CURRENT_CHANNELED_SPELL)->getCastTimeLeft() > 0)
+                    pVictim->getCurrentSpell(CURRENT_CHANNELED_SPELL)->AddTime(0);
+                else if (pVictim->getCurrentSpell(CURRENT_GENERIC_SPELL) != nullptr && pVictim->getCurrentSpell(CURRENT_GENERIC_SPELL)->getCastTimeLeft() > 0)
+                    pVictim->getCurrentSpell(CURRENT_GENERIC_SPELL)->AddTime(0);
+            }
         }
         else
         {
@@ -9308,29 +9309,6 @@ bool Unit::SetAurDuration(uint32 spellId, uint32 duration)
     return true;
 }
 
-void Unit::_UpdateSpells(uint32 time)
-{
-    // to avoid deleting the current spell
-    if (m_currentSpell != NULL)
-    {
-        //		m_spellsbusy=true;
-        m_currentSpell->Update(time);
-        //		m_spellsbusy=false;
-    }
-}
-
-void Unit::castSpell(Spell* pSpell)
-{
-    // check if we have a spell already casting etc
-    if (m_currentSpell && pSpell != m_currentSpell)
-    {
-        m_currentSpell->cancel();
-    }
-
-    m_currentSpell = pSpell;
-    pLastSpell = pSpell->GetSpellInfo();
-}
-
 int32 Unit::GetSpellDmgBonus(Unit* pVictim, SpellInfo* spellInfo, int32 base_dmg, bool isdot)
 {
     float plus_damage = 0.0f;
@@ -9557,14 +9535,6 @@ float Unit::CalcSpellDamageReduction(Unit* victim, SpellInfo* spell, float res)
     return reduced_damage;
 }
 
-void Unit::InterruptSpell()
-{
-    if (m_currentSpell)
-    {
-        m_currentSpell->cancel();
-    }
-}
-
 void Unit::DeMorph()
 {
     // hope it solves it :)
@@ -9660,8 +9630,7 @@ void Unit::OnRemoveInRangeObject(Object* pObj)
         GetAIInterface()->CheckTarget(pUnit);
 
         if (GetCharmedUnitGUID() == pObj->GetGUID())
-            if (m_currentSpell)
-                m_currentSpell->cancel();
+            interruptSpell();
     }
 }
 
@@ -10316,7 +10285,7 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
                     //priest - surge of light
                     case 33151:
                     {
-                        switch (m_currentSpell->GetSpellInfo()->getId())
+                        switch (getCurrentSpell(CURRENT_GENERIC_SPELL)->GetSpellInfo()->getId())
                         {
                             //SPELL_HASH_SMITE
                             case 585:
@@ -10343,7 +10312,7 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
                             case 71842:
                             {
                                 //our luck. it got triggered on smite..we do not remove it just yet
-                                if (m_currentSpell)
+                                if (getCurrentSpell(CURRENT_GENERIC_SPELL) != nullptr)
                                     continue;
                             }
                         }
@@ -10385,9 +10354,9 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
                     break;
                     case 34936:	// Backlash
                     {
-                        if (m_currentSpell)
+                        if (getCurrentSpell(CURRENT_GENERIC_SPELL) != nullptr)
                         {
-                            switch (m_currentSpell->GetSpellInfo()->getId())
+                            switch (getCurrentSpell(CURRENT_GENERIC_SPELL)->GetSpellInfo()->getId())
                             {
                                 //SPELL_HASH_SHADOW_BOLT
                                 case 686:
@@ -10762,9 +10731,9 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
                     case 59578: // Art of War
                     case 53489:
                     {
-                        if (m_currentSpell)
+                        if (getCurrentSpell(CURRENT_GENERIC_SPELL) != nullptr)
                         {
-                            switch (m_currentSpell->m_spellInfo->getId())
+                            switch (getCurrentSpell(CURRENT_GENERIC_SPELL)->m_spellInfo->getId())
                             {
                                 //SPELL_HASH_FLASH_OF_LIGHT
                                 case 19750:
@@ -10832,9 +10801,9 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
                     break;
                     case 17941: //Shadow Trance
                     {
-                        if (m_currentSpell)
+                        if (getCurrentSpell(CURRENT_GENERIC_SPELL) != nullptr)
                         {
-                            switch (m_currentSpell->GetSpellInfo()->getId())
+                            switch (getCurrentSpell(CURRENT_GENERIC_SPELL)->GetSpellInfo()->getId())
                             {
                                 //SPELL_HASH_SHADOW_BOLT
                                 case 686:
@@ -11173,10 +11142,10 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
                     break;
                     case 48108: // Hot Streak
                     {
-                        if (m_currentSpell)
+                        if (getCurrentSpell(CURRENT_GENERIC_SPELL) == nullptr)
                             continue;
 
-                        switch (m_currentSpell->GetSpellInfo()->getId())
+                        switch (getCurrentSpell(CURRENT_GENERIC_SPELL)->GetSpellInfo()->getId())
                         {
                             //SPELL_HASH_PYROBLAST
                             case 11366:
@@ -12452,26 +12421,9 @@ void Unit::InheritSMMods(Unit* inherit_from)
     }
 }
 
-void Unit::CancelSpell(Spell* ptr)
-{
-    /*
-        if (ptr)
-        ptr->cancel();
-        else */
-    if (m_currentSpell)
-    {
-        // this logically might seem a little bit twisted
-        // crash situation : an already deleted spell will be called to get canceled by eventmanager
-        // solution : We should not delay spell canceling more then second spell canceling.
-        // problem : might remove spells that should not be removed. Not sure about it :(
-        sEventMgr.RemoveEvents(this, EVENT_UNIT_DELAYED_SPELL_CANCEL);
-        m_currentSpell->cancel();
-    }
-}
-
 void Unit::EventStopChanneling(bool abort)
 {
-    auto spell = GetCurrentSpell();
+    Spell* spell = getCurrentSpell(CURRENT_CHANNELED_SPELL);
 
     if (spell == nullptr)
         return;

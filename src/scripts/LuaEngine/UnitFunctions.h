@@ -2309,7 +2309,7 @@ class LuaUnit
     {
         if (!ptr)
             return 0;
-        ptr->CancelSpell(ptr->GetCurrentSpell());
+        ptr->interruptSpell();
         return 0;
     }
 
@@ -2495,8 +2495,16 @@ class LuaUnit
     static int GetCurrentSpellId(lua_State* L, Unit* ptr)
     {
         if (!ptr) return 0;
-        if (ptr->GetCurrentSpell())
-            lua_pushnumber(L, ptr->GetCurrentSpell()->GetSpellInfo()->getId());
+        uint32_t spellId = 0;
+        for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
+        {
+            if (ptr->getCurrentSpell(CurrentSpellType(i)) == nullptr)
+                continue;
+            spellId = ptr->getCurrentSpell(CurrentSpellType(i))->GetSpellInfo()->getId();
+            break;
+        }
+        if (spellId != 0)
+            lua_pushnumber(L, spellId);
         else
             lua_pushnil(L);
         return 1;
@@ -2505,8 +2513,16 @@ class LuaUnit
     static int GetCurrentSpell(lua_State* L, Unit* ptr)
     {
         if (!ptr) return 0;
-        if (ptr->GetCurrentSpell() != 0)
-            PUSH_SPELL(L, ptr->GetCurrentSpell());
+        Spell* curSpell = nullptr;
+        for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
+        {
+            if (ptr->getCurrentSpell(CurrentSpellType(i)) == nullptr)
+                continue;
+            curSpell = ptr->getCurrentSpell(CurrentSpellType(i));
+            break;
+        }
+        if (curSpell != nullptr)
+            PUSH_SPELL(L, curSpell);
         else
             lua_pushnil(L);
         return 1;
@@ -4029,7 +4045,7 @@ class LuaUnit
     static int InterruptSpell(lua_State* L, Unit* ptr)
     {
         if (!ptr) return 0;
-        ptr->InterruptSpell();
+        ptr->interruptSpell();
         return 0;
     }
 

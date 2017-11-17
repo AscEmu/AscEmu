@@ -331,7 +331,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
                 GameObject_FishingNode* go_fishing_node = static_cast<GameObject_FishingNode*>(go);
                 go_fishing_node->EndFishing(true);
 
-                auto spell = _player->GetCurrentSpell();
+                auto spell = _player->getCurrentSpell(CURRENT_CHANNELED_SPELL);
                 if (spell != nullptr)
                 {
                     spell->SendChannelUpdate(0);

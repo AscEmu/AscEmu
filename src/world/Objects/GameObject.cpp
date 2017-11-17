@@ -136,6 +136,7 @@ void GameObject::Update(unsigned long time_passed)
     if (m_deleted)
         return;
 
+    _UpdateSpells(time_passed);
 }
 
 void GameObject::Spawn(MapMgr* m)

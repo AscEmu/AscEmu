@@ -250,8 +250,8 @@ namespace LuaSpell
 
     int Cancel(lua_State* L, Spell* sp)
     {
-        if (!sp) return 0;
-        sp->cancel();
+        if (!sp || !sp->m_caster->IsInWorld()) return 0;
+        sp->m_caster->interruptSpell(sp->GetSpellInfo()->getId());
         return 0;
     }
 

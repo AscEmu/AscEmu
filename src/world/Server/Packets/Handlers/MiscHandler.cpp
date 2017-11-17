@@ -75,8 +75,8 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     Item* add;
     Loot* pLoot = NULL;
 
-    if (_player->IsCasting())
-        _player->InterruptSpell();
+    _player->interruptSpell();
+
     GameObject* pGO = NULL;
     Creature* pCreature = NULL;
     Item *lootSrcItem = NULL;
@@ -296,8 +296,7 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& recv_data)
     if (!lootguid)
         return;   // dunno why this happens
 
-    if (_player->IsCasting())
-        _player->InterruptSpell();
+    _player->interruptSpell();
 
     WorldPacket pkt;
     Unit* pt = 0;
@@ -451,8 +450,7 @@ void WorldSession::HandleLootOpcode(WorldPacket& recv_data)
     if (_player->IsStealth())    // Check if the player is stealthed
         _player->RemoveStealth(); // cebernic:RemoveStealth on looting. Blizzlike
 
-    if (_player->IsCasting())    // Check if the player is casting
-        _player->InterruptSpell(); // Cancel spell casting
+    _player->interruptSpell(); // Cancel spell casting (no need to check is casting, the function does it)
 
     if (_player->IsInvisible())    // Check if the player is invisible for what ever reason
         _player->RemoveInvisibility(); // Remove all invisibility
@@ -1675,7 +1673,6 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
         {
             spellInfo = sSpellCustomizations.GetSpellInfo(OPEN_CHEST);
             spell = sSpellFactoryMgr.NewSpell(plyr, spellInfo, true, NULL);
-            _player->m_currentSpell = spell;
             targets.m_unitTarget = obj->GetGUID();
             spell->prepare(&targets);
         }
@@ -1756,7 +1753,8 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                 plyr->GetSession()->OutPacket(SMSG_FISH_NOT_HOOKED);
             }
 
-            auto spell = plyr->GetCurrentSpell();
+            // Fishing is channeled spell
+            auto spell = plyr->getCurrentSpell(CURRENT_CHANNELED_SPELL);
             if (spell != nullptr)
             {
                 if (success)

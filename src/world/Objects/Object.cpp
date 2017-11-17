@@ -38,6 +38,7 @@
 #include "Map/WorldCreator.h"
 #include "Spell/Definitions/ProcFlags.h"
 #include "Spell/Definitions/SpellDamageType.h"
+#include "Spell/Definitions/SpellState.h"
 #include <Spell/Definitions/AuraInterruptFlags.h>
 #include "Spell/Definitions/SpellSchoolConversionTable.h"
 #include "Spell/Definitions/PowerType.h"
@@ -266,7 +267,6 @@ void Object::updateObject()
     }
 }
 
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // Position functions
 bool Object::isInRange(LocationVector location, float square_r) const
@@ -289,6 +289,208 @@ float Object::getDistanceSq(float x, float y, float z) const
     return m_position.distanceSquare(x, y, z);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Spell functions
+Spell* Object::getCurrentSpell(CurrentSpellType spellType) const
+{
+    return m_currentSpell[spellType];
+}
+
+Spell* Object::getCurrentSpellById(uint32_t spellId) const
+{
+    for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
+    {
+        if (m_currentSpell[i] == nullptr)
+            continue;
+        if (m_currentSpell[i]->GetSpellInfo()->getId() == spellId)
+            return m_currentSpell[i];
+    }
+    return nullptr;
+}
+
+void Object::setCurrentSpell(Spell* curSpell)
+{
+    ARCEMU_ASSERT(curSpell != nullptr); // curSpell cannot be nullptr
+
+    // Get current spell type
+    CurrentSpellType spellType = CURRENT_GENERIC_SPELL;
+    if (curSpell->GetSpellInfo()->getAttributes() & (ATTRIBUTES_ON_NEXT_ATTACK | ATTRIBUTES_ON_NEXT_SWING_2))
+    {
+        // Melee spell
+        spellType = CURRENT_MELEE_SPELL;
+    }
+    else if (curSpell->GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_AUTOREPEAT)
+    {
+        // Autorepeat spells (Auto shot / Shoot (wand))
+        spellType = CURRENT_AUTOREPEAT_SPELL;
+    }
+    else if (curSpell->GetSpellInfo()->getAttributesEx() & (ATTRIBUTESEX_CHANNELED_1 | ATTRIBUTESEX_CHANNELED_2))
+    {
+        // Channeled spells
+        spellType = CURRENT_CHANNELED_SPELL;
+    }
+
+    // We've already set this spell to current spell, ignore
+    if (curSpell == m_currentSpell[spellType])
+        return;
+
+    // Interrupt spell with same spell type, but ignore delayed spells
+    interruptSpellWithSpellType(spellType, false);
+
+    // Handle spelltype specific cases
+    switch (spellType)
+    {
+        case CURRENT_GENERIC_SPELL:
+        {
+            // Generic spells break channeled spells, but ignore delayed spells
+            interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL, false);
+
+            if (m_currentSpell[CURRENT_AUTOREPEAT_SPELL] != nullptr)
+            {
+                // Generic spells do not break Auto Shot
+                if (m_currentSpell[CURRENT_AUTOREPEAT_SPELL]->GetSpellInfo()->getId() != 75)
+                    interruptSpellWithSpellType(CURRENT_AUTOREPEAT_SPELL);
+            }
+            break;
+        }
+        case CURRENT_CHANNELED_SPELL:
+        {
+            // Channeled spells break generic spells, but ignore delayed spells
+            interruptSpellWithSpellType(CURRENT_GENERIC_SPELL, false);
+            // as well break delayed channeled spells too
+            interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
+
+            // Also break autorepeat spells, unless it's Auto Shot
+            if (m_currentSpell[CURRENT_AUTOREPEAT_SPELL] != nullptr && m_currentSpell[CURRENT_AUTOREPEAT_SPELL]->GetSpellInfo()->getId() != 75)
+            {
+                interruptSpellWithSpellType(CURRENT_AUTOREPEAT_SPELL);
+            }
+            break;
+        }
+        case CURRENT_AUTOREPEAT_SPELL:
+        {
+            // Other autorepeats than Auto Shot break non-delayed generic and channeled spells
+            if (curSpell->GetSpellInfo()->getId() != 75)
+            {
+                interruptSpellWithSpellType(CURRENT_GENERIC_SPELL, false);
+                interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL, false);
+            }
+
+            if (IsPlayer())
+            {
+                static_cast<Player*>(this)->m_FirstCastAutoRepeat = true;
+            }
+            break;
+        }
+        default:
+            break;
+    }
+
+    // If spell is not yet cancelled, force it
+    if (m_currentSpell[spellType] != nullptr)
+    {
+        m_currentSpell[spellType]->finish(false);
+    }
+
+    // Set new current spell
+    m_currentSpell[spellType] = curSpell;
+}
+
+void Object::interruptSpell(uint32_t spellId, bool checkMeleeSpell, bool checkDelayed)
+{
+    for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
+    {
+        if (!checkMeleeSpell && i == CURRENT_MELEE_SPELL)
+            continue;
+
+        if (m_currentSpell[i] != nullptr &&
+            (spellId == 0 || m_currentSpell[i]->GetSpellInfo()->getId() == spellId))
+        {
+            interruptSpellWithSpellType(CurrentSpellType(i), checkDelayed);
+        }
+    }
+}
+
+void Object::interruptSpellWithSpellType(CurrentSpellType spellType, bool /*checkDelayed*/)
+{
+    Spell* curSpell = m_currentSpell[spellType];
+    if (curSpell != nullptr)
+    {
+        if (spellType == CURRENT_AUTOREPEAT_SPELL)
+        {
+            if (IsPlayer() && IsInWorld())
+            {
+                // Send server-side cancel message
+                static_cast<Player*>(this)->GetSession()->OutPacket(SMSG_CANCEL_AUTO_REPEAT);
+            }
+        }
+
+        // Cancel spell
+        curSpell->cancel();
+        m_currentSpell[spellType] = nullptr;
+    }
+}
+
+bool Object::isCastingNonMeleeSpell(bool /*checkDelayed = true*/, bool skipChanneled /*= false*/, bool skipAutorepeat /*= false*/, bool isAutoshoot /*= false*/) const
+{
+    // Check from generic spells, ignore finished spells
+    if (m_currentSpell[CURRENT_GENERIC_SPELL] != nullptr && m_currentSpell[CURRENT_GENERIC_SPELL]->getState() != SPELL_STATE_FINISHED && m_currentSpell[CURRENT_GENERIC_SPELL]->getCastTimeLeft() > 0 &&
+        (!isAutoshoot || !(m_currentSpell[CURRENT_GENERIC_SPELL]->GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_NOT_RESET_AUTO_ATTACKS)))
+    {
+        return true;
+    }
+
+    // If not skipped, check from channeled spells
+    if (!skipChanneled && m_currentSpell[CURRENT_CHANNELED_SPELL] != nullptr && m_currentSpell[CURRENT_CHANNELED_SPELL]->getState() != SPELL_STATE_FINISHED &&
+        (!isAutoshoot || !(m_currentSpell[CURRENT_CHANNELED_SPELL]->GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_NOT_RESET_AUTO_ATTACKS)))
+    {
+        return true;
+    }
+
+    // If not skipped, check from autorepeat spells
+    if (!skipAutorepeat && m_currentSpell[CURRENT_AUTOREPEAT_SPELL] != nullptr)
+    {
+        return true;
+    }
+    return false;
+}
+
+Spell* Object::findCurrentCastedSpellBySpellId(uint32_t spellId)
+{
+    for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
+    {
+        if (m_currentSpell[i] == nullptr)
+            continue;
+        if (m_currentSpell[i]->GetSpellInfo()->getId() == spellId)
+            return m_currentSpell[i];
+    }
+    return nullptr;
+}
+
+void Object::_UpdateSpells(uint32_t time)
+{
+    if (m_currentSpell[CURRENT_AUTOREPEAT_SPELL] != nullptr && IsPlayer())
+    {
+        static_cast<Player*>(this)->updateAutoRepeatSpell();
+    }
+
+    for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
+    {
+        if (m_currentSpell[i] != nullptr)
+        {
+            // Remove finished spells from object's current spell array
+            if (m_currentSpell[i]->getState() == SPELL_STATE_FINISHED)
+            {
+                m_currentSpell[i] = nullptr;
+            }
+            // Update spells with other state
+            else
+            {
+                m_currentSpell[i]->Update(time);
+            }
+        }
+    }
+}
 // MIT End
 
 Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
@@ -299,7 +501,10 @@ Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
     m_uint32Values = 0;
     m_objectUpdated = false;
 
-    m_currentSpell = NULL;
+    for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
+    {
+        m_currentSpell[i] = nullptr;
+    }
     m_valuesCount = 0;
 
     m_phase = 1;                //Set the default phase: 00000000 00000000 00000000 00000001
@@ -337,10 +542,12 @@ Object::~Object()
     // for linux
     m_instanceId = INSTANCEID_NOT_IN_WORLD;
 
-    if (m_currentSpell)
+    for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
     {
-        m_currentSpell->cancel();
-        m_currentSpell = NULL;
+        if (m_currentSpell[i] != nullptr)
+        {
+            interruptSpellWithSpellType(CurrentSpellType(i));
+        }
     }
 
     //avoid leaving traces in eventmanager. Have to work on the speed. Not all objects ever had events so list iteration can be skipped
@@ -1901,9 +2108,17 @@ void Object::RemoveFromWorld(bool free_guid)
         sp = *itr2;
         //if the spell being deleted is the same being casted, Spell::cancel will take care of deleting the spell
         //if it's not the same removing us from world. Otherwise finish() will delete the spell once all SpellEffects are handled.
-        if (sp == m_currentSpell)
-            sp->cancel();
-        else
+        bool foundSpell = false;
+        for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
+        {
+            if (sp == m_currentSpell[i])
+            {
+                interruptSpellWithSpellType(CurrentSpellType(i));
+                foundSpell = true;
+                break;
+            }
+        }
+        if (!foundSpell)
             delete sp;
     }
     //shouldnt need to clear, spell destructor will erase
@@ -2603,8 +2818,10 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
     if (!(dmg.full_damage == 0 && abs_dmg))
     {
         //Only pushback the victim current spell if it's not fully absorbed
-        if (pVictim->GetCurrentSpell())
-            pVictim->GetCurrentSpell()->AddTime(spellInfo->getSchool());
+        if (pVictim->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr && pVictim->getCurrentSpell(CURRENT_CHANNELED_SPELL)->getCastTimeLeft() > 0)
+            pVictim->getCurrentSpell(CURRENT_CHANNELED_SPELL)->AddTime(spellInfo->getSchool());
+        else if (pVictim->getCurrentSpell(CURRENT_GENERIC_SPELL) != nullptr && pVictim->getCurrentSpell(CURRENT_GENERIC_SPELL)->getCastTimeLeft() > 0)
+            pVictim->getCurrentSpell(CURRENT_GENERIC_SPELL)->AddTime(spellInfo->getSchool());
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////

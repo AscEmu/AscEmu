@@ -48,7 +48,12 @@ typedef void(Spell::*pSpellTarget)(uint32 i, uint32 j);
 class SERVER_DECL Spell : public EventableObject
 {
     public:
-
+        // APGL Ends
+        // MIT Starts
+        int32_t getFullCastTime() const { return m_castTime; }
+        int32_t getCastTimeLeft() const { return m_timer; }
+        // MIT Ends
+        // APGL Starts
         friend class DummySpellHandler;
         Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur);
         ~Spell();
