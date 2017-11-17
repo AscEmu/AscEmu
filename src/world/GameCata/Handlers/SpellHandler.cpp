@@ -43,16 +43,15 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 
     LogDetail("WORLD: got cast spell packet, spellId - %i (%s), data length = %i", spellId, spellInfo->Name.c_str(), recvPacket.size());
 
-    // Cheat Detection only if player and not from an item
-    // this could fuck up things but meh it's needed ALOT of the newbs are using WPE now
-    // WPE allows them to mod the outgoing packet and basically choose what ever spell they want :(
-
+    // Check does player have the spell
     if (!GetPlayer()->HasSpell(spellId))
     {
         sCheatLog.writefromsession(this, "Cast spell %lu but doesn't have that spell.", spellId);
         LogDetail("WORLD: Spell isn't cast because player \'%s\' is cheating", GetPlayer()->GetName());
         return;
     }
+
+    // Check is player trying to cast a passive spell
     if (spellInfo->IsPassive())
     {
         sCheatLog.writefromsession(this, "Cast passive spell %lu.", spellId);
@@ -60,95 +59,37 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (GetPlayer()->GetOnMeleeSpell() != spellId)
+    // Check are we already casting this autorepeat spell
+    if ((spellInfo->getAttributesExB() & ATTRIBUTESEXB_AUTOREPEAT) && _player->getCurrentSpell(CURRENT_AUTOREPEAT_SPELL) != nullptr
+        && spellInfo == _player->getCurrentSpell(CURRENT_AUTOREPEAT_SPELL)->GetSpellInfo())
     {
-        //autoshot 75
-        if ((spellInfo->AttributesExB & ATTRIBUTESEXB_ACTIVATE_AUTO_SHOT) /*spellInfo->Attributes == 327698*/)	// auto shot..
+        return;
+    }
+
+    // TODO: move this check to new Spell::prepare() and clean it
+    if (_player->isCastingNonMeleeSpell(false, true, true, spellInfo->getId() == 75))
+    {
+        _player->SendCastResult(spellId, SPELL_FAILED_SPELL_IN_PROGRESS, castCount, 0);
+        return;
+    }
+
+    SpellCastTargets targets(recvPacket, GetPlayer()->GetGUID());
+
+    // some anticheat stuff
+    if (spellInfo->custom_self_cast_only)
+    {
+        if (targets.m_unitTarget && targets.m_unitTarget != _player->GetGUID())
         {
-            LogDebugFlag(LF_SPELL, "HandleCastSpellOpcode : Auto Shot-type spell cast (id %u, name %s)", spellInfo->Id, spellInfo->Name.c_str());
-            Item* weapon = GetPlayer()->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-            if (!weapon)
-                return;
-
-            uint32_t spellid;
-            switch (weapon->GetItemProperties()->SubClass)
-            {
-                case 2:			 // bows
-                case 3:			 // guns
-                case 18:		 // crossbow
-                    spellid = SPELL_RANGED_GENERAL;
-                    break;
-                case 16:			// thrown
-                    spellid = SPELL_RANGED_THROW;
-                    break;
-                case 19:			// wands
-                    spellid = SPELL_RANGED_WAND;
-                    break;
-                default:
-                    spellid = 0;
-                    break;
-            }
-
-            if (!spellid)
-                spellid = spellInfo->Id;
-
-            if (!_player->m_onAutoShot)
-            {
-                _player->m_AutoShotTarget = _player->GetSelection();
-                uint32_t duration = _player->GetBaseAttackTime(RANGED);
-                SpellCastTargets targets(recvPacket, GetPlayer()->GetGUID());
-                if (!targets.m_unitTarget)
-                {
-                    LogDebugFlag(LF_SPELL, "HandleCastSpellOpcode : Cancelling auto-shot cast because targets.m_unitTarget is null!");
-                    return;
-                }
-                SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spellid);
-
-                _player->m_AutoShotSpell = sp;
-                _player->m_AutoShotDuration = duration;
-                //This will fix fast clicks
-                if (_player->m_AutoShotAttackTimer < 500)
-                    _player->m_AutoShotAttackTimer = 500;
-
-                _player->m_onAutoShot = true;
-            }
-            
+            // send the error message
+            _player->SendCastResult(spellInfo->Id, SPELL_FAILED_BAD_TARGETS, castCount, 0);
             return;
         }
-
-        if (_player->m_currentSpell)
-        {
-            if (_player->m_currentSpell->getState() == SPELL_STATE_CASTING)
-            {
-                // cancel the existing channel spell, cast this one
-                _player->m_currentSpell->cancel();
-            }
-            else
-            {
-                // send the error message
-                _player->SendCastResult(spellInfo->Id, SPELL_FAILED_SPELL_IN_PROGRESS, castCount, 0);
-                return;
-            }
-        }
-
-        SpellCastTargets targets(recvPacket, GetPlayer()->GetGUID());
-
-        // some anticheat stuff
-        if (spellInfo->custom_self_cast_only)
-        {
-            if (targets.m_unitTarget && targets.m_unitTarget != _player->GetGUID())
-            {
-                // send the error message
-                _player->SendCastResult(spellInfo->Id, SPELL_FAILED_BAD_TARGETS, castCount, 0);
-                return;
-            }
-        }
-
-        Spell* spell = sSpellFactoryMgr.NewSpell(GetPlayer(), spellInfo, false, nullptr);
-        spell->extra_cast_number = castCount;
-        spell->m_glyphslot = glyphSlot;
-        spell->prepare(&targets);
     }
+
+    Spell* spell = sSpellFactoryMgr.NewSpell(GetPlayer(), spellInfo, false, nullptr);
+    spell->extra_cast_number = castCount;
+    spell->m_glyphslot = glyphSlot;
+    spell->prepare(&targets);
 }
 
 
@@ -256,8 +197,10 @@ void WorldSession::HandleCancelCastOpcode(WorldPacket& recvPacket)
     recvPacket.read_skip<uint8_t>();
     recvPacket >> spellId;
 
-    if (GetPlayer()->m_currentSpell)
-        GetPlayer()->m_currentSpell->cancel();
+    if (_player->isCastingNonMeleeSpell(false))
+    {
+        _player->interruptSpell(spellId, false, false);
+    }
 }
 
 void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
@@ -265,10 +208,52 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
     uint32_t spellId;
     recvPacket >> spellId;
 
-    // do not cancel ghost auras
-    if (spellId == 8326 || spellId == 9036)
+    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
+    if (spellInfo == nullptr)
+    {
         return;
+    }
 
+    if (spellInfo->getAttributes() & ATTRIBUTES_CANT_CANCEL)
+    {
+        return;
+    }
+
+    if (spellInfo->getAttributesEx() & (ATTRIBUTESEX_CHANNELED_1 | ATTRIBUTESEX_CHANNELED_2))
+    {
+        if (_player->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr)
+        {
+            if (_player->getCurrentSpell(CURRENT_CHANNELED_SPELL)->GetSpellInfo()->getId() == spellId)
+                _player->interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
+        }
+        return;
+    }
+
+    if (spellInfo->IsPassive())
+    {
+        return;
+    }
+
+    Aura* spellAura = _player->getAuraWithId(spellId);
+    if (spellAura == nullptr)
+    {
+        return;
+    }
+
+    if (!spellAura->IsPositive())
+    {
+        return;
+    }
+
+    if (spellInfo->getAttributes() & ATTRIBUTES_NEGATIVE)
+    {
+        return;
+    }
+
+    _player->removeAllAurasById(spellId);
+
+
+    /*
     if (_player->m_currentSpell && _player->m_currentSpell->GetSpellInfo()->getId() == spellId)
         _player->m_currentSpell->cancel();
     else
@@ -291,6 +276,7 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
             LOG_DEBUG("Removing all auras with ID: %u", spellId);
         }
     }
+    */
 }
 
 void WorldSession::HandleCancelChannellingOpcode(WorldPacket& recvPacket)
@@ -298,21 +284,15 @@ void WorldSession::HandleCancelChannellingOpcode(WorldPacket& recvPacket)
     uint32_t spellId;
     recvPacket >> spellId;
 
-    Player* plyr = GetPlayer();
-    if (!plyr)
-        return;
-    if (plyr->m_currentSpell)
-    {
-        plyr->m_currentSpell->cancel();
-    }
+    _player->interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
 }
 
-void WorldSession::HandleCancelAutoRepeatSpellOpcode(WorldPacket& recv_data)
+void WorldSession::HandleCancelAutoRepeatSpellOpcode(WorldPacket& /*recvPacket*/)
 {
     LogDebugFlag(LF_OPCODE, "Received CMSG_CANCEL_AUTO_REPEAT_SPELL message.");
     //on original we automatically enter combat when creature got close to us
     //	GetPlayer()->GetSession()->OutPacket(SMSG_CANCEL_COMBAT);
-    GetPlayer()->m_onAutoShot = false;
+    _player->interruptSpellWithSpellType(CURRENT_AUTOREPEAT_SPELL);
 }
 
 void WorldSession::HandleCancelTotem(WorldPacket& recv_data)

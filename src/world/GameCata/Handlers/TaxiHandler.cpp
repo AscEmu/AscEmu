@@ -171,8 +171,10 @@ void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
     data << uint32_t(0);
     SendPacket(&data);
 
-    if (_player->GetCurrentSpell() != nullptr)
-        _player->GetCurrentSpell()->cancel();
+    for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
+    {
+        _player->interruptSpellWithSpellType(CurrentSpellType(i), false);
+    }
 
     _player->taxi_model_id = modelid;
     _player->TaxiStart(taxipath, modelid, 0);
