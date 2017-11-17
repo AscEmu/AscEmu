@@ -429,6 +429,8 @@ public:
 #if VERSION_STRING == Cata
     uint32_t getFreePrimaryProfessionPoints() const { return getUInt32Value(PLAYER_CHARACTER_POINTS); }
 #endif
+    void updateAutoRepeatSpell();
+    bool m_FirstCastAutoRepeat;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Auction
@@ -1334,13 +1336,8 @@ public:
         bool HasWonRbgToday();
         void SetHasWonRbgToday(bool value);
 
-        void EventRepeatSpell();
         int32 CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot);
-        uint32 m_AutoShotDuration;
         uint32 m_AutoShotAttackTimer;
-        bool m_onAutoShot;
-        uint64 m_AutoShotTarget;
-        SpellInfo* m_AutoShotSpell;
         void _InitialReputation();
         void EventActivateGameObject(GameObject* obj);
         void EventDeActivateGameObject(GameObject* obj);

@@ -274,10 +274,11 @@ Spell::~Spell()
     m_caster->m_pendingSpells.erase(this);
 
     ///////////////////////////// This is from the virtual_destructor shit ///////////////
-    if (m_caster->GetCurrentSpell() == this)
-        m_caster->SetCurrentSpell(NULL);
-
-
+    for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
+    {
+        if (m_caster->getCurrentSpell(CurrentSpellType(i)) == this)
+            m_caster->interruptSpellWithSpellType(CurrentSpellType(i));
+    }
 
     if (m_spellInfo_override != NULL)
         delete[] m_spellInfo_override;
@@ -948,11 +949,10 @@ uint8 Spell::prepare(SpellCastTargets* targets)
             // when a spell is channeling and a new spell is cast
             // that is a channeling spell, but not triggered by a aura
             // the channel bar/spell is bugged
-            if (u_caster && u_caster->GetChannelSpellTargetGUID() != 0 && u_caster->GetCurrentSpell())
+            if (u_caster && u_caster->GetChannelSpellTargetGUID() != 0 && u_caster->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr)
             {
-                u_caster->GetCurrentSpell()->cancel();
+                u_caster->interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
                 SendChannelUpdate(0);
-                cancel();
                 return ccr;
             }
         }
@@ -993,17 +993,31 @@ uint8 Spell::prepare(SpellCastTargets* targets)
                 u_caster->RemoveFlag(UNIT_FIELD_AURASTATE, GetSpellInfo()->getCasterAuraState());
     }
 
-    //instant cast(or triggered) and not channeling
-    if (u_caster != NULL && (m_castTime > 0 || GetSpellInfo()->getChannelInterruptFlags()) && !m_triggeredSpell)
+    // If spell is triggered, skip straight to ::castMe
+    if (m_triggeredSpell)
     {
+        castMe(false);
+    }
+    else
+    {
+        // Spells with this attributes are considered as triggered spells, so don't set as current spell
+        if (!(GetSpellInfo()->getAttributesExD() & ATTRIBUTESEXD_TRIGGERED))
+        {
+            m_caster->setCurrentSpell(this);
+        }
+
+        // Set casting position
         m_castPositionX = m_caster->GetPositionX();
         m_castPositionY = m_caster->GetPositionY();
         m_castPositionZ = m_caster->GetPositionZ();
 
-        u_caster->castSpell(this);
+        // Handle instant and non-channeled spells instantly. Other spells will be handled in ::update on next tick.
+        // First autorepeat casts are actually never casted, only set as current spell. Player::updateAutoRepeatSpell handles the shooting.
+        if (m_castTime == 0 && GetSpellInfo()->getChannelInterruptFlags() == 0 && !(GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_AUTOREPEAT))
+        {
+            castMe(false);
+        }
     }
-    else
-        castMe(false);
 
     return ccr;
 }
@@ -1698,7 +1712,7 @@ void Spell::AddTime(uint32 type)
     {
         if (GetSpellInfo()->getInterruptFlags() & CAST_INTERRUPT_ON_DAMAGE_TAKEN)
         {
-            cancel();
+            u_caster->interruptSpell(GetSpellInfo()->getId());
             return;
         }
 
@@ -1802,19 +1816,19 @@ void Spell::Update(unsigned long time_passed)
     {
         case SPELL_STATE_PREPARING:
         {
-            if (static_cast<int32>(time_passed) >= m_timer)
-                castMe(true);
-            else
+            if (m_timer > 0)
             {
-                m_timer -= time_passed;
-                if (static_cast<int32>(time_passed) >= m_timer)
-                {
+                if (static_cast<int32_t>(time_passed) >= m_timer)
                     m_timer = 0;
-                    castMe(true);
-                }
+                else
+                    m_timer -= time_passed;
             }
 
-
+            if (m_timer == 0 && !(GetSpellInfo()->getAttributes() & (ATTRIBUTES_ON_NEXT_ATTACK | ATTRIBUTES_ON_NEXT_SWING_2)) && !(GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_AUTOREPEAT))
+            {
+                // Skip checks for instant spells
+                castMe(m_castTime == 0);
+            }
         }
         break;
         case SPELL_STATE_CASTING:
@@ -2132,16 +2146,6 @@ void Spell::finish(bool successful)
     // Now .cheat cooldown works perfectly.
     if (!m_triggeredSpell && p_caster != NULL && p_caster->CooldownCheat)
         p_caster->ClearCooldownForSpell(GetSpellInfo()->getId());
-
-    /*
-    We set current spell only if this spell has cast time or is channeling spell
-    otherwise it's instant spell and we delete it right after completion
-    */
-    if (u_caster != NULL)
-    {
-        if (!m_triggeredSpell && (GetSpellInfo()->getChannelInterruptFlags() || m_castTime > 0))
-            u_caster->SetCurrentSpell(NULL);
-    }
 
     // Send Spell cast info to QuestMgr
     if (successful && p_caster != NULL && p_caster->IsInWorld())
@@ -5539,24 +5543,6 @@ uint8 Spell::CanCast(bool tolerate)
          */
         if (u_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED) && (GetSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_CONFUSED) == 0)
             return SPELL_FAILED_CONFUSED;
-
-
-        if (u_caster->GetChannelSpellTargetGUID() != 0)
-        {
-            SpellInfo* t_spellInfo = (u_caster->GetCurrentSpell() ? u_caster->GetCurrentSpell()->GetSpellInfo() : NULL);
-
-            if (!t_spellInfo || !m_triggeredSpell)
-                return SPELL_FAILED_SPELL_IN_PROGRESS;
-            else if (t_spellInfo)
-            {
-                if (t_spellInfo->getEffectTriggerSpell(0) != GetSpellInfo()->getId() &&
-                    t_spellInfo->getEffectTriggerSpell(1) != GetSpellInfo()->getId() &&
-                    t_spellInfo->getEffectTriggerSpell(2) != GetSpellInfo()->getId())
-                {
-                    return SPELL_FAILED_SPELL_IN_PROGRESS;
-                }
-            }
-        }
     }
 
     /**
@@ -5670,7 +5656,7 @@ void Spell::RemoveItems()
     if (p_caster != nullptr)
     {
 #if VERSION_STRING != Cata
-        if (hasAttributeExB(ATTRIBUTESEXB_REQ_RANGED_WEAPON) || hasAttributeExC(ATTRIBUTESEXC_PLAYER_RANGED_SPELLS))
+        if (hasAttributeExB(ATTRIBUTESEXB_NOT_RESET_AUTO_ATTACKS) || hasAttributeExC(ATTRIBUTESEXC_PLAYER_RANGED_SPELLS))
         {
             if (!p_caster->m_requiresNoAmmo)
                 p_caster->GetItemInterface()->RemoveItemAmt_ProtectPointer(p_caster->getUInt32Value(PLAYER_AMMO_ID), 1, &i_caster);

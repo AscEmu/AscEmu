@@ -292,7 +292,7 @@ class NovosTheSummonerAI : public CreatureAIScript
                 }
             }
             getCreature()->setMoveRoot(true);
-            getCreature()->InterruptSpell();
+            getCreature()->interruptSpell();
             getCreature()->RemoveAllAuras();
         }
 
@@ -337,7 +337,7 @@ class NovosTheSummonerAI : public CreatureAIScript
                 }
                 if (new_phase)
                 {
-                    getCreature()->InterruptSpell();
+                    getCreature()->interruptSpell();
                     getCreature()->RemoveAllAuras();
                     getCreature()->setMoveRoot(false);
                     _setMeleeDisabled(false);

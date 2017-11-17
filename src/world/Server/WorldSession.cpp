@@ -323,8 +323,11 @@ void WorldSession::LogoutPlayer(bool Save)
         }
 
         // cancel current spell
-        if (_player->m_currentSpell != NULL)
-            _player->m_currentSpell->cancel();
+        for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
+        {
+            if (_player->getCurrentSpell(CurrentSpellType(i)) != nullptr)
+                _player->interruptSpellWithSpellType(CurrentSpellType(i));
+        }
 
         _player->Social_TellFriendsOffline();
 

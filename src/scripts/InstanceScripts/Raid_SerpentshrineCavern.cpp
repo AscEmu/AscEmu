@@ -347,7 +347,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
 
         void SpellCast(float val)
         {
-            if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
+            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
@@ -521,7 +521,7 @@ class LurkerAI : public CreatureAIScript
 
         void SpellCast(float val)
         {
-            if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
+            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
@@ -847,7 +847,7 @@ class LeotherasAI : public CreatureAIScript
                 //Chaos Blast
                 if (getCreature()->GetAIInterface()->getNextTarget())
                 {
-                    if (getCreature()->GetCurrentSpell() == NULL)
+                    if (!getCreature()->isCastingNonMeleeSpell())
                     {
                         if (RandomUInt(1))
                         {
@@ -879,7 +879,7 @@ class LeotherasAI : public CreatureAIScript
 
         void SpellCast(float val)
         {
-            if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
+            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
@@ -1025,7 +1025,7 @@ class GreyheartSpellbinderAI : public CreatureAIScript
 
         void SpellCast(float val)
         {
-            if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
+            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
@@ -1142,7 +1142,7 @@ class ShadowofLeotherasAI : public CreatureAIScript
             //Chaos Blast
             if (getCreature()->GetAIInterface()->getNextTarget())
             {
-                if (getCreature()->GetCurrentSpell() == NULL)
+                if (!getCreature()->isCastingNonMeleeSpell())
                 {
                     if (RandomUInt(1))
                     {
@@ -1502,7 +1502,7 @@ class MorogrimAI : public CreatureAIScript
 
         void AIUpdate() override
         {
-            if (getCreature()->GetAIInterface()->getNextTarget() != NULL && getCreature()->GetCurrentSpell() == NULL)
+            if (getCreature()->GetAIInterface()->getNextTarget() != NULL && !getCreature()->isCastingNonMeleeSpell())
             {
                 Unit* target = NULL;
                 uint32 t = (uint32)time(NULL);
@@ -2093,7 +2093,7 @@ class VashjAI : public CreatureAIScript
 
         void SpellCast(float val)
         {
-            if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
+            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
@@ -2244,7 +2244,7 @@ class TaintedElementalAI : public CreatureAIScript
         void AIUpdate() override
         {
             ///\todo  Despawn after 15 secs
-            if (getCreature()->GetCurrentSpell() == NULL)
+            if (!getCreature()->isCastingNonMeleeSpell())
                 getCreature()->GetAIInterface()->SetNextSpell(spell_poison_spit);
         }
 
@@ -2487,7 +2487,7 @@ class ToxicSporeBatAI : public CreatureAIScript
 
         void SpellCast(float val)
         {
-            if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
+            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;

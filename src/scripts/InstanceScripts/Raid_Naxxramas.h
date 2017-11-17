@@ -1406,7 +1406,7 @@ class GluthAI : public CreatureAIScript
 
     void SpellCast(float val)
     {
-        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
+        if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
         {
             float comulativeperc = 0;
             Unit* target = NULL;
@@ -1503,7 +1503,7 @@ class BonyConstructAI : public CreatureAIScript
 
     void SpellCast(float val)
     {
-        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
+        if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
         {
             float comulativeperc = 0;
             Unit* target = NULL;
@@ -1599,7 +1599,7 @@ class DeathLordAI : public CreatureAIScript
 
     void SpellCast(float val)
     {
-        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
+        if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
         {
             float comulativeperc = 0;
             Unit* target = NULL;
@@ -1720,7 +1720,7 @@ class RazuviousAI : public CreatureAIScript
 
     void SpellCast(float val)
     {
-        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
+        if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
         {
             float comulativeperc = 0;
             Unit* target = NULL;
@@ -1870,7 +1870,7 @@ class KorthazzAI : public CreatureAIScript
 
     void SpellCast(float val)
     {
-        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
+        if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
         {
             float comulativeperc = 0;
             Unit* target = NULL;
@@ -2042,7 +2042,7 @@ class BlaumeuxAI : public CreatureAIScript
 
     void SpellCast(float val)
     {
-        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
+        if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
         {
             float comulativeperc = 0;
             Unit* target = NULL;
@@ -2211,7 +2211,7 @@ class ZeliekAI : public CreatureAIScript
 
     void SpellCast(float val)
     {
-        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
+        if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
         {
             float comulativeperc = 0;
             Unit* target = NULL;
@@ -2592,7 +2592,7 @@ class SapphironAI : public CreatureAIScript
     void AIUpdate() override
     {
         uint32 t = (uint32)time(NULL);
-        if (t > spells[3].casttime && getCreature()->GetCurrentSpell() == NULL)
+        if (t > spells[3].casttime && !getCreature()->isCastingNonMeleeSpell())
         {
             getCreature()->CastSpell(getCreature(), spells[3].info, spells[3].instant);
 
@@ -2625,8 +2625,8 @@ class SapphironAI : public CreatureAIScript
             uint32 t = (uint32)time(NULL);
             if (t > PhaseTimer)
             {
-                if (getCreature()->GetCurrentSpell() != NULL)
-                    getCreature()->GetCurrentSpell()->cancel();
+                if (getCreature()->isCastingNonMeleeSpell())
+                    getCreature()->interruptSpell();
 
                 getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
                 getCreature()->GetAIInterface()->StopMovement(0);
@@ -2670,7 +2670,7 @@ class SapphironAI : public CreatureAIScript
 
         if (FlightActions < 5)
         {
-            if (getCreature()->GetCurrentSpell() == NULL)
+            if (!getCreature()->isCastingNonMeleeSpell())
             {
                 if (getCreature()->GetAIInterface()->getNextTarget() != NULL)
                 {
@@ -2812,7 +2812,7 @@ class SapphironAI : public CreatureAIScript
 
     void SpellCast(float val)
     {
-        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget() != NULL)
+        if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget() != NULL)
         {
             float comulativeperc = 0;
             Unit* target = NULL;
@@ -2870,7 +2870,7 @@ class SapphironAI : public CreatureAIScript
         if (!maxdist2cast) maxdist2cast = 100.0f;
         if (!maxhp2cast) maxhp2cast = 100;
 
-        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget() != NULL)
+        if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget() != NULL)
         {
             std::vector<Unit*> TargetTable;
             for (std::set<Object*>::iterator itr = getCreature()->GetInRangeSetBegin(); itr != getCreature()->GetInRangeSetEnd(); ++itr)
@@ -3578,7 +3578,7 @@ class KelthuzadAI : public CreatureAIScript
 
     void SpellCast(float val)
     {
-        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
+        if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
         {
             float comulativeperc = 0;
             Unit* target = NULL;
@@ -3638,7 +3638,7 @@ class KelthuzadAI : public CreatureAIScript
         if (!maxdist2cast) maxdist2cast = 100.0f;
         if (!maxhp2cast) maxhp2cast = 100;
 
-        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
+        if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
         {
             std::vector<Unit*> TargetTable;
             for (std::set<Object*>::iterator itr = getCreature()->GetInRangeSetBegin(); itr != getCreature()->GetInRangeSetEnd(); ++itr)
@@ -3936,7 +3936,7 @@ class UnstoppableAbominationAI : public CreatureAIScript
 
     void SpellCast(float val)
     {
-        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
+        if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
         {
             float comulativeperc = 0;
             Unit* target = NULL;
@@ -4100,7 +4100,7 @@ class SoulWeaverAI : public CreatureAIScript
 
     void SpellCast(float val)
     {
-        if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())
+        if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
         {
             float comulativeperc = 0;
             Unit* target = NULL;

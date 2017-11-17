@@ -115,8 +115,19 @@ bool Strangulate(uint32 i, Aura* pAura, bool apply)
 
     Unit* unitTarget = pAura->GetTarget();
 
-    if (unitTarget->IsCasting())
-        unitTarget->InterruptSpell();
+    // Interrupt target's current casted spell (either channeled or generic spell with cast time)
+    if (pAura->GetTarget()->isCastingNonMeleeSpell(true, false, true))
+    {
+        if (pAura->GetTarget()->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr && pAura->GetTarget()->getCurrentSpell(CURRENT_CHANNELED_SPELL)->getCastTimeLeft() > 0)
+        {
+            pAura->GetTarget()->interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
+        }
+        // No need to check cast time for generic spells, checked already in Object::isCastingNonMeleeSpell()
+        else if (pAura->GetTarget()->getCurrentSpell(CURRENT_GENERIC_SPELL) != nullptr)
+        {
+            pAura->GetTarget()->interruptSpellWithSpellType(CURRENT_GENERIC_SPELL);
+        }
+    }
 
     return true;
 }

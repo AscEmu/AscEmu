@@ -201,8 +201,8 @@ class OnyxiaAI : public CreatureAIScript
             {
                 m_phase = 2;
                 getCreature()->SetCastSpeedMod(0.01f);
-                if (getCreature()->GetCurrentSpell() != NULL)
-                    getCreature()->GetCurrentSpell()->cancel();
+                if (getCreature()->isCastingNonMeleeSpell())
+                    getCreature()->interruptSpell();
 
                 getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
                 //_unit->m_pacified++;
@@ -223,8 +223,8 @@ class OnyxiaAI : public CreatureAIScript
             {
                 m_phase = 3;
                 getCreature()->SetCastSpeedMod(1.0f);
-                if (getCreature()->GetCurrentSpell() != NULL)
-                    getCreature()->GetCurrentSpell()->cancel();
+                if (getCreature()->isCastingNonMeleeSpell())
+                    getCreature()->interruptSpell();
                 getCreature()->GetAIInterface()->m_canMove = true;
                 getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
                 //_unit->m_pacified++;
@@ -363,7 +363,7 @@ class OnyxiaAI : public CreatureAIScript
 
         void SpellCast(uint32 val)
         {
-            if (getCreature()->GetCurrentSpell() == NULL && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
+            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
             {
                 if (m_fBreath)
                 {

@@ -1687,7 +1687,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
         }
     }
 
-    if (cansee && getNextTarget() && getNextTarget()->isAlive() && !isAiState(AI_STATE_EVADE) && !m_Unit->IsCasting())
+    if (cansee && getNextTarget() && getNextTarget()->isAlive() && !isAiState(AI_STATE_EVADE) && !m_Unit->isCastingNonMeleeSpell())
     {
         if (agent == AGENT_NULL || (isAiScriptType(AI_SCRIPT_PET) && !m_nextSpell))     // allow pets autocast
         {
@@ -2653,11 +2653,11 @@ float AIInterface::_CalcAggroRange(Unit* target)
     bool isMining = false;
     if (target->IsPlayer())
     {
-        if (target->IsCasting())
+        if (target->isCastingNonMeleeSpell())
         {
             // If nearby miners weren't spotted already we'll give them a little surprise.
-            Spell* sp = target->GetCurrentSpell();
-            if (sp->GetSpellInfo()->getEffect(0) == SPELL_EFFECT_OPEN_LOCK && sp->GetSpellInfo()->getEffectMiscValue(0) == LOCKTYPE_MINING)
+            Spell* sp = target->getCurrentSpell(CURRENT_GENERIC_SPELL);
+            if (sp != nullptr && sp->GetSpellInfo()->getEffect(0) == SPELL_EFFECT_OPEN_LOCK && sp->GetSpellInfo()->getEffectMiscValue(0) == LOCKTYPE_MINING)
             {
                 isMining = true;
             }
@@ -2971,7 +2971,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
     }
 
     //move after finishing our current spell
-    if (m_Unit->GetCurrentSpell() != NULL)
+    if (m_Unit->isCastingNonMeleeSpell())
         return;
 
     uint32 timediff = 0;

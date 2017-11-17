@@ -393,7 +393,6 @@ public:
     void CastSpellAoF(LocationVector lv, SpellInfo* Sp, bool triggered);
     void EventCastSpell(Unit* Target, SpellInfo* Sp);
 
-    bool IsCasting();
     bool IsInInstance();
     void CalculateResistanceReduction(Unit* pVictim, dealdamage* dmg, SpellInfo* ability, float ArmorPctReduce);
     void RegenerateHealth();
@@ -523,9 +522,6 @@ public:
     };
     DeathState getDeathState() { return m_deathState; }
     void OnDamageTaken();
-
-    void castSpell(Spell* pSpell);
-    void InterruptSpell();
 
     //caller is the caster
     int32 GetSpellDmgBonus(Unit* pVictim, SpellInfo* spellInfo, int32 base_dmg, bool isdot);
@@ -945,7 +941,6 @@ public:
     uint8 FindVisualSlot(uint32 SpellId, bool IsPos);
     uint32 m_auravisuals[MAX_NEGATIVE_VISUAL_AURAS_END];
 
-    SpellInfo* pLastSpell;
     bool bProcInUse;
     bool bInvincible;
     Player* m_redirectSpellPackets;
@@ -965,7 +960,6 @@ public:
     CombatStatusHandler CombatStatus;
     bool m_temp_summon;
 
-    void CancelSpell(Spell* ptr);
     void EventStopChanneling(bool abort);
     void EventStrikeWithAbility(uint64 guid, SpellInfo* sp, uint32 damage);
     void DispelAll(bool positive);
@@ -1244,7 +1238,6 @@ protected:
 
     uint32 m_meleespell;
     uint8 m_meleespell_ecn;         // extra_cast_number
-    void _UpdateSpells(uint32 time);
 
     uint16 m_H_regenTimer;
     uint16 m_P_regenTimer;

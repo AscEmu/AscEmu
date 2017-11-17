@@ -2385,9 +2385,9 @@ void Pet::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     if (GetChannelSpellTargetGUID() != 0)
     {
 
-        Spell* spl = GetCurrentSpell();
+        Spell* spl = getCurrentSpell(CURRENT_CHANNELED_SPELL);
 
-        if (spl != NULL)
+        if (spl != nullptr)
         {
 
             for (uint8 i = 0; i < 3; i++)
@@ -2403,7 +2403,7 @@ void Pet::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
                 }
             }
 
-            if (spl->GetSpellInfo()->getChannelInterruptFlags() == 48140) spl->cancel();
+            if (spl->GetSpellInfo()->getChannelInterruptFlags() == 48140) interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
         }
     }
 
@@ -2412,10 +2412,14 @@ void Pet::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     {
         Unit* attacker = static_cast< Unit* >(*itr);
 
-        if (attacker->GetCurrentSpell() != NULL)
+        if (attacker->isCastingNonMeleeSpell())
         {
-            if (attacker->GetCurrentSpell()->m_targets.m_unitTarget == GetGUID())
-                attacker->GetCurrentSpell()->cancel();
+            for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
+            {
+                Spell* curSpell = attacker->getCurrentSpell(CurrentSpellType(i));
+                if (curSpell != nullptr && curSpell->m_targets.m_unitTarget == GetGUID())
+                    attacker->interruptSpellWithSpellType(CurrentSpellType(i));
+            }
         }
     }
 

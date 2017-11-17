@@ -66,7 +66,6 @@ class Spell;
 class UpdateMask;
 class EventableObject;
 
-
 enum HIGHGUID_TYPE
 {
     HIGHGUID_TYPE_PLAYER			= 0x00000000,
@@ -85,6 +84,15 @@ enum HIGHGUID_TYPE
 //===============================================
     HIGHGUID_TYPE_MASK				= 0xFFF00000,
     LOWGUID_ENTRY_MASK				= 0x00FFFFFF,
+};
+
+enum CurrentSpellType : uint8_t
+{
+    CURRENT_MELEE_SPELL         = 0,
+    CURRENT_GENERIC_SPELL       = 1,
+    CURRENT_CHANNELED_SPELL     = 2,
+    CURRENT_AUTOREPEAT_SPELL    = 3,
+    CURRENT_SPELL_MAX
 };
 
 #define GET_TYPE_FROM_GUID(x) (Arcemu::Util::GUID_HIPART((x)) & HIGHGUID_TYPE_MASK)
@@ -380,6 +388,28 @@ public:
 
     float getDistanceSq(LocationVector target) const;
     float getDistanceSq(float x, float y, float z) const;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Spell functions
+    Spell* getCurrentSpell(CurrentSpellType spellType) const;
+    Spell* getCurrentSpellById(uint32_t spellId) const;
+    void setCurrentSpell(Spell* curSpell);
+
+    // If spellid is set to 0, function will interrupt any current spell
+    // TODO: implement delayed spells
+    void interruptSpell(uint32_t spellId = 0, bool checkMeleeSpell = true, bool checkDelayed = true);
+    void interruptSpellWithSpellType(CurrentSpellType spellType, bool checkDelayed = true);
+    // Searches for current casted spell, but skips melee spells
+    // TODO: implement delayed spells
+    bool isCastingNonMeleeSpell(bool checkDelayed = true, bool skipChanneled = false, bool skipAutorepeat = false, bool isAutoshoot = false) const;
+    Spell* findCurrentCastedSpellBySpellId(uint32_t spellId);
+
+    void _UpdateSpells(uint32_t time); // moved here from Unit class since GameObject can be caster as well
+
+private:
+    Spell* m_currentSpell[CURRENT_SPELL_MAX];
+
+public:
     // MIT End
 
         typedef std::set<Object*> InRangeSet;
@@ -935,11 +965,6 @@ public:
     public:
 
         bool m_loadedFromDB;
-
-        // Spell currently casting
-        Spell* m_currentSpell;
-        Spell* GetCurrentSpell() { return m_currentSpell; }
-        void SetCurrentSpell(Spell* cSpell) { m_currentSpell = cSpell; }
 
         // Andy's crap
         virtual Object* GetPlayerOwner();

@@ -176,12 +176,7 @@ Player::Player(uint32 guid)
     m_bgQueueInstanceId(0),
     m_bgIsRbg(false),
     m_bgIsRbgWon(false),
-    // Autoshot variables
-    m_AutoShotDuration(0),
     m_AutoShotAttackTimer(0),
-    m_onAutoShot(false),
-    m_AutoShotTarget(0),
-    m_AutoShotSpell(NULL),
     DetectedRange(0),
     PctIgnoreRegenModifier(0.0f),
     m_retainedrage(0),
@@ -1122,20 +1117,7 @@ void Player::Update(unsigned long time_passed)
             _EventAttack(true);
     }
 
-    if (m_onAutoShot)
-    {
-        if (m_AutoShotAttackTimer > time_passed)
-        {
-            //LOG_DEBUG("HUNTER AUTOSHOT 0) %i, %i", m_AutoShotAttackTimer, p_time);
-            m_AutoShotAttackTimer -= time_passed;
-        }
-        else
-        {
-            //LOG_DEBUG("HUNTER AUTOSHOT 1) %i", p_time);
-            EventRepeatSpell();
-        }
-    }
-    else if (m_AutoShotAttackTimer > 0)
+    if (m_AutoShotAttackTimer > 0)
     {
         if (m_AutoShotAttackTimer > time_passed)
             m_AutoShotAttackTimer -= time_passed;
@@ -1299,11 +1281,12 @@ void Player::EventDismount(uint32 money, float x, float y, float z)
 
 void Player::_EventAttack(bool offhand)
 {
-    if (m_currentSpell)
+    if (isCastingNonMeleeSpell())
     {
-        if (m_currentSpell->GetSpellInfo()->getChannelInterruptFlags() != 0) // this is a channeled spell - ignore the attack event
+        // Non-channeled
+        if (getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr) // this is a channeled spell - ignore the attack event
             return;
-        m_currentSpell->cancel();
+        interruptSpellWithSpellType(CURRENT_GENERIC_SPELL);
         setAttackTimer(500, offhand);
         return;
     }
@@ -6115,8 +6098,8 @@ void Player::OnRemoveInRangeObject(Object* pObj)
             return;
 
         UnPossess();
-        if (m_currentSpell)
-            m_currentSpell->cancel();       // cancel the spell
+        if (isCastingNonMeleeSpell())
+            interruptSpell();       // cancel the spell
         m_CurrentCharm = 0;
 
     }
@@ -6314,7 +6297,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
     }
 
     // Player has clicked off target. Fail spell.
-    if (m_curSelection != m_AutoShotTarget)
+    if (m_curSelection != getCurrentSpell(CURRENT_AUTOREPEAT_SPELL)->m_targets.m_unitTarget)
         return SPELL_FAILED_INTERRUPTED;
 
     // Check if target is already dead
@@ -6331,7 +6314,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
     }
 
     // Check if we aren't casting another spell already
-    if (GetCurrentSpell())
+    if (isCastingNonMeleeSpell(true, false, true, autoshot))
         return -1;
 
     // Supalosa - The hunter ability Auto Shot is using Shoot range, which is 5 yards shorter.
@@ -6436,63 +6419,6 @@ bool Player::HasWonRbgToday()
 void Player::SetHasWonRbgToday(bool value)
 {
     this->m_bgIsRbgWon = value;
-}
-
-void Player::EventRepeatSpell()
-{
-    if (!m_curSelection || !IsInWorld())
-        return;
-
-    Unit* target = GetMapMgr()->GetUnit(m_curSelection);
-    if (target == nullptr)
-    {
-        m_AutoShotAttackTimer = 0; //avoid flooding client with error messages
-        m_onAutoShot = false;
-        //LOG_DEBUG("Can't cast Autoshot: Target changed! (Timer: %u)" , m_AutoShotAttackTimer);
-        return;
-    }
-
-    m_AutoShotDuration = m_uint32Values[UNIT_FIELD_RANGEDATTACKTIME];
-
-    if (m_isMoving)
-    {
-        //LOG_DEBUG("HUNTER AUTOSHOT 2) %i, %i", m_AutoShotAttackTimer, m_AutoShotDuration);
-        //m_AutoShotAttackTimer = m_AutoShotDuration;//avoid flooding client with error messages
-        //LOG_DEBUG("Can't cast Autoshot: You're moving! (Timer: %u)" , m_AutoShotAttackTimer);
-        m_AutoShotAttackTimer = 100; // shoot when we can
-        return;
-    }
-
-    int32 f = this->CanShootRangedWeapon(m_AutoShotSpell->getId(), target, true);
-
-    if (f != 0)
-    {
-        if (f != SPELL_FAILED_OUT_OF_RANGE)
-        {
-            m_AutoShotAttackTimer = 0;
-            m_onAutoShot = false;
-        }
-        else if (m_isMoving)
-        {
-            m_AutoShotAttackTimer = 100;
-        }
-        else
-        {
-            m_AutoShotAttackTimer = m_AutoShotDuration;//avoid flooding client with error messages
-        }
-        return;
-    }
-    else
-    {
-        m_AutoShotAttackTimer = m_AutoShotDuration;
-
-        ARCEMU_ASSERT(m_AutoShotSpell != NULL);
-        Spell* sp = sSpellFactoryMgr.NewSpell(this, m_AutoShotSpell, true, NULL);
-        SpellCastTargets tgt;
-        tgt.m_unitTarget = m_curSelection;
-        tgt.m_targetMask = TARGET_FLAG_UNIT;
-        sp->prepare(&tgt);
-    }
 }
 
 bool Player::HasSpell(uint32 spell)
@@ -8070,11 +7996,19 @@ void Player::ZoneUpdate(uint32 ZoneId)
             smsg_AttackStop(pUnit);
         }
 
-        if (m_currentSpell)
+        if (isCastingNonMeleeSpell())
         {
-            Unit* target = m_currentSpell->GetUnitTarget();
-            if (target && target != DuelingWith && target != this)
-                m_currentSpell->cancel();
+            for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
+            {
+                if (getCurrentSpell(CurrentSpellType(i)) != nullptr)
+                {
+                    Unit* target = getCurrentSpell(CurrentSpellType(i))->GetUnitTarget();
+                    if (target != nullptr && target != DuelingWith && target != this)
+                    {
+                        interruptSpellWithSpellType(CurrentSpellType(i));
+                    }
+                }
+            }
         }
     }
 
@@ -13323,7 +13257,7 @@ void Player::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     if (GetChannelSpellTargetGUID() != 0)
     {
 
-        Spell* spl = GetCurrentSpell();
+        Spell* spl = getCurrentSpell(CURRENT_CHANNELED_SPELL);
 
         if (spl != NULL)
         {
@@ -13341,7 +13275,7 @@ void Player::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
                 }
             }
 
-            if (spl->GetSpellInfo()->getChannelInterruptFlags() == 48140) spl->cancel();
+            if (spl->GetSpellInfo()->getChannelInterruptFlags() == 48140) interruptSpell(spl->GetSpellInfo()->getId());
         }
     }
 
@@ -13350,10 +13284,15 @@ void Player::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     {
         Unit* attacker = static_cast< Unit* >(*itr);
 
-        if (attacker->GetCurrentSpell() != NULL)
+        if (attacker->isCastingNonMeleeSpell())
         {
-            if (attacker->GetCurrentSpell()->m_targets.m_unitTarget == GetGUID())
-                attacker->GetCurrentSpell()->cancel();
+            for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
+            {
+                if (attacker->getCurrentSpell(CurrentSpellType(i)) == nullptr)
+                    continue;
+                if (attacker->getCurrentSpell(CurrentSpellType(i))->m_targets.m_unitTarget == GetGUID())
+                    attacker->interruptSpellWithSpellType(CurrentSpellType(i));
+            }
         }
     }
 

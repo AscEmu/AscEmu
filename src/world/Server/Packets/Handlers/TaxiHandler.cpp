@@ -242,8 +242,10 @@ void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
     // 0x000008 seems to enable detailed collision checking
 
     //! Check if the player is casting, obviously they should not be able to cast on a taxi
-    if (_player->GetCurrentSpell() != NULL)
-        _player->GetCurrentSpell()->cancel();
+    for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
+    {
+        _player->interruptSpellWithSpellType(CurrentSpellType(i), false);
+    }
 
     _player->taxi_model_id = modelid;
     _player->TaxiStart(taxipath, modelid, 0);

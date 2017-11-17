@@ -130,6 +130,65 @@ void Player::sendAuctionCommandResult(Auction* auction, uint32_t action, uint32_
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// Spells
+void Player::updateAutoRepeatSpell()
+{
+    // Get the autorepeat spell
+    Spell* autoRepeatSpell = getCurrentSpell(CURRENT_AUTOREPEAT_SPELL);
+
+    // Check is target valid
+    // Note for self: remove this check when new Spell::canCast() is ready -Appled
+    Unit* target = GetMapMgr()->GetUnit(autoRepeatSpell->m_targets.m_unitTarget);
+    if (target == nullptr)
+    {
+        m_AutoShotAttackTimer = 0;
+        interruptSpellWithSpellType(CURRENT_AUTOREPEAT_SPELL);
+        return;
+    }
+
+    // If player is moving or casting a spell, interrupt wand casting and delay auto shot
+    const bool isAutoShot = autoRepeatSpell->GetSpellInfo()->getId() == 75;
+    if (m_isMoving || isCastingNonMeleeSpell(true, false, true, isAutoShot))
+    {
+        if (!isAutoShot)
+        {
+            interruptSpellWithSpellType(CURRENT_AUTOREPEAT_SPELL);
+        }
+        m_FirstCastAutoRepeat = true;
+        return;
+    }
+
+    // Apply delay to wand shooting
+    if (m_FirstCastAutoRepeat && m_AutoShotAttackTimer < 500 && !isAutoShot)
+    {
+        m_AutoShotAttackTimer = 500;
+    }
+    m_FirstCastAutoRepeat = false;
+
+    if (m_AutoShotAttackTimer == 0)
+    {
+        // TODO: implement ::CanShootRangedWeapon() into new Spell::canCast()
+        // also currently if target gets too far away, your autorepeat spell will get interrupted
+        // it's related most likely to ::CanShootRangedWeapon()
+        const int32_t canCastAutoRepeatSpell = CanShootRangedWeapon(autoRepeatSpell->GetSpellInfo()->getId(), target, isAutoShot);
+        if (canCastAutoRepeatSpell != SPELL_CANCAST_OK)
+        {
+            if (!isAutoShot)
+            {
+                interruptSpellWithSpellType(CURRENT_AUTOREPEAT_SPELL);
+            }
+            return;
+        }
+
+        m_AutoShotAttackTimer = m_uint32Values[UNIT_FIELD_RANGEDATTACKTIME];
+
+        // Cast the spell with triggered flag
+        Spell* newAutoRepeatSpell = sSpellFactoryMgr.NewSpell(this, autoRepeatSpell->GetSpellInfo(), true, nullptr);
+        newAutoRepeatSpell->prepare(&(autoRepeatSpell->m_targets));
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Messages
 void Player::sendReportToGmMessage(std::string playerName, std::string damageLog)
 {
