@@ -27,34 +27,24 @@ class MeathookAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(MeathookAI);
         MeathookAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            spells.clear();
-
-            ScriptSpell* ConstrictingChains = new ScriptSpell;
-            ConstrictingChains->normal_spellid = 52696;
-            ConstrictingChains->heroic_spellid = 58823;
-            ConstrictingChains->chance = 100;
-            ConstrictingChains->timer = 8000;
-            ConstrictingChains->time = 0;
-            ConstrictingChains->target = SPELL_TARGET_RANDOM_PLAYER;
-            spells.push_back(ConstrictingChains);
-
-            ScriptSpell* DiseaseExpulsion = new ScriptSpell;
-            DiseaseExpulsion->normal_spellid = 52666;
-            DiseaseExpulsion->heroic_spellid = 58824;
-            DiseaseExpulsion->chance = 50;
-            DiseaseExpulsion->timer = 5000;
-            DiseaseExpulsion->time = 0;
-            DiseaseExpulsion->target = SPELL_TARGET_RANDOM_PLAYER;
-            spells.push_back(DiseaseExpulsion);
-
-            ScriptSpell* Frenzy = new ScriptSpell;
-            Frenzy->normal_spellid = 58841;
-            Frenzy->heroic_spellid = 58841;
-            Frenzy->chance = 20;
-            Frenzy->timer = 1000;
-            Frenzy->time = 0;
-            Frenzy->target = SPELL_TARGET_SELF;
-            spells.push_back(Frenzy);
+            if (_isHeroic())
+            {
+                // ConstrictingChains
+                addAISpell(58823, 100.0f, TARGET_RANDOM_SINGLE, 0, 8);
+                // DiseaseExpulsion
+               addAISpell(58824, 50.0f, TARGET_RANDOM_SINGLE, 0, 5);
+                // Frenzy
+                addAISpell(58841, 20.0f, TARGET_SELF, 0, 1);
+            }
+            else
+            {
+                // ConstrictingChains
+                addAISpell(52696, 100.0f, TARGET_RANDOM_SINGLE, 0, 8);
+                // DiseaseExpulsion
+                addAISpell(52666, 50.0f, TARGET_RANDOM_SINGLE, 0, 5);
+                // Frenzy
+                addAISpell(58841, 20.0f, TARGET_SELF, 0, 1);
+            }
 
             // new
             addEmoteForEvent(Event_OnCombatStart, SAY_MEATHOOK_01);
@@ -64,102 +54,12 @@ class MeathookAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, SAY_MEATHOOK_06);
         }
 
-        void OnCombatStart(Unit* mTarget) override
-        {
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
-        }
-
         void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
             getCreature()->RemoveAllAuras();
         }
-
-        void AIUpdate() override
-        {
-            if (spells.size() > 0)
-            {
-                for (uint8 i = 0; i < spells.size(); i++)
-                {
-                    if (spells[i]->time <Util::getMSTime())
-                    {
-                        if (Rand(spells[i]->chance))
-                        {
-                            CastScriptSpell(spells[i]);
-                            spells[i]->time = Util::getMSTime() + spells[i]->timer;
-                        }
-                    }
-                }
-            }
-        }
-
-        Player* GetRandomPlayerTarget()
-        {
-            std::vector< uint32 > possible_targets;
-            for (std::set< Object* >::iterator iter = getCreature()->GetInRangePlayerSetBegin(); iter != getCreature()->GetInRangePlayerSetEnd(); ++iter)
-            {
-                Player* p = static_cast< Player* >(*iter);
-                if (p->isAlive())
-                    possible_targets.push_back(p->GetLowGUID());
-            }
-            if (possible_targets.size() > 0)
-            {
-                uint32 random_player = possible_targets[Rand(uint32(possible_targets.size() - 1))];
-                return getCreature()->GetMapMgr()->GetPlayer(random_player);
-            }
-            return NULL;
-        }
-
-        void CastScriptSpell(ScriptSpell* spell)
-        {
-            getCreature()->setMoveRoot(true);
-            uint32 spellid = _isHeroic() ? spell->heroic_spellid : spell->normal_spellid;
-            Unit* spelltarget = NULL;
-            switch (spell->target)
-            {
-                case SPELL_TARGET_SELF:
-                {
-                    spelltarget = getCreature();
-                }
-                break;
-                case SPELL_TARGET_GENERATE:
-                {
-                    spelltarget = NULL;
-                }
-                break;
-                case SPELL_TARGET_CURRENT_ENEMY:
-                {
-                    spelltarget = getCreature()->GetAIInterface()->getNextTarget();
-                }
-                break;
-                case SPELL_TARGET_RANDOM_PLAYER:
-                {
-                    spelltarget = GetRandomPlayerTarget();
-                }
-                break;
-            }
-            getCreature()->CastSpell(spelltarget, spellid, false);
-            getCreature()->setMoveRoot(false);
-        }
-
-        void Destroy() override
-        {
-            for (uint32 i = 0; i < spells.size(); ++i)
-            {
-                if (spells[i] != NULL)
-                    delete spells[i];
-            };
-
-            spells.clear();
-
-            delete this;
-        }
-
-    protected:
-
-        std::vector< ScriptSpell* > spells;
 };
 
 //SalramTheFleshcrafterAI
@@ -168,52 +68,33 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(SalramTheFleshcrafterAI);
         SalramTheFleshcrafterAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            spells.clear();
+            if (_isHeroic())
+            {
+                // shadowBolt
+                addAISpell(58827, 50.0f, TARGET_RANDOM_SINGLE, 0, 4);
+                // curseOfTwistedFlesh
+                addAISpell(58845, 50.0f, TARGET_RANDOM_SINGLE, 0, 4);
+                // stealFlesh
+                addAISpell(52708, 30.0f, TARGET_RANDOM_SINGLE, 0, 5);
+                // summonGhouls
+                addAISpell(52451, 50.0f, TARGET_SELF, 0, 4);
 
-            ScriptSpell* ShadowBolt = new ScriptSpell;
-            ShadowBolt->normal_spellid = 57725;
-            ShadowBolt->heroic_spellid = 58827;
-            ShadowBolt->chance = 50;
-            ShadowBolt->timer = 4000;
-            ShadowBolt->time = 0;
-            ShadowBolt->target = SPELL_TARGET_RANDOM_PLAYER;
-            spells.push_back(ShadowBolt);
-
-            ScriptSpell* CurseOfTwistedFlesh = new ScriptSpell;
-            CurseOfTwistedFlesh->normal_spellid = 0;
-            CurseOfTwistedFlesh->heroic_spellid = 58845;
-            CurseOfTwistedFlesh->chance = 50;
-            CurseOfTwistedFlesh->timer = 4000;
-            CurseOfTwistedFlesh->time = 0;
-            CurseOfTwistedFlesh->target = SPELL_TARGET_RANDOM_PLAYER;
-            spells.push_back(CurseOfTwistedFlesh);
-
-            ScriptSpell* StealFlesh = new ScriptSpell;
-            StealFlesh->normal_spellid = 52708;
-            StealFlesh->heroic_spellid = 52708;
-            StealFlesh->chance = 30;
-            StealFlesh->timer = 5000;
-            StealFlesh->time = 0;
-            StealFlesh->target = SPELL_TARGET_RANDOM_PLAYER;
-            spells.push_back(StealFlesh);
-
-            ScriptSpell* SummonGhouls = new ScriptSpell;
-            SummonGhouls->normal_spellid = 52451;
-            SummonGhouls->heroic_spellid = 52451;
-            SummonGhouls->chance = 50;
-            SummonGhouls->timer = 4000;
-            SummonGhouls->time = 0;
-            SummonGhouls->target = SPELL_TARGET_SELF;
-            spells.push_back(SummonGhouls);
-
-            ScriptSpell* ExplodeGhoul = new ScriptSpell;
-            ExplodeGhoul->normal_spellid = 52480;
-            ExplodeGhoul->heroic_spellid = 58825;
-            ExplodeGhoul->chance = 80;
-            ExplodeGhoul->timer = 6000;
-            ExplodeGhoul->time = 0;
-            ExplodeGhoul->target = SPELL_TARGET_CUSTOM;
-            spells.push_back(ExplodeGhoul);
+                auto explodeGhoul = addAISpell(58825, 80.0f, TARGET_CUSTOM, 0, 6);
+                if (explodeGhoul)
+                    explodeGhoul->setCustomTarget(getNearestCreature(27733));
+            }
+            else
+            {
+                // shadowBolt
+                addAISpell(57725, 50.0f, TARGET_RANDOM_SINGLE, 0, 4);
+                // stealFlesh
+                addAISpell(52708, 30.0f, TARGET_RANDOM_SINGLE, 0, 5);
+                // summonGhouls
+                addAISpell(52451, 50.0f, TARGET_SELF, 0, 4);
+                auto explodeGhoul = addAISpell(52480, 80.0f, TARGET_CUSTOM, 0, 6);
+                if (explodeGhoul)
+                    explodeGhoul->setCustomTarget(getNearestCreature(27733));
+            }
 
             // new
             addEmoteForEvent(Event_OnCombatStart, SAY_SALRAM_FLESH_01);
@@ -223,110 +104,12 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, SAY_SALRAM_FLESH_06);
         }
 
-        void OnCombatStart(Unit* mTarget) override
-        {
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
-        }
-
         void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
             getCreature()->RemoveAllAuras();
         }
-
-        void AIUpdate() override
-        {
-            if (spells.size() > 0)
-            {
-                for (uint8 i = 0; i < spells.size(); i++)
-                {
-                    if (spells[i]->time <Util::getMSTime())
-                    {
-                        if (Rand(spells[i]->chance))
-                        {
-                            CastScriptSpell(spells[i]);
-                            spells[i]->time = Util::getMSTime() + spells[i]->timer;
-                        }
-                    }
-                }
-            }
-        }
-
-        Player* GetRandomPlayerTarget()
-        {
-            std::vector< uint32 > possible_targets;
-            for (std::set< Object* >::iterator iter = getCreature()->GetInRangePlayerSetBegin(); iter != getCreature()->GetInRangePlayerSetEnd(); ++iter)
-            {
-                Player* p = static_cast< Player* >(*iter);
-
-                if (p->isAlive())
-                    possible_targets.push_back(p->GetLowGUID());
-            }
-            if (possible_targets.size() > 0)
-            {
-                uint32 random_player = possible_targets[Rand(uint32(possible_targets.size() - 1))];
-                return getCreature()->GetMapMgr()->GetPlayer(random_player);
-            }
-            return NULL;
-        }
-
-        void CastScriptSpell(ScriptSpell* spell)
-        {
-            getCreature()->setMoveRoot(true);
-            uint32 spellid = _isHeroic() ? spell->heroic_spellid : spell->normal_spellid;
-            if (spellid == 0)
-                return;
-            Unit* spelltarget = NULL;
-            switch (spell->target)
-            {
-                case SPELL_TARGET_SELF:
-                {
-                    spelltarget = getCreature();
-                }
-                break;
-                case SPELL_TARGET_GENERATE:
-                {
-                    spelltarget = NULL;
-                }
-                break;
-                case SPELL_TARGET_CURRENT_ENEMY:
-                {
-                    spelltarget = getCreature()->GetAIInterface()->getNextTarget();
-                }
-                break;
-                case SPELL_TARGET_RANDOM_PLAYER:
-                {
-                    spelltarget = GetRandomPlayerTarget();
-                }
-                break;
-                case SPELL_TARGET_CUSTOM:
-                {
-                    spelltarget = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), 27733);
-                }
-                break;
-            }
-            getCreature()->CastSpell(spelltarget, spellid, false);
-            getCreature()->setMoveRoot(false);
-        }
-
-        void Destroy() override
-        {
-            for (uint32 i = 0; i < spells.size(); ++i)
-            {
-                if (spells[i] != NULL)
-                    delete spells[i];
-            };
-
-            spells.clear();
-
-            delete this;
-        }
-
-    protected:
-
-        std::vector< ScriptSpell* > spells;
 };
 
 //ChronoLordEpochAI
@@ -335,149 +118,37 @@ class ChronoLordEpochAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(ChronoLordEpochAI);
         ChronoLordEpochAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            spells.clear();
+            if (_isHeroic())
+            {
+                // WoundingStrike
+                addAISpell(58830, 50.0f, TARGET_ATTACKING, 0, 3);
+                // TimeStop
+                addAISpell(58848, 20.0f, TARGET_ATTACKING, 0, 2);
+            }
+            else
+            {
+                // WoundingStrike
+                addAISpell(52771, 50.0f, TARGET_ATTACKING, 0, 3);
+            }
 
-            ScriptSpell* WoundingStrike = new ScriptSpell;
-            WoundingStrike->normal_spellid = 52771;
-            WoundingStrike->heroic_spellid = 58830;
-            WoundingStrike->chance = 50;
-            WoundingStrike->timer = 3000;
-            WoundingStrike->time = 0;
-            WoundingStrike->target = SPELL_TARGET_CURRENT_ENEMY;
-            spells.push_back(WoundingStrike);
+            // CurseOfExertion
+            addAISpell(52772, 100.0f, TARGET_RANDOM_SINGLE, 0, 5);
+            // TimeWarp
+            addAISpell(52766, 50.0f, TARGET_ATTACKING, 0, 6);
 
-            ScriptSpell* CurseOfExertion = new ScriptSpell;
-            CurseOfExertion->normal_spellid = 52772;
-            CurseOfExertion->heroic_spellid = 52772;
-            CurseOfExertion->chance = 100;
-            CurseOfExertion->timer = 5000;
-            CurseOfExertion->time = 0;
-            CurseOfExertion->target = SPELL_TARGET_RANDOM_PLAYER;
-            spells.push_back(CurseOfExertion);
 
-            ScriptSpell* TimeWarp = new ScriptSpell;
-            TimeWarp->normal_spellid = 52766;
-            TimeWarp->heroic_spellid = 52766;
-            TimeWarp->chance = 50;
-            TimeWarp->timer = 6000;
-            TimeWarp->time = 0;
-            TimeWarp->target = SPELL_TARGET_CURRENT_ENEMY;
-            spells.push_back(TimeWarp);
-
-            ScriptSpell* TimeStop = new ScriptSpell;
-            TimeStop->normal_spellid = 0;
-            TimeStop->heroic_spellid = 58848;
-            TimeStop->chance = 20;
-            TimeStop->timer = 2000;
-            TimeStop->time = 0;
-            TimeStop->target = SPELL_TARGET_CURRENT_ENEMY;
-            spells.push_back(TimeStop);
-
-            // new
             addEmoteForEvent(Event_OnCombatStart, SAY_CHRONOLORD_EPOCH_02);
             addEmoteForEvent(Event_OnTargetDied, SAY_CHRONOLORD_EPOCH_06);
             addEmoteForEvent(Event_OnTargetDied, SAY_CHRONOLORD_EPOCH_07);
             addEmoteForEvent(Event_OnTargetDied, SAY_CHRONOLORD_EPOCH_08);
         }
 
-        void OnCombatStart(Unit* mTarget) override
-        {
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
-        }
-
         void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
             getCreature()->RemoveAllAuras();
         }
-
-        void AIUpdate() override
-        {
-            if (spells.size() > 0)
-            {
-                for (uint8 i = 0; i < spells.size(); i++)
-                {
-                    if (spells[i]->time <Util::getMSTime())
-                    {
-                        if (Rand(spells[i]->chance))
-                        {
-                            CastScriptSpell(spells[i]);
-                            spells[i]->time = Util::getMSTime() + spells[i]->timer;
-                        }
-                    }
-                }
-            }
-        }
-
-        Player* GetRandomPlayerTarget()
-        {
-            std::vector< uint32 > possible_targets;
-            for (std::set< Object* >::iterator iter = getCreature()->GetInRangePlayerSetBegin(); iter != getCreature()->GetInRangePlayerSetEnd(); ++iter)
-            {
-                Player* p = static_cast< Player* >(*iter);
-                if (p->isAlive())
-                    possible_targets.push_back(p->GetLowGUID());
-            }
-            if (possible_targets.size() > 0)
-            {
-                uint32 random_player = possible_targets[Rand(uint32(possible_targets.size() - 1))];
-                return getCreature()->GetMapMgr()->GetPlayer(random_player);
-            }
-            return NULL;
-        }
-
-        void CastScriptSpell(ScriptSpell* spell)
-        {
-            getCreature()->setMoveRoot(true);
-            uint32 spellid = _isHeroic() ? spell->heroic_spellid : spell->normal_spellid;
-            if (spellid == 0)
-                return;
-            Unit* spelltarget = NULL;
-            switch (spell->target)
-            {
-                case SPELL_TARGET_SELF:
-                {
-                    spelltarget = getCreature();
-                }
-                break;
-                case SPELL_TARGET_GENERATE:
-                {
-                    spelltarget = NULL;
-                }
-                break;
-                case SPELL_TARGET_CURRENT_ENEMY:
-                {
-                    spelltarget = getCreature()->GetAIInterface()->getNextTarget();
-                }
-                break;
-                case SPELL_TARGET_RANDOM_PLAYER:
-                {
-                    spelltarget = GetRandomPlayerTarget();
-                }
-                break;
-            }
-            getCreature()->CastSpell(spelltarget, spellid, false);
-            getCreature()->setMoveRoot(false);
-        }
-
-        void Destroy() override
-        {
-            for (uint32 i = 0; i < spells.size(); ++i)
-            {
-                if (spells[i] != NULL)
-                    delete spells[i];
-            };
-
-            spells.clear();
-
-            delete this;
-        }
-
-    protected:
-
-        std::vector< ScriptSpell* > spells;
 };
 
 
@@ -486,128 +157,22 @@ class InfiniteCorruptorAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(InfiniteCorruptorAI);
         InfiniteCorruptorAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            spells.clear();
-            ScriptSpell* VoidStrike = new ScriptSpell;
-            VoidStrike->normal_spellid = 60590;
-            VoidStrike->heroic_spellid = 60590;
-            VoidStrike->chance = 50;
-            VoidStrike->timer = 1000;
-            VoidStrike->time = 0;
-            VoidStrike->target = SPELL_TARGET_CURRENT_ENEMY;
-            spells.push_back(VoidStrike);
+            // VoidStrike
+            addAISpell(60590, 50.0f, TARGET_ATTACKING, 0, 1);
+            // CorruptingBlight
+            addAISpell(60588, 50.0f, TARGET_RANDOM_SINGLE, 0, 3);
 
-            ScriptSpell* CorruptingBlight = new ScriptSpell;
-            CorruptingBlight->normal_spellid = 60588;
-            CorruptingBlight->heroic_spellid = 60588;
-            CorruptingBlight->chance = 50;
-            CorruptingBlight->timer = 3000;
-            CorruptingBlight->time = 0;
-            CorruptingBlight->target = SPELL_TARGET_RANDOM_PLAYER;
-            spells.push_back(CorruptingBlight);
-
-            // new
+            
             addEmoteForEvent(Event_OnCombatStart, SAY_INFINITE_CORRUP_01);
             addEmoteForEvent(Event_OnDied, SAY_INFINITE_CORRUP_02);
-        }
-
-        void OnCombatStart(Unit* mTarget) override
-        {
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
         void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
             getCreature()->RemoveAllAuras();
         }
-
-        void AIUpdate() override
-        {
-            if (spells.size() > 0)
-            {
-                for (uint8 i = 0; i < spells.size(); i++)
-                {
-                    if (spells[i]->time <Util::getMSTime())
-                    {
-                        if (Rand(spells[i]->chance))
-                        {
-                            CastScriptSpell(spells[i]);
-                            spells[i]->time = Util::getMSTime() + spells[i]->timer;
-                        }
-                    }
-                }
-            }
-        }
-
-        Player* GetRandomPlayerTarget()
-        {
-            std::vector< uint32 > possible_targets;
-            for (std::set< Object* >::iterator iter = getCreature()->GetInRangePlayerSetBegin(); iter != getCreature()->GetInRangePlayerSetEnd(); ++iter)
-            {
-                Player* p = static_cast< Player* >(*iter);
-                if (p->isAlive())
-                    possible_targets.push_back(p->GetLowGUID());
-            }
-            if (possible_targets.size() > 0)
-            {
-                uint32 random_player = possible_targets[Rand(uint32(possible_targets.size() - 1))];
-                return getCreature()->GetMapMgr()->GetPlayer(random_player);
-            }
-            return NULL;
-        }
-
-        void CastScriptSpell(ScriptSpell* spell)
-        {
-            getCreature()->setMoveRoot(true);
-            uint32 spellid = _isHeroic() ? spell->heroic_spellid : spell->normal_spellid;
-            if (spellid == 0)
-                return;
-            Unit* spelltarget = NULL;
-            switch (spell->target)
-            {
-                case SPELL_TARGET_SELF:
-                {
-                    spelltarget = getCreature();
-                }
-                break;
-                case SPELL_TARGET_GENERATE:
-                {
-                    spelltarget = NULL;
-                }
-                break;
-                case SPELL_TARGET_CURRENT_ENEMY:
-                {
-                    spelltarget = getCreature()->GetAIInterface()->getNextTarget();
-                }
-                break;
-                case SPELL_TARGET_RANDOM_PLAYER:
-                {
-                    spelltarget = GetRandomPlayerTarget();
-                }
-                break;
-            }
-            getCreature()->CastSpell(spelltarget, spellid, false);
-            getCreature()->setMoveRoot(false);
-        }
-
-        void Destroy() override
-        {
-            for (uint32 i = 0; i < spells.size(); ++i)
-            {
-                if (spells[i] != NULL)
-                    delete spells[i];
-            }
-
-            spells.clear();
-
-            delete this;
-        }
-
-    protected:
-
-        std::vector< ScriptSpell* > spells;
 };
 
 
@@ -616,45 +181,29 @@ class MalganisAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(MalganisAI);
         MalganisAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            scene = true;
-            spells.clear();
-            ScriptSpell* CarrionSwarm = new ScriptSpell;
-            CarrionSwarm->normal_spellid = 52720;
-            CarrionSwarm->heroic_spellid = 58852;
-            CarrionSwarm->chance = 60;
-            CarrionSwarm->timer = 10000;
-            CarrionSwarm->time = 0;
-            CarrionSwarm->target = SPELL_TARGET_CURRENT_ENEMY;
-            spells.push_back(CarrionSwarm);
+            if (_isHeroic())
+            {
+                // CarrionSwarm
+                addAISpell(58852, 60.0f, TARGET_ATTACKING, 0, 10);
+                // MindBlast
+                addAISpell(58850, 50.0f, TARGET_RANDOM_SINGLE, 0, 5);
+                // Sleep
+                addAISpell(58849, 40.0f, TARGET_RANDOM_SINGLE, 0, 7);
+            }
+            else
+            {
+                // CarrionSwarm
+                addAISpell(52720, 60.0f, TARGET_ATTACKING, 0, 10);
+                // MindBlast
+                addAISpell(52722, 50.0f, TARGET_RANDOM_SINGLE, 0, 5);
+                // Sleep
+                addAISpell(52721, 40.0f, TARGET_RANDOM_SINGLE, 0, 7);
+            }
 
-            ScriptSpell* MindBlast = new ScriptSpell;
-            MindBlast->normal_spellid = 52722;
-            MindBlast->heroic_spellid = 58850;
-            MindBlast->chance = 50;
-            MindBlast->timer = 5000;
-            MindBlast->time = 0;
-            MindBlast->target = SPELL_TARGET_RANDOM_PLAYER;
-            spells.push_back(MindBlast);
+            // VampiricTouch
+            addAISpell(52723, 90.0f, TARGET_SELF, 0, 30);
 
-            ScriptSpell* Sleep = new ScriptSpell;
-            Sleep->normal_spellid = 52721;
-            Sleep->heroic_spellid = 58849;
-            Sleep->chance = 40;
-            Sleep->timer = 7000;
-            Sleep->time = 0;
-            Sleep->target = SPELL_TARGET_RANDOM_PLAYER;
-            spells.push_back(Sleep);
 
-            ScriptSpell* VampiricTouch = new ScriptSpell;
-            VampiricTouch->normal_spellid = 52723;
-            VampiricTouch->heroic_spellid = 52723;
-            VampiricTouch->chance = 90;
-            VampiricTouch->timer = 30000;
-            VampiricTouch->time = 0;
-            VampiricTouch->target = SPELL_TARGET_SELF;
-            spells.push_back(VampiricTouch);
-
-            // new
             addEmoteForEvent(Event_OnCombatStart, SAY_MALGANIS_03);
             addEmoteForEvent(Event_OnTargetDied, SAY_MALGANIS_04);
             addEmoteForEvent(Event_OnTargetDied, SAY_MALGANIS_05);
@@ -662,16 +211,10 @@ class MalganisAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, SAY_MALGANIS_16);
         }
 
-        void OnCombatStart(Unit* mTarget) override
-        {
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
-        }
-
         void OnCombatStop(Unit* mTarget) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
             getCreature()->RemoveAllAuras();
         }
 
@@ -681,12 +224,14 @@ class MalganisAI : public CreatureAIScript
             {
                 getCreature()->Heal(getCreature(), 52723, fAmount / 2);
             }
+
             if (getCreature()->GetHealthPct() < 2)
             {
                 getCreature()->setMoveRoot(true);
                 getCreature()->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
-                for (uint8 i = 0; i < 7; i++)
+                for (uint8 i = 0; i < 7; ++i)
                     getCreature()->SchoolImmunityList[i] = 1;
+
                 RemoveAIUpdateEvent();
                 sendDBChatMessage(SAY_MALGANIS_17);
 
@@ -697,123 +242,6 @@ class MalganisAI : public CreatureAIScript
                 getCreature()->Despawn(1, 0);
             }
         }
-
-        void AIUpdate() override
-        {
-            if (!scene && spells.size() > 0)
-            {
-                for (uint8 i = 0; i < spells.size(); i++)
-                {
-                    if (spells[i]->time <Util::getMSTime())
-                    {
-                        if (Rand(spells[i]->chance))
-                        {
-                            CastScriptSpell(spells[i]);
-                            spells[i]->time = Util::getMSTime() + spells[i]->timer;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                //this is ugly, better ideas?
-                scene = false;
-                Creature* citizen = NULL;
-                uint32 entry = 0;
-                for (uint32 i = 0; i != getCreature()->GetMapMgr()->m_CreatureHighGuid; ++i)
-                {
-                    if (getCreature()->GetMapMgr()->CreatureStorage[i] != NULL)
-                    {
-                        entry = getCreature()->GetMapMgr()->CreatureStorage[i]->GetEntry();
-                        if (entry == 31126 || entry == 31127 || entry == 28167 || entry == 28169)
-                        {
-                            citizen = getCreature()->GetMapMgr()->CreatureStorage[i];
-                            CreatureProperties const* cp = sMySQLStore.getCreatureProperties(27737);//risen zombie
-                            if (cp)
-                            {
-                                Creature* c = getCreature()->GetMapMgr()->CreateCreature(27737);
-                                if (c)
-                                {
-                                    //position is guessed
-                                    c->Load(cp, citizen->GetPositionX(), citizen->GetPositionY(), citizen->GetPositionZ(), citizen->GetOrientation());
-                                    c->PushToWorld(getCreature()->GetMapMgr());
-                                }
-                            }
-                            citizen->Despawn(0, 0);
-                        }
-                    }
-                }
-            }
-        }
-
-        Player* GetRandomPlayerTarget()
-        {
-            std::vector< uint32 > possible_targets;
-            for (std::set< Object* >::iterator iter = getCreature()->GetInRangePlayerSetBegin(); iter != getCreature()->GetInRangePlayerSetEnd(); ++iter)
-            {
-                Player* p = static_cast< Player* >(*iter);
-                if (p->isAlive())
-                    possible_targets.push_back(p->GetLowGUID());
-            }
-            if (possible_targets.size() > 0)
-            {
-                uint32 random_player = possible_targets[Rand(uint32(possible_targets.size() - 1))];
-                return getCreature()->GetMapMgr()->GetPlayer(random_player);
-            }
-            return NULL;
-        }
-
-        void CastScriptSpell(ScriptSpell* spell)
-        {
-            getCreature()->setMoveRoot(true);
-            uint32 spellid = _isHeroic() ? spell->heroic_spellid : spell->normal_spellid;
-            if (spellid == 0)
-                return;
-            Unit* spelltarget = NULL;
-            switch (spell->target)
-            {
-                case SPELL_TARGET_SELF:
-                {
-                    spelltarget = getCreature();
-                }
-                break;
-                case SPELL_TARGET_GENERATE:
-                {
-                    spelltarget = NULL;
-                }
-                break;
-                case SPELL_TARGET_CURRENT_ENEMY:
-                {
-                    spelltarget = getCreature()->GetAIInterface()->getNextTarget();
-                }
-                break;
-                case SPELL_TARGET_RANDOM_PLAYER:
-                {
-                    spelltarget = GetRandomPlayerTarget();
-                }
-                break;
-            }
-            getCreature()->CastSpell(spelltarget, spellid, false);
-            getCreature()->setMoveRoot(false);
-        }
-
-        void Destroy() override
-        {
-            for (uint32 i = 0; i < spells.size(); ++i)
-            {
-                if (spells[i] != NULL)
-                    delete spells[i];
-            }
-
-            spells.clear();
-
-            delete this;
-        }
-
-    protected:
-
-        bool scene;
-        std::vector< ScriptSpell* > spells;
 };
 
 
@@ -910,8 +338,8 @@ class UtherAI : public CreatureAIScript
             if (i == 3 && check)
             {
                 check = false;
-                Creature* Arthas = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), CN_ARTHAS);
-                Creature* Jaina = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), CN_JAINA);
+                Creature* Arthas = getNearestCreature(CN_ARTHAS);
+                Creature* Jaina = getNearestCreature(CN_JAINA);
                 if (Arthas && Jaina)  //Show must go on!
                 {
                     //we add 0,5s per speech
@@ -952,7 +380,6 @@ class UtherAI : public CreatureAIScript
                     //17 = 82s
                     Jaina->SendTimedScriptTextChatMessage(SAY_JAINA_02, 82000);
                     //trigger Arthas actions = 86,5s
-                    sEventMgr.AddEvent(Arthas, &Creature::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, 86500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                     getCreature()->Despawn(100000, 0);
                 }
             }
@@ -1019,7 +446,6 @@ class ArthasAI : public CreatureAIScript
                 {
                     sendDBChatMessage(SAY_ARTHAS_11);
                     phase++;
-                    sEventMgr.AddEvent(getCreature(), &Creature::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, 12500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 }
                 break;
                 default:
@@ -1049,13 +475,13 @@ class ArthasAI : public CreatureAIScript
                 case 1:
                 {
                     getCreature()->SendTimedScriptTextChatMessage(SAY_ARTHAS_12, 300);
-                    Creature* citizen = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), 28167);
+                    Creature* citizen = getNearestCreature(28167);
                     if (citizen)
                     {
                         getCreature()->GetAIInterface()->MoveTo(citizen->GetPositionX(), citizen->GetPositionY(), citizen->GetPositionZ());
                         getCreature()->DealDamage(citizen, citizen->getUInt32Value(UNIT_FIELD_HEALTH), 0, 0, 0);
                     }
-                    citizen = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), 28169);
+                    citizen = getNearestCreature(28169);
                     if (citizen)
                     {
                         getCreature()->GetAIInterface()->MoveTo(citizen->GetPositionX(), citizen->GetPositionY(), citizen->GetPositionZ());
@@ -1063,7 +489,6 @@ class ArthasAI : public CreatureAIScript
                     }
                     getCreature()->SendTimedScriptTextChatMessage(SAY_ARTHAS_13, 1000);
                     phase++;
-                    sEventMgr.AddEvent(getCreature(), &Creature::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, 1500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 }
                 break;
                 case 2:
@@ -1094,13 +519,11 @@ class ArthasAI : public CreatureAIScript
                         c->SendScriptTextChatMessage(SAY_MALGANIS_01);
                         //2 = 13s
                         //change all citizens to undeads...
-                        sEventMgr.AddEvent(c, &Creature::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, 13000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                         c->SendTimedScriptTextChatMessage(SAY_MALGANIS_02, 13000);
                         //2 = 32s
                         getCreature()->SendTimedScriptTextChatMessage(SAY_ARTHAS_14, 32000);
                         c->Despawn(38500, 0);
                         //3 = 37s
-                        sEventMgr.AddEvent(static_cast<Object*>(getCreature()), &Object::PlaySoundToSet, (uint32)14885, EVENT_UNK, 39000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                     }
                 }
                 break;

@@ -490,7 +490,8 @@ enum
     TARGET_SOURCE,
     TARGET_RANDOM_FRIEND,    // doesn't work yet
     TARGET_RANDOM_SINGLE,
-    TARGET_RANDOM_DESTINATION
+    TARGET_RANDOM_DESTINATION,
+    TARGET_CUSTOM
 };
 
 #include "Spell/Customization/SpellCustomizations.hpp"
@@ -522,6 +523,8 @@ class SERVER_DECL CreatureAISpells
             mMaxHpRangeToCast = 100.0f;
 
             mAttackStopTimer = 0;
+
+            mCustomTargetCreature = nullptr;
         }
 
         ~CreatureAISpells()
@@ -652,6 +655,17 @@ class SERVER_DECL CreatureAISpells
 
         std::string mAnnouncement;
         void sendAnnouncement(CreatureAIScript* creatureAI);
+
+        Creature* mCustomTargetCreature;
+        void setCustomTarget(Creature* targetCreature)
+        {
+            mCustomTargetCreature = targetCreature;
+        }
+
+        Creature* getCustomTarget()
+        {
+            return mCustomTargetCreature;
+        }
 };
 
 class SERVER_DECL CreatureAIScript

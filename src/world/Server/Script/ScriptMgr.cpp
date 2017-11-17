@@ -1414,6 +1414,12 @@ void CreatureAIScript::newAIUpdateSpellSystem()
                 case TARGET_RANDOM_DESTINATION:
                     castSpellOnRandomTarget(usedSpell);
                     break;
+                case TARGET_CUSTOM:
+                {
+                    // nos custom target set, no spell cast.
+                    if (usedSpell->getCustomTarget() != nullptr)
+                        getCreature()->CastSpell(usedSpell->getCustomTarget(), usedSpell->mSpellInfo, usedSpell->mIsTriggered);
+                } break;
             }
 
             // override attack stop timer if needed
