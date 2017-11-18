@@ -100,7 +100,7 @@ class SERVER_DECL AuraCondition
 {
 public:
 
-    virtual bool operator()(Aura* aura)
+    virtual bool operator()(Aura* /*aura*/)
     {
         return true;
     }
@@ -113,7 +113,7 @@ class SERVER_DECL AuraAction
 {
 public:
 
-    virtual void operator()(Aura* aura) {}
+    virtual void operator()(Aura* /*aura*/) {}
 };
 
 struct ReflectSpellSchool
@@ -502,9 +502,9 @@ public:
 
     // ProcTrigger
     std::list<SpellProc*> m_procSpells;
-    SpellProc* AddProcTriggerSpell(uint32 spell_id, uint32 orig_spell_id, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, uint32* groupRelation, uint32* procClassMask = NULL, Object* obj = NULL);
-    SpellProc* AddProcTriggerSpell(SpellInfo* spell, SpellInfo* orig_spell, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, uint32* groupRelation, uint32* procClassMask = NULL, Object* obj = NULL);
-    SpellProc* AddProcTriggerSpell(SpellInfo* sp, uint64 caster, uint32* groupRelation, uint32* procClassMask = NULL, Object* obj = NULL);
+    SpellProc* AddProcTriggerSpell(uint32 spell_id, uint32 orig_spell_id, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, uint32* groupRelation, uint32* procClassMask = nullptr, Object* obj = nullptr);
+    SpellProc* AddProcTriggerSpell(SpellInfo* spell, SpellInfo* orig_spell, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, uint32* groupRelation, uint32* procClassMask = nullptr, Object* obj = nullptr);
+    SpellProc* AddProcTriggerSpell(SpellInfo* sp, uint64 caster, uint32* groupRelation, uint32* procClassMask = nullptr, Object* obj = nullptr);
     SpellProc* GetProcTriggerSpell(uint32 spellId, uint64 casterGuid = 0);
     void RemoveProcTriggerSpell(uint32 spellId, uint64 casterGuid = 0, uint64 misc = 0);
 
@@ -598,8 +598,8 @@ public:
     uint32 SchoolCastPrevent[SCHOOL_COUNT];
     int32 MechanicDurationPctMod[28];
 
-    virtual int32 GetDamageDoneMod(uint32 school) { return 0; }
-    virtual float GetDamageDonePctMod(uint32 school) { return 0; }
+    virtual int32 GetDamageDoneMod(uint32 /*school*/) { return 0; }
+    virtual float GetDamageDonePctMod(uint32 /*school*/) { return 0; }
 
     int32 DamageTakenMod[SCHOOL_COUNT];
     float DamageTakenPctMod[SCHOOL_COUNT];
@@ -917,8 +917,8 @@ public:
 
     void SetFacing(float newo);     //only working if creature is idle
 
-    AuraCheckResponse AuraCheck(SpellInfo* proto, Object* caster = NULL);
-    AuraCheckResponse AuraCheck(SpellInfo* proto, Aura* aur, Object* caster = NULL);
+    AuraCheckResponse AuraCheck(SpellInfo* proto, Object* caster = nullptr);
+    AuraCheckResponse AuraCheck(SpellInfo* proto, Aura* aur, Object* caster = nullptr);
 
     uint16 m_diminishCount[DIMINISHING_GROUP_COUNT];
     uint8 m_diminishAuraCount[DIMINISHING_GROUP_COUNT];
@@ -1081,11 +1081,11 @@ public:
     void SetEmoteState(uint32 id) { setUInt32Value(UNIT_NPC_EMOTESTATE, id); }
     uint32 GetEmoteState() { return getUInt32Value(UNIT_NPC_EMOTESTATE); }
 
-    void SetStat(uint32 stat, uint32 amt) { setUInt32Value(UNIT_FIELD_STAT0 + stat, amt); }
-    uint32 GetStat(uint32 stat) { return getUInt32Value(UNIT_FIELD_STAT0 + stat); }
+    void SetStat(uint16_t stat, uint32 amt) { setUInt32Value(UNIT_FIELD_STAT0 + stat, amt); }
+    uint32 GetStat(uint16_t stat) { return getUInt32Value(UNIT_FIELD_STAT0 + stat); }
 
-    void SetResistance(uint32 type, uint32 amt) { setUInt32Value(UNIT_FIELD_RESISTANCES + type, amt); }
-    uint32 GetResistance(uint32 type) { return getUInt32Value(UNIT_FIELD_RESISTANCES + type); }
+    void SetResistance(uint16_t type, uint32 amt) { setUInt32Value(UNIT_FIELD_RESISTANCES + type, amt); }
+    uint32 GetResistance(uint16_t type) { return getUInt32Value(UNIT_FIELD_RESISTANCES + type); }
 
     void SetBaseMana(uint32 amt) { setUInt32Value(UNIT_FIELD_BASE_MANA, amt); }
     uint32 GetBaseMana() { return getUInt32Value(UNIT_FIELD_BASE_MANA); }
@@ -1093,9 +1093,9 @@ public:
     void SetBaseHealth(uint32 amt) { setUInt32Value(UNIT_FIELD_BASE_HEALTH, amt); }
     uint32 GetBaseHealth() { return getUInt32Value(UNIT_FIELD_BASE_HEALTH); }
 
-    void SetPowerCostMultiplier(uint32 school, float amt) { setFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER + school, amt); }
-    void ModPowerCostMultiplier(uint32 school, float amt) { ModFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER + school, amt); }
-    float GetPowerCostMultiplier(uint32 school) { return getFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER + school); }
+    void SetPowerCostMultiplier(uint16_t school, float amt) { setFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER + school, amt); }
+    void ModPowerCostMultiplier(uint16_t school, float amt) { ModFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER + school, amt); }
+    float GetPowerCostMultiplier(uint16_t school) { return getFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER + school); }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1103,7 +1103,7 @@ public:
     uint32 GetAttackPower() { return getUInt32Value(UNIT_FIELD_ATTACK_POWER); }
 
     //\todo fix this
-    void SetAttackPowerMods(uint32 amt)
+    void SetAttackPowerMods(uint32 /*amt*/)
     {
 #if VERSION_STRING != Cata
         setUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS, amt);
@@ -1117,7 +1117,7 @@ public:
         return 0;
 #endif
     }
-    void ModAttackPowerMods(uint32 amt)
+    void ModAttackPowerMods(uint32 /*amt*/)
     {
 #if VERSION_STRING != Cata
         ModUnsigned32Value(UNIT_FIELD_ATTACK_POWER_MODS, amt);
@@ -1134,7 +1134,7 @@ public:
     uint32 GetRangedAttackPower() { return getUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER); }
 
     //\todo fix this
-    void SetRangedAttackPowerMods(uint32 amt)
+    void SetRangedAttackPowerMods(uint32 /*amt*/)
     {
 #if VERSION_STRING != Cata
         setUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS, amt);
@@ -1148,7 +1148,7 @@ public:
         return 0;
 #endif
     }
-    void ModRangedAttackPowerMods(uint32 amt)
+    void ModRangedAttackPowerMods(uint32 /*amt*/)
     {
 #if VERSION_STRING != Cata
         ModUnsigned32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS, amt);
@@ -1186,7 +1186,7 @@ public:
 
     void SetPower(uint32 type, int32 value);
 
-    void ModPower(uint32 index, int32 value)
+    void ModPower(uint16_t index, int32 value)
     {
         int32 power = static_cast<int32>(m_uint32Values[UNIT_FIELD_POWER1 + index]);
         int32 maxpower = static_cast<int32>(m_uint32Values[UNIT_FIELD_MAXPOWER1 + index]);
@@ -1202,13 +1202,13 @@ public:
             setUInt32Value(UNIT_FIELD_POWER1 + index, power + value);
     }
 
-    uint32 GetPower(uint32 index) { return getUInt32Value(UNIT_FIELD_POWER1 + index); }
+    uint32 GetPower(uint16_t index) { return getUInt32Value(UNIT_FIELD_POWER1 + index); }
 
-    void SetMaxPower(uint32 index, uint32 value) { setUInt32Value(UNIT_FIELD_MAXPOWER1 + index, value); }
+    void SetMaxPower(uint16_t index, uint32 value) { setUInt32Value(UNIT_FIELD_MAXPOWER1 + index, value); }
 
-    void ModMaxPower(uint32 index, int32 value) { ModUnsigned32Value(UNIT_FIELD_MAXPOWER1 + index, value); }
+    void ModMaxPower(uint16_t index, int32 value) { ModUnsigned32Value(UNIT_FIELD_MAXPOWER1 + index, value); }
 
-    uint32 GetMaxPower(uint32 index) { return getUInt32Value(UNIT_FIELD_MAXPOWER1 + index); }
+    uint32 GetMaxPower(uint16_t index) { return getUInt32Value(UNIT_FIELD_MAXPOWER1 + index); }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1301,7 +1301,7 @@ public:
 
     Vehicle* GetVehicleComponent();
 
-    virtual void AddVehicleComponent(uint32 creature_entry, uint32 vehicleid) {}
+    virtual void AddVehicleComponent(uint32 /*creatureEntry*/, uint32 /*vehicleId*/) {}
     virtual void RemoveVehicleComponent() {}
 
     void SendHopOnVehicle(Unit* vehicleowner, uint32 seat);
@@ -1309,7 +1309,7 @@ public:
 
     Unit* GetVehicleBase();
 
-    virtual Group* GetGroup() { return NULL; }
+    virtual Group* GetGroup() { return nullptr; }
     bool InParty(Unit* u);
     bool InRaid(Unit* u);
     const CombatStatusHandler* getcombatstatus() const { return &CombatStatus; }

@@ -128,8 +128,8 @@ class PlayerCache : public Arcemu::Shared::CRefCounter
         size_t GetSize64(uint32 field) { m_set64lock.Acquire(); size_t ret = m_map64fields[field].size(); m_set64lock.Release(); return ret; }
 
         //These functions request the field you're going to use, so we can turn them into an array of mutexes if needed. Scalability testing needs done first :P
-        void AcquireLock64(uint32 field) { m_set64lock.Acquire(); }
-        void ReleaseLock64(uint32 field) { m_set64lock.Release(); }
+        void AcquireLock64(uint32 /*field*/) { m_set64lock.Acquire(); }
+        void ReleaseLock64(uint32 /*field*/) { m_set64lock.Release(); }
 
         //Set64 iterators, you must have the lock before using these!
         PlayerCacheMap::iterator Begin64(uint32 field) { return m_map64fields[field].begin(); }

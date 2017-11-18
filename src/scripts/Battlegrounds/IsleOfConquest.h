@@ -199,13 +199,13 @@ class IsleOfConquest : public CBattleground
         void HookOnAreaTrigger(Player* plr, uint32 id);
         void HookOnPlayerDeath(Player* plr);
         void HookOnPlayerResurrect(Player* player);
-        void HookOnPlayerKill(Player* plr, Player* pVictim) {}
-        void HookFlagDrop(Player* plr, GameObject* obj) {}
-        void HookOnFlagDrop(Player* plr) {}
-        void HookFlagStand(Player* plr, GameObject* obj) {}
+        void HookOnPlayerKill(Player* /*plr*/, Player* /*pVictim*/) {}
+        void HookFlagDrop(Player* /*plr*/, GameObject* /*obj*/) {}
+        void HookOnFlagDrop(Player* /*plr*/) {}
+        void HookFlagStand(Player* /*plr*/, GameObject* /*obj*/) {}
         bool HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell *pSpell);
-        void HookOnMount(Player* plr) {}
-        void HookGenerateLoot(Player* plr, Object* pCorpse) {}
+        void HookOnMount(Player* /*plr*/) {}
+        void HookGenerateLoot(Player* /*plr*/, Object* /*pCorpse*/) {}
         void OnAddPlayer(Player* plr);
         void OnRemovePlayer(Player* plr);
         void HookOnShadowSight();

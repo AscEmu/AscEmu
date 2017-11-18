@@ -1530,7 +1530,7 @@ namespace DBC
             //char* Description;                // 6
             
             // helpers
-            bool IsFitToFamilyMask(uint64 familyFlags, uint32_t familyFlags2 = 0) const
+            bool IsFitToFamilyMask(uint64 /*familyFlags*/, uint32_t /*familyFlags2*/ = 0) const
             {
                 return true; // SpellFamilyFlags.IsFitToFamilyMask(familyFlags, familyFlags2);
             }
@@ -1540,7 +1540,7 @@ namespace DBC
                 return SpellFamily(SpellFamilyName) == family && IsFitToFamilyMask(familyFlags, familyFlags2);
             }
 
-            bool IsFitToFamilyMask(ClassFamilyMask const& mask) const
+            bool IsFitToFamilyMask(ClassFamilyMask const& /*mask*/) const
             {
                 return true;// SpellFamilyFlags.IsFitToFamilyMask(mask);
             }

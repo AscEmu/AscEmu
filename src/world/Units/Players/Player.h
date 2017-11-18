@@ -1673,7 +1673,7 @@ public:
 #endif
         }
 
-        void SetInventorySlot(uint32 slot, uint64 guid) { setUInt64Value(PLAYER_FIELD_INV_SLOT_HEAD + (slot * 2), guid); }
+        void SetInventorySlot(uint16_t slot, uint64 guid) { setUInt64Value(PLAYER_FIELD_INV_SLOT_HEAD + (slot * 2), guid); }
 
         void SetFarsightTarget(uint64 guid) { setUInt64Value(PLAYER_FARSIGHT, guid); }
         uint64 GetFarsightTarget() { return getUInt64Value(PLAYER_FARSIGHT); }
@@ -1752,10 +1752,10 @@ public:
         }
 
         void ModPosDamageDoneMod(uint32 school, uint32 value) { ModUnsigned32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + school, value); }
-        uint32 GetPosDamageDoneMod(uint32 school) { return getUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + school); }
+        uint32 GetPosDamageDoneMod(uint16_t school) { return getUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + school); }
 
-        void ModNegDamageDoneMod(uint32 school, uint32 value) { ModUnsigned32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_NEG + school, value); }
-        uint32 GetNegDamageDoneMod(uint32 school) { return getUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_NEG + school); }
+        void ModNegDamageDoneMod(uint16_t school, uint32 value) { ModUnsigned32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_NEG + school, value); }
+        uint32 GetNegDamageDoneMod(uint16_t school) { return getUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_NEG + school); }
 
         void ModHealingDoneMod(uint32 value)
         {

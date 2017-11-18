@@ -184,9 +184,9 @@ class SERVER_DECL MovementInfo
         uint32_t getTransportTime() const { return transport_time; }
         uint32_t getTransportTime2() const { return transport_time2; }
 
-        void setTransportData(ObjectGuid guid, float x, float y, float z, float o, uint32_t time, int8_t seat)
+        void setTransportData(ObjectGuid _guid, float x, float y, float z, float o, uint32_t time, int8_t seat)
         {
-            transport_guid = guid;
+            transport_guid = _guid;
             transport_position.x = x;
             transport_position.y = y;
             transport_position.z = z;
@@ -263,6 +263,7 @@ static float normalizeOrientation(float orientation)
 
     return fmod(orientation, 2.0f * static_cast<float>(M_PI));
 }
+
 #else
 struct MovementInfo
 {
@@ -347,7 +348,7 @@ struct MovementInfo
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// class Object:Base object for every item, unit, player, corpse, container, etc
+// class Object:Base object for every item, unit, player, corpse, container, etc
 //////////////////////////////////////////////////////////////////////////////////////////
 class SERVER_DECL Object : public EventableObject, public IUpdatable
 {
@@ -417,7 +418,7 @@ public:
         Object();
         virtual ~Object();
 
-        void Update(unsigned long time_passed) {}
+        void Update(unsigned long /*time_passed*/) {}
 
         /// True if object exists in world, else false
         bool IsInWorld() { return m_mapMgr != NULL; }
@@ -428,49 +429,49 @@ public:
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// virtual void OnPrePushToWorld()
-        /// Virtual method that is called, BEFORE pushing the Object in the game world
-        ///
-        /// \param none
-        ///
-        /// \return none
-        ///
+        // virtual void OnPrePushToWorld()
+        // Virtual method that is called, BEFORE pushing the Object in the game world
+        //
+        // \param none
+        //
+        // \return none
+        //
         //////////////////////////////////////////////////////////////////////////////////////////
         virtual void OnPrePushToWorld() {}
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// virtual void OnPushToWorld()
-        /// Virtual method that is called, AFTER pushing the Object in the game world
-        ///
-        /// \param none
-        ///
-        /// \return none
-        ///
+        // virtual void OnPushToWorld()
+        // Virtual method that is called, AFTER pushing the Object in the game world
+        //
+        // \param none
+        //
+        // \return none
+        //
         //////////////////////////////////////////////////////////////////////////////////////////
         virtual void OnPushToWorld() {}
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// virtual void OnPreRemoveFromWorld()
-        /// Virtual method that is called, BEFORE removing the Object from the game world
-        ///
-        /// \param none
-        ///
-        /// \return none
-        ///
+        // virtual void OnPreRemoveFromWorld()
+        // Virtual method that is called, BEFORE removing the Object from the game world
+        //
+        // \param none
+        //
+        // \return none
+        //
         //////////////////////////////////////////////////////////////////////////////////////////
         virtual void OnPreRemoveFromWorld() {}
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// virtual void OnRemoveFromWorld()
-        /// Virtual method that is called, AFTER removing the Object from the game world
-        ///
-        /// \param none
-        ///
-        /// \return none
-        ///
+        // virtual void OnRemoveFromWorld()
+        // Virtual method that is called, AFTER removing the Object from the game world
+        //
+        // \param none
+        //
+        // \return none
+        //
         //////////////////////////////////////////////////////////////////////////////////////////
         virtual void OnRemoveFromWorld() {}
 
@@ -638,22 +639,22 @@ public:
             return m_updateMask.GetBit(index);
         }
 
-        /// Use this to check if a object is in range of another
+        // Use this to check if a object is in range of another
         bool isInRange(Object* target, float range);
 
-        /// Use this to Check if a object is in front of another object.
+        // Use this to Check if a object is in front of another object.
         bool isInFront(Object* target);
-        /// Use this to Check if a object is in back of another object.
+        // Use this to Check if a object is in back of another object.
         bool isInBack(Object* target);
-        /// Check to see if an object is in front of a target in a specified arc (in degrees)
+        // Check to see if an object is in front of a target in a specified arc (in degrees)
         bool isInArc(Object* target, float degrees);
-        /// NYS: Scriptdev2
+        // NYS: Scriptdev2
         bool HasInArc(float degrees, Object* target);
-        /// Calculates the angle between two positions
+        // Calculates the angle between two positions
         float calcAngle(float Position1X, float Position1Y, float Position2X, float Position2Y);
         float calcRadAngle(float Position1X, float Position1Y, float Position2X, float Position2Y);
 
-        /// Converts to 360 > x > 0
+        // Converts to 360 > x > 0
         float getEasyAngle(float angle);
 
         const float getDistanceSq(Object* obj)
@@ -688,13 +689,13 @@ public:
         void RemoveInRangeObject(Object* pObj);
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// void RemoveSelfFromInrangeSets()
-        /// Removes the Object from the inrangesets of the Objects in range
-        ///
-        /// \param none
-        ///
-        /// \return none
-        ///
+        // void RemoveSelfFromInrangeSets()
+        // Removes the Object from the inrangesets of the Objects in range
+        //
+        // \param none
+        //
+        // \return none
+        //
         //////////////////////////////////////////////////////////////////////////////////////////
         void RemoveSelfFromInrangeSets();
 
@@ -763,32 +764,32 @@ public:
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// void OutPacket(uint16 opcode, uint16 len, const void *data)
-        /// Sends a packet to the Player
-        ///
-        /// \param uint16 opcode      -   opcode of the packet
-        /// \param uint16 len         -   length/size of the packet
-        /// \param const void *data   -   the data that needs to be sent
-        ///
-        /// \return none
-        ///
+        // void OutPacket(uint16 opcode, uint16 len, const void *data)
+        // Sends a packet to the Player
+        //
+        // \param uint16 opcode      -   opcode of the packet
+        // \param uint16 len         -   length/size of the packet
+        // \param const void *data   -   the data that needs to be sent
+        //
+        // \return none
+        //
         //////////////////////////////////////////////////////////////////////////////////////////
 #if VERSION_STRING == Cata
-        virtual void OutPacket(uint32 opcode, uint16 len, const void* data) {};
+        virtual void OutPacket(uint32_t /*opcode*/, uint16_t /*len*/, const void* /*data*/) {};
 #else
-        virtual void OutPacket(uint16 opcode, uint16 len, const void* data) {};
+        virtual void OutPacket(uint16_t /*opcode*/, uint16_t /*len*/, const void* /*data*/) {};
 #endif
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// void SendPacket(WorldPacket *packet)
-        ///  Sends a packet to the Player
-        ///
-        /// \param WorldPAcket *packet      -     the packet that needs to be sent
-        ///
-        /// \return none
-        ///
+        // void SendPacket(WorldPacket *packet)
+        //  Sends a packet to the Player
+        //
+        // \param WorldPAcket *packet      -     the packet that needs to be sent
+        //
+        // \return none
+        //
         //////////////////////////////////////////////////////////////////////////////////////////
-        virtual void SendPacket(WorldPacket* packet) {};
+        virtual void SendPacket(WorldPacket* /*packet*/) {};
 
 
         void SendCreatureChatMessageInRange(Creature* creature, uint32_t textId);
@@ -803,32 +804,32 @@ public:
 #endif
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        ///void SendAIReaction(uint32 reaction = 2)
-        /// Notifies the player's clients about the AI reaction of this object
-        /// (NPC growl for example "aggro sound")
-        ///
-        /// \param uint32 reaction  -  Reaction type
-        ///
-        /// \return none
-        ///
+        // void SendAIReaction(uint32 reaction = 2)
+        // Notifies the player's clients about the AI reaction of this object
+        // (NPC growl for example "aggro sound")
+        //
+        // \param uint32 reaction  -  Reaction type
+        //
+        // \return none
+        //
         //////////////////////////////////////////////////////////////////////////////////////////
         void SendAIReaction(uint32 reaction = 2);
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        ///void SendDestroyObject()
-        /// Destroys this Object for the players' clients that are nearby
-        /// (removes object from the scene)
-        ///
-        /// \param none
-        ///
-        /// \return none
-        ///
+        //void SendDestroyObject()
+        // Destroys this Object for the players' clients that are nearby
+        // (removes object from the scene)
+        //
+        // \param none
+        //
+        // \return none
+        //
         //////////////////////////////////////////////////////////////////////////////////////////
         void SendDestroyObject();
 
 
-        /// Fill values with data from a space separated string of uint32s.
+        // Fill values with data from a space separated string of uint32s.
         void LoadValues(const char* data);
 
         uint16 GetValuesCount() const { return m_valuesCount; }
@@ -836,25 +837,25 @@ public:
         MovementInfo obj_movement_info;
         Transporter* GetTransport() const;
 
-        uint32 m_phase;         /// This stores the phase, if two objects have the same bit set, then they can see each other. The default phase is 0x1.
+        uint32 m_phase;         // This stores the phase, if two objects have the same bit set, then they can see each other. The default phase is 0x1.
 
         const uint32 GetPhase() { return m_phase; }
         virtual void Phase(uint8 command = PHASE_SET, uint32 newphase = 1);
 
         void EventSpellDamage(uint64 Victim, uint32 SpellID, uint32 Damage);
         void SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage, bool allowProc, bool static_damage = false, bool no_remove_auras = false);
-        virtual bool IsCriticalDamageForSpell(Object* victim, SpellInfo* spell) { return false; }
-        virtual float GetCriticalDamageBonusForSpell(Object* victim, SpellInfo* spell, float amount) { return 0; }
-        virtual bool IsCriticalHealForSpell(Object* victim, SpellInfo* spell) { return false; }
-        virtual float GetCriticalHealBonusForSpell(Object* victim, SpellInfo* spell, float amount) { return 0; }
+        virtual bool IsCriticalDamageForSpell(Object* /*victim*/, SpellInfo* /*spell*/) { return false; }
+        virtual float GetCriticalDamageBonusForSpell(Object* /*victim*/, SpellInfo* /*spell*/, float /*amount*/) { return 0; }
+        virtual bool IsCriticalHealForSpell(Object* /*victim*/, SpellInfo* /*spell*/) { return false; }
+        virtual float GetCriticalHealBonusForSpell(Object* /*victim*/, SpellInfo* /*spell*/, float /*amount*/) { return 0; }
 
-        /// SpellLog packets just to keep the code cleaner and better to read
+        // SpellLog packets just to keep the code cleaner and better to read
         void SendSpellLog(Object* Caster, Object* Target, uint32 Ability, uint8 SpellLogType);
 
         void SendSpellNonMeleeDamageLog(Object* Caster, Object* Target, uint32 SpellID, uint32 Damage, uint8 School, uint32 AbsorbedDamage, uint32 ResistedDamage, bool PhysicalDamage, uint32 BlockedDamage, bool CriticalHit, bool bToSet);
         void SendAttackerStateUpdate(Object* Caster, Object* Target, dealdamage* Dmg, uint32 Damage, uint32 Abs, uint32 BlockedDamage, uint32 HitStatus, uint32 VState);
 
-        /// object faction
+        // object faction
         void _setFaction();
         uint32 _getFaction();
 
@@ -950,11 +951,11 @@ public:
         /// List of object properties that need updating.
         UpdateMask m_updateMask;
 
-        /// True if object was updated
+        // True if object was updated
         bool m_objectUpdated;
 
-        /// Set of Objects in range.
-        ///\todo that functionality should be moved into WorldServer.
+        // Set of Objects in range.
+        // \todo that functionality should be moved into WorldServer.
         std::set<Object*> m_objectsInRange;
         std::set<Object*> m_inRangePlayers;
         std::set<Object*> m_oppFactsInRange;

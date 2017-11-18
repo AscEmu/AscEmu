@@ -211,9 +211,9 @@ class SERVER_DECL Item : public Object
         void SetDuration(uint32 durationseconds) { setUInt32Value(ITEM_FIELD_DURATION, durationseconds); }
         uint32 GetDuration() { return getUInt32Value(ITEM_FIELD_DURATION); }
 
-        void SetCharges(uint32 index, uint32 charges) { setUInt32Value(ITEM_FIELD_SPELL_CHARGES + index, charges); }
-        void ModCharges(uint32 index, int32 val) { ModSignedInt32Value(ITEM_FIELD_SPELL_CHARGES + index, val); }
-        uint32 GetCharges(uint32 index) const { return getUInt32Value(ITEM_FIELD_SPELL_CHARGES + index); }
+        void SetCharges(uint16_t index, uint32 charges) { setUInt32Value(ITEM_FIELD_SPELL_CHARGES + index, charges); }
+        void ModCharges(uint16_t index, int32 val) { ModSignedInt32Value(ITEM_FIELD_SPELL_CHARGES + index, val); }
+        uint32 GetCharges(uint16_t index) const { return getUInt32Value(ITEM_FIELD_SPELL_CHARGES + index); }
 
         /////////////////////////////////////////////////// FLAGS ////////////////////////////////////////////////////////////
 
@@ -280,14 +280,14 @@ class SERVER_DECL Item : public Object
         uint32 GetEnchantmentCharges(uint32 index) { return getUInt32Value(ITEM_FIELD_ENCHANTMENT + 2 + 3 * index); }
         void SetEnchantmentCharges(uint32 index, uint32 value) { setUInt32Value(ITEM_FIELD_ENCHANTMENT + 2 + 3 * index, value); }
 #else
-        uint32 GetEnchantmentId(uint32 index) { return getUInt32Value(ITEM_FIELD_ENCHANTMENT_1_1 + 3 * index); }
-        void SetEnchantmentId(uint32 index, uint32 value) { setUInt32Value(ITEM_FIELD_ENCHANTMENT_1_1 + 3 * index, value); }
+        uint32 GetEnchantmentId(uint16_t index) { return getUInt32Value(ITEM_FIELD_ENCHANTMENT_1_1 + 3 * index); }
+        void SetEnchantmentId(uint16_t index, uint32 value) { setUInt32Value(ITEM_FIELD_ENCHANTMENT_1_1 + 3 * index, value); }
 
-        uint32 GetEnchantmentDuration(uint32 index) { return getUInt32Value(ITEM_FIELD_ENCHANTMENT_1_1 + 1 + 3 * index); }
-        void SetEnchantmentDuration(uint32 index, uint32 value) { setUInt32Value(ITEM_FIELD_ENCHANTMENT_1_1 + 1 + 3 * index, value); }
+        uint32 GetEnchantmentDuration(uint16_t index) { return getUInt32Value(ITEM_FIELD_ENCHANTMENT_1_1 + 1 + 3 * index); }
+        void SetEnchantmentDuration(uint16_t index, uint32 value) { setUInt32Value(ITEM_FIELD_ENCHANTMENT_1_1 + 1 + 3 * index, value); }
 
-        uint32 GetEnchantmentCharges(uint32 index) { return getUInt32Value(ITEM_FIELD_ENCHANTMENT_1_1 + 2 + 3 * index); }
-        void SetEnchantmentCharges(uint32 index, uint32 value) { setUInt32Value(ITEM_FIELD_ENCHANTMENT_1_1 + 2 + 3 * index, value); }
+        uint32 GetEnchantmentCharges(uint16_t index) { return getUInt32Value(ITEM_FIELD_ENCHANTMENT_1_1 + 2 + 3 * index); }
+        void SetEnchantmentCharges(uint16_t index, uint32 value) { setUInt32Value(ITEM_FIELD_ENCHANTMENT_1_1 + 2 + 3 * index, value); }
 
         //////////////////////////////////////////////////////////
         // Creation time in terms of played time

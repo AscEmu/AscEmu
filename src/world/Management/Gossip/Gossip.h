@@ -306,7 +306,7 @@ namespace Arcemu
                 std::string boxmessage_;
                 std::string text_;
                 Item(size_t, uint8);
-                Item(size_t, uint8, const char*, bool = false, size_t = 0, const char* = NULL);
+                Item(size_t, uint8, const char*, bool = false, size_t = 0, const char* = nullptr);
 
                 friend class Menu;
         };
@@ -322,48 +322,48 @@ namespace Arcemu
                 Menu(Object*, uint32, uint32 = 0, uint32 = 0);
 
                 //////////////////////////////////////////////////////////////////////////////////////////
-                /// Adds a menu item.
-                /// \param uint8 - the icon
-                /// \param const char * - the text of the item.
-                /// \param uint32 - the id of the item, limit is 2^16 or 0xFFFF;
-                /// \param bool - whether or not to retrieve text input.
+                // Adds a menu item.
+                // \param uint8 - the icon
+                // \param const char * - the text of the item.
+                // \param uint32 - the id of the item, limit is 2^16 or 0xFFFF;
+                // \param bool - whether or not to retrieve text input.
                 //////////////////////////////////////////////////////////////////////////////////////////
                 void AddItem(uint8, const char*, uint32, bool = false);
 
                 //////////////////////////////////////////////////////////////////////////////////////////
-                /// Adds a menu item.
-                /// \param uint8 - the icon
-                /// \param const char * - the text of the item.
-                /// \param uint32 - the id of the item, limit is 2^16 or 0xFFFF;
-                /// \param uint32 - box money
-                /// \param const char* - box text
-                /// \param bool - whether or not to retrieve text input.
+                // Adds a menu item.
+                // \param uint8 - the icon
+                // \param const char * - the text of the item.
+                // \param uint32 - the id of the item, limit is 2^16 or 0xFFFF;
+                // \param uint32 - box money
+                // \param const char* - box text
+                // \param bool - whether or not to retrieve text input.
                 //////////////////////////////////////////////////////////////////////////////////////////
                 void AddItem(uint8, const char*, uint32, uint32, const char*, bool = false);
 
                 //////////////////////////////////////////////////////////////////////////////////////////
-                /// Removes the item with the specified id.
-                /// \param uint32 - the id of the item.
+                // Removes the item with the specified id.
+                // \param uint32 - the id of the item.
                 //////////////////////////////////////////////////////////////////////////////////////////
                 void RemoveItem(uint32);
 
                 //////////////////////////////////////////////////////////////////////////////////////////
-                /// Adds a quest item to the menu
-                /// \param Quest * - the quest
-                /// \param uint8 - the icon
+                // Adds a quest item to the menu
+                // \param Quest * - the quest
+                // \param uint8 - the icon
                 //////////////////////////////////////////////////////////////////////////////////////////
                 void AddQuest(QuestProperties const*, uint8);
 
                 //////////////////////////////////////////////////////////////////////////////////////////
-                /// Removes a quest.
-                /// \param Quest * - quest to remove.
-                /// \returns  void
+                // Removes a quest.
+                // \param Quest * - quest to remove.
+                // \returns  void
                 //////////////////////////////////////////////////////////////////////////////////////////
                 void RemoveQuest(QuestProperties const*);
 
                 //////////////////////////////////////////////////////////////////////////////////////////
-                /// Fills the packet with the menu data.
-                /// \param WorldPacket & - the packet to fill
+                // Fills the packet with the menu data.
+                // \param WorldPacket & - the packet to fill
                 //////////////////////////////////////////////////////////////////////////////////////////
                 void BuildPacket(WorldPacket &) const;
                 void BuildPacket(WorldPacket*) const;
@@ -378,46 +378,46 @@ namespace Arcemu
                 inline void setLanguage(uint32 language) { language_ = language; }
 
                 //////////////////////////////////////////////////////////////////////////////////////////
-                /// Creates an worldpacket SMSG_GOSSIP_MESSAGE packet, fills it and sends it to the specified player.
-                /// \param Player*  - player to send to.
-                /// \returns  void
+                // Creates an worldpacket SMSG_GOSSIP_MESSAGE packet, fills it and sends it to the specified player.
+                // \param Player*  - player to send to.
+                // \returns  void
                 //////////////////////////////////////////////////////////////////////////////////////////
                 void Send(Player*) const;
 
                 //////////////////////////////////////////////////////////////////////////////////////////
-                /// Creates a stackworldpacket SMSG_GOSSIP_MESSAGE, fills it and sends it to the specified player.
-                /// \param Player*  - player to send to.
-                /// \returns  void
+                // Creates a stackworldpacket SMSG_GOSSIP_MESSAGE, fills it and sends it to the specified player.
+                // \param Player*  - player to send to.
+                // \returns  void
                 //////////////////////////////////////////////////////////////////////////////////////////
                 template<uint32>
                 void StackSend(Player*) const;
 
                 //////////////////////////////////////////////////////////////////////////////////////////
-                /// Sends a menu with just the text id and no options.
-                /// \param uint64 - the creature guid.
-                /// \param size_t - the text id.
-                /// \param Player*  - the player to send to.
+                // Sends a menu with just the text id and no options.
+                // \param uint64 - the creature guid.
+                // \param size_t - the text id.
+                // \param Player*  - the player to send to.
                 //////////////////////////////////////////////////////////////////////////////////////////
                 static void SendSimpleMenu(uint64, size_t, Player*);
 
                 //////////////////////////////////////////////////////////////////////////////////////////
-                /// Sends a menu with a given text id and menu item.
-                /// \param uint32 - creature guid
-                /// \param size_t - txt id
-                /// \param Player* - player to send to.
-                /// \param size_t - item id
-                /// \param uint8 - icon
-                /// \param const string * - item text
-                /// \param size_t - required money
-                /// \param const string * - money text
+                // Sends a menu with a given text id and menu item.
+                // \param uint32 - creature guid
+                // \param size_t - txt id
+                // \param Player* - player to send to.
+                // \param size_t - item id
+                // \param uint8 - icon
+                // \param const string * - item text
+                // \param size_t - required money
+                // \param const string * - money text
                 // \param uint8 extra
                 //////////////////////////////////////////////////////////////////////////////////////////
-                static void SendQuickMenu(uint64, size_t, Player*, size_t, uint8, const char*, size_t = 0, const char * = NULL, uint8 = 0);
+                static void SendQuickMenu(uint64, size_t, Player*, size_t, uint8, const char*, size_t = 0, const char * = nullptr, uint8 = 0);
 
                 //////////////////////////////////////////////////////////////////////////////////////////
-                /// Simply sends out an SMSG_GOSSIP_COMPLETE packet.
-                /// \param Plr *
-                /// \returns  void
+                // Simply sends out an SMSG_GOSSIP_COMPLETE packet.
+                // \param Plr *
+                // \returns  void
                 //////////////////////////////////////////////////////////////////////////////////////////
                 static void Complete(Player*);
 
@@ -436,9 +436,9 @@ namespace Arcemu
                 Script() {}
                 virtual ~Script() {}
 
-                virtual void OnHello(Object* pObject, Player* Plr) = 0;
-                virtual void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32 gossipId = 0) {}
-                virtual void OnEnd(Object* pObject, Player* Plr) {}
+                virtual void OnHello(Object* pObject, Player* plr) = 0;
+                virtual void OnSelectOption(Object* /*pObject*/, Player* /*plr*/, uint32 /*id*/, const char* /*enteredCode*/, uint32 /*gossipId*/ = 0) {}
+                virtual void OnEnd(Object* /*pObject*/, Player* /*plr*/) {}
                 virtual void Destroy();
 
                 static Script* GetInterface(Creature*);
@@ -452,7 +452,7 @@ namespace Arcemu
 
                 SpiritHealer() {}
                 virtual ~SpiritHealer() {}
-                void OnHello(Object* pObject, Player* Plr);
+                void OnHello(Object* pObject, Player* plr) override;
         };
 
         class SERVER_DECL Vendor : public Script
@@ -461,8 +461,8 @@ namespace Arcemu
 
                 Vendor() {}
                 virtual ~Vendor() {}
-                void OnHello(Object* pObject, Player* Plr);
-                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId);
+                void OnHello(Object* pObject, Player* plr) override;
+                void OnSelectOption(Object* pObject, Player* plr, uint32 id, const char* enteredCode, uint32_t gossipId) override;
         };
         class SERVER_DECL Trainer : public Script
         {
@@ -470,8 +470,8 @@ namespace Arcemu
 
                 Trainer() {}
                 virtual ~Trainer() {}
-                virtual void OnHello(Object* pObject, Player* Plr);
-                virtual void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId);
+                void OnHello(Object* pObject, Player* plr) override;
+                void OnSelectOption(Object* pObject, Player* plr, uint32 id, const char* enteredCode, uint32_t gossipId) override;
         };
         class SERVER_DECL ClassTrainer : public Script
         {
@@ -479,8 +479,8 @@ namespace Arcemu
 
                 ClassTrainer() {}
                 virtual ~ClassTrainer() {}
-                virtual void OnHello(Object* pObject, Player* Plr);
-                virtual void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId);
+                void OnHello(Object* pObject, Player* plr) override;
+                void OnSelectOption(Object* pObject, Player* plr, uint32 id, const char* enteredCode, uint32_t gossipId) override;
         };
         class SERVER_DECL PetTrainer : public Script
         {
@@ -488,8 +488,8 @@ namespace Arcemu
 
                 PetTrainer() {}
                 virtual ~PetTrainer() {}
-                virtual void OnHello(Object* pObject, Player* Plr);
-                virtual void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId);
+                void OnHello(Object* pObject, Player* Plr) override;
+                void OnSelectOption(Object* pObject, Player* plr, uint32 id, const char* enteredCode, uint32_t gossipId) override;
         };
         class SERVER_DECL FlightMaster : public Script
         {
@@ -497,8 +497,8 @@ namespace Arcemu
 
                 FlightMaster() {}
                 virtual ~FlightMaster() {}
-                void OnHello(Object* pObject, Player* Plr);
-                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId);
+                void OnHello(Object* pObject, Player* Plr) override;
+                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId) override;
         };
         class SERVER_DECL Auctioneer: public Script
         {
@@ -506,8 +506,8 @@ namespace Arcemu
 
                 Auctioneer() {}
                 virtual ~Auctioneer() {}
-                void OnHello(Object* pObject, Player* Plr);
-                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId);
+                void OnHello(Object* pObject, Player* Plr) override;
+                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId) override;
         };
         class SERVER_DECL InnKeeper : public Script
         {
@@ -515,8 +515,8 @@ namespace Arcemu
 
                 InnKeeper() {}
                 virtual ~InnKeeper() {}
-                void OnHello(Object* pObject, Player* Plr);
-                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId);
+                void OnHello(Object* pObject, Player* Plr) override;
+                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId) override;
         };
         class SERVER_DECL BattleMaster : public Script
         {
@@ -524,8 +524,8 @@ namespace Arcemu
 
                 BattleMaster() {}
                 virtual ~BattleMaster() {}
-                void OnHello(Object* pObject, Player* Plr);
-                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId);
+                void OnHello(Object* pObject, Player* Plr) override;
+                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId) override;
         };
         class SERVER_DECL Banker : public Script
         {
@@ -533,8 +533,8 @@ namespace Arcemu
 
                 Banker() {}
                 virtual ~Banker() {}
-                void OnHello(Object* pObject, Player* Plr);
-                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId);
+                void OnHello(Object* pObject, Player* Plr) override;
+                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId) override;
         };
         class SERVER_DECL CharterGiver : public Script
         {
@@ -542,8 +542,8 @@ namespace Arcemu
 
                 CharterGiver() {}
                 virtual ~CharterGiver() {}
-                void OnHello(Object* pObject, Player* Plr);
-                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId);
+                void OnHello(Object* pObject, Player* Plr) override;
+                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId) override;
         };
         class SERVER_DECL TabardDesigner : public Script
         {
@@ -551,8 +551,8 @@ namespace Arcemu
 
                 TabardDesigner() {}
                 virtual ~TabardDesigner() {}
-                void OnHello(Object* pObject, Player* Plr);
-                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId);
+                void OnHello(Object* pObject, Player* Plr) override;
+                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId) override;
         };
         class SERVER_DECL StableMaster : public Script
         {
@@ -560,8 +560,8 @@ namespace Arcemu
 
                 StableMaster() {}
                 virtual ~StableMaster() {}
-                void OnHello(Object* pObject, Player* Plr);
-                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId);
+                void OnHello(Object* pObject, Player* plr) override;
+                void OnSelectOption(Object* pObject, Player* plr, uint32 id, const char* enteredCode, uint32_t gossipId) override;
         };
         class SERVER_DECL Generic : public Script
         {
@@ -569,8 +569,8 @@ namespace Arcemu
 
                 Generic() {}
                 virtual ~Generic() {}
-                void OnHello(Object* pObject, Player* Plr);
-                void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId);
+                void OnHello(Object* pObject, Player* plr) override;
+                void OnSelectOption(Object* pObject, Player* plr, uint32 id, const char* enteredCode, uint32_t gossipId) override;
         };
     }
 }
