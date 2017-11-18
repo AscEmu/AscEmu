@@ -59,16 +59,16 @@ bool SpellProc::CheckClassMask(Unit* victim, SpellInfo* CastingSpell)
         return false;
 }
 
-bool SpellProc::DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
+bool SpellProc::DoEffect(Unit* /*victim*/, SpellInfo* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* /*dmgOverwrite*/, uint32 /*weaponDamageType*/)
 {
     return false;
 }
 
-void SpellProc::Init(Object* obj)
+void SpellProc::Init(Object* /*obj*/)
 {
 }
 
-uint32 SpellProc::CalcProcChance(Unit* victim, SpellInfo* CastingSpell)
+uint32 SpellProc::CalcProcChance(Unit* /*victim*/, SpellInfo* /*CastingSpell*/)
 {
     // Check if proc chance is based on combo points
     if (mTarget->IsPlayer() && mOrigSpell && mOrigSpell->getAttributesEx() & ATTRIBUTESEX_REQ_COMBO_POINTS1 && mOrigSpell->getAttributesExD() & ATTRIBUTESEXD_PROCCHANCE_COMBOBASED)
@@ -77,9 +77,9 @@ uint32 SpellProc::CalcProcChance(Unit* victim, SpellInfo* CastingSpell)
         return mProcChance;
 }
 
-bool SpellProc::CanProcOnTriggered(Unit* victim, SpellInfo* CastingSpell)
+bool SpellProc::CanProcOnTriggered(Unit* /*victim*/, SpellInfo* /*castingSpell*/)
 {
-    if (mOrigSpell != NULL && mOrigSpell->getAttributesExC() & ATTRIBUTESEXC_CAN_PROC_ON_TRIGGERED)
+    if (mOrigSpell != nullptr && mOrigSpell->getAttributesExC() & ATTRIBUTESEXC_CAN_PROC_ON_TRIGGERED)
         return true;
     return false;
 }
@@ -92,13 +92,13 @@ void SpellProc::CastSpell(Unit* victim, SpellInfo* CastingSpell, int* dmg_overwr
     else
         targets.m_unitTarget = victim->GetGUID();
 
-    Spell* spell = sSpellFactoryMgr.NewSpell(mTarget, mSpell, true, NULL);
+    Spell* spell = sSpellFactoryMgr.NewSpell(mTarget, mSpell, true, nullptr);
     spell->forced_basepoints[0] = dmg_overwrite[0];
     spell->forced_basepoints[1] = dmg_overwrite[1];
     spell->forced_basepoints[2] = dmg_overwrite[2];
     spell->ProcedOnSpell = CastingSpell;
 
-    if (mOrigSpell != NULL)
+    if (mOrigSpell != nullptr)
         spell->pSpellId = mOrigSpell->getId();
 
     spell->prepare(&targets);
@@ -111,19 +111,19 @@ SpellProc* SpellProcMgr::NewSpellProc(Unit* target, uint32 spell_id, uint32 orig
 
 SpellProc* SpellProcMgr::NewSpellProc(Unit* target, SpellInfo* spell, SpellInfo* orig_spell, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, uint32* groupRelation, uint32* procClassMask, Object* obj)
 {
-    if (spell == NULL)
-        return NULL;
+    if (spell == nullptr)
+        return nullptr;
 
     SpellProc* result;
     SpellProcMap::iterator itr;
-    spell_proc_factory_function ptr = NULL;
+    spell_proc_factory_function ptr = nullptr;
 
     // Search for SpellProc in unordered_map
     itr = mSpellProc.find(spell->getId());
     if (itr != mSpellProc.end())
         ptr = itr->second;
 
-    if (ptr != NULL)
+    if (ptr != nullptr)
         result = (*ptr)();      // Found. Create a new object of this specific class
     else
         result = new SpellProc; // Not found. Create a new object of generic SpellProc
@@ -138,7 +138,7 @@ SpellProc* SpellProcMgr::NewSpellProc(Unit* target, SpellInfo* spell, SpellInfo*
     result->mLastTrigger = 0;
     result->mDeleted = false;
 
-    if (groupRelation != NULL)
+    if (groupRelation != nullptr)
     {
         result->mGroupRelation[0] = groupRelation[0];
         result->mGroupRelation[1] = groupRelation[1];
@@ -150,7 +150,7 @@ SpellProc* SpellProcMgr::NewSpellProc(Unit* target, SpellInfo* spell, SpellInfo*
         result->mGroupRelation[1] = 0;
         result->mGroupRelation[2] = 0;
     }
-    if (procClassMask != NULL)
+    if (procClassMask != nullptr)
     {
         result->mProcClassMask[0] = procClassMask[0];
         result->mProcClassMask[1] = procClassMask[1];

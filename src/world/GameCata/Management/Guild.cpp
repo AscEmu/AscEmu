@@ -2296,7 +2296,7 @@ void Guild::addGuildNews(uint8_t type, uint64_t guid, uint32_t flags, uint32_t v
     broadcastPacket(&data);
 }
 
-bool Guild::hasAchieved(uint32_t achievementId) const
+bool Guild::hasAchieved(uint32_t /*achievementId*/) const
 {
     return false;
 }
@@ -2752,7 +2752,7 @@ bool Guild::GuildMember::loadGuildMembersFromDB(Field* fields, Field* fields2)
     return true;
 }
 
-void Guild::GuildMember::saveGuildMembersToDB(bool _delete) const
+void Guild::GuildMember::saveGuildMembersToDB(bool /*_delete*/) const
 {
     CharacterDatabase.Execute("REPLACE INTO guild_member VALUES (%u, %u, %u, '%s', '%s')",
         mGuildId, Arcemu::Util::GUID_LOPART(mGuid), (uint32_t)mRankId, mPublicNote.c_str(), mOfficerNote.c_str());

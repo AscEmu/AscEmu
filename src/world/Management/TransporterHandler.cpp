@@ -753,7 +753,7 @@ uint32 Transporter::AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y
     return tguid;
 }
 
-Creature* Transporter::AddNPCPassengerInInstance(uint32 entry, float x, float y, float z, float o, uint32 anim)
+Creature* Transporter::AddNPCPassengerInInstance(uint32 entry, float x, float y, float z, float o, uint32 /*anim*/)
 {
     MapMgr* map = GetMapMgr();
 

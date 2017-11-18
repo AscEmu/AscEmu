@@ -30,7 +30,7 @@
 #define  SENDSURVEY "\x03"
 #ifdef GM_TICKET_MY_MASTER_COMPATIBLE
 
-bool ChatHandler::HandleGMTicketListCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleGMTicketListCommand(const char* /*args*/, WorldSession* m_session)
 {
     Player* cplr = m_session->GetPlayer();
 
@@ -565,7 +565,7 @@ bool ChatHandler::HandleGMTicketDeletePermanentCommand(const char* args, WorldSe
 
 #endif
 
-bool ChatHandler::HandleGMTicketToggleTicketSystemStatusCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleGMTicketToggleTicketSystemStatusCommand(const char* /*args*/, WorldSession* m_session)
 {
     sWorld.toggleGmTicketStatus();
 

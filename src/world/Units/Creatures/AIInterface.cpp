@@ -1246,10 +1246,7 @@ bool AIInterface::generateAndSendSplinePath(float x, float y, float z, float o /
         sendSplineMoveToPoint(LocationVector(x, y, z, o));
         return true;
     }
-
-    return true;
 }
-
 
 void AIInterface::EventAiInterfaceParamsetFinish()
 {

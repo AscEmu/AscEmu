@@ -247,7 +247,7 @@ public:
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new BloodPlagueSpell(Caster, info, triggered, aur); }
 
-    int32 DoCalculateEffect(uint32 i, Unit* target, int32 value)
+    int32 DoCalculateEffect(uint32 i, Unit* /*target*/, int32 value)
     {
         if (p_caster != NULL && i == 0)
             value += (uint32)(p_caster->GetAP() * 0.055 * 1.15);
@@ -471,7 +471,7 @@ public:
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new BloodwormSpell(Caster, info, triggered, aur); }
 
-    int32 DoCalculateEffect(uint32 i, Unit* target, int32 value)
+    int32 DoCalculateEffect(uint32 /*i*/, Unit* /*target*/, int32 /*value*/)
     {
         return 2 + RandomUInt(2);
     }

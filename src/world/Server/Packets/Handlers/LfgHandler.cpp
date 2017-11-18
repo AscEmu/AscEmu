@@ -99,7 +99,7 @@ void WorldSession::HandleLfgJoinOpcode(WorldPacket& recv_data)
     sLfgMgr.Join(GetPlayer(), uint8(roles), newDungeons, comment);
 }
 
-void WorldSession::HandleLfgLeaveOpcode(WorldPacket& recv_data)
+void WorldSession::HandleLfgLeaveOpcode(WorldPacket& /*recvData*/)
 {
     LogDebugFlag(LF_OPCODE, "CMSG_LFG_LEAVE");
 
@@ -169,7 +169,7 @@ void WorldSession::HandleLfgSetBootVoteOpcode(WorldPacket& recv_data)
     sLfgMgr.UpdateBoot(GetPlayer(), agree);
 }
 
-void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data)
+void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& /*recvData*/)
 {
     LogDebugFlag(LF_OPCODE, "CMSG_LFD_PLAYER_LOCK_INFO_REQUEST");
     uint64 guid = GetPlayer()->GetGUID();
@@ -178,10 +178,10 @@ void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data)
     // Get Random dungeons that can be done at a certain level and expansion
     // FIXME - Should return seasonals (when not disabled)
     LfgDungeonSet randomDungeons;
-    uint8 level = GetPlayer()->getLevel();
-    uint8 expansion = GetPlayer()->GetSession()->GetFlags();
+    uint8 level = GetPlayer()->getLevel();  
 
 #if VERSION_STRING != Cata
+    uint8 expansion = GetPlayer()->GetSession()->GetFlags();
 	for (uint32 i = 0; i < sLFGDungeonStore.GetNumRows(); ++i)
     {
         DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(i);
@@ -223,8 +223,8 @@ void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data)
             data << uint32(qRew->reward_xp);
             data << uint32(reward->reward[done].variableMoney);
             data << uint32(reward->reward[done].variableXP);
-            ///\todo FIXME Linux: error: cast from const uint32* {aka const unsigned int*} to uint8 {aka unsigned char} loses precision 
-            /// can someone check this now ?
+            //\todo FIXME Linux: error: cast from const uint32* {aka const unsigned int*} to uint8 {aka unsigned char} loses precision 
+            // can someone check this now ?
             data << uint8(qRew->GetRewardItemCount());
             for (uint8 i = 0; i < 4; ++i)
                 if (qRew->reward_item[i] != 0)
@@ -249,17 +249,17 @@ void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data)
     SendPacket(&data);
 }
 
-void WorldSession::HandleLfgTeleportOpcode(WorldPacket& recv_data)
+void WorldSession::HandleLfgTeleportOpcode(WorldPacket& recvData)
 {
     LogDebugFlag(LF_OPCODE, "CMSG_LFG_TELEPORT");
     bool out;
-    recv_data >> out;
+    recvData >> out;
 
     LogDebugFlag(LF_OPCODE, "CMSG_LFG_TELEPORT %u out: %u", GetPlayer()->GetGUID(), out ? 1 : 0);
     sLfgMgr.TeleportPlayer(GetPlayer(), out, true);
 }
 
-void WorldSession::HandleLfgPartyLockInfoRequestOpcode(WorldPacket& recv_data)
+void WorldSession::HandleLfgPartyLockInfoRequestOpcode(WorldPacket& /*recvData*/)
 {
     LogDebugFlag(LF_OPCODE, "CMSG_LFD_PARTY_LOCK_INFO_REQUEST");
 

@@ -37,7 +37,7 @@ void WorldSession::HandleQuestgiverStatusQueryOpcode(WorldPacket& recv_data)
 
     uint64 guid;
     WorldPacket data(SMSG_QUESTGIVER_STATUS, 12);
-    Object* qst_giver = NULL;
+    Object* qst_giver = nullptr;
 
     recv_data >> guid;
     uint32 guidtype = GET_TYPE_FROM_GUID(guid);
@@ -124,7 +124,7 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
     recv_data >> quest_id;
     recv_data >> unk;
 
-    Object* qst_giver = NULL;
+    Object* qst_giver = nullptr;
 
     bool bValid = false;
 
@@ -230,11 +230,11 @@ void WorldSession::HandleQuestgiverAcceptQuestOpcode(WorldPacket& recv_data)
     _player->AcceptQuest(guid, quest_id);
 }
 
-void WorldSession::HandleQuestgiverCancelOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleQuestgiverCancelOpcode(WorldPacket& /*recvPacket*/)
 {
     CHECK_INWORLD_RETURN
 
-    OutPacket(SMSG_GOSSIP_COMPLETE, 0, NULL);
+    OutPacket(SMSG_GOSSIP_COMPLETE, 0, nullptr);
 
     LOG_DEBUG("WORLD: Sent SMSG_GOSSIP_COMPLETE");
 }
@@ -268,7 +268,7 @@ void WorldSession::HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
     if (qPtr->srcitem && qPtr->srcitem != qPtr->receive_items[0])
     {
         ItemProperties const* itemProto = sMySQLStore.getItemProperties(qPtr->srcitem);
-        if (itemProto != NULL)
+        if (itemProto != nullptr)
             if (itemProto->QuestId != qPtr->id)
                 _player->GetItemInterface()->RemoveItemAmt(qPtr->srcitem, qPtr->srcitemcount ? qPtr->srcitemcount : 1);
     }
@@ -278,7 +278,7 @@ void WorldSession::HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
         if (qPtr->required_item[i] != 0)
         {
             ItemProperties const* itemProto = sMySQLStore.getItemProperties(qPtr->required_item[i]);
-            if (itemProto != NULL && itemProto->Class == ITEM_CLASS_QUEST)
+            if (itemProto != nullptr && itemProto->Class == ITEM_CLASS_QUEST)
                 GetPlayer()->GetItemInterface()->RemoveItemAmt(qPtr->required_item[i], qPtr->required_itemcount[i]);
         }
     }
@@ -319,7 +319,7 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket& recv_data)
 
     bool bValid = false;
     QuestProperties const* qst = nullptr;
-    Object* qst_giver = NULL;
+    Object* qst_giver = nullptr;
     uint32 status = 0;
     uint32 guidtype = GET_TYPE_FROM_GUID(guid);
 
@@ -373,7 +373,7 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket& recv_data)
         return;
     }
 
-    if (!bValid || qst == NULL)
+    if (!bValid || qst == nullptr)
     {
         LOG_DEBUG("WORLD: Creature is not a questgiver.");
         return;
@@ -402,7 +402,7 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
 
     bool bValid = false;
     QuestProperties const* qst = nullptr;
-    Object* qst_giver = NULL;
+    Object* qst_giver = nullptr;
     uint32 status = 0;
     uint32 guidtype = GET_TYPE_FROM_GUID(guid);
 
@@ -452,7 +452,7 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (!bValid || qst == NULL)
+    if (!bValid || qst == nullptr)
     {
         LOG_DEBUG("WORLD: Creature is not a questgiver.");
         return;
@@ -493,8 +493,8 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
         return;
 
     bool bValid = false;
-    QuestProperties const* qst = NULL;
-    Object* qst_giver = NULL;
+    QuestProperties const* qst = nullptr;
+    Object* qst_giver = nullptr;
     uint32 guidtype = GET_TYPE_FROM_GUID(guid);
 
     if (guidtype == HIGHGUID_TYPE_UNIT)
@@ -528,7 +528,7 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (!bValid || qst == NULL)
+    if (!bValid || qst == nullptr)
     {
         LOG_DEBUG("WORLD: Creature is not a questgiver.");
         return;

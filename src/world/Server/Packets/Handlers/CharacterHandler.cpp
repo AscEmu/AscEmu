@@ -83,13 +83,13 @@ LoginErrorCode VerifyName(const char* name, size_t nlen)
 }
 
 #if VERSION_STRING > TBC
-void WorldSession::HandleCharCustomizeLooksOpcode(WorldPacket& recv_data)
+void WorldSession::HandleCharCustomizeLooksOpcode(WorldPacket& recvData)
 {
     uint64 guid;
     std::string newname;
 
-    recv_data >> guid;
-    recv_data >> newname;
+    recvData >> guid;
+    recvData >> newname;
 
     uint8 gender;
     uint8 skin;
@@ -97,15 +97,17 @@ void WorldSession::HandleCharCustomizeLooksOpcode(WorldPacket& recv_data)
     uint8 hairStyle;
     uint8 hairColor;
     uint8 facialHair;
+#if VERSION_STRING != Cata
     uint8 race;
     uint8 faction;
+#endif
 
-    recv_data >> gender;
-    recv_data >> skin;
-    recv_data >> hairColor;
-    recv_data >> hairStyle;
-    recv_data >> facialHair;
-    recv_data >> face;
+    recvData >> gender;
+    recvData >> skin;
+    recvData >> hairColor;
+    recvData >> hairStyle;
+    recvData >> facialHair;
+    recvData >> face;
 #if VERSION_STRING != Cata
     recv_data >> race;
     recv_data >> faction;
@@ -163,7 +165,7 @@ void WorldSession::HandleCharCustomizeLooksOpcode(WorldPacket& recv_data)
 }
 #endif
 
-void WorldSession::HandleCharEnumOpcode(WorldPacket& recv_data)
+void WorldSession::HandleCharEnumOpcode(WorldPacket& /*recvData*/)
 {
     AsyncQuery* q = new AsyncQuery(new SQLClassCallbackP1<World, uint32>(World::getSingletonPtr(), &World::sendCharacterEnumToAccountSession, GetAccountId()));
 #if VERSION_STRING != Cata

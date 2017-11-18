@@ -38,7 +38,7 @@
 #include "GameCata/Management/GuildMgr.h"
 #endif
 
-void WorldSession::HandleRepopRequestOpcode(WorldPacket& recv_data)
+void WorldSession::HandleRepopRequestOpcode(WorldPacket& /*recvData*/)
 {
     CHECK_INWORLD_RETURN
 

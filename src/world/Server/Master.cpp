@@ -111,7 +111,7 @@ bool StartConsoleListener();
 void CloseConsoleListener();
 ThreadBase* GetConsoleListener();
 
-bool Master::Run(int argc, char** argv)
+bool Master::Run(int /*argc*/, char** /*argv*/)
 {
     char* config_file = (char*)CONFDIR "/world.conf";
 

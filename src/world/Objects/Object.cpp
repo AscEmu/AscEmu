@@ -3329,6 +3329,8 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
                             if (lmsay->text4 != NULL)
                                 text = lmsay->text4;
                             break;
+                        default:
+                            text = npcMonsterSay->texts[randChoice];
                     }
                 }
                 else

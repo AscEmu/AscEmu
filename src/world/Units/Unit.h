@@ -1107,8 +1107,12 @@ public:
     {
 #if VERSION_STRING != Cata
         setUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS, amt);
+#else
+        if (amt == 0) { return; }
 #endif
     }
+
+    //\todo fix this
     uint32 GetAttackPowerMods()
     {
 #if VERSION_STRING != Cata
@@ -1117,10 +1121,14 @@ public:
         return 0;
 #endif
     }
+
+    //\todo fix this
     void ModAttackPowerMods(uint32 amt)
     {
 #if VERSION_STRING != Cata
         ModUnsigned32Value(UNIT_FIELD_ATTACK_POWER_MODS, amt);
+#else
+        if (amt == 0) { return; }
 #endif
     }
 
@@ -1138,8 +1146,12 @@ public:
     {
 #if VERSION_STRING != Cata
         setUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS, amt);
+#else
+        if (amt == 0) { return; }
 #endif
     }
+
+    //\todo fix this
     uint32 GetRangedAttackPowerMods()
     {
 #if VERSION_STRING != Cata
@@ -1148,10 +1160,14 @@ public:
         return 0;
 #endif
     }
+
+    //\todo fix this
     void ModRangedAttackPowerMods(uint32 amt)
     {
 #if VERSION_STRING != Cata
         ModUnsigned32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS, amt);
+#else
+        if (amt == 0) { return; }
 #endif
     }
 

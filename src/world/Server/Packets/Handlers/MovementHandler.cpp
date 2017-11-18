@@ -760,21 +760,21 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
 }
 #endif
 
-void WorldSession::HandleMoveTimeSkippedOpcode(WorldPacket& recv_data)
+void WorldSession::HandleMoveTimeSkippedOpcode(WorldPacket& /*recvData*/)
 {}
 
-void WorldSession::HandleMoveNotActiveMoverOpcode(WorldPacket& recv_data)
+void WorldSession::HandleMoveNotActiveMoverOpcode(WorldPacket& recvData)
 {
 #if VERSION_STRING != Cata
     CHECK_INWORLD_RETURN
 
     WoWGuid guid;
-    recv_data >> guid;
+    recvData >> guid;
 
     if (guid == m_MoverWoWGuid)
         return;
 
-    movement_info.init(recv_data);
+    movement_info.init(recvData);
 
     if ((guid != uint64(0)) && (guid == _player->GetCharmedUnitGUID()))
         m_MoverWoWGuid = guid;
@@ -784,16 +784,18 @@ void WorldSession::HandleMoveNotActiveMoverOpcode(WorldPacket& recv_data)
     // set up to the movement packet
     movement_packet[0] = m_MoverWoWGuid.GetNewGuidMask();
     memcpy(&movement_packet[1], m_MoverWoWGuid.GetNewGuid(), m_MoverWoWGuid.GetNewGuidLen());
+#else
+    if (recvData.GetOpcode() == 0) { return; }
 #endif
 }
 
-void WorldSession::HandleSetActiveMoverOpcode(WorldPacket& recv_data)
+void WorldSession::HandleSetActiveMoverOpcode(WorldPacket& recvData)
 {
     CHECK_INWORLD_RETURN
 
     // set current movement object
     uint64 guid;
-    recv_data >> guid;
+    recvData >> guid;
 
     if (guid != m_MoverWoWGuid.GetOldGuid())
     {
@@ -816,10 +818,10 @@ void WorldSession::HandleSetActiveMoverOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleMoveSplineCompleteOpcode(WorldPacket& recvPacket)
+void WorldSession::HandleMoveSplineCompleteOpcode(WorldPacket& /*recvPacket*/)
 {}
 
-void WorldSession::HandleMountSpecialAnimOpcode(WorldPacket& recvdata)
+void WorldSession::HandleMountSpecialAnimOpcode(WorldPacket& /*recvdata*/)
 {
     CHECK_INWORLD_RETURN
 
@@ -828,23 +830,23 @@ void WorldSession::HandleMountSpecialAnimOpcode(WorldPacket& recvdata)
     _player->SendMessageToSet(&data, true);
 }
 
-void WorldSession::HandleWorldportOpcode(WorldPacket& recv_data)
+void WorldSession::HandleWorldportOpcode(WorldPacket& recvData)
 {
     CHECK_INWORLD_RETURN
 
-    uint32 time;
-    uint32 mapid;
+    uint32_t time;
+    uint32_t mapid;
     float target_position_x;
     float target_position_y;
     float target_position_z;
     float target_position_o;
 
-    recv_data >> time;
-    recv_data >> mapid;
-    recv_data >> target_position_x;
-    recv_data >> target_position_y;
-    recv_data >> target_position_z;
-    recv_data >> target_position_o;
+    recvData >> time;
+    recvData >> mapid;
+    recvData >> target_position_x;
+    recvData >> target_position_y;
+    recvData >> target_position_z;
+    recvData >> target_position_o;
 
     if (!HasGMPermissions())
     {

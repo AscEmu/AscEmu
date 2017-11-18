@@ -538,8 +538,8 @@ public:
         bool IsAppearDisabled() { return disableAppear; }
 
         // Scripting
-        void SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 delay = 0);
-        void SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg, Player* plr);
+        void SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 delay = 0) override;
+        void SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg, Player* plr) override;
     protected:
 
         void _UpdateSkillFields();
@@ -598,17 +598,17 @@ public:
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// void SendTotemCreated(uint8 slot, uint64 GUID, uint32 duration, uint32 spellid)
-        /// Notifies the client about the creation of a Totem/Summon
-        /// (client will show a right-clickable icon with a timer that can cancel the summon)
-        ///
-        /// \param uint8 slot       -  Summon slot number
-        /// \param uint64 GUID      -  GUID of the summon
-        /// \param uint32 duration  -  Duration of the summon (the timer of the icon)
-        /// \param uint32 spellid   -  ID of the spell that created this summon
-        ///
-        /// \return none
-        ///
+        // void SendTotemCreated(uint8 slot, uint64 GUID, uint32 duration, uint32 spellid)
+        // Notifies the client about the creation of a Totem/Summon
+        // (client will show a right-clickable icon with a timer that can cancel the summon)
+        //
+        // \param uint8 slot       -  Summon slot number
+        // \param uint64 GUID      -  GUID of the summon
+        // \param uint32 duration  -  Duration of the summon (the timer of the icon)
+        // \param uint32 spellid   -  ID of the spell that created this summon
+        //
+        // \return none
+        //
         //////////////////////////////////////////////////////////////////////////////////////////
         void SendTotemCreated(uint8 slot, uint64 GUID, uint32 duration, uint32 spellid);
 
@@ -621,32 +621,32 @@ public:
 
 
         /////////////////////////////////////////////////////////////////////////////////////////
-        /// static void CharChange_Looks(uint64 GUID, uint8 gender, uint8 skin, uint8 face, uint8 hairStyle, uint8 hairColor, uint8 facialHair)
-        /// Updates database with characters new looks, gender, and name after character customization is called at login.
-        ///
-        /// \param uint64 GUID          - GUID of the character to customized
-        /// \param uint8 gender         - New gender of the character customized
-        /// \param uint8 skin           - New skin colour of the character customized
-        /// \param uint8 face           - New face selection of the character customized
-        /// \param uint8 hairStyle      - New hair style selected for the character customized
-        /// \param uint8 hairColor      - New hair color selected for the character customized
-        /// \param uint8 facialHair     - New facial hair selected for the character customized
-        ///
-        /// \return none
-        ///
+        // static void CharChange_Looks(uint64 GUID, uint8 gender, uint8 skin, uint8 face, uint8 hairStyle, uint8 hairColor, uint8 facialHair)
+        // Updates database with characters new looks, gender, and name after character customization is called at login.
+        //
+        // \param uint64 GUID          - GUID of the character to customized
+        // \param uint8 gender         - New gender of the character customized
+        // \param uint8 skin           - New skin colour of the character customized
+        // \param uint8 face           - New face selection of the character customized
+        // \param uint8 hairStyle      - New hair style selected for the character customized
+        // \param uint8 hairColor      - New hair color selected for the character customized
+        // \param uint8 facialHair     - New facial hair selected for the character customized
+        //
+        // \return none
+        //
         //////////////////////////////////////////////////////////////////////////////////////////
         static void CharChange_Looks(uint64 GUID, uint8 gender, uint8 skin, uint8 face, uint8 hairStyle, uint8 hairColor, uint8 facialHair);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////
-        /// static void CharChange_Language(uint64 GUID, uint8 race)
-        /// Updates the characters racial languages
-        ///
-        /// \param uint64 GUID         -  GUID of the character to customized
-        /// \param uint8 race          -  New race to be usedd for racial language change
-        ///
-        /// \return none
-        ///
+        // static void CharChange_Language(uint64 GUID, uint8 race)
+        // Updates the characters racial languages
+        //
+        // \param uint64 GUID         -  GUID of the character to customized
+        // \param uint8 race          -  New race to be usedd for racial language change
+        //
+        // \return none
+        //
         //////////////////////////////////////////////////////////////////////////////////////////
         static void CharChange_Language(uint64 GUID, uint8 race);
 
@@ -734,25 +734,25 @@ public:
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// bool HasTimedQuest()
-        /// Tells if the Player has a timed quest already
-        ///
-        /// \param none
-        ///
-        /// \return true if the Player already has a timed quest, false otherwise
-        ///
+        // bool HasTimedQuest()
+        // Tells if the Player has a timed quest already
+        //
+        // \param none
+        //
+        // \return true if the Player already has a timed quest, false otherwise
+        //
         //////////////////////////////////////////////////////////////////////////////////////////
         bool HasTimedQuest();
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// void ClearQuest(uint32 id)
-        /// Clears the finished status of a quest
-        ///
-        /// \param uint32 id  -  Identifier of the quest
-        ///
-        /// \return none
-        ///
+        // void ClearQuest(uint32 id)
+        // Clears the finished status of a quest
+        //
+        // \param uint32 id  -  Identifier of the quest
+        //
+        // \return none
+        //
         //////////////////////////////////////////////////////////////////////////////////////////
         void ClearQuest(uint32 id);
 
@@ -766,15 +766,15 @@ public:
         void AddQuestKill(uint32 questid, uint8 reqid, uint32 delay = 0);
 
 
-        //////////////////////////////////////////////////////////////////////////////////////////
-        /// void AcceptQuest(uint64 guid, uint32 quest_id)
-        /// Checks if the quest is acceptable from that questgiver and accepts it.
-        ///
-        /// \param uin64 guid      -  guid of the questgiver
-        /// \param uint32 quest_id -  id of the quest
-        ///
-        /// \return none
-        ///
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // void AcceptQuest(uint64 guid, uint32 quest_id)
+        // Checks if the quest is acceptable from that questgiver and accepts it.
+        //
+        // \param uin64 guid      -  guid of the questgiver
+        // \param uint32 quest_id -  id of the quest
+        //
+        // \return none
+        //
         //////////////////////////////////////////////////////////////////////////////////////////
         void AcceptQuest(uint64 guid, uint32 quest_id);
 
@@ -809,13 +809,13 @@ public:
             if (s <= 0)
                 return false;
 
-            /// Fight forms that do not use player's weapon
+            // Fight forms that do not use player's weapon
             return (s == FORM_BEAR || s == FORM_DIREBEAR || s == FORM_CAT);     //Shady: actually ghostwolf form doesn't use weapon too.
         }
 
         void CalcDamage();
 
-        int32 GetDamageDoneMod(uint32 school)
+        int32 GetDamageDoneMod(uint16_t school)
         {
             if (school >= SCHOOL_COUNT)
                 return 0;
@@ -860,7 +860,7 @@ public:
         bool removeDeletedSpell(uint32 SpellID);
         void SendPreventSchoolCast(uint32 SpellSchool, uint32 unTimeMs);
 
-        /// PLEASE DO NOT INLINE!
+        // PLEASE DO NOT INLINE!
         void AddOnStrikeSpell(SpellInfo* sp, uint32 delay)
         {
             m_onStrikeSpells.insert(std::map<SpellInfo*, std::pair<uint32, uint32>>::value_type(sp, std::make_pair(delay, 0)));
@@ -916,7 +916,7 @@ public:
         void SetFactionInactive(uint32 faction, bool set);
         bool AddNewFaction(DBC::Structures::FactionEntry const* dbc, int32 standing, bool base);
         void OnModStanding(DBC::Structures::FactionEntry const* dbc, FactionReputation* rep);
-        uint32 GetExaltedCount(void);
+        uint32 GetExaltedCount();
 
         // Factions
         void smsg_InitialFactions();
@@ -1052,17 +1052,17 @@ public:
         // Pets
         /////////////////////////////////////////////////////////////////////////////////////////
         void AddSummon(Pet* pet) { m_Summons.push_front(pet); }
-        Pet* GetSummon(void)     /// returns 1st summon
+        Pet* GetSummon()     // returns 1st summon
         {
             if (!m_Summons.empty())
                 return m_Summons.front();
             else
-                return NULL;
+                return nullptr;
         }
-        std::list<Pet*> GetSummons(void) { return m_Summons; }
+        std::list<Pet*> GetSummons() { return m_Summons; }
 
         void RemoveSummon(Pet* pet);
-        uint32 GeneratePetNumber(void);
+        uint32 GeneratePetNumber();
         void RemovePlayerPet(uint32 pet_number);
         void AddPlayerPet(PlayerPet* pet, uint32 index) { m_Pets[index] = pet; }
         PlayerPet* GetPlayerPet(uint32 idx)
@@ -1071,18 +1071,18 @@ public:
             if (itr != m_Pets.end())
                 return itr->second;
             else
-                return NULL;
+                return nullptr;
         }
         void SpawnPet(uint32 pet_number);
         void SpawnActivePet();
         void DismissActivePets();
-        uint8 GetPetCount(void) { return (uint8)m_Pets.size(); }
+        uint8 GetPetCount() { return (uint8)m_Pets.size(); }
         void SetStableSlotCount(uint8 count) { m_StableSlotCount = count; }
-        uint8 GetStableSlotCount(void) { return m_StableSlotCount; }
+        uint8 GetStableSlotCount() { return m_StableSlotCount; }
 
-        uint32 GetUnstabledPetNumber(void);
-        void EventSummonPet(Pet* new_pet);   /// if we charmed or simply summoned a pet, this function should get called
-        void EventDismissPet();              /// if pet/charm died or whatever happened we should call this function
+        uint32 GetUnstabledPetNumber();
+        void EventSummonPet(Pet* new_pet);   // if we charmed or simply summoned a pet, this function should get called
+        void EventDismissPet();              // if pet/charm died or whatever happened we should call this function
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Item Interface
@@ -1265,11 +1265,11 @@ public:
 
         uint32 m_furorChance;
 
-        ///Showing Units WayPoints
+        // Showing Units WayPoints
         AIInterface* waypointunit;
 
         uint32 m_nextSave;
-        //Tutorials
+        // Tutorials
         uint32 GetTutorialInt(uint32 intId);
         void SetTutorialInt(uint32 intId, uint32 value);
 
@@ -1324,10 +1324,10 @@ public:
 
     protected:
 
-        ///True if player queued for Random Battleground
+        // True if player queued for Random Battleground
         bool m_bgIsRbg;
 
-        ///True if player has won a Random Battleground today
+        // True if player has won a Random Battleground today
         bool m_bgIsRbgWon;
 
     public:
@@ -1354,19 +1354,19 @@ public:
         uint32 BaseResistanceModPctNeg[SCHOOL_COUNT];
         uint32 ResistanceModPctPos[SCHOOL_COUNT];
         uint32 ResistanceModPctNeg[SCHOOL_COUNT];
-        float m_resist_critical[2];             /// when we are a victim we can have talents to decrease chance for critical hit. This is a negative value and it's added to critchances
-        float m_resist_hit[2];                  /// 0 = melee; 1= ranged;
-        int32 m_resist_hit_spell[SCHOOL_COUNT]; /// spell resist per school
+        float m_resist_critical[2];             // when we are a victim we can have talents to decrease chance for critical hit. This is a negative value and it's added to critchances
+        float m_resist_hit[2];                  // 0 = melee; 1= ranged;
+        int32 m_resist_hit_spell[SCHOOL_COUNT]; // spell resist per school
         float m_attack_speed[3];
         float SpellHealDoneByAttribute[5][SCHOOL_COUNT];
         uint32 m_modphyscritdmgPCT;
-        uint32 m_RootedCritChanceBonus;         /// Class Script Override: Shatter
+        uint32 m_RootedCritChanceBonus;         // Class Script Override: Shatter
         uint32 m_IncreaseDmgSnaredSlowed;
 
         uint32 m_ModInterrMRegenPCT;
         int32 m_ModInterrMRegen;
         float m_RegenManaOnSpellResist;
-        uint32 m_casted_amount[SCHOOL_COUNT];   /// Last casted spells amounts. Need for some spells. Like Ignite etc. DOesn't count HoTs and DoTs. Only directs
+        uint32 m_casted_amount[SCHOOL_COUNT];   // Last casted spells amounts. Need for some spells. Like Ignite etc. DOesn't count HoTs and DoTs. Only directs
 
         uint32 FlatStatModPos[5];
         uint32 FlatStatModNeg[5];
@@ -1374,7 +1374,7 @@ public:
         uint32 StatModPctNeg[5];
         uint32 TotalStatModPctPos[5];
         uint32 TotalStatModPctNeg[5];
-        int32 IncreaseDamageByType[12];         /// mod dmg by creature type
+        int32 IncreaseDamageByType[12];         // mod dmg by creature type
         float IncreaseDamageByTypePCT[12];
         float IncreaseCricticalByTypePCT[12];
         int32 DetectedRange;
@@ -1730,16 +1730,22 @@ public:
             return points;
         }
 
+        //\todo fix this
         void SetPrimaryProfessionPoints(uint32 amt)
         {
 #if VERSION_STRING != Cata
             setUInt32Value(PLAYER_CHARACTER_POINTS2, amt);
+#else
+            if (amt == 0) { return; }
 #endif
         }
+        //\todo fix this
         void ModPrimaryProfessionPoints(int32 amt)
         {
 #if VERSION_STRING != Cata
             ModUnsigned32Value(PLAYER_CHARACTER_POINTS2, amt);
+#else
+            if (amt == 0) { return; }
 #endif
         }
         uint32 GetPrimaryProfessionPoints()
@@ -1777,6 +1783,8 @@ public:
         {
 #if VERSION_STRING < Cata
             setUInt32Value(PLAYER_AMMO_ID, id);
+#else
+            if (id == 0) { return; }
 #endif
         }
         uint32 GetAmmoId()
@@ -1791,6 +1799,7 @@ public:
         void SetHonorCurrency(uint32 value)
         {
 #if VERSION_STRING == Cata
+            if (value == 0) { return; }
 #elif VERSION_STRING == Classic
 #else
             setUInt32Value(PLAYER_FIELD_HONOR_CURRENCY, value);
@@ -1799,6 +1808,7 @@ public:
         void ModHonorCurrency(uint32 value)
         {
 #if VERSION_STRING == Cata
+            if (value == 0) { return; }
 #elif VERSION_STRING == Classic
 #else
             ModUnsigned32Value(PLAYER_FIELD_HONOR_CURRENCY, value);
@@ -1822,6 +1832,7 @@ public:
         void SetArenaCurrency(uint32 value)
         {
 #if VERSION_STRING == Cata
+            if (value == 0) { return; }
 #elif VERSION_STRING == Classic
 #else
             setUInt32Value(PLAYER_FIELD_ARENA_CURRENCY, value);
@@ -1830,6 +1841,7 @@ public:
         void ModArenaCurrency(uint32 value)
         {
 #if VERSION_STRING == Cata
+            if (value == 0) { return; }
 #elif VERSION_STRING == Classic
 #else
             ModUnsigned32Value(PLAYER_FIELD_ARENA_CURRENCY, value);
@@ -1855,40 +1867,40 @@ public:
         uint32 GetGlyph(uint32 spec, uint32 slot) const { return m_specs[spec].glyphs[slot]; }
 #endif
 
-        /// Do this on /pvp off
+        // Do this on /pvp off
         void ResetPvPTimer();
-        /// Stop the timer for pvp off
+        // Stop the timer for pvp off
         void StopPvPTimer() { m_pvpTimer = 0; }
 
-        /// Called at login to add the honorless buff, etc.
+        // Called at login to add the honorless buff, etc.
         void LoginPvPSetup();
-        /// Update our pvp area (called when zone changes)
+        // Update our pvp area (called when zone changes)
         void UpdatePvPArea();
-        /// PvP Toggle (called on /pvp)
+        // PvP Toggle (called on /pvp)
         void PvPToggle();
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// void HandleSpellLoot(uint32 itemid)
-        /// Generates loot for the spell loot item (clams for example) , then adds the generated loot to the Player
-        ///
-        /// \param uint32 itemid   -  unique numerical identifier of the item the Player is looting
-        ///
-        /// \return none
-        ///
+        // void HandleSpellLoot(uint32 itemid)
+        // Generates loot for the spell loot item (clams for example) , then adds the generated loot to the Player
+        //
+        // \param uint32 itemid   -  unique numerical identifier of the item the Player is looting
+        //
+        // \return none
+        //
         //////////////////////////////////////////////////////////////////////////////////////////
         void HandleSpellLoot(uint32 itemid);
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// void LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
-        /// Teaches a talentspell to the Player and decreases the available talent points
-        ///
-        /// \param uint32 talentid     -   unique numeric identifier of the talent (index of talent.dbc)
-        /// \param uint32 rank         -   rank of the talent
-        /// \param bool isPreviewed     -   true if called from the preview system
-        ///
-        /// \return none
-        ///
+        // void LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
+        // Teaches a talentspell to the Player and decreases the available talent points
+        //
+        // \param uint32 talentid     -   unique numeric identifier of the talent (index of talent.dbc)
+        // \param uint32 rank         -   rank of the talent
+        // \param bool isPreviewed     -   true if called from the preview system
+        //
+        // \return none
+        //
         //////////////////////////////////////////////////////////////////////////////////////////
         void LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed = false);
 
@@ -1925,7 +1937,7 @@ public:
         uint64 m_comboTarget;
         int8 m_comboPoints;
         bool m_retainComboPoints;
-        int8 m_spellcomboPoints;        /// rogue talent Ruthlessness will change combopoints while consuming them. solutions 1) add post cast prochandling, 2) delay adding the CP
+        int8 m_spellcomboPoints;        // rogue talent Ruthlessness will change combopoints while consuming them. solutions 1) add post cast prochandling, 2) delay adding the CP
         void UpdateComboPoints();
 
         void AddComboPoints(uint64 target, int8 count);
@@ -1943,7 +1955,7 @@ public:
 #endif
 
         // Water level related stuff (they are public because they need to be accessed fast)
-        /// Nose level of the character (needed for proper breathing)
+        // Nose level of the character (needed for proper breathing)
         float m_noseLevel;
 
         void RemoteRevive();
@@ -2052,9 +2064,9 @@ public:
         // Player Class systems, info and misc things
         /////////////////////////////////////////////////////////////////////////////////////////
         PlayerCreateInfo const* info;
-        uint32 m_AttackMsgTimer;        /// "too far away" and "wrong facing" timer
+        uint32 m_AttackMsgTimer;        // "too far away" and "wrong facing" timer
         bool m_attacking;
-        std::string m_name;             /// max 21 character name
+        std::string m_name;             // max 21 character name
         uint32 m_Tutorials[8];
 
         // Character Ban
@@ -2065,7 +2077,7 @@ public:
         uint32 m_PetNumberMax;
         std::map<uint32, PlayerPet*> m_Pets;
 
-        uint32 m_invitersGuid;      /// It is guild inviters guid ,0 when its not used
+        uint32 m_invitersGuid;      // It is guild inviters guid ,0 when its not used
 
         // bind
         float m_bind_pos_x;
@@ -2129,7 +2141,7 @@ public:
 
         uint32 m_lastHonorResetTime;
         uint32 _fields[PLAYER_END];
-        int hearth_of_wild_pct;        /// druid hearth of wild talent used on shapeshifting. We either know what is last talent level or memo on learn
+        int hearth_of_wild_pct;        // druid hearth of wild talent used on shapeshifting. We either know what is last talent level or memo on learn
 
         uint32 m_team;
 
@@ -2182,13 +2194,13 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
 
         bool m_castFilterEnabled;
-        uint32 m_castFilter[3];    /// spell group relation of only spells that player can currently cast
+        uint32 m_castFilter[3];    // spell group relation of only spells that player can currently cast
 
         uint32 m_outStealthDamageBonusPct;
         uint32 m_outStealthDamageBonusPeriod;
         uint32 m_outStealthDamageBonusTimer;
 
-        ///\todo sort out where all the publics and privates go. This will do for now..
+        //\todo sort out where all the publics and privates go. This will do for now..
 
     private:
 

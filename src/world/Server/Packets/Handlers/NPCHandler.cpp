@@ -401,7 +401,7 @@ void WorldSession::HandleGossipHelloOpcode(WorldPacket& recv_data)
     recv_data >> guid;
     Creature* qst_giver = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
 
-    if (qst_giver != NULL)
+    if (qst_giver != nullptr)
     {
         //stop when talked to
         if (qst_giver->GetAIInterface())
@@ -417,7 +417,7 @@ void WorldSession::HandleGossipHelloOpcode(WorldPacket& recv_data)
         LOG_DEBUG("WORLD: Received CMSG_GOSSIP_HELLO from %u", Arcemu::Util::GUID_LOPART(guid));
 
         Arcemu::Gossip::Script* script = Arcemu::Gossip::Script::GetInterface(qst_giver);
-        if (script != NULL)
+        if (script != nullptr)
             script->OnHello(qst_giver, GetPlayer());
     }
 }
@@ -471,14 +471,14 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recv_data)
         if (str.length() > 0)
             script->OnSelectOption(object, GetPlayer(), option, str.c_str(), gossipId);
         else
-            script->OnSelectOption(object, GetPlayer(), option, NULL, gossipId);
+            script->OnSelectOption(object, GetPlayer(), option, nullptr, gossipId);
     }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// This function handles CMSG_SPIRIT_HEALER_ACTIVATE:
+// This function handles CMSG_SPIRIT_HEALER_ACTIVATE:
 //////////////////////////////////////////////////////////////////////////////////////////
-void WorldSession::HandleSpiritHealerActivateOpcode(WorldPacket& recv_data)
+void WorldSession::HandleSpiritHealerActivateOpcode(WorldPacket& /*recvData*/)
 {
     CHECK_INWORLD_RETURN
 
@@ -492,12 +492,12 @@ void WorldSession::HandleSpiritHealerActivateOpcode(WorldPacket& recv_data)
     {
         Aura* aur = GetPlayer()->getAuraWithId(15007);
 
-        if (aur == NULL)        // If the player already have the aura, just extend it.
+        if (aur == nullptr)        // If the player already have the aura, just extend it.
         {
             SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(15007);    //resurrection sickness
             SpellCastTargets targets;
             targets.m_unitTarget = GetPlayer()->GetGUID();
-            Spell* sp = sSpellFactoryMgr.NewSpell(_player, spellInfo, true, NULL);
+            Spell* sp = sSpellFactoryMgr.NewSpell(_player, spellInfo, true, nullptr);
             sp->prepare(&targets);
         }
 
@@ -514,7 +514,7 @@ void WorldSession::HandleSpiritHealerActivateOpcode(WorldPacket& recv_data)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// This function handles CMSG_NPC_TEXT_QUERY:
+///This function handles CMSG_NPC_TEXT_QUERY:
 //////////////////////////////////////////////////////////////////////////////////////////
 void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
 {

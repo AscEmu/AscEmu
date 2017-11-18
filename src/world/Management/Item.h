@@ -315,7 +315,7 @@ class SERVER_DECL Item : public Object
         //////////////////////////////////////////////////////////////////////////////////////////
         uint32 GetChargesLeft() const
         {
-            for (uint32 x = 0; x < 5; ++x)
+            for (uint16_t x = 0; x < 5; ++x)
                 if ((m_itemProperties->Spells[x].Id != 0) && (m_itemProperties->Spells[x].Trigger == USE))
                     return GetCharges(x);
 
@@ -334,7 +334,7 @@ class SERVER_DECL Item : public Object
         //////////////////////////////////////////////////////////////////////////////////////////
         void SetChargesLeft(uint32 charges)
         {
-            for (uint32 x = 0; x < 5; ++x)
+            for (uint16_t x = 0; x < 5; ++x)
             {
                 if ((m_itemProperties->Spells[x].Id != 0) && (m_itemProperties->Spells[x].Trigger == USE))
                 {
@@ -440,7 +440,7 @@ class SERVER_DECL Item : public Object
             return false;
         }
 
-        void SetText(std::string &text){ this->text = text; }
+        void SetText(std::string &textString){ this->text = textString; }
         const std::string& GetText() const{ return this->text; }
 #if VERSION_STRING == Cata
     protected:

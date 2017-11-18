@@ -13396,7 +13396,7 @@ bool Unit::IsCriticalHealForSpell(Object* victim, SpellInfo* spell)
     return Rand(crit_chance);
 }
 
-float Unit::GetCriticalHealBonusForSpell(Object* victim, SpellInfo* spell, float amount)
+float Unit::GetCriticalHealBonusForSpell(Object* /*victim*/, SpellInfo* spell, float amount)
 {
     int32 critical_bonus = 100;
     spellModFlatIntValue(this->SM_PCriticalDamage, &critical_bonus, spell->getSpellGroupType());

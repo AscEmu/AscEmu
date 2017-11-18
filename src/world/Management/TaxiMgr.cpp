@@ -148,7 +148,7 @@ void TaxiPath::SetPosForTime(float & x, float & y, float & z, uint32 time, uint3
 TaxiPathNode* TaxiPath::GetPathNode(uint32 i)
 {
     if (m_pathNodes.find(i) == m_pathNodes.end())
-        return NULL;
+        return nullptr;
     else
         return m_pathNodes.find(i)->second;
 }

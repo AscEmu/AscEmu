@@ -116,6 +116,7 @@ class BIH
             delete[] dat.primBound;
             delete[] dat.indices;
         }
+
         uint32 primCount() const { return objects.size(); }
 
         template<typename RayCallback>

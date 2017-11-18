@@ -51,14 +51,14 @@ public:
         return true;
     }
 
-    bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
+    bool DoEffect(Unit* /*victim*/, SpellInfo* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* dmgOverwrite, uint32 /*weaponDamageType*/)
     {
         Player* plr = static_cast<Player*>(mTarget);
 
-        dmg_overwrite[0] = plr->GetBlockDamageReduction() * (mOrigSpell->getEffectBasePoints(0) + 1) / 100;
+        dmgOverwrite[0] = plr->GetBlockDamageReduction() * (mOrigSpell->getEffectBasePoints(0) + 1) / 100;
 
         // plr->GetBlockDamageReduction() returns ZERO if player has no shield equipped
-        if (dmg_overwrite[0] == 0)
+        if (dmgOverwrite[0] == 0)
             return true;
 
         return false;

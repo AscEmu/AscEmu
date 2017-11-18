@@ -24,7 +24,7 @@
 #include "Server/World.Legacy.h"
 #include "Objects/ObjectMgr.h"
 
-void WorldStatesHandler::SetWorldStateForZone(uint32 zone, uint32 area, uint32 field, uint32 value)
+void WorldStatesHandler::SetWorldStateForZone(uint32 zone, uint32 /*area*/, uint32 field, uint32 value)
 {
     std::unordered_map< uint32, std::unordered_map< uint32, uint32 > >::iterator itr = worldstates.find(zone);
     if (itr == worldstates.end())
