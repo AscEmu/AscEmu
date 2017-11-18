@@ -68,12 +68,12 @@ class GeneralDrakkisathAI : public CreatureAIScript
             spells[3].attackstoptimer = 1000; // 1sec
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -174,12 +174,12 @@ class PyroguardEmbersserAI : public CreatureAIScript
             spells[2].attackstoptimer = 1000; // 1sec
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -280,12 +280,12 @@ class RendBlackhandAI : public CreatureAIScript
             spells[2].attackstoptimer = 1000; // 1sec
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -388,14 +388,14 @@ class GythAI : public CreatureAIScript
             HasSummoned = false;
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
 
             HasSummoned = false;
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -511,12 +511,12 @@ class TheBeastAI : public CreatureAIScript
             spells[2].attackstoptimer = 1000; // 1sec
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -641,12 +641,12 @@ class HighlordOmokkAI : public CreatureAIScript
             spells[6].attackstoptimer = 1000; // 1sec
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -747,12 +747,12 @@ class ShadowHunterVoshAI : public CreatureAIScript
             spells[2].attackstoptimer = 1000; // 1sec
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -871,12 +871,12 @@ class WarMasterVooneAI : public CreatureAIScript
             spells[5].attackstoptimer = 1000; // 1sec
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -983,12 +983,12 @@ class MotherSmolderwebAI : public CreatureAIScript
             spells[3].attackstoptimer = 1000; // 1sec
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -1113,12 +1113,12 @@ class UrokDoomhowlAI : public CreatureAIScript
             spells[6].attackstoptimer = 1000; // 1sec
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -1219,12 +1219,12 @@ class QuartermasterZigrisAI : public CreatureAIScript
             spells[2].attackstoptimer = 1000; // 1sec
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -1321,14 +1321,14 @@ class HalyconAI : public CreatureAIScript
             HasSummoned = false;
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
 
             HasSummoned = false;
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -1452,14 +1452,14 @@ class OverlordWyrmthalakAI : public CreatureAIScript
             HasSummoned = false;
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
 
             HasSummoned = false;
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);

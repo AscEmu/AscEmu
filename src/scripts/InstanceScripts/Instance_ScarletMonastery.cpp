@@ -40,7 +40,7 @@ class VishasAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTargetDied, 2113);     // Purged by pain!
         }
 
-        void OnCombatStop(Unit* pTarget) override
+        void OnCombatStop(Unit* /*pTarget*/) override
         {
             m_uiSay = 0;
         }
@@ -81,7 +81,7 @@ class ThalnosAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTargetDied, 2109);     // More... More souls!
         }
 
-        void OnCombatStop(Unit* pTarget) override
+        void OnCombatStop(Unit* /*pTarget*/) override
         {
             m_bEmoted = false;
         }
@@ -127,7 +127,7 @@ class DoanAI : public CreatureAIScript
             addEmoteForEvent(Event_OnCombatStart, 2099);     // You will not defile these mysteries!
         }
 
-        void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
+        void OnDamageTaken(Unit* /*mAttacker*/, uint32 /*fAmount*/) override
         {
             if (_getHealthPercent() <= 50 && !m_bShielded)
                 Shield();
@@ -141,7 +141,7 @@ class DoanAI : public CreatureAIScript
             m_bShielded = true;
         }
 
-        void OnCombatStop(Unit* pTarget) override
+        void OnCombatStop(Unit* /*pTarget*/) override
         {
             m_bShielded = false;
         }
@@ -169,7 +169,7 @@ class HerodAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTargetDied, 2087);     // Is that all?
         }
 
-        void OnCombatStop(Unit* pTarget) override
+        void OnCombatStop(Unit* /*pTarget*/) override
         {
             m_bEnraged = false;
             _removeAura(SP_HEROD_ENRAGESPELL); 
@@ -233,19 +233,19 @@ class MograineAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, SAY_MORGRAINE_03);
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->getUInt32Value(UNIT_FIELD_BASEATTACKTIME));
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             GameObject* pDoor = getNearestGameObject(1173.01f, 1389.91f, 31.9723f, GO_INQUISITORS_DOOR);
             if (pDoor == 0)
@@ -365,12 +365,12 @@ class WhitemaneAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, SAY_WHITEMANE_03);
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->getUInt32Value(UNIT_FIELD_BASEATTACKTIME));
         }
 
-        void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
+        void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
         {
             if (fAmount < 5) return;
             // <50% hp -> We go to phase 1
@@ -400,7 +400,7 @@ class WhitemaneAI : public CreatureAIScript
             getCreature()->CastSpell(getCreature(), spells[2].info, spells[2].instant);
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -501,12 +501,12 @@ class FairbanksAI : public CreatureAIScript
             Timer = 0;
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->getUInt32Value(UNIT_FIELD_BASEATTACKTIME));
         }
 
-        void OnTargetDied(Unit* mTarget) override
+        void OnTargetDied(Unit* /*mTarget*/) override
         {
             if (getCreature()->GetHealthPct() > 0)
             {
@@ -522,7 +522,7 @@ class FairbanksAI : public CreatureAIScript
             }
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);

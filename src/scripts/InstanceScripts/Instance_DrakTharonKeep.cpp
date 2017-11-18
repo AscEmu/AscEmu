@@ -70,12 +70,12 @@ class TrollgoreAI : public CreatureAIScript
             spells.push_back(Consume);
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -254,7 +254,7 @@ class NovosTheSummonerAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, SAY_NOVOS_SUMMONER_03);
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             getCreature()->CastSpell(getCreature(), 47346, false);
             //spawn 4 Ritual Crystal
@@ -277,7 +277,7 @@ class NovosTheSummonerAI : public CreatureAIScript
             getCreature()->setMoveRoot(true);
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -550,19 +550,19 @@ class CrystalHandlerAI : public CreatureAIScript
             spells.push_back(FlashofDarkness);
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             Unit* Novos = getCreature()->GetMapMgr()->GetUnit(getCreature()->GetSummonedByGUID());
             if (Novos)
@@ -709,12 +709,12 @@ class KingDreadAI : public CreatureAIScript
             spells.push_back(PiercingSlash);
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -888,7 +888,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
             spells.push_back(EyeBeam);
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
             phase = 1;
@@ -896,7 +896,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
             phase_timer = Util::getMSTime() + WINDSERPENT_PHASE_INTERVAL;
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -907,7 +907,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
             getCreature()->SetDisplayId(getCreature()->GetNativeDisplayId());
         }
 
-        void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
+        void OnDamageTaken(Unit* /*mAttacker*/, uint32 /*fAmount*/) override
         {
             if (getCreature()->GetHealthPct() < 2 && phase == 2)
             {

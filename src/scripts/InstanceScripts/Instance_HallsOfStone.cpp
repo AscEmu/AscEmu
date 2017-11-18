@@ -181,7 +181,7 @@ class MaidenOfGriefAI : public CreatureAIScript
         addEmoteForEvent(Event_OnDied, 4372);     // I hope you all rot! I never... wanted... this.
     }
 
-    void OnCombatStart(Unit* pTarget) override
+    void OnCombatStart(Unit* /*pTarget*/) override
     {
         mShock->setTriggerCooldown();
     }
@@ -214,7 +214,7 @@ class KrystallusAI : public CreatureAIScript
         addEmoteForEvent(Event_OnDied, 4364);     //
     }
 
-    void OnCombatStart(Unit* pTarget) override
+    void OnCombatStart(Unit* /*pTarget*/) override
     {
         mStompTimer = _addTimer(STOMP_TIMER);
     }

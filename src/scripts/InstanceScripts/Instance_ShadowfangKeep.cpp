@@ -262,7 +262,7 @@ class ShadowfangKeepInstance : public InstanceScript
             }
         }
 
-        void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer) override
+        void OnGameObjectActivate(GameObject* pGameObject, Player* /*pPlayer*/) override
         {
             switch (pGameObject->GetEntry())
             {
@@ -295,7 +295,7 @@ class ShadowfangKeepInstance : public InstanceScript
             }
         }
 
-        void OnCreatureDeath(Creature* pCreature, Unit* pKiller) override
+        void OnCreatureDeath(Creature* pCreature, Unit* /*pKiller*/) override
         {
             switch (pCreature->GetEntry())
             {
@@ -649,7 +649,7 @@ class AshcrombeAI : public CreatureAIScript
                 float distanceY = 0;
                 float distance = 0;
                 float walkSpeed = getCreature()->GetCreatureProperties()->walk_speed;
-                float runSpeed = getCreature()->GetCreatureProperties()->run_speed;
+                //float runSpeed = getCreature()->GetCreatureProperties()->run_speed;
                 if (i == 0) // first waypoint
                 {
                     distanceX = (SorcererAshcrombeWPS[i].x - getCreature()->GetPositionX())*(SorcererAshcrombeWPS[i].x - getCreature()->GetPositionX());
@@ -825,14 +825,14 @@ class SpringvaleAI : public CreatureAIScript
             HammerOfJustice = AddSpell(SPELL_HAMMER_OF_JUSTICE, Target_Current, 12, 0, 60);
         }
 
-        void OnCombatStart(Unit* pTarget) override
+        void OnCombatStart(Unit* /*pTarget*/) override
         {
             // Turn aura ON!
             if (!getCreature()->HasAura(SPELL_DEVO_AURA))
                 CastSpellNowNoScheduling(DevoAura);
         }
 
-        void OnCombatStop(Unit* pTarget) override
+        void OnCombatStop(Unit* /*pTarget*/) override
         {
             // Turn aura OFF!
             if (getCreature()->HasAura(SPELL_DEVO_AURA))
@@ -892,12 +892,12 @@ class NandosAI : public CreatureAIScript
 
         void Reset()
         {
-            sCallBleakWorg_Timer        = -1;
-            sCallSlaveringWorg_Timer    = -1;
-            sCallLupineHorror_Timer     = -1;
+            sCallBleakWorg_Timer        = 0;
+            sCallSlaveringWorg_Timer    = 0;
+            sCallLupineHorror_Timer     = 0;
         }
 
-        void OnCombatStart(Unit* mEnemy) override
+        void OnCombatStart(Unit* /*mEnemy*/) override
         {
             
             sCallBleakWorg_Timer = _addTimer(RandomUInt(1) ? 33700 : 48800);
@@ -907,7 +907,7 @@ class NandosAI : public CreatureAIScript
                 SFK_instance->SetLocaleInstanceData(0, INDEX_NANDOS, InProgress);
         }
 
-        void OnCombatStop(Unit* mEnemy) override
+        void OnCombatStop(Unit* /*mEnemy*/) override
         {
             // Battle has failed
             if (SFK_instance)
@@ -1084,7 +1084,7 @@ class ArugalBossAI : public CreatureAIScript
             getCreature()->PctPowerRegenModifier[POWER_TYPE_MANA] = originalRegen;
         }
 
-        void OnCombatStart(Unit* pEnemy) override
+        void OnCombatStart(Unit* /*pEnemy*/) override
         {
             // do not regen mana
             getCreature()->PctPowerRegenModifier[POWER_TYPE_MANA] = 0.3f;
@@ -1095,7 +1095,7 @@ class ArugalBossAI : public CreatureAIScript
             getCreature()->GetAIInterface()->setMeleeDisabled(true);
         }
 
-        void OnCombatStop(Unit* pEnemy) override
+        void OnCombatStop(Unit* /*pEnemy*/) override
         {
             Reset();
         }
@@ -1447,7 +1447,7 @@ class WorlfguardWorgAI : public CreatureAIScript
 ///////////////////////////////////////////////////////////////////
 
 // Spell entry: 6421
-bool ashrombeUnlockDummySpell(uint32 i, Spell* pSpell)
+bool ashrombeUnlockDummySpell(uint32 /*i*/, Spell* pSpell)
 {
     Unit* target = pSpell->u_caster;
     if (!target)

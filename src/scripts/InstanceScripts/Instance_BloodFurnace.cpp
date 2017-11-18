@@ -57,7 +57,7 @@ class KelidanTheBreakerAI : public CreatureAIScript
         addEmoteForEvent(Event_OnDied, 4848);           // Good...luck. You'll need it.
     }
 
-    void OnCombatStart(Unit* pTarget) override
+    void OnCombatStart(Unit* /*pTarget*/) override
     {
         mBurningNovaTimer = _addTimer(15000);
     }
@@ -98,7 +98,7 @@ class BroggokAI : public CreatureAIScript
             AddSpell(SLIME_SPRAY, Target_Self, 10.0f, 0, 25);
         }
 
-        void OnDied(Unit* pKiller) override
+        void OnDied(Unit* /*pKiller*/) override
         {
             GameObject* pDoor = getNearestGameObject(456.157349f, 34.248005f, 9.559463f, GO_BROGGOK);
             if (pDoor)
@@ -129,7 +129,7 @@ class TheMakerAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, 4854);           // Stay away from... Me!
         }
 
-        void OnDied(Unit* pKiller) override
+        void OnDied(Unit* /*pKiller*/) override
         {
             GameObject* pDoor = getNearestGameObject(327.155487f, 149.753418f, 9.559869f, GO_THE_MAKER);
             if (pDoor)

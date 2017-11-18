@@ -47,7 +47,7 @@ class AnomalusAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, 4318);     // Of course.
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             mSummon = 0;
             mRift = false;
@@ -102,7 +102,7 @@ class AnomalusAI : public CreatureAIScript
             mSummon += 1;
         }
 
-        void OnDied(Unit* pKiller) override
+        void OnDied(Unit* /*pKiller*/) override
         {
             if (mInstance)
             {
@@ -144,12 +144,12 @@ class ChaoticRiftAI : public CreatureAIScript
             despawn(40000, 0);
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             despawn(2000, 0);
         }
 
-        void OnCombatStop(Unit* pTarget) override
+        void OnCombatStop(Unit* /*pTarget*/) override
         {
             despawn(2000, 0);
         }
@@ -162,12 +162,12 @@ class CraziedManaWrathAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(CraziedManaWrathAI);
         CraziedManaWrathAI(Creature* pCreature) : CreatureAIScript(pCreature) {};
 
-        void OnCombatStop(Unit* pTarget) override
+        void OnCombatStop(Unit* /*pTarget*/) override
         {
             despawn(2000, 0);
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             despawn(2000, 0);
         }
@@ -270,7 +270,7 @@ class TelestraBossAI : public CreatureAIScript
             }
         }
 
-        void OnCombatStop(Unit* pTarget) override
+        void OnCombatStop(Unit* /*pTarget*/) override
         {
             for (uint8 i = 0; i < 3; ++i)
             {
@@ -282,7 +282,7 @@ class TelestraBossAI : public CreatureAIScript
             }
         }
 
-        void OnDied(Unit* pKiller) override
+        void OnDied(Unit* /*pKiller*/) override
         {
             for (uint8 i = 0; i < 3; ++i)
             {
@@ -402,7 +402,7 @@ class OrmorokAI : public CreatureAIScript
         addEmoteForEvent(Event_OnDied, 1944);     // Aaggh!
     }
 
-    void OnCombatStart(Unit* pTarget) override
+    void OnCombatStart(Unit* /*pTarget*/) override
     {
         mEnraged = false;
     }
@@ -417,7 +417,7 @@ class OrmorokAI : public CreatureAIScript
         }
     }
 
-    void OnDied(Unit* pKiller) override
+    void OnDied(Unit* /*pKiller*/) override
     {
         if (mInstance)
         {
@@ -637,7 +637,7 @@ class NexusScript : public InstanceScript
             }
         }
 
-        void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer) override
+        void OnGameObjectActivate(GameObject* pGameObject, Player* /*pPlayer*/) override
         {
             switch (pGameObject->GetEntry())
             {

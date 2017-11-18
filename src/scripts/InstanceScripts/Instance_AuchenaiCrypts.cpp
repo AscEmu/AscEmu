@@ -70,7 +70,7 @@ class SHIRRAKTHEDEADWATCHERAI : public CreatureAIScript
             spells[3].cooldown = 15;
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = 0;
@@ -78,7 +78,7 @@ class SHIRRAKTHEDEADWATCHERAI : public CreatureAIScript
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -231,7 +231,7 @@ class AvatarOfTheMartyredAI : public CreatureAIScript
             spells[2].instant = true;
             spells[2].perctrigger = 0.0f;
             spells[2].attackstoptimer = 1000;
-            spells[2].cooldown = -1;
+            spells[2].cooldown = 0;
 
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
 
@@ -241,16 +241,15 @@ class AvatarOfTheMartyredAI : public CreatureAIScript
             Appear = true;
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            //RemoveAIUpdateEvent();
         }
 
         void AIUpdate() override
@@ -366,7 +365,7 @@ class EXARCHMALADAARAI : public CreatureAIScript
             spells[3].instant = false;
             spells[3].perctrigger = 0.0f;
             spells[3].attackstoptimer = 1000;
-            spells[3].cooldown = -1;
+            spells[3].cooldown = 0;
 
             Avatar = false;
 
@@ -379,7 +378,7 @@ class EXARCHMALADAARAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, SAY_MALADAAR_06);
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             for (uint8 i = 0; i < 4; i++)
                 spells[i].casttime = 0;
@@ -389,7 +388,7 @@ class EXARCHMALADAARAI : public CreatureAIScript
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);

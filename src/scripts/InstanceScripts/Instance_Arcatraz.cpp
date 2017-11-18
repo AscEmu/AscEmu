@@ -49,13 +49,13 @@ class ZerekethAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, 5501);            // The Void... beckons.
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             VoidTimer = _addTimer((RandomUInt(10) + 30) * 1000);
             SpeechTimer = _addTimer((RandomUInt(10) + 40) * 1000);
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             //despawn voids
             for (std::set<Object*>::iterator itr = getCreature()->GetInRangeSetBegin(); itr != getCreature()->GetInRangeSetEnd();)
@@ -195,7 +195,7 @@ class DalliahTheDoomsayerAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, 7375);           // Now I'm really angry.
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             GameObject* door2 = getNearestGameObject(184319);
             if (door2 != NULL)
@@ -226,7 +226,7 @@ class WrathScryerSoccothratesAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, 7380);           // Knew this was... the only way out.
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             GameObject* door1 = getNearestGameObject(199.969f, 118.5837f, 22.379f, 184318);
             if (door1 != NULL)
@@ -269,7 +269,7 @@ class HarbringerSkyrissAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, 5042);           // I am merely one of... infinite multitudes.
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             IllusionCount = 0;
         }
@@ -319,7 +319,7 @@ class WardenMellicharAI : public CreatureAIScript
             NPC_ID_Spawn = 0;
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             Phasepart = 0;
             setRooted(true);
@@ -336,7 +336,7 @@ class WardenMellicharAI : public CreatureAIScript
             getCreature()->SendTimedScriptTextChatMessage(SAY_MELLICHAR_02, 27000);
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             Reset_Event();
         }

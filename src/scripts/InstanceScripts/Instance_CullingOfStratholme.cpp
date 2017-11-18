@@ -54,7 +54,7 @@ class MeathookAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, SAY_MEATHOOK_06);
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -104,7 +104,7 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, SAY_SALRAM_FLESH_06);
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -143,7 +143,7 @@ class ChronoLordEpochAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTargetDied, SAY_CHRONOLORD_EPOCH_08);
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -167,7 +167,7 @@ class InfiniteCorruptorAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, SAY_INFINITE_CORRUP_02);
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -211,14 +211,14 @@ class MalganisAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, SAY_MALGANIS_16);
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             getCreature()->RemoveAllAuras();
         }
 
-        void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
+        void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
         {
             if (getCreature()->HasAura(52723))    //handling a dummy :)
             {
@@ -249,7 +249,7 @@ class Quest_Dispelling_Illusions : public QuestScript
 {
     public:
 
-        void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry) override
+        void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
         {
             for (uint8 i = 0; i < 5; i++)
                 SpawnCrates(i, mTarget->GetMapMgr());
@@ -333,7 +333,7 @@ class UtherAI : public CreatureAIScript
             check = true;
         }
 
-        void OnReachWP(uint32 i, bool usl) override
+        void OnReachWP(uint32 i, bool /*usl*/) override
         {
             if (i == 3 && check)
             {
@@ -423,7 +423,7 @@ class ArthasAI : public CreatureAIScript
             phase = 0;
         }
 
-        void OnReachWP(uint32 i, bool usl) override
+        void OnReachWP(uint32 i, bool /*usl*/) override
         {
             switch (i)
             {
@@ -550,7 +550,7 @@ class ArthasGossip : public Arcemu::Gossip::Script
             menu.Send(Plr);
         }
 
-        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId) override
+        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32_t /*gossipId*/) override
         {
             switch (Id)
             {

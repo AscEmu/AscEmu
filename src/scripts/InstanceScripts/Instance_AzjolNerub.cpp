@@ -60,10 +60,10 @@ class KrikthirAI : public CreatureAIScript
         }
     }
 
-    void OnDied(Unit* pKiller) override
+    void OnDied(Unit* /*pKiller*/) override
     {
         GameObject* Doors = getNearestGameObject(192395);
-        if (Doors != NULL)
+        if (Doors != nullptr)
             Doors->Despawn(0, 0);
     }
     bool mEnraged;

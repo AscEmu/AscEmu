@@ -63,7 +63,7 @@ class CelebrasTheCursedAI : public CreatureAIScript
             m_spellcheck[2] = true;
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
@@ -75,7 +75,7 @@ class CelebrasTheCursedAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -83,7 +83,7 @@ class CelebrasTheCursedAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             CastTime();
         }
@@ -179,7 +179,7 @@ class LordVyletongueAI : public CreatureAIScript
             m_spellcheck[1] = true;
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
@@ -191,7 +191,7 @@ class LordVyletongueAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -199,7 +199,7 @@ class LordVyletongueAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             CastTime();
         }
@@ -296,7 +296,7 @@ class MeshlokTheHarvesterAI : public CreatureAIScript
             m_spellcheck[1] = true;
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
@@ -308,7 +308,7 @@ class MeshlokTheHarvesterAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -316,7 +316,7 @@ class MeshlokTheHarvesterAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             CastTime();
         }
@@ -428,7 +428,7 @@ class PrincessTheradrasAI : public CreatureAIScript
             m_spellcheck[3] = true;
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
@@ -440,7 +440,7 @@ class PrincessTheradrasAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -448,7 +448,7 @@ class PrincessTheradrasAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             CastTime();
         }
@@ -552,7 +552,7 @@ class RazorlashAI : public CreatureAIScript
             m_spellcheck[2] = true;
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
@@ -564,7 +564,7 @@ class RazorlashAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -572,7 +572,7 @@ class RazorlashAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             CastTime();
         }
@@ -668,7 +668,7 @@ class TinkererGizlockAI : public CreatureAIScript
             m_spellcheck[1] = true;
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
@@ -680,7 +680,7 @@ class TinkererGizlockAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -688,7 +688,7 @@ class TinkererGizlockAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             CastTime();
         }
@@ -784,7 +784,7 @@ class NoxxionAI : public CreatureAIScript
             m_spellcheck[1] = true;
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             CastTime();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
@@ -796,7 +796,7 @@ class NoxxionAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             CastTime();
             setAIAgent(AGENT_NULL);
@@ -804,7 +804,7 @@ class NoxxionAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             CastTime();
         }

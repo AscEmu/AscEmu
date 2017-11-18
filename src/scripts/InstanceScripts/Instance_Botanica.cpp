@@ -51,12 +51,12 @@ class BloodProtectorAI : public CreatureAIScript
 
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -150,12 +150,12 @@ class BloodGreenkeeperAI : public CreatureAIScript
 
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -247,12 +247,12 @@ class SunchemistAI : public CreatureAIScript
             spells[1].attackstoptimer = 2000; // 1sec
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -356,13 +356,13 @@ class SunResearcherAI : public CreatureAIScript
             spells[3].attackstoptimer = 2000; // 1sec
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
             getCreature()->CastSpell(getCreature(), spells[0].info, spells[0].instant);
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -440,21 +440,21 @@ class CommanderSarannisAI : public CreatureAIScript
             spells[0].info = sSpellCustomizations.GetSpellInfo(ARCANE_RESONANCE);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
-            spells[0].cooldown = -1;
+            spells[0].cooldown = 0;
             spells[0].perctrigger = 7.0f;
             spells[0].attackstoptimer = 1000;
 
             spells[1].info = sSpellCustomizations.GetSpellInfo(ARCANE_DEVASTATION);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
-            spells[1].cooldown = -1;
+            spells[1].cooldown = 0;
             spells[1].perctrigger = 15.0f;
             spells[1].attackstoptimer = 1000;
 
             spells[2].info = sSpellCustomizations.GetSpellInfo(SUMMON_REINFORCEMENTS);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
-            spells[2].cooldown = -1;
+            spells[2].cooldown = 0;
             spells[2].perctrigger = 0.0f;
             spells[2].attackstoptimer = 1000;
 
@@ -465,7 +465,7 @@ class CommanderSarannisAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, SAY_COMMANDER_SARANNIS_07);
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             GuardAdds = false;
             CastTime();
@@ -478,7 +478,7 @@ class CommanderSarannisAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             GuardAdds = false;
             CastTime();
@@ -487,7 +487,7 @@ class CommanderSarannisAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             GuardAdds = false;
             CastTime();
@@ -594,35 +594,35 @@ class HighBotanistFreywinnAI : public CreatureAIScript
             spells[0].info = sSpellCustomizations.GetSpellInfo(PLANT_RED_SEEDLING);
             spells[0].targettype = TARGET_SELF;
             spells[0].instant = true;
-            spells[0].cooldown = -1;
+            spells[0].cooldown = 0;
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000;
 
             spells[1].info = sSpellCustomizations.GetSpellInfo(PLANT_GREEN_SEEDLING);
             spells[1].targettype = TARGET_SELF;
             spells[1].instant = true;
-            spells[1].cooldown = -1;
+            spells[1].cooldown = 0;
             spells[1].perctrigger = 0.0f;
             spells[1].attackstoptimer = 1000;
 
             spells[2].info = sSpellCustomizations.GetSpellInfo(PLANT_WHITE_SEEDLING);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
-            spells[2].cooldown = -1;
+            spells[2].cooldown = 0;
             spells[2].perctrigger = 0.0f;
             spells[2].attackstoptimer = 1000;
 
             spells[3].info = sSpellCustomizations.GetSpellInfo(PLANT_BLUE_SEEDLING);
             spells[3].targettype = TARGET_SELF;
             spells[3].instant = true;
-            spells[3].cooldown = -1;
+            spells[3].cooldown = 0;
             spells[3].perctrigger = 0.0f;
             spells[3].attackstoptimer = 1000;
 
             spells[4].info = sSpellCustomizations.GetSpellInfo(SUMMON_FRAYER_PROTECTOR);
             spells[4].targettype = TARGET_SELF;
             spells[4].instant = true;
-            spells[4].cooldown = -1;
+            spells[4].cooldown = 0;
             spells[4].perctrigger = 5.0f;
             spells[4].attackstoptimer = 1000;
 
@@ -636,7 +636,7 @@ class HighBotanistFreywinnAI : public CreatureAIScript
             spells[6].info = sSpellCustomizations.GetSpellInfo(TRANQUILITY);
             spells[6].targettype = TARGET_VARIOUS;
             spells[6].instant = false;
-            spells[6].cooldown = -1;
+            spells[6].cooldown = 0;
             spells[6].perctrigger = 0.0f;
             spells[6].attackstoptimer = 1000;
 
@@ -647,7 +647,7 @@ class HighBotanistFreywinnAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, SAY_HIGH_BOTANIS_FREYWIN_06);
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             PlantTimer = 10;
             CastTime();
@@ -660,7 +660,7 @@ class HighBotanistFreywinnAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             PlantTimer = 10;
             CastTime();
@@ -669,7 +669,7 @@ class HighBotanistFreywinnAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             PlantTimer = 10;
             CastTime();
@@ -813,21 +813,21 @@ class ThorngrinTheTenderAI : public CreatureAIScript
             spells[0].info = sSpellCustomizations.GetSpellInfo(HELLFIRE);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = false;
-            spells[0].cooldown = -1;
+            spells[0].cooldown = 0;
             spells[0].perctrigger = 9.0f;
             spells[0].attackstoptimer = 1000;
 
             spells[1].info = sSpellCustomizations.GetSpellInfo(SACRIFICE);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
-            spells[1].cooldown = -1;
+            spells[1].cooldown = 0;
             spells[1].perctrigger = 6.0f;
             spells[1].attackstoptimer = 1000;
 
             spells[2].info = sSpellCustomizations.GetSpellInfo(ENRAGE);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
-            spells[2].cooldown = -1;
+            spells[2].cooldown = 0;
             spells[2].perctrigger = 0.0f;
             spells[2].attackstoptimer = 1000;
 
@@ -838,7 +838,7 @@ class ThorngrinTheTenderAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, SAY_THORNIN_08);
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             Enraged = false;
             CastTime();
@@ -851,7 +851,7 @@ class ThorngrinTheTenderAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             Enraged = false;
             CastTime();
@@ -860,7 +860,7 @@ class ThorngrinTheTenderAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             Enraged = false;
             CastTime();
@@ -990,33 +990,33 @@ class LajAI : public CreatureAIScript
             spells[0].info = sSpellCustomizations.GetSpellInfo(ALERGIC_REACTION);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = false;
-            spells[0].cooldown = -1;
+            spells[0].cooldown = 0;
             spells[0].perctrigger = 10.0f;
             spells[0].attackstoptimer = 1000;
 
             spells[1].info = sSpellCustomizations.GetSpellInfo(SUMMON_THORN_LASHER);
             spells[1].targettype = TARGET_SELF;
             spells[1].instant = true;
-            spells[1].cooldown = -1;
+            spells[1].cooldown = 0;
             spells[1].perctrigger = 6.0f;
             spells[1].attackstoptimer = 1000;
 
             spells[2].info = sSpellCustomizations.GetSpellInfo(SUMMON_THORN_FLAYER);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
-            spells[2].cooldown = -1;
+            spells[2].cooldown = 0;
             spells[2].perctrigger = 6.0f;
             spells[2].attackstoptimer = 1000;
 
             spells[3].info = sSpellCustomizations.GetSpellInfo(TELEPORT_SELF);
             spells[3].targettype = TARGET_SELF;
             spells[3].instant = true;
-            spells[3].cooldown = -1; // will take this spell separately as it needs additional coding for changing position
+            spells[3].cooldown = 0; // will take this spell separately as it needs additional coding for changing position
             spells[3].perctrigger = 0.0f;
             spells[3].attackstoptimer = 1000;
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             TeleportTimer = 20;
             CastTime();
@@ -1029,7 +1029,7 @@ class LajAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             TeleportTimer = 20;
             CastTime();
@@ -1038,7 +1038,7 @@ class LajAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             TeleportTimer = 20;
             CastTime();
@@ -1134,21 +1134,21 @@ class WarpSplinterAI : public CreatureAIScript
             spells[0].info = sSpellCustomizations.GetSpellInfo(STOMP);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
-            spells[0].cooldown = -1;
+            spells[0].cooldown = 0;
             spells[0].perctrigger = 8.0f;
             spells[0].attackstoptimer = 1000;
 
             spells[1].info = sSpellCustomizations.GetSpellInfo(SUMMON_SAPLINGS);
             spells[1].targettype = TARGET_SELF;
             spells[1].instant = true;
-            spells[1].cooldown = -1;
+            spells[1].cooldown = 0;
             spells[1].perctrigger = 0.0f;
             spells[1].attackstoptimer = 1000;
 
             spells[2].info = sSpellCustomizations.GetSpellInfo(ARCANE_VOLLEY);
             spells[2].targettype = TARGET_VARIOUS;    // VARIOUS
             spells[2].instant = false;
-            spells[2].cooldown = -1;
+            spells[2].cooldown = 0;
             spells[2].perctrigger = 12.0f;
             spells[2].attackstoptimer = 1000;
 
@@ -1159,7 +1159,7 @@ class WarpSplinterAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, SAY_WARP_SPLINTER_06);
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             SummonTimer = 20;
             CastTime();
@@ -1172,7 +1172,7 @@ class WarpSplinterAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             SummonTimer = 20;
             CastTime();
@@ -1181,7 +1181,7 @@ class WarpSplinterAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             SummonTimer = 20;
             CastTime();

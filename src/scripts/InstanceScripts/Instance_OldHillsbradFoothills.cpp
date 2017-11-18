@@ -323,7 +323,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //    }
 //};
 
-void SetupOldHillsbradFoothills(ScriptMgr* mgr)
+void SetupOldHillsbradFoothills(ScriptMgr* /*mgr*/)
 {
     /*mgr->register_instance_script(MAP_OLD_HILSBRAD, &OldHilsbradInstance::Create);
     mgr->register_creature_script(CN_LIEUTENANT_DRAKE, &LieutenantDrakeAI::Create);

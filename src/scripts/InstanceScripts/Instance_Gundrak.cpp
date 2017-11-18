@@ -148,7 +148,7 @@ class GundrakScript : public InstanceScript
             }
         }
 
-        void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer) override
+        void OnGameObjectActivate(GameObject* pGameObject, Player* /*pPlayer*/) override
         {
             switch (pGameObject->GetEntry())
             {
@@ -195,7 +195,7 @@ class GundrakScript : public InstanceScript
                 pCoilision->SetState(pCoilision->GetState() == 1 ? 0 : 1);
         }
 
-        void OnCreatureDeath(Creature* pVictim, Unit* pKiller) override
+        void OnCreatureDeath(Creature* pVictim, Unit* /*pKiller*/) override
         {
             GameObject* pDoors = NULL;
             GameObject* pAltar = NULL;

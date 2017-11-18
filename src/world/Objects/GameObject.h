@@ -25,7 +25,7 @@
 #include "Management/QuestMgr.h"
 #include "Map/Map.h"
 
-enum GameObject_State
+enum GameObject_State : uint8_t
 {
     GO_STATE_OPEN               = 0,
     GO_STATE_CLOSED             = 1,

@@ -153,7 +153,7 @@ class Jaina_Gossip : public Arcemu::Gossip::Script
             Arcemu::Gossip::Menu::SendQuickMenu(pObject->GetGUID(), 1, plr, 1, GOSSIP_ICON_CHAT, "Can you remove the sword?");
         }
 
-        static void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)
+        static void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/)
         {
             if (JainaAI* pJaina = static_cast< JainaAI* >(static_cast<Creature*>(pObject)->GetScript()))
                 pJaina->StartInstance();

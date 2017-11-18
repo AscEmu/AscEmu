@@ -159,7 +159,7 @@ class RhahkZorAI : public CreatureAIScript
         AddSpell(6304, Target_Current, 8, 0, 3);    // Rhahk'Zor Slam
     }
 
-    void OnCombatStart(Unit* pTarget) override
+    void OnCombatStart(Unit* /*pTarget*/) override
     {
         sendDBChatMessage(5495);     // VanCleef pay big for you heads!
 
@@ -181,7 +181,7 @@ class MrSmiteAI : public CreatureAIScript
             _setWieldWeapon(true);
         }
 
-        void OnCombatStop(Unit* pTarget) override
+        void OnCombatStop(Unit* /*pTarget*/) override
         {
             if (isScriptPhase(4))
                 _removeAura(SMITES_HAMMER);

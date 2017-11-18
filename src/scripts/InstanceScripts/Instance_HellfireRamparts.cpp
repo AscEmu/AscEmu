@@ -108,12 +108,12 @@ class OmorTheUnscarredAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, 4861);     // It is... not over.
         }
 
-        void OnCombatStart(Unit* pTarget) override
+        void OnCombatStart(Unit* /*pTarget*/) override
         {           
             setRooted(true);
         }
 
-        void OnCombatStop(Unit* pTarget) override
+        void OnCombatStop(Unit* /*pTarget*/) override
         {
             if (isAlive())
             {

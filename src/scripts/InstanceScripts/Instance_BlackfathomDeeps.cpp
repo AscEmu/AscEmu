@@ -115,7 +115,7 @@ class MorriduneGossip : public Arcemu::Gossip::Script
             menu.Send(pPlayer);
         }
 
-        void OnSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* Code, uint32 gossipId) override
+        void OnSelectOption(Object* /*pObject*/, Player* pPlayer, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
         {
             switch (Id)
             {

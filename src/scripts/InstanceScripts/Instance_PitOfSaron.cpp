@@ -91,7 +91,7 @@ class ForgemasterGarfrostAI : public CreatureAIScript
         addEmoteForEvent(Event_OnDied, 8764);
     }
 
-    void OnCombatStart(Unit* pTarget) override
+    void OnCombatStart(Unit* /*pTarget*/) override
     {
         // Seting up Timers
         mSaroniteTimer = _addTimer(45000);
@@ -100,7 +100,7 @@ class ForgemasterGarfrostAI : public CreatureAIScript
         mDeepFreezeTimer = _addTimer(10000);
     }
 
-    void OnCombatStop(Unit* mTarget) override
+    void OnCombatStop(Unit* /*mTarget*/) override
     {
         // Clear Agent and Ai State
         setAIAgent(AGENT_NULL);
@@ -224,14 +224,14 @@ class IckAI : public CreatureAIScript
         }
 
         // Timers
-        mMightyKickTimer = INVALIDATE_TIMER;
-        mPursueTimer = INVALIDATE_TIMER;
-        mPoisonNovaTimer = INVALIDATE_TIMER;
-        mExplosionBarageTimer = INVALIDATE_TIMER;
-        mToxicWasteTimer = INVALIDATE_TIMER;
-        mShadowBoltTimer = INVALIDATE_TIMER;
-        mExplosionBarageEndTimer = INVALIDATE_TIMER;
-        mSpecialAttackTimer = INVALIDATE_TIMER;
+        mMightyKickTimer = 0;
+        mPursueTimer = 0;
+        mPoisonNovaTimer = 0;
+        mExplosionBarageTimer = 0;
+        mToxicWasteTimer = 0;
+        mShadowBoltTimer = 0;
+        mExplosionBarageEndTimer = 0;
+        mSpecialAttackTimer = 0;
 
         // Emotes
         // Krick
@@ -248,7 +248,7 @@ class IckAI : public CreatureAIScript
         Phase = BATTLE;
     }
 
-    void OnCombatStart(Unit* pTarget) override
+    void OnCombatStart(Unit* /*pTarget*/) override
     {
         Phase = BATTLE;
 
@@ -259,7 +259,7 @@ class IckAI : public CreatureAIScript
         mShadowBoltTimer = _addTimer(15000);
     }
 
-    void OnCombatStop(Unit* pTarget) override
+    void OnCombatStop(Unit* /*pTarget*/) override
     {
         Phase = OUTRO;
     }
@@ -414,8 +414,8 @@ class KrickAI : public CreatureAIScript
         mInstance = getInstanceScript();
 
         // Timer
-        mOutroTimer = INVALIDATE_TIMER;
-        mBarrageTimer = INVALIDATE_TIMER;
+        mOutroTimer = 0;
+        mBarrageTimer = 0;
 
         mBarrageSummon = nullptr;
 
@@ -433,7 +433,7 @@ class KrickAI : public CreatureAIScript
         Phase = BATTLE;
     }
 
-    void OnCombatStart(Unit* pTarget) override
+    void OnCombatStart(Unit* /*pTarget*/) override
     {
         // Set Battle
         Phase = BATTLE;
