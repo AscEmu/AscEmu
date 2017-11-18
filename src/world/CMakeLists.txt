@@ -98,6 +98,18 @@ set(sources
    ${SRC_UNITS_PLAYERS_FILES}
    ${SRC_UNITS_SUMMONS_FILES}
    ${SRC_WORLD_PROJECT}
+   
+   # Required for linker
+   ../collision/Management/VMapFactory.cpp
+   ../collision/Management/VMapManager2.cpp
+   ../collision/Management/MMapFactory.cpp
+   ../collision/Management/MMapManager.cpp
+   ../collision/Models/ModelInstance.cpp
+   ../collision/Models/WorldModel.cpp
+   ../collision/Models/GameObjectModel.cpp
+   ../collision/Maps/MapTree.cpp
+   ../collision/Maps/TileAssembler.cpp
+   ../collision/BoundingIntervalHierarchy.cpp
 )
 
 if("${ASCEMU_VERSION}" STREQUAL "Cata")
@@ -134,8 +146,8 @@ if(WIN32 AND NOT USE_PCH)
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS TRUE)
-add_dependencies(${PROJECT_NAME} shared g3dlite collision Detour Recast lualib)
+add_dependencies(${PROJECT_NAME} shared g3dlite Detour Recast lualib)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/WorldConf.h.in ${CMAKE_CURRENT_SOURCE_DIR}/WorldConf.h)
 
-target_link_libraries(${PROJECT_NAME} shared g3dlite collision Detour Recast ${PCRE_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} shared g3dlite Detour Recast ${PCRE_LIBRARIES})
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)

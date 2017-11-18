@@ -14,6 +14,11 @@ set(SRCS
     LUAEngine.cpp
     LuaGlobal.cpp
     LuaHelpers.cpp
+    # Required for linker
+    ../../world/Server/LazyTimer.cpp
+    ../../world/Server/ServerState.cpp
+    ../../world/Spell/SpellCastTargets.cpp
+    ../../shared/Util.cpp
 )
 
 set(HEADERS
@@ -32,11 +37,6 @@ set(HEADERS
     SpellFunctions.h
     TaxiFunctions.h
     UnitFunctions.h
-    # Required for linker
-    ../../world/Server/LazyTimer.cpp
-    ../../world/Server/ServerState.cpp
-    ../../world/Spell/SpellCastTargets.cpp
-    ../../shared/Util.cpp
 )
 
 include_directories(
