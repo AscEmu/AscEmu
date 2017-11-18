@@ -4,6 +4,7 @@
 #include <atomic>
 #include <mutex>
 #include <thread>
+#include <functional>
 
 // Lightweight wrapper for std::thread to provide extensibility
 namespace AscEmu { namespace Threading
