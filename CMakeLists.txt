@@ -1,6 +1,6 @@
 # Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
 project(Ascemu)
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.2)
 
 # set runtime binary where all compiled (before install) binary will compiled in
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

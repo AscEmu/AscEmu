@@ -6,7 +6,7 @@ endif()
 
 message(STATUS "Applying settings for ${CMAKE_CXX_COMPILER_ID}")
 
-add_definitions(-D_CRT_SECURE_NO_WARNINGS -DHAS_CXX0X)
+add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
 #set defines for msvc
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /EHa /MP /bigobj")
@@ -20,8 +20,8 @@ endif()
 # enable/disable warnings
 # dll warning 4251 disabled by default.
 if (BUILD_WITH_WARNINGS)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W3 /wd4251")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /wd4251")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W4 /wd4251")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /wd4251")
 else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W0")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0")
