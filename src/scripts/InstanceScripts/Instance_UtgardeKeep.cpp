@@ -63,7 +63,7 @@ class UtgardeKeepScript : public InstanceScript
         uint32        mDalronnDoorsGUID;
         uint32        mIngvarDoors[2];
 
-        uint8        mUtgardeData[UTGARDE_DATA_END];
+        uint32        mUtgardeData[UTGARDE_DATA_END];
 
         UtgardeKeepScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
         {
@@ -154,7 +154,7 @@ class UtgardeKeepScript : public InstanceScript
             }
         }
 
-        void SetLocaleInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
+        void SetLocaleInstanceData(uint32 /*pType*/, uint32 pIndex, uint32 pData)
         {
             switch (pIndex)
             {
@@ -213,17 +213,15 @@ class DragonflayerForgeMasterAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(DragonflayerForgeMasterAI);
         DragonflayerForgeMasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            pInstance = (UtgardeKeepScript*)getCreature()->GetMapMgr()->GetScript();
+            pInstance = static_cast<UtgardeKeepScript*>(getCreature()->GetMapMgr()->GetScript());
 
             AddSpell(DRAGONFLAYER_FORGE_MASTER_BURNING_BRAND, Target_Current, 8, 0, 40, 0, 30);
         }
 
-        void OnDied(Unit* pKiller) override
+        void OnDied(Unit* /*pKiller*/) override
         {
             if (pInstance)
-                pInstance->SetLocaleInstanceData(0, UTGARDE_FORGE_MASTER, 0);
-
-            
+                pInstance->SetLocaleInstanceData(0, UTGARDE_FORGE_MASTER, 0); 
         }
 
         UtgardeKeepScript* pInstance;
@@ -435,14 +433,14 @@ class SkarvaldTheConstructorAI : public CreatureAIScript
             AddSpell(SKARVALD_CHARGE, Target_RandomPlayerNotCurrent, 35, 0, 8);
             AddSpell(STONE_STRIKE, Target_ClosestPlayer, 25, 0, 10);
 
-            mReplyTimer = INVALIDATE_TIMER;
-            pDalronn = NULL;
-            pDalronnGhost = NULL;
+            mReplyTimer = 0;
+            pDalronn = nullptr;
+            pDalronnGhost = nullptr;
 
             addEmoteForEvent(Event_OnCombatStart, 4471);     // Dalronn! See if you can muster the nerve to join my attack!
         }
 
-        void OnCombatStart(Unit* pTarget) override
+        void OnCombatStart(Unit* /*pTarget*/) override
         {
             pDalronn = getNearestCreatureAI(CN_DALRONN);
 
@@ -458,7 +456,7 @@ class SkarvaldTheConstructorAI : public CreatureAIScript
             }
         }
 
-        void OnDied(Unit* pKiller) override
+        void OnDied(Unit* /*pKiller*/) override
         {
             if (pDalronn != nullptr && pDalronn->isAlive())
             {
@@ -481,7 +479,7 @@ class SkarvaldTheConstructorAI : public CreatureAIScript
             }
         }
 
-        void OnCombatStop(Unit* pTarget) override
+        void OnCombatStop(Unit* /*pTarget*/) override
         {
             if (pDalronn != nullptr)
             {
@@ -526,11 +524,9 @@ class DalronnTheControllerAI : public CreatureAIScript
             pSkarvaldGhost = nullptr;
         }
 
-        void OnCombatStart(Unit* pTarget) override
+        void OnCombatStart(Unit* /*pTarget*/) override
         {
             pSkarvald = getNearestCreatureAI(CN_SKARVALD);
-
-            
         }
 
         void AIUpdate() override
@@ -541,11 +537,9 @@ class DalronnTheControllerAI : public CreatureAIScript
                 spawnCreature(SKELETON_ADD, getCreature()->GetPositionX() - 6, getCreature()->GetPositionY() + 4, getCreature()->GetPositionZ(), 0);
                 _resetTimer(mSummonTimer, 15000);
             }
-
-            
         }
 
-        void OnDied(Unit* pKiller) override
+        void OnDied(Unit* /*pKiller*/) override
         {
             if (pSkarvald != nullptr && pSkarvald->isAlive())
             {
@@ -566,11 +560,9 @@ class DalronnTheControllerAI : public CreatureAIScript
                     pSkarvaldGhost = nullptr;
                 }
             }
-
-            
         }
 
-        void OnCombatStop(Unit* pTarget) override
+        void OnCombatStop(Unit* /*pTarget*/) override
         {
             if (pSkarvald != nullptr)
             {
@@ -609,8 +601,6 @@ class SkarvaldTheConstructorGhostAI : public CreatureAIScript
             Player* pTarget = getNearestPlayer();
             if (pTarget != nullptr)
                 getCreature()->GetAIInterface()->AttackReaction(pTarget, 50, 0);
-
-            
         }
 };
 
@@ -638,15 +628,13 @@ class DalronnTheControllerGhostAI : public CreatureAIScript
             Player* pTarget = getNearestPlayer();
             if (pTarget != nullptr)
                 getCreature()->GetAIInterface()->AttackReaction(pTarget, 50, 0);
-
-            
         }
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////// Prince Keleseth ///////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
-void SpellFunc_KelesethFrostTomb(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_KelesethFrostTomb(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType /*pType*/)
 {
     if (pCreatureAI != NULL)
     {
@@ -659,7 +647,7 @@ void SpellFunc_KelesethFrostTomb(SpellDesc* pThis, CreatureAIScript* pCreatureAI
     }
 }
 
-void SpellFunc_KelesethAddSummon(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_KelesethAddSummon(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* /*pTarget*/, TargetType /*pType*/)
 {
     if (pCreatureAI != NULL)
     {
@@ -685,7 +673,7 @@ class PrinceKelesethAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTargetDied, 504);      // I join... the night.
         }
 
-        void OnCombatStart(Unit* pTarget) override
+        void OnCombatStart(Unit* /*pTarget*/) override
         {
             CastSpellNowNoScheduling(mAddSummon);
         }
@@ -719,7 +707,7 @@ class FrostTombAI : public CreatureAIScript
                 despawn();
         }
 
-        void OnDied(Unit* pKilled) override
+        void OnDied(Unit* /*pKilled*/) override
         {
             if (plr != nullptr && plr->HasAura(FROST_TOMB_SPELL))
             {
@@ -753,12 +741,12 @@ class SkeletonAddAI : public CreatureAIScript
             
         }
 
-        void OnCombatStop(Unit* pTarget) override
+        void OnCombatStop(Unit* /*pTarget*/) override
         {
             despawn(1);
         }
 
-        void OnDied(Unit* pKiller) override
+        void OnDied(Unit* /*pKiller*/) override
         {
             despawn(1);
         }
@@ -768,7 +756,7 @@ class SkeletonAddAI : public CreatureAIScript
 ////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// Ingvar the Plunderer //////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
-void SpellFunc_ShadowAxe(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_ShadowAxe(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType /*pType*/)
 {
     if (pCreatureAI != NULL)
     {
@@ -811,7 +799,7 @@ class IngvarThePlundererAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, 4470);     // My life for the... death god!
         }
 
-        void OnDied(Unit* pKiller) override
+        void OnDied(Unit* /*pKiller*/) override
         {
             //Ressurect event
             spawnCreature(CN_INGVAR_UNDEAD, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->GetFaction());

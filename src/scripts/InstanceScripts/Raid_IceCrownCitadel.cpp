@@ -92,7 +92,7 @@ class IceCrownCitadelScript : public InstanceScript
             }
         }
 
-        void OnCreatureDeath(Creature* pCreature, Unit* pUnit) override
+        void OnCreatureDeath(Creature* pCreature, Unit* /*pUnit*/) override
         {
             switch (pCreature->GetEntry())
             {
@@ -162,7 +162,7 @@ public:
         menu.Send(player);
     }
 
-    void OnSelectOption(Object* object, Player* player, uint32 Id, const char* enteredcode, uint32 gossipId) override
+    void OnSelectOption(Object* /*object*/, Player* player, uint32 Id, const char* /*enteredcode*/, uint32 /*gossipId*/) override
     {
         switch (Id)
         {
@@ -262,7 +262,7 @@ class LordMarrowgarAI : public CreatureAIScript
         {
         }
 
-        void OnCastSpell(uint32 spellId) override
+        void OnCastSpell(uint32 /*spellId*/) override
         {
         }
 
@@ -276,15 +276,15 @@ class LordMarrowgarAI : public CreatureAIScript
             sendAnnouncement(ss.str());
         }
 
-        void OnCombatStart(Unit* pTarget) override
+        void OnCombatStart(Unit* /*pTarget*/) override
         {
         }
 
-        void OnTargetDied(Unit* pTarget) override
+        void OnTargetDied(Unit* /*pTarget*/) override
         {
         }
 
-        void OnDied(Unit* pTarget) override
+        void OnDied(Unit* /*pTarget*/) override
         {
         }
 };

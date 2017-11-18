@@ -94,7 +94,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             ResetCastTime();
             MarkCount = 0;
@@ -110,7 +110,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             getCreature()->SetDisplayId(20162);
             getCreature()->SchoolImmunityList[SCHOOL_FROST] = 1;
@@ -121,7 +121,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnTargetDied(Unit* mTarget) override
+        void OnTargetDied(Unit* /*mTarget*/) override
         {
             if (getCreature()->GetHealthPct() > 0)
             {
@@ -154,7 +154,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
             }
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             sendDBChatMessage(4757);     // You are the disease, not I..
         }
@@ -345,13 +345,13 @@ class HydrossTheUnstableAI : public CreatureAIScript
             SpellCast(val);
         }
 
-        void SpellCast(float val)
+        void SpellCast(float /*val*/)
         {
             if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (uint8 i = minspell; i <= maxspell; i++)
+                for (int i = minspell; i <= maxspell; i++)
                 {
                     if (m_spellcheck[i])
                     {
@@ -501,12 +501,12 @@ class LurkerAI : public CreatureAIScript
             spells[3].attackstoptimer = 2000; // 2sec
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -647,7 +647,7 @@ class LeotherasAI : public CreatureAIScript
             }
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             if (LeotherasEventGreyheartToKill[getCreature()->GetInstanceID()] != 0)
                 return;
@@ -661,7 +661,7 @@ class LeotherasAI : public CreatureAIScript
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             //despawn shadow of leotheras
             Creature* shadow = NULL;
@@ -677,7 +677,7 @@ class LeotherasAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnTargetDied(Unit* mTarget) override
+        void OnTargetDied(Unit* /*mTarget*/) override
         {
             if (getCreature()->GetHealthPct() > 0)
             {
@@ -714,7 +714,7 @@ class LeotherasAI : public CreatureAIScript
             }
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             sendDBChatMessage(4783);     // You cannot kill me! Fools, I'll be back! I'll... aarghh...
         }
@@ -965,7 +965,7 @@ class GreyheartSpellbinderAI : public CreatureAIScript
             }
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             getCreature()->SetChannelSpellTargetGUID(0);
             getCreature()->SetChannelSpellId(0);
@@ -973,7 +973,7 @@ class GreyheartSpellbinderAI : public CreatureAIScript
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -987,7 +987,7 @@ class GreyheartSpellbinderAI : public CreatureAIScript
             SpellCast(val);
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             LeotherasEventGreyheartToKill[getCreature()->GetInstanceID()]--;
 
@@ -1126,13 +1126,13 @@ class ShadowofLeotherasAI : public CreatureAIScript
             sEventMgr.AddEvent(static_cast<Object*>(getCreature()), &Object::EventSetUInt32Value, (uint32)UNIT_FIELD_FLAGS, (uint32)0, EVENT_CREATURE_UPDATE, 7500, 0, 1);
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_SPELL);
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             RemoveAIUpdateEvent();
         }
@@ -1186,7 +1186,7 @@ class KarathressAI : public CreatureAIScript
             CataclysmicBoltTimer = 0;
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             CataclysmicBoltTimer = 10;
             EnrageTimer = 600;
@@ -1195,14 +1195,14 @@ class KarathressAI : public CreatureAIScript
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             sendDBChatMessage(4748);     // Her ... excellency ... awaits!
 
@@ -1213,7 +1213,7 @@ class KarathressAI : public CreatureAIScript
                 olum->Despawn(180000, 0);
         }
 
-        void OnTargetDied(Unit* mTarget) override
+        void OnTargetDied(Unit* /*mTarget*/) override
         {
             sendDBChatMessage(4747);     // I am rid of you.
         }
@@ -1304,13 +1304,13 @@ class FathomGuardSharkissAI : public CreatureAIScript
             SummonPetTimer = 0;
         }
 
-        void OnCombatStart(Unit* pTarget) override
+        void OnCombatStart(Unit* /*pTarget*/) override
         {
             CurrentPet = NULL;
             SummonPetTimer = 5;
         }
 
-        void OnDied(Unit* pKiller) override
+        void OnDied(Unit* /*pKiller*/) override
         {
             Creature* FLK = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), CN_FATHOM_LORD_KARATHRESS);
             if (FLK)
@@ -1372,7 +1372,7 @@ class FathomGuardTidalvessAI : public CreatureAIScript
             AddSpell(WINDFURY, Target_Current, 10.0f, 0, 0);
         }
 
-        void OnDied(Unit* pKiller) override
+        void OnDied(Unit* /*pKiller*/) override
         {
             Creature* FLK = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), CN_FATHOM_LORD_KARATHRESS);
             if (FLK)
@@ -1402,12 +1402,12 @@ class FathomGuardCaribdisAI : public CreatureAIScript
             HealingWaveTimer = 0;
         }
 
-        void OnCombatStart(Unit* pTarget) override
+        void OnCombatStart(Unit* /*pTarget*/) override
         {
             HealingWaveTimer = 15;
         }
 
-        void OnDied(Unit* pKiller) override
+        void OnDied(Unit* /*pKiller*/) override
         {
             Creature* FLK = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), CN_FATHOM_LORD_KARATHRESS);
             if (FLK)
@@ -1456,7 +1456,7 @@ class MorogrimAI : public CreatureAIScript
             spells[3].cooldown = 30;
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             sendDBChatMessage(4784);     // Flood of the deep, take you!
 
@@ -1467,7 +1467,7 @@ class MorogrimAI : public CreatureAIScript
                 spells[i].casttime = t + spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -1475,12 +1475,12 @@ class MorogrimAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             sendDBChatMessage(4792);     // Great... currents of... Ageon.
         }
 
-        void OnTargetDied(Unit* mTarget) override
+        void OnTargetDied(Unit* /*mTarget*/) override
         {
             if (getCreature()->GetHealthPct() > 0)
             {
@@ -1587,12 +1587,12 @@ class TidewalkerLurkerAI : public CreatureAIScript
             }
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             getCreature()->Despawn(1, 0);
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             getCreature()->Despawn(1, 0);
         }
@@ -1674,7 +1674,7 @@ class EnchantedElementalAI : public CreatureAIScript
             }
         }
 
-        void OnReachWP(uint32 iWaypointId, bool bForwards) override
+        void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
         {
             switch (iWaypointId)
             {
@@ -1777,7 +1777,7 @@ class VashjAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             ResetCastTime();
             Phase = 1;
@@ -1807,7 +1807,7 @@ class VashjAI : public CreatureAIScript
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             //despawn enchanted elemental, tainted elemental, coilfang elite, coilfang strider
             Creature* creature = NULL;
@@ -1836,12 +1836,12 @@ class VashjAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             sendDBChatMessage(4771);     // Lord Illidan, I... I am... sorry.
         }
 
-        void OnTargetDied(Unit* mTarget) override
+        void OnTargetDied(Unit* /*mTarget*/) override
         {
             switch (RandomUInt(1))
             {
@@ -2066,7 +2066,7 @@ class VashjAI : public CreatureAIScript
             }
         }
 
-        void OnReachWP(uint32 iWaypointId, bool bForwards) override
+        void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
         {
             switch (iWaypointId)
             {
@@ -2219,18 +2219,18 @@ class TaintedElementalAI : public CreatureAIScript
                 delete this->spell_poison_spit;
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_SPELL);
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             Creature* Vashj = NULL;
             Vashj = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), CN_LADY_VASHJ);
@@ -2312,7 +2312,7 @@ class ToxicSporeBatAI : public CreatureAIScript
             spells[0].info = sSpellCustomizations.GetSpellInfo(TOXIC_SPORES);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
-            spells[0].cooldown = -1;
+            spells[0].cooldown = 0;
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000;
 
@@ -2335,7 +2335,7 @@ class ToxicSporeBatAI : public CreatureAIScript
             FlyWay = 0;
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             //_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Phase 1 Test!");
             getCreature()->PlaySoundToSet(11243);
@@ -2369,7 +2369,7 @@ class ToxicSporeBatAI : public CreatureAIScript
                 spells[i].casttime = spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             Phase = 0;
             FlameQuills = false;
@@ -2386,7 +2386,7 @@ class ToxicSporeBatAI : public CreatureAIScript
             //RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             Phase = 0;
             FlameQuills = false;
@@ -2533,7 +2533,7 @@ class ToxicSporeBatAI : public CreatureAIScript
             }
         }
 
-        void OnReachWP(uint32 iWaypointId, bool bForwards) override
+        void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
         {
             if (Phase == 1)
             {
@@ -2767,7 +2767,7 @@ class UnderbogColossusAI : public CreatureAIScript
             }
         }
 
-        void OnDied(Unit* pKiller) override
+        void OnDied(Unit* /*pKiller*/) override
         {
             //There will also be a choice of abilities he might use as he dies:
             switch (RandomUInt(2))
@@ -2877,7 +2877,7 @@ class SerpentshrineCavern : public InstanceScript
             }
         }
 
-        void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer) override
+        void OnGameObjectActivate(GameObject* pGameObject, Player* /*pPlayer*/) override
         {
             if (pGameObject->GetGameObjectProperties()->entry != 184568)
                 return;

@@ -39,12 +39,12 @@ class CoreRagerAI : public CreatureAIScript
             info_mangle = sSpellCustomizations.GetSpellInfo(MANGLE);
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -103,12 +103,12 @@ class SulfuronAI : public CreatureAIScript
             info_flamespear = sSpellCustomizations.GetSpellInfo(FLAME_SPEAR);
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -218,20 +218,20 @@ class RagnarosAI : public CreatureAIScript
             getCreature()->setMoveRoot(true);
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
             getCreature()->GetAIInterface()->skip_reset_hp = true;
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
-        void OnTargetDied(Unit* mTarget) override
+        void OnTargetDied(Unit* /*mTarget*/) override
         {
             sendDBChatMessage(3053);     // Die, insect!
         }
@@ -510,7 +510,7 @@ class FlameguardAI : public CreatureAIScript
             mFlames = AddSpell(FLAMEGUARD_FLAMES, Target_Self, 0, 0, 0);
         }
 
-        void OnDied(Unit* pKiller) override
+        void OnDied(Unit* /*pKiller*/) override
         {
             CastSpellNowNoScheduling(mFlames);
         }
@@ -662,12 +662,12 @@ class FireswornAI : public CreatureAIScript
             mSeparationAnxiety = AddSpell(FIRESWORN_SEPARATION_ANXIETY, Target_Self, 0, 5, 5);
         }
 
-        void OnCombatStart(Unit* pTarget) override
+        void OnCombatStart(Unit* /*pTarget*/) override
         {
             mGarr = getNearestCreatureAI(CN_GARR);
         }
 
-        void OnDied(Unit* pKiller) override
+        void OnDied(Unit* /*pKiller*/) override
         {
             CastSpellNowNoScheduling(mEruption);
         }
@@ -732,7 +732,7 @@ class ShazzrahAI : public CreatureAIScript
         SpellDesc* mArcaneExplosion;
 };
 
-void SpellFunc_ShazzrahBlinkArcaneExplosions(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_ShazzrahBlinkArcaneExplosions(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* /*pTarget*/, TargetType /*pType*/)
 {
     ShazzrahAI* Shazzrah = (pCreatureAI) ? static_cast< ShazzrahAI* >(pCreatureAI) : NULL;
     if (Shazzrah)

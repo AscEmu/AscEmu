@@ -44,7 +44,7 @@ class DeepfuryAI : public CreatureAIScript
         AddSpell(IMPROVED_BLOCKING, Target_Self, 100, 0, 20);
     }
 
-    void OnCombatStart(Unit* pTarget) override
+    void OnCombatStart(Unit* /*pTarget*/) override
     {
         getCreature()->CastSpell(getCreature(), 7164, false); // Defensive Stance
         
@@ -91,7 +91,7 @@ class BazilAI : public CreatureAIScript
         addEmoteForEvent(Event_OnCombatStart, 8760);
     }
 
-    void OnCombatStart(Unit* pTarget) override
+    void OnCombatStart(Unit* /*pTarget*/) override
     {
         getCreature()->CastSpell(getCreature(), 674, false); // Dual Wield
     }
@@ -107,7 +107,7 @@ class DextrenAI : public CreatureAIScript
         AddSpell(STRIKE, Target_Self, 33, 0, 10);
     }
 
-    void OnCombatStart(Unit* pTarget) override
+    void OnCombatStart(Unit* /*pTarget*/) override
     {
         getCreature()->CastSpell(getCreature(), 7165, false); // Battle Stance
     }
@@ -146,7 +146,7 @@ class InmateAI : public CreatureAIScript
         AddSpell(REND, Target_Current, 100, 5, 16);
     }
 
-    void OnCombatStart(Unit* pTarget) override
+    void OnCombatStart(Unit* /*pTarget*/) override
     {
         getCreature()->CastSpell(getCreature(), 7165, false); // Battle Stance
     }
@@ -161,7 +161,7 @@ class InsurgentAI : public CreatureAIScript
         AddSpell(DEMORALIZING_SHOUT, Target_Self, 100, 7, 25);
     }
 
-    void OnCombatStart(Unit* pTarget) override
+    void OnCombatStart(Unit* /*pTarget*/) override
     {
         getCreature()->CastSpell(getCreature(), 9128, false); // Battle Shout
     }
@@ -177,7 +177,7 @@ class PrisonerAI : public CreatureAIScript
         AddSpell(DISARM, Target_Current, 100, 10, 14);
     }
 
-    void OnCombatStart(Unit* pTarget) override
+    void OnCombatStart(Unit* /*pTarget*/) override
     {
         getCreature()->CastSpell(getCreature(), 7165, false); // Battle Stance
     }
@@ -192,7 +192,7 @@ class ConvictAI : public CreatureAIScript
         AddSpell(BACKHAND, Target_Current, 100, 5, 12);
     }
 
-    void OnCombatStart(Unit* pTarget) override
+    void OnCombatStart(Unit* /*pTarget*/) override
     {
         getCreature()->CastSpell(getCreature(), 674, false); // Dual Wield
     }

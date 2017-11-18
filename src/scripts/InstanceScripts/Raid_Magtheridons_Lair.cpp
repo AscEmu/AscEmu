@@ -577,8 +577,8 @@ class ManticronCubeGO : public GameObjectAIScript
                     Magtheridon->interruptSpell();
 
                 // We add channeling player aura that does not allow that go to be used again in 1.3 min
-                Aura* aura = sSpellFactoryMgr.NewAura(sSpellCustomizations.GetSpellInfo(MIND_EXHAUSTION), (uint32)78000, Magtheridon, Channeler);
-                Channeler->AddAura(aura);
+                Aura* auraT = sSpellFactoryMgr.NewAura(sSpellCustomizations.GetSpellInfo(MIND_EXHAUSTION), (int32)78000, Magtheridon, Channeler);
+                Channeler->AddAura(auraT);
 
                 MagYell = true;
 
@@ -713,7 +713,7 @@ class HellfireWarderAI : public CreatureAIScript
             spells[6].attackstoptimer = 8;
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
 
@@ -721,7 +721,7 @@ class HellfireWarderAI : public CreatureAIScript
                 spells[i].casttime = 0;
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -906,7 +906,7 @@ class HellfireChannelerAI : public CreatureAIScript
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
 
@@ -917,7 +917,7 @@ class HellfireChannelerAI : public CreatureAIScript
                 spells[i].casttime = 0;
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -938,13 +938,13 @@ class HellfireChannelerAI : public CreatureAIScript
             }
         }
 
-        void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
+        void OnDamageTaken(Unit* /*mAttacker*/, uint32 /*fAmount*/) override
         {
             if (!getCreature()->GetAIInterface()->GetAllowedToEnterCombat())
                 getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             getCreature()->SetChannelSpellTargetGUID(0);
             getCreature()->SetChannelSpellId(0);
@@ -1096,7 +1096,7 @@ class BurningAbyssalAI : public CreatureAIScript
             getCreature()->m_noRespawn = true;
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
 
@@ -1104,7 +1104,7 @@ class BurningAbyssalAI : public CreatureAIScript
                 spells[i].casttime = 0;
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -1299,7 +1299,7 @@ class MagtheridonAI : public CreatureAIScript
             PhaseSwitch = false;
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             timer_quake = timer_enrage = timer_blastNova = timer_caveIn = 0;
             PhaseSwitch = false;
@@ -1314,7 +1314,7 @@ class MagtheridonAI : public CreatureAIScript
                 Gate->SetState(GO_STATE_CLOSED);
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -1340,12 +1340,12 @@ class MagtheridonAI : public CreatureAIScript
                 Gate->SetState(GO_STATE_OPEN);
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             sendDBChatMessage(8750);     // The Legion... will consume you... all....
         }
 
-        void OnTargetDied(Unit* mTarget) override
+        void OnTargetDied(Unit* /*mTarget*/) override
         {
             if (getCreature()->GetHealthPct() > 0)
             {

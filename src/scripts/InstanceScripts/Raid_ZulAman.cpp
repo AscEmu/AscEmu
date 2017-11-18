@@ -51,17 +51,17 @@ class NalorakkAI : public CreatureAIScript
             MorphTimer = 0;
         }
 
-        void OnCombatStart(Unit* pTarget) override
+        void OnCombatStart(Unit* /*pTarget*/) override
         {
             MorphTimer = _addTimer(45000);
         }
 
-        void OnCombatStop(Unit* pTarget) override
+        void OnCombatStop(Unit* /*pTarget*/) override
         {
             _setDisplayId(21631); 
         }
 
-        void OnDied(Unit* pKiller) override
+        void OnDied(Unit* /*pKiller*/) override
         {
             _setDisplayId(21631);
         }
@@ -116,7 +116,7 @@ class AkilzonAI : public CreatureAIScript
             mSummonTime = 0;
         }
 
-        void OnCombatStart(Unit* pTarget) override
+        void OnCombatStart(Unit* /*pTarget*/) override
         {
             mSummonTime = _addTimer(120000);
         }
@@ -189,7 +189,7 @@ class HalazziAI : public CreatureAIScript
             SplitCount = 0;
         }
 
-        void OnCombatStart(Unit* pTarget) override
+        void OnCombatStart(Unit* /*pTarget*/) override
         {
             mTotemTimer = _addTimer(5000); // Just to make the Timer ID
             SplitCount = 1;
@@ -197,7 +197,7 @@ class HalazziAI : public CreatureAIScript
             mLynx = NULL;
         }
 
-        void OnCombatStop(Unit* pTarget) override
+        void OnCombatStop(Unit* /*pTarget*/) override
         {
             Merge();
         }

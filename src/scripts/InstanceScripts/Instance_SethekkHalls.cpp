@@ -1592,7 +1592,7 @@ class TalonKingIkissAI : public CreatureAIScript
             spells[3].instant = false;
             spells[3].perctrigger = 0.0f;
             spells[3].attackstoptimer = 1000;
-            spells[3].cooldown = -1;
+            spells[3].cooldown = 0;
 
             Blink = false;
 

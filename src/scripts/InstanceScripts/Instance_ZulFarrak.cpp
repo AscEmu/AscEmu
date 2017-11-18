@@ -44,14 +44,14 @@ class ThekaAI : public CreatureAIScript
             morphcheck = false;
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             morphcheck = true;
             plaguecount = 0;
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -60,7 +60,7 @@ class ThekaAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             morphcheck = false;
             plaguecount = 0;
@@ -152,7 +152,7 @@ class AntusulAI : public CreatureAIScript
             secondspawncount = 0;
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             add1 = add2 = add3 = add4 = add5 = add6 = trigger = NULL;
             spawns = firstspawn = secondspawn = true;
@@ -162,7 +162,7 @@ class AntusulAI : public CreatureAIScript
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             spawns = spawns2 = attack = firstspawn = secondspawn = false;
 
@@ -174,7 +174,7 @@ class AntusulAI : public CreatureAIScript
             deletespawns();
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             spawns = spawns2 = attack = firstspawn = secondspawn = false;
 

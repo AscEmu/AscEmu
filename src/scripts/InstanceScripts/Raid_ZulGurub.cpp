@@ -94,7 +94,7 @@ class JeklikAI : public CreatureAIScript
             spells[5].attackstoptimer = 10000; // 1sec
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             sendDBChatMessage(3201);     // Lord Hir'eek, grant me wings of vengeance!
 
@@ -103,7 +103,7 @@ class JeklikAI : public CreatureAIScript
             getCreature()->CastSpell(getCreature(), spells[0].info, spells[0].instant);
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -233,12 +233,12 @@ class VenoxisAI : public CreatureAIScript
             spells[3].attackstoptimer = 2000; // 2sec
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);

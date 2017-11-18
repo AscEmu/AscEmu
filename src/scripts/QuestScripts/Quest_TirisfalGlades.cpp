@@ -37,42 +37,47 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(CalvinMontague);
     CalvinMontague(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnLoad()
+    void OnLoad() override
     {
         getCreature()->SetFaction(68);
         getCreature()->SetStandState(STANDSTATE_STAND);
     }
 
-    void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
+    void OnDamageTaken(Unit* mAttacker, uint32 /*fAmount*/) override
     {
         if (getCreature()->GetHealthPct() < 10)
         {
             if (mAttacker->IsPlayer())
             {
                 getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                RegisterAIUpdateEvent(1000);
                 QuestLogEntry* qle = (static_cast<Player*>(mAttacker))->GetQuestLogForEntry(590);
                 if (!qle)
                     return;
+
                 qle->SendQuestComplete();
+
+                setScriptPhase(2);
             }
         }
     }
 
-    void AIUpdate()
+    void OnScriptPhaseChange(uint32_t phase) override
     {
-        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay, okay! Enough fighting.");
-        getCreature()->RemoveNegativeAuras();
-        getCreature()->SetFaction(68);
-        getCreature()->SetStandState(STANDSTATE_SIT);
-        getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(433), true);
-        sEventMgr.AddEvent(static_cast<Unit*>(getCreature()), &Unit::SetStandState, (uint8)STANDSTATE_STAND, EVENT_CREATURE_UPDATE, 18000, 0, 1);
-        getCreature()->GetAIInterface()->WipeTargetList();
-        getCreature()->GetAIInterface()->WipeHateList();
-        getCreature()->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
-        _setMeleeDisabled(true);
-        getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+        if (phase == 2)
+        {
+            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay, okay! Enough fighting.");
+            getCreature()->RemoveNegativeAuras();
+            getCreature()->SetFaction(68);
+            getCreature()->SetStandState(STANDSTATE_SIT);
+            getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(433), true);
+            sEventMgr.AddEvent(static_cast<Unit*>(getCreature()), &Unit::SetStandState, (uint8)STANDSTATE_STAND, EVENT_CREATURE_UPDATE, 18000, 0, 1);
+            getCreature()->GetAIInterface()->WipeTargetList();
+            getCreature()->GetAIInterface()->WipeHateList();
+            getCreature()->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
+            _setMeleeDisabled(true);
+            getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+        }
     }
 };
 

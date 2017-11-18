@@ -289,7 +289,7 @@ class DofNaralexGossip : public Arcemu::Gossip::Script
             }
 
         }
-        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId) override
+        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32_t /*gossipId*/) override
         {
             Creature* pCreature = (pObject->IsCreature()) ? static_cast<Creature*>(pObject) : nullptr;
             if (pCreature == nullptr)
@@ -342,7 +342,7 @@ class DofNaralexAI : public CreatureAIScript
             SpawnTimer = 0;
         }
 
-        void OnReachWP(uint32 iWaypointId, bool bForwards) override
+        void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
         {
             ForceWaypointMove(iWaypointId + 1);
             if (isScriptPhase(1) && GetCurrentWaypoint() == 39)

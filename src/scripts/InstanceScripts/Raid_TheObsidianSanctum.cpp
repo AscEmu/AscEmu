@@ -53,7 +53,7 @@ class ObsidianSanctumScript : public InstanceScript
             }
         }
 
-        void OnCreatureDeath(Creature* pVictim, Unit* pKiller) override
+        void OnCreatureDeath(Creature* pVictim, Unit* /*pKiller*/) override
         {
             switch (pVictim->GetEntry())
             {
@@ -100,7 +100,7 @@ class ObsidianSanctumScript : public InstanceScript
         }
 };
 
-void SpellFunc_FlameTsunami(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_FlameTsunami(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* /*pTarget*/, TargetType /*pType*/)
 {
     if (pCreatureAI != NULL)
     {
@@ -143,7 +143,7 @@ void SpellFunc_FlameTsunami(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Uni
     }
 }
 
-void SpellFunc_LavaSpawn(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_LavaSpawn(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType /*pType*/)
 {
     if (pCreatureAI == NULL)
         return;
@@ -198,7 +198,7 @@ class SartharionAI : public CreatureAIScript
             m_iDrakeCount = 0;
         }
 
-        void OnCombatStart(Unit* pTarget) override
+        void OnCombatStart(Unit* /*pTarget*/) override
         {
             m_bEnraged = false;
             mFlameTsunami->setTriggerCooldown();
@@ -291,7 +291,7 @@ class SartharionAI : public CreatureAIScript
             m_bDrakes[DRAKE_VESPERON] = false;
         }
 
-        void OnDied(Unit* pKiller) override
+        void OnDied(Unit* /*pKiller*/) override
         {
             sendDBChatMessage(3984);         //Such is the price... of failure...
         }
@@ -358,12 +358,12 @@ class LavaBlazeAI : public CreatureAIScript
             AggroNearestPlayer(1);
         }
 
-        void OnCombatStop(Unit* pTarget) override
+        void OnCombatStop(Unit* /*pTarget*/) override
         {
             despawn(1000, 0);
         }
 
-        void OnDied(Unit* pKiller) override
+        void OnDied(Unit* /*pKiller*/) override
         {
             despawn(1000, 0);
         }

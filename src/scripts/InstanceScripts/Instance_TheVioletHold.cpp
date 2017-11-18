@@ -204,7 +204,7 @@ class TheVioletHoldScript : public InstanceScript
             return CN_INTRO_AZURE_SPELLBREAKER_ARCANE;
         }
 
-        void OnStateChange(uint32 pLastState, uint32 pNewState)
+        void OnStateChange(uint32 /*pLastState*/, uint32 pNewState)
         {
             switch (pNewState)
             {
@@ -265,7 +265,7 @@ class VHCreatureAI : public CreatureAIScript
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I am alive!");
         }
 
-        void OnReachWP(uint32 iWaypointId, bool bForwards) override
+        void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
         {
             switch (iWaypointId)
             {
@@ -289,7 +289,7 @@ class VHCreatureAI : public CreatureAIScript
         }
 
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             PutAllSpellsOnCooldown();
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
@@ -301,7 +301,7 @@ class VHCreatureAI : public CreatureAIScript
                 m_spells[i].casttime = m_spells[i].cooldown;
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             PutAllSpellsOnCooldown();
             setAIAgent(AGENT_NULL);
@@ -309,7 +309,7 @@ class VHCreatureAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             PutAllSpellsOnCooldown();
         }
@@ -565,7 +565,7 @@ class MoraggAI : public CreatureAIScript
 //class CyanigosaAI : public CreatureAIScript
 
 
-void SetupTheVioletHold(ScriptMgr* mgr)
+void SetupTheVioletHold(ScriptMgr* /*mgr*/)
 {
     //Instance
 //    mgr->register_instance_script(MAP_VIOLET_HOLD, &TheVioletHoldScript::Create);

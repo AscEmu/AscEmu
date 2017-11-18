@@ -69,7 +69,7 @@ class OnyxiaAI : public CreatureAIScript
             m_currentWP = 0;
         }
 
-        void OnCombatStart(Unit* mTarget) override
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             m_phase = 1;
             m_eFlamesCooldown = 1;
@@ -86,7 +86,7 @@ class OnyxiaAI : public CreatureAIScript
             m_Cleave = false;
         }
 
-        void OnCombatStop(Unit* mTarget) override
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
             getCreature()->GetAIInterface()->setWayPointToMove(0);
@@ -102,14 +102,14 @@ class OnyxiaAI : public CreatureAIScript
                 RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit* mKiller) override
+        void OnDied(Unit* /*mKiller*/) override
         {
             m_phase = 1;
             m_eFlamesCooldown = 1;
             m_whelpCooldown = 7;
         }
 
-        void OnReachWP(uint32 iWaypointId, bool bForwards) override
+        void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
         {
             switch (iWaypointId)
             {

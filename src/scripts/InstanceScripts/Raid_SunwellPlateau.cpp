@@ -228,7 +228,7 @@ class FelmystAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTaunt, 8846);
         }
 
-        void OnCombatStart(Unit* pTarget) override
+        void OnCombatStart(Unit* /*pTarget*/) override
         {
             _applyAura(FELMYST_NOXIOUS_FUME);
         }
@@ -260,7 +260,7 @@ class LadySacrolashAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, 8848); // Wasn't able to find sound for this text
         }
 
-        void OnDied(Unit* pKiller) override
+        void OnDied(Unit* /*pKiller*/) override
         {
             CreatureAIScript* mGrandWarlockAlythess = getNearestCreatureAI(CN_GRAND_WARLOCK_ALYTHESS);
             if (mGrandWarlockAlythess != nullptr && mGrandWarlockAlythess->isAlive())
@@ -296,7 +296,7 @@ class GrandWarlockAlythessAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, 8850); // Wasn't able to find sound for this text
         }
 
-        void OnDied(Unit* pKiller) override
+        void OnDied(Unit* /*pKiller*/) override
         {
             CreatureAIScript* mLadySacrolash = getNearestCreatureAI(CN_LADY_SACROLASH);
             if (mLadySacrolash != nullptr && mLadySacrolash->isAlive())
