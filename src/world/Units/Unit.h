@@ -1103,7 +1103,7 @@ public:
     uint32 GetAttackPower() { return getUInt32Value(UNIT_FIELD_ATTACK_POWER); }
 
     //\todo fix this
-    void SetAttackPowerMods(uint32 /*amt*/)
+    void SetAttackPowerMods(uint32 amt)
     {
 #if VERSION_STRING != Cata
         setUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS, amt);
@@ -1117,7 +1117,7 @@ public:
         return 0;
 #endif
     }
-    void ModAttackPowerMods(uint32 /*amt*/)
+    void ModAttackPowerMods(uint32 amt)
     {
 #if VERSION_STRING != Cata
         ModUnsigned32Value(UNIT_FIELD_ATTACK_POWER_MODS, amt);
@@ -1134,7 +1134,7 @@ public:
     uint32 GetRangedAttackPower() { return getUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER); }
 
     //\todo fix this
-    void SetRangedAttackPowerMods(uint32 /*amt*/)
+    void SetRangedAttackPowerMods(uint32 amt)
     {
 #if VERSION_STRING != Cata
         setUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS, amt);
@@ -1148,7 +1148,7 @@ public:
         return 0;
 #endif
     }
-    void ModRangedAttackPowerMods(uint32 /*amt*/)
+    void ModRangedAttackPowerMods(uint32 amt)
     {
 #if VERSION_STRING != Cata
         ModUnsigned32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS, amt);
