@@ -517,10 +517,16 @@ class SERVER_DECL CreatureAISpells
             mMaxStackCount = 1;
 
             mMinPositionRangeToCast = 0.0f;
-            mMaxPositionRangeToCast = 100.0f;
+            mMaxPositionRangeToCast = 0.0f;
 
             mMinHpRangeToCast = 0.0f;
             mMaxHpRangeToCast = 100.0f;
+
+            if (mSpellInfo != nullptr)
+            {
+                mMinPositionRangeToCast = GetMaxRange(sSpellRangeStore.LookupEntry(mSpellInfo->getRangeIndex()));
+                mMaxPositionRangeToCast = GetMinRange(sSpellRangeStore.LookupEntry(mSpellInfo->getRangeIndex()));
+            }
 
             mAttackStopTimer = 0;
 
@@ -654,6 +660,10 @@ class SERVER_DECL CreatureAISpells
         }
 
         std::string mAnnouncement;
+        void setAnnouncement(std::string announcement)
+        {
+            mAnnouncement = announcement;
+        }
         void sendAnnouncement(CreatureAIScript* creatureAI);
 
         Creature* mCustomTargetCreature;
@@ -897,7 +907,7 @@ class SERVER_DECL CreatureAIScript
         bool enableCreatureAISpellSystem;
 
         //addAISpell(spellID, Chance, TargetType, Duration (s), waitBeforeNextCast (s))
-        CreatureAISpells* addAISpell(uint32_t spellId, float castChance, uint32_t targetType, uint32_t duration = 0, uint32_t cooldown = 0, bool forceRemove = false, bool isTriggered = true)
+        CreatureAISpells* addAISpell(uint32_t spellId, float castChance, uint32_t targetType, uint32_t duration = 0, uint32_t cooldown = 0, bool forceRemove = false, bool isTriggered = false)
         {
             SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
             if (spellInfo != nullptr)
@@ -940,6 +950,9 @@ class SERVER_DECL CreatureAIScript
         void _setTargetToChannel(Unit* target, uint32_t spellId);
         void _unsetTargetToChannel();
         Unit* _getTargetToChannel();
+
+        Unit* mCurrentSpellTarget;
+        CreatureAISpells* mLastCastedSpell;
 
         // only for internal use
         void newAIUpdateSpellSystem();
