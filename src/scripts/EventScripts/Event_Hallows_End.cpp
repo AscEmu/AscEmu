@@ -128,7 +128,7 @@ public:
         }
     }
 
-    void OnReachWP(uint32 iWaypointId, bool bForwards)
+    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
     {
         auto area = getCreature()->GetArea();
         auto area_id = area ? area->id : 0;

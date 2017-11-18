@@ -54,7 +54,7 @@ class SERVER_DECL ArenaTeam
     public:
 
         uint32 m_id;
-        uint32 m_type;
+        uint16_t m_type;
         uint32 m_leader;
         uint32 m_slots;
         std::string m_name;

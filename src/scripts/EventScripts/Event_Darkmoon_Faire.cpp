@@ -298,7 +298,7 @@ public:
         menu.Send(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/)
     {
         Arcemu::Gossip::Menu menu(pObject->GetGUID(), BARK_MAXIMA_2, plr->GetSession()->language);
         menu.Send(plr);
@@ -337,7 +337,7 @@ public:
         menu.Send(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/)
     {
         Creature* pCreature = static_cast<Creature*>(pObject);
 
@@ -432,7 +432,7 @@ public:
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/)
     {
         Creature* pCreature = static_cast<Creature*>(pObject);
 
@@ -633,7 +633,7 @@ class SelinaDourman_Gossip : public Arcemu::Gossip::Script
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60035, plr->GetSession()->language);
         menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WHAT_PURCHASE), 1);
@@ -643,7 +643,7 @@ public:
         menu.Send(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 IntId, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Creature* pCreature = static_cast<Creature*>(pObject);
 
@@ -688,14 +688,14 @@ class SilasDarkmoon_Gossip : public Arcemu::Gossip::Script
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60013, plr->GetSession()->language);                // \todo find right text
         menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ASK_PROFIT), 1);    // Silas, why is most everything at the fair free? How do you make a profit?
         menu.Send(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 7336, plr);
     }

@@ -33,7 +33,7 @@ void WorldSession::HandleCalendarGetCalendar(WorldPacket& /*recv_data*/)
 
 }
 
-void WorldSession::HandleCalendarComplain(WorldPacket& recv_data)
+void WorldSession::HandleCalendarComplain(WorldPacket& /*recv_data*/)
 {
     LogDebugFlag(LF_OPCODE, "HandleCalendarComplain Not handled");
 }
@@ -82,57 +82,57 @@ void WorldSession::HandleCalendarAddEvent(WorldPacket& recv_data)
 
 }
 
-void WorldSession::HandleCalendarGetEvent(WorldPacket& recv_data)
+void WorldSession::HandleCalendarGetEvent(WorldPacket& /*recv_data*/)
 {
     LogDebugFlag(LF_OPCODE, "HandleCalendarGetEvent Not handled");
 }
 
-void WorldSession::HandleCalendarGuildFilter(WorldPacket& recv_data)
+void WorldSession::HandleCalendarGuildFilter(WorldPacket& /*recv_data*/)
 {
     LogDebugFlag(LF_OPCODE, "HandleCalendarGuildFilter Not handled");
 }
 
-void WorldSession::HandleCalendarArenaTeam(WorldPacket& recv_data)
+void WorldSession::HandleCalendarArenaTeam(WorldPacket& /*recv_data*/)
 {
     LogDebugFlag(LF_OPCODE, "HandleCalendarArenaTeam Not handled");
 }
 
-void WorldSession::HandleCalendarUpdateEvent(WorldPacket& recv_data)
+void WorldSession::HandleCalendarUpdateEvent(WorldPacket& /*recv_data*/)
 {
     LogDebugFlag(LF_OPCODE, "HandleCalendarUpdateEvent Not handled");
 }
 
-void WorldSession::HandleCalendarRemoveEvent(WorldPacket& recv_data)
+void WorldSession::HandleCalendarRemoveEvent(WorldPacket& /*recv_data*/)
 {
     LogDebugFlag(LF_OPCODE, "HandleCalendarRemoveEvent Not handled");
 }
 
-void WorldSession::HandleCalendarCopyEvent(WorldPacket& recv_data)
+void WorldSession::HandleCalendarCopyEvent(WorldPacket& /*recv_data*/)
 {
     LogDebugFlag(LF_OPCODE, "HandleCalendarCopyEvent Not handled");
 }
 
-void WorldSession::HandleCalendarEventInvite(WorldPacket& recv_data)
+void WorldSession::HandleCalendarEventInvite(WorldPacket& /*recv_data*/)
 {
     LogDebugFlag(LF_OPCODE, "HandleCalendarEventInvite Not handled");
 }
 
-void WorldSession::HandleCalendarEventRsvp(WorldPacket& recv_data)
+void WorldSession::HandleCalendarEventRsvp(WorldPacket& /*recv_data*/)
 {
     LogDebugFlag(LF_OPCODE, "HandleCalendarEventRsvp Not handled");
 }
 
-void WorldSession::HandleCalendarEventRemoveInvite(WorldPacket& recv_data)
+void WorldSession::HandleCalendarEventRemoveInvite(WorldPacket& /*recv_data*/)
 {
     LogDebugFlag(LF_OPCODE, "HandleCalendarEventRemoveInvite Not handled");
 }
 
-void WorldSession::HandleCalendarEventStatus(WorldPacket& recv_data)
+void WorldSession::HandleCalendarEventStatus(WorldPacket& /*recv_data*/)
 {
     LogDebugFlag(LF_OPCODE, "HandleCalendarEventStatus Not handled");
 }
 
-void WorldSession::HandleCalendarEventModeratorStatus(WorldPacket& recv_data)
+void WorldSession::HandleCalendarEventModeratorStatus(WorldPacket& /*recv_data*/)
 {
     LogDebugFlag(LF_OPCODE, "HandleCalendarEventModeratorStatus Not handled");
 }

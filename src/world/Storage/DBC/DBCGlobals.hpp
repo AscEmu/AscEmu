@@ -76,10 +76,9 @@ namespace DBC
     }
 
     template <class T>
-    inline void LoadDBC(uint32& available_dbc_locales, StoreProblemList& errors, DBC::DBCStorage<T>& storage, std::string const& dbc_path,
-      std::string const& dbc_filename,std::string const* custom_format = NULL, std::string const* custom_index_name = NULL)
+    void LoadDBC(uint32& available_dbc_locales, StoreProblemList& errors, DBC::DBCStorage<T>& storage, std::string const& dbc_path,
+      std::string const& dbc_filename,std::string const* custom_format = NULL, std::string const* /*custom_index_name*/ = NULL)
     {
-        auto tsize = sizeof(T);
         ASSERT(DBC::DBCLoader::GetFormatRecordSize(storage.GetFormat()) == sizeof(T) || LoadDBC_assert_print(DBC::DBCLoader::GetFormatRecordSize(storage.GetFormat()), sizeof(T), dbc_filename));
 
         ++g_dbc_file_count;

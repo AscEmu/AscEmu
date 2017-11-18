@@ -21,13 +21,13 @@
 
 #include "CRitual.h"
 
-void CRitual::Setup(unsigned long CasterGUID, unsigned long TargetGUID, unsigned long SpellID)
+void CRitual::Setup(unsigned long caster_guid, unsigned long target_guid, unsigned long spell_id)
 {
-    this->CasterGUID = CasterGUID;
-    this->TargetGUID = TargetGUID;
-    this->SpellID = SpellID;
+    this->CasterGUID = caster_guid;
+    this->TargetGUID = target_guid;
+    this->SpellID = spell_id;
 
-    AddMember(CasterGUID);
+    AddMember(caster_guid);
 }
 
 bool CRitual::AddMember(unsigned long GUID)

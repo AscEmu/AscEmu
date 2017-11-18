@@ -105,7 +105,7 @@ bool ChatHandler::HandleBGSendStatusCommand(const char* args, WorldSession* m_se
 }
 
 //.battleground setscore
-bool ChatHandler::HandleBGSetScoreCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleBGSetScoreCommand(const char* /*args*/, WorldSession* m_session)
 {
     RedSystemMessage(m_session, ".battleground setscore command not implemented yet!");
 

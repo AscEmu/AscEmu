@@ -37,11 +37,11 @@ class SERVER_DECL CStackWalker : public StackWalker
 {
     public:
 
-        void OnOutput(LPCSTR szText);
-        void OnSymInit(LPCSTR szSearchPath, DWORD symOptions, LPCSTR szUserName);
-        void OnLoadModule(LPCSTR img, LPCSTR mod, DWORD64 baseAddr, DWORD size, DWORD result, LPCSTR symType, LPCSTR pdbName, ULONGLONG fileVersion);
-        void OnCallstackEntry(CallstackEntryType eType, CallstackEntry & entry);
-        void OnDbgHelpErr(LPCSTR szFuncName, DWORD gle, DWORD64 addr);
+        void OnOutput(LPCSTR szText) override;
+        void OnSymInit(LPCSTR szSearchPath, DWORD symOptions, LPCSTR szUserName) override;
+        void OnLoadModule(LPCSTR img, LPCSTR mod, DWORD64 baseAddr, DWORD size, DWORD result, LPCSTR symType, LPCSTR pdbName, ULONGLONG fileVersion) override;
+        void OnCallstackEntry(CallstackEntryType eType, CallstackEntry & entry) override;
+        void OnDbgHelpErr(LPCSTR szFuncName, DWORD gle, DWORD64 addr) override;
 };
 
 void StartCrashHandler();

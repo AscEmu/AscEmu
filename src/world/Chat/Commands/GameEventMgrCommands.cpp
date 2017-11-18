@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatHandler.hpp"
 
 //.event list
-bool ChatHandler::HandleEventListEvents(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleEventListEvents(const char* /*args*/, WorldSession* m_session)
 {
     SystemMessage(m_session, "--- Current Active Events ---");
     auto eventList = sGameEventMgr.mGameEvents;
@@ -107,7 +107,7 @@ bool ChatHandler::HandleEventResetEvent(const char* args, WorldSession* m_sessio
 }
 
 //.event reload
-bool ChatHandler::HandleEventReloadAllEvents(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleEventReloadAllEvents(const char* /*args*/, WorldSession* m_session)
 {
     SystemMessage(m_session, "Beginning reload of all game events");
     auto start = time(0);

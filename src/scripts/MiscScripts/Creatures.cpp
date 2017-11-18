@@ -46,7 +46,7 @@ class CrimsonHammersmith : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(CrimsonHammersmith);
         CrimsonHammersmith(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Who Dares Disturb Me");
         }
@@ -59,7 +59,7 @@ class Corrupt_Minor_Manifestation_Water_Dead : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(Corrupt_Minor_Manifestation_Water_Dead);
         Corrupt_Minor_Manifestation_Water_Dead(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* /*mKiller*/) override
         {
             float SSX = getCreature()->GetPositionX();
             float SSY = getCreature()->GetPositionY();
@@ -77,15 +77,15 @@ class SavannahProwler : public CreatureAIScript
     public:
         SavannahProwler(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnLoad()
+        void OnLoad() override
         {
-            uint8 chance = RandomUInt(3);
+            uint32_t chance = Util::getRandomUInt(3);
 
             if(chance == 1)
                 getCreature()->SetStandState(STANDSTATE_SLEEP);
         }
 
-        void OnCombatStart(Unit* pTarget)
+        void OnCombatStart(Unit* pTarget) override
         {
             if(getCreature()->GetStandState() == STANDSTATE_SLEEP)
                 getCreature()->SetStandState(STANDSTATE_STAND);
@@ -220,7 +220,7 @@ class DragonhawkMasters : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(DragonhawkMasters)
         DragonhawkMasters(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             LocationVector vect(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation());
             for (uint8 i = 0; i < 2; ++i)
@@ -237,7 +237,7 @@ class NeutralMasters : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(NeutralMasters)
         NeutralMasters(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             LocationVector vect(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation());
             for (uint8 i = 0; i < 2; ++i)
@@ -254,7 +254,7 @@ class TyrandeWhisperwind : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(TyrandeWhisperwind);
         TyrandeWhisperwind(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             getCreature()->PlaySoundToSet(5885);
         }
@@ -268,7 +268,7 @@ class ProphetVelen : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(ProphetVelen);
         ProphetVelen(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             getCreature()->PlaySoundToSet(10155);
         }
@@ -282,7 +282,7 @@ class KingMagniBronzebeard : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(KingMagniBronzebeard);
         KingMagniBronzebeard(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             getCreature()->PlaySoundToSet(5896);
         }
@@ -296,7 +296,7 @@ class Thrall : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(Thrall);
         Thrall(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             getCreature()->PlaySoundToSet(5880);
         }
@@ -310,7 +310,7 @@ class CairneBloodhoof : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(CairneBloodhoof);
         CairneBloodhoof(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             getCreature()->PlaySoundToSet(5884);
         }
@@ -324,7 +324,7 @@ class LadySylvanasWindrunner : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(LadySylvanasWindrunner);
         LadySylvanasWindrunner(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             getCreature()->PlaySoundToSet(5886);
         }
@@ -378,7 +378,7 @@ class SilithidCreeperEgg : public CreatureAIScript
             pCreature->GetAIInterface()->SetAllowedToEnterCombat(false);
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* /*mKiller*/) override
         {
             float SSX = getCreature()->GetPositionX();
             float SSY = getCreature()->GetPositionY();
@@ -413,12 +413,12 @@ class GuardRoberts : public CreatureAIScript
         GuardRoberts(Creature* pCreature) : CreatureAIScript(pCreature)
         { }
 
-        void OnLoad()
+        void OnLoad() override
         {
             getCreature()->SetHealth(100);
         }
 
-        void OnDied(Unit* mKiller)
+        void OnDied(Unit* /*mKiller*/) override
         {
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Argh, the pain. Will it ever leave me?");
         }

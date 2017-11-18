@@ -45,7 +45,7 @@ bool Starfall(uint32 i, Spell* pSpell)
     return true;
 }
 
-bool ImprovedLeaderOfThePack(uint32 i, Spell* s)
+bool ImprovedLeaderOfThePack(uint32 /*i*/, Spell* s)
 {
     if (s->p_caster == NULL)
         return false;
@@ -147,7 +147,7 @@ bool LifeBloom(uint32 i, Aura* a, bool apply)
     return true;
 }
 
-bool LeaderOfThePack(uint32 i, Aura* a, bool apply)
+bool LeaderOfThePack(uint32 /*i*/, Aura* a, bool apply)
 {
     Unit* u_target = a->GetTarget();
 

@@ -60,7 +60,7 @@ void Database::createQueryBufferConnection()
         m_queryBufferConnection = GetFreeConnection();
 }
 
-void Database::dbThreadRunner(AEThread& thread)
+void Database::dbThreadRunner(AEThread& /*thread*/)
 {
     dbRunAllQueries();
 }
@@ -235,7 +235,7 @@ void Database::dbRunAllQueries()
     }
 }
 
-void Database::queryBufferThreadRunner(AEThread& thread)
+void Database::queryBufferThreadRunner(AEThread& /*thread*/)
 {
     queryBufferRunAllQueries();
 }

@@ -851,7 +851,6 @@ bool ChatHandler::HandleGOSetPhaseCommand(const char* args, WorldSession* m_sess
         return true;
     }
 
-    uint32 old_phase = gameobject->GetPhase();
     auto go_spawn = gameobject->m_spawn;
     gameobject->Phase(PHASE_SET, phase);
 

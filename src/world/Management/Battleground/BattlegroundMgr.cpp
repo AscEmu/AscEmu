@@ -709,15 +709,15 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
                     // Now we just need to add the players to the Arena instance
                     while (teams[0].size() > 0)
                     {
-                        for (uint32 team = 0; team < 2; team++)
+                        for (uint32 localeTeam = 0; localeTeam < 2; localeTeam++)
                         {
-                            plrguid = teams[team].front();
-                            teams[team].pop();
+                            plrguid = teams[localeTeam].front();
+                            teams[localeTeam].pop();
                             plr = objmgr.GetPlayer(plrguid);
                             if (plr == NULL)
                                 continue;
 
-                            plr->m_bgTeam = team;
+                            plr->m_bgTeam = localeTeam;
                             arena->AddPlayer(plr, plr->m_bgTeam);
                             // remove from the main queue (painful!)
                             ErasePlayerFromList(plr->GetLowGUID(), &m_queuedPlayers[i][j]);
@@ -951,7 +951,7 @@ void CBattlegroundManager::RemoveGroupFromQueues(Group* grp)
 }
 
 
-bool CBattlegroundManager::CanCreateInstance(uint32 Type, uint32 LevelGroup)
+bool CBattlegroundManager::CanCreateInstance(uint32 /*Type*/, uint32 /*LevelGroup*/)
 {
     /*uint32 lc = 0;
     for (map<uint32, CBattleground*>::iterator itr = m_instances[Type].begin(); itr != m_instances[Type].end(); ++itr)

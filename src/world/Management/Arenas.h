@@ -44,54 +44,53 @@ class SERVER_DECL Arena : public CBattleground
         virtual ~Arena();
 
         bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
-        bool HookHandleRepop(Player* plr);
-        void OnAddPlayer(Player* plr);
-        void OnRemovePlayer(Player* plr);
-        void OnCreate();
-        void HookOnPlayerDeath(Player* plr);
-        void HookOnPlayerKill(Player* plr, Player* pVictim);
-        void HookOnUnitKill(Player* plr, Unit* pVictim);
-        void HookOnFlagDrop(Player* plr);
-        void HookOnHK(Player* plr);
-        void HookOnShadowSight();
-        void HookGenerateLoot(Player* plr, Object* pCorpse);
+        bool HookHandleRepop(Player* plr) override;
+        void OnAddPlayer(Player* plr) override;
+        void OnRemovePlayer(Player* plr) override;
+        void OnCreate() override;
+        void HookOnPlayerDeath(Player* plr) override;
+        void HookOnPlayerKill(Player* plr, Player* pVictim) override;
+        void HookOnUnitKill(Player* plr, Unit* pVictim) override;
+        void HookOnFlagDrop(Player* plr) override;
+        void HookOnHK(Player* plr) override;
+        void HookOnShadowSight() override;
+        void HookGenerateLoot(Player* plr, Object* pCorpse) override;
         void UpdatePlayerCounts();
-        LocationVector GetStartingCoords(uint32 Team);
-        uint32 GetNameID() { return 50; }
-        void OnStart();
-        bool CanPlayerJoin(Player* plr, uint32 type)
+        LocationVector GetStartingCoords(uint32 Team) override;
+        uint32 GetNameID() override { return 50; }
+        void OnStart() override;
+        bool CanPlayerJoin(Player* plr, uint32 type) override
         {
             if (m_started)
                 return false;
-            else
-                return CBattleground::CanPlayerJoin(plr, type);
+
+            return CBattleground::CanPlayerJoin(plr, type);
         }
 
-        bool CreateCorpse(Player* plr) { return false; }
+        bool CreateCorpse(Player* /*plr*/) override { return false; }
 
         /* dummy stuff */
-        void HookOnMount(Player* plr) {}
-        void HookFlagDrop(Player* plr, GameObject* obj) {}
-        void HookFlagStand(Player* plr, GameObject* obj) {}
-        void HookOnAreaTrigger(Player* plr, uint32 id);
+        void HookOnMount(Player* /*plr*/) override {}
+        void HookFlagDrop(Player* /*plr*/, GameObject* /*obj*/) override {}
+        void HookFlagStand(Player* /*plr*/, GameObject* /*obj*/) override {}
+        void HookOnAreaTrigger(Player* plr, uint32 id) override;
 
-        int32 GetFreeTeam()
+        int32 GetFreeTeam() const
         {
             size_t c0 = m_players[0].size() + m_pendPlayers[0].size();
             size_t c1 = m_players[1].size() + m_pendPlayers[1].size();
-            if (m_started) return -1;
+            if (m_started)
+                return -1;
 
-            /// Check if there is free room, if yes, return team with less members
+            // Check if there is free room, if yes, return team with less members
             return ((c0 + c1 >= m_playerCountPerTeam * 2) ? -1 : (c0 > c1));
-
-            /* We shouldn't reach here. */
         }
 
-        /// Returns the faction of the team
+        // Returns the faction of the team
         uint32 GetTeamFaction(uint32 team);
-        inline uint8 Rated() { return rated_match; }
-        inline uint32 GetArenaTeamType() { return m_arenateamtype; }
-        inline ArenaTeam** GetTeams() { return m_teams; }
+        uint8 Rated() override { return rated_match; }
+        uint32 GetArenaTeamType() const { return m_arenateamtype; }
+        ArenaTeam** GetTeams() { return m_teams; }
         uint32 CalcDeltaRating(uint32 oldRating, uint32 opponentRating, bool outcome);
 };
 

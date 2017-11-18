@@ -361,7 +361,7 @@ bool ChatHandler::HandleCharRemoveAurasCommand(const char* /*args*/, WorldSessio
 }
 
 //.character removesickness
-bool ChatHandler::HandleCharRemoveSickessCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleCharRemoveSickessCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
@@ -1289,7 +1289,7 @@ bool ChatHandler::HandleCharResetReputationCommand(const char* /*args*/, WorldSe
 }
 
 //.character resetspells
-bool ChatHandler::HandleCharResetSpellsCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleCharResetSpellsCommand(const char* /*args*/, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
     if (selected_player == nullptr)
@@ -1383,7 +1383,7 @@ bool ChatHandler::HandleCharSetGenderCommand(const char* args, WorldSession* m_s
 }
 
 //.character set itemsrepaired
-bool ChatHandler::HandleCharSetItemsRepairedCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleCharSetItemsRepairedCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)

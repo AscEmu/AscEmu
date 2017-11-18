@@ -64,7 +64,7 @@ bool Pestilence(uint32 i, Spell* pSpell)
     return true;
 }
 
-bool DeathStrike(uint32 i, Spell* pSpell)
+bool DeathStrike(uint32 /*i*/, Spell* pSpell)
 {
     if (pSpell->p_caster == NULL || pSpell->GetUnitTarget() == NULL)
         return true;
@@ -105,7 +105,7 @@ bool DeathStrike(uint32 i, Spell* pSpell)
     return true;
 }
 
-bool Strangulate(uint32 i, Aura* pAura, bool apply)
+bool Strangulate(uint32 /*i*/, Aura* pAura, bool apply)
 {
     if (!apply)
         return true;
@@ -116,23 +116,23 @@ bool Strangulate(uint32 i, Aura* pAura, bool apply)
     Unit* unitTarget = pAura->GetTarget();
 
     // Interrupt target's current casted spell (either channeled or generic spell with cast time)
-    if (pAura->GetTarget()->isCastingNonMeleeSpell(true, false, true))
+    if (unitTarget->isCastingNonMeleeSpell(true, false, true))
     {
-        if (pAura->GetTarget()->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr && pAura->GetTarget()->getCurrentSpell(CURRENT_CHANNELED_SPELL)->getCastTimeLeft() > 0)
+        if (unitTarget->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr && pAura->GetTarget()->getCurrentSpell(CURRENT_CHANNELED_SPELL)->getCastTimeLeft() > 0)
         {
-            pAura->GetTarget()->interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
+            unitTarget->interruptSpellWithSpellType(CURRENT_CHANNELED_SPELL);
         }
         // No need to check cast time for generic spells, checked already in Object::isCastingNonMeleeSpell()
-        else if (pAura->GetTarget()->getCurrentSpell(CURRENT_GENERIC_SPELL) != nullptr)
+        else if (unitTarget->getCurrentSpell(CURRENT_GENERIC_SPELL) != nullptr)
         {
-            pAura->GetTarget()->interruptSpellWithSpellType(CURRENT_GENERIC_SPELL);
+            unitTarget->interruptSpellWithSpellType(CURRENT_GENERIC_SPELL);
         }
     }
 
     return true;
 }
 
-bool RaiseDead(uint32 i, Spell* s)
+bool RaiseDead(uint32 /*i*/, Spell* s)
 {
     if (s->p_caster == nullptr)
     {
@@ -247,7 +247,7 @@ bool DeathGrip(uint32 i, Spell* s)
     return true;
 }
 
-bool DeathCoil(uint32 i, Spell* s)
+bool DeathCoil(uint32 /*i*/, Spell* s)
 {
     Unit* unitTarget = s->GetUnitTarget();
 
@@ -270,7 +270,7 @@ bool DeathCoil(uint32 i, Spell* s)
     return true;
 }
 
-bool BladedArmor(uint32 i, Spell* s)
+bool BladedArmor(uint32 /*i*/, Spell* /*s*/)
 {
     /********************************************************************************************************
     /* SPELL_EFFECT_DUMMY is used in this spell, in DBC, only to store data for in-game tooltip output.
@@ -302,7 +302,7 @@ bool DeathAndDecay(uint32 i, Aura* pAura, bool apply)
     return true;
 }
 
-bool Butchery(uint32 i, Aura* pAura, bool apply)
+bool Butchery(uint32 /*i*/, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 
@@ -314,7 +314,7 @@ bool Butchery(uint32 i, Aura* pAura, bool apply)
     return true;
 }
 
-bool DeathRuneMastery(uint32 i, Aura* pAura, bool apply)
+bool DeathRuneMastery(uint32 /*i*/, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 
@@ -329,7 +329,7 @@ bool DeathRuneMastery(uint32 i, Aura* pAura, bool apply)
     return true;
 }
 
-bool MarkOfBlood(uint32 i, Aura* pAura, bool apply)
+bool MarkOfBlood(uint32 /*i*/, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 

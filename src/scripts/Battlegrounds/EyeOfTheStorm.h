@@ -54,27 +54,27 @@ class EyeOfTheStorm : public CBattleground
         ~EyeOfTheStorm();
 
         bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
-        void HookOnPlayerDeath(Player* plr);
-        void HookFlagDrop(Player* plr, GameObject* obj);
-        void HookFlagStand(Player* plr, GameObject* obj);
-        void HookOnMount(Player* plr);
-        void HookOnAreaTrigger(Player* plr, uint32 id);
-        bool HookHandleRepop(Player* plr);
-        void OnAddPlayer(Player* plr);
-        void OnRemovePlayer(Player* plr);
-        void OnCreate();
-        void HookOnPlayerKill(Player* plr, Player* pVictim);
-        void HookOnUnitKill(Player* plr, Unit* pVictim);
-        void HookOnHK(Player* plr);
-        void HookOnShadowSight();
-        void HookGenerateLoot(Player* plr, Object* pCorpse);
+        void HookOnPlayerDeath(Player* plr) override;
+        void HookFlagDrop(Player* plr, GameObject* obj) override;
+        void HookFlagStand(Player* plr, GameObject* obj) override;
+        void HookOnMount(Player* plr) override;
+        void HookOnAreaTrigger(Player* plr, uint32 id) override;
+        bool HookHandleRepop(Player* plr) override;
+        void OnAddPlayer(Player* plr) override;
+        void OnRemovePlayer(Player* plr) override;
+        void OnCreate() override;
+        void HookOnPlayerKill(Player* plr, Player* pVictim) override;
+        void HookOnUnitKill(Player* plr, Unit* pVictim) override;
+        void HookOnHK(Player* plr) override;
+        void HookOnShadowSight() override;
+        void HookGenerateLoot(Player* plr, Object* pCorpse) override;
         void SpawnBuff(uint32 x);
-        LocationVector GetStartingCoords(uint32 Team);
+        LocationVector GetStartingCoords(uint32 Team) override;
         static CBattleground* Create(MapMgr* m, uint32 i, uint32 l, uint32 t) { return new EyeOfTheStorm(m, i, l, t); }
-        uint64 GetFlagHolderGUID(uint32 faction) const { return m_flagHolder; }
+        uint64 GetFlagHolderGUID(uint32 /*faction*/) const override { return m_flagHolder; }
 
-        uint32 GetNameID() { return 44; }
-        void OnStart();
+        uint32 GetNameID() override { return 44; }
+        void OnStart() override;
 
         void UpdateCPs();
         void GeneratePoints();
@@ -84,13 +84,13 @@ class EyeOfTheStorm : public CBattleground
 
         void RespawnCPFlag(uint32 i, uint32 id);        // 0 = Neutral, <0 = Leaning towards alliance, >0 Leaning towards horde
 
-        bool HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpell);
+        bool HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpell) override;
         void DropFlag2(Player* plr, uint32 id);
-        void HookOnFlagDrop(Player* plr);
+        void HookOnFlagDrop(Player* plr) override;
         void EventResetFlag();
         void RepopPlayersOfTeam(int32 team, Creature* sh);
 
-        void SetIsWeekend(bool isweekend);
+        void SetIsWeekend(bool isweekend) override;
 
     protected:
 

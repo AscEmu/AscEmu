@@ -28,7 +28,7 @@
 #include "Spell/Definitions/SpellCastTargetFlags.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
 
-bool ChatHandler::HandleDebugDumpMovementCommand(const char* args, WorldSession* session)
+bool ChatHandler::HandleDebugDumpMovementCommand(const char* /*args*/, WorldSession* session)
 {
     try
     {
@@ -53,7 +53,7 @@ bool ChatHandler::HandleDebugDumpMovementCommand(const char* args, WorldSession*
     }
 }
 
-bool ChatHandler::HandleDebugInFrontCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleDebugInFrontCommand(const char* /*args*/, WorldSession* m_session)
 {
     Object* obj;
 
@@ -111,7 +111,7 @@ bool ChatHandler::HandleShowReactionCommand(const char* args, WorldSession* m_se
     return true;
 }
 
-bool ChatHandler::HandleDistanceCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleDistanceCommand(const char* /*args*/, WorldSession* m_session)
 {
     Object* obj;
 
@@ -239,11 +239,11 @@ bool ChatHandler::HandleAIMoveCommand(const char* args, WorldSession* m_session)
             y = (creature->GetPositionY() + y * q) / (1 + q);
             z = (creature->GetPositionZ() + z * q) / (1 + q);
         }
-        creature->GetAIInterface()->MoveTo(x, y, z);
+        creature->GetAIInterface()->MoveTo(x, y, z, o);
     }
     else
     {
-        creature->GetAIInterface()->MoveTo(x, y, z);
+        creature->GetAIInterface()->MoveTo(x, y, z, o);
     }
 
     return true;
@@ -371,7 +371,7 @@ bool ChatHandler::HandleGetBytesCommand(const char* args, WorldSession* m_sessio
     SystemMessage(m_session, sstext.str().c_str());
     return true;
 }
-bool ChatHandler::HandleDebugLandWalk(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleDebugLandWalk(const char* /*args*/, WorldSession* m_session)
 {
     Player* chr = GetSelectedPlayer(m_session, true, true);
     if (chr == nullptr)
@@ -386,7 +386,7 @@ bool ChatHandler::HandleDebugLandWalk(const char* args, WorldSession* m_session)
     return true;
 }
 
-bool ChatHandler::HandleAggroRangeCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleAggroRangeCommand(const char* /*args*/, WorldSession* m_session)
 {
     Unit* unit = GetSelectedUnit(m_session, true);
     if (unit == nullptr)
@@ -481,7 +481,7 @@ bool ChatHandler::HandleCalcThreatCommand(const char* args, WorldSession* m_sess
     return true;
 }
 
-bool ChatHandler::HandleThreatListCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleThreatListCommand(const char* /*args*/, WorldSession* m_session)
 {
     Unit* target = NULL;
     target = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->GetSelection());
@@ -651,7 +651,7 @@ bool ChatHandler::HandleModifyValueCommand(const char* args, WorldSession* m_ses
     return true;
 }
 
-bool ChatHandler::HandleDebugDumpCoordsCommmand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleDebugDumpCoordsCommmand(const char* /*args*/, WorldSession* m_session)
 {
     Player* p = m_session->GetPlayer();
     //char buffer[200] = {0};
@@ -899,7 +899,7 @@ bool ChatHandler::HandleUpdateWorldStateCommand(const char *args, WorldSession* 
     return true;
 }
 
-bool ChatHandler::HandleInitWorldStatesCommand(const char* args, WorldSession* session)
+bool ChatHandler::HandleInitWorldStatesCommand(const char* /*args*/, WorldSession* session)
 {
     Player* p = session->GetPlayer();
 
@@ -914,7 +914,7 @@ bool ChatHandler::HandleInitWorldStatesCommand(const char* args, WorldSession* s
     return true;
 }
 
-bool ChatHandler::HandleClearWorldStatesCommand(const char* args, WorldSession* session)
+bool ChatHandler::HandleClearWorldStatesCommand(const char* /*args*/, WorldSession* session)
 {
     Player* p = session->GetPlayer();
 
@@ -1021,7 +1021,7 @@ bool ChatHandler::HandleSimpleDistanceCommand(const char* args, WorldSession* m_
     return true;
 }
 
-bool ChatHandler::HandleRangeCheckCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleRangeCheckCommand(const char* /*args*/, WorldSession* m_session)
 {
     WorldPacket data;
     uint64 guid = m_session->GetPlayer()->GetSelection();
@@ -1048,7 +1048,7 @@ bool ChatHandler::HandleRangeCheckCommand(const char* args, WorldSession* m_sess
     return true;
 }
 
-bool ChatHandler::HandleCollisionTestIndoor(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleCollisionTestIndoor(const char* /*args*/, WorldSession* m_session)
 {
     if (worldConfig.terrainCollision.isCollisionEnabled)
     {
@@ -1065,7 +1065,7 @@ bool ChatHandler::HandleCollisionTestIndoor(const char* args, WorldSession* m_se
     }
 }
 
-bool ChatHandler::HandleCollisionTestLOS(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleCollisionTestLOS(const char* /*args*/, WorldSession* m_session)
 {
     if (worldConfig.terrainCollision.isCollisionEnabled)
     {
@@ -1099,7 +1099,7 @@ bool ChatHandler::HandleCollisionTestLOS(const char* args, WorldSession* m_sessi
     }
 }
 
-bool ChatHandler::HandleCollisionGetHeight(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleCollisionGetHeight(const char* /*args*/, WorldSession* m_session)
 {
     if (worldConfig.terrainCollision.isCollisionEnabled)
     {
@@ -1133,7 +1133,7 @@ bool ChatHandler::HandleCollisionGetHeight(const char* args, WorldSession* m_ses
     }
 }
 
-bool ChatHandler::HandleGetDeathState(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleGetDeathState(const char* /*args*/, WorldSession* m_session)
 {
     Player* SelectedPlayer = GetSelectedPlayer(m_session, true, true);
     if (!SelectedPlayer)
@@ -1152,7 +1152,7 @@ struct spell_thingo
 std::list<SpellInfo*> aiagent_spells;
 std::map<uint32, spell_thingo> aiagent_extra;
 
-SpellCastTargets SetTargets(SpellInfo* sp, uint32 type, uint32 targettype, Unit* dst, Creature* src)
+SpellCastTargets SetTargets(SpellInfo* /*sp*/, uint32 /*type*/, uint32 targettype, Unit* dst, Creature* src)
 {
     SpellCastTargets targets;
     targets.m_unitTarget = 0;
@@ -1235,7 +1235,7 @@ bool ChatHandler::HandleAIAgentDebugContinue(const char* args, WorldSession* m_s
     return true;
 }
 
-bool ChatHandler::HandleAIAgentDebugBegin(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleAIAgentDebugBegin(const char* /*args*/, WorldSession* m_session)
 {
     QueryResult* result = WorldDatabase.Query("SELECT DISTINCT spell FROM ai_agents");
     if (!result) return false;

@@ -408,7 +408,7 @@ void EyeOfTheStorm::HookOnPlayerDeath(Player* plr)
     UpdatePvPData();
 }
 
-void EyeOfTheStorm::HookFlagDrop(Player* plr, GameObject* obj)
+void EyeOfTheStorm::HookFlagDrop(Player* plr, GameObject* /*obj*/)
 {
     if (!m_dropFlag->IsInWorld())
         return;
@@ -430,12 +430,12 @@ void EyeOfTheStorm::HookFlagDrop(Player* plr, GameObject* obj)
     event_RemoveEvents(EVENT_EOTS_RESET_FLAG);
 }
 
-void EyeOfTheStorm::HookFlagStand(Player* plr, GameObject* obj)
+void EyeOfTheStorm::HookFlagStand(Player* /*plr*/, GameObject* /*obj*/)
 {
 
 }
 
-bool EyeOfTheStorm::HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpell)
+bool EyeOfTheStorm::HookSlowLockOpen(GameObject* /*pGo*/, Player* pPlayer, Spell* /*pSpell*/)
 {
     if (m_flagHolder != 0)
         return false;
@@ -876,7 +876,7 @@ bool EyeOfTheStorm::GivePoints(uint32 team, uint32 points)
     return false;
 }
 
-void EyeOfTheStorm::HookOnPlayerKill(Player* plr, Player* pVictim)
+void EyeOfTheStorm::HookOnPlayerKill(Player* plr, Player* /*pVictim*/)
 {
     plr->m_bgScore.KillingBlows++;
     UpdatePvPData();
@@ -963,10 +963,10 @@ void EyeOfTheStorm::OnStart()
 void EyeOfTheStorm::HookOnShadowSight()
 {}
 
-void EyeOfTheStorm::HookGenerateLoot(Player* plr, Object* pOCorpse)
+void EyeOfTheStorm::HookGenerateLoot(Player* /*plr*/, Object* /*pOCorpse*/)
 {}
 
-void EyeOfTheStorm::HookOnUnitKill(Player* plr, Unit* pVictim)
+void EyeOfTheStorm::HookOnUnitKill(Player* /*plr*/, Unit* /*pVictim*/)
 {}
 
 void EyeOfTheStorm::SetIsWeekend(bool isweekend)

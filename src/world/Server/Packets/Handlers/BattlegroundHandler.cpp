@@ -55,7 +55,7 @@ void WorldSession::HandleBattlefieldPortOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleBattlefieldStatusOpcode(WorldPacket& recv_data)
+void WorldSession::HandleBattlefieldStatusOpcode(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
 
@@ -140,7 +140,7 @@ void WorldSession::HandleBattleMasterHelloOpcode(WorldPacket& recv_data)
 }
 #endif
 
-void WorldSession::HandleLeaveBattlefieldOpcode(WorldPacket& recv_data)
+void WorldSession::HandleLeaveBattlefieldOpcode(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
 
@@ -198,7 +198,7 @@ void WorldSession::HandleAreaSpiritHealerQueueOpcode(WorldPacket& recv_data)
     _player->CastSpell(_player, 2584, true);
 }
 
-void WorldSession::HandleBattlegroundPlayerPositionsOpcode(WorldPacket& recv_data)
+void WorldSession::HandleBattlegroundPlayerPositionsOpcode(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
 
@@ -394,7 +394,7 @@ void WorldSession::HandleInspectArenaStatsOpcode(WorldPacket& recv_data)
 #endif
 }
 
-void WorldSession::HandlePVPLogDataOpcode(WorldPacket& recv_data)
+void WorldSession::HandlePVPLogDataOpcode(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN;
     if (_player->m_bg)
@@ -409,7 +409,7 @@ void WorldSession::SendNotInArenaTeamPacket(uint8 type)
     SendPacket(&data);
 }
 
-void WorldSession::HandleBgInviteResponse(WorldPacket& recv_data)
+void WorldSession::HandleBgInviteResponse(WorldPacket& /*recv_data*/)
 {
     LogDebugFlag(LF_OPCODE, "Recieved unknown packet: CMSG_BATTLEFIELD_MGR_ENTRY_INVITE_RESPONSE");
 

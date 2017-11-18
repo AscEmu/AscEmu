@@ -572,7 +572,7 @@ enum UnitStates
 
 
 // byte flags value (UNIT_FIELD_BYTES_1,0)
-enum StandState
+enum StandState : uint16_t
 {
     STANDSTATE_STAND             = 0,
     STANDSTATE_SIT               = 1,

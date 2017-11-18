@@ -152,7 +152,6 @@ void ArenaTeam::Destroy()
 
 bool ArenaTeam::AddMember(PlayerInfo* info)
 {
-    uint32 base_field;
     Player* plr = info->m_loggedInPlayer;
     if (m_memberCount >= m_slots)
     {
@@ -167,7 +166,7 @@ bool ArenaTeam::AddMember(PlayerInfo* info)
 #if VERSION_STRING != Classic
     if (plr)
     {
-        base_field = (m_type * 7) + PLAYER_FIELD_ARENA_TEAM_INFO_1_1;
+        uint16_t base_field = (m_type * 7) + PLAYER_FIELD_ARENA_TEAM_INFO_1_1;
         plr->setUInt32Value(base_field, m_id);
         plr->setUInt32Value(base_field + 1, m_leader);
 
@@ -525,7 +524,7 @@ void WorldSession::HandleArenaTeamRemoveMemberOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleArenaTeamInviteAcceptOpcode(WorldPacket& recv_data)
+void WorldSession::HandleArenaTeamInviteAcceptOpcode(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
 
@@ -569,7 +568,7 @@ void WorldSession::HandleArenaTeamInviteAcceptOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleArenaTeamInviteDenyOpcode(WorldPacket& recv_data)
+void WorldSession::HandleArenaTeamInviteDenyOpcode(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
 

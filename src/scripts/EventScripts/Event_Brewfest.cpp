@@ -40,7 +40,7 @@ void CorenDirebrewGossip::OnHello(Object* pObject, Player * Plr)
     menu.Send(Plr);
 }
 
-void CorenDirebrewGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char * Code, uint32 gossipId)
+void CorenDirebrewGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char * /*Code*/, uint32 /*gossipId*/)
 {
     Creature* pCreature = static_cast<Creature*>(pObject);
 

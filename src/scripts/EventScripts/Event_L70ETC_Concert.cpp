@@ -62,12 +62,12 @@ class SamAI : public CreatureAIScript
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* /*mTarget*/) override
         { 
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -79,12 +79,12 @@ class SamAI : public CreatureAIScript
             getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
-        void OnDespawn()
+        void OnDespawn() override
         {
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             switch (timer)
             {
@@ -129,12 +129,12 @@ class BerAI : public CreatureAIScript
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -146,12 +146,12 @@ class BerAI : public CreatureAIScript
             getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
-        void OnDespawn()
+        void OnDespawn() override
         {
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             switch (timer)
             {
@@ -191,12 +191,12 @@ class SigAI : public CreatureAIScript
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -208,12 +208,12 @@ class SigAI : public CreatureAIScript
             getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
-        void OnDespawn()
+        void OnDespawn() override
         {
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             switch (timer)
             {
@@ -257,12 +257,13 @@ class MaiAI : public CreatureAIScript
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
-        void OnCombatStart(Unit* mTarget)
+
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -274,12 +275,12 @@ class MaiAI : public CreatureAIScript
             getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
-        void OnDespawn()
+        void OnDespawn() override
         {
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             switch (timer)
             {
@@ -323,12 +324,12 @@ class ThuAI : public CreatureAIScript
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -340,13 +341,13 @@ class ThuAI : public CreatureAIScript
             getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
-        void OnDespawn()
+        void OnDespawn() override
         {
             RemoveAIUpdateEvent();
             getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             switch (timer)
             {
@@ -402,12 +403,13 @@ class UndeadAI : public CreatureAIScript
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
-        void OnCombatStart(Unit* mTarget)
+
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -419,13 +421,13 @@ class UndeadAI : public CreatureAIScript
             getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
-        void OnDespawn()
+        void OnDespawn() override
         {
             RemoveAIUpdateEvent();
             getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             switch (timer)
             {
@@ -455,12 +457,13 @@ class Undead2AI : public CreatureAIScript
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
-        void OnCombatStart(Unit* mTarget)
+
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -472,14 +475,14 @@ class Undead2AI : public CreatureAIScript
             getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
-        void OnDespawn()
+        void OnDespawn() override
         {
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "THAT WAS GREAT!");
             RemoveAIUpdateEvent();
             getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             switch (timer)
             {
@@ -510,12 +513,12 @@ class Undead3AI : public CreatureAIScript
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -527,7 +530,7 @@ class Undead3AI : public CreatureAIScript
             getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             switch (timer)
             {
@@ -558,12 +561,12 @@ class TriggerAI : public CreatureAIScript
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -575,14 +578,14 @@ class TriggerAI : public CreatureAIScript
             getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
-        void OnDespawn()
+        void OnDespawn() override
         {
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "THAT WAS GREAT!");
             RemoveAIUpdateEvent();
             getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             switch (timer)
             {
@@ -658,12 +661,12 @@ class Trigger2AI : public CreatureAIScript
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -675,13 +678,13 @@ class Trigger2AI : public CreatureAIScript
             getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
 
-        void OnDespawn()
+        void OnDespawn() override
         {
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "THAT WAS GREAT!");
             RemoveAIUpdateEvent();
             getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(SPELLFLARE), true);
         }
-        void AIUpdate()
+        void AIUpdate() override
         {
             switch (timer)
             {
@@ -751,12 +754,12 @@ class Effectsground : public CreatureAIScript
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStart(Unit* mTarget)
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -769,12 +772,12 @@ class Effectsground : public CreatureAIScript
             timer = 0;
         }
 
-        void OnDespawn()
+        void OnDespawn() override
         {
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             switch (timer)
             {
@@ -874,12 +877,13 @@ class Effectsair : public CreatureAIScript
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
-        void OnCombatStart(Unit* mTarget)
+
+        void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(1000);
         }
 
-        void OnCombatStop(Unit* mTarget)
+        void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
@@ -892,12 +896,12 @@ class Effectsair : public CreatureAIScript
             getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         }
 
-        void OnDespawn()
+        void OnDespawn() override
         {
             RemoveAIUpdateEvent();
         }
 
-        void AIUpdate()
+        void AIUpdate() override
         {
             switch (timer)
             {

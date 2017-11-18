@@ -321,7 +321,7 @@ class SERVER_DECL Creature : public Unit
         bool IsInLimboState();
 
         void SetLimboState(bool set);
-        uint32 GetLineByFamily(DBC::Structures::CreatureFamilyEntry const* family);
+    static uint32 GetLineByFamily(DBC::Structures::CreatureFamilyEntry const* family);
         void RemoveLimboState(Unit* healer);
         void SetGuardWaypoints();
         bool m_corpseEvent;
