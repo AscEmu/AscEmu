@@ -543,7 +543,7 @@ void GameObject_Door::SpecialOpen()
     SetState(GO_STATE_ALTERNATIVE_OPEN);
 }
 
-void GameObject_Door::Use(uint64 GUID)
+void GameObject_Door::Use(uint64 /*GUID*/)
 {
     if (GetState() == GO_STATE_CLOSED)
         Open();

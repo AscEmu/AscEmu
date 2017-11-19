@@ -2596,10 +2596,10 @@ void Object::EventSetUInt32Value(uint32 index, uint32 value)
     setUInt32Value(index, value);
 }
 
-void Object::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32 unitEvent, uint32 spellId, bool no_remove_auras)
+void Object::DealDamage(Unit* /*pVictim*/, uint32 /*damage*/, uint32 /*targetEvent*/, uint32 /*unitEvent*/, uint32 /*spellId*/, bool /*no_remove_auras*/)
 {}
 
-void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage, bool allowProc, bool static_damage, bool no_remove_auras)
+void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage, bool allowProc, bool static_damage, bool /*no_remove_auras*/)
 {
     //////////////////////////////////////////////////////////////////////////////////////////
     //Unacceptable Cases Processing
@@ -3186,7 +3186,7 @@ void Object::AddInRangeObject(Object* pObj)
 #if VERSION_STRING == Cata
 void Object::OutPacketToSet(uint32 Opcode, uint16 Len, const void* Data, bool self)
 #else
-void Object::OutPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool self)
+void Object::OutPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool /*self*/)
 #endif
 {
     if (!IsInWorld())
@@ -3201,7 +3201,7 @@ void Object::OutPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool se
     }
 }
 
-void Object::SendMessageToSet(WorldPacket* data, bool bToSelf, bool myteam_only)
+void Object::SendMessageToSet(WorldPacket* data, bool /*bToSelf*/, bool /*myteam_only*/)
 {
     if (!IsInWorld())
         return;
@@ -3475,7 +3475,7 @@ void Object::RemoveSelfFromInrangeSets()
     }
 }
 
-void Object::OnRemoveInRangeObject(Object* pObj)
+void Object::OnRemoveInRangeObject(Object* /*pObj*/)
 {
     // This method will remain empty for now, don't remove it! -dfighter
 }

@@ -32,7 +32,7 @@ public:
 
     static SpellProc* Create() { return new TwinBladesOfAzzinothSpellProc(); }
 
-    void Init(Object* obj)
+    void Init(Object* /*obj*/)
     {
         if (!mTarget->IsPlayer())
             return;

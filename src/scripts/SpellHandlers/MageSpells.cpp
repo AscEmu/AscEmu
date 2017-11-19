@@ -22,7 +22,7 @@
 #include "Server/Script/ScriptMgr.h"
 #include "Spell/Definitions/ProcFlags.h"
 
-bool Cold_Snap(uint32 i, Spell* pSpell)
+bool Cold_Snap(uint32 /*i*/, Spell* pSpell)
 {
     if (!pSpell->p_caster)
         return true;
@@ -60,7 +60,7 @@ bool HotStreak(uint32 i, Aura* pAura, bool apply)
     return true;
 }
 
-bool SummonWaterElemental(uint32 i, Spell* pSpell)
+bool SummonWaterElemental(uint32 /*i*/, Spell* pSpell)
 {
     Unit* caster = pSpell->u_caster;
     if (caster == NULL)

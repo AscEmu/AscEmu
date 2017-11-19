@@ -1171,7 +1171,7 @@ void Pet::OnRemoveFromWorld()
     }
 }
 
-void Pet::Despawn(uint32 delay, uint32 respawntime)
+void Pet::Despawn(uint32 delay, uint32 /*respawntime*/)
 {
     bool delayed = (delay != 0);
     DelayedRemove(delayed, true, delay);
@@ -2107,7 +2107,7 @@ Group* Pet::GetGroup()
     return NULL;
 }
 
-void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32 unitEvent, uint32 spellId, bool no_remove_auras)
+void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint32 /*unitEvent*/, uint32 spellId, bool no_remove_auras)
 {
     if (!pVictim || !pVictim->isAlive() || !pVictim->IsInWorld() || !IsInWorld())
         return;

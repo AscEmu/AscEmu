@@ -115,8 +115,8 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
 {
     char* config_file = (char*)CONFDIR "/world.conf";
 
-    int file_log_level = DEF_VALUE_NOT_SET;
-    int screen_log_level = DEF_VALUE_NOT_SET;
+    //int file_log_level = DEF_VALUE_NOT_SET;
+    //int screen_log_level = DEF_VALUE_NOT_SET;
 
     // Zyres: The commandline options (especially the config_file value) is leaking our memory (CID 52872 and 52620). This feature seems to be unfinished.
 #ifdef COMMANDLINE_OPT_ENABLE

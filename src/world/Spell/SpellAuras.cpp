@@ -8878,7 +8878,7 @@ void Aura::SendChannelUpdate(uint32 time, Object* m_caster)
     m_caster->SendMessageToSet(&data, true);
 }
 
-void Aura::SpellAuraExpertise(bool apply)
+void Aura::SpellAuraExpertise(bool /*apply*/)
 {
     if (p_target == nullptr)
         return;

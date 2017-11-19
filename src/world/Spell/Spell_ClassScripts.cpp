@@ -206,7 +206,7 @@ public:
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new DispersionSpell(Caster, info, triggered, aur); }
 
-    void DoAfterHandleEffect(Unit* target, uint32 i)
+    void DoAfterHandleEffect(Unit* target, uint32 /*i*/)
     {
         if (p_caster != NULL)
         {
@@ -323,7 +323,7 @@ public:
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new BloodStrikeSpell(Caster, info, triggered, aur); }
 
-    int32 DoCalculateEffect(uint32 i, Unit* target, int32 value)
+    int32 DoCalculateEffect(uint32 /*i*/, Unit* target, int32 value)
     {
         if (target != NULL)
         {

@@ -74,7 +74,7 @@ class MasterHammersmith : public Arcemu::Gossip::Script
 
                 else
                 {
-                    int32 unlearnGold;
+                    int32 unlearnGold = 0;
                     if (plr->getLevel() <= 50)
                         unlearnGold = 250000;
                     if (plr->getLevel() > 50 && plr->getLevel() <= 65)

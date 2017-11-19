@@ -78,7 +78,7 @@ uint32 mTimeStamp()
 
 //\TODO move it to version specific files.
 #if VERSION_STRING != Cata
-void WorldSession::HandleMoveWorldportAckOpcode(WorldPacket& recv_data)
+void WorldSession::HandleMoveWorldportAckOpcode(WorldPacket& /*recv_data*/)
 {
     GetPlayer()->SetPlayerStatus(NONE);
     if (_player->IsInWorld())

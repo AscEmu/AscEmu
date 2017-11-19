@@ -481,8 +481,8 @@ namespace luaItem
 
     int SetUInt64Value(lua_State* L, Item* ptr)
     {
-        uint16_t field = CHECK_ULONG(L, 1);
-        uint64_t guid = CHECK_GUID(L, 2);
+        uint16_t field = static_cast<uint16_t>(CHECK_ULONG(L, 1));
+        uint64_t guid = static_cast<uint64_t>(CHECK_GUID(L, 2));
         if (ptr)
             ptr->setUInt64Value(field, guid);
         return 0;

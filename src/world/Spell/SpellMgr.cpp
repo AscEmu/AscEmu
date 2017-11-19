@@ -348,7 +348,7 @@ bool SpellArea::IsFitToRequirements(Player* player, uint32 newZone, uint32 newAr
     return true;
 }
 
-bool SpellInfo::CheckLocation(uint32_t map_id, uint32_t zone_id, uint32_t area_id, Player* player)
+bool SpellInfo::CheckLocation(uint32_t /*map_id*/, uint32_t zone_id, uint32_t area_id, Player* player)
 {
 #if VERSION_STRING > TBC
     // normal case

@@ -73,7 +73,6 @@ namespace DBC
 
                 uint32 sql_record_count = 0;
                 uint32 sql_highest_index = 0;
-                Field* fields = NULL;
                 // SQL not yet implemented
                 auto result = 0;
                 // Load data from SQL

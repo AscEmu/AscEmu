@@ -414,7 +414,6 @@ SpellInfo* ObjectMgr::GetNextSpellRank(SpellInfo* sp, uint32 level)
 void ObjectMgr::LoadPlayersInfo()
 {
     QueryResult* result = CharacterDatabase.Query("SELECT guid, name, race, class, level, gender, zoneid, timestamp, acct FROM characters");
-    uint32 c = 0;
     if (result)
     {
         do

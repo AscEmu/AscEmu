@@ -1069,7 +1069,7 @@ void AIInterface::unsetSpline()
 #endif
 }
 
-void AIInterface::splineMoveKnockback(float x, float y, float z, float horizontal, float vertical)
+void AIInterface::splineMoveKnockback(float x, float y, float z, float /*horizontal*/, float vertical)
 {
     mSplinePriority = SPLINE_PRIORITY_REDIRECTION;
 

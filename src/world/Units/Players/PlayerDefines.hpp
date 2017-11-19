@@ -129,7 +129,7 @@ enum PlayerStatus
     TRANSFER_PENDING = 1
 };
 
-enum RankTitles
+enum RankTitles : uint16_t
 {
     PVPTITLE_NONE                           = 0,
     PVPTITLE_PRIVATE                        = 1,

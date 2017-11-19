@@ -1862,8 +1862,8 @@ public:
         void UpdateArenaPoints();
 
 #if VERSION_STRING > TBC
-        void SetGlyph(uint32 slot, uint32 id) { setUInt32Value(PLAYER_FIELD_GLYPHS_1 + slot, id); }
-        uint32 GetGlyph(uint32 slot) { return getUInt32Value(PLAYER_FIELD_GLYPHS_1 + slot); }
+        void SetGlyph(uint16 slot, uint32 id) { setUInt32Value(PLAYER_FIELD_GLYPHS_1 + slot, id); }
+        uint32 GetGlyph(uint16 slot) { return getUInt32Value(PLAYER_FIELD_GLYPHS_1 + slot); }
         uint32 GetGlyph(uint32 spec, uint32 slot) const { return m_specs[spec].glyphs[slot]; }
 #endif
 

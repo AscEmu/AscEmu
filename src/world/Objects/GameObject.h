@@ -392,7 +392,7 @@ class SERVER_DECL GameObject : public Object
 
         virtual bool IsLootable() { return false; }
 
-        virtual void Use(uint64 GUID) {}
+        virtual void Use(uint64 /*GUID*/) {}
         void CastSpell(uint64 TargetGUID, SpellInfo* sp);
         void CastSpell(uint64 TargetGUID, uint32 SpellID);
 

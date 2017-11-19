@@ -10093,7 +10093,7 @@ bool Unit::HasAurasOfBuffType(uint32 buff_type, const uint64 & guid, uint32 skip
     return false;
 }
 
-AuraCheckResponse Unit::AuraCheck(SpellInfo* proto, Object* caster)
+AuraCheckResponse Unit::AuraCheck(SpellInfo* proto, Object* /*caster*/)
 {
     AuraCheckResponse resp;
 
@@ -10150,7 +10150,7 @@ AuraCheckResponse Unit::AuraCheck(SpellInfo* proto, Object* caster)
     return resp;
 }
 
-AuraCheckResponse Unit::AuraCheck(SpellInfo* proto, Aura* aur, Object* caster)
+AuraCheckResponse Unit::AuraCheck(SpellInfo* proto, Aura* aur, Object* /*caster*/)
 {
     AuraCheckResponse resp;
     SpellInfo* aura_sp = aur->GetSpellInfo();
@@ -12432,7 +12432,7 @@ void Unit::EventStopChanneling(bool abort)
     spell->finish(abort);
 }
 
-void Unit::EventStrikeWithAbility(uint64 guid, SpellInfo* sp, uint32 damage)
+void Unit::EventStrikeWithAbility(uint64 guid, SpellInfo* sp, uint32 /*damage*/)
 {
     Unit* victim = m_mapMgr ? m_mapMgr->GetUnit(guid) : NULL;
     if (victim)
@@ -13073,10 +13073,10 @@ void Unit::RemoveProcTriggerSpell(uint32 spellId, uint64 casterGuid, uint64 misc
     }
 }
 
-void Unit::TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_remove_auras)
+void Unit::TakeDamage(Unit* /*pAttacker*/, uint32 /*damage*/, uint32 /*spellid*/, bool /*no_remove_auras*/)
 {}
 
-void Unit::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
+void Unit::Die(Unit* /*pAttacker*/, uint32 /*damage*/, uint32 /*spellid*/)
 {}
 
 void Unit::SendPeriodicAuraLog(const WoWGuid & CasterGUID, const WoWGuid & TargetGUID, uint32 SpellID, uint32 School, uint32 Amount, uint32 abs_dmg, uint32 resisted_damage, uint32 Flags, bool is_critical)
@@ -13485,7 +13485,7 @@ void Unit::SendHopOnVehicle(Unit* vehicleowner, uint32 seat)
     SendMessageToSet(&data, true);
 }
 
-void Unit::SendHopOffVehicle(Unit* vehicleowner, LocationVector& landposition)
+void Unit::SendHopOffVehicle(Unit* vehicleowner, LocationVector& /*landposition*/)
 {
     WorldPacket data(SMSG_MONSTER_MOVE, 1 + 12 + 4 + 1 + 4 + 4 + 4 + 12 + 8);
     data << GetNewGUID();

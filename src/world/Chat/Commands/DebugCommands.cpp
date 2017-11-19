@@ -154,7 +154,6 @@ bool ChatHandler::HandleDebugDumpState(const char* /*args*/, WorldSession* sessi
 
 bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_session)
 {
-    uint32 guid = Arcemu::Util::GUID_LOPART(m_session->GetPlayer()->GetSelection());
     Unit* selected_unit = GetSelectedUnit(m_session);
     if (selected_unit == nullptr)
         return true;
@@ -200,7 +199,6 @@ bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_sess
 //.debug hover
 bool ChatHandler::HandleDebugHover(const char* /*args*/, WorldSession* m_session)
 {
-    uint32 guid = Arcemu::Util::GUID_LOPART(m_session->GetPlayer()->GetSelection());
     Unit* selected_unit = GetSelectedUnit(m_session);
     if (selected_unit == nullptr)
         return false;

@@ -210,7 +210,8 @@ void CRandomMersenne::RandomInitByArray(uint32 seeds[], int length)
 
     // Randomize some more
     mti = 0;
-    for(int i = 0; i <= MERS_N; i++) BRandom();
+    for(int z = 0; z <= MERS_N; z++)
+        BRandom();
 }
 
 

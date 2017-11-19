@@ -92,7 +92,7 @@ class BIH
 
             buildData dat;
             dat.maxPrims = leafSize;
-            dat.numPrims = primitives.size();
+            dat.numPrims = static_cast<uint32_t>(primitives.size());
             dat.indices = new uint32[dat.numPrims];
             dat.primBound = new G3D::AABox[dat.numPrims];
             getBounds(primitives[0], bounds);
@@ -117,7 +117,7 @@ class BIH
             delete[] dat.indices;
         }
 
-        uint32 primCount() const { return objects.size(); }
+        uint32 primCount() const { return static_cast<uint32_t>(objects.size()); }
 
         template<typename RayCallback>
         void intersectRay(const G3D::Ray &r, RayCallback& intersectCallback, float &maxDist, bool stopAtFirst=false) const

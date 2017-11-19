@@ -2545,7 +2545,7 @@ class LuaUnit
 
     static int GetFloatValue(lua_State* L, Unit* ptr)
     {
-        uint32 field = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         if (ptr)
             lua_pushnumber(L, ptr->getFloatValue(field));
         return 1;
@@ -2820,11 +2820,11 @@ class LuaUnit
         POWER_TYPE_RUNES        = 5,
         POWER_TYPE_RUNIC_POWER  = 6 */
 
-        uint16 powertype;
+        uint8 powertype;
         if (luaL_optinteger(L, 1, -1) == -1)
             powertype = ptr->GetPowerType();
         else
-            powertype = static_cast<uint16>(luaL_optinteger(L, 1, -1));
+            powertype = static_cast<uint8>(luaL_optinteger(L, 1, -1));
 
         ptr->SetPowerType(powertype);
         return 0;
@@ -3075,7 +3075,7 @@ class LuaUnit
     static int CreateGuardian(lua_State* L, Unit* ptr)
     {
         uint32 entry = CHECK_ULONG(L, 1);
-        uint32 duration = CHECK_ULONG(L, 2);
+        //uint32 duration = CHECK_ULONG(L, 2);
         float angle = CHECK_FLOAT(L, 3);
         uint32 lvl = CHECK_ULONG(L, 4);
 
@@ -3928,7 +3928,7 @@ class LuaUnit
         uint32 mechanic = static_cast<uint32>(luaL_checkinteger(L, 1));
         bool hostileonly = CHECK_BOOL(L, 2);
         if (ptr && mechanic)
-            ptr->RemoveAllAurasByMechanic(mechanic, -1, hostileonly);
+            ptr->RemoveAllAurasByMechanic(mechanic, 0, hostileonly);
         return 0;
     }
 
@@ -5619,7 +5619,7 @@ class LuaUnit
         TEST_PLAYER()
         uint32 spec = static_cast<uint32>(luaL_checkinteger(L, 1)); //0 or 1
         PlayerSpec plrSpec = static_cast<Player*>(ptr)->m_specs[spec];
-        uint32 Lvl = static_cast<Player*>(ptr)->getLevel();
+        //uint32 Lvl = static_cast<Player*>(ptr)->getLevel();
         uint32 FreePoints = plrSpec.GetTP();
 
         lua_pushnumber(L, FreePoints);

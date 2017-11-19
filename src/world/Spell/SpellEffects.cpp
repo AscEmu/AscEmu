@@ -400,7 +400,7 @@ const char* SpellEffectNames[TOTAL_SPELL_EFFECTS] =
     "UNKNOWN37"                  //    161 //used by spell 63624(dual talents)
 };
 
-void Spell::SpellEffectUnused(uint32 i)
+void Spell::SpellEffectUnused(uint32 /*i*/)
 {
     // To prevent debugging. Useless or implemented in a different way.
 }
@@ -463,7 +463,7 @@ void Spell::SpellEffectNULL(uint32 i)
     LogDebugFlag(LF_SPELL_EFF, "Unhandled spell effect %u in spell %u.", GetSpellInfo()->getEffect(i), GetSpellInfo()->getId());
 }
 
-void Spell::SpellEffectInstantKill(uint32 i)
+void Spell::SpellEffectInstantKill(uint32 /*i*/)
 {
     if (!unitTarget || !unitTarget->isAlive())
         return;
@@ -1795,7 +1795,7 @@ void Spell::SpellEffectApplyAura(uint32 i)  // Apply Aura
     pAura->AddMod(GetSpellInfo()->getEffectApplyAuraName(i), damage, GetSpellInfo()->getEffectMiscValue(i), i);
 }
 
-void Spell::SpellEffectEnvironmentalDamage(uint32 i)
+void Spell::SpellEffectEnvironmentalDamage(uint32 /*i*/)
 {
     if (!playerTarget) return;
 
@@ -1832,7 +1832,7 @@ void Spell::SpellEffectPowerDrain(uint32 i)  // Power Drain
     u_caster->Energize(u_caster, GetSpellInfo()->getId(), amt, GetSpellInfo()->getEffectMiscValue(i));
 }
 
-void Spell::SpellEffectHealthLeech(uint32 i) // Health Leech
+void Spell::SpellEffectHealthLeech(uint32 /*i*/) // Health Leech
 {
     if (!unitTarget || !unitTarget->isAlive())
         return;
@@ -2283,7 +2283,7 @@ void Spell::SpellEffectQuestComplete(uint32 i) // Quest Complete
 }
 
 //wand->
-void Spell::SpellEffectWeapondamageNoschool(uint32 i) // Weapon damage + (no School)
+void Spell::SpellEffectWeapondamageNoschool(uint32 /*i*/) // Weapon damage + (no School)
 {
     if (!unitTarget || !u_caster)
         return;
@@ -2345,14 +2345,14 @@ void Spell::SpellEffectResurrect(uint32 i) // Resurrect (Flat)
     playerTarget->setMoveRoot(false);
 }
 
-void Spell::SpellEffectAddExtraAttacks(uint32 i) // Add Extra Attacks
+void Spell::SpellEffectAddExtraAttacks(uint32 /*i*/) // Add Extra Attacks
 {
     if (!u_caster)
         return;
     u_caster->m_extraattacks += damage;
 }
 
-void Spell::SpellEffectDodge(uint32 i)
+void Spell::SpellEffectDodge(uint32 /*i*/)
 {
     //i think this actually enables the skill to be able to dodge melee+ranged attacks
     //value is static and sets value directly which will be modified by other factors
@@ -2361,13 +2361,13 @@ void Spell::SpellEffectDodge(uint32 i)
     //      unitTarget->SetFloatValue(PLAYER_DODGE_PERCENTAGE,damage);
 }
 
-void Spell::SpellEffectParry(uint32 i)
+void Spell::SpellEffectParry(uint32 /*i*/)
 {
     if (unitTarget)
         unitTarget->setcanparry(true);
 }
 
-void Spell::SpellEffectBlock(uint32 i)
+void Spell::SpellEffectBlock(uint32 /*i*/)
 {
     //i think this actually enables the skill to be able to block melee+ranged attacks
     //value is static and sets value directly which will be modified by other factors
@@ -2616,7 +2616,7 @@ void Spell::SpellEffectCreateItem(uint32 i)
     }
 }
 
-void Spell::SpellEffectWeapon(uint32 i)
+void Spell::SpellEffectWeapon(uint32 /*i*/)
 {
     if (!playerTarget)
         return;
@@ -2738,7 +2738,7 @@ void Spell::SpellEffectWeapon(uint32 i)
     }
 }
 
-void Spell::SpellEffectDefense(uint32 i)
+void Spell::SpellEffectDefense(uint32 /*i*/)
 {
     //i think this actually enables the skill to be able to use defense
     //value is static and sets value directly which will be modified by other factors
@@ -3011,7 +3011,7 @@ void Spell::SpellEffectSummonWild(uint32 i)  // Summon Wild
     }
 }
 
-void Spell::SpellEffectSummonGuardian(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
+void Spell::SpellEffectSummonGuardian(uint32 /*i*/, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
 {
 
     if (g_caster != NULL)
@@ -3057,7 +3057,7 @@ void Spell::SpellEffectSummonGuardian(uint32 i, DBC::Structures::SummonPropertie
     }
 }
 
-void Spell::SpellEffectSummonTemporaryPet(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
+void Spell::SpellEffectSummonTemporaryPet(uint32 /*i*/, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
 {
     if (p_caster == NULL)
         return;
@@ -3101,7 +3101,7 @@ void Spell::SpellEffectSummonTemporaryPet(uint32 i, DBC::Structures::SummonPrope
     }
 }
 
-void Spell::SpellEffectSummonTotem(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
+void Spell::SpellEffectSummonTotem(uint32 /*i*/, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
 {
     if (u_caster == NULL)
         return;
@@ -3134,7 +3134,7 @@ void Spell::SpellEffectSummonTotem(uint32 i, DBC::Structures::SummonPropertiesEn
         sEventMgr.AddEvent(static_cast< Object* >(s), &Object::Delete, EVENT_SUMMON_EXPIRE, 60 * 60 * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
-void Spell::SpellEffectSummonPossessed(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
+void Spell::SpellEffectSummonPossessed(uint32 /*i*/, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
 {
     if (p_caster == NULL)
         return;
@@ -3191,7 +3191,7 @@ void Spell::SpellEffectSummonCompanion(uint32 i, DBC::Structures::SummonProperti
     u_caster->SetSummonedCritterGUID(summon->GetGUID());
 }
 
-void Spell::SpellEffectSummonVehicle(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v)
+void Spell::SpellEffectSummonVehicle(uint32 /*i*/, DBC::Structures::SummonPropertiesEntry const* /*spe*/, CreatureProperties const* properties_, LocationVector& v)
 {
     if (u_caster == NULL)
         return;
@@ -3840,7 +3840,7 @@ void Spell::SpellEffectLearnSpell(uint32 i) // Learn Spell
     SpellEffectLearnPetSpell(i);
 }
 
-void Spell::SpellEffectSpellDefense(uint32 i)
+void Spell::SpellEffectSpellDefense(uint32 /*i*/)
 {
     //used to enable this ability. We use it all the time ...
 }
@@ -4006,7 +4006,7 @@ void Spell::SpellEffectLanguage(uint32 i)
 #endif
 }
 
-void Spell::SpellEffectDualWield(uint32 i)
+void Spell::SpellEffectDualWield(uint32 /*i*/)
 {
     if (p_caster == NULL)
         return;
@@ -4104,7 +4104,7 @@ void Spell::SpellEffectAddHonor(uint32 i)
     playerTarget->GetSession()->SendPacket(&data);
 }
 
-void Spell::SpellEffectSpawn(uint32 i)
+void Spell::SpellEffectSpawn(uint32 /*i*/)
 {
     // this effect is mostly for custom teleporting
     switch (GetSpellInfo()->getId())
@@ -4313,7 +4313,7 @@ void Spell::SpellEffectEnchantItemTemporary(uint32 i)  // Enchant Item Temporary
         DetermineSkillUp(skill_line_ability->skilline, itemTarget->GetItemProperties()->ItemLevel);
 }
 
-void Spell::SpellEffectTameCreature(uint32 i)
+void Spell::SpellEffectTameCreature(uint32 /*i*/)
 {
     if (unitTarget == NULL || !unitTarget->IsCreature())
         return;
@@ -4425,7 +4425,7 @@ void Spell::SpellEffectLearnPetSpell(uint32 i)
     }
 }
 
-void Spell::SpellEffectWeapondamage(uint32 i)   // Weapon damage +
+void Spell::SpellEffectWeapondamage(uint32 /*i*/)   // Weapon damage +
 {
     if (!unitTarget || !u_caster)
         return;
@@ -4465,7 +4465,7 @@ void Spell::SpellEffectWeapondamage(uint32 i)   // Weapon damage +
     u_caster->Strike(unitTarget, _type, GetSpellInfo(), damage, 0, 0, false, true);
 }
 
-void Spell::SpellEffectOpenLockItem(uint32 i)
+void Spell::SpellEffectOpenLockItem(uint32 /*i*/)
 {
     if (p_caster == nullptr || i_caster == nullptr)
         return;
@@ -4473,7 +4473,7 @@ void Spell::SpellEffectOpenLockItem(uint32 i)
     p_caster->HandleSpellLoot(i_caster->GetItemProperties()->ItemId);
 }
 
-void Spell::SpellEffectProficiency(uint32 i)
+void Spell::SpellEffectProficiency(uint32 /*i*/)
 {
     uint32 skill = 0;
 
@@ -4598,7 +4598,7 @@ void Spell::SpellEffectApplyRaidAA(uint32 i)
     ApplyAreaAura(i);
 }
 
-void Spell::SpellEffectPowerFunnel(uint32 i) // Power Funnel
+void Spell::SpellEffectPowerFunnel(uint32 /*i*/) // Power Funnel
 {
     if (!unitTarget || !unitTarget->isAlive() || !unitTarget->IsPet())
         return;
@@ -4606,7 +4606,7 @@ void Spell::SpellEffectPowerFunnel(uint32 i) // Power Funnel
     //does not exist
 }
 
-void Spell::SpellEffectHealMaxHealth(uint32 i)   // Heal Max Health
+void Spell::SpellEffectHealMaxHealth(uint32 /*i*/)   // Heal Max Health
 {
     if (!unitTarget || !unitTarget->isAlive())
         return;
@@ -4645,7 +4645,7 @@ void Spell::SpellEffectHealMaxHealth(uint32 i)   // Heal Max Health
     }
 }
 
-void Spell::SpellEffectInterruptCast(uint32 i) // Interrupt Cast
+void Spell::SpellEffectInterruptCast(uint32 /*i*/) // Interrupt Cast
 {
     if (!unitTarget || !unitTarget->isAlive())
         return;
@@ -4713,7 +4713,7 @@ void Spell::SpellEffectInterruptCast(uint32 i) // Interrupt Cast
     }
 }
 
-void Spell::SpellEffectDistract(uint32 i) // Distract
+void Spell::SpellEffectDistract(uint32 /*i*/) // Distract
 {
     //spellId 1725 Distract:Throws a distraction attracting the all monsters for ten sec's
     if (!unitTarget || !unitTarget->isAlive())
@@ -4737,7 +4737,7 @@ void Spell::SpellEffectDistract(uint32 i) // Distract
     //Unit Field Target of
 }
 
-void Spell::SpellEffectPickpocket(uint32 i) // pickpocket
+void Spell::SpellEffectPickpocket(uint32 /*i*/) // pickpocket
 {
     //Show random loot based on roll,
     if (!unitTarget || !p_caster || !unitTarget->IsCreature())
@@ -4827,7 +4827,7 @@ void Spell::SpellEffectUseGlyph(uint32 i)
 #endif
 }
 
-void Spell::SpellEffectHealMechanical(uint32 i)
+void Spell::SpellEffectHealMechanical(uint32 /*i*/)
 {
     if (!unitTarget || !unitTarget->IsCreature() || static_cast< Creature* >(unitTarget)->GetCreatureProperties()->Type != UNIT_TYPE_MECHANICAL)
         return;
@@ -4867,7 +4867,7 @@ void Spell::SpellEffectScriptEffect(uint32 i) // Script Effect
     LOG_ERROR("Spell ID: %u (%s) has a scripted effect (%u) but no handler for it.", m_spellInfo->getId(), m_spellInfo->getName().c_str(), i);
 }
 
-void Spell::SpellEffectSanctuary(uint32 i) // Stop all attacks made to you
+void Spell::SpellEffectSanctuary(uint32 /*i*/) // Stop all attacks made to you
 {
     if (!u_caster)
         return;
@@ -4889,7 +4889,7 @@ void Spell::SpellEffectSanctuary(uint32 i) // Stop all attacks made to you
     }
 }
 
-void Spell::SpellEffectAddComboPoints(uint32 i) // Add Combo Points
+void Spell::SpellEffectAddComboPoints(uint32 /*i*/) // Add Combo Points
 {
     if (!p_caster)
         return;
@@ -4908,13 +4908,11 @@ void Spell::SpellEffectAddComboPoints(uint32 i) // Add Combo Points
     p_caster->AddComboPoints(p_caster->GetSelection(), static_cast<uint8>(damage));
 }
 
-void Spell::SpellEffectCreateHouse(uint32 i) // Create House
+void Spell::SpellEffectCreateHouse(uint32 /*i*/) // Create House
 {
-
-
 }
 
-void Spell::SpellEffectDuel(uint32 i) // Duel
+void Spell::SpellEffectDuel(uint32 /*i*/) // Duel
 {
     if (!p_caster || !p_caster->isAlive())
         return;
@@ -4961,7 +4959,7 @@ void Spell::SpellEffectDuel(uint32 i) // Duel
     p_caster->RequestDuel(playerTarget);
 }
 
-void Spell::SpellEffectStuck(uint32 i)
+void Spell::SpellEffectStuck(uint32 /*i*/)
 {
     if (!playerTarget || playerTarget != p_caster)
         return;
@@ -4972,9 +4970,10 @@ void Spell::SpellEffectStuck(uint32 i)
     playerTarget->SafeTeleport(playerTarget->GetBindMapId(), 0, playerTarget->GetBindPositionX(), playerTarget->GetBindPositionY(), playerTarget->GetBindPositionZ(), 3.14f);*/
 }
 
-void Spell::SpellEffectSummonPlayer(uint32 i)
+void Spell::SpellEffectSummonPlayer(uint32 /*i*/)
 {
-    if (!playerTarget) return;
+    if (!playerTarget)
+        return;
 
     // vojta: from 2.4 players can be summoned on another map
     //if (m_caster->GetMapMgr()->GetMapInfo() && m_caster->GetMapMgr()->GetMapInfo()->type != INSTANCE_NULL && m_caster->GetMapId() != playerTarget->GetMapId())
@@ -5139,7 +5138,7 @@ void Spell::SpellEffectSelfResurrect(uint32 i)
         AddCooldown();
 }
 
-void Spell::SpellEffectSkinning(uint32 i)
+void Spell::SpellEffectSkinning(uint32 /*i*/)
 {
     if (!unitTarget || !unitTarget->IsCreature())
         return;
@@ -5170,7 +5169,7 @@ void Spell::SpellEffectSkinning(uint32 i)
     }
 }
 
-void Spell::SpellEffectCharge(uint32 i)
+void Spell::SpellEffectCharge(uint32 /*i*/)
 {
     if (unitTarget == nullptr || !unitTarget->isAlive())
         return;
@@ -5194,7 +5193,7 @@ void Spell::SpellEffectKnockBack2(uint32 i)
     unitTarget->HandleKnockback(m_caster, GetSpellInfo()->getEffectMiscValue(i) / 10.0f, damage / 10.0f);
 }
 
-void Spell::SpellEffectDisenchant(uint32 i)
+void Spell::SpellEffectDisenchant(uint32 /*i*/)
 {
     if (!p_caster)
         return;
@@ -5234,7 +5233,7 @@ void Spell::SpellEffectDisenchant(uint32 i)
         i_caster = NULL;
 }
 
-void Spell::SpellEffectInebriate(uint32 i) // lets get drunk!
+void Spell::SpellEffectInebriate(uint32 /*i*/) // lets get drunk!
 {
     if (playerTarget == NULL)
         return;
@@ -5286,7 +5285,7 @@ void Spell::SpellEffectFeedPet(uint32 i)  // Feed Pet
     }
 }
 
-void Spell::SpellEffectDismissPet(uint32 i)
+void Spell::SpellEffectDismissPet(uint32 /*i*/)
 {
     // remove pet.. but don't delete so it can be called later
     if (!p_caster) return;
@@ -5375,7 +5374,7 @@ void Spell::SpellEffectDispelMechanic(uint32 i)
     unitTarget->RemoveAllAurasByMechanic(GetSpellInfo()->getEffectMiscValue(i), GetSpellInfo()->getEffectBasePoints(i), false);
 }
 
-void Spell::SpellEffectSummonDeadPet(uint32 i)
+void Spell::SpellEffectSummonDeadPet(uint32 /*i*/)
 {
     //this is pet resurrect
     if (!p_caster)
@@ -5503,7 +5502,7 @@ void Spell::SpellEffectResurrectNew(uint32 i)
     SendResurrectRequest(playerTarget);
 }
 
-void Spell::SpellEffectAttackMe(uint32 i)
+void Spell::SpellEffectAttackMe(uint32 /*i*/)
 {
     if (!unitTarget || !unitTarget->isAlive())
         return;
@@ -5511,7 +5510,7 @@ void Spell::SpellEffectAttackMe(uint32 i)
     unitTarget->GetAIInterface()->AttackReaction(u_caster, 1, 0);
 }
 
-void Spell::SpellEffectSkinPlayerCorpse(uint32 i)
+void Spell::SpellEffectSkinPlayerCorpse(uint32 /*i*/)
 {
     Corpse* corpse = 0;
     if (!playerTarget)
@@ -5604,7 +5603,7 @@ void Spell::SpellEffectApplyPetAA(uint32 i)
     ApplyAreaAura(i);
 }
 
-void Spell::SpellEffectDummyMelee(uint32 i)   // Normalized Weapon damage +
+void Spell::SpellEffectDummyMelee(uint32 /*i*/)   // Normalized Weapon damage +
 {
 
     if (!unitTarget || !u_caster)
@@ -5879,7 +5878,7 @@ void Spell::SpellEffectDummyMelee(uint32 i)   // Normalized Weapon damage +
     u_caster->Strike(unitTarget, _type, GetSpellInfo(), damage, pct_dmg_mod, 0, false, true);
 }
 
-void Spell::SpellEffectStartTaxi(uint32 i)
+void Spell::SpellEffectStartTaxi(uint32 /*i*/)
 {
     if (!playerTarget || !playerTarget->isAlive() || !u_caster)
         return;
@@ -5921,7 +5920,7 @@ void Spell::SpellEffectStartTaxi(uint32 i)
     playerTarget->TaxiStart(taxipath, modelid, 0);
 }
 
-void Spell::SpellEffectPlayerPull(uint32 i)
+void Spell::SpellEffectPlayerPull(uint32 /*i*/)
 {
     if (!unitTarget || !unitTarget->isAlive() || !unitTarget->IsPlayer())
         return;
@@ -5957,7 +5956,7 @@ void Spell::SpellEffectPlayerPull(uint32 i)
     p_target->SendMessageToSet(&data, true);
 }
 
-void Spell::SpellEffectReduceThreatPercent(uint32 i)
+void Spell::SpellEffectReduceThreatPercent(uint32 /*i*/)
 {
     if (!unitTarget || !unitTarget->IsCreature() || !u_caster || unitTarget->GetAIInterface()->getThreatByPtr(u_caster) == 0)
         return;
@@ -5965,7 +5964,7 @@ void Spell::SpellEffectReduceThreatPercent(uint32 i)
     unitTarget->GetAIInterface()->modThreatByPtr(u_caster, (int32)unitTarget->GetAIInterface()->getThreatByPtr(u_caster) * damage / 100);
 }
 
-void Spell::SpellEffectSpellSteal(uint32 i)
+void Spell::SpellEffectSpellSteal(uint32 /*i*/)
 {
     if (unitTarget == NULL || u_caster == NULL || !unitTarget->isAlive())
         return;
@@ -6058,7 +6057,7 @@ void Spell::SpellEffectSpellSteal(uint32 i)
     }
 }
 
-void Spell::SpellEffectProspecting(uint32 i)
+void Spell::SpellEffectProspecting(uint32 /*i*/)
 {
     if (!p_caster) return;
 
@@ -6098,7 +6097,7 @@ void Spell::SpellEffectApplyEnemyAA(uint32 i)
     ApplyAreaAura(i);
 }
 
-void Spell::SpellEffectRedirectThreat(uint32 i)
+void Spell::SpellEffectRedirectThreat(uint32 /*i*/)
 {
     if (!p_caster || !unitTarget)
         return;
@@ -6225,7 +6224,7 @@ void Spell::SpellEffectTeachTaxiPath(uint32 i)
     }
 }
 
-void Spell::SpellEffectDualWield2H(uint32 i)
+void Spell::SpellEffectDualWield2H(uint32 /*i*/)
 {
     if (!playerTarget)
         return;
@@ -6280,7 +6279,7 @@ void Spell::SpellEffectCreateItem2(uint32 i) // Create item
     }
 }
 
-void Spell::SpellEffectMilling(uint32 i)
+void Spell::SpellEffectMilling(uint32 /*i*/)
 {
     if (!p_caster) return;
 
@@ -6310,7 +6309,7 @@ void Spell::SpellEffectMilling(uint32 i)
     }
 }
 
-void Spell::SpellEffectRenamePet(uint32 i)
+void Spell::SpellEffectRenamePet(uint32 /*i*/)
 {
     if (!unitTarget || !unitTarget->IsPet() ||
         !static_cast< Pet* >(unitTarget)->GetPetOwner() || static_cast< Pet* >(unitTarget)->GetPetOwner()->getClass() != HUNTER)
@@ -6319,7 +6318,7 @@ void Spell::SpellEffectRenamePet(uint32 i)
     unitTarget->setByteValue(UNIT_FIELD_BYTES_2, 2, PET_RENAME_ALLOWED);
 }
 
-void Spell::SpellEffectRestoreHealthPct(uint32 i)
+void Spell::SpellEffectRestoreHealthPct(uint32 /*i*/)
 {
     if (unitTarget == NULL || !unitTarget->isAlive())
         return;
@@ -6341,7 +6340,7 @@ void Spell::SpellEffectRestoreHealthPct(uint32 i)
     SendHealSpellOnPlayer(m_caster, unitTarget, modHealth, false, overheal, pSpellId ? pSpellId : GetSpellInfo()->getId());
 }
 
-void Spell::SpellEffectLearnSpec(uint32 i)
+void Spell::SpellEffectLearnSpec(uint32 /*i*/)
 {
     if (p_caster == NULL)
         return;
@@ -6350,7 +6349,7 @@ void Spell::SpellEffectLearnSpec(uint32 i)
     p_caster->smsg_TalentsInfo(false);
 }
 
-void Spell::SpellEffectActivateSpec(uint32 i)
+void Spell::SpellEffectActivateSpec(uint32 /*i*/)
 {
     if (p_caster == NULL)
         return;
@@ -6606,7 +6605,7 @@ void Spell::SpellEffectActivateRunes(uint32 i)
     }
 }
 
-void Spell::SpellEffectSetMirrorName(uint32 i)
+void Spell::SpellEffectSetMirrorName(uint32 /*i*/)
 {
     WorldPacket data(SMSG_CLEAR_TARGET, 8);
     data << uint64(m_caster->GetGUID());

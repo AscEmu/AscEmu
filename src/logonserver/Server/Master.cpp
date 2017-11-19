@@ -27,15 +27,15 @@ std::set<AuthSocket*> _authSockets;
 
 ConfigMgr Config;
 
-void LogonServer::Run(int argc, char** argv)
+void LogonServer::Run(int /*argc*/, char** /*argv*/)
 {
     UNIXTIME = time(NULL);
     g_localTime = *localtime(&UNIXTIME);
 
-    char* config_file = (char*)CONFDIR "/logon.conf";
+    //char* config_file = (char*)CONFDIR "/logon.conf";
 
-    int file_log_level = DEF_VALUE_NOT_SET;
-    int screen_log_level = DEF_VALUE_NOT_SET;
+    //int file_log_level = DEF_VALUE_NOT_SET;
+    //int screen_log_level = DEF_VALUE_NOT_SET;
 
     // Zyres: The commandline options (especially the config_file value) is leaking our memory (CID 52921). This feature seems to be unfinished.
 #ifdef COMMANDLINE_OPT_ENABLE

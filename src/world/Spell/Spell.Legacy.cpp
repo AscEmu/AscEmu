@@ -7678,7 +7678,7 @@ void Spell::SpellEffectJumpTarget(uint32 i)
         u_caster->GetAIInterface()->splineMoveJump(x, y, z, o, speedZ, GetSpellInfo()->getEffect(i) == 145);
 }
 
-void Spell::SpellEffectJumpBehindTarget(uint32 i)
+void Spell::SpellEffectJumpBehindTarget(uint32 /*i*/)
 {
     if (u_caster == nullptr)
         return;

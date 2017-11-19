@@ -57,7 +57,7 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
     ai_spell->procCount = maxcount;
     ai_spell->spell = spell_entry;
     ai_spell->spellType = static_cast<uint8>(spellType);
-    ai_spell->spelltargetType = spelltargetType;
+    ai_spell->spelltargetType = static_cast<uint8>(spelltargetType);
     ai_spell->floatMisc1 = floatMisc1;
     ai_spell->Misc2 = Misc2;
     ai_spell->cooldown = spellCooldown;
