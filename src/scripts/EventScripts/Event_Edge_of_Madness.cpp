@@ -63,5 +63,5 @@ const uint32 SPELL_AMBUSH = 34794;
 #define YELL_WUSHOOLAY_7 "The end of our empire... is only the beginning..."            /// on die
 
 
-void SetupEdgeOfMadnes(ScriptMgr* mgr)
+void SetupEdgeOfMadnes(ScriptMgr* /*mgr*/)
 { }

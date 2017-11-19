@@ -25,5 +25,5 @@
 // Chulo
 #define YELL_CHULO_1 "Heh! You'll not get my treasure!"
 
-void SetupLeaderOfJinAlai(ScriptMgr* mgr)
+void SetupLeaderOfJinAlai(ScriptMgr* /*mgr*/)
 { }

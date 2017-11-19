@@ -11,5 +11,5 @@
 // event_properties holiday: NA \n
 //\todo New Years's Eve \n
 
-void SetupNewYearsEve(ScriptMgr* mgr)
+void SetupNewYearsEve(ScriptMgr* /*mgr*/)
 { }

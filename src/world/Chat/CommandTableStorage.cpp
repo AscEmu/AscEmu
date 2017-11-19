@@ -394,8 +394,6 @@ void CommandTableStorage::Init()
         { "aispelltestcontinue",'d', &ChatHandler::HandleAIAgentDebugContinue,      "",                                                         nullptr, 0, 0, 0 },
         { "aispelltestskip",    'd', &ChatHandler::HandleAIAgentDebugSkip,          "",                                                         nullptr, 0, 0, 0 },
         { "dumpcoords",         'd', &ChatHandler::HandleDebugDumpCoordsCommmand,   "",                                                         nullptr, 0, 0, 0 },
-        { "sendpacket",         'd', &ChatHandler::HandleSendpacket,                "<Opcode ID>, <data>",                                      nullptr, 0, 0, 0 },
-        { "sqlquery",           'd', &ChatHandler::HandleSQLQueryCommand,           "<Sql query>",                                              nullptr, 0, 0, 0 },
         { "rangecheck",         'd', &ChatHandler::HandleRangeCheckCommand,         "Checks the range between the player and the target.",      nullptr, 0, 0, 0 },
         { "testlos",            'd', &ChatHandler::HandleCollisionTestLOS,          "Tests LoS",                                                nullptr, 0, 0, 0 },
         { "testindoor",         'd', &ChatHandler::HandleCollisionTestIndoor,       "Tests indoor",                                             nullptr, 0, 0, 0 },

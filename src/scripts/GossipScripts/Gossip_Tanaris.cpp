@@ -27,7 +27,7 @@ class CurgleCranklehop_Gossip : public Arcemu::Gossip::Script
 {
     public:
 
-        void OnHello(Object* pObject, Player* plr)
+        void OnHello(Object* pObject, Player* plr) override
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1519);
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TANARIS_CRANK_HIPPO), 1);
@@ -35,7 +35,7 @@ class CurgleCranklehop_Gossip : public Arcemu::Gossip::Script
             menu.Send(plr);
         }
 
-        void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)
+        void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 0);
             if (1 == Id)
@@ -45,7 +45,7 @@ class CurgleCranklehop_Gossip : public Arcemu::Gossip::Script
             menu.Send(plr);
         }
 
-        void Destroy() { delete this; }
+        void Destroy() override { delete this; }
 
 };
 
@@ -53,17 +53,19 @@ class TrentonLighthammer_Gossip : public Arcemu::Gossip::Script
 {
     public:
 
-        void OnHello(Object* pObject, Player* plr)
+        void OnHello(Object* pObject, Player* plr) override
         {
             Arcemu::Gossip::Menu::SendQuickMenu(pObject->GetGUID(), 1758, plr, 1, GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TANARIS_TELL_TRENTON));
         }
 
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)
+        void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
         {
-            Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 1759, plr);
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 0);
+            menu.setTextID(1759);
+            menu.Send(plr);
         }
 
-        void Destroy() { delete this; }
+        void Destroy() override { delete this; }
 };
 
 void SetupTanarisGossip(ScriptMgr* mgr)

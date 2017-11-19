@@ -244,7 +244,7 @@ namespace luaGlobalFunctions
         return 0;
     }
 
-    static int ReloadLuaEngine(lua_State* L)
+    static int ReloadLuaEngine(lua_State* /*L*/)
     {
         /*g_luaMgr.Restart();
         MapMgr * mgr;
@@ -289,7 +289,7 @@ namespace luaGlobalFunctions
         return 1;
     }
 
-    static int Rehash(lua_State* L)
+    static int Rehash(lua_State* /*L*/)
     {
         sWorld.loadWorldConfigValues(true);
         return 0;

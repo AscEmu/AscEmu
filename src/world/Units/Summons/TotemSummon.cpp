@@ -33,15 +33,15 @@ TotemSummon::TotemSummon(uint64 GUID) : Summon(GUID)
 TotemSummon::~TotemSummon()
 {}
 
-void TotemSummon::Load(CreatureProperties const* properties_, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot)
+void TotemSummon::Load(CreatureProperties const* properties_, Unit* pOwner, LocationVector & position, uint32 spellid, int32 pSummonslot)
 {
-    Summon::Load(properties_, owner, position, spellid, summonslot);
+    Summon::Load(properties_, pOwner, position, spellid, pSummonslot);
     uint32 displayID = 0;
 
     MySQLStructure::TotemDisplayIds const* totemdisplay = sMySQLStore.getTotemDisplayId(creature_properties->Male_DisplayID);
     if (totemdisplay != nullptr)
     {
-        switch (owner->getRace())
+        switch (pOwner->getRace())
         {
             case RACE_DRAENEI:
                 displayID = totemdisplay->draeneiId;
@@ -74,9 +74,9 @@ void TotemSummon::Load(CreatureProperties const* properties_, Unit* owner, Locat
     }
 
     // Set up the creature.
-    SetMaxPower(POWER_TYPE_FOCUS, owner->getLevel() * 30);
-    SetPower(POWER_TYPE_FOCUS, owner->getLevel() * 30);
-    setLevel(owner->getLevel());
+    SetMaxPower(POWER_TYPE_FOCUS, pOwner->getLevel() * 30);
+    SetPower(POWER_TYPE_FOCUS, pOwner->getLevel() * 30);
+    setLevel(pOwner->getLevel());
     setRace(0);
     setClass(1);
     setGender(2);
@@ -90,15 +90,15 @@ void TotemSummon::Load(CreatureProperties const* properties_, Unit* owner, Locat
     SetCastSpeedMod(1.0f);
     setUInt32Value(UNIT_DYNAMIC_FLAGS, 0);
 
-    InheritSMMods(owner);
+    InheritSMMods(pOwner);
 
     for (uint8 school = 0; school < SCHOOL_COUNT; school++)
     {
-        ModDamageDone[school] = owner->GetDamageDoneMod(school);
-        HealDoneMod[school] = owner->HealDoneMod[school];
+        ModDamageDone[school] = pOwner->GetDamageDoneMod(school);
+        HealDoneMod[school] = pOwner->HealDoneMod[school];
     }
 
-    m_aiInterface->Init(this, AI_SCRIPT_TOTEM, Movement::WP_MOVEMENT_SCRIPT_NONE, owner);
+    m_aiInterface->Init(this, AI_SCRIPT_TOTEM, Movement::WP_MOVEMENT_SCRIPT_NONE, pOwner);
     DisableAI();
 }
 
@@ -173,7 +173,7 @@ void TotemSummon::SetupSpells()
     }
 }
 
-void TotemSummon::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
+void TotemSummon::Die(Unit* /*pAttacker*/, uint32 /*damage*/, uint32 /*spellid*/)
 {
     Despawn(1, 0);
 }

@@ -66,5 +66,5 @@ enum MidsummerSpells
 //////////////////////////////////////////////////////////////////////////////////////////
 // Bonfire
 
-void SetupMidsummerFestival(ScriptMgr* mgr)
+void SetupMidsummerFestival(ScriptMgr* /*mgr*/)
 { }

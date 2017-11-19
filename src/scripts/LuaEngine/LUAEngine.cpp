@@ -224,7 +224,7 @@ void LuaEngine::LoadScripts()
         }
         else
         {
-            if (errorCode = lua_pcall(lu, 0, 0, 0))
+            if (errorCode == lua_pcall(lu, 0, 0, 0))
             {
                 LOG_ERROR("%s failed.(could not run). Error code %i", itr->c_str(), errorCode);
                 report(lu);
@@ -636,7 +636,7 @@ void LuaEngine::RegisterCoreFunctions()
 
 static int RegisterServerHook(lua_State* L)
 {
-    uint16 functionRef = 0;
+    uint16_t functionRef = 0;
     //Maximum passed in arguments, consider rest as garbage
     lua_settop(L, 2);
     uint32 ev = static_cast<uint32>(luaL_checkinteger(L, 1));
@@ -648,11 +648,11 @@ static int RegisterServerHook(lua_State* L)
     //For functions directly passed in, skip all that code and register the reference.
     if (!strcmp(typeName, "function"))
     {
-        functionRef = (uint16)luaL_ref(L, LUA_REGISTRYINDEX);
+        functionRef = static_cast<uint16_t>(luaL_ref(L, LUA_REGISTRYINDEX));
     }
     else if (!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
     {
-        functionRef = LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 2));
+        functionRef = static_cast<uint16_t>(LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 2)));
     }
     if (functionRef > 0)
     {
@@ -666,7 +666,7 @@ static int RegisterServerHook(lua_State* L)
 
 static int RegisterDummySpell(lua_State* L)
 {
-    uint16 functionRef = 0;
+    uint16_t functionRef = 0;
     uint32 entry = static_cast<uint32>(luaL_checkinteger(L, 1));
     const char* typeName = luaL_typename(L, 2);
     lua_settop(L, 2);
@@ -682,11 +682,11 @@ static int RegisterDummySpell(lua_State* L)
     }
     if (!strcmp(typeName, "function"))
     {
-        functionRef = (uint16)luaL_ref(L, LUA_REGISTRYINDEX);
+        functionRef = static_cast<uint16_t>(luaL_ref(L, LUA_REGISTRYINDEX));
     }
     else if (!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
     {
-        functionRef = LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 2));
+        functionRef = static_cast<uint16_t>(LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 2)));
     }
     if (functionRef > 0)
     {
@@ -701,7 +701,7 @@ static int RegisterDummySpell(lua_State* L)
 static int RegisterUnitEvent(lua_State* L)
 {
     lua_settop(L, 3);
-    uint16 functionRef = 0;
+    uint16_t functionRef = 0;
     int entry = static_cast<int>(luaL_checkinteger(L, 1));
     int ev = static_cast<int>(luaL_checkinteger(L, 2));
     const char* typeName = luaL_typename(L, 3);
@@ -712,11 +712,11 @@ static int RegisterUnitEvent(lua_State* L)
     }
     if (!strcmp(typeName, "function"))
     {
-        functionRef = (uint16)luaL_ref(L, LUA_REGISTRYINDEX);
+        functionRef = static_cast<uint16_t>(luaL_ref(L, LUA_REGISTRYINDEX));
     }
     else if (!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
     {
-        functionRef = LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 3));
+        functionRef = static_cast<uint16_t>(LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 3)));
     }
     if (functionRef > 0)
     {
@@ -731,7 +731,7 @@ static int RegisterUnitEvent(lua_State* L)
 static int RegisterInstanceEvent(lua_State* L)
 {
     lua_settop(L, 3);
-    uint16 functionRef = 0;
+    uint16_t functionRef = 0;
     int map = static_cast<int>(luaL_checkinteger(L, 1));
     int ev = static_cast<int>(luaL_checkinteger(L, 2));
     const char* typeName = luaL_typename(L, 3);
@@ -742,11 +742,11 @@ static int RegisterInstanceEvent(lua_State* L)
     }
     if (!strcmp(typeName, "function"))
     {
-        functionRef = (uint16)luaL_ref(L, LUA_REGISTRYINDEX);
+        functionRef = static_cast<uint16_t>(luaL_ref(L, LUA_REGISTRYINDEX));
     }
     else if (!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
     {
-        functionRef = LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 3));
+        functionRef = static_cast<uint16_t>(LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 3)));
     }
     if (functionRef > 0)
     {
@@ -761,7 +761,7 @@ static int RegisterInstanceEvent(lua_State* L)
 static int RegisterQuestEvent(lua_State* L)
 {
     lua_settop(L, 3);
-    uint16 functionRef = 0;
+    uint16_t functionRef = 0;
     int entry = static_cast<int>(luaL_checkinteger(L, 1));
     int ev = static_cast<int>(luaL_checkinteger(L, 2));
     const char* typeName = luaL_typename(L, 3);
@@ -772,11 +772,11 @@ static int RegisterQuestEvent(lua_State* L)
     }
     if (!strcmp(typeName, "function"))
     {
-        functionRef = (uint16)luaL_ref(L, LUA_REGISTRYINDEX);
+        functionRef = static_cast<uint16_t>(luaL_ref(L, LUA_REGISTRYINDEX));
     }
     else if (!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
     {
-        functionRef = LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 3));
+        functionRef = static_cast<uint16_t>(LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 3)));
     }
     if (functionRef > 0)
     {
@@ -791,7 +791,7 @@ static int RegisterQuestEvent(lua_State* L)
 static int RegisterGameObjectEvent(lua_State* L)
 {
     lua_settop(L, 3);
-    uint16 functionRef = 0;
+    uint16_t functionRef = 0;
     int entry = static_cast<int>(luaL_checkinteger(L, 1));
     int ev = static_cast<int>(luaL_checkinteger(L, 2));
     const char* typeName = luaL_typename(L, 3);
@@ -802,11 +802,11 @@ static int RegisterGameObjectEvent(lua_State* L)
     }
     if (!strcmp(typeName, "function"))
     {
-        functionRef = (uint16)luaL_ref(L, LUA_REGISTRYINDEX);
+        functionRef = static_cast<uint16_t>(luaL_ref(L, LUA_REGISTRYINDEX));
     }
     else if (!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
     {
-        functionRef = LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 3));
+        functionRef = static_cast<uint16_t>(LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 3)));
     }
     if (functionRef > 0)
     {
@@ -821,7 +821,7 @@ static int RegisterGameObjectEvent(lua_State* L)
 static int RegisterUnitGossipEvent(lua_State* L)
 {
     lua_settop(L, 3);
-    uint16 functionRef = 0;
+    uint16_t functionRef = 0;
     int entry = static_cast<int>(luaL_checkinteger(L, 1));
     int ev = static_cast<int>(luaL_checkinteger(L, 2));
     const char* typeName = luaL_typename(L, 3);
@@ -832,11 +832,11 @@ static int RegisterUnitGossipEvent(lua_State* L)
     }
     if (!strcmp(typeName, "function"))
     {
-        functionRef = (uint16)luaL_ref(L, LUA_REGISTRYINDEX);
+        functionRef = static_cast<uint16_t>(luaL_ref(L, LUA_REGISTRYINDEX));
     }
     else if (!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
     {
-        functionRef = LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 3));
+        functionRef = static_cast<uint16_t>(LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 3)));
     }
     if (functionRef > 0)
     {
@@ -850,7 +850,7 @@ static int RegisterUnitGossipEvent(lua_State* L)
 static int RegisterItemGossipEvent(lua_State* L)
 {
     lua_settop(L, 3);
-    uint16 functionRef = 0;
+    uint16_t functionRef = 0;
     int entry = static_cast<int>(luaL_checkinteger(L, 1));
     int ev = static_cast<int>(luaL_checkinteger(L, 2));
     const char* typeName = luaL_typename(L, 3);
@@ -861,11 +861,11 @@ static int RegisterItemGossipEvent(lua_State* L)
     }
     if (!strcmp(typeName, "function"))
     {
-        functionRef = (uint16)luaL_ref(L, LUA_REGISTRYINDEX);
+        functionRef = static_cast<uint16_t>(luaL_ref(L, LUA_REGISTRYINDEX));
     }
     else if (!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
     {
-        functionRef = LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 3));
+        functionRef = static_cast<uint16_t>(LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 3)));
     }
     if (functionRef > 0)
     {
@@ -880,7 +880,7 @@ static int RegisterItemGossipEvent(lua_State* L)
 static int RegisterGOGossipEvent(lua_State* L)
 {
     lua_settop(L, 3);
-    uint16 functionRef = 0;
+    uint16_t functionRef = 0;
     int entry = static_cast<int>(luaL_checkinteger(L, 1));
     int ev = static_cast<int>(luaL_checkinteger(L, 2));
     const char* typeName = luaL_typename(L, 3);
@@ -891,11 +891,11 @@ static int RegisterGOGossipEvent(lua_State* L)
     }
     if (!strcmp(typeName, "function"))
     {
-        functionRef = (uint16)luaL_ref(L, LUA_REGISTRYINDEX);
+        functionRef = static_cast<uint16_t>(luaL_ref(L, LUA_REGISTRYINDEX));
     }
     else if (!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
     {
-        functionRef = LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 3));
+        functionRef = static_cast<uint16_t>(LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 3)));
     }
     if (functionRef > 0)
     {
@@ -1904,7 +1904,7 @@ class LuaCreature : public CreatureAIScript
         {
 
             CHECK_BINDING_ACQUIRELOCK
-            LuaGlobal::instance()->luaEngine()->BeginCall(fRef);
+            LuaGlobal::instance()->luaEngine()->BeginCall(static_cast<uint16_t>(fRef));
             LuaGlobal::instance()->luaEngine()->PushUnit(getCreature());
             LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
             RELEASE_LOCK
@@ -2120,7 +2120,7 @@ class LuaGossip : public Arcemu::Gossip::Script
             }
         }
 
-        void OnHello(Object* pObject, Player* plr)
+        void OnHello(Object* pObject, Player* plr) override
         {
             GET_LOCK
             if (pObject->IsCreature())
@@ -2168,7 +2168,7 @@ class LuaGossip : public Arcemu::Gossip::Script
             RELEASE_LOCK
         }
 
-        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId)
+        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t /*gossipId*/) override
         {
             GET_LOCK
             if (pObject->IsCreature())
@@ -2223,7 +2223,7 @@ class LuaGossip : public Arcemu::Gossip::Script
             RELEASE_LOCK
         }
 
-        void OnEnd(Object* pObject, Player* Plr)
+        void OnEnd(Object* pObject, Player* Plr) override
         {
             GET_LOCK
             if (pObject->IsCreature())

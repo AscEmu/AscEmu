@@ -480,7 +480,7 @@ void Arcemu::Gossip::Banker::OnHello(Object* pObject, Player* Plr)
     Plr->GetSession()->SendBankerList(static_cast<Creature*>(pObject));
 }
 
-void Arcemu::Gossip::Banker::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId)
+void Arcemu::Gossip::Banker::OnSelectOption(Object* /*pObject*/, Player* /*Plr*/, uint32 /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
 
 }
@@ -526,7 +526,7 @@ void Arcemu::Gossip::TabardDesigner::OnHello(Object* pObject, Player* Plr)
     menu.Send(Plr);
 }
 
-void Arcemu::Gossip::TabardDesigner::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId)
+void Arcemu::Gossip::TabardDesigner::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
     switch (Id)
     {
@@ -557,7 +557,7 @@ void Arcemu::Gossip::StableMaster::OnHello(Object* pObject, Player* Plr)
         Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), Text, Plr);
 }
 
-void Arcemu::Gossip::StableMaster::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId)
+void Arcemu::Gossip::StableMaster::OnSelectOption(Object* pObject, Player* Plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
     Plr->GetSession()->SendStabledPetList(pObject->GetGUID());
 }
@@ -580,7 +580,7 @@ void Arcemu::Gossip::PetTrainer::OnHello(Object* pObject, Player* Plr)
     menu.StackSend<256>(Plr);
 }
 
-void Arcemu::Gossip::PetTrainer::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId)
+void Arcemu::Gossip::PetTrainer::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
     if (1 == Id)
         Plr->GetSession()->SendTrainerList(static_cast<Creature*>(pObject));
@@ -675,7 +675,7 @@ void Arcemu::Gossip::ClassTrainer::OnHello(Object* pObject, Player* Plr)
     menu.StackSend<256>(Plr);
 }
 
-void Arcemu::Gossip::ClassTrainer::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId)
+void Arcemu::Gossip::ClassTrainer::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
     const char* purchaseconfirm;
     switch (Id)
@@ -726,5 +726,5 @@ void Arcemu::Gossip::Generic::OnHello(Object* pObject, Player* Plr)
     menu.StackSend<256>(Plr);
 }
 
-void Arcemu::Gossip::Generic::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32_t gossipId)
+void Arcemu::Gossip::Generic::OnSelectOption(Object* /*pObject*/, Player* /*Plr*/, uint32 /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {}

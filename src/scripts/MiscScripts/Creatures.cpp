@@ -85,7 +85,7 @@ class SavannahProwler : public CreatureAIScript
                 getCreature()->SetStandState(STANDSTATE_SLEEP);
         }
 
-        void OnCombatStart(Unit* pTarget) override
+        void OnCombatStart(Unit* /*pTarget*/) override
         {
             if(getCreature()->GetStandState() == STANDSTATE_SLEEP)
                 getCreature()->SetStandState(STANDSTATE_STAND);

@@ -23,7 +23,7 @@
 #include <Spell/Definitions/SpellMechanics.h>
 #include <Units/Creatures/Pet.h>
 
-bool Refocus(uint32 i, Spell* pSpell)
+bool Refocus(uint32 /*i*/, Spell* pSpell)
 {
     Player* playerTarget = pSpell->GetPlayerTarget();
     if (playerTarget == 0) return true;
@@ -43,7 +43,7 @@ bool Refocus(uint32 i, Spell* pSpell)
     return true;
 }
 
-bool Readiness(uint32 i, Spell* pSpell)
+bool Readiness(uint32 /*i*/, Spell* pSpell)
 {
     if (!pSpell->p_caster)
         return true;
@@ -80,7 +80,7 @@ bool MastersCall(uint32 i, Spell* pSpell)
     return true;
 }
 
-bool TheBeastWithin(uint32 i, Aura* a, bool apply)
+bool TheBeastWithin(uint32 /*i*/, Aura* a, bool apply)
 {
     Unit* m_target = a->GetTarget();
 
@@ -105,7 +105,7 @@ bool TheBeastWithin(uint32 i, Aura* a, bool apply)
 }
 
 
-bool BestialWrath(uint32 i, Aura* a, bool apply)
+bool BestialWrath(uint32 /*i*/, Aura* a, bool apply)
 {
     Unit* m_target = a->GetTarget();
 
@@ -128,7 +128,7 @@ bool BestialWrath(uint32 i, Aura* a, bool apply)
     return true;
 }
 
-bool Misdirection(uint32 i, Aura* a, bool apply)
+bool Misdirection(uint32 /*i*/, Aura* a, bool apply)
 {
     Player* caster = a->GetPlayerCaster();
 
@@ -263,7 +263,8 @@ public:
     }
 };
 
-bool ChimeraShot(uint32 i, Spell *spell) {
+bool ChimeraShot(uint32 /*i*/, Spell *spell)
+{
     Unit *target = spell->GetUnitTarget();
 
     HasNameHash condition;

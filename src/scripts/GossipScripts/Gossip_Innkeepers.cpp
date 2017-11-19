@@ -79,7 +79,7 @@ void InnkeeperGossip::OnHello(Object* pObject, Player* Plr)
     menu.Send(Plr);
 }
 
-void InnkeeperGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code)
+void InnkeeperGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/)
 {
     Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : nullptr;
     if (pCreature == nullptr)

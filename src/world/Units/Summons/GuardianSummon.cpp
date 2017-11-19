@@ -29,20 +29,20 @@ GuardianSummon::GuardianSummon(uint64 GUID) : Summon(GUID)
 GuardianSummon::~GuardianSummon()
 {}
 
-void GuardianSummon::Load(CreatureProperties const* properties_, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot)
+void GuardianSummon::Load(CreatureProperties const* properties_, Unit* pOwner, LocationVector & position, uint32 spellid, int32 pSummonslot)
 {
-    Summon::Load(properties_, owner, position, spellid, summonslot);
+    Summon::Load(properties_, pOwner, position, spellid, pSummonslot);
 
     SetPowerType(POWER_TYPE_MANA);
     SetMaxPower(POWER_TYPE_MANA, GetMaxPower(POWER_TYPE_MANA) + 28 + 10 * getLevel());
     SetPower(POWER_TYPE_MANA, GetPower(POWER_TYPE_MANA) + 28 + 10 * getLevel());
-    setLevel(owner->getLevel());
+    setLevel(pOwner->getLevel());
     SetMaxHealth(GetMaxHealth() + 28 + 30 * getLevel());
     SetHealth(GetMaxHealth());
     SetType(CREATURE_TYPE_GUARDIAN);
 
-    m_aiInterface->Init(this, AI_SCRIPT_PET, Movement::WP_MOVEMENT_SCRIPT_NONE, owner);
-    m_aiInterface->SetUnitToFollow(owner);
+    m_aiInterface->Init(this, AI_SCRIPT_PET, Movement::WP_MOVEMENT_SCRIPT_NONE, pOwner);
+    m_aiInterface->SetUnitToFollow(pOwner);
     m_aiInterface->SetFollowDistance(3.0f);
 
     m_noRespawn = true;

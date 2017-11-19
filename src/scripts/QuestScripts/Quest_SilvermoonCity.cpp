@@ -23,7 +23,7 @@
 class PathoftheAdept : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1, plr->GetSession()->language);
         if (plr->HasQuest(9692))
@@ -32,7 +32,7 @@ public:
         menu.Send(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* EnteredCode, uint32 gossipId)
+    void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
     {
         plr->GetItemInterface()->AddItemById(24226, 1, 0);
     }
@@ -44,7 +44,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(LordDawnstar);
     LordDawnstar(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnLoad()
+    void OnLoad() override
     {
         getCreature()->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
         getCreature()->SetStandState(STANDSTATE_DEAD);

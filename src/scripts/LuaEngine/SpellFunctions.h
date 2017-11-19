@@ -190,7 +190,9 @@ namespace LuaSpell
 {
     int GetCaster(lua_State* L, Spell* sp)
     {
-        if (!sp) return 0;
+        if (!sp)
+            return 0;
+
         if (sp->u_caster)  //unit caster
         {
             PUSH_UNIT(L, sp->u_caster);
@@ -215,21 +217,24 @@ namespace LuaSpell
 
     int GetEntry(lua_State* L, Spell* sp)
     {
-        if (!sp) return 0;
+        if (!sp)
+            return 0;
         lua_pushinteger(L, sp->GetSpellInfo()->getId());
         return 1;
     }
 
     int IsDuelSpell(lua_State* L, Spell* sp)
     {
-        if (!sp) return 0;
+        if (!sp)
+            return 0;
         lua_pushboolean(L, sp->duelSpell ? 1 : 0);
         return 1;
     }
 
     int GetSpellType(lua_State* L, Spell* sp)
     {
-        if (!sp) return 0;
+        if (!sp)
+            return 0;
         lua_pushinteger(L, sp->GetType());
         return 1;
     }
@@ -243,21 +248,24 @@ namespace LuaSpell
         SPELL_STATE_FINISHED  = 3,
         SPELL_STATE_IDLE      = 4
         */
-        if (!sp) return 0;
+        if (!sp)
+            return 0;
         lua_pushinteger(L, sp->getState());
         return 1;
     }
 
-    int Cancel(lua_State* L, Spell* sp)
+    int Cancel(lua_State* /*L*/, Spell* sp)
     {
-        if (!sp || !sp->m_caster->IsInWorld()) return 0;
+        if (!sp || !sp->m_caster->IsInWorld())
+            return 0;
         sp->m_caster->interruptSpell(sp->GetSpellInfo()->getId());
         return 0;
     }
 
     int Cast(lua_State* L, Spell* sp)
     {
-        if (!sp) return 0;
+        if (!sp)
+            return 0;
         bool check = CHECK_BOOL(L, 1);
         sp->castMe(check);
         return 0;
@@ -265,14 +273,16 @@ namespace LuaSpell
 
     int CanCast(lua_State* L, Spell* sp)
     {
-        if (!sp) return 0;
+        if (!sp)
+            return 0;
         lua_pushinteger(L, sp->CanCast(false));
         return 1;
     }
 
-    int Finish(lua_State* L, Spell* sp)
+    int Finish(lua_State* /*L*/, Spell* sp)
     {
-        if (!sp) return 0;
+        if (!sp)
+            return 0;
         sp->finish();
         return 0;
     }
@@ -467,10 +477,11 @@ namespace LuaSpell
         return 1;
     }
 
-    int ResetAllVars(lua_State* L, Spell* sp)
+    int ResetAllVars(lua_State* /*L*/, Spell* sp)
     {
-        if (!sp) return 0;
-        sp->m_spellInfo_override = NULL;
+        if (!sp)
+            return 0;
+        sp->m_spellInfo_override = nullptr;
         return 0;
     }
 

@@ -828,7 +828,7 @@ void Group::SaveToDB()
 
     std::stringstream ss;
     //uint32 i = 0;
-    uint32 fillers = 8 - m_SubGroupCount;
+    //uint32 fillers = 8 - m_SubGroupCount;
 
 
     ss << "DELETE FROM groups WHERE group_id = ";
@@ -1161,11 +1161,11 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
                     myMask.Clear();
                     u1 = u2 = false;
 #if VERSION_STRING == TBC
-                    for (uint32 j = PLAYER_QUEST_LOG_1_1; j <= PLAYER_QUEST_LOG_25_1; ++j)
+                    for (uint16 j = PLAYER_QUEST_LOG_1_1; j <= PLAYER_QUEST_LOG_25_1; ++j)
 #elif VERSION_STRING == Classic
-                    for (uint32 j = PLAYER_QUEST_LOG_1_1; j <= PLAYER_QUEST_LOG_15_4; ++j)
+                    for (uint16 j = PLAYER_QUEST_LOG_1_1; j <= PLAYER_QUEST_LOG_15_4; ++j)
 #else
-                    for (uint32 j = PLAYER_QUEST_LOG_1_1; j <= PLAYER_QUEST_LOG_25_5; ++j)
+                    for (uint16 j = PLAYER_QUEST_LOG_1_1; j <= PLAYER_QUEST_LOG_25_5; ++j)
 #endif
                     {
                         if (plr->getUInt32Value(j))
@@ -1414,7 +1414,6 @@ void Group::Teleport(WorldSession* m_session)
 	GroupMembersSet::iterator itr1, itr2;
 	uint8 i = 0;
 	SubGroup* sg1 = NULL;
-	SubGroup* sg2 = NULL;
 	Player * member = NULL;
 	m_groupLock.Acquire();
 	for(i = 0; i < m_SubGroupCount; i++)

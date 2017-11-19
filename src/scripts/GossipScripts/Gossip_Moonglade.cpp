@@ -28,7 +28,7 @@ class SilvaFilnaveth_Gossip : public Arcemu::Gossip::Script
 {
     public:
 
-        void OnHello(Object* pObject, Player* plr)
+        void OnHello(Object* pObject, Player* plr) override
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 0);
             if (plr->getClass() == DRUID && plr->getRace() == RACE_NIGHTELF)
@@ -44,7 +44,7 @@ class SilvaFilnaveth_Gossip : public Arcemu::Gossip::Script
             menu.Send(plr);
         }
 
-        void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)
+        void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
         {
             Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
             if (pCreature == NULL)
@@ -52,7 +52,7 @@ class SilvaFilnaveth_Gossip : public Arcemu::Gossip::Script
             plr->TaxiStart(sTaxiMgr.GetTaxiPath(315), 479, 0);     // Hippogryph
         }
 
-        void Destroy() { delete this; }
+        void Destroy() override { delete this; }
 
 };
 
@@ -60,7 +60,7 @@ class BunthenPlainswind_Gossip : public Arcemu::Gossip::Script
 {
     public:
 
-        void OnHello(Object* pObject, Player* plr)
+        void OnHello(Object* pObject, Player* plr) override
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 0);
             if (plr->getClass() == DRUID && plr->getRace() == RACE_TAUREN)
@@ -76,7 +76,7 @@ class BunthenPlainswind_Gossip : public Arcemu::Gossip::Script
             menu.Send(plr);
         }
 
-        void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)
+        void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
         {
             Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
             if (pCreature == NULL)

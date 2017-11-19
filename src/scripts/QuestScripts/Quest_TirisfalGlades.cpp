@@ -23,7 +23,7 @@
 class TheDormantShade : public QuestScript
 {
 public:
-    void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* creat = mTarget->GetMapMgr()->GetInterface()->SpawnCreature(1946, 2467.314f, 14.8471f, 23.5950f, 0, true, false, 0, 0);
         creat->Despawn(60000, 0);
@@ -85,7 +85,7 @@ class ARoguesDeal : public QuestScript
 {
 public:
 
-    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float SSX = mTarget->GetPositionX();
         float SSY = mTarget->GetPositionY();
@@ -108,7 +108,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(Zealot);
     Zealot(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnReachWP(uint32 iWaypointId, bool bForwards)
+    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
     {
         if (!getCreature()->HasAura(3287))
             return;

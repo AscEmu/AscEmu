@@ -25,7 +25,7 @@ class GossipScourgeGryphon : public Arcemu::Gossip::Script
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(12670) || plr->HasFinishedQuest(12670))
         {
@@ -50,7 +50,7 @@ public:
         return new AcherusSoulPrison(GO);
     }
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         QuestLogEntry* en = pPlayer->GetQuestLogForEntry(12848);
         if (!en)
@@ -111,7 +111,7 @@ enum QUEST_12842_ENUM
     SPELL_PREPERATION_FOR_BATTLE_CREDIT = 54586
 };
 
-bool PreparationForBattleEffect(uint32 effectIndex, Spell* pSpell)
+bool PreparationForBattleEffect(uint32 /*effectIndex*/, Spell* pSpell)
 {
     Player* pCaster = pSpell->p_caster;
     if (pCaster == nullptr)
@@ -131,7 +131,7 @@ public:
     EyeofAcherusControl(GameObject* gameobject) : GameObjectAIScript(gameobject) {}
     static GameObjectAIScript* Create(GameObject* gameobject_ai) { return new EyeofAcherusControl(gameobject_ai); }
 
-    void OnActivate(Player* player)
+    void OnActivate(Player* player) override
     {
         if (!player->HasQuest(12641))
             return;

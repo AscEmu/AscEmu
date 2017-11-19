@@ -698,7 +698,7 @@ bool IsleOfConquest::HandleFinishBattlegroundRewardCalculation(PlayerTeam winnin
     return true;
 }
 
-void IsleOfConquest::HookOnAreaTrigger(Player* plr, uint32 id)
+void IsleOfConquest::HookOnAreaTrigger(Player* /*plr*/, uint32 /*id*/)
 {}
 
 void IsleOfConquest::HookOnPlayerDeath(Player* plr)
@@ -730,7 +730,7 @@ void IsleOfConquest::HookOnPlayerResurrect(Player *player)
         }
 }
 
-bool IsleOfConquest::HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpell)
+bool IsleOfConquest::HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* /*pSpell*/)
 {
     uint32 cpid = 0; //control point id, not child porn id!
     for (cpid = 0; cpid < IOC_NUM_CONTROL_POINTS; cpid++)
@@ -787,10 +787,10 @@ void IsleOfConquest::OnRemovePlayer(Player *plr)
 void IsleOfConquest::HookOnShadowSight()
 {}
 
-void IsleOfConquest::SetIsWeekend(bool isweekend)
+void IsleOfConquest::SetIsWeekend(bool /*isweekend*/)
 {}
 
-void IsleOfConquest::HookOnUnitKill(Player* plr, Unit* pVictim)
+void IsleOfConquest::HookOnUnitKill(Player* /*plr*/, Unit* /*pVictim*/)
 {}
 
 void IsleOfConquest::HookOnUnitDied(Unit *victim)

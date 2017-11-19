@@ -29,7 +29,7 @@ AddonMgr::~AddonMgr()
     mKnownAddons.clear();
 }
 
-bool AddonMgr::IsAddonBanned(uint64 crc, std::string name)
+bool AddonMgr::IsAddonBanned(uint64 /*crc*/, std::string name)
 {
     return false;    // bleh needs work
 }
@@ -91,7 +91,7 @@ bool AddonMgr::ShouldShowInList(std::string name)
     return true;
 }
 
-void AddonMgr::SendAddonInfoPacket(WorldPacket* source, uint32 pos, WorldSession* m_session)
+void AddonMgr::SendAddonInfoPacket(WorldPacket* source, uint32 /*pos*/, WorldSession* m_session)
 {
     WorldPacket returnpacket;
     returnpacket.Initialize(SMSG_ADDON_INFO);    // SMSG_ADDON_INFO

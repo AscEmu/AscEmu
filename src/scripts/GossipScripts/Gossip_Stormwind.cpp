@@ -29,7 +29,7 @@ class ArchmageMalin_Gossip : public Arcemu::Gossip::Script
 {
     public:
 
-        void OnHello(Object* pObject, Player* plr)
+        void OnHello(Object* pObject, Player* plr) override
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 11469);
 
@@ -39,13 +39,13 @@ class ArchmageMalin_Gossip : public Arcemu::Gossip::Script
             menu.Send(plr);
         }
 
-        void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)
+        void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
         {
             static_cast<Creature*>(pObject)->CastSpell(plr, sSpellCustomizations.GetSpellInfo(42711), true);
             Arcemu::Gossip::Menu::Complete(plr);
         }
 
-        void Destroy() { delete this; }
+        void Destroy() override { delete this; }
 };
 
 
@@ -54,7 +54,7 @@ class SWHarborFlyAround : public Arcemu::Gossip::Script
 {
     public:
 
-        void OnHello(Object* pObject, Player* Plr)
+        void OnHello(Object* pObject, Player* Plr) override
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 13454);
             menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SW_HARBOR_FLY_YES), 1);
@@ -62,14 +62,14 @@ class SWHarborFlyAround : public Arcemu::Gossip::Script
 
             menu.Send(Plr);
         }
-        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code)
+        void OnSelectOption(Object* /*pObject*/, Player* Plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
         {
             Arcemu::Gossip::Menu::Complete(Plr);
             if (1 == Id)
                 Plr->TaxiStart(sTaxiMgr.GetTaxiPath(1041), 25679, 0);
         }
 
-        void Destroy() { delete this; }
+        void Destroy() override { delete this; }
 };
 
 void SetupStormwindGossip(ScriptMgr* mgr)

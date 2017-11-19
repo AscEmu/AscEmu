@@ -1569,7 +1569,7 @@ AchievementCompletionState AchievementMgr::GetAchievementCompletionState(DBC::St
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Sets progress of the achievement criteria.
 /// \brief If relative argument is true, this behaves the same as UpdateCriteriaProgress
-void AchievementMgr::SetCriteriaProgress(DBC::Structures::AchievementCriteriaEntry const* entry, int32 newValue, bool relative)
+void AchievementMgr::SetCriteriaProgress(DBC::Structures::AchievementCriteriaEntry const* entry, int32 newValue, bool /*relative*/)
 {
     CriteriaProgress* progress = NULL;
 

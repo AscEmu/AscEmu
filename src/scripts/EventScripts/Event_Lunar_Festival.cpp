@@ -14,5 +14,5 @@
 // The Elder
 // https://www.youtube.com/watch?v=MkB10Klu-sc
 
-void SetupLunarFestival(ScriptMgr* mgr)
+void SetupLunarFestival(ScriptMgr* /*mgr*/)
 { }

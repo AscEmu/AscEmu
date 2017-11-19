@@ -26,17 +26,17 @@
 class ErelasAmbersky_Gossip : public Arcemu::Gossip::Script
 {
     public:
-        void OnHello(Object* pObject, Player* plr)
+        void OnHello(Object* pObject, Player* plr) override
         {
             Arcemu::Gossip::Menu::SendQuickMenu(pObject->GetGUID(), 2153, plr, 1, GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELDSASSIL_HIPPO));
         }
 
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32_t gossipId)
+        void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
         {
             Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 2154, plr);
         }
 
-        void Destroy() { delete this; }
+        void Destroy() override { delete this; }
 };
 
 void SetupTeldrassilGossip(ScriptMgr* mgr)

@@ -11,5 +11,5 @@
 // event_properties holiday: NA \n
 //\todo Zalazane's Fall \n
 
-void SetupZalazanesFall(ScriptMgr* mgr)
+void SetupZalazanesFall(ScriptMgr* /*mgr*/)
 { }

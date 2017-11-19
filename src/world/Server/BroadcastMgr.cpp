@@ -13,7 +13,7 @@ using AscEmu::Threading::AEThread;
 using std::chrono::milliseconds;
 using std::make_unique;
 
-void BroadcastMgr::threadRunner(AEThread& thread) { sendBroadcast(); }
+void BroadcastMgr::threadRunner(AEThread& /*thread*/) { sendBroadcast(); }
 
 void BroadcastMgr::threadInit()
 {

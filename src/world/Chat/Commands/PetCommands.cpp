@@ -59,7 +59,7 @@ bool ChatHandler::HandlePetCreateCommand(const char* args, WorldSession* m_sessi
 }
 
 //.pet dismiss
-bool ChatHandler::HandlePetDismissCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandlePetDismissCommand(const char* /*args*/, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, false, true);
     Pet* selected_pet = nullptr;

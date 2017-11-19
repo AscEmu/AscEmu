@@ -116,7 +116,7 @@ public:
     Blacksmithing_Plans_Use(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new Blacksmithing_Plans_Use(GO); }
 
-    void OnLootTaken(Player* player, ItemProperties const* itemProperties)
+    void OnLootTaken(Player* player, ItemProperties const* /*itemProperties*/)
     {
         LocationVector pos = player->GetPosition();
         Creature* NewCreature = player->GetMapMgr()->GetInterface()->SpawnCreature(11120, pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
@@ -382,7 +382,7 @@ public:
     DustySpellbooks(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new DustySpellbooks(GO); }
 
-    void OnLootTaken(Player* player, ItemProperties const* itemProperties)
+    void OnLootTaken(Player* player, ItemProperties const* /*itemProperties*/)
     {
         QuestLogEntry* en = player->GetQuestLogForEntry(422);
         if (en == nullptr)

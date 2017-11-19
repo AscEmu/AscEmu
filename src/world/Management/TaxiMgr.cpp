@@ -377,7 +377,7 @@ uint32 TaxiMgr::GetNearestTaxiNode(float x, float y, float z, uint32 mapid)
     return nearest;
 }
 
-bool TaxiMgr::GetGlobalTaxiNodeMask(uint32 curloc, uint32* Mask)
+bool TaxiMgr::GetGlobalTaxiNodeMask(uint32 /*curloc*/, uint32* Mask)
 {
     std::unordered_map<uint32, TaxiPath*>::iterator itr;
     uint8 field;

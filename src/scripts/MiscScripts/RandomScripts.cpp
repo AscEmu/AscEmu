@@ -86,7 +86,7 @@ void OnEmote(Player* pPlayer, uint32 Emote, Unit* pUnit)
 class JeanPierrePoulain : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->GetGUID(), 14500);
         if (plr->HasFinishedQuest(13668) || plr->HasQuest(13668) || plr->HasFinishedQuest(13667) || plr->HasQuest(13667))
@@ -100,7 +100,7 @@ public:
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId)
+    void OnSelectOption(Object* /*pObject*/, Player* Plr, uint32 /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         Plr->CastSpell(Plr, 64795, true);
         Arcemu::Gossip::Menu::Complete(Plr);
@@ -110,7 +110,7 @@ public:
 class Wormhole : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         if (plr->_GetSkillLineCurrent(202, false) >= 415)
         {
@@ -121,16 +121,14 @@ public:
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(450), 4);     // Icecrown
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(451), 5);     // Storm Peaks
 
-            uint8 chance = RandomUInt(1);
-
-            if (chance == 1)
+            if (Util::getRandomUInt(100) > 50)
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(452), 6);     // Underground...
 
             menu.Send(plr);
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* /*pObject*/, Player* Plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         switch (Id)
         {
@@ -160,7 +158,7 @@ public:
 void SetupRandomScripts(ScriptMgr* mgr)
 {
     // Register Hook Event here
-    mgr->register_hook(SERVER_HOOK_EVENT_ON_EMOTE, (void*)&OnEmote);
+    mgr->register_hook(SERVER_HOOK_EVENT_ON_EMOTE, static_cast<void*>(&OnEmote));
 
     Arcemu::Gossip::Script* jeanPierrePoulain = new JeanPierrePoulain();
     mgr->register_creature_gossip(34244, jeanPierrePoulain);

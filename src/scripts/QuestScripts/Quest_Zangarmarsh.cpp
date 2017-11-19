@@ -24,7 +24,7 @@
 class AncientMarks : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         uint32 entry = pObject->GetEntry();
         const char* text = "";
@@ -49,7 +49,7 @@ public:
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Creature* casta = (static_cast<Creature*>(pObject));
         switch (pObject->GetEntry())
@@ -89,7 +89,7 @@ public:
 class ElderKuruti : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         if (!plr->GetItemInterface()->GetItemCount(24573, true))
         {
@@ -99,7 +99,7 @@ public:
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         switch (Id)
         {

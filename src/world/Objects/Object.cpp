@@ -1965,13 +1965,13 @@ void Object::LoadValues(const char* data)
     while (pos != std::string::npos);
 }
 
-void Object::_SetUpdateBits(UpdateMask* updateMask, Player* target) const
+void Object::_SetUpdateBits(UpdateMask* updateMask, Player* /*target*/) const
 {
     *updateMask = m_updateMask;
 }
 
 
-void Object::_SetCreateBits(UpdateMask* updateMask, Player* target) const
+void Object::_SetCreateBits(UpdateMask* updateMask, Player* /*target*/) const
 {
 
     for (uint32 i = 0; i < m_valuesCount; ++i)

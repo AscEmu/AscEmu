@@ -36,5 +36,5 @@
 // event_properties entry: 54 \n
 // event_properties holiday: 420 \n
 
-void SetupCallToArms(ScriptMgr* mgr)
+void SetupCallToArms(ScriptMgr* /*mgr*/)
 { }

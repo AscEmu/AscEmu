@@ -25,7 +25,7 @@ class Lady_Jaina : public Arcemu::Gossip::Script
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(558))
         {
@@ -35,7 +35,7 @@ public:
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         plr->CastSpell(plr, sSpellCustomizations.GetSpellInfo(23122), true);
         Arcemu::Gossip::Menu::Complete(plr);
@@ -46,7 +46,7 @@ class Cairne : public Arcemu::Gossip::Script
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(925))
         {
@@ -56,7 +56,7 @@ public:
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 7014, plr);
         plr->CastSpell(plr, sSpellCustomizations.GetSpellInfo(23123), true);
@@ -70,7 +70,7 @@ class TeleportQ_Gossip : public Arcemu::Gossip::Script
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         uint32 Text = sMySQLStore.getGossipTextIdForNpc(static_cast<Creature*>(pObject)->GetEntry());
         if (sMySQLStore.getNpcText(Text) == nullptr)
@@ -86,7 +86,7 @@ public:
         menu.Send(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         plr->CastSpell(plr, DALARAN_TELEPORT_SPELL, true);
     }

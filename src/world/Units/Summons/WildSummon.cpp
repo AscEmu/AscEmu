@@ -27,11 +27,11 @@ WildSummon::WildSummon(uint64 GUID) : Summon(GUID)
 WildSummon::~WildSummon()
 {}
 
-void WildSummon::Load(CreatureProperties const* properties_, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot)
+void WildSummon::Load(CreatureProperties const* properties_, Unit* pOwner, LocationVector & position, uint32 spellid, int32 pSummonslot)
 {
-    Summon::Load(properties_, owner, position, spellid, summonslot);
+    Summon::Load(properties_, pOwner, position, spellid, pSummonslot);
 
-    setLevel(owner->getLevel());
+    setLevel(pOwner->getLevel());
 }
 
 void WildSummon::OnPushToWorld()

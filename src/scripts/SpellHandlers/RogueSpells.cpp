@@ -30,7 +30,7 @@
 
 //Alice : Correct formula for Rogue - Preparation
 
-bool Preparation(uint32 i, Spell* pSpell)
+bool Preparation(uint32 /*i*/, Spell* pSpell)
 {
     if (!pSpell->p_caster) return true;
 
@@ -53,7 +53,7 @@ bool Preparation(uint32 i, Spell* pSpell)
     return true;
 }
 
-bool Shiv(uint32 i, Spell* pSpell)
+bool Shiv(uint32 /*i*/, Spell* pSpell)
 {
     Unit* pTarget = pSpell->GetUnitTarget();
     if (!pSpell->p_caster || !pTarget) return true;
@@ -100,7 +100,7 @@ bool ImprovedSprint(uint32 i, Spell* pSpell)
     return true;
 }
 
-bool CutToTheChase(uint32 i, Aura* pAura, bool apply)
+bool CutToTheChase(uint32 /*i*/, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 
@@ -115,7 +115,7 @@ bool CutToTheChase(uint32 i, Aura* pAura, bool apply)
     return true;
 }
 
-bool DeadlyBrew(uint32 i, Aura* pAura, bool apply)
+bool DeadlyBrew(uint32 /*i*/, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 
@@ -130,7 +130,7 @@ bool DeadlyBrew(uint32 i, Aura* pAura, bool apply)
     return true;
 }
 
-bool CloakOfShadows(uint32 i, Spell* s)
+bool CloakOfShadows(uint32 /*i*/, Spell* s)
 {
     Unit* unitTarget = s->GetUnitTarget();
 
@@ -152,7 +152,7 @@ bool CloakOfShadows(uint32 i, Spell* s)
     return true;
 }
 
-bool CheatDeath(uint32 i, Aura* a, bool apply)
+bool CheatDeath(uint32 /*i*/, Aura* a, bool apply)
 {
     Unit* u_target = a->GetTarget();
     Player* p_target = NULL;
@@ -212,7 +212,7 @@ bool MasterOfSubtlety(uint32 i, Aura* a, bool apply)
     return true;
 }
 
-bool PreyOnTheWeakPeriodicDummy(uint32 i, Aura* a, bool apply)
+bool PreyOnTheWeakPeriodicDummy(uint32 /*i*/, Aura* a, bool apply)
 {
     Unit* m_target = a->GetTarget();
     Player* p_target = NULL;
@@ -240,7 +240,7 @@ bool PreyOnTheWeakPeriodicDummy(uint32 i, Aura* a, bool apply)
     return true;
 }
 
-bool KillingSpreePeriodicDummy(uint32 i, Aura* a, bool apply)
+bool KillingSpreePeriodicDummy(uint32 /*i*/, Aura* a, bool /*apply*/)
 {
     Unit* m_target = a->GetTarget();
     if (!m_target->IsPlayer())
@@ -280,7 +280,7 @@ bool KillingSpreePeriodicDummy(uint32 i, Aura* a, bool apply)
 
 }
 
-bool KillingSpreeEffectDummy(uint32 i, Spell* s)
+bool KillingSpreeEffectDummy(uint32 /*i*/, Spell* s)
 {
     Player* p_caster = s->p_caster;
 

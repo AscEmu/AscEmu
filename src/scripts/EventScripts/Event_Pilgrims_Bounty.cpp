@@ -11,5 +11,5 @@
 // event_properties holiday: 404 \n
 //\todo Pilgrim's Bounty \n
 
-void SetupPilgrimsBounty(ScriptMgr* mgr)
+void SetupPilgrimsBounty(ScriptMgr* /*mgr*/)
 { }

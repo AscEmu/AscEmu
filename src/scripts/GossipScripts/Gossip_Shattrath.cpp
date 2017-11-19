@@ -30,7 +30,7 @@
 class ExarchNasuun_Gossip : public Arcemu::Gossip::Script
 {
     public:
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->GetGUID(), 12227);
 #ifdef USE_THE_STATUS
@@ -42,7 +42,7 @@ class ExarchNasuun_Gossip : public Arcemu::Gossip::Script
         menu.Send(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         switch (Id)
         {
@@ -69,12 +69,12 @@ class ZephyrGossipScript : public Arcemu::Gossip::Script
 {
     public:
 
-        void OnHello(Object* pObject, Player* Plr)
+        void OnHello(Object* pObject, Player* Plr) override
         {
             Arcemu::Gossip::Menu::SendQuickMenu(pObject->GetGUID(), 1, Plr, 1, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SHATT_ZEPH_COT));
         }
 
-        void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* EnteredCode)
+        void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
         {
             if (plr->GetStanding(989) >= 21000)
                 //plr->SafeTeleport( 1, 0, -8170.441406f, -4751.321777f, 33.457771f, 5.136f);
@@ -84,7 +84,7 @@ class ZephyrGossipScript : public Arcemu::Gossip::Script
             Arcemu::Gossip::Menu::Complete(plr);
         }
 
-        void Destroy() { delete this; }
+        void Destroy() override { delete this; }
 };
 
 void SetupShattrathGossip(ScriptMgr* mgr)

@@ -78,7 +78,7 @@ uint32 MapScriptInterface::GetPlayerCountInRadius(float x, float y, float z /* =
     return PlayerCount;
 }
 
-GameObject* MapScriptInterface::SpawnGameObject(uint32 Entry, float cX, float cY, float cZ, float cO, bool AddToWorld, uint32 Misc1, uint32 Misc2, uint32 phase)
+GameObject* MapScriptInterface::SpawnGameObject(uint32 Entry, float cX, float cY, float cZ, float cO, bool AddToWorld, uint32 /*Misc1*/, uint32 /*Misc2*/, uint32 phase)
 {
 
     GameObject* pGameObject = mapMgr.CreateGameObject(Entry);

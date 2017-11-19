@@ -19,7 +19,7 @@ public:
 };
 
 
-void ScarletEnclaveScripts(ScriptMgr* scriptMgr)
+void ScarletEnclaveScripts(ScriptMgr* /*scriptMgr*/)
 {
     //scriptMgr->register_instance_script(000, &ScarletEnclave::Create);
 }

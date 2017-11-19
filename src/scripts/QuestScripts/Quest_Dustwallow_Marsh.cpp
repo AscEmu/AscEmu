@@ -30,7 +30,7 @@ public:
         friendlyTimer = BALOS_FRIENDLY_TIMER;
     }
 
-    void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
+    void OnDamageTaken(Unit* /*mAttacker*/, uint32 fAmount) override
     {
         // If Balos Jacken HP - fAmount < 20%
         if (getCreature()->getUInt32Value(UNIT_FIELD_HEALTH) - fAmount <= getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.2f)
@@ -44,7 +44,7 @@ public:
         }
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         if (friendlyTimer == BALOS_FRIENDLY_TIMER)
         {
@@ -78,7 +78,7 @@ public:
         }
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* /*mKiller*/) override
     {
         RemoveAIUpdateEvent();
     }
@@ -92,12 +92,12 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(OverlordMokMorokk);
     OverlordMokMorokk(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnLoad()
+    void OnLoad() override
     {
         getCreature()->SetStandState(STANDSTATE_STAND);
     }
 
-    void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
+    void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
     {
         uint32 chance = RandomUInt(100);
         if (chance < 25)
@@ -118,7 +118,7 @@ public:
         }
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         getCreature()->RemoveNegativeAuras();
         getCreature()->SetFaction(29);
@@ -136,7 +136,7 @@ class ChallengeOverlordMokMorokk : public QuestScript
 {
 public:
 
-    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float SSX = mTarget->GetPositionX();
         float SSY = mTarget->GetPositionY();
@@ -163,13 +163,13 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(PrivateHendel);
     PrivateHendel(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnLoad()
+    void OnLoad() override
     {
         getCreature()->SetFaction(12);
         getCreature()->SetStandState(STANDSTATE_STAND);
     }
 
-    void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
+    void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
     {
         if (getCreature()->getUInt32Value(UNIT_FIELD_HEALTH) - fAmount <= getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.37f)
         {
@@ -185,7 +185,7 @@ public:
         }
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         getCreature()->Emote(EMOTE_STATE_KNEEL);
         getCreature()->RemoveNegativeAuras();
@@ -204,7 +204,7 @@ class TheMissingDiplomat2 : public QuestScript
 {
 public:
 
-    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float SSX = mTarget->GetPositionX();
         float SSY = mTarget->GetPositionY();
@@ -212,7 +212,7 @@ public:
 
         Creature* Dashel = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 4966);
 
-        if (Dashel == NULL)
+        if (Dashel == nullptr)
             return;
 
         Dashel->SetFaction(72);

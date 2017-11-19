@@ -49,7 +49,7 @@ namespace luaItem
         return 1;
     }
 
-    int GossipMenuAddItem(lua_State* L, Item* ptr)
+    int GossipMenuAddItem(lua_State* L, Item* /*ptr*/)
     {
         uint8 icon = static_cast<uint8>(luaL_checkinteger(L, 1));
         const char* menu_text = luaL_checkstring(L, 2);
@@ -69,7 +69,7 @@ namespace luaItem
         return 0;
     }
 
-    int GossipSendMenu(lua_State* L, Item* ptr)
+    int GossipSendMenu(lua_State* L, Item* /*ptr*/)
     {
         Player* plr = CHECK_PLAYER(L, 1);
 
@@ -84,7 +84,7 @@ namespace luaItem
         return 1;
     }
 
-    int GossipComplete(lua_State* L, Item* ptr)
+    int GossipComplete(lua_State* L, Item* /*ptr*/)
     {
         Player* plr = CHECK_PLAYER(L, 1);
 
@@ -99,7 +99,7 @@ namespace luaItem
         return 1;
     }
 
-    int GossipSendPOI(lua_State* L, Item* ptr)
+    int GossipSendPOI(lua_State* L, Item* /*ptr*/)
     {
         Player* plr = CHECK_PLAYER(L, 1);
         float x = CHECK_FLOAT(L, 2);
@@ -266,17 +266,17 @@ namespace luaItem
     }
     int SetByteValue(lua_State* L, Item* ptr)
     {
-        uint32 index = static_cast<uint32>(luaL_checkinteger(L, 1));
-        uint32 index1 = static_cast<uint32>(luaL_checkinteger(L, 2));
-        uint8 value = static_cast<uint8>(luaL_checkinteger(L, 3));
+        uint16_t index = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        uint8_t index1 = static_cast<uint8_t>(luaL_checkinteger(L, 2));
+        uint8_t value = static_cast<uint8_t>(luaL_checkinteger(L, 3));
         ptr->setByteValue(index, index1, value);
         return 1;
     }
 
     int GetByteValue(lua_State* L, Item* ptr)
     {
-        uint32 index = static_cast<uint32>(luaL_checkinteger(L, 1));
-        uint32 index1 = static_cast<uint32>(luaL_checkinteger(L, 2));
+        uint16_t index = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        uint8_t index1 = static_cast<uint8_t>(luaL_checkinteger(L, 2));
         lua_pushinteger(L, ptr->getByteValue(index, index1));
         return 1;
     }
@@ -305,7 +305,7 @@ namespace luaItem
         return 1;
     }
 
-    int RepairItem(lua_State* L, Item* ptr)
+    int RepairItem(lua_State* /*L*/, Item* ptr)
     {
         if (!ptr)
             return 0;
@@ -429,7 +429,7 @@ namespace luaItem
         return 1;
     }
 
-    int Remove(lua_State* L, Item* ptr)
+    int Remove(lua_State* /*L*/, Item* ptr)
     {
         if (ptr == NULL || !ptr->IsInWorld() || !ptr->IsItem())
         {
@@ -439,7 +439,7 @@ namespace luaItem
         return 0;
     }
 
-    int Create(lua_State* L, Item* ptr)
+    int Create(lua_State* L, Item* /*ptr*/)
     {
         uint32 id = CHECK_ULONG(L, 1);
         uint32 stackcount = CHECK_ULONG(L, 2);
@@ -472,8 +472,8 @@ namespace luaItem
 
     int SetUInt32Value(lua_State* L, Item* ptr)
     {
-        uint32 field = static_cast<uint32>(luaL_checkinteger(L, 1));
-        uint32 value = static_cast<uint32>(luaL_checkinteger(L, 2));
+        uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+        uint8_t value = static_cast<uint8_t>(luaL_checkinteger(L, 2));
         if (ptr)
             ptr->setUInt32Value(field, value);
         return 0;
@@ -481,8 +481,8 @@ namespace luaItem
 
     int SetUInt64Value(lua_State* L, Item* ptr)
     {
-        uint32 field = CHECK_ULONG(L, 1);
-        uint64 guid = CHECK_GUID(L, 2);
+        uint16_t field = CHECK_ULONG(L, 1);
+        uint64_t guid = CHECK_GUID(L, 2);
         if (ptr)
             ptr->setUInt64Value(field, guid);
         return 0;
@@ -508,7 +508,7 @@ namespace luaItem
 
     int SetFloatValue(lua_State* L, Item* ptr)
     {
-        uint32 field = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         float value = CHECK_FLOAT(L, 2);
         if (ptr)
             ptr->setFloatValue(field, value);
@@ -517,7 +517,7 @@ namespace luaItem
 
     int GetUInt32Value(lua_State* L, Item* ptr)
     {
-        uint32 field = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         if (ptr)
             lua_pushnumber(L, ptr->getUInt32Value(field));
         return 1;
@@ -525,7 +525,7 @@ namespace luaItem
 
     int GetUInt64Value(lua_State* L, Item* ptr)
     {
-        uint32 field = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         if (ptr)
             PUSH_GUID(L, ptr->getUInt64Value(field));
         return 1;
@@ -533,7 +533,7 @@ namespace luaItem
 
     int GetFloatValue(lua_State* L, Item* ptr)
     {
-        uint32 field = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
         if (ptr)
             lua_pushnumber(L, ptr->getFloatValue(field));
         return 1;

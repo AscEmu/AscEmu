@@ -645,7 +645,7 @@ public:
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 IntId, const char* /*Code*/, uint32 /*gossipId*/) override
     {
-        Creature* pCreature = static_cast<Creature*>(pObject);
+        //Creature* pCreature = static_cast<Creature*>(pObject);
 
         switch (IntId)
         {

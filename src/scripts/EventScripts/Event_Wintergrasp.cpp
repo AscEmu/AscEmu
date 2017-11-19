@@ -17,5 +17,5 @@
 // event_properties holiday: NA \n
 //\todo Wintergrasp Horde Defence \n
 
-void SetupWintergrasp(ScriptMgr* mgr)
+void SetupWintergrasp(ScriptMgr* /*mgr*/)
 { }

@@ -52,7 +52,7 @@ class MoonkinGhost_Gossip : public Arcemu::Gossip::Script
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->GetGUID(), 4714, plr->GetSession()->language);
         if (plr->HasQuest(6002))
@@ -63,7 +63,7 @@ public:
         menu.Send(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Creature* pCreature = static_cast<Creature*>(pObject);
 
@@ -117,7 +117,7 @@ public:
 class SCRIPT_DECL BearGhost_Gossip : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->GetGUID(), 4719, plr->GetSession()->language);
         if (plr->HasQuest(5930)) // horde
@@ -128,7 +128,7 @@ public:
         menu.Send(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         switch (Id)
         {
@@ -213,7 +213,7 @@ public:
 class MoongladeQuest : public QuestScript
 {
 public:
-    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         if (!mTarget->HasSpell(19027))
             mTarget->CastSpell(mTarget, sSpellCustomizations.GetSpellInfo(19027), true);

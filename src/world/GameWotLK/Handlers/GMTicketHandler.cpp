@@ -120,7 +120,7 @@ void WorldSession::HandleGMTicketUpdateOpcode(WorldPacket& recv_data)
 #endif
 }
 
-void WorldSession::HandleGMTicketDeleteOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGMTicketDeleteOpcode(WorldPacket& /*recv_data*/)
 {
     GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(GetPlayer()->GetGUID());
 
@@ -173,7 +173,7 @@ void WorldSession::HandleGMTicketSystemStatusOpcode(WorldPacket& /*recv_data*/)
     SendPacket(&data);
 }
 
-void WorldSession::HandleGMTicketToggleSystemStatusOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGMTicketToggleSystemStatusOpcode(WorldPacket& /*recv_data*/)
 {
     if (HasGMPermissions())
     {

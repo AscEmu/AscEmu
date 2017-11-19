@@ -404,12 +404,12 @@ uint32 Arena::GetTeamFaction(uint32 team)
     return p->GetTeam();
 }
 
-LocationVector Arena::GetStartingCoords(uint32 Team)
+LocationVector Arena::GetStartingCoords(uint32 /*Team*/)
 {
     return LocationVector(0, 0, 0, 0);
 }
 
-bool Arena::HookHandleRepop(Player* plr)
+bool Arena::HookHandleRepop(Player* /*plr*/)
 {
     return false;
 }
@@ -454,11 +454,11 @@ void Arena::HookOnAreaTrigger(Player* plr, uint32 id)
     }
 }
 
-void Arena::HookGenerateLoot(Player* plr, Object* pCorpse)    // Not Used
+void Arena::HookGenerateLoot(Player* /*plr*/, Object* /*pCorpse*/)    // Not Used
 {}
 
-void Arena::HookOnUnitKill(Player* plr, Unit* pVictim)
+void Arena::HookOnUnitKill(Player* /*plr*/, Unit* /*pVictim*/)
 {}
 
-void Arena::HookOnFlagDrop(Player* plr)
+void Arena::HookOnFlagDrop(Player* /*plr*/)
 {}

@@ -24,7 +24,7 @@ class ProtectingtheShipment : public QuestScript
 {
 public:
 
-    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry) override
     {
         float SSX = mTarget->GetPositionX();
         float SSY = mTarget->GetPositionY();
@@ -72,7 +72,7 @@ public:
         pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
     }
 
-    void OnReachWP(uint32 iWaypointId, bool bForwards)
+    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
     {
         if (iWaypointId == 7)
         {

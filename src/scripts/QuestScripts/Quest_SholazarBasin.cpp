@@ -71,7 +71,7 @@ const uint32 TAMARA = 28568;
 class SCRIPT_DECL HemetTasteTest : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(12645))
         {
@@ -81,7 +81,7 @@ public:
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Creature* pCreature = static_cast<Creature*>(pObject);
 
@@ -108,7 +108,7 @@ public:
 class SCRIPT_DECL HadriusTasteTest : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(12645))
         {
@@ -118,7 +118,7 @@ public:
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Creature* pCreature = static_cast<Creature*>(pObject);
 
@@ -144,7 +144,7 @@ public:
 class SCRIPT_DECL TamaraTasteTest : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(12645))
         {
@@ -154,7 +154,7 @@ public:
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Creature* pCreature = static_cast<Creature*>(pObject);
 

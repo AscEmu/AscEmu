@@ -226,7 +226,7 @@ class FizzcrankGossip : public Arcemu::Gossip::Script
 {
 public:
 
-    void OnHello(Object* pObject, Player* pPlayer)
+    void OnHello(Object* pObject, Player* pPlayer) override
     {
         Arcemu::Gossip::Menu menu(pObject->GetGUID(), 12435, pPlayer->GetSession()->language);
         if (pPlayer->HasQuest(QUEST_THE_MECHAGNOMES))
@@ -235,7 +235,7 @@ public:
         menu.Send(pPlayer);
     }
 
-    void OnSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         switch (Id)
         {
@@ -309,7 +309,7 @@ class SurristraszGossip : public Arcemu::Gossip::Script
 {
 public:
 
-    void OnHello(Object* pObject, Player* pPlayer)
+    void OnHello(Object* pObject, Player* pPlayer) override
     {
         uint32 Text = sMySQLStore.getGossipTextIdForNpc(static_cast<Creature*>(pObject)->GetEntry());
 
@@ -325,7 +325,7 @@ public:
         menu.Send(pPlayer);
     }
 
-    void OnSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* pObject, Player* pPlayer, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         pPlayer->GetSession()->SendTaxiList(static_cast<Creature*>(pObject));
     }
@@ -547,7 +547,7 @@ class SaltyJohnGossip : public Arcemu::Gossip::Script
 {
 public:
 
-    void OnHello(Object* pObject, Player* pPlayer)
+    void OnHello(Object* pObject, Player* pPlayer) override
     {
         if (pPlayer->HasQuest(questHuntIsOn) && pPlayer->HasAura(46078))
         {
@@ -557,7 +557,7 @@ public:
         }
     }
 
-    void OnSelectOption(Object* pObject, Player*  pPlayer, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* pObject, Player* /*pPlayer*/, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Creature* SaltyJohn = static_cast<Creature*>(pObject);
         SaltyJohn->SetFaction(14);
@@ -569,7 +569,7 @@ class TomHeggerGossip : public Arcemu::Gossip::Script
 {
 public:
 
-    void OnHello(Object* pObject, Player* pPlayer)
+    void OnHello(Object* pObject, Player* pPlayer) override
     {
         if (pPlayer->HasQuest(questHuntIsOn) && pPlayer->HasAura(46078))
         {
@@ -579,7 +579,7 @@ public:
         }
     }
 
-    void OnSelectOption(Object* pObject, Player*  pPlayer, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* pObject, Player* /*pPlayer*/, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Creature* TomHegger = static_cast<Creature*>(pObject);
         TomHegger->SetFaction(14);
@@ -591,7 +591,7 @@ class GuardMitchGossip : public Arcemu::Gossip::Script
 {
 public:
 
-    void OnHello(Object* pObject, Player* pPlayer)
+    void OnHello(Object* pObject, Player* pPlayer) override
     {
         if (pPlayer->HasQuest(questHuntIsOn) && pPlayer->HasAura(46078))
         {
@@ -601,7 +601,7 @@ public:
         }
     }
 
-    void OnSelectOption(Object* pObject, Player*  pPlayer, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* pObject, Player* /*pPlayer*/, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Creature* GuardMitch = static_cast<Creature*>(pObject);
         GuardMitch->SetFaction(14);
@@ -609,7 +609,7 @@ public:
     }
 };
 
-bool PlaceCart(uint32 i, Spell* pSpell)
+bool PlaceCart(uint32 /*i*/, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
@@ -653,7 +653,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(Worm);
     Worm(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnLoad()
+    void OnLoad() override
     {
         getCreature()->setMoveRoot(true);
         getCreature()->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);

@@ -24,7 +24,7 @@
 class Quest_The_Ring_of_Blood_The_Final_Challenge : public QuestScript
 {
 public:
-    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/)
     {
         Creature* pMogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
         if (pMogor != NULL)
@@ -51,7 +51,7 @@ public:
         }
     }
 
-    void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* mogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
         if (mogor != NULL)
@@ -64,7 +64,7 @@ public:
 class Quest_The_Ring_of_Blood_The_Warmaul_Champion : public QuestScript
 {
 public:
-    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Unit* pQgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
         if (pQgiver != NULL)
@@ -80,7 +80,7 @@ public:
         };
     };
 
-    void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Unit* pMogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
         if (pMogor != NULL)
@@ -100,7 +100,7 @@ public:
 class Quest_The_Ring_of_Blood_Skragath : public QuestScript
 {
 public:
-    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
         if (Qgiver != NULL)
@@ -118,7 +118,7 @@ public:
         };
     };
 
-    void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Unit* mogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
         if (mogor != NULL)
@@ -137,7 +137,7 @@ public:
 class Quest_The_Ring_of_Blood_Rokdar_the_Sundered_Lord : public QuestScript
 {
 public:
-    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
         if (Qgiver != NULL)
@@ -154,7 +154,7 @@ public:
         };
     };
 
-    void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Unit* mogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
         if (mogor != NULL)
@@ -169,7 +169,7 @@ public:
 class Quest_The_Ring_of_Blood_The_Blue_Brothers : public QuestScript
 {
 public:
-    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* pBrokentoe = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18398);
         if (pBrokentoe != NULL)
@@ -189,7 +189,7 @@ public:
         };
     };
 
-    void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Unit* mogor = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18069);
         if (mogor != NULL)
@@ -212,7 +212,7 @@ public:
 class Quest_The_Ring_of_Blood_Brokentoe : public QuestScript
 {
 public:
-    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
         if (Qgiver != NULL)
@@ -224,7 +224,7 @@ public:
         };
     };
 
-    void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Unit* Qgiver = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18471);
         if (Qgiver != NULL)
@@ -262,7 +262,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(NotOnMyWatch);
     NotOnMyWatch(Creature* pCreature) : CreatureAIScript(pCreature) {};
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* /*mTarget*/) override
     {
         RegisterAIUpdateEvent(1000);
         getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "In Nagrand, food hunt ogre!");
@@ -273,18 +273,18 @@ public:
         RemoveAIUpdateEvent();
     };
 
-    void OnDied(Unit* mTarget)
+    void OnDied(Unit* /*mTarget*/) override
     {
         RemoveAIUpdateEvent();
     };
 
-    void OnLoad()
+    void OnLoad() override
     {
         getCreature()->SetFaction(14);
         RemoveAIUpdateEvent();
     };
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         if (getCreature()->GetHealthPct() < 30)
         {
@@ -309,17 +309,15 @@ public:
 class LumpGossipScript : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->GetGUID(), 2, plr->GetSession()->language);
         menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(469), 1);     // Why are Boulderfist out this far? You know this is Kurenai territory!
         menu.Send(plr);
     };
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* EnteredCode, uint32 gossipId)
+    void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
     {
-        Creature* Lump = static_cast<Creature*>(pObject);
-
         plr->AddQuestKill(9918, 0, 0);
     }
 };

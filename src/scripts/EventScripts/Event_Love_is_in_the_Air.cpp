@@ -25,5 +25,5 @@
 // Frye (36272) Summon by 25% life
 #define SAY_FRYE "Great. We're not gutless, we're incompetent."                             // On die
 
-void SetupLoveIsInTheAir(ScriptMgr* mgr)
+void SetupLoveIsInTheAir(ScriptMgr* /*mgr*/)
 { }

@@ -29,12 +29,12 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(WyrmcultBlackwhelp);
     WyrmcultBlackwhelp(Creature* c) : CreatureAIScript(c) {}
 
-    void OnLoad()
+    void OnLoad() override
     {
         RegisterAIUpdateEvent(1000);
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         // Let's see if we are netted
         Aura* a = getCreature()->getAuraWithId(38177);
@@ -67,7 +67,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(BladespireQAI);
     BladespireQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         if (mKiller->IsPlayer())
         {
@@ -80,7 +80,7 @@ class IntotheSoulgrinder : public QuestScript
 {
 public:
 
-    void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* qg = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 22941);
         if (qg == nullptr)
@@ -97,7 +97,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(MagnetoAura);
     MagnetoAura(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnLoad()
+    void OnLoad() override
     {
         getCreature()->CastSpell(getCreature(), 37136, true);
     }
@@ -110,7 +110,7 @@ public:
     powerconv(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new powerconv(GO); }
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(10584);
         if (qle == nullptr)
@@ -133,7 +133,7 @@ public:
     NetherEgg(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new NetherEgg(GO); }
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(10609);
         if (qle == nullptr)
@@ -159,7 +159,7 @@ public:
         i = 0;      // rename this....
     }
 
-    void OnLoad()
+    void OnLoad() override
     {
         RegisterAIUpdateEvent(5000);
         getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
@@ -171,7 +171,7 @@ public:
         i = 1;
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         switch (i)
         {
@@ -203,7 +203,7 @@ public:
     LegionObelisk(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new LegionObelisk(GO); }
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         GameObject* obelisk1 = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2898.92f, 4759.29f, 277.408f, 185198);
         GameObject* obelisk2 = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2942.3f, 4752.28f, 285.553f, 185197);
@@ -244,7 +244,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(BloodmaulQAI);
     BloodmaulQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         if (!mKiller->IsPlayer())
             return;
@@ -265,17 +265,17 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(Thuk_the_DefiantAI);
 
     Thuk_the_DefiantAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
-    void OnLoad()
+    void OnLoad() override
     {
         getCreature()->setFloatValue(OBJECT_FIELD_SCALE_X, 0.4f);
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* /*mKiller*/) override
     {
         RemoveAIUpdateEvent();
     }
 
-    void OnTargetDied(Unit* mTarget)
+    void OnTargetDied(Unit* /*mTarget*/) override
     {
         getCreature()->SetFaction(35);
         getCreature()->setFloatValue(OBJECT_FIELD_SCALE_X, 0.4f);
@@ -292,7 +292,7 @@ public:
         return new Stasis_Chamber_Alpha(GO);
     }
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         if (pPlayer->HasQuest(10974))
         {
@@ -357,7 +357,7 @@ public:
         RegisterAIUpdateEvent(1000);
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         if (Ogre == nullptr)
             return;

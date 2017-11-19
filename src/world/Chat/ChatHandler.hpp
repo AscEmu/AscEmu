@@ -221,8 +221,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleModifyBitCommand(const char* args, WorldSession* m_session);
         bool HandleModifyValueCommand(const char* args, WorldSession* m_session);
         bool HandleDebugDumpCoordsCommmand(const char* args, WorldSession* m_session);
-        bool HandleSQLQueryCommand(const char* args, WorldSession* m_session);
-        bool HandleSendpacket(const char* args, WorldSession* m_session);
         bool HandleDebugSpawnWarCommand(const char* args, WorldSession* m_session);
         bool HandleUpdateWorldStateCommand(const char* args, WorldSession* session);
         bool HandleInitWorldStatesCommand(const char* args, WorldSession* session);

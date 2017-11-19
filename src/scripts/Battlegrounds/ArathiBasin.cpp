@@ -539,12 +539,12 @@ void ArathiBasin::HookOnPlayerDeath(Player* plr)
     UpdatePvPData();
 }
 
-void ArathiBasin::HookOnMount(Player* plr)
+void ArathiBasin::HookOnMount(Player* /*plr*/)
 {
     // nothing in this BG
 }
 
-void ArathiBasin::HookOnPlayerKill(Player* plr, Player* pVictim)
+void ArathiBasin::HookOnPlayerKill(Player* plr, Player* /*pVictim*/)
 {
     plr->m_bgScore.KillingBlows++;
     UpdatePvPData();
@@ -572,12 +572,12 @@ void ArathiBasin::OnRemovePlayer(Player* plr)
     plr->RemoveAura(BG_PREPARATION);
 }
 
-void ArathiBasin::HookFlagDrop(Player* plr, GameObject* obj)
+void ArathiBasin::HookFlagDrop(Player* /*plr*/, GameObject* /*obj*/)
 {
     // nothing?
 }
 
-void ArathiBasin::HookFlagStand(Player* plr, GameObject* obj)
+void ArathiBasin::HookFlagStand(Player* /*plr*/, GameObject* /*obj*/)
 {
     // nothing?
 }
@@ -586,8 +586,8 @@ LocationVector ArathiBasin::GetStartingCoords(uint32 Team)
 {
     if (Team)
         return LocationVector(684.75629f, 681.945007f, -12.915456f, 0.881211f);
-    else
-        return LocationVector(1314.932495f, 1311.246948f, -9.00952f, 3.802896f);
+
+    return LocationVector(1314.932495f, 1311.246948f, -9.00952f, 3.802896f);
 }
 
 void ArathiBasin::HookOnAreaTrigger(Player* plr, uint32 trigger)
@@ -908,24 +908,27 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
         else
         {
             QuestLogEntry* en = pPlayer->GetQuestLogForEntry(8105);
-            switch (Id)
+            if (en != nullptr)
             {
-                case AB_CONTROL_POINT_MINE:
+                switch (Id)
                 {
-                    pPlayer->AddQuestKill(8105, 0, 0);
-                } break;
-                case AB_CONTROL_POINT_LUMBERMILL:
-                {
-                    pPlayer->AddQuestKill(8105, 1, 0);
-                } break;
-                case AB_CONTROL_POINT_BLACKSMITH:
-                {
-                    pPlayer->AddQuestKill(8105, 2, 0);
-                } break;
-                case AB_CONTROL_POINT_FARM:
-                {
-                    pPlayer->AddQuestKill(8105, 3, 0);
-                } break;
+                    case AB_CONTROL_POINT_MINE:
+                    {
+                        pPlayer->AddQuestKill(8105, 0, 0);
+                    } break;
+                    case AB_CONTROL_POINT_LUMBERMILL:
+                    {
+                        pPlayer->AddQuestKill(8105, 1, 0);
+                    } break;
+                    case AB_CONTROL_POINT_BLACKSMITH:
+                    {
+                        pPlayer->AddQuestKill(8105, 2, 0);
+                    } break;
+                    case AB_CONTROL_POINT_FARM:
+                    {
+                        pPlayer->AddQuestKill(8105, 3, 0);
+                    } break;
+                }
             }
         }
         sEventMgr.AddEvent(this, &ArathiBasin::CaptureControlPoint, Id, Team, EVENT_AB_CAPTURE_CP_1 + Id, MSTIME_MINUTE, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -942,7 +945,7 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
     }
 }
 
-bool ArathiBasin::HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpell)
+bool ArathiBasin::HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* /*pSpell*/)
 {
     uint32 cpid = 0; //control point id, not child porn id!
     for (cpid = 0; cpid < AB_NUM_CONTROL_POINTS; cpid++)
@@ -965,13 +968,13 @@ bool ArathiBasin::HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpe
 
 void ArathiBasin::HookOnShadowSight()
 {}
-void ArathiBasin::HookGenerateLoot(Player* plr, Object* pOCorpse)
+void ArathiBasin::HookGenerateLoot(Player* /*plr*/, Object* /*pOCorpse*/)
 {}
 
-void ArathiBasin::HookOnUnitKill(Player* plr, Unit* pVictim)
+void ArathiBasin::HookOnUnitKill(Player* /*plr*/, Unit* /*pVictim*/)
 {}
 
-void ArathiBasin::HookOnFlagDrop(Player* plr)
+void ArathiBasin::HookOnFlagDrop(Player* /*plr*/)
 {}
 
 void ArathiBasin::SetIsWeekend(bool isweekend)

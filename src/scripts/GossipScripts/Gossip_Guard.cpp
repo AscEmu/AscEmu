@@ -13,12 +13,12 @@ class StormwindGuard : public Arcemu::Gossip::Script
 public:
 
     uint32_t definedGossipMenu = 114;
-    void OnHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player) override
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
     {
         if (IntId > 0)
         {
@@ -35,12 +35,12 @@ class DarnassusGuard : public Arcemu::Gossip::Script
 public:
 
     uint32_t definedGossipMenu = 122;
-    void OnHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player) override
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
     {
         if (IntId > 0)
         {
@@ -57,12 +57,12 @@ class UndercityGuard : public Arcemu::Gossip::Script
 public:
 
     uint32_t definedGossipMenu = 142;
-    void OnHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player) override
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
     {
         if (IntId > 0)
         {
@@ -79,12 +79,12 @@ class UndercityGuardOverseer : public Arcemu::Gossip::Script
 public:
 
     uint32_t definedGossipMenu = 163;
-    void OnHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player) override
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
     {
         if (IntId > 0)
         {
@@ -101,12 +101,12 @@ class ThunderbluffGuard : public Arcemu::Gossip::Script
 public:
 
     uint32_t definedGossipMenu = 152;
-    void OnHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player) override
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
     {
         if (IntId > 0)
         {
@@ -123,12 +123,12 @@ class GoldshireGuard : public Arcemu::Gossip::Script
 public:
 
     uint32_t definedGossipMenu = 132;
-    void OnHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player) override
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
     {
         if (IntId > 0)
         {
@@ -145,12 +145,12 @@ class TeldrassilGuard : public Arcemu::Gossip::Script
 public:
 
     uint32_t definedGossipMenu = 172;
-    void OnHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player) override
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
     {
         if (IntId > 0)
         {
@@ -167,12 +167,12 @@ class SilvermoonGuard : public Arcemu::Gossip::Script
 public:
 
     uint32_t definedGossipMenu = 180;
-    void OnHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player) override
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
     {
         if (IntId > 0)
         {
@@ -189,12 +189,12 @@ class ExodarGuard : public Arcemu::Gossip::Script
 public:
 
     uint32_t definedGossipMenu = 191;
-    void OnHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player) override
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
     {
         if (IntId > 0)
         {
@@ -211,12 +211,12 @@ class OrgrimmarGuard : public Arcemu::Gossip::Script
 public:
 
     uint32_t definedGossipMenu = 724;
-    void OnHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player) override
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
     {
         if (IntId > 0)
         {
@@ -233,12 +233,12 @@ class BloodhoofGuard : public Arcemu::Gossip::Script
 public:
 
     uint32_t definedGossipMenu = 751;
-    void OnHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player) override
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
     {
         if (IntId > 0)
         {
@@ -255,12 +255,12 @@ class RazorHillGuard : public Arcemu::Gossip::Script
 public:
 
     uint32_t definedGossipMenu = 989;
-    void OnHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player) override
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
     {
         if (IntId > 0)
         {
@@ -277,12 +277,12 @@ class BrillGuard : public Arcemu::Gossip::Script
 public:
 
     uint32_t definedGossipMenu = 1003;
-    void OnHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player) override
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
     {
         if (IntId > 0)
         {
@@ -299,12 +299,12 @@ class IronforgeGuard : public Arcemu::Gossip::Script
 public:
 
     uint32_t definedGossipMenu = 1012;
-    void OnHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player) override
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
     {
         if (IntId > 0)
         {
@@ -321,12 +321,12 @@ class KharanosGuard : public Arcemu::Gossip::Script
 public:
 
     uint32_t definedGossipMenu = 1035;
-    void OnHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player) override
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
     {
         if (IntId > 0)
         {
@@ -343,12 +343,12 @@ class FalconwingGuard : public Arcemu::Gossip::Script
 public:
 
     uint32_t definedGossipMenu = 1047;
-    void OnHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player) override
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
     {
         if (IntId > 0)
         {
@@ -365,12 +365,12 @@ class AzureWatchGuard : public Arcemu::Gossip::Script
 public:
 
     uint32_t definedGossipMenu = 1058;
-    void OnHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player) override
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
     {
         if (IntId > 0)
         {
@@ -387,12 +387,12 @@ class ShattrathGuard : public Arcemu::Gossip::Script
 public:
 
     uint32_t definedGossipMenu = 1068;
-    void OnHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player) override
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
     {
         if (IntId > 0)
         {
@@ -409,12 +409,12 @@ class DalaranGuard : public Arcemu::Gossip::Script
 public:
 
     uint32_t definedGossipMenu = 1095;
-    void OnHello(Object* object, Player* player)
+    void OnHello(Object* object, Player* player) override
     {
         objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
     }
 
-    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
     {
         if (IntId > 0)
         {

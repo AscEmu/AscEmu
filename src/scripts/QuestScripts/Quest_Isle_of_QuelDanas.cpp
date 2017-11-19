@@ -57,7 +57,7 @@ public:
 class AyrenCloudbreaker_Gossip : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* pPlayer)
+    void OnHello(Object* pObject, Player* pPlayer) override
     {
         Arcemu::Gossip::Menu menu(pObject->GetGUID(), 12252, pPlayer->GetSession()->language);
         if (pPlayer->HasQuest(11532) || pPlayer->HasQuest(11533))
@@ -69,7 +69,7 @@ public:
         menu.Send(pPlayer);
     }
 
-    void OnSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* /*pObject*/, Player* pPlayer, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         switch (Id)
         {
@@ -95,7 +95,7 @@ public:
 class SCRIPT_DECL UnrestrainedDragonhawk_Gossip : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* pPlayer)
+    void OnHello(Object* pObject, Player* pPlayer) override
     {
         Arcemu::Gossip::Menu menu(pObject->GetGUID(), 12371, pPlayer->GetSession()->language);
         if (pPlayer->HasQuest(11543) || pPlayer->HasQuest(11542))
@@ -104,7 +104,7 @@ public:
         menu.Send(pPlayer);
     }
 
-    void OnSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* /*pObject*/, Player* pPlayer, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         TaxiPath* pPath = sTaxiMgr.GetTaxiPath(788);
         pPlayer->TaxiStart(pPath, 22840, 0);
@@ -119,7 +119,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(TheBattleForTheSunReachArmory);
     TheBattleForTheSunReachArmory(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnDied(Unit* pKiller)
+    void OnDied(Unit* pKiller) override
     {
         if (pKiller->IsPlayer())
         {

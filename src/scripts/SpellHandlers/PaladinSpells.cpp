@@ -25,7 +25,7 @@
 #include "Spell/Definitions/ProcFlags.h"
 #include <Spell/Definitions/PowerType.h>
 
-bool EyeForAnEye(uint32 i, Aura* pAura, bool apply)
+bool EyeForAnEye(uint32 /*i*/, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 
@@ -41,7 +41,7 @@ bool EyeForAnEye(uint32 i, Aura* pAura, bool apply)
     return true;
 }
 
-bool HolyShock(uint32 i, Spell* pSpell)
+bool HolyShock(uint32 /*i*/, Spell* pSpell)
 {
     ///\todo This function returns true on failures (invalid target, invalid spell). Verify this is the correct return value
     Unit* target = pSpell->GetUnitTarget();
@@ -191,7 +191,7 @@ bool SealOfVengeance(uint32 i, Aura* pAura, bool apply)
     return true;
 }
 
-bool JudgementLightWisdomJustice(uint32 i, Spell* pSpell)
+bool JudgementLightWisdomJustice(uint32 /*i*/, Spell* pSpell)
 {
     Unit* target = pSpell->GetUnitTarget();
     if (target == nullptr)
@@ -321,7 +321,7 @@ bool JudgementLightWisdomJustice(uint32 i, Spell* pSpell)
     return true;
 }
 
-bool JudgementOfLight(uint32 i, Aura* pAura, bool apply)
+bool JudgementOfLight(uint32 /*i*/, Aura* pAura, bool apply)
 {
     Unit* caster = pAura->GetUnitCaster();
     if (caster == nullptr)
@@ -341,7 +341,7 @@ bool JudgementOfLight(uint32 i, Aura* pAura, bool apply)
     return true;
 }
 
-bool JudgementOfWisdom(uint32 i, Aura* pAura, bool apply)
+bool JudgementOfWisdom(uint32 /*i*/, Aura* pAura, bool apply)
 {
     Unit* caster = pAura->GetUnitCaster();
     if (caster == nullptr)
@@ -361,7 +361,7 @@ bool JudgementOfWisdom(uint32 i, Aura* pAura, bool apply)
     return true;
 }
 
-bool RighteousDefense(uint32 i, Spell* s)
+bool RighteousDefense(uint32 /*i*/, Spell* s)
 {
     //we will try to lure 3 enemies from our target
 
@@ -405,7 +405,7 @@ bool RighteousDefense(uint32 i, Spell* s)
     return true;
 }
 
-bool Illumination(uint32 i, Spell* s)
+bool Illumination(uint32 /*i*/, Spell* s)
 {
     switch (s->m_triggeredByAura == NULL ? s->GetSpellInfo()->getId() : s->m_triggeredByAura->GetSpellId())
     {
@@ -427,7 +427,7 @@ bool Illumination(uint32 i, Spell* s)
     return true;
 }
 
-bool JudgementOfTheWise(uint32 i, Spell* s)
+bool JudgementOfTheWise(uint32 /*i*/, Spell* s)
 {
     if (!s->p_caster)
         return false;
@@ -438,7 +438,7 @@ bool JudgementOfTheWise(uint32 i, Spell* s)
     return true;
 }
 
-bool GuardedByTheLight(uint32 i, Spell* s)
+bool GuardedByTheLight(uint32 /*i*/, Spell* s)
 {
     if (!s->p_caster)
         return false;

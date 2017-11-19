@@ -17,7 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/ObjectMgr.h"
 
 
-bool handleSendChatAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient)
+bool handleSendChatAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool /*isWebClient*/)
 {
     if (argumentCount > 0 && consoleInput.empty())
         return false;
@@ -31,7 +31,7 @@ bool handleSendChatAnnounceCommand(BaseConsole* baseConsole, int argumentCount, 
     return true;
 }
 
-bool handleBanAccountCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient)
+bool handleBanAccountCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool /*isWebClient*/)
 {
     if (argumentCount > 0 && consoleInput.empty())
         return false;
@@ -59,7 +59,7 @@ bool handleBanAccountCommand(BaseConsole* baseConsole, int argumentCount, std::s
     return true;
 }
 
-bool handleCreateAccountCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient)
+bool handleCreateAccountCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool /*isWebClient*/)
 {
     if (argumentCount > 0 && consoleInput.empty())
         return false;
@@ -80,7 +80,7 @@ bool handleCreateAccountCommand(BaseConsole* baseConsole, int argumentCount, std
     return true;
 }
 
-bool handleAccountPermission(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient)
+bool handleAccountPermission(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool /*isWebClient*/)
 {
     if (argumentCount > 0 && consoleInput.empty())
         return false;
@@ -101,7 +101,7 @@ bool handleAccountPermission(BaseConsole* baseConsole, int argumentCount, std::s
     return true;
 }
 
-bool handleCancelShutdownCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient)
+bool handleCancelShutdownCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool /*isWebClient*/)
 {
     sMaster.m_ShutdownTimer = 5000;
     sMaster.m_ShutdownEvent = false;
@@ -159,7 +159,7 @@ bool handleServerInfoCommand(BaseConsole* baseConsole, int /*argumentCount*/, st
     return true;
 }
 
-bool handleOnlineGmsCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient)
+bool handleOnlineGmsCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool /*isWebClient*/)
 {
     baseConsole->Write("There are the following GM's online on this server: \r\n");
     baseConsole->Write("======================================================\r\n");
@@ -182,7 +182,7 @@ bool handleOnlineGmsCommand(BaseConsole* baseConsole, int /*argumentCount*/, std
     return true;
 }
 
-bool handleKickPlayerCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient)
+bool handleKickPlayerCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool /*isWebClient*/)
 {
     if (argumentCount > 0 && consoleInput.empty())
         return false;
@@ -215,7 +215,7 @@ bool handleKickPlayerCommand(BaseConsole* baseConsole, int argumentCount, std::s
     return true;
 }
 
-bool handleMotdCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient)
+bool handleMotdCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool /*isWebClient*/)
 {
     if (argumentCount > 0 && consoleInput.empty())
         return false;
@@ -233,7 +233,7 @@ bool handleMotdCommand(BaseConsole* baseConsole, int argumentCount, std::string 
     return true;
 }
 
-bool handleListOnlinePlayersCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient)
+bool handleListOnlinePlayersCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool /*isWebClient*/)
 {
     baseConsole->Write("There following players online on this server: \r\n");
     baseConsole->Write("======================================================\r\n");
@@ -252,7 +252,7 @@ bool handleListOnlinePlayersCommand(BaseConsole* baseConsole, int /*argumentCoun
     return true;
 }
 
-bool handlePlayerInfoCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient)
+bool handlePlayerInfoCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool /*isWebClient*/)
 {
     if (argumentCount > 0 && consoleInput.empty())
         return false;
@@ -273,7 +273,7 @@ bool handlePlayerInfoCommand(BaseConsole* baseConsole, int argumentCount, std::s
     return true;
 }
 
-bool handleShutDownServerCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string consoleInput, bool isWebClient)
+bool handleShutDownServerCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string consoleInput, bool /*isWebClient*/)
 {
     uint32_t delay = 5;
 
@@ -301,7 +301,7 @@ bool handleShutDownServerCommand(BaseConsole* baseConsole, int /*argumentCount*/
     return true;
 }
 
-bool handleRehashConfigCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient)
+bool handleRehashConfigCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool /*isWebClient*/)
 {
     baseConsole->Write("Config file re-parsed.\r\n");
     sWorld.loadWorldConfigValues(true);
@@ -309,7 +309,7 @@ bool handleRehashConfigCommand(BaseConsole* baseConsole, int /*argumentCount*/, 
     return true;
 }
 
-bool handleUnbanAccountCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient)
+bool handleUnbanAccountCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool /*isWebClient*/)
 {
     if (argumentCount > 0 && consoleInput.empty())
         return false;
@@ -320,7 +320,7 @@ bool handleUnbanAccountCommand(BaseConsole* baseConsole, int argumentCount, std:
     return true;
 }
 
-bool handleSendWAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient)
+bool handleSendWAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool /*isWebClient*/)
 {
     if (argumentCount > 0 && consoleInput.empty())
         return false;
@@ -334,7 +334,7 @@ bool handleSendWAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std
     return true;
 }
 
-bool handleWhisperCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient)
+bool handleWhisperCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool /*isWebClient*/)
 {
     if (argumentCount > 0 && consoleInput.empty())
         return false;
@@ -366,7 +366,7 @@ bool handleWhisperCommand(BaseConsole* baseConsole, int argumentCount, std::stri
     return true;
 }
 
-bool handleCreateNameHashCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient)
+bool handleCreateNameHashCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool /*isWebClient*/)
 {
     if (argumentCount > 0 && consoleInput.empty())
         return false;
@@ -377,7 +377,7 @@ bool handleCreateNameHashCommand(BaseConsole* baseConsole, int argumentCount, st
     return true;
 }
 
-bool handleRevivePlayerCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient)
+bool handleRevivePlayerCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool /*isWebClient*/)
 {
     if (argumentCount > 0 && consoleInput.empty())
         return false;
@@ -402,7 +402,7 @@ bool handleRevivePlayerCommand(BaseConsole* baseConsole, int argumentCount, std:
     return true;
 }
 
-bool handleClearConsoleCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient)
+bool handleClearConsoleCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool /*isWebClient*/)
 {
     system("cls");
     baseConsole->Write("Out of the ashes, Chuck Norris appears! With a roundhouse kick, your console shall now be cleaned!\r\n");
@@ -422,7 +422,7 @@ bool handleReloadScriptEngineCommand(BaseConsole* baseConsole, int /*argumentCou
     return true;
 }
 
-bool handlePrintTimeDateCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient)
+bool handlePrintTimeDateCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool /*isWebClient*/)
 {
     std::string current_time = Util::GetCurrentDateTimeString();
 
@@ -434,7 +434,7 @@ bool handlePrintTimeDateCommand(BaseConsole* baseConsole, int /*argumentCount*/,
     return true;
 }
 
-bool handleGetAccountsCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient)
+bool handleGetAccountsCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool /*isWebClient*/)
 {
     sLogonCommHandler.requestAccountData();
 

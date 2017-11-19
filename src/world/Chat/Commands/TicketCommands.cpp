@@ -11,8 +11,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 bool ChatHandler::HandleTicketListCommand(const char* /*args*/, WorldSession* m_session)
 {
-    Player* player = m_session->GetPlayer();
-
     QueryResult* result = CharacterDatabase.Query("SELECT * FROM gm_tickets WHERE deleted=0");
 
     if (!result)
@@ -39,8 +37,6 @@ bool ChatHandler::HandleTicketListCommand(const char* /*args*/, WorldSession* m_
 
 bool ChatHandler::HandleTicketListAllCommand(const char* /*args*/, WorldSession* m_session)
 {
-    Player* player = m_session->GetPlayer();
-
     QueryResult* result = CharacterDatabase.Query("SELECT * FROM gm_tickets");
 
     if (!result)
@@ -72,8 +68,6 @@ bool ChatHandler::HandleTicketGetCommand(const char* args, WorldSession* m_sessi
         RedSystemMessage(m_session, "You need to specify a ticket ID!");
         return false;
     }
-
-    Player* player = m_session->GetPlayer();
 
     uint32 ticketID = atol(args);
 
@@ -188,12 +182,9 @@ bool ChatHandler::HandleTicketDeleteCommand(const char* args, WorldSession* m_se
         return false;
     }
 
-    Player* player = m_session->GetPlayer();
-
     uint32 ticketID = atol(args);
 
     QueryResult* result = CharacterDatabase.Query("SELECT * FROM gm_tickets WHERE ticketid = %u AND deleted = 1", ticketID);
-
     if (!result)
     {
         RedSystemMessage(m_session, "Ticket %u is not available in gm_tickets table or not closed!", ticketID);

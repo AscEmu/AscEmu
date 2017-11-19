@@ -347,7 +347,7 @@ namespace MySQLStructure
         std::string text;
         uint32_t creature_entry;    // creature entry ID
         uint32_t text_id;           // text_id started with 0
-        uint32_t type;
+        uint8_t type;
         uint32_t language;
         float probability;          // chance/percent
         uint32_t emote;             // emote id on say

@@ -46,9 +46,9 @@ enum eGossipTexts
 class ProspectorAnvilwardGossip : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* Plr);
-    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32 gossipId);
-    void Destroy() { delete this; }
+    void OnHello(Object* pObject, Player* Plr) override;
+    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode, uint32 gossipId) override;
+    void Destroy() override { delete this; }
 };
 
 void ProspectorAnvilwardGossip::OnHello(Object* pObject, Player * Plr)
@@ -60,7 +60,7 @@ void ProspectorAnvilwardGossip::OnHello(Object* pObject, Player * Plr)
     menu.Send(Plr);
 }
 
-void ProspectorAnvilwardGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char * Code, uint32 gossipId)
+void ProspectorAnvilwardGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/)
 {
     switch (Id)
     {
@@ -92,7 +92,7 @@ public:
         pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
     }
 
-    void OnReachWP(uint32 iWaypointId, bool bForwards)
+    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
     {
         if (iWaypointId == 9)
         {

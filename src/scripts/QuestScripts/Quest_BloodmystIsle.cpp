@@ -25,7 +25,7 @@ class TheKesselRun : public QuestScript
 {
 public:
 
-    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         if (!mTarget)
             return;
@@ -38,7 +38,7 @@ class TheKesselRun1 : public Arcemu::Gossip::Script
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1);
         if (plr->HasQuest(9663))
@@ -47,7 +47,7 @@ public:
         menu.Send(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* EnteredCode, uint32 gossipId)
+    void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
     {
         plr->AddQuestKill(9663, 0, 0);
     }
@@ -57,7 +57,7 @@ class TheKesselRun2 : public Arcemu::Gossip::Script
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1);
         if (plr->HasQuest(9663))
@@ -66,7 +66,7 @@ public:
         menu.Send(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* EnteredCode, uint32 gossipId)
+    void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
     {
         plr->AddQuestKill(9663, 1, 0);
     }
@@ -76,7 +76,7 @@ class TheKesselRun3 : public Arcemu::Gossip::Script
 {
 public:
 
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1);
         if (plr->HasQuest(9663))
@@ -85,7 +85,7 @@ public:
         menu.Send(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* EnteredCode, uint32 gossipId)
+    void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
     {
         plr->AddQuestKill(9663, 2, 0);
     }
@@ -98,7 +98,7 @@ public:
     SavingPrincessStillpine(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new SavingPrincessStillpine(GO); }
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         pPlayer->AddQuestKill(9667, 0, 0);
 
@@ -118,7 +118,7 @@ public:
         fulborgskilled = 0;
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         fulborgskilled++;
         if (mKiller->IsPlayer())
@@ -147,20 +147,20 @@ public:
     WebbedCreature(Creature* pCreature) : CreatureAIScript(pCreature)
     {}
 
-    void OnCombatStart(Unit* pTarget)
+    void OnCombatStart(Unit* /*pTarget*/) override
     {
         _setMeleeDisabled(true);
         getCreature()->setMoveRoot(true);
         getCreature()->GetAIInterface()->StopMovement(0);
     }
 
-    void OnCombatStop(Unit* pTarget)
+    void OnCombatStop(Unit* /*pTarget*/) override
     {
         _setMeleeDisabled(false);
         getCreature()->setMoveRoot(false);
     }
 
-    void OnDied(Unit* pKiller)
+    void OnDied(Unit* pKiller) override
     {
         Player* QuestHolder = NULL;
         if (pKiller->IsPlayer())
@@ -185,8 +185,6 @@ public:
                 RandomCreature->m_noRespawn = true;
                 RandomCreature->Despawn(60000, 0);
             }
-
-            return;
         }
         else
         {

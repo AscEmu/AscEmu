@@ -418,7 +418,7 @@ void WarsongGulch::HookFlagStand(Player* plr, GameObject* obj)
         SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->GetGUID(), "The Horde's flag has been taken by %s !", plr->GetName());
 }
 
-void WarsongGulch::HookOnPlayerKill(Player* plr, Player* pVictim)
+void WarsongGulch::HookOnPlayerKill(Player* plr, Player* /*pVictim*/)
 {
     plr->m_bgScore.KillingBlows++;
     UpdatePvPData();
@@ -637,10 +637,10 @@ void WarsongGulch::TimeLeft()
 void WarsongGulch::HookOnShadowSight()
 {}
 
-void WarsongGulch::HookGenerateLoot(Player* plr, Object* pOCorpse)
+void WarsongGulch::HookGenerateLoot(Player* /*plr*/, Object* /*pOCorpse*/)
 {}
 
-void WarsongGulch::HookOnUnitKill(Player* plr, Unit* pVictim)
+void WarsongGulch::HookOnUnitKill(Player* /*plr*/, Unit* /*pVictim*/)
 {}
 
 void WarsongGulch::SetIsWeekend(bool isweekend)

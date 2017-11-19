@@ -20,5 +20,5 @@
 // item_id 19851 (must be placed at the area) \n
 //\todo Harvest Festival \n
 
-void SetupHarvestFestival(ScriptMgr* mgr)
+void SetupHarvestFestival(ScriptMgr* /*mgr*/)
 { }

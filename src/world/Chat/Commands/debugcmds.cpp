@@ -302,7 +302,7 @@ bool ChatHandler::HandleSetBytesCommand(const char* args, WorldSession* m_sessio
     if (!pBytesIndex)
         return false;
 
-    uint32 BytesIndex = atoi(pBytesIndex);
+    uint16 BytesIndex = static_cast<uint16>(atoi(pBytesIndex));
 
     char* pValue1 = strtok(NULL, " ");
     if (!pValue1)
@@ -361,7 +361,7 @@ bool ChatHandler::HandleGetBytesCommand(const char* args, WorldSession* m_sessio
     if (!pBytesIndex)
         return false;
 
-    uint32 BytesIndex = atoi(pBytesIndex);
+    uint16 BytesIndex = static_cast<uint16>(atoi(pBytesIndex));
     uint32 theBytes = obj->getUInt32Value(BytesIndex);
 
     std::stringstream sstext;
@@ -662,144 +662,6 @@ bool ChatHandler::HandleDebugDumpCoordsCommmand(const char* /*args*/, WorldSessi
     fprintf(f, "mob.CreateWaypoint(%f, %f, %f, %f, 0, 0, 0);\n", p->GetPositionX(), p->GetPositionY(), p->GetPositionZ(), p->GetOrientation());
     fclose(f);
 
-    return true;
-}
-
-//As requested by WaRxHeAd for database development.
-//This should really only be available in special cases and NEVER on real servers... -DGM
-
-//#define ONLY_FOOLS_TRY_THIS_
-
-bool ChatHandler::HandleSQLQueryCommand(const char* args, WorldSession* m_session)
-{
-#ifdef ONLY_FOOLS_TRY_THIS_
-    if (!*args)
-    {
-        RedSystemMessage(m_session, "No query given.");
-        return false;
-    }
-
-    bool isok = false;
-    //SQL query lenght is seems to be limited to 16384 characters, thus the check
-    if (strlen(args) > 16384)
-    {
-        RedSystemMessage(m_session, "Query is longer than 16384 chars!");
-        //Now let the user now what are we talking about
-        GreenSystemMessage(m_session, args);
-    }
-    else
-    {
-        //First send back what we got. Feedback to the user of the command.
-        GreenSystemMessage(m_session, args);
-        //Sending the query, but this time getting the result back
-        QueryResult* qResult = WorldDatabase.Query(args);
-        if (qResult != NULL)
-        {
-            Field* field;
-            //Creating the line (instancing)
-            std::string line = "";
-            do
-            {
-                field = qResult->Fetch();
-                for (uint32 i = 0; i < (qResult->GetFieldCount()); i++)
-                {
-                    //Constructing the line
-                    line += field[i].GetString();
-                }
-                //Sending the line as ingame message
-                BlueSystemMessage(m_session, line.data());
-                //Clear the line
-                line.clear();
-            }
-            while (qResult->NextRow());
-            delete field;
-        }
-        else
-        {
-            RedSystemMessage(m_session, "Invalid query, or the Databse might be busy.");
-            isok = false;
-        }
-        //delete qResult anyway, not to cause some leak!
-        delete qResult;
-        isok = true;
-    }
-
-    if (isok)
-        GreenSystemMessage(m_session, "Query was executed successfully.");
-    else
-        RedSystemMessage(m_session, "Query failed to execute.");
-
-#endif
-
-    return true;
-}
-
-bool ChatHandler::HandleSendpacket(const char* args, WorldSession* m_session)
-{
-#ifdef ONLY_FOOLS_TRY_THIS_
-
-    uint32 arg_len = strlen(args);
-    char* xstring = new char[arg_len];
-    memcpy(xstring, args, arg_len);
-
-    for (uint32 i = 0; i < arg_len; i++)
-    {
-        if (xstring[i] == ' ')
-        {
-            xstring[i] = '\0';
-        }
-    }
-
-    // we receive our packet as hex, that means we get it like ff ff ff ff
-    // the opcode consists of 2 bytes
-
-    if (!xstring)
-    {
-        LOG_DEBUG("[Debug][Sendpacket] Packet is invalid");
-        return false;
-    }
-
-    WorldPacket data(arg_len);
-
-    uint32 loop = 0;
-    uint16 opcodex = 0;
-    uint16 opcodez = 0;
-
-    // get the opcode
-    sscanf(xstring, "%x", &opcodex);
-
-    // should be around here
-    sscanf(&xstring[3], "%x", &opcodez);
-
-    opcodex = opcodex << 8;
-    opcodex |= opcodez;
-    data.Initialize(opcodex);
-
-
-    int j = 3;
-    do
-    {
-        if (xstring[j] == '\0')
-        {
-            uint32 HexValue;
-            sscanf(&xstring[j + 1], "%x", &HexValue);
-            if (HexValue > 0xFF)
-            {
-                LOG_DEBUG("[Debug][Sendpacket] Packet is invalid");
-                return false;
-            }
-            data << uint8(HexValue);
-            //j++;
-        }
-        j++;
-    } while (j < arg_len);
-
-    data.hexlike();
-
-    m_session->SendPacket(&data);
-
-    LOG_DEBUG("[Debug][Sendpacket] Packet was send");
-#endif
     return true;
 }
 

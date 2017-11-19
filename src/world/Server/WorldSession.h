@@ -277,7 +277,7 @@ class SERVER_DECL WorldSession
         // Acct flags
         void SetAccountFlags(uint32 flags) { _accountFlags = flags; }
         bool HasFlag(uint32 flag) { return (_accountFlags & flag) != 0; }
-        uint8 GetFlags() { return _accountFlags; }
+        uint32 GetFlags() { return _accountFlags; }
 
         // GM Permission System
         void LoadSecurity(std::string securitystring);

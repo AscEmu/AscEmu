@@ -5,6 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 
-void SetupMage(ScriptMgr* mgr)
+void SetupMage(ScriptMgr* /*mgr*/)
 {
 }

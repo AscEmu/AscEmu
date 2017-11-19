@@ -11,5 +11,5 @@
 // event_properties holiday: NA
 //\ref Event_L70ETC_Concert.cpp
 
-void SetupWorldsEndTavern(ScriptMgr* mgr)
+void SetupWorldsEndTavern(ScriptMgr* /*mgr*/)
 { }

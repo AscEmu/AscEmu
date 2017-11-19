@@ -63,7 +63,7 @@ bool Execute(uint32 i, Spell* pSpell)
     return true;
 }
 
-bool Vigilance(uint32 i, Spell* pSpell)
+bool Vigilance(uint32 /*i*/, Spell* pSpell)
 {
     if (!pSpell->p_caster)
     {
@@ -75,7 +75,7 @@ bool Vigilance(uint32 i, Spell* pSpell)
     return true;
 }
 
-bool DamageShield(uint32 i, Aura* pAura, bool apply)
+bool DamageShield(uint32 /*i*/, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 
@@ -91,7 +91,7 @@ bool DamageShield(uint32 i, Aura* pAura, bool apply)
     return true;
 }
 
-bool HeroicFury(uint32 i, Spell* s)
+bool HeroicFury(uint32 /*i*/, Spell* s)
 {
     Player* p_caster = s->p_caster;
 
@@ -109,20 +109,15 @@ bool HeroicFury(uint32 i, Spell* s)
     {
         if (p_caster->m_auras[x])
         {
-            for (uint32 y = 0; y < 3; ++y)
+            for (uint8 y = 0; y < 3; ++y)
             {
                 switch (p_caster->m_auras[x]->GetSpellInfo()->getEffectApplyAuraName(y))
                 {
                     case SPELL_AURA_MOD_ROOT:
                     case SPELL_AURA_MOD_DECREASE_SPEED:
                         p_caster->m_auras[x]->Remove();
-                        goto out;
                         break;
                 }
-
-                continue;
-            out:
-                break;
             }
         }
     }
@@ -160,7 +155,7 @@ bool Charge(uint32 i, Spell* s)
     return true;
 }
 
-bool LastStand(uint32 i, Spell* s)
+bool LastStand(uint32 /*i*/, Spell* s)
 {
     Player* playerTarget = s->GetPlayerTarget();
 
@@ -179,7 +174,7 @@ bool LastStand(uint32 i, Spell* s)
     return true;
 }
 
-bool BerserkerRage(uint32 i, Aura* a, bool apply)
+bool BerserkerRage(uint32 /*i*/, Aura* a, bool apply)
 {
     Unit* u = a->GetTarget();
     Player* p_target = NULL;
@@ -219,7 +214,7 @@ bool BerserkerRage(uint32 i, Aura* a, bool apply)
     return true;
 }
 
-bool SweepingStrikes(uint32 i, Aura* a, bool apply)
+bool SweepingStrikes(uint32 /*i*/, Aura* a, bool apply)
 {
     Unit* m_target = a->GetTarget();
 
@@ -263,7 +258,7 @@ bool TacticalAndStanceMastery(uint32 i, Aura* a, bool apply)
     return true;
 }
 
-bool SecondWind(uint32 i, Aura* a, bool apply)
+bool SecondWind(uint32 /*i*/, Aura* a, bool apply)
 {
     Player* caster = a->GetPlayerCaster();
 
@@ -284,7 +279,7 @@ bool SecondWind(uint32 i, Aura* a, bool apply)
     return true;
 }
 
-bool SecondWind2(uint32 i, Aura* a, bool apply)
+bool SecondWind2(uint32 /*i*/, Aura* a, bool apply)
 {
     Player* caster = a->GetPlayerCaster();
 
@@ -305,7 +300,7 @@ bool SecondWind2(uint32 i, Aura* a, bool apply)
     return true;
 }
 
-bool ArmoredToTheTeeth(uint32 i, Spell* s)
+bool ArmoredToTheTeeth(uint32 /*i*/, Spell* /*s*/)
 {
     // Same as Death Knight's Bladed Armor. See DeathKnightSpells.cpp line 276 for detailed explanation.
     return true;

@@ -258,7 +258,7 @@ void LogonCommServerSocket::HandleSessionRequest(WorldPacket & recvData)
     SendPacket(&data);
 }
 
-void LogonCommServerSocket::HandlePing(WorldPacket & recvData)
+void LogonCommServerSocket::HandlePing(WorldPacket & /*recvData*/)
 {
     WorldPacket data(LRSMSG_LOGON_PING_RESULT, 4);
     SendPacket(&data);
@@ -574,21 +574,6 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
                 new_pass.push_back(':');
                 new_pass.append(new_password);
 
-                auto new_pass_query = sLogonSQL->Query("UPDATE accounts SET encrypted_password = SHA(UPPER('%s')) WHERE acc_name = '%s'", new_pass.c_str(), account_name.c_str());
-
-                /*The query is already done, don't know why we are here. \todo check sLogonSQL query handling.
-                if (!new_pass_query)
-                {
-                // Send packet back... Somehting went wrong!
-                result = Result_Account_SQL_error;
-
-                data << uint32(method);     // method_id
-                data << uint8(result);
-                data << account_name;       // account_name
-                SendPacket(&data);
-                }
-                else
-                {*/
                 // Send packet back... Everything is fine!
                 result = Result_Account_Finished;
 
@@ -641,7 +626,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
                 pass.push_back(':');
                 pass.append(password);
 
-                auto create_account = sLogonSQL->Query("INSERT INTO `accounts`(`acc_name`,`encrypted_password`,`banned`,`email`,`flags`,`banreason`) VALUES ('%s', SHA(UPPER('%s')),'0','','24','')", name_save.c_str(), pass.c_str());
+                sLogonSQL->Query("INSERT INTO `accounts`(`acc_name`,`encrypted_password`,`banned`,`email`,`flags`,`banreason`) VALUES ('%s', SHA(UPPER('%s')),'0','','24','')", name_save.c_str(), pass.c_str());
 
                 result = Result_Account_Finished;
 

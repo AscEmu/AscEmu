@@ -28,7 +28,7 @@ class MasterHammersmith : public Arcemu::Gossip::Script
 {
     public:
 
-        void OnHello(Object* pObject, Player* plr)
+        void OnHello(Object* pObject, Player* plr) override
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 7245);
             menu.AddItem(GOSSIP_ICON_TRAINER, plr->GetSession()->LocalizedGossipOption(GI_T_HAMMERSMITH_LEARN), 1);
@@ -37,7 +37,7 @@ class MasterHammersmith : public Arcemu::Gossip::Script
             menu.Send(plr);
         }
 
-        void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)
+        void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
         {
             uint32 textid = 0;
             if (1 == Id)
@@ -90,7 +90,7 @@ class MasterHammersmith : public Arcemu::Gossip::Script
             Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), textid, plr);
         }
 
-        void Destroy() { delete this; }
+        void Destroy() override { delete this; }
 
 };
 
@@ -98,7 +98,7 @@ class MasterSwordsmith : public Arcemu::Gossip::Script
 {
     public:
 
-        void OnHello(Object* pObject, Player* plr)
+        void OnHello(Object* pObject, Player* plr) override
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 7247);
             menu.AddItem(GOSSIP_ICON_TRAINER, plr->GetSession()->LocalizedGossipOption(GI_T_SWORDSMITH_LEARN), 1);
@@ -106,7 +106,7 @@ class MasterSwordsmith : public Arcemu::Gossip::Script
             menu.Send(plr);
         }
 
-        void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)
+        void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
         {
             uint32 textid = 0;
             if (1 == Id)
@@ -167,7 +167,7 @@ class MasterAxesmith : public Arcemu::Gossip::Script
 {
     public:
 
-        void OnHello(Object* pObject, Player* plr)
+        void OnHello(Object* pObject, Player* plr) override
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 7243);
             menu.AddItem(GOSSIP_ICON_TRAINER, plr->GetSession()->LocalizedGossipOption(GI_T_AXESMITH_LEARN), 1);
@@ -175,7 +175,7 @@ class MasterAxesmith : public Arcemu::Gossip::Script
             menu.Send(plr);
         }
 
-        void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)
+        void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
         {
             uint32 textid = 0;
             if (1 == Id)

@@ -174,7 +174,7 @@ void LogonCommClientSocket::HandleSessionInfo(WorldPacket& recvData)
     m.Release();
 }
 
-void LogonCommClientSocket::HandlePong(WorldPacket& recvData)
+void LogonCommClientSocket::HandlePong(WorldPacket& /*recvData*/)
 {
     latency = Util::getMSTime() - pingtime;
     last_pong = (uint32)UNIXTIME;

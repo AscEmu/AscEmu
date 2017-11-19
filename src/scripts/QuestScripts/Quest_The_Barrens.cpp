@@ -24,7 +24,7 @@
 class BeatenCorpse : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(4921))
         {
@@ -34,7 +34,7 @@ public:
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 3558, plr);
 
@@ -57,7 +57,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(Wizzlecranks_Shredder);
     Wizzlecranks_Shredder(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnReachWP(uint32 iWaypointId, bool bForwards)
+    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
     {
         if (iWaypointId == 195)
         {
@@ -83,7 +83,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(Gilthares_Firebough);
     Gilthares_Firebough(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnReachWP(uint32 iWaypointId, bool bForwards)
+    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
     {
         if (iWaypointId == 100)
         {
@@ -109,7 +109,7 @@ class VerogtheDervish : public CreatureAIScript
 public:
     ADD_CREATURE_FACTORY_FUNCTION(VerogtheDervish);
     VerogtheDervish(Creature* pCreature) : CreatureAIScript(pCreature) {}
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         kolkarskilled++;
         if (mKiller->IsPlayer())

@@ -26,7 +26,7 @@
 
 namespace LuaTaxi
 {
-    int CreateTaxi(lua_State* L, TaxiPath* tp)
+    int CreateTaxi(lua_State* L, TaxiPath* /*tp*/)
     {
         TaxiPath* ntp = new TaxiPath();
         PUSH_TAXIPATH(L, ntp);

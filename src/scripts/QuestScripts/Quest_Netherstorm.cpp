@@ -23,7 +23,7 @@
 class Veronia : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(10652))
         {
@@ -33,7 +33,7 @@ public:
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Creature* creat = static_cast<Creature*>(pObject);
         creat->CastSpell(plr, sSpellCustomizations.GetSpellInfo(34905), true);

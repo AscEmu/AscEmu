@@ -15,79 +15,79 @@ class VayrieTest : public EventScript
 {
 public:
 
-    bool OnBeforeEventStart(GameEvent* pEvent, GameEventState pOldState)
+    bool OnBeforeEventStart(GameEvent* pEvent, GameEventState /*pOldState*/) override
     {
         ARCEMU_ASSERT(pEvent != nullptr);
         return true;
     }
 
-    void OnAfterEventStart(GameEvent* pEvent, GameEventState pOldState)
+    void OnAfterEventStart(GameEvent* pEvent, GameEventState /*pOldState*/) override
     {
         ARCEMU_ASSERT(pEvent != nullptr);
     }
 
-    bool OnBeforeEventStop(GameEvent* pEvent, GameEventState pOldState)
+    bool OnBeforeEventStop(GameEvent* pEvent, GameEventState /*pOldState*/) override
     {
         ARCEMU_ASSERT(pEvent != nullptr);
         return true;
     }
 
-    void OnAfterEventStop(GameEvent* pEvent, GameEventState pOldState)
+    void OnAfterEventStop(GameEvent* pEvent, GameEventState /*pOldState*/) override
     {
         ARCEMU_ASSERT(pEvent != nullptr);
     }
 
-    GameEventState OnEventStateChange(GameEvent* pEvent, GameEventState pOldState, GameEventState pNewState)
+    GameEventState OnEventStateChange(GameEvent* pEvent, GameEventState /*pOldState*/, GameEventState pNewState) override
     {
         ARCEMU_ASSERT(pEvent != nullptr);
         return pNewState;
     }
 
-    bool OnCreatureLoad(GameEvent* pEvent, Creature* pCreature)
+    bool OnCreatureLoad(GameEvent* pEvent, Creature* pCreature) override
     {
         ARCEMU_ASSERT(pEvent != nullptr);
         ARCEMU_ASSERT(pCreature != nullptr);
         return true;
     }
 
-    void OnCreaturePushToWorld(GameEvent* pEvent, Creature* pCreature)
+    void OnCreaturePushToWorld(GameEvent* pEvent, Creature* pCreature) override
     {
         ARCEMU_ASSERT(pEvent != nullptr);
         ARCEMU_ASSERT(pCreature != nullptr);
     }
 
-    void OnBeforeCreatureDespawn(GameEvent* pEvent, Creature* pCreature)
+    void OnBeforeCreatureDespawn(GameEvent* pEvent, Creature* pCreature) override
     {
         ARCEMU_ASSERT(pEvent != nullptr);
         ARCEMU_ASSERT(pCreature != nullptr);
     }
 
-    void OnAfterCreatureDespawn(GameEvent* pEvent, Creature* pCreature)
+    void OnAfterCreatureDespawn(GameEvent* pEvent, Creature* pCreature) override
     {
         ARCEMU_ASSERT(pEvent != nullptr);
         ARCEMU_ASSERT(pCreature != nullptr);
     }
 
-    bool OnGameObjectLoad(GameEvent* pEvent, GameObject* pGameObject)
+    bool OnGameObjectLoad(GameEvent* pEvent, GameObject* pGameObject) override
     {
         ARCEMU_ASSERT(pEvent != nullptr);
         ARCEMU_ASSERT(pGameObject != nullptr);
         return true;
     }
 
-    void OnGameObjectPushToWorld(GameEvent* pEvent, GameObject* pGameObject)
+    void OnGameObjectPushToWorld(GameEvent* pEvent, GameObject* pGameObject) override
     {
         ARCEMU_ASSERT(pEvent != nullptr);
         ARCEMU_ASSERT(pGameObject != nullptr);
     }
 
-    void OnBeforeGameObjectDespawn(GameEvent* pEvent, GameObject* pGameObject)
+    void OnBeforeGameObjectDespawn(GameEvent* pEvent, GameObject* pGameObject) override
     {
         ARCEMU_ASSERT(pEvent != nullptr);
         ARCEMU_ASSERT(pGameObject != nullptr);
     }
 
-    void OnAfterGameObjectDespawn(GameEvent* pEvent, GameObject* pGameObject)
+    void OnAfterGameObjectDespawn(GameEvent* pEvent, GameObject* pGameObject) override
     {
         ARCEMU_ASSERT(pEvent != nullptr);
         ARCEMU_ASSERT(pGameObject != nullptr);

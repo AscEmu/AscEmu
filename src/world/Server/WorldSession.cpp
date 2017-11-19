@@ -866,7 +866,7 @@ void WorldSession::HandleLearnTalentOpcode(WorldPacket& recv_data)
     _player->LearnTalent(talent_id, requested_rank);
 }
 
-void WorldSession::HandleUnlearnTalents(WorldPacket& recv_data)
+void WorldSession::HandleUnlearnTalents(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
         uint32 price = GetPlayer()->CalcTalentResetCost(GetPlayer()->GetTalentResetTimes());

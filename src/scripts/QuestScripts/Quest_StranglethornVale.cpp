@@ -23,7 +23,7 @@
 class StrFever : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1, plr->GetSession()->language);
         if (plr->HasQuest(348) && plr->GetItemInterface()->GetItemCount(2799, 0) && !plr->GetItemInterface()->GetItemCount(2797, 0))
@@ -32,7 +32,7 @@ public:
         menu.Send(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Creature* doctor = static_cast<Creature*>(pObject);
 
@@ -56,7 +56,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(Beka);
     Beka(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         if (mKiller->IsPlayer())
         {
@@ -92,7 +92,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(Beka1);
     Beka1(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         if (mKiller->IsPlayer())
         {
@@ -128,7 +128,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(Beka2);
     Beka2(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         float SSX = mKiller->GetPositionX();
         float SSY = mKiller->GetPositionY();
@@ -144,7 +144,7 @@ class BloodscalpClanHeads : public QuestScript
 {
 public:
 
-    void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float SSX = mTarget->GetPositionX();
         float SSY = mTarget->GetPositionY();
@@ -180,7 +180,7 @@ class BacktoBootyBay : public QuestScript
 {
 public:
 
-    void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float X = mTarget->GetPositionX();
         float Y = mTarget->GetPositionY();
@@ -201,7 +201,7 @@ class VoodooDues : public QuestScript
 {
 public:
 
-    void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float X = mTarget->GetPositionX();
         float Y = mTarget->GetPositionY();
@@ -252,7 +252,7 @@ static Movement::Location BreadSpawnPoints[] =
 
 class FacingNegolash : public QuestScript
 {
-    void OnQuestComplete(Player* pPlayer, QuestLogEntry* qLogEntry)
+    void OnQuestComplete(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
         GameObject* obj = nullptr;
 
@@ -293,7 +293,7 @@ public:
     NegolashAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
     }
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* /*mKiller*/) override
     {
         getCreature()->Despawn(180000, 0);
         RemoveAIUpdateEvent();

@@ -24,7 +24,7 @@
 class DearestNatalia1 : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* Plr)
+    void OnHello(Object* pObject, Player* Plr) override
     {
         QuestLogEntry* en = Plr->GetQuestLogForEntry(8304);
 
@@ -36,7 +36,7 @@ public:
         menu.Send(Plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32_t gossipId)
+    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         switch (Id)
         {
@@ -93,7 +93,7 @@ public:
 class DearestNatalia2 : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* Plr)
+    void OnHello(Object* pObject, Player* Plr) override
     {
         QuestLogEntry* en = Plr->GetQuestLogForEntry(8304);
         if (en && (en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0]) && (en->GetMobCount(1) == 1))
@@ -104,7 +104,7 @@ public:
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code, uint32_t gossipId)
+    void OnSelectOption(Object* pObject, Player* Plr, uint32 IntId, const char* /*Code*/, uint32_t /*gossipId*/) override
     {
         switch (IntId)
         {
@@ -162,7 +162,7 @@ public:
 class highlord_demitrianGossip : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* pPlayer)
+    void OnHello(Object* pObject, Player* pPlayer) override
     {
         //Send quests and gossip menu.
         Arcemu::Gossip::Menu menu(pObject->GetGUID(), 6812, pPlayer->GetSession()->language);
@@ -177,7 +177,7 @@ public:
         menu.Send(pPlayer);
     };
 
-    void OnSelectOption(Object* object, Player* player, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* object, Player* player, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         switch (Id)
         {
@@ -229,7 +229,7 @@ public:
 class Thunderan : public QuestScript
 {
 public:
-    void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         mTarget->GetMapMgr()->CreateAndSpawnCreature(14435, -6241.0f, 1715.0f, 4.8f, 0.605017f);
     }

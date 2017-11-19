@@ -248,7 +248,7 @@ void LogonServer::Run(int argc, char** argv)
     AscLog.~AscEmuLog();
 }
 
-void OnCrash(bool Terminate)
+void OnCrash(bool /*Terminate*/)
 {
 
 }

@@ -173,7 +173,7 @@ void Item::Create(uint32 itemid, Player* owner)
 void Item::LoadFromDB(Field* fields, Player* plr, bool light)
 {
     uint32 itemid = fields[2].GetUInt32();
-    uint32 random_prop, random_suffix;
+    uint32 randomProp, randomSuffix;
     uint32 count;
 
     m_itemProperties = sMySQLStore.getItemProperties(itemid);
@@ -200,15 +200,15 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     SetChargesLeft(fields[7].GetUInt32());
 
     setUInt32Value(ITEM_FIELD_FLAGS, fields[8].GetUInt32());
-    random_prop = fields[9].GetUInt32();
-    random_suffix = fields[10].GetUInt32();
+    randomProp = fields[9].GetUInt32();
+    randomSuffix = fields[10].GetUInt32();
 
-    SetItemRandomPropertyId(random_prop);
+    SetItemRandomPropertyId(randomProp);
 
-    int32 rprop = int32(random_prop);
+    int32 rprop = int32(randomProp);
     // If random properties point is negative that means the item uses random suffix as random enchantment
     if (rprop < 0)
-        SetItemRandomSuffixFactor(random_suffix);
+        SetItemRandomSuffixFactor(randomSuffix);
     else
         SetItemRandomSuffixFactor(0);
 
@@ -636,7 +636,7 @@ void Item::SetOwner(Player* owner)
     m_owner = owner;
 }
 
-int32 Item::AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment, uint32 Duration, bool Perm /* = false */, bool apply /* = true */, bool RemoveAtLogout /* = false */, uint32 Slot_, uint32 RandomSuffix)
+int32 Item::AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment, uint32 Duration, bool /*Perm*/ /* = false */, bool apply /* = true */, bool RemoveAtLogout /* = false */, uint32 Slot_, uint32 RandomSuffix)
 {
     int32 Slot = Slot_;
     m_isDirty = true;
@@ -652,12 +652,12 @@ int32 Item::AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enc
     Instance.RandomSuffix = RandomSuffix;
 
     // Set the enchantment in the item fields.
-    SetEnchantmentId(Slot, Enchantment->Id);
-    SetEnchantmentDuration(Slot, (uint32)Instance.ApplyTime);
-    SetEnchantmentCharges(Slot, 0);
+    SetEnchantmentId(static_cast<uint16>(Slot), Enchantment->Id);
+    SetEnchantmentDuration(static_cast<uint16>(Slot), static_cast<uint32>(Instance.ApplyTime));
+    SetEnchantmentCharges(static_cast<uint16>(Slot), 0);
 
     // Add it to our map.
-    Enchantments.insert(std::make_pair((uint32)Slot, Instance));
+    Enchantments.insert(std::make_pair(static_cast<uint32>(Slot), Instance));
 
     if (m_owner == NULL)
         return Slot;
@@ -711,9 +711,9 @@ void Item::RemoveEnchantment(uint32 EnchantmentSlot)
         ApplyEnchantmentBonus(EnchantmentSlot, false);
 
     // Unset the item fields.
-    SetEnchantmentId(Slot, 0);
-    SetEnchantmentDuration(Slot, 0);
-    SetEnchantmentCharges(Slot, 0);
+    SetEnchantmentId(static_cast<uint16>(Slot), 0);
+    SetEnchantmentDuration(static_cast<uint16>(Slot), 0);
+    SetEnchantmentCharges(static_cast<uint16>(Slot), 0);
 
     // Remove the enchantment event for removal.
     event_RemoveEvents(EVENT_REMOVE_ENCHANTMENT1 + Slot);
@@ -942,7 +942,7 @@ void Item::EventRemoveEnchantment(uint32 Slot)
     RemoveEnchantment(Slot);
 }
 
-int32 Item::FindFreeEnchantSlot(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment, uint32 random_type)
+int32 Item::FindFreeEnchantSlot(DBC::Structures::SpellItemEnchantmentEntry const* /*Enchantment*/, uint32 random_type)
 {
     uint32 GemSlotsReserve = GetSocketsCount();
     if (GetItemProperties()->SocketBonus)
@@ -950,21 +950,21 @@ int32 Item::FindFreeEnchantSlot(DBC::Structures::SpellItemEnchantmentEntry const
 
     if (random_type == RANDOMPROPERTY)        // random prop
     {
-        for (uint32 Slot = PROP_ENCHANTMENT_SLOT_2; Slot < MAX_ENCHANTMENT_SLOT; ++Slot)
+        for (uint16 Slot = PROP_ENCHANTMENT_SLOT_2; Slot < MAX_ENCHANTMENT_SLOT; ++Slot)
             if (GetEnchantmentId(Slot) == 0)
-                return Slot;
+                return static_cast<int32>(Slot);
     }
     else if (random_type == RANDOMSUFFIX)    // random suffix
     {
-        for (uint32 Slot = PROP_ENCHANTMENT_SLOT_0; Slot < MAX_ENCHANTMENT_SLOT; ++Slot)
+        for (uint16 Slot = PROP_ENCHANTMENT_SLOT_0; Slot < MAX_ENCHANTMENT_SLOT; ++Slot)
             if (GetEnchantmentId(Slot) == 0)
-                return Slot;
+                return static_cast<int32>(Slot);
     }
 
-    for (uint32 Slot = GemSlotsReserve + 2; Slot < 11; Slot++)
+    for (uint16 Slot = GemSlotsReserve + 2; Slot < 11; Slot++)
     {
         if (GetEnchantmentId(Slot) == 0)
-            return Slot;
+            return static_cast<int32>(Slot);
     }
 
     return -1;
@@ -972,10 +972,10 @@ int32 Item::FindFreeEnchantSlot(DBC::Structures::SpellItemEnchantmentEntry const
 
 int32 Item::HasEnchantment(uint32 Id)
 {
-    for (uint32 Slot = 0; Slot < MAX_ENCHANTMENT_SLOT; Slot++)
+    for (uint16 Slot = 0; Slot < MAX_ENCHANTMENT_SLOT; Slot++)
     {
         if (GetEnchantmentId(Slot) == Id)
-            return Slot;
+            return static_cast<int32>(Slot);
     }
 
     return -1;

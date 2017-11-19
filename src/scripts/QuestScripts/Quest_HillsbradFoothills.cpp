@@ -26,7 +26,7 @@ class WantedBaronVardus : public QuestScript
 {
 public:
 
-    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         if (BaronVardusAllowSpawn == true)
         {
@@ -57,7 +57,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(Baron_Vardus);
     Baron_Vardus(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* /*mKiller*/) override
     {
         BaronVardusAllowSpawn = true;
     }

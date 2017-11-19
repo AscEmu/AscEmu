@@ -26,5 +26,5 @@
 // event_properties entry: 62 \n
 // event_properties holiday: NA \n
 
-void SetupFishingExtravaganza(ScriptMgr* mgr)
+void SetupFishingExtravaganza(ScriptMgr* /*mgr*/)
 { }

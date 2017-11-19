@@ -242,7 +242,7 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPacket& recv_data)
 /// This function handles MSG_CORPSE_QUERY:
 //////////////////////////////////////////////////////////////////////////////////////////
 #if VERSION_STRING != Cata
-void WorldSession::HandleCorpseQueryOpcode(WorldPacket& recv_data)
+void WorldSession::HandleCorpseQueryOpcode(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
 
@@ -376,7 +376,7 @@ void WorldSession::HandleItemNameQueryOpcode(WorldPacket& recv_data)
 }
 
 #if VERSION_STRING != Cata
-void WorldSession::HandleInrangeQuestgiverQuery(WorldPacket& recv_data)
+void WorldSession::HandleInrangeQuestgiverQuery(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN;
 

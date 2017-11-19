@@ -1173,7 +1173,7 @@ MapMgr* InstanceMgr::CreateBattlegroundInstance(uint32 mapid)
     return ret;
 }
 
-MapMgr* InstanceMgr::CreateInstance(uint32 instanceType, uint32 mapid)
+MapMgr* InstanceMgr::CreateInstance(uint32 /*instanceType*/, uint32 mapid)
 {
     // shouldn't happen
     if (mapid >= NUM_MAPS)

@@ -181,7 +181,7 @@ public:
         dpsSpell = 0;
     }
 
-    void OnLoad()
+    void OnLoad() override
     {
         getCreature()->SetDisplayId(getCreature()->GetCreatureProperties()->Female_DisplayID);
         getCreature()->SetBaseAttackTime(MELEE, 2000);
@@ -198,13 +198,13 @@ public:
 
                 if (item != NULL)
                 {
-                    for (uint8 s = 0; s < 5; s++)
+                    for (uint8 si = 0; si < 5; si++)
                     {
-                        if (item->GetItemProperties()->Spells[s].Id == 0)
+                        if (item->GetItemProperties()->Spells[si].Id == 0)
                             continue;
 
-                        if (item->GetItemProperties()->Spells[s].Trigger == CHANCE_ON_HIT)
-                            procSpell[s] = item->GetItemProperties()->Spells[s].Id;
+                        if (item->GetItemProperties()->Spells[si].Trigger == CHANCE_ON_HIT)
+                            procSpell[si] = item->GetItemProperties()->Spells[si].Id;
                     }
 
                     s->SetEquippedItem(MELEE, item->GetEntry());
@@ -219,18 +219,18 @@ public:
         }
     }
 
-    void OnCombatStart(Unit* mTarget)
+    void OnCombatStart(Unit* /*mTarget*/) override
     {
         RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
     }
 
-    void OnCombatStop(Unit* mTarget)
+    void OnCombatStop(Unit* /*mTarget*/) override
     {
         RemoveAIUpdateEvent();
         dpsCycle = 0;
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         Unit* curtarget = getCreature()->GetAIInterface()->getNextTarget();
         if (!getCreature()->isCastingNonMeleeSpell() && curtarget)
@@ -277,7 +277,7 @@ public:
         }
     }
 
-    void OnHit(Unit* mTarget, float fAmount)
+    void OnHit(Unit* mTarget, float /*fAmount*/) override
     {
         for (uint8 p = 0; p < 5; p++)
         {

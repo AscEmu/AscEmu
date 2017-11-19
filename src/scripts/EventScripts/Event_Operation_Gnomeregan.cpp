@@ -11,5 +11,5 @@
 // event_properties holiday: NA \n
 //\todo Operation Gnomeregan \n
 
-void SetupOperationGnomeregan(ScriptMgr* mgr)
+void SetupOperationGnomeregan(ScriptMgr* /*mgr*/)
 { }

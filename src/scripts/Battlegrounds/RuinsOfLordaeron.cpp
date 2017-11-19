@@ -77,7 +77,7 @@ LocationVector RuinsOfLordaeron::GetStartingCoords(uint32 Team)
 
 }
 
-void RuinsOfLordaeron::HookOnAreaTrigger(Player* plr, uint32 trigger)
+void RuinsOfLordaeron::HookOnAreaTrigger(Player* /*plr*/, uint32 trigger)
 {
     switch (trigger)
     {
@@ -86,7 +86,6 @@ void RuinsOfLordaeron::HookOnAreaTrigger(Player* plr, uint32 trigger)
             break;
         default:
             LOG_ERROR("Encountered unhandled areatrigger id %u", trigger);
-            return;
             break;
     }
 }

@@ -30,7 +30,7 @@
  /* Spell Defs                                                           */
  /************************************************************************/
 
-bool FlametongueWeaponPassive(uint32 i, Aura* pAura, bool apply)
+bool FlametongueWeaponPassive(uint32 /*i*/, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 
@@ -46,7 +46,7 @@ bool FlametongueWeaponPassive(uint32 i, Aura* pAura, bool apply)
     return true;
 }
 
-bool SkyShatterRegalia(uint32 i, Spell* s)
+bool SkyShatterRegalia(uint32 /*i*/, Spell* s)
 {
     // Shaman - Skyshatter Regalia - Two Piece Bonus
     // it checks for earth, air, water, fire totems and triggers Totemic Mastery spell 38437.
@@ -61,7 +61,7 @@ bool SkyShatterRegalia(uint32 i, Spell* s)
     {
         Aura* aur = sSpellFactoryMgr.NewAura(sSpellCustomizations.GetSpellInfo(38437), 5000, s->p_caster, s->p_caster, true);
 
-        for (uint32 j = 0; j < 3; j++)
+        for (uint8 j = 0; j < 3; j++)
             aur->AddMod(aur->GetSpellInfo()->getEffectRadiusIndex(j), aur->GetSpellInfo()->getEffectBasePoints(j) + 1, aur->GetSpellInfo()->getEffectMiscValue(j), j);
 
         s->p_caster->AddAura(aur);
@@ -70,7 +70,7 @@ bool SkyShatterRegalia(uint32 i, Spell* s)
     return true;
 }
 
-bool ManaTide(uint32 i, Spell* s)
+bool ManaTide(uint32 /*i*/, Spell* s)
 {
     Unit* unitTarget = s->GetUnitTarget();
 
@@ -83,7 +83,7 @@ bool ManaTide(uint32 i, Spell* s)
     return true;
 }
 
-bool EarthShieldDummyAura(uint32 i, Aura* pAura, bool apply)
+bool EarthShieldDummyAura(uint32 /*i*/, Aura* pAura, bool apply)
 {
     Unit* m_target = pAura->GetTarget();
 
@@ -95,7 +95,7 @@ bool EarthShieldDummyAura(uint32 i, Aura* pAura, bool apply)
     return true;
 }
 
-bool Reincarnation(uint32 i, Aura* a, bool apply)
+bool Reincarnation(uint32 /*i*/, Aura* a, bool apply)
 {
     Unit* u_target = a->GetTarget();
 

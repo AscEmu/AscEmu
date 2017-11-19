@@ -30,7 +30,7 @@
 #include "Spell/SpellAuras.h"
 #include <Spell/Customization/SpellCustomizations.hpp>
 
-bool FrostWarding(uint32 i, Spell* s)
+bool FrostWarding(uint32 /*i*/, Spell* s)
 {
     Unit* unitTarget = s->GetUnitTarget();
 
@@ -54,7 +54,7 @@ bool FrostWarding(uint32 i, Spell* s)
     return true;
 }
 
-bool MoltenShields(uint32 i, Spell* s)
+bool MoltenShields(uint32 /*i*/, Spell* s)
 {
     Unit* unitTarget = s->GetUnitTarget();
 
@@ -115,31 +115,31 @@ bool Cannibalize(uint32 i, Spell* s)
     return true;
 }
 
-bool ArcaniteDragonLing(uint32 i, Spell* s)
+bool ArcaniteDragonLing(uint32 /*i*/, Spell* s)
 {
     s->u_caster->CastSpell(s->u_caster, 19804, true);
     return true;
 }
 
-bool MithrilMechanicalDragonLing(uint32 i, Spell* s)
+bool MithrilMechanicalDragonLing(uint32 /*i*/, Spell* s)
 {
     s->u_caster->CastSpell(s->u_caster, 12749, true);
     return true;
 }
 
-bool MechanicalDragonLing(uint32 i, Spell* s)
+bool MechanicalDragonLing(uint32 /*i*/, Spell* s)
 {
     s->u_caster->CastSpell(s->u_caster, 4073, true);
     return true;
 }
 
-bool GnomishBattleChicken(uint32 i, Spell* s)
+bool GnomishBattleChicken(uint32 /*i*/, Spell* s)
 {
     s->u_caster->CastSpell(s->u_caster, 13166, true);
     return true;
 }
 
-bool GiftOfLife(uint32 i, Spell* s)
+bool GiftOfLife(uint32 /*i*/, Spell* s)
 {
     Player* playerTarget = s->GetPlayerTarget();
 
@@ -155,7 +155,7 @@ bool GiftOfLife(uint32 i, Spell* s)
     return true;
 }
 
-bool Give5kGold(uint32 i, Spell* s)
+bool Give5kGold(uint32 /*i*/, Spell* s)
 {
     if (s->GetPlayerTarget() != NULL)
     {
@@ -175,7 +175,7 @@ bool Give5kGold(uint32 i, Spell* s)
     return true;
 }
 
-bool NorthRendInscriptionResearch(uint32 i, Spell* s)
+bool NorthRendInscriptionResearch(uint32 /*i*/, Spell* s)
 {
     // http://www.wowwiki.com/Minor_Inscription_Research :
     // Minor Inscription Research is taught at 75 skill in Inscription.
@@ -239,7 +239,7 @@ bool NorthRendInscriptionResearch(uint32 i, Spell* s)
     return true;
 }
 
-bool DeadlyThrowInterrupt(uint32 i, Aura* a, bool apply)
+bool DeadlyThrowInterrupt(uint32 /*i*/, Aura* a, bool apply)
 {
 
     if (!apply)
@@ -270,7 +270,7 @@ bool DeadlyThrowInterrupt(uint32 i, Aura* a, bool apply)
     return true;
 }
 
-bool WaitingToResurrect(uint32 i, Aura* a, bool apply)
+bool WaitingToResurrect(uint32 /*i*/, Aura* a, bool apply)
 {
     Unit* u_target = a->GetTarget();
 
@@ -294,7 +294,7 @@ bool WaitingToResurrect(uint32 i, Aura* a, bool apply)
     return true;
 }
 
-bool NegativeCrap(uint32 i, Aura* a, bool apply)
+bool NegativeCrap(uint32 /*i*/, Aura* a, bool apply)
 {
     if (apply)
         a->SetNegative();
@@ -302,7 +302,7 @@ bool NegativeCrap(uint32 i, Aura* a, bool apply)
     return true;
 }
 
-bool DecayFlash(uint32 i, Aura* pAura, bool apply)
+bool DecayFlash(uint32 /*i*/, Aura* pAura, bool apply)
 {
     if (apply && pAura->GetTarget()->IsPlayer())
     {
@@ -313,7 +313,7 @@ bool DecayFlash(uint32 i, Aura* pAura, bool apply)
     return true;
 }
 
-bool ReturnFlash(uint32 i, Aura* pAura, bool apply)
+bool ReturnFlash(uint32 /*i*/, Aura* pAura, bool apply)
 {
     if (apply && pAura->GetTarget()->IsPlayer())
     {
@@ -325,7 +325,7 @@ bool ReturnFlash(uint32 i, Aura* pAura, bool apply)
     return true;
 }
 
-bool EatenRecently(uint32 i, Aura* pAura, bool apply)
+bool EatenRecently(uint32 /*i*/, Aura* pAura, bool apply)
 {
     if (pAura == nullptr)
         return true;
@@ -350,7 +350,7 @@ bool EatenRecently(uint32 i, Aura* pAura, bool apply)
     return true;
 }
 
-bool Temper(uint32 i, Spell* pSpell)
+bool Temper(uint32 /*i*/, Spell* pSpell)
 {
     if (pSpell->u_caster == NULL)
         return true;
@@ -370,7 +370,7 @@ bool Temper(uint32 i, Spell* pSpell)
 };
 
 //Chaos blast dummy effect
-bool ChaosBlast(uint32 i, Spell* pSpell)
+bool ChaosBlast(uint32 /*i*/, Spell* pSpell)
 {
     if (pSpell->u_caster == NULL)
         return true;
@@ -379,7 +379,7 @@ bool ChaosBlast(uint32 i, Spell* pSpell)
     return true;
 }
 
-bool Dummy_Solarian_WrathOfTheAstromancer(uint32 pEffectIndex, Spell* pSpell)
+bool Dummy_Solarian_WrathOfTheAstromancer(uint32 /*pEffectIndex*/, Spell* pSpell)
 {
     Unit* Caster = pSpell->u_caster;
     if (!Caster)
@@ -398,7 +398,7 @@ bool Dummy_Solarian_WrathOfTheAstromancer(uint32 pEffectIndex, Spell* pSpell)
     return true;
 }
 
-bool PreparationForBattle(uint32 i, Spell* pSpell)
+bool PreparationForBattle(uint32 /*i*/, Spell* pSpell)
 {
     if (pSpell->p_caster == NULL)
         return true;
@@ -414,7 +414,7 @@ bool PreparationForBattle(uint32 i, Spell* pSpell)
 #define CRYSTAL_SPIKES      47958
 #define CRYSTAL_SPIKES_H    57082
 
-bool CrystalSpikes(uint32 i, Spell* pSpell)
+bool CrystalSpikes(uint32 /*i*/, Spell* pSpell)
 {
     if (pSpell->u_caster == NULL)
         return true;
@@ -452,7 +452,7 @@ bool CrystalSpikes(uint32 i, Spell* pSpell)
 ///  Casted by Player. Makes the player cast "Listening to Music"
 ///
 ////////////////////////////////////////////////////////////////
-bool ListeningToMusicParent(uint32 i, Spell* s)
+bool ListeningToMusicParent(uint32 /*i*/, Spell* s)
 {
     if (s->p_caster == NULL)
         return true;
@@ -477,7 +477,7 @@ bool ListeningToMusicParent(uint32 i, Spell* s)
 //
 //
 ////////////////////////////////////////////////////////////////
-bool TeleportToCoordinates(uint32 i, Spell* s)
+bool TeleportToCoordinates(uint32 /*i*/, Spell* s)
 {
     if (s->p_caster == nullptr)
         return true;
@@ -515,7 +515,7 @@ static float IOCTeleOutLocations[6][4] =
 };
 
 
-bool IOCTeleporterIn(uint32 i, Spell* s)
+bool IOCTeleporterIn(uint32 /*i*/, Spell* s)
 {
     Player* p = s->GetPlayerTarget();
     if (p == NULL)
@@ -546,7 +546,7 @@ bool IOCTeleporterIn(uint32 i, Spell* s)
     return true;
 }
 
-bool IOCTeleporterOut(uint32 i, Spell* s)
+bool IOCTeleporterOut(uint32 /*i*/, Spell* s)
 {
     Player* p = s->GetPlayerTarget();
     if (p == NULL)
@@ -587,7 +587,7 @@ const float sotaTransDest[5][4] =
 };
 
 // 54640
-bool SOTATeleporter(uint32 i, Spell* s)
+bool SOTATeleporter(uint32 /*i*/, Spell* s)
 {
     Player* plr = s->GetPlayerTarget();
     if (plr == NULL)
@@ -614,7 +614,7 @@ bool SOTATeleporter(uint32 i, Spell* s)
 }
 
 // 51892 - Eye of Acherus Visual
-bool EyeOfAcherusVisual(uint32 i, Spell* spell)
+bool EyeOfAcherusVisual(uint32 /*i*/, Spell* spell)
 {
     Player* player = spell->GetPlayerTarget();
     if (player == nullptr)
@@ -626,7 +626,7 @@ bool EyeOfAcherusVisual(uint32 i, Spell* spell)
 }
 
 // 52694 - Recall Eye of Acherus
-bool RecallEyeOfAcherus(uint32 i, Spell* spell)
+bool RecallEyeOfAcherus(uint32 /*i*/, Spell* spell)
 {
     Player* player = spell->GetPlayerTarget();
     if (player == nullptr)
@@ -636,13 +636,13 @@ bool RecallEyeOfAcherus(uint32 i, Spell* spell)
     return true;
 }
 
-bool GeneralDummyAura(uint32 i, Aura* pAura, bool apply)
+bool GeneralDummyAura(uint32 /*i*/, Aura* /*pAura*/, bool /*apply*/)
 {
     // This handler is being used to apply visual effect.
     return true;
 }
 
-bool GeneralDummyEffect(uint32 i, Spell* pSpell)
+bool GeneralDummyEffect(uint32 /*i*/, Spell* /*pSpell*/)
 {
     // This applies the dummy effect (nothing more needed for this spell)
     return true;

@@ -32,7 +32,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(ElizaAI);
     ElizaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        mElizaCombatTimer = INVALIDATE_TIMER;
+        mElizaCombatTimer = 0;
         setCanEnterCombat(false);
         AddSpell(ELIZA_FROST_NOVA, Target_Current, 10, 0, 1, 0, 10, true);
         AddSpell(ELIZA_FROSTBOLT, Target_Current, 20, 3, 1);
@@ -42,11 +42,11 @@ public:
         mElizaCombatTimer = _addTimer(4000);
 
         RegisterAIUpdateEvent(1000);
-        mElizaGuard = NULL;
+        mElizaGuard = nullptr;
     }
-    void AIUpdate()
+
+    void AIUpdate() override
     {
-        
         if (_isTimerFinished(mElizaCombatTimer))
         {
             setCanEnterCombat(true);
@@ -56,7 +56,7 @@ public:
         if (_getHealthPercent() >= 10 && _getHealthPercent() <= 98 && !_isCasting())
         {
             mElizaGuard = getCreature()->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), 1871);
-            if (mElizaGuard == NULL)
+            if (mElizaGuard == nullptr)
             {
                 CastSpellNowNoScheduling(mSummonGuard);
             }
@@ -64,19 +64,19 @@ public:
     }
 
     uint32 mElizaCombatTimer;
-    SpellDesc*  mSummonGuard;
+    SpellDesc* mSummonGuard;
     Creature* mElizaGuard;
 };
 
 class SummonElizaQuest : public QuestScript
 {
 public:
-    void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* Eliza = mTarget->GetMapMgr()->CreateAndSpawnCreature(314, -10271.127f, 53.784f, 42.711f, 1.72f);
         if (Eliza != nullptr)
             Eliza->Despawn(300000, 0);    // Should it be that much ?
-    };
+    }
 };
 
 

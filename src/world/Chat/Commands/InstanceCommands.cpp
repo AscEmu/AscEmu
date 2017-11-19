@@ -221,7 +221,7 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
         {
             bool foundSomething = false;
             plr->getPlayerInfo()->savedInstanceIdsLock.Acquire();
-            for (uint32 difficulty = 0; difficulty < NUM_INSTANCE_MODES; difficulty++)
+            for (uint8 difficulty = 0; difficulty < NUM_INSTANCE_MODES; difficulty++)
             {
                 PlayerInstanceMap::iterator itr = plr->getPlayerInfo()->savedInstanceIds[difficulty].find(instance->m_mapId);
                 if (itr == plr->getPlayerInfo()->savedInstanceIds[difficulty].end() || (*itr).second != instance->m_instanceId)

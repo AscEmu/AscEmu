@@ -104,7 +104,7 @@ namespace LuaAura
     {
         if (!aura)
             RET_BOOL(false);
-        uint32 negativery = static_cast<uint32>(luaL_optinteger(L, 1, 1));
+        signed char negativery = static_cast<signed char>(luaL_optinteger(L, 1, 1));
         aura->SetNegative(negativery);
         RET_BOOL(true);
     }
@@ -113,12 +113,12 @@ namespace LuaAura
     {
         if (!aura)
             RET_BOOL(false);
-        uint32 positivery = static_cast<uint32>(luaL_optinteger(L, 1, 1));
+        signed char positivery = static_cast<signed char>(luaL_optinteger(L, 1, 1));
         aura->SetPositive(positivery);
         RET_BOOL(true);
     }
 
-    int Remove(lua_State* L, Aura* aura)
+    int Remove(lua_State* /*L*/, Aura* aura)
     {
         if (!aura)
             return 0;

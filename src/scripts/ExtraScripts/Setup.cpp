@@ -18,7 +18,7 @@
  */
 
 #include "Setup.h"
-#include "Server/Script/ScriptSetup.h""
+#include "Server/Script/ScriptSetup.h"
 #include "Server/Script/ScriptMgr.h"
 
 extern "C" SCRIPT_DECL void _exp_set_serverstate_singleton(ServerState* state)

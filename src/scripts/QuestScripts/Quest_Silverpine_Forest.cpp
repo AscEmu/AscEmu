@@ -27,7 +27,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(Deathstalker_Erland);
     Deathstalker_Erland(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnReachWP(uint32 iWaypointId, bool bForwards)
+    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
     {
         if (iWaypointId == 9)
         {
@@ -52,7 +52,7 @@ class Nightlash : public CreatureAIScript
 public:
     ADD_CREATURE_FACTORY_FUNCTION(Nightlash);
     Nightlash(Creature* pCreature) : CreatureAIScript(pCreature) {}
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         if (mKiller->IsPlayer())
         {

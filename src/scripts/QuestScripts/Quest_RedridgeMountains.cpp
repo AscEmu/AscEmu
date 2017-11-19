@@ -26,7 +26,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(Corporal_Keeshan);
     Corporal_Keeshan(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnReachWP(uint32 iWaypointId, bool bForwards)
+    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
     {
         if (iWaypointId == 19)
         {

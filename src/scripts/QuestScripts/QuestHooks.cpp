@@ -40,7 +40,7 @@ void Hanazua(Player* pPlayer, Object* pObject)
     (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
 }
 
-void AHumbleTask(Player* pPlayer, Object* pObject)
+void AHumbleTask(Player* /*pPlayer*/, Object* pObject)
 {
     (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Greatmother Hawkwind gestures to the pitcher of water sitting on the edge of the well.");
 }
@@ -51,28 +51,28 @@ void Yorus_Barleybrew(Player* pPlayer, Object* pObject)
     pPlayer->CastSpell(pPlayer, sSpellCustomizations.GetSpellInfo(8554), true);
 }
 
-void Menara_Voidrender(Player* pPlayer, Object* pObject)
+void Menara_Voidrender(Player* /*pPlayer*/, Object* pObject)
 {
     (static_cast<Creature*>(pObject))->EventAddEmote(EMOTE_STATE_USESTANDING, 3000);
 }
 
-void Hanazua_III(Player* pPlayer, Object* pObject)
+void Hanazua_III(Player* /*pPlayer*/, Object* pObject)
 {
     (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Killed  Sarkoth !!");
 }
 
-void TheFamilyAndTheFishingPole(Player* pPlayer, Object* pObject)
+void TheFamilyAndTheFishingPole(Player* /*pPlayer*/, Object* pObject)
 {
     (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I got some extras with me; if you pay me back what i paid for them, you can have one. I got some bait too.");
 }
 
-void MillysHarvest(Player* pPlayer, Object* pObject)
+void MillysHarvest(Player* /*pPlayer*/, Object* pObject)
 {
     (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I hope for you!");
     (static_cast<Creature*>(pObject))->EventAddEmote(EMOTE_ONESHOT_CRY, 2000);
 }
 
-void Rest_n_Relaxation(Player* pPlayer, Object* pObject)
+void Rest_n_Relaxation(Player* /*pPlayer*/, Object* pObject)
 {
     (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Think of small pumpkins, my friend!!");
     (static_cast<Creature*>(pObject))->Emote(EMOTE_ONESHOT_CHEER);
@@ -86,7 +86,7 @@ void OntoGoldshireComplete(Player* pPlayer, Object* pObject)
     (static_cast<Creature*>(pObject))->Emote(EMOTE_ONESHOT_BOW);
 }
 
-void ZuluhedtheWhacked(Player* pPlayer, Object* pObject)
+void ZuluhedtheWhacked(Player* pPlayer, Object* /*pObject*/)
 {
     Creature* Zuluhed = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-4206.199219f, 313.5462f, 122.907f, 11980);
     if(Zuluhed == nullptr)
@@ -98,7 +98,7 @@ void ZuluhedtheWhacked(Player* pPlayer, Object* pObject)
 
 void OnQuestAccept(Player* pPlayer, QuestProperties* pQuest, Object* pObject)
 {
-    if(pPlayer == NULL || pQuest == NULL || pObject == NULL || !pObject->IsInWorld() || !pPlayer->IsInWorld() || !pObject->IsCreature())
+    if (pPlayer == nullptr || pQuest == nullptr || pObject == nullptr || !pObject->IsInWorld() || !pPlayer->IsInWorld() || !pObject->IsCreature())
         return;
 
     switch (pQuest->id)
@@ -148,7 +148,7 @@ void OnQuestAccept(Player* pPlayer, QuestProperties* pQuest, Object* pObject)
 **************************************************************************************/
 
 
-void Hanazua_II(Player* pPlayer, Object* pObject)
+void Hanazua_II(Player* /*pPlayer*/, Object* pObject)
 {
     (static_cast<Creature*>(pObject))->SetStandState(STANDSTATE_KNEEL);
 }
@@ -168,17 +168,17 @@ void CapturedMountaineer(Player* pPlayer, Object* pObject)
     (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
 }
 
-void PlaguedLands(Player* pPlayer, Object* pObject)
+void PlaguedLands(Player* /*pPlayer*/, Object* pObject)
 {
     (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Be cleansed!");
 }
 
-void DeeprunRatRoundup(Player* pPlayer, Object* pObject)
+void DeeprunRatRoundup(Player* /*pPlayer*/, Object* pObject)
 {
     (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Into the box me pretties! Thas it. One by one ye go.");
 }
 
-void MaybellComplete(Player* pPlayer, Object* pObject)
+void MaybellComplete(Player* /*pPlayer*/, Object* pObject)
 {
     (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Here goes nothing...");
     (static_cast<Creature*>(pObject))->Emote(EMOTE_ONESHOT_CRY);
@@ -189,7 +189,7 @@ void MaybellComplete(Player* pPlayer, Object* pObject)
 
 void OnQuestFinished(Player* pPlayer, QuestProperties* pQuest, Object* pObject)
 {
-    if(pPlayer == NULL || pQuest == NULL || pObject == NULL || !pObject->IsCreature())
+    if (pPlayer == nullptr || pQuest == nullptr || pObject == nullptr || !pObject->IsCreature())
         return;
 
     switch (pQuest->id)
@@ -225,7 +225,7 @@ void OnQuestFinished(Player* pPlayer, QuestProperties* pQuest, Object* pObject)
 void ZuluhedtheWhackedCancel(Player* pPlayer)
 {
     Creature* Zuluhed = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-4206.199219f, 313.5462f, 122.907f, 11980);
-    if(Zuluhed != NULL)
+    if(Zuluhed != nullptr)
     {
         Zuluhed->Despawn(0, 0);
     }
@@ -235,7 +235,7 @@ void ZuluhedtheWhackedCancel(Player* pPlayer)
 
 void OnQuestCancelled(Player* pPlayer, QuestProperties* pQuest)
 {
-    if(pPlayer == NULL || pQuest == NULL)
+    if (pPlayer == nullptr || pQuest == nullptr)
         return;
 
     switch (pQuest->id)
@@ -386,22 +386,22 @@ void OnEmote(Player* pPlayer, uint32 Emote, Unit* pUnit)
 **************************************************************************************/
 
 
-void InvasionPointCataclysm(Player* pPlayer, uint32 AreaTrigger)
+void InvasionPointCataclysm(Player* pPlayer, uint32 /*AreaTrigger*/)
 {
     QuestLogEntry* en = pPlayer->GetQuestLogForEntry(10766);
-    if(en == NULL)
+    if(en == nullptr)
         return;
     pPlayer->SafeTeleport(530, 0, -2723.674561f, 1952.664673f, 146.939743f, 3.185559f);
 }
 
-void Scratches(Player* pPlayer, uint32 AreaTrigger)
+void Scratches(Player* pPlayer, uint32 /*AreaTrigger*/)
 {
     QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(10556);
-    if(qle == NULL)
+    if(qle == nullptr)
         return;
 
     Creature* Kaliri = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 21468);
-    if(Kaliri == NULL)
+    if(Kaliri == nullptr)
         return;
 
     Kaliri->Despawn(0, 0);

@@ -68,18 +68,11 @@ namespace DBC
 
     typedef std::list<std::string> StoreProblemList;
 
-    static bool LoadDBC_assert_print(uint32 format_string_size, uint32 record_size, const std::string& dbc_filename)
-    {
-        LOG_ERROR("misc", "Size of '%s' set by format string (%u) is not equal to the size of the C++ structure (%u)", dbc_filename.c_str(), format_string_size, record_size);
-
-        return false;
-    }
-
     template <class T>
     void LoadDBC(uint32& available_dbc_locales, StoreProblemList& errors, DBC::DBCStorage<T>& storage, std::string const& dbc_path,
       std::string const& dbc_filename,std::string const* custom_format = NULL, std::string const* /*custom_index_name*/ = NULL)
     {
-        ASSERT(DBC::DBCLoader::GetFormatRecordSize(storage.GetFormat()) == sizeof(T) || LoadDBC_assert_print(DBC::DBCLoader::GetFormatRecordSize(storage.GetFormat()), sizeof(T), dbc_filename));
+        ASSERT(DBC::DBCLoader::GetFormatRecordSize(storage.GetFormat()) == sizeof(T));
 
         ++g_dbc_file_count;
         std::string dbc_file_path = dbc_path + dbc_filename;

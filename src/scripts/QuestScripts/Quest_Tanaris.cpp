@@ -23,7 +23,7 @@
 class SpiritScreeches : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(3520))
         {
@@ -33,7 +33,7 @@ public:
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* EnteredCode, uint32 gossipId)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
     {
         Creature* spirit = static_cast<Creature*>(pObject);
         spirit->Despawn(1, 0);
@@ -49,7 +49,7 @@ public:
 
     ScreecherSpirit(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnLoad()
+    void OnLoad() override
     {
         if (!getCreature())
             return;
@@ -68,7 +68,7 @@ public:
 class StewardOfTime : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(10279) || plr->HasFinishedQuest(10279))
         {
@@ -78,7 +78,7 @@ public:
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Creature* creat = static_cast<Creature*>(pObject);
 

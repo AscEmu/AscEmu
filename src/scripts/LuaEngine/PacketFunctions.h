@@ -29,7 +29,7 @@ namespace luPacket
         NORMAL OPERATIONS
         */
 
-    int CreatePacket(lua_State* L, WorldPacket* packet)
+    int CreatePacket(lua_State* L, WorldPacket* /*packet*/)
     {
         uint16 opcode = static_cast<uint16>(luaL_checkinteger(L, 1));
         size_t size = static_cast<size_t>(luaL_checkinteger(L, 2));

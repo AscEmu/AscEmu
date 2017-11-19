@@ -31,43 +31,43 @@ Summon::Summon(uint64 GUID) : Creature(GUID)
 Summon::~Summon()
 {}
 
-void Summon::Load(CreatureProperties const* properties_, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot)
+void Summon::Load(CreatureProperties const* properties_, Unit* pOwner, LocationVector & position, uint32 spellid, int32 pSummonslot)
 {
-    ARCEMU_ASSERT(owner != nullptr);
+    ARCEMU_ASSERT(pOwner != nullptr);
 
     Creature::Load(properties_, position.x, position.y, position.z, position.o);
 
-    SetFaction(owner->GetFaction());
-    Phase(PHASE_SET, owner->GetPhase());
-    SetZoneId(owner->GetZoneId());
+    SetFaction(pOwner->GetFaction());
+    Phase(PHASE_SET, pOwner->GetPhase());
+    SetZoneId(pOwner->GetZoneId());
     SetCreatedBySpell(spellid);
-    this->summonslot = summonslot;
+    this->summonslot = pSummonslot;
 
-    if (owner->IsPvPFlagged())
+    if (pOwner->IsPvPFlagged())
         SetPvPFlag();
     else
         RemovePvPFlag();
 
-    if (owner->IsFFAPvPFlagged())
+    if (pOwner->IsFFAPvPFlagged())
         SetFFAPvPFlag();
     else
         RemoveFFAPvPFlag();
 
-    if (owner->IsSanctuaryFlagged())
+    if (pOwner->IsSanctuaryFlagged())
         SetSanctuaryFlag();
     else
         RemoveSanctuaryFlag();
 
-    SetCreatedByGUID(owner->GetGUID());
+    SetCreatedByGUID(pOwner->GetGUID());
 
-    if (owner->GetSummonedByGUID() == 0)
-        SetSummonedByGUID(owner->GetGUID());
+    if (pOwner->GetSummonedByGUID() == 0)
+        SetSummonedByGUID(pOwner->GetGUID());
     else
-        SetSummonedByGUID(owner->GetSummonedByGUID());
+        SetSummonedByGUID(pOwner->GetSummonedByGUID());
 
-    this->owner = owner;
+    this->owner = pOwner;
 
-    if (owner->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE))
+    if (pOwner->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE))
         SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
 
 }
@@ -105,7 +105,7 @@ void Summon::OnPreRemoveFromWorld()
 
 Object* Summon::GetPlayerOwner()
 {
-    // owner is nulled on death
+    // pOwner is nulled on death
     if (owner == NULL)
         return NULL;
 

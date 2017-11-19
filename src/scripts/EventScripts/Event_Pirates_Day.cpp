@@ -11,5 +11,5 @@
 // event_properties holiday: 398 \n
 //\todo Pirates' Day \n
 
-void SetupPiratesDay(ScriptMgr* mgr)
+void SetupPiratesDay(ScriptMgr* /*mgr*/)
 { }

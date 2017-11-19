@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Management/QuestLogEntry.hpp"
 #include "Map/MapScriptInterface.h"
-#include "Spell/Customization/SpellCustomizations.hpp""
+#include "Spell/Customization/SpellCustomizations.hpp"
 #include "Map/WorldCreatorDefines.hpp"
 
 void SetupGoHandlers(ScriptMgr* mgr);

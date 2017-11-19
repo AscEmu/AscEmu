@@ -666,7 +666,8 @@ bool ChatHandler::CmdSetFloatField(WorldSession* m_session, uint32 field, uint32
             GreenSystemMessage(plr->GetSession(), "%s set your %s to %.1f.", m_session->GetPlayer()->GetName(), fieldname, av);
         }
         plr->setFloatValue(field, av);
-        if (fieldmax) plr->setFloatValue(fieldmax, mv);
+        if (fieldmax)
+            plr->setFloatValue(fieldmax, mv);
     }
     else
     {

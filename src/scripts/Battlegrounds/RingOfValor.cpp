@@ -66,7 +66,7 @@ LocationVector RingOfValor::GetStartingCoords(uint32 Team)
         return LocationVector(763.9755f, -274.0825f, 28.4f);
 }
 
-void RingOfValor::HookOnAreaTrigger(Player* plr, uint32 trigger)
+void RingOfValor::HookOnAreaTrigger(Player* /*plr*/, uint32 trigger)
 {
     switch (trigger)
     {
@@ -77,7 +77,6 @@ void RingOfValor::HookOnAreaTrigger(Player* plr, uint32 trigger)
             break;
         default:
             LOG_ERROR("Encountered unhandled areatrigger id %u", trigger);
-            return;
             break;
     }
 }

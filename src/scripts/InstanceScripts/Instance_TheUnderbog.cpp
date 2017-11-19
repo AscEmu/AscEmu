@@ -2159,7 +2159,7 @@ class HungarfenAI : public CreatureAIScript
             }
         }
 
-        void CastSpellOnRandomTarget(uint32 /*i*/, float mindist2cast, float maxdist2cast, int minhp2cast, int maxhp2cast)
+        void CastSpellOnRandomTarget(uint32 /*i*/, float mindist2cast, float maxdist2cast, int /*minhp2cast*/, int maxhp2cast)
         {
             if (!maxdist2cast) maxdist2cast = 100.0f;
             if (!maxhp2cast) maxhp2cast = 100;

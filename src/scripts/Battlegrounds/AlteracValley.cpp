@@ -1354,7 +1354,7 @@ void AlteracValley::AVNode::Spawn()
     LogDebug("AlteracValley : AVNode::Spawn(%s) : completed for state %u %s", m_template->m_name, m_state, g_stateNames[m_state]);
 }
 
-void AlteracValley::AVNode::SpawnGuards(uint32 x)
+void AlteracValley::AVNode::SpawnGuards(uint32 /*x*/)
 {
     LogDebug("AlteracValley : AVNode::SpawnGuards(%s) : spawning %u guards", m_template->m_name, m_template->m_guardCount);
 }
@@ -1490,7 +1490,7 @@ AlteracValley::~AlteracValley()
         delete m_nodes[x];
 }
 
-bool AlteracValley::HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpell)
+bool AlteracValley::HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* /*pSpell*/)
 {
     uint32 nodeid = 0;
 
@@ -1514,17 +1514,17 @@ bool AlteracValley::HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pS
     return true;
 }
 
-void AlteracValley::HookFlagDrop(Player* plr, GameObject* obj)
+void AlteracValley::HookFlagDrop(Player* /*plr*/, GameObject* /*obj*/)
 {
 
 }
 
-void AlteracValley::HookFlagStand(Player* plr, GameObject* obj)
+void AlteracValley::HookFlagStand(Player* /*plr*/, GameObject* /*obj*/)
 {
 
 }
 
-void AlteracValley::HookOnMount(Player* plr)
+void AlteracValley::HookOnMount(Player* /*plr*/)
 {
 
 }
@@ -1558,7 +1558,6 @@ void AlteracValley::HookOnAreaTrigger(Player* plr, uint32 trigger)
             break;
         default:
             LOG_ERROR("Encountered unhandled areatrigger id %u", trigger);
-            return;
             break;
     }
 }
@@ -1608,7 +1607,7 @@ void AlteracValley::HookOnHK(Player* plr)
     UpdatePvPData();
 }
 
-void AlteracValley::DropFlag(Player* plr)
+void AlteracValley::DropFlag(Player* /*plr*/)
 {
 
 }
@@ -1739,7 +1738,7 @@ void AlteracValley::HookOnPlayerKill(Player* plr, Player* pVictim)
     }
 }
 
-void AlteracValley::HookOnUnitKill(Player* plr, Unit* pVictim)
+void AlteracValley::HookOnUnitKill(Player* /*plr*/, Unit* pVictim)
 {
     if (pVictim->IsPlayer())
         return;
@@ -1923,7 +1922,7 @@ void AlteracValley::Herald(const char* format, ...)
     DistributePacketToAll(&data);
 }
 
-void AlteracValley::HookOnFlagDrop(Player* plr)
+void AlteracValley::HookOnFlagDrop(Player* /*plr*/)
 {
 }
 

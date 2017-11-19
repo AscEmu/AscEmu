@@ -74,12 +74,12 @@ struct LogonWorldPacket
 #pragma pack(pop)
 
 
-static void byteSwapUInt16(uint16_t* byte16)
+inline void byteSwapUInt16(uint16_t* byte16)
 {
     *byte16 = ((*byte16 >> 8) & 0xFF00) | ((*byte16 << 8) & 0xFF0000);
 }
 
-static void byteSwapUInt32(uint32_t* byte32)
+inline void byteSwapUInt32(uint32_t* byte32)
 {
     *byte32 = ((*byte32 >> 24) & 0xFF) | ((*byte32 >> 8) & 0xFF00) | ((*byte32 << 8) & 0xFF0000) | (*byte32 << 24);
 }

@@ -78,14 +78,14 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(DeathbringerJovaanAI);
     DeathbringerJovaanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        mJovaanTimer = INVALIDATE_TIMER;
+        mJovaanTimer = 0;
         mJovaanPhase = -1;
 
         for (int i = 1; i < 5; ++i)
             AddWaypoint(CreateWaypoint(i, DeathbringerJovaanWP[i].WaitTime, Movement::WP_MOVE_TYPE_WALK, DeathbringerJovaanWP[i].mCoords));
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         if (_isTimerFinished(mJovaanTimer))
         {
@@ -151,7 +151,7 @@ public:
         
     }
 
-    void OnReachWP(uint32 iWaypointId, bool bForwards)
+    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
     {
         switch (iWaypointId)
         {
@@ -190,7 +190,7 @@ public:
         mRazuunPhase = 0;
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         if (_isTimerFinished(mRazuunTimer))
         {
@@ -233,7 +233,6 @@ public:
                     mRazuunPhase = -1;
                     _removeTimer(mRazuunTimer);
                     despawn(0, 0);
-                    return;
                 }
                 break;
             }
@@ -249,7 +248,7 @@ public:
 class NeltharakusTale_Gossip : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         if (plr->HasQuest(10814))
         {
@@ -261,7 +260,7 @@ public:
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         switch (Id)
         {
@@ -307,7 +306,7 @@ public:
         AddWaypoint(CreateWaypoint(1, 0, WayPoint.wp_flag, WayPoint.wp_location));
     }
 
-    void OnReachWP(uint32 iWaypointId, bool bForwards)
+    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
     {
         if (iWaypointId == 1)
         {
@@ -323,7 +322,7 @@ public:
     KarynakuChains(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new KarynakuChains(GO); }
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10872);
 
@@ -341,8 +340,8 @@ public:
 class FlanisSwiftwing_Gossip : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* Plr);
-    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32 gossipId);
+    void OnHello(Object* pObject, Player* Plr) override;
+    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32 gossipId) override;
 };
 
 void FlanisSwiftwing_Gossip::OnHello(Object* pObject, Player* plr)
@@ -354,10 +353,8 @@ void FlanisSwiftwing_Gossip::OnHello(Object* pObject, Player* plr)
     menu.Send(plr);
 };
 
-void FlanisSwiftwing_Gossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32 gossipId)
+void FlanisSwiftwing_Gossip::OnSelectOption(Object* /*pObject*/, Player* Plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/)
 {
-    Creature* pCreature = static_cast<Creature*>(pObject);
-
     Item* item = objmgr.CreateItem(30658, Plr);
     if (item == nullptr)
         return;

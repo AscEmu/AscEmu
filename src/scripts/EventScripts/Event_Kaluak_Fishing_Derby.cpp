@@ -23,5 +23,5 @@
 #define YELL_CLEARWATER "$N has won the Kalu'ak Fishing Derby!"
 
 
-void SetupKalualFishingDerby(ScriptMgr* mgr)
+void SetupKalualFishingDerby(ScriptMgr* /*mgr*/)
 { }

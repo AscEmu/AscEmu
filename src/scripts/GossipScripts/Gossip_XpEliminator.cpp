@@ -29,7 +29,7 @@ class XpEliminatorGossip : public Arcemu::Gossip::Script
 {
     public:
 
-        void OnHello(Object* pObject, Player* plr)
+        void OnHello(Object* pObject, Player* plr) override
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 14736);
             if (plr->CanGainXp())
@@ -40,7 +40,7 @@ class XpEliminatorGossip : public Arcemu::Gossip::Script
             menu.Send(plr);
         }
 
-        void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)
+        void OnSelectOption(Object* /*pObject*/, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
         {
             // turning xp gains on/off costs 10g each time
             if (plr->HasGold(100000))
@@ -51,7 +51,7 @@ class XpEliminatorGossip : public Arcemu::Gossip::Script
             Arcemu::Gossip::Menu::Complete(plr);
         }
 
-        void Destroy() { delete this; }
+        void Destroy() override { delete this; }
 
 };
 

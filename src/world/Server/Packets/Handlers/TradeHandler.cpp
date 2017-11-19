@@ -87,7 +87,7 @@ void WorldSession::HandleInitiateTradeOpcode(WorldPacket& recv_data)
     pTarget->m_session->SendPacket(&data);
 }
 
-void WorldSession::HandleBeginTradeOpcode(WorldPacket& recv_data)
+void WorldSession::HandleBeginTradeOpcode(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
 
@@ -119,7 +119,7 @@ void WorldSession::HandleBeginTradeOpcode(WorldPacket& recv_data)
     _player->mTradeStatus = TradeStatus;
 }
 
-void WorldSession::HandleBusyTrade(WorldPacket& recv_data)
+void WorldSession::HandleBusyTrade(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
 
@@ -145,7 +145,7 @@ void WorldSession::HandleBusyTrade(WorldPacket& recv_data)
     _player->mTradeTarget = 0;
 }
 
-void WorldSession::HandleIgnoreTrade(WorldPacket& recv_data)
+void WorldSession::HandleIgnoreTrade(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
 
@@ -170,7 +170,7 @@ void WorldSession::HandleIgnoreTrade(WorldPacket& recv_data)
     _player->mTradeTarget = 0;
 }
 
-void WorldSession::HandleCancelTrade(WorldPacket& recv_data)
+void WorldSession::HandleCancelTrade(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
 
@@ -193,7 +193,7 @@ void WorldSession::HandleCancelTrade(WorldPacket& recv_data)
     _player->ResetTradeVariables();
 }
 
-void WorldSession::HandleUnacceptTrade(WorldPacket& recv_data)
+void WorldSession::HandleUnacceptTrade(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
 
@@ -358,7 +358,7 @@ void WorldSession::HandleClearTradeItem(WorldPacket& recv_data)
     _player->SendTradeUpdate();
 }
 
-void WorldSession::HandleAcceptTrade(WorldPacket& recv_data)
+void WorldSession::HandleAcceptTrade(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
 

@@ -645,7 +645,7 @@ void Mailbox::FillTimePacket(WorldPacket& data)
 
 }
 
-void WorldSession::HandleMailTime(WorldPacket& recv_data)
+void WorldSession::HandleMailTime(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
 
@@ -654,7 +654,7 @@ void WorldSession::HandleMailTime(WorldPacket& recv_data)
     SendPacket(&data);
 }
 
-void WorldSession::HandleGetMail(WorldPacket& recv_data)
+void WorldSession::HandleGetMail(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
 

@@ -23,7 +23,7 @@
 class TheSummoning : public QuestScript
 {
 public:
-    void OnQuestStart(Player* pPlayer, QuestLogEntry* qLogEntry)
+    void OnQuestStart(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* windwatcher = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 6176);
         if (windwatcher == nullptr)
@@ -63,13 +63,13 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(Bartleby);
     Bartleby(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnLoad()
+    void OnLoad() override
     {
         getCreature()->SetFaction(11);
         getCreature()->setEmoteState(EMOTE_ONESHOT_EAT);
     }
 
-    void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
+    void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
     {
         if (getCreature()->getUInt32Value(UNIT_FIELD_HEALTH) - fAmount <= getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.37f)
         {
@@ -85,7 +85,7 @@ public:
         }
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         getCreature()->RemoveNegativeAuras();
         getCreature()->SetFaction(11);
@@ -98,7 +98,7 @@ public:
         getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, 0);
     }
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* /*mKiller*/) override
     {
         RemoveAIUpdateEvent();
     }
@@ -108,7 +108,7 @@ class BeatBartleby : public QuestScript
 {
 public:
 
-    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float SSX = mTarget->GetPositionX();
         float SSY = mTarget->GetPositionY();

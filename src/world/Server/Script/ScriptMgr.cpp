@@ -532,7 +532,7 @@ CreatureAIScript::CreatureAIScript(Creature* creature) : _creature(creature), li
 
     mEnrageSpell = nullptr;
     mEnrageTimerDuration = -1;
-    mEnrageTimer = INVALIDATE_TIMER;
+    mEnrageTimer = 0;
 
     mRunToTargetCache = nullptr;
     mRunToTargetSpellCache = nullptr;
@@ -1157,8 +1157,8 @@ uint32_t CreatureAIScript::_getTimerCount()
 {
     if (InstanceScript* inScript = getInstanceScript())
         return mCreatureTimerIds.size();
-    else
-        return mCreatureTimer.size();
+    
+    return static_cast<uint32_t>(mCreatureTimer.size());
 }
 
 void CreatureAIScript::updateAITimers()
@@ -2479,12 +2479,12 @@ void SpellDesc::addAnnouncement(std::string pText)
 //Premade Spell Functions
 const uint32_t SPELLFUNC_VANISH = 24699;
 
-void SpellFunc_ClearHateList(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_ClearHateList(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* /*pTarget*/, TargetType /*pType*/)
 {
     pCreatureAI->_clearHateList();
 }
 
-void SpellFunc_Disappear(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_Disappear(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* /*pTarget*/, TargetType /*pType*/)
 {
     pCreatureAI->_clearHateList();
     pCreatureAI->setRooted(true);
@@ -2492,7 +2492,7 @@ void SpellFunc_Disappear(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* 
     pCreatureAI->_applyAura(SPELLFUNC_VANISH);
 }
 
-void SpellFunc_Reappear(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_Reappear(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* /*pTarget*/, TargetType /*pType*/)
 {
     pCreatureAI->setRooted(false);
     pCreatureAI->setCanEnterCombat(true);

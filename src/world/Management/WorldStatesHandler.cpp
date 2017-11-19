@@ -40,7 +40,8 @@ void WorldStatesHandler::SetWorldStateForZone(uint32 zone, uint32 /*area*/, uint
         observer->onWorldStateUpdate(zone, field, value);
 }
 
-uint32 WorldStatesHandler::GetWorldStateForZone(uint32 zone, uint32 area, uint32 field) const{
+uint32 WorldStatesHandler::GetWorldStateForZone(uint32 zone, uint32 /*area*/, uint32 field) const
+{
     std::unordered_map< uint32, std::unordered_map< uint32, uint32 > >::const_iterator itr = worldstates.find(zone);
     if (itr == worldstates.end())
         return 0;

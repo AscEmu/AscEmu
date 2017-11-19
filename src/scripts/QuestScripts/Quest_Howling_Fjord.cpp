@@ -26,7 +26,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(NorthFleet);
     NorthFleet(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         if (mKiller->IsPlayer())
         {
@@ -40,7 +40,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(ChillmereScourge);
     ChillmereScourge(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         if (mKiller->IsPlayer())
         {
@@ -54,7 +54,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(Baleheim);
     Baleheim(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnDied(Unit* mKiller)
+    void OnDied(Unit* mKiller) override
     {
         if (mKiller->IsPlayer())
         {
@@ -66,7 +66,7 @@ public:
 class Plaguethis_Gossip : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         Arcemu::Gossip::Menu menu(pObject->GetGUID(), 40002, plr->GetSession()->language);
         menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(464), 2);     // Where would you like to fly too ?
@@ -77,7 +77,7 @@ public:
         menu.Send(plr);
     }
 
-    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         Creature* pCreature = static_cast<Creature*>(pObject);
 

@@ -11,5 +11,5 @@
 // event_properties holiday: 201 \n
 //\todo Check what happen on Children's Week
 
-void SetupChildrensWeek(ScriptMgr* mgr)
+void SetupChildrensWeek(ScriptMgr* /*mgr*/)
 { }

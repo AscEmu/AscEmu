@@ -157,7 +157,7 @@ public:
 class PrisonerGossip : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* pPlayer)
+    void OnHello(Object* pObject, Player* pPlayer) override
     {
         int32 i = -1;
         Creature* pPrisoner = static_cast<Creature*>(pObject);
@@ -189,10 +189,10 @@ public:
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* EnteredCode, uint32 gossipId)
+    void OnSelectOption(Object* pObject, Player* pPlayer, uint32 /*Id*/, const char* /*EnteredCode*/, uint32 /*gossipId*/) override
     {
 
-        int32 i = -1;
+        uint8 i = 66;
         Creature* pPrisoner = static_cast<Creature*>(pObject);
         switch (pPrisoner->GetEntry())
         {
@@ -207,7 +207,7 @@ public:
                 break;
         }
 
-        if (i == -1)
+        if (i == 66)
             return;
 
         pPlayer->AddQuestKill(10368, i, 0);
@@ -226,7 +226,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(PrisonersDreghoodElders);
     PrisonersDreghoodElders(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnLoad()
+    void OnLoad() override
     {
         getCreature()->SetStandState(STANDSTATE_SIT);
         getCreature()->setDeathState(CORPSE);
@@ -242,7 +242,7 @@ public:
 
     ADD_CREATURE_FACTORY_FUNCTION(AncestralSpiritWolf);
     AncestralSpiritWolf(Creature* c) : CreatureAIScript(c) {}
-    void OnLoad()
+    void OnLoad() override
     {
         getCreature()->CastSpell(getCreature(), 29938, false);
     }
@@ -257,7 +257,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(HellfireDeadNPC);
     HellfireDeadNPC(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnLoad()
+    void OnLoad() override
     {
         getCreature()->SetStandState(STANDSTATE_DEAD);
         getCreature()->setDeathState(CORPSE);
@@ -269,10 +269,10 @@ class DarkTidingsAlliance : public QuestScript
 {
 public:
 
-    void OnQuestComplete(Player* pPlayer, QuestLogEntry* qLogEntry)
+    void OnQuestComplete(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* pCreature = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17479);
-        if (pCreature == NULL)
+        if (pCreature == nullptr)
             return;
 
         char msg[100];
@@ -285,10 +285,10 @@ class DarkTidingsHorde : public QuestScript
 {
 public:
 
-    void OnQuestComplete(Player* pPlayer, QuestLogEntry* qLogEntry)
+    void OnQuestComplete(Player* pPlayer, QuestLogEntry* /*qLogEntry*/) override
     {
         Creature* pCreature = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 17558);
-        if (pCreature == NULL)
+        if (pCreature == nullptr)
             return;
 
         char msg[100];

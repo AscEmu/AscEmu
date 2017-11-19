@@ -335,7 +335,7 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
         server.mapUnloadTime = MAP_CELL_DEFAULT_UNLOAD_TIME;
     }
 
-    server.mapCellNumber = Config.MainConfig.getIntDefault("Server", "MapCellNumber", 1);
+    server.mapCellNumber = static_cast<uint8_t>(Config.MainConfig.getIntDefault("Server", "MapCellNumber", 1));
     if (server.mapCellNumber == 0)
     {
         LOG_ERROR("MapCellNumber is set to 0. Congrats, no MapCells will be loaded. Overriding it to default value of 1");
@@ -365,9 +365,9 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     player.deathKnightStartTalentPoints = Config.MainConfig.getIntDefault("Player", "DKStartingTalents", 0);
     player.deathKnightPreReq = Config.MainConfig.getBoolDefault("Player", "DKPreReq", false);
     player.deathKnightLimit = Config.MainConfig.getBoolDefault("Player", "DKLimit", true);
-    player.maxProfessions = (uint32_t)Config.MainConfig.getIntDefault("Player", "MaxProfessions", 2);
+    player.maxProfessions = static_cast<uint32_t>(Config.MainConfig.getIntDefault("Player", "MaxProfessions", 2));
     player.skipCinematics = Config.MainConfig.getBoolDefault("Player", "SkipCinematic", false);
-    player.enableInstantLogoutForAccessType = Config.MainConfig.getIntDefault("Player", "InstantLogout", 1);
+    player.enableInstantLogoutForAccessType = static_cast<uint8_t>(Config.MainConfig.getIntDefault("Player", "InstantLogout", 1));
     player.minDualSpecLevel = Config.MainConfig.getIntDefault("Player", "MinDualSpecLevel", 40);
     player.minTalentResetLevel = Config.MainConfig.getIntDefault("Player", "MinTalentResetLevel", 10);
     player.showAllVendorItems = Config.MainConfig.getBoolDefault("Player", "ShowAllVendorItems", false);
@@ -560,12 +560,12 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
 
     // world.conf - Limits settings
     limit.isLimitSystemEnabled = Config.MainConfig.getBoolDefault("Limits", "Enable", true);
-    limit.maxAutoAttackDamageCap = (uint32_t)Config.MainConfig.getIntDefault("Limits", "AutoAttackDmg", 10000);
-    limit.maxSpellDamageCap = (uint32_t)Config.MainConfig.getIntDefault("Limits", "SpellDmg", 30000);
-    limit.maxHealthCap = (uint32_t)Config.MainConfig.getIntDefault("Limits", "Health", 80000);
-    limit.maxManaCap = (uint32_t)Config.MainConfig.getIntDefault("Limits", "Mana", 80000);
-    limit.maxHonorPoints = (uint32_t)Config.MainConfig.getIntDefault("Limits", "Honor", 75000);
-    limit.maxArenaPoints = (uint32_t)Config.MainConfig.getIntDefault("Limits", "Arena", 5000);
+    limit.maxAutoAttackDamageCap = static_cast<uint32_t>(Config.MainConfig.getIntDefault("Limits", "AutoAttackDmg", 10000));
+    limit.maxSpellDamageCap = static_cast<uint32_t>(Config.MainConfig.getIntDefault("Limits", "SpellDmg", 30000));
+    limit.maxHealthCap = static_cast<uint32_t>(Config.MainConfig.getIntDefault("Limits", "Health", 80000));
+    limit.maxManaCap = static_cast<uint32_t>(Config.MainConfig.getIntDefault("Limits", "Mana", 80000));
+    limit.maxHonorPoints = static_cast<uint32_t>(Config.MainConfig.getIntDefault("Limits", "Honor", 75000));
+    limit.maxArenaPoints = static_cast<uint32_t>(Config.MainConfig.getIntDefault("Limits", "Arena", 5000));
     limit.disconnectPlayerForExceedingLimits = Config.MainConfig.getBoolDefault("Limits", "Disconnect", false);
     limit.broadcastMessageToGmOnExceeding = Config.MainConfig.getBoolDefault("Limits", "BroadcastGMs", true);
 

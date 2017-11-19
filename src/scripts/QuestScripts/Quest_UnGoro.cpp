@@ -27,7 +27,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(RingoDeadNPC);
     RingoDeadNPC(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnLoad()
+    void OnLoad() override
     {
         getCreature()->SetStandState(STANDSTATE_DEAD);
         getCreature()->setDeathState(CORPSE);
@@ -42,7 +42,7 @@ public:
     NorthernPylon(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new NorthernPylon(GO); }
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         if (pPlayer->HasFinishedQuest(4284))
         {
@@ -62,7 +62,7 @@ public:
     EasternPylon(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new EasternPylon(GO); }
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         if (pPlayer->HasFinishedQuest(4284))
         {
@@ -82,7 +82,7 @@ public:
     WesternPylon(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
     static GameObjectAIScript* Create(GameObject* GO) { return new WesternPylon(GO); }
 
-    void OnActivate(Player* pPlayer)
+    void OnActivate(Player* pPlayer) override
     {
         if (pPlayer->HasFinishedQuest(4284))
         {
@@ -102,7 +102,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(A_Me01);
     A_Me01(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnReachWP(uint32 iWaypointId, bool bForwards)
+    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
     {
         if (iWaypointId == 28)
         {

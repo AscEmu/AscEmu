@@ -26,13 +26,13 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(DashelStonefist);
     DashelStonefist(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnLoad()
+    void OnLoad() override
     {
         getCreature()->SetFaction(12);
         getCreature()->SetStandState(STANDSTATE_STAND);
     }
 
-    void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
+    void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
     {
         if (getCreature()->getUInt32Value(UNIT_FIELD_HEALTH) - fAmount <= getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.2f)
         {
@@ -48,7 +48,7 @@ public:
         }
     }
 
-    void AIUpdate()
+    void AIUpdate() override
     {
         getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay, okay! Enough fighting. No one else needs to get hurt.");
         getCreature()->RemoveNegativeAuras();
@@ -68,7 +68,7 @@ class TheMissingDiplomat : public QuestScript
 {
 public:
 
-    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float SSX = mTarget->GetPositionX();
         float SSY = mTarget->GetPositionY();

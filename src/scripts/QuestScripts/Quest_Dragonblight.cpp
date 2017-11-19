@@ -32,7 +32,7 @@ public:
 class WoodlandWalkerGossip : public Arcemu::Gossip::Script
 {
 public:
-    void OnHello(Object* pObject, Player* plr)
+    void OnHello(Object* pObject, Player* plr) override
     {
         Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : nullptr;
         if (pCreature == nullptr)
@@ -55,7 +55,7 @@ public:
 class WrathGateQuestCinema : public QuestScript
 {
 public:
-    void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+    void OnQuestComplete(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
 #if VERSION_STRING > TBC
         // send packet for movie

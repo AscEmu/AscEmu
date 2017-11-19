@@ -44,9 +44,9 @@ int LuaGameObject::GossipCreateMenu(lua_State* L, GameObject* ptr)
     return 0;
 }
 
-int LuaGameObject::GossipMenuAddItem(lua_State* L, GameObject* ptr)
+int LuaGameObject::GossipMenuAddItem(lua_State* L, GameObject* /*ptr*/)
 {
-    int icon = static_cast<int>(luaL_checkinteger(L, 1));
+    uint8 icon = static_cast<uint8>(luaL_checkinteger(L, 1));
     const char* menu_text = luaL_checkstring(L, 2);
     int IntId = static_cast<int>(luaL_checkinteger(L, 3));
     bool coded = (luaL_checkinteger(L, 4)) ? true : false;
@@ -63,7 +63,7 @@ int LuaGameObject::GossipMenuAddItem(lua_State* L, GameObject* ptr)
     return 0;
 }
 
-int LuaGameObject::GossipSendMenu(lua_State* L, GameObject* ptr)
+int LuaGameObject::GossipSendMenu(lua_State* L, GameObject* /*ptr*/)
 {
     Player* target = CHECK_PLAYER(L, 1);
     if (!target)
@@ -80,7 +80,7 @@ int LuaGameObject::GossipSendMenu(lua_State* L, GameObject* ptr)
     return 0;
 }
 
-int LuaGameObject::GossipComplete(lua_State* L, GameObject* ptr)
+int LuaGameObject::GossipComplete(lua_State* L, GameObject* /*ptr*/)
 {
     Player* target = CHECK_PLAYER(L, 1);
     if (!target)
@@ -97,7 +97,7 @@ int LuaGameObject::GossipComplete(lua_State* L, GameObject* ptr)
     return 0;
 }
 
-int LuaGameObject::GossipSendPOI(lua_State* L, GameObject* ptr)
+int LuaGameObject::GossipSendPOI(lua_State* L, GameObject* /*ptr*/)
 {
     Player* plr = CHECK_PLAYER(L, 1);
     float x = CHECK_FLOAT(L, 2);
@@ -150,7 +150,7 @@ int LuaGameObject::ModAIUpdate(lua_State* L, GameObject* ptr)
     return 0;
 }
 
-int LuaGameObject::RemoveAIUpdate(lua_State* L, GameObject* ptr)
+int LuaGameObject::RemoveAIUpdate(lua_State* /*L*/, GameObject* ptr)
 {
     TEST_GO()
     sEventMgr.RemoveEvents(ptr, EVENT_SCRIPT_UPDATE_EVENT);
@@ -163,7 +163,7 @@ int LuaGameObject::GetMapId(lua_State* L, GameObject* ptr)
     return 1;
 }
 
-int LuaGameObject::RemoveFromWorld(lua_State* L, GameObject* ptr)
+int LuaGameObject::RemoveFromWorld(lua_State* /*L*/, GameObject* ptr)
 {
     if (ptr)
         ptr->RemoveFromWorld(true);
@@ -544,7 +544,7 @@ int LuaGameObject::IsInBack(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::GetUInt32Value(lua_State* L, GameObject* ptr)
 {
-    int field = static_cast<int>(luaL_checkinteger(L, 1));
+    uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
     if (ptr && field > 0)
         lua_pushinteger(L, ptr->getUInt32Value(field));
     else
@@ -554,7 +554,7 @@ int LuaGameObject::GetUInt32Value(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::GetUInt64Value(lua_State* L, GameObject* ptr)
 {
-    int field = static_cast<int>(luaL_checkinteger(L, 1));
+    uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
     if (ptr && field)
     PUSH_GUID(L, ptr->getUInt64Value(field));
     else
@@ -564,8 +564,8 @@ int LuaGameObject::GetUInt64Value(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::SetUInt32Value(lua_State* L, GameObject* ptr)
 {
-    int field = static_cast<int>(luaL_checkinteger(L, 1));
-    int value = static_cast<int>(luaL_checkinteger(L, 2));
+    uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+    uint32_t value = static_cast<uint32_t>(luaL_checkinteger(L, 2));
     if (ptr && field)
         ptr->setUInt32Value(field, value);
     return 0;
@@ -573,7 +573,7 @@ int LuaGameObject::SetUInt32Value(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::SetUInt64Value(lua_State* L, GameObject* ptr)
 {
-    int field = static_cast<int>(luaL_checkinteger(L, 1));
+    uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
     uint64 guid = CHECK_GUID(L, 1);
     if (ptr && field)
         ptr->setUInt64Value(field, guid);
@@ -582,7 +582,7 @@ int LuaGameObject::SetUInt64Value(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::SetFloatValue(lua_State* L, GameObject* ptr)
 {
-    int field = static_cast<int>(luaL_checkinteger(L, 1));
+    uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
     float value = CHECK_FLOAT(L, 2);
     if (ptr)
         ptr->setFloatValue(field, value);
@@ -607,7 +607,7 @@ int LuaGameObject::SetFlag(lua_State* L, GameObject* ptr)
     return 0;
 }
 
-int LuaGameObject::Update(lua_State* L, GameObject* ptr)
+int LuaGameObject::Update(lua_State* /*L*/, GameObject* ptr)
 {
     //just despawns/respawns to update GO visuals
     //credits: Sadikum
@@ -623,7 +623,7 @@ int LuaGameObject::Update(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::GetFloatValue(lua_State* L, GameObject* ptr)
 {
-    int field = static_cast<int>(luaL_checkinteger(L, 1));
+    uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
     if (ptr && field)
         lua_pushnumber(L, ptr->getFloatValue(field));
     else
@@ -681,7 +681,7 @@ int LuaGameObject::GetLandHeight(lua_State* L, GameObject* ptr)
     return 1;
 }
 
-int LuaGameObject::SetZoneWeather(lua_State* L, GameObject* ptr)
+int LuaGameObject::SetZoneWeather(lua_State* L, GameObject* /*ptr*/)
 {
     /*
     WEATHER_TYPE_NORMAL            = 0, // NORMAL (SUNNY)
@@ -1060,8 +1060,8 @@ int LuaGameObject::ChangeScale(lua_State* L, GameObject* ptr)
 int LuaGameObject::GetByte(lua_State* L, GameObject* ptr)
 {
     TEST_GO()
-    uint32_t index = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-    uint32_t index2 = static_cast<uint32_t>(luaL_checkinteger(L, 2));
+        uint16_t index = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+    uint8_t index2 = static_cast<uint8_t>(luaL_checkinteger(L, 2));
     uint8 value = ptr->getByteValue(index, index2);
     RET_INT(value);
 }
@@ -1069,9 +1069,9 @@ int LuaGameObject::GetByte(lua_State* L, GameObject* ptr)
 int LuaGameObject::SetByte(lua_State* L, GameObject* ptr)
 {
     TEST_GO_RET();
-    int index = static_cast<int>(luaL_checkinteger(L, 1));
-    int index2 = static_cast<int>(luaL_checkinteger(L, 2));
-    uint8 value = static_cast<uint8>(luaL_checkinteger(L, 3));
+    uint16_t index = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+    uint8_t index2 = static_cast<uint8_t>(luaL_checkinteger(L, 2));
+    uint8_t value = static_cast<uint8_t>(luaL_checkinteger(L, 3));
     ptr->setByteValue(index, index2, value);
     RET_BOOL(true)
 }
@@ -1261,7 +1261,7 @@ int LuaGameObject::Damage(lua_State* L, GameObject* ptr)
     return 0;
 }
 
-int LuaGameObject::Rebuild(lua_State* L, GameObject* ptr)
+int LuaGameObject::Rebuild(lua_State* /*L*/, GameObject* ptr)
 {
     TEST_GO();
 

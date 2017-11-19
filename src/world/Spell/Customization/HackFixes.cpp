@@ -460,7 +460,7 @@ void Modify_AuraInterruptFlags(SpellInfo* sp)
     // HACK FIX: Break roots/fear on damage.. this needs to be fixed properly!
     if (!(sp->getAuraInterruptFlags() & AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN))
     {
-        for (uint32 z = 0; z < 3; ++z)
+        for (uint8 z = 0; z < 3; ++z)
         {
             if (sp->getEffectApplyAuraName(z) == SPELL_AURA_MOD_FEAR || sp->getEffectApplyAuraName(z) == SPELL_AURA_MOD_ROOT)
             {
@@ -780,7 +780,7 @@ void ApplyNormalFixes()
                 break;
         }
 
-        for (uint32 b = 0; b < 3; ++b)
+        for (uint8 b = 0; b < 3; ++b)
         {
             if (sp->getEffectTriggerSpell(b) != 0 && sSpellCustomizations.GetSpellInfo(sp->getEffectTriggerSpell(b)) == NULL)
             {
@@ -2720,7 +2720,7 @@ void ApplyNormalFixes()
     sp = Spell::checkAndReturnSpellEntry(20608);   //Reincarnation
     if (sp != nullptr)
     {
-        for (int i = 0; i < 8; ++i)
+        for (uint8 i = 0; i < 8; ++i)
         {
             if (sp->getReagent(i))
             {
