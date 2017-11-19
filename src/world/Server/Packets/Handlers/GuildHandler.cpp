@@ -1153,20 +1153,6 @@ void WorldSession::HandleGuildLog(WorldPacket& /*recv_data*/)
     _player->m_playerInfo->guild->SendGuildLog(this);
 }
 
-uint32_t _GetGuildBankTabPrice(uint8_t tabId)
-{
-    switch (tabId)
-    {
-        case 0: { return 100; }
-        case 1: { return 250; }
-        case 2: { return 500; }
-        case 3: { return 1000; }
-        case 4: { return 2500; }
-        case 5: { return 5000; }
-        default: { return 0; }
-    }
-}
-
 void WorldSession::HandleGuildBankBuyTab(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN

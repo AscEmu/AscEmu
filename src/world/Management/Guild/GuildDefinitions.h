@@ -332,7 +332,7 @@ uint32_t const guildChallengeXPReward[4] = { 0, 300000, 3000000, 1500000 };
 uint32_t const guildChallengesPerWeek[4] = { 0, 7, 1, 3 };
 
 #if VERSION_STRING == Cata
-static std::string _GetGuildEventString(GuildEvents event)
+inline std::string _GetGuildEventString(GuildEvents event)
 {
     switch (event)
     {
@@ -360,3 +360,17 @@ static std::string _GetGuildEventString(GuildEvents event)
     }
 }
 #endif
+
+inline uint32_t _GetGuildBankTabPrice(uint8_t tabId)
+{
+    switch (tabId)
+    {
+        case 0: { return 100; }
+        case 1: { return 250; }
+        case 2: { return 500; }
+        case 3: { return 1000; }
+        case 4: { return 2500; }
+        case 5: { return 5000; }
+        default: { return 0; }
+    }
+}
