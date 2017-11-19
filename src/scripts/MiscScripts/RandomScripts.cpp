@@ -158,7 +158,7 @@ public:
 void SetupRandomScripts(ScriptMgr* mgr)
 {
     // Register Hook Event here
-    mgr->register_hook(SERVER_HOOK_EVENT_ON_EMOTE, static_cast<void*>(&OnEmote));
+    mgr->register_hook(SERVER_HOOK_EVENT_ON_EMOTE, (void*)&OnEmote);
 
     Arcemu::Gossip::Script* jeanPierrePoulain = new JeanPierrePoulain();
     mgr->register_creature_gossip(34244, jeanPierrePoulain);
