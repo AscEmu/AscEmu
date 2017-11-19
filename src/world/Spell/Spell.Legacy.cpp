@@ -1861,6 +1861,20 @@ void Spell::finish(bool successful)
     {
         CALL_SCRIPT_EVENT(u_caster, OnCastSpell)(GetSpellInfo()->getId());
 
+        // call script
+        Unit* target = u_caster->GetMapMgr()->GetUnit(u_caster->GetTargetGUID());
+        if (target != nullptr)
+        {
+            if (target->IsCreature())
+            {
+                auto creature = static_cast<Creature*>(target);
+                if (creature->GetScript())
+                {
+                    CALL_SCRIPT_EVENT(creature, OnHitBySpell)(GetSpellInfo()->getId(), u_caster);
+                }
+            }
+        }
+
         u_caster->m_canMove = true;
         // mana           channeled                                                     power type is mana                             if spell wasn't cast successfully, don't delay mana regeneration
         if (m_usesMana && (GetSpellInfo()->getChannelInterruptFlags() == 0 && !m_triggeredSpell) && u_caster->GetPowerType() == POWER_TYPE_MANA && successful)

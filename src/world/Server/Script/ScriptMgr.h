@@ -720,6 +720,7 @@ class SERVER_DECL CreatureAIScript
 
         // MIT start
         virtual void OnScriptPhaseChange(uint32_t /*phaseId*/) {}
+        virtual void OnHitBySpell(uint32_t /*pSpellId*/, Unit* /*pUnitCaster*/) {}
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Event default management

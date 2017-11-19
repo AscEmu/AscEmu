@@ -228,7 +228,7 @@ class LordMarrowgarAI : public CreatureAIScript
 
             auto boneslice = addAISpell(BONE_SLICE, 60.0f, TARGET_ATTACKING, 0, 120);
             boneslice->addEmote("boneslice", CHAT_MSG_MONSTER_YELL, 0);
-            boneslice->setAvailableForScriptPhase({ 1 });
+            boneslice->setAvailableForScriptPhase({ 2 });
 
             auto bonestorm = addAISpell(BONE_STORM, 30.0f, TARGET_DESTINATION, 30, 300, true);
             bonestorm->addEmote("bonestorm", CHAT_MSG_MONSTER_YELL, 0);
@@ -243,6 +243,7 @@ class LordMarrowgarAI : public CreatureAIScript
 
             auto souldFest = addAISpell(SOUL_FEAST, 50.0f, TARGET_RANDOM_SINGLE, 0, 20);
             souldFest->addEmote("Your soul is fest", CHAT_MSG_MONSTER_YELL, 0);
+            souldFest->setAvailableForScriptPhase({ 2 });
 
             auto bonespike = addAISpell(BONE_SPIKE, 80.0f, TARGET_RANDOM_SINGLE, 10, 30);
             bonespike->setAnnouncement("Lord Marrowgar is preparing BoneSpike");
@@ -266,6 +267,22 @@ class LordMarrowgarAI : public CreatureAIScript
 
         void OnCastSpell(uint32 /*spellId*/) override
         {
+        }
+
+        void OnHitBySpell(uint32_t pSpellId, Unit* pUnitCaster) override
+        {
+            switch (pSpellId)
+            {
+                case 49233:
+                {
+                    if (pUnitCaster != nullptr && pUnitCaster->IsPlayer())
+                    {
+                        std::stringstream ss;
+                        ss << "Player " << static_cast<Player*>(pUnitCaster)->GetName();
+                        sendAnnouncement(ss.str());
+                    }
+                } break;
+            }
         }
 
         // Testcode - remove me please
