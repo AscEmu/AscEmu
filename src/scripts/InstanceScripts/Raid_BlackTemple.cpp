@@ -1485,6 +1485,12 @@ class NajentusAI : public CreatureAIScript
             spells[3].cooldown = 20;
             spells[3].mindist2cast = 0.0f;
             spells[3].maxdist2cast = 60.0f;
+
+            // new
+            addEmoteForEvent(Event_OnCombatStart, 4720);     // You will die in the name of Lady Vashj!
+            addEmoteForEvent(Event_OnTargetDied, 4705);     // Time for you to go.
+            addEmoteForEvent(Event_OnTargetDied, 4704); // Your success was short-lived!
+            addEmoteForEvent(Event_OnDied, 4710);     // Lord Illidan will... crush you!
         }
 
         void OnCombatStart(Unit* /*mTarget*/) override
@@ -1496,8 +1502,6 @@ class NajentusAI : public CreatureAIScript
             spells[2].casttime = t + 60;
             spells[3].casttime = t + 20;
 
-            sendDBChatMessage(4720);     // You will die in the name of Lady Vashj!
-
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
@@ -1507,25 +1511,6 @@ class NajentusAI : public CreatureAIScript
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
             RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* /*mKiller*/) override
-        {
-            sendDBChatMessage(4710);     // Lord Illidan will... crush you!
-        }
-
-        void OnTargetDied(Unit* /*mTarget*/) override
-        {
-            switch (RandomUInt(2))
-            {
-                case 1:
-                    sendDBChatMessage(4705);     // Time for you to go.
-                    break;
-                default:
-                    {
-                        sendDBChatMessage(4704); // Your success was short-lived!
-                    }
-            }
         }
 
         void AIUpdate() override
@@ -1689,12 +1674,17 @@ class SupremusAI : public CreatureAIScript
 
             timer = 0;
             m_phase = 0;
+
+            // new
+            addEmoteForEvent(Event_OnCombatStart, 5034);    // Bear witness to the agent of your demise! used when he kills Warden Mellichar
+            addEmoteForEvent(Event_OnTargetDied, 5035);     // Your fate is written.
+            addEmoteForEvent(Event_OnTargetDied, 5036);     // The chaos I have sown here is but a taste....
+            addEmoteForEvent(Event_OnDied, 5042);     // I am merely one of... infinite multitudes.
         }
 
         void OnCombatStart(Unit* /*mTarget*/) override
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
-            sendDBChatMessage(5034);    // Bear witness to the agent of your demise! used when he kills Warden Mellichar
             timer = 0;
         }
 
@@ -1703,27 +1693,6 @@ class SupremusAI : public CreatureAIScript
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* /*mKiller*/) override
-        {
-            sendDBChatMessage(5042);     // I am merely one of... infinite multitudes.
-        }
-
-        void OnTargetDied(Unit* /*mTarget*/) override
-        {
-            if (getCreature()->GetHealthPct() > 0)
-            {
-                switch (RandomUInt(1))
-                {
-                    case 0:
-                        sendDBChatMessage(5035);     // Your fate is written.
-                        break;
-                    case 1:
-                        sendDBChatMessage(5036);     // The chaos I have sown here is but a taste....
-                        break;
-                }
-            }
         }
 
         void AIUpdate() override
@@ -1966,6 +1935,12 @@ class GurtoggAI : public CreatureAIScript
             LastThreat = 0;
             PhaseTimer = 0;
             Phase = 1;
+
+            // new
+            addEmoteForEvent(Event_OnCombatStart, 4642);     // Horde will crush you!"
+            addEmoteForEvent(Event_OnTargetDied, 4644);     // "More! I want more!"
+            addEmoteForEvent(Event_OnTargetDied, 4643);     // Time to feast!"
+            addEmoteForEvent(Event_OnDied, 4649);     // Aaaahrg...
         }
 
         void OnCombatStart(Unit* /*mTarget*/) override
@@ -1977,7 +1952,6 @@ class GurtoggAI : public CreatureAIScript
 
             spells[2].casttime = (uint32)time(NULL) + 10;
 
-            sendDBChatMessage(4642);     // Horde will crush you!"
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
 
             PhaseTimer = (uint32)time(NULL) + 60;
@@ -1998,24 +1972,6 @@ class GurtoggAI : public CreatureAIScript
             LastThreat = 0;
             PhaseTimer = 0;
             Phase = 1;
-        }
-
-        void OnDied(Unit* /*mKiller*/) override
-        {
-            sendDBChatMessage(4649);     // Aaaahrg...
-        }
-
-        void OnTargetDied(Unit* /*mTarget*/) override
-        {
-            switch (RandomUInt(2))
-            {
-                case 1:
-                    sendDBChatMessage(4644);     // "More! I want more!"
-                    break;
-                case 2:
-                    sendDBChatMessage(4643);     // Time to feast!"
-                    break;
-            }
         }
 
         void AIUpdate() override
@@ -2723,12 +2679,16 @@ class ShahrazAI : public CreatureAIScript
             Enraged = false;
             AuraChange = 0;
             SoundTimer = 0;
+
+            // new
+            addEmoteForEvent(Event_OnCombatStart, 4653);     //So, business... or pleasure?"
+            addEmoteForEvent(Event_OnTargetDied, 4658);     // So much for a happy ending.
+            addEmoteForEvent(Event_OnTargetDied, 4657);     // Easy come, easy go.
+            addEmoteForEvent(Event_OnDied, 4660);     // I wasn't finished.
         }
 
         void OnCombatStart(Unit* /*mTarget*/) override
         {
-            sendDBChatMessage(4653);     //So, business... or pleasure?"
-
             for (uint8 i = 0; i < 6; i++)
                 spells[i].casttime = 0;
 
@@ -2745,24 +2705,6 @@ class ShahrazAI : public CreatureAIScript
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
             RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* /*mKiller*/) override
-        {
-            sendDBChatMessage(4660);     // I wasn't finished.
-        }
-
-        void OnTargetDied(Unit* /*mTarget*/) override
-        {
-            switch (RandomUInt(2))
-            {
-                case 1:
-                    sendDBChatMessage(4658);     // So much for a happy ending.
-                    break;
-                case 2:
-                    sendDBChatMessage(4657);     // Easy come, easy go.
-                    break;
-            }
         }
 
         void AIUpdate() override
@@ -3193,12 +3135,16 @@ class TeronGorefiendAI : public CreatureAIScript
             spells[3].cooldown = 30;
             spells[3].mindist2cast = 0.0f;
             spells[3].maxdist2cast = 60.0f;
+
+            // new
+            addEmoteForEvent(Event_OnCombatStart, 4692);     // Vengeance is mine!
+            addEmoteForEvent(Event_OnTargetDied, 4694);     // It gets worse...
+            addEmoteForEvent(Event_OnTargetDied, 4693);     // I have use for you!
+            addEmoteForEvent(Event_OnDied, 4700);     // The wheel...spins...again....
         }
 
         void OnCombatStart(Unit* /*mTarget*/) override
         {
-            sendDBChatMessage(4692);     // Vengeance is mine!
-
             for (uint8 i = 0; i < 4; i++)
                 spells[i].casttime = 0;
 
@@ -3209,33 +3155,12 @@ class TeronGorefiendAI : public CreatureAIScript
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnTargetDied(Unit* /*mTarget*/) override
-        {
-            if (getCreature()->GetHealthPct() > 0)
-            {
-                switch (RandomUInt(2))
-                {
-                    case 1:
-                        sendDBChatMessage(4694);     // It gets worse...
-                        break;
-                    default:
-                        sendDBChatMessage(4693);     // I have use for you!
-                        break;
-                }
-            }
-        }
-
         void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
             RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* /*mKiller*/) override
-        {
-            sendDBChatMessage(4700);     // The wheel...spins...again....
         }
 
         void AIUpdate() override

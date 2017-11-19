@@ -317,6 +317,9 @@ class WardenMellicharAI : public CreatureAIScript
             orb4 = NULL;
             Phasepart = 0;
             NPC_ID_Spawn = 0;
+
+            // new
+            addEmoteForEvent(Event_OnCombatStart, SAY_MELLICHAR_01);
         }
 
         void OnCombatStart(Unit* /*mTarget*/) override
@@ -332,7 +335,6 @@ class WardenMellicharAI : public CreatureAIScript
             if (shield)
                 shield->SetState(GO_STATE_CLOSED);
 
-            sendDBChatMessage(SAY_MELLICHAR_01);
             getCreature()->SendTimedScriptTextChatMessage(SAY_MELLICHAR_02, 27000);
         }
 

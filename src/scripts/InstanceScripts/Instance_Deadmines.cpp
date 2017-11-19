@@ -157,15 +157,9 @@ class RhahkZorAI : public CreatureAIScript
     RhahkZorAI(Creature* pCreature) : CreatureAIScript(pCreature), debugTimer(1500)
     {
         AddSpell(6304, Target_Current, 8, 0, 3);    // Rhahk'Zor Slam
-    }
 
-    void OnCombatStart(Unit* /*pTarget*/) override
-    {
-        sendDBChatMessage(5495);     // VanCleef pay big for you heads!
-
-        std::stringstream ss;
-        ss << "Timer Init Value: " << debugTimer.getRealDelta();
-        getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, ss.str().c_str());
+        // new
+        addEmoteForEvent(Event_OnCombatStart, 5495);     // VanCleef pay big for you heads!
     }
 };
 
