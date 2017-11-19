@@ -1346,13 +1346,13 @@ void CreatureAIScript::newAIUpdateSpellSystem()
     {
         if (!_isTimerFinished(mSpellWaitTimerId))
         {
-            // if spell has a min/max range set.
+            // spell has a min/max range
             if (!getCreature()->isCastingNonMeleeSpell() && (mLastCastedSpell->mMaxPositionRangeToCast > 0.0f || mLastCastedSpell->mMinPositionRangeToCast > 0.0f))
             {
-                // if we have a current target and slepp is not triggered
+                // if we have a current target and spell is not triggered
                 if (mCurrentSpellTarget != nullptr && !mLastCastedSpell->mIsTriggered)
                 {
-                    // interrupt spell if we are not in the castable range
+                    // interrupt spell if we are not in  required range
                     const float targetDistance = getCreature()->GetPosition().Distance2DSq(mCurrentSpellTarget->GetPositionX(), mCurrentSpellTarget->GetPositionY());
                     if (!mLastCastedSpell->isDistanceInRange(targetDistance))
                     {

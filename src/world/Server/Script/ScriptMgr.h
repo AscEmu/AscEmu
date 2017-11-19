@@ -524,8 +524,8 @@ class SERVER_DECL CreatureAISpells
 
             if (mSpellInfo != nullptr)
             {
-                mMinPositionRangeToCast = GetMaxRange(sSpellRangeStore.LookupEntry(mSpellInfo->getRangeIndex()));
-                mMaxPositionRangeToCast = GetMinRange(sSpellRangeStore.LookupEntry(mSpellInfo->getRangeIndex()));
+                mMinPositionRangeToCast = GetMinRange(sSpellRangeStore.LookupEntry(mSpellInfo->getRangeIndex()));
+                mMaxPositionRangeToCast = GetMaxRange(sSpellRangeStore.LookupEntry(mSpellInfo->getRangeIndex()));
             }
 
             mAttackStopTimer = 0;
