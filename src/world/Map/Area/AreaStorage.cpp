@@ -169,7 +169,7 @@ namespace MapManagement
                 return 0;
         }
 
-        const uint16 AreaStorage::GetFlagByPosition(uint16 area_flag_without_adt_id, bool have_area_info, uint32 mogp_flags, int32 adt_id, int32 root_id, int32 group_id, uint32 map_id, float x, float y, float z, bool* _out_is_outdoors)
+        const uint16 AreaStorage::GetFlagByPosition(uint16 area_flag_without_adt_id, bool have_area_info, uint32 /*mogp_flags*/, int32 adt_id, int32 root_id, int32 group_id, uint32 map_id, float /*x*/, float /*y*/, float /*z*/, bool* /*_out_is_outdoors*/)
         {
             ::DBC::Structures::AreaTableEntry const* at_entry = nullptr;
             if (have_area_info)

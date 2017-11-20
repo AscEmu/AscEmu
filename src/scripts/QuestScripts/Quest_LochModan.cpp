@@ -24,7 +24,7 @@ class ProtectingtheShipment : public QuestScript
 {
 public:
 
-    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry) override
+    void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/) override
     {
         float SSX = mTarget->GetPositionX();
         float SSY = mTarget->GetPositionY();

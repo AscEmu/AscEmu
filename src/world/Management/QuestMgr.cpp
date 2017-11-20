@@ -2445,18 +2445,18 @@ void QuestMgr::BuildQuestPOIResponse(WorldPacket& data, uint32 questid)
             data << uint32(questid);
             data << uint32(POI->size());
 
-            for (QuestPOIVector::const_iterator itr = POI->begin(); itr != POI->end(); ++itr)
+            for (QuestPOIVector::const_iterator iterator = POI->begin(); iterator != POI->end(); ++iterator)
             {
-                data << uint32(itr->PoiId);
-                data << int32(itr->ObjectiveIndex);
-                data << uint32(itr->MapId);
-                data << uint32(itr->MapAreaId);
-                data << uint32(itr->FloorId);
-                data << uint32(itr->Unk3);
-                data << uint32(itr->Unk4);
-                data << uint32(itr->points.size());
+                data << uint32(iterator->PoiId);
+                data << int32(iterator->ObjectiveIndex);
+                data << uint32(iterator->MapId);
+                data << uint32(iterator->MapAreaId);
+                data << uint32(iterator->FloorId);
+                data << uint32(iterator->Unk3);
+                data << uint32(iterator->Unk4);
+                data << uint32(iterator->points.size());
 
-                for (std::vector< QuestPOIPoint >::const_iterator itr2 = itr->points.begin(); itr2 != itr->points.end(); ++itr2)
+                for (std::vector< QuestPOIPoint >::const_iterator itr2 = iterator->points.begin(); itr2 != iterator->points.end(); ++itr2)
                 {
                     data << int32(itr2->x);
                     data << int32(itr2->y);

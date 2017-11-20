@@ -4335,7 +4335,7 @@ void Aura::SpellAuraModEffectImmunity(bool apply)
     }
 }
 
-void Aura::SpellAuraModStateImmunity(bool apply)
+void Aura::SpellAuraModStateImmunity(bool /*apply*/)
 {
     //%50 chance to dispel 1 magic effect on target
     //23922
@@ -4464,7 +4464,7 @@ void Aura::SpellAuraModSchoolImmunity(bool apply)
     }
 }
 
-void Aura::SpellAuraModDmgImmunity(bool apply)
+void Aura::SpellAuraModDmgImmunity(bool /*apply*/)
 {
 
 }
@@ -5506,7 +5506,7 @@ void Aura::SpellAuraModStalked(bool apply)
     }
 }
 
-void Aura::SpellAuraSchoolAbsorb(bool apply)
+void Aura::SpellAuraSchoolAbsorb(bool /*apply*/)
 {
     // See AbsorbAura::SpellAuraSchoolAbsorb
 }
@@ -6235,12 +6235,12 @@ void Aura::SpellAuraModDetectRange(bool apply)
     }
 }
 
-void Aura::SpellAuraPreventsFleeing(bool apply)
+void Aura::SpellAuraPreventsFleeing(bool /*apply*/)
 {
     // Curse of Recklessness
 }
 
-void Aura::SpellAuraModUnattackable(bool apply)
+void Aura::SpellAuraModUnattackable(bool /*apply*/)
 {
     /*
             Also known as Apply Aura: Mod Unintractable
@@ -9297,7 +9297,7 @@ void Aura::SpellAuraModAttackPowerOfArmor(bool apply)
     m_target->CalcDamage();
 }
 
-void Aura::SpellAuraDeflectSpells(bool apply)
+void Aura::SpellAuraDeflectSpells(bool /*apply*/)
 {
     //Currently used only by Detterence and handled in Spell::DidHit
 }

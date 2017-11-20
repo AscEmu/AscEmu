@@ -44,7 +44,7 @@ extern "C" SCRIPT_DECL uint32 _exp_get_script_type()
 }
 
 
-extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
+extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* /*mgr*/)
 {
     CBattlegroundManager &bgMgr = CBattlegroundManager::getSingleton();
 
@@ -72,7 +72,7 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
 }
 
 #ifdef WIN32
-    BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
+    BOOL APIENTRY DllMain(HANDLE /*hModule*/, DWORD  /*ul_reason_for_call*/, LPVOID /*lpReserved*/)
     {
         return TRUE;
     }

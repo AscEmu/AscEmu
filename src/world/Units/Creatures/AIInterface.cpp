@@ -3069,7 +3069,7 @@ SpellInfo* AIInterface::getSpellEntry(uint32 spellId)
     return spellInfo;
 }
 
-SpellCastTargets AIInterface::setSpellTargets(SpellInfo* spellInfo, Unit* target) const
+SpellCastTargets AIInterface::setSpellTargets(SpellInfo* /*spellInfo*/, Unit* target) const
 {
     SpellCastTargets targets;
     targets.m_unitTarget = target ? target->GetGUID() : 0;

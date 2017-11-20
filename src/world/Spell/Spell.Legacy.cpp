@@ -2208,7 +2208,7 @@ void Spell::finish(bool successful)
     DecRef();
 }
 
-void Spell::WriteCastResult(WorldPacket& data, Player* caster, uint32 spellInfo, uint8 castCount, uint8 result, SpellExtraError extraError)
+void Spell::WriteCastResult(WorldPacket& data, Player* /*caster*/, uint32 spellInfo, uint8 castCount, uint8 result, SpellExtraError extraError)
 {
     data << uint8(castCount);       // cast count
     data << uint32(spellInfo);      // Spell ID
@@ -3436,16 +3436,6 @@ void Spell::HandleAddAura(uint64 guid)
 
                     Spell* spell = sSpellFactoryMgr.NewSpell(p_caster, spellInfo, true, nullptr);
 
-                    uint32 kingOfTheJungle[] =
-                    {
-                        //SPELL_HASH_KING_OF_THE_JUNGLE
-                        48492,
-                        48494,
-                        48495,
-                        51178,
-                        51185,
-                        0
-                    };
 
                     spell->forced_basepoints[0] = p_caster->getAuraWithId(kingOfTheJungle)->m_spellInfo->custom_RankNumber * 5;
                     SpellCastTargets targets(p_caster->GetGUID());
@@ -4973,12 +4963,9 @@ uint8 Spell::CanCast(bool tolerate)
                 {
                     return SPELL_FAILED_BAD_TARGETS;
                 }
-                else
-                {
-                    target->SetTargetGUID(p_caster->GetGUID());
-                    return SPELL_FAILED_SUCCESS;
-                }
 
+                target->SetTargetGUID(p_caster->GetGUID());
+                return SPELL_FAILED_SUCCESS;
             }
             ////////////////////////////////////////////////////// Target check spells that are only castable on certain creatures/gameobjects ///////////////
 
@@ -6555,7 +6542,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
     return value;
 }
 
-void Spell::DoAfterHandleEffect(Unit* target, uint32 i)
+void Spell::DoAfterHandleEffect(Unit* /*target*/, uint32 /*i*/)
 {
 }
 
@@ -7299,7 +7286,7 @@ GameObject* Spell::GetTargetConstraintGameObject() const
     return targetConstraintGameObject;
 }
 
-void Spell::SendCastSuccess(Object* target)
+void Spell::SendCastSuccess(Object* /*target*/)
 {
     Player* plr = p_caster;
     if (!plr && u_caster)

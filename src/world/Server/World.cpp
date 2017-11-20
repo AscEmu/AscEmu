@@ -733,8 +733,6 @@ void World::sendBroadcastMessageById(uint32_t broadcastId)
 // General Functions
 bool World::setInitialWorldSettings()
 {
-    uint32_t start_time = Util::getMSTime();
-
     Player::InitVisibleUpdateBits();
 
     resetCharacterLoginBannState();
@@ -1031,7 +1029,6 @@ void World::saveAllPlayersToDb()
     LogDefault("Saving all players to database...");
 
     uint32_t count = 0;
-    uint32_t save_start_time;
 
     objmgr._playerslock.AcquireReadLock();
 

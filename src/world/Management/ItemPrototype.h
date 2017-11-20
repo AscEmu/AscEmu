@@ -539,7 +539,7 @@ enum ITEM_FLAGS2
     ITEM_FLAG2_NEED_ROLL_DISABLED       = 0x00100,
 };
 
-/// dictates what bag-types an item can go into
+// dictates what bag-types an item can go into
 enum SPECIAL_ITEM_TYPE
 {
     ITEM_TYPE_BOWAMMO        = 0x0001,      // Arrows (quivers)
@@ -573,7 +573,6 @@ enum ITEM_LIMIT_FLAGS
     ILFLAG_EQUIP_ONLY       = 1
 };
 
-#pragma pack(push,1)
 struct SocketInfo
 {
     uint32_t SocketColor;
@@ -680,23 +679,23 @@ struct ItemProperties
     uint32_t HolidayId;
     uint32_t FoodType;
 
-    std::string lowercase_name;      /// used in auctions
+    std::string lowercase_name;      // used in auctions
     int32_t ForcedPetId;
 
     bool HasFlag(uint32_t flag) const
     {
         if ((Flags & flag) != 0)
             return true;
-        else
-            return false;
+
+        return false;
     }
     
     bool HasFlag2(uint32_t flag) const
     {
         if ((Flags2 & flag) != 0)
             return true;
-        else
-            return false;
+        
+        return false;
     }
 };
 
@@ -707,6 +706,5 @@ typedef struct
     //Spell* spell[8];
 } ItemSet;
 
-#pragma pack(pop)
 
 #endif // ITEMPROTOTYPE_H

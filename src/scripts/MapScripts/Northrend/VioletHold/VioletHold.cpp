@@ -38,7 +38,7 @@ public:
 
     static CreatureAIScript* Create(Creature* creature) { return new SinclariAI(creature); }
 
-    void OnReachWP(uint32 iWaypointId, bool bForwards)
+    void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
     {
         switch (iWaypointId)
         {
@@ -82,7 +82,7 @@ class SinclariGossip : public Arcemu::Gossip::Script
 {
 public:
 
-    void OnHello(Object* pObject, Player* pPlayer)
+    void OnHello(Object* pObject, Player* pPlayer) override
     {
         VioletHold* pInstance = (VioletHold*)pPlayer->GetMapMgr()->GetScript();
         if (!pInstance)
@@ -105,7 +105,7 @@ public:
         }
     }
 
-    void OnSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* Code, uint32 gossipId)
+    void OnSelectOption(Object* pObject, Player* pPlayer, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
     {
         VioletHold* pInstance = (VioletHold*)pPlayer->GetMapMgr()->GetScript();
         if (!pInstance)

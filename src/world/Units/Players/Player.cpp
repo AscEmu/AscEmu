@@ -106,25 +106,25 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
     SendMessageToSet(&data, false);
 }
 
-void Player::handleFall(MovementInfo const& movement_info)
+void Player::handleFall(MovementInfo const& /*movement_info*/)
 {
 }
 
-bool Player::isPlayerJumping(MovementInfo const& movement_info, uint16_t opcode)
-{
-    return false;
-}
-
-void Player::handleBreathing(MovementInfo const& movement_info, WorldSession* session)
-{
-}
-
-bool Player::isSpellFitByClassAndRace(uint32_t spell_id)
+bool Player::isPlayerJumping(MovementInfo const& /*movement_info*/, uint16_t /*opcode*/)
 {
     return false;
 }
 
-void Player::sendAuctionCommandResult(Auction* auction, uint32_t action, uint32_t errorCode, uint32_t bidError)
+void Player::handleBreathing(MovementInfo const& /*movement_info*/, WorldSession* /*session*/)
+{
+}
+
+bool Player::isSpellFitByClassAndRace(uint32_t /*spell_id*/)
+{
+    return false;
+}
+
+void Player::sendAuctionCommandResult(Auction* /*auction*/, uint32_t /*action*/, uint32_t /*errorCode*/, uint32_t /*bidError*/)
 {
 }
 #endif

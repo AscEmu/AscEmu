@@ -27,7 +27,7 @@ MySQLDataStore::~MySQLDataStore()
         for (NpcMonstersayContainer::iterator itr = _npcMonstersayContainer[i].begin(); itr != _npcMonstersayContainer[i].end(); ++itr)
         {
             MySQLStructure::NpcMonsterSay* npcMonsterSay = itr->second;
-            for (int j = 0; j < npcMonsterSay->textCount; ++j)
+            for (uint32_t j = 0; j < npcMonsterSay->textCount; ++j)
             {
                 free((char*)npcMonsterSay->texts[j]);
             }

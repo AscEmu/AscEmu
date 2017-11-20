@@ -38,7 +38,7 @@ public:
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new FirestarterTalent(Caster, info, triggered, aur); }
 
-    void DoAfterHandleEffect(Unit* target, uint32 i)
+    void DoAfterHandleEffect(Unit* target, uint32 /*i*/) override
     {
         if (p_caster != NULL && target != NULL && p_caster->HasAura(54741)) // Cronicman: Player has "Firestarter" aura so we remove it AFTER casting Flamestrike.
         {
@@ -55,7 +55,7 @@ public:
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new MissileBarrage(Caster, info, triggered, aur); }
 
-    void DoAfterHandleEffect(Unit* target, uint32 i)
+    void DoAfterHandleEffect(Unit* target, uint32 /*i*/) override
     {
         if (p_caster != NULL && target != NULL && p_caster->HasAura(44401)) // Player has "Missile Barrage" aura so we remove it AFTER casting arcane missles.
         {
@@ -147,7 +147,7 @@ public:
         return new CheatDeathAura(proto, duration, caster, target, temporary, i_caster);
     }
 
-    uint32 AbsorbDamage(uint32 School, uint32* dmg)
+    uint32 AbsorbDamage(uint32 /*School*/, uint32* dmg)
     {
         // Checking for 1 min cooldown
         if (dSpell == NULL || !p_target->Cooldown_CanCast(dSpell))
@@ -264,7 +264,7 @@ public:
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new IcyTouchSpell(Caster, info, triggered, aur); }
 
-    int32 DoCalculateEffect(uint32 i, Unit* target, int32 value)
+    int32 DoCalculateEffect(uint32 i, Unit* /*target*/, int32 value) override
     {
         if (p_caster != NULL && i == 0)
             value += (uint32)(p_caster->GetAP() * 0.1);
@@ -281,7 +281,7 @@ public:
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new FrostFeverSpell(Caster, info, triggered, aur); }
 
-    int32 DoCalculateEffect(uint32 i, Unit* target, int32 value)
+    int32 DoCalculateEffect(uint32 i, Unit* /*target*/, int32 value) override
     {
         if (p_caster != NULL && i == 0)
             value += (uint32)(p_caster->GetAP() * 0.055 * 1.15);
@@ -489,7 +489,7 @@ public:
         return new WillOfTheNecropolisAura(proto, duration, caster, target, temporary, i_caster);
     }
 
-    uint32 AbsorbDamage(uint32 School, uint32* dmg)
+    uint32 AbsorbDamage(uint32 /*School*/, uint32* dmg) override
     {
         Unit* caster = GetUnitCaster();
         if (caster == NULL)
@@ -521,7 +521,7 @@ public:
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new VampiricBloodSpell(Caster, info, triggered, aur); }
 
-    int32 DoCalculateEffect(uint32 i, Unit* target, int32 value)
+    int32 DoCalculateEffect(uint32 i, Unit* /*target*/, int32 value) override
     {
         if (i == 1 && p_caster != NULL)
             value = p_caster->GetMaxHealth() * (GetSpellInfo()->getEffectBasePoints(i) + 1) / 100;

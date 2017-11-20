@@ -1537,8 +1537,8 @@ bool CenarionMoondust(uint32 /*i*/, Spell* pSpell) // Body And Heart (Alliance)
     //make sure that player dont cheat speed or something
     if (lunaclaw->GetDistance2dSq(p_caster) < 200)   // can be more? - he can speed hack or teleport hack
     {
-        LocationVector pos = p_caster->GetPosition();
-        lunaclaw->LoadCustomWaypoint(pos.x, pos.y, pos.z, pos.o + 3, 200, Movement::WP_MOVE_TYPE_RUN, false, 0, false, 0, md, md);
+        LocationVector casterPos = p_caster->GetPosition();
+        lunaclaw->LoadCustomWaypoint(casterPos.x, casterPos.y, casterPos.z, casterPos.o + 3, 200, Movement::WP_MOVE_TYPE_RUN, false, 0, false, 0, md, md);
     }
     else
     {

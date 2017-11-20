@@ -100,8 +100,6 @@ enum MONSTER_SAY_EVENTS
     NUM_MONSTER_SAY_EVENTS
 };
 
-
-#pragma pack(push,1)
 struct CreatureProperties
 {
     uint32 Id;
@@ -222,9 +220,6 @@ struct CreatureProperties
     std::vector<uint32> castable_spells;
     std::list<AI_Spell*> spells;
 };
-
-#pragma pack(pop)
-
 
 enum UNIT_TYPE
 {

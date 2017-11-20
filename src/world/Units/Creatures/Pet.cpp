@@ -2360,7 +2360,7 @@ void Pet::TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_rem
     ModHealth(-1 * static_cast<int32>(damage));
 }
 
-void Pet::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
+void Pet::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 {
     //general hook for die
     if (!sHookInterface.OnPreUnitDie(pAttacker, this))

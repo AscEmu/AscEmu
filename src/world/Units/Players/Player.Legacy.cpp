@@ -3212,7 +3212,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     char* end = NULL;
 
     // new format
-    const ItemProf* prof;
+    const ItemProf* prof1;
 
     LoadSkills(results[15].result);
 
@@ -3233,13 +3233,13 @@ void Player::LoadFromDBProc(QueryResultVector & results)
             itr->second.CurrentValue = itr->second.MaximumValue;
         }
 
-        prof = GetProficiencyBySkill(itr->first);
-        if (prof)
+        prof1 = GetProficiencyBySkill(itr->first);
+        if (prof1)
         {
-            if (prof->itemclass == 4)
-                armor_proficiency |= prof->subclass;
+            if (prof1->itemclass == 4)
+                armor_proficiency |= prof1->subclass;
             else
-                weapon_proficiency |= prof->subclass;
+                weapon_proficiency |= prof1->subclass;
         }
         _LearnSkillSpells(itr->second.Skill->id, itr->second.CurrentValue);
     }
@@ -4333,8 +4333,8 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
                         if (Set->itemscount == item_set_entry->itemscount[x])
                         {
                             //cast new spell
-                            SpellInfo* info = sSpellCustomizations.GetSpellInfo(item_set_entry->SpellID[x]);
-                            Spell* spell = sSpellFactoryMgr.NewSpell(this, info, true, NULL);
+                            SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(item_set_entry->SpellID[x]);
+                            Spell* spell = sSpellFactoryMgr.NewSpell(this, spellInfo, true, NULL);
                             SpellCastTargets targets;
                             targets.m_unitTarget = this->GetGUID();
                             spell->prepare(&targets);
@@ -4431,9 +4431,9 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         if (plrLevel > DBC_PLAYER_LEVEL_CAP)
             plrLevel = DBC_PLAYER_LEVEL_CAP;
 
-        for (uint32 i = 0; i < sScalingStatValuesStore.GetNumRows(); ++i)
+        for (uint32 id = 0; id < sScalingStatValuesStore.GetNumRows(); ++id)
         {
-            auto scaling_stat_values = sScalingStatValuesStore.LookupEntry(i);
+            auto scaling_stat_values = sScalingStatValuesStore.LookupEntry(id);
             if (scaling_stat_values == nullptr)
                 continue;
 
@@ -5619,20 +5619,20 @@ void Player::UpdateStats()
     SetAttackPower(AP);
     SetRangedAttackPower(RAP);
 
-    LevelInfo* lvlinfo = objmgr.GetLevelInfo(this->getRace(), this->getClass(), lev);
+    LevelInfo* levelInfo = objmgr.GetLevelInfo(this->getRace(), this->getClass(), lev);
 
-    if (lvlinfo != nullptr)
+    if (levelInfo != nullptr)
     {
-        hpdelta = lvlinfo->Stat[2] * 10;
-        manadelta = lvlinfo->Stat[3] * 15;
+        hpdelta = levelInfo->Stat[2] * 10;
+        manadelta = levelInfo->Stat[3] * 15;
     }
 
-    lvlinfo = objmgr.GetLevelInfo(this->getRace(), this->getClass(), 1);
+    levelInfo = objmgr.GetLevelInfo(this->getRace(), this->getClass(), 1);
 
-    if (lvlinfo != nullptr)
+    if (levelInfo != nullptr)
     {
-        hpdelta -= lvlinfo->Stat[2] * 10;
-        manadelta -= lvlinfo->Stat[3] * 15;
+        hpdelta -= levelInfo->Stat[2] * 10;
+        manadelta -= levelInfo->Stat[3] * 15;
     }
 
     uint32 hp = GetBaseHealth();
@@ -6553,8 +6553,8 @@ void Player::AreaExploredOrEventHappens(uint32 questId)
 
 void Player::Reset_Spells()
 {
-    PlayerCreateInfo const* info = sMySQLStore.getPlayerCreateInfo(getRace(), getClass());
-    ARCEMU_ASSERT(info != NULL);
+    PlayerCreateInfo const* playerCreateInfo = sMySQLStore.getPlayerCreateInfo(getRace(), getClass());
+    ARCEMU_ASSERT(playerCreateInfo != NULL);
 
     std::list<uint32> spelllist;
 
@@ -6568,7 +6568,7 @@ void Player::Reset_Spells()
         removeSpell((*itr), false, false, 0);
     }
 
-    for (std::set<uint32>::iterator sp = info->spell_list.begin(); sp != info->spell_list.end(); ++sp)
+    for (std::set<uint32>::iterator sp = playerCreateInfo->spell_list.begin(); sp != playerCreateInfo->spell_list.end(); ++sp)
     {
         if (*sp)
         {
@@ -9352,7 +9352,7 @@ void Player::CompleteLoading()
 {
     // cast passive initial spells      -- grep note: these shouldn't require plyr to be in world
     SpellSet::iterator itr;
-    SpellInfo* info;
+    SpellInfo* spellInfo;
     SpellCastTargets targets;
     targets.m_unitTarget = this->GetGUID();
     targets.m_targetMask = TARGET_FLAG_UNIT;
@@ -9366,19 +9366,19 @@ void Player::CompleteLoading()
 
     for (itr = mSpells.begin(); itr != mSpells.end(); ++itr)
     {
-        info = sSpellCustomizations.GetSpellInfo(*itr);
+        spellInfo = sSpellCustomizations.GetSpellInfo(*itr);
 
-        if (info != NULL
-            && (info->IsPassive())  // passive
-            && !(info->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET))
+        if (spellInfo != NULL
+            && (spellInfo->IsPassive())  // passive
+            && !(spellInfo->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET))
         {
-            if (info->getRequiredShapeShift())
+            if (spellInfo->getRequiredShapeShift())
             {
-                if (!(((uint32)1 << (GetShapeShift() - 1)) & info->getRequiredShapeShift()))
+                if (!(((uint32)1 << (GetShapeShift() - 1)) & spellInfo->getRequiredShapeShift()))
                     continue;
             }
 
-            Spell* spell = sSpellFactoryMgr.NewSpell(this, info, true, NULL);
+            Spell* spell = sSpellFactoryMgr.NewSpell(this, spellInfo, true, NULL);
             spell->prepare(&targets);
         }
     }
@@ -10411,7 +10411,6 @@ void Player::_AddSkillLine(uint32 SkillLine, uint32 Curr_sk, uint32 Max_sk)
     Curr_sk = (Curr_sk > DBC_PLAYER_SKILL_MAX ? DBC_PLAYER_SKILL_MAX : (Curr_sk < 1 ? 1 : Curr_sk));
     Max_sk = (Max_sk > DBC_PLAYER_SKILL_MAX ? DBC_PLAYER_SKILL_MAX : Max_sk);
 
-    ItemProf* prof;
     SkillMap::iterator itr = m_skills.find(SkillLine);
     if (itr != m_skills.end())
     {
@@ -10432,18 +10431,20 @@ void Player::_AddSkillLine(uint32 SkillLine, uint32 Curr_sk, uint32 Max_sk)
         m_skills.insert(std::make_pair(SkillLine, inf));
         _UpdateSkillFields();
     }
+
+    ItemProf* prof1;
     //Add to proficiency
-    if ((prof = (ItemProf*)GetProficiencyBySkill(SkillLine)) != 0)
+    if ((prof1 = (ItemProf*)GetProficiencyBySkill(SkillLine)) != 0)
     {
-        if (prof->itemclass == 4)
+        if (prof1->itemclass == 4)
         {
-            armor_proficiency |= prof->subclass;
-            SendSetProficiency(prof->itemclass, armor_proficiency);
+            armor_proficiency |= prof1->subclass;
+            SendSetProficiency(prof1->itemclass, armor_proficiency);
         }
         else
         {
-            weapon_proficiency |= prof->subclass;
-            SendSetProficiency(prof->itemclass, weapon_proficiency);
+            weapon_proficiency |= prof1->subclass;
+            SendSetProficiency(prof1->itemclass, weapon_proficiency);
         }
     }
     _LearnSkillSpells(SkillLine, Curr_sk);
@@ -11450,84 +11451,84 @@ void Player::Social_AddFriend(const char* name, const char* note)
     std::map<uint32, char*>::iterator itr;
 
     // lookup the player
-    PlayerInfo* info = objmgr.GetPlayerInfoByName(name);
-    PlayerCache* cache = objmgr.GetPlayerCache(name, false);
+    PlayerInfo* playerInfo = objmgr.GetPlayerInfoByName(name);
+    PlayerCache* playerCache = objmgr.GetPlayerCache(name, false);
 
-    if (info == nullptr || (cache != nullptr && cache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM)))
+    if (playerInfo == nullptr || (playerCache != nullptr && playerCache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM)))
     {
         data << uint8(FRIEND_NOT_FOUND);
         m_session->SendPacket(&data);
 
-        if (cache != nullptr)
-            cache->DecRef();
+        if (playerCache != nullptr)
+            playerCache->DecRef();
         return;
     }
 
     // team check
-    if (info->team != GetTeamInitial() && m_session->permissioncount == 0 && !worldConfig.player.isInterfactionFriendsEnabled)
+    if (playerInfo->team != GetTeamInitial() && m_session->permissioncount == 0 && !worldConfig.player.isInterfactionFriendsEnabled)
     {
         data << uint8(FRIEND_ENEMY);
-        data << uint64(info->guid);
+        data << uint64(playerInfo->guid);
         m_session->SendPacket(&data);
-        if (cache != nullptr)
-            cache->DecRef();
+        if (playerCache != nullptr)
+            playerCache->DecRef();
         return;
     }
 
     // are we ourselves?
-    if (cache != nullptr && cache->GetUInt32Value(CACHE_PLAYER_LOWGUID) == GetLowGUID())
+    if (playerCache != nullptr && playerCache->GetUInt32Value(CACHE_PLAYER_LOWGUID) == GetLowGUID())
     {
         data << uint8(FRIEND_SELF);
         data << GetGUID();
         m_session->SendPacket(&data);
-        if (cache != nullptr)
-            cache->DecRef();
+        if (playerCache != nullptr)
+            playerCache->DecRef();
         return;
     }
 
-    if (m_cache->CountValue64(CACHE_SOCIAL_FRIENDLIST, info->guid))
+    if (m_cache->CountValue64(CACHE_SOCIAL_FRIENDLIST, playerInfo->guid))
     {
         data << uint8(FRIEND_ALREADY);
-        data << uint64(info->guid);
+        data << uint64(playerInfo->guid);
         m_session->SendPacket(&data);
-        if (cache != nullptr)
-            cache->DecRef();
+        if (playerCache != nullptr)
+            playerCache->DecRef();
         return;
     }
 
-    if (cache != nullptr)   //hes online if he has a cache
+    if (playerCache != nullptr)   //hes online if he has a cache
     {
         data << uint8(FRIEND_ADDED_ONLINE);
-        data << uint64(cache->GetUInt32Value(CACHE_PLAYER_LOWGUID));
+        data << uint64(playerCache->GetUInt32Value(CACHE_PLAYER_LOWGUID));
         if (note != NULL)
             data << note;
         else
             data << uint8(0);
 
         data << uint8(1);
-        data << info->m_loggedInPlayer->GetZoneId();
-        data << info->lastLevel;
-        data << uint32(info->cl);
+        data << playerInfo->m_loggedInPlayer->GetZoneId();
+        data << playerInfo->lastLevel;
+        data << uint32(playerInfo->cl);
 
-        cache->InsertValue64(CACHE_SOCIAL_HASFRIENDLIST, GetLowGUID());
+        playerCache->InsertValue64(CACHE_SOCIAL_HASFRIENDLIST, GetLowGUID());
     }
     else
     {
         data << uint8(FRIEND_ADDED_OFFLINE);
-        data << uint64(info->guid);
+        data << uint64(playerInfo->guid);
     }
 
     char* notedup = note == NULL ? NULL : strdup(note);
-    m_cache->InsertValue64(CACHE_SOCIAL_FRIENDLIST, info->guid, notedup);
+    m_cache->InsertValue64(CACHE_SOCIAL_FRIENDLIST, playerInfo->guid, notedup);
 
     m_session->SendPacket(&data);
 
     // dump into the db
     CharacterDatabase.Execute("INSERT INTO social_friends VALUES(%u, %u, \'%s\')",
-                              GetLowGUID(), info->guid, note ? CharacterDatabase.EscapeString(std::string(note)).c_str() : "");
+                              GetLowGUID(), playerInfo->guid, note ? CharacterDatabase.EscapeString(std::string(note)).c_str() : "");
 
-    if (cache != nullptr)
-        cache->DecRef();
+    if (playerCache != nullptr)
+        playerCache->DecRef();
 }
 
 void Player::Social_RemoveFriend(uint32 guid)
@@ -11590,11 +11591,11 @@ void Player::Social_SetNote(uint32 guid, const char* note)
 void Player::Social_AddIgnore(const char* name)
 {
     WorldPacket data(SMSG_FRIEND_STATUS, 10);
-    PlayerInfo* info;
+    PlayerInfo* playerInfo;
 
     // lookup the player
-    info = objmgr.GetPlayerInfoByName(name);
-    if (info == NULL)
+    playerInfo = objmgr.GetPlayerInfoByName(name);
+    if (playerInfo == NULL)
     {
         data << uint8(FRIEND_IGNORE_NOT_FOUND);
         m_session->SendPacket(&data);
@@ -11602,7 +11603,7 @@ void Player::Social_AddIgnore(const char* name)
     }
 
     // are we ourselves?
-    if (info == m_playerInfo)
+    if (playerInfo == m_playerInfo)
     {
         data << uint8(FRIEND_IGNORE_SELF);
         data << GetGUID();
@@ -11610,22 +11611,22 @@ void Player::Social_AddIgnore(const char* name)
         return;
     }
 
-    if (m_cache->CountValue64(CACHE_SOCIAL_IGNORELIST, info->guid) > 0)
+    if (m_cache->CountValue64(CACHE_SOCIAL_IGNORELIST, playerInfo->guid) > 0)
     {
         data << uint8(FRIEND_IGNORE_ALREADY);
-        data << uint64(info->guid);
+        data << uint64(playerInfo->guid);
         m_session->SendPacket(&data);
         return;
     }
 
     data << uint8(FRIEND_IGNORE_ADDED);
-    data << uint64(info->guid);
+    data << uint64(playerInfo->guid);
 
-    m_cache->InsertValue64(CACHE_SOCIAL_IGNORELIST, info->guid);
+    m_cache->InsertValue64(CACHE_SOCIAL_IGNORELIST, playerInfo->guid);
     m_session->SendPacket(&data);
 
     // dump into db
-    CharacterDatabase.Execute("INSERT INTO social_ignores VALUES(%u, %u)", GetLowGUID(), info->guid);
+    CharacterDatabase.Execute("INSERT INTO social_ignores VALUES(%u, %u)", GetLowGUID(), playerInfo->guid);
 }
 
 void Player::Social_RemoveIgnore(uint32 guid)
@@ -12261,12 +12262,12 @@ void Player::SendExploreXP(uint32 areaid, uint32 xp)
 
 void Player::HandleSpellLoot(uint32 itemid)
 {
-    Loot loot;
+    Loot loot1;
     std::vector< __LootItem >::iterator itr;
 
-    lootmgr.FillItemLoot(&loot, itemid);
+    lootmgr.FillItemLoot(&loot1, itemid);
 
-    for (itr = loot.items.begin(); itr != loot.items.end(); ++itr)
+    for (itr = loot1.items.begin(); itr != loot1.items.end(); ++itr)
     {
         uint32 looteditemid = itr->item.itemproto->ItemId;
         uint32 count = itr->iItemsCount;
@@ -12380,7 +12381,7 @@ void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
 
 
         // Check if we already have the talent with the same or higher rank
-        for (uint8 i = rank; i < 5; ++i)
+        for (uint32 i = rank; i < 5; ++i)
             if (talent_info->RankID[i] != 0 && HasSpell(talent_info->RankID[i]))
                 return; // cheater
 
@@ -13206,7 +13207,7 @@ void Player::TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_
     ModHealth(-1 * static_cast<int32>(damage));
 }
 
-void Player::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
+void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 {
     if (GetVehicleComponent() != NULL)
     {
@@ -13763,10 +13764,8 @@ bool Player::LoadReputations(QueryResult *result)
     int32 basestanding = 0;
     int32 standing = 0;
 
-    Field* field = NULL;
-
     do {
-        Field *field = result->Fetch();
+        Field* field = result->Fetch();
 
         id = field[0].GetUInt32();
         flag = field[1].GetUInt32();
