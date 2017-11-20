@@ -2039,7 +2039,7 @@ void MapMgr::CallScriptUpdate()
     mInstanceScript->updateTimers();
 };
 
-const uint16 MapMgr::GetAreaFlag(float x, float y, float z, bool *is_outdoors /* = nullptr */)
+const uint16 MapMgr::GetAreaFlag(float x, float y, float z, bool */*isOutdoors*/ /* = nullptr */)
 {
     uint32 mogp_flags;
     int32 adt_id;

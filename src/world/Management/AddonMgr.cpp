@@ -362,7 +362,7 @@ void AddonMgr::LoadFromDB()
 
 void AddonMgr::SaveAddon(AddonEntry const& addon)
 {
-    CharacterDatabase.Execute("REPLACE INTO clientaddons(name, crc) VALUES('\%s\', %u )", addon.name.c_str(), addon.crc);
+    CharacterDatabase.Execute("REPLACE INTO clientaddons(name, crc) VALUES('%s', %u )", addon.name.c_str(), addon.crc);
 
     mKnownAddons.push_back(SavedAddon(addon.name, addon.crc));
 }

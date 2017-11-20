@@ -464,7 +464,7 @@ void World::addGlobalSession(WorldSession* worldSession)
     globalSessionMutex.Release();
 }
 
-void World::updateGlobalSession(uint32_t diff)
+void World::updateGlobalSession(uint32_t /*diff*/)
 {
     std::list<WorldSession*> ErasableSessions;
 

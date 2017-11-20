@@ -583,14 +583,14 @@ void Mailbox::FillTimePacket(WorldPacket& data)
 
 }
 
-void WorldSession::HandleMailTime(WorldPacket& recv_data)
+void WorldSession::HandleMailTime(WorldPacket& /*recvData*/)
 {
     WorldPacket data(MSG_QUERY_NEXT_MAIL_TIME, 100);
     _player->m_mailBox.FillTimePacket(data);
     SendPacket(&data);
 }
 
-void WorldSession::HandleGetMail(WorldPacket& recv_data)
+void WorldSession::HandleGetMail(WorldPacket& /*recvData*/)
 {
     WorldPacket* data = _player->m_mailBox.BuildMailboxListingPacket();
     SendPacket(data);

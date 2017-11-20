@@ -311,7 +311,7 @@ void WorldSession::HandleInitiateTradeOpcode(WorldPacket& recv_data)
     player_target->GetSession()->SendPacket(&data);
 }
 
-void WorldSession::HandleBeginTradeOpcode(WorldPacket& recv_data)
+void WorldSession::HandleBeginTradeOpcode(WorldPacket& /*recvData*/)
 {
     TradeData* trade_data = _player->m_TradeData;
     if (trade_data == nullptr)
@@ -321,10 +321,10 @@ void WorldSession::HandleBeginTradeOpcode(WorldPacket& recv_data)
     sendTradeResult(TRADE_STATUS_OPEN_WINDOW);
 }
 
-void WorldSession::HandleSetTradeGold(WorldPacket& recv_data)
+void WorldSession::HandleSetTradeGold(WorldPacket& recvData)
 {
     uint64_t gold;
-    recv_data >> gold;
+    recvData >> gold;
 
     TradeData* trade_data = _player->getTradeData();
     if (trade_data == nullptr)
@@ -565,21 +565,21 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleCancelTrade(WorldPacket& recv_data)
+void WorldSession::HandleCancelTrade(WorldPacket& /*recvData*/)
 {
     if (_player != nullptr)
         _player->cancelTrade(true);
 }
 
-void WorldSession::HandleSetTradeItem(WorldPacket& recv_data)
+void WorldSession::HandleSetTradeItem(WorldPacket& recvData)
 {
     uint8_t tradeSlot;
     uint8_t sourceBag;
     uint8_t sourceSlot;
 
-    recv_data >> sourceSlot;
-    recv_data >> tradeSlot;
-    recv_data >> sourceBag;
+    recvData >> sourceSlot;
+    recvData >> tradeSlot;
+    recvData >> sourceBag;
 
     TradeData* trade_data = _player->m_TradeData;
     if (trade_data == nullptr)

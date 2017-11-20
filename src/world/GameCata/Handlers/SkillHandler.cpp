@@ -51,7 +51,7 @@ void WorldSession::HandleLearnPreviewTalentsOpcode(WorldPacket& recv_data)
     _player->smsg_TalentsInfo(false);
 }
 
-void WorldSession::HandleUnlearnTalents(WorldPacket& recv_data)
+void WorldSession::HandleUnlearnTalents(WorldPacket& /*recvData*/)
 {
     uint32_t price = GetPlayer()->CalcTalentResetCost(GetPlayer()->GetTalentResetTimes());
     if (!GetPlayer()->HasGold(price))

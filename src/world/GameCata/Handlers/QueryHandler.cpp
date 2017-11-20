@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/WorldCreatorDefines.hpp"
 
 
-void WorldSession::HandleCorpseQueryOpcode(WorldPacket& recv_data)
+void WorldSession::HandleCorpseQueryOpcode(WorldPacket& /*recvData*/)
 {
     Corpse* pCorpse = objmgr.GetCorpseByOwner(GetPlayer()->GetLowGUID());
     if (pCorpse == nullptr)
@@ -66,7 +66,7 @@ void WorldSession::HandleCorpseQueryOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleInrangeQuestgiverQuery(WorldPacket& recv_data)
+void WorldSession::HandleInrangeQuestgiverQuery(WorldPacket& /*recvData*/)
 {
     uint32_t count = 0;
 
@@ -93,13 +93,13 @@ void WorldSession::HandleInrangeQuestgiverQuery(WorldPacket& recv_data)
     SendPacket(&data);
 }
 
-void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
+void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recvData)
 {
     uint32_t entry;
     uint64_t guid;
 
-    recv_data >> entry;
-    recv_data >> guid;
+    recvData >> entry;
+    recvData >> guid;
 
     WorldPacket data(SMSG_CREATURE_QUERY_RESPONSE, 250);
     CreatureProperties const* ci = sMySQLStore.getCreatureProperties(entry);
@@ -144,7 +144,6 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
         WorldPacket data(SMSG_CREATURE_QUERY_RESPONSE, 4);
         data << uint32_t(entry | 0x80000000);
     }
-
 
     SendPacket(&data);
 }

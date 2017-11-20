@@ -537,7 +537,7 @@ void GuildMgr::resetTimes(bool week)
     }
 }
 
-void GuildMgr::update(uint32_t diff)
+void GuildMgr::update(uint32_t /*diff*/)
 {
     if (!firstSave)
     {
@@ -547,7 +547,7 @@ void GuildMgr::update(uint32_t diff)
 
     if (time(nullptr) >= lastSave)
     {
-        lastSave = time(NULL) + worldConfig.guild.saveInterval;
+        lastSave = time(nullptr) + worldConfig.guild.saveInterval;
         sGuildMgr.saveGuilds();
     }
 }

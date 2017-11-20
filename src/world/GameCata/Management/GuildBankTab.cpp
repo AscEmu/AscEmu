@@ -25,7 +25,7 @@ void GuildBankTab::loadGuildBankTabFromDB(Field* fields)
 bool GuildBankTab::loadGuildBankTabItemFromDB(Field* fields)
 {
     uint8_t slotId = fields[2].GetUInt8();
-    uint32_t itemGuid = fields[3].GetUInt32();
+    // uint32_t itemGuid = fields[3].GetUInt32();
 
     Item* pItem = objmgr.LoadItem(fields[3].GetUInt32());
     if (pItem == nullptr)

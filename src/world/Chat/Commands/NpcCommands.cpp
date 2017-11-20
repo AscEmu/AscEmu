@@ -860,6 +860,17 @@ bool ChatHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* 
     }
 
     sGMLog.writefromsession(m_session, "added item %u to vendor %u", item, selected_creature->GetEntry());
+#else
+    char* pitem = strtok((char*)args, " ");
+    if (!pitem)
+        return false;
+
+    uint64 guid = m_session->GetPlayer()->GetSelection();
+    if (guid == 0)
+    {
+        SystemMessage(m_session, "No selection.");
+        return true;
+    }
 #endif
     return true;
 }

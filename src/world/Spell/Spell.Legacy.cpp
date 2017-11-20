@@ -327,7 +327,7 @@ void Spell::FillSpecifiedTargetsInArea(float srcx, float srcy, float srcz, uint3
 }
 
 // for the moment we do invisible targets
-void Spell::FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float srcz, float range, uint32 specification)
+void Spell::FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float srcz, float range, uint32 /*specification*/)
 {
     std::vector<uint64_t>* tmpMap = &m_targetUnits[i];
     //IsStealth()

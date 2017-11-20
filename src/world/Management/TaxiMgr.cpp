@@ -153,7 +153,7 @@ TaxiPathNode* TaxiPath::GetPathNode(uint32 i)
     return m_pathNodes.find(i)->second;
 }
 
-void TaxiPath::SendMoveForTime(Player* riding, Player* to, uint32 pTime)
+void TaxiPath::SendMoveForTime(Player* riding, Player* plrTo, uint32 pTime)
 {
     if (!pTime)
         return;
@@ -255,7 +255,7 @@ void TaxiPath::SendMoveForTime(Player* riding, Player* to, uint32 pTime)
     }
 
     *(uint32*)&(data->contents()[pos]) = nodecounter;
-    to->delayedPackets.add(data);
+    plrTo->delayedPackets.add(data);
 }
 
 void TaxiMgr::_LoadTaxiNodes()

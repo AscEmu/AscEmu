@@ -1296,7 +1296,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
 #endif
 
 #if VERSION_STRING == Cata
-void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* target)
+void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /*target*/)
 {
     ObjectGuid Guid = GetGUID();
 

@@ -238,7 +238,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
 
 }
 
-void WorldSession::HandleLootMoneyOpcode(WorldPacket& recv_data)
+void WorldSession::HandleLootMoneyOpcode(WorldPacket& /*recvData*/)
 {
     uint64_t lootguid = GetPlayer()->GetLootGUID();
     if (lootguid == 0)

@@ -254,7 +254,7 @@ void WorldSession::HandleGMTicketUpdateOpcode(WorldPacket& recv_data)
 #endif
 }
 
-void WorldSession::HandleGMTicketToggleSystemStatusOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGMTicketToggleSystemStatusOpcode(WorldPacket& /*recvData*/)
 {
     if (HasGMPermissions())
     {

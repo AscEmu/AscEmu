@@ -126,7 +126,7 @@ int32_t GuildRankInfo::getBankTabSlotsPerDay(uint8_t tabId) const
     return tabId < MAX_GUILD_BANK_TABS ? mBankTabRightsAndSlots[tabId].getSlots() : 0;
 }
 
-void GuildRankInfo::createMissingTabsIfNeeded(uint8_t tabs, bool _delete, bool logOnCreate)
+void GuildRankInfo::createMissingTabsIfNeeded(uint8_t tabs, bool /*_delete*/, bool logOnCreate)
 {
     for (uint8_t i = 0; i < tabs; ++i)
     {

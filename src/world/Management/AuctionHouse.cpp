@@ -1068,7 +1068,7 @@ void AuctionHouse::RemoveAuction(Auction* auct)
     delete auct;
 }
 
-void AuctionHouse::SendBidListPacket(Player* plr, WorldPacket* packet)
+void AuctionHouse::SendBidListPacket(Player* plr, WorldPacket* /*packet*/)
 {
     uint32 count = 0;
     uint32 totalcount = 0;
@@ -1119,7 +1119,7 @@ void AuctionHouse::UpdateOwner(uint32 oldGuid, uint32 newGuid)
     auctionLock.ReleaseWriteLock();
 }
 
-void AuctionHouse::SendOwnerListPacket(Player* plr, WorldPacket* packet)
+void AuctionHouse::SendOwnerListPacket(Player* plr, WorldPacket* /*packet*/)
 {
     uint32 count = 0;
     uint32 totalcount = 0;
@@ -1242,7 +1242,7 @@ void AuctionHouse::SendAuctionBuyOutNotificationPacket(Auction* auct)
     }
 }
 
-void AuctionHouse::SendAuctionExpiredNotificationPacket(Auction* auct)
+void AuctionHouse::SendAuctionExpiredNotificationPacket(Auction* /*auct*/)
 {
     //todo danko
     ///\todo I don't know the net code... so: TODO ;-)

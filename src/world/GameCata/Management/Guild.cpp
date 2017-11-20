@@ -1419,7 +1419,7 @@ void Guild::broadcastToGuild(WorldSession* session, bool officerOnly, std::strin
     }
 }
 
-void Guild::broadcastAddonToGuild(WorldSession* session, bool officerOnly, std::string const& msg, std::string const& prefix) const
+void Guild::broadcastAddonToGuild(WorldSession* session, bool officerOnly, std::string const& msg, std::string const& /*prefix*/) const
 {
     if (session && session->GetPlayer() && _hasRankRight(session->GetPlayer()->GetGUID(), officerOnly ? GR_RIGHT_OFFCHATSPEAK : GR_RIGHT_GCHATSPEAK))
     {
@@ -1569,7 +1569,7 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
     return true;
 }
 
-void Guild::deleteMember(uint64_t guid, bool isDisbanding, bool isKicked)
+void Guild::deleteMember(uint64_t guid, bool isDisbanding, bool /*isKicked*/)
 {
     uint32_t lowguid = Arcemu::Util::GUID_LOPART(guid);
     Player* player = objmgr.GetPlayer(lowguid);

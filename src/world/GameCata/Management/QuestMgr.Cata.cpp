@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLStructures.h"
 #include "Spell/SpellMgr.h"
 
-void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32_t menutype, uint32_t language, Player* plr)
+void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32_t /*menutype*/, uint32_t language, Player* plr)
 {
     MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
     std::map<uint32_t, uint8_t>::const_iterator itr;
@@ -143,7 +143,7 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
     }
 }
 
-void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32_t menutype, uint32_t language, Player* plr)
+void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32_t /*menutype*/, uint32_t language, Player* plr)
 {
     MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
 

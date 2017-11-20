@@ -784,12 +784,12 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint32_t opcode, float cu
     }
 }
 
-void WorldSession::HandleForceSpeedAckOpcodes(WorldPacket& recv_data)
+void WorldSession::HandleForceSpeedAckOpcodes(WorldPacket& /*recvData*/)
 {
     LOG_DEBUG("WORLD : Received FORCED SPEED ACK package!");
 }
 
-void WorldSession::HandleMoveWorldportAckOpcode(WorldPacket& recv_data)
+void WorldSession::HandleMoveWorldportAckOpcode(WorldPacket& /*recvData*/)
 {
     GetPlayer()->SetPlayerStatus(NONE);
     if (_player->IsInWorld())
@@ -824,31 +824,31 @@ void WorldSession::HandleMoveWorldportAckOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleMoveTeleportAckOpcode(WorldPacket& recv_data)
+void WorldSession::HandleMoveTeleportAckOpcode(WorldPacket& recvData)
 {
     uint32_t flags;
     uint32_t time;
-    recv_data >> flags;
-    recv_data >> time;
+    recvData >> flags;
+    recvData >> time;
 
     ObjectGuid guid;
-    guid[5] = recv_data.readBit();
-    guid[0] = recv_data.readBit();
-    guid[1] = recv_data.readBit();
-    guid[6] = recv_data.readBit();
-    guid[3] = recv_data.readBit();
-    guid[7] = recv_data.readBit();
-    guid[2] = recv_data.readBit();
-    guid[4] = recv_data.readBit();
+    guid[5] = recvData.readBit();
+    guid[0] = recvData.readBit();
+    guid[1] = recvData.readBit();
+    guid[6] = recvData.readBit();
+    guid[3] = recvData.readBit();
+    guid[7] = recvData.readBit();
+    guid[2] = recvData.readBit();
+    guid[4] = recvData.readBit();
 
-    recv_data.ReadByteSeq(guid[4]);
-    recv_data.ReadByteSeq(guid[2]);
-    recv_data.ReadByteSeq(guid[7]);
-    recv_data.ReadByteSeq(guid[6]);
-    recv_data.ReadByteSeq(guid[5]);
-    recv_data.ReadByteSeq(guid[1]);
-    recv_data.ReadByteSeq(guid[3]);
-    recv_data.ReadByteSeq(guid[0]);
+    recvData.ReadByteSeq(guid[4]);
+    recvData.ReadByteSeq(guid[2]);
+    recvData.ReadByteSeq(guid[7]);
+    recvData.ReadByteSeq(guid[6]);
+    recvData.ReadByteSeq(guid[5]);
+    recvData.ReadByteSeq(guid[1]);
+    recvData.ReadByteSeq(guid[3]);
+    recvData.ReadByteSeq(guid[0]);
 
     if (guid == _player->GetGUID())
     {

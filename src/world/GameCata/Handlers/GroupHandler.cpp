@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/ObjectMgr.h"
 
 
-void WorldSession::SendPartyCommandResult(Player* pPlayer, uint32_t p1, std::string name, uint32_t err)
+void WorldSession::SendPartyCommandResult(Player* /*pPlayer*/, uint32_t p1, std::string name, uint32_t err)
 {
     WorldPacket data(SMSG_PARTY_COMMAND_RESULT, name.size() + 18);
     data << uint32_t(p1);     // 0 invite, 1 uninvite, 2 leave, 3 swap
@@ -385,7 +385,7 @@ void WorldSession::HandleGroupSetRolesOpcode(WorldPacket& recvData)
         SendPacket(&data);
 }
 
-void WorldSession::HandleGroupDisbandOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGroupDisbandOpcode(WorldPacket& /*recvData*/)
 {
     Group* group = _player->GetGroup();
     if (group == nullptr)
@@ -397,15 +397,15 @@ void WorldSession::HandleGroupDisbandOpcode(WorldPacket& recv_data)
     group->RemovePlayer(_player->m_playerInfo);
 }
 
-void WorldSession::HandleLootMethodOpcode(WorldPacket& recv_data)
+void WorldSession::HandleLootMethodOpcode(WorldPacket& recvData)
 {
     uint32_t loot_method;
     uint64_t loot_master;
     uint32_t loot_threshold;
 
-    recv_data >> loot_method;
-    recv_data >> loot_master;
-    recv_data >> loot_threshold;
+    recvData >> loot_method;
+    recvData >> loot_master;
+    recvData >> loot_threshold;
 
     Group* target_group = _player->GetGroup();
     if (target_group == nullptr)
@@ -457,7 +457,7 @@ void WorldSession::HandleConvertGroupToRaidOpcode(WorldPacket& recv_data)
     SendPartyCommandResult(_player, 0, "", ERR_PARTY_NO_ERROR);
 }
 
-void WorldSession::HandleGroupRequestJoinUpdatesOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGroupRequestJoinUpdatesOpcode(WorldPacket& /*recvData*/)
 {
     Group* group = _player->GetGroup();
     if (group != nullptr)
