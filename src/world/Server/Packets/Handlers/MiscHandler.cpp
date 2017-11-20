@@ -1550,7 +1550,7 @@ void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
     uint32 oldhair = _player->getByteValue(PLAYER_BYTES, 2);
     uint32 oldhaircolor = _player->getByteValue(PLAYER_BYTES, 3);
     uint32 oldfacial = _player->getByteValue(PLAYER_BYTES_2, 0);
-    uint32 oldskincolor = _player->getByteValue(PLAYER_BYTES, 0);
+    // uint32 oldskincolor = _player->getByteValue(PLAYER_BYTES, 0);
 
     uint32 newhair, newhaircolor, newfacial;
 

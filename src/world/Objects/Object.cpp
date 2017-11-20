@@ -67,7 +67,6 @@ void Object::setByteValue(uint16_t index, uint8_t offset, uint8_t value)
 
         updateObject();
     }
-
 }
 
 uint8_t Object::getByteValue(uint16_t index, uint8_t offset) const
@@ -498,7 +497,7 @@ Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
     m_mapId = MAPID_NOT_IN_WORLD;
     m_zoneId = 0;
 
-    m_uint32Values = 0;
+    m_uint32Values = nullptr;
     m_objectUpdated = false;
 
     for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
@@ -509,7 +508,7 @@ Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
 
     m_phase = 1;                //Set the default phase: 00000000 00000000 00000000 00000001
 
-    m_mapMgr = 0;
+    m_mapMgr = nullptr;
     m_mapCell_x = m_mapCell_y = uint32(-1);
 
     m_faction = nullptr;
@@ -780,7 +779,7 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask
     ARCEMU_ASSERT(m_wowGuid.GetNewGuidLen() > 0);
     *buf << m_wowGuid;
 
-    _BuildValuesUpdate(buf, mask, 0);
+    _BuildValuesUpdate(buf, mask, nullptr);
 
     // 1 update.
     return 1;
@@ -1036,7 +1035,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
 
     ByteBuffer* splinebuf = (m_objectTypeId == TYPEID_UNIT) ? target->GetAndRemoveSplinePacket(GetGUID()) : 0;
 
-    if (splinebuf != NULL)
+    if (splinebuf != nullptr)
     {
         flags2 |= MOVEFLAG_SPLINE_ENABLED | MOVEFLAG_MOVE_FORWARD;	   //1=move forward
         if (IsCreature())
@@ -1051,7 +1050,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
     if (IsVehicle())
     {
         Unit* u = static_cast< Unit* >(this);
-        if (u->GetVehicleComponent() != NULL)
+        if (u->GetVehicleComponent() != nullptr)
             moveflags2 |= u->GetVehicleComponent()->GetMoveFlags2();
 
         if (IsCreature())
@@ -1064,15 +1063,15 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
 
     *data << uint16(flags);
 
-    Player* pThis = NULL;
-    MovementInfo* moveinfo = NULL;
+    Player* pThis = nullptr;
+    MovementInfo* moveinfo = nullptr;
     if (IsPlayer())
     {
         pThis = static_cast< Player* >(this);
         if (pThis->GetSession())
             moveinfo = pThis->GetSession()->GetMovementInfo();
     }
-    Creature* uThis = NULL;
+    Creature* uThis = nullptr;
     if (IsCreature())
         uThis = static_cast< Creature* >(this);
 
@@ -1089,12 +1088,12 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
         else if (uThis && uThis->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
             flags2 |= MOVEFLAG_TRANSPORT;
 
-        if ((pThis != NULL) && pThis->isRooted())
+        if ((pThis != nullptr) && pThis->isRooted())
             flags2 |= MOVEFLAG_ROOTED;
-        else if ((uThis != NULL) && uThis->isRooted())
+        else if ((uThis != nullptr) && uThis->isRooted())
             flags2 |= MOVEFLAG_ROOTED;
 
-        if (uThis != NULL)
+        if (uThis != nullptr)
         {
             // Don't know what this is, but I've only seen it applied to spirit healers. maybe some sort of invisibility flag? :/
             switch (GetEntry())
@@ -1165,7 +1164,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
 
         if (flags2 & MOVEFLAG_REDIRECTED)   // 0x00001000
         {
-            if (moveinfo != NULL)
+            if (moveinfo != nullptr)
             {
                 *data << moveinfo->redirectVelocity;
                 *data << moveinfo->redirectSin;
@@ -1208,7 +1207,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
 
         if (flags2 & MOVEFLAG_SPLINE_ENABLED)   //VLack: On Mangos this is a nice spline movement code, but we never had such... Also, at this point we haven't got this flag, that's for sure, but fail just in case...
         {
-            if (splinebuf != NULL)
+            if (splinebuf != nullptr)
             {
                 data->append(*splinebuf);
                 //delete splinebuf;
@@ -1740,7 +1739,7 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
                 for (itr = go_quest_giver->QuestsBegin(); itr != go_quest_giver->QuestsEnd(); ++itr)
                 {
                     QuestRelation* qr = (*itr);
-                    if (qr != NULL)
+                    if (qr != nullptr)
                     {
                         QuestProperties const* qst = qr->qst;
                         if (qst != nullptr)
@@ -1764,7 +1763,7 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
                     for (GameObjectGOMap::const_iterator itr = gameobject_info->goMap.begin(); itr != gameobject_info->goMap.end(); ++itr)
                     {
                         qle = target->GetQuestLogForEntry(itr->first->id);
-                        if (qle != NULL)
+                        if (qle != nullptr)
                         {
                             if (qle->GetQuest()->count_required_mob == 0)
                                 continue;
@@ -1791,7 +1790,7 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
                                  it2 != itr->second.end();
                                  ++it2)
                             {
-                                if ((qle = target->GetQuestLogForEntry(itr->first->id)) != 0)
+                                if ((qle = target->GetQuestLogForEntry(itr->first->id)) != nullptr)
                                 {
                                     if (target->GetItemInterface()->GetItemCount(it2->first) < it2->second)
                                     {
@@ -1931,7 +1930,7 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
     if (IsUnit())
     {
         Unit* u = static_cast< Unit* >(this);
-        if (u->GetVehicleComponent() != NULL)
+        if (u->GetVehicleComponent() != nullptr)
             u->GetVehicleComponent()->MovePassengers(newX, newY, newZ, newOrientation);
     }
 
@@ -1982,7 +1981,7 @@ void Object::_SetCreateBits(UpdateMask* updateMask, Player* /*target*/) const
 void Object::AddToWorld()
 {
     MapMgr* mapMgr = sInstanceMgr.GetInstance(this);
-    if (mapMgr == NULL)
+    if (mapMgr == nullptr)
     {
         LOG_ERROR("AddToWorld() failed for Object with GUID " I64FMT " MapId %u InstanceId %u", GetGUID(), GetMapId(), GetInstanceID());
         return;
@@ -1991,20 +1990,20 @@ void Object::AddToWorld()
     if (IsPlayer())
     {
         Player* plr = static_cast< Player* >(this);
-        if (mapMgr->pInstance != NULL && !plr->isGMFlagSet())
+        if (mapMgr->pInstance != nullptr && !plr->isGMFlagSet())
         {
             // Player limit?
             if (mapMgr->GetMapInfo()->playerlimit && mapMgr->GetPlayerCount() >= mapMgr->GetMapInfo()->playerlimit)
                 return;
             Group* group = plr->GetGroup();
             // Player in group?
-            if (group == NULL && mapMgr->pInstance->m_creatorGuid == 0)
+            if (group == nullptr && mapMgr->pInstance->m_creatorGuid == 0)
                 return;
             // If set: Owns player the instance?
             if (mapMgr->pInstance->m_creatorGuid != 0 && mapMgr->pInstance->m_creatorGuid != plr->GetLowGUID())
                 return;
 
-            if (group != NULL)
+            if (group != nullptr)
             {
                 // Is instance empty or owns our group the instance?
                 if (mapMgr->pInstance->m_creatorGroup != 0 && mapMgr->pInstance->m_creatorGroup != group->GetID())
@@ -2054,7 +2053,7 @@ void Object::PushToWorld(MapMgr* mgr)
 {
     ARCEMU_ASSERT(t_currentMapContext.get() == mgr);
 
-    if (mgr == NULL)
+    if (mgr == nullptr)
     {
         LOG_ERROR("Invalid push to world of Object " I64FMT, GetGUID());
         return; //instance add failed
@@ -2094,7 +2093,7 @@ void Object::RemoveFromWorld(bool free_guid)
     OnPreRemoveFromWorld();
 
     MapMgr* m = m_mapMgr;
-    m_mapMgr = NULL;
+    m_mapMgr = nullptr;
 
     m->RemoveObject(this, free_guid);
 
@@ -2450,7 +2449,7 @@ bool Object::isInBack(Object* target)
     if (IsCreature() && static_cast<Creature*>(this)->GetTargetGUID() != 0)
     {
         Unit* pTarget = static_cast<Creature*>(this)->GetAIInterface()->getNextTarget();
-        if (pTarget != NULL)
+        if (pTarget != nullptr)
             angle -= double(Object::calcRadAngle(target->m_position.x, target->m_position.y, pTarget->m_position.x, pTarget->m_position.y));
         else
             angle -= target->GetOrientation();
@@ -2603,11 +2602,11 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
 {
     //////////////////////////////////////////////////////////////////////////////////////////
     //Unacceptable Cases Processing
-    if (pVictim == NULL || !pVictim->isAlive())
+    if (pVictim == nullptr || !pVictim->isAlive())
         return;
 
     SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellID);
-    if (spellInfo == NULL)
+    if (spellInfo == nullptr)
         return;
 
     if (this->IsPlayer() && !static_cast< Player* >(this)->canCast(spellInfo))
@@ -2756,7 +2755,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
             if (!entry)
                 return;
 
-            Spell* sp = sSpellFactoryMgr.NewSpell(pl, entry, true, NULL);
+            Spell* sp = sSpellFactoryMgr.NewSpell(pl, entry, true, nullptr);
             sp->GetSpellInfo()->setEffectBasePoints(spellpower, 0);
             SpellCastTargets targets;
             targets.m_unitTarget = pl->GetGUID();
@@ -2867,7 +2866,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
 //////////////////////////////////////////////////////////////////////////////////////////
 void Object::SendSpellLog(Object* Caster, Object* Target, uint32 Ability, uint8 SpellLogType)
 {
-    if (Caster == NULL || Target == NULL || Ability == 0)
+    if (Caster == nullptr || Target == nullptr || Ability == 0)
         return;
 
 
@@ -3000,7 +2999,7 @@ void Object::EventSpellDamage(uint64 Victim, uint32 SpellID, uint32 Damage)
         return;
 
     Unit* pUnit = GetMapMgr()->GetUnit(Victim);
-    if (pUnit == NULL)
+    if (pUnit == nullptr)
         return;
 
     SpellNonMeleeDamageLog(pUnit, SpellID, Damage, true);
@@ -3049,7 +3048,7 @@ void Object::Activate(MapMgr* mgr)
 
 void Object::Deactivate(MapMgr* mgr)
 {
-    if (mgr == NULL)
+    if (mgr == nullptr)
         return;
 
     switch (m_objectTypeId)
@@ -3075,7 +3074,7 @@ void Object::SetZoneId(uint32 newZone)
     if (IsPlayer())
     {
         static_cast<Player*>(this)->m_cache->SetUInt32Value(CACHE_PLAYER_ZONEID, newZone);
-        if (static_cast<Player*>(this)->GetGroup() != NULL)
+        if (static_cast<Player*>(this)->GetGroup() != nullptr)
             static_cast<Player*>(this)->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_ZONE);
     }
 }
@@ -3303,30 +3302,30 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
 
                 //////////////////////////////////////////////////////////////////////////////////////////////
                 // get text (normal or localized)
-                const char* text;
+                const char* text = npcMonsterSay->texts[randChoice];
                 MySQLStructure::LocalesNPCMonstersay const* lmsay = (sessionLanguage > 0) ? sMySQLStore.getLocalizedMonsterSay(GetEntry(), sessionLanguage, event) : nullptr;
                 if (lmsay != nullptr)
                 {
                     switch (randChoice)
                     {
                         case 0:
-                            if (lmsay->text0 != NULL)
+                            if (lmsay->text0 != nullptr)
                                 text = lmsay->text0;
                             break;
                         case 1:
-                            if (lmsay->text1 != NULL)
+                            if (lmsay->text1 != nullptr)
                                 text = lmsay->text1;
                             break;
                         case 2:
-                            if (lmsay->text2 != NULL)
+                            if (lmsay->text2 != nullptr)
                                 text = lmsay->text2;
                             break;
                         case 3:
-                            if (lmsay->text3 != NULL)
+                            if (lmsay->text3 != nullptr)
                                 text = lmsay->text3;
                             break;
                         case 4:
-                            if (lmsay->text4 != NULL)
+                            if (lmsay->text4 != nullptr)
                                 text = lmsay->text4;
                             break;
                         default:
@@ -3347,9 +3346,9 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
 #endif
                 static const char* classes[MAX_PLAYER_CLASSES] = { "None", "Warrior", "Paladin", "Hunter", "Rogue", "Priest", "Death Knight", "Shaman", "Mage", "Warlock", "None", "Druid" };
                 char* test = strstr((char*)text, "$R");
-                if (test == NULL)
+                if (test == nullptr)
                     test = strstr((char*)text, "$r");
-                if (test != NULL)
+                if (test != nullptr)
                 {
                     uint64 targetGUID = creature->GetTargetGUID();
                     Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
@@ -3360,9 +3359,9 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
                     }
                 }
                 test = strstr((char*)text, "$N");
-                if (test == NULL)
+                if (test == nullptr)
                     test = strstr((char*)text, "$n");
-                if (test != NULL)
+                if (test != nullptr)
                 {
                     uint64 targetGUID = creature->GetTargetGUID();
                     Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
@@ -3373,9 +3372,9 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
                     }
                 }
                 test = strstr((char*)text, "$C");
-                if (test == NULL)
+                if (test == nullptr)
                     test = strstr((char*)text, "$c");
-                if (test != NULL)
+                if (test != nullptr)
                 {
                     uint64 targetGUID = creature->GetTargetGUID();
                     Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
@@ -3386,9 +3385,9 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
                     }
                 }
                 test = strstr((char*)text, "$G");
-                if (test == NULL)
+                if (test == nullptr)
                     test = strstr((char*)text, "$g");
-                if (test != NULL)
+                if (test != nullptr)
                 {
                     uint64 targetGUID = creature->GetTargetGUID();
                     Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
@@ -3483,7 +3482,7 @@ void Object::OnRemoveInRangeObject(Object* /*pObj*/)
 Object* Object::GetMapMgrObject(const uint64 & guid)
 {
     if (!IsInWorld())
-        return NULL;
+        return nullptr;
 
     return GetMapMgr()->_GetObject(guid);
 }
@@ -3491,7 +3490,7 @@ Object* Object::GetMapMgrObject(const uint64 & guid)
 Pet* Object::GetMapMgrPet(const uint64 & guid)
 {
     if (!IsInWorld())
-        return NULL;
+        return nullptr;
 
     return GetMapMgr()->GetPet(GET_LOWGUID_PART(guid));
 }
@@ -3499,7 +3498,7 @@ Pet* Object::GetMapMgrPet(const uint64 & guid)
 Unit* Object::GetMapMgrUnit(const uint64 & guid)
 {
     if (!IsInWorld())
-        return NULL;
+        return nullptr;
 
     return GetMapMgr()->GetUnit(guid);
 }
@@ -3507,7 +3506,7 @@ Unit* Object::GetMapMgrUnit(const uint64 & guid)
 Player* Object::GetMapMgrPlayer(const uint64 & guid)
 {
     if (!IsInWorld())
-        return NULL;
+        return nullptr;
 
     return GetMapMgr()->GetPlayer(GET_LOWGUID_PART(guid));
 }
@@ -3515,7 +3514,7 @@ Player* Object::GetMapMgrPlayer(const uint64 & guid)
 Creature* Object::GetMapMgrCreature(const uint64 & guid)
 {
     if (!IsInWorld())
-        return NULL;
+        return nullptr;
 
     return GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
 }
@@ -3523,7 +3522,7 @@ Creature* Object::GetMapMgrCreature(const uint64 & guid)
 GameObject* Object::GetMapMgrGameObject(const uint64 & guid)
 {
     if (!IsInWorld())
-        return NULL;
+        return nullptr;
 
     return GetMapMgr()->GetGameObject(GET_LOWGUID_PART(guid));
 }
@@ -3531,14 +3530,14 @@ GameObject* Object::GetMapMgrGameObject(const uint64 & guid)
 DynamicObject* Object::GetMapMgrDynamicObject(const uint64 & guid)
 {
     if (!IsInWorld())
-        return NULL;
+        return nullptr;
 
     return GetMapMgr()->GetDynamicObject(GET_LOWGUID_PART(guid));
 }
 
 Object* Object::GetPlayerOwner()
 {
-    return NULL;
+    return nullptr;
 }
 
 MapCell* Object::GetMapCell() const
@@ -3549,7 +3548,7 @@ MapCell* Object::GetMapCell() const
 
 void Object::SetMapCell(MapCell* cell)
 {
-    if (cell == NULL)
+    if (cell == nullptr)
     {
         //mapcell coordinates are uint16, so using uint32(-1) will always make GetMapCell() return NULL.
         m_mapCell_x = m_mapCell_y = uint32(-1);
@@ -3607,7 +3606,7 @@ bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float 
             filter.setIncludeFlags(NAV_GROUND | NAV_WATER | NAV_SLIME | NAV_MAGMA);
 
             dtPolyRef startref;
-            nav_query->findNearestPoly(start, extents, &filter, &startref, NULL);
+            nav_query->findNearestPoly(start, extents, &filter, &startref, nullptr);
 
             float point;
             float hitNormal[3];

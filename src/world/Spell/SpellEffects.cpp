@@ -3223,7 +3223,7 @@ void Spell::SpellEffectLeap(uint32 i) // Leap
 
     MMAP::MMapManager* mmap = MMAP::MMapFactory::createOrGetMMapManager();
     dtNavMesh* nav = const_cast<dtNavMesh*>(mmap->GetNavMesh(m_caster->GetMapId()));
-    dtNavMeshQuery* nav_query = const_cast<dtNavMeshQuery*>(mmap->GetNavMeshQuery(m_caster->GetMapId(), m_caster->GetInstanceID()));
+    // dtNavMeshQuery* nav_query = const_cast<dtNavMeshQuery*>(mmap->GetNavMeshQuery(m_caster->GetMapId(), m_caster->GetInstanceID()));
     //NavMeshData* nav = CollideInterface.GetNavMesh(m_caster->GetMapId());
 
     if (nav != nullptr)

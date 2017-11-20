@@ -142,7 +142,7 @@ void LfgMgr::LoadRewards()
         }
 
 #if VERSION_STRING != Cata
-		DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(dungeonId);
+		//DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(dungeonId);
 #endif
         m_RewardMap.insert(LfgRewardMap::value_type(dungeonId, new LfgReward(maxLevel, firstQuestId, firstMoneyVar, firstXPVar, otherQuestId, otherMoneyVar, otherXPVar)));
         ++count;
@@ -1446,7 +1446,7 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
                 SetDungeon(grp->GetGUID(), dungeon->Entry());
 #endif
 
-                uint32 low_gguid = grp->GetID();
+                // uint32 low_gguid = grp->GetID();
                 uint64 gguid = grp->GetGUID();
                 SetState(gguid, LFG_STATE_PROPOSAL);
                 grp->AddMember(player->getPlayerInfo());

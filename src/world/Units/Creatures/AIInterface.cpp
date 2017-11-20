@@ -375,9 +375,9 @@ void AIInterface::generateWaypointScriptRandom()
                     randPos.y = pos.y + distance * sinf(orientation);
                     randPos.z = m_Unit->GetMapMgr()->GetLandHeight(randPos.x, randPos.y, pos.z + 2);
 
-                    VMAP::IVMapManager* vmapMgr = VMAP::VMapFactory::createOrGetVMapManager();
+                    // VMAP::IVMapManager* vmapMgr = VMAP::VMapFactory::createOrGetVMapManager();
 
-                    bool isHittingObject = vmapMgr->getObjectHitPos(m_Unit->GetMapId(), pos.x, pos.y, pos.z + 2, randPos.x, randPos.y, randPos.z, randPos.x, randPos.y, randPos.z, -1);
+                    // bool isHittingObject = vmapMgr->getObjectHitPos(m_Unit->GetMapId(), pos.x, pos.y, pos.z + 2, randPos.x, randPos.y, randPos.z, randPos.x, randPos.y, randPos.z, -1);
 
                     MoveTo(randPos.x, randPos.y, randPos.z);
 
@@ -604,10 +604,10 @@ void AIInterface::setFearRandomMovement()
                 randPos.y = pos.y + distance * sinf(orientation);
                 randPos.z = unitToFear->GetMapMgr()->GetLandHeight(randPos.x, randPos.y, pos.z + 2);
 
-                VMAP::IVMapManager* vmapMgr = VMAP::VMapFactory::createOrGetVMapManager();
+                // VMAP::IVMapManager* vmapMgr = VMAP::VMapFactory::createOrGetVMapManager();
 
                 // change generated x, y, z to a position before hitting the object.
-                bool isHittingObject = vmapMgr->getObjectHitPos(m_Unit->GetMapId(), pos.x, pos.y, pos.z + 2, randPos.x, randPos.y, randPos.z, randPos.x, randPos.y, randPos.z, -1);
+                // bool isHittingObject = vmapMgr->getObjectHitPos(m_Unit->GetMapId(), pos.x, pos.y, pos.z + 2, randPos.x, randPos.y, randPos.z, randPos.x, randPos.y, randPos.z, -1);
 
                 MoveTo(randPos.x, randPos.y, randPos.z);
 
@@ -4225,12 +4225,12 @@ dtStatus AIInterface::findSmoothPath(const float* startPos, const float* endPos,
             npolys -= npos;
 
             // Handle the connection.
-            float startPos[VERTEX_SIZE], endPos[VERTEX_SIZE];
-            if (!dtStatusFailed(mesh->getOffMeshConnectionPolyEndPoints(prevRef, polyRef, startPos, endPos)))
+            float startPos2[VERTEX_SIZE], endPos[VERTEX_SIZE];
+            if (!dtStatusFailed(mesh->getOffMeshConnectionPolyEndPoints(prevRef, polyRef, startPos2, endPos)))
             {
                 if (nsmoothPath < maxSmoothPathSize)
                 {
-                    dtVcopy(&smoothPath[nsmoothPath * VERTEX_SIZE], startPos);
+                    dtVcopy(&smoothPath[nsmoothPath * VERTEX_SIZE], startPos2);
                     nsmoothPath++;
                 }
                 // Move position at the other side of the off-mesh link.

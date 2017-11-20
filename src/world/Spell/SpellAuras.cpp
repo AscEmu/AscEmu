@@ -3491,9 +3491,9 @@ void Aura::EventPeriodicTriggerSpell(SpellInfo* spellInfo, bool overridevalues, 
         for (uint8 i = 0; i < 3; ++i)
             spell->m_overridenBasePoints[i] = overridevalue;
     }
-    SpellCastTargets targets;
-    spell->GenerateTargets(&targets);
-    spell->prepare(&targets);
+    SpellCastTargets spellTargets;
+    spell->GenerateTargets(&spellTargets);
+    spell->prepare(&spellTargets);
 }
 
 void Aura::SpellAuraPeriodicEnergize(bool apply)
@@ -3989,7 +3989,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
         return;
 
     uint32 spellId = 0;
-    uint32 spellId2 = 0;
+    // uint32 spellId2 = 0;
     uint32 modelId = (uint32)(apply ? shapeshift_form->modelId : 0);
 
     bool freeMovements = false;
@@ -8753,9 +8753,9 @@ void Aura::SpellAuraSpiritOfRedemption(bool apply)
         m_target->SetHealth(1);
         SpellInfo* sorInfo = sSpellCustomizations.GetSpellInfo(27792);
         Spell* sor = sSpellFactoryMgr.NewSpell(m_target, sorInfo, true, nullptr);
-        SpellCastTargets targets;
-        targets.m_unitTarget = m_target->GetGUID();
-        sor->prepare(&targets);
+        SpellCastTargets spellTargets;
+        spellTargets.m_unitTarget = m_target->GetGUID();
+        sor->prepare(&spellTargets);
     }
     else
     {

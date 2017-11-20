@@ -1749,7 +1749,7 @@ void ObjectMgr::createGuardGossipOptionAndSubMenu(uint64_t senderGuid, Player* p
 {
     LOG_DEBUG("GossipId: %u  gossipItemId: %u", gossipMenuId, gossipItemId);
 
-    bool openSubMenu = true;
+    // bool openSubMenu = true;
 
     typedef MySQLDataStore::GossipMenuItemsContainer::iterator GossipMenuItemsIterator;
     std::pair<GossipMenuItemsIterator, GossipMenuItemsIterator> gossipEqualRange = sMySQLStore._gossipMenuItemsStores.equal_range(gossipMenuId);
