@@ -5015,7 +5015,7 @@ void Spell::SpellEffectBuildingDamage(uint32 i)
     if (u_caster == NULL)
         return;
 
-    uint32 damage = m_spellInfo->getEffectBasePoints(i) + 1;
+    uint32 spellDamage = m_spellInfo->getEffectBasePoints(i) + 1;
     Unit* controller = NULL;
 
     if (u_caster->GetVehicleComponent() != NULL)
@@ -5026,7 +5026,7 @@ void Spell::SpellEffectBuildingDamage(uint32 i)
 
     // Baaaam
     GameObject_Destructible* dgo = static_cast<GameObject_Destructible*>(gameObjTarget);
-    dgo->Damage(damage, u_caster->GetGUID(), controller->GetGUID(), m_spellInfo->getId());
+    dgo->Damage(spellDamage, u_caster->GetGUID(), controller->GetGUID(), m_spellInfo->getId());
 }
 
 void Spell::SpellEffectEnchantHeldItem(uint32 i)

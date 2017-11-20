@@ -2650,7 +2650,7 @@ void Spell::writeSpellMissedTargets(WorldPacket* data)
     }
 }
 // Not called
-void Spell::SendLogExecute(uint32 damage, uint64 & targetGuid)
+void Spell::SendLogExecute(uint32 spellDamage, uint64 & targetGuid)
 {
     WorldPacket data(SMSG_SPELLLOGEXECUTE, 37);
     data << m_caster->GetNewGUID();
@@ -2660,8 +2660,8 @@ void Spell::SendLogExecute(uint32 damage, uint64 & targetGuid)
     data << uint32(1);
     if (m_caster->GetGUID() != targetGuid)
         data << targetGuid;
-    if (damage)
-        data << damage;
+    if (spellDamage)
+        data << spellDamage;
     m_caster->SendMessageToSet(&data, true);
 }
 

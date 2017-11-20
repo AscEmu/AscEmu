@@ -1583,7 +1583,7 @@ void AIInterface::_UpdateTargets()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Updates Combat Status of m_Unit
-void AIInterface::_UpdateCombat(uint32 p_time)
+void AIInterface::_UpdateCombat(uint32 /*p_time*/)
 {
     if (!isAiScriptType(AI_SCRIPT_PET) && isCombatDisabled())
         return;

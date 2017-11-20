@@ -27,14 +27,14 @@ CompanionSummon::CompanionSummon(uint64 GUID) : Summon(GUID)
 CompanionSummon::~CompanionSummon()
 { }
 
-void CompanionSummon::Load(CreatureProperties const* properties_, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot)
+void CompanionSummon::Load(CreatureProperties const* properties_, Unit* companionOwner, LocationVector & position, uint32 spellid, int32 summonSlot)
 {
-    Summon::Load(properties_, owner, position, spellid, summonslot);
+    Summon::Load(properties_, companionOwner, position, spellid, summonSlot);
 
     SetFaction(35);
     setLevel(1);
-    m_aiInterface->Init(this, AI_SCRIPT_PET, Movement::WP_MOVEMENT_SCRIPT_NONE, owner);
-    m_aiInterface->SetUnitToFollow(owner);
+    m_aiInterface->Init(this, AI_SCRIPT_PET, Movement::WP_MOVEMENT_SCRIPT_NONE, companionOwner);
+    m_aiInterface->SetUnitToFollow(companionOwner);
     m_aiInterface->SetUnitToFollowAngle(-M_PI_FLOAT / 2);
     m_aiInterface->SetFollowDistance(3.0f);
     m_aiInterface->setMeleeDisabled(true);

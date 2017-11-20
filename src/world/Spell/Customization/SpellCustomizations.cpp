@@ -545,7 +545,7 @@ void SpellCustomizations::LoadSpellCustomAssign()
             uint32 on_target = result->Fetch()[1].GetUInt32();
 
             // loaded but not used!
-            uint32 from_caster_on_self_flag = result->Fetch()[2].GetUInt32();
+            // uint32 from_caster_on_self_flag = result->Fetch()[2].GetUInt32();
 
             bool self_cast_only = result->Fetch()[3].GetBool();
             uint32 c_is_flag = result->Fetch()[4].GetUInt32();
@@ -626,7 +626,7 @@ void SpellCustomizations::LoadSpellProcs()
         {
             Field* f = result->Fetch();
             uint32 spell_id = f[0].GetUInt32();
-            uint32 name_hash = f[1].GetUInt32();
+            // uint32 name_hash = f[1].GetUInt32();
 
             auto spell_entry = GetSpellInfo(spell_id);
             if (spell_entry != nullptr)
@@ -677,7 +677,7 @@ void SpellCustomizations::LoadSpellProcs()
     }
 }
 
-///Fix if it is a periodic trigger with amplitude = 0, to avoid division by zero
+// Fix if it is a periodic trigger with amplitude = 0, to avoid division by zero
 void SpellCustomizations::SetEffectAmplitude(SpellInfo* spell_entry)
 {
     for (uint8 y = 0; y < 3; y++)
@@ -710,7 +710,7 @@ void SpellCustomizations::SetAuraFactoryFunc(SpellInfo* spell_entry)
         }
         else
         {
-            if (spell_entry->getEffectApplyAuraName(y) == SPELL_AURA_SCHOOL_ABSORB && spell_entry->AuraFactoryFunc == NULL)
+            if (spell_entry->getEffectApplyAuraName(y) == SPELL_AURA_SCHOOL_ABSORB && spell_entry->AuraFactoryFunc == nullptr)
             {
                 spell_entry->AuraFactoryFunc = (void * (*)) &AbsorbAura::Create;
 
