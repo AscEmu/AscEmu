@@ -15,6 +15,11 @@
 #include "G3D/platform.h"
 #include "G3D/g3dmath.h"
 
+#ifdef _MSC_VER
+#   pragma warning (push)
+#   pragma warning (disable : 4244)
+#endif
+
 namespace G3D {
 
 
@@ -176,5 +181,9 @@ public:
 G3D_END_PACKED_CLASS(1)
 
 } // namespace G3D
+
+#ifdef _MSC_VER
+#pragma warning (pop)
+#endif
 
 #endif // G3D_unorm16

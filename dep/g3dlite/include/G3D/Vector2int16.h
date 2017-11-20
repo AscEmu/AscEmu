@@ -17,6 +17,11 @@
 #include "G3D/g3dmath.h"
 #include "G3D/HashTrait.h"
 
+#ifdef _MSC_VER
+#   pragma warning (push)
+#   pragma warning (disable : 4244)
+#endif
+
 namespace G3D {
 
 class Any;
@@ -140,5 +145,9 @@ typedef Vector2int16 Point2int16;
 template<> struct HashTrait<G3D::Vector2int16> {
     static size_t hashCode(const G3D::Vector2int16& key) { return static_cast<size_t>(key.x + ((int)key.y << 16)); }
 };
+
+#ifdef _MSC_VER
+#pragma warning (pop)
+#endif
 
 #endif
