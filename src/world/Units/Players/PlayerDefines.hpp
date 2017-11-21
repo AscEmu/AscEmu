@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <ctime>
 
-enum PlayerTeam : int
+enum PlayerTeam : uint8_t
 {
     TEAM_ALLIANCE = 0,
     TEAM_HORDE    = 1,

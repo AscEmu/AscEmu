@@ -17,10 +17,9 @@ public:
     static InstanceScript* Create(MapMgr* pMapMgr) { return new Gundrak(pMapMgr); }
 };
 
-
+#ifdef UseNewMapScriptsProject
 void GundrakScripts(ScriptMgr* scriptMgr)
 {
-#ifdef UseNewMapScriptsProject
     scriptMgr->register_instance_script(604, &Gundrak::Create);
-#endif
 }
+#endif

@@ -18,9 +18,9 @@ public:
 };
 
 
+#ifdef UseNewMapScriptsProject
 void BlackTempleScript(ScriptMgr* scriptMgr)
 {
-#ifdef UseNewMapScriptsProject
     scriptMgr->register_instance_script(564, &BlackTemple::Create);
-#endif
 }
+#endif

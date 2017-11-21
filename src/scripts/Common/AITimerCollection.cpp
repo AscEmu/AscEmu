@@ -12,7 +12,7 @@ using std::make_unique;
 int AITimerCollection::unsafeCreateTimer(long long durationMs)
 {
     // When we append to the vector, this will be the correct indexer for the timer
-    int timerId = m_timers.size();
+    int timerId = static_cast<int>(m_timers.size());
 
     auto timer = make_unique<LazyTimer>(durationMs);
     m_timers.push_back(move(timer));

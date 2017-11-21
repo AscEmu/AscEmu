@@ -15,6 +15,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Map/WorldCreatorDefines.hpp"
 
+//#define UseNewMapScriptsProject
+
+#ifdef UseNewMapScriptsProject
 
 void AlteracValleyScripts(ScriptMgr* scriptMgr);
 void BlackrockDepthsScripts(ScriptMgr* scriptMgr);
@@ -96,3 +99,5 @@ void TheArcatrazScripts(ScriptMgr* scriptMgr);
 void TheBotanicaScripts(ScriptMgr* scriptMgr);
 void TheEyeScripts(ScriptMgr* scriptMgr);
 void TheMechanarScripts(ScriptMgr* scriptMgr);
+
+#endif

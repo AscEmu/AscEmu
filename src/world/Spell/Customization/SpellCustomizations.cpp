@@ -44,11 +44,7 @@ void SpellCustomizations::LoadSpellInfoData()
     {
 
         DBC::Structures::SpellEntry const* dbc_spell_entry = sSpellStore.LookupEntry(i);
-        if (dbc_spell_entry == nullptr)
-        {
-            continue;
-        }
-        else
+        if (dbc_spell_entry != nullptr)
         {
             uint32 spell_id = dbc_spell_entry->Id;
             SpellInfo& spellInfo = _spellInfoContainerStore[spell_id];
@@ -102,74 +98,74 @@ void SpellCustomizations::LoadSpellInfoData()
             spellInfo.setModalNextSpell(dbc_spell_entry->modalNextSpell);
             spellInfo.setMaxstack(dbc_spell_entry->maxstack);
 
-            for (uint8 i = 0; i < MAX_SPELL_TOTEMS; ++i)
-                spellInfo.setTotem(dbc_spell_entry->Totem[i], i);
+            for (uint8 j = 0; j < MAX_SPELL_TOTEMS; ++j)
+                spellInfo.setTotem(dbc_spell_entry->Totem[j], j);
 
-            for (uint8 i = 0; i < MAX_SPELL_REAGENTS; ++i)
-                spellInfo.setReagent(dbc_spell_entry->Reagent[i], i);
+            for (uint8 j = 0; j < MAX_SPELL_REAGENTS; ++j)
+                spellInfo.setReagent(dbc_spell_entry->Reagent[j], j);
 
-            for (uint8 i = 0; i < MAX_SPELL_REAGENTS; ++i)
-                spellInfo.setReagentCount(dbc_spell_entry->ReagentCount[i], i);
+            for (uint8 j = 0; j < MAX_SPELL_REAGENTS; ++j)
+                spellInfo.setReagentCount(dbc_spell_entry->ReagentCount[j], j);
 
             spellInfo.setEquippedItemClass(dbc_spell_entry->EquippedItemClass);
             spellInfo.setEquippedItemSubClass(dbc_spell_entry->EquippedItemSubClass);
             spellInfo.setRequiredItemFlags(dbc_spell_entry->RequiredItemFlags);
 
-            for (int i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.setEffect(dbc_spell_entry->Effect[i], i);
+            for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
+                spellInfo.setEffect(dbc_spell_entry->Effect[j], j);
 
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.setEffectDieSides(dbc_spell_entry->EffectDieSides[i], i);
+            for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
+                spellInfo.setEffectDieSides(dbc_spell_entry->EffectDieSides[j], j);
 
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.setEffectRealPointsPerLevel(dbc_spell_entry->EffectRealPointsPerLevel[i], i);
+            for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
+                spellInfo.setEffectRealPointsPerLevel(dbc_spell_entry->EffectRealPointsPerLevel[j], j);
 
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.setEffectBasePoints(dbc_spell_entry->EffectBasePoints[i], i);
+            for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
+                spellInfo.setEffectBasePoints(dbc_spell_entry->EffectBasePoints[j], j);
 
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.setEffectMechanic(dbc_spell_entry->EffectMechanic[i], i);
+            for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
+                spellInfo.setEffectMechanic(dbc_spell_entry->EffectMechanic[j], j);
 
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.setEffectImplicitTargetA(dbc_spell_entry->EffectImplicitTargetA[i], i);
+            for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
+                spellInfo.setEffectImplicitTargetA(dbc_spell_entry->EffectImplicitTargetA[j], j);
 
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.setEffectImplicitTargetB(dbc_spell_entry->EffectImplicitTargetB[i], i);
+            for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
+                spellInfo.setEffectImplicitTargetB(dbc_spell_entry->EffectImplicitTargetB[j], j);
 
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.setEffectRadiusIndex(dbc_spell_entry->EffectRadiusIndex[i], i);
+            for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
+                spellInfo.setEffectRadiusIndex(dbc_spell_entry->EffectRadiusIndex[j], j);
 
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.setEffectApplyAuraName(dbc_spell_entry->EffectApplyAuraName[i], i);
+            for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
+                spellInfo.setEffectApplyAuraName(dbc_spell_entry->EffectApplyAuraName[j], j);
 
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.setEffectAmplitude(dbc_spell_entry->EffectAmplitude[i], i);
+            for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
+                spellInfo.setEffectAmplitude(dbc_spell_entry->EffectAmplitude[j], j);
 
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.setEffectMultipleValue(dbc_spell_entry->EffectMultipleValue[i], i);
+            for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
+                spellInfo.setEffectMultipleValue(dbc_spell_entry->EffectMultipleValue[j], j);
 
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.setEffectChainTarget(dbc_spell_entry->EffectChainTarget[i], i);
+            for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
+                spellInfo.setEffectChainTarget(dbc_spell_entry->EffectChainTarget[j], j);
 
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.setEffectItemType(dbc_spell_entry->EffectItemType[i], i);
+            for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
+                spellInfo.setEffectItemType(dbc_spell_entry->EffectItemType[j], j);
 
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.setEffectMiscValue(dbc_spell_entry->EffectMiscValue[i], i);
+            for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
+                spellInfo.setEffectMiscValue(dbc_spell_entry->EffectMiscValue[j], j);
 
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.setEffectMiscValueB(dbc_spell_entry->EffectMiscValueB[i], i);
+            for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
+                spellInfo.setEffectMiscValueB(dbc_spell_entry->EffectMiscValueB[j], j);
 
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.setEffectTriggerSpell(dbc_spell_entry->EffectTriggerSpell[i], i);
+            for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
+                spellInfo.setEffectTriggerSpell(dbc_spell_entry->EffectTriggerSpell[j], j);
 
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.setEffectPointsPerComboPoint(dbc_spell_entry->EffectPointsPerComboPoint[i], i);
+            for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
+                spellInfo.setEffectPointsPerComboPoint(dbc_spell_entry->EffectPointsPerComboPoint[j], j);
 
 #if VERSION_STRING > TBC
-            for (uint8 i = 0; i < 3; ++i)
+            for (uint8 x = 0; x < 3; ++x)
                 for (uint8 j = 0; j < 3; ++j)
-                    spellInfo.setEffectSpellClassMask(dbc_spell_entry->EffectSpellClassMask[i][j], i, j);
+                    spellInfo.setEffectSpellClassMask(dbc_spell_entry->EffectSpellClassMask[x][j], x, j);
 #endif
 
             spellInfo.setSpellVisual(dbc_spell_entry->SpellVisual);
@@ -190,8 +186,8 @@ void SpellCustomizations::LoadSpellInfoData()
             spellInfo.setSpellFamilyName(dbc_spell_entry->SpellFamilyName);
 
 #if VERSION_STRING > TBC
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.setSpellGroupType(dbc_spell_entry->SpellGroupType[i], i);
+            for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
+                spellInfo.setSpellGroupType(dbc_spell_entry->SpellGroupType[j], j);
 #endif
 
             spellInfo.setMaxTargets(dbc_spell_entry->MaxTargets);
@@ -199,15 +195,15 @@ void SpellCustomizations::LoadSpellInfoData()
             spellInfo.setPreventionType(dbc_spell_entry->PreventionType);
             spellInfo.setStanceBarOrder(dbc_spell_entry->StanceBarOrder);
 
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                spellInfo.setDmg_multiplier(dbc_spell_entry->dmg_multiplier[i], i);
+            for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
+                spellInfo.setDmg_multiplier(dbc_spell_entry->dmg_multiplier[j], j);
 
             spellInfo.setMinFactionID(dbc_spell_entry->MinFactionID);
             spellInfo.setMinReputation(dbc_spell_entry->MinReputation);
             spellInfo.setRequiredAuraVision(dbc_spell_entry->RequiredAuraVision);
 
-            for (uint8 i = 0; i < MAX_SPELL_TOTEM_CATEGORIES; ++i)
-                spellInfo.setTotemCategory(dbc_spell_entry->TotemCategory[i], i);
+            for (uint8 j = 0; j < MAX_SPELL_TOTEM_CATEGORIES; ++j)
+                spellInfo.setTotemCategory(dbc_spell_entry->TotemCategory[j], j);
 
             spellInfo.setRequiresAreaId(dbc_spell_entry->RequiresAreaId);
             spellInfo.setSchool(dbc_spell_entry->School);

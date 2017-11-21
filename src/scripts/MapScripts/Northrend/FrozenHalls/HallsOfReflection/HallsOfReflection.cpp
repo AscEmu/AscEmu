@@ -17,10 +17,9 @@ public:
     static InstanceScript* Create(MapMgr* pMapMgr) { return new HallsOfReflection(pMapMgr); }
 };
 
-
+#ifdef UseNewMapScriptsProject
 void HallsOfReflectionScripts(ScriptMgr* scriptMgr)
 {
-#ifdef UseNewMapScriptsProject
     scriptMgr->register_instance_script(668, &HallsOfReflection::Create);
-#endif
 }
+#endif

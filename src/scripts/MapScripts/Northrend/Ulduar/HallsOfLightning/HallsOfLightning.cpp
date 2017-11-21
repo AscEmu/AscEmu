@@ -17,10 +17,9 @@ public:
     static InstanceScript* Create(MapMgr* pMapMgr) { return new HallsOfLightning(pMapMgr); }
 };
 
-
+#ifdef UseNewMapScriptsProject
 void HallsOfLightningScripts(ScriptMgr* scriptMgr)
 {
-#ifdef UseNewMapScriptsProject
     scriptMgr->register_instance_script(602, &HallsOfLightning::Create);
-#endif
 }
+#endif

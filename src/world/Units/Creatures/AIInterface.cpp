@@ -873,12 +873,12 @@ void AIInterface::changeWayPointId(uint32_t oldWaypointId, uint32_t newWaypointI
     saveWayPoints();
 }
 
-size_t AIInterface::getWayPointsCount()
+uint32_t AIInterface::getWayPointsCount()
 {
     if (mWayPointMap && !mWayPointMap->empty())
-        return mWayPointMap->size() - 1;
-    else
-        return 0;
+        return static_cast<uint32_t>(mWayPointMap->size() - 1);
+
+    return 0;
 }
 
 void AIInterface::setWayPointToMove(uint32_t waypointId)
@@ -4225,8 +4225,8 @@ dtStatus AIInterface::findSmoothPath(const float* startPos, const float* endPos,
             npolys -= npos;
 
             // Handle the connection.
-            float startPos2[VERTEX_SIZE], endPos[VERTEX_SIZE];
-            if (!dtStatusFailed(mesh->getOffMeshConnectionPolyEndPoints(prevRef, polyRef, startPos2, endPos)))
+            float startPos2[VERTEX_SIZE], endPos2[VERTEX_SIZE];
+            if (!dtStatusFailed(mesh->getOffMeshConnectionPolyEndPoints(prevRef, polyRef, startPos2, endPos2)))
             {
                 if (nsmoothPath < maxSmoothPathSize)
                 {
@@ -4234,7 +4234,7 @@ dtStatus AIInterface::findSmoothPath(const float* startPos, const float* endPos,
                     nsmoothPath++;
                 }
                 // Move position at the other side of the off-mesh link.
-                dtVcopy(iterPos, endPos);
+                dtVcopy(iterPos, endPos2);
                 query->getPolyHeight(polys[0], iterPos, &iterPos[1]);
             }
         }

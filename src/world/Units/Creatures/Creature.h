@@ -196,7 +196,7 @@ class SERVER_DECL Creature : public Unit
         int32 ModDamageDone[SCHOOL_COUNT];
         float ModDamageDonePct[SCHOOL_COUNT];
         void CalcResistance(uint16 type);
-        void CalcStat(uint32 type);
+        void CalcStat(uint16 type);
 
         bool m_canRegenerateHP;
         void RegenerateHealth();

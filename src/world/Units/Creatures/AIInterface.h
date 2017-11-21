@@ -270,7 +270,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         bool hasWayPoints();
         uint32_t getCurrentWayPointId();
         void changeWayPointId(uint32_t oldWaypointId, uint32_t newWaypointId);
-        size_t getWayPointsCount();
+        uint32_t getWayPointsCount();
 
         void setWayPointToMove(uint32_t waypointId);
 

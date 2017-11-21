@@ -345,18 +345,12 @@ bool JudgementOfWisdom(uint32 /*i*/, Aura* pAura, bool apply)
 {
     Unit* caster = pAura->GetUnitCaster();
     if (caster == nullptr)
-    {
         return true;
-    }
 
     if (apply)
-    {
         caster->AddProcTriggerSpell(20268, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), PROC_ON_MELEE_ATTACK | PROC_TARGET_SELF, 0, NULL, NULL);
-    }
     else
-    {
         caster->RemoveProcTriggerSpell(20268, pAura->m_casterGuid);
-    }
 
     return true;
 }

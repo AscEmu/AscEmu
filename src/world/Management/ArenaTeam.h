@@ -35,7 +35,7 @@ struct ArenaTeamMember
 
 class SERVER_DECL ArenaTeam
 {
-        void AllocateSlots(uint32 Type)
+        void AllocateSlots(uint16 Type)
         {
             uint32 Slots = 0;
             if (Type == ARENA_TEAM_TYPE_2V2)
@@ -74,7 +74,7 @@ class SERVER_DECL ArenaTeam
         uint32 m_stat_gameswonseason;
         uint32 m_stat_ranking;
 
-        ArenaTeam(uint32 Type, uint32 Id);
+        ArenaTeam(uint16 Type, uint32 Id);
         ArenaTeam(Field* f);
         ~ArenaTeam()
         {

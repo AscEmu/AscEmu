@@ -922,7 +922,7 @@ void Creature::CalcResistance(uint16 type)
     SetResistance(type, tot > 0 ? tot : 0);
 }
 
-void Creature::CalcStat(uint32 type)
+void Creature::CalcStat(uint16 type)
 {
     int32 pos = 0;
     int32 neg = 0;

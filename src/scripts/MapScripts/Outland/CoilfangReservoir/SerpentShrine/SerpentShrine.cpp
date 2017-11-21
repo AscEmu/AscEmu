@@ -17,10 +17,9 @@ public:
     static InstanceScript* Create(MapMgr* pMapMgr) { return new SerpentShrine(pMapMgr); }
 };
 
-
+#ifdef UseNewMapScriptsProject
 void SerpentShrineScripts(ScriptMgr* scriptMgr)
 {
-#ifdef UseNewMapScriptsProject
     scriptMgr->register_instance_script(548, &SerpentShrine::Create);
-#endif
 }
+#endif

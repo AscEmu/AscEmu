@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-enum procFlags
+enum procFlags : uint32_t
 {
     PROC_NULL                         = 0x0,
     PROC_ON_ANY_HOSTILE_ACTION        = 0x1,

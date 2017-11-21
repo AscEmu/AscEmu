@@ -98,9 +98,9 @@ public:
 
 };
 
+#ifdef UseNewMapScriptsProject
 void IcecrownCitadel(ScriptMgr* scriptMgr)
 {
-#ifdef UseNewMapScriptsProject
     scriptMgr->register_instance_script(631, &IceCrownCitadel::Create);
 
     scriptMgr->register_gameobject_script(GO_TELE_1, &IcecrownCitadelTeleport::Create);
@@ -117,5 +117,5 @@ void IcecrownCitadel(ScriptMgr* scriptMgr)
 
     scriptMgr->register_gameobject_script(GO_TELE_5, &IcecrownCitadelTeleport::Create);
     scriptMgr->register_go_gossip(GO_TELE_5, new ICCTeleporterGossip());
-#endif
 }
+#endif

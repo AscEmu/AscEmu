@@ -17,10 +17,9 @@ public:
     static InstanceScript* Create(MapMgr* pMapMgr) { return new PitOfSaron(pMapMgr); }
 };
 
-
+#ifdef UseNewMapScriptsProject
 void PitOfSaronScripts(ScriptMgr* scriptMgr)
 {
-#ifdef UseNewMapScriptsProject
     scriptMgr->register_instance_script(658, &PitOfSaron::Create);
-#endif
 }
+#endif

@@ -591,8 +591,8 @@ int LuaGameObject::SetFloatValue(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::RemoveFlag(lua_State* L, GameObject* ptr)
 {
-    int field = static_cast<int>(luaL_checkinteger(L, 1));
-    int value = static_cast<int>(luaL_checkinteger(L, 2));
+    uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+    uint32_t value = static_cast<uint32_t>(luaL_checkinteger(L, 2));
     if (ptr)
         ptr->RemoveFlag(field, value);
     return 0;
@@ -600,8 +600,8 @@ int LuaGameObject::RemoveFlag(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::SetFlag(lua_State* L, GameObject* ptr)
 {
-    int field = static_cast<int>(luaL_checkinteger(L, 1));
-    int value = static_cast<int>(luaL_checkinteger(L, 2));
+    uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+    uint32_t value = static_cast<uint32_t>(luaL_checkinteger(L, 2));
     if (ptr)
         ptr->SetFlag(field, value);
     return 0;
@@ -984,7 +984,7 @@ int LuaGameObject::SetDungeonDifficulty(lua_State* L, GameObject* ptr)
 int LuaGameObject::HasFlag(lua_State* L, GameObject* ptr)
 {
     TEST_GO_RET();
-    uint32_t index = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+    uint16_t index = static_cast<uint16_t>(luaL_checkinteger(L, 1));
     uint32_t flag = static_cast<uint32_t>(luaL_checkinteger(L, 2));
     lua_pushboolean(L, ptr->HasFlag(index, flag) ? 1 : 0);
     return 1;

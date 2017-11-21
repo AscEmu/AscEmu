@@ -17,10 +17,9 @@ public:
     static InstanceScript* Create(MapMgr* pMapMgr) { return new Nexus(pMapMgr); }
 };
 
-
+#ifdef UseNewMapScriptsProject
 void NexusScripts(ScriptMgr* scriptMgr)
 {
-#ifdef UseNewMapScriptsProject
     scriptMgr->register_instance_script(576, &Nexus::Create);
-#endif
 }
+#endif

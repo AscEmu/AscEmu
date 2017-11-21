@@ -17,10 +17,9 @@ public:
     static InstanceScript* Create(MapMgr* pMapMgr) { return new ForgeOfSouls(pMapMgr); }
 };
 
-
+#ifdef UseNewMapScriptsProject
 void ForgeOfSoulsScripts(ScriptMgr* scriptMgr)
 {
-#ifdef UseNewMapScriptsProject
     scriptMgr->register_instance_script(632, &ForgeOfSouls::Create);
-#endif
 }
+#endif

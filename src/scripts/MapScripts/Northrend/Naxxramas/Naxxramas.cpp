@@ -17,10 +17,9 @@ public:
     static InstanceScript* Create(MapMgr* pMapMgr) { return new Naxxramas(pMapMgr); }
 };
 
-
+#ifdef UseNewMapScriptsProject
 void NaxxramasScripts(ScriptMgr* scriptMgr)
 {
-#ifdef UseNewMapScriptsProject
     scriptMgr->register_instance_script(533, &Naxxramas::Create);
-#endif
 }
+#endif

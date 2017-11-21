@@ -416,7 +416,6 @@ void LogonConsole::checkAccountName(std::string name, uint8 type)
             if (AccountMgr::getSingleton().GetAccount(aname) == NULL)
             {
                 std::cout << "There's no account with name " << name << std::endl;
-                return;
             }
 
         } break;
@@ -425,9 +424,7 @@ void LogonConsole::checkAccountName(std::string name, uint8 type)
             if (AccountMgr::getSingleton().GetAccount(aname) != NULL)
             {
                 std::cout << "There's already an account with name " << name << std::endl;
-                return;
             }
-
         } break;
     }
 }
