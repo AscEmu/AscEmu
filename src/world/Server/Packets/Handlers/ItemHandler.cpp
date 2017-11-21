@@ -1513,10 +1513,6 @@ void WorldSession::SendInventoryList(Creature* unit)
 
                     if (curItem->HasFlag2(ITEM_FLAG2_ALLIANCE_ONLY) && !GetPlayer()->IsTeamAlliance())
                         continue;
-
-                    int8 Slot = _player->GetItemInterface()->GetItemSlotByType(curItem->InventoryType);
-                    if (_player->GetItemInterface()->CanEquipItemInSlot(INVENTORY_SLOT_NOT_SET, Slot, curItem, true, true))
-                        continue;
                 }
                 
                 uint32 av_am = (itr->max_amount > 0) ? itr->available_amount : 0xFFFFFFFF;
