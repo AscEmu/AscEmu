@@ -4386,7 +4386,7 @@ void ItemInterface::removeLootableItems()
         if (container == nullptr)
             continue;
 
-        uint8 s = container->GetNumSlots();
+        uint8 s = static_cast<uint8>(container->GetNumSlots());
         for (uint8 j = 0; j < s; j++)
         {
             Item* item = container->GetItem(j);
@@ -4404,7 +4404,7 @@ void ItemInterface::removeLootableItems()
         if (container == nullptr)
             continue;
 
-        uint8 s = container->GetNumSlots();
+        uint8 s = static_cast<uint8>(container->GetNumSlots());
         for (uint8 j = 0; j < s; ++j)
         {
             Item* item = container->GetItem(j);

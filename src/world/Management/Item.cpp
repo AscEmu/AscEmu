@@ -961,7 +961,7 @@ int32 Item::FindFreeEnchantSlot(DBC::Structures::SpellItemEnchantmentEntry const
                 return static_cast<int32>(Slot);
     }
 
-    for (uint16 Slot = GemSlotsReserve + 2; Slot < 11; Slot++)
+    for (uint16 Slot = static_cast<uint16>(GemSlotsReserve + 2); Slot < 11; Slot++)
     {
         if (GetEnchantmentId(Slot) == 0)
             return static_cast<int32>(Slot);

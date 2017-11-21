@@ -433,10 +433,10 @@ bool Transporter::GenerateWaypoints(uint32 pathid)
                     }
 
                     //                    LogDefault("T: %d, D: %f, x: %f, y: %f, z: %f", t, d, newX, newY, newZ);
-                    TWayPoint pos(keyFrames[i].mapid, newX, newY, newZ, teleport2);
+                    TWayPoint pos2(keyFrames[i].mapid, newX, newY, newZ, teleport2);
                     if (teleport)
                     {
-                        m_WayPoints[t] = pos;
+                        m_WayPoints[t] = pos2;
                     }
                 }
 
@@ -481,12 +481,12 @@ bool Transporter::GenerateWaypoints(uint32 pathid)
             cM = keyFrames[i + 1].mapid;
         }
 
-        TWayPoint pos(keyFrames[i + 1].mapid, keyFrames[i + 1].x, keyFrames[i + 1].y, keyFrames[i + 1].z, teleport3);
+        TWayPoint pos2(keyFrames[i + 1].mapid, keyFrames[i + 1].x, keyFrames[i + 1].y, keyFrames[i + 1].z, teleport3);
 
         //        LogDefault("T: %d, x: %f, y: %f, z: %f, t:%d", t, pos.x, pos.y, pos.z, teleport);
 
         //if (teleport)
-        m_WayPoints[t] = pos;
+        m_WayPoints[t] = pos2;
         //if (keyFrames[i + 1].delay > 5)
         //    pos2.delayed = true;
 

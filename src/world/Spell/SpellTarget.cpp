@@ -112,11 +112,11 @@ void Spell::FillTargetMap(uint32 i)
     ARCEMU_ASSERT(m_caster->IsInWorld());
 
     uint32 TargetType = 0;
-    TargetType |= GetTargetType(m_spellInfo->getEffectImplicitTargetA(i), i);
+    TargetType |= GetTargetType(m_spellInfo->getEffectImplicitTargetA(static_cast<uint8_t>(i)), i);
 
     //never get info from B if it is 0 :P
     if (m_spellInfo->getEffectImplicitTargetB(i) != EFF_TARGET_NONE)
-        TargetType |= GetTargetType(m_spellInfo->getEffectImplicitTargetB(i), i);
+        TargetType |= GetTargetType(m_spellInfo->getEffectImplicitTargetB(static_cast<uint8_t>(i)), i);
 
     if (TargetType & SPELL_TARGET_NOT_IMPLEMENTED)
         return;
@@ -255,7 +255,7 @@ void Spell::AddChainTargets(uint32 i, uint32 targetType, float /*r*/, uint32 /*m
     if (casterFrom != nullptr && pfirstTargetFrom != nullptr && casterFrom->GetGroup() == pfirstTargetFrom->GetGroup())
         RaidOnly = true;
 
-    uint32 jumps = m_spellInfo->getEffectChainTarget(i);
+    uint32 jumps = m_spellInfo->getEffectChainTarget(static_cast<uint8_t>(i));
 
     //range
     range /= jumps; //hacky, needs better implementation!

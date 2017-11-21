@@ -813,7 +813,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
         resistchance += min;
     }
 
-    if (GetSpellInfo()->getEffect(effindex) == SPELL_EFFECT_DISPEL)
+    if (GetSpellInfo()->getEffect(static_cast<uint8_t>(effindex)) == SPELL_EFFECT_DISPEL)
     {
         spellModFlatFloatValue(u_victim->SM_FRezist_dispell, &resistchance, GetSpellInfo()->getSpellGroupType());
         spellModPercentageFloatValue(u_victim->SM_PRezist_dispell, &resistchance, GetSpellInfo()->getSpellGroupType());
@@ -1610,7 +1610,7 @@ void Spell::castMe(bool check)
             // if the spell is not reflected
             if (!IsReflected())
             {
-                for (uint32 x = 0; x < 3; x++)
+                for (uint8_t x = 0; x < 3; x++)
                 {
                     // check if we actually have a effect
                     if (GetSpellInfo()->getEffect(x))
@@ -3212,7 +3212,7 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
         }
     }
 
-    uint32 id = GetSpellInfo()->getEffect(i);
+    uint32 id = GetSpellInfo()->getEffect(static_cast<uint8_t>(i));
 
     damage = CalculateEffect(i, unitTarget);
 
@@ -3226,11 +3226,11 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
 #endif
 
     uint32 TargetType = 0;
-    TargetType |= GetTargetType(m_spellInfo->getEffectImplicitTargetA(i), i);
+    TargetType |= GetTargetType(m_spellInfo->getEffectImplicitTargetA(static_cast<uint8_t>(i)), i);
 
     //never get info from B if it is 0 :P
-    if (m_spellInfo->getEffectImplicitTargetB(i) != EFF_TARGET_NONE)
-        TargetType |= GetTargetType(m_spellInfo->getEffectImplicitTargetB(i), i);
+    if (m_spellInfo->getEffectImplicitTargetB(static_cast<uint8_t>(i)) != EFF_TARGET_NONE)
+        TargetType |= GetTargetType(m_spellInfo->getEffectImplicitTargetB(static_cast<uint8_t>(i)), i);
 
     if (u_caster != nullptr && unitTarget != nullptr && unitTarget->IsCreature() && TargetType & SPELL_TARGET_REQUIRE_ATTACKABLE && !(m_spellInfo->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
     {
@@ -3769,7 +3769,7 @@ float Spell::GetRadius(uint32 i)
     if (bRadSet[i])
         return Rad[i];
     bRadSet[i] = true;
-    Rad[i] = ::GetRadius(sSpellRadiusStore.LookupEntry(GetSpellInfo()->getEffectRadiusIndex(i)));
+    Rad[i] = ::GetRadius(sSpellRadiusStore.LookupEntry(GetSpellInfo()->getEffectRadiusIndex(static_cast<uint8_t>(i))));
     if (u_caster != nullptr)
     {
         ascemu::World::Spell::Helpers::spellModFlatFloatValue(u_caster->SM_FRadius, &Rad[i], GetSpellInfo()->getSpellGroupType());
@@ -4123,8 +4123,8 @@ uint8 Spell::CanCast(bool tolerate)
         {
             for (i = 0; i < 3; ++i)
             {
-                if (GetSpellInfo()->getEffect(i) && GetSpellInfo()->getEffect(i) != SPELL_EFFECT_APPLY_AURA && GetSpellInfo()->getEffect(i) != SPELL_EFFECT_APPLY_PET_AREA_AURA
-                    && GetSpellInfo()->getEffect(i) != SPELL_EFFECT_APPLY_GROUP_AREA_AURA && GetSpellInfo()->getEffect(i) != SPELL_EFFECT_APPLY_RAID_AREA_AURA)
+                if (GetSpellInfo()->getEffect(i) && GetSpellInfo()->getEffect(static_cast<uint8_t>(i)) != SPELL_EFFECT_APPLY_AURA && GetSpellInfo()->getEffect(i) != SPELL_EFFECT_APPLY_PET_AREA_AURA
+                    && GetSpellInfo()->getEffect(i) != SPELL_EFFECT_APPLY_GROUP_AREA_AURA && GetSpellInfo()->getEffect(static_cast<uint8_t>(i)) != SPELL_EFFECT_APPLY_RAID_AREA_AURA)
                 {
                     return SPELL_FAILED_TARGET_DUELING;
                 }
@@ -4321,10 +4321,10 @@ uint8 Spell::CanCast(bool tolerate)
             {
                 for (i = 0; i < 8; ++i)
                 {
-                    if (GetSpellInfo()->getReagent(i) == 0 || GetSpellInfo()->getReagentCount(i) == 0)
+                    if (GetSpellInfo()->getReagent(static_cast<uint8_t>(i)) == 0 || GetSpellInfo()->getReagentCount(static_cast<uint8_t>(i)) == 0)
                         continue;
 
-                    if (p_caster->GetItemInterface()->GetItemCount(GetSpellInfo()->getReagent(i)) < GetSpellInfo()->getReagentCount(i))
+                    if (p_caster->GetItemInterface()->GetItemCount(GetSpellInfo()->getReagent(static_cast<uint8_t>(i))) < GetSpellInfo()->getReagentCount(static_cast<uint8_t>(i)))
                         return SPELL_FAILED_ITEM_GONE;
                 }
             }
@@ -4335,9 +4335,9 @@ uint8 Spell::CanCast(bool tolerate)
          */
         for (i = 0; i < 2; ++i)
         {
-            if (GetSpellInfo()->getTotem(i) != 0)
+            if (GetSpellInfo()->getTotem(static_cast<uint8_t>(i)) != 0)
             {
-                if (p_caster->GetItemInterface()->GetItemCount(GetSpellInfo()->getTotem(i)) == 0)
+                if (p_caster->GetItemInterface()->GetItemCount(GetSpellInfo()->getTotem(static_cast<uint8_t>(i))) == 0)
                     return SPELL_FAILED_TOTEMS;
             }
         }
@@ -4984,11 +4984,11 @@ uint8 Spell::CanCast(bool tolerate)
                 size_t creatures = m_target_constraint->getCreatures().size();
 
                 // Spells for Invisibl Creatures and or Gameobjects ( Casting Spells Near them )
-                for (size_t i = 0; i < creatures; ++i)
+                for (size_t j = 0; j < creatures; ++j)
                 {
-                    if (!m_target_constraint->isFocused(m_target_constraint->getCreatures()[i]))
+                    if (!m_target_constraint->isFocused(m_target_constraint->getCreatures()[j]))
                     {
-                        pCreature = m_caster->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), m_target_constraint->getCreatures()[i]);
+                        pCreature = m_caster->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), m_target_constraint->getCreatures()[j]);
 
                         if (pCreature)
                         {
@@ -5004,11 +5004,11 @@ uint8 Spell::CanCast(bool tolerate)
                 GameObject* pGameobject = nullptr;
                 size_t gameobjects = m_target_constraint->getGameObjects().size();
 
-                for (size_t i = 0; i < gameobjects; ++i)
+                for (size_t j = 0; j < gameobjects; ++j)
                 {
-                    if (!m_target_constraint->isFocused(m_target_constraint->getGameObjects()[i]))
+                    if (!m_target_constraint->isFocused(m_target_constraint->getGameObjects()[j]))
                     {
-                        pGameobject = m_caster->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), m_target_constraint->getGameObjects()[i]);
+                        pGameobject = m_caster->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), m_target_constraint->getGameObjects()[j]);
 
                         if (pGameobject)
                         {
@@ -5463,9 +5463,9 @@ uint8 Spell::CanCast(bool tolerate)
         {
             for (i = 0; i < 3; i++)  // if is going to cast a spell that breaks stun remove stun auras, looks a bit hacky but is the best way i can find
             {
-                if (GetSpellInfo()->getEffectApplyAuraName(i) == SPELL_AURA_MECHANIC_IMMUNITY)
+                if (GetSpellInfo()->getEffectApplyAuraName(static_cast<uint8_t>(i)) == SPELL_AURA_MECHANIC_IMMUNITY)
                 {
-                    target->RemoveAllAurasByMechanic(GetSpellInfo()->getEffectMiscValue(i), static_cast<uint32>(-1), true);
+                    target->RemoveAllAurasByMechanic(GetSpellInfo()->getEffectMiscValue(static_cast<uint8_t>(i)), static_cast<uint32>(-1), true);
                     // Remove all debuffs of that mechanic type.
                     // This is also done in SpellAuras.cpp - wtf?
                 }
@@ -5729,13 +5729,13 @@ int32 Spell::CalculateEffect(uint32 i, Unit* target)
     }
 exit:
 
-    float basePointsPerLevel = GetSpellInfo()->getEffectRealPointsPerLevel(i);
+    float basePointsPerLevel = GetSpellInfo()->getEffectRealPointsPerLevel(static_cast<uint8_t>(i));
     int32 basePoints;
     if (m_overrideBasePoints)
         basePoints = m_overridenBasePoints[i];
     else
-        basePoints = GetSpellInfo()->getEffectBasePoints(i) + 1;
-    int32 randomPoints = GetSpellInfo()->getEffectDieSides(i);
+        basePoints = GetSpellInfo()->getEffectBasePoints(static_cast<uint8_t>(i)) + 1;
+    int32 randomPoints = GetSpellInfo()->getEffectDieSides(static_cast<uint8_t>(i));
 
     //added by Zack : some talents inherit their basepoints from the previously cast spell: see mage - Master of Elements
     if (forced_basepoints[i])
@@ -5757,7 +5757,7 @@ exit:
     else
         value = basePoints + (int32)RandomUInt(randomPoints);
 
-    int32 comboDamage = (int32)GetSpellInfo()->getEffectPointsPerComboPoint(i);
+    int32 comboDamage = (int32)GetSpellInfo()->getEffectPointsPerComboPoint(static_cast<uint8_t>(i));
     if (comboDamage && p_caster != nullptr)
     {
         m_requiresCP = true;
@@ -6033,7 +6033,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         {
             if (p_caster != nullptr)
             {
-                value += (uint32)((p_caster->GetAP() * 0.1526f) + (p_caster->GetPower(POWER_TYPE_ENERGY) * GetSpellInfo()->getDmg_multiplier(i)));
+                value += (uint32)((p_caster->GetAP() * 0.1526f) + (p_caster->GetPower(POWER_TYPE_ENERGY) * GetSpellInfo()->getDmg_multiplier(static_cast<uint8_t>(i))));
                 p_caster->SetPower(POWER_TYPE_ENERGY, 0);
             }
         } break;
@@ -6217,7 +6217,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         case 72427:
         {
             if (i == 2)
-                return GetSpellInfo()->getEffectBasePoints(i) + 1;
+                return GetSpellInfo()->getEffectBasePoints(static_cast<uint8_t>(i)) + 1;
         } break;
 
         // SPELL_HASH_FAN_OF_KNIVES:  // rogue - fan of knives
@@ -6256,7 +6256,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         case 15290:
         case 71269:
         {
-            value = value * (GetSpellInfo()->getEffectBasePoints(i) + 1) / 100;
+            value = value * (GetSpellInfo()->getEffectBasePoints(static_cast<uint8_t>(i)) + 1) / 100;
             if (p_caster != nullptr)
             {
                 spellModFlatIntValue(p_caster->SM_FMiscEffect, &value, GetSpellInfo()->getSpellGroupType());
@@ -6468,7 +6468,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                     case 68315:
                     case 72329:
                     case 72330:
-                        if (GetSpellInfo()->getEffectApplyAuraName(i) == SPELL_AURA_PERIODIC_DAMAGE)
+                        if (GetSpellInfo()->getEffectApplyAuraName(static_cast<uint8_t>(i)) == SPELL_AURA_PERIODIC_DAMAGE)
                             value += float2int32(u_caster->GetAP() * 0.03f);
                         break;
                     // SPELL_HASH_INSTANT_POISON_IX:
@@ -6501,7 +6501,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                     case 28428:
                     case 41189:
                     case 59242:
-                        if (GetSpellInfo()->getEffect(i) == SPELL_EFFECT_SCHOOL_DAMAGE)
+                        if (GetSpellInfo()->getEffect(static_cast<uint8_t>(i)) == SPELL_EFFECT_SCHOOL_DAMAGE)
                             value += float2int32(u_caster->GetAP() * 0.10f);
                         break;
                     // SPELL_HASH_WOUND_POISON_VII:
@@ -6531,7 +6531,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                     case 43461:
                     case 54074:
                     case 65962:
-                        if (GetSpellInfo()->getEffect(i) == SPELL_EFFECT_SCHOOL_DAMAGE)
+                        if (GetSpellInfo()->getEffect(static_cast<uint8_t>(i)) == SPELL_EFFECT_SCHOOL_DAMAGE)
                             value += float2int32(u_caster->GetAP() * 0.04f);
                         break;
                 }
@@ -7688,7 +7688,9 @@ void Spell::SpellEffectJumpBehindTarget(uint32 /*i*/)
     }
     else if (m_targets.m_targetMask & (TARGET_FLAG_SOURCE_LOCATION | TARGET_FLAG_DEST_LOCATION))
     {
-        float x, y, z;
+        float x = 0.0f;
+        float y = 0.0f;
+        float z = 0.0f;
 
         //this can also jump to a point
         if (m_targets.m_targetMask & TARGET_FLAG_SOURCE_LOCATION)
@@ -7698,6 +7700,7 @@ void Spell::SpellEffectJumpBehindTarget(uint32 /*i*/)
             y = source.y;
             z = source.z;
         }
+
         if (m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION)
         {
             auto destination = m_targets.destination();
@@ -7706,8 +7709,15 @@ void Spell::SpellEffectJumpBehindTarget(uint32 /*i*/)
             z = destination.z;
         }
 
-        if (u_caster->GetAIInterface() != nullptr)
-            u_caster->GetAIInterface()->splineMoveJump(x, y, z);
+        if (x != 0.0f && y != 0.0f && z != 0.0f)
+        {
+            if (u_caster->GetAIInterface() != nullptr)
+                u_caster->GetAIInterface()->splineMoveJump(x, y, z);
+        }
+        else
+        {
+            LogDebugFlag(LF_SPELL, "Coordinates are empty");
+        }
     }
 }
 

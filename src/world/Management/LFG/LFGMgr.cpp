@@ -401,8 +401,8 @@ bool LfgMgr::RemoveFromQueue(uint64 guid)
 void LfgMgr::InitializeLockedDungeons(Player* player)
 {
     uint64 guid = player->GetGUID();
-    uint8 level = player->getLevel();
-    uint8 expansion = player->GetSession()->GetFlags();
+    uint8 level = static_cast<uint8>(player->getLevel());
+    uint8 expansion = static_cast<uint8>(player->GetSession()->GetFlags());
     LfgDungeonSet dungeons = GetDungeonsByRandom(0);
     LfgLockMap lock;
 

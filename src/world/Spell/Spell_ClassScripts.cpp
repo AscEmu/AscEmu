@@ -524,7 +524,7 @@ public:
     int32 DoCalculateEffect(uint32 i, Unit* /*target*/, int32 value) override
     {
         if (i == 1 && p_caster != NULL)
-            value = p_caster->GetMaxHealth() * (GetSpellInfo()->getEffectBasePoints(i) + 1) / 100;
+            value = p_caster->GetMaxHealth() * (GetSpellInfo()->getEffectBasePoints(static_cast<uint8_t>(i)) + 1) / 100;
 
         return value;
     }

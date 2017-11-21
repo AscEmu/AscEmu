@@ -8790,7 +8790,7 @@ void Unit::AddAura(Aura* aur)
                                         ench = oh->GetEnchantment(TEMP_ENCHANTMENT_SLOT);
                                         if (ench)
                                         {
-                                            DBC::Structures::SpellItemEnchantmentEntry const* Entry = ench->Enchantment;
+                                            DBC::Structures::SpellItemEnchantmentEntry const* itemEntry = ench->Enchantment;
                                             for (uint8 c = 0; c < 3; c++)
                                             {
                                                 if (Entry->type[c] && Entry->spell[c])
@@ -8860,7 +8860,7 @@ void Unit::AddAura(Aura* aur)
                                                                 break;
                                                         }
 
-                                                        oh_spell = Entry->spell[c];
+                                                        oh_spell = itemEntry->spell[c];
                                                         break;
                                                     }
                                                 }
@@ -11489,7 +11489,7 @@ bool Unit::IsDazed()
         {
             if (m_auras[x]->GetSpellInfo()->getMechanicsType() == MECHANIC_ENSNARED)
                 return true;
-            for (uint32 y = 0; y < 3; y++)
+            for (uint8_t y = 0; y < 3; y++)
                 if (m_auras[x]->GetSpellInfo()->getEffectMechanic(y) == MECHANIC_ENSNARED)
                     return true;
         }
