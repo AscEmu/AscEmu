@@ -519,8 +519,8 @@ class SERVER_DECL CreatureAISpells
             mMinPositionRangeToCast = 0.0f;
             mMaxPositionRangeToCast = 0.0f;
 
-            mMinHpRangeToCast = 0.0f;
-            mMaxHpRangeToCast = 100.0f;
+            mMinHpRangeToCast = 0;
+            mMaxHpRangeToCast = 100;
 
             if (mSpellInfo != nullptr)
             {
@@ -605,10 +605,10 @@ class SERVER_DECL CreatureAISpells
 
         // if it is not a random target type it sets the hp range when the creature can cast this spell
         // if it is a random target it controles when the spell can be cast based on the target hp
-        float mMinHpRangeToCast;
-        float mMaxHpRangeToCast;
+        int mMinHpRangeToCast;
+        int mMaxHpRangeToCast;
 
-        bool isHpInRange(float targetHp)
+        bool isHpInPercentRange(int targetHp)
         {
             if (targetHp >= mMinHpRangeToCast && targetHp <= mMaxHpRangeToCast)
                 return true;
@@ -616,7 +616,7 @@ class SERVER_DECL CreatureAISpells
             return false;
         }
 
-        void setMinMaxHp(float minHp, float maxHp)
+        void setMinMaxPercentHp(int minHp, int maxHp)
         {
             mMinHpRangeToCast = minHp;
             mMaxHpRangeToCast = maxHp;

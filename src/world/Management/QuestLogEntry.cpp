@@ -33,7 +33,7 @@ QuestLogEntry::QuestLogEntry()
     mInitialized = false;
     m_quest = nullptr;
     mDirty = false;
-    m_slot = -1;
+    m_slot = 0;
     completed = 0;
     m_plr = nullptr;
     iscastquest = false;
@@ -46,7 +46,7 @@ QuestLogEntry::~QuestLogEntry()
     
 }
 
-void QuestLogEntry::Init(QuestProperties const* quest, Player* plr, uint32 slot)
+void QuestLogEntry::Init(QuestProperties const* quest, Player* plr, uint16 slot)
 {
     ARCEMU_ASSERT(quest != nullptr);
     ARCEMU_ASSERT(plr != nullptr);
@@ -118,7 +118,6 @@ bool QuestLogEntry::IsUnitAffected(Unit* target)
 
 void QuestLogEntry::SaveToDB(QueryBuffer* buf)
 {
-    ARCEMU_ASSERT(m_slot != -1);
     if (!mDirty)
         return;
 
@@ -138,7 +137,7 @@ void QuestLogEntry::SaveToDB(QueryBuffer* buf)
     ss.rdbuf()->str("");
 
     ss << "INSERT INTO questlog VALUES(";
-    ss << m_plr->GetLowGUID() << "," << m_quest->id << "," << m_slot << "," << expirytime;
+    ss << m_plr->GetLowGUID() << "," << m_quest->id << "," << uint32(m_slot) << "," << expirytime;
     for (uint8 i = 0; i < 4; ++i)
         ss << "," << m_explored_areas[i];
 
@@ -275,9 +274,8 @@ void QuestLogEntry::SetTrigger(uint32 i)
     mDirty = true;
 }
 
-void QuestLogEntry::SetSlot(int32 i)
+void QuestLogEntry::SetSlot(uint16 i)
 {
-    ARCEMU_ASSERT(i != -1);
     m_slot = i;
 }
 
@@ -285,7 +283,7 @@ void QuestLogEntry::Finish()
 {
     sEventMgr.RemoveEvents(m_plr, EVENT_TIMED_QUEST_EXPIRE);
 
-    uint32 base = GetBaseField(m_slot);
+    uint16 base = GetBaseField(m_slot);
     m_plr->setUInt32Value(base + 0, 0);
     m_plr->setUInt32Value(base + 1, 0);
     m_plr->setUInt64Value(base + 2, 0);
@@ -308,7 +306,7 @@ void QuestLogEntry::Fail(bool timerexpired)
     expirytime = 0;
     mDirty = true;
 
-    uint32 base = GetBaseField(m_slot);
+    uint16 base = GetBaseField(m_slot);
     m_plr->setUInt32Value(base + 1, 2);
 
     if (timerexpired)
@@ -327,9 +325,9 @@ void QuestLogEntry::UpdatePlayerFields()
     if (!m_plr)
         return;
 
-    uint32 base = GetBaseField(m_slot);
+    uint16 base = GetBaseField(m_slot);
     m_plr->setUInt32Value(base + 0, m_quest->id);
-    uint32 field0 = 0;          // 0x01000000 = "Objective Complete" - 0x02 = Quest Failed - 0x04 = Quest Accepted
+    uint16 field0 = 0;          // 0x01000000 = "Objective Complete" - 0x02 = Quest Failed - 0x04 = Quest Accepted
 
     // next field is count (kills, etc)
     uint64 field1 = 0;

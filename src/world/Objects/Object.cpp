@@ -2226,13 +2226,13 @@ void Object::ModFloatValueByPCT(const uint32 index, int32 byPct)
 }
 
 
-void Object::SetFlag(const uint32 index, uint32 newFlag)
+void Object::SetFlag(const uint16 index, uint32 newFlag)
 {
     setUInt32Value(index, getUInt32Value(index) | newFlag);
 }
 
 
-void Object::RemoveFlag(const uint32 index, uint32 oldFlag)
+void Object::RemoveFlag(const uint16 index, uint32 oldFlag)
 {
     setUInt32Value(index, getUInt32Value(index) & ~oldFlag);
 }
@@ -2590,7 +2590,7 @@ void Object::UpdateSameFactionSet()
     }
 }
 
-void Object::EventSetUInt32Value(uint32 index, uint32 value)
+void Object::EventSetUInt32Value(uint16 index, uint32 value)
 {
     setUInt32Value(index, value);
 }

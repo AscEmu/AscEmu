@@ -217,8 +217,8 @@ class SERVER_DECL LootMgr : public Singleton <LootMgr>
         //////////////////////////////////////////////////////////////////////////////////////////
         bool HasLootForCreature(uint32 loot_id);
 
-        void FillCreatureLoot(Loot* loot, uint32 loot_id, uint32 type);
-        void FillGOLoot(Loot* loot, uint32 loot_id, uint32 type);
+        void FillCreatureLoot(Loot* loot, uint32 loot_id, uint8 type);
+        void FillGOLoot(Loot* loot, uint32 loot_id, uint8 type);
         void FillItemLoot(Loot* loot, uint32 loot_id);
         void FillFishingLoot(Loot* loot, uint32 loot_id);
         void FillSkinningLoot(Loot* loot, uint32 loot_id);
@@ -248,7 +248,7 @@ class SERVER_DECL LootMgr : public Singleton <LootMgr>
     private:
 
         void LoadLootTables(const char* szTableName, LootStore* LootTable);
-        void PushLoot(StoreLootList* list, Loot* loot, uint32 type);
+        void PushLoot(StoreLootList* list, Loot* loot, uint8 type);
         std::map<uint32, RandomPropertyVector> _randomprops;
         std::map<uint32, RandomSuffixVector> _randomsuffix;
 };

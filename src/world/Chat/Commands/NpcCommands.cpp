@@ -330,7 +330,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
 
     SystemMessage(m_session, "Health (cur / max): %u / %u", creature_target->GetHealth(), creature_target->GetMaxHealth());
 
-    uint32 powertype = creature_target->GetPowerType();
+    uint16_t powertype = creature_target->GetPowerType();
     if (powertype <= 6)
     {
         SystemMessage(m_session, "Powertype: %s", POWERTYPE[powertype]);
@@ -1016,10 +1016,10 @@ bool ChatHandler::HandleNpcSetCanFlyCommand(const char* args, WorldSession* m_se
 //.npc set equip
 bool ChatHandler::HandleNpcSetEquipCommand(const char* args, WorldSession* m_session)
 {
-    uint32 equipment_slot;
+    uint8_t equipment_slot;
     uint32 item_id;
 
-    if (sscanf(args, "%u %u", (unsigned int*)&equipment_slot, (unsigned int*)&item_id) != 2)
+    if (sscanf(args, "%hhu %u", &equipment_slot, &item_id) != 2)
     {
         RedSystemMessage(m_session, "Command must be in format: .npc add equipment <slot> <item_id>.");
         RedSystemMessage(m_session, "Slots: (0)melee, (1)offhand, (2)ranged");
@@ -1317,10 +1317,10 @@ bool ChatHandler::HandleNpcSetPhaseCommand(const char* args, WorldSession* m_ses
 //.npc set standstate
 bool ChatHandler::HandleNpcSetStandstateCommand(const char* args, WorldSession* m_session)
 {
-    uint32 standstate;
+    uint8_t standstate;
     uint32 save = 0;
 
-    if (sscanf(args, "%u %u", &standstate, &save) < 1)
+    if (sscanf(args, "%hhu %u", &standstate, &save) < 1)
     {
         RedSystemMessage(m_session, "You must specify a standstate value.");
         RedSystemMessage(m_session, ".npc set standstate <standstate>");

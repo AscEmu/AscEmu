@@ -65,7 +65,7 @@ class SERVER_DECL Creature : public Unit
         void AddVehicleComponent(uint32 creature_entry, uint32 vehicleid);
         void RemoveVehicleComponent();
 
-        bool Load(CreatureSpawn* spawn, uint32 mode, MySQLStructure::MapInfo const* info);
+        bool Load(CreatureSpawn* spawn, uint8 mode, MySQLStructure::MapInfo const* info);
         void Load(CreatureProperties const* c_properties, float x, float y, float z, float o = 0);
 
         void AddToWorld();
@@ -195,7 +195,7 @@ class SERVER_DECL Creature : public Unit
 
         int32 ModDamageDone[SCHOOL_COUNT];
         float ModDamageDonePct[SCHOOL_COUNT];
-        void CalcResistance(uint32 type);
+        void CalcResistance(uint16 type);
         void CalcStat(uint32 type);
 
         bool m_canRegenerateHP;

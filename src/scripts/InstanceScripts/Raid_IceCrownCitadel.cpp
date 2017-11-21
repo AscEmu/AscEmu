@@ -238,7 +238,7 @@ class LordMarrowgarAI : public CreatureAIScript
             auto berserk = addAISpell(LM_BERSERK, 50.0f, TARGET_SELF, 30, 240);
             berserk->addEmote("berserk", CHAT_MSG_MONSTER_YELL, 0);
             berserk->setMaxStackCount(1);
-            berserk->setMinMaxHp(0.0f, 50.0f);
+            berserk->setMinMaxPercentHp(0, 50);
             berserk->setAvailableForScriptPhase({ 3, 5 });
 
             auto souldFest = addAISpell(SOUL_FEAST, 50.0f, TARGET_RANDOM_SINGLE, 0, 20);

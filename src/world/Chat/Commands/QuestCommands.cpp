@@ -157,7 +157,7 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
                 recout += "Player is currently on that quest.";
             else
             {
-                int32 open_slot = plr->GetOpenQuestSlot();
+                uint16 open_slot = plr->GetOpenQuestSlot();
 
                 if (open_slot == -1)
                 {
@@ -175,7 +175,7 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
                     sGMLog.writefromsession(m_session, "started quest %u [%s] for player %s", qst->id, qst->title.c_str(), plr->GetName());
 
                     QuestLogEntry* qle = new QuestLogEntry();
-                    qle->Init(qst, plr, (uint32)open_slot);
+                    qle->Init(qst, plr, open_slot);
                     qle->UpdatePlayerFields();
 
                     // If the quest should give any items on begin, give them the items.

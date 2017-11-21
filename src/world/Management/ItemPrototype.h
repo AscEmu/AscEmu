@@ -611,7 +611,7 @@ struct ItemProperties
 {
     uint32_t ItemId;
     uint32_t Class;
-    uint32_t SubClass;
+    uint16_t SubClass;
     uint32_t unknown_bc;
     std::string Name;
     uint32_t DisplayInfoID;

@@ -630,7 +630,7 @@ enum DuelWinner
 const time_t attackTimeoutInterval = 5000;
 const time_t forcedResurrectInterval = 360000;  // 1000*60*6= 6 minutes
 
-enum PlayerCombatRating
+enum PlayerCombatRating : uint16_t
 {
     PCR_RANGED_SKILL                = 0,
     PCR_DEFENCE                     = 1,

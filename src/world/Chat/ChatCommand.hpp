@@ -23,8 +23,8 @@ public:
 
     ChatCommand* ChildCommands;
 
-    uint32_t NormalValueField;
-    uint32_t MaxValueField;
+    uint16_t NormalValueField;
+    uint16_t MaxValueField;
 
     /// ValueType: 0 = nothing, 1 = uint, 2 = float
     uint16_t ValueType;

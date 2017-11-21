@@ -38,7 +38,7 @@ class SERVER_DECL QuestLogEntry : public EventableObject
 		~QuestLogEntry();
 
 		inline QuestProperties const* GetQuest() { return m_quest; };
-		void Init(QuestProperties const* quest, Player* plr, uint32 slot);
+		void Init(QuestProperties const* quest, Player* plr, uint16 slot);
 
 		bool CanBeFinished();
 		void Complete();
@@ -56,7 +56,7 @@ class SERVER_DECL QuestLogEntry : public EventableObject
 		void AddAffectedUnit(Unit* target);
 		void ClearAffectedUnits();
 
-		void SetSlot(int32 i);
+		void SetSlot(uint16 i);
 		void Finish();
 
 
@@ -89,11 +89,11 @@ class SERVER_DECL QuestLogEntry : public EventableObject
 		inline uint32 GetMobCount(uint32 i) { return m_mobcount[i]; }
 		inline uint32 GetExploredAreas(uint32 i) { return m_explored_areas[i]; }
 
-		inline uint32 GetBaseField(uint32 slot)
+		uint16 GetBaseField(uint16 slot)
 		{
 			return PLAYER_QUEST_LOG_1_1 + (slot * 5);
 		}
-		inline int32 GetSlot() { return m_slot; }
+		uint16 GetSlot() { return m_slot; }
 
 	private:
 
@@ -113,7 +113,7 @@ class SERVER_DECL QuestLogEntry : public EventableObject
 		bool isemotequest;
 
 		uint32 expirytime;
-		int32 m_slot;
+		uint16 m_slot;
 };
 #define CALL_QUESTSCRIPT_EVENT(obj, func) if (static_cast<QuestLogEntry*>(obj)->GetQuest()->pQuestScript != NULL) static_cast<QuestLogEntry*>(obj)->GetQuest()->pQuestScript->func
 

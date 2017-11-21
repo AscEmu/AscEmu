@@ -149,7 +149,7 @@ namespace MySQLStructure
         uint32_t gossipMenu;
         uint32_t itemOrder;
         uint32_t menuOptionText;
-        uint32_t icon;
+        uint8_t icon;
         uint32_t pointOfInterest;
         uint32_t nextGossipMenu;
         uint32_t nextGossipMenuText;

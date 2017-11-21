@@ -221,7 +221,7 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 		void EventCorpseDespawn(uint64 guid);
 
 		time_t InactiveMoveTime;
-		uint32 iInstanceMode;
+		uint8 iInstanceMode;
 
 		void UnloadCell(uint32 x, uint32 y);
 		void EventRespawnCreature(Creature* c, uint16 x, uint16 y);

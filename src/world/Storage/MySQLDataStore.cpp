@@ -230,7 +230,7 @@ void MySQLDataStore::loadItemPropertiesTable()
 
             itemProperties.ItemId = entry;
             itemProperties.Class = fields[1].GetUInt32();
-            itemProperties.SubClass = fields[2].GetUInt32();
+            itemProperties.SubClass = fields[2].GetUInt16();
             itemProperties.unknown_bc = fields[3].GetUInt32();
             itemProperties.Name = fields[4].GetString();
             itemProperties.DisplayInfoID = fields[5].GetUInt32();
@@ -1119,7 +1119,7 @@ void MySQLDataStore::loadQuestPropertiesTable()
                 questInfo.required_quests[i] = fields[107 + i].GetUInt32();
             }
 
-            questInfo.remove_quests = fields[111].GetUInt32();
+            questInfo.remove_quests = fields[111].GetString();
 
             for (uint8_t i = 0; i < 4; ++i)
             {
@@ -1560,7 +1560,7 @@ void MySQLDataStore::loadNpcScriptTextTable()
         npcScriptText.text = fields[1].GetString();
         npcScriptText.creature_entry = fields[2].GetUInt32();
         npcScriptText.text_id = fields[3].GetUInt32();
-        npcScriptText.type = ChatMsg(fields[4].GetUInt32());
+        npcScriptText.type = fields[4].GetUInt8();
         npcScriptText.language = Languages(fields[5].GetUInt32());
         npcScriptText.probability = fields[6].GetFloat();
         npcScriptText.emote = EmoteType(fields[7].GetUInt32());
@@ -3386,10 +3386,10 @@ void MySQLDataStore::loadLocalesNpcText()
         std::string locString = fields[1].GetString();
         localNpcText.languageCode = Util::getLanguagesIdFromString(locString);
 
-        for (uint8 i = 0; i < 8; ++i)
+        for (uint8 j = 0; j < 8; ++j)
         {
-            localNpcText.texts[i][0] = strdup(fields[2 + (2 * i)].GetString());
-            localNpcText.texts[i][1] = strdup(fields[3 + (2 * i)].GetString());
+            localNpcText.texts[j][0] = strdup(fields[2 + (2 * j)].GetString());
+            localNpcText.texts[j][1] = strdup(fields[3 + (2 * j)].GetString());
         }
 
         ++load_count;
@@ -3975,7 +3975,7 @@ void MySQLDataStore::loadGossipMenuItemsTable()
             gMenuItem.gossipMenu = fields[0].GetUInt32();
             gMenuItem.itemOrder = fields[1].GetUInt32();
             gMenuItem.menuOptionText = fields[2].GetUInt32();
-            gMenuItem.icon = fields[3].GetUInt32();
+            gMenuItem.icon = fields[3].GetUInt8();
             gMenuItem.pointOfInterest = fields[4].GetUInt32();
             gMenuItem.nextGossipMenu = fields[5].GetUInt32();
             gMenuItem.nextGossipMenuText = fields[6].GetUInt32();

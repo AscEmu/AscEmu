@@ -181,7 +181,7 @@ class SERVER_DECL PlayerInfo
         char* name;
         uint32 race;
         uint32 gender;
-        uint32 cl;
+        uint8 cl;
         uint32 team;
         uint8 role;
 
@@ -588,7 +588,7 @@ public:
         void SendMeetingStoneQueue(uint32 DungeonId, uint8 Status);
         void SendDungeonDifficulty();
         void SendRaidDifficulty();
-        void SendInstanceDifficulty(uint32 difficulty);
+        void SendInstanceDifficulty(uint8 difficulty);
         void SendExploreXP(uint32 areaid, uint32 xp);
         void SendDestroyObject(uint64 GUID);
         void SendEquipmentSetList();
@@ -714,7 +714,7 @@ public:
             return false;
         }
 
-        int32 GetOpenQuestSlot();
+        uint16 GetOpenQuestSlot();
         QuestLogEntry* GetQuestLogForEntry(uint32 quest);
         QuestLogEntry* GetQuestLogInSlot(uint32 slot) { return m_questlog[slot]; }
         uint32 GetQuestSharer() { return m_questSharer; }
@@ -1343,7 +1343,7 @@ public:
         void EventDeActivateGameObject(GameObject* obj);
         void UpdateNearbyGameObjects();
 
-        void CalcResistance(uint32 type);
+        void CalcResistance(uint16 type);
         float res_M_crit_get() { return m_resist_critical[0]; }
         void res_M_crit_set(float newvalue) { m_resist_critical[0] = newvalue; }
         float res_R_crit_get() { return m_resist_critical[1]; }
@@ -1382,7 +1382,7 @@ public:
         uint32 m_retainedrage;
 
         uint32* GetPlayedtime() { return m_playedtime; };
-        void CalcStat(uint32 t);
+        void CalcStat(uint16 t);
         float CalcRating(PlayerCombatRating t);
         void RegenerateMana(bool is_interrupted);
         void RegenerateHealth(bool inCombat);
@@ -2227,7 +2227,7 @@ public:
 
         PlayerInfo* getPlayerInfo() const { return m_playerInfo; }
 
-        void LoadFieldsFromString(const char* string, uint32 firstField, uint32 fieldsNum);
+        void LoadFieldsFromString(const char* string, uint16 firstField, uint32 fieldsNum);
 #if VERSION_STRING > TBC
         void UpdateGlyphs();
 #endif

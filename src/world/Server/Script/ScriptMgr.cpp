@@ -1156,7 +1156,7 @@ void CreatureAIScript::_cancelAllTimers()
 uint32_t CreatureAIScript::_getTimerCount()
 {
     if (InstanceScript* inScript = getInstanceScript())
-        return mCreatureTimerIds.size();
+        return static_cast<uint32_t>(mCreatureTimerIds.size());
     
     return static_cast<uint32_t>(mCreatureTimer.size());
 }
@@ -1322,7 +1322,7 @@ void CreatureAISpells::sendRandomEmote(CreatureAIScript* creatureAI)
     {
         LogDebugFlag(LF_SCRIPT_MGR, "AISpellEmotes::sendRandomEmote() : called");
 
-        uint32_t randomUInt = (mAISpellEmote.size() > 1) ? Util::getRandomUInt(mAISpellEmote.size() - 1) : 0;
+        uint32_t randomUInt = (mAISpellEmote.size() > 1) ? Util::getRandomUInt(static_cast<uint32_t>(mAISpellEmote.size() - 1)) : 0;
         creatureAI->getCreature()->SendChatMessage(mAISpellEmote[randomUInt].mType, LANG_UNIVERSAL, mAISpellEmote[randomUInt].mText.c_str());
 
         if (mAISpellEmote[randomUInt].mSoundId != 0)
@@ -1414,7 +1414,7 @@ void CreatureAIScript::newAIUpdateSpellSystem()
                     continue;
 
                 // hp range
-                if (!AISpell->isHpInRange(getCreature()->GetHealthPct()))
+                if (!AISpell->isHpInPercentRange(getCreature()->GetHealthPct()))
                     continue;
 
                 // no random chance (cast in script)
@@ -1510,7 +1510,7 @@ void CreatureAIScript::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
 
                 if (
                     inRangeTarget->isAlive() && AiSpell->isDistanceInRange(getCreature()->GetDistance2dSq(inRangeTarget)) 
-                    && ((AiSpell->isHpInRange(inRangeTarget->GetHealthPct()) && isTargetRandFriend)
+                    && ((AiSpell->isHpInPercentRange(inRangeTarget->GetHealthPct()) && isTargetRandFriend)
                     || (getCreature()->GetAIInterface()->getThreatByPtr(inRangeTarget) > 0 && isHostile(getCreature(), inRangeTarget))))
                 {
                     possibleUnitTargets.push_back(inRangeTarget);
@@ -1519,7 +1519,7 @@ void CreatureAIScript::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
         }
 
         // add us as a friendly target.
-        if (AiSpell->isHpInRange(getCreature()->GetHealthPct()) && isTargetRandFriend)
+        if (AiSpell->isHpInPercentRange(getCreature()->GetHealthPct()) && isTargetRandFriend)
             possibleUnitTargets.push_back(getCreature());
 
         // no targets in our range for hp range and firendly targets
@@ -1758,7 +1758,7 @@ void CreatureAIScript::sendRandomDBChatMessage(std::vector<uint32_t> emoteVector
 {
     if (!emoteVector.empty())
     {
-        uint32_t randomUInt = (emoteVector.size() > 1) ? Util::getRandomUInt(emoteVector.size() - 1) : 0;
+        uint32_t randomUInt = (emoteVector.size() > 1) ? Util::getRandomUInt(static_cast<uint32_t>(emoteVector.size() - 1)) : 0;
 
         sendDBChatMessage(emoteVector[randomUInt]);
     }
@@ -2456,7 +2456,7 @@ void SpellDesc::sendRandomEmote(CreatureAIScript* creatureAI)
     {
         LogDebugFlag(LF_SCRIPT_MGR, "SpellDesc::SendRandomEmote() : called");
 
-        uint32_t randomUInt = (mEmotes.size() > 1) ? Util::getRandomUInt(mEmotes.size() - 1) : 0;
+        uint32_t randomUInt = (mEmotes.size() > 1) ? Util::getRandomUInt(static_cast<uint32_t>(mEmotes.size() - 1)) : 0;
         creatureAI->getCreature()->SendChatMessage(mEmotes[randomUInt].mType, LANG_UNIVERSAL, mEmotes[randomUInt].mText.c_str());
 
         if (mEmotes[randomUInt].mSoundId != 0)

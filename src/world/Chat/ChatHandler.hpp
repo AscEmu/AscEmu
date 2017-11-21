@@ -50,8 +50,8 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleHelpCommand(const char* args, WorldSession* m_session);
         bool HandleCommandsCommand(const char* args, WorldSession* m_session);
         bool HandleGetSkillLevelCommand(const char* args, WorldSession* m_session);
-        bool CmdSetValueField(WorldSession* m_session, uint32 field, uint32 fieldmax, const char* fieldname, const char* args);
-        bool CmdSetFloatField(WorldSession* m_session, uint32 field, uint32 fieldmax, const char* fieldname, const char* args);
+        bool CmdSetValueField(WorldSession* m_session, uint16 field, uint16 fieldmax, const char* fieldname, const char* args);
+        bool CmdSetFloatField(WorldSession* m_session, uint16 field, uint16 fieldmax, const char* fieldname, const char* args);
 
 
         //helper

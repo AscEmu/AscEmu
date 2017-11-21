@@ -606,13 +606,13 @@ public:
             m_wowGuid.Init(GetGUID());
         }
 
-        void EventSetUInt32Value(uint32 index, uint32 value);
+        void EventSetUInt32Value(uint16 index, uint32 value);
 
-        void SetFlag(const uint32 index, uint32 newFlag);
+        void SetFlag(const uint16 index, uint32 newFlag);
 
-        void RemoveFlag(const uint32 index, uint32 oldFlag);
+        void RemoveFlag(const uint16 index, uint32 oldFlag);
 
-        uint32 HasFlag(const uint32 index, uint32 flag) const
+        bool HasFlag(const uint16 index, uint32 flag) const
         {
             ARCEMU_ASSERT(index < m_valuesCount);
             return m_uint32Values[index] & flag;

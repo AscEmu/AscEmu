@@ -1627,7 +1627,7 @@ void Aura::SpellAuraModBaseResistancePerc(bool apply)
     else
         amt = -mod->m_amount;
 
-    for (uint32 x = 0; x < 7; x++)
+    for (uint16 x = 0; x < 7; x++)
     {
         if (Flag & (((uint32)1) << x))
         {
@@ -3355,7 +3355,7 @@ void Aura::SpellAuraModResistance(bool apply)
 
     if (m_target->IsPlayer())
     {
-        for (uint32 x = 0; x < 7; x++)
+        for (uint16 x = 0; x < 7; x++)
         {
             if (Flag & (((uint32)1) << x))
             {
@@ -3369,9 +3369,9 @@ void Aura::SpellAuraModResistance(bool apply)
     }
     else if (m_target->IsCreature())
     {
-        for (uint32 x = 0; x < 7; x++)
+        for (uint16 x = 0; x < 7; x++)
         {
-            if (Flag & (((uint32)1) << x))
+            if (Flag & (((uint32)1) << (uint32)x))
             {
                 static_cast< Creature* >(m_target)->FlatResistanceMod[x] += amt;
                 static_cast< Creature* >(m_target)->CalcResistance(x);
@@ -6358,7 +6358,7 @@ void Aura::SpellAuraModResistancePCT(bool apply)
     else
         amt = -mod->m_amount;
 
-    for (uint8 x = 0; x < SCHOOL_COUNT; x++)
+    for (uint16 x = 0; x < SCHOOL_COUNT; x++)
     {
         if (Flag & (((uint32)1) << x))
         {
@@ -8228,7 +8228,7 @@ void Aura::SpellAuraIncreaseArmorByPctInt(bool apply)
     int32 amt = float2int32(i_Int * ((float)mod->m_amount / 100.0f));
     amt *= (!apply) ? -1 : 1;
 
-    for (uint8 x = 0; x < 7; x++)
+    for (uint16 x = 0; x < 7; x++)
     {
         if (mod->m_miscValue & (((uint32)1) << x))
         {

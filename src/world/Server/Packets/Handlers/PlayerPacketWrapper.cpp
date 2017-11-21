@@ -241,7 +241,7 @@ void Player::SendRaidDifficulty()
 #endif
 }
 
-void Player::SendInstanceDifficulty(uint32 difficulty)
+void Player::SendInstanceDifficulty(uint8 difficulty)
 {
     WorldPacket data(SMSG_INSTANCE_DIFFICULTY, 8);
     data << uint32(difficulty);

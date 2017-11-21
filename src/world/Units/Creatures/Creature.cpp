@@ -883,7 +883,7 @@ void Creature::ClearInRangeSet()
     Unit::ClearInRangeSet();
 }
 
-void Creature::CalcResistance(uint32 type)
+void Creature::CalcResistance(uint16 type)
 {
     int32 pos = 0;
     int32 neg = 0;
@@ -1300,7 +1300,7 @@ bool Creature::Teleport(const LocationVector& vec, MapMgr* map)
     }
 }
 
-bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MySQLStructure::MapInfo const* info)
+bool Creature::Load(CreatureSpawn* spawn, uint8 mode, MySQLStructure::MapInfo const* info)
 {
     m_spawn = spawn;
     creature_properties = sMySQLStore.getCreatureProperties(spawn->entry);

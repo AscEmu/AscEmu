@@ -1396,7 +1396,7 @@ void ObjectMgr::LoadSpellEffectsOverride()
         {
             Field* f = result->Fetch();
             uint32 seo_SpellId = f[0].GetUInt32();
-            uint32 seo_EffectId = f[1].GetUInt32();
+            uint8 seo_EffectId = f[1].GetUInt8();
             uint32 seo_Disable = f[2].GetUInt32();
             uint32 seo_Effect = f[3].GetUInt32();
             uint32 seo_BasePoints = f[4].GetUInt32();
@@ -3800,7 +3800,7 @@ void ObjectMgr::LoadCreatureAIAgents()
 
                 AI_Spell* sp = new AI_Spell;
                 sp->entryId = fields[0].GetUInt32();
-                sp->instance_mode = fields[1].GetUInt32();
+                sp->instance_mode = fields[1].GetUInt8();
                 sp->agent = fields[2].GetUInt16();
                 sp->procChance = fields[4].GetUInt32();
                 sp->procCount = fields[5].GetUInt32();

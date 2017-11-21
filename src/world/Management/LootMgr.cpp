@@ -328,7 +328,7 @@ void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
     delete result;
 }
 
-void LootMgr::PushLoot(StoreLootList* list, Loot* loot, uint32 type)
+void LootMgr::PushLoot(StoreLootList* list, Loot* loot, uint8 type)
 {
     uint32 i;
     uint32 count;
@@ -521,7 +521,7 @@ bool LootMgr::HasLootForCreature(uint32 loot_id)
         return false;
 }
 
-void LootMgr::FillCreatureLoot(Loot* loot, uint32 loot_id, uint32 type)
+void LootMgr::FillCreatureLoot(Loot* loot, uint32 loot_id, uint8 type)
 {
     loot->items.clear();
     loot->gold = 0;
@@ -532,7 +532,7 @@ void LootMgr::FillCreatureLoot(Loot* loot, uint32 loot_id, uint32 type)
         PushLoot(&tab->second, loot, type);
 }
 
-void LootMgr::FillGOLoot(Loot* loot, uint32 loot_id, uint32 type)
+void LootMgr::FillGOLoot(Loot* loot, uint32 loot_id, uint8 type)
 {
     loot->items.clear();
     loot->gold = 0;

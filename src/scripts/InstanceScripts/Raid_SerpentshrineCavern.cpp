@@ -1123,7 +1123,7 @@ class ShadowofLeotherasAI : public CreatureAIScript
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "At last I am liberated. It has been too long since I have tasted true freedom!");
             getCreature()->PlaySoundToSet(11309);
 
-            sEventMgr.AddEvent(static_cast<Object*>(getCreature()), &Object::EventSetUInt32Value, (uint32)UNIT_FIELD_FLAGS, (uint32)0, EVENT_CREATURE_UPDATE, 7500, 0, 1);
+            sEventMgr.AddEvent(static_cast<Object*>(getCreature()), &Object::EventSetUInt32Value, (uint16)UNIT_FIELD_FLAGS, (uint32)0, EVENT_CREATURE_UPDATE, 7500, 0, 1);
         }
 
         void OnCombatStart(Unit* /*mTarget*/) override

@@ -490,7 +490,7 @@ void ChatHandler::BlueSystemMessage(WorldSession* m_session, const char* message
     delete data;
 }
 
-bool ChatHandler::CmdSetValueField(WorldSession* m_session, uint32 field, uint32 fieldmax, const char* fieldname, const char* args)
+bool ChatHandler::CmdSetValueField(WorldSession* m_session, uint16 field, uint16 fieldmax, const char* fieldname, const char* args)
 {
     char* pvalue;
     uint32 mv, av;
@@ -611,7 +611,7 @@ bool ChatHandler::CmdSetValueField(WorldSession* m_session, uint32 field, uint32
     return true;
 }
 
-bool ChatHandler::CmdSetFloatField(WorldSession* m_session, uint32 field, uint32 fieldmax, const char* fieldname, const char* args)
+bool ChatHandler::CmdSetFloatField(WorldSession* m_session, uint16 field, uint16 fieldmax, const char* fieldname, const char* args)
 {
     char* pvalue;
     float mv, av;

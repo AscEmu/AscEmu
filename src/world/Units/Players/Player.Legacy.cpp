@@ -1027,7 +1027,7 @@ bool Player::Create(WorldPacket& data)
     SetGold(worldConfig.player.startGoldAmount);
 
 
-    for (uint32 x = 0; x < 7; x++)
+    for (uint16 x = 0; x < 7; x++)
         setFloatValue(PLAYER_FIELD_MOD_DAMAGE_DONE_PCT + x, 1.00);
 
     setUInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, 0xEEEEEEEE);
@@ -1492,7 +1492,7 @@ bool Player::HasAreaExplored(::DBC::Structures::AreaTableEntry const* at)
     if (at == nullptr)
         return false;
 
-    int offset = at->explore_flag / 32;
+    uint16_t offset = static_cast<uint16_t>(at->explore_flag / 32);
     offset += PLAYER_EXPLORED_ZONES_1;
 
     uint32 val = (uint32)(1 << (at->explore_flag % 32));
@@ -1521,7 +1521,7 @@ void Player::_EventExploration()
 
     uint32 AreaId = at->id;
 
-    int offset = at->explore_flag / 32;
+    uint16_t offset = static_cast<uint16_t>(at->explore_flag / 32);
     offset += PLAYER_EXPLORED_ZONES_1;
 
     uint32 val = (uint32)(1 << (at->explore_flag % 32));
@@ -3289,7 +3289,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     ///    SetFloatValue(x, 0.0f);
 
 #if VERSION_STRING != Classic
-    for (uint32 x = PLAYER_FIELD_MOD_DAMAGE_DONE_PCT; x < PLAYER_FIELD_MOD_HEALING_DONE_POS; ++x)
+    for (uint16_t x = PLAYER_FIELD_MOD_DAMAGE_DONE_PCT; x < PLAYER_FIELD_MOD_HEALING_DONE_POS; ++x)
         setFloatValue(x, 1.0f);
 #endif
 
@@ -3403,7 +3403,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     }
     for (uint32 z = 0; z < NUM_CHARTER_TYPES; ++z)
         m_charters[z] = objmgr.GetCharterByGuid(GetGUID(), (CharterTypes)z);
-    for (uint32 z = 0; z < NUM_ARENA_TEAM_TYPES; ++z)
+    for (uint16 z = 0; z < NUM_ARENA_TEAM_TYPES; ++z)
     {
         m_arenaTeams[z] = objmgr.GetArenaTeamByGuid(GetLowGUID(), z);
         if (m_arenaTeams[z] != nullptr)
@@ -3686,7 +3686,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     HonorHandler::RecalculateHonorFields(this);
 
-    for (uint32 x = 0; x < 5; x++)
+    for (uint16 x = 0; x < 5; x++)
         BaseStats[x] = GetStat(x);
 
 #if VERSION_STRING > TBC
@@ -3924,19 +3924,18 @@ void Player::_LoadQuestLogEntry(QueryResult* result)
     QuestProperties const* quest;
     Field* fields;
     uint32 questid;
-    uint32 baseindex;
 
     // clear all fields
     for (uint8 i = 0; i < 25; ++i)
     {
-        baseindex = PLAYER_QUEST_LOG_1_1 + (i * 5);
+        uint16_t baseindex = PLAYER_QUEST_LOG_1_1 + (i * 5);
         setUInt32Value(baseindex + 0, 0);
         setUInt32Value(baseindex + 1, 0);
         setUInt64Value(baseindex + 2, 0);
         setUInt32Value(baseindex + 4, 0);
     }
 
-    int slot = 0;
+    uint16 slot = 0;
 
     if (result)
     {
@@ -3945,8 +3944,7 @@ void Player::_LoadQuestLogEntry(QueryResult* result)
             fields = result->Fetch();
             questid = fields[1].GetUInt32();
             quest = sMySQLStore.getQuestProperties(questid);
-            slot = fields[2].GetUInt32();
-            ARCEMU_ASSERT(slot != -1);
+            slot = fields[2].GetUInt16();
 
             // remove on next save if bad quest
             if (!quest)
@@ -4270,7 +4268,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
     //Items Set check
     int32 proto_setid = proto->ItemSet;
 
-    uint32 setid = 0;
+    int32 setid = 0;
     // These season pvp itemsets are interchangeable and each set group has the same
     // bonuses if you have a full set made up of parts from any of the 3 similar sets
     // you will get the highest sets bonus
@@ -4283,7 +4281,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
     }
     else
     {
-        setid = uint32(proto_setid);
+        setid = proto_setid;
     }
 
 
@@ -5193,13 +5191,13 @@ bool Player::IsGroupMember(Player* plyr)
     return false;
 }
 
-int32 Player::GetOpenQuestSlot()
+uint16 Player::GetOpenQuestSlot()
 {
     for (uint8 i = 0; i < 25; ++i)
         if (m_questlog[i] == nullptr)
             return i;
 
-    return -1;
+    return 0;
 }
 
 void Player::AddToFinishedQuests(uint32 quest_id)
@@ -6684,7 +6682,7 @@ void Player::Reset_Talents()
 
 void Player::Reset_AllTalents()
 {
-    uint32 originalspec = m_talentActiveSpec;
+    uint8 originalspec = m_talentActiveSpec;
     Reset_Talents();
 
     if (originalspec == SPEC_PRIMARY)
@@ -6696,7 +6694,7 @@ void Player::Reset_AllTalents()
     ActivateSpec(originalspec);
 }
 
-void Player::CalcResistance(uint32 type)
+void Player::CalcResistance(uint16 type)
 {
     int32 res;
     int32 pos;
@@ -7079,7 +7077,7 @@ void Player::RemoveSpellsFromLine(uint32 skill_line)
     }
 }
 
-void Player::CalcStat(uint32 type)
+void Player::CalcStat(uint16 type)
 {
     int32 res;
     ARCEMU_ASSERT(type < 5);
@@ -9394,7 +9392,7 @@ void Player::CompleteLoading()
         //if (!(*i).positive) // do we need this? - vojta
         //    aura->SetNegative();
 
-        for (uint32 x = 0; x < 3; x++)
+        for (uint8 x = 0; x < 3; x++)
         {
             if (sp->getEffect(x) == SPELL_EFFECT_APPLY_AURA)
             {
@@ -10458,9 +10456,9 @@ void Player::_AddSkillLine(uint32 SkillLine, uint32 Curr_sk, uint32 Max_sk)
 void Player::_UpdateSkillFields()
 {
 #if VERSION_STRING != Cata
-    uint32 f = PLAYER_SKILL_INFO_1_1;
+    uint16 f = PLAYER_SKILL_INFO_1_1;
 #else
-    uint32 f = PLAYER_SKILL_LINEID_0;
+    uint16 f = PLAYER_SKILL_LINEID_0;
 #endif
     /* Set the valid skills */
     for (SkillMap::iterator itr = m_skills.begin(); itr != m_skills.end();)
@@ -11916,7 +11914,7 @@ void Player::UpdateGlyphs()
 
     if (level >= 15)
     {
-        uint32 y = 0;
+        uint16 y = 0;
         for (uint32 i = 0; i < sGlyphSlotStore.GetNumRows(); ++i)
         {
             auto glyph_slot = sGlyphSlotStore.LookupEntry(i);
@@ -11988,13 +11986,13 @@ void Player::UpdateGlyphs()
 #endif
 
 // Fills fields from firstField to firstField+fieldsNum-1 with integers from the string
-void Player::LoadFieldsFromString(const char* string, uint32 firstField, uint32 fieldsNum)
+void Player::LoadFieldsFromString(const char* string, uint16 firstField, uint32 fieldsNum)
 {
     if (string == nullptr)
         return;
     char* end;
     char* start = (char*)string;
-    for (uint32 Counter = 0; Counter < fieldsNum; Counter++)
+    for (uint16 Counter = 0; Counter < fieldsNum; Counter++)
     {
         end = strchr(start, ',');
         if (!end)
@@ -13667,7 +13665,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         return;
     }
 
-    int32 log_slot = GetOpenQuestSlot();
+    uint16 log_slot = GetOpenQuestSlot();
 
     if (log_slot == -1)
     {
