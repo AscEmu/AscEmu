@@ -724,7 +724,7 @@ void Item::RemoveEnchantment(uint32 EnchantmentSlot)
 
 void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
 {
-    if (m_owner == NULL)
+    if (m_owner == nullptr)
         return;
 
     EnchantmentMap::iterator itr = Enchantments.find(Slot);
@@ -750,7 +750,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
     uint32 ItemSlot = m_owner->GetItemInterface()->GetInventorySlotByGuid(GetGUID()) * 2;   //VLack: for 3.1.1 "* 18" is a bad idea, now it's "* 2"; but this could have been calculated based on UpdateFields.h! This is PLAYER_VISIBLE_ITEM_LENGTH
     uint32 VisibleBase = PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + ItemSlot;
     if (VisibleBase <= PLAYER_VISIBLE_ITEM_19_ENCHANTMENT)
-        m_owner->setUInt32Value(VisibleBase, Apply ? Entry->Id : 0);   //On 3.1 we can't add a Slot to the base now, as we no longer have multiple fields for storing them. This in some cases will try to write for example 3 visuals into one place, but now every item has only one field for this, and as we can't choose which visual to have, we'll accept the last one.
+        m_owner->setUInt32Value(static_cast<uint8_t>(VisibleBase), Apply ? Entry->Id : 0);   //On 3.1 we can't add a Slot to the base now, as we no longer have multiple fields for storing them. This in some cases will try to write for example 3 visuals into one place, but now every item has only one field for this, and as we can't choose which visual to have, we'll accept the last one.
     else
         LOG_ERROR("Item::ApplyEnchantmentBonus visual out of range! Tried to address UInt32 field %i !!!", VisibleBase);
 #else
@@ -776,7 +776,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                     if (Apply)
                     {
                         if (Entry->spell[c] != 0)
-                            m_owner->AddProcTriggerSpell(Entry->spell[c], 0, m_owner->GetGUID(), Entry->min[c], PROC_ON_MELEE_ATTACK, 0, NULL, NULL, this);
+                            m_owner->AddProcTriggerSpell(Entry->spell[c], 0, m_owner->GetGUID(), Entry->min[c], PROC_ON_MELEE_ATTACK, 0, nullptr, nullptr, this);
                     }
                     else
                     {
@@ -841,7 +841,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                     {
                         m_owner->FlatResistanceModifierPos[Entry->spell[c]] -= val;
                     }
-                    m_owner->CalcResistance(Entry->spell[c]);
+                    m_owner->CalcResistance(static_cast<uint16_t>(Entry->spell[c]));
                 }
                 break;
 

@@ -2521,7 +2521,7 @@ void Spell::SendSpellGo()
     m_targets.write(data);   // this write is included the target flag
 
     if (flags & SPELL_GO_FLAGS_POWER_UPDATE)
-        data << (uint32)p_caster->GetPower(GetSpellInfo()->getPowerType());
+        data << (uint32)p_caster->GetPower(static_cast<uint16_t>(GetSpellInfo()->getPowerType()));
 
     // er why handle it being null inside if if you can't get into if if its null
     if (GetType() == SPELL_DMG_TYPE_RANGED)
@@ -2796,7 +2796,7 @@ void Spell::SendTameFailure(uint8 result)
 
 bool Spell::HasPower()
 {
-    int32 powerField;
+    uint16_t powerField;
     if (u_caster != nullptr)
         if (u_caster->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TRAINER))
             return true;
@@ -2882,8 +2882,7 @@ bool Spell::HasPower()
         }
     }
 
-    int32 currentPower = m_caster->getUInt32Value(powerField);
-
+    uint32_t currentPower = m_caster->getUInt32Value(powerField);
     int32 cost = 0;
 
     if (GetSpellInfo()->getManaCostPercentage()) //Percentage spells cost % of !!!BASE!!! mana
@@ -2909,7 +2908,7 @@ bool Spell::HasPower()
             cost += u_caster->PowerCostMod[GetSpellInfo()->getSchool()];//this is not percent!
         else
             cost += u_caster->PowerCostMod[0];
-        cost += float2int32(cost * u_caster->GetPowerCostMultiplier(GetSpellInfo()->getSchool()));
+        cost += float2int32(cost * u_caster->GetPowerCostMultiplier(static_cast<uint16_t>(GetSpellInfo()->getSchool())));
     }
 
     //hackfix for shiv's energy cost
@@ -2948,7 +2947,7 @@ bool Spell::HasPower()
 
 bool Spell::TakePower()
 {
-    int32 powerField;
+    uint16_t powerField;
     if (u_caster != nullptr)
         if (u_caster->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TRAINER))
             return true;
@@ -3041,9 +3040,9 @@ bool Spell::TakePower()
         }
     }
 
-    int32 currentPower = m_caster->getUInt32Value(powerField);
-
+    uint32_t currentPower = m_caster->getUInt32Value(powerField);
     int32 cost = 0;
+
     if (GetSpellInfo()->getManaCostPercentage()) //Percentage spells cost % of !!!BASE!!! mana
     {
         if (u_caster != nullptr)
@@ -3067,7 +3066,7 @@ bool Spell::TakePower()
             cost += u_caster->PowerCostMod[GetSpellInfo()->getSchool()];//this is not percent!
         else
             cost += u_caster->PowerCostMod[0];
-        cost += float2int32(cost * u_caster->GetPowerCostMultiplier(GetSpellInfo()->getSchool()));
+        cost += float2int32(cost * u_caster->GetPowerCostMultiplier(static_cast<uint16_t>(GetSpellInfo()->getSchool())));
     }
 
     //hackfix for shiv's energy cost
@@ -3801,8 +3800,6 @@ uint32 Spell::GetMechanic(SpellInfo* sp)
 
 uint8 Spell::CanCast(bool tolerate)
 {
-    uint32 i;
-
     // Check if spell can be casted while player is moving.
     if ((p_caster != nullptr) && p_caster->m_isMoving && (m_spellInfo->getInterruptFlags() & CAST_INTERRUPT_ON_MOVEMENT) && (m_castTime != 0) && (GetDuration() != 0))
         return SPELL_FAILED_MOVING;
@@ -4121,10 +4118,10 @@ uint8 Spell::CanCast(bool tolerate)
          */
         if (p_caster->GetDuelState() == DUEL_STATE_REQUESTED)
         {
-            for (i = 0; i < 3; ++i)
+            for (uint8_t i = 0; i < 3; ++i)
             {
-                if (GetSpellInfo()->getEffect(i) && GetSpellInfo()->getEffect(static_cast<uint8_t>(i)) != SPELL_EFFECT_APPLY_AURA && GetSpellInfo()->getEffect(i) != SPELL_EFFECT_APPLY_PET_AREA_AURA
-                    && GetSpellInfo()->getEffect(i) != SPELL_EFFECT_APPLY_GROUP_AREA_AURA && GetSpellInfo()->getEffect(static_cast<uint8_t>(i)) != SPELL_EFFECT_APPLY_RAID_AREA_AURA)
+                if (GetSpellInfo()->getEffect(i) && GetSpellInfo()->getEffect(i) != SPELL_EFFECT_APPLY_AURA && GetSpellInfo()->getEffect(i) != SPELL_EFFECT_APPLY_PET_AREA_AURA
+                    && GetSpellInfo()->getEffect(i) != SPELL_EFFECT_APPLY_GROUP_AREA_AURA && GetSpellInfo()->getEffect(i) != SPELL_EFFECT_APPLY_RAID_AREA_AURA)
                 {
                     return SPELL_FAILED_TARGET_DUELING;
                 }
@@ -4319,12 +4316,12 @@ uint8 Spell::CanCast(bool tolerate)
             // Skip this with enchanting scrolls
             if (!i_caster || i_caster->GetItemProperties()->Flags != 268435520)
             {
-                for (i = 0; i < 8; ++i)
+                for (uint8_t i = 0; i < 8; ++i)
                 {
-                    if (GetSpellInfo()->getReagent(static_cast<uint8_t>(i)) == 0 || GetSpellInfo()->getReagentCount(static_cast<uint8_t>(i)) == 0)
+                    if (GetSpellInfo()->getReagent(i) == 0 || GetSpellInfo()->getReagentCount(i) == 0)
                         continue;
 
-                    if (p_caster->GetItemInterface()->GetItemCount(GetSpellInfo()->getReagent(static_cast<uint8_t>(i))) < GetSpellInfo()->getReagentCount(static_cast<uint8_t>(i)))
+                    if (p_caster->GetItemInterface()->GetItemCount(GetSpellInfo()->getReagent(i)) < GetSpellInfo()->getReagentCount(i))
                         return SPELL_FAILED_ITEM_GONE;
                 }
             }
@@ -4333,11 +4330,11 @@ uint8 Spell::CanCast(bool tolerate)
         /**
          *	check if we have the required tools, totems, etc
          */
-        for (i = 0; i < 2; ++i)
+        for (uint8_t i = 0; i < 2; ++i)
         {
-            if (GetSpellInfo()->getTotem(static_cast<uint8_t>(i)) != 0)
+            if (GetSpellInfo()->getTotem(i) != 0)
             {
-                if (p_caster->GetItemInterface()->GetItemCount(GetSpellInfo()->getTotem(static_cast<uint8_t>(i))) == 0)
+                if (p_caster->GetItemInterface()->GetItemCount(GetSpellInfo()->getTotem(i)) == 0)
                     return SPELL_FAILED_TOTEMS;
             }
         }
@@ -4399,16 +4396,17 @@ uint8 Spell::CanCast(bool tolerate)
         {
             auto area_group = sAreaGroupStore.LookupEntry(GetSpellInfo()->getRequiresAreaId());
             auto area = p_caster->GetArea();
-            for (i = 0; i < 6; ++i)
+            for (uint8_t i = 0; i < 6; ++i)
             {
                 if (area_group->AreaId[i] == area->id || (area->zone != 0 && area_group->AreaId[i] == area->zone))
                     break;
             }
-
+            /* i are not initaliazed (only in for loops) -- ask Zyres
             if (i == 7)
             {
                 return SPELL_FAILED_REQUIRES_AREA;
             }
+            */
         }
 #endif
 
@@ -5461,11 +5459,11 @@ uint8 Spell::CanCast(bool tolerate)
         Unit* target = (m_caster->IsInWorld()) ? m_caster->GetMapMgr()->GetUnit(m_targets.m_unitTarget) : NULL;
         if (target)  /* -Supalosa- Shouldn't this be handled on Spell Apply? */
         {
-            for (i = 0; i < 3; i++)  // if is going to cast a spell that breaks stun remove stun auras, looks a bit hacky but is the best way i can find
+            for (uint8_t i = 0; i < 3; i++)  // if is going to cast a spell that breaks stun remove stun auras, looks a bit hacky but is the best way i can find
             {
-                if (GetSpellInfo()->getEffectApplyAuraName(static_cast<uint8_t>(i)) == SPELL_AURA_MECHANIC_IMMUNITY)
+                if (GetSpellInfo()->getEffectApplyAuraName(i) == SPELL_AURA_MECHANIC_IMMUNITY)
                 {
-                    target->RemoveAllAurasByMechanic(GetSpellInfo()->getEffectMiscValue(static_cast<uint8_t>(i)), static_cast<uint32>(-1), true);
+                    target->RemoveAllAurasByMechanic(GetSpellInfo()->getEffectMiscValue(i), static_cast<uint32>(-1), true);
                     // Remove all debuffs of that mechanic type.
                     // This is also done in SpellAuras.cpp - wtf?
                 }
@@ -5614,7 +5612,7 @@ void Spell::RemoveItems()
         }
         else
         {
-            for (uint32 x = 0; x < 5; x++)
+            for (uint16_t x = 0; x < 5; x++)
             {
                 int32 charges = static_cast<int32>(i_caster->GetCharges(x));
 
@@ -7428,7 +7426,7 @@ uint32 Spell::GetTargetType(uint32 value, uint32 i)
     uint32 type = g_spellImplicitTargetFlags[value];
 
     //CHAIN SPELLS ALWAYS CHAIN!
-    uint32 jumps = m_spellInfo->getEffectChainTarget(i);
+    uint32 jumps = m_spellInfo->getEffectChainTarget(static_cast<uint8_t>(i));
     if (u_caster != nullptr)
         spellModFlatIntValue(u_caster->SM_FAdditionalTargets, (int32*)&jumps, m_spellInfo->getSpellGroupType());
     if (jumps != 0)
@@ -7652,17 +7650,17 @@ void Spell::SpellEffectJumpTarget(uint32 i)
 
     float speedZ = 0.0f;
 
-    if (m_spellInfo->getEffectMiscValue(i))
-        speedZ = float(m_spellInfo->getEffectMiscValue(i)) / 10;
-    else if (m_spellInfo->getEffectMiscValueB(i))
-        speedZ = float(m_spellInfo->getEffectMiscValueB(i)) / 10;
+    if (m_spellInfo->getEffectMiscValue(static_cast<uint8_t>(i)))
+        speedZ = float(m_spellInfo->getEffectMiscValue(static_cast<uint8_t>(i))) / 10;
+    else if (m_spellInfo->getEffectMiscValueB(static_cast<uint8_t>(i)))
+        speedZ = float(m_spellInfo->getEffectMiscValueB(static_cast<uint8_t>(i))) / 10;
 
     o = unitTarget->calcRadAngle(u_caster->GetPositionX(), u_caster->GetPositionY(), x, y);
 
     if (speedZ <= 0.0f)
-        u_caster->GetAIInterface()->splineMoveJump(x, y, z, o, GetSpellInfo()->getEffect(i) == 145);
+        u_caster->GetAIInterface()->splineMoveJump(x, y, z, o, GetSpellInfo()->getEffect(static_cast<uint8_t>(i)) == 145);
     else
-        u_caster->GetAIInterface()->splineMoveJump(x, y, z, o, speedZ, GetSpellInfo()->getEffect(i) == 145);
+        u_caster->GetAIInterface()->splineMoveJump(x, y, z, o, speedZ, GetSpellInfo()->getEffect(static_cast<uint8_t>(i)) == 145);
 }
 
 void Spell::SpellEffectJumpBehindTarget(uint32 /*i*/)

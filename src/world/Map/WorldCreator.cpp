@@ -209,7 +209,7 @@ uint32 InstanceMgr::PreTeleport(uint32 mapid, Player* plr, uint32 instanceid)
     // if it's not a normal / 10men normal then check if we even have this mode
     if (inf->type == INSTANCE_RAID && plr->GetRaidDifficulty() != MODE_NORMAL_10MEN)
     {
-        uint32 newtype = 0;
+        uint8_t newtype = 0;
 
         if (!inf->hasDifficulty(plr->GetRaidDifficulty()))
         {
@@ -253,7 +253,7 @@ uint32 InstanceMgr::PreTeleport(uint32 mapid, Player* plr, uint32 instanceid)
                 plr->SendRaidDifficulty();
 
                 Group* grp = plr->GetGroup();
-                if (grp != NULL)
+                if (grp != nullptr)
                     grp->SetRaidDifficulty(newtype);
             }
         }

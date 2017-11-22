@@ -115,7 +115,7 @@ void Spell::FillTargetMap(uint32 i)
     TargetType |= GetTargetType(m_spellInfo->getEffectImplicitTargetA(static_cast<uint8_t>(i)), i);
 
     //never get info from B if it is 0 :P
-    if (m_spellInfo->getEffectImplicitTargetB(i) != EFF_TARGET_NONE)
+    if (m_spellInfo->getEffectImplicitTargetB(static_cast<uint8_t>(i)) != EFF_TARGET_NONE)
         TargetType |= GetTargetType(m_spellInfo->getEffectImplicitTargetB(static_cast<uint8_t>(i)), i);
 
     if (TargetType & SPELL_TARGET_NOT_IMPLEMENTED)

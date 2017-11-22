@@ -1035,7 +1035,7 @@ void WorldSession::HandleCharterTurnInCharter(WorldPacket& recv_data)
     {
         ///\todo Arena charter -Replace with correct messages */
         ArenaTeam* team;
-        uint32 type;
+        uint16_t type;
         uint32 i;
         uint32 icon;
         uint32 iconcolor;

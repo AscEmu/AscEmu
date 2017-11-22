@@ -75,7 +75,7 @@ void Summon::Load(CreatureProperties const* properties_, Unit* pOwner, LocationV
 void Summon::OnPushToWorld()
 {
     if (summonslot != -1)
-        owner->summonhandler.AddSummonToSlot(this, summonslot);
+        owner->summonhandler.AddSummonToSlot(this, static_cast<uint8_t>(summonslot));
     else
         owner->summonhandler.AddSummon(this);
 
@@ -92,7 +92,7 @@ void Summon::OnPreRemoveFromWorld()
         owner->RemoveAura(GetCreatedBySpell());
 
     if (summonslot != -1)
-        owner->summonhandler.RemoveSummonFromSlot(summonslot, false);
+        owner->summonhandler.RemoveSummonFromSlot(static_cast<uint8_t>(summonslot), false);
     else
         owner->summonhandler.RemoveSummon(this);
 
@@ -123,7 +123,7 @@ void Summon::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     Creature::Die(pAttacker, damage, spellid);
 
     if (summonslot != -1)
-        owner->summonhandler.RemoveSummonFromSlot(summonslot, false);
+        owner->summonhandler.RemoveSummonFromSlot(static_cast<uint8_t>(summonslot), false);
     else
         owner->summonhandler.RemoveSummon(this);
 

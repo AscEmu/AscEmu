@@ -11128,11 +11128,11 @@ bool Player::HasSpellWithAuraNameAndBasePoints(uint32 auraname, uint32 basepoint
     {
         SpellInfo *sp = sSpellCustomizations.GetSpellInfo(*itr);
 
-        for (uint8 i = 0; i < 3; ++i)
+        for (uint8_t i = 0; i < 3; ++i)
         {
             if (sp->getEffect(i) == SPELL_EFFECT_APPLY_AURA)
             {
-                if ((sp->getEffectApplyAuraName(i) == auraname) && (sp->getEffectBasePoints(i) == (basepoints - 1)))
+                if (sp->getEffectApplyAuraName(i) == auraname && sp->getEffectBasePoints(i) == basepoints - 1)
                     return true;
             }
         }

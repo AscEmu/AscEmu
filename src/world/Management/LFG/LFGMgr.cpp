@@ -1878,7 +1878,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         player->GetAchievementMgr().UpdateAchievementCriteria(player, 13029, 1); // Done LFG Dungeon with random Players
 #endif
 
-    LfgReward const* reward = GetRandomDungeonReward(rDungeonId, player->getLevel());
+    LfgReward const* reward = GetRandomDungeonReward(rDungeonId, static_cast<uint8_t>(player->getLevel()));
     if (!reward)
         return;
 

@@ -4791,7 +4791,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 case 64849:
                 case 64850:
                 {
-                    if (CastingSpell == NULL)
+                    if (CastingSpell == nullptr)
                         continue;
                     //trigger only on heal spell cast by NOT us
                     if (!(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_HEALING) || this == victim)
@@ -4801,14 +4801,14 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     if (idx != 1)
                     {
                         if (ospinfo)
-                            dmg_overwrite[0] = ((CastingSpell->getEffectBasePoints(idx) + 1) * (ospinfo->getEffectBasePoints(0) + 1) / 100);
+                            dmg_overwrite[0] = ((CastingSpell->getEffectBasePoints(static_cast<uint8_t>(idx)) + 1) * (ospinfo->getEffectBasePoints(0) + 1) / 100);
                     }
                 }
                 break;
                 //paladin - Light's Grace
                 case 31834:
                 {
-                    if (CastingSpell == NULL)
+                    if (CastingSpell == nullptr)
                         continue;//this should not occur unless we made a fuckup somewhere
 
                     switch (CastingSpell->getId())
@@ -6773,7 +6773,7 @@ void Unit::RegeneratePower(bool isinterrupted)
 
     if (!IsPlayer() && IsVehicle())
     {
-        uint32 powertype = GetPowerType();
+        uint8_t powertype = GetPowerType();
         float wrate = worldConfig.getFloatRate(RATE_VEHICLES_POWER_REGEN);
         float amount = wrate * 20.0f;
         SetPower(powertype, static_cast<int32>(GetPower(powertype) + amount));
@@ -6927,7 +6927,7 @@ void Unit::CalculateResistanceReduction(Unit* pVictim, dealdamage* dmg, SpellInf
     else
     {
         // applying resistance to other type of damage
-        int32 RResist = float2int32((pVictim->GetResistance((*dmg).school_type) + ((pVictim->getLevel() > getLevel()) ? (pVictim->getLevel() - this->getLevel()) * 5 : 0)) - PowerCostPctMod[(*dmg).school_type]);
+        int32 RResist = float2int32((pVictim->GetResistance(static_cast<uint16_t>((*dmg).school_type)) + ((pVictim->getLevel() > getLevel()) ? (pVictim->getLevel() - this->getLevel()) * 5 : 0)) - PowerCostPctMod[(*dmg).school_type]);
         if (RResist < 0)
             RResist = 0;
         AverageResistance = ((float)(RResist) / (float)(getLevel() * 5) * 0.75f);
@@ -6937,7 +6937,7 @@ void Unit::CalculateResistanceReduction(Unit* pVictim, dealdamage* dmg, SpellInf
         // NOT WOWWIKILIKE but i think it's actually to add some fullresist chance from resistances
         if (!ability || !(ability->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY))
         {
-            float Resistchance = (float)pVictim->GetResistance((*dmg).school_type) / (float)pVictim->getLevel();
+            float Resistchance = (float)pVictim->GetResistance(static_cast<uint16_t>((*dmg).school_type)) / (float)pVictim->getLevel();
             Resistchance *= Resistchance;
             if (Rand(Resistchance))
                 AverageResistance = 1.0f;
@@ -12127,8 +12127,8 @@ void Unit::Energize(Unit* target, uint32 SpellId, uint32 amount, uint32 type)
     if (!target || !SpellId || !amount)
         return;
 
-    uint32 cur = target->GetPower(POWER_TYPE_MANA + type);
-    uint32 max = target->GetMaxPower(POWER_TYPE_MANA + type);
+    uint32 cur = target->GetPower(static_cast<uint16_t>(POWER_TYPE_MANA + type));
+    uint32 max = target->GetMaxPower(static_cast<uint16_t>(POWER_TYPE_MANA + type));
 
     if (cur + amount > max)
         amount = max - cur;
@@ -12851,14 +12851,14 @@ void Unit::RemoveReflect(uint32 spellid, bool apply)
 
 void Unit::SetPower(uint32 type, int32 value)
 {
-    uint32 maxpower = getUInt32Value(UNIT_FIELD_MAXPOWER1 + type);
+    uint32 maxpower = getUInt32Value(static_cast<uint16_t>(UNIT_FIELD_MAXPOWER1 + type));
 
     if (value < 0)
         value = 0;
     else if (value > (int32)maxpower)
         value = maxpower;
 
-    setUInt32Value(UNIT_FIELD_POWER1 + type, value);
+    setUInt32Value(static_cast<uint16_t>(UNIT_FIELD_POWER1 + type), value);
 }
 
 void Unit::SendPowerUpdate(bool self)

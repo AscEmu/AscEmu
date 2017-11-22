@@ -542,7 +542,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
 
     //type of this UNIT_FIELD_ATTACK_POWER_MODS is unknown, not even uint32 disabled for now.
 
-    uint32 offset;
+    uint16_t offset;
     Item* it = nullptr;
 
     if (ability)

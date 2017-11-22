@@ -38,7 +38,7 @@ uint8 DeathKnight::GetBaseRuneType(uint8 slot)
     return base_runes[slot];
 }
 
-uint8 DeathKnight::GetRuneType(uint8 slot)
+uint8_t DeathKnight::GetRuneType(uint8_t slot)
 {
     return m_runes[slot].type;
 }

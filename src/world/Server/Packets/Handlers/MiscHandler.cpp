@@ -2707,40 +2707,40 @@ void WorldSession::HandleToggleHelmOpcode(WorldPacket& /*recv_data*/)
         _player->SetFlag(PLAYER_FLAGS, PLAYER_FLAG_NOHELM);
 }
 
-void WorldSession::HandleDungeonDifficultyOpcode(WorldPacket& recv_data)
+void WorldSession::HandleDungeonDifficultyOpcode(WorldPacket& recvData)
 {
     CHECK_INWORLD_RETURN
 
-    uint32 data;
-    recv_data >> data;
+    uint8_t data;
+    recvData >> data;
 
     // Set dungeon difficulty for us
     _player->iInstanceType = data;
     sInstanceMgr.ResetSavedInstances(_player);
 
-    Group* m_Group = _player->GetGroup();
+    Group* group = _player->GetGroup();
 
     // If we have a group and we are the leader then set it for the entire group as well
-    if (m_Group && _player->IsGroupLeader())
-        m_Group->SetDungeonDifficulty(data);
+    if (group && _player->IsGroupLeader())
+        group->SetDungeonDifficulty(data);
 }
 
-void WorldSession::HandleRaidDifficultyOpcode(WorldPacket& recv_data)
+void WorldSession::HandleRaidDifficultyOpcode(WorldPacket& recvData)
 {
     CHECK_INWORLD_RETURN
 
-    uint32 data;
-    recv_data >> data;
+    uint8_t data;
+    recvData >> data;
 
     // set the raid difficulty for us
     _player->SetRaidDifficulty(data);
     sInstanceMgr.ResetSavedInstances(_player);
 
-    Group* m_Group = _player->GetGroup();
+    Group* group = _player->GetGroup();
 
     // if we have a group and we are the leader then set it for the entire group as well
-    if (m_Group && _player->IsGroupLeader())
-        m_Group->SetRaidDifficulty(data);
+    if (group && _player->IsGroupLeader())
+        group->SetRaidDifficulty(data);
 }
 
 void WorldSession::HandleSummonResponseOpcode(WorldPacket& recv_data)
@@ -2798,7 +2798,7 @@ void WorldSession::HandleRemoveGlyph(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint32 glyphNum;
+    uint16_t glyphNum;
     recv_data >> glyphNum;
 
     if (glyphNum > 5)

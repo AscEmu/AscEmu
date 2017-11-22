@@ -27,7 +27,6 @@
 bool MailMessage::AddMessageDataToPacket(WorldPacket& data)
 {
     uint8 i = 0;
-    uint32 j;
     std::vector<uint32>::iterator itr;
     Item* pItem;
 
@@ -80,14 +79,14 @@ bool MailMessage::AddMessageDataToPacket(WorldPacket& data)
         for (itr = items.begin(); itr != items.end(); ++itr)
         {
             pItem = objmgr.LoadItem(*itr);
-            if (pItem == NULL)
+            if (pItem == nullptr)
                 continue;
 
             data << uint8(i++);
             data << uint32(pItem->GetLowGUID());
             data << uint32(pItem->GetEntry());
 
-            for (j = 0; j < 7; ++j)
+            for (uint16_t j = 0; j < 7; ++j)
             {
                 data << uint32(pItem->GetEnchantmentId(j));
                 data << uint32(pItem->GetEnchantmentDuration(j));
@@ -143,7 +142,7 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
 
     // Search for the recipient
     PlayerInfo* player = ObjectMgr::getSingleton().GetPlayerInfoByName(recepient.c_str());
-    if (player == NULL)
+    if (player == nullptr)
     {
         SendMailError(MAIL_ERR_RECIPIENT_NOT_FOUND);
         return;
@@ -155,7 +154,7 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
         recv_data >> itemguid;
 
         pItem = _player->GetItemInterface()->GetItemByGUID(itemguid);
-        if (pItem == NULL || pItem->IsSoulbound() || pItem->IsConjured())
+        if (pItem == nullptr || pItem->IsSoulbound() || pItem->IsConjured())
         {
             SendMailError(MAIL_ERR_INTERNAL_ERROR);
             return;
@@ -240,8 +239,8 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
                 continue;        // should never be hit.
 
             pItem->RemoveFromWorld();
-            pItem->SetOwner(NULL);
-            pItem->SaveToDB(INVENTORY_SLOT_NOT_SET, 0, true, NULL);
+            pItem->SetOwner(nullptr);
+            pItem->SaveToDB(INVENTORY_SLOT_NOT_SET, 0, true, nullptr);
             msg.items.push_back(pItem->GetLowGUID());
 
             if (GetPermissionCount() > 0)
@@ -295,7 +294,7 @@ void WorldSession::HandleMarkAsRead(WorldPacket& recv_data)
     recv_data >> message_id;
 
     MailMessage* message = _player->m_mailBox.GetMessage(message_id);
-    if (message == 0)
+    if (message == nullptr)
         return;
 
     // mark the message as read
@@ -324,7 +323,7 @@ void WorldSession::HandleMailDelete(WorldPacket& recv_data)
     data << uint32(MAIL_RES_DELETED);
 
     MailMessage* message = _player->m_mailBox.GetMessage(message_id);
-    if (message == 0)
+    if (message == nullptr)
     {
         data << uint32(MAIL_ERR_INTERNAL_ERROR);
         SendPacket(&data);
@@ -355,7 +354,7 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
     data << uint32(MAIL_RES_ITEM_TAKEN);
 
     MailMessage* message = _player->m_mailBox.GetMessage(message_id);
-    if (message == 0 || message->items.empty())
+    if (message == nullptr || message->items.empty())
     {
         data << uint32(MAIL_ERR_INTERNAL_ERROR);
         SendPacket(&data);
@@ -387,7 +386,7 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
 
     // grab the item
     Item* item = objmgr.LoadItem(*itr);
-    if (item == 0)  // doesn't exist
+    if (item == nullptr)  // doesn't exist
     {
         data << uint32(MAIL_ERR_INTERNAL_ERROR);
         SendPacket(&data);
@@ -418,7 +417,7 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
         }
     }
     else
-        item->SaveToDB(result.ContainerSlot, result.Slot, true, NULL);
+        item->SaveToDB(result.ContainerSlot, result.Slot, true, nullptr);
 
     // send complete packet
     data << uint32(MAIL_OK);
@@ -464,7 +463,7 @@ void WorldSession::HandleTakeMoney(WorldPacket& recv_data)
     data << uint32(MAIL_RES_MONEY_TAKEN);
 
     MailMessage* message = _player->m_mailBox.GetMessage(message_id);
-    if (message == 0 || !message->money)
+    if (message == nullptr || !message->money)
     {
         data << uint32(MAIL_ERR_INTERNAL_ERROR);
         SendPacket(&data);
@@ -476,7 +475,7 @@ void WorldSession::HandleTakeMoney(WorldPacket& recv_data)
     {
         if ((_player->GetGold() + message->money) > worldConfig.player.limitGoldAmount)
         {
-            _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
+            _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
             return;
         }
     }
@@ -509,7 +508,7 @@ void WorldSession::HandleReturnToSender(WorldPacket& recv_data)
     data << uint32(MAIL_RES_RETURNED_TO_SENDER);
 
     MailMessage* msg = _player->m_mailBox.GetMessage(message_id);
-    if (msg == 0)
+    if (msg == nullptr)
     {
         data << uint32(MAIL_ERR_INTERNAL_ERROR);
         SendPacket(&data);
@@ -559,7 +558,7 @@ void WorldSession::HandleMailCreateTextItem(WorldPacket& recv_data)
 
     ItemProperties const* proto = sMySQLStore.getItemProperties(8383);
     MailMessage* message = _player->m_mailBox.GetMessage(message_id);
-    if (message == 0 || !proto)
+    if (message == nullptr || !proto)
     {
         data << uint32(MAIL_ERR_INTERNAL_ERROR);
         SendPacket(&data);
@@ -575,7 +574,7 @@ void WorldSession::HandleMailCreateTextItem(WorldPacket& recv_data)
     }
 
     Item* pItem = objmgr.CreateItem(8383, _player);
-    if (pItem == NULL)
+    if (pItem == nullptr)
         return;
 
     pItem->SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_WRAP_GIFT); // the flag is probably misnamed
