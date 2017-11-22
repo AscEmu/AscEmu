@@ -30,7 +30,7 @@
  /* Spell Defs                                                           */
  /************************************************************************/
 
-bool FlametongueWeaponPassive(uint32 /*i*/, Aura* pAura, bool apply)
+bool FlametongueWeaponPassive(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 
@@ -46,7 +46,7 @@ bool FlametongueWeaponPassive(uint32 /*i*/, Aura* pAura, bool apply)
     return true;
 }
 
-bool SkyShatterRegalia(uint32 /*i*/, Spell* s)
+bool SkyShatterRegalia(uint8_t /*effectIndex*/, Spell* s)
 {
     // Shaman - Skyshatter Regalia - Two Piece Bonus
     // it checks for earth, air, water, fire totems and triggers Totemic Mastery spell 38437.
@@ -70,7 +70,7 @@ bool SkyShatterRegalia(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool ManaTide(uint32 /*i*/, Spell* s)
+bool ManaTide(uint8_t /*effectIndex*/, Spell* s)
 {
     Unit* unitTarget = s->GetUnitTarget();
 
@@ -83,7 +83,7 @@ bool ManaTide(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool EarthShieldDummyAura(uint32 /*i*/, Aura* pAura, bool apply)
+bool EarthShieldDummyAura(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
     Unit* m_target = pAura->GetTarget();
 
@@ -95,7 +95,7 @@ bool EarthShieldDummyAura(uint32 /*i*/, Aura* pAura, bool apply)
     return true;
 }
 
-bool Reincarnation(uint32 /*i*/, Aura* a, bool apply)
+bool Reincarnation(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     Unit* u_target = a->GetTarget();
 

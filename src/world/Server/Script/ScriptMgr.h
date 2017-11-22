@@ -129,9 +129,11 @@ class QuestScript;
 typedef CreatureAIScript* (*exp_create_creature_ai)(Creature* pCreature);
 typedef GameObjectAIScript* (*exp_create_gameobject_ai)(GameObject* pGameObject);
 typedef InstanceScript* (*exp_create_instance_ai)(MapMgr* pMapMgr);
-typedef bool(*exp_handle_dummy_spell)(uint32 i, Spell* pSpell);
-typedef bool(*exp_handle_script_effect)(uint32 i, Spell* pSpell);
-typedef bool(*exp_handle_dummy_aura)(uint32 i, Aura* pAura, bool apply);
+
+typedef bool(*exp_handle_dummy_spell)(uint8_t effectIndex, Spell* pSpell);
+typedef bool(*exp_handle_script_effect)(uint8_t effectIndex, Spell* pSpell);
+typedef bool(*exp_handle_dummy_aura)(uint8_t effectIndex, Aura* pAura, bool apply);
+
 typedef void(*exp_script_register)(ScriptMgr* mgr);
 typedef void(*exp_engine_reload)();
 typedef void(*exp_engine_unload)();
@@ -178,9 +180,9 @@ class SERVER_DECL ScriptMgr : public Singleton<ScriptMgr>
         GameObjectAIScript* CreateAIScriptClassForGameObject(uint32 uEntryId, GameObject* pGameObject);
         InstanceScript* CreateScriptClassForInstance(uint32 pMapId, MapMgr* pMapMgr);
 
-        bool CallScriptedDummySpell(uint32 uSpellId, uint32 i, Spell* pSpell);
-        bool HandleScriptedSpellEffect(uint32 SpellId, uint32 i, Spell* s);
-        bool CallScriptedDummyAura(uint32 uSpellId, uint32 i, Aura* pAura, bool apply);
+        bool CallScriptedDummySpell(uint32 uSpellId, uint8_t effectIndex, Spell* pSpell);
+        bool HandleScriptedSpellEffect(uint32 SpellId, uint8_t effectIndex, Spell* s);
+        bool CallScriptedDummyAura(uint32 uSpellId, uint8_t effectIndex, Aura* pAura, bool apply);
         bool CallScriptedItem(Item* pItem, Player* pPlayer);
 
         //Single Entry Registers

@@ -24,7 +24,7 @@ const uint32 SPELL_BENDINGSHINBONE = 8856;
 const uint32 ITEM_STURDYSHINBONE = 7134;
 const uint32 ITEM_BROKENSHINBONE = 7135;
 
-bool BendingShinbone(uint32 /*i*/, Spell* pSpell)
+bool BendingShinbone(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster)
     {

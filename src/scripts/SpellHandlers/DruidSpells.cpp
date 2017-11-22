@@ -23,7 +23,7 @@
 #include "Server/Script/ScriptMgr.h"
 #include "Spell/Definitions/ProcFlags.h"
 
-bool Starfall(uint32 i, Spell* pSpell)
+bool Starfall(uint8_t effectIndex, Spell* pSpell)
 {
     Unit* m_caster = pSpell->u_caster;
     if (m_caster == NULL)
@@ -34,9 +34,9 @@ bool Starfall(uint32 i, Spell* pSpell)
         if (!(*itr)->IsUnit())
             continue;
         Unit* Target = static_cast<Unit*>((*itr));
-        if (isAttackable(Target, m_caster) && m_caster->CalcDistance((*itr)) <= pSpell->GetRadius(i))
+        if (isAttackable(Target, m_caster) && m_caster->CalcDistance((*itr)) <= pSpell->GetRadius(effectIndex))
         {
-            m_caster->CastSpell(Target, pSpell->CalculateEffect(i, Target), true);
+            m_caster->CastSpell(Target, pSpell->CalculateEffect(effectIndex, Target), true);
             ++am;
             if (am >= 2)
                 return true;
@@ -45,7 +45,7 @@ bool Starfall(uint32 i, Spell* pSpell)
     return true;
 }
 
-bool ImprovedLeaderOfThePack(uint32 /*i*/, Spell* s)
+bool ImprovedLeaderOfThePack(uint8_t /*effectIndex*/, Spell* s)
 {
     if (s->p_caster == NULL)
         return false;
@@ -55,13 +55,13 @@ bool ImprovedLeaderOfThePack(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool PredatoryStrikes(uint32 i, Aura* a, bool apply)
+bool PredatoryStrikes(uint8_t effectIndex, Aura* a, bool apply)
 {
     Unit* m_target = a->GetTarget();
     int32 realamount = 0;
 
 
-    realamount = (a->GetModAmount(i) * m_target->getLevel()) / 100;
+    realamount = (a->GetModAmount(effectIndex) * m_target->getLevel()) / 100;
 
     if (apply)
     {
@@ -76,7 +76,7 @@ bool PredatoryStrikes(uint32 i, Aura* a, bool apply)
     return true;
 }
 
-bool Furor(uint32 i, Aura* a, bool apply)
+bool Furor(uint8_t effectIndex, Aura* a, bool apply)
 {
     Unit* u_target = a->GetTarget();
 
@@ -88,24 +88,24 @@ bool Furor(uint32 i, Aura* a, bool apply)
         return true;
 
     if (apply)
-        p_target->m_furorChance += a->GetModAmount(i);
+        p_target->m_furorChance += a->GetModAmount(effectIndex);
     else
-        p_target->m_furorChance -= a->GetModAmount(i);
+        p_target->m_furorChance -= a->GetModAmount(effectIndex);
 
     return true;
 }
 
-bool Tranquility(uint32 i, Aura* a, bool apply)
+bool Tranquility(uint8_t effectIndex, Aura* a, bool apply)
 {
     if (apply)
-        sEventMgr.AddEvent(a, &Aura::EventPeriodicHeal1, (uint32)a->GetModAmount(i), EVENT_AURA_PERIODIC_HEAL, 2000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(a, &Aura::EventPeriodicHeal1, (uint32)a->GetModAmount(effectIndex), EVENT_AURA_PERIODIC_HEAL, 2000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     else
         sEventMgr.RemoveEvents(a, EVENT_AURA_PERIODIC_HEAL);
 
     return true;
 }
 
-bool LifeBloom(uint32 i, Aura* a, bool apply)
+bool LifeBloom(uint8_t effectIndex, Aura* a, bool apply)
 {
     Unit* m_target = a->GetTarget();
 
@@ -140,14 +140,14 @@ bool LifeBloom(uint32 i, Aura* a, bool apply)
     {
         Spell* spell = sSpellFactoryMgr.NewSpell(pCaster, a->GetSpellInfo(), true, NULL);
         spell->SetUnitTarget(m_target);
-        spell->Heal(a->GetModAmount(i));
+        spell->Heal(a->GetModAmount(effectIndex));
         delete spell;
     }
 
     return true;
 }
 
-bool LeaderOfThePack(uint32 /*i*/, Aura* a, bool apply)
+bool LeaderOfThePack(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     Unit* u_target = a->GetTarget();
 

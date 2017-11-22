@@ -22,7 +22,7 @@
 #include "Server/Script/ScriptMgr.h"
 #include "Spell/Definitions/ProcFlags.h"
 
-bool Cold_Snap(uint32 /*i*/, Spell* pSpell)
+bool Cold_Snap(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (!pSpell->p_caster)
         return true;
@@ -31,18 +31,18 @@ bool Cold_Snap(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool Living_Bomb(uint32 i, Aura* pAura, bool apply)
+bool Living_Bomb(uint8_t effectIndex, Aura* pAura, bool apply)
 {
     Unit* caster = pAura->GetUnitCaster();
     if (caster && !apply)
-        caster->CastSpell(pAura->GetTarget(), pAura->GetSpellInfo()->getEffectBasePoints(i) + 1, true);
+        caster->CastSpell(pAura->GetTarget(), pAura->GetSpellInfo()->getEffectBasePoints(effectIndex) + 1, true);
     return true;
 }
 
-bool HotStreak(uint32 i, Aura* pAura, bool apply)
+bool HotStreak(uint8_t effectIndex, Aura* pAura, bool apply)
 {
 #if VERSION_STRING != Cata
-    if (i == 0)
+    if (effectIndex == 0)
     {
         auto caster = pAura->GetUnitCaster();
         if (caster == nullptr)
@@ -51,7 +51,7 @@ bool HotStreak(uint32 i, Aura* pAura, bool apply)
         if (apply)
         {
             static uint32 classMask[3] = { 0x13, 0x21000, 0 };
-            caster->AddProcTriggerSpell(48108, pAura->GetSpellInfo()->getId(), caster->GetGUID(), pAura->GetSpellInfo()->getEffectBasePoints(i) + 1, PROC_ON_SPELL_CRIT_HIT | PROC_ON_SPELL_HIT, 0, pAura->GetSpellInfo()->getEffectSpellClassMask(i), classMask);
+            caster->AddProcTriggerSpell(48108, pAura->GetSpellInfo()->getId(), caster->GetGUID(), pAura->GetSpellInfo()->getEffectBasePoints(effectIndex) + 1, PROC_ON_SPELL_CRIT_HIT | PROC_ON_SPELL_HIT, 0, pAura->GetSpellInfo()->getEffectSpellClassMask(effectIndex), classMask);
         }
         else
             caster->RemoveProcTriggerSpell(48108);
@@ -60,7 +60,7 @@ bool HotStreak(uint32 i, Aura* pAura, bool apply)
     return true;
 }
 
-bool SummonWaterElemental(uint32 /*i*/, Spell* pSpell)
+bool SummonWaterElemental(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Unit* caster = pSpell->u_caster;
     if (caster == NULL)
@@ -74,19 +74,19 @@ bool SummonWaterElemental(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool TormentOfTheWeak(uint32 i, Aura* a, bool apply)
+bool TormentOfTheWeak(uint8_t effectIndex, Aura* a, bool apply)
 {
     Unit* m_target = a->GetTarget();
 
     if (m_target->IsPlayer())
     {
-        static_cast<Player*>(m_target)->m_IncreaseDmgSnaredSlowed += ((apply) ? 1 : -1) * (uint32)(((float)a->GetModAmount(i)) / 100);
+        static_cast<Player*>(m_target)->m_IncreaseDmgSnaredSlowed += ((apply) ? 1 : -1) * (uint32)(((float)a->GetModAmount(effectIndex)) / 100);
     }
 
     return true;
 }
 
-bool FingersOfFrost(uint32 i, Aura* a, bool apply) // Should be visible to client by using ID 74396
+bool FingersOfFrost(uint8_t effectIndex, Aura* a, bool apply) // Should be visible to client by using ID 74396
 {
     Player* caster = a->GetPlayerCaster();
 
@@ -94,14 +94,14 @@ bool FingersOfFrost(uint32 i, Aura* a, bool apply) // Should be visible to clien
         return true;
 
     if (apply)
-        caster->SetTriggerChill(44544, a->GetModAmount(i), false);
+        caster->SetTriggerChill(44544, a->GetModAmount(effectIndex), false);
     else
         caster->SetTriggerChill(0, 0, false);
 
     return true;
 }
 
-bool BrainFreeze(uint32 i, Aura* a, bool apply)
+bool BrainFreeze(uint8_t effectIndex, Aura* a, bool apply)
 {
     Player* caster = a->GetPlayerCaster();
 
@@ -109,14 +109,14 @@ bool BrainFreeze(uint32 i, Aura* a, bool apply)
         return true;
 
     if (apply)
-        caster->SetTriggerChill(57761, a->GetModAmount(i), false);
+        caster->SetTriggerChill(57761, a->GetModAmount(effectIndex), false);
     else
         caster->SetTriggerChill(0, 0, false);
 
     return true;
 }
 
-bool MagicAbsorbtion(uint32 i, Aura* a, bool apply)
+bool MagicAbsorbtion(uint8_t effectIndex, Aura* a, bool apply)
 {
     Unit* m_target = a->GetTarget();
 
@@ -125,20 +125,20 @@ bool MagicAbsorbtion(uint32 i, Aura* a, bool apply)
         Player* p_target = static_cast<Player*>(m_target);
 
         if (apply)
-            p_target->m_RegenManaOnSpellResist += (a->GetModAmount(i) / 100);
+            p_target->m_RegenManaOnSpellResist += (a->GetModAmount(effectIndex) / 100);
         else
-            p_target->m_RegenManaOnSpellResist -= (a->GetModAmount(i) / 100);
+            p_target->m_RegenManaOnSpellResist -= (a->GetModAmount(effectIndex) / 100);
     }
 
     return true;
 }
 
-bool MirrorImage(uint32 i, Aura* pAura, bool apply)
+bool MirrorImage(uint8_t effectIndex, Aura* pAura, bool apply)
 {
     Unit* caster = pAura->GetUnitCaster();
-    if (caster != NULL && apply && i == 2)
+    if (caster != NULL && apply && effectIndex == 2)
         if (caster->GetGUID() == pAura->GetTarget()->GetCreatedByGUID())
-            caster->CastSpell(pAura->GetTarget(), pAura->GetSpellInfo()->getEffectTriggerSpell(i), true);
+            caster->CastSpell(pAura->GetTarget(), pAura->GetSpellInfo()->getEffectTriggerSpell(effectIndex), true);
 
     return true;
 }

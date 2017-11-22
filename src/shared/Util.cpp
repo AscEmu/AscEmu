@@ -30,10 +30,10 @@ namespace Util
     {
         if (!str.empty())
         {
-            str[0] = ::toupper(str[0]);
+            str[0] = static_cast<char>(::toupper(str[0]));
 
             for (std::size_t i = 1; i < str.length(); ++i)
-                str[i] = ::tolower(str[i]);
+                str[i] = static_cast<char>(::tolower(str[i]));
         }
     }
 

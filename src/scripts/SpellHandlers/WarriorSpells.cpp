@@ -24,7 +24,7 @@
 #include <Spell/Definitions/PowerType.h>
 #include <Spell/Customization/SpellCustomizations.hpp>
 
-bool Execute(uint32 i, Spell* pSpell)
+bool Execute(uint8_t effectIndex, Spell* pSpell)
 {
     if (pSpell->p_caster == NULL || pSpell->GetUnitTarget() == NULL)
     {
@@ -54,7 +54,7 @@ bool Execute(uint32 i, Spell* pSpell)
         toadd = (multiple[pSpell->GetSpellInfo()->custom_RankNumber] * rage);
     }
 
-    dmg = pSpell->CalculateEffect(i, pSpell->GetUnitTarget());
+    dmg = pSpell->CalculateEffect(effectIndex, pSpell->GetUnitTarget());
     dmg += Caster->GetAttackPower() / 5;
     dmg += toadd;
 
@@ -63,7 +63,7 @@ bool Execute(uint32 i, Spell* pSpell)
     return true;
 }
 
-bool Vigilance(uint32 /*i*/, Spell* pSpell)
+bool Vigilance(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (!pSpell->p_caster)
     {
@@ -75,23 +75,19 @@ bool Vigilance(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool DamageShield(uint32 /*i*/, Aura* pAura, bool apply)
+bool DamageShield(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 
     if (apply)
-    {
         target->AddProcTriggerSpell(59653, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), PROC_ON_MELEE_ATTACK_VICTIM | PROC_ON_BLOCK_VICTIM, 0, NULL, NULL);
-    }
     else
-    {
         target->RemoveProcTriggerSpell(59653, pAura->m_casterGuid);
-    }
 
     return true;
 }
 
-bool HeroicFury(uint32 /*i*/, Spell* s)
+bool HeroicFury(uint8_t /*effectIndex*/, Spell* s)
 {
     Player* p_caster = s->p_caster;
 
@@ -125,14 +121,14 @@ bool HeroicFury(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool Charge(uint32 i, Spell* s)
+bool Charge(uint8_t effectIndex, Spell* s)
 {
     if (!s->u_caster)
     {
         return false;
     }
 
-    uint32 rage_to_gen = s->GetSpellInfo()->getEffectBasePoints(i) + 1;
+    uint32 rage_to_gen = s->GetSpellInfo()->getEffectBasePoints(effectIndex) + 1;
     if (s->p_caster)
     {
         for (std::set<uint32>::iterator itr = s->p_caster->mSpells.begin(); itr != s->p_caster->mSpells.end(); ++itr)
@@ -155,7 +151,7 @@ bool Charge(uint32 i, Spell* s)
     return true;
 }
 
-bool LastStand(uint32 /*i*/, Spell* s)
+bool LastStand(uint8_t /*effectIndex*/, Spell* s)
 {
     Player* playerTarget = s->GetPlayerTarget();
 
@@ -174,7 +170,7 @@ bool LastStand(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool BerserkerRage(uint32 /*i*/, Aura* a, bool apply)
+bool BerserkerRage(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     Unit* u = a->GetTarget();
     Player* p_target = NULL;
@@ -214,93 +210,69 @@ bool BerserkerRage(uint32 /*i*/, Aura* a, bool apply)
     return true;
 }
 
-bool SweepingStrikes(uint32 /*i*/, Aura* a, bool apply)
+bool SweepingStrikes(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     Unit* m_target = a->GetTarget();
 
     if (apply)
-    {
         m_target->AddExtraStrikeTarget(a->GetSpellInfo(), 10);
-    }
     else
-    {
         m_target->RemoveExtraStrikeTarget(a->GetSpellInfo());
-    }
 
     return true;
 }
 
-bool TacticalAndStanceMastery(uint32 i, Aura* a, bool apply)
+bool TacticalAndStanceMastery(uint8_t effectIndex, Aura* a, bool apply)
 {
     Unit* u_target = a->GetTarget();
 
     if (!u_target->IsPlayer())
-    {
         return true;
-    }
 
     Player* p_target = static_cast<Player*>(u_target);
 
     if (p_target == NULL)
-    {
         return true;
-    }
 
     if (apply)
-    {
-        p_target->m_retainedrage += (a->GetModAmount(i) * 10);     //don't really know if value is all value or needs to be multiplied with 10
-    }
+        p_target->m_retainedrage += (a->GetModAmount(effectIndex) * 10);     //don't really know if value is all value or needs to be multiplied with 10
     else
-    {
-        p_target->m_retainedrage -= (a->GetModAmount(i) * 10);
-    }
+        p_target->m_retainedrage -= (a->GetModAmount(effectIndex) * 10);
 
     return true;
 }
 
-bool SecondWind(uint32 /*i*/, Aura* a, bool apply)
+bool SecondWind(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     Player* caster = a->GetPlayerCaster();
 
     if (caster == NULL)
-    {
         return true;
-    }
 
     if (apply)
-    {
         caster->SetTriggerStunOrImmobilize(29841, 100, true);  //fixed 100% chance
-    }
     else
-    {
         caster->SetTriggerStunOrImmobilize(0, 0, true);
-    }
 
     return true;
 }
 
-bool SecondWind2(uint32 /*i*/, Aura* a, bool apply)
+bool SecondWind2(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     Player* caster = a->GetPlayerCaster();
 
     if (caster == NULL)
-    {
         return true;
-    }
 
     if (apply)
-    {
         caster->SetTriggerStunOrImmobilize(29842, 100, true);  //fixed 100% chance
-    }
     else
-    {
         caster->SetTriggerStunOrImmobilize(0, 0, true);
-    }
 
     return true;
 }
 
-bool ArmoredToTheTeeth(uint32 /*i*/, Spell* /*s*/)
+bool ArmoredToTheTeeth(uint8_t /*effectIndex*/, Spell* /*s*/)
 {
     // Same as Death Knight's Bladed Armor. See DeathKnightSpells.cpp line 276 for detailed explanation.
     return true;

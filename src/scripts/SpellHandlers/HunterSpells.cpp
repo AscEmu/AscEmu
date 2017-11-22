@@ -23,7 +23,7 @@
 #include <Spell/Definitions/SpellMechanics.h>
 #include <Units/Creatures/Pet.h>
 
-bool Refocus(uint32 /*i*/, Spell* pSpell)
+bool Refocus(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* playerTarget = pSpell->GetPlayerTarget();
     if (playerTarget == 0) return true;
@@ -43,7 +43,7 @@ bool Refocus(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool Readiness(uint32 /*i*/, Spell* pSpell)
+bool Readiness(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (!pSpell->p_caster)
         return true;
@@ -53,7 +53,7 @@ bool Readiness(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool MastersCall(uint32 i, Spell* pSpell)
+bool MastersCall(uint8_t effectIndex, Spell* pSpell)
 {
     Player* caster = pSpell->p_caster;
 
@@ -64,23 +64,20 @@ bool MastersCall(uint32 i, Spell* pSpell)
     if (Summon == NULL || Summon->IsDead())
         return true;
 
-    switch (i)
+    switch (effectIndex)
     {
         case 0:
             Summon->CastSpell(caster, pSpell->damage, true);
-
             return true;
-
         case 1:
             Summon->CastSpell(Summon, 62305, true);
-
             return true;
     }
 
     return true;
 }
 
-bool TheBeastWithin(uint32 /*i*/, Aura* a, bool apply)
+bool TheBeastWithin(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     Unit* m_target = a->GetTarget();
 
@@ -105,7 +102,7 @@ bool TheBeastWithin(uint32 /*i*/, Aura* a, bool apply)
 }
 
 
-bool BestialWrath(uint32 /*i*/, Aura* a, bool apply)
+bool BestialWrath(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     Unit* m_target = a->GetTarget();
 
@@ -128,7 +125,7 @@ bool BestialWrath(uint32 /*i*/, Aura* a, bool apply)
     return true;
 }
 
-bool Misdirection(uint32 /*i*/, Aura* a, bool apply)
+bool Misdirection(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     Player* caster = a->GetPlayerCaster();
 
@@ -141,7 +138,7 @@ bool Misdirection(uint32 /*i*/, Aura* a, bool apply)
     return true;
 }
 
-bool ExplosiveShot(uint32 i, Aura* a, bool apply)
+bool ExplosiveShot(uint8_t effectIndex, Aura* a, bool apply)
 {
     if (!apply)
         return true;
@@ -149,7 +146,7 @@ bool ExplosiveShot(uint32 i, Aura* a, bool apply)
     Unit* m_target = a->GetTarget();
 
     a->SetNegative();
-    int32 dmg = a->GetModAmount(i);
+    int32 dmg = a->GetModAmount(effectIndex);
     dmg += float2int32(m_target->GetRangedAttackPower() * 0.16f);
 
     a->EventPeriodicDamage(dmg);
@@ -263,7 +260,7 @@ public:
     }
 };
 
-bool ChimeraShot(uint32 /*i*/, Spell *spell)
+bool ChimeraShot(uint8_t /*effectIndex*/, Spell *spell)
 {
     Unit *target = spell->GetUnitTarget();
 

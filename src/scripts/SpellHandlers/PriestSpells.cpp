@@ -23,7 +23,7 @@
 #include "Server/Script/ScriptMgr.h"
 #include "Spell/Definitions/ProcFlags.h"
 
-bool Penance(uint32 /*i*/, Spell* pSpell)
+bool Penance(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (!pSpell->p_caster || !pSpell->p_caster->isAlive() ||
         !pSpell->GetUnitTarget() || !pSpell->GetUnitTarget()->isAlive())
@@ -82,7 +82,7 @@ bool Penance(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool DivineAegis(uint32 /*i*/, Aura* pAura, bool apply)
+bool DivineAegis(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 
@@ -94,7 +94,7 @@ bool DivineAegis(uint32 /*i*/, Aura* pAura, bool apply)
     return true;
 }
 
-bool ImprovedDevouringPlague(uint32 /*i*/, Aura* pAura, bool apply)
+bool ImprovedDevouringPlague(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 
@@ -109,7 +109,7 @@ bool ImprovedDevouringPlague(uint32 /*i*/, Aura* pAura, bool apply)
     return true;
 }
 
-bool VampiricEmbrace(uint32 /*i*/, Aura* pAura, bool apply)
+bool VampiricEmbrace(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 
@@ -121,11 +121,11 @@ bool VampiricEmbrace(uint32 /*i*/, Aura* pAura, bool apply)
     return true;
 }
 
-bool VampiricTouch(uint32 i, Aura* pAura, bool apply)
+bool VampiricTouch(uint8_t effectIndex, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 
-    switch (i)
+    switch (effectIndex)
     {
         case 0:
             if (apply)
@@ -145,7 +145,7 @@ bool VampiricTouch(uint32 i, Aura* pAura, bool apply)
     return true;
 }
 
-bool EmpoweredRenew(uint32 /*i*/, Aura* pAura, bool apply)
+bool EmpoweredRenew(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 
@@ -160,7 +160,7 @@ bool EmpoweredRenew(uint32 /*i*/, Aura* pAura, bool apply)
     return true;
 }
 
-bool ImprovedMindBlast(uint32 /*i*/, Aura* pAura, bool apply)
+bool ImprovedMindBlast(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 
@@ -175,7 +175,7 @@ bool ImprovedMindBlast(uint32 /*i*/, Aura* pAura, bool apply)
     return true;
 }
 
-bool PainAndSufferingAura(uint32 /*i*/, Aura* pAura, bool apply)
+bool PainAndSufferingAura(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 
@@ -190,7 +190,7 @@ bool PainAndSufferingAura(uint32 /*i*/, Aura* pAura, bool apply)
     return true;
 }
 
-bool PainAndSufferingProc(uint32 /*i*/, Spell* pSpell)
+bool PainAndSufferingProc(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* caster = pSpell->p_caster;
     if (caster == NULL)
@@ -256,14 +256,14 @@ bool PainAndSufferingProc(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool BodyAndSoul(uint32 i, Aura* pAura, bool apply)
+bool BodyAndSoul(uint8_t effectIndex, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 
     if (apply)
     {
         static uint32 classMask[3] = { 0, 1, 0 };
-        target->AddProcTriggerSpell(64134, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetModAmount(i), PROC_ON_CAST_SPELL | PROC_TARGET_SELF, 0, NULL, classMask);
+        target->AddProcTriggerSpell(64134, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetModAmount(effectIndex), PROC_ON_CAST_SPELL | PROC_TARGET_SELF, 0, NULL, classMask);
     }
     else
         target->RemoveProcTriggerSpell(64134, pAura->m_casterGuid);
@@ -271,7 +271,7 @@ bool BodyAndSoul(uint32 i, Aura* pAura, bool apply)
     return true;
 }
 
-bool PrayerOfMendingAura(uint32 /*i*/, Aura* pAura, bool apply)
+bool PrayerOfMendingAura(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 

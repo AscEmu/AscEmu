@@ -29,7 +29,7 @@
 #include <Units/Creatures/Pet.h>
 
 
-bool CleansingVial(uint32 /*i*/, Spell* pSpell)
+bool CleansingVial(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -46,7 +46,7 @@ bool CleansingVial(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool SummonCyclonian(uint32 /*i*/, Spell* pSpell)
+bool SummonCyclonian(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->u_caster == nullptr)
         return true;
@@ -83,7 +83,7 @@ bool ElementalPowerExtractor(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool SummonEkkorash(uint32 /*i*/, Spell* pSpell)
+bool SummonEkkorash(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -96,7 +96,7 @@ bool SummonEkkorash(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool CallRexxar(uint32 /*i*/, Spell* pSpell)
+bool CallRexxar(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -119,7 +119,7 @@ bool CallRexxar(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool LayWreath(uint32 /*i*/, Spell* pSpell)  //Peace at Last quest
+bool LayWreath(uint8_t /*effectIndex*/, Spell* pSpell)  //Peace at Last quest
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -140,7 +140,7 @@ bool LayWreath(uint32 /*i*/, Spell* pSpell)  //Peace at Last quest
     return true;
 }
 
-bool ScrapReaver(uint32 /*i*/, Spell* pSpell)
+bool ScrapReaver(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -158,7 +158,7 @@ bool ScrapReaver(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool RuuanokClaw(uint32 /*i*/, Spell* pSpell)
+bool RuuanokClaw(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (!pSpell->p_caster)
         return true;
@@ -167,7 +167,7 @@ bool RuuanokClaw(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool KarangsBanner(uint32 /*i*/, Spell* pSpell)
+bool KarangsBanner(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -185,7 +185,7 @@ bool KarangsBanner(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool ADireSituation(uint32 /*i*/, Spell* pSpell)
+bool ADireSituation(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster != nullptr)
     {
@@ -195,7 +195,7 @@ bool ADireSituation(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool FuryoftheDreghoodElders(uint32 /*i*/, Spell* pSpell)
+bool FuryoftheDreghoodElders(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
@@ -221,7 +221,7 @@ bool FuryoftheDreghoodElders(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool ASpiritAlly(uint32 /*i*/, Spell* pSpell)
+bool ASpiritAlly(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
@@ -237,7 +237,7 @@ bool ASpiritAlly(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool BalanceMustBePreserved(uint32 /*i*/, Aura* pAura, bool apply)
+bool BalanceMustBePreserved(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
     if (apply == false)
         return true;
@@ -273,7 +273,7 @@ bool BalanceMustBePreserved(uint32 /*i*/, Aura* pAura, bool apply)
     return true;
 }
 
-bool BlessingofIncineratus(uint32 /*i*/, Spell* pSpell)
+bool BlessingofIncineratus(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
@@ -322,7 +322,7 @@ bool BlessingofIncineratus(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool TagMurloc(uint32 /*i*/, Aura* pAura, bool apply)
+bool TagMurloc(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
     Object* Caster = pAura->GetCaster();
     if (Caster->IsPlayer() == false)
@@ -357,7 +357,7 @@ bool TagMurloc(uint32 /*i*/, Aura* pAura, bool apply)
     return true;
 }
 
-bool CookingPot(uint32 /*i*/, Spell* pSpell)
+bool CookingPot(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
@@ -374,7 +374,7 @@ bool CookingPot(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool EvilDrawsNear(uint32 /*i*/, Spell* pSpell)
+bool EvilDrawsNear(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
@@ -391,7 +391,7 @@ bool EvilDrawsNear(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool UnyieldingBattleHorn(uint32 /*i*/, Spell* pSpell)
+bool UnyieldingBattleHorn(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -402,7 +402,7 @@ bool UnyieldingBattleHorn(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool MeasuringWarpEnergies(uint32 /*i*/, Spell* pSpell)
+bool MeasuringWarpEnergies(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
@@ -452,7 +452,7 @@ bool MeasuringWarpEnergies(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool YennikuRelease(uint32 /*i*/, Spell* pSpell)
+bool YennikuRelease(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
@@ -473,7 +473,7 @@ bool YennikuRelease(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool ScrollOfMyzrael(uint32 /*i*/, Spell* pSpell)
+bool ScrollOfMyzrael(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
@@ -498,7 +498,7 @@ bool ScrollOfMyzrael(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool Showdown(uint32 /*i*/, Spell* pSpell)
+bool Showdown(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* p_caster = pSpell->p_caster;
     if (p_caster == nullptr)
@@ -517,7 +517,7 @@ bool Showdown(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool TheBaitforLarkorwi1(uint32 /*i*/, Spell* pSpell)
+bool TheBaitforLarkorwi1(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
@@ -536,7 +536,7 @@ bool TheBaitforLarkorwi1(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool TheBaitforLarkorwi2(uint32 /*i*/, Spell* pSpell)
+bool TheBaitforLarkorwi2(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
@@ -553,7 +553,7 @@ bool TheBaitforLarkorwi2(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool Fumping(uint32 /*i*/, Spell* pSpell)
+bool Fumping(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
@@ -586,7 +586,7 @@ bool Fumping(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool TheBigBoneWorm(uint32 /*i*/, Spell* pSpell)
+bool TheBigBoneWorm(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
@@ -603,7 +603,7 @@ bool TheBigBoneWorm(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool Torgos(uint32 /*i*/, Spell* pSpell)
+bool Torgos(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
@@ -622,7 +622,7 @@ bool Torgos(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool WelcomingtheWolfSpirit(uint32 /*i*/, Spell* pSpell)
+bool WelcomingtheWolfSpirit(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
@@ -638,7 +638,7 @@ bool WelcomingtheWolfSpirit(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool NaturalRemedies(uint32 /*i*/, Spell* pSpell)
+bool NaturalRemedies(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
@@ -656,7 +656,7 @@ bool NaturalRemedies(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool FloraoftheEcoDomes(uint32 /*i*/, Spell* pSpell)
+bool FloraoftheEcoDomes(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr || pSpell->GetUnitTarget() == nullptr || pSpell->GetUnitTarget()->IsCreature() == false)
         return true;
@@ -680,7 +680,7 @@ bool FloraoftheEcoDomes(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool TheCleansingMustBeStopped(uint32 /*i*/, Spell* pSpell)
+bool TheCleansingMustBeStopped(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
@@ -703,7 +703,7 @@ bool TheCleansingMustBeStopped(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool AdministreringtheSalve(uint32 /*i*/, Aura* pAura, bool apply)
+bool AdministreringtheSalve(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
     Object* m_caster = pAura->GetCaster();
     if (m_caster->IsPlayer() == false)
@@ -736,7 +736,7 @@ bool AdministreringtheSalve(uint32 /*i*/, Aura* pAura, bool apply)
     return true;
 }
 
-bool ZappedGiants(uint32 /*i*/, Spell* pSpell)
+bool ZappedGiants(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
@@ -793,7 +793,7 @@ bool ZappedGiants(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool BuildingAPerimeter(uint32 /*i*/, Spell* pSpell)
+bool BuildingAPerimeter(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -824,7 +824,7 @@ bool BuildingAPerimeter(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool RodofPurification(uint32 /*i*/, Spell* pSpell)
+bool RodofPurification(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
@@ -846,7 +846,7 @@ bool RodofPurification(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool AnUnusualPatron(uint32 /*i*/, Spell* pSpell)
+bool AnUnusualPatron(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
@@ -866,7 +866,7 @@ bool AnUnusualPatron(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool MagnetoCollector(uint32 /*i*/, Aura* pAura, bool /*apply*/)
+bool MagnetoCollector(uint8_t /*effectIndex*/, Aura* pAura, bool /*apply*/)
 {
     if (pAura->GetCaster()->IsPlayer() == false)
         return true;
@@ -890,7 +890,7 @@ bool MagnetoCollector(uint32 /*i*/, Aura* pAura, bool /*apply*/)
     return true;
 }
 
-bool TemporalPhaseModulator(uint32 /*i*/, Spell* pSpell)
+bool TemporalPhaseModulator(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
@@ -975,7 +975,7 @@ bool TemporalPhaseModulator(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool EmblazonRuneblade(uint32 /*i*/, Spell* pSpell)
+bool EmblazonRuneblade(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
     {
@@ -996,7 +996,7 @@ bool EmblazonRuneblade(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool WyrmcallersHorn(uint32 /*i*/, Spell* pSpell)
+bool WyrmcallersHorn(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -1015,7 +1015,7 @@ bool WyrmcallersHorn(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool RaeloraszSpark(uint32 /*i*/, Spell* pSpell)
+bool RaeloraszSpark(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -1037,7 +1037,7 @@ bool RaeloraszSpark(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool RuneOfDistortion(uint32 /*i*/, Spell* pSpell)
+bool RuneOfDistortion(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* plr = pSpell->p_caster;
     if (plr == nullptr)
@@ -1054,7 +1054,7 @@ bool RuneOfDistortion(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool GoreBladder(uint32 /*i*/, Spell* pSpell)
+bool GoreBladder(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
     {
@@ -1073,7 +1073,7 @@ bool GoreBladder(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool PlagueSpray(uint32 /*i*/, Spell* pSpell)
+bool PlagueSpray(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -1091,7 +1091,7 @@ bool PlagueSpray(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool GoblinWeatherMachine(uint32 /*i*/, Spell* pSpell)
+bool GoblinWeatherMachine(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -1102,7 +1102,7 @@ bool GoblinWeatherMachine(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool PurifiedAshes(uint32 /*i*/, Spell* pSpell)
+bool PurifiedAshes(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -1124,7 +1124,7 @@ bool PurifiedAshes(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool DISMEMBER(uint32 /*i*/, Spell* pSpell)
+bool DISMEMBER(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (!pSpell->p_caster)
         return true;
@@ -1152,7 +1152,7 @@ bool DISMEMBER(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool CraftyBlaster(uint32 /*i*/, Spell* pSpell)
+bool CraftyBlaster(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
     {
@@ -1172,7 +1172,7 @@ bool CraftyBlaster(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool RagefistTorch(uint32 /*i*/, Spell* pSpell)
+bool RagefistTorch(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
     {
@@ -1194,7 +1194,7 @@ bool RagefistTorch(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool SummonShadra(uint32 /*i*/, Spell* pSpell)
+bool SummonShadra(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -1205,9 +1205,9 @@ bool SummonShadra(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool SummonEcheyakee(uint32 i, Spell* pSpell)
+bool SummonEcheyakee(uint8_t effectIndex, Spell* pSpell)
 {
-    if (pSpell->p_caster == nullptr || i != 1)  //Effect_1 = SEND_EVENT,Effect_2 = DUMMY
+    if (pSpell->p_caster == nullptr || effectIndex != 1)  //Effect_1 = SEND_EVENT,Effect_2 = DUMMY
         return true;
 
     LocationVector pos = pSpell->p_caster->GetPosition();
@@ -1216,7 +1216,7 @@ bool SummonEcheyakee(uint32 i, Spell* pSpell)
     return true;
 }
 
-bool HodirsHorn(uint32 /*i*/, Spell* pSpell)
+bool HodirsHorn(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -1234,7 +1234,7 @@ bool HodirsHorn(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool TelluricPoultice(uint32 /*i*/, Spell* pSpell)
+bool TelluricPoultice(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
     {
@@ -1256,7 +1256,7 @@ bool TelluricPoultice(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool Screwdriver(uint32 /*i*/, Spell* pSpell)
+bool Screwdriver(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
     {
@@ -1278,7 +1278,7 @@ bool Screwdriver(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool IncineratingOil(uint32 /*i*/, Spell* pSpell)
+bool IncineratingOil(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
     {
@@ -1300,7 +1300,7 @@ bool IncineratingOil(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool SummonAquementas(uint32 /*i*/, Spell* pSpell)
+bool SummonAquementas(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -1312,7 +1312,7 @@ bool SummonAquementas(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool PrayerBeads(uint32 /*i*/, Spell* pSpell)
+bool PrayerBeads(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -1339,7 +1339,7 @@ bool CleansingVialDND(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool HunterTamingQuest(uint32 /*i*/, Aura* a, bool apply)
+bool HunterTamingQuest(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     Unit* m_target = a->GetTarget();
     Player* p_caster = a->GetPlayerCaster();
@@ -1413,7 +1413,7 @@ bool HunterTamingQuest(uint32 /*i*/, Aura* a, bool apply)
     return true;
 }
 
-bool ArcaneDisruption(uint32 /*i*/, Aura* pAura, bool apply)
+bool ArcaneDisruption(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
     if (apply == false)
         return true;
@@ -1461,7 +1461,7 @@ bool ArcaneDisruption(uint32 /*i*/, Aura* pAura, bool apply)
     return true;
 }
 
-bool ToLegionHold(uint32 /*i*/, Aura* pAura, bool apply)
+bool ToLegionHold(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
     if (pAura == nullptr)
         return true;
@@ -1509,7 +1509,7 @@ bool ToLegionHold(uint32 /*i*/, Aura* pAura, bool apply)
     return true;
 }
 
-bool CenarionMoondust(uint32 /*i*/, Spell* pSpell) // Body And Heart (Alliance)
+bool CenarionMoondust(uint8_t /*effectIndex*/, Spell* pSpell) // Body And Heart (Alliance)
 {
     if (!pSpell->p_caster)
         return true;
@@ -1556,7 +1556,7 @@ bool CenarionMoondust(uint32 /*i*/, Spell* pSpell) // Body And Heart (Alliance)
     return true;
 }
 
-bool CenarionLunardust(uint32 /*i*/, Spell* pSpell)  // Body And Heart (Horde)
+bool CenarionLunardust(uint8_t /*effectIndex*/, Spell* pSpell)  // Body And Heart (Horde)
 {
     if (!pSpell->p_caster)
         return true;
@@ -1601,7 +1601,7 @@ bool CenarionLunardust(uint32 /*i*/, Spell* pSpell)  // Body And Heart (Horde)
     return true;
 }
 
-bool CurativeAnimalSalve(uint32 /*i*/, Spell* pSpell) // Curing the Sick
+bool CurativeAnimalSalve(uint8_t /*effectIndex*/, Spell* pSpell) // Curing the Sick
 {
     Player* caster = pSpell->p_caster;
     if (caster == NULL)
@@ -1642,7 +1642,7 @@ bool CurativeAnimalSalve(uint32 /*i*/, Spell* pSpell) // Curing the Sick
 
 // Trial Of The Lake
 
-bool TrialOfTheLake(uint32 /*i*/, Spell* pSpell)
+bool TrialOfTheLake(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == NULL)
         return true;
@@ -1655,7 +1655,7 @@ bool TrialOfTheLake(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool SymbolOfLife(uint32 /*i*/, Spell* pSpell) // Alliance ress. quests
+bool SymbolOfLife(uint8_t /*effectIndex*/, Spell* pSpell) // Alliance ress. quests
 {
     Player* plr = pSpell->p_caster;
     if (plr == nullptr)
@@ -1713,7 +1713,7 @@ bool SymbolOfLife(uint32 /*i*/, Spell* pSpell) // Alliance ress. quests
     return true;
 }
 
-bool FilledShimmeringVessel(uint32 /*i*/, Spell* pSpell) // Blood Elf ress. quest
+bool FilledShimmeringVessel(uint8_t /*effectIndex*/, Spell* pSpell) // Blood Elf ress. quest
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -1743,7 +1743,7 @@ bool FilledShimmeringVessel(uint32 /*i*/, Spell* pSpell) // Blood Elf ress. ques
     return true;
 }
 
-bool DouseEternalFlame(uint32 /*i*/, Spell* pSpell)
+bool DouseEternalFlame(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -1773,7 +1773,7 @@ bool DouseEternalFlame(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool Triage(uint32 /*i*/, Spell* pSpell)
+bool Triage(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (!pSpell->p_caster || pSpell->GetUnitTarget() == nullptr)
         return true;
@@ -1785,7 +1785,7 @@ bool Triage(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool NeutralizingTheCauldrons(uint32 /*i*/, Spell* pSpell)
+bool NeutralizingTheCauldrons(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr || !pSpell->p_caster->IsInWorld())
         return true;
@@ -1823,7 +1823,7 @@ bool NeutralizingTheCauldrons(uint32 /*i*/, Spell* pSpell)
 }
 
 // Stop the Plague
-bool HighmessasCleansingSeeds(uint32 /*i*/, Spell* pSpell)
+bool HighmessasCleansingSeeds(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr || !pSpell->p_caster->IsInWorld())
         return true;
@@ -1836,7 +1836,7 @@ bool HighmessasCleansingSeeds(uint32 /*i*/, Spell* pSpell)
 }
 
 // There's Something Going On In Those Caves
-bool BixiesInhibitingPowder(uint32 /*i*/, Spell* pSpell)
+bool BixiesInhibitingPowder(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr || !pSpell->p_caster->IsInWorld())
         return true;
@@ -1849,7 +1849,7 @@ bool BixiesInhibitingPowder(uint32 /*i*/, Spell* pSpell)
 }
 
 // Leading the Ancestors Home
-bool CompleteAncestorRitual(uint32 /*i*/, Spell* pSpell)
+bool CompleteAncestorRitual(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr || !pSpell->p_caster->IsInWorld())
         return true;
@@ -1882,7 +1882,7 @@ bool CompleteAncestorRitual(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool PoweringOurDefenses(uint32 /*i*/, Spell* pSpell)
+bool PoweringOurDefenses(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -1897,7 +1897,7 @@ bool PoweringOurDefenses(uint32 /*i*/, Spell* pSpell)
 /*--------------------------------------------------------------------------------------------------------*/
 // Testing the Antidote
 
-bool TestingTheAntidote(uint32 /*i*/, Spell* pSpell)
+bool TestingTheAntidote(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (!pSpell->GetUnitTarget() || !pSpell->GetUnitTarget()->IsCreature())
         return true;
@@ -1922,7 +1922,7 @@ bool TestingTheAntidote(uint32 /*i*/, Spell* pSpell)
 /*--------------------------------------------------------------------------------------------------------*/
 // Zeth'Gor Must Burn!
 
-bool ZethGorMustBurnHorde(uint32 /*i*/, Spell* pSpell)
+bool ZethGorMustBurnHorde(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
@@ -2026,7 +2026,7 @@ bool ZethGorMustBurnHorde(uint32 /*i*/, Spell* pSpell)
 /*--------------------------------------------------------------------------------------------------------*/
 // Laying Waste to the Unwanted
 
-bool LayingWasteToTheUnwantedAlliance(uint32 /*i*/, Spell* pSpell)
+bool LayingWasteToTheUnwantedAlliance(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
@@ -2111,7 +2111,7 @@ bool LayingWasteToTheUnwantedAlliance(uint32 /*i*/, Spell* pSpell)
 /*--------------------------------------------------------------------------------------------------------*/
 // Burn It Up... For the Horde!
 
-bool BurnItUp(uint32 /*i*/, Spell* pSpell)
+bool BurnItUp(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -2164,7 +2164,7 @@ bool BurnItUp(uint32 /*i*/, Spell* pSpell)
 /*--------------------------------------------------------------------------------------------------------*/
 // The Seer's Relic
 
-bool TheSeersRelic(uint32 /*i*/, Spell* pSpell)
+bool TheSeersRelic(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -2194,7 +2194,7 @@ bool TheSeersRelic(uint32 /*i*/, Spell* pSpell)
 /*--------------------------------------------------------------------------------------------------------*/
 // Disrupt Their Reinforcements
 
-bool DisruptTheirReinforcements(uint32 /*i*/, Spell* pSpell)
+bool DisruptTheirReinforcements(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -2304,7 +2304,7 @@ bool FuryOfTheDreghoodElders(uint32 /*i*/, Spell* pSpell)
 }
 
 // War is Hell
-bool WarIsHell(uint32 /*i*/, Spell* pSpell)
+bool WarIsHell(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -2336,7 +2336,7 @@ bool WarIsHell(uint32 /*i*/, Spell* pSpell)
 }
 
 // A Lesson in Fear
-bool PlantForsakenBanner(uint32 /*i*/, Spell* pSpell)
+bool PlantForsakenBanner(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -2379,7 +2379,7 @@ bool PlantForsakenBanner(uint32 /*i*/, Spell* pSpell)
 /*--------------------------------------------------------------------------------------------------------*/
 // Erratic Behavior
 
-bool ConvertingSentry(uint32 /*i*/, Spell* pSpell)
+bool ConvertingSentry(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pCaster = pSpell->p_caster;
     if (pCaster == nullptr)
@@ -2408,7 +2408,7 @@ bool ConvertingSentry(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool OrbOfMurlocControl(uint32 /*i*/, Spell* pSpell)
+bool OrbOfMurlocControl(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -2454,7 +2454,7 @@ bool OrbOfMurlocControl(uint32 /*i*/, Spell* pSpell)
 #define GO_FIRE 183816
 
 
-bool ShipBombing(uint32 /*i*/, Spell* pSpell)
+bool ShipBombing(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
@@ -2538,7 +2538,7 @@ bool ShipBombing(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool ImpaleEmissary(uint32 /*i*/, Spell* pSpell)
+bool ImpaleEmissary(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -2569,7 +2569,7 @@ bool ImpaleEmissary(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool LeyLine(uint32 /*i*/, Spell* pSpell)
+bool LeyLine(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -2598,7 +2598,7 @@ bool LeyLine(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool ManaRemnants(uint32 /*i*/, Spell* pSpell)
+bool ManaRemnants(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
@@ -2627,7 +2627,7 @@ bool ManaRemnants(uint32 /*i*/, Spell* pSpell)
 }
 
 // Stopping the Spread
-bool StoppingTheSpread(uint32 /*i*/, Spell* pSpell)
+bool StoppingTheSpread(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -2663,7 +2663,7 @@ bool StoppingTheSpread(uint32 /*i*/, Spell* pSpell)
 }
 
 //Ruthless Cunning
-bool RuthlessCunning(uint32 /*i*/, Spell* pSpell)
+bool RuthlessCunning(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -2686,7 +2686,7 @@ bool RuthlessCunning(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool FindingTheKeymaster(uint32 /*i*/, Spell* pSpell)
+bool FindingTheKeymaster(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -2698,7 +2698,7 @@ bool FindingTheKeymaster(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool TheFleshLies(uint32 /*i*/, Spell* pSpell)
+bool TheFleshLies(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -2731,7 +2731,7 @@ bool TheFleshLies(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool SurveyingtheRuins(uint32 /*i*/, Spell* pSpell)
+bool SurveyingtheRuins(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -2787,7 +2787,7 @@ bool SurveyingtheRuins(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool CrystalOfDeepShadows(uint32 /*i*/, Spell* pSpell) // Becoming a Shadoweave Tailor
+bool CrystalOfDeepShadows(uint8_t /*effectIndex*/, Spell* pSpell) // Becoming a Shadoweave Tailor
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -2805,7 +2805,7 @@ bool CrystalOfDeepShadows(uint32 /*i*/, Spell* pSpell) // Becoming a Shadoweave 
     return true;
 }
 
-bool Carcass(uint32 /*i*/, Spell* pSpell) // Becoming a Shadoweave Tailor
+bool Carcass(uint8_t /*effectIndex*/, Spell* pSpell) // Becoming a Shadoweave Tailor
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -2840,7 +2840,7 @@ bool Carcass(uint32 /*i*/, Spell* pSpell) // Becoming a Shadoweave Tailor
     return true;
 }
 
-bool ForceofNeltharakuSpell(uint32 /*i*/, Spell* pSpell) // Becoming a Shadoweave Tailor
+bool ForceofNeltharakuSpell(uint8_t /*effectIndex*/, Spell* pSpell) // Becoming a Shadoweave Tailor
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -2882,7 +2882,7 @@ bool UnlockKarynakuChains(uint32 /*i*/, Spell* pSpell) // Becoming a Shadoweave 
 }
 
 
-bool ShatariTorch(uint32 /*i*/, Spell* pSpell)
+bool ShatariTorch(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -2938,7 +2938,7 @@ bool ShatariTorch(uint32 /*i*/, Spell* pSpell)
 
 // Lost!
 
-bool SpragglesCanteen(uint32 /*i*/, Spell* pSpell)
+bool SpragglesCanteen(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -2970,7 +2970,7 @@ bool SpragglesCanteen(uint32 /*i*/, Spell* pSpell)
 
 //Finding the Source
 
-bool FindingTheSource(uint32 /*i*/, Spell* pSpell)
+bool FindingTheSource(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
@@ -3020,7 +3020,7 @@ bool FindingTheSource(uint32 /*i*/, Spell* pSpell)
 }
 
 // quest 5163 - Are We There, Yeti?
-bool ReleaseUmisYeti(uint32 /*i*/, Spell* pSpell)
+bool ReleaseUmisYeti(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr || pSpell->GetUnitTarget() == nullptr || !pSpell->GetUnitTarget()->IsCreature())
         return true;
@@ -3045,7 +3045,7 @@ bool ReleaseUmisYeti(uint32 /*i*/, Spell* pSpell)
 
 // Healing The Lake
 
-bool HealingTheLake(uint32 /*i*/, Spell* pSpell)
+bool HealingTheLake(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -3058,7 +3058,7 @@ bool HealingTheLake(uint32 /*i*/, Spell* pSpell)
 }
 
 // Protecting Our Own
-bool ProtectingOurOwn(uint32 /*i*/, Spell* pSpell)
+bool ProtectingOurOwn(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;
@@ -3084,7 +3084,7 @@ bool ProtectingOurOwn(uint32 /*i*/, Spell* pSpell)
 //     Has a chance of spawning an Angry Murloc.
 //
 /////////////////////////////////////////////////////////////////
-bool CastFishingNet(uint32 /*i*/, Spell* pSpell)
+bool CastFishingNet(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr || pSpell->GetGameObjectTarget() == nullptr)
         return true;
@@ -3115,7 +3115,7 @@ bool CastFishingNet(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool InducingVision(uint32 /*i*/, Spell* pSpell)
+bool InducingVision(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == nullptr)
         return true;

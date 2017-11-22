@@ -39,7 +39,7 @@
  //
  //
  /////////////////////////////////////////////////////////////
-bool SoulLinkParent(uint32 /*i*/, Spell* s)
+bool SoulLinkParent(uint8_t /*effectIndex*/, Spell* s)
 {
     if (s->p_caster == nullptr)
     {
@@ -57,7 +57,7 @@ bool SoulLinkParent(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool LifeTap(uint32 i, Spell* s)
+bool LifeTap(uint8_t effectIndex, Spell* s)
 {
     Player* playerTarget = s->GetPlayerTarget();
 
@@ -78,7 +78,7 @@ bool LifeTap(uint32 i, Spell* s)
     else
         mod = 6;
 
-    uint32 damage = s->GetSpellInfo()->getEffectBasePoints(i) + 1 + mod * playerTarget->GetStat(STAT_SPIRIT) / 2;
+    uint32 damage = s->GetSpellInfo()->getEffectBasePoints(effectIndex) + 1 + mod * playerTarget->GetStat(STAT_SPIRIT) / 2;
 
     if (damage >= playerTarget->GetHealth())
         return false;
@@ -94,7 +94,7 @@ bool LifeTap(uint32 i, Spell* s)
     return true;
 }
 
-bool SoulShatter(uint32 /*i*/, Spell* s)
+bool SoulShatter(uint8_t /*effectIndex*/, Spell* s)
 {
     Unit* unitTarget = s->GetUnitTarget();
 
@@ -106,7 +106,7 @@ bool SoulShatter(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool MinorHealthStone(uint32 /*i*/, Spell* s)
+bool MinorHealthStone(uint8_t /*effectIndex*/, Spell* s)
 {
     if (s->p_caster == nullptr)
         return false;
@@ -121,7 +121,7 @@ bool MinorHealthStone(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool LesserHealthStone(uint32 /*i*/, Spell* s)
+bool LesserHealthStone(uint8_t /*effectIndex*/, Spell* s)
 {
     if (s->p_caster == nullptr)
         return false;
@@ -135,7 +135,7 @@ bool LesserHealthStone(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool HealthStone(uint32 /*i*/, Spell* s)
+bool HealthStone(uint8_t /*effectIndex*/, Spell* s)
 {
     if (s->p_caster == nullptr)
         return false;
@@ -150,7 +150,7 @@ bool HealthStone(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool GreaterHealthStone(uint32 /*i*/, Spell* s)
+bool GreaterHealthStone(uint8_t /*effectIndex*/, Spell* s)
 {
     if (s->p_caster == nullptr)
         return false;
@@ -165,7 +165,7 @@ bool GreaterHealthStone(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool MajorHealthStone(uint32 /*i*/, Spell* s)
+bool MajorHealthStone(uint8_t /*effectIndex*/, Spell* s)
 {
     if (s->p_caster == nullptr)
         return false;
@@ -180,7 +180,7 @@ bool MajorHealthStone(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool MasterHealthStone(uint32 /*i*/, Spell* s)
+bool MasterHealthStone(uint8_t /*effectIndex*/, Spell* s)
 {
     if (s->p_caster == nullptr)
         return false;
@@ -195,7 +195,7 @@ bool MasterHealthStone(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool DemonicHealthStone(uint32 /*i*/, Spell* s)
+bool DemonicHealthStone(uint8_t /*effectIndex*/, Spell* s)
 {
     if (s->p_caster == nullptr)
         return false;
@@ -210,7 +210,7 @@ bool DemonicHealthStone(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool FelHealthStone(uint32 /*i*/, Spell* s)
+bool FelHealthStone(uint8_t /*effectIndex*/, Spell* s)
 {
     if (s->p_caster == nullptr)
         return false;
@@ -225,7 +225,7 @@ bool FelHealthStone(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool MasterDemonologist1(uint32 /*i*/, Spell* s)
+bool MasterDemonologist1(uint8_t /*effectIndex*/, Spell* s)
 {
     Unit* unitTarget = s->GetUnitTarget();
 
@@ -282,7 +282,7 @@ bool MasterDemonologist1(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool MasterDemonologist2(uint32 /*i*/, Spell* s)
+bool MasterDemonologist2(uint8_t /*effectIndex*/, Spell* s)
 {
     Player* p_caster = s->p_caster;
     Unit* unitTarget = s->GetUnitTarget();
@@ -339,7 +339,7 @@ bool MasterDemonologist2(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool MasterDemonologist3(uint32 /*i*/, Spell* s)
+bool MasterDemonologist3(uint8_t /*effectIndex*/, Spell* s)
 {
     Player* p_caster = s->p_caster;
     Unit* unitTarget = s->GetUnitTarget();
@@ -395,7 +395,7 @@ bool MasterDemonologist3(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool MasterDemonologist4(uint32 /*i*/, Spell* s)
+bool MasterDemonologist4(uint8_t /*effectIndex*/, Spell* s)
 {
     Player* p_caster = s->p_caster;
     Unit* unitTarget = s->GetUnitTarget();
@@ -451,7 +451,7 @@ bool MasterDemonologist4(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool MasterDemonologist5(uint32 /*i*/, Spell* s)
+bool MasterDemonologist5(uint8_t /*effectIndex*/, Spell* s)
 {
     Player* p_caster = s->p_caster;
     Unit* unitTarget = s->GetUnitTarget();
@@ -508,7 +508,7 @@ bool MasterDemonologist5(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool SummonSuccubusQuest(uint32 /*i*/, Spell* s)
+bool SummonSuccubusQuest(uint8_t /*effectIndex*/, Spell* s)
 {
     CreatureProperties const* cp = sMySQLStore.getCreatureProperties(5677);
     if (cp == nullptr)
@@ -524,7 +524,7 @@ bool SummonSuccubusQuest(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool SummonVoidWalkerQuest(uint32 /*i*/, Spell* s)
+bool SummonVoidWalkerQuest(uint8_t /*effectIndex*/, Spell* s)
 {
     Player* p_caster = s->p_caster;
 
@@ -542,7 +542,7 @@ bool SummonVoidWalkerQuest(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool SummonFelHunterQuest(uint32 /*i*/, Spell* s)
+bool SummonFelHunterQuest(uint8_t /*effectIndex*/, Spell* s)
 {
     Player* p_caster = s->p_caster;
 
@@ -560,7 +560,7 @@ bool SummonFelHunterQuest(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool DemonicKnowledge(uint32 i, Aura* a, bool apply)
+bool DemonicKnowledge(uint8_t effectIndex, Aura* a, bool apply)
 {
     Unit* m_target = a->GetTarget();
 
@@ -572,7 +572,7 @@ bool DemonicKnowledge(uint32 i, Aura* a, bool apply)
             uint32 val1 = m_target->GetStat(STAT_STAMINA); // stamina
             uint32 val2 = m_target->GetStat(STAT_INTELLECT); // intellect
             uint32 val0 = val1 + val2;
-            float dmginc = (float)(val0 * a->GetModAmount(i)) / 100;
+            float dmginc = (float)(val0 * a->GetModAmount(effectIndex)) / 100;
 
             int32 val;
 
@@ -591,14 +591,14 @@ bool DemonicKnowledge(uint32 i, Aura* a, bool apply)
     return true;
 }
 
-bool ImprovedLifeTap(uint32 i, Aura* a, bool apply)
+bool ImprovedLifeTap(uint8_t effectIndex, Aura* a, bool apply)
 {
     Unit* u_target = a->GetTarget();
     if (!u_target->IsPlayer())
         return true;
 
     Player* p_target = static_cast<Player*>(u_target);
-    int32 amount = a->GetModAmount(i);
+    int32 amount = a->GetModAmount(effectIndex);
 
 
     if (apply)
@@ -609,10 +609,10 @@ bool ImprovedLifeTap(uint32 i, Aura* a, bool apply)
     return true;
 }
 
-bool SoulSiphon(uint32 i, Aura* a, bool apply)
+bool SoulSiphon(uint8_t effectIndex, Aura* a, bool apply)
 {
     Unit* caster = a->GetUnitCaster();
-    int32 amount = a->GetModAmount(i);
+    int32 amount = a->GetModAmount(effectIndex);
 
     if (caster)
     {
@@ -625,7 +625,7 @@ bool SoulSiphon(uint32 i, Aura* a, bool apply)
     return true;
 }
 
-bool SoulStoneResurrection(uint32 /*i*/, Aura* a, bool apply)
+bool SoulStoneResurrection(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     Unit* u_target = a->GetTarget();
     if (!u_target->IsPlayer())
@@ -647,7 +647,7 @@ bool SoulStoneResurrection(uint32 /*i*/, Aura* a, bool apply)
     return true;
 }
 
-bool DemonicCircleSummon(uint32 /*i*/, Aura* a, bool apply)
+bool DemonicCircleSummon(uint8_t /*effectIndex*/, Aura* a, bool apply)
 {
     Unit* m_target = a->GetTarget();
 

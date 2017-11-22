@@ -30,9 +30,9 @@
 const uint32 BLOOD_PLAGUE = 55078;
 const uint32 FROST_FEVER = 55095;
 
-bool Pestilence(uint32 i, Spell* pSpell)
+bool Pestilence(uint8_t effectIndex, Spell* pSpell)
 {
-    if (i == 1) // Script Effect that has been identified to handle the spread of diseases.
+    if (effectIndex == 1) // Script Effect that has been identified to handle the spread of diseases.
     {
         if (!pSpell->u_caster || !pSpell->u_caster->GetTargetGUID() || !pSpell->u_caster->IsInWorld())
             return true;
@@ -51,7 +51,7 @@ bool Pestilence(uint32 i, Spell* pSpell)
             Unit* Target = static_cast<Unit*>((*itr));
             if (Main->GetGUID() == Target->GetGUID() && !u_caster->HasAura(63334))
                 continue;
-            if (isAttackable(Target, u_caster) && u_caster->CalcDistance((*itr)) <= (pSpell->GetRadius(i) + inc))
+            if (isAttackable(Target, u_caster) && u_caster->CalcDistance((*itr)) <= (pSpell->GetRadius(effectIndex) + inc))
             {
                 if (blood)
                     u_caster->CastSpell(Target, BLOOD_PLAGUE, true);
@@ -64,7 +64,7 @@ bool Pestilence(uint32 i, Spell* pSpell)
     return true;
 }
 
-bool DeathStrike(uint32 /*i*/, Spell* pSpell)
+bool DeathStrike(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (pSpell->p_caster == NULL || pSpell->GetUnitTarget() == NULL)
         return true;
@@ -105,7 +105,7 @@ bool DeathStrike(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool Strangulate(uint32 /*i*/, Aura* pAura, bool apply)
+bool Strangulate(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
     if (!apply)
         return true;
@@ -132,7 +132,7 @@ bool Strangulate(uint32 /*i*/, Aura* pAura, bool apply)
     return true;
 }
 
-bool RaiseDead(uint32 /*i*/, Spell* s)
+bool RaiseDead(uint8_t /*effectIndex*/, Spell* s)
 {
     if (s->p_caster == nullptr)
     {
@@ -162,7 +162,7 @@ bool RaiseDead(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool DeathGrip(uint32 i, Spell* s)
+bool DeathGrip(uint8_t effectIndex, Spell* s)
 {
     Unit* unitTarget = s->GetUnitTarget();
 
@@ -185,7 +185,7 @@ bool DeathGrip(uint32 i, Spell* s)
             return false;
 #endif
 
-        s->SpellEffectPlayerPull(i);
+        s->SpellEffectPlayerPull(effectIndex);
 
         return false;
 
@@ -247,7 +247,7 @@ bool DeathGrip(uint32 i, Spell* s)
     return true;
 }
 
-bool DeathCoil(uint32 /*i*/, Spell* s)
+bool DeathCoil(uint8_t /*effectIndex*/, Spell* s)
 {
     Unit* unitTarget = s->GetUnitTarget();
 
@@ -270,7 +270,7 @@ bool DeathCoil(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool BladedArmor(uint32 /*i*/, Spell* /*s*/)
+bool BladedArmor(uint8_t /*effectIndex*/, Spell* /*s*/)
 {
     /********************************************************************************************************
     /* SPELL_EFFECT_DUMMY is used in this spell, in DBC, only to store data for in-game tooltip output.
@@ -286,7 +286,7 @@ bool BladedArmor(uint32 /*i*/, Spell* /*s*/)
     return true;
 }
 
-bool DeathAndDecay(uint32 i, Aura* pAura, bool apply)
+bool DeathAndDecay(uint8_t effectIndex, Aura* pAura, bool apply)
 {
     if (apply)
     {
@@ -294,7 +294,7 @@ bool DeathAndDecay(uint32 i, Aura* pAura, bool apply)
         if (caster == NULL)
             return true;
 
-        int32 value = int32(pAura->GetModAmount(i) + (int32)caster->GetAP() * 0.064);
+        int32 value = int32(pAura->GetModAmount(effectIndex) + (int32)caster->GetAP() * 0.064);
 
         caster->CastSpell(pAura->GetTarget(), 52212, value, true);
     }
@@ -302,7 +302,7 @@ bool DeathAndDecay(uint32 i, Aura* pAura, bool apply)
     return true;
 }
 
-bool Butchery(uint32 /*i*/, Aura* pAura, bool apply)
+bool Butchery(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 
@@ -314,7 +314,7 @@ bool Butchery(uint32 /*i*/, Aura* pAura, bool apply)
     return true;
 }
 
-bool DeathRuneMastery(uint32 /*i*/, Aura* pAura, bool apply)
+bool DeathRuneMastery(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 
@@ -329,7 +329,7 @@ bool DeathRuneMastery(uint32 /*i*/, Aura* pAura, bool apply)
     return true;
 }
 
-bool MarkOfBlood(uint32 /*i*/, Aura* pAura, bool apply)
+bool MarkOfBlood(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 
@@ -341,22 +341,22 @@ bool MarkOfBlood(uint32 /*i*/, Aura* pAura, bool apply)
     return true;
 }
 
-bool Hysteria(uint32 i, Aura* pAura, bool apply)
+bool Hysteria(uint8_t effectIndex, Aura* pAura, bool apply)
 {
     if (!apply)
         return true;
 
     Unit* target = pAura->GetTarget();
 
-    uint32 dmg = (uint32)target->GetMaxHealth() * (pAura->GetSpellInfo()->getEffectBasePoints(i) + 1) / 100;
+    uint32 dmg = (uint32)target->GetMaxHealth() * (pAura->GetSpellInfo()->getEffectBasePoints(effectIndex) + 1) / 100;
     target->DealDamage(target, dmg, 0, 0, 0);
 
     return true;
 }
 
-bool WillOfTheNecropolis(uint32 i, Spell* spell)
+bool WillOfTheNecropolis(uint8_t effectIndex, Spell* spell)
 {
-    if (i != 0)
+    if (effectIndex != 0)
         return true;
 
     Player* plr = spell->p_caster;

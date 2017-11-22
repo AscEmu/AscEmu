@@ -1534,7 +1534,7 @@ bool LuaHookOnResurrect(Player* pPlayer)
     return result;
 }
 
-bool LuaOnDummySpell(uint32 effectIndex, Spell* pSpell)
+bool LuaOnDummySpell(uint8_t effectIndex, Spell* pSpell)
 {
     GET_LOCK
     LuaGlobal::instance()->luaEngine()->BeginCall(LuaGlobal::instance()->m_luaDummySpells[pSpell->GetSpellInfo()->getId()]);
@@ -2788,12 +2788,13 @@ void LuaEngine::Startup()
     RegisterHook(SERVER_HOOK_EVENT_ON_AURA_REMOVE, (void*)LuaHookOnAuraRemove)
     RegisterHook(SERVER_HOOK_EVENT_ON_RESURRECT, (void*)LuaHookOnResurrect)
 
-    for (std::map<uint32, uint16>::iterator itr = LuaGlobal::instance()->m_luaDummySpells.begin(); itr != LuaGlobal::instance()->m_luaDummySpells.end(); ++itr)
+    for (const auto& dummySpell : LuaGlobal::instance()->m_luaDummySpells)
     {
-        if (std::find(LuaGlobal::instance()->luaEngine()->HookInfo.dummyHooks.begin(), LuaGlobal::instance()->luaEngine()->HookInfo.dummyHooks.end(), itr->first) == LuaGlobal::instance()->luaEngine()->HookInfo.dummyHooks.end())
+        auto dummyHook = LuaGlobal::instance()->luaEngine()->HookInfo.dummyHooks;
+        if (std::find(dummyHook.begin(), dummyHook.end(), dummySpell.first) == dummyHook.end())
         {
-            m_scriptMgr->register_dummy_spell(itr->first, &LuaOnDummySpell);
-            LuaGlobal::instance()->luaEngine()->HookInfo.dummyHooks.push_back(itr->first);
+            m_scriptMgr->register_dummy_spell(dummySpell.first, &LuaOnDummySpell);
+            LuaGlobal::instance()->luaEngine()->HookInfo.dummyHooks.push_back(dummySpell.first);
         }
     }
 }
@@ -3282,12 +3283,13 @@ void LuaEngine::Restart()
     RegisterHook(SERVER_HOOK_EVENT_ON_AURA_REMOVE, (void*)LuaHookOnAuraRemove)
     RegisterHook(SERVER_HOOK_EVENT_ON_RESURRECT, (void*)LuaHookOnResurrect)
 
-    for (std::map<uint32, uint16>::iterator itr = LuaGlobal::instance()->m_luaDummySpells.begin(); itr != LuaGlobal::instance()->m_luaDummySpells.end(); ++itr)
+    for (const auto& dummySpell : LuaGlobal::instance()->m_luaDummySpells)
     {
-        if (std::find(LuaGlobal::instance()->luaEngine()->HookInfo.dummyHooks.begin(), LuaGlobal::instance()->luaEngine()->HookInfo.dummyHooks.end(), itr->first) == LuaGlobal::instance()->luaEngine()->HookInfo.dummyHooks.end())
+        auto dummyHook = LuaGlobal::instance()->luaEngine()->HookInfo.dummyHooks;
+        if (std::find(dummyHook.begin(), dummyHook.end(), dummySpell.first) == dummyHook.end())
         {
-            m_scriptMgr->register_dummy_spell(itr->first, &LuaOnDummySpell);
-            LuaGlobal::instance()->luaEngine()->HookInfo.dummyHooks.push_back(itr->first);
+            m_scriptMgr->register_dummy_spell(dummySpell.first, &LuaOnDummySpell);
+            LuaGlobal::instance()->luaEngine()->HookInfo.dummyHooks.push_back(dummySpell.first);
         }
     }
     RELEASE_LOCK

@@ -1447,7 +1447,7 @@ class WorlfguardWorgAI : public CreatureAIScript
 ///////////////////////////////////////////////////////////////////
 
 // Spell entry: 6421
-bool ashrombeUnlockDummySpell(uint32 /*i*/, Spell* pSpell)
+bool ashrombeUnlockDummySpell(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Unit* target = pSpell->u_caster;
     if (!target)
@@ -1465,7 +1465,7 @@ bool ashrombeUnlockDummySpell(uint32 /*i*/, Spell* pSpell)
 }
 
 // Spell entry: 6422
-bool ashrombeTeleportDummyAura(uint32 /*i*/, Aura* pAura, bool /*apply*/)
+bool ashrombeTeleportDummyAura(uint8_t /*effectIndex*/, Aura* pAura, bool /*apply*/)
 {
     Unit* target = pAura->GetUnitCaster();
     if (!target || !target->IsCreature())

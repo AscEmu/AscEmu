@@ -482,34 +482,34 @@ InstanceScript* ScriptMgr::CreateScriptClassForInstance(uint32 /*pMapId*/, MapMg
     return (function_ptr)(pMapMgr);
 };
 
-bool ScriptMgr::CallScriptedDummySpell(uint32 uSpellId, uint32 i, Spell* pSpell)
+bool ScriptMgr::CallScriptedDummySpell(uint32 uSpellId, uint8_t effectIndex, Spell* pSpell)
 {
     HandleDummySpellMap::iterator itr = _spells.find(uSpellId);
     if (itr == _spells.end())
         return false;
 
     exp_handle_dummy_spell function_ptr = itr->second;
-    return (function_ptr)(i, pSpell);
+    return (function_ptr)(effectIndex, pSpell);
 }
 
-bool ScriptMgr::HandleScriptedSpellEffect(uint32 SpellId, uint32 i, Spell* s)
+bool ScriptMgr::HandleScriptedSpellEffect(uint32 SpellId, uint8_t effectIndex, Spell* s)
 {
     HandleScriptEffectMap::iterator itr = SpellScriptEffects.find(SpellId);
     if (itr == SpellScriptEffects.end())
         return false;
 
     exp_handle_script_effect ptr = itr->second;
-    return (ptr)(i, s);
+    return (ptr)(effectIndex, s);
 }
 
-bool ScriptMgr::CallScriptedDummyAura(uint32 uSpellId, uint32 i, Aura* pAura, bool apply)
+bool ScriptMgr::CallScriptedDummyAura(uint32 uSpellId, uint8_t effectIndex, Aura* pAura, bool apply)
 {
     HandleDummyAuraMap::iterator itr = _auras.find(uSpellId);
     if (itr == _auras.end())
         return false;
 
     exp_handle_dummy_aura function_ptr = itr->second;
-    return (function_ptr)(i, pAura, apply);
+    return (function_ptr)(effectIndex, pAura, apply);
 }
 
 bool ScriptMgr::CallScriptedItem(Item* pItem, Player* pPlayer)

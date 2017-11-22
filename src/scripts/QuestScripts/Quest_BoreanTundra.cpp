@@ -609,7 +609,7 @@ public:
     }
 };
 
-bool PlaceCart(uint32 /*i*/, Spell* pSpell)
+bool PlaceCart(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)

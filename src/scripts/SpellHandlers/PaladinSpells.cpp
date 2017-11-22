@@ -25,23 +25,19 @@
 #include "Spell/Definitions/ProcFlags.h"
 #include <Spell/Definitions/PowerType.h>
 
-bool EyeForAnEye(uint32 /*i*/, Aura* pAura, bool apply)
+bool EyeForAnEye(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 
     if (apply)
-    {
         target->AddProcTriggerSpell(25997, pAura->GetSpellInfo()->getId(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), PROC_ON_CRIT_HIT_VICTIM | PROC_ON_RANGED_CRIT_ATTACK_VICTIM | PROC_ON_SPELL_CRIT_HIT_VICTIM, 0, NULL, NULL);
-    }
     else
-    {
         target->RemoveProcTriggerSpell(25997, pAura->m_casterGuid);
-    }
 
     return true;
 }
 
-bool HolyShock(uint32 /*i*/, Spell* pSpell)
+bool HolyShock(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     ///\todo This function returns true on failures (invalid target, invalid spell). Verify this is the correct return value
     Unit* target = pSpell->GetUnitTarget();
@@ -130,30 +126,26 @@ bool HolyShock(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool SealOfRighteousness(uint32 i, Aura* pAura, bool apply)
+bool SealOfRighteousness(uint8_t effectIndex, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 
-    if (i == 0)
+    if (effectIndex == 0)
     {
         if (apply)
-        {
             target->AddProcTriggerSpell(25742, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), PROC_ON_MELEE_ATTACK, 0, NULL, NULL);
-        }
         else
-        {
             target->RemoveProcTriggerSpell(25742, pAura->m_casterGuid);
-        }
     }
 
     return true;
 }
 
-bool SealOfCorruption(uint32 i, Aura* pAura, bool apply)
+bool SealOfCorruption(uint8_t effectIndex, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 
-    if (i == 0)
+    if (effectIndex == 0)
     {
         if (apply)
         {
@@ -170,11 +162,11 @@ bool SealOfCorruption(uint32 i, Aura* pAura, bool apply)
     return true;
 }
 
-bool SealOfVengeance(uint32 i, Aura* pAura, bool apply)
+bool SealOfVengeance(uint8_t effectIndex, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
 
-    if (i == 0)
+    if (effectIndex == 0)
     {
         if (apply)
         {
@@ -191,7 +183,7 @@ bool SealOfVengeance(uint32 i, Aura* pAura, bool apply)
     return true;
 }
 
-bool JudgementLightWisdomJustice(uint32 /*i*/, Spell* pSpell)
+bool JudgementLightWisdomJustice(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Unit* target = pSpell->GetUnitTarget();
     if (target == nullptr)
@@ -321,27 +313,21 @@ bool JudgementLightWisdomJustice(uint32 /*i*/, Spell* pSpell)
     return true;
 }
 
-bool JudgementOfLight(uint32 /*i*/, Aura* pAura, bool apply)
+bool JudgementOfLight(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
     Unit* caster = pAura->GetUnitCaster();
     if (caster == nullptr)
-    {
         return true;
-    }
 
     if (apply)
-    {
         caster->AddProcTriggerSpell(20267, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->getProcChance(), PROC_ON_MELEE_ATTACK | PROC_TARGET_SELF, 0, NULL, NULL);
-    }
     else
-    {
         caster->RemoveProcTriggerSpell(20267, pAura->m_casterGuid);
-    }
 
     return true;
 }
 
-bool JudgementOfWisdom(uint32 /*i*/, Aura* pAura, bool apply)
+bool JudgementOfWisdom(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
 {
     Unit* caster = pAura->GetUnitCaster();
     if (caster == nullptr)
@@ -355,7 +341,7 @@ bool JudgementOfWisdom(uint32 /*i*/, Aura* pAura, bool apply)
     return true;
 }
 
-bool RighteousDefense(uint32 /*i*/, Spell* s)
+bool RighteousDefense(uint8_t /*effectIndex*/, Spell* s)
 {
     //we will try to lure 3 enemies from our target
 
@@ -399,7 +385,7 @@ bool RighteousDefense(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool Illumination(uint32 /*i*/, Spell* s)
+bool Illumination(uint8_t /*effectIndex*/, Spell* s)
 {
     switch (s->m_triggeredByAura == NULL ? s->GetSpellInfo()->getId() : s->m_triggeredByAura->GetSpellId())
     {
@@ -421,7 +407,7 @@ bool Illumination(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool JudgementOfTheWise(uint32 /*i*/, Spell* s)
+bool JudgementOfTheWise(uint8_t /*effectIndex*/, Spell* s)
 {
     if (!s->p_caster)
         return false;
@@ -432,7 +418,7 @@ bool JudgementOfTheWise(uint32 /*i*/, Spell* s)
     return true;
 }
 
-bool GuardedByTheLight(uint32 /*i*/, Spell* s)
+bool GuardedByTheLight(uint8_t /*effectIndex*/, Spell* s)
 {
     if (!s->p_caster)
         return false;

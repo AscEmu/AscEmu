@@ -111,7 +111,7 @@ enum QUEST_12842_ENUM
     SPELL_PREPERATION_FOR_BATTLE_CREDIT = 54586
 };
 
-bool PreparationForBattleEffect(uint32 /*effectIndex*/, Spell* pSpell)
+bool PreparationForBattleEffect(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* pCaster = pSpell->p_caster;
     if (pCaster == nullptr)

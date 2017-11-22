@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-enum SPEC
+enum SPEC : uint8_t
 {
     SPEC_PRIMARY   = 0,
     SPEC_SECONDARY = 1

@@ -7587,7 +7587,7 @@ void Spell::HandleModeratedEffects(uint64 guid)
     DecRef();
 }
 
-void Spell::SpellEffectJumpTarget(uint32 i)
+void Spell::SpellEffectJumpTarget(uint8_t effectIndex)
 {
     if (u_caster == nullptr)
         return;
@@ -7650,20 +7650,20 @@ void Spell::SpellEffectJumpTarget(uint32 i)
 
     float speedZ = 0.0f;
 
-    if (m_spellInfo->getEffectMiscValue(static_cast<uint8_t>(i)))
-        speedZ = float(m_spellInfo->getEffectMiscValue(static_cast<uint8_t>(i))) / 10;
-    else if (m_spellInfo->getEffectMiscValueB(static_cast<uint8_t>(i)))
-        speedZ = float(m_spellInfo->getEffectMiscValueB(static_cast<uint8_t>(i))) / 10;
+    if (m_spellInfo->getEffectMiscValue(effectIndex))
+        speedZ = float(m_spellInfo->getEffectMiscValue(effectIndex)) / 10;
+    else if (m_spellInfo->getEffectMiscValueB(effectIndex))
+        speedZ = float(m_spellInfo->getEffectMiscValueB(effectIndex)) / 10;
 
     o = unitTarget->calcRadAngle(u_caster->GetPositionX(), u_caster->GetPositionY(), x, y);
 
     if (speedZ <= 0.0f)
-        u_caster->GetAIInterface()->splineMoveJump(x, y, z, o, GetSpellInfo()->getEffect(static_cast<uint8_t>(i)) == 145);
+        u_caster->GetAIInterface()->splineMoveJump(x, y, z, o, GetSpellInfo()->getEffect(effectIndex) == 145);
     else
-        u_caster->GetAIInterface()->splineMoveJump(x, y, z, o, speedZ, GetSpellInfo()->getEffect(static_cast<uint8_t>(i)) == 145);
+        u_caster->GetAIInterface()->splineMoveJump(x, y, z, o, speedZ, GetSpellInfo()->getEffect(effectIndex) == 145);
 }
 
-void Spell::SpellEffectJumpBehindTarget(uint32 /*i*/)
+void Spell::SpellEffectJumpBehindTarget(uint8_t /*i*/)
 {
     if (u_caster == nullptr)
         return;
