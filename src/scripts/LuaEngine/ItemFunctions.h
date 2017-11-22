@@ -369,7 +369,7 @@ namespace luaItem
         if (ptr == nullptr)
             return 0;
 
-        uint32 index = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint16 index = static_cast<uint16>(luaL_checkinteger(L, 1));
         uint32 flag = static_cast<uint32>(luaL_checkinteger(L, 2));
         lua_pushboolean(L, ptr->HasFlag(index, flag) ? 1 : 0);
         return 1;
@@ -490,7 +490,7 @@ namespace luaItem
 
     int RemoveFlag(lua_State* L, Item* ptr)
     {
-        uint32 field = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint16 field = static_cast<uint16>(luaL_checkinteger(L, 1));
         uint32 value = static_cast<uint32>(luaL_checkinteger(L, 2));
         if (ptr)
             ptr->RemoveFlag(field, value);
@@ -499,7 +499,7 @@ namespace luaItem
 
     int SetFlag(lua_State* L, Item* ptr)
     {
-        uint32 field = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint16 field = static_cast<uint16>(luaL_checkinteger(L, 1));
         uint32 value = static_cast<uint32>(luaL_checkinteger(L, 2));
         if (ptr)
             ptr->SetFlag(field, value);

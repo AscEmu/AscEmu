@@ -701,3 +701,5 @@ enum PlayerCheats
 #else
     #define GLYPHS_COUNT 6
 #endif
+
+#define MAX_QUEST_SLOT 25

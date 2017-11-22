@@ -5193,11 +5193,11 @@ bool Player::IsGroupMember(Player* plyr)
 
 uint16 Player::GetOpenQuestSlot()
 {
-    for (uint8 i = 0; i < 25; ++i)
+    for (uint8 i = 0; i < MAX_QUEST_SLOT; ++i)
         if (m_questlog[i] == nullptr)
             return i;
 
-    return 0;
+    return MAX_QUEST_SLOT + 1;
 }
 
 void Player::AddToFinishedQuests(uint32 quest_id)
@@ -13666,8 +13666,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
     }
 
     uint16 log_slot = GetOpenQuestSlot();
-
-    if (log_slot == -1)
+    if (log_slot > MAX_QUEST_SLOT)
     {
         sQuestMgr.SendQuestLogFull(this);
         return;

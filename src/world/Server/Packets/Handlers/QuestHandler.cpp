@@ -625,7 +625,7 @@ void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket& recv_data)
                             response = QUEST_SHARE_MSG_CANT_TAKE_QUEST;
                         }
                         // Checks if the player has room in his/her questlog
-                        else if (pPlayer->GetOpenQuestSlot() == -1)
+                        else if (pPlayer->GetOpenQuestSlot() > MAX_QUEST_SLOT)
                         {
                             response = QUEST_SHARE_MSG_LOG_FULL;
                         }

@@ -755,8 +755,7 @@ class LuaUnit
         if (!ptr)
             return 0;
         uint8_t state = static_cast<uint8_t>(luaL_checkinteger(L, 1));
-        if (state < 0)
-            return 0;
+
         ptr->SetStandState(state);
         return 0;
     }
@@ -1690,9 +1689,8 @@ class LuaUnit
                 }
                 else
                 {
-                    int32 open_slot = plr->GetOpenQuestSlot();
-
-                    if (open_slot == -1)
+                    uint16 open_slot = plr->GetOpenQuestSlot();
+                    if (open_slot > MAX_QUEST_SLOT)
                     {
                         sQuestMgr.SendQuestLogFull(plr);
                         lua_pushnumber(L, 2);
@@ -1701,7 +1699,7 @@ class LuaUnit
                     else
                     {
                         QuestLogEntry* qle = new QuestLogEntry();
-                        qle->Init(qst, plr, (uint32)open_slot);
+                        qle->Init(qst, plr, open_slot);
                         qle->UpdatePlayerFields();
 
                         // If the quest should give any items on begin, give them the items.
@@ -2166,8 +2164,8 @@ class LuaUnit
     static int HasFlag(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER_RET();
-        uint32 index = CHECK_ULONG(L, 1);
-        uint32 flag = CHECK_ULONG(L, 2);
+        uint16 index = static_cast<uint16>(luaL_checkinteger(L, 1));
+        uint32 flag = static_cast<uint32>(luaL_checkinteger(L, 2));
         lua_pushboolean(L, ptr->HasFlag(index, flag) ? 1 : 0);
         return 1;
     }
@@ -2618,7 +2616,7 @@ class LuaUnit
 
     static int RemoveFlag(lua_State* L, Unit* ptr)
     {
-        uint32 field = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint16 field = static_cast<uint16>(luaL_checkinteger(L, 1));
         uint32 value = static_cast<uint32>(luaL_checkinteger(L, 2));
         if (ptr)
             ptr->RemoveFlag(field, value);
@@ -2627,7 +2625,7 @@ class LuaUnit
 
     static int SetFlag(lua_State* L, Unit* ptr)
     {
-        uint32 field = static_cast<uint32>(luaL_checkinteger(L, 1));
+        uint16 field = static_cast<uint16>(luaL_checkinteger(L, 1));
         uint32 value = static_cast<uint32>(luaL_checkinteger(L, 2));
         if (ptr)
             ptr->SetFlag(field, value);
