@@ -190,7 +190,7 @@ class TerrainHolder
         TerrainHolder(uint32_t mapid);
         ~TerrainHolder();
 
-        uint16_t GetAreaFlagWithoutAdtId(float x, float y);
+        uint32_t GetAreaFlagWithoutAdtId(float x, float y);
 
         TerrainTile* GetTile(float x, float y);
         TerrainTile* GetTile(int32_t tx, int32_t ty);

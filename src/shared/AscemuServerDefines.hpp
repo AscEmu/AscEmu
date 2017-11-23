@@ -28,9 +28,6 @@
 #include <sys/resource.h>
 #endif
 
-#include "../shared/ascemu_getopt.h"
-
-
 #define DEF_VALUE_NOT_SET 0xDEADBEEF
 
 #define GM_TICKET_MY_MASTER_COMPATIBLE

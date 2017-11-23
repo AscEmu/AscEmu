@@ -9805,7 +9805,7 @@ int32 Unit::getDetectRangeMod(uint64 guid)
 
 bool Unit::IsSitting()
 {
-    uint8 s = GetStandState();
+    StandState s = GetStandState();
     return
         s == STANDSTATE_SIT_CHAIR        || s == STANDSTATE_SIT_LOW_CHAIR  ||
         s == STANDSTATE_SIT_MEDIUM_CHAIR || s == STANDSTATE_SIT_HIGH_CHAIR ||
@@ -12450,22 +12450,25 @@ void Unit::DispelAll(bool positive)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// bool Unit::RemoveAllAurasByMechanic (renamed from MechanicImmunityMassDispel)
-/// Removes all auras on this unit that are of a specific mechanic.
-/// Useful for things like.. Apply Aura: Immune Mechanic, where existing (de)buffs are *always supposed* to be removed.
-/// I'm not sure if this goes here under unit.
-///
-/// \param uint32 MechanicType
-/// \return False if no buffs were dispelled, true if more than 0 were dispelled.
+// bool Unit::RemoveAllAurasByMechanic (renamed from MechanicImmunityMassDispel)
+// Removes all auras on this unit that are of a specific mechanic.
+// Useful for things like.. Apply Aura: Immune Mechanic, where existing (de)buffs are *always supposed* to be removed.
+// I'm not sure if this goes here under unit.
+//
+// \param uint32 MechanicType
+// \return False if no buffs were dispelled, true if more than 0 were dispelled.
 //////////////////////////////////////////////////////////////////////////////////////////
-bool Unit::RemoveAllAurasByMechanic(uint32 MechanicType, uint32 MaxDispel = -1, bool HostileOnly = true)
+
+// MaxDispel was set to -1 which will led to a uint32 of 4294967295
+bool Unit::RemoveAllAurasByMechanic(uint32 MechanicType, uint32 /*MaxDispel = 0*/, bool HostileOnly = true)
 {
     LogDebugFlag(LF_AURA, "Unit::MechanicImmunityMassDispel called, mechanic: %u" , MechanicType);
     uint32 DispelCount = 0;
     for (uint32 x = (HostileOnly ? MAX_NEGATIVE_AURAS_EXTEDED_START : MAX_POSITIVE_AURAS_EXTEDED_START); x < MAX_REMOVABLE_AURAS_END; x++)    // If HostileOnly = 1, then we use aura slots 40-56 (hostile). Otherwise, we use 0-56 (all)
     {
-        if (DispelCount >= MaxDispel && MaxDispel > 0)
-            return true;
+        // This check is will never be true since DispelCount is 0 and MaxDispel was 4294967295!
+        /*if (DispelCount >= MaxDispel && MaxDispel > 0)
+            return true;*/
 
         if (m_auras[x])
         {

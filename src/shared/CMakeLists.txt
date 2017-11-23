@@ -25,7 +25,6 @@ set(sources
 
 	Threading/AEThread.cpp
 
-    ascemu_getopt.cpp
     CrashHandler.cpp
     crc32.cpp
     CThreads.cpp
@@ -45,7 +44,6 @@ set(sources
 
 set(headers
 	Array.h
-	ascemu_getopt.h
     AscemuServerDefines.hpp
 	AuthCodes.h
 	ByteBuffer.h

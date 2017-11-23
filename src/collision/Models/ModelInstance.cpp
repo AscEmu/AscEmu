@@ -213,7 +213,7 @@ namespace VMAP
             check += fwrite(&spawn.iBound.low(), sizeof(float), 3, wf);
             check += fwrite(&spawn.iBound.high(), sizeof(float), 3, wf);
         }
-        uint32 nameLen = spawn.name.length();
+        uint32 nameLen = static_cast<uint32>(spawn.name.length());
         check += fwrite(&nameLen, sizeof(uint32), 1, wf);
         if (check != uint32(has_bound ? 17 : 11))
             return false;

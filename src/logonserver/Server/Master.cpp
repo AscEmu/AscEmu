@@ -32,71 +32,9 @@ void LogonServer::Run(int /*argc*/, char** /*argv*/)
     UNIXTIME = time(NULL);
     g_localTime = *localtime(&UNIXTIME);
 
-    //char* config_file = (char*)CONFDIR "/logon.conf";
-
-    //int file_log_level = DEF_VALUE_NOT_SET;
-    //int screen_log_level = DEF_VALUE_NOT_SET;
-
-    // Zyres: The commandline options (especially the config_file value) is leaking our memory (CID 52921). This feature seems to be unfinished.
-#ifdef COMMANDLINE_OPT_ENABLE
-
-    int do_check_conf = 0;
-    int do_version = 0;
-
-    struct arcemu_option longopts[] =
-    {
-        { "checkconf",          arcemu_no_argument,              &do_check_conf,         1 },
-        { "screenloglevel",     arcemu_required_argument,        &screen_log_level,      1 },
-        { "fileloglevel",       arcemu_required_argument,        &file_log_level,        1 },
-        { "version",            arcemu_no_argument,              &do_version,            1 },
-        { "conf",               arcemu_required_argument,        NULL,                  'c' },
-        { 0, 0, 0, 0 }
-    };
-
-    int c;
-    while ((c = arcemu_getopt_long_only(argc, argv, ":f:", longopts, NULL)) != -1)
-    {
-        switch (c)
-        {
-            case 'c':
-                /* Log filename was set */
-                config_file = new char[strlen(arcemu_optarg) + 1];
-                strcpy(config_file, arcemu_optarg);
-                break;
-            case 0:
-                break;
-            default:
-                return;
-        }
-    }
-#endif
     AscLog.InitalizeLogFiles("logon");
 
     PrintBanner();
-
-#ifdef COMMANDLINE_OPT_ENABLE
-    if (do_version)
-    {
-        AscLog.~AscEmuLog();
-        return;
-    }
-
-    if (do_check_conf)
-    {
-        LOG_BASIC("Checking config file: %s", config_file.c_str());
-        if (Config.MainConfig.SetSource(config_file, true))
-            LOG_BASIC("  Passed without errors.");
-        else
-            LOG_BASIC("  Encountered one or more errors.");
-
-        AscLog.~AscEmuLog();
-        return;
-    }
-
-    // set new log levels
-    if (file_log_level != (int)DEF_VALUE_NOT_SET)
-        AscLog.SetFileLoggingLevel(file_log_level);
-#endif
 
     LogDefault("The key combination <Ctrl-C> will safely shut down the server.");
 

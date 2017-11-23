@@ -5463,7 +5463,7 @@ uint8 Spell::CanCast(bool tolerate)
             {
                 if (GetSpellInfo()->getEffectApplyAuraName(i) == SPELL_AURA_MECHANIC_IMMUNITY)
                 {
-                    target->RemoveAllAurasByMechanic(GetSpellInfo()->getEffectMiscValue(i), static_cast<uint32>(-1), true);
+                    target->RemoveAllAurasByMechanic(GetSpellInfo()->getEffectMiscValue(i), 0, true);
                     // Remove all debuffs of that mechanic type.
                     // This is also done in SpellAuras.cpp - wtf?
                 }

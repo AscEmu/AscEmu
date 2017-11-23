@@ -93,8 +93,8 @@ bool ImprovedSprint(uint8_t effectIndex, Spell* pSpell)
         if (target == NULL)
             return true;
 
-        target->RemoveAllAurasByMechanic(MECHANIC_ENSNARED, -1, true);
-        target->RemoveAllAurasByMechanic(MECHANIC_ROOTED, -1, true);
+        target->RemoveAllAurasByMechanic(MECHANIC_ENSNARED, 0, true);
+        target->RemoveAllAurasByMechanic(MECHANIC_ROOTED, 0, true);
     }
 
     return true;

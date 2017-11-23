@@ -5639,7 +5639,7 @@ void Aura::SpellAuraMechanicImmunity(bool apply)
         if (mod->m_miscValue != 16 && mod->m_miscValue != 25 && mod->m_miscValue != 19) // don't remove bandages, Power Word and protection effect
         {
             /* Supa's test run of Unit::RemoveAllAurasByMechanic */
-            m_target->RemoveAllAurasByMechanic((uint32)mod->m_miscValue, static_cast<uint32>(-1), false);
+            m_target->RemoveAllAurasByMechanic((uint32)mod->m_miscValue, 0, false);
 
             //Insignia/Medallion of A/H			//Every Man for Himself
             if (m_spellInfo->getId() == 42292 || m_spellInfo->getId() == 59752)

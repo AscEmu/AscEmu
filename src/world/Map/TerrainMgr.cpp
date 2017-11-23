@@ -40,7 +40,7 @@ TerrainHolder::~TerrainHolder()
             UnloadTile(i, j);
 }
 
-uint16 TerrainHolder::GetAreaFlagWithoutAdtId(float x, float y)
+uint32 TerrainHolder::GetAreaFlagWithoutAdtId(float x, float y)
 {
     auto tile = this->GetTile(x, y);
     if (tile)
