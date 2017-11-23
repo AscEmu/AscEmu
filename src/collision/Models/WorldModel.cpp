@@ -278,7 +278,6 @@ namespace VMAP
     bool GroupModel::writeToFile(FILE* wf)
     {
         bool result = true;
-        uint32 chunkSize, count;
 
         if (result && fwrite(&iBound, sizeof(G3D::AABox), 1, wf) != 1) result = false;
         if (result && fwrite(&iMogpFlags, sizeof(uint32), 1, wf) != 1) result = false;
@@ -287,8 +286,8 @@ namespace VMAP
         // write vertices
         if (result && fwrite("VERT", 1, 4, wf) != 4)
             result = false;
-        count = vertices.size();
-        chunkSize = sizeof(uint32)+ sizeof(Vector3)*count;
+        size_t count = vertices.size();
+        size_t chunkSize = sizeof(uint32)+ sizeof(Vector3)*count;
         if (result && fwrite(&chunkSize, sizeof(uint32), 1, wf) != 1)
             result = false;
         if (result && fwrite(&count, sizeof(uint32), 1, wf) != 1)
@@ -547,18 +546,17 @@ namespace VMAP
         if (!wf)
             return false;
 
-        uint32 chunkSize, count;
         bool result = fwrite(VMAP_MAGIC, 1, 8, wf) == 8;
         if (result && fwrite("WMOD", 1, 4, wf) != 4)
             result = false;
-        chunkSize = sizeof(uint32) + sizeof(uint32);
+        size_t chunkSize = sizeof(uint32) + sizeof(uint32);
         if (result && fwrite(&chunkSize, sizeof(uint32), 1, wf) != 1)
             result = false;
         if (result && fwrite(&RootWMOID, sizeof(uint32), 1, wf) != 1)
             result = false;
 
         // write group models
-        count=groupModels.size();
+        size_t count = groupModels.size();
         if (count)
         {
             if (result && fwrite("GMOD", 1, 4, wf) != 4)

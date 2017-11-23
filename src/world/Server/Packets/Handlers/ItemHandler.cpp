@@ -761,7 +761,7 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recv_data)
     WorldPacket data(SMSG_ITEM_QUERY_SINGLE_RESPONSE, 800);
     data << itemProto->ItemId;
     data << itemProto->Class;
-    data << uint32(itemProto->SubClass);
+    data << uint32_t(itemProto->SubClass);
     data << itemProto->unknown_bc;  // soundOverride
     data << Name;
     data << uint8(0);           // name 2?

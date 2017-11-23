@@ -186,7 +186,7 @@ namespace VMAP
                     continue;
                 }
 
-                uint32 nSpawns = tileEntries.count(tile->first);
+                size_t nSpawns = tileEntries.count(tile->first);
                 std::stringstream tilefilename;
                 tilefilename.fill('0');
                 tilefilename << iDestDir << '/' << std::setw(3) << map_iter->first << '_';
@@ -265,7 +265,8 @@ namespace VMAP
             return false;
         }
         printf("Read coordinate mapping...\n");
-        uint32 mapID, tileX, tileY, check = 0;
+        uint32 mapID, tileX, tileY = 0;
+        size_t check;
         G3D::Vector3 v1, v2;
         ModelSpawn spawn;
         while (!feof(dirf))
@@ -332,7 +333,7 @@ namespace VMAP
             return false;
         }
 
-        uint32 groups = raw_model.groupsArray.size();
+        size_t groups = raw_model.groupsArray.size();
         if (groups != 1)
         {
             printf("Warning: '%s' does not seem to be a M2 model!\n", modelFilename.c_str());
@@ -341,7 +342,7 @@ namespace VMAP
         AABox modelBound;
         bool boundEmpty = true;
 
-        for (uint32 g=0; g<groups; ++g) // should be only one for M2 files...
+        for (uint32 g = 0; g < groups; ++g) // should be only one for M2 files...
         {
             std::vector<Vector3>& vertices = raw_model.groupsArray[g].vertexArray;
 
@@ -351,7 +352,7 @@ namespace VMAP
                 continue;
             }
 
-            uint32 nvectors = vertices.size();
+            size_t nvectors = vertices.size();
             for (uint32 i = 0; i < nvectors; ++i)
             {
                 Vector3 v = modelPosition.transform(vertices[i]);
@@ -404,7 +405,7 @@ namespace VMAP
         {
             std::vector<GroupModel> groupsArray;
 
-            uint32 groups = raw_model.groupsArray.size();
+            size_t groups = raw_model.groupsArray.size();
             for (uint32 g = 0; g < groups; ++g)
             {
                 GroupModel_Raw& raw_group = raw_model.groupsArray[g];
@@ -464,7 +465,7 @@ namespace VMAP
             {
                 std::vector<Vector3>& vertices = raw_model.groupsArray[g].vertexArray;
 
-                uint32 nvectors = vertices.size();
+                size_t nvectors = vertices.size();
                 for (uint32 i = 0; i < nvectors; ++i)
                 {
                     Vector3& v = vertices[i];

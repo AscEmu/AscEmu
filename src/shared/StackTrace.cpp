@@ -42,6 +42,7 @@ static long getCaller(int index)
     return caller;
 
 #else
+    if (index < 0) { return 0;  }
 
     return 0;
 
