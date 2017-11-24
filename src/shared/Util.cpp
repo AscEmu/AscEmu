@@ -18,12 +18,18 @@ namespace Util
 
     void StringToLowerCase(std::string& str)
     {
-        std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+        // C4244
+        //std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+        for (std::size_t i = 0; i < str.length(); ++i)
+            str[i] = static_cast<char>(::tolower(str[i]));
     }
 
     void StringToUpperCase(std::string& str)
     {
-        std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+        // C4244
+        //std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+        for (std::size_t i = 0; i < str.length(); ++i)
+            str[i] = static_cast<char>(::toupper(str[i]));
     }
 
     void CapitalizeString(std::string& str)

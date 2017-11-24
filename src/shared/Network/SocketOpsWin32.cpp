@@ -15,7 +15,7 @@ namespace SocketOps
     SOCKET CreateTCPFileDescriptor()
     {
         // create a socket for use with overlapped i/o.
-        return ::WSASocket(AF_INET, SOCK_STREAM, 0, 0, 0, WSA_FLAG_OVERLAPPED);
+        return ::WSASocketW(AF_INET, SOCK_STREAM, 0, 0, 0, WSA_FLAG_OVERLAPPED);
     }
 
     // Disable blocking send/recv calls.

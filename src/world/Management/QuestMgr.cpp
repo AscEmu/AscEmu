@@ -316,7 +316,7 @@ uint32 QuestMgr::ActiveQuestsCount(Object* quest_giver, Player* plr)
         {
             if (tmp_map.find((*itr)->qst->id) == tmp_map.end())
             {
-                tmp_map.insert(std::map<uint32, uint8>::value_type((*itr)->qst->id, 1));
+                tmp_map.insert(std::map<uint32, uint8>::value_type((*itr)->qst->id, static_cast<uint8_t>(1)));
                 questCount++;
             }
         }
@@ -428,7 +428,7 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, O
 void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32 /*menutype*/, uint32 language, Player* plr)
 {
     MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
-    std::map<uint32, uint8>::const_iterator itr;
+    //std::map<uint32, uint8>::const_iterator itr;
 
     data->SetOpcode(SMSG_QUESTGIVER_QUEST_DETAILS);
 
@@ -713,7 +713,7 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
         {
             if (tmp_map.find((*it)->qst->id) == tmp_map.end())
             {
-                tmp_map.insert(std::map<uint32, uint8>::value_type((*it)->qst->id, 1));
+                tmp_map.insert(std::map<uint32, uint8>::value_type((*it)->qst->id, static_cast<uint8_t>(1)));
                 MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest((*it)->qst->id, language) : nullptr;
 
                 *data << (*it)->qst->id;

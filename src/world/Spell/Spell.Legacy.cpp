@@ -3241,7 +3241,7 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
     if (id < TOTAL_SPELL_EFFECTS)
     {
         LogDebugFlag(LF_SPELL, "WORLD: Spell effect id = %u (%s), damage = %d", id, SpellEffectNames[id], damage);
-        (*this.*SpellEffectsHandler[id])(i);
+        (*this.*SpellEffectsHandler[id])(static_cast<uint8_t>(i));
     }
     else
         LOG_ERROR("SPELL: unknown effect %u spellid %u", id, GetSpellInfo()->getId());

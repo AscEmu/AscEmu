@@ -757,7 +757,7 @@ void Master::ShutdownThreadPools(bool listnersockcreate)
         if (50 > etime)
         {
 
-            Arcemu::Sleep(50 - etime);
+            Arcemu::Sleep(static_cast<unsigned long>(50 - etime));
 
         }
     }

@@ -3894,7 +3894,7 @@ void Spell::SpellEffectDispel(uint8_t effectIndex) // Dispel
                     if (--damage <= 0)
                         finish = true;
                 }
-                else if (aursp->getDispelType() == GetSpellInfo()->getEffectMiscValue(effectIndex))
+                else if (static_cast<int32_t>(aursp->getDispelType()) == GetSpellInfo()->getEffectMiscValue(effectIndex))
                 {
                     unitTarget->HandleProc(PROC_ON_PRE_DISPELL_AURA_VICTIM, u_caster, GetSpellInfo(), m_triggeredSpell, aursp->getId());
 

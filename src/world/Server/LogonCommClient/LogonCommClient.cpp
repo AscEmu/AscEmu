@@ -31,7 +31,6 @@
 #include "Server/World.Legacy.h"
 #include "LogonCommDefines.h"
 
-
 LogonCommClientSocket::LogonCommClientSocket(SOCKET fd) : Socket(fd, 724288, 262444)
 {
     // do nothing
@@ -192,7 +191,6 @@ void LogonCommClientSocket::SendPing()
 void LogonCommClientSocket::SendPacket(WorldPacket* data, bool no_crypto)
 {
     LogonWorldPacket header;
-    bool rv;
     if (!IsConnected() || IsDeleted())
         return;
 
@@ -201,13 +199,20 @@ void LogonCommClientSocket::SendPacket(WorldPacket* data, bool no_crypto)
     header.opcode = data->GetOpcode();
     //header.size   = ntohl((u_long)data->size());
     header.size = (uint32)data->size();
-    byteSwapUInt32(&header.size);
 
+#ifdef _MSC_VER
+#   pragma warning (push)
+#   pragma warning (disable : 4366)
+#endif
+    byteSwapUInt32(&header.size);
+#ifdef _MSC_VER
+#pragma warning (pop)
+#endif
 
     if (use_crypto && !no_crypto)
         _sendCrypto.Process((unsigned char*)&header, (unsigned char*)&header, 6);
 
-    rv = BurstSend((const uint8*)&header, 6);
+    bool rv = BurstSend((const uint8*)&header, 6);
 
     if (data->size() > 0 && rv)
     {
@@ -301,7 +306,7 @@ void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket& recvData)
             if (itr != mapping_to_send.end())
                 itr->second++;
             else
-                mapping_to_send.insert(std::make_pair(account_id, 1));
+                mapping_to_send.insert(std::make_pair(account_id, static_cast<uint8_t>(1)));
         }
         while (result->NextRow());
         delete result;

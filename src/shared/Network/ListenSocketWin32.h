@@ -14,6 +14,11 @@
 
 #include "../Threading/LegacyThreadPool.h"
 
+#ifdef _MSC_VER
+#   pragma warning (push)
+#   pragma warning (disable : 4996)
+#endif
+
 template<class T>
 class SERVER_DECL ListenSocket : public ThreadBase
 {
@@ -21,7 +26,7 @@ class SERVER_DECL ListenSocket : public ThreadBase
 
         ListenSocket(const char* ListenAddress, uint32 Port)
         {
-            m_socket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
+            m_socket = WSASocketW(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
             SocketOps::ReuseAddr(m_socket);
             SocketOps::Blocking(m_socket);
             SocketOps::SetTimeout(m_socket, 60);
@@ -109,6 +114,10 @@ class SERVER_DECL ListenSocket : public ThreadBase
         T* socket;
         HANDLE m_cp;
 };
+
+#ifdef _MSC_VER
+#pragma warning (pop)
+#endif
 
 #endif
 #endif      //LISTEN_SOCKET_WIN32_H

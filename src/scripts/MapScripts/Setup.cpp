@@ -103,6 +103,11 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* scriptMgr)
     TheBotanicaScripts(scriptMgr);
     TheEyeScripts(scriptMgr);
     TheMechanarScripts(scriptMgr);
+#else
+    if (scriptMgr == nullptr)
+    {
+        return;
+    }
 #endif
 }
 
