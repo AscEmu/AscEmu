@@ -2936,7 +2936,7 @@ bool Spell::HasPower()
     }
     else
     {
-        if (cost <= currentPower) // Unit has enough power (needed for creatures)
+        if (cost <= static_cast<int32_t>(currentPower)) // Unit has enough power (needed for creatures)
         {
             return true;
         }
@@ -3095,7 +3095,7 @@ bool Spell::TakePower()
     }
     else
     {
-        if (cost <= currentPower) // Unit has enough power (needed for creatures)
+        if (cost <= static_cast<int32_t>(currentPower)) // Unit has enough power (needed for creatures)
         {
             m_caster->setUInt32Value(powerField, currentPower - cost);
             return true;

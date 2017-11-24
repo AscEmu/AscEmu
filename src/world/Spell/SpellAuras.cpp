@@ -2853,7 +2853,8 @@ void Aura::SpellAuraModStealth(bool apply)
             Aura *buff = m_target->getAuraWithId(58427);
             if (buff)
             {
-                m_target->SetAurDuration(58427, -1);
+                // Spell Overkill - in stealth and 20 seconds after stealth +30% energy regeneration - -1 duration => hacky infinity
+                m_target->SetAurDuration(58427, static_cast<uint32_t>(-1));
                 m_target->ModVisualAuraStackCount(buff, 0);
             }
             else
