@@ -168,7 +168,7 @@ class SERVER_DECL StackBuffer : public StackBufferBase
 
         /** string (null-terminated) operators
          */
-        StackBuffer<Size>& operator << (std::string & value) { EnsureBufferSize(value.length() + 1); memcpy(&m_bufferPointer[m_writePos], value.c_str(), value.length() + 1); m_writePos += (value.length() + 1); return *this; }
+        StackBuffer<Size>& operator << (std::string & value) { EnsureBufferSize(static_cast<uint32>(value.length() + 1)); memcpy(&m_bufferPointer[m_writePos], value.c_str(), value.length() + 1); m_writePos += static_cast<uint32>(value.length() + 1); return *this; }
         StackBuffer<Size>& operator >> (std::string & dest)
         {
             dest.clear();
@@ -183,9 +183,9 @@ class SERVER_DECL StackBuffer : public StackBufferBase
         }
         StackBuffer<Size>& operator << (const std::string & value)
         {
-            EnsureBufferSize(value.length() + 1);
+            EnsureBufferSize(static_cast<uint32>(value.length() + 1));
             memcpy(&m_bufferPointer[m_writePos], value.c_str(), value.length() + 1);
-            m_writePos += (value.length() + 1);
+            m_writePos += static_cast<uint32>(value.length() + 1);
             return *this;
         }
 

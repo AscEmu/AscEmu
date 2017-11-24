@@ -522,11 +522,11 @@ namespace luaGlobalFunctions
         }
         RET_NUMBER(left)
     }
-    int bit_not(lua_State* L)
+    /*int bit_not(lua_State* L)
     {
         uint32 left = CHECK_ULONG(L, 1);
         RET_NUMBER(~left)
-    }
+    }*/
     int bit_shiftleft(lua_State* L)
     {
         uint32 left = CHECK_ULONG(L, 1);
@@ -747,7 +747,7 @@ void RegisterGlobalFunctions(lua_State* L)
     lua_register(L, "bit_and", &luaGlobalFunctions::bit_and);
     lua_register(L, "bit_or", &luaGlobalFunctions::bit_or);
     lua_register(L, "bit_xor", &luaGlobalFunctions::bit_xor);
-    lua_register(L, "bit_not", &luaGlobalFunctions::bit_not);
+    //lua_register(L, "bit_not", &luaGlobalFunctions::bit_not);
     lua_register(L, "bit_shiftleft", &luaGlobalFunctions::bit_shiftleft);
     lua_register(L, "bit_shiftright", &luaGlobalFunctions::bit_shiftright);
 

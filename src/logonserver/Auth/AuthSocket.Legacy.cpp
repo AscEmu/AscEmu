@@ -722,7 +722,7 @@ void AuthSocket::HandleReconnectProof()
             buffer << uint8(3);
             buffer << uint8(0);
             buffer << uint16(0);
-            Send(buffer.contents(), buffer.size());
+            Send(buffer.contents(), static_cast<uint32>(buffer.size()));
         }
         else
         {

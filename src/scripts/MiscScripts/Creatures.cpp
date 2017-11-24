@@ -472,7 +472,7 @@ class NestlewoodOwlkin : public CreatureAIScript
         {
             if (getCreature()->HasAura(29528))
             {
-                Player* player = getCreature()->GetMapMgr()->GetPlayer(getCreature()->GetTargetGUID());
+                Player* player = getCreature()->GetMapMgr()->GetPlayer(static_cast<uint32>(getCreature()->GetTargetGUID()));
                 if (player != nullptr)
                 {
                     if (!player->HasQuest(9303) || player->HasFinishedQuest(9303))

@@ -135,16 +135,6 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
     ThreadPool.Startup();
     auto startTime = Util::TimeNow();
 
-    int32 intVal = -1;
-    uint32 uintVal = static_cast<uint32>(intVal);
-
-    LogDefault("UINT is %u", uintVal);
-
-    int32 intVal2 = -5;
-    uint32 uintVal2 = intVal2;
-
-    LogDefault("UINT2 is %u", uintVal2);
-
     new EventMgr;
     new World;
 
