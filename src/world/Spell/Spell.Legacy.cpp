@@ -3284,6 +3284,17 @@ void Spell::HandleAddAura(uint64 guid)
         return;
     }
 
+    // call script
+    if (Target->IsCreature())
+    {
+        auto creature = static_cast<Creature*>(Target);
+        if (creature->GetScript())
+        {
+            if (m_caster->IsUnit())
+                CALL_SCRIPT_EVENT(creature, OnHitBySpell)(GetSpellInfo()->getId(), static_cast<Unit*>(m_caster));
+        }
+    }
+
     // Applying an aura to a flagged target will cause you to get flagged.
     // self casting doesn't flag himself.
     if (Target->IsPlayer() && p_caster && p_caster != static_cast<Player*>(Target))

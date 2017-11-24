@@ -282,6 +282,21 @@ class LordMarrowgarAI : public CreatureAIScript
                         sendAnnouncement(ss.str());
                     }
                 } break;
+                case 9770:
+                {
+                    if (pUnitCaster != nullptr && pUnitCaster->IsPlayer())
+                    {
+                        std::stringstream ss;
+                        ss << static_cast<Player*>(pUnitCaster)->GetName() << " hits me with aura 9770... damnit! ";
+                        sendAnnouncement(ss.str());
+                    }
+                } break;
+                case 9798:
+                {
+                    std::stringstream ss;
+                    ss << "9798 hit me..... damnit! ";
+                    sendAnnouncement(ss.str());
+                } break;
             }
         }
 
