@@ -82,11 +82,11 @@ class OmorTheUnscarredAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(OmorTheUnscarredAI);
         OmorTheUnscarredAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            SpellDesc* pShield = AddSpell(OMOR_DEMONIC_SHIELD, Target_Self, 30, 0, 25);
+            pShield = AddSpell(OMOR_DEMONIC_SHIELD, Target_Self, 30, 0, 25);
             pShield->mEnabled = false;
             SpellDesc* pSummon = AddSpell(OMOR_SUMMON_FIENDISH_HOUND, Target_Self, 8, 1, 20);
             pSummon->addEmote("Achor-she-ki! Feast my pet! Eat your fill!", CHAT_MSG_MONSTER_YELL, 10277);
-            AddSpell(OMOR_SHADOW_WHIP, Target_RandomPlayer, 10, 0, 30);
+            pWhip = AddSpell(OMOR_SHADOW_WHIP, Target_RandomPlayer, 10, 0, 30);
             if (!_isHeroic())
             {
                 AddSpell(OMOR_SHADOW_BOLT, Target_RandomPlayer, 8, 3, 15, 10, 60, true);
@@ -123,7 +123,6 @@ class OmorTheUnscarredAI : public CreatureAIScript
 
         void AIUpdate() override
         {
-            SpellDesc* pShield = FindSpellById(OMOR_DEMONIC_SHIELD);
             if (_getHealthPercent() <= 20 && pShield != NULL && !pShield->mEnabled)
             {
                 pShield->mEnabled = true;
@@ -154,7 +153,6 @@ class OmorTheUnscarredAI : public CreatureAIScript
 
                 if (pTarget == NULL)
                 {
-                    SpellDesc* pWhip = FindSpellById(OMOR_SHADOW_WHIP);    // used for now
                     if (pWhip != NULL)
                     {
                         pWhip->mLastCastTime = 0;
@@ -167,6 +165,10 @@ class OmorTheUnscarredAI : public CreatureAIScript
             
             setRooted(true);
     }
+
+        SpellDesc* pShield;
+        SpellDesc* pWhip;
+
 };
 
 void SetupHellfireRamparts(ScriptMgr* mgr)

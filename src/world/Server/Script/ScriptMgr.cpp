@@ -553,8 +553,6 @@ CreatureAIScript::~CreatureAIScript()
         linkedCreatureAI->LinkedCreatureDeleted();
 
     mPhaseSpells.clear();
-
-    DeleteArray(mSpells);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1960,21 +1958,6 @@ void CreatureAIScript::CastSpellNowNoScheduling(SpellDesc* pSpell)
 {
     if (CastSpellInternal(pSpell))
         _delayNextAttack(CalcSpellAttackTime(pSpell));
-}
-
-SpellDesc* CreatureAIScript::FindSpellById(uint32_t pSpellId)
-{
-    for (auto& creatureSpell : mSpells)
-    {
-        if (creatureSpell)
-        {
-            if (creatureSpell->mInfo && creatureSpell->mInfo->getId() == pSpellId)
-            {
-                return creatureSpell;
-            }
-        }
-    }
-    return nullptr;
 }
 
 SpellDesc* CreatureAIScript::FindSpellByFunc(SpellFunc pFnc)

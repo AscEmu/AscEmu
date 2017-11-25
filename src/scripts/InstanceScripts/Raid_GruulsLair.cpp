@@ -217,8 +217,8 @@ class HighKingMaulgarAI : public CreatureAIScript
 
 void SpellFunc_Maulgar_Enrage(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* /*pTarget*/, TargetType /*pType*/)
 {
-    HighKingMaulgarAI* pMaulgarAI = (pCreatureAI != NULL) ? static_cast< HighKingMaulgarAI* >(pCreatureAI) : NULL;
-    if (pMaulgarAI != NULL)
+    HighKingMaulgarAI* pMaulgarAI = (pCreatureAI != nullptr) ? static_cast< HighKingMaulgarAI* >(pCreatureAI) : nullptr;
+    if (pMaulgarAI != nullptr)
     {
         pMaulgarAI->_applyAura(HIGH_KING_MAULGAR_FLURRY);
         pMaulgarAI->_setDisplayWeapon(false, false);

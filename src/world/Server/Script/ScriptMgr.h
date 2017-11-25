@@ -1076,7 +1076,6 @@ class SERVER_DECL CreatureAIScript
         void CastSpell(SpellDesc* pSpell);
         void CastSpellNowNoScheduling(SpellDesc* pSpell);
         
-        SpellDesc* FindSpellById(uint32_t pSpellId);
         SpellDesc* FindSpellByFunc(SpellFunc pFnc);
 
         void TriggerCooldownOnAllSpells();
@@ -1121,19 +1120,6 @@ class SERVER_DECL CreatureAIScript
 
         PhaseSpellArray mPhaseSpells;
 };
-
-
-//STL Utilities
-template <class Type> inline void DeleteArray(std::vector<Type> pVector)
-{
-    typename std::vector<Type>::iterator Iter = pVector.begin();
-    for (; Iter != pVector.end(); ++Iter)
-    {
-        delete(*Iter);
-    }
-    pVector.clear();
-}
-
 
 class GameEvent;
 class SERVER_DECL EventScript

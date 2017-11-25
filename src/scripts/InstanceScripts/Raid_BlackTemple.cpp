@@ -441,7 +441,7 @@ class AshtongueStalkerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(AshtongueStalkerAI);
         AshtongueStalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(ASHTONGUE_STALKER_BLIND, Target_RandomPlayer, 7, 1, 25);                // Should be Blind - > Attack Next Target?
+            pSpell =AddSpell(ASHTONGUE_STALKER_BLIND, Target_RandomPlayer, 7, 1, 25);                // Should be Blind - > Attack Next Target?
             AddSpell(ASHTONGUE_STALKER_INSTANT_POISON, Target_Current, 10, 0, 20, 0, 10);
             AddSpell(ASHTONGUE_STALKER_MINDNUMBING_POISON, Target_RandomPlayer, 8, 0, 20);
             _applyAura(ASHTONGUE_STALKER_STEATH);
@@ -449,7 +449,6 @@ class AshtongueStalkerAI : public CreatureAIScript
 
         void OnCombatStart(Unit* /*pTarget*/) override
         {
-            SpellDesc* pSpell = FindSpellById(ASHTONGUE_STALKER_BLIND);
             if (pSpell != NULL)
             {
                 CastSpellNowNoScheduling(pSpell);
@@ -463,6 +462,8 @@ class AshtongueStalkerAI : public CreatureAIScript
                 _applyAura(ASHTONGUE_STALKER_STEATH);
             }
         }
+
+        SpellDesc* pSpell;
 };
 
 
@@ -483,7 +484,7 @@ class BonechewerBehemothAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(BonechewerBehemothAI);
         BonechewerBehemothAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(BONECHEWER_BEHEMOTH_BEHEMOTH_CHARGE, Target_Current, 0, 0, 20);    // Mechanics are like charge on random target?
+            pCharge = AddSpell(BONECHEWER_BEHEMOTH_BEHEMOTH_CHARGE, Target_Current, 0, 0, 20);    // Mechanics are like charge on random target?
             AddSpell(BONECHEWER_BEHEMOTH_ENRAGE, Target_Self, 5, 0, 45);
             AddSpell(BONECHEWER_BEHEMOTH_FEL_STOMP, Target_Self, 7, 0, 30);
             AddSpell(BONECHEWER_BEHEMOTH_FIERY_COMET, Target_RandomPlayerDestination, 6, 1, 30);
@@ -492,12 +493,13 @@ class BonechewerBehemothAI : public CreatureAIScript
 
         void OnCombatStart(Unit* /*pTarget*/) override
         {
-            SpellDesc* pCharge = FindSpellById(BONECHEWER_BEHEMOTH_BEHEMOTH_CHARGE);
             if (pCharge != NULL)
             {
                 CastSpellNowNoScheduling(pCharge);
             }
         }
+
+        SpellDesc* pCharge;
 };
 
 
@@ -552,7 +554,7 @@ class BonechewerShieldDiscipleAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(BonechewerShieldDiscipleAI);
         BonechewerShieldDiscipleAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(BONECHEWER_SHIELD_DISCIPLE_INTERVENE, Target_Current, 0, 0, 20);
+            pIntervene = AddSpell(BONECHEWER_SHIELD_DISCIPLE_INTERVENE, Target_Current, 0, 0, 20);
             AddSpell(BONECHEWER_SHIELD_DISCIPLE_SHIELD_BASH, Target_Current, 8, 0, 25, 0, 10);
             AddSpell(BONECHEWER_SHIELD_DISCIPLE_SHIELD_WALL, Target_Self, 8, 0, 35);
             AddSpell(BONECHEWER_SHIELD_DISCIPLE_THROW_SHIELD, Target_RandomPlayer, 7, 0, 30);    // Current?
@@ -560,12 +562,13 @@ class BonechewerShieldDiscipleAI : public CreatureAIScript
 
         void OnCombatStart(Unit* /*pTarget*/) override
         {
-            SpellDesc* pIntervene = FindSpellById(BONECHEWER_SHIELD_DISCIPLE_INTERVENE);
             if (pIntervene != NULL)
             {
                 CastSpellNowNoScheduling(pIntervene);
             }
         }
+
+        SpellDesc* pIntervene;
 };
 
 
@@ -574,7 +577,7 @@ class BonechewerSpectatorAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(BonechewerSpectatorAI);
         BonechewerSpectatorAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(BONECHEWER_SPECTATOR_CHARGE, Target_Current, 0, 0, 20);
+            pCharge = AddSpell(BONECHEWER_SPECTATOR_CHARGE, Target_Current, 0, 0, 20);
             AddSpell(BONECHEWER_SPECTATOR_CLEAVE, Target_Current, 10, 0, 25, 0, 10);
             AddSpell(BONECHEWER_SPECTATOR_MORTAL_WOUND, Target_Current, 7, 0, 15, 0, 10);
             AddSpell(BONECHEWER_SPECTATOR_STRIKE, Target_Current, 10, 0, 10, 0, 10);
@@ -583,12 +586,13 @@ class BonechewerSpectatorAI : public CreatureAIScript
 
         void OnCombatStart(Unit* /*pTarget*/) override
         {
-            SpellDesc* pCharge = FindSpellById(BONECHEWER_SPECTATOR_CHARGE);
             if (pCharge != NULL)
             {
                 CastSpellNowNoScheduling(pCharge);
             }
         }
+
+        SpellDesc* pCharge;
 };
 
 
@@ -641,19 +645,20 @@ class CoilskarHarpoonerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(CoilskarHarpoonerAI);
         CoilskarHarpoonerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(COILSKAR_HARPOONER_HARPOONERS_MARK, Target_RandomPlayer, 7, 0, 35);        // I must link Dragon Turtle with Harpooner before scripting it
+            pMark = AddSpell(COILSKAR_HARPOONER_HARPOONERS_MARK, Target_RandomPlayer, 7, 0, 35);        // I must link Dragon Turtle with Harpooner before scripting it
             AddSpell(COILSKAR_HARPOONER_HOOKED_NET, Target_RandomPlayer, 7, 0.5, 25);
             AddSpell(COILSKAR_HARPOONER_SPEAR_THROW, Target_Current, 8, 0, 15, 0, 40);            // Random? Also isn't it typical ranged unit? (using Spear Throw instead of Shoot/Shot spell?)
         }
 
         void OnCombatStart(Unit* /*pTarget*/) override
         {
-            SpellDesc* pMark = FindSpellById(COILSKAR_HARPOONER_HARPOONERS_MARK);
             if (pMark != NULL)
             {
                 CastSpellNowNoScheduling(pMark);
             }
         }
+
+        SpellDesc* pMark;
 };
 
 
@@ -824,10 +829,11 @@ class IllidariArchonAI : public CreatureAIScript
                     AddSpell(ILLIDARI_ARCHON_HEAL, Target_WoundedFriendly, 5, 2, 30);
                     AddSpell(ILLIDARI_ARCHON_HOLY_SMITE, Target_Current, 8, 2.5, 25, 0, 40);
                     AddSpell(ILLIDARI_ARCHON_POWER_WORD_SHIELD, Target_Self, 7, 0, 35);
+                    pDeath = nullptr;
                     break;
                 case 1:
                     AddSpell(ILLIDARI_ARCHON_MIND_BLAST, Target_Current, 8, 1.5, 25, 0, 30);
-                    AddSpell(ILLIDARI_ARCHON_SHADOW_WORD_DEATH, Target_RandomPlayer, 7, 0, 35);
+                    pDeath = AddSpell(ILLIDARI_ARCHON_SHADOW_WORD_DEATH, Target_RandomPlayer, 7, 0, 35);
                     _applyAura(ILLIDARI_ARCHON_SHADOWFORM);
                     mIsShadowPriest = true;
                     break;
@@ -844,8 +850,7 @@ class IllidariArchonAI : public CreatureAIScript
 
         void AIUpdate() override
         {
-            SpellDesc* pDeath = FindSpellById(ILLIDARI_ARCHON_SHADOW_WORD_DEATH);
-            if (mIsShadowPriest && getCreature()->getUInt32Value(UNIT_FIELD_HEALTH) <= 2500 && pDeath->mEnabled)
+            if (mIsShadowPriest && getCreature()->getUInt32Value(UNIT_FIELD_HEALTH) <= 2500 && pDeath != nullptr && pDeath->mEnabled)
             {
                 Spell* pCurrentSpell = getCreature()->findCurrentCastedSpellBySpellId(pDeath->mInfo->getId());
                 if (pCurrentSpell != nullptr)
@@ -853,23 +858,28 @@ class IllidariArchonAI : public CreatureAIScript
                     getCreature()->interruptSpell(pCurrentSpell->GetSpellInfo()->getId());
                 }
                 if (!mQueuedSpells.empty())
+                {
                     for (SpellDescList::iterator itr = mQueuedSpells.begin(); itr != mQueuedSpells.end(); ++itr)
                     {
                         if ((*itr)->mInfo->getId() == pDeath->mInfo->getId())
                             itr = mQueuedSpells.erase(itr);
                     }
+                }
                 if (!mScheduledSpells.empty())
+                {
                     for (SpellDescList::iterator itr = mScheduledSpells.begin(); itr != mScheduledSpells.end(); ++itr)
                     {
                         if ((*itr)->mInfo->getId() == pDeath->mInfo->getId())
                             itr = mScheduledSpells.erase(itr);
                     }
+                }
 
                 pDeath->mEnabled = false;
             }            
         }
 
         bool    mIsShadowPriest;
+        SpellDesc* pDeath;
 };
 
 
@@ -5091,10 +5101,10 @@ class IllidanStormrageAI : public CreatureAIScript
             mParasitic = AddSpellFunc(&SpellFunc_Illidan_Parasitic, Target_RandomPlayerNotCurrent, 0, 0, 0);
             //Phase 2 spells
             AddPhaseSpell(2, AddSpell(ILLIDAN_THROW_GLAIVE1, Target_Destination, 0, 0.5f, 0));
-            AddPhaseSpell(2, AddSpell(ILLIDAN_THROW_GLAIVE2, Target_Self, 0, 0.5f, 0));
+            mGlaiveThrow = AddPhaseSpell(2, AddSpell(ILLIDAN_THROW_GLAIVE2, Target_Self, 0, 0.5f, 0));
             AddPhaseSpell(2, AddSpell(ILLIDAN_FIREBALL, Target_RandomPlayer, 60, 2, 0));
             AddPhaseSpell(2, AddSpell(ILLIDAN_DARK_BARRAGE, Target_RandomPlayer, 40, 10, 40));
-            AddPhaseSpell(2, AddSpell(ILLIDAN_GLAIVE_RETURNS, Target_Self, 0, 0.5f, 0));
+            mGlaiveReturns = AddPhaseSpell(2, AddSpell(ILLIDAN_GLAIVE_RETURNS, Target_Self, 0, 0.5f, 0));
             //Phase 3 spells
             AddPhaseSpell(3, AddSpell(ILLIDAN_SHEAR, Target_Current, 12, 1.5f, 15));
             AddPhaseSpell(3, AddSpell(ILLIDAN_DRAW_SOUL, Target_Self, 6, 1.5f, 40));    // Self-kills are bad =/
@@ -5447,7 +5457,6 @@ class IllidanStormrageAI : public CreatureAIScript
                     case 0:
                         {
                         sendChatMessage(CHAT_MSG_MONSTER_YELL, 11480, "Behold the flames of Azzinoth!");
-                            SpellDesc* mGlaiveThrow = FindSpellById(ILLIDAN_THROW_GLAIVE2);
                             if (mGlaiveThrow != NULL)
                             {
                                 CastSpellNowNoScheduling(mGlaiveThrow);
@@ -5517,7 +5526,6 @@ class IllidanStormrageAI : public CreatureAIScript
                         break;
                     case 6:
                         {
-                            SpellDesc* mGlaiveReturns = FindSpellById(ILLIDAN_GLAIVE_RETURNS);
                             if (mGlaiveReturns != NULL)
                                 CastSpellNowNoScheduling(mGlaiveReturns);
 
@@ -6251,6 +6259,8 @@ class IllidanStormrageAI : public CreatureAIScript
         int32 mFireWallTimer;
         int32 mLastFireWall;
         uint32 mMiscEventPart;
+        SpellDesc* mGlaiveThrow;
+        SpellDesc* mGlaiveReturns;
 
         // Phase 3 variables
         SpellDesc* mShadowPrison;
