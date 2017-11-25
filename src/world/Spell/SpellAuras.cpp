@@ -3699,22 +3699,24 @@ void Aura::SpellAuraModStat(bool apply)
     else if (stat >= 0)
     {
         ARCEMU_ASSERT(mod->m_miscValue < 5);
+
+        uint16_t modValue = static_cast<uint16_t>(mod->m_miscValue);
         if (m_target->IsPlayer())
         {
             if (mod->m_amount > 0)
-                static_cast< Player* >(m_target)->FlatStatModPos[mod->m_miscValue] += val;
+                static_cast< Player* >(m_target)->FlatStatModPos[modValue] += val;
             else
-                static_cast< Player* >(m_target)->FlatStatModNeg[mod->m_miscValue] -= val;
+                static_cast< Player* >(m_target)->FlatStatModNeg[modValue] -= val;
 
-            static_cast< Player* >(m_target)->CalcStat(mod->m_miscValue);
+            static_cast< Player* >(m_target)->CalcStat(modValue);
 
             static_cast< Player* >(m_target)->UpdateStats();
             static_cast< Player* >(m_target)->UpdateChances();
         }
         else if (m_target->IsCreature())
         {
-            static_cast< Creature* >(m_target)->FlatStatMod[mod->m_miscValue] += val;
-            static_cast< Creature* >(m_target)->CalcStat(mod->m_miscValue);
+            static_cast< Creature* >(m_target)->FlatStatMod[modValue] += val;
+            static_cast< Creature* >(m_target)->CalcStat(modValue);
         }
     }
 }
@@ -3959,10 +3961,11 @@ void Aura::SpellAuraModIncreaseEnergy(bool apply)
     return; */
 
     int32 amount = apply ? mod->m_amount : -mod->m_amount;
-    m_target->ModMaxPower(mod->m_miscValue, amount);
-    m_target->ModPower(mod->m_miscValue, amount);
+    uint16_t modValue = static_cast<uint16_t>(mod->m_miscValue);
+    m_target->ModMaxPower(modValue, amount);
+    m_target->ModPower(modValue, amount);
 
-    if (mod->m_miscValue == 0 && m_target->IsPlayer())
+    if (modValue == 0 && m_target->IsPlayer())
     {
         static_cast< Player* >(m_target)->SetManaFromSpell(static_cast< Player* >(m_target)->GetManaFromSpell() + amount);
     }
@@ -5899,22 +5902,23 @@ void Aura::SpellAuraModPercStat(bool apply)
     else
     {
         ARCEMU_ASSERT(mod->m_miscValue < 5);
+        uint16_t modValue = static_cast<uint16_t>(mod->m_miscValue);
         if (p_target != nullptr)
         {
             if (mod->m_amount > 0)
-                p_target->StatModPctPos[mod->m_miscValue] += val;
+                p_target->StatModPctPos[modValue] += val;
             else
-                p_target->StatModPctNeg[mod->m_miscValue] -= val;
+                p_target->StatModPctNeg[modValue] -= val;
 
-            p_target->CalcStat(mod->m_miscValue);
+            p_target->CalcStat(modValue);
 
             p_target->UpdateStats();
             p_target->UpdateChances();
         }
         else if (m_target->IsCreature())
         {
-            static_cast< Creature* >(m_target)->StatModPct[mod->m_miscValue] += val;
-            static_cast< Creature* >(m_target)->CalcStat(mod->m_miscValue);
+            static_cast< Creature* >(m_target)->StatModPct[modValue] += val;
+            static_cast< Creature* >(m_target)->CalcStat(modValue);
         }
     }
 }
@@ -7073,16 +7077,17 @@ void Aura::SpellAuraModIncreaseEnergyPerc(bool apply)
 {
     SetPositive();
 
+    uint16_t modValue = static_cast<uint16_t>(mod->m_miscValue);
     if (apply)
     {
         mod->fixed_amount[mod->m_effectIndex] = m_target->GetModPUInt32Value(UNIT_FIELD_MAXPOWER1 + mod->m_miscValue, mod->m_amount);
-        m_target->ModMaxPower(mod->m_miscValue, mod->fixed_amount[mod->m_effectIndex]);
+        m_target->ModMaxPower(modValue, mod->fixed_amount[mod->m_effectIndex]);
         if (p_target != nullptr && mod->m_miscValue == POWER_TYPE_MANA)
             p_target->SetManaFromSpell(p_target->GetManaFromSpell() + mod->fixed_amount[mod->m_effectIndex]);
     }
     else
     {
-        m_target->ModMaxPower(mod->m_miscValue, -mod->fixed_amount[mod->m_effectIndex]);
+        m_target->ModMaxPower(modValue, -mod->fixed_amount[mod->m_effectIndex]);
         if (p_target != nullptr && mod->m_miscValue == POWER_TYPE_MANA)
             p_target->SetManaFromSpell(p_target->GetManaFromSpell() - mod->fixed_amount[mod->m_effectIndex]);
     }
@@ -7187,19 +7192,23 @@ void Aura::SpellAuraModTotalStatPerc(bool apply)
                 } break;
             }
 
-            if (mod->m_amount > 0)
-                p_target->TotalStatModPctPos[mod->m_miscValue] += val;
-            else
-                p_target->TotalStatModPctNeg[mod->m_miscValue] -= val;
+            uint16_t modValue = static_cast<uint16_t>(mod->m_miscValue);
 
-            p_target->CalcStat(mod->m_miscValue);
+            if (mod->m_amount > 0)
+                p_target->TotalStatModPctPos[modValue] += val;
+            else
+                p_target->TotalStatModPctNeg[modValue] -= val;
+
+            p_target->CalcStat(modValue);
             p_target->UpdateStats();
             p_target->UpdateChances();
         }
         else if (m_target->IsCreature())
         {
-            static_cast< Creature* >(m_target)->TotalStatModPct[mod->m_miscValue] += val;
-            static_cast< Creature* >(m_target)->CalcStat(mod->m_miscValue);
+            uint16_t modValue = static_cast<uint16_t>(mod->m_miscValue);
+
+            static_cast< Creature* >(m_target)->TotalStatModPct[modValue] += val;
+            static_cast< Creature* >(m_target)->CalcStat(modValue);
         }
     }
 }
@@ -7811,7 +7820,7 @@ void Aura::SpellAuraIncreaseHealingByAttribute(bool apply)
 
     uint16_t stat;
     if (mod->m_miscValue < 5)
-        stat = mod->m_miscValue;
+        stat = static_cast<uint16_t>(mod->m_miscValue);
     else
     {
         LOG_ERROR("Aura::SpellAuraIncreaseHealingByAttribute::Unknown spell attribute type %u in spell %u.\n", mod->m_miscValue, GetSpellId());
@@ -8816,7 +8825,8 @@ void Aura::SpellAuraIncreaseRAPbyStatPct(bool apply)
         else
             SetNegative();
 
-        mod->fixed_amount[mod->m_effectIndex] = m_target->GetStat(mod->m_miscValue) * mod->m_amount / 100;
+        uint16_t modValue = static_cast<uint16_t>(mod->m_miscValue);
+        mod->fixed_amount[mod->m_effectIndex] = m_target->GetStat(modValue) * mod->m_amount / 100;
         m_target->ModRangedAttackPowerMods(mod->fixed_amount[mod->m_effectIndex]);
     }
     else
@@ -9137,7 +9147,9 @@ void Aura::SpellAuraIncreaseAPbyStatPct(bool apply)
         else
             SetNegative();
 
-        mod->fixed_amount[mod->m_effectIndex] = m_target->GetStat(mod->m_miscValue) * mod->m_amount / 100;
+        uint16_t modValue = static_cast<uint16_t>(mod->m_miscValue);
+
+        mod->fixed_amount[mod->m_effectIndex] = m_target->GetStat(modValue) * mod->m_amount / 100;
         m_target->ModAttackPowerMods(mod->fixed_amount[mod->m_effectIndex]);
     }
     else

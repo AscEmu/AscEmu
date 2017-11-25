@@ -327,7 +327,7 @@ void QuestLogEntry::UpdatePlayerFields()
 
     uint16 base = GetBaseField(m_slot);
     m_plr->setUInt32Value(base + 0, m_quest->id);
-    uint16 field0 = 0;          // 0x01000000 = "Objective Complete" - 0x02 = Quest Failed - 0x04 = Quest Accepted
+    uint32_t field0 = 0;          // 0x01000000 = "Objective Complete" - 0x02 = Quest Failed - 0x04 = Quest Accepted
 
     // next field is count (kills, etc)
     uint64 field1 = 0;
@@ -367,7 +367,7 @@ void QuestLogEntry::UpdatePlayerFields()
         }
         if (cast_complete)
         {
-            field0 |= 0x01000000;       // "Objective Complete"
+            field0 |= 0x1000000;       // "Objective Complete"
         }
     }
     else if (isemotequest)
@@ -383,7 +383,7 @@ void QuestLogEntry::UpdatePlayerFields()
         }
         if (emote_complete)
         {
-            field0 |= 0x01000000;       // "Objective Complete"
+            field0 |= 0x1000000;       // "Objective Complete"
         }
     }
 

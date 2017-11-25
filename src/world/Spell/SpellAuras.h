@@ -380,7 +380,7 @@ struct Modifier
     //uint32 m_actamt;       // actual amt, for percent and stuff
     uint32 m_type;           // What does it modify? (str,int,hp)
     int32 m_amount;          // By how much does it mod?
-    uint16_t m_miscValue;       // Misc Value
+    int32_t m_miscValue;       // Misc Value
     uint8_t m_effectIndex;
 
     ///needed for per level effect
