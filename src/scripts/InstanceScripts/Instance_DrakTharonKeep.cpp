@@ -40,67 +40,41 @@ class TrollgoreAI : public CreatureAIScript
         TrollgoreAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             invastion_timer = 0;
-            spells.clear();
 
-            ScriptSpell* Crush = new ScriptSpell;
-            Crush->normal_spellid = 49639;
-            Crush->heroic_spellid = 49639;
-            Crush->chance = 20;
-            Crush->timer = 1000;
-            Crush->time = 0;
-            Crush->target = SPELL_TARGET_CURRENT_ENEMY;
-            spells.push_back(Crush);
+            enableCreatureAISpellSystem = true;
 
-            ScriptSpell* Infected_Wound = new ScriptSpell;
-            Infected_Wound->normal_spellid = 49637;
-            Infected_Wound->heroic_spellid = 49637;
-            Infected_Wound->chance = 50;
-            Infected_Wound->timer = 8000;
-            Infected_Wound->time = 0;
-            Infected_Wound->target = SPELL_TARGET_CURRENT_ENEMY;
-            spells.push_back(Infected_Wound);
+            if (_isHeroic())
+            {
+                addAISpell(49639, 20.0f, TARGET_ATTACKING, 0, 1);  //crush
+                addAISpell(59805, 100.0f, TARGET_SELF, 0, 100);    //Consume
+            }
+            else
+            {
+                addAISpell(49639, 20.0f, TARGET_ATTACKING, 0, 1);  //crush
+                addAISpell(49381, 100.0f, TARGET_SELF, 0, 100);    //Consume
+            }
 
-            ScriptSpell* Consume = new ScriptSpell;
-            Consume->normal_spellid = 49381;
-            Consume->heroic_spellid = 59805;
-            Consume->chance = 100;
-            Consume->timer = 10000;
-            Consume->time = 0;
-            Consume->target = SPELL_TARGET_SELF;
-            spells.push_back(Consume);
+            addAISpell(49637, 50.0f, TARGET_ATTACKING, 0, 8);      //Infected_Wound
         }
 
         void OnCombatStart(Unit* /*mTarget*/) override
         {
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+            invastion_timer = _addTimer(INVASION_INTERVAL);
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
+            _removeTimer(invastion_timer);
         }
 
         void AIUpdate() override
         {
-            if (spells.size() > 0)
+            if (_isTimerFinished(invastion_timer))
             {
-                for (uint8 i = 0; i < spells.size(); i++)
-                {
-                    if (spells[i]->time <Util::getMSTime())
-                    {
-                        if (Rand(spells[i]->chance))
-                        {
-                            CastScriptSpell(spells[i]);
-                            spells[i]->time = Util::getMSTime() + spells[i]->timer;
-                        }
-                    }
-                }
-            }
-            if (invastion_timer <Util::getMSTime())
-            {
-                invastion_timer = Util::getMSTime() + INVASION_INTERVAL;
+                _resetTimer(invastion_timer, INVASION_INTERVAL);
+
                 //spawn invaders ;)
                 for (uint8 i = 0; i < INVADERS_PER_INVASION; i++)
                 {
@@ -122,71 +96,9 @@ class TrollgoreAI : public CreatureAIScript
             }
         }
 
-        Player* GetRandomPlayerTarget()
-        {
-            std::vector< uint32 > possible_targets;
-            for (std::set< Object* >::iterator iter = getCreature()->GetInRangePlayerSetBegin(); iter != getCreature()->GetInRangePlayerSetEnd(); ++iter)
-            {
-                if ((*iter) && (static_cast< Player* >(*iter))->isAlive())
-                    possible_targets.push_back((uint32)(*iter)->GetGUID());
-            }
-            if (possible_targets.size() > 0)
-            {
-                uint32 random_player = possible_targets[Rand(uint32(possible_targets.size() - 1))];
-                return getCreature()->GetMapMgr()->GetPlayer(random_player);
-            }
-            return NULL;
-        }
-
-        void CastScriptSpell(ScriptSpell* spell)
-        {
-            getCreature()->setMoveRoot(true);
-            uint32 spellid = _isHeroic() ? spell->heroic_spellid : spell->normal_spellid;
-            Unit* spelltarget = NULL;
-            switch (spell->target)
-            {
-                case SPELL_TARGET_SELF:
-                {
-                    spelltarget = getCreature();
-                }
-                break;
-                case SPELL_TARGET_GENERATE:
-                {
-                    spelltarget = NULL;
-                }
-                break;
-                case SPELL_TARGET_CURRENT_ENEMY:
-                {
-                    spelltarget = getCreature()->GetAIInterface()->getNextTarget();
-                }
-                break;
-                case SPELL_TARGET_RANDOM_PLAYER:
-                {
-                    spelltarget = GetRandomPlayerTarget();
-                }
-                break;
-            }
-            getCreature()->CastSpell(spelltarget, spellid, false);
-            getCreature()->setMoveRoot(false);
-        }
-
-        void Destroy() override
-        {
-            for (uint8 i = 0; i < spells.size(); ++i)
-            {
-                if (spells[i] != NULL)
-                    delete spells[i];
-            }
-
-            spells.clear();
-
-            delete this;
-        }
-
     protected:
 
         uint32 invastion_timer;
-        std::vector< ScriptSpell* > spells;
 };
 
 /*
@@ -207,48 +119,26 @@ class NovosTheSummonerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(NovosTheSummonerAI);
         NovosTheSummonerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            phase = 0;
             invasion_timer = 0;
             handler_timer = 0;
-            spells.clear();
 
-            ScriptSpell* ArcaneBlast = new ScriptSpell;
-            ArcaneBlast->normal_spellid = 49198;
-            ArcaneBlast->heroic_spellid = 59909;
-            ArcaneBlast->chance = 70;
-            ArcaneBlast->timer = 4000;
-            ArcaneBlast->time = 0;
-            ArcaneBlast->target = SPELL_TARGET_CURRENT_ENEMY;
-            spells.push_back(ArcaneBlast);
+            enableCreatureAISpellSystem = true;
 
-            ScriptSpell* Blizzard = new ScriptSpell;
-            Blizzard->normal_spellid = 49034;
-            Blizzard->heroic_spellid = 59854;
-            Blizzard->chance = 50;
-            Blizzard->timer = 6000;
-            Blizzard->time = 0;
-            Blizzard->target = SPELL_TARGET_RANDOM_PLAYER;
-            spells.push_back(Blizzard);
+            if (_isHeroic())
+            {
+                addAISpell(59909, 70.0f, TARGET_ATTACKING, 0, 4);        //ArcaneBlast
+                addAISpell(59854, 50.0f, TARGET_RANDOM_SINGLE, 0, 6);    //Blizzard
+                addAISpell(59855, 40.0f, TARGET_RANDOM_SINGLE, 0, 2);    //Frostbolt
+                addAISpell(59856, 10.0f, TARGET_RANDOM_SINGLE, 0, 5);    //WrathOfMisery
+            }
+            else
+            {
+                addAISpell(49198, 70.0f, TARGET_ATTACKING, 0, 4);        //ArcaneBlast
+                addAISpell(49034, 50.0f, TARGET_RANDOM_SINGLE, 0, 6);    //Blizzard
+                addAISpell(49037, 40.0f, TARGET_RANDOM_SINGLE, 0, 2);    //Frostbolt
+                addAISpell(50089, 10.0f, TARGET_RANDOM_SINGLE, 0, 5);    //WrathOfMisery
+            }
 
-            ScriptSpell* Frostbolt = new ScriptSpell;
-            Frostbolt->normal_spellid = 49037;
-            Frostbolt->heroic_spellid = 59855;
-            Frostbolt->chance = 40;
-            Frostbolt->timer = 2000;
-            Frostbolt->time = 0;
-            Frostbolt->target = SPELL_TARGET_RANDOM_PLAYER;
-            spells.push_back(Frostbolt);
-
-            ScriptSpell* WrathOfMisery = new ScriptSpell;
-            WrathOfMisery->normal_spellid = 50089;
-            WrathOfMisery->heroic_spellid = 59856;
-            WrathOfMisery->chance = 10;
-            WrathOfMisery->timer = 5000;
-            WrathOfMisery->time = 0;
-            WrathOfMisery->target = SPELL_TARGET_RANDOM_PLAYER;
-            spells.push_back(WrathOfMisery);
-
-            //new
             addEmoteForEvent(Event_OnCombatStart, SAY_NOVOS_SUMMONER_01);
             addEmoteForEvent(Event_OnTargetDied, SAY_NOVOS_SUMMONER_02);
             addEmoteForEvent(Event_OnDied, SAY_NOVOS_SUMMONER_03);
@@ -260,14 +150,14 @@ class NovosTheSummonerAI : public CreatureAIScript
             //spawn 4 Ritual Crystal
             for (uint8 i = 0; i < 4; i++)
                 SpawnCrystal(i);
+
             handler_timer = Util::getMSTime() + HANDLER_INTERVAL;
             _setMeleeDisabled(true);
-            phase = 1;
+
             for (uint8 i = 0; i < 7; i++)
                 getCreature()->SchoolImmunityList[i] = 1;
             sendDBChatMessage(SAY_NOVOS_SUMMONER_05);
             sendDBChatMessage(SAY_NOVOS_SUMMONER_06);
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
         void OnLoad() override
@@ -281,7 +171,6 @@ class NovosTheSummonerAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
             for (uint8 i = 0; i < 4; i++)
             {
                 if (getCreature()->m_ObjectSlots[i])
@@ -298,33 +187,20 @@ class NovosTheSummonerAI : public CreatureAIScript
 
         void AIUpdate() override
         {
-            //we are not using any abilities in first phase
-            if (phase == 2 && spells.size() > 0)
-            {
-                for (uint8 i = 0; i < spells.size(); i++)
-                {
-                    if (spells[i]->time <Util::getMSTime())
-                    {
-                        if (Rand(spells[i]->chance))
-                        {
-                            CastScriptSpell(spells[i]);
-                            spells[i]->time = Util::getMSTime() + spells[i]->timer;
-                        }
-                    }
-                }
-            }
-            if (phase == 1)
+            if (getScriptPhase() == 1)
             {
                 if (invasion_timer <Util::getMSTime())
                 {
                     invasion_timer = Util::getMSTime() + INVADE_INTERVAL;
                     SpawnInvader(0);
                 }
+
                 if (handler_timer <Util::getMSTime())
                 {
                     handler_timer = Util::getMSTime() + HANDLER_INTERVAL;
                     SpawnInvader(1);
                 }
+
                 bool new_phase = true;
                 for (uint8 i = 0; i < 4; i++)
                 {
@@ -335,19 +211,27 @@ class NovosTheSummonerAI : public CreatureAIScript
                             new_phase = false;
                     }
                 }
+
                 if (new_phase)
                 {
                     getCreature()->interruptSpell();
                     getCreature()->RemoveAllAuras();
                     getCreature()->setMoveRoot(false);
                     _setMeleeDisabled(false);
-                    phase = 2;
+                    setScriptPhase(2);
+
                     for (uint8 i = 0; i < 7; i++)
                         getCreature()->SchoolImmunityList[i] = 0;
                 }
             }
         }
 
+        void OnScriptPhaseChange(uint32_t scriptPhase) override
+        {
+            if (scriptPhase == 2)
+                getCreature()->setMoveRoot(false);
+        }
+        
         Player* GetRandomPlayerTarget()
         {
             std::vector< uint32 > possible_targets;
@@ -364,39 +248,6 @@ class NovosTheSummonerAI : public CreatureAIScript
             return NULL;
         }
 
-        void CastScriptSpell(ScriptSpell* spell)
-        {
-            getCreature()->setMoveRoot(true);
-            uint32 spellid = _isHeroic() ? spell->heroic_spellid : spell->normal_spellid;
-            Unit* spelltarget = NULL;
-            switch (spell->target)
-            {
-                case SPELL_TARGET_SELF:
-                {
-                    spelltarget = getCreature();
-                }
-                break;
-                case SPELL_TARGET_GENERATE:
-                {
-                    spelltarget = NULL;
-                }
-                break;
-                case SPELL_TARGET_CURRENT_ENEMY:
-                {
-                    spelltarget = getCreature()->GetAIInterface()->getNextTarget();
-                }
-                break;
-                case SPELL_TARGET_RANDOM_PLAYER:
-                {
-                    spelltarget = GetRandomPlayerTarget();
-                }
-                break;
-            }
-            getCreature()->CastSpell(spelltarget, spellid, false);
-            if (phase == 2)
-                getCreature()->setMoveRoot(false);
-        }
-        
         // scriptPhase
         //type: 1 - normal, 0 - handler
         void SpawnInvader(uint32 type)
@@ -510,25 +361,10 @@ class NovosTheSummonerAI : public CreatureAIScript
             getCreature()->m_ObjectSlots[id] = go->GetUIdFromGUID();
         }
 
-        void Destroy() override
-        {
-            for (uint8 i = 0; i < spells.size(); ++i)
-            {
-                if (spells[i] != NULL)
-                    delete spells[i];
-            }
-
-            spells.clear();
-
-            delete this;
-        }
-
     protected:
 
-        std::vector< ScriptSpell* > spells;
         uint32 invasion_timer;
         uint32 handler_timer;
-        uint32 phase;
 };
 
 
@@ -538,35 +374,27 @@ class CrystalHandlerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(CrystalHandlerAI);
         CrystalHandlerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            spells.clear();
+            enableCreatureAISpellSystem = true;
 
-            ScriptSpell* FlashofDarkness = new ScriptSpell;
-            FlashofDarkness->normal_spellid = 49668;
-            FlashofDarkness->heroic_spellid = 59004;
-            FlashofDarkness->chance = 50;
-            FlashofDarkness->timer = 4000;
-            FlashofDarkness->time = 0;
-            FlashofDarkness->target = SPELL_TARGET_CURRENT_ENEMY;
-            spells.push_back(FlashofDarkness);
-        }
-
-        void OnCombatStart(Unit* /*mTarget*/) override
-        {
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+            if (_isHeroic())
+                addAISpell(59004, 50.0f, TARGET_ATTACKING, 0, 4);    //FlashofDarkness
+            else
+                addAISpell(49668, 50.0f, TARGET_ATTACKING, 0, 4);    //FlashofDarkness
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
         }
 
         void OnDied(Unit* /*mKiller*/) override
         {
             Unit* Novos = getCreature()->GetMapMgr()->GetUnit(getCreature()->GetSummonedByGUID());
             if (Novos)
+            {
                 for (uint8 i = 0; i < 4; i++)
+                {
                     if (Novos->m_ObjectSlots[i])
                     {
                         GameObject* Crystal = Novos->GetMapMgr()->GetGameObject(Novos->m_ObjectSlots[i]);
@@ -576,90 +404,9 @@ class CrystalHandlerAI : public CreatureAIScript
                             return;
                         }
                     }
-        }
-
-        void AIUpdate() override
-        {
-            if (spells.size() > 0)
-            {
-                for (uint8 i = 0; i < spells.size(); i++)
-                {
-                    if (spells[i]->time <Util::getMSTime())
-                    {
-                        if (Rand(spells[i]->chance))
-                        {
-                            CastScriptSpell(spells[i]);
-                            spells[i]->time = Util::getMSTime() + spells[i]->timer;
-                        }
-                    }
                 }
             }
         }
-
-        Player* GetRandomPlayerTarget()
-        {
-            std::vector< uint32 > possible_targets;
-            for (std::set< Object* >::iterator iter = getCreature()->GetInRangePlayerSetBegin(); iter != getCreature()->GetInRangePlayerSetEnd(); ++iter)
-            {
-                if ((*iter) && (static_cast< Player* >(*iter))->isAlive())
-                    possible_targets.push_back((uint32)(*iter)->GetGUID());
-            }
-            if (possible_targets.size() > 0)
-            {
-                uint32 random_player = possible_targets[Rand(uint32(possible_targets.size() - 1))];
-                return getCreature()->GetMapMgr()->GetPlayer(random_player);
-            }
-            return NULL;
-        }
-
-        void CastScriptSpell(ScriptSpell* spell)
-        {
-            getCreature()->setMoveRoot(true);
-            uint32 spellid = _isHeroic() ? spell->heroic_spellid : spell->normal_spellid;
-            Unit* spelltarget = NULL;
-            switch (spell->target)
-            {
-                case SPELL_TARGET_SELF:
-                {
-                    spelltarget = getCreature();
-                }
-                break;
-                case SPELL_TARGET_GENERATE:
-                {
-                    spelltarget = NULL;
-                }
-                break;
-                case SPELL_TARGET_CURRENT_ENEMY:
-                {
-                    spelltarget = getCreature()->GetAIInterface()->getNextTarget();
-                }
-                break;
-                case SPELL_TARGET_RANDOM_PLAYER:
-                {
-                    spelltarget = GetRandomPlayerTarget();
-                }
-                break;
-            }
-            getCreature()->CastSpell(spelltarget, spellid, false);
-            getCreature()->setMoveRoot(false);
-        }
-
-        void Destroy() override
-        {
-            for (uint8 i = 0; i < spells.size(); ++i)
-            {
-                if (spells[i] != NULL)
-                    delete spells[i];
-            }
-
-            spells.clear();
-
-            delete this;
-        }
-
-    protected:
-
-        std::vector< ScriptSpell* > spells;
 };
 
 
@@ -670,139 +417,28 @@ class KingDreadAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(KingDreadAI);
         KingDreadAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            spells.clear();
+            enableCreatureAISpellSystem = true;
 
-            ScriptSpell* BellowingRoar = new ScriptSpell;
-            BellowingRoar->normal_spellid = 22686;
-            BellowingRoar->heroic_spellid = 22686;
-            BellowingRoar->chance = 30;
-            BellowingRoar->timer = 5000;
-            BellowingRoar->time = 0;
-            BellowingRoar->target = SPELL_TARGET_CURRENT_ENEMY;
-            spells.push_back(BellowingRoar);
+            if (_isHeroic())
+            {
+                addAISpell(59422, 80.0f, TARGET_ATTACKING, 0, 3);  //GrievousBite
+                addAISpell(48873, 40.0f, TARGET_ATTACKING, 0, 2);  //ManglingSlash
+            }
+            else
+            {
+                addAISpell(48849, 80.0f, TARGET_ATTACKING, 0, 3);  //GrievousBite
+                addAISpell(48873, 40.0f, TARGET_ATTACKING, 0, 2);  //ManglingSlas
+            }
 
-            ScriptSpell* GrievousBite = new ScriptSpell;
-            GrievousBite->normal_spellid = 48849;
-            GrievousBite->heroic_spellid = 59422;
-            GrievousBite->chance = 80;
-            GrievousBite->timer = 3000;
-            GrievousBite->time = 0;
-            GrievousBite->target = SPELL_TARGET_CURRENT_ENEMY;
-            spells.push_back(GrievousBite);
-
-            ScriptSpell* ManglingSlash = new ScriptSpell;
-            ManglingSlash->normal_spellid = 48873;
-            ManglingSlash->heroic_spellid = 48873;
-            ManglingSlash->chance = 40;
-            ManglingSlash->timer = 2000;
-            ManglingSlash->time = 0;
-            ManglingSlash->target = SPELL_TARGET_CURRENT_ENEMY;
-            spells.push_back(ManglingSlash);
-
-            ScriptSpell* PiercingSlash = new ScriptSpell;
-            PiercingSlash->normal_spellid = 48878;
-            PiercingSlash->heroic_spellid = 48878;
-            PiercingSlash->chance = 40;
-            PiercingSlash->timer = 5000;
-            PiercingSlash->time = 0;
-            PiercingSlash->target = SPELL_TARGET_RANDOM_PLAYER;
-            spells.push_back(PiercingSlash);
-        }
-
-        void OnCombatStart(Unit* /*mTarget*/) override
-        {
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+            addAISpell(22686, 30.0f, TARGET_ATTACKING, 0, 5); //BellowingRoar
+            addAISpell(48878, 40.0f, TARGET_ATTACKING, 0, 5); //PiercingSlash
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
         }
-
-        void AIUpdate() override
-        {
-            if (spells.size() > 0)
-            {
-                for (uint8 i = 0; i < spells.size(); i++)
-                {
-                    if (spells[i]->time <Util::getMSTime())
-                    {
-                        if (Rand(spells[i]->chance))
-                        {
-                            CastScriptSpell(spells[i]);
-                            spells[i]->time = Util::getMSTime() + spells[i]->timer;
-                        }
-                    }
-                }
-            }
-        }
-
-        Player* GetRandomPlayerTarget()
-        {
-            std::vector< uint32 > possible_targets;
-            for (std::set< Object* >::iterator iter = getCreature()->GetInRangePlayerSetBegin(); iter != getCreature()->GetInRangePlayerSetEnd(); ++iter)
-            {
-                if ((*iter) && (static_cast< Player* >(*iter))->isAlive())
-                    possible_targets.push_back((uint32)(*iter)->GetGUID());
-            }
-            if (possible_targets.size() > 0)
-            {
-                uint32 random_player = possible_targets[Rand(uint32(possible_targets.size() - 1))];
-                return getCreature()->GetMapMgr()->GetPlayer(random_player);
-            }
-            return NULL;
-        }
-
-        void CastScriptSpell(ScriptSpell* spell)
-        {
-            getCreature()->setMoveRoot(true);
-            uint32 spellid = _isHeroic() ? spell->heroic_spellid : spell->normal_spellid;
-            Unit* spelltarget = NULL;
-            switch (spell->target)
-            {
-                case SPELL_TARGET_SELF:
-                {
-                    spelltarget = getCreature();
-                }
-                break;
-                case SPELL_TARGET_GENERATE:
-                {
-                    spelltarget = NULL;
-                }
-                break;
-                case SPELL_TARGET_CURRENT_ENEMY:
-                {
-                    spelltarget = getCreature()->GetAIInterface()->getNextTarget();
-                }
-                break;
-                case SPELL_TARGET_RANDOM_PLAYER:
-                {
-                    spelltarget = GetRandomPlayerTarget();
-                }
-                break;
-            }
-            getCreature()->CastSpell(spelltarget, spellid, false);
-            getCreature()->setMoveRoot(false);
-        }
-
-        void Destroy() override
-        {
-            for (uint8 i = 0; i < spells.size(); ++i)
-            {
-                if (spells[i] != NULL)
-                    delete spells[i];
-            }
-
-            spells.clear();
-
-            delete this;
-        }
-
-    protected:
-
-        std::vector< ScriptSpell* > spells;
 };
 
 /*
@@ -822,76 +458,35 @@ class TheProphetTaronjaAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(TheProphetTaronjaAI);
         TheProphetTaronjaAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            spells.clear();
             phase_timer = 0;
             phase_length = 0;
-            phase = 0;
 
-            ScriptSpell* CurseOfLife = new ScriptSpell;
-            CurseOfLife->normal_spellid = 49527;
-            CurseOfLife->heroic_spellid = 59972;
-            CurseOfLife->chance = 80;
-            CurseOfLife->timer = 7000;
-            CurseOfLife->time = 0;
-            CurseOfLife->phase = PHASES_COUNT + 1; //all phases
-            CurseOfLife->target = SPELL_TARGET_RANDOM_PLAYER;
-            spells.push_back(CurseOfLife);
+            enableCreatureAISpellSystem = true;
 
-            ScriptSpell* LightningBreath = new ScriptSpell;
-            LightningBreath->normal_spellid = 49537;
-            LightningBreath->heroic_spellid = 59963;
-            LightningBreath->chance = 60;
-            LightningBreath->timer = 4000;
-            LightningBreath->time = 0;
-            LightningBreath->phase = PHASES_COUNT + 1; //all phases
-            LightningBreath->target = SPELL_TARGET_RANDOM_PLAYER;
-            spells.push_back(LightningBreath);
-
-            ScriptSpell* PoisonCloud = new ScriptSpell;
-            PoisonCloud->normal_spellid = 49548;
-            PoisonCloud->heroic_spellid = 59969;
-            PoisonCloud->chance = 30;
-            PoisonCloud->timer = 6000;
-            PoisonCloud->time = 0;
-            PoisonCloud->phase = PHASES_COUNT + 1; //all phases
-            PoisonCloud->target = SPELL_TARGET_RANDOM_PLAYER;
-            spells.push_back(PoisonCloud);
-
-            ScriptSpell* RainofFire = new ScriptSpell;
-            RainofFire->normal_spellid = 49518;
-            RainofFire->heroic_spellid = 59971;
-            RainofFire->chance = 70;
-            RainofFire->timer = 10000;
-            RainofFire->time = 0;
-            RainofFire->phase = PHASES_COUNT + 1; //all phases
-            RainofFire->target = SPELL_TARGET_RANDOM_PLAYER;
-            spells.push_back(RainofFire);
-
-            ScriptSpell* ShadowVolley = new ScriptSpell;
-            ShadowVolley->normal_spellid = 49528;
-            ShadowVolley->heroic_spellid = 59973;
-            ShadowVolley->chance = 60;
-            ShadowVolley->timer = 5000;
-            ShadowVolley->time = 0;
-            ShadowVolley->phase = PHASES_COUNT + 1; //all phases
-            ShadowVolley->target = SPELL_TARGET_RANDOM_PLAYER;
-            spells.push_back(ShadowVolley);
-
-            ScriptSpell* EyeBeam = new ScriptSpell;
-            EyeBeam->normal_spellid = 49544;
-            EyeBeam->heroic_spellid = 59965;
-            EyeBeam->chance = 50;
-            EyeBeam->timer = 3000;
-            EyeBeam->time = 0;
-            EyeBeam->phase = 2;
-            EyeBeam->target = SPELL_TARGET_RANDOM_PLAYER;
-            spells.push_back(EyeBeam);
+            if (_isHeroic())
+            {
+                addAISpell(59972, 80.0f, TARGET_RANDOM_SINGLE, 0, 7);   //CurseOfLife
+                addAISpell(59963, 60.0f, TARGET_RANDOM_SINGLE, 0, 4);   //LightningBreath
+                addAISpell(59969, 30.0f, TARGET_RANDOM_SINGLE, 0, 6);   //PoisonCloud
+                addAISpell(59971, 70.0f, TARGET_RANDOM_SINGLE, 0, 10);   //PoisonCloud
+                addAISpell(59973, 60.0f, TARGET_RANDOM_SINGLE, 0, 5);   //ShadowVolley
+                auto ShadowVolley = addAISpell(59965, 50.0f, TARGET_RANDOM_SINGLE, 0, 3);
+                ShadowVolley->setAvailableForScriptPhase({ 2 });
+            }
+            else
+            {
+                addAISpell(49527, 80.0f, TARGET_RANDOM_SINGLE, 0, 7);   //CurseOfLife
+                addAISpell(49537, 60.0f, TARGET_RANDOM_SINGLE, 0, 4);   //LightningBreath
+                addAISpell(49548, 30.0f, TARGET_RANDOM_SINGLE, 0, 6);   //PoisonCloud
+                addAISpell(49518, 70.0f, TARGET_RANDOM_SINGLE, 0, 10);   //PoisonCloud
+                addAISpell(49528, 60.0f, TARGET_RANDOM_SINGLE, 0, 5);   //ShadowVolley
+                auto ShadowVolley = addAISpell(49544, 50.0f, TARGET_RANDOM_SINGLE, 0, 3);
+                ShadowVolley->setAvailableForScriptPhase({ 2 });
+            }
         }
 
         void OnCombatStart(Unit* /*mTarget*/) override
         {
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
-            phase = 1;
             phase_length = 0;
             phase_timer = Util::getMSTime() + WINDSERPENT_PHASE_INTERVAL;
         }
@@ -900,8 +495,6 @@ class TheProphetTaronjaAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-            phase = 1;
             phase_timer = 0;
             phase_length = 0;
             getCreature()->SetDisplayId(getCreature()->GetNativeDisplayId());
@@ -909,9 +502,8 @@ class TheProphetTaronjaAI : public CreatureAIScript
 
         void OnDamageTaken(Unit* /*mAttacker*/, uint32 /*fAmount*/) override
         {
-            if (getCreature()->GetHealthPct() < 2 && phase == 2)
+            if (getCreature()->GetHealthPct() < 2 && getScriptPhase() == 2)
             {
-                phase = 1;
                 phase_timer = Util::getMSTime() + WINDSERPENT_PHASE_INTERVAL;
                 getCreature()->SetDisplayId(getCreature()->GetNativeDisplayId());
                 getCreature()->CastSpell(getCreature(), 53463, false);
@@ -920,105 +512,26 @@ class TheProphetTaronjaAI : public CreatureAIScript
 
         void AIUpdate() override
         {
-            if (phase == 1 && phase_timer <Util::getMSTime())
+            if (getScriptPhase() == 1 && phase_timer < Util::getMSTime())
             {
-                phase = 2;
+                setScriptPhase(2);
                 phase_length = Util::getMSTime() + WINDSERPENT_PHASE_LENGTH;
                 getCreature()->SetDisplayId(27073);
                 getCreature()->RemoveAllAuras();
                 getCreature()->CastSpell(getCreature(), 49356, false);
             }
-            if (phase == 2 && phase_length <Util::getMSTime())
+            if (getScriptPhase() == 2 && phase_length <Util::getMSTime())
             {
-                phase = 1;
+                setScriptPhase(1);
                 phase_timer = Util::getMSTime() + WINDSERPENT_PHASE_INTERVAL;
                 getCreature()->SetDisplayId(getCreature()->GetNativeDisplayId());
                 getCreature()->RemoveAllAuras();
                 getCreature()->CastSpell(getCreature(), 53463, false);
             }
-            if (spells.size() > 0)
-            {
-                for (uint8 i = 0; i < spells.size(); i++)
-                {
-                    if (spells[i]->time <Util::getMSTime() && (spells[i]->phase == phase || spells[i]->phase > PHASES_COUNT))
-                    {
-                        if (Rand(spells[i]->chance))
-                        {
-                            CastScriptSpell(spells[i]);
-                            spells[i]->time = Util::getMSTime() + spells[i]->timer;
-                        }
-                    }
-                }
-            }
         }
 
-        Player* GetRandomPlayerTarget()
-        {
-            std::vector< uint32 > possible_targets;
-            for (std::set< Object* >::iterator iter = getCreature()->GetInRangePlayerSetBegin(); iter != getCreature()->GetInRangePlayerSetEnd(); ++iter)
-            {
-                if ((*iter) && (static_cast< Player* >(*iter))->isAlive())
-                    possible_targets.push_back((uint32)(*iter)->GetGUID());
-            }
-            if (possible_targets.size() > 0)
-            {
-                uint32 random_player = possible_targets[Rand(uint32(possible_targets.size() - 1))];
-                return getCreature()->GetMapMgr()->GetPlayer(random_player);
-            }
-            return NULL;
-        }
-
-        void CastScriptSpell(ScriptSpell* spell)
-        {
-            getCreature()->setMoveRoot(true);
-            uint32 spellid = _isHeroic() ? spell->heroic_spellid : spell->normal_spellid;
-            Unit* spelltarget = NULL;
-            switch (spell->target)
-            {
-                case SPELL_TARGET_SELF:
-                {
-                    spelltarget = getCreature();
-                }
-                break;
-                case SPELL_TARGET_GENERATE:
-                {
-                    spelltarget = NULL;
-                }
-                break;
-                case SPELL_TARGET_CURRENT_ENEMY:
-                {
-                    spelltarget = getCreature()->GetAIInterface()->getNextTarget();
-                }
-                break;
-                case SPELL_TARGET_RANDOM_PLAYER:
-                {
-                    spelltarget = GetRandomPlayerTarget();
-                }
-                break;
-            }
-            getCreature()->CastSpell(spelltarget, spellid, false);
-            getCreature()->setMoveRoot(false);
-        }
-
-        void Destroy() override
-        {
-            for (uint8 i = 0; i < spells.size(); ++i)
-            {
-                if (spells[i] != NULL)
-                    delete spells[i];
-            }
-
-            spells.clear();
-
-            delete this;
-        }
-
-    protected:
-
-        std::vector< ScriptSpell* > spells;
         uint32 phase_timer;
         uint32 phase_length;
-        uint32 phase;
 };
 
 void SetupDrakTharonKeep(ScriptMgr* mgr)

@@ -498,7 +498,7 @@ enum
 
 #include "Spell/Customization/SpellCustomizations.hpp"
 
-//\brief: created by Zyres 11/13/2017 - This should replace SP_AI_Spell, ScriptSpell and SpellDesc
+//\brief: created by Zyres 11/13/2017 - This should replace SP_AI_Spell and SpellDesc
 class SERVER_DECL CreatureAISpells
 {
     public:
