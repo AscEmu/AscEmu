@@ -530,10 +530,6 @@ CreatureAIScript::CreatureAIScript(Creature* creature) : _creature(creature), li
     mCreatureTimerIds.clear();
     mCreatureTimer.clear();
 
-    mEnrageSpell = nullptr;
-    mEnrageTimerDuration = -1;
-    mEnrageTimer = 0;
-
     mRunToTargetCache = nullptr;
     mRunToTargetSpellCache = nullptr;
 
@@ -602,10 +598,6 @@ void CreatureAIScript::_internalOnCombatStart()
     sendRandomDBChatMessage(mEmotesOnCombatStart);
 
     setScriptPhase(1);
-    if (mEnrageSpell && mEnrageTimerDuration > 0)
-    {
-        mEnrageTimer = _addTimer(mEnrageTimerDuration);
-    }
 
     TriggerCooldownOnAllSpells();
 
@@ -626,8 +618,6 @@ void CreatureAIScript::_internalOnCombatStop()
 
     resetScriptPhase();
     enableOnIdleEmote(true);
-
-    _removeTimer(mEnrageTimer);
 
     CancelAllSpells();
 }
@@ -1555,13 +1545,6 @@ void CreatureAIScript::oldAIUpdateSpellSystem()
     // MoonScript spell handling...
     if (mSpells.size() > 0)
     {
-        // enrage automation not implemented correct yet
-        /*if (mEnrageSpell && mEnrageTimerDuration > 0 && _isTimerFinished(mEnrageTimer))
-        {
-        CastSpell(mEnrageSpell);
-        _removeTimer(mEnrageTimer);
-        }*/
-
         SpellDesc* Spell;
         uint32 CurrentTime = (uint32)time(nullptr);
 
@@ -2397,12 +2380,6 @@ SpellDesc* CreatureAIScript::AddPhaseSpell(uint32_t pPhase, SpellDesc* pSpell)
     return pSpell;
 }
 
-void CreatureAIScript::SetEnrageInfo(SpellDesc* pSpell, uint32_t pTriggerMilliseconds)
-{
-    mEnrageSpell = pSpell;
-    mEnrageTimerDuration = pTriggerMilliseconds;
-}
-
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Class TargetType
@@ -2473,75 +2450,6 @@ void SpellDesc::setTriggerCooldown(uint32_t pCurrentTime)
 void SpellDesc::addAnnouncement(std::string pText)
 {
     mAnnouncement = (!pText.empty() ? pText : "");
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
-//Premade Spell Functions
-const uint32_t SPELLFUNC_VANISH = 24699;
-
-void SpellFunc_ClearHateList(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* /*pTarget*/, TargetType /*pType*/)
-{
-    pCreatureAI->_clearHateList();
-}
-
-void SpellFunc_Disappear(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* /*pTarget*/, TargetType /*pType*/)
-{
-    pCreatureAI->_clearHateList();
-    pCreatureAI->setRooted(true);
-    pCreatureAI->setCanEnterCombat(false);
-    pCreatureAI->_applyAura(SPELLFUNC_VANISH);
-}
-
-void SpellFunc_Reappear(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* /*pTarget*/, TargetType /*pType*/)
-{
-    pCreatureAI->setRooted(false);
-    pCreatureAI->setCanEnterCombat(true);
-    pCreatureAI->_removeAura(SPELLFUNC_VANISH);
-}
-
-void EventFunc_ApplyAura(CreatureAIScript* pCreatureAI, int32_t pMiscVal)
-{
-    if (!pCreatureAI || pMiscVal <= 0)
-        return;
-
-    pCreatureAI->_applyAura(uint32(pMiscVal));
-    if (!pCreatureAI->_isInCombat() && pCreatureAI->_getTimerCount() == 0)
-        pCreatureAI->RemoveAIUpdateEvent();
-}
-
-void EventFunc_ChangeGoState(CreatureAIScript* pCreatureAI, int32_t pMiscVal)
-{
-    if (!pCreatureAI || pMiscVal <= 0)
-        return;
-
-    MapMgr* pInstance = pCreatureAI->getCreature()->GetMapMgr();
-    if (!pInstance)
-        return;
-
-    GameObject* pSelectedGO = nullptr;
-    uint32_t pGOEntry = static_cast<uint32_t>(pMiscVal);
-    for (std::vector< GameObject* >::iterator GOIter = pInstance->GOStorage.begin(); GOIter != pInstance->GOStorage.end(); ++GOIter)
-    {
-        pSelectedGO = (*GOIter);
-        if (pSelectedGO->GetEntry() == pGOEntry)
-        {
-            pSelectedGO->SetState(pSelectedGO->GetState() == 1 ? 0 : 1);
-        }
-    }
-
-    if (!pCreatureAI->_isInCombat() && pCreatureAI->_getTimerCount() == 0)
-        pCreatureAI->RemoveAIUpdateEvent();
-}
-
-void EventFunc_RemoveUnitFieldFlags(CreatureAIScript* pCreatureAI, int32_t pMiscVal)
-{
-    if (!pCreatureAI || pMiscVal <= 0)
-        return;
-
-    pCreatureAI->getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
-
-    if (!pCreatureAI->_isInCombat() && pCreatureAI->_getTimerCount() == 0)
-        pCreatureAI->RemoveAIUpdateEvent();
 }
 
 

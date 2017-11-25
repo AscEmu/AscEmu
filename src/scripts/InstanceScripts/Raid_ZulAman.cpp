@@ -39,7 +39,7 @@ class NalorakkAI : public CreatureAIScript
             AddPhaseSpell(2, AddSpell(NALORAKK_REND_FLESH, Target_Current, 12, 0, 12));
             AddPhaseSpell(2, AddSpell(NALORAKK_DEAFENING_ROAR, Target_RandomPlayer, 11, 0, 12));
 
-            SetEnrageInfo(AddSpell(NALORAKK_BERSERK, Target_Self, 0, 0, 600, 0, 0, false, "You had your chance, now it be too late!", CHAT_MSG_MONSTER_YELL, 12074), 600000);
+            mLocaleEnrageSpell = AddSpell(NALORAKK_BERSERK, Target_Self, 0, 0, 600, 0, 0, false, "You had your chance, now it be too late!", CHAT_MSG_MONSTER_YELL, 12074);
 
             addEmoteForEvent(Event_OnCombatStart, 8855);
             addEmoteForEvent(Event_OnTargetDied, 8856);
@@ -54,11 +54,13 @@ class NalorakkAI : public CreatureAIScript
         void OnCombatStart(Unit* /*pTarget*/) override
         {
             MorphTimer = _addTimer(45000);
+            mLocaleEnrageTimerId = _addTimer(600000);
         }
 
         void OnCombatStop(Unit* /*pTarget*/) override
         {
             _setDisplayId(21631); 
+            _removeTimer(mLocaleEnrageTimerId);
         }
 
         void OnDied(Unit* /*pKiller*/) override
@@ -68,6 +70,12 @@ class NalorakkAI : public CreatureAIScript
 
         void AIUpdate() override
         {
+            if (_isTimerFinished(mLocaleEnrageTimerId))
+            {
+                CastSpell(mLocaleEnrageSpell);
+                _removeTimer(mLocaleEnrageTimerId);
+            }
+
             // Bear Form
             if (_isTimerFinished(MorphTimer) && isScriptPhase(1))
             {
@@ -95,6 +103,9 @@ class NalorakkAI : public CreatureAIScript
 
         SpellDesc* Morph;
         int32 MorphTimer;
+
+        SpellDesc* mLocaleEnrageSpell;
+        uint32_t mLocaleEnrageTimerId;
 };
 
 //Akil'zon <Eagle Avatar>

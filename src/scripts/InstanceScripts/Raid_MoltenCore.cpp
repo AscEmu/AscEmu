@@ -376,7 +376,6 @@ class LavaAnnihilatorAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(LavaAnnihilatorAI);
         LavaAnnihilatorAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpellFunc(&SpellFunc_ClearHateList, Target_Self, 20, 0, 0);
         }
 };
 

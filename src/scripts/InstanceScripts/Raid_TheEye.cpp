@@ -1582,7 +1582,7 @@ class VoidReaverAI : public CreatureAIScript
 
             mArcaneOrb = AddSpell(VOID_REAVER_ARCANE_ORB_TRIGGER, Target_RandomPlayerDestination, 100, 0, 3);
             AddSpell(VOID_REAVER_KNOCK_AWAY, Target_Current, 100, 0, 20, 0, 12);    // 12 is experimental value
-            SetEnrageInfo(AddSpell(VOID_REAVER_ENRAGE, Target_Self, 0, 0, 0), 600000);
+            mLocaleEnrageSpell = AddSpell(VOID_REAVER_ENRAGE, Target_Self, 0, 0, 0);
 
             addEmoteForEvent(Event_OnCombatStart, 8867);
             addEmoteForEvent(Event_OnTargetDied, 8868);
@@ -1595,6 +1595,8 @@ class VoidReaverAI : public CreatureAIScript
 
         void OnCombatStart(Unit* /*mTarget*/) override
         {
+            mLocaleEnrageTimerId = _addTimer(600000);
+
             if (mArcaneOrb != NULL)
             {
                 mArcaneOrbTimer = _addTimer(10000);
@@ -1609,7 +1611,21 @@ class VoidReaverAI : public CreatureAIScript
                 _removeTimer(mArcaneOrbTimer);
                 mArcaneOrb->mEnabled = true;
             }  
+
+            if (_isTimerFinished(mLocaleEnrageTimerId))
+            {
+                CastSpell(mLocaleEnrageSpell);
+                _removeTimer(mLocaleEnrageTimerId);
+            }
         }
+
+        void OnCombatStop(Unit* /*pTarget*/) override
+        {
+            _removeTimer(mLocaleEnrageTimerId);
+        }
+
+        SpellDesc* mLocaleEnrageSpell;
+        uint32_t mLocaleEnrageTimerId;
 
         uint32 mArcaneOrbTimer;
         SpellDesc* mArcaneOrb;
@@ -1768,12 +1784,18 @@ bool Dummy_Solarian_WrathOfTheAstromancer(uint32 /*pEffectIndex*/, Spell* pSpell
     return true;
 }
 
-void SpellFunc_Solarian_Disappear(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_Solarian_Disappear(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* /*pTarget*/, TargetType /*pType*/)
 {
-    HighAstromancerSolarianAI* Solarian = (pCreatureAI) ? static_cast< HighAstromancerSolarianAI* >(pCreatureAI) : NULL;
+    HighAstromancerSolarianAI* Solarian = (pCreatureAI) ? static_cast< HighAstromancerSolarianAI* >(pCreatureAI) : nullptr;
     if (Solarian)
     {
-        SpellFunc_Disappear(pThis, pCreatureAI, pTarget, pType);
+        if (pCreatureAI != nullptr)
+        {
+            pCreatureAI->_clearHateList();
+            pCreatureAI->setRooted(true);
+            pCreatureAI->setCanEnterCombat(false);
+            pCreatureAI->_applyAura(24699);     // vanish
+        }
 
         //Spawn spot lights, and despawn them after 26sec X(400,460) Y(-340,-400)
         Solarian->mSpawnPositions[0][0] = 400 + RandomFloat(60);
@@ -1788,9 +1810,9 @@ void SpellFunc_Solarian_Disappear(SpellDesc* pThis, CreatureAIScript* pCreatureA
     }
 }
 
-void SpellFunc_Solarian_Reappear(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
+void SpellFunc_Solarian_Reappear(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* /*pTarget*/, TargetType /*pType*/)
 {
-    HighAstromancerSolarianAI* Solarian = (pCreatureAI) ? static_cast< HighAstromancerSolarianAI* >(pCreatureAI) : NULL;
+    HighAstromancerSolarianAI* Solarian = (pCreatureAI) ? static_cast< HighAstromancerSolarianAI* >(pCreatureAI) : nullptr;
     if (Solarian)
     {
         //Spawn two priest friend to help Solarian
@@ -1798,7 +1820,12 @@ void SpellFunc_Solarian_Reappear(SpellDesc* pThis, CreatureAIScript* pCreatureAI
         Solarian->spawnCreatureAndGetAIScript(CN_SOLARIUMPRIEST, Solarian->mSpawnPositions[1][0], Solarian->mSpawnPositions[1][1], 17, 0);
         //Solarian->MoveTo(Solarian->mSpawnPositions[2][0], Solarian->mSpawnPositions[2][1], 17);    //Doesn't work quite right yet
 
-        SpellFunc_Reappear(pThis, pCreatureAI, pTarget, pType);
+        if (pCreatureAI != nullptr)
+        {
+            pCreatureAI->setRooted(false);
+            pCreatureAI->setCanEnterCombat(true);
+            pCreatureAI->_removeAura(24699);    // vanish
+        }
     }
 }
 

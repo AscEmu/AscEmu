@@ -375,6 +375,9 @@ class AnubRekhanAI : public CreatureAIScript
     SpellDesc* mLocustSwarm;
     int32 mLocustSwarmTimer;
     uint32 mCryptSpawnTimer;
+
+    SpellDesc* mLocaleEnrageSpell;
+    uint32_t mLocaleEnrageTimerId;
 };
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -1193,8 +1196,19 @@ class PatchwerkAI : public CreatureAIScript
     PatchwerkAI(Creature* pCreature);
 
     void AIUpdate() override;
+    void OnCombatStart(Unit* /*pTarget*/) override
+    {
+        mLocaleEnrageTimerId = _addTimer(360000);
+    }
+
+    void OnCombatStop(Unit* /*pTarget*/) override
+    {
+        _removeTimer(mLocaleEnrageTimerId);
+    }
 
     bool    mEnraged;
+    SpellDesc* mLocaleEnrageSpell;
+    uint32_t mLocaleEnrageTimerId;
 };
 
 // ---- Abomination Wing ----

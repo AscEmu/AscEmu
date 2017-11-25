@@ -5115,7 +5115,7 @@ class IllidanStormrageAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTargetDied, 8912);
             addEmoteForEvent(Event_OnTargetDied, 8913);
 
-            SetEnrageInfo(AddSpell(ILLIDAN_BERSERK, Target_Self, 0, 0, 0), 1500000);
+            mLocaleEnrageSpell = AddSpell(ILLIDAN_BERSERK, Target_Self, 0, 0, 0);
 
             _applyAura(ILLIDAN_SKULL_INTRO);
             setCanEnterCombat(false);
@@ -5156,6 +5156,8 @@ class IllidanStormrageAI : public CreatureAIScript
 
         void OnCombatStart(Unit* /*pTarget*/) override
         {
+            mLocaleEnrageTimerId = _addTimer(1500000);
+
             GameObject* pRightGate = getNearestGameObject(745.07f, 241.802f, 354.292f, 200000);
             GameObject* pLeftGate  = getNearestGameObject(744.829f, 369.276f, 354.324f, 200001);
             if (pRightGate != NULL)
@@ -5178,6 +5180,7 @@ class IllidanStormrageAI : public CreatureAIScript
         void OnCombatStop(Unit* /*pTarget*/) override
         {
             // General
+            _removeTimer(mLocaleEnrageTimerId);
             getCreature()->SetEmoteState(EMOTE_ONESHOT_NONE);
             SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
             _unsetTargetToChannel();
@@ -5323,6 +5326,12 @@ class IllidanStormrageAI : public CreatureAIScript
         {
             if (!mAllow)
                 return;
+
+            if (_isTimerFinished(mLocaleEnrageTimerId))
+            {
+                CastSpell(mLocaleEnrageSpell);
+                _removeTimer(mLocaleEnrageTimerId);
+            }
 
             switch (getScriptPhase())
             {
@@ -6252,6 +6261,8 @@ class IllidanStormrageAI : public CreatureAIScript
         SpellDesc* mFlameBurst;
         SpellDesc* mShadowDemons;
         SpellDesc* mShadowBlast;
+        SpellDesc* mLocaleEnrageSpell;
+        uint32_t mLocaleEnrageTimerId;
         bool mPlaySound;
 
         // Phase 3 & 4 variables

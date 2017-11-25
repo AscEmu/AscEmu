@@ -756,12 +756,13 @@ AnubRekhanAI::AnubRekhanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     addEmoteForEvent(Event_OnTaunt, 8926);
     addEmoteForEvent(Event_OnTaunt, 8927);
 
-    SetEnrageInfo(AddSpell(ANUBREKHAN_BERSERK, Target_Self, 0, 0, 0), 600000);
+    mLocaleEnrageSpell = AddSpell(ANUBREKHAN_BERSERK, Target_Self, 0, 0, 0);
     mLocustSwarmTimer = mCryptSpawnTimer = 0;
 }
 
 void AnubRekhanAI::OnCombatStart(Unit* /*pTarget*/)
 {
+    mLocaleEnrageTimerId = _addTimer(600000);
     mLocustSwarmTimer = _addTimer(70000 + RandomUInt(50) * 1000);
 
     if (_isHeroic())
@@ -777,6 +778,7 @@ void AnubRekhanAI::OnCombatStart(Unit* /*pTarget*/)
 
 void AnubRekhanAI::OnCombatStop(Unit* /*pTarget*/)
 {
+    _removeTimer(mLocaleEnrageTimerId);
     mLocustSwarmTimer = mCryptSpawnTimer = 0;
 
     for (std::set< CryptGuardAI* >::iterator Iter = mCryptGuards.begin(); Iter != mCryptGuards.end(); ++Iter)
@@ -842,6 +844,12 @@ void AnubRekhanAI::AIUpdate()
 
             CastSpellNowNoScheduling(mLocustSwarm);
             mLocustSwarmTimer = _addTimer(70000 + RandomUInt(50) * 1000);
+        }
+
+        if (_isTimerFinished(mLocaleEnrageTimerId))
+        {
+            CastSpell(mLocaleEnrageSpell);
+            _removeTimer(mLocaleEnrageTimerId);
         }
     }
 }
@@ -2598,7 +2606,7 @@ void SpellFunc_PatchwerkHatefulStrike(SpellDesc* pThis, CreatureAIScript* pCreat
 PatchwerkAI::PatchwerkAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
     AddSpellFunc(&SpellFunc_PatchwerkHatefulStrike, Target_Self, 50, 0, 3);
-    SetEnrageInfo(AddSpell(PATCHWERK_BERSERK, Target_Self, 0, 0, 0), 360000);
+    mLocaleEnrageSpell = AddSpell(PATCHWERK_BERSERK, Target_Self, 0, 0, 0);
 
     addEmoteForEvent(Event_OnCombatStart, 8934);
     addEmoteForEvent(Event_OnCombatStart, 8935);
@@ -2614,6 +2622,12 @@ void PatchwerkAI::AIUpdate()
         _applyAura(PATCHWERK_FRENZY);
         getCreature()->SendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, "Patchwerk goes into a frenzy!");
         mEnraged = true;
+    }
+
+    if (mEnraged && _isTimerFinished(mLocaleEnrageTimerId))
+    {
+        CastSpell(mLocaleEnrageSpell);
+        _removeTimer(mLocaleEnrageTimerId);
     }
 }
 

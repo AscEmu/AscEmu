@@ -173,7 +173,7 @@ class BrutallusAI : public CreatureAIScript
             AddSpell(BRUTALLUS_STOMP, Target_Current, 25, 0, 30);
 
             //6min Enrage
-            SetEnrageInfo(AddSpell(BRUTALLUS_BERSERK, Target_Self, 0, 0, 0, 0, 0, false, "So much for a real challenge... Die!", CHAT_MSG_MONSTER_YELL, 12470), 360000);
+            mLocaleEnrageSpell = AddSpell(BRUTALLUS_BERSERK, Target_Self, 0, 0, 0, 0, 0, false, "So much for a real challenge... Die!", CHAT_MSG_MONSTER_YELL, 12470);
 
             //Emotes
             addEmoteForEvent(Event_OnCombatStart, 8834);
@@ -185,6 +185,28 @@ class BrutallusAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTaunt, 8840);
             addEmoteForEvent(Event_OnTaunt, 8841);
         }
+
+        void AIUpdate() override
+        {
+            if (_isTimerFinished(mLocaleEnrageTimerId))
+            {
+                CastSpell(mLocaleEnrageSpell);
+                _removeTimer(mLocaleEnrageTimerId);
+            }
+        }
+
+        void OnCombatStart(Unit* /*pTarget*/) override
+        {
+            mLocaleEnrageTimerId = _addTimer(360000);
+        }
+
+        void OnCombatStop(Unit* /*pTarget*/) override
+        {
+            _removeTimer(mLocaleEnrageTimerId);
+        }
+
+        SpellDesc* mLocaleEnrageSpell;
+        uint32_t mLocaleEnrageTimerId;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -218,7 +240,7 @@ class FelmystAI : public CreatureAIScript
             //AddSpell(FELMYST_FOG_OF_CORRUPTION, Target_RandomPlayerApplyAura, 15, 0, 20, 0, 10); Does not support by the core.
 
             //10min Enrage
-            SetEnrageInfo(AddSpell(FELMYST_ENRAGE, Target_Self, 0, 0, 0, 0, 0, false, "No more hesitation! Your fates are written!", CHAT_MSG_MONSTER_YELL, 12482), 600000);
+            mLocaleEnrageSpell = AddSpell(FELMYST_ENRAGE, Target_Self, 0, 0, 0, 0, 0, false, "No more hesitation! Your fates are written!", CHAT_MSG_MONSTER_YELL, 12482);
 
             //Emotes
             addEmoteForEvent(Event_OnCombatStart, 8842);
@@ -228,10 +250,28 @@ class FelmystAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTaunt, 8846);
         }
 
+        void AIUpdate() override
+        {
+            if (_isTimerFinished(mLocaleEnrageTimerId))
+            {
+                CastSpell(mLocaleEnrageSpell);
+                _removeTimer(mLocaleEnrageTimerId);
+            }
+        }
+
         void OnCombatStart(Unit* /*pTarget*/) override
         {
+            mLocaleEnrageTimerId = _addTimer(600000);
             _applyAura(FELMYST_NOXIOUS_FUME);
         }
+
+        void OnCombatStop(Unit* /*pTarget*/) override
+        {
+            _removeTimer(mLocaleEnrageTimerId);
+        }
+
+        SpellDesc* mLocaleEnrageSpell;
+        uint32_t mLocaleEnrageTimerId;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -253,12 +293,34 @@ class LadySacrolashAI : public CreatureAIScript
             AddSpell(LADY_SACROLASH_SHADOW_BLADES, Target_Current, 25, 1.5, 5, 0, 50);
             AddSpell(LADY_SACROLASH_SHADOW_NOVA, Target_RandomPlayer, 15, 3.5, 20, 0, 50, false, "Shadow to the aid of fire!", CHAT_MSG_MONSTER_YELL, 12485);
             AddSpell(LADY_SACROLASH_CONFOUNDING_BLOW, Target_RandomPlayer, 10, 0, 15, 0, 50);
-            SetEnrageInfo(AddSpell(LADY_SACROLASH_ENRAGE, Target_Self, 0, 0, 0, 0, 0, 0, "Time is a luxury you no longer possess!", CHAT_MSG_MONSTER_YELL, 0), 360000); // Wasn't able to find sound for this text
+            mLocaleEnrageSpell = AddSpell(LADY_SACROLASH_ENRAGE, Target_Self, 0, 0, 0, 0, 0, 0, "Time is a luxury you no longer possess!", CHAT_MSG_MONSTER_YELL, 0); // Wasn't able to find sound for this text
 
             //Emotes
             addEmoteForEvent(Event_OnTargetDied, 8847);
             addEmoteForEvent(Event_OnDied, 8848); // Wasn't able to find sound for this text
         }
+
+        void AIUpdate() override
+        {
+            if (_isTimerFinished(mLocaleEnrageTimerId))
+            {
+                CastSpell(mLocaleEnrageSpell);
+                _removeTimer(mLocaleEnrageTimerId);
+            }
+        }
+
+        void OnCombatStart(Unit* /*pTarget*/) override
+        {
+            mLocaleEnrageTimerId = _addTimer(360000);
+        }
+
+        void OnCombatStop(Unit* /*pTarget*/) override
+        {
+            _removeTimer(mLocaleEnrageTimerId);
+        }
+
+        SpellDesc* mLocaleEnrageSpell;
+        uint32_t mLocaleEnrageTimerId;
 
         void OnDied(Unit* /*pKiller*/) override
         {
@@ -289,12 +351,34 @@ class GrandWarlockAlythessAI : public CreatureAIScript
             AddSpell(GRAND_WARLOCK_ALYTHESS_CONFLAGRATION, Target_RandomPlayer, 15, 3.5, 25, 0, 50, false, "Fire to the aid of shadow!", CHAT_MSG_MONSTER_YELL, 12489);
             AddSpell(GRAND_WARLOCK_ALYTHESS_BLAZE, Target_RandomPlayer, 30, 2.5, 0, 0, 50);
             AddSpell(GRAND_WARLOCK_ALYTHESS_FLAME_SEAR, Target_RandomPlayer, 20, 0, 0, 0, 50);
-            SetEnrageInfo(AddSpell(GRAND_WARLOCK_ALYTHESS_ENRAGE, Target_Self, 0, 0, 0, 0, 0, false, "Your luck has run its course!", CHAT_MSG_MONSTER_YELL, 12493), 360000);
+            mLocaleEnrageSpell = AddSpell(GRAND_WARLOCK_ALYTHESS_ENRAGE, Target_Self, 0, 0, 0, 0, 0, false, "Your luck has run its course!", CHAT_MSG_MONSTER_YELL, 12493);
 
             //Emotes
             addEmoteForEvent(Event_OnTargetDied, 8849);
             addEmoteForEvent(Event_OnDied, 8850); // Wasn't able to find sound for this text
         }
+
+        void AIUpdate() override
+        {
+            if (_isTimerFinished(mLocaleEnrageTimerId))
+            {
+                CastSpell(mLocaleEnrageSpell);
+                _removeTimer(mLocaleEnrageTimerId);
+            }
+        }
+
+        void OnCombatStart(Unit* /*pTarget*/) override
+        {
+            mLocaleEnrageTimerId = _addTimer(360000);
+        }
+
+        void OnCombatStop(Unit* /*pTarget*/) override
+        {
+            _removeTimer(mLocaleEnrageTimerId);
+        }
+
+        SpellDesc* mLocaleEnrageSpell;
+        uint32_t mLocaleEnrageTimerId;
 
         void OnDied(Unit* /*pKiller*/) override
         {
