@@ -1,6 +1,10 @@
-# ![logo](http://ascemu.org/style/img/logo.png)
+# ![logo](http://ascemu.org/images/logo.png)
 
 # Opensource software in this folder:
+
+## Folder: MySQL Connector/C
+- Web: http://www.mysql.com
+- Version: 6.1.11 (2017-07-13)
 
 ## Folder: zlib
 - Web: http://www.zlib.net
@@ -23,7 +27,7 @@
 - Version: d59b4cf1d107b5f6a0f67d6bc545c6c6ebef3d74 (2011/11/08)
 
 ## Folder: StormLib
-- Web: UNK
+- Web: http://www.zezula.net/en/mpq/stormlib.html
 - Version: (2012/06/05)
 
 ## Folder: bzip2
@@ -31,9 +35,6 @@
 - Version: 1.0.6 (2010/09/20)
 
 # Everything below this is not updated to a newer version.
-
-## Folder: mysql (dev-files)
-- Web: http://www.mysql.com
 
 ## Folder: openssl
 - Web: https://www.openssl.org

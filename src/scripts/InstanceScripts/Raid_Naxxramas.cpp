@@ -758,6 +758,7 @@ AnubRekhanAI::AnubRekhanAI(Creature* pCreature) : CreatureAIScript(pCreature)
 
     mLocaleEnrageSpell = AddSpell(ANUBREKHAN_BERSERK, Target_Self, 0, 0, 0);
     mLocustSwarmTimer = mCryptSpawnTimer = 0;
+    mLocaleEnrageTimerId = 0;
 }
 
 void AnubRekhanAI::OnCombatStart(Unit* /*pTarget*/)
@@ -2613,6 +2614,7 @@ PatchwerkAI::PatchwerkAI(Creature* pCreature) : CreatureAIScript(pCreature)
     addEmoteForEvent(Event_OnTargetDied, 8936);
     addEmoteForEvent(Event_OnDied, 8937);
     mEnraged = false;
+    mLocaleEnrageTimerId = 0;
 }
 
 void PatchwerkAI::AIUpdate()

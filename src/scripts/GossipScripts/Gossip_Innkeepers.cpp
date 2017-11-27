@@ -30,8 +30,8 @@ class InnkeeperGossip : public Arcemu::Gossip::Script
 {
     public:
 
-        void OnHello(Object* pObject, Player* Plr);
-        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code);
+        void OnHello(Object* pObject, Player* Plr) override;
+        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code, uint32 gossipId) override;
         void Destroy() { delete this; }
 };
 
@@ -79,7 +79,7 @@ void InnkeeperGossip::OnHello(Object* pObject, Player* Plr)
     menu.Send(Plr);
 }
 
-void InnkeeperGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/)
+void InnkeeperGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/)
 {
     Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : nullptr;
     if (pCreature == nullptr)

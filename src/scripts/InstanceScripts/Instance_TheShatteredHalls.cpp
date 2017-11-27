@@ -35,1407 +35,317 @@ class InstanceTheShatteredHallsScript : public InstanceScript
         static InstanceScript* Create(MapMgr* pMapMgr) { return new InstanceTheShatteredHallsScript(pMapMgr); }
 };
 
-// FelOrcConvertAI
 class FelOrcConvertAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(FelOrcConvertAI);
-        SP_AI_Spell spells[1];
-        bool m_spellcheck[1];
-
         FelOrcConvertAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            nrspells = 1;
-            for (uint8 i = 0; i < nrspells; i++)
-            {
-                m_spellcheck[i] = false;
-            }
+            enableCreatureAISpellSystem = true;
 
-            spells[0].info = sSpellCustomizations.GetSpellInfo(SP_FEL_ORC_CONVERTER_HEMORRHAGE);
-            spells[0].targettype = TARGET_ATTACKING;
-            spells[0].instant = true;
-            spells[0].cooldown = 25;
-            spells[0].perctrigger = 0.0f;
-            spells[0].attackstoptimer = 1000;
-        }
-
-        void OnCombatStart(Unit* /*mTarget*/) override
-        {
-            CastTime();
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
-        }
-
-        void CastTime()
-        {
-            for (uint8 i = 0; i < nrspells; i++)
-                spells[i].casttime = spells[i].cooldown;
+            // not casted
+            auto hemorrhage = addAISpell(SP_FEL_ORC_CONVERTER_HEMORRHAGE, 0.0f, TARGET_RANDOM_SINGLE, 0, 25, false, true);
+            hemorrhage->setAttackStopTimer(1000);
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            CastTime();
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
         }
-
-        void OnDied(Unit* /*mKiller*/) override
-        {
-            CastTime();
-        }
-
-        void AIUpdate() override
-        {
-            float val = RandomFloat(100.0f);
-            SpellCast(val);
-        }
-
-        void SpellCast(float val)
-        {
-            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
-            {
-                float comulativeperc = 0;
-                Unit* target = NULL;
-                for (uint8 i = 0; i < nrspells; i++)
-                {
-                    spells[i].casttime--;
-
-                    if (m_spellcheck[i])
-                    {
-                        spells[i].casttime = spells[i].cooldown;
-                        target = getCreature()->GetAIInterface()->getNextTarget();
-                        switch (spells[i].targettype)
-                        {
-                            case TARGET_SELF:
-                            case TARGET_VARIOUS:
-                                getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_ATTACKING:
-                                getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_DESTINATION:
-                                getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
-                                break;
-                        }
-
-                        if (spells[i].speech != "")
-                        {
-                            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
-                            getCreature()->PlaySoundToSet(spells[i].soundid);
-                        }
-
-                        m_spellcheck[i] = false;
-                        return;
-                    }
-
-                    if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
-                    {
-                        getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
-                        m_spellcheck[i] = true;
-                    }
-                    comulativeperc += spells[i].perctrigger;
-                }
-            }
-        }
-
-    protected:
-
-        uint8 nrspells;
 };
 
 
-// ShatteredHandHeathenAI
 class ShatteredHandHeathenAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandHeathenAI);
-        SP_AI_Spell spells[2];
-        bool m_spellcheck[2];
-
         ShatteredHandHeathenAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            nrspells = 2;
-            for (uint8 i = 0; i < nrspells; i++)
-            {
-                m_spellcheck[i] = false;
-            }
+            enableCreatureAISpellSystem = true;
 
-            spells[0].info = sSpellCustomizations.GetSpellInfo(SP_HAND_HEATHEN_BLOODTHIRST);
-            spells[0].targettype = TARGET_ATTACKING;
-            spells[0].instant = true;
-            spells[0].cooldown = 25;
-            spells[0].perctrigger = 0.0f;
-            spells[0].attackstoptimer = 1000;
+            // not casted
+            auto bloodthirst = addAISpell(SP_HAND_HEATHEN_BLOODTHIRST, 0.0f, TARGET_ATTACKING, 0, 25, false, true);
+            bloodthirst->setAttackStopTimer(1000);
 
-            spells[1].info = sSpellCustomizations.GetSpellInfo(SP_HAND_HEATHEN_ENRAGE);
-            spells[1].targettype = TARGET_SELF;
-            spells[1].instant = true;
-            spells[1].cooldown = 70;
-            spells[1].perctrigger = 0.0f;
-            spells[1].attackstoptimer = 1000;
+            enrage = addAISpell(SP_HAND_HEATHEN_ENRAGE, 0.0f, TARGET_SELF, 0, 70, false, true);
+            enrage->setAttackStopTimer(1000);
         }
 
         void OnCombatStart(Unit* /*mTarget*/) override
         {
-            CastTime();
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
-            getCreature()->CastSpell(getCreature(), spells[1].info, spells[1].instant);
-        }
-
-        void CastTime()
-        {
-            for (uint8 i = 0; i < nrspells; i++)
-                spells[i].casttime = spells[i].cooldown;
+            getCreature()->CastSpell(getCreature(), enrage->mSpellInfo, enrage->mIsTriggered);
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            CastTime();
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* /*mKiller*/) override
-        {
-            CastTime();
-        }
-
-        void AIUpdate() override
-        {
-            float val = RandomFloat(100.0f);
-            SpellCast(val);
-        }
-
-        void SpellCast(float val)
-        {
-            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
-            {
-                float comulativeperc = 0;
-                Unit* target = NULL;
-                for (uint8 i = 0; i < nrspells; i++)
-                {
-                    spells[i].casttime--;
-
-                    if (m_spellcheck[i])
-                    {
-                        spells[i].casttime = spells[i].cooldown;
-                        target = getCreature()->GetAIInterface()->getNextTarget();
-                        switch (spells[i].targettype)
-                        {
-                            case TARGET_SELF:
-                            case TARGET_VARIOUS:
-                                getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_ATTACKING:
-                                getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_DESTINATION:
-                                getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
-                                break;
-                        }
-
-                        if (spells[i].speech != "")
-                        {
-                            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
-                            getCreature()->PlaySoundToSet(spells[i].soundid);
-                        }
-
-                        m_spellcheck[i] = false;
-                        return;
-                    }
-
-                    if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
-                    {
-                        getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
-                        m_spellcheck[i] = true;
-                    }
-                    comulativeperc += spells[i].perctrigger;
-                }
-            }
         }
 
     protected:
 
-        uint8 nrspells;
+        CreatureAISpells* enrage;
 };
 
-// ShatteredHandLegionnaireAI
 class ShatteredHandLegionnaireAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandLegionnaireAI);
-        SP_AI_Spell spells[3];
-        bool m_spellcheck[3];
-
         ShatteredHandLegionnaireAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            nrspells = 3;
-            for (uint8 i = 0; i < nrspells; i++)
-            {
-                m_spellcheck[i] = false;
-            }
-            spells[0].info = sSpellCustomizations.GetSpellInfo(SP_HAND_LEGI_AURA_OF_DISCIPLINE);
-            spells[0].targettype = TARGET_VARIOUS;
-            spells[0].instant = true;
-            spells[0].cooldown = 0;    // no idea if this should be like that
-            spells[0].perctrigger = 0.0f;
-            spells[0].attackstoptimer = 1000;
+            enableCreatureAISpellSystem = true;
 
-            spells[1].info = sSpellCustomizations.GetSpellInfo(SP_HAND_LEGI_PUMMEL);
-            spells[1].targettype = TARGET_ATTACKING;
-            spells[1].instant = true;
-            spells[1].cooldown = 25;
-            spells[1].perctrigger = 0.0f;
-            spells[1].attackstoptimer = 1000;
+            // not casted
+            auraOfDiscipline = addAISpell(SP_HAND_LEGI_AURA_OF_DISCIPLINE, 0.0f, TARGET_VARIOUS, 0, 0, false, true);
+            auraOfDiscipline->setAttackStopTimer(1000);
 
-            spells[2].info = sSpellCustomizations.GetSpellInfo(SP_HAND_LEGI_ENRAGE);
-            spells[2].targettype = TARGET_SELF;
-            spells[2].instant = true;
-            spells[2].cooldown = 70;
-            spells[2].perctrigger = 0.0f;
-            spells[2].attackstoptimer = 1000;
+            auto pummel = addAISpell(SP_HAND_LEGI_PUMMEL, 0.0f, TARGET_ATTACKING, 0, 25, false, true);
+            pummel->setAttackStopTimer(1000);
+
+            auto enrage = addAISpell(SP_HAND_LEGI_ENRAGE, 0.0f, TARGET_ATTACKING, 0, 70, false, true);
+            enrage->setAttackStopTimer(1000);
         }
 
         void OnCombatStart(Unit* /*mTarget*/) override
         {
-            CastTime();
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
-            getCreature()->CastSpell(getCreature(), spells[0].info, spells[0].instant);
-        }
-
-        void CastTime()
-        {
-            for (uint8 i = 0; i < nrspells; i++)
-                spells[i].casttime = spells[i].cooldown;
+            getCreature()->CastSpell(getCreature(), auraOfDiscipline->mSpellInfo, auraOfDiscipline->mIsTriggered);
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            CastTime();
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* /*mKiller*/) override
-        {
-            CastTime();
-        }
-
-        void AIUpdate() override
-        {
-            float val = RandomFloat(100.0f);
-            SpellCast(val);
-        }
-
-        void SpellCast(float val)
-        {
-            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
-            {
-                float comulativeperc = 0;
-                Unit* target = NULL;
-                for (uint8 i = 0; i < nrspells; i++)
-                {
-                    spells[i].casttime--;
-
-                    if (m_spellcheck[i])
-                    {
-                        spells[i].casttime = spells[i].cooldown;
-                        target = getCreature()->GetAIInterface()->getNextTarget();
-                        switch (spells[i].targettype)
-                        {
-                            case TARGET_SELF:
-                            case TARGET_VARIOUS:
-                                getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_ATTACKING:
-                                getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_DESTINATION:
-                                getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
-                                break;
-                        }
-
-                        if (spells[i].speech != "")
-                        {
-                            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
-                            getCreature()->PlaySoundToSet(spells[i].soundid);
-                        }
-
-                        m_spellcheck[i] = false;
-                        return;
-                    }
-
-                    if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
-                    {
-                        getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
-                        m_spellcheck[i] = true;
-                    }
-                    comulativeperc += spells[i].perctrigger;
-                }
-            }
         }
 
     protected:
 
-        uint8 nrspells;
+        CreatureAISpells* auraOfDiscipline;
 };
 
-// ShatteredHandSavageAI
 class ShatteredHandSavageAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandSavageAI);
-        SP_AI_Spell spells[3];
-        bool m_spellcheck[3];
-
         ShatteredHandSavageAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            nrspells = 3;
-            for (uint8 i = 0; i < nrspells; i++)
-            {
-                m_spellcheck[i] = false;
-            }
+            enableCreatureAISpellSystem = true;
 
-            spells[0].info = sSpellCustomizations.GetSpellInfo(SP_HAND_SAVAGE_SLICE_AND_DICE);
-            spells[0].targettype = TARGET_SELF;
-            spells[0].instant = true;
-            spells[0].cooldown = 35;
-            spells[0].perctrigger = 0.0f;
-            spells[0].attackstoptimer = 1000;
+            // not casted
+            auto sliceAndDice = addAISpell(SP_HAND_SAVAGE_SLICE_AND_DICE, 0.0f, TARGET_SELF, 0, 35, false, true);
+            sliceAndDice->setAttackStopTimer(1000);
 
-            spells[1].info = sSpellCustomizations.GetSpellInfo(SP_HAND_SAVAGE_ENRAGE);
-            spells[1].targettype = TARGET_SELF;
-            spells[1].instant = true;
-            spells[1].cooldown = 70;
-            spells[1].perctrigger = 0.0f;
-            spells[1].attackstoptimer = 1000;
+            enrage = addAISpell(SP_HAND_SAVAGE_ENRAGE, 0.0f, TARGET_SELF, 0, 70, false, true);
+            enrage->setAttackStopTimer(1000);
 
-            spells[2].info = sSpellCustomizations.GetSpellInfo(SP_HAND_SAVAGE_DEATHBLOW);
-            spells[2].targettype = TARGET_ATTACKING;
-            spells[2].instant = true;
-            spells[2].cooldown = 25;
-            spells[2].perctrigger = 0.0f;
-            spells[2].attackstoptimer = 1000;
+            auto deathblow = addAISpell(SP_HAND_SAVAGE_DEATHBLOW, 0.0f, TARGET_ATTACKING, 0, 25, false, true);
+            deathblow->setAttackStopTimer(1000);
         }
 
         void OnCombatStart(Unit* /*mTarget*/) override
         {
-            CastTime();
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
-            getCreature()->CastSpell(getCreature(), spells[1].info, spells[1].instant);
-        }
-
-        void CastTime()
-        {
-            for (uint8 i = 0; i < nrspells; i++)
-                spells[i].casttime = spells[i].cooldown;
+            getCreature()->CastSpell(getCreature(), enrage->mSpellInfo, enrage->mIsTriggered);
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            CastTime();
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* /*mKiller*/) override
-        {
-            CastTime();
-        }
-
-        void AIUpdate() override
-        {
-            float val = RandomFloat(100.0f);
-            SpellCast(val);
-        }
-
-        void SpellCast(float val)
-        {
-            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
-            {
-                float comulativeperc = 0;
-                Unit* target = NULL;
-                for (uint8 i = 0; i < nrspells; i++)
-                {
-                    spells[i].casttime--;
-
-                    if (m_spellcheck[i])
-                    {
-                        spells[i].casttime = spells[i].cooldown;
-                        target = getCreature()->GetAIInterface()->getNextTarget();
-                        switch (spells[i].targettype)
-                        {
-                            case TARGET_SELF:
-                            case TARGET_VARIOUS:
-                                getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_ATTACKING:
-                                getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_DESTINATION:
-                                getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
-                                break;
-                        }
-
-                        if (spells[i].speech != "")
-                        {
-                            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
-                            getCreature()->PlaySoundToSet(spells[i].soundid);
-                        }
-
-                        m_spellcheck[i] = false;
-                        return;
-                    }
-
-                    if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
-                    {
-                        getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
-                        m_spellcheck[i] = true;
-                    }
-                    comulativeperc += spells[i].perctrigger;
-                }
-            }
         }
 
     protected:
 
-        uint8 nrspells;
+        CreatureAISpells* enrage;
 };
 
-
-// ShadowmoonAcolyteAI
 class ShadowmoonAcolyteAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonAcolyteAI);
-        SP_AI_Spell spells[4];
-        bool m_spellcheck[4];
-
         ShadowmoonAcolyteAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            nrspells = 4;
-            for (uint8 i = 0; i < nrspells; i++)
-            {
-                m_spellcheck[i] = false;
-            }
+            enableCreatureAISpellSystem = true;
 
-            spells[0].info = sSpellCustomizations.GetSpellInfo(SP_SHADOWMOON_ACOLYTE_HEAL);
-            spells[0].targettype = TARGET_SELF;
-            spells[0].instant = false;
-            spells[0].cooldown = 35;
-            spells[0].perctrigger = 0.0f;
-            spells[0].attackstoptimer = 1000;
+            auto heal = addAISpell(SP_SHADOWMOON_ACOLYTE_HEAL, 5.0f, TARGET_SELF, 0, 35, false, true);
+            heal->setAttackStopTimer(1000);
 
-            spells[1].info = sSpellCustomizations.GetSpellInfo(SP_SHADOWMOON_ACOLYTE_PW_SHIELD);
-            spells[1].targettype = TARGET_SELF;
-            spells[1].instant = true;
-            spells[1].cooldown = 45;
-            spells[1].perctrigger = 0.0f;
-            spells[1].attackstoptimer = 1000;
+            auto shield = addAISpell(SP_SHADOWMOON_ACOLYTE_PW_SHIELD, 5.0f, TARGET_SELF, 0, 45, false, true);
+            shield->setAttackStopTimer(1000);
 
-            spells[2].info = sSpellCustomizations.GetSpellInfo(SP_SHADOWMOON_ACOLYTE_MIND_BLAST);
-            spells[2].targettype = TARGET_ATTACKING;
-            spells[2].instant = false;
-            spells[2].cooldown = 10;
-            spells[2].perctrigger = 0.0f;
-            spells[2].attackstoptimer = 1000;
+            auto mindBlast = addAISpell(SP_SHADOWMOON_ACOLYTE_MIND_BLAST, 5.0f, TARGET_ATTACKING, 0, 10);
+            mindBlast->setAttackStopTimer(1000);
 
-            spells[3].info = sSpellCustomizations.GetSpellInfo(SP_SHADOWMOON_ACOLYTE_RESIST_SHADOW);
-            spells[3].targettype = TARGET_SELF; // should be ally
-            spells[3].instant = true;
-            spells[3].cooldown = 65;
-            spells[3].perctrigger = 0.0f;
-            spells[3].attackstoptimer = 1000;
-        }
-
-        void OnCombatStart(Unit* /*mTarget*/) override
-        {
-            CastTime();
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
-            if (RandomUInt(4) == 1)
-                getCreature()->CastSpell(getCreature(), spells[3].info, spells[3].instant);
-            else
-                spells[3].casttime = RandomUInt(20) + 10;
-        }
-
-        void CastTime()
-        {
-            for (uint8 i = 0; i < nrspells; i++)
-                spells[i].casttime = spells[i].cooldown;
+            auto resistShadow = addAISpell(SP_SHADOWMOON_ACOLYTE_RESIST_SHADOW, 5.0f, TARGET_SELF, 0, 65, false, true);
+            resistShadow->setAttackStopTimer(1000);
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            CastTime();
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
         }
-
-        void OnDied(Unit* /*mKiller*/) override
-        {
-            CastTime();
-        }
-
-        void AIUpdate() override
-        {
-            float val = RandomFloat(100.0f);
-            SpellCast(val);
-        }
-
-        void SpellCast(float val)
-        {
-            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
-            {
-                float comulativeperc = 0;
-                Unit* target = NULL;
-                for (uint8 i = 0; i < nrspells; i++)
-                {
-                    spells[i].casttime--;
-
-                    if (m_spellcheck[i])
-                    {
-                        spells[i].casttime = spells[i].cooldown;
-                        target = getCreature()->GetAIInterface()->getNextTarget();
-                        switch (spells[i].targettype)
-                        {
-                            case TARGET_SELF:
-                            case TARGET_VARIOUS:
-                                getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_ATTACKING:
-                                getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_DESTINATION:
-                                getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
-                                break;
-                        }
-
-                        if (spells[i].speech != "")
-                        {
-                            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
-                            getCreature()->PlaySoundToSet(spells[i].soundid);
-                        }
-
-                        m_spellcheck[i] = false;
-                        return;
-                    }
-
-                    if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
-                    {
-                        getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
-                        m_spellcheck[i] = true;
-                    }
-                    comulativeperc += spells[i].perctrigger;
-                }
-            }
-        }
-
-    protected:
-
-        uint8 nrspells;
 };
 
-// ShatteredHandAssassinAI
 class ShatteredHandAssassinAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandAssassinAI);
-        SP_AI_Spell spells[3];
-        bool m_spellcheck[3];
-
         ShatteredHandAssassinAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            nrspells = 3;
-            for (uint8 i = 0; i < nrspells; i++)
-            {
-                m_spellcheck[i] = false;
-            }
+            enableCreatureAISpellSystem = true;
 
-            spells[0].info = sSpellCustomizations.GetSpellInfo(SP_SHATT_HAND_ASSASSIN_SAP);
-            spells[0].targettype = TARGET_ATTACKING;
-            spells[0].instant = true;
-            spells[0].cooldown = 0;
-            spells[0].perctrigger = 0.0f;
-            spells[0].attackstoptimer = 1000;
+            auto sap = addAISpell(SP_SHATT_HAND_ASSASSIN_SAP, 5.0f, TARGET_ATTACKING, 0, 0, false, true);
+            sap->setAttackStopTimer(1000);
 
-            spells[1].info = sSpellCustomizations.GetSpellInfo(SP_SHATT_HAND_ASSASSIN_STEALTH);
-            spells[1].targettype = TARGET_SELF;
-            spells[1].instant = true;
-            spells[1].cooldown = 0;
-            spells[1].perctrigger = 0.0f;
-            spells[1].attackstoptimer = 1000;
+            stealth = addAISpell(SP_SHATT_HAND_ASSASSIN_STEALTH, 0.0f, TARGET_SELF, 0, 0, false, true);
+            stealth->setAttackStopTimer(1000);
 
-            spells[2].info = sSpellCustomizations.GetSpellInfo(SP_SHATT_HAND_ASSASSIN_CHEAP_SHOT);
-            spells[2].targettype = TARGET_ATTACKING;
-            spells[2].instant = true;
-            spells[2].cooldown = 25;
-            spells[2].perctrigger = 0.0f;
-            spells[2].attackstoptimer = 1000;
+            auto cheapShot = addAISpell(SP_SHATT_HAND_ASSASSIN_CHEAP_SHOT, 5.0f, TARGET_ATTACKING, 0, 25, false, true);
+            cheapShot->setAttackStopTimer(1000);
 
-            getCreature()->CastSpell(getCreature(), spells[1].info, spells[1].instant);
-        }
-
-        void OnCombatStart(Unit* mTarget) override
-        {
-            CastTime();
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
-            if (getCreature()->isCastingNonMeleeSpell() && mTarget)
-                getCreature()->CastSpell(mTarget, spells[0].info, spells[0].instant);
-        }
-
-        void CastTime()
-        {
-            for (uint8 i = 0; i < nrspells; i++)
-                spells[i].casttime = spells[i].cooldown;
+            getCreature()->CastSpell(getCreature(), stealth->mSpellInfo, stealth->mIsTriggered);
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            CastTime();
-            getCreature()->CastSpell(getCreature(), spells[1].info, spells[1].instant);
+            getCreature()->CastSpell(getCreature(), stealth->mSpellInfo, stealth->mIsTriggered);
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* /*mKiller*/) override
-        {
-            CastTime();
-        }
-
-        void AIUpdate() override
-        {
-            float val = RandomFloat(100.0f);
-            SpellCast(val);
-        }
-
-        void SpellCast(float val)
-        {
-            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
-            {
-                float comulativeperc = 0;
-                Unit* target = NULL;
-                for (uint8 i = 0; i < nrspells; i++)
-                {
-                    spells[i].casttime--;
-
-                    if (m_spellcheck[i])
-                    {
-                        spells[i].casttime = spells[i].cooldown;
-                        target = getCreature()->GetAIInterface()->getNextTarget();
-                        switch (spells[i].targettype)
-                        {
-                            case TARGET_SELF:
-                            case TARGET_VARIOUS:
-                                getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_ATTACKING:
-                                getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_DESTINATION:
-                                getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
-                                break;
-                        }
-
-                        if (spells[i].speech != "")
-                        {
-                            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
-                            getCreature()->PlaySoundToSet(spells[i].soundid);
-                        }
-
-                        m_spellcheck[i] = false;
-                        return;
-                    }
-
-                    if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
-                    {
-                        getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
-                        m_spellcheck[i] = true;
-                    }
-                    comulativeperc += spells[i].perctrigger;
-                }
-            }
         }
 
     protected:
 
-        uint8 nrspells;
+        CreatureAISpells* stealth;
 };
 
-// ShatteredHandGladiatorAI
 class ShatteredHandGladiatorAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandGladiatorAI);
-        SP_AI_Spell spells[1];
-        bool m_spellcheck[1];
-
         ShatteredHandGladiatorAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            nrspells = 1;
-            for (uint8 i = 0; i < nrspells; i++)
-            {
-                m_spellcheck[i] = false;
-            }
+            enableCreatureAISpellSystem = true;
 
-            spells[0].info = sSpellCustomizations.GetSpellInfo(SP_SHATT_HAND_GLADI_MORTAL_STRIKE);
-            spells[0].targettype = TARGET_ATTACKING;
-            spells[0].instant = true;
-            spells[0].cooldown = 15;
-            spells[0].perctrigger = 0.0f;
-            spells[0].attackstoptimer = 1000;
-        }
-
-        void OnCombatStart(Unit* /*mTarget*/) override
-        {
-            CastTime();
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
-        }
-
-        void CastTime()
-        {
-            for (uint8 i = 0; i < nrspells; i++)
-                spells[i].casttime = spells[i].cooldown;
+            // not casted
+            auto sap = addAISpell(SP_SHATT_HAND_GLADI_MORTAL_STRIKE, 0.0f, TARGET_ATTACKING, 0, 15, false, true);
+            sap->setAttackStopTimer(1000);
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            CastTime();
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
         }
-
-        void OnDied(Unit* /*mKiller*/) override
-        {
-            CastTime();
-        }
-
-        void AIUpdate() override
-        {
-            float val = RandomFloat(100.0f);
-            SpellCast(val);
-        }
-
-        void SpellCast(float val)
-        {
-            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
-            {
-                float comulativeperc = 0;
-                Unit* target = NULL;
-                for (uint8 i = 0; i < nrspells; i++)
-                {
-                    spells[i].casttime--;
-
-                    if (m_spellcheck[i])
-                    {
-                        spells[i].casttime = spells[i].cooldown;
-                        target = getCreature()->GetAIInterface()->getNextTarget();
-                        switch (spells[i].targettype)
-                        {
-                            case TARGET_SELF:
-                            case TARGET_VARIOUS:
-                                getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_ATTACKING:
-                                getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_DESTINATION:
-                                getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
-                                break;
-                        }
-
-                        if (spells[i].speech != "")
-                        {
-                            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
-                            getCreature()->PlaySoundToSet(spells[i].soundid);
-                        }
-
-                        m_spellcheck[i] = false;
-                        return;
-                    }
-
-                    if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
-                    {
-                        getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
-                        m_spellcheck[i] = true;
-                    }
-                    comulativeperc += spells[i].perctrigger;
-                }
-            }
-        }
-
-    protected:
-
-        uint8 nrspells;
 };
 
-// ShatteredHandHoundmasterAI
 // he patrols with Rabid Warhounds
 class ShatteredHandHoundmasterAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandHoundmasterAI);
-        SP_AI_Spell spells[1];
-        bool m_spellcheck[1];
-
         ShatteredHandHoundmasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            nrspells = 1;
-            for (uint8 i = 0; i < nrspells; i++)
-            {
-                m_spellcheck[i] = false;
-            }
+            enableCreatureAISpellSystem = true;
 
-            spells[0].info = sSpellCustomizations.GetSpellInfo(SP_SHATT_HAND_HOUNDMASTER_VOLLEY);
-            spells[0].targettype = TARGET_DESTINATION;
-            spells[0].instant = false;
-            spells[0].cooldown = 30;
-            spells[0].perctrigger = 0.0f;
-            spells[0].attackstoptimer = 1000;
-        }
-
-        void OnCombatStart(Unit* /*mTarget*/) override
-        {
-            CastTime();
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
-        }
-
-        void CastTime()
-        {
-            for (uint8 i = 0; i < nrspells; i++)
-                spells[i].casttime = spells[i].cooldown;
+            // not casted
+            auto sap = addAISpell(SP_SHATT_HAND_HOUNDMASTER_VOLLEY, 0.0f, TARGET_DESTINATION, 0, 30);
+            sap->setAttackStopTimer(1000);
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            CastTime();
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
         }
-
-        void OnDied(Unit* /*mKiller*/) override
-        {
-            CastTime();
-        }
-
-        void AIUpdate() override
-        {
-            float val = RandomFloat(100.0f);
-            SpellCast(val);
-        }
-
-        void SpellCast(float val)
-        {
-            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
-            {
-                float comulativeperc = 0;
-                Unit* target = NULL;
-                for (uint8 i = 0; i < nrspells; i++)
-                {
-                    spells[i].casttime--;
-
-                    if (m_spellcheck[i])
-                    {
-                        spells[i].casttime = spells[i].cooldown;
-                        target = getCreature()->GetAIInterface()->getNextTarget();
-                        switch (spells[i].targettype)
-                        {
-                            case TARGET_SELF:
-                            case TARGET_VARIOUS:
-                                getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_ATTACKING:
-                                getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_DESTINATION:
-                                getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
-                                break;
-                        }
-
-                        if (spells[i].speech != "")
-                        {
-                            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
-                            getCreature()->PlaySoundToSet(spells[i].soundid);
-                        }
-
-                        m_spellcheck[i] = false;
-                        return;
-                    }
-
-                    if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
-                    {
-                        getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
-                        m_spellcheck[i] = true;
-                    }
-                    comulativeperc += spells[i].perctrigger;
-                }
-            }
-        }
-
-    protected:
-
-        uint8 nrspells;
 };
 
-// ShatteredHandReaverAI
 class ShatteredHandReaverAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandReaverAI);
-        SP_AI_Spell spells[3];
-        bool m_spellcheck[3];
-
         ShatteredHandReaverAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            nrspells = 3;
-            for (uint8 i = 0; i < nrspells; i++)
-            {
-                m_spellcheck[i] = false;
-            }
-            spells[0].info = sSpellCustomizations.GetSpellInfo(SP_SHATT_HAND_REAVER_CLEAVE);
-            spells[0].targettype = TARGET_VARIOUS;
-            spells[0].instant = true;
-            spells[0].cooldown = 10;
-            spells[0].perctrigger = 0.0f;
-            spells[0].attackstoptimer = 1000;
+            enableCreatureAISpellSystem = true;
 
-            spells[1].info = sSpellCustomizations.GetSpellInfo(SP_SHATT_HAND_REAVER_UPPERCUT);
-            spells[1].targettype = TARGET_ATTACKING;
-            spells[1].instant = true;
-            spells[1].cooldown = 35;
-            spells[1].perctrigger = 0.0f;
-            spells[1].attackstoptimer = 1000;
+            auto cleave = addAISpell(SP_SHATT_HAND_REAVER_CLEAVE, 7.0f, TARGET_VARIOUS, 0, 10, false, true);
+            cleave->setAttackStopTimer(1000);
 
-            spells[2].info = sSpellCustomizations.GetSpellInfo(SP_SHATT_HAND_REAVER_ENRAGE);
-            spells[2].targettype = TARGET_SELF;
-            spells[2].instant = true;
-            spells[2].cooldown = 70;
-            spells[2].perctrigger = 0.0f;
-            spells[2].attackstoptimer = 1000;
-        }
+            auto uppercut = addAISpell(SP_SHATT_HAND_REAVER_UPPERCUT, 7.0f, TARGET_ATTACKING, 0, 35, false, true);
+            uppercut->setAttackStopTimer(1000);
 
-        void OnCombatStart(Unit* /*mTarget*/) override
-        {
-            CastTime();
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
-            if (RandomUInt(4) == 1)
-                getCreature()->CastSpell(getCreature(), spells[2].info, spells[2].instant);
-            else
-                spells[2].casttime = RandomUInt(30) + 20;
-        }
-
-        void CastTime()
-        {
-            for (uint8 i = 0; i < nrspells; i++)
-                spells[i].casttime = spells[i].cooldown;
+            auto enrage = addAISpell(SP_SHATT_HAND_REAVER_ENRAGE, 5.0f, TARGET_SELF, 0, 70, false, true);
+            enrage->setAttackStopTimer(1000);
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            CastTime();
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
         }
-
-        void OnDied(Unit* /*mKiller*/) override
-        {
-            CastTime();
-        }
-
-        void AIUpdate() override
-        {
-            float val = RandomFloat(100.0f);
-            SpellCast(val);
-        }
-
-        void SpellCast(float val)
-        {
-            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
-            {
-                float comulativeperc = 0;
-                Unit* target = NULL;
-                for (uint8 i = 0; i < nrspells; i++)
-                {
-                    spells[i].casttime--;
-
-                    if (m_spellcheck[i])
-                    {
-                        spells[i].casttime = spells[i].cooldown;
-                        target = getCreature()->GetAIInterface()->getNextTarget();
-                        switch (spells[i].targettype)
-                        {
-                            case TARGET_SELF:
-                            case TARGET_VARIOUS:
-                                getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_ATTACKING:
-                                getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_DESTINATION:
-                                getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
-                                break;
-                        }
-
-                        if (spells[i].speech != "")
-                        {
-                            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
-                            getCreature()->PlaySoundToSet(spells[i].soundid);
-                        }
-
-                        m_spellcheck[i] = false;
-                        return;
-                    }
-
-                    if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
-                    {
-                        getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
-                        m_spellcheck[i] = true;
-                    }
-                    comulativeperc += spells[i].perctrigger;
-                }
-            }
-        }
-
-    protected:
-
-        uint8 nrspells;
 };
 
-// ShatteredHandSentryAI
 class ShatteredHandSentryAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandSentryAI);
-        SP_AI_Spell spells[2];
-        bool m_spellcheck[2];
-
         ShatteredHandSentryAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            nrspells = 1;
-            for (uint8 i = 0; i < nrspells; i++)
-            {
-                m_spellcheck[i] = false;
-            }
+            enableCreatureAISpellSystem = true;
 
-            spells[0].info = sSpellCustomizations.GetSpellInfo(SP_SHATT_HAND_SENTRY_HAMSTERING);
-            spells[0].targettype = TARGET_ATTACKING;
-            spells[0].instant = true;
-            spells[0].cooldown = 20;
-            spells[0].perctrigger = 0.0f;
-            spells[0].attackstoptimer = 1000;
+            auto hamstering = addAISpell(SP_SHATT_HAND_SENTRY_HAMSTERING, 7.0f, TARGET_ATTACKING, 0, 20, false, true);
+            hamstering->setAttackStopTimer(1000);
 
-            spells[1].info = sSpellCustomizations.GetSpellInfo(SP_SHATT_HAND_SENTRY_CHARGE);
-            spells[1].targettype = TARGET_ATTACKING;
-            spells[1].instant = true;
-            spells[1].cooldown = 0;
-            spells[1].perctrigger = 0.0f;
-            spells[1].attackstoptimer = 1000;
-        }
-
-        void OnCombatStart(Unit* /*mTarget*/) override
-        {
-            CastTime();
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
-        }
-
-        void CastTime()
-        {
-            for (uint8 i = 0; i < nrspells; i++)
-                spells[i].casttime = spells[i].cooldown;
+            auto charge = addAISpell(SP_SHATT_HAND_SENTRY_CHARGE, 5.0f, TARGET_ATTACKING, 0, 0, false, true);
+            charge->setAttackStopTimer(1000);
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            CastTime();
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
         }
-
-        void OnDied(Unit* /*mKiller*/) override
-        {
-            CastTime();
-        }
-
-        void AIUpdate() override
-        {
-            if (getCreature()->GetAIInterface()->getNextTarget() && getCreature()->isCastingNonMeleeSpell())
-            {
-                Unit* target = NULL;
-                target = getCreature()->GetAIInterface()->getNextTarget();
-                if (getCreature()->GetDistance2dSq(target) > 225.0f && RandomUInt(4) == 1)
-                {
-                    getCreature()->CastSpell(target, spells[1].info, spells[1].instant);
-                    return;
-                }
-            }
-
-            float val = RandomFloat(100.0f);
-            SpellCast(val);
-        }
-
-        void SpellCast(float val)
-        {
-            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
-            {
-                float comulativeperc = 0;
-                Unit* target = NULL;
-                for (uint8 i = 0; i < nrspells; i++)
-                {
-                    spells[i].casttime--;
-
-                    if (m_spellcheck[i])
-                    {
-                        spells[i].casttime = spells[i].cooldown;
-                        target = getCreature()->GetAIInterface()->getNextTarget();
-                        switch (spells[i].targettype)
-                        {
-                            case TARGET_SELF:
-                            case TARGET_VARIOUS:
-                                getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_ATTACKING:
-                                getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_DESTINATION:
-                                getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
-                                break;
-                        }
-
-                        if (spells[i].speech != "")
-                        {
-                            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
-                            getCreature()->PlaySoundToSet(spells[i].soundid);
-                        }
-
-                        m_spellcheck[i] = false;
-                        return;
-                    }
-
-                    if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
-                    {
-                        getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
-                        m_spellcheck[i] = true;
-                    }
-                    comulativeperc += spells[i].perctrigger;
-                }
-            }
-        }
-
-    protected:
-
-        uint8 nrspells;
 };
 
-// ShatteredHandSharpshooterAI
 class ShatteredHandSharpshooterAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandSharpshooterAI);
-        SP_AI_Spell spells[4];
-        bool m_spellcheck[4];
-
         ShatteredHandSharpshooterAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            nrspells = 4;
-            for (uint8 i = 0; i < nrspells; i++)
-            {
-                m_spellcheck[i] = false;
-            }
+            enableCreatureAISpellSystem = true;
 
-            spells[0].info = sSpellCustomizations.GetSpellInfo(SP_SHATT_HAND_SHARP_SCATTER_SHOT);
-            spells[0].targettype = TARGET_ATTACKING;
-            spells[0].instant = true;
-            spells[0].cooldown = 20;
-            spells[0].perctrigger = 0.0f;
-            spells[0].attackstoptimer = 1000;
+            auto scatterShot = addAISpell(SP_SHATT_HAND_SHARP_SCATTER_SHOT, 7.0f, TARGET_ATTACKING, 0, 20, false, true);
+            scatterShot->setAttackStopTimer(1000);
 
-            spells[1].info = sSpellCustomizations.GetSpellInfo(SP_SHATT_HAND_SHARP_IMMO_ARROW);
-            spells[1].targettype = TARGET_ATTACKING;    // no idea why fire stays under caster instead of target
-            spells[1].instant = false;
-            spells[1].cooldown = 5;
-            spells[1].perctrigger = 0.0f;
-            spells[1].attackstoptimer = 1000;
+            auto arrow = addAISpell(SP_SHATT_HAND_SHARP_IMMO_ARROW, 7.0f, TARGET_ATTACKING, 0, 5);
+            arrow->setAttackStopTimer(1000);
 
-            spells[2].info = sSpellCustomizations.GetSpellInfo(SP_SHATT_HAND_SHARP_SHOT);    // disabled for now
-            spells[2].targettype = TARGET_ATTACKING;
-            spells[2].instant = true;
-            spells[2].cooldown = 0;
-            spells[2].perctrigger = 0.0f;
-            spells[2].attackstoptimer = 1000;
+            auto sharpShot = addAISpell(SP_SHATT_HAND_SHARP_SHOT, 7.0f, TARGET_ATTACKING, 0, 5, false, true);
+            sharpShot->setAttackStopTimer(1000);
 
-            spells[3].info = sSpellCustomizations.GetSpellInfo(SP_SHATT_HAND_SHARP_INCENDIARY_SHOT);
-            spells[3].targettype = TARGET_ATTACKING;
-            spells[3].instant = false;
-            spells[3].cooldown = 35;
-            spells[3].perctrigger = 0.0f;
-            spells[3].attackstoptimer = 1000;
-        }
-
-        void OnCombatStart(Unit* /*mTarget*/) override
-        {
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
+            auto incendiaryShot = addAISpell(SP_SHATT_HAND_SHARP_INCENDIARY_SHOT, 7.0f, TARGET_ATTACKING, 0, 35, false, true);
+            incendiaryShot->setAttackStopTimer(1000);
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
         }
-
-        void AIUpdate() override
-        {
-            setAIAgent(AGENT_NULL);
-            if (getCreature()->GetAIInterface()->getNextTarget() && getCreature()->GetDistance2dSq(getCreature()->GetAIInterface()->getNextTarget()) <= 900.0f)
-            {
-                setAIAgent(AGENT_SPELL);
-                if (!getCreature()->isCastingNonMeleeSpell())
-                {
-                    uint32 Chance = RandomUInt(100);
-                    if (Chance <= 70)
-                    {
-                        getCreature()->CastSpell(getCreature()->GetAIInterface()->getNextTarget(), spells[2].info, spells[2].instant);
-                    }
-
-                    else if (Chance > 70 && Chance <= 78)
-                    {
-                        getCreature()->CastSpell(getCreature()->GetAIInterface()->getNextTarget(), spells[1].info, spells[1].instant);
-                    }
-
-                    else if (Chance > 78 && Chance <= 82)
-                    {
-                        getCreature()->CastSpell(getCreature()->GetAIInterface()->getNextTarget(), spells[3].info, spells[3].instant);
-                    }
-
-                    else if (Chance > 82 && Chance <= 86)
-                    {
-                        getCreature()->CastSpell(getCreature()->GetAIInterface()->getNextTarget(), spells[0].info, spells[0].instant);
-                    }
-                }
-            }
-        }
-
-    protected:
-
-        uint8 nrspells;
 };
 
-// ShatteredHandBrawlerAI
 // Self Visual - Sleep Until Cancelled (DND) 16093 ?
 class ShatteredHandBrawlerAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(ShatteredHandBrawlerAI);
-        SP_AI_Spell spells[3];
-        bool m_spellcheck[3];
-
         ShatteredHandBrawlerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            nrspells = 3;
-            for (uint8 i = 0; i < nrspells; i++)
-            {
-                m_spellcheck[i] = false;
-            }
-            spells[0].info = sSpellCustomizations.GetSpellInfo(SP_CURSE_OF_THE_SHATTERED_HAND);
-            spells[0].targettype = TARGET_ATTACKING;
-            spells[0].instant = true;
-            spells[0].cooldown = 35;
-            spells[0].perctrigger = 0.0f;
-            spells[0].attackstoptimer = 1000;
+            enableCreatureAISpellSystem = true;
 
-            spells[1].info = sSpellCustomizations.GetSpellInfo(SP_SHATT_HAND_BRAWLER_KICK);
-            spells[1].targettype = TARGET_ATTACKING;
-            spells[1].instant = true;
-            spells[1].cooldown = 25;
-            spells[1].perctrigger = 0.0f;
-            spells[1].attackstoptimer = 1000;
+            auto shatteredHand = addAISpell(SP_CURSE_OF_THE_SHATTERED_HAND, 7.0f, TARGET_ATTACKING, 0, 35, false, true);
+            shatteredHand->setAttackStopTimer(1000);
 
-            spells[2].info = sSpellCustomizations.GetSpellInfo(SP_SHATT_HAND_BRAWLER_TRASH);
-            spells[2].targettype = TARGET_SELF;
-            spells[2].instant = true;
-            spells[2].cooldown = 20;
-            spells[2].perctrigger = 0.0f;
-            spells[2].attackstoptimer = 1000;
-        }
+            auto brawlerKick = addAISpell(SP_SHATT_HAND_BRAWLER_KICK, 7.0f, TARGET_ATTACKING, 0, 25, false, true);
+            brawlerKick->setAttackStopTimer(1000);
 
-        void OnCombatStart(Unit* /*mTarget*/) override
-        {
-            CastTime();
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
-        }
-
-        void CastTime()
-        {
-            for (uint8 i = 0; i < nrspells; i++)
-                spells[i].casttime = spells[i].cooldown;
+            auto brawlerTrash = addAISpell(SP_SHATT_HAND_BRAWLER_TRASH, 7.0f, TARGET_SELF, 0, 20, false, true);
+            brawlerTrash->setAttackStopTimer(1000);
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            CastTime();
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
         }
-
-        void OnDied(Unit* /*mKiller*/) override
-        {
-            CastTime();
-        }
-
-        void AIUpdate() override
-        {
-            float val = RandomFloat(100.0f);
-            SpellCast(val);
-        }
-
-        void SpellCast(float val)
-        {
-            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
-            {
-                float comulativeperc = 0;
-                Unit* target = NULL;
-                for (uint8 i = 0; i < nrspells; i++)
-                {
-                    spells[i].casttime--;
-
-                    if (m_spellcheck[i])
-                    {
-                        spells[i].casttime = spells[i].cooldown;
-                        target = getCreature()->GetAIInterface()->getNextTarget();
-                        switch (spells[i].targettype)
-                        {
-                            case TARGET_SELF:
-                            case TARGET_VARIOUS:
-                                getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_ATTACKING:
-                                getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_DESTINATION:
-                                getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
-                                break;
-                        }
-
-                        if (spells[i].speech != "")
-                        {
-                            getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
-                            getCreature()->PlaySoundToSet(spells[i].soundid);
-                        }
-
-                        m_spellcheck[i] = false;
-                        return;
-                    }
-
-                    if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
-                    {
-                        getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
-                        m_spellcheck[i] = true;
-                    }
-                    comulativeperc += spells[i].perctrigger;
-                }
-            }
-        }
-
-    protected:
-
-        uint8 nrspells;
 };
 
 
@@ -1534,50 +444,18 @@ class ShadowmoonDarkcasterAI : public CreatureAIScript
 };
 
 
-// Grand Warlock NethekurseAI
-/// \todo It has much more sounds (like for servant dies etc.). For future makes researches on them.
+// \todo It has much more sounds (like for servant dies etc.). For future makes researches on them.
 class GrandWarlockNethekurseAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(GrandWarlockNethekurseAI);
-        SP_AI_Spell spells[3];
-        bool m_spellcheck[3];
-
         GrandWarlockNethekurseAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            nrspells = 1;
-            for (uint8 i = 0; i < nrspells; i++)
-            {
-                m_spellcheck[i] = false;
-            }
+            enableCreatureAISpellSystem = true;
 
-            spells[0].info = sSpellCustomizations.GetSpellInfo(SP_GRAND_WARLOCK_NETH_DEATH_COIL);
-            spells[0].targettype = TARGET_RANDOM_SINGLE;
-            spells[0].instant = true;
-            spells[0].cooldown = 15;
-            spells[0].perctrigger = 10.0f;
-            spells[0].attackstoptimer = 1000;
-            spells[0].mindist2cast = 0.0f;
-            spells[0].maxdist2cast = 40.0f;
-            // disabled for now
-            spells[1].info = sSpellCustomizations.GetSpellInfo(SP_LESSER_SHADOW_FISSURE);
-            spells[1].targettype = TARGET_RANDOM_SINGLE;
-            spells[1].instant = true;    // doesn't work, because of lack of core support (so to prevent channeling I changed false to true)
-            spells[1].cooldown = 25;
-            spells[1].perctrigger = 0.0f;
-            spells[1].attackstoptimer = 1000;
-            spells[1].mindist2cast = 0.0f;
-            spells[1].maxdist2cast = 40.0f;
+            auto deathCoil = addAISpell(SP_GRAND_WARLOCK_NETH_DEATH_COIL, 10.0f, TARGET_ATTACKING, 0, 15, false, true);
+            deathCoil->setAttackStopTimer(1000);
+            deathCoil->setMinMaxDistance(0.0f, 40.0f);
 
-            spells[2].info = sSpellCustomizations.GetSpellInfo(SP_GRAND_WARLOCK_NETH_DARK_SPIN);
-            spells[2].targettype = TARGET_VARIOUS;
-            spells[2].instant = false;
-            spells[2].cooldown = 60;
-            spells[2].perctrigger = 0.0f;
-            spells[2].attackstoptimer = 1000;
-
-            Started = false;
-
-            // new
             addEmoteForEvent(Event_OnCombatStart, SAY_GRAND_WARLOCK_13);
             addEmoteForEvent(Event_OnCombatStart, SAY_GRAND_WARLOCK_14);
             addEmoteForEvent(Event_OnCombatStart, SAY_GRAND_WARLOCK_15);
@@ -1586,314 +464,31 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, SAY_GRAND_WARLOCK_18);
         }
 
-        void OnCombatStart(Unit* /*mTarget*/) override
-        {
-            for (uint8 i = 0; i < 3; i++)
-                spells[i].casttime = 0;
-
-            if (Started)
-            {
-                  RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
-            }
-            else
-                RegisterAIUpdateEvent(4000);
-        }
-
         void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-
-            if (Started)
-                RemoveAIUpdateEvent();
         }
-
-        void AIUpdate() override
-        {
-            if (!Started)
-            {
-                getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
-                getCreature()->SetEmoteState(EMOTE_ONESHOT_NONE);
-                getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
-
-                setAIAgent(AGENT_NULL);
-                getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-                RemoveAIUpdateEvent();
-
-                Started = true;
-
-                Unit* target = NULL;
-                target = FindTarget();
-                if (target)
-                {
-                    getCreature()->GetAIInterface()->AttackReaction(target, 1, 0);
-                }
-            }
-
-            if (getCreature()->getAuraWithId(SP_GRAND_WARLOCK_NETH_DARK_SPIN))
-            {
-                getCreature()->setAttackTimer(2500, false);
-                return;
-            }
-
-            uint32 t = (uint32)time(NULL);
-            // not sure if this should work like that
-            if (t > spells[2].casttime && getCreature()->GetHealthPct() <= 20 && !getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
-            {
-                getCreature()->setAttackTimer(2500, false);
-
-                getCreature()->CastSpell(getCreature(), spells[2].info, spells[2].instant);
-
-                spells[2].casttime = t + 120;
-                return;
-            }
-
-            else
-            {
-                float val = RandomFloat(100.0f);
-                SpellCast(val);
-            }
-        }
-
-        void SpellCast(float val)
-        {
-            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
-            {
-                float comulativeperc = 0;
-                Unit* target = NULL;
-                for (uint8 i = 0; i < nrspells; i++)
-                {
-                    if (!spells[i].perctrigger) continue;
-
-                    if (m_spellcheck[i])
-                    {
-                        target = getCreature()->GetAIInterface()->getNextTarget();
-                        switch (spells[i].targettype)
-                        {
-                            case TARGET_SELF:
-                            case TARGET_VARIOUS:
-                                getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_ATTACKING:
-                                getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_DESTINATION:
-                                getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_RANDOM_FRIEND:
-                            case TARGET_RANDOM_SINGLE:
-                            case TARGET_RANDOM_DESTINATION:
-                                CastSpellOnRandomTarget(i, spells[i].mindist2cast, spells[i].maxdist2cast, spells[i].minhp2cast, spells[i].maxhp2cast);
-                                break;
-                        }
-
-                        m_spellcheck[i] = false;
-                        return;
-                    }
-
-                    uint32 t = (uint32)time(NULL);
-                    if (val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger) && t > spells[i].casttime)
-                    {
-                        getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
-                        spells[i].casttime = t + spells[i].cooldown;
-                        m_spellcheck[i] = true;
-                    }
-                    comulativeperc += spells[i].perctrigger;
-                }
-            }
-        }
-
-        void CastSpellOnRandomTarget(uint32 i, float mindist2cast, float maxdist2cast, int minhp2cast, int maxhp2cast)
-        {
-            if (!maxdist2cast) maxdist2cast = 100.0f;
-            if (!maxhp2cast) maxhp2cast = 100;
-
-            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
-            {
-                std::vector<Unit*> TargetTable;        // From M4ksiu - Big THX to Capt
-                for (std::set<Object*>::iterator itr = getCreature()->GetInRangeSetBegin(); itr != getCreature()->GetInRangeSetEnd(); ++itr)
-                {
-                    if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(getCreature(), (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(getCreature(), (*itr)) && (*itr) != getCreature())) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
-                    {
-                        Unit* RandomTarget = NULL;
-                        RandomTarget = static_cast<Unit*>(*itr);
-
-                        if (RandomTarget->isAlive() && getCreature()->GetDistance2dSq(RandomTarget) >= mindist2cast * mindist2cast && getCreature()->GetDistance2dSq(RandomTarget) <= maxdist2cast * maxdist2cast && ((RandomTarget->GetHealthPct() >= minhp2cast && RandomTarget->GetHealthPct() <= maxhp2cast && spells[i].targettype == TARGET_RANDOM_FRIEND) || (getCreature()->GetAIInterface()->getThreatByPtr(RandomTarget) > 0 && isHostile(getCreature(), RandomTarget))))
-                        {
-                            TargetTable.push_back(RandomTarget);
-                        }
-                    }
-                }
-
-                if (getCreature()->GetHealthPct() >= minhp2cast && getCreature()->GetHealthPct() <= maxhp2cast && spells[i].targettype == TARGET_RANDOM_FRIEND)
-                    TargetTable.push_back(getCreature());
-
-                if (!TargetTable.size())
-                    return;
-
-                auto random_index = RandomUInt(0, uint32(TargetTable.size() - 1));
-                auto random_target = TargetTable[random_index];
-
-                if (random_target == nullptr)
-                    return;
-
-                switch (spells[i].targettype)
-                {
-                    case TARGET_RANDOM_FRIEND:
-                    case TARGET_RANDOM_SINGLE:
-                        getCreature()->CastSpell(random_target, spells[i].info, spells[i].instant);
-                        break;
-                    case TARGET_RANDOM_DESTINATION:
-                        getCreature()->CastSpellAoF(random_target->GetPosition(), spells[i].info, spells[i].instant);
-                        break;
-                }
-
-                TargetTable.clear();
-            }
-        }
-
-        // A bit rewritten FindTarget function
-        Unit* FindTarget()
-        {
-            Unit* target = NULL;
-            float distance = 50.0f;
-
-            Unit* pUnit;
-            float dist;
-
-            for (std::set<Object*>::iterator itr = getCreature()->GetInRangeOppFactsSetBegin(); itr != getCreature()->GetInRangeOppFactsSetEnd(); ++itr)
-            {
-                if (!(*itr)->IsUnit())
-                    continue;
-
-                pUnit = static_cast<Unit*>((*itr));
-
-                if (pUnit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH))
-                    continue;
-
-                if (!pUnit->isAlive() || getCreature() == pUnit)
-                    continue;
-
-                dist = getCreature()->GetDistance2dSq(pUnit);
-
-                if (dist > distance * distance)
-                    continue;
-
-                target = pUnit;
-                break;
-            }
-
-            return target;
-        }
-
-    protected:
-
-        bool Started;
-        uint8 nrspells;
 };
 
 
-// Blood Guard PorungAI
 // Note: This boss appears only in Heroic mode and I don't have much infos about it =/
 class BloodGuardPorungAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(BloodGuardPorungAI);
-        SP_AI_Spell spells[1];
-        bool m_spellcheck[1];
-
         BloodGuardPorungAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            nrspells = 1;
-            for (uint8 i = 0; i < nrspells; i++)
-            {
-                m_spellcheck[i] = false;
-            }
+            enableCreatureAISpellSystem = true;
 
-            spells[0].info = sSpellCustomizations.GetSpellInfo(SP_BLOOD_GUARD_PORUNG_CLEAVE);
-            spells[0].targettype = TARGET_VARIOUS;
-            spells[0].instant = true;
-            spells[0].cooldown = 15;
-            spells[0].perctrigger = 10.0f;
-            spells[0].attackstoptimer = 1000;
-        }
-
-        void OnCombatStart(Unit* /*mTarget*/) override
-        {
-            CastTime();
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
-        }
-
-        void CastTime()
-        {
-            for (uint8 i = 0; i < nrspells; i++)
-                spells[i].casttime = 0;
+            auto cleave = addAISpell(SP_BLOOD_GUARD_PORUNG_CLEAVE, 10.0f, TARGET_VARIOUS, 0, 15, false, true);
+            cleave->setAttackStopTimer(1000);
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            CastTime();
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
         }
-
-        void OnDied(Unit* /*mKiller*/) override
-        {
-            CastTime();
-        }
-
-        void AIUpdate() override
-        {
-            float val = RandomFloat(100.0f);
-            SpellCast(val);
-        }
-
-        void SpellCast(float val)
-        {
-            if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())
-            {
-                float comulativeperc = 0;
-                Unit* target = NULL;
-                for (uint8 i = 0; i < nrspells; i++)
-                {
-                    if (!spells[i].perctrigger) continue;
-
-                    if (m_spellcheck[i])
-                    {
-                        target = getCreature()->GetAIInterface()->getNextTarget();
-                        switch (spells[i].targettype)
-                        {
-                            case TARGET_SELF:
-                            case TARGET_VARIOUS:
-                                getCreature()->CastSpell(getCreature(), spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_ATTACKING:
-                                getCreature()->CastSpell(target, spells[i].info, spells[i].instant);
-                                break;
-                            case TARGET_DESTINATION:
-                                getCreature()->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
-                                break;
-                        }
-
-                        m_spellcheck[i] = false;
-                        return;
-                    }
-
-                    uint32 t = (uint32)time(NULL);
-                    if (val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger) && t > spells[i].casttime)
-                    {
-                        getCreature()->setAttackTimer(spells[i].attackstoptimer, false);
-                        spells[i].casttime = t + spells[i].cooldown;
-                        m_spellcheck[i] = true;
-                    }
-                    comulativeperc += spells[i].perctrigger;
-                }
-            }
-        }
-
-    protected:
-
-        uint8 nrspells;
 };
 
 // WarbringerOmroggAI
@@ -2155,32 +750,17 @@ class HeadAI : public CreatureAIScript
     }
 };
 
-// Warchief Kargath BladefistAI
-
-// Should call for support?
-// does he use only one ability?
+// Should call for support? does he use only one ability?
 class WarchiefKargathBladefistAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(WarchiefKargathBladefistAI);
-        SP_AI_Spell spells[1];
-        bool m_spellcheck[1];
-
         WarchiefKargathBladefistAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            nrspells = 1;
-            for (uint8 i = 0; i < nrspells; i++)
-            {
-                m_spellcheck[i] = false;
-            }
+            enableCreatureAISpellSystem = true;
 
-            spells[0].info = sSpellCustomizations.GetSpellInfo(SP_WARCHIEF_LARAGATH_BLADE_DANCE);
-            spells[0].targettype = TARGET_VARIOUS;
-            spells[0].instant = true;
-            spells[0].cooldown = 30;
-            spells[0].perctrigger = 0.0f;
-            spells[0].attackstoptimer = 1000;
+            auto bladeDance = addAISpell(SP_WARCHIEF_LARAGATH_BLADE_DANCE, 10.0f, TARGET_VARIOUS, 0, 30, false, true);
+            bladeDance->setAttackStopTimer(1500);
 
-            // new
             addEmoteForEvent(Event_OnCombatStart, SAY_WARCHIEF_KARGATH_01);
             addEmoteForEvent(Event_OnCombatStart, SAY_WARCHIEF_KARGATH_02);
             addEmoteForEvent(Event_OnCombatStart, SAY_WARCHIEF_KARGATH_03);
@@ -2189,40 +769,15 @@ class WarchiefKargathBladefistAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, SAY_WARCHIEF_KARGATH_06);
         }
 
-        void OnCombatStart(Unit* /*mTarget*/) override
-        {
-            RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
-
-            spells[0].casttime = (uint32)time(NULL) + 30;
-        }
-
         void OnCombatStop(Unit* /*mTarget*/) override
         {
             setAIAgent(AGENT_NULL);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
         }
-
-        void AIUpdate() override
-        {
-            uint32 t = (uint32)time(NULL);
-            if (t > spells[0].casttime && getCreature()->GetAIInterface()->getNextTarget() && !getCreature()->isCastingNonMeleeSpell())
-            {
-                getCreature()->setAttackTimer(1500, false);
-
-                getCreature()->CastSpell(getCreature()->GetAIInterface()->getNextTarget(), spells[0].info, spells[0].instant);
-
-                spells[0].casttime = t + spells[0].cooldown;
-            }
-        }
-
-    protected:
-
-        uint8 nrspells;
 };
 
 
-/// \todo Shattered Hand Executioner 17301, Shattered Hand Champion 17671,
+// \todo Shattered Hand Executioner 17301, Shattered Hand Champion 17671,
 // Shattered Hand Centurion 17465, Shattered Hand Blood Guard 17461,
 // hattered Hand Archer 17427, Sharpshooter Guard 17622, Shattered Hand Zealot 17462
 // (lack of infos or don't have any spells!) more?
