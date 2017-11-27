@@ -822,6 +822,7 @@ class IllidariArchonAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(IllidariArchonAI);
         IllidariArchonAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            pDeath = nullptr;
             mIsShadowPriest = false;
             switch (RandomUInt(1))
             {
@@ -829,7 +830,6 @@ class IllidariArchonAI : public CreatureAIScript
                     AddSpell(ILLIDARI_ARCHON_HEAL, Target_WoundedFriendly, 5, 2, 30);
                     AddSpell(ILLIDARI_ARCHON_HOLY_SMITE, Target_Current, 8, 2.5, 25, 0, 40);
                     AddSpell(ILLIDARI_ARCHON_POWER_WORD_SHIELD, Target_Self, 7, 0, 35);
-                    pDeath = nullptr;
                     break;
                 case 1:
                     AddSpell(ILLIDARI_ARCHON_MIND_BLAST, Target_Current, 8, 1.5, 25, 0, 30);

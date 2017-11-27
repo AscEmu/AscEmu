@@ -541,6 +541,8 @@ class NethermancerSepethreaAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTargetDied, SAY_NETH_SEPETHREA_05);
             addEmoteForEvent(Event_OnTargetDied, SAY_NETH_SEPETHREA_06);
             addEmoteForEvent(Event_OnDied, SAY_NETH_SEPETHREA_07);
+
+            SummonTimer = 0;
         }
 
         void OnCombatStart(Unit* /*mTarget*/) override
@@ -614,6 +616,8 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTargetDied, SAY_PATHALEON_06);
             addEmoteForEvent(Event_OnTargetDied, SAY_PATHALEON_07);
             addEmoteForEvent(Event_OnDied, SAY_PATHALEON_08);
+
+            SummonTimer = 0;
         }
 
         void OnCombatStart(Unit* /*mTarget*/) override

@@ -184,6 +184,8 @@ class BrutallusAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTaunt, 8839);
             addEmoteForEvent(Event_OnTaunt, 8840);
             addEmoteForEvent(Event_OnTaunt, 8841);
+
+            mLocaleEnrageTimerId = 0;
         }
 
         void AIUpdate() override
@@ -248,6 +250,8 @@ class FelmystAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTargetDied, 8844);
             addEmoteForEvent(Event_OnDied, 8845);
             addEmoteForEvent(Event_OnTaunt, 8846);
+
+            mLocaleEnrageTimerId = 0;
         }
 
         void AIUpdate() override

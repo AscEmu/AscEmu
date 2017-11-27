@@ -65,6 +65,7 @@ class VoidReaverAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, 8871);
 
             mArcaneOrbTimer = 0;
+            mLocaleEnrageTimerId = 0;
         }
 
         void OnCombatStart(Unit* /*mTarget*/) override

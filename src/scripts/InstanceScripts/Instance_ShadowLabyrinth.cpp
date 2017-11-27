@@ -242,6 +242,8 @@ class FelOverseerAI : public CreatureAIScript
 
             auto uppercut = addAISpell(SP_FEL_OVERSEER_UPPERCUT, 5.0f, TARGET_ATTACKING, 0, 0, false, true);
             uppercut->setAttackStopTimer(1000);
+
+            HealCooldown = 0;
         }
 
         void OnCombatStart(Unit* /*mTarget*/) override
