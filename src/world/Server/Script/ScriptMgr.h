@@ -482,7 +482,6 @@ public:
     uint32_t mLastCastTime;         //Last time at which the spell casted (used to implement cooldown), set to 0
 };
 
-//\brief: Used originally for SP_AI_Spell targettype and new for CreatureAISpells
 enum
 {
     TARGET_SELF,
@@ -498,7 +497,7 @@ enum
 
 #include "Spell/Customization/SpellCustomizations.hpp"
 
-//\brief: created by Zyres 11/13/2017 - This should replace SP_AI_Spell and SpellDesc
+//\brief: created by Zyres 11/13/2017 - This should replace SpellDesc
 class SERVER_DECL CreatureAISpells
 {
     public:

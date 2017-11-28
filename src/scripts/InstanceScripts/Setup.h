@@ -80,29 +80,6 @@ void SetupSunwellPlateau(ScriptMgr* pScriptMgr);
 void SetupWorldBosses(ScriptMgr* mgr);
 void SetupZulAman(ScriptMgr* mgr);
 
-
-// Zyres 11/14/2017 Marked as deprecated
-struct SP_AI_Spell
-{
-    SP_AI_Spell();
-    SpellInfo* info;        // spell info
-    char targettype;        // 0-self , 1-attaking target, ....
-    bool instant;           // does it is instant or not?
-    float perctrigger;      // % of the cast of this spell in a total of 100% of the attacks
-    int attackstoptimer;    // stop the creature from attacking
-    int soundid;            // sound id from DBC
-    std::string speech;     // text displaied when spell was casted
-    uint32 cooldown;        // spell cooldown
-    uint32 casttime;        // "time" left to cast spell
-    uint32 reqlvl;          // required level ? needed?
-    float hpreqtocast;      // ? needed?
-    float mindist2cast;     // min dist from caster to victim to perform cast (dist from caster >= mindist2cast)
-    float maxdist2cast;     // max dist from caster to victim to perform cast (dist from caster <= maxdist2cast)
-    int minhp2cast;         // min hp amount of victim to perform cast on it (health >= minhp2cast)
-    int maxhp2cast;         // max hp amount of victim to perform cast on it (health <= maxhp2cast)
-};
-
-
 //\todo create for all instance scripts for these maps... best example how encounter states work ->Raid_IceCrownCitadel.cpp
 enum InstanceMaps
 {
