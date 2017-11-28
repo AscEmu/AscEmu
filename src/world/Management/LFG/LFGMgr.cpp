@@ -437,6 +437,10 @@ void LfgMgr::InitializeLockedDungeons(Player* player)
         }
     }
     SetLockedDungeons(guid, lock);
+#else
+    if (expansion == 0) { return; }
+    if (guid == 0) { return; }
+    if (level == 0) { return; }
 #endif
 }
 

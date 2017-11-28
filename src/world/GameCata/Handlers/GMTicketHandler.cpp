@@ -95,7 +95,7 @@ void WorldSession::HandleGMTicketSystemStatusOpcode(WorldPacket& /*recv_data*/)
     SendPacket(&data);
 }
 
-void WorldSession::HandleGMTicketCreateOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGMTicketCreateOpcode(WorldPacket& recvData)
 {
     uint32_t map;
     float x;
@@ -109,43 +109,43 @@ void WorldSession::HandleGMTicketCreateOpcode(WorldPacket& recv_data)
     uint32_t decompressedSize;
     std::string chatLog;
 
-    recv_data >> map;
-    recv_data >> x;
-    recv_data >> y;
-    recv_data >> z;
-    recv_data >> message;
-    recv_data >> responseNeeded;
-    recv_data >> moreHelpNeeded;
-    recv_data >> ticketCount;
+    recvData >> map;
+    recvData >> x;
+    recvData >> y;
+    recvData >> z;
+    recvData >> message;
+    recvData >> responseNeeded;
+    recvData >> moreHelpNeeded;
+    recvData >> ticketCount;
 
     for (uint32 i = 0; i < ticketCount; ++i)
     {
         uint32_t time;
-        recv_data >> time;
+        recvData >> time;
         timesList.push_back(time);
     }
 
-    recv_data >> decompressedSize;
+    recvData >> decompressedSize;
 
     if (ticketCount && decompressedSize && decompressedSize < 0xFFFF)
     {
-        uint32 pos = recv_data.rpos();
+        uint32 pos = recvData.rpos();
         ByteBuffer dest;
         dest.resize(decompressedSize);
 
         uLongf realSize = decompressedSize;
-        if (uncompress(dest.contents(), &realSize, recv_data.contents() + pos, recv_data.size() - pos) == Z_OK)
+        if (uncompress(dest.contents(), &realSize, recvData.contents() + pos, recvData.size() - pos) == Z_OK)
         {
             dest >> chatLog;
         }
         else
         {
             LOG_ERROR("CMSG_GMTICKET_CREATE failed to uncompress packet.");
-            recv_data.rfinish();
+            recvData.rfinish();
             return;
         }
 
-        recv_data.rfinish();
+        recvData.rfinish();
     }
 
     objmgr.RemoveGMTicketByPlayer(GetPlayer()->GetGUID());

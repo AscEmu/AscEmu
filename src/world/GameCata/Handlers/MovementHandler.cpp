@@ -463,7 +463,7 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, uint32_t opcode)
                 break;
             case MSEFlags2:
                 if (hasMovementFlags2)
-                    move_flags2 = data.readBits(12);
+                    move_flags2 = static_cast<uint16_t>(data.readBits(12));
                 break;
             case MSEHasUnknownBit:
                 data.readBit();

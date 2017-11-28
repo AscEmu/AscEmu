@@ -168,7 +168,7 @@ void WorldSession::HandleAddonRegisteredPrefixesOpcode(WorldPacket& recv_data)
     std::vector<uint8_t> nameLengths(addonCount);
     for (uint32_t i = 0; i < addonCount; ++i)
     {
-        nameLengths[i] = recv_data.readBits(5);
+        nameLengths[i] = static_cast<uint8_t>(recv_data.readBits(5));
     }
 
     for (uint32_t i = 0; i < addonCount; ++i)

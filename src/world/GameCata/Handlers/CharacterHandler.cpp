@@ -57,8 +57,6 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
     has_dk = false;
     _side = -1;
 
-    uint32_t numchar = 0;
-
     auto startTime = Util::TimeNow();
 
     WorldPacket data(SMSG_CHAR_ENUM, 270);

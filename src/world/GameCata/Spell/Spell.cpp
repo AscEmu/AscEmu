@@ -224,7 +224,7 @@ void Spell::SendSpellGo()
     m_targets.write(data);   // this write is included the target flag
 
     if (flags & SPELL_GO_FLAGS_POWER_UPDATE)
-        data << (uint32)p_caster->GetPower(GetSpellInfo()->getPowerType());
+        data << (uint32)p_caster->GetPower(static_cast<uint16_t>(GetSpellInfo()->getPowerType()));
 
     // er why handle it being null inside if if you can't get into if if its null
     if (GetType() == SPELL_DMG_TYPE_RANGED)

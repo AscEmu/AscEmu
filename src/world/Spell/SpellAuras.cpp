@@ -9436,13 +9436,11 @@ bool Aura::DotCanCrit()
         return false;
 
     SpellInfo* sp = this->GetSpellInfo();
-    uint32 index = MAX_TOTAL_AURAS_START;
-    Aura* aura;
     bool found = false;
 
     for (;;)
     {
-        aura = caster->getAuraWithAuraEffect(SPELL_AURA_ALLOW_DOT_TO_CRIT);
+        Aura * aura = caster->getAuraWithAuraEffect(SPELL_AURA_ALLOW_DOT_TO_CRIT);
 
         if (aura == nullptr)
             break;

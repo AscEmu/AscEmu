@@ -541,13 +541,13 @@ void GuildMgr::update(uint32_t /*diff*/)
 {
     if (!firstSave)
     {
-        lastSave = time(nullptr);
+        lastSave = static_cast<uint32_t>(time(nullptr));
         firstSave = true;
     }
 
     if (time(nullptr) >= lastSave)
     {
-        lastSave = time(nullptr) + worldConfig.guild.saveInterval;
+        lastSave = static_cast<uint32_t>(time(nullptr)) + worldConfig.guild.saveInterval;
         sGuildMgr.saveGuilds();
     }
 }

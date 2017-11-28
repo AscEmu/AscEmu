@@ -15,9 +15,9 @@ namespace Packets
 
         // packets are uint16_t on WotLK NOT uint32_t
 #if VERSION_STRING <= WotLK
-            uint16 m_opcode;
+            uint16_t m_opcode;
 #else
-            uint32 m_opcode;
+            uint32_t m_opcode;
 #endif
 
         public:
@@ -27,7 +27,7 @@ namespace Packets
 #if VERSION_STRING <= WotLK
             ManagedPacket(uint16 pOpcode, uint32 pSize) : m_opcode(pOpcode), data(pOpcode, pSize) {}
 #else
-            ManagedPacket(uint32 pOpcode, uint32 pSize) : m_opcode(pOpcode), data(pOpcode, pSize) {}
+            ManagedPacket(uint32_t pOpcode, uint32_t pSize) : m_opcode(pOpcode), data(pOpcode, pSize) {}
 #endif
     };
 }

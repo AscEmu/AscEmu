@@ -67,7 +67,6 @@ void WorldSession::HandleReportPlayerOpcode(WorldPacket& recv_data)
 
     std::string message;
 
-    uint32_t unk1 = recv_data.readBits(7);      // unk
     uint32_t length = recv_data.readBits(9);    // length * 2
     recv_data >> unk3;                          // type
     recv_data >> unk4;                          // guid - 1?

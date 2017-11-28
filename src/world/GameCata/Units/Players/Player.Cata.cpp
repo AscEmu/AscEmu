@@ -141,15 +141,15 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
 }
 
 
-void Player::handleFall(MovementInfo const& movement_info)
+void Player::handleFall(MovementInfo const& movementInfo)
 {
     if (!z_axisposition)
     {
-        z_axisposition = movement_info.getPosition()->z;
+        z_axisposition = movementInfo.getPosition()->z;
     }
 
-    uint32 falldistance = float2int32(z_axisposition - movement_info.getPosition()->z);
-    if (z_axisposition <= movement_info.getPosition()->z)
+    uint32 falldistance = float2int32(z_axisposition - movementInfo.getPosition()->z);
+    if (z_axisposition <= movementInfo.getPosition()->z)
     {
         falldistance = 1;
     }
@@ -183,15 +183,15 @@ void Player::handleFall(MovementInfo const& movement_info)
     z_axisposition = 0.0f;
 }
 
-bool Player::isPlayerJumping(MovementInfo const& movement_info, uint16_t opcode)
+bool Player::isPlayerJumping(MovementInfo const& movementInfo, uint16_t opcode)
 {
-    if (opcode == MSG_MOVE_FALL_LAND || movement_info.hasMovementFlag(MOVEFLAG_SWIMMING))
+    if (opcode == MSG_MOVE_FALL_LAND || movementInfo.hasMovementFlag(MOVEFLAG_SWIMMING))
     {
         jumping = false;
         return false;
     }
 
-    if (!jumping && (opcode == MSG_MOVE_JUMP || movement_info.hasMovementFlag(MOVEFLAG_FALLING)))
+    if (!jumping && (opcode == MSG_MOVE_JUMP || movementInfo.hasMovementFlag(MOVEFLAG_FALLING)))
     {
         jumping = true;
         return true;
@@ -200,7 +200,7 @@ bool Player::isPlayerJumping(MovementInfo const& movement_info, uint16_t opcode)
     return false;
 }
 
-void Player::handleBreathing(MovementInfo const& movement_info, WorldSession* session)
+void Player::handleBreathing(MovementInfo const& movementInfo, WorldSession* session)
 {
     if (!worldConfig.server.enableBreathing || FlyCheat || m_bUnlimitedBreath || !isAlive() || GodModeCheat)
     {
@@ -216,7 +216,7 @@ void Player::handleBreathing(MovementInfo const& movement_info, WorldSession* se
 
         if (session->m_bIsWLevelSet)
         {
-            if ((movement_info.getPosition()->z + m_noseLevel) > session->m_wLevel)
+            if ((movementInfo.getPosition()->z + m_noseLevel) > session->m_wLevel)
             {
                 RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_LEAVE_WATER);
 
@@ -227,22 +227,22 @@ void Player::handleBreathing(MovementInfo const& movement_info, WorldSession* se
         return;
     }
 
-    if (movement_info.hasMovementFlag(MOVEFLAG_SWIMMING) && !(m_UnderwaterState & UNDERWATERSTATE_SWIMMING))
+    if (movementInfo.hasMovementFlag(MOVEFLAG_SWIMMING) && !(m_UnderwaterState & UNDERWATERSTATE_SWIMMING))
     {
         RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_ENTER_WATER);
 
         if (!session->m_bIsWLevelSet)
         {
-            session->m_wLevel = movement_info.getPosition()->z + m_noseLevel * 0.95f;
+            session->m_wLevel = movementInfo.getPosition()->z + m_noseLevel * 0.95f;
             session->m_bIsWLevelSet = true;
         }
 
         m_UnderwaterState |= UNDERWATERSTATE_SWIMMING;
     }
 
-    if (!(movement_info.hasMovementFlag(MOVEFLAG_SWIMMING)) && (movement_info.hasMovementFlag(MOVEFLAG_NONE)) && (m_UnderwaterState & UNDERWATERSTATE_SWIMMING))
+    if (!(movementInfo.hasMovementFlag(MOVEFLAG_SWIMMING)) && (movementInfo.hasMovementFlag(MOVEFLAG_NONE)) && (m_UnderwaterState & UNDERWATERSTATE_SWIMMING))
     {
-        if ((movement_info.getPosition()->z + m_noseLevel) > session->m_wLevel)
+        if ((movementInfo.getPosition()->z + m_noseLevel) > session->m_wLevel)
         {
             RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_LEAVE_WATER);
 
@@ -254,7 +254,7 @@ void Player::handleBreathing(MovementInfo const& movement_info, WorldSession* se
 
     if (m_UnderwaterState & UNDERWATERSTATE_SWIMMING && !(m_UnderwaterState & UNDERWATERSTATE_UNDERWATER))
     {
-        if ((movement_info.getPosition()->z + m_noseLevel) < session->m_wLevel)
+        if ((movementInfo.getPosition()->z + m_noseLevel) < session->m_wLevel)
         {
             m_UnderwaterState |= UNDERWATERSTATE_UNDERWATER;
             SendMirrorTimer(MIRROR_TYPE_BREATH, m_UnderwaterTime, m_UnderwaterMaxTime, -1);
@@ -263,7 +263,7 @@ void Player::handleBreathing(MovementInfo const& movement_info, WorldSession* se
 
     if (m_UnderwaterState & UNDERWATERSTATE_SWIMMING && m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
     {
-        if ((movement_info.getPosition()->z + m_noseLevel) > session->m_wLevel)
+        if ((movementInfo.getPosition()->z + m_noseLevel) > session->m_wLevel)
         {
             m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
             SendMirrorTimer(MIRROR_TYPE_BREATH, m_UnderwaterTime, m_UnderwaterMaxTime, 10);
@@ -272,7 +272,7 @@ void Player::handleBreathing(MovementInfo const& movement_info, WorldSession* se
 
     if (!(m_UnderwaterState & UNDERWATERSTATE_SWIMMING) && m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
     {
-        if ((movement_info.getPosition()->z + m_noseLevel) > session->m_wLevel)
+        if ((movementInfo.getPosition()->z + m_noseLevel) > session->m_wLevel)
         {
             m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
             SendMirrorTimer(MIRROR_TYPE_BREATH, m_UnderwaterTime, m_UnderwaterMaxTime, 10);
@@ -280,25 +280,25 @@ void Player::handleBreathing(MovementInfo const& movement_info, WorldSession* se
     }
 }
 
-void Player::handleAuraInterruptForMovementFlags(MovementInfo const& movement_info)
+void Player::handleAuraInterruptForMovementFlags(MovementInfo const& movementInfo)
 {
     uint32_t auraInterruptFlags = 0;
-    if (movement_info.hasMovementFlag(MOVEFLAG_MOTION_MASK))
+    if (movementInfo.hasMovementFlag(MOVEFLAG_MOTION_MASK))
     {
         auraInterruptFlags |= AURA_INTERRUPT_ON_MOVEMENT;
     }
 
-    if (!(movement_info.hasMovementFlag(MOVEFLAG_SWIMMING)) || movement_info.hasMovementFlag(MOVEFLAG_FALLING))
+    if (!(movementInfo.hasMovementFlag(MOVEFLAG_SWIMMING)) || movementInfo.hasMovementFlag(MOVEFLAG_FALLING))
     {
         auraInterruptFlags |= AURA_INTERRUPT_ON_LEAVE_WATER;
     }
 
-    if (movement_info.hasMovementFlag(MOVEFLAG_SWIMMING))
+    if (movementInfo.hasMovementFlag(MOVEFLAG_SWIMMING))
     {
         auraInterruptFlags |= AURA_INTERRUPT_ON_ENTER_WATER;
     }
 
-    if ((movement_info.hasMovementFlag(MOVEFLAG_TURNING_MASK)) || isTurning)
+    if ((movementInfo.hasMovementFlag(MOVEFLAG_TURNING_MASK)) || isTurning)
     {
         auraInterruptFlags |= AURA_INTERRUPT_ON_TURNING;
     }
@@ -363,8 +363,6 @@ bool Player::hasLanguage(uint32_t language)
 
 WorldPacket Player::buildChatMessagePacket(Player* targetPlayer, uint32_t type, uint32_t language, const char* message, uint64_t guid, uint8_t flag)
 {
-    Player* senderPlayer = objmgr.GetPlayer(guid);
-
     uint32_t messageLength = (uint32_t)strlen(message) + 1;
     WorldPacket data(SMSG_MESSAGECHAT, messageLength + 60);
     data << uint8_t(type);

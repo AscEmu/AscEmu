@@ -319,9 +319,9 @@ void SpellCustomizations::LoadSpellInfoData()
             {
                 spellInfo.SpellFamilyName = dbc_spell_entry->GetSpellClassOptions()->SpellFamilyName;
 
-                for (uint8 i = 0; i < 3; ++i)
+                for (uint8_t j = 0; j < 3; ++j)
                 {
-                    spellInfo.SpellGroupType[i] = dbc_spell_entry->GetSpellClassOptions()->SpellFamilyFlags[i];
+                    spellInfo.SpellGroupType[j] = dbc_spell_entry->GetSpellClassOptions()->SpellFamilyFlags[j];
                 }
 
             }
@@ -371,10 +371,10 @@ void SpellCustomizations::LoadSpellInfoData()
             // data from SpellReagents.dbc
             if (dbc_spell_entry->SpellReagentsId && dbc_spell_entry->GetSpellReagents() != nullptr)
             {
-                for (uint8 i = 0; i < MAX_SPELL_REAGENTS; ++i)
+                for (uint8_t j = 0; j < MAX_SPELL_REAGENTS; ++j)
                 {
-                    spellInfo.Reagent[i] = dbc_spell_entry->GetSpellReagents()->Reagent[i];
-                    spellInfo.ReagentCount[i] = dbc_spell_entry->GetSpellReagents()->ReagentCount[i];
+                    spellInfo.Reagent[j] = dbc_spell_entry->GetSpellReagents()->Reagent[j];
+                    spellInfo.ReagentCount[j] = dbc_spell_entry->GetSpellReagents()->ReagentCount[j];
                 }
             }
 
@@ -397,46 +397,46 @@ void SpellCustomizations::LoadSpellInfoData()
             // data from SpellTotems.dbc
             if (dbc_spell_entry->SpellTotemsId && dbc_spell_entry->GetSpellTotems() != nullptr)
             {
-                for (uint8 i = 0; i < MAX_SPELL_TOTEMS; ++i)
+                for (uint8_t j = 0; j < MAX_SPELL_TOTEMS; ++j)
                 {
-                    spellInfo.TotemCategory[i] = dbc_spell_entry->GetSpellTotems()->TotemCategory[i];
-                    spellInfo.Totem[i] = dbc_spell_entry->GetSpellTotems()->Totem[i];
+                    spellInfo.TotemCategory[j] = dbc_spell_entry->GetSpellTotems()->TotemCategory[j];
+                    spellInfo.Totem[j] = dbc_spell_entry->GetSpellTotems()->Totem[j];
                 }
             }
 
             // data from SpellEffect.dbc
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+            for (uint8_t j = 0; j < MAX_SPELL_EFFECTS; ++j)
             {
-                DBC::Structures::SpellEffectEntry const* spell_effect_entry = GetSpellEffectEntry(spell_id, SpellEffectIndex(i));
+                DBC::Structures::SpellEffectEntry const* spell_effect_entry = GetSpellEffectEntry(spell_id, SpellEffectIndex(j));
                 if (spell_effect_entry == nullptr)
                 {
                     continue;
                 }
                 else
                 {
-                    spellInfo.Effect[i] = spell_effect_entry->Effect;
-                    spellInfo.EffectMultipleValue[i] = spell_effect_entry->EffectMultipleValue;
-                    spellInfo.EffectApplyAuraName[i] = spell_effect_entry->EffectApplyAuraName;
-                    spellInfo.EffectAmplitude[i] = spell_effect_entry->EffectAmplitude;
-                    spellInfo.EffectBasePoints[i] = spell_effect_entry->EffectBasePoints;
-                    spellInfo.EffectBonusMultiplier[i] = spell_effect_entry->EffectBonusMultiplier;
-                    spellInfo.dmg_multiplier[i] = spell_effect_entry->EffectDamageMultiplier;
-                    spellInfo.EffectChainTarget[i] = spell_effect_entry->EffectChainTarget;
-                    spellInfo.EffectDieSides[i] = spell_effect_entry->EffectDieSides;
-                    spellInfo.EffectItemType[i] = spell_effect_entry->EffectItemType;
-                    spellInfo.EffectMechanic[i] = spell_effect_entry->EffectMechanic;
-                    spellInfo.EffectMiscValue[i] = spell_effect_entry->EffectMiscValue;
-                    spellInfo.EffectMiscValueB[i] = spell_effect_entry->EffectMiscValueB;
-                    spellInfo.EffectPointsPerComboPoint[i] = spell_effect_entry->EffectPointsPerComboPoint;
-                    spellInfo.EffectRadiusIndex[i] = spell_effect_entry->EffectRadiusIndex;
-                    spellInfo.EffectRadiusMaxIndex[i] = spell_effect_entry->EffectRadiusMaxIndex;
-                    spellInfo.EffectRealPointsPerLevel[i] = spell_effect_entry->EffectRealPointsPerLevel;
-                    spellInfo.EffectSpellClassMask[i] = spell_effect_entry->EffectSpellClassMask[i];
-                    spellInfo.EffectTriggerSpell[i] = spell_effect_entry->EffectTriggerSpell;
-                    spellInfo.EffectImplicitTargetA[i] = spell_effect_entry->EffectImplicitTargetA;
-                    spellInfo.EffectImplicitTargetB[i] = spell_effect_entry->EffectImplicitTargetB;
-                    spellInfo.EffectSpellId[i] = spell_effect_entry->EffectSpellId;
-                    spellInfo.EffectIndex[i] = spell_effect_entry->EffectIndex;
+                    spellInfo.Effect[j] = spell_effect_entry->Effect;
+                    spellInfo.EffectMultipleValue[j] = spell_effect_entry->EffectMultipleValue;
+                    spellInfo.EffectApplyAuraName[j] = spell_effect_entry->EffectApplyAuraName;
+                    spellInfo.EffectAmplitude[j] = spell_effect_entry->EffectAmplitude;
+                    spellInfo.EffectBasePoints[j] = spell_effect_entry->EffectBasePoints;
+                    spellInfo.EffectBonusMultiplier[j] = spell_effect_entry->EffectBonusMultiplier;
+                    spellInfo.dmg_multiplier[j] = spell_effect_entry->EffectDamageMultiplier;
+                    spellInfo.EffectChainTarget[j] = spell_effect_entry->EffectChainTarget;
+                    spellInfo.EffectDieSides[j] = spell_effect_entry->EffectDieSides;
+                    spellInfo.EffectItemType[j] = spell_effect_entry->EffectItemType;
+                    spellInfo.EffectMechanic[j] = spell_effect_entry->EffectMechanic;
+                    spellInfo.EffectMiscValue[j] = spell_effect_entry->EffectMiscValue;
+                    spellInfo.EffectMiscValueB[j] = spell_effect_entry->EffectMiscValueB;
+                    spellInfo.EffectPointsPerComboPoint[j] = spell_effect_entry->EffectPointsPerComboPoint;
+                    spellInfo.EffectRadiusIndex[j] = spell_effect_entry->EffectRadiusIndex;
+                    spellInfo.EffectRadiusMaxIndex[j] = spell_effect_entry->EffectRadiusMaxIndex;
+                    spellInfo.EffectRealPointsPerLevel[j] = spell_effect_entry->EffectRealPointsPerLevel;
+                    spellInfo.EffectSpellClassMask[j] = spell_effect_entry->EffectSpellClassMask[j];
+                    spellInfo.EffectTriggerSpell[j] = spell_effect_entry->EffectTriggerSpell;
+                    spellInfo.EffectImplicitTargetA[j] = spell_effect_entry->EffectImplicitTargetA;
+                    spellInfo.EffectImplicitTargetB[j] = spell_effect_entry->EffectImplicitTargetB;
+                    spellInfo.EffectSpellId[j] = spell_effect_entry->EffectSpellId;
+                    spellInfo.EffectIndex[j] = spell_effect_entry->EffectIndex;
                 }
             }
 

@@ -136,26 +136,26 @@ bool WorldSession::isFloodProtectionTriggered()
     return false;
 }
 
-void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
+void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
 {
     WorldPacket* data = nullptr;
 
     int32 lang;
 
-    const char* pMisc = NULL;
-    const char* pMsg = NULL;
+    const char* pMisc = nullptr;
+    const char* pMsg = nullptr;
 
-    uint32 type = getMessageTypeForOpcode(recv_data.GetOpcode());
+    uint32 type = getMessageTypeForOpcode(recvData.GetOpcode());
     if (type == 0xFF)
     {
-        LogError("HandleMessagechatOpcode : Unknown chat opcode (0x%X)", recv_data.GetOpcode());
-        recv_data.clear();
+        LogError("HandleMessagechatOpcode : Unknown chat opcode (0x%X)", recvData.GetOpcode());
+        recvData.clear();
         return;
     }
 
     if (type != CHAT_MSG_EMOTE && type != CHAT_MSG_AFK && type != CHAT_MSG_DND)
     {
-        recv_data >> lang;
+        recvData >> lang;
     }
     else
     {
@@ -227,22 +227,22 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
         case CHAT_MSG_BATTLEGROUND:
         case CHAT_MSG_AFK:
         case CHAT_MSG_DND:
-            msg = recv_data.ReadString(recv_data.readBits(9));
+            msg = recvData.ReadString(recvData.readBits(9));
             break;
         case CHAT_MSG_WHISPER:
         {
-            toLength = recv_data.readBits(10);
-            msgLength = recv_data.readBits(9);
-            to = recv_data.ReadString(toLength);
-            msg = recv_data.ReadString(msgLength);
+            toLength = recvData.readBits(10);
+            msgLength = recvData.readBits(9);
+            to = recvData.ReadString(toLength);
+            msg = recvData.ReadString(msgLength);
         }
         break;
         case CHAT_MSG_CHANNEL:
         {
-            toLength = recv_data.readBits(10);
-            msgLength = recv_data.readBits(9);
-            msg = recv_data.ReadString(msgLength);
-            channel = recv_data.ReadString(toLength);
+            toLength = recvData.readBits(10);
+            msgLength = recvData.readBits(9);
+            msg = recvData.ReadString(msgLength);
+            channel = recvData.ReadString(toLength);
         } break;
         default:
         {
@@ -273,11 +273,11 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
         return;
     }
 
-    Channel* chn = NULL;
+    Channel* chn = nullptr;
 
     // set lang to universal if we set it in our config
     Player* playerSender = GetPlayer();
-    uint32_t chatTag = 0;
+    uint8_t chatTag = 0;
 
     if (sChatHandler.ParseCommands(msg.c_str(), this) > 0)
     {
@@ -342,7 +342,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
         case CHAT_MSG_RAID_WARNING:
         {
             Group* pGroup = _player->GetGroup();
-            if (pGroup == NULL) break;
+            if (pGroup == nullptr) break;
 
             if (GetPlayer()->m_modlanguage >= LANG_UNIVERSAL)
                 data = sChatHandler.FillMessageData(type, GetPlayer()->m_modlanguage, msg.c_str(), _player->GetGUID(), chatTag);
@@ -512,14 +512,14 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             if (chn)
             {
                 //g_chatFilter->ParseEscapeCodes((char*)pMsg, (chn->m_flags & CHANNEL_PACKET_ALLOWLINKS)>0);
-                chn->Say(GetPlayer(), msg.c_str(), NULL, false);
+                chn->Say(GetPlayer(), msg.c_str(), nullptr, false);
             }
         }
         break;
         case CHAT_MSG_AFK:
         {
             std::string reason = "";
-            recv_data >> reason;
+            recvData >> reason;
 
             GetPlayer()->SetAFKReason(reason);
 
@@ -551,7 +551,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
         case CHAT_MSG_DND:
         {
             std::string reason;
-            recv_data >> reason;
+            recvData >> reason;
             GetPlayer()->SetAFKReason(reason);
 
             if (GetPlayer()->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_DND))
@@ -568,7 +568,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
         case CHAT_MSG_BATTLEGROUND:
         case CHAT_MSG_BATTLEGROUND_LEADER:
         {
-            if (_player->m_bg != NULL)
+            if (_player->m_bg != nullptr)
             {
                 data = sChatHandler.FillMessageData(type, lang, msg.c_str(), _player->GetGUID());
                 _player->m_bg->DistributePacketToTeam(data, _player->GetTeam());

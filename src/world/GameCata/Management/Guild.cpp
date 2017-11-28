@@ -1174,7 +1174,7 @@ bool Guild::loadGuildFromDB(Field* fields)
     mMotd = fields[9].GetString();
     mCreatedDate = time_t(fields[10].GetUInt32());
     mBankMoney = fields[11].GetUInt64();
-    _level = fields[12].GetUInt32();
+    _level = static_cast<uint8_t>(fields[12].GetUInt32());
     _experience = fields[13].GetUInt64();
     _todayExperience = fields[14].GetUInt64();
 
@@ -2049,7 +2049,7 @@ void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool withContent,
                     uint32_t enchants = 0;
                     for (uint32_t ench = 0; ench < MAX_ENCHANTMENT_SLOT; ++ench)
                     {
-                        if (uint32_t enchantId = tabItem->GetEnchantmentId(EnchantmentSlot(ench)))
+                        if (uint32_t enchantId = tabItem->GetEnchantmentId(static_cast<uint16_t>(EnchantmentSlot(ench))))
                         {
                             tabData << uint32_t(enchantId);
                             tabData << uint32_t(ench);
@@ -2564,7 +2564,7 @@ void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots) const
             {
                 for (uint32_t enchSlot = 0; enchSlot < MAX_ENCHANTMENT_SLOT; ++enchSlot)
                 {
-                    if (uint32_t enchantId = tabItem->GetEnchantmentId(EnchantmentSlot(enchSlot)))
+                    if (uint32_t enchantId = tabItem->GetEnchantmentId(static_cast<uint16_t>(EnchantmentSlot(enchSlot))))
                     {
                         tabData << uint32_t(enchantId);
                         tabData << uint32_t(enchSlot);
@@ -2626,7 +2626,7 @@ mTotalActivity(0), mWeekActivity(0), mTotalReputation(0), mWeekReputation(0)
 void Guild::GuildMember::setStats(Player* player)
 {
     mName = player->GetName();
-    mLevel = player->getLevel();
+    mLevel = static_cast<uint8_t>(player->getLevel());
     mClass = player->getClass();
     mZoneId = player->GetZoneId();
     mAccountId = player->GetSession()->GetAccountId();

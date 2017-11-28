@@ -26,10 +26,7 @@ void WorldSession::SendTrainerList(Creature* pCreature)
     else
     {
         WorldPacket data(SMSG_TRAINER_LIST, 5000);
-        TrainerSpell* pSpell;
-        uint32_t Spacer = 0;
-        uint32_t Count = 0;
-        std::string Text;
+        std::string text;
 
         data << pCreature->GetGUID();
         data << trainer->TrainerType;
@@ -39,14 +36,12 @@ void WorldSession::SendTrainerList(Creature* pCreature)
         size_t count_pos = data.wpos();
         data << uint32_t(trainer->Spells.size());
 
-        uint32_t value = GetPlayer()->getFreePrimaryProfessionPoints();
-
         bool can_learn_primary_prof = GetPlayer()->getFreePrimaryProfessionPoints() < 2;
 
         uint32_t count = 0;
         for (std::vector<TrainerSpell>::iterator itr = trainer->Spells.begin(); itr != trainer->Spells.end(); ++itr)
         {
-            pSpell = &(*itr);
+            TrainerSpell * pSpell = &(*itr);
 
             bool valid = true;
             bool primary_prof_first_rank = false;

@@ -155,22 +155,22 @@ bool ChatHandler::HandleGuildDisbandCommand(const char* /*args*/, WorldSession* 
 }
 
 #if VERSION_STRING == Cata
-bool ChatHandler::HandleGuildInfoCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatHandler::HandleGuildInfoCommand(const char* /*args*/, WorldSession* session)
 {
-    Player* selected_player = GetSelectedPlayer(m_session, true, true);
+    Player* selected_player = GetSelectedPlayer(session, true, true);
     if (selected_player == nullptr)
         return true;
 
     if (!selected_player->GetGuild())
     {
-        RedSystemMessage(m_session, "%s is not in a guild.", selected_player->GetName());
+        RedSystemMessage(session, "%s is not in a guild.", selected_player->GetName());
         return true;
     }
 
-    GreenSystemMessage(m_session, "Player Guild Information:");
-    GreenSystemMessage(m_session, "  GuildName: %s", selected_player->GetGuild()->getName().c_str());
-    GreenSystemMessage(m_session, "  GuildId: %u", selected_player->GetGuild()->getId());
-    GreenSystemMessage(m_session, "  Player rank: %u", selected_player->GetRankFromDB(selected_player->GetGUID()));
+    GreenSystemMessage(session, "Player Guild Information:");
+    GreenSystemMessage(session, "  GuildName: %s", selected_player->GetGuild()->getName().c_str());
+    GreenSystemMessage(session, "  GuildId: %u", selected_player->GetGuild()->getId());
+    GreenSystemMessage(session, "  Player rank: %u", selected_player->GetRankFromDB(selected_player->GetGUID()));
 
 }
 #endif

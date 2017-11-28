@@ -366,8 +366,6 @@ char* DB2::DB2FileLoader::AutoProduceStrings(const char* format, char* dataTable
     if (strlen(format) != fieldCount)
         return NULL;
 
-    size_t stringHolderSize = sizeof(char*) * DBC::C_TOTAL_LOCALES;
-
     char* stringPool = new char[stringSize];
     memcpy(stringPool, stringTable, stringSize);
 

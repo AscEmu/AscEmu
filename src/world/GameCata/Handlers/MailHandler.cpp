@@ -9,29 +9,26 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 
-void WorldSession::HandleSendMail(WorldPacket& recv_data)
+void WorldSession::HandleSendMail(WorldPacket& recvData)
 {
     MailMessage msg;
     ObjectGuid mailbox;
     uint32_t unk1, unk2;
     uint64_t money, COD;
-    uint32_t bodyLength, subjectLength, receiverLength;
-    std::string receiver, subject, body;
 
     std::vector< Item* > items;
-    std::vector< Item* >::iterator itr;
     Item* pItem;
 
-    recv_data >> unk1;
-    recv_data >> unk2;
+    recvData >> unk1;
+    recvData >> unk2;
 
-    recv_data >> COD;
-    recv_data >> money;
+    recvData >> COD;
+    recvData >> money;
 
-    bodyLength = recv_data.readBits(12);
-    subjectLength = recv_data.readBits(9);
+    uint32_t bodyLength = recvData.readBits(12);
+    uint32_t subjectLength = recvData.readBits(9);
 
-    uint8_t items_count = recv_data.readBits(5);              // attached items count
+    uint8_t items_count = recvData.readBits(5);              // attached items count
 
     if (items_count > MAIL_MAX_ITEM_SLOT)
     {
@@ -39,60 +36,60 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
         return;
     }
 
-    mailbox[0] = recv_data.readBit();
+    mailbox[0] = recvData.readBit();
 
     ObjectGuid itemGUIDs[MAIL_MAX_ITEM_SLOT];
 
     for (uint8_t i = 0; i < items_count; ++i)
     {
-        itemGUIDs[i][2] = recv_data.readBit();
-        itemGUIDs[i][6] = recv_data.readBit();
-        itemGUIDs[i][3] = recv_data.readBit();
-        itemGUIDs[i][7] = recv_data.readBit();
-        itemGUIDs[i][1] = recv_data.readBit();
-        itemGUIDs[i][0] = recv_data.readBit();
-        itemGUIDs[i][4] = recv_data.readBit();
-        itemGUIDs[i][5] = recv_data.readBit();
+        itemGUIDs[i][2] = recvData.readBit();
+        itemGUIDs[i][6] = recvData.readBit();
+        itemGUIDs[i][3] = recvData.readBit();
+        itemGUIDs[i][7] = recvData.readBit();
+        itemGUIDs[i][1] = recvData.readBit();
+        itemGUIDs[i][0] = recvData.readBit();
+        itemGUIDs[i][4] = recvData.readBit();
+        itemGUIDs[i][5] = recvData.readBit();
     }
 
-    mailbox[3] = recv_data.readBit();
-    mailbox[4] = recv_data.readBit();
-    receiverLength = recv_data.readBits(7);
-    mailbox[2] = recv_data.readBit();
-    mailbox[6] = recv_data.readBit();
-    mailbox[1] = recv_data.readBit();
-    mailbox[7] = recv_data.readBit();
-    mailbox[5] = recv_data.readBit();
+    mailbox[3] = recvData.readBit();
+    mailbox[4] = recvData.readBit();
+    uint32_t receiverLength = recvData.readBits(7);
+    mailbox[2] = recvData.readBit();
+    mailbox[6] = recvData.readBit();
+    mailbox[1] = recvData.readBit();
+    mailbox[7] = recvData.readBit();
+    mailbox[5] = recvData.readBit();
 
-    recv_data.ReadByteSeq(mailbox[4]);
+    recvData.ReadByteSeq(mailbox[4]);
 
     for (uint8_t i = 0; i < items_count; ++i)
     {
-        recv_data.ReadByteSeq(itemGUIDs[i][6]);
-        recv_data.ReadByteSeq(itemGUIDs[i][1]);
-        recv_data.ReadByteSeq(itemGUIDs[i][7]);
-        recv_data.ReadByteSeq(itemGUIDs[i][2]);
-        recv_data.read_skip<uint8_t>();            // item slot in mail, not used
-        recv_data.ReadByteSeq(itemGUIDs[i][3]);
-        recv_data.ReadByteSeq(itemGUIDs[i][0]);
-        recv_data.ReadByteSeq(itemGUIDs[i][4]);
-        recv_data.ReadByteSeq(itemGUIDs[i][5]);
+        recvData.ReadByteSeq(itemGUIDs[i][6]);
+        recvData.ReadByteSeq(itemGUIDs[i][1]);
+        recvData.ReadByteSeq(itemGUIDs[i][7]);
+        recvData.ReadByteSeq(itemGUIDs[i][2]);
+        recvData.read_skip<uint8_t>();            // item slot in mail, not used
+        recvData.ReadByteSeq(itemGUIDs[i][3]);
+        recvData.ReadByteSeq(itemGUIDs[i][0]);
+        recvData.ReadByteSeq(itemGUIDs[i][4]);
+        recvData.ReadByteSeq(itemGUIDs[i][5]);
     }
 
-    recv_data.ReadByteSeq(mailbox[7]);
-    recv_data.ReadByteSeq(mailbox[3]);
-    recv_data.ReadByteSeq(mailbox[6]);
-    recv_data.ReadByteSeq(mailbox[5]);
+    recvData.ReadByteSeq(mailbox[7]);
+    recvData.ReadByteSeq(mailbox[3]);
+    recvData.ReadByteSeq(mailbox[6]);
+    recvData.ReadByteSeq(mailbox[5]);
 
-    subject = recv_data.ReadString(subjectLength);
-    receiver = recv_data.ReadString(receiverLength);
+    std::string subject = recvData.ReadString(subjectLength);
+    std::string receiver = recvData.ReadString(receiverLength);
 
-    recv_data.ReadByteSeq(mailbox[2]);
-    recv_data.ReadByteSeq(mailbox[0]);
+    recvData.ReadByteSeq(mailbox[2]);
+    recvData.ReadByteSeq(mailbox[0]);
 
-    body = recv_data.ReadString(bodyLength);
+    std::string body = recvData.ReadString(bodyLength);
 
-    recv_data.ReadByteSeq(mailbox[1]);
+    recvData.ReadByteSeq(mailbox[1]);
 
     // Search for the recipient
     PlayerInfo* player_info = ObjectMgr::getSingleton().GetPlayerInfoByName(receiver.c_str());
@@ -159,8 +156,6 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
     // Set up the cost
     uint32_t cost = items_count ? 30 * items_count : 30;  // price hardcoded in client
 
-    uint64_t reqmoney = cost + money;
-
     if (!sMailSystem.MailOption(MAIL_FLAG_DISABLE_POSTAGE_COSTS) && !(GetPermissionCount() && sMailSystem.MailOption(MAIL_FLAG_NO_COST_FOR_GM)))
     {
         cost += 30;
@@ -176,7 +171,7 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
     // Check for the item, and required item.
     if (!items.empty())
     {
-        for (itr = items.begin(); itr != items.end(); ++itr)
+        for (std::vector< Item* >::iterator itr = items.begin(); itr != items.end(); ++itr)
         {
             pItem = *itr;
             if (_player->GetItemInterface()->SafeRemoveAndRetreiveItemByGuid(pItem->GetGUID(), false) != pItem)
@@ -209,8 +204,8 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
     // Fill in the rest of the info
     msg.player_guid = player_info->guid;
     msg.sender_guid = _player->GetGUID();
-    msg.money = money;
-    msg.cod = COD;
+    msg.money = static_cast<uint32_t>(money);
+    msg.cod = static_cast<uint32_t>(COD);
     msg.subject = subject;
     msg.body = body;
 
@@ -600,15 +595,13 @@ void WorldSession::HandleGetMail(WorldPacket& /*recvData*/)
 WorldPacket* Mailbox::BuildMailboxListingPacket()
 {
     WorldPacket* data = new WorldPacket(SMSG_MAIL_LIST_RESULT, 200);
-    MessageMap::iterator itr;
-    uint8_t i = 0;
     uint32_t realCount = 0;
     uint32_t mailsCount = 0;
     uint32_t t = (uint32_t)UNIXTIME;
     *data << uint32_t(0);     // real mail's count
     *data << uint8_t(0);      // mail's count
 
-    for (itr = Messages.begin(); itr != Messages.end(); ++itr)
+    for (MessageMap::iterator itr = Messages.begin(); itr != Messages.end(); ++itr)
     {
         if (itr->second.expire_time && t > itr->second.expire_time)
             continue;       // expired mail -> skip it
@@ -658,11 +651,10 @@ WorldPacket* Mailbox::BuildMailboxListingPacket()
         *data << itr->second.body;                                          // message? max 8000
         *data << uint8_t(item_count);                                         // client limit is 0x10
 
-        Item* pItem;
         std::vector<uint32_t>::iterator itr2;
         for (uint8_t i = 0; i < item_count; ++i)
         {
-            pItem = objmgr.LoadItem(itr->second.items[i]);
+            Item * pItem = objmgr.LoadItem(itr->second.items[i]);
             *data << uint8_t(i);                                              // item index (0-6)
             *data << uint32_t((pItem ? pItem->GetLowGUID() : 0));
             *data << uint32_t((pItem ? pItem->GetEntry() : 0));

@@ -254,15 +254,11 @@ void WorldSession::HandleGuildDisbandOpcode(WorldPacket& /*recv_data*/)
     }
 }
 
-void WorldSession::HandleGuildLeaderOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGuildLeaderOpcode(WorldPacket& recvData)
 {
-    uint8_t nameLength;
-    bool inactive;
-    std::string playerName;
-
-    nameLength = recv_data.readBits(7);
-    inactive = recv_data.readBit();                 // bool inactive?
-    playerName = recv_data.ReadString(nameLength);
+    uint8_t nameLength = static_cast<uint8_t>(recvData.readBits(7));
+    /*bool inactive = */recvData.readBit();                 // bool inactive?
+    std::string playerName = recvData.ReadString(nameLength);
 
     if (Guild* guild = GetPlayer()->GetGuild())
     {
@@ -382,10 +378,10 @@ void WorldSession::HandleGuildAddRankOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleGuildDelRankOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGuildDelRankOpcode(WorldPacket& recvData)
 {
     uint32_t rankId;
-    recv_data >> rankId;
+    recvData >> rankId;
 
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_DEL_RANK %s: Rank: %u", _player->GetName(), rankId);
 
@@ -685,16 +681,13 @@ void WorldSession::HandleGuildNewsUpdateStickyOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleGuildSetGuildMaster(WorldPacket& recv_data)
+void WorldSession::HandleGuildSetGuildMaster(WorldPacket& recvData)
 {
-    uint8_t nameLength;
-    std::string playerName;
+    uint8_t nameLength = static_cast<uint8_t>(recvData.readBits(7));
 
-    nameLength = recv_data.readBits(7);
+    recvData.readBit();
 
-    recv_data.readBit();
-
-    playerName = recv_data.ReadString(nameLength);
+    std::string playerName = recvData.ReadString(nameLength);
 
     if (Guild* guild = GetPlayer()->GetGuild())
     {
@@ -1540,7 +1533,7 @@ void WorldSession::HandleCharterRenameOpcode(WorldPacket& recv_data)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // GuildFinder
-void WorldSession::HandleGuildFinderAddRecruit(WorldPacket& recv_data)
+void WorldSession::HandleGuildFinderAddRecruit(WorldPacket& recvData)
 {
     if (sGuildFinderMgr.getAllMembershipRequestsForPlayer(GetPlayer()->GetLowGUID()).size() == 10)
     {
@@ -1551,44 +1544,39 @@ void WorldSession::HandleGuildFinderAddRecruit(WorldPacket& recv_data)
     uint32_t availability = 0;
     uint32_t guildInterests = 0;
 
-    recv_data >> classRoles;
-    recv_data >> guildInterests;
-    recv_data >> availability;
-
-    uint16_t commentLength;
-    uint8_t nameLength;
-    std::string comment;
-    std::string playerName;
+    recvData >> classRoles;
+    recvData >> guildInterests;
+    recvData >> availability;
 
     ObjectGuid guid;
 
-    guid[3] = recv_data.readBit();
-    guid[0] = recv_data.readBit();
-    guid[6] = recv_data.readBit();
-    guid[1] = recv_data.readBit();
+    guid[3] = recvData.readBit();
+    guid[0] = recvData.readBit();
+    guid[6] = recvData.readBit();
+    guid[1] = recvData.readBit();
 
-    commentLength = recv_data.readBits(11);
+    uint16_t commentLength = static_cast<uint16_t>(recvData.readBits(11));
 
-    guid[5] = recv_data.readBit();
-    guid[4] = recv_data.readBit();
-    guid[7] = recv_data.readBit();
+    guid[5] = recvData.readBit();
+    guid[4] = recvData.readBit();
+    guid[7] = recvData.readBit();
 
-    nameLength = recv_data.readBits(7);
+    uint8_t nameLength = static_cast<uint8_t>(recvData.readBits(7));
 
-    guid[2] = recv_data.readBit();
+    guid[2] = recvData.readBit();
 
-    recv_data.ReadByteSeq(guid[4]);
-    recv_data.ReadByteSeq(guid[5]);
+    recvData.ReadByteSeq(guid[4]);
+    recvData.ReadByteSeq(guid[5]);
 
-    comment = recv_data.ReadString(commentLength);
-    playerName = recv_data.ReadString(nameLength);
+    std::string comment = recvData.ReadString(commentLength);
+    std::string playerName = recvData.ReadString(nameLength);
 
-    recv_data.ReadByteSeq(guid[7]);
-    recv_data.ReadByteSeq(guid[2]);
-    recv_data.ReadByteSeq(guid[0]);
-    recv_data.ReadByteSeq(guid[6]);
-    recv_data.ReadByteSeq(guid[1]);
-    recv_data.ReadByteSeq(guid[3]);
+    recvData.ReadByteSeq(guid[7]);
+    recvData.ReadByteSeq(guid[2]);
+    recvData.ReadByteSeq(guid[0]);
+    recvData.ReadByteSeq(guid[6]);
+    recvData.ReadByteSeq(guid[1]);
+    recvData.ReadByteSeq(guid[3]);
 
     uint32_t guildLowGuid = Arcemu::Util::GUID_LOPART(uint64_t(guid));
 

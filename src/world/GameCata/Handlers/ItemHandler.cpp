@@ -45,18 +45,18 @@ void WorldSession::SendRefundInfo(uint64_t guid)
         ItemProperties const* item_properties = item->GetItemProperties();
         item->SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_REFUNDABLE);
 
-        ObjectGuid guid = item->GetGUID();
+        ObjectGuid objectGuid = item->GetGUID();
         WorldPacket data(SMSG_ITEMREFUNDINFO, 68);
-        data.writeBit(guid[3]);
-        data.writeBit(guid[5]);
-        data.writeBit(guid[7]);
-        data.writeBit(guid[6]);
-        data.writeBit(guid[2]);
-        data.writeBit(guid[4]);
-        data.writeBit(guid[0]);
-        data.writeBit(guid[1]);
+        data.writeBit(objectGuid[3]);
+        data.writeBit(objectGuid[5]);
+        data.writeBit(objectGuid[7]);
+        data.writeBit(objectGuid[6]);
+        data.writeBit(objectGuid[2]);
+        data.writeBit(objectGuid[4]);
+        data.writeBit(objectGuid[0]);
+        data.writeBit(objectGuid[1]);
         data.flushBits();
-        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(objectGuid[7]);
 
         uint32_t* played = _player->GetPlayedtime();
 
@@ -71,20 +71,20 @@ void WorldSession::SendRefundInfo(uint64_t guid)
             data << uint32_t(item_extended_cost->count[i]);
         }
 
-        data.WriteByteSeq(guid[6]);
-        data.WriteByteSeq(guid[4]);
-        data.WriteByteSeq(guid[3]);
-        data.WriteByteSeq(guid[2]);
+        data.WriteByteSeq(objectGuid[6]);
+        data.WriteByteSeq(objectGuid[4]);
+        data.WriteByteSeq(objectGuid[3]);
+        data.WriteByteSeq(objectGuid[2]);
         for (uint8_t i = 0; i < 5; ++i)
         {
             data << uint32_t(item_extended_cost->reqcurrcount[i]);
             data << uint32_t(item_extended_cost->reqcur[i]);
         }
 
-        data.WriteByteSeq(guid[1]);
-        data.WriteByteSeq(guid[5]);
+        data.WriteByteSeq(objectGuid[1]);
+        data.WriteByteSeq(objectGuid[5]);
         data << uint32_t(0);
-        data.WriteByteSeq(guid[0]);
+        data.WriteByteSeq(objectGuid[0]);
         data << uint32_t(item_properties->BuyPrice);
 
         SendPacket(&data);

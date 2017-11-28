@@ -79,7 +79,6 @@ void LoadDB2Stores()
 {
     std::string db2Path = sWorld.settings.server.dataDir + "dbc/";
 
-    DBC::LocaleNameStr const* defaultLocaleNameStr = NULL;
     StoreProblemList1 bad_db2_files;
 
     LocalDB2Data availableDb2Locales(DBC::LocaleConstant(0));
