@@ -457,7 +457,7 @@ void GuildMgr::loadGuildXpForLevelFromDB()
         Field* fields = result->Fetch();
 
         uint32_t level = fields[0].GetUInt8();
-        uint32_t requiredXP = fields[1].GetUInt64();
+        uint32_t requiredXP = static_cast<uint32_t>(fields[1].GetUInt64());
 
         if (level >= worldConfig.guild.maxLevel)
         {

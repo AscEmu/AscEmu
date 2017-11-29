@@ -1843,7 +1843,7 @@ void ObjectMgr::LoadTrainers()
             do
             {
                 Field* fields2 = result2->Fetch();
-                uint32 entry = fields2[0].GetUInt32();
+                uint32 entry1 = fields2[0].GetUInt32();
                 uint32 spell = fields2[1].GetUInt32();
                 uint32 spellCost = fields2[2].GetUInt32();
                 uint32 reqSkill = fields2[3].GetUInt16();
@@ -1883,7 +1883,7 @@ void ObjectMgr::LoadTrainers()
                         effect->EffectImplicitTargetA != 25 &&
                         effect->EffectImplicitTargetA != 1)
                     {
-                        LogDebugFlag(LF_DB_TABLES, "LoadTrainers : Table `trainer_spels` has spell %u for trainer entry %u with learn effect which has incorrect target type, ignoring learn effect!", spell, entry);
+                        LogDebugFlag(LF_DB_TABLES, "LoadTrainers : Table `trainer_spels` has spell %u for trainer entry %u with learn effect which has incorrect target type, ignoring learn effect!", spell, entry1);
                         continue;
                     }
 

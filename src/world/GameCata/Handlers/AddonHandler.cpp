@@ -28,7 +28,7 @@ void WorldSession::readAddonInfoPacket(ByteBuffer &recv_data)
 
     uLongf uSize = recvSize;
 
-    uint32_t pos = recv_data.rpos();
+    uint32_t pos = static_cast<uint32_t>(recv_data.rpos());
 
     ByteBuffer unpackedInfo;
     unpackedInfo.resize(recvSize);

@@ -53,11 +53,11 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recv_data)
     unk_guid[2] = recv_data.readBit();
     unk_guid[7] = recv_data.readBit();
 
-    uint8_t realm_name_length = recv_data.readBits(9);
+    uint8_t realm_name_length = static_cast<uint8_t>(recv_data.readBits(9));
 
     unk_guid[3] = recv_data.readBit();
 
-    uint8_t member_name_length = recv_data.readBits(10);
+    uint8_t member_name_length = static_cast<uint8_t>(recv_data.readBits(10));
 
     unk_guid[5] = recv_data.readBit();
     unk_guid[4] = recv_data.readBit();

@@ -28,7 +28,7 @@ void WorldSession::HandleSendMail(WorldPacket& recvData)
     uint32_t bodyLength = recvData.readBits(12);
     uint32_t subjectLength = recvData.readBits(9);
 
-    uint8_t items_count = recvData.readBits(5);              // attached items count
+    uint8_t items_count = static_cast<uint8_t>(recvData.readBits(5));              // attached items count
 
     if (items_count > MAIL_MAX_ITEM_SLOT)
     {
@@ -615,7 +615,7 @@ WorldPacket* Mailbox::BuildMailboxListingPacket()
             continue;
         }
 
-        uint8_t item_count = itr->second.items.size();
+        uint8_t item_count = static_cast<uint8_t>(itr->second.items.size());
 
         size_t next_mail_size = 2 + 4 + 1 + (itr->second.message_type == MAIL_TYPE_NORMAL ? 8 : 4) + 4 * 8 + (itr->second.subject.size() + 1) + (itr->second.body.size() + 1) + 1 + item_count*(1 + 4 + 4 + MAX_INSPECTED_ENCHANTMENT_SLOT * 3 * 4 + 4 + 4 + 4 + 4 + 4 + 4 + 1);
 

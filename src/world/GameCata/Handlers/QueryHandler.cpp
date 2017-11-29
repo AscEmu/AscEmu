@@ -141,8 +141,8 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recvData)
     }
     else
     {
-        WorldPacket data(SMSG_CREATURE_QUERY_RESPONSE, 4);
-        data << uint32_t(entry | 0x80000000);
+        WorldPacket worldPacket(SMSG_CREATURE_QUERY_RESPONSE, 4);
+        worldPacket << uint32_t(entry | 0x80000000);
     }
 
     SendPacket(&data);

@@ -7185,7 +7185,7 @@ void Player::RegenerateHealth(bool inCombat)
 #if VERSION_STRING != Cata
     float amt = basespirit * HPRegen->ratio + extraspirit * HPRegenBase->ratio;
 #else
-    float amt = basespirit * 200+ extraspirit * 200;
+    float amt = static_cast<float>(basespirit * 200 + extraspirit * 200);
 #endif
 
     if (PctRegenModifier)
@@ -11961,7 +11961,7 @@ void Player::UpdateGlyphs()
     {
         if (DBC::Structures::GlyphSlotEntry const* glyphSlot = sGlyphSlotStore.LookupEntry(i))
         {
-            setUInt32Value(PLAYER_FIELD_GLYPH_SLOTS_1 + slot++, glyphSlot->Id);
+            setUInt32Value(static_cast<uint16_t>(PLAYER_FIELD_GLYPH_SLOTS_1 + slot++), glyphSlot->Id);
         }
     }
 
@@ -12554,7 +12554,7 @@ void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
             }
         }
 
-        for (uint8 i = rank; i < 5; ++i)
+        for (uint32_t i = rank; i < 5; ++i)
         {
             if (talent_info->RankID[i] != 0 && HasSpell(talent_info->RankID[i]))
             {

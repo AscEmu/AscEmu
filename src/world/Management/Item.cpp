@@ -1382,5 +1382,6 @@ bool Item::RepairItem(Player* pPlayer, bool guildmoney, int32* pCost)   //pCost 
     }
     SetDurabilityToMax();
     m_isDirty = true;
+    if (guildmoney || pCost == nullptr) { return true; }
     return true;
 }

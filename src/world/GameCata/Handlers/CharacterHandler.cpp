@@ -147,7 +147,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
 
             CreatureProperties const* petInfo = nullptr;
             uint32_t petDisplayId;
-            uint32_t petLevel;
+            uint32_t petLevel = 0;
             uint32_t petFamily;
 
             if (charEnum.Class == WARLOCK || charEnum.Class == HUNTER)
@@ -648,7 +648,7 @@ void WorldSession::FullLogin(Player* plr)
     if (plr->getPlayerInfo()->m_guild && sGuildMgr.getGuildById(plr->getPlayerInfo()->m_guild != NULL))
     {
         plr->SetInGuild(plr->getPlayerInfo()->m_guild);
-        plr->SetRank(plr->getPlayerInfo()->guildRank);
+        plr->SetRank(static_cast<uint8_t>(plr->getPlayerInfo()->guildRank));
         plr->GetGuild()->sendLoginInfo(plr->GetSession());
         if (Guild* guild = sGuildMgr.getGuildById(plr->GetGuildId()))
             plr->SetGuildLevel(guild->getLevel());

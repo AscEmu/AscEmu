@@ -1003,6 +1003,8 @@ void InstanceMgr::BuildSavedInstancesForPlayer(Player* plr)
     data.SetOpcode(SMSG_UPDATE_INSTANCE_OWNERSHIP);
     data << uint32(0x00);
     plr->GetSession()->SendPacket(&data);
+#else
+    if (plr == nullptr) { return; }
 #endif
 }
 

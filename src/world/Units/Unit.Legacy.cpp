@@ -12883,6 +12883,7 @@ void Unit::SendPowerUpdate(bool self)
     WorldPacket* pkt = BuildFieldUpdatePacket(UNIT_FIELD_MAXPOWER1 + GetPowerType(), amount);
     SendMessageToSet(pkt, false);
     delete pkt;
+    if (self) { return; }
 #else
 #if VERSION_STRING > TBC
     uint32 amount = getUInt32Value(UNIT_FIELD_POWER1 + GetPowerType()); //save the amount, so we send the same to the player and everyone else

@@ -81,6 +81,8 @@ void BuildWeatherPacket(WorldPacket* data, uint32 Effect, float Density)
         *data << uint8(0);
     }
     //    LOG_DEBUG("Send Weather Update %d, Density %f, Sound %d, unint8(0)", Effect,Density,GetSound(Effect,Density));
+#else
+    if (Effect == 0 || Density == 0 || data->isEmpty()) { return; }
 #endif
 }
 

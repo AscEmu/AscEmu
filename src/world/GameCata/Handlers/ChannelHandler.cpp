@@ -23,8 +23,8 @@ void WorldSession::HandleChannelJoin(WorldPacket& recvPacket)
     recvPacket.readBit();       // has voice
     recvPacket.readBit();       // zone update
 
-    uint8 channelLength = recvPacket.readBits(8);
-    uint8 passwordLength = recvPacket.readBits(8);
+    uint32_t channelLength = recvPacket.readBits(8);
+    uint32_t passwordLength = recvPacket.readBits(8);
 
     channelname = recvPacket.ReadString(channelLength);
     pass = recvPacket.ReadString(passwordLength);

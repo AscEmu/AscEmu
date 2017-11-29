@@ -129,7 +129,7 @@ void WorldSession::HandleGMTicketCreateOpcode(WorldPacket& recvData)
 
     if (ticketCount && decompressedSize && decompressedSize < 0xFFFF)
     {
-        uint32 pos = recvData.rpos();
+        uint32 pos = static_cast<uint32_t>(recvData.rpos());
         ByteBuffer dest;
         dest.resize(decompressedSize);
 
