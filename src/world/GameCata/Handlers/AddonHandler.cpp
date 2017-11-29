@@ -33,7 +33,7 @@ void WorldSession::readAddonInfoPacket(ByteBuffer &recv_data)
     ByteBuffer unpackedInfo;
     unpackedInfo.resize(recvSize);
 
-    if (uncompress(unpackedInfo.contents(), &uSize, recv_data.contents() + pos, recv_data.size() - pos) == Z_OK)
+    if (uncompress(unpackedInfo.contents(), &uSize, recv_data.contents() + pos, static_cast<uLong>(recv_data.size() - pos)) == Z_OK)
     {
         uint32_t addonsCount;
         unpackedInfo >> addonsCount;

@@ -526,7 +526,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recvData)
             }
             else
             {
-                _player->ModGold(target_trade_data->getMoney());
+                _player->ModGold(static_cast<int32_t>(target_trade_data->getMoney()));
                 trade_target->ModGold(-(int32_t)target_trade_data->getMoney());
             }
         }
@@ -540,7 +540,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recvData)
             }
             else
             {
-                trade_target->ModGold(trade_data->getMoney());
+                trade_target->ModGold(static_cast<int32_t>(trade_data->getMoney()));
                 _player->ModGold(-(int32_t)trade_data->getMoney());
             }
         }

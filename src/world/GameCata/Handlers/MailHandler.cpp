@@ -199,7 +199,7 @@ void WorldSession::HandleSendMail(WorldPacket& recvData)
     }
 
     // take the money
-    _player->ModGold(-cost);
+    _player->ModGold(-static_cast<int32_t>(cost));
 
     // Fill in the rest of the info
     msg.player_guid = player_info->guid;
@@ -596,7 +596,7 @@ WorldPacket* Mailbox::BuildMailboxListingPacket()
 {
     WorldPacket* data = new WorldPacket(SMSG_MAIL_LIST_RESULT, 200);
     uint32_t realCount = 0;
-    uint32_t mailsCount = 0;
+    uint8_t mailsCount = 0;
     uint32_t t = (uint32_t)UNIXTIME;
     *data << uint32_t(0);     // real mail's count
     *data << uint8_t(0);      // mail's count

@@ -4619,15 +4619,18 @@ class LuaUnit
 
     static int VendorAddItem(lua_State* L, Unit* ptr)
     {
+#if VERSION_STRING != Cata
         TEST_UNIT()
         Creature* ctr = static_cast<Creature*>(ptr);
         uint32 itemid = (uint32)luaL_checknumber(L, 1);
         uint32 amount = (uint32)luaL_checknumber(L, 2);
         uint32 costid = (uint32)luaL_checknumber(L, 3);
-#if VERSION_STRING != Cata
+
         auto item_extended_cost = (costid > 0) ? sItemExtendedCostStore.LookupEntry(costid) : NULL;
         if (itemid && amount)
             ctr->AddVendorItem(itemid, amount, item_extended_cost);
+#else
+        if (L != nullptr && ptr != nullptr) { return 0 ; }
 #endif
         return 0;
     }
@@ -5111,6 +5114,8 @@ class LuaUnit
         Player* target = CHECK_PLAYER(L, 1);
         if (target && plr->GetGuild())
             plr->GetGuild()->DemoteGuildMember(target->getPlayerInfo(), plr->GetSession());
+#else
+        if (L != nullptr && ptr != nullptr) { return 0; }
 #endif
         return 0;
     }
@@ -5123,6 +5128,8 @@ class LuaUnit
         Player* target = CHECK_PLAYER(L, 1);
         if (target && plr->GetGuild())
             plr->GetGuild()->PromoteGuildMember(target->getPlayerInfo(), plr->GetSession());
+#else
+            if (L != nullptr && ptr != nullptr) { return 0; }
 #endif
         return 0;
     }
@@ -5135,6 +5142,8 @@ class LuaUnit
         const char* szNewMotd = luaL_checkstring(L, 1);
         if (plr->GetGuild() && szNewMotd != NULL)
             plr->GetGuild()->SetMOTD(szNewMotd, plr->GetSession());
+#else
+            if (L != nullptr && ptr != nullptr) { return 0; }
 #endif
         return 0;
     }
@@ -5153,6 +5162,8 @@ class LuaUnit
             lua_pushstring(L, guild->getMOTD());
         else
             lua_pushnil(L);
+#else
+            if (L != nullptr && ptr != nullptr) { return 0; }
 #endif
         return 1;
     }
@@ -5165,6 +5176,8 @@ class LuaUnit
         const char* gi = luaL_checkstring(L, 1);
         if (gi && plr->GetGuild())
             plr->GetGuild()->SetGuildInformation(gi, plr->GetSession());
+#else
+            if (L != nullptr && ptr != nullptr) { return 0; }
 #endif
         return 0;
     }
@@ -5179,6 +5192,8 @@ class LuaUnit
         Guild* target = objmgr.GetGuild(g_id);
         if (target)
             target->AddGuildMember(plr->getPlayerInfo(), NULL, rank);
+#else
+            if (L != nullptr && ptr != nullptr) { return 0; }
 #endif
         return 0;
     }
@@ -5191,6 +5206,8 @@ class LuaUnit
         Player* target = CHECK_PLAYER(L, 1);
         if (target && plr->GetGuild())
             plr->GetGuild()->RemoveGuildMember(target->getPlayerInfo(), plr->GetSession());
+#else
+            if (L != nullptr && ptr != nullptr) { return 0; }
 #endif
         return 0;
     }
@@ -5204,6 +5221,8 @@ class LuaUnit
         const char* note = luaL_checkstring(L, 2);
         if (target && note && plr->GetGuild())
             plr->GetGuild()->SetPublicNote(target->getPlayerInfo(), note, plr->GetSession());
+#else
+            if (L != nullptr && ptr != nullptr) { return 0; }
 #endif
         return 0;
     }
@@ -5217,6 +5236,8 @@ class LuaUnit
         const char* note = luaL_checkstring(L, 2);
         if (target && note && plr->GetGuild())
             plr->GetGuild()->SetOfficerNote(target->getPlayerInfo(), note, plr->GetSession());
+#else
+            if (L != nullptr && ptr != nullptr) { return 0; }
 #endif
         return 0;
     }
@@ -5233,6 +5254,8 @@ class LuaUnit
             guild = plr->GetGuild();
         if (guild != nullptr)
             guild->disband();
+#else
+            if (L != nullptr && ptr != nullptr) { return 0; }
 #endif
         return 0;
     }
@@ -5245,6 +5268,8 @@ class LuaUnit
         Player* target = CHECK_PLAYER(L, 1);
         if (target)
             plr->GetGuild()->ChangeGuildMaster(target->getPlayerInfo(), plr->GetSession());
+#else
+            if (L != nullptr && ptr != nullptr) { return 0; }
 #endif
         return 0;
     }
@@ -5258,6 +5283,8 @@ class LuaUnit
         bool officer = CHECK_BOOL(L, 2);
         if (plr->GetGuild() != NULL && message != NULL)
             (officer) ? plr->GetGuild()->OfficerChat(message, plr->GetSession(), 0) : plr->GetGuild()->GuildChat(message, plr->GetSession(), 0);
+#else
+            if (L != nullptr && ptr != nullptr) { return 0; }
 #endif
         return 0;
     }
@@ -5281,6 +5308,8 @@ class LuaUnit
         uint32 amount = static_cast<uint32>(luaL_checkinteger(L, 1));
         if (plr->GetGuild() != NULL)
             plr->GetGuild()->DepositMoney(plr->GetSession(), amount);
+#else
+            if (L != nullptr && ptr != nullptr) { return 0; }
 #endif
         return 0;
     }
@@ -5293,6 +5322,8 @@ class LuaUnit
         uint32 amount = static_cast<uint32>(luaL_checkinteger(L, 1));
         if (plr->GetGuild() != NULL)
             plr->GetGuild()->WithdrawMoney(plr->GetSession(), amount);
+#else
+            if (L != nullptr && ptr != nullptr) { return 0; }
 #endif
         return 0;
     }
@@ -5349,6 +5380,8 @@ class LuaUnit
         }
         else
             lua_pushnil(L);
+#else
+            if (L != nullptr && ptr != nullptr) { return 0; }
 #endif
         return 1;
     }
@@ -5359,6 +5392,8 @@ class LuaUnit
 #if VERSION_STRING != Cata
             Guild* pGuild = static_cast<Player*>(ptr)->GetGuild();
         (pGuild != NULL) ? lua_pushinteger(L, pGuild->GetNumMembers()) : lua_pushnil(L);
+#else
+            if (L != nullptr && ptr != nullptr) { return 0; }
 #endif
         return 1;
     }
@@ -5608,6 +5643,8 @@ class LuaUnit
             static_cast<Player*>(ptr)->setUInt32Value(PLAYER_CHARACTER_POINTS1, points);
 
         static_cast<Player*>(ptr)->smsg_TalentsInfo(false);
+#else
+            if (L != nullptr && ptr != nullptr) { return 0; }
 #endif
         return 0;
     }
@@ -5676,6 +5713,8 @@ class LuaUnit
         }
         else
             lua_pushnil(L);
+#else
+            if (L != nullptr && ptr != nullptr) { return 0; }
 #endif
         return 1;
     }

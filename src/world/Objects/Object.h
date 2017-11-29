@@ -251,7 +251,7 @@ inline WorldPacket& operator>> (WorldPacket& buf, MovementInfo& mi)
     return buf;
 }
 
-static float normalizeOrientation(float orientation)
+inline float normalizeOrientation(float orientation)
 {
     if (orientation < 0)
     {

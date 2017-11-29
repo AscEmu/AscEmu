@@ -1832,6 +1832,8 @@ void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
 
     if (error != LFG_TELEPORTERROR_OK)
         player->GetSession()->SendLfgTeleportError(uint8(error));
+
+    if (fromOpcode) { return;  }
 }
 
 void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)

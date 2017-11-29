@@ -66,11 +66,19 @@ enum AccountDatabaseResult
 };
 
 #pragma pack(push, 1)
+#if VERSION_STRING <= WotLK
 struct LogonWorldPacket
 {
     uint16_t opcode;
     uint32_t size;
 };
+#else
+struct LogonWorldPacket
+{
+    uint32_t opcode;
+    uint32_t size;
+};
+#endif
 #pragma pack(pop)
 
 

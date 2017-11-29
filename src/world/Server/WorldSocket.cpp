@@ -229,7 +229,7 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32 opcode, size_t len, const void* 
     sWorldPacketLog.logPacket((uint32)len, opcode, (const uint8*)data, 1, (mSession ? mSession->GetAccountId() : 0));
 
 #if VERSION_STRING == Cata
-    ServerPktHeader Header(uint32(len + 2), opcode);
+    ServerPktHeader Header(uint32(len + 2), static_cast<uint16_t>(opcode));
 #else
     // Encrypt the packet
     // First, create the header.

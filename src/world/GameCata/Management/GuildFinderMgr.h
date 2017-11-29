@@ -59,8 +59,8 @@ struct MembershipRequest
         }
 
         MembershipRequest(uint32_t playerGUID, uint32_t guildId, uint32_t availability, uint32_t classRoles, uint32_t interests, std::string& comment, time_t submitTime) :
-            mComment(comment), mGuildId(guildId), mPlayerGUID(playerGUID), mAvailability(availability),
-            mClassRoles(classRoles), mInterests(interests), mTime(submitTime)  {}
+            mComment(comment), mGuildId(guildId), mPlayerGUID(playerGUID), mAvailability(static_cast<uint8_t>(availability)),
+            mClassRoles(static_cast<uint8_t>(classRoles)), mInterests(static_cast<uint8_t>(interests)), mTime(submitTime)  {}
 
         MembershipRequest() : mGuildId(0), mPlayerGUID(0), mAvailability(0), mClassRoles(0),
             mInterests(0), mTime(time(nullptr)) {}

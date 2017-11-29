@@ -565,7 +565,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
         if (item->loot != nullptr)
         {
             uint32_t itemsNotLooted =
-                std::count_if(item->loot->items.begin(), item->loot->items.end(), ItemIsNotLooted());
+                static_cast<uint32_t>(std::count_if(item->loot->items.begin(), item->loot->items.end(), ItemIsNotLooted()));
 
             if ((itemsNotLooted == 0) && (item->loot->gold == 0))
             {

@@ -13404,6 +13404,7 @@ void Player::HandleKnockback(Object* caster, float horizontal, float vertical)
     data.WriteByteSeq(guid[5]);
     data.WriteByteSeq(guid[3]);
     data << float(-vertical);
+    data << float(cos);
     data.WriteByteSeq(guid[2]);
     data.WriteByteSeq(guid[0]);
 #endif

@@ -134,7 +134,7 @@ void WorldSession::HandleGMTicketCreateOpcode(WorldPacket& recvData)
         dest.resize(decompressedSize);
 
         uLongf realSize = decompressedSize;
-        if (uncompress(dest.contents(), &realSize, recvData.contents() + pos, recvData.size() - pos) == Z_OK)
+        if (uncompress(dest.contents(), &realSize, recvData.contents() + pos, static_cast<uLong>(recvData.size() - pos)) == Z_OK)
         {
             dest >> chatLog;
         }

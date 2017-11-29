@@ -419,7 +419,11 @@ public:
     void sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed);
 
     void handleFall(MovementInfo const& movement_info);
+#if VERSION_STRING == Cata
+    bool isPlayerJumping(MovementInfo const& movement_info, uint32_t opcode);
+#else
     bool isPlayerJumping(MovementInfo const& movement_info, uint16_t opcode);
+#endif
     void handleBreathing(MovementInfo const& movement_info, WorldSession* session);
     void handleAuraInterruptForMovementFlags(MovementInfo const& movement_info);
 

@@ -893,10 +893,10 @@ void Guild::handleMemberDepositMoney(WorldSession* session, uint64_t amount, boo
     modifyBankMoney(amount, true);
     if (cashFlow == false)
     {
-        player->ModGold(-int64_t(amount));
+        player->ModGold(-int32_t(amount));
     }
 
-    logBankEvent(cashFlow ? GB_LOG_CASH_FLOW_DEPOSIT : GB_LOG_DEPOSIT_MONEY, uint8_t(0), player->GetLowGUID(), amount);
+    logBankEvent(cashFlow ? GB_LOG_CASH_FLOW_DEPOSIT : GB_LOG_DEPOSIT_MONEY, uint8_t(0), player->GetLowGUID(), static_cast<uint32_t>(amount));
 
     std::string aux = Util::ByteArrayToHexString(reinterpret_cast<uint8_t*>(&amount), 8, true);
     broadcastEvent(GE_BANK_MONEY_CHANGED, 0, aux.c_str());
@@ -927,10 +927,10 @@ bool Guild::handleMemberWithdrawMoney(WorldSession* session, uint64_t amount, bo
         player->ModGold(int32_t(amount));
     }
 
-    member->updateBankWithdrawValue(MAX_GUILD_BANK_TABS, amount);
+    member->updateBankWithdrawValue(MAX_GUILD_BANK_TABS, static_cast<uint32_t>(amount));
     modifyBankMoney(amount, false);
 
-    logBankEvent(repair ? GB_LOG_REPAIR_MONEY : GB_LOG_WITHDRAW_MONEY, uint8_t(0), player->GetLowGUID(), amount);
+    logBankEvent(repair ? GB_LOG_REPAIR_MONEY : GB_LOG_WITHDRAW_MONEY, uint8_t(0), player->GetLowGUID(), static_cast<uint32_t>(amount));
 
     std::string aux = Util::ByteArrayToHexString(reinterpret_cast<uint8_t*>(&amount), 8, true);
     broadcastEvent(GE_BANK_MONEY_CHANGED, 0, aux.c_str());
@@ -1735,7 +1735,7 @@ void Guild::updateAccountsNumber()
         accountsIdSet.insert(itr->second->getAccountId());
     }
 
-    mAccountsNumber = accountsIdSet.size();
+    mAccountsNumber = static_cast<uint32_t>(accountsIdSet.size());
 }
 
 bool Guild::isLeader(Player* player) const

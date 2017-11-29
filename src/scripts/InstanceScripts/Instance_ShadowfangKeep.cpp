@@ -1527,5 +1527,7 @@ void SetupShadowfangKeep(ScriptMgr* mgr)
     // Spells
     mgr->register_dummy_spell(SPELL_ASHCROMBE_UNLOCK, &ashrombeUnlockDummySpell);
     mgr->register_dummy_aura(SPELL_ASHCROMBE_FIRE, &ashrombeTeleportDummyAura);
+#else
+    if (mgr != nullptr) { return; }
 #endif //VERSION_STRING != Cata
 }

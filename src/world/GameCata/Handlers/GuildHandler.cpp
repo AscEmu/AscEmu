@@ -758,7 +758,7 @@ void WorldSession::HandleGuildBankDepositMoney(WorldPacket& recv_data)
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_BANK_DEPOSIT_MONEY %s: gameobject: %u, money: " I64FMTD,
         _player->GetName(), Arcemu::Util::GUID_LOPART(bankGuid), money);
 
-    if (money && GetPlayer()->HasGold(money))
+    if (money && GetPlayer()->HasGold(static_cast<uint32_t>(money)))
     {
         if (Guild* guild = GetPlayer()->GetGuild())
         {
@@ -1631,7 +1631,7 @@ void WorldSession::HandleGuildFinderBrowse(WorldPacket& recv_data)
 
     Player* player = GetPlayer();
 
-    LFGuildPlayer settings(player->GetLowGUID(), classRoles, availability, guildInterests, ANY_FINDER_LEVEL);
+    LFGuildPlayer settings(player->GetLowGUID(), static_cast<uint8_t>(classRoles), static_cast<uint8_t>(availability), static_cast<uint8_t>(guildInterests), ANY_FINDER_LEVEL);
     LFGuildStore guildList = sGuildFinderMgr.getGuildsMatchingSetting(settings, player->GetTeamReal());
     uint32_t guildCount = static_cast<uint32_t>(guildList.size());
 
@@ -1691,7 +1691,7 @@ void WorldSession::HandleGuildFinderBrowse(WorldPacket& recv_data)
 
         bufferData.WriteByteSeq(guildGUID[7]);
 
-        bufferData << uint8_t(sGuildFinderMgr.hasRequest(player->GetLowGUID(), guild->getGUID()));
+        bufferData << uint8_t(sGuildFinderMgr.hasRequest(player->GetLowGUID(), guild->getId()));
 
         bufferData.WriteByteSeq(guildGUID[2]);
         bufferData.WriteByteSeq(guildGUID[0]);
@@ -2011,6 +2011,6 @@ void WorldSession::HandleGuildFinderSetGuildPost(WorldPacket& recv_data)
         }
     }
 
-    LFGuildSettings settings(listed, player->GetTeamReal(), player->GetGuildId(), classRoles, availability, guildInterests, level, comment);
+    LFGuildSettings settings(listed, player->GetTeamReal(), player->GetGuildId(), static_cast<uint8_t>(classRoles), static_cast<uint8_t>(availability), static_cast<uint8_t>(guildInterests), static_cast<uint8_t>(level), comment);
     sGuildFinderMgr.setGuildSettings(player->GetGuildId(), settings);
 }

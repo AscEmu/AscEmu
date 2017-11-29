@@ -107,7 +107,7 @@ class SERVER_DECL ByteBuffer
 
         template <typename T> void writeBits(T value, size_t bits)
         {
-            for (int32_t i = bits - 1; i >= 0; --i)
+            for (size_t i = bits - 1; i >= 0; --i)
                 writeBit((value >> i) & 1);
         }
 

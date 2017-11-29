@@ -26,6 +26,7 @@
 #include "StackBuffer.h"
 #include "../world/Server/Packets/Opcode.h"
 
+#if VERSION_STRING <= WotLK
 class SERVER_DECL WorldPacket : public ByteBuffer
 {
     public:
@@ -48,6 +49,30 @@ class SERVER_DECL WorldPacket : public ByteBuffer
     protected:
         uint16 m_opcode;
 };
+#else
+class SERVER_DECL WorldPacket : public ByteBuffer
+{
+public:
+    __inline WorldPacket() : ByteBuffer(0), m_opcode(MSG_NULL_ACTION) { }
+    __inline WorldPacket(uint32_t opcode, size_t res) : ByteBuffer(res), m_opcode(opcode) {}
+    __inline WorldPacket(size_t res) : ByteBuffer(res), m_opcode(0) { }
+    __inline WorldPacket(const WorldPacket & packet) : ByteBuffer(packet), m_opcode(packet.m_opcode) {}
+
+    //! Clear packet and set opcode all in one mighty blow
+    __inline void Initialize(uint32_t opcode, size_t newres = 200)
+    {
+        clear();
+        _storage.reserve(newres);
+        m_opcode = opcode;
+    }
+
+    __inline uint32_t GetOpcode() const { return m_opcode; }
+    __inline void SetOpcode(uint32_t opcode) { m_opcode = opcode; }
+
+protected:
+    uint32_t m_opcode;
+};
+#endif
 
 template<uint32 Size>
 class SERVER_DECL StackWorldPacket : public StackBuffer<Size>

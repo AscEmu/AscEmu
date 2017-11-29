@@ -61,11 +61,13 @@ Guild* GuildMgr::getGuildById(uint32_t guildId) const
 Guild* GuildMgr::getGuildByName(const std::string& guildName) const
 {
     std::string search = guildName;
-    std::transform(search.begin(), search.end(), search.begin(), ::toupper);
+    Util::StringToUpperCase(search);
+    // std::transform(search.begin(), search.end(), search.begin(), ::toupper);
     for (GuildContainer::const_iterator itr = GuildStore.begin(); itr != GuildStore.end(); ++itr)
     {
         std::string gname = itr->second->getName();
-        std::transform(gname.begin(), gname.end(), gname.begin(), ::toupper);
+        Util::StringToUpperCase(gname);
+        // std::transform(gname.begin(), gname.end(), gname.begin(), ::toupper);
         if (search == gname)
         {
             return itr->second;
@@ -101,7 +103,7 @@ uint32_t GuildMgr::getXPForGuildLevel(uint8_t level) const
 {
     if (level < GuildXPperLevel.size())
     {
-        return GuildXPperLevel[level];
+        return static_cast<uint32_t>(GuildXPperLevel[level]);
     }
 
     return 0;

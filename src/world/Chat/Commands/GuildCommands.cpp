@@ -172,6 +172,7 @@ bool ChatHandler::HandleGuildInfoCommand(const char* /*args*/, WorldSession* ses
     GreenSystemMessage(session, "  GuildId: %u", selected_player->GetGuild()->getId());
     GreenSystemMessage(session, "  Player rank: %u", selected_player->GetRankFromDB(selected_player->GetGUID()));
 
+    return true;
 }
 #endif
 
