@@ -774,11 +774,8 @@ public:
         // \return none
         //
         //////////////////////////////////////////////////////////////////////////////////////////
-#if VERSION_STRING == Cata
-        virtual void OutPacket(uint32_t /*opcode*/, uint16_t /*len*/, const void* /*data*/) {};
-#else
         virtual void OutPacket(uint16_t /*opcode*/, uint16_t /*len*/, const void* /*data*/) {};
-#endif
+
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // void SendPacket(WorldPacket *packet)
@@ -797,11 +794,7 @@ public:
 
         virtual void SendMessageToSet(WorldPacket* data, bool self, bool myteam_only = false);
         void SendMessageToSet(StackBufferBase* data, bool self) { OutPacketToSet(data->GetOpcode(), static_cast<uint16>(data->GetSize()), data->GetBufferPointer(), self); }
-#if VERSION_STRING == Cata
-        virtual void OutPacketToSet(uint32 Opcode, uint16 Len, const void* Data, bool self);
-#else
         virtual void OutPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool self);
-#endif
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // void SendAIReaction(uint32 reaction = 2)

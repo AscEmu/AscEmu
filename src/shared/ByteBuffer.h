@@ -107,7 +107,7 @@ class SERVER_DECL ByteBuffer
 
         template <typename T> void writeBits(T value, size_t bits)
         {
-            for (size_t i = bits - 1; i >= 0; --i)
+            for (int32 i = static_cast<int32>(bits - 1); i >= 0; --i)
                 writeBit((value >> i) & 1);
         }
 
@@ -519,6 +519,9 @@ class SERVER_DECL ByteBuffer
         void append(const uint8_t* src, size_t cnt)
         {
             if (!cnt)
+                return;
+
+            if (!src)
                 return;
 
             assert(size() < 10000000);

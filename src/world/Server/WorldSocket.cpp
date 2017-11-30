@@ -133,11 +133,7 @@ void WorldSocket::OnDisconnect()
     }
 }
 
-#if VERSION_STRING != Cata
 void WorldSocket::OutPacket(uint16 opcode, size_t len, const void* data)
-#else
-void WorldSocket::OutPacket(uint32 opcode, size_t len, const void* data)
-#endif
 {
     OUTPACKET_RESULT res;
     if ((len + 10) > WORLDSOCKET_SENDBUF_SIZE)
@@ -207,11 +203,7 @@ void WorldSocket::UpdateQueuedPackets()
     queueLock.Release();
 }
 
-#if VERSION_STRING != Cata
 OUTPACKET_RESULT WorldSocket::_OutPacket(uint16 opcode, size_t len, const void* data)
-#else
-OUTPACKET_RESULT WorldSocket::_OutPacket(uint32 opcode, size_t len, const void* data)
-#endif
 {
     bool rv;
     if (!IsConnected())
