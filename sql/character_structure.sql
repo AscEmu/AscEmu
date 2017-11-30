@@ -301,7 +301,7 @@ CREATE TABLE IF NOT EXISTS `character_db_version` (
 -- Dumping data for table character_db_version: ~1 rows (approximately)
 /*!40000 ALTER TABLE `character_db_version` DISABLE KEYS */;
 INSERT INTO `character_db_version` (`LastUpdate`) VALUES
-	('2017-06-25_01_clienbtaddons');
+	('2017-09-13_01_account_permissions');
 /*!40000 ALTER TABLE `character_db_version` ENABLE KEYS */;
 
 
