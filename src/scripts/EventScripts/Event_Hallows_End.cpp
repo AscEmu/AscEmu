@@ -100,8 +100,8 @@ public:
     {
         setCanEnterCombat(false);
         getCreature()->SetMount(22653);
-        ///Spells
-        mSummon = AddSpell(SHADE_OF_THE_HORSEMAN_SUMMON, Target_Self, 0, 0, 0);
+        //Spells
+        //SHADE_OF_THE_HORSEMAN_SUMMON
 
         //Emotes
         addEmoteForEvent(Event_OnDied, 8802);
@@ -172,7 +172,6 @@ public:
     }
 
     int8 WPCount;
-    SpellDesc* mSummon;
 };
 
 

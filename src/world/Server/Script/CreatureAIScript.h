@@ -12,6 +12,19 @@ This file is released under the MIT license. See README-MIT for more information
 class Creature;
 class CreatureAIScript;
 
+enum AISpellTargetType
+{
+    TARGET_SELF,
+    TARGET_VARIOUS,
+    TARGET_ATTACKING,
+    TARGET_DESTINATION,
+    TARGET_SOURCE,
+    TARGET_RANDOM_FRIEND,
+    TARGET_RANDOM_SINGLE,
+    TARGET_RANDOM_DESTINATION,
+    TARGET_CUSTOM
+};
+
 class SERVER_DECL CreatureAISpells
 {
 public:

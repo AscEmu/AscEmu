@@ -1595,7 +1595,37 @@ void CreatureAIScript::oldAIUpdateSpellSystem()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// spell deprecated
+// spell
+
+CreatureAISpells* CreatureAIScript::addAISpell(uint32_t spellId, float castChance, uint32_t targetType, uint32_t duration /*= 0*/, uint32_t cooldown /*= 0*/, bool forceRemove /*= false*/, bool isTriggered /*= false*/)
+{
+    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
+    if (spellInfo != nullptr)
+    {
+        uint32_t spellDuration = duration * 1000;
+        if (spellDuration == 0)
+            spellDuration = spellInfo->getSpellDuration(nullptr);
+
+        uint32_t spellCooldown = cooldown * 1000;
+        if (spellCooldown == 0)
+            spellCooldown = spellInfo->getSpellDuration(nullptr);
+
+        CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, targetType, spellDuration, spellCooldown, forceRemove, isTriggered);
+
+        mCreatureAISpells.push_back(newAISpell);
+
+        newAISpell->setdurationTimer(_addTimer(spellDuration));
+        newAISpell->setCooldownTimerId(_addTimer(0));
+
+        return newAISpell;
+    }
+
+    LOG_ERROR("tried to add invalid spell with id %u", spellId);
+
+    // assert spellInfo can not be nullptr!
+    ARCEMU_ASSERT(spellInfo != nullptr);
+    return nullptr;
+}
 
 void CreatureAIScript::_applyAura(uint32_t spellId)
 {
@@ -1640,6 +1670,44 @@ void CreatureAIScript::_castOnInrangePlayersWithinDist(float minDistance, float 
             if (distanceToPlayer >= minDistance && distanceToPlayer <= maxDistance)
                 _creature->CastSpell(static_cast<Player*>(object), spellId, triggered);
         }
+    }
+}
+
+void CreatureAIScript::_castAISpell(CreatureAISpells* aiSpell)
+{
+    Unit* target = getCreature()->GetAIInterface()->getNextTarget();
+    switch (aiSpell->mTargetType)
+    {
+        case TARGET_SELF:
+        case TARGET_VARIOUS:
+        {
+            getCreature()->CastSpell(getCreature(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+            mLastCastedSpell = aiSpell;
+        } break;
+        case TARGET_ATTACKING:
+        {
+            getCreature()->CastSpell(target, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+            mCurrentSpellTarget = target;
+            mLastCastedSpell = aiSpell;
+        } break;
+        case TARGET_DESTINATION:
+        {
+            getCreature()->CastSpellAoF(target->GetPosition(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+            mCurrentSpellTarget = target;
+            mLastCastedSpell = aiSpell;
+        } break;
+        case TARGET_RANDOM_FRIEND:
+        case TARGET_RANDOM_SINGLE:
+        case TARGET_RANDOM_DESTINATION:
+        {
+            castSpellOnRandomTarget(aiSpell);
+            mLastCastedSpell = aiSpell;
+        } break;
+        case TARGET_CUSTOM:
+        {
+            if (aiSpell->getCustomTarget() != nullptr)
+                getCreature()->CastSpell(aiSpell->getCustomTarget(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+        } break;
     }
 }
 

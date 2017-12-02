@@ -23,7 +23,7 @@
 #include "Setup.h"
 #include "Raid_ZulAman.h"
 
-///\todo move AddEmote to database
+//\todo move AddEmote to database
 
 //NalorakkAI
 class NalorakkAI : public CreatureAIScript
@@ -31,15 +31,30 @@ class NalorakkAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(NalorakkAI);
         NalorakkAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddPhaseSpell(1, AddSpell(NALORAKK_BRUTAL_SWIPE, Target_Current, 2, 0, 35));
-            AddPhaseSpell(1, AddSpell(NALORAKK_MANGLE, Target_Current, 12, 0, 20));
-            AddPhaseSpell(1, AddSpell(NALORAKK_SURGE, Target_RandomPlayer, 8, 0, 20, 0.0f, 45.0f, true, "I bring da pain!", CHAT_MSG_MONSTER_YELL, 12071));
+            enableCreatureAISpellSystem = true;
 
-            AddPhaseSpell(2, AddSpell(NALORAKK_LACERATING_SLASH, Target_Current, 12, 0, 20));
-            AddPhaseSpell(2, AddSpell(NALORAKK_REND_FLESH, Target_Current, 12, 0, 12));
-            AddPhaseSpell(2, AddSpell(NALORAKK_DEAFENING_ROAR, Target_RandomPlayer, 11, 0, 12));
+            auto brutalSwipe = addAISpell(NALORAKK_BRUTAL_SWIPE, 2.0f, TARGET_ATTACKING, 0, 35);
+            brutalSwipe->setAvailableForScriptPhase({ 1 });
 
-            mLocaleEnrageSpell = AddSpell(NALORAKK_BERSERK, Target_Self, 0, 0, 600, 0, 0, false, "You had your chance, now it be too late!", CHAT_MSG_MONSTER_YELL, 12074);
+            auto mangle = addAISpell(NALORAKK_MANGLE, 12.0f, TARGET_ATTACKING, 0, 20);
+            mangle->setAvailableForScriptPhase({ 1 });
+
+            auto surge = addAISpell(NALORAKK_SURGE, 8.0f, TARGET_RANDOM_SINGLE, 0, 20, false, true);
+            surge->setAvailableForScriptPhase({ 1 });
+            surge->addEmote("I bring da pain!", CHAT_MSG_MONSTER_YELL, 12071);
+
+            auto slash = addAISpell(NALORAKK_LACERATING_SLASH, 12.0f, TARGET_ATTACKING, 0, 20);
+            slash->setAvailableForScriptPhase({ 2 });
+
+            auto flesh = addAISpell(NALORAKK_REND_FLESH, 12.0f, TARGET_ATTACKING, 0, 12);
+            flesh->setAvailableForScriptPhase({ 2 });
+
+            auto roar = addAISpell(NALORAKK_DEAFENING_ROAR, 11.0f, TARGET_RANDOM_SINGLE, 0, 12);
+            roar->setAvailableForScriptPhase({ 2 });
+
+            mLocaleEnrageSpell = addAISpell(NALORAKK_BERSERK, 0.0f, TARGET_SELF, 0, 600);
+            surge->addEmote("You had your chance, now it be too late!", CHAT_MSG_MONSTER_YELL, 12074);
+
 
             addEmoteForEvent(Event_OnCombatStart, 8855);
             addEmoteForEvent(Event_OnTargetDied, 8856);
@@ -47,7 +62,9 @@ class NalorakkAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, 8858);
 
             // Bear Form
-            Morph = AddSpell(42377, Target_Self, 0, 0, 0, 0, 0, false, "You call on da beast, you gonna get more dan you bargain for!", CHAT_MSG_MONSTER_YELL, 12072);
+            Morph = addAISpell(42377, 0.0f, TARGET_SELF, 0, 0);
+            Morph->addEmote("You call on da beast, you gonna get more dan you bargain for!", CHAT_MSG_MONSTER_YELL, 12072);
+
             MorphTimer = 0;
         }
 
@@ -72,7 +89,7 @@ class NalorakkAI : public CreatureAIScript
         {
             if (_isTimerFinished(mLocaleEnrageTimerId))
             {
-                CastSpell(mLocaleEnrageSpell);
+                _castAISpell(mLocaleEnrageSpell);
                 _removeTimer(mLocaleEnrageTimerId);
             }
 
@@ -101,10 +118,10 @@ class NalorakkAI : public CreatureAIScript
             }
         }
 
-        SpellDesc* Morph;
+        CreatureAISpells* Morph;
         int32 MorphTimer;
 
-        SpellDesc* mLocaleEnrageSpell;
+        CreatureAISpells* mLocaleEnrageSpell;
         uint32_t mLocaleEnrageTimerId;
 };
 
@@ -114,10 +131,12 @@ class AkilzonAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(AkilzonAI);
         AkilzonAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(AKILZON_STATIC_DISRUPTION, Target_Self, 2, 0, 60);
-            AddSpell(AKILZON_CALL_LIGHTING, Target_Current, 2, 0, 0);
-            AddSpell(AKILZON_GUST_OF_WIND, Target_Current, 0, 0, 0);
-            AddSpell(AKILZON_ELECTRICAL_STORM, Target_Self, 1, 0, 0);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(AKILZON_STATIC_DISRUPTION, 2.0f, TARGET_SELF, 0, 60);
+            addAISpell(AKILZON_CALL_LIGHTING, 2.0f, TARGET_ATTACKING);
+            addAISpell(AKILZON_GUST_OF_WIND, 0.0f, TARGET_ATTACKING);
+            addAISpell(AKILZON_ELECTRICAL_STORM, 1.0f, TARGET_SELF);
 
             addEmoteForEvent(Event_OnCombatStart, 8859);
             addEmoteForEvent(Event_OnTargetDied, 8860);
@@ -163,7 +182,9 @@ class SoaringEagleAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(SoaringEagleAI);
         SoaringEagleAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(EAGLE_SWOOP, Target_Destination, 5, 0, 0);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(EAGLE_SWOOP, 5.0f, TARGET_DESTINATION, 0, 0);
             getCreature()->m_noRespawn = true;
         }
 };
@@ -175,18 +196,25 @@ class HalazziAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(HalazziAI);
         HalazziAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddPhaseSpell(1, AddSpell(HALAZZI_SABER_LASH, Target_Destination, 0.5, 0, 0, 0, 0, false, "Me gonna carve ya now!", CHAT_MSG_MONSTER_YELL, 12023));
+            enableCreatureAISpellSystem = true;
 
-            AddPhaseSpell(2, AddSpell(HALAZZI_FLAME_SHOCK, Target_Current, 12, 0, 0));
-            AddPhaseSpell(2, AddSpell(HALAZZI_EARTH_SHOCK, Target_Current, 12, 0, 0));
+            auto saberLash = addAISpell(HALAZZI_SABER_LASH, 0.5f, TARGET_DESTINATION, 0, 0);
+            saberLash->addEmote("Me gonna carve ya now!", CHAT_MSG_MONSTER_YELL, 12023);
+            saberLash->addEmote("You gonna leave in pieces!", CHAT_MSG_MONSTER_YELL, 12024);
+            saberLash->setAvailableForScriptPhase({ 1, 3 });
 
-            AddPhaseSpell(3, AddSpell(HALAZZI_SABER_LASH, Target_Destination, 0.5, 0, 0, 0, 0, false, "You gonna leave in pieces!", CHAT_MSG_MONSTER_YELL, 12024));
-            AddPhaseSpell(3, AddSpell(HALAZZI_FLAME_SHOCK, Target_Current, 18, 0, 0));
-            AddPhaseSpell(3, AddSpell(HALAZZI_EARTH_SHOCK, Target_Current, 18, 0, 0));
-            AddPhaseSpell(3, AddSpell(HALAZZI_ENRAGE, Target_Self, 100, 0, 60));
+            auto flameShock = addAISpell(HALAZZI_FLAME_SHOCK, 12.0f, TARGET_ATTACKING, 0, 0);
+            flameShock->setAvailableForScriptPhase({ 2, 3 });
+
+            auto earthShock = addAISpell(HALAZZI_EARTH_SHOCK, 12.0f, TARGET_ATTACKING, 0, 0);
+            earthShock->setAvailableForScriptPhase({ 2, 3 });
+
+            auto enrage = addAISpell(HALAZZI_ENRAGE, 100.0f, TARGET_SELF, 0, 60);
+            enrage->setAvailableForScriptPhase({ 3 });
 
             // Transfigure: 4k aoe damage
-            Transfigure = AddSpell(44054, Target_Self, 0, 0, 0, 0, 0, false, "I fight wit' untamed spirit...", CHAT_MSG_MONSTER_YELL, 12021);
+            Transfigure = addAISpell(44054, 0.0f, TARGET_SELF, 0, 0);
+            Transfigure->addEmote("I fight wit' untamed spirit...", CHAT_MSG_MONSTER_YELL, 12021);
 
             addEmoteForEvent(Event_OnCombatStart, 8863);
             addEmoteForEvent(Event_OnTargetDied, 8864);
@@ -295,7 +323,7 @@ class HalazziAI : public CreatureAIScript
             switch (phaseId)
             {
                 case 2:
-                    CastSpellNowNoScheduling(Transfigure);
+                    _castAISpell(Transfigure);
                     break;
                 default:
                     break;
@@ -303,7 +331,7 @@ class HalazziAI : public CreatureAIScript
         }
 
         Creature* mLynx;
-        SpellDesc* Transfigure;
+        CreatureAISpells* Transfigure;
         int32 mTotemTimer;
         int32 CurrentHealth;
         int32 MaxHealth;
@@ -316,9 +344,9 @@ class LynxSpiritAI : public CreatureAIScript
         LynxSpiritAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             // Lynx Flurry
-            AddSpell(43290, Target_Self, 15, 0, 8);
+            addAISpell(43290, 15.0f, TARGET_SELF, 0, 8);
             // Shred Armor
-            AddSpell(43243, Target_Current, 20, 0, 0);
+            addAISpell(43243, 20.0f, TARGET_ATTACKING, 0, 0);
         }
 };
 

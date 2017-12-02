@@ -482,18 +482,6 @@ public:
     uint32_t mLastCastTime;         //Last time at which the spell casted (used to implement cooldown), set to 0
 };
 
-enum
-{
-    TARGET_SELF,
-    TARGET_VARIOUS,
-    TARGET_ATTACKING,
-    TARGET_DESTINATION,
-    TARGET_SOURCE,
-    TARGET_RANDOM_FRIEND,    // doesn't work yet
-    TARGET_RANDOM_SINGLE,
-    TARGET_RANDOM_DESTINATION,
-    TARGET_CUSTOM
-};
 
 #include "Spell/Customization/SpellCustomizations.hpp"
 
@@ -730,37 +718,7 @@ class SERVER_DECL CreatureAIScript
         bool enableCreatureAISpellSystem;
 
         //addAISpell(spellID, Chance, TargetType, Duration (s), waitBeforeNextCast (s))
-        CreatureAISpells* addAISpell(uint32_t spellId, float castChance, uint32_t targetType, uint32_t duration = 0, uint32_t cooldown = 0, bool forceRemove = false, bool isTriggered = false)
-        {
-            SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
-            if (spellInfo != nullptr)
-            {
-                uint32_t spellDuration = duration * 1000;
-                if (spellDuration == 0)
-                    spellDuration = spellInfo->getSpellDuration(nullptr);
-
-                uint32_t spellCooldown = cooldown * 1000;
-                if (spellCooldown == 0)
-                    spellCooldown = spellInfo->getSpellDuration(nullptr);
-
-                CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, targetType, spellDuration, spellCooldown, forceRemove, isTriggered);
-
-                mCreatureAISpells.push_back(newAISpell);
-
-                newAISpell->setdurationTimer(_addTimer(spellDuration));
-                newAISpell->setCooldownTimerId(_addTimer(0));
-
-                return newAISpell;
-            }
-            else
-            {
-                LOG_ERROR("tried to add invalid spell with id %u", spellId);
-
-                // assert spellInfo can not be nullptr!
-                ARCEMU_ASSERT(spellInfo != nullptr);
-                return nullptr;
-            }
-        }
+        CreatureAISpells* addAISpell(uint32_t spellId, float castChance, uint32_t targetType, uint32_t duration = 0, uint32_t cooldown = 0, bool forceRemove = false, bool isTriggered = false);
 
         void _applyAura(uint32_t spellId);
         void _removeAura(uint32_t spellId);
@@ -769,6 +727,8 @@ class SERVER_DECL CreatureAIScript
         void _removeAuraOnPlayers(uint32_t spellId);
         void _castOnInrangePlayers(uint32_t spellId, bool triggered = false);
         void _castOnInrangePlayersWithinDist(float minDistance, float maxDistance, uint32_t spellId, bool triggered = false);
+
+        void _castAISpell(CreatureAISpells* aiSpell);
 
         void _setTargetToChannel(Unit* target, uint32_t spellId);
         void _unsetTargetToChannel();
