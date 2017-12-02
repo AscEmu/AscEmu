@@ -1,4 +1,6 @@
 #pragma once
+#include <memory>
+#include "Threading/AEThread.h"
 
 class BroadcastMgr
 {

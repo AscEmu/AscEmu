@@ -4,10 +4,15 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "StdAfx.h"
+
 #include "Player.h"
 #include "Server/Packets/Opcode.h"
 #include "Chat/ChatDefines.hpp"
 #include "Server/World.h"
+#include "Spell/Spell.h"
+#include "Spell/SpellMgr.h"
+#include "Spell/SpellFailure.h"
+#include "Map/MapMgr.h"
 
 
 //////////////////////////////////////////////////////////////////////////////////////////

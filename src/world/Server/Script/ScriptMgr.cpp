@@ -1289,44 +1289,6 @@ void CreatureAIScript::_setDisplayWeaponIds(uint32_t itemId1, uint32_t itemId2)
 //////////////////////////////////////////////////////////////////////////////////////////
 // spell
 
-void CreatureAISpells::addDBEmote(uint32_t textId)
-{
-    MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(textId);
-    if (npcScriptText != nullptr)
-        addEmote(npcScriptText->text, npcScriptText->type, npcScriptText->sound);
-    else
-        LogDebugFlag(LF_SCRIPT_MGR, "A script tried to add a spell emote with %u! Id is not available in table npc_script_text.", textId);
-}
-
-void CreatureAISpells::addEmote(std::string pText, uint8_t pType, uint32_t pSoundId)
-{
-    if (!pText.empty() || pSoundId)
-        mAISpellEmote.push_back(AISpellEmotes(pText, pType, pSoundId));
-}
-
-void CreatureAISpells::sendRandomEmote(CreatureAIScript* creatureAI)
-{
-    if (!mAISpellEmote.empty() && creatureAI != nullptr)
-    {
-        LogDebugFlag(LF_SCRIPT_MGR, "AISpellEmotes::sendRandomEmote() : called");
-
-        uint32_t randomUInt = (mAISpellEmote.size() > 1) ? Util::getRandomUInt(static_cast<uint32_t>(mAISpellEmote.size() - 1)) : 0;
-        creatureAI->getCreature()->SendChatMessage(mAISpellEmote[randomUInt].mType, LANG_UNIVERSAL, mAISpellEmote[randomUInt].mText.c_str());
-
-        if (mAISpellEmote[randomUInt].mSoundId != 0)
-            creatureAI->getCreature()->PlaySoundToSet(mAISpellEmote[randomUInt].mSoundId);
-    }
-}
-
-void CreatureAISpells::sendAnnouncement(CreatureAIScript* creatureAI)
-{
-    if (!mAnnouncement.empty() && creatureAI != nullptr)
-    {
-        LogDebugFlag(LF_SCRIPT_MGR, "AISpellEmotes::sendAnnouncement() : called");
-
-        creatureAI->getCreature()->SendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, mAnnouncement.c_str());
-    }
-}
 
 void CreatureAIScript::newAIUpdateSpellSystem()
 {
