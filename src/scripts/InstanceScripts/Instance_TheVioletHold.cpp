@@ -526,20 +526,20 @@ class MoraggAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(MoraggAI);
     MoraggAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        // Spells
-        if (_isHeroic())
-        {
-            AddSpell(MORAGG_SPELL_RAY_OF_SUFFERING_H, Target_Current, 100, 0, 0, 0, 45);
-            AddSpell(MORAGG_SPELL_RAY_OF_PAIN_H, Target_Current, 100, 0, 0, 0 , 45);
-        }
-        else
-        {
-            AddSpell(MORAGG_SPELL_RAY_OF_SUFFERING, Target_Self, 100, 0, 0, 0, 45);
-            AddSpell(MORAGG_SPELL_RAY_OF_PAIN, Target_Current, 100, 0, 0, 0, 45);
-        }
+        //// Spells
+        //if (_isHeroic())
+        //{
+        //    AddSpell(MORAGG_SPELL_RAY_OF_SUFFERING_H, TARGET_ATTACKING, 100, 0, 0, 0, 45);
+        //    AddSpell(MORAGG_SPELL_RAY_OF_PAIN_H, TARGET_ATTACKING, 100, 0, 0, 0 , 45);
+        //}
+        //else
+        //{
+        //    AddSpell(MORAGG_SPELL_RAY_OF_SUFFERING, TARGET_SELF, 100, 0, 0, 0, 45);
+        //    AddSpell(MORAGG_SPELL_RAY_OF_PAIN, TARGET_ATTACKING, 100, 0, 0, 0, 45);
+        //}
 
-        AddSpell(MORAGG_SPELL_CORROSIVE_SALIVA, Target_Current, 100, 0, 10, 0 , 5);
-        AddSpell(MORAGG_SPELL_OPTIC_LINK, Target_Current, 100, 0, 15, 0, 50);
+        //AddSpell(MORAGG_SPELL_CORROSIVE_SALIVA, TARGET_ATTACKING, 100, 0, 10, 0 , 5);
+        //AddSpell(MORAGG_SPELL_OPTIC_LINK, TARGET_ATTACKING, 100, 0, 15, 0, 50);
 
     }
 };

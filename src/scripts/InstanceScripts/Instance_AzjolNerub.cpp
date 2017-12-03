@@ -30,20 +30,25 @@ class KrikthirAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(KrikthirAI);
     KrikthirAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
+        enableCreatureAISpellSystem = true;
+
         if (!_isHeroic())
         {
-            AddSpell(KRIKTHIR_CURSEOFFATIGUE, Target_Self, 100, 0, 10);
-            AddSpell(KRIKTHIR_MINDFLAY, Target_RandomPlayer, 100, 0, 7, 0, 30);
+            addAISpell(KRIKTHIR_CURSEOFFATIGUE, 100.0f, TARGET_SELF, 0, 10);
+
+            auto curseOfFattigue = addAISpell(KRIKTHIR_MINDFLAY, 100.0f, TARGET_RANDOM_SINGLE, 0, 7);
+            curseOfFattigue->setMinMaxDistance(0.0f, 30.0f);
         }
         else
         {
-            AddSpell(KRIKTHIR_CURSEOFFATIGUE_HC, Target_Self, 100, 0, 10);
-            AddSpell(KRIKTHIR_MINDFLAY_HC, Target_RandomPlayer, 100, 0, 7, 0, 30);
+            addAISpell(KRIKTHIR_CURSEOFFATIGUE_HC, 100.0f, TARGET_SELF, 0, 10);
+
+            auto curseOfFattigue = addAISpell(KRIKTHIR_MINDFLAY_HC, 100.0f, TARGET_RANDOM_SINGLE, 0, 7);
+            curseOfFattigue->setMinMaxDistance(0.0f, 30.0f);
         }
 
         mEnraged = false;
 
-        // new
         addEmoteForEvent(Event_OnCombatStart, 3908);    // This kingdom belongs to the Scourge. Only the dead may enter!
         addEmoteForEvent(Event_OnTargetDied, 3910);     // As Anub'arak commands!
         addEmoteForEvent(Event_OnTargetDied, 3909);     // You were foolish to come.
@@ -75,20 +80,30 @@ class HadronoxAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(HadronoxAI);
     HadronoxAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
+        enableCreatureAISpellSystem = true;
+
         if (!_isHeroic())
         {
-            AddSpell(HADRONOX_WEBGRAB, Target_RandomPlayer, 22, 0, 14, 0, 0);
-            AddSpell(HADRONOX_LEECHPOISON, Target_Self, 14, 0, 25, 0, 20);
-            AddSpell(HADRONOX_ACIDCLOUD, Target_RandomPlayer, 18, 0, 20, 0, 60);
+            addAISpell(HADRONOX_WEBGRAB, 22.0f, TARGET_RANDOM_SINGLE, 0, 14);
+
+            auto leechpoison = addAISpell(HADRONOX_LEECHPOISON, 14.0f, TARGET_SELF, 0, 25);
+            leechpoison->setMinMaxDistance(0.0f, 20.0f);
+
+            auto acidcloud = addAISpell(HADRONOX_ACIDCLOUD, 18.0f, TARGET_RANDOM_SINGLE, 0, 20);
+            acidcloud->setMinMaxDistance(0.0f, 60.0f);
         }
         else
         {
-            AddSpell(HADRONOX_WEBGRAB_HC, Target_RandomPlayer, 22, 0, 14, 0, 0);
-            AddSpell(HADRONOX_LEECHPOISON_HC, Target_Self, 14, 0, 25, 0, 20);
-            AddSpell(HADRONOX_ACIDCLOUD_HC, Target_RandomPlayer, 18, 0, 20, 0, 60);
+            addAISpell(HADRONOX_WEBGRAB_HC, 22.0f, TARGET_RANDOM_SINGLE, 0, 14);
+
+            auto leechpoison = addAISpell(HADRONOX_LEECHPOISON_HC, 14.0f, TARGET_SELF, 0, 25);
+            leechpoison->setMinMaxDistance(0.0f, 20.0f);
+
+            auto acidcloud = addAISpell(HADRONOX_ACIDCLOUD_HC, 18.0f, TARGET_RANDOM_SINGLE, 0, 20);
+            acidcloud->setMinMaxDistance(0.0f, 60.0f);
         }
 
-        AddSpell(HADRONOX_PIERCEARMOR, Target_ClosestPlayer, 20, 0, 5, 0, 0);
+        addAISpell(HADRONOX_PIERCEARMOR, 20.0f, TARGET_ATTACKING, 0, 5);
     }
 };
 
@@ -98,8 +113,10 @@ class GashraAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(GashraAI);
     GashraAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(GASHRA_WEBWRAP, Target_RandomPlayer, 22, 0, 35, 0, 0);
-        AddSpell(GASHRA_INFECTEDBITE, Target_ClosestPlayer, 35, 0, 12, 0, 0);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(GASHRA_WEBWRAP, 22.0f, TARGET_RANDOM_SINGLE, 0, 35);
+        addAISpell(GASHRA_INFECTEDBITE, 35.0f, TARGET_ATTACKING, 0, 12);
     }
 };
 
@@ -109,9 +126,11 @@ class NarjilAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(NarjilAI);
     NarjilAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(NARJIL_WEBWRAP, Target_RandomPlayer, 22, 0, 35, 0, 0);
-        AddSpell(NARJIL_INFECTEDBITE, Target_ClosestPlayer, 35, 0, 12, 0, 0);
-        AddSpell(NARJIL_BLINDINGWEBS, Target_ClosestPlayer, 16, 0, 9, 0, 0);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(NARJIL_WEBWRAP, 22.0f, TARGET_RANDOM_SINGLE, 0, 35);
+        addAISpell(NARJIL_INFECTEDBITE, 35.0f, TARGET_ATTACKING, 0, 12);
+        addAISpell(NARJIL_BLINDINGWEBS, 16.0f, TARGET_ATTACKING, 0, 9);
     }
 };
 
@@ -121,9 +140,11 @@ class SilthikAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(SilthikAI);
     SilthikAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(NARJIL_WEBWRAP, Target_RandomPlayer, 22, 0, 35, 0, 0);
-        AddSpell(NARJIL_INFECTEDBITE, Target_ClosestPlayer, 35, 0, 12, 0, 0);
-        AddSpell(SILTHIK_POISONSPRAY, Target_RandomPlayer, 30, 0, 15, 0, 0);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(NARJIL_WEBWRAP, 22.0f, TARGET_RANDOM_SINGLE, 0, 35);
+        addAISpell(NARJIL_INFECTEDBITE, 35.0f, TARGET_ATTACKING, 0, 12);
+        addAISpell(SILTHIK_POISONSPRAY, 30.0f, TARGET_RANDOM_SINGLE, 0, 15);
     }
 };
 
@@ -133,8 +154,10 @@ class AnubShadowcasterAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(AnubShadowcasterAI);
     AnubShadowcasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(SHADOWCASTER_SHADOWBOLT, Target_RandomPlayer, 36, 0, 8);
-        AddSpell(SHADOWCASTER_SHADOW_NOVA, Target_Self, 22, 0, 15);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(SHADOWCASTER_SHADOWBOLT, 36.0f, TARGET_RANDOM_SINGLE, 0, 8);
+        addAISpell(SHADOWCASTER_SHADOW_NOVA, 22.0f, TARGET_SELF, 0, 15);
     }
 };
 

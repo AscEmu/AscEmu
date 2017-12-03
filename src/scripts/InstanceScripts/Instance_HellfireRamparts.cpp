@@ -23,32 +23,35 @@
 #include "Instance_HellfireRamparts.h"
 
 
-// Watchkeeper GargolmarAI
-/// \todo "Do you smell that? Fresh meat has somehow breached our citadel. Be wary of any intruders." should be on some areatrigger
+// \todo "Do you smell that? Fresh meat has somehow breached our citadel. Be wary of any intruders." should be on some areatrigger
 class WatchkeeperGargolmarAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(WatchkeeperGargolmarAI);
     WatchkeeperGargolmarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(WATCHKEEPER_SURGE, Target_RandomUnit, 20, 0, 15, 5, 40, false, "Back off, pup!", CHAT_MSG_MONSTER_YELL, 10330);
-        AddSpell(WATCHKEEPER_OVERPOWER, Target_Current, 10, 0, 5);
-        mRetaliation = AddSpell(WATCHKEEPER_RETALIATION, Target_Self, 0, 0, 0);
+        enableCreatureAISpellSystem = true;
+
+        auto surge = addAISpell(WATCHKEEPER_SURGE, 20.0f, TARGET_RANDOM_SINGLE, 0, 15);
+        surge->addEmote("Back off, pup!", CHAT_MSG_MONSTER_YELL, 10330);
+        surge->setMinMaxDistance(5.0f, 40.0f);;
+
+        addAISpell(WATCHKEEPER_OVERPOWER, 10.0f, TARGET_ATTACKING, 0, 5);
+        mRetaliation = addAISpell(WATCHKEEPER_RETALIATION, 0.0f, TARGET_SELF);
 
         if (_isHeroic())
-            AddSpell(WATCHKEEPER_MORTAL_WOUND_H, Target_Current, 15, 0, 12);
+            addAISpell(WATCHKEEPER_MORTAL_WOUND_H, 15.0f, TARGET_ATTACKING, 0, 12);
         else
-            AddSpell(WATCHKEEPER_MORTAL_WOUND, Target_Current, 15, 0, 12);
+            addAISpell(WATCHKEEPER_MORTAL_WOUND, 15.0f, TARGET_ATTACKING, 0, 12);
 
         mCalledForHelp = 0;
         _retaliation = false;
 
-        // new
-        addEmoteForEvent(Event_OnCombatStart, 4873);     // What have we here?
-        addEmoteForEvent(Event_OnCombatStart, 4874);     // This may hurt a little....
-        addEmoteForEvent(Event_OnCombatStart, 4875);     // I'm going to enjoy this...
+        addEmoteForEvent(Event_OnCombatStart, 4873);    // What have we here?
+        addEmoteForEvent(Event_OnCombatStart, 4874);    // This may hurt a little....
+        addEmoteForEvent(Event_OnCombatStart, 4875);    // I'm going to enjoy this...
         addEmoteForEvent(Event_OnTargetDied, 4876);     // Say farewell!
         addEmoteForEvent(Event_OnTargetDied, 4877);     // Much too easy.
-        addEmoteForEvent(Event_OnDied, 4878);      // Hahah.. <cough> ..argh!
+        addEmoteForEvent(Event_OnDied, 4878);           // Hahah.. <cough> ..argh!
     }
 
     //case for scriptPhase
@@ -64,48 +67,56 @@ class WatchkeeperGargolmarAI : public CreatureAIScript
         {
             _retaliation = true;
             getCreature()->setAttackTimer(1500, false);
-            CastSpellNowNoScheduling(mRetaliation);
+            _castAISpell(mRetaliation);
         }
-
-        
     }
 
     bool mCalledForHelp;
     bool _retaliation;
-    SpellDesc* mRetaliation;
+    CreatureAISpells* mRetaliation;
 };
 
 
-//Omor the Unscarred
 class OmorTheUnscarredAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(OmorTheUnscarredAI);
         OmorTheUnscarredAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            pShield = AddSpell(OMOR_DEMONIC_SHIELD, Target_Self, 30, 0, 25);
-            pShield->mEnabled = false;
-            SpellDesc* pSummon = AddSpell(OMOR_SUMMON_FIENDISH_HOUND, Target_Self, 8, 1, 20);
+            enableCreatureAISpellSystem = true;
+
+            pShield = addAISpell(OMOR_DEMONIC_SHIELD, 30.0f, TARGET_SELF, 0, 25);
+            pShield->setMinMaxPercentHp(0, 20);
+
+            auto pSummon = addAISpell(OMOR_SUMMON_FIENDISH_HOUND, 8.0f, TARGET_SELF, 1, 20);
             pSummon->addEmote("Achor-she-ki! Feast my pet! Eat your fill!", CHAT_MSG_MONSTER_YELL, 10277);
-            pWhip = AddSpell(OMOR_SHADOW_WHIP, Target_RandomPlayer, 10, 0, 30);
+
+            pWhip = addAISpell(OMOR_SHADOW_WHIP, 10.0f, TARGET_RANDOM_SINGLE, 0, 30);
+            pWhip->setMinMaxDistance(10.0f, 60.0f);
+
             if (!_isHeroic())
             {
-                AddSpell(OMOR_SHADOW_BOLT, Target_RandomPlayer, 8, 3, 15, 10, 60, true);
-                SpellDesc* pAura = AddSpell(OMOR_TREACHEROUS_AURA, Target_RandomPlayer, 8, 2, 35, 0, 60, true);
+                auto shadowBolt = addAISpell(OMOR_SHADOW_BOLT, 8.0f, TARGET_RANDOM_SINGLE, 3, 15, false, true);
+                shadowBolt->setMinMaxDistance(10.0f, 60.0f);
+
+                auto pAura = addAISpell(OMOR_TREACHEROUS_AURA, 8.0f, TARGET_RANDOM_SINGLE, 2, 35, false, true);
+                pAura->setMinMaxDistance(0.0f, 60.0f);
                 pAura->addEmote("A-Kreesh!", CHAT_MSG_MONSTER_YELL, 10278);
             }
             else
             {
-                AddSpell(OMOR_SHADOW_BOLT2, Target_RandomPlayer, 8, 3, 15, 10, 60, true);
-                SpellDesc* pAura = AddSpell(OMOR_BANE_OF_TREACHERY, Target_RandomPlayer, 8, 2, 35, 0, 60, true);
+                auto shadowBolt = addAISpell(OMOR_SHADOW_BOLT2, 8.0f, TARGET_RANDOM_SINGLE, 3, 15, false, true);
+                shadowBolt->setMinMaxDistance(10.0f, 60.0f);
+
+                auto pAura = addAISpell(OMOR_BANE_OF_TREACHERY, 8.0f, TARGET_RANDOM_SINGLE, 2, 35, false, true);
+                pAura->setMinMaxDistance(0.0f, 60.0f);
                 pAura->addEmote("A-Kreesh!", CHAT_MSG_MONSTER_YELL, 10278);
             }
 
-            // new
             addEmoteForEvent(Event_OnCombatStart, 4856);     // I will not be defeated!
             addEmoteForEvent(Event_OnCombatStart, 4855);     // You dare stand against ME?
             addEmoteForEvent(Event_OnCombatStart, 4857);     // Your insolence will be your death!
-            addEmoteForEvent(Event_OnTargetDied, 4860);     // Die, weakling!
-            addEmoteForEvent(Event_OnDied, 4861);     // It is... not over.
+            addEmoteForEvent(Event_OnTargetDied, 4860);      // Die, weakling!
+            addEmoteForEvent(Event_OnDied, 4861);            // It is... not over.
         }
 
         void OnCombatStart(Unit* /*pTarget*/) override
@@ -116,59 +127,11 @@ class OmorTheUnscarredAI : public CreatureAIScript
         void OnCombatStop(Unit* /*pTarget*/) override
         {
             if (isAlive())
-            {
                 sendDBChatMessage(4862);     // I am victorious!
-            }
         }
 
-        void AIUpdate() override
-        {
-            if (_getHealthPercent() <= 20 && pShield != NULL && !pShield->mEnabled)
-            {
-                pShield->mEnabled = true;
-            }
-
-            Unit* pTarget = getCreature()->GetAIInterface()->getNextTarget();
-            if (pTarget != NULL)
-            {
-                if (getRangeToObject(pTarget) > 10.0f)
-                {
-                    pTarget = GetBestPlayerTarget(TargetFilter_Closest);
-                    if (pTarget != NULL)
-                    {
-                        if (getRangeToObject(pTarget) > 10.0f)
-                        {
-                            pTarget = NULL;
-                        }
-                        else
-                        {
-                            _clearHateList();
-                            getCreature()->GetAIInterface()->AttackReaction(pTarget, 500);
-                            getCreature()->GetAIInterface()->setNextTarget(pTarget);
-                        }
-                    }
-                    else
-                        return;
-                }
-
-                if (pTarget == NULL)
-                {
-                    if (pWhip != NULL)
-                    {
-                        pWhip->mLastCastTime = 0;
-                        CastSpellNowNoScheduling(pWhip);
-                        return;
-                    }
-                }
-            }
-
-            
-            setRooted(true);
-    }
-
-        SpellDesc* pShield;
-        SpellDesc* pWhip;
-
+        CreatureAISpells* pShield;
+        CreatureAISpells* pWhip;
 };
 
 void SetupHellfireRamparts(ScriptMgr* mgr)

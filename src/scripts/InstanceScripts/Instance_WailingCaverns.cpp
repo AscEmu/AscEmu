@@ -24,170 +24,160 @@
 #include "Instance_WailingCaverns.h"
 
 
-// Devouring Ectoplasm AI
 class DevouringEctoplasmAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(DevouringEctoplasmAI);
         DevouringEctoplasmAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             // Summon Evolving Ectoplasm
-            AddSpell(7952, Target_Self, 10, 0, 600);
+            addAISpell(7952, 10.0f, TARGET_SELF, 0, 600);
         }
 };
 
-// Druid of the Fang AI
 class DruidFangAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(DruidFangAI);
         DruidFangAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             // Serpent Form
-            SerpentForm = AddSpell(8041, Target_Self, 0, 0, 0);
+            SerpentForm = addAISpell(8041, 5.0f, TARGET_SELF);
+            HealingTouch->setMinMaxPercentHp(0, 50);
 
             // Healing Touch
-            HealingTouch = AddSpell(5187, Target_Self, 0, 2.5, 0);
+            HealingTouch = addAISpell(5187, 5.0f, TARGET_SELF);
+            HealingTouch->setMinMaxPercentHp(0, 5);
 
             // Lightning Bolt
-            LightningBolt = AddSpell(9532, Target_Current, 30, 3, 0);
+            LightningBolt = addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
 
             // Druid's Slumber
-            DruidsSlumber = AddSpell(8040, Target_RandomPlayerNotCurrent, 20, 2.5, 0);
+            DruidsSlumber = addAISpell(8040, 20.0f, TARGET_RANDOM_SINGLE, 3, 0);
         }
 
-        void AIUpdate() override
-        {
-            if (_getHealthPercent() <= 50 && SerpentForm->mEnabled == true)
-            {
-                CastSpellNowNoScheduling(SerpentForm);
-                SerpentForm->mEnabled = false;
-                LightningBolt->mEnabled = false;
-                DruidsSlumber->mEnabled = false;
-            } // If they dont have serpent form aura then re-enable normal spells
-            else if (SerpentForm->mEnabled == false && !getCreature()->HasAura(8041))
-            {
-                LightningBolt->mEnabled = true;
-                DruidsSlumber->mEnabled = true;
-            }
-
-            if (_getHealthPercent() <= 5 && HealingTouch->mEnabled == true)
-            {
-                // Remove Serpent Form
-                _removeAura(8041);
-                CastSpellNowNoScheduling(HealingTouch);
-                HealingTouch->mEnabled = false;
-            }
-        }
-
-        SpellDesc* SerpentForm;
-        SpellDesc* LightningBolt;
-        SpellDesc* DruidsSlumber;
-        SpellDesc* HealingTouch;
+        CreatureAISpells* SerpentForm;
+        CreatureAISpells* LightningBolt;
+        CreatureAISpells* DruidsSlumber;
+        CreatureAISpells* HealingTouch;
 };
 
 
 // BOSSES
-// Lady Anacondra AI
 class LadyAnacondraAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(LadyAnacondraAI);
         LadyAnacondraAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             // Lightning Bolt
-            AddSpell(9532, Target_Current, 30, 3, 0);
+            addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
             // Sleep
-            AddSpell(700, Target_RandomPlayerNotCurrent, 10, 1.5, 20);
+            addAISpell(700, 10.0f, TARGET_RANDOM_SINGLE, 2, 20);
 
             addEmoteForEvent(Event_OnCombatStart, 8755);     // None can stand against the Serpent Lords
         }
 };
 
-// Lord Cobrahn AI
 class LordCobrahnAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(LordCobrahnAI);
         LordCobrahnAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             // Lightning Bolt
-            LightningBolt = AddSpell(9532, Target_Current, 30, 3, 0);
+            LightningBolt = addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
+            mEnableLighningBolt = true;
             // Poison -- Spell ID Needs checked
-            AddSpell(34969, Target_Current, 15, 0, 0);
+            addAISpell(34969, 15.0f, TARGET_ATTACKING);
             // Cobrahn Serpent Form
-            SerpentForm = AddSpell(7965, Target_Self, 0, 0, 0);
+            SerpentForm = addAISpell(7965, 0.0f, TARGET_SELF);
+            mEnableSerpentForm = true;
 
             addEmoteForEvent(Event_OnCombatStart, 8756);     // You will never wake the dreamer!
         }
 
         void AIUpdate() override
         {
-            if (_getHealthPercent() <= 20 && SerpentForm->mEnabled == true)
+            if (_getHealthPercent() <= 20 && mEnableSerpentForm == true)
             {
-                CastSpellNowNoScheduling(SerpentForm);
-                SerpentForm->mEnabled = false;
+                _castAISpell(SerpentForm);
+                mEnableSerpentForm = false;
                 // Disable Lightning Bolt
-                LightningBolt->mEnabled = false;
+                mEnableLighningBolt = false;
             }
-            else if (_getHealthPercent() <= 20 && SerpentForm->mEnabled == false && !getCreature()->HasAura(7965))
+            else if (_getHealthPercent() <= 20 && mEnableSerpentForm == false && !getCreature()->HasAura(7965))
             {
                 // Enable Lightning Bolt
-                LightningBolt->mEnabled = true;
+                mEnableLighningBolt = true;
             }
             
         }
-        SpellDesc* LightningBolt;
-        SpellDesc* SerpentForm;
+        CreatureAISpells* LightningBolt;
+        bool mEnableLighningBolt;
+        CreatureAISpells* SerpentForm;
+        bool mEnableSerpentForm;
 };
 
-// Lord Pythas AI
 class LordPythasAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(LordPythasAI);
         LordPythasAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             // Lightning Bolt
-            AddSpell(9532, Target_Current, 30, 3, 0);
+            addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
             // Sleep
-            AddSpell(700, Target_RandomPlayer, 10, 1.5, 0);
+            addAISpell(700, 10.0f, TARGET_RANDOM_SINGLE, 2, 0);
             // Thunderclap
-            AddSpell(8147, Target_Self, 20, 0, 5);
+            addAISpell(8147, 20.0f, TARGET_SELF, 0, 5);
 
             addEmoteForEvent(Event_OnCombatStart, 8757);     // The coils of death... Will crush you!
         }
 };
 
-// Lord Serpentis AI
 class LordSerpentisAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(LordSerpentisAI);
         LordSerpentisAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             // Lightning Bolt
-            AddSpell(9532, Target_Current, 30, 3, 0);
+            addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
             // Sleep
-            AddSpell(700, Target_RandomPlayer, 10, 1.5, 0);
+            addAISpell(700, 10.0f, TARGET_RANDOM_SINGLE, 2, 0);
 
             addEmoteForEvent(Event_OnCombatStart, 8758);     // I am the serpent king, i can do anything!
         }
 };
 
-// Verdan the Everliving AI
 class VerdanEverlivingAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(VerdanEverlivingAI);
         VerdanEverlivingAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             // Grasping Vines
-            AddSpell(8142, Target_Current, 30, 1, 0);
+            addAISpell(8142, 30.0f, TARGET_ATTACKING, 1, 0);
         }
 };
 
-// Skum AI
 class SkumAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(SkumAI);
         SkumAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             // Chained Bolt
-            AddSpell(6254, Target_Current, 50, 1.8f, 0);
+            addAISpell(6254, 50.0f, TARGET_ATTACKING, 2, 0);
         }
 
         void AIUpdate() override
@@ -204,19 +194,19 @@ class SkumAI : public CreatureAIScript
         }
 };
 
-// Mutanus the Devourer AI
 class MutanusAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(MutanusAI);
         MutanusAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             // Thundercrack
-            AddSpell(8150, Target_Self, 15, 0, 0);
+            addAISpell(8150, 15.0f, TARGET_SELF);
             // Terrify
-            AddSpell(7399, Target_RandomPlayer, 15, 0, 4);
+            addAISpell(7399, 15.0f, TARGET_RANDOM_SINGLE, 0, 4);
         }
 };
-
 
 
 // Wailing Caverns Event
@@ -320,12 +310,13 @@ class DofNaralexGossip : public Arcemu::Gossip::Script
         }
 };
 
-// Disciple of Naralex AI
 class DofNaralexAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(DofNaralexAI);
         DofNaralexAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             // --- Initialization ---
             Mutanus = nullptr;
 
@@ -337,7 +328,8 @@ class DofNaralexAI : public CreatureAIScript
             SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
 
             // Awakening Spell
-            Awakening = AddSpell(6271, Target_Self, 0, 0, 0, 0, 0, false, "Step back and be ready!, I'll try to Awake Naralex", CHAT_MSG_MONSTER_SAY);
+            Awakening = addAISpell(6271, 0.0f, TARGET_SELF);
+            Awakening->addEmote("Step back and be ready!, I'll try to Awake Naralex", CHAT_MSG_MONSTER_SAY, 0);
 
             SpawnTimer = 0;
         }
@@ -355,7 +347,7 @@ class DofNaralexAI : public CreatureAIScript
             {
                 case 2:
                     getCreature()->Emote(EMOTE_ONESHOT_TALK);
-                    CastSpellNowNoScheduling(Awakening);
+                    _castAISpell(Awakening);
                     SpawnTimer = _addTimer(100000);
                     break;
                 default:
@@ -434,10 +426,11 @@ class DofNaralexAI : public CreatureAIScript
         }
 
         int32 SpawnTimer;
-        SpellDesc* Awakening;
+        CreatureAISpells* Awakening;
         Creature* Mutanus;
 };
-// Deviate Moccasin
+
+
 class DeviateMoccasinAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(DeviateMoccasinAI);
@@ -446,7 +439,6 @@ class DeviateMoccasinAI : public CreatureAIScript
         }
 };
 
-// Nightmare Ectoplasm
 class EctoplasmAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(EctoplasmAI);
@@ -455,7 +447,6 @@ class EctoplasmAI : public CreatureAIScript
         }
 };
 
-// Naralex State
 class Naralex : public CreatureAIScript
 {
     public:

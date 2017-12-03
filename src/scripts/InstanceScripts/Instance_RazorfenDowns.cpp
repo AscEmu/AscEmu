@@ -76,9 +76,10 @@ class MordreshFireEyeAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(MordreshFireEyeAI);
     MordreshFireEyeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        //spells
-        AddSpell(SP_MORDRESH_FIRE_NOVA, Target_Self, 10, 2, 0);
-        AddSpell(SP_MORDRESH_FIREBALL, Target_Current, 10, 3, 0, 0, 40);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(SP_MORDRESH_FIRE_NOVA, 10.0f, TARGET_SELF, 2, 0);
+        addAISpell(SP_MORDRESH_FIREBALL, 10.0f, TARGET_ATTACKING, 3, 0);
     }
 };
 

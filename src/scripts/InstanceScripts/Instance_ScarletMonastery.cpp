@@ -25,18 +25,18 @@
 
 // Graveyard
 
-// Interrogator Vishas
 class VishasAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(VishasAI);
         VishasAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(SP_VISHAS_SHADOW_WORD, Target_RandomPlayer, 20, 0, 8);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(SP_VISHAS_SHADOW_WORD, 20.0f, TARGET_RANDOM_SINGLE, 0, 8);
 
             m_uiSay = 0;
 
-            // new
-            addEmoteForEvent(Event_OnCombatStart, 2110);     // Tell me... tell me everything!
+            addEmoteForEvent(Event_OnCombatStart, 2110);    // Tell me... tell me everything!
             addEmoteForEvent(Event_OnTargetDied, 2113);     // Purged by pain!
         }
 
@@ -65,18 +65,18 @@ class VishasAI : public CreatureAIScript
         uint8 m_uiSay;
 };
 
-// Bloodmage Thalnos
 class ThalnosAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(ThalnosAI);
         ThalnosAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(SP_THALNOS_SHADOW_BOLT, Target_RandomPlayer, 20, 3.0f, 2);
-            AddSpell(SP_THALNOS_FLAME_SPIKE, Target_RandomPlayerDestination, 20, 3.0f, 14);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(SP_THALNOS_SHADOW_BOLT, 20.0f, TARGET_RANDOM_SINGLE, 3, 2);
+            addAISpell(SP_THALNOS_FLAME_SPIKE, 20.0f, TARGET_RANDOM_DESTINATION, 3, 14);
 
             m_bEmoted = false;
 
-            // new
             addEmoteForEvent(Event_OnCombatStart, 2107);     // We hunger for vengeance.
             addEmoteForEvent(Event_OnTargetDied, 2109);     // More... More souls!
         }
@@ -101,26 +101,29 @@ class ThalnosAI : public CreatureAIScript
 };
 
 // Library
-//Houndmaster Loksey
 class LokseyAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(LokseyAI);
         LokseyAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(SP_LOKSEY_BLOODLUST, Target_Self, 5, 0, 40);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(SP_LOKSEY_BLOODLUST, 5.0f, TARGET_SELF, 0, 40);
+
             addEmoteForEvent(Event_OnCombatStart, 2086);     // Release the hounds!
         }
 };
 
-// Arcanist Doan
 class DoanAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(DoanAI);
         DoanAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(SP_DOAN_SILENCE, Target_Self, 25, 1.5f, 14);
-            AddSpell(SP_DOAN_POLY, Target_SecondMostHated, 15, 1.5f, 10);
-            AddSpell(SP_DOAN_ARCANE_EXP, Target_Self, 20, 0, 10);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(SP_DOAN_SILENCE, 25.0f, TARGET_SELF, 2, 14);
+            addAISpell(SP_DOAN_POLY, 15.0f, TARGET_VARIOUS, 2, 10);
+            addAISpell(SP_DOAN_ARCANE_EXP, 20.0f, TARGET_SELF, 0, 10);
 
             m_bShielded = false;
 
@@ -154,14 +157,17 @@ class DoanAI : public CreatureAIScript
 
 
 // Armory
-// Herod
 class HerodAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(HerodAI);
         HerodAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(SP_HEROD_WHIRLWINDSPELL, Target_Self, 12, 0, 12)->addEmote("Blades of Light!", CHAT_MSG_MONSTER_YELL, 5832);
-            AddSpell(SP_HEROD_CHARGE, Target_RandomPlayer, 6, 0, 20);
+            enableCreatureAISpellSystem = true;
+
+            auto whirlwind = addAISpell(SP_HEROD_WHIRLWINDSPELL, 12.0f, TARGET_SELF, 0, 12);
+            whirlwind->addEmote("Blades of Light!", CHAT_MSG_MONSTER_YELL, 5832);
+
+            addAISpell(SP_HEROD_CHARGE, 6.0f, TARGET_RANDOM_SINGLE, 0, 20);
 
             m_bEnraged = false;
 

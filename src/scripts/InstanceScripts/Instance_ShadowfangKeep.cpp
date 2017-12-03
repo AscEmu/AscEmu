@@ -802,8 +802,7 @@ class AshcrombeGossip : public Arcemu::Gossip::Script
 };
 
 ///////////////////////////////////////////////////////////////////
-/// Main bosses events
-///////////////////////////////////////////////////////////////////
+// Main bosses events
 
 // Creature entry: 4278
 class SpringvaleAI : public CreatureAIScript
@@ -819,17 +818,22 @@ class SpringvaleAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(SpringvaleAI);
         SpringvaleAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            HolyLight = AddSpell(SPELL_HOLY_LIGHT, Target_WoundedFriendly, 10, 2.5f, 0);
-            DevoAura = AddSpell(SPELL_DEVO_AURA, Target_Self, 0, 0, 0);
-            DivineProt = AddSpell(SPELL_DIVINE_PROT, Target_Self, 0, 0, 0);
-            HammerOfJustice = AddSpell(SPELL_HAMMER_OF_JUSTICE, Target_Current, 12, 0, 60);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(SPELL_HOLY_LIGHT, 10.0f, TARGET_RANDOM_FRIEND, 3, 0);
+
+            DevoAura = addAISpell(SPELL_DEVO_AURA, 0.0f, TARGET_SELF, 0, 0);
+            DivineProt = addAISpell(SPELL_DIVINE_PROT, 0.0f, TARGET_SELF, 0, 0);
+            mEnableDivineProt = true;
+
+            addAISpell(SPELL_HAMMER_OF_JUSTICE, 12.0f, TARGET_ATTACKING, 0, 60);
         }
 
         void OnCombatStart(Unit* /*pTarget*/) override
         {
             // Turn aura ON!
             if (!getCreature()->HasAura(SPELL_DEVO_AURA))
-                CastSpellNowNoScheduling(DevoAura);
+                _castAISpell(DevoAura);
         }
 
         void OnCombatStop(Unit* /*pTarget*/) override
@@ -841,23 +845,21 @@ class SpringvaleAI : public CreatureAIScript
 
         void AIUpdate() override
         {
-            if (_getHealthPercent() <= 20 && DivineProt->mEnabled)
+            if (_getHealthPercent() <= 20 && mEnableDivineProt)
             {
-                CastSpellNowNoScheduling(DivineProt);
-                DivineProt->mEnabled = false;
+                _castAISpell(DivineProt);
+                mEnableDivineProt = false;
             }
         }
 
     protected:
 
-        SpellDesc* DevoAura;
-        SpellDesc* DivineProt;
-        SpellDesc* HolyLight;
-        SpellDesc* HammerOfJustice;
+        CreatureAISpells* DevoAura;
+        CreatureAISpells* DivineProt;
+        bool mEnableDivineProt;
 };
 
 // Creature entry: 3914
-
 class RethilgoreAI : public CreatureAIScript
 {
     const uint32 SPELL_SOUL_DRAIN = 7295;
@@ -865,12 +867,13 @@ class RethilgoreAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(RethilgoreAI);
         RethilgoreAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(SPELL_SOUL_DRAIN, Target_RandomPlayer, 8.0f, 2, 10);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(SPELL_SOUL_DRAIN, 8.0f, TARGET_RANDOM_SINGLE, 2, 10);
         }
 };
 
 // Creature entry: 3927
-
 class NandosAI : public CreatureAIScript
 {
         enum NandosAISpells : uint32
@@ -883,10 +886,13 @@ class NandosAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(NandosAI);
         NandosAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             SFK_instance = static_cast<ShadowfangKeepInstance*>(pCreature->GetMapMgr()->GetScript());
-            sCallBleakWord = AddSpell(SPELL_CALL_BLEAK_WORG, Target_Self, 0, 1.3f, 0);
-            sCallSlaveringWorg = AddSpell(SPELL_CALL_SLAVERING_WORG, Target_Self, 0, 1.3f, 0);
-            sCallLupineHorror = AddSpell(SPELL_CALLLUPINE_HORROR, Target_Self, 0, 1.3f, 0);
+
+            sCallBleakWord = addAISpell(SPELL_CALL_BLEAK_WORG, 0.0f, TARGET_SELF);
+            sCallSlaveringWorg = addAISpell(SPELL_CALL_SLAVERING_WORG, 0.0f, TARGET_SELF);
+            sCallLupineHorror = addAISpell(SPELL_CALLLUPINE_HORROR, 0.0f, TARGET_SELF);
             Reset();
         }
 
@@ -895,6 +901,10 @@ class NandosAI : public CreatureAIScript
             sCallBleakWorg_Timer        = 0;
             sCallSlaveringWorg_Timer    = 0;
             sCallLupineHorror_Timer     = 0;
+
+            mEnableCallBleakWord = true;
+            mEnableCallSlaveringWorg = true;
+            mEnableCallLupineHorror = true;
         }
 
         void OnCombatStart(Unit* /*mEnemy*/) override
@@ -920,25 +930,25 @@ class NandosAI : public CreatureAIScript
         {
             if (_getHealthPercent() <= 80)
             {
-                if (_isTimerFinished(sCallBleakWorg_Timer) && sCallBleakWord->mEnabled)
+                if (_isTimerFinished(sCallBleakWorg_Timer) && mEnableCallBleakWord)
                 {
-                    CastSpell(sCallBleakWord);
+                    _castAISpell(sCallBleakWord);
                     _removeTimer(sCallBleakWorg_Timer);
-                    sCallBleakWord->mEnabled = false;
+                    mEnableCallBleakWord = false;
                 }
 
-                if (_isTimerFinished(sCallSlaveringWorg_Timer) && sCallSlaveringWorg->mEnabled)
+                if (_isTimerFinished(sCallSlaveringWorg_Timer) && mEnableCallSlaveringWorg)
                 {
-                    CastSpell(sCallSlaveringWorg);
+                    _castAISpell(sCallSlaveringWorg);
                     _removeTimer(sCallSlaveringWorg_Timer);
-                    sCallSlaveringWorg->mEnabled = false;
+                    mEnableCallSlaveringWorg = false;
                 }
 
-                if (_isTimerFinished(sCallLupineHorror_Timer) && sCallLupineHorror->mEnabled)
+                if (_isTimerFinished(sCallLupineHorror_Timer) && mEnableCallLupineHorror)
                 {
-                    CastSpell(sCallLupineHorror);
+                    _castAISpell(sCallLupineHorror);
                     _removeTimer(sCallLupineHorror_Timer);
-                    sCallLupineHorror->mEnabled = false;
+                    mEnableCallLupineHorror = false;
                 }
             }
         }
@@ -949,13 +959,17 @@ class NandosAI : public CreatureAIScript
         uint32 sCallBleakWorg_Timer;
         uint32 sCallSlaveringWorg_Timer;
         uint32 sCallLupineHorror_Timer;
-        SpellDesc* sCallBleakWord;
-        SpellDesc* sCallSlaveringWorg;
-        SpellDesc* sCallLupineHorror;
+
+        CreatureAISpells* sCallBleakWord;
+        CreatureAISpells* sCallSlaveringWorg;
+        CreatureAISpells* sCallLupineHorror;
+
+        bool mEnableCallBleakWord;
+        bool mEnableCallSlaveringWorg;
+        bool mEnableCallLupineHorror;
 };
 
 // Creature entry: 3887
-
 class BaronSilverlaineAI : public CreatureAIScript
 {
         const uint32 SPELL_VEIL_OF_SHADOW = 7068;
@@ -963,12 +977,13 @@ class BaronSilverlaineAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(BaronSilverlaineAI);
         BaronSilverlaineAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(SPELL_VEIL_OF_SHADOW, Target_Current, 10.0f, 0, 2);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(SPELL_VEIL_OF_SHADOW, 10.0f, TARGET_ATTACKING, 0, 2);
         }
 };
 
 // Creature entry: 4279
-
 class BlindWatcherAI : public CreatureAIScript
 {
         enum ODO_THE_BLINDWATCHER_SPELLS : uint32
@@ -979,45 +994,55 @@ class BlindWatcherAI : public CreatureAIScript
         };
 
         ADD_CREATURE_FACTORY_FUNCTION(BlindWatcherAI);
-        BlindWatcherAI(Creature* pCreature) : CreatureAIScript(pCreature), mPhase(0)
+        BlindWatcherAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            // Howling Rage 1
-            HowlingRage1 = AddSpell(ODO_HOWLING_RAGE1, Target_Self, 0, 5, 0);
-            // Howling Rage 2
-            HowlingRage2 = AddSpell(ODO_HOWLING_RAGE2, Target_Self, 0, 1.5f, 0);
-            // Howling Rage 3
-            HowlingRage3 = AddSpell(ODO_HOWLING_RAGE3, Target_Self, 0, 1.5f, 0);
+            enableCreatureAISpellSystem = true;
+
+            HowlingRage1 = addAISpell(ODO_HOWLING_RAGE1, 0.0f, TARGET_SELF);
+            HowlingRage2 = addAISpell(ODO_HOWLING_RAGE2, 0.0f, TARGET_SELF);
+            HowlingRage3 = addAISpell(ODO_HOWLING_RAGE3, 0.0f, TARGET_SELF);
         }
 
         void AIUpdate() override
         {
-            if (_getHealthPercent() <= 75 && !getCreature()->HasAura(ODO_HOWLING_RAGE1) && mPhase == 0)
+            if (_getHealthPercent() <= 75 && getScriptPhase() == 1)
             {
-                CastSpell(HowlingRage1);
-                ++mPhase;
+                setScriptPhase(2);
             }
-            else if (_getHealthPercent() <= 45 && !getCreature()->HasAura(ODO_HOWLING_RAGE2) && mPhase == 1)
+            else if (_getHealthPercent() <= 45 && getScriptPhase() == 2)
             {
-                CastSpell(HowlingRage2);
-                ++mPhase;
+                setScriptPhase(3);
             }
-            else if (_getHealthPercent() <= 20 && !getCreature()->HasAura(ODO_HOWLING_RAGE2) && mPhase == 2)
+            else if (_getHealthPercent() <= 20 && getScriptPhase() == 3)
             {
-                CastSpell(HowlingRage3);
-                ++mPhase;
+                setScriptPhase(4);
+            }
+        }
+
+        void OnScriptPhaseChange(uint32_t scriptPhase) override
+        {
+            switch (scriptPhase)
+            {
+                case 2:
+                    _castAISpell(HowlingRage1);
+                    break;
+                case 3:
+                    _castAISpell(HowlingRage2);
+                    break;
+                case 4:
+                    _castAISpell(HowlingRage3);
+                    break;
             }
         }
 
     protected:
 
-        SpellDesc* HowlingRage1;
-        SpellDesc* HowlingRage2;
-        SpellDesc* HowlingRage3;
-        uint8 mPhase;
+        CreatureAISpells* HowlingRage1;
+        CreatureAISpells* HowlingRage2;
+        CreatureAISpells* HowlingRage3;
 };
 
 // Creature entry: 4274
-
 class FenrusAI : public CreatureAIScript
 {
         const uint32 SPELL_TOXIC_SALIVA = 7125;
@@ -1025,12 +1050,13 @@ class FenrusAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(FenrusAI);
         FenrusAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(SPELL_TOXIC_SALIVA, Target_Current, 12, 1.5f, 60);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(SPELL_TOXIC_SALIVA, 12.0f, TARGET_ATTACKING, 2, 60);
         }
 };
 
 // Creature entry: 4275
-
 class ArugalBossAI : public CreatureAIScript
 {
         enum Arugal_Boss_Spells : uint32
@@ -1056,9 +1082,12 @@ class ArugalBossAI : public CreatureAIScript
         {
             SFK_instance = static_cast<ShadowfangKeepInstance*>(pCreature->GetMapMgr()->GetScript());
 
-            sVoidBolt = AddSpell(SPELL_VOID_BOLT, Target_Current, 0, 3, 1);
-            AddSpell(SPELL_THUNDER_SHOCK, Target_Self, 10.0f, 0, 0, 0, 5.0f);
-            AddSpell(SPELL_ARUGALS_CURSE, Target_RandomPlayer, 5.0f, 0, 0);
+            enableCreatureAISpellSystem = true;
+
+            sVoidBolt = addAISpell(SPELL_VOID_BOLT, 0.0f, TARGET_ATTACKING);
+
+            addAISpell(SPELL_THUNDER_SHOCK, 10.0f, TARGET_SELF);
+            addAISpell(SPELL_ARUGALS_CURSE, 5.0f, TARGET_RANDOM_SINGLE);
 
             addEmoteForEvent(Event_OnCombatStart, YELL_ARUGAL_AGROO);
             addEmoteForEvent(Event_OnTargetDied, YELL_ARUGAL_ENEMY_DEATH);
@@ -1164,7 +1193,7 @@ class ArugalBossAI : public CreatureAIScript
                 // Cast void bolt non stop
                 if (getAIAgent() == AGENT_SPELL)
                 {
-                    CastSpellNowNoScheduling(sVoidBolt);
+                    _castAISpell(sVoidBolt);
                 }
 
                 if (_getHealthPercent() <= 25)
@@ -1194,13 +1223,13 @@ class ArugalBossAI : public CreatureAIScript
         uint8 stage;
         uint8 arugalPosition;
         ShadowfangKeepInstance* SFK_instance;
-        SpellDesc* sVoidBolt;
+        CreatureAISpells* sVoidBolt;
+
         uint32 aiUpdateOriginal;
         float originalRegen;
 };
 
 // Creature entry: 3886
-
 class RazorclawTheButcherAI : public CreatureAIScript
 {
         const uint32 SPELL_BUTCHER_DRAIN = 7485;
@@ -1208,16 +1237,16 @@ class RazorclawTheButcherAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(RazorclawTheButcherAI);
         RazorclawTheButcherAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(SPELL_BUTCHER_DRAIN, Target_RandomPlayer, 5.0f, 0, 0);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(SPELL_BUTCHER_DRAIN, 5.0f, TARGET_RANDOM_SINGLE);
         }
 };
 
 ///////////////////////////////////////////////////////////////////
-/// Trash npcs
-///////////////////////////////////////////////////////////////////
+// Trash npcs
 
 // Creature entry: 3866
-
 class VileBatAI : public CreatureAIScript
 {
         enum VileBatSpells : uint32
@@ -1229,13 +1258,14 @@ class VileBatAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(VileBatAI);
         VileBatAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(SPELL_DIVING_SWEEP, Target_Current, 8.0f, 0, 0);
-            AddSpell(SPELL_DISARM, Target_Current, 5.0f, 0, 6);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(SPELL_DIVING_SWEEP, 8.0f, TARGET_ATTACKING);
+            addAISpell(SPELL_DISARM, 5.0f, TARGET_ATTACKING, 0, 6);
         }
 };
 
 // Creature entry: 3868
-
 class BloodSeekerAI : public CreatureAIScript
 {
         const uint32 SPELL_EXPOSE_WEAKNESS = 7140;
@@ -1243,100 +1273,107 @@ class BloodSeekerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(BloodSeekerAI);
         BloodSeekerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            // Expose Weakness
-            AddSpell(SPELL_EXPOSE_WEAKNESS, Target_Current, 5.0f, 0, 5);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(SPELL_EXPOSE_WEAKNESS, 5.0f, TARGET_ATTACKING, 0, 5);
         }
 };
 
 // Creature entry: 4627
-
 class VoidWalkerAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(VoidWalkerAI);
         VoidWalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             // Dark Offering
-            AddSpell(7154, Target_WoundedFriendly, 5.0f, 0, 7);
+            addAISpell(7154, 5.0f, TARGET_RANDOM_FRIEND, 0, 7);
         }
 };
 
 // Creature entry: 3861
-
 class BleakWorgAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(BleakWorgAI);
         BleakWorgAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             // Wavering Will
-            AddSpell(7127, Target_RandomPlayer, 5.0f, 0, 60);
+            addAISpell(7127, 5.0f, TARGET_RANDOM_SINGLE, 0, 60);
         }
 };
 
 // Creature entry: 3863
-
 class LupineHorrorAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(LupineHorrorAI);
         LupineHorrorAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             // Summon Lupine Delusions
-            AddSpell(7132, Target_Self, 5.0f, 0, 4 * 60);
+            addAISpell(7132, 5.0f, TARGET_SELF, 0, 240);
         }
 };
 
 // Creature entry: 2529
-
 class SonOfArugalAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(SonOfArugalAI);
         SonOfArugalAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             // Arugal's Gift
-            AddSpell(7124, Target_Current, 5.0f, 2.5f, 0);
+            addAISpell(7124, 5.0f, TARGET_ATTACKING, 3, 0);
         }
 };
 
 // Creature entry: 3853
-
 class ShadowfangMoonwalkerAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(ShadowfangMoonwalkerAI);
         ShadowfangMoonwalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             // Anti-Magic Shield
-            AddSpell(7121, Target_Self, 5.0f, 2.0f, 10);
+            addAISpell(7121, 5.0f, TARGET_SELF, 2, 10);
         }
 };
 
 // Creature entry: 3855
-
 class ShadowfangDarksoulAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(ShadowfangDarksoulAI);
         ShadowfangDarksoulAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             // Befuddlement
-            AddSpell(8140, Target_RandomPlayer, 8.0f, 0, 15);
+            addAISpell(8140, 8.0f, TARGET_RANDOM_SINGLE, 0, 15);
 
             // Shadow Word : Pain
-            AddSpell(970, Target_RandomPlayer, 5.0f, 0, 18);
+            addAISpell(970, 5.0f, TARGET_RANDOM_SINGLE, 0, 18);
         }
 };
 
 // Creature entry: 3857
-
 class ShadowfangGluttonAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(ShadowfangGluttonAI);
         ShadowfangGluttonAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             // Blood Tap
-            AddSpell(7122, Target_Current, 5.0f, 0, 0);
+            addAISpell(7122, 5.0f, TARGET_ATTACKING);
         }
 };
 
 // Creature entry: 3859
-
 class ShadowfangRagetoothAI : public CreatureAIScript
 {
         const uint32 SPELL_WILD_RAGE = 7072;
@@ -1358,70 +1395,74 @@ class ShadowfangRagetoothAI : public CreatureAIScript
 
     protected:
 
-        //SpellDesc* sWildRage;
         bool sWildRageCasted;
 };
 
 // Creature entry: 3864
-
 class FelSteedAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(FelSteedAI);
         FelSteedAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             // Fel Stomp
-            AddSpell(7139, Target_Current, 5.0f, 0, 3);
+            addAISpell(7139, 5.0f, TARGET_ATTACKING, 0, 3);
         }
 };
 
 // Creature entry: 3872
-
 class DeathswornCaptainAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(DeathswornCaptainAI);
         DeathswornCaptainAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             // Hamstring
-            AddSpell(9080, Target_Current, 5.0f, 0, 10);
+            addAISpell(9080, 5.0f, TARGET_ATTACKING, 0, 10);
 
             // Cleave
-            AddSpell(40505, Target_Current, 8.0f, 0, 10);
+            addAISpell(40505, 8.0f, TARGET_ATTACKING, 0, 10);
         }
 };
 
 // Creature entry: 3873
-
 class TormentedOfficerAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(TormentedOfficerAI);
         TormentedOfficerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             // Forsaken Skills (TODO: implement dummy aura of this spell)
-            AddSpell(7054, Target_Current, 5.0f, 2.0f, 300);
+            addAISpell(7054, 5.0f, TARGET_ATTACKING, 2, 300);
         }
 };
 
 // Creature entry: 3875
-
 class HauntedServitorAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(HauntedServitorAI);
         HauntedServitorAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             // Haunting Spirits (TODO: implement dummy aura of this spell)
-            AddSpell(7057, Target_Current, 5.0f, 2.0f, 300);
+            addAISpell(7057, 5.0f, TARGET_ATTACKING, 2, 300);
         }
 };
 
 // Creature entry: 3877
-
 class WaillingGuardsmanAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(WaillingGuardsmanAI);
         WaillingGuardsmanAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             // Screams of the Past
-            AddSpell(7074, Target_Self, 5.0f, 0, 5);
+            addAISpell(7074, 5.0f, TARGET_SELF, 0, 5);
         }
 };
 
@@ -1443,8 +1484,7 @@ class WorlfguardWorgAI : public CreatureAIScript
 };
 
 ///////////////////////////////////////////////////////////////////
-/// Spells used by creatures in Shadowfang keep dungeon
-///////////////////////////////////////////////////////////////////
+// Spells used by creatures in Shadowfang keep dungeon
 
 // Spell entry: 6421
 bool ashrombeUnlockDummySpell(uint8_t /*effectIndex*/, Spell* pSpell)

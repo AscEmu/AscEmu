@@ -143,7 +143,7 @@ class JainaAI : public CreatureAIScript
 };
 
 // Lady Jaina Proudmoore Gossip
-/// \todo update this to new GossipHello
+// \todo update this to new GossipHello
 class Jaina_Gossip : public Arcemu::Gossip::Script
 {
     public:
@@ -164,32 +164,40 @@ class Jaina_Gossip : public Arcemu::Gossip::Script
 };
 
 
-//Marwyn
 class Marwyn : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(Marwyn);
         Marwyn(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            if (_isHeroic() == false) // NORMAL MODE
+            enableCreatureAISpellSystem = true;
+
+            CreatureAISpells* spellWell = nullptr;
+            CreatureAISpells* corruptFlesh = nullptr;
+            if (_isHeroic() == false)
             {
-                AddSpell(N_SPELL_OBLITERATE, Target_Current, 45, 0, 30); // Timer may be off on this.
-                AddSpell(N_SPELL_WELL, Target_RandomPlayer, 60, 0, 13, 0, 0, false, "Your flesh has decayed before your very eyes!", CHAT_MSG_MONSTER_YELL, 16739);
-                AddSpell(N_SPELL_CORRUPTFLESH, Target_Current, 40, 0, 20, 0, 0, false, "Waste away into nothingness!", CHAT_MSG_MONSTER_YELL, 16740);
-                AddSpell(N_SPELL_SHARED, Target_RandomPlayer, 45, 0, 20);
+                addAISpell(N_SPELL_OBLITERATE, 45.0f, TARGET_ATTACKING, 0, 30); // Timer may be off on this.
+                spellWell = addAISpell(N_SPELL_WELL, 60.0f, TARGET_RANDOM_SINGLE, 0, 13);
+                corruptFlesh = addAISpell(N_SPELL_CORRUPTFLESH, 40.0f, TARGET_ATTACKING, 0, 20);
+                addAISpell(N_SPELL_SHARED, 45.0f, TARGET_RANDOM_SINGLE, 0, 20);
             }
-            else // HEROIC MODE
+            else
             {
-                AddSpell(H_SPELL_OBLITERATE, Target_Current, 45, 0, 30); // Timer may be off on this.
-                AddSpell(H_SPELL_WELL, Target_RandomPlayer, 60, 0, 13, 0, 0, false, "Your flesh has decayed before your very eyes!", CHAT_MSG_MONSTER_YELL, 16739);
-                AddSpell(H_SPELL_CORRUPTFLESH, Target_Current, 40, 0, 20, 0, 0, false, "Waste away into nothingness!", CHAT_MSG_MONSTER_YELL, 16740);
-                AddSpell(H_SPELL_SHARED, Target_RandomPlayer, 45, 0, 20);
+                addAISpell(H_SPELL_OBLITERATE, 45.0f, TARGET_ATTACKING, 0, 30); // Timer may be off on this.
+                spellWell = addAISpell(H_SPELL_WELL, 60.0f, TARGET_RANDOM_SINGLE, 0, 13);
+                corruptFlesh = addAISpell(H_SPELL_CORRUPTFLESH, 40.0f, TARGET_ATTACKING, 0, 20);
+                addAISpell(H_SPELL_SHARED, 45.0f, TARGET_RANDOM_SINGLE, 0, 20);
             }
 
-            // new
-            addEmoteForEvent(Event_OnCombatStart, 4105);     // Death is all that you will find here!
+            if (spellWell)
+                spellWell->addEmote("Your flesh has decayed before your very eyes!", CHAT_MSG_MONSTER_YELL, 16739);
+
+            if (corruptFlesh)
+                corruptFlesh->addEmote("Waste away into nothingness!", CHAT_MSG_MONSTER_YELL, 16740);
+
+            addEmoteForEvent(Event_OnCombatStart, 4105);    // Death is all that you will find here!
             addEmoteForEvent(Event_OnTargetDied, 5254);     // I saw the same look in his eyes when he died. Terenas could hardly believe it.
             addEmoteForEvent(Event_OnTargetDied, 5255);     // Choke on your suffering!
-            addEmoteForEvent(Event_OnDied, 5256);      // Yes... Run... Run to meet your destiny... Its bitter, cold embrace, awaits you.
+            addEmoteForEvent(Event_OnDied, 5256);           // Yes... Run... Run to meet your destiny... Its bitter, cold embrace, awaits you.
         }
 
         void OnLoad() override
@@ -204,34 +212,31 @@ class Marwyn : public CreatureAIScript
 };
 
 
-//Falric
 class Falric : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(Falric);
         Falric(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            if (_isHeroic() == false) // NORMAL MODE
+            if (_isHeroic() == false)
             {
-                AddSpell(N_SPELL_QSTRIKE, Target_Current, 45, 0, 23);
-                AddSpell(N_SPELL_IMPEND, Target_Current, 60, 0, 9);
-                AddSpell(N_SPELL_HORROR, Target_Current, 40, 0, 20);
+                addAISpell(N_SPELL_QSTRIKE, 45.0f, TARGET_ATTACKING, 0, 23);
+                addAISpell(N_SPELL_IMPEND, 60.0f, TARGET_ATTACKING, 0, 9);
+                addAISpell(N_SPELL_HORROR, 40.0f, TARGET_ATTACKING, 0, 20);
             }
-            else // HEROIC MODE
+            else
             {
-                AddSpell(H_SPELL_QSTRIKE, Target_Current, 45, 0, 23);
-                AddSpell(H_SPELL_IMPEND, Target_Current, 60, 0, 9);
-                AddSpell(H_SPELL_HORROR, Target_Current, 40, 0, 20);
-                AddSpell(H_SPELL_SHARED, Target_RandomPlayer, 45, 0, 20);
+                addAISpell(H_SPELL_QSTRIKE, 45.0f, TARGET_ATTACKING, 0, 23);
+                addAISpell(H_SPELL_IMPEND, 60.0f, TARGET_ATTACKING, 0, 9);
+                addAISpell(H_SPELL_HORROR, 40.0f, TARGET_ATTACKING, 0, 20);
+                addAISpell(H_SPELL_SHARED, 45.0f, TARGET_RANDOM_SINGLE, 0, 20);
             }
 
-            // new
-            addEmoteForEvent(Event_OnCombatStart, 4084);      // Men, women, and children... None were spared the master's wrath. Your death will be no different.
+            addEmoteForEvent(Event_OnCombatStart, 4084);    // Men, women, and children... None were spared the master's wrath. Your death will be no different.
             addEmoteForEvent(Event_OnTargetDied, 4086);     // The children of Stratholme fought with more ferocity!
             addEmoteForEvent(Event_OnTargetDied, 4085);     // Sniveling maggot!
-            addEmoteForEvent(Event_OnDied, 4087);     // Marwyn, finish them...
+            addEmoteForEvent(Event_OnDied, 4087);           // Marwyn, finish them...
         }
 
-        //\todo what the hell
         void AIUpdate(Player* Plr)
         {
             if (isScriptPhase(1) && _getHealthPercent() <= 66)
@@ -251,7 +256,6 @@ class Falric : public CreatureAIScript
                 getCreature()->CastSpell(Plr, 72397, true);
                 setScriptPhase(4);
             }
-
         }
 };
 

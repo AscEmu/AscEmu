@@ -61,43 +61,35 @@ class ForgemasterGarfrostAI : public CreatureAIScript
         // Instance Script
         mInstance = getInstanceScript();
 
+        enableCreatureAISpellSystem = true;
+
         // Normal Spells
-        mSaronite = AddSpell(SPELL_THROWSARONITE, Target_RandomPlayerDestination, 20, 2, 15);
-        mPermafrost = AddSpell(SPELL_PERMAFROST, Target_Self, 0, 0, 0);
+        addAISpell(SPELL_THROWSARONITE, 20.0f, TARGET_RANDOM_DESTINATION, 2, 45);
+        addAISpell(SPELL_PERMAFROST, 5.0f, TARGET_SELF, 0, 2);
 
         if (_isHeroic())
         {
             // Phased Spells
-            mChllingWave = AddPhaseSpell(2, AddSpell(H_SPELL_CHILLING_WAVE, Target_Current, 25, 0, 14));
-            mDeepFreeze = AddPhaseSpell(3, AddSpell(H_SPELL_DEEP_FREEZE, Target_RandomPlayer, 15, 2, 20));
+            auto chllingWave = addAISpell(H_SPELL_CHILLING_WAVE, 25.0f, TARGET_ATTACKING, 0, 14);
+            chllingWave->setAvailableForScriptPhase({ 2 });
+
+            auto deepFreeze = addAISpell(H_SPELL_DEEP_FREEZE, 15.0f, TARGET_RANDOM_SINGLE, 2, 20);
+            deepFreeze->setAvailableForScriptPhase({ 3 });
         }
         else
         {
             // Phased Spells
-            mChllingWave = AddPhaseSpell(2, AddSpell(SPELL_CHILLINGWAVE, Target_Current, 25, 0, 14));
-            mDeepFreeze = AddPhaseSpell(3, AddSpell(SPELL_DEEPFREEZE, Target_RandomPlayer, 15, 2, 20));
+            auto chllingWave = addAISpell(SPELL_CHILLINGWAVE, 25.0f, TARGET_ATTACKING, 0, 14);
+            chllingWave->setAvailableForScriptPhase({ 2 });
+
+            auto deepFreeze = addAISpell(SPELL_DEEPFREEZE, 15.0f, TARGET_RANDOM_SINGLE, 2, 20);
+            deepFreeze->setAvailableForScriptPhase({ 3 });
         }
 
-        // Timers
-        mSaroniteTimer = INVALIDATE_TIMER;
-        mPermafrostTimer = INVALIDATE_TIMER;
-        mChllingWaveTimer = INVALIDATE_TIMER;
-        mDeepFreezeTimer = INVALIDATE_TIMER;
-
-        // Emotes
         addEmoteForEvent(Event_OnCombatStart, 8761);
         addEmoteForEvent(Event_OnTargetDied, 8762);
         addEmoteForEvent(Event_OnTargetDied, 8763);
         addEmoteForEvent(Event_OnDied, 8764);
-    }
-
-    void OnCombatStart(Unit* /*pTarget*/) override
-    {
-        // Seting up Timers
-        mSaroniteTimer = _addTimer(45000);
-        mPermafrostTimer = _addTimer(2000);
-        mChllingWaveTimer = _addTimer(10000);
-        mDeepFreezeTimer = _addTimer(10000);
     }
 
     void OnCombatStop(Unit* /*mTarget*/) override
@@ -109,8 +101,6 @@ class ForgemasterGarfrostAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        CastSpells();
-
         if (isScriptPhase(1) && _getHealthPercent() <= 66)
         {
             sendDBChatMessage(8765);
@@ -151,51 +141,11 @@ class ForgemasterGarfrostAI : public CreatureAIScript
         }
     }
 
-    void CastSpells()
-    {
-        if (_isTimerFinished(mSaroniteTimer))
-        {
-            // Casting Saronite Boulder every 45 secs.
-            Unit* unit = GetBestUnitTarget(TargetFilter_None);
-            CastSpellOnTarget(unit, TargetGen_RandomPlayer, mSaronite->mInfo, true);
-            _resetTimer(mSaroniteTimer, 45000);
-        }
-
-        if (_isTimerFinished(mPermafrostTimer))
-        {
-            // Cast Permafrost every 2 secs.
-            CastSpellNowNoScheduling(mPermafrost);
-            _resetTimer(mPermafrostTimer, 2000);
-        }
-
-        if (_isTimerFinished(mChllingWaveTimer) && isScriptPhase(2))
-        {
-            // Cast Chilling Wave every 10 secs.
-            CastSpell(mChllingWave);
-            _resetTimer(mChllingWaveTimer, 10000);
-        }
-
-        if (_isTimerFinished(mDeepFreezeTimer) && isScriptPhase(3))
-        {
-            // Cast Deep Freeze every 10 secs.
-            CastSpell(mDeepFreeze);
-            _resetTimer(mDeepFreezeTimer, 10000);
-        }
-    }
-
-    SpellDesc* mPermafrost;
-    SpellDesc* mSaronite;
-    SpellDesc* mChllingWave;
-    SpellDesc* mDeepFreeze;
-    int32_t mSaroniteTimer;
-    int32_t mPermafrostTimer;
-    int32_t mChllingWaveTimer;
-    int32_t mDeepFreezeTimer;
     InstanceScript* mInstance;
 };
 
-// Ick and Krick
 
+//\todo replace manual spellcast as much as possible
 class IckAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(IckAI);
@@ -204,27 +154,29 @@ class IckAI : public CreatureAIScript
         // Instance Script
         mInstance = getInstanceScript();
 
+        enableCreatureAISpellSystem = true;
+
         // Spells
-        mMightyKick = AddSpell(SPELL_MIGHTY_KICK, Target_Current, 25, 0, 0);
-        mPursue = AddSpell(SPELL_PURSUED, Target_RandomPlayer, 0, 5000, 0);
-        mExplosionBarage = AddSpell(SPELL_EXPLOSIVE_BARRAGE, Target_Self, 0, 0, 0);
-        mShadowBolt = AddSpell(SPELL_SHADOW_BOLT, Target_Current, 0, 3000, 0);
-        mConfusion = AddSpell(SPELL_CONFUSION, Target_Self, 0, 0, 0);
-        mExplosionBarageKrick = AddSpell(SPELL_EXPLOSIVE_BARRAGE_KRICK, Target_Self, 0, 0, 0);
+        mMightyKick = addAISpell(SPELL_MIGHTY_KICK, 0.0f, TARGET_ATTACKING);
+
+        mPursue = addAISpell(SPELL_PURSUED, 0.0f, TARGET_RANDOM_SINGLE);
+        mExplosionBarage = addAISpell(SPELL_EXPLOSIVE_BARRAGE, 0.0f, TARGET_SELF);
+        mShadowBolt = addAISpell(SPELL_SHADOW_BOLT, 0.0f, TARGET_ATTACKING);
+        mConfusion = addAISpell(SPELL_CONFUSION, 0.0f, TARGET_SELF);
+        mExplosionBarageKrick = addAISpell(SPELL_EXPLOSIVE_BARRAGE_KRICK, 0.0f, TARGET_SELF);
 
         if (_isHeroic())
         {
-            mToxicWaste = AddSpell(H_SPELL_TOXIC_WASTE, Target_Current, 0, 0, 0);
-            mPoisonNova = AddSpell(H_SPELL_POISON_NOVA, Target_Self, 0, 5000, 0);
+            mToxicWaste = addAISpell(H_SPELL_TOXIC_WASTE, 0.0f, TARGET_ATTACKING);
+            mPoisonNova = addAISpell(H_SPELL_POISON_NOVA, 0.0f, TARGET_SELF);
         }
         else
         {
-            mToxicWaste = AddSpell(SPELL_TOXIC_WASTE, Target_Current, 0, 0, 0);
-            mPoisonNova = AddSpell(SPELL_POISON_NOVA, Target_Self, 0, 5000, 0);
+            mToxicWaste = addAISpell(SPELL_TOXIC_WASTE, 0.0f, TARGET_ATTACKING);
+            mPoisonNova = addAISpell(SPELL_POISON_NOVA, 0.0f, TARGET_SELF);
         }
 
         // Timers
-        mMightyKickTimer = 0;
         mPursueTimer = 0;
         mPoisonNovaTimer = 0;
         mExplosionBarageTimer = 0;
@@ -242,8 +194,8 @@ class IckAI : public CreatureAIScript
         mKrickAI->addEmoteForEvent(Event_OnTargetDied, 8769);
 
         // Ick Spell Announcements
-        mPursue->addAnnouncement("Ick is chasing you!");
-        mPoisonNova->addAnnouncement("Ick begins to unleash a toxic poison cloud!");
+        mPursue->setAnnouncement("Ick is chasing you!");
+        mPoisonNova->setAnnouncement("Ick begins to unleash a toxic poison cloud!");
 
         Phase = BATTLE;
     }
@@ -276,21 +228,21 @@ class IckAI : public CreatureAIScript
         // Mighty Kick
         if (_isTimerFinished(mMightyKickTimer))
         {
-            CastSpell(mMightyKick);
+            _castAISpell(mMightyKick);
             _resetTimer(mMightyKickTimer, 25000);
         }
 
         // Toxic Waste
         if (_isTimerFinished(mToxicWasteTimer))
         {
-            CastSpell(mToxicWaste);
+            _castAISpell(mToxicWaste);
             _resetTimer(mToxicWasteTimer, 5000);
         }
 
         // Shadow Bolt
         if (_isTimerFinished(mShadowBoltTimer))
         {
-            CastSpell(mShadowBolt);
+            _castAISpell(mShadowBolt);
             _resetTimer(mShadowBoltTimer, 15000);
         }
 
@@ -318,7 +270,7 @@ class IckAI : public CreatureAIScript
             if (mKrickAI)
                 mKrickAI->sendDBChatMessage(8770);
 
-            CastSpell(mPoisonNova);
+            _castAISpell(mPoisonNova);
             _removeTimer(mPoisonNovaTimer);
         }
 
@@ -347,10 +299,10 @@ class IckAI : public CreatureAIScript
                 _clearHateList();
                 getCreature()->GetAIInterface()->setNextTarget(pTarget);
                 getCreature()->GetAIInterface()->modThreatByPtr(pTarget, 1000);
-                CastSpellOnTarget(pTarget, TargetGen_Current, mPursue->mInfo, true);
+                CastSpellOnTarget(pTarget, TargetGen_Current, mPursue->mSpellInfo, true);
             }
 
-            CastSpell(mConfusion);
+            _castAISpell(mConfusion);
             _removeTimer(mPursueTimer);
         }
 
@@ -361,11 +313,11 @@ class IckAI : public CreatureAIScript
             {
                 mKrickAI->sendDBChatMessage(8774);
                 mKrickAI->sendAnnouncement("Krick begins rapidly conjuring explosive mines!");
-                static_cast<CreatureAIScript*>(mKrickAI)->CastSpell(mExplosionBarageKrick);
+                static_cast<CreatureAIScript*>(mKrickAI)->_castAISpell(mExplosionBarageKrick);
             }
             
             getCreature()->setMoveRoot(true);
-            CastSpell(mExplosionBarage);
+            _castAISpell(mExplosionBarage);
 
             mExplosionBarageEndTimer = _addTimer(20000);
 
@@ -394,14 +346,14 @@ class IckAI : public CreatureAIScript
     int32_t mToxicWasteTimer;
     int32_t mShadowBoltTimer;
     int32_t mSpecialAttackTimer;
-    SpellDesc* mMightyKick;
-    SpellDesc* mPursue;
-    SpellDesc* mPoisonNova;
-    SpellDesc* mExplosionBarage;
-    SpellDesc* mToxicWaste;
-    SpellDesc* mShadowBolt;
-    SpellDesc* mConfusion;
-    SpellDesc* mExplosionBarageKrick;
+    CreatureAISpells* mMightyKick;
+    CreatureAISpells* mPursue;
+    CreatureAISpells* mPoisonNova;
+    CreatureAISpells* mExplosionBarage;
+    CreatureAISpells* mToxicWaste;
+    CreatureAISpells* mShadowBolt;
+    CreatureAISpells* mConfusion;
+    CreatureAISpells* mExplosionBarageKrick;
     BattlePhases Phase;
 };
 

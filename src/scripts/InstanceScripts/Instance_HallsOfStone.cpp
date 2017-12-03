@@ -21,158 +21,177 @@
 #include "Instance_HallsOfStone.h"
 
 
-//Dark Rune Stormcaller
 class DarkRuneStormcallerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DarkRuneStormcallerAI);
     DarkRuneStormcallerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(STORMCALLER_LIGHTNINGBOLT, Target_RandomPlayer, 60, 3, 6);
-        AddSpell(STORMCALLER_SHADOWWORD, Target_RandomPlayer, 16, 0, 12);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(STORMCALLER_LIGHTNINGBOLT, 60.0f, TARGET_RANDOM_SINGLE, 3, 6);
+        addAISpell(STORMCALLER_SHADOWWORD, 16.0f, TARGET_RANDOM_SINGLE, 0, 12);
     }
 };
 
-//Iron Golem Custodian
 class IronGolemCustodianAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(IronGolemCustodianAI);
     IronGolemCustodianAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(CUSTODIAN_CRUSH_ARMOR, Target_Current, 50, 0, 5);
-        AddSpell(CUSTODIAN_GROUND_SMASH, Target_ClosestPlayer, 20, 0, 14);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(CUSTODIAN_CRUSH_ARMOR, 50.0f, TARGET_ATTACKING, 0, 5);
+        addAISpell(CUSTODIAN_GROUND_SMASH, 20.0f, TARGET_ATTACKING, 0, 14);
     }
 };
 
-//Dark Rune Protector
 class DarkRuneProtectorAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DarkRuneProtectorAI);
     DarkRuneProtectorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(PROTECTOR_CHARGE, Target_RandomPlayerNotCurrent, 20, 0, 14, 10);
-        AddSpell(PROTECTOR_CLAVE, Target_Current, 35, 0, 8);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(PROTECTOR_CHARGE, 20.0f, TARGET_RANDOM_SINGLE, 0, 14);
+        addAISpell(PROTECTOR_CLAVE, 35.0f, TARGET_ATTACKING, 0, 8);
     }
 };
 
-//Lesser Air Elemental
 class LesserAirElementalAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(LesserAirElementalAI);
     LesserAirElementalAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(ELEMENTAL_LIGHTNING_BOLT, Target_RandomPlayerNotCurrent, 20, 3, 14);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(ELEMENTAL_LIGHTNING_BOLT, 20.0f, TARGET_RANDOM_SINGLE, 3, 14);
     }
 };
 
-//Dark Rune Worker
 class DarkRuneWorkerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DarkRuneWorkerAI);
     DarkRuneWorkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(WORKER_ENRAGE, Target_Self, 5, 0, 60, 10);
-        AddSpell(WORKER_PIERCE_ARMOR, Target_Current, 35, 0, 45);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(WORKER_ENRAGE, 5.0f, TARGET_SELF, 0, 60);
+        addAISpell(WORKER_PIERCE_ARMOR, 35.0f, TARGET_ATTACKING, 0, 45);
     }
 };
 
-//Dark Rune Warrior
 class DarkRuneWarriorAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DarkRuneWarriorAI);
     DarkRuneWarriorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(WARRIOR_CLAVE, Target_Current, 15, 0, 8);
-        AddSpell(WARRIOR_HEROIC_STRIKE, Target_Current, 35, 0, 12);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(WARRIOR_CLAVE, 15.0f, TARGET_ATTACKING, 0, 8);
+        addAISpell(WARRIOR_HEROIC_STRIKE, 35.0f, TARGET_ATTACKING, 0, 12);
     }
 };
 
-//Dark Rune Theurgist
 class DarkRuneTheurgistAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DarkRuneTheurgistAI);
     DarkRuneTheurgistAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(THEURGIST_BLAST_WAVE, Target_Self, 22, 0, 25);
-        AddSpell(THEURGIST_FIREBOLT, Target_RandomPlayer, 40, 3, 6);
-        AddSpell(THEURGIST_IRON_MIGHT, Target_Self, 5, 0, 60);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(THEURGIST_BLAST_WAVE, 22.0f, TARGET_SELF, 0, 25);
+        addAISpell(THEURGIST_FIREBOLT, 40.0f, TARGET_RANDOM_SINGLE, 3, 6);
+        addAISpell(THEURGIST_IRON_MIGHT, 5.0f, TARGET_SELF, 0, 60);
     }
 };
 
-//Dark Rune Shaper
 class DarkRuneShaperAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DarkRuneShaperAI);
     DarkRuneShaperAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(SHAPER_RAY, Target_RandomPlayer, 35, 1.5, 12);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(SHAPER_RAY, 35.0f, TARGET_RANDOM_SINGLE, 2, 12);
     }
 };
 
-//Dark Rune Scholar
 class DarkRuneScholarAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DarkRuneScholarAI);
     DarkRuneScholarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(SCHOLAR_SILANCE, Target_RandomPlayerNotCurrent, 35, 2.5, 12);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(SCHOLAR_SILANCE, 35.0f, TARGET_RANDOM_SINGLE, 3, 12);
     }
 };
 
-//Dark Rune Giant
 class DarkRuneGiantAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DarkRuneGiantAI);
     DarkRuneGiantAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(GIANT_FIST, Target_Self, 3, 2, 40);
-        AddSpell(GIANT_STOMP, Target_RandomPlayer, 35, 0, 14, 0, 10);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(GIANT_FIST, 3.0f, TARGET_SELF, 2, 40);
+        auto stomp = addAISpell(GIANT_STOMP, 35.0f, TARGET_RANDOM_SINGLE, 0, 14);
+        stomp->setMinMaxDistance(0.0f, 10.0f);
     }
 };
 
-//Raging Construct
 class DarkRuneConstructAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DarkRuneConstructAI);
     DarkRuneConstructAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(RAGING_POTENT_JOLT, Target_Self, 95, 0, 8);
-        AddSpell(RAGING_CLAVE, Target_Current, 30, 0, 9, 0, 10);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(RAGING_POTENT_JOLT, 95.0f, TARGET_SELF, 0, 8);
+        auto cleave = addAISpell(RAGING_CLAVE, 30.0f, TARGET_ATTACKING, 0, 9);
+        cleave->setMinMaxDistance(0.0f, 10.0f);
     }
 };
 
-//Lightning Construct
 class DarkLightningConstructAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(DarkLightningConstructAI);
     DarkLightningConstructAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(LIGHTN_ELECTRICAL_OVERLOAD, Target_Self, 5, 1.5, 14);
-        AddSpell(LIGHTN_CHAIN_LIGHTNING, Target_Current, 30, 3, 8, 0, 30);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(LIGHTN_ELECTRICAL_OVERLOAD, 5.0f, TARGET_SELF, 2, 14);
+        auto chainLightning = addAISpell(LIGHTN_CHAIN_LIGHTNING, 30.0f, TARGET_ATTACKING, 3, 8);
+        chainLightning->setMinMaxDistance(0.0f, 30.0f);
     }
 };
 
-//Forged Iron Trogg
 class ForgedIronTroggAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ForgedIronTroggAI);
     ForgedIronTroggAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(LIGHTN_CHAIN_LIGHTNING, Target_RandomPlayer, 30, 2, 8, 0, 10);
+        enableCreatureAISpellSystem = true;
+
+        auto chainLightning = addAISpell(LIGHTN_CHAIN_LIGHTNING, 30.0f, TARGET_ATTACKING, 3, 8);
+        chainLightning->setMinMaxDistance(0.0f, 30.0f);
     }
 };
 
-//Maiden of Grief
 class MaidenOfGriefAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(MaidenOfGriefAI);
     MaidenOfGriefAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(MAIDEN_STORM_OF_GRIEF, Target_RandomPlayerDestination, 100, 0, 19);
-        AddSpell(MAIDEN_PILLAR_OF_WOE, Target_RandomPlayerNotCurrent, 30, 0, 8);
-        mShock = AddSpell(MAIDEN_SHOCK_OF_SORROW, Target_Self, 20, 0, 18);
-        mShock->addEmote("So much lost time... that you'll never get back!", CHAT_MSG_MONSTER_YELL, 13492);
+        enableCreatureAISpellSystem = true;
 
-        // new
+        addAISpell(MAIDEN_STORM_OF_GRIEF, 100.0f, TARGET_RANDOM_DESTINATION, 0, 19);
+        addAISpell(MAIDEN_PILLAR_OF_WOE, 30.0f, TARGET_RANDOM_SINGLE, 0, 8);
+
+        mShock = addAISpell(MAIDEN_SHOCK_OF_SORROW, 20.0f, TARGET_SELF, 0, 18);
+        mShock->addEmote("So much lost time... that you'll never get back!", CHAT_MSG_MONSTER_YELL, 13492);
+        mShock->setAttackStopTimer(0);
+
         addEmoteForEvent(Event_OnCombatStart, 4367);     // You shouldn't have come... now you will die!
         addEmoteForEvent(Event_OnTargetDied, 4368);     // Why must it be this way?
         addEmoteForEvent(Event_OnTargetDied, 4369);     // You had it coming!
@@ -181,14 +200,9 @@ class MaidenOfGriefAI : public CreatureAIScript
         addEmoteForEvent(Event_OnDied, 4372);     // I hope you all rot! I never... wanted... this.
     }
 
-    void OnCombatStart(Unit* /*pTarget*/) override
-    {
-        mShock->setTriggerCooldown();
-    }
-
     protected:
 
-        SpellDesc* mShock;
+        CreatureAISpells* mShock;
 };
 
 // Krystallus
@@ -200,50 +214,51 @@ class KrystallusAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(KrystallusAI);
     KrystallusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(KRYSTALLUS_BOULDER_TOSS, Target_ClosestPlayer, 35, 1, 4);
-        mShatter = AddSpell(KRYSTALLUS_SHATTER, Target_Self, 0, 0, 0);
-        mStomp = AddSpell(KRYSTALLUS_STOMP, Target_Self, 0, 0, 0);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(KRYSTALLUS_BOULDER_TOSS, 35.0f, TARGET_ATTACKING, 1, 4);
+        mShatter = addAISpell(KRYSTALLUS_SHATTER, 0.0f, TARGET_SELF, 0, 0);
+        mStomp = addAISpell(KRYSTALLUS_STOMP, 0.0f, TARGET_SELF, 0, 0);
         mShatter->addEmote("Break.... you....", CHAT_MSG_MONSTER_YELL, 14178);
 
-        mStompTimer = 0;
-        mShatterTimer = 0;
+        mStompTimerId = 0;
+        mShatterTimerId = 0;
 
-        // new
-        addEmoteForEvent(Event_OnCombatStart, 4363);      // Crush....
+        addEmoteForEvent(Event_OnCombatStart, 4363);    // Crush....
         addEmoteForEvent(Event_OnTargetDied, 4365);     // Uuuuhhhhhhhhhh......
-        addEmoteForEvent(Event_OnDied, 4364);     //
+        addEmoteForEvent(Event_OnDied, 4364);
     }
 
     void OnCombatStart(Unit* /*pTarget*/) override
     {
-        mStompTimer = _addTimer(STOMP_TIMER);
+        mStompTimerId = _addTimer(STOMP_TIMER);
     }
 
     void AIUpdate() override
     {
-        if (_isTimerFinished(mStompTimer))
+        if (_isTimerFinished(mStompTimerId))
         {
-            CastSpellNowNoScheduling(mStomp);
+            _castAISpell(mStomp);
             setRooted(true);
-            _resetTimer(mStompTimer, (STOMP_TIMER + SHATTER_TIMER));
-            mShatterTimer = _addTimer(SHATTER_TIMER);
+            _resetTimer(mStompTimerId, (STOMP_TIMER + SHATTER_TIMER));
+            mShatterTimerId = _addTimer(SHATTER_TIMER);
 
         }
-        if (_isTimerFinished(mShatterTimer))
+        if (_isTimerFinished(mShatterTimerId))
         {
-            CastSpellNowNoScheduling(mShatter);
+            _castAISpell(mShatter);
             setRooted(false);
-            _removeTimer(mShatterTimer);
+            _removeTimer(mShatterTimerId);
         }
     }
 
     protected:
 
-        SpellDesc* mStomp;
-        SpellDesc* mShatter;
+        CreatureAISpells* mStomp;
+        CreatureAISpells* mShatter;
 
-        int32 mStompTimer;
-        uint32 mShatterTimer;
+        uint32_t mStompTimerId;
+        uint32_t mShatterTimerId;
 };
 
 

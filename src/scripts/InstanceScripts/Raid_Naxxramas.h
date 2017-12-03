@@ -964,9 +964,15 @@ class DeathKnightUnderstudyAI : public CreatureAIScript
 
 DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
-    AddSpell(DEATH_KNIGHT_UNDERSTUDY_BLOOD_STRIKE, Target_Current, 10, 0, 4, 0, 8);
-    AddSpell(DEATH_KNIGHT_UNDERSTUDY_BONE_BARRIER, Target_Self, 8, 0, 30);
-    AddSpell(DEATH_KNIGHT_UNDERSTUDY_TAUNT, Target_Current, 8, 0, 10, 0, 8);
+    enableCreatureAISpellSystem = true;
+
+    auto bloodStrike = addAISpell(DEATH_KNIGHT_UNDERSTUDY_BLOOD_STRIKE, 10.0f, TARGET_ATTACKING, 0, 4);
+    bloodStrike->setMinMaxDistance(0.0f, 8.0f);
+
+    addAISpell(DEATH_KNIGHT_UNDERSTUDY_BONE_BARRIER, 8.0f, TARGET_SELF, 0, 30);
+
+    auto understudyTaunt = addAISpell(DEATH_KNIGHT_UNDERSTUDY_TAUNT, 8.0f, TARGET_ATTACKING, 0, 10);
+    understudyTaunt->setMinMaxDistance(0.0f, 8.0f);
 
     // Blood Strike
     auto blood_strike_spell = new AI_Spell;

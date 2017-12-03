@@ -491,19 +491,17 @@ class BloodGuardPorungAI : public CreatureAIScript
         }
 };
 
-// WarbringerOmroggAI
-// Maybe timer for 'afterspeech' should be added too?
-void SpellFunc_Warbringer_BurningMaul(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
-
 class WarbringerOmroggAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(WarbringerOmroggAI);
         WarbringerOmroggAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(SP_WARBRINGER_OMROGG_THUNDERCLAP, Target_Self, 25, 1, 12);
-            AddSpell(SP_WARBRINGER_OMROGG_FEAR, Target_Self, 7, 0, 20);
-            AddSpellFunc(&SpellFunc_Warbringer_BurningMaul, Target_Self, 100, 0, 30);
-            mBlastWave = AddSpell(SP_WARBRINGER_OMROGG_BLAST_WAVE, Target_Self, 0, 1, 0);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(SP_WARBRINGER_OMROGG_THUNDERCLAP, 25.0f, TARGET_SELF, 1, 12);
+            addAISpell(SP_WARBRINGER_OMROGG_FEAR, 7.0f, TARGET_SELF, 0, 20);
+
+            mBlastWave = addAISpell(SP_WARBRINGER_OMROGG_BLAST_WAVE, 100.0f, TARGET_SELF, 1, 15);
             mBlastWaveTimer = mSpeechTimer = mSpeechId = mAggroShiftTimer = INVALIDATE_TIMER;
             mRightHead = nullptr;
             mLeftHead = nullptr;
@@ -647,7 +645,7 @@ class WarbringerOmroggAI : public CreatureAIScript
             if (mBlastWaveTimer != INVALIDATE_TIMER && _isTimerFinished(mBlastWaveTimer))
             {
                 _removeTimer(mBlastWaveTimer);
-                CastSpell(mBlastWave);
+                _castAISpell(mBlastWave);
             }
         }
 
@@ -704,18 +702,8 @@ class WarbringerOmroggAI : public CreatureAIScript
         uint32 mBlastWaveTimer;
         uint32 mSpeechTimer;
         int32 mSpeechId;
-        SpellDesc* mBlastWave;
+        CreatureAISpells* mBlastWave;
 };
-
-void SpellFunc_Warbringer_BurningMaul(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* /*pTarget*/, TargetType /*pType*/)
-{
-    WarbringerOmroggAI* Warbringer = (pCreatureAI) ? static_cast< WarbringerOmroggAI* >(pCreatureAI) : NULL;
-    if (Warbringer != nullptr)
-    {
-        Warbringer->CastSpell(Warbringer->mBlastWave);
-        Warbringer->mBlastWaveTimer = Warbringer->_addTimer(RandomUInt(5) + 5);
-    }
-}
 
 class HeadAI : public CreatureAIScript
 {

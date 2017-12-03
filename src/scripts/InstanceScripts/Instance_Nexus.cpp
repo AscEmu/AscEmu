@@ -24,8 +24,6 @@
 
 #define GO_FLAG_UNCLICKABLE 0x00000010
 
-//////////////////////////////////////////////////////////////////////////////////////////
-///Anomalus
 class AnomalusAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(AnomalusAI);
@@ -33,18 +31,19 @@ class AnomalusAI : public CreatureAIScript
         {
             mInstance = getInstanceScript();
 
+            enableCreatureAISpellSystem = true;
+
             if (_isHeroic())
-                AddSpell(SPARK_HC, Target_RandomPlayer, 80, 0, 3);
+                addAISpell(SPARK_HC, 80.0f, TARGET_RANDOM_SINGLE, 0, 3);
             else
-                AddSpell(SPARK, Target_RandomPlayer, 80, 0, 3);
+                addAISpell(SPARK, 80.0f, TARGET_RANDOM_SINGLE, 0, 3);
 
             mSummon = 0;
             mRift = false;
             mSummonTimer = 0;
 
-            // new
-            addEmoteForEvent(Event_OnCombatStart, 4317);     // Chaos beckons.
-            addEmoteForEvent(Event_OnDied, 4318);     // Of course.
+            addEmoteForEvent(Event_OnCombatStart, 4317);    // Chaos beckons.
+            addEmoteForEvent(Event_OnDied, 4318);           // Of course.
         }
 
         void OnCombatStart(Unit* /*mTarget*/) override
@@ -128,14 +127,16 @@ class ChaoticRiftAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(ChaoticRiftAI);
         ChaoticRiftAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             auto spell_mana_wrath = sSpellCustomizations.GetSpellInfo(SUMMON_MANA_WRAITH);
             if (spell_mana_wrath != nullptr)
-                AddSpell(SUMMON_MANA_WRAITH, Target_Self, 30, 0, spell_mana_wrath->getRecoveryTime());
+                addAISpell(SUMMON_MANA_WRAITH, 30.0f, TARGET_SELF, 0, spell_mana_wrath->getRecoveryTime());
 
             auto spell_energy_burst = sSpellCustomizations.GetSpellInfo(CHAOTIC_ENERGY_BURST);
             if (spell_energy_burst != nullptr)
-                AddSpell(CHAOTIC_ENERGY_BURST, Target_RandomPlayer, 30, 0, spell_energy_burst->getRecoveryTime());
+                addAISpell(CHAOTIC_ENERGY_BURST, 30.0f, TARGET_RANDOM_SINGLE, 0, spell_energy_burst->getRecoveryTime());
         }
 
         void OnLoad() override
@@ -174,15 +175,12 @@ class CraziedManaWrathAI : public CreatureAIScript
 };
 
 
-//////////////////////////////////////////////////////////////////////////////////////////
-/// Grand Magus Telestra
 static Movement::Location FormSpawns[] =
 {
     { 494.726990f, 89.128799f, -15.941300f, 6.021390f },
     { 495.006012f, 89.328102f, -16.124609f, 0.027486f },
     { 504.798431f, 102.248375f, -16.124609f, 4.629921f }
 };
-
 
 class TelestraBossAI : public CreatureAIScript
 {
@@ -191,30 +189,29 @@ class TelestraBossAI : public CreatureAIScript
         {
             mInstance = getInstanceScript();
 
+            enableCreatureAISpellSystem = true;
+
             if (_isHeroic())
             {
-                AddSpell(ICE_NOVA_HC, Target_Self, 25, 2.0, 15);
-                AddSpell(FIREBOMB_HC, Target_RandomPlayer, 35, 1.5, 5);
-                AddSpell(GRAVITY_WELL, Target_Self, 15, 0.5, 20);
+                addAISpell(ICE_NOVA_HC, 25.0f, TARGET_SELF, 2, 15);
+                addAISpell(FIREBOMB_HC, 35.0f, TARGET_RANDOM_SINGLE, 2, 5);
+                addAISpell(GRAVITY_WELL, 15.0f, TARGET_SELF, 1, 20);
             }
             else
             {
-                AddSpell(ICE_NOVA, Target_Self, 25, 2.0, 15);
-                AddSpell(FIREBOMB, Target_RandomPlayer, 35, 1.5, 5);
-                AddSpell(GRAVITY_WELL, Target_Self, 15, 0.5, 20);
+                addAISpell(ICE_NOVA, 25.0f, TARGET_SELF, 2, 15);
+                addAISpell(FIREBOMB, 35.0f, TARGET_RANDOM_SINGLE, 2, 5);
+                addAISpell(GRAVITY_WELL, 15.0f, TARGET_SELF, 1, 20);
             }
-
-            SetAIUpdateFreq(1000);
 
             mAddCount = 0;
             mPhaseRepeat = 2;
 
             mAddArray[0] = mAddArray[1] = mAddArray[2] = NULL;
 
-            // new
-            addEmoteForEvent(Event_OnCombatStart, 4326);      // You know what they say about curiosity....
-            addEmoteForEvent(Event_OnTargetDied, 4327);      // Death becomes you.
-            addEmoteForEvent(Event_OnDied, 4328);      // Damn the... luck.
+            addEmoteForEvent(Event_OnCombatStart, 4326);     // You know what they say about curiosity....
+            addEmoteForEvent(Event_OnTargetDied, 4327);     // Death becomes you.
+            addEmoteForEvent(Event_OnDied, 4328);           // Damn the... luck.
         }
 
         void AIUpdate() override
@@ -320,15 +317,17 @@ class TelestraFireAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(TelestraFireAI);
         TelestraFireAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             if (_isHeroic())
             {
-                AddSpell(FIRE_BLAST_HC, Target_RandomPlayer, 30, 0, 14);
-                AddSpell(SCORCH_HC, Target_Current, 100, 1, 3);
+                addAISpell(FIRE_BLAST_HC, 30.0f, TARGET_RANDOM_SINGLE, 0, 14);
+                addAISpell(SCORCH_HC, 100.0f, TARGET_ATTACKING, 1, 3);
             }
             else
             {
-                AddSpell(FIRE_BLAST, Target_RandomPlayer, 30, 0, 14);
-                AddSpell(SCORCH, Target_Current, 100, 1, 3);
+                addAISpell(FIRE_BLAST, 30.0f, TARGET_RANDOM_SINGLE, 0, 14);
+                addAISpell(SCORCH, 100.0f, TARGET_ATTACKING, 1, 3);
             }
         }
 
@@ -343,15 +342,17 @@ class TelestraFrostAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(TelestraFrostAI);
         TelestraFrostAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             if (_isHeroic())
             {
-                AddSpell(BLIZZARD_HC, Target_RandomPlayerDestination, 20, 0, 20);
-                AddSpell(ICE_BARB_HC, Target_RandomPlayer, 25, 0.5, 6);
+                addAISpell(BLIZZARD_HC, 20.0f, TARGET_RANDOM_DESTINATION, 0, 20);
+                addAISpell(ICE_BARB_HC, 25.0f, TARGET_RANDOM_SINGLE, 1, 6);
             }
             else
             {
-                AddSpell(BLIZZARD, Target_RandomPlayerDestination, 20, 0, 20);
-                AddSpell(ICE_BARB, Target_RandomPlayer, 25, 0.5, 6);
+                addAISpell(BLIZZARD, 20.0f, TARGET_RANDOM_DESTINATION, 0, 20);
+                addAISpell(ICE_BARB, 25.0f, TARGET_RANDOM_SINGLE, 1, 6);
             }
         }
 
@@ -366,8 +367,10 @@ class TelestraArcaneAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(TelestraArcaneAI);
         TelestraArcaneAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(TIME_STOP, Target_Self, 30, 1.5, 30);
-            AddSpell(CRITTER, Target_RandomPlayer, 25, 0, 20);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(TIME_STOP, 30.0f, TARGET_SELF, 2, 30);
+            addAISpell(CRITTER, 25.0f, TARGET_RANDOM_SINGLE, 0, 20);
         }
 
         void OnLoad() override
@@ -377,8 +380,6 @@ class TelestraArcaneAI : public CreatureAIScript
 };
 
 
-//////////////////////////////////////////////////////////////////////////////////////////
-/// Ormorok the Tree-Shaper
 class OrmorokAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(OrmorokAI);
@@ -386,20 +387,22 @@ class OrmorokAI : public CreatureAIScript
     {
         mInstance = getInstanceScript();
 
-        if (_isHeroic())
-            AddSpell(TRAMPLE_H, Target_Current, 30, 0, 9);
-        else
-            AddSpell(TRAMPLE, Target_Current, 30, 0, 9);
+        enableCreatureAISpellSystem = true;
 
-        AddSpell(SPELL_REFLECTION, Target_Self, 35, 2.0f, 15);
-        mCrystalSpikes = AddSpell(CRYSTAL_SPIKES, Target_Self, 25, 0, 12);
-        mCrystalSpikes->addEmote("Bleed!", CHAT_MSG_MONSTER_YELL, 13332);
+        if (_isHeroic())
+            addAISpell(TRAMPLE_H, 30.0f, TARGET_ATTACKING, 0, 9);
+        else
+            addAISpell(TRAMPLE, 30.0f, TARGET_ATTACKING, 0, 9);
+
+        addAISpell(SPELL_REFLECTION, 35.0f, TARGET_SELF, 2, 15);
+
+        auto crystalSpikes = addAISpell(CRYSTAL_SPIKES, 25.0f, TARGET_SELF, 0, 12);
+        crystalSpikes->addEmote("Bleed!", CHAT_MSG_MONSTER_YELL, 13332);
 
         mEnraged = false;
 
-        // new
-        addEmoteForEvent(Event_OnCombatStart, 1943);     // Noo!
-        addEmoteForEvent(Event_OnDied, 1944);     // Aaggh!
+        addEmoteForEvent(Event_OnCombatStart, 1943);    // Noo!
+        addEmoteForEvent(Event_OnDied, 1944);           // Aaggh!
     }
 
     void OnCombatStart(Unit* /*pTarget*/) override
@@ -432,9 +435,7 @@ class OrmorokAI : public CreatureAIScript
 
     private:
 
-        SpellDesc* mCrystalSpikes;
         bool mEnraged;
-
         InstanceScript* mInstance;
 };
 
@@ -483,32 +484,31 @@ class CrystalSpikeAI : public CreatureAIScript
 };
 
 
-//////////////////////////////////////////////////////////////////////////////////////////
-/// Keristrasza
-/// \todo currently unfinished
+// \todo currently unfinished
 class KeristraszaAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(KeristraszaAI);
     KeristraszaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
+        enableCreatureAISpellSystem = true;
+
         if (_isHeroic())
-            AddSpell(CRYSTALFIRE_BREATH_HC, Target_Self, 30, 1, 14);
+            addAISpell(CRYSTALFIRE_BREATH_HC, 30.0f, TARGET_SELF, 1, 14);
         else
-            AddSpell(CRYSTALFIRE_BREATH, Target_Self, 30, 1, 14);
+            addAISpell(CRYSTALFIRE_BREATH, 30.0f, TARGET_SELF, 1, 14);
 
-        AddSpell(CRYSTAL_CHAINS, Target_RandomPlayer, 30, 0, 12);
-        AddSpell(TAIL_SWEEP, Target_Self, 40, 0, 8);
+        addAISpell(CRYSTAL_CHAINS, 30.0f, TARGET_RANDOM_SINGLE, 0, 12);
+        addAISpell(TAIL_SWEEP, 40.0f, TARGET_SELF, 0, 8);
 
-        mCrystalize = AddSpell(CRYSTALLIZE, Target_Self, 25, 0, 22);
-        mCrystalize->addEmote("Stay. Enjoy your final moments.", CHAT_MSG_MONSTER_YELL, 13451);
+        auto crystalize = addAISpell(CRYSTALLIZE, 25.0f, TARGET_SELF, 0, 22);
+        crystalize->addEmote("Stay. Enjoy your final moments.", CHAT_MSG_MONSTER_YELL, 13451);
 
         mEnraged = false;
         setCanEnterCombat(false);
 
-        // new
-        addEmoteForEvent(Event_OnCombatStart, 4321);     // Preserve? Why? There's no truth in it. No no no... only in the taking! I see that now!
+        addEmoteForEvent(Event_OnCombatStart, 4321);    // Preserve? Why? There's no truth in it. No no no... only in the taking! I see that now!
         addEmoteForEvent(Event_OnTargetDied, 4322);     // Now we've come to the truth! )
-        addEmoteForEvent(Event_OnDied, 4324);     // Dragonqueen... Life-Binder... preserve... me.
+        addEmoteForEvent(Event_OnDied, 4324);           // Dragonqueen... Life-Binder... preserve... me.
     }
 
     void OnLoad() override
@@ -525,6 +525,7 @@ class KeristraszaAI : public CreatureAIScript
         }
     }
 
+    // called from instance script o.O
     void Release()
     {
         setCanEnterCombat(true);
@@ -534,8 +535,7 @@ class KeristraszaAI : public CreatureAIScript
 
     private:
 
-        bool mEnraged;
-        SpellDesc* mCrystalize;
+        bool mEnraged;;
 };
 
 // Nexus Instance script

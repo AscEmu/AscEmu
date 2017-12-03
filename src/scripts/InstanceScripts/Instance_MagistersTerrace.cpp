@@ -35,7 +35,6 @@ class InstanceMagistersTerraceScript : public InstanceScript
         static InstanceScript* Create(MapMgr* pMapMgr) { return new InstanceMagistersTerraceScript(pMapMgr); }
 };
 
-// Selin Firehart Encounter
 // Fel Crystal Spawn Locations
 static LocationExtra FelCrystals[] =
 {
@@ -51,34 +50,32 @@ class SelinFireheartAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(SelinFireheartAI);
     SelinFireheartAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(SF_DRAINLIFE, Target_RandomPlayer, 8, 0, 35);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(SF_DRAINLIFE, 8.0f, TARGET_RANDOM_SINGLE, 0, 35);
 
         if (_isHeroic())
-            AddSpell(SF_DRAINMANA, Target_RandomPlayer, 8, 0, 35);
+            addAISpell(SF_DRAINMANA, 8.0f, TARGET_RANDOM_SINGLE, 0, 35);
 
         ManaRage = sSpellCustomizations.GetSpellInfo(FC_MANARAGE);
-        ManaRageTrigger = AddSpell(FC_MANARAGE_TRIGGER, Target_Self, 0, 0, 0);
-        FelExplosion = AddSpell(SF_FELEXPLOSION, Target_Self, 0, 0, 0);
+        ManaRageTrigger = addAISpell(FC_MANARAGE_TRIGGER, 0.0f, TARGET_SELF, 0, 0);
+        FelExplosion = addAISpell(SF_FELEXPLOSION, 0.0f, TARGET_SELF, 0, 0);
+        mEnableFelExplosion = false;
     }
 
     void OnCombatStart(Unit* /*pTarget*/) override
     {
-        /*
-            Selin Fireheart starts with 0 mana and drains it from the felcrystals in the room
-            \todo  Set it so mana regen is off
-            */
+        // Selin Fireheart starts with 0 mana and drains it from the felcrystals in the room
+        // \todo  Set it so mana regen is off
         getCreature()->setUInt32Value(UNIT_FIELD_POWER1, 0);
-        
     }
 
-    /*
-        During the AIUpdate() Selin will spam FelExplosion until hes out of mana
-        He will then attempt to gain mana from a FelCrystal thats in the room by running to them
-        */
+    // During the AIUpdate() Selin will spam FelExplosion until hes out of mana
+    // He will then attempt to gain mana from a FelCrystal thats in the room by running to them
     void AIUpdate() override
     {
         // 10% of his mana according to wowhead is 3231 which is whats needed to cast FelExplosion
-        if (_getManaPercent() < 10 || FelExplosion->mEnabled == false)
+        if (_getManaPercent() < 10 || mEnableFelExplosion == false)
             Mana();
         else if (!_isCasting())// Mana is greater than 10%
             CastFelExplosion();
@@ -88,11 +85,9 @@ class SelinFireheartAI : public CreatureAIScript
 
     void Mana()
     {
-        /*
-            Attempt to get a Fel Crystal and move to it if not in range.
-            Once in range we get the FelCrystal to cast Mana Rage on Selin
-            */
-        Unit* FelCrystal = NULL;
+        // Attempt to get a Fel Crystal and move to it if not in range.
+        // Once in range we get the FelCrystal to cast Mana Rage on Selin
+        Unit* FelCrystal = nullptr;
         PreventActions(false);
 
         FelCrystal = FindFelCrystal();
@@ -100,7 +95,7 @@ class SelinFireheartAI : public CreatureAIScript
         if (!FelCrystal || !FelCrystal->isAlive())
         {
             PreventActions(true);
-            FelCrystal = NULL;
+            FelCrystal = nullptr;
             return;
         }
 
@@ -108,7 +103,7 @@ class SelinFireheartAI : public CreatureAIScript
         if (getCreature()->GetDistance2dSq(FelCrystal) > 100)
         {
             moveTo(FelCrystal->GetPositionX(), FelCrystal->GetPositionY(), FelCrystal->GetPositionZ());
-            FelCrystal = NULL;
+            FelCrystal = nullptr;
             return;
         }
 
@@ -118,7 +113,7 @@ class SelinFireheartAI : public CreatureAIScript
             FelCrystal->CastSpell(getCreature(), ManaRage, false);
 
         // Mana Rage giving of mana doesnt work so we give 10%(3231) / AIUpdate() Event.
-        CastSpellNowNoScheduling(ManaRageTrigger);
+        _castAISpell(ManaRageTrigger);
         uint32 mana = getCreature()->GetPower(POWER_TYPE_MANA) + 3231;
         if (mana >= getCreature()->GetMaxPower(POWER_TYPE_MANA))
             mana = getCreature()->GetMaxPower(POWER_TYPE_MANA);
@@ -129,12 +124,12 @@ class SelinFireheartAI : public CreatureAIScript
         if (_getManaPercent() >= 100)
             PreventActions(true);
 
-        FelCrystal = NULL;
+        FelCrystal = nullptr;
     }
 
     void PreventActions(bool Allow)
     {
-        FelExplosion->mEnabled = Allow;
+        mEnableFelExplosion = Allow;
         _setMeleeDisabled(!Allow);
         _setRangedDisabled(!Allow);
         _setCastDisabled(!Allow);
@@ -143,15 +138,13 @@ class SelinFireheartAI : public CreatureAIScript
 
     Unit* FindFelCrystal()
     {
-        /*
-            Find a FelCrystal
-            */
-        Unit* FC = NULL;
+        // Find a FelCrystal
+        Unit* FC = nullptr;
         for (uint8 x = 0; x < 5; x++)
         {
             FC = getNearestCreature(FelCrystals[x].x, FelCrystals[x].y, FelCrystals[x].z, FelCrystals[x].addition);
             if (!FC || !FC->isAlive() || FC->GetInstanceID() != getCreature()->GetInstanceID())
-                FC = NULL;
+                FC = nullptr;
             else
                 break;
         }
@@ -160,35 +153,42 @@ class SelinFireheartAI : public CreatureAIScript
 
     void CastFelExplosion()
     {
-        CastSpellNowNoScheduling(FelExplosion);
+        _castAISpell(FelExplosion);
 
         // No Idea why the mana isnt taken when the spell is cast so had to manually take it -_-
         getCreature()->setUInt32Value(UNIT_FIELD_POWER1, getCreature()->GetPower(POWER_TYPE_MANA) - 3231);
     }
 
     SpellInfo* ManaRage;
-    SpellDesc* ManaRageTrigger;
-    SpellDesc* FelExplosion;
+    CreatureAISpells* ManaRageTrigger;
+    CreatureAISpells* FelExplosion;
+    bool mEnableFelExplosion;
 };
 
-
-// Vexallus
 class VexallusAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(VexallusAI);
     VexallusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddPhaseSpell(1, AddSpell(VEXALLUS_CHAIN_LIGHTNING, Target_Current, 19, 0, 8, 0, 0));
-        AddPhaseSpell(1, AddSpell(VEXALLUS_ARCANE_SHOCK, Target_ClosestPlayer, 12, 0, 20, 0, 0, true, "Un...con...tainable.", CHAT_MSG_MONSTER_YELL, 12392));
-        AddPhaseSpell(2, AddSpell(VEXALLUS_OVERLOAD, Target_Self, 85, 0, 3, 0, 0));
-        mPureEnergy = AddSpell(VEXALLUS_SUMMON_PURE_ENERGY, Target_Self, 85, 0, 3);
+        enableCreatureAISpellSystem = true;
+
+        auto chainLighning = addAISpell(VEXALLUS_CHAIN_LIGHTNING, 19.0f, TARGET_ATTACKING, 0, 8);
+        chainLighning->setAvailableForScriptPhase({ 1 });
+
+        auto arcaneShock = addAISpell(VEXALLUS_ARCANE_SHOCK, 12.0f, TARGET_ATTACKING, 0, 20, false, true);
+        arcaneShock->addEmote("Un...con...tainable.", CHAT_MSG_MONSTER_YELL, 12392);
+        arcaneShock->setAvailableForScriptPhase({ 1 });
+
+        auto overload = addAISpell(VEXALLUS_OVERLOAD, 85.0f, TARGET_SELF, 0, 3);
+        overload->setAvailableForScriptPhase({ 2 });
+
+        mPureEnergy = addAISpell(VEXALLUS_SUMMON_PURE_ENERGY, 0.0f, TARGET_SELF, 0, 3);
 
         mSummon = 0;
 
-        // new
-        addEmoteForEvent(Event_OnCombatStart, 3003);     // Drain... life!
+        addEmoteForEvent(Event_OnCombatStart, 3003);    // Drain... life!
         addEmoteForEvent(Event_OnTargetDied, 3006);     // Con...sume.
-        addEmoteForEvent(Event_OnDied, 4861);     // It is... not over.
+        addEmoteForEvent(Event_OnDied, 4861);           // It is... not over.
     }
 
     void AIUpdate() override
@@ -199,7 +199,7 @@ class VexallusAI : public CreatureAIScript
             (_getHealthPercent() <= 40 && mSummon == 3) ||
             (_getHealthPercent() <= 25 && mSummon == 4))
         {
-            CastSpell(mPureEnergy);
+            _castAISpell(mPureEnergy);
             ++mSummon;
             //spawnCreature(CN_PURE_ENERGY, 231, -207, 6, 0, true);
         }
@@ -208,27 +208,35 @@ class VexallusAI : public CreatureAIScript
             setScriptPhase(2);
     }
 
-    SpellDesc* mPureEnergy;
+    CreatureAISpells* mPureEnergy;
     uint8 mSummon;
 };
 
-
-//Priestess Delrissa
 class Priestess_DelrissaAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Priestess_DelrissaAI);
     Priestess_DelrissaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(PRIESTESS_DELRISSA_DISPEL_MAGIC, Target_RandomFriendly, 35, 0, 5, 0, 30);
-        AddSpell(PRIESTESS_DELRISSA_FLASH_HEAL, Target_RandomFriendly, 40, 1.5, 7, 0, 40);
-        AddSpell(PRIESTESS_DELRISSA_SHADOWWORD_PAIN, Target_RandomPlayer, 45, 0, 18, 0, 30);
-        AddSpell(PRIESTESS_DELRISSA_POWERWORD_SHIELD, Target_RandomFriendly, 32, 0, 15, 0, 40);
-        AddSpell(PRIESTESS_DELRISSA_RENEW, Target_RandomFriendly, 30, 0, 18, 0, 40);
+        enableCreatureAISpellSystem = true;
+
+        auto dispelMagic = addAISpell(PRIESTESS_DELRISSA_DISPEL_MAGIC, 35.0f, TARGET_RANDOM_FRIEND, 0, 5);
+        dispelMagic->setMinMaxDistance(0.0f, 30.0f);
+
+        auto flashHeal = addAISpell(PRIESTESS_DELRISSA_FLASH_HEAL, 40.0f, TARGET_RANDOM_FRIEND, 2, 7);
+        flashHeal->setMinMaxDistance(0.0f, 40.0f);
+
+        auto shadowwordPain = addAISpell(PRIESTESS_DELRISSA_SHADOWWORD_PAIN, 45.0f, TARGET_RANDOM_SINGLE, 0, 18);
+        shadowwordPain->setMinMaxDistance(0.0f, 30.0f);
+
+        auto powerwordShield = addAISpell(PRIESTESS_DELRISSA_POWERWORD_SHIELD, 32.0f, TARGET_RANDOM_FRIEND, 0, 15);
+        powerwordShield->setMinMaxDistance(0.0f, 40.0f);
+
+        auto renew = addAISpell(PRIESTESS_DELRISSA_RENEW, 30.0f, TARGET_RANDOM_FRIEND, 0, 18);
+        renew->setMinMaxDistance(0.0f, 40.0f);
 
         mClearHateList = _addTimer(15000);
         mKilledPlayers = 0;
 
-        // new
         addEmoteForEvent(Event_OnCombatStart, 3022);     // Annihilate them.
         addEmoteForEvent(Event_OnDied, 3032);     // Not what I had... planned.
     }
@@ -274,178 +282,238 @@ class Priestess_DelrissaAI : public CreatureAIScript
         int32 mClearHateList;
 };
 
-
-//Kagani Nightstrike
 class KaganiNightstrikeAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(KaganiNightstrikeAI);
     KaganiNightstrikeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(KAGANI_KIDNEY_SHOT, Target_Current, 80, 0, 25, 0, 30);
-        AddSpell(KAGANI_GOUGE, Target_ClosestPlayer, 20, 0, 18, 0, 30);
-        AddSpell(KAGANI_EVISCERATE, Target_Current, 8, 0, 45, 0, 30);
+        enableCreatureAISpellSystem = true;
+
+        auto kidneyShot = addAISpell(KAGANI_KIDNEY_SHOT, 80.0f, TARGET_ATTACKING, 0, 25);
+        kidneyShot->setMinMaxDistance(0.0f, 30.0f);
+
+        auto gouge = addAISpell(KAGANI_GOUGE, 20.0f, TARGET_ATTACKING, 0, 18);
+        gouge->setMinMaxDistance(0.0f, 30.0f);
+
+        auto eviscerate = addAISpell(KAGANI_EVISCERATE, 8.0f, TARGET_ATTACKING, 0, 45);
+        eviscerate->setMinMaxDistance(0.0f, 30.0f);
     }
 };
 
-//Ellrys Duskhallow
 class EllrysDuskhallowAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(EllrysDuskhallowAI);
     EllrysDuskhallowAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(ELLRYS_IMMOLATE, Target_Current, 75, 2, 15, 0, 30);
-        AddSpell(ELLRYS_SHADOWBOLT, Target_RandomPlayer, 75, 3, 5, 4, 40);
-        AddSpell(ELLRYS_CURSE_OF_AGONY, Target_RandomPlayer, 75, 0, 4, 0, 30);
-        AddSpell(ELLRYS_FEAR, Target_RandomPlayer, 75, 1.5, 9, 0, 20);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(ELLRYS_IMMOLATE, 75.0f, TARGET_ATTACKING, 2, 15);
+
+        auto shadowBolt = addAISpell(ELLRYS_SHADOWBOLT, 75.0f, TARGET_RANDOM_SINGLE, 3, 5);
+        shadowBolt->setMinMaxDistance(0.0f, 40.0f);
+
+        auto curseOfAgony = addAISpell(ELLRYS_CURSE_OF_AGONY, 75.0f, TARGET_RANDOM_SINGLE, 0, 4);
+        curseOfAgony->setMinMaxDistance(0.0f, 30.0f);
+
+        auto fear = addAISpell(ELLRYS_FEAR, 75.0f, TARGET_RANDOM_SINGLE, 2, 9);
+        fear->setMinMaxDistance(0.0f, 20.0f);
     }
 };
 
-//Eramas Brightblaze
 class EramasBrightblazeAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(EramasBrightblazeAI);
     EramasBrightblazeAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(ERAMAS_KNOCKDOWN, Target_Current, 25, 0, 5, 0, 5);
-        AddSpell(ERAMAS_SNAP_KICK, Target_SecondMostHated, 40, 0, 2, 0, 5);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(ERAMAS_KNOCKDOWN, 25.0f, TARGET_ATTACKING, 0, 5);
+        addAISpell(ERAMAS_SNAP_KICK, 40.0f, TARGET_VARIOUS, 0, 2);
     }
 };
 
-//Yazzai
 class YazzaiAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(YazzaiAI);
     YazzaiAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(YAZZAI_POLYMORPH, Target_RandomPlayer, 30, 1.5, 16, 0, 30);
-        AddSpell(YAZZAI_ICE_BLOCK, Target_Self, 20, 0, 300, 0, 1);
-        AddSpell(YAZZAI_BLIZZARD, Target_RandomPlayer, 25, 0, 20, 0, 30);
-        AddSpell(YAZZAI_CONE_OF_COLD, Target_Self, 10, 0, 19, 0, 1);
-        AddSpell(YAZZAI_FROSTBOLT, Target_RandomPlayer, 80, 3, 14, 0, 40);
+        enableCreatureAISpellSystem = true;
+
+        auto polymorph = addAISpell(YAZZAI_POLYMORPH, 30.0f, TARGET_RANDOM_SINGLE, 2, 16);
+        polymorph->setMinMaxDistance(8.0f, 30.0f);
+
+        addAISpell(YAZZAI_ICE_BLOCK, 20.0f, TARGET_SELF, 0, 300);
+        auto blizzard = addAISpell(YAZZAI_BLIZZARD, 25.0f, TARGET_RANDOM_SINGLE, 0, 20);
+        blizzard->setMinMaxDistance(8.0f, 30.0f);
+
+        addAISpell(YAZZAI_CONE_OF_COLD, 10.0f, TARGET_SELF, 0, 19);
+        auto frostBolt = addAISpell(YAZZAI_FROSTBOLT, 80.0f, TARGET_RANDOM_SINGLE, 3, 14);
+        frostBolt->setMinMaxDistance(8.0f, 40.0f);
     }
 };
 
-//Warlord Salaris
 class WarlordSalarisAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(WarlordSalarisAI);
     WarlordSalarisAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        //AddSpell(uint32 pSpellId, TargetType pTargetType, float pChance, float pCastTime, int32 pCooldown, float pMinRange, float pMaxRange
-        AddSpell(SALARIS_INTERCEPT, Target_RandomPlayer, 25, 0, 8, 8, 25);
-        AddSpell(SALARIS_DISARM, Target_Current, 100, 0, 60, 0, 5);
-        AddSpell(SALARIS_PIERCING_HOWL, Target_Self, 22, 0, 17, 0, 1);
-        AddSpell(SALARIS_FRIGHTENING_SHOUT, Target_RandomPlayer, 30, 0, 9, 0, 10);
-        AddSpell(SALARIS_HAMSTRING, Target_ClosestPlayer, 10, 0, 20, 0, 5);
-        AddSpell(SALARIS_MORTAL_STRIKE, Target_Current, 100, 0, 6, 0, 5);
+        enableCreatureAISpellSystem = true;
+
+        auto intercept = addAISpell(SALARIS_INTERCEPT, 25.0f, TARGET_RANDOM_SINGLE, 0, 8);
+        intercept->setMinMaxDistance(8.0f, 25.0f);
+
+        addAISpell(SALARIS_DISARM, 100.0f, TARGET_ATTACKING, 0, 60);
+
+        addAISpell(SALARIS_PIERCING_HOWL, 22.0f, TARGET_SELF, 0, 17);
+
+        auto shout = addAISpell(SALARIS_FRIGHTENING_SHOUT, 30.0f, TARGET_RANDOM_SINGLE, 0, 9);
+        shout->setMinMaxDistance(0.0f, 10.0f);
+
+        addAISpell(SALARIS_HAMSTRING, 10.0f, TARGET_ATTACKING, 0, 20);
+        addAISpell(SALARIS_MORTAL_STRIKE, 100.0f, TARGET_ATTACKING, 0, 6);
     }
 };
 
-//Geraxxas
 class GaraxxasAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(GaraxxasAI);
     GaraxxasAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(GARAXXAS_AIMED_SHOT, Target_RandomPlayer, 90, 3, 6, 5, 35);
-        AddSpell(GARAXXAS_SHOOT, Target_RandomPlayer, 90, 2.5, 5, 5, 30);
-        AddSpell(GARAXXAS_CONCUSSIV_SHOT, Target_RandomPlayer, 40, 0, 8, 5, 35);
-        AddSpell(GARAXXAS_MULTI_SHOT, Target_RandomPlayer, 25, 0, 12, 5, 30);
-        AddSpell(GARAXXAS_WING_CLIP, Target_Current, 30, 0, 9, 0, 5);
+        enableCreatureAISpellSystem = true;
+
+        auto aimedShot = addAISpell(GARAXXAS_AIMED_SHOT, 90.0f, TARGET_RANDOM_SINGLE, 3, 6);
+        aimedShot->setMinMaxDistance(5.0f, 35.0f);
+
+        auto shoot = addAISpell(GARAXXAS_SHOOT, 90.0f, TARGET_RANDOM_SINGLE, 3, 5);
+        shoot->setMinMaxDistance(5.0f, 30.0f);
+
+        auto concussivShot = addAISpell(GARAXXAS_CONCUSSIV_SHOT, 40.0f, TARGET_RANDOM_SINGLE, 0, 8);
+        concussivShot->setMinMaxDistance(5.0f, 35.0f);
+
+        auto multiShot = addAISpell(GARAXXAS_MULTI_SHOT, 25.0f, TARGET_RANDOM_SINGLE, 0, 12);
+        multiShot->setMinMaxDistance(5.0f, 30.0f);
+
+        addAISpell(GARAXXAS_WING_CLIP, 30.0f, TARGET_ATTACKING, 0, 9);
     }
 };
 
-//Apoko
 class ApokoAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ApokoAI);
     ApokoAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(APOKO_FROST_SHOCK, Target_RandomPlayer, 40, 0, 8, 0, 20);
-        AddSpell(APOKO_LESSER_HEALING_WAVE, Target_RandomFriendly, 50, 1.5, 10, 0, 40);
-        AddSpell(APOKO_PURGE, Target_RandomUnit, 20, 0, 40, 0, 30);
+        enableCreatureAISpellSystem = true;
+
+        auto frostShock = addAISpell(APOKO_FROST_SHOCK, 40.0f, TARGET_RANDOM_SINGLE, 0, 8);
+        frostShock->setMinMaxDistance(0.0f, 20.0f);
+
+        auto healingWave = addAISpell(APOKO_LESSER_HEALING_WAVE, 50.0f, TARGET_RANDOM_FRIEND, 2, 10);
+        healingWave->setMinMaxDistance(0.0f, 40.0f);
+
+        auto purge = addAISpell(APOKO_PURGE, 20.0f, TARGET_RANDOM_SINGLE, 0, 40);
+        purge->setMinMaxDistance(0.0f, 30.0f);
     }
 };
 
-//Zelfan
 class ZelfanAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ZelfanAI);
     ZelfanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(ZELFAN_GOBLIN_DRAGON_GUN, Target_Current, 90, 0, 15, 0, 5);
-        AddSpell(ZELFAN_HIGH_EXPLOSIV_SHEEP, Target_Self, 90, 2, 80);
-        AddSpell(ZELFAN_ROCKET_LAUNCH, Target_RandomPlayer, 99, 3.5, 60, 0, 45);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(ZELFAN_GOBLIN_DRAGON_GUN, 90.0f, TARGET_ATTACKING, 0, 15);
+        addAISpell(ZELFAN_HIGH_EXPLOSIV_SHEEP, 90.0f, TARGET_SELF, 2, 80);
+
+        auto rocketLaunch = addAISpell(ZELFAN_ROCKET_LAUNCH, 99.0f, TARGET_RANDOM_SINGLE, 4, 60);
+        rocketLaunch->setMinMaxDistance(0.0f, 45.0f);
     }
 };
 
 //Trash mobs
 
-//Coilskar Witch
 class CoilskarWitchAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(CoilskarWitchAI);
     CoilskarWitchAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(COILSKAR_WITCH_FORKED_LIGHTNING, Target_Current, 60, 2, 12, 0, 30);
-        AddSpell(COILSKAR_WITCH_FROST_ARROW, Target_RandomPlayer, 15, 0, 16, 0, 40);
-        AddSpell(COILSKAR_WITCH_MANA_SHIELD, Target_Self, 6, 0, 40, 0, 0);
-        AddSpell(COILSKAR_WITCH_SHOOT, Target_RandomPlayer, 75, 1.5, 4, 5, 30);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(COILSKAR_WITCH_FORKED_LIGHTNING, 60.0f, TARGET_ATTACKING, 2, 12);
+
+        auto frostArrow = addAISpell(COILSKAR_WITCH_FROST_ARROW, 15.0f, TARGET_RANDOM_SINGLE, 0, 16);
+        frostArrow->setMinMaxDistance(0.0f, 40.0f);
+
+        addAISpell(COILSKAR_WITCH_MANA_SHIELD, 6.0f, TARGET_SELF, 0, 40);
+
+        auto witchShoot = addAISpell(COILSKAR_WITCH_SHOOT, 75.0f, TARGET_RANDOM_SINGLE, 2, 4);
+        witchShoot->setMinMaxDistance(5.0f, 30.0f);
     }
 };
 
-//Sister of Torment
 class SisterOfTormentAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SisterOfTormentAI);
     SisterOfTormentAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(SISTER_OF_TORMENT_LASH_OF_PAIN, Target_Current, 60, 0, 8, 0, 5);
-        AddSpell(SISTER_OF_TORMENT_DEADLY_EMBRACE, Target_RandomPlayer, 20, 1.5, 16, 0, 20);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(SISTER_OF_TORMENT_LASH_OF_PAIN, 60.0f, TARGET_ATTACKING, 0, 8);
+
+        auto deadlyEmbracy = addAISpell(SISTER_OF_TORMENT_DEADLY_EMBRACE, 20.0f, TARGET_RANDOM_SINGLE, 2, 16);
+        deadlyEmbracy->setMinMaxDistance(0.0f, 20.0f);
     }
 };
 
-//Sunblade Blood Knight
 class SunbladeBloodKnightAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SunbladeBloodKnightAI);
     SunbladeBloodKnightAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(BLOOD_KNIGHT_JUDGEMENT_OF_WRATH, Target_Current, 20, 0, 30, 0, 5);
-        AddSpell(BLOOD_KNIGHT_SEAL_OF_WRATH, Target_Self, 99, 0, 30, 0, 0);
-        AddSpell(BLOOD_KNIGHT_HOLY_LIGHT, Target_Self, 10, 2, 30, 0, 40);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(BLOOD_KNIGHT_JUDGEMENT_OF_WRATH, 20.0f, TARGET_ATTACKING, 0, 30);
+        addAISpell(BLOOD_KNIGHT_SEAL_OF_WRATH, 99.0f, TARGET_SELF, 0, 30);
+
+        auto holyLight = addAISpell(BLOOD_KNIGHT_HOLY_LIGHT, 10.0f, TARGET_SELF, 2, 30);
+        holyLight->setMinMaxDistance(0.0f, 40.0f);
     }
 };
 
-//Sunblade Imp
 class SunbladeImpAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SunbladeImpAI);
     SunbladeImpAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(IMP_FIREBOLT, Target_Current, 100, 2, (int32)2.5, 0, 30);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(IMP_FIREBOLT, 100.0f, TARGET_ATTACKING, 2, 3);
     }
 };
 
-//Sunblade Mage Guard
 class SunbladeMageGuardAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SunbladeMageGuardAI);
     SunbladeMageGuardAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(MAGE_GUARD_GLAVE_THROW, Target_Current, 60, 0, 25, 0, 5);
-        AddSpell(MAGE_GUARD_MAGIC_DAMPENING_FIELD, Target_RandomPlayer, 20, 1, 35, 0, 20);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(MAGE_GUARD_GLAVE_THROW, 60.0f, TARGET_ATTACKING, 0, 25);
+
+        auto magicDampening = addAISpell(MAGE_GUARD_MAGIC_DAMPENING_FIELD, 20.0f, TARGET_RANDOM_SINGLE, 1, 35);
+        magicDampening->setMinMaxDistance(0.0f, 20.0f);
     }
 };
 
-//Sunblade Magister
 class SunbladeMagisterAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SunbladeMagisterAI);
     SunbladeMagisterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(MAGISTER_FROSTBOLT, Target_Current, 65, 2, 4, 0, 30);
-        AddSpell(MAGISTER_ARCANE_NOVA, Target_Self, 12, 1.5, 40, 0, 0);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(MAGISTER_FROSTBOLT, 65.0f, TARGET_ATTACKING, 2, 4);
+        addAISpell(MAGISTER_ARCANE_NOVA, 12.0f, TARGET_SELF, 2, 40);
     }
 };
 

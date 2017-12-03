@@ -21,8 +21,6 @@
 #include "Instance_HallsOfLightning.h"
 
 
-/////////////////////////////////////////////////////////////////////////////////
-/// Halls of Lightning Instance
 class HallsOfLightningScript : public InstanceScript
 {
     public:
@@ -115,28 +113,36 @@ enum GENERAL_STANCES
     STANCE_DEFENSIVE = 3,
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-/// General Bjarnrim Script
 class GeneralBjarngrimAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(GeneralBjarngrimAI);
     GeneralBjarngrimAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
+        enableCreatureAISpellSystem = true;
+
         // Battle Stance
-        AddPhaseSpell(1, AddSpell(SPELL_MORTAL_STRIKE, Target_Current, 25, 0, 5));
-        AddPhaseSpell(1, AddSpell(SPELL_WHIRLWIND, Target_Self, 90, 8, 30));
+        auto mortalStrike = addAISpell(SPELL_MORTAL_STRIKE, 25.0f, TARGET_ATTACKING, 0, 5);
+        mortalStrike->setAvailableForScriptPhase({ 1 });
+
+        auto whirlwind = addAISpell(SPELL_WHIRLWIND, 90.0f, TARGET_SELF, 8, 30);
+        whirlwind->setAvailableForScriptPhase({ 1 });
 
         // Berserker Stance
-        AddPhaseSpell(2, AddSpell(SPELL_CLEAVE, Target_Current, 30, 0, 5));
+        auto cleave = addAISpell(SPELL_CLEAVE, 30.0f, TARGET_ATTACKING, 0, 5);
+        cleave->setAvailableForScriptPhase({ 2 });
 
         // Defensive Stance
-        AddPhaseSpell(3, AddSpell(SPELL_SPELL_REFLECTION, Target_Self, 20, 0, 10));
-        AddPhaseSpell(3, AddSpell(SPELL_INTERCEPT, Target_RandomPlayerNotCurrent, 40, 0, 6));
-        AddPhaseSpell(3, AddSpell(SPELL_PUMMEL, Target_Current, 40, 0, 5));
+        auto reflection = addAISpell(SPELL_SPELL_REFLECTION, 20.0f, TARGET_SELF, 0, 10);
+        reflection->setAvailableForScriptPhase({ 3 });
+
+        auto intercept = addAISpell(SPELL_INTERCEPT, 40.0f, TARGET_RANDOM_SINGLE, 0, 6);
+        intercept->setAvailableForScriptPhase({ 3 });
+
+        auto pummel = addAISpell(SPELL_PUMMEL, 40.0f, TARGET_ATTACKING, 0, 5);
+        pummel->setAvailableForScriptPhase({ 3 });
 
         mStanceTimer = INVALIDATE_TIMER;
 
-        // new
         addEmoteForEvent(Event_OnCombatStart, 758);      // I am the greatest of my father's sons! Your end has come!
         addEmoteForEvent(Event_OnTargetDied, 762);        // So ends your curse.
         addEmoteForEvent(Event_OnTargetDied, 763);        // Flesh... is... weak!
@@ -216,22 +222,22 @@ const uint32 SPELL_BLAST_WAVE = 23113;
 const uint32 TIMER_STOMP = 24000;
 
 
-/////////////////////////////////////////////////////////////////////////////////
-/// Volkhan Script
 class Volkhan : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Volkhan);
     Volkhan(Creature* pCreature) : CreatureAIScript(pCreature)
     {
+        enableCreatureAISpellSystem = true;
+
         if (_isHeroic())
         {
-            AddSpell(59529, Target_WoundedFriendly, 15, 1.5f, 15);
-            mStomp = AddSpell(59529, Target_Self, 0, 3, 0);
+            addAISpell(59529, 15.0f, TARGET_RANDOM_FRIEND, 2, 15);
+            mStomp = addAISpell(59529, 0.0f, TARGET_SELF, 3, 0);
         }
         else
         {
-            AddSpell(52237, Target_WoundedFriendly, 15, 1.5f, 15);
-            mStomp = AddSpell(52237, Target_Self, 0, 3, 0);
+            addAISpell(52237, 15.0f, TARGET_RANDOM_FRIEND, 2, 15);
+            mStomp = addAISpell(52237, 0.0f, TARGET_SELF, 3, 0);
         }
 
         mStomp->addEmote("I will crush you beneath my boots!", CHAT_MSG_MONSTER_YELL, 13963);
@@ -244,11 +250,11 @@ class Volkhan : public CreatureAIScript
 
         SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
         AddWaypoint(CreateWaypoint(1, 0, Movement::WP_MOVE_TYPE_RUN, m_cVolkhanWP));
-        mStompTimer = INVALIDATE_TIMER;
+
+        mStompTimerId = 0;
         mPhase = 0;
         m_bStomp = false;
 
-        // new
         addEmoteForEvent(Event_OnCombatStart, 769);      // It is you who have destroyed my children? You... shall... pay!
         addEmoteForEvent(Event_OnTargetDied, 774);      // The armies of iron will conquer all!
         addEmoteForEvent(Event_OnTargetDied, 775);      // Feh! Pathetic!
@@ -258,25 +264,25 @@ class Volkhan : public CreatureAIScript
 
     void OnCombatStart(Unit* /*pTarget*/) override
     {
-        mStompTimer = _addTimer(TIMER_STOMP + (RandomUInt(6) * 1000));
+        mStompTimerId = _addTimer(TIMER_STOMP + (RandomUInt(6) * 1000));
         mPhase = 0;
     }
 
     void AIUpdate() override
     {
-        if (_isTimerFinished(mStompTimer))
+        if (_isTimerFinished(mStompTimerId))
         {
             if (m_bStomp == false)
             {
                 m_bStomp = true;
                 sendAnnouncement("Volkhan prepares to shatter his Brittle Golems!");
-                CastSpellNowNoScheduling(mStomp);
-                _resetTimer(mStompTimer, 3000);
+                _castAISpell(mStomp);
+                _resetTimer(mStompTimerId, 3000);
             }
             else
             {
                 DoStomp();
-                _resetTimer(mStompTimer, TIMER_STOMP + (RandomUInt(6) * 1000));
+                _resetTimer(mStompTimerId, TIMER_STOMP + (RandomUInt(6) * 1000));
             }
         }
 
@@ -334,10 +340,10 @@ class Volkhan : public CreatureAIScript
         m_bStomp = false;
     }
 
-    SpellDesc* mStomp;
+    CreatureAISpells* mStomp;
     Movement::Location m_cVolkhanWP;
     bool m_bStomp;
-    int32 mStompTimer;
+    uint32_t mStompTimerId;
     int32 mPhase;
 };
 
@@ -347,12 +353,14 @@ class MoltenGolem : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(MoltenGolem);
     MoltenGolem(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        AddSpell(SPELL_BLAST_WAVE, Target_Self, 25, 0, 20);
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(SPELL_BLAST_WAVE, 25.0f, TARGET_SELF, 0, 20);
 
         if (_isHeroic())
-            AddSpell(59530, Target_Current, 15, 0, 15);
+            addAISpell(59530, 15.0f, TARGET_ATTACKING, 0, 15);
         else
-            AddSpell(52433, Target_Current, 15, 0, 15);
+            addAISpell(52433, 15.0f, TARGET_ATTACKING, 0, 15);
     }
 
     void OnDied(Unit* /*pKiller*/) override
@@ -388,31 +396,31 @@ class VolkhansAnvil : public CreatureAIScript
 
 const uint32 DISPRESE = 52770;;
 const uint32 SPELL_SUMMON_SPARK = 52746;
-/////////////////////////////////////////////////////////////////////////////////
-/// Ionar
-// Status: Basic script, missing spark phase
+
+//\todo missing spark phase
 class IonarAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(IonarAI);
     IonarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
+        enableCreatureAISpellSystem = true;
+
         if (_isHeroic())
         {
-            AddSpell(59800, Target_RandomPlayerNotCurrent, 20, 1.5f, 5);
-            AddSpell(59795, Target_RandomPlayerNotCurrent, 15, 0, 12);
+            addAISpell(59800, 20.0f, TARGET_RANDOM_SINGLE, 2, 5);
+            addAISpell(59795, 15.0f, TARGET_RANDOM_SINGLE, 0, 12);
         }
         else
         {
-            AddSpell(52780, Target_RandomPlayerNotCurrent, 20, 1.5f, 5);
-            AddSpell(52658, Target_RandomPlayerNotCurrent, 15, 0, 12);
+            addAISpell(52780, 20.0f, TARGET_RANDOM_SINGLE, 2, 5);
+            addAISpell(52658, 15.0f, TARGET_RANDOM_SINGLE, 0, 12);
         }
 
-        // new
-        addEmoteForEvent(Event_OnCombatStart, 738);      // You wish to confront the master? You must first weather the storm!
+        addEmoteForEvent(Event_OnCombatStart, 738);     // You wish to confront the master? You must first weather the storm!
         addEmoteForEvent(Event_OnTargetDied, 741);      // Shocking, I know.
         addEmoteForEvent(Event_OnTargetDied, 742);      // You attempt the impossible.
         addEmoteForEvent(Event_OnTargetDied, 743);      // Your spark of life is... extinguished.
-        addEmoteForEvent(Event_OnDied, 744);      // Master... you have guests
+        addEmoteForEvent(Event_OnDied, 744);            // Master... you have guests
     }
 };
 
@@ -423,28 +431,31 @@ const uint32 ARC_LIGHTNING = 52921;
 const uint32 TIMER_NOVA = 14000;
 const uint32 TIMER_RESPOND = 18000;
 
-/////////////////////////////////////////////////////////////////////////////////
-/// Loken
 class LokenAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(LokenAI);
     LokenAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
+        enableCreatureAISpellSystem = true;
+
         if (_isHeroic())
-            mNova = AddSpell(59835, Target_Self, 0, 4.0f, 0);
+            mNova = addAISpell(59835, 0.0f, TARGET_SELF, 4, 0);
         else
-            mNova = AddSpell(52960, Target_Self, 0, 4.0f, 0);
+            mNova = addAISpell(52960, 0.0f, TARGET_SELF, 4, 0);
+
+        mNova->addDBEmote(802);      // You cannot hide from fate!
+        mNova->addDBEmote(803);      // Come closer. I will make it quick.
+        mNova->addDBEmote(804);      // Your flesh cannot hold out for long.
         
-        AddSpell(ARC_LIGHTNING, Target_RandomPlayer, 25, 0, 6);
+        addAISpell(ARC_LIGHTNING, 25.0f, TARGET_RANDOM_SINGLE, 0, 6);
 
         sendChatMessage(CHAT_MSG_MONSTER_YELL, 14160, "I have witnessed the rise and fall of empires. The birth and extinction of entire species. Over countless millennia the foolishness of mortals has remained the only constant. Your presence here confirms this.");
 
-        mNovaTimer = INVALIDATE_TIMER;
+        mNovaTimerId = 0;
         mRespondTimer = _addTimer(TIMER_RESPOND);
         RegisterAIUpdateEvent(1000);
         mSpeech = 1;
 
-        // new
         addEmoteForEvent(Event_OnCombatStart, 801);      // What hope is there for you? None!
         addEmoteForEvent(Event_OnTargetDied, 805);      // Only mortal...
         addEmoteForEvent(Event_OnTargetDied, 806);      // I... am... FOREVER!
@@ -461,7 +472,7 @@ class LokenAI : public CreatureAIScript
         else
             _applyAura(52961);
 
-        mNovaTimer = _addTimer(TIMER_NOVA);
+        mNovaTimerId = _addTimer(TIMER_NOVA);
         _castOnInrangePlayers(PULSING_SHOCKWAVE_AURA);
     }
 
@@ -470,7 +481,6 @@ class LokenAI : public CreatureAIScript
         _removeAuraOnPlayers(PULSING_SHOCKWAVE_AURA);
     }
 
-
     void OnDied(Unit* /*pKiller*/) override
     {
         _removeAuraOnPlayers(PULSING_SHOCKWAVE_AURA);
@@ -478,25 +488,11 @@ class LokenAI : public CreatureAIScript
 
     void AIUpdate() override
     {
-        // spell emote
-        if (_isTimerFinished(mNovaTimer))
+        if (_isTimerFinished(mNovaTimerId))
         {
-            switch (RandomUInt(2))
-            {
-                case 0:
-                    sendDBChatMessage(802);      // You cannot hide from fate!
-                    break;
-                case 1:
-                    sendDBChatMessage(803);      // Come closer. I will make it quick.
-                    break;
-                case 2:
-                    sendDBChatMessage(804);      // Your flesh cannot hold out for long.
-                    break;
-            }
-
             sendAnnouncement("Loken begins to cast Lightning Nova!");
-            CastSpellNowNoScheduling(mNova);
-            _resetTimer(mNovaTimer, TIMER_NOVA + (RandomUInt(8) * 1000));
+            _castAISpell(mNova);
+            _resetTimer(mNovaTimerId, TIMER_NOVA + (RandomUInt(8) * 1000));
         }
 
         if (mSpeech == 4)
@@ -531,9 +527,9 @@ class LokenAI : public CreatureAIScript
         
     }
 
-    SpellDesc* mNova;
+    CreatureAISpells* mNova;
 
-    int32 mNovaTimer;
+    uint32_t mNovaTimerId;
     uint32 mRespondTimer;
     uint8 mSpeech;
 };

@@ -19,38 +19,37 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include "Setup.h"
 #include "Instance_BloodFurnace.h"
 
 
-// Keli'dan the BreakerAI
 class KelidanTheBreakerAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(KelidanTheBreakerAI);
     KelidanTheBreakerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        //spells
+        enableCreatureAISpellSystem = true;
+
         if (_isHeroic())
         {
-            mShadowBoltVolley = AddSpell(KELIDAN_SHADOW_BOLT_VOLLEY_H, Target_Self, 25, 0, 6);
-            mFireNova = AddSpell(KELIDAN_FIRE_NOVA_H, Target_Current, 15, 0, 12);
+            mShadowBoltVolley = addAISpell(KELIDAN_SHADOW_BOLT_VOLLEY_H, 25.0f, TARGET_SELF, 0, 6);
+            mFireNova = addAISpell(KELIDAN_FIRE_NOVA_H, 15.0f, TARGET_ATTACKING, 0, 12);
         }
         else
         {
-            mShadowBoltVolley = AddSpell(KELIDAN_SHADOW_BOLT_VOLLEY, Target_Self, 25, 0, 6);
-            mFireNova = AddSpell(KELIDAN_FIRE_NOVA, Target_Self, 15, 0, 12);
+            mShadowBoltVolley = addAISpell(KELIDAN_SHADOW_BOLT_VOLLEY, 25.0f, TARGET_SELF, 0, 6);
+            mFireNova = addAISpell(KELIDAN_FIRE_NOVA, 15.0f, TARGET_SELF, 0, 12);
         }
 
-        mBurningNova = AddSpell(KELIDAN_BURNING_NOVA, Target_Self, 0, 0, 0);
+        mBurningNova = addAISpell(KELIDAN_BURNING_NOVA, 0.0f, TARGET_SELF, 0, 0);
         mBurningNova->addEmote("Closer! Come closer... and burn!", CHAT_MSG_MONSTER_YELL);
-        mVortex = AddSpell(KELIDAN_FIRE_NOVA, Target_Self, 0, 0, 0);
-        AddSpell(KELIDAN_CORRUPTION, Target_Current, 15, 0, 10);
 
-        mBurningNovaTimer = INVALIDATE_TIMER;
+        mVortex = addAISpell(KELIDAN_FIRE_NOVA, 0.0f, TARGET_SELF, 0, 0);
+        addAISpell(KELIDAN_CORRUPTION, 15.0f, TARGET_ATTACKING, 0, 10);
+
+        mBurningNovaTimerId = 0;
         SetAIUpdateFreq(800);
 
-        // new
         addEmoteForEvent(Event_OnCombatStart, 4841);    // Who dares interrupt--What is this; what have you done? You'll ruin everything!
         addEmoteForEvent(Event_OnTargetDied, 4845);     // Just as you deserve!
         addEmoteForEvent(Event_OnTargetDied, 4846);     // Your friends will soon be joining you!
@@ -59,33 +58,33 @@ class KelidanTheBreakerAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*pTarget*/) override
     {
-        mBurningNovaTimer = _addTimer(15000);
+        mBurningNovaTimerId = _addTimer(15000);
     }
 
     void AIUpdate() override
     {
-        if (!_isCasting())
+        if (getScriptPhase() == 1 && !_isCasting())
         {
-            if (mBurningNovaTimer == INVALIDATE_TIMER || _isTimerFinished(mBurningNovaTimer))
+            if (_isTimerFinished(mBurningNovaTimerId))
             {
                 if (_isHeroic())
-                    CastSpell(mVortex);
-                CastSpell(mBurningNova);
+                    _castAISpell(mVortex);
 
-                _resetTimer(mBurningNovaTimer, 30000);
+                _castAISpell(mBurningNova);
+
+                _resetTimer(mBurningNovaTimerId, 30000);
             }
         }
     }
 
-    SpellDesc* mShadowBoltVolley;
-    SpellDesc* mFireNova;
-    SpellDesc* mBurningNova;
-    SpellDesc* mVortex;
-    int32 mBurningNovaTimer;
+    CreatureAISpells* mShadowBoltVolley;
+    CreatureAISpells* mFireNova;
+    CreatureAISpells* mBurningNova;
+    CreatureAISpells* mVortex;
+    uint32_t mBurningNovaTimerId;
 };
 
 
-// Broggok
 class BroggokAI : public CreatureAIScript
 {
     public:
@@ -93,9 +92,13 @@ class BroggokAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(BroggokAI);
         BroggokAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(POISON_BOLT, Target_Self, 12.0f, 0, 15);
-            AddSpell(POISON_CLOUD, Target_RandomPlayerDestination, 8.0f, 0, 40, 0, 40);
-            AddSpell(SLIME_SPRAY, Target_Self, 10.0f, 0, 25);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(POISON_BOLT, 12.0f, TARGET_SELF, 0, 15);
+            addAISpell(SLIME_SPRAY, 10.0f, TARGET_SELF, 0, 25);
+
+            auto poisonCloud = addAISpell(POISON_CLOUD, 8.0f, TARGET_RANDOM_DESTINATION, 0, 40);
+            poisonCloud->setMinMaxDistance(0.0f, 40.0f);
         }
 
         void OnDied(Unit* /*pKiller*/) override
@@ -107,7 +110,6 @@ class BroggokAI : public CreatureAIScript
 };
 
 
-// The Maker
 class TheMakerAI : public CreatureAIScript
 {
     public:
@@ -115,11 +117,14 @@ class TheMakerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(TheMakerAI);
         TheMakerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(DOMINATION, Target_RandomPlayer, 8.0f, 0, 30);
-            AddSpell(ACID_SPRAY, Target_Self, 10.0f, 0, 20);
-            AddSpell(THROW_BEAKER, Target_RandomPlayerDestination, 20.0f, 0, 0, 0, 40);
+            enableCreatureAISpellSystem = true;
 
-            // new
+            addAISpell(DOMINATION, 8.0f, TARGET_RANDOM_SINGLE);
+            addAISpell(ACID_SPRAY, 10.0f, TARGET_SELF);
+
+            auto throwBreaker = addAISpell(THROW_BEAKER, 20.0f, TARGET_RANDOM_DESTINATION);
+            throwBreaker->setMinMaxDistance(0.0f, 40.0f);
+
             addEmoteForEvent(Event_OnCombatStart, 4849);    // My work must not be interrupted!
             addEmoteForEvent(Event_OnCombatStart, 4850);    // Perhaps I can find a use for you...
             addEmoteForEvent(Event_OnCombatStart, 4851);    // Anger...hate... These are tools I can use.
