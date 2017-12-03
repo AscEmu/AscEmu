@@ -100,60 +100,60 @@ class ObsidianSanctumScript : public InstanceScript
         }
 };
 
-void SpellFunc_FlameTsunami(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* /*pTarget*/, TargetType /*pType*/)
-{
-    if (pCreatureAI != NULL)
-    {
-        pCreatureAI->getCreature()->SendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, "The lava surrounding Sartharion churns!");
-
-        switch (RandomUInt(3))
-        {
-            case 0:
-                pCreatureAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 14100, "Such flammable little insects....");
-                break;
-            case 1:
-                pCreatureAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 14101, "Your charred bones will litter the floor!");
-                break;
-            case 2:
-                pCreatureAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 14102, "How much heat can you take?");
-                break;
-            case 3:
-                pCreatureAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 14103, "All will be reduced to ash!");
-                break;
-        }
-
-        for (uint8 i = 0; i < 3; ++i)
-        {
-            switch (RandomUInt(1))
-            {
-                case 0:
-                {
-                    Creature* Tsunami = pCreatureAI->spawnCreature(CN_FLAME_TSUNAMI, TSUNAMI_SPAWN[i].x, TSUNAMI_SPAWN[i].y, TSUNAMI_SPAWN[i].z, TSUNAMI_SPAWN[i].o);
-                    if (Tsunami != nullptr)
-                        Tsunami->GetAIInterface()->MoveTo(TSUNAMI_MOVE[i].x, TSUNAMI_MOVE[i].y, TSUNAMI_MOVE[i].z);
-                } break;
-                case 1:
-                {
-                    Creature* Tsunami = pCreatureAI->spawnCreature(CN_FLAME_TSUNAMI, TSUNAMI_SPAWN[i + 3].x, TSUNAMI_SPAWN[i + 3].y, TSUNAMI_SPAWN[i + 3].z, TSUNAMI_SPAWN[i + 3].o);
-                    if (Tsunami != nullptr)
-                        Tsunami->GetAIInterface()->MoveTo(TSUNAMI_MOVE[i + 3].x, TSUNAMI_MOVE[i + 3].y, TSUNAMI_MOVE[i + 3].z);
-                } break;
-            }
-        }
-    }
-}
-
-void SpellFunc_LavaSpawn(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType /*pType*/)
-{
-    if (pCreatureAI == NULL)
-        return;
-
-    for (uint8 i = 0; i < 2; ++i)
-    {
-        uint32 j = RandomUInt(5);
-        pCreatureAI->spawnCreature(CN_LAVA_BLAZE, pTarget->GetPositionX() + j, pTarget->GetPositionY() + j, pTarget->GetPositionZ(), pTarget->GetOrientation(), pCreatureAI->getCreature()->GetFaction());
-    }
-}
+//void SpellFunc_FlameTsunami(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* /*pTarget*/, TargetType /*pType*/)
+//{
+//    if (pCreatureAI != NULL)
+//    {
+//        pCreatureAI->getCreature()->SendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, "The lava surrounding Sartharion churns!");
+//
+//        switch (RandomUInt(3))
+//        {
+//            case 0:
+//                pCreatureAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 14100, "Such flammable little insects....");
+//                break;
+//            case 1:
+//                pCreatureAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 14101, "Your charred bones will litter the floor!");
+//                break;
+//            case 2:
+//                pCreatureAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 14102, "How much heat can you take?");
+//                break;
+//            case 3:
+//                pCreatureAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 14103, "All will be reduced to ash!");
+//                break;
+//        }
+//
+//        for (uint8 i = 0; i < 3; ++i)
+//        {
+//            switch (RandomUInt(1))
+//            {
+//                case 0:
+//                {
+//                    Creature* Tsunami = pCreatureAI->spawnCreature(CN_FLAME_TSUNAMI, TSUNAMI_SPAWN[i].x, TSUNAMI_SPAWN[i].y, TSUNAMI_SPAWN[i].z, TSUNAMI_SPAWN[i].o);
+//                    if (Tsunami != nullptr)
+//                        Tsunami->GetAIInterface()->MoveTo(TSUNAMI_MOVE[i].x, TSUNAMI_MOVE[i].y, TSUNAMI_MOVE[i].z);
+//                } break;
+//                case 1:
+//                {
+//                    Creature* Tsunami = pCreatureAI->spawnCreature(CN_FLAME_TSUNAMI, TSUNAMI_SPAWN[i + 3].x, TSUNAMI_SPAWN[i + 3].y, TSUNAMI_SPAWN[i + 3].z, TSUNAMI_SPAWN[i + 3].o);
+//                    if (Tsunami != nullptr)
+//                        Tsunami->GetAIInterface()->MoveTo(TSUNAMI_MOVE[i + 3].x, TSUNAMI_MOVE[i + 3].y, TSUNAMI_MOVE[i + 3].z);
+//                } break;
+//            }
+//        }
+//    }
+//}
+//
+//void SpellFunc_LavaSpawn(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType /*pType*/)
+//{
+//    if (pCreatureAI == NULL)
+//        return;
+//
+//    for (uint8 i = 0; i < 2; ++i)
+//    {
+//        uint32 j = RandomUInt(5);
+//        pCreatureAI->spawnCreature(CN_LAVA_BLAZE, pTarget->GetPositionX() + j, pTarget->GetPositionY() + j, pTarget->GetPositionZ(), pTarget->GetOrientation(), pCreatureAI->getCreature()->GetFaction());
+//    }
+//}
 
 class SartharionAI : public CreatureAIScript
 {
@@ -179,8 +179,8 @@ class SartharionAI : public CreatureAIScript
             if (mFlame != nullptr)
                 mFlame->addEmote("Burn, you miserable wretches!", CHAT_MSG_MONSTER_YELL, 14098);
             
-            mFlameTsunami = AddSpellFunc(&SpellFunc_FlameTsunami, TARGET_SELF, 99, 0, 25);
-            mSummonLava = AddSpellFunc(&SpellFunc_LavaSpawn, TARGET_RANDOM_SINGLE, 25, 0, 8);
+           /* mFlameTsunami = AddSpellFunc(&SpellFunc_FlameTsunami, TARGET_SELF, 99, 0, 25);
+            mSummonLava = AddSpellFunc(&SpellFunc_LavaSpawn, TARGET_RANDOM_SINGLE, 25, 0, 8);*/
 
             addEmoteForEvent(Event_OnTargetDied, 8851);
             addEmoteForEvent(Event_OnTargetDied, 8852);
@@ -201,7 +201,7 @@ class SartharionAI : public CreatureAIScript
         void OnCombatStart(Unit* /*pTarget*/) override
         {
             m_bEnraged = false;
-            mFlameTsunami->setTriggerCooldown();
+            /*mFlameTsunami->setTriggerCooldown();*/
             CheckDrakes();
 
             if (m_iDrakeCount >= 1)   //HardMode!
@@ -232,8 +232,8 @@ class SartharionAI : public CreatureAIScript
 
             if (_getHealthPercent() <= 10 && m_bEnraged == false)   // enrage phase
             {
-                for (uint8 i = 0; i < 3; ++i)
-                    CastSpellNowNoScheduling(mSummonLava);
+                /*for (uint8 i = 0; i < 3; ++i)
+                    CastSpellNowNoScheduling(mSummonLava);*/
 
                 m_bEnraged = true;
             }
@@ -305,7 +305,7 @@ class SartharionAI : public CreatureAIScript
         ObsidianSanctumScript* mInstance;
 
         Creature* m_cDrakes[OS_DATA_END - 1]; // exclude boss
-        SpellDesc* mFlameTsunami, *mSummonLava;
+        /*SpellDesc* mFlameTsunami, *mSummonLava;*/
 };
 
 class TsunamiAI : public CreatureAIScript
@@ -372,13 +372,13 @@ class LavaBlazeAI : public CreatureAIScript
 void SetupTheObsidianSanctum(ScriptMgr* mgr)
 {
     //////////////////////////////////////////////////////////////////////////////////////////
-    ///////// Bosses
+    // Bosses
     mgr->register_creature_script(CN_SARTHARION, &SartharionAI::Create);
     mgr->register_creature_script(CN_FLAME_TSUNAMI, &TsunamiAI::Create);
     mgr->register_creature_script(CN_CYCLON, &CyclonAI::Create);
     mgr->register_creature_script(CN_LAVA_BLAZE, &LavaBlazeAI::Create);
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    ///////// Instance
+    // Instance
     mgr->register_instance_script(MAP_OBSIDIAN_SANCTUM, &ObsidianSanctumScript::Create);
 }

@@ -20,32 +20,28 @@
 #include "Setup.h"
 #include "Instance_Gundrak.h"
 
+#define GO_FLAG_UNCLICKABLE 0x00000010
 
-#define GO_FLAG_UNCLICKABLE            0x00000010
-
-
-/////////////////////////////////////////////////////////////////////////////////
-// Status: Finished
 class GundrakScript : public InstanceScript
 {
     public:
-        uint32        mSladranAltarGUID;
-        uint32        mSladranStatueGUID;
-        uint32        mColossusAltarGUID;
-        uint32        mColossusStatueGUID;
-        uint32        mMoorabiAltarGUID;
-        uint32        mMoorabiStatueGUID;
+        uint32 mSladranAltarGUID;
+        uint32 mSladranStatueGUID;
+        uint32 mColossusAltarGUID;
+        uint32 mColossusStatueGUID;
+        uint32 mMoorabiAltarGUID;
+        uint32 mMoorabiStatueGUID;
 
-        uint32        mEckDoorsGUID;
+        uint32 mEckDoorsGUID;
 
-        uint32        mTrapDoorGUID;
-        uint32      mCoilisionGUID;
+        uint32 mTrapDoorGUID;
+        uint32 mCoilisionGUID;
 
-        uint32      mCombatDoorsGUID;
-        uint32        mDoor1GUID;
-        uint32        mDoor2GUID;
+        uint32 mCombatDoorsGUID;
+        uint32 mDoor1GUID;
+        uint32 mDoor2GUID;
 
-        uint8        mStatueCount;
+        uint8 mStatueCount;
 
         GundrakScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
         {
@@ -74,7 +70,6 @@ class GundrakScript : public InstanceScript
         {
             switch (pGameObject->GetEntry())
             {
-
                 case GO_ALTAR1_SLADRAN:
                 {
                     mSladranAltarGUID = pGameObject->GetLowGUID();
@@ -243,15 +238,13 @@ class GundrakScript : public InstanceScript
         }
 };
 
-/////////////////////////////////////////////////////////////////////////////////
+
 // Status: 50% done, missing add related stuff and maybe correct timers
 class SladranAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(SladranAI);
     SladranAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         CreatureAISpells* sdPoisonNova = nullptr;
         if (_isHeroic())
         {
@@ -280,7 +273,6 @@ class SladranAI : public CreatureAIScript
 };
 
 
-/////////////////////////////////////////////////////////////////////////////////
 // Status: 20% done, missing rihno part, need vehicle support for that, missing stampade script
 class GalDarahAI : public CreatureAIScript
 {

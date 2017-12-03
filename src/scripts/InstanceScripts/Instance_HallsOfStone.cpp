@@ -26,8 +26,6 @@ class DarkRuneStormcallerAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(DarkRuneStormcallerAI);
     DarkRuneStormcallerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(STORMCALLER_LIGHTNINGBOLT, 60.0f, TARGET_RANDOM_SINGLE, 3, 6);
         addAISpell(STORMCALLER_SHADOWWORD, 16.0f, TARGET_RANDOM_SINGLE, 0, 12);
     }
@@ -38,8 +36,6 @@ class IronGolemCustodianAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(IronGolemCustodianAI);
     IronGolemCustodianAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(CUSTODIAN_CRUSH_ARMOR, 50.0f, TARGET_ATTACKING, 0, 5);
         addAISpell(CUSTODIAN_GROUND_SMASH, 20.0f, TARGET_ATTACKING, 0, 14);
     }
@@ -50,8 +46,6 @@ class DarkRuneProtectorAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(DarkRuneProtectorAI);
     DarkRuneProtectorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(PROTECTOR_CHARGE, 20.0f, TARGET_RANDOM_SINGLE, 0, 14);
         addAISpell(PROTECTOR_CLAVE, 35.0f, TARGET_ATTACKING, 0, 8);
     }
@@ -62,8 +56,6 @@ class LesserAirElementalAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(LesserAirElementalAI);
     LesserAirElementalAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(ELEMENTAL_LIGHTNING_BOLT, 20.0f, TARGET_RANDOM_SINGLE, 3, 14);
     }
 };
@@ -73,8 +65,6 @@ class DarkRuneWorkerAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(DarkRuneWorkerAI);
     DarkRuneWorkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(WORKER_ENRAGE, 5.0f, TARGET_SELF, 0, 60);
         addAISpell(WORKER_PIERCE_ARMOR, 35.0f, TARGET_ATTACKING, 0, 45);
     }
@@ -85,8 +75,6 @@ class DarkRuneWarriorAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(DarkRuneWarriorAI);
     DarkRuneWarriorAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(WARRIOR_CLAVE, 15.0f, TARGET_ATTACKING, 0, 8);
         addAISpell(WARRIOR_HEROIC_STRIKE, 35.0f, TARGET_ATTACKING, 0, 12);
     }
@@ -97,8 +85,6 @@ class DarkRuneTheurgistAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(DarkRuneTheurgistAI);
     DarkRuneTheurgistAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(THEURGIST_BLAST_WAVE, 22.0f, TARGET_SELF, 0, 25);
         addAISpell(THEURGIST_FIREBOLT, 40.0f, TARGET_RANDOM_SINGLE, 3, 6);
         addAISpell(THEURGIST_IRON_MIGHT, 5.0f, TARGET_SELF, 0, 60);
@@ -110,8 +96,6 @@ class DarkRuneShaperAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(DarkRuneShaperAI);
     DarkRuneShaperAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(SHAPER_RAY, 35.0f, TARGET_RANDOM_SINGLE, 2, 12);
     }
 };
@@ -121,8 +105,6 @@ class DarkRuneScholarAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(DarkRuneScholarAI);
     DarkRuneScholarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(SCHOLAR_SILANCE, 35.0f, TARGET_RANDOM_SINGLE, 3, 12);
     }
 };
@@ -132,8 +114,6 @@ class DarkRuneGiantAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(DarkRuneGiantAI);
     DarkRuneGiantAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(GIANT_FIST, 3.0f, TARGET_SELF, 2, 40);
         auto stomp = addAISpell(GIANT_STOMP, 35.0f, TARGET_RANDOM_SINGLE, 0, 14);
         stomp->setMinMaxDistance(0.0f, 10.0f);
@@ -145,8 +125,6 @@ class DarkRuneConstructAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(DarkRuneConstructAI);
     DarkRuneConstructAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(RAGING_POTENT_JOLT, 95.0f, TARGET_SELF, 0, 8);
         auto cleave = addAISpell(RAGING_CLAVE, 30.0f, TARGET_ATTACKING, 0, 9);
         cleave->setMinMaxDistance(0.0f, 10.0f);
@@ -158,8 +136,6 @@ class DarkLightningConstructAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(DarkLightningConstructAI);
     DarkLightningConstructAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(LIGHTN_ELECTRICAL_OVERLOAD, 5.0f, TARGET_SELF, 2, 14);
         auto chainLightning = addAISpell(LIGHTN_CHAIN_LIGHTNING, 30.0f, TARGET_ATTACKING, 3, 8);
         chainLightning->setMinMaxDistance(0.0f, 30.0f);
@@ -171,8 +147,6 @@ class ForgedIronTroggAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(ForgedIronTroggAI);
     ForgedIronTroggAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         auto chainLightning = addAISpell(LIGHTN_CHAIN_LIGHTNING, 30.0f, TARGET_ATTACKING, 3, 8);
         chainLightning->setMinMaxDistance(0.0f, 30.0f);
     }
@@ -183,8 +157,6 @@ class MaidenOfGriefAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(MaidenOfGriefAI);
     MaidenOfGriefAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(MAIDEN_STORM_OF_GRIEF, 100.0f, TARGET_RANDOM_DESTINATION, 0, 19);
         addAISpell(MAIDEN_PILLAR_OF_WOE, 30.0f, TARGET_RANDOM_SINGLE, 0, 8);
 
@@ -214,8 +186,6 @@ class KrystallusAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(KrystallusAI);
     KrystallusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(KRYSTALLUS_BOULDER_TOSS, 35.0f, TARGET_ATTACKING, 1, 4);
         mShatter = addAISpell(KRYSTALLUS_SHATTER, 0.0f, TARGET_SELF, 0, 0);
         mStomp = addAISpell(KRYSTALLUS_STOMP, 0.0f, TARGET_SELF, 0, 0);

@@ -51,8 +51,6 @@ class InstancePitOfSaronScript : public InstanceScript
 };
 
 // BOSSES
-// Forgemaster Garfrost
-
 class ForgemasterGarfrostAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(ForgemasterGarfrostAI);
@@ -60,8 +58,6 @@ class ForgemasterGarfrostAI : public CreatureAIScript
     {
         // Instance Script
         mInstance = getInstanceScript();
-
-        enableCreatureAISpellSystem = true;
 
         // Normal Spells
         addAISpell(SPELL_THROWSARONITE, 20.0f, TARGET_RANDOM_DESTINATION, 2, 45);
@@ -153,8 +149,6 @@ class IckAI : public CreatureAIScript
     {
         // Instance Script
         mInstance = getInstanceScript();
-
-        enableCreatureAISpellSystem = true;
 
         // Spells
         mMightyKick = addAISpell(SPELL_MIGHTY_KICK, 0.0f, TARGET_ATTACKING);
@@ -299,7 +293,7 @@ class IckAI : public CreatureAIScript
                 _clearHateList();
                 getCreature()->GetAIInterface()->setNextTarget(pTarget);
                 getCreature()->GetAIInterface()->modThreatByPtr(pTarget, 1000);
-                CastSpellOnTarget(pTarget, TargetGen_Current, mPursue->mSpellInfo, true);
+                //CastSpellOnTarget(pTarget, TargetGen_Current, mPursue->mSpellInfo, true);
             }
 
             _castAISpell(mConfusion);
@@ -368,8 +362,6 @@ class KrickAI : public CreatureAIScript
         // Timer
         mOutroTimer = 0;
         mBarrageTimer = 0;
-
-        mBarrageSummon = nullptr;
 
         // Ick
         mIckAI = nullptr;
@@ -531,7 +523,6 @@ class KrickAI : public CreatureAIScript
     InstanceScript* mInstance;
     Creature* mIckAI;
     CreatureAIScript* JainaOrSylvanas;
-    SpellDesc* mBarrageSummon;
     uint8_t sequence;
     uint32_t mOutroTimer;
     int32_t mBarrageTimer;
@@ -570,26 +561,6 @@ class BarrageAI : public CreatureAIScript
         }
 };
 
-class SylvanasAI : public CreatureAIScript
-{
-public:
-    ADD_CREATURE_FACTORY_FUNCTION(SylvanasAI);
-    SylvanasAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-    }
-};
-
-class JainaAI : public CreatureAIScript
-{
-public:
-    ADD_CREATURE_FACTORY_FUNCTION(JainaAI);
-    JainaAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-    }
-};
-
-// Scourgelord Tyrannus and Rimefang
-
 void SetupPitOfSaron(ScriptMgr* mgr)
 {
 #ifndef UseNewMapScriptsProject
@@ -599,6 +570,4 @@ void SetupPitOfSaron(ScriptMgr* mgr)
     mgr->register_creature_script(CN_ICK, &IckAI::Create);
     mgr->register_creature_script(CN_KRICK, &KrickAI::Create);
     mgr->register_creature_script(CREATURE_EXPLODING_ORB, &BarrageAI::Create);
-    mgr->register_creature_script(CN_JAINA_PROUDMOORE, &JainaAI::Create);
-    mgr->register_creature_script(CN_SYLVANAS_WINDRUNNER, &SylvanasAI::Create);
 }

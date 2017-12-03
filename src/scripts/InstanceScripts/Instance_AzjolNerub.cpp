@@ -30,8 +30,6 @@ class KrikthirAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(KrikthirAI);
     KrikthirAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         if (!_isHeroic())
         {
             addAISpell(KRIKTHIR_CURSEOFFATIGUE, 100.0f, TARGET_SELF, 0, 10);
@@ -80,8 +78,6 @@ class HadronoxAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(HadronoxAI);
     HadronoxAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         if (!_isHeroic())
         {
             addAISpell(HADRONOX_WEBGRAB, 22.0f, TARGET_RANDOM_SINGLE, 0, 14);
@@ -113,8 +109,6 @@ class GashraAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(GashraAI);
     GashraAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(GASHRA_WEBWRAP, 22.0f, TARGET_RANDOM_SINGLE, 0, 35);
         addAISpell(GASHRA_INFECTEDBITE, 35.0f, TARGET_ATTACKING, 0, 12);
     }
@@ -126,8 +120,6 @@ class NarjilAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(NarjilAI);
     NarjilAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(NARJIL_WEBWRAP, 22.0f, TARGET_RANDOM_SINGLE, 0, 35);
         addAISpell(NARJIL_INFECTEDBITE, 35.0f, TARGET_ATTACKING, 0, 12);
         addAISpell(NARJIL_BLINDINGWEBS, 16.0f, TARGET_ATTACKING, 0, 9);
@@ -140,8 +132,6 @@ class SilthikAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(SilthikAI);
     SilthikAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(NARJIL_WEBWRAP, 22.0f, TARGET_RANDOM_SINGLE, 0, 35);
         addAISpell(NARJIL_INFECTEDBITE, 35.0f, TARGET_ATTACKING, 0, 12);
         addAISpell(SILTHIK_POISONSPRAY, 30.0f, TARGET_RANDOM_SINGLE, 0, 15);
@@ -154,8 +144,6 @@ class AnubShadowcasterAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(AnubShadowcasterAI);
     AnubShadowcasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(SHADOWCASTER_SHADOWBOLT, 36.0f, TARGET_RANDOM_SINGLE, 0, 8);
         addAISpell(SHADOWCASTER_SHADOW_NOVA, 22.0f, TARGET_SELF, 0, 15);
     }

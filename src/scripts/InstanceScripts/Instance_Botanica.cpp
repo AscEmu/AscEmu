@@ -29,8 +29,6 @@ class BloodProtectorAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(BloodProtectorAI);
         BloodProtectorAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto crystalStrike = addAISpell(CRYSTAL_STRIKE, 10.0f, TARGET_ATTACKING);
             crystalStrike->setAttackStopTimer(1000);
         }
@@ -56,8 +54,6 @@ class BloodGreenkeeperAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(BloodGreenkeeperAI);
         BloodGreenkeeperAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto greenkeeperFury = addAISpell(GREENKEEPER_FURY, 10.0f, TARGET_ATTACKING);
             greenkeeperFury->setAttackStopTimer(1000);
         }
@@ -76,8 +72,6 @@ class SunchemistAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(SunchemistAI);
         SunchemistAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto flameBreath = addAISpell(FLAME_BREATH, 10.0f, TARGET_VARIOUS);
             flameBreath->setAttackStopTimer(1000);
 
@@ -99,8 +93,6 @@ class SunResearcherAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(SunResearcherAI);
         SunResearcherAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             poisonShield = addAISpell(POISON_SHIELD, 0.0f, TARGET_SELF);
             poisonShield->setAttackStopTimer(1000);
 
@@ -138,8 +130,6 @@ class CommanderSarannisAI : public CreatureAIScript
         CommanderSarannisAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             GuardAdds = false;
-
-            enableCreatureAISpellSystem = true;
 
             auto arcaneResonance = addAISpell(ARCANE_RESONANCE, 7.0f, TARGET_ATTACKING);
             arcaneResonance->setAttackStopTimer(1000);
@@ -200,8 +190,6 @@ class HighBotanistFreywinnAI : public CreatureAIScript
         HighBotanistFreywinnAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             PlantTimer = 10;
-
-            enableCreatureAISpellSystem = true;
 
             plantRedSeedling = addAISpell(PLANT_RED_SEEDLING, 0.0f, TARGET_SELF);
             plantRedSeedling->setAttackStopTimer(1000);
@@ -306,8 +294,6 @@ class ThorngrinTheTenderAI : public CreatureAIScript
         {
             Enraged = false;
 
-            enableCreatureAISpellSystem = true;
-
             auto hellfire = addAISpell(HELLFIRE, 9.0f, TARGET_VARIOUS);
             hellfire->setAttackStopTimer(1000);
             hellfire->addDBEmote(SAY_THORNIN_06);
@@ -368,8 +354,6 @@ class LajAI : public CreatureAIScript
         {
             TeleportTimer = 20;    // It's sth about that
 
-            enableCreatureAISpellSystem = true;
-
             auto allergicReaction = addAISpell(ALERGIC_REACTION, 10.0f, TARGET_ATTACKING);
             allergicReaction->setAttackStopTimer(1000);
 
@@ -426,8 +410,6 @@ class WarpSplinterAI : public CreatureAIScript
         WarpSplinterAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             SummonTimer = 20;    // It's sth about that
-
-            enableCreatureAISpellSystem = true;
 
             auto stomp = addAISpell(STOMP, 8.0f, TARGET_VARIOUS);
             stomp->setAttackStopTimer(1000);

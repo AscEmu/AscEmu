@@ -224,8 +224,6 @@ class LordMarrowgarAI : public CreatureAIScript
             sendDBChatMessage(922);      // This is the beginning AND the end, mortals. None may enter the master's sanctum!
 
             // examplecode for spell setup
-            enableCreatureAISpellSystem = true;
-
             auto boneslice = addAISpell(BONE_SLICE, 60.0f, TARGET_ATTACKING, 0, 120);
             boneslice->addEmote("boneslice", CHAT_MSG_MONSTER_YELL, 0);
             boneslice->setAvailableForScriptPhase({ 2 });

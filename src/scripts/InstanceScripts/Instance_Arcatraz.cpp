@@ -32,8 +32,6 @@ class ZerekethAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(ZerekethAI);
         ZerekethAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto seedOfC = addAISpell(SEED_OF_C, 6.0f, TARGET_RANDOM_SINGLE, 2, 20);
             seedOfC->setMinMaxDistance(0.0f, 100.0f);
 
@@ -177,8 +175,6 @@ class DalliahTheDoomsayerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(DalliahTheDoomsayerAI);
         DalliahTheDoomsayerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(GIFT_OF_THE_DOOMSAYER, 8.0f, TARGET_ATTACKING);
 
             auto whirlTemp = addAISpell(WHIRLWIND, 15.0f, TARGET_SELF);
@@ -216,8 +212,6 @@ class WrathScryerSoccothratesAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(WrathScryerSoccothratesAI);
         WrathScryerSoccothratesAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(IMMOLATION, 10.0f, TARGET_SELF);
             addAISpell(FELFIRE_SHOCK, 8.0f, TARGET_ATTACKING);
             addAISpell(FELFIRE_LINE_UP, 8.0f, TARGET_SELF);
@@ -248,8 +242,6 @@ class HarbringerSkyrissAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(HarbringerSkyrissAI);
         HarbringerSkyrissAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(MIND_REND, 15.0f, TARGET_ATTACKING);
 
             auto fear = addAISpell(FEAR, 8.0f, TARGET_ATTACKING);
@@ -323,7 +315,6 @@ class WardenMellicharAI : public CreatureAIScript
             Phasepart = 0;
             NPC_ID_Spawn = 0;
 
-            // new
             addEmoteForEvent(Event_OnCombatStart, SAY_MELLICHAR_01);
         }
 

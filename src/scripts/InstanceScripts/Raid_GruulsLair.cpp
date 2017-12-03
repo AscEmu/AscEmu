@@ -31,8 +31,6 @@ class LairBruteAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(LairBruteAI);
         LairBruteAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(LAIR_BRUTE_CLEAVE, 20.0f, TARGET_ATTACKING, 0, 15);
             addAISpell(LAIR_BRUTE_MORTALSTRIKE, 8.0f, TARGET_ATTACKING, 0, 20);
             addAISpell(LAIR_BRUTE_CHARGE, 7.0f, TARGET_ATTACKING, 0, 35);
@@ -64,8 +62,6 @@ class GronnPriestAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(GronnPriestAI);
         GronnPriestAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(GRONN_PRIEST_PSYCHICSCREAM, 8.0f, TARGET_SELF, 0, 20);
 
             auto renew = addAISpell(GRONN_PRIEST_RENEW, 8.0f, TARGET_RANDOM_FRIEND, 0, 25);
@@ -94,8 +90,6 @@ class HighKingMaulgarAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(HighKingMaulgarAI);
         HighKingMaulgarAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto charge = addAISpell(HIGH_KING_MAULGAR_BERSERKER_CHARGE, 10.0f, TARGET_RANDOM_SINGLE, 0, 25);
             charge->setAvailableForScriptPhase({ 2 });
             charge->setMinMaxDistance(0.0f, 40.0f);
@@ -235,8 +229,6 @@ class KigglerTheCrazedAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(KigglerTheCrazedAI);
         KigglerTheCrazedAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(KIGGLER_THE_CRAZED_LIGHTNING_BOLT, 70.0f, TARGET_ATTACKING, 2, 0);
             addAISpell(KIGGLER_THE_CRAZED_GREATER_POLYMORPH, 8.0f, TARGET_RANDOM_SINGLE, 0, 15);
             addAISpell(KIGGLER_THE_CRAZED_ARCANE_EXPLOSION, 8.0f, TARGET_SELF, 0, 20);
@@ -286,8 +278,6 @@ class BlindeyeTheSeerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(BlindeyeTheSeerAI);
         BlindeyeTheSeerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(BLINDEYE_THE_SEER_PRAYER_OF_HEALING, 5.0f, TARGET_SELF, 4, 30);
             addAISpell(BLINDEYE_THE_SEER_GREAT_POWER_WORD_SHIELD, 8.0f, TARGET_SELF, 0, 30);
             addAISpell(BLINDEYE_THE_SEER_HEAL, 8.0f, TARGET_RANDOM_FRIEND,2, 25);
@@ -314,8 +304,6 @@ class OlmTheSummonerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(OlmTheSummonerAI);
         OlmTheSummonerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(OLM_THE_SUMMONER_DEATH_COIL, 7.0f, TARGET_RANDOM_SINGLE, 0, 10);
             addAISpell(OLM_THE_SUMMONER_SUMMON_WILD_FELHUNTER, 7.0f, TARGET_SELF, 3, 15);
             addAISpell(OLM_THE_SUMMONER_DARK_DECAY, 10.0f, TARGET_RANDOM_SINGLE, 0, 6);
@@ -340,8 +328,6 @@ class WildFelStalkerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(WildFelStalkerAI);
         WildFelStalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(WILD_FEL_STALKER_WILD_BITE, 10.0f, TARGET_ATTACKING, 0, 10);
             AggroRandomPlayer(200);
         }
@@ -363,8 +349,6 @@ class KroshFirehandAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(KroshFirehandAI);
         KroshFirehandAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             //spells
             mBlastWave = addAISpell(BALST_WAVE, 0.0f, TARGET_SELF, 0, 15);
             addAISpell(GREAT_FIREBALL, 100.0f, TARGET_ATTACKING, 3, 0);
@@ -434,17 +418,15 @@ const uint32 GRUUL_THE_DRAGONKILLER_REVERBERATION = 36297;    // +
 const uint32 GRUUL_THE_DRAGONKILLER_STONED = 33652;    // +
 const uint32 GRUUL_THE_DRAGONKILLER_GRONN_LORDS_GRASP = 33572;    // Should be used only after Ground Slam
 
-void SpellFunc_Gruul_GroundSlam(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
-void SpellFunc_Gruul_Stoned(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
-void SpellFunc_Gruul_Shatter(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
+//void SpellFunc_Gruul_GroundSlam(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
+//void SpellFunc_Gruul_Stoned(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
+//void SpellFunc_Gruul_Shatter(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
 
 class GruulTheDragonkillerAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(GruulTheDragonkillerAI);
         GruulTheDragonkillerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             mHurtfulStrike = addAISpell(GRUUL_THE_DRAGONKILLER_HURTFUL_STRIKE, 0.0f, TARGET_ATTACKING, 0, 8);
 
             mGroundSlam = addAISpell(GRUUL_THE_DRAGONKILLER_GROUND_SLAM, 6.0f, TARGET_SELF, 1, 35);

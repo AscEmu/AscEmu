@@ -198,8 +198,6 @@ class RageWinterchillAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(RageWinterchillAI);
         RageWinterchillAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto frostbold = addAISpell(FROSTBOLT, 8.0f, TARGET_RANDOM_SINGLE, 0, 10, false, true);
             frostbold->setAttackStopTimer(1000);
             frostbold->setMinMaxDistance(0.0f, 80.0f);
@@ -245,8 +243,6 @@ class AnetheronAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(AnetheronAI);
         AnetheronAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto vampiricAura = addAISpell(VAMPIRIC_AURA, 8.0f, TARGET_SELF, 0, 8, false, true);
             vampiricAura->setAttackStopTimer(1000);
 
@@ -290,8 +286,6 @@ class KazrogalAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(KazrogalAI);
         KazrogalAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto cleave = addAISpell(K_CLEAVE, 8.0f, TARGET_ATTACKING, 0, 10, false, true);
             cleave->setAttackStopTimer(1000);
 
@@ -337,8 +331,6 @@ class AzgalorAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(AzgalorAI);
         AzgalorAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto cleave = addAISpell(CLEAVE, 8.0f, TARGET_ATTACKING, 0, 10, false, true);
             cleave->setAttackStopTimer(3000);
 
@@ -536,8 +528,6 @@ class ArchimondeAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(ArchimondeAI);
         ArchimondeAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto airBurst = addAISpell(AIR_BURST, 5.0f, TARGET_ATTACKING, 0, 25, false, true);
             airBurst->setAttackStopTimer(1000);
 

@@ -29,8 +29,6 @@ class WatchkeeperGargolmarAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(WatchkeeperGargolmarAI);
     WatchkeeperGargolmarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         auto surge = addAISpell(WATCHKEEPER_SURGE, 20.0f, TARGET_RANDOM_SINGLE, 0, 15);
         surge->addEmote("Back off, pup!", CHAT_MSG_MONSTER_YELL, 10330);
         surge->setMinMaxDistance(5.0f, 40.0f);;
@@ -82,8 +80,6 @@ class OmorTheUnscarredAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(OmorTheUnscarredAI);
         OmorTheUnscarredAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             pShield = addAISpell(OMOR_DEMONIC_SHIELD, 30.0f, TARGET_SELF, 0, 25);
             pShield->setMinMaxPercentHp(0, 20);
 

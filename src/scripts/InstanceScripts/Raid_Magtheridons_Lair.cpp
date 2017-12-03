@@ -634,8 +634,6 @@ class HellfireWarderAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(HellfireWarderAI);
         HellfireWarderAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto shadowBoltVolley = addAISpell(HW_SHADOW_BOLT_VOLLEY, 15.0f, TARGET_VARIOUS, 0, 5, false, true);
             shadowBoltVolley->setAttackStopTimer(1000);
 
@@ -684,8 +682,6 @@ class HellfireChannelerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(HellfireChannelerAI);
         HellfireChannelerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto shadowBoltVolley = addAISpell(SHADOW_BOLT_VOLLEY, 10.0f, TARGET_VARIOUS, 0, 5);
             shadowBoltVolley->setAttackStopTimer(1000);
 
@@ -748,7 +744,6 @@ class HellfireChannelerAI : public CreatureAIScript
         }
 };
 
-// Burning Abyssal AI
 
 const uint32 CN_BURNING_ABYSSAL = 17454;
 
@@ -759,8 +754,6 @@ class BurningAbyssalAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(BurningAbyssalAI);
         BurningAbyssalAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto fireBlast = addAISpell(FIRE_BLAST, 8.0f, TARGET_RANDOM_SINGLE, 0, 10, false, true);
             fireBlast->setAttackStopTimer(1000);
             fireBlast->setMinMaxDistance(0.0f, 20.0f);
@@ -795,8 +788,6 @@ class MagtheridonAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(MagtheridonAI);
         MagtheridonAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto cleave = addAISpell(CLEAVE, 6.0f, TARGET_ATTACKING, 0, 15, false, true);
             cleave->setAttackStopTimer(1000);
 

@@ -30,8 +30,6 @@ class AvianDarkhawkAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(AvianDarkhawkAI);
         AvianDarkhawkAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto charge = addAISpell(SP_AVIAN_DARKHAWK_CHARGE, 5.0f, TARGET_ATTACKING, 0, 0, false, true);
             charge->setAttackStopTimer(1000);
         }
@@ -48,8 +46,6 @@ class AvianRipperAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(AvianRipperAI);
         AvianRipperAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto fleshRip = addAISpell(SP_AVIAN_RIPPER_FLESH_RIP, 15.0f, TARGET_ATTACKING, 0, 0, false, true);
             fleshRip->setAttackStopTimer(3000);
         }
@@ -65,8 +61,6 @@ class AvianWarhawkAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(AvianWarhawkAI);
         AvianWarhawkAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto cleave = addAISpell(SP_AVIAN_WARHAWK_CLEAVE, 12.0f, TARGET_VARIOUS, 0, 0, false, true);
             cleave->setAttackStopTimer(1000);
 
@@ -89,8 +83,6 @@ class CobaltSerpentAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(CobaltSerpentAI);
         CobaltSerpentAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto wingBuffet = addAISpell(SP_COBALT_SERPENT_WING_BUFFET, 7.0f, TARGET_VARIOUS);
             wingBuffet->setAttackStopTimer(1000);
 
@@ -113,8 +105,6 @@ class TimeLostControllerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(TimeLostControllerAI);
         TimeLostControllerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto shrink = addAISpell(SP_TL_CONTROLLER_SHIRNK, 10.0f, TARGET_ATTACKING, 0, 0, false, true);
             shrink->setAttackStopTimer(1000);
         }
@@ -131,8 +121,6 @@ class TimeLostScryerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(TimeLostScryerAI);
         TimeLostScryerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto flashHeal = addAISpell(SP_TL_SCRYER_FLASH_HEAL, 5.0f, TARGET_SELF, 0, 0, false, true);
             flashHeal->setAttackStopTimer(1000);
 
@@ -152,8 +140,6 @@ class TimeLostShadowmageAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(TimeLostShadowmageAI);
         TimeLostShadowmageAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto curseOfDarkTalon = addAISpell(SP_TL_CURSE_OF_THE_DARK_TALON, 10.0f, TARGET_ATTACKING, 0, 0, false, true);
             curseOfDarkTalon->setAttackStopTimer(1000);
         }
@@ -170,8 +156,6 @@ class SethekkGuardAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(SethekkGuardAI);
         SethekkGuardAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto thunderclap = addAISpell(SP_SETHEKK_GUARD_THUNDERCLAP, 12.0f, TARGET_VARIOUS, 0, 0, false, true);
             thunderclap->setAttackStopTimer(1000);
 
@@ -191,8 +175,6 @@ class SethekkInitiateAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(SethekkInitiateAI);
         SethekkInitiateAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto magicReflection = addAISpell(SP_SETHEKK_INIT_MAGIC_REFLECTION, 10.0f, TARGET_SELF, 0, 0, false, true);
             magicReflection->setAttackStopTimer(1000);
         }
@@ -209,8 +191,6 @@ class SethekkOracleAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(SethekkOracleAI);
         SethekkOracleAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto faeriFire = addAISpell(SP_SETHEKK_ORACLE_FAERIE_FIRE, 8.0f, TARGET_ATTACKING, 0, 0, false, true);
             faeriFire->setAttackStopTimer(1000);
 
@@ -230,8 +210,6 @@ class SethekkProphetAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(SethekkProphetAI);
         SethekkProphetAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto prophetFear = addAISpell(SP_SETHEKK_PROPHET_FEAR, 8.0f, TARGET_ATTACKING, 0, 0, false, true);
             prophetFear->setAttackStopTimer(1000);
         }
@@ -248,8 +226,6 @@ class SethekkRavenguardAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(SethekkRavenguardAI);
         SethekkRavenguardAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto bloodthirst = addAISpell(SP_SETHEKK_RAVENG_BLOODTHIRST, 10.0f, TARGET_ATTACKING, 0, 0, false, true);
             bloodthirst->setAttackStopTimer(1000);
 
@@ -269,8 +245,6 @@ class SethekkShamanAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(SethekkShamanAI);
         SethekkShamanAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto summonDarkVortex = addAISpell(SP_SETHEKK_SHAMAN_SUM_DARK_VORTEX, 8.0f, TARGET_SELF, 0, 0, false, true);
             summonDarkVortex->setAttackStopTimer(1000);
         }
@@ -287,8 +261,6 @@ class SethekkTalonLordAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(SethekkTalonLordAI);
         SethekkTalonLordAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto ofJustice = addAISpell(SP_SETHEKK_TALON_OF_JUSTICE, 10.0f, TARGET_ATTACKING, 0, 0, false, true);
             ofJustice->setAttackStopTimer(1000);
 
@@ -378,8 +350,6 @@ class DarkweaverSythAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(DarkweaverSythAI);
         DarkweaverSythAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto frostShock = addAISpell(SP_DARKW_SYNTH_FROST_SHOCK, 8.0f, TARGET_ATTACKING, 0, 15, false, true);
             frostShock->setAttackStopTimer(2000);
 
@@ -487,8 +457,6 @@ class TalonKingIkissAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(TalonKingIkissAI);
         TalonKingIkissAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             arcaneVolley = addAISpell(SP_TALRON_K_IKISS_ARCANE_VOLLEY, 12.0f, TARGET_VARIOUS, 0, 10);
             arcaneVolley->setAttackStopTimer(1000);
 
@@ -570,8 +538,6 @@ class ANZUAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(ANZUAI);
         ANZUAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto bomb = addAISpell(SP_ANZU_SPELL_BOMB, 10.0f, TARGET_ATTACKING, 0, 0, false, true);
             bomb->setAttackStopTimer(1000);
 
@@ -660,5 +626,4 @@ void SetupSethekkHalls(ScriptMgr* mgr)
     mgr->register_creature_script(CN_DARKWEAVER_SYTH, &DarkweaverSythAI::Create);
     mgr->register_creature_script(CN_TALON_KING_IKISS, &TalonKingIkissAI::Create);
     mgr->register_creature_script(CN_LAKKA, &LakkaAI::Create);
-    //mgr->register_creature_script(CN_ANZU, &AnzuAI::Create); /// \todo Can't check Anzu he is in the DB right now
 }

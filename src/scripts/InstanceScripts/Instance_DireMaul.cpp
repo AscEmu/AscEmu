@@ -28,8 +28,6 @@ class AlzzinTheWildshaper : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(AlzzinTheWildshaper);
         AlzzinTheWildshaper(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto mangle = addAISpell(22689, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             mangle->setAttackStopTimer(3000);
 
@@ -53,8 +51,6 @@ class CaptainKromcrush : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(CaptainKromcrush);
         CaptainKromcrush(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto mortalStrike = addAISpell(15708, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             mortalStrike->setAttackStopTimer(3000);
 
@@ -75,8 +71,6 @@ class ChoRushTheObserver : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(ChoRushTheObserver);
         ChoRushTheObserver(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto unknown = addAISpell(10947, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             unknown->setAttackStopTimer(3000);
 
@@ -97,8 +91,6 @@ class GuardFengus : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(GuardFengus);
         GuardFengus(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto strike = addAISpell(15580, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             strike->setAttackStopTimer(3000);
 
@@ -125,8 +117,6 @@ class GuardMolDar : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(GuardMolDar);
         GuardMolDar(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto strike = addAISpell(15580, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             strike->setAttackStopTimer(3000);
 
@@ -150,8 +140,6 @@ class GuardSlipKik : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(GuardSlipKik);
         GuardSlipKik(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto strike = addAISpell(15580, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             strike->setAttackStopTimer(3000);
 
@@ -175,8 +163,6 @@ class Hydrospawn : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(Hydrospawn);
         Hydrospawn(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto riptide = addAISpell(22419, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             riptide->setAttackStopTimer(3000);
 
@@ -200,8 +186,6 @@ class MassiveGeyser : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(MassiveGeyser);
         MassiveGeyser(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto water = addAISpell(22422, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             water->setAttackStopTimer(3000);
         }
@@ -219,8 +203,6 @@ class IllyanaRavenoak : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(IllyanaRavenoak);
         IllyanaRavenoak(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto concussiveShot = addAISpell(5116, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             concussiveShot->setAttackStopTimer(3000);
 
@@ -247,8 +229,6 @@ class Immolthar : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(Immolthar);
         Immolthar(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto infectedBite = addAISpell(16128, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             infectedBite->setAttackStopTimer(3000);
 
@@ -272,8 +252,6 @@ class EyeOfImmolThar : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(EyeOfImmolThar);
         EyeOfImmolThar(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto eyeOfImmolThar = addAISpell(22909, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             eyeOfImmolThar->setAttackStopTimer(3000);
         }
@@ -291,8 +269,6 @@ class KingGordok : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(KingGordok);
         KingGordok(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto mortalStrike = addAISpell(15708, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             mortalStrike->setAttackStopTimer(3000);
 
@@ -313,8 +289,6 @@ class Lethtendris : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(Lethtendris);
         Lethtendris(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto unknow = addAISpell(11668, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             unknow->setAttackStopTimer(3000);
 
@@ -335,8 +309,6 @@ class LordHelNurath : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(LordHelNurath);
         LordHelNurath(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto unknow = addAISpell(10984, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             unknow->setAttackStopTimer(3000);
         }
@@ -354,8 +326,6 @@ class MagisterKalendris : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(MagisterKalendris);
         MagisterKalendris(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto unknow = addAISpell(10894, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             unknow->setAttackStopTimer(3000);
 
@@ -379,8 +349,6 @@ class PrinceTortheldrin : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(PrinceTortheldrin);
         PrinceTortheldrin(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto cleave = addAISpell(20691, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             cleave->setAttackStopTimer(3000);
 
@@ -401,8 +369,6 @@ class Pusillin : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(Pusillin);
         Pusillin(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto blastWave = addAISpell(22424, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             blastWave->setAttackStopTimer(3000);
 
@@ -426,8 +392,6 @@ class SkarrTheUnbreakable : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(SkarrTheUnbreakable);
         SkarrTheUnbreakable(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto cleave = addAISpell(20691, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             cleave->setAttackStopTimer(3000);
 
@@ -448,8 +412,6 @@ class TendrisWarpwood : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(TendrisWarpwood);
         TendrisWarpwood(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto trample = addAISpell(15550, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             trample->setAttackStopTimer(3000);
 
@@ -473,8 +435,6 @@ class ZevrimThornhoof : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(ZevrimThornhoof);
         ZevrimThornhoof(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto intensePain = addAISpell(22478, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             intensePain->setAttackStopTimer(3000);
 
@@ -495,8 +455,6 @@ class GordokMageLord : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(GordokMageLord);
         GordokMageLord(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto fireBlast = addAISpell(20832, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             fireBlast->setAttackStopTimer(3000);
 
@@ -523,8 +481,6 @@ class GordokReaver : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(GordokReaver);
         GordokReaver(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto bruisingBlow = addAISpell(22572, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             bruisingBlow->setAttackStopTimer(3000);
 
@@ -545,8 +501,6 @@ class GordokBrute : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(GordokBrute);
         GordokBrute(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto mortalStrike = addAISpell(13737, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             mortalStrike->setAttackStopTimer(3000);
 
@@ -570,8 +524,6 @@ class FelLash : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(FelLash);
         FelLash(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto arcaneExplosion = addAISpell(22460, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             arcaneExplosion->setAttackStopTimer(3000);
 
@@ -588,7 +540,6 @@ class FelLash : public CreatureAIScript
 
 void SetupDireMaul(ScriptMgr* mgr)
 {
-    //mgr->register_creature_script(CN_ALZZINTHE_WILDSHAPER, &AlzzintheWildshaper::Create); - ai should be added
     mgr->register_creature_script(CN_CAPTAIN_KROMCRUSH, &CaptainKromcrush::Create);
     mgr->register_creature_script(CN_CHO_RUSH_OBSERVER, &ChoRushTheObserver::Create);
     mgr->register_creature_script(CN_GUARD_FENGUS, &GuardFengus::Create);

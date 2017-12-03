@@ -26,7 +26,6 @@
 
 //////////////////////////////////////////////////////////////
 // Boss AIs
-//////////////////////////////////////////////////////////////
 
 class TotemsAI : public CreatureAIScript
 {
@@ -95,8 +94,6 @@ class MennuTheBetrayerAI : public CreatureAIScript
         {
             for (uint8 i = 0; i < 4; i++)
                 SummonedTotems[i] = false;
-
-            enableCreatureAISpellSystem = true;
 
             auto lighningBolt = addAISpell(LIGHTNING_BOLT, 10.0f, TARGET_ATTACKING, 0, 15);
             lighningBolt->setAttackStopTimer(5000);
@@ -222,8 +219,6 @@ class RokmarTheCracklerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(RokmarTheCracklerAI);
         RokmarTheCracklerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto grievousWound = addAISpell(GRIEVOUS_WOUND, 8.0f, TARGET_ATTACKING, 0, 20, false, true);
             grievousWound->setAttackStopTimer(5000);
 
@@ -268,14 +263,11 @@ class RokmarTheCracklerAI : public CreatureAIScript
 };
 
 
-// QuagmirranAI
 class QuagmirranAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(QuagmirranAI);
         QuagmirranAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto acidGeyser = addAISpell(ACID_GEYSER, 10.0f, TARGET_RANDOM_SINGLE, 0, 20, false, true);
             acidGeyser->setAttackStopTimer(5000);
             acidGeyser->setMinMaxDistance(0.0f, 40.0f);

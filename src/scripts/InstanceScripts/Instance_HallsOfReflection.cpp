@@ -169,8 +169,6 @@ class Marwyn : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(Marwyn);
         Marwyn(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             CreatureAISpells* spellWell = nullptr;
             CreatureAISpells* corruptFlesh = nullptr;
             if (_isHeroic() == false)

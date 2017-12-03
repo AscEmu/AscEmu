@@ -29,8 +29,6 @@ class RagefireShamanAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(RagefireShamanAI);
     RagefireShamanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(SP_RF_SHAMAN_HEALIN_WAVE, 15.0f, TARGET_RANDOM_FRIEND, 3, 10);
         addAISpell(SP_RF_SHAMAN_LIGHTNING_BOLT, 20.0f, TARGET_ATTACKING, 3, 0);
     }
@@ -41,8 +39,6 @@ class RagefireTroggAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(RagefireTroggAI);
     RagefireTroggAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(SP_RF_TROGG_STRIKE, 40.0f, TARGET_ATTACKING, 0, 0);
     }
 };
@@ -52,8 +48,6 @@ class SearingBladeWarlockAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(SearingBladeWarlockAI);
     SearingBladeWarlockAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(SP_SB_WARLOCK_SHADOW_BOLT, 20.0f, TARGET_ATTACKING, 3, 0);
     }
 };
@@ -63,8 +57,6 @@ class SearingBladeEnforcerAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(SearingBladeEnforcerAI);
     SearingBladeEnforcerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(SP_SB_ENFORCERER_SHIELD_SLAM, 15.0f, TARGET_ATTACKING, 0, 0);
     }
 };
@@ -74,8 +66,6 @@ class BladeCultistAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(BladeCultistAI);
     BladeCultistAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(SP_SB_CULTIST_CURSE_OF_AGONY, 30.0f, TARGET_ATTACKING, 0, 15);
     }
 };
@@ -85,8 +75,6 @@ class MoltenElementalAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(MoltenElementalAI);
     MoltenElementalAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(SP_MOLTEN_ELEMENTAL_FIRE_SHIELD, 40.0f, TARGET_SELF, 1, 15);
     }
 };
@@ -96,8 +84,6 @@ class EarthborerAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(EarthborerAI);
     EarthborerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(SP_EARTHBORER_ACID, 15.0f, TARGET_ATTACKING, 0, 0);
     }
 };
@@ -132,15 +118,13 @@ class BloodFilledOrb : public GameObjectAIScript
         }
 };
 
-/* BOSSES */
+// BOSSES
 
 class OggleflintAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(OggleflintAI);
     OggleflintAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(SP_OGGLEFLINT_CLEAVE, 10.0f, TARGET_ATTACKING, 0, 1);
     }
 };
@@ -150,8 +134,6 @@ class TaragamanAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(TaragamanAI);
     TaragamanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(SP_TARAGAMAN_FIRE_NOVA, 10.0f, TARGET_SELF, 2, 0);
         addAISpell(SP_TARAGAMAN_UPPERCUT, 10.0f, TARGET_ATTACKING, 0, 0);
     }
@@ -162,8 +144,6 @@ class JergoshAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(JergoshAI);
     JergoshAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(SP_JERGOSH_IMMOLATE, 15.0f, TARGET_ATTACKING, 2, 0);
         addAISpell(SP_JERGOSH_CURSE_OF_WEAKNESS, 10.0f, TARGET_ATTACKING, 0, 0);
     }
@@ -174,8 +154,6 @@ class BazzalanAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(BazzalanAI);
     BazzalanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(SP_BAZZLAN_SINISTER_STRIKE, 15.0f, TARGET_ATTACKING, 0, 0);
         addAISpell(SP_BAZZLAN_POISON, 5.0f, TARGET_ATTACKING, 0, 0);
     }

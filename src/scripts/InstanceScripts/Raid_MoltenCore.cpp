@@ -323,8 +323,6 @@ class MoltenGiantAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(MoltenGiantAI);
         MoltenGiantAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(MOLTENGIANT_STOMP, 10.0f, TARGET_ATTACKING, 0, 5);
             addAISpell(MOLTENGIANT_KNOCKBACK, 10.0f, TARGET_SELF, 0, 5);
         }
@@ -340,8 +338,6 @@ class MoltenDestroyerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(MoltenDestroyerAI);
         MoltenDestroyerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(MOLTENDESTROYER_MASSIVE_TREMOR, 12.5f, TARGET_SELF, 0, 0);
             addAISpell(MOLTENDESTROYER_KNOCKDOWN, 12.5f, TARGET_ATTACKING, 0, 0);
         }
@@ -356,8 +352,6 @@ class FirelordAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(FirelordAI);
         FirelordAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(FIRELORD_SUMMON_LAVA_SPAWN, 20.0f, TARGET_SELF, 0, 10);
             addAISpell(FIRELORD_SOUL_BURN, 20.0f, TARGET_RANDOM_SINGLE, 0, 5);
         }
@@ -379,8 +373,6 @@ class AncientCoreHoundAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(AncientCoreHoundAI);
         AncientCoreHoundAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(ANCIENTCOREHOUND_LAVA_BREATH, 20.0f, TARGET_SELF, 0, 3);
             addAISpell(ANCIENTCOREHOUND_VICIOUS_BITE, 20.0f, TARGET_SELF, 0, 0);
 
@@ -417,8 +409,6 @@ class LavaSurgerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(LavaSurgerAI);
         LavaSurgerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(LAVASURGER_SURGE, 20.0f, TARGET_RANDOM_SINGLE, 0, 5);
         }
 };
@@ -431,8 +421,6 @@ class FlameImpAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(FlameImpAI);
         FlameImpAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(FLAMEIMP_FIRE_NOVA, 25.0f, TARGET_ATTACKING, 0, 0);
         }
 };
@@ -445,8 +433,6 @@ class CoreHoundAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(CoreHoundAI);
         CoreHoundAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(COREHOUND_SERRATED_BITE, 10.0f, TARGET_RANDOM_SINGLE, 0, 0);
         }
 };
@@ -459,8 +445,6 @@ class LavaReaverAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(LavaReaverAI);
         LavaReaverAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(LAVAREAVER_CLEAVE, 20.0f, TARGET_ATTACKING, 0, 0);
         }
 };
@@ -473,8 +457,6 @@ class LavaElementalAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(LavaElementalAI);
         LavaElementalAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(LAVAELEMENTAL_PYROCLAST_BARRAGE, 10.0f, TARGET_SELF, 0, 10);
         }
 };
@@ -488,8 +470,6 @@ class FlameguardAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(FlameguardAI);
         FlameguardAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(FLAMEGUARD_FIRE_SHIELD, 100.0f, TARGET_SELF, 0, 0);
             mFlames = addAISpell(FLAMEGUARD_FLAMES, 0.0f, TARGET_SELF, 0, 0);
         }
@@ -512,8 +492,6 @@ class FirewalkerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(FirewalkerAI);
         FirewalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(FIREWALKER_MELT_ARMOR, 10.0f, TARGET_SELF, 0, 0);
             addAISpell(FIREWALKER_INCITE_FLAMES, 10.0f, TARGET_SELF, 0, 0);
             addAISpell(FIREWALKER_FIRE_BLOSSOM, 10.0f, TARGET_SELF, 0, 0);
@@ -530,8 +508,6 @@ class LucifronAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(LucifronAI);
         LucifronAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(LUCIFRON_IMPEDING_DOOM, 8.0f, TARGET_SELF, 0, 0);
             addAISpell(LUCIFRON_LUCIFRONS_CURSE, 8.0f, TARGET_SELF, 0, 0);
             addAISpell(LUCIFRON_SHADOW_SHOCK, 8.0f, TARGET_SELF, 0, 0);
@@ -547,8 +523,6 @@ class FlamewakerProtectorAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(FlamewakerProtectorAI);
         FlamewakerProtectorAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(FLAMEWAKERPROTECTOR_CLEAVE, 8.0f, TARGET_ATTACKING, 0, 0);
             addAISpell(FLAMEWAKERPROTECTOR_DOMINATE_MIND, 4.0f, TARGET_RANDOM_SINGLE, 0, 0);
         }
@@ -565,8 +539,6 @@ class MagmadarAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(MagmadarAI);
         MagmadarAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(MAGMADAR_MAGMA_SPIT, 8.0f, TARGET_SELF, 0, 0);
             addAISpell(MAGMADAR_LAVA_BREATH, 8.0f, TARGET_SELF, 0, 0);
             addAISpell(MAGMADAR_PANIC, 8.0f, TARGET_SELF, 0, 0);
@@ -584,8 +556,6 @@ class GehennasAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(GehennasAI);
         GehennasAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(GEHENNAS_SHADOW_BOLT, 8.0f, TARGET_RANDOM_SINGLE, 0, 0);
             addAISpell(GEHENNAS_GEHENNAS_CURSE, 8.0f, TARGET_SELF, 0, 0);
             addAISpell(GEHENNAS_RAIN_OF_FIRE, 4.0f, TARGET_RANDOM_DESTINATION, 0, 0);
@@ -602,8 +572,6 @@ class FlamewakerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(FlamewakerAI);
         FlamewakerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(FLAMEWAKER_SUNDER_ARMOR, 8.0f, TARGET_ATTACKING, 0, 0);
             addAISpell(FLAMEWAKER_FIST_OF_RAGNAROS, 8.0f, TARGET_SELF, 0, 0);
             addAISpell(FLAMEWAKER_STRIKE, 14.0f, TARGET_ATTACKING, 0, 0);
@@ -619,8 +587,6 @@ class GarrAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(GarrAI);
         GarrAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(GARR_ANTIMAGIC_PULSE, 10.0f, TARGET_SELF, 0, 0);
             addAISpell(GARR_MAGMA_SHACKES, 10.0f, TARGET_SELF, 0, 0);
         }
@@ -638,8 +604,6 @@ class FireswornAI : public CreatureAIScript
         FireswornAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             mGarr = nullptr;
-
-            enableCreatureAISpellSystem = true;
 
             //Spells
             addAISpell(FIRESWORN_IMMOLATE, 10.0f, TARGET_ATTACKING, 0, 0);
@@ -680,8 +644,6 @@ class BaronGeddonAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(BaronGeddonAI);
         BaronGeddonAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(BARONGEDDON_INFERNO, 8.0f, TARGET_SELF, 0, 0);
             addAISpell(BARONGEDDON_IGNITE_MANA, 8.0f, TARGET_SELF, 0, 0);
             addAISpell(BARONGEDDON_LIVING_BOMB, 8.0f, TARGET_RANDOM_SINGLE, 0, 0);
@@ -701,8 +663,6 @@ class ShazzrahAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(ShazzrahAI);
         ShazzrahAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(SHAZZRAH_SHAZZRAHS_CURSE, 8.0f, TARGET_SELF, 0, 0);
             addAISpell(SHAZZRAH_MAGIC_GROUNDING, 6.0f, TARGET_SELF, 0, 0);
             addAISpell(SHAZZRAH_COUNTERSPELL, 6.0f, TARGET_SELF, 0, 0);
@@ -736,8 +696,6 @@ class GolemaggAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(GolemaggAI);
         GolemaggAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(GOLEMAGG_GOLEMAGGS_TRUST, 8.0f, TARGET_SELF, 0, 0);
             addAISpell(GOLEMAGG_MAGMA_SPLASH, 8.0f, TARGET_SELF, 0, 0);
             addAISpell(GOLEMAGG_PYROBLAST, 8.0f, TARGET_RANDOM_SINGLE, 0, 0);

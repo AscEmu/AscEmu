@@ -29,8 +29,6 @@ class DevouringEctoplasmAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(DevouringEctoplasmAI);
         DevouringEctoplasmAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             // Summon Evolving Ectoplasm
             addAISpell(7952, 10.0f, TARGET_SELF, 0, 600);
         }
@@ -41,8 +39,6 @@ class DruidFangAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(DruidFangAI);
         DruidFangAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             // Serpent Form
             SerpentForm = addAISpell(8041, 5.0f, TARGET_SELF);
             HealingTouch->setMinMaxPercentHp(0, 50);
@@ -71,8 +67,6 @@ class LadyAnacondraAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(LadyAnacondraAI);
         LadyAnacondraAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             // Lightning Bolt
             addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
             // Sleep
@@ -87,8 +81,6 @@ class LordCobrahnAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(LordCobrahnAI);
         LordCobrahnAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             // Lightning Bolt
             LightningBolt = addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
             mEnableLighningBolt = true;
@@ -128,8 +120,6 @@ class LordPythasAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(LordPythasAI);
         LordPythasAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             // Lightning Bolt
             addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
             // Sleep
@@ -146,8 +136,6 @@ class LordSerpentisAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(LordSerpentisAI);
         LordSerpentisAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             // Lightning Bolt
             addAISpell(9532, 30.0f, TARGET_ATTACKING, 3, 0);
             // Sleep
@@ -162,8 +150,6 @@ class VerdanEverlivingAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(VerdanEverlivingAI);
         VerdanEverlivingAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             // Grasping Vines
             addAISpell(8142, 30.0f, TARGET_ATTACKING, 1, 0);
         }
@@ -174,8 +160,6 @@ class SkumAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(SkumAI);
         SkumAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             // Chained Bolt
             addAISpell(6254, 50.0f, TARGET_ATTACKING, 2, 0);
         }
@@ -199,8 +183,6 @@ class MutanusAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(MutanusAI);
         MutanusAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             // Thundercrack
             addAISpell(8150, 15.0f, TARGET_SELF);
             // Terrify
@@ -315,9 +297,6 @@ class DofNaralexAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(DofNaralexAI);
         DofNaralexAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
-            // --- Initialization ---
             Mutanus = nullptr;
 
             for (uint8 i = 1; i < 39; ++i)

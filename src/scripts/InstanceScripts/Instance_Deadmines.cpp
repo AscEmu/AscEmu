@@ -156,7 +156,7 @@ class RhahkZorAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(RhahkZorAI);
     RhahkZorAI(Creature* pCreature) : CreatureAIScript(pCreature), debugTimer(1500)
     {
-        enableCreatureAISpellSystem = true;
+        
 
         addAISpell(6304, 8.0f, TARGET_ATTACKING, 0, 3);    // Rhahk'Zor Slam
 
@@ -170,7 +170,7 @@ class MrSmiteAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(MrSmiteAI);
         MrSmiteAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
+            
 
             auto smiteSlam = addAISpell(SMITE_SLAM, 25.0f, TARGET_ATTACKING, 0, 15, false, true);
             smiteSlam->setMinMaxDistance(0.0f, 8.0f);
@@ -306,8 +306,6 @@ class VanCleefAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(VanCleefAI);
     VanCleefAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(3391, 25.0f, TARGET_SELF);    //Thrash (Gives the caster 2 extra attacks.)
 
         addEmoteForEvent(Event_OnCombatStart, 7722);     // None may challenge the Brotherhood!
@@ -362,7 +360,6 @@ class VanCleefAI : public CreatureAIScript
 
 void SetupDeadmines(ScriptMgr* mgr)
 {
-    //mgr->register_instance_script(MAP_DEADMINES, &DeadminesInstanceScript::Create);
     mgr->register_creature_script(NPC_RHAHK_ZOR, &RhahkZorAI::Create);
     mgr->register_creature_script(NPC_MR_SMITE, &MrSmiteAI::Create);
     mgr->register_creature_script(NPC_EDWIN_VANCLEEF, &VanCleefAI::Create);

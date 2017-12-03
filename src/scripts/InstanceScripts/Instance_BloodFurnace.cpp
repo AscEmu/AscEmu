@@ -28,8 +28,6 @@ class KelidanTheBreakerAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(KelidanTheBreakerAI);
     KelidanTheBreakerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         if (_isHeroic())
         {
             mShadowBoltVolley = addAISpell(KELIDAN_SHADOW_BOLT_VOLLEY_H, 25.0f, TARGET_SELF, 0, 6);
@@ -92,8 +90,6 @@ class BroggokAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(BroggokAI);
         BroggokAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(POISON_BOLT, 12.0f, TARGET_SELF, 0, 15);
             addAISpell(SLIME_SPRAY, 10.0f, TARGET_SELF, 0, 25);
 
@@ -117,8 +113,6 @@ class TheMakerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(TheMakerAI);
         TheMakerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(DOMINATION, 8.0f, TARGET_RANDOM_SINGLE);
             addAISpell(ACID_SPRAY, 10.0f, TARGET_SELF);
 

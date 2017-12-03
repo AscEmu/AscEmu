@@ -69,8 +69,6 @@ class AttumenTheHuntsmanAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(AttumenTheHuntsmanAI);
     AttumenTheHuntsmanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         //All phase spells
         addAISpell(ATTUMEN_SHADOW_CLEAVE, 15.0f, TARGET_ATTACKING, 0, 6, false, true);
         addAISpell(ATTUMEN_INTANGIBLE_PRESENCE, 15.0f, TARGET_ATTACKING, 0, 12, false, true);
@@ -209,8 +207,6 @@ class MoroesAI : public CreatureAIScript
         mVanishTimer = 0;
         mGarroteTimer = 0;
 
-        enableCreatureAISpellSystem = true;
-
         //Phase 1 spells
         auto gouge = addAISpell(MOROES_GOUGE, 20.0f, TARGET_ATTACKING, 0, 10);
         gouge->setAvailableForScriptPhase({ 1 });
@@ -308,8 +304,6 @@ class MaidenOfVirtueAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(MaidenOfVirtueAI);
     MaidenOfVirtueAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         //Spells
         addAISpell(MAIDENOFVIRTUE_HOLY_GROUND, 100.0f, TARGET_SELF, 0, 3);
         addAISpell(MAIDENOFVIRTUE_HOLY_FIRE, 25.0f, TARGET_RANDOM_SINGLE, 1, 15);
@@ -966,8 +960,6 @@ class AstralFlareAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(AstralFlareAI);
     AstralFlareAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(ASTRAL_FLARE_PASSIVE, 100.0f, TARGET_SELF, 0, 3);
         addAISpell(ASTRAL_FLARE_VISUAL, 100.0f, TARGET_SELF, 0, 6);
         addAISpell(30235, 20.0f, TARGET_ATTACKING);

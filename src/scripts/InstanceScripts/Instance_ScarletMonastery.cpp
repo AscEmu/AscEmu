@@ -30,8 +30,6 @@ class VishasAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(VishasAI);
         VishasAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(SP_VISHAS_SHADOW_WORD, 20.0f, TARGET_RANDOM_SINGLE, 0, 8);
 
             m_uiSay = 0;
@@ -70,8 +68,6 @@ class ThalnosAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(ThalnosAI);
         ThalnosAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(SP_THALNOS_SHADOW_BOLT, 20.0f, TARGET_RANDOM_SINGLE, 3, 2);
             addAISpell(SP_THALNOS_FLAME_SPIKE, 20.0f, TARGET_RANDOM_DESTINATION, 3, 14);
 
@@ -106,8 +102,6 @@ class LokseyAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(LokseyAI);
         LokseyAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(SP_LOKSEY_BLOODLUST, 5.0f, TARGET_SELF, 0, 40);
 
             addEmoteForEvent(Event_OnCombatStart, 2086);     // Release the hounds!
@@ -119,8 +113,6 @@ class DoanAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(DoanAI);
         DoanAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(SP_DOAN_SILENCE, 25.0f, TARGET_SELF, 2, 14);
             addAISpell(SP_DOAN_POLY, 15.0f, TARGET_VARIOUS, 2, 10);
             addAISpell(SP_DOAN_ARCANE_EXP, 20.0f, TARGET_SELF, 0, 10);
@@ -162,8 +154,6 @@ class HerodAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(HerodAI);
         HerodAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto whirlwind = addAISpell(SP_HEROD_WHIRLWINDSPELL, 12.0f, TARGET_SELF, 0, 12);
             whirlwind->addEmote("Blades of Light!", CHAT_MSG_MONSTER_YELL, 5832);
 
@@ -190,7 +180,7 @@ class HerodAI : public CreatureAIScript
             }
         }
 
-        bool    m_bEnraged;
+        bool m_bEnraged;
 };
 
 
@@ -200,8 +190,6 @@ class MograineAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(MograineAI);
         MograineAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto shield = addAISpell(SP_MORGRAINE_SHIELD, 5.0f, TARGET_SELF, 0, 10, false, true);
             shield->setAttackStopTimer(1000);
 
@@ -235,8 +223,6 @@ class WhitemaneAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(WhitemaneAI);
         WhitemaneAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto smite = addAISpell(SP_WHITEMANE_SMITE, 15.0f, TARGET_ATTACKING);
             smite->setAttackStopTimer(1000);
 
@@ -258,9 +244,7 @@ class WhitemaneAI : public CreatureAIScript
                 return;
 
             if (getCreature()->GetHealthPct() <= 50 && getScriptPhase() == 1)
-            {
                 ChangeToPhase1();
-            }
         }
 
         void ChangeToPhase1()
@@ -302,8 +286,6 @@ class FairbanksAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(FairbanksAI);
         FairbanksAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto blood = addAISpell(SP_FAIRBANKS_BLOOD, 15.0f, TARGET_ATTACKING, 0, 20, false, true);
             blood->setAttackStopTimer(1000);
 
@@ -380,7 +362,7 @@ class CathedralLever : public GameObjectAIScript
 
 void SetupScarletMonastery(ScriptMgr* mgr)
 {
-    //Bosses?
+    //Bosses
     mgr->register_creature_script(CN_LOKSEY, &LokseyAI::Create);
     mgr->register_creature_script(CN_VISHAS, &VishasAI::Create);
     mgr->register_creature_script(CN_THALNOS, &ThalnosAI::Create);

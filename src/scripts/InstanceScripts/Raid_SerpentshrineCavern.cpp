@@ -80,7 +80,6 @@ class HydrossTheUnstableAI : public CreatureAIScript
             maxspell = 0;
             Enraged = false;
             EnrageTimer = 0;
-            spell_water_tomb = 0;
         }
 
 
@@ -336,7 +335,6 @@ class HydrossTheUnstableAI : public CreatureAIScript
         int minspell;
         int maxspell;
         bool form; //false = water | true = poison
-        SpellDesc* spell_water_tomb;
         uint32 MarkTimer;
         uint32 MarkCount;
         bool Enraged;
@@ -981,8 +979,6 @@ class FathomGuardSharkissAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(FathomGuardSharkissAI);
         FathomGuardSharkissAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(MULTI_SHOT, 10.0f, TARGET_ATTACKING);
             addAISpell(LEECHING_THROW, 10.0f, TARGET_ATTACKING);
             addAISpell(THE_BEAST_WITHIN, 10.0f, TARGET_ATTACKING, 0, 40);
@@ -1050,8 +1046,6 @@ class FathomGuardTidalvessAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(FathomGuardTidalvessAI);
         FathomGuardTidalvessAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             //totems
             addAISpell(SPITFIRE_TOTEM, 10.0f, TARGET_SELF);
             addAISpell(POISON_CLEANSING_TOTEM, 10.0f, TARGET_SELF);
@@ -1086,8 +1080,6 @@ class FathomGuardCaribdisAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(FathomGuardCaribdisAI);
         FathomGuardCaribdisAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(TIDAL_SURGE, 20.0f, TARGET_SELF, 0, 10);
             addAISpell(SUMMON_CYCLONE, 2.0f, TARGET_SELF, 0, 0);
             HealingWaveTimer = 0;
@@ -1115,9 +1107,6 @@ class FathomGuardCaribdisAI : public CreatureAIScript
         uint32 HealingWaveTimer;
 };
 
-//------------------------------------
-//    -= Morogrim Tidewalker =-
-//------------------------------------
 
 const uint32 TIDAL_WAVE = 37730;
 const uint32 WATERY_GRAVE = 38049;
@@ -1228,9 +1217,7 @@ class TidewalkerLurkerAI : public CreatureAIScript
         }
 };
 
-//------------------------------------
-//    -= Lady Vashj =-
-//------------------------------------
+
 
 /* \todo
  - Toxic Sporebats
@@ -1249,7 +1236,6 @@ const uint32 VASHJ_SHIELD = 38112;
 const uint32 POISON_SPIT = 40078;
 const uint32 TOXIC_SPORES = 38575;
 const uint32 SHOCK_BLAST = 38509;
-
 
 class EnchantedElementalAI : public CreatureAIScript
 {
@@ -2063,11 +2049,7 @@ class ToxicSporeBatAI : public CreatureAIScript
 };
 
 
-//------------------------------------
-//    -= Trash Mobs =-
-//------------------------------------
 
-//Coilfang Ambusher
 const uint32 CA_MULTI_SHOT = 27021;
 
 class CoilfangAmbusherAI : public CreatureAIScript
@@ -2075,13 +2057,10 @@ class CoilfangAmbusherAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(CoilfangAmbusherAI);
         CoilfangAmbusherAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(CA_MULTI_SHOT, 10.0f, TARGET_SELF);
         }
 };
 
-//Coilfang Fathom-Witch
 const uint32 SHADOW_BOLT = 27209;
 const uint32 WHIRLWIND_KNOCKBACK = 34109;
 
@@ -2090,14 +2069,11 @@ class CoilfangFathomWitchAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(CoilfangFathomWitchAI);
         CoilfangFathomWitchAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(SHADOW_BOLT, 2.0f, TARGET_ATTACKING);
             addAISpell(WHIRLWIND_KNOCKBACK, 2.0f, TARGET_SELF);
         }
 };
 
-//Coilfang Guardian
 const uint32 CLEAVE = 38260;
 
 class CoilfangGuardianAI : public CreatureAIScript
@@ -2105,13 +2081,10 @@ class CoilfangGuardianAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(CoilfangGuardianAI);
         CoilfangGuardianAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(CLEAVE, 3.0f, TARGET_RANDOM_DESTINATION);
         }
 };
 
-//Coilfang Priestess
 const uint32 HOLY_NOVA = 38589;
 const uint32 SMITE = 25364;
 const uint32 SPIRIT_OF_REDEMPTION = 35618;
@@ -2121,15 +2094,12 @@ class CoilfangPriestessAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(CoilfangPriestessAI);
         CoilfangPriestessAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(HOLY_NOVA, 2.0f, TARGET_SELF);
             addAISpell(SMITE, 1.0f, TARGET_ATTACKING);
             addAISpell(SPIRIT_OF_REDEMPTION, 2.0f, TARGET_SELF);
         }
 };
 
-//Underbog Colossus
 const uint32 ACID_GEYSER = 37959;
 const uint32 ATROPIC_BLOW = 39015;
 const uint32 SPORE_QUAKE = 38976;
@@ -2143,8 +2113,6 @@ class UnderbogColossusAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(UnderbogColossusAI);
         UnderbogColossusAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             //these mobs pick from a random set of abilities
             switch (RandomUInt(2))
             {
@@ -2185,7 +2153,6 @@ class UnderbogColossusAI : public CreatureAIScript
         }
 };
 
-//Tidewalker Warrior
 const uint32 TW_CLEAVE = 38260;
 const uint32 TW_BLOODTHIRST = 30335; //INSTANT
 const uint32 TW_FRENZY = 37605;
@@ -2195,15 +2162,12 @@ class TidewalkerWarriorAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(TidewalkerWarriorAI);
         TidewalkerWarriorAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(TW_CLEAVE, 1.0f, TARGET_RANDOM_DESTINATION);
             addAISpell(TW_BLOODTHIRST, 1.0f, TARGET_ATTACKING, 0, 0, false, true);
             addAISpell(TW_FRENZY, 2.0f, TARGET_SELF);
         }
 };
 
-//Coilfang Serpentguard
 const uint32 CSERP_CLEAVE = 38260;
 const uint32 CSERP_REFLECTION = 36096;
 const uint32 CSERP_DEVOTION = 38603;
@@ -2213,15 +2177,12 @@ class CoilfangSerpentguardAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(CoilfangSerpentguardAI);
         CoilfangSerpentguardAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(CSERP_CLEAVE, 1.0f, TARGET_RANDOM_DESTINATION);
             addAISpell(CSERP_REFLECTION, 0.5f, TARGET_SELF);
             addAISpell(CSERP_DEVOTION, 1.0f, TARGET_SELF);
         }
 };
 
-//Coilfang Shatterer
 const uint32 CSHATT_ARMOR = 38591;
 
 class CoilfangShattererAI : public CreatureAIScript
@@ -2229,13 +2190,10 @@ class CoilfangShattererAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(CoilfangShattererAI);
         CoilfangShattererAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(CSHATT_ARMOR, 2.0f, TARGET_ATTACKING);
         }
 };
 
-//Coilfang Strider
 const uint32 CSTRID_SCREAM = 10890;
 
 class CoilfangStriderAI : public CreatureAIScript
@@ -2243,13 +2201,10 @@ class CoilfangStriderAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(CoilfangStriderAI);
         CoilfangStriderAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(CSTRID_SCREAM, 2.0f, TARGET_ATTACKING);
         }
 };
 
-// Serpentshrine Cavern Instance Script
 class SerpentshrineCavern : public InstanceScript
 {
     public:

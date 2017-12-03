@@ -22,14 +22,10 @@
 #include "Instance_DrakTharonKeep.h"
 
 
-/*
- Trollgore - TOO EASY!!
- \todo Whole corpses/consume thingo is wrong
- NOTES:
- Core doesn't support auras on corpses, we are currently unable to script this blizzlike
- */
 
-//TrollgoreAI
+// \todo Whole corpses/consume thingo is wrong
+
+
 const uint32 INVASION_INTERVAL = 20000;
 const uint32 INVADERS_PER_INVASION = 1;
 //two mobs per 10s
@@ -40,8 +36,6 @@ class TrollgoreAI : public CreatureAIScript
         TrollgoreAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             invastion_timer = 0;
-
-            enableCreatureAISpellSystem = true;
 
             if (_isHeroic())
             {
@@ -121,8 +115,6 @@ class NovosTheSummonerAI : public CreatureAIScript
         {
             invasion_timer = 0;
             handler_timer = 0;
-
-            enableCreatureAISpellSystem = true;
 
             if (_isHeroic())
             {
@@ -368,14 +360,11 @@ class NovosTheSummonerAI : public CreatureAIScript
 };
 
 
-//CrystalHandlerAI
 class CrystalHandlerAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(CrystalHandlerAI);
         CrystalHandlerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             if (_isHeroic())
                 addAISpell(59004, 50.0f, TARGET_ATTACKING, 0, 4);    //FlashofDarkness
             else
@@ -410,15 +399,12 @@ class CrystalHandlerAI : public CreatureAIScript
 };
 
 
-// KingDreadAI
 // \todo King Dred Call nearby friends
 class KingDreadAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(KingDreadAI);
         KingDreadAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             if (_isHeroic())
             {
                 addAISpell(59422, 80.0f, TARGET_ATTACKING, 0, 3);  //GrievousBite
@@ -448,7 +434,6 @@ class KingDreadAI : public CreatureAIScript
  - Figure out why players are not always changed to skeletons while chaning phases
  */
 
-// TheProphetTaronjaAI
 const uint32 WINDSERPENT_PHASE_INTERVAL = 60000; //change phase each 60s
 const uint32 WINDSERPENT_PHASE_LENGTH = 30000; //30s
 const uint32 PHASES_COUNT = 2;
@@ -460,8 +445,6 @@ class TheProphetTaronjaAI : public CreatureAIScript
         {
             phase_timer = 0;
             phase_length = 0;
-
-            enableCreatureAISpellSystem = true;
 
             if (_isHeroic())
             {
@@ -536,8 +519,6 @@ class TheProphetTaronjaAI : public CreatureAIScript
 
 void SetupDrakTharonKeep(ScriptMgr* mgr)
 {
-    //Trash Mobs
-
     //Bosses
     mgr->register_creature_script(CN_TROLLGORE, &TrollgoreAI::Create);
     mgr->register_creature_script(CN_NOVOS_THE_SUMMONER, &NovosTheSummonerAI::Create);

@@ -16,7 +16,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include "Setup.h"
 #include "Instance_HallsOfLightning.h"
 
@@ -118,8 +117,6 @@ class GeneralBjarngrimAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(GeneralBjarngrimAI);
     GeneralBjarngrimAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         // Battle Stance
         auto mortalStrike = addAISpell(SPELL_MORTAL_STRIKE, 25.0f, TARGET_ATTACKING, 0, 5);
         mortalStrike->setAvailableForScriptPhase({ 1 });
@@ -221,14 +218,11 @@ const uint32 SPELL_BLAST_WAVE = 23113;
 // 24 seconds + up to 6
 const uint32 TIMER_STOMP = 24000;
 
-
 class Volkhan : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(Volkhan);
     Volkhan(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         if (_isHeroic())
         {
             addAISpell(59529, 15.0f, TARGET_RANDOM_FRIEND, 2, 15);
@@ -291,9 +285,7 @@ class Volkhan : public CreatureAIScript
             ForceWaypointMove(1);
             sendAnnouncement("Volkhan runs to his anvil!");
             ++mPhase;
-        }
-
-        
+        } 
     }
 
     void OnReachWP(uint32 iWaypointId, bool /*bForwards*/) override
@@ -353,8 +345,6 @@ class MoltenGolem : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(MoltenGolem);
     MoltenGolem(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(SPELL_BLAST_WAVE, 25.0f, TARGET_SELF, 0, 20);
 
         if (_isHeroic())
@@ -403,8 +393,6 @@ class IonarAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(IonarAI);
     IonarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         if (_isHeroic())
         {
             addAISpell(59800, 20.0f, TARGET_RANDOM_SINGLE, 2, 5);
@@ -436,8 +424,6 @@ class LokenAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(LokenAI);
     LokenAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         if (_isHeroic())
             mNova = addAISpell(59835, 0.0f, TARGET_SELF, 4, 0);
         else
@@ -522,9 +508,7 @@ class LokenAI : public CreatureAIScript
             sendDBChatMessage(800);      // My master has shown me the future, and you have no place in it. Azeroth..
             _removeTimer(mRespondTimer);
             RemoveAIUpdateEvent();
-        }
-
-        
+        }       
     }
 
     CreatureAISpells* mNova;

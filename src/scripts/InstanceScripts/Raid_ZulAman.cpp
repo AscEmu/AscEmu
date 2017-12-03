@@ -24,15 +24,11 @@
 #include "Raid_ZulAman.h"
 
 //\todo move AddEmote to database
-
-//NalorakkAI
 class NalorakkAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(NalorakkAI);
         NalorakkAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto brutalSwipe = addAISpell(NALORAKK_BRUTAL_SWIPE, 2.0f, TARGET_ATTACKING, 0, 35);
             brutalSwipe->setAvailableForScriptPhase({ 1 });
 
@@ -125,14 +121,11 @@ class NalorakkAI : public CreatureAIScript
         uint32_t mLocaleEnrageTimerId;
 };
 
-//Akil'zon <Eagle Avatar>
 class AkilzonAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(AkilzonAI);
         AkilzonAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(AKILZON_STATIC_DISRUPTION, 2.0f, TARGET_SELF, 0, 60);
             addAISpell(AKILZON_CALL_LIGHTING, 2.0f, TARGET_ATTACKING);
             addAISpell(AKILZON_GUST_OF_WIND, 0.0f, TARGET_ATTACKING);
@@ -176,28 +169,22 @@ class AkilzonAI : public CreatureAIScript
         int32 mSummonTime;
 };
 
-//SOARING_EAGLE Summon Akil'zon
 class SoaringEagleAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(SoaringEagleAI);
         SoaringEagleAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             addAISpell(EAGLE_SWOOP, 5.0f, TARGET_DESTINATION, 0, 0);
             getCreature()->m_noRespawn = true;
         }
 };
 
 
-//Halazzi <Lynx Avatar>
 class HalazziAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(HalazziAI);
         HalazziAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto saberLash = addAISpell(HALAZZI_SABER_LASH, 0.5f, TARGET_DESTINATION, 0, 0);
             saberLash->addEmote("Me gonna carve ya now!", CHAT_MSG_MONSTER_YELL, 12023);
             saberLash->addEmote("You gonna leave in pieces!", CHAT_MSG_MONSTER_YELL, 12024);

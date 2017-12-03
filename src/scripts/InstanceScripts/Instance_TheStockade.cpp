@@ -22,8 +22,7 @@
 #include "Setup.h"
 #include "Instance_TheStockade.h"
 
-//////////////////////////////////////////////////////////////////////////////////////////
-//Stormwind Stockade
+
 class InstanceStormwindStockadeScript : public InstanceScript
 {
     public:
@@ -39,8 +38,6 @@ class DeepfuryAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(DeepfuryAI);
     DeepfuryAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(SHIELD_SLAM, 100.0f, TARGET_ATTACKING, 0, 8);
         addAISpell(IMPROVED_BLOCKING, 100.0f, TARGET_SELF, 0, 20);
     }
@@ -60,7 +57,6 @@ class DeepfuryAI : public CreatureAIScript
             _setCastDisabled(true);
             moveTo(float(105.693390), float(-58.426674), float(-34.856178), true);
         }
-        
     }
 };
 
@@ -69,8 +65,6 @@ class HamhockAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(HamhockAI);
     HamhockAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(BLOODLUST, 100.0f, TARGET_RANDOM_FRIEND, 0, 60);
         addAISpell(CHAINLIGHT, 50.0f, TARGET_ATTACKING, 2, 7);
 
@@ -83,8 +77,6 @@ class BazilAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(BazilAI);
     BazilAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(SMOKE_BOMB, 100.0f, TARGET_ATTACKING, 9, 15);
         addAISpell(BATTLE_SHOUT, 100.0f, TARGET_SELF, 3, 30);
 
@@ -102,8 +94,6 @@ class DextrenAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(DextrenAI);
     DextrenAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(FRIGHTENING_SHOUT, 33.0f, TARGET_ATTACKING, 8, 30);
         addAISpell(STRIKE, 33.0f, TARGET_SELF, 0, 10);
     }
@@ -122,8 +112,6 @@ class TargorrTheDreadAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(TargorrTheDreadAI);
     TargorrTheDreadAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         Enraged = addAISpell(ENRAGE, 0.0f, TARGET_SELF);
         addAISpell(THRASH, 50.0f, TARGET_SELF, 0, 8);
         Enrage = false;
@@ -144,8 +132,6 @@ class InmateAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(InmateAI);
     InmateAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(REND, 100.0f, TARGET_ATTACKING, 5, 16);
     }
 
@@ -160,8 +146,6 @@ class InsurgentAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(InsurgentAI);
     InsurgentAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(DEMORALIZING_SHOUT, 100.0f, TARGET_SELF, 7, 25);
     }
 
@@ -176,8 +160,6 @@ class PrisonerAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(PrisonerAI);
     PrisonerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(KICK, 100.0f, TARGET_ATTACKING, 5, 16);
         addAISpell(DISARM, 100.0f, TARGET_ATTACKING, 10, 14);
     }
@@ -193,8 +175,6 @@ class ConvictAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(ConvictAI);
     ConvictAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        enableCreatureAISpellSystem = true;
-
         addAISpell(BACKHAND, 100.0f, TARGET_ATTACKING, 5, 12);
     }
 

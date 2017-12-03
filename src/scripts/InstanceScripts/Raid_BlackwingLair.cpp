@@ -32,8 +32,6 @@ class DTcaptainAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(DTcaptainAI);
         DTcaptainAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto markOfFlames = addAISpell(MARK_OF_FLAMES, 15.0f, TARGET_ATTACKING);
             markOfFlames->setAttackStopTimer(1000);
 
@@ -66,8 +64,6 @@ class DTflamescaleAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(DTflamescaleAI);
         DTflamescaleAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto flameShock = addAISpell(FLAME_SHOCK, 15.0f, TARGET_ATTACKING);
             flameShock->setAttackStopTimer(1000);
         }
@@ -107,8 +103,6 @@ class DTwyrmkinAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(DTwyrmkinAI);
         DTwyrmkinAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto fireballVolley = addAISpell(FIREBALL_VOLLEY, 40.0f, TARGET_VARIOUS);
             fireballVolley->setAttackStopTimer(1000);
         }
@@ -131,9 +125,6 @@ They can be put to sleep by a druid's hibernate ability, but due to their high l
 */
 
 
-// -------------------------------
-
-// --- Blackwing Lair Lab Packs ---
 
 const uint32 CN_TECHNICIAN = 13996;
 const uint32 GRANADE = 30217;
@@ -143,8 +134,6 @@ class TechnicianAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(TechnicianAI);
         TechnicianAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto granade = addAISpell(GRANADE, 25.0f, TARGET_ATTACKING);
             granade->setAttackStopTimer(1000);
         }
@@ -155,9 +144,9 @@ class TechnicianAI : public CreatureAIScript
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
-/*
-Relatively low HP. Has a ranged aoe grenade that inflicts moderate damage to anyone in the area of effect.
-*/
+
+//Relatively low HP. Has a ranged aoe grenade that inflicts moderate damage to anyone in the area of effect.
+
 
 const uint32 CN_BLACK_WARLOCK = 12459;
 const uint32 RAIN_OF_FIRE = 19717;
@@ -168,8 +157,6 @@ class BlackWarlockAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(BlackWarlockAI);
         BlackWarlockAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto rainOfFire = addAISpell(RAIN_OF_FIRE, 10.0f, TARGET_DESTINATION);
             rainOfFire->setAttackStopTimer(1000);
 
@@ -216,10 +203,8 @@ That said, as of patch 2.0, Ive been polyd while dpsing these.
 It would appear more accurate to say that the polymorph is targetted at people who do not have the spellbinders aggro.
 */
 
-// -------------------------------
 
-// --- BOSS'S ---
-
+// BOSS
 const uint32 CN_LASHLAYER = 12017;
 const uint32 FIRE_NOVA_LASH = 39001; //BLAST WAVE
 const uint32 MORTAL_STRIKE = 9347;
@@ -230,8 +215,6 @@ class LashlayerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(LashlayerAI);
         LashlayerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto fireNovaLash = addAISpell(FIRE_NOVA_LASH, 15.0f, TARGET_VARIOUS);
             fireNovaLash->setAttackStopTimer(1000);
         }
@@ -258,8 +241,6 @@ class FiremawAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(FiremawAI);
         FiremawAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto wingBuffet = addAISpell(WING_BUFFET, 10.0f, TARGET_VARIOUS);
             wingBuffet->setAttackStopTimer(1000);
 
@@ -283,8 +264,6 @@ class EbonrocAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(EbonrocAI);
         EbonrocAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto wingBuffet = addAISpell(WING_BUFFET, 10.0f, TARGET_VARIOUS);
             wingBuffet->setAttackStopTimer(1000);
 
@@ -308,8 +287,6 @@ class FlamegorAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(FlamegorAI);
         FlamegorAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             auto wingBuffet = addAISpell(WING_BUFFET, 10.0f, TARGET_VARIOUS);
             wingBuffet->setAttackStopTimer(1000);
 
@@ -356,8 +333,6 @@ class VaelastraszAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(VaelastraszAI);
         VaelastraszAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            enableCreatureAISpellSystem = true;
-
             essenceOfTheRed = addAISpell(ESSENCE_OF_THE_RED, 0.0f, TARGET_VARIOUS);
             essenceOfTheRed->setAttackStopTimer(1000);
 

@@ -19,8 +19,6 @@
 
 #include "Setup.h"
 
- ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
- /////// Eliza
 const uint32 CN_ELIZA = 314;
 const uint32 ELIZA_FROST_NOVA = 11831;
 const uint32 ELIZA_FROSTBOLT = 20819;
@@ -34,8 +32,6 @@ public:
     {
         mElizaCombatTimer = 0;
         setCanEnterCombat(false);
-
-        enableCreatureAISpellSystem = true;
 
         addAISpell(ELIZA_FROST_NOVA, 10.0f, TARGET_ATTACKING, 0, 1, false, true);
         addAISpell(ELIZA_FROSTBOLT, 20.0f, TARGET_ATTACKING, 3, 1);
