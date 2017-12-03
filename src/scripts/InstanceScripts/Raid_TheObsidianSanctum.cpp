@@ -162,25 +162,25 @@ class SartharionAI : public CreatureAIScript
         {
             mInstance = dynamic_cast<ObsidianSanctumScript*>(getInstanceScript());
 
-            AddSpell(SARTHARION_CLEAVE, Target_Current, 24, 0, 8);
+            addAISpell(SARTHARION_CLEAVE, 24.0f, TARGET_ATTACKING, 0, 8);
 
-            SpellDesc* mFlame = nullptr;
+            CreatureAISpells* mFlame = nullptr;
             if (_isHeroic())
             {
-                mFlame = AddSpell(58956, Target_Self, 18, 2, 16);
-                AddSpell(58957, Target_Self, 40, 0, 12);
+                mFlame = addAISpell(58956, 18.0f, TARGET_SELF, 2, 16);
+                addAISpell(58957, 40.0f, TARGET_SELF, 0, 12);
             }
             else
             {
-                mFlame = AddSpell(56908, Target_Self, 18, 2, 16);
-                AddSpell(56910, Target_Self, 40, 0, 12);
+                mFlame = addAISpell(56908, 18.0f, TARGET_SELF, 2, 16);
+                addAISpell(56910, 40.0f, TARGET_SELF, 0, 12);
             }
 
             if (mFlame != nullptr)
                 mFlame->addEmote("Burn, you miserable wretches!", CHAT_MSG_MONSTER_YELL, 14098);
             
-            mFlameTsunami = AddSpellFunc(&SpellFunc_FlameTsunami, Target_Self, 99, 0, 25);
-            mSummonLava = AddSpellFunc(&SpellFunc_LavaSpawn, Target_RandomUnitNotCurrent, 25, 0, 8);
+            mFlameTsunami = AddSpellFunc(&SpellFunc_FlameTsunami, TARGET_SELF, 99, 0, 25);
+            mSummonLava = AddSpellFunc(&SpellFunc_LavaSpawn, TARGET_RANDOM_SINGLE, 25, 0, 8);
 
             addEmoteForEvent(Event_OnTargetDied, 8851);
             addEmoteForEvent(Event_OnTargetDied, 8852);

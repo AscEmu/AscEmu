@@ -23,7 +23,6 @@
 #include "Setup.h"
 
 /*
-
 //Kil'Jaeden sound IDs saved for future use
 //Some of them are used anytime during the raid progression in the instance (no mechanism for this yet)
 //Some others are used in the actual Kil'Jaeden encounter
@@ -36,11 +35,8 @@
 12499 Sunwell Plateau - Kil Jaeden - "Drain the girl, drain her power, untill there is nothing but an ...something... shell"
 12500 Sunwell Plateau - Kil Jaeden - Very long thing, basiclly he tells us that he will take control over the Burning Legion.
 12501 Sunwell Plateau - Kil Jaeden - "Another step towards destruction!"
-
 */
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Sunblade Protector
 const uint32 CN_SUNBLADE_PROTECTOR = 25507;
 const uint32 SUNBLADE_PROTECTOR_FEL_LIGHTNING = 46480;
 
@@ -49,12 +45,14 @@ class SunbladeProtectorAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(SunbladeProtectorAI);
         SunbladeProtectorAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(SUNBLADE_PROTECTOR_FEL_LIGHTNING, Target_RandomPlayer, 100, 0, 15, 0, 60);
+            enableCreatureAISpellSystem = true;
+
+            auto felLightning = addAISpell(SUNBLADE_PROTECTOR_FEL_LIGHTNING, 100.0f, TARGET_RANDOM_SINGLE, 0, 15, 0, 60);
+            felLightning->setMinMaxDistance(0.0f, 60.0f);
         }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Shadowsword Assassin
+
 const uint32 CN_SHADOWSWORD_ASSASSIN = 25484;
 const uint32 SHADOWSWORD_ASSASSIN_ASSASSINS_MARK = 46459;
 const uint32 SHADOWSWORD_ASSASSIN_AIMED_SHOT = 46460;
@@ -66,15 +64,22 @@ class ShadowswordAssassinAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(ShadowswordAssassinAI);
         ShadowswordAssassinAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(SHADOWSWORD_ASSASSIN_ASSASSINS_MARK, Target_RandomPlayer, 100, 0, 15, 0, 100);
-            AddSpell(SHADOWSWORD_ASSASSIN_AIMED_SHOT, Target_Current, 15, 4, 6, 5, 35, true);
-            AddSpell(SHADOWSWORD_ASSASSIN_SHADOWSTEP, Target_RandomPlayer, 15, 0, 50, 0, 40);
-            AddSpell(SHADOWSWORD_ASSASSIN_GREATER_INVISIBILITY, Target_Self, 5, 0, 180);
+            enableCreatureAISpellSystem = true;
+
+            auto assaMark = addAISpell(SHADOWSWORD_ASSASSIN_ASSASSINS_MARK, 100.0f, TARGET_RANDOM_SINGLE, 0, 15);
+            assaMark->setMinMaxDistance(0.0f, 100.0f);
+
+            auto aimedShot = addAISpell(SHADOWSWORD_ASSASSIN_AIMED_SHOT, 15.0f, TARGET_ATTACKING, 4, 6, false, true);
+            aimedShot->setMinMaxDistance(5.0f, 35.0f);
+
+            auto shadowstep = addAISpell(SHADOWSWORD_ASSASSIN_SHADOWSTEP, 15.0f, TARGET_RANDOM_SINGLE, 0, 50);
+            shadowstep->setMinMaxDistance(0.0f, 40.0f);
+
+            addAISpell(SHADOWSWORD_ASSASSIN_GREATER_INVISIBILITY, 5.0f, TARGET_SELF, 0, 180);
         }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Shadowsword Commander
+
 const uint32 CN_SHADOWSWORD_COMMANDER = 25837;
 const uint32 SHADOWSWORD_COMMANDER_SHIELD_SLAM = 46762;
 const uint32 SHADOWSWORD_COMMANDER_BATTLESHOUT = 46763;
@@ -84,79 +89,14 @@ class ShadowswordCommanderAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(ShadowswordCommanderAI);
         ShadowswordCommanderAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(SHADOWSWORD_COMMANDER_SHIELD_SLAM, Target_Current, 10, 0, 10);
-            AddSpell(SHADOWSWORD_COMMANDER_BATTLESHOUT, Target_Self, 20, 0, 25);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(SHADOWSWORD_COMMANDER_SHIELD_SLAM, 10.0f, TARGET_ATTACKING, 0, 10);
+            addAISpell(SHADOWSWORD_COMMANDER_BATTLESHOUT, 20.0f, TARGET_SELF, 0, 25);
         }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Kalecgos
-/*const uint32 CN_KALECGOS = 24850
-const uint32 KALECGOS_FROST_BREATH = 44799
-const uint32 KALECGOS_SPECTRAL_BLAST = 44866
-const uint32 KALECGOS_ARCANE_BUFFET = 45018
 
-void SpellFunc_Kalecgos_WildMagic(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
-
-class KalecgosAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(KalecgosAI);
-    KalecgosAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        AddSpell(KALECGOS_FROST_BREATH, Target_Current, 10, 1, 12, 0, 30);
-        AddSpellFunc(SpellFunc_Kalecgos_WildMagic, Target_RandomPlayer, 15, 0, 10, 0, 100);
-        AddSpell(KALECGOS_SPECTRAL_BLAST, Target_Self, 25, 0, 25, 0, 50);
-        AddSpell(KALECGOS_ARCANE_BUFFET, Target_Self, 100, 0, 8);
-
-        //Emotes
-        AddEmote(Event_OnCombatStart, "I need... your help... Cannot... resist him... much longer...", Text_Yell, 12428);
-        AddEmote(Event_OnTargetDied, "In the name of Kil'jaeden!", Text_Yell, 12425);
-        AddEmote(Event_OnTargetDied, "You were warned! ", Text_Yell, 12426);
-        AddEmote(Event_OnDied, "I am forever in your debt. Once we have triumphed over Kil'jaeden, this entire world will be in your debt as well.", Text_Yell, 12431);
-    }
-};
-
-void SpellFunc_Kalecgos_WildMagic(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType)
-{
-    KalecgosAI* Kalecgos = (pCreatureAI) ? (KalecgosAI*)pCreatureAI : NULL;
-    if (Kalecgos)
-    {
-        \todo 
-
-        const uint32 SP_WILD_MAGIC_1            44978
-        const uint32 SP_WILD_MAGIC_2            45001
-        const uint32 SP_WILD_MAGIC_3            45002
-        const uint32 SP_WILD_MAGIC_4            45004
-        const uint32 SP_WILD_MAGIC_5            45006
-        const uint32 SP_WILD_MAGIC_6            45010
-    }
-}
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Sathrovarr the Corruptor
-const uint32 CN_SATHROVARR_THE_CORRUPTOR = 24892
-const uint32 SATHROVARR_THE_CORRUPTOR_CURSE_OF_BOUNDLESS_AGONY = 45034
-const uint32 SATHROVARR_THE_CORRUPTOR_SHADOW_BOLT_VOLLEY = 38840
-const uint32 SATHROVARR_THE_CORRUPTOR_CORRUPTING_STRIKE = 45029
-
-class SathrovarrTheCorruptorAI : public CreatureAIScript
-{
-    ADD_CREATURE_FACTORY_FUNCTION(SathrovarrTheCorruptorAI);
-    SathrovarrTheCorruptorAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        AddSpell(SATHROVARR_THE_CORRUPTOR_CURSE_OF_BOUNDLESS_AGONY, Target_RandomPlayer, 20, 0, 12, 0, 40);
-        AddSpell(SATHROVARR_THE_CORRUPTOR_SHADOW_BOLT_VOLLEY, Target_RandomPlayerApplyAura, 20, 1, 25, 0, 40);
-        AddSpell(SATHROVARR_THE_CORRUPTOR_CORRUPTING_STRIKE, Target_Current, 30, 0, 5, 0, 10);
-
-        //Emotes
-        AddEmote(Event_OnCombatStart, "Gyahaha... There will be no reprieve. My work here is nearly finished.", Text_Yell, 12451);
-        AddEmote(Event_OnTargetDied, "Pitious mortal!", Text_Yell, 12455);
-        AddEmote(Event_OnTargetDied, "Haven't you heard? I always win!", Text_Yell, 12456);
-        AddEmo(Event_OnDied, "I'm... never on... the losing... side...", Text_Yell, 12452);
-    }
-};
-*/
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Brutallus
 const uint32 CN_BRUTALLUS = 24882;
 const uint32 BRUTALLUS_METEOR_SLASH = 45150;
 const uint32 BRUTALLUS_BURN = 45141;
@@ -168,12 +108,15 @@ class BrutallusAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(BrutallusAI);
         BrutallusAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(BRUTALLUS_METEOR_SLASH, Target_Self, 100, 1, 12);
-            AddSpell(BRUTALLUS_BURN, Target_RandomPlayer, 50, 0, 20);
-            AddSpell(BRUTALLUS_STOMP, Target_Current, 25, 0, 30);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(BRUTALLUS_METEOR_SLASH, 100.0f, TARGET_SELF, 1, 12);
+            addAISpell(BRUTALLUS_BURN, 50.0f, TARGET_RANDOM_SINGLE, 0, 20);
+            addAISpell(BRUTALLUS_STOMP, 25.0f, TARGET_ATTACKING, 0, 30);
 
             //6min Enrage
-            mLocaleEnrageSpell = AddSpell(BRUTALLUS_BERSERK, Target_Self, 0, 0, 0, 0, 0, false, "So much for a real challenge... Die!", CHAT_MSG_MONSTER_YELL, 12470);
+            mLocaleEnrageSpell = addAISpell(BRUTALLUS_BERSERK, 0.0f, TARGET_SELF);
+            mLocaleEnrageSpell->addEmote("So much for a real challenge... Die!", CHAT_MSG_MONSTER_YELL, 12470);
 
             //Emotes
             addEmoteForEvent(Event_OnCombatStart, 8834);
@@ -192,7 +135,7 @@ class BrutallusAI : public CreatureAIScript
         {
             if (_isTimerFinished(mLocaleEnrageTimerId))
             {
-                CastSpell(mLocaleEnrageSpell);
+                _castAISpell(mLocaleEnrageSpell);
                 _removeTimer(mLocaleEnrageTimerId);
             }
         }
@@ -207,12 +150,11 @@ class BrutallusAI : public CreatureAIScript
             _removeTimer(mLocaleEnrageTimerId);
         }
 
-        SpellDesc* mLocaleEnrageSpell;
+        CreatureAISpells* mLocaleEnrageSpell;
         uint32_t mLocaleEnrageTimerId;
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Felmyst
+
 const uint32 CN_FELMYST = 25038;
 const uint32 FELMYST_CLEAVE = 19983;
 const uint32 FELMYST_CORROSION = 45866;
@@ -228,21 +170,34 @@ class FelmystAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(FelmystAI);
         FelmystAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             //Phase 1 spells
-            AddPhaseSpell(1, AddSpell(FELMYST_CLEAVE, Target_Current, 6, 0, 10, 0, 5));
-            AddPhaseSpell(1, AddSpell(FELMYST_GAS_NOVA, Target_Self, 25, 1, 18));
-            AddPhaseSpell(1, AddSpell(FELMYST_ENCAPSULATE, Target_RandomPlayer, 25, 7, 30, 0, 30));
-            AddPhaseSpell(1, AddSpell(FELMYST_CORROSION, Target_Current, 20, 0.75f, 35, 0, 30, false, "Choke on your final breath!", CHAT_MSG_MONSTER_YELL, 12478));
+            auto cleave = addAISpell(FELMYST_CLEAVE, 6.0f, TARGET_ATTACKING, 0, 10);
+            cleave->setAvailableForScriptPhase({ 1 });
+
+            auto gasNova = addAISpell(FELMYST_GAS_NOVA, 25.0f, TARGET_SELF, 1, 18);
+            gasNova->setAvailableForScriptPhase({ 1 });
+
+            auto encapsulate = addAISpell(FELMYST_ENCAPSULATE, 25.0f, TARGET_RANDOM_SINGLE, 7, 30);
+            encapsulate->setMinMaxDistance(0.0f, 30.0f);
+            encapsulate->setAvailableForScriptPhase({ 1 });
+
+            auto corrosion = addAISpell(FELMYST_CORROSION, 20.0f, TARGET_ATTACKING, 1, 35);
+            corrosion->setMinMaxDistance(0.0f, 30.0f);
+            corrosion->setAvailableForScriptPhase({ 1 });
+            corrosion->addEmote("Choke on your final breath!", CHAT_MSG_MONSTER_YELL, 12478);
 
             //Phase 2 spells
-            AddPhaseSpell(2, AddSpell(FELMYST_DEMONIC_VAPOR, Target_RandomPlayer, 10, 0, 20));
+            auto demonicVapor = addAISpell(FELMYST_DEMONIC_VAPOR, 10.0f, TARGET_RANDOM_SINGLE, 0, 20);
+            demonicVapor->setAvailableForScriptPhase({ 2 });
 
             //Phase 3 spells
             //Fog of corruption is the actual breath Felmyst does during his second phase, probably we'll have to spawn it like a creature.
-            //AddSpell(FELMYST_FOG_OF_CORRUPTION, Target_RandomPlayerApplyAura, 15, 0, 20, 0, 10); Does not support by the core.
 
             //10min Enrage
-            mLocaleEnrageSpell = AddSpell(FELMYST_ENRAGE, Target_Self, 0, 0, 0, 0, 0, false, "No more hesitation! Your fates are written!", CHAT_MSG_MONSTER_YELL, 12482);
+            mLocaleEnrageSpell = addAISpell(FELMYST_ENRAGE, 0.0f, TARGET_SELF);
+            mLocaleEnrageSpell->addEmote("No more hesitation! Your fates are written!", CHAT_MSG_MONSTER_YELL, 12482);
 
             //Emotes
             addEmoteForEvent(Event_OnCombatStart, 8842);
@@ -258,7 +213,7 @@ class FelmystAI : public CreatureAIScript
         {
             if (_isTimerFinished(mLocaleEnrageTimerId))
             {
-                CastSpell(mLocaleEnrageSpell);
+                _castAISpell(mLocaleEnrageSpell);
                 _removeTimer(mLocaleEnrageTimerId);
             }
         }
@@ -274,12 +229,12 @@ class FelmystAI : public CreatureAIScript
             _removeTimer(mLocaleEnrageTimerId);
         }
 
-        SpellDesc* mLocaleEnrageSpell;
+        CreatureAISpells* mLocaleEnrageSpell;
         uint32_t mLocaleEnrageTimerId;
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Lady Sacrolash
+
+
 const uint32 CN_LADY_SACROLASH = 25165;
 const uint32 CN_GRAND_WARLOCK_ALYTHESS = 25166;
 const uint32 LADY_SACROLASH_DARK_TOUCHED = 45347;
@@ -293,22 +248,34 @@ class LadySacrolashAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(LadySacrolashAI);
         LadySacrolashAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(LADY_SACROLASH_DARK_TOUCHED, Target_RandomPlayerApplyAura, 50, 0, 10, 0, 50);
-            AddSpell(LADY_SACROLASH_SHADOW_BLADES, Target_Current, 25, 1.5, 5, 0, 50);
-            AddSpell(LADY_SACROLASH_SHADOW_NOVA, Target_RandomPlayer, 15, 3.5, 20, 0, 50, false, "Shadow to the aid of fire!", CHAT_MSG_MONSTER_YELL, 12485);
-            AddSpell(LADY_SACROLASH_CONFOUNDING_BLOW, Target_RandomPlayer, 10, 0, 15, 0, 50);
-            mLocaleEnrageSpell = AddSpell(LADY_SACROLASH_ENRAGE, Target_Self, 0, 0, 0, 0, 0, 0, "Time is a luxury you no longer possess!", CHAT_MSG_MONSTER_YELL, 0); // Wasn't able to find sound for this text
+            enableCreatureAISpellSystem = true;
+
+            auto darkTouch = addAISpell(LADY_SACROLASH_DARK_TOUCHED, 50.0f, TARGET_RANDOM_SINGLE, 0, 10);
+            darkTouch->setMinMaxDistance(0.0f, 50.0f);
+
+            auto shadowBlades = addAISpell(LADY_SACROLASH_SHADOW_BLADES, 25.0f, TARGET_ATTACKING, 2, 5);
+            shadowBlades->setMinMaxDistance(0.0f, 50.0f);
+
+            auto shadowNova = addAISpell(LADY_SACROLASH_SHADOW_NOVA, 15.0f, TARGET_RANDOM_SINGLE, 4, 20);
+            shadowNova->addEmote("Shadow to the aid of fire!", CHAT_MSG_MONSTER_YELL, 12485);
+            shadowNova->setMinMaxDistance(0.0f, 50.0f);
+
+            auto confoundingBlow = addAISpell(LADY_SACROLASH_CONFOUNDING_BLOW, 10.0f, TARGET_RANDOM_SINGLE, 0, 15);
+            confoundingBlow->setMinMaxDistance(0.0f, 50.0f);
+
+            mLocaleEnrageSpell = addAISpell(LADY_SACROLASH_ENRAGE, 0.0f, TARGET_SELF);
+            mLocaleEnrageSpell->addEmote("Time is a luxury you no longer possess!", CHAT_MSG_MONSTER_YELL, 0); // Wasn't able to find sound for this text
 
             //Emotes
             addEmoteForEvent(Event_OnTargetDied, 8847);
-            addEmoteForEvent(Event_OnDied, 8848); // Wasn't able to find sound for this text
+            addEmoteForEvent(Event_OnDied, 8848);
         }
 
         void AIUpdate() override
         {
             if (_isTimerFinished(mLocaleEnrageTimerId))
             {
-                CastSpell(mLocaleEnrageSpell);
+                _castAISpell(mLocaleEnrageSpell);
                 _removeTimer(mLocaleEnrageTimerId);
             }
         }
@@ -323,9 +290,6 @@ class LadySacrolashAI : public CreatureAIScript
             _removeTimer(mLocaleEnrageTimerId);
         }
 
-        SpellDesc* mLocaleEnrageSpell;
-        uint32_t mLocaleEnrageTimerId;
-
         void OnDied(Unit* /*pKiller*/) override
         {
             CreatureAIScript* mGrandWarlockAlythess = getNearestCreatureAI(CN_GRAND_WARLOCK_ALYTHESS);
@@ -334,10 +298,13 @@ class LadySacrolashAI : public CreatureAIScript
                 mGrandWarlockAlythess->sendChatMessage(CHAT_MSG_MONSTER_YELL, 12492, "Sacrolash!");
             }
         }
+
+        CreatureAISpells* mLocaleEnrageSpell;
+        uint32_t mLocaleEnrageTimerId;
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Grand Warlock Alythess
+
+
 const uint32 GRAND_WARLOCK_ALYTHESS_PYROGENICS = 45230;
 const uint32 GRAND_WARLOCK_ALYTHESS_FLAME_TOUCHED = 45348;
 const uint32 GRAND_WARLOCK_ALYTHESS_CONFLAGRATION = 45342;
@@ -350,12 +317,27 @@ class GrandWarlockAlythessAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(GrandWarlockAlythessAI);
         GrandWarlockAlythessAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(GRAND_WARLOCK_ALYTHESS_PYROGENICS, Target_Self, 100, 0, 10, 0, 50);
-            AddSpell(GRAND_WARLOCK_ALYTHESS_FLAME_TOUCHED, Target_RandomPlayerApplyAura, 10, 0, 30, 0, 50);
-            AddSpell(GRAND_WARLOCK_ALYTHESS_CONFLAGRATION, Target_RandomPlayer, 15, 3.5, 25, 0, 50, false, "Fire to the aid of shadow!", CHAT_MSG_MONSTER_YELL, 12489);
-            AddSpell(GRAND_WARLOCK_ALYTHESS_BLAZE, Target_RandomPlayer, 30, 2.5, 0, 0, 50);
-            AddSpell(GRAND_WARLOCK_ALYTHESS_FLAME_SEAR, Target_RandomPlayer, 20, 0, 0, 0, 50);
-            mLocaleEnrageSpell = AddSpell(GRAND_WARLOCK_ALYTHESS_ENRAGE, Target_Self, 0, 0, 0, 0, 0, false, "Your luck has run its course!", CHAT_MSG_MONSTER_YELL, 12493);
+            enableCreatureAISpellSystem = true;
+
+            auto pyrogenetics = addAISpell(GRAND_WARLOCK_ALYTHESS_PYROGENICS, 100.0f, TARGET_SELF, 0, 10);
+            pyrogenetics->setMinMaxDistance(0.0f, 50.0f);
+
+            auto flameTouched = addAISpell(GRAND_WARLOCK_ALYTHESS_FLAME_TOUCHED, 10.0f, TARGET_RANDOM_SINGLE, 0, 30);
+            flameTouched->setMinMaxDistance(0.0f, 50.0f);
+
+            auto conflagration = addAISpell(GRAND_WARLOCK_ALYTHESS_CONFLAGRATION, 15.0f, TARGET_RANDOM_SINGLE, 4, 25);
+            conflagration->addEmote("Fire to the aid of shadow!", CHAT_MSG_MONSTER_YELL, 12489);
+            conflagration->setMinMaxDistance(0.0f, 50.0f);
+
+            auto blaze = addAISpell(GRAND_WARLOCK_ALYTHESS_BLAZE, 30.0f, TARGET_RANDOM_SINGLE, 3, 0);
+            blaze->setMinMaxDistance(0.0f, 50.0f);
+
+            auto flameFear = addAISpell(GRAND_WARLOCK_ALYTHESS_FLAME_SEAR, 20.0f, TARGET_RANDOM_SINGLE);
+            flameFear->setMinMaxDistance(0.0f, 50.0f);
+
+            mLocaleEnrageSpell = addAISpell(GRAND_WARLOCK_ALYTHESS_ENRAGE, 0.0f, TARGET_SELF);
+            mLocaleEnrageSpell->addEmote("Your luck has run its course!", CHAT_MSG_MONSTER_YELL, 12493);
+            mLocaleEnrageSpell->setMinMaxDistance(0.0f, 50.0f);
 
             //Emotes
             addEmoteForEvent(Event_OnTargetDied, 8849);
@@ -366,7 +348,7 @@ class GrandWarlockAlythessAI : public CreatureAIScript
         {
             if (_isTimerFinished(mLocaleEnrageTimerId))
             {
-                CastSpell(mLocaleEnrageSpell);
+                _castAISpell(mLocaleEnrageSpell);
                 _removeTimer(mLocaleEnrageTimerId);
             }
         }
@@ -381,9 +363,6 @@ class GrandWarlockAlythessAI : public CreatureAIScript
             _removeTimer(mLocaleEnrageTimerId);
         }
 
-        SpellDesc* mLocaleEnrageSpell;
-        uint32_t mLocaleEnrageTimerId;
-
         void OnDied(Unit* /*pKiller*/) override
         {
             CreatureAIScript* mLadySacrolash = getNearestCreatureAI(CN_LADY_SACROLASH);
@@ -392,10 +371,12 @@ class GrandWarlockAlythessAI : public CreatureAIScript
                 mLadySacrolash->sendChatMessage(CHAT_MSG_MONSTER_YELL, 12488, "Alythess! Your fire burns within me!");
             }
         }
+
+        CreatureAISpells* mLocaleEnrageSpell;
+        uint32_t mLocaleEnrageTimerId;
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//M'uru
+
 const uint32 CN_MURU = 25741;
 const uint32 CN_SHADOWSWORD_BERSERKER = 25798;
 const uint32 CN_SHADOWSWORD_FURY_MAGE = 25799;
@@ -411,61 +392,20 @@ class MuruAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(MuruAI);
         MuruAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(MURU_NEGATIVE_ENERGY, Target_Self, 25, 0, 0);
-            AddSpell(MURU_DARKNESS, Target_Self, 20, 0, 45);
+            enableCreatureAISpellSystem = true;
 
-            //AddSpell(MURU_SUMMON_BERSERKER, Target_, 15, 3.5, 25, 0, 50);  Most of Databases don't the SQL for this yet. Also I am not sure what function are for summoning Spells :).
-            //AddSpell(MURU_SUMMON_FURY_MAGE, Target_, 30, 2.5, 0, 0, 50);
-            //AddSpell(MURU_SUMMON_VOID_SENTINEL, Target_, 20, 0, 0, 0, 50);
+            addAISpell(MURU_NEGATIVE_ENERGY, 25.0f, TARGET_SELF);
+            addAISpell(MURU_DARKNESS, 20.0f, TARGET_SELF, 0, 45);
         }
 };
 
-class ShadowswordBerserkerAI : public CreatureAIScript
-{
-        ADD_CREATURE_FACTORY_FUNCTION(ShadowswordBerserkerAI);
-        ShadowswordBerserkerAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
-};
-
-class ShadowswordFuryMageAI : public CreatureAIScript
-{
-        ADD_CREATURE_FACTORY_FUNCTION(ShadowswordFuryMageAI);
-        ShadowswordFuryMageAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
-};
-
-class VoidSentinelAI : public CreatureAIScript
-{
-        ADD_CREATURE_FACTORY_FUNCTION(VoidSentinelAI);
-        VoidSentinelAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
-};
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Entropius
-const uint32 CN_ENTROPIUS = 25840;
-
-class EntropiusAI : public CreatureAIScript
-{
-        ADD_CREATURE_FACTORY_FUNCTION(EntropiusAI);
-        EntropiusAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-            ///\todo Entropius AI Boss Script
-        }
-};
 
 void SetupSunwellPlateau(ScriptMgr* pScriptMgr)
 {
     pScriptMgr->register_creature_script(CN_SUNBLADE_PROTECTOR, &SunbladeProtectorAI::Create);
-
-    //pScriptMgr->register_creature_script(CN_KALECGOS, &SUNWELL_KALECGOS::DRAGON_KALECGOS::Create);
-    //pScriptMgr->register_creature_script(CN_SATHROVAR, &SUNWELL_KALECGOS::SATHROVAR::Create);
-    //pScriptMgr->register_creature_script(CN_DARK_ELF, &SUNWELL_KALECGOS::DARK_ELF::Create);
-    //pScriptMgr->register_dummy_spell(KALECGOS_SPECTRAL_TELEPORT, &SUNWELL_KALECGOS::HandleSpectralTeleport);
     pScriptMgr->register_creature_script(CN_BRUTALLUS, &BrutallusAI::Create);
     pScriptMgr->register_creature_script(CN_FELMYST, &FelmystAI::Create);
     pScriptMgr->register_creature_script(CN_LADY_SACROLASH, &LadySacrolashAI::Create);
     pScriptMgr->register_creature_script(CN_GRAND_WARLOCK_ALYTHESS, &GrandWarlockAlythessAI::Create);
     pScriptMgr->register_creature_script(CN_MURU, &MuruAI::Create);
-    pScriptMgr->register_creature_script(CN_SHADOWSWORD_BERSERKER, &ShadowswordBerserkerAI::Create);
-    pScriptMgr->register_creature_script(CN_SHADOWSWORD_FURY_MAGE, &ShadowswordFuryMageAI::Create);
-    pScriptMgr->register_creature_script(CN_VOID_SENTINEL, &VoidSentinelAI::Create);
-    pScriptMgr->register_creature_script(CN_ENTROPIUS, &EntropiusAI::Create);
 }

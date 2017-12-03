@@ -34,15 +34,21 @@ public:
     {
         mElizaCombatTimer = 0;
         setCanEnterCombat(false);
-        AddSpell(ELIZA_FROST_NOVA, Target_Current, 10, 0, 1, 0, 10, true);
-        AddSpell(ELIZA_FROSTBOLT, Target_Current, 20, 3, 1);
-        mSummonGuard = AddSpell(ELIZA_SUMMON_GUARD, Target_Self, 0, 0, 0);
 
+        enableCreatureAISpellSystem = true;
+
+        addAISpell(ELIZA_FROST_NOVA, 10.0f, TARGET_ATTACKING, 0, 1, false, true);
+        addAISpell(ELIZA_FROSTBOLT, 20.0f, TARGET_ATTACKING, 3, 1);
+
+        mSummonGuard = addAISpell(ELIZA_SUMMON_GUARD, 0.0f, TARGET_SELF);
+
+        mElizaGuard = nullptr;
+    }
+
+    void OnCombatStart(Unit*) override
+    {
         sendChatMessage(CHAT_MSG_MONSTER_SAY, 0, "Wait...you are not my husband. But he must have sent you. And you...look..delicious!");
         mElizaCombatTimer = _addTimer(4000);
-
-        RegisterAIUpdateEvent(1000);
-        mElizaGuard = nullptr;
     }
 
     void AIUpdate() override
@@ -58,13 +64,13 @@ public:
             mElizaGuard = getCreature()->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), 1871);
             if (mElizaGuard == nullptr)
             {
-                CastSpellNowNoScheduling(mSummonGuard);
+                _castAISpell(mSummonGuard);
             }
         }
     }
 
     uint32 mElizaCombatTimer;
-    SpellDesc* mSummonGuard;
+    CreatureAISpells* mSummonGuard;
     Creature* mElizaGuard;
 };
 
