@@ -2,6 +2,10 @@
 
 # Opensource software in this folder:
 
+## Folder: OpenSSL
+- Web: https://www.openssl.org
+- Version: 1.0.2 (2017-05-25)
+
 ## Folder: MySQL Connector/C
 - Web: http://www.mysql.com
 - Version: 6.1.11 (2017-07-13)
@@ -33,8 +37,3 @@
 ## Folder: bzip2
 - Web: http://www.bzip.org
 - Version: 1.0.6 (2010/09/20)
-
-# Everything below this is not updated to a newer version.
-
-## Folder: openssl
-- Web: https://www.openssl.org
