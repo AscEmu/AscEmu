@@ -26,38 +26,33 @@ const uint32 LAIR_BRUTE_MORTALSTRIKE = 39171;
 const uint32 LAIR_BRUTE_CLEAVE = 39174;
 const uint32 LAIR_BRUTE_CHARGE = 24193;
 
-void SpellFunc_LairBrute_Charge(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
-
 class LairBruteAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(LairBruteAI);
         LairBruteAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(LAIR_BRUTE_CLEAVE, Target_Current, 20, 0, 15, 0, 7);
-            AddSpell(LAIR_BRUTE_MORTALSTRIKE, Target_Current, 8, 0, 20, 0, 7);
-            mCharge = AddSpell(LAIR_BRUTE_CHARGE, Target_Current, 0, 0, 0, 0, 40);
-            AddSpellFunc(&SpellFunc_LairBrute_Charge, Target_Current, 7, 0, 35, 0, 40);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(LAIR_BRUTE_CLEAVE, 20.0f, TARGET_ATTACKING, 0, 15);
+            addAISpell(LAIR_BRUTE_MORTALSTRIKE, 8.0f, TARGET_ATTACKING, 0, 20);
+            addAISpell(LAIR_BRUTE_CHARGE, 7.0f, TARGET_ATTACKING, 0, 35);
         }
 
-        SpellDesc* mCharge;
+        void OnCastSpell(uint32 spellId) override
+        {
+            if (spellId == LAIR_BRUTE_CHARGE)
+            {
+                Unit* pCurrentTarget = getCreature()->GetAIInterface()->getNextTarget();
+                if (pCurrentTarget != nullptr)
+                {
+                    getCreature()->GetAIInterface()->AttackReaction(pCurrentTarget, 500);
+                    getCreature()->GetAIInterface()->setNextTarget(pCurrentTarget);
+                    getCreature()->GetAIInterface()->RemoveThreatByPtr(pCurrentTarget);
+                }
+            }
+        }
 };
 
-void SpellFunc_LairBrute_Charge(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType /*pType*/)
-{
-    LairBruteAI* pBruteAI = (pCreatureAI != NULL) ? static_cast< LairBruteAI* >(pCreatureAI) : NULL;
-    if (pBruteAI != NULL)
-    {
-        Unit* pCurrentTarget = pBruteAI->getCreature()->GetAIInterface()->getNextTarget();
-        if (pCurrentTarget != NULL && pCurrentTarget != pTarget)
-        {
-            pBruteAI->getCreature()->GetAIInterface()->AttackReaction(pTarget, 500);
-            pBruteAI->getCreature()->GetAIInterface()->setNextTarget(pTarget);
-            pBruteAI->getCreature()->GetAIInterface()->RemoveThreatByPtr(pCurrentTarget);
-        }
-
-        pBruteAI->CastSpell(pBruteAI->mCharge);
-    }
-}
 
 const uint32 CN_GRONN_PRIEST = 21350;
 const uint32 GRONN_PRIEST_PSYCHICSCREAM = 22884;
@@ -69,9 +64,15 @@ class GronnPriestAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(GronnPriestAI);
         GronnPriestAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(GRONN_PRIEST_PSYCHICSCREAM, Target_Self, 8, 0, 20);
-            AddSpell(GRONN_PRIEST_RENEW, Target_WoundedFriendly, 6, 0, 25, 0, 100);
-            AddSpell(GRONN_PRIEST_HEAL, Target_WoundedFriendly, 5, 2, 30, 0, 100);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(GRONN_PRIEST_PSYCHICSCREAM, 8.0f, TARGET_SELF, 0, 20);
+
+            auto renew = addAISpell(GRONN_PRIEST_RENEW, 8.0f, TARGET_RANDOM_FRIEND, 0, 25);
+            renew->setMinMaxDistance(0.0f, 100.0f);
+
+            auto heal = addAISpell(GRONN_PRIEST_HEAL, 8.0f, TARGET_RANDOM_FRIEND, 2, 30);
+            heal->setMinMaxDistance(0.0f, 100.0f);
         }
 };
 
@@ -85,7 +86,6 @@ const uint32 HIGH_KING_MAULGAR_ARCING_SMASH2 = 39144;
 const uint32 HIGH_KING_MAULGAR_WHIRLWIND = 33238;
 const uint32 HIGH_KING_MAULGAR_WHIRLWIND2 = 33239;
 
-void SpellFunc_Maulgar_Enrage(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
 // 4th unit sometimes cannot be found - blame cell system
 uint32 Adds[4] = { 18832, 18834, 18836, 18835 };
 
@@ -94,12 +94,20 @@ class HighKingMaulgarAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(HighKingMaulgarAI);
         HighKingMaulgarAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddPhaseSpell(2, AddSpell(HIGH_KING_MAULGAR_BERSERKER_CHARGE, Target_RandomPlayer, 10, 0, 25, 0, 40));
-            AddPhaseSpell(2, AddSpell(HIGH_KING_MAULGAR_INTIMIDATING_ROAR, Target_Current, 7, 0, 20, 0, 5));
-            AddSpell(HIGH_KING_MAULGAR_ARCING_SMASH, Target_Current, 8, 0, 15, 0, 10);
-            AddSpell(HIGH_KING_MAULGAR_WHIRLWIND, Target_Self, 7, 15, 25);                    // SpellFunc for range check?
-            AddSpell(HIGH_KING_MAULGAR_MIGHTY_BLOW, Target_Current, 7, 0, 20, 0, 5);
-            mEnrage = AddSpellFunc(&SpellFunc_Maulgar_Enrage, Target_Self, 0, 0, 0);
+            enableCreatureAISpellSystem = true;
+
+            auto charge = addAISpell(HIGH_KING_MAULGAR_BERSERKER_CHARGE, 10.0f, TARGET_RANDOM_SINGLE, 0, 25);
+            charge->setAvailableForScriptPhase({ 2 });
+            charge->setMinMaxDistance(0.0f, 40.0f);
+
+            auto roar = addAISpell(HIGH_KING_MAULGAR_INTIMIDATING_ROAR, 7.0f, TARGET_ATTACKING, 0, 20);
+            roar->setAvailableForScriptPhase({ 2 });
+
+            addAISpell(HIGH_KING_MAULGAR_ARCING_SMASH, 8.0f, TARGET_ATTACKING,  0, 15);
+            addAISpell(HIGH_KING_MAULGAR_WHIRLWIND, 7.0f, TARGET_SELF, 15, 25);                    // SpellFunc for range check?
+            addAISpell(HIGH_KING_MAULGAR_MIGHTY_BLOW, 7.0f, TARGET_ATTACKING, 0, 20);
+
+            mEnrage = addAISpell(HIGH_KING_MAULGAR_FLURRY, 2.0f, TARGET_SELF, 0, 60);
             mEnrage->addEmote("You will not defeat the hand of Gruul!", CHAT_MSG_MONSTER_YELL, 11368);
 
             addEmoteForEvent(Event_OnCombatStart, 8806);
@@ -168,7 +176,7 @@ class HighKingMaulgarAI : public CreatureAIScript
             switch (phaseId)
             {
                 case 2:
-                    CastSpellNowNoScheduling(mEnrage);
+                    _castAISpell(mEnrage);
                     break;
                 default:
                     break;
@@ -212,18 +220,9 @@ class HighKingMaulgarAI : public CreatureAIScript
 
         uint32 mAliveAdds;
         int32 mLastYell;
-        SpellDesc* mEnrage;
+        CreatureAISpells* mEnrage;
 };
 
-void SpellFunc_Maulgar_Enrage(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* /*pTarget*/, TargetType /*pType*/)
-{
-    HighKingMaulgarAI* pMaulgarAI = (pCreatureAI != nullptr) ? static_cast< HighKingMaulgarAI* >(pCreatureAI) : nullptr;
-    if (pMaulgarAI != nullptr)
-    {
-        pMaulgarAI->_applyAura(HIGH_KING_MAULGAR_FLURRY);
-        pMaulgarAI->_setDisplayWeapon(false, false);
-    }
-}
 
 const uint32 CN_KIGGLER_THE_CRAZED = 18835;
 const uint32 KIGGLER_THE_CRAZED_LIGHTNING_BOLT = 36152;
@@ -236,10 +235,12 @@ class KigglerTheCrazedAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(KigglerTheCrazedAI);
         KigglerTheCrazedAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(KIGGLER_THE_CRAZED_LIGHTNING_BOLT, Target_Current, 70, 2, 0, 0, 40);
-            AddSpell(KIGGLER_THE_CRAZED_GREATER_POLYMORPH, Target_RandomPlayer, 8, 0, 15, 0, 30);    // Additional SpellFunc for removing target from target list if there are different targets?
-            AddSpell(KIGGLER_THE_CRAZED_ARCANE_EXPLOSION, Target_Self, 8, 0, 20);
-            AddSpell(KIGGLER_THE_CRAZED_ARCANE_SHOCK, Target_RandomPlayer, 10, 0, 15, 0, 30);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(KIGGLER_THE_CRAZED_LIGHTNING_BOLT, 70.0f, TARGET_ATTACKING, 2, 0);
+            addAISpell(KIGGLER_THE_CRAZED_GREATER_POLYMORPH, 8.0f, TARGET_RANDOM_SINGLE, 0, 15);
+            addAISpell(KIGGLER_THE_CRAZED_ARCANE_EXPLOSION, 8.0f, TARGET_SELF, 0, 20);
+            addAISpell(KIGGLER_THE_CRAZED_ARCANE_SHOCK, 10.0f, TARGET_RANDOM_SINGLE, 0, 15);
         }
 
         void OnCombatStart(Unit* pTarget) override
@@ -285,9 +286,11 @@ class BlindeyeTheSeerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(BlindeyeTheSeerAI);
         BlindeyeTheSeerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(BLINDEYE_THE_SEER_PRAYER_OF_HEALING, Target_Self, 5, 4, 30);                // Affects players? Core bugzor?
-            AddSpell(BLINDEYE_THE_SEER_GREAT_POWER_WORD_SHIELD, Target_Self, 8, 0, 30);            // Strategies don't say anything about buffing friends
-            AddSpell(BLINDEYE_THE_SEER_HEAL, Target_WoundedFriendly, 8, 1.5, 25);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(BLINDEYE_THE_SEER_PRAYER_OF_HEALING, 5.0f, TARGET_SELF, 4, 30);
+            addAISpell(BLINDEYE_THE_SEER_GREAT_POWER_WORD_SHIELD, 8.0f, TARGET_SELF, 0, 30);
+            addAISpell(BLINDEYE_THE_SEER_HEAL, 8.0f, TARGET_RANDOM_FRIEND,2, 25);
         }
 
         void OnDied(Unit* /*mKiller*/) override
@@ -311,9 +314,11 @@ class OlmTheSummonerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(OlmTheSummonerAI);
         OlmTheSummonerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(OLM_THE_SUMMONER_DEATH_COIL, Target_RandomPlayer, 7, 0, 10, 0, 30);
-            AddSpell(OLM_THE_SUMMONER_SUMMON_WILD_FELHUNTER, Target_Self, 7, 3, 15);
-            AddSpell(OLM_THE_SUMMONER_DARK_DECAY, Target_RandomPlayer, 10, 0, 6);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(OLM_THE_SUMMONER_DEATH_COIL, 7.0f, TARGET_RANDOM_SINGLE, 0, 10);
+            addAISpell(OLM_THE_SUMMONER_SUMMON_WILD_FELHUNTER, 7.0f, TARGET_SELF, 3, 15);
+            addAISpell(OLM_THE_SUMMONER_DARK_DECAY, 10.0f, TARGET_RANDOM_SINGLE, 0, 6);
         }
 
         void OnDied(Unit* /*mKiller*/) override
@@ -335,7 +340,9 @@ class WildFelStalkerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(WildFelStalkerAI);
         WildFelStalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(WILD_FEL_STALKER_WILD_BITE, Target_Current, 10, 0, 10, 0, 5);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(WILD_FEL_STALKER_WILD_BITE, 10.0f, TARGET_ATTACKING, 0, 10);
             AggroRandomPlayer(200);
         }
 };
@@ -356,10 +363,12 @@ class KroshFirehandAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(KroshFirehandAI);
         KroshFirehandAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            enableCreatureAISpellSystem = true;
+
             //spells
-            mBlastWave = AddSpell(BALST_WAVE, Target_Self, 0, 0, 0, 0, 15);
-            AddSpell(GREAT_FIREBALL, Target_Current, 100, 3, 0, 0, 100);
-            mSpellShield = AddSpell(SPELLSHIELD, Target_Self, 0, 0, 0);
+            mBlastWave = addAISpell(BALST_WAVE, 0.0f, TARGET_SELF, 0, 15);
+            addAISpell(GREAT_FIREBALL, 100.0f, TARGET_ATTACKING, 3, 0);
+            mSpellShield = addAISpell(SPELLSHIELD, 0.0f, TARGET_SELF, 0, 0);
 
             mEventTimer = _addTimer(30000);
             mBlastWaveTimer = -1;
@@ -368,7 +377,7 @@ class KroshFirehandAI : public CreatureAIScript
 
         void OnCombatStart(Unit* /*pTarget*/) override
         {
-            CastSpellNowNoScheduling(mSpellShield); 
+            _castAISpell(mSpellShield);
         }
 
         void AIUpdate() override
@@ -380,7 +389,7 @@ class KroshFirehandAI : public CreatureAIScript
                     Unit* unit = GetBestUnitTarget(TargetFilter_Closest);
                     if (unit && getRangeToObject(unit) < 15.0f)
                     {
-                        CastSpellNowNoScheduling(mBlastWave);
+                        _castAISpell(mBlastWave);
                         if (mBlastWaveTimer == -1)
                             mBlastWaveTimer = _addTimer(6000);
                         else
@@ -393,7 +402,7 @@ class KroshFirehandAI : public CreatureAIScript
                 if (_isTimerFinished(mEventTimer))
                 {
                     _resetTimer(mEventTimer, 30000);
-                    CastSpellNowNoScheduling(mSpellShield);
+                    _castAISpell(mSpellShield);
                 }
             }
         }
@@ -408,8 +417,8 @@ class KroshFirehandAI : public CreatureAIScript
             }
         }
 
-        SpellDesc* mSpellShield;
-        SpellDesc* mBlastWave;
+        CreatureAISpells* mSpellShield;
+        CreatureAISpells* mBlastWave;
         int32 mEventTimer;
         int32 mBlastWaveTimer;
 };
@@ -434,19 +443,24 @@ class GruulTheDragonkillerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(GruulTheDragonkillerAI);
         GruulTheDragonkillerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            mHurtfulStrike = AddSpell(GRUUL_THE_DRAGONKILLER_HURTFUL_STRIKE, Target_Current, 0, 0, 0, 0, 8);
-            mGroundSlam = AddSpell(GRUUL_THE_DRAGONKILLER_GROUND_SLAM, Target_Self, 0, 1, 0);
+            enableCreatureAISpellSystem = true;
+
+            mHurtfulStrike = addAISpell(GRUUL_THE_DRAGONKILLER_HURTFUL_STRIKE, 0.0f, TARGET_ATTACKING, 0, 8);
+
+            mGroundSlam = addAISpell(GRUUL_THE_DRAGONKILLER_GROUND_SLAM, 6.0f, TARGET_SELF, 1, 35);
             mGroundSlam->addEmote("Scurry.", CHAT_MSG_MONSTER_YELL, 11356);
             mGroundSlam->addEmote("No escape.", CHAT_MSG_MONSTER_YELL, 11357);
-            mGroundSlam2 = AddSpell(GRUUL_THE_DRAGONKILLER_GROUND_SLAM2, Target_Self, 0, 1, 0);
-            mStoned = AddSpellFunc(&SpellFunc_Gruul_Stoned, Target_Self, 0, 2, 0);
-            mShatter = AddSpellFunc(&SpellFunc_Gruul_Shatter, Target_Self, 0, 3, 0);
-            mShatter2 = AddSpell(GRUUL_THE_DRAGONKILLER_SHATTER, Target_Self, 0, 1, 0);
+
+            mGroundSlam2 = addAISpell(GRUUL_THE_DRAGONKILLER_GROUND_SLAM2, 0.0f, TARGET_SELF, 1, 0);
+
+            mShatter2 = addAISpell(GRUUL_THE_DRAGONKILLER_SHATTER, 0.0f, TARGET_SELF, 0, 1, 0);
             mShatter2->addEmote("Stay...", CHAT_MSG_MONSTER_YELL, 11358);
             mShatter2->addEmote("Beg for life.", CHAT_MSG_MONSTER_YELL, 11359);
-            AddSpell(GRUUL_THE_DRAGONKILLER_REVERBERATION, Target_Self, 4, 0, 30);
-            AddSpell(GRUUL_THE_DRAGONKILLER_CAVE_IN, Target_RandomPlayerDestination, 7, 0, 25);
-            AddSpellFunc(&SpellFunc_Gruul_GroundSlam, Target_Self, 6, 1, 35);
+
+            addAISpell(GRUUL_THE_DRAGONKILLER_REVERBERATION, TARGET_SELF, 4, 0, 30);
+            addAISpell(GRUUL_THE_DRAGONKILLER_CAVE_IN, TARGET_RANDOM_DESTINATION, 7, 0, 25);
+
+            //addAISpell(&SpellFunc_Gruul_GroundSlam, TARGET_SELF, 6, 1, 35);
 
             addEmoteForEvent(Event_OnCombatStart, 8811);
             addEmoteForEvent(Event_OnTargetDied, 8812);
@@ -467,6 +481,16 @@ class GruulTheDragonkillerAI : public CreatureAIScript
             GameObject* pGate = getNearestGameObject(166.897f, 368.226f, 16.9209f, 184662);
             if (pGate != NULL)
                 pGate->SetState(GO_STATE_CLOSED);
+        }
+
+        void OnCastSpell(uint32 spellId) override
+        {
+            if (spellId == GRUUL_THE_DRAGONKILLER_GROUND_SLAM)
+            {
+                _castAISpell(mGroundSlam);
+                _castAISpell(mGroundSlam2);
+                _castAISpell(mStoned);
+            }
         }
 
         void OnCombatStop(Unit* /*pTarget*/) override
@@ -517,8 +541,6 @@ class GruulTheDragonkillerAI : public CreatureAIScript
                             Player* pPlayer = static_cast< Player* >(*itr);
                             if (!pPlayer->isAlive())
                                 continue;
-//                        if (pPlayer->m_auracount[SPELL_AURA_MOD_INVISIBILITY])
-//                            continue;
                             if (pPlayer->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH))
                                 continue;
                             if (getRangeToObject(pPlayer) > 8.0f)
@@ -530,7 +552,7 @@ class GruulTheDragonkillerAI : public CreatureAIScript
                         }
 
                         if (pTarget == pCurrentTarget)
-                            CastSpellNowNoScheduling(mHurtfulStrike);
+                            _castAISpell(mHurtfulStrike);
                         else
                             getCreature()->CastSpell(pTarget, GRUUL_THE_DRAGONKILLER_HURTFUL_STRIKE, true);
                     }
@@ -558,61 +580,13 @@ class GruulTheDragonkillerAI : public CreatureAIScript
         int32 mHurtfulTimer;
         int32 mGrowthTimer;
 
-        SpellDesc* mHurtfulStrike;
-        SpellDesc* mGroundSlam;
-        SpellDesc* mGroundSlam2;
-        SpellDesc* mStoned;
-        SpellDesc* mShatter;
-        SpellDesc*  mShatter2;
+        CreatureAISpells* mHurtfulStrike;
+        CreatureAISpells* mGroundSlam;
+        CreatureAISpells* mGroundSlam2;
+        CreatureAISpells* mStoned;
+        CreatureAISpells* mShatter;
+        CreatureAISpells* mShatter2;
 };
-
-void SpellFunc_Gruul_GroundSlam(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* /*pTarget*/, TargetType /*pType*/)
-{
-    GruulTheDragonkillerAI* pGruul = (pCreatureAI != NULL) ? static_cast< GruulTheDragonkillerAI* >(pCreatureAI) : NULL;
-    if (pGruul != NULL)
-    {
-        pGruul->CastSpellNowNoScheduling(pGruul->mGroundSlam);
-        pGruul->CastSpell(pGruul->mGroundSlam2);
-        pGruul->CastSpell(pGruul->mStoned);
-    }
-}
-
-void SpellFunc_Gruul_Stoned(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType /*pType*/)
-{
-    GruulTheDragonkillerAI* pGruul = (pCreatureAI != NULL) ? static_cast< GruulTheDragonkillerAI* >(pCreatureAI) : NULL;
-    if (pGruul != NULL)
-    {
-        UnitArray TargetArray = pGruul->GetInRangePlayers();
-        if (TargetArray.size() > 0)
-        {
-            for (size_t i = 0; i < TargetArray.size(); ++i)
-            {
-                Unit* target = TargetArray[i];
-                pTarget->CastSpell(target, GRUUL_THE_DRAGONKILLER_STONED, true);
-            }
-        }
-
-        pGruul->CastSpell(pGruul->mShatter);
-    }
-}
-
-void SpellFunc_Gruul_Shatter(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* /*pTarget*/, TargetType /*pType*/)
-{
-    GruulTheDragonkillerAI* pGruul = (pCreatureAI != NULL) ? static_cast< GruulTheDragonkillerAI* >(pCreatureAI) : NULL;
-    if (pGruul != NULL)
-    {
-        pGruul->CastSpell(pGruul->mShatter2);    // Spell to script
-        UnitArray TargetArray = pGruul->GetInRangePlayers();
-        if (TargetArray.size() > 0)
-        {
-            for (size_t i = 0; i < TargetArray.size(); ++i)
-            {
-                Unit* target = TargetArray[i];
-                target->RemoveAura(GRUUL_THE_DRAGONKILLER_STONED);
-            }
-        }
-    }
-}
 
 void SetupGruulsLair(ScriptMgr* mgr)
 {

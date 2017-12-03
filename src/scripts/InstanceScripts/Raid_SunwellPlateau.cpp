@@ -47,7 +47,7 @@ class SunbladeProtectorAI : public CreatureAIScript
         {
             enableCreatureAISpellSystem = true;
 
-            auto felLightning = addAISpell(SUNBLADE_PROTECTOR_FEL_LIGHTNING, 100.0f, TARGET_RANDOM_SINGLE, 0, 15, 0, 60);
+            auto felLightning = addAISpell(SUNBLADE_PROTECTOR_FEL_LIGHTNING, 100.0f, TARGET_RANDOM_SINGLE, 0, 15);
             felLightning->setMinMaxDistance(0.0f, 60.0f);
         }
 };

@@ -33,6 +33,8 @@ class SporeAI;
 class PortalOfShadowsAI;
 class DeathKnightUnderstudyAI;
 
+
+
 /////////////////////////////////////////////////////////////////////////////////
 ////// The Arachnid Quarter
 
@@ -295,8 +297,8 @@ class GrandWidowFaerlinaAI : public CreatureAIScript
 
     std::set< NaxxramasWorshipperAI* > mWorshippers;
     std::set< NaxxramasFollowerAI* > mFollowers;
-    SpellDesc* mFrenzy;
-    SpellDesc* mPoisonVolleyBolt;
+    CreatureAISpells* mFrenzy;
+    CreatureAISpells* mPoisonVolleyBolt;
     int32 mFrenzyTimer;
     int32 mPoisonVolleyBoltTimer;
 };
@@ -372,11 +374,11 @@ class AnubRekhanAI : public CreatureAIScript
     std::set< CorpseScarabAI* > mScarabs;
     std::set< CryptGuardAI* > mCryptGuards;
     std::set< uint32 > mUsedCorpseGuids;
-    SpellDesc* mLocustSwarm;
+    CreatureAISpells* mLocustSwarm;
     int32 mLocustSwarmTimer;
     uint32 mCryptSpawnTimer;
 
-    SpellDesc* mLocaleEnrageSpell;
+    CreatureAISpells* mLocaleEnrageSpell;
     uint32_t mLocaleEnrageTimerId;
 };
 
@@ -419,7 +421,7 @@ class StoneskinGargoyleAI : public CreatureAIScript
     bool HasStoneskin();
     void AIUpdate() override;
 
-    SpellDesc* mStoneskin;
+    CreatureAISpells* mStoneskin;
 };
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -851,7 +853,7 @@ class DeathchargerSteedAI : public CreatureAIScript
     void Destroy() override;
 
     DeathKnightCavalierAI* mDeathKnightAI;
-    SpellDesc* mCharge;
+    CreatureAISpells* mCharge;
 };
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -1213,7 +1215,7 @@ class PatchwerkAI : public CreatureAIScript
     }
 
     bool    mEnraged;
-    SpellDesc* mLocaleEnrageSpell;
+    CreatureAISpells* mLocaleEnrageSpell;
     uint32_t mLocaleEnrageTimerId;
 };
 

@@ -28,7 +28,6 @@ const uint32 CN_CORERAGER = 11672;
 const uint32 MANGLE = 19820; // 1 target
 // put full HP if less 50% and golemagg is still alive
 
-// Golemagg AI
 class CoreRagerAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(CoreRagerAI);
@@ -90,7 +89,6 @@ const uint32 INSPIRE = 19779;
 const uint32 FLAME_SPEAR = 19781;
 // needs a aoe knockback 19780?
 
-// Sulfuron Harbringer AI
 class SulfuronAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(SulfuronAI);
@@ -202,7 +200,6 @@ const uint32 SUMMON_SONS_OF_FLAMES = 21108; //\todo  DUMMY :P summon the sons of
 //Ragnaros Submerge Visual -> 20567
 //Ragnaros Emerge -> 20568
 
-// Ragnaros AI
 class RagnarosAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(RagnarosAI);
@@ -317,8 +314,6 @@ class RagnarosAI : public CreatureAIScript
  - Core Hound packs aren't in pack, so they don't rez each other
 */
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Molten Giant AI Script
 const uint32 CN_MOLTENGIANT = 11658;
 const uint32 MOLTENGIANT_STOMP = 31900;   //to verify
 const uint32 MOLTENGIANT_KNOCKBACK = 30056;   //to verify
@@ -328,13 +323,13 @@ class MoltenGiantAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(MoltenGiantAI);
         MoltenGiantAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(MOLTENGIANT_STOMP, Target_Current, 10, 0, 5);
-            AddSpell(MOLTENGIANT_KNOCKBACK, Target_Self, 10, 0, 5);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(MOLTENGIANT_STOMP, 10.0f, TARGET_ATTACKING, 0, 5);
+            addAISpell(MOLTENGIANT_KNOCKBACK, 10.0f, TARGET_SELF, 0, 5);
         }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Molten Destroyer AI Script
 const uint32 CN_MOLTENDESTROYER = 11659;
 const uint32 MOLTENDESTROYER_MASSIVE_TREMOR = 19129;    //to verify
 //const uint32 MOLTENDESTROYER_SMASH_ATTACK    ?
@@ -345,14 +340,13 @@ class MoltenDestroyerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(MoltenDestroyerAI);
         MoltenDestroyerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(MOLTENDESTROYER_MASSIVE_TREMOR, Target_Self, 12.5f, 0, 0);
-//        AddSpell(MOLTENDESTROYER_SMASH_ATTACK, Target_Self, 10, 0, 0);
-            AddSpell(MOLTENDESTROYER_KNOCKDOWN, Target_Current, 12.5f, 0, 0);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(MOLTENDESTROYER_MASSIVE_TREMOR, 12.5f, TARGET_SELF, 0, 0);
+            addAISpell(MOLTENDESTROYER_KNOCKDOWN, 12.5f, TARGET_ATTACKING, 0, 0);
         }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Firelord AI Script
 const uint32 CN_FIRELORD = 11668;
 const uint32 FIRELORD_SUMMON_LAVA_SPAWN = 19392;
 const uint32 FIRELORD_SOUL_BURN = 19393;
@@ -362,25 +356,14 @@ class FirelordAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(FirelordAI);
         FirelordAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(FIRELORD_SUMMON_LAVA_SPAWN, Target_Self, 20, 0, 10);
-            AddSpell(FIRELORD_SOUL_BURN, Target_RandomPlayer, 20, 0, 5);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(FIRELORD_SUMMON_LAVA_SPAWN, 20.0f, TARGET_SELF, 0, 10);
+            addAISpell(FIRELORD_SOUL_BURN, 20.0f, TARGET_RANDOM_SINGLE, 0, 5);
         }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Lava Annihilator AI Script
-const uint32 CN_LAVAANNIHILATOR = 11665;
 
-class LavaAnnihilatorAI : public CreatureAIScript
-{
-        ADD_CREATURE_FACTORY_FUNCTION(LavaAnnihilatorAI);
-        LavaAnnihilatorAI(Creature* pCreature) : CreatureAIScript(pCreature)
-        {
-        }
-};
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Ancient Core Hound AI Script
 const uint32 CN_ANCIENTCOREHOUND = 11673;
 const uint32 ANCIENTCOREHOUND_LAVA_BREATH = 19272;
 const uint32 ANCIENTCOREHOUND_VICIOUS_BITE = 19319;
@@ -396,36 +379,36 @@ class AncientCoreHoundAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(AncientCoreHoundAI);
         AncientCoreHoundAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(ANCIENTCOREHOUND_LAVA_BREATH, Target_Self, 20, 0, 3);
-            AddSpell(ANCIENTCOREHOUND_VICIOUS_BITE, Target_Self, 20, 0, 0);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(ANCIENTCOREHOUND_LAVA_BREATH, 20.0f, TARGET_SELF, 0, 3);
+            addAISpell(ANCIENTCOREHOUND_VICIOUS_BITE, 20.0f, TARGET_SELF, 0, 0);
 
             //Each Ancient Core Hound have only one of the following spell
             switch (RandomUInt(5))
             {
                 case 0:
-                    AddSpell(ANCIENTCOREHOUND_GROUND_STOMP, Target_Self, 20, 0, 15);
+                    addAISpell(ANCIENTCOREHOUND_GROUND_STOMP, 20.0f, TARGET_SELF, 0, 15);
                     break;
                 case 1:
-                    AddSpell(ANCIENTCOREHOUND_ANCIENT_DREAD, Target_Self, 20, 0, 15);
+                    addAISpell(ANCIENTCOREHOUND_ANCIENT_DREAD, 20.0f, TARGET_SELF, 0, 15);
                     break;
                 case 2:
-                    AddSpell(ANCIENTCOREHOUND_ANCIENT_DESPAIR, Target_Self, 20, 0, 15);
+                    addAISpell(ANCIENTCOREHOUND_ANCIENT_DESPAIR, 20.0f, TARGET_SELF, 0, 15);
                     break;
                 case 3:
-                    AddSpell(ANCIENTCOREHOUND_CAUTERIZING_FLAMES, Target_Self, 20, 0, 15);
+                    addAISpell(ANCIENTCOREHOUND_CAUTERIZING_FLAMES, 20.0f, TARGET_SELF, 0, 15);
                     break;
                 case 4:
-                    AddSpell(ANCIENTCOREHOUND_WITHERING_HEAT, Target_Self, 20, 0, 15);
+                    addAISpell(ANCIENTCOREHOUND_WITHERING_HEAT, 20.0f, TARGET_SELF, 0, 15);
                     break;
                 case 5:
-                    AddSpell(ANCIENTCOREHOUND_ANCIENT_HYSTERIA, Target_Self, 20, 0, 15);
+                    addAISpell(ANCIENTCOREHOUND_ANCIENT_HYSTERIA, 20.0f, TARGET_SELF, 0, 15);
                     break;
             }
         }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Lava Surger AI Script
 const uint32 CN_LAVASURGER = 12101;
 const uint32 LAVASURGER_SURGE = 25787;
 
@@ -434,12 +417,12 @@ class LavaSurgerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(LavaSurgerAI);
         LavaSurgerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(LAVASURGER_SURGE, Target_RandomUnit, 20, 0, 5, 0, 40);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(LAVASURGER_SURGE, 20.0f, TARGET_RANDOM_SINGLE, 0, 5);
         }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Flame Imp AI Script
 const uint32 CN_FLAMEIMP = 11669;
 const uint32 FLAMEIMP_FIRE_NOVA = 20602;   //corrected http://www.wowhead.com/?npc=11669#abilities
 
@@ -448,12 +431,12 @@ class FlameImpAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(FlameImpAI);
         FlameImpAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(FLAMEIMP_FIRE_NOVA, Target_Current, 25, 0, 0);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(FLAMEIMP_FIRE_NOVA, 25.0f, TARGET_ATTACKING, 0, 0);
         }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Core Hound AI Script
 const uint32 CN_COREHOUND = 11671;
 const uint32 COREHOUND_SERRATED_BITE = 19771;
 
@@ -462,12 +445,12 @@ class CoreHoundAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(CoreHoundAI);
         CoreHoundAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(COREHOUND_SERRATED_BITE, Target_RandomPlayer, 10, 0, 0, 0, 10);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(COREHOUND_SERRATED_BITE, 10.0f, TARGET_RANDOM_SINGLE, 0, 0);
         }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Lava Reaver AI Script
 const uint32 CN_LAVAREAVER = 12100;
 const uint32 LAVAREAVER_CLEAVE = 20691;
 
@@ -476,12 +459,12 @@ class LavaReaverAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(LavaReaverAI);
         LavaReaverAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(LAVAREAVER_CLEAVE, Target_Current, 20, 0, 0, 0, 15);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(LAVAREAVER_CLEAVE, 20.0f, TARGET_ATTACKING, 0, 0);
         }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Lava Elemental AI Script
 const uint32 CN_LAVAELEMENTAL = 12076;
 const uint32 LAVAELEMENTAL_PYROCLAST_BARRAGE = 19641;
 
@@ -490,12 +473,12 @@ class LavaElementalAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(LavaElementalAI);
         LavaElementalAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(LAVAELEMENTAL_PYROCLAST_BARRAGE, Target_Self, 10, 0, 10);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(LAVAELEMENTAL_PYROCLAST_BARRAGE, 10.0f, TARGET_SELF, 0, 10);
         }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Flameguard AI Script
 const uint32 CN_FLAMEGUARD = 11667;
 const uint32 FLAMEGUARD_FIRE_SHIELD = 19627;
 const uint32 FLAMEGUARD_FLAMES = 19628;
@@ -505,20 +488,20 @@ class FlameguardAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(FlameguardAI);
         FlameguardAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(FLAMEGUARD_FIRE_SHIELD, Target_Self, 100, 0, 0);
-            mFlames = AddSpell(FLAMEGUARD_FLAMES, Target_Self, 0, 0, 0);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(FLAMEGUARD_FIRE_SHIELD, 100.0f, TARGET_SELF, 0, 0);
+            mFlames = addAISpell(FLAMEGUARD_FLAMES, 0.0f, TARGET_SELF, 0, 0);
         }
 
         void OnDied(Unit* /*pKiller*/) override
         {
-            CastSpellNowNoScheduling(mFlames);
+            _castAISpell(mFlames);
         }
 
-        SpellDesc* mFlames;
+        CreatureAISpells* mFlames;
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Firewalker AI Script
 const uint32 CN_FIREWALKER = 11666;
 const uint32 FIREWALKER_MELT_ARMOR = 19631;
 const uint32 FIREWALKER_INCITE_FLAMES = 19635;
@@ -529,14 +512,14 @@ class FirewalkerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(FirewalkerAI);
         FirewalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(FIREWALKER_MELT_ARMOR, Target_Self, 10, 0, 0);
-            AddSpell(FIREWALKER_INCITE_FLAMES, Target_Self, 10, 0, 0);
-            AddSpell(FIREWALKER_FIRE_BLOSSOM, Target_Self, 10, 0, 0);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(FIREWALKER_MELT_ARMOR, 10.0f, TARGET_SELF, 0, 0);
+            addAISpell(FIREWALKER_INCITE_FLAMES, 10.0f, TARGET_SELF, 0, 0);
+            addAISpell(FIREWALKER_FIRE_BLOSSOM, 10.0f, TARGET_SELF, 0, 0);
         }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Lucifron AI Script
 const uint32 CN_LUCIFRON = 12118;
 const uint32 LUCIFRON_IMPEDING_DOOM = 19702;
 const uint32 LUCIFRON_LUCIFRONS_CURSE = 19703;
@@ -547,14 +530,14 @@ class LucifronAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(LucifronAI);
         LucifronAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(LUCIFRON_IMPEDING_DOOM, Target_Self, 8, 0, 0);
-            AddSpell(LUCIFRON_LUCIFRONS_CURSE, Target_Self, 8, 0, 0);
-            AddSpell(LUCIFRON_SHADOW_SHOCK, Target_Self, 8, 0, 0);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(LUCIFRON_IMPEDING_DOOM, 8.0f, TARGET_SELF, 0, 0);
+            addAISpell(LUCIFRON_LUCIFRONS_CURSE, 8.0f, TARGET_SELF, 0, 0);
+            addAISpell(LUCIFRON_SHADOW_SHOCK, 8.0f, TARGET_SELF, 0, 0);
         }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Flamewaker Protector AI Script
 const uint32 CN_FLAMEWAKERPROTECTOR = 12119;
 const uint32 FLAMEWAKERPROTECTOR_CLEAVE = 20691;
 const uint32 FLAMEWAKERPROTECTOR_DOMINATE_MIND = 20740;    //to verify
@@ -564,13 +547,13 @@ class FlamewakerProtectorAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(FlamewakerProtectorAI);
         FlamewakerProtectorAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(FLAMEWAKERPROTECTOR_CLEAVE, Target_Current, 8, 0, 0, 0, 15);
-            AddSpell(FLAMEWAKERPROTECTOR_DOMINATE_MIND, Target_RandomPlayer, 4, 0, 0, 0, 20);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(FLAMEWAKERPROTECTOR_CLEAVE, 8.0f, TARGET_ATTACKING, 0, 0);
+            addAISpell(FLAMEWAKERPROTECTOR_DOMINATE_MIND, 4.0f, TARGET_RANDOM_SINGLE, 0, 0);
         }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Magmadar AI Script
 const uint32 CN_MAGMADAR = 11982;
 const uint32 MAGMADAR_MAGMA_SPIT = 19450;   //aura doesnt work
 const uint32 MAGMADAR_LAVA_BREATH = 19272;   //to verify
@@ -582,15 +565,15 @@ class MagmadarAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(MagmadarAI);
         MagmadarAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(MAGMADAR_MAGMA_SPIT, Target_Self, 8, 0, 0);
-            AddSpell(MAGMADAR_LAVA_BREATH, Target_Self, 8, 0, 0);
-            AddSpell(MAGMADAR_PANIC, Target_Self, 8, 0, 0);
-            AddSpell(MAGMADAR_LAVA_BOMB, Target_RandomPlayer, 8, 0, 0, 0, 100);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(MAGMADAR_MAGMA_SPIT, 8.0f, TARGET_SELF, 0, 0);
+            addAISpell(MAGMADAR_LAVA_BREATH, 8.0f, TARGET_SELF, 0, 0);
+            addAISpell(MAGMADAR_PANIC, 8.0f, TARGET_SELF, 0, 0);
+            addAISpell(MAGMADAR_LAVA_BOMB, 8.0f, TARGET_RANDOM_SINGLE, 0, 0);
         }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Gehennas AI Script
 const uint32 CN_GEHENNAS = 12259;
 const uint32 GEHENNAS_SHADOW_BOLT = 29317;   //to verify
 const uint32 GEHENNAS_GEHENNAS_CURSE = 19716;
@@ -601,14 +584,14 @@ class GehennasAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(GehennasAI);
         GehennasAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(GEHENNAS_SHADOW_BOLT, Target_RandomPlayer, 8, 0, 0, 0, 45);
-            AddSpell(GEHENNAS_GEHENNAS_CURSE, Target_Self, 8, 0, 0);
-            AddSpell(GEHENNAS_RAIN_OF_FIRE, Target_RandomPlayerDestination, 4, 0, 0, 0, 40);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(GEHENNAS_SHADOW_BOLT, 8.0f, TARGET_RANDOM_SINGLE, 0, 0);
+            addAISpell(GEHENNAS_GEHENNAS_CURSE, 8.0f, TARGET_SELF, 0, 0);
+            addAISpell(GEHENNAS_RAIN_OF_FIRE, 4.0f, TARGET_RANDOM_DESTINATION, 0, 0);
         }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Flamewaker AI Script
 const uint32 CN_FLAMEWAKER = 11661;
 const uint32 FLAMEWAKER_SUNDER_ARMOR = 25051;
 const uint32 FLAMEWAKER_FIST_OF_RAGNAROS = 20277;
@@ -619,14 +602,14 @@ class FlamewakerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(FlamewakerAI);
         FlamewakerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(FLAMEWAKER_SUNDER_ARMOR, Target_Current, 8, 0, 0);
-            AddSpell(FLAMEWAKER_FIST_OF_RAGNAROS, Target_Self, 8, 0, 0);
-            AddSpell(FLAMEWAKER_STRIKE, Target_Current, 14, 0, 0);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(FLAMEWAKER_SUNDER_ARMOR, 8.0f, TARGET_ATTACKING, 0, 0);
+            addAISpell(FLAMEWAKER_FIST_OF_RAGNAROS, 8.0f, TARGET_SELF, 0, 0);
+            addAISpell(FLAMEWAKER_STRIKE, 14.0f, TARGET_ATTACKING, 0, 0);
         }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Garr AI Script
 const uint32 CN_GARR = 12057;
 const uint32 GARR_ANTIMAGIC_PULSE = 19492;
 const uint32 GARR_MAGMA_SHACKES = 19496;
@@ -636,13 +619,14 @@ class GarrAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(GarrAI);
         GarrAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(GARR_ANTIMAGIC_PULSE, Target_Self, 10, 0, 0);
-            AddSpell(GARR_MAGMA_SHACKES, Target_Self, 10, 0, 0);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(GARR_ANTIMAGIC_PULSE, 10.0f, TARGET_SELF, 0, 0);
+            addAISpell(GARR_MAGMA_SHACKES, 10.0f, TARGET_SELF, 0, 0);
         }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Firesworn AI Script
+
 const uint32 CN_FIRESWORN = 12099;
 const uint32 FIRESWORN_IMMOLATE = 20294;
 const uint32 FIRESWORN_ERUPTION = 19497;
@@ -655,10 +639,12 @@ class FireswornAI : public CreatureAIScript
         {
             mGarr = nullptr;
 
+            enableCreatureAISpellSystem = true;
+
             //Spells
-            AddSpell(FIRESWORN_IMMOLATE, Target_Current, 10, 0, 0, 0, 40);
-            mEruption = AddSpell(FIRESWORN_ERUPTION, Target_Self, 0, 0, 0);
-            mSeparationAnxiety = AddSpell(FIRESWORN_SEPARATION_ANXIETY, Target_Self, 0, 5, 5);
+            addAISpell(FIRESWORN_IMMOLATE, 10.0f, TARGET_ATTACKING, 0, 0);
+            mEruption = addAISpell(FIRESWORN_ERUPTION, 0.0f, TARGET_SELF, 0, 0);
+            mSeparationAnxiety = addAISpell(FIRESWORN_SEPARATION_ANXIETY, 0.0f, TARGET_SELF, 5, 5);
         }
 
         void OnCombatStart(Unit* /*pTarget*/) override
@@ -668,24 +654,22 @@ class FireswornAI : public CreatureAIScript
 
         void OnDied(Unit* /*pKiller*/) override
         {
-            CastSpellNowNoScheduling(mEruption);
+            _castAISpell(mEruption);
         }
 
         void AIUpdate() override
         {
             if (mGarr && mGarr->isAlive() && getRangeToObject(mGarr->getCreature()) > 100)
             {
-                CastSpell(mSeparationAnxiety);
+                _castAISpell(mSeparationAnxiety);
             }
         }
 
-        SpellDesc* mEruption;
-        SpellDesc* mSeparationAnxiety;
+        CreatureAISpells* mEruption;
+        CreatureAISpells* mSeparationAnxiety;
         CreatureAIScript* mGarr;
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Baron Geddon AI Script
 const uint32 CN_BARONGEDDON = 12056;
 const uint32 BARONGEDDON_INFERNO = 19698;    //35268
 const uint32 BARONGEDDON_IGNITE_MANA = 19659;
@@ -696,14 +680,14 @@ class BaronGeddonAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(BaronGeddonAI);
         BaronGeddonAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(BARONGEDDON_INFERNO, Target_Self, 8, 0, 0);
-            AddSpell(BARONGEDDON_IGNITE_MANA, Target_Self, 8, 0, 0);
-            AddSpell(BARONGEDDON_LIVING_BOMB, Target_RandomPlayer, 8, 0, 0, 0, 45);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(BARONGEDDON_INFERNO, 8.0f, TARGET_SELF, 0, 0);
+            addAISpell(BARONGEDDON_IGNITE_MANA, 8.0f, TARGET_SELF, 0, 0);
+            addAISpell(BARONGEDDON_LIVING_BOMB, 8.0f, TARGET_RANDOM_SINGLE, 0, 0);
         }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Shazzrah AI Script
 const uint32 CN_SHAZZRAH = 12264;
 const uint32 SHAZZRAH_ARCANE_EXPLOSION = 19712;
 const uint32 SHAZZRAH_SHAZZRAHS_CURSE = 19713;
@@ -711,40 +695,36 @@ const uint32 SHAZZRAH_MAGIC_GROUNDING = 19714;
 const uint32 SHAZZRAH_COUNTERSPELL = 19715;
 const uint32 SHAZZRAH_BLINK = 29883;    //dummy spell, need to be coded in core
 
-void SpellFunc_ShazzrahBlinkArcaneExplosions(SpellDesc* pThis, CreatureAIScript* pCreatureAI, Unit* pTarget, TargetType pType);
 
 class ShazzrahAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(ShazzrahAI);
         ShazzrahAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(SHAZZRAH_SHAZZRAHS_CURSE, Target_Self, 8, 0, 0);
-            AddSpell(SHAZZRAH_MAGIC_GROUNDING, Target_Self, 6, 0, 0);
-            AddSpell(SHAZZRAH_COUNTERSPELL, Target_Self, 6, 0, 0);
+            enableCreatureAISpellSystem = true;
 
-            mBlink = AddSpell(SHAZZRAH_BLINK, Target_RandomPlayer, 0, 0, 0);
-            mArcaneExplosion = AddSpell(SHAZZRAH_ARCANE_EXPLOSION, Target_Self, 0, 0, 0);
-            AddSpellFunc(&SpellFunc_ShazzrahBlinkArcaneExplosions, Target_Self, 8, -1, 15);
+            addAISpell(SHAZZRAH_SHAZZRAHS_CURSE, 8.0f, TARGET_SELF, 0, 0);
+            addAISpell(SHAZZRAH_MAGIC_GROUNDING, 6.0f, TARGET_SELF, 0, 0);
+            addAISpell(SHAZZRAH_COUNTERSPELL, 6.0f, TARGET_SELF, 0, 0);
+
+            mBlink = addAISpell(SHAZZRAH_BLINK, 5.0f, TARGET_RANDOM_SINGLE, 0, 15);
+            mArcaneExplosion = addAISpell(SHAZZRAH_ARCANE_EXPLOSION, 8.0f, TARGET_SELF, 0, 0);
         }
 
-        SpellDesc* mBlink;
-        SpellDesc* mArcaneExplosion;
+        void OnCastSpell(uint32 spellId) override
+        {
+            if (spellId == SHAZZRAH_BLINK)
+            {
+                for (uint8 Iter = 0; Iter < 4; Iter++)
+                    _castAISpell(mArcaneExplosion);
+            }
+        }
+
+        CreatureAISpells* mBlink;
+        CreatureAISpells* mArcaneExplosion;
 };
 
-void SpellFunc_ShazzrahBlinkArcaneExplosions(SpellDesc* /*pThis*/, CreatureAIScript* pCreatureAI, Unit* /*pTarget*/, TargetType /*pType*/)
-{
-    ShazzrahAI* Shazzrah = (pCreatureAI) ? static_cast< ShazzrahAI* >(pCreatureAI) : NULL;
-    if (Shazzrah)
-    {
-        //Teleport blink, then cast 4 arcane explosions
-        Shazzrah->CastSpell(Shazzrah->mBlink);
-        for (uint8 Iter = 0; Iter < 4; Iter++)
-            Shazzrah->CastSpell(Shazzrah->mArcaneExplosion);
-    }
-}
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Golemagg AI Script
 const uint32 CN_GOLEMAGG = 11988;
 const uint32 GOLEMAGG_GOLEMAGGS_TRUST = 20553;
 const uint32 GOLEMAGG_MAGMA_SPLASH = 13880;
@@ -756,21 +736,20 @@ class GolemaggAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(GolemaggAI);
         GolemaggAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AddSpell(GOLEMAGG_GOLEMAGGS_TRUST, Target_Self, 8, 0, 0);
-            AddSpell(GOLEMAGG_MAGMA_SPLASH, Target_Self, 8, 0, 0);
-            AddSpell(GOLEMAGG_PYROBLAST, Target_RandomPlayer, 8, 0, 0, 0, 40);
-            AddSpell(GOLEMAGG_EARTHQUAKE, Target_Self, 8, 0, 0);
+            enableCreatureAISpellSystem = true;
+
+            addAISpell(GOLEMAGG_GOLEMAGGS_TRUST, 8.0f, TARGET_SELF, 0, 0);
+            addAISpell(GOLEMAGG_MAGMA_SPLASH, 8.0f, TARGET_SELF, 0, 0);
+            addAISpell(GOLEMAGG_PYROBLAST, 8.0f, TARGET_RANDOM_SINGLE, 0, 0);
+            addAISpell(GOLEMAGG_EARTHQUAKE, 8.0f, TARGET_SELF, 0, 0);
         }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Register
 void SetupMoltenCore(ScriptMgr* pScriptMgr)
 {
     pScriptMgr->register_creature_script(CN_MOLTENGIANT, &MoltenGiantAI::Create);
     pScriptMgr->register_creature_script(CN_MOLTENDESTROYER, &MoltenDestroyerAI::Create);
     pScriptMgr->register_creature_script(CN_FIRELORD, &FirelordAI::Create);
-    pScriptMgr->register_creature_script(CN_LAVAANNIHILATOR, &LavaAnnihilatorAI::Create);
     pScriptMgr->register_creature_script(CN_ANCIENTCOREHOUND, &AncientCoreHoundAI::Create);
     pScriptMgr->register_creature_script(CN_LAVASURGER, &LavaSurgerAI::Create);
     pScriptMgr->register_creature_script(CN_FLAMEIMP, &FlameImpAI::Create);
