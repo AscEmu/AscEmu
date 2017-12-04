@@ -1861,16 +1861,19 @@ void Spell::finish(bool successful)
     {
         CALL_SCRIPT_EVENT(u_caster, OnCastSpell)(GetSpellInfo()->getId());
 
-        // call script
-        Unit* target = u_caster->GetMapMgr()->GetUnit(u_caster->GetTargetGUID());
-        if (target != nullptr)
+        if (!sEventMgr.HasEvent(u_caster, EVENT_CREATURE_RESPAWN))
         {
-            if (target->IsCreature())
+            // call script
+            Unit* target = u_caster->GetMapMgr()->GetUnit(u_caster->GetTargetGUID());
+            if (target != nullptr)
             {
-                auto creature = static_cast<Creature*>(target);
-                if (creature->GetScript())
+                if (target->IsCreature())
                 {
-                    CALL_SCRIPT_EVENT(creature, OnHitBySpell)(GetSpellInfo()->getId(), u_caster);
+                    auto creature = static_cast<Creature*>(target);
+                    if (creature->GetScript())
+                    {
+                        CALL_SCRIPT_EVENT(creature, OnHitBySpell)(GetSpellInfo()->getId(), u_caster);
+                    }
                 }
             }
         }

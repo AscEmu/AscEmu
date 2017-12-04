@@ -1802,36 +1802,40 @@ void Creature::Despawn(uint32 delay, uint32 respawntime)
     if (delay)
     {
         sEventMgr.AddEvent(this, &Creature::Despawn, (uint32)0, respawntime, EVENT_CREATURE_RESPAWN, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-        return;
-    }
-
-    PrepareForRemove();
-
-    if (!IsInWorld())
-        return;
-
-    if (_myScriptClass != NULL)
-        _myScriptClass->OnDespawn();
-
-    if (respawntime && !m_noRespawn)
-    {
-        // get the cell with our SPAWN location. if we've moved cell this might break :P
-        MapCell* pCell = m_mapMgr->GetCellByCoords(m_spawnLocation.x, m_spawnLocation.y);
-        if (pCell == NULL)
-            pCell = GetMapCell();
-
-        ARCEMU_ASSERT(pCell != NULL);
-        pCell->_respawnObjects.insert(this);
-        sEventMgr.RemoveEvents(this);
-        sEventMgr.AddEvent(m_mapMgr, &MapMgr::EventRespawnCreature, this, pCell->GetPositionX(), pCell->GetPositionY(), EVENT_CREATURE_RESPAWN, respawntime, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-        Unit::RemoveFromWorld(false);
-        m_position = m_spawnLocation;
-        m_respawnCell = pCell;
     }
     else
     {
-        Unit::RemoveFromWorld(true);
-        SafeDelete();
+        PrepareForRemove();
+
+        if (!IsInWorld())
+            return;
+
+        if (_myScriptClass != NULL)
+            _myScriptClass->OnDespawn();
+
+        if (respawntime && !m_noRespawn)
+        {
+            // get the cell with our SPAWN location. if we've moved cell this might break :P
+            MapCell* pCell = m_mapMgr->GetCellByCoords(m_spawnLocation.x, m_spawnLocation.y);
+            if (pCell == NULL)
+                pCell = GetMapCell();
+
+            ARCEMU_ASSERT(pCell != NULL);
+            pCell->_respawnObjects.insert(this);
+
+            sEventMgr.RemoveEvents(this);
+            sEventMgr.AddEvent(m_mapMgr, &MapMgr::EventRespawnCreature, this, pCell->GetPositionX(), pCell->GetPositionY(), EVENT_CREATURE_RESPAWN, respawntime, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            
+            Unit::RemoveFromWorld(false);
+
+            m_position = m_spawnLocation;
+            m_respawnCell = pCell;
+        }
+        else
+        {
+            Unit::RemoveFromWorld(true);
+            SafeDelete();
+        }
     }
 }
 

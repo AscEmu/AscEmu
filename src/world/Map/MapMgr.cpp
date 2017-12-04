@@ -461,7 +461,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
         }
     }
 
-    ///\todo That object types are not map objects. TODO: add AI groups here?
+    //\todo That object types are not map objects. TODO: add AI groups here?
     if (obj->IsItem() || obj->IsContainer())
     {
         return;
@@ -1388,15 +1388,10 @@ Unit* MapMgr::GetUnit(const uint64 & guid)
         case HIGHGUID_TYPE_UNIT:
         case HIGHGUID_TYPE_VEHICLE:
             return GetCreature(GET_LOWGUID_PART(guid));
-            break;
-
         case HIGHGUID_TYPE_PLAYER:
             return GetPlayer(Arcemu::Util::GUID_LOPART(guid));
-            break;
-
         case HIGHGUID_TYPE_PET:
             return GetPet(GET_LOWGUID_PART(guid));
-            break;
     }
 
     return nullptr;

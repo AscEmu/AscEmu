@@ -306,6 +306,16 @@ class LordMarrowgarAI : public CreatureAIScript
             ss << "My scriptPhase is now " << scriptPhase;
 
             sendAnnouncement(ss.str());
+
+            switch (scriptPhase)
+            {
+                case 1:
+                    despawn(60000, 1000);
+                    break;
+                case 2:
+                    despawn(2000, 10000);
+                    break;
+            }
         }
 
         void OnCombatStart(Unit* /*pTarget*/) override
