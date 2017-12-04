@@ -51,12 +51,6 @@ class HydromancerThespiaAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTargetDied, SAY_HYDROMACER_THESPIA_06);
             addEmoteForEvent(Event_OnDied, SAY_HYDROMACER_THESPIA_07);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 
@@ -165,9 +159,6 @@ class MekgineerSteamriggerAI : public CreatureAIScript
             }
 
             Gnomes.clear();
-
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 
         void AIUpdate() override
@@ -328,8 +319,6 @@ class WarlordKalitreshAI : public CreatureAIScript
             getCreature()->GetAIInterface()->m_canMove = true;
             getCreature()->GetAIInterface()->ResetUnitToFollow();
             getCreature()->GetAIInterface()->SetFollowDistance(0.0f);
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
             if (getCreature()->getAuraWithId(37076))
                 getCreature()->RemoveAura(37076);
@@ -346,8 +335,6 @@ class WarlordKalitreshAI : public CreatureAIScript
                 pDistiller->GetAIInterface()->WipeTargetList();
                 pDistiller->GetAIInterface()->WipeHateList();
             }
-
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate() override

@@ -204,12 +204,6 @@ class MograineAI : public CreatureAIScript
             addEmoteForEvent(Event_OnDied, SAY_MORGRAINE_03);
         }
 
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
-
         void OnDied(Unit* /*mKiller*/) override
         {
             GameObject* pDoor = getNearestGameObject(1173.01f, 1389.91f, 31.9723f, GO_INQUISITORS_DOOR);
@@ -268,12 +262,6 @@ class WhitemaneAI : public CreatureAIScript
                 getCreature()->CastSpell(morgrain, resurrection->mSpellInfo, true);
         }
 
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
-
     protected:
 
         CreatureAISpells* sleep;
@@ -291,12 +279,6 @@ class FairbanksAI : public CreatureAIScript
 
             auto pws = addAISpell(SP_FAIRBANKS_PWS, 15.0f, TARGET_SELF, 0, 0, false, true);
             pws->setAttackStopTimer(1000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 

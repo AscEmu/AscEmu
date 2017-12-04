@@ -661,12 +661,6 @@ class HellfireWarderAI : public CreatureAIScript
             shadowBurst->setAttackStopTimer(1000);
             shadowBurst->setMinMaxDistance(0.0f, 30.0f);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 // Hellfire Channeler
@@ -713,9 +707,6 @@ class HellfireChannelerAI : public CreatureAIScript
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-
             if (isAlive())
             {
 
@@ -759,12 +750,6 @@ class BurningAbyssalAI : public CreatureAIScript
             fireBlast->setMinMaxDistance(0.0f, 20.0f);
 
             getCreature()->m_noRespawn = true;
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 
@@ -829,9 +814,6 @@ class MagtheridonAI : public CreatureAIScript
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-
             if (getCreature()->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9) || getCreature()->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2))
                 return;
 

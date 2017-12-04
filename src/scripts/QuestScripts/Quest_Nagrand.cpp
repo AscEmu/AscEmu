@@ -268,7 +268,7 @@ public:
         getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "In Nagrand, food hunt ogre!");
     };
 
-    void OnCombatStop()
+    void OnCombatStop(Unit* /*mTarget*/) override
     {
         RemoveAIUpdateEvent();
     };

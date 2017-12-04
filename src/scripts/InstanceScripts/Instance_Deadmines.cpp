@@ -19,7 +19,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include "Setup.h"
 #include "Instance_Deadmines.h"
 #include "Server/LazyTimer.h"
@@ -156,8 +155,6 @@ class RhahkZorAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(RhahkZorAI);
     RhahkZorAI(Creature* pCreature) : CreatureAIScript(pCreature), debugTimer(1500)
     {
-        
-
         addAISpell(6304, 8.0f, TARGET_ATTACKING, 0, 3);    // Rhahk'Zor Slam
 
         addEmoteForEvent(Event_OnCombatStart, 5495);     // VanCleef pay big for you heads!
@@ -170,8 +167,6 @@ class MrSmiteAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(MrSmiteAI);
         MrSmiteAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            
-
             auto smiteSlam = addAISpell(SMITE_SLAM, 25.0f, TARGET_ATTACKING, 0, 15, false, true);
             smiteSlam->setMinMaxDistance(0.0f, 8.0f);
 
@@ -300,7 +295,6 @@ class MrSmiteAI : public CreatureAIScript
 };
 
 
-// VanCleef
 class VanCleefAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(VanCleefAI);
@@ -312,7 +306,6 @@ class VanCleefAI : public CreatureAIScript
         addEmoteForEvent(Event_OnDied, 7727);            // The Brotherhood shall prevail!
     }
 
-
     void OnTargetDied(Unit* pTarget) override
     {
         char msg[200];
@@ -322,7 +315,6 @@ class VanCleefAI : public CreatureAIScript
             sprintf(msg, "And stay down, %s.", static_cast<Pet*>(pTarget)->GetName().c_str());
 
         sendChatMessage(CHAT_MSG_MONSTER_YELL, 5781, msg);
-        
     }
 
     void AIUpdate() override
@@ -354,7 +346,6 @@ class VanCleefAI : public CreatureAIScript
             sendDBChatMessage(7727);     // The Brotherhood shall prevail!
             setScriptPhase(4);
         }
-        
     }
 };
 

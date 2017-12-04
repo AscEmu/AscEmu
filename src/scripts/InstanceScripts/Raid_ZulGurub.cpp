@@ -91,8 +91,6 @@ class JeklikAI : public CreatureAIScript
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
             getCreature()->RemoveAura(TRANSFORM_BAT);
         }
@@ -162,8 +160,6 @@ class VenoxisAI : public CreatureAIScript
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
             getCreature()->RemoveAura(TRANSFORM_SNAKE);
         }

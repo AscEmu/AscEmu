@@ -21,7 +21,7 @@
 #include "Setup.h"
 #include "Instance_CullingOfStratholme.h"
 
-//MeathookAA
+
 class MeathookAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(MeathookAI);
@@ -56,13 +56,10 @@ class MeathookAI : public CreatureAIScript
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             getCreature()->RemoveAllAuras();
         }
 };
 
-//SalramTheFleshcrafterAI
 class SalramTheFleshcrafterAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(SalramTheFleshcrafterAI);
@@ -106,13 +103,10 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             getCreature()->RemoveAllAuras();
         }
 };
 
-//ChronoLordEpochAI
 class ChronoLordEpochAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(ChronoLordEpochAI);
@@ -145,8 +139,6 @@ class ChronoLordEpochAI : public CreatureAIScript
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             getCreature()->RemoveAllAuras();
         }
 };
@@ -169,8 +161,6 @@ class InfiniteCorruptorAI : public CreatureAIScript
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             getCreature()->RemoveAllAuras();
         }
 };
@@ -213,8 +203,6 @@ class MalganisAI : public CreatureAIScript
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             getCreature()->RemoveAllAuras();
         }
 
@@ -321,7 +309,6 @@ static Movement::Location walk[] =
     { 1897.4763f, 1291.1870f, 143.5821f, 1.4194f }
 };
 
-//UtherAI
 class UtherAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(UtherAI);
@@ -403,7 +390,6 @@ static Movement::Location ArthasWalk[] =
 };
 
 
-//ArthasAI
 class ArthasAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(ArthasAI);
@@ -536,7 +522,6 @@ class ArthasAI : public CreatureAIScript
 };
 
 
-//ArthasGossip
 class ArthasGossip : public Arcemu::Gossip::Script
 {
     public:

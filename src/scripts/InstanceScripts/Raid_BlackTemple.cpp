@@ -1282,12 +1282,6 @@ class NajentusAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTargetDied, 4704); // Your success was short-lived!
             addEmoteForEvent(Event_OnDied, 4710);     // Lord Illidan will... crush you!
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 
@@ -1325,13 +1319,6 @@ class SupremusAI : public CreatureAIScript
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
             timer = 0;
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
         }
 
         void AIUpdate() override
@@ -1540,9 +1527,6 @@ class GurtoggAI : public CreatureAIScript
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-
             if (isAlive())
                 sendDBChatMessage(4648);     //I'll rip the meat from your bones!
 
@@ -1955,12 +1939,6 @@ class ShahrazAI : public CreatureAIScript
             SoundTimer = 5;
         }
 
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
-
         void AIUpdate() override
         {
             SoundTimer++;
@@ -2243,12 +2221,6 @@ class TeronGorefiendAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTargetDied, 4693);     // I have use for you!
             addEmoteForEvent(Event_OnDied, 4700);     // The wheel...spins...again....
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 //\todo all these texts seems to be incorrect... is the creature entry correct?
@@ -2292,9 +2264,6 @@ class ShadeofakamaAI : public CreatureAIScript
         void OnCombatStop(Unit* /*mTarget*/) override
         {
             hm = 100;
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
         }
 
         void OnDied(Unit* /*mKiller*/) override
@@ -2760,12 +2729,6 @@ class EyeBeamTriggerAI : public CreatureAIScript
             mPosition = -1;
         }
 
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
-
         void AIUpdate() override
         {
             if (mPosition == -1)
@@ -3006,8 +2969,6 @@ class AkamaAI : public CreatureAIScript
 
         void OnCombatStop(Unit* /*pTarget*/) override
         {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             _setWieldWeapon(false);
         }
 
@@ -3566,9 +3527,6 @@ class MaievAI : public CreatureAIScript
 
         void OnCombatStop(Unit* /*pTarget*/) override
         {
-            _cancelAllTimers();
-            _removeAllAuras();
-            setAIAgent(AGENT_NULL);
             _setWieldWeapon(false);
             if (mIllidanAI != NULL)
             {
@@ -3581,7 +3539,6 @@ class MaievAI : public CreatureAIScript
             else
             {
                 _castAISpell(mTeleport);
-                RemoveAIUpdateEvent();
                 despawn(500, 0);
             }
         }
@@ -4018,7 +3975,6 @@ class IllidanStormrageAI : public CreatureAIScript
         void OnCombatStop(Unit* /*pTarget*/) override
         {
             // General
-            _removeTimer(mLocaleEnrageTimerId);
             getCreature()->SetEmoteState(EMOTE_ONESHOT_NONE);
             SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
             _unsetTargetToChannel();
@@ -5167,12 +5123,6 @@ class CageTrapTriggerAI : public CreatureAIScript
             _setMeleeDisabled(false);
             mIsActivated = false;
             mHasTrapped = false;
-        }
-
-        void OnCombatStop(Unit* /*pTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 
         void AIUpdate() override

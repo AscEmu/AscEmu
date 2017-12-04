@@ -38,12 +38,6 @@ class DTcaptainAI : public CreatureAIScript
             auto markOfDetonation = addAISpell(MARK_OF_DETONATION, 4.0f, TARGET_ATTACKING);
             markOfDetonation->setAttackStopTimer(2000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 
@@ -66,12 +60,6 @@ class DTflamescaleAI : public CreatureAIScript
         {
             auto flameShock = addAISpell(FLAME_SHOCK, 15.0f, TARGET_ATTACKING);
             flameShock->setAttackStopTimer(1000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 
@@ -106,12 +94,6 @@ class DTwyrmkinAI : public CreatureAIScript
             auto fireballVolley = addAISpell(FIREBALL_VOLLEY, 40.0f, TARGET_VARIOUS);
             fireballVolley->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 /*
@@ -137,12 +119,6 @@ class TechnicianAI : public CreatureAIScript
             auto granade = addAISpell(GRANADE, 25.0f, TARGET_ATTACKING);
             granade->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 //Relatively low HP. Has a ranged aoe grenade that inflicts moderate damage to anyone in the area of effect.
@@ -162,12 +138,6 @@ class BlackWarlockAI : public CreatureAIScript
 
             auto shadowBolt = addAISpell(SHADOW_BOLT, 15.0f, TARGET_DESTINATION, 0, 0, false, true);
             shadowBolt->setAttackStopTimer(1000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 
@@ -223,12 +193,6 @@ class LashlayerAI : public CreatureAIScript
         {
             sendDBChatMessage(2287);     // None of your kind should be here. You have doomed only yourselves!
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 
@@ -247,12 +211,6 @@ class FiremawAI : public CreatureAIScript
             auto flameBuffet = addAISpell(FLAME_BUFFET, 15.0f, TARGET_VARIOUS);
             flameBuffet->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 
@@ -270,12 +228,6 @@ class EbonrocAI : public CreatureAIScript
             auto shadowOfEbonroc = addAISpell(SHADOW_OF_EBONROC, 15.0f, TARGET_ATTACKING);
             shadowOfEbonroc->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 
@@ -292,12 +244,6 @@ class FlamegorAI : public CreatureAIScript
 
             auto fireNova = addAISpell(FIRE_NOVA, 20.0f, TARGET_VARIOUS, 0, 0, false, true);
             fireNova->setAttackStopTimer(1000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 
@@ -348,12 +294,6 @@ class VaelastraszAI : public CreatureAIScript
         void OnCombatStart(Unit* /*mTarget*/) override
         {
             getCreature()->CastSpell(getCreature(), essenceOfTheRed->mSpellInfo, essenceOfTheRed->mIsTriggered);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 
         void OnTargetDied(Unit* /*mTarget*/) override

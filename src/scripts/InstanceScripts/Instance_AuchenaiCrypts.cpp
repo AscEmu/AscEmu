@@ -43,12 +43,6 @@ class SHIRRAKTHEDEADWATCHERAI : public CreatureAIScript
             auto attractMagic = addAISpell(ATTRACT_MAGIC, 10.0f, TARGET_VARIOUS, 0, 15, false, true);
             attractMagic->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 
@@ -71,12 +65,6 @@ class AvatarOfTheMartyredAI : public CreatureAIScript
             getCreature()->m_noRespawn = true;
 
             Appear = true;
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 
         void AIUpdate() override
@@ -138,9 +126,6 @@ class EXARCHMALADAARAI : public CreatureAIScript
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-
             Avatar = false;
         }
 

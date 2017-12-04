@@ -37,12 +37,6 @@ class AmnennarTheColdbringerAI : public CreatureAIScript
             auto amnennarsWhath = addAISpell(13009, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             amnennarsWhath->setAttackStopTimer(3000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 
@@ -87,12 +81,6 @@ class PlaguemawTheRottingAI : public CreatureAIScript
             auto putridStench = addAISpell(12946, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             putridStench->setAttackStopTimer(3000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 class RagglesnoutAI : public CreatureAIScript
@@ -105,12 +93,6 @@ class RagglesnoutAI : public CreatureAIScript
 
             auto unknown2 = addAISpell(11659, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             unknown2->setAttackStopTimer(3000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 
@@ -125,12 +107,6 @@ class TutenKashAI : public CreatureAIScript
 
             auto webSpray = addAISpell(12252, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             webSpray->setAttackStopTimer(3000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 

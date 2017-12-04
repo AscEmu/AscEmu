@@ -36,12 +36,6 @@ class CabalAcolyteAI : public CreatureAIScript
             auto heal = addAISpell(SP_CABAL_ACOLYTE_HEAL, 6.0f, TARGET_SELF, 0, 0, false, true);
             heal->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 class CabalDeathswornAI : public CreatureAIScript
@@ -58,12 +52,6 @@ class CabalDeathswornAI : public CreatureAIScript
             auto blackCleave = addAISpell(SP_CABAL_DEATHSWORN_BLACK_CLEAVE, 9.0f, TARGET_ATTACKING, 0, 0, false, true);
             blackCleave->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 class CabalFanaticAI : public CreatureAIScript
@@ -74,15 +62,8 @@ class CabalFanaticAI : public CreatureAIScript
             auto fanaticFixate = addAISpell(SP_CABAL_FANATIC_FIXATE, 10.0f, TARGET_ATTACKING, 0, 0, false, true);
             fanaticFixate->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
-// CabalShadowPriestAI
 class CabalShadowPriestAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(CabalShadowPriestAI);
@@ -93,12 +74,6 @@ class CabalShadowPriestAI : public CreatureAIScript
 
             auto worPain = addAISpell(SP_CABAL_SHADOW_PRIEST_WORD_PAIN, 10.0f, TARGET_ATTACKING, 0, 0, false, true);
             worPain->setAttackStopTimer(1000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 
@@ -113,12 +88,6 @@ class CabalSpellbinderAI : public CreatureAIScript
             auto earthShock = addAISpell(SP_CABAL_SPELLBINDER_EARTH_SHOCK, 10.0f, TARGET_ATTACKING, 0, 0, false, true);
             earthShock->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 class CabalWarlockAI : public CreatureAIScript
@@ -131,12 +100,6 @@ class CabalWarlockAI : public CreatureAIScript
 
             auto seedOfCorruption = addAISpell(SP_CABAL_WARLOCK_SEED_OF_CORRUPTION, 8.0f, TARGET_ATTACKING);
             seedOfCorruption->setAttackStopTimer(1000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 
@@ -151,12 +114,6 @@ class CabalZealotAI : public CreatureAIScript
             //never casted
             auto transformation = addAISpell(SP_CABAL_ZEALOT_TRANSFROMATION, 0.0f, TARGET_SELF, 0, 0, false, true);
             transformation->setAttackStopTimer(1000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 
@@ -197,12 +154,6 @@ class CabalRitualistAI : public CreatureAIScript
             auto frostbolt = addAISpell(SP_CABAL_RITUALIST_FROSTBOLT, 9.0f, TARGET_VARIOUS);
             frostbolt->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 class FelOverseerAI : public CreatureAIScript
@@ -236,8 +187,6 @@ class FelOverseerAI : public CreatureAIScript
         void OnCombatStop(Unit* /*mTarget*/) override
         {
             HealCooldown = 1;
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 
         void OnDied(Unit* /*mKiller*/) override
@@ -272,12 +221,6 @@ class MaliciousInstructorAI : public CreatureAIScript
             auto markOfMalice = addAISpell(SP_MILICIOUS_INSTRUCT_MARK_OF_MALICE, 9.0f, TARGET_ATTACKING, 0, 0, false, true);
             markOfMalice->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 
@@ -310,8 +253,6 @@ class AmbassadorHellmawAI : public CreatureAIScript
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             _removeTimer(aoeFearTimerId);
         }
 
@@ -365,8 +306,6 @@ class BlackheartTheInciterAI : public CreatureAIScript
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             _removeTimer(chaosTimerId);
         }
 
@@ -410,12 +349,6 @@ class GrandmasterVorpilAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTargetDied, SAY_GRD_VORPIL_07);
             addEmoteForEvent(Event_OnDied, SAY_GRD_VORPIL_08);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 class MurmurAI : public CreatureAIScript
@@ -458,9 +391,6 @@ class MurmurAI : public CreatureAIScript
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-
             if (getCreature()->GetMapMgr() != NULL && !_isHeroic() && getCreature()->GetHealthPct() >= 41)
             {
                 getCreature()->SetHealthPct(40);

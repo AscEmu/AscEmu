@@ -602,6 +602,7 @@ void CreatureAIScript::_internalOnCombatStop()
     _cancelAllTimers();
     _removeAllAuras();
     setAIAgent(AGENT_NULL);
+    getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
     RemoveAIUpdateEvent();
 
     if (_isDespawnWhenInactiveSet())

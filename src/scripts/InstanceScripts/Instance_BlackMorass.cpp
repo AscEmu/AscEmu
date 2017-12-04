@@ -40,12 +40,6 @@ class ChronoLordAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTargetDied, SAY_CHRONOLORD_03);
             addEmoteForEvent(Event_OnDied, SAY_CHRONOLORD_04);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 
@@ -65,12 +59,6 @@ class TemporusAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTargetDied, SAY_TEMPORUS_02);
             addEmoteForEvent(Event_OnTargetDied, SAY_TEMPORUS_03);
             addEmoteForEvent(Event_OnDied, SAY_TEMPORUS_04);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 
@@ -94,12 +82,6 @@ class AenusAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTargetDied, SAY_AENUS_02);
             addEmoteForEvent(Event_OnTargetDied, SAY_AENUS_03);
             addEmoteForEvent(Event_OnDied, SAY_AENUS_04);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 

@@ -88,13 +88,6 @@ class ForgemasterGarfrostAI : public CreatureAIScript
         addEmoteForEvent(Event_OnDied, 8764);
     }
 
-    void OnCombatStop(Unit* /*mTarget*/) override
-    {
-        // Clear Agent and Ai State
-        setAIAgent(AGENT_NULL);
-        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-    }
-
     void AIUpdate() override
     {
         if (isScriptPhase(1) && _getHealthPercent() <= 66)

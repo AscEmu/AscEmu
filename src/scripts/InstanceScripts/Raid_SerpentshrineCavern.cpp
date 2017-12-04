@@ -103,10 +103,6 @@ class HydrossTheUnstableAI : public CreatureAIScript
             getCreature()->SetDisplayId(20162);
             getCreature()->SchoolImmunityList[SCHOOL_FROST] = 1;
             getCreature()->SchoolImmunityList[SCHOOL_NATURE] = 0;
-
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
         }
 
         void OnTargetDied(Unit* /*mTarget*/) override
@@ -389,18 +385,8 @@ class LurkerAI : public CreatureAIScript
         {
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
 };
 
-//------------------------------------
-//    -= Leotheras the Blind =-
-//------------------------------------
 
 /* \todo
  - Some phase timers
@@ -503,9 +489,6 @@ class LeotherasAI : public CreatureAIScript
             }
 
             SwitchToHumanForm();
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
         }
 
         void OnTargetDied(Unit* /*mTarget*/) override
@@ -748,14 +731,6 @@ class GreyheartSpellbinderAI : public CreatureAIScript
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-
-            RemoveAIUpdateEvent();
-        }
-
         void OnDied(Unit* /*mKiller*/) override
         {
             LeotherasEventGreyheartToKill[getCreature()->GetInstanceID()]--;
@@ -876,13 +851,6 @@ class KarathressAI : public CreatureAIScript
             Enraged = false;
             sendDBChatMessage(4740);     // Guards, attention!We have visitors ...
             RegisterAIUpdateEvent(1000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
         }
 
         void OnDied(Unit* /*mKiller*/) override
@@ -1127,14 +1095,6 @@ class MorogrimAI : public CreatureAIScript
             RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
         }
 
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-
-            RemoveAIUpdateEvent();
-        }
-
         void OnDied(Unit* /*mKiller*/) override
         {
             sendDBChatMessage(4792);     // Great... currents of... Ageon.
@@ -1370,8 +1330,6 @@ class VashjAI : public CreatureAIScript
             getCreature()->RemoveAura(VASHJ_SHIELD);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
             getCreature()->GetAIInterface()->m_canMove = true;
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 

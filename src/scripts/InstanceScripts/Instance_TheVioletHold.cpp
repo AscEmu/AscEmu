@@ -304,9 +304,6 @@ class VHCreatureAI : public CreatureAIScript
         void OnCombatStop(Unit* /*mTarget*/) override
         {
             PutAllSpellsOnCooldown();
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-            RemoveAIUpdateEvent();
         }
 
         void OnDied(Unit* /*mKiller*/) override

@@ -35,12 +35,6 @@ class EtherealDarkcasterAI : public CreatureAIScript
             auto shadowWordPain = addAISpell(SHADOW_WORD_PAIN, 10.0f, TARGET_ATTACKING, 0, 0, false, true);
             shadowWordPain->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 
@@ -55,12 +49,6 @@ class EtherealPriestAI : public CreatureAIScript
             auto powerWordShield = addAISpell(POWER_WORD_SHIELD, 7.0f, TARGET_SELF, 0, 0, false, true);
             powerWordShield->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 class EtherealTheurgistAI : public CreatureAIScript
@@ -74,12 +62,6 @@ class EtherealTheurgistAI : public CreatureAIScript
             auto blastWave = addAISpell(BLAST_WAVE, 10.0f, TARGET_SELF, 0, 0, false, true);
             blastWave->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 
@@ -90,12 +72,6 @@ class EtherealSorcererAI : public CreatureAIScript
         {
             auto arcaneMissiles = addAISpell(ARCANE_MISSILES, 10.0f, TARGET_ATTACKING, 0, 0, false, true);
             arcaneMissiles->setAttackStopTimer(1000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 
@@ -113,12 +89,6 @@ class NexusStalkerAI : public CreatureAIScript
             auto stealth = addAISpell(STEALTH, 5.0f, TARGET_SELF, 0, 0, false, true);
             stealth->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 class NexusTerrorAI : public CreatureAIScript
@@ -128,12 +98,6 @@ class NexusTerrorAI : public CreatureAIScript
         {
             auto psychicScream = addAISpell(PSYCHIC_SCREAM, 3.0f, TARGET_VARIOUS, 0, 0, false, true);
             psychicScream->setAttackStopTimer(1000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 
@@ -145,12 +109,6 @@ class ManaLeechAI : public CreatureAIScript
         {
             arcaneExplosion = addAISpell(ARCANE_EXPLOSION, 0.0f, TARGET_VARIOUS, 0, 0, false, true);
             arcaneExplosion->setAttackStopTimer(1000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 
         void OnDied(Unit* /*mKiller*/) override
@@ -180,12 +138,6 @@ class EtherealSpellbinderAI : public CreatureAIScript
             auto summonEtherealWraith = addAISpell(SUMMON_ETHEREAL_WRAITH, 5.0f, TARGET_SELF, 0, 0, false, true);
             summonEtherealWraith->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 
@@ -196,12 +148,6 @@ class EtherealWraithAI : public CreatureAIScript
         {
             auto shadowBoltVolley = addAISpell(SHADOW_BOLT_VOLLEY, 15.0f, TARGET_VARIOUS);
             shadowBoltVolley->setAttackStopTimer(1000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 
@@ -224,12 +170,6 @@ class PandemoniusAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTargetDied, SAY_PANDEMONIUS_05);
             addEmoteForEvent(Event_OnDied, SAY_PANDEMONIUS_06);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 // \todo Strange... I couldn't find any sounds for this boss in DBC and in extracted from client sounds O_O
@@ -247,12 +187,6 @@ class TavarokAI : public CreatureAIScript
 
             auto arcingSmash = addAISpell(ARCING_SMASH, 12.0f, TARGET_VARIOUS, 0, 10, false, true);
             arcingSmash->setAttackStopTimer(2000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 
@@ -287,12 +221,6 @@ class NexusPrinceShaffarAI : public CreatureAIScript
             addEmoteForEvent(Event_OnTargetDied, SAY_NEXUSPRINCE_05);
             addEmoteForEvent(Event_OnDied, SAY_NEXUSPRINCE_08);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 class YorAI : public CreatureAIScript
@@ -305,12 +233,6 @@ class YorAI : public CreatureAIScript
 
             auto stomp = addAISpell(STOMP, 7.0f, TARGET_VARIOUS, 0, 25, false, true);
             stomp->setAttackStopTimer(2000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 

@@ -128,12 +128,6 @@ class MennuTheBetrayerAI : public CreatureAIScript
             TotemCounter = 0;
         }
 
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
-
         void AIUpdate() override
         {
             if (getScriptPhase() == 1 && TotemCounter != 0 && !getCreature()->isCastingNonMeleeSpell())
@@ -240,12 +234,6 @@ class RokmarTheCracklerAI : public CreatureAIScript
             Enraged = false;
         }
 
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
-
         void AIUpdate() override
         {
             if (getCreature()->GetHealthPct() <= 20 && !Enraged && getScriptPhase() == 1)
@@ -277,12 +265,6 @@ class QuagmirranAI : public CreatureAIScript
 
             auto cleave = addAISpell(CLEAVE, 6.0f, TARGET_ATTACKING, 0, 15, false, true);
             cleave->setAttackStopTimer(2000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);;
         }
 };
 

@@ -33,12 +33,6 @@ class AvianDarkhawkAI : public CreatureAIScript
             auto charge = addAISpell(SP_AVIAN_DARKHAWK_CHARGE, 5.0f, TARGET_ATTACKING, 0, 0, false, true);
             charge->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 class AvianRipperAI : public CreatureAIScript
@@ -48,11 +42,6 @@ class AvianRipperAI : public CreatureAIScript
         {
             auto fleshRip = addAISpell(SP_AVIAN_RIPPER_FLESH_RIP, 15.0f, TARGET_ATTACKING, 0, 0, false, true);
             fleshRip->setAttackStopTimer(3000);
-        }
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 
@@ -70,12 +59,6 @@ class AvianWarhawkAI : public CreatureAIScript
             auto bite = addAISpell(SP_AVIAN_WARHAWK_BITE, 12.0f, TARGET_ATTACKING, 0, 0, false, true);
             bite->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 class CobaltSerpentAI : public CreatureAIScript
@@ -92,12 +75,6 @@ class CobaltSerpentAI : public CreatureAIScript
             auto chainLightning = addAISpell(SP_COBALT_SERPENT_CHAIN_LIGHTNING, 9.0f, TARGET_ATTACKING);
             chainLightning->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 class TimeLostControllerAI : public CreatureAIScript
@@ -107,12 +84,6 @@ class TimeLostControllerAI : public CreatureAIScript
         {
             auto shrink = addAISpell(SP_TL_CONTROLLER_SHIRNK, 10.0f, TARGET_ATTACKING, 0, 0, false, true);
             shrink->setAttackStopTimer(1000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 
@@ -127,12 +98,6 @@ class TimeLostScryerAI : public CreatureAIScript
             auto arcaneMissiles = addAISpell(SP_TL_SCRYER_ARCANE_MISSILES, 12.0f, TARGET_ATTACKING, 0, 0, false, true);
             arcaneMissiles->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 class TimeLostShadowmageAI : public CreatureAIScript
@@ -142,12 +107,6 @@ class TimeLostShadowmageAI : public CreatureAIScript
         {
             auto curseOfDarkTalon = addAISpell(SP_TL_CURSE_OF_THE_DARK_TALON, 10.0f, TARGET_ATTACKING, 0, 0, false, true);
             curseOfDarkTalon->setAttackStopTimer(1000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 
@@ -162,12 +121,6 @@ class SethekkGuardAI : public CreatureAIScript
             auto sunderArmor = addAISpell(SP_SETHEKK_GUARD_SUNDER_ARMOR, 8.0f, TARGET_ATTACKING, 0, 0, false, true);
             sunderArmor->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 class SethekkInitiateAI : public CreatureAIScript
@@ -177,12 +130,6 @@ class SethekkInitiateAI : public CreatureAIScript
         {
             auto magicReflection = addAISpell(SP_SETHEKK_INIT_MAGIC_REFLECTION, 10.0f, TARGET_SELF, 0, 0, false, true);
             magicReflection->setAttackStopTimer(1000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 
@@ -197,12 +144,6 @@ class SethekkOracleAI : public CreatureAIScript
             auto arcaneLighning = addAISpell(SP_SETHEKK_ORACLE_ARCANE_LIGHTNING, 15.0f, TARGET_ATTACKING);
             arcaneLighning->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 class SethekkProphetAI : public CreatureAIScript
@@ -212,12 +153,6 @@ class SethekkProphetAI : public CreatureAIScript
         {
             auto prophetFear = addAISpell(SP_SETHEKK_PROPHET_FEAR, 8.0f, TARGET_ATTACKING, 0, 0, false, true);
             prophetFear->setAttackStopTimer(1000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 
@@ -232,12 +167,6 @@ class SethekkRavenguardAI : public CreatureAIScript
             auto howlingScreech = addAISpell(SP_SETHEKK_RAVENG_HOWLING_SCREECH, 8.0f, TARGET_VARIOUS, 0, 0, false, true);
             howlingScreech->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 class SethekkShamanAI : public CreatureAIScript
@@ -247,12 +176,6 @@ class SethekkShamanAI : public CreatureAIScript
         {
             auto summonDarkVortex = addAISpell(SP_SETHEKK_SHAMAN_SUM_DARK_VORTEX, 8.0f, TARGET_SELF, 0, 0, false, true);
             summonDarkVortex->setAttackStopTimer(1000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 
@@ -266,12 +189,6 @@ class SethekkTalonLordAI : public CreatureAIScript
 
             auto avengersShield = addAISpell(SP_SETHEKK_TALON_AVENGERS_SHIELD, 7.0f, TARGET_ATTACKING, 0, 0, false, true);
             avengersShield->setAttackStopTimer(1000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 
@@ -394,8 +311,6 @@ class DarkweaverSythAI : public CreatureAIScript
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             Summons = 0;
         }
 
@@ -492,12 +407,6 @@ class TalonKingIkissAI : public CreatureAIScript
             Blink = false;
         }
 
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
-
         void OnDied(Unit* /*mKiller*/) override
         {
             GameObject* IkissDoor = getNearestGameObject(43.079f, 149.505f, 0.034f, 183398);
@@ -565,8 +474,6 @@ class ANZUAI : public CreatureAIScript
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             getCreature()->RemoveAura(SP_ANZU_BANISH);
 
             Banished = false;

@@ -47,12 +47,6 @@ class HungarfenAI : public CreatureAIScript
             FourSpores = false;
         }
 
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
-
         void OnDied(Unit* /*mKiller*/) override
         {
             FourSpores = false;
@@ -107,12 +101,6 @@ class GhazanAI : public CreatureAIScript
             Enraged = false;
         }
 
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
-
         void AIUpdate() override
         {
             if (getCreature()->GetHealthPct() <= 20 && !Enraged && !getCreature()->isCastingNonMeleeSpell())
@@ -146,12 +134,6 @@ class ClawAI : public CreatureAIScript
 
             auto enrage = addAISpell(CL_ENRAGE, 15.0f, TARGET_SELF, 0, 240, false, true);
             enrage->setAttackStopTimer(1000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 
@@ -189,12 +171,6 @@ class SwamplordMuselekAI : public CreatureAIScript
             Unit* Bear = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), 17827);
             if (Bear && Bear->isAlive())
                 Bear->GetAIInterface()->AttackReaction(mTarget, 1, 0);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 
         void AIUpdate() override
@@ -261,12 +237,6 @@ class TheBlackStalkerAI : public CreatureAIScript
 
             auto summonSporeStrider = addAISpell(SUMMON_SPORE_STRIDER, 0.0f, TARGET_SELF, 0, 10, false, true);
             summonSporeStrider->setAttackStopTimer(1000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 

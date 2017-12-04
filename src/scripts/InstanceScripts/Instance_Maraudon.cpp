@@ -38,12 +38,6 @@ class CelebrasTheCursedAI : public CreatureAIScript
             auto twistedTranquility = addAISpell(21793, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             twistedTranquility->setAttackStopTimer(3000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 
@@ -58,12 +52,6 @@ class LordVyletongueAI : public CreatureAIScript
             auto smokeBomb = addAISpell(8817, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             smokeBomb->setAttackStopTimer(3000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 
@@ -77,12 +65,6 @@ class MeshlokTheHarvesterAI : public CreatureAIScript
 
             auto strike = addAISpell(15580, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             strike->setAttackStopTimer(3000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 
@@ -104,12 +86,6 @@ class PrincessTheradrasAI : public CreatureAIScript
             auto repulsiveGaze = addAISpell(21869, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             repulsiveGaze->setAttackStopTimer(3000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 
@@ -127,12 +103,6 @@ class RazorlashAI : public CreatureAIScript
             auto unknown2 = addAISpell(21749, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             unknown2->setAttackStopTimer(3000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 
@@ -147,12 +117,6 @@ class TinkererGizlockAI : public CreatureAIScript
             auto bomb = addAISpell(22334, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             bomb->setAttackStopTimer(3000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 
@@ -166,12 +130,6 @@ class NoxxionAI : public CreatureAIScript
 
             auto sporeCloud = addAISpell(21547, 20.0f, TARGET_ATTACKING, 0, 10, false, true);
             sporeCloud->setAttackStopTimer(3000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 

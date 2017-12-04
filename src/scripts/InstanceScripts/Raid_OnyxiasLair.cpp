@@ -90,8 +90,7 @@ class OnyxiaAI : public CreatureAIScript
         {
             getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
             getCreature()->GetAIInterface()->setWayPointToMove(0);
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
+
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
             getCreature()->GetAIInterface()->unsetSplineFlying();
             getCreature()->GetAIInterface()->m_canMove = true;

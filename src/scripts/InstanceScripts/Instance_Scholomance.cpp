@@ -39,12 +39,6 @@ class DoctorTheolenKrastinovAI : public CreatureAIScript
             frenzy->setAttackStopTimer(1000);
         }
 
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
-
         void AIUpdate() override
         {
             if (getCreature()->GetHealthPct() <= 50 && getScriptPhase() == 1)
@@ -79,12 +73,6 @@ class InstructorMaliciaAI : public CreatureAIScript
             auto heal = addAISpell(SP_MALICIA_HEAL, 5.0f, TARGET_SELF, 0, 0, false, true);
             heal->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 class TheRavenianAI : public CreatureAIScript
@@ -103,12 +91,6 @@ class TheRavenianAI : public CreatureAIScript
 
             auto knockaway = addAISpell(SP_RAVENIAN_KNOCKAWAY, 11.0f, TARGET_ATTACKING, 0, 0, false, true);
             knockaway->setAttackStopTimer(1000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 
@@ -131,12 +113,6 @@ class LadyIlluciaBarovAI : public CreatureAIScript
 
             auto dominantMind = addAISpell(SP_ILLUCIA_DOMINATE_MIND, 4.0f, TARGET_ATTACKING, 0, 0, false, true);
             dominantMind->setAttackStopTimer(1000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 
@@ -169,12 +145,6 @@ class RasForstwhisperAI : public CreatureAIScript
             getCreature()->CastSpell(getCreature(), IceArmor->mSpellInfo, true);
         }
 
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
-
     protected:
 
         CreatureAISpells* IceArmor;
@@ -193,12 +163,6 @@ class JandiceBarovAI : public CreatureAIScript
 
             auto summonIllusion = addAISpell(SP_JANDICE_SUMMON_ILLUSION, 5.0f, TARGET_SELF, 0, 0, false, true);
             summonIllusion->setAttackStopTimer(1000);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 
@@ -220,12 +184,6 @@ class KormokAI : public CreatureAIScript
         void OnCombatStart(Unit* /*mTarget*/) override
         {
             getCreature()->CastSpell(getCreature(), boneShield->mSpellInfo, true);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 
     protected:
@@ -289,12 +247,6 @@ class LordAlexeiBarovAI : public CreatureAIScript
             getCreature()->CastSpell(getCreature(), unholyAura->mSpellInfo, true);
         }
 
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
-
     protected:
 
         CreatureAISpells* unholyAura;
@@ -317,12 +269,6 @@ class LorekeeperPolkeltAI : public CreatureAIScript
             auto noxiousCatalyst = addAISpell(SP_LORE_NOXIOUS_CATALYST, 10.0f, TARGET_ATTACKING, 0, 0, false, true);
             noxiousCatalyst->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 class DarkmasterGandlingAI : public CreatureAIScript
@@ -343,12 +289,6 @@ class DarkmasterGandlingAI : public CreatureAIScript
         void OnCombatStart(Unit* /*mTarget*/) override
         {
             getCreature()->CastSpell(getCreature(), shadowShield->mSpellInfo, true);
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 
     protected:

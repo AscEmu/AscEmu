@@ -254,17 +254,13 @@ const uint32 MAX_THRALLWP1 = 27;
 //    void OnCombatStart(Unit* pTarget)
 //    {
 //        if (pInstance)
-//            pInstance->SetData(OHF_PHASE_2, OHF_DATA_IN_PROGRESS);
-//
-//        
+//            pInstance->SetData(OHF_PHASE_2, OHF_DATA_IN_PROGRESS); 
 //    }
 //
 //    void OnCombatStop(Unit* pTarget)
 //    {
 //        if (pInstance)
 //            pInstance->SetData(OHF_PHASE_2, OHF_DATA_PERFORMED);
-//
-//        
 //    }
 //};
 //
@@ -292,7 +288,6 @@ const uint32 MAX_THRALLWP1 = 27;
 //
 //    void OnCombatStop(Unit* pTarget)
 //    {
-//        
 //        SetWaypointToMove(m_currentWp);
 //    }
 //

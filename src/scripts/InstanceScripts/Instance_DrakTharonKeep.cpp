@@ -58,8 +58,6 @@ class TrollgoreAI : public CreatureAIScript
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             _removeTimer(invastion_timer);
         }
 
@@ -161,8 +159,6 @@ class NovosTheSummonerAI : public CreatureAIScript
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             for (uint8 i = 0; i < 4; i++)
             {
                 if (getCreature()->m_ObjectSlots[i])
@@ -371,12 +367,6 @@ class CrystalHandlerAI : public CreatureAIScript
                 addAISpell(49668, 50.0f, TARGET_ATTACKING, 0, 4);    //FlashofDarkness
         }
 
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
-
         void OnDied(Unit* /*mKiller*/) override
         {
             Unit* Novos = getCreature()->GetMapMgr()->GetUnit(getCreature()->GetSummonedByGUID());
@@ -418,12 +408,6 @@ class KingDreadAI : public CreatureAIScript
 
             addAISpell(22686, 30.0f, TARGET_ATTACKING, 0, 5); //BellowingRoar
             addAISpell(48878, 40.0f, TARGET_ATTACKING, 0, 5); //PiercingSlash
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 };
 
@@ -476,8 +460,6 @@ class TheProphetTaronjaAI : public CreatureAIScript
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             phase_timer = 0;
             phase_length = 0;
             getCreature()->SetDisplayId(getCreature()->GetNativeDisplayId());

@@ -23,7 +23,6 @@
 #include "Instance_BlackrockSpire.h"
 
 
-// General Drakkisath AI by Soulshifter
 class GeneralDrakkisathAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(GeneralDrakkisathAI);
@@ -41,16 +40,9 @@ class GeneralDrakkisathAI : public CreatureAIScript
             auto thunderclap = addAISpell(SPELL_THUNDERCLAP, 15.0f, TARGET_VARIOUS);
             thunderclap->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 
-// Pyroguard Embersser AI by Soulshifter
 class PyroguardEmbersserAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(PyroguardEmbersserAI);
@@ -65,15 +57,8 @@ class PyroguardEmbersserAI : public CreatureAIScript
             auto pyroblast = addAISpell(SPELL_PYROBLAST, 30.0f, TARGET_ATTACKING);
             pyroblast->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
-// Warchief Rend Blackhand AI by Soulshifter
 //\todo  PHASES. D:
 class RendBlackhandAI : public CreatureAIScript
 {
@@ -89,16 +74,9 @@ class RendBlackhandAI : public CreatureAIScript
             auto thunderclap = addAISpell(SPELL_THUNDERCLAP_WR, 30.0f, TARGET_ATTACKING);
             thunderclap->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 
-// Gyth AI by Soulshifter
 class GythAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(GythAI);
@@ -119,12 +97,6 @@ class GythAI : public CreatureAIScript
         void OnCombatStart(Unit* /*mTarget*/) override
         {
             HasSummoned = false;
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 
         void AIUpdate() override
@@ -150,7 +122,6 @@ class GythAI : public CreatureAIScript
 };
 
 
-// The Beast AI by Soulshifter
 class TheBeastAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(TheBeastAI);
@@ -165,16 +136,9 @@ class TheBeastAI : public CreatureAIScript
             auto terrifyingroar = addAISpell(SPELL_TERRIFYINGROAR, 20.0f, TARGET_VARIOUS);
             terrifyingroar->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 
-// Highlord Omokk AI by Soulshifter
 class HighlordOmokkAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(HighlordOmokkAI);
@@ -201,16 +165,9 @@ class HighlordOmokkAI : public CreatureAIScript
             auto slow = addAISpell(SPELL_SLOW, 20.0f, TARGET_VARIOUS);
             slow->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 
-// Shadow Hunter Vosh'gajin AI by Soulshifter
 class ShadowHunterVoshAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(ShadowHunterVoshAI);
@@ -225,16 +182,9 @@ class ShadowHunterVoshAI : public CreatureAIScript
             auto cleave = addAISpell(SPELL_CLEAVE4, 30.0f, TARGET_ATTACKING);
             cleave->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 
-// War Master Voone AI by Soulshifter
 class WarMasterVooneAI : public CreatureAIScript
 {
     ADD_CREATURE_FACTORY_FUNCTION(WarMasterVooneAI);
@@ -258,16 +208,9 @@ class WarMasterVooneAI : public CreatureAIScript
         auto throwax = addAISpell(SPELL_THROWAXE, 30.0f, TARGET_ATTACKING);
         throwax->setAttackStopTimer(1000);
     }
-
-    void OnCombatStop(Unit* /*mTarget*/) override
-    {
-        setAIAgent(AGENT_NULL);
-        getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-    }
 };
 
 
-// Mother Smolderweb AI by Soulshifter
 class MotherSmolderwebAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(MotherSmolderwebAI);
@@ -285,16 +228,9 @@ class MotherSmolderwebAI : public CreatureAIScript
             auto webexplosion = addAISpell(SPELL_WEBEXPLOSION, 20.0f, TARGET_ATTACKING);
             webexplosion->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 
-// Urok Doomhowl AI by Soulshifter
 class UrokDoomhowlAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(UrokDoomhowlAI);
@@ -321,16 +257,9 @@ class UrokDoomhowlAI : public CreatureAIScript
             auto slow = addAISpell(SPELL_SLOW_UD, 10.0f, TARGET_VARIOUS);
             slow->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 
-// Quartermaster Zigris AI by Soulshifter
 class QuartermasterZigrisAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(QuartermasterZigrisAI);
@@ -345,16 +274,9 @@ class QuartermasterZigrisAI : public CreatureAIScript
             auto hooked = addAISpell(SPELL_HOOKEDNET, 20.0f, TARGET_ATTACKING);
             hooked->setAttackStopTimer(1000);
         }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
-        }
 };
 
 
-// Halycon AI by Soulshifter
 class HalyconAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(HalyconAI);
@@ -372,12 +294,6 @@ class HalyconAI : public CreatureAIScript
         void OnCombatStart(Unit* /*mTarget*/) override
         {
             HasSummoned = false;
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 
         void AIUpdate() override
@@ -403,7 +319,6 @@ class HalyconAI : public CreatureAIScript
 };
 
 
-// Overlord Wyrmthalak AI by Soulshifter
 class OverlordWyrmthalakAI : public CreatureAIScript
 {
         ADD_CREATURE_FACTORY_FUNCTION(OverlordWyrmthalakAI);
@@ -427,12 +342,6 @@ class OverlordWyrmthalakAI : public CreatureAIScript
         void OnCombatStart(Unit* /*mTarget*/) override
         {
             HasSummoned = false;
-        }
-
-        void OnCombatStop(Unit* /*mTarget*/) override
-        {
-            setAIAgent(AGENT_NULL);
-            getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 
         void AIUpdate() override

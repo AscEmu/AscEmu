@@ -128,8 +128,8 @@ class VigilantShadeAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(VigilantShadeAI);
     VigilantShadeAI(Creature* pCreature);
 
-    void OnCombatStart(Unit* pTarget);
-    void OnCombatStop(Unit* pTarget);
+    void OnCombatStart(Unit* pTarget) override;
+    void OnCombatStop(Unit* pTarget) override;
 };
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -595,17 +595,17 @@ class HeiganTheUncleanAI : public CreatureAIScript
     friend class PlagueFissureGO;
 
     static uint32 CalculateTriggerArea(float pPosX, float pPosY);
-    void    CallEruptionEvent(int32 pTimerId, int32 pNewTime);
-    void    OnCombatStart(Unit* pTarget) override;
-    void    OnCombatStop(Unit* pTarget) override;
-    void    AIUpdate() override;
-    void    Destroy() override;
+    void CallEruptionEvent(int32 pTimerId, int32 pNewTime);
+    void OnCombatStart(Unit* pTarget) override;
+    void OnCombatStop(Unit* pTarget) override;
+    void AIUpdate() override;
+    void Destroy() override;
 
-    std::set<std::pair< uint32, PlagueFissureGO* > >        mFissures;
-    int32                                        mPhaseSwitchTimer;
-    int32                                        mEruptionTimer;
-    int32                                        mEruptionPhase;
-    bool                                        mClockWiseEruption;
+    std::set<std::pair<uint32, PlagueFissureGO*>> mFissures;
+    int32 mPhaseSwitchTimer;
+    int32 mEruptionTimer;
+    int32 mEruptionPhase;
+    bool mClockWiseEruption;
 };
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -660,12 +660,12 @@ class LoathebAI : public CreatureAIScript
     void AIUpdate() override;
     void Destroy() override;
 
-    std::set< SporeAI* >    mSpores;
-    uint32            mDoomStaticTimer;
-    int32            mSporeTimer;
-    int32            mDoomTimer;
-    int32            mDeathbloomTimer;
-    bool            mDeathbloomDamagePhase;
+    std::set<SporeAI*> mSpores;
+    uint32 mDoomStaticTimer;
+    int32 mSporeTimer;
+    int32 mDoomTimer;
+    int32 mDeathbloomTimer;
+    bool mDeathbloomDamagePhase;
 };
 
 /////////////////////////////////////////////////////////////////////////////////
