@@ -2749,7 +2749,7 @@ void AIInterface::_CalcDestinationAndMove(Unit* target, float dist)
 
     if (!generateAndSendSplinePath(newx, newy, newz))
     {
-        ///\todo enter evade mode if creature, not pet, not totem
+        //\todo enter evade mode if creature, not pet, not totem
     }
 }
 

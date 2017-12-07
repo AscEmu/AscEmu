@@ -8,6 +8,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CommonTypes.hpp"
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Chat/ChatDefines.hpp"
+#include "Management/Item.h"
+#include "Units/Creatures/AIInterface.h"
+#include "ScriptMgr.h"
 
 class Creature;
 class CreatureAIScript;
@@ -140,4 +143,344 @@ public:
     Creature* mCustomTargetCreature;
     void setCustomTarget(Creature* targetCreature);
     Creature* getCustomTarget();
+};
+
+class SERVER_DECL CreatureAIScript
+{
+public:
+
+    CreatureAIScript(Creature* creature);
+    virtual ~CreatureAIScript();
+
+    virtual void OnCombatStart(Unit* /*_target*/) {}
+    virtual void OnCombatStop(Unit* /*_target*/) {}
+    virtual void OnDamageTaken(Unit* /*_attacker*/, uint32_t /*_amount*/) {}
+    virtual void OnCastSpell(uint32_t /*_spellId*/) {}
+    virtual void OnTargetParried(Unit* /*_target*/) {}
+    virtual void OnTargetDodged(Unit* /*_target*/) {}
+    virtual void OnTargetBlocked(Unit* /*_target*/, int32 /*_amount*/) {}
+    virtual void OnTargetCritHit(Unit* /*_target*/, int32 /*_amount*/) {}
+    virtual void OnTargetDied(Unit* /*_target*/) {}
+    virtual void OnParried(Unit* /*_target*/) {}
+    virtual void OnDodged(Unit* /*_target*/) {}
+    virtual void OnBlocked(Unit* /*_target*/, int32 /*_amount*/) {}
+    virtual void OnCritHit(Unit* /*_target*/, int32 /*_amount*/) {}
+    virtual void OnHit(Unit* /*_target*/, float /*_amount*/) {}
+    virtual void OnDied(Unit* /*_killer*/) {}
+    virtual void OnAssistTargetDied(Unit* /*_assistTarget*/) {}
+    virtual void OnFear(Unit* /*_fearer*/, uint32_t /*_spellId*/) {}
+    virtual void OnFlee(Unit* /*_flee*/) {}
+    virtual void OnCallForHelp() {}
+    virtual void OnLoad() {}
+    virtual void OnDespawn() {}
+    virtual void OnReachWP(uint32_t /*_waypointId*/, bool /*_isForwards*/) {}
+    virtual void OnLootTaken(Player* /*player*/, ItemProperties const* /*_itemProperties*/) {}
+    virtual void AIUpdate() {}
+    virtual void OnEmote(Player* /*_player*/, EmoteType /*_emote*/) {}
+    virtual void StringFunctionCall(int) {}
+
+    virtual void OnEnterVehicle() {}
+    virtual void OnExitVehicle() {}
+    virtual void OnFirstPassengerEntered(Unit* /*_passenger*/) {}
+    virtual void OnVehicleFull() {}
+    virtual void OnLastPassengerLeft(Unit* /*_passenger*/) {}
+
+    virtual void OnScriptPhaseChange(uint32_t /*_phaseId*/) {}
+    virtual void OnHitBySpell(uint32_t /*_spellId*/, Unit* /*_caster*/) {}
+
+    virtual void Destroy() { delete this; }
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Event default management
+    // \brief: These functions are called internal for script events. Do NOT use them in your scripts!
+    void _internalOnDied();
+    void _internalOnTargetDied();
+    void _internalOnCombatStart();
+    void _internalOnCombatStop();
+    void _internalAIUpdate();
+    void _internalOnScriptPhaseChange();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // player
+    Player* getNearestPlayer();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // creature
+    CreatureAIScript* getNearestCreatureAI(uint32_t entry);
+
+    Creature* getNearestCreature(uint32_t entry);
+    Creature* getNearestCreature(float posX, float posY, float posZ, uint32_t entry);
+
+    float getRangeToObject(Object* object);
+
+    CreatureAIScript* spawnCreatureAndGetAIScript(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId = 0);
+
+    Creature* spawnCreature(uint32_t entry, LocationVector pos, uint32_t factionId = 0);
+    Creature* spawnCreature(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId = 0);
+    void despawn(uint32_t delay = 2000, uint32_t respawnTime = 0);
+
+    bool isAlive();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // AIAgent
+    void setAIAgent(AI_Agent agent);
+    uint8_t getAIAgent();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // movement
+    void setRooted(bool set);
+    bool isRooted();
+
+    void setFlyMode(bool fly);
+
+    // single point movement
+    void moveTo(float posX, float posY, float posZ, bool setRun = true);
+    void moveToUnit(Unit* unit);
+    void moveToSpawn();
+    void stopMovement();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // wp movement
+    Movement::WayPoint* CreateWaypoint(int pId, uint32_t pWaittime, uint32_t pMoveFlag, Movement::Location pCoords);
+    void AddWaypoint(Movement::WayPoint* pWayPoint);
+    void ForceWaypointMove(uint32_t pWaypointId);
+    void SetWaypointToMove(uint32_t pWaypointId);
+    void StopWaypointMovement();
+    void SetWaypointMoveType(Movement::WaypointMovementScript wp_move_script_type);
+    uint32_t GetCurrentWaypoint();
+    size_t GetWaypointCount();
+    bool HasWaypoints();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // combat setup
+    bool canEnterCombat();
+    void setCanEnterCombat(bool enterCombat);
+    bool _isInCombat();
+    void _delayNextAttack(int32_t milliseconds);
+
+    void _setMeleeDisabled(bool disable);
+    bool _isMeleeDisabled();
+    void _setRangedDisabled(bool disable);
+    bool _isRangedDisabled();
+    void _setCastDisabled(bool disable);
+    bool _isCastDisabled();
+    void _setTargetingDisabled(bool disable);
+    bool _isTargetingDisabled();
+
+    void _clearHateList();
+    void _wipeHateList();
+    int32_t _getHealthPercent();
+    int32_t _getManaPercent();
+    void _regenerateHealth();
+
+    bool _isCasting();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // script phase
+    // \brief: script phase is reset to 0 in _internalOnDied() and _internalOnCombatStop()
+private:
+
+    uint32_t mScriptPhase;
+
+public:
+
+    uint32_t getScriptPhase();
+    void setScriptPhase(uint32_t scriptPhase);
+    void resetScriptPhase();
+    bool isScriptPhase(uint32_t scriptPhase);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // timers
+    //\brief: timers are stored and updated in InstanceScript if a instance script is
+    //        available (instanceUpdateFrequency). If the creature is on a map without a
+    //        instance script, the timer gets updated locale (AIUpdateFrequency).
+private:
+
+    //reference to instance time - used for creatures located on a map with a instance script.
+    typedef std::list<uint32_t> creatureTimerIds;
+    creatureTimerIds mCreatureTimerIds;
+
+    //creature timer - used for creatures located on a map with NO instance script.
+    typedef std::pair<uint32_t, uint32_t> CreatureTimerPair;
+    typedef std::vector<CreatureTimerPair> CreatureTimerArray;
+
+    CreatureTimerArray mCreatureTimer;
+
+    uint32_t mCreatureTimerCount;
+
+public:
+
+    uint32_t _addTimer(uint32_t durationInMs);
+    uint32_t _getTimeForTimer(uint32_t timerId);
+    void _removeTimer(uint32_t& timerId);
+    void _resetTimer(uint32_t timerId, uint32_t durationInMs);
+    bool _isTimerFinished(uint32_t timerId);
+    void _cancelAllTimers();
+
+    uint32_t _getTimerCount();
+
+    //only for internal use!
+    void updateAITimers();
+
+    //used for debug
+    void displayCreatureTimerList(Player* player);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // ai upodate frequency
+private:
+
+    uint32_t mAIUpdateFrequency;
+
+    uint32_t mCustomAIUpdateDelayTimerId;
+    uint32_t mCustomAIUpdateDelay;
+public:
+
+    //new
+    void registerAiUpdateFrequency();
+    void removeAiUpdateFrequency();
+
+    //old stuff
+    void SetAIUpdateFreq(uint32_t pUpdateFreq);
+    uint32_t GetAIUpdateFreq();
+
+    void RegisterAIUpdateEvent(uint32_t frequency);
+    void ModifyAIUpdateEvent(uint32_t newfrequency);
+    void RemoveAIUpdateEvent();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // appearance
+    void _setScale(float scale);
+    float _getScale();
+    void _setDisplayId(uint32_t displayId);
+    void _setWieldWeapon(bool setWieldWeapon);
+    void _setDisplayWeapon(bool setMainHand, bool setOffHand);
+    void _setDisplayWeaponIds(uint32_t itemId1, uint32_t itemId2);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // spell
+    typedef std::vector<CreatureAISpells*> CreatureAISpellsArray;
+    CreatureAISpellsArray mCreatureAISpells;
+
+public:
+
+    uint32_t mSpellWaitTimerId;
+
+    //addAISpell(spellID, Chance, TargetType, Duration (s), waitBeforeNextCast (s))
+    CreatureAISpells* addAISpell(uint32_t spellId, float castChance, uint32_t targetType, uint32_t duration = 0, uint32_t cooldown = 0, bool forceRemove = false, bool isTriggered = false);
+
+    void _applyAura(uint32_t spellId);
+    void _removeAura(uint32_t spellId);
+    void _removeAllAuras();
+
+    void _removeAuraOnPlayers(uint32_t spellId);
+    void _castOnInrangePlayers(uint32_t spellId, bool triggered = false);
+    void _castOnInrangePlayersWithinDist(float minDistance, float maxDistance, uint32_t spellId, bool triggered = false);
+
+    void _castAISpell(CreatureAISpells* aiSpell);
+
+    void _setTargetToChannel(Unit* target, uint32_t spellId);
+    void _unsetTargetToChannel();
+    Unit* _getTargetToChannel();
+
+    Unit* mCurrentSpellTarget;
+    CreatureAISpells* mLastCastedSpell;
+
+    // only for internal use
+    void newAIUpdateSpellSystem();
+    void castSpellOnRandomTarget(CreatureAISpells* AiSpell);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // gameobject
+    GameObject* getNearestGameObject(uint32_t entry);
+    GameObject* getNearestGameObject(float posX, float posY, float posZ, uint32_t entry);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // chat message
+    enum EmoteEventType
+    {
+        Event_OnCombatStart = 0,
+        Event_OnTargetDied = 1,
+        Event_OnDied = 2,
+        Event_OnTaunt = 3,
+        Event_OnIdle = 4     // new not part of db definitions!
+    };
+
+private:
+
+    typedef std::vector<uint32_t> definedEmoteVector;
+    definedEmoteVector mEmotesOnCombatStart;
+    definedEmoteVector mEmotesOnTargetDied;
+    definedEmoteVector mEmotesOnDied;
+    definedEmoteVector mEmotesOnTaunt;
+    definedEmoteVector mEmotesOnIdle;
+
+public:
+
+    void sendChatMessage(uint8_t type, uint32_t soundId, std::string text);
+    void sendDBChatMessage(uint32_t textId);
+
+    void sendRandomDBChatMessage(std::vector<uint32_t> emoteVector);
+
+    void addEmoteForEvent(uint32_t eventType, uint32_t scriptTextId);
+
+    void sendAnnouncement(std::string stringAnnounce);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // idle emote timer
+    // \brief: idle timer is seperated from custom timers. If isIdleEmoteEnabled is true,
+    //         a random chat message is send by _internalAIUpdate stored in mEmotesOnIdle
+private:
+
+    bool isIdleEmoteEnabled;
+    uint32_t idleEmoteTimerId;
+
+    uint32_t idleEmoteTimeMin;
+    uint32_t idleEmoteTimeMax;
+
+public:
+
+    void enableOnIdleEmote(bool enable, uint32_t durationInMs = 0);
+    void setIdleEmoteTimerId(uint32_t timerId);
+    uint32_t getIdleEmoteTimerId();
+    void resetIdleEmoteTime(uint32_t durationInMs);
+
+    void setRandomIdleEmoteTime(uint32_t minTime, uint32_t maxTime);
+    void generateNextRandomIdleEmoteTime();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // basic
+private:
+
+    Creature* _creature;
+
+public:
+
+    Creature* getCreature() { return _creature; }
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // instance
+    InstanceScript* getInstanceScript();
+
+    bool _isHeroic();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // linked creature AI scripts
+private:
+
+    CreatureAIScript* linkedCreatureAI;
+
+public:
+
+    CreatureAIScript* getLinkedCreatureAIScript() { return linkedCreatureAI; }
+    void setLinkedCreatureAIScript(CreatureAIScript* creatureAI);
+    void removeLinkToCreatureAIScript();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // target
+    Unit* getBestPlayerTarget(TargetFilter pFilter = TargetFilter_None, float pMinRange = 0.0f, float pMaxRange = 0.0f);
+    Unit* getBestUnitTarget(TargetFilter pFilter = TargetFilter_None, float pMinRange = 0.0f, float pMaxRange = 0.0f);
+    Unit* getBestTargetInArray(UnitArray& pTargetArray, TargetFilter pFilter);
+    Unit* getNearestTargetInArray(UnitArray& pTargetArray);
+    Unit* getSecondMostHatedTargetInArray(UnitArray& pTargetArray);
+    bool isValidUnitTarget(Object* pObject, TargetFilter pFilter, float pMinRange = 0.0f, float pMaxRange = 0.0f);
 };

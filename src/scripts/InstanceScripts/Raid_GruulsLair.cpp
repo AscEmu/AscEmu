@@ -125,7 +125,7 @@ class HighKingMaulgarAI : public CreatureAIScript
                 Unit* pAdd = getNearestCreature(Adds[i]);
                 if (pAdd != NULL && pAdd->isAlive())
                 {
-                    Unit* pTarget = GetBestPlayerTarget();
+                    Unit* pTarget = getBestPlayerTarget();
                     if (pTarget != NULL)
                     {
                         pAdd->GetAIInterface()->AttackReaction(pTarget, 200);
@@ -329,7 +329,6 @@ class WildFelStalkerAI : public CreatureAIScript
         WildFelStalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             addAISpell(WILD_FEL_STALKER_WILD_BITE, 10.0f, TARGET_ATTACKING, 0, 10);
-            AggroRandomPlayer(200);
         }
 };
 
@@ -370,7 +369,7 @@ class KroshFirehandAI : public CreatureAIScript
             {
                 if (mBlastWaveTimer == -1 || _isTimerFinished(mBlastWaveTimer))
                 {
-                    Unit* unit = GetBestUnitTarget(TargetFilter_Closest);
+                    Unit* unit = getBestUnitTarget(TargetFilter_Closest);
                     if (unit && getRangeToObject(unit) < 15.0f)
                     {
                         _castAISpell(mBlastWave);
@@ -542,20 +541,6 @@ class GruulTheDragonkillerAI : public CreatureAIScript
                     _resetTimer(mHurtfulTimer, 8000);
                 }
             }
-        }
-
-        UnitArray GetInRangePlayers()
-        {
-            UnitArray TargetArray;
-            for (std::set< Object* >::iterator itr = getCreature()->GetInRangePlayerSetBegin(); itr != getCreature()->GetInRangePlayerSetEnd(); ++itr)
-            {
-                if (IsValidUnitTarget(*itr, TargetFilter_None))
-                {
-                    TargetArray.push_back(static_cast< Unit* >(*itr));
-                }
-            }
-
-            return TargetArray;
         }
 
         uint32 mGrowthStacks;        // temporary way to store it

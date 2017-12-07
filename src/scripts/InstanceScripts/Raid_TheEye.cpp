@@ -308,12 +308,6 @@ class SolariumAgentAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(SolariumAgentAI);
         SolariumAgentAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            _setDespawnWhenInactive(true);    //despawn creature if it gets out of combat or dead
-        }
-
-        void OnLoad() override
-        {
-            AggroNearestUnit(); //Aggro on spawn
         }
 };
 
@@ -326,12 +320,6 @@ class SolariumPriestAI : public CreatureAIScript
             greaterHeal->setMinMaxDistance(0.0f, 40.0f);
 
             addAISpell(SOLARIUMPRIEST_HOLY_SMITE, 80.0f, TARGET_ATTACKING, 3, 0);
-            _setDespawnWhenInactive(true);    //despawn creature if it gets out of combat or dead
-        }
-
-        void OnLoad() override
-        {
-            AggroNearestUnit(); //Aggro on spawn
         }
 };
 
@@ -413,7 +401,7 @@ class DarkenerAI : public CreatureAIScript
 
         bool SwitchTarget()
         {
-            mCurrentTarget = GetBestPlayerTarget();
+            mCurrentTarget = getBestPlayerTarget();
             if (mCurrentTarget == getCreature()->GetAIInterface()->getNextTarget())
                 return true;
 
@@ -509,7 +497,7 @@ class CapernianAI : public CreatureAIScript
         {
             setAIAgent(AGENT_NULL);
             setRooted(false);
-            Unit* pClosestTarget = GetBestPlayerTarget(TargetFilter_Closest);
+            Unit* pClosestTarget = getBestPlayerTarget(TargetFilter_Closest);
             if (pClosestTarget != NULL && getRangeToObject(pClosestTarget) <= 6.0f)
             {
                 _castAISpell(mArcaneBurst);
@@ -608,7 +596,7 @@ class PhoenixAI : public CreatureAIScript
         PhoenixAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             RegisterAIUpdateEvent(1000);
-            Unit* pTarget = GetBestPlayerTarget();
+            Unit* pTarget = getBestPlayerTarget();
             if (pTarget != NULL)
             {
                 getCreature()->GetAIInterface()->AttackReaction(pTarget, 500, 0);
@@ -619,7 +607,7 @@ class PhoenixAI : public CreatureAIScript
 
         void OnTargetDied(Unit* /*mTarget*/) override
         {
-            Unit* pTarget = GetBestPlayerTarget(TargetFilter_Closest);
+            Unit* pTarget = getBestPlayerTarget(TargetFilter_Closest);
             if (pTarget != NULL)
             {
                 getCreature()->GetAIInterface()->AttackReaction(pTarget, 500);
@@ -700,7 +688,7 @@ class WeaponsAI : public CreatureAIScript
         {
             getCreature()->m_noRespawn = true;
 
-            Unit* pTarget = GetBestPlayerTarget();
+            Unit* pTarget = getBestPlayerTarget();
             if (pTarget != NULL)
             {
                 getCreature()->GetAIInterface()->AttackReaction(pTarget, 200, 0);
@@ -709,7 +697,7 @@ class WeaponsAI : public CreatureAIScript
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            Unit* pTarget = GetBestPlayerTarget();
+            Unit* pTarget = getBestPlayerTarget();
             if (pTarget != NULL)
             {
                 getCreature()->GetAIInterface()->AttackReaction(pTarget, 500);
@@ -957,7 +945,7 @@ class KaelThasAI : public CreatureAIScript
             pCreature->GetAIInterface()->SetAllowedToEnterCombat(true);
             pCreature->setUInt64Value(UNIT_FIELD_FLAGS, 0);
 
-            Unit* pTarget = GetBestPlayerTarget();
+            Unit* pTarget = getBestPlayerTarget();
             if (pTarget != NULL)
             {
                 pCreature->GetAIInterface()->AttackReaction(pTarget, 200, 0);
@@ -1063,10 +1051,6 @@ class KaelThasAI : public CreatureAIScript
                         {
                             pCreature->GetAIInterface()->SetAllowedToEnterCombat(true);
                             pCreature->setUInt64Value(UNIT_FIELD_FLAGS, 0);
-                            if (pCreature->GetScript() != nullptr)
-                            {
-                                static_cast< CreatureAIScript* >(pCreature->GetScript())->AggroNearestUnit(200);
-                            }
                         }
                     }
 
@@ -1144,7 +1128,7 @@ class KaelThasAI : public CreatureAIScript
 
         Unit* GetRandomPlayer()
         {
-            return GetBestPlayerTarget(TargetFilter_NotCurrent);
+            return getBestPlayerTarget(TargetFilter_NotCurrent);
         }
 
         CreatureAISpells* mSummonWeapons;

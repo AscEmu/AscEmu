@@ -89,11 +89,6 @@ class AttumenTheHuntsmanAI : public CreatureAIScript
         addEmoteForEvent(Event_OnTaunt, 8823);
     }
 
-    void OnLoad() override
-    {
-        AggroNearestUnit(); //Aggro on spawn
-    }
-
     void OnCombatStop(Unit* /*pTarget*/) override
     {
         despawn(10000);
@@ -103,13 +98,13 @@ class AttumenTheHuntsmanAI : public CreatureAIScript
     {
         if (isScriptPhase(1))
         {
-            if (GetLinkedCreature() && GetLinkedCreature()->isAlive() && _getHealthPercent() <= 25 && !_isCasting())
+            if (getLinkedCreatureAIScript() && getLinkedCreatureAIScript()->isAlive() && _getHealthPercent() <= 25 && !_isCasting())
             {
                 setScriptPhase(2);
                 _setMeleeDisabled(false);
                 _setCastDisabled(true);
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 9168, "Come Midnight, let's disperse this petty rabble!");
-                CreatureAIScript* midnight = static_cast<CreatureAIScript*>(GetLinkedCreature());
+                CreatureAIScript* midnight = static_cast<CreatureAIScript*>(getLinkedCreatureAIScript());
                 midnight->setScriptPhase(2);
                 midnight->moveToUnit(getCreature());
                 midnight->_setMeleeDisabled(false);
@@ -134,9 +129,9 @@ class MidnightAI : public CreatureAIScript
 
     void OnTargetDied(Unit* /*pTarget*/) override
     {
-        if (GetLinkedCreature() && GetLinkedCreature()->isAlive())
+        if (getLinkedCreatureAIScript() && getLinkedCreatureAIScript()->isAlive())
         {
-            static_cast<CreatureAIScript*>(GetLinkedCreature())->sendChatMessage(CHAT_MSG_MONSTER_YELL, 9173, "Well done Midnight!");
+            static_cast<CreatureAIScript*>(getLinkedCreatureAIScript())->sendChatMessage(CHAT_MSG_MONSTER_YELL, 9173, "Well done Midnight!");
         }
     }
 
@@ -144,20 +139,20 @@ class MidnightAI : public CreatureAIScript
     {
         if (isScriptPhase(1))
         {
-            if (GetLinkedCreature() == nullptr && _getHealthPercent() <= 95 && !_isCasting())
+            if (getLinkedCreatureAIScript() == nullptr && _getHealthPercent() <= 95 && !_isCasting())
             {
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "Midnight calls for her master!");
                 CreatureAIScript* attumen = spawnCreatureAndGetAIScript(CN_ATTUMEN, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation());
                 if (attumen != nullptr)
                 {
-                    SetLinkedCreature(attumen);
-                    attumen->SetLinkedCreature(this);
+                    setLinkedCreatureAIScript(attumen);
+                    attumen->setLinkedCreatureAIScript(this);
                 }
             }
-            else if (GetLinkedCreature() && GetLinkedCreature()->isAlive() && _getHealthPercent() <= 25 && !_isCasting())
+            else if (getLinkedCreatureAIScript() && getLinkedCreatureAIScript()->isAlive() && _getHealthPercent() <= 25 && !_isCasting())
             {
                 setScriptPhase(2);
-                CreatureAIScript* attumen = static_cast<CreatureAIScript*>(GetLinkedCreature());
+                CreatureAIScript* attumen = static_cast<CreatureAIScript*>(getLinkedCreatureAIScript());
                 moveToUnit(attumen->getCreature());
                 _setMeleeDisabled(false);
                 attumen->setScriptPhase(2);
@@ -168,9 +163,9 @@ class MidnightAI : public CreatureAIScript
         }
         else if (isScriptPhase(2))
         {
-            if (GetLinkedCreature() && GetLinkedCreature()->isAlive())
+            if (getLinkedCreatureAIScript() && getLinkedCreatureAIScript()->isAlive())
             {
-                CreatureAIScript* attumen = static_cast<CreatureAIScript*>(GetLinkedCreature());
+                CreatureAIScript* attumen = static_cast<CreatureAIScript*>(getLinkedCreatureAIScript());
                 if (attumen && getRangeToObject(attumen->getCreature()) <= 15)
                 {
                     attumen->_regenerateHealth();
@@ -945,9 +940,6 @@ class AstralFlareAI : public CreatureAIScript
         addAISpell(ASTRAL_FLARE_PASSIVE, 100.0f, TARGET_SELF, 0, 3);
         addAISpell(ASTRAL_FLARE_VISUAL, 100.0f, TARGET_SELF, 0, 6);
         addAISpell(30235, 20.0f, TARGET_ATTACKING);
-
-        _setDespawnWhenInactive(true);
-        AggroNearestPlayer();
     }
 };
 
@@ -1939,8 +1931,8 @@ class MalchezaarAI : public CreatureAIScript
         CreatureAIScript* infernalDummy = spawnCreatureAndGetAIScript(CN_DUMMY, dumX, dumY, dumZ, 0);
         if (infernalDummy != nullptr)
         {
-            SetLinkedCreature(infernalDummy);
-            infernalDummy->SetLinkedCreature(this);
+            setLinkedCreatureAIScript(infernalDummy);
+            infernalDummy->setLinkedCreatureAIScript(this);
         }
 
         ranX = 0;
@@ -1985,8 +1977,8 @@ class MalchezaarAI : public CreatureAIScript
         for (uint8 i = 0; i < 5; ++i)
             Enfeeble_Targets[i] = 0;
 
-        if (GetLinkedCreature() != NULL)
-            GetLinkedCreature()->getCreature()->Despawn(10000, 0);
+        if (getLinkedCreatureAIScript() != NULL)
+            getLinkedCreatureAIScript()->getCreature()->Despawn(10000, 0);
 
         GameObject* MDoor = getNearestGameObject(-11018.5f, -1967.92f, 276.652f, 185134);
         // Open door
@@ -2003,8 +1995,8 @@ class MalchezaarAI : public CreatureAIScript
     {
         sendDBChatMessage(2030);     // I refuse to concede defeat. I am a prince of the Eredar! I am...
 
-        if (GetLinkedCreature() != NULL)
-            GetLinkedCreature()->getCreature()->Despawn(10000, 0);
+        if (getLinkedCreatureAIScript() != NULL)
+            getLinkedCreatureAIScript()->getCreature()->Despawn(10000, 0);
 
         Creature* MAxes = NULL;
         MAxes = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(),
@@ -2175,10 +2167,10 @@ class MalchezaarAI : public CreatureAIScript
 
         ranX = RandomFloat(113.47f) - 11019.37f;
         ranY = RandomFloat(36.951f) - 2011.549f;
-        //if (GetLinkedCreature() != NULL)
+        //if (getLinkedCreatureAIScript() != NULL)
         //{
-        //    GetLinkedCreature()->getCreature()->CastSpellAoF(LocationVector(ranX, ranY, 275.0f), spells[2].info, spells[2].instant); // Shoots the missile
-        //    float dist = GetLinkedCreature()->getCreature()->CalcDistance(ranX, ranY, 275.0f);
+        //    getLinkedCreatureAIScript()->getCreature()->CastSpellAoF(LocationVector(ranX, ranY, 275.0f), spells[2].info, spells[2].instant); // Shoots the missile
+        //    float dist = getLinkedCreatureAIScript()->getCreature()->CalcDistance(ranX, ranY, 275.0f);
         //    uint32 dtime = (uint32)(dist / spells[2].info->getSpeed());
         //    m_spawn_infernal = (uint32)time(NULL) + dtime + 1;
         //    m_infernal = true;

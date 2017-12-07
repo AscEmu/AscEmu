@@ -40,8 +40,6 @@ class BaronAquanisAI : public CreatureAIScript
         BaronAquanisAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             addAISpell(15043, 20.0f, TARGET_ATTACKING, 3, 0);    // Frostbolt
-            AggroNearestPlayer();
-            _setDespawnWhenInactive(true);
         }
 };
 

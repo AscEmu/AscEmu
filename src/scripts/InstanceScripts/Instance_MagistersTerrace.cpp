@@ -263,7 +263,6 @@ class Priestess_DelrissaAI : public CreatureAIScript
         if (_isTimerFinished(mClearHateList))
         {
             _clearHateList();
-            AggroRandomUnit();
             _resetTimer(mClearHateList, 15000);
         }
     }

@@ -329,8 +329,6 @@ void MaexxnaAI::AIUpdate()
             if (Spiderling != nullptr)
             {
                 Spiderling->getCreature()->m_noRespawn = true;
-                Spiderling->_setDespawnWhenInactive(true);
-                static_cast<CreatureAIScript*>(Spiderling)->AggroRandomPlayer(1000);
             }
         }
 
@@ -574,16 +572,6 @@ void GrandWidowFaerlinaAI::OnCombatStart(Unit* /*pTarget*/)
     GameObject* WebGate = getNearestGameObject(3318.65f, -3695.85f, 259.094f, 181235);
     if (WebGate != NULL)
         WebGate->SetState(GO_STATE_CLOSED);
-
-    for (std::set< NaxxramasWorshipperAI* >::iterator Iter = mWorshippers.begin(); Iter != mWorshippers.end(); ++Iter)
-    {
-        (*Iter)->AggroNearestPlayer(200);
-    }
-
-    for (std::set< NaxxramasFollowerAI* >::iterator Iter = mFollowers.begin(); Iter != mFollowers.end(); ++Iter)
-    {
-        (*Iter)->AggroNearestPlayer(200);
-    }
 }
 
 void GrandWidowFaerlinaAI::OnCombatStop(Unit* /*pTarget*/)
@@ -794,14 +782,7 @@ void AnubRekhanAI::OnCombatStart(Unit* /*pTarget*/)
     mLocaleEnrageTimerId = _addTimer(600000);
     mLocustSwarmTimer = _addTimer(70000 + RandomUInt(50) * 1000);
 
-    if (_isHeroic())
-    {
-        for (std::set< CryptGuardAI* >::iterator Iter = mCryptGuards.begin(); Iter != mCryptGuards.end(); ++Iter)
-        {
-            (*Iter)->AggroRandomPlayer(200);
-        }
-    }
-    else
+    if (!_isHeroic())
         mCryptSpawnTimer = _addTimer(20000);
 }
 
@@ -856,7 +837,6 @@ void AnubRekhanAI::AIUpdate()
                 CryptAI->getCreature()->m_noRespawn = true;
                 CryptAI->mAnubRekhanAI = this;
                 mCryptGuards.insert(CryptAI);
-                CryptAI->AggroRandomPlayer(200);
             }
         }
 
@@ -868,7 +848,6 @@ void AnubRekhanAI::AIUpdate()
                 CryptAI->getCreature()->m_noRespawn = true;
                 CryptAI->mAnubRekhanAI = this;
                 mCryptGuards.insert(CryptAI);
-                CryptAI->AggroRandomPlayer(200);
             }
 
             _castAISpell(mLocustSwarm);
@@ -1165,7 +1144,7 @@ void EyeStalkerAI::AIUpdate()
 
         if (getRangeToObject(CurrentTarget) > MaxRange)
         {
-            Unit* NewTarget = GetBestUnitTarget(TargetFilter_Closest);
+            Unit* NewTarget = getBestUnitTarget(TargetFilter_Closest);
             if (NewTarget != NULL && getRangeToObject(NewTarget) <= MaxRange)
             {
                 getCreature()->GetAIInterface()->setNextTarget(NewTarget);
@@ -1328,7 +1307,6 @@ void NothThePlaguebringerAI::AIUpdate()
                 if (WarriorAI != nullptr)
                 {
                     WarriorAI->getCreature()->m_noRespawn = true;
-                    WarriorAI->AggroNearestPlayer(200);
                     WarriorAI->mNothAI = this;
                     mWarriors.insert(WarriorAI);
                 }
@@ -1390,7 +1368,6 @@ void NothThePlaguebringerAI::AIUpdate()
                 if (ChampionAI != nullptr)
                 {
                     ChampionAI->getCreature()->m_noRespawn = true;
-                    ChampionAI->AggroNearestPlayer(200);
                     ChampionAI->mNothAI = this;
                     mChampions.insert(ChampionAI);
                 }
@@ -1417,7 +1394,6 @@ void NothThePlaguebringerAI::AIUpdate()
                 if (GuardianAI != nullptr)
                 {
                     GuardianAI->getCreature()->m_noRespawn = true;
-                    GuardianAI->AggroNearestPlayer(200);
                     GuardianAI->mNothAI = this;
                     mGuardians.insert(GuardianAI);
                 }
@@ -1915,7 +1891,6 @@ void LoathebAI::AIUpdate()
             if (Spore != nullptr)
             {
                 Spore->getCreature()->m_noRespawn = true;
-                Spore->AggroRandomPlayer(200);
                 Spore->mLoathebAI = this;
                 mSpores.insert(Spore);
             }
@@ -2090,8 +2065,6 @@ void ShadeOfNaxxramasAI::OnDied(Unit* /*pKiller*/)
     if (Ghost != nullptr)
     {
         Ghost->getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
-        Ghost->_setDespawnWhenInactive(true);
-        static_cast<CreatureAIScript*>(Ghost)->AggroNearestPlayer(200);
     }
 
     for (std::set< PortalOfShadowsAI* >::iterator Iter = mPortals.begin(); Iter != mPortals.end(); ++Iter)
@@ -2164,8 +2137,6 @@ void PortalOfShadowsAI::AIUpdate()
             if (Ghost != nullptr)
             {
                 Ghost->getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
-                Ghost->_setDespawnWhenInactive(true);
-                static_cast<CreatureAIScript*>(Ghost)->AggroNearestPlayer(200);
             }
 
             _resetTimer(mSpawnTimer, 15000);
@@ -2328,9 +2299,7 @@ void DeathchargerSteedAI::OnCombatStop(Unit* /*pTarget*/)
 {
     if (mDeathKnightAI != NULL)
     {
-        if (mDeathKnightAI->_isInCombat())
-            AggroNearestUnit(200);
-        else
+        if (!mDeathKnightAI->_isInCombat())
         {
             mDeathKnightAI->mChargerAI = NULL;
             mDeathKnightAI = NULL;

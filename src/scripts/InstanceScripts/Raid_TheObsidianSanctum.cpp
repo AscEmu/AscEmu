@@ -353,11 +353,6 @@ class LavaBlazeAI : public CreatureAIScript
         LavaBlazeAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {}
 
-        void OnLoad() override
-        {
-            AggroNearestPlayer(1);
-        }
-
         void OnCombatStop(Unit* /*pTarget*/) override
         {
             despawn(1000, 0);

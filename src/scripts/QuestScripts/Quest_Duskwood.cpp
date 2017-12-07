@@ -52,7 +52,6 @@ public:
         if (_isTimerFinished(mElizaCombatTimer))
         {
             setCanEnterCombat(true);
-            AggroNearestUnit();
             _removeTimer(mElizaCombatTimer);
         }
         if (_getHealthPercent() >= 10 && _getHealthPercent() <= 98 && !_isCasting())

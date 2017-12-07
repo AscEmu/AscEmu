@@ -280,7 +280,7 @@ class IckAI : public CreatureAIScript
                 }
             }
 
-            Unit* pTarget = GetBestPlayerTarget(TargetFilter_NotCurrent);
+            Unit* pTarget = getBestPlayerTarget(TargetFilter_NotCurrent);
             if (pTarget != NULL)
             {
                 _clearHateList();

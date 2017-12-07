@@ -914,7 +914,6 @@ class ShadowmoonFallenAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(ShadowmoonFallenAI);
         ShadowmoonFallenAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            AggroNearestPlayer(200);
         }
 };
 
@@ -1129,15 +1128,10 @@ class AqueousLordAI : public CreatureAIScript
 
         void AIUpdate() override
         {
-            if (Util::getRandomUInt(0, 100) < 10 && _isTimerFinished(mAqueousTimerId))
+            /*if (Util::getRandomUInt(0, 100) < 10 && _isTimerFinished(mAqueousTimerId))
             {
                 CreatureAIScript* pSpawnAI = spawnCreatureAndGetAIScript(CN_AQUEOUS_SPAWN, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation());
-                if (pSpawnAI != nullptr)
-                {
-                    static_cast<CreatureAIScript*>(pSpawnAI)->AggroRandomUnit(500);
-                    pSpawnAI->_setDespawnWhenInactive(true);
-                }
-            }
+            }*/
         }
 
         uint32_t mAqueousTimerId;
@@ -1835,14 +1829,7 @@ class ReliquaryOfSoulsAI : public CreatureAIScript
                         {
                             _removeTimer(mEnslavedSoulTimer);
                             SpawnedEnsalvedSoul = true;
-                            for (uint8 i = 0; i < 10; i++)
-                            {
-                                CreatureAIScript* pSpawnedEnsalvedSoul = spawnCreatureAndGetAIScript(CN_ENSLAVED_SOUL, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation());
-                                if (pSpawnedEnsalvedSoul)
-                                {
-                                    static_cast<CreatureAIScript*>(pSpawnedEnsalvedSoul)->AggroNearestPlayer();
-                                }
-                            }
+
                             _removeTimer(mEnslavedSoulTimer);
                         }
                         if (SpawnedEnsalvedSoul)
@@ -2769,10 +2756,9 @@ class ShadowDemonAI : public CreatureAIScript
 
             mParalyze = addAISpell(SHADOW_DEMON_PARALYZE, 0.0f, TARGET_ATTACKING);
             mConsumeSoul = addAISpell(SHADOW_DEMON_CONSUME_SOUL, 0.0f, TARGET_ATTACKING);
-            _setDespawnWhenInactive(true);
             getCreature()->m_noRespawn = true;
 
-            Unit* pTarget = GetBestPlayerTarget();
+            Unit* pTarget = getBestPlayerTarget();
             if (pTarget != NULL)
             {
                 getCreature()->GetAIInterface()->AttackReaction(pTarget, 200000);
@@ -2847,10 +2833,9 @@ class ParasiticShadowfiendAI : public CreatureAIScript
             getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             _applyAura(PARASITIC_SHADOWFIEND_PASSIVE);
             getCreature()->m_noRespawn = true;
-            _setDespawnWhenInactive(true);
             _setScale(0.0f);
 
-            Unit* pTarget = GetBestPlayerTarget(TargetFilter_Closest);
+            Unit* pTarget = getBestPlayerTarget(TargetFilter_Closest);
             if (pTarget != NULL)
             {
                 getCreature()->GetAIInterface()->SetUnitToFollow(pTarget);
@@ -3591,7 +3576,7 @@ class MaievAI : public CreatureAIScript
                 }
                 else if (_isTimerFinished(mTrapTimer))
                 {
-                    Unit* pTarget = GetBestPlayerTarget();
+                    Unit* pTarget = getBestPlayerTarget();
                     if (pTarget != NULL)
                     {
                         _castAISpell(mTeleport);
@@ -4083,7 +4068,7 @@ class IllidanStormrageAI : public CreatureAIScript
                     pTarget = getCreature()->GetAIInterface()->GetSecondHated();
                     if (pTarget == NULL || !pTarget->IsPlayer())
                     {
-                        pTarget = GetBestPlayerTarget(TargetFilter_Closest);
+                        pTarget = getBestPlayerTarget(TargetFilter_Closest);
                         if (pTarget == NULL)
                             return;
                     }
@@ -4294,7 +4279,7 @@ class IllidanStormrageAI : public CreatureAIScript
                             SetAIUpdateFreq(1000);
                             mScenePart = 0;
 
-                            getCreature()->GetAIInterface()->setNextTarget(GetBestPlayerTarget(TargetFilter_Closest));
+                            getCreature()->GetAIInterface()->setNextTarget(getBestPlayerTarget(TargetFilter_Closest));
                             return;
                         }
                         break;
@@ -4330,7 +4315,7 @@ class IllidanStormrageAI : public CreatureAIScript
                                 pTrigger->Despawn(0, 0);
                             }
 
-                            getCreature()->GetAIInterface()->setNextTarget(GetBestPlayerTarget(TargetFilter_Closest));
+                            getCreature()->GetAIInterface()->setNextTarget(getBestPlayerTarget(TargetFilter_Closest));
                             getCreature()->SetEmoteState(EMOTE_ONESHOT_READY1H);
                             setCanEnterCombat(true);
                             _setMeleeDisabled(true);
@@ -4469,7 +4454,7 @@ class IllidanStormrageAI : public CreatureAIScript
                     {
                         _unsetTargetToChannel();
                         _removeAura(ILLIDAN_EYE_BLAST1);
-                        getCreature()->GetAIInterface()->setNextTarget(GetBestPlayerTarget(TargetFilter_Closest));
+                        getCreature()->GetAIInterface()->setNextTarget(getBestPlayerTarget(TargetFilter_Closest));
 
                         mFireWallTimer = 30000;
                         mMiscEventPart = 0;
@@ -4507,7 +4492,7 @@ class IllidanStormrageAI : public CreatureAIScript
                 if (mMiscEventPart == 5)
                 {
                     _clearHateList();
-                    Unit* pTarget = GetBestPlayerTarget();
+                    Unit* pTarget = getBestPlayerTarget();
                     if (pTarget != NULL)
                     {
                         getCreature()->GetAIInterface()->AttackReaction(pTarget, 5000);

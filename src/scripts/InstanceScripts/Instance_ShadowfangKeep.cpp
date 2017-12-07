@@ -1137,7 +1137,6 @@ class ArugalBossAI : public CreatureAIScript
                         if (CreatureAIScript* voidwalker = spawnCreatureAndGetAIScript(CN_VOIDWALKER, voidwalkerSpawns[x].x, voidwalkerSpawns[x].y, voidwalkerSpawns[x].z, voidwalkerSpawns[x].o))
                         {
                             voidwalker->despawn(4 * 60 * 1000); // Despawn in 4 mins
-                            static_cast<CreatureAIScript*>(voidwalker)->AggroNearestPlayer();
                         }
                     }
                     getCreature()->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);

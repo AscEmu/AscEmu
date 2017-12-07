@@ -65,7 +65,7 @@ class AnomalusAI : public CreatureAIScript
                 _resetTimer(mSummonTimer, _isHeroic() ? 14000 : 18000);
             }
 
-            if (mRift == true && (GetLinkedCreature() == NULL || !GetLinkedCreature()->isAlive()))
+            if (mRift == true && (getLinkedCreatureAIScript() == NULL || !getLinkedCreatureAIScript()->isAlive()))
             {
                 _removeAura(47748);
                 mRift = false;
@@ -82,8 +82,8 @@ class AnomalusAI : public CreatureAIScript
             CreatureAIScript* chaoticRift = spawnCreatureAndGetAIScript(CN_CHAOTIC_RIFT, getCreature()->GetPositionX() + 13.5f, getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation());
             if (chaoticRift != nullptr)
             {
-                SetLinkedCreature(chaoticRift);
-                chaoticRift->SetLinkedCreature(this);
+                setLinkedCreatureAIScript(chaoticRift);
+                chaoticRift->setLinkedCreatureAIScript(this);
             }
         }
 
@@ -322,11 +322,6 @@ class TelestraFireAI : public CreatureAIScript
                 addAISpell(SCORCH, 100.0f, TARGET_ATTACKING, 1, 3);
             }
         }
-
-        void OnLoad() override
-        {
-            AggroNearestUnit();
-        }
 };
 
 class TelestraFrostAI : public CreatureAIScript
@@ -345,11 +340,6 @@ class TelestraFrostAI : public CreatureAIScript
                 addAISpell(ICE_BARB, 25.0f, TARGET_RANDOM_SINGLE, 1, 6);
             }
         }
-
-        void OnLoad() override
-        {
-            AggroNearestUnit();
-        }
 };
 
 class TelestraArcaneAI : public CreatureAIScript
@@ -359,11 +349,6 @@ class TelestraArcaneAI : public CreatureAIScript
         {
             addAISpell(TIME_STOP, 30.0f, TARGET_SELF, 2, 30);
             addAISpell(CRITTER, 25.0f, TARGET_RANDOM_SINGLE, 0, 20);
-        }
-
-        void OnLoad() override
-        {
-            AggroNearestUnit();
         }
 };
 

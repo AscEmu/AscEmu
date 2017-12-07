@@ -531,7 +531,7 @@ class WarbringerOmroggAI : public CreatureAIScript
 
         void ShiftAggro()
         {
-            Unit* pTarget = GetBestPlayerTarget(TargetFilter_NotCurrent);
+            Unit* pTarget = getBestPlayerTarget(TargetFilter_NotCurrent);
             if (pTarget != nullptr)
             {
                 _clearHateList();

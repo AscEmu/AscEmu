@@ -151,13 +151,8 @@ class AkilzonAI : public CreatureAIScript
                 // Spawn 3 Soaring Eagles
                 for (uint8 x = 0; x < 3; x++)
                 {
-                    CreatureAIScript* Eagle = spawnCreatureAndGetAIScript(CN_SOARING_EAGLE, (getCreature()->GetPositionX() + RandomFloat(12) - 10), (getCreature()->GetPositionY() + RandomFloat(12) - 15),
+                    /*CreatureAIScript* Eagle =*/ spawnCreatureAndGetAIScript(CN_SOARING_EAGLE, (getCreature()->GetPositionX() + RandomFloat(12) - 10), (getCreature()->GetPositionY() + RandomFloat(12) - 15),
                                           getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->GetFaction());
-                    if (Eagle)
-                    {
-                        static_cast<CreatureAIScript*>(Eagle)->AggroNearestUnit();
-                        Eagle->_setDespawnWhenInactive(true);
-                    }
                 }
 
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 12019, "Feed, me bruddahs!");
@@ -253,7 +248,6 @@ class HalazziAI : public CreatureAIScript
                     if (Totem)
                     {
                         Totem->despawn(60000); // Despawn in 60 seconds
-                        static_cast<CreatureAIScript*>(Totem)->AggroNearestPlayer();
                     }
 
                     switch (getScriptPhase())

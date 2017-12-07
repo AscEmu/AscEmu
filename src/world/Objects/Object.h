@@ -718,7 +718,7 @@ public:
         size_t GetInRangeCount() { return m_objectsInRange.size(); }
         size_t GetInRangePlayersCount() { return m_inRangePlayers.size(); }
 
-        auto GetInRangeSet() { return m_objectsInRange; }
+        std::set<Object*> GetInRangeSet() { return m_objectsInRange; }
 
         InRangeSet::iterator GetInRangeSetBegin() { return m_objectsInRange.begin(); }
         InRangeSet::iterator GetInRangeSetEnd() { return m_objectsInRange.end(); }
@@ -752,10 +752,15 @@ public:
         bool IsInRangeOppFactSet(Object* pObj) { return (m_oppFactsInRange.count(pObj) > 0); }
         void UpdateOppFactionSet();
         size_t GetInRangeOppFactsSize() { return m_oppFactsInRange.size(); }
+
+        std::set<Object*> GetInRangeOppFactsSet() { return m_oppFactsInRange; }
+
         std::set<Object*>::iterator GetInRangeOppFactsSetBegin() { return m_oppFactsInRange.begin(); }
         std::set<Object*>::iterator GetInRangeOppFactsSetEnd() { return m_oppFactsInRange.end(); }
+
         std::set<Object*>::iterator GetInRangePlayerSetBegin() { return m_inRangePlayers.begin(); }
         std::set<Object*>::iterator GetInRangePlayerSetEnd() { return m_inRangePlayers.end(); }
+
         std::set<Object*> * GetInRangePlayerSet() { return &m_inRangePlayers; }
         std::set<Object*> & GetInRangePlayers() { return m_inRangePlayers; }
         std::set<Object*> & GetInRangeOpposingFactions() { return m_oppFactsInRange; }
