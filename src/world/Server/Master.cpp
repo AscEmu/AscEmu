@@ -57,10 +57,10 @@ ConfigMgr Config;
 // DB version
 #if VERSION_STRING != Cata
 static const char* REQUIRED_CHAR_DB_VERSION = "2017-09-13_01_account_permissions";
-static const char* REQUIRED_WORLD_DB_VERSION = "2017-11-09_01_npc_script_text";
+static const char* REQUIRED_WORLD_DB_VERSION = "2017-12-10_01_creature_spawns";
 #else
 static const char* REQUIRED_CHAR_DB_VERSION = "2017-09-13_01_account_permissions";
-static const char* REQUIRED_WORLD_DB_VERSION = "2017-11-09_01_npc_script_text";
+static const char* REQUIRED_WORLD_DB_VERSION = "2017-12-10_01_creature_spawns";
 #endif
 
 void Master::_OnSignal(int s)
