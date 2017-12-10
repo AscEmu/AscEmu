@@ -1,4 +1,4 @@
-# AscEmu
+# ![logo](http://ascemu.org/images/logo.png)
 ## Thanks and Credits
 
 AscEmu is derived from ArcEmu, OpenAscent, Ascent, Antrix, EspireEmu and 
