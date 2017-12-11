@@ -32,6 +32,7 @@
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Units/Creatures/Pet.h"
 
+#if VERSION_STRING != Cata
 trainertype trainer_types[TRAINER_TYPE_MAX] =
 {
     { "Warrior"         , 0 },
@@ -685,3 +686,4 @@ void WorldSession::SendStabledPetList(uint64 npcguid)
 
     SendPacket(&data);
 }
+#endif

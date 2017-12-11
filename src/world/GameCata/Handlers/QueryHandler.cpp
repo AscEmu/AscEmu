@@ -8,7 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLStructures.h"
 #include "Map/WorldCreatorDefines.hpp"
 
-
 void WorldSession::HandleCorpseQueryOpcode(WorldPacket& /*recvData*/)
 {
     Corpse* pCorpse = objmgr.GetCorpseByOwner(GetPlayer()->GetLowGUID());
@@ -146,4 +145,203 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recvData)
     }
 
     SendPacket(&data);
+}
+
+//\todo Rewrite for cata - after this all functions are copied from wotlk
+
+void WorldSession::HandleNameQueryOpcode(WorldPacket& recv_data)
+{
+    CHECK_PACKET_SIZE(recv_data, 8);
+    uint64 guid;
+    recv_data >> guid;
+
+    PlayerInfo* pn = objmgr.GetPlayerInfo(static_cast<uint32>(guid));
+
+    if (!pn)
+        return;
+
+    LOG_DEBUG("Received CMSG_NAME_QUERY for: %s", pn->name);
+
+    WoWGuid pguid(static_cast<uint64>(pn->guid)); //VLack: The usual new style guid handling on 3.1.2
+    WorldPacket data(SMSG_NAME_QUERY_RESPONSE, strlen(pn->name) + 35);
+    //    data << pn->guid << uint32(0);    //highguid
+    data << pguid;
+    data << uint8(0); //VLack: usual, new-style guid with an uint8
+    data << pn->name;
+    data << uint8(0);       // this is a string showed besides players name (eg. in combat log), a custom title ?
+    data << uint8(pn->race);
+    data << uint8(pn->gender);
+    data << uint8(pn->cl);
+    //    data << uint8(0);            // 2.4.0, why do i get the feeling blizz is adding custom classes or custom titles? (same thing in who list)
+    data << uint8(0); //VLack: tell the server this name is not declined... (3.1 fix?)
+    SendPacket(&data);
+}
+
+void WorldSession::HandleQueryTimeOpcode(WorldPacket& /*recvData*/)
+{
+    WorldPacket data(SMSG_QUERY_TIME_RESPONSE, 4 + 4);
+    data << static_cast<uint32>(UNIXTIME);
+    data << static_cast<uint32>(0); //VLack: 3.1; thanks Stewart for reminding me to have the correct structure even if it seems the old one still works.
+    SendPacket(&data);
+
+}
+
+void WorldSession::HandleGameObjectQueryOpcode(WorldPacket& recvData)
+{
+    CHECK_PACKET_SIZE(recvData, 12);
+    WorldPacket data(SMSG_GAMEOBJECT_QUERY_RESPONSE, 900);
+
+    uint32 entryID;
+    uint64 guid;
+
+    recvData >> entryID;
+    recvData >> guid;
+
+    LOG_DETAIL("WORLD: CMSG_GAMEOBJECT_QUERY '%u'", entryID);
+
+    auto gameobject_info = sMySQLStore.getGameObjectProperties(entryID);
+    if (gameobject_info == nullptr)
+    {
+        return;
+    }
+
+    MySQLStructure::LocalesGameobject const* lgn = (language > 0) ? sMySQLStore.getLocalizedGameobject(entryID, language) : nullptr;
+
+    data << entryID;                        // unique identifier of the GO template
+    data << gameobject_info->type;          // type of the gameobject
+    data << gameobject_info->display_id;    // displayid/modelid of the gameobject
+
+                                            // Name of the gameobject
+    if (lgn != nullptr)
+    {
+        data << lgn->name;
+    }
+    else
+    {
+        data << gameobject_info->name;
+    }
+
+    data << uint8(0);               // name2, always seems to be empty
+    data << uint8(0);               // name3, always seems to be empty
+    data << uint8(0);               // name4, always seems to be empty
+    data << gameobject_info->category_name;  // Category string of the GO, like "attack", "pvp", "point", etc
+    data << gameobject_info->cast_bar_text;  // text displayed when using the go, like "collecting", "summoning" etc
+    data << gameobject_info->Unkstr;
+    data << gameobject_info->raw.parameter_0;     // spellfocus id, ex.: spell casted when interacting with the GO
+    data << gameobject_info->raw.parameter_1;
+    data << gameobject_info->raw.parameter_2;
+    data << gameobject_info->raw.parameter_3;
+    data << gameobject_info->raw.parameter_4;
+    data << gameobject_info->raw.parameter_5;
+    data << gameobject_info->raw.parameter_6;
+    data << gameobject_info->raw.parameter_7;
+    data << gameobject_info->raw.parameter_8;
+    data << gameobject_info->raw.parameter_9;
+    data << gameobject_info->raw.parameter_10;
+    data << gameobject_info->raw.parameter_11;
+    data << gameobject_info->raw.parameter_12;
+    data << gameobject_info->raw.parameter_13;
+    data << gameobject_info->raw.parameter_14;
+    data << gameobject_info->raw.parameter_15;
+    data << gameobject_info->raw.parameter_16;
+    data << gameobject_info->raw.parameter_17;
+    data << gameobject_info->raw.parameter_18;
+    data << gameobject_info->raw.parameter_19;
+    data << gameobject_info->raw.parameter_20;
+    data << gameobject_info->raw.parameter_21;
+    data << gameobject_info->raw.parameter_22;
+    data << gameobject_info->raw.parameter_23;
+    data << float(gameobject_info->size);       // scaling of the GO
+
+                                                // questitems that the go can contain
+    for (uint8 i = 0; i < 6; ++i)
+    {
+        data << uint32(gameobject_info->QuestItems[i]);
+    }
+
+    SendPacket(&data);
+}
+
+void WorldSession::HandlePageTextQueryOpcode(WorldPacket& recvData)
+{
+    CHECK_PACKET_SIZE(recvData, 4);
+    uint32 pageid = 0;
+    recvData >> pageid;
+
+    while (pageid)
+    {
+        MySQLStructure::ItemPage const* page = sMySQLStore.getItemPage(pageid);
+        if (page == nullptr)
+        {
+            return;
+        }
+
+        MySQLStructure::LocalesItemPages const* lpi = (language > 0) ? sMySQLStore.getLocalizedItemPages(pageid, language) : nullptr;
+
+        WorldPacket data(SMSG_PAGE_TEXT_QUERY_RESPONSE, 1000);
+        data << pageid;
+
+        if (lpi != nullptr)
+        {
+            data << lpi->text;
+        }
+        else
+        {
+            data << page->text;
+        }
+
+        data << page->nextPage;
+        pageid = page->nextPage;
+        SendPacket(&data);
+    }
+}
+
+void WorldSession::HandleItemNameQueryOpcode(WorldPacket& recvData)
+{
+    CHECK_PACKET_SIZE(recvData, 4);
+
+    uint32 itemid;
+
+    recvData >> itemid;
+    recvData.read_skip<uint64>();
+
+    WorldPacket reply(SMSG_ITEM_NAME_QUERY_RESPONSE, 100);
+    reply << itemid;
+
+    std::string Name = ("Unknown Item");
+
+    ItemProperties const* proto = sMySQLStore.getItemProperties(itemid);
+    if (proto != nullptr)
+    {
+        MySQLStructure::LocalesItem const* li = (language > 0) ? sMySQLStore.getLocalizedItem(itemid, language) : nullptr;
+        if (li != nullptr)
+        {
+            Name = li->name;
+        }
+        else
+        {
+            Name = proto->Name;
+        }
+
+        reply << Name;
+        reply << proto->InventoryType;
+    }
+    else
+    {
+        reply << Name;
+    }
+
+    SendPacket(&reply);
+}
+
+void WorldSession::HandleAchievmentQueryOpcode(WorldPacket& recvData)
+{
+    uint64 guid = recvData.unpackGUID();               // Get the inspectee's GUID
+    Player* pTarget = objmgr.GetPlayer(static_cast<uint32>(guid));
+    if (!pTarget)
+    {
+        return;
+    }
+
+    pTarget->GetAchievementMgr().SendAllAchievementData(GetPlayer());
 }

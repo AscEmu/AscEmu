@@ -227,12 +227,12 @@ void WorldSession::HandleSendMail(WorldPacket& recvData)
     SendMailError(MAIL_OK);
 }
 
-void WorldSession::HandleMarkAsRead(WorldPacket& recv_data)
+void WorldSession::HandleMarkAsRead(WorldPacket& recvData)
 {
     uint64_t mailbox;
     uint32_t message_id;
-    recv_data >> mailbox;
-    recv_data >> message_id;
+    recvData >> mailbox;
+    recvData >> message_id;
 
     MailMessage* message = _player->m_mailBox.GetMessage(message_id);
     if (message == 0)
@@ -250,20 +250,20 @@ void WorldSession::HandleMarkAsRead(WorldPacket& recv_data)
                                   message->checked_flag, message->expire_time, message->message_id);
 }
 
-void WorldSession::HandleMailDelete(WorldPacket& recv_data)
+void WorldSession::HandleMailDelete(WorldPacket& recvData)
 {
     uint64_t mailbox;
-    uint32_t message_id;
+    uint32_t messageId;
 
-    recv_data >> mailbox;
-    recv_data >> message_id;
-    recv_data.read_skip<uint32_t>();
+    recvData >> mailbox;
+    recvData >> messageId;
+    recvData.read_skip<uint32_t>();
 
     WorldPacket data(SMSG_SEND_MAIL_RESULT, 12);
-    data << message_id;
+    data << messageId;
     data << uint32_t(MAIL_RES_DELETED);
 
-    MailMessage* message = _player->m_mailBox.GetMessage(message_id);
+    MailMessage* message = _player->m_mailBox.GetMessage(messageId);
     if (!message)
     {
         data << uint32_t(MAIL_ERR_INTERNAL_ERROR);
@@ -271,22 +271,22 @@ void WorldSession::HandleMailDelete(WorldPacket& recv_data)
         return;
     }
 
-    _player->m_mailBox.DeleteMessage(message_id, true);
+    _player->m_mailBox.DeleteMessage(messageId, true);
 
     data << uint32_t(MAIL_OK);
     SendPacket(&data);
 }
 
-void WorldSession::HandleTakeItem(WorldPacket& recv_data)
+void WorldSession::HandleTakeItem(WorldPacket& recvData)
 {
     uint64_t mailbox;
     uint32_t message_id;
     uint32_t lowguid;
     std::vector< uint32_t >::iterator itr;
 
-    recv_data >> mailbox;
-    recv_data >> message_id;
-    recv_data >> lowguid;
+    recvData >> mailbox;
+    recvData >> message_id;
+    recvData >> lowguid;
 
     WorldPacket data(SMSG_SEND_MAIL_RESULT, 12);
     data << message_id;
@@ -387,19 +387,19 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
     // probably need to send an item push here
 }
 
-void WorldSession::HandleTakeMoney(WorldPacket& recv_data)
+void WorldSession::HandleTakeMoney(WorldPacket& recvData)
 {
     uint64_t mailbox;
-    uint32_t message_id;
+    uint32_t messageId;
 
-    recv_data >> mailbox;
-    recv_data >> message_id;
+    recvData >> mailbox;
+    recvData >> messageId;
 
     WorldPacket data(SMSG_SEND_MAIL_RESULT, 12);
-    data << message_id;
+    data << messageId;
     data << uint32_t(MAIL_RES_MONEY_TAKEN);
 
-    MailMessage* message = _player->m_mailBox.GetMessage(message_id);
+    MailMessage* message = _player->m_mailBox.GetMessage(messageId);
     if (!message || !message->money)
     {
         data << uint32_t(MAIL_ERR_INTERNAL_ERROR);
@@ -431,19 +431,19 @@ void WorldSession::HandleTakeMoney(WorldPacket& recv_data)
     SendPacket(&data);
 }
 
-void WorldSession::HandleReturnToSender(WorldPacket& recv_data)
+void WorldSession::HandleReturnToSender(WorldPacket& recvData)
 {
     uint64_t mailbox;
-    uint32_t message_id;
+    uint32_t messageId;
 
-    recv_data >> mailbox;
-    recv_data >> message_id;
+    recvData >> mailbox;
+    recvData >> messageId;
 
     WorldPacket data(SMSG_SEND_MAIL_RESULT, 12);
-    data << message_id;
+    data << messageId;
     data << uint32_t(MAIL_RES_RETURNED_TO_SENDER);
 
-    MailMessage* msg = _player->m_mailBox.GetMessage(message_id);
+    MailMessage* msg = _player->m_mailBox.GetMessage(messageId);
     if (!msg)
     {
         data << uint32_t(MAIL_ERR_INTERNAL_ERROR);
@@ -455,7 +455,7 @@ void WorldSession::HandleReturnToSender(WorldPacket& recv_data)
     MailMessage message = *msg;
 
     // remove the old message
-    _player->m_mailBox.DeleteMessage(message_id, true);
+    _player->m_mailBox.DeleteMessage(messageId, true);
 
     // re-assign the owner/sender
     message.player_guid = message.sender_guid;
@@ -479,20 +479,20 @@ void WorldSession::HandleReturnToSender(WorldPacket& recv_data)
     SendPacket(&data);
 }
 
-void WorldSession::HandleMailCreateTextItem(WorldPacket& recv_data)
+void WorldSession::HandleMailCreateTextItem(WorldPacket& recvData)
 {
     uint64_t mailbox;
-    uint32_t message_id;
+    uint32_t messageId;
 
-    recv_data >> mailbox;
-    recv_data >> message_id;
+    recvData >> mailbox;
+    recvData >> messageId;
 
     WorldPacket data(SMSG_SEND_MAIL_RESULT, 12);
-    data << message_id;
+    data << messageId;
     data << uint32_t(MAIL_RES_MADE_PERMANENT);
 
     ItemProperties const* item_properties = sMySQLStore.getItemProperties(8383);
-    MailMessage* message = _player->m_mailBox.GetMessage(message_id);
+    MailMessage* message = _player->m_mailBox.GetMessage(messageId);
     if (!message || !item_properties)
     {
         data << uint32_t(MAIL_ERR_INTERNAL_ERROR);
@@ -526,11 +526,11 @@ void WorldSession::HandleMailCreateTextItem(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleItemTextQuery(WorldPacket& recv_data)
+void WorldSession::HandleItemTextQuery(WorldPacket& recvData)
 {
     uint64_t itemGuid;
 
-    recv_data >> itemGuid;
+    recvData >> itemGuid;
 
     Item* pItem = _player->GetItemInterface()->GetItemByGUID(itemGuid);
     WorldPacket data(SMSG_ITEM_TEXT_QUERY_RESPONSE, pItem->GetText().size() + 9);

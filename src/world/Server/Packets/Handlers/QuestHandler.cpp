@@ -28,6 +28,7 @@
 
 initialiseSingleton(QuestMgr);
 
+#if VERSION_STRING != Cata
 void WorldSession::HandleQuestgiverStatusQueryOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -693,3 +694,4 @@ void WorldSession::HandleQuestPushResult(WorldPacket& recvPacket)
         }
     }
 }
+#endif

@@ -252,7 +252,6 @@ void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
 
     //LogDefault("TAXI: Starting taxi trip. Next update in %d msec.", first_node_time);
 }
-#endif
 
 void WorldSession::HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
 {
@@ -396,3 +395,4 @@ void WorldSession::HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
     // start the first trip :)
     _player->TaxiStart(taxipath, modelid, 0);
 }
+#endif

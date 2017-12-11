@@ -41,7 +41,6 @@ void WorldSession::HandleConvertGroupToRaidOpcode(WorldPacket& /*recv_data*/)
     pGroup->ExpandToRaid();
     SendPartyCommandResult(_player, 0, "", ERR_PARTY_NO_ERROR);
 }
-#endif
 
 void WorldSession::HandleGroupChangeSubGroup(WorldPacket& recv_data)
 {
@@ -183,3 +182,4 @@ void WorldSession::HandleReadyCheckOpcode(WorldPacket& recv_data)
             pGroup->GetAssistantLeader()->m_loggedInPlayer->GetSession()->SendPacket(&data);
     }
 }
+#endif

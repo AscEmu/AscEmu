@@ -24,7 +24,7 @@
 #include "Log.hpp"
 #include "Units/Players/Player.h"
 
-
+#if VERSION_STRING != Cata
 void WorldSession::HandleFriendListOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -88,3 +88,4 @@ void WorldSession::HandleSetFriendNote(WorldPacket& recv_data)
     recv_data >> guid >> note;
     _player->Social_SetNote((uint32)guid, note.size() ? note.c_str() : NULL);
 }
+#endif

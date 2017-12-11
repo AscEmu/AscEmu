@@ -28,6 +28,7 @@
 #include "../../../../scripts/Battlegrounds/AlteracValley.h"
 #include "Objects/ObjectMgr.h"
 
+#if VERSION_STRING != Cata
 void WorldSession::HandlePetAction(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -644,4 +645,5 @@ void WorldSession::HandlePetLearnTalent(WorldPacket& recvPacket)
     // send talent update
     pPet->SendTalentsToOwner();
 }
+#endif
 #endif

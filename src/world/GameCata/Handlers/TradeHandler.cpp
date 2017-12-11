@@ -13,7 +13,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Objects/ObjectMgr.h"
 
-
 void WorldSession::sendTradeResult(TradeStatus result)
 {
     WorldPacket data(SMSG_TRADE_STATUS, 4 + 8);
@@ -83,24 +82,24 @@ void WorldSession::sendTradeResult(TradeStatus result)
     SendPacket(&data);
 }
 
-void WorldSession::sendTradeUpdate(bool trade_state /*= true*/)
+void WorldSession::sendTradeUpdate(bool tradeState /*= true*/)
 {
-    TradeData* trade_data = trade_state ? _player->getTradeData()->getTargetTradeData() : _player->getTradeData();
+    TradeData* tradeData = tradeState ? _player->getTradeData()->getTargetTradeData() : _player->getTradeData();
 
     WorldPacket data(SMSG_TRADE_STATUS_EXTENDED, 100);
     data << uint32_t(0);                  // unk
     data << uint32_t(0);                  // unk
-    data << uint64_t(trade_data->getMoney());
-    data << uint32_t(trade_data->getSpell());
+    data << uint64_t(tradeData->getMoney());
+    data << uint32_t(tradeData->getSpell());
     data << uint32_t(TRADE_SLOT_COUNT);
     data << uint32_t(0);                  // unk
-    data << uint8_t(trade_state ? 1 : 0);
+    data << uint8_t(tradeState ? 1 : 0);
     data << uint32_t(TRADE_SLOT_COUNT);
 
     uint8_t count = 0;
     for (uint8_t i = 0; i < TRADE_SLOT_COUNT; ++i)
     {
-        if (Item* item = trade_data->getTradeItem(TradeSlots(i)))
+        if (Item* item = tradeData->getTradeItem(TradeSlots(i)))
             ++count;
     }
 
@@ -108,7 +107,7 @@ void WorldSession::sendTradeUpdate(bool trade_state /*= true*/)
 
     for (uint8_t i = 0; i < TRADE_SLOT_COUNT; ++i)
     {
-        if (Item* item = trade_data->getTradeItem(TradeSlots(i)))
+        if (Item* item = tradeData->getTradeItem(TradeSlots(i)))
         {
             ObjectGuid creatorGuid = item->GetCreatorGUID();
             ObjectGuid giftCreatorGuid = item->GetGiftCreatorGUID();
@@ -142,7 +141,7 @@ void WorldSession::sendTradeUpdate(bool trade_state /*= true*/)
 
     for (uint8_t i = 0; i < TRADE_SLOT_COUNT; ++i)
     {
-        if (Item* item = trade_data->getTradeItem(TradeSlots(i)))
+        if (Item* item = tradeData->getTradeItem(TradeSlots(i)))
         {
             ObjectGuid creatorGuid = item->GetCreatorGUID();
             ObjectGuid giftCreatorGuid = item->GetGiftCreatorGUID();
@@ -203,27 +202,27 @@ void WorldSession::sendTradeUpdate(bool trade_state /*= true*/)
     SendPacket(&data);
 }
 
-void WorldSession::HandleInitiateTradeOpcode(WorldPacket& recv_data)
+void WorldSession::HandleInitiateTradeOpcode(WorldPacket& recvData)
 {
-    ObjectGuid target_guid;
+    ObjectGuid targetGuid;
 
-    target_guid[0] = recv_data.readBit();
-    target_guid[3] = recv_data.readBit();
-    target_guid[5] = recv_data.readBit();
-    target_guid[1] = recv_data.readBit();
-    target_guid[4] = recv_data.readBit();
-    target_guid[6] = recv_data.readBit();
-    target_guid[7] = recv_data.readBit();
-    target_guid[2] = recv_data.readBit();
+    targetGuid[0] = recvData.readBit();
+    targetGuid[3] = recvData.readBit();
+    targetGuid[5] = recvData.readBit();
+    targetGuid[1] = recvData.readBit();
+    targetGuid[4] = recvData.readBit();
+    targetGuid[6] = recvData.readBit();
+    targetGuid[7] = recvData.readBit();
+    targetGuid[2] = recvData.readBit();
 
-    recv_data.ReadByteSeq(target_guid[7]);
-    recv_data.ReadByteSeq(target_guid[4]);
-    recv_data.ReadByteSeq(target_guid[3]);
-    recv_data.ReadByteSeq(target_guid[5]);
-    recv_data.ReadByteSeq(target_guid[1]);
-    recv_data.ReadByteSeq(target_guid[2]);
-    recv_data.ReadByteSeq(target_guid[6]);
-    recv_data.ReadByteSeq(target_guid[0]);
+    recvData.ReadByteSeq(targetGuid[7]);
+    recvData.ReadByteSeq(targetGuid[4]);
+    recvData.ReadByteSeq(targetGuid[3]);
+    recvData.ReadByteSeq(targetGuid[5]);
+    recvData.ReadByteSeq(targetGuid[1]);
+    recvData.ReadByteSeq(targetGuid[2]);
+    recvData.ReadByteSeq(targetGuid[6]);
+    recvData.ReadByteSeq(targetGuid[0]);
 
     if (GetPlayer()->m_TradeData)
     {
@@ -231,7 +230,7 @@ void WorldSession::HandleInitiateTradeOpcode(WorldPacket& recv_data)
         return;
     }
 
-    Player* player_target = _player->GetMapMgr()->GetPlayer((uint32_t)target_guid);
+    Player* player_target = _player->GetMapMgr()->GetPlayer(static_cast<uint32_t>(targetGuid));
     if (player_target == nullptr)
     {
         sendTradeResult(TRADE_STATUS_NO_TARGET);
@@ -352,21 +351,21 @@ void TradeData::setMoney(uint64_t money)
     updateTrade();
 }
 
-void TradeData::updateTrade(bool for_trader /*= true*/)
+void TradeData::updateTrade(bool forTrader /*= true*/)
 {
-    if (for_trader)
+    if (forTrader)
         m_tradeTarget->GetSession()->sendTradeUpdate(true);
     else
         m_player->GetSession()->sendTradeUpdate(false);
 }
 
-void TradeData::setAccepted(bool state, bool send_both /*= false*/)
+void TradeData::setAccepted(bool state, bool sendBoth /*= false*/)
 {
     m_accepted = state;
 
     if (!state)
     {
-        if (send_both)
+        if (sendBoth)
             m_tradeTarget->GetSession()->sendTradeResult(TRADE_STATUS_BACK_TO_TRADE);
         else
             m_player->GetSession()->sendTradeResult(TRADE_STATUS_BACK_TO_TRADE);
@@ -541,7 +540,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recvData)
             else
             {
                 trade_target->ModGold(static_cast<int32_t>(trade_data->getMoney()));
-                _player->ModGold(-(int32_t)trade_data->getMoney());
+                _player->ModGold(-static_cast<int32_t>(trade_data->getMoney()));
             }
         }
 
@@ -581,8 +580,8 @@ void WorldSession::HandleSetTradeItem(WorldPacket& recvData)
     recvData >> tradeSlot;
     recvData >> sourceBag;
 
-    TradeData* trade_data = _player->m_TradeData;
-    if (trade_data == nullptr)
+    TradeData* tradeData = _player->m_TradeData;
+    if (tradeData == nullptr)
         return;
 
     if (tradeSlot >= TRADE_SLOT_COUNT)
@@ -598,13 +597,13 @@ void WorldSession::HandleSetTradeItem(WorldPacket& recvData)
         return;
     }
 
-    if (trade_data->hasTradeItem(item->GetGUID()))
+    if (tradeData->hasTradeItem(item->GetGUID()))
     {
         sendTradeResult(TRADE_STATUS_TRADE_CANCELED);
         return;
     }
 
-    trade_data->setItem(TradeSlots(tradeSlot), item);
+    tradeData->setItem(TradeSlots(tradeSlot), item);
 }
 
 void WorldSession::sendTradeCancel()
@@ -612,10 +611,10 @@ void WorldSession::sendTradeCancel()
     sendTradeResult(TRADE_STATUS_TRADE_CANCELED);
 }
 
-void WorldSession::HandleClearTradeItem(WorldPacket& recv_data)
+void WorldSession::HandleClearTradeItem(WorldPacket& recvData)
 {
     uint8_t tradeSlot;
-    recv_data >> tradeSlot;
+    recvData >> tradeSlot;
 
     TradeData* trade_data = _player->m_TradeData;
     if (trade_data == nullptr)

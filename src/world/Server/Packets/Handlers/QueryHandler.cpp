@@ -24,6 +24,7 @@
 #include "Storage/MySQLStructures.h"
 #include "Map/WorldCreatorDefines.hpp"
 
+#if VERSION_STRING != Cata
 //////////////////////////////////////////////////////////////////////////////////////////
 /// This function handles CMSG_NAME_QUERY:
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -425,3 +426,4 @@ void WorldSession::HandleAchievmentQueryOpcode(WorldPacket& recv_data)
     pTarget->GetAchievementMgr().SendAllAchievementData(GetPlayer());
 #endif
 }
+#endif
