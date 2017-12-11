@@ -60,7 +60,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
     if (result)
         numchar = result->GetRowCount();
 
-    uint32_t start_time = getMSTime();
+    uint32_t start_time = Util::getMSTime();
 
     WorldPacket data(SMSG_CHAR_ENUM, 1 + numchar * 200);
     data << uint8_t(char_real_count);
@@ -79,7 +79,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
             charEnum.Class = fields[3].GetUInt8();
             if (charEnum.Class == DEATHKNIGHT)
             {
-                LogDebugFlag(LF_OPCODE, "Your character Table includes DeathKnights! You are running AscEmu for TBC clients - skip!", getMSTime() - start_time);
+                LogDebugFlag(LF_OPCODE, "Your character Table includes DeathKnights! You are running AscEmu for TBC clients - skip!", Util::getMSTime() - start_time);
                 continue;
             }
             charEnum.gender = fields[4].GetUInt8();
@@ -206,6 +206,6 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
 
     data.put<uint8_t>(0, char_real_count);
 
-    LogDebugFlag(LF_OPCODE, "Character Enum Built in %u ms.", getMSTime() - start_time);
+    LogDebugFlag(LF_OPCODE, "Character Enum Built in %u ms.", Util::getMSTime() - start_time);
     SendPacket(&data);
 }

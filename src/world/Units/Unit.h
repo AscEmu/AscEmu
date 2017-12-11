@@ -993,7 +993,10 @@ public:
     void SetSummonedUnitGUID(uint64 GUID) { setUInt64Value(UNIT_FIELD_SUMMON, GUID); }
     void SetSummonedCritterGUID(uint64 GUID)
     {
+        //\todo tbc has no field critter - use locale var.
+#if VERSION_STRING != TBC
         setUInt64Value(UNIT_FIELD_CRITTER, GUID);
+#endif
     }
 
     void SetCharmedByGUID(uint64 GUID) { setUInt64Value(UNIT_FIELD_CHARMEDBY, GUID); }
@@ -1005,7 +1008,12 @@ public:
     uint64 GetSummonedUnitGUID() { return getUInt64Value(UNIT_FIELD_SUMMON); }
     uint64 GetSummonedCritterGUID()
     {
+        //\todo tbc has no field critter - use locale var.
+#if VERSION_STRING != TBC
         return getUInt64Value(UNIT_FIELD_CRITTER);
+#else
+        return 0;
+#endif
     }
 
     uint64 GetCharmedByGUID() { return getUInt64Value(UNIT_FIELD_CHARMEDBY); }

@@ -802,7 +802,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
         flags2 |= MOVEFLAG_SPLINE_ENABLED | MOVEFLAG_MOVE_FORWARD;	   //1=move forward
         if (IsCreature())
         {
-            if (static_cast<Unit*>(this)->GetAIInterface()->HasWalkMode(WALKMODE_WALK))
+            if (static_cast<Unit*>(this)->GetAIInterface()->hasWalkMode(WALKMODE_WALK))
                 flags2 |= MOVEFLAG_WALK;
         }
     }
@@ -855,7 +855,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
                 break;
             }
 
-            if (uThis->GetAIInterface()->IsFlying())
+            if (uThis->GetAIInterface()->isFlying())
                 flags2 |= MOVEFLAG_DISABLEGRAVITY;        //0x400 Zack : Teribus the Cursed had flag 400 instead of 800 and he is flying all the time
             if (uThis->GetAIInterface()->onGameobject)
                 flags2 |= MOVEFLAG_ROOTED;
