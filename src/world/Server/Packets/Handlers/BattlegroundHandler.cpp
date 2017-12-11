@@ -25,6 +25,7 @@
 #include "Storage/MySQLStructures.h"
 #include "Map/MapMgr.h"
 
+#if VERSION_STRING != Cata
 void WorldSession::HandleBattlefieldPortOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -116,6 +117,7 @@ void WorldSession::SendBattlegroundList(Creature* pCreature, uint32 mapid)
 
     BattlegroundManager.HandleBattlegroundListPacket(this, t);
 }
+#endif
 
 #if VERSION_STRING != Cata
 void WorldSession::HandleBattleMasterHelloOpcode(WorldPacket& recv_data)
@@ -140,6 +142,7 @@ void WorldSession::HandleBattleMasterHelloOpcode(WorldPacket& recv_data)
 }
 #endif
 
+#if VERSION_STRING != Cata
 void WorldSession::HandleLeaveBattlefieldOpcode(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
@@ -416,3 +419,4 @@ void WorldSession::HandleBgInviteResponse(WorldPacket& /*recv_data*/)
     // uint32 ?
     // uint8  ?
 }
+#endif

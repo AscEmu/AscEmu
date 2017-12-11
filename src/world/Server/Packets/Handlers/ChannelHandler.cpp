@@ -53,7 +53,7 @@ void WorldSession::HandleChannelJoin(WorldPacket& recvPacket)
     chn->AttemptJoin(_player, pass.c_str());
     LogDebugFlag(LF_OPCODE, "ChannelJoin %s", channelname.c_str());
 }
-#endif
+
 
 void WorldSession::HandleChannelLeave(WorldPacket& recvPacket)
 {
@@ -337,3 +337,4 @@ void WorldSession::HandleChannelNumMembersQuery(WorldPacket& recvPacket)
         SendPacket(&data);
     }
 }
+#endif

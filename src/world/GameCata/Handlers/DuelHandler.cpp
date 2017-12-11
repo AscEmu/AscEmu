@@ -10,11 +10,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObject.h"
 #include "Units/Creatures/Pet.h"
 
-
-void WorldSession::HandleDuelAccepted(WorldPacket& recv_data)
+void WorldSession::HandleDuelAccepted(WorldPacket& recvData)
 {
     uint64_t guid;
-    recv_data >> guid;
+    recvData >> guid;
 
     if (_player->DuelingWith == nullptr)
         return;
@@ -52,10 +51,10 @@ void WorldSession::SendDuelComplete(uint8_t type)
     SendPacket(&data);
 }
 
-void WorldSession::HandleDuelCancelled(WorldPacket& recv_data)
+void WorldSession::HandleDuelCancelled(WorldPacket& recvData)
 {
     uint64_t guid;
-    recv_data >> guid;
+    recvData >> guid;
 
     if (_player->DuelingWith == nullptr)
         return;

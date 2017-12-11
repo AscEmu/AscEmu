@@ -1,23 +1,7 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2016 AscEmu Team <http://www.ascemu.org/>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "StdAfx.h"
 #include "Config/Config.h"
@@ -28,11 +12,12 @@
 #include "Server/MainServerDefines.h"
 #include "Server/WorldSession.h"
 #include "Server/World.h"
-#include "Server/World.Legacy.h"
 #include "Objects/ObjectMgr.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
 
-#if VERSION_STRING != Cata
+
+//\todo Rewrite for cata - after this all functions are copied from wotlk
+
 void WorldSession::HandleSetVisibleRankOpcode(WorldPacket& recvData)
 {
     CHECK_PACKET_SIZE(recvData, 4);
@@ -231,12 +216,12 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                 {
                     // Hellfire Horde Controlled Towers
                     /*if (pAffectedPlayer->GetMapMgr()->GetWorldState(2478) != 3 && pAffectedPlayer->GetTeam() == 1)
-                        return;
+                    return;
 
-                        // Hellfire Alliance Controlled Towers
-                        if (pAffectedPlayer->GetMapMgr()->GetWorldState(2476) != 3 && pAffectedPlayer->GetTeam() == 0)
-                        return;
-                        */
+                    // Hellfire Alliance Controlled Towers
+                    if (pAffectedPlayer->GetMapMgr()->GetWorldState(2476) != 3 && pAffectedPlayer->GetTeam() == 0)
+                    return;
+                    */
 
                     // Add Mark of Thrallmar/Honor Hold
                     SpellInfo* pvp_token_spell = sSpellCustomizations.GetSpellInfo(pAffectedPlayer->IsTeamHorde() ? 32158 : 32155);
@@ -252,4 +237,3 @@ void HonorHandler::RecalculateHonorFields(Player* pPlayer)
     if (pPlayer != nullptr)
         pPlayer->UpdatePvPCurrencies();
 }
-#endif

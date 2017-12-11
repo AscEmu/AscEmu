@@ -21,6 +21,7 @@
 #include "Common.hpp"
 #include "Storage/MySQLDataStore.hpp"
 
+#if VERSION_STRING != Cata
 void BuildPlayerLockDungeonBlock(WorldPacket& data, const LfgLockMap& lock)
 {
     LogDebugFlag(LF_OPCODE, "BUILD PLAYER LOCK DUNGEON BLOCK");
@@ -725,3 +726,4 @@ void WorldSession::SendLfgTeleportError(uint8 err)
     SendPacket(&data);
 #endif
 }
+#endif

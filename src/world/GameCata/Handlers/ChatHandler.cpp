@@ -690,3 +690,11 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
 
     sQuestMgr.OnPlayerEmote(_player, textEmote, guid);
 }
+
+void WorldSession::HandleChatChannelWatchOpcode(WorldPacket& recvPacket)
+{
+    std::string channelName;
+    recvPacket >> channelName;
+
+    LogDebugFlag(LF_OPCODE, "Unhandled... Player %s watch channel: %s", _player->GetName(), channelName.c_str());
+}

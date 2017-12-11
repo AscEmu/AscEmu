@@ -808,7 +808,6 @@ void WorldSession::HandleChatIgnoredOpcode(WorldPacket & recvPacket)
     player->GetSession()->SendPacket(data);
     delete data;
 }
-#endif
 
 void WorldSession::HandleChatChannelWatchOpcode(WorldPacket& recvPacket)
 {
@@ -817,3 +816,4 @@ void WorldSession::HandleChatChannelWatchOpcode(WorldPacket& recvPacket)
 
     LogDebugFlag(LF_OPCODE, "Unhandled... Player %s watch channel: %s", _player->GetName(), channelName.c_str());
 }
+#endif

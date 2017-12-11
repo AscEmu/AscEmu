@@ -41,42 +41,40 @@ void WorldSession::SendEmptyGroupList(Player* player)
     player->GetSession()->SendPacket(&data);
 }
 
-void WorldSession::HandleGroupInviteOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGroupInviteOpcode(WorldPacket& recvData)
 {
-    std::string member_name;
-    std::string realm_name;
     ObjectGuid unk_guid;
 
-    recv_data.read_skip<uint32_t>();
-    recv_data.read_skip<uint32_t>();
+    recvData.read_skip<uint32_t>();
+    recvData.read_skip<uint32_t>();
 
-    unk_guid[2] = recv_data.readBit();
-    unk_guid[7] = recv_data.readBit();
+    unk_guid[2] = recvData.readBit();
+    unk_guid[7] = recvData.readBit();
 
-    uint8_t realm_name_length = static_cast<uint8_t>(recv_data.readBits(9));
+    uint8_t realm_name_length = static_cast<uint8_t>(recvData.readBits(9));
 
-    unk_guid[3] = recv_data.readBit();
+    unk_guid[3] = recvData.readBit();
 
-    uint8_t member_name_length = static_cast<uint8_t>(recv_data.readBits(10));
+    uint8_t member_name_length = static_cast<uint8_t>(recvData.readBits(10));
 
-    unk_guid[5] = recv_data.readBit();
-    unk_guid[4] = recv_data.readBit();
-    unk_guid[6] = recv_data.readBit();
-    unk_guid[0] = recv_data.readBit();
-    unk_guid[1] = recv_data.readBit();
+    unk_guid[5] = recvData.readBit();
+    unk_guid[4] = recvData.readBit();
+    unk_guid[6] = recvData.readBit();
+    unk_guid[0] = recvData.readBit();
+    unk_guid[1] = recvData.readBit();
 
-    recv_data.ReadByteSeq(unk_guid[4]);
-    recv_data.ReadByteSeq(unk_guid[7]);
-    recv_data.ReadByteSeq(unk_guid[6]);
+    recvData.ReadByteSeq(unk_guid[4]);
+    recvData.ReadByteSeq(unk_guid[7]);
+    recvData.ReadByteSeq(unk_guid[6]);
 
-    member_name = recv_data.ReadString(member_name_length);
-    realm_name = recv_data.ReadString(realm_name_length);
+    std::string member_name = recvData.ReadString(member_name_length);
+    std::string realm_name = recvData.ReadString(realm_name_length);
 
-    recv_data.ReadByteSeq(unk_guid[1]);
-    recv_data.ReadByteSeq(unk_guid[0]);
-    recv_data.ReadByteSeq(unk_guid[5]);
-    recv_data.ReadByteSeq(unk_guid[3]);
-    recv_data.ReadByteSeq(unk_guid[2]);
+    recvData.ReadByteSeq(unk_guid[1]);
+    recvData.ReadByteSeq(unk_guid[0]);
+    recvData.ReadByteSeq(unk_guid[5]);
+    recvData.ReadByteSeq(unk_guid[3]);
+    recvData.ReadByteSeq(unk_guid[2]);
 
     if (_player->HasBeenInvited())
         return;
@@ -234,14 +232,12 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recv_data)
     player->SetInviter(_player->GetLowGUID());
 }
 
-void WorldSession::HandleGroupInviteResponseOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGroupInviteResponseOpcode(WorldPacket& recvData)
 {
-    bool accept_invite = false;
+    recvData.readBit();                    //unk
+    bool acceptInvite = recvData.readBit();
 
-    recv_data.readBit();                    //unk
-    accept_invite = recv_data.readBit();
-
-    if (accept_invite)
+    if (acceptInvite)
     {
         if (_player->GetGroup() != nullptr)
             return;
@@ -297,9 +293,9 @@ void WorldSession::HandleGroupInviteResponseOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleGroupSetRolesOpcode(WorldPacket& recvData)
 {
-    uint32_t new_role;
+    uint32_t newRole;
 
-    recvData >> new_role;
+    recvData >> newRole;
 
     ObjectGuid target_guid; // Target GUID
     ObjectGuid player_guid = GetPlayer()->GetGUID();
@@ -358,7 +354,7 @@ void WorldSession::HandleGroupSetRolesOpcode(WorldPacket& recvData)
     data.WriteByteSeq(target_guid[4]);
     data.WriteByteSeq(target_guid[0]);
 
-    data << uint32_t(new_role);        // role
+    data << uint32_t(newRole);        // role
 
     data.WriteByteSeq(target_guid[6]);
     data.WriteByteSeq(target_guid[2]);
@@ -399,25 +395,25 @@ void WorldSession::HandleGroupDisbandOpcode(WorldPacket& /*recvData*/)
 
 void WorldSession::HandleLootMethodOpcode(WorldPacket& recvData)
 {
-    uint32_t loot_method;
-    uint64_t loot_master;
-    uint32_t loot_threshold;
+    uint32_t lootMethod;
+    uint64_t lootMaster;
+    uint32_t lootThreshold;
 
-    recvData >> loot_method;
-    recvData >> loot_master;
-    recvData >> loot_threshold;
+    recvData >> lootMethod;
+    recvData >> lootMaster;
+    recvData >> lootThreshold;
 
     Group* target_group = _player->GetGroup();
     if (target_group == nullptr)
         return;
 
-    if (loot_method > PARTY_LOOT_NBG)
+    if (lootMethod > PARTY_LOOT_NBG)
         return;
 
-    if (loot_threshold < ITEM_QUALITY_UNCOMMON_GREEN || loot_threshold > ITEM_QUALITY_ARTIFACT_LIGHT_YELLOW)
+    if (lootThreshold < ITEM_QUALITY_UNCOMMON_GREEN || lootThreshold > ITEM_QUALITY_ARTIFACT_LIGHT_YELLOW)
         return;
 
-    if (loot_method == PARTY_LOOT_MASTER && !target_group->HasMember(objmgr.GetPlayer((uint32_t)loot_master)))
+    if (lootMethod == PARTY_LOOT_MASTER && !target_group->HasMember(objmgr.GetPlayer(static_cast<uint32_t>(lootMaster))))
         return;
 
     if (target_group->GetLeader() != _player->getPlayerInfo())
@@ -426,17 +422,17 @@ void WorldSession::HandleLootMethodOpcode(WorldPacket& recvData)
         return;
     }
 
-    Player* player = objmgr.GetPlayer((uint32_t)loot_master);
+    Player* player = objmgr.GetPlayer(static_cast<uint32_t>(lootMaster));
     if (player != nullptr)
-        target_group->SetLooter(player, static_cast<uint8_t>(loot_method), static_cast<uint16_t>(loot_threshold));
+        target_group->SetLooter(player, static_cast<uint8_t>(lootMethod), static_cast<uint16_t>(lootThreshold));
     else
-        target_group->SetLooter(_player, static_cast<uint8_t>(loot_method), static_cast<uint16_t>(loot_threshold));
+        target_group->SetLooter(_player, static_cast<uint8_t>(lootMethod), static_cast<uint16_t>(lootThreshold));
 }
 
-void WorldSession::HandleConvertGroupToRaidOpcode(WorldPacket& recv_data)
+void WorldSession::HandleConvertGroupToRaidOpcode(WorldPacket& recvData)
 {
     bool convert_to_raid = false;
-    recv_data >> convert_to_raid;
+    recvData >> convert_to_raid;
 
     Group* group = _player->GetGroup();
     if (group == nullptr)
@@ -470,13 +466,13 @@ void WorldSession::HandleGroupRequestJoinUpdatesOpcode(WorldPacket& /*recvData*/
     }
 }
 
-void WorldSession::HandleGroupRoleCheckBeginOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGroupRoleCheckBeginOpcode(WorldPacket& recvData)
 {
     Group* group = GetPlayer()->GetGroup();
     if (!group)
         return;
 
-    if (recv_data.isEmpty())
+    if (recvData.isEmpty())
     {
         if (group->GetLeader()->guid != GetPlayer()->GetGUID() && group->GetMainAssist()->guid != GetPlayer()->GetGUID())
             return;
@@ -506,10 +502,10 @@ void WorldSession::HandleGroupRoleCheckBeginOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleGroupSetLeaderOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGroupSetLeaderOpcode(WorldPacket& recvData)
 {
     uint64_t memberGuid;
-    recv_data >> memberGuid;
+    recvData >> memberGuid;
 
     Player* player = objmgr.GetPlayer((uint32)memberGuid);
 
@@ -539,13 +535,13 @@ void WorldSession::HandleGroupSetLeaderOpcode(WorldPacket& recv_data)
 }
 
 //\TODO handle reason - send it to player.
-void WorldSession::HandleGroupUninviteGuidOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGroupUninviteGuidOpcode(WorldPacket& recvData)
 {
     uint64_t memberGuid;
     std::string reason;
 
-    recv_data >> memberGuid;
-    recv_data >> reason;
+    recvData >> memberGuid;
+    recvData >> reason;
 
     Player* player = objmgr.GetPlayer(Arcemu::Util::GUID_LOPART(memberGuid));
     PlayerInfo* info = objmgr.GetPlayerInfo(Arcemu::Util::GUID_LOPART(memberGuid));

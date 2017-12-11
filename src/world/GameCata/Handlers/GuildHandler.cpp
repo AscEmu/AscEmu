@@ -17,13 +17,13 @@ This file is released under the MIT license. See README-MIT for more information
 //////////////////////////////////////////////////////////////////////////////////////////
 // Guild
 
-void WorldSession::HandleGuildQueryOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGuildQueryOpcode(WorldPacket& recvData)
 {
     uint64_t guildGuid;
     uint64_t playerGuid;
 
-    recv_data >> guildGuid;
-    recv_data >> playerGuid;
+    recvData >> guildGuid;
+    recvData >> playerGuid;
 
     uint32_t guildId = uint32_t(guildGuid);
 
@@ -38,13 +38,12 @@ void WorldSession::HandleGuildQueryOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleInviteToGuildOpcode(WorldPacket& recv_data)
+void WorldSession::HandleInviteToGuildOpcode(WorldPacket& recvData)
 {
-    uint32_t nameLength;
     std::string invitedName;
 
-    nameLength = recv_data.readBits(7);
-    invitedName = recv_data.ReadString(nameLength);
+    uint32_t nameLength = recvData.readBits(7);
+    invitedName = recvData.ReadString(nameLength);
 
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_INVITE %s: Invited: %s", _player->GetName(), invitedName.c_str());
 
@@ -54,27 +53,27 @@ void WorldSession::HandleInviteToGuildOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleGuildRemoveOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGuildRemoveOpcode(WorldPacket& recvData)
 {
     ObjectGuid playerGuid;
 
-    playerGuid[6] = recv_data.readBit();
-    playerGuid[5] = recv_data.readBit();
-    playerGuid[4] = recv_data.readBit();
-    playerGuid[0] = recv_data.readBit();
-    playerGuid[1] = recv_data.readBit();
-    playerGuid[3] = recv_data.readBit();
-    playerGuid[7] = recv_data.readBit();
-    playerGuid[2] = recv_data.readBit();
+    playerGuid[6] = recvData.readBit();
+    playerGuid[5] = recvData.readBit();
+    playerGuid[4] = recvData.readBit();
+    playerGuid[0] = recvData.readBit();
+    playerGuid[1] = recvData.readBit();
+    playerGuid[3] = recvData.readBit();
+    playerGuid[7] = recvData.readBit();
+    playerGuid[2] = recvData.readBit();
 
-    recv_data.ReadByteSeq(playerGuid[2]);
-    recv_data.ReadByteSeq(playerGuid[6]);
-    recv_data.ReadByteSeq(playerGuid[5]);
-    recv_data.ReadByteSeq(playerGuid[7]);
-    recv_data.ReadByteSeq(playerGuid[1]);
-    recv_data.ReadByteSeq(playerGuid[4]);
-    recv_data.ReadByteSeq(playerGuid[3]);
-    recv_data.ReadByteSeq(playerGuid[0]);
+    recvData.ReadByteSeq(playerGuid[2]);
+    recvData.ReadByteSeq(playerGuid[6]);
+    recvData.ReadByteSeq(playerGuid[5]);
+    recvData.ReadByteSeq(playerGuid[7]);
+    recvData.ReadByteSeq(playerGuid[1]);
+    recvData.ReadByteSeq(playerGuid[4]);
+    recvData.ReadByteSeq(playerGuid[3]);
+    recvData.ReadByteSeq(playerGuid[0]);
 
     if (Guild* guild = GetPlayer()->GetGuild())
     {
@@ -113,27 +112,27 @@ void WorldSession::HandleGuildRosterOpcode(WorldPacket& /*recv_data*/)
     }
 }
 
-void WorldSession::HandleGuildPromoteOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGuildPromoteOpcode(WorldPacket& recvData)
 {
     ObjectGuid targetGuid;
 
-    targetGuid[7] = recv_data.readBit();
-    targetGuid[2] = recv_data.readBit();
-    targetGuid[5] = recv_data.readBit();
-    targetGuid[6] = recv_data.readBit();
-    targetGuid[1] = recv_data.readBit();
-    targetGuid[0] = recv_data.readBit();
-    targetGuid[3] = recv_data.readBit();
-    targetGuid[4] = recv_data.readBit();
+    targetGuid[7] = recvData.readBit();
+    targetGuid[2] = recvData.readBit();
+    targetGuid[5] = recvData.readBit();
+    targetGuid[6] = recvData.readBit();
+    targetGuid[1] = recvData.readBit();
+    targetGuid[0] = recvData.readBit();
+    targetGuid[3] = recvData.readBit();
+    targetGuid[4] = recvData.readBit();
 
-    recv_data.ReadByteSeq(targetGuid[0]);
-    recv_data.ReadByteSeq(targetGuid[5]);
-    recv_data.ReadByteSeq(targetGuid[2]);
-    recv_data.ReadByteSeq(targetGuid[3]);
-    recv_data.ReadByteSeq(targetGuid[6]);
-    recv_data.ReadByteSeq(targetGuid[4]);
-    recv_data.ReadByteSeq(targetGuid[1]);
-    recv_data.ReadByteSeq(targetGuid[7]);
+    recvData.ReadByteSeq(targetGuid[0]);
+    recvData.ReadByteSeq(targetGuid[5]);
+    recvData.ReadByteSeq(targetGuid[2]);
+    recvData.ReadByteSeq(targetGuid[3]);
+    recvData.ReadByteSeq(targetGuid[6]);
+    recvData.ReadByteSeq(targetGuid[4]);
+    recvData.ReadByteSeq(targetGuid[1]);
+    recvData.ReadByteSeq(targetGuid[7]);
 
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_PROMOTE %s: Target: %u", _player->GetName(), Arcemu::Util::GUID_LOPART(targetGuid));
 
@@ -143,61 +142,61 @@ void WorldSession::HandleGuildPromoteOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleGuildAssignRankOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGuildAssignRankOpcode(WorldPacket& recvData)
 {
     ObjectGuid targetGuid;
     ObjectGuid setterGuid;
 
     uint32_t rankId;
-    recv_data >> rankId;
+    recvData >> rankId;
 
-    targetGuid[1] = recv_data.readBit();
-    targetGuid[7] = recv_data.readBit();
+    targetGuid[1] = recvData.readBit();
+    targetGuid[7] = recvData.readBit();
 
-    setterGuid[4] = recv_data.readBit();
-    setterGuid[2] = recv_data.readBit();
+    setterGuid[4] = recvData.readBit();
+    setterGuid[2] = recvData.readBit();
 
-    targetGuid[4] = recv_data.readBit();
-    targetGuid[5] = recv_data.readBit();
-    targetGuid[6] = recv_data.readBit();
+    targetGuid[4] = recvData.readBit();
+    targetGuid[5] = recvData.readBit();
+    targetGuid[6] = recvData.readBit();
 
-    setterGuid[1] = recv_data.readBit();
-    setterGuid[7] = recv_data.readBit();
+    setterGuid[1] = recvData.readBit();
+    setterGuid[7] = recvData.readBit();
 
-    targetGuid[2] = recv_data.readBit();
-    targetGuid[3] = recv_data.readBit();
-    targetGuid[0] = recv_data.readBit();
+    targetGuid[2] = recvData.readBit();
+    targetGuid[3] = recvData.readBit();
+    targetGuid[0] = recvData.readBit();
 
-    setterGuid[6] = recv_data.readBit();
-    setterGuid[3] = recv_data.readBit();
-    setterGuid[0] = recv_data.readBit();
-    setterGuid[5] = recv_data.readBit();
+    setterGuid[6] = recvData.readBit();
+    setterGuid[3] = recvData.readBit();
+    setterGuid[0] = recvData.readBit();
+    setterGuid[5] = recvData.readBit();
 
-    recv_data.ReadByteSeq(targetGuid[0]);
+    recvData.ReadByteSeq(targetGuid[0]);
 
-    recv_data.ReadByteSeq(setterGuid[1]);
-    recv_data.ReadByteSeq(setterGuid[3]);
-    recv_data.ReadByteSeq(setterGuid[5]);
+    recvData.ReadByteSeq(setterGuid[1]);
+    recvData.ReadByteSeq(setterGuid[3]);
+    recvData.ReadByteSeq(setterGuid[5]);
 
-    recv_data.ReadByteSeq(targetGuid[7]);
-    recv_data.ReadByteSeq(targetGuid[3]);
+    recvData.ReadByteSeq(targetGuid[7]);
+    recvData.ReadByteSeq(targetGuid[3]);
 
-    recv_data.ReadByteSeq(setterGuid[0]);
+    recvData.ReadByteSeq(setterGuid[0]);
 
-    recv_data.ReadByteSeq(targetGuid[1]);
+    recvData.ReadByteSeq(targetGuid[1]);
 
-    recv_data.ReadByteSeq(setterGuid[6]);
+    recvData.ReadByteSeq(setterGuid[6]);
 
-    recv_data.ReadByteSeq(targetGuid[2]);
-    recv_data.ReadByteSeq(targetGuid[5]);
-    recv_data.ReadByteSeq(targetGuid[4]);
+    recvData.ReadByteSeq(targetGuid[2]);
+    recvData.ReadByteSeq(targetGuid[5]);
+    recvData.ReadByteSeq(targetGuid[4]);
 
-    recv_data.ReadByteSeq(setterGuid[2]);
-    recv_data.ReadByteSeq(setterGuid[4]);
+    recvData.ReadByteSeq(setterGuid[2]);
+    recvData.ReadByteSeq(setterGuid[4]);
 
-    recv_data.ReadByteSeq(targetGuid[6]);
+    recvData.ReadByteSeq(targetGuid[6]);
 
-    recv_data.ReadByteSeq(setterGuid[7]);
+    recvData.ReadByteSeq(setterGuid[7]);
 
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_ASSIGN_MEMBER_RANK %s: Target: %u Rank: %u, Issuer: %u",
         _player->GetName(), Arcemu::Util::GUID_LOPART(targetGuid), rankId, Arcemu::Util::GUID_LOPART(setterGuid));
@@ -208,27 +207,27 @@ void WorldSession::HandleGuildAssignRankOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleGuildDemoteOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGuildDemoteOpcode(WorldPacket& recvData)
 {
     ObjectGuid targetGuid;
 
-    targetGuid[7] = recv_data.readBit();
-    targetGuid[1] = recv_data.readBit();
-    targetGuid[5] = recv_data.readBit();
-    targetGuid[6] = recv_data.readBit();
-    targetGuid[2] = recv_data.readBit();
-    targetGuid[3] = recv_data.readBit();
-    targetGuid[0] = recv_data.readBit();
-    targetGuid[4] = recv_data.readBit();
+    targetGuid[7] = recvData.readBit();
+    targetGuid[1] = recvData.readBit();
+    targetGuid[5] = recvData.readBit();
+    targetGuid[6] = recvData.readBit();
+    targetGuid[2] = recvData.readBit();
+    targetGuid[3] = recvData.readBit();
+    targetGuid[0] = recvData.readBit();
+    targetGuid[4] = recvData.readBit();
 
-    recv_data.ReadByteSeq(targetGuid[1]);
-    recv_data.ReadByteSeq(targetGuid[2]);
-    recv_data.ReadByteSeq(targetGuid[7]);
-    recv_data.ReadByteSeq(targetGuid[5]);
-    recv_data.ReadByteSeq(targetGuid[6]);
-    recv_data.ReadByteSeq(targetGuid[0]);
-    recv_data.ReadByteSeq(targetGuid[4]);
-    recv_data.ReadByteSeq(targetGuid[3]);
+    recvData.ReadByteSeq(targetGuid[1]);
+    recvData.ReadByteSeq(targetGuid[2]);
+    recvData.ReadByteSeq(targetGuid[7]);
+    recvData.ReadByteSeq(targetGuid[5]);
+    recvData.ReadByteSeq(targetGuid[6]);
+    recvData.ReadByteSeq(targetGuid[0]);
+    recvData.ReadByteSeq(targetGuid[4]);
+    recvData.ReadByteSeq(targetGuid[3]);
 
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_DEMOTE %s: Target: %u", _player->GetName(), Arcemu::Util::GUID_LOPART(targetGuid));
 
@@ -266,13 +265,12 @@ void WorldSession::HandleGuildLeaderOpcode(WorldPacket& recvData)
     }
 }
 
-void WorldSession::HandleGuildMotdOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGuildMotdOpcode(WorldPacket& recvData)
 {
-    uint32_t motdLength;
     std::string motd;
 
-    motdLength = recv_data.readBits(11);
-    motd = recv_data.ReadString(motdLength);
+    uint32_t motdLength = recvData.readBits(11);
+    motd = recvData.ReadString(motdLength);
 
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_MOTD %s: MOTD: %s", _player->GetName(), motd.c_str());
 
@@ -282,40 +280,39 @@ void WorldSession::HandleGuildMotdOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleGuildSetNoteOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGuildSetNoteOpcode(WorldPacket& recvData)
 {
     bool ispublic;          // 0 officer, 1 public
-    uint32_t noteLength;
     std::string note;
 
     ObjectGuid playerGuid;
 
-    playerGuid[1] = recv_data.readBit();
-    playerGuid[4] = recv_data.readBit();
-    playerGuid[5] = recv_data.readBit();
-    playerGuid[3] = recv_data.readBit();
-    playerGuid[0] = recv_data.readBit();
-    playerGuid[7] = recv_data.readBit();
+    playerGuid[1] = recvData.readBit();
+    playerGuid[4] = recvData.readBit();
+    playerGuid[5] = recvData.readBit();
+    playerGuid[3] = recvData.readBit();
+    playerGuid[0] = recvData.readBit();
+    playerGuid[7] = recvData.readBit();
 
-    ispublic = recv_data.readBit();
+    ispublic = recvData.readBit();
 
-    playerGuid[6] = recv_data.readBit();
+    playerGuid[6] = recvData.readBit();
 
-    noteLength = recv_data.readBits(8);
+    uint32_t noteLength = recvData.readBits(8);
 
-    playerGuid[2] = recv_data.readBit();
+    playerGuid[2] = recvData.readBit();
 
-    recv_data.ReadByteSeq(playerGuid[4]);
-    recv_data.ReadByteSeq(playerGuid[5]);
-    recv_data.ReadByteSeq(playerGuid[0]);
-    recv_data.ReadByteSeq(playerGuid[3]);
-    recv_data.ReadByteSeq(playerGuid[1]);
-    recv_data.ReadByteSeq(playerGuid[6]);
-    recv_data.ReadByteSeq(playerGuid[7]);
+    recvData.ReadByteSeq(playerGuid[4]);
+    recvData.ReadByteSeq(playerGuid[5]);
+    recvData.ReadByteSeq(playerGuid[0]);
+    recvData.ReadByteSeq(playerGuid[3]);
+    recvData.ReadByteSeq(playerGuid[1]);
+    recvData.ReadByteSeq(playerGuid[6]);
+    recvData.ReadByteSeq(playerGuid[7]);
 
-    note = recv_data.ReadString(noteLength);
+    note = recvData.ReadString(noteLength);
 
-    recv_data.ReadByteSeq(playerGuid[2]);
+    recvData.ReadByteSeq(playerGuid[2]);
 
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_SET_NOTE %s: Target: %u, Note: %s, Public: %u",
         _player->GetName(), Arcemu::Util::GUID_LOPART(playerGuid), note.c_str(), ispublic);
@@ -326,27 +323,27 @@ void WorldSession::HandleGuildSetNoteOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleGuildQueryRanksOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGuildQueryRanksOpcode(WorldPacket& recvData)
 {
     ObjectGuid guildGuid;
 
-    guildGuid[2] = recv_data.readBit();
-    guildGuid[3] = recv_data.readBit();
-    guildGuid[0] = recv_data.readBit();
-    guildGuid[6] = recv_data.readBit();
-    guildGuid[4] = recv_data.readBit();
-    guildGuid[7] = recv_data.readBit();
-    guildGuid[5] = recv_data.readBit();
-    guildGuid[1] = recv_data.readBit();
+    guildGuid[2] = recvData.readBit();
+    guildGuid[3] = recvData.readBit();
+    guildGuid[0] = recvData.readBit();
+    guildGuid[6] = recvData.readBit();
+    guildGuid[4] = recvData.readBit();
+    guildGuid[7] = recvData.readBit();
+    guildGuid[5] = recvData.readBit();
+    guildGuid[1] = recvData.readBit();
 
-    recv_data.ReadByteSeq(guildGuid[3]);
-    recv_data.ReadByteSeq(guildGuid[4]);
-    recv_data.ReadByteSeq(guildGuid[5]);
-    recv_data.ReadByteSeq(guildGuid[7]);
-    recv_data.ReadByteSeq(guildGuid[1]);
-    recv_data.ReadByteSeq(guildGuid[0]);
-    recv_data.ReadByteSeq(guildGuid[6]);
-    recv_data.ReadByteSeq(guildGuid[2]);
+    recvData.ReadByteSeq(guildGuid[3]);
+    recvData.ReadByteSeq(guildGuid[4]);
+    recvData.ReadByteSeq(guildGuid[5]);
+    recvData.ReadByteSeq(guildGuid[7]);
+    recvData.ReadByteSeq(guildGuid[1]);
+    recvData.ReadByteSeq(guildGuid[0]);
+    recvData.ReadByteSeq(guildGuid[6]);
+    recvData.ReadByteSeq(guildGuid[2]);
 
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_QUERY_RANKS %s: Guild: %u", _player->GetName(), Arcemu::Util::GUID_LOPART(guildGuid));
 
@@ -359,16 +356,15 @@ void WorldSession::HandleGuildQueryRanksOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleGuildAddRankOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGuildAddRankOpcode(WorldPacket& recvData)
 {
     uint32_t rankId;
-    uint32_t length;
     std::string rankName;
 
-    recv_data >> rankId;
+    recvData >> rankId;
 
-    length = recv_data.readBits(7);
-    rankName = recv_data.ReadString(length);
+    uint32_t length = recvData.readBits(7);
+    rankName = recvData.ReadString(length);
 
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_ADD_RANK %s: Rank: %s", _player->GetName(), rankName.c_str());
 
@@ -406,13 +402,13 @@ void WorldSession::HandleGuildChangeInfoTextOpcode(WorldPacket& recvData)
     }
 }
 
-void WorldSession::HandleSaveGuildEmblemOpcode(WorldPacket& recv_data)
+void WorldSession::HandleSaveGuildEmblemOpcode(WorldPacket& recvData)
 {
     uint64_t vendorGuid;
     EmblemInfo emblemInfo;
 
-    recv_data >> vendorGuid;
-    emblemInfo.readEmblemInfoFromPacket(recv_data);
+    recvData >> vendorGuid;
+    emblemInfo.readEmblemInfoFromPacket(recvData);
 
     LogDebugFlag(LF_OPCODE, "MSG_SAVE_GUILD_EMBLEM %s: vendorGuid: %u style: %u, color: %u, borderStyle: %u, borderColor: %u, backgroundColor: %u", _player->GetName(),
         Arcemu::Util::GUID_LOPART(vendorGuid), emblemInfo.getStyle(), emblemInfo.getColor(), emblemInfo.getBorderStyle(), emblemInfo.getBorderColor(), emblemInfo.getBackgroundColor());
@@ -456,27 +452,27 @@ void WorldSession::HandleGuildPermissions(WorldPacket& /*recv_data*/)
     }
 }
 
-void WorldSession::HandleGuildQueryXPOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGuildQueryXPOpcode(WorldPacket& recvData)
 {
     ObjectGuid guildGuid;
 
-    guildGuid[2] = recv_data.readBit();
-    guildGuid[1] = recv_data.readBit();
-    guildGuid[0] = recv_data.readBit();
-    guildGuid[5] = recv_data.readBit();
-    guildGuid[4] = recv_data.readBit();
-    guildGuid[7] = recv_data.readBit();
-    guildGuid[6] = recv_data.readBit();
-    guildGuid[3] = recv_data.readBit();
+    guildGuid[2] = recvData.readBit();
+    guildGuid[1] = recvData.readBit();
+    guildGuid[0] = recvData.readBit();
+    guildGuid[5] = recvData.readBit();
+    guildGuid[4] = recvData.readBit();
+    guildGuid[7] = recvData.readBit();
+    guildGuid[6] = recvData.readBit();
+    guildGuid[3] = recvData.readBit();
 
-    recv_data.ReadByteSeq(guildGuid[7]);
-    recv_data.ReadByteSeq(guildGuid[2]);
-    recv_data.ReadByteSeq(guildGuid[3]);
-    recv_data.ReadByteSeq(guildGuid[6]);
-    recv_data.ReadByteSeq(guildGuid[1]);
-    recv_data.ReadByteSeq(guildGuid[5]);
-    recv_data.ReadByteSeq(guildGuid[0]);
-    recv_data.ReadByteSeq(guildGuid[4]);
+    recvData.ReadByteSeq(guildGuid[7]);
+    recvData.ReadByteSeq(guildGuid[2]);
+    recvData.ReadByteSeq(guildGuid[3]);
+    recvData.ReadByteSeq(guildGuid[6]);
+    recvData.ReadByteSeq(guildGuid[1]);
+    recvData.ReadByteSeq(guildGuid[5]);
+    recvData.ReadByteSeq(guildGuid[0]);
+    recvData.ReadByteSeq(guildGuid[4]);
 
     uint32_t guildId = Arcemu::Util::GUID_LOPART(guildGuid);
 
@@ -491,7 +487,7 @@ void WorldSession::HandleGuildQueryXPOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleGuildSetRankPermissionsOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGuildSetRankPermissionsOpcode(WorldPacket& recvData)
 {
     Guild* guild = GetPlayer()->GetGuild();
     if (guild == nullptr)
@@ -505,9 +501,9 @@ void WorldSession::HandleGuildSetRankPermissionsOpcode(WorldPacket& recv_data)
     uint32_t newRights;
     uint32_t moneyPerDay;
 
-    recv_data >> oldRankId;
-    recv_data >> oldRights;
-    recv_data >> newRights;
+    recvData >> oldRankId;
+    recvData >> oldRights;
+    recvData >> newRights;
 
     GuildBankRightsAndSlotsVec rightsAndSlots(MAX_GUILD_BANK_TABS);
     for (uint8_t tabId = 0; tabId < MAX_GUILD_BANK_TABS; ++tabId)
@@ -515,44 +511,44 @@ void WorldSession::HandleGuildSetRankPermissionsOpcode(WorldPacket& recv_data)
         uint32_t bankRights;
         uint32_t slots;
 
-        recv_data >> bankRights;
-        recv_data >> slots;
+        recvData >> bankRights;
+        recvData >> slots;
 
         rightsAndSlots[tabId] = GuildBankRightsAndSlots(tabId, uint8_t(bankRights), slots);
     }
 
-    recv_data >> moneyPerDay;
-    recv_data >> newRankId;
+    recvData >> moneyPerDay;
+    recvData >> newRankId;
 
-    uint32_t nameLength = recv_data.readBits(7);
-    std::string rankName = recv_data.ReadString(nameLength);
+    uint32_t nameLength = recvData.readBits(7);
+    std::string rankName = recvData.ReadString(nameLength);
 
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_SET_RANK_PERMISSIONS %s: rank: %s (%u)", _player->GetName(), rankName.c_str(), newRankId);
 
     guild->handleSetRankInfo(this, static_cast<uint8_t>(newRankId), rankName, newRights, moneyPerDay, rightsAndSlots);
 }
 
-void WorldSession::HandleGuildRequestPartyState(WorldPacket& recv_data)
+void WorldSession::HandleGuildRequestPartyState(WorldPacket& recvData)
 {
     ObjectGuid guildGuid;
 
-    guildGuid[0] = recv_data.readBit();
-    guildGuid[6] = recv_data.readBit();
-    guildGuid[7] = recv_data.readBit();
-    guildGuid[3] = recv_data.readBit();
-    guildGuid[5] = recv_data.readBit();
-    guildGuid[1] = recv_data.readBit();
-    guildGuid[2] = recv_data.readBit();
-    guildGuid[4] = recv_data.readBit();
+    guildGuid[0] = recvData.readBit();
+    guildGuid[6] = recvData.readBit();
+    guildGuid[7] = recvData.readBit();
+    guildGuid[3] = recvData.readBit();
+    guildGuid[5] = recvData.readBit();
+    guildGuid[1] = recvData.readBit();
+    guildGuid[2] = recvData.readBit();
+    guildGuid[4] = recvData.readBit();
 
-    recv_data.ReadByteSeq(guildGuid[6]);
-    recv_data.ReadByteSeq(guildGuid[3]);
-    recv_data.ReadByteSeq(guildGuid[2]);
-    recv_data.ReadByteSeq(guildGuid[1]);
-    recv_data.ReadByteSeq(guildGuid[5]);
-    recv_data.ReadByteSeq(guildGuid[0]);
-    recv_data.ReadByteSeq(guildGuid[7]);
-    recv_data.ReadByteSeq(guildGuid[4]);
+    recvData.ReadByteSeq(guildGuid[6]);
+    recvData.ReadByteSeq(guildGuid[3]);
+    recvData.ReadByteSeq(guildGuid[2]);
+    recvData.ReadByteSeq(guildGuid[1]);
+    recvData.ReadByteSeq(guildGuid[5]);
+    recvData.ReadByteSeq(guildGuid[0]);
+    recvData.ReadByteSeq(guildGuid[7]);
+    recvData.ReadByteSeq(guildGuid[4]);
 
     uint32_t guildId = Arcemu::Util::GUID_LOPART(guildGuid);
 
@@ -562,27 +558,27 @@ void WorldSession::HandleGuildRequestPartyState(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleGuildRequestMaxDailyXP(WorldPacket& recv_data)
+void WorldSession::HandleGuildRequestMaxDailyXP(WorldPacket& recvData)
 {
     ObjectGuid guid;
 
-    guid[0] = recv_data.readBit();
-    guid[3] = recv_data.readBit();
-    guid[5] = recv_data.readBit();
-    guid[1] = recv_data.readBit();
-    guid[4] = recv_data.readBit();
-    guid[6] = recv_data.readBit();
-    guid[7] = recv_data.readBit();
-    guid[2] = recv_data.readBit();
+    guid[0] = recvData.readBit();
+    guid[3] = recvData.readBit();
+    guid[5] = recvData.readBit();
+    guid[1] = recvData.readBit();
+    guid[4] = recvData.readBit();
+    guid[6] = recvData.readBit();
+    guid[7] = recvData.readBit();
+    guid[2] = recvData.readBit();
 
-    recv_data.ReadByteSeq(guid[7]);
-    recv_data.ReadByteSeq(guid[4]);
-    recv_data.ReadByteSeq(guid[3]);
-    recv_data.ReadByteSeq(guid[5]);
-    recv_data.ReadByteSeq(guid[1]);
-    recv_data.ReadByteSeq(guid[2]);
-    recv_data.ReadByteSeq(guid[6]);
-    recv_data.ReadByteSeq(guid[0]);
+    recvData.ReadByteSeq(guid[7]);
+    recvData.ReadByteSeq(guid[4]);
+    recvData.ReadByteSeq(guid[3]);
+    recvData.ReadByteSeq(guid[5]);
+    recvData.ReadByteSeq(guid[1]);
+    recvData.ReadByteSeq(guid[2]);
+    recvData.ReadByteSeq(guid[6]);
+    recvData.ReadByteSeq(guid[0]);
 
     uint32_t guildId = Arcemu::Util::GUID_LOPART(guid);
 
@@ -597,19 +593,19 @@ void WorldSession::HandleGuildRequestMaxDailyXP(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleAutoDeclineGuildInvites(WorldPacket& recv_data)
+void WorldSession::HandleAutoDeclineGuildInvites(WorldPacket& recvData)
 {
     uint8_t enable;
-    recv_data >> enable;
+    recvData >> enable;
 
     bool enabled = enable > 0 ? true : false;
 
     GetPlayer()->ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_AUTO_DECLINE_GUILD, enabled);
 }
 
-void WorldSession::HandleGuildRewardsQueryOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGuildRewardsQueryOpcode(WorldPacket& recvData)
 {
-    recv_data.read_skip<uint32_t>();
+    recvData.read_skip<uint32_t>();
 
     if (sGuildMgr.getGuildById(_player->GetGuildId()))
     {
@@ -634,9 +630,9 @@ void WorldSession::HandleGuildRewardsQueryOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleGuildQueryNewsOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGuildQueryNewsOpcode(WorldPacket& recvData)
 {
-    recv_data.read_skip<uint32_t>();
+    recvData.read_skip<uint32_t>();
 
     if (Guild* guild = GetPlayer()->GetGuild())
     {
@@ -644,35 +640,35 @@ void WorldSession::HandleGuildQueryNewsOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleGuildNewsUpdateStickyOpcode(WorldPacket& recv_data)
+void WorldSession::HandleGuildNewsUpdateStickyOpcode(WorldPacket& recvData)
 {
     uint32_t newsId;
     bool isSticky;
 
     ObjectGuid guid;
 
-    recv_data >> newsId;
+    recvData >> newsId;
 
-    guid[2] = recv_data.readBit();
-    guid[4] = recv_data.readBit();
-    guid[3] = recv_data.readBit();
-    guid[0] = recv_data.readBit();
+    guid[2] = recvData.readBit();
+    guid[4] = recvData.readBit();
+    guid[3] = recvData.readBit();
+    guid[0] = recvData.readBit();
 
-    isSticky = recv_data.readBit();
+    isSticky = recvData.readBit();
 
-    guid[6] = recv_data.readBit();
-    guid[7] = recv_data.readBit();
-    guid[1] = recv_data.readBit();
-    guid[5] = recv_data.readBit();
+    guid[6] = recvData.readBit();
+    guid[7] = recvData.readBit();
+    guid[1] = recvData.readBit();
+    guid[5] = recvData.readBit();
 
-    recv_data.ReadByteSeq(guid[6]);
-    recv_data.ReadByteSeq(guid[2]);
-    recv_data.ReadByteSeq(guid[1]);
-    recv_data.ReadByteSeq(guid[0]);
-    recv_data.ReadByteSeq(guid[5]);
-    recv_data.ReadByteSeq(guid[3]);
-    recv_data.ReadByteSeq(guid[7]);
-    recv_data.ReadByteSeq(guid[4]);
+    recvData.ReadByteSeq(guid[6]);
+    recvData.ReadByteSeq(guid[2]);
+    recvData.ReadByteSeq(guid[1]);
+    recvData.ReadByteSeq(guid[0]);
+    recvData.ReadByteSeq(guid[5]);
+    recvData.ReadByteSeq(guid[3]);
+    recvData.ReadByteSeq(guid[7]);
+    recvData.ReadByteSeq(guid[4]);
 
     if (Guild* guild = GetPlayer()->GetGuild())
     {
@@ -706,13 +702,13 @@ void WorldSession::HandleGuildBankMoneyWithdrawn(WorldPacket& /*recv_data*/)
     }
 }
 
-void WorldSession::HandleGuildBankerActivate(WorldPacket& recv_data)
+void WorldSession::HandleGuildBankerActivate(WorldPacket& recvData)
 {
     uint64_t bankGuid;
     bool sendAllSlots;
 
-    recv_data >> bankGuid;
-    recv_data >> sendAllSlots;
+    recvData >> bankGuid;
+    recvData >> sendAllSlots;
 
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_BANKER_ACTIVATE %s: gameobject: %u allSlots: %u",
         _player->GetName(), Arcemu::Util::GUID_LOPART(bankGuid), sendAllSlots);
@@ -728,15 +724,15 @@ void WorldSession::HandleGuildBankerActivate(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleGuildBankQueryTab(WorldPacket& recv_data)
+void WorldSession::HandleGuildBankQueryTab(WorldPacket& recvData)
 {
     uint64_t bankGuid;
     uint8_t tabId;
     bool sendAllSlots;
 
-    recv_data >> bankGuid;
-    recv_data >> tabId;
-    recv_data >> sendAllSlots;
+    recvData >> bankGuid;
+    recvData >> tabId;
+    recvData >> sendAllSlots;
 
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_BANK_QUERY_TAB %s: gameobject: %u, tabId: %u, allSlots: %u",
         _player->GetName(), Arcemu::Util::GUID_LOPART(bankGuid), tabId, sendAllSlots);
@@ -747,13 +743,13 @@ void WorldSession::HandleGuildBankQueryTab(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleGuildBankDepositMoney(WorldPacket& recv_data)
+void WorldSession::HandleGuildBankDepositMoney(WorldPacket& recvData)
 {
     uint64_t bankGuid;
     uint64_t money;
 
-    recv_data >> bankGuid;
-    recv_data >> money;
+    recvData >> bankGuid;
+    recvData >> money;
 
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_BANK_DEPOSIT_MONEY %s: gameobject: %u, money: " I64FMTD,
         _player->GetName(), Arcemu::Util::GUID_LOPART(bankGuid), money);
@@ -767,13 +763,13 @@ void WorldSession::HandleGuildBankDepositMoney(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleGuildBankWithdrawMoney(WorldPacket& recv_data)
+void WorldSession::HandleGuildBankWithdrawMoney(WorldPacket& recvData)
 {
     uint64_t bankGuid;
     uint64_t money;
 
-    recv_data >> bankGuid;
-    recv_data >> money;
+    recvData >> bankGuid;
+    recvData >> money;
 
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_BANK_WITHDRAW_MONEY %s: gameobject: %u, money: " I64FMTD,
         _player->GetName(), Arcemu::Util::GUID_LOPART(bankGuid), money);
@@ -784,21 +780,21 @@ void WorldSession::HandleGuildBankWithdrawMoney(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleGuildBankSwapItems(WorldPacket& recv_data)
+void WorldSession::HandleGuildBankSwapItems(WorldPacket& recvData)
 {
     Guild* guild = GetPlayer()->GetGuild();
     if (guild == nullptr)
     {
-        recv_data.rfinish();
+        recvData.rfinish();
         return;
     }
 
     uint64_t bankGuid;
-    recv_data >> bankGuid;
+    recvData >> bankGuid;
 
 
     uint8_t bankToBank;
-    recv_data >> bankToBank;
+    recvData >> bankToBank;
 
     uint8_t tabId;
     uint8_t slotId;
@@ -808,21 +804,21 @@ void WorldSession::HandleGuildBankSwapItems(WorldPacket& recv_data)
     if (bankToBank)
     {
         uint8_t destTabId;
-        recv_data >> destTabId;
+        recvData >> destTabId;
 
         uint8_t destSlotId;
-        recv_data >> destSlotId;
+        recvData >> destSlotId;
 
         uint32_t destItemEntry;
-        recv_data >> destItemEntry;
+        recvData >> destItemEntry;
 
-        recv_data >> tabId;
-        recv_data >> slotId;
-        recv_data >> itemEntry;
+        recvData >> tabId;
+        recvData >> slotId;
+        recvData >> itemEntry;
 
-        recv_data.read_skip<uint8_t>();
+        recvData.read_skip<uint8_t>();
 
-        recv_data >> splitedAmount;
+        recvData >> splitedAmount;
 
         guild->swapItems(GetPlayer(), tabId, slotId, destTabId, destSlotId, splitedAmount);
     }
@@ -832,25 +828,25 @@ void WorldSession::HandleGuildBankSwapItems(WorldPacket& recv_data)
         uint8_t playerSlotId = UNDEFINED_TAB_SLOT;
         uint8_t toCharNum = 1;
 
-        recv_data >> tabId;
-        recv_data >> slotId;
-        recv_data >> itemEntry;
+        recvData >> tabId;
+        recvData >> slotId;
+        recvData >> itemEntry;
 
         uint8_t autoStore;
-        recv_data >> autoStore;
+        recvData >> autoStore;
 
         if (autoStore)
         {
-            recv_data.read_skip<uint32_t>();
-            recv_data.read_skip<uint8_t>();
-            recv_data.read_skip<uint32_t>();
+            recvData.read_skip<uint32_t>();
+            recvData.read_skip<uint8_t>();
+            recvData.read_skip<uint32_t>();
         }
         else
         {
-            recv_data >> playerBag;
-            recv_data >> playerSlotId;
-            recv_data >> toCharNum;
-            recv_data >> splitedAmount;
+            recvData >> playerBag;
+            recvData >> playerSlotId;
+            recvData >> toCharNum;
+            recvData >> splitedAmount;
         }
 
         bool toChar = toCharNum > 0 ? true : false;
@@ -859,13 +855,13 @@ void WorldSession::HandleGuildBankSwapItems(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleGuildBankBuyTab(WorldPacket& recv_data)
+void WorldSession::HandleGuildBankBuyTab(WorldPacket& recvData)
 {
     uint64_t bankGuid;
     uint8_t tabId;
 
-    recv_data >> bankGuid;
-    recv_data >> tabId;
+    recvData >> bankGuid;
+    recvData >> tabId;
 
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_BANK_BUY_TAB %s: gameobject: %u, TabId: %u", _player->GetName(), Arcemu::Util::GUID_LOPART(bankGuid), tabId);
 
@@ -875,17 +871,17 @@ void WorldSession::HandleGuildBankBuyTab(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleGuildBankUpdateTab(WorldPacket& recv_data)
+void WorldSession::HandleGuildBankUpdateTab(WorldPacket& recvData)
 {
     uint64_t bankGuid;
     uint8_t tabId;
     std::string name;
     std::string icon;
 
-    recv_data >> bankGuid;
-    recv_data >> tabId;
-    recv_data >> name;
-    recv_data >> icon;
+    recvData >> bankGuid;
+    recvData >> tabId;
+    recvData >> name;
+    recvData >> icon;
 
     LogDebugFlag(LF_OPCODE, "CMSG_GUILD_BANK_UPDATE_TAB %s: gameobject: %u, tabId: %u, name: %s, icon: %s",
         _player->GetName(), Arcemu::Util::GUID_LOPART(bankGuid), tabId, name.c_str(), icon.c_str());
@@ -912,10 +908,10 @@ void WorldSession::HandleGuildBankLogQuery(WorldPacket& recvData)
     }
 }
 
-void WorldSession::HandleQueryGuildBankTabText(WorldPacket &recv_data)
+void WorldSession::HandleQueryGuildBankTabText(WorldPacket &recvData)
 {
     uint8_t tabId;
-    recv_data >> tabId;
+    recvData >> tabId;
 
     LogDebugFlag(LF_OPCODE, "MSG_QUERY_GUILD_BANK_TEXT %s: tabId: %u", _player->GetName(), tabId);
 
@@ -946,7 +942,7 @@ void WorldSession::HandleSetGuildBankTabText(WorldPacket& recvData)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Charter
 
-void WorldSession::HandleCharterBuyOpcode(WorldPacket& recv_data)
+void WorldSession::HandleCharterBuyOpcode(WorldPacket& recvData)
 {
     uint8_t error;
 
@@ -963,28 +959,28 @@ void WorldSession::HandleCharterBuyOpcode(WorldPacket& recv_data)
     std::string unkString2;
     uint32_t arenaIndex;
 
-    recv_data >> creatureGuid;
-    recv_data >> unk1;
-    recv_data >> unk2;
-    recv_data >> name;
-    recv_data >> unkString;
+    recvData >> creatureGuid;
+    recvData >> unk1;
+    recvData >> unk2;
+    recvData >> name;
+    recvData >> unkString;
 
     for (uint8_t i = 0; i < 7; ++i)
     {
-        recv_data >> charterData[i];
+        recvData >> charterData[i];
     }
 
-    recv_data >> unk3;
-    recv_data >> unk4;
-    recv_data >> unk5;
-    recv_data >> petitionSignerCount;
+    recvData >> unk3;
+    recvData >> unk4;
+    recvData >> unk5;
+    recvData >> petitionSignerCount;
 
     for (uint32_t s = 0; s < 10; ++s)
     {
-        recv_data >> unkString2;
+        recvData >> unkString2;
     }
 
-    recv_data >> arenaIndex;
+    recvData >> arenaIndex;
 
     Creature* creature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(creatureGuid));
     if (creature == nullptr)
@@ -1198,10 +1194,10 @@ void SendShowSignatures(Charter* charter, uint64_t itemGuid, Player* player)
     player->GetSession()->SendPacket(&data);
 }
 
-void WorldSession::HandleCharterShowSignaturesOpcode(WorldPacket& recv_data)
+void WorldSession::HandleCharterShowSignaturesOpcode(WorldPacket& recvData)
 {
     uint64_t itemGuid;
-    recv_data >> itemGuid;
+    recvData >> itemGuid;
 
     if (Charter* pCharter = objmgr.GetCharterByItemGuid(itemGuid))
     {
@@ -1209,13 +1205,13 @@ void WorldSession::HandleCharterShowSignaturesOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleCharterQueryOpcode(WorldPacket& recv_data)
+void WorldSession::HandleCharterQueryOpcode(WorldPacket& recvData)
 {
     uint32_t charterId;
     uint64_t itemGuid;
 
-    recv_data >> charterId;
-    recv_data >> itemGuid;
+    recvData >> charterId;
+    recvData >> itemGuid;
 
     Charter* charter = objmgr.GetCharterByItemGuid(itemGuid);
     if (charter == nullptr)
@@ -1278,15 +1274,15 @@ void WorldSession::HandleCharterQueryOpcode(WorldPacket& recv_data)
     SendPacket(&data);
 }
 
-void WorldSession::HandleCharterOfferOpcode(WorldPacket& recv_data)
+void WorldSession::HandleCharterOfferOpcode(WorldPacket& recvData)
 {
     uint32_t unk;
     uint64_t itemGuid;
     uint64_t targetGuid;
 
-    recv_data >> unk;
-    recv_data >> itemGuid;
-    recv_data >> targetGuid;
+    recvData >> unk;
+    recvData >> itemGuid;
+    recvData >> targetGuid;
 
     
     Charter* charter = objmgr.GetCharterByItemGuid(itemGuid);
@@ -1313,10 +1309,10 @@ void WorldSession::HandleCharterOfferOpcode(WorldPacket& recv_data)
     SendShowSignatures(charter, itemGuid, pTarget);
 }
 
-void WorldSession::HandleCharterSignOpcode(WorldPacket& recv_data)
+void WorldSession::HandleCharterSignOpcode(WorldPacket& recvData)
 {
     uint64_t itemGuid;
-    recv_data >> itemGuid;
+    recvData >> itemGuid;
 
     Charter* charter = objmgr.GetCharterByItemGuid(itemGuid);
     if (charter == nullptr)
