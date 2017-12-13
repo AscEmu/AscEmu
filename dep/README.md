@@ -4,7 +4,7 @@
 
 ## Folder: OpenSSL
 - Web: https://www.openssl.org
-- Version: 1.0.2 (2017-05-25)
+- Version: 1.0.2n (2017-12-7)
 
 ## Folder: MySQL Connector/C
 - Web: http://www.mysql.com
