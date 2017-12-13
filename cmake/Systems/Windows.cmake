@@ -10,26 +10,26 @@ endif()
 
 # set source paths for libraries
 if(IS_64BIT)
-    set(OPENSSL_LIBRARIES ${CMAKE_SOURCE_DIR}/dep/lib/libeay32_win64.lib CACHE INTERNAL "OpenSSL libraries." FORCE)
-
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(MYSQL_LIBRARIES ${CMAKE_SOURCE_DIR}/dep/lib/libmysql_debug_x64.lib CACHE INTERNAL "OpenSSL libraries." FORCE)
+        set(MYSQL_LIBRARIES ${CMAKE_SOURCE_DIR}/dep/lib/libmysql_debug_x64.lib CACHE INTERNAL "MYSQL libraries." FORCE)
+        set(OPENSSL_LIBRARIES ${CMAKE_SOURCE_DIR}/dep/lib/libeay32_debug_x64.lib CACHE INTERNAL "OpenSSL libraries." FORCE)
     else()
-        set(MYSQL_LIBRARIES ${CMAKE_SOURCE_DIR}/dep/lib/libmysql_release_x64.lib CACHE INTERNAL "OpenSSL libraries." FORCE)
+        set(MYSQL_LIBRARIES ${CMAKE_SOURCE_DIR}/dep/lib/libmysql_release_x64.lib CACHE INTERNAL "MYSQL libraries." FORCE)
+        set(OPENSSL_LIBRARIES ${CMAKE_SOURCE_DIR}/dep/lib/libeay32_release_x64.lib CACHE INTERNAL "OpenSSL libraries." FORCE)
     endif()
 else()
-    set(OPENSSL_LIBRARIES ${CMAKE_SOURCE_DIR}/dep/lib/libeay32_win32.lib CACHE INTERNAL "OpenSSL libraries." FORCE)
-
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(MYSQL_LIBRARIES ${CMAKE_SOURCE_DIR}/dep/lib/libmysql_debug_win32.lib CACHE INTERNAL "OpenSSL libraries." FORCE)
+        set(MYSQL_LIBRARIES ${CMAKE_SOURCE_DIR}/dep/lib/libmysql_debug_win32.lib CACHE INTERNAL "MYSQL libraries." FORCE)
+        set(OPENSSL_LIBRARIES ${CMAKE_SOURCE_DIR}/dep/lib/libeay32_debug_win32.lib CACHE INTERNAL "OpenSSL libraries." FORCE)
     else()
-        set(MYSQL_LIBRARIES ${CMAKE_SOURCE_DIR}/dep/lib/libmysql_release_win32.lib CACHE INTERNAL "OpenSSL libraries." FORCE)
+        set(MYSQL_LIBRARIES ${CMAKE_SOURCE_DIR}/dep/lib/libmysql_release_win32.lib CACHE INTERNAL "MYSQL libraries." FORCE)
+        set(OPENSSL_LIBRARIES ${CMAKE_SOURCE_DIR}/dep/lib/libeay32_release_win32.lib CACHE INTERNAL "OpenSSL libraries." FORCE)
     endif()
 endif()
 
 # set dependencies include dirs paths
 set(OPENSSL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/dep/openssl CACHE INTERNAL "OpenSSL include dir." FORCE)
-set(MYSQL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/dep/mysql CACHE INTERNAL "Mysql include dir." FORCE)
+set(MYSQL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/dep/mysql CACHE INTERNAL "MYSQL include dir." FORCE)
 
 #Needed for socket stuff and crash handler
 set(EXTRA_LIBS 
