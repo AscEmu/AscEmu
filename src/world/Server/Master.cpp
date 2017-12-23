@@ -111,6 +111,8 @@ bool StartConsoleListener();
 void CloseConsoleListener();
 ThreadBase* GetConsoleListener();
 
+std::unique_ptr<WorldRunnable> worldRunnable = nullptr;
+
 bool Master::Run(int /*argc*/, char** /*argv*/)
 {
     char* config_file = (char*)CONFDIR "/world.conf";
@@ -176,8 +178,7 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
 
     sWorld.setWorldStartTime((uint32)UNIXTIME);
 
-    WorldRunnable* wr = new WorldRunnable();
-    ThreadPool.ExecuteTask(wr);
+    worldRunnable = std::move(std::make_unique<WorldRunnable>());
 
     _HookSignals();
 
@@ -251,7 +252,9 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
 
     _UnhookSignals();
 
-    wr->SetThreadState(THREADSTATE_TERMINATE);
+    worldRunnable->threadShutdown();
+    worldRunnable = nullptr;
+
     ThreadPool.ShowStats();
     /* Shut down console system */
     console->stopThread();
