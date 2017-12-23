@@ -102,9 +102,7 @@ void DayWatcherThread::update_settings()
 
 void DayWatcherThread::load_settings()
 {
-    std::string arena_timeout = worldConfig.period.arenaUpdate;
-    arena_period = get_timeout_from_string(arena_timeout.c_str(), WEEKLY);
-
+    arena_period = get_timeout_from_string(worldConfig.period.arenaUpdate, WEEKLY);
     QueryResult* result = CharacterDatabase.Query("SELECT setting_value FROM server_settings WHERE setting_id = \'last_arena_update_time\'");
     if (result)
     {
@@ -117,9 +115,7 @@ void DayWatcherThread::load_settings()
         last_arena_time = 0;
     }
 
-    std::string daily_timeout = worldConfig.period.dailyUpdate;
-    daily_period = get_timeout_from_string(daily_timeout.c_str(), DAILY);
-
+    daily_period = get_timeout_from_string(worldConfig.period.dailyUpdate, DAILY);
     QueryResult* result2 = CharacterDatabase.Query("SELECT setting_value FROM server_settings WHERE setting_id = \'last_daily_update_time\'");
     if (result2)
     {
@@ -139,18 +135,18 @@ void DayWatcherThread::set_tm_pointers()
     dupe_tm_pointer(localtime(&last_daily_time), &local_last_daily_time);
 }
 
-uint32 DayWatcherThread::get_timeout_from_string(const char* string, uint32 def)
+uint32 DayWatcherThread::get_timeout_from_string(std::string string, uint32 def)
 {
-    if (!stricmp(string, "weekly"))
+    if (string.compare("weekly") == 0)
         return WEEKLY;
-    else if (!stricmp(string, "monthly"))
+    if (string.compare("monthly") == 0)
         return MONTHLY;
-    else if (!stricmp(string, "daily"))
+    if (string.compare("daily") == 0)
         return DAILY;
-    else if (!stricmp(string, "hourly"))
+    if (string.compare("hourly") == 0)
         return HOURLY;
-    else
-        return def;
+
+    return def;
 }
 
 bool DayWatcherThread::has_timeout_expired(tm* now_time, tm* last_time, uint32 timeoutval)
@@ -158,19 +154,15 @@ bool DayWatcherThread::has_timeout_expired(tm* now_time, tm* last_time, uint32 t
     switch (timeoutval)
     {
         case WEEKLY:
-        {
             return (abs(now_time->tm_yday - last_time->tm_yday) >= 7);
-        }
-
         case MONTHLY:
             return (now_time->tm_mon != last_time->tm_mon);
-
         case HOURLY:
             return ((now_time->tm_hour != last_time->tm_hour) || (now_time->tm_mday != last_time->tm_mday) || (now_time->tm_mon != last_time->tm_mon));
-
         case DAILY:
             return (now_time->tm_mday != last_time->tm_mday && now_time->tm_hour == 4);
     }
+
     return false;
 }
 

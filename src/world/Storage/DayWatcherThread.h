@@ -64,7 +64,7 @@ class DayWatcherThread : public CThread
         void load_settings();
         void update_settings();
         void set_tm_pointers();
-        uint32_t get_timeout_from_string(const char* string, uint32_t def);
+        uint32_t get_timeout_from_string(std::string string, uint32_t def);
         bool has_timeout_expired(tm* now_time, tm* last_time, uint32_t timeoutval);
         void update_arena();
         void update_daily();
