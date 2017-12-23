@@ -45,7 +45,7 @@ class CoreRagerAI : public CreatureAIScript
 
         void AIUpdate() override
         {
-            uint32 val = RandomUInt(1000);
+            uint32 val = Util::getRandomUInt(1000);
             SpellCast(val);
         }
 
@@ -101,7 +101,7 @@ class SulfuronAI : public CreatureAIScript
 
         void AIUpdate() override
         {
-            uint32 val = RandomUInt(1000);
+            uint32 val = Util::getRandomUInt(1000);
             SpellCast(val);
         }
 
@@ -214,7 +214,7 @@ class RagnarosAI : public CreatureAIScript
 
         void AIUpdate() override
         {
-            uint32 val = RandomUInt(1000);
+            uint32 val = Util::getRandomUInt(1000);
             SpellCast(val);
         }
 
@@ -356,7 +356,7 @@ class AncientCoreHoundAI : public CreatureAIScript
             addAISpell(ANCIENTCOREHOUND_VICIOUS_BITE, 20.0f, TARGET_SELF, 0, 0);
 
             //Each Ancient Core Hound have only one of the following spell
-            switch (RandomUInt(5))
+            switch (Util::getRandomUInt(5))
             {
                 case 0:
                     addAISpell(ANCIENTCOREHOUND_GROUND_STOMP, 20.0f, TARGET_SELF, 0, 15);

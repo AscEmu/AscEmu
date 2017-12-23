@@ -154,7 +154,7 @@ public:
             return 0;
 
         // Check for proc chance
-        if (RandomFloat(100.0f) > GetSpellInfo()->getEffectBasePoints(0) + 1)
+        if (Util::getRandomFloat(100.0f) > GetSpellInfo()->getEffectBasePoints(0) + 1)
             return 0;
 
         // Check if damage will kill player.
@@ -473,7 +473,7 @@ public:
 
     int32 DoCalculateEffect(uint32 /*i*/, Unit* /*target*/, int32 /*value*/)
     {
-        return 2 + RandomUInt(2);
+        return 2 + Util::getRandomUInt(2);
     }
 };
 

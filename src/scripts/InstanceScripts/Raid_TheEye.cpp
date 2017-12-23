@@ -272,14 +272,14 @@ bool Dummy_Solarian_WrathOfTheAstromancer(uint32 /*pEffectIndex*/, Spell* pSpell
 //        }
 //
 //        //Spawn spot lights, and despawn them after 26sec X(400,460) Y(-340,-400)
-//        Solarian->mSpawnPositions[0][0] = 400 + RandomFloat(60);
-//        Solarian->mSpawnPositions[0][1] = -400 + RandomFloat(60);
+//        Solarian->mSpawnPositions[0][0] = 400 + Util::getRandomFloat(60);
+//        Solarian->mSpawnPositions[0][1] = -400 + Util::getRandomFloat(60);
 //        Solarian->spawnCreatureAndGetAIScript(CN_SOLARIUM_SPOT_LIGHT, Solarian->mSpawnPositions[0][0], Solarian->mSpawnPositions[0][1], 17, 0)->despawn(26000);
-//        Solarian->mSpawnPositions[1][0] = 400 + RandomFloat(60);
-//        Solarian->mSpawnPositions[1][1] = -400 + RandomFloat(60);
+//        Solarian->mSpawnPositions[1][0] = 400 + Util::getRandomFloat(60);
+//        Solarian->mSpawnPositions[1][1] = -400 + Util::getRandomFloat(60);
 //        Solarian->spawnCreatureAndGetAIScript(CN_SOLARIUM_SPOT_LIGHT, Solarian->mSpawnPositions[1][0], Solarian->mSpawnPositions[1][1], 17, 0)->despawn(26000);
-//        Solarian->mSpawnPositions[2][0] = 400 + RandomFloat(60);
-//        Solarian->mSpawnPositions[2][1] = -400 + RandomFloat(60);
+//        Solarian->mSpawnPositions[2][0] = 400 + Util::getRandomFloat(60);
+//        Solarian->mSpawnPositions[2][1] = -400 + Util::getRandomFloat(60);
 //        Solarian->spawnCreatureAndGetAIScript(CN_SOLARIUM_SPOT_LIGHT, Solarian->mSpawnPositions[2][0], Solarian->mSpawnPositions[2][1], 17, 0)->despawn(26000);
 //    }
 //}
@@ -371,7 +371,7 @@ class DarkenerAI : public CreatureAIScript
             setCanEnterCombat(true);
             SwitchTarget();
 
-            mGazeSwitchTimer = _addTimer((RandomUInt(4) + 8) * 1000);
+            mGazeSwitchTimer = _addTimer((Util::getRandomUInt(4) + 8) * 1000);
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override
@@ -393,7 +393,7 @@ class DarkenerAI : public CreatureAIScript
         {
             if (_isTimerFinished(mGazeSwitchTimer))
             {
-                _resetTimer(mGazeSwitchTimer, (RandomUInt(4) + 8) * 1000);
+                _resetTimer(mGazeSwitchTimer, (Util::getRandomUInt(4) + 8) * 1000);
                 if (!SwitchTarget())
                     return;
             }

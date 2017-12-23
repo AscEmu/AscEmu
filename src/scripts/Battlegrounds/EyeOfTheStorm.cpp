@@ -890,7 +890,7 @@ void EyeOfTheStorm::HookOnHK(Player* plr)
 
 void EyeOfTheStorm::SpawnBuff(uint32 x)
 {
-    uint32 chosen_buffid = EOTSbuffentrys[RandomUInt(2)];
+    uint32 chosen_buffid = EOTSbuffentrys[Util::getRandomUInt(2)];
     GameObjectProperties const* goi = sMySQLStore.getGameObjectProperties(chosen_buffid);
     if (goi == nullptr)
         return;

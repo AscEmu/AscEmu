@@ -66,7 +66,7 @@ class ThekaAI : public CreatureAIScript
         void AIUpdate() override
         {
             plaguecount++;
-            randomplague = 16 + RandomUInt(3);
+            randomplague = 16 + Util::getRandomUInt(3);
             if (plaguecount >= randomplague && getCreature()->GetAIInterface()->getNextTarget())
             {
                 plaguecount = 0;

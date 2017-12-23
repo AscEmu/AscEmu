@@ -38,21 +38,21 @@ struct loot_tb
 
 bool Rand(float chance)
 {
-    int32 val = RandomUInt(10000);
+    int32 val = Util::getRandomUInt(10000);
     int32 p = int32(chance * 100.0f);
     return p >= val;
 }
 
 bool Rand(uint32 chance)
 {
-    int32 val = RandomUInt(10000);
+    int32 val = Util::getRandomUInt(10000);
     int32 p = int32(chance * 100);
     return p >= val;
 }
 
 bool Rand(int32 chance)
 {
-    int32 val = RandomUInt(10000);
+    int32 val = Util::getRandomUInt(10000);
     int32 p = chance * 100;
     return p >= val;
 }
@@ -63,7 +63,7 @@ const T & RandomChoice(const T* variant, int count)
     float totalChance = 0;
     for (int i = 0; i < count; i++)
         totalChance += variant[i].chance;
-    float val = RandomFloat(totalChance);
+    float val = Util::getRandomFloat(totalChance);
     for (int i = 0; i < count; i++)
     {
         val -= variant[i].chance;
@@ -83,7 +83,7 @@ T* RandomChoiceVector(std::vector<std::pair<T*, float> > & variant)
         return NULL;
     for (itr = variant.begin(); itr != variant.end(); ++itr)
         totalChance += itr->second;
-    val = RandomFloat(totalChance);
+    val = Util::getRandomFloat(totalChance);
     for (itr = variant.begin(); itr != variant.end(); ++itr)
     {
         val -= itr->second;
@@ -363,7 +363,7 @@ void LootMgr::PushLoot(StoreLootList* list, Loot* loot, uint8 type)
                 if (list->items[x].mincount == list->items[x].maxcount)
                     count = list->items[x].maxcount;
                 else
-                    count = RandomUInt(list->items[x].maxcount - list->items[x].mincount) + list->items[x].mincount;
+                    count = Util::getRandomUInt(list->items[x].maxcount - list->items[x].mincount) + list->items[x].mincount;
                 for (i = 0; i < loot->items.size(); ++i)
                 {
                     //itemid rand match a already placed item, if item is stackable and unique(stack), increment it, otherwise skips
@@ -441,7 +441,7 @@ void LootMgr::AddLoot(Loot* loot, uint32 itemid, uint32 mincount, uint32 maxcoun
         if (mincount == maxcount)
             count = maxcount;
         else
-            count = RandomUInt(maxcount - mincount) + mincount;
+            count = Util::getRandomUInt(maxcount - mincount) + mincount;
         for (i = 0; i < loot->items.size(); ++i)
         {
             //itemid rand match a already placed item, if item is stackable and unique(stack), increment it, otherwise skips
@@ -847,7 +847,7 @@ void LootRoll::PlayerRolled(Player* player, uint8 choice)
 {
     if (m_NeedRolls.find(player->GetLowGUID()) != m_NeedRolls.end() || m_GreedRolls.find(player->GetLowGUID()) != m_GreedRolls.end())
         return; // don't allow cheaters
-    int roll = RandomUInt(99) + 1;
+    int roll = Util::getRandomUInt(99) + 1;
     // create packet
     WorldPacket data(34);
     data.SetOpcode(SMSG_LOOT_ROLL);

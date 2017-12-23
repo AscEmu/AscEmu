@@ -463,7 +463,7 @@ class LuaUnit
         float z2 = CHECK_FLOAT(L, 6);
         //float o2 = CHECK_FLOAT(L, 7);
 
-        ptr->GetAIInterface()->MoveTo(x1 + (RandomFloat(x2 - x1)), y1 + (RandomFloat(y2 - y1)), z1 + (RandomFloat(z2 - z1)));
+        ptr->GetAIInterface()->MoveTo(x1 + (Util::getRandomFloat(x2 - x1)), y1 + (Util::getRandomFloat(y2 - y1)), z1 + (Util::getRandomFloat(z2 - z1)));
         return 0;
     }
 
@@ -1010,7 +1010,7 @@ class LuaUnit
             case RANDOM_ANY:
             {
                 uint32 count = (uint32)ptr->GetInRangePlayersCount();
-                uint32 r = RandomUInt(count - 1);
+                uint32 r = Util::getRandomUInt(count - 1);
                 count = 0;
                 for (std::set< Object* >::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
                 {
@@ -1033,7 +1033,7 @@ class LuaUnit
                         players.push_back(obj);
                 }
                 if (players.size())
-                    ret = players[RandomUInt(static_cast<uint32>(players.size() - 1))];
+                    ret = players[Util::getRandomUInt(static_cast<uint32>(players.size() - 1))];
             }
             break;
             case RANDOM_IN_MIDRANGE:
@@ -1046,7 +1046,7 @@ class LuaUnit
                         players.push_back(obj);
                 }
                 if (players.size())
-                    ret = players[RandomUInt(static_cast<uint32>(players.size() - 1))];
+                    ret = players[Util::getRandomUInt(static_cast<uint32>(players.size() - 1))];
             }
             break;
             case RANDOM_IN_LONGRANGE:
@@ -1058,7 +1058,7 @@ class LuaUnit
                         players.push_back(obj);
                 }
                 if (players.size())
-                    ret = players[RandomUInt(static_cast<uint32>(players.size() - 1))];
+                    ret = players[Util::getRandomUInt(static_cast<uint32>(players.size() - 1))];
             }
             break;
             case RANDOM_WITH_MANA:
@@ -1070,7 +1070,7 @@ class LuaUnit
                         players.push_back(obj);
                 }
                 if (players.size())
-                    ret = players[RandomUInt(static_cast<uint32>(players.size() - 1))];
+                    ret = players[Util::getRandomUInt(static_cast<uint32>(players.size() - 1))];
             }
             break;
             case RANDOM_WITH_ENERGY:
@@ -1082,7 +1082,7 @@ class LuaUnit
                         players.push_back(obj);
                 }
                 if (players.size())
-                    ret = players[RandomUInt(static_cast<uint32>(players.size() - 1))];
+                    ret = players[Util::getRandomUInt(static_cast<uint32>(players.size() - 1))];
             }
             break;
             case RANDOM_WITH_RAGE:
@@ -1094,7 +1094,7 @@ class LuaUnit
                         players.push_back(obj);
                 }
                 if (players.size())
-                    ret = players[RandomUInt(static_cast<uint32>(players.size() - 1))];
+                    ret = players[Util::getRandomUInt(static_cast<uint32>(players.size() - 1))];
             }
             break;
             case RANDOM_NOT_MAINTANK:
@@ -1110,7 +1110,7 @@ class LuaUnit
                         players.push_back(obj);
                 }
                 if (players.size())
-                    ret = players[RandomUInt(static_cast<uint32>(players.size() - 1))];
+                    ret = players[Util::getRandomUInt(static_cast<uint32>(players.size() - 1))];
             }
             break;
         }
@@ -1135,7 +1135,7 @@ class LuaUnit
                 allies.push_back(obj);
         }
         if (allies.size())
-            PUSH_UNIT(L, allies[RandomUInt(static_cast<uint32>(allies.size() - 1))]);
+            PUSH_UNIT(L, allies[Util::getRandomUInt(static_cast<uint32>(allies.size() - 1))]);
         else
             lua_pushnil(L);
         return 1;
@@ -1153,7 +1153,7 @@ class LuaUnit
                 enemies.push_back(obj);
         }
         if (enemies.size())
-            PUSH_UNIT(L, enemies[RandomUInt(static_cast<uint32>(enemies.size() - 1))]);
+            PUSH_UNIT(L, enemies[Util::getRandomUInt(static_cast<uint32>(enemies.size() - 1))]);
         else
             lua_pushnil(L);
         return 1;

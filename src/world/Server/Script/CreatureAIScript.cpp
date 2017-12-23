@@ -1433,7 +1433,7 @@ Unit* CreatureAIScript::getBestTargetInArray(UnitArray & pTargetArray, TargetFil
         return getSecondMostHatedTargetInArray(pTargetArray);
 
     //random unit in array
-    return (pTargetArray.size() > 1) ? pTargetArray[RandomUInt((uint32_t)pTargetArray.size() - 1)] : nullptr;
+    return (pTargetArray.size() > 1) ? pTargetArray[Util::getRandomUInt((uint32_t)pTargetArray.size() - 1)] : nullptr;
 }
 
 Unit* CreatureAIScript::getNearestTargetInArray(UnitArray& pTargetArray)

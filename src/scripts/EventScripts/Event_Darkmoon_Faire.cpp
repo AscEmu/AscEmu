@@ -177,7 +177,7 @@ public:
     void OnHello(Object* pObject, Player* plr) override
     {
         uint32 textId = 0;
-        uint32 randomNumber = RandomUInt(3);
+        uint32 randomNumber = Util::getRandomUInt(3);
 
         switch (randomNumber)
         {
@@ -229,7 +229,7 @@ public:
     void OnHello(Object* pObject, Player* plr) override
     {
         uint32 textId = 0;
-        uint32 randomNumber = RandomUInt(1);
+        uint32 randomNumber = Util::getRandomUInt(1);
 
         switch (randomNumber)
         {

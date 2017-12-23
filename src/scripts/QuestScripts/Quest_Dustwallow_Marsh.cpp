@@ -99,7 +99,7 @@ public:
 
     void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
     {
-        uint32 chance = RandomUInt(100);
+        uint32 chance = Util::getRandomUInt(100);
         if (chance < 25)
         {
             getCreature()->CastSpell(mAttacker, sSpellCustomizations.GetSpellInfo(6749), true);

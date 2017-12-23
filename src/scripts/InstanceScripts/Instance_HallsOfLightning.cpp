@@ -148,8 +148,8 @@ class GeneralBjarngrimAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*pTarget*/) override
     {
-        mStanceTimer = _addTimer(TIMER_STANCE_CHANGE + (RandomUInt(7) * 1000));
-        switchStance(RandomUInt(2));
+        mStanceTimer = _addTimer(TIMER_STANCE_CHANGE + (Util::getRandomUInt(7) * 1000));
+        switchStance(Util::getRandomUInt(2));
     }
 
     void AIUpdate() override
@@ -159,19 +159,19 @@ class GeneralBjarngrimAI : public CreatureAIScript
             switch (getScriptPhase())
             {
                 case STANCE_BATTLE:
-                    switchStance(RandomUInt(1) + 2);
+                    switchStance(Util::getRandomUInt(1) + 2);
                     break;
                 case STANCE_BERSERKER:
-                    if (RandomUInt(1) == 1)
+                    if (Util::getRandomUInt(1) == 1)
                         switchStance(STANCE_BATTLE);
                     else
                         switchStance(STANCE_DEFENSIVE);
                     break;
                 case STANCE_DEFENSIVE:
-                    switchStance(RandomUInt(1) + 1);
+                    switchStance(Util::getRandomUInt(1) + 1);
                     break;
             }
-            _resetTimer(mStanceTimer, TIMER_STANCE_CHANGE + (RandomUInt(7) * 1000));
+            _resetTimer(mStanceTimer, TIMER_STANCE_CHANGE + (Util::getRandomUInt(7) * 1000));
         }
     }
 
@@ -258,7 +258,7 @@ class Volkhan : public CreatureAIScript
 
     void OnCombatStart(Unit* /*pTarget*/) override
     {
-        mStompTimerId = _addTimer(TIMER_STOMP + (RandomUInt(6) * 1000));
+        mStompTimerId = _addTimer(TIMER_STOMP + (Util::getRandomUInt(6) * 1000));
         mPhase = 0;
     }
 
@@ -276,7 +276,7 @@ class Volkhan : public CreatureAIScript
             else
             {
                 DoStomp();
-                _resetTimer(mStompTimerId, TIMER_STOMP + (RandomUInt(6) * 1000));
+                _resetTimer(mStompTimerId, TIMER_STOMP + (Util::getRandomUInt(6) * 1000));
             }
         }
 
@@ -292,7 +292,7 @@ class Volkhan : public CreatureAIScript
     {
         if (iWaypointId == 1)
         {
-            switch (RandomUInt(2))
+            switch (Util::getRandomUInt(2))
             {
                 case 0:
                     sendDBChatMessage(770);      // Life from lifelessness... death for you.
@@ -478,7 +478,7 @@ class LokenAI : public CreatureAIScript
         {
             sendAnnouncement("Loken begins to cast Lightning Nova!");
             _castAISpell(mNova);
-            _resetTimer(mNovaTimerId, TIMER_NOVA + (RandomUInt(8) * 1000));
+            _resetTimer(mNovaTimerId, TIMER_NOVA + (Util::getRandomUInt(8) * 1000));
         }
 
         if (mSpeech == 4)

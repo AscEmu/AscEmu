@@ -27,7 +27,7 @@ void GuardsOnSalute(Player* pPlayer, Unit* pUnit)
     // Check if we are friendly with our Guards (they will salute only when You are)
     if (((pUnit->GetEntry() == 68 || pUnit->GetEntry() == 1976) && pPlayer->GetStandingRank(72) >= STANDING_FRIENDLY) || (pUnit->GetEntry() == 3296 && pPlayer->GetStandingRank(76) >= STANDING_FRIENDLY))
     {
-        uint32 EmoteChance = RandomUInt(100);
+        uint32 EmoteChance = Util::getRandomUInt(100);
         if (EmoteChance < 33) // 1/3 chance to get Salute from Guard
             pUnit->Emote(EMOTE_ONESHOT_SALUTE);
     }
@@ -41,7 +41,7 @@ void GaurdsOnKiss(Player* pPlayer, Unit* pUnit)
     // Check if we are friendly with our Guards (they will bow only when You are)
     if (((pUnit->GetEntry() == 68 || pUnit->GetEntry() == 1976) && pPlayer->GetStandingRank(72) >= STANDING_FRIENDLY) || (pUnit->GetEntry() == 3296 && pPlayer->GetStandingRank(76) >= STANDING_FRIENDLY))
     {
-        uint32 EmoteChance = RandomUInt(100);
+        uint32 EmoteChance = Util::getRandomUInt(100);
         if (EmoteChance < 33) // 1/3 chance to get Bow from Guard
             pUnit->Emote(EMOTE_ONESHOT_BOW);
     }
@@ -55,7 +55,7 @@ void GuardsOnWave(Player* pPlayer, Unit* pUnit)
     // Check if we are friendly with our Guards (they will wave only when You are)
     if (((pUnit->GetEntry() == 68 || pUnit->GetEntry() == 1976) && pPlayer->GetStandingRank(72) >= STANDING_FRIENDLY) || (pUnit->GetEntry() == 3296 && pPlayer->GetStandingRank(76) >= STANDING_FRIENDLY))
     {
-        uint32 EmoteChance = RandomUInt(100);
+        uint32 EmoteChance = Util::getRandomUInt(100);
         if (EmoteChance < 33) // 1/3 chance to get Bow from Guard
             pUnit->Emote(EMOTE_ONESHOT_WAVE);
     }

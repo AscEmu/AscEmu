@@ -643,8 +643,8 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
                 if (attempts > 10)
                     return false;
 
-                float r = RandomFloat(GetRadius(0));
-                float ang = RandomFloat(M_PI_FLOAT * 2);
+                float r = Util::getRandomFloat(GetRadius(0));
+                float ang = Util::getRandomFloat(M_PI_FLOAT * 2);
                 auto lv = LocationVector();
                 lv.x = m_caster->GetPositionX() + (cosf(ang) * r);
                 lv.y = m_caster->GetPositionY() + (sinf(ang) * r);

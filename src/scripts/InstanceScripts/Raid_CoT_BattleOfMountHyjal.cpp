@@ -389,11 +389,11 @@ class DoomfireAI : public CreatureAIScript
             }
             // After 4 sec of last direction change, doomfire has 33% chance to change direction
             DirChange++;
-            if ((DirChange == 4 && RandomUInt(3) == 1) || DirChange >= 5)
+            if ((DirChange == 4 && Util::getRandomUInt(3) == 1) || DirChange >= 5)
             {
                 if (getCreature()->GetAIInterface()->getUnitToFollow())
                 {
-                    if (RandomUInt(3) == 1 || getCreature()->GetDistance2dSq(getCreature()->GetAIInterface()->getUnitToFollow()) <= 2.0f)
+                    if (Util::getRandomUInt(3) == 1 || getCreature()->GetDistance2dSq(getCreature()->GetAIInterface()->getUnitToFollow()) <= 2.0f)
                     {
                         getCreature()->GetAIInterface()->ResetUnitToFollow();
                         getCreature()->GetAIInterface()->SetUnitToFollowAngle(0.0f);
@@ -402,7 +402,7 @@ class DoomfireAI : public CreatureAIScript
 
                 if (!getCreature()->GetAIInterface()->getUnitToFollow())
                 {
-                    if (RandomUInt(3) == 1)
+                    if (Util::getRandomUInt(3) == 1)
                     {
                         Unit* NewTarget = NULL;
                         NewTarget = FindTarget();
@@ -419,12 +419,12 @@ class DoomfireAI : public CreatureAIScript
                         float x = 0.0f;
                         float y = 0.0f;
 
-                        float xchange = RandomFloat(movedist);
+                        float xchange = Util::getRandomFloat(movedist);
                         float ychange = sqrt(movedist * movedist - xchange * xchange);
 
-                        if (RandomUInt(2) == 1)
+                        if (Util::getRandomUInt(2) == 1)
                             xchange *= -1;
-                        if (RandomUInt(2) == 1)
+                        if (Util::getRandomUInt(2) == 1)
                             ychange *= -1;
 
                         x = getCreature()->GetPositionX() + xchange;

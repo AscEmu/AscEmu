@@ -80,55 +80,9 @@ double RandomDouble()
     }
 }
 
-uint32 RandomUInt(uint32 n)
-{
-    uint32 ret;
-    uint32 c;
-    for(;;)
-    {
-        c = counter % NUMBER_OF_GENERATORS;
-        if(m_locks[c]->AttemptAcquire())
-        {
-            ret = m_generators[c]->IRandom(0, n);
-            m_locks[c]->Release();
-            return ret;
-        }
-
-        ++counter;
-    }
-}
-
-uint32 RandomUInt(uint32 n1, uint32 n2)
-{
-    uint32 ret;
-    uint32 c;
-    for (;;)
-    {
-        c = counter % NUMBER_OF_GENERATORS;
-        if (m_locks[c]->AttemptAcquire())
-        {
-            ret = m_generators[c]->IRandom(n1, n2);
-            m_locks[c]->Release();
-            return ret;
-        }
-
-        ++counter;
-    }
-}
-
 double RandomDouble(double n)
 {
     return RandomDouble() * n;
-}
-
-float RandomFloat(float n)
-{
-    return float(RandomDouble() * double(n));
-}
-
-float RandomFloat()
-{
-    return float(RandomDouble());
 }
 
 uint32 RandomUInt()

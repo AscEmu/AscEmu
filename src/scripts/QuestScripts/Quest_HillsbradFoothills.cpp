@@ -30,7 +30,7 @@ public:
     {
         if (BaronVardusAllowSpawn == true)
         {
-            uint32 rand = RandomUInt(3);
+            uint32 rand = Util::getRandomUInt(3);
             switch (rand)
             {
                 case 0:

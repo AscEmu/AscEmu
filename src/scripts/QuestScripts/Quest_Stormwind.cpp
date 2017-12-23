@@ -83,7 +83,7 @@ public:
         Dashel->GetAIInterface()->setMeleeDisabled(false);
         Dashel->GetAIInterface()->SetAllowedToEnterCombat(true);
 
-        uint32 chance = RandomUInt(100);
+        uint32 chance = Util::getRandomUInt(100);
         if (chance < 15)
         {
             std::string say = "Now you're gonna get it good, ";

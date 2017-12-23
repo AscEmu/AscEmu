@@ -119,7 +119,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                 Magtheridon = getNearestCreature(-22.657900f, 2.159050f, -0.345542f, 17257);
                 if (Magtheridon)
                 {
-                    switch (RandomUInt(6))
+                    switch (Util::getRandomUInt(6))
                     {
                         case 1:
                             sendDBChatMessage(8740);     // Wretched, meddling insects! Release me, and perhaps I will grant you a merciful death!
@@ -316,7 +316,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                         Magtheridon = getNearestCreature(-22.657900f, 2.159050f, -0.345542f, 17257);
                         if (Magtheridon)
                         {
-                            if (RandomUInt(4) == 1)
+                            if (Util::getRandomUInt(4) == 1)
                             {
                                 // on movies I saw only another text, but Magtheridon may use this one rarely too, so added here
                                 Magtheridon->SendScriptTextChatMessage(8747);    // Thank you for releasing me. Now... die!

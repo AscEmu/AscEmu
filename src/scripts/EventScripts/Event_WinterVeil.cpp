@@ -43,7 +43,7 @@ void WinterReveler(Player* pPlayer, Unit* pUnit)
         uint32 Winteritem = 0;
         SlotResult slotresult;
 
-        uint32 chance = RandomUInt(2);
+        uint32 chance = Util::getRandomUInt(2);
         switch (chance)
         {
             case 0:

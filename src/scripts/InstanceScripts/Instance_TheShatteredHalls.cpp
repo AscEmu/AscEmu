@@ -284,7 +284,7 @@ class ShadowmoonDarkcasterAI : public CreatureAIScript
             GrandWarlock = getNearestCreature(178.811996f, 292.377991f, -8.190210f, CN_GRAND_WARLOCK_NETHEKURSE);
             if (GrandWarlock)
             {
-                switch (RandomUInt(3))        // must be verified + emotes?
+                switch (Util::getRandomUInt(3))        // must be verified + emotes?
                 {
                     case 0:
                         GrandWarlock->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_02);
@@ -325,7 +325,7 @@ class ShadowmoonDarkcasterAI : public CreatureAIScript
                     GrandWarlock->GetAIInterface()->HandleEvent(EVENT_ENTERCOMBAT, GrandWarlock, 0);
                 }
 
-                switch (RandomUInt(2))    // those need to be verified too
+                switch (Util::getRandomUInt(2))    // those need to be verified too
                 {
                     case 0:
                         GrandWarlock->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_06);
@@ -389,7 +389,7 @@ class WarbringerOmroggAI : public CreatureAIScript
 
         void OnCombatStart(Unit* /*pTarget*/) override
         {
-            mAggroShiftTimer = _addTimer(20000 + RandomUInt(10) * 1000);
+            mAggroShiftTimer = _addTimer(20000 + Util::getRandomUInt(10) * 1000);
             mBlastWaveTimer = mSpeechTimer = mSpeechId = INVALIDATE_TIMER;
 
             mLeftHead = spawnCreatureAndGetAIScript(19523, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation());
@@ -401,7 +401,7 @@ class WarbringerOmroggAI : public CreatureAIScript
             mLeftHead->getCreature()->GetAIInterface()->SetUnitToFollow(getCreature());
             mRightHead->getCreature()->GetAIInterface()->SetUnitToFollow(getCreature());
 
-            switch (RandomUInt(2))
+            switch (Util::getRandomUInt(2))
             {
                 case 0:
                     sendChatMessage(CHAT_MSG_MONSTER_YELL, 10308, "If you nice me let you live.");
@@ -444,7 +444,7 @@ class WarbringerOmroggAI : public CreatureAIScript
             if (mLeftHead == nullptr || mRightHead == nullptr || mSpeechTimer != INVALIDATE_TIMER)
                 return;
 
-            switch (RandomUInt(1))
+            switch (Util::getRandomUInt(1))
             {
                 case 0:
                     sendChatMessage(CHAT_MSG_MONSTER_YELL, 10320, "I'm tired. You kill the next one!");
@@ -518,7 +518,7 @@ class WarbringerOmroggAI : public CreatureAIScript
             }
             else if (_isTimerFinished(mAggroShiftTimer))
             {
-                _resetTimer(mAggroShiftTimer, 20000 + RandomUInt(10) * 1000);
+                _resetTimer(mAggroShiftTimer, 20000 + Util::getRandomUInt(10) * 1000);
                 ShiftAggro();
             }
 
@@ -541,7 +541,7 @@ class WarbringerOmroggAI : public CreatureAIScript
                 if (mLeftHead == nullptr || mRightHead == nullptr || mSpeechTimer != INVALIDATE_TIMER)
                     return;
 
-                switch (RandomUInt(6))
+                switch (Util::getRandomUInt(6))
                 {
                     case 0:
                         mLeftHead->sendChatMessage(CHAT_MSG_MONSTER_YELL, 10301, "We kill his friend!");

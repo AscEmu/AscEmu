@@ -193,7 +193,7 @@ class TheVioletHoldScript : public InstanceScript
 
         int GetRandomIntroMob() const
         {
-            auto rnd = RandomFloat(100.0f);
+            auto rnd = Util::getRandomFloat(100.0f);
             if (rnd < 25.0f)
                 return CN_INTRO_AZURE_BINDER_ARCANE;
             if (rnd < 50.f)
@@ -313,7 +313,7 @@ class VHCreatureAI : public CreatureAIScript
 
         void AIUpdate() override
         {
-            /*auto randomValue = RandomFloat(100.0f);
+            /*auto randomValue = Util::getRandomFloat(100.0f);
             SpellCast(randomValue);*/
         }
     

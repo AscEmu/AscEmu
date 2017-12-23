@@ -286,7 +286,7 @@ public:
                 SpellInfo* mProc = sSpellCustomizations.GetSpellInfo(procSpell[p]);
                 if (!mProc)
                     return;
-                int x = RandomUInt(99);
+                int x = Util::getRandomUInt(99);
                 uint32 proc = mProc->getProcChance();
                 if (proc < 1)
                     proc = 10; // Got to be fair :P

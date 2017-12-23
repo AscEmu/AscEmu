@@ -184,10 +184,10 @@ class HighKingMaulgarAI : public CreatureAIScript
                 --mAliveAdds;
                 if (mAliveAdds > 1)
                 {
-                    uint32 RandomText = RandomUInt(1);
+                    uint32 RandomText = Util::getRandomUInt(1);
                     while((int)RandomText == mLastYell)
                     {
-                        RandomText = RandomUInt(1);
+                        RandomText = Util::getRandomUInt(1);
                     }
 
                     switch (RandomText)

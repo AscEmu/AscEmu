@@ -214,9 +214,9 @@ class HighBotanistFreywinnAI : public CreatureAIScript
 
         void PlantColorSeedling()
         {
-            PlantTimer = RandomUInt(5, 10);    //5-10 sec (as in my DB attack time is 1000)
+            PlantTimer = Util::getRandomUInt(5, 10);    //5-10 sec (as in my DB attack time is 1000)
 
-            switch (RandomUInt(3))
+            switch (Util::getRandomUInt(3))
             {
                 case 0:
                 {

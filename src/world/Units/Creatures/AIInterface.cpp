@@ -317,7 +317,7 @@ void AIInterface::generateWaypointScriptRandom()
                         {
                             if (mCurrentWaypoint == 0)
                             {
-                                mCurrentWaypoint = RandomUInt(1, (uint32)getWayPointsCount());
+                                mCurrentWaypoint = Util::getRandomUInt(1, (uint32)getWayPointsCount());
                                 isFirstWP = true;
                             }
                             else
@@ -325,7 +325,7 @@ void AIInterface::generateWaypointScriptRandom()
                                 mCurrentWaypoint = mNextPoint;
                             }
 
-                            mNextPoint = RandomUInt(1, (uint32)getWayPointsCount());
+                            mNextPoint = Util::getRandomUInt(1, (uint32)getWayPointsCount());
                         }
 
                         //////////////////////////////////////////////////////////////////////////////////////////
@@ -363,12 +363,12 @@ void AIInterface::generateWaypointScriptRandom()
             {
                 if (MoveDone())
                 {
-                    uint32_t randomMoveTime = RandomUInt(300, 6000);
+                    uint32_t randomMoveTime = Util::getRandomUInt(300, 6000);
 
                     LocationVector pos = m_Unit->GetPosition();
 
-                    float distance = RandomFloat(4.0f) + 2.0f;
-                    float orientation = RandomFloat(6.283f);
+                    float distance = Util::getRandomFloat(4.0f) + 2.0f;
+                    float orientation = Util::getRandomFloat(6.283f);
 
                     LocationVector randPos;
                     randPos.x = pos.x + distance * cosf(orientation);
@@ -596,8 +596,8 @@ void AIInterface::setFearRandomMovement()
             {
                 LocationVector pos = unitToFear->GetPosition();     // current position
 
-                float distance = RandomFloat(15.0f) + 5.0f;
-                float orientation = RandomFloat(6.283f);
+                float distance = Util::getRandomFloat(15.0f) + 5.0f;
+                float orientation = Util::getRandomFloat(6.283f);
 
                 LocationVector randPos;
                 randPos.x = pos.x + distance * cosf(orientation);
@@ -611,7 +611,7 @@ void AIInterface::setFearRandomMovement()
 
                 MoveTo(randPos.x, randPos.y, randPos.z);
 
-                m_FearTimer = Util::getMSTime() + RandomUInt(500, 1700);
+                m_FearTimer = Util::getMSTime() + Util::getRandomUInt(500, 1700);
             }
         }
     }
@@ -2566,8 +2566,8 @@ bool AIInterface::FindFriends(float dist)
         if (cp == nullptr)
             return result;
 
-        float x = m_Unit->GetPositionX() + ((RandomFloat(150.f) + 100.f) / 1000.0f);
-        float y = m_Unit->GetPositionY() + ((RandomFloat(150.f) + 100.f) / 1000.0f);
+        float x = m_Unit->GetPositionX() + ((Util::getRandomFloat(150.f) + 100.f) / 1000.0f);
+        float y = m_Unit->GetPositionY() + ((Util::getRandomFloat(150.f) + 100.f) / 1000.0f);
         float z = m_Unit->GetMapMgr()->GetLandHeight(x, y, m_Unit->GetPositionZ() + 2);
 
         if (fabs(z - m_Unit->GetPositionZ()) > 10.0f)
@@ -2599,7 +2599,7 @@ bool AIInterface::FindFriends(float dist)
 
             if (guard->CanAddToWorld())
             {
-                uint32 t = RandomUInt(8) * 1000;
+                uint32 t = Util::getRandomUInt(8) * 1000;
                 if (t == 0)
                     guard->PushToWorld(m_Unit->GetMapMgr());
                 else
@@ -4918,7 +4918,7 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
 
             m_Unit->SetScale(properties_difficulty->Scale);
 
-            uint32 health = properties_difficulty->MinHealth + RandomUInt(properties_difficulty->MaxHealth - properties_difficulty->MinHealth);
+            uint32 health = properties_difficulty->MinHealth + Util::getRandomUInt(properties_difficulty->MaxHealth - properties_difficulty->MinHealth);
 
             m_Unit->SetHealth(health);
             m_Unit->SetMaxHealth(health);
@@ -4928,7 +4928,7 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
             m_Unit->SetBaseMana(properties_difficulty->Mana);
             m_Unit->SetPower(POWER_TYPE_MANA, properties_difficulty->Mana);
 
-            m_Unit->setLevel(properties_difficulty->MinLevel + (RandomUInt(properties_difficulty->MaxLevel - properties_difficulty->MinLevel)));
+            m_Unit->setLevel(properties_difficulty->MinLevel + (Util::getRandomUInt(properties_difficulty->MaxLevel - properties_difficulty->MinLevel)));
 
             for (uint8 i = 0; i < 7; ++i)
             {

@@ -1375,7 +1375,7 @@ Player* Group::GetRandomPlayerInRangeButSkip(Player* plr, float range, Player* p
     if (players.size() > 0)
     {
         // Get a random player in members subset
-        uint32 i = RandomUInt((uint32)players.size() - 1);
+        uint32 i = Util::getRandomUInt((uint32)players.size() - 1);
         new_plr = players[i];
         players.clear();
     }

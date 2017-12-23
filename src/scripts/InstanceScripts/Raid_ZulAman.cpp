@@ -151,7 +151,7 @@ class AkilzonAI : public CreatureAIScript
                 // Spawn 3 Soaring Eagles
                 for (uint8 x = 0; x < 3; x++)
                 {
-                    /*CreatureAIScript* Eagle =*/ spawnCreatureAndGetAIScript(CN_SOARING_EAGLE, (getCreature()->GetPositionX() + RandomFloat(12) - 10), (getCreature()->GetPositionY() + RandomFloat(12) - 15),
+                    /*CreatureAIScript* Eagle =*/ spawnCreatureAndGetAIScript(CN_SOARING_EAGLE, (getCreature()->GetPositionX() + Util::getRandomFloat(12) - 10), (getCreature()->GetPositionY() + Util::getRandomFloat(12) - 15),
                                           getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->GetFaction());
                 }
 
@@ -244,7 +244,7 @@ class HalazziAI : public CreatureAIScript
             {
                 if (_isTimerFinished(mTotemTimer))
                 {
-                    CreatureAIScript* Totem = spawnCreatureAndGetAIScript(CN_TOTEM, (getCreature()->GetPositionX() + RandomFloat(3) - 3), (getCreature()->GetPositionY() + RandomFloat(3) - 3), getCreature()->GetPositionZ(), 0, getCreature()->GetFaction());
+                    CreatureAIScript* Totem = spawnCreatureAndGetAIScript(CN_TOTEM, (getCreature()->GetPositionX() + Util::getRandomFloat(3) - 3), (getCreature()->GetPositionY() + Util::getRandomFloat(3) - 3), getCreature()->GetPositionZ(), 0, getCreature()->GetFaction());
                     if (Totem)
                     {
                         Totem->despawn(60000); // Despawn in 60 seconds

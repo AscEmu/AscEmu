@@ -298,7 +298,7 @@ class WarlordKalitreshAI : public CreatureAIScript
 
         void OnCombatStart(Unit* /*mTarget*/) override
         {
-            RagePhaseTimer = (uint32)time(NULL) + RandomUInt(15) + 10;
+            RagePhaseTimer = (uint32)time(NULL) + Util::getRandomUInt(15) + 10;
             DistillerNumber = 0;
             EnrageTimer = 0;
             RagePhase = 0;
@@ -354,7 +354,7 @@ class WarlordKalitreshAI : public CreatureAIScript
                     getCreature()->GetAIInterface()->ResetUnitToFollow();
                     getCreature()->GetAIInterface()->SetFollowDistance(0.0f);
 
-                    RagePhaseTimer = t + RandomUInt(15) + 20;
+                    RagePhaseTimer = t + Util::getRandomUInt(15) + 20;
                     EnrageTimer = 0;
                     RagePhase = 0;
 
@@ -415,7 +415,7 @@ class WarlordKalitreshAI : public CreatureAIScript
                         getCreature()->GetAIInterface()->SetFollowDistance(0.0f);
                         getCreature()->CastSpell(getCreature(), 36453, true);
 
-                        RagePhaseTimer = t + RandomUInt(15) + 20;
+                        RagePhaseTimer = t + Util::getRandomUInt(15) + 20;
                         DistillerNumber = 0;
                         EnrageTimer = 0;
                         RagePhase = 0;

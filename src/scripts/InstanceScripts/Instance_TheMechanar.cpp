@@ -484,17 +484,17 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
 
         void OnCombatStart(Unit* /*mTarget*/) override
         {
-            SummonTimer = RandomUInt(30, 45);
+            SummonTimer = Util::getRandomUInt(30, 45);
         }
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            SummonTimer = RandomUInt(30, 45);
+            SummonTimer = Util::getRandomUInt(30, 45);
         }
 
         void OnDied(Unit* /*mKiller*/) override
         {
-            SummonTimer = RandomUInt(30, 45);
+            SummonTimer = Util::getRandomUInt(30, 45);
         }
 
         void AIUpdate() override
@@ -507,7 +507,7 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
                 getCreature()->CastSpell(getCreature(), summonNetherWraith2->mSpellInfo, summonNetherWraith2->mIsTriggered);
                 getCreature()->CastSpell(getCreature(), summonNetherWraith3->mSpellInfo, summonNetherWraith3->mIsTriggered);
                 getCreature()->CastSpell(getCreature(), summonNetherWraith4->mSpellInfo, summonNetherWraith4->mIsTriggered);
-                SummonTimer = RandomUInt(30, 45);    // 30 - 45
+                SummonTimer = Util::getRandomUInt(30, 45);    // 30 - 45
                 sendDBChatMessage(SAY_PATHALEON_04);
             }
         }

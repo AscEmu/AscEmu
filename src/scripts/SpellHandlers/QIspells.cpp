@@ -562,7 +562,7 @@ bool Fumping(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pPlayer->HasQuest(10929) == false)
         return true;
 
-    uint32 chance = RandomUInt(1);
+    uint32 chance = Util::getRandomUInt(1);
     uint32 entry = 0;
     switch (chance)
     {
@@ -691,13 +691,13 @@ bool TheCleansingMustBeStopped(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pPlayer->HasQuest(9370) == false)
         return true;
 
-    Creature* draenei1 = pPlayer->GetMapMgr()->CreateAndSpawnCreature(16994, pos.x + RandomFloat(5.0f), pos.y + RandomFloat(5.0f), pos.z, pos.o);
+    Creature* draenei1 = pPlayer->GetMapMgr()->CreateAndSpawnCreature(16994, pos.x + Util::getRandomFloat(5.0f), pos.y + Util::getRandomFloat(5.0f), pos.z, pos.o);
     draenei1->Despawn(6 * 60 * 1000, 0);
 
-    Creature* draenei2 = pPlayer->GetMapMgr()->CreateAndSpawnCreature(16994, pos.x - RandomFloat(5.0f), pos.y + RandomFloat(5.0f), pos.z, pos.o);
+    Creature* draenei2 = pPlayer->GetMapMgr()->CreateAndSpawnCreature(16994, pos.x - Util::getRandomFloat(5.0f), pos.y + Util::getRandomFloat(5.0f), pos.z, pos.o);
     draenei2->Despawn(6 * 60 * 1000, 0);
 
-    Creature* draenei3 = pPlayer->GetMapMgr()->CreateAndSpawnCreature(16994, pos.x + RandomFloat(5.0f), pos.y - RandomFloat(5.0f), pos.z, pos.o);
+    Creature* draenei3 = pPlayer->GetMapMgr()->CreateAndSpawnCreature(16994, pos.x + Util::getRandomFloat(5.0f), pos.y - Util::getRandomFloat(5.0f), pos.z, pos.o);
     draenei3->Despawn(6 * 60 * 1000, 0);
 
     return true;
@@ -905,7 +905,7 @@ bool TemporalPhaseModulator(uint8_t /*effectIndex*/, Spell* pSpell)
     if (whelp != nullptr)
     {
         LocationVector whelpPos = whelp->GetPosition();
-        if (RandomUInt(1) == 0)
+        if (Util::getRandomUInt(1) == 0)
         {
             Creature* adolescent = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21817, whelpPos.x, whelpPos.y, whelpPos.z, whelpPos.o);
             adolescent->Despawn(5 * 60 * 1000, 0);
@@ -923,7 +923,7 @@ bool TemporalPhaseModulator(uint8_t /*effectIndex*/, Spell* pSpell)
     if (whelp != nullptr)
     {
         LocationVector whelpPos = whelp->GetPosition();
-        if (RandomUInt(10) < 8)
+        if (Util::getRandomUInt(10) < 8)
         {
             Creature* mature = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21820, whelpPos.x, whelpPos.y, whelpPos.z, whelpPos.o);
             mature->Despawn(5 * 60 * 1000, 0);
@@ -941,7 +941,7 @@ bool TemporalPhaseModulator(uint8_t /*effectIndex*/, Spell* pSpell)
     if (whelp != nullptr)
     {
         LocationVector whelpPos = whelp->GetPosition();
-        if (RandomUInt(10) < 8)
+        if (Util::getRandomUInt(10) < 8)
         {
             Creature* mature = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21820, whelpPos.x, whelpPos.y, whelpPos.z, whelpPos.o);
             mature->Despawn(5 * 60 * 1000, 0);
@@ -958,7 +958,7 @@ bool TemporalPhaseModulator(uint8_t /*effectIndex*/, Spell* pSpell)
     if (whelp != nullptr)
     {
         LocationVector whelpPos = whelp->GetPosition();
-        if (RandomUInt(1) == 0)
+        if (Util::getRandomUInt(1) == 0)
         {
             Creature* adolescent = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21817, whelpPos.x, whelpPos.y, whelpPos.z, whelpPos.o);
             adolescent->Despawn(5 * 60 * 1000, 0);
@@ -1096,7 +1096,7 @@ bool GoblinWeatherMachine(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pSpell->p_caster == nullptr)
         return true;
 
-    uint32 Weather = 46736 + RandomUInt(4);
+    uint32 Weather = 46736 + Util::getRandomUInt(4);
 
     pSpell->p_caster->CastSpell(pSpell->p_caster, sSpellCustomizations.GetSpellInfo(Weather), true);
     return true;
@@ -3098,7 +3098,7 @@ bool CastFishingNet(uint8_t /*effectIndex*/, Spell* pSpell)
 
     LocationVector pos = pPlayer->GetPosition();
 
-    if (RandomUInt(10) <= 3)
+    if (Util::getRandomUInt(10) <= 3)
     {
         Creature* pNewCreature = pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(17102, pos.x, pos.y, pos.z, pos.o, true, false, 0, 0);
         if (pNewCreature != nullptr)

@@ -101,7 +101,7 @@ class PeonSleepingAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(PeonSleepingAI);
         PeonSleepingAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            RegisterAIUpdateEvent(3000 + RandomUInt(180000));
+            RegisterAIUpdateEvent(3000 + Util::getRandomUInt(180000));
         };
 
         void AIUpdate()
@@ -140,11 +140,11 @@ class AllianceGryphon : public CreatureAIScript
             if(!mTarget->IsPlayer())
                 return;
 
-            Creature* NewCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(9526, getCreature()->GetPositionX() + RandomFloat(5.0f), getCreature()->GetPositionY() + RandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true, false, 0, 0);
+            Creature* NewCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(9526, getCreature()->GetPositionX() + Util::getRandomFloat(5.0f), getCreature()->GetPositionY() + Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true, false, 0, 0);
             if(NewCreature != NULL)
                 NewCreature->Despawn(360000, 0);
 
-            NewCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(9526, getCreature()->GetPositionX() - RandomFloat(5.0f), getCreature()->GetPositionY() - RandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true, false, 0, 0);
+            NewCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(9526, getCreature()->GetPositionX() - Util::getRandomFloat(5.0f), getCreature()->GetPositionY() - Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true, false, 0, 0);
             if(NewCreature != NULL)
                 NewCreature->Despawn(360000, 0);
         }
@@ -162,11 +162,11 @@ class AllianceHippogryph : public CreatureAIScript
             if(!mTarget->IsPlayer())
                 return;
 
-            Creature* NewCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(9527, getCreature()->GetPositionX() + RandomFloat(5.0f), getCreature()->GetPositionY() + RandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true, false, 0, 0);
+            Creature* NewCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(9527, getCreature()->GetPositionX() + Util::getRandomFloat(5.0f), getCreature()->GetPositionY() + Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true, false, 0, 0);
             if(NewCreature != NULL)
                 NewCreature->Despawn(360000, 0);
 
-            NewCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(9527, getCreature()->GetPositionX() - RandomFloat(5.0f), getCreature()->GetPositionY() - RandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true, false, 0, 0);
+            NewCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(9527, getCreature()->GetPositionX() - Util::getRandomFloat(5.0f), getCreature()->GetPositionY() - Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true, false, 0, 0);
             if(NewCreature != NULL)
                 NewCreature->Despawn(360000, 0);
         }
@@ -183,11 +183,11 @@ class HordeWyvern : public CreatureAIScript
             if(!mTarget->IsPlayer())
                 return;
 
-            Creature* NewCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(9297, getCreature()->GetPositionX() + RandomFloat(5.0f), getCreature()->GetPositionY() + RandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true, false, 0, 0);
+            Creature* NewCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(9297, getCreature()->GetPositionX() + Util::getRandomFloat(5.0f), getCreature()->GetPositionY() + Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true, false, 0, 0);
             if(NewCreature != NULL)
                 NewCreature->Despawn(360000, 0);
 
-            NewCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(9297, getCreature()->GetPositionX() - RandomFloat(5.0f), getCreature()->GetPositionY() - RandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true, false, 0, 0);
+            NewCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(9297, getCreature()->GetPositionX() - Util::getRandomFloat(5.0f), getCreature()->GetPositionY() - Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true, false, 0, 0);
             if(NewCreature != NULL)
                 NewCreature->Despawn(360000, 0);
         }
@@ -204,11 +204,11 @@ class HordeBat : public CreatureAIScript
             if(!mTarget->IsPlayer())
                 return;
 
-            Creature* NewCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(9521, getCreature()->GetPositionX() + RandomFloat(5.0f), getCreature()->GetPositionY() + RandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true, false, 0, 0);
+            Creature* NewCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(9521, getCreature()->GetPositionX() + Util::getRandomFloat(5.0f), getCreature()->GetPositionY() + Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true, false, 0, 0);
             if(NewCreature != NULL)
                 NewCreature->Despawn(360000, 0);
 
-            getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(9521, getCreature()->GetPositionX() - RandomFloat(5.0f), getCreature()->GetPositionY() - RandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true, false, 0, 0);
+            getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(9521, getCreature()->GetPositionX() - Util::getRandomFloat(5.0f), getCreature()->GetPositionY() - Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), true, false, 0, 0);
             if(NewCreature != NULL)
                 NewCreature->Despawn(360000, 0);
         }
@@ -225,8 +225,8 @@ class DragonhawkMasters : public CreatureAIScript
             LocationVector vect(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation());
             for (uint8 i = 0; i < 2; ++i)
             {
-                vect.x += RandomFloat(2.0f);
-                vect.y += RandomFloat(2.0f);
+                vect.x += Util::getRandomFloat(2.0f);
+                vect.y += Util::getRandomFloat(2.0f);
             }
         }
 };
@@ -242,8 +242,8 @@ class NeutralMasters : public CreatureAIScript
             LocationVector vect(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation());
             for (uint8 i = 0; i < 2; ++i)
             {
-                vect.x += RandomFloat(2.0f);
-                vect.y += RandomFloat(2.0f);
+                vect.x += Util::getRandomFloat(2.0f);
+                vect.y += Util::getRandomFloat(2.0f);
             }
         }
 };

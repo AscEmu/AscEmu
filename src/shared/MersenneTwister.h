@@ -28,11 +28,7 @@ SERVER_DECL void ReseedRandomNumberGenerators();
 SERVER_DECL void CleanupRandomNumberGenerators();
 SERVER_DECL double RandomDouble();
 SERVER_DECL double RandomDouble(double n);
-SERVER_DECL float RandomFloat();
-SERVER_DECL float RandomFloat(float n);
 SERVER_DECL uint32 RandomUInt();
-SERVER_DECL uint32 RandomUInt(uint32 n);
-SERVER_DECL uint32 RandomUInt(uint32 n1, uint32 n2);
 
 /*************************** RANDOMC.H ***************** 2007-09-22 Agner Fog *
 *

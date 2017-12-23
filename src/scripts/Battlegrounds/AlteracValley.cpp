@@ -1289,8 +1289,8 @@ void AlteracValley::AVNode::Spawn()
             LogDebug("AlteracValley : AVNode::Spawn(%s) : spawning %u guards of %u", m_template->m_name, m_template->m_guardCount, m_template->m_guardId[t]);
             for (uint32 i = 0; i < m_template->m_guardCount; ++i)
             {
-                float x = RandomUInt(10) * cos(RandomFloat(6.28f)) + m_template->m_flagLocation.x;
-                float y = RandomUInt(10) * cos(RandomFloat(6.28f)) + m_template->m_flagLocation.y;
+                float x = Util::getRandomInt(10) * cos(Util::getRandomFloat(6.28f)) + m_template->m_flagLocation.x;
+                float y = Util::getRandomInt(10) * cos(Util::getRandomFloat(6.28f)) + m_template->m_flagLocation.y;
                 float z = m_bg->GetMapMgr()->GetADTLandHeight(x, y);
                 m_guards.push_back(m_bg->SpawnCreature(m_template->m_guardId[t], x, y, z, 0.0f));
             }
@@ -1849,7 +1849,7 @@ void AlteracValley::HookGenerateLoot(Player* plr, Object* pCorpse)
                     li.item.displayid = pProto->DisplayInfoID;
                     li.item.itemproto = pProto;
                     if (loot_ptr->MinCount != loot_ptr->MaxCount)
-                        li.iItemsCount = RandomUInt(loot_ptr->MaxCount - loot_ptr->MinCount) + loot_ptr->MinCount;
+                        li.iItemsCount = Util::getRandomUInt(loot_ptr->MaxCount - loot_ptr->MinCount) + loot_ptr->MinCount;
                     else
                         li.iItemsCount = loot_ptr->MinCount;
 

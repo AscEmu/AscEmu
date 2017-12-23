@@ -111,7 +111,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
             {
                 if (!form)
                 {
-                    switch (RandomUInt(1))
+                    switch (Util::getRandomUInt(1))
                     {
                         case 0:
                             sendDBChatMessage(4751);     // They have forced me to this...
@@ -124,7 +124,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
                 }
                 else
                 {
-                    switch (RandomUInt(1))
+                    switch (Util::getRandomUInt(1))
                     {
                         case 0:
                             sendDBChatMessage(4755);     // I will purge you from this place.
@@ -469,7 +469,7 @@ class LeotherasAI : public CreatureAIScript
             if (LeotherasEventGreyheartToKill[getCreature()->GetInstanceID()] != 0)
                 return;
 
-            SwitchTimer = 40 + RandomUInt(5); //wowwiki says 45, bosskillers says 40
+            SwitchTimer = 40 + Util::getRandomUInt(5); //wowwiki says 45, bosskillers says 40
             WhirlwindTimer = 15;
             EnrageTimer = 599; //10 minutes
 
@@ -497,7 +497,7 @@ class LeotherasAI : public CreatureAIScript
             {
                 if (Phase) //blood elf form
                 {
-                    switch (RandomUInt(2))
+                    switch (Util::getRandomUInt(2))
                     {
                         case 0:
                             sendDBChatMessage(4778);     // Kill! KILL!
@@ -512,7 +512,7 @@ class LeotherasAI : public CreatureAIScript
                 }
                 else //demon form
                 {
-                    switch (RandomUInt(2))
+                    switch (Util::getRandomUInt(2))
                     {
                         case 0:
                             sendDBChatMessage(4775);     // I have no equal.
@@ -660,7 +660,7 @@ class LeotherasAI : public CreatureAIScript
                 {
                     if (!getCreature()->isCastingNonMeleeSpell())
                     {
-                        if (RandomUInt(1))
+                        if (Util::getRandomUInt(1))
                         {
                             getCreature()->CastSpell(getCreature()->GetAIInterface()->getNextTarget(), info_chaos_blast, false);
                         }
@@ -681,8 +681,8 @@ class LeotherasAI : public CreatureAIScript
                     setAIAgent(AGENT_MELEE);
                     SwitchToHumanForm();
                     Phase = 0;
-                    WhirlwindTimer = 10 + RandomUInt(5);
-                    SwitchTimer = 40 + RandomUInt(5); //wowwiki says 45, bosskillers says 40
+                    WhirlwindTimer = 10 + Util::getRandomUInt(5);
+                    SwitchTimer = 40 + Util::getRandomUInt(5); //wowwiki says 45, bosskillers says 40
                     getCreature()->GetAIInterface()->ClearHateList(); //reset aggro
                 }
             }
@@ -802,7 +802,7 @@ class ShadowofLeotherasAI : public CreatureAIScript
             {
                 if (!getCreature()->isCastingNonMeleeSpell())
                 {
-                    if (RandomUInt(1))
+                    if (Util::getRandomUInt(1))
                     {
                         getCreature()->CastSpell(getCreature()->GetAIInterface()->getNextTarget(), info_chaos_blast, false);
                     }
@@ -893,7 +893,7 @@ class KarathressAI : public CreatureAIScript
                 if (!TargetTable.size())
                     return;
 
-                auto random_index = RandomUInt(0, uint32(TargetTable.size() - 1));
+                auto random_index = Util::getRandomUInt(0, uint32(TargetTable.size() - 1));
                 auto random_target = TargetTable[random_index];
 
                 if (random_target == nullptr)
@@ -982,7 +982,7 @@ class FathomGuardSharkissAI : public CreatureAIScript
                 SummonPetTimer--;
                 if (!SummonPetTimer)
                 {
-                    switch (RandomUInt(1))
+                    switch (Util::getRandomUInt(1))
                     {
                         case 0:
                             CurrentPet = spawnCreature(CN_FATHOM_LURKER, getCreature()->GetPosition());
@@ -1104,7 +1104,7 @@ class MorogrimAI : public CreatureAIScript
         {
             if (getCreature()->GetHealthPct() > 0)
             {
-                switch (RandomUInt(2))
+                switch (Util::getRandomUInt(2))
                 {
                     case 0:
                         sendDBChatMessage(4791);     // Only the strong survive.
@@ -1287,7 +1287,7 @@ class VashjAI : public CreatureAIScript
             SporebatTimer = 0;
             ForkedLightningTimer = 5;
 
-            switch (RandomUInt(3))
+            switch (Util::getRandomUInt(3))
             {
                 case 0:
                     sendDBChatMessage(4759);     // I'll split you from stem to stern!");
@@ -1340,7 +1340,7 @@ class VashjAI : public CreatureAIScript
 
         void OnTargetDied(Unit* /*mTarget*/) override
         {
-            switch (RandomUInt(1))
+            switch (Util::getRandomUInt(1))
             {
                 case 0:
                     sendDBChatMessage(4768);     // Your time ends now!
@@ -1410,14 +1410,14 @@ class VashjAI : public CreatureAIScript
             ForkedLightningTimer--;
             if (!ForkedLightningTimer)
             {
-                ForkedLightningTimer = 2 + RandomUInt(5);
+                ForkedLightningTimer = 2 + Util::getRandomUInt(5);
             }
 
             //spawn creatures
             EnchantedElementalTimer--;
             if (!EnchantedElementalTimer)
             {
-                uint32 pos = RandomUInt(7);
+                uint32 pos = Util::getRandomUInt(7);
                 Creature* elemental = NULL;
                 elemental = spawnCreature(CN_ENCHANTED_ELEMENTAL, ElementalSpawnPoints[pos].x, ElementalSpawnPoints[pos].y, ElementalSpawnPoints[pos].z, ElementalSpawnPoints[pos].o);
                 if (elemental)
@@ -1454,7 +1454,7 @@ class VashjAI : public CreatureAIScript
                     wp->backwardskinid = 0;
                     elemental->GetAIInterface()->addWayPoint(wp);
                 }
-                EnchantedElementalTimer = 10 + RandomUInt(5);
+                EnchantedElementalTimer = 10 + Util::getRandomUInt(5);
             }
             CoilfangStriderTimer--;
             if (!CoilfangStriderTimer)
@@ -1482,7 +1482,7 @@ class VashjAI : public CreatureAIScript
             CoilfangEliteTimer--;
             if (!CoilfangEliteTimer)
             {
-                uint32 pos = RandomUInt(3);
+                uint32 pos = Util::getRandomUInt(3);
                 Creature* summoned = NULL;
                 summoned = spawnCreature(CN_COILFANG_ELITE, CoilfangEliteSpawnPoints[pos].x, CoilfangEliteSpawnPoints[pos].y, CoilfangEliteSpawnPoints[pos].z, CoilfangEliteSpawnPoints[pos].o);
                 if (summoned)
@@ -1506,7 +1506,7 @@ class VashjAI : public CreatureAIScript
             TaintedElementalTimer--;
             if (!TaintedElementalTimer)
             {
-                uint32 pos = RandomUInt(7);
+                uint32 pos = Util::getRandomUInt(7);
                 spawnCreature(CN_TAINTED_ELEMENTAL, ElementalSpawnPoints[pos].x, ElementalSpawnPoints[pos].y, ElementalSpawnPoints[pos].z, ElementalSpawnPoints[pos].o);
                 TaintedElementalTimer = 120;
             }
@@ -1536,7 +1536,7 @@ class VashjAI : public CreatureAIScript
 
         void Shoot(Unit* target)
         {
-            switch (RandomUInt(1))
+            switch (Util::getRandomUInt(1))
             {
                 case 0: //shoot
                     getCreature()->CastSpell(target, info_shot, true);
@@ -1546,7 +1546,7 @@ class VashjAI : public CreatureAIScript
                     break;
             }
 
-            switch (RandomUInt(5))
+            switch (Util::getRandomUInt(5))
             {
                 case 0:
                     sendDBChatMessage(4766);     // "Straight to the heart!
@@ -1717,8 +1717,8 @@ class ToxicSporeBatAI : public CreatureAIScript
             Phase = 0;
             FlameQuills = false;
             Meteor = false;
-            PositionChange = RandomUInt(15, 23);
-            PhoenixSummon = RandomUInt(17, 23);
+            PositionChange = Util::getRandomUInt(15, 23);
+            PhoenixSummon = Util::getRandomUInt(17, 23);
             getCreature()->GetAIInterface()->setSplineFlying();
             getCreature()->GetAIInterface()->StopMovement(0);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
@@ -1741,9 +1741,9 @@ class ToxicSporeBatAI : public CreatureAIScript
             Phase = 1;
             FlameQuills = false;
             Meteor = false;
-            PositionChange = RandomUInt(30, 45);    // 30-45sec /*** if attack time 1000 (%15+31) ***/
-            PhoenixSummon = RandomUInt(34, 44);    // 34-44sec /*** if attack time 1000 (%11+34) ***/
-            FlyWay = RandomUInt(1);
+            PositionChange = Util::getRandomUInt(30, 45);    // 30-45sec /*** if attack time 1000 (%15+31) ***/
+            PhoenixSummon = Util::getRandomUInt(34, 44);    // 34-44sec /*** if attack time 1000 (%11+34) ***/
+            FlyWay = Util::getRandomUInt(1);
             switch (FlyWay)
             {
                 case 0:    // Clock like
@@ -1764,8 +1764,8 @@ class ToxicSporeBatAI : public CreatureAIScript
             Phase = 0;
             FlameQuills = false;
             Meteor = false;
-            PhoenixSummon = RandomUInt(17, 23);
-            PositionChange = RandomUInt(15, 23);
+            PhoenixSummon = Util::getRandomUInt(17, 23);
+            PositionChange = Util::getRandomUInt(15, 23);
             getCreature()->GetAIInterface()->StopMovement(0);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
             getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
@@ -1777,8 +1777,8 @@ class ToxicSporeBatAI : public CreatureAIScript
             Phase = 0;
             FlameQuills = false;
             Meteor = false;
-            PositionChange = RandomUInt(15, 23);
-            PhoenixSummon = RandomUInt(17, 23);
+            PositionChange = Util::getRandomUInt(15, 23);
+            PhoenixSummon = Util::getRandomUInt(17, 23);
         }
 
         void AIUpdate() override
@@ -1843,19 +1843,19 @@ class ToxicSporeBatAI : public CreatureAIScript
             if (!PhoenixSummon--)
             {
                 getCreature()->CastSpell(getCreature(), spells[0].info, spells[0].instant);
-                PhoenixSummon = RandomUInt(17, 23);
+                PhoenixSummon = Util::getRandomUInt(17, 23);
             }*/
 
             if (!PositionChange)
             {
                 getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                 getCreature()->GetAIInterface()->setWayPointToMove(NextWP);
-                PositionChange = RandomUInt(15, 23);    // added 4 sec fit time + time needed to move to next pos.
+                PositionChange = Util::getRandomUInt(15, 23);    // added 4 sec fit time + time needed to move to next pos.
             }
 
             else
             {
-                uint32 val = RandomUInt(100);
+                uint32 val = Util::getRandomUInt(100);
 
                 if (val > 0 && val < 5)    // Flame Quills wp here!
                 {
@@ -2072,7 +2072,7 @@ class UnderbogColossusAI : public CreatureAIScript
         UnderbogColossusAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             //these mobs pick from a random set of abilities
-            switch (RandomUInt(2))
+            switch (Util::getRandomUInt(2))
             {
                 case 0:
                     addAISpell(RAMPANT_INFECTION, 5.0f, TARGET_SELF);
@@ -2091,7 +2091,7 @@ class UnderbogColossusAI : public CreatureAIScript
         void OnDied(Unit* /*pKiller*/) override
         {
             //There will also be a choice of abilities he might use as he dies:
-            switch (RandomUInt(2))
+            switch (Util::getRandomUInt(2))
             {
                 case 0:
                     //cast toxic pool

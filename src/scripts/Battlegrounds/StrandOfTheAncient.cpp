@@ -618,7 +618,7 @@ void StrandOfTheAncient::PrepareRound()
 
     if (BattleRound == 1)
     {
-        Attackers = RandomUInt(1);
+        Attackers = Util::getRandomUInt(1);
         if (Attackers == TEAM_ALLIANCE)
         { 
             Defenders = TEAM_HORDE;

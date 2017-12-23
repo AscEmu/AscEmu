@@ -746,13 +746,13 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
 
                         if (bgPossible.size() > 0)
                         {
-                            uint32 num = RandomUInt(0, static_cast<uint32>(bgPossible.size() - 1));
+                            uint32 num = Util::getRandomUInt(0, static_cast<uint32>(bgPossible.size() - 1));
                             bgToStart = bgPossible[num];
                         }
                     }
                     else
                     {
-                        uint32 num = RandomUInt(0, static_cast<uint32>(avalibleInRandom.size() - 1));
+                        uint32 num = Util::getRandomUInt(0, static_cast<uint32>(avalibleInRandom.size() - 1));
                         bgToStart = avalibleInRandom[num];
                     }
                 }
@@ -813,7 +813,7 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
         for (uint32 j = 0; j < (uint32)m_queuedGroups[i].size(); j++)
         {
             group1 = group2 = NULL;
-            n = RandomUInt((uint32)m_queuedGroups[i].size()) - 1;
+            n = Util::getRandomUInt((uint32)m_queuedGroups[i].size()) - 1;
             for (itz = m_queuedGroups[i].begin(); itz != m_queuedGroups[i].end() && n > 0; ++itz)
                 --n;
 
@@ -860,7 +860,7 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
 
             if (possibleGroups.size() > 0)
             {
-                n = RandomUInt((uint32)possibleGroups.size()) - 1;
+                n = Util::getRandomUInt((uint32)possibleGroups.size()) - 1;
                 for (itz = possibleGroups.begin(); itz != possibleGroups.end() && n > 0; ++itz)
                     --n;
 
@@ -1059,7 +1059,7 @@ CBattleground* CBattlegroundManager::CreateInstance(uint32 Type, uint32 LevelGro
             return NULL;
         }
 
-        uint32 index = RandomUInt(arenaMapCount - 1);
+        uint32 index = Util::getRandomUInt(arenaMapCount - 1);
         uint32 mapid = arenaMaps[index];
         ArenaFactoryMethod arenaFactory = arenaFactories[index];
         uint32 players_per_side;

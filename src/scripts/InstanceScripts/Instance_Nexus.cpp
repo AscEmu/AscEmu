@@ -212,7 +212,7 @@ class TelestraBossAI : public CreatureAIScript
         {
             if (isScriptPhase(1) && _getHealthPercent() <= (mPhaseRepeat * 25))
             {
-                switch (RandomUInt(1))
+                switch (Util::getRandomUInt(1))
                 {
                     case 0:
                         sendDBChatMessage(4330);      // There's plenty of me to go around.

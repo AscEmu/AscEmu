@@ -106,7 +106,7 @@ class ObsidianSanctumScript : public InstanceScript
 //    {
 //        pCreatureAI->getCreature()->SendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, "The lava surrounding Sartharion churns!");
 //
-//        switch (RandomUInt(3))
+//        switch (Util::getRandomUInt(3))
 //        {
 //            case 0:
 //                pCreatureAI->sendChatMessage(CHAT_MSG_MONSTER_YELL, 14100, "Such flammable little insects....");
@@ -150,7 +150,7 @@ class ObsidianSanctumScript : public InstanceScript
 //
 //    for (uint8 i = 0; i < 2; ++i)
 //    {
-//        uint32 j = RandomUInt(5);
+//        uint32 j = Util::getRandomUInt(5);
 //        pCreatureAI->spawnCreature(CN_LAVA_BLAZE, pTarget->GetPositionX() + j, pTarget->GetPositionY() + j, pTarget->GetPositionZ(), pTarget->GetOrientation(), pCreatureAI->getCreature()->GetFaction());
 //    }
 //}

@@ -32,6 +32,8 @@
 
 #include <ctime>
 
+#include "Util.hpp"
+
 struct AI_Spell;
 
 // #define MAX_CREATURE_LOOT 8 Zyres 2015/12/30 unused
@@ -173,7 +175,7 @@ struct CreatureProperties
 
         while (true)
         {
-            uint32 res = RandomUInt(3);
+            uint32 res = Util::getRandomUInt(3);
             if (models[res])
             {
                 *des = models[res];
@@ -197,7 +199,7 @@ struct CreatureProperties
             model_ids[counter++] = Female_DisplayID2;
 
         if (counter > 0)
-            return model_ids[RandomUInt(0, counter - 1)];
+            return model_ids[Util::getRandomUInt(0, counter - 1)];
 
         LogError("CreatureProperties : No random display_id found for entry %u", Id);
         return 0;

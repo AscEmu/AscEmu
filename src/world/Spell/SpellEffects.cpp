@@ -723,7 +723,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                 if (unitTarget->HasFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_IMMOLATE))
                 {
                     // random extra damage
-                    uint32 extra_dmg = 111 + (GetSpellInfo()->custom_RankNumber * 11) + RandomUInt(GetSpellInfo()->custom_RankNumber * 11);
+                    uint32 extra_dmg = 111 + (GetSpellInfo()->custom_RankNumber * 11) + Util::getRandomUInt(GetSpellInfo()->custom_RankNumber * 11);
                     dmg += extra_dmg;
                 }
             } break;
@@ -754,7 +754,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             {
                 if (u_caster)
                     dmg += float2int32(u_caster->GetRAP() * 0.15f);
-                dmg = float2int32(dmg * (0.9f + RandomFloat(0.2f)));      // randomized damage
+                dmg = float2int32(dmg * (0.9f + Util::getRandomFloat(0.2f)));      // randomized damage
 
                 if (p_caster != nullptr)
                 {
@@ -1994,7 +1994,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
                         if (randomPoints <= 1)
                             value = basePoints;
                         else
-                            value = basePoints + RandomUInt(randomPoints);
+                            value = basePoints + Util::getRandomUInt(randomPoints);
                         //the value is in percent. Until now it's a fixed 10%
                         Heal(unitTarget->GetMaxHealth()*value / 100);
                     }
@@ -2416,7 +2416,7 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
         uint32 mincount = basecount - difference;
         uint32 maxcount = basecount + difference;
         uint32 variablecount = maxcount - mincount;
-        uint32 randcount = RandomUInt(variablecount);
+        uint32 randcount = Util::getRandomUInt(variablecount);
 
         count = mincount + randcount;
     }
@@ -2486,7 +2486,7 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
 
                 uint32 spList[] = { 28590, 28587, 28588, 28591, 28589 };
                 cast_chance = 2;
-                learn_spell = spList[RandomUInt(4)];
+                learn_spell = spList[Util::getRandomUInt(4)];
             }
 
             //Transmutation Master
@@ -2509,7 +2509,7 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
 
                 uint32 spList[] = { 28581, 28585, 28585, 28584, 28582, 28580 };
                 cast_chance = 5;
-                learn_spell = spList[RandomUInt(5)];
+                learn_spell = spList[Util::getRandomUInt(5)];
             }
         }
 
@@ -4755,7 +4755,7 @@ void Spell::SpellEffectPickpocket(uint8_t /*effectIndex*/) // pickpocket
     lootmgr.FillPickpocketingLoot(&static_cast< Creature* >(unitTarget)->loot, unitTarget->GetEntry());
 
     uint32 _rank = static_cast< Creature* >(unitTarget)->GetCreatureProperties()->Rank;
-    unitTarget->loot.gold = float2int32((_rank + 1) * unitTarget->getLevel() * (RandomUInt(5) + 1) * worldConfig.getFloatRate(RATE_MONEY));
+    unitTarget->loot.gold = float2int32((_rank + 1) * unitTarget->getLevel() * (Util::getRandomUInt(5) + 1) * worldConfig.getFloatRate(RATE_MONEY));
 
     p_caster->SendLoot(unitTarget->GetGUID(), LOOT_PICKPOCKETING, unitTarget->GetMapId());
     target->SetPickPocketed(true);

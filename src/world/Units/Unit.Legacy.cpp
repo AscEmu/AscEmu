@@ -1858,7 +1858,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                         continue; //no weapon no joy
                     //float chance=float(it->GetProto()->Delay)*float(talentlevel)/600.0f;
                     uint32 chance = it->GetItemProperties()->Delay * talentlevel / 300; //zack this had a very low proc rate. Kinda like a wasted talent
-                    uint32 myroll = RandomUInt(100);
+                    uint32 myroll = Util::getRandomUInt(100);
                     if (myroll > chance)
                         continue;
                 }
@@ -7164,7 +7164,7 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
 
 
     // roll
-    float Roll = RandomFloat(100.0f);
+    float Roll = Util::getRandomFloat(100.0f);
     uint32 r = 0;
 
     while (r < 4 && Roll > chances[r])
@@ -7602,7 +7602,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
     //printf("crush: %.2f\n", crush);
 
     // roll
-    float Roll = RandomFloat(100.0f);
+    float Roll = Util::getRandomFloat(100.0f);
     uint32 r = 0;
     while (r < 7 && Roll> chances[r])
     {
@@ -8114,7 +8114,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                 dmg2 = itr->second.mindmg;
                 range = itr->second.maxdmg - itr->second.mindmg;
                 if (range != 0)
-                    dmg2 += RandomUInt(range);
+                    dmg2 += Util::getRandomUInt(range);
 
                 SpellNonMeleeDamageLog(pVictim, itr->second.spellid, dmg2, true);
             }

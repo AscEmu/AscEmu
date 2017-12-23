@@ -5088,11 +5088,11 @@ void Aura::SpellAuraTransform(bool apply)
                         break;
 
                     case 28272:	 // Pig
-                        displayId = 16356 + RandomUInt(2);
+                        displayId = 16356 + Util::getRandomUInt(2);
                         break;
 
                     case 28271:	 // Turtle
-                        displayId = 16359 + RandomUInt(2);
+                        displayId = 16359 + Util::getRandomUInt(2);
                         break;
 
                     default:
@@ -5376,7 +5376,7 @@ bool isFeignDeathResisted(uint32 playerlevel, uint32 moblevel)
         if (fMobRes > 100)
             fMobRes = 100;
 
-        if (RandomUInt(1, 100) < static_cast<uint32>(fMobRes))
+        if (Util::getRandomUInt(1, 100) < static_cast<uint32>(fMobRes))
             return true;
     }
 

@@ -545,7 +545,7 @@ class BarnesAI : public CreatureAIScript
         WayStartBBW[getCreature()->GetInstanceID()] = 1;
 
         eventRand = 0;
-        switch (RandomUInt(2))
+        switch (Util::getRandomUInt(2))
         {
             case 0:
                 eventRand = 0;
@@ -839,7 +839,7 @@ class CuratorAI : public CreatureAIScript
     {
         if (getCreature()->GetHealthPct() > 0)
         {
-            switch (RandomUInt(1))
+            switch (Util::getRandomUInt(1))
             {
                 case 0:
                     sendDBChatMessage(2067);     // Do not touch the displays.
@@ -866,13 +866,13 @@ class CuratorAI : public CreatureAIScript
         if (!Target_List.size())
             return;
 
-        auto random_index = RandomUInt(0, uint32(Target_List.size() - 1));
+        auto random_index = Util::getRandomUInt(0, uint32(Target_List.size() - 1));
         Unit* random_target = Target_List[random_index];
 
         if (random_target == nullptr)
             return;
 
-        switch (RandomUInt(1))
+        switch (Util::getRandomUInt(1))
         {
             case 0:
                 sendDBChatMessage(2063);     // Gallery rules will be strictly enforced.
@@ -886,7 +886,7 @@ class CuratorAI : public CreatureAIScript
         float dX = getCreature()->GetPositionX();
         float dY = getCreature()->GetPositionY();
         Creature* AstralFlare = NULL;
-        switch (RandomUInt(3))
+        switch (Util::getRandomUInt(3))
         {
             case 0:
             {
@@ -1011,15 +1011,15 @@ class ShadeofAranAI : public CreatureAIScript
         spells[3].info = sSpellCustomizations.GetSpellInfo(CHAINSOFICE);
         spells[3].targettype = TARGET_RANDOM_SINGLE;
         spells[3].instant = true;
-        spells[3].cooldown = RandomUInt(5) + 14;
-        spells[3].casttime = RandomUInt(5) + 14;
+        spells[3].cooldown = Util::getRandomUInt(5) + 14;
+        spells[3].casttime = Util::getRandomUInt(5) + 14;
         spells[3].attackstoptimer = 1000;
 
         spells[4].info = sSpellCustomizations.GetSpellInfo(DRAGONSBREATH);
         spells[4].targettype = TARGET_RANDOM_SINGLE;
         spells[4].instant = true;
-        spells[4].cooldown = RandomUInt(5) + 16;
-        spells[4].casttime = RandomUInt(5) + 16;
+        spells[4].cooldown = Util::getRandomUInt(5) + 16;
+        spells[4].casttime = Util::getRandomUInt(5) + 16;
         spells[4].attackstoptimer = 1000;
         spells[4].maxdist2cast = 15;
 
@@ -1086,7 +1086,7 @@ class ShadeofAranAI : public CreatureAIScript
         }
         else
         {
-            switch (RandomUInt(2))
+            switch (Util::getRandomUInt(2))
             {
                 case 0:
                     sendDBChatMessage(2031);     // Please, no more. My son... he's gone mad!
@@ -1103,14 +1103,14 @@ class ShadeofAranAI : public CreatureAIScript
         setAIAgent(AGENT_SPELL);
         RegisterAIUpdateEvent(1000);
         m_time_enrage = 900;
-        m_time_special = (uint32)RandomUInt(5) + 25;
+        m_time_special = (uint32)Util::getRandomUInt(5) + 25;
         m_time_pyroblast = 0;
         drinking = false;
         enraged = false;
         summoned = false;
         explode = false;
         slow = false;
-        LastSuperSpell = RandomUInt(100) % 3;
+        LastSuperSpell = Util::getRandomUInt(100) % 3;
         // Door closing
         GameObject* SDoor = getNearestGameObject(-11190.012f, -1881.016f, 231.95f, 184517);
         if (SDoor)
@@ -1141,7 +1141,7 @@ class ShadeofAranAI : public CreatureAIScript
 
     void OnTargetDied(Unit* /*mTarget*/) override
     {
-        switch (RandomUInt(1))
+        switch (Util::getRandomUInt(1))
         {
             case 0:
                 sendDBChatMessage(2042);     // I want this nightmare to be over!
@@ -1241,8 +1241,8 @@ class ShadeofAranAI : public CreatureAIScript
         {
             sendDBChatMessage(2044);     // You've wasted enough of my time. Let these games be finished!
 
-            float ERX = 5 * cos(RandomFloat(6.28f)) + (getCreature()->GetPositionX());
-            float ERY = 5 * sin(RandomFloat(6.28f)) + (getCreature()->GetPositionY());
+            float ERX = 5 * cos(Util::getRandomFloat(6.28f)) + (getCreature()->GetPositionX());
+            float ERY = 5 * sin(Util::getRandomFloat(6.28f)) + (getCreature()->GetPositionY());
             float ERZ = getCreature()->GetPositionZ();
 
             for (uint8 i = 0; i < 4; i++)
@@ -1258,14 +1258,14 @@ class ShadeofAranAI : public CreatureAIScript
         else if (!m_time_special)
         {
             CastSpecial();
-            m_time_special = (uint32)RandomUInt(5) + 25;
+            m_time_special = (uint32)Util::getRandomUInt(5) + 25;
             return;
         }
     }
 
     void FlameWreath()
     {
-        switch (RandomUInt(1))
+        switch (Util::getRandomUInt(1))
         {
             case 0:
                 sendDBChatMessage(2034);     // I'll show you this beaten dog still has some teeth!
@@ -1292,7 +1292,7 @@ class ShadeofAranAI : public CreatureAIScript
         }
 
         while (Targets.size() > 3)
-            Targets.erase(Targets.begin() + RandomUInt(static_cast<uint32>(Targets.size())));
+            Targets.erase(Targets.begin() + Util::getRandomUInt(static_cast<uint32>(Targets.size())));
 
         uint32 i = 0;
         for (std::vector<Player*>::iterator itr = Targets.begin(); itr != Targets.end(); ++itr)
@@ -1310,7 +1310,7 @@ class ShadeofAranAI : public CreatureAIScript
 
     void Blizzard()
     {
-        switch (RandomUInt(1))
+        switch (Util::getRandomUInt(1))
         {
             case 0:
                 sendDBChatMessage(2036);     // I'll freeze you all!
@@ -1325,7 +1325,7 @@ class ShadeofAranAI : public CreatureAIScript
 
     void AoEExplosion()
     {
-        switch (RandomUInt(1))
+        switch (Util::getRandomUInt(1))
         {
             case 0:
                 sendDBChatMessage(2038);     // Yes, yes, my son is quite powerful... but I have powers of my own!
@@ -1366,7 +1366,7 @@ class ShadeofAranAI : public CreatureAIScript
                 return;
         }
 
-        LastSuperSpell = Available[RandomUInt(1)];
+        LastSuperSpell = Available[Util::getRandomUInt(1)];
 
         switch (LastSuperSpell)
         {
@@ -1424,7 +1424,7 @@ class WaterEleAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        WaterBolt = (RandomUInt(3) + 5);
+        WaterBolt = (Util::getRandomUInt(3) + 5);
         RegisterAIUpdateEvent(1250);
     }
 
@@ -1459,7 +1459,7 @@ class ShadowofAranAI : public CreatureAIScript
 
     void OnCombatStart(Unit* /*mTarget*/) override
     {
-        ShadowPyro = (RandomUInt(2) + 4);
+        ShadowPyro = (Util::getRandomUInt(2) + 4);
         RegisterAIUpdateEvent(1250);
     }
 
@@ -1576,7 +1576,7 @@ class IllhoofAI : public CreatureAIScript
 
     void OnTargetDied(Unit* /*mTarget*/) override
     {
-        switch (RandomUInt(1))
+        switch (Util::getRandomUInt(1))
         {
             case 0:
                 sendDBChatMessage(2047);     // Your blood will anoint my circle.
@@ -1618,7 +1618,7 @@ class IllhoofAI : public CreatureAIScript
 
     void spawnSummoningPortals()
     {
-        switch (RandomUInt(1))
+        switch (Util::getRandomUInt(1))
         {
             case 0:
                 sendDBChatMessage(2053);     // Come, you dwellers in the dark. Rally to my call!
@@ -1634,7 +1634,7 @@ class IllhoofAI : public CreatureAIScript
 
     void PlrSacrifice()
     {
-        switch (RandomUInt(1))
+        switch (Util::getRandomUInt(1))
         {
             case 0:
                 sendDBChatMessage(2051);     // Please, accept this humble offering, oh great one.
@@ -1660,7 +1660,7 @@ class IllhoofAI : public CreatureAIScript
         if (!TargetTable.size())
             return;
 
-        auto random_index = RandomUInt(0, uint32(TargetTable.size() - 1));
+        auto random_index = Util::getRandomUInt(0, uint32(TargetTable.size() - 1));
         auto random_target = TargetTable[random_index];
 
         if (random_target == nullptr)
@@ -1761,7 +1761,7 @@ class FiendishImpAI : public CreatureAIScript
         /*if (getCreature()->GetAIInterface()->getNextTarget() && getCreature()->GetDistance2dSq(getCreature()->GetAIInterface()->getNextTarget()) <= 1225.0f)
         {
             setAIAgent(AGENT_SPELL);
-            if (!getCreature()->isCastingNonMeleeSpell() && RandomUInt(10) > 2)
+            if (!getCreature()->isCastingNonMeleeSpell() && Util::getRandomUInt(10) > 2)
             {
                 getCreature()->setAttackTimer(spells[0].attackstoptimer, false);
 
@@ -2012,7 +2012,7 @@ class MalchezaarAI : public CreatureAIScript
 
     void OnTargetDied(Unit* /*mTarget*/) override
     {
-        switch (RandomUInt(2))
+        switch (Util::getRandomUInt(2))
         {
             case 0:
                 sendDBChatMessage(2027);     // You are, but a plaything, unfit even to amuse.
@@ -2079,7 +2079,7 @@ class MalchezaarAI : public CreatureAIScript
         }
         else
         {
-            float val = RandomFloat(100.0f);
+            float val = Util::getRandomFloat(100.0f);
             SpellCast(val);
         }*/
     }
@@ -2155,7 +2155,7 @@ class MalchezaarAI : public CreatureAIScript
 
     void SummonInfernal()
     {
-        switch (RandomUInt(1))
+        switch (Util::getRandomUInt(1))
         {
             case 0:
                 sendDBChatMessage(2029);     // You face not Malchezaar alone, but the legions I command!
@@ -2165,8 +2165,8 @@ class MalchezaarAI : public CreatureAIScript
                 break;
         }
 
-        ranX = RandomFloat(113.47f) - 11019.37f;
-        ranY = RandomFloat(36.951f) - 2011.549f;
+        ranX = Util::getRandomFloat(113.47f) - 11019.37f;
+        ranY = Util::getRandomFloat(36.951f) - 2011.549f;
         //if (getLinkedCreatureAIScript() != NULL)
         //{
         //    getLinkedCreatureAIScript()->getCreature()->CastSpellAoF(LocationVector(ranX, ranY, 275.0f), spells[2].info, spells[2].instant); // Shoots the missile
@@ -2194,7 +2194,7 @@ class MalchezaarAI : public CreatureAIScript
         }
 
         while (Targets.size() > 5)
-            Targets.erase(Targets.begin() + RandomUInt(static_cast<uint32>(Targets.size())));
+            Targets.erase(Targets.begin() + Util::getRandomUInt(static_cast<uint32>(Targets.size())));
 
         /*for (std::vector<Player*>::iterator E_Itr = Targets.begin(); E_Itr != Targets.end(); ++E_Itr)
         {
@@ -2308,7 +2308,7 @@ class MAxesAI : public CreatureAIScript
         if (!TargetTable.size())
             return;
 
-        auto random_index = RandomUInt(0, uint32(TargetTable.size() - 1));
+        auto random_index = Util::getRandomUInt(0, uint32(TargetTable.size() - 1));
         auto random_target = TargetTable[random_index];
 
         if (random_target == nullptr)
@@ -2347,7 +2347,7 @@ class NetherspiteAI : public CreatureAIScript
         /*spells[0].info = sSpellCustomizations.GetSpellInfo(NETHERBREATH);
         spells[0].targettype = TARGET_ATTACKING;
         spells[0].instant = false;
-        spells[0].cooldown = RandomUInt(5) + 30;
+        spells[0].cooldown = Util::getRandomUInt(5) + 30;
         spells[0].perctrigger = 50.0f;
         spells[0].attackstoptimer = 1000;
 
@@ -2417,14 +2417,14 @@ class NetherspiteAI : public CreatureAIScript
             if (!TargetTable.size())
                 return;
 
-            auto random_index = RandomUInt(0, uint32(TargetTable.size() - 1));
+            auto random_index = Util::getRandomUInt(0, uint32(TargetTable.size() - 1));
             auto random_target = TargetTable[random_index];
 
             if (random_target == nullptr)
                 return;
 
-            float vzX = 5 * cos(RandomFloat(6.28f)) + random_target->GetPositionX();
-            float vzY = 5 * cos(RandomFloat(6.28f)) + random_target->GetPositionY();
+            float vzX = 5 * cos(Util::getRandomFloat(6.28f)) + random_target->GetPositionX();
+            float vzY = 5 * cos(Util::getRandomFloat(6.28f)) + random_target->GetPositionY();
             float vzZ = random_target->GetPositionZ();
             spawnCreature(CN_VOIDZONE, vzX, vzY, vzZ, 0);
             TargetTable.clear();
@@ -2817,14 +2817,14 @@ class DorotheeAI : public CreatureAIScript
 
     void SpawnTito()    // Lacking in collision checks!
     {
-        float xchange = RandomFloat(15.0f);
+        float xchange = Util::getRandomFloat(15.0f);
         float distance = 15.0f;
 
         float ychange = sqrt(distance * distance - xchange * xchange);
 
-        if (RandomUInt(1) == 1)
+        if (Util::getRandomUInt(1) == 1)
             xchange *= -1;
-        if (RandomUInt(1) == 1)
+        if (Util::getRandomUInt(1) == 1)
             ychange *= -1;
 
         float newposx = getCreature()->GetPositionX() + xchange;
@@ -3222,7 +3222,7 @@ class RomuloAI : public CreatureAIScript
 
     void OnDied(Unit* /*mKiller*/) override
     {
-        switch (RandomUInt(1))
+        switch (Util::getRandomUInt(1))
         {
             case 0:
                 sendDBChatMessage(2003);     // Thou smilest... upon the stroke that... murders me.
@@ -3328,7 +3328,7 @@ class JulianneAI : public CreatureAIScript
 
     void OnDied(Unit* /*mKiller*/) override
     {
-        switch (RandomUInt(1))
+        switch (Util::getRandomUInt(1))
         {
             case 0:
                 sendDBChatMessage(1998);     // Romulo, I come! Oh... this do I drink to thee!

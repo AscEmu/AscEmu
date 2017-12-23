@@ -380,7 +380,7 @@ void Creature::generateLoot()
         }
 
         // To hide your discrete values a bit, add another random amount between -(chunk_size/2) and +(chunk_size/2)
-        gold_fp += (chunk_size * (RandomFloat(1.0f) - 0.5f));
+        gold_fp += (chunk_size * (Util::getRandomFloat(1.0f) - 0.5f));
 
         /// \ brief In theory we can end up with a negative amount. Give at least one chunk_size here to prevent this from happening. In
         /// case you're interested, the probability is around 2.98e-8.
@@ -1327,11 +1327,11 @@ bool Creature::Load(CreatureSpawn* spawn, uint8 mode, MySQLStructure::MapInfo co
     if (creature_properties->MinHealth > creature_properties->MaxHealth)
     {
         LOG_ERROR("MinHealth is bigger than MaxHealt! Using MaxHealth value. You should fix this in creature_proto table for entry: %u!", creature_properties->Id);
-        health = creature_properties->MaxHealth - RandomUInt(10);
+        health = creature_properties->MaxHealth - Util::getRandomUInt(10);
     }
     else
     {
-        health = creature_properties->MinHealth + RandomUInt(creature_properties->MaxHealth - creature_properties->MinHealth);
+        health = creature_properties->MinHealth + Util::getRandomUInt(creature_properties->MaxHealth - creature_properties->MinHealth);
     }
 
     SetHealth(health);
@@ -1349,7 +1349,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint8 mode, MySQLStructure::MapInfo co
 
     EventModelChange();
 
-    setLevel(creature_properties->MinLevel + (RandomUInt(creature_properties->MaxLevel - creature_properties->MinLevel)));
+    setLevel(creature_properties->MinLevel + (Util::getRandomUInt(creature_properties->MaxLevel - creature_properties->MinLevel)));
 
     if (mode && info)
         modLevel(std::min(73 - getLevel(), info->lvl_mod_a));
@@ -1573,7 +1573,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     setFloatValue(UNIT_FIELD_HOVERHEIGHT, creature_properties->Scale);
 #endif
 
-    uint32 health = creature_properties->MinHealth + RandomUInt(creature_properties->MaxHealth - creature_properties->MinHealth);
+    uint32 health = creature_properties->MinHealth + Util::getRandomUInt(creature_properties->MaxHealth - creature_properties->MinHealth);
 
     SetHealth(health);
     SetMaxHealth(health);
@@ -1593,7 +1593,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
 
     EventModelChange();
 
-    setLevel(creature_properties->MinLevel + (RandomUInt(creature_properties->MaxLevel - creature_properties->MinLevel)));
+    setLevel(creature_properties->MinLevel + (Util::getRandomUInt(creature_properties->MaxLevel - creature_properties->MinLevel)));
 
     for (uint8 i = 0; i < 7; ++i)
         SetResistance(i, creature_properties->Resistances[i]);
@@ -1957,10 +1957,10 @@ void Creature::SetGuardWaypoints()
     GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_RANDOMWP);
     for (uint8 i = 1; i <= 4; i++)
     {
-        float ang = RandomFloat(100.0f) / 100.0f;
-        float ran = RandomFloat(100.0f) / 10.0f;
+        float ang = Util::getRandomFloat(100.0f) / 100.0f;
+        float ran = Util::getRandomFloat(100.0f) / 10.0f;
         while (ran < 1)
-            ran = RandomFloat(100.0f) / 10.0f;
+            ran = Util::getRandomFloat(100.0f) / 10.0f;
 
         Movement::WayPoint* wp = new Movement::WayPoint;
         wp->id = i;
@@ -2595,7 +2595,7 @@ void Creature::HandleMonsterSayEvent(MONSTER_SAY_EVENTS Event)
         int choice = 0;
         if (Rand(npcMonsterSay->chance))
         {
-            choice = (npcMonsterSay->textCount == 1) ? 0 : RandomUInt(npcMonsterSay->textCount - 1);
+            choice = (npcMonsterSay->textCount == 1) ? 0 : Util::getRandomUInt(npcMonsterSay->textCount - 1);
         }
 
         SendMonsterSayMessageInRange(this, npcMonsterSay, choice, Event);

@@ -751,7 +751,7 @@ class IllidariArchonAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(IllidariArchonAI);
         IllidariArchonAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            switch (RandomUInt(1))
+            switch (Util::getRandomUInt(1))
             {
                 case 0:
                     addAISpell(ILLIDARI_ARCHON_HEAL, 5.0f, TARGET_RANDOM_FRIEND, 2, 30);
@@ -793,7 +793,7 @@ class IllidariBattlemageAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(IllidariBattlemageAI);
         IllidariBattlemageAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            switch (RandomUInt(1))
+            switch (Util::getRandomUInt(1))
             {
                 case 0:
                     addAISpell(ILLIDARI_BATTLEMAGE_BLIZZARD, 8.0f, TARGET_RANDOM_DESTINATION, 8, 35);
@@ -1340,7 +1340,7 @@ class SupremusAI : public CreatureAIScript
         {
             timer++;
 
-            uint32 val = RandomUInt(1000);
+            uint32 val = Util::getRandomUInt(1000);
 
             if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
             {
@@ -1383,7 +1383,7 @@ class SupremusAI : public CreatureAIScript
         {
             timer++;
 
-            uint32 val = RandomUInt(1000);
+            uint32 val = Util::getRandomUInt(1000);
 
             if (!getCreature()->isCastingNonMeleeSpell() && getCreature()->GetAIInterface()->getNextTarget())//_unit->getAttackTarget())
             {
@@ -1931,7 +1931,7 @@ class ShahrazAI : public CreatureAIScript
             SoundTimer++;
             if (getCreature()->GetAIInterface()->GetIsTaunted() && SoundTimer > 10)
             {
-                switch (RandomUInt(3))
+                switch (Util::getRandomUInt(3))
                 {
                     case 1:
                         sendDBChatMessage(4651);     // I'm not impressed.
@@ -1961,7 +1961,7 @@ class ShahrazAI : public CreatureAIScript
             if (t > AuraChange)
             {
                 uint32 SpellId = 0;
-                switch (RandomUInt(6))
+                switch (Util::getRandomUInt(6))
                 {
                     case 1:
                         SpellId = 40891;    // Arcane
@@ -2231,7 +2231,7 @@ class ShadeofakamaAI : public CreatureAIScript
         {
             if (getCreature()->GetHealthPct() > 0)
             {
-                switch (RandomUInt(2))
+                switch (Util::getRandomUInt(2))
                 {
                     case 0:
                         getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I will not last much longer...");
@@ -3570,7 +3570,7 @@ class MaievAI : public CreatureAIScript
                 {
                     sendChatMessage(CHAT_MSG_MONSTER_YELL, 11495, "There shall be no prison for you this time!");
                     _castAISpell(mTrapSummon);
-                    _resetTimer(mYellTimer, _getTimeForTimer(mYellTimer) + (5 + RandomUInt(10)) * 1000);
+                    _resetTimer(mYellTimer, _getTimeForTimer(mYellTimer) + (5 + Util::getRandomUInt(10)) * 1000);
                     mSummonTrap = false;
                     return;
                 }
@@ -3584,13 +3584,13 @@ class MaievAI : public CreatureAIScript
                         getCreature()->GetAIInterface()->StopMovement(2500);
                     }
 
-                    _resetTimer(mTrapTimer, ((RandomUInt(5) + 25) * 1000));
+                    _resetTimer(mTrapTimer, ((Util::getRandomUInt(5) + 25) * 1000));
                     mSummonTrap = true;
                     return;
                 }
                 else if (_isTimerFinished(mYellTimer))
                 {
-                    switch (RandomUInt(2))
+                    switch (Util::getRandomUInt(2))
                     {
                         case 0:
                             sendChatMessage(CHAT_MSG_MONSTER_YELL, 11494, "Bleed as I have bled!");
@@ -3603,7 +3603,7 @@ class MaievAI : public CreatureAIScript
                             break;
                     }
 
-                    _resetTimer(mYellTimer, (RandomUInt(20) + 20) * 1000);
+                    _resetTimer(mYellTimer, (Util::getRandomUInt(20) + 20) * 1000);
                 }
             }
             else
@@ -3631,7 +3631,7 @@ class MaievAI : public CreatureAIScript
                     setAIAgent(AGENT_NULL);
                     _setDisplayWeapon(true, false);
                     _setWieldWeapon(true);
-                    _resetTimer(mTrapTimer, (RandomUInt(5) + 20) * 1000);
+                    _resetTimer(mTrapTimer, (Util::getRandomUInt(5) + 20) * 1000);
                     setScriptPhase(1);
                     FightWithIllidan();
                 }
@@ -4327,7 +4327,7 @@ class IllidanStormrageAI : public CreatureAIScript
                             SetAIUpdateFreq(1000);
 
                             mParasiticTimer = 30000;
-                            mShadowDemonsTimer = (RandomUInt(25) + 15) * 1000;
+                            mShadowDemonsTimer = (Util::getRandomUInt(25) + 15) * 1000;
                             mDemonTimer = 40000;
                             mPhaseBackup = 3;
                             mScenePart = 0;
@@ -4394,7 +4394,7 @@ class IllidanStormrageAI : public CreatureAIScript
                     }
                     else if (mMovementTimer <= 0)
                     {
-                        if (RandomUInt(1) == 1)    // Move right
+                        if (Util::getRandomUInt(1) == 1)    // Move right
                         {
                             ++mCurrentWaypoint;
                             if (mCurrentWaypoint > 3)
@@ -4418,10 +4418,10 @@ class IllidanStormrageAI : public CreatureAIScript
                 {
                     if (mMiscEventPart == 1)
                     {
-                        uint32 FireWall = RandomUInt(7);
+                        uint32 FireWall = Util::getRandomUInt(7);
                         while((int)FireWall == mLastFireWall || (int)FireWall == 7 - mLastFireWall)
                         {
-                            FireWall = RandomUInt(7);
+                            FireWall = Util::getRandomUInt(7);
                         }
 
                         Creature* pTrigger = spawnCreature(CN_EYE_BEAM_TRIGGER, EyeBeamPaths[FireWall].x, EyeBeamPaths[FireWall].y, EyeBeamPaths[FireWall].z, EyeBeamPaths[FireWall].o);
@@ -4503,7 +4503,7 @@ class IllidanStormrageAI : public CreatureAIScript
 
                     if (mPlaySound)
                     {
-                        switch (RandomUInt(2))
+                        switch (Util::getRandomUInt(2))
                         {
                             case 0:
                                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 11469, "You know nothing of power!");
@@ -4520,7 +4520,7 @@ class IllidanStormrageAI : public CreatureAIScript
                 {
                     if (mPlaySound)
                     {
-                        switch (RandomUInt(2))
+                        switch (Util::getRandomUInt(2))
                         {
                             case 0:
                                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 11469, "You know nothing of power!");
@@ -4536,8 +4536,8 @@ class IllidanStormrageAI : public CreatureAIScript
                     _setDisplayWeapon(false, false);
                     SetAIUpdateFreq(1000);
 
-                    mShadowDemonsTimer = (RandomUInt(25) + 15) * 1000;
-                    mFlameBurstTimer = (RandomUInt(7) + 8) * 1000;
+                    mShadowDemonsTimer = (Util::getRandomUInt(25) + 15) * 1000;
+                    mFlameBurstTimer = (Util::getRandomUInt(7) + 8) * 1000;
                     mDemonTimer = 60000;
                     mMiscEventPart = 0;
 
@@ -4559,7 +4559,7 @@ class IllidanStormrageAI : public CreatureAIScript
                     setScriptPhase(mPhaseBackup);
                     if (mPhaseBackup == 5)
                     {
-                        mEnrageTimer = RandomUInt(5) + 25;
+                        mEnrageTimer = Util::getRandomUInt(5) + 25;
                     }
 
                     SetAIUpdateFreq(1000);
@@ -4582,14 +4582,14 @@ class IllidanStormrageAI : public CreatureAIScript
 
         bool SpawnMaiev()    // this doesn't have collision checks! so keep in mind that Maiev can be spawned behind walls!
         {
-            float xchange  = RandomFloat(15.0f);
+            float xchange  = Util::getRandomFloat(15.0f);
             float distance = 15.0f;
 
             float ychange = sqrt(distance * distance - xchange * xchange);
 
-            if (RandomUInt(1) == 1)
+            if (Util::getRandomUInt(1) == 1)
                 xchange *= -1;
-            if (RandomUInt(1) == 1)
+            if (Util::getRandomUInt(1) == 1)
                 ychange *= -1;
 
             float newposx = getCreature()->GetPositionX() + xchange;
@@ -4699,8 +4699,8 @@ class IllidanStormrageAI : public CreatureAIScript
                     getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
 
                     pMaievAI->RegisterAIUpdateEvent(1000);
-                    pMaievAI->mYellTimer = pMaievAI->_addTimer((RandomUInt(20) + 20) * 1000);
-                    pMaievAI->mTrapTimer = pMaievAI->_addTimer((RandomUInt(5) + 18) * 1000);
+                    pMaievAI->mYellTimer = pMaievAI->_addTimer((Util::getRandomUInt(20) + 20) * 1000);
+                    pMaievAI->mTrapTimer = pMaievAI->_addTimer((Util::getRandomUInt(5) + 18) * 1000);
                     pMaievAI->getCreature()->SetEmoteState(EMOTE_ONESHOT_READY1H);
                     pMaievAI->setCanEnterCombat(true);
                     pMaievAI->getCreature()->GetAIInterface()->setCurrentAgent(AGENT_NULL);
@@ -4795,7 +4795,7 @@ class IllidanStormrageAI : public CreatureAIScript
         {
             if (mPlaySound)
             {
-                switch (RandomUInt(2))
+                switch (Util::getRandomUInt(2))
                 {
                     case 0:
                         sendChatMessage(CHAT_MSG_MONSTER_YELL, 11469, "You know nothing of power!");
@@ -4846,9 +4846,9 @@ class IllidanStormrageAI : public CreatureAIScript
                     if (mShadowDemonsTimer <= 0)
                     {
                         //CastSpellNowNoScheduling(mShadowDemons);
-                        spawnCreature(CN_SHADOW_DEMON, getCreature()->GetPositionX() + RandomFloat(5), getCreature()->GetPositionY() + RandomFloat(5), getCreature()->GetPositionZ() + 2.0f, 0);
-                        spawnCreature(CN_SHADOW_DEMON, getCreature()->GetPositionX() - RandomFloat(5), getCreature()->GetPositionY() + RandomFloat(5), getCreature()->GetPositionZ() + 2.0f, 0);
-                        spawnCreature(CN_SHADOW_DEMON, getCreature()->GetPositionX() + RandomFloat(5), getCreature()->GetPositionY() - RandomFloat(5), getCreature()->GetPositionZ() + 2.0f, 0);
+                        spawnCreature(CN_SHADOW_DEMON, getCreature()->GetPositionX() + Util::getRandomFloat(5), getCreature()->GetPositionY() + Util::getRandomFloat(5), getCreature()->GetPositionZ() + 2.0f, 0);
+                        spawnCreature(CN_SHADOW_DEMON, getCreature()->GetPositionX() - Util::getRandomFloat(5), getCreature()->GetPositionY() + Util::getRandomFloat(5), getCreature()->GetPositionZ() + 2.0f, 0);
+                        spawnCreature(CN_SHADOW_DEMON, getCreature()->GetPositionX() + Util::getRandomFloat(5), getCreature()->GetPositionY() - Util::getRandomFloat(5), getCreature()->GetPositionZ() + 2.0f, 0);
 
                         mShadowDemonsTimer = 120000;
                         return;
@@ -4879,7 +4879,7 @@ class IllidanStormrageAI : public CreatureAIScript
                         return;
                     }
 
-                    /*uint32 Spell = RandomUInt() % 100;
+                    /*uint32 Spell = Util::getRandomUInt() % 100;
                     if (Spell <= 80)
                         CastSpellNowNoScheduling(mShadowBlast);*/
                 }

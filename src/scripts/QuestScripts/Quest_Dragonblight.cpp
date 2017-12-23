@@ -38,7 +38,7 @@ public:
         if (pCreature == nullptr)
             return;
 
-        uint32 chance = RandomUInt(1);
+        uint32 chance = Util::getRandomUInt(1);
         if (chance == 0)
         {
             pCreature->SetFaction(14);

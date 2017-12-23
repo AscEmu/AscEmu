@@ -5767,7 +5767,7 @@ exit:
     if (randomPoints <= 1)
         value = basePoints;
     else
-        value = basePoints + (int32)RandomUInt(randomPoints);
+        value = basePoints + (int32)Util::getRandomUInt(randomPoints);
 
     int32 comboDamage = (int32)GetSpellInfo()->getEffectPointsPerComboPoint(static_cast<uint8_t>(i));
     if (comboDamage && p_caster != nullptr)
@@ -5790,7 +5790,7 @@ exit:
             ScriptOverrideList::iterator itrSO;
             for (itrSO = itr->second->begin(); itrSO != itr->second->end(); ++itrSO)
             {
-                value += RandomUInt((*itrSO)->damage);
+                value += Util::getRandomUInt((*itrSO)->damage);
             }
         }
     }
@@ -5894,7 +5894,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                     it = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                     if (it)
                     {
-                        float weapondmg = RandomFloat(1) * (it->GetItemProperties()->Damage[0].Max - it->GetItemProperties()->Damage[0].Min) + it->GetItemProperties()->Damage[0].Min;
+                        float weapondmg = Util::getRandomFloat(1) * (it->GetItemProperties()->Damage[0].Max - it->GetItemProperties()->Damage[0].Min) + it->GetItemProperties()->Damage[0].Min;
                         value += float2int32(GetSpellInfo()->getEffectBasePoints(0) + weapondmg / (it->GetItemProperties()->Delay / 1000.0f) * 2.8f);
                     }
                 }

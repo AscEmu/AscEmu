@@ -161,7 +161,7 @@ static uint32 resourcesToGainBR = 160;
 
 void ArathiBasin::SpawnBuff(uint32 x)
 {
-    uint32 chosen_buffid = buffentries[RandomUInt(2)];
+    uint32 chosen_buffid = buffentries[Util::getRandomUInt(2)];
     auto gameobject_info = sMySQLStore.getGameObjectProperties(chosen_buffid);
     if (gameobject_info == nullptr)
         return;

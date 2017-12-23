@@ -51,8 +51,8 @@ class ZerekethAI : public CreatureAIScript
 
         void OnCombatStart(Unit* /*mTarget*/) override
         {
-            VoidTimer = _addTimer((RandomUInt(10) + 30) * 1000);
-            SpeechTimer = _addTimer((RandomUInt(10) + 40) * 1000);
+            VoidTimer = _addTimer((Util::getRandomUInt(10) + 30) * 1000);
+            SpeechTimer = _addTimer((Util::getRandomUInt(10) + 40) * 1000);
         }
 
         void OnDied(Unit* /*mKiller*/) override
@@ -76,7 +76,7 @@ class ZerekethAI : public CreatureAIScript
 
         void Speech()
         {
-            switch (RandomUInt(1))
+            switch (Util::getRandomUInt(1))
             {
                 case 0:
                     sendDBChatMessage(SAY_ZEREKETH_01);
@@ -85,12 +85,12 @@ class ZerekethAI : public CreatureAIScript
                     sendDBChatMessage(SAY_ZEREKETH_02);
                     break;
             }
-            _resetTimer(SpeechTimer, (RandomUInt(10) + 40) * 1000);
+            _resetTimer(SpeechTimer, (Util::getRandomUInt(10) + 40) * 1000);
         }
 
         void VoidZoneArc()
         {
-            _resetTimer(VoidTimer, (RandomUInt(10) + 30) * 1000);
+            _resetTimer(VoidTimer, (Util::getRandomUInt(10) + 30) * 1000);
 
             std::vector<Player*> TargetTable;
             std::set< Object* >::iterator Itr = getCreature()->GetInRangePlayerSetBegin();
@@ -107,14 +107,14 @@ class ZerekethAI : public CreatureAIScript
             if (!TargetTable.size())
                 return;
 
-            auto random_index = RandomUInt(0, uint32(TargetTable.size() - 1));
+            auto random_index = Util::getRandomUInt(0, uint32(TargetTable.size() - 1));
             auto random_target = TargetTable[random_index];
 
             if (random_target == nullptr)
                 return;
 
-            float vzX = RandomUInt(5) * cos(RandomFloat(6.28f)) + random_target->GetPositionX();
-            float vzY = RandomUInt(5) * cos(RandomFloat(6.28f)) + random_target->GetPositionY();
+            float vzX = Util::getRandomUInt(5) * cos(Util::getRandomFloat(6.28f)) + random_target->GetPositionX();
+            float vzY = Util::getRandomUInt(5) * cos(Util::getRandomFloat(6.28f)) + random_target->GetPositionY();
             float vzZ = random_target->GetPositionZ();
 
             Creature* VoidZone = spawnCreature(CN_VOIDZONEARC, vzX, vzY, vzZ, 0.0f);
@@ -356,7 +356,7 @@ class WardenMellicharAI : public CreatureAIScript
                     if (orb1)
                         orb1->SetState(GO_STATE_OPEN);
 
-                    switch (RandomUInt(1))
+                    switch (Util::getRandomUInt(1))
                     {
                         NPC_ID_Spawn = 0;
                         case 0:
@@ -444,7 +444,7 @@ class WardenMellicharAI : public CreatureAIScript
                     if (orb3)
                         orb3->SetState(GO_STATE_OPEN);
 
-                    switch (RandomUInt(1))
+                    switch (Util::getRandomUInt(1))
                     {
                         NPC_ID_Spawn = 0;
                         case 0:
@@ -501,7 +501,7 @@ class WardenMellicharAI : public CreatureAIScript
                     if (orb4)
                         orb4->SetState(GO_STATE_OPEN);
 
-                    switch (RandomUInt(1))
+                    switch (Util::getRandomUInt(1))
                     {
                         NPC_ID_Spawn = 0;
                         case 0:

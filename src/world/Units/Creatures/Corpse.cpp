@@ -120,7 +120,7 @@ void Corpse::Despawn()
 
 void Corpse::generateLoot()
 {
-    loot.gold = RandomUInt(50, 150); // between 50c and 1.5s, need to fix this!
+    loot.gold = Util::getRandomUInt(50, 150); // between 50c and 1.5s, need to fix this!
 }
 
 void Corpse::SpawnBones()

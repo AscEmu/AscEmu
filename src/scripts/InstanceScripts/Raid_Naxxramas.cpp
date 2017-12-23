@@ -310,7 +310,7 @@ void MaexxnaAI::OnCombatStart(Unit* /*pTarget*/)
     mWebSprayTimer = _addTimer(40000);
     mWebWrapTimer = _addTimer(20000);
     mHasEnraged = false;
-    if (RandomUInt(1) == 1)
+    if (Util::getRandomUInt(1) == 1)
         mLeftWall = !mLeftWall;
 }
 
@@ -375,7 +375,7 @@ void MaexxnaAI::AIUpdate()
 //        if (pTarget == NULL || !pTarget->IsPlayer() || pTarget->HasAura(MAEXXNA_WEB_WRAP) || Maexxna->getCreature() == NULL || Maexxna->getCreature()->GetMapMgr() == NULL)
 //            return;
 //
-//        uint32 Id = RandomUInt(1);
+//        uint32 Id = Util::getRandomUInt(1);
 //        if (!Maexxna->mLeftWall)
 //            Id += 3;
 //
@@ -440,7 +440,7 @@ void NaxxramasWorshipperAI::OnDied(Unit* /*pKiller*/)
             getCreature()->AddAura(WidowEmbrace);
 
             // Not sure about new Frenzy Timer
-            mGrandWidow->_resetTimer(mGrandWidow->mFrenzyTimer, 60000 + RandomUInt(20) * 1000);
+            mGrandWidow->_resetTimer(mGrandWidow->mFrenzyTimer, 60000 + Util::getRandomUInt(20) * 1000);
             if (mGrandWidow->getCreature()->HasAura(GRAND_WIDOW_FAERLINA_FRENZY_NORMAL))
                 mGrandWidow->getCreature()->RemoveAura(GRAND_WIDOW_FAERLINA_FRENZY_NORMAL);    // Really needed ?
             else if (mGrandWidow->getCreature()->HasAura(GRAND_WIDOW_FAERLINA_FRENZY_HEROIC))
@@ -567,7 +567,7 @@ GrandWidowFaerlinaAI::GrandWidowFaerlinaAI(Creature* pCreature) : CreatureAIScri
 void GrandWidowFaerlinaAI::OnCombatStart(Unit* /*pTarget*/)
 {
     mPoisonVolleyBoltTimer = _addTimer(15000);
-    mFrenzyTimer = _addTimer(60000 + RandomUInt(20) * 1000);
+    mFrenzyTimer = _addTimer(60000 + Util::getRandomUInt(20) * 1000);
 
     GameObject* WebGate = getNearestGameObject(3318.65f, -3695.85f, 259.094f, 181235);
     if (WebGate != NULL)
@@ -641,7 +641,7 @@ void GrandWidowFaerlinaAI::AIUpdate()
         else if (_isTimerFinished(mFrenzyTimer))
         {
             _castAISpell(mFrenzy);
-            _resetTimer(mFrenzyTimer, 60000 + RandomUInt(20) * 1000);
+            _resetTimer(mFrenzyTimer, 60000 + Util::getRandomUInt(20) * 1000);
         }
     }
 }
@@ -780,7 +780,7 @@ AnubRekhanAI::AnubRekhanAI(Creature* pCreature) : CreatureAIScript(pCreature)
 void AnubRekhanAI::OnCombatStart(Unit* /*pTarget*/)
 {
     mLocaleEnrageTimerId = _addTimer(600000);
-    mLocustSwarmTimer = _addTimer(70000 + RandomUInt(50) * 1000);
+    mLocustSwarmTimer = _addTimer(70000 + Util::getRandomUInt(50) * 1000);
 
     if (!_isHeroic())
         mCryptSpawnTimer = _addTimer(20000);
@@ -851,7 +851,7 @@ void AnubRekhanAI::AIUpdate()
             }
 
             _castAISpell(mLocustSwarm);
-            mLocustSwarmTimer = _addTimer(70000 + RandomUInt(50) * 1000);
+            mLocustSwarmTimer = _addTimer(70000 + Util::getRandomUInt(50) * 1000);
         }
 
         if (_isTimerFinished(mLocaleEnrageTimerId))
@@ -935,7 +935,7 @@ void AnubRekhanAI::Destroy()
 //
 //        if (PlayerCorpses.size() > 0)
 //        {
-//            uint32 Id = RandomUInt(static_cast<uint32>(PlayerCorpses.size() - 1));
+//            uint32 Id = Util::getRandomUInt(static_cast<uint32>(PlayerCorpses.size() - 1));
 //            PlayerPtr = PlayerCorpses[Id].first;
 //            AnubRekhan->mUsedCorpseGuids.insert(static_cast<uint32>(PlayerPtr->GetGUID()));
 //
@@ -981,7 +981,7 @@ void AnubRekhanAI::Destroy()
 //
 //        if (CryptCorpses.size() > 0)
 //        {
-//            uint32 Id = RandomUInt(static_cast<uint32>(CryptCorpses.size() - 1));
+//            uint32 Id = Util::getRandomUInt(static_cast<uint32>(CryptCorpses.size() - 1));
 //            CreaturePtr = CryptCorpses[Id];
 //
 //            float X, Y, Z, O;
@@ -1191,7 +1191,7 @@ NothThePlaguebringerAI::NothThePlaguebringerAI(Creature* pCreature) : CreatureAI
 void NothThePlaguebringerAI::OnCombatStart(Unit* /*pTarget*/)
 {
     if (_isHeroic())
-        mBlinkTimer = _addTimer(28000 + RandomUInt(12) * 1000);
+        mBlinkTimer = _addTimer(28000 + Util::getRandomUInt(12) * 1000);
 
     mPhaseSwitchTimer = _addTimer(110000);
     mSkeletonTimer = _addTimer(8000);
@@ -1271,7 +1271,7 @@ void NothThePlaguebringerAI::AIUpdate()
             /*if (_isHeroic() && _isTimerFinished(mBlinkTimer))
             {
                 CastSpellNowNoScheduling(mCriple);
-                _resetTimer(mBlinkTimer, 28000 + (RandomUInt(1, 12) * 1000));
+                _resetTimer(mBlinkTimer, 28000 + (Util::getRandomUInt(1, 12) * 1000));
             }*/
         }
 
@@ -1290,7 +1290,7 @@ void NothThePlaguebringerAI::AIUpdate()
             uint32 Id = 0;
             for (uint8 i = 0; i < SkelLimit; ++i)
             {
-                Id = RandomUInt(0, (SkelLimit - 1));    // SkellPosPhase1 is 0-indexed
+                Id = Util::getRandomUInt(0, (SkelLimit - 1));    // SkellPosPhase1 is 0-indexed
                 if (PosTaken[Id])
                 {
                     for (uint32 j = 0; j < 3; ++j)
@@ -1327,7 +1327,7 @@ void NothThePlaguebringerAI::AIUpdate()
             _resetTimer(mPhaseSwitchTimer, 70000);
             _resetTimer(mSkeletonTimer, 8000);
             if (_isHeroic())
-                _resetTimer(mBlinkTimer, 28000 + (RandomUInt(12)) * 1000);
+                _resetTimer(mBlinkTimer, 28000 + (Util::getRandomUInt(12)) * 1000);
 
             return;
         }
@@ -1351,7 +1351,7 @@ void NothThePlaguebringerAI::AIUpdate()
 
             for (uint8 i = 0; i < Champions; ++i)
             {
-                Id = RandomUInt(1, 3);
+                Id = Util::getRandomUInt(1, 3);
                 if (PosTaken[Id])
                 {
                     for (uint32 j = 0; j < 4; ++j)
@@ -1377,7 +1377,7 @@ void NothThePlaguebringerAI::AIUpdate()
 
             for (uint8 i = 0; i < SpawnLimit - Champions; ++i)
             {
-                Id = RandomUInt(1, 3);
+                Id = Util::getRandomUInt(1, 3);
                 if (PosTaken[Id])
                 {
                     for (uint32 j = 0; j < 4; ++j)
@@ -1874,7 +1874,7 @@ void LoathebAI::AIUpdate()
         uint32 Id = 0;
         for (uint8 i = 0; i < 3; ++i)
         {
-            Id = RandomUInt(3);
+            Id = Util::getRandomUInt(3);
             if (PosTaken[Id])
             {
                 for (uint32 j = 0; j < 4; ++j)
@@ -2258,7 +2258,7 @@ void DeathKnightCavalierAI::AIUpdate()
 {
     if (mIsMounted && getCreature()->GetMount() == 0)
         getCreature()->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID , 25278);
-    if (mIsMounted && RandomUInt(99) < 2)
+    if (mIsMounted && Util::getRandomUInt(99) < 2)
     {
         getCreature()->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID , 0);
         _applyAura(DEATH_KNIGHT_CAVALIER_DISMOUNT_DEATHCHARGER);
@@ -2328,7 +2328,7 @@ DarkTouchedWarriorAI::DarkTouchedWarriorAI(Creature* pCreature) : CreatureAIScri
 
 void DarkTouchedWarriorAI::OnCombatStart(Unit* /*pTarget*/)
 {
-    mResetHateTimer = _addTimer(8000 + RandomUInt(7) * 1000);
+    mResetHateTimer = _addTimer(8000 + Util::getRandomUInt(7) * 1000);
 }
 
 void DarkTouchedWarriorAI::AIUpdate()
@@ -2336,7 +2336,7 @@ void DarkTouchedWarriorAI::AIUpdate()
     if (!_isCasting() && _isTimerFinished(mResetHateTimer))
     {
         _clearHateList();
-        mResetHateTimer = _addTimer(8000 + RandomUInt(7) * 1000);
+        mResetHateTimer = _addTimer(8000 + Util::getRandomUInt(7) * 1000);
     }
 }
 
@@ -2563,7 +2563,7 @@ void StitchedColossusAI::OnCombatStart(Unit* /*pTarget*/)
 
 void StitchedColossusAI::AIUpdate()
 {
-    if (!mEnraged && RandomUInt(99) == 0)
+    if (!mEnraged && Util::getRandomUInt(99) == 0)
     {
         _applyAura(STITCHED_COLOSSUS_UNSTOPPABLE_ENRAGE);
         mEnraged = true;

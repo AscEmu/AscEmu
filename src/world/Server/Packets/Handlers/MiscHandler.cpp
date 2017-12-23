@@ -575,7 +575,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                             if (pLock->locktype[i] == 1)   //Item or Quest Required;
                             {
                                 if (despawn)
-                                    pGO->Despawn(0, (sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (RandomUInt(180000)) : 900000 + (RandomUInt(600000))));
+                                    pGO->Despawn(0, (sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (Util::getRandomUInt(180000)) : 900000 + (Util::getRandomUInt(600000))));
                                 else
                                     pGO->SetState(GO_STATE_CLOSED);
 
@@ -595,7 +595,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                                         return;
                                     }
 
-                                    pGO->Despawn(0, 900000 + (RandomUInt(600000)));
+                                    pGO->Despawn(0, 900000 + (Util::getRandomUInt(600000)));
                                     return;
                                 }
                             }
@@ -606,7 +606,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                                     pGO->SetState(GO_STATE_CLOSED);
                                     return;
                                 }
-                                pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (RandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (RandomUInt(600000))));
+                                pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (Util::getRandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (Util::getRandomUInt(600000))));
                                 return;
                             }
                         }
@@ -617,7 +617,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                                 pGO->SetState(1);
                                 return;
                             }
-                            pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (RandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (RandomUInt(600000))));
+                            pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (Util::getRandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (Util::getRandomUInt(600000))));
                             return;
                         }
                     }
@@ -629,7 +629,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                         pGO->SetState(GO_STATE_CLOSED);
                         return;
                     }
-                    pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (RandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (RandomUInt(600000))));
+                    pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (Util::getRandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (Util::getRandomUInt(600000))));
 
                     return;
 
@@ -1886,7 +1886,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                 {
                     Player* psacrifice = nullptr;
 
-                    uint32 victimid = RandomUInt(ritual_obj->GetRitual()->GetMaxMembers() - 1);
+                    uint32 victimid = Util::getRandomUInt(ritual_obj->GetRitual()->GetMaxMembers() - 1);
 
                     // kill the sacrifice player
                     psacrifice = _player->GetMapMgr()->GetPlayer(ritual_obj->GetRitual()->GetMemberGUIDBySlot(victimid));
@@ -2335,7 +2335,7 @@ void WorldSession::HandleRandomRollOpcode(WorldPacket& recv_data)
         min = max;
 
     // generate number
-    roll = RandomUInt(max - min) + min;
+    roll = Util::getRandomUInt(max - min) + min;
 
     // append to packet, and guid
     data << roll;

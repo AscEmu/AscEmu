@@ -404,7 +404,7 @@ public:
 
     void OnActivate(Player* player)
     {
-        uint32 Chance = RandomUInt(100);
+        uint32 Chance = Util::getRandomUInt(100);
         if (Chance <= 10)
         {
             LocationVector pos = player->GetPosition();
@@ -566,23 +566,23 @@ public:
 
         LocationVector pos = player->GetPosition();
 
-        Creature* pirate = player->GetMapMgr()->CreateAndSpawnCreature(7899, pos.x + RandomFloat(5.0f), pos.y + RandomFloat(5.0f), pos.z, pos.o);
+        Creature* pirate = player->GetMapMgr()->CreateAndSpawnCreature(7899, pos.x + Util::getRandomFloat(5.0f), pos.y + Util::getRandomFloat(5.0f), pos.z, pos.o);
         if (pirate != nullptr)
             pirate->Despawn(6 * 60 * 1000, 0);
 
-        pirate = player->GetMapMgr()->CreateAndSpawnCreature(7899, pos.x - RandomFloat(5.0f), pos.y + RandomFloat(5.0f), pos.z, pos.o);
+        pirate = player->GetMapMgr()->CreateAndSpawnCreature(7899, pos.x - Util::getRandomFloat(5.0f), pos.y + Util::getRandomFloat(5.0f), pos.z, pos.o);
         if (pirate != nullptr)
             pirate->Despawn(6 * 60 * 1000, 0);
 
-        pirate = player->GetMapMgr()->CreateAndSpawnCreature(7901, pos.x + RandomFloat(5.0f), pos.y - RandomFloat(5.0f), pos.z, pos.o);
+        pirate = player->GetMapMgr()->CreateAndSpawnCreature(7901, pos.x + Util::getRandomFloat(5.0f), pos.y - Util::getRandomFloat(5.0f), pos.z, pos.o);
         if (pirate != nullptr)
             pirate->Despawn(6 * 60 * 1000, 0);
 
-        pirate = player->GetMapMgr()->CreateAndSpawnCreature(7901, pos.x + RandomFloat(5.0f), pos.y + RandomFloat(5.0f), pos.z, pos.o);
+        pirate = player->GetMapMgr()->CreateAndSpawnCreature(7901, pos.x + Util::getRandomFloat(5.0f), pos.y + Util::getRandomFloat(5.0f), pos.z, pos.o);
         if (pirate != nullptr)
             pirate->Despawn(6 * 60 * 1000, 0);
 
-        pirate = player->GetMapMgr()->CreateAndSpawnCreature(7902, pos.x - RandomFloat(5.0f), pos.y - RandomFloat(5.0f), pos.z, pos.o);
+        pirate = player->GetMapMgr()->CreateAndSpawnCreature(7902, pos.x - Util::getRandomFloat(5.0f), pos.y - Util::getRandomFloat(5.0f), pos.z, pos.o);
         if (pirate != nullptr)
             pirate->Despawn(6 * 60 * 1000, 0);
 

@@ -210,11 +210,11 @@ void WeatherInfo::_GenerateWeather()
     m_currentTime = 0;
     m_currentEffect = 0;
     m_currentDensity = 0.30f;//Starting Offset (don't go below, it's annoying fog)
-    float fd = RandomFloat();
+    float fd = Util::getRandomFloat(1);
     m_maxDensity = fd + 1; //1 - 2
-    m_totalTime = (RandomUInt(11) + 5) * 1000 * 120; //update approx. every 1-2 minutes
+    m_totalTime = (Util::getRandomUInt(11) + 5) * 1000 * 120; //update approx. every 1-2 minutes
 
-    uint32 rv = RandomUInt(100);
+    uint32 rv = Util::getRandomUInt(100);
 
     std::map<uint32, uint32>::iterator itr;
 
@@ -257,7 +257,7 @@ void WeatherInfo::BuildUp()
 void WeatherInfo::Update()
 {
     // There will be a 66% the weather density decreases. If Sunny, use as currentDensity as countdown
-    if (m_currentEffect == 0 || RandomUInt(100) < 66)
+    if (m_currentEffect == 0 || Util::getRandomUInt(100) < 66)
     {
         m_currentDensity -= WEATHER_DENSITY_UPDATE;
         if (m_currentDensity < 0.30f)  //0.20 is considered fog, lower values are annoying

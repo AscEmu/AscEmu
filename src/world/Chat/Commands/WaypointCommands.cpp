@@ -421,11 +421,11 @@ bool ChatHandler::HandleWayPointGenerateCommand(const char* args, WorldSession* 
             SystemMessage(m_session, "Usage: waypoint range must be 1 or higher");
             return true;
         }
-        float ang = RandomFloat(100.0f);
-        float ran = (range < 2 ? 1.0f : RandomFloat(float(range)));
+        float ang = Util::getRandomFloat(100.0f);
+        float ran = (range < 2 ? 1.0f : Util::getRandomFloat(float(range)));
         while (ran < 1.0f)
         {
-            ran = RandomFloat(float(range));
+            ran = Util::getRandomFloat(float(range));
         }
 
         float x = creature_target->GetPositionX() + ran * sin(ang);

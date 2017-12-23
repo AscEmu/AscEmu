@@ -236,7 +236,7 @@ class IckAI : public CreatureAIScript
         // Special Attack
         if (_isTimerFinished(mSpecialAttackTimer))
         {
-            switch (RandomUInt(2))
+            switch (Util::getRandomUInt(2))
             {
                 case 0:
                     mPursueTimer = _addTimer(1000);
@@ -266,7 +266,7 @@ class IckAI : public CreatureAIScript
         {
             if (mKrickAI)
             {
-                switch (RandomUInt(2))
+                switch (Util::getRandomUInt(2))
                 {
                     case 0:
                         mKrickAI->sendDBChatMessage(8771);//Chase 1

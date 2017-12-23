@@ -164,7 +164,7 @@ class MennuTheBetrayerAI : public CreatureAIScript
                     Spawned = true;
                 }
 
-                uint32 i = RandomUInt(3);
+                uint32 i = Util::getRandomUInt(3);
                 if (SummonedTotems[i])
                     Counter++;
                 else

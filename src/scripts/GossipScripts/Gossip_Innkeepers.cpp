@@ -109,14 +109,14 @@ void InnkeeperGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, co
                 pCreature->CastSpell(Plr, SPELL_TRICK_OR_TREATED, true);
 
                 // either trick or treat, 50% chance
-                if (RandomUInt(1))
+                if (Util::getRandomUInt(1))
                 {
                     Plr->CastSpell(Plr, SPELL_TREAT, true);
                 }
                 else
                 {
                     int32 trickspell = 0;
-                    switch (RandomUInt(5))
+                    switch (Util::getRandomUInt(5))
                     {
                         case 0:
                         {

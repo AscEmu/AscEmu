@@ -67,7 +67,7 @@ public:
                             break;
                     }
 
-                    finall = min + RandomUInt(max - min);
+                    finall = min + Util::getRandomUInt(max - min);
 
                     float SSX = getCreature()->GetPositionX();
                     float SSY = getCreature()->GetPositionY();
@@ -76,7 +76,7 @@ public:
 
                     for (uint8 i = 0; i < finall; i++)
                     {
-                        Creature * NewCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(22419, SSX + RandomFloat(3.0f), SSY + RandomFloat(3.0f), SSZ, SSO + RandomFloat(1.0f), true, false, 0, 0);
+                        Creature * NewCreature = getCreature()->GetMapMgr()->GetInterface()->SpawnCreature(22419, SSX + Util::getRandomFloat(3.0f), SSY + Util::getRandomFloat(3.0f), SSZ, SSO + Util::getRandomFloat(1.0f), true, false, 0, 0);
                         if (NewCreature != NULL)
                             NewCreature->Despawn(120000, 0);
                     }
@@ -111,7 +111,7 @@ public:
             return;
 
         Player* plr = static_cast<Player*>(mKiller);
-        uint8 chance = (uint8)RandomUInt(5);
+        uint8 chance = (uint8)Util::getRandomUInt(5);
         uint32 spawn = 0;
 
         switch (chance)

@@ -277,7 +277,7 @@ class NovosTheSummonerAI : public CreatureAIScript
                     else
                     {
                         uint32 mobs[2] = { 27598, 27600 };
-                        mob_entry = mobs[RandomUInt(1)];
+                        mob_entry = mobs[Util::getRandomUInt(1)];
                     }
                     CreatureProperties const* cp = sMySQLStore.getCreatureProperties(mob_entry);
                     if (cp != nullptr)

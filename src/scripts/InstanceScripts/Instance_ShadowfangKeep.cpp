@@ -903,8 +903,8 @@ class NandosAI : public CreatureAIScript
         void OnCombatStart(Unit* /*mEnemy*/) override
         {
             
-            sCallBleakWorg_Timer = _addTimer(RandomUInt(1) ? 33700 : 48800);
-            sCallSlaveringWorg_Timer = _addTimer(RandomUInt(1) ? 45400 : 51700);
+            sCallBleakWorg_Timer = _addTimer(Util::getRandomUInt(1) ? 33700 : 48800);
+            sCallSlaveringWorg_Timer = _addTimer(Util::getRandomUInt(1) ? 45400 : 51700);
             sCallLupineHorror_Timer = _addTimer(69500);
             if (SFK_instance)
                 SFK_instance->SetLocaleInstanceData(0, INDEX_NANDOS, InProgress);

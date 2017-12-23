@@ -738,7 +738,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
     float result = min_damage;
 
     if (diff >= 1)
-        result += RandomFloat(diff);
+        result += Util::getRandomFloat(diff);
 
     if (result >= 0)
     {
