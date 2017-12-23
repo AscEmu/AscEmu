@@ -37,7 +37,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 initialiseSingleton(World);
 
-DayWatcherThread* dw = nullptr;
+std::unique_ptr<DayWatcherThread> dw = nullptr;
 
 std::unique_ptr<BroadcastMgr> broadcastMgr = nullptr;
 
@@ -799,8 +799,7 @@ bool World::setInitialWorldSettings()
     LogDetail("World : Starting CBattlegroundManager...");
     new CBattlegroundManager;
 
-    dw = new DayWatcherThread();
-    ThreadPool.ExecuteTask(dw);
+    dw = std::move(std::make_unique<DayWatcherThread>());
 
     broadcastMgr = std::move(std::make_unique<BroadcastMgr>());
 

@@ -1,91 +1,100 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team (Burlex)
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "StdAfx.h"
+
 #include "Management/ArenaTeam.h"
 #include "Server/MainServerDefines.h"
-#include "Config/Config.h"
 #include "Objects/ObjectMgr.h"
 #include "DayWatcherThread.h"
 
-#define THREAD_LOOP_INTERVAL 120 // seconds
+using AscEmu::Threading::AEThread;
+using std::chrono::milliseconds;
+using std::make_unique;
+
 
 DayWatcherThread::DayWatcherThread()
 {
-    m_running = true;
-    m_dirty = false;
-    last_arena_time = 0;
-    local_last_arena_time.tm_sec = 0;
-    local_last_arena_time.tm_min = 0;
-    local_last_arena_time.tm_hour = 0;
-    local_last_arena_time.tm_mday = 0;
-    local_last_arena_time.tm_mon = 0;
-    local_last_arena_time.tm_year = 0;
-    local_last_arena_time.tm_wday = 0;
-    local_last_arena_time.tm_yday = 0;
-    local_last_arena_time.tm_isdst = 0;
+    m_updateDBSettings = false;
+
+    m_lastArenaTime = 0;
+    m_localLastArenaTime.tm_sec = 0;
+    m_localLastArenaTime.tm_min = 0;
+    m_localLastArenaTime.tm_hour = 0;
+    m_localLastArenaTime.tm_mday = 0;
+    m_localLastArenaTime.tm_mon = 0;
+    m_localLastArenaTime.tm_year = 0;
+    m_localLastArenaTime.tm_wday = 0;
+    m_localLastArenaTime.tm_yday = 0;
+    m_localLastArenaTime.tm_isdst = 0;
 #ifndef WIN32
     local_last_arena_time.tm_gmtoff = 0;
     local_last_arena_time.tm_zone = 0;
 #endif
-    last_daily_time = 0;
-    local_last_daily_time.tm_sec = 0;
-    local_last_daily_time.tm_min = 0;
-    local_last_daily_time.tm_hour = 0;
-    local_last_daily_time.tm_mday = 0;
-    local_last_daily_time.tm_mon = 0;
-    local_last_daily_time.tm_year = 0;
-    local_last_daily_time.tm_wday = 0;
-    local_last_daily_time.tm_yday = 0;
-    local_last_daily_time.tm_isdst = 0;
+    m_lastDailyTime = 0;
+    m_localLastDailyTime.tm_sec = 0;
+    m_localLastDailyTime.tm_min = 0;
+    m_localLastDailyTime.tm_hour = 0;
+    m_localLastDailyTime.tm_mday = 0;
+    m_localLastDailyTime.tm_mon = 0;
+    m_localLastDailyTime.tm_year = 0;
+    m_localLastDailyTime.tm_wday = 0;
+    m_localLastDailyTime.tm_yday = 0;
+    m_localLastDailyTime.tm_isdst = 0;
 #ifndef WIN32
     local_last_daily_time.tm_gmtoff = 0;
     local_last_daily_time.tm_zone = 0;
 #endif
-    arena_period = WEEKLY;
-    daily_period = WEEKLY;
-    m_busy = false;
-    currenttime = 0;
-    local_currenttime.tm_sec = 0;
-    local_currenttime.tm_min = 0;
-    local_currenttime.tm_hour = 0;
-    local_currenttime.tm_mday = 0;
-    local_currenttime.tm_mon = 0;
-    local_currenttime.tm_year = 0;
-    local_currenttime.tm_wday = 0;
-    local_currenttime.tm_yday = 0;
-    local_currenttime.tm_isdst = 0;
+    m_arenaPeriod = WEEKLY;
+    m_dailyPeriod = WEEKLY;
+
+    m_currenttime = 0;
+    m_localCurrenttime.tm_sec = 0;
+    m_localCurrenttime.tm_min = 0;
+    m_localCurrenttime.tm_hour = 0;
+    m_localCurrenttime.tm_mday = 0;
+    m_localCurrenttime.tm_mon = 0;
+    m_localCurrenttime.tm_year = 0;
+    m_localCurrenttime.tm_wday = 0;
+    m_localCurrenttime.tm_yday = 0;
+    m_localCurrenttime.tm_isdst = 0;
 #ifndef WIN32
     local_currenttime.tm_gmtoff = 0;
     local_currenttime.tm_zone = 0;
 #endif
+
+    m_thread = make_unique<AEThread>("DayWatcherThread", [this](AEThread& thread) { this->threadRunner(thread); }, milliseconds(120000), false);
+    this->threadInit();
 }
 
-DayWatcherThread::~DayWatcherThread()
-{}
+DayWatcherThread::~DayWatcherThread() { m_thread->join(); }
 
-void DayWatcherThread::terminate()
+void DayWatcherThread::threadInit()
 {
-    m_running = false;
-    cond.Signal();
+    m_currenttime = UNIXTIME;
+    dupe_tm_pointer(localtime(&m_currenttime), &m_localCurrenttime);
+    load_settings();
+    set_tm_pointers();
+
+    LogNotice("DayWatcherThread : Started");
+    m_thread->reboot();
+}
+
+void DayWatcherThread::threadRunner(AEThread& /*thread*/)
+{
+    m_currenttime = UNIXTIME;
+    dupe_tm_pointer(localtime(&m_currenttime), &m_localCurrenttime);
+
+    if (has_timeout_expired(&m_localCurrenttime, &m_localLastArenaTime, m_arenaPeriod))
+        update_arena();
+
+    if (has_timeout_expired(&m_localCurrenttime, &m_localLastDailyTime, m_dailyPeriod))
+        update_daily();
+
+    if (m_updateDBSettings)
+        update_settings();
 }
 
 void DayWatcherThread::dupe_tm_pointer(tm* returnvalue, tm* mypointer)
@@ -95,47 +104,46 @@ void DayWatcherThread::dupe_tm_pointer(tm* returnvalue, tm* mypointer)
 
 void DayWatcherThread::update_settings()
 {
-    CharacterDatabase.ExecuteNA("DELETE FROM server_settings WHERE setting_id LIKE 'last_%_update_time';");
-    CharacterDatabase.Execute("INSERT INTO server_settings VALUES(\'last_arena_update_time\', %u);", last_arena_time);
-    CharacterDatabase.Execute("INSERT INTO server_settings VALUES(\'last_daily_update_time\', %u);", last_daily_time);
+    CharacterDatabase.Execute("REPLACE INTO server_settings VALUES(\'last_arena_update_time\', %u);", m_lastArenaTime);
+    CharacterDatabase.Execute("REPLACE INTO server_settings VALUES(\'last_daily_update_time\', %u);", m_lastDailyTime);
 }
 
 void DayWatcherThread::load_settings()
 {
-    arena_period = get_timeout_from_string(worldConfig.period.arenaUpdate, WEEKLY);
+    m_arenaPeriod = get_timeout_from_string(worldConfig.period.arenaUpdate, WEEKLY);
     QueryResult* result = CharacterDatabase.Query("SELECT setting_value FROM server_settings WHERE setting_id = \'last_arena_update_time\'");
     if (result)
     {
-        last_arena_time = result->Fetch()[0].GetUInt32();
+        m_lastArenaTime = result->Fetch()[0].GetUInt32();
         delete result;
     }
     else
     {
         LogNotice("DayWatcherThread : Initializing Arena Updates to zero.");
-        last_arena_time = 0;
+        m_lastArenaTime = 0;
     }
 
-    daily_period = get_timeout_from_string(worldConfig.period.dailyUpdate, DAILY);
+    m_dailyPeriod = get_timeout_from_string(worldConfig.period.dailyUpdate, DAILY);
     QueryResult* result2 = CharacterDatabase.Query("SELECT setting_value FROM server_settings WHERE setting_id = \'last_daily_update_time\'");
     if (result2)
     {
-        last_daily_time = result2->Fetch()[0].GetUInt32();
+        m_lastDailyTime = result2->Fetch()[0].GetUInt32();
         delete result2;
     }
     else
     {
         LogNotice("DayWatcherThread : Initializing Daily Updates to zero.");
-        last_daily_time = 0;
+        m_lastDailyTime = 0;
     }
 }
 
 void DayWatcherThread::set_tm_pointers()
 {
-    dupe_tm_pointer(localtime(&last_arena_time), &local_last_arena_time);
-    dupe_tm_pointer(localtime(&last_daily_time), &local_last_daily_time);
+    dupe_tm_pointer(localtime(&m_lastArenaTime), &m_localLastArenaTime);
+    dupe_tm_pointer(localtime(&m_lastDailyTime), &m_localLastDailyTime);
 }
 
-uint32 DayWatcherThread::get_timeout_from_string(std::string string, uint32 def)
+uint32_t DayWatcherThread::get_timeout_from_string(std::string string, uint32_t def)
 {
     if (string.compare("weekly") == 0)
         return WEEKLY;
@@ -149,182 +157,130 @@ uint32 DayWatcherThread::get_timeout_from_string(std::string string, uint32 def)
     return def;
 }
 
-bool DayWatcherThread::has_timeout_expired(tm* now_time, tm* last_time, uint32 timeoutval)
+bool DayWatcherThread::has_timeout_expired(tm* now_time, tm* last_time, uint32_t timeoutval)
 {
     switch (timeoutval)
     {
         case WEEKLY:
-            return (abs(now_time->tm_yday - last_time->tm_yday) >= 7);
+            return abs(now_time->tm_yday - last_time->tm_yday) >= 7;
         case MONTHLY:
-            return (now_time->tm_mon != last_time->tm_mon);
+            return now_time->tm_mon != last_time->tm_mon;
         case HOURLY:
-            return ((now_time->tm_hour != last_time->tm_hour) || (now_time->tm_mday != last_time->tm_mday) || (now_time->tm_mon != last_time->tm_mon));
+            return now_time->tm_hour != last_time->tm_hour || now_time->tm_mday != last_time->tm_mday || now_time->tm_mon != last_time->tm_mon;
         case DAILY:
-            return (now_time->tm_mday != last_time->tm_mday && now_time->tm_hour == 4);
+            return now_time->tm_mday != last_time->tm_mday && now_time->tm_hour == 4;
     }
 
     return false;
 }
 
-bool DayWatcherThread::runThread()
-{
-    LOG_DETAIL("Started.");
-    currenttime = UNIXTIME;
-    dupe_tm_pointer(localtime(&currenttime), &local_currenttime);
-    load_settings();
-    set_tm_pointers();
-    m_busy = false;
-
-    while (GetThreadState() != THREADSTATE_TERMINATE)
-    {
-        m_busy = true;
-        currenttime = UNIXTIME;
-        dupe_tm_pointer(localtime(&currenttime), &local_currenttime);
-
-        if (has_timeout_expired(&local_currenttime, &local_last_arena_time, arena_period))
-            update_arena();
-
-        if (has_timeout_expired(&local_currenttime, &local_last_daily_time, daily_period))
-            update_daily();
-
-        if (m_dirty)
-            update_settings();
-
-        m_busy = false;
-        if (GetThreadState() == THREADSTATE_TERMINATE)
-            break;
-
-        cond.Wait(THREAD_LOOP_INTERVAL * 1000);
-
-        if (!m_running)
-            break;
-    }
-
-    return true;
-}
-
 void DayWatcherThread::update_daily()
 {
     LogNotice("DayWatcherThread : Running Daily Quest Reset...");
+
     CharacterDatabase.WaitExecute("UPDATE characters SET finisheddailies = ''");
     CharacterDatabase.WaitExecute("UPDATE characters SET rbg_daily = '0'");     // Reset RBG
+
     objmgr.ResetDailies();
-    last_daily_time = UNIXTIME;
-    dupe_tm_pointer(localtime(&last_daily_time), &local_last_daily_time);
-    m_dirty = true;
+    m_lastDailyTime = UNIXTIME;
+    dupe_tm_pointer(localtime(&m_lastDailyTime), &m_localLastDailyTime);
+    m_updateDBSettings = true;
 }
 
 void DayWatcherThread::update_arena()
 {
     LogNotice("DayWatcherThread : Running Weekly Arena Point Maintenance...");
-    QueryResult* result = CharacterDatabase.Query("SELECT guid, arenaPoints FROM characters");  // this one is a little more intensive
-    Player* plr;
-    uint32 guid, arenapoints, orig_arenapoints;
-    ArenaTeam* team;
-    uint32 arenapointsPerTeam[3] = { 0 };
-    double X, Y;
+
+    QueryResult* result = CharacterDatabase.Query("SELECT guid, arenaPoints FROM characters");
+    uint32_t arenapointsPerTeam[3] = { 0 };
     if (result)
     {
         do
         {
-            Field* f = result->Fetch();
-            guid = f[0].GetUInt32();
-            arenapoints = f[1].GetUInt32();
-            orig_arenapoints = arenapoints;
+            Field* field = result->Fetch();
+            uint32_t guid = field[0].GetUInt32();
+            uint32_t arenapoints = field[1].GetUInt32();
+            uint32_t orig_arenapoints = arenapoints;
 
-            for (uint8 i = 0; i < 3; ++i)
+            for (uint8_t i = 0; i < 3; ++i)
                 arenapointsPerTeam[i] = 0;
 
             // are we in any arena teams?
-            for (uint8 i = 0; i < 3; ++i)            // 3 arena team types
+            for (uint8_t i = 0; i < 3; ++i)
             {
-                team = objmgr.GetArenaTeamByGuid(guid, i);
-                if (team)
+                ArenaTeam* team = objmgr.GetArenaTeamByGuid(guid, i);
+                if (team != nullptr)
                 {
-                    ArenaTeamMember* member = team->GetMemberByGuid(guid);
-                    if (member == NULL || team->m_stat_gamesplayedweek < 10 || ((member->Played_ThisWeek * 100) / team->m_stat_gamesplayedweek < 30))
+                    const auto arenaTeamMember = team->GetMemberByGuid(guid);
+                    if (arenaTeamMember == nullptr || team->m_stat_gamesplayedweek < 10 || arenaTeamMember->Played_ThisWeek * 100 / team->m_stat_gamesplayedweek < 30)
                         continue;
 
-                    // we're in an arena team of this type!
-                    // Source: http://www.wowwiki.com/Arena_point
-                    X = (double)team->m_stat_rating;
-                    if (X <= 510.0)    // "if X<=510"
-                        continue;        // no change
-                    else if (X > 510.0 && X <= 1500.0)        // "if 510 < X <= 1500"
-                    {
-                        Y = (0.22 * X) + 14.0;
-                    }
-                    else            // "if X > 1500"
-                    {
-                        // http://eu.wowarmory.com/arena-calculator.xml
-                        //              1511.26
-                        //   ---------------------------
-                        //                   -0.00412*X
-                        //    1+1639.28*2.71828
+                    const double arenaStatsRating = static_cast<double>(team->m_stat_rating);
+                    double anrenaPoints;
 
-                        double power = ((-0.00412) * X);
-                        //if (power < 1.0)
-                        //    power = 1.0;
+                    if (arenaStatsRating <= 510.0)
+                        continue;
 
-                        double divisor = pow(((double)(2.71828)), power);
-                        divisor *= 1639.28;
-                        divisor += 1.0;
-                        //if (divisor < 1.0)
-                        //    divisor = 1.0;
-
-                        Y = 1511.26 / divisor;
-                    }
-
-                    // 2v2 teams only earn 70% (Was 60% until 13th March 07) of the arena points, 3v3 teams get 80%, while 5v5 teams get 100% of the arena points.
-                    // 2v2 - 76%, 3v3 - 88% as of patch 2.2
-                    if (team->m_type == ARENA_TEAM_TYPE_2V2)
+                    if (arenaStatsRating > 510.0 && arenaStatsRating <= 1500.0)        // 510 < X <= 1500"
                     {
-                        Y *= 0.76;
-                        Y *= worldConfig.getFloatRate(RATE_ARENAPOINTMULTIPLIER2X);
-                    }
-                    else if (team->m_type == ARENA_TEAM_TYPE_3V3)
-                    {
-                        Y *= 0.88;
-                        Y *= worldConfig.getFloatRate(RATE_ARENAPOINTMULTIPLIER3X);
+                        anrenaPoints = 0.22 * arenaStatsRating + 14.0;
                     }
                     else
                     {
-                        Y *= worldConfig.getFloatRate(RATE_ARENAPOINTMULTIPLIER5X);
+                        const double power = -0.00412 * arenaStatsRating;
+                        double divisor = pow(static_cast<double>(2.71828), power);
+                        divisor *= 1639.28;
+                        divisor += 1.0;
+
+                        anrenaPoints = 1511.26 / divisor;
                     }
 
-                    if (Y > 1.0)
-                        arenapointsPerTeam[i] += long2int32(double(ceil(Y)));
+                    if (team->m_type == ARENA_TEAM_TYPE_2V2)
+                    {
+                        anrenaPoints *= 0.76;
+                        anrenaPoints *= worldConfig.getFloatRate(RATE_ARENAPOINTMULTIPLIER2X);
+                    }
+                    else if (team->m_type == ARENA_TEAM_TYPE_3V3)
+                    {
+                        anrenaPoints *= 0.88;
+                        anrenaPoints *= worldConfig.getFloatRate(RATE_ARENAPOINTMULTIPLIER3X);
+                    }
+                    else
+                    {
+                        anrenaPoints *= worldConfig.getFloatRate(RATE_ARENAPOINTMULTIPLIER5X);
+                    }
+
+                    if (anrenaPoints > 1.0)
+                        arenapointsPerTeam[i] += long2int32(double(ceil(anrenaPoints)));
                 }
             }
 
-            arenapointsPerTeam[0] = (uint32)std::max(arenapointsPerTeam[0], arenapointsPerTeam[1]);
-            arenapoints += (uint32)std::max(arenapointsPerTeam[0], arenapointsPerTeam[2]);
-            if (arenapoints > 5000) arenapoints = 5000;
+            arenapointsPerTeam[0] = static_cast<uint32_t>(std::max(arenapointsPerTeam[0], arenapointsPerTeam[1]));
+            arenapoints += static_cast<uint32_t>(std::max(arenapointsPerTeam[0], arenapointsPerTeam[2]));
+            if (arenapoints > 5000)
+                arenapoints = 5000;
 
             if (orig_arenapoints != arenapoints)
             {
-                plr = objmgr.GetPlayer(guid);
-                if (plr)
+                auto player = objmgr.GetPlayer(guid);
+                if (player != nullptr)
                 {
-                    plr->AddArenaPoints(arenapoints, false);
+                    player->AddArenaPoints(arenapoints, false);
 
-                    // update visible fields (must be done through an event because of no uint lock
-                    sEventMgr.AddEvent(plr, &Player::UpdateArenaPoints, EVENT_PLAYER_UPDATE, 100, 1, 0);
-
-                    sChatHandler.SystemMessage(plr->GetSession(), "Your arena points have been updated! Check your PvP tab!");
+                    // update fields (no uint lock)
+                    sEventMgr.AddEvent(player, &Player::UpdateArenaPoints, EVENT_PLAYER_UPDATE, 100, 1, 0);
+                    sChatHandler.SystemMessage(player->GetSession(), "Your arena points have been updated! Check your PvP tab!");
                 }
 
-                // update in sql
                 CharacterDatabase.Execute("UPDATE characters SET arenaPoints = %u WHERE guid = %u", arenapoints, guid);
             }
-        }
-        while (result->NextRow());
+        } while (result->NextRow());
         delete result;
     }
 
     objmgr.UpdateArenaTeamWeekly();
 
-    last_arena_time = UNIXTIME;
-    dupe_tm_pointer(localtime(&last_arena_time), &local_last_arena_time);
-    m_dirty = true;
+    m_lastArenaTime = UNIXTIME;
+    dupe_tm_pointer(localtime(&m_lastArenaTime), &m_localLastArenaTime);
+    m_updateDBSettings = true;
 }

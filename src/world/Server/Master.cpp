@@ -49,9 +49,6 @@ SERVER_DECL SessionLog* GMCommand_Log;
 SERVER_DECL SessionLog* Anticheat_Log;
 SERVER_DECL SessionLog* Player_Log;
 
-// threads
-extern DayWatcherThread* dw;
-
 ConfigMgr Config;
 
 // DB version
@@ -270,10 +267,6 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
     // kill the database thread first so we don't lose any queries/data
     CharacterDatabase.EndThreads();
     WorldDatabase.EndThreads();
-
-    LogNotice("DayWatcherThread : Exiting...");
-    dw->terminate();
-    dw = NULL;
 
     ls->Close();
 
