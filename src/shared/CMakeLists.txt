@@ -34,7 +34,6 @@ set(sources
     Log.cpp
     MapFile.cpp
     MapFileEntry.cpp
-    MersenneTwister.cpp
     PerformanceCounter.cpp
     printStackTrace.cpp
     SysInfo.cpp
@@ -67,7 +66,6 @@ set(headers
     LogonCommDefines.h
 	MapFile.h
 	MapFileEntry.h
-	MersenneTwister.h
 	PerformanceCounter.hpp
 	PreallocatedQueue.h
 	printStackTrace.h

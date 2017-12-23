@@ -39,7 +39,6 @@
 
 #include "CommonDefines.hpp"    // QuestLogEntry.h, Object.h
 #include "Common.hpp"
-#include "MersenneTwister.h"
 #include "WorldPacket.h"
 #include "Log.hpp"
 #include "ByteBuffer.h"

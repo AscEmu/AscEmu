@@ -51,8 +51,6 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 2008 | StackBuffer.h
 * 2008 | Singleton.h
 * 2008 | PreallocatedQueue.h
-* 2008 | MersenneTwister.h
-* 2008 | MersenneTwister.cpp
 * 2008 | LocationVector.h
 * 2008 | FindFilesResult.hpp
 * 2008 | FindFiles.hpp
@@ -143,6 +141,10 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 2008 | Log.Legacy.h
 * 2008 | Log.Legacy.cpp
 * 2005 | Timer.h
+
+### Removed on 23 Dez 2017
+* 2008 | MersenneTwister.h
+* 2008 | MersenneTwister.cpp
 
 ### New files
 * 2017 | Common.hpp

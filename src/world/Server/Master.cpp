@@ -130,7 +130,6 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
 #endif
 
     InitImplicitTargetFlags();
-    InitRandomNumberGenerators();
 
     ThreadPool.Startup();
     auto startTime = Util::TimeNow();

@@ -157,8 +157,6 @@ enum MsTimeVariables
 
 #include "CRefcounter.h"
 
-#include "MersenneTwister.h"
-
 #if COMPILER == COMPILER_MICROSOFT
     #define I64FMT "%016I64X"
     #define I64FMTD "%I64u"

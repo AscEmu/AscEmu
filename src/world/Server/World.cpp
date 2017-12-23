@@ -43,7 +43,6 @@ std::unique_ptr<BroadcastMgr> broadcastMgr = nullptr;
 
 extern void ApplyNormalFixes();
 extern void LoadGameObjectModelList(std::string const& dataPath);
-void CleanupRandomNumberGenerators();
 
 World::World()
 {
@@ -123,9 +122,6 @@ World::~World()
 
     LogNotice("WordFilter : ~WordFilter()");
     delete g_chatFilter;
-
-    LogNotice("Rnd : ~Rnd()");
-    CleanupRandomNumberGenerators();
 
     LogNotice("SpellProcMgr : ~SpellProcMgr()");
     delete SpellProcMgr::getSingletonPtr();

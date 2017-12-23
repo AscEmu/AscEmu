@@ -72,7 +72,7 @@ WorldSocket::WorldSocket(SOCKET fd)
     mOpcode(0),
     mRemaining(0),
     mSize(0),
-    mSeed(RandomUInt()),
+    mSeed(Util::getRandomUInt(RAND_MAX)),
     mRequestID(0),
     mSession(NULL),
     pAuthenticationPacket(NULL),
