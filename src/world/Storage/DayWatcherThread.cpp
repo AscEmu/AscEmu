@@ -30,8 +30,8 @@ DayWatcherThread::DayWatcherThread()
     m_localLastArenaTime.tm_yday = 0;
     m_localLastArenaTime.tm_isdst = 0;
 #ifndef WIN32
-    m_local_last_arena_time.tm_gmtoff = 0;
-    m_local_last_arena_time.tm_zone = 0;
+    m_localLastArenaTime.tm_gmtoff = 0;
+    m_localLastArenaTime.tm_zone = 0;
 #endif
     m_lastDailyTime = 0;
     m_localLastDailyTime.tm_sec = 0;
@@ -44,8 +44,8 @@ DayWatcherThread::DayWatcherThread()
     m_localLastDailyTime.tm_yday = 0;
     m_localLastDailyTime.tm_isdst = 0;
 #ifndef WIN32
-    m_local_last_daily_time.tm_gmtoff = 0;
-    m_local_last_daily_time.tm_zone = 0;
+    m_localLastDailyTime.tm_gmtoff = 0;
+    m_localLastDailyTime.tm_zone = 0;
 #endif
     m_arenaPeriod = WEEKLY;
     m_dailyPeriod = WEEKLY;
@@ -61,8 +61,8 @@ DayWatcherThread::DayWatcherThread()
     m_localCurrenttime.tm_yday = 0;
     m_localCurrenttime.tm_isdst = 0;
 #ifndef WIN32
-    m_local_currenttime.tm_gmtoff = 0;
-    m_local_currenttime.tm_zone = 0;
+    m_localCurrenttime.tm_gmtoff = 0;
+    m_localCurrenttime.tm_zone = 0;
 #endif
 
     m_thread = make_unique<AEThread>("DayWatcherThread", [this](AEThread& thread) { this->threadRunner(thread); }, milliseconds(120000), false);
