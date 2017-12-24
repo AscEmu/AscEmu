@@ -58,7 +58,7 @@ class SERVER_DECL Spell : public EventableObject
         Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur);
         ~Spell();
 
-    int32 event_GetInstanceID() override;
+        int32 event_GetInstanceID() override;
 
         bool m_overrideBasePoints;
         uint32 m_overridenBasePoints[3];
@@ -116,14 +116,14 @@ class SERVER_DECL Spell : public EventableObject
         // Checks the caster is ready for cast
         virtual uint8 CanCast(bool);
 
-    bool hasAttribute(SpellAttributes attribute);
-    bool hasAttributeEx(SpellAttributesEx attribute);
-    bool hasAttributeExB(SpellAttributesExB attribute);
-    bool hasAttributeExC(SpellAttributesExC attribute);
-    bool hasAttributeExD(SpellAttributesExD attribute);
-    bool hasAttributeExE(SpellAttributesExE attribute);
-    bool hasAttributeExF(SpellAttributesExF attribute);
-    bool hasAttributeExG(SpellAttributesExG attribute);
+        bool hasAttribute(SpellAttributes attribute);
+        bool hasAttributeEx(SpellAttributesEx attribute);
+        bool hasAttributeExB(SpellAttributesExB attribute);
+        bool hasAttributeExC(SpellAttributesExC attribute);
+        bool hasAttributeExD(SpellAttributesExD attribute);
+        bool hasAttributeExE(SpellAttributesExE attribute);
+        bool hasAttributeExF(SpellAttributesExF attribute);
+        bool hasAttributeExG(SpellAttributesExG attribute);
 
         // Removes reagents, ammo, and items/charges
         void RemoveItems();
@@ -143,12 +143,12 @@ class SERVER_DECL Spell : public EventableObject
 
         bool Reflect(Unit* refunit);
 
-    uint32 getState() const;
-    void SetUnitTarget(Unit* punit);
-    void SetTargetConstraintCreature(Creature* pCreature);
-    void SetTargetConstraintGameObject(GameObject* pGameobject);
-    Creature* GetTargetConstraintCreature() const;
-    GameObject* GetTargetConstraintGameObject() const;
+        uint32 getState() const;
+        void SetUnitTarget(Unit* punit);
+        void SetTargetConstraintCreature(Creature* pCreature);
+        void SetTargetConstraintGameObject(GameObject* pGameobject);
+        Creature* GetTargetConstraintCreature() const;
+        GameObject* GetTargetConstraintGameObject() const;
 
         // Send Packet functions
         void SetExtraCastResult(SpellExtraError result);
@@ -331,11 +331,11 @@ class SERVER_DECL Spell : public EventableObject
         std::vector<uint64_t> UniqueTargets;
         std::vector<SpellTargetMod> ModeratedTargets;
 
-    Item* GetItemTarget() const;
-    Unit* GetUnitTarget() const;
-    Player* GetPlayerTarget() const;
-    GameObject* GetGameObjectTarget() const;
-    Corpse* GetCorpseTarget() const;
+        Item* GetItemTarget() const;
+        Unit* GetUnitTarget() const;
+        Player* GetPlayerTarget() const;
+        GameObject* GetGameObjectTarget() const;
+        Corpse* GetCorpseTarget() const;
 
         uint32 chaindamage;
         // -------------------------------------------
@@ -343,17 +343,17 @@ class SERVER_DECL Spell : public EventableObject
         bool IsAspect();
         bool IsSeal();
 
-    SpellInfo* GetSpellInfo();
+        SpellInfo* GetSpellInfo();
 
-    void InitProtoOverride();
+        void InitProtoOverride();
 
-    uint32 GetDuration();
+        uint32 GetDuration();
 
-    float GetRadius(uint32 i);
+        float GetRadius(uint32 i);
 
-    static uint32 GetBaseThreat(uint32 dmg);
+        static uint32 GetBaseThreat(uint32 dmg);
 
-    static uint32 GetMechanic(SpellInfo* sp);
+        static uint32 GetMechanic(SpellInfo* sp);
 
         bool IsStealthSpell();
         bool IsInvisibilitySpell();
@@ -377,9 +377,6 @@ class SERVER_DECL Spell : public EventableObject
         uint8 extra_cast_number;
         uint32 m_glyphslot;
 
-        void SendCastSuccess(Object* target);
-        void SendCastSuccess(const uint64 & guid);
-
         bool duelSpell;
 
         ////////////////////////////////////////////////////////////////////////////////
@@ -389,21 +386,21 @@ class SERVER_DECL Spell : public EventableObject
         /// \return true if Spell is now invalid because the duel is over false if Spell is valid.
         ///
         ///////////////////////////////////////////////////////////////////////////////
-    bool DuelSpellNoMoreValid() const;
+        bool DuelSpellNoMoreValid() const;
 
-    void safe_cancel();
+        void safe_cancel();
 
         /// Spell state's
         /// Spell failed
-    bool GetSpellFailed() const;
-    void SetSpellFailed(bool failed = true);
+        bool GetSpellFailed() const;
+        void SetSpellFailed(bool failed = true);
 
-    bool IsReflected() const;
-    void SetReflected(bool reflected = true);
+        bool IsReflected() const;
+        void SetReflected(bool reflected = true);
 
         /// Spell possibility's
-    bool GetCanReflect() const;
-    void SetCanReflect(bool reflect = true);
+        bool GetCanReflect() const;
+        void SetCanReflect(bool reflect = true);
 
 
         Spell* m_reflectedParent;
@@ -449,12 +446,12 @@ class SERVER_DECL Spell : public EventableObject
         uint8 m_rune_avail_before;
         //void _DamageRangeUpdate();
 
-    bool HasTarget(const uint64& guid, std::vector<uint64_t>* tmpMap);
+        bool HasTarget(const uint64& guid, std::vector<uint64_t>* tmpMap);
 
         SpellTargetConstraint* m_target_constraint;
 
         virtual int32 DoCalculateEffect(uint32 i, Unit* target, int32 value);
-    virtual void DoAfterHandleEffect(Unit* target, uint32 i);
+        virtual void DoAfterHandleEffect(Unit* target, uint32 i);
 
     public:     //Modified by LUAppArc private->public
 

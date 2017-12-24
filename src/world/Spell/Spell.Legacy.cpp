@@ -2610,7 +2610,6 @@ void Spell::writeSpellGoTargets(WorldPacket* data)
     std::vector<uint64_t>::iterator i;
     for (i = UniqueTargets.begin(); i != UniqueTargets.end(); ++i)
     {
-        //		SendCastSuccess(*i);
         *data << *i;
     }
 }
@@ -7296,41 +7295,6 @@ Creature* Spell::GetTargetConstraintCreature() const
 GameObject* Spell::GetTargetConstraintGameObject() const
 {
     return targetConstraintGameObject;
-}
-
-void Spell::SendCastSuccess(Object* /*target*/)
-{
-    Player* plr = p_caster;
-    if (!plr && u_caster)
-        plr = u_caster->m_redirectSpellPackets;
-    if (!plr || !plr->IsPlayer())
-        return;
-
-    /*	WorldPacket data(SMSG_CLEAR_EXTRA_AURA_INFO_OBSOLETE, 13);
-        data << ((target != 0) ? target->GetNewGUID() : uint64(0));
-        data << GetProto()->getId();
-
-        plr->GetSession()->SendPacket(&data);*/
-}
-
-void Spell::SendCastSuccess(const uint64 & guid)
-{
-    Player* plr = p_caster;
-    if (!plr && u_caster)
-        plr = u_caster->m_redirectSpellPackets;
-    if (!plr || !plr->IsPlayer())
-        return;
-
-    // fuck bytebuffers
-    unsigned char buffer[13];
-    uint32 c = FastGUIDPack(guid, buffer, 0);
-
-    *(uint32*)&buffer[c] = GetSpellInfo()->getId();
-    c += 4;
-
-#if VERSION_STRING > TBC
-    plr->GetSession()->OutPacket(uint16(SMSG_CLEAR_EXTRA_AURA_INFO_OBSOLETE), static_cast<uint16>(c), buffer);
-#endif
 }
 
 bool Spell::DuelSpellNoMoreValid() const
