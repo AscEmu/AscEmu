@@ -6,9 +6,8 @@
 💬 [Doxygen](http://www.ascemu.org/doxygen/)
 💬 [World DB](http://www.board.ascemu.org/filebase/index.php/FileList/1-Database/)
 
-Branch | TravisCi | AppVeyor | Branch | TravisCi | AppVeyor | Coverity | Codacy
-:------------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------:
 master | [![Travis Status](https://travis-ci.org/AscEmu/AscEmu.svg?branch=master)](https://travis-ci.org/AscEmu/AscEmu) | [![AppYeyor Status](https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/master?svg=true)](https://ci.appveyor.com/project/Zyres/ascemu) | develop | [![Travis Status](https://travis-ci.org/AscEmu/AscEmu.svg?branch=develop)](https://travis-ci.org/AscEmu/AscEmu) | [![AppYeyor Status](https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/develop?svg=true)](https://ci.appveyor.com/project/Zyres/ascemu) | [![Coverity Snac](https://scan.coverity.com/projects/4747/badge.svg)](https://scan.coverity.com/projects/4747) | [![Codacy Badge](https://api.codacy.com/project/badge/Grade/842741b177dc4a798487729e110f6d2b)](https://www.codacy.com/app/mr/AscEmu?utm_source=github.com&utm_medium=referral&utm_content=AscEmu/AscEmu&utm_campaign=badger)
+:------------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------:
 
 ## Introduction [![Open HUB Stats](https://www.openhub.net/p/AscEmu/widgets/project_thin_badge.gif)](https://www.openhub.net/p/AscEmu)
 AscEmu is derived from ArcEmu to keep up the Antrix-Ascent-Arcemu way of Framework.
