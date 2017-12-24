@@ -1451,15 +1451,19 @@ bool Creature::Load(CreatureSpawn* spawn, uint8 mode, MySQLStructure::MapInfo co
 
     if (!creature_properties->isTrainingDummy && !IsVehicle())
     {
-        if (isattackable(spawn))
-        {
-            GetAIInterface()->SetAllowedToEnterCombat(true);
-        }
+        GetAIInterface()->SetAllowedToEnterCombat(isattackable(spawn));
     }
     else
     {
-        GetAIInterface()->SetAllowedToEnterCombat(false);
-        GetAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
+        if (!isattackable(spawn))
+        {
+            GetAIInterface()->SetAllowedToEnterCombat(false);
+            GetAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
+        }
+        else
+        {
+            GetAIInterface()->SetAllowedToEnterCombat(true);
+        }
     }
 
     // load formation data
