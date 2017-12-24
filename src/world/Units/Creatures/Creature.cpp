@@ -1449,9 +1449,12 @@ bool Creature::Load(CreatureSpawn* spawn, uint8 mode, MySQLStructure::MapInfo co
 
     GetAIInterface()->setSplineWalk();
 
-    if (isattackable(spawn) && !creature_properties->isTrainingDummy && !IsVehicle())
+    if (!creature_properties->isTrainingDummy && !IsVehicle())
     {
-        GetAIInterface()->SetAllowedToEnterCombat(true);
+        if (isattackable(spawn))
+        {
+            GetAIInterface()->SetAllowedToEnterCombat(true);
+        }
     }
     else
     {
