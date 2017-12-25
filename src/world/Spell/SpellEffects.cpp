@@ -677,9 +677,9 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             case 45150:
             {
                 uint32 splitCount = 0;
-                for (std::set<Object*>::iterator itr = u_caster->GetInRangeOppFactsSetBegin(); itr != u_caster->GetInRangeOppFactsSetEnd(); ++itr)
+                for (const auto& itr : u_caster->GetInRangeOppFactsSet())
                 {
-                    if ((*itr)->isInFront(u_caster) && u_caster->CalcDistance((*itr)) <= 65)
+                    if (itr && itr->isInFront(u_caster) && u_caster->CalcDistance(itr) <= 65)
                         splitCount++;
                 }
 
@@ -1348,11 +1348,12 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                 if (u_caster != nullptr)
                 {
                     int splitCount = 0;
-                    for (std::set<Object*>::iterator itr = u_caster->GetInRangeOppFactsSetBegin(); itr != u_caster->GetInRangeOppFactsSetEnd(); ++itr)
+                    for (const auto& itr : u_caster->GetInRangeOppFactsSet())
                     {
-                        if ((*itr)->isInFront(u_caster))
+                        if (itr && itr->isInFront(u_caster))
                             splitCount++;
-                    };
+                    }
+
                     if (splitCount > 1)
                         dmg /= splitCount;
                 }
@@ -4874,9 +4875,6 @@ void Spell::SpellEffectSanctuary(uint8_t /*effectIndex*/) // Stop all attacks ma
     if (!u_caster)
         return;
 
-    //warning this causes crashes !
-    //  Object::InRangeSet::iterator itr = u_caster->GetInRangeOppFactsSetBegin();
-    //  Object::InRangeSet::iterator itr_end = u_caster->GetInRangeOppFactsSetEnd();
     //use these instead
     Object::InRangeSet::iterator itr = u_caster->GetInRangeSetBegin();
     Object::InRangeSet::iterator itr_end = u_caster->GetInRangeSetEnd();

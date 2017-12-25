@@ -703,9 +703,12 @@ bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
 
             case 3:  // every attacking enemy
             {
-                for (std::set< Object* >::iterator itr = s->p_caster->GetInRangeOppFactsSetBegin(); itr != s->p_caster->GetInRangeOppFactsSetEnd(); ++itr)
+                for (const auto& itr : s->p_caster->GetInRangeOppFactsSet())
                 {
-                    Object* o = *itr;
+                    if(!itr)
+                        continue;
+
+                    Object* o = itr;
 
                     if ((o->GetPhase() & s->p_caster->GetPhase()) == 0)
                         continue;

@@ -1151,12 +1151,12 @@ class TidewalkerLurkerAI : public CreatureAIScript
             Unit* pUnit;
             float dist;
 
-            for (std::set<Object*>::iterator itr = getCreature()->GetInRangeOppFactsSetBegin(); itr != getCreature()->GetInRangeOppFactsSetEnd(); ++itr)
+            for (const auto& itr : getCreature()->GetInRangeOppFactsSet())
             {
-                if (!(*itr)->IsUnit())
+                if (!itr || !itr->IsUnit())
                     continue;
 
-                pUnit = static_cast<Unit*>((*itr));
+                pUnit = static_cast<Unit*>(itr);
 
                 if (pUnit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH))
                     continue;
