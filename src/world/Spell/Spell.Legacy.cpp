@@ -334,18 +334,18 @@ void Spell::FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float s
     float r = range * range;
     uint8 did_hit_result;
 
-    for (std::set<Object*>::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
+    for (const auto& itr : m_caster->GetInRangeSet())
     {
-        auto obj = *itr;
+        auto obj = itr;
         // don't add objects that are not units and that are dead
-        if (!((*itr)->IsUnit()) || !static_cast<Unit*>(*itr)->isAlive())
+        if (!obj || !obj->IsUnit() || !static_cast<Unit*>(obj)->isAlive())
             continue;
 
         if (GetSpellInfo()->getTargetCreatureType())
         {
-            if (!(*itr)->IsCreature())
+            if (!obj->IsCreature())
                 continue;
-            CreatureProperties const* inf = static_cast<Creature*>(*itr)->GetCreatureProperties();
+            CreatureProperties const* inf = static_cast<Creature*>(obj)->GetCreatureProperties();
             if (!(1 << (inf->Type - 1) & GetSpellInfo()->getTargetCreatureType()))
                 continue;
         }
@@ -354,13 +354,13 @@ void Spell::FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float s
         {
             if (u_caster != nullptr)
             {
-                if (isAttackable(u_caster, *itr, !(GetSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
+                if (isAttackable(u_caster, itr, !(GetSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
                 {
-                    did_hit_result = DidHit(i, static_cast<Unit*>(*itr));
+                    did_hit_result = DidHit(i, static_cast<Unit*>(itr));
                     if (did_hit_result != SPELL_DID_HIT_SUCCESS)
-                        ModeratedTargets.push_back(SpellTargetMod((*itr)->GetGUID(), did_hit_result));
+                        ModeratedTargets.push_back(SpellTargetMod(itr->GetGUID(), did_hit_result));
                     else
-                        SafeAddTarget(tmpMap, (*itr)->GetGUID());
+                        SafeAddTarget(tmpMap, itr->GetGUID());
                 }
 
             }
@@ -369,11 +369,11 @@ void Spell::FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float s
                 if (g_caster && g_caster->getUInt32Value(OBJECT_FIELD_CREATED_BY) && g_caster->m_summoner)
                 {
                     //trap, check not to attack owner and friendly
-                    if (isAttackable(g_caster->m_summoner, *itr, !(GetSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
-                        SafeAddTarget(tmpMap, (*itr)->GetGUID());
+                    if (isAttackable(g_caster->m_summoner, itr, !(GetSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
+                        SafeAddTarget(tmpMap, itr->GetGUID());
                 }
                 else
-                    SafeAddTarget(tmpMap, (*itr)->GetGUID());
+                    SafeAddTarget(tmpMap, itr->GetGUID());
             }
             if (GetSpellInfo()->getMaxTargets())
             {
@@ -403,7 +403,7 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
     uint8 did_hit_result;
     std::set<Object*>::iterator itr, itr2;
 
-    for (itr2 = m_caster->GetInRangeSetBegin(); itr2 != m_caster->GetInRangeSetEnd();)
+    for (itr2 = m_caster->GetInRangeSet().begin(); itr2 != m_caster->GetInRangeSet().end();)
     {
         auto obj = *itr;
         itr = itr2;
@@ -476,7 +476,7 @@ void Spell::FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, 
     uint8 did_hit_result;
     std::set<Object*>::iterator itr, itr2;
 
-    for (itr2 = m_caster->GetInRangeSetBegin(); itr2 != m_caster->GetInRangeSetEnd();)
+    for (itr2 = m_caster->GetInRangeSet().begin(); itr2 != m_caster->GetInRangeSet().end();)
     {
         auto obj = *itr;
         itr = itr2;
@@ -551,17 +551,17 @@ uint64 Spell::GetSinglePossibleEnemy(uint32 i, float prange)
     }
     float srcx = m_caster->GetPositionX(), srcy = m_caster->GetPositionY(), srcz = m_caster->GetPositionZ();
 
-    for (std::set<Object*>::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
+    for (const auto& itr : m_caster->GetInRangeSet())
     {
-        auto obj = *itr;
-        if (!((*itr)->IsUnit()) || !static_cast<Unit*>(*itr)->isAlive())
+        auto obj = itr;
+        if (!obj || !itr->IsUnit() || !static_cast<Unit*>(itr)->isAlive())
             continue;
 
         if (GetSpellInfo()->getTargetCreatureType())
         {
-            if (!(*itr)->IsCreature())
+            if (!itr->IsCreature())
                 continue;
-            CreatureProperties const* inf = static_cast<Creature*>(*itr)->GetCreatureProperties();
+            CreatureProperties const* inf = static_cast<Creature*>(itr)->GetCreatureProperties();
             if (!(1 << (inf->Type - 1) & GetSpellInfo()->getTargetCreatureType()))
                 continue;
         }
@@ -569,9 +569,9 @@ uint64 Spell::GetSinglePossibleEnemy(uint32 i, float prange)
         {
             if (u_caster != nullptr)
             {
-                if (isAttackable(u_caster, *itr, !(GetSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)) && DidHit(i, static_cast<Unit*>(*itr)) == SPELL_DID_HIT_SUCCESS)
+                if (isAttackable(u_caster, itr, !(GetSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)) && DidHit(i, static_cast<Unit*>(itr)) == SPELL_DID_HIT_SUCCESS)
                 {
-                    return (*itr)->GetGUID();
+                    return itr->GetGUID();
                 }
             }
             else //cast from GO
@@ -579,9 +579,9 @@ uint64 Spell::GetSinglePossibleEnemy(uint32 i, float prange)
                 if (g_caster && g_caster->getUInt32Value(OBJECT_FIELD_CREATED_BY) && g_caster->m_summoner)
                 {
                     //trap, check not to attack owner and friendly
-                    if (isAttackable(g_caster->m_summoner, *itr, !(GetSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
+                    if (isAttackable(g_caster->m_summoner, itr, !(GetSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
                     {
-                        return (*itr)->GetGUID();
+                        return itr->GetGUID();
                     }
                 }
             }
@@ -606,16 +606,16 @@ uint64 Spell::GetSinglePossibleFriend(uint32 i, float prange)
     }
     float srcx = m_caster->GetPositionX(), srcy = m_caster->GetPositionY(), srcz = m_caster->GetPositionZ();
 
-    for (std::set<Object*>::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
+    for (const auto& itr : m_caster->GetInRangeSet())
     {
-        auto obj = *itr;
-        if (!((*itr)->IsUnit()) || !static_cast<Unit*>(*itr)->isAlive())
+        auto obj = itr;
+        if (!obj || !itr->IsUnit() || !static_cast<Unit*>(itr)->isAlive())
             continue;
         if (GetSpellInfo()->getTargetCreatureType())
         {
-            if (!(*itr)->IsCreature())
+            if (!itr->IsCreature())
                 continue;
-            CreatureProperties const* inf = static_cast<Creature*>(*itr)->GetCreatureProperties();
+            CreatureProperties const* inf = static_cast<Creature*>(itr)->GetCreatureProperties();
             if (!(1 << (inf->Type - 1) & GetSpellInfo()->getTargetCreatureType()))
                 continue;
         }
@@ -623,9 +623,9 @@ uint64 Spell::GetSinglePossibleFriend(uint32 i, float prange)
         {
             if (u_caster != nullptr)
             {
-                if (isFriendly(u_caster, static_cast<Unit*>(*itr)) && DidHit(i, static_cast<Unit*>(*itr)) == SPELL_DID_HIT_SUCCESS)
+                if (isFriendly(u_caster, static_cast<Unit*>(itr)) && DidHit(i, static_cast<Unit*>(itr)) == SPELL_DID_HIT_SUCCESS)
                 {
-                    return (*itr)->GetGUID();
+                    return itr->GetGUID();
                 }
             }
             else //cast from GO
@@ -633,9 +633,9 @@ uint64 Spell::GetSinglePossibleFriend(uint32 i, float prange)
                 if (g_caster && g_caster->getUInt32Value(OBJECT_FIELD_CREATED_BY) && g_caster->m_summoner)
                 {
                     //trap, check not to attack owner and friendly
-                    if (isFriendly(g_caster->m_summoner, static_cast<Unit*>(*itr)))
+                    if (isFriendly(g_caster->m_summoner, static_cast<Unit*>(itr)))
                     {
-                        return (*itr)->GetGUID();
+                        return itr->GetGUID();
                     }
                 }
             }
@@ -4362,22 +4362,22 @@ uint8 Spell::CanCast(bool tolerate)
         {
             bool found = false;
 
-            for (std::set<Object*>::iterator itr = p_caster->GetInRangeSetBegin(); itr != p_caster->GetInRangeSetEnd(); ++itr)
+            for (const auto& itr : p_caster->GetInRangeSet())
             {
-                auto obj = *itr;
-                if (!(*itr)->IsGameObject())
+                auto obj = itr;
+                if (!obj || !itr->IsGameObject())
                     continue;
 
-                if ((static_cast<GameObject*>(*itr))->GetType() != GAMEOBJECT_TYPE_SPELL_FOCUS)
+                if ((static_cast<GameObject*>(itr))->GetType() != GAMEOBJECT_TYPE_SPELL_FOCUS)
                     continue;
 
-                if (!(p_caster->GetPhase() & (*itr)->GetPhase()))    //We can't see this, can't be the focus, skip further checks
+                if (!(p_caster->GetPhase() & itr->GetPhase()))    //We can't see this, can't be the focus, skip further checks
                     continue;
 
-                auto gameobject_info = static_cast<GameObject*>(*itr)->GetGameObjectProperties();
+                auto gameobject_info = static_cast<GameObject*>(itr)->GetGameObjectProperties();
                 if (!gameobject_info)
                 {
-                    LogDebugFlag(LF_SPELL, "Warning: could not find info about game object %u", (*itr)->GetEntry());
+                    LogDebugFlag(LF_SPELL, "Warning: could not find info about game object %u", (itr)->GetEntry());
                     continue;
                 }
 
@@ -6860,7 +6860,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
                 uint8 did_hit_result;
                 std::set<Object*>::iterator itr, itr2;
 
-                for (itr2 = u_caster->GetInRangeSetBegin(); itr2 != u_caster->GetInRangeSetEnd();)
+                for (itr2 = u_caster->GetInRangeSet().begin(); itr2 != u_caster->GetInRangeSet().end();)
                 {
                     auto obj = *itr;
                     itr = itr2;
@@ -6940,17 +6940,17 @@ void Spell::Heal(int32 amount, bool ForceCrit)
         std::vector<Unit*> target_threat;
         int count = 0;
         Creature* tmp_creature;
-        for (std::set<Object*>::iterator itr = u_caster->GetInRangeSetBegin(); itr != u_caster->GetInRangeSetEnd(); ++itr)
+        for (const auto& itr : u_caster->GetInRangeSet())
         {
-            if (!(*itr)->IsCreature())
+            if (!itr || !itr->IsCreature())
                 continue;
 
-            tmp_creature = static_cast<Creature*>(*itr);
+            tmp_creature = static_cast<Creature*>(itr);
 
             if (!tmp_creature->CombatStatus.IsInCombat() || (tmp_creature->GetAIInterface()->getThreatByPtr(u_caster) == 0 && tmp_creature->GetAIInterface()->getThreatByPtr(unitTarget) == 0))
                 continue;
 
-            if (!(u_caster->GetPhase() & (*itr)->GetPhase()))     //Can't see, can't be a threat
+            if (!(u_caster->GetPhase() & itr->GetPhase()))     //Can't see, can't be a threat
                 continue;
 
             target_threat.push_back(tmp_creature);

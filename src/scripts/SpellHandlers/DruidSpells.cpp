@@ -28,13 +28,15 @@ bool Starfall(uint8_t effectIndex, Spell* pSpell)
     Unit* m_caster = pSpell->u_caster;
     if (m_caster == NULL)
         return true;
+
     uint8 am = 0;
-    for (Object::InRangeSet::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
+    for (const auto& itr : m_caster->GetInRangeSet())
     {
-        if (!(*itr)->IsUnit())
+        if (!itr || !itr->IsUnit())
             continue;
-        Unit* Target = static_cast<Unit*>((*itr));
-        if (isAttackable(Target, m_caster) && m_caster->CalcDistance((*itr)) <= pSpell->GetRadius(effectIndex))
+
+        Unit* Target = static_cast<Unit*>(itr);
+        if (isAttackable(Target, m_caster) && m_caster->CalcDistance(itr) <= pSpell->GetRadius(effectIndex))
         {
             m_caster->CastSpell(Target, pSpell->CalculateEffect(effectIndex, Target), true);
             ++am;

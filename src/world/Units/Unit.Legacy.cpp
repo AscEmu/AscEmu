@@ -11565,29 +11565,30 @@ void Unit::UpdateVisibility()
     }
     else			// For units we can save a lot of work
     {
-        for (std::set<Object*>::iterator it2 = GetInRangePlayerSetBegin(); it2 != GetInRangePlayerSetEnd(); ++it2)
+        for (const auto& it2 : *GetInRangePlayerSet())
         {
-
-            Player* p = static_cast<Player*>(*it2);
-
-            can_see = p->CanSee(this);
-            is_visible = p->IsVisible(this->GetGUID());
-            if (!can_see)
+            Player* p = static_cast<Player*>(it2);
+            if (p)
             {
-                if (is_visible)
+                can_see = p->CanSee(this);
+                is_visible = p->IsVisible(this->GetGUID());
+                if (!can_see)
                 {
-                    p->SendDestroyObject(GetGUID());
-                    p->RemoveVisibleObject(GetGUID());
+                    if (is_visible)
+                    {
+                        p->SendDestroyObject(GetGUID());
+                        p->RemoveVisibleObject(GetGUID());
+                    }
                 }
-            }
-            else
-            {
-                if (!is_visible)
+                else
                 {
-                    buf.clear();
-                    count = BuildCreateUpdateBlockForPlayer(&buf, p);
-                    p->PushCreationData(&buf, count);
-                    p->AddVisibleObject(this->GetGUID());
+                    if (!is_visible)
+                    {
+                        buf.clear();
+                        count = BuildCreateUpdateBlockForPlayer(&buf, p);
+                        p->PushCreationData(&buf, count);
+                        p->AddVisibleObject(this->GetGUID());
+                    }
                 }
             }
         }
@@ -12590,12 +12591,11 @@ void Unit::RemoveFieldSummon()
 
 void Unit::AggroPvPGuards()
 {
-    Unit* tmpUnit;
-    for (Object::InRangeSet::iterator i = GetInRangeSetBegin(); i != GetInRangeSetEnd(); ++i)
+    for (const auto& i : GetInRangeSet())
     {
-        if ((*i)->IsCreature())
+        if (i && i->IsCreature())
         {
-            tmpUnit = static_cast<Unit*>(*i);
+            Unit* tmpUnit = static_cast<Unit*>(i);
             if (tmpUnit->GetAIInterface() && tmpUnit->GetAIInterface()->m_isNeutralGuard && CalcDistance(tmpUnit) <= (50.0f * 50.0f))
             {
                 tmpUnit->GetAIInterface()->AttackReaction(this, 1, 0);

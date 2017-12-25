@@ -854,15 +854,13 @@ class CuratorAI : public CreatureAIScript
     void AstralSpawn()
     {
         std::vector<Player*> Target_List;
-        for (std::set< Object* >::iterator itr = getCreature()->GetInRangePlayerSetBegin();
-            itr != getCreature()->GetInRangePlayerSetEnd(); ++itr)
+        for (const auto& itr : *getCreature()->GetInRangePlayerSet())
         {
-            Player* RandomTarget = NULL;
-            RandomTarget = static_cast<Player*>(*itr);
-            if (RandomTarget && RandomTarget->isAlive() && isHostile(getCreature(), (*itr)))
+            Player* RandomTarget = static_cast<Player*>(itr);
+            if (RandomTarget && RandomTarget->isAlive() && isHostile(getCreature(), itr))
                 Target_List.push_back(RandomTarget);
-            RandomTarget = NULL;
         }
+
         if (!Target_List.size())
             return;
 
@@ -1063,11 +1061,11 @@ class ShadeofAranAI : public CreatureAIScript
         bool HasAtiesh = false;
         if (mTarget->IsPlayer())
         {
-            for (std::set< Object* >::iterator itr = getCreature()->GetInRangePlayerSetBegin(); itr != getCreature()->GetInRangePlayerSetEnd(); ++itr)
+            for (const auto& itr : *getCreature()->GetInRangePlayerSet())
             {
-                if (*itr)
+                if (itr)
                 {
-                    Player* plr = static_cast<Player*>(*itr);
+                    Player* plr = static_cast<Player*>(itr);
                     if (plr->GetItemInterface()->GetItemCount(22589) > 0 ||
                         plr->GetItemInterface()->GetItemCount(22630) > 0 ||
                         plr->GetItemInterface()->GetItemCount(22631) > 0 ||
@@ -1281,12 +1279,9 @@ class ShadeofAranAI : public CreatureAIScript
         FlameWreathTarget[2] = 0;
 
         std::vector<Player*> Targets;
-        std::set< Object* >::iterator hostileItr = getCreature()->GetInRangePlayerSetBegin();
-        for (; hostileItr != getCreature()->GetInRangePlayerSetEnd(); ++hostileItr)
+        for (const auto& hostileItr : *getCreature()->GetInRangePlayerSet())
         {
-            Player* RandomTarget = NULL;
-            RandomTarget = static_cast<Player*>(*hostileItr);
-
+            Player* RandomTarget = static_cast<Player*>(hostileItr);
             if (RandomTarget && RandomTarget->isAlive() && getCreature()->GetAIInterface()->getThreatByPtr(RandomTarget) > 0)
                 Targets.push_back(RandomTarget);
         }
@@ -1645,14 +1640,11 @@ class IllhoofAI : public CreatureAIScript
         }
 
         std::vector<Player* > TargetTable;
-        std::set< Object* >::iterator itr = getCreature()->GetInRangePlayerSetBegin();
-
-        for (; itr != getCreature()->GetInRangePlayerSetEnd(); ++itr)
+        for (const auto& itr : *getCreature()->GetInRangePlayerSet())
         {
-            if (isHostile(getCreature(), (*itr)))
+            if (itr && isHostile(getCreature(), itr))
             {
-                Player* RandomTarget = NULL;
-                RandomTarget = static_cast<Player*>(*itr);
+                Player* RandomTarget = static_cast<Player*>(itr);
                 if (RandomTarget && RandomTarget->isAlive() && isHostile(getCreature(), RandomTarget))
                     TargetTable.push_back(RandomTarget);
             }
@@ -2180,15 +2172,12 @@ class MalchezaarAI : public CreatureAIScript
     void Enfeebler()
     {
         std::vector<Player*> Targets;
-        std::set< Object* >::iterator Itr = getCreature()->GetInRangePlayerSetBegin();
-
-        for (; Itr != getCreature()->GetInRangePlayerSetEnd(); ++Itr)
+        for (const auto& itr: *getCreature()->GetInRangePlayerSet())
         {
-            if (isHostile(getCreature(), (*Itr)))
+            if (itr && isHostile(getCreature(), itr))
             {
-                Player* RandomTarget = static_cast<Player*>(*Itr);
-
-                if (RandomTarget->isAlive())
+                Player* RandomTarget = static_cast<Player*>(itr);
+                if (RandomTarget && RandomTarget->isAlive())
                     Targets.push_back(RandomTarget);
             }
         }
@@ -2293,15 +2282,12 @@ class MAxesAI : public CreatureAIScript
         //spells[0].casttime = (uint32)time(NULL) + spells[0].cooldown;
 
         std::vector<Unit* > TargetTable;
-        for (std::set< Object* >::iterator itr = getCreature()->GetInRangePlayerSetBegin(); itr != getCreature()->GetInRangePlayerSetEnd(); ++itr)
+        for (const auto& itr : *getCreature()->GetInRangePlayerSet())
         {
-            if (isHostile(getCreature(), (*itr)) && (static_cast<Player*>(*itr))->isAlive())
+            Player* RandomTarget = static_cast<Player*>(itr);
+            if (RandomTarget && isHostile(getCreature(), RandomTarget) && RandomTarget->isAlive())
             {
-                Player* RandomTarget = NULL;
-                RandomTarget = static_cast<Player*>(*itr);
-
-                if (RandomTarget && RandomTarget->isAlive() && isHostile(getCreature(), RandomTarget))
-                    TargetTable.push_back(RandomTarget);
+                TargetTable.push_back(RandomTarget);
             }
         }
 
@@ -2405,12 +2391,11 @@ class NetherspiteAI : public CreatureAIScript
         {
             VoidTimer = t + 20;
             std::vector<Unit* > TargetTable;
-            for (std::set< Object* >::iterator itr = getCreature()->GetInRangePlayerSetBegin(); itr != getCreature()->GetInRangePlayerSetEnd(); ++itr)
+            for (const auto& itr : *getCreature()->GetInRangePlayerSet())
             {
-                Unit* RandomTarget = NULL;
-                RandomTarget = static_cast<Unit*>(*itr);
+                Unit* RandomTarget = static_cast<Unit*>(itr);
 
-                if (RandomTarget && RandomTarget->isAlive() && isHostile(getCreature(), (*itr)))
+                if (RandomTarget && RandomTarget->isAlive() && isHostile(getCreature(), itr))
                     TargetTable.push_back(RandomTarget);
             }
 
@@ -2667,13 +2652,13 @@ class NightbaneAI : public CreatureAIScript
             getCreature()->CastSpell(target, sSpellCustomizations.GetSpellInfo(SMOKING_BLAST), true);
         }
 
-        target = NULL;
+        target = nullptr;
         //fireball barrage check
-        for (std::set<Object*>::iterator itr = getCreature()->GetInRangeSetBegin(); itr != getCreature()->GetInRangeSetEnd(); ++itr)
+        for (const auto& itr : getCreature()->GetInRangeSet())
         {
-            if ((*itr)->IsPlayer())
+            if (itr && itr->IsPlayer())
             {
-                target = static_cast<Unit*>(*itr);
+                target = static_cast<Unit*>(itr);
 
                 if (getCreature()->GetDistance2dSq(target) > 2025) //45 yards
                 {
@@ -2712,12 +2697,11 @@ class NightbaneAI : public CreatureAIScript
         mTailSweepTimer--;
         if (!mTailSweepTimer)
         {
-            Unit* target = NULL;
-            for (std::set<Object*>::iterator itr = getCreature()->GetInRangeSetBegin(); itr != getCreature()->GetInRangeSetEnd(); ++itr)
+            for (const auto& itr : getCreature()->GetInRangeSet())
             {
-                if ((*itr)->IsPlayer())
+                if (itr && itr->IsPlayer())
                 {
-                    target = static_cast<Unit*>(*itr);
+                    Unit* target = static_cast<Unit*>(itr);
 
                     //cone behind the boss
                     if (target->isAlive() && target->isInBack(getCreature()))

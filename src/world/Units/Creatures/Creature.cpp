@@ -2426,11 +2426,10 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     }
 
     // Stop players from casting
-    for (std::set< Object* >::iterator itr = GetInRangePlayerSetBegin(); itr != GetInRangePlayerSetEnd(); ++itr)
+    for (const auto& itr : *GetInRangePlayerSet())
     {
-        Unit* attacker = static_cast< Unit* >(*itr);
-
-        if (attacker->isCastingNonMeleeSpell())
+        Unit* attacker = static_cast<Unit*>(itr);
+        if (attacker && attacker->isCastingNonMeleeSpell())
         {
             for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
             {

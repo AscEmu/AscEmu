@@ -468,14 +468,11 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
             }
             grp->Unlock();
         }
+
         // Send Achievement message to nearby players
-        std::set<Object*>::iterator inRangeItr = GetPlayer()->GetInRangePlayerSetBegin();
-        std::set<Object*>::iterator inRangeItrLast = GetPlayer()->GetInRangePlayerSetEnd();
-        for (; inRangeItr != inRangeItrLast; ++inRangeItr)
+        for (const auto& inRangeItr : *GetPlayer()->GetInRangePlayerSet())
         {
-
-            Player* p = static_cast< Player* >((*inRangeItr));
-
+            Player* p = static_cast<Player*>(inRangeItr);
             if (p && p->GetSession() && !p->Social_IsIgnoring(GetPlayer()->GetLowGUID()))
             {
                 // check if achievement message has already been sent to this player (in guild or group)

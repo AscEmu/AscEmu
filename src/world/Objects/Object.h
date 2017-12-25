@@ -720,8 +720,6 @@ public:
 
         std::set<Object*> GetInRangeSet() { return m_objectsInRange; }
 
-        InRangeSet::iterator GetInRangeSetBegin() { return m_objectsInRange.begin(); }
-        InRangeSet::iterator GetInRangeSetEnd() { return m_objectsInRange.end(); }
         InRangeSet::iterator FindInRangeSet(Object* obj) { return m_objectsInRange.find(obj); }
 
         void RemoveInRangeObject(InRangeSet::iterator itr)
@@ -752,9 +750,6 @@ public:
         size_t GetInRangeOppFactsSize() { return m_oppFactsInRange.size(); }
 
         std::set<Object*> GetInRangeOppFactsSet() { return m_oppFactsInRange; }
-
-        std::set<Object*>::iterator GetInRangePlayerSetBegin() { return m_inRangePlayers.begin(); }
-        std::set<Object*>::iterator GetInRangePlayerSetEnd() { return m_inRangePlayers.end(); }
 
         std::set<Object*> * GetInRangePlayerSet() { return &m_inRangePlayers; }
         std::set<Object*> & GetInRangePlayers() { return m_inRangePlayers; }

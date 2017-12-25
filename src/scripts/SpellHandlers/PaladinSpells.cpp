@@ -353,7 +353,7 @@ bool RighteousDefense(uint8_t /*effectIndex*/, Spell* s)
     Unit* targets[3];
     uint32 targets_got = 0;
 
-    for (std::set<Object*>::iterator itr = unitTarget->GetInRangeSetBegin(), i2; itr != unitTarget->GetInRangeSetEnd();)
+    for (std::set<Object*>::iterator itr = unitTarget->GetInRangeSet().begin(), i2; itr != unitTarget->GetInRangeSet().end();)
     {
         i2 = itr++;
 

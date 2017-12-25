@@ -141,10 +141,10 @@ bool HolidayCheer(uint8_t effectIndex, Spell* pSpell)
     Unit* target;
     float dist = pSpell->GetRadius(effectIndex);
 
-    for (ObjectSet::iterator itr = pSpell->m_caster->GetInRangeSetBegin(); itr != pSpell->m_caster->GetInRangeSetEnd(); ++itr)
+    for (const auto& itr : pSpell->m_caster->GetInRangeSet())
     {
-        if ((*itr)->IsUnit())
-            target = static_cast<Unit*>(*itr);
+        if (itr && itr->IsUnit())
+            target = static_cast<Unit*>(itr);
         else
             continue;
 
@@ -540,16 +540,16 @@ bool ExtractGas(uint8_t /*effectIndex*/, Spell* s)
     if (!s->p_caster)
         return false;
 
-    for (Object::InRangeSet::iterator itr = s->p_caster->GetInRangeSetBegin(); itr != s->p_caster->GetInRangeSetEnd(); ++itr)
+    for (const auto& itr : s->p_caster->GetInRangeSet())
     {
-        if ((*itr)->IsCreature())
+        if (itr && itr->IsCreature())
         {
-            creature = static_cast<Creature*>((*itr));
+            creature = static_cast<Creature*>(itr);
             cloudtype = creature->GetEntry();
 
             if (cloudtype == 24222 || cloudtype == 17408 || cloudtype == 17407 || cloudtype == 17378)
             {
-                if (s->p_caster->GetDistance2dSq((*itr)) < 400)
+                if (s->p_caster->GetDistance2dSq(itr) < 400)
                 {
                     s->p_caster->SetSelection(creature->GetGUID());
                     check = true;
@@ -686,10 +686,12 @@ bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
 
             case 2:  // our party
             {
-                for (std::set< Object* >::iterator itr = s->p_caster->GetInRangePlayerSetBegin(); itr != s->p_caster->GetInRangePlayerSetEnd(); ++itr)
+                for (const auto& itr : *s->p_caster->GetInRangePlayerSet())
                 {
-                    Player* p = static_cast<Player*>(*itr);
+                    if (!itr)
+                        continue;
 
+                    Player* p = static_cast<Player*>(itr);
                     if ((p->GetPhase() & s->p_caster->GetPhase()) == 0)
                         continue;
 

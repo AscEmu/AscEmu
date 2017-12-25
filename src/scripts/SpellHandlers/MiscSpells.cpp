@@ -85,16 +85,16 @@ bool Cannibalize(uint8_t effectIndex, Spell* s)
     float rad = s->GetRadius(effectIndex);
     rad *= rad;
 
-    for (Object::InRangeSet::iterator itr = s->p_caster->GetInRangeSetBegin(); itr != s->p_caster->GetInRangeSetEnd(); ++itr)
+    for (const auto& itr : s->p_caster->GetInRangeSet())
     {
-        if ((*itr)->IsCreature())
+        if (itr && itr->IsCreature())
         {
-            if (static_cast<Creature*>((*itr))->getDeathState() == CORPSE)
+            if (static_cast<Creature*>(itr)->getDeathState() == CORPSE)
             {
-                CreatureProperties const* cn = static_cast<Creature*>((*itr))->GetCreatureProperties();
+                CreatureProperties const* cn = static_cast<Creature*>(itr)->GetCreatureProperties();
                 if (cn->Type == UNIT_TYPE_HUMANOID || cn->Type == UNIT_TYPE_UNDEAD)
                 {
-                    if (s->p_caster->GetDistance2dSq((*itr)) < rad)
+                    if (s->p_caster->GetDistance2dSq(itr) < rad)
                     {
                         check = true;
                         break;

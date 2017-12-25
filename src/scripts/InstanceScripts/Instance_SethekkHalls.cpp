@@ -224,17 +224,15 @@ class LakkaAI : public CreatureAIScript
                 {
                     SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                     SetWaypointToMove(2);
-                    Player* pPlayer = NULL;
-                    QuestLogEntry* pQuest = NULL;
-                    for (std::set<Object*>::iterator itr = getCreature()->GetInRangeSetBegin(); itr != getCreature()->GetInRangeSetEnd(); ++itr)
+                    for (const auto& itr : getCreature()->GetInRangeSet())
                     {
-                        if ((*itr)->IsPlayer())
+                        if (itr && itr->IsPlayer())
                         {
-                            pPlayer = static_cast<Player*>((*itr));
-                            if (pPlayer != NULL)
+                            Player* pPlayer = static_cast<Player*>(itr);
+                            if (pPlayer != nullptr)
                             {
-                                pQuest = pPlayer->GetQuestLogForEntry(10097);
-                                if (pQuest != NULL && pQuest->GetMobCount(1) < 1)
+                                QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10097);
+                                if (pQuest != nullptr && pQuest->GetMobCount(1) < 1)
                                 {
                                     pQuest->SetMobCount(1, 1);
                                     pQuest->SendUpdateAddKill(1);

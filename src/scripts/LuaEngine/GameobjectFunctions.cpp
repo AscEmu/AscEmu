@@ -218,18 +218,21 @@ int LuaGameObject::GetClosestPlayer(lua_State* L, GameObject* ptr)
     TEST_GO();
     float d2 = 0;
     float dist = 0;
-    Player* ret = NULL;
+    Player* ret = nullptr;
 
-    for (std::set<Object*>::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
+    for (const auto& itr : *ptr->GetInRangePlayerSet())
     {
-        d2 = (static_cast<Player*>(*itr))->getDistanceSq(ptr);
-        if (!ret || d2 < dist)
+        if (itr)
         {
-            dist = d2;
-            ret = static_cast<Player*>(*itr);
+            d2 = static_cast<Player*>(itr)->getDistanceSq(ptr);
+            if (!ret || d2 < dist)
+            {
+                dist = d2;
+                ret = static_cast<Player*>(itr);
+            }
         }
     }
-    if (ret == NULL)
+    if (ret == nullptr)
         lua_pushnil(L);
     else
     PUSH_UNIT(L, ret);
@@ -461,13 +464,13 @@ int LuaGameObject::GetInRangePlayers(lua_State* L, GameObject* ptr)
     TEST_GO_RET();
     uint32_t count = 0;
     lua_newtable(L);
-    for (std::set<Object*>::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
+    for (const auto& itr : *ptr->GetInRangePlayerSet())
     {
-        if ((*itr)->IsUnit())
+        if (itr && itr->IsUnit())
         {
             count++ ,
-                    lua_pushinteger(L, count);
-            PUSH_UNIT(L, *itr);
+            lua_pushinteger(L, count);
+            PUSH_UNIT(L, itr);
             lua_rawset(L, -3);
         }
     }
@@ -479,13 +482,13 @@ int LuaGameObject::GetInRangeGameObjects(lua_State* L, GameObject* ptr)
     TEST_GO_RET();
     uint32_t count = 0;
     lua_newtable(L);
-    for (std::set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); ++itr)
+    for (const auto& itr : ptr->GetInRangeSet())
     {
-        if ((*itr)->IsGameObject())
+        if (itr && itr->IsGameObject())
         {
             count++ ,
-                    lua_pushinteger(L, count);
-            PUSH_GO(L, *itr);
+            lua_pushinteger(L, count);
+            PUSH_GO(L, itr);
             lua_rawset(L, -3);
         }
     }
@@ -497,13 +500,13 @@ int LuaGameObject::GetInRangeUnits(lua_State* L, GameObject* ptr)
     TEST_GO();
     uint32_t count = 0;
     lua_newtable(L);
-    for (std::set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); ++itr)
+    for (const auto& itr : ptr->GetInRangeSet())
     {
-        if ((*itr)->IsUnit())
+        if (itr && itr->IsUnit())
         {
             count++ ,
-                    lua_pushinteger(L, count);
-            PUSH_UNIT(L, *itr);
+            lua_pushinteger(L, count);
+            PUSH_UNIT(L, itr);
             lua_rawset(L, -3);
         }
     }
@@ -1223,18 +1226,17 @@ int LuaGameObject::GetClosestUnit(lua_State* L, GameObject* ptr)
     TEST_GO()
     float closest_dist = 99999.99f;
     float current_dist = 0;
-    Object* closest_unit = NULL;
-    Unit* ret = NULL;
-    for (std::set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); ++itr)
+    Unit* ret = nullptr;
+    for (const auto& itr : ptr->GetInRangeSet())
     {
-        closest_unit = (*itr);
-        if (!closest_unit->IsUnit())
+        if (!itr || !itr->IsUnit())
             continue;
-        current_dist = ptr->GetDistance2dSq(closest_unit);
+
+        current_dist = ptr->GetDistance2dSq(itr);
         if (current_dist < closest_dist)
         {
             closest_dist = current_dist;
-            ret = static_cast<Unit*>(closest_unit);
+            ret = static_cast<Unit*>(itr);
         }
     }
     PUSH_UNIT(L, ret);

@@ -250,34 +250,36 @@ bool KillingSpreePeriodicDummy(uint8_t /*effectIndex*/, Aura* a, bool /*apply*/)
 
     //Find targets around aura's target in range of 10 yards.
     //It can hit same target multiple times.
-    for (std::set<Object*>::iterator itr = p_target->GetInRangeSetBegin(); itr != p_target->GetInRangeSetEnd(); ++itr)
+    for (const auto& itr : p_target->GetInRangeSet())
     {
-        //Get the range of 10 yards from Effect 1
-        float r = static_cast<float>(a->m_spellInfo->getEffectRadiusIndex(1));
-
-        //Get initial position of aura target (caster)
-        LocationVector source = p_target->GetPosition();
-
-        //Calc distance to the target
-        float dist = (*itr)->CalcDistance(source);
-
-        //Radius check
-        if (dist <= r)
+        if (itr)
         {
-            //Avoid targeting anything that is not unit and not alive
-            if (!(*itr)->IsUnit() || !static_cast<Unit*>((*itr))->isAlive())
-                continue;
+            //Get the range of 10 yards from Effect 1
+            float r = static_cast<float>(a->m_spellInfo->getEffectRadiusIndex(1));
 
-            uint64 spellTarget = (*itr)->GetGUID();
-            //SPELL_EFFECT_TELEPORT
-            p_target->CastSpell(spellTarget, 57840, true);
-            //SPELL_EFFECT_NORMALIZED_WEAPON_DMG and triggering 57842 with the same effect
-            p_target->CastSpell(spellTarget, 57841, true);
+            //Get initial position of aura target (caster)
+            LocationVector source = p_target->GetPosition();
+
+            //Calc distance to the target
+            float dist = itr->CalcDistance(source);
+
+            //Radius check
+            if (dist <= r)
+            {
+                //Avoid targeting anything that is not unit and not alive
+                if (!itr->IsUnit() || !static_cast<Unit*>(itr)->isAlive())
+                    continue;
+
+                uint64 spellTarget = itr->GetGUID();
+                //SPELL_EFFECT_TELEPORT
+                p_target->CastSpell(spellTarget, 57840, true);
+                //SPELL_EFFECT_NORMALIZED_WEAPON_DMG and triggering 57842 with the same effect
+                p_target->CastSpell(spellTarget, 57841, true);
+            }
+
         }
-
     }
     return true;
-
 }
 
 bool KillingSpreeEffectDummy(uint8_t /*effectIndex*/, Spell* s)

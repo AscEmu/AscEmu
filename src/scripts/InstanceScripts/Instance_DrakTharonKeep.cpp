@@ -223,17 +223,17 @@ class NovosTheSummonerAI : public CreatureAIScript
         Player* GetRandomPlayerTarget()
         {
             std::vector< uint32 > possible_targets;
-            for (std::set< Object* >::iterator iter = getCreature()->GetInRangePlayerSetBegin(); iter != getCreature()->GetInRangePlayerSetEnd(); ++iter)
+            for (const auto& iter : *getCreature()->GetInRangePlayerSet())
             {
-                if ((*iter) && (static_cast< Player* >(*iter))->isAlive())
-                    possible_targets.push_back((uint32)(*iter)->GetGUID());
+                if (iter && static_cast<Player*>(iter)->isAlive())
+                    possible_targets.push_back(static_cast<uint32>(iter->GetGUID()));
             }
             if (possible_targets.size() > 0)
             {
                 uint32 random_player = possible_targets[Rand(uint32(possible_targets.size() - 1))];
                 return getCreature()->GetMapMgr()->GetPlayer(random_player);
             }
-            return NULL;
+            return nullptr;
         }
 
         // scriptPhase

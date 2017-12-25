@@ -2264,9 +2264,9 @@ Unit* AIInterface::FindTarget()
     // Start of neutralguard snippet
     if (m_isNeutralGuard)
     {
-        for (std::set< Object*>::iterator itrPlr = m_Unit->GetInRangePlayerSetBegin(); itrPlr != m_Unit->GetInRangePlayerSetEnd(); ++itrPlr)
+        for (const auto& itrPlr : *m_Unit->GetInRangePlayerSet())
         {
-            Player* tmpPlr = static_cast< Player* >(*itrPlr);
+            Player* tmpPlr = static_cast<Player*>(itrPlr);
 
             if (tmpPlr == nullptr)
                 continue;
@@ -2331,7 +2331,7 @@ Unit* AIInterface::FindTarget()
 
     //we have a high chance that we will agro a player
     //this is slower then oppfaction list BUT it has a lower chance that contains invalid pointers
-    for (std::set<Object*>::iterator pitr2 = m_Unit->GetInRangePlayerSetBegin(); pitr2 != m_Unit->GetInRangePlayerSetEnd();)
+    for (std::set<Object*>::iterator pitr2 = m_Unit->GetInRangePlayerSet()->begin(); pitr2 != m_Unit->GetInRangePlayerSet()->end();)
     {
         std::set<Object*>::iterator pitr = pitr2;
         ++pitr2;
@@ -2371,7 +2371,7 @@ Unit* AIInterface::FindTarget()
     {
         m_updateTargetsTimer2 = Util::getMSTime() + TARGET_UPDATE_INTERVAL;
 
-        for (std::set<Object*>::iterator itr2 = m_Unit->GetInRangeSetBegin(); itr2 != m_Unit->GetInRangeSetEnd();)
+        for (std::set<Object*>::iterator itr2 = m_Unit->GetInRangeSet().begin(); itr2 != m_Unit->GetInRangeSet().end();)
         {
             std::set<Object*>::iterator itr = itr2;
             ++itr2;
@@ -2485,12 +2485,12 @@ bool AIInterface::FindFriends(float dist)
 
     bool result = false;
 
-    for (std::set<Object*>::iterator itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); ++itr)
+    for (const auto& itr : m_Unit->GetInRangeSet())
     {
-        if (!(*itr)->IsUnit())
+        if (!itr || !itr->IsUnit())
             continue;
 
-        Unit* pUnit = static_cast< Unit* >(*itr);
+        Unit* pUnit = static_cast<Unit*>(itr);
         if (!pUnit->isAlive())
             continue;
 
@@ -2575,14 +2575,13 @@ bool AIInterface::FindFriends(float dist)
 
         uint8 spawned = 0;
 
-        for (std::set<Object*>::iterator hostileItr = m_Unit->GetInRangePlayerSetBegin(); hostileItr != m_Unit->GetInRangePlayerSetEnd(); ++hostileItr)
+        for (const auto& hostileItr : *m_Unit->GetInRangePlayerSet())
         {
-            Player* player = static_cast<Player*>(*hostileItr);
-
+            Player* player = static_cast<Player*>(hostileItr);
             if (spawned >= 3)
                 break;
 
-            if (!isHostile(player, m_Unit))
+            if (!player || !isHostile(player, m_Unit))
                 continue;
 
             if (spawned == 0)
@@ -3721,11 +3720,11 @@ void AIInterface::WipeReferences()
     tauntedBy = 0;
 
     //Clear targettable
-    for (std::set<Object*>::iterator itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); ++itr)
+    for (const auto& itr : m_Unit->GetInRangeSet())
     {
-        if ((*itr)->IsUnit() && static_cast<Unit*>(*itr)->GetAIInterface())
+        if (itr && itr->IsUnit() && static_cast<Unit*>(itr)->GetAIInterface())
         {
-            static_cast<Unit*>(*itr)->GetAIInterface()->RemoveThreatByPtr(m_Unit);
+            static_cast<Unit*>(itr)->GetAIInterface()->RemoveThreatByPtr(m_Unit);
         }
     }
 }
@@ -3754,11 +3753,11 @@ void AIInterface::EventChangeFaction(Unit* ForceAttackersToHateThisInstead)
     //Clear targettable
     if (ForceAttackersToHateThisInstead == nullptr)
     {
-        for (std::set<Object*>::iterator itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); ++itr)
+        for (const auto& itr : m_Unit->GetInRangeSet())
         {
-            if ((*itr)->IsUnit() && static_cast<Unit*>(*itr)->GetAIInterface())
+            if (itr && itr->IsUnit() && static_cast<Unit*>(itr)->GetAIInterface())
             {
-                static_cast<Unit*>(*itr)->GetAIInterface()->RemoveThreatByPtr(m_Unit);
+                static_cast<Unit*>(itr)->GetAIInterface()->RemoveThreatByPtr(m_Unit);
             }
         }
 
@@ -3766,13 +3765,13 @@ void AIInterface::EventChangeFaction(Unit* ForceAttackersToHateThisInstead)
     }
     else
     {
-        for (std::set<Object*>::iterator itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); ++itr)
+        for (const auto& itr : m_Unit->GetInRangeSet())
         {
-            if ((*itr)->IsUnit() && static_cast<Unit*>(*itr)->GetAIInterface()
-                && static_cast<Unit*>(*itr)->GetAIInterface()->getThreatByPtr(m_Unit))   //this guy will join me in fight since I'm telling him "sorry i was controlled"
+            if (itr && itr->IsUnit() && static_cast<Unit*>(itr)->GetAIInterface()
+                && static_cast<Unit*>(itr)->GetAIInterface()->getThreatByPtr(m_Unit))   //this guy will join me in fight since I'm telling him "sorry i was controlled"
             {
-                static_cast<Unit*>(*itr)->GetAIInterface()->modThreatByPtr(ForceAttackersToHateThisInstead, 10);   //just aping to be bale to hate him in case we got nothing else
-                static_cast<Unit*>(*itr)->GetAIInterface()->RemoveThreatByPtr(m_Unit);
+                static_cast<Unit*>(itr)->GetAIInterface()->modThreatByPtr(ForceAttackersToHateThisInstead, 10);   //just aping to be bale to hate him in case we got nothing else
+                static_cast<Unit*>(itr)->GetAIInterface()->RemoveThreatByPtr(m_Unit);
             }
         }
 

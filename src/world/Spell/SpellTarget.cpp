@@ -180,18 +180,15 @@ void Spell::FillTargetMap(uint32 i)
 
 void Spell::AddScriptedOrSpellFocusTargets(uint32 i, uint32 targetType, float r, uint32 /*maxtargets*/)
 {
-    for (std::set< Object* >::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
+    for (const auto& itr : m_caster->GetInRangeSet())
     {
-        Object* o = *itr;
-
-        if (!o->IsGameObject())
+        Object* o = itr;
+        if (!o || !o->IsGameObject())
             continue;
 
         GameObject* go = static_cast<GameObject*>(o);
-
         if (go->GetGameObjectProperties()->raw.parameter_0 == m_spellInfo->getRequiresSpellFocus())
         {
-
             if (!m_caster->isInRange(go, r))
                 continue;
 
@@ -206,17 +203,17 @@ void Spell::AddScriptedOrSpellFocusTargets(uint32 i, uint32 targetType, float r,
 void Spell::AddConeTargets(uint32 i, uint32 targetType, float /*r*/, uint32 maxtargets)
 {
     std::vector<uint64_t>* list = &m_targetUnits[i];
-    ObjectSet::iterator itr;
-    for (itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
+    for (const auto& itr : m_caster->GetInRangeSet())
     {
-        if (!((*itr)->IsUnit()) || !static_cast<Unit*>((*itr))->isAlive())
+        if (!itr || !itr->IsUnit() || !static_cast<Unit*>(itr)->isAlive())
             continue;
+
         //is Creature in range
-        if (m_caster->isInRange(static_cast<Unit*>(*itr), GetRadius(i)))
+        if (m_caster->isInRange(itr, GetRadius(i)))
         {
-            if (m_spellInfo->cone_width ? m_caster->isInArc(static_cast<Unit*>(*itr), m_spellInfo->cone_width) : m_caster->isInFront(static_cast<Unit*>(*itr)))  // !!! is the target within our cone ?
+            if (m_spellInfo->cone_width ? m_caster->isInArc(itr, m_spellInfo->cone_width) : m_caster->isInFront(itr))  // !!! is the target within our cone ?
             {
-                AddTarget(i, targetType, (*itr));
+                AddTarget(i, targetType, itr);
             }
         }
         if (maxtargets != 0 && list->size() >= maxtargets)
@@ -267,18 +264,17 @@ void Spell::AddChainTargets(uint32 i, uint32 targetType, float /*r*/, uint32 /*m
     if (jumps <= 1 || list->size() == 0) //1 because we've added the first target, 0 size if spell is resisted
         return;
 
-    ObjectSet::iterator itr;
-    for (itr = firstTarget->GetInRangeSetBegin(); itr != firstTarget->GetInRangeSetEnd(); ++itr)
+    for (const auto& itr : firstTarget->GetInRangeSet())
     {
-        auto obj = *itr;
-        if (!(*itr)->IsUnit() || !static_cast<Unit*>((*itr))->isAlive())
+        auto obj = itr;
+        if (!obj || !itr->IsUnit() || !static_cast<Unit*>(itr)->isAlive())
             continue;
 
-        if (RaidOnly && !pfirstTargetFrom->InRaid(static_cast<Unit*>(*itr)))
+        if (RaidOnly && !pfirstTargetFrom->InRaid(static_cast<Unit*>(itr)))
             continue;
 
         //healing spell, full health target = NONO
-        if (m_spellInfo->isHealingSpell() && static_cast<Unit*>(*itr)->GetHealthPct() == 100)
+        if (m_spellInfo->isHealingSpell() && static_cast<Unit*>(itr)->GetHealthPct() == 100)
             continue;
 
         size_t oldsize;
@@ -286,7 +282,7 @@ void Spell::AddChainTargets(uint32 i, uint32 targetType, float /*r*/, uint32 /*m
         if (obj->isInRange(firstTarget->GetPositionX(), firstTarget->GetPositionY(), firstTarget->GetPositionZ(), range))
         {
             oldsize = list->size();
-            AddTarget(i, targetType, (*itr));
+            AddTarget(i, targetType, itr);
             if (list->size() == oldsize || list->size() >= jumps) //either out of jumps or a resist
                 return;
         }
@@ -305,23 +301,22 @@ void Spell::AddPartyTargets(uint32 i, uint32 targetType, float r, uint32 /*maxta
 
     AddTarget(i, targetType, p);
 
-    ObjectSet::iterator itr;
-    for (itr = u->GetInRangeSetBegin(); itr != u->GetInRangeSetEnd(); ++itr)
+    for (const auto& itr : u->GetInRangeSet())
     {
-        if (!(*itr)->IsUnit() || !static_cast<Unit*>(*itr)->isAlive())
+        if (!itr || !itr->IsUnit() || !static_cast<Unit*>(itr)->isAlive())
             continue;
 
         //only affect players and pets
-        if (!(*itr)->IsPlayer() && !(*itr)->IsPet())
+        if (!itr->IsPlayer() && !itr->IsPet())
             continue;
 
-        if (!p->InParty(static_cast<Unit*>(*itr)))
+        if (!p->InParty(static_cast<Unit*>(itr)))
             continue;
 
-        if (u->CalcDistance(*itr) > r)
+        if (u->CalcDistance(itr) > r)
             continue;
 
-        AddTarget(i, targetType, (*itr));
+        AddTarget(i, targetType, itr);
     }
 }
 
@@ -337,23 +332,22 @@ void Spell::AddRaidTargets(uint32 i, uint32 targetType, float r, uint32 /*maxtar
 
     AddTarget(i, targetType, p);
 
-    ObjectSet::iterator itr;
-    for (itr = u->GetInRangeSetBegin(); itr != u->GetInRangeSetEnd(); ++itr)
+    for (const auto& itr : u->GetInRangeSet())
     {
-        if (!(*itr)->IsUnit() || !static_cast<Unit*>(*itr)->isAlive())
+        if (!itr || !itr->IsUnit() || !static_cast<Unit*>(itr)->isAlive())
             continue;
 
         //only affect players and pets
-        if (!(*itr)->IsPlayer() && !(*itr)->IsPet())
+        if (!itr->IsPlayer() && !itr->IsPet())
             continue;
 
-        if (!p->InRaid(static_cast<Unit*>(*itr)))
+        if (!p->InRaid(static_cast<Unit*>(itr)))
             continue;
 
-        if (u->CalcDistance(*itr) > r)
+        if (u->CalcDistance(itr) > r)
             continue;
 
-        AddTarget(i, targetType, (*itr));
+        AddTarget(i, targetType, itr);
     }
 }
 
@@ -383,14 +377,17 @@ void Spell::AddAOETargets(uint32 i, uint32 targetType, float r, uint32 maxtarget
 
     std::vector<uint64_t>* t = &m_targetUnits[i];
 
-    for (ObjectSet::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
+    for (const auto& itr : m_caster->GetInRangeSet())
     {
+        if (!itr)
+            continue;
+
         if (maxtargets != 0 && t->size() >= maxtargets)
             break;
 
-        float dist = (*itr)->CalcDistance(source);
+        float dist = itr->CalcDistance(source);
         if (dist <= r)
-            AddTarget(i, targetType, (*itr));
+            AddTarget(i, targetType, itr);
     }
 }
 

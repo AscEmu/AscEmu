@@ -568,7 +568,7 @@ void MapMgr::ChangeObjectLocation(Object* obj)
     // Update in-range data for old objects
     if (obj->HasInRangeObjects())
     {
-        for (Object::InRangeSet::iterator iter = obj->GetInRangeSetBegin(); iter != obj->GetInRangeSetEnd();)
+        for (Object::InRangeSet::iterator iter = obj->GetInRangeSet().begin(); iter != obj->GetInRangeSet().end();)
         {
             curObj = *iter;
             ++iter;
@@ -896,12 +896,12 @@ void MapMgr::_UpdateObjects()
 
                 if (count)
                 {
-                    for (std::set<Object*>::iterator itr = pObj->GetInRangePlayerSetBegin(); itr != pObj->GetInRangePlayerSetEnd(); ++itr)
+                    for (const auto& itr : *pObj->GetInRangePlayerSet())
                     {
-                        Player* lplr = static_cast<Player*>(*itr);
+                        Player* lplr = static_cast<Player*>(itr);
 
                         // Make sure that the target player can see us.
-                        if (lplr->IsVisible(pObj->GetGUID()))
+                        if (lplr && lplr->IsVisible(pObj->GetGUID()))
                             lplr->PushUpdateData(&update, count);
                     }
                     update.clear();
@@ -1943,10 +1943,10 @@ GameObject* MapMgr::FindNearestGoWithType(Object* o, uint32 type)
     GameObject* go = nullptr;
     float r = FLT_MAX;
 
-    for (std::set<Object*>::iterator itr = o->GetInRangeSetBegin(); itr != o->GetInRangeSetEnd(); ++itr)
+    for (const auto& itr : o->GetInRangeSet())
     {
-        Object* iro = *itr;
-        if (!iro->IsGameObject())
+        Object* iro = itr;
+        if (!iro || !iro->IsGameObject())
             continue;
 
         GameObject* irgo = static_cast<GameObject*>(iro);

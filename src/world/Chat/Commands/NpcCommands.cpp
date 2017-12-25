@@ -656,12 +656,11 @@ bool ChatHandler::HandleNpcSelectCommand(const char* /*args*/, WorldSession* m_s
     float dist2;
 
     auto player = m_session->GetPlayer();
-    std::set<Object*>::iterator itr;
-    for (itr = player->GetInRangeSetBegin(); itr != player->GetInRangeSetEnd(); ++itr)
+    for (const auto& itr : player->GetInRangeSet())
     {
-        if ((dist2 = player->GetDistance2dSq(*itr)) < dist && (*itr)->IsCreature())
+        if (itr && (dist2 = player->GetDistance2dSq(itr)) < dist && (itr)->IsCreature())
         {
-            near_creature = static_cast<Creature*>(*itr);
+            near_creature = static_cast<Creature*>(itr);
             dist = dist2;
         }
     }

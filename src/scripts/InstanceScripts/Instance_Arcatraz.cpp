@@ -58,7 +58,7 @@ class ZerekethAI : public CreatureAIScript
         void OnDied(Unit* /*mKiller*/) override
         {
             //despawn voids
-            for (std::set<Object*>::iterator itr = getCreature()->GetInRangeSetBegin(); itr != getCreature()->GetInRangeSetEnd();)
+            for (std::set<Object*>::iterator itr = getCreature()->GetInRangeSet().begin(); itr != getCreature()->GetInRangeSet().end();)
             {
                 Object* obj = *itr;
                 ++itr;
@@ -93,14 +93,13 @@ class ZerekethAI : public CreatureAIScript
             _resetTimer(VoidTimer, (Util::getRandomUInt(10) + 30) * 1000);
 
             std::vector<Player*> TargetTable;
-            std::set< Object* >::iterator Itr = getCreature()->GetInRangePlayerSetBegin();
-            for (; Itr != getCreature()->GetInRangePlayerSetEnd(); ++Itr)
+            for (const auto& itr : *getCreature()->GetInRangePlayerSet())
             {
-                Player* RandomTarget = NULL;
-                if (!(*Itr)->IsPlayer())
+                if (!itr || !itr->IsPlayer())
                     continue;
-                RandomTarget = static_cast< Player* >(*Itr);
-                if (RandomTarget && RandomTarget->isAlive() && isHostile(*Itr, getCreature()))
+
+                Player* RandomTarget = static_cast<Player*>(itr);
+                if (RandomTarget->isAlive() && isHostile(itr, getCreature()))
                     TargetTable.push_back(RandomTarget);
             }
 

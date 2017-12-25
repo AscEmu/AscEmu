@@ -1834,13 +1834,11 @@ class ReliquaryOfSoulsAI : public CreatureAIScript
                         }
                         if (SpawnedEnsalvedSoul)
                         {
-
-                            Creature* creature = NULL;
-                            for (std::set<Object*>::iterator itr = getCreature()->GetInRangeSetBegin(); itr != getCreature()->GetInRangeSetEnd(); ++itr)
+                            for (const auto& itr : getCreature()->GetInRangeSet())
                             {
-                                if ((*itr)->IsCreature())
+                                if (itr && itr->IsCreature())
                                 {
-                                    creature = static_cast<Creature*>((*itr));
+                                    Creature* creature = static_cast<Creature*>(itr);
                                     if (creature->GetCreatureProperties()->Id == CN_ENSLAVED_SOUL && !creature->isAlive())
                                         DeadSoulCount++;
                                 }
@@ -3416,21 +3414,18 @@ class AkamaAI : public CreatureAIScript
         // A bit rewritten FindTarget function
         Unit* FindClosestTargetToUnit(Unit* pSeeker)
         {
-            if (pSeeker == NULL)
-                return NULL;
+            if (pSeeker == nullptr)
+                return nullptr;
 
-            Unit* pTarget = NULL;
+            Unit* pTarget = nullptr;
             float distance = 70.0f;
             float z_diff;
 
-            Unit* pUnit;
-            float dist;
-
-            for (std::set< Object* >::iterator itr = getCreature()->GetInRangePlayerSetBegin(); itr != getCreature()->GetInRangePlayerSetEnd(); ++itr)
+            for (const auto& itr : *getCreature()->GetInRangePlayerSet())
             {
-                pUnit = static_cast< Unit* >(*itr);
+                Unit* pUnit = static_cast<Unit*>(itr);
 
-                if (pUnit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH))
+                if (!pUnit || pUnit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH))
                     continue;
 
                 z_diff = fabs(getCreature()->GetPositionZ() - pUnit->GetPositionZ());
@@ -3440,7 +3435,7 @@ class AkamaAI : public CreatureAIScript
                 if (!pUnit->isAlive())
                     continue;
 
-                dist = pSeeker->GetDistance2dSq(pUnit);
+                float dist = pSeeker->GetDistance2dSq(pUnit);
 
                 if (dist > distance * distance)
                     continue;
@@ -4856,21 +4851,24 @@ class IllidanStormrageAI : public CreatureAIScript
                     if (mFlameBurstTimer <= 0)
                     {
                         //CastSpellNowNoScheduling(mFlameBurst);
-                        for (std::set< Object* >::iterator itr = getCreature()->GetInRangePlayerSetBegin(); itr != getCreature()->GetInRangePlayerSetEnd(); ++itr)
+                        for (const auto& itr : *getCreature()->GetInRangePlayerSet())
                         {
-                            Unit* pUnit = static_cast< Unit* >(*itr);
-                            CreatureAIScript* pAI = spawnCreatureAndGetAIScript(CN_FLAME_BURST, (*itr)->GetPositionX(), (*itr)->GetPositionY(), (*itr)->GetPositionZ(), 0, getCreature()->GetFaction());
-                            getCreature()->CastSpell(pUnit, ILLIDAN_FLAME_BURST2, true);
-                            if (pAI != nullptr)
+                            Unit* pUnit = static_cast<Unit*>(itr);
+                            if (pUnit)
                             {
-                                float Distance = getRangeToObject(pUnit);
-                                if (Distance == 0.0f)
+                                CreatureAIScript* pAI = spawnCreatureAndGetAIScript(CN_FLAME_BURST, itr->GetPositionX(), itr->GetPositionY(), itr->GetPositionZ(), 0, getCreature()->GetFaction());
+                                getCreature()->CastSpell(pUnit, ILLIDAN_FLAME_BURST2, true);
+                                if (pAI != nullptr)
                                 {
-                                    pAI->RegisterAIUpdateEvent(300);        // o'rly?
-                                }
-                                else
-                                {
-                                    pAI->RegisterAIUpdateEvent((uint32)(Distance * 1000 / 32.796));
+                                    float Distance = getRangeToObject(pUnit);
+                                    if (Distance == 0.0f)
+                                    {
+                                        pAI->RegisterAIUpdateEvent(300);        // o'rly?
+                                    }
+                                    else
+                                    {
+                                        pAI->RegisterAIUpdateEvent((uint32)(Distance * 1000 / 32.796));
+                                    }
                                 }
                             }
                         }

@@ -1328,11 +1328,11 @@ void Aura::EventUpdateFriendAA(float r)
     if (u == nullptr)
         return;
 
-    for (std::set< Object* >::iterator itr = u->GetInRangeSetBegin(); itr != u->GetInRangeSetEnd(); ++itr)
+    for (const auto& itr : u->GetInRangeSet())
     {
-        Object* o = *itr;
+        Object* o = itr;
 
-        if (!o->IsUnit())
+        if (!o || !o->IsUnit())
             continue;
 
         Unit* ou = static_cast<Unit*>(o);
@@ -1398,11 +1398,11 @@ void Aura::EventUpdateEnemyAA(float r)
     if (u == nullptr)
         return;
 
-    for (std::set< Object* >::iterator itr = u->GetInRangeSetBegin(); itr != u->GetInRangeSetEnd(); ++itr)
+    for (const auto& itr : u->GetInRangeSet())
     {
-        Object* o = *itr;
+        Object* o = itr;
 
-        if (!o->IsUnit())
+        if (!o || !o->IsUnit())
             continue;
 
         Unit* ou = static_cast<Unit*>(o);
@@ -2467,11 +2467,11 @@ void Aura::EventPeriodicHeal(uint32 amount)
         std::vector<Unit*> target_threat;
         int count = 0;
         Creature* tmp_creature = nullptr;
-        for (std::set<Object*>::iterator itr = u_caster->GetInRangeSetBegin(); itr != u_caster->GetInRangeSetEnd(); ++itr)
+        for (const auto& itr : u_caster->GetInRangeSet())
         {
-            if (!(*itr)->IsCreature())
+            if (!itr || !itr->IsCreature())
                 continue;
-            tmp_creature = static_cast<Creature*>(*itr);
+            tmp_creature = static_cast<Creature*>(itr);
             if (!tmp_creature->CombatStatus.IsInCombat() || (tmp_creature->GetAIInterface()->getThreatByPtr(u_caster) == 0 && tmp_creature->GetAIInterface()->getThreatByPtr(m_target) == 0))
                 continue;
 
@@ -2963,13 +2963,12 @@ void Aura::SpellAuraModStealth(bool apply)
                 case 55964:
                 case 71400:
                 {
-                    for (Object::InRangeSet::iterator iter = m_target->GetInRangeSetBegin(); iter != m_target->GetInRangeSetEnd(); ++iter)
+                    for (const auto& iter : m_target->GetInRangeSet())
                     {
-                        if ((*iter) == nullptr || !(*iter)->IsUnit())
+                        if (iter == nullptr || !iter->IsUnit())
                             continue;
 
-                        Unit* _unit = static_cast<Unit*>(*iter);
-
+                        Unit* _unit = static_cast<Unit*>(iter);
                         if (!_unit->isAlive())
                             continue;
 
@@ -5401,12 +5400,11 @@ void Aura::SpellAuraFeignDeath(bool apply)
             p_target->SetFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_DEAD);
 
             //now get rid of mobs agro. pTarget->CombatStatus.AttackersForgetHate() - this works only for already attacking mobs
-            for (std::set<Object*>::iterator itr = p_target->GetInRangeSetBegin(); itr != p_target->GetInRangeSetEnd(); ++itr)
+            for (const auto& itr : p_target->GetInRangeSet())
             {
-                if ((*itr)->IsUnit() && (static_cast< Unit* >(*itr))->isAlive())
+                if (itr && itr->IsUnit() && static_cast<Unit*>(itr)->isAlive())
                 {
-                    Unit* u = static_cast< Unit* >(*itr);
-
+                    Unit* u = static_cast<Unit*>(itr);
                     if (isFeignDeathResisted(p_target->getLevel(), u->getLevel()))
                     {
                         sEventMgr.AddEvent(this, &Aura::Remove, EVENT_AURA_REMOVE, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT | EVENT_FLAG_DELETES_OBJECT);
@@ -5419,8 +5417,7 @@ void Aura::SpellAuraFeignDeath(bool apply)
                     //if this is player and targeting us then we interrupt cast
                     if (u->IsPlayer())
                     {
-                        Player* plr = static_cast< Player* >(*itr);
-
+                        Player* plr = static_cast<Player*>(itr);
                         if (plr->isCastingNonMeleeSpell())
                             plr->interruptSpell(); // cancel current casting spell
 

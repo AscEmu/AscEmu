@@ -44,14 +44,16 @@ bool Pestilence(uint8_t effectIndex, Spell* pSpell)
         bool blood = Main->HasAura(BLOOD_PLAGUE);
         bool frost = Main->HasAura(FROST_FEVER);
         int inc = (u_caster->HasAura(59309) ? 10 : 5);
-        for (Object::InRangeSet::iterator itr = u_caster->GetInRangeSetBegin(); itr != u_caster->GetInRangeSetEnd(); ++itr)
+        for (const auto& itr : u_caster->GetInRangeSet())
         {
-            if (!(*itr)->IsUnit())
+            if (!itr || !itr->IsUnit())
                 continue;
-            Unit* Target = static_cast<Unit*>((*itr));
+
+            Unit* Target = static_cast<Unit*>(itr);
             if (Main->GetGUID() == Target->GetGUID() && !u_caster->HasAura(63334))
                 continue;
-            if (isAttackable(Target, u_caster) && u_caster->CalcDistance((*itr)) <= (pSpell->GetRadius(effectIndex) + inc))
+
+            if (isAttackable(Target, u_caster) && u_caster->CalcDistance(itr) <= (pSpell->GetRadius(effectIndex) + inc))
             {
                 if (blood)
                     u_caster->CastSpell(Target, BLOOD_PLAGUE, true);

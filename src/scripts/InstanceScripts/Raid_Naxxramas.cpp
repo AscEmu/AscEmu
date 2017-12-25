@@ -891,13 +891,13 @@ void AnubRekhanAI::Destroy()
 //        std::vector<std::pair< Player* , Movement::Location > > PlayerCorpses;
 //        Player* PlayerPtr = NULL;
 //        LocationVector spawnLocation;
-//        for (std::set< Object* >::iterator Iter = AnubRekhan->getCreature()->GetInRangePlayerSetBegin(); Iter != AnubRekhan->getCreature()->GetInRangePlayerSetEnd(); ++Iter)
+//        for (const auto& Iter : AnubRekhan->getCreature()->GetInRangePlayerSet())
 //        {
-//            if ((*Iter) == NULL)
+//            if (Iter == nullptr)
 //                continue;
 //
-//            PlayerPtr = static_cast< Player* >(*Iter);
-//            std::set< uint32 >::iterator PlayerIter = AnubRekhan->mUsedCorpseGuids.find(static_cast<uint32>(PlayerPtr->GetGUID()));
+//            PlayerPtr = static_cast<Player*>(Iter);
+//            std::set<uint32>::iterator PlayerIter = AnubRekhan->mUsedCorpseGuids.find(static_cast<uint32>(PlayerPtr->GetGUID()));
 //            if (PlayerIter != AnubRekhan->mUsedCorpseGuids.end())
 //            {
 //                if (PlayerPtr->isAlive())
@@ -1677,14 +1677,12 @@ void HeiganTheUncleanAI::OnCombatStart(Unit* /*pTarget*/)
 
         if (mFissures.size() == 0)
         {
-            GameObject* Fissure = NULL;
-            PlagueFissureGO* FissureGO = NULL;
-            for (std::set< Object* >::iterator Iter = getCreature()->GetInRangeSetBegin(); Iter != getCreature()->GetInRangeSetEnd(); ++Iter)
+            for (const auto& Iter : getCreature()->GetInRangeSet())
             {
-                if ((*Iter) == NULL || !(*Iter)->IsGameObject())
+                if (Iter == nullptr || !Iter->IsGameObject())
                     continue;
 
-                Fissure = static_cast< GameObject* >(*Iter);
+                GameObject* Fissure = static_cast<GameObject*>(Iter);
 
                 if (Fissure->GetGameObjectProperties() == nullptr)
                     continue;
@@ -1692,11 +1690,11 @@ void HeiganTheUncleanAI::OnCombatStart(Unit* /*pTarget*/)
                 if (Fissure->getUInt32Value(GAMEOBJECT_DISPLAYID) != 6785 && Fissure->getUInt32Value(GAMEOBJECT_DISPLAYID) != 1287)
                     continue;
 
-                if (Fissure->GetScript() == NULL)
+                if (Fissure->GetScript() == nullptr)
                     continue;
 
                 uint32 AreaId = CalculateTriggerArea(Fissure->GetPositionX(), Fissure->GetPositionY());
-                FissureGO = static_cast< PlagueFissureGO* >(Fissure->GetScript());
+                PlagueFissureGO* FissureGO = static_cast< PlagueFissureGO* >(Fissure->GetScript());
                 mFissures.insert(std::make_pair(AreaId, FissureGO));
                 FissureGO->mHeiganAI = this;
                 FissureGO->SetState(GO_STATE_CLOSED);
@@ -1923,13 +1921,12 @@ void LoathebAI::AIUpdate()
         {
             if (mDeathbloomDamagePhase)
             {
-                Player* PlayerPtr = NULL;
-                for (std::set< Object* >::iterator Iter = getCreature()->GetInRangePlayerSetBegin(); Iter != getCreature()->GetInRangePlayerSetEnd(); ++Iter)
+                for (const auto& Iter : *getCreature()->GetInRangePlayerSet())
                 {
-                    if ((*Iter) == NULL)
+                    if (Iter == nullptr)
                         continue;
 
-                    PlayerPtr = static_cast< Player* >(*Iter);
+                    Player* PlayerPtr = static_cast<Player*>(Iter);
                     if (!PlayerPtr->isAlive())
                         continue;
 
@@ -2583,14 +2580,13 @@ MaraudingGeistAI::MaraudingGeistAI(Creature* pCreature) : CreatureAIScript(pCrea
 //    uint32 _mostHP = 0;
 //    Player* pBestTarget = NULL;
 //
-//    for (std::set< Object* >::iterator PlayerIter = pCreatureAI->getCreature()->GetInRangePlayerSetBegin();
-//            PlayerIter != pCreatureAI->getCreature()->GetInRangePlayerSetEnd(); ++PlayerIter)
+//    for (const auto& PlayerIter : pCreatureAI->getCreature()->GetInRangePlayerSet())
 //    {
-//        if ((*PlayerIter) && (static_cast< Player* >(*PlayerIter))->isAlive() && (*PlayerIter)->GetDistance2dSq(pCreatureAI->getCreature()) <= 5.0f
-//                && (*PlayerIter)->getUInt32Value(UNIT_FIELD_HEALTH) > _mostHP)
+//        if (PlayerIter && (static_cast<Player*>(PlayerIter))->isAlive() && PlayerIter->GetDistance2dSq(pCreatureAI->getCreature()) <= 5.0f
+//                && PlayerIter->getUInt32Value(UNIT_FIELD_HEALTH) > _mostHP)
 //        {
-//            _mostHP = (*PlayerIter)->getUInt32Value(UNIT_FIELD_HEALTH);
-//            pBestTarget = static_cast< Player* >(*PlayerIter);
+//            _mostHP = PlayerIter->getUInt32Value(UNIT_FIELD_HEALTH);
+//            pBestTarget = static_cast<Player*>(PlayerIter);
 //        }
 //    }
 //

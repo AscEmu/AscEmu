@@ -315,11 +315,11 @@ class Volkhan : public CreatureAIScript
 
     void DoStomp()
     {
-        for (std::set< Object* >::iterator itr = getCreature()->GetInRangeSetBegin(); itr != getCreature()->GetInRangeSetEnd(); ++itr)
+        for (const auto& itr : getCreature()->GetInRangeSet())
         {
-            if ((*itr) && (*itr)->IsCreature() && (*itr)->GetEntry() == CN_BRITTLE_GOLEM)
+            if (itr && itr->IsCreature() && itr->GetEntry() == CN_BRITTLE_GOLEM)
             {
-                Creature* pCreature = static_cast< Creature* >((*itr));
+                Creature* pCreature = static_cast<Creature*>(itr);
                 if (_isHeroic())
                     pCreature->CastSpell(pCreature, 59527, true);
                 else
