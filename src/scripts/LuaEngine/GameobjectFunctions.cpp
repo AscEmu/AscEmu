@@ -636,10 +636,10 @@ int LuaGameObject::GetFloatValue(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::ModUInt32Value(lua_State* L, GameObject* ptr)
 {
-    int field = static_cast<int>(luaL_checkinteger(L, 1));
-    int value = static_cast<int>(luaL_checkinteger(L, 2));
+    uint16_t field = static_cast<uint16_t>(luaL_checkinteger(L, 1));
+    uint32_t value = static_cast<uint32_t>(luaL_checkinteger(L, 2));
     if (ptr && field)
-        ptr->ModSignedInt32Value(field, value);
+        ptr->modInt32Value(field, value);
     return 0;
 }
 

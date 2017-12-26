@@ -471,7 +471,7 @@ class SERVER_DECL GameObject : public Object
         void Activate() { setUInt32Value(GAMEOBJECT_DYNAMIC, 1); }
         bool IsActive()
         {
-            if (m_uint32Values[GAMEOBJECT_DYNAMIC] == 1)
+            if (getUInt32Value(GAMEOBJECT_DYNAMIC) == 1)
                 return true;
             else
                 return false;

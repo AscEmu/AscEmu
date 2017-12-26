@@ -297,7 +297,7 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
             m_pOwner->setUInt32Value(VisibleBase + 5, item->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 12));
             m_pOwner->setUInt32Value(VisibleBase + 6, item->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 15));
             m_pOwner->setUInt32Value(VisibleBase + 7, item->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 18));
-            m_pOwner->setUInt32Value(VisibleBase + 8, item->getUInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID));
+            m_pOwner->setInt32Value(VisibleBase + 8, item->getInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID));
         }
     }
 #endif
@@ -3164,7 +3164,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
                 m_pOwner->setUInt32Value(VisibleBase + 5, m_pItems[(int)srcslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 12));
                 m_pOwner->setUInt32Value(VisibleBase + 6, m_pItems[(int)srcslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 15));
                 m_pOwner->setUInt32Value(VisibleBase + 7, m_pItems[(int)srcslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 18));
-                m_pOwner->setUInt32Value(VisibleBase + 8, m_pItems[(int)srcslot]->getUInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID));
+                m_pOwner->setInt32Value(VisibleBase + 8, m_pItems[(int)srcslot]->getInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID));
             }
 
             // handle bind on equip
@@ -3245,7 +3245,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
                 m_pOwner->setUInt32Value(VisibleBase + 5, m_pItems[(int)dstslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 12));
                 m_pOwner->setUInt32Value(VisibleBase + 6, m_pItems[(int)dstslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 15));
                 m_pOwner->setUInt32Value(VisibleBase + 7, m_pItems[(int)dstslot]->getUInt32Value(ITEM_FIELD_ENCHANTMENT + 18));
-                m_pOwner->setUInt32Value(VisibleBase + 8, m_pItems[(int)dstslot]->getUInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID));
+                m_pOwner->setInt32Value(VisibleBase + 8, m_pItems[(int)dstslot]->getInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID));
             }
 
             // handle bind on equip

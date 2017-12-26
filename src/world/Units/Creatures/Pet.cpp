@@ -1256,7 +1256,7 @@ bool Pet::CanGainXP()
 void Pet::GiveXP(uint32 xp)
 {
     xp += GetXP();
-    uint32 nxp = m_uint32Values[UNIT_FIELD_PETNEXTLEVELEXP];
+    uint32 nxp = getUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP);
 
     if (xp >= nxp)
     {
@@ -1874,7 +1874,7 @@ void Pet::ApplyStatsForLevel()
     }
 
     // Apply health fields.
-    SetHealth(m_uint32Values[UNIT_FIELD_MAXHEALTH]);
+    SetHealth(getUInt32Value(UNIT_FIELD_MAXHEALTH));
     SetPower(POWER_TYPE_MANA, GetMaxPower(POWER_TYPE_MANA));   // mana
     SetPower(POWER_TYPE_FOCUS, GetMaxPower(POWER_TYPE_FOCUS));   // focus
 }

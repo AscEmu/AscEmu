@@ -352,11 +352,19 @@ struct MovementInfo
 //////////////////////////////////////////////////////////////////////////////////////////
 class SERVER_DECL Object : public EventableObject, public IUpdatable
 {
-public:
-
     // MIT Start
     //////////////////////////////////////////////////////////////////////////////////////////
     // Object values
+
+protected:
+    union
+    {
+        int32_t* m_int32Values;
+        uint32_t* m_uint32Values;
+        float* m_floatValues;
+    };
+
+public:
 
     void setByteValue(uint16_t index, uint8_t offset, uint8_t value);
     uint8_t getByteValue(uint16_t index, uint8_t offset) const;
@@ -371,12 +379,24 @@ public:
 
     void setUInt32Value(uint16_t index, uint32_t value);
     uint32_t getUInt32Value(uint16_t index) const;
+    void modUInt32Value(uint16_t index, int32_t mod);
+
+    // Zyres 12/26/2017 - percent mod, float, not uint32_t (used for UNIT_FIELD_BASEATTACKTIME which should be a float)
+    uint32_t getPercentModUInt32Value(uint16_t index, const int32_t value);
+
+    void setInt32Value(uint16_t index, int32_t value);
+    uint32_t getInt32Value(uint16_t index) const;
+    void modInt32Value(uint16_t index, int32_t value);
 
     void setUInt64Value(uint16_t index, uint64_t value);
     uint64_t getUInt64Value(uint16_t index) const;
 
     void setFloatValue(uint16_t index, float value);
     float getFloatValue(uint16_t index) const;
+
+    void modFloatValue(uint16_t index, float value);
+    void modFloatValueByPCT(uint16_t index, int32 byPct);
+
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Object update
@@ -641,12 +661,6 @@ public:
         const uint32 GetMapId() const { return m_mapId; }
         const uint32 & GetZoneId() const { return m_zoneId; }
 
-        void ModFloatValue(const uint32 index, const float value);
-        void ModFloatValueByPCT(const uint32 index, int32 byPct);
-        void ModSignedInt32Value(uint32 index, int32 value);
-        void ModUnsigned32Value(uint32 index, int32 mod);
-        uint32 GetModPUInt32Value(const uint32 index, const int32 value);
-
         void SetNewGuid(uint32 Guid)
         {
             SetLowGUID(Guid);
@@ -886,13 +900,6 @@ public:
         LocationVector m_position;
         LocationVector m_lastMapUpdatePosition;
         LocationVector m_spawnLocation;
-
-        // Object properties.
-        union
-        {
-            uint32* m_uint32Values;
-            float* m_floatValues;
-        };
 
         // Number of properties
         uint16 m_valuesCount;

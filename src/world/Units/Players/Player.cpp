@@ -185,7 +185,7 @@ void Player::updateAutoRepeatSpell()
             return;
         }
 
-        m_AutoShotAttackTimer = m_uint32Values[UNIT_FIELD_RANGEDATTACKTIME];
+        m_AutoShotAttackTimer = getUInt32Value(UNIT_FIELD_RANGEDATTACKTIME);
 
         // Cast the spell with triggered flag
         Spell* newAutoRepeatSpell = sSpellFactoryMgr.NewSpell(this, autoRepeatSpell->GetSpellInfo(), true, nullptr);

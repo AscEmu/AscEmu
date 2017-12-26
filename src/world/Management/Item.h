@@ -206,14 +206,14 @@ class SERVER_DECL Item : public Object
 
         void SetStackCount(uint32 amt) { setUInt32Value(ITEM_FIELD_STACK_COUNT, amt); }
         uint32 GetStackCount() { return getUInt32Value(ITEM_FIELD_STACK_COUNT); }
-        void ModStackCount(int32 val) { ModUnsigned32Value(ITEM_FIELD_STACK_COUNT, val); }
+        void ModStackCount(int32 val) { modUInt32Value(ITEM_FIELD_STACK_COUNT, val); }
 
         void SetDuration(uint32 durationseconds) { setUInt32Value(ITEM_FIELD_DURATION, durationseconds); }
         uint32 GetDuration() { return getUInt32Value(ITEM_FIELD_DURATION); }
 
-        void SetCharges(uint16_t index, uint32 charges) { setUInt32Value(ITEM_FIELD_SPELL_CHARGES + index, charges); }
-        void ModCharges(uint16_t index, int32 val) { ModSignedInt32Value(ITEM_FIELD_SPELL_CHARGES + index, val); }
-        uint32 GetCharges(uint16_t index) const { return getUInt32Value(ITEM_FIELD_SPELL_CHARGES + index); }
+        void SetCharges(uint16_t index, uint32 charges) { setInt32Value(ITEM_FIELD_SPELL_CHARGES + index, charges); }
+        void ModCharges(uint16_t index, int32 val) { modInt32Value(ITEM_FIELD_SPELL_CHARGES + index, val); }
+        uint32 GetCharges(uint16_t index) const { return getInt32Value(ITEM_FIELD_SPELL_CHARGES + index); }
 
         /////////////////////////////////////////////////// FLAGS ////////////////////////////////////////////////////////////
 
@@ -238,13 +238,13 @@ class SERVER_DECL Item : public Object
 
         void SetDirty(){ m_isDirty = true; }
 
-        uint32 GetItemRandomPropertyId() const { return m_uint32Values[ITEM_FIELD_RANDOM_PROPERTIES_ID]; }
-        uint32 GetItemRandomSuffixFactor() { return m_uint32Values[ITEM_FIELD_PROPERTY_SEED]; }
+        uint32 GetItemRandomPropertyId() const { return getInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID); }
+        uint32 GetItemRandomSuffixFactor() { return getUInt32Value(ITEM_FIELD_PROPERTY_SEED); }
 
         void SetItemRandomPropertyId(uint32 id)
         {
             random_prop = id;
-            setUInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID, id);
+            setInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID, id);
         }
 
         void SetItemRandomSuffixFactor(uint32 factor)

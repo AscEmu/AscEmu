@@ -827,12 +827,12 @@ public:
             return static_cast<int32>(GetPosDamageDoneMod(school)) - static_cast<int32>(GetNegDamageDoneMod(school));
         }
 
-        float GetDamageDonePctMod(uint32 school)
+        float GetDamageDonePctMod(uint16_t school)
         {
             if (school >= SCHOOL_COUNT)
                 return 0;
 
-            return m_floatValues[PLAYER_FIELD_MOD_DAMAGE_DONE_PCT + school];
+            return getFloatValue(PLAYER_FIELD_MOD_DAMAGE_DONE_PCT + school);
         }
 
         uint32 GetMainMeleeDamage(uint32 AP_owerride);          /// I need this for windfury
@@ -977,14 +977,14 @@ public:
         //\todo fix this
         bool IsInGuild()
         {
-            return (m_uint32Values[PLAYER_GUILDID] != 0) ? true : false;
+            return (getUInt32Value(PLAYER_GUILDID) != 0) ? true : false;
         }
         uint32 GetGuildId()
         {
-            return m_uint32Values[PLAYER_GUILDID];
+            return getUInt32Value(PLAYER_GUILDID);
         }
         void SetGuildId(uint32 guildId);
-        uint32 GetGuildRank() { return m_uint32Values[PLAYER_GUILDRANK]; }
+        uint32 GetGuildRank() { return getUInt32Value(PLAYER_GUILDRANK); }
         GuildRank* GetGuildRankS() { return m_playerInfo->guildRank; }
         void SetGuildRank(uint32 guildRank);
         uint32 GetGuildInvitersGuid() { return m_invitersGuid; }
@@ -1642,7 +1642,7 @@ public:
         }
         void ModGold(int32 coins)
         {
-            ModUnsigned32Value(PLAYER_FIELD_COINAGE, coins);
+            modUInt32Value(PLAYER_FIELD_COINAGE, coins);
         }
         uint32 GetGold()
         {
@@ -1659,11 +1659,11 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         void GiveGold(int32 coins)
         {
-            ModUnsigned32Value(PLAYER_FIELD_COINAGE , coins);
+            modUInt32Value(PLAYER_FIELD_COINAGE , coins);
         }
         void TakeGold(int32 coins)
         {
-            ModUnsigned32Value(PLAYER_FIELD_COINAGE, -coins);
+            modUInt32Value(PLAYER_FIELD_COINAGE, -coins);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -1747,7 +1747,7 @@ public:
         void ModPrimaryProfessionPoints(int32 amt)
         {
 #if VERSION_STRING != Cata
-            ModUnsigned32Value(PLAYER_CHARACTER_POINTS2, amt);
+            modUInt32Value(PLAYER_CHARACTER_POINTS2, amt);
 #else
             if (amt == 0) { return; }
 #endif
@@ -1761,16 +1761,16 @@ public:
 #endif
         }
 
-        void ModPosDamageDoneMod(uint32 school, uint32 value) { ModUnsigned32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + school, value); }
-        uint32 GetPosDamageDoneMod(uint16_t school) { return getUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + school); }
+        void ModPosDamageDoneMod(uint16_t school, uint32_t value) { modInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + school, value); }
+        uint32 GetPosDamageDoneMod(uint16_t school) { return getInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + school); }
 
-        void ModNegDamageDoneMod(uint16_t school, uint32 value) { ModUnsigned32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_NEG + school, value); }
-        uint32 GetNegDamageDoneMod(uint16_t school) { return getUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_NEG + school); }
+        void ModNegDamageDoneMod(uint16_t school, uint32_t value) { modInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_NEG + school, value); }
+        uint32 GetNegDamageDoneMod(uint16_t school) { return getInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_NEG + school); }
 
         void ModHealingDoneMod(uint32 value)
         {
 #if VERSION_STRING > Classic
-            ModUnsigned32Value(PLAYER_FIELD_MOD_HEALING_DONE_POS, value);
+            modUInt32Value(PLAYER_FIELD_MOD_HEALING_DONE_POS, value);
 #endif
         }
         uint32 GetHealingDoneMod()
@@ -1815,7 +1815,7 @@ public:
             if (value == 0) { return; }
 #elif VERSION_STRING == Classic
 #else
-            ModUnsigned32Value(PLAYER_FIELD_HONOR_CURRENCY, value);
+            modUInt32Value(PLAYER_FIELD_HONOR_CURRENCY, value);
 #endif
         }
         uint32 GetHonorCurrency()
@@ -1848,7 +1848,7 @@ public:
             if (value == 0) { return; }
 #elif VERSION_STRING == Classic
 #else
-            ModUnsigned32Value(PLAYER_FIELD_ARENA_CURRENCY, value);
+            modUInt32Value(PLAYER_FIELD_ARENA_CURRENCY, value);
 #endif
         }
         uint32 GetArenaCurrency()

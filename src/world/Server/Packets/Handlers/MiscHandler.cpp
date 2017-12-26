@@ -1445,7 +1445,7 @@ void WorldSession::HandleSetWatchedFactionIndexOpcode(WorldPacket & recvPacket)
 
     uint32 factionid;
     recvPacket >> factionid;
-    GetPlayer()->setUInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, factionid);
+    GetPlayer()->setInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, factionid);
 }
 
 void WorldSession::HandleTogglePVPOpcode(WorldPacket& /*recv_data*/)

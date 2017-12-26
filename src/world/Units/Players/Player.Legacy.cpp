@@ -1030,7 +1030,7 @@ bool Player::Create(WorldPacket& data)
     for (uint16 x = 0; x < 7; x++)
         setFloatValue(PLAYER_FIELD_MOD_DAMAGE_DONE_PCT + x, 1.00);
 
-    setUInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, 0xEEEEEEEE);
+    setInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, uint32_t(-1));
 
     m_StableSlotCount = 0;
     Item* item;
@@ -2654,7 +2654,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 
     SaveSkills(bNewCharacter, buf);
 
-    ss << m_uint32Values[PLAYER_FIELD_WATCHED_FACTION_INDEX] << ","
+    ss << getInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX) << ","
 #if VERSION_STRING != Classic
         << m_uint32Values[PLAYER_CHOSEN_TITLE] << ","
 #else
@@ -3243,7 +3243,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     }
 
     // set the rest of the stuff
-    m_uint32Values[PLAYER_FIELD_WATCHED_FACTION_INDEX] = get_next_field.GetUInt32();
+    setInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, get_next_field.GetUInt32());
     SetChosenTitle(get_next_field.GetUInt32());
     setUInt64Value(PLAYER_FIELD_KNOWN_TITLES, get_next_field.GetUInt64());
 #if VERSION_STRING > TBC
@@ -9587,74 +9587,74 @@ void Player::ModifyBonuses(uint32 type, int32 val, bool apply)
         break;
         case WEAPON_SKILL_RATING:
         {
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_SKILL, val);
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_MAIN_HAND_SKILL, val);   // melee main hand
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_OFF_HAND_SKILL, val);   // melee off hand
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_SKILL, val);
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_MAIN_HAND_SKILL, val);   // melee main hand
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_OFF_HAND_SKILL, val);   // melee off hand
         }
         break;
         case DEFENSE_RATING:
         {
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_DEFENCE, val);
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_DEFENCE, val);
         }
         break;
         case DODGE_RATING:
         {
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_DODGE, val);
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_DODGE, val);
         }
         break;
         case PARRY_RATING:
         {
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_PARRY, val);
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_PARRY, val);
         }
         break;
         case SHIELD_BLOCK_RATING:
         {
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_BLOCK, val);
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_BLOCK, val);
         }
         break;
         case MELEE_HIT_RATING:
         {
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_HIT, val);
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_HIT, val);
         }
         break;
         case RANGED_HIT_RATING:
         {
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_HIT, val);
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_HIT, val);
         }
         break;
         case SPELL_HIT_RATING:
         {
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_SPELL_HIT, val);
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_SPELL_HIT, val);
         }
         break;
         case MELEE_CRITICAL_STRIKE_RATING:
         {
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_CRIT, val);
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_CRIT, val);
         }
         break;
         case RANGED_CRITICAL_STRIKE_RATING:
         {
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_CRIT, val);
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_CRIT, val);
         }
         break;
         case SPELL_CRITICAL_STRIKE_RATING:
         {
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_SPELL_CRIT, val);
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_SPELL_CRIT, val);
         }
         break;
         case MELEE_HIT_AVOIDANCE_RATING:
         {
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_HIT_AVOIDANCE, val);
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_HIT_AVOIDANCE, val);
         }
         break;
         case RANGED_HIT_AVOIDANCE_RATING:
         {
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_HIT_AVOIDANCE, val);
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_HIT_AVOIDANCE, val);
         }
         break;
         case SPELL_HIT_AVOIDANCE_RATING:
         {
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_SPELL_HIT_AVOIDANCE, val);
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_SPELL_HIT_AVOIDANCE, val);
         }
         break;
         case MELEE_CRITICAL_AVOIDANCE_RATING:
@@ -9671,38 +9671,38 @@ void Player::ModifyBonuses(uint32 type, int32 val, bool apply)
         } break;
         case MELEE_HASTE_RATING:
         {
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_HASTE, val);  //melee
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_HASTE, val);  //melee
         }
         break;
         case RANGED_HASTE_RATING:
         {
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_HASTE, val);  //ranged
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_HASTE, val);  //ranged
         }
         break;
         case SPELL_HASTE_RATING:
         {
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_SPELL_HASTE, val);  //spell
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_SPELL_HASTE, val);  //spell
         }
         break;
         case HIT_RATING:
         {
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_HIT, val);  //melee
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_HIT, val);  //ranged
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_SPELL_HIT, val);   //Spell
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_HIT, val);  //melee
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_HIT, val);  //ranged
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_SPELL_HIT, val);   //Spell
         }
         break;
         case CRITICAL_STRIKE_RATING:
         {
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_CRIT, val);  //melee
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_CRIT, val);  //ranged
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_SPELL_CRIT, val);   //spell
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_CRIT, val);  //melee
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_CRIT, val);  //ranged
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_SPELL_CRIT, val);   //spell
         }
         break;
         case HIT_AVOIDANCE_RATING:// this is guessed based on layout of other fields
         {
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_HIT_AVOIDANCE, val);  //melee
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_HIT_AVOIDANCE, val);  //ranged
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_SPELL_HIT_AVOIDANCE, val);  //spell
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_HIT_AVOIDANCE, val);  //melee
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_HIT_AVOIDANCE, val);  //ranged
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_SPELL_HIT_AVOIDANCE, val);  //spell
         }
         break;
         case CRITICAL_AVOIDANCE_RATING:
@@ -9711,21 +9711,21 @@ void Player::ModifyBonuses(uint32 type, int32 val, bool apply)
         } break;
         case EXPERTISE_RATING:
         {
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_EXPERTISE, val);
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_EXPERTISE, val);
         }
         break;
         case RESILIENCE_RATING:
         {
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_CRIT_RESILIENCE, val);  //melee
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_CRIT_RESILIENCE, val);  //ranged
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_SPELL_CRIT_RESILIENCE, val);  //spell
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_CRIT_RESILIENCE, val);  //melee
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_CRIT_RESILIENCE, val);  //ranged
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_SPELL_CRIT_RESILIENCE, val);  //spell
         }
         break;
         case HASTE_RATING:
         {
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_HASTE, val);  //melee
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_HASTE, val);  //ranged
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_SPELL_HASTE, val);   // Spell
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_HASTE, val);  //melee
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_HASTE, val);  //ranged
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_SPELL_HASTE, val);   // Spell
         }
         break;
         case ATTACK_POWER:
@@ -9768,7 +9768,7 @@ void Player::ModifyBonuses(uint32 type, int32 val, bool apply)
         break;
         case ARMOR_PENETRATION_RATING:
         {
-            ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_ARMOR_PENETRATION_RATING, val);
+            modUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_ARMOR_PENETRATION_RATING, val);
         }
         break;
         case SPELL_POWER:
@@ -12069,8 +12069,8 @@ void Player::CalcExpertise()
     }
 
 #if VERSION_STRING != Classic
-    ModUnsigned32Value(PLAYER_EXPERTISE, (int32)CalcRating(PCR_EXPERTISE) + modifier);
-    ModUnsigned32Value(PLAYER_OFFHAND_EXPERTISE, (int32)CalcRating(PCR_EXPERTISE) + modifier);
+    modUInt32Value(PLAYER_EXPERTISE, (int32)CalcRating(PCR_EXPERTISE) + modifier);
+    modUInt32Value(PLAYER_OFFHAND_EXPERTISE, (int32)CalcRating(PCR_EXPERTISE) + modifier);
 #endif
     UpdateStats();
 }

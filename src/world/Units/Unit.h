@@ -358,12 +358,12 @@ public:
     bool  canReachWithAttack(Unit* pVictim);
 
     /// Stats
-    uint32 getLevel() { return m_uint32Values[UNIT_FIELD_LEVEL]; };
+    uint32 getLevel() { return getUInt32Value(UNIT_FIELD_LEVEL); };
     void setLevel(uint32 level);
-    void modLevel(int32 mod) { ModUnsigned32Value(UNIT_FIELD_LEVEL, mod); };
+    void modLevel(int32 mod) { modUInt32Value(UNIT_FIELD_LEVEL, mod); };
     uint32 getClassMask() { return 1 << (getClass() - 1); }
     uint32 getRaceMask() { return 1 << (getRace() - 1); }
-    uint8 getStandState() { return ((uint8)m_uint32Values[UNIT_FIELD_BYTES_1]); }
+    uint8 getStandState() { return ((uint8)getUInt32Value(UNIT_FIELD_BYTES_1)); }
 
     //// Combat
     uint32 GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability);
@@ -1034,7 +1034,7 @@ public:
 
     void SetBaseAttackTime(uint8 slot, uint32 time) { setUInt32Value(UNIT_FIELD_BASEATTACKTIME + slot, time); }
     uint32 GetBaseAttackTime(uint8 slot) { return getUInt32Value(UNIT_FIELD_BASEATTACKTIME + slot); }
-    void ModBaseAttackTime(uint8 slot, int32 mod) { ModUnsigned32Value(UNIT_FIELD_BASEATTACKTIME + slot, mod); }
+    void ModBaseAttackTime(uint8 slot, int32 mod) { modUInt32Value(UNIT_FIELD_BASEATTACKTIME + slot, mod); }
 
     void SetBoundingRadius(float rad) { setFloatValue(UNIT_FIELD_BOUNDINGRADIUS, rad); }
     float GetBoundingRadius() { return getFloatValue(UNIT_FIELD_BOUNDINGRADIUS); }
@@ -1075,7 +1075,7 @@ public:
 
     void SetCastSpeedMod(float amt) { setFloatValue(UNIT_MOD_CAST_SPEED, amt); }
     float GetCastSpeedMod() { return getFloatValue(UNIT_MOD_CAST_SPEED); }
-    void ModCastSpeedMod(float mod) { ModFloatValue(UNIT_MOD_CAST_SPEED, mod); }
+    void ModCastSpeedMod(float mod) { modFloatValue(UNIT_MOD_CAST_SPEED, mod); }
 
     void SetCreatedBySpell(uint32 id) { setUInt32Value(UNIT_CREATED_BY_SPELL, id); }
     uint32 GetCreatedBySpell() { return getUInt32Value(UNIT_CREATED_BY_SPELL); }
@@ -1096,39 +1096,39 @@ public:
     uint32 GetBaseHealth() { return getUInt32Value(UNIT_FIELD_BASE_HEALTH); }
 
     void SetPowerCostMultiplier(uint16_t school, float amt) { setFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER + school, amt); }
-    void ModPowerCostMultiplier(uint16_t school, float amt) { ModFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER + school, amt); }
+    void ModPowerCostMultiplier(uint16_t school, float amt) { modFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER + school, amt); }
     float GetPowerCostMultiplier(uint16_t school) { return getFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER + school); }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void SetAttackPower(uint32 amt) { setUInt32Value(UNIT_FIELD_ATTACK_POWER, amt); }
-    uint32 GetAttackPower() { return getUInt32Value(UNIT_FIELD_ATTACK_POWER); }
+    void SetAttackPower(int32 amt) { setInt32Value(UNIT_FIELD_ATTACK_POWER, amt); }
+    int32 GetAttackPower() { return getInt32Value(UNIT_FIELD_ATTACK_POWER); }
 
     //\todo fix this
-    void SetAttackPowerMods(uint32 amt)
+    void SetAttackPowerMods(int32 amt)
     {
 #if VERSION_STRING != Cata
-        setUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS, amt);
+        setInt32Value(UNIT_FIELD_ATTACK_POWER_MODS, amt);
 #else
         if (amt == 0) { return; }
 #endif
     }
 
     //\todo fix this
-    uint32 GetAttackPowerMods()
+    int32 GetAttackPowerMods()
     {
 #if VERSION_STRING != Cata
-        return getUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS);
+        return getInt32Value(UNIT_FIELD_ATTACK_POWER_MODS);
 #else
         return 0;
 #endif
     }
 
     //\todo fix this
-    void ModAttackPowerMods(uint32 amt)
+    void ModAttackPowerMods(int32 amt)
     {
 #if VERSION_STRING != Cata
-        ModUnsigned32Value(UNIT_FIELD_ATTACK_POWER_MODS, amt);
+        modInt32Value(UNIT_FIELD_ATTACK_POWER_MODS, amt);
 #else
         if (amt == 0) { return; }
 #endif
@@ -1136,25 +1136,25 @@ public:
 
     void SetAttackPowerMultiplier(float amt) { setFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER, amt); }
     float GetAttackPowerMultiplier() { return getFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER); }
-    void ModAttackPowerMultiplier(float amt) { ModFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER, amt); }
+    void ModAttackPowerMultiplier(float amt) { modFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER, amt); }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void SetRangedAttackPower(uint32 amt) { setUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER, amt); }
-    uint32 GetRangedAttackPower() { return getUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER); }
+    void SetRangedAttackPower(int32 amt) { setInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER, amt); }
+    int32 GetRangedAttackPower() { return getInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER); }
 
     //\todo fix this
-    void SetRangedAttackPowerMods(uint32 amt)
+    void SetRangedAttackPowerMods(int32 amt)
     {
 #if VERSION_STRING != Cata
-        setUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS, amt);
+        setInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS, amt);
 #else
         if (amt == 0) { return; }
 #endif
     }
 
     //\todo fix this
-    uint32 GetRangedAttackPowerMods()
+    int32 GetRangedAttackPowerMods()
     {
 #if VERSION_STRING != Cata
         return getUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS);
@@ -1164,10 +1164,10 @@ public:
     }
 
     //\todo fix this
-    void ModRangedAttackPowerMods(uint32 amt)
+    void ModRangedAttackPowerMods(int32 amt)
     {
 #if VERSION_STRING != Cata
-        ModUnsigned32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS, amt);
+        modUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS, amt);
 #else
         if (amt == 0) { return; }
 #endif
@@ -1175,7 +1175,7 @@ public:
 
     void SetRangedAttackPowerMultiplier(float amt) { setFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER, amt); }
     float GetRangedAttackPowerMultiplier() { return getFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER); }
-    void ModRangedAttackPowerMultiplier(float amt) { ModFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER, amt); }
+    void ModRangedAttackPowerMultiplier(float amt) { modFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER, amt); }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // bytes 0
@@ -1199,15 +1199,15 @@ public:
     uint32 GetHealth()    const { return getUInt32Value(UNIT_FIELD_HEALTH); }
     uint32 GetMaxHealth() const { return getUInt32Value(UNIT_FIELD_MAXHEALTH); }
 
-    void ModHealth(int32 val) { ModUnsigned32Value(UNIT_FIELD_HEALTH, val); }
-    void ModMaxHealth(int32 val) { ModUnsigned32Value(UNIT_FIELD_MAXHEALTH, val); }
+    void ModHealth(int32 val) { modUInt32Value(UNIT_FIELD_HEALTH, val); }
+    void ModMaxHealth(int32 val) { modUInt32Value(UNIT_FIELD_MAXHEALTH, val); }
 
     void SetPower(uint32 type, int32 value);
 
     void ModPower(uint16_t index, int32 value)
     {
-        int32 power = static_cast<int32>(m_uint32Values[UNIT_FIELD_POWER1 + index]);
-        int32 maxpower = static_cast<int32>(m_uint32Values[UNIT_FIELD_MAXPOWER1 + index]);
+        int32 power = static_cast<int32>(getUInt32Value(UNIT_FIELD_POWER1 + index));
+        int32 maxpower = static_cast<int32>(getUInt32Value(UNIT_FIELD_MAXPOWER1 + index));
 
         if (value <= power)
             setUInt32Value(UNIT_FIELD_POWER1 + index, 0);
@@ -1224,7 +1224,7 @@ public:
 
     void SetMaxPower(uint16_t index, uint32 value) { setUInt32Value(UNIT_FIELD_MAXPOWER1 + index, value); }
 
-    void ModMaxPower(uint16_t index, int32 value) { ModUnsigned32Value(UNIT_FIELD_MAXPOWER1 + index, value); }
+    void ModMaxPower(uint16_t index, int32 value) { modUInt32Value(UNIT_FIELD_MAXPOWER1 + index, value); }
 
     uint32 GetMaxPower(uint16_t index) { return getUInt32Value(UNIT_FIELD_MAXPOWER1 + index); }
 

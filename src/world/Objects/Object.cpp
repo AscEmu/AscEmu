@@ -212,6 +212,56 @@ uint32_t Object::getUInt32Value(uint16_t index) const
     return m_uint32Values[index];
 }
 
+void Object::modUInt32Value(uint16_t index, int32_t mod)
+{
+    int32_t value = m_uint32Values[index];
+    value += mod;
+
+    if (value < 0)
+        value = 0;
+
+    setUInt32Value(index, value);
+}
+
+uint32_t Object::getPercentModUInt32Value(uint16_t index, const int32_t value)
+{
+    ARCEMU_ASSERT(index < m_valuesCount);
+    int32_t basevalue = (int32_t)m_uint32Values[index];
+    return ((basevalue * value) / 100);
+}
+
+void Object::setInt32Value(uint16_t index, int32_t value)
+{
+    ARCEMU_ASSERT(index < m_valuesCount);
+
+    if (m_int32Values[index] != value)
+    {
+        m_int32Values[index] = value;
+        m_updateMask.SetBit(index);
+
+        updateObject();
+    }
+}
+
+uint32_t Object::getInt32Value(uint16_t index) const
+{
+    ARCEMU_ASSERT(index < m_valuesCount);
+    return m_int32Values[index];
+}
+
+void Object::modInt32Value(uint16_t index, int32_t mod)
+{
+    ARCEMU_ASSERT(index < m_valuesCount);
+    if (mod == 0)
+        return;
+
+    m_int32Values[index] += mod;
+
+    m_updateMask.SetBit(index);
+
+    updateObject();
+}
+
 void Object::setUInt64Value(uint16_t index, uint64_t value)
 {
     ARCEMU_ASSERT(index + 1 < m_valuesCount);
@@ -253,6 +303,29 @@ float Object::getFloatValue(uint16_t index) const
 {
     ARCEMU_ASSERT(index < m_valuesCount);
     return m_floatValues[index];
+}
+
+void Object::modFloatValue(uint16_t index, float value)
+{
+    ARCEMU_ASSERT(index < m_valuesCount);
+    m_floatValues[index] += value;
+
+    m_updateMask.SetBit(index);
+
+    updateObject();
+}
+
+void Object::modFloatValueByPCT(uint16_t index, int32 byPct)
+{
+    ARCEMU_ASSERT(index < m_valuesCount);
+    if (byPct > 0)
+        m_floatValues[index] *= 1.0f + byPct / 100.0f;
+    else
+        m_floatValues[index] /= 1.0f - byPct / 100.0f;
+
+    m_updateMask.SetBit(index);
+
+    updateObject();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -2315,99 +2388,6 @@ void Object::RemoveFromWorld(bool free_guid)
     // update our event holder
     event_Relocate();
 }
-
-uint32 Object::GetModPUInt32Value(const uint32 index, const int32 value)
-{
-    ARCEMU_ASSERT(index < m_valuesCount);
-    int32 basevalue = (int32)m_uint32Values[index];
-    return ((basevalue * value) / 100);
-}
-
-void Object::ModUnsigned32Value(uint32 index, int32 mod)
-{
-    ARCEMU_ASSERT(index < m_valuesCount);
-    if (mod == 0)
-        return;
-
-    m_uint32Values[index] += mod;
-    if ((int32)m_uint32Values[index] < 0)
-        m_uint32Values[index] = 0;
-
-    m_updateMask.SetBit(index);
-
-    updateObject();
-
-    if (IsPlayer())
-    {
-        switch (index)
-        {
-            case UNIT_FIELD_POWER1:
-            case UNIT_FIELD_POWER2:
-            case UNIT_FIELD_POWER4:
-#if VERSION_STRING == WotLK
-            case UNIT_FIELD_POWER7:
-#endif
-                static_cast< Unit* >(this)->SendPowerUpdate(true);
-                break;
-            default:
-                break;
-        }
-    }
-    else if (IsCreature())
-    {
-        switch (index)
-        {
-            case UNIT_FIELD_POWER1:
-            case UNIT_FIELD_POWER2:
-            case UNIT_FIELD_POWER3:
-            case UNIT_FIELD_POWER4:
-#if VERSION_STRING == WotLK
-            case UNIT_FIELD_POWER7:
-#endif
-                static_cast<Creature*>(this)->SendPowerUpdate(false);
-                break;
-            default:
-                break;
-        }
-    }
-}
-
-void Object::ModSignedInt32Value(uint32 index, int32 value)
-{
-    ARCEMU_ASSERT(index < m_valuesCount);
-    if (value == 0)
-        return;
-
-    m_uint32Values[index] += value;
-
-    m_updateMask.SetBit(index);
-
-    updateObject();
-}
-
-void Object::ModFloatValue(const uint32 index, const float value)
-{
-    ARCEMU_ASSERT(index < m_valuesCount);
-    m_floatValues[index] += value;
-
-    m_updateMask.SetBit(index);
-
-    updateObject();
-}
-
-void Object::ModFloatValueByPCT(const uint32 index, int32 byPct)
-{
-    ARCEMU_ASSERT(index < m_valuesCount);
-    if (byPct > 0)
-        m_floatValues[index] *= 1.0f + byPct / 100.0f;
-    else
-        m_floatValues[index] /= 1.0f - byPct / 100.0f;
-
-    m_updateMask.SetBit(index);
-
-    updateObject();
-}
-
 
 void Object::SetFlag(const uint16 index, uint32 newFlag)
 {
