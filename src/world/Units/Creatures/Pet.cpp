@@ -2408,7 +2408,7 @@ void Pet::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     }
 
     //Stop players from casting
-    for (const auto& itr : *GetInRangePlayerSet())
+    for (const auto& itr : getInRangePlayersSet())
     {
         Unit* attacker = static_cast<Unit*>(itr);
         if (attacker && attacker->isCastingNonMeleeSpell())

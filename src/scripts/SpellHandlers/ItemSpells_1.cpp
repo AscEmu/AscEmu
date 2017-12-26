@@ -141,7 +141,7 @@ bool HolidayCheer(uint8_t effectIndex, Spell* pSpell)
     Unit* target;
     float dist = pSpell->GetRadius(effectIndex);
 
-    for (const auto& itr : pSpell->m_caster->GetInRangeSet())
+    for (const auto& itr : pSpell->m_caster->getInRangeObjectsSet())
     {
         if (itr && itr->IsUnit())
             target = static_cast<Unit*>(itr);
@@ -540,7 +540,7 @@ bool ExtractGas(uint8_t /*effectIndex*/, Spell* s)
     if (!s->p_caster)
         return false;
 
-    for (const auto& itr : s->p_caster->GetInRangeSet())
+    for (const auto& itr : s->p_caster->getInRangeObjectsSet())
     {
         if (itr && itr->IsCreature())
         {
@@ -686,7 +686,7 @@ bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
 
             case 2:  // our party
             {
-                for (const auto& itr : *s->p_caster->GetInRangePlayerSet())
+                for (const auto& itr : s->p_caster->getInRangePlayersSet())
                 {
                     if (!itr)
                         continue;
@@ -705,7 +705,7 @@ bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
 
             case 3:  // every attacking enemy
             {
-                for (const auto& itr : s->p_caster->GetInRangeOppFactsSet())
+                for (const auto& itr : s->p_caster->getInRangeOppositeFactionSet())
                 {
                     if(!itr)
                         continue;

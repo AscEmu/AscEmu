@@ -212,7 +212,7 @@ void MapMgr::PushObject(Object* obj)
         m_corpses.insert(static_cast< Corpse* >(obj));
     }
 
-    obj->ClearInRangeSet();
+    obj->clearInRangeSets();
 
     // Check valid cell x/y values
     ARCEMU_ASSERT(obj->GetMapId() == _mapId);
@@ -497,8 +497,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
         plObj->ClearAllPendingUpdates();
     }
 
-    obj->RemoveSelfFromInrangeSets();
-    obj->ClearInRangeSet();             // Clear object's in-range set
+    obj->clearInRangeSets();             // Clear object's in-range set
 
     uint8 cellNumber = worldConfig.server.mapCellNumber;
 
@@ -555,41 +554,39 @@ void MapMgr::ChangeObjectLocation(Object* obj)
     }
 
     Player* plObj = nullptr;
-    ByteBuffer* buf = 0;
+    ByteBuffer* buf = nullptr;
 
     if (obj->IsPlayer())
-    {
         plObj = static_cast<Player*>(obj);
-    }
 
-    Object* curObj;
     float fRange = 0.0f;
 
     // Update in-range data for old objects
-    if (obj->HasInRangeObjects())
+    if (obj->hasInRangeObjects())
     {
-        for (Object::InRangeSet::iterator iter = obj->GetInRangeSet().begin(); iter != obj->GetInRangeSet().end();)
+        for (const auto& iter : obj->getInRangeObjectsSet())
         {
-            curObj = *iter;
-            ++iter;
-
-            fRange = GetUpdateDistance(curObj, obj, plObj);
-
-            if (fRange > 0.0f && (curObj->GetDistance2dSq(obj) > fRange))
+            if (iter)
             {
-                if (plObj != nullptr)
-                    plObj->RemoveIfVisible(curObj->GetGUID());
+                Object* curObj = iter;
 
-                if (curObj->IsPlayer())
-                    static_cast< Player* >(curObj)->RemoveIfVisible(obj->GetGUID());
+                fRange = GetUpdateDistance(curObj, obj, plObj);
 
-                curObj->RemoveInRangeObject(obj);
-
-                if (obj->GetMapMgr() != this)
+                if (fRange > 0.0f && (curObj->GetDistance2dSq(obj) > fRange))
                 {
-                    return;             //Something removed us.
+                    if (plObj != nullptr)
+                        plObj->RemoveIfVisible(curObj->GetGUID());
+
+                    if (curObj->IsPlayer())
+                        static_cast<Player*>(curObj)->RemoveIfVisible(obj->GetGUID());
+
+                    curObj->removeObjectFromInRangeObjectsSet(obj);
+
+                    if (obj->GetMapMgr() != this)
+                        return;             //Something removed us.
+
+                    obj->removeObjectFromInRangeObjectsSet(curObj);
                 }
-                obj->RemoveInRangeObject(curObj);
             }
         }
     }
@@ -738,10 +735,10 @@ void MapMgr::UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuf
 
         if (curObj != obj && (curObj->GetDistance2dSq(obj) <= fRange || fRange == 0.0f))
         {
-            if (!obj->IsInRangeSet(curObj))
+            if (!obj->isObjectInInRangeObjectsSet(curObj))
             {
-                obj->AddInRangeObject(curObj);          // Object in range, add to set
-                curObj->AddInRangeObject(obj);
+                obj->addToInRangeObjects(curObj);          // Object in range, add to set
+                curObj->addToInRangeObjects(obj);
 
                 if (curObj->IsPlayer())
                 {
@@ -896,7 +893,7 @@ void MapMgr::_UpdateObjects()
 
                 if (count)
                 {
-                    for (const auto& itr : *pObj->GetInRangePlayerSet())
+                    for (const auto& itr : pObj->getInRangePlayersSet())
                     {
                         Player* lplr = static_cast<Player*>(itr);
 
@@ -1943,7 +1940,7 @@ GameObject* MapMgr::FindNearestGoWithType(Object* o, uint32 type)
     GameObject* go = nullptr;
     float r = FLT_MAX;
 
-    for (const auto& itr : o->GetInRangeSet())
+    for (const auto& itr : o->getInRangeObjectsSet())
     {
         Object* iro = itr;
         if (!iro || !iro->IsGameObject())

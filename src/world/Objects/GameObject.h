@@ -432,7 +432,7 @@ class SERVER_DECL GameObject : public Object
 
         GameobjectSpawn* m_spawn;
         void OnPushToWorld();
-        void OnRemoveInRangeObject(Object* pObj);
+        void onRemoveInRangeObject(Object* pObj);
         void RemoveFromWorld(bool free_guid);
 
         uint32 GetGOReqSkill();

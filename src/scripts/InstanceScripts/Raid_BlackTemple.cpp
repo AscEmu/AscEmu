@@ -1834,7 +1834,7 @@ class ReliquaryOfSoulsAI : public CreatureAIScript
                         }
                         if (SpawnedEnsalvedSoul)
                         {
-                            for (const auto& itr : getCreature()->GetInRangeSet())
+                            for (const auto& itr : getCreature()->getInRangeObjectsSet())
                             {
                                 if (itr && itr->IsCreature())
                                 {
@@ -3421,7 +3421,7 @@ class AkamaAI : public CreatureAIScript
             float distance = 70.0f;
             float z_diff;
 
-            for (const auto& itr : *getCreature()->GetInRangePlayerSet())
+            for (const auto& itr : getCreature()->getInRangePlayersSet())
             {
                 Unit* pUnit = static_cast<Unit*>(itr);
 
@@ -4851,7 +4851,7 @@ class IllidanStormrageAI : public CreatureAIScript
                     if (mFlameBurstTimer <= 0)
                     {
                         //CastSpellNowNoScheduling(mFlameBurst);
-                        for (const auto& itr : *getCreature()->GetInRangePlayerSet())
+                        for (const auto& itr : getCreature()->getInRangePlayersSet())
                         {
                             Unit* pUnit = static_cast<Unit*>(itr);
                             if (pUnit)

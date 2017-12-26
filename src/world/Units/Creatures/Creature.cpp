@@ -828,8 +828,8 @@ void Creature::EnslaveExpire()
 
     GetAIInterface()->Init(((Unit*)this), AI_SCRIPT_AGRO, Movement::WP_MOVEMENT_SCRIPT_NONE);
 
-    UpdateOppFactionSet();
-    UpdateSameFactionSet();
+    updateInRangeOppositeFactionSet();
+    updateInRangeSameFactionSet();
 }
 
 uint32 Creature::GetEnslaveCount()
@@ -857,12 +857,12 @@ bool Creature::RemoveEnslave()
     return RemoveAura(m_enslaveSpell);
 }
 
-void Creature::AddInRangeObject(Object* pObj)
+void Creature::addToInRangeObjects(Object* pObj)
 {
-    Unit::AddInRangeObject(pObj);
+    Unit::addToInRangeObjects(pObj);
 }
 
-void Creature::OnRemoveInRangeObject(Object* pObj)
+void Creature::onRemoveInRangeObject(Object* pObj)
 {
     if (m_escorter == pObj)
     {
@@ -875,12 +875,12 @@ void Creature::OnRemoveInRangeObject(Object* pObj)
         Despawn(1000, 1000);
     }
 
-    Unit::OnRemoveInRangeObject(pObj);
+    Unit::onRemoveInRangeObject(pObj);
 }
 
-void Creature::ClearInRangeSet()
+void Creature::clearInRangeSets()
 {
-    Unit::ClearInRangeSet();
+    Unit::clearInRangeSets();
 }
 
 void Creature::CalcResistance(uint16 type)
@@ -2426,7 +2426,7 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     }
 
     // Stop players from casting
-    for (const auto& itr : *GetInRangePlayerSet())
+    for (const auto& itr : getInRangePlayersSet())
     {
         Unit* attacker = static_cast<Unit*>(itr);
         if (attacker && attacker->isCastingNonMeleeSpell())

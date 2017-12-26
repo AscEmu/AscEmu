@@ -440,7 +440,7 @@ class LeotherasAI : public CreatureAIScript
         void FirstCheck()
         {
             //count greyheart spellbinders
-            for (const auto& itr : getCreature()->GetInRangeSet())
+            for (const auto& itr : getCreature()->getInRangeObjectsSet())
             {
                 if (itr && itr->IsCreature())
                 {
@@ -751,7 +751,7 @@ class GreyheartSpellbinderAI : public CreatureAIScript
                     //attack nearest player
                     Player* NearestPlayer = nullptr;
                     float NearestDist = 0;
-                    for (const auto& itr : *getCreature()->GetInRangePlayerSet())
+                    for (const auto& itr : getCreature()->getInRangePlayersSet())
                     {
                         if (itr && isHostile(getCreature(), itr) && (itr->GetDistance2dSq(getCreature()) < NearestDist || !NearestDist))
                         {
@@ -877,7 +877,7 @@ class KarathressAI : public CreatureAIScript
                 // trying to be blizzlike: cast this bolt random on casters only
                 CataclysmicBoltTimer = 10;
                 std::vector<Unit*> TargetTable;
-                for (const auto& itr : getCreature()->GetInRangeSet())
+                for (const auto& itr : getCreature()->getInRangeObjectsSet())
                 {
                     if (itr && isHostile(getCreature(), itr) && itr->IsUnit())
                     {
@@ -1149,7 +1149,7 @@ class TidewalkerLurkerAI : public CreatureAIScript
             Unit* pUnit;
             float dist;
 
-            for (const auto& itr : getCreature()->GetInRangeOppFactsSet())
+            for (const auto& itr : getCreature()->getInRangeOppositeFactionSet())
             {
                 if (!itr || !itr->IsUnit())
                     continue;
@@ -1307,7 +1307,7 @@ class VashjAI : public CreatureAIScript
         void OnCombatStop(Unit* /*mTarget*/) override
         {
             //despawn enchanted elemental, tainted elemental, coilfang elite, coilfang strider
-            for (const auto& itr : getCreature()->GetInRangeSet())
+            for (const auto& itr : getCreature()->getInRangeObjectsSet())
             {
                 if (itr && itr->IsCreature())
                 {
@@ -1383,7 +1383,7 @@ class VashjAI : public CreatureAIScript
 
             //if nobody is in range, shot or multishot
             bool InRange = false;
-            for (const auto& itr : getCreature()->GetInRangeSet())
+            for (const auto& itr : getCreature()->getInRangeObjectsSet())
             {
                 if (itr && isHostile(getCreature(), itr) && getCreature()->GetDistance2dSq(itr) < 100) //10 yards
                 {
@@ -1462,7 +1462,7 @@ class VashjAI : public CreatureAIScript
                     //attack nearest target
                     Unit* nearest = nullptr;
                     float nearestdist = 0;
-                    for (const auto& itr : summoned->GetInRangeSet())
+                    for (const auto& itr : summoned->getInRangeObjectsSet())
                     {
                         if (itr && itr->IsUnit() && isHostile(summoned, itr) && (summoned->GetDistance2dSq(itr) < nearestdist || !nearestdist))
                         {
@@ -1485,7 +1485,7 @@ class VashjAI : public CreatureAIScript
                     //attack nearest target
                     Unit* nearest = nullptr;
                     float nearestdist = 0;
-                    for (const auto& itr : summoned->GetInRangeSet())
+                    for (const auto& itr : summoned->getInRangeObjectsSet())
                     {
                         if (itr && itr->IsUnit() && isHostile(summoned, itr) && (summoned->GetDistance2dSq(itr) < nearestdist || !nearestdist))
                         {
@@ -1509,7 +1509,7 @@ class VashjAI : public CreatureAIScript
             if (getCreature()->GetHealthPct() <= 50)
             {
                 //despawn enchanted elementals
-                for (const auto& itr : getCreature()->GetInRangeSet())
+                for (const auto& itr : getCreature()->getInRangeObjectsSet())
                 {
                     if (itr && itr->IsCreature())
                     {

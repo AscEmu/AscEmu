@@ -661,7 +661,7 @@ void EyeOfTheStorm::UpdateCPs()
         go = m_CPStatusGO[i];
         disp = &m_CPDisplay[i];
 
-        for (const auto& itr : *go->GetInRangePlayerSet())
+        for (const auto& itr : go->getInRangePlayersSet())
         {
             Player* plr = static_cast<Player*>(itr);
             if (plr && plr->isAlive() && !(plr->IsStealth()) && !(plr->m_invisible) && !(plr->SchoolImmunityList[0]) && plr->GetDistance2dSq(go) <= EOTS_CAPTURE_DISTANCE)

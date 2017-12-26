@@ -531,7 +531,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /************************************************************************/
     /* Copy into the output buffer.                                         */
     /************************************************************************/
-    if (_player->m_inRangePlayers.size())
+    if (_player->getInRangePlayersCount())
     {
         move_time = (movement_info.time - (mstime - m_clientTimeDelay)) + MOVEMENT_PACKET_TIME_DELAY + mstime;
         memcpy(&movement_packet[0], recv_data.contents(), recv_data.size());
@@ -540,15 +540,13 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
         /************************************************************************/
         /* Distribute to all inrange players.                                   */
         /************************************************************************/
-        for (std::set<Object*>::iterator itr = _player->m_inRangePlayers.begin(); itr != _player->m_inRangePlayers.end(); ++itr)
+        for (const auto& itr : _player->getInRangePlayersSet())
         {
-
-            Player* p = static_cast< Player* >((*itr));
+            Player* p = static_cast<Player*>(itr);
 
             *(uint32*)&movement_packet[pos + 6] = uint32(move_time + p->GetSession()->m_moveDelayTime);
 
             p->GetSession()->OutPacket(recv_data.GetOpcode(), uint16(recv_data.size() + pos), movement_packet);
-
         }
     }
 

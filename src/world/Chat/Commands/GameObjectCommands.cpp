@@ -468,8 +468,8 @@ bool ChatHandler::HandleGOSelectCommand(const char* args, WorldSession* m_sessio
     GameObject* GObj = NULL;
     GameObject* GObjs = m_session->GetPlayer()->GetSelectedGo();
 
-    std::set<Object*>::iterator Itr = m_session->GetPlayer()->GetInRangeSet().begin();
-    std::set<Object*>::iterator Itr2 = m_session->GetPlayer()->GetInRangeSet().end();
+    std::set<Object*>::iterator Itr = m_session->GetPlayer()->getInRangeObjectsSet().begin();
+    std::set<Object*>::iterator Itr2 = m_session->GetPlayer()->getInRangeObjectsSet().end();
     float cDist = 9999.0f;
     float nDist = 0.0f;
     bool bUseNext = false;
@@ -484,7 +484,7 @@ bool ChatHandler::HandleGOSelectCommand(const char* args, WorldSession* m_sessio
             for (;; ++Itr)
             {
                 if (Itr == Itr2 && GObj == NULL && bUseNext)
-                    Itr = m_session->GetPlayer()->GetInRangeSet().begin();
+                    Itr = m_session->GetPlayer()->getInRangeObjectsSet().begin();
                 else if (Itr == Itr2)
                     break;
 

@@ -342,26 +342,22 @@ void WorldSession::HandleSetAtWarOpcode(WorldPacket& recv_data)
 void Player::UpdateInrangeSetsBasedOnReputation()
 {
     // This function assumes that the opp faction set for player = the opp faction set for the unit.
-    InRangeSet::iterator itr;
-    Unit* pUnit;
-    bool rep_value;
-    bool enemy_current;
-    for (itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
+    for (const auto& itr : getInRangeObjectsSet())
     {
-        if (!(*itr)->IsUnit())
+        if (!itr || !itr->IsUnit())
             continue;
 
-        pUnit = static_cast< Unit* >(*itr);
-        if (pUnit->m_factionDBC == NULL || pUnit->m_factionDBC->RepListId < 0)
+        Unit* pUnit = static_cast<Unit*>(itr);
+        if (pUnit->m_factionDBC == nullptr || pUnit->m_factionDBC->RepListId < 0)
             continue;
 
-        rep_value = IsHostileBasedOnReputation(pUnit->m_factionDBC);
-        enemy_current = IsInRangeOppFactSet(pUnit);
+        bool rep_value = IsHostileBasedOnReputation(pUnit->m_factionDBC);
+        bool enemy_current = isObjectInInRangeOppositeFactionSet(pUnit);
 
         if (rep_value && !enemy_current)   // We are now enemies.
-            m_oppFactsInRange.insert(pUnit);
+            addInRangeOppositeFaction(pUnit);
         else if (!rep_value && enemy_current)
-            m_oppFactsInRange.erase(pUnit);
+            addInRangeOppositeFaction(pUnit);
     }
 }
 

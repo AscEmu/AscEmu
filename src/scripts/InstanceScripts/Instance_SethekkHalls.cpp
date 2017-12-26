@@ -224,7 +224,7 @@ class LakkaAI : public CreatureAIScript
                 {
                     SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                     SetWaypointToMove(2);
-                    for (const auto& itr : getCreature()->GetInRangeSet())
+                    for (const auto& itr : getCreature()->getInRangeObjectsSet())
                     {
                         if (itr && itr->IsPlayer())
                         {

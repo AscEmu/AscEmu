@@ -1292,9 +1292,9 @@ public:
         // Visible objects
         bool CanSee(Object* obj);
         bool IsVisible(uint64 pObj) { return !(m_visibleObjects.find(pObj) == m_visibleObjects.end()); }
-        void AddInRangeObject(Object* pObj);
-        void OnRemoveInRangeObject(Object* pObj);
-        void ClearInRangeSet();
+        void addToInRangeObjects(Object* pObj);
+        void onRemoveInRangeObject(Object* pObj);
+        void clearInRangeSets();
         void AddVisibleObject(uint64 pObj) { m_visibleObjects.insert(pObj); }
         void RemoveVisibleObject(uint64 pObj) { m_visibleObjects.erase(pObj); }
         void RemoveVisibleObject(std::set< uint64 >::iterator itr) { m_visibleObjects.erase(itr); }

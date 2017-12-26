@@ -854,7 +854,7 @@ class CuratorAI : public CreatureAIScript
     void AstralSpawn()
     {
         std::vector<Player*> Target_List;
-        for (const auto& itr : *getCreature()->GetInRangePlayerSet())
+        for (const auto& itr : getCreature()->getInRangePlayersSet())
         {
             Player* RandomTarget = static_cast<Player*>(itr);
             if (RandomTarget && RandomTarget->isAlive() && isHostile(getCreature(), itr))
@@ -1061,7 +1061,7 @@ class ShadeofAranAI : public CreatureAIScript
         bool HasAtiesh = false;
         if (mTarget->IsPlayer())
         {
-            for (const auto& itr : *getCreature()->GetInRangePlayerSet())
+            for (const auto& itr : getCreature()->getInRangePlayersSet())
             {
                 if (itr)
                 {
@@ -1279,7 +1279,7 @@ class ShadeofAranAI : public CreatureAIScript
         FlameWreathTarget[2] = 0;
 
         std::vector<Player*> Targets;
-        for (const auto& hostileItr : *getCreature()->GetInRangePlayerSet())
+        for (const auto& hostileItr : getCreature()->getInRangePlayersSet())
         {
             Player* RandomTarget = static_cast<Player*>(hostileItr);
             if (RandomTarget && RandomTarget->isAlive() && getCreature()->GetAIInterface()->getThreatByPtr(RandomTarget) > 0)
@@ -1640,7 +1640,7 @@ class IllhoofAI : public CreatureAIScript
         }
 
         std::vector<Player* > TargetTable;
-        for (const auto& itr : *getCreature()->GetInRangePlayerSet())
+        for (const auto& itr : getCreature()->getInRangePlayersSet())
         {
             if (itr && isHostile(getCreature(), itr))
             {
@@ -2172,7 +2172,7 @@ class MalchezaarAI : public CreatureAIScript
     void Enfeebler()
     {
         std::vector<Player*> Targets;
-        for (const auto& itr: *getCreature()->GetInRangePlayerSet())
+        for (const auto& itr: getCreature()->getInRangePlayersSet())
         {
             if (itr && isHostile(getCreature(), itr))
             {
@@ -2282,7 +2282,7 @@ class MAxesAI : public CreatureAIScript
         //spells[0].casttime = (uint32)time(NULL) + spells[0].cooldown;
 
         std::vector<Unit* > TargetTable;
-        for (const auto& itr : *getCreature()->GetInRangePlayerSet())
+        for (const auto& itr : getCreature()->getInRangePlayersSet())
         {
             Player* RandomTarget = static_cast<Player*>(itr);
             if (RandomTarget && isHostile(getCreature(), RandomTarget) && RandomTarget->isAlive())
@@ -2391,7 +2391,7 @@ class NetherspiteAI : public CreatureAIScript
         {
             VoidTimer = t + 20;
             std::vector<Unit* > TargetTable;
-            for (const auto& itr : *getCreature()->GetInRangePlayerSet())
+            for (const auto& itr : *getCreature()->getInRangePlayersSet())
             {
                 Unit* RandomTarget = static_cast<Unit*>(itr);
 
@@ -2654,7 +2654,7 @@ class NightbaneAI : public CreatureAIScript
 
         target = nullptr;
         //fireball barrage check
-        for (const auto& itr : getCreature()->GetInRangeSet())
+        for (const auto& itr : getCreature()->getInRangeObjectsSet())
         {
             if (itr && itr->IsPlayer())
             {
@@ -2697,7 +2697,7 @@ class NightbaneAI : public CreatureAIScript
         mTailSweepTimer--;
         if (!mTailSweepTimer)
         {
-            for (const auto& itr : getCreature()->GetInRangeSet())
+            for (const auto& itr : getCreature()->getInRangeObjectsSet())
             {
                 if (itr && itr->IsPlayer())
                 {

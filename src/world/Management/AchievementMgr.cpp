@@ -470,7 +470,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
         }
 
         // Send Achievement message to nearby players
-        for (const auto& inRangeItr : *GetPlayer()->GetInRangePlayerSet())
+        for (const auto& inRangeItr : GetPlayer()->getInRangePlayersSet())
         {
             Player* p = static_cast<Player*>(inRangeItr);
             if (p && p->GetSession() && !p->Social_IsIgnoring(GetPlayer()->GetLowGUID()))

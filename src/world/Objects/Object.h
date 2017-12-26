@@ -392,6 +392,10 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Spell functions
+private:
+    Spell* m_currentSpell[CURRENT_SPELL_MAX];
+
+public:
     Spell* getCurrentSpell(CurrentSpellType spellType) const;
     Spell* getCurrentSpellById(uint32_t spellId) const;
     void setCurrentSpell(Spell* curSpell);
@@ -400,6 +404,7 @@ public:
     // TODO: implement delayed spells
     void interruptSpell(uint32_t spellId = 0, bool checkMeleeSpell = true, bool checkDelayed = true);
     void interruptSpellWithSpellType(CurrentSpellType spellType, bool checkDelayed = true);
+
     // Searches for current casted spell, but skips melee spells
     // TODO: implement delayed spells
     bool isCastingNonMeleeSpell(bool checkDelayed = true, bool skipChanneled = false, bool skipAutorepeat = false, bool isAutoshoot = false) const;
@@ -407,13 +412,58 @@ public:
 
     void _UpdateSpells(uint32_t time); // moved here from Unit class since GameObject can be caster as well
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // InRange sets
 private:
-    Spell* m_currentSpell[CURRENT_SPELL_MAX];
+
+    std::set<Object*> mInRangeObjectsSet;
+    std::set<Object*> mInRangePlayersSet;
+    std::set<Object*> mInRangeOppositeFactionSet;
+    std::set<Object*> mInRangeSameFactionSet;
 
 public:
+
+    // general
+    virtual void clearInRangeSets();
+    virtual void addToInRangeObjects(Object* pObj);
+    virtual void onRemoveInRangeObject(Object* /*pObj*/) {}
+
+    // Objects
+    std::set<Object*> getInRangeObjectsSet();
+
+    bool hasInRangeObjects();
+    size_t getInRangeObjectsCount();
+
+    bool isObjectInInRangeObjectsSet(Object* pObj);
+    void removeObjectFromInRangeObjectsSet(Object* pObj);
+
+    // Players
+    std::set<Object*> getInRangePlayersSet();
+
+    size_t getInRangePlayersCount();
+    
+
+    // opposit faction
+    std::set<Object*> getInRangeOppositeFactionSet();
+
+    bool isObjectInInRangeOppositeFactionSet(Object* pObj);
+    void updateInRangeOppositeFactionSet();
+
+    void addInRangeOppositeFaction(Object* obj);
+    void removeObjectFromInRangeOppositeFactionSet(Object* obj);
+
+    // same faction
+    std::set<Object*> getInRangeSameFactionSet();
+
+    bool isObjectInInRangeSameFactionSet(Object* pObj);
+    void updateInRangeSameFactionSet();
+
+    void addInRangeSameFaction(Object* obj);
+    void removeObjectFromInRangeSameFactionSet(Object* obj);
+
     // MIT End
 
-        typedef std::set<Object*> InRangeSet;
+        
 
         Object();
         virtual ~Object();
@@ -676,87 +726,6 @@ public:
             return m_position.Distance2DSq(obj->m_position);
         }
 
-        /// In-range object management, not sure if we need it
-        bool IsInRangeSet(Object* pObj)
-        {
-            return !(m_objectsInRange.find(pObj) == m_objectsInRange.end());
-        }
-
-        virtual void AddInRangeObject(Object* pObj);
-
-        Mutex m_inrangechangelock;
-
-        void RemoveInRangeObject(Object* pObj);
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // void RemoveSelfFromInrangeSets()
-        // Removes the Object from the inrangesets of the Objects in range
-        //
-        // \param none
-        //
-        // \return none
-        //
-        //////////////////////////////////////////////////////////////////////////////////////////
-        void RemoveSelfFromInrangeSets();
-
-
-        bool HasInRangeObjects()
-        {
-            return (m_objectsInRange.size() > 0);
-        }
-
-        virtual void OnRemoveInRangeObject(Object* pObj);
-
-        virtual void ClearInRangeSet()
-        {
-            m_objectsInRange.clear();
-            m_inRangePlayers.clear();
-            m_oppFactsInRange.clear();
-            m_sameFactsInRange.clear();
-        }
-
-        size_t GetInRangeCount() { return m_objectsInRange.size(); }
-        size_t GetInRangePlayersCount() { return m_inRangePlayers.size(); }
-
-        std::set<Object*> GetInRangeSet() { return m_objectsInRange; }
-
-        InRangeSet::iterator FindInRangeSet(Object* obj) { return m_objectsInRange.find(obj); }
-
-        void RemoveInRangeObject(InRangeSet::iterator itr)
-        {
-            OnRemoveInRangeObject(*itr);
-            m_objectsInRange.erase(itr);
-        }
-
-        bool RemoveIfInRange(Object* obj)
-        {
-            InRangeSet::iterator itr = m_objectsInRange.find(obj);
-            if (obj->IsPlayer())
-                m_inRangePlayers.erase(obj);
-
-            if (itr == m_objectsInRange.end())
-                return false;
-
-            m_objectsInRange.erase(itr);
-
-            return true;
-        }
-
-        bool IsInRangeSameFactSet(Object* pObj) { return (m_sameFactsInRange.count(pObj) > 0); }
-        void UpdateSameFactionSet();
-
-        bool IsInRangeOppFactSet(Object* pObj) { return (m_oppFactsInRange.count(pObj) > 0); }
-        void UpdateOppFactionSet();
-        size_t GetInRangeOppFactsSize() { return m_oppFactsInRange.size(); }
-
-        std::set<Object*> GetInRangeOppFactsSet() { return m_oppFactsInRange; }
-
-        std::set<Object*> * GetInRangePlayerSet() { return &m_inRangePlayers; }
-        std::set<Object*> & GetInRangePlayers() { return m_inRangePlayers; }
-        std::set<Object*> & GetInRangeOpposingFactions() { return m_oppFactsInRange; }
-        std::set<Object*> & GetInRangeSameFactions() { return m_sameFactsInRange; }
-        std::set<Object*> & GetInRangeObjects() { return m_objectsInRange; }
-
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // void OutPacket(uint16 opcode, uint16 len, const void *data)
@@ -941,13 +910,6 @@ public:
 
         // True if object was updated
         bool m_objectUpdated;
-
-        // Set of Objects in range.
-        // \todo that functionality should be moved into WorldServer.
-        std::set<Object*> m_objectsInRange;
-        std::set<Object*> m_inRangePlayers;
-        std::set<Object*> m_oppFactsInRange;
-        std::set<Object*> m_sameFactsInRange;
 
         int32 m_instanceId;
 

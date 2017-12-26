@@ -793,9 +793,9 @@ public:
     };
 
     //In-Range
-    virtual void AddInRangeObject(Object* pObj);
-    virtual void OnRemoveInRangeObject(Object* pObj);
-    void ClearInRangeSet();
+    virtual void addToInRangeObjects(Object* pObj);
+    virtual void onRemoveInRangeObject(Object* pObj);
+    void clearInRangeSets();
 
     uint32 m_CombatUpdateTimer;
 

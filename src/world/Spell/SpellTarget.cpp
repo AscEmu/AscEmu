@@ -180,7 +180,7 @@ void Spell::FillTargetMap(uint32 i)
 
 void Spell::AddScriptedOrSpellFocusTargets(uint32 i, uint32 targetType, float r, uint32 /*maxtargets*/)
 {
-    for (const auto& itr : m_caster->GetInRangeSet())
+    for (const auto& itr : m_caster->getInRangeObjectsSet())
     {
         Object* o = itr;
         if (!o || !o->IsGameObject())
@@ -203,7 +203,7 @@ void Spell::AddScriptedOrSpellFocusTargets(uint32 i, uint32 targetType, float r,
 void Spell::AddConeTargets(uint32 i, uint32 targetType, float /*r*/, uint32 maxtargets)
 {
     std::vector<uint64_t>* list = &m_targetUnits[i];
-    for (const auto& itr : m_caster->GetInRangeSet())
+    for (const auto& itr : m_caster->getInRangeObjectsSet())
     {
         if (!itr || !itr->IsUnit() || !static_cast<Unit*>(itr)->isAlive())
             continue;
@@ -264,7 +264,7 @@ void Spell::AddChainTargets(uint32 i, uint32 targetType, float /*r*/, uint32 /*m
     if (jumps <= 1 || list->size() == 0) //1 because we've added the first target, 0 size if spell is resisted
         return;
 
-    for (const auto& itr : firstTarget->GetInRangeSet())
+    for (const auto& itr : firstTarget->getInRangeObjectsSet())
     {
         auto obj = itr;
         if (!obj || !itr->IsUnit() || !static_cast<Unit*>(itr)->isAlive())
@@ -301,7 +301,7 @@ void Spell::AddPartyTargets(uint32 i, uint32 targetType, float r, uint32 /*maxta
 
     AddTarget(i, targetType, p);
 
-    for (const auto& itr : u->GetInRangeSet())
+    for (const auto& itr : u->getInRangeObjectsSet())
     {
         if (!itr || !itr->IsUnit() || !static_cast<Unit*>(itr)->isAlive())
             continue;
@@ -332,7 +332,7 @@ void Spell::AddRaidTargets(uint32 i, uint32 targetType, float r, uint32 /*maxtar
 
     AddTarget(i, targetType, p);
 
-    for (const auto& itr : u->GetInRangeSet())
+    for (const auto& itr : u->getInRangeObjectsSet())
     {
         if (!itr || !itr->IsUnit() || !static_cast<Unit*>(itr)->isAlive())
             continue;
@@ -377,7 +377,7 @@ void Spell::AddAOETargets(uint32 i, uint32 targetType, float r, uint32 maxtarget
 
     std::vector<uint64_t>* t = &m_targetUnits[i];
 
-    for (const auto& itr : m_caster->GetInRangeSet())
+    for (const auto& itr : m_caster->getInRangeObjectsSet())
     {
         if (!itr)
             continue;

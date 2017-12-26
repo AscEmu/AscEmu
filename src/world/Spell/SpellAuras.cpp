@@ -1328,7 +1328,7 @@ void Aura::EventUpdateFriendAA(float r)
     if (u == nullptr)
         return;
 
-    for (const auto& itr : u->GetInRangeSet())
+    for (const auto& itr : u->getInRangeObjectsSet())
     {
         Object* o = itr;
 
@@ -1398,7 +1398,7 @@ void Aura::EventUpdateEnemyAA(float r)
     if (u == nullptr)
         return;
 
-    for (const auto& itr : u->GetInRangeSet())
+    for (const auto& itr : u->getInRangeObjectsSet())
     {
         Object* o = itr;
 
@@ -1701,7 +1701,7 @@ void Aura::SpellAuraModPossess(bool apply)
             m_target->SetCharmedByGUID(0);
             m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
             m_target->SetFaction(m_target->GetCharmTempVal());
-            m_target->UpdateOppFactionSet();
+            m_target->updateInRangeOppositeFactionSet();
         }
         else
         {
@@ -2083,7 +2083,7 @@ void Aura::SpellAuraModCharm(bool apply)
         m_target->addUnitStateFlag(UNIT_STATE_CHARM);
         m_target->SetCharmTempVal(m_target->GetFaction());
         m_target->SetFaction(caster->GetFaction());
-        m_target->UpdateOppFactionSet();
+        m_target->updateInRangeOppositeFactionSet();
         m_target->GetAIInterface()->Init(m_target, AI_SCRIPT_PET, Movement::WP_MOVEMENT_SCRIPT_NONE, caster);
         m_target->SetCharmedByGUID(caster->GetGUID());
         caster->SetCharmedUnitGUID(target->GetGUID());
@@ -2119,7 +2119,7 @@ void Aura::SpellAuraModCharm(bool apply)
         m_target->SetFaction(m_target->GetCharmTempVal());
         m_target->GetAIInterface()->WipeHateList();
         m_target->GetAIInterface()->WipeTargetList();
-        m_target->UpdateOppFactionSet();
+        m_target->updateInRangeOppositeFactionSet();
         m_target->GetAIInterface()->Init(m_target, AI_SCRIPT_AGRO, Movement::WP_MOVEMENT_SCRIPT_NONE);
         m_target->SetCharmedByGUID(0);
 
@@ -2467,7 +2467,7 @@ void Aura::EventPeriodicHeal(uint32 amount)
         std::vector<Unit*> target_threat;
         int count = 0;
         Creature* tmp_creature = nullptr;
-        for (const auto& itr : u_caster->GetInRangeSet())
+        for (const auto& itr : u_caster->getInRangeObjectsSet())
         {
             if (!itr || !itr->IsCreature())
                 continue;
@@ -2963,7 +2963,7 @@ void Aura::SpellAuraModStealth(bool apply)
                 case 55964:
                 case 71400:
                 {
-                    for (const auto& iter : m_target->GetInRangeSet())
+                    for (const auto& iter : m_target->getInRangeObjectsSet())
                     {
                         if (iter == nullptr || !iter->IsUnit())
                             continue;
@@ -5400,7 +5400,7 @@ void Aura::SpellAuraFeignDeath(bool apply)
             p_target->SetFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_DEAD);
 
             //now get rid of mobs agro. pTarget->CombatStatus.AttackersForgetHate() - this works only for already attacking mobs
-            for (const auto& itr : p_target->GetInRangeSet())
+            for (const auto& itr : p_target->getInRangeObjectsSet())
             {
                 if (itr && itr->IsUnit() && static_cast<Unit*>(itr)->isAlive())
                 {

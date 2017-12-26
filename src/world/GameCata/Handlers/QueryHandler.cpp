@@ -72,14 +72,12 @@ void WorldSession::HandleInrangeQuestgiverQuery(WorldPacket& /*recvData*/)
     WorldPacket data(SMSG_QUESTGIVER_STATUS_MULTIPLE, 4 + 8 + 4);
     data << uint32_t(count);
 
-    Object::InRangeSet::iterator itr;
-    for (itr = _player->m_objectsInRange.begin(); itr != _player->m_objectsInRange.end(); ++itr)
+    for (const auto& itr : _player->getInRangeObjectsSet())
     {
-        if (!(*itr)->IsCreature())
+        if (!itr || !itr->IsCreature())
             continue;
 
-        Creature* pCreature = static_cast<Creature*>(*itr);
-
+        Creature* pCreature = static_cast<Creature*>(itr);
         if (pCreature->isQuestGiver())
         {
             data << uint64_t(pCreature->GetGUID());

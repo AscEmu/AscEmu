@@ -49,8 +49,8 @@ public:
         void Create(Unit* caster, Spell* pSpell, float x, float y, float z, uint32 duration, float radius, uint32 type);
         void UpdateTargets();
 
-        void AddInRangeObject(Object* pObj);
-        void OnRemoveInRangeObject(Object* pObj);
+        void addToInRangeObjects(Object* pObj);
+        void onRemoveInRangeObject(Object* pObj);
         void Remove();
 
     protected:

@@ -315,7 +315,7 @@ class Volkhan : public CreatureAIScript
 
     void DoStomp()
     {
-        for (const auto& itr : getCreature()->GetInRangeSet())
+        for (const auto& itr : getCreature()->getInRangeObjectsSet())
         {
             if (itr && itr->IsCreature() && itr->GetEntry() == CN_BRITTLE_GOLEM)
             {

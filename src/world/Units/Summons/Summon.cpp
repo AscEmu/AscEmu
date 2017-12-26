@@ -131,11 +131,11 @@ void Summon::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     owner = NULL;
 }
 
-void Summon::OnRemoveInRangeObject(Object* object)
+void Summon::onRemoveInRangeObject(Object* object)
 {
 
     if ((owner != NULL) && (object->GetGUID() == owner->GetGUID()))
         Despawn(1, 0);
 
-    Creature::OnRemoveInRangeObject(object);
+    Creature::onRemoveInRangeObject(object);
 }

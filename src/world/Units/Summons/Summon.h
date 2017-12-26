@@ -68,7 +68,7 @@ class Summon : public Creature
         Unit* GetOwner() { return owner; }
         Object* GetPlayerOwner();
         void Die(Unit* pAttacker, uint32 damage, uint32 spellid);
-        void OnRemoveInRangeObject(Object* object);
+        void onRemoveInRangeObject(Object* object);
 
     private:
 

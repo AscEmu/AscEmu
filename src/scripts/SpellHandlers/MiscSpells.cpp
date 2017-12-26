@@ -85,7 +85,7 @@ bool Cannibalize(uint8_t effectIndex, Spell* s)
     float rad = s->GetRadius(effectIndex);
     rad *= rad;
 
-    for (const auto& itr : s->p_caster->GetInRangeSet())
+    for (const auto& itr : s->p_caster->getInRangeObjectsSet())
     {
         if (itr && itr->IsCreature())
         {

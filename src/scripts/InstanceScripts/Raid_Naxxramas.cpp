@@ -891,7 +891,7 @@ void AnubRekhanAI::Destroy()
 //        std::vector<std::pair< Player* , Movement::Location > > PlayerCorpses;
 //        Player* PlayerPtr = NULL;
 //        LocationVector spawnLocation;
-//        for (const auto& Iter : AnubRekhan->getCreature()->GetInRangePlayerSet())
+//        for (const auto& Iter : AnubRekhan->getCreature()->getInRangePlayersSet())
 //        {
 //            if (Iter == nullptr)
 //                continue;
@@ -1677,7 +1677,7 @@ void HeiganTheUncleanAI::OnCombatStart(Unit* /*pTarget*/)
 
         if (mFissures.size() == 0)
         {
-            for (const auto& Iter : getCreature()->GetInRangeSet())
+            for (const auto& Iter : getCreature()->getInRangeObjectsSet())
             {
                 if (Iter == nullptr || !Iter->IsGameObject())
                     continue;
@@ -1921,7 +1921,7 @@ void LoathebAI::AIUpdate()
         {
             if (mDeathbloomDamagePhase)
             {
-                for (const auto& Iter : *getCreature()->GetInRangePlayerSet())
+                for (const auto& Iter : getCreature()->getInRangePlayersSet())
                 {
                     if (Iter == nullptr)
                         continue;
@@ -2580,7 +2580,7 @@ MaraudingGeistAI::MaraudingGeistAI(Creature* pCreature) : CreatureAIScript(pCrea
 //    uint32 _mostHP = 0;
 //    Player* pBestTarget = NULL;
 //
-//    for (const auto& PlayerIter : pCreatureAI->getCreature()->GetInRangePlayerSet())
+//    for (const auto& PlayerIter : pCreatureAI->getCreature()->getInRangePlayersSet())
 //    {
 //        if (PlayerIter && (static_cast<Player*>(PlayerIter))->isAlive() && PlayerIter->GetDistance2dSq(pCreatureAI->getCreature()) <= 5.0f
 //                && PlayerIter->getUInt32Value(UNIT_FIELD_HEALTH) > _mostHP)

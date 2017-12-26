@@ -377,9 +377,9 @@ void GameObject::OnPushToWorld()
     }
 }
 
-void GameObject::OnRemoveInRangeObject(Object* pObj)
+void GameObject::onRemoveInRangeObject(Object* pObj)
 {
-    Object::OnRemoveInRangeObject(pObj);
+    Object::onRemoveInRangeObject(pObj);
     if (m_summonedGo && m_summoner == pObj)
     {
         for (uint8 i = 0; i < 4; i++)
@@ -810,13 +810,13 @@ void GameObject_Trap::Update(unsigned long time_passed)
         if (targetupdatetimer != 0)
             return;
 
-        for (std::set<Object*>::iterator itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
+        for (const auto& itr : getInRangeObjectsSet())
         {
             float dist;
 
-            Object* o = *itr;
+            Object* o = itr;
 
-            if (!o->IsUnit())
+            if (!o || !o->IsUnit())
                 continue;
 
             if ((m_summoner != NULL) && (o->GetGUID() == m_summoner->GetGUID()))

@@ -6054,7 +6054,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
     }
 }
 
-void Player::AddInRangeObject(Object* pObj)
+void Player::addToInRangeObjects(Object* pObj)
 {
     //Send taxi move if we're on a taxi
     if (m_CurrentTaxiPath && pObj->IsPlayer())
@@ -6067,7 +6067,7 @@ void Player::AddInRangeObject(Object* pObj)
             m_CurrentTaxiPath->SendMoveForTime(this, TO< Player* >(pObj), m_taxi_ride_time - ntime);*/
     }
 
-    Unit::AddInRangeObject(pObj);
+    Unit::addToInRangeObjects(pObj);
 
     //if the object is a unit send a move packet if they have a destination
     if (pObj->IsCreature())
@@ -6075,7 +6075,7 @@ void Player::AddInRangeObject(Object* pObj)
         static_cast< Creature* >(pObj)->GetAIInterface()->SendCurrentMove(this);
     }
 }
-void Player::OnRemoveInRangeObject(Object* pObj)
+void Player::onRemoveInRangeObject(Object* pObj)
 {
     //object was deleted before reaching here
     if (pObj == nullptr)
@@ -6085,7 +6085,7 @@ void Player::OnRemoveInRangeObject(Object* pObj)
         PushOutOfRange(pObj->GetNewGUID());
 
     m_visibleObjects.erase(pObj->GetGUID());
-    Unit::OnRemoveInRangeObject(pObj);
+    Unit::onRemoveInRangeObject(pObj);
 
     if (pObj->GetGUID() == m_CurrentCharm)
     {
@@ -6117,10 +6117,10 @@ void Player::OnRemoveInRangeObject(Object* pObj)
         sEventMgr.AddEvent(static_cast<Unit*>(this), &Unit::RemoveFieldSummon, EVENT_SUMMON_EXPIRE, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);//otherwise Creature::Update() will access free'd memory
 }
 
-void Player::ClearInRangeSet()
+void Player::clearInRangeSets()
 {
     m_visibleObjects.clear();
-    Unit::ClearInRangeSet();
+    Unit::clearInRangeSets();
 }
 
 void Player::EventCannibalize(uint32 amount)
@@ -6752,11 +6752,10 @@ void Player::CalcResistance(uint16 type)
 
 void Player::UpdateNearbyGameObjects()
 {
-
-    for (Object::InRangeSet::iterator itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
+    for (const auto& itr : getInRangeObjectsSet())
     {
-        Object* obj = (*itr);
-        if (obj->IsGameObject())
+        Object* obj = itr;
+        if (obj && obj->IsGameObject())
         {
             bool activate_quest_object = false;
             GameObject* go = static_cast<GameObject*>(obj);
@@ -6832,7 +6831,7 @@ void Player::UpdateNearbyGameObjects()
                 }
             }
             if (!bPassed)
-                EventDeActivateGameObject(static_cast<GameObject*>(*itr));
+                EventDeActivateGameObject(static_cast<GameObject*>(itr));
         }
     }
 }
@@ -9082,7 +9081,7 @@ void Player::UpdatePvPArea()
 void Player::BuildFlagUpdateForNonGroupSet(uint32 index, uint32 flag)
 {
     Object* curObj;
-    for (Object::InRangeSet::iterator iter = m_objectsInRange.begin(); iter != m_objectsInRange.end();)
+    for (std::set<Object*>::iterator iter = getInRangeObjectsSet().begin(); iter != getInRangeObjectsSet().end();)
     {
         curObj = *iter;
         ++iter;
@@ -12740,18 +12739,20 @@ void Player::OutPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool se
     if (self)
         OutPacket(Opcode, Len, Data);
 
-    for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
+    for (const auto& itr : getInRangePlayersSet())
     {
-        Player* p = static_cast< Player* >(*itr);
-
-        if (gm)
+        if (itr)
         {
-            if (p->GetSession()->GetPermissionCount() > 0)
+            Player* p = static_cast<Player*>(itr);
+            if (gm)
+            {
+                if (p->GetSession()->GetPermissionCount() > 0)
+                    p->OutPacket(Opcode, Len, Data);
+            }
+            else
+            {
                 p->OutPacket(Opcode, Len, Data);
-        }
-        else
-        {
-            p->OutPacket(Opcode, Len, Data);
+            }
         }
     }
 }
@@ -12777,30 +12778,29 @@ void Player::SendMessageToSet(WorldPacket* data, bool bToSelf, bool myteam_only)
 
         if (data->GetOpcode() != SMSG_MESSAGECHAT)
         {
-            for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
+            for (const auto& itr : getInRangePlayersSet())
             {
-                Player* p = static_cast< Player* >(*itr);
+                if (itr)
+                {
+                    Player* p = static_cast<Player*>(itr);
+                    if (gminvis && ((p->GetSession() == nullptr) || (p->GetSession()->GetPermissionCount() <= 0)))
+                        continue;
 
-                if (gminvis && ((p->GetSession() == nullptr) || (p->GetSession()->GetPermissionCount() <= 0)))
-                    continue;
-
-                if (p->GetTeam() == myteam
-                    && (p->GetPhase() & myphase) != 0
-                    && p->IsVisible(GetGUID()))
-                    p->SendPacket(data);
+                    if (p->GetTeam() == myteam && (p->GetPhase() & myphase) != 0 && p->IsVisible(GetGUID()))
+                        p->SendPacket(data);
+                }
             }
         }
         else
         {
-            for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
+            for (const auto& itr : getInRangePlayersSet())
             {
-                Player* p = static_cast< Player* >(*itr);
-
-                if (p->GetSession()
-                    && p->GetTeam() == myteam
-                    && !p->Social_IsIgnoring(GetLowGUID())
-                    && (p->GetPhase() & myphase) != 0)
-                    p->SendPacket(data);
+                if (itr)
+                {
+                    Player* p = static_cast<Player*>(itr);
+                    if (p->GetSession() && p->GetTeam() == myteam && !p->Social_IsIgnoring(GetLowGUID()) && (p->GetPhase() & myphase) != 0)
+                        p->SendPacket(data);
+                }
             }
         }
     }
@@ -12808,28 +12808,29 @@ void Player::SendMessageToSet(WorldPacket* data, bool bToSelf, bool myteam_only)
     {
         if (data->GetOpcode() != SMSG_MESSAGECHAT)
         {
-            for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
+            for (const auto& itr : getInRangePlayersSet())
             {
-                Player* p = static_cast< Player* >(*itr);
+                if (itr)
+                {
+                    Player* p = static_cast<Player*>(itr);
+                    if (gminvis && (p->GetSession() == nullptr || p->GetSession()->GetPermissionCount() <= 0))
+                        continue;
 
-                if (gminvis && ((p->GetSession() == nullptr) || (p->GetSession()->GetPermissionCount() <= 0)))
-                    continue;
-
-                if ((p->GetPhase() & myphase) != 0
-                    && p->IsVisible(GetGUID()))
-                    p->SendPacket(data);
+                    if ((p->GetPhase() & myphase) != 0 && p->IsVisible(GetGUID()))
+                        p->SendPacket(data);
+                }
             }
         }
         else
         {
-            for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
+            for (const auto& itr : getInRangePlayersSet())
             {
-                Player* p = static_cast< Player* >(*itr);
-
-                if (p->GetSession()
-                    && !p->Social_IsIgnoring(GetLowGUID())
-                    && (p->GetPhase() & myphase) != 0)
-                    p->SendPacket(data);
+                if (itr)
+                {
+                    Player* p = static_cast<Player*>(itr);
+                    if (p->GetSession() && !p->Social_IsIgnoring(GetLowGUID()) && (p->GetPhase() & myphase) != 0)
+                        p->SendPacket(data);
+                }
             }
         }
     }
@@ -13279,7 +13280,7 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     }
 
     // Stop players from casting
-    for (const auto& itr : *GetInRangePlayerSet())
+    for (const auto& itr : getInRangePlayersSet())
     {
         Unit* attacker = static_cast<Unit*>(itr);
         if (attacker && attacker->isCastingNonMeleeSpell())

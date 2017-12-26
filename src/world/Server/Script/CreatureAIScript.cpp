@@ -916,7 +916,7 @@ void CreatureAIScript::_removeAllAuras()
 
 void CreatureAIScript::_removeAuraOnPlayers(uint32_t spellId)
 {
-    for (auto object : *_creature->GetInRangePlayerSet())
+    for (auto object : _creature->getInRangePlayersSet())
     {
         if (object != nullptr)
             static_cast<Player*>(object)->RemoveAura(spellId);
@@ -925,7 +925,7 @@ void CreatureAIScript::_removeAuraOnPlayers(uint32_t spellId)
 
 void CreatureAIScript::_castOnInrangePlayers(uint32_t spellId, bool triggered)
 {
-    for (auto object : *_creature->GetInRangePlayerSet())
+    for (auto object : _creature->getInRangePlayersSet())
     {
         if (object != nullptr)
             _creature->CastSpell(static_cast<Player*>(object), spellId, triggered);
@@ -934,7 +934,7 @@ void CreatureAIScript::_castOnInrangePlayers(uint32_t spellId, bool triggered)
 
 void CreatureAIScript::_castOnInrangePlayersWithinDist(float minDistance, float maxDistance, uint32_t spellId, bool triggered)
 {
-    for (auto object : *_creature->GetInRangePlayerSet())
+    for (auto object : _creature->getInRangePlayersSet())
     {
         if (object != nullptr)
         {
@@ -1168,7 +1168,7 @@ void CreatureAIScript::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
         // set up targets in range by position, relation and hp range
         std::vector<Unit*> possibleUnitTargets;
 
-        for (const auto& inRangeObject : getCreature()->GetInRangeSet())
+        for (const auto& inRangeObject : getCreature()->getInRangeObjectsSet())
         {
             if (((isTargetRandFriend && isFriendly(getCreature(), inRangeObject))
                 || (!isTargetRandFriend && isHostile(getCreature(), inRangeObject) && inRangeObject != getCreature())) && inRangeObject->IsUnit())
@@ -1389,7 +1389,7 @@ Unit* CreatureAIScript::getBestPlayerTarget(TargetFilter pTargetFilter, float pM
 {
     //Build potential target list
     UnitArray TargetArray;
-    for (const auto& PlayerIter : *getCreature()->GetInRangePlayerSet())
+    for (const auto& PlayerIter : getCreature()->getInRangePlayersSet())
     {
         if (PlayerIter && isValidUnitTarget(PlayerIter, pTargetFilter, pMinRange, pMaxRange))
             TargetArray.push_back(static_cast<Unit*>(PlayerIter));
@@ -1404,7 +1404,7 @@ Unit* CreatureAIScript::getBestUnitTarget(TargetFilter pTargetFilter, float pMin
     UnitArray TargetArray;
     if (pTargetFilter & TargetFilter_Friendly)
     {
-        for (const auto& ObjectIter : getCreature()->GetInRangeSet())
+        for (const auto& ObjectIter : getCreature()->getInRangeObjectsSet())
         {
             if (ObjectIter && isValidUnitTarget(ObjectIter, pTargetFilter, pMinRange, pMaxRange))
                 TargetArray.push_back(static_cast<Unit*>(ObjectIter));
@@ -1415,7 +1415,7 @@ Unit* CreatureAIScript::getBestUnitTarget(TargetFilter pTargetFilter, float pMin
     }
     else
     {
-        for (const auto& ObjectIter : getCreature()->GetInRangeOppFactsSet())
+        for (const auto& ObjectIter : getCreature()->getInRangeOppositeFactionSet())
         {
             if (ObjectIter && isValidUnitTarget(ObjectIter, pTargetFilter, pMinRange, pMaxRange))
                 TargetArray.push_back(static_cast<Unit*>(ObjectIter));

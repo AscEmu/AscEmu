@@ -322,28 +322,27 @@ void WorldSession::HandleSetAtWarOpcode(WorldPacket& recvData)
 
 void Player::UpdateInrangeSetsBasedOnReputation()
 {
-    for (InRangeSet::iterator itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
+    for (const auto& itr : getInRangeObjectsSet())
     {
-        if (!(*itr)->IsUnit())
+        if (!itr || !itr->IsUnit())
             continue;
 
-        Unit * pUnit = static_cast< Unit* >(*itr);
+        Unit * pUnit = static_cast<Unit*>(itr);
         if (pUnit->m_factionDBC == nullptr || pUnit->m_factionDBC->RepListId < 0)
             continue;
 
         bool rep_value = IsHostileBasedOnReputation(pUnit->m_factionDBC);
-        bool enemy_current = IsInRangeOppFactSet(pUnit);
+        bool enemy_current = isObjectInInRangeOppositeFactionSet(pUnit);
 
         if (rep_value && !enemy_current)   // We are now enemies.
-            m_oppFactsInRange.insert(pUnit);
+            addInRangeOppositeFaction(pUnit);
         else if (!rep_value && enemy_current)
-            m_oppFactsInRange.erase(pUnit);
+            removeObjectFromInRangeOppositeFactionSet(pUnit);
     }
 }
 
 void Player::Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop)
 {
-
     // add rep for on kill
     if (!pUnit->IsCreature() || pUnit->IsPet() || pUnit->isCritter())
         return;

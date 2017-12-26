@@ -334,7 +334,7 @@ void Spell::FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float s
     float r = range * range;
     uint8 did_hit_result;
 
-    for (const auto& itr : m_caster->GetInRangeSet())
+    for (const auto& itr : m_caster->getInRangeObjectsSet())
     {
         auto obj = itr;
         // don't add objects that are not units and that are dead
@@ -403,7 +403,7 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
     uint8 did_hit_result;
     std::set<Object*>::iterator itr, itr2;
 
-    for (itr2 = m_caster->GetInRangeSet().begin(); itr2 != m_caster->GetInRangeSet().end();)
+    for (itr2 = m_caster->getInRangeObjectsSet().begin(); itr2 != m_caster->getInRangeObjectsSet().end();)
     {
         auto obj = *itr;
         itr = itr2;
@@ -476,7 +476,7 @@ void Spell::FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, 
     uint8 did_hit_result;
     std::set<Object*>::iterator itr, itr2;
 
-    for (itr2 = m_caster->GetInRangeSet().begin(); itr2 != m_caster->GetInRangeSet().end();)
+    for (itr2 = m_caster->getInRangeObjectsSet().begin(); itr2 != m_caster->getInRangeObjectsSet().end();)
     {
         auto obj = *itr;
         itr = itr2;
@@ -551,7 +551,7 @@ uint64 Spell::GetSinglePossibleEnemy(uint32 i, float prange)
     }
     float srcx = m_caster->GetPositionX(), srcy = m_caster->GetPositionY(), srcz = m_caster->GetPositionZ();
 
-    for (const auto& itr : m_caster->GetInRangeSet())
+    for (const auto& itr : m_caster->getInRangeObjectsSet())
     {
         auto obj = itr;
         if (!obj || !itr->IsUnit() || !static_cast<Unit*>(itr)->isAlive())
@@ -606,7 +606,7 @@ uint64 Spell::GetSinglePossibleFriend(uint32 i, float prange)
     }
     float srcx = m_caster->GetPositionX(), srcy = m_caster->GetPositionY(), srcz = m_caster->GetPositionZ();
 
-    for (const auto& itr : m_caster->GetInRangeSet())
+    for (const auto& itr : m_caster->getInRangeObjectsSet())
     {
         auto obj = itr;
         if (!obj || !itr->IsUnit() || !static_cast<Unit*>(itr)->isAlive())
@@ -4362,7 +4362,7 @@ uint8 Spell::CanCast(bool tolerate)
         {
             bool found = false;
 
-            for (const auto& itr : p_caster->GetInRangeSet())
+            for (const auto& itr : p_caster->getInRangeObjectsSet())
             {
                 auto obj = itr;
                 if (!obj || !itr->IsGameObject())
@@ -6860,7 +6860,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
                 uint8 did_hit_result;
                 std::set<Object*>::iterator itr, itr2;
 
-                for (itr2 = u_caster->GetInRangeSet().begin(); itr2 != u_caster->GetInRangeSet().end();)
+                for (itr2 = u_caster->getInRangeObjectsSet().begin(); itr2 != u_caster->getInRangeObjectsSet().end();)
                 {
                     auto obj = *itr;
                     itr = itr2;
@@ -6940,7 +6940,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
         std::vector<Unit*> target_threat;
         int count = 0;
         Creature* tmp_creature;
-        for (const auto& itr : u_caster->GetInRangeSet())
+        for (const auto& itr : u_caster->getInRangeObjectsSet())
         {
             if (!itr || !itr->IsCreature())
                 continue;

@@ -30,7 +30,7 @@ bool Starfall(uint8_t effectIndex, Spell* pSpell)
         return true;
 
     uint8 am = 0;
-    for (const auto& itr : m_caster->GetInRangeSet())
+    for (const auto& itr : m_caster->getInRangeObjectsSet())
     {
         if (!itr || !itr->IsUnit())
             continue;

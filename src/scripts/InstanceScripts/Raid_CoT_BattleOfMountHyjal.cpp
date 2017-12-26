@@ -447,7 +447,7 @@ class DoomfireAI : public CreatureAIScript
             Unit* pUnit;
             float dist;
 
-            for (const auto& itr : getCreature()->GetInRangeOppFactsSet())
+            for (const auto& itr : getCreature()->getInRangeOppositeFactionSet())
             {
                 if (!itr || !itr->IsUnit())
                     continue;

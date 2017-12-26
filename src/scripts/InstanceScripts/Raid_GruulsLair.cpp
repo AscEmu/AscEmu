@@ -517,7 +517,7 @@ class GruulTheDragonkillerAI : public CreatureAIScript
                     if (pCurrentTarget != nullptr)
                     {
                         Unit* pTarget = pCurrentTarget;
-                        for (const auto& itr : *getCreature()->GetInRangePlayerSet())
+                        for (const auto& itr : getCreature()->getInRangePlayersSet())
                         {
                             Player* pPlayer = static_cast<Player*>(itr);
                             if (!pPlayer || !pPlayer->isAlive())

@@ -391,16 +391,14 @@ WorldPacket Player::buildChatMessagePacket(Player* targetPlayer, uint32_t type, 
 void Player::sendChatPacket(uint32_t type, uint32_t language, const char* message, uint64_t guid, uint8_t flag)
 {
     if (IsInWorld() == false)
-    {
         return;
-    }
 
     uint32_t senderPhase = GetPhase();
 
-    for (std::set<Object*>::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
+    for (const auto& itr : getInRangePlayersSet())
     {
-        Player* p = static_cast<Player*>(*itr);
-        if (p->GetSession() && !p->Social_IsIgnoring(GetLowGUID()) && (p->GetPhase() & senderPhase) != 0)
+        Player* p = static_cast<Player*>(itr);
+        if (p && p->GetSession() && !p->Social_IsIgnoring(GetLowGUID()) && (p->GetPhase() & senderPhase) != 0)
         {
             WorldPacket data = p->buildChatMessagePacket(p, type, language, message, guid, flag);
             p->SendPacket(&data);

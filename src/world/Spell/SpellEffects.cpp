@@ -677,7 +677,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             case 45150:
             {
                 uint32 splitCount = 0;
-                for (const auto& itr : u_caster->GetInRangeOppFactsSet())
+                for (const auto& itr : u_caster->getInRangeOppositeFactionSet())
                 {
                     if (itr && itr->isInFront(u_caster) && u_caster->CalcDistance(itr) <= 65)
                         splitCount++;
@@ -1348,7 +1348,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                 if (u_caster != nullptr)
                 {
                     int splitCount = 0;
-                    for (const auto& itr : u_caster->GetInRangeOppFactsSet())
+                    for (const auto& itr : u_caster->getInRangeOppositeFactionSet())
                     {
                         if (itr && itr->isInFront(u_caster))
                             splitCount++;
@@ -3415,7 +3415,7 @@ void Spell::SpellEffectTriggerMissile(uint8_t effectIndex) // Trigger Missile
     float spellRadius = GetRadius(effectIndex);
 
     //\todo Following should be / is probably in SpellTarget code
-    for (const auto& itr : m_caster->GetInRangeSet())
+    for (const auto& itr : m_caster->getInRangeObjectsSet())
     {
         if (!itr || !itr->IsUnit() || !static_cast<Unit*>(itr)->isAlive())
             continue;
@@ -4879,7 +4879,7 @@ void Spell::SpellEffectSanctuary(uint8_t /*effectIndex*/) // Stop all attacks ma
     if (p_caster != nullptr)
         p_caster->RemoveAllAuraType(SPELL_AURA_MOD_ROOT);
 
-    for (const auto& itr : u_caster->GetInRangeSet())
+    for (const auto& itr : u_caster->getInRangeObjectsSet())
     {
         if (itr && itr->IsCreature())
             static_cast<Creature*>(itr)->GetAIInterface()->RemoveThreatByPtr(unitTarget);

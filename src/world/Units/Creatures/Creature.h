@@ -242,9 +242,9 @@ class SERVER_DECL Creature : public Unit
     public:
 
         // In Range
-        void AddInRangeObject(Object* pObj);
-        void OnRemoveInRangeObject(Object* pObj);
-        void ClearInRangeSet();
+        void addToInRangeObjects(Object* pObj);
+        void onRemoveInRangeObject(Object* pObj);
+        void clearInRangeSets();
 
         // Demon
         void EnslaveExpire();

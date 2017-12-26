@@ -656,7 +656,7 @@ bool ChatHandler::HandleNpcSelectCommand(const char* /*args*/, WorldSession* m_s
     float dist2;
 
     auto player = m_session->GetPlayer();
-    for (const auto& itr : player->GetInRangeSet())
+    for (const auto& itr : player->getInRangeObjectsSet())
     {
         if (itr && (dist2 = player->GetDistance2dSq(itr)) < dist && (itr)->IsCreature())
         {

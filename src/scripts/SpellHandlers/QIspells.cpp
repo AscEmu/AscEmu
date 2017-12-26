@@ -2421,7 +2421,7 @@ bool OrbOfMurlocControl(uint8_t /*effectIndex*/, Spell* pSpell)
 
     Creature* pTarget;
 
-    for (const auto& itr : pSpell->m_caster->GetInRangeSet())
+    for (const auto& itr : pSpell->m_caster->getInRangeObjectsSet())
     {
         if (itr && itr->IsUnit() && static_cast<Unit*>(itr)->IsCreature())
             pTarget = static_cast<Creature*>(itr);

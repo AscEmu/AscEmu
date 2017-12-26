@@ -638,46 +638,47 @@ void Player::SendLootUpdate(Object* o)
 void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, bool sendtoself)
 {
     //////////////////////////////////////////////////////////////////////////////////////////
-    ///first case we need to send to both grouped and ungrouped players in the set
-    if (groupbuf != NULL && nongroupbuf != NULL)
+    // first case we need to send to both grouped and ungrouped players in the set
+    if (groupbuf != nullptr && nongroupbuf != nullptr)
     {
-
-        for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
+        for (const auto& itr : getInRangePlayersSet())
         {
-            Player* p = static_cast< Player* >(*itr);
+            Player* p = static_cast<Player*>(itr);
 
-            if (p->GetGroup() != NULL && GetGroup() != NULL && p->GetGroup()->GetID() == GetGroup()->GetID())
+            if (p->GetGroup() != nullptr && GetGroup() != nullptr && p->GetGroup()->GetID() == GetGroup()->GetID())
                 p->PushUpdateData(groupbuf, 1);
             else
                 p->PushUpdateData(nongroupbuf, 1);
         }
     }
     else
+    {
         //////////////////////////////////////////////////////////////////////////////////////////
         //second case we send to group only
-        if (groupbuf != NULL && nongroupbuf == NULL)
+        if (groupbuf != nullptr && nongroupbuf == nullptr)
         {
-            for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
+            for (const auto& itr : getInRangePlayersSet())
             {
-                Player* p = static_cast< Player* >(*itr);
-
-                if (p->GetGroup() != NULL && GetGroup() != NULL && p->GetGroup()->GetID() == GetGroup()->GetID())
+                Player* p = static_cast<Player*>(itr);
+                if (p && p->GetGroup() != nullptr && GetGroup() != nullptr && p->GetGroup()->GetID() == GetGroup()->GetID())
                     p->PushUpdateData(groupbuf, 1);
             }
         }
         else
+        {
             //////////////////////////////////////////////////////////////////////////////////////////
             //Last case we send to nongroup only
-            if (groupbuf == NULL && nongroupbuf != NULL)
+            if (groupbuf == nullptr && nongroupbuf != nullptr)
             {
-                for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
+                for (const auto& itr : getInRangePlayersSet())
                 {
-                    Player* p = static_cast< Player* >(*itr);
-
-                    if (p->GetGroup() == NULL || p->GetGroup()->GetID() != GetGroup()->GetID())
+                    Player* p = static_cast<Player*>(itr);
+                    if (p && p->GetGroup() == nullptr || p->GetGroup()->GetID() != GetGroup()->GetID())
                         p->PushUpdateData(nongroupbuf, 1);
                 }
             }
+        }
+    }
 
     if (sendtoself && groupbuf != nullptr)
         PushUpdateData(groupbuf, 1);

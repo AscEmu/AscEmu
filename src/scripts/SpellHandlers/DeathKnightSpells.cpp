@@ -44,7 +44,7 @@ bool Pestilence(uint8_t effectIndex, Spell* pSpell)
         bool blood = Main->HasAura(BLOOD_PLAGUE);
         bool frost = Main->HasAura(FROST_FEVER);
         int inc = (u_caster->HasAura(59309) ? 10 : 5);
-        for (const auto& itr : u_caster->GetInRangeSet())
+        for (const auto& itr : u_caster->getInRangeObjectsSet())
         {
             if (!itr || !itr->IsUnit())
                 continue;

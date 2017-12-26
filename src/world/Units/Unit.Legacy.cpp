@@ -8326,18 +8326,18 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
             itx2 = itx++;
             ExtraStrike* ex = *itx2;
 
-            for (std::set<Object*>::iterator itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
+            for (const auto& itr : getInRangeObjectsSet())
             {
-                if ((*itr) == pVictim || !(*itr)->IsUnit())
+                if (!itr || itr == pVictim || !itr->IsUnit())
                     continue;
 
-                if (CalcDistance(*itr) < 5.0f && isAttackable(this, (*itr)) && (*itr)->isInFront(this) && !static_cast<Unit*>(*itr)->IsPacified())
+                if (CalcDistance(itr) < 5.0f && isAttackable(this, itr) && itr->isInFront(this) && !static_cast<Unit*>(itr)->IsPacified())
                 {
                     // Sweeping Strikes hits cannot be dodged, missed or parried (from wowhead)
                     bool skip_hit_check2 = ex->spell_info->getId() == 12328 ? true : false;
                     //zack : should we use the spell id the registered this extra strike when striking ? It would solve a few proc on proc problems if so ;)
                     //					Strike(TO<Unit*>(*itr), weapon_damage_type, ability, add_damage, pct_dmg_mod, exclusive_damage, false, skip_hit_check);
-                    Strike(static_cast<Unit*>(*itr), weapon_damage_type, ex->spell_info, add_damage, pct_dmg_mod, exclusive_damage, false, skip_hit_check2);
+                    Strike(static_cast<Unit*>(itr), weapon_damage_type, ex->spell_info, add_damage, pct_dmg_mod, exclusive_damage, false, skip_hit_check2);
                     break;
                 }
             }
@@ -9605,24 +9605,24 @@ void Unit::WipeTargetList()
     GetAIInterface()->WipeTargetList();
 }
 
-void Unit::AddInRangeObject(Object* pObj)
+void Unit::addToInRangeObjects(Object* pObj)
 {
     if (pObj->IsUnit())
     {
         if (isHostile(this, pObj))
-            m_oppFactsInRange.insert(pObj);
+            addInRangeOppositeFaction(pObj);
 
         if (isFriendly(this, pObj))
-            m_sameFactsInRange.insert(pObj);
+            addInRangeSameFaction(pObj);
     }
 
-    Object::AddInRangeObject(pObj);
+    Object::addToInRangeObjects(pObj);
 }//427
 
-void Unit::OnRemoveInRangeObject(Object* pObj)
+void Unit::onRemoveInRangeObject(Object* pObj)
 {
-    m_oppFactsInRange.erase(pObj);
-    m_sameFactsInRange.erase(pObj);
+    removeObjectFromInRangeOppositeFactionSet(pObj);
+    removeObjectFromInRangeSameFactionSet(pObj);
 
     if (pObj->IsUnit())
     {
@@ -9634,9 +9634,9 @@ void Unit::OnRemoveInRangeObject(Object* pObj)
     }
 }
 
-void Unit::ClearInRangeSet()
+void Unit::clearInRangeSets()
 {
-    Object::ClearInRangeSet();
+    Object::clearInRangeSets();
 }
 
 //Events
@@ -11511,7 +11511,7 @@ void Unit::UpdateVisibility()
     if (IsPlayer())
     {
         plr = static_cast<Player*>(this);
-        for (Object::InRangeSet::iterator itr2 = m_objectsInRange.begin(); itr2 != m_objectsInRange.end();)
+        for (std::set<Object*>::iterator itr2 = getInRangeObjectsSet().begin(); itr2 != getInRangeObjectsSet().end();)
         {
             pObj = (*itr2);
             ++itr2;
@@ -11565,7 +11565,7 @@ void Unit::UpdateVisibility()
     }
     else			// For units we can save a lot of work
     {
-        for (const auto& it2 : *GetInRangePlayerSet())
+        for (const auto& it2 : getInRangePlayersSet())
         {
             Player* p = static_cast<Player*>(it2);
             if (p)
@@ -12591,7 +12591,7 @@ void Unit::RemoveFieldSummon()
 
 void Unit::AggroPvPGuards()
 {
-    for (const auto& i : GetInRangeSet())
+    for (const auto& i : getInRangeObjectsSet())
     {
         if (i && i->IsCreature())
         {
@@ -13125,10 +13125,10 @@ void Unit::Phase(uint8 command, uint32 newphase)
 {
     Object::Phase(command, newphase);
 
-    for (std::set<Object*>::iterator itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
+    for (const auto& itr : getInRangeObjectsSet())
     {
-        if ((*itr)->IsUnit())
-            static_cast<Unit*>(*itr)->UpdateVisibility();
+        if (itr && itr->IsUnit())
+            static_cast<Unit*>(itr)->UpdateVisibility();
     }
 
     UpdateVisibility();
@@ -13841,7 +13841,7 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
     pThis->SetClientControl(pTarget, 1);
 
     // update target faction set
-    pTarget->UpdateOppFactionSet();
+    pTarget->updateInRangeOppositeFactionSet();
 
     if (!(pTarget->IsPet() && static_cast< Pet* >(pTarget) == pThis->GetSummon()))
     {
@@ -13887,7 +13887,7 @@ void Unit::UnPossess()
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
     pTarget->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
     pTarget->SetFaction(pTarget->GetCharmTempVal());
-    pTarget->UpdateOppFactionSet();
+    pTarget->updateInRangeOppositeFactionSet();
 
     // send "switch mover" packet
     pThis->SetClientControl(pTarget, 0);
