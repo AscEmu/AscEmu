@@ -514,6 +514,15 @@ void Object::addToInRangeObjects(Object* pObj)
     mInRangeObjectsSet.push_back(pObj);
 }
 
+void Object::removeSelfFromInrangeSets()
+{
+    for (const auto& itr : mInRangeObjectsSet)
+    {
+        if (itr)
+            itr->removeObjectFromInRangeObjectsSet(this);
+    }
+}
+
 // Objects
 std::vector<Object*> Object::getInRangeObjectsSet()
 {
@@ -559,7 +568,7 @@ size_t Object::getInRangePlayersCount()
     return mInRangePlayersSet.size();
 }
 
-// Opposit Faction
+// Opposite Faction
 std::vector<Object*> Object::getInRangeOppositeFactionSet()
 {
     return mInRangeOppositeFactionSet;

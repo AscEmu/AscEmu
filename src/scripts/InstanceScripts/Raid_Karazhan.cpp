@@ -2391,7 +2391,7 @@ class NetherspiteAI : public CreatureAIScript
         {
             VoidTimer = t + 20;
             std::vector<Unit* > TargetTable;
-            for (const auto& itr : *getCreature()->getInRangePlayersSet())
+            for (const auto& itr : getCreature()->getInRangePlayersSet())
             {
                 Unit* RandomTarget = static_cast<Unit*>(itr);
 
