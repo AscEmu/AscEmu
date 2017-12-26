@@ -9080,17 +9080,18 @@ void Player::UpdatePvPArea()
 
 void Player::BuildFlagUpdateForNonGroupSet(uint32 index, uint32 flag)
 {
-    Object* curObj;
-    for (std::set<Object*>::iterator iter = getInRangeObjectsSet().begin(); iter != getInRangeObjectsSet().end();)
+    for (const auto& iter : getInRangeObjectsSet())
     {
-        curObj = *iter;
-        ++iter;
-        if (curObj->IsPlayer())
+        if (iter)
         {
-            Group* pGroup = static_cast< Player* >(curObj)->GetGroup();
-            if (!pGroup && pGroup != GetGroup())
+            Object* curObj = iter;
+            if (curObj->IsPlayer())
             {
-                BuildFieldUpdatePacket(static_cast< Player* >(curObj), index, flag);
+                Group* pGroup = static_cast<Player*>(curObj)->GetGroup();
+                if (!pGroup && pGroup != GetGroup())
+                {
+                    BuildFieldUpdatePacket(static_cast<Player*>(curObj), index, flag);
+                }
             }
         }
     }

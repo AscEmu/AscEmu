@@ -353,20 +353,21 @@ bool RighteousDefense(uint8_t /*effectIndex*/, Spell* s)
     Unit* targets[3];
     uint32 targets_got = 0;
 
-    for (std::set<Object*>::iterator itr = unitTarget->getInRangeObjectsSet().begin(), i2; itr != unitTarget->getInRangeObjectsSet().end();)
+    for (const auto& itr : unitTarget->getInRangeObjectsSet())
     {
-        i2 = itr++;
+        if (itr)
+        {
+            // don't add objects that are not creatures and that are dead
+            if (!itr->IsCreature() || !static_cast<Creature*>(itr)->isAlive())
+                continue;
 
-        // don't add objects that are not creatures and that are dead
-        if (!(*i2)->IsCreature() || !static_cast<Creature*>((*i2))->isAlive())
-            continue;
+            Creature* cr = static_cast<Creature*>(itr);
+            if (cr->GetAIInterface()->getNextTarget() == unitTarget)
+                targets[targets_got++] = cr;
 
-        Creature* cr = static_cast<Creature*>((*i2));
-        if (cr->GetAIInterface()->getNextTarget() == unitTarget)
-            targets[targets_got++] = cr;
-
-        if (targets_got == 3)
-            break;
+            if (targets_got == 3)
+                break;
+        }
     }
 
     for (uint32 j = 0; j < targets_got; j++)

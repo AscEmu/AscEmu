@@ -416,10 +416,10 @@ public:
     // InRange sets
 private:
 
-    std::set<Object*> mInRangeObjectsSet;
-    std::set<Object*> mInRangePlayersSet;
-    std::set<Object*> mInRangeOppositeFactionSet;
-    std::set<Object*> mInRangeSameFactionSet;
+    std::vector<Object*> mInRangeObjectsSet;
+    std::vector<Object*> mInRangePlayersSet;
+    std::vector<Object*> mInRangeOppositeFactionSet;
+    std::vector<Object*> mInRangeSameFactionSet;
 
 public:
 
@@ -428,8 +428,19 @@ public:
     virtual void addToInRangeObjects(Object* pObj);
     virtual void onRemoveInRangeObject(Object* /*pObj*/) {}
 
+    void removeSelfFromInrangeSets()
+    {
+        for (const auto& itr : mInRangeObjectsSet)
+        {
+            Object* o = itr;
+            ARCEMU_ASSERT(o != nullptr);
+
+            o->removeObjectFromInRangeObjectsSet(this);
+        }
+    }
+
     // Objects
-    std::set<Object*> getInRangeObjectsSet();
+    std::vector<Object*> getInRangeObjectsSet();
 
     bool hasInRangeObjects();
     size_t getInRangeObjectsCount();
@@ -438,13 +449,13 @@ public:
     void removeObjectFromInRangeObjectsSet(Object* pObj);
 
     // Players
-    std::set<Object*> getInRangePlayersSet();
+    std::vector<Object*> getInRangePlayersSet();
 
     size_t getInRangePlayersCount();
     
 
     // opposit faction
-    std::set<Object*> getInRangeOppositeFactionSet();
+    std::vector<Object*> getInRangeOppositeFactionSet();
 
     bool isObjectInInRangeOppositeFactionSet(Object* pObj);
     void updateInRangeOppositeFactionSet();
@@ -453,7 +464,7 @@ public:
     void removeObjectFromInRangeOppositeFactionSet(Object* obj);
 
     // same faction
-    std::set<Object*> getInRangeSameFactionSet();
+    std::vector<Object*> getInRangeSameFactionSet();
 
     bool isObjectInInRangeSameFactionSet(Object* pObj);
     void updateInRangeSameFactionSet();

@@ -58,17 +58,19 @@ class ZerekethAI : public CreatureAIScript
         void OnDied(Unit* /*mKiller*/) override
         {
             //despawn voids
-            for (std::set<Object*>::iterator itr = getCreature()->getInRangeObjectsSet().begin(); itr != getCreature()->getInRangeObjectsSet().end();)
+            for (const auto& itr : getCreature()->getInRangeObjectsSet())
             {
-                Object* obj = *itr;
-                ++itr;
-                if (obj->IsCreature())
+                if (itr)
                 {
-                    auto creature = static_cast<Creature*>(obj);
-
-                    if (creature->GetCreatureProperties()->Id == 21101 && creature->isAlive())
+                    Object* obj = itr;
+                    if (obj->IsCreature())
                     {
-                        creature->Despawn(0, 0);
+                        auto creature = static_cast<Creature*>(obj);
+
+                        if (creature->GetCreatureProperties()->Id == 21101 && creature->isAlive())
+                        {
+                            creature->Despawn(0, 0);
+                        }
                     }
                 }
             }

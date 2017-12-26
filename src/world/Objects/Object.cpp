@@ -509,20 +509,20 @@ void Object::addToInRangeObjects(Object* pObj)
         LOG_ERROR("We are in range of ourselves!");
 
     if (pObj->IsPlayer())
-        mInRangePlayersSet.insert(pObj);
+        mInRangePlayersSet.push_back(pObj);
 
-    mInRangeObjectsSet.insert(pObj);
+    mInRangeObjectsSet.push_back(pObj);
 }
 
 // Objects
-std::set<Object*> Object::getInRangeObjectsSet()
+std::vector<Object*> Object::getInRangeObjectsSet()
 {
     return mInRangeObjectsSet;
 }
 
 bool Object::hasInRangeObjects()
 {
-    return (mInRangeObjectsSet.size() > 0);
+    return mInRangeObjectsSet.size() > 0;
 }
 
 size_t Object::getInRangeObjectsCount()
@@ -532,7 +532,8 @@ size_t Object::getInRangeObjectsCount()
 
 bool Object::isObjectInInRangeObjectsSet(Object* pObj)
 {
-    return mInRangeObjectsSet.find(pObj) != mInRangeObjectsSet.end();
+    auto it = std::find(mInRangeObjectsSet.begin(), mInRangeObjectsSet.end(), pObj);
+    return it != mInRangeObjectsSet.end();
 }
 
 void Object::removeObjectFromInRangeObjectsSet(Object* pObj)
@@ -540,17 +541,15 @@ void Object::removeObjectFromInRangeObjectsSet(Object* pObj)
     ARCEMU_ASSERT(pObj != nullptr);
 
     if (pObj->IsPlayer())
-    {
-        ARCEMU_ASSERT(mInRangePlayersSet.erase(pObj) == 1);
-    }
+        mInRangePlayersSet.erase(std::remove(mInRangePlayersSet.begin(), mInRangePlayersSet.end(), pObj), mInRangePlayersSet.end());
 
-    ARCEMU_ASSERT(mInRangeObjectsSet.erase(pObj) == 1);
+    mInRangeObjectsSet.erase(std::remove(mInRangeObjectsSet.begin(), mInRangeObjectsSet.end(), pObj), mInRangeObjectsSet.end());
 
     onRemoveInRangeObject(pObj);
 }
 
 // Players
-std::set<Object*> Object::getInRangePlayersSet()
+std::vector<Object*> Object::getInRangePlayersSet()
 {
     return mInRangePlayersSet;
 }
@@ -561,14 +560,15 @@ size_t Object::getInRangePlayersCount()
 }
 
 // Opposit Faction
-std::set<Object*> Object::getInRangeOppositeFactionSet()
+std::vector<Object*> Object::getInRangeOppositeFactionSet()
 {
     return mInRangeOppositeFactionSet;
 }
 
 bool Object::isObjectInInRangeOppositeFactionSet(Object* pObj)
 {
-    return mInRangeOppositeFactionSet.count(pObj) > 0;
+    auto it = std::find(mInRangeOppositeFactionSet.begin(), mInRangeOppositeFactionSet.end(), pObj);
+    return it != mInRangeOppositeFactionSet.end();
 }
 
 void Object::updateInRangeOppositeFactionSet()
@@ -584,16 +584,16 @@ void Object::updateInRangeOppositeFactionSet()
                 if (isHostile(this, itr))
                 {
                     if (!itr->isObjectInInRangeOppositeFactionSet(this))
-                        itr->mInRangeOppositeFactionSet.insert(this);
+                        itr->mInRangeOppositeFactionSet.push_back(this);
                     if (!isObjectInInRangeOppositeFactionSet(itr))
-                        mInRangeOppositeFactionSet.insert(itr);
+                        mInRangeOppositeFactionSet.push_back(itr);
                 }
                 else
                 {
                     if (itr->isObjectInInRangeOppositeFactionSet(this))
-                        itr->mInRangeOppositeFactionSet.erase(this);
+                        itr->mInRangeOppositeFactionSet.erase(std::remove(itr->mInRangeOppositeFactionSet.begin(), itr->mInRangeOppositeFactionSet.end(), this), itr->mInRangeOppositeFactionSet.end());
                     if (isObjectInInRangeOppositeFactionSet(itr))
-                        mInRangeOppositeFactionSet.erase(itr);
+                        mInRangeOppositeFactionSet.erase(std::remove(mInRangeOppositeFactionSet.begin(), mInRangeOppositeFactionSet.end(), itr), mInRangeOppositeFactionSet.end());
                 }
             }
         }
@@ -602,23 +602,24 @@ void Object::updateInRangeOppositeFactionSet()
 
 void Object::addInRangeOppositeFaction(Object* obj)
 {
-    mInRangeOppositeFactionSet.insert(obj);
+    mInRangeOppositeFactionSet.push_back(obj);
 }
 
 void Object::removeObjectFromInRangeOppositeFactionSet(Object* obj)
 {
-    mInRangeOppositeFactionSet.erase(obj);
+    mInRangeOppositeFactionSet.erase(std::remove(mInRangeOppositeFactionSet.begin(), mInRangeOppositeFactionSet.end(), obj), mInRangeOppositeFactionSet.end());
 }
 
 // Same Faction
-std::set<Object*> Object::getInRangeSameFactionSet()
+std::vector<Object*> Object::getInRangeSameFactionSet()
 {
     return mInRangeSameFactionSet;
 }
 
 bool Object::isObjectInInRangeSameFactionSet(Object* pObj)
 {
-    return mInRangeSameFactionSet.count(pObj) > 0;
+    auto it = std::find(mInRangeSameFactionSet.begin(), mInRangeSameFactionSet.end(), pObj);
+    return it != mInRangeSameFactionSet.end();
 }
 
 void Object::updateInRangeSameFactionSet()
@@ -634,18 +635,18 @@ void Object::updateInRangeSameFactionSet()
                 if (isFriendly(this, itr))
                 {
                     if (!itr->isObjectInInRangeSameFactionSet(this))
-                        itr->mInRangeSameFactionSet.insert(this);
+                        itr->mInRangeSameFactionSet.push_back(this);
 
                     if (!isObjectInInRangeOppositeFactionSet(itr))
-                        mInRangeSameFactionSet.insert(itr);
+                        mInRangeSameFactionSet.push_back(itr);
                 }
                 else
                 {
                     if (itr->isObjectInInRangeSameFactionSet(this))
-                        itr->mInRangeSameFactionSet.erase(this);
+                        itr->mInRangeSameFactionSet.erase(std::remove(itr->mInRangeSameFactionSet.begin(), itr->mInRangeSameFactionSet.end(), this), itr->mInRangeSameFactionSet.end());
 
                     if (isObjectInInRangeSameFactionSet(itr))
-                        mInRangeSameFactionSet.erase(itr);
+                        mInRangeSameFactionSet.erase(std::remove(mInRangeSameFactionSet.begin(), mInRangeSameFactionSet.end(), itr), mInRangeSameFactionSet.end());
                 }
             }
         }
@@ -654,12 +655,12 @@ void Object::updateInRangeSameFactionSet()
 
 void Object::addInRangeSameFaction(Object* obj)
 {
-    mInRangeSameFactionSet.insert(obj);
+    mInRangeSameFactionSet.push_back(obj);
 }
 
 void Object::removeObjectFromInRangeSameFactionSet(Object* obj)
 {
-    mInRangeSameFactionSet.erase(obj);
+    mInRangeSameFactionSet.erase(std::remove(mInRangeSameFactionSet.begin(), mInRangeSameFactionSet.end(), obj), mInRangeSameFactionSet.end());
 }
 
 
@@ -3286,11 +3287,10 @@ void Object::OutPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool /*
         return;
 
     // We are on Object level, which means we can't send it to ourselves so we only send to Players inrange
-    for (std::set< Object* >::iterator itr = mInRangePlayersSet.begin(); itr != mInRangePlayersSet.end(); ++itr)
+    for (const auto& itr : mInRangePlayersSet)
     {
-        Object* o = *itr;
-
-        o->OutPacket(Opcode, Len, Data);
+        if (itr)
+            itr->OutPacket(Opcode, Len, Data);
     }
 }
 
@@ -3300,21 +3300,20 @@ void Object::SendMessageToSet(WorldPacket* data, bool /*bToSelf*/, bool /*myteam
         return;
 
     uint32 myphase = GetPhase();
-    for (std::set< Object* >::iterator itr = mInRangePlayersSet.begin(); itr != mInRangePlayersSet.end(); ++itr)
+    for (const auto& itr : mInRangePlayersSet)
     {
-        Object* o = *itr;
-        if ((o->GetPhase() & myphase) != 0)
-            o->SendPacket(data);
+        if (itr && (itr->GetPhase() & myphase) != 0)
+            itr->SendPacket(data);
     }
 }
 
 void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId)
 {
     uint32 myphase = GetPhase();
-    for (std::set<Object*>::iterator itr = mInRangePlayersSet.begin(); itr != mInRangePlayersSet.end(); ++itr)
+    for (const auto& itr : mInRangePlayersSet)
     {
-        Object* object = *itr;
-        if ((object->GetPhase() & myphase) != 0)
+        Object* object = itr;
+        if (object && (object->GetPhase() & myphase) != 0)
         {
             if (object->IsPlayer())
             {
@@ -3384,10 +3383,10 @@ void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId)
 void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::NpcMonsterSay* npcMonsterSay, int randChoice, uint32_t event)
 {
     uint32 myphase = GetPhase();
-    for (std::set<Object*>::iterator itr = mInRangePlayersSet.begin(); itr != mInRangePlayersSet.end(); ++itr)
+    for (const auto& itr : mInRangePlayersSet)
     {
-        Object* object = *itr;
-        if ((object->GetPhase() & myphase) != 0)
+        Object* object = itr;
+        if (object && (object->GetPhase() & myphase) != 0)
         {
             if (object->IsPlayer())
             {

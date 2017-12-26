@@ -395,75 +395,74 @@ void Spell::FillAllTargetsInArea(float srcx, float srcy, float srcz, uint32 ind)
     FillAllTargetsInArea(ind, srcx, srcy, srcz, GetRadius(ind));
 }
 
-/// We fill all the targets in the area, including the stealth ed one's
+// We fill all the targets in the area, including the stealth ed one's
 void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, float range)
 {
     std::vector<uint64_t>* tmpMap = &m_targetUnits[i];
     float r = range * range;
     uint8 did_hit_result;
-    std::set<Object*>::iterator itr, itr2;
 
-    for (itr2 = m_caster->getInRangeObjectsSet().begin(); itr2 != m_caster->getInRangeObjectsSet().end();)
+    for (const auto& itr : m_caster->getInRangeObjectsSet())
     {
-        auto obj = *itr;
-        itr = itr2;
-        //maybe scripts can change list. Should use lock instead of this to prevent multiple changes. This protects to 1 deletion only
-        ++itr2;
-        if (!((*itr)->IsUnit()) || !static_cast<Unit*>(*itr)->isAlive())      //|| (TO< Creature* >(*itr)->IsTotem() && !TO< Unit* >(*itr)->IsPlayer())) why shouldn't we fill totems?
-            continue;
+        if (itr)
+        {
+            auto obj = itr;
+            if (!itr->IsUnit() || !static_cast<Unit*>(itr)->isAlive())      //|| (TO< Creature* >(*itr)->IsTotem() && !TO< Unit* >(*itr)->IsPlayer())) why shouldn't we fill totems?
+                continue;
 
-        if (p_caster && (*itr)->IsPlayer() && p_caster->GetGroup() && static_cast<Player*>(*itr)->GetGroup() && static_cast<Player*>(*itr)->GetGroup() == p_caster->GetGroup())      //Don't attack party members!!
-        {
-            //Dueling - AoE's should still hit the target party member if you're dueling with him
-            if (!p_caster->DuelingWith || p_caster->DuelingWith != static_cast<Player*>(*itr))
-                continue;
-        }
-        if (GetSpellInfo()->getTargetCreatureType())
-        {
-            if (!(*itr)->IsCreature())
-                continue;
-            CreatureProperties const* inf = static_cast<Creature*>(*itr)->GetCreatureProperties();
-            if (!(1 << (inf->Type - 1) & GetSpellInfo()->getTargetCreatureType()))
-                continue;
-        }
-        if (obj->isInRange(srcx, srcy, srcz, r))
-        {
-            if (worldConfig.terrainCollision.isCollisionEnabled)
+            if (p_caster && (itr)->IsPlayer() && p_caster->GetGroup() && static_cast<Player*>(itr)->GetGroup() && static_cast<Player*>(itr)->GetGroup() == p_caster->GetGroup())      //Don't attack party members!!
             {
-                VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
-                bool isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), (*itr)->GetPositionX(), (*itr)->GetPositionY(), (*itr)->GetPositionZ());
-
-                if (m_caster->GetMapId() == (*itr)->GetMapId() && !isInLOS)
+                //Dueling - AoE's should still hit the target party member if you're dueling with him
+                if (!p_caster->DuelingWith || p_caster->DuelingWith != static_cast<Player*>(itr))
                     continue;
             }
+            if (GetSpellInfo()->getTargetCreatureType())
+            {
+                if (!itr->IsCreature())
+                    continue;
+                CreatureProperties const* inf = static_cast<Creature*>(itr)->GetCreatureProperties();
+                if (!(1 << (inf->Type - 1) & GetSpellInfo()->getTargetCreatureType()))
+                    continue;
+            }
+            if (obj->isInRange(srcx, srcy, srcz, r))
+            {
+                if (worldConfig.terrainCollision.isCollisionEnabled)
+                {
+                    VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+                    bool isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), itr->GetPositionX(), itr->GetPositionY(), itr->GetPositionZ());
 
-            if (u_caster != nullptr)
-            {
-                if (isAttackable(u_caster, *itr, !(GetSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
+                    if (m_caster->GetMapId() == itr->GetMapId() && !isInLOS)
+                        continue;
+                }
+
+                if (u_caster != nullptr)
                 {
-                    did_hit_result = DidHit(i, static_cast<Unit*>(*itr));
-                    if (did_hit_result == SPELL_DID_HIT_SUCCESS)
-                        SafeAddTarget(tmpMap, (*itr)->GetGUID());
+                    if (isAttackable(u_caster, itr, !(GetSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
+                    {
+                        did_hit_result = DidHit(i, static_cast<Unit*>(itr));
+                        if (did_hit_result == SPELL_DID_HIT_SUCCESS)
+                            SafeAddTarget(tmpMap, itr->GetGUID());
+                        else
+                            ModeratedTargets.push_back(SpellTargetMod(itr->GetGUID(), did_hit_result));
+                    }
+                }
+                else //cast from GO
+                {
+                    if (g_caster != nullptr && g_caster->getUInt32Value(OBJECT_FIELD_CREATED_BY) && g_caster->m_summoner != nullptr)
+                    {
+                        //trap, check not to attack owner and friendly
+                        if (isAttackable(g_caster->m_summoner, itr, !(GetSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
+                            SafeAddTarget(tmpMap, itr->GetGUID());
+                    }
                     else
-                        ModeratedTargets.push_back(SpellTargetMod((*itr)->GetGUID(), did_hit_result));
+                        SafeAddTarget(tmpMap, itr->GetGUID());
                 }
+                if (GetSpellInfo()->getMaxTargets())
+                    if (GetSpellInfo()->getMaxTargets() == tmpMap->size())
+                    {
+                        return;
+                    }
             }
-            else //cast from GO
-            {
-                if (g_caster != nullptr && g_caster->getUInt32Value(OBJECT_FIELD_CREATED_BY) && g_caster->m_summoner != nullptr)
-                {
-                    //trap, check not to attack owner and friendly
-                    if (isAttackable(g_caster->m_summoner, *itr, !(GetSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
-                        SafeAddTarget(tmpMap, (*itr)->GetGUID());
-                }
-                else
-                    SafeAddTarget(tmpMap, (*itr)->GetGUID());
-            }
-            if (GetSpellInfo()->getMaxTargets())
-                if (GetSpellInfo()->getMaxTargets() == tmpMap->size())
-                {
-                    return;
-                }
         }
     }
 }
@@ -474,63 +473,61 @@ void Spell::FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, 
     std::vector<uint64_t>* tmpMap = &m_targetUnits[i];
     float r = range * range;
     uint8 did_hit_result;
-    std::set<Object*>::iterator itr, itr2;
 
-    for (itr2 = m_caster->getInRangeObjectsSet().begin(); itr2 != m_caster->getInRangeObjectsSet().end();)
+    for (const auto& itr : m_caster->getInRangeObjectsSet())
     {
-        auto obj = *itr;
-        itr = itr2;
-        ++itr2; //maybe scripts can change list. Should use lock instead of this to prevent multiple changes. This protects to 1 deletion only
-        if (!((*itr)->IsUnit()) || !static_cast<Unit*>(*itr)->isAlive())
-            continue;
-
-        if (GetSpellInfo()->getTargetCreatureType())
+        if (itr)
         {
-            if (!(*itr)->IsCreature())
+            auto obj = itr;
+            if (!(itr->IsUnit()) || !static_cast<Unit*>(itr)->isAlive())
                 continue;
-            CreatureProperties const* inf = static_cast<Creature*>(*itr)->GetCreatureProperties();
-            if (!(1 << (inf->Type - 1) & GetSpellInfo()->getTargetCreatureType()))
-                continue;
-        }
 
-        if (obj->isInRange(srcx, srcy, srcz, r))
-        {
-            if (worldConfig.terrainCollision.isCollisionEnabled)
+            if (GetSpellInfo()->getTargetCreatureType())
             {
-                VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
-                bool isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), (*itr)->GetPositionX(), (*itr)->GetPositionY(), (*itr)->GetPositionZ());
-
-                if (m_caster->GetMapId() == (*itr)->GetMapId() && !isInLOS)
+                if (!itr->IsCreature())
+                    continue;
+                CreatureProperties const* inf = static_cast<Creature*>(itr)->GetCreatureProperties();
+                if (!(1 << (inf->Type - 1) & GetSpellInfo()->getTargetCreatureType()))
                     continue;
             }
 
-            if (u_caster != nullptr)
+            if (obj->isInRange(srcx, srcy, srcz, r))
             {
-                if (isFriendly(u_caster, static_cast<Unit*>(*itr)))
+                if (worldConfig.terrainCollision.isCollisionEnabled)
                 {
-                    did_hit_result = DidHit(i, static_cast<Unit*>(*itr));
-                    if (did_hit_result == SPELL_DID_HIT_SUCCESS)
-                        SafeAddTarget(tmpMap, (*itr)->GetGUID());
+                    VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+                    bool isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), itr->GetPositionX(), itr->GetPositionY(), itr->GetPositionZ());
+
+                    if (m_caster->GetMapId() == itr->GetMapId() && !isInLOS)
+                        continue;
+                }
+
+                if (u_caster != nullptr)
+                {
+                    if (isFriendly(u_caster, static_cast<Unit*>(itr)))
+                    {
+                        did_hit_result = DidHit(i, static_cast<Unit*>(itr));
+                        if (did_hit_result == SPELL_DID_HIT_SUCCESS)
+                            SafeAddTarget(tmpMap, itr->GetGUID());
+                        else
+                            ModeratedTargets.push_back(SpellTargetMod(itr->GetGUID(), did_hit_result));
+                    }
+                }
+                else //cast from GO
+                {
+                    if (g_caster != nullptr && g_caster->getUInt32Value(OBJECT_FIELD_CREATED_BY) && g_caster->m_summoner != nullptr)
+                    {
+                        //trap, check not to attack owner and friendly
+                        if (isFriendly(g_caster->m_summoner, static_cast<Unit*>(itr)))
+                            SafeAddTarget(tmpMap, itr->GetGUID());
+                    }
                     else
-                        ModeratedTargets.push_back(SpellTargetMod((*itr)->GetGUID(), did_hit_result));
+                        SafeAddTarget(tmpMap, itr->GetGUID());
                 }
+                if (GetSpellInfo()->getMaxTargets())
+                    if (GetSpellInfo()->getMaxTargets() == tmpMap->size())
+                        return;
             }
-            else //cast from GO
-            {
-                if (g_caster != nullptr && g_caster->getUInt32Value(OBJECT_FIELD_CREATED_BY) && g_caster->m_summoner != nullptr)
-                {
-                    //trap, check not to attack owner and friendly
-                    if (isFriendly(g_caster->m_summoner, static_cast<Unit*>(*itr)))
-                        SafeAddTarget(tmpMap, (*itr)->GetGUID());
-                }
-                else
-                    SafeAddTarget(tmpMap, (*itr)->GetGUID());
-            }
-            if (GetSpellInfo()->getMaxTargets())
-                if (GetSpellInfo()->getMaxTargets() == tmpMap->size())
-                {
-                    return;
-                }
         }
     }
 }
@@ -6858,18 +6855,18 @@ void Spell::Heal(int32 amount, bool ForceCrit)
                 int dmg = (int)CalculateDamage(u_caster, unitTarget, MELEE, nullptr, sSpellCustomizations.GetSpellInfo(53385));    //1 hit
                 int target = 0;
                 uint8 did_hit_result;
-                std::set<Object*>::iterator itr, itr2;
 
-                for (itr2 = u_caster->getInRangeObjectsSet().begin(); itr2 != u_caster->getInRangeObjectsSet().end();)
+                for (const auto& itr : u_caster->getInRangeObjectsSet())
                 {
-                    auto obj = *itr;
-                    itr = itr2;
-                    ++itr2;
-                    if ((*itr)->IsUnit() && static_cast<Unit*>(*itr)->isAlive() && obj->isInRange(u_caster, 8) && (u_caster->GetPhase() & (*itr)->GetPhase()))
+                    if (itr)
                     {
-                        did_hit_result = DidHit(sSpellCustomizations.GetSpellInfo(53385)->getEffect(0), static_cast<Unit*>(*itr));
-                        if (did_hit_result == SPELL_DID_HIT_SUCCESS)
-                            target++;
+                        auto obj = itr;
+                        if (itr->IsUnit() && static_cast<Unit*>(itr)->isAlive() && obj->isInRange(u_caster, 8) && (u_caster->GetPhase() & itr->GetPhase()))
+                        {
+                            did_hit_result = DidHit(sSpellCustomizations.GetSpellInfo(53385)->getEffect(0), static_cast<Unit*>(itr));
+                            if (did_hit_result == SPELL_DID_HIT_SUCCESS)
+                                target++;
+                        }
                     }
                 }
                 if (target > 4)

@@ -497,6 +497,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
         plObj->ClearAllPendingUpdates();
     }
 
+    obj->removeSelfFromInrangeSets();
     obj->clearInRangeSets();             // Clear object's in-range set
 
     uint8 cellNumber = worldConfig.server.mapCellNumber;

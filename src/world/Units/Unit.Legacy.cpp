@@ -11511,53 +11511,55 @@ void Unit::UpdateVisibility()
     if (IsPlayer())
     {
         plr = static_cast<Player*>(this);
-        for (std::set<Object*>::iterator itr2 = getInRangeObjectsSet().begin(); itr2 != getInRangeObjectsSet().end();)
+        for (const auto& itr2 : getInRangeObjectsSet())
         {
-            pObj = (*itr2);
-            ++itr2;
+            if (itr2)
+            {
+                pObj = itr2;
 
-            can_see = plr->CanSee(pObj);
-            is_visible = plr->IsVisible(pObj->GetGUID());
-            if (can_see)
-            {
-                if (!is_visible)
-                {
-                    buf.clear();
-                    count = pObj->BuildCreateUpdateBlockForPlayer(&buf, plr);
-                    plr->PushCreationData(&buf, count);
-                    plr->AddVisibleObject(pObj->GetGUID());
-                }
-            }
-            else
-            {
-                if (is_visible)
-                {
-                    plr->SendDestroyObject(pObj->GetGUID());
-                    plr->RemoveVisibleObject(pObj->GetGUID());
-                }
-            }
-
-            if (pObj->IsPlayer())
-            {
-                pl = static_cast<Player*>(pObj);
-                can_see = pl->CanSee(plr);
-                is_visible = pl->IsVisible(plr->GetGUID());
+                can_see = plr->CanSee(pObj);
+                is_visible = plr->IsVisible(pObj->GetGUID());
                 if (can_see)
                 {
                     if (!is_visible)
                     {
                         buf.clear();
-                        count = plr->BuildCreateUpdateBlockForPlayer(&buf, pl);
-                        pl->PushCreationData(&buf, count);
-                        pl->AddVisibleObject(plr->GetGUID());
+                        count = pObj->BuildCreateUpdateBlockForPlayer(&buf, plr);
+                        plr->PushCreationData(&buf, count);
+                        plr->AddVisibleObject(pObj->GetGUID());
                     }
                 }
                 else
                 {
                     if (is_visible)
                     {
-                        pl->SendDestroyObject(plr->GetGUID());
-                        pl->RemoveVisibleObject(plr->GetGUID());
+                        plr->SendDestroyObject(pObj->GetGUID());
+                        plr->RemoveVisibleObject(pObj->GetGUID());
+                    }
+                }
+
+                if (pObj->IsPlayer())
+                {
+                    pl = static_cast<Player*>(pObj);
+                    can_see = pl->CanSee(plr);
+                    is_visible = pl->IsVisible(plr->GetGUID());
+                    if (can_see)
+                    {
+                        if (!is_visible)
+                        {
+                            buf.clear();
+                            count = plr->BuildCreateUpdateBlockForPlayer(&buf, pl);
+                            pl->PushCreationData(&buf, count);
+                            pl->AddVisibleObject(plr->GetGUID());
+                        }
+                    }
+                    else
+                    {
+                        if (is_visible)
+                        {
+                            pl->SendDestroyObject(plr->GetGUID());
+                            pl->RemoveVisibleObject(plr->GetGUID());
+                        }
                     }
                 }
             }
