@@ -41,7 +41,7 @@ class DruidFangAI : public CreatureAIScript
         {
             // Serpent Form
             SerpentForm = addAISpell(8041, 5.0f, TARGET_SELF);
-            HealingTouch->setMinMaxPercentHp(0, 50);
+            SerpentForm->setMinMaxPercentHp(0, 50);
 
             // Healing Touch
             HealingTouch = addAISpell(5187, 5.0f, TARGET_SELF);

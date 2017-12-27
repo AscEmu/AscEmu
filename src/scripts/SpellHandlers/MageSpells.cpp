@@ -57,7 +57,7 @@ bool HotStreak(uint8_t effectIndex, Aura* pAura, bool apply)
             caster->RemoveProcTriggerSpell(48108);
     }
 #endif
-    if (apply || effectIndex == 0 || pAura->IsPositive()) { return true; }
+
     return true;
 }
 

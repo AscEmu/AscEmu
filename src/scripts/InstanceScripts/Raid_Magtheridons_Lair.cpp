@@ -1006,9 +1006,9 @@ class MagtheridonAI : public CreatureAIScript
 
         CreatureAISpells* quake1;
         CreatureAISpells* quake2;
-        CreatureAISpells* blastNova;
+        //CreatureAISpells* blastNova;
         CreatureAISpells* caveIn;
-        CreatureAISpells* enrage;
+        //CreatureAISpells* enrage;
 };
 
 void SetupMagtheridonsLair(ScriptMgr* mgr)

@@ -2609,6 +2609,8 @@ PatchwerkAI::PatchwerkAI(Creature* pCreature) : CreatureAIScript(pCreature)
     addEmoteForEvent(Event_OnTargetDied, 8936);
     addEmoteForEvent(Event_OnDied, 8937);
     mEnraged = false;
+
+    mLocaleEnrageTimerId = 0;
 }
 
 void PatchwerkAI::AIUpdate()

@@ -171,6 +171,7 @@ class IckAI : public CreatureAIScript
         mShadowBoltTimer = 0;
         mExplosionBarageEndTimer = 0;
         mSpecialAttackTimer = 0;
+        mMightyKickTimer = 0;
 
         // Emotes
         // Krick

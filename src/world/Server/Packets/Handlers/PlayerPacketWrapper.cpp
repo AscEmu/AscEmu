@@ -672,9 +672,12 @@ void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, 
             {
                 for (const auto& itr : getInRangePlayersSet())
                 {
-                    Player* p = static_cast<Player*>(itr);
-                    if (p && p->GetGroup() == nullptr || p->GetGroup()->GetID() != GetGroup()->GetID())
-                        p->PushUpdateData(nongroupbuf, 1);
+                    if (itr)
+                    {
+                        Player* p = static_cast<Player*>(itr);
+                        if (p->GetGroup() == nullptr || p->GetGroup()->GetID() != GetGroup()->GetID())
+                            p->PushUpdateData(nongroupbuf, 1);
+                    }
                 }
             }
         }

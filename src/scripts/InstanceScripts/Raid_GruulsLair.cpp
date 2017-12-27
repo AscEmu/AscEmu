@@ -550,8 +550,8 @@ class GruulTheDragonkillerAI : public CreatureAIScript
         CreatureAISpells* mHurtfulStrike;
         CreatureAISpells* mGroundSlam;
         CreatureAISpells* mGroundSlam2;
-        CreatureAISpells* mStoned;
-        CreatureAISpells* mShatter;
+        //CreatureAISpells* mStoned;
+        //CreatureAISpells* mShatter;
         CreatureAISpells* mShatter2;
 };
 

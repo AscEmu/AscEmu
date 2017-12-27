@@ -257,6 +257,8 @@ class LadySacrolashAI : public CreatureAIScript
             //Emotes
             addEmoteForEvent(Event_OnTargetDied, 8847);
             addEmoteForEvent(Event_OnDied, 8848);
+
+            mLocaleEnrageTimerId = 0;
         }
 
         void AIUpdate() override
@@ -327,6 +329,8 @@ class GrandWarlockAlythessAI : public CreatureAIScript
             //Emotes
             addEmoteForEvent(Event_OnTargetDied, 8849);
             addEmoteForEvent(Event_OnDied, 8850); // Wasn't able to find sound for this text
+
+            mLocaleEnrageTimerId = 0;
         }
 
         void AIUpdate() override

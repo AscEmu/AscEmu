@@ -1369,10 +1369,11 @@ bool Item::RepairItem(Player* pPlayer, bool guildmoney, int32* pCost)   //pCost 
     {
         if (!pPlayer->GetGuildMember()->RepairItem((uint32)cost))
             return false;//we should tell the client that he can't repair with the guild gold.
+
         if (pCost != NULL)
             *pCost += cost;
     }
-    else//we pay with our gold
+    else //we pay with our gold
 #endif
     {
         if (!pPlayer->HasGold(cost))
@@ -1382,6 +1383,6 @@ bool Item::RepairItem(Player* pPlayer, bool guildmoney, int32* pCost)   //pCost 
     }
     SetDurabilityToMax();
     m_isDirty = true;
-    if (guildmoney || pCost == nullptr) { return true; }
+
     return true;
 }
