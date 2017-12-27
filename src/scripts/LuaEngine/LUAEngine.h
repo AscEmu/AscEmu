@@ -588,9 +588,15 @@ public:
             // push onto the Lua stack a userdata containing a pointer to T object
             static int push(lua_State* L, T* obj, bool gc = false)
             {
-                if (!obj) { lua_pushnil(L); return lua_gettop(L); }
+                if (!obj)
+                {
+                    lua_pushnil(L); return lua_gettop(L);
+                }
+
                 luaL_getmetatable(L, GetTClassName<T>());  // lookup metatable in Lua registry
-                if (lua_isnil(L, -1)) luaL_error(L, "%s missing metatable", GetTClassName<T>());
+                if (lua_isnil(L, -1))
+                    luaL_error(L, "%s missing metatable", GetTClassName<T>());
+
                 int mt = lua_gettop(L);
                 T** ptrHold = (T**)lua_newuserdata(L, sizeof(T**));
                 int ud = lua_gettop(L);

@@ -119,17 +119,23 @@ void WorldSession::HandleGroupPromote(WorldPacket& recv_data)
     else if (promotetype == 1)
         function_to_call = &Group::SetMainAssist;
 
-    if (on == 0)
-        (_player->GetGroup()->*function_to_call)(NULL);
+    if (on == 0 && function_to_call != nullptr)
+    {
+        (_player->GetGroup()->*function_to_call)(nullptr);
+    }
     else
     {
         PlayerInfo* np = objmgr.GetPlayerInfo((uint32)guid);
-        if (np == NULL)
-            (_player->GetGroup()->*function_to_call)(NULL);
+        if (np == nullptr)
+        {
+            if (function_to_call != nullptr)
+                (_player->GetGroup()->*function_to_call)(nullptr);
+        }
         else
         {
             if (_player->GetGroup()->HasMember(np))
-                (_player->GetGroup()->*function_to_call)(np);
+                if (function_to_call != nullptr)
+                    (_player->GetGroup()->*function_to_call)(np);
         }
     }
 }

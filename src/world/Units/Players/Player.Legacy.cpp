@@ -565,6 +565,8 @@ Player::Player(uint32 guid)
     // command
     go_last_x_rotation = 0.0f;
     go_last_y_rotation = 0.0f;
+
+    m_FirstCastAutoRepeat = false;
 }
 
 void Player::OnLogin()

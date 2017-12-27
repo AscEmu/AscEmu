@@ -10,20 +10,13 @@ This file is released under the MIT license. See README-MIT for more information
 //.vehicle ejectpassenger
 bool ChatHandler::HandleVehicleEjectPassengerCommand(const char* args, WorldSession* session)
 {
-    std::string seatString;
-    std::stringstream ss(args);
-    ss >> seatString;
-
-    if (ss.fail())
+    if (!args)
     {
         RedSystemMessage(session, "You need to specify a seat number.");
         return false;
     }
 
-    uint32_t seat = 0;
-
-    if (seatString.empty() == false)
-        seat = atoi(seatString.c_str());
+    uint32_t seat = atoi(args);
 
     Player* p = session->GetPlayer();
     if (p->GetTargetGUID() == 0)
@@ -38,11 +31,12 @@ bool ChatHandler::HandleVehicleEjectPassengerCommand(const char* args, WorldSess
         RedSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
-    if (u->GetVehicleComponent() == NULL)
+    if (u->GetVehicleComponent() == nullptr)
     {
         RedSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
+
     u->GetVehicleComponent()->EjectPassengerFromSeat(seat);
     return true;
 }

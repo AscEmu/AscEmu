@@ -62,6 +62,7 @@ class NalorakkAI : public CreatureAIScript
             Morph->addEmote("You call on da beast, you gonna get more dan you bargain for!", CHAT_MSG_MONSTER_YELL, 12072);
 
             MorphTimer = 0;
+            mLocaleEnrageTimerId = 0;
         }
 
         void OnCombatStart(Unit* /*pTarget*/) override

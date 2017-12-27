@@ -3930,6 +3930,7 @@ class IllidanStormrageAI : public CreatureAIScript
             mYellTimer = 0;
             mEnrageTimer = 0;
             mCurrentWaypoint = 0;
+            mLocaleEnrageTimerId = 0;
         }
 
         void OnCombatStart(Unit* /*pTarget*/) override
