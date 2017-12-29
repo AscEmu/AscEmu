@@ -1,16 +1,16 @@
 ﻿<h1 align="center"> <img src="http://www.ascemu.org/images/ascemu.svg" alt="AscEmu... a never ending place to work." /></h1>
 
-💬 [Web](http://www.ascemu.org)
-💬 [Forums](http://www.board.ascemu.org)
-💬 [Wiki](http://www.ascemu.org/wiki/)
-💬 [Doxygen](http://www.ascemu.org/doxygen/)
-💬 [World DB](http://www.board.ascemu.org/filebase/index.php/FileList/1-Database/)
-
 ## Introduction [![Open HUB Stats](https://www.openhub.net/p/AscEmu/widgets/project_thin_badge.gif)](https://www.openhub.net/p/AscEmu)
 AscEmu is derived from ArcEmu to keep up the Antrix-Ascent-Arcemu way of Framework.
 We focus on optimizing the codebase and improving the ingame functionality.
 You can help us by contributing. It is completely open source and can be used by everyone.
 This project is for educational purpose. So, if you're looking for serverfiles to run your server or create some "custom" scripts  this is the wrong place for you. If you want to discuss/develop/work on an open source project and on important stuff for the framework feel free to join our community.
+
+💬 [Web](http://www.ascemu.org)
+💬 [Forums](http://www.board.ascemu.org)
+💬 [Wiki](http://www.ascemu.org/wiki/)
+💬 [Doxygen](http://www.ascemu.org/doxygen/)
+💬 [World DB](http://www.board.ascemu.org/filebase/index.php/FileList/1-Database/)
 
 Branch | TravisCi | AppVeyor | Branch | TravisCi | AppVeyor | Coverity | Codacy
 :------------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------:
