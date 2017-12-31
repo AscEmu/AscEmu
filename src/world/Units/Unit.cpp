@@ -965,7 +965,7 @@ uint64_t Unit::getSingleTargetGuidForAura(uint32_t spell)
 
 uint64_t Unit::getSingleTargetGuidForAura(uint32_t* spellIds, uint32_t* index)
 {
-    for (uint8 i = 0;; i++)
+    for (uint8 i = 0; ; i++)
     {
         if (!spellIds[i])
             return 0;

@@ -1945,7 +1945,7 @@ inline bool Guild::memberHasTabRights(uint64_t guid, uint8_t tabId, uint32_t rig
 
 inline void Guild::logEvent(GuildEventLogTypes eventType, uint32_t playerGuid1, uint32_t playerGuid2, uint8_t newRank)
 {
-    mEventLog->addEvent(new GuildEventLogEntry(mId, mEventLog->getNextGUID(), eventType, playerGuid1, playerGuid2, newRank));;
+    mEventLog->addEvent(new GuildEventLogEntry(mId, mEventLog->getNextGUID(), eventType, playerGuid1, playerGuid2, newRank));
 }
 
 void Guild::logBankEvent(GuildBankEventLogTypes eventType, uint8_t tabId, uint32_t lowguid, uint32_t itemOrMoney, uint16_t itemStackCount, uint8_t destTabId)
