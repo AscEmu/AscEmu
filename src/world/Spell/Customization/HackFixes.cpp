@@ -3735,7 +3735,7 @@ void ApplyNormalFixes()
     if (sp != nullptr)
     {
         sp->setEffectSpellClassMask(0x00100000 | 0x10000000 | 0x80000000, 0, 0);
-        sp->setEffectSpellClassMask(0x08000000, 0, 1);;
+        sp->setEffectSpellClassMask(0x08000000, 0, 1);
         sp->setProcFlags(PROC_ON_CAST_SPELL);
         sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
     }

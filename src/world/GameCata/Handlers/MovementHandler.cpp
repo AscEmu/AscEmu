@@ -527,7 +527,7 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, uint32_t opcode)
             case MSEPitch:
                 if (status_info.hasPitch)
                     data >> pitch_rate;
-                break;;
+                break;
             case MSEFallTime:
                 if (status_info.hasFallData)
                     data >> fall_time;

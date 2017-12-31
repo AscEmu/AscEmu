@@ -225,7 +225,7 @@ void CreatureAIScript::_internalOnCombatStop()
     RemoveAIUpdateEvent();
 
     resetScriptPhase();
-    enableOnIdleEmote(true);;
+    enableOnIdleEmote(true);
 }
 
 void CreatureAIScript::_internalAIUpdate()

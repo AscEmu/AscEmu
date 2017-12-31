@@ -1026,7 +1026,7 @@ bool GameObject_FishingNode::HasLoot()
 // Class functions for GameObject_Ritual
 GameObject_Ritual::GameObject_Ritual(uint64 GUID) : GameObject(GUID)
 {
-    Ritual = NULL;;
+    Ritual = NULL;
 }
 
 GameObject_Ritual::~GameObject_Ritual()
