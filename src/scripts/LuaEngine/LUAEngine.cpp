@@ -224,7 +224,7 @@ void LuaEngine::LoadScripts()
         }
         else
         {
-            if (errorCode == lua_pcall(lu, 0, 0, 0))
+            if (errorCode != lua_pcall(lu, 0, 0, 0))
             {
                 LOG_ERROR("%s failed.(could not run). Error code %i", itr->c_str(), errorCode);
                 report(lu);
