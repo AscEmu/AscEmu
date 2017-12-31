@@ -473,7 +473,7 @@ void GuildMgr::loadGuildXpForLevelFromDB()
     } while (result->NextRow());
 
     // fill level gaps
-    for (uint8_t level = 1; level < worldConfig.guild.maxLevel ; ++level)
+    for (uint8_t level = 1; level < worldConfig.guild.maxLevel; ++level)
     {
         if (!GuildXPperLevel[level])
         {

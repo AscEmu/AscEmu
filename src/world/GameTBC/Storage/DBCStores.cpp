@@ -268,7 +268,7 @@ std::string generateName(uint32_t type)
     if (_namegenData[type].size() == 0)
         return "ERR";
 
-    uint32_t ent = RandomUInt((uint32_t)_namegenData[type].size() - 1);
+    uint32_t ent = Util::getRandomUInt((uint32_t)_namegenData[type].size() - 1);
     return _namegenData[type].at(ent).name;
 }
 
