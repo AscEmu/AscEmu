@@ -4630,7 +4630,7 @@ class LuaUnit
         if (itemid && amount)
             ctr->AddVendorItem(itemid, amount, item_extended_cost);
 #else
-        if (L != nullptr && ptr != nullptr) { return 0 ; }
+        if (L != nullptr && ptr != nullptr) { return 0; }
 #endif
         return 0;
     }

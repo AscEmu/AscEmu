@@ -302,7 +302,7 @@ std::string generateName(uint32_t type)
     return _namegenData[type].at(ent).name;
 }
 
-uint32_t const* getTalentTabPages(uint8 playerClass)
+uint32_t const* getTalentTabPages(uint8_t playerClass)
 {
     return InspectTalentTabPages[playerClass];
 }

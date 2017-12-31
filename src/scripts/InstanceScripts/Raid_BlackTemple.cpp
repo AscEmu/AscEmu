@@ -4284,7 +4284,7 @@ class IllidanStormrageAI : public CreatureAIScript
                         }
                         break;
                     case 5:
-                        for (uint8 i = 0 ; i < 2; ++i)
+                        for (uint8 i = 0; i < 2; ++i)
                         {
                             Creature* Blade = getNearestCreature(UnitPos[i].x, UnitPos[i].y, UnitPos[i].z, CN_BLADE_OF_AZZINOTH);
                             if (Blade != NULL)

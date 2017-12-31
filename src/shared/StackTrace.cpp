@@ -60,14 +60,14 @@ int StackTrace::printStackTrace(MapFile** map, int maps,
     long callersAddr[MAX_DEPTH];
     int callers = 0;
     int i;
-    for(i = initLevel ; i < maxDepth ; ++i)
+    for(i = initLevel; i < maxDepth; ++i)
     {
         long addr = getCaller(i);
         callersAddr[callers++] = addr;
 
         // end tracing here if the entry is not in a map file
         int entry = -1;
-        for(int j = 0 ; j < maps ; ++j)
+        for(int j = 0; j < maps; ++j)
         {
             entry = map[j]->findEntry(addr);
             if(-1 != entry)
@@ -81,14 +81,14 @@ int StackTrace::printStackTrace(MapFile** map, int maps,
     if(bufferSize > 0)
         *buffer = 0;
     int needed = 0;
-    for(i = initLevel ; i < callers ; ++i)
+    for(i = initLevel; i < callers; ++i)
     {
         long addr = callersAddr[callers - i - 1];
 
         // find entry info
         int entry = -1;
         const MapFile* entryMap = NULL;
-        for(int j = 0 ; j < maps ; ++j)
+        for(int j = 0; j < maps; ++j)
         {
             entry = map[j]->findEntry(addr);
             if(-1 != entry)
@@ -101,7 +101,7 @@ int StackTrace::printStackTrace(MapFile** map, int maps,
         // format entry to tempory buf
         char buf[MapFileEntry::MAX_NAME + MAX_DEPTH + 20];    // name + margin + hex number
         buf[0] = 0;
-        for(int k = initLevel - 1 ; k < i ; ++k)
+        for(int k = initLevel - 1; k < i; ++k)
             strcat(buf, " ");
         if(!entryMap)
             sprintf(buf + strlen(buf), "0x%x\n", addr);
