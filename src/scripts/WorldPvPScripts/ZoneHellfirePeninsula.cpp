@@ -139,7 +139,7 @@ class HellfirePeninsulaBannerAI : public GameObjectAIScript
             uint32 timeptr = (uint32)UNIXTIME;
             bool in_range;
             bool is_valid;
-            PlayerPointer plr = NULLPLR;
+            PlayerPointer plr = nullptr;
 
             for(; itr != itrend; ++itr)
             {
