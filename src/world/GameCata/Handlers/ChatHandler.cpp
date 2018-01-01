@@ -66,8 +66,8 @@ static const uint32 LanguageSkills[NUM_LANGUAGES] =
 
 struct OpcodeToChatType
 {
-    uint32 opcode;
-    uint32 chatType;
+    uint16_t opcode;
+    uint8_t chatType;
 };
 
 #define MSG_OPCODE_COUNT 13
@@ -89,7 +89,7 @@ OpcodeToChatType opcodeToChatTypeList[MSG_OPCODE_COUNT] =
     { CMSG_MESSAGECHAT_RAID_WARNING, CHAT_MSG_RAID_WARNING }
 };
 
-uint32_t getMessageTypeForOpcode(uint32_t opcode)
+uint8_t getMessageTypeForOpcode(uint16_t opcode)
 {
     for (int i = 0; i < MSG_OPCODE_COUNT; ++i)
     {
@@ -145,7 +145,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
     const char* pMisc = nullptr;
     const char* pMsg = nullptr;
 
-    uint32 type = getMessageTypeForOpcode(recvData.GetOpcode());
+    uint8_t type = getMessageTypeForOpcode(recvData.GetOpcode());
     if (type == 0xFF)
     {
         LogError("HandleMessagechatOpcode : Unknown chat opcode (0x%X)", recvData.GetOpcode());

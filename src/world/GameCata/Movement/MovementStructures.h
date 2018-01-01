@@ -4024,7 +4024,7 @@ MovementStatusElements MoveUpdateTeleport[] =
     MSEEnd,
 };
 
-MovementStatusElements* GetMovementStatusElementsSequence(uint32 opcode)
+MovementStatusElements* GetMovementStatusElementsSequence(uint16_t opcode)
 {
     switch (opcode)
     {

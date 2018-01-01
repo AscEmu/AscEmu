@@ -206,8 +206,8 @@ class SERVER_DECL MovementInfo
             transport_seat = -1;
         }
 
-        void readMovementInfo(ByteBuffer& data, uint32_t opcode);
-        void writeMovementInfo(ByteBuffer& data, uint32_t opcode, float custom_speed = 0.f) const;
+        void readMovementInfo(ByteBuffer& data, uint16_t opcode);
+        void writeMovementInfo(ByteBuffer& data, uint16_t opcode, float custom_speed = 0.f) const;
 
     private:
 

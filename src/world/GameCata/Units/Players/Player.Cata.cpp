@@ -183,7 +183,7 @@ void Player::handleFall(MovementInfo const& movementInfo)
     z_axisposition = 0.0f;
 }
 
-bool Player::isPlayerJumping(MovementInfo const& movementInfo, uint32_t opcode)
+bool Player::isPlayerJumping(MovementInfo const& movementInfo, uint16_t opcode)
 {
     if (opcode == MSG_MOVE_FALL_LAND || movementInfo.hasMovementFlag(MOVEFLAG_SWIMMING))
     {

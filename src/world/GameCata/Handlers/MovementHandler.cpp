@@ -16,7 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
 {
-    uint32_t opcode = recv_data.GetOpcode();
+    uint16_t opcode = recv_data.GetOpcode();
     Player* mover = _player;
 
     if (m_MoverGuid != mover->GetGUID())
@@ -396,7 +396,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     mover->SendMessageToSet(&data, false);
 }
 
-void MovementInfo::readMovementInfo(ByteBuffer& data, uint32_t opcode)
+void MovementInfo::readMovementInfo(ByteBuffer& data, uint16_t opcode)
 {
     bool hasTransportData = false,
         hasMovementFlags = false,
@@ -597,7 +597,7 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, uint32_t opcode)
     }
 }
 
-void MovementInfo::writeMovementInfo(ByteBuffer& data, uint32_t opcode, float custom_speed) const
+void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, float custom_speed) const
 {
     bool hasTransportData = !transport_guid.IsEmpty();
 

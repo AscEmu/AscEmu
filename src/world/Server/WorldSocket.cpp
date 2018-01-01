@@ -833,11 +833,7 @@ void WorldSocket::SendAuthResponseError(uint8_t code)
 }
 #endif
 
-#if VERSION_STRING != Cata
 void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* data, uint8_t direction, uint32_t accountid)
-#else
-void WorldPacketLog::logPacket(uint32_t len, uint32_t opcode, const uint8_t* data, uint8_t direction, uint32_t accountid)
-#endif
 {
     if (worldConfig.log.worldDebugFlags & LF_OPCODE)
     {

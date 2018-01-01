@@ -34,11 +34,7 @@ class WorldPacketLog : public Singleton<WorldPacketLog>
         void disablePacketLog();
 
         //WorldSocket.cpp
-    #if VERSION_STRING != Cata
         void logPacket(uint32_t len, uint16_t opcode, const uint8_t* data, uint8_t direction, uint32_t accountid = 0);
-    #else
-        void logPacket(uint32_t len, uint32_t opcode, const uint8_t* data, uint8_t direction, uint32_t accountid = 0);
-    #endif
 };
 #define sWorldPacketLog WorldPacketLog::getSingleton()
 
