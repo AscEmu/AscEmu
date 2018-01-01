@@ -468,8 +468,8 @@ class SCRIPT_DECL ZMScouts : public GossipScript
             if(!plr)
                 return;
 
-            CreaturePointer  pCreature = NULLCREATURE;
-            pCreature = pObject->IsCreature() ? TO_CREATURE(pObject) : NULLCREATURE;
+            CreaturePointer  pCreature = nullptr;
+            pCreature = pObject->IsCreature() ? TO_CREATURE(pObject) : nullptr;
             if(!pCreature)
                 return;
 
@@ -601,7 +601,7 @@ void ZMSpawnBanners(shared_ptr<MapMgr> bmgr, int32 side)
     const sgodata* b;
     b = &gobdata[i];
 
-    GameObjectPointer bGo = NULLGOB;
+    GameObjectPointer bGo = nullptr;
     bGo = bmgr->GetInterface()->SpawnGameObject(b->entry, b->posx, b->posy, b->posz, b->facing, false, 0, 0);
     if(!bGo)
         return;
@@ -638,7 +638,7 @@ void ZMSpawnObjects(shared_ptr<MapMgr> pmgr)
     {
         p = &godata[i];
 
-        GameObjectPointer pGo = NULLGOB;
+        GameObjectPointer pGo = nullptr;
         pGo = pmgr->GetInterface()->SpawnGameObject(p->entry, p->posx, p->posy, p->posz, p->facing, false, 0, 0);
         if(!pGo)
             continue;
