@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 
 if(NOT BUILD_MISCSCRIPTS)
   message("\tMiscScripts was skipped because BUILD_MISCSCRIPTS is unchecked.")

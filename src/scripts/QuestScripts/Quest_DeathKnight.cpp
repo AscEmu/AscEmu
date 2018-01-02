@@ -1,6 +1,6 @@
 /*
 * AscEmu Framework based on Arcemu MMORPG Server
-* Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+* Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 * Copyright (C) 2009-2012 ArcEmu Team <http://www.arcemu.org>
 * Copyright (C) 2008-2009 Sun++ Team <http://www.sunplusplus.info>
 *
