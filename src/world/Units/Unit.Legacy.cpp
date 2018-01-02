@@ -379,6 +379,9 @@ Unit::Unit() : m_currentSpeedWalk(2.5f),
     m_basicTurnRate(3.141594f), m_basicSpeedFly(7.0f), m_basicSpeedFlyBack(4.5f), m_basicPitchRate(3.14f),
     m_movementManager()
 {
+    mControledUnit = this;
+    mPlayerControler = nullptr;
+
     int i;
 
     m_attackTimer = 0;
@@ -13827,6 +13830,7 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
         pTarget->setAItoUse(false);
         pTarget->GetAIInterface()->StopMovement(0);
         pTarget->m_redirectSpellPackets = pThis;
+        pTarget->mPlayerControler = pThis;
     }
 
     m_noInterrupt++;
@@ -13834,6 +13838,7 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
     pTarget->SetCharmedByGUID(GetGUID());
     pTarget->SetCharmTempVal(pTarget->GetFaction());
     pThis->SetFarsightTarget(pTarget->GetGUID());
+    pThis->mControledUnit = pTarget;
     pTarget->SetFaction(GetFaction());
     pTarget->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
 
@@ -13877,11 +13882,13 @@ void Unit::UnPossess()
     {
         // unit-only stuff.
         pTarget->setAItoUse(true);
-        pTarget->m_redirectSpellPackets = 0;
+        pTarget->m_redirectSpellPackets = nullptr;
+        pTarget->mPlayerControler = nullptr;
     }
 
     m_noInterrupt--;
     pThis->SetFarsightTarget(0);
+    pThis->mControledUnit = this;
     SetCharmedUnitGUID(0);
     pTarget->SetCharmedByGUID(0);
     SetCharmedUnitGUID(0);

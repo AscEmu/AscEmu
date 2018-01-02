@@ -316,7 +316,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
 
     bool moved = true;
 
-    if (_player->GetCharmedByGUID() || _player->GetPlayerStatus() == TRANSFER_PENDING || _player->GetTaxiState() || _player->getDeathState() == JUST_DIED)
+    if (/*_player->GetCharmedByGUID() || */_player->GetPlayerStatus() == TRANSFER_PENDING || _player->GetTaxiState() || _player->getDeathState() == JUST_DIED)
         return;
 
     // spell cancel on movement, for now only fishing is added
@@ -341,6 +341,14 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
         }
     }
 
+    Unit* mover = _player->mControledUnit;
+
+    ASSERT(mover != nullptr)
+
+    Player* plrMover = nullptr;
+    if (mover->IsPlayer())
+        plrMover = dynamic_cast<Player*>(mover);
+
     /************************************************************************/
     /* Clear standing state to stand.				                        */
     /************************************************************************/
@@ -359,14 +367,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     recv_data >> guid;
     movement_info.init(recv_data);
 
-    if (guid != m_MoverWoWGuid.GetOldGuid())
-    {
-        return;
-    }
-
-    // Player is in control of some entity, so we move that instead of the player
-    Unit* mover = _player->GetMapMgr()->GetUnit(m_MoverWoWGuid.GetOldGuid());
-    if (mover == NULL)
+    if (guid != mover->GetGUID())
         return;
 
     /* Anti Multi-Jump Check */
@@ -536,7 +537,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
         /************************************************************************/
         /* Distribute to all inrange players.                                   */
         /************************************************************************/
-        for (const auto& itr : _player->getInRangePlayersSet())
+        for (const auto& itr : mover->getInRangePlayersSet())
         {
             Player* p = static_cast<Player*>(itr);
 

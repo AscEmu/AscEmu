@@ -365,6 +365,8 @@ Player::Player(uint32 guid)
     bUpdateBuffer.reserve(30000);//ought to be > than enough ;)
     mOutOfRangeIds.reserve(1000);
 
+    mControledUnit = this;
+    mPlayerControler = this;
 
     bProcessPending = false;
     for (i = 0; i < 25; ++i)

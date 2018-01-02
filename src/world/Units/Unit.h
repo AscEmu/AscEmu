@@ -268,6 +268,10 @@ public:
 
     void sendMoveSplinePaket(UnitSpeedType speed_type);
 
+    // Mover
+    Unit* mControledUnit;
+    Player* mPlayerControler;
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Internal States
 private:

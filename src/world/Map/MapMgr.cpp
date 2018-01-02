@@ -200,7 +200,7 @@ void MapMgr::PushObject(Object* obj)
     // Assertions
     ARCEMU_ASSERT(obj != nullptr);
 
-    ///\todo That object types are not map objects. TODO: add AI groups here?
+    //\todo That object types are not map objects. TODO: add AI groups here?
     if (obj->IsItem() || obj->IsContainer())
     {
         // mark object as updatable and exit
@@ -493,6 +493,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
     if (obj->IsPlayer())
     {
         plObj = static_cast<Player*>(obj);
+
         _processQueue.erase(plObj);     // Clear any updates pending
         plObj->ClearAllPendingUpdates();
     }
@@ -503,20 +504,31 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
     uint8 cellNumber = worldConfig.server.mapCellNumber;
 
     // If it's a player - update his nearby cells
-    if (!_shutdown && obj->IsPlayer())
+    if (!_shutdown)
     {
-        // get x/y
-        if (obj->GetPositionX() < _maxX || obj->GetPositionX() > _minY || obj->GetPositionY() < _maxY || obj->GetPositionY() > _minY)
-        {
-            uint32 x = GetPosX(obj->GetPositionX());
-            uint32 y = GetPosY(obj->GetPositionY());
-            UpdateCellActivity(x, y, 2 + cellNumber);
+        if (obj->IsPlayer())
+        {// get x/y
+            if (obj->GetPositionX() < _maxX || obj->GetPositionX() > _minY || obj->GetPositionY() < _maxY || obj->GetPositionY() > _minY)
+            {
+                uint32 x = GetPosX(obj->GetPositionX());
+                uint32 y = GetPosY(obj->GetPositionY());
+                UpdateCellActivity(x, y, 2 + cellNumber);
+            }
+            m_PlayerStorage.erase(static_cast<Player*>(obj)->GetLowGUID());
         }
-        m_PlayerStorage.erase(static_cast< Player* >(obj)->GetLowGUID());
+        else if (obj->IsUnit() && static_cast<Unit*>(obj)->mPlayerControler != nullptr)
+        {
+            if (obj->GetPositionX() < _maxX || obj->GetPositionX() > _minY || obj->GetPositionY() < _maxY || obj->GetPositionY() > _minY)
+            {
+                uint32 x = GetPosX(obj->GetPositionX());
+                uint32 y = GetPosY(obj->GetPositionY());
+                UpdateCellActivity(x, y, 2 + cellNumber);
+            }
+        }
     }
 
     // Remove the session from our set if it is a player.
-    if (obj->IsPlayer())
+    if (obj->IsPlayer() || obj->IsUnit() && static_cast<Unit*>(obj)->mPlayerControler != nullptr)
     {
         for (std::set<Object*>::iterator itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
         {
@@ -559,6 +571,8 @@ void MapMgr::ChangeObjectLocation(Object* obj)
 
     if (obj->IsPlayer())
         plObj = static_cast<Player*>(obj);
+    if (obj->IsUnit() && static_cast<Unit*>(obj)->mPlayerControler != nullptr)
+        plObj = static_cast<Unit*>(obj)->mPlayerControler;
 
     float fRange = 0.0f;
 
@@ -580,6 +594,9 @@ void MapMgr::ChangeObjectLocation(Object* obj)
 
                     if (curObj->IsPlayer())
                         static_cast<Player*>(curObj)->RemoveIfVisible(obj->GetGUID());
+
+                    if (curObj->IsUnit() && static_cast<Unit*>(curObj)->mPlayerControler != nullptr)
+                        static_cast<Unit*>(curObj)->mPlayerControler->RemoveIfVisible(obj->GetGUID());
 
                     curObj->removeObjectFromInRangeObjectsSet(obj);
 
@@ -642,7 +659,7 @@ void MapMgr::ChangeObjectLocation(Object* obj)
 
         // if player we need to update cell activity radius = 2 is used in order to update
         // both old and new cells
-        if (obj->IsPlayer())
+        if (obj->IsPlayer() || obj->IsUnit() && static_cast<Unit*>(obj)->mPlayerControler != nullptr)
         {
             // have to unlock/lock here to avoid a deadlock situation.
             UpdateCellActivity(cellX, cellY, 2 + cellNumber);
@@ -754,6 +771,19 @@ void MapMgr::UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuf
                         (*buf)->clear();
                     }
                 }
+                else if (curObj->IsUnit() && static_cast<Unit*>(curObj)->mPlayerControler != nullptr)
+                {
+                    plObj2 = static_cast<Unit*>(curObj)->mPlayerControler;
+
+                    if (plObj2->CanSee(obj) && !plObj2->IsVisible(obj->GetGUID()))
+                    {
+                        CHECK_BUF;
+                        count = obj->BuildCreateUpdateBlockForPlayer(*buf, plObj2);
+                        plObj2->PushCreationData(*buf, count);
+                        plObj2->AddVisibleObject(obj->GetGUID());
+                        (*buf)->clear();
+                    }
+                }
 
                 if (plObj != nullptr)
                 {
@@ -773,6 +803,25 @@ void MapMgr::UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuf
                 if (curObj->IsPlayer())
                 {
                     plObj2 = static_cast<Player*>(curObj);
+                    cansee = plObj2->CanSee(obj);
+                    isvisible = plObj2->IsVisible(obj->GetGUID());
+                    if (!cansee && isvisible)
+                    {
+                        plObj2->PushOutOfRange(obj->GetNewGUID());
+                        plObj2->RemoveVisibleObject(obj->GetGUID());
+                    }
+                    else if (cansee && !isvisible)
+                    {
+                        CHECK_BUF;
+                        count = obj->BuildCreateUpdateBlockForPlayer(*buf, plObj2);
+                        plObj2->PushCreationData(*buf, count);
+                        plObj2->AddVisibleObject(obj->GetGUID());
+                        (*buf)->clear();
+                    }
+                }
+                else if (curObj->IsUnit() && static_cast<Unit*>(curObj)->mPlayerControler != nullptr)
+                {
+                    plObj2 = static_cast<Unit*>(curObj)->mPlayerControler;
                     cansee = plObj2->CanSee(obj);
                     isvisible = plObj2->IsVisible(obj->GetGUID());
                     if (!cansee && isvisible)
@@ -882,6 +931,15 @@ void MapMgr::_UpdateObjects()
                     if (count)
                     {
                         static_cast<Player*>(pObj)->PushUpdateData(&update, count);
+                        update.clear();
+                    }
+                }
+                else if (pObj->IsUnit() && static_cast<Unit*>(pObj)->mPlayerControler != nullptr)
+                {
+                    count = pObj->BuildValuesUpdateBlockForPlayer(&update, static_cast<Unit*>(pObj)->mPlayerControler);
+                    if (count)
+                    {
+                        static_cast<Unit*>(pObj)->mPlayerControler->PushUpdateData(&update, count);
                         update.clear();
                     }
                 }
