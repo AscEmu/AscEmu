@@ -148,7 +148,7 @@ void Map::LoadSpawns(bool reload)
                 do
                 {
                     Field* fields = creature_spawn_result->Fetch();
-                    CreatureSpawn* cspawn = new CreatureSpawn;
+                    MySQLStructure::CreatureSpawn* cspawn = new MySQLStructure::CreatureSpawn;
                     cspawn->id = fields[0].GetUInt32();
                     cspawn->form = sMySQLStore.getCreatureFormationBySpawnId(cspawn->id);
 
@@ -251,7 +251,7 @@ void Map::LoadSpawns(bool reload)
                 do
                 {
                     Field* fields = gobject_spawn_result->Fetch();
-                    GameobjectSpawn* go_spawn = new GameobjectSpawn;
+                    MySQLStructure::GameobjectSpawn* go_spawn = new MySQLStructure::GameobjectSpawn;
                     go_spawn->id = fields[0].GetUInt32();
 
                     uint32 gameobject_entry = fields[1].GetUInt32();

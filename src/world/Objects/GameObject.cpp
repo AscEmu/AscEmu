@@ -187,7 +187,7 @@ void GameObject::SaveToDB()
     if (m_spawn == NULL)
     {
         // Create spawn instance
-        m_spawn = new GameobjectSpawn;
+        m_spawn = new MySQLStructure::GameobjectSpawn;
         m_spawn->entry = GetEntry();
         m_spawn->id = objmgr.GenerateGameObjectSpawnID();
         m_spawn->map = GetMapId();
@@ -284,7 +284,7 @@ void GameObject::InitAI()
         myScript = sScriptMgr.CreateAIScriptClassForGameObject(GetEntry(), this);
 }
 
-bool GameObject::Load(GameobjectSpawn* go_spawn)
+bool GameObject::Load(MySQLStructure::GameobjectSpawn* go_spawn)
 {
     if (!CreateFromProto(go_spawn->entry, 0, go_spawn->position_x, go_spawn->position_y, go_spawn->position_z, go_spawn->orientation, go_spawn->rotation_0, go_spawn->rotation_1, go_spawn->rotation_2, go_spawn->rotation_3, go_spawn->overrides))
         return false;

@@ -398,7 +398,7 @@ void Creature::SaveToDB()
 {
     if (m_spawn == NULL)
     {
-        m_spawn = new CreatureSpawn;
+        m_spawn = new MySQLStructure::CreatureSpawn;
         m_spawn->entry = GetEntry();
         m_spawn->form = 0;
         m_spawn->id = spawnid = objmgr.GenerateCreatureSpawnID();
@@ -1260,7 +1260,7 @@ Movement::WayPoint* Creature::CreateWaypointStruct()
 }
 //#define SAFE_FACTIONS
 
-bool Creature::isattackable(CreatureSpawn* spawn)
+bool Creature::isattackable(MySQLStructure::CreatureSpawn* spawn)
 {
     if (spawn == nullptr)
         return false;
@@ -1300,7 +1300,7 @@ bool Creature::Teleport(const LocationVector& vec, MapMgr* map)
     }
 }
 
-bool Creature::Load(CreatureSpawn* spawn, uint8 mode, MySQLStructure::MapInfo const* info)
+bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStructure::MapInfo const* info)
 {
     m_spawn = spawn;
     creature_properties = sMySQLStore.getCreatureProperties(spawn->entry);

@@ -386,7 +386,7 @@ class SERVER_DECL GameObject : public Object
 
         bool CreateFromProto(uint32 entry, uint32 mapid, float x, float y, float z, float ang, float r0 = 0.0f, float r1 = 0.0f, float r2 = 0.0f, float r3 = 0.0f, uint32 overrides = 0);
 
-        bool Load(GameobjectSpawn* spawn);
+        bool Load(MySQLStructure::GameobjectSpawn* spawn);
 
         virtual bool IsLootable() { return false; }
 
@@ -430,7 +430,7 @@ class SERVER_DECL GameObject : public Object
 
         GameObjectAIScript* GetScript() { return myScript; }
 
-        GameobjectSpawn* m_spawn;
+        MySQLStructure::GameobjectSpawn* m_spawn;
         void OnPushToWorld();
         void onRemoveInRangeObject(Object* pObj);
         void RemoveFromWorld(bool free_guid);

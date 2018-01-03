@@ -1856,7 +1856,7 @@ GameObject* MapMgr::CreateAndSpawnGameObject(uint32 entryID, float x, float y, f
     go->PushToWorld(this);
 
     // Create spawn instance
-    auto go_spawn = new GameobjectSpawn;
+    auto go_spawn = new MySQLStructure::GameobjectSpawn;
     go_spawn->entry = go->GetEntry();
     go_spawn->id = objmgr.GenerateGameObjectSpawnID();
     go_spawn->map = go->GetMapId();

@@ -65,7 +65,7 @@ class SERVER_DECL Creature : public Unit
         void AddVehicleComponent(uint32 creature_entry, uint32 vehicleid);
         void RemoveVehicleComponent();
 
-        bool Load(CreatureSpawn* spawn, uint8 mode, MySQLStructure::MapInfo const* info);
+        bool Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStructure::MapInfo const* info);
         void Load(CreatureProperties const* c_properties, float x, float y, float z, float o = 0);
 
         void AddToWorld();
@@ -298,7 +298,7 @@ class SERVER_DECL Creature : public Unit
         uint32 spawnid;
         uint32 original_emotestate;
 
-        CreatureSpawn* m_spawn;
+        MySQLStructure::CreatureSpawn* m_spawn;
 
         void OnPushToWorld();
         virtual void Despawn(uint32 delay, uint32 respawntime);
@@ -330,7 +330,7 @@ class SERVER_DECL Creature : public Unit
         uint32 m_respawnTimeOverride;
 
         float GetBaseParry();
-        bool isattackable(CreatureSpawn* spawn);
+        bool isattackable(MySQLStructure::CreatureSpawn* spawn);
 
         void DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32 unitEvent, uint32 spellId, bool no_remove_auras = false);
         void TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_remove_auras = false);

@@ -99,6 +99,50 @@ namespace MySQLStructure
     //creature_quest_finisher
     //creature_quest_starter
     //creature_spawns
+    struct CreatureSpawn
+    {
+        uint32_t id;          // spawn ID
+        uint32_t entry;
+        float x;
+        float y;
+        float z;
+        float o;
+        MySQLStructure::CreatureFormation const* form;    // formation
+        uint8_t movetype;
+        uint32_t displayid;
+        uint32_t factionid;
+        uint32_t flags;
+        uint32_t bytes0;
+        uint32_t bytes1;
+        uint32_t bytes2;
+        uint32_t emote_state;
+        //uint32_t respawnNpcLink;
+        uint16_t channel_spell;
+        uint32_t channel_target_go;
+        uint32_t channel_target_creature;
+        uint16_t stand_state;
+        uint32_t death_state;
+        uint32_t MountedDisplayID;
+        uint32_t Item1SlotDisplay;
+        uint32_t Item2SlotDisplay;
+        uint32_t Item3SlotDisplay;
+        uint32_t CanFly;
+        uint32_t phase;
+
+        // sets one of the bytes of an uint32
+        uint32 setbyte(uint32 buffer, uint8 index, uint32 byte)
+        {
+            // We don't want a segfault, now do we?
+            if (index >= 4)
+                return buffer;
+
+            byte = byte << index * 8;
+            buffer = buffer | byte;
+
+            return buffer;
+        }
+    };
+
     //creature_staticspawns
     //creature_timed_emotes
     //creature_waypoints
@@ -133,6 +177,31 @@ namespace MySQLStructure
     //gameobject_quest_pickup_binding
     //gameobject_quest_starter
     //gameobject_spawns
+    struct GameobjectSpawn
+    {
+        uint32_t id;        // spawn ID
+        uint32_t entry;
+        uint32_t map;
+        float position_x;
+        float position_y;
+        float position_z;
+        float orientation;  // column facing
+        float rotation_0;   // column orientation1
+        float rotation_1;   // column orientation2
+        float rotation_2;   // column orientation3
+        float rotation_3;   // column orientation4
+        //float facing;
+        //uint32_t flags;
+        uint32_t state;
+        uint32_t flags;
+        uint32_t faction;
+        //uint32_t level;
+        float scale;
+        //uint32_t stateNpcLink;
+        uint32_t phase;
+        uint32_t overrides;
+    };
+
     //gameobject_staticspawns
     //gameobject_teleports
 

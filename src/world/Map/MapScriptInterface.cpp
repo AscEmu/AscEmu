@@ -96,7 +96,7 @@ GameObject* MapScriptInterface::SpawnGameObject(uint32 Entry, float cX, float cY
     return pGameObject;
 }
 
-GameObject* MapScriptInterface::SpawnGameObject(GameobjectSpawn* gs, bool AddToWorld)
+GameObject* MapScriptInterface::SpawnGameObject(MySQLStructure::GameobjectSpawn* gs, bool AddToWorld)
 {
     if (!gs)
         return nullptr;
@@ -121,7 +121,7 @@ Creature* MapScriptInterface::SpawnCreature(uint32 Entry, float cX, float cY, fl
     if (creature_properties == nullptr)
         return nullptr;
 
-    CreatureSpawn* spawn = new CreatureSpawn;
+    MySQLStructure::CreatureSpawn* spawn = new MySQLStructure::CreatureSpawn;
     spawn->entry = Entry;
     uint32 DisplayID = 0;
     uint8 Gender = creature_properties->GetGenderAndCreateRandomDisplayID(&DisplayID);
@@ -167,7 +167,7 @@ Creature* MapScriptInterface::SpawnCreature(uint32 Entry, float cX, float cY, fl
     return creature;
 }
 
-Creature* MapScriptInterface::SpawnCreature(CreatureSpawn* sp, bool AddToWorld)
+Creature* MapScriptInterface::SpawnCreature(MySQLStructure::CreatureSpawn* sp, bool AddToWorld)
 {
     if (!sp)
         return nullptr;
