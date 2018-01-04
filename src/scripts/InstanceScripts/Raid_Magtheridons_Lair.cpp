@@ -712,7 +712,7 @@ class HellfireChannelerAI : public CreatureAIScript
 
                 Unit* Magtheridon = NULL;
                 Magtheridon = getNearestCreature(-22.657900f, 2.159050f, -0.345542f, 17257);
-                if (Magtheridon && Magtheridon->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9))
+                if (Magtheridon && Magtheridon->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT))
                 {
                     getCreature()->SetChannelSpellTargetGUID(Magtheridon->GetGUID());
                     getCreature()->SetChannelSpellId(SHADOW_GRASP);
@@ -784,7 +784,7 @@ class MagtheridonAI : public CreatureAIScript
             quake2 = addAISpell(QUAKE2, 0.0f, TARGET_VARIOUS);
             caveIn = addAISpell(CAVE_IN, 0.0f, TARGET_VARIOUS);
 
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
 
             Aura* aura = sSpellFactoryMgr.NewAura(sSpellCustomizations.GetSpellInfo(BANISHMENT), (uint32) - 1, getCreature(), getCreature());
             getCreature()->AddAura(aura);
@@ -814,7 +814,7 @@ class MagtheridonAI : public CreatureAIScript
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            if (getCreature()->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9) || getCreature()->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2))
+            if (getCreature()->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT) || getCreature()->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2))
                 return;
 
             GameObject* Gate = NULL;
