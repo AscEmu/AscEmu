@@ -1561,7 +1561,7 @@ void AIInterface::_UpdateTargets()
                     AttackReaction(target, 1, 0);
             }
         }
-        else if (m_aiTargets.size() == 0 && ((isAiScriptType(AI_SCRIPT_PET) && (m_Unit->IsPet() && static_cast< Pet* >(m_Unit)->GetPetState() == PET_STATE_AGGRESSIVE)) || (!m_Unit->IsPet() && mIsMeleeDisabled == false)))
+        else if (m_aiTargets.empty() && ((isAiScriptType(AI_SCRIPT_PET) && (m_Unit->IsPet() && static_cast< Pet* >(m_Unit)->GetPetState() == PET_STATE_AGGRESSIVE)) || (!m_Unit->IsPet() && mIsMeleeDisabled == false)))
         {
             Unit* target = FindTarget();
             if (target)
@@ -1570,8 +1570,8 @@ void AIInterface::_UpdateTargets()
             }
         }
     }
-    // Find new Targets when we are ooc
-    if ((isAiState(AI_STATE_IDLE) || isAiState(AI_STATE_SCRIPTIDLE)) && m_assistTargets.size() == 0)
+    // Find new Targets when we are out of combat
+    if ((isAiState(AI_STATE_IDLE) || isAiState(AI_STATE_SCRIPTIDLE)) && m_assistTargets.empty())
     {
         Unit* target = FindTarget();
         if (target)
@@ -2075,6 +2075,9 @@ void AIInterface::AttackReaction(Unit* pUnit, uint32 damage_dealt, uint32 spellI
     if (isAiState(AI_STATE_EVADE) || !pUnit || !pUnit->isAlive() || m_Unit->IsDead() || (m_Unit == pUnit) || isAiScriptType(AI_SCRIPT_PASSIVE) || isCombatDisabled())
         return;
 
+    if ((pUnit->IsPlayer() && m_Unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT)) || (pUnit->IsCreature() && m_Unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_CREATURE_COMBAT)))
+        return;
+
     if (worldConfig.terrainCollision.isCollisionEnabled && pUnit->IsPlayer())
     {
         if (m_Unit->GetMapMgr() != nullptr)
@@ -2280,7 +2283,7 @@ Unit* AIInterface::FindTarget()
             if (tmpPlr->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH))
                 continue;
 
-            if (tmpPlr->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9))
+            if (tmpPlr->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT))
                 continue;
 
             if (tmpPlr->m_invisible)
@@ -2497,7 +2500,7 @@ bool AIInterface::FindFriends(float dist)
         if (pUnit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE))
             continue;
 
-        if (pUnit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9))
+        if (pUnit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT))
             continue;
 
         if (!(pUnit->m_phase & m_Unit->m_phase))   //We can't help a friendly unit if it is not in our phase

@@ -273,7 +273,7 @@ class ShadowmoonDarkcasterAI : public CreatureAIScript
             GrandWarlock = getNearestCreature(178.811996f, 292.377991f, -8.190210f, CN_GRAND_WARLOCK_NETHEKURSE);
             if (GrandWarlock)
             {
-                GrandWarlock->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+                GrandWarlock->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                 GrandWarlock->GetAIInterface()->SetAllowedToEnterCombat(false);
             }
         }

@@ -686,8 +686,8 @@ enum UnitFieldFlags : uint32_t // UNIT_FIELD_FLAGS #46 - these are client flags
     UNIT_FLAG_UNKNOWN_5                  = 0x00000010, // 5           16  ? some NPCs have this
     UNIT_FLAG_NO_REAGANT_COST            = 0x00000020, // 6           32  no reagant cost
     UNIT_FLAG_PLUS_MOB                   = 0x00000040, // 7           64  ? some NPCs have this (Rare/Elite/Boss?)
-    UNIT_FLAG_UNKNOWN_8                  = 0x00000080, // 8          128  ? can change attackable status
-    UNIT_FLAG_NOT_ATTACKABLE_9           = 0x00000100, // 9          256  changes attackable status
+    UNIT_FLAG_IGNORE_CREATURE_COMBAT     = 0x00000080, // 8          128  unit will not enter combat with creatures
+    UNIT_FLAG_IGNORE_PLAYER_COMBAT       = 0x00000100, // 9          256  unit will not enter combat with players
     UNIT_FLAG_UNKNOWN_10                 = 0x00000200, // 10         512  ? some NPCs have this
     UNIT_FLAG_LOOTING                    = 0x00000400, // 11        1024
     UNIT_FLAG_SELF_RES                   = 0x00000800, // 12        2048  ? some NPCs have this
@@ -878,8 +878,8 @@ static const UnitFlagNames UnitFlagToName[] =
     { UNIT_FLAG_UNKNOWN_5, "UNIT_FLAG_UNKNOWN_5" },
     { UNIT_FLAG_NO_REAGANT_COST, "UNIT_FLAG_NO_REAGANT_COST" },
     { UNIT_FLAG_PLUS_MOB, "UNIT_FLAG_PLUS_MOB" },
-    { UNIT_FLAG_UNKNOWN_8, "UNIT_FLAG_UNKNOWN_8" },
-    { UNIT_FLAG_NOT_ATTACKABLE_9, "UNIT_FLAG_NOT_ATTACKABLE_9" },
+    { UNIT_FLAG_IGNORE_CREATURE_COMBAT, "UNIT_FLAG_IGNORE_CREATURE_COMBAT" },
+    { UNIT_FLAG_IGNORE_PLAYER_COMBAT, "UNIT_FLAG_IGNORE_PLAYER_COMBAT" },
     { UNIT_FLAG_UNKNOWN_10, "UNIT_FLAG_UNKNOWN_10" },
     { UNIT_FLAG_LOOTING, "UNIT_FLAG_LOOTING" },
     { UNIT_FLAG_SELF_RES, "UNIT_FLAG_SELF_RES" },

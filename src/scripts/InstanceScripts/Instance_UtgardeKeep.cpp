@@ -554,7 +554,7 @@ class SkarvaldTheConstructorGhostAI : public CreatureAIScript
 
         void OnLoad() override
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
 
             Player* pTarget = getNearestPlayer();
             if (pTarget != nullptr)
@@ -581,7 +581,7 @@ class DalronnTheControllerGhostAI : public CreatureAIScript
 
         void OnLoad() override
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
 
             Player* pTarget = getNearestPlayer();
             if (pTarget != nullptr)

@@ -250,7 +250,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(mogorQAI);
     mogorQAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
     };
 

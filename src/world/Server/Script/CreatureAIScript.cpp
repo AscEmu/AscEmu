@@ -491,12 +491,13 @@ void CreatureAIScript::setCanEnterCombat(bool enterCombat)
     //Zyres 10/21/2017 creatures can be attackable even if they can not enter combat... the following line is not correct.
     if (enterCombat)
     {
-        _creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+        _creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
     }
     else
     {
-        _creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+        _creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
     }
+
     _creature->GetAIInterface()->SetAllowedToEnterCombat(enterCombat);
 }
 

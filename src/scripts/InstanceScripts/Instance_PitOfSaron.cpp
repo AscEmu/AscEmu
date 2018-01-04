@@ -425,7 +425,7 @@ class KrickAI : public CreatureAIScript
             setCanEnterCombat(false);
 
             // Clear Hatelist dont allow Combat and root the Unit
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             getCreature()->GetAIInterface()->WipeTargetList();
             getCreature()->GetAIInterface()->WipeHateList();

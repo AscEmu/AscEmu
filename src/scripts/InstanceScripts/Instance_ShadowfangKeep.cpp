@@ -76,7 +76,7 @@ class ShadowfangKeepInstance : public InstanceScript
                     {
                         if (Creature* ArugalSpawn = spawnCreature(CN_ARUGAL_BOSS, ArugalAtFenrusLoc.x, ArugalAtFenrusLoc.y, ArugalAtFenrusLoc.z, ArugalAtFenrusLoc.o))
                         {
-                            ArugalSpawn->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+                            ArugalSpawn->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                             ArugalSpawn->GetAIInterface()->SetAllowedToEnterCombat(false);
                             ArugalSpawn->GetAIInterface()->m_canMove = false;
                             if (ArugalSpawn->GetScript())
@@ -617,7 +617,7 @@ class AdamantGossip : public Arcemu::Gossip::Script
                     pPrisoner->getCreature()->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                     pPrisoner->getCreature()->SendScriptTextChatMessage(SAY_ADAMANT_FOLLOW);
                     pPrisoner->RegisterAIUpdateEvent(5000);
-                    pPrisoner->getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+                    pPrisoner->getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                     pPrisoner->getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
                     pPrisoner->getCreature()->EventAddEmote(EMOTE_ONESHOT_CHEER, 4000);
                     pPrisoner->eventStarted = true;
@@ -786,7 +786,7 @@ class AshcrombeGossip : public Arcemu::Gossip::Script
                     pPrisoner->getCreature()->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                     pPrisoner->getCreature()->SendScriptTextChatMessage(SAY_ASHCROMBE_FOLLOW);
                     pPrisoner->RegisterAIUpdateEvent(4000);
-                    pPrisoner->getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+                    pPrisoner->getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                     pPrisoner->getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
                     pPrisoner->getCreature()->Emote(EMOTE_ONESHOT_POINT);
                     pPrisoner->eventStarted = true;
@@ -1139,7 +1139,7 @@ class ArugalBossAI : public CreatureAIScript
                             voidwalker->despawn(4 * 60 * 1000); // Despawn in 4 mins
                         }
                     }
-                    getCreature()->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+                    getCreature()->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                     getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
                     getCreature()->GetAIInterface()->m_canMove = true;
 
