@@ -8544,7 +8544,7 @@ void Unit::AddAura(Aura* aur)
             CheckLimit = MAX_NEGATIVE_AURAS_EXTEDED_END;
         }
         // Nasty check for Blood Fury debuff (spell system based on namehashes is bs anyways)
-        if (!sSpellCustomizations.isAlwaysApply(aur->GetSpellInfo()) == false)
+        if (!sSpellCustomizations.isAlwaysApply(aur->GetSpellInfo()))
         {
             //uint32 aurName = aur->GetSpellProto()->Name;
             //uint32 aurRank = aur->GetSpellProto()->Rank;
