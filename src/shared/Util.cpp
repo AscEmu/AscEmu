@@ -4,6 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Util.hpp"
+#include "../../dep/utf8cpp/utf8.h"
+
 #include <iostream>
 #include <vector>
 #include <string>
@@ -301,4 +303,56 @@ namespace Util
         return dist(mt);
     }
 
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Utf8 string functions
+
+size_t utf8length(std::string& utf8str)
+{
+    try
+    {
+        return utf8::distance(utf8str.c_str(),utf8str.c_str()+utf8str.size());
+    }
+    catch(std::exception)
+    {
+        utf8str = "";
+        return 0;
+    }
+}
+
+bool Utf8WStr(std::string utf8str, std::wstring& wstr)
+{
+    try
+    {
+        size_t len = utf8::distance(utf8str.c_str(),utf8str.c_str()+utf8str.size());
+        wstr.resize(len);
+
+        utf8::utf8to16(utf8str.c_str(),utf8str.c_str()+utf8str.size(),&wstr[0]);
+    }
+    catch(std::exception)
+    {
+        wstr = L"";
+        return false;
+    }
+
+    return true;
+}
+
+bool WStrUtf8(std::wstring wstr, std::string& utf8str)
+{
+    try
+    {
+        utf8str.resize(wstr.size()*2);
+
+        char* oend = utf8::utf16to8(wstr.c_str(),wstr.c_str()+wstr.size(),&utf8str[0]);
+        utf8str.resize(oend-(&utf8str[0]));
+    }
+    catch(std::exception)
+    {
+        utf8str = "";
+        return false;
+    }
+
+    return true;
 }

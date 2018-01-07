@@ -93,3 +93,63 @@ struct SmallTimeTracker
         int32_t getExpireTime() const { return mExpireTime; }
         bool isTimePassed() const { return mExpireTime <= 0; }
 };
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Utf8 string functions
+
+bool Utf8WStr(std::string utf8str, std::wstring& wstr);
+bool WStrUtf8(std::wstring wstr, std::string& utf8str);
+
+size_t utf8length(std::string& utf8str);
+
+inline wchar_t wcharToUpper(wchar_t wchar)
+{
+    if(wchar >= L'a' && wchar <= L'z')
+        return wchar_t(uint16(wchar)-0x0020);
+    if(wchar == 0x00DF)
+        return wchar_t(0x1E9E);
+    if(wchar >= 0x00E0 && wchar <= 0x00F6)
+        return wchar_t(uint16(wchar)-0x0020);
+    if(wchar >= 0x00F8 && wchar <= 0x00FE)
+        return wchar_t(uint16(wchar)-0x0020);
+    if(wchar >= 0x0101 && wchar <= 0x012F)
+    {
+        if(wchar % 2 == 1)
+            return wchar_t(uint16(wchar)-0x0001);
+    }
+    if(wchar >= 0x0430 && wchar <= 0x044F)
+        return wchar_t(uint16(wchar)-0x0020);
+
+    return wchar;
+}
+
+inline wchar_t wcharToLower(wchar_t wchar)
+{
+    if(wchar >= L'A' && wchar <= L'Z')
+        return wchar_t(uint16(wchar)+0x0020);
+    if(wchar >= 0x00C0 && wchar <= 0x00D6)
+        return wchar_t(uint16(wchar)+0x0020);
+    if(wchar >= 0x00D8 && wchar <= 0x00DF)
+        return wchar_t(uint16(wchar)+0x0020);
+    if(wchar >= 0x0100 && wchar <= 0x012E)
+    {
+        if(wchar % 2 == 0)
+            return wchar_t(uint16(wchar)+0x0001);
+    }
+    if(wchar == 0x1E9E)
+        return wchar_t(0x00DF);
+    if(wchar >= 0x0410 && wchar <= 0x042F)
+        return wchar_t(uint16(wchar)+0x0020);
+
+    return wchar;
+}
+
+inline void wstrToUpper(std::wstring& str)
+{
+    std::transform( str.begin(), str.end(), str.begin(), wcharToUpper );
+}
+
+inline void wstrToLower(std::wstring& str)
+{
+    std::transform( str.begin(), str.end(), str.begin(), wcharToLower );
+}
