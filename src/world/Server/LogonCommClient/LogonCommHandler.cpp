@@ -165,7 +165,7 @@ void LogonCommHandler::tryLogonServerConnection(LogonServerStructure* server)
         return;
     }
 
-    LogDefault("Authentication successfull.");
+    LogDefault("Authentication successful.");
     LogNotice("LogonCommClient : Logonserver was connected on [%s:%u].", server->address.c_str(), server->port);
 
     // Send the initial ping
@@ -372,7 +372,7 @@ void LogonCommHandler::dropLogonServerConnection(uint32_t ID)
 uint32_t LogonCommHandler::clientConnectionId(std::string AccountName, WorldSocket* Socket)
 {
     uint32_t request_id = next_request++;
-    
+
     LOG_DEBUG(" Send Request for Account: `%s` (request ID: %u).", AccountName.c_str(), request_id);
 
     // Send request packet to server.
