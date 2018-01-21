@@ -462,8 +462,12 @@ void InformationCore::UpdateRealmPop(uint32 realm_id, float pop)
     }
     realmLock.Release();
 }
+
 void InformationCore::SendRealms(AuthSocket* Socket)
 {
+#ifdef AE_TBC
+    writeRealmDataTbc(Socket);
+#else
     realmLock.Acquire();
 
     // packet header
@@ -574,6 +578,7 @@ void InformationCore::SendRealms(AuthSocket* Socket)
         (*SSitr)->RefreshRealmsPop();
 
     ss.clear();
+#endif
 }
 
 void InformationCore::TimeoutSockets()
