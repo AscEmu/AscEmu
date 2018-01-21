@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 
 #We have our own custom modules that we use. This tells cmakes where to find them.
 set(CMAKE_MODULE_PATH 
