@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 
 #set our variables
 set(BUILD_EXTRAS_CREATUREDATA FALSE CACHE BOOL "Build creature data extractor")

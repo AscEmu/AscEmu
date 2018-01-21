@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 
 if(MSVC_VERSION VERSION_LESS 19.0.24210) #2015 3
     message(FATAL_ERROR "AscEmu requires at least Visual Studio 2015 update 3")
