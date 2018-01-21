@@ -40,7 +40,7 @@ BroadcastMgr::BroadcastMgr()
     this->threadInit();
 }
 
-BroadcastMgr::~BroadcastMgr() { m_thread->join(); }
+BroadcastMgr::~BroadcastMgr() { m_thread->killAndJoin(); }
 
 void BroadcastMgr::sendBroadcast()
 {

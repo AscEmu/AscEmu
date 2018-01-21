@@ -68,7 +68,7 @@ void Database::dbThreadRunner(AEThread& /*thread*/)
 void Database::dbThreadShutdown()
 {
     // Shut down thread
-    m_dbThread->join();
+    m_dbThread->killAndJoin();
 
     // Execute remaining queries
     dbRunAllQueries();
@@ -241,7 +241,7 @@ void Database::queryBufferThreadRunner(AEThread& /*thread*/)
 }
 
 void Database::queryBufferThreadShutdown() {
-    m_queryBufferThread->join();
+    m_queryBufferThread->killAndJoin();
     queryBufferRunAllQueries();
     destroyQueryBufferConnection();
 }

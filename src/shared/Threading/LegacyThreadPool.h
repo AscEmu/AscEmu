@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
+#pragma once
 #include "../Common.hpp"
 
 #ifndef __THREADPOOL_H
@@ -186,58 +186,57 @@ struct SERVER_DECL Thread
     bool DeleteAfterExit;
 };
 
-typedef std::set<Thread*> ThreadSet;
-
 class SERVER_DECL CThreadPool
 {
-        int GetNumCpus();
+    typedef std::set<Thread*> ThreadSet;
+    int GetNumCpus();
 
-        uint32 _threadsRequestedSinceLastCheck;
-        uint32 _threadsFreedSinceLastCheck;
-        uint32 _threadsExitedSinceLastCheck;
-        uint32 _threadsToExit;
-        int32 _threadsEaten;
-        Mutex _mutex;
+    uint32 _threadsRequestedSinceLastCheck;
+    uint32 _threadsFreedSinceLastCheck;
+    uint32 _threadsExitedSinceLastCheck;
+    uint32 _threadsToExit;
+    int32 _threadsEaten;
+    Mutex _mutex;
 
-        ThreadSet m_activeThreads;
-        ThreadSet m_freeThreads;
+    ThreadSet m_activeThreads;
+    ThreadSet m_freeThreads;
 
-    public:
-        CThreadPool();
+public:
+    CThreadPool();
 
-        // call every 2 minutes or so.
-        void IntegrityCheck();
+    // call every 2 minutes or so.
+    void IntegrityCheck();
 
-        // call at startup
-        void Startup();
+    // call at startup
+    void Startup();
 
-        // shutdown all threads
-        void Shutdown();
+    // shutdown all threads
+    void Shutdown();
 
-        // return true - suspend ourselves, and wait for a future task.
-        // return false - exit, we're shutting down or no longer needed.
-        bool ThreadExit(Thread* t);
+    // return true - suspend ourselves, and wait for a future task.
+    // return false - exit, we're shutting down or no longer needed.
+    bool ThreadExit(Thread* t);
 
-        // creates a thread, returns a handle to it.
-        Thread* StartThread(ThreadBase* ExecutionTarget);
+    // creates a thread, returns a handle to it.
+    Thread* StartThread(ThreadBase* ExecutionTarget);
 
-        // grabs/spawns a thread, and tells it to execute a task.
-        void ExecuteTask(ThreadBase* ExecutionTarget);
+    // grabs/spawns a thread, and tells it to execute a task.
+    void ExecuteTask(ThreadBase* ExecutionTarget);
 
-        // prints some neat debug stats
-        void ShowStats();
+    // prints some neat debug stats
+    void ShowStats();
 
-        // kills x free threads
-        void KillFreeThreads(uint32 count);
+    // kills x free threads
+    void KillFreeThreads(uint32 count);
 
-        // resets the gobble counter
-        inline void Gobble() { _threadsEaten = (int32)m_freeThreads.size(); }
+    // resets the gobble counter
+    inline void Gobble() { _threadsEaten = (int32)m_freeThreads.size(); }
 
-        // gets active thread count
-        inline uint32 GetActiveThreadCount() { return (uint32)m_activeThreads.size(); }
+    // gets active thread count
+    inline uint32 GetActiveThreadCount() { return (uint32)m_activeThreads.size(); }
 
-        // gets free thread count
-        inline uint32 GetFreeThreadCount() { return (uint32)m_freeThreads.size(); }
+    // gets free thread count
+    inline uint32 GetFreeThreadCount() { return (uint32)m_freeThreads.size(); }
 };
 
 volatile long Sync_Add(volatile long* value);
