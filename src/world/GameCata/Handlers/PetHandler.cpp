@@ -227,28 +227,33 @@ void WorldSession::HandlePetAction(WorldPacket& recvData)
 
 void WorldSession::HandlePetInfo(WorldPacket& /*recv_data*/)
 {
-    //nothing
+    // nothing
     LOG_DEBUG("HandlePetInfo is called");
+
+    // uint32_t petNumber = 0;
+    // uint64_t petGuid = 0;
+
+    // recv_data >> petNumber;
+    // recv_data >> petGuid;
 }
 
-void WorldSession::HandlePetNameQuery(WorldPacket& recvData)
+void WorldSession::HandlePetNameQuery(WorldPacket& recv_data)
 {
-    uint32 petNumber = 0;
-    uint64 petGuid = 0;
+    uint32_t petNumber = 0;
+    uint64_t petGuid = 0;
 
-    recvData >> petNumber;
-    recvData >> petGuid;
+    recv_data >> petNumber;
+    recv_data >> petGuid;
 
     Pet* pPet = _player->GetMapMgr()->GetPet(GET_LOWGUID_PART(petGuid));
     if (!pPet)
         return;
 
-    WorldPacket data(9 + pPet->GetName().size());
-    data.SetOpcode(SMSG_PET_NAME_QUERY_RESPONSE);
-    data << petNumber;
-    data << pPet->GetName();
+    WorldPacket data(SMSG_PET_NAME_QUERY_RESPONSE, 10 + pPet->GetName().size());
+    data << uint32_t(petNumber);
+    data << pPet->GetName().c_str();
     data << pPet->getUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP);
-    data << uint8(0);
+    data << uint8_t(0);
     SendPacket(&data);
 }
 

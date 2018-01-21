@@ -500,7 +500,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     for (z = 1, b = 1; b < 32;)
     {
         if (movement_info.flags & z)
-            LOG_DEBUG("   Bit %u (0x%.8X or %u) is set!", b, z, z);
+            LOG_DEBUG("Bit %u (0x%.8X or %u) is set!", b, z, z);
 
         z <<= 1;
         b += 1;
@@ -513,7 +513,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /************************************************************************/
 #if 0
     LOG_DEBUG("Packet: 0x%03X (%s)", recv_data.GetOpcode(), getOpcodeName(recv_data.GetOpcode()).c_str());
-    LOG_DEBUG("Orientation: %.10f", movement_info.orientation);
+    LOG_DEBUG("Orientation: %.10f", movement_info.position.o);
 #endif
 
     /************************************************************************/
