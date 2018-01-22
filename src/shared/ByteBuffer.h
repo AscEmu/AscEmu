@@ -492,6 +492,7 @@ class SERVER_DECL ByteBuffer
         {
             return _storage.size();
         }
+        size_t remaining() const { return _storage.size() - _rpos; }
 
         bool isEmpty() const
         {
