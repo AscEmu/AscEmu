@@ -21,7 +21,6 @@
 #ifndef WORLDSESSION_H
 #define WORLDSESSION_H
 
-
 #include <Threading/Mutex.h>
 #include "Server/Packets/Opcode.h"
 #include "Management/Quest.h"
@@ -120,7 +119,7 @@ enum MovementFlags
     MOVEFLAG_CAN_FLY                    = 0x01000000,   // Zyres: can_fly
     MOVEFLAG_FLYING                     = 0x02000000,   // Zyres: flying
     MOVEFLAG_SPLINE_MOVER               = 0x04000000,   // Zyres: spl elevation
-    MOVEFLAG_SPLINE_ENABLED             = 0x08000000,   
+    MOVEFLAG_SPLINE_ENABLED             = 0x08000000,
     MOVEFLAG_WATER_WALK                 = 0x10000000,
     MOVEFLAG_FEATHER_FALL               = 0x20000000,   // Does not negate fall damage.
     MOVEFLAG_HOVER                      = 0x40000000,
@@ -649,7 +648,7 @@ class SERVER_DECL WorldSession
 #if VERSION_STRING > TBC
         void HandleQuestPOIQueryOpcode(WorldPacket& recv_data);
 #endif
-    
+
         /// Vehicles
 #if VERSION_STRING > TBC
         void HandleDismissVehicle(WorldPacket& recv_data);
@@ -816,7 +815,7 @@ class SERVER_DECL WorldSession
         void HandleGuildQueryNewsOpcode(WorldPacket& recv_data);
         void HandleGuildNewsUpdateStickyOpcode(WorldPacket& recv_data);
         void HandleGuildSetGuildMaster(WorldPacket& recv_data);
-        
+
         //////////////////////////////////////////////////////////////////////////////////////////
         // Guild Bank
         void HandleGuildBankMoneyWithdrawn(WorldPacket& /*recv_data*/);
@@ -830,7 +829,7 @@ class SERVER_DECL WorldSession
         void HandleGuildBankLogQuery(WorldPacket& recv_data);
         void HandleQueryGuildBankTabText(WorldPacket& recv_data);
         void HandleSetGuildBankTabText(WorldPacket& recv_data);
-        
+
         //////////////////////////////////////////////////////////////////////////////////////////
         // Charter
         void HandleCharterBuyOpcode(WorldPacket& recv_data);
@@ -841,7 +840,7 @@ class SERVER_DECL WorldSession
         void HandleCharterDeclineOpcode(WorldPacket& recv_data);
         void HandleCharterTurnInCharterOpcode(WorldPacket& recv_data);
         void HandleCharterRenameOpcode(WorldPacket& recv_data);
-        
+
         //////////////////////////////////////////////////////////////////////////////////////////
         // GuildFinder
         void HandleGuildFinderAddRecruit(WorldPacket& recv_data);

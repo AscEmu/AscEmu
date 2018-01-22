@@ -959,6 +959,7 @@ class SERVER_DECL ByteBuffer
         const uint8* contents() const { return &_storage[0]; };
 
         inline size_t size() const { return _storage.size(); };
+        size_t remaining() const { return _storage.size() - _rpos; }
         bool isEmpty() const { return _storage.empty(); }
         // one should never use resize probably
         void resize(size_t newsize)

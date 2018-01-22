@@ -23,7 +23,6 @@
 #include "MMapManager.h"
 #include "MMapFactory.h"
 #include "Units/Stats.h"
-#include "Server/Packets/Movement/CreatureMovement.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Server/MainServerDefines.h"
@@ -42,6 +41,7 @@
 #include "Pet.h"
 #include "Spell/SpellEffects.h"
 #include "Objects/ObjectMgr.h"
+#include "Server/Packets/Movement/CreatureMovement.h"
 
 #ifndef UNIX
 #include <cmath>

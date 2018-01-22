@@ -4,8 +4,7 @@ set(PATH_PREFIX Server/Packets/Movement)
 
 set(SRC_PACKET_MOVEMENT_FILES
    ${PATH_PREFIX}/CreatureMovement.cpp
-   ${PATH_PREFIX}/CreatureMovement.hpp
-   ${PATH_PREFIX}/SmsgMonsterMove.hpp
+   ${PATH_PREFIX}/CreatureMovement.h
 )
 
 source_group(Server\\Packets\\Movement FILES ${SRC_PACKET_MOVEMENT_FILES})

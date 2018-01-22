@@ -23,6 +23,11 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
 #include "Units/Creatures/Pet.h"
+#include "Server/Packets/SmsgBindPointUpdate.h"
+#include "Server/Packets/SmsgSetProficiency.h"
+#include "Server/Packets/SmsgTutorialFlags.h"
+
+using namespace AscEmu::Packets;
 
 void Player::SendTalentResetConfirm()
 {
@@ -552,6 +557,25 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
     SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOOTING);
 }
 
+#ifdef AE_TBC
+// MIT Start
+// TODO: Move to own file
+void Player::SendInitialLogonPackets()
+{
+    m_session->SendPacket(SmsgBindPointUpdate(m_bind_pos_x, m_bind_pos_y, m_bind_pos_z, m_bind_mapid, m_bind_zoneid).serialise().get());
+    m_session->SendPacket(SmsgSetProficiency(4, armor_proficiency).serialise().get());
+    m_session->SendPacket(SmsgSetProficiency(2, weapon_proficiency).serialise().get());
+
+    std::vector<uint32_t> tutorials;
+    for (auto tutorial : m_Tutorials)
+        tutorials.push_back(tutorial);
+
+    m_session->SendPacket(SmsgTutorialFlags(tutorials).serialise().get());
+}
+// MIT End
+#endif
+
+#ifndef AE_TBC
 void Player::SendInitialLogonPackets()
 {
     // Initial Packets... they seem to be re-sent on port.
@@ -616,6 +640,7 @@ void Player::SendInitialLogonPackets()
 #endif
     LOG_DETAIL("WORLD: Sent initial logon packets for %s.", GetName());
 }
+#endif
 
 void Player::SendLootUpdate(Object* o)
 {
