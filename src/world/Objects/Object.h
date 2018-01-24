@@ -465,7 +465,7 @@ public:
     std::vector<Object*> getInRangePlayersSet();
 
     size_t getInRangePlayersCount();
-    
+
 
     // Opposite Faction
     std::vector<Object*> getInRangeOppositeFactionSet();

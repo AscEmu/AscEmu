@@ -62,6 +62,7 @@
 #include "Spell/SpellHelpers.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Units/Creatures/Pet.h"
+#include "Server/Packets/SmsgInitialSpells.h"
 
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
@@ -916,15 +917,18 @@ bool Player::Create(WorldPacket& data)
     SetPower(POWER_TYPE_RAGE, 0);
     SetPower(POWER_TYPE_FOCUS, info->focus); // focus
     SetPower(POWER_TYPE_ENERGY, info->energy);
-    SetPower(POWER_TYPE_RUNES, 8);
 
     SetMaxHealth(info->health);
     SetMaxPower(POWER_TYPE_MANA, info->mana);
     SetMaxPower(POWER_TYPE_RAGE, info->rage);
     SetMaxPower(POWER_TYPE_FOCUS, info->focus);
     SetMaxPower(POWER_TYPE_ENERGY, info->energy);
+
+#if VERSION_STRING >= WotLK
+    SetPower(POWER_TYPE_RUNES, 8);
     SetMaxPower(POWER_TYPE_RUNES, 8);
     SetMaxPower(POWER_TYPE_RUNIC_POWER, 1000);
+#endif
 
     //THIS IS NEEDED
     SetBaseHealth(info->health);
@@ -1783,6 +1787,50 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
 
 }
 
+#ifdef AE_TBC
+void Player::smsg_InitialSpells()
+{
+    const auto mstime = Util::getMSTime();
+
+    AscEmu::Packets::SmsgInitialSpells initial_spells_packet;
+    for (auto spell_id : mSpells)
+        initial_spells_packet.spell_ids.push_back(spell_id);
+
+    for (auto iter = m_cooldownMap[COOLDOWN_TYPE_SPELL].begin(); iter != m_cooldownMap[COOLDOWN_TYPE_SPELL].end(); ++iter)
+    {
+        auto &cd = *iter;
+        const auto iter2 = iter++;
+        // Remove expired cooldowns
+        if (iter2->second.ExpireTime < mstime || iter2->second.ExpireTime - mstime < 10000)
+        {
+            m_cooldownMap[COOLDOWN_TYPE_SPELL].erase(iter2);
+            continue;
+        }
+
+        initial_spells_packet.addSpellCooldown(cd.first, cd.second.ItemId, 0, cd.second.ExpireTime - mstime, 0);
+    }
+
+    for (auto iter = m_cooldownMap[COOLDOWN_TYPE_SPELL].begin(); iter != m_cooldownMap[COOLDOWN_TYPE_SPELL].end(); ++iter)
+    {
+        auto &cd = *iter;
+        const auto iter2 = iter++;
+        // Remove expired cooldowns
+        if (iter2->second.ExpireTime < mstime || iter2->second.ExpireTime - mstime < 10000)
+        {
+            m_cooldownMap[COOLDOWN_TYPE_CATEGORY].erase(iter2);
+            continue;
+        }
+
+        initial_spells_packet.addSpellCooldown(cd.second.SpellId, cd.second.ItemId, cd.first, 0, cd.second.ExpireTime - mstime);
+    }
+
+    GetSession()->SendPacket(initial_spells_packet.serialise().get());
+    uint32_t v = 0;
+    GetSession()->OutPacket(SMSG_SEND_UNLEARN_SPELLS, 4, &v);
+}
+#endif
+
+#ifndef AE_TBC
 void Player::smsg_InitialSpells()
 {
     PlayerCooldownMap::iterator itr, itr2;
@@ -1881,6 +1929,7 @@ void Player::smsg_InitialSpells()
 #endif
     //Log::getSingleton().outDetail("CHARACTER: Sent Initial Spells");
 }
+#endif
 
 #if VERSION_STRING != Cata
 void Player::smsg_TalentsInfo(bool SendPetTalents)
@@ -3070,6 +3119,772 @@ bool Player::LoadFromDB(uint32 guid)
 
 }
 
+#if VERSION_STRING <= TBC
+void Player::LoadFromDBProc(QueryResultVector & results)
+{
+    uint32 field_index = 2;
+#define get_next_field fields[field_index++]
+
+    if (GetSession() == nullptr || results.size() < 8)        // should have 8 queryresults for aplayer load.
+    {
+        RemovePendingPlayer();
+        return;
+    }
+
+    QueryResult* result = results[0].result;
+    if (!result)
+    {
+        LOG_ERROR("Player login query failed! guid = %u", GetLowGUID());
+        RemovePendingPlayer();
+        return;
+    }
+
+    const uint32 fieldcount = 95;
+
+    if (result->GetFieldCount() != fieldcount)
+    {
+        LOG_ERROR("Expected %u fields from the database, but received %u!  You may need to update your character database.", fieldcount, uint32(result->GetFieldCount()));
+        RemovePendingPlayer();
+        return;
+    }
+
+    Field* fields = result->Fetch();
+
+    if (fields[1].GetUInt32() != m_session->GetAccountId())
+    {
+        sCheatLog.writefromsession(m_session, "player tried to load character not belonging to them (guid %u, on account %u)",
+                                   fields[0].GetUInt32(), fields[1].GetUInt32());
+        RemovePendingPlayer();
+        return;
+    }
+
+    uint32 banned = fields[34].GetUInt32();
+    if (banned && (banned < 100 || banned >(uint32)UNIXTIME))
+    {
+        RemovePendingPlayer();
+        return;
+    }
+
+    // Load name
+    m_name = get_next_field.GetString();
+    // Update Cache
+    m_cache->SetStringValue(CACHE_PLAYER_NAME, m_name);
+
+    // Load race/class from fields
+    setRace(get_next_field.GetUInt8());
+    setClass(get_next_field.GetUInt8());
+    setGender(get_next_field.GetUInt8());
+    uint32 cfaction = get_next_field.GetUInt32();
+
+    // set race dbc
+    myRace = sChrRacesStore.LookupEntry(getRace());
+    myClass = sChrClassesStore.LookupEntry(getClass());
+    if (!myClass || !myRace)
+    {
+        // bad character
+        LOG_ERROR("guid %u failed to login, no race or class dbc found. (race %u class %u)", (unsigned int)GetLowGUID(), (unsigned int)getRace(), (unsigned int)getClass());
+        RemovePendingPlayer();
+        return;
+    }
+
+    if (myRace->team_id == 7)
+    {
+        m_bgTeam = m_team = 0;
+    }
+    else
+    {
+        m_bgTeam = m_team = 1;
+    }
+    m_cache->SetUInt32Value(CACHE_PLAYER_INITIALTEAM, m_team);
+
+    SetNoseLevel();
+
+    // set power type
+    SetPowerType(static_cast<uint8>(myClass->power_type));
+
+    // obtain player create info
+    info = sMySQLStore.getPlayerCreateInfo(getRace(), getClass());
+    if (info == nullptr)
+    {
+        LOG_ERROR("player guid %u has no playerCreateInfo!", (unsigned int)GetLowGUID());
+        RemovePendingPlayer();
+        return;
+    }
+
+    // set level
+    setLevel(get_next_field.GetUInt32());
+
+    // obtain level/stats information
+    lvlinfo = objmgr.GetLevelInfo(getRace(), getClass(), getLevel());
+
+    if (!lvlinfo)
+    {
+        LOG_ERROR("guid %u level %u class %u race %u levelinfo not found!", (unsigned int)GetLowGUID(), (unsigned int)getLevel(), (unsigned int)getClass(), (unsigned int)getRace());
+        RemovePendingPlayer();
+        return;
+    }
+
+#if VERSION_STRING > TBC
+    // load achievements before anything else otherwise skills would complete achievements already in the DB, leading to duplicate achievements and criterias(like achievement=126).
+    m_achievementMgr.LoadFromDB(results[16].result, results[17].result);
+#endif
+
+    CalculateBaseStats();
+
+    // set xp
+    SetXp(get_next_field.GetUInt32());
+
+    // Load active cheats
+    uint32 active_cheats = get_next_field.GetUInt32();
+    if (active_cheats & PLAYER_CHEAT_COOLDOWN)
+        CooldownCheat = true;
+    if (active_cheats & PLAYER_CHEAT_CAST_TIME)
+        CastTimeCheat = true;
+    if (active_cheats & PLAYER_CHEAT_GOD_MODE)
+        GodModeCheat = true;
+    if (active_cheats & PLAYER_CHEAT_POWER)
+        PowerCheat = true;
+    if (active_cheats & PLAYER_CHEAT_FLY)
+        FlyCheat = true;
+    if (active_cheats & PLAYER_CHEAT_AURA_STACK)
+        AuraStackCheat = true;
+    if (active_cheats & PLAYER_CHEAT_ITEM_STACK)
+        ItemStackCheat = true;
+    if (active_cheats & PLAYER_CHEAT_TRIGGERPASS)
+        TriggerpassCheat = true;
+    if (active_cheats & PLAYER_CHEAT_TAXI)
+        TaxiCheat = true;
+
+    // Process exploration data.
+    LoadFieldsFromString(get_next_field.GetString(), PLAYER_EXPLORED_ZONES_1, PLAYER_EXPLORED_ZONES_LENGTH);
+
+    // Process skill data.
+    uint32 Counter = 0;
+    char* start = nullptr;
+    char* end = nullptr;
+
+    // new format
+    const ItemProf* prof1;
+
+    LoadSkills(results[15].result);
+
+    if (m_skills.empty())
+    {
+        /* no skills - reset to defaults */
+        for (std::list<CreateInfo_SkillStruct>::const_iterator ss = info->skills.begin(); ss != info->skills.end(); ++ss)
+        {
+            if (ss->skillid && ss->currentval && ss->maxval && !::GetSpellForLanguage(ss->skillid))
+                _AddSkillLine(ss->skillid, ss->currentval, ss->maxval);
+        }
+    }
+
+    for (SkillMap::iterator itr = m_skills.begin(); itr != m_skills.end(); ++itr)
+    {
+        if (itr->first == SKILL_RIDING)
+        {
+            itr->second.CurrentValue = itr->second.MaximumValue;
+        }
+
+        prof1 = GetProficiencyBySkill(itr->first);
+        if (prof1)
+        {
+            if (prof1->itemclass == 4)
+                armor_proficiency |= prof1->subclass;
+            else
+                weapon_proficiency |= prof1->subclass;
+        }
+        _LearnSkillSpells(itr->second.Skill->id, itr->second.CurrentValue);
+    }
+
+    // set the rest of the stuff
+    setInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, get_next_field.GetUInt32());
+    SetChosenTitle(get_next_field.GetUInt32());
+    setUInt64Value(PLAYER_FIELD_KNOWN_TITLES, get_next_field.GetUInt64());
+#if VERSION_STRING > TBC
+    setUInt64Value(PLAYER_FIELD_KNOWN_TITLES1, get_next_field.GetUInt64());
+    setUInt64Value(PLAYER_FIELD_KNOWN_TITLES2, get_next_field.GetUInt64());
+#else
+    get_next_field.GetUInt32();
+    get_next_field.GetUInt32();
+#endif
+    m_uint32Values[PLAYER_FIELD_COINAGE] = get_next_field.GetUInt32();
+#if VERSION_STRING != Cata
+    m_uint32Values[PLAYER_AMMO_ID] = get_next_field.GetUInt32();
+    m_uint32Values[PLAYER_CHARACTER_POINTS2] = get_next_field.GetUInt32();
+#else
+    get_next_field.GetUInt32();
+    get_next_field.GetUInt32();
+#endif
+    load_health = get_next_field.GetUInt32();
+    load_mana = get_next_field.GetUInt32();
+    SetHealth(load_health);
+    uint8 pvprank = get_next_field.GetUInt8();
+    setUInt32Value(PLAYER_BYTES, get_next_field.GetUInt32());
+    setUInt32Value(PLAYER_BYTES_2, get_next_field.GetUInt32());
+    setUInt32Value(PLAYER_BYTES_3, getGender() | (pvprank << 24));
+    setUInt32Value(PLAYER_FLAGS, get_next_field.GetUInt32());
+    setUInt32Value(PLAYER_FIELD_BYTES, get_next_field.GetUInt32());
+    //m_uint32Values[0x22]=(m_uint32Values[0x22]>0x46)?0x46:m_uint32Values[0x22];
+
+    m_position.x = get_next_field.GetFloat();
+    m_position.y = get_next_field.GetFloat();
+    m_position.z = get_next_field.GetFloat();
+    m_position.o = get_next_field.GetFloat();
+
+    m_mapId = get_next_field.GetUInt32();
+    m_zoneId = get_next_field.GetUInt32();
+    SetZoneId(m_zoneId);
+
+    // Calculate the base stats now they're all loaded
+    for (uint8 i = 0; i < 5; ++i)
+        CalcStat(i);
+
+    //  for (uint32 x = PLAYER_SPELL_CRIT_PERCENTAGE1; x < PLAYER_SPELL_CRIT_PERCENTAGE06 + 1; ++x)
+    ///    SetFloatValue(x, 0.0f);
+
+#if VERSION_STRING != Classic
+    for (uint16_t x = PLAYER_FIELD_MOD_DAMAGE_DONE_PCT; x < PLAYER_FIELD_MOD_HEALING_DONE_POS; ++x)
+        setFloatValue(x, 1.0f);
+#endif
+
+    // Normal processing...
+    UpdateStats();
+
+    // Initialize 'normal' fields
+    SetScale(1.0f);
+#if VERSION_STRING > TBC
+    setFloatValue(UNIT_FIELD_HOVERHEIGHT, 1.0f);
+#endif
+
+    //SetUInt32Value(UNIT_FIELD_POWER2, 0);
+    SetPower(POWER_TYPE_FOCUS, info->focus); // focus
+    SetPower(POWER_TYPE_ENERGY, info->energy);
+    SetMaxPower(POWER_TYPE_RAGE, info->rage);
+    SetMaxPower(POWER_TYPE_FOCUS, info->focus);
+    SetMaxPower(POWER_TYPE_ENERGY, info->energy);
+    if (getClass() == WARRIOR)
+        SetShapeShift(FORM_BATTLESTANCE);
+
+    setUInt32Value(UNIT_FIELD_BYTES_2, (0x28 << 8));
+    SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
+    SetBoundingRadius(0.388999998569489f);
+    SetCombatReach(1.5f);
+
+    if (getRace() != RACE_BLOODELF)
+    {
+        SetDisplayId(info->displayId + getGender());
+        SetNativeDisplayId(info->displayId + getGender());
+    }
+    else
+    {
+        SetDisplayId(info->displayId - getGender());
+        SetNativeDisplayId(info->displayId - getGender());
+    }
+    EventModelChange();
+
+    SetCastSpeedMod(1.0f);
+#if VERSION_STRING != Classic
+    setUInt32Value(PLAYER_FIELD_MAX_LEVEL, worldConfig.player.playerLevelCap);
+#endif
+    SetFaction(info->factiontemplate);
+    if (cfaction)
+    {
+        SetFaction(cfaction);
+        // re-calculate team
+        switch (cfaction)
+        {
+            case 1:     // human
+            case 3:     // dwarf
+            case 4:     // ne
+            case 8:     // gnome
+            case 927:   // draenei
+                m_team = m_bgTeam = 0;
+                break;
+            case 2:     // orc
+            case 5:     // undead
+            case 6:     // tauren
+            case 9:     // troll
+            case 914:   // bloodelf
+                m_team = m_bgTeam = 1;
+                break;
+        }
+    }
+
+    LoadTaxiMask(get_next_field.GetString());
+
+    m_banned = get_next_field.GetUInt32();      //Character ban
+    m_banreason = get_next_field.GetString();
+    m_timeLogoff = get_next_field.GetUInt32();
+    field_index++;
+
+    m_bind_pos_x = get_next_field.GetFloat();
+    m_bind_pos_y = get_next_field.GetFloat();
+    m_bind_pos_z = get_next_field.GetFloat();
+    m_bind_mapid = get_next_field.GetUInt32();
+    m_bind_zoneid = get_next_field.GetUInt32();
+
+    m_isResting = get_next_field.GetUInt8();
+    m_restState = get_next_field.GetUInt8();
+    m_restAmount = get_next_field.GetUInt32();
+
+
+    std::string tmpStr = get_next_field.GetString();
+    m_playedtime[0] = (uint32)atoi((const char*)strtok((char*)tmpStr.c_str(), " "));
+    m_playedtime[1] = (uint32)atoi((const char*)strtok(nullptr, " "));
+
+    m_deathState = (DeathState)get_next_field.GetUInt32();
+    m_talentresettimes = get_next_field.GetUInt32();
+    m_FirstLogin = get_next_field.GetBool();
+    login_flags = get_next_field.GetUInt32();
+    m_arenaPoints = get_next_field.GetUInt32();
+    if (m_arenaPoints > worldConfig.limit.maxArenaPoints)
+    {
+        std::stringstream dmgLog;
+        dmgLog << "has over " << worldConfig.limit.maxArenaPoints << " arena points " << m_arenaPoints;
+        sCheatLog.writefromsession(m_session, dmgLog.str().c_str());
+
+        if (worldConfig.limit.broadcastMessageToGmOnExceeding)          // report to online GMs
+            sendReportToGmMessage(GetName(), dmgLog.str());
+
+        if (worldConfig.limit.disconnectPlayerForExceedingLimits)
+        {
+            m_session->Disconnect();
+        }
+        m_arenaPoints = worldConfig.limit.maxArenaPoints;
+    }
+    for (uint32 z = 0; z < NUM_CHARTER_TYPES; ++z)
+        m_charters[z] = objmgr.GetCharterByGuid(GetGUID(), (CharterTypes)z);
+    for (uint16 z = 0; z < NUM_ARENA_TEAM_TYPES; ++z)
+    {
+        m_arenaTeams[z] = objmgr.GetArenaTeamByGuid(GetLowGUID(), z);
+        if (m_arenaTeams[z] != nullptr)
+        {
+#if VERSION_STRING != Classic
+            setUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (z * 7), m_arenaTeams[z]->m_id);
+            if (m_arenaTeams[z]->m_leader == GetLowGUID())
+                setUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (z * 7) + 1, 0);
+            else
+                setUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (z * 7) + 1, 1);
+#endif
+        }
+    }
+
+    m_StableSlotCount = static_cast<uint8>(get_next_field.GetUInt32());
+    m_instanceId = get_next_field.GetUInt32();
+    m_bgEntryPointMap = get_next_field.GetUInt32();
+    m_bgEntryPointX = get_next_field.GetFloat();
+    m_bgEntryPointY = get_next_field.GetFloat();
+    m_bgEntryPointZ = get_next_field.GetFloat();
+    m_bgEntryPointO = get_next_field.GetFloat();
+    m_bgEntryPointInstance = get_next_field.GetUInt32();
+
+    uint32 taxipath = get_next_field.GetUInt32();
+    TaxiPath* path = nullptr;
+    if (taxipath)
+    {
+        path = sTaxiMgr.GetTaxiPath(taxipath);
+        lastNode = get_next_field.GetUInt32();
+        if (path)
+        {
+            SetMount(get_next_field.GetUInt32());
+            SetTaxiPath(path);
+            m_onTaxi = true;
+        }
+        else
+            field_index++;
+    }
+    else
+    {
+        field_index++;
+        field_index++;
+    }
+
+    obj_movement_info.transporter_info.guid = get_next_field.GetUInt32();
+    if (obj_movement_info.transporter_info.guid)
+    {
+        Transporter* t = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transporter_info.guid));
+        obj_movement_info.transporter_info.guid = t ? t->GetGUID() : 0;
+    }
+
+    obj_movement_info.transporter_info.position.x = get_next_field.GetFloat();
+    obj_movement_info.transporter_info.position.y = get_next_field.GetFloat();
+    obj_movement_info.transporter_info.position.z = get_next_field.GetFloat();
+    obj_movement_info.transporter_info.position.o = get_next_field.GetFloat();
+
+    LoadSpells(results[13].result);
+
+    LoadDeletedSpells(results[14].result);
+
+    LoadReputations(results[12].result);
+
+    // Load saved actionbars
+    for (uint8 s = 0; s < MAX_SPEC_COUNT; ++s)
+    {
+        start = (char*)get_next_field.GetString();
+        Counter = 0;
+        while (Counter < PLAYER_ACTION_BUTTON_COUNT)
+        {
+            if (start == nullptr)
+                break;
+
+            end = strchr(start, ',');
+            if (!end)
+                break;
+            *end = 0;
+            m_specs[s].mActions[Counter].Action = (uint16)atol(start);
+            start = end + 1;
+            end = strchr(start, ',');
+            if (!end)
+                break;
+            *end = 0;
+            m_specs[s].mActions[Counter].Type = (uint8)atol(start);
+            start = end + 1;
+            end = strchr(start, ',');
+            if (!end)
+                break;
+            *end = 0;
+            m_specs[s].mActions[Counter].Misc = (uint8)atol(start);
+            start = end + 1;
+
+            Counter++;
+        }
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Parse saved buffs
+    std::istringstream savedPlayerBuffsStream(get_next_field.GetString());
+    std::string auraId, auraDuration, auraPositivValue, auraCharges;
+
+    while (std::getline(savedPlayerBuffsStream, auraId, ','))
+    {
+        LoginAura la;
+        la.id = atol(auraId.c_str());
+
+        std::getline(savedPlayerBuffsStream, auraDuration, ',');
+        la.dur = atol(auraDuration.c_str());
+
+        std::getline(savedPlayerBuffsStream, auraPositivValue, ',');
+        la.positive = (auraPositivValue.c_str());
+
+        std::getline(savedPlayerBuffsStream, auraCharges, ',');
+        la.charges = atol(auraCharges.c_str());
+
+        loginauras.push_back(la);
+    }
+
+    // Load saved finished quests
+
+    start = (char*)get_next_field.GetString();
+    while (true)
+    {
+        end = strchr(start, ',');
+        if (!end)break;
+        *end = 0;
+        m_finishedQuests.insert(atol(start));
+        start = end + 1;
+    }
+
+    start = (char*)get_next_field.GetString();
+    while (true)
+    {
+        end = strchr(start, ',');
+        if (!end) break;
+        *end = 0;
+        m_finishedDailies.insert(atol(start));
+        start = end + 1;
+    }
+
+    m_honorRolloverTime = get_next_field.GetUInt32();
+    m_killsToday = get_next_field.GetUInt32();
+    m_killsYesterday = get_next_field.GetUInt32();
+    m_killsLifetime = get_next_field.GetUInt32();
+
+    m_honorToday = get_next_field.GetUInt32();
+    m_honorYesterday = get_next_field.GetUInt32();
+    m_honorPoints = get_next_field.GetUInt32();
+    if (m_honorPoints > worldConfig.limit.maxHonorPoints)
+    {
+        std::stringstream dmgLog;
+        dmgLog << "has over " << worldConfig.limit.maxHonorPoints << " honor points " << m_honorPoints;
+
+        sCheatLog.writefromsession(m_session, dmgLog.str().c_str());
+
+        if (worldConfig.limit.broadcastMessageToGmOnExceeding)
+            sendReportToGmMessage(GetName(), dmgLog.str());
+
+        if (worldConfig.limit.disconnectPlayerForExceedingLimits)
+        {
+            m_session->Disconnect();
+        }
+        m_honorPoints = worldConfig.limit.maxHonorPoints;
+    }
+
+    RolloverHonor();
+
+    // Load drunk value and calculate sobering. after 15 minutes logged out, the player will be sober again
+    uint32 timediff = (uint32)UNIXTIME - m_timeLogoff;
+    uint32 soberFactor;
+    if (timediff > 900)
+        soberFactor = 0;
+    else
+        soberFactor = 1 - timediff / 900;
+    SetDrunkValue(uint16(soberFactor * get_next_field.GetUInt32()));
+
+    for (uint8 s = 0; s < MAX_SPEC_COUNT; ++s)
+    {
+        start = (char*)get_next_field.GetString();
+        uint8 glyphid = 0;
+        while (glyphid < GLYPHS_COUNT)
+        {
+            end = strchr(start, ',');
+            if (!end)break;
+            *end = 0;
+            m_specs[s].glyphs[glyphid] = (uint16)atol(start);
+            ++glyphid;
+            start = end + 1;
+        }
+
+        //Load talents for spec
+        start = (char*)get_next_field.GetString();
+        while (end != nullptr)
+        {
+            end = strchr(start, ',');
+            if (!end)
+                break;
+            *end = 0;
+            uint32 talentid = atol(start);
+            start = end + 1;
+
+            end = strchr(start, ',');
+            if (!end)
+                break;
+            *end = 0;
+            uint8 rank = (uint8)atol(start);
+            start = end + 1;
+
+            m_specs[s].talents.insert(std::pair<uint32, uint8>(talentid, rank));
+        }
+    }
+
+    m_talentSpecsCount = get_next_field.GetUInt8();
+    m_talentActiveSpec = get_next_field.GetUInt8();
+
+    {
+        std::stringstream ss(get_next_field.GetString());
+        uint32 tp1 = 0;
+        uint32 tp2 = 0;
+
+        ss >> tp1;
+        ss >> tp2;
+
+        m_specs[SPEC_PRIMARY].SetTP(tp1);
+        m_specs[SPEC_SECONDARY].SetTP(tp2);
+#if VERSION_STRING != Cata
+        setUInt32Value(PLAYER_CHARACTER_POINTS1, m_specs[m_talentActiveSpec].GetTP());
+#else
+        setUInt32Value(PLAYER_CHARACTER_POINTS, m_specs[m_talentActiveSpec].GetTP());
+#endif
+    }
+
+#if VERSION_STRING != Cata
+    get_next_field.GetUInt32();
+#else
+    m_FirstTalentTreeLock = get_next_field.GetUInt32(); // Load First Set Talent Tree
+#endif
+
+    m_phase = get_next_field.GetUInt32(); //Load the player's last phase
+
+    uint32 xpfield = get_next_field.GetUInt32();
+
+    if (xpfield == 0)
+        m_XpGain = false;
+    else
+        m_XpGain = true;
+
+    get_next_field;//skipping one
+
+    if (get_next_field.GetUInt32() == 1)
+        resettalents = true;
+    else
+        resettalents = false;
+
+    // Load player's RGB daily data
+    if (get_next_field.GetUInt32() == 1)
+        m_bgIsRbgWon = true;
+    else
+        m_bgIsRbgWon = false;
+
+    iInstanceType = get_next_field.GetUInt8();
+    m_RaidDifficulty = get_next_field.GetUInt8();
+
+    HonorHandler::RecalculateHonorFields(this);
+
+    for (uint16 x = 0; x < 5; x++)
+        BaseStats[x] = GetStat(x);
+
+#if VERSION_STRING > TBC
+    UpdateGlyphs();
+
+    for (uint8 i = 0; i < GLYPHS_COUNT; ++i)
+    {
+        SetGlyph(i, m_specs[m_talentActiveSpec].glyphs[i]);
+    }
+#endif
+    //class fixes
+    switch (getClass())
+    {
+        case PALADIN:
+            armor_proficiency |= (1 << 7);  //LIBRAM
+            break;
+        case DRUID:
+            armor_proficiency |= (1 << 8);  //IDOL
+            break;
+        case SHAMAN:
+            armor_proficiency |= (1 << 9);  //TOTEM
+            break;
+        case DEATHKNIGHT:
+            armor_proficiency |= (1 << 10);  //SIGIL
+            break;
+        case WARLOCK:
+        case HUNTER:
+            _LoadPet(results[5].result);
+            _LoadPetSpells(results[6].result);
+            break;
+    }
+
+#if VERSION_STRING != Cata
+    if (m_session->CanUseCommand('c'))
+        _AddLanguages(true);
+    else
+        _AddLanguages(false);
+#else
+    _AddLanguages(false);
+#endif
+
+    if (GetGuildId())
+        setUInt32Value(PLAYER_GUILD_TIMESTAMP, (uint32)UNIXTIME);
+
+#undef get_next_field
+
+    // load properties
+    _LoadTutorials(results[1].result);
+    _LoadPlayerCooldowns(results[2].result);
+    _LoadQuestLogEntry(results[3].result);
+    m_ItemInterface->mLoadItemsFromDatabase(results[4].result);
+    m_ItemInterface->m_EquipmentSets.LoadfromDB(results[11].result);
+
+    m_mailBox.Load(results[7].result);
+
+    // SOCIAL
+    if (results[8].result != nullptr)            // this query is "who are our friends?"
+    {
+        result = results[8].result;
+        do
+        {
+            fields = result->Fetch();
+            uint32 friendguid = fields[0].GetUInt32();
+            const char* str = fields[1].GetString();
+            char* note = nullptr;
+            if (strlen(str) > 0)
+                note = strdup(str);
+            m_cache->InsertValue64(CACHE_SOCIAL_FRIENDLIST, friendguid, note);
+        }
+        while (result->NextRow());
+    }
+
+    if (results[9].result != nullptr)            // this query is "who has us in their friends?"
+    {
+        result = results[9].result;
+        do
+        {
+            m_cache->InsertValue64(CACHE_SOCIAL_HASFRIENDLIST, result->Fetch()[0].GetUInt32());
+        }
+        while (result->NextRow());
+    }
+
+    if (results[10].result != nullptr)        // this query is "who are we ignoring"
+    {
+        result = results[10].result;
+        do
+        {
+            uint32 guid = result->Fetch()[0].GetUInt32();
+            m_cache->InsertValue64(CACHE_SOCIAL_IGNORELIST, guid);
+        }
+        while (result->NextRow());
+    }
+
+    // END SOCIAL
+
+    // Check skills that player shouldn't have
+    if (_HasSkillLine(SKILL_DUAL_WIELD) && !HasSpell(674))
+    {
+        _RemoveSkillLine(SKILL_DUAL_WIELD);
+    }
+
+#if VERSION_STRING > TBC
+    // update achievements before adding player to World, otherwise we'll get a nice race condition.
+    //move CheckAllAchievementCriteria() after FullLogin(this) and i'll cut your b***s.
+    m_achievementMgr.CheckAllAchievementCriteria();
+#endif
+
+    m_session->FullLogin(this);
+    m_session->m_loggingInPlayer = nullptr;
+
+    if (!isAlive())
+    {
+        Corpse* myCorpse = objmgr.GetCorpseByOwner(GetLowGUID());
+        if (myCorpse != nullptr)
+        {
+            myCorpseLocation = myCorpse->GetPosition();
+            myCorpseInstanceId = myCorpse->GetInstanceID();
+        }
+    }
+
+    // check for multiple gems with unique-equipped flag
+    uint32 count;
+    uint32 uniques[64];
+    int nuniques = 0;
+
+    for (uint8 x = EQUIPMENT_SLOT_START; x < EQUIPMENT_SLOT_END; ++x)
+    {
+        ItemInterface* itemi = GetItemInterface();
+        Item* it = itemi->GetInventoryItem(x);
+
+        if (it != nullptr)
+        {
+            for (count = 0; count < it->GetSocketsCount(); count++)
+            {
+                EnchantmentInstance* ei = it->GetEnchantment(SOCK_ENCHANTMENT_SLOT1 + count);
+
+                if (ei && ei->Enchantment)
+                {
+                    ItemProperties const* ip = sMySQLStore.getItemProperties(ei->Enchantment->GemEntry);
+
+                    if (ip && ip->Flags & ITEM_FLAG_UNIQUE_EQUIP &&
+                        itemi->IsEquipped(ip->ItemId))
+                    {
+                        int i;
+
+                        for (i = 0; i < nuniques; i++)
+                        {
+                            if (uniques[i] == ip->ItemId)
+                            {
+                                // found a duplicate unique-equipped gem, remove it
+                                it->RemoveEnchantment(2 + count);
+                                break;
+                            }
+                        }
+
+                        if (i == nuniques)  // not found
+                            uniques[nuniques++] = ip->ItemId;
+                    }
+                }
+            }
+        }
+    }
+}
+#else
+
 void Player::LoadFromDBProc(QueryResultVector & results)
 {
     uint32 field_index = 2;
@@ -3855,6 +4670,9 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     }
 }
 
+#endif
+
+
 void Player::SetPersistentInstanceId(Instance* pInstance)
 {
     if (pInstance == nullptr)
@@ -4067,6 +4885,122 @@ void Player::OnPrePushToWorld()
 #endif
 }
 
+#ifdef AE_TBC
+void Player::OnPushToWorld()
+{
+    if (m_TeleportState == 2)   // Worldport Ack
+        OnWorldPortAck();
+
+    SpeedCheatReset();
+    m_beingPushed = false;
+    AddItemsToWorld();
+
+    // delay the unlock movement packet
+    WorldPacket* data = new WorldPacket(SMSG_TIME_SYNC_REQ, 4);
+    *data << uint32(0);
+    delayedPackets.add(data);
+
+    // set fly if cheat is active
+    // TODO Validate that this isn't breaking logon by messaging player without delay
+#ifndef AE_TBC
+    setMoveCanFly(FlyCheat);
+#endif
+
+    // Update PVP Situation
+    LoginPvPSetup();
+
+    // TODO What is this?
+#ifndef AE_TBC
+    removeByteFlag(UNIT_FIELD_BYTES_2, 1, 0x28);
+#endif
+
+    if (m_playerInfo->lastOnline + 900 < UNIXTIME)    // did we logged out for more than 15 minutes?
+        m_ItemInterface->RemoveAllConjured();
+
+    Unit::OnPushToWorld();
+
+    if (m_FirstLogin)
+    {
+        uint8 my_class = getClass();
+        uint8 start_level = 1;
+        if (my_class == DEATHKNIGHT)
+            start_level = static_cast<uint8>(std::max(55, worldConfig.player.playerStartingLevel));
+        else
+            start_level = static_cast<uint8>(worldConfig.player.playerStartingLevel);
+
+        sHookInterface.OnFirstEnterWorld(this);
+        LevelInfo* Info = objmgr.GetLevelInfo(getRace(), getClass(), start_level);
+        ApplyLevelInfo(Info, start_level);
+        m_FirstLogin = false;
+    }
+
+    sHookInterface.OnEnterWorld(this);
+    CALL_INSTANCE_SCRIPT_EVENT(m_mapMgr, OnZoneChange)(this, m_zoneId, 0);
+    CALL_INSTANCE_SCRIPT_EVENT(m_mapMgr, OnPlayerEnter)(this);
+
+    if (m_TeleportState == 1)        // First world enter
+        CompleteLoading();
+
+    m_TeleportState = 0;
+
+    if (GetTaxiState())
+    {
+        if (m_taxiMapChangeNode != 0)
+        {
+            lastNode = m_taxiMapChangeNode;
+        }
+
+        // Process create packet
+        ProcessPendingUpdates();
+
+        TaxiStart(GetTaxiPath(),
+                  GetMount(),
+                  lastNode);
+
+        m_taxiMapChangeNode = 0;
+    }
+
+    if (flying_aura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpell(54197) && getDeathState() == ALIVE)))
+        // can only fly in outlands or northrend (northrend requires cold weather flying)
+    {
+        RemoveAura(flying_aura);
+        flying_aura = 0;
+    }
+
+    /* send weather */
+    sWeatherMgr.SendWeather(this);
+
+    SetHealth((load_health > m_uint32Values[UNIT_FIELD_MAXHEALTH] ? m_uint32Values[UNIT_FIELD_MAXHEALTH] : load_health));
+    SetPower(POWER_TYPE_MANA, (load_mana > GetMaxPower(POWER_TYPE_MANA) ? GetMaxPower(POWER_TYPE_MANA) : load_mana));
+
+    if (!GetSession()->HasGMPermissions())
+        GetItemInterface()->CheckAreaItems();
+
+    if (m_mapMgr && m_mapMgr->m_battleground != nullptr && m_bg != m_mapMgr->m_battleground)
+    {
+        m_mapMgr->m_battleground->PortPlayer(this, true);
+    }
+
+    if (m_bg != nullptr)
+    {
+        m_bg->OnAddPlayer(this);   // add buffs and so, must be after zone update and related aura removal
+        m_bg->OnPlayerPushed(this);
+    }
+
+    m_changingMaps = false;
+    SendFullAuraUpdate();
+
+    m_ItemInterface->HandleItemDurations();
+
+    //SendInitialWorldstates();
+
+    if (resettalents)
+    {
+        Reset_AllTalents();
+        resettalents = false;
+    }
+}
+#else
 void Player::OnPushToWorld()
 {
     uint8 class_ = getClass();
@@ -4174,6 +5108,7 @@ void Player::OnPushToWorld()
         resettalents = false;
     }
 }
+#endif
 
 void Player::RemoveFromWorld()
 {
@@ -4892,8 +5827,10 @@ void Player::KillPlayer()
 
     if (getClass() == WARRIOR)   // Rage resets on death
         SetPower(POWER_TYPE_RAGE, 0);
+#if VERSION_STRING >= WotLK
     else if (getClass() == DEATHKNIGHT)
         SetPower(POWER_TYPE_RUNIC_POWER, 0);
+#endif
 
     summonhandler.RemoveAllSummons();
     DismissActivePets();
@@ -5152,6 +6089,22 @@ void Player::CleanupChannels()
     }
 }
 
+#ifdef AE_TBC
+void Player::SendInitialActions()
+{
+    WorldPacket data(SMSG_ACTION_BUTTONS, PLAYER_ACTION_BUTTON_SIZE + 1);
+
+    for (uint8 i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+    {
+        data << m_specs[m_talentActiveSpec].mActions[i].Action;
+        data << m_specs[m_talentActiveSpec].mActions[i].Type;
+        data << m_specs[m_talentActiveSpec].mActions[i].Misc;
+    }
+    m_session->SendPacket(&data);
+}
+#endif
+
+#ifndef AE_TBC
 void Player::SendInitialActions()
 {
 #if VERSION_STRING == Cata
@@ -5175,6 +6128,7 @@ void Player::SendInitialActions()
 #endif
     m_session->SendPacket(&data);
 }
+#endif
 
 void Player::setAction(uint8 button, uint16 action, uint8 type, uint8 misc)
 {
@@ -7362,6 +8316,42 @@ void Player::_Relocate(uint32 mapid, const LocationVector & v, bool sendpending,
     z_axisposition = 0.0f;
 }
 
+#ifdef AE_TBC
+void Player::AddItemsToWorld()
+{
+    for (uint8 i = 0; i < INVENTORY_KEYRING_END; ++i)
+    {
+        if (const auto pItem = GetItemInterface()->GetInventoryItem(i))
+        {
+            pItem->PushToWorld(m_mapMgr);
+
+            if (i < INVENTORY_SLOT_BAG_END)      // only equipment slots get mods.
+            {
+                _ApplyItemMods(pItem, i, true, false, true);
+            }
+
+            if (i >= CURRENCYTOKEN_SLOT_START && i < CURRENCYTOKEN_SLOT_END)
+            {
+                UpdateKnownCurrencies(pItem->GetEntry(), true);
+            }
+
+            if (pItem->IsContainer() && GetItemInterface()->IsBagSlot(i))
+            {
+                for (uint32 e = 0; e < pItem->GetItemProperties()->ContainerSlots; ++e)
+                {
+                    Item* item = (static_cast< Container* >(pItem))->GetItem(static_cast<int16>(e));
+                    if (item)
+                    {
+                        item->PushToWorld(m_mapMgr);
+                    }
+                }
+            }
+        }
+    }
+
+    UpdateStats();
+}
+#else
 void Player::AddItemsToWorld()
 {
     Item* pItem;
@@ -7398,6 +8388,7 @@ void Player::AddItemsToWorld()
 
     UpdateStats();
 }
+#endif
 
 void Player::RemoveItemsFromWorld()
 {

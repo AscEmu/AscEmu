@@ -211,7 +211,9 @@ public:
                     s->SetBaseAttackTime(MELEE, item->GetItemProperties()->Delay);
                 }
 
+#if VERSION_STRING >= WotLK
                 pOwner->SetPower(POWER_TYPE_RUNIC_POWER, 0);
+#endif
             }
 
             s->SetMinDamage(float(owner->GetDamageDoneMod(SCHOOL_NORMAL)));

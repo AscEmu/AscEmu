@@ -964,15 +964,16 @@ void WorldSession::SendMOTD()
         }
         pos = nextpos + 1;
     }
-        if (pos < str_motd.length())
-        {
-            data << str_motd.substr(pos);
-            ++linecount;
-        }
 
-        data.put(0, linecount);
+    if (pos < str_motd.length())
+    {
+        data << str_motd.substr(pos);
+        ++linecount;
+    }
 
-        SendPacket(&data);
+    data.put(0, linecount);
+
+    SendPacket(&data);
 }
 
 #if VERSION_STRING > TBC

@@ -14,6 +14,73 @@ This file is released under the MIT license. See README-MIT for more information
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
 
+#ifdef AE_TBC
+uint32_t Unit::addAuraVisual(uint32_t spell_id, uint32_t count, bool positive)
+{
+    bool out;
+    return addAuraVisual(spell_id, count, positive, out);
+}
+
+uint32_t Unit::addAuraVisual(uint32_t spell_id, uint32_t count, bool positive,
+    bool& skip_client_update)
+{
+    auto free = -1;
+    uint32_t start = positive ? MAX_POSITIVE_VISUAL_AURAS_START : MAX_POSITIVE_VISUAL_AURAS_END;
+    uint32_t end = positive ? MAX_NEGATIVE_VISUAL_AURAS_START : MAX_NEGATIVE_VISUAL_AURAS_END;
+
+    for (auto x = start; x < end; ++x)
+    {
+        if (free == -1 && m_uint32Values[UNIT_FIELD_AURA + x] == 0)
+            free = x;
+
+        if (m_uint32Values[UNIT_FIELD_AURA + x] == spell_id)
+        {
+            const auto aura = m_auras[x];
+            ModVisualAuraStackCount(aura, count);
+            skip_client_update = true;
+            return free;
+        }
+    }
+
+    skip_client_update = false;
+
+    if (free == -1)
+        return 0xff;
+
+    const auto flag_slot = static_cast<uint8_t>((free / 4));
+    const uint16_t val_slot = UNIT_FIELD_AURAFLAGS + flag_slot;
+    auto value = m_uint32Values[val_slot];
+    const auto aura_pos = free % 4 * 8;
+    value &= ~(0xff << aura_pos);
+    if (positive)
+        value |= 0x1f << aura_pos;
+    else
+        value |= 0x9 << aura_pos;
+
+    m_uint32Values[val_slot] = value;
+    m_uint32Values[UNIT_FIELD_AURA + free] = spell_id;
+    const auto aura = m_auras[free];
+    ModVisualAuraStackCount(aura, 1);
+    setAuraSlotLevel(free, positive);
+
+    return free;
+}
+
+void Unit::setAuraSlotLevel(uint32_t slot, bool positive)
+{
+    const auto index = slot / 4;
+    auto value = m_uint32Values[UNIT_FIELD_AURALEVELS + index];
+    const auto bit = slot % 4 * 8;
+    value &= ~(0xff << bit);
+    if (positive)
+        value |= 0x46 << bit;
+    else
+        value |= 0x19 << bit;
+
+    m_uint32Values[UNIT_FIELD_AURALEVELS + index] = value;
+}
+#endif
+
 void Unit::setMoveWaterWalk()
 {
     AddUnitMovementFlag(MOVEFLAG_WATER_WALK);
@@ -206,7 +273,7 @@ void Unit::setMoveCanFly(bool set_fly)
             WorldPacket data(SMSG_MOVE_SET_CAN_FLY, 13);
 #if VERSION_STRING != Cata
             data << GetNewGUID();
-            data << uint32(0);
+            data << uint32(2);
 #else
             movement_info.writeMovementInfo(data, SMSG_MOVE_SET_CAN_FLY);
 #endif
@@ -222,7 +289,7 @@ void Unit::setMoveCanFly(bool set_fly)
             WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
 #if VERSION_STRING != Cata
             data << GetNewGUID();
-            data << uint32(0);
+            data << uint32(5);
 #else
             movement_info.writeMovementInfo(data, SMSG_MOVE_UNSET_CAN_FLY);
 #endif

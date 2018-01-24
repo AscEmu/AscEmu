@@ -741,15 +741,11 @@ void WorldSession::FullLogin(Player* plr)
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-    StackWorldPacket<20> datab(SMSG_FEATURE_SYSTEM_STATUS);
-
-
-    datab.Initialize(SMSG_FEATURE_SYSTEM_STATUS);
-
-    datab << uint8(2);
-    datab << uint8(0);
-
-    SendPacket(&datab);
+    //StackWorldPacket<20> datab(SMSG_FEATURE_SYSTEM_STATUS);
+    //datab.Initialize(SMSG_FEATURE_SYSTEM_STATUS);
+    //datab << uint8(2); // Voice Chat
+    //datab << uint8(0); // Can use it?
+    //SendPacket(&datab);
 
 #if VERSION_STRING > TBC
     WorldPacket dataldm(SMSG_LEARNED_DANCE_MOVES, 4 + 4);
@@ -911,7 +907,8 @@ void WorldSession::FullLogin(Player* plr)
     }
 
     // server Message Of The Day
-    SendMOTD();
+    //SendMOTD();
+    plr->SendDungeonDifficulty();
 
     //Set current RestState
     if (plr->m_isResting)

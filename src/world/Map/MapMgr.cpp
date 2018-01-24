@@ -330,7 +330,7 @@ void MapMgr::PushObject(Object* obj)
         obj->Activate(this);
 
     // Add the session to our set if it is a player.
-    if (plObj != nullptr)
+    if (plObj)
     {
         Sessions.insert(plObj->GetSession());
 

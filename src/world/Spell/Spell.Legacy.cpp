@@ -266,10 +266,12 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
 
 Spell::~Spell()
 {
+#if VERSION_STRING >= WotLK
     // If this spell deals with rune power, send spell_go to update client
     // For instance, when Dk cast Empower Rune Weapon, if we don't send spell_go, the client won't update
     if (GetSpellInfo()->getSchool() && GetSpellInfo()->getPowerType() == POWER_TYPE_RUNES)
         SendSpellGo();
+#endif
 
     m_caster->m_pendingSpells.erase(this);
 
@@ -2476,6 +2478,7 @@ void Spell::SendSpellGo()
 
     //experiments with rune updates
     uint8 cur_have_runes = 0;
+#if VERSION_STRING >= WotLK
     if (p_caster && p_caster->IsDeathKnight())   //send our rune updates ^^
     {
         if (GetSpellInfo()->getRuneCostID() && GetSpellInfo()->getPowerType() == POWER_TYPE_RUNES)
@@ -2485,6 +2488,7 @@ void Spell::SendSpellGo()
         if (cur_have_runes != m_rune_avail_before)
             flags |= SPELL_GO_FLAGS_RUNE_UPDATE | SPELL_GO_FLAGS_UNK40000;
     }
+#endif
 
     // hacky..
     if (GetSpellInfo()->getId() == 8326)   // death

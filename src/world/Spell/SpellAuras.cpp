@@ -43,6 +43,8 @@
 #include "Definitions/PowerType.h"
 #include "Customization/SpellCustomizations.hpp"
 #include "Units/Creatures/Pet.h"
+#include "Server/Packets/SmsgUpdateAuraDuration.h"
+#include "Server/Packets/SmsgSetExtraAuraInfo.h"
 
 using ascemu::World::Spell::Helpers::decimalToMask;
 using ascemu::World::Spell::Helpers::spellModFlatFloatValue;
@@ -2579,7 +2581,7 @@ void Aura::SpellAuraModStun(bool apply)
     {
         // Check Mechanic Immunity
         // Stun is a tricky one... it's used for all different kinds of mechanics as a base Aura
-        
+
         switch (m_spellInfo->getId())
         {
             //SPELL_HASH_ICE_BLOCK
@@ -9669,3 +9671,22 @@ void Aura::SpellAuraMirrorImage2(bool apply)
         }
     }
 }
+
+// MIT
+#ifdef AE_TBC
+void Aura::addAuraVisual()
+{
+    bool skip_client_update;
+    m_visualSlot = m_target->addAuraVisual(m_spellInfo->getId(), 1, IsPositive(), skip_client_update);
+
+    if (skip_client_update || m_visualSlot == 0xff)
+        return;
+
+    if (m_target->IsPlayer())
+        reinterpret_cast<Player*>(m_target)->SendPacket(AscEmu::Packets::SmsgUpdateAuraDuration(m_visualSlot, m_duration).serialise().get());
+
+    auto guid = m_target->GetNewGUID();
+    m_target->SendMessageToSet(AscEmu::Packets::SmsgSetExtraAuraInfo(&guid, m_visualSlot, m_spellInfo->getId(), m_duration, m_duration).serialise().get(), false);
+}
+#endif
+// MIT End

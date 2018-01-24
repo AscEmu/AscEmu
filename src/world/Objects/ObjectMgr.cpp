@@ -2653,7 +2653,7 @@ Transporter* ObjectMgr::GetTransporter(uint32 guid)
     Transporter* rv = nullptr;
     _TransportLock.Acquire();
     std::unordered_map<uint32, Transporter*>::const_iterator itr = m_Transports.find(guid);
-    rv = (itr != m_Transports.end()) ? itr->second : 0;
+    rv = (itr != m_Transports.end()) ? itr->second : nullptr;
     _TransportLock.Release();
     return rv;
 }

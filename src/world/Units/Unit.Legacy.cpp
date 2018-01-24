@@ -6841,7 +6841,7 @@ void Unit::RegeneratePower(bool isinterrupted)
                 SetPower(POWER_TYPE_FOCUS, (cur >= mm) ? mm : cur);
             }
             break;
-
+#if VERSION_STRING >= WotLK
             case POWER_TYPE_RUNIC_POWER:
             {
                 if (!CombatStatus.IsInCombat())
@@ -6853,6 +6853,7 @@ void Unit::RegeneratePower(bool isinterrupted)
                 }
             }
             break;
+#endif
         }
 
         /*
@@ -8469,6 +8470,583 @@ uint8 Unit::FindVisualSlot(uint32 SpellId, bool IsPos)
     return visualslot;
 }
 
+#ifdef AE_TBC
+void Unit::AddAura(Aura* aur)
+{
+    if (aur == NULL)
+        return;
+
+    if (!(isAlive() || (aur->GetSpellInfo()->isDeathPersistent())))
+    {
+        delete aur;
+        return;
+    }
+
+    if (m_mapId != 530 && (m_mapId != 571 || (IsPlayer() && !static_cast<Player*>(this)->HasSpell(54197) && static_cast<Player*>(this)->getDeathState() == ALIVE)))
+        // can't use flying auras in non-outlands or non-northrend (northrend requires cold weather flying)
+    {
+        for (uint8 i = 0; i < 3; ++i)
+        {
+            if (aur->GetSpellInfo()->getEffectApplyAuraName(i) == SPELL_AURA_ENABLE_FLIGHT_WITH_UNMOUNTED_SPEED || aur->GetSpellInfo()->getEffectApplyAuraName(i) == SPELL_AURA_ENABLE_FLIGHT2)
+            {
+                delete aur;
+                return;
+            }
+        }
+    }
+
+    if (aur->GetSpellInfo()->getSchool() && SchoolImmunityList[aur->GetSpellInfo()->getSchool()])
+    {
+        delete aur;
+        return;
+    }
+
+    // If this aura can only affect one target at a time
+    if (aur->GetSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_SINGLE_TARGET_AURA)
+    {
+        // remove aura from the previous applied target
+        Unit* caster = aur->GetUnitCaster();
+        uint64 prev_target_guid = 0;
+
+        if (caster != NULL)
+        {
+            prev_target_guid = caster->getSingleTargetGuidForAura(aur->GetSpellInfo()->getId());
+
+            if (prev_target_guid && prev_target_guid != aur->GetTarget()->GetGUID())
+            {
+                Unit* prev_target = this->GetMapMgr()->GetUnit(prev_target_guid);
+                if (prev_target != NULL)
+                    prev_target->removeAllAurasById(aur->GetSpellInfo()->getId());
+            }
+        }
+
+        // remove aura from this unit. other player/unit may have casted on this target
+        // this is necessary for the following case:
+        //  1) attacker A cast on target A
+        //  2) attacker B cast on target B
+        //  3) attacker A cast on target B, and aura is removed from target A
+        //  4) attacker B cast on target A, and aura is not removed from target B, because caster A is now the one that casted on target B
+        if (prev_target_guid && prev_target_guid != aur->GetTarget()->GetGUID())
+            removeAllAurasById(aur->GetSpellInfo()->getId());
+    }
+
+    uint16 AuraSlot = 0xFFFF;
+    //all this code block is to try to find a valid slot for our new aura.
+    if (!aur->IsPassive())
+    {
+        uint32 AlreadyApplied = 0, CheckLimit, StartCheck;
+        if (aur->IsPositive())
+        {
+            StartCheck = MAX_POSITIVE_AURAS_EXTEDED_START; //also check talents to make sure they will not stack. Maybe not required ?
+            CheckLimit = MAX_POSITIVE_AURAS_EXTEDED_END;
+        }
+        else
+        {
+            StartCheck = MAX_NEGATIVE_AURAS_EXTEDED_START;
+            CheckLimit = MAX_NEGATIVE_AURAS_EXTEDED_END;
+        }
+        // Nasty check for Blood Fury debuff (spell system based on namehashes is bs anyways)
+        if (!sSpellCustomizations.isAlwaysApply(aur->GetSpellInfo()))
+        {
+            //uint32 aurName = aur->GetSpellProto()->Name;
+            //uint32 aurRank = aur->GetSpellProto()->Rank;
+            uint32 maxStack = aur->GetSpellInfo()->getMaxstack();
+            if (aur->GetSpellInfo()->getProcCharges() > 0)
+            {
+                int charges = aur->GetSpellInfo()->getProcCharges();
+                Unit* ucaster = aur->GetUnitCaster();
+                if (ucaster != nullptr)
+                {
+                    spellModFlatIntValue(ucaster->SM_FCharges, &charges, aur->GetSpellInfo()->getSpellGroupType());
+                    spellModPercentageIntValue(ucaster->SM_PCharges, &charges, aur->GetSpellInfo()->getSpellGroupType());
+                }
+                maxStack = charges;
+            }
+            if (IsPlayer() && static_cast<Player*>(this)->AuraStackCheat)
+                maxStack = 999;
+
+            SpellInfo* info = aur->GetSpellInfo();
+            //uint32 flag3 = aur->GetSpellProto()->Flags3;
+
+            AuraCheckResponse acr;
+            WorldPacket data(21);
+            bool deleteAur = false;
+
+            //check if we already have this aura by this caster -> update duration
+            for (uint32 x = StartCheck; x < CheckLimit; x++)
+            {
+                if (m_auras[x])
+                {
+                    if (m_auras[x]->GetSpellId() == aur->GetSpellId())
+                    {
+                        if (!aur->IsPositive()
+                            && m_auras[x]->m_casterGuid != aur->m_casterGuid
+                            && (m_auras[x]->GetSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_MAXSTACK_FOR_DEBUFF) == 0
+                            )
+                        {
+                            continue;
+                        }
+                        AlreadyApplied++;
+                        //update duration,the same aura (update the whole stack whenever we cast a new one)
+                        m_auras[x]->ResetDuration();
+
+                        if (maxStack <= AlreadyApplied)
+                        {
+                            ModVisualAuraStackCount(m_auras[x], 0);
+                            if (AlreadyApplied == 1)
+                                m_auras[x]->UpdateModifiers();
+                            deleteAur = true;
+                            break;
+                        }
+                    }
+                    else if ((aur->pSpellId != m_auras[x]->GetSpellInfo()->getId()))     // if this is a proc spell then it should not remove it's mother : test with combustion later
+                    {
+                        // Check for auras by specific type.
+                        if (info->custom_BGR_one_buff_on_target > 0 && m_auras[x]->GetSpellInfo()->custom_BGR_one_buff_on_target & info->custom_BGR_one_buff_on_target && maxStack == 0)
+                        {
+                            deleteAur = HasAurasOfBuffType(info->custom_BGR_one_buff_on_target, aur->m_casterGuid, 0);
+                        }
+                        // Check for auras with the same name and a different rank.
+                        else
+                        {
+                            acr = AuraCheck(info, m_auras[x], aur->GetCaster());
+                            if (acr.Error == AURA_CHECK_RESULT_HIGHER_BUFF_PRESENT)
+                            {
+                                deleteAur = true;
+                            }
+                            else if (acr.Error == AURA_CHECK_RESULT_LOWER_BUFF_PRESENT)
+                            {
+                                // remove the lower aura
+                                m_auras[x]->Remove();
+
+                                // no more checks on bad ptr
+                                continue;
+                            }
+                        }
+                    }
+                }
+                else if (AuraSlot == 0xFFFF)
+                {
+                    AuraSlot = static_cast<uint16>(x);
+                }
+            }
+
+            if (deleteAur)
+            {
+                sEventMgr.RemoveEvents(aur);
+
+                // Once stacked 5 times, each application of Deadly poison also causes the poison on the Rogue's other weapon to apply
+                // http://www.wowhead.com/?item=43233#comments
+                if (AlreadyApplied >= maxStack && info->custom_c_is_flags & SPELL_FLAG_IS_POISON)
+                {
+                    Player* caster = aur->GetPlayerCaster();
+                    if (caster != NULL)
+                    {
+                        switch (info->getId())
+                        {
+                            // SPELL_HASH_DEADLY_POISON_IX:
+                            case 57970:
+                            case 57973:
+                                // SPELL_HASH_DEADLY_POISON_VIII:
+                            case 57969:
+                            case 57972:
+                                // SPELL_HASH_DEADLY_POISON_VII:
+                            case 27186:
+                            case 27187:
+                                // SPELL_HASH_DEADLY_POISON_VI:
+                            case 26967:
+                            case 26968:
+                                // SPELL_HASH_DEADLY_POISON_V:
+                            case 25349:
+                            case 25351:
+                                // SPELL_HASH_DEADLY_POISON_IV:
+                            case 11354:
+                            case 11356:
+                                // SPELL_HASH_DEADLY_POISON_III:
+                            case 11353:
+                            case 11355:
+                                // SPELL_HASH_DEADLY_POISON_II:
+                            case 2819:
+                            case 2824:
+                                // SPELL_HASH_DEADLY_POISON:
+                            case 2818:
+                            case 2823:
+                            case 3583:
+                            case 10022:
+                            case 13582:
+                            case 21787:
+                            case 21788:
+                            case 32970:
+                            case 32971:
+                            case 34616:
+                            case 34655:
+                            case 34657:
+                            case 36872:
+                            case 38519:
+                            case 38520:
+                            case 41191:
+                            case 41192:
+                            case 41485:
+                            case 43580:
+                            case 43581:
+                            case 56145:
+                            case 56149:
+                            case 59479:
+                            case 59482:
+                            case 63755:
+                            case 63756:
+                            case 67710:
+                            case 67711:
+                            case 68315:
+                            case 72329:
+                            case 72330:
+                            {
+                                Item* mh = caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                                Item* oh = caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+
+                                if (mh != NULL && oh != NULL)
+                                {
+                                    uint32 mh_spell = 0;
+                                    uint32 oh_spell = 0;
+                                    bool is_mh_deadly_poison = false;
+                                    bool is_oh_deadly_poison = false;
+
+                                    // Find mainhand enchantment
+                                    EnchantmentInstance* ench = mh->GetEnchantment(TEMP_ENCHANTMENT_SLOT);
+                                    if (ench)
+                                    {
+                                        DBC::Structures::SpellItemEnchantmentEntry const* Entry = ench->Enchantment;
+                                        for (uint8 c = 0; c < 3; c++)
+                                        {
+                                            if (Entry->type[c] && Entry->spell[c])
+                                            {
+                                                SpellInfo* sp = sSpellCustomizations.GetSpellInfo(Entry->spell[c]);
+                                                if (sp && sp->custom_c_is_flags & SPELL_FLAG_IS_POISON)
+                                                {
+                                                    switch (sp->getId())
+                                                    {
+                                                        // SPELL_HASH_DEADLY_POISON_IX:
+                                                        case 57970:
+                                                        case 57973:
+                                                            // SPELL_HASH_DEADLY_POISON_VIII:
+                                                        case 57969:
+                                                        case 57972:
+                                                            // SPELL_HASH_DEADLY_POISON_VII:
+                                                        case 27186:
+                                                        case 27187:
+                                                            // SPELL_HASH_DEADLY_POISON_VI:
+                                                        case 26967:
+                                                        case 26968:
+                                                            // SPELL_HASH_DEADLY_POISON_V:
+                                                        case 25349:
+                                                        case 25351:
+                                                            // SPELL_HASH_DEADLY_POISON_IV:
+                                                        case 11354:
+                                                        case 11356:
+                                                            // SPELL_HASH_DEADLY_POISON_III:
+                                                        case 11353:
+                                                        case 11355:
+                                                            // SPELL_HASH_DEADLY_POISON_II:
+                                                        case 2819:
+                                                        case 2824:
+                                                            // SPELL_HASH_DEADLY_POISON:
+                                                        case 2818:
+                                                        case 2823:
+                                                        case 3583:
+                                                        case 10022:
+                                                        case 13582:
+                                                        case 21787:
+                                                        case 21788:
+                                                        case 32970:
+                                                        case 32971:
+                                                        case 34616:
+                                                        case 34655:
+                                                        case 34657:
+                                                        case 36872:
+                                                        case 38519:
+                                                        case 38520:
+                                                        case 41191:
+                                                        case 41192:
+                                                        case 41485:
+                                                        case 43580:
+                                                        case 43581:
+                                                        case 56145:
+                                                        case 56149:
+                                                        case 59479:
+                                                        case 59482:
+                                                        case 63755:
+                                                        case 63756:
+                                                        case 67710:
+                                                        case 67711:
+                                                        case 68315:
+                                                        case 72329:
+                                                        case 72330:
+                                                            is_mh_deadly_poison = true;
+                                                            break;
+                                                    }
+
+                                                    mh_spell = Entry->spell[c];
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                        // Find offhand enchantment
+                                        ench = oh->GetEnchantment(TEMP_ENCHANTMENT_SLOT);
+                                        if (ench)
+                                        {
+                                            DBC::Structures::SpellItemEnchantmentEntry const* itemEntry = ench->Enchantment;
+                                            for (uint8 c = 0; c < 3; c++)
+                                            {
+                                                if (Entry->type[c] && Entry->spell[c])
+                                                {
+                                                    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(Entry->spell[c]);
+                                                    if (sp && sp->custom_c_is_flags & SPELL_FLAG_IS_POISON)
+                                                    {
+                                                        switch (sp->getId())
+                                                        {
+                                                            // SPELL_HASH_DEADLY_POISON_IX:
+                                                            case 57970:
+                                                            case 57973:
+                                                                // SPELL_HASH_DEADLY_POISON_VIII:
+                                                            case 57969:
+                                                            case 57972:
+                                                                // SPELL_HASH_DEADLY_POISON_VII:
+                                                            case 27186:
+                                                            case 27187:
+                                                                // SPELL_HASH_DEADLY_POISON_VI:
+                                                            case 26967:
+                                                            case 26968:
+                                                                // SPELL_HASH_DEADLY_POISON_V:
+                                                            case 25349:
+                                                            case 25351:
+                                                                // SPELL_HASH_DEADLY_POISON_IV:
+                                                            case 11354:
+                                                            case 11356:
+                                                                // SPELL_HASH_DEADLY_POISON_III:
+                                                            case 11353:
+                                                            case 11355:
+                                                                // SPELL_HASH_DEADLY_POISON_II:
+                                                            case 2819:
+                                                            case 2824:
+                                                                // SPELL_HASH_DEADLY_POISON:
+                                                            case 2818:
+                                                            case 2823:
+                                                            case 3583:
+                                                            case 10022:
+                                                            case 13582:
+                                                            case 21787:
+                                                            case 21788:
+                                                            case 32970:
+                                                            case 32971:
+                                                            case 34616:
+                                                            case 34655:
+                                                            case 34657:
+                                                            case 36872:
+                                                            case 38519:
+                                                            case 38520:
+                                                            case 41191:
+                                                            case 41192:
+                                                            case 41485:
+                                                            case 43580:
+                                                            case 43581:
+                                                            case 56145:
+                                                            case 56149:
+                                                            case 59479:
+                                                            case 59482:
+                                                            case 63755:
+                                                            case 63756:
+                                                            case 67710:
+                                                            case 67711:
+                                                            case 68315:
+                                                            case 72329:
+                                                            case 72330:
+                                                                is_oh_deadly_poison = true;
+                                                                break;
+                                                        }
+
+                                                        oh_spell = itemEntry->spell[c];
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    // Only apply if both weapons are enchanted and enchantment is poison and enchantment type is different
+                                    if (mh_spell && oh_spell && mh_spell != oh_spell && is_mh_deadly_poison != is_oh_deadly_poison)
+                                    {
+                                        if (mh_spell != info->getId())
+                                            caster->CastSpell(aur->GetTarget(), mh_spell, true);
+                                        else
+                                            caster->CastSpell(aur->GetTarget(), oh_spell, true);
+                                    }
+                                }
+
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                delete aur;
+                return;
+            }
+        }
+        else
+        {
+            //these auras stack to infinite and with anything. Don't ask me why there is no better solution for them :P
+            for (uint32 x = StartCheck; x < CheckLimit; x++)
+                if (!m_auras[x])
+                {
+                    AuraSlot = static_cast<uint16>(x);
+                    break;
+                }
+        }
+    }
+    else
+    {
+        //talents just get applied always. Maybe we should check stack for these as well?
+        for (uint32 x = MAX_PASSIVE_AURAS_START; x < MAX_PASSIVE_AURAS_END; x++)
+            if (!m_auras[x])
+            {
+                AuraSlot = static_cast<uint16>(x);
+                break;
+            }
+        //			else if (m_auras[x]->GetID()==aur->GetID()) printf("OMG stacking talents ?\n");
+    }
+
+
+    //check if we can store this aura in some empty slot
+    if (AuraSlot == 0xFFFF)
+    {
+        LOG_ERROR("Aura error in active aura. ");
+        sEventMgr.RemoveEvents(aur);
+        delete aur;
+        /*
+                if (aur != NULL)
+                {
+                delete [] aur;
+                aur = NULL;
+                }
+                */
+        return;
+    }
+
+    //Zack : if all mods were resisted it means we did not apply anything and we do not need to delete this spell either
+    if (aur->TargetWasImuneToMods())
+    {
+        ///\todo notify client that we are immune to this spell
+        sEventMgr.RemoveEvents(aur);
+        delete aur;
+        return;
+    }
+
+    uint8 visualslot = 0xFF;
+    //search for a visual slot
+    aur->m_auraSlot = AuraSlot;
+    if (!aur->IsPassive() || (aur->m_spellInfo->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
+        aur->addAuraVisual();
+        //visualslot = FindVisualSlot(aur->GetSpellId(), aur->IsPositive());
+
+    m_auras[AuraSlot] = aur;
+    ModVisualAuraStackCount(aur, 1);
+
+    aur->ApplyModifiers(true);
+
+    // We add 500ms here to allow for the last tick in DoT spells. This is a dirty hack, but at least it doesn't crash like my other method.
+    // - Burlex
+    if (aur->GetDuration() > 0)
+    {
+        sEventMgr.AddEvent(aur, &Aura::Remove, EVENT_AURA_REMOVE, aur->GetDuration() + 500, 1,
+                           EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT | EVENT_FLAG_DELETES_OBJECT);
+    }
+
+    //have to hate these relocate events. They run in a separate thread :P
+    aur->RelocateEvents();
+
+    // Reaction from enemy AI
+    if (!aur->IsPositive() && aur->IsCombatStateAffecting())	  // Creature
+    {
+        Unit* pCaster = aur->GetUnitCaster();
+        if (pCaster && pCaster->isAlive() && this->isAlive())
+        {
+            pCaster->CombatStatus.OnDamageDealt(this);
+
+            if (IsCreature())
+                m_aiInterface->AttackReaction(pCaster, 1, aur->GetSpellId());
+        }
+    }
+
+    if (aur->GetSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_INVINCIBLE)
+    {
+        Unit* pCaster = aur->GetUnitCaster();
+        if (pCaster)
+        {
+            pCaster->RemoveStealth();
+            pCaster->RemoveInvisibility();
+
+            uint32 iceBlock[] =
+            {
+                //SPELL_HASH_ICE_BLOCK
+                27619,
+                36911,
+                41590,
+                45438,
+                45776,
+                46604,
+                46882,
+                56124,
+                56644,
+                62766,
+                65802,
+                69924,
+                0
+            };
+            pCaster->removeAllAurasById(iceBlock);
+
+            uint32 divineShield[] =
+            {
+                //SPELL_HASH_DIVINE_SHIELD
+                642,
+                13874,
+                29382,
+                33581,
+                40733,
+                41367,
+                54322,
+                63148,
+                66010,
+                67251,
+                71550,
+                0
+            };
+            pCaster->removeAllAurasById(divineShield);
+            //SPELL_HASH_BLESSING_OF_PROTECTION
+            pCaster->removeAllAurasById(41450);
+        }
+    }
+
+    // If this aura can only affect one target at a time, store this target GUID for future reference
+    if (aur->GetSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_SINGLE_TARGET_AURA)
+    {
+        Unit* caster = aur->GetUnitCaster();
+        if (caster != NULL)
+            caster->setSingleTargetGuidForAura(aur->GetSpellInfo()->getId(), this->GetGUID());
+    }
+
+    /* Set aurastates */
+    uint32 flag = 0;
+    if (aur->GetSpellInfo()->getMechanicsType() == MECHANIC_ENRAGED && !asc_enraged++)
+        flag |= AURASTATE_FLAG_ENRAGED;
+    else if (aur->GetSpellInfo()->getMechanicsType() == MECHANIC_BLEEDING && !asc_bleed++)
+        flag |= AURASTATE_FLAG_BLEED;
+    if (aur->GetSpellInfo()->custom_BGR_one_buff_on_target & SPELL_TYPE_SEAL && !asc_seal++)
+        flag |= AURASTATE_FLAG_JUDGEMENT;
+
+    SetFlag(UNIT_FIELD_AURASTATE, flag);
+}
+#else
 void Unit::AddAura(Aura* aur)
 {
     if (aur == NULL)
@@ -9050,6 +9628,7 @@ void Unit::AddAura(Aura* aur)
 
     SetFlag(UNIT_FIELD_AURASTATE, flag);
 }
+#endif
 
 bool Unit::RemoveAura(Aura* aur)
 {
@@ -10197,10 +10776,12 @@ void Unit::OnPushToWorld()
             m_auras[x]->RelocateEvents();
     }
 
+#if VERSION_STRING >= WotLK
     if (GetVehicleComponent() != NULL)
         GetVehicleComponent()->InstallAccessories();
 
     z_axisposition = 0.0f;
+#endif
 }
 
 //! Remove Unit from world
@@ -11392,6 +11973,32 @@ void Unit::SendAuraUpdate(uint32 AuraSlot, bool remove)
     }
 
     SendMessageToSet(&data, true);
+#endif
+
+#ifdef AE_TBC
+    if (AuraSlot >= MAX_TOTAL_AURAS_END)
+        return;
+
+    auto aura = m_auras[AuraSlot];
+    if (!aura || aura->IsPassive())
+        return;
+
+    if (IsPlayer())
+    {
+        const auto this_player = reinterpret_cast<Player*>(this);
+
+        /*WorldPacket data(SMSG_UPDATE_AURA_DURATION, 5);
+        data << uint8_t(AuraSlot) << uint32_t(aura->GetDuration());
+        this_player->SendPacket(&data);
+
+        data.Initialize(SMSG_SET_EXTRA_AURA_INFO, (8 + 1 + 4 + 4 + 4));
+        data << this_player->GetNewGUID();
+        data << uint8_t(AuraSlot);
+        data << uint32_t(aura->GetSpellId());
+        data << uint32_t(aura->getExpiryTime());
+        data << uint32_t(aura->GetDuration());
+        this_player->SendPacket(&data);*/
+    }
 #endif
 }
 #else

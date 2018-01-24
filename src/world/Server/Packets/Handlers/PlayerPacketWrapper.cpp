@@ -26,6 +26,8 @@
 #include "Server/Packets/SmsgBindPointUpdate.h"
 #include "Server/Packets/SmsgSetProficiency.h"
 #include "Server/Packets/SmsgTutorialFlags.h"
+#include "Server/Packets/SmsgInstanceDifficulty.h"
+#include "Server/Packets/SmsgInitialSpells.h"
 
 using namespace AscEmu::Packets;
 
@@ -562,6 +564,9 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
 // TODO: Move to own file
 void Player::SendInitialLogonPackets()
 {
+    // SMSG_SET_REST_START
+    m_session->OutPacket(SMSG_SET_REST_START, 4, &m_timeLogoff); // Seem to be unused by client
+
     m_session->SendPacket(SmsgBindPointUpdate(m_bind_pos_x, m_bind_pos_y, m_bind_pos_z, m_bind_mapid, m_bind_zoneid).serialise().get());
     m_session->SendPacket(SmsgSetProficiency(4, armor_proficiency).serialise().get());
     m_session->SendPacket(SmsgSetProficiency(2, weapon_proficiency).serialise().get());
@@ -571,8 +576,27 @@ void Player::SendInitialLogonPackets()
         tutorials.push_back(tutorial);
 
     m_session->SendPacket(SmsgTutorialFlags(tutorials).serialise().get());
+    // Normal difficulty - TODO implement
+    //m_session->SendPacket(SmsgInstanceDifficulty(0).serialise().get());
+
+    smsg_InitialSpells();
+
+    // MIT End
+
+    SendInitialActions();
+    smsg_InitialFactions();
+
+    StackWorldPacket<32> data(SMSG_BINDPOINTUPDATE);
+    data.Initialize(SMSG_LOGIN_SETTIMESPEED);
+
+    data << uint32(Arcemu::Util::MAKE_GAME_TIME());
+    data << float(0.0166666669777748f);    // Normal Game Speed
+
+    m_session->SendPacket(&data);
+
+    UpdateSpeed();
+    LOG_DETAIL("WORLD: Sent initial logon packets for %s.", GetName());
 }
-// MIT End
 #endif
 
 #ifndef AE_TBC

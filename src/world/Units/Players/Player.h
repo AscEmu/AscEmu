@@ -951,7 +951,7 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         void SetInviter(uint32 pInviter) { m_GroupInviter = pInviter; }
         uint32 GetInviter() { return m_GroupInviter; }
-        bool InGroup() { return (m_playerInfo->m_Group != NULL && !m_GroupInviter); }
+        bool InGroup() { return m_playerInfo && (m_playerInfo->m_Group != NULL && !m_GroupInviter); }
 
         bool IsGroupLeader();
         int HasBeenInvited() { return m_GroupInviter != 0; }

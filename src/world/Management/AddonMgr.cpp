@@ -178,7 +178,9 @@ void AddonMgr::SendAddonInfoPacket(WorldPacket* source, uint32 /*pos*/, WorldSes
     }
 
     //unknown 4 bytes at the end of the packet. Stays 0 for me. Tried custom addons, deleting, faulty etc. It stays 0.
+#ifndef AE_TBC
     returnpacket << uint32(0);  //Some additional count for additional records, but we won't send them.
+#endif
 
     m_session->SendPacket(&returnpacket);
 }

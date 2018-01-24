@@ -105,10 +105,27 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
     }
 
     data << GetNewGUID();
+#ifdef AE_TBC
+    // TODO : Move to own file
+    if (speed_type != TYPE_SWIM_BACK)
+    {
+        data << m_speedChangeCounter++;
+        if (speed_type == TYPE_RUN)
+            data << uint8_t(1);
+    }
+    else
+    {
+        data << uint32_t(0) << uint8_t(0) << uint32_t(Util::getMSTime())
+            << GetPosition() << m_position.o << uint32_t(0);
+    }
+#endif
+
+#ifndef AE_TBC
     BuildMovementPacket(&data);
+#endif
     data << float(speed);
 
-    SendMessageToSet(&data, false);
+    SendMessageToSet(&data, true);
 }
 
 void Player::handleFall(MovementInfo const& /*movement_info*/)

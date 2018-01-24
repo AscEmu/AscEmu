@@ -171,9 +171,7 @@ class SERVER_DECL CombatStatusHandler
 
     uint64 m_primaryAttackTarget;
 
-    public:
-
-        CombatStatusHandler() : m_Unit(nullptr), m_lastStatus(false), m_primaryAttackTarget(0) {}
+public:CombatStatusHandler() : m_Unit(nullptr), m_lastStatus(false), m_primaryAttackTarget(0) {}
 
         AttackerMap m_attackers;
 
@@ -223,6 +221,11 @@ private:
     int32_t m_rootCounter;
 
 public:
+#ifdef AE_TBC
+    uint32_t addAuraVisual(uint32_t spell_id, uint32_t count, bool positive);
+    uint32_t addAuraVisual(uint32_t spell_id, uint32_t count, bool positive, bool &skip_client_update);
+    void setAuraSlotLevel(uint32_t slot, bool positive);
+#endif
 
     void setMoveWaterWalk();
     void setMoveLandWalk();
