@@ -318,7 +318,7 @@ Creature* CreatureAIScript::spawnCreature(uint32_t entry, float posX, float posY
         return nullptr;
     }
 
-    Creature* creature = _creature->GetMapMgr()->GetInterface()->SpawnCreature(entry, posX, posY, posZ, posO, true, true, 0, 0);
+    Creature* creature = _creature->GetMapMgr()->GetInterface()->SpawnCreature(entry, posX, posY, posZ, posO, true, true, 0, 1);
     if (creature == nullptr)
         return nullptr;
 
