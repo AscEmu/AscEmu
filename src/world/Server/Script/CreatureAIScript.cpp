@@ -298,18 +298,18 @@ float CreatureAIScript::getRangeToObject(Object* object)
     return _creature->CalcDistance(object);
 }
 
-CreatureAIScript* CreatureAIScript::spawnCreatureAndGetAIScript(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId /* = 0*/)
+CreatureAIScript* CreatureAIScript::spawnCreatureAndGetAIScript(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId /* = 0*/, uint32_t phase /*= 1*/)
 {
-    Creature* creature = spawnCreature(entry, posX, posY, posZ, posO, factionId);
+    Creature* creature = spawnCreature(entry, posX, posY, posZ, posO, factionId, phase);
     return (creature ? creature->GetScript() : nullptr);
 }
 
-Creature* CreatureAIScript::spawnCreature(uint32_t entry, LocationVector pos, uint32_t factionId /*= 0*/)
+Creature* CreatureAIScript::spawnCreature(uint32_t entry, LocationVector pos, uint32_t factionId /*= 0*/, uint32_t phase /*= 1*/)
 {
-    return spawnCreature(entry, pos.x, pos.y, pos.z, pos.o, factionId);
+    return spawnCreature(entry, pos.x, pos.y, pos.z, pos.o, factionId, phase);
 }
 
-Creature* CreatureAIScript::spawnCreature(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId /* = 0*/)
+Creature* CreatureAIScript::spawnCreature(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId /* = 0*/, uint32_t phase /*= 1*/)
 {
     CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(entry);
     if (creatureProperties == nullptr)
@@ -318,7 +318,7 @@ Creature* CreatureAIScript::spawnCreature(uint32_t entry, float posX, float posY
         return nullptr;
     }
 
-    Creature* creature = _creature->GetMapMgr()->GetInterface()->SpawnCreature(entry, posX, posY, posZ, posO, true, true, 0, 0);
+    Creature* creature = _creature->GetMapMgr()->GetInterface()->SpawnCreature(entry, posX, posY, posZ, posO, true, true, 0, 0, phase);
     if (creature == nullptr)
         return nullptr;
 

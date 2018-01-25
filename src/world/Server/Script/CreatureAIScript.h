@@ -213,10 +213,10 @@ public:
 
     float getRangeToObject(Object* object);
 
-    CreatureAIScript* spawnCreatureAndGetAIScript(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId = 0);
+    CreatureAIScript* spawnCreatureAndGetAIScript(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId = 0, uint32_t phase = 1);
 
-    Creature* spawnCreature(uint32_t entry, LocationVector pos, uint32_t factionId = 0);
-    Creature* spawnCreature(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId = 0);
+    Creature* spawnCreature(uint32_t entry, LocationVector pos, uint32_t factionId = 0, uint32_t phase = 1);
+    Creature* spawnCreature(uint32_t entry, float posX, float posY, float posZ, float posO, uint32_t factionId = 0, uint32_t phase = 1);
     void despawn(uint32_t delay = 2000, uint32_t respawnTime = 0);
 
     bool isAlive();
