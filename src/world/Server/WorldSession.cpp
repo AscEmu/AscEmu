@@ -1235,7 +1235,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
         {
             Item* item = pcaster->GetItemInterface()->GetInventoryItem(static_cast <int16> (imageitemslots[i]));
             if (item != nullptr)
-                data << uint32(item->GetItemProperties()->DisplayInfoID);
+                data << uint32(item->getItemProperties()->DisplayInfoID);
             else
                 data << uint32(0);
         }

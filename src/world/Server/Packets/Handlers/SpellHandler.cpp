@@ -18,6 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Units/Creatures/Pet.h"
 #include "Objects/Faction.h"
+#include "Data/WoWItem.h"
 
 void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 {
@@ -47,7 +48,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    ItemProperties const* itemProto = tmpItem->GetItemProperties();
+    ItemProperties const* itemProto = tmpItem->getItemProperties();
     if (!itemProto)
     {
         _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_NOT_FOUND);
@@ -68,7 +69,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (tmpItem->IsSoulbound() && tmpItem->GetOwnerGUID() != _player->GetGUID() && !tmpItem->IsAccountbound())
+    if (tmpItem->IsSoulbound() && tmpItem->itemData()->owner_guid != _player->GetGUID() && !tmpItem->IsAccountbound())
     {
         _player->GetItemInterface()->BuildInventoryChangeError(tmpItem, nullptr, INV_ERR_DONT_OWN_THAT_ITEM);
         return;

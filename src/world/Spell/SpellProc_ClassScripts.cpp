@@ -193,7 +193,7 @@ public:
             return;
         }
 
-        mProcChance = static_cast< Item* >(obj)->GetItemProperties()->Delay * 9 / 600;
+        mProcChance = static_cast< Item* >(obj)->getItemProperties()->Delay * 9 / 600;
     }
 };
 
@@ -265,7 +265,7 @@ public:
                     case 58791:
                     case 58792:
                     {
-                        wp_speed = item->GetItemProperties()->Delay;
+                        wp_speed = item->getItemProperties()->Delay;
                         damage = (sp->getEffectBasePoints(0) + 1) * wp_speed / 100000;
                     } break;
                 }
@@ -335,7 +335,7 @@ public:
 
         mItemGUID = static_cast<Item*>(obj)->GetGUID();
         if (mProcPerMinute)
-            mProcChance = static_cast<Item*>(obj)->GetItemProperties()->Delay * mProcPerMinute / 600;
+            mProcChance = static_cast<Item*>(obj)->getItemProperties()->Delay * mProcPerMinute / 600;
     }
 
     bool CanDelete(uint32 spellId, uint64 casterGuid = 0, uint64 misc = 0)//in this case misc is the item guid.
@@ -953,7 +953,7 @@ public:
 
         auto item = static_cast<Player*>(mTarget)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
         if (item != nullptr)
-            weapspeed = item->GetItemProperties()->Delay;
+            weapspeed = item->getItemProperties()->Delay;
 
         mProcChance = 7 * weapspeed / 600;
         if (mProcChance >= 50)

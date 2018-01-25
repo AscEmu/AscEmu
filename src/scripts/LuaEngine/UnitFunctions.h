@@ -4216,7 +4216,7 @@ class LuaUnit
                 if (pItem->IsContainer())
                 {
                     pContainer = static_cast< Container* >(pItem);
-                    for (j = 0; j < pContainer->GetItemProperties()->ContainerSlots; ++j)
+                    for (j = 0; j < pContainer->getItemProperties()->ContainerSlots; ++j)
                     {
                         pItem = pContainer->GetItem(j);
                         if (pItem != NULL)
@@ -4227,7 +4227,7 @@ class LuaUnit
                 }
                 else
                 {
-                    if (pItem->GetItemProperties()->MaxDurability > 0 && i < INVENTORY_SLOT_BAG_END && pItem->GetDurability() <= 0)
+                    if (pItem->getItemProperties()->MaxDurability > 0 && i < INVENTORY_SLOT_BAG_END && pItem->GetDurability() <= 0)
                     {
                         pItem->SetDurabilityToMax();
                         plr->ApplyItemMods(pItem, i, true);

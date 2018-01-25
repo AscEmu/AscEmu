@@ -44,6 +44,8 @@
 #include "WorldPacket.h"
 #include "Units/Creatures/CreatureDefines.hpp"
 
+struct WoWObject;
+
 class SpellInfo;
 
 struct FactionDBC;
@@ -359,12 +361,21 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
 protected:
     union
     {
+        uint8_t* wow_data_ptr;
+        WoWObject* wow_data;
         int32_t* m_int32Values;
         uint32_t* m_uint32Values;
         float* m_floatValues;
     };
-
 public:
+
+    const WoWObject* objectData() const { return wow_data; }
+    bool write(const float_t& member, float_t val);
+    bool write(const uint32_t& member, uint32_t val);
+    bool write(const uint64_t& member, uint64_t val);
+    bool write(const uint64_t& member, uint32_t low, uint32_t high);
+    bool writeLow(const uint64_t& member, uint32_t val);
+    bool writeHigh(const uint64_t& member, uint32_t val);
 
     void setByteValue(uint16_t index, uint8_t offset, uint8_t value);
     uint8_t getByteValue(uint16_t index, uint8_t offset) const;

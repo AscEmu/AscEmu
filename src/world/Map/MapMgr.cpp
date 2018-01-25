@@ -907,7 +907,7 @@ void MapMgr::_UpdateObjects()
         if (pObj->IsItem() || pObj->IsContainer())
         {
             // our update is only sent to the owner here.
-            Player* pOwner = static_cast<Item*>(pObj)->GetOwner();
+            Player* pOwner = static_cast<Item*>(pObj)->getOwner();
             if (pOwner != nullptr)
             {
                 count = static_cast<Item*>(pObj)->BuildValuesUpdateBlockForPlayer(&update, pOwner);

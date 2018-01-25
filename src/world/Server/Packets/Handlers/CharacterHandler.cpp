@@ -32,6 +32,7 @@
 #include "Map/MapMgr.h"
 #include "Map/WorldCreator.h"
 #include "Spell/Definitions/PowerType.h"
+#include "Data/WoWPlayer.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
 #endif

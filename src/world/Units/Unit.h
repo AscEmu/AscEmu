@@ -212,15 +212,16 @@ public:CombatStatusHandler() : m_Unit(nullptr), m_lastStatus(false), m_primaryAt
 // AGPL End
 
 // MIT Start
+struct WoWUnit;
 class SERVER_DECL Unit : public Object
 {
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement
-private:
 
     int32_t m_rootCounter;
 
 public:
+    const WoWUnit* unitData() const { return reinterpret_cast<WoWUnit*>(wow_data); }
 #ifdef AE_TBC
     uint32_t addAuraVisual(uint32_t spell_id, uint32_t count, bool positive);
     uint32_t addAuraVisual(uint32_t spell_id, uint32_t count, bool positive, bool &skip_client_update);

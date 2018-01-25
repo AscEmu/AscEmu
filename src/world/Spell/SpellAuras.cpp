@@ -764,7 +764,7 @@ Aura::Aura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool 
 
     if (i_caster != nullptr)
     {
-        m_castedItemId = i_caster->GetItemProperties()->ItemId;
+        m_castedItemId = i_caster->getItemProperties()->ItemId;
         itemCasterGUID = i_caster->GetGUID();
     }
     else
@@ -1787,8 +1787,8 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
                 {
                     dmg = 0;
                     for (uint8 i = 0; i < MAX_ITEM_PROTO_DAMAGES; ++i)
-                        if (it->GetItemProperties()->Damage[i].Type == SCHOOL_NORMAL)
-                            dmg += int32((it->GetItemProperties()->Damage[i].Min + it->GetItemProperties()->Damage[i].Max) / 2);
+                        if (it->getItemProperties()->Damage[i].Type == SCHOOL_NORMAL)
+                            dmg += int32((it->getItemProperties()->Damage[i].Min + it->getItemProperties()->Damage[i].Max) / 2);
                     dmg = multiplyer * dmg / 100;
                 }
             }
@@ -9657,11 +9657,11 @@ void Aura::SpellAuraMirrorImage2(bool apply)
 
             item = p->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
             if (item != nullptr)
-                m_target->setUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, item->GetItemProperties()->ItemId);
+                m_target->setUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, item->getItemProperties()->ItemId);
 
             item = p->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
             if (item != nullptr)
-                m_target->setUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, item->GetItemProperties()->ItemId);
+                m_target->setUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, item->getItemProperties()->ItemId);
         }
         else
         {

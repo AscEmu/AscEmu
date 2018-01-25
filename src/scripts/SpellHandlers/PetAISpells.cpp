@@ -200,15 +200,15 @@ public:
                 {
                     for (uint8 si = 0; si < 5; si++)
                     {
-                        if (item->GetItemProperties()->Spells[si].Id == 0)
+                        if (item->getItemProperties()->Spells[si].Id == 0)
                             continue;
 
-                        if (item->GetItemProperties()->Spells[si].Trigger == CHANCE_ON_HIT)
-                            procSpell[si] = item->GetItemProperties()->Spells[si].Id;
+                        if (item->getItemProperties()->Spells[si].Trigger == CHANCE_ON_HIT)
+                            procSpell[si] = item->getItemProperties()->Spells[si].Id;
                     }
 
                     s->SetEquippedItem(MELEE, item->GetEntry());
-                    s->SetBaseAttackTime(MELEE, item->GetItemProperties()->Delay);
+                    s->SetBaseAttackTime(MELEE, item->getItemProperties()->Delay);
                 }
 
 #if VERSION_STRING >= WotLK

@@ -178,25 +178,23 @@ enum RandomEnchantmentTypes
 
 #define RANDOM_SUFFIX_MAGIC_CALCULATION(__suffix, __scale) float2int32(float(__suffix) * float(__scale) / 10000.0f);
 
+struct WoWItem;
 class SERVER_DECL Item : public Object
 {
-    public:
+    // MIT Start
+protected:
+public:
+    const WoWItem* itemData() const { return reinterpret_cast<WoWItem*>(wow_data); }
+    void init(uint32_t high, uint32_t low);
+    void create(uint32_t itemId, Player* owner);
+    Player* getOwner() const;
+    void setOwner(Player* owner);
+    ItemProperties const* getItemProperties() const;
+    void setItemProperties(ItemProperties const* itemProperties);
+    // MIT End
+
         Item();
-        void Init(uint32 high, uint32 low);
         virtual ~Item();
-        void Create(uint32 itemid, Player* owner);
-
-        ItemProperties const* GetItemProperties() const { return m_itemProperties; }
-        void SetItemProperties(ItemProperties const* pr) { m_itemProperties = pr; }
-
-        Player* GetOwner() const { return m_owner; }
-        void SetOwner(Player* owner);
-
-        void SetOwnerGUID(uint64 GUID) { setUInt64Value(ITEM_FIELD_OWNER, GUID); }
-        uint64 GetOwnerGUID() { return getUInt64Value(ITEM_FIELD_OWNER); }
-
-        void SetContainerGUID(uint64 GUID) { setUInt64Value(ITEM_FIELD_CONTAINED, GUID); }
-        uint64 GetContainerGUID() { return getUInt64Value(ITEM_FIELD_CONTAINED); }
 
         void SetCreatorGUID(uint64 GUID) { setUInt64Value(ITEM_FIELD_CREATOR, GUID); }
         void SetGiftCreatorGUID(uint64 GUID) { setUInt64Value(ITEM_FIELD_GIFTCREATOR, GUID); }

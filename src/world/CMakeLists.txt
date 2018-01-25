@@ -7,6 +7,7 @@ include(Game${ASCEMU_VERSION}/CMakeLists.txt)
 
 include(Chat/CMakeLists.txt)
 include(Chat/Commands/CMakeLists.txt)
+include(Data/CMakeLists.txt)
 include(Management/CMakeLists.txt)
 include(Management/Battleground/CMakeLists.txt)
 include(Management/Gossip/CMakeLists.txt)
@@ -75,6 +76,7 @@ set(sources
 
    ${SRC_CHAT_FILES}
    ${SRC_COMMAND_FILES}
+   ${SRC_DATA_FILES}
    ${SRC_MANAGEMENT_FILES}
    ${SRC_MANAGEMENT_BATTLEGROUND_FILES}
    ${SRC_MANAGEMENT_GOSSIP_FILES}

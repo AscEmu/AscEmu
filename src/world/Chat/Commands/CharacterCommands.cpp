@@ -1162,7 +1162,7 @@ bool ChatHandler::HandleCharIncreaseWeaponSkill(const char* args, WorldSession* 
         item = selected_player->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
 
     if (item != nullptr)
-        proto = item->GetItemProperties();
+        proto = item->getItemProperties();
 
     if (proto)
     {
@@ -1397,7 +1397,7 @@ bool ChatHandler::HandleCharSetItemsRepairedCommand(const char* /*args*/, WorldS
             if (player_item->IsContainer())
             {
                 auto item_container = static_cast<Container*>(player_item);
-                for (uint32 j = 0; j < item_container->GetItemProperties()->ContainerSlots; ++j)
+                for (uint32 j = 0; j < item_container->getItemProperties()->ContainerSlots; ++j)
                 {
                     player_item = item_container->GetItem(static_cast<uint16>(j));
                     if (player_item != nullptr)
@@ -1409,7 +1409,7 @@ bool ChatHandler::HandleCharSetItemsRepairedCommand(const char* /*args*/, WorldS
             }
             else
             {
-                if (player_item->GetItemProperties()->MaxDurability > 0 && i < INVENTORY_SLOT_BAG_END && player_item->GetDurability() <= 0)
+                if (player_item->getItemProperties()->MaxDurability > 0 && i < INVENTORY_SLOT_BAG_END && player_item->GetDurability() <= 0)
                 {
                     player_item->SetDurabilityToMax();
                     player_item->m_isDirty = true;
@@ -1952,7 +1952,7 @@ bool ChatHandler::HandleCharListItemsCommand(const char* /*args*/, WorldSession*
         if (!(*itr))
             return false;
         itemcount++;
-        SendItemLinkToPlayer((*itr)->GetItemProperties(), m_session, true, player_target, m_session->language);
+        SendItemLinkToPlayer((*itr)->getItemProperties(), m_session, true, player_target, m_session->language);
     }
     itr.EndSearch();
 

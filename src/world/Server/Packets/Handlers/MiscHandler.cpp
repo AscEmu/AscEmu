@@ -2604,7 +2604,7 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket& recv_data)
         pItem->SetGiftCreatorGUID(0);
         pItem->SetEntry(pItem->wrapped_item_id);
         pItem->wrapped_item_id = 0;
-        pItem->SetItemProperties(it);
+        pItem->setItemProperties(it);
 
         if (it->Bonding == ITEM_BIND_ON_PICKUP)
             pItem->SoulBind();
@@ -2622,7 +2622,7 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket& recv_data)
         return;
     }
 
-    auto lock = sLockStore.LookupEntry(pItem->GetItemProperties()->LockId);
+    auto lock = sLockStore.LookupEntry(pItem->getItemProperties()->LockId);
 
     uint32 removeLockItems[LOCK_NUM_CASES] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 

@@ -22,6 +22,7 @@
 #include "StdAfx.h"
 #include "Management/Container.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Data/WoWContainer.h"
 
 Container::Container(uint32 high, uint32 low) : Item()
 {
@@ -49,7 +50,7 @@ Container::~Container()
 {
     for (uint32 i = 0; i < m_itemProperties->ContainerSlots; ++i)
     {
-        if (m_Slot[i] && m_Slot[i]->GetOwner() == m_owner)
+        if (m_Slot[i] && m_Slot[i]->getOwner() == m_owner)
         {
             m_Slot[i]->DeleteMe();
         }
@@ -94,8 +95,8 @@ void Container::Create(uint32 itemid, Player* owner)
     ///\todo this shouldn't get NULL form containers in mail fix me
     if (owner != NULL)
     {
-        SetOwnerGUID(0);
-        SetContainerGUID(owner->GetGUID());
+        write(containerData()->owner_guid, 0);
+        write(containerData()->container_guid, owner->objectData()->guid);
     }
     SetStackCount(1);
     SetNumSlots(m_itemProperties->ContainerSlots);
@@ -135,7 +136,7 @@ bool Container::HasItems()
 
 bool Container::AddItem(int16 slot, Item* item)
 {
-    if (slot < 0 || (uint32)slot >= GetItemProperties()->ContainerSlots)
+    if (slot < 0 || (uint32)slot >= getItemProperties()->ContainerSlots)
         return false;
 
     //ARCEMU_ASSERT(  m_Slot[slot] == NULL);
@@ -151,13 +152,12 @@ bool Container::AddItem(int16 slot, Item* item)
     m_Slot[slot] = item;
     item->m_isDirty = true;
 
+    item->write(itemData()->container_guid, containerData()->guid);
+    item->setOwner(m_owner);
 
-    item->SetContainerGUID(GetGUID());
-    item->SetOwner(m_owner);
-
-    if (item->GetItemProperties()->Bonding == ITEM_BIND_ON_PICKUP)
+    if (item->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP)
     {
-        if (item->GetItemProperties()->Flags & ITEM_FLAG_ACCOUNTBOUND) // don't "Soulbind" account-bound items
+        if (item->getItemProperties()->Flags & ITEM_FLAG_ACCOUNTBOUND) // don't "Soulbind" account-bound items
             item->AccountBind();
         else
             item->SoulBind();
@@ -190,7 +190,7 @@ void Container::SwapItems(int8 SrcSlot, int8 DstSlot)
     if (DstSlot < 0 || DstSlot >= (int8)m_itemProperties->ContainerSlots)
         return;
 
-    uint32 destMaxCount = (m_owner->ItemStackCheat) ? 0x7fffffff : ((m_Slot[DstSlot]) ? m_Slot[DstSlot]->GetItemProperties()->MaxCount : 0);
+    uint32 destMaxCount = (m_owner->ItemStackCheat) ? 0x7fffffff : ((m_Slot[DstSlot]) ? m_Slot[DstSlot]->getItemProperties()->MaxCount : 0);
     if (m_Slot[DstSlot] && m_Slot[SrcSlot] && m_Slot[DstSlot]->GetEntry() == m_Slot[SrcSlot]->GetEntry() && m_Slot[SrcSlot]->wrapped_item_id == 0 && m_Slot[DstSlot]->wrapped_item_id == 0 && destMaxCount > 1)
     {
         uint32 total = m_Slot[SrcSlot]->GetStackCount() + m_Slot[DstSlot]->GetStackCount();
@@ -244,7 +244,7 @@ void Container::SwapItems(int8 SrcSlot, int8 DstSlot)
 
 Item* Container::SafeRemoveAndRetreiveItemFromSlot(int16 slot, bool destroy)
 {
-    if (slot < 0 || (uint32)slot >= GetItemProperties()->ContainerSlots)
+    if (slot < 0 || (uint32)slot >= getItemProperties()->ContainerSlots)
         return NULL;
 
     Item* pItem = m_Slot[slot];
@@ -254,10 +254,10 @@ Item* Container::SafeRemoveAndRetreiveItemFromSlot(int16 slot, bool destroy)
 
     m_Slot[slot] = NULL;
 
-    if (pItem->GetOwner() == m_owner)
+    if (pItem->getOwner() == m_owner)
     {
         SetSlot(slot, 0);
-        pItem->SetContainerGUID(0);
+        pItem->write(pItem->itemData()->container_guid, 0);
 
         if (destroy)
         {
@@ -278,7 +278,7 @@ Item* Container::SafeRemoveAndRetreiveItemFromSlot(int16 slot, bool destroy)
 
 bool Container::SafeFullRemoveItemFromSlot(int16 slot)
 {
-    if (slot < 0 || (uint32)slot >= GetItemProperties()->ContainerSlots)
+    if (slot < 0 || (uint32)slot >= getItemProperties()->ContainerSlots)
         return false;
 
     Item* pItem = m_Slot[slot];
@@ -287,7 +287,7 @@ bool Container::SafeFullRemoveItemFromSlot(int16 slot)
     m_Slot[slot] = NULL;
 
     SetSlot(slot, 0);
-    pItem->SetContainerGUID(0);
+    pItem->write(pItem->itemData()->container_guid, 0);
 
     if (pItem->IsInWorld())
     {
@@ -302,15 +302,15 @@ bool Container::SafeFullRemoveItemFromSlot(int16 slot)
 bool Container::AddItemToFreeSlot(Item* pItem, uint32* r_slot)
 {
     uint32 slot;
-    for (slot = 0; slot < GetItemProperties()->ContainerSlots; slot++)
+    for (slot = 0; slot < getItemProperties()->ContainerSlots; slot++)
     {
         if (!m_Slot[slot])
         {
             m_Slot[slot] = pItem;
             pItem->m_isDirty = true;
 
-            pItem->SetContainerGUID(GetGUID());
-            pItem->SetOwner(m_owner);
+            pItem->write(pItem->itemData()->container_guid, containerData()->guid);
+            pItem->setOwner(m_owner);
 
             SetSlot(uint16(slot), pItem->GetGUID());
 
@@ -339,7 +339,7 @@ void Container::SaveBagToDB(int8 slot, bool first, QueryBuffer* buf)
 
     for (uint32 i = 0; i < m_itemProperties->ContainerSlots; ++i)
     {
-        if (m_Slot[i] && !((m_Slot[i]->GetItemProperties()->Flags) & 2))
+        if (m_Slot[i] && !((m_Slot[i]->getItemProperties()->Flags) & 2))
         {
             m_Slot[i]->SaveToDB(slot, static_cast<int8>(i), first, buf);
         }

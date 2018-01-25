@@ -372,9 +372,13 @@ enum GameObjectTypes
 
 #define CALL_GO_SCRIPT_EVENT(obj, func) if (obj->IsGameObject() && static_cast< GameObject* >(obj)->GetScript() != NULL) static_cast< GameObject* >(obj)->GetScript()->func
 
+struct WoWGameObject;
 class SERVER_DECL GameObject : public Object
 {
-    public:
+    // MIT Start
+public:
+    WoWGameObject* gameObjectData() const { return reinterpret_cast<WoWGameObject*>(wow_data); }
+    // MIT End
 
         GameObject(uint64 guid);
         ~GameObject();

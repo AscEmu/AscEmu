@@ -224,7 +224,7 @@ uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
     }
     else if (quest_giver->IsItem())
     {
-        if (static_cast< Item* >(quest_giver)->GetItemProperties()->QuestId)
+        if (static_cast< Item* >(quest_giver)->getItemProperties()->QuestId)
             bValid = true;
     }
     //This will be handled at quest share so nothing important as status
@@ -242,7 +242,7 @@ uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
 
     if (quest_giver->IsItem())
     {
-        QuestProperties const* pQuest = sMySQLStore.getQuestProperties(static_cast< Item* >(quest_giver)->GetItemProperties()->QuestId);
+        QuestProperties const* pQuest = sMySQLStore.getQuestProperties(static_cast< Item* >(quest_giver)->getItemProperties()->QuestId);
         if (pQuest)
         {
             QuestRelation qr;

@@ -1471,8 +1471,8 @@ Item* ObjectMgr::CreateItem(uint32 entry, Player* owner)
     else
     {
         Item* pItem = new Item;
-        pItem->Init(HIGHGUID_TYPE_ITEM, GenerateLowGuid(HIGHGUID_TYPE_ITEM));
-        pItem->Create(entry, owner);
+        pItem->init(HIGHGUID_TYPE_ITEM, GenerateLowGuid(HIGHGUID_TYPE_ITEM));
+        pItem->create(entry, owner);
         pItem->SetStackCount(1);
 
 #if VERSION_STRING > TBC
@@ -1507,7 +1507,7 @@ Item* ObjectMgr::LoadItem(uint32 lowguid)
         else
         {
             Item* pItem = new Item;
-            pItem->Init(HIGHGUID_TYPE_ITEM, lowguid);
+            pItem->init(HIGHGUID_TYPE_ITEM, lowguid);
             pItem->LoadFromDB(result->Fetch(), nullptr, false);
             pReturn = pItem;
         }

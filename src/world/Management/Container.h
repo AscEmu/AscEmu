@@ -23,10 +23,14 @@
 
 #include "Management/Item.h"
 
+struct WoWContainer;
 class SERVER_DECL Container : public Item
 {
-    public:
-
+    // MIT Start
+protected:
+    const WoWContainer* containerData() const { return reinterpret_cast<WoWContainer*>(wow_data); }
+public:
+    // MIT End
         friend class WorldSession;
 
         Container(uint32 high, uint32 low);
@@ -39,7 +43,7 @@ class SERVER_DECL Container : public Item
         bool AddItemToFreeSlot(Item* pItem, uint32* r_slot);
         Item* GetItem(int16 slot)
         {
-            if (slot >= 0 && (uint16)slot < GetItemProperties()->ContainerSlots)
+            if (slot >= 0 && (uint16)slot < getItemProperties()->ContainerSlots)
                 return m_Slot[slot];
             else
                 return 0;

@@ -47,7 +47,113 @@
 
 // MIT Start
 
-//////////////////////////////////////////////////////////////////////////////////////////
+bool Object::write(const float_t& member, float_t val)
+{
+    if (member == val)
+        return false;
+
+    const auto nonconst_member = const_cast<float_t*>(&member);
+    *nonconst_member = val;
+
+    const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
+    uint32_t distance = member_ptr - wow_data_ptr;
+    distance /= 4;
+
+    m_updateMask.SetBit(distance);
+    updateObject();
+    return true;
+}
+
+bool Object::write(const uint32_t& member, uint32_t val)
+{
+    if (member == val)
+        return false;
+
+    const auto nonconst_member = const_cast<uint32_t*>(&member);
+    *nonconst_member = val;
+
+    const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
+    uint32_t distance = member_ptr - wow_data_ptr;
+    distance /= 4;
+
+    m_updateMask.SetBit(distance);
+    updateObject();
+    return true;
+}
+
+bool Object::write(const uint64_t& member, uint64_t val)
+{
+    if (member == val)
+        return false;
+
+    const auto nonconst_member = const_cast<uint64_t*>(&member);
+    *nonconst_member = val;
+
+    const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
+    uint32_t distance = member_ptr - wow_data_ptr;
+    distance /= 4;
+
+    m_updateMask.SetBit(distance);
+    m_updateMask.SetBit(distance + 1);
+    updateObject();
+    return true;
+}
+
+bool Object::writeLow(const uint64_t& member, uint32_t val)
+{
+    if (member == val)
+        return false;
+
+    const auto nonconst_member = const_cast<uint64_t*>(&member);
+    *reinterpret_cast<uint32_t*>(*nonconst_member) = val;
+
+    const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
+    uint32_t distance = member_ptr - wow_data_ptr;
+    distance /= 4;
+
+    m_updateMask.SetBit(distance);
+    updateObject();
+    return true;
+}
+
+bool Object::writeHigh(const uint64_t& member, uint32_t val)
+{
+    if (member == val)
+        return false;
+
+    const auto nonconst_member = const_cast<uint64_t*>(&member);
+    *(reinterpret_cast<uint32_t*>(*nonconst_member) + 1) = val;
+
+    const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
+    uint32_t distance = member_ptr - wow_data_ptr;
+    distance /= 4;
+
+    m_updateMask.SetBit(distance + 1);
+    updateObject();
+    return true;
+}
+
+bool Object::write(const uint64_t& member, uint32_t low, uint32_t high)
+{
+    const auto nonconst_member = const_cast<uint64_t*>(&member);
+    const auto low_ptr = reinterpret_cast<uint32_t*>(*nonconst_member);
+    const auto high_ptr = low_ptr + 1;
+
+    if (*low_ptr == low && *high_ptr == high)
+        return false;
+
+    *low_ptr = low;
+    *high_ptr = high;
+
+    const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
+    uint32_t distance = member_ptr - wow_data_ptr;
+    distance /= 4;
+
+    m_updateMask.SetBit(distance);
+    m_updateMask.SetBit(distance + 1);
+    updateObject();
+    return true;
+} //////////////////////////////////////////////////////////////////////////////////////////
 // Object values
 void Object::setByteValue(uint16_t index, uint8_t offset, uint8_t value)
 {

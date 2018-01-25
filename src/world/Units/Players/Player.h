@@ -408,10 +408,11 @@ class TradeData
 };
 #endif
 
+struct WoWPlayer;
 class SERVER_DECL Player : public Unit
 {
-
 public:
+    const WoWPlayer* playerData() const { return reinterpret_cast<WoWPlayer*>(wow_data); }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement

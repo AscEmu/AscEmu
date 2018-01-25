@@ -595,7 +595,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
 
     AuctionHouse* ah = pCreature->auctionHouse;
 
-    uint32 item_worth = pItem->GetItemProperties()->SellPrice * pItem->GetStackCount();
+    uint32 item_worth = pItem->getItemProperties()->SellPrice * pItem->GetStackCount();
     uint32 item_deposit = (uint32)(item_worth * ah->deposit_percent) * (uint32)(etime / 240.0f); // deposit is per 4 hours
 
     if (!_player->HasGold(item_deposit))   // player cannot afford deposit
@@ -624,7 +624,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
         pItem->RemoveFromWorld();
     }
 
-    pItem->SetOwner(NULL);
+    pItem->setOwner(NULL);
     pItem->m_isDirty = true;
     pItem->SaveToDB(INVENTORY_SLOT_NOT_SET, 0, true, NULL);
 
@@ -701,7 +701,7 @@ void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
     for (; itr != auctions.end(); ++itr)
     {
         if (itr->second->Deleted) continue;
-        proto = itr->second->pItem->GetItemProperties();
+        proto = itr->second->pItem->getItemProperties();
 
         // Check the auction for parameters
 

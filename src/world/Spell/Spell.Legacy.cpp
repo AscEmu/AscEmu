@@ -163,7 +163,7 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
             u_caster = nullptr;
             p_caster = nullptr;
             i_caster = static_cast<Item*>(Caster);
-            if (i_caster->GetOwner() && i_caster->GetOwner()->GetDuelState() == DUEL_STATE_STARTED)
+            if (i_caster->getOwner() && i_caster->getOwner()->GetDuelState() == DUEL_STATE_STARTED)
                 duelSpell = true;
         }
         break;
@@ -2131,28 +2131,28 @@ void Spell::finish(bool successful)
     /*
     Set cooldown on item
     */
-    if (i_caster && i_caster->GetOwner() && cancastresult == SPELL_CANCAST_OK && !GetSpellFailed())
+    if (i_caster && i_caster->getOwner() && cancastresult == SPELL_CANCAST_OK && !GetSpellFailed())
     {
         uint8 x;
         for (x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
         {
-            if (i_caster->GetItemProperties()->Spells[x].Trigger == USE)
+            if (i_caster->getItemProperties()->Spells[x].Trigger == USE)
             {
-                if (i_caster->GetItemProperties()->Spells[x].Id)
+                if (i_caster->getItemProperties()->Spells[x].Id)
                     break;
             }
         }
         // cooldown starts after leaving combat
-        if (i_caster->GetItemProperties()->Class == ITEM_CLASS_CONSUMABLE && i_caster->GetItemProperties()->SubClass == 1)
+        if (i_caster->getItemProperties()->Class == ITEM_CLASS_CONSUMABLE && i_caster->getItemProperties()->SubClass == 1)
         {
-            i_caster->GetOwner()->SetLastPotion(i_caster->GetItemProperties()->ItemId);
-            if (!i_caster->GetOwner()->CombatStatus.IsInCombat())
-                i_caster->GetOwner()->UpdatePotionCooldown();
+            i_caster->getOwner()->SetLastPotion(i_caster->getItemProperties()->ItemId);
+            if (!i_caster->getOwner()->CombatStatus.IsInCombat())
+                i_caster->getOwner()->UpdatePotionCooldown();
         }
         else
         {
             if (x < MAX_ITEM_PROTO_SPELLS)
-                i_caster->GetOwner()->Cooldown_AddItem(i_caster->GetItemProperties(), x);
+                i_caster->getOwner()->Cooldown_AddItem(i_caster->getItemProperties(), x);
         }
     }
 
@@ -2370,7 +2370,7 @@ void Spell::SendSpellStart()
                 auto item = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                 if (item != nullptr)
                 {
-                    ip = item->GetItemProperties();
+                    ip = item->getItemProperties();
                     /* Throwing Weapon Patch by Supalosa
                     p_caster->GetItemInterface()->RemoveItemAmt(it->GetEntry(),1);
                     (Supalosa: Instead of removing one from the stack, remove one from durability)
@@ -2537,7 +2537,7 @@ void Spell::SendSpellGo()
             {
                 Item* it = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                 if (it != nullptr)
-                    ip = it->GetItemProperties();
+                    ip = it->getItemProperties();
             }
             else
                 ip = sMySQLStore.getItemProperties(2512);	/*rough arrow*/
@@ -2919,7 +2919,7 @@ bool Spell::HasPower()
     {
         Item* it = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
         if (it != nullptr)
-            cost += (uint32)(10 * (it->GetItemProperties()->Delay / 1000.0f));
+            cost += (uint32)(10 * (it->getItemProperties()->Delay / 1000.0f));
     }
 
     //apply modifiers
@@ -3077,7 +3077,7 @@ bool Spell::TakePower()
     {
         Item* it = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
         if (it != nullptr)
-            cost += it->GetItemProperties()->Delay / 100;//10 * it->GetProto()->Delay / 1000;
+            cost += it->getItemProperties()->Delay / 100;//10 * it->GetProto()->Delay / 1000;
     }
 
     //apply modifiers
@@ -4228,7 +4228,7 @@ uint8 Spell::CanCast(bool tolerate)
                 case FORM_FLIGHT:
                 {
                     // check if item is allowed (only special items allowed in flight forms)
-                    if (i_caster && !(i_caster->GetItemProperties()->Flags & ITEM_FLAG_SHAPESHIFT_OK))
+                    if (i_caster && !(i_caster->getItemProperties()->Flags & ITEM_FLAG_SHAPESHIFT_OK))
                         return SPELL_FAILED_NO_ITEMS_WHILE_SHAPESHIFTED;
 
                     break;
@@ -4256,8 +4256,8 @@ uint8 Spell::CanCast(bool tolerate)
                 default:
                 {
                     // check if item is allowed (only special & equipped items allowed in other forms)
-                    if (i_caster && !(i_caster->GetItemProperties()->Flags & ITEM_FLAG_SHAPESHIFT_OK))
-                        if (i_caster->GetItemProperties()->InventoryType == INVTYPE_NON_EQUIP)
+                    if (i_caster && !(i_caster->getItemProperties()->Flags & ITEM_FLAG_SHAPESHIFT_OK))
+                        if (i_caster->getItemProperties()->InventoryType == INVTYPE_NON_EQUIP)
                             return SPELL_FAILED_NO_ITEMS_WHILE_SHAPESHIFTED;
                 }
             }
@@ -4309,12 +4309,12 @@ uint8 Spell::CanCast(bool tolerate)
          */
         if (i_caster)
         {
-            if (i_caster->GetItemProperties()->ZoneNameID && i_caster->GetItemProperties()->ZoneNameID != i_caster->GetZoneId())
+            if (i_caster->getItemProperties()->ZoneNameID && i_caster->getItemProperties()->ZoneNameID != i_caster->GetZoneId())
                 return SPELL_FAILED_NOT_HERE;
-            if (i_caster->GetItemProperties()->MapID && i_caster->GetItemProperties()->MapID != i_caster->GetMapId())
+            if (i_caster->getItemProperties()->MapID && i_caster->getItemProperties()->MapID != i_caster->GetMapId())
                 return SPELL_FAILED_NOT_HERE;
 
-            if (i_caster->GetItemProperties()->Spells[0].Charges != 0)
+            if (i_caster->getItemProperties()->Spells[0].Charges != 0)
             {
                 // check if the item has the required charges
                 if (i_caster->GetCharges(0) == 0)
@@ -4328,7 +4328,7 @@ uint8 Spell::CanCast(bool tolerate)
         if (!(p_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NO_REAGANT_COST) && hasAttributeExE(ATTRIBUTESEXE_REAGENT_REMOVAL)))
         {
             // Skip this with enchanting scrolls
-            if (!i_caster || i_caster->GetItemProperties()->Flags != 268435520)
+            if (!i_caster || i_caster->getItemProperties()->Flags != 268435520)
             {
                 for (uint8_t i = 0; i < 8; ++i)
                 {
@@ -4493,7 +4493,7 @@ uint8 Spell::CanCast(bool tolerate)
         if (!i_target || (i_target->GetDurability() == 0 && i_target->GetDurabilityMax() != 0))
             return SPELL_FAILED_BAD_TARGETS;
 
-        ItemProperties const* proto = i_target->GetItemProperties();
+        ItemProperties const* proto = i_target->getItemProperties();
 
         // check to make sure the targeted item is acceptable
         switch (GetSpellInfo()->getEffect(0))
@@ -4580,14 +4580,14 @@ uint8 Spell::CanCast(bool tolerate)
                     GetSpellInfo()->getBaseLevel() && (GetSpellInfo()->getBaseLevel() > proto->ItemLevel))
                     return int8(SPELL_FAILED_BAD_TARGETS); // maybe there is different err code
 
-                if (i_caster && i_caster->GetItemProperties()->Flags == 2097216)
+                if (i_caster && i_caster->getItemProperties()->Flags == 2097216)
                     break;
 
                 // If the spell is castable on our own items only then we can't cast it on someone else's
                 if (hasAttributeExB(ATTRIBUTESEXB_ENCHANT_OWN_ONLY) &&
                     i_target != nullptr &&
                     u_caster != nullptr &&
-                    static_cast<Player*>(u_caster) != i_target->GetOwner())
+                    static_cast<Player*>(u_caster) != i_target->getOwner())
                     return SPELL_FAILED_BAD_TARGETS;
 
                 break;
@@ -5647,7 +5647,7 @@ void Spell::RemoveItems()
                     // If we have only 1 charge left, it's pointless to decrease the charge, we will have to remove the item anyways, so who cares ^^
                     if (charges == -1)
                     {
-                        i_caster->GetOwner()->GetItemInterface()->SafeFullRemoveItemByGuid(i_caster->GetGUID());
+                        i_caster->getOwner()->GetItemInterface()->SafeFullRemoveItemByGuid(i_caster->GetGUID());
                     }
                     else
                     {
@@ -5894,8 +5894,8 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                     it = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                     if (it)
                     {
-                        float weapondmg = Util::getRandomFloat(1) * (it->GetItemProperties()->Damage[0].Max - it->GetItemProperties()->Damage[0].Min) + it->GetItemProperties()->Damage[0].Min;
-                        value += float2int32(GetSpellInfo()->getEffectBasePoints(0) + weapondmg / (it->GetItemProperties()->Delay / 1000.0f) * 2.8f);
+                        float weapondmg = Util::getRandomFloat(1) * (it->getItemProperties()->Damage[0].Max - it->getItemProperties()->Damage[0].Min) + it->getItemProperties()->Damage[0].Min;
+                        value += float2int32(GetSpellInfo()->getEffectBasePoints(0) + weapondmg / (it->getItemProperties()->Delay / 1000.0f) * 2.8f);
                     }
                 }
                 if (target && target->IsDazed())
@@ -5956,10 +5956,10 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                 it = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                 if (it)
                 {
-                    if (it->GetItemProperties()->Class == 2)
+                    if (it->getItemProperties()->Class == 2)
                     {
-                        float avgwepdmg = (it->GetItemProperties()->Damage[0].Min + it->GetItemProperties()->Damage[0].Max) * 0.5f;
-                        float wepspd = (it->GetItemProperties()->Delay * 0.001f);
+                        float avgwepdmg = (it->getItemProperties()->Damage[0].Min + it->getItemProperties()->Damage[0].Max) * 0.5f;
+                        float wepspd = (it->getItemProperties()->Delay * 0.001f);
                         int32 dmg = float2int32((avgwepdmg)+p_caster->GetAP() / 14 * wepspd);
 
                         if (target && target->GetHealthPct() > 75)
@@ -5994,7 +5994,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                 auto mainHand = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                 if (mainHand != nullptr)
                 {
-                    float avgWeaponDmg = (mainHand->GetItemProperties()->Damage[0].Max + mainHand->GetItemProperties()->Damage[0].Min) / 2;
+                    float avgWeaponDmg = (mainHand->getItemProperties()->Damage[0].Max + mainHand->getItemProperties()->Damage[0].Min) / 2;
                     value += float2int32((GetSpellInfo()->getEffectBasePoints(0) + 1) + avgWeaponDmg);
                 }
             }
@@ -6257,7 +6257,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                 Item* mit = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                 if (mit != nullptr)
                 {
-                    if (mit->GetItemProperties()->Class == 2 && mit->GetItemProperties()->SubClass == 15)   // daggers
+                    if (mit->getItemProperties()->Class == 2 && mit->getItemProperties()->SubClass == 15)   // daggers
                         value = 105;
                 }
             }
@@ -6285,7 +6285,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
             {
                 Item* mit = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                 if (mit != nullptr)
-                    value = (p_caster->GetAP() * 22 + p_caster->GetPosDamageDoneMod(SCHOOL_HOLY) * 44) * mit->GetItemProperties()->Delay / 1000000;
+                    value = (p_caster->GetAP() * 22 + p_caster->GetPosDamageDoneMod(SCHOOL_HOLY) * 44) * mit->getItemProperties()->Delay / 1000000;
             }
         } break;
 
