@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #pragma once
+#if VERSION_STRING <= TBC
 #include <cstdint>
 
 #include "ManagedPacket.h"
@@ -62,3 +63,4 @@ namespace AscEmu { namespace Packets
         }
     };
 }}
+#endif

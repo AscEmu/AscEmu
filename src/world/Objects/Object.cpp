@@ -56,7 +56,7 @@ bool Object::write(const float_t& member, float_t val)
     *nonconst_member = val;
 
     const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
-    uint32_t distance = member_ptr - wow_data_ptr;
+    auto distance = static_cast<uint32_t>(member_ptr - wow_data_ptr);
     distance /= 4;
 
     m_updateMask.SetBit(distance);
@@ -73,7 +73,7 @@ bool Object::write(const uint32_t& member, uint32_t val)
     *nonconst_member = val;
 
     const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
-    uint32_t distance = member_ptr - wow_data_ptr;
+    auto distance = static_cast<uint32_t>(member_ptr - wow_data_ptr);
     distance /= 4;
 
     m_updateMask.SetBit(distance);
@@ -90,7 +90,7 @@ bool Object::write(const uint64_t& member, uint64_t val)
     *nonconst_member = val;
 
     const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
-    uint32_t distance = member_ptr - wow_data_ptr;
+    auto distance = static_cast<uint32_t>(member_ptr - wow_data_ptr);
     distance /= 4;
 
     m_updateMask.SetBit(distance);
@@ -108,7 +108,7 @@ bool Object::writeLow(const uint64_t& member, uint32_t val)
     *reinterpret_cast<uint32_t*>(*nonconst_member) = val;
 
     const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
-    uint32_t distance = member_ptr - wow_data_ptr;
+    auto distance = static_cast<uint32_t>(member_ptr - wow_data_ptr);
     distance /= 4;
 
     m_updateMask.SetBit(distance);
@@ -125,7 +125,7 @@ bool Object::writeHigh(const uint64_t& member, uint32_t val)
     *(reinterpret_cast<uint32_t*>(*nonconst_member) + 1) = val;
 
     const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
-    uint32_t distance = member_ptr - wow_data_ptr;
+    auto distance = static_cast<uint32_t>(member_ptr - wow_data_ptr);
     distance /= 4;
 
     m_updateMask.SetBit(distance + 1);
@@ -146,14 +146,17 @@ bool Object::write(const uint64_t& member, uint32_t low, uint32_t high)
     *high_ptr = high;
 
     const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
-    uint32_t distance = member_ptr - wow_data_ptr;
+    auto distance = static_cast<uint32_t>(member_ptr - wow_data_ptr);
     distance /= 4;
 
     m_updateMask.SetBit(distance);
     m_updateMask.SetBit(distance + 1);
     updateObject();
     return true;
-} //////////////////////////////////////////////////////////////////////////////////////////
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Object values
 void Object::setByteValue(uint16_t index, uint8_t offset, uint8_t value)
 {

@@ -742,7 +742,7 @@ void WorldSession::SendRefundInfo(uint64 GUID)
         if (item_extended_cost == nullptr)
             return;
 
-        ItemProperties const* proto = item->GetItemProperties();
+        ItemProperties const* proto = item->getItemProperties();
 
         item->SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_REFUNDABLE);
         // ////////////////////////////////////////////////////////////////////////////////////////
@@ -1021,7 +1021,7 @@ void WorldSession::HandleEquipmentSetUse(WorldPacket& data)
         {
             // we have no item equipped in the slot, so let's equip
             AddItemResult additemresult;
-            int8 EquipError = _player->GetItemInterface()->CanEquipItemInSlot(dstbag, dstslot, item->GetItemProperties(), false, false);
+            int8 EquipError = _player->GetItemInterface()->CanEquipItemInSlot(dstbag, dstslot, item->getItemProperties(), false, false);
             if (EquipError == INV_ERR_OK)
             {
                 dstslotitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(SrcBagID, SrcSlotID, false);

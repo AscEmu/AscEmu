@@ -297,11 +297,13 @@ Player::Player(uint32 guid)
 
     memset(m_uint32Values, 0, (PLAYER_END)* sizeof(uint32));
     m_updateMask.SetCount(PLAYER_END);
-    setUInt32Value(OBJECT_FIELD_TYPE, TYPE_PLAYER | TYPE_UNIT | TYPE_OBJECT);
-    SetLowGUID(guid);
-    m_wowGuid.Init(GetGUID());
-#if VERSION_STRING != Classic
-    setUInt32Value(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_ENABLE_POWER_REGEN);
+
+    auto data = playerData();
+    write(data->type, TYPE_PLAYER | TYPE_UNIT | TYPE_OBJECT);
+    writeLow(data->guid, guid);
+    m_wowGuid.Init(data->guid);
+#if VERSION_STRING >= WotLK
+    write(data->unit_flags_2, UNIT_FLAG2_ENABLE_POWER_REGEN);
 #endif
 
 #if VERSION_STRING > TBC
@@ -8375,7 +8377,7 @@ void Player::AddItemsToWorld()
 
             if (pItem->IsContainer() && GetItemInterface()->IsBagSlot(i))
             {
-                for (uint32 e = 0; e < pItem->GetItemProperties()->ContainerSlots; ++e)
+                for (uint32 e = 0; e < pItem->getItemProperties()->ContainerSlots; ++e)
                 {
                     Item* item = (static_cast< Container* >(pItem))->GetItem(static_cast<int16>(e));
                     if (item)

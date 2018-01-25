@@ -3128,7 +3128,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             }
 
             // handle bind on equip
-            if (m_pItems[(int)srcslot]->GetItemProperties()->Bonding == ITEM_BIND_ON_EQUIP)
+            if (m_pItems[(int)srcslot]->getItemProperties()->Bonding == ITEM_BIND_ON_EQUIP)
                 m_pItems[(int)srcslot]->SoulBind();
         }
         else
@@ -3207,7 +3207,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             }
 
             // handle bind on equip
-            if (m_pItems[(int)dstslot]->GetItemProperties()->Bonding == ITEM_BIND_ON_EQUIP)
+            if (m_pItems[(int)dstslot]->getItemProperties()->Bonding == ITEM_BIND_ON_EQUIP)
                 m_pItems[(int)dstslot]->SoulBind();
 
         }
@@ -4239,7 +4239,7 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
             SrcItem->SoulBind();
 
 #if VERSION_STRING > TBC
-        m_pOwner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, SrcItem->GetItemProperties()->ItemId, 0, 0);
+        m_pOwner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, SrcItem->getItemProperties()->ItemId, 0, 0);
 
         if (DstSlot < INVENTORY_SLOT_BAG_START) // check Superior/Epic achievement
         {
@@ -4247,9 +4247,9 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
             // "213" value not found in achievement or criteria entries, have to hard-code it here? :(
             // Achievement ID:557 description Equip a superior item in every slot with a minimum item level of 187.
             // "187" value not found in achievement or criteria entries, have to hard-code it here? :(
-            if ((SrcItem->GetItemProperties()->Quality == ITEM_QUALITY_RARE_BLUE && SrcItem->GetItemProperties()->ItemLevel >= 187) ||
-                (SrcItem->GetItemProperties()->Quality == ITEM_QUALITY_EPIC_PURPLE && SrcItem->GetItemProperties()->ItemLevel >= 213))
-                m_pOwner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, DstSlot, SrcItem->GetItemProperties()->Quality, 0);
+            if ((SrcItem->getItemProperties()->Quality == ITEM_QUALITY_RARE_BLUE && SrcItem->getItemProperties()->ItemLevel >= 187) ||
+                (SrcItem->getItemProperties()->Quality == ITEM_QUALITY_EPIC_PURPLE && SrcItem->getItemProperties()->ItemLevel >= 213))
+                m_pOwner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, DstSlot, SrcItem->getItemProperties()->Quality, 0);
         }
 #endif
     }
@@ -4259,12 +4259,12 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
         if (DstItem->getItemProperties()->Bonding == ITEM_BIND_ON_EQUIP)
             DstItem->SoulBind();
 #if VERSION_STRING > TBC
-        m_pOwner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, DstItem->GetItemProperties()->ItemId, 0, 0);
+        m_pOwner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, DstItem->getItemProperties()->ItemId, 0, 0);
         if (SrcSlot < INVENTORY_SLOT_BAG_START) // check Superior/Epic achievement
         {
-            if ((DstItem->GetItemProperties()->Quality == ITEM_QUALITY_RARE_BLUE && DstItem->GetItemProperties()->ItemLevel >= 187) ||
-                (DstItem->GetItemProperties()->Quality == ITEM_QUALITY_EPIC_PURPLE && DstItem->GetItemProperties()->ItemLevel >= 213))
-                m_pOwner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, SrcSlot, DstItem->GetItemProperties()->Quality, 0);
+            if ((DstItem->getItemProperties()->Quality == ITEM_QUALITY_RARE_BLUE && DstItem->getItemProperties()->ItemLevel >= 187) ||
+                (DstItem->getItemProperties()->Quality == ITEM_QUALITY_EPIC_PURPLE && DstItem->getItemProperties()->ItemLevel >= 213))
+                m_pOwner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, SrcSlot, DstItem->getItemProperties()->Quality, 0);
         }
 #endif
     }

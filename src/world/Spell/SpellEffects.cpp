@@ -1146,7 +1146,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                 {
 #if VERSION_STRING != Classic
                     Item* it = static_cast<Item*>(p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND));
-                    if (it && it->GetItemProperties() && it->GetItemProperties()->InventoryType == INVTYPE_SHIELD)
+                    if (it && it->getItemProperties() && it->getItemProperties()->InventoryType == INVTYPE_SHIELD)
                         dmg = p_caster->getUInt32Value(PLAYER_SHIELD_BLOCK);
 #endif
                 }

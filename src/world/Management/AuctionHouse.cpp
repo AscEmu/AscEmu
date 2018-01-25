@@ -1316,7 +1316,7 @@ void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
     for (; itr != auctions.end(); ++itr)
     {
         if (itr->second->Deleted) continue;
-        proto = itr->second->pItem->GetItemProperties();
+        proto = itr->second->pItem->getItemProperties();
 
         // Check the auction for parameters
 

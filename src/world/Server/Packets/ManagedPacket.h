@@ -17,9 +17,9 @@ namespace AscEmu { namespace Packets
         uint16_t m_opcode;
         size_t m_minimum_size;
 
-        virtual bool internalSerialise(WorldPacket& packet) { return true; }
+        virtual bool internalSerialise(WorldPacket&) { return true; }
 
-        virtual bool internalDeserialise(WorldPacket& packet) { return true; }
+        virtual bool internalDeserialise(WorldPacket&) { return true; }
 
         ManagedPacket(uint16_t opcode, size_t expected_size) :
             m_opcode(opcode),

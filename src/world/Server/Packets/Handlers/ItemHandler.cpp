@@ -328,30 +328,30 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recvData)
 #if VERSION_STRING > TBC
     if (dstitem && srcslot < INVENTORY_SLOT_BAG_END)
     {
-        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, dstitem->GetItemProperties()->ItemId, 0, 0);
+        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, dstitem->getItemProperties()->ItemId, 0, 0);
         if (srcslot < INVENTORY_SLOT_BAG_START) // check Superior/Epic achievement
         {
             // Achievement ID:556 description Equip an epic item in every slot with a minimum item level of 213.
             // "213" value not found in achievement or criteria entries, have to hard-code it here? :(
             // Achievement ID:557 description Equip a superior item in every slot with a minimum item level of 187.
             // "187" value not found in achievement or criteria entries, have to hard-code it here? :(
-            if ((dstitem->GetItemProperties()->Quality == ITEM_QUALITY_RARE_BLUE && dstitem->GetItemProperties()->ItemLevel >= 187) ||
-                (dstitem->GetItemProperties()->Quality == ITEM_QUALITY_EPIC_PURPLE && dstitem->GetItemProperties()->ItemLevel >= 213))
-                _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, srcslot, dstitem->GetItemProperties()->Quality, 0);
+            if ((dstitem->getItemProperties()->Quality == ITEM_QUALITY_RARE_BLUE && dstitem->getItemProperties()->ItemLevel >= 187) ||
+                (dstitem->getItemProperties()->Quality == ITEM_QUALITY_EPIC_PURPLE && dstitem->getItemProperties()->ItemLevel >= 213))
+                _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, srcslot, dstitem->getItemProperties()->Quality, 0);
         }
     }
     if (srcitem && dstslot < INVENTORY_SLOT_BAG_END)
     {
-        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, srcitem->GetItemProperties()->ItemId, 0, 0);
+        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, srcitem->getItemProperties()->ItemId, 0, 0);
         if (dstslot < INVENTORY_SLOT_BAG_START) // check Superior/Epic achievement
         {
             // Achievement ID:556 description Equip an epic item in every slot with a minimum item level of 213.
             // "213" value not found in achievement or criteria entries, have to hard-code it here? :(
             // Achievement ID:557 description Equip a superior item in every slot with a minimum item level of 187.
             // "187" value not found in achievement or criteria entries, have to hard-code it here? :(
-            if ((srcitem->GetItemProperties()->Quality == ITEM_QUALITY_RARE_BLUE && srcitem->GetItemProperties()->ItemLevel >= 187) ||
-                (srcitem->GetItemProperties()->Quality == ITEM_QUALITY_EPIC_PURPLE && srcitem->GetItemProperties()->ItemLevel >= 213))
-                _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, dstslot, srcitem->GetItemProperties()->Quality, 0);
+            if ((srcitem->getItemProperties()->Quality == ITEM_QUALITY_RARE_BLUE && srcitem->getItemProperties()->ItemLevel >= 187) ||
+                (srcitem->getItemProperties()->Quality == ITEM_QUALITY_EPIC_PURPLE && srcitem->getItemProperties()->ItemLevel >= 213))
+                _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, dstslot, srcitem->getItemProperties()->Quality, 0);
         }
     }
 #endif
@@ -612,14 +612,14 @@ void WorldSession::HandleAutoEquipItemOpcode(WorldPacket& recvData)
         if (eitem->getItemProperties()->Bonding == ITEM_BIND_ON_EQUIP)
             eitem->SoulBind();
 #if VERSION_STRING > TBC
-        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, eitem->GetItemProperties()->ItemId, 0, 0);
+        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, eitem->getItemProperties()->ItemId, 0, 0);
         // Achievement ID:556 description Equip an epic item in every slot with a minimum item level of 213.
         // "213" value not found in achievement or criteria entries, have to hard-code it here? :(
         // Achievement ID:557 description Equip a superior item in every slot with a minimum item level of 187.
         // "187" value not found in achievement or criteria entries, have to hard-code it here? :(
-        if ((eitem->GetItemProperties()->Quality == ITEM_QUALITY_RARE_BLUE && eitem->GetItemProperties()->ItemLevel >= 187) ||
-            (eitem->GetItemProperties()->Quality == ITEM_QUALITY_EPIC_PURPLE && eitem->GetItemProperties()->ItemLevel >= 213))
-            _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, Slot, eitem->GetItemProperties()->Quality, 0);
+        if ((eitem->getItemProperties()->Quality == ITEM_QUALITY_RARE_BLUE && eitem->getItemProperties()->ItemLevel >= 187) ||
+            (eitem->getItemProperties()->Quality == ITEM_QUALITY_EPIC_PURPLE && eitem->getItemProperties()->ItemLevel >= 213))
+            _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, Slot, eitem->getItemProperties()->Quality, 0);
 #endif
     }
     //Recalculate Expertise (for Weapon specs)
@@ -2350,7 +2350,7 @@ void WorldSession::HandleItemRefundRequestOpcode(WorldPacket& recvPacket)
 
             if (item_extended_cost != nullptr)
             {
-                item_proto = item->GetItemProperties();
+                item_proto = item->getItemProperties();
 
                 ////////////////////////////////// We remove the refunded item and refund the cost //////////////////////////////////
 

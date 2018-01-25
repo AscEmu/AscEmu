@@ -176,7 +176,7 @@ bool Container::AddItem(int16 slot, Item* item)
         m_owner->PushCreationData(&buf, count);
     }
 #if VERSION_STRING > TBC
-    m_owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM, item->GetItemProperties()->ItemId, item->GetStackCount(), 0);
+    m_owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM, item->getItemProperties()->ItemId, item->GetStackCount(), 0);
 #endif
     return true;
 }
@@ -325,7 +325,7 @@ bool Container::AddItemToFreeSlot(Item* pItem, uint32* r_slot)
                 *r_slot = slot;
 
 #if VERSION_STRING > TBC
-            m_owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM, pItem->GetItemProperties()->ItemId, pItem->GetStackCount(), 0);
+            m_owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM, pItem->getItemProperties()->ItemId, pItem->GetStackCount(), 0);
 #endif
             return true;
         }
