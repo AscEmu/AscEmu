@@ -4010,7 +4010,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
             spellId = 3025;
             if (apply)
             {
-                m_target->SetPowerType(POWER_TYPE_ENERGY);
+                m_target->setPowerType(POWER_TYPE_ENERGY);
                 m_target->SetMaxPower(POWER_TYPE_ENERGY, 100);  //100 Energy
                 m_target->SetPower(POWER_TYPE_ENERGY, 0);  //0 Energy
                 if (m_target->getRace() != RACE_NIGHTELF)//TAUREN
@@ -4021,7 +4021,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
             {
                 //turn back to mana
                 //m_target->SetBaseAttackTime(MELEE,oldap);
-                m_target->SetPowerType(POWER_TYPE_MANA);
+                m_target->setPowerType(POWER_TYPE_MANA);
                 if (m_target->m_stealth)
                 {
                     uint32 sp = m_target->m_stealth;
@@ -4059,7 +4059,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
             spellId = 1178;
             if (apply)
             {
-                m_target->SetPowerType(POWER_TYPE_RAGE);
+                m_target->setPowerType(POWER_TYPE_RAGE);
                 m_target->SetMaxPower(POWER_TYPE_RAGE, 1000);
                 m_target->SetPower(POWER_TYPE_RAGE, 0); //0 rage
 
@@ -4077,7 +4077,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
             else
             {
                 //reset back to mana
-                m_target->SetPowerType(POWER_TYPE_MANA);
+                m_target->setPowerType(POWER_TYPE_MANA);
                 m_target->RemoveAura(21178);   // remove Bear Form (Passive2)
             }
         }
@@ -4089,14 +4089,14 @@ void Aura::SpellAuraModShapeshift(bool apply)
             spellId = 9635;
             if (apply)
             {
-                m_target->SetPowerType(POWER_TYPE_RAGE);
+                m_target->setPowerType(POWER_TYPE_RAGE);
                 m_target->SetMaxPower(POWER_TYPE_RAGE, 1000);
                 m_target->SetPower(POWER_TYPE_RAGE, 0); //0 rage
                 if (m_target->getRace() != RACE_NIGHTELF)   //TAUREN
                     modelId = 2289;
             }
             else //reset back to mana
-                m_target->SetPowerType(POWER_TYPE_MANA);
+                m_target->setPowerType(POWER_TYPE_MANA);
         }
         break;
         case FORM_BATTLESTANCE:

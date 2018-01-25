@@ -376,8 +376,8 @@ struct WoWGameObject;
 class SERVER_DECL GameObject : public Object
 {
     // MIT Start
-public:
     WoWGameObject* gameObjectData() const { return reinterpret_cast<WoWGameObject*>(wow_data); }
+public:
     // MIT End
 
         GameObject(uint64 guid);

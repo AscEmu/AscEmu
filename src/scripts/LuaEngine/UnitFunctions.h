@@ -947,7 +947,7 @@ class LuaUnit
             if (item_add == nullptr)
                 return 0;
 
-            item_add->SetStackCount(count);
+            item_add->setStackCount(count);
             if (player->GetItemInterface()->AddItemToFreeSlot(item_add))
                 player->SendItemPushResult(false, true, false, true, player->GetItemInterface()->LastSearchItemBagSlot(),
                 player->GetItemInterface()->LastSearchItemSlot(), count, item_add->GetEntry(), item_add->GetItemRandomSuffixFactor(),
@@ -1724,7 +1724,7 @@ class LuaUnit
                             Item* item = objmgr.CreateItem(qst->srcitem, plr);
                             if (item)
                             {
-                                item->SetStackCount(qst->srcitemcount ? qst->srcitemcount : 1);
+                                item->setStackCount(qst->srcitemcount ? qst->srcitemcount : 1);
                                 if (!plr->GetItemInterface()->AddItemToFreeSlot(item))
                                     item->DeleteMe();
                             }
@@ -2827,7 +2827,7 @@ class LuaUnit
         else
             powertype = static_cast<uint8>(luaL_optinteger(L, 1, -1));
 
-        ptr->SetPowerType(powertype);
+        ptr->setPowerType(powertype);
         return 0;
     }
 

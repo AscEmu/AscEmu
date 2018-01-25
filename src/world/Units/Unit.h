@@ -219,9 +219,8 @@ class SERVER_DECL Unit : public Object
     // Movement
 
     int32_t m_rootCounter;
-
-public:
     const WoWUnit* unitData() const { return reinterpret_cast<WoWUnit*>(wow_data); }
+public:
 #ifdef AE_TBC
     uint32_t addAuraVisual(uint32_t spell_id, uint32_t count, bool positive);
     uint32_t addAuraVisual(uint32_t spell_id, uint32_t count, bool positive, bool &skip_client_update);
@@ -367,7 +366,7 @@ public:
 
     /// Stats
     uint32 getLevel() { return getUInt32Value(UNIT_FIELD_LEVEL); };
-    void setLevel(uint32 level);
+    void setLevel(uint32_t level);
     void modLevel(int32 mod) { modUInt32Value(UNIT_FIELD_LEVEL, mod); };
     uint32 getClassMask() { return 1 << (getClass() - 1); }
     uint32 getRaceMask() { return 1 << (getRace() - 1); }
@@ -1188,16 +1187,16 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // bytes 0
 
-    void setRace(uint8 race) { setByteValue(UNIT_FIELD_BYTES_0, 0, race); }
-    uint8 getRace() { return getByteValue(UNIT_FIELD_BYTES_0, 0); }
+    uint8 getRace() const;
+    uint8 getClass() const;
+    uint8 getGender() const;
 
-    void setClass(uint8 class_) { setByteValue(UNIT_FIELD_BYTES_0, 1, class_); }
-    uint8 getClass() { return getByteValue(UNIT_FIELD_BYTES_0, 1); }
+    void setRace(uint8_t race);
+    void setClass(uint8_t class_);
+    void setGender(uint8_t gender);
+    void setPowerType(uint8_t powerType);
 
-    uint8 getGender() { return getByteValue(UNIT_FIELD_BYTES_0, 2); }
-    void setGender(uint8 gender) { setByteValue(UNIT_FIELD_BYTES_0, 2, gender); }
 
-    void SetPowerType(uint8 type) { setByteValue(UNIT_FIELD_BYTES_0, 3, type); }
     uint8 GetPowerType() { return getByteValue(UNIT_FIELD_BYTES_0, 3); }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

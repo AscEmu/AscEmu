@@ -791,7 +791,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
             c->PetitionSignerCount = PetitionSignerCount;
             memcpy(c->Data, Data, sizeof(Data));
 
-            i->SetStackCount(1);
+            i->setStackCount(1);
             i->SoulBind();
             i->SetEnchantmentId(0, c->GetID());
             i->SetItemRandomSuffixFactor(57813883);
@@ -1573,7 +1573,7 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
                 if (pSourceItem == NULL)
                     return;
 
-                pSourceItem->SetStackCount(deposit_stack);
+                pSourceItem->setStackCount(deposit_stack);
                 pSourceItem->SetCreatorGUID(pSourceItem2->GetCreatorGUID());
                 pSourceItem2->ModStackCount(-(int32)deposit_stack);
                 pSourceItem2->m_isDirty = true;
@@ -1603,7 +1603,7 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
                 if (pDestItem == NULL)
                     return;
 
-                pDestItem->SetStackCount(deposit_stack);
+                pDestItem->setStackCount(deposit_stack);
                 pDestItem->SetCreatorGUID(pSourceItem2->GetCreatorGUID());
             }
             else

@@ -5629,7 +5629,7 @@ void Spell::SpellEffectDummyMelee(uint8_t /*effectIndex*/)   // Normalized Weapo
                 sEventMgr.RemoveEvents(p_caster, EVENT_COMBO_POINT_CLEAR_FOR_TARGET);
             }
         } break;
-        
+
         case 20243:
         case 30016:
         case 30017:

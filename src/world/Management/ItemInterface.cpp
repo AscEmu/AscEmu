@@ -224,7 +224,7 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
         if (!GetInventoryItem(slot))        //slot is free, add item.
         {
             item->setOwner(m_pOwner);
-            item->write(item->itemData()->container_guid, m_pOwner->playerData()->guid);
+            item->setContainerGuid(m_pOwner->getGuid());
             m_pItems[(int)slot] = item;
 
             if (item->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP)
@@ -960,7 +960,7 @@ uint32 ItemInterface::RemoveItemAmt(uint32 id, uint32 amt)
 
                 if (item->GetStackCount() > amt)
                 {
-                    item->SetStackCount(item->GetStackCount() - amt);
+                    item->setStackCount(item->GetStackCount() - amt);
                     item->m_isDirty = true;
                     return amt;
                 }
@@ -999,7 +999,7 @@ uint32 ItemInterface::RemoveItemAmt(uint32 id, uint32 amt)
                     {
                         if (item2->GetStackCount() > amt)
                         {
-                            item2->SetStackCount(item2->GetStackCount() - amt);
+                            item2->setStackCount(item2->GetStackCount() - amt);
                             item2->m_isDirty = true;
                             return amt;
                         }
@@ -1036,7 +1036,7 @@ uint32 ItemInterface::RemoveItemAmt(uint32 id, uint32 amt)
             {
                 if (item->GetStackCount() > amt)
                 {
-                    item->SetStackCount(item->GetStackCount() - amt);
+                    item->setStackCount(item->GetStackCount() - amt);
                     item->m_isDirty = true;
                     return amt;
                 }
@@ -1070,7 +1070,7 @@ uint32 ItemInterface::RemoveItemAmt(uint32 id, uint32 amt)
             {
                 if (item->GetStackCount() > amt)
                 {
-                    item->SetStackCount(item->GetStackCount() - amt);
+                    item->setStackCount(item->GetStackCount() - amt);
                     item->m_isDirty = true;
                     return amt;
                 }
@@ -1122,7 +1122,7 @@ uint32 ItemInterface::RemoveItemAmt_ProtectPointer(uint32 id, uint32 amt, Item**
 
                 if (item->GetStackCount() > amt)
                 {
-                    item->SetStackCount(item->GetStackCount() - amt);
+                    item->setStackCount(item->GetStackCount() - amt);
                     item->m_isDirty = true;
                     return amt;
                 }
@@ -1170,7 +1170,7 @@ uint32 ItemInterface::RemoveItemAmt_ProtectPointer(uint32 id, uint32 amt, Item**
                     {
                         if (item2->GetStackCount() > amt)
                         {
-                            item2->SetStackCount(item2->GetStackCount() - amt);
+                            item2->setStackCount(item2->GetStackCount() - amt);
                             item2->m_isDirty = true;
                             return amt;
                         }
@@ -1212,7 +1212,7 @@ uint32 ItemInterface::RemoveItemAmt_ProtectPointer(uint32 id, uint32 amt, Item**
             {
                 if (item->GetStackCount() > amt)
                 {
-                    item->SetStackCount(item->GetStackCount() - amt);
+                    item->setStackCount(item->GetStackCount() - amt);
                     item->m_isDirty = true;
                     return amt;
                 }
@@ -1252,7 +1252,7 @@ uint32 ItemInterface::RemoveItemAmt_ProtectPointer(uint32 id, uint32 amt, Item**
             {
                 if (item->GetStackCount() > amt)
                 {
-                    item->SetStackCount(item->GetStackCount() - amt);
+                    item->setStackCount(item->GetStackCount() - amt);
                     item->m_isDirty = true;
                     return amt;
                 }
@@ -1306,7 +1306,7 @@ uint32 ItemInterface::RemoveItemAmtByGuid(uint64 guid, uint32 amt)
 
                 if (item->GetStackCount() > amt)
                 {
-                    item->SetStackCount(item->GetStackCount() - amt);
+                    item->setStackCount(item->GetStackCount() - amt);
                     item->m_isDirty = true;
                     return amt;
                 }
@@ -1346,7 +1346,7 @@ uint32 ItemInterface::RemoveItemAmtByGuid(uint64 guid, uint32 amt)
                     {
                         if (item2->GetStackCount() > amt)
                         {
-                            item2->SetStackCount(item2->GetStackCount() - amt);
+                            item2->setStackCount(item2->GetStackCount() - amt);
                             item2->m_isDirty = true;
                             return amt;
                         }
@@ -1383,7 +1383,7 @@ uint32 ItemInterface::RemoveItemAmtByGuid(uint64 guid, uint32 amt)
             {
                 if (item->GetStackCount() > amt)
                 {
-                    item->SetStackCount(item->GetStackCount() - amt);
+                    item->setStackCount(item->GetStackCount() - amt);
                     item->m_isDirty = true;
                     return amt;
                 }
@@ -1418,7 +1418,7 @@ uint32 ItemInterface::RemoveItemAmtByGuid(uint64 guid, uint32 amt)
             {
                 if (item->GetStackCount() > amt)
                 {
-                    item->SetStackCount(item->GetStackCount() - amt);
+                    item->setStackCount(item->GetStackCount() - amt);
                     item->m_isDirty = true;
                     return amt;
                 }
@@ -1646,7 +1646,7 @@ AddItemResult ItemInterface::AddItemToFreeSlot(Item* item)
                     m_pItems[i]->GetStackCount() < itemMaxStack  &&
                     m_pItems[i]->GetStackCount() + item->GetStackCount() <= itemMaxStack)
                 {
-                    m_pItems[i]->SetStackCount(m_pItems[i]->GetStackCount() + item->GetStackCount());
+                    m_pItems[i]->setStackCount(m_pItems[i]->GetStackCount() + item->GetStackCount());
                     m_result.Slot = static_cast<int8>(i);
                     m_result.Result = true;
                     p->UpdateKnownCurrencies(m_pItems[i]->GetEntry(), true);
@@ -1701,7 +1701,7 @@ AddItemResult ItemInterface::AddItemToFreeSlot(Item* item)
             m_pItems[i]->GetStackCount() < itemMaxStack  &&
             m_pItems[i]->GetStackCount() + item->GetStackCount() <= itemMaxStack)
         {
-            m_pItems[i]->SetStackCount(m_pItems[i]->GetStackCount() + item->GetStackCount());
+            m_pItems[i]->setStackCount(m_pItems[i]->GetStackCount() + item->GetStackCount());
             m_pItems[i]->m_isDirty = true;
             m_result.Slot = static_cast<int8>(i);
             m_result.Result = true;
@@ -1742,7 +1742,7 @@ AddItemResult ItemInterface::AddItemToFreeSlot(Item* item)
                     item2->GetStackCount() < itemMaxStack &&
                     item2->GetStackCount() + item->GetStackCount() <= itemMaxStack)
                 {
-                    item2->SetStackCount(item2->GetStackCount() + item->GetStackCount());
+                    item2->setStackCount(item2->GetStackCount() + item->GetStackCount());
                     item2->m_isDirty = true;
                     m_result.Slot = static_cast<int8>(i);
                     m_result.Result = true;
@@ -3002,7 +3002,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             else
             {
                 int32 delta = dstItemMaxStack - DstItem->GetStackCount();
-                DstItem->SetStackCount(dstItemMaxStack);
+                DstItem->setStackCount(dstItemMaxStack);
                 SrcItem->ModStackCount(-delta);
                 SrcItem->m_isDirty = true;
                 DstItem->m_isDirty = true;
@@ -4093,7 +4093,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
             toadd = count;
         }
 
-        item->SetStackCount(toadd);
+        item->setStackCount(toadd);
 
         AddItemResult res = AddItemToFreeSlot(item);
         if (res != ADD_ITEM_RESULT_ERROR)
@@ -4308,7 +4308,7 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
                 else
                 {
                     int32 delta = dstItemMaxStack - DstItem->GetStackCount();
-                    DstItem->SetStackCount(dstItemMaxStack);
+                    DstItem->setStackCount(dstItemMaxStack);
                     SrcItem->ModStackCount(-delta);
                     SrcItem->m_isDirty = true;
                     DstItem->m_isDirty = true;

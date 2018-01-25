@@ -13,7 +13,17 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellMgr.h"
 #include "Spell/SpellFailure.h"
 #include "Map/MapMgr.h"
+#include "Data/WoWPlayer.h"
 
+void Player::setAttackPowerMultiplier(float val)
+{
+    write(playerData()->attack_power_multiplier, val);
+}
+
+void Player::setRangedAttackPowerMultiplier(float val)
+{
+    write(playerData()->ranged_attack_power_multiplier, val);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
@@ -242,3 +252,9 @@ void Player::sendMovie(uint32_t movieId)
     m_session->SendPacket(&data);
 #endif
 }
+
+void Player::setXp(uint32 xp) { write(playerData()->xp, xp); }
+
+uint32 Player::getXp() const { return playerData()->xp; }
+
+void Player::setNextLevelXp(uint32_t xp) { write(playerData()->next_level_xp, xp); }

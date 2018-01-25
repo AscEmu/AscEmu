@@ -298,15 +298,11 @@ Player::Player(uint32 guid)
     memset(m_uint32Values, 0, (PLAYER_END)* sizeof(uint32));
     m_updateMask.SetCount(PLAYER_END);
 
-    auto data = playerData();
-    write(data->type, TYPE_PLAYER | TYPE_UNIT | TYPE_OBJECT);
-    writeLow(data->guid, guid);
-    m_wowGuid.Init(data->guid);
+    setObjectType(TYPEID_PLAYER);
+    setGuidLow(guid);
+    m_wowGuid.Init(getGuid());
 #if VERSION_STRING >= WotLK
     write(data->unit_flags_2, UNIT_FLAG2_ENABLE_POWER_REGEN);
-#endif
-
-#if VERSION_STRING > TBC
     setFloatValue(PLAYER_RUNE_REGEN_1, 0.100000f);
     setFloatValue(PLAYER_RUNE_REGEN_1 + 1, 0.100000f);
     setFloatValue(PLAYER_RUNE_REGEN_1 + 2, 0.100000f);
@@ -425,8 +421,8 @@ Player::Player(uint32 guid)
     m_comboTarget = 0;
     m_comboPoints = 0;
 
-    SetAttackPowerMultiplier(0.0f);
-    SetRangedAttackPowerMultiplier(0.0f);
+    setAttackPowerMultiplier(0.f);
+    setRangedAttackPowerMultiplier(0.f);
 
     m_resist_critical[0] = m_resist_critical[1] = 0;
     m_castFilterEnabled = false;
@@ -951,7 +947,7 @@ bool Player::Create(WorldPacket& data)
     else
     {
         setLevel(55);
-        SetNextLevelXp(148200);
+        setNextLevelXp(148200);
     }
 
 #if VERSION_STRING > TBC
@@ -963,7 +959,7 @@ bool Player::Create(WorldPacket& data)
     setRace(race);
     setClass(class_);
     setGender(gender);
-    SetPowerType(powertype);
+    setPowerType(powertype);
 
 #if VERSION_STRING != Cata
     setUInt32Value(UNIT_FIELD_BYTES_2, (U_FIELD_BYTES_FLAG_PVP << 8));
@@ -1027,7 +1023,7 @@ bool Player::Create(WorldPacket& data)
     setByteValue(PLAYER_BYTES_3, 2, 0);  // unknown
     setByteValue(PLAYER_BYTES_3, 3, GetPVPRank());  // pvp rank
 #endif
-    SetNextLevelXp(400);
+    setNextLevelXp(400);
     setUInt32Value(PLAYER_FIELD_BYTES, 0x08);
     SetCastSpeedMod(1.0f);
 #if VERSION_STRING != Classic
@@ -1087,7 +1083,7 @@ bool Player::Create(WorldPacket& data)
             item = objmgr.CreateItem((*is).protoid, this);
             if (item)
             {
-                item->SetStackCount((*is).amount);
+                item->setStackCount((*is).amount);
                 if ((*is).slot < INVENTORY_SLOT_BAG_END)
                 {
                     if (!GetItemInterface()->SafeAddItem(item, INVENTORY_SLOT_NOT_SET, (*is).slot))
@@ -1695,7 +1691,7 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
     UpdateRestState();
     SendLogXPGain(guid, xp, restxp, guid == 0 ? true : false);
 
-    int32 newxp = GetXp() + xp;
+    int32 newxp = getXp() + xp;
     int32 nextlevelxp = GetXpToLevel();
     uint32 level = getLevel();
     LevelInfo* li;
@@ -1786,7 +1782,7 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
     }
 
     // Set the update bit
-    SetXp(newxp);
+    setXp(newxp);
 
 }
 
@@ -2697,7 +2693,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
         ss << "0,";
 
     ss << uint32(getLevel()) << ","
-        << GetXp() << ","
+        << getXp() << ","
         << active_cheats << ","
 
         // dump exploration data
@@ -3116,7 +3112,7 @@ bool Player::LoadFromDB(uint32 guid)
     q->AddQuery("SELECT criteria, counter, date FROM character_achievement_progress WHERE guid = '%u'", guid); // 17
 
     // queue it!
-    SetLowGUID(guid);
+    setGuidLow(guid);
     CharacterDatabase.QueueAsyncQuery(q);
     return true;
 
@@ -3190,20 +3186,10 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         return;
     }
 
-    if (myRace->team_id == 7)
-    {
-        m_bgTeam = m_team = 0;
-    }
-    else
-    {
-        m_bgTeam = m_team = 1;
-    }
+    m_bgTeam = myRace->team_id == 7 ? 0 : 1;
     m_cache->SetUInt32Value(CACHE_PLAYER_INITIALTEAM, m_team);
-
     SetNoseLevel();
-
-    // set power type
-    SetPowerType(static_cast<uint8>(myClass->power_type));
+    setPowerType(myClass->power_type);
 
     // obtain player create info
     info = sMySQLStore.getPlayerCreateInfo(getRace(), getClass());
@@ -3235,7 +3221,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     CalculateBaseStats();
 
     // set xp
-    SetXp(get_next_field.GetUInt32());
+    setXp(get_next_field.GetUInt32());
 
     // Load active cheats
     uint32 active_cheats = get_next_field.GetUInt32();
@@ -14720,7 +14706,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
             Item *item = objmgr.CreateItem(qst->srcitem, this);
             if (item != nullptr)
             {
-                item->SetStackCount(qst->srcitemcount ? qst->srcitemcount : 1);
+                item->setStackCount(qst->srcitemcount ? qst->srcitemcount : 1);
                 if (!m_ItemInterface->AddItemToFreeSlot(item))
                     item->DeleteMe();
             }

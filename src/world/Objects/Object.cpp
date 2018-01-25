@@ -44,8 +44,113 @@
 #include "Spell/Definitions/PowerType.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Units/Creatures/CreatureDefines.hpp"
+#include "Data/WoWObject.h"
 
 // MIT Start
+
+void Object::setGuid(uint64_t guid)
+{
+    write(objectData()->guid, guid);
+    m_wowGuid.Init(guid);
+}
+
+void Object::setGuid(uint32_t low, uint32_t high)
+{
+    setGuid(static_cast<uint64_t>(high) << 32 | low);
+}
+
+void Object::setGuidLow(uint32_t low)
+{
+    setGuid(low, objectData()->guid_parts.high);
+}
+
+void Object::setGuidHigh(uint32_t high)
+{
+    setGuid(objectData()->guid_parts.low, high);
+}
+
+void Object::setObjectType(uint32_t objectTypeId)
+{
+    uint32_t object_type = TYPE_OBJECT;
+    switch (objectTypeId)
+    {
+    case TYPEID_CONTAINER:
+        object_type |= TYPE_CONTAINER;
+    case TYPEID_ITEM:
+        object_type |= TYPE_ITEM;
+        break;
+    case TYPEID_PLAYER:
+        object_type |= TYPE_PLAYER;
+    case TYPEID_UNIT:
+        object_type |= TYPE_UNIT;
+        break;
+    case TYPEID_GAMEOBJECT:
+        object_type |= TYPE_GAMEOBJECT;
+        break;
+    case TYPEID_DYNAMICOBJECT:
+        object_type |= TYPE_DYNAMICOBJECT;
+        break;
+    case TYPEID_CORPSE:
+        object_type |= TYPE_CORPSE;
+        break;
+    default:
+        break;
+    }
+
+    m_objectType = object_type;
+    m_objectTypeId = objectTypeId;
+    write(objectData()->type, static_cast<uint32_t>(m_objectType));
+}
+
+void Object::setScaleX(float_t scaleX)
+{
+    write(objectData()->scale_x, scaleX);
+}
+
+uint64_t Object::getGuid() const
+{
+    return objectData()->guid;
+}
+
+uint32_t Object::getGuidLow() const
+{
+    return objectData()->guid_parts.low;
+}
+
+uint32_t Object::getGuidHigh() const
+{
+    return objectData()->guid_parts.high;
+}
+
+uint32_t Object::getEntry() const
+{
+    return objectData()->entry;
+}
+
+void Object::setEntry(uint32_t entry)
+{
+    write(objectData()->entry, entry);
+}
+
+bool Object::write(const uint8_t& member, uint8_t val)
+{
+    if (member == val)
+        return false;
+
+    const auto member_ptr = const_cast<uint8_t*>(&member);
+    *member_ptr = val;
+
+    auto distance = static_cast<uint32_t>(member_ptr - wow_data_ptr);
+    distance -= distance % 4;
+    distance /= 4;
+
+    m_updateMask.SetBit(distance);
+
+    if (!skipping_updates)
+        updateObject();
+
+    return true;
+}
 
 bool Object::write(const float_t& member, float_t val)
 {
@@ -60,7 +165,30 @@ bool Object::write(const float_t& member, float_t val)
     distance /= 4;
 
     m_updateMask.SetBit(distance);
-    updateObject();
+
+    if (!skipping_updates)
+        updateObject();
+
+    return true;
+}
+
+bool Object::write(const int32_t& member, int32_t val)
+{
+    if (member == val)
+        return false;
+
+    const auto nonconst_member = const_cast<int32_t*>(&member);
+    *nonconst_member = val;
+
+    const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
+    auto distance = static_cast<uint32_t>(member_ptr - wow_data_ptr);
+    distance /= 4;
+
+    m_updateMask.SetBit(distance);
+
+    if (!skipping_updates)
+        updateObject();
+
     return true;
 }
 
@@ -77,7 +205,10 @@ bool Object::write(const uint32_t& member, uint32_t val)
     distance /= 4;
 
     m_updateMask.SetBit(distance);
-    updateObject();
+
+    if (!skipping_updates)
+        updateObject();
+
     return true;
 }
 
@@ -95,7 +226,10 @@ bool Object::write(const uint64_t& member, uint64_t val)
 
     m_updateMask.SetBit(distance);
     m_updateMask.SetBit(distance + 1);
-    updateObject();
+
+    if (!skipping_updates)
+        updateObject();
+
     return true;
 }
 
@@ -112,7 +246,10 @@ bool Object::writeLow(const uint64_t& member, uint32_t val)
     distance /= 4;
 
     m_updateMask.SetBit(distance);
-    updateObject();
+
+    if (!skipping_updates)
+        updateObject();
+
     return true;
 }
 
@@ -129,7 +266,10 @@ bool Object::writeHigh(const uint64_t& member, uint32_t val)
     distance /= 4;
 
     m_updateMask.SetBit(distance + 1);
-    updateObject();
+
+    if (!skipping_updates)
+        updateObject();
+
     return true;
 }
 
@@ -151,10 +291,12 @@ bool Object::write(const uint64_t& member, uint32_t low, uint32_t high)
 
     m_updateMask.SetBit(distance);
     m_updateMask.SetBit(distance + 1);
-    updateObject();
+
+    if (!skipping_updates)
+        updateObject();
+
     return true;
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Object values
@@ -2224,7 +2366,6 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
         }
     }
 }
-
 // This is not called!
 void Unit::BuildHeartBeatMsg(WorldPacket* data)
 {

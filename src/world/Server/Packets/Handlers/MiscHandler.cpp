@@ -187,7 +187,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
         if (item == NULL)
             return;
 
-        item->SetStackCount(amt);
+        item->setStackCount(amt);
         if (pLoot->items.at(lootSlot).iRandomProperty != NULL)
         {
             item->SetItemRandomPropertyId(pLoot->items.at(lootSlot).iRandomProperty->ID);
@@ -224,7 +224,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     }
     else
     {
-        add->SetStackCount(add->GetStackCount() + amt);
+        add->setStackCount(add->GetStackCount() + amt);
         add->m_isDirty = true;
 
         sQuestMgr.OnPlayerItemPickup(GetPlayer(), add);
@@ -2479,7 +2479,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
     if (item == NULL)
         return;
 
-    item->SetStackCount(amt);
+    item->setStackCount(amt);
     if (pLoot->items.at(slotid).iRandomProperty != NULL)
     {
         item->SetItemRandomPropertyId(pLoot->items.at(slotid).iRandomProperty->ID);

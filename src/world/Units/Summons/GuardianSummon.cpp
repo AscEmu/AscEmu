@@ -33,7 +33,7 @@ void GuardianSummon::Load(CreatureProperties const* properties_, Unit* pOwner, L
 {
     Summon::Load(properties_, pOwner, position, spellid, pSummonslot);
 
-    SetPowerType(POWER_TYPE_MANA);
+    setPowerType(POWER_TYPE_MANA);
     SetMaxPower(POWER_TYPE_MANA, GetMaxPower(POWER_TYPE_MANA) + 28 + 10 * getLevel());
     SetPower(POWER_TYPE_MANA, GetPower(POWER_TYPE_MANA) + 28 + 10 * getLevel());
     setLevel(pOwner->getLevel());

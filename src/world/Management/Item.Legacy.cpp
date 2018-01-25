@@ -128,7 +128,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     count = fields[6].GetUInt32();
     if (count > m_itemProperties->MaxCount && (m_owner && !m_owner->ItemStackCheat))
         count = m_itemProperties->MaxCount;
-    SetStackCount(count);
+    setStackCount(count);
 
     SetChargesLeft(fields[7].GetUInt32());
 
@@ -199,7 +199,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     if (GetEntry() == ITEM_ENTRY_GUILD_CHARTER)
     {
         SoulBind();
-        SetStackCount(1);
+        setStackCount(1);
         SetItemRandomSuffixFactor(57813883);
         if (plr != NULL && plr->m_charters[CHARTER_TYPE_GUILD])
             SetEnchantmentId(0, plr->m_charters[CHARTER_TYPE_GUILD]->GetID());
@@ -208,7 +208,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     if (GetEntry() == ARENA_TEAM_CHARTER_2v2)
     {
         SoulBind();
-        SetStackCount(1);
+        setStackCount(1);
         SetItemRandomSuffixFactor(57813883);
         if (plr != NULL && plr->m_charters[CHARTER_TYPE_ARENA_2V2])
             SetEnchantmentId(0, plr->m_charters[CHARTER_TYPE_ARENA_2V2]->GetID());
@@ -217,7 +217,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     if (GetEntry() == ARENA_TEAM_CHARTER_3v3)
     {
         SoulBind();
-        SetStackCount(1);
+        setStackCount(1);
         SetItemRandomSuffixFactor(57813883);
         if (plr != NULL && plr->m_charters[CHARTER_TYPE_ARENA_3V3])
             SetEnchantmentId(0, plr->m_charters[CHARTER_TYPE_ARENA_3V3]->GetID());
@@ -226,7 +226,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     if (GetEntry() == ARENA_TEAM_CHARTER_5v5)
     {
         SoulBind();
-        SetStackCount(1);
+        setStackCount(1);
         SetItemRandomSuffixFactor(57813883);
         if (plr != NULL && plr->m_charters[CHARTER_TYPE_ARENA_5V5])
             SetEnchantmentId(0, plr->m_charters[CHARTER_TYPE_ARENA_5V5]->GetID());
@@ -321,9 +321,9 @@ void Item::SaveToDB(int8 containerslot, int8 slot, bool firstsave, QueryBuffer* 
 
     ss << "INSERT INTO playeritems VALUES(";
 
-    ss << (Arcemu::Util::GUID_LOPART(itemData()->owner_guid)) << ",";
-    ss << GetLowGUID() << ",";
-    ss << GetEntry() << ",";
+    ss << getOwnerGuidLow() << ",";
+    ss << getGuidLow() << ",";
+    ss << getEntry() << ",";
     ss << wrapped_item_id << ",";
     ss << (Arcemu::Util::GUID_LOPART(GiftCreatorGUID)) << ",";
     ss << (Arcemu::Util::GUID_LOPART(CreatorGUID)) << ",";

@@ -447,7 +447,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
         setUInt32Value(UNIT_FIELD_BYTES_2, (0x01 | (0x28 << 8) | (0x2 << 24)));
         SetBoundingRadius(0.5f);
         SetCombatReach(0.75f);
-        SetPowerType(POWER_TYPE_MANA);
+        setPowerType(POWER_TYPE_MANA);
     }
     else // Hunter pet
     {
@@ -471,7 +471,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
         SetPower(POWER_TYPE_FOCUS, 100);                                                // Focus
         SetMaxPower(POWER_TYPE_FOCUS, 100);
         setUInt32Value(UNIT_FIELD_BYTES_2, 1  /* | (0x28 << 8) */ | (PET_RENAME_ALLOWED << 16));  // 0x3 -> Enable pet rename.
-        SetPowerType(POWER_TYPE_FOCUS);
+        setPowerType(POWER_TYPE_FOCUS);
     }
     SetFaction(owner->GetFaction());
 
@@ -916,7 +916,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
         setUInt32Value(UNIT_FIELD_BYTES_2, (0x01 | (0x28 << 8) | (0x2 << 24)));
         SetBoundingRadius(0.5f);
         SetCombatReach(0.75f);
-        SetPowerType(POWER_TYPE_MANA);
+        setPowerType(POWER_TYPE_MANA);
     }
     else
     {
@@ -930,7 +930,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
         setUInt32Value(UNIT_FIELD_BYTES_2, 1);
         SetPower(POWER_TYPE_FOCUS, 100);                                                    // Focus
         SetMaxPower(POWER_TYPE_FOCUS, 100);
-        SetPowerType(POWER_TYPE_FOCUS);
+        setPowerType(POWER_TYPE_FOCUS);
     }
 
     BaseDamage[0] = 0;

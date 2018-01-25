@@ -16,7 +16,15 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma pack(push, 1)
 struct WoWObject
 {
-    uint64_t guid;
+    union
+    {
+        struct
+        {
+            uint32_t low;
+            uint32_t high;
+        } guid_parts;
+        uint64_t guid;
+    };
     uint32_t type;
     uint32_t entry;
     float_t scale_x;

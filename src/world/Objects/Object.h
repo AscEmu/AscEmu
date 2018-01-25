@@ -367,10 +367,28 @@ protected:
         uint32_t* m_uint32Values;
         float* m_floatValues;
     };
-public:
 
     const WoWObject* objectData() const { return wow_data; }
+
+    void setGuid(uint64_t guid);
+    void setGuid(uint32_t low, uint32_t high);
+    void setGuidLow(uint32_t low);
+    void setGuidHigh(uint32_t high);
+    void setObjectType(uint32_t objectTypeId);
+    void setScaleX(float_t scaleX);
+
+    bool skipping_updates = false;
+public:
+    uint64_t getGuid() const;
+    uint32_t getGuidLow() const;
+    uint32_t getGuidHigh() const;
+    uint32_t getEntry() const;
+
+    void setEntry(uint32_t entry);
+
+    bool write(const uint8_t& member, uint8_t val);
     bool write(const float_t& member, float_t val);
+    bool write(const int32_t& member, int32_t val);
     bool write(const uint32_t& member, uint32_t val);
     bool write(const uint64_t& member, uint64_t val);
     bool write(const uint64_t& member, uint32_t low, uint32_t high);

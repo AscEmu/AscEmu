@@ -360,7 +360,7 @@ namespace luaItem
         uint32 count = static_cast<uint32>(luaL_checkinteger(L, 1));
         if (!count || count > 1000)
             return 0;
-        ptr->SetStackCount(count);
+        ptr->setStackCount(count);
         return 1;
     }
 
@@ -446,7 +446,7 @@ namespace luaItem
         Item* pItem = objmgr.CreateItem(id, NULL);
         if (!pItem)
             RET_NIL();
-        pItem->SetStackCount(stackcount);
+        pItem->setStackCount(stackcount);
         pItem->SaveToDB(0, 0, true, NULL);
         PUSH_ITEM(L, pItem);
         return 1;

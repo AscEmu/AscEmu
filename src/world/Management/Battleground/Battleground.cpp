@@ -883,7 +883,7 @@ Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, ui
     pCreature->setRace(0);
     pCreature->setClass(2);
     pCreature->setGender(1);
-    pCreature->SetPowerType(0);
+    pCreature->setPowerType(0);
 
     pCreature->SetEquippedItem(MELEE, 22802);
 

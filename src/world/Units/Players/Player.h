@@ -411,8 +411,12 @@ class TradeData
 struct WoWPlayer;
 class SERVER_DECL Player : public Unit
 {
-public:
     const WoWPlayer* playerData() const { return reinterpret_cast<WoWPlayer*>(wow_data); }
+public:
+
+    // Data
+    void setAttackPowerMultiplier(float val);
+    void setRangedAttackPowerMultiplier(float val);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement
@@ -1681,10 +1685,10 @@ public:
         void SetFarsightTarget(uint64 guid) { setUInt64Value(PLAYER_FARSIGHT, guid); }
         uint64 GetFarsightTarget() { return getUInt64Value(PLAYER_FARSIGHT); }
 
-        void SetXp(uint32 xp) { setUInt32Value(PLAYER_XP, xp); }
-        uint32 GetXp() { return getUInt32Value(PLAYER_XP); }
+    void setXp(uint32 xp);
+    uint32 getXp() const;
         uint32 GetXpToLevel() { return getUInt32Value(PLAYER_NEXT_LEVEL_XP); }
-        void SetNextLevelXp(uint32 xp) { setUInt32Value(PLAYER_NEXT_LEVEL_XP, xp); }
+    void setNextLevelXp(uint32_t xp);
 
         //\todo fix this
         void SetTalentPointsForAllSpec(uint32 amt)

@@ -38,8 +38,8 @@ enum CORPSE_STATE
 struct WoWCorpse;
 class SERVER_DECL Corpse : public Object
 {
-    public:
         const WoWCorpse* corpseData() const { return reinterpret_cast<WoWCorpse*>(wow_data); }
+    public:
         Corpse(uint32 high, uint32 low);
         ~Corpse();
 

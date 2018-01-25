@@ -28,6 +28,8 @@
 #include "WorldConf.h"
 #include "LootMgr.h"
 
+class Container;
+
 struct EnchantmentInstance
 {
     DBC::Structures::SpellItemEnchantmentEntry const* Enchantment;
@@ -182,15 +184,25 @@ struct WoWItem;
 class SERVER_DECL Item : public Object
 {
     // MIT Start
-protected:
-public:
     const WoWItem* itemData() const { return reinterpret_cast<WoWItem*>(wow_data); }
+public:
     void init(uint32_t high, uint32_t low);
     void create(uint32_t itemId, Player* owner);
     Player* getOwner() const;
     void setOwner(Player* owner);
     ItemProperties const* getItemProperties() const;
     void setItemProperties(ItemProperties const* itemProperties);
+    void setContainer(Container* container);
+    void setContainerGuid(uint64_t guid);
+    uint64_t getOwnerGuid() const;
+    uint32_t getOwnerGuidLow() const;
+    uint32_t getOwnerGuidHigh() const;
+    void setOwnerGuid(uint64_t guid);
+    void setStackCount(uint32_t count);
+    void setSpellCharges(uint32_t idx, int32_t count);
+    void setDurability(uint32_t durability);
+    void setMaxDurability(uint32_t maxDurability);
+
     // MIT End
 
         Item();
@@ -202,7 +214,6 @@ public:
         uint64 GetCreatorGUID() { return getUInt64Value(ITEM_FIELD_CREATOR); }
         uint64 GetGiftCreatorGUID() { return getUInt64Value(ITEM_FIELD_GIFTCREATOR); }
 
-        void SetStackCount(uint32 amt) { setUInt32Value(ITEM_FIELD_STACK_COUNT, amt); }
         uint32 GetStackCount() { return getUInt32Value(ITEM_FIELD_STACK_COUNT); }
         void ModStackCount(int32 val) { modUInt32Value(ITEM_FIELD_STACK_COUNT, val); }
 
@@ -260,8 +271,8 @@ public:
             random_suffix = id;
         }
 
-        void SetDurability(uint32 Value) { setUInt32Value(ITEM_FIELD_DURABILITY, Value); };
-        void SetDurabilityMax(uint32 Value) { setUInt32Value(ITEM_FIELD_MAXDURABILITY, Value); };
+        void SetDurability(uint32 Value) { setUInt32Value(ITEM_FIELD_DURABILITY, Value); }
+        void SetDurabilityMax(uint32 Value) { setUInt32Value(ITEM_FIELD_MAXDURABILITY, Value); }
 
         uint32 GetDurability() { return getUInt32Value(ITEM_FIELD_DURABILITY); }
         uint32 GetDurabilityMax() { return getUInt32Value(ITEM_FIELD_MAXDURABILITY); }
@@ -408,7 +419,7 @@ public:
 
         void RemoveFromWorld();
 
-        Loot* loot;
+    Loot* loot;
         bool locked;
         bool m_isDirty;
 

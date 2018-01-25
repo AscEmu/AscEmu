@@ -130,7 +130,7 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recvData)
             if (i2 == nullptr)
                 return;
 
-            i2->SetStackCount(c);
+            i2->setStackCount(c);
             i1->m_isDirty = true;
             i2->m_isDirty = true;
 
@@ -903,7 +903,7 @@ void WorldSession::HandleBuyBackOpcode(WorldPacket& recvData)
         }
         else
         {
-            add->SetStackCount(add->GetStackCount() + amount);
+            add->setStackCount(add->GetStackCount() + amount);
             add->m_isDirty = true;
 
             // delete the item
@@ -1014,7 +1014,7 @@ void WorldSession::HandleSellItemOpcode(WorldPacket& recvData)
 
     if (quantity < stackcount)
     {
-        item->SetStackCount(stackcount - quantity);
+        item->setStackCount(stackcount - quantity);
         item->m_isDirty = true;
     }
     else
@@ -1198,7 +1198,7 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recvData)   // drag & 
         pItem = objmgr.CreateItem(it->ItemId, _player);
         if (pItem)
         {
-            pItem->SetStackCount(count_per_stack);
+            pItem->setStackCount(count_per_stack);
             pItem->m_isDirty = true;
             //            LOG_DEBUG("SUPADBG bagslot=%u, slot=%u" , bagslot, slot);
             if (!_player->GetItemInterface()->SafeAddItem(pItem, bagslot, slot))
@@ -1334,7 +1334,7 @@ void WorldSession::HandleBuyItemOpcode(WorldPacket& recvData)   // right-click o
         }
 
         item->m_isDirty = true;
-        item->SetStackCount(amount * creature_item.amount);
+        item->setStackCount(amount * creature_item.amount);
 
         if (slotresult.ContainerSlot == ITEM_NO_SLOT_AVAILABLE)
         {

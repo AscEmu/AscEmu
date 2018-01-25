@@ -44,6 +44,7 @@
 #include "Spell/Definitions/SpellEffectTarget.h"
 #include "Spell/SpellHelpers.h"
 #include "Creatures/Pet.h"
+#include "Data/WoWUnit.h"
 
 using ascemu::World::Spell::Helpers::spellModFlatIntValue;
 using ascemu::World::Spell::Helpers::spellModPercentageIntValue;
@@ -14295,13 +14296,6 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
     if (GetUnitMovementFlags() & MOVEFLAG_SPLINE_MOVER)
         *data << (float)GetMovementInfo()->spline_elevation;
 #endif
-}
-
-void Unit::setLevel(uint32 level)
-{
-    setUInt32Value(UNIT_FIELD_LEVEL, level);
-    if (IsPlayer())
-        static_cast< Player* >(this)->SetNextLevelXp(sMySQLStore.getPlayerXPForLevel(level));
 }
 
 void Unit::UpdateAuraForGroup(uint8 slot)

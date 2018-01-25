@@ -797,6 +797,8 @@ void WorldSession::FullLogin(Player* plr)
 
     bool enter_world = true;
 
+    auto data = plr->getXp();
+
     // Find our transporter and add us if we're on one.
     if (plr->obj_movement_info.transporter_info.guid != 0)
     {

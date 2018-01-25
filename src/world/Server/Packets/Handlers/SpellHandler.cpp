@@ -69,7 +69,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (tmpItem->IsSoulbound() && tmpItem->itemData()->owner_guid != _player->GetGUID() && !tmpItem->IsAccountbound())
+    if (tmpItem->IsSoulbound() && tmpItem->getOwnerGuid() != _player->GetGUID() && !tmpItem->IsAccountbound())
     {
         _player->GetItemInterface()->BuildInventoryChangeError(tmpItem, nullptr, INV_ERR_DONT_OWN_THAT_ITEM);
         return;

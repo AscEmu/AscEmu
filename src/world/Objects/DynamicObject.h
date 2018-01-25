@@ -39,8 +39,8 @@ struct WoWDynamicObject;
 class SERVER_DECL DynamicObject : public Object
 {
     // MIT Start
-public:
     const WoWDynamicObject* dynamicObjectData() const { return reinterpret_cast<WoWDynamicObject*>(wow_data); }
+public:
     void Create(Unit* caster, Spell* pSpell, LocationVector lv, uint32 duration, float radius, uint32 type);
     // MIT End
 

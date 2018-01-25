@@ -1465,7 +1465,7 @@ Item* ObjectMgr::CreateItem(uint32 entry, Player* owner)
     {
         Container* pContainer = new Container(HIGHGUID_TYPE_CONTAINER, GenerateLowGuid(HIGHGUID_TYPE_CONTAINER));
         pContainer->Create(entry, owner);
-        pContainer->SetStackCount(1);
+        pContainer->setStackCount(1);
         return pContainer;
     }
     else
@@ -1473,7 +1473,7 @@ Item* ObjectMgr::CreateItem(uint32 entry, Player* owner)
         Item* pItem = new Item;
         pItem->init(HIGHGUID_TYPE_ITEM, GenerateLowGuid(HIGHGUID_TYPE_ITEM));
         pItem->create(entry, owner);
-        pItem->SetStackCount(1);
+        pItem->setStackCount(1);
 
 #if VERSION_STRING > TBC
         if (owner != nullptr)

@@ -27,7 +27,6 @@ struct WoWContainer;
 class SERVER_DECL Container : public Item
 {
     // MIT Start
-protected:
     const WoWContainer* containerData() const { return reinterpret_cast<WoWContainer*>(wow_data); }
 public:
     // MIT End
@@ -41,13 +40,7 @@ public:
 
         bool AddItem(int16 slot, Item* item);
         bool AddItemToFreeSlot(Item* pItem, uint32* r_slot);
-        Item* GetItem(int16 slot)
-        {
-            if (slot >= 0 && (uint16)slot < getItemProperties()->ContainerSlots)
-                return m_Slot[slot];
-            else
-                return 0;
-        }
+    Item* GetItem(int16 slot);
 
         int8 FindFreeSlot();
         bool HasItems();
@@ -62,7 +55,7 @@ public:
         void SetSlot(uint16 slot, uint64 guid) { setUInt64Value(CONTAINER_FIELD_SLOT_1 + (slot * 2), guid); }
         uint64 GetSlot(uint16 slot) { return getUInt64Value(CONTAINER_FIELD_SLOT_1 + (slot * 2)); }
 
-    protected:
+protected:
 
         Item** m_Slot;
         uint32 __fields[CONTAINER_END];

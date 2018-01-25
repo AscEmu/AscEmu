@@ -796,7 +796,7 @@ void LootRoll::Finalize()
         Item* item = objmgr.CreateItem(itemid, _player);
         if (item == nullptr)
             return;
-        item->SetStackCount(amt);
+        item->setStackCount(amt);
 
         if (pLoot->items.at(_slotid).iRandomProperty != NULL)
         {
@@ -822,7 +822,7 @@ void LootRoll::Finalize()
     }
     else
     {
-        add->SetStackCount(add->GetStackCount() + amt);
+        add->setStackCount(add->GetStackCount() + amt);
         add->m_isDirty = true;
         sQuestMgr.OnPlayerItemPickup(_player, add);
         _player->SendItemPushResult(false, true, true, false, (uint8)_player->GetItemInterface()->GetBagSlotByGuid(add->GetGUID()), 0xFFFFFFFF, 1, add->GetEntry(), add->GetItemRandomSuffixFactor(), add->GetItemRandomPropertyId(), add->GetStackCount());

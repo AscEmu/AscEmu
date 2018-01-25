@@ -1500,9 +1500,9 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
         GetAIInterface()->onGameobject = true;
     // more hacks!
     if (creature_properties->Mana != 0)
-        SetPowerType(POWER_TYPE_MANA);
+        setPowerType(POWER_TYPE_MANA);
     else
-        SetPowerType(0);
+        setPowerType(0);
 
     if (creature_properties->guardtype == GUARDTYPE_CITY)
         m_aiInterface->m_isGuard = true;
@@ -1700,7 +1700,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
         m_useAI = false;
     }
 
-    SetPowerType(POWER_TYPE_MANA);
+    setPowerType(POWER_TYPE_MANA);
 
     if (creature_properties->guardtype == GUARDTYPE_CITY)
         m_aiInterface->m_isGuard = true;
@@ -1832,7 +1832,7 @@ void Creature::Despawn(uint32 delay, uint32 respawntime)
 
             sEventMgr.RemoveEvents(this);
             sEventMgr.AddEvent(m_mapMgr, &MapMgr::EventRespawnCreature, this, pCell->GetPositionX(), pCell->GetPositionY(), EVENT_CREATURE_RESPAWN, respawntime, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-            
+
             Unit::RemoveFromWorld(false);
 
             m_position = m_spawnLocation;

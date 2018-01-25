@@ -10,6 +10,40 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/DiminishingGroup.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
+#include "Data/WoWUnit.h"
+
+uint8 Unit::getRace() const { return unitData()->field_bytes_0_wowplayer.race; }
+
+uint8 Unit::getClass() const { return unitData()->field_bytes_0_wowplayer.unit_class; }
+
+uint8 Unit::getGender() const { return unitData()->field_bytes_0_wowplayer.gender; }
+
+void Unit::setRace(uint8_t race)
+{
+    write(unitData()->field_bytes_0_wowplayer.race, race);
+}
+
+void Unit::setClass(uint8_t class_)
+{
+    write(unitData()->field_bytes_0_wowplayer.unit_class, class_);
+}
+
+void Unit::setGender(uint8_t gender)
+{
+    write(unitData()->field_bytes_0_wowplayer.gender, gender);
+}
+
+void Unit::setPowerType(uint8_t powerType)
+{
+    write(unitData()->field_bytes_0_wowplayer.power_type, powerType);
+}
+
+void Unit::setLevel(uint32_t level)
+{
+    write(unitData()->level, level);
+    if (IsPlayer())
+        static_cast<Player*>(this)->setNextLevelXp(sMySQLStore.getPlayerXPForLevel(level));
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement

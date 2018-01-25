@@ -52,7 +52,17 @@ struct WoWUnit : WoWObject
     uint32_t max_power_5;
     uint32_t level;
     uint32_t faction_template;
-    uint32_t bytes_0;
+    union
+    {
+        struct
+        {
+            uint8_t race;
+            uint8_t unit_class;
+            uint8_t gender;
+            uint8_t power_type;
+        } field_bytes_0_wowplayer;
+        uint32_t field_bytes_0;
+    };
     uint32_t virtual_item_slot_display[WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT];
     uint32_t virtual_item_info[WOWUNIT_VIRTUAL_ITEM_INFO_COUNT];
     uint32_t unit_flags;

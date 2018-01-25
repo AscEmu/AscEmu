@@ -69,7 +69,7 @@ void Container::LoadFromDB(Field* fields)
 
 
     SetCreatorGUID(fields[5].GetUInt32());
-    SetStackCount(1);
+    setStackCount(1);
 
     setUInt32Value(ITEM_FIELD_FLAGS, fields[8].GetUInt32());
     SetItemRandomPropertyId(fields[9].GetUInt32());
@@ -95,10 +95,10 @@ void Container::Create(uint32 itemid, Player* owner)
     ///\todo this shouldn't get NULL form containers in mail fix me
     if (owner != NULL)
     {
-        write(containerData()->owner_guid, 0);
-        write(containerData()->container_guid, owner->objectData()->guid);
+        setOwnerGuid(0UL);
+        setContainerGuid(owner->getGuid());
     }
-    SetStackCount(1);
+    setStackCount(1);
     SetNumSlots(m_itemProperties->ContainerSlots);
 
     m_Slot = new Item*[m_itemProperties->ContainerSlots];
@@ -152,7 +152,7 @@ bool Container::AddItem(int16 slot, Item* item)
     m_Slot[slot] = item;
     item->m_isDirty = true;
 
-    item->write(itemData()->container_guid, containerData()->guid);
+    item->setContainer(this);
     item->setOwner(m_owner);
 
     if (item->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP)
@@ -210,7 +210,7 @@ void Container::SwapItems(int8 SrcSlot, int8 DstSlot)
             else
             {
                 int32 delta = destMaxCount - m_Slot[DstSlot]->GetStackCount();
-                m_Slot[DstSlot]->SetStackCount(destMaxCount);
+                m_Slot[DstSlot]->setStackCount(destMaxCount);
                 m_Slot[SrcSlot]->ModStackCount(-delta);
                 return;
             }
@@ -257,7 +257,7 @@ Item* Container::SafeRemoveAndRetreiveItemFromSlot(int16 slot, bool destroy)
     if (pItem->getOwner() == m_owner)
     {
         SetSlot(slot, 0);
-        pItem->write(pItem->itemData()->container_guid, 0);
+        pItem->setContainer(nullptr);
 
         if (destroy)
         {
@@ -287,7 +287,7 @@ bool Container::SafeFullRemoveItemFromSlot(int16 slot)
     m_Slot[slot] = NULL;
 
     SetSlot(slot, 0);
-    pItem->write(pItem->itemData()->container_guid, 0);
+    pItem->setContainer(nullptr);
 
     if (pItem->IsInWorld())
     {
@@ -309,7 +309,7 @@ bool Container::AddItemToFreeSlot(Item* pItem, uint32* r_slot)
             m_Slot[slot] = pItem;
             pItem->m_isDirty = true;
 
-            pItem->write(pItem->itemData()->container_guid, containerData()->guid);
+            pItem->setContainer(this);
             pItem->setOwner(m_owner);
 
             SetSlot(uint16(slot), pItem->GetGUID());
@@ -331,6 +331,14 @@ bool Container::AddItemToFreeSlot(Item* pItem, uint32* r_slot)
         }
     }
     return false;
+}
+
+Item* Container::GetItem(int16 slot)
+{
+    if (slot >= 0 && (uint16)slot < getItemProperties()->ContainerSlots)
+        return m_Slot[slot];
+    else
+        return 0;
 }
 
 void Container::SaveBagToDB(int8 slot, bool first, QueryBuffer* buf)
