@@ -19,7 +19,7 @@ option(BUILD_MISCSCRIPTS "Build ascMiscScripts." ON)
 option(BUILD_LUAENGINE "Build LuaEngine." ON)
 option(WITH_NEW_SPELL_SYSTEM "Use experimental spell system" OFF)
 set(ASCEMU_TOOLS_PATH "tools" CACHE PATH "The directory where you want the tools installed.")
-option(BUILD_WITH_WARNINGS "Enable/Disable warnings on compilation" OFF)
+option(BUILD_WITH_WARNINGS "Enable/Disable warnings on compilation" ON)
 option(USE_PCH "Enable precompiled headers - it will reduce compilation time" ON)
 
 if(NOT WITH_NEW_SPELL_SYSTEM)

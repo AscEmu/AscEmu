@@ -20,8 +20,8 @@ endif()
 # enable/disable warnings
 # dll warning 4251 disabled by default.
 if (BUILD_WITH_WARNINGS)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W4 /wd4251")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /wd4251")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /WX /wd4251")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX /wd4251")
 else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W0")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0")
