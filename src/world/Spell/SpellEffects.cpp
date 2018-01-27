@@ -6373,19 +6373,27 @@ void Spell::SpellEffectActivateSpec(uint8_t /*effectIndex*/)
         }
     }
 
-    uint8 NewSpec = p_caster->m_talentActiveSpec == SPEC_PRIMARY ? SPEC_SECONDARY : SPEC_PRIMARY; // Check if primary spec is on or not
-    p_caster->ActivateSpec(NewSpec);
-
     WorldPacket data(SMSG_ACTION_BUTTONS, PLAYER_ACTION_BUTTON_SIZE + 1);
 
     data << uint8(1); // Force the client to reset the actionbar and use new values
 
+#ifdef FT_DUAL_SPEC
+    uint8 NewSpec = p_caster->m_talentActiveSpec == SPEC_PRIMARY ? SPEC_SECONDARY : SPEC_PRIMARY; // Check if primary spec is on or not
+    p_caster->ActivateSpec(NewSpec);
     for (uint32 j = 0; j < PLAYER_ACTION_BUTTON_COUNT; ++j)
     {
         data << p_caster->m_specs[NewSpec].mActions[j].Action;
         data << p_caster->m_specs[NewSpec].mActions[j].Type;
         data << p_caster->m_specs[NewSpec].mActions[j].Misc;
     }
+#else
+    for (uint32 j = 0; j < PLAYER_ACTION_BUTTON_COUNT; ++j)
+    {
+        data << p_caster->getActiveSpec().mActions[j].Action;
+        data << p_caster->getActiveSpec().mActions[j].Type;
+        data << p_caster->getActiveSpec().mActions[j].Misc;
+    }
+#endif
 
     p_caster->GetSession()->SendPacket(&data);
     p_caster->SetPower(p_caster->getPowerType(), 0);

@@ -172,7 +172,7 @@ bool Container::AddItem(int16 slot, Item* item)
         item->PushToWorld(m_owner->GetMapMgr());
 
         ByteBuffer buf(3000);
-        uint32 count = item->BuildCreateUpdateBlockForPlayer(&buf, m_owner);
+        uint32 count = item->buildCreateUpdateBlockForPlayer(&buf, m_owner);
         m_owner->PushCreationData(&buf, count);
     }
 #if VERSION_STRING > TBC
@@ -318,7 +318,7 @@ bool Container::AddItemToFreeSlot(Item* pItem, uint32* r_slot)
             {
                 pItem->PushToWorld(m_owner->GetMapMgr());
                 ByteBuffer buf(2500);
-                uint32 count = pItem->BuildCreateUpdateBlockForPlayer(&buf, m_owner);
+                uint32 count = pItem->buildCreateUpdateBlockForPlayer(&buf, m_owner);
                 m_owner->PushCreationData(&buf, count);
             }
             if (r_slot)

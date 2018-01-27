@@ -60,7 +60,7 @@ uint32 ItemInterface::m_CreateForPlayer(ByteBuffer* data)       // 100%
         {
             if (m_pItems[i]->IsContainer())
             {
-                count += static_cast<Container*>(m_pItems[i])->BuildCreateUpdateBlockForPlayer(data, m_pOwner);
+                count += static_cast<Container*>(m_pItems[i])->buildCreateUpdateBlockForPlayer(data, m_pOwner);
 
                 for (uint32 e = 0; e < m_pItems[i]->getItemProperties()->ContainerSlots; ++e)
                 {
@@ -69,18 +69,18 @@ uint32 ItemInterface::m_CreateForPlayer(ByteBuffer* data)       // 100%
                     {
                         if (pItem->IsContainer())
                         {
-                            count += static_cast<Container*>(pItem)->BuildCreateUpdateBlockForPlayer(data, m_pOwner);
+                            count += static_cast<Container*>(pItem)->buildCreateUpdateBlockForPlayer(data, m_pOwner);
                         }
                         else
                         {
-                            count += pItem->BuildCreateUpdateBlockForPlayer(data, m_pOwner);
+                            count += pItem->buildCreateUpdateBlockForPlayer(data, m_pOwner);
                         }
                     }
                 }
             }
             else
             {
-                count += m_pItems[i]->BuildCreateUpdateBlockForPlayer(data, m_pOwner);
+                count += m_pItems[i]->buildCreateUpdateBlockForPlayer(data, m_pOwner);
             }
         }
     }
@@ -239,7 +239,7 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
             {
                 item->PushToWorld(m_pOwner->GetMapMgr());
                 ByteBuffer buf(2500);
-                uint32 count = item->BuildCreateUpdateBlockForPlayer(&buf, m_pOwner);
+                uint32 count = item->buildCreateUpdateBlockForPlayer(&buf, m_pOwner);
                 m_pOwner->PushCreationData(&buf, count);
             }
             m_pOwner->SetInventorySlot(slot, item->GetGUID());

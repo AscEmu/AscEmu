@@ -274,7 +274,7 @@ Player::Player(uint32 guid)
     m_GroupInviter(0),
     m_SummonedObject(nullptr),
     myCorpseLocation()
-#if VERSION_STRING > TBC
+#ifdef FT_ACHIEVEMENTS
         ,
     m_achievementMgr(this)
 #endif
@@ -448,14 +448,17 @@ Player::Player(uint32 guid)
     m_GuildId = 0;
 #endif
 
+#ifdef FT_DUAL_SPEC
     for (uint8 s = 0; s < MAX_SPEC_COUNT; ++s)
     {
         m_specs[s].talents.clear();
-#ifdef FT_GLYPHS
         memset(m_specs[s].glyphs, 0, GLYPHS_COUNT * sizeof(uint16));
-#endif
         memset(m_specs[s].mActions, 0, PLAYER_ACTION_BUTTON_SIZE);
     }
+#else
+    m_spec.talents.clear();
+    memset(m_spec.mActions, 0, PLAYER_ACTION_BUTTON_SIZE);
+#endif
 
     m_drunkTimer = 0;
     m_drunk = 0;
@@ -2063,6 +2066,9 @@ void Player::smsg_TalentsInfo(bool SendPetTalents)
 
 void Player::ActivateSpec(uint8 spec)
 {
+#ifndef FT_DUAL_SPEC
+    return;
+#else
     if (spec >= MAX_SPEC_COUNT || m_talentActiveSpec >= MAX_SPEC_COUNT)
         return;
 
@@ -2118,6 +2124,7 @@ void Player::ActivateSpec(uint8 spec)
     setUInt32Value(PLAYER_CHARACTER_POINTS, m_specs[m_talentActiveSpec].GetTP());
 #endif
     smsg_TalentsInfo(false);
+#endif
 }
 
 void PlayerSpec::AddTalent(uint32 talentid, uint8 rankid)
@@ -2872,6 +2879,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     SaveReputations(bNewCharacter, buf);
 
     // Add player action bars
+#ifdef FT_DUAL_SPEC
     for (uint8 s = 0; s < MAX_SPEC_COUNT; ++s)
     {
         for (uint8 i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
@@ -2882,9 +2890,14 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
         }
         ss << "','";
     }
-
-#ifndef FT_DUAL_SPEC
-    ss << "','";
+#else
+    for (uint8 i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+    {
+        ss << uint32(m_spec.mActions[i].Action) << ","
+                << uint32(m_spec.mActions[i].Type) << ","
+                << uint32(m_spec.mActions[i].Misc) << ",";
+    }
+    ss << "','','";
 #endif
 
     if (!bNewCharacter)
@@ -2932,13 +2945,17 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     }
 #else
     ss << "'', '";
-    for (const auto talent : m_specs[0].talents)
+    for (const auto talent : m_spec.talents)
         ss << talent.first << "," << talent.second << ",";
     ss << "', '', '', ";
 #endif
     ss << uint32(m_talentSpecsCount) << ", " << uint32(m_talentActiveSpec);
     ss << ", '";
+#ifdef FT_DUAL_SPEC
     ss << uint32(m_specs[SPEC_PRIMARY].GetTP()) << " " << uint32(m_specs[SPEC_SECONDARY].GetTP());
+#else
+    ss << uint32(m_spec.GetTP()) << " 0";
+#endif
     ss << "', ";
 
 #if VERSION_STRING != Cata
@@ -3523,6 +3540,11 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     // Load saved actionbars
     for (uint8 s = 0; s < MAX_SPEC_COUNT; ++s)
     {
+#ifdef FT_DUAL_SPEC
+        auto& spec = m_specs[s];
+#else
+        auto& spec = m_spec;
+#endif
         start = (char*)get_next_field.GetString();
         Counter = 0;
         while (Counter < PLAYER_ACTION_BUTTON_COUNT)
@@ -3534,19 +3556,19 @@ void Player::LoadFromDBProc(QueryResultVector & results)
             if (!end)
                 break;
             *end = 0;
-            m_specs[s].mActions[Counter].Action = (uint16)atol(start);
+            spec.mActions[Counter].Action = (uint16)atol(start);
             start = end + 1;
             end = strchr(start, ',');
             if (!end)
                 break;
             *end = 0;
-            m_specs[s].mActions[Counter].Type = (uint8)atol(start);
+            spec.mActions[Counter].Type = (uint8)atol(start);
             start = end + 1;
             end = strchr(start, ',');
             if (!end)
                 break;
             *end = 0;
-            m_specs[s].mActions[Counter].Misc = (uint8)atol(start);
+            spec.mActions[Counter].Misc = (uint8)atol(start);
             start = end + 1;
 
             Counter++;
@@ -3640,7 +3662,9 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     for (uint8 s = 0; s < MAX_SPEC_COUNT; ++s)
     {
         start = (char*)get_next_field.GetString();
-#ifdef FT_GLYPHS
+#ifdef FT_DUAL_SPEC
+        auto& spec = m_specs[s];
+
         uint8 glyphid = 0;
         while (glyphid < GLYPHS_COUNT)
         {
@@ -3651,6 +3675,8 @@ void Player::LoadFromDBProc(QueryResultVector & results)
             ++glyphid;
             start = end + 1;
         }
+#else
+        auto& spec = m_spec;
 #endif
 
         //Load talents for spec
@@ -3671,7 +3697,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
             uint8 rank = (uint8)atol(start);
             start = end + 1;
 
-            m_specs[s].talents.insert(std::pair<uint32, uint8>(talentid, rank));
+            spec.talents.insert(std::pair<uint32, uint8>(talentid, rank));
         }
     }
 
@@ -3686,12 +3712,17 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         ss >> tp1;
         ss >> tp2;
 
+#ifdef FT_DUAL_SPEC
         m_specs[SPEC_PRIMARY].SetTP(tp1);
         m_specs[SPEC_SECONDARY].SetTP(tp2);
 #if VERSION_STRING != Cata
         setUInt32Value(PLAYER_CHARACTER_POINTS1, m_specs[m_talentActiveSpec].GetTP());
 #else
         setUInt32Value(PLAYER_CHARACTER_POINTS, m_specs[m_talentActiveSpec].GetTP());
+#endif
+#else
+        m_spec.SetTP(tp1);
+        setUInt32Value(PLAYER_CHARACTER_POINTS1, getActiveSpec().GetTP());
 #endif
     }
 
@@ -6105,9 +6136,9 @@ void Player::SendInitialActions()
 
     for (uint8 i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
     {
-        data << m_specs[m_talentActiveSpec].mActions[i].Action;
-        data << m_specs[m_talentActiveSpec].mActions[i].Type;
-        data << m_specs[m_talentActiveSpec].mActions[i].Misc;
+        data << getActiveSpec().mActions[i].Action;
+        data << getActiveSpec().mActions[i].Type;
+        data << getActiveSpec().mActions[i].Misc;
     }
     m_session->SendPacket(&data);
 }
@@ -6144,9 +6175,9 @@ void Player::setAction(uint8 button, uint16 action, uint8 type, uint8 misc)
     if (button >= PLAYER_ACTION_BUTTON_COUNT)
         return;
 
-    m_specs[m_talentActiveSpec].mActions[button].Action = action;
-    m_specs[m_talentActiveSpec].mActions[button].Misc = misc;
-    m_specs[m_talentActiveSpec].mActions[button].Type = type;
+    getActiveSpec().mActions[button].Action = action;
+    getActiveSpec().mActions[button].Misc = misc;
+    getActiveSpec().mActions[button].Type = type;
 }
 
 // Groupcheck
@@ -7640,7 +7671,7 @@ void Player::Reset_Talents()
         ResetDualWield2H();
     }
 
-    m_specs[m_talentActiveSpec].talents.clear();
+    getActiveSpec().talents.clear();
 #if VERSION_STRING == Cata
     m_FirstTalentTreeLock = 0;
 #endif
@@ -8433,7 +8464,7 @@ void Player::RemoveItemsFromWorld()
     UpdateStats();
 }
 
-uint32 Player::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
+uint32 Player::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 {
     int count = 0;
     if (target == this)
@@ -8441,7 +8472,7 @@ uint32 Player::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
         // we need to send create objects for all items.
         count += GetItemInterface()->m_CreateForPlayer(data);
     }
-    count += Unit::BuildCreateUpdateBlockForPlayer(data, target);
+    count += Unit::buildCreateUpdateBlockForPlayer(data, target);
     return count;
 }
 
@@ -13294,7 +13325,7 @@ void Player::HandleSpellLoot(uint32 itemid)
 #if VERSION_STRING != Cata
 void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
 {
-    uint32 CurTalentPoints = m_specs[m_talentActiveSpec].GetTP();   // Calculate free points in active spec
+    uint32 CurTalentPoints = getActiveSpec().GetTP();   // Calculate free points in active spec
 
     if (CurTalentPoints == 0)
         return;
@@ -13457,7 +13488,7 @@ void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
             }
 
             SetCurrentTalentPoints(CurTalentPoints - static_cast<uint32>(points));
-            m_specs[m_talentActiveSpec].AddTalent(talentid, uint8(rank));
+            getActiveSpec().AddTalent(talentid, uint8(rank));
             smsg_TalentsInfo(false);
         }
     }

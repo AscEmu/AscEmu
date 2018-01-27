@@ -68,10 +68,6 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
         return;
     }
 
-    // Prevent moving other objects
-    if (movement_info.guid != mover->GetGUID())
-        return;
-
     if (auto summoned_object = _player->m_SummonedObject)
     {
          if (summoned_object->IsGameObject())
@@ -180,6 +176,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
         m_clientTimeDelay = ms_time - movement_info.time;
 
     MovementPacket packet(recvData.GetOpcode(), 0);
+    packet.guid = mover->GetGUID();
     packet.info = movement_info;
 
     if (_player->getInRangePlayersCount())

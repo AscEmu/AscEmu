@@ -8,7 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 struct MovementInfo
 {
-    WoWGuid guid;
     uint32_t flags;
 #if VERSION_STRING <= TBC
     uint8_t flags2;
@@ -35,7 +34,6 @@ struct MovementInfo
     uint32_t unk_13;
 
     MovementInfo():
-        guid(),
         flags(0),
         flags2(0),
         time(0),

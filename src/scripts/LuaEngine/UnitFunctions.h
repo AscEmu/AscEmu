@@ -5640,12 +5640,18 @@ class LuaUnit
     {
         TEST_PLAYER()
 #if VERSION_STRING != Cata
+#ifdef FT_DUAL_SPEC
         uint32 spec = static_cast<uint32>(luaL_checkinteger(L, 1)); //0 or 1
         uint32 points = static_cast<uint32>(luaL_checkinteger(L, 2));
         static_cast<Player*>(ptr)->m_specs[spec].SetTP(points);
-
         if (spec == static_cast<Player*>(ptr)->m_talentActiveSpec)
             static_cast<Player*>(ptr)->setUInt32Value(PLAYER_CHARACTER_POINTS1, points);
+#else
+        uint32 spec = static_cast<uint32>(luaL_checkinteger(L, 1)); //0 or 1
+        uint32 points = static_cast<uint32>(luaL_checkinteger(L, 2));
+        static_cast<Player*>(ptr)->getActiveSpec().SetTP(points);
+        static_cast<Player*>(ptr)->setUInt32Value(PLAYER_CHARACTER_POINTS1, points);
+#endif
 
         static_cast<Player*>(ptr)->smsg_TalentsInfo(false);
 #else
@@ -5658,7 +5664,11 @@ class LuaUnit
     {
         TEST_PLAYER()
         uint32 spec = static_cast<uint32>(luaL_checkinteger(L, 1)); //0 or 1
+#ifdef FT_DUAL_SPEC
         PlayerSpec plrSpec = static_cast<Player*>(ptr)->m_specs[spec];
+#else
+        PlayerSpec plrSpec = static_cast<Player*>(ptr)->m_spec;
+#endif
         //uint32 Lvl = static_cast<Player*>(ptr)->getLevel();
         uint32 FreePoints = plrSpec.GetTP();
 

@@ -14,15 +14,12 @@ namespace AscEmu { namespace Packets
     class MovementPacket : public ManagedPacket
     {
     public:
+        WoWGuid guid;
         MovementInfo info;
 
     private:
         bool deserialiseTbc(WorldPacket& packet)
         {
-            uint64_t unpacked_guid;
-            packet >> unpacked_guid;
-            info.guid = WoWGuid(unpacked_guid);
-
             packet >> info.flags >> info.flags2 >> info.time
                     >> info.position >> info.position.o;
 
@@ -46,7 +43,8 @@ namespace AscEmu { namespace Packets
 
         bool serialiseTbc(WorldPacket& packet)
         {
-            packet << info.guid.GetOldGuid() << info.flags << info.flags2 << info.time
+            packet << guid;
+            packet << info.flags << info.flags2 << info.time
                     << info.position << info.position.o;
 
             if (info.isOnTransport())

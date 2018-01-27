@@ -926,7 +926,7 @@ bool AIInterface::activateShowWayPoints(Player* player, bool showBackwards)
             wpCreature->SetStat(STAT_STRENGTH, wayPoint->flags);
 
             ByteBuffer buf(3000);
-            uint32_t count = wpCreature->BuildCreateUpdateBlockForPlayer(&buf, player);
+            uint32_t count = wpCreature->buildCreateUpdateBlockForPlayer(&buf, player);
             player->PushCreationData(&buf, count);
 
             wpCreature->setMoveRoot(true);

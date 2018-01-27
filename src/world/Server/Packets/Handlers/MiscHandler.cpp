@@ -2138,7 +2138,7 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
     //data.appendPackGUID(player->GetGUID());
     //data << player->GetNewGUID();
 #ifdef SAVE_BANDWIDTH
-    PlayerSpec *currSpec = &player->m_specs[player->m_talentActiveSpec];
+    PlayerSpec *currSpec = &player->getActiveSpec();
     data << uint32(currSpec->GetTP());
     data << uint8(1) << uint8(0);
     data << uint8(currSpec->talents.size()); //fake value, will be overwritten at the end
@@ -2146,12 +2146,16 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
         data << itr->first << itr->second;
     data << uint8(0); // Send Glyph info
 #else
-    data << uint32(player->m_specs[player->m_talentActiveSpec].GetTP());
+    data << uint32(player->getActiveSpec().GetTP());
     data << uint8(player->m_talentSpecsCount);
     data << uint8(player->m_talentActiveSpec);
     for (uint8 s = 0; s < player->m_talentSpecsCount; s++)
     {
+#ifdef FT_DUAL_SPEC
         PlayerSpec spec = player->m_specs[s];
+#else
+        PlayerSpec spec = player->m_spec;
+#endif
 
         int32 talent_max_rank;
         uint32 const* talent_tab_ids;

@@ -41,6 +41,7 @@ This file is released under the MIT license. See README-MIT for more information
 #endif
 
 #if VERSION_STRING >= WotLK
+    #define FT_ACHIEVEMENTS
     #define FT_DEATH_KNIGHT
     #define FT_DUAL_SPEC
     #define FT_DUNGEON_FINDER

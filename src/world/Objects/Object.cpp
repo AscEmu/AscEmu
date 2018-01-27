@@ -1094,7 +1094,7 @@ void Object::_Create(uint32 mapid, float x, float y, float z, float ang)
 }
 
 #ifdef AE_TBC
-uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
+uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 {
     if (!target)
         return 0;
@@ -1154,16 +1154,16 @@ uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
     *data << m_objectTypeId;
 
     //\todo remove flags (0) from function call.
-    _BuildMovementUpdate(data, flags, target);
+    buildMovementUpdate(data, flags, target);
 
 
     // we have dirty data, or are creating for ourself.
-    UpdateMask updateMask;
-    updateMask.SetCount(m_valuesCount);
-    _SetCreateBits(&updateMask, target);
+    UpdateMask update_mask;
+    update_mask.SetCount(m_valuesCount);
+    _SetCreateBits(&update_mask, target);
 
     // this will cache automatically if needed
-    _BuildValuesUpdate(data, &updateMask, target);
+    buildValuesUpdate(data, &update_mask, target);
 
     // update count: 1 ;)
     return 1;
@@ -1358,7 +1358,7 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* target)
             ARCEMU_ASSERT(m_wowGuid.GetNewGuidLen() > 0);
             *data << m_wowGuid;
 
-            _BuildValuesUpdate(data, &updateMask, target);
+            buildValuesUpdate(data, &updateMask, target);
             return 1;
         }
     }
@@ -1375,7 +1375,7 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask
     ARCEMU_ASSERT(m_wowGuid.GetNewGuidLen() > 0);
     *buf << m_wowGuid;
 
-    _BuildValuesUpdate(buf, mask, nullptr);
+    buildValuesUpdate(buf, mask, nullptr);
 
     // 1 update.
     return 1;
@@ -1386,8 +1386,9 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask
 ///\todo rewrite this stuff, document unknown fields and flags
 uint32 TimeStamp();
 
+// MIT Start
 #if VERSION_STRING < WotLK
-void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
+void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 {
     const auto tbc_flags = static_cast<uint8>(flags);
     uint32_t tbc_flags_2 = 0;
@@ -1543,7 +1544,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
 #endif
 
 #if VERSION_STRING == WotLK
-void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
+void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 {
     uint32 flags2 = 0;
 
@@ -1809,7 +1810,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
 #endif
 
 #if VERSION_STRING == Cata
-void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /*target*/)
+void Object::buildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /*target*/)
 {
     ObjectGuid Guid = GetGUID();
 
@@ -2186,8 +2187,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* 
 }
 #endif
 
-// MIT Start
-void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player* target)
+void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player* target)
 {
     auto activate_quest_object = false, reset = false;
     uint32_t old_flags = 0;

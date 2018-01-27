@@ -142,7 +142,7 @@ protected:
         void OnPushToWorld();
 
         // Build Update for Player
-        uint32  BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
+        uint32  buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
 
         std::set<uint32> const& GetPassengers() const { return m_passengers; }
 

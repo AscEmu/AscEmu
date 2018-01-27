@@ -90,6 +90,7 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
 
     switch (speed_type)
     {
+#if VERSION_STRING > WotLK
         case TYPE_WALK:
             data.Initialize(MSG_MOVE_SET_WALK_SPEED);
             break;
@@ -114,9 +115,29 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
         case TYPE_FLY_BACK:
             data.Initialize(MSG_MOVE_SET_FLIGHT_BACK_SPEED);
             break;
-#if VERSION_STRING > TBC
         case TYPE_PITCH_RATE:
             data.Initialize(MSG_MOVE_SET_PITCH_RATE);
+            break;
+#else
+        case TYPE_RUN:
+            data.Initialize(SMSG_FORCE_RUN_SPEED_CHANGE);
+            break;
+        case TYPE_RUN_BACK:
+            data.Initialize(SMSG_FORCE_RUN_BACK_SPEED_CHANGE);
+            break;
+        case TYPE_SWIM:
+            data.Initialize(SMSG_FORCE_SWIM_SPEED_CHANGE);
+            break;
+        case TYPE_SWIM_BACK:
+            data.Initialize(SMSG_FORCE_SWIM_BACK_SPEED_CHANGE);
+            break;
+        case TYPE_FLY:
+            data.Initialize(SMSG_FORCE_FLIGHT_SPEED_CHANGE);
+            break;
+        case TYPE_FLY_BACK:
+        case TYPE_TURN_RATE:
+        case TYPE_WALK:
+        case TYPE_PITCH_RATE:
             break;
 #endif
     }
@@ -272,3 +293,12 @@ void Player::setXp(uint32 xp) { write(playerData()->xp, xp); }
 uint32 Player::getXp() const { return playerData()->xp; }
 
 void Player::setNextLevelXp(uint32_t xp) { write(playerData()->next_level_xp, xp); }
+
+PlayerSpec& Player::getActiveSpec()
+{
+#ifdef FT_DUAL_SPEC
+    return m_specs[m_talentActiveSpec];
+#else
+    return m_spec;
+#endif
+}

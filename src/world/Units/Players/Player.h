@@ -1138,7 +1138,7 @@ public:
 
         // Talents
         // These functions build a specific type of A9 packet
-        uint32 BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
+        uint32 buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
         void SetTalentHearthOfWildPCT(int value) { hearth_of_wild_pct = value; }
         void EventTalentHearthOfWildChange(bool apply);
 
@@ -1697,8 +1697,13 @@ public:
         //\todo fix this
         void SetTalentPointsForAllSpec(uint32 amt)
         {
+#ifdef FT_DUAL_SPEC
             m_specs[0].SetTP(amt);
             m_specs[1].SetTP(amt);
+#else
+            m_spec.SetTP(amt);
+#endif
+
 #if VERSION_STRING != Cata
             setUInt32Value(PLAYER_CHARACTER_POINTS1, amt);
 #else
@@ -1709,8 +1714,12 @@ public:
 
         void AddTalentPointsToAllSpec(uint32 amt)
         {
+#ifdef FT_DUAL_SPEC
             m_specs[0].SetTP(m_specs[0].GetTP() + amt);
             m_specs[1].SetTP(m_specs[1].GetTP() + amt);
+#else
+            m_spec.SetTP(m_spec.GetTP() + amt);
+#endif
 #if VERSION_STRING != Cata
             setUInt32Value(PLAYER_CHARACTER_POINTS1, getUInt32Value(PLAYER_CHARACTER_POINTS1) + amt);
 #else
@@ -1721,7 +1730,7 @@ public:
 
         void SetCurrentTalentPoints(uint32 points)
         {
-            m_specs[m_talentActiveSpec].SetTP(points);
+            getActiveSpec().SetTP(points);
 #if VERSION_STRING != Cata
             setUInt32Value(PLAYER_CHARACTER_POINTS1, points);
 #else
@@ -1737,7 +1746,7 @@ public:
 #else
             uint32 points = getUInt32Value(PLAYER_CHARACTER_POINTS);
 #endif
-            Arcemu::Util::ArcemuAssert(points == m_specs[m_talentActiveSpec].GetTP());
+            Arcemu::Util::ArcemuAssert(points == getActiveSpec().GetTP());
             return points;
         }
 
@@ -2266,7 +2275,13 @@ public:
         uint32 CalcTalentPointsHaveSpent(uint32 spec);
 #endif
 
-        PlayerSpec m_specs[MAX_SPEC_COUNT];
+#ifdef FT_DUAL_SPEC
+    PlayerSpec m_specs[MAX_SPEC_COUNT];
+#else
+    PlayerSpec m_spec;
+#endif
+
+    PlayerSpec& getActiveSpec();
 
         uint8 m_roles;
 		uint32 GroupUpdateFlags;

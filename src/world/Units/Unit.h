@@ -223,7 +223,7 @@ class SERVER_DECL Unit : public Object
     const WoWUnit* unitData() const { return reinterpret_cast<WoWUnit*>(wow_data); }
 public:
     uint32_t getDynamicFlags() const;
-    void setDynamicFlags(uint32_t currentFlags);
+    void setDynamicFlags(uint32_t flags);
 #ifdef AE_TBC
     uint32_t addAuraVisual(uint32_t spell_id, uint32_t count, bool positive);
     uint32_t addAuraVisual(uint32_t spell_id, uint32_t count, bool positive, bool &skip_client_update);

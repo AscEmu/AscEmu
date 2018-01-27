@@ -585,16 +585,16 @@ bool Transporter::RemovePassenger(Player* passenger)
     return true;
 }
 
-uint32 Transporter::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
+uint32 Transporter::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 {
-    uint32 cnt = Object::BuildCreateUpdateBlockForPlayer(data, target);
+    uint32 cnt = Object::buildCreateUpdateBlockForPlayer(data, target);
 
     // add all the npcs to the packet
     m_creatureSetMutex.Acquire();
     for (CreatureSet::iterator itr = m_NPCPassengerSet.begin(); itr != m_NPCPassengerSet.end(); ++itr)
     {
         Creature* npc = *itr;
-        cnt += npc->BuildCreateUpdateBlockForPlayer(data, target);
+        cnt += npc->buildCreateUpdateBlockForPlayer(data, target);
     }
     m_creatureSetMutex.Release();
     return cnt;

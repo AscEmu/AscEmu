@@ -387,6 +387,7 @@ public:
         ~GameObject();
     bool isFishingNode() const;
     uint32_t getDynamic() const;
+    void setDynamic(uint32_t dynamic);
 
     GameEvent* mEvent = nullptr;
 

@@ -527,7 +527,7 @@ public:
         bool IsContainer() { return m_objectTypeId == TYPEID_CONTAINER; }
 
         //! This includes any nested objects we have, inventory for example.
-        virtual uint32 BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
+        virtual uint32 buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
         uint32 BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, Player* target);
         uint32 BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask);
 
@@ -822,8 +822,8 @@ public:
         virtual void _SetCreateBits(UpdateMask* updateMask, Player* target) const;
 
         // Create updates that player will see
-        void _BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target);
-        void _BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player* target);
+        void buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target);
+        void buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player* target);
 
         // WoWGuid class
         WoWGuid m_wowGuid;

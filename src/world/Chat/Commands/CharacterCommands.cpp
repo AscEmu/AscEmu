@@ -1675,7 +1675,11 @@ bool ChatHandler::HandleCharSetTalentpointsCommand(const char* args, WorldSessio
     if (!args)
     {
         RedSystemMessage(m_session, "No amount of talentpoints entered.");
+#ifdef FT_DUAL_SPEC
         RedSystemMessage(m_session, "Use: .character set talentpoints <primary_amount> <secondary_amount>");
+#else
+        RedSystemMessage(m_session, "Use: .character set talentpoints <amount>");
+#endif
         return true;
     }
 
@@ -1684,26 +1688,42 @@ bool ChatHandler::HandleCharSetTalentpointsCommand(const char* args, WorldSessio
         return true;
 
     uint32 primary_amount = 0;
-    uint32 secondary_amnount = 0;
+    uint32 secondary_amount = 0;
 
     std::stringstream ss(args);
     ss >> primary_amount;
+#ifdef FT_DUAL_SPEC
     ss >> secondary_amnount;
+#endif
 
+#ifdef FT_DUAL_SPEC
     player_target->m_specs[SPEC_PRIMARY].SetTP(primary_amount);
     player_target->m_specs[SPEC_SECONDARY].SetTP(secondary_amnount);
+#else
+    player_target->m_spec.SetTP(primary_amount);
+#endif
 
     player_target->smsg_TalentsInfo(false);
 
     if (player_target != m_session->GetPlayer())
     {
-        BlueSystemMessage(m_session, "Setting talentpoints primary: %u, secondary: %u for player %s.", primary_amount, secondary_amnount, player_target->GetName());
-        GreenSystemMessage(player_target->GetSession(), "%s set your talenpoints to primary: %u, secondary: %u.", m_session->GetPlayer()->GetName(), primary_amount, secondary_amnount);
-        sGMLog.writefromsession(m_session, "set talenpoints primary: %u, secondary: %u for player %s", primary_amount, secondary_amnount, player_target->GetName());
+#ifdef FT_DUAL_SPEC
+        BlueSystemMessage(m_session, "Setting talentpoints primary: %u, secondary: %u for player %s.", primary_amount, secondary_amount, player_target->GetName());
+        GreenSystemMessage(player_target->GetSession(), "%s set your talenpoints to primary: %u, secondary: %u.", m_session->GetPlayer()->GetName(), primary_amount, secondary_amount);
+        sGMLog.writefromsession(m_session, "set talenpoints primary: %u, secondary: %u for player %s", primary_amount, secondary_amount, player_target->GetName());
+#else
+        BlueSystemMessage(m_session, "Setting talent points %u for player %s.", primary_amount, player_target->GetName());
+        GreenSystemMessage(player_target->GetSession(), "%s set your talent points to %u.", m_session->GetPlayer()->GetName(), primary_amount);
+        sGMLog.writefromsession(m_session, "set talent points %u for player %s", primary_amount, player_target->GetName());
+#endif
     }
     else
     {
-        BlueSystemMessage(m_session, "Your talenpoints were set - primary: %u, secondary: %u.", primary_amount, secondary_amnount);
+#ifdef FT_DUAL_SPEC
+        BlueSystemMessage(m_session, "Your talent points were set - primary: %u, secondary: %u.", primary_amount, secondary_amount);
+#else
+        BlueSystemMessage(m_session, "Your talent points were set to %u.", primary_amount);
+#endif
     }
 
     return true;
