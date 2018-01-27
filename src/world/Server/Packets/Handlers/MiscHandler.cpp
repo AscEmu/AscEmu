@@ -46,7 +46,7 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket& /*recvData*/)
     if (_player->getDeathState() != JUST_DIED)
         return;
 #if VERSION_STRING != Cata
-    if (_player->obj_movement_info.IsOnTransport())
+    if (_player->obj_movement_info.isOnTransport())
 #else
     if (!_player->obj_movement_info.getTransportGuid().IsEmpty())
 #endif
@@ -992,7 +992,7 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket& /*recv_data*/)
                 return;
             }
 
-            if (pPlayer->m_isResting || pPlayer->GetTaxiState() || worldConfig.player.enableInstantLogoutForAccessType == 2)
+            if (pPlayer->m_isResting || pPlayer->isOnTaxi() || worldConfig.player.enableInstantLogoutForAccessType == 2)
             {
                 //Logout on NEXT sessionupdate to preserve processing of dead packets (all pending ones should be processed)
                 SetLogoutTimer(1);
@@ -1001,7 +1001,7 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket& /*recv_data*/)
         }
         if (GetPermissionCount() > 0)
         {
-            if (pPlayer->m_isResting || pPlayer->GetTaxiState() || worldConfig.player.enableInstantLogoutForAccessType > 0)
+            if (pPlayer->m_isResting || pPlayer->isOnTaxi() || worldConfig.player.enableInstantLogoutForAccessType > 0)
             {
                 //Logout on NEXT sessionupdate to preserve processing of dead packets (all pending ones should be processed)
                 SetLogoutTimer(1);
@@ -2774,7 +2774,7 @@ void WorldSession::HandleDismountOpcode(WorldPacket& /*recv_data*/)
     CHECK_INWORLD_RETURN
     LOG_DEBUG("WORLD: Received CMSG_DISMOUNT");
 
-    if (_player->GetTaxiState())
+    if (_player->isOnTaxi())
         return;
 
     _player->Dismount();

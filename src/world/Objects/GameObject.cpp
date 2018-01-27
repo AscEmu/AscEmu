@@ -97,6 +97,16 @@ GameObject::~GameObject()
                 m_summoner->m_ObjectSlots[i] = 0;
 }
 
+bool GameObject::isFishingNode() const
+{
+    return GetType() == GAMEOBJECT_TYPE_FISHINGNODE;
+}
+
+GameObjectProperties const* GameObject::GetGameObjectProperties() const
+{
+    return gameobject_properties;
+}
+
 bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, float z, float ang, float r0, float r1, float r2, float r3, uint32 overrides)
 {
     gameobject_properties = sMySQLStore.getGameObjectProperties(entry);
@@ -414,6 +424,11 @@ uint32 GameObject::GetGOReqSkill()
             return lock->minlockskill[i];
     }
     return 0;
+}
+
+uint32 GameObject::GetType() const
+{
+    return GetGameObjectProperties()->type;
 }
 
 using G3D::Quat;

@@ -806,7 +806,7 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recvData)
         data << itemProto->Spells[i].CategoryCooldown;
     }
     data << itemProto->Bonding;
-    
+
     data << Description;
 
     data << itemProto->PageId;
@@ -1414,7 +1414,7 @@ void WorldSession::HandleListInventoryOpcode(WorldPacket& recvData)
 
     //this is a blizzlike check
 #if VERSION_STRING != Cata
-    if (!_player->obj_movement_info.IsOnTransport())
+    if (!_player->obj_movement_info.isOnTransport())
 #else
     if (_player->obj_movement_info.getTransportGuid().IsEmpty())
 #endif
@@ -1487,7 +1487,7 @@ void WorldSession::SendInventoryList(Creature* unit)
                     if (curItem->HasFlag2(ITEM_FLAG2_ALLIANCE_ONLY) && !GetPlayer()->IsTeamAlliance())
                         continue;
                 }
-                
+
                 uint32 av_am = (itr->max_amount > 0) ? itr->available_amount : 0xFFFFFFFF;
                 uint32 price = 0;
                 if ((itr->extended_cost == nullptr) || curItem->HasFlag2(ITEM_FLAG2_EXT_COST_REQUIRES_GOLD))

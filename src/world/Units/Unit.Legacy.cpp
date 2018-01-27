@@ -14230,24 +14230,27 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
         if (IsPlayer())
         {
             auto plr = static_cast<Player*>(this);
-            if (plr->obj_movement_info.IsOnTransport())
+            if (plr->obj_movement_info.isOnTransport())
             {
-                obj_movement_info.transporter_info.guid = plr->obj_movement_info.transporter_info.guid;
+                obj_movement_info.transport_data.transportGuid = plr->obj_movement_info.transport_data.transportGuid;
             }
         }
         if (Unit* u = GetVehicleBase())
-            obj_movement_info.transporter_info.guid = u->GetGUID();
-        *data << obj_movement_info.transporter_info.guid;
-        *data << obj_movement_info.transporter_info.guid;
+            obj_movement_info.transport_data.transportGuid = u->GetGUID();
+        *data << obj_movement_info.transport_data.transportGuid;
+        *data << obj_movement_info.transport_data.transportGuid;
         *data << GetTransPositionX();
         *data << GetTransPositionY();
         *data << GetTransPositionZ();
         *data << GetTransPositionO();
         *data << GetTransTime();
+#ifdef FT_VEHICLES
         *data << GetTransSeat();
 
+        // TODO what is this in BC?
         if (GetExtraUnitMovementFlags() & MOVEFLAG2_INTERPOLATED_MOVE)
-            *data << uint32(GetMovementInfo()->transporter_info.time2);
+            *data << uint32(GetMovementInfo()->transport_data.time2);
+#endif
     }
 
     // 0x02200000
@@ -14261,10 +14264,10 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
 #if VERSION_STRING != Cata
     if (GetUnitMovementFlags() & MOVEFLAG_REDIRECTED)
     {
-        *data << (float)GetMovementInfo()->redirectVelocity;
-        *data << (float)GetMovementInfo()->redirectSin;
-        *data << (float)GetMovementInfo()->redirectCos;
-        *data << (float)GetMovementInfo()->redirect2DSpeed;
+        *data << (float)GetMovementInfo()->redirect_velocity;
+        *data << (float)GetMovementInfo()->redirect_sin;
+        *data << (float)GetMovementInfo()->redirect_cos;
+        *data << (float)GetMovementInfo()->redirect_2d_speed;
     }
 
     // 0x04000000
@@ -14294,16 +14297,18 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
             obj_movement_info.transporter_info.guid = static_cast<Player*>(this)->m_transport->GetGUID();
         if (Unit* u = GetVehicleBase())
             obj_movement_info.transporter_info.guid = u->GetGUID();*/
-        *data << obj_movement_info.transporter_info.guid;
+        *data << obj_movement_info.transport_data.transportGuid;
         *data << GetTransPositionX();
         *data << GetTransPositionY();
         *data << GetTransPositionZ();
         *data << GetTransPositionO();
         *data << GetTransTime();
+#ifdef FT_VEHICLES
         *data << GetTransSeat();
 
         if (GetExtraUnitMovementFlags() & MOVEFLAG2_INTERPOLATED_MOVE)
-            *data << uint32(GetMovementInfo()->transporter_info.time2);
+            *data << uint32(GetMovementInfo()->transport_data.time2);
+#endif
     }
 
     // 0x02200000
@@ -14317,10 +14322,10 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
 #if VERSION_STRING != Cata
     if (GetUnitMovementFlags() & MOVEFLAG_REDIRECTED)
     {
-        *data << (float)GetMovementInfo()->redirectVelocity;
-        *data << (float)GetMovementInfo()->redirectSin;
-        *data << (float)GetMovementInfo()->redirectCos;
-        *data << (float)GetMovementInfo()->redirect2DSpeed;
+        *data << (float)GetMovementInfo()->redirect_velocity;
+        *data << (float)GetMovementInfo()->redirect_sin;
+        *data << (float)GetMovementInfo()->redirect_cos;
+        *data << (float)GetMovementInfo()->redirect_2d_speed;
     }
 
     // 0x04000000

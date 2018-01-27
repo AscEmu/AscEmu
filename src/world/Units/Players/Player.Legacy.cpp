@@ -1607,7 +1607,7 @@ void Player::_EventExploration()
     }
 
 #if VERSION_STRING != Cata
-    if (!(currFields & val) && !GetTaxiState() && !obj_movement_info.transporter_info.guid) //Unexplored Area        // bur: we don't want to explore new areas when on taxi
+    if (!(currFields & val) && !isOnTaxi() && !obj_movement_info.transport_data.transportGuid) //Unexplored Area        // bur: we don't want to explore new areas when on taxi
 #else
     if (!(currFields & val) && !GetTaxiState() && obj_movement_info.getTransportGuid().IsEmpty()) //Unexplored Area        // bur: we don't want to explore new areas when on taxi
 #endif
@@ -3488,17 +3488,17 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         field_index++;
     }
 
-    obj_movement_info.transporter_info.guid = get_next_field.GetUInt32();
-    if (obj_movement_info.transporter_info.guid)
+    obj_movement_info.transport_data.transportGuid = get_next_field.GetUInt32();
+    if (obj_movement_info.transport_data.transportGuid)
     {
-        Transporter* t = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transporter_info.guid));
-        obj_movement_info.transporter_info.guid = t ? t->GetGUID() : 0;
+        Transporter* t = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transport_data.transportGuid));
+        obj_movement_info.transport_data.transportGuid = t ? t->GetGUID() : 0;
     }
 
-    obj_movement_info.transporter_info.position.x = get_next_field.GetFloat();
-    obj_movement_info.transporter_info.position.y = get_next_field.GetFloat();
-    obj_movement_info.transporter_info.position.z = get_next_field.GetFloat();
-    obj_movement_info.transporter_info.position.o = get_next_field.GetFloat();
+    obj_movement_info.transport_data.relativePosition.x = get_next_field.GetFloat();
+    obj_movement_info.transport_data.relativePosition.y = get_next_field.GetFloat();
+    obj_movement_info.transport_data.relativePosition.z = get_next_field.GetFloat();
+    obj_movement_info.transport_data.relativePosition.o = get_next_field.GetFloat();
 
     LoadSpells(results[13].result);
 
@@ -4932,7 +4932,7 @@ void Player::OnPushToWorld()
 
     m_TeleportState = 0;
 
-    if (GetTaxiState())
+    if (isOnTaxi())
     {
         if (m_taxiMapChangeNode != 0)
         {
@@ -5168,7 +5168,7 @@ void Player::RemoveFromWorld()
         Unit::RemoveFromWorld(false);
     }
 
-    if (GetTaxiState())
+    if (isOnTaxi())
         event_RemoveEvents(EVENT_PLAYER_TAXI_INTERPOLATE);
 
     m_changingMaps = true;
@@ -5658,7 +5658,7 @@ void Player::RepopRequestedPlayer()
     {
         transport->RemovePassenger(this);
 #if VERSION_STRING != Cata
-        this->obj_movement_info.transporter_info.guid = 0;
+        this->obj_movement_info.transport_data.transportGuid = 0;
 #else
         this->obj_movement_info.clearTransportData();
 #endif
@@ -9602,7 +9602,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
 
     SpeedCheatDelay(10000);
 
-    if (GetTaxiState())
+    if (isOnTaxi())
     {
         sEventMgr.RemoveEvents(this, EVENT_PLAYER_TELEPORT);
         sEventMgr.RemoveEvents(this, EVENT_PLAYER_TAXI_DISMOUNT);
@@ -9617,13 +9617,13 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
         setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN));
     }
 
-    if (obj_movement_info.transporter_info.guid)
+    if (obj_movement_info.transport_data.transportGuid)
     {
-        Transporter* pTrans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transporter_info.guid));
+        Transporter* pTrans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transport_data.transportGuid));
         if (pTrans)
         {
             pTrans->RemovePassenger(this);
-            obj_movement_info.transporter_info.guid = 0;
+            obj_movement_info.transport_data.transportGuid = 0;
         }
     }
 

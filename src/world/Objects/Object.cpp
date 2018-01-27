@@ -617,6 +617,11 @@ float Object::getDistanceSq(float x, float y, float z) const
     return m_position.distanceSquare(x, y, z);
 }
 
+Player* Object::asPlayer()
+{
+    return reinterpret_cast<Player*>(this);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Spell functions
 Spell* Object::getCurrentSpell(CurrentSpellType spellType) const
@@ -3488,7 +3493,7 @@ uint32 Object::GetTeam()
 Transporter* Object::GetTransport() const
 {
 #if VERSION_STRING != Cata
-    return objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transporter_info.guid));
+    return objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transport_data.transportGuid));
 #else
     return nullptr;
 #endif

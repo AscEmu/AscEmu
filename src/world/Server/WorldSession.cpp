@@ -74,7 +74,7 @@ WorldSession::WorldSession(uint32 id, std::string Name, WorldSocket* sock) :
     memset(movement_packet, 0, sizeof(movement_packet));
 
 #if VERSION_STRING != Cata
-    movement_info.redirectVelocity = 0;
+    movement_info.redirect_velocity = 0;
 #endif
 
     for (uint8 x = 0; x < 8; x++)

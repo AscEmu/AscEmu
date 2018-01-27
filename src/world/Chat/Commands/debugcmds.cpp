@@ -36,9 +36,9 @@ bool ChatHandler::HandleDebugDumpMovementCommand(const char* /*args*/, WorldSess
 
         SystemMessage(session, "Position: [%f, %f, %f, %f]", me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
 #if VERSION_STRING != Cata
-        SystemMessage(session, "On transport: %s", me->obj_movement_info.transporter_info.guid != 0 ? "yes" : "no");
-        SystemMessage(session, "Transport GUID: %lu", me->obj_movement_info.transporter_info.guid);
-        SystemMessage(session, "Transport relative position: [%f, %f, %f, %f]", me->obj_movement_info.transporter_info.position.x, me->obj_movement_info.transporter_info.position.y, me->obj_movement_info.transporter_info.position.z, me->obj_movement_info.transporter_info.position.o);
+        SystemMessage(session, "On transport: %s", me->obj_movement_info.transport_data.transportGuid != 0 ? "yes" : "no");
+        SystemMessage(session, "Transport GUID: %lu", me->obj_movement_info.transport_data.transportGuid);
+        SystemMessage(session, "Transport relative position: [%f, %f, %f, %f]", me->obj_movement_info.transport_data.relativePosition.x, me->obj_movement_info.transport_data.relativePosition.y, me->obj_movement_info.transport_data.relativePosition.z, me->obj_movement_info.transport_data.relativePosition.o);
 #else
         SystemMessage(session, "On transport: %s", !me->obj_movement_info.getTransportGuid().IsEmpty() ? "yes" : "no");
         //SystemMessage(session, "Transport GUID: %lu", me->obj_movement_info.getTransportGuid());

@@ -438,6 +438,7 @@ public:
     uint32_t getFreePrimaryProfessionPoints() const { return getUInt32Value(PLAYER_CHARACTER_POINTS); }
 #endif
     void updateAutoRepeatSpell();
+    bool isTransferPending() const;
     bool m_FirstCastAutoRepeat;
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -682,7 +683,7 @@ public:
         // Taxi
         /////////////////////////////////////////////////////////////////////////////////////////
         TaxiPath* GetTaxiPath() { return m_CurrentTaxiPath; }
-        bool GetTaxiState() { return m_onTaxi; }
+        bool isOnTaxi() const { return m_onTaxi; }
         const uint32 & GetTaximask(uint8 index) const { return m_taximask[index]; }
         void LoadTaxiMask(const char* data);
         void TaxiStart(TaxiPath* path, uint32 modelid, uint32 start_node);
@@ -1251,7 +1252,7 @@ public:
         void SetTalentResetTimes(uint32 value) { m_talentresettimes = value; }
 
         void SetPlayerStatus(uint8 pStatus) { m_status = pStatus; }
-        uint8 GetPlayerStatus() { return m_status; }
+    uint8 GetPlayerStatus() const;
 
         const float & GetBindPositionX() const { return m_bind_pos_x; }
         const float & GetBindPositionY() const { return m_bind_pos_y; }

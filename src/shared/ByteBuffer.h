@@ -38,6 +38,9 @@
 
 class SERVER_DECL ByteBuffer
 {
+    bool m_readFailure = false;
+public:
+    bool hadReadFailure() const { return m_readFailure; }
 #ifdef AE_CATA
     public:
 
@@ -440,12 +443,17 @@ class SERVER_DECL ByteBuffer
             return r;
         }
 
-        template <typename T> T read(size_t pos) const
+        template <typename T> T read(size_t pos)
         {
             if (pos + sizeof(T) > size())
+            {
+                m_readFailure = true;
                 return static_cast<T>(0);
+            }
             else
+            {
                 return *((T*)&_storage[pos]);
+            }
         }
 
         void read(uint8_t* dest, size_t len)
@@ -909,11 +917,12 @@ class SERVER_DECL ByteBuffer
             _rpos += sizeof(T);
             return r;
         };
-        template <typename T> T read(size_t pos) const
+        template <typename T> T read(size_t pos)
         {
             //ASSERT(pos + sizeof(T) <= size());
             if(pos + sizeof(T) > size())
             {
+                m_readFailure = true;
                 return (T)0;
             }
             else

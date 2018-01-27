@@ -52,6 +52,11 @@ void Unit::setLevel(uint32_t level)
         static_cast<Player*>(this)->setNextLevelXp(sMySQLStore.getPlayerXPForLevel(level));
 }
 
+bool Unit::justDied() const
+{
+    return m_deathState == JUST_DIED;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
 
@@ -581,7 +586,7 @@ void Unit::setBaseHealth(uint32_t baseHealth) { write(unitData()->base_health, b
 
 void Unit::setBaseMana(uint32_t baseMana) { write(unitData()->base_mana, baseMana); }
 
-float Unit::getSpeedForType(UnitSpeedType speed_type, bool get_basic)
+float Unit::getSpeedForType(UnitSpeedType speed_type, bool get_basic) const
 {
     switch (speed_type)
     {
@@ -607,6 +612,53 @@ float Unit::getSpeedForType(UnitSpeedType speed_type, bool get_basic)
             return m_basicSpeedWalk;
     }
 }
+
+float Unit::getFlySpeed() const
+{
+    return getSpeedForType(TYPE_FLY);
+}
+
+float Unit::getSwimSpeed() const
+{
+    return getSpeedForType(TYPE_SWIM);
+}
+
+float Unit::getRunSpeed() const
+{
+    return getSpeedForType(TYPE_RUN);
+}
+
+UnitSpeedType Unit::getFastestSpeedType() const
+{
+    auto fastest_speed = 0.f;
+    auto fastest_speed_type = TYPE_WALK;
+    for (uint32_t i = TYPE_WALK; i <= TYPE_PITCH_RATE; ++i)
+    {
+        const auto speed_type = static_cast<UnitSpeedType>(i + 1);
+
+        switch(speed_type)
+        {
+        case TYPE_TURN_RATE:
+        case TYPE_PITCH_RATE:
+            continue;
+            default:
+            break;
+        }
+
+        const auto speed = getSpeedForType(speed_type);
+
+        fastest_speed = speed > fastest_speed ? speed : fastest_speed;
+        fastest_speed_type = speed == fastest_speed ? speed_type : fastest_speed_type;
+    }
+    return fastest_speed_type;
+}
+
+
+float Unit::getFastestSpeed() const
+{
+    return getSpeedForType(getFastestSpeedType());
+}
+
 
 void Unit::setSpeedForType(UnitSpeedType speed_type, float speed, bool set_basic)
 {

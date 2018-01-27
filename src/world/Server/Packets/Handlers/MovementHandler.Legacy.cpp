@@ -28,6 +28,10 @@
 #include <Spell/Definitions/AuraInterruptFlags.h>
 #include "Units/Creatures/Pet.h"
 
+#ifdef AE_TBC
+#include "GameTBC/Data/MovementInfoTBC.h"
+#endif
+
 #define SWIMMING_TOLERANCE_LEVEL -0.08f
 #define MOVEMENT_PACKET_TIME_DELAY 500
 
@@ -310,6 +314,7 @@ static MovementFlagName MoveFlagsToNames[] =
 };
 
 static const uint32 nmovementflags = sizeof(MoveFlagsToNames) / sizeof(MovementFlagName);
+#ifndef AE_TBC
 void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -754,10 +759,13 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     }
 }
 #endif
+#endif
 
 void WorldSession::HandleMoveTimeSkippedOpcode(WorldPacket& /*recvData*/)
 {}
 
+// TODO implement
+#ifndef AE_TBC
 void WorldSession::HandleMoveNotActiveMoverOpcode(WorldPacket& recvData)
 {
 #if VERSION_STRING != Cata
@@ -783,6 +791,7 @@ void WorldSession::HandleMoveNotActiveMoverOpcode(WorldPacket& recvData)
     if (recvData.GetOpcode() == 0) { return; }
 #endif
 }
+#endif
 
 void WorldSession::HandleMoveSplineCompleteOpcode(WorldPacket& /*recvPacket*/)
 {}
@@ -871,99 +880,99 @@ void WorldSession::HandleTeleportCheatOpcode(WorldPacket& recv_data)
 }
 
 #if VERSION_STRING != Cata
-void MovementInfo::init(WorldPacket& data)
-{
-    transporter_info.transGuid = 0;
-    data >> flags;
-    data >> flags2;
-    data >> time;
+//void MovementInfo::init(WorldPacket& data)
+//{
+//    transporter_info.transGuid = 0;
+//    data >> flags;
+//    data >> flags2;
+//    data >> time;
+//
+//    data >> position.x;
+//    data >> position.y;
+//    data >> position.z;
+//    data >> position.o;
+//
+//    if (HasMovementFlag(MOVEFLAG_TRANSPORT))
+//    {
+//        data >> transporter_info.transGuid;
+//        data >> transporter_info.position.x;
+//        data >> transporter_info.position.y;
+//        data >> transporter_info.position.z;
+//        data >> transporter_info.position.o;
+//        data >> transporter_info.time;
+//        data >> transporter_info.seat;
+//
+//        if (HasMovementFlag2(MOVEFLAG2_INTERPOLATED_MOVE))
+//        {
+//            data >> transporter_info.time2;
+//        }
+//    }
+//
+//    if (HasMovementFlag((MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || HasMovementFlag2(MOVEFLAG2_ALLOW_PITCHING))
+//    {
+//        data >> pitch;
+//    }
+//
+//    data >> fall_time;
+//
+//    if (HasMovementFlag(MOVEFLAG_REDIRECTED))
+//    {
+//        data >> redirectVelocity;
+//        data >> redirectSin;
+//        data >> redirectCos;
+//        data >> redirect2DSpeed;
+//    }
+//    if (HasMovementFlag(MOVEFLAG_SPLINE_MOVER))
+//    {
+//        data >> spline_elevation;
+//    }
+//}
 
-    data >> position.x;
-    data >> position.y;
-    data >> position.z;
-    data >> position.o;
-
-    if (HasMovementFlag(MOVEFLAG_TRANSPORT))
-    {
-        data >> transporter_info.transGuid;
-        data >> transporter_info.position.x;
-        data >> transporter_info.position.y;
-        data >> transporter_info.position.z;
-        data >> transporter_info.position.o;
-        data >> transporter_info.time;
-        data >> transporter_info.seat;
-
-        if (HasMovementFlag2(MOVEFLAG2_INTERPOLATED_MOVE))
-        {
-            data >> transporter_info.time2;
-        }
-    }
-
-    if (HasMovementFlag((MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || HasMovementFlag2(MOVEFLAG2_ALLOW_PITCHING))
-    {
-        data >> pitch;
-    }
-
-    data >> fall_time;
-
-    if (HasMovementFlag(MOVEFLAG_REDIRECTED))
-    {
-        data >> redirectVelocity;
-        data >> redirectSin;
-        data >> redirectCos;
-        data >> redirect2DSpeed;
-    }
-    if (HasMovementFlag(MOVEFLAG_SPLINE_MOVER))
-    {
-        data >> spline_elevation;
-    }
-}
-
-void MovementInfo::write(WorldPacket& data)
-{
-    data << flags;
-    data << flags2;
-    data <<Util::getMSTime();
-
-    data << position.x;
-    data << position.y;
-    data << position.z;
-    data << position.o;
-
-    if (HasMovementFlag(MOVEFLAG_TRANSPORT))
-    {
-        data << transporter_info.transGuid;
-        data << transporter_info.position.x;
-        data << transporter_info.position.y;
-        data << transporter_info.position.z;
-        data << transporter_info.position.o;
-        data << transporter_info.time;
-        data << transporter_info.seat;
-
-        if (HasMovementFlag2(MOVEFLAG2_INTERPOLATED_MOVE))
-        {
-            data << transporter_info.time2;
-        }
-    }
-
-    if (HasMovementFlag((MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || HasMovementFlag2(MOVEFLAG2_ALLOW_PITCHING))
-    {
-        data << pitch;
-    }
-
-    data << fall_time;
-
-    if (HasMovementFlag(MOVEFLAG_FALLING))
-    {
-        data << redirectVelocity;
-        data << redirectSin;
-        data << redirectCos;
-        data << redirect2DSpeed;
-    }
-
-    if (HasMovementFlag(MOVEFLAG_SPLINE_MOVER))
-    {
-        data << spline_elevation;
-    }
-}
+//void MovementInfo::write(WorldPacket& data)
+//{
+//    data << flags;
+//    data << flags2;
+//    data <<Util::getMSTime();
+//
+//    data << position.x;
+//    data << position.y;
+//    data << position.z;
+//    data << position.o;
+//
+//    if (HasMovementFlag(MOVEFLAG_TRANSPORT))
+//    {
+//        data << transporter_info.transGuid;
+//        data << transporter_info.position.x;
+//        data << transporter_info.position.y;
+//        data << transporter_info.position.z;
+//        data << transporter_info.position.o;
+//        data << transporter_info.time;
+//        data << transporter_info.seat;
+//
+//        if (HasMovementFlag2(MOVEFLAG2_INTERPOLATED_MOVE))
+//        {
+//            data << transporter_info.time2;
+//        }
+//    }
+//
+//    if (HasMovementFlag((MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || HasMovementFlag2(MOVEFLAG2_ALLOW_PITCHING))
+//    {
+//        data << pitch;
+//    }
+//
+//    data << fall_time;
+//
+//    if (HasMovementFlag(MOVEFLAG_FALLING))
+//    {
+//        data << redirectVelocity;
+//        data << redirectSin;
+//        data << redirectCos;
+//        data << redirect2DSpeed;
+//    }
+//
+//    if (HasMovementFlag(MOVEFLAG_SPLINE_MOVER))
+//    {
+//        data << spline_elevation;
+//    }
+//}
 #endif

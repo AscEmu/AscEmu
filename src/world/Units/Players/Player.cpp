@@ -227,6 +227,11 @@ void Player::updateAutoRepeatSpell()
     }
 }
 
+bool Player::isTransferPending() const
+{
+    return GetPlayerStatus() == TRANSFER_PENDING;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Messages
 void Player::sendReportToGmMessage(std::string playerName, std::string damageLog)
@@ -259,6 +264,8 @@ void Player::sendMovie(uint32_t movieId)
     m_session->SendPacket(&data);
 #endif
 }
+
+uint8 Player::GetPlayerStatus() const { return m_status; }
 
 void Player::setXp(uint32 xp) { write(playerData()->xp, xp); }
 

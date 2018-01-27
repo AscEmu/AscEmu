@@ -43,6 +43,7 @@
 #include "../shared/CommonDefines.hpp"
 #include "WorldPacket.h"
 #include "Units/Creatures/CreatureDefines.hpp"
+#include "GameTBC/Data/MovementInfoTBC.h"
 
 struct WoWObject;
 
@@ -265,88 +266,6 @@ inline float normalizeOrientation(float orientation)
 
     return fmod(orientation, 2.0f * static_cast<float>(M_PI));
 }
-
-#else
-struct MovementInfo
-{
-    WoWGuid object_guid;
-    uint32_t flags;
-    uint16_t flags2;
-    LocationVector position;
-    uint32_t time;
-
-    //pitch
-    //-1.55=looking down, 0=looking forward, +1.55=looking up
-    float pitch;
-
-    //jumping related
-    float redirectVelocity;
-    float redirectSin;      //on slip 8 is zero, on jump some other number
-    float redirectCos;
-    float redirect2DSpeed;  //9,10 changes if you are not on foot
-
-    uint32_t fall_time;       //fall_time in ms
-
-    float spline_elevation;
-
-    struct TransporterInfo
-    {
-        Transporter* m_transporter;
-        WoWGuid transGuid;
-        uint64_t guid;        // switch to WoWGuid
-        LocationVector position;
-        uint32_t time;
-        uint32_t time2;
-        uint8_t seat;
-
-        void Clear()
-        {
-            m_transporter = nullptr;
-            transGuid = 0;
-            guid = 0;
-            position.ChangeCoords(0.0f, 0.0f, 0.0f, 0.0f);
-            time = 0;
-            time2 = 0;
-            seat = 0;
-        }
-    }transporter_info;
-
-    MovementInfo()
-    {
-        object_guid = 0;
-        flags = 0;
-        flags2 = 0;
-        position.ChangeCoords(0.0f, 0.0f, 0.0f, 0.0f);
-
-        time = 0;
-
-        pitch = 0.0f;
-
-        redirectVelocity = 0.0f;
-        redirectSin = 0.0f;
-        redirectCos = 0.0f;
-        redirect2DSpeed = 0.0f;
-
-        fall_time = 0;
-        spline_elevation = 0;
-
-        transporter_info.Clear();
-    }
-
-    void init(WorldPacket& data);
-    void write(WorldPacket& data);
-
-    bool IsOnTransport() const { return this->transporter_info.guid != 0; };
-
-    //flags uint32_t
-    bool HasMovementFlag(uint32_t move_flags) const { return (flags & move_flags) != 0; }
-    uint32_t GetMovementFlags() const { return flags; }
-    void RemoveMovementFlag(uint32_t move_flags) { flags &= ~move_flags; }
-
-    //flags2 uint16_t
-    bool HasMovementFlag2(uint16_t move_flags2) const { return (flags2 & move_flags2) != 0; }
-    uint16_t GetMovementFlags2() const { return flags2; }
-};
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -438,6 +357,7 @@ public:
 
     float getDistanceSq(LocationVector target) const;
     float getDistanceSq(float x, float y, float z) const;
+    Player* asPlayer();
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Spell functions
@@ -640,12 +560,15 @@ public:
 
 #if VERSION_STRING != Cata
         // TransporterInfo
-        float GetTransPositionX() const { return obj_movement_info.transporter_info.position.x; }
-        float GetTransPositionY() const { return obj_movement_info.transporter_info.position.y; }
-        float GetTransPositionZ() const { return obj_movement_info.transporter_info.position.z; }
-        float GetTransPositionO() const { return obj_movement_info.transporter_info.position.o; }
-        uint32 GetTransTime() const { return obj_movement_info.transporter_info.time; }
+        float GetTransPositionX() const { return obj_movement_info.transport_data.relativePosition.x; }
+        float GetTransPositionY() const { return obj_movement_info.transport_data.relativePosition.y; }
+        float GetTransPositionZ() const { return obj_movement_info.transport_data.relativePosition.z; }
+        float GetTransPositionO() const { return obj_movement_info.transport_data.relativePosition.o; }
+        uint32 GetTransTime() const { return obj_movement_info.transport_time; }
+#if FT_VEHICLES
+        // TODO check if this is in BC
         uint8 GetTransSeat() const { return obj_movement_info.transporter_info.seat; }
+#endif
 #else
         float GetTransPositionX() const { return obj_movement_info.getTransportPosition()->x; }
         float GetTransPositionY() const { return obj_movement_info.getTransportPosition()->y; }

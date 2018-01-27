@@ -2277,7 +2277,7 @@ Unit* AIInterface::FindTarget()
             if (tmpPlr->IsDead())
                 continue;
 
-            if (tmpPlr->GetTaxiState())
+            if (tmpPlr->isOnTaxi())
                 continue;
 
             if (tmpPlr->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH))

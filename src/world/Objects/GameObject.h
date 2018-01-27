@@ -382,10 +382,11 @@ public:
 
         GameObject(uint64 guid);
         ~GameObject();
+    bool isFishingNode() const;
 
-        GameEvent* mEvent = nullptr;
+    GameEvent* mEvent = nullptr;
 
-        GameObjectProperties const* GetGameObjectProperties() { return gameobject_properties; }
+    GameObjectProperties const* GetGameObjectProperties() const;
         void SetGameObjectProperties(GameObjectProperties const* go_prop) { gameobject_properties = go_prop; }
 
         bool CreateFromProto(uint32 entry, uint32 mapid, float x, float y, float z, float ang, float r0 = 0.0f, float r1 = 0.0f, float r2 = 0.0f, float r3 = 0.0f, uint32 overrides = 0);
@@ -447,7 +448,7 @@ public:
         uint8 GetState() { return getUInt32Value(GAMEOBJECT_STATE); }
 
         void SetType(uint8 type) { setUInt32Value(GAMEOBJECT_TYPE_ID, type); }
-        uint32 GetType() { return this->GetGameObjectProperties()->type; }
+    uint32 GetType() const;
 
         void SetArtKit(uint8 artkit) { setUInt32Value(GAMEOBJECT_ARTKIT, artkit); }
         uint8 GetArtkKit() { return getUInt32Value(GAMEOBJECT_ARTKIT); }

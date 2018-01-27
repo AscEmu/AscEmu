@@ -4739,7 +4739,7 @@ class LuaUnit
     static int IsOnTaxi(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-            lua_pushboolean(L, static_cast<Player*>(ptr)->GetTaxiState() ? 1 : 0);
+            lua_pushboolean(L, static_cast<Player*>(ptr)->isOnTaxi() ? 1 : 0);
         return 1;
     }
 

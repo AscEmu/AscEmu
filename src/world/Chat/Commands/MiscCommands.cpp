@@ -614,7 +614,7 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
     SystemMessage(m_session, buf);
 
 #if VERSION_STRING != Cata
-    if (obj->obj_movement_info.IsOnTransport())
+    if (obj->obj_movement_info.isOnTransport())
 #else
     if (!obj->obj_movement_info.getTransportGuid().IsEmpty())
 #endif

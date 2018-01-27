@@ -36,4 +36,20 @@ This file is released under the MIT license. See README-MIT for more information
     #define AE_CATA
 #endif
 
+#if VERSION_STRING >= TBC
+    #define FT_FLYING
+#endif
+
+#if VERSION_STRING >= WotLK
+    #define FT_DEATH_KNIGHT
+    #define FT_DUAL_SPEC
+    #define FT_DUNGEON_FINDER
+    #define FT_VEHICLES
+#endif
+
+#if VERSION_STRING >= Cata
+    #define FT_TRANSMOG
+    #define FT_LFR
+#endif
+
 #endif // WORLD_CONF_H

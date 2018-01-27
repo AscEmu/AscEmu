@@ -587,8 +587,10 @@ void Vehicle::InstallAccessories()
         Creature* c = owner->GetMapMgr()->CreateCreature(accessory->accessory_entry);
         c->Load(cp, owner->GetPositionX(), owner->GetPositionY(), owner->GetPositionZ(), owner->GetOrientation());
 #if VERSION_STRING != Cata
-        c->obj_movement_info.transporter_info.guid = owner->GetGUID();
-        c->obj_movement_info.transporter_info.seat = static_cast<uint8_t>(accessory->seat);
+        c->obj_movement_info.transport_data.transportGuid = owner->GetGUID();
+#if FT_VEHICLES
+        c->obj_movement_info.transport_data.seat = static_cast<uint8_t>(accessory->seat);
+#endif
 #endif
         c->Phase(PHASE_SET, owner->GetPhase());
         c->SetFaction(owner->GetFaction());

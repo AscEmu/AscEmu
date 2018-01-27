@@ -31,6 +31,7 @@
 #include "Movement/UnitMovementManager.hpp"
 #include "Spell/Definitions/School.h"
 #include "Storage/MySQLStructures.h"
+#include "GameTBC/Data/MovementInfoTBC.h"
 
 class AIInterface;
 class Aura;
@@ -269,7 +270,13 @@ private:
 
 public:
 
-    float getSpeedForType(UnitSpeedType speed_type, bool get_basic = false);
+    float getSpeedForType(UnitSpeedType speed_type, bool get_basic = false) const;
+    float getFlySpeed() const;
+    float getSwimSpeed() const;
+    float getRunSpeed() const;
+    UnitSpeedType getFastestSpeedType() const;
+    float getFastestSpeed() const;
+
     void setSpeedForType(UnitSpeedType speed_type, float speed, bool set_basic = false);
     void resetCurrentSpeed();
 
@@ -525,6 +532,7 @@ public:
 
     /// Combat / Death Status
     bool isAlive() { return m_deathState == ALIVE; };
+    bool justDied() const;
     bool IsDead() { return  m_deathState != ALIVE; };
     virtual void setDeathState(DeathState s)
     {
