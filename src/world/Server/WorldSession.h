@@ -475,7 +475,7 @@ class SERVER_DECL WorldSession
         void HandleMovementOpcodes(WorldPacket& recvPacket);
         void HandleMoveTimeSkippedOpcode(WorldPacket& recv_data);
         void HandleMoveNotActiveMoverOpcode(WorldPacket& recv_data);
-        void HandleSetActiveMoverOpcode(WorldPacket& recv_data);
+        void handleSetActiveMoverOpcode(WorldPacket& recv_data);
         void HandleMoveTeleportAckOpcode(WorldPacket& recv_data);
 
         /// Opcodes implemented in GroupHandler.cpp:

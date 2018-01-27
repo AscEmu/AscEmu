@@ -79,7 +79,7 @@ void WorldSession::loadSpecificHandlers()
     //WorldPacketHandlers[MSG_MOVE_STOP_ASCEND].handler = &WorldSession::HandleMovementOpcodes;
     //WorldPacketHandlers[CMSG_MOVE_TIME_SKIPPED].handler = &WorldSession::HandleMoveTimeSkippedOpcode;
     //WorldPacketHandlers[CMSG_MOVE_NOT_ACTIVE_MOVER].handler = &WorldSession::HandleMoveNotActiveMoverOpcode;
-    //WorldPacketHandlers[CMSG_SET_ACTIVE_MOVER].handler = &WorldSession::HandleSetActiveMoverOpcode;
+    WorldPacketHandlers[CMSG_SET_ACTIVE_MOVER].handler = &WorldSession::handleSetActiveMoverOpcode;
     //WorldPacketHandlers[CMSG_MOVE_CHNG_TRANSPORT].handler = &WorldSession::HandleMovementOpcodes;
 
     // ACK

@@ -4,6 +4,7 @@ set(PATH_PREFIX Server/Packets)
 
 set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgNameQuery.h
+   ${PATH_PREFIX}/CmsgSetActiveMover.h
    ${PATH_PREFIX}/ManagedPacket.h
    ${PATH_PREFIX}/Opcode.h
    ${PATH_PREFIX}/SmsgBindPointUpdate.h
