@@ -340,7 +340,9 @@ class PlayerSpec
         }
 
         std::map<uint32, uint8> talents;
+#ifdef FT_GLYPHS
         uint16 glyphs[GLYPHS_COUNT];
+#endif
         ActionButton mActions[PLAYER_ACTION_BUTTON_COUNT];
     private:
 

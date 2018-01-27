@@ -2202,10 +2202,12 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
 
         data.put<uint8>(pos, talent_count);
 
+#ifdef FT_GLYPHS
         // Send Glyph info
         data << uint8(GLYPHS_COUNT);
         for (uint8 i = 0; i < GLYPHS_COUNT; i++)
             data << uint16(spec.glyphs[i]);
+#endif
 
     }
 #endif

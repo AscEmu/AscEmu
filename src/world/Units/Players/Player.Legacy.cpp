@@ -451,7 +451,9 @@ Player::Player(uint32 guid)
     for (uint8 s = 0; s < MAX_SPEC_COUNT; ++s)
     {
         m_specs[s].talents.clear();
+#ifdef FT_GLYPHS
         memset(m_specs[s].glyphs, 0, GLYPHS_COUNT * sizeof(uint16));
+#endif
         memset(m_specs[s].mActions, 0, PLAYER_ACTION_BUTTON_SIZE);
     }
 
@@ -2881,6 +2883,10 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
         ss << "','";
     }
 
+#ifndef FT_DUAL_SPEC
+    ss << "','";
+#endif
+
     if (!bNewCharacter)
         SaveAuras(ss);
 
@@ -2912,6 +2918,8 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 
     ss << (m_uint32Values[PLAYER_BYTES_3] & 0xFFFE) << ", ";
 
+    // TODO Remove
+#ifdef FT_DUAL_SPEC
     for (uint8 s = 0; s < MAX_SPEC_COUNT; ++s)
     {
         ss << "'";
@@ -2922,6 +2930,12 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
             ss << itr->first << "," << uint32(itr->second) << ",";
         ss << "',";
     }
+#else
+    ss << "'', '";
+    for (const auto talent : m_specs[0].talents)
+        ss << talent.first << "," << talent.second << ",";
+    ss << "', '', '', ";
+#endif
     ss << uint32(m_talentSpecsCount) << ", " << uint32(m_talentActiveSpec);
     ss << ", '";
     ss << uint32(m_specs[SPEC_PRIMARY].GetTP()) << " " << uint32(m_specs[SPEC_SECONDARY].GetTP());
@@ -3539,6 +3553,10 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         }
     }
 
+#ifndef FT_DUAL_SPEC
+    field_index++;
+#endif
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Parse saved buffs
     std::istringstream savedPlayerBuffsStream(get_next_field.GetString());
@@ -3622,6 +3640,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     for (uint8 s = 0; s < MAX_SPEC_COUNT; ++s)
     {
         start = (char*)get_next_field.GetString();
+#ifdef FT_GLYPHS
         uint8 glyphid = 0;
         while (glyphid < GLYPHS_COUNT)
         {
@@ -3632,6 +3651,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
             ++glyphid;
             start = end + 1;
         }
+#endif
 
         //Load talents for spec
         start = (char*)get_next_field.GetString();

@@ -44,6 +44,7 @@ This file is released under the MIT license. See README-MIT for more information
     #define FT_DEATH_KNIGHT
     #define FT_DUAL_SPEC
     #define FT_DUNGEON_FINDER
+    #define FT_GLYPHS
     #define FT_VEHICLES
 #endif
 
