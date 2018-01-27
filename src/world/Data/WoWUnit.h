@@ -45,7 +45,11 @@ struct WoWUnit : WoWObject
     uint32_t power_4;
     uint32_t power_5;
     uint32_t max_health;
-    uint32_t max_power_1;
+    union
+    {
+        uint32_t max_power_1;
+        uint32_t max_mana;
+    };
     uint32_t max_power_2;
     uint32_t max_power_3;
     uint32_t max_power_4;

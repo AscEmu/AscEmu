@@ -37,8 +37,8 @@ void GuardianSummon::Load(CreatureProperties const* properties_, Unit* pOwner, L
     SetMaxPower(POWER_TYPE_MANA, GetMaxPower(POWER_TYPE_MANA) + 28 + 10 * getLevel());
     SetPower(POWER_TYPE_MANA, GetPower(POWER_TYPE_MANA) + 28 + 10 * getLevel());
     setLevel(pOwner->getLevel());
-    SetMaxHealth(GetMaxHealth() + 28 + 30 * getLevel());
-    SetHealth(GetMaxHealth());
+    setMaxHealth(GetMaxHealth() + 28 + 30 * getLevel());
+    setHealth(GetMaxHealth());
     SetType(CREATURE_TYPE_GUARDIAN);
 
     m_aiInterface->Init(this, AI_SCRIPT_PET, Movement::WP_MOVEMENT_SCRIPT_NONE, pOwner);

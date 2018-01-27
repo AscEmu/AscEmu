@@ -21,6 +21,7 @@
 
 #include "SpellTarget.h"
 #include "Units/Creatures/Pet.h"
+#include "Server/Packets/SmsgClearExtraAuraInfo.h"
 #ifndef USE_EXPERIMENTAL_SPELL_SYSTEM
 #include "Spell.Legacy.h"
 #include "Definitions/SpellInFrontStatus.h"
@@ -57,6 +58,7 @@
 #include "SpellMgr.h"
 #include "SpellAuras.h"
 #include "Map/WorldCreatorDefines.hpp"
+
 
 using ascemu::World::Spell::Helpers::decimalToMask;
 using ascemu::World::Spell::Helpers::spellModFlatFloatValue;
@@ -1547,7 +1549,7 @@ void Spell::castMe(bool check)
                             }
                         }
                     }
-                    if (u_caster && u_caster->GetPowerType() == POWER_TYPE_MANA)
+                    if (u_caster && u_caster->getPowerType() == POWER_TYPE_MANA)
                     {
                         if (channelDuration <= 5000)
                             u_caster->DelayPowerRegeneration(5000);
@@ -1632,6 +1634,18 @@ void Spell::castMe(bool check)
                 for (auto target: ModeratedTargets)
                 {
                     HandleModeratedTarget(target.targetGuid);
+                }
+
+                auto apply_aura = false;
+                for (auto aura_idx = 0; aura_idx < 3; ++aura_idx)
+                    apply_aura = apply_aura || GetSpellInfo()->getEffectApplyAuraName(0) != 0;
+                if (apply_aura)
+                {
+                    hadEffect = true;
+                    for (auto target : UniqueTargets)
+                    {
+                        HandleAddAura(target);
+                    }
                 }
 
                 // spells that proc on spell cast, some talents
@@ -1879,7 +1893,7 @@ void Spell::finish(bool successful)
 
         u_caster->m_canMove = true;
         // mana           channeled                                                     power type is mana                             if spell wasn't cast successfully, don't delay mana regeneration
-        if (m_usesMana && (GetSpellInfo()->getChannelInterruptFlags() == 0 && !m_triggeredSpell) && u_caster->GetPowerType() == POWER_TYPE_MANA && successful)
+        if (m_usesMana && (GetSpellInfo()->getChannelInterruptFlags() == 0 && !m_triggeredSpell) && u_caster->getPowerType() == POWER_TYPE_MANA && successful)
         {
             /*
             Five Second Rule
@@ -2324,7 +2338,11 @@ void Spell::SendSpellStart()
 
     WorldPacket data(150);
 
+#if VERSION_STRING >= WotLK
     uint32 cast_flags = 2;
+#else
+    uint16_t cast_flags = 2;
+#endif
 
     if (GetType() == SPELL_DMG_TYPE_RANGED)
         cast_flags |= 0x20;
@@ -2415,7 +2433,7 @@ void Spell::SendSpellStart()
 #endif
     }
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING >= WotLK
     data << (uint32)139; //3.0.2 seems to be some small value around 250 for shadow bolt.
 #endif
     m_caster->SendMessageToSet(&data, true);
@@ -2459,10 +2477,13 @@ void Spell::SendSpellGo()
     // Start Spell
     WorldPacket data(200);
     data.SetOpcode(SMSG_SPELL_GO);
+#if VERSION_STRING >= WotLK
     uint32 flags = 0;
-
     if (m_missileTravelTime != 0)
         flags |= 0x20000;
+#else
+    uint16_t flags = 0;
+#endif
 
     if (GetType() == SPELL_DMG_TYPE_RANGED)
         flags |= SPELL_GO_FLAGS_RANGED; // 0x20 RANGED
@@ -2473,12 +2494,12 @@ void Spell::SendSpellGo()
     if (ModeratedTargets.size() > 0)
         flags |= SPELL_GO_FLAGS_EXTRA_MESSAGE; // 0x400 TARGET MISSES AND OTHER MESSAGES LIKE "Resist"
 
+#if VERSION_STRING >= WotLK
     if (p_caster != NULL && GetSpellInfo()->getPowerType() != POWER_TYPE_HEALTH)
         flags |= SPELL_GO_FLAGS_POWER_UPDATE;
 
     //experiments with rune updates
     uint8 cur_have_runes = 0;
-#if VERSION_STRING >= WotLK
     if (p_caster && p_caster->IsDeathKnight())   //send our rune updates ^^
     {
         if (GetSpellInfo()->getRuneCostID() && GetSpellInfo()->getPowerType() == POWER_TYPE_RUNES)
@@ -2524,8 +2545,10 @@ void Spell::SendSpellGo()
 
     m_targets.write(data);   // this write is included the target flag
 
+#if VERSION_STRING >= WotLK
     if (flags & SPELL_GO_FLAGS_POWER_UPDATE)
         data << (uint32)p_caster->GetPower(static_cast<uint16_t>(GetSpellInfo()->getPowerType()));
+#endif
 
     // er why handle it being null inside if if you can't get into if if its null
     if (GetType() == SPELL_DMG_TYPE_RANGED)
@@ -2556,16 +2579,19 @@ void Spell::SendSpellGo()
             data << ip->DisplayInfoID;
             data << ip->InventoryType;
         }
+#if VERSION_STRING >= WotLK
         else
         {
             data << uint32(0);
             data << uint32(0);
         }
+#endif
     }
 
     //data order depending on flags : 0x800, 0x200000, 0x20000, 0x20, 0x80000, 0x40 (this is not spellgoflag but seems to be from spellentry or packet..)
     //.text:00401110                 mov     eax, [ecx+14h] -> them
     //.text:00401115                 cmp     eax, [ecx+10h] -> us
+#if VERSION_STRING >= WotLK
     if (flags & SPELL_GO_FLAGS_RUNE_UPDATE)
     {
         data << uint8(m_rune_avail_before);
@@ -2577,6 +2603,7 @@ void Spell::SendSpellGo()
                 data << uint8(0);   //values of the rune converted into byte. We just think it is 0 but maybe it is not :P
         }
     }
+#endif
 
 
 
@@ -2586,7 +2613,7 @@ void Spell::SendSpellGo()
             if (missilepitch != M_PI / 4 && missilepitch != -M_PI / 4) //lets not divide by 0 lul
             traveltime = (sqrtf(dx * dx + dy * dy) / (cosf(missilepitch) * missilespeed)) * 1000;
             */
-
+#if VERSION_STRING >= WotLK
     if (flags & 0x20000)
     {
         data << float(m_missilePitch);
@@ -2596,6 +2623,7 @@ void Spell::SendSpellGo()
 
     if (m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION)
         data << uint8(0);   //some spells require this ? not sure if it is last byte or before that.
+#endif
 
     m_caster->SendMessageToSet(&data, true);
 
@@ -2611,6 +2639,21 @@ void Spell::writeSpellGoTargets(WorldPacket* data)
     std::vector<uint64_t>::iterator i;
     for (i = UniqueTargets.begin(); i != UniqueTargets.end(); ++i)
     {
+
+#if VERSION_STRING <= TBC
+        auto plr = p_caster;
+        if (!plr && u_caster)
+            plr = u_caster->m_redirectSpellPackets;
+
+        if (plr && plr->IsPlayer())
+        {
+            AscEmu::Packets::SmsgClearExtraAuraInfo aura_packet;
+            aura_packet.guid = *i;
+            aura_packet.spell_id = GetSpellInfo()->getId();
+            plr->SendPacket(aura_packet.serialise().get());
+        }
+#endif
+
         *data << *i;
     }
 }
@@ -2629,12 +2672,12 @@ void Spell::writeSpellMissedTargets(WorldPacket* data)
      */
     if (u_caster && u_caster->isAlive())
     {
-        for (auto moderatedTarget: ModeratedTargets)
+        for (auto moderated_target: ModeratedTargets)
         {
-            *data << moderatedTarget.targetGuid;
-            *data << moderatedTarget.targetModType;
+            *data << moderated_target.targetGuid;
+            *data << moderated_target.targetModType;
             ///handle proc on resist spell
-            Unit* target = u_caster->GetMapMgr()->GetUnit(moderatedTarget.targetGuid);
+            Unit* target = u_caster->GetMapMgr()->GetUnit(moderated_target.targetGuid);
             if (target && target->isAlive())
             {
                 u_caster->HandleProc(PROC_ON_RESIST_VICTIM, target, GetSpellInfo()/*,damage*/);		/** Damage is uninitialized at this point - burlex */
@@ -6911,7 +6954,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
     uint32 maxHealth = unitTarget->getUInt32Value(UNIT_FIELD_MAXHEALTH);
     if ((curHealth + amount) >= maxHealth)
     {
-        unitTarget->SetHealth(maxHealth);
+        unitTarget->setHealth(maxHealth);
         overheal = curHealth + amount - maxHealth;
     }
     else

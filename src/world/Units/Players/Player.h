@@ -417,6 +417,7 @@ public:
     // Data
     void setAttackPowerMultiplier(float val);
     void setRangedAttackPowerMultiplier(float val);
+    void setExploredZone(uint32_t idx, uint32_t data);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement

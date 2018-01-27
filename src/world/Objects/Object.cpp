@@ -1384,7 +1384,7 @@ uint32 TimeStamp();
 #if VERSION_STRING < WotLK
 void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 {
-    uint8_t tbc_flags = flags;
+    const auto tbc_flags = static_cast<uint8>(flags);
     uint32_t tbc_flags_2 = 0;
 
     // This is checked for nullptr later
@@ -1469,9 +1469,8 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
             {
                 if (const auto transport = this_player->GetTransport())
                 {
-
-                *data << transport->GetGUID();
-                *data << transport->GetPosition() << transport->GetOrientation();
+                    *data << transport->GetGUID();
+                    *data << transport->GetPosition() << transport->GetOrientation();
                     // According to old repo, this is meant to be a float. TODO Investigate
                     *data << transport->GetTransTime();
                 }

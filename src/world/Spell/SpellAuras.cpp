@@ -2415,7 +2415,7 @@ void Aura::EventPeriodicHeal(uint32 amount)
 
     if ((curHealth + add) >= maxHealth)
     {
-        m_target->SetHealth(maxHealth);
+        m_target->setHealth(maxHealth);
         over_heal = curHealth + add - maxHealth;
     }
     else
@@ -3226,9 +3226,9 @@ void Aura::EventPeriodicHealPct(float RegenPct)
     uint32 newHealth = m_target->GetHealth() + add;
 
     if (newHealth <= m_target->GetMaxHealth())
-        m_target->SetHealth(newHealth);
+        m_target->setHealth(newHealth);
     else
-        m_target->SetHealth(m_target->GetMaxHealth());
+        m_target->setHealth(m_target->GetMaxHealth());
 
     m_target->SendPeriodicAuraLog(m_casterGuid, m_target->GetNewGUID(), m_spellInfo->getId(), m_spellInfo->getSchool(), add, 0, 0, FLAG_PERIODIC_HEAL, false);
 
@@ -3930,7 +3930,7 @@ void Aura::SpellAuraModIncreaseHealth(bool apply)
         {
             if ((int32)m_target->GetHealth() > -amt) //watch it on remove value is negative
                 m_target->ModHealth(amt);
-            else m_target->SetHealth(1); //do not kill player but do strip him good
+            else m_target->setHealth(1); //do not kill player but do strip him good
         }
     }
     else
@@ -4849,9 +4849,9 @@ void Aura::EventPeriodicLeech(uint32 amount)
 
     uint32 mh = m_caster->GetMaxHealth();
     if (newHealth <= mh)
-        m_caster->SetHealth(newHealth);
+        m_caster->setHealth(newHealth);
     else
-        m_caster->SetHealth(mh);
+        m_caster->setHealth(mh);
 
     m_target->SendPeriodicHealAuraLog(m_caster->GetNewGUID(), m_caster->GetNewGUID(), sp->getId(), heal_amount, 0, false);
     m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), sp->getId(), sp->getSchool(), heal_amount, 0, 0, FLAG_PERIODIC_LEECH, is_critical);
@@ -5300,9 +5300,9 @@ void Aura::EventPeriodicHealthFunnel(uint32 amount)
 
         uint32 mh = m_caster->GetMaxHealth();
         if (newHealth <= mh)
-            m_caster->SetHealth(newHealth);
+            m_caster->setHealth(newHealth);
         else
-            m_caster->SetHealth(mh);
+            m_caster->setHealth(mh);
 
         m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), m_spellInfo->getId(), m_spellInfo->getSchool(), 1000, 0, 0, FLAG_PERIODIC_LEECH, false);
 
@@ -6034,9 +6034,9 @@ void Aura::EventPeriodicHeal1(uint32 amount)
     uint32 mh = m_target->GetMaxHealth();
 
     if (ch > mh)
-        m_target->SetHealth(mh);
+        m_target->setHealth(mh);
     else
-        m_target->SetHealth(ch);
+        m_target->setHealth(ch);
 
     if (GetSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
     {
@@ -7108,7 +7108,7 @@ void Aura::SpellAuraModIncreaseHealthPerc(bool apply)
     {
         m_target->ModMaxHealth(-mod->fixed_amount[mod->m_effectIndex]);
         if (m_target->getUInt32Value(UNIT_FIELD_HEALTH) > m_target->getUInt32Value(UNIT_FIELD_MAXHEALTH))
-            m_target->SetHealth(m_target->getUInt32Value(UNIT_FIELD_MAXHEALTH));
+            m_target->setHealth(m_target->getUInt32Value(UNIT_FIELD_MAXHEALTH));
         if (p_target != nullptr)
             p_target->SetHealthFromSpell(static_cast<Player*>(m_target)->GetHealthFromSpell() - mod->fixed_amount[mod->m_effectIndex]);
         //		else if (m_target->IsPet())
@@ -8767,7 +8767,7 @@ void Aura::SpellAuraSpiritOfRedemption(bool apply)
     if (apply)
     {
         m_target->SetScale(0.5);
-        m_target->SetHealth(1);
+        m_target->setHealth(1);
         SpellInfo* sorInfo = sSpellCustomizations.GetSpellInfo(27792);
         Spell* sor = sSpellFactoryMgr.NewSpell(m_target, sorInfo, true, nullptr);
         SpellCastTargets spellTargets;
@@ -8778,7 +8778,7 @@ void Aura::SpellAuraSpiritOfRedemption(bool apply)
     {
         m_target->SetScale(1);
         m_target->RemoveAura(27792);
-        m_target->SetHealth(0);
+        m_target->setHealth(0);
     }
 }
 

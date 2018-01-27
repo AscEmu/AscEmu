@@ -252,7 +252,7 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
         }
         else
         {
-            named_player->SetHealth(0);
+            named_player->setHealth(0);
             named_player->KillPlayer();
             RedSystemMessage(named_player->GetSession(), "You were killed by %s with a GM command.", m_session->GetPlayer()->GetName());
             GreenSystemMessage(m_session, "Killed player %s.", args);
@@ -284,7 +284,7 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
                 {
                     auto player = static_cast<Player*>(unit_target);
 
-                    player->SetHealth(0);
+                    player->setHealth(0);
                     player->KillPlayer();
                     RedSystemMessage(player->GetSession(), "You were killed by %s with a GM command.", m_session->GetPlayer()->GetName());
                     GreenSystemMessage(m_session, "Killed player %s.", player->GetName());
@@ -354,7 +354,7 @@ bool ChatHandler::HandleReviveCommand(const char* args, WorldSession* m_session)
         {
             player_target->setMoveRoot(false);
             player_target->ResurrectPlayer();
-            player_target->SetHealth(player_target->GetMaxHealth());
+            player_target->setHealth(player_target->GetMaxHealth());
             player_target->SetPower(POWER_TYPE_MANA, player_target->GetMaxPower(POWER_TYPE_MANA));
             player_target->SetPower(POWER_TYPE_ENERGY, player_target->GetMaxPower(POWER_TYPE_ENERGY));
 

@@ -631,7 +631,7 @@ class PhoenixAI : public CreatureAIScript
             double PercMaxHP = (double)getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.05;
             if (CurrentHP > PercMaxHP && _isTimerFinished(mBurnTimer))
             {
-                getCreature()->SetHealth((uint32)(CurrentHP - PercMaxHP));
+                getCreature()->setHealth((uint32)(CurrentHP - PercMaxHP));
                 _resetTimer(mBurnTimer, 3000);
                 _applyAura(PHOENIX_BURN);
             }

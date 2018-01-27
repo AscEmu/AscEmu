@@ -960,8 +960,8 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     ApplyStatsForLevel();
 
     SetTPs(static_cast<uint8>(mPi->talentpoints));
-    SetPower(GetPowerType(), mPi->current_power);
-    SetHealth(mPi->current_hp);
+    SetPower(getPowerType(), mPi->current_power);
+    setHealth(mPi->current_hp);
     SetPower(POWER_TYPE_HAPPINESS, mPi->current_happiness);
 
     if (mPi->renamable == 0)
@@ -974,7 +974,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
         //This is because now we call SpawnPet() only if it's alive or we wanna revive it.
     {
         setUInt32Value(UNIT_DYNAMIC_FLAGS, 0);
-        SetHealth(GetMaxHealth());              //this is modified (if required) in Spell::SpellEffectSummonDeadPet()
+        setHealth(GetMaxHealth());              //this is modified (if required) in Spell::SpellEffectSummonDeadPet()
         setDeathState(ALIVE);
     }
 
@@ -1115,7 +1115,7 @@ void Pet::UpdatePetInfo(bool bSetToOffline)
     player_pet->reset_time = reset_time;
     player_pet->petstate = m_State;
     player_pet->alive = isAlive();
-    player_pet->current_power = GetPower(GetPowerType());
+    player_pet->current_power = GetPower(getPowerType());
     player_pet->talentpoints = GetTPs();
     player_pet->current_hp = GetHealth();
     player_pet->current_happiness = GetPower(POWER_TYPE_HAPPINESS);
@@ -1788,9 +1788,9 @@ void Pet::ApplySummonLevelAbilities()
         LOG_ERROR("Pet with entry %u has 0 health !!", GetEntry());
         health = 100;
     }
-    SetBaseHealth((uint32)(health));
-    SetMaxHealth((uint32)(health));
-    SetBaseMana((uint32)(mana));
+    setBaseHealth((uint32)(health));
+    setMaxHealth((uint32)(health));
+    setBaseMana((uint32)(mana));
     SetMaxPower(POWER_TYPE_MANA, (uint32)(mana));
 
     for (uint16 x = 0; x < 5; ++x)
@@ -1834,7 +1834,7 @@ void Pet::ApplyPetLevelAbilities()
     BaseStats[3] = pet_abilities->intellect;
     BaseStats[4] = pet_abilities->spirit;
 
-    SetBaseHealth(pet_abilities->health);
+    setBaseHealth(pet_abilities->health);
     setUInt32Value(UNIT_FIELD_MAXHEALTH, pet_abilities->health);
 
     //Family Aura
@@ -1874,7 +1874,7 @@ void Pet::ApplyStatsForLevel()
     }
 
     // Apply health fields.
-    SetHealth(getUInt32Value(UNIT_FIELD_MAXHEALTH));
+    setHealth(getUInt32Value(UNIT_FIELD_MAXHEALTH));
     SetPower(POWER_TYPE_MANA, GetMaxPower(POWER_TYPE_MANA));   // mana
     SetPower(POWER_TYPE_FOCUS, GetMaxPower(POWER_TYPE_FOCUS));   // focus
 }
@@ -2151,7 +2151,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
             if (NewHP < 5)
                 NewHP = 5;
 
-            pVictim->SetHealth(NewHP);
+            pVictim->setHealth(NewHP);
             m_Owner->EndDuel(DUEL_WINNER_KNOCKOUT);
             pVictim->Emote(EMOTE_ONESHOT_BEG);
             return;
@@ -2162,7 +2162,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
     {
         if (pVictim->isTrainingDummy())
         {
-            pVictim->SetHealth(1);
+            pVictim->setHealth(1);
             return;
         }
 
@@ -2423,7 +2423,7 @@ void Pet::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     }
 
     smsg_AttackStop(this);
-    SetHealth(0);
+    setHealth(0);
 
     // Wipe our attacker set on death
     CombatStatus.Vanished();

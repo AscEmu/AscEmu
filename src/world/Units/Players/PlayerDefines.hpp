@@ -415,7 +415,7 @@ enum LootType
     LOOT_PICKPOCKETING          = 2,        // 2
     LOOT_DISENCHANTING          = 2,        // 4    // ignored
     LOOT_PROSPECTING            = 2,        // 7
-    LOOT_MILLING                = 2,        // 8    
+    LOOT_MILLING                = 2,        // 8
     LOOT_INSIGNIA               = 2         // 21 unsupported by client, sending LOOT_SKINNING instead
 };
 

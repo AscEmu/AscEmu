@@ -724,7 +724,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
                 //extra check to set HP to 0 only if the player is dead (KillPlayer() has already this check)
                 if (_player->isAlive())
                 {
-                    _player->SetHealth(0);
+                    _player->setHealth(0);
                     _player->KillPlayer();
                 }
 

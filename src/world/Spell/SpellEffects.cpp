@@ -1855,7 +1855,7 @@ void Spell::SpellEffectHealthLeech(uint8_t /*effectIndex*/) // Health Leech
 
     if (playerCurHealth + amt > playerMaxHealth)
     {
-        u_caster->SetHealth(playerMaxHealth);
+        u_caster->setHealth(playerMaxHealth);
     }
     else
     {
@@ -2317,7 +2317,7 @@ void Spell::SpellEffectResurrect(uint8_t effectIndex) // Resurrect (Flat)
                         sEventMgr.RemoveEvents(unitTarget, EVENT_PET_DELAYED_REMOVE);
                         sEventMgr.RemoveEvents(unitTarget, EVENT_CREATURE_REMOVE_CORPSE);
                     }
-                    unitTarget->SetHealth(hlth);
+                    unitTarget->setHealth(hlth);
                     unitTarget->SetPower(POWER_TYPE_MANA, mana);
                     unitTarget->setUInt32Value(UNIT_DYNAMIC_FLAGS, 0);
                     unitTarget->setDeathState(ALIVE);
@@ -3123,8 +3123,8 @@ void Spell::SpellEffectSummonTotem(uint32 /*i*/, DBC::Structures::SummonProperti
     if (s == nullptr)
         return;
     s->Load(properties_, u_caster, v, m_spellInfo->getId(), spe->Slot - 1);
-    s->SetMaxHealth(damage);
-    s->SetHealth(damage);
+    s->setMaxHealth(damage);
+    s->setHealth(damage);
     s->PushToWorld(u_caster->GetMapMgr());
 
     if (p_caster != nullptr)
@@ -4526,7 +4526,7 @@ void Spell::SpellEffectSendEvent(uint8_t effectIndex) //Send Event
 
 void Spell::SpellEffectPowerBurn(uint8_t effectIndex) // power burn
 {
-    if (unitTarget == nullptr || !unitTarget->isAlive() || unitTarget->GetPowerType() != POWER_TYPE_MANA)
+    if (unitTarget == nullptr || !unitTarget->isAlive() || unitTarget->getPowerType() != POWER_TYPE_MANA)
         return;
 
     if (unitTarget->IsPlayer())
@@ -5383,7 +5383,7 @@ void Spell::SpellEffectSummonDeadPet(uint8_t /*effectIndex*/)
         spellModPercentageIntValue(p_caster->SM_PMiscEffect, &damage, GetSpellInfo()->getSpellGroupType());
 
         pPet->setUInt32Value(UNIT_DYNAMIC_FLAGS, 0);
-        pPet->SetHealth((uint32)((pPet->GetMaxHealth() * damage) / 100));
+        pPet->setHealth((uint32)((pPet->GetMaxHealth() * damage) / 100));
         pPet->setDeathState(ALIVE);
         pPet->GetAIInterface()->HandleEvent(EVENT_FOLLOWOWNER, pPet, 0);
         sEventMgr.RemoveEvents(pPet, EVENT_PET_DELAYED_REMOVE);
@@ -5400,7 +5400,7 @@ void Spell::SpellEffectSummonDeadPet(uint8_t /*effectIndex*/)
         spellModFlatIntValue(p_caster->SM_FMiscEffect, &damage, GetSpellInfo()->getSpellGroupType());
         spellModPercentageIntValue(p_caster->SM_PMiscEffect, &damage, GetSpellInfo()->getSpellGroupType());
 
-        pPet->SetHealth((uint32)((pPet->GetMaxHealth() * damage) / 100));
+        pPet->setHealth((uint32)((pPet->GetMaxHealth() * damage) / 100));
     }
 }
 
@@ -5470,7 +5470,7 @@ void Spell::SpellEffectResurrectNew(uint8_t effectIndex)
                         sEventMgr.RemoveEvents(unitTarget, EVENT_PET_DELAYED_REMOVE);
                         sEventMgr.RemoveEvents(unitTarget, EVENT_CREATURE_REMOVE_CORPSE);
                     }
-                    unitTarget->SetHealth(hlth);
+                    unitTarget->setHealth(hlth);
                     unitTarget->SetPower(POWER_TYPE_MANA, mana);
                     unitTarget->setUInt32Value(UNIT_DYNAMIC_FLAGS, 0);
                     unitTarget->setDeathState(ALIVE);
@@ -6328,7 +6328,7 @@ void Spell::SpellEffectRestoreHealthPct(uint8_t /*effectIndex*/)
     uint32 overheal = 0;
     if (newHealth >= maxHealth)
     {
-        unitTarget->SetHealth(maxHealth);
+        unitTarget->setHealth(maxHealth);
         overheal = newHealth - maxHealth;
     }
     else
@@ -6388,7 +6388,7 @@ void Spell::SpellEffectActivateSpec(uint8_t /*effectIndex*/)
     }
 
     p_caster->GetSession()->SendPacket(&data);
-    p_caster->SetPower(p_caster->GetPowerType(), 0);
+    p_caster->SetPower(p_caster->getPowerType(), 0);
     p_caster->SendPowerUpdate(false);
 }
 

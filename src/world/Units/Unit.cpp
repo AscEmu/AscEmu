@@ -18,6 +18,8 @@ uint8 Unit::getClass() const { return unitData()->field_bytes_0_wowplayer.unit_c
 
 uint8 Unit::getGender() const { return unitData()->field_bytes_0_wowplayer.gender; }
 
+uint8 Unit::getPowerType() const { return unitData()->field_bytes_0_wowplayer.power_type; }
+
 void Unit::setRace(uint8_t race)
 {
     write(unitData()->field_bytes_0_wowplayer.race, race);
@@ -36,6 +38,11 @@ void Unit::setGender(uint8_t gender)
 void Unit::setPowerType(uint8_t powerType)
 {
     write(unitData()->field_bytes_0_wowplayer.power_type, powerType);
+}
+
+void Unit::setMaxMana(uint32_t maxMana)
+{
+    write(unitData()->max_mana, maxMana);
 }
 
 void Unit::setLevel(uint32_t level)
@@ -565,6 +572,14 @@ void Unit::setMoveWalk(bool set_walk)
         }
     }
 }
+
+void Unit::setHealth(uint32_t health) { write(unitData()->health, health); }
+
+void Unit::setMaxHealth(uint32_t maxHealth) { write(unitData()->max_health, maxHealth); }
+
+void Unit::setBaseHealth(uint32_t baseHealth) { write(unitData()->base_health, baseHealth); }
+
+void Unit::setBaseMana(uint32_t baseMana) { write(unitData()->base_mana, baseMana); }
 
 float Unit::getSpeedForType(UnitSpeedType speed_type, bool get_basic)
 {

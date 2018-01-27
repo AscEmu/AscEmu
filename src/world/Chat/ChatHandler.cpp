@@ -548,7 +548,7 @@ bool ChatHandler::CmdSetValueField(WorldSession* m_session, uint16 field, uint16
         if (field == UNIT_FIELD_STAT1) av /= 2;
         if (field == UNIT_FIELD_BASE_HEALTH)
         {
-            plr->SetHealth(av);
+            plr->setHealth(av);
         }
 
         plr->setUInt32Value(field, av);
@@ -572,7 +572,7 @@ bool ChatHandler::CmdSetValueField(WorldSession* m_session, uint16 field, uint16
             sGMLog.writefromsession(m_session, "used modify field value: [creature]%s, %u on %s", fieldname, av, creaturename.c_str());
             if (field == UNIT_FIELD_STAT1) av /= 2;
             if (field == UNIT_FIELD_BASE_HEALTH)
-                cr->SetHealth(av);
+                cr->setHealth(av);
 
             switch(field)
             {

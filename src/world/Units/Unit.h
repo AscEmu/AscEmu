@@ -239,6 +239,10 @@ public:
     void setMoveSwim(bool set_swim);
     void setMoveDisableGravity(bool disable_gravity);
     void setMoveWalk(bool set_walk);
+    void setHealth(uint32_t health);
+    void setMaxHealth(uint32_t health);
+    void setBaseHealth(uint32_t baseHealth);
+    void setBaseMana(uint32_t baseMana);
 
     // Speed
 private:
@@ -789,7 +793,7 @@ public:
         return (int)(getUInt32Value(UNIT_FIELD_HEALTH) * 100 / getUInt32Value(UNIT_FIELD_MAXHEALTH));
     };
 
-    void SetHealthPct(uint32 val) { if (val > 0) SetHealth(float2int32(val * 0.01f * getUInt32Value(UNIT_FIELD_MAXHEALTH))); };
+    void SetHealthPct(uint32 val) { if (val > 0) setHealth(float2int32(val * 0.01f * getUInt32Value(UNIT_FIELD_MAXHEALTH))); };
 
     int GetManaPct()
     {
@@ -944,7 +948,7 @@ public:
 
     void SendFullAuraUpdate();
     void SendAuraUpdate(uint32 AuraSlot, bool remove);
-    uint32 ModVisualAuraStackCount(Aura* aur, int32 count);
+    void ModVisualAuraStackCount(Aura* aur, int32 count);
     uint8 FindVisualSlot(uint32 SpellId, bool IsPos);
     uint32 m_auravisuals[MAX_NEGATIVE_VISUAL_AURAS_END];
 
@@ -1096,10 +1100,9 @@ public:
     void SetResistance(uint16_t type, uint32 amt) { setUInt32Value(UNIT_FIELD_RESISTANCES + type, amt); }
     uint32 GetResistance(uint16_t type) { return getUInt32Value(UNIT_FIELD_RESISTANCES + type); }
 
-    void SetBaseMana(uint32 amt) { setUInt32Value(UNIT_FIELD_BASE_MANA, amt); }
+
     uint32 GetBaseMana() { return getUInt32Value(UNIT_FIELD_BASE_MANA); }
 
-    void SetBaseHealth(uint32 amt) { setUInt32Value(UNIT_FIELD_BASE_HEALTH, amt); }
     uint32 GetBaseHealth() { return getUInt32Value(UNIT_FIELD_BASE_HEALTH); }
 
     void SetPowerCostMultiplier(uint16_t school, float amt) { setFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER + school, amt); }
@@ -1190,18 +1193,17 @@ public:
     uint8 getRace() const;
     uint8 getClass() const;
     uint8 getGender() const;
+    uint8 getPowerType() const;
 
     void setRace(uint8_t race);
     void setClass(uint8_t class_);
     void setGender(uint8_t gender);
     void setPowerType(uint8_t powerType);
 
+    void setMaxMana(uint32_t maxMana);
 
-    uint8 GetPowerType() { return getByteValue(UNIT_FIELD_BYTES_0, 3); }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void SetHealth(uint32 val) { setUInt32Value(UNIT_FIELD_HEALTH, val); }
-    void SetMaxHealth(uint32 val) { setUInt32Value(UNIT_FIELD_MAXHEALTH, val); }
 
     uint32 GetHealth()    const { return getUInt32Value(UNIT_FIELD_HEALTH); }
     uint32 GetMaxHealth() const { return getUInt32Value(UNIT_FIELD_MAXHEALTH); }

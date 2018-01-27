@@ -883,7 +883,7 @@ class KarathressAI : public CreatureAIScript
                     {
                         Unit* RandomTarget = static_cast<Unit*>(itr);
 
-                        if (RandomTarget->isAlive() && getCreature()->GetDistance2dSq(RandomTarget) <= 80.0f && getCreature()->GetPowerType() == POWER_TYPE_MANA)
+                        if (RandomTarget->isAlive() && getCreature()->GetDistance2dSq(RandomTarget) <= 80.0f && getCreature()->getPowerType() == POWER_TYPE_MANA)
                             TargetTable.push_back(RandomTarget);
                     }
                 }

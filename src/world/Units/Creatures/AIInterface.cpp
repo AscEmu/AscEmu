@@ -921,8 +921,8 @@ bool AIInterface::activateShowWayPoints(Player* player, bool showBackwards)
             wpCreature->setLevel(wayPoint->id);
             wpCreature->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
             wpCreature->SetFaction(player->GetFaction());
-            wpCreature->SetHealth(1);
-            wpCreature->SetMaxHealth(1);
+            wpCreature->setHealth(1);
+            wpCreature->setMaxHealth(1);
             wpCreature->SetStat(STAT_STRENGTH, wayPoint->flags);
 
             ByteBuffer buf(3000);
@@ -1368,7 +1368,7 @@ void AIInterface::Update(unsigned long time_passed)
             setSplineWalk();
 
             if (!isAiScriptType(AI_SCRIPT_PET) && !skip_reset_hp)
-                m_Unit->SetHealth(m_Unit->GetMaxHealth());
+                m_Unit->setHealth(m_Unit->GetMaxHealth());
         }
         else
         {
@@ -4922,12 +4922,12 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
 
             uint32 health = properties_difficulty->MinHealth + Util::getRandomUInt(properties_difficulty->MaxHealth - properties_difficulty->MinHealth);
 
-            m_Unit->SetHealth(health);
-            m_Unit->SetMaxHealth(health);
-            m_Unit->SetBaseHealth(health);
+            m_Unit->setHealth(health);
+            m_Unit->setMaxHealth(health);
+            m_Unit->setBaseHealth(health);
 
             m_Unit->SetMaxPower(POWER_TYPE_MANA, properties_difficulty->Mana);
-            m_Unit->SetBaseMana(properties_difficulty->Mana);
+            m_Unit->setBaseMana(properties_difficulty->Mana);
             m_Unit->SetPower(POWER_TYPE_MANA, properties_difficulty->Mana);
 
             m_Unit->setLevel(properties_difficulty->MinLevel + (Util::getRandomUInt(properties_difficulty->MaxLevel - properties_difficulty->MinLevel)));

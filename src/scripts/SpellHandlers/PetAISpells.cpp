@@ -118,8 +118,8 @@ public:
             // Mage mirror image spell
             if (getCreature()->GetCreatedBySpell() == 58833)
             {
-                getCreature()->SetMaxHealth(2500);
-                getCreature()->SetHealth(2500);
+                getCreature()->setMaxHealth(2500);
+                getCreature()->setHealth(2500);
                 getCreature()->SetMaxPower(POWER_TYPE_MANA, owner->GetMaxPower(POWER_TYPE_MANA));
                 getCreature()->SetPower(POWER_TYPE_MANA, owner->GetPower(POWER_TYPE_MANA));
 

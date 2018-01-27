@@ -45,6 +45,8 @@
 #include "Spell/SpellHelpers.h"
 #include "Creatures/Pet.h"
 #include "Data/WoWUnit.h"
+#include "Server/Packets/SmsgUpdateAuraDuration.h"
+#include "Server/Packets/SmsgSetExtraAuraInfo.h"
 
 using ascemu::World::Spell::Helpers::spellModFlatIntValue;
 using ascemu::World::Spell::Helpers::spellModPercentageIntValue;
@@ -1295,6 +1297,9 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
             continue;
         }
 
+        if (!(spell_proc->mProcFlags & flag))
+            continue;
+
         if (CastingSpell != NULL)
         {
             // A spell cannot proc itself
@@ -1302,8 +1307,8 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 continue;
 
             // If this is called by a triggered spell, check if it's allowed
-            if (is_triggered && !spell_proc->CanProcOnTriggered(victim, CastingSpell))
-                continue;
+            /*if (is_triggered && !spell_proc->CanProcOnTriggered(victim, CastingSpell))
+                continue;*/
         }
 
         // Check if this can proc
@@ -6777,7 +6782,7 @@ void Unit::RegeneratePower(bool isinterrupted)
 
     if (!IsPlayer() && IsVehicle())
     {
-        uint8_t powertype = GetPowerType();
+        uint8_t powertype = getPowerType();
         float wrate = worldConfig.getFloatRate(RATE_VEHICLES_POWER_REGEN);
         float amount = wrate * 20.0f;
         SetPower(powertype, static_cast<int32>(GetPower(powertype) + amount));
@@ -6785,7 +6790,7 @@ void Unit::RegeneratePower(bool isinterrupted)
 
     //druids regen every tick, which is every 100ms, at one energy, as of 3.0.2
     //I don't know how mana has changed exactly, but it has, will research it - optical
-    if (IsPlayer() && GetPowerType() == POWER_TYPE_ENERGY)
+    if (IsPlayer() && getPowerType() == POWER_TYPE_ENERGY)
     {
         static_cast<Player*>(this)->RegenerateEnergy();
         // druids regen mana when shapeshifted
@@ -6799,7 +6804,7 @@ void Unit::RegeneratePower(bool isinterrupted)
     // player regen
     if (this->IsPlayer())
     {
-        uint32 powertype = GetPowerType();
+        uint32 powertype = getPowerType();
         switch (powertype)
         {
             case POWER_TYPE_MANA:
@@ -6881,7 +6886,7 @@ void Unit::RegeneratePower(bool isinterrupted)
     }
     else
     {
-        uint32 powertype = GetPowerType();
+        uint32 powertype = getPowerType();
         switch (powertype)
         {
             case POWER_TYPE_MANA:
@@ -8251,7 +8256,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
     //rage processing
     //http://www.wowwiki.com/Formulas:Rage_generation
 
-    if (dmg.full_damage && IsPlayer() && GetPowerType() == POWER_TYPE_RAGE && !ability)
+    if (dmg.full_damage && IsPlayer() && getPowerType() == POWER_TYPE_RAGE && !ability)
     {
         float val;
         uint32 level = getLevel();
@@ -8589,7 +8594,31 @@ void Unit::AddAura(Aura* aur)
                         }
                         AlreadyApplied++;
                         //update duration,the same aura (update the whole stack whenever we cast a new one)
+#if VERSION_STRING > WotLK
                         m_auras[x]->ResetDuration();
+#else
+                        if (AlreadyApplied == 1)
+                        {
+                            m_auras[x]->SetDuration(aur->GetDuration());
+                            sEventMgr.ModifyEventTimeLeft(m_auras[x], EVENT_AURA_REMOVE, aur->GetDuration());
+                            if (IsPlayer())
+                            {
+                                AscEmu::Packets::SmsgUpdateAuraDuration aura_duration_packet;
+                                aura_duration_packet.slot = m_auras[x]->m_visualSlot;
+                                aura_duration_packet.duration = aur->GetDuration();
+                                reinterpret_cast<Player*>(this)->SendPacket(aura_duration_packet.serialise().get());
+                            }
+
+                            AscEmu::Packets::SmsgSetExtraAuraInfo extra_aura_packet;
+                            auto my_guid = GetNewGUID();
+                            extra_aura_packet.guid = &my_guid;
+                            extra_aura_packet.aura_slot = m_auras[x]->m_visualSlot;
+                            extra_aura_packet.spell_id = m_auras[x]->GetSpellInfo()->getId();
+                            extra_aura_packet.duration = aur->GetDuration();
+                            extra_aura_packet.max_duration = aur->GetDuration();
+                            SendMessageToSet(extra_aura_packet.serialise().get(), false);
+                        }
+#endif
 
                         if (maxStack <= AlreadyApplied)
                         {
@@ -12054,14 +12083,15 @@ void Unit::SendAuraUpdate(uint32 AuraSlot, bool remove)
 }
 #endif
 
-uint32 Unit::ModVisualAuraStackCount(Aura* aur, int32 count)
+void Unit::ModVisualAuraStackCount(Aura* aur, int32 count)
 {
+    return;
     if (!aur)
-        return 0;
+        return;
 
     uint8 slot = aur->m_visualSlot;
     if (slot >= MAX_NEGATIVE_VISUAL_AURAS_END)
-        return 0;
+        return;
 
     if (count < 0 && m_auraStackCount[slot] <= -count)
     {
@@ -12078,7 +12108,7 @@ uint32 Unit::ModVisualAuraStackCount(Aura* aur, int32 count)
         SendAuraUpdate(aur->m_auraSlot, false);
     }
 
-    return m_auraStackCount[slot];
+    //return m_auraStackCount[slot];
 }
 
 void Unit::RemoveAurasOfSchool(uint32 School, bool Positive, bool Immune)
@@ -12222,11 +12252,12 @@ void Unit::EventHealthChangeSinceLastUpdate()
     }
     else
         RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_HEALTH35 | AURASTATE_FLAG_HEALTH20);
-
+#if VERSION_STRING >= WotLK
     if (pct < 75)
         RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_HEALTH75);
     else
         SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_HEALTH75);
+#endif
 }
 
 int32 Unit::GetAP()
@@ -12722,12 +12753,12 @@ void Unit::Heal(Unit* target, uint32 SpellId, uint32 amount)
 
         if (ch > mh)
         {
-            target->SetHealth(mh);
+            target->setHealth(mh);
             overheal = amount - mh;
             amount += (mh - ch);
         }
         else
-            target->SetHealth(ch);
+            target->setHealth(ch);
 
         Spell::SendHealSpellOnPlayer(this, target, amount, false, overheal, SpellId);
 

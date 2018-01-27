@@ -32,6 +32,7 @@ namespace AscEmu { namespace Packets
 
         SmsgInitialSpells(std::vector<uint16_t> spell_ids, std::vector<SpellCooldown> spell_cooldowns) :
             ManagedPacket(SMSG_INITIAL_SPELLS, 0),
+            unk1(0),
             spell_ids(move(spell_ids)),
             spell_cooldowns(move(spell_cooldowns))
         {

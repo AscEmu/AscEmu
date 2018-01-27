@@ -815,6 +815,10 @@ void WorldSession::SendAccountDataTimes(uint32 mask)
 {
 #if VERSION_STRING == TBC
     StackWorldPacket<128> data(SMSG_ACCOUNT_DATA_TIMES);
+    for (auto i = 0; i < 32; ++i)
+        data << uint32(0);
+    SendPacket(&data);
+    return;
 
     MD5Hash md5hash;
     for (int i = 0; i < 8; ++i)

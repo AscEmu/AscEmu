@@ -154,6 +154,16 @@ void AddonMgr::SendAddonInfoPacket(WorldPacket* source, uint32 /*pos*/, WorldSes
         unpacked >> crc;
         unpacked >> unknown;
 
+        if (crc != STANDARD_ADDON_CRC)
+        {
+            returnpacket.append(PublicKey, 264);
+        }
+        else
+        {
+            returnpacket << uint8(2) << uint8_t(1) << uint8_t(0) << uint32_t(0) << uint8_t(0);
+        }
+
+#if VERSION_STRING >= WotLK
         unk = (Enable ? 2 : 1);
         returnpacket << unk;
         unk1 = (Enable ? 1 : 0);
@@ -175,6 +185,7 @@ void AddonMgr::SendAddonInfoPacket(WorldPacket* source, uint32 /*pos*/, WorldSes
         returnpacket << unk2;
         if (unk2)
             returnpacket << uint8(0);
+#endif
     }
 
     //unknown 4 bytes at the end of the packet. Stays 0 for me. Tried custom addons, deleting, faulty etc. It stays 0.

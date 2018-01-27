@@ -1214,7 +1214,11 @@ void Item::SendDurationUpdate()
 
     WorldPacket durationupdate(SMSG_ITEM_TIME_UPDATE, 12);
     durationupdate << uint64(GetGUID());
+#if VERSION_STRING >= WotLK
     durationupdate << uint32(GetItemExpireTime() - UNIXTIME);
+#else
+    durationupdate << uint32_t(getUInt32Value(ITEM_FIELD_DURATION));
+#endif
     m_owner->SendPacket(&durationupdate);
 
 }

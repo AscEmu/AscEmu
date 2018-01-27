@@ -959,7 +959,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     if (mask & GROUP_UPDATE_FLAG_MAX_HP)
         *data << uint32(pPlayer->GetMaxHealth());
 
-    uint8 powerType = pPlayer->GetPowerType();
+    uint8 powerType = pPlayer->getPowerType();
     if (mask & GROUP_UPDATE_FLAG_POWER_TYPE)
         *data << uint8(powerType);
 
@@ -1040,7 +1040,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     if (mask & GROUP_UPDATE_FLAG_PET_POWER_TYPE)
     {
         if (pet)
-            *data << uint8(pet->GetPowerType());
+            *data << uint8(pet->getPowerType());
         else
             *data << uint8(0);
     }
@@ -1048,7 +1048,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     if (mask & GROUP_UPDATE_FLAG_PET_CUR_POWER)
     {
         if (pet)
-            *data << uint16(pet->GetPower(pet->GetPowerType()));
+            *data << uint16(pet->GetPower(pet->getPowerType()));
         else
             *data << uint16(0);
     }
@@ -1056,7 +1056,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     if (mask & GROUP_UPDATE_FLAG_PET_MAX_POWER)
     {
         if (pet)
-            *data << uint16(pet->GetMaxPower(pet->GetPowerType()));
+            *data << uint16(pet->GetMaxPower(pet->getPowerType()));
         else
             *data << uint16(0);
     }

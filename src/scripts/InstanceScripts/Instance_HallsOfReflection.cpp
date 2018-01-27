@@ -202,8 +202,8 @@ class Marwyn : public CreatureAIScript
         {
             if (_isHeroic() == true) // HEROIC MODE
             {
-                getCreature()->SetMaxHealth(903227); // SET HP CAUSE ARCEMU DONT SUPPORT HEROIC MODES!
-                getCreature()->SetHealth(903227); //SET HP CAUSE ARCEMU DONT SUPPORT HEROIC MODES!
+                getCreature()->setMaxHealth(903227); // SET HP CAUSE ARCEMU DONT SUPPORT HEROIC MODES!
+                getCreature()->setHealth(903227); //SET HP CAUSE ARCEMU DONT SUPPORT HEROIC MODES!
                 _setDisplayWeaponIds(51010, 51010); // Just incase DB doesn't have them correctly.
             }
         }

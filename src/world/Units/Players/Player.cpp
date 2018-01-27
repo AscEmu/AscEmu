@@ -25,6 +25,13 @@ void Player::setRangedAttackPowerMultiplier(float val)
     write(playerData()->ranged_attack_power_multiplier, val);
 }
 
+void Player::setExploredZone(uint32_t idx, uint32_t data)
+{
+    ARCEMU_ASSERT(idx < WOWPLAYER_EXPLORED_ZONES_COUNT)
+
+    write(playerData()->explored_zones[idx], data);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
 

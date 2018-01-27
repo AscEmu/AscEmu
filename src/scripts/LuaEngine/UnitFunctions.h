@@ -1068,7 +1068,7 @@ class LuaUnit
                 for (const auto& itr : ptr->getInRangePlayersSet())
                 {
                     Player* obj = static_cast<Player*>(itr);
-                    if (obj && obj->GetPowerType() == POWER_TYPE_MANA)
+                    if (obj && obj->getPowerType() == POWER_TYPE_MANA)
                         players.push_back(obj);
                 }
                 if (players.size())
@@ -1080,7 +1080,7 @@ class LuaUnit
                 for (const auto& itr : ptr->getInRangePlayersSet())
                 {
                     Player* obj = static_cast<Player*>(itr);
-                    if (obj && obj->GetPowerType() == POWER_TYPE_ENERGY)
+                    if (obj && obj->getPowerType() == POWER_TYPE_ENERGY)
                         players.push_back(obj);
                 }
                 if (players.size())
@@ -1092,7 +1092,7 @@ class LuaUnit
                 for (const auto& itr : ptr->getInRangePlayersSet())
                 {
                     Player* obj = static_cast<Player*>(itr);
-                    if (obj && obj->GetPowerType() == POWER_TYPE_RAGE)
+                    if (obj && obj->getPowerType() == POWER_TYPE_RAGE)
                         players.push_back(obj);
                 }
                 if (players.size())
@@ -1872,9 +1872,9 @@ class LuaUnit
         if (ptr != nullptr && val > 0)
         {
             if (val > ptr->getUInt32Value(UNIT_FIELD_MAXHEALTH))
-                ptr->SetHealth(ptr->getUInt32Value(UNIT_FIELD_MAXHEALTH));
+                ptr->setHealth(ptr->getUInt32Value(UNIT_FIELD_MAXHEALTH));
             else
-                ptr->SetHealth(val);
+                ptr->setHealth(val);
         }
         return 0;
     }
@@ -1885,7 +1885,7 @@ class LuaUnit
         if (ptr != nullptr && val > 0)
         {
             if (val < ptr->getUInt32Value(UNIT_FIELD_HEALTH))
-                ptr->SetHealth(val);
+                ptr->setHealth(val);
             ptr->setUInt32Value(UNIT_FIELD_MAXHEALTH, val);
         }
         return 0;
@@ -2730,7 +2730,7 @@ class LuaUnit
     {
         if (!ptr)
             return 0;
-        if (ptr->GetPowerType() == (uint8)POWER_TYPE_MANA)
+        if (ptr->getPowerType() == (uint8)POWER_TYPE_MANA)
             lua_pushnumber(L, (int)(ptr->GetPower(POWER_TYPE_MANA) * 100.0f / ptr->GetMaxPower(POWER_TYPE_MANA)));
         else
             lua_pushnil(L);
@@ -2746,7 +2746,7 @@ class LuaUnit
         }
         uint16 powertype;
         if (luaL_optinteger(L, 1, -1) == -1)
-            powertype = ptr->GetPowerType();
+            powertype = ptr->getPowerType();
         else
             powertype = static_cast<uint16>(luaL_optinteger(L, 1, -1));
 
@@ -2773,7 +2773,7 @@ class LuaUnit
         }
         uint16 powertype;
         if (luaL_optinteger(L, 1, -1) == -1)
-            powertype = ptr->GetPowerType();
+            powertype = ptr->getPowerType();
         else
             powertype = static_cast<uint16>(luaL_optinteger(L, 1, -1));
 
@@ -2800,7 +2800,7 @@ class LuaUnit
         }
         uint16 powertype;
         if (luaL_optinteger(L, 1, -1) == -1)
-            powertype = ptr->GetPowerType();
+            powertype = ptr->getPowerType();
         else
             powertype = static_cast<uint16>(luaL_optinteger(L, 1, -1));
 
@@ -2823,7 +2823,7 @@ class LuaUnit
 
         uint8 powertype;
         if (luaL_optinteger(L, 1, -1) == -1)
-            powertype = ptr->GetPowerType();
+            powertype = ptr->getPowerType();
         else
             powertype = static_cast<uint8>(luaL_optinteger(L, 1, -1));
 
@@ -2840,7 +2840,7 @@ class LuaUnit
 
         uint16 powertype;
         if (luaL_optinteger(L, 2, -1) == -1)
-            powertype = ptr->GetPowerType();
+            powertype = ptr->getPowerType();
         else
             powertype = static_cast<uint16>(luaL_optinteger(L, 2, -1));
 
@@ -2857,7 +2857,7 @@ class LuaUnit
 
         uint32 powertype;
         if (luaL_optinteger(L, 2, -1) == -1)
-            powertype = ptr->GetPowerType();
+            powertype = ptr->getPowerType();
         else
             powertype = static_cast<uint32>(luaL_optinteger(L, 2, -1));
 
@@ -2874,7 +2874,7 @@ class LuaUnit
 
         uint16 powertype;
         if (luaL_optinteger(L, 2, -1) == -1)
-            powertype = ptr->GetPowerType();
+            powertype = ptr->getPowerType();
         else
             powertype = static_cast<uint16>(luaL_optinteger(L, 2, -1));
 
@@ -2888,7 +2888,7 @@ class LuaUnit
         if (!ptr)
             return 0;
 
-        lua_pushinteger(L, ptr->GetPowerType());
+        lua_pushinteger(L, ptr->getPowerType());
         return 1;
     }
 

@@ -401,7 +401,7 @@ class DraeneiSurvivor : public CreatureAIScript
 
         void OnLoad()
         {
-            getCreature()->SetHealth(getCreature()->GetMaxHealth() / 2);
+            getCreature()->setHealth(getCreature()->GetMaxHealth() / 2);
         }
 };
 
@@ -415,7 +415,7 @@ class GuardRoberts : public CreatureAIScript
 
         void OnLoad() override
         {
-            getCreature()->SetHealth(100);
+            getCreature()->setHealth(100);
         }
 
         void OnDied(Unit* /*mKiller*/) override

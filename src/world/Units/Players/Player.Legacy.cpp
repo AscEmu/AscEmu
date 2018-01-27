@@ -911,13 +911,13 @@ bool Player::Create(WorldPacket& data)
     // Set Starting stats for char
     //SetScale( ((race==RACE_TAUREN)?1.3f:1.0f));
     SetScale(1.0f);
-    SetHealth(info->health);
+    setHealth(info->health);
     SetPower(POWER_TYPE_MANA, info->mana);
     SetPower(POWER_TYPE_RAGE, 0);
     SetPower(POWER_TYPE_FOCUS, info->focus); // focus
     SetPower(POWER_TYPE_ENERGY, info->energy);
 
-    SetMaxHealth(info->health);
+    setMaxHealth(info->health);
     SetMaxPower(POWER_TYPE_MANA, info->mana);
     SetMaxPower(POWER_TYPE_RAGE, info->rage);
     SetMaxPower(POWER_TYPE_FOCUS, info->focus);
@@ -930,8 +930,8 @@ bool Player::Create(WorldPacket& data)
 #endif
 
     //THIS IS NEEDED
-    SetBaseHealth(info->health);
-    SetBaseMana(info->mana);
+    setBaseHealth(info->health);
+    setBaseMana(info->mana);
     SetFaction(info->factiontemplate);
 
     if (class_ == DEATHKNIGHT)
@@ -1759,7 +1759,7 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
             ResurrectPlayer();
 
         //set full hp and mana
-        SetHealth(GetMaxHealth());
+        setHealth(GetMaxHealth());
         SetPower(POWER_TYPE_MANA, GetMaxPower(POWER_TYPE_MANA));
 
         // if warlock has summoned pet, increase its level too
@@ -3306,7 +3306,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 #endif
     load_health = get_next_field.GetUInt32();
     load_mana = get_next_field.GetUInt32();
-    SetHealth(load_health);
+    setHealth(load_health);
     uint8 pvprank = get_next_field.GetUInt8();
     setUInt32Value(PLAYER_BYTES, get_next_field.GetUInt32());
     setUInt32Value(PLAYER_BYTES_2, get_next_field.GetUInt32());
@@ -4959,7 +4959,7 @@ void Player::OnPushToWorld()
     /* send weather */
     sWeatherMgr.SendWeather(this);
 
-    SetHealth((load_health > m_uint32Values[UNIT_FIELD_MAXHEALTH] ? m_uint32Values[UNIT_FIELD_MAXHEALTH] : load_health));
+    setHealth((load_health > m_uint32Values[UNIT_FIELD_MAXHEALTH] ? m_uint32Values[UNIT_FIELD_MAXHEALTH] : load_health));
     SetPower(POWER_TYPE_MANA, (load_mana > GetMaxPower(POWER_TYPE_MANA) ? GetMaxPower(POWER_TYPE_MANA) : load_mana));
 
     if (!GetSession()->HasGMPermissions())
@@ -5756,7 +5756,7 @@ void Player::ResurrectPlayer()
 
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_FORCED_RESURRECT); // In case somebody resurrected us before this event happened
     if (m_resurrectHealth)
-        SetHealth((uint32)std::min(m_resurrectHealth, m_uint32Values[UNIT_FIELD_MAXHEALTH]));
+        setHealth((uint32)std::min(m_resurrectHealth, m_uint32Values[UNIT_FIELD_MAXHEALTH]));
     if (m_resurrectMana)
         SetPower(POWER_TYPE_MANA, m_resurrectMana);
 
@@ -6617,11 +6617,11 @@ void Player::UpdateStats()
     setUInt32Value(UNIT_FIELD_MAXHEALTH, res);
 
     if (getUInt32Value(UNIT_FIELD_HEALTH) > res)
-        SetHealth(res);
+        setHealth(res);
     else if ((cl == DRUID) && (GetShapeShift() == FORM_BEAR || GetShapeShift() == FORM_DIREBEAR))
     {
         res = getUInt32Value(UNIT_FIELD_MAXHEALTH) * getUInt32Value(UNIT_FIELD_HEALTH) / oldmaxhp;
-        SetHealth(res);
+        setHealth(res);
     }
 
     if (cl != WARRIOR && cl != ROGUE && cl != DEATHKNIGHT)
@@ -7084,9 +7084,9 @@ void Player::EventCannibalize(uint32 amount)
     uint32 newHealth = GetHealth() + amt;
 
     if (newHealth <= GetMaxHealth())
-        SetHealth(newHealth);
+        setHealth(newHealth);
     else
-        SetHealth(GetMaxHealth());
+        setHealth(GetMaxHealth());
 
     cannibalizeCount++;
     if (cannibalizeCount == 5)
@@ -8154,7 +8154,7 @@ void Player::RegenerateHealth(bool inCombat)
                 cur++;
             else
                 cur += float2int32(amt);
-            SetHealth((cur >= mh) ? mh : cur);
+            setHealth((cur >= mh) ? mh : cur);
         }
         else
             DealDamage(this, float2int32(-amt), 0, 0, 0);
@@ -8193,7 +8193,7 @@ void Player::RegenerateEnergy()
     //    which can be slightly out-of-sync with client regeneration [latency] (and wastes packets since client can handle this on its own)
     if (wrate != 1.0f) // our config has custom regen rate, so send new amount to player's client
     {
-        SetPower(GetPowerType(), (cur >= mh) ? mh : cur);
+        SetPower(getPowerType(), (cur >= mh) ? mh : cur);
     }
     else // let player's own client handle normal regen rates.
     {
@@ -8677,6 +8677,10 @@ void Player::ProcessPendingUpdates()
 #endif
         *(uint32*)&update_buffer[c] = ((mOutOfRangeIds.size() > 0) ? (mCreationCount + 1) : mCreationCount);
         c += 4;
+#if VERSION_STRING <= TBC
+        update_buffer[c] = 1;
+        ++c;
+#endif
 
         // append any out of range updates
         if (mOutOfRangeIdCount)
@@ -8724,6 +8728,11 @@ void Player::ProcessPendingUpdates()
 
         *(uint32*)&update_buffer[c] = ((mOutOfRangeIds.size() > 0) ? (mUpdateCount + 1) : mUpdateCount);
         c += 4;
+
+#if VERSION_STRING <= TBC
+        update_buffer[c] = 1;
+        ++c;
+#endif
 
         //update_buffer[c] = 1;
         memcpy(&update_buffer[c], bUpdateBuffer.contents(), bUpdateBuffer.size());
@@ -9510,8 +9519,8 @@ void Player::ApplyLevelInfo(LevelInfo* Info, uint32 Level)
     }
 
     // Set health / mana
-    SetHealth(Info->HP);
-    SetMaxHealth(Info->HP);
+    setHealth(Info->HP);
+    setMaxHealth(Info->HP);
     SetMaxPower(POWER_TYPE_MANA, Info->Mana);
     SetPower(POWER_TYPE_MANA, Info->Mana);
 
@@ -9528,8 +9537,8 @@ void Player::ApplyLevelInfo(LevelInfo* Info, uint32 Level)
     }
 
     // Set base fields
-    SetBaseHealth(Info->HP);
-    SetBaseMana(Info->Mana);
+    setBaseHealth(Info->HP);
+    setBaseMana(Info->Mana);
 
     _UpdateMaxSkillCounts();
     UpdateStats();
@@ -10318,13 +10327,13 @@ void Player::CalculateBaseStats()
         LOG_ERROR("%s (%d): NULL pointer", __FUNCTION__, __LINE__);
         return;
     }
-    SetMaxHealth(lvlinfo->HP);
-    SetBaseHealth(lvlinfo->HP - (lvlinfo->Stat[2] - levelone->Stat[2]) * 10);
+    setMaxHealth(lvlinfo->HP);
+    setBaseHealth(lvlinfo->HP - (lvlinfo->Stat[2] - levelone->Stat[2]) * 10);
 
-    if (GetPowerType() == POWER_TYPE_MANA)
+    if (getPowerType() == POWER_TYPE_MANA)
     {
-        SetBaseMana(lvlinfo->Mana - (lvlinfo->Stat[3] - levelone->Stat[3]) * 15);
-        SetMaxPower(POWER_TYPE_MANA, lvlinfo->Mana);
+        setBaseMana(lvlinfo->Mana - (lvlinfo->Stat[3] - levelone->Stat[3]) * 15);
+        setMaxMana(lvlinfo->Mana);
     }
 }
 
@@ -11633,7 +11642,11 @@ void Player::_UpdateMaxSkillCounts()
     uint32 new_max;
     for (SkillMap::iterator itr = m_skills.begin(); itr != m_skills.end(); ++itr)
     {
-        if (itr->second.Skill->type == SKILL_TYPE_WEAPON || itr->second.Skill->id == SKILL_LOCKPICKING)
+        auto level_bound_skill = itr->second.Skill->type == SKILL_TYPE_WEAPON || itr->second.Skill->id == SKILL_LOCKPICKING;
+#if VERSION_STRING <= TBC
+        level_bound_skill = level_bound_skill || itr->second.Skill->id == SKILL_POISONS;
+#endif
+        if (level_bound_skill)
         {
             new_max = 5 * getLevel();
         }
@@ -12809,7 +12822,7 @@ void Player::FullHPMP()
 {
     if (IsDead())
         ResurrectPlayer();
-    SetHealth(GetMaxHealth());
+    setHealth(GetMaxHealth());
     SetPower(POWER_TYPE_MANA, GetMaxPower(POWER_TYPE_MANA));
     SetPower(POWER_TYPE_ENERGY, GetMaxPower(POWER_TYPE_ENERGY));
 }
@@ -12982,7 +12995,7 @@ void Player::LoadFieldsFromString(const char* string, uint16 firstField, uint32 
         if (!end)
             break;
         *end = 0;
-        setUInt32Value(firstField + Counter, atol(start));
+        setExploredZone(Counter, atol(start));
         start = end + 1;
     }
 }
@@ -13920,7 +13933,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
             if (NewHP < 5)
                 NewHP = 5;
 
-            pVictim->SetHealth(NewHP);
+            pVictim->setHealth(NewHP);
             EndDuel(DUEL_WINNER_KNOCKOUT);
             pVictim->Emote(EMOTE_ONESHOT_BEG);
             return;
@@ -13932,7 +13945,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
 
         if (pVictim->isTrainingDummy())
         {
-            pVictim->SetHealth(1);
+            pVictim->setHealth(1);
             return;
         }
 
@@ -14143,7 +14156,7 @@ void Player::TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_
 
 
     // Rage generation on damage
-    if (GetPowerType() == POWER_TYPE_RAGE && pAttacker != this)
+    if (getPowerType() == POWER_TYPE_RAGE && pAttacker != this)
     {
         float val;
         float level = static_cast<float>(getLevel());
@@ -14322,7 +14335,7 @@ void Player::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     summonhandler.RemoveAllSummons();
     DismissActivePets();
 
-    SetHealth(0);
+    setHealth(0);
 
     //check for spirit of Redemption
     if (HasSpell(20711))
@@ -15481,7 +15494,7 @@ void Player::RemoteRevive()
     setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN, true));
     setSpeedForType(TYPE_SWIM, getSpeedForType(TYPE_SWIM, true));
     setMoveLandWalk();
-    SetHealth(getUInt32Value(UNIT_FIELD_MAXHEALTH));
+    setHealth(getUInt32Value(UNIT_FIELD_MAXHEALTH));
 }
 
 void Player::SetMover(Unit* target)

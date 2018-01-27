@@ -726,7 +726,7 @@ class EnslavedServantAI : public CreatureAIScript
         {
             if (_isTimerFinished(mHealthResetTimer))
             {
-                getCreature()->SetHealth(getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH));    // Found such note about this mob
+                getCreature()->setHealth(getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH));    // Found such note about this mob
                 _resetTimer(mHealthResetTimer, 45000);
             }
         }
@@ -3488,7 +3488,7 @@ class MaievAI : public CreatureAIScript
             // HACK!
             getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
             getCreature()->setUInt32Value(UNIT_FIELD_MAXHEALTH, 1000000);
-            getCreature()->SetHealth(1000000);
+            getCreature()->setHealth(1000000);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
 
             SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
@@ -3525,7 +3525,7 @@ class MaievAI : public CreatureAIScript
 
         void OnDamageTaken(Unit* /*mAttacker*/, uint32 /*fAmount*/) override
         {
-            getCreature()->SetHealth(getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH));
+            getCreature()->setHealth(getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH));
         }
 
         void AIUpdate() override
@@ -3717,7 +3717,7 @@ class MaievAI : public CreatureAIScript
                             }
 
                             mIllidanAI->getCreature()->SetEmoteState(EMOTE_ONESHOT_NONE);
-                            mIllidanAI->getCreature()->SetHealth(0);
+                            mIllidanAI->getCreature()->setHealth(0);
                             mIllidanAI->getCreature()->setDeathState(JUST_DIED);
                         }
                         break;
@@ -4026,7 +4026,7 @@ class IllidanStormrageAI : public CreatureAIScript
             Creature* pMaiev = getNearestCreature(CN_MAIEV);
             if (pMaiev != NULL && pMaiev->isAlive())
             {
-                getCreature()->SetHealth(1);
+                getCreature()->setHealth(1);
                 setCanEnterCombat(false);
                 _applyAura(ILLIDAN_DEATH1);
                 _applyAura(ILLIDAN_DEATH2);

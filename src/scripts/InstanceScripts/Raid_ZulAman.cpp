@@ -268,7 +268,7 @@ class HalazziAI : public CreatureAIScript
         {
             CurrentHealth = getCreature()->getUInt32Value(UNIT_FIELD_HEALTH);
             _setDisplayId(24144);
-            getCreature()->SetHealth(240000);
+            getCreature()->setHealth(240000);
             getCreature()->setUInt32Value(UNIT_FIELD_MAXHEALTH, 240000);
 
             mLynx = spawnCreature(CN_LYNX_SPIRIT, getCreature()->GetPosition());
@@ -291,7 +291,7 @@ class HalazziAI : public CreatureAIScript
             }
 
             if (CurrentHealth)
-                getCreature()->SetHealth(CurrentHealth);
+                getCreature()->setHealth(CurrentHealth);
             if (MaxHealth)
                 getCreature()->setUInt32Value(UNIT_FIELD_MAXHEALTH, MaxHealth);
             _setDisplayId(21632);
