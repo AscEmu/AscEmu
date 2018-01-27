@@ -2186,135 +2186,118 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* 
 }
 #endif
 
-//////////////////////////////////////////////////////////////////////////////////////////
-/// Creates an update block with the values of this object as determined by the updateMask.
-//////////////////////////////////////////////////////////////////////////////////////////
+// MIT Start
 void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player* target)
 {
-    bool activate_quest_object = false;
-    bool reset = false;
-    uint32 oldflags = 0;
+    auto activate_quest_object = false, reset = false;
+    uint32_t old_flags = 0;
 
-    if (updateMask->GetBit(OBJECT_FIELD_GUID) && target)	   // We're creating.
+    // Create a new object
+    if (updateMask->GetBit(OBJECT_FIELD_GUID) && target)
     {
         if (IsCreature())
         {
-            Creature* pThis = static_cast< Creature* >(this);
-            if (pThis->IsTagged() && (pThis->loot.gold || pThis->loot.items.size()))
+            auto this_creature = static_cast<Creature*>(this);
+            if (this_creature->IsTagged() && this_creature->loot.any())
             {
-                // Let's see if we're the tagger or not.
-                oldflags = m_uint32Values[UNIT_DYNAMIC_FLAGS];
-                uint32 Flags = m_uint32Values[UNIT_DYNAMIC_FLAGS];
-                uint32 oldFlags = 0;
-
-                if (pThis->GetTaggerGUID() == target->GetGUID())
+                uint32_t current_flags;
+                old_flags = current_flags = this_creature->getDynamicFlags();
+                if (this_creature->GetTaggerGUID() == target->GetGUID())
                 {
-                    // Our target is our tagger.
-                    oldFlags = U_DYN_FLAG_TAGGED_BY_OTHER;
+                    old_flags = U_DYN_FLAG_TAGGED_BY_OTHER;
+                    if (current_flags & U_DYN_FLAG_TAGGED_BY_OTHER)
+                        current_flags &= ~old_flags;
 
-                    if (Flags & U_DYN_FLAG_TAGGED_BY_OTHER)
-                        Flags &= ~oldFlags;
-
-                    if (!(Flags & U_DYN_FLAG_LOOTABLE) && pThis->HasLootForPlayer(target))
-                        Flags |= U_DYN_FLAG_LOOTABLE;
+                    if (!(current_flags & U_DYN_FLAG_LOOTABLE) && this_creature->HasLootForPlayer(target))
+                        current_flags |= U_DYN_FLAG_LOOTABLE;
                 }
                 else
                 {
-                    // Target is not the tagger.
-                    oldFlags = U_DYN_FLAG_LOOTABLE;
+                    old_flags = U_DYN_FLAG_LOOTABLE;
 
-                    if (!(Flags & U_DYN_FLAG_TAGGED_BY_OTHER))
-                        Flags |= U_DYN_FLAG_TAGGED_BY_OTHER;
+                    if (!(current_flags & U_DYN_FLAG_TAGGED_BY_OTHER))
+                        current_flags |= U_DYN_FLAG_TAGGED_BY_OTHER;
 
-                    if (Flags & U_DYN_FLAG_LOOTABLE)
-                        Flags &= ~oldFlags;
+                    if (current_flags & U_DYN_FLAG_LOOTABLE)
+                        current_flags &= ~old_flags;
                 }
 
-                m_uint32Values[UNIT_DYNAMIC_FLAGS] = Flags;
-
-                updateMask->SetBit(UNIT_DYNAMIC_FLAGS);
-
+                this_creature->setDynamicFlags(current_flags);
                 reset = true;
             }
-        }
 
-        if (target && IsGameObject())
-        {
-            GameObject* go = static_cast<GameObject*>(this);
-            QuestLogEntry* qle;
-            GameObjectProperties const* gameobject_info;
-            GameObject_QuestGiver* go_quest_giver = nullptr;
-            if (go->GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
-                go_quest_giver = static_cast<GameObject_QuestGiver*>(go);
-
-            if (go_quest_giver != nullptr && go_quest_giver->HasQuests())
+            if (IsGameObject())
             {
-                std::list<QuestRelation*>::iterator itr;
-                for (itr = go_quest_giver->QuestsBegin(); itr != go_quest_giver->QuestsEnd(); ++itr)
+                const auto this_go = static_cast<GameObject*>(this);
+                if (this_go->isQuestGiver())
                 {
-                    QuestRelation* qr = (*itr);
-                    if (qr != nullptr)
+                    auto this_qg = static_cast<GameObject_QuestGiver*>(this);
+                    if (this_qg->HasQuests())
                     {
-                        QuestProperties const* qst = qr->qst;
-                        if (qst != nullptr)
+                        for (auto quest_relation : this_qg->getQuestList())
                         {
-                            if ((qr->type & QUESTGIVER_QUEST_START && !target->HasQuest(qst->id))
-                                || (qr->type & QUESTGIVER_QUEST_END && target->HasQuest(qst->id))
-                               )
-                            {
-                                activate_quest_object = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                gameobject_info = go->GetGameObjectProperties();
-                if (gameobject_info && (gameobject_info->goMap.size() || gameobject_info->itemMap.size()))
-                {
-                    for (GameObjectGOMap::const_iterator itr = gameobject_info->goMap.begin(); itr != gameobject_info->goMap.end(); ++itr)
-                    {
-                        qle = target->GetQuestLogForEntry(itr->first->id);
-                        if (qle != nullptr)
-                        {
-                            if (qle->GetQuest()->count_required_mob == 0)
+                            if (!quest_relation)
                                 continue;
-                            for (uint8 i = 0; i < 4; ++i)
+
+                            if (const auto quest_props = quest_relation->qst)
                             {
-                                if (qle->GetQuest()->required_mob_or_go[i] == static_cast<int32>(go->GetEntry()) && qle->GetMobCount(i) < qle->GetQuest()->required_mob_or_go_count[i])
-                                {
-                                    activate_quest_object = true;
-                                    break;
-                                }
+                                activate_quest_object = (quest_relation->type & QUESTGIVER_QUEST_START && !target->HasQuest(quest_props->id))
+                                 || (quest_relation->type & QUESTGIVER_QUEST_END && !target->HasQuest(quest_props->id));
                             }
-                            if (activate_quest_object)
-                                break;
                         }
                     }
-
-                    if (!activate_quest_object)
+                    else
                     {
-                        for (GameObjectItemMap::const_iterator itr = gameobject_info->itemMap.begin();
-                             itr != go->GetGameObjectProperties()->itemMap.end();
-                             ++itr)
+                        if (const auto go_props = this_go->GetGameObjectProperties())
                         {
-                            for (std::map<uint32, uint32>::const_iterator it2 = itr->second.begin();
-                                 it2 != itr->second.end();
-                                 ++it2)
+                            if (go_props->goMap.size() > 0 || go_props->itemMap.size() > 0)
                             {
-                                if ((qle = target->GetQuestLogForEntry(itr->first->id)) != nullptr)
+                                for (const auto quest_go : go_props->goMap)
                                 {
-                                    if (target->GetItemInterface()->GetItemCount(it2->first) < it2->second)
+                                    if (const auto quest_log = target->GetQuestLogForEntry(quest_go.first->id))
                                     {
-                                        activate_quest_object = true;
+                                        const auto quest = quest_log->GetQuest();
+                                        if (quest->count_required_mob == 0)
+                                            continue;
+
+                                        for (auto i = 0; i < 4; ++i)
+                                        {
+                                            if (quest->required_mob_or_go[i] == this_go->GetEntry())
+                                            {
+                                                if (quest_log->GetMobCount(i) < quest->required_mob_or_go_count[i])
+                                                {
+                                                    activate_quest_object = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    if (activate_quest_object)
                                         break;
+                                }
+
+                                if (!activate_quest_object)
+                                {
+                                    for (auto quest_props : go_props->itemMap)
+                                    {
+                                        for (const auto item_pair : quest_props.second)
+                                        {
+                                            if (const auto quest_log = target->GetQuestLogForEntry(quest_props.first->id))
+                                            {
+                                                if (target->GetItemInterface()->GetItemCount(item_pair.first) < item_pair.second)
+                                                {
+                                                    activate_quest_object = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                        if (activate_quest_object)
+                                            break;
                                     }
                                 }
                             }
-                            if (activate_quest_object)
-                                break;
                         }
                     }
                 }
@@ -2322,54 +2305,50 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
         }
     }
 
-
-    if (activate_quest_object)
+    // We already checked if GameObject, but do it again in case logic path changes in future
+    if (activate_quest_object && IsGameObject())
     {
-        oldflags = m_uint32Values[GAMEOBJECT_DYNAMIC];
-        if (!updateMask->GetBit(GAMEOBJECT_DYNAMIC))
-            updateMask->SetBit(GAMEOBJECT_DYNAMIC);
-        m_uint32Values[GAMEOBJECT_DYNAMIC] = 1 | 8;     // 8 to show sparkles
+        const auto this_go = static_cast<GameObject*>(this);
+        old_flags = this_go->getDynamic();
+        // Show sparkles
+        this_go->setDynamic(1 | 8);
         reset = true;
     }
 
     ARCEMU_ASSERT(updateMask && updateMask->GetCount() == m_valuesCount);
-    uint32 bc;
-    uint32 values_count;
-    if (m_valuesCount > (2 * 0x20))    //if number of blocks > 2->  unit and player+item container
-    {
-        bc = updateMask->GetUpdateBlockCount();
-        values_count = std::min<uint32>(bc * 32, m_valuesCount);
 
+    uint32_t block_count, values_count;
+    if (m_valuesCount > 2 * 0x20)
+    {
+        block_count = updateMask->GetUpdateBlockCount();
+        values_count = std::min<uint32_t>(block_count * 0x20, m_valuesCount);
     }
     else
     {
-        bc = updateMask->GetBlockCount();
+        block_count = updateMask->GetBlockCount();
         values_count = m_valuesCount;
     }
 
-    *data << (uint8)bc;
-    data->append(updateMask->GetMask(), bc * 4);
-    for (uint32 index = 0; index < values_count; index++)
+    *data << uint8_t(block_count);
+    data->append(updateMask->GetMask(), block_count * 4);
+    for (auto idx = 0; idx < values_count; ++idx)
     {
-        if (updateMask->GetBit(index))
-        {
-            *data << m_uint32Values[index];
-        }
+        if (updateMask->GetBit(idx))
+            *data << m_uint32Values[idx];
     }
 
     if (reset)
     {
-        switch (GetTypeId())
-        {
-            case TYPEID_UNIT:
-                m_uint32Values[UNIT_DYNAMIC_FLAGS] = oldflags;
-                break;
-            case TYPEID_GAMEOBJECT:
-                m_uint32Values[GAMEOBJECT_DYNAMIC] = oldflags;
-                break;
-        }
+        skipping_updates = true;
+        if (IsUnit())
+            static_cast<Unit*>(this)->setDynamicFlags(old_flags);
+        else if (IsGameObject())
+            static_cast<GameObject*>(this)->setDynamic(old_flags);
+        skipping_updates = false;
     }
 }
+// MIT End
+
 // This is not called!
 void Unit::BuildHeartBeatMsg(WorldPacket* data)
 {

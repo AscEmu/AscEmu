@@ -30,6 +30,14 @@
 #include "Spell/Definitions/ProcFlags.h"
 #include "Spell/Definitions/SpellEffectTarget.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
+#include "Data/WoWGameObject.h"
+
+// MIT
+bool GameObject::isQuestGiver() const
+{
+    return GetType() == GAMEOBJECT_TYPE_QUESTGIVER;
+}
+// MIT End
 
 GameObject::GameObject(uint64 guid)
 {
@@ -520,6 +528,16 @@ void GameObject::SetCustomAnim(uint32_t anim)
     data << uint64_t(GetGUID());
     data << uint32_t(anim);
     SendMessageToSet(&data, false, false);
+}
+
+uint32_t GameObject::getDynamic() const
+{
+    return gameObjectData()->dynamic;
+}
+
+void GameObject::setDynamic(uint32_t dynamic)
+{
+    write(gameObjectData()->dynamic, dynamic);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

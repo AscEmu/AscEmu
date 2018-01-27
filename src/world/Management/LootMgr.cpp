@@ -93,6 +93,11 @@ T* RandomChoiceVector(std::vector<std::pair<T*, float> > & variant)
     return variant.begin()->first;
 }
 
+bool Loot::any() const
+{
+    return gold > 0 || items.size() > 0;
+}
+
 LootMgr::LootMgr()
 {
     is_loading = false;

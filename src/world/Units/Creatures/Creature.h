@@ -57,8 +57,8 @@ class SERVER_DECL Creature : public Unit
         Creature(uint64 guid);
         virtual ~Creature();
 
-        GameEvent* mEvent = nullptr;
-        
+    GameEvent* mEvent = nullptr;
+
         /// For derived subclasses of Creature
         bool IsVehicle();
 
@@ -202,7 +202,7 @@ class SERVER_DECL Creature : public Unit
         void RegenerateHealth();
         void RegenerateMana();
         int BaseAttackType;
-        
+
         /// Invisibility & Stealth Detection - Partha
         bool CanSee(Unit* obj);
 

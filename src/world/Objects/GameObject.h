@@ -318,7 +318,9 @@ struct GameObjectProperties
     uint32 QuestItems[6];
 
     // Quests
+    // <quest, requirement_count>
     GameObjectGOMap goMap;
+    // <quest, [<item, item_count>]>
     GameObjectItemMap itemMap;
 };
 
@@ -378,11 +380,13 @@ class SERVER_DECL GameObject : public Object
     // MIT Start
     WoWGameObject* gameObjectData() const { return reinterpret_cast<WoWGameObject*>(wow_data); }
 public:
+    bool isQuestGiver() const;
     // MIT End
 
         GameObject(uint64 guid);
         ~GameObject();
     bool isFishingNode() const;
+    uint32_t getDynamic() const;
 
     GameEvent* mEvent = nullptr;
 
@@ -670,6 +674,11 @@ class GameObject_QuestGiver : public GameObject
         {
             m_quests = qst_lst;
         };
+
+        std::list<QuestRelation*>& getQuestList() const
+        {
+            return *m_quests;
+        }
 
     private:
 
