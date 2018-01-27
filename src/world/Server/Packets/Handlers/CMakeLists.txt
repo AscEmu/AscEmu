@@ -28,6 +28,7 @@ set(SRC_PACKET_HANDLER_FILES
    ${PATH_PREFIX}/PlayerCache.h
    ${PATH_PREFIX}/PlayerPacketWrapper.cpp
    ${PATH_PREFIX}/QueryHandler.cpp
+   ${PATH_PREFIX}/QueryHandler.Legacy.cpp
    ${PATH_PREFIX}/QuestHandler.cpp
    ${PATH_PREFIX}/RaidHandler.cpp
    ${PATH_PREFIX}/ReputationHandler.cpp

@@ -462,8 +462,8 @@ class SERVER_DECL WorldSession
         void HandleGMSurveySubmitOpcode(WorldPacket& recv_data);
 
         /// Opcodes implemented in QueryHandler.cpp:
-        void HandleNameQueryOpcode(WorldPacket& recvPacket);
-        void HandleQueryTimeOpcode(WorldPacket& recvPacket);
+        void handleNameQueryOpcode(WorldPacket& recvPacket);
+        void handleQueryTimeOpcode(WorldPacket& recvPacket);
         void HandleCreatureQueryOpcode(WorldPacket& recvPacket);
         void HandleGameObjectQueryOpcode(WorldPacket& recvPacket);
         void HandleItemNameQueryOpcode(WorldPacket& recv_data);

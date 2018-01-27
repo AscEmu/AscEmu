@@ -4,6 +4,7 @@ set(PATH_PREFIX Server/Packets)
 
 set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgNameQuery.h
+   ${PATH_PREFIX}/CmsgQueryTime.h
    ${PATH_PREFIX}/CmsgSetActiveMover.h
    ${PATH_PREFIX}/ManagedPacket.h
    ${PATH_PREFIX}/Opcode.h
@@ -12,6 +13,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/SmsgInitialSpells.h
    ${PATH_PREFIX}/SmsgInstanceDifficulty.h
    ${PATH_PREFIX}/SmsgNameQueryResponse.h
+   ${PATH_PREFIX}/SmsgQueryTimeResponse.h
    ${PATH_PREFIX}/SmsgSetExtraAuraInfo.h
    ${PATH_PREFIX}/SmsgSetProficiency.h
    ${PATH_PREFIX}/SmsgTutorialFlags.h
