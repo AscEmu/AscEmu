@@ -107,6 +107,11 @@ bool SubGroup::HasMember(uint32 guid)
     return false;
 }
 
+GroupMembersSet& SubGroup::getGroupMembers()
+{
+    return m_GroupMembers;
+}
+
 SubGroup* Group::FindFreeSubGroup()
 {
     for (uint32 i = 0; i < m_SubGroupCount; i++)
@@ -1202,6 +1207,11 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
     }
 
     m_groupLock.Release();
+}
+
+bool Group::isRaid() const
+{
+    return getGroupType() == GROUP_TYPE_RAID;
 }
 
 Group* Group::Create()

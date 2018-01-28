@@ -22,6 +22,7 @@
 
 #include "../world/WorldConf.h"
 #include "Units/Players/Player.h"
+#include "Server/Packets/CmsgMessageChat.h"
 
 enum PartyErrors
 {
@@ -144,8 +145,9 @@ class SERVER_DECL SubGroup    // Most stuff will be done through here, not throu
 
         void Disband();
         bool HasMember(uint32 guid);
+    GroupMembersSet& getGroupMembers();
 
-    protected:
+protected:
 
         GroupMembersSet m_GroupMembers;
         Group* m_Parent;
@@ -217,14 +219,15 @@ class SERVER_DECL Group
         void SaveToDB();
         void LoadFromDB(Field* fields);
 
-        inline uint8 GetGroupType() { return m_GroupType; }
+        inline uint8 getGroupType() const { return m_GroupType; }
         inline uint32 GetID() { return m_Id; }
         uint64 GetGUID() const;
 
         void UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket* Packet);
         void UpdateAllOutOfRangePlayersFor(Player* pPlayer);
+    bool isRaid() const;
 
-        uint64 m_targetIcons[8];
+    uint64 m_targetIcons[8];
         bool m_disbandOnNoMembers;
         inline Mutex & getLock() { return m_groupLock; }
         inline void Lock() { m_groupLock.Acquire(); }
@@ -262,8 +265,8 @@ class SERVER_DECL Group
         void UpdateAchievementCriteriaForInrange(Object* o, AchievementCriteriaTypes type, int32 miscvalue1, int32 miscvalue2, uint32 time);
 #endif
         void Teleport(WorldSession* m_session);
-		bool isLFGGroup() 
-		{ 
+		bool isLFGGroup()
+		{
 			if(m_GroupType & GROUP_TYPE_LFD)
 				return true;
 			return false;

@@ -253,6 +253,35 @@ bool Player::isTransferPending() const
     return GetPlayerStatus() == TRANSFER_PENDING;
 }
 
+void Player::toggleAfk()
+{
+    if (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_AFK))
+    {
+        RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_AFK);
+        if (worldConfig.getKickAFKPlayerTime())
+            sEventMgr.RemoveEvents(this, EVENT_PLAYER_SOFT_DISCONNECT);
+    }
+    else
+    {
+        SetFlag(PLAYER_FLAGS, PLAYER_FLAG_AFK);
+
+        if (m_bg)
+            m_bg->RemovePlayer(this, false);
+
+        if (worldConfig.getKickAFKPlayerTime())
+            sEventMgr.AddEvent(this, &Player::SoftDisconnect, EVENT_PLAYER_SOFT_DISCONNECT,
+                               worldConfig.getKickAFKPlayerTime(), 1, 0);
+    }
+}
+
+void Player::toggleDnd()
+{
+    if (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_DND))
+        RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_DND);
+    else
+        SetFlag(PLAYER_FLAGS, PLAYER_FLAG_DND);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Messages
 void Player::sendReportToGmMessage(std::string playerName, std::string damageLog)

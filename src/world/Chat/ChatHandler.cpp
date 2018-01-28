@@ -98,10 +98,10 @@ bool ChatHandler::ExecuteCommandInTable(ChatCommand* table, const char* text, Wo
                     GreenSystemMessage(m_session, "Available Subcommands:");
                     for (uint32 k = 0; table[i].ChildCommands[k].Name; k++)
                     {
-                        if (table[i].ChildCommands[k].CommandGroup == '0' || (table[i].ChildCommands[k].CommandGroup != '0' 
+                        if (table[i].ChildCommands[k].CommandGroup == '0' || (table[i].ChildCommands[k].CommandGroup != '0'
                             && m_session->CanUseCommand(table[i].ChildCommands[k].CommandGroup)))
                         {
-                            BlueSystemMessage(m_session, " %s - %s", table[i].ChildCommands[k].Name, 
+                            BlueSystemMessage(m_session, " %s - %s", table[i].ChildCommands[k].Name,
                                 table[i].ChildCommands[k].Help.size() ? table[i].ChildCommands[k].Help.c_str() : "No Help Available");
                         }
                     }
@@ -314,7 +314,7 @@ Unit* ChatHandler::GetSelectedUnit(WorldSession* m_session, bool showerror)
         return nullptr;
 
     uint64 guid = m_session->GetPlayer()->GetSelection();
-    
+
     Unit* unit = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid);
     if (unit == nullptr)
     {

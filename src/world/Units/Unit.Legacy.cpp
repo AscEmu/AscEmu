@@ -1213,7 +1213,7 @@ void Unit::GiveGroupXP(Unit* pVictim, Player* PlayerInGroup)
     }
     else
     {
-        if (pGroup->GetGroupType() == GROUP_TYPE_PARTY)
+        if (pGroup->getGroupType() == GROUP_TYPE_PARTY)
         {
             if (active_player_count == 3)
                 xp_mod = 1.1666f;
@@ -1223,7 +1223,7 @@ void Unit::GiveGroupXP(Unit* pVictim, Player* PlayerInGroup)
                 xp_mod = 1.4f;
             else xp_mod = 1; //in case we have only 2 members ;)
         }
-        else if (pGroup->GetGroupType() == GROUP_TYPE_RAID)
+        else if (pGroup->getGroupType() == GROUP_TYPE_RAID)
             xp_mod = 0.5f;
 
         /*if (pHighLvlPlayer == 0) This cannot be true CID 52744

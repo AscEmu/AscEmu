@@ -441,6 +441,8 @@ public:
 #endif
     void updateAutoRepeatSpell();
     bool isTransferPending() const;
+    void toggleAfk();
+    void toggleDnd();
     bool m_FirstCastAutoRepeat;
 
     //////////////////////////////////////////////////////////////////////////////////////////

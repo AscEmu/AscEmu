@@ -73,7 +73,7 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recv_data)
 
     if (player->InGroup())
     {
-        SendPartyCommandResult(_player, player->GetGroup()->GetGroupType(), membername, ERR_PARTY_ALREADY_IN_GROUP);
+        SendPartyCommandResult(_player, player->GetGroup()->getGroupType(), membername, ERR_PARTY_ALREADY_IN_GROUP);
         data.SetOpcode(SMSG_GROUP_INVITE);
         data << uint8(0);
         data << GetPlayer()->GetName();
@@ -353,7 +353,7 @@ void WorldSession::HandleGroupDisbandOpcode(WorldPacket& /*recv_data*/)
         return;
 
     // cant leave a battleground group (blizzlike 3.3.3)
-    if (pGroup->GetGroupType() & GROUP_TYPE_BG)
+    if (pGroup->getGroupType() & GROUP_TYPE_BG)
         return;
 
     pGroup->RemovePlayer(_player->m_playerInfo);

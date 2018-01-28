@@ -3,6 +3,8 @@
 set(PATH_PREFIX Server/Packets)
 
 set(SRC_PACKET_FILES
+   ${PATH_PREFIX}/ChatPacket.h
+   ${PATH_PREFIX}/CmsgMessageChat.h
    ${PATH_PREFIX}/CmsgNameQuery.h
    ${PATH_PREFIX}/CmsgQueryTime.h
    ${PATH_PREFIX}/CmsgSetActiveMover.h
@@ -11,10 +13,12 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/MsgMoveFallLand.h
    ${PATH_PREFIX}/Opcode.h
    ${PATH_PREFIX}/SmsgBindPointUpdate.h
+   ${PATH_PREFIX}/SmsgChatPlayerNotFound.h
    ${PATH_PREFIX}/SmsgClearExtraAuraInfo.h
    ${PATH_PREFIX}/SmsgInitialSpells.h
    ${PATH_PREFIX}/SmsgInstanceDifficulty.h
    ${PATH_PREFIX}/SmsgLogoutResponse.h
+   ${PATH_PREFIX}/SmsgMessageChat.h
    ${PATH_PREFIX}/SmsgMoveUnsetCanFly.h
    ${PATH_PREFIX}/SmsgNameQueryResponse.h
    ${PATH_PREFIX}/SmsgQueryTimeResponse.h

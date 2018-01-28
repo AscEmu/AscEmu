@@ -542,9 +542,9 @@ class SERVER_DECL WorldSession
         //MIT
         bool isSessionMuted();
         bool isFloodProtectionTriggered();
+        void handleMessageChatOpcode(WorldPacket& recvData);
         //MIT End
 
-        void HandleMessagechatOpcode(WorldPacket& recvPacket);
         void HandleEmoteOpcode(WorldPacket& recvPacket);
         void HandleTextEmoteOpcode(WorldPacket& recvPacket);
         void HandleReportSpamOpcode(WorldPacket& recvPacket);

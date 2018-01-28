@@ -3236,7 +3236,7 @@ class LuaUnit
             Player* plr = static_cast<Player*>(ptr);
             if (plr->GetGroup())
             {
-                if (plr->GetGroup()->GetGroupType() == GROUP_TYPE_PARTY)
+                if (plr->GetGroup()->getGroupType() == GROUP_TYPE_PARTY)
                     lua_pushnumber(L, plr->GetGroup()->m_difficulty);
                 else
                     lua_pushnumber(L, plr->GetGroup()->m_raiddifficulty);
@@ -4912,7 +4912,7 @@ class LuaUnit
             Player* plr = static_cast<Player*>(ptr);
         Group* group = plr->GetGroup();
         if (group != NULL)
-            lua_pushinteger(L, group->GetGroupType());
+            lua_pushinteger(L, group->getGroupType());
         else
             lua_pushnil(L);
         return 1;
