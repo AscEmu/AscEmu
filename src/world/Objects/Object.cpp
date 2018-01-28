@@ -1171,7 +1171,7 @@ uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 #endif
 
 #ifndef AE_TBC
-uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
+uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 {
     if (!target)
         return 0;
@@ -1263,9 +1263,7 @@ uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
     *data << m_wowGuid;
     *data << uint8(m_objectTypeId);
 
-    //\todo remove flags (0) from function call.
-    _BuildMovementUpdate(data, updateflags, target);
-
+    buildMovementUpdate(data, updateflags, target);
 
     // we have dirty data, or are creating for ourself.
     UpdateMask updateMask;
@@ -1273,7 +1271,7 @@ uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
     _SetCreateBits(&updateMask, target);
 
     // this will cache automatically if needed
-    _BuildValuesUpdate(data, &updateMask, target);
+    buildValuesUpdate(data, &updateMask, target);
 
     // update count: 1 ;)
     return 1;
@@ -1655,7 +1653,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 
         if (flags2 & MOVEFLAG_TRANSPORT) //0x0200
         {
-            *data << WoWGuid(obj_movement_info.transporter_info.guid);
+            *data << WoWGuid(obj_movement_info.transport_data.transportGuid);
             *data << float(GetTransPositionX());
             *data << float(GetTransPositionY());
             *data << float(GetTransPositionZ());
@@ -1681,10 +1679,10 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
         {
             if (moveinfo != nullptr)
             {
-                *data << moveinfo->redirectVelocity;
-                *data << moveinfo->redirectSin;
-                *data << moveinfo->redirectCos;
-                *data << moveinfo->redirect2DSpeed;
+                *data << moveinfo->redirect_velocity;
+                *data << moveinfo->redirect_sin;
+                *data << moveinfo->redirect_cos;
+                *data << moveinfo->redirect_2d_speed;
             }
             else
             {

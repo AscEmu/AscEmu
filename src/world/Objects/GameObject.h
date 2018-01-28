@@ -446,7 +446,8 @@ public:
         void RemoveFromWorld(bool free_guid);
 
         uint32 GetGOReqSkill();
-        MapCell* m_respawnCell;
+    uint32 GetType() const;
+    MapCell* m_respawnCell;
 
 #if VERSION_STRING < WotLK
         void SetState(uint8 state) { setUInt32Value(GAMEOBJECT_STATE, state); }

@@ -43,7 +43,11 @@
 #include "../shared/CommonDefines.hpp"
 #include "WorldPacket.h"
 #include "Units/Creatures/CreatureDefines.hpp"
+#if VERSION_STRING == TBC
 #include "GameTBC/Data/MovementInfoTBC.h"
+#elif VERSION_STRING == WotLK
+#include "GameWotLK/Data/MovementInfoWotLK.h"
+#endif
 
 struct WoWObject;
 
@@ -565,9 +569,9 @@ public:
         float GetTransPositionZ() const { return obj_movement_info.transport_data.relativePosition.z; }
         float GetTransPositionO() const { return obj_movement_info.transport_data.relativePosition.o; }
         uint32 GetTransTime() const { return obj_movement_info.transport_time; }
-#if FT_VEHICLES
+#ifdef FT_VEHICLES
         // TODO check if this is in BC
-        uint8 GetTransSeat() const { return obj_movement_info.transporter_info.seat; }
+        uint8 GetTransSeat() const { return obj_movement_info.transport_seat; }
 #endif
 #else
         float GetTransPositionX() const { return obj_movement_info.getTransportPosition()->x; }

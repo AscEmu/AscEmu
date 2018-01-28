@@ -31,7 +31,11 @@
 #include "Movement/UnitMovementManager.hpp"
 #include "Spell/Definitions/School.h"
 #include "Storage/MySQLStructures.h"
+#if VERSION_STRING == TBC
 #include "GameTBC/Data/MovementInfoTBC.h"
+#elif VERSION_STRING == WotLK
+#include "GameWotLK/Data/MovementInfoWotLK.h"
+#endif
 
 class AIInterface;
 class Aura;

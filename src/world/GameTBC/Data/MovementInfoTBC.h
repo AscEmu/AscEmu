@@ -9,11 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 struct MovementInfo
 {
     uint32_t flags;
-#if VERSION_STRING <= TBC
     uint8_t flags2;
-#else
-    uint16_t flags2;
-#endif
     uint32_t time;
     LocationVector position;
     TransportData transport_data;

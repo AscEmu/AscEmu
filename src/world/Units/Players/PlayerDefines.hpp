@@ -700,14 +700,11 @@ enum PlayerCheats
 #define MAX_SPEC_COUNT 1
 #endif
 
-#ifdef FT_GLYPHS
 #if VERSION_STRING == Cata
 #define GLYPHS_COUNT 9
-#else
+#elif VERSION_STRING == WotLK
 #define GLYPHS_COUNT 6
 #endif
-#else
-#define GLYPHS_COUNT 0
-#endif
+
 
 #define MAX_QUEST_SLOT 25

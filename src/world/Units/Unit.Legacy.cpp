@@ -13530,11 +13530,11 @@ void Unit::SendPowerUpdate(bool self)
     if (self) { return; }
 #else
 #if VERSION_STRING > TBC
-    uint32 amount = getUInt32Value(UNIT_FIELD_POWER1 + GetPowerType()); //save the amount, so we send the same to the player and everyone else
+    uint32 amount = getUInt32Value(UNIT_FIELD_POWER1 + getPowerType()); //save the amount, so we send the same to the player and everyone else
 
     WorldPacket data(SMSG_POWER_UPDATE, 14);
     FastGUIDPack(data, GetGUID());
-    data << (uint8)GetPowerType();
+    data << (uint8)getPowerType();
     data << amount;
     // \todo This was added in revision 1726.  Is it necessary?  To me, it seems to just be sending the packet twice.
     //	If it is needed for something, put it back in I guess.
@@ -13542,7 +13542,7 @@ void Unit::SendPowerUpdate(bool self)
     SendMessageToSet(&data, self);
 
     //VLack: On 3.1.3, create and send a field update packet to everyone else, as this is the only way to update their GUI with the power values.
-    WorldPacket* pkt = BuildFieldUpdatePacket(UNIT_FIELD_POWER1 + GetPowerType(), amount);
+    WorldPacket* pkt = BuildFieldUpdatePacket(UNIT_FIELD_POWER1 + getPowerType(), amount);
     SendMessageToSet(pkt, false);
     delete pkt;
 #endif
@@ -13556,8 +13556,8 @@ void Unit::UpdatePowerAmm()
         return;
     WorldPacket data(SMSG_POWER_UPDATE, 14);
     FastGUIDPack(data, GetGUID());
-    data << uint8(GetPowerType());
-    data << getUInt32Value(UNIT_FIELD_POWER1 + GetPowerType());
+    data << uint8(getPowerType());
+    data << getUInt32Value(UNIT_FIELD_POWER1 + getPowerType());
     SendMessageToSet(&data, true);
 #endif
 }
@@ -14249,7 +14249,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
 
         // TODO what is this in BC?
         if (GetExtraUnitMovementFlags() & MOVEFLAG2_INTERPOLATED_MOVE)
-            *data << uint32(GetMovementInfo()->transport_data.time2);
+            *data << uint32(GetMovementInfo()->transport_time2);
 #endif
     }
 
@@ -14307,7 +14307,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
         *data << GetTransSeat();
 
         if (GetExtraUnitMovementFlags() & MOVEFLAG2_INTERPOLATED_MOVE)
-            *data << uint32(GetMovementInfo()->transport_data.time2);
+            *data << uint32(GetMovementInfo()->transport_time2);
 #endif
     }
 

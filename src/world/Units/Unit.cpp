@@ -60,7 +60,6 @@ bool Unit::justDied() const
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
 
-#ifdef AE_TBC
 uint32_t Unit::getDynamicFlags() const
 {
     return unitData()->dynamic_flags;
@@ -71,6 +70,7 @@ void Unit::setDynamicFlags(uint32_t flags)
     write(unitData()->dynamic_flags, flags);
 }
 
+#ifdef AE_TBC
 uint32_t Unit::addAuraVisual(uint32_t spell_id, uint32_t count, bool positive)
 {
     bool out;

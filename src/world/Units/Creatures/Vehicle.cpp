@@ -174,8 +174,8 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
     if (passenger->IsCreature())
     {
 #if VERSION_STRING != Cata
-        passenger->obj_movement_info.transporter_info.guid = owner->GetGUID();
-        passenger->obj_movement_info.transporter_info.seat = static_cast<uint8_t>(seatid);
+        passenger->obj_movement_info.transport_data.transportGuid = owner->GetGUID();
+        passenger->obj_movement_info.transport_seat = static_cast<uint8_t>(seatid);
 #endif
     }
 
@@ -588,8 +588,8 @@ void Vehicle::InstallAccessories()
         c->Load(cp, owner->GetPositionX(), owner->GetPositionY(), owner->GetPositionZ(), owner->GetOrientation());
 #if VERSION_STRING != Cata
         c->obj_movement_info.transport_data.transportGuid = owner->GetGUID();
-#if FT_VEHICLES
-        c->obj_movement_info.transport_data.seat = static_cast<uint8_t>(accessory->seat);
+#ifdef FT_VEHICLES
+        c->obj_movement_info.transport_seat = static_cast<uint8_t>(accessory->seat);
 #endif
 #endif
         c->Phase(PHASE_SET, owner->GetPhase());

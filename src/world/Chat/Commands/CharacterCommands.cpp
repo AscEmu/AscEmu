@@ -1693,12 +1693,12 @@ bool ChatHandler::HandleCharSetTalentpointsCommand(const char* args, WorldSessio
     std::stringstream ss(args);
     ss >> primary_amount;
 #ifdef FT_DUAL_SPEC
-    ss >> secondary_amnount;
+    ss >> secondary_amount;
 #endif
 
 #ifdef FT_DUAL_SPEC
     player_target->m_specs[SPEC_PRIMARY].SetTP(primary_amount);
-    player_target->m_specs[SPEC_SECONDARY].SetTP(secondary_amnount);
+    player_target->m_specs[SPEC_SECONDARY].SetTP(secondary_amount);
 #else
     player_target->m_spec.SetTP(primary_amount);
 #endif

@@ -302,7 +302,8 @@ Player::Player(uint32 guid)
     setGuidLow(guid);
     m_wowGuid.Init(getGuid());
 #if VERSION_STRING >= WotLK
-    write(data->unit_flags_2, UNIT_FLAG2_ENABLE_POWER_REGEN);
+    auto data = playerData();
+    SetFlag(data->unit_flags_2, UNIT_FLAG2_ENABLE_POWER_REGEN);
     setFloatValue(PLAYER_RUNE_REGEN_1, 0.100000f);
     setFloatValue(PLAYER_RUNE_REGEN_1 + 1, 0.100000f);
     setFloatValue(PLAYER_RUNE_REGEN_1 + 2, 0.100000f);
@@ -1614,7 +1615,7 @@ void Player::_EventExploration()
 #if VERSION_STRING != Cata
     if (!(currFields & val) && !isOnTaxi() && !obj_movement_info.transport_data.transportGuid) //Unexplored Area        // bur: we don't want to explore new areas when on taxi
 #else
-    if (!(currFields & val) && !GetTaxiState() && obj_movement_info.getTransportGuid().IsEmpty()) //Unexplored Area        // bur: we don't want to explore new areas when on taxi
+    if (!(currFields & val) && !isOnTaxi() && obj_movement_info.getTransportGuid().IsEmpty()) //Unexplored Area        // bur: we don't want to explore new areas when on taxi
 #endif
     {
         setUInt32Value(offset, (uint32)(currFields | val));
@@ -4005,7 +4006,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     SetNoseLevel();
 
     // set power type
-    SetPowerType(static_cast<uint8>(myClass->power_type));
+    setPowerType(static_cast<uint8>(myClass->power_type));
 
     // obtain player create info
     info = sMySQLStore.getPlayerCreateInfo(getRace(), getClass());
@@ -4037,7 +4038,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     CalculateBaseStats();
 
     // set xp
-    SetXp(get_next_field.GetUInt32());
+    setXp(get_next_field.GetUInt32());
 
     // Load active cheats
     uint32 active_cheats = get_next_field.GetUInt32();
@@ -4122,7 +4123,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 #endif
     load_health = get_next_field.GetUInt32();
     load_mana = get_next_field.GetUInt32();
-    SetHealth(load_health);
+    setHealth(load_health);
     uint8 pvprank = get_next_field.GetUInt8();
     setUInt32Value(PLAYER_BYTES, get_next_field.GetUInt32());
     setUInt32Value(PLAYER_BYTES_2, get_next_field.GetUInt32());
@@ -4308,17 +4309,17 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     }
 
 #if VERSION_STRING != Cata
-    obj_movement_info.transporter_info.guid = get_next_field.GetUInt32();
-    if (obj_movement_info.transporter_info.guid)
+    obj_movement_info.transport_data.transportGuid = get_next_field.GetUInt32();
+    if (obj_movement_info.transport_data.transportGuid)
     {
-        Transporter* t = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transporter_info.guid));
-        obj_movement_info.transporter_info.guid = t ? t->GetGUID() : 0;
+        Transporter* t = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transport_data.transportGuid));
+        obj_movement_info.transport_data.transportGuid = t ? t->GetGUID() : 0;
     }
 
-    obj_movement_info.transporter_info.position.x = get_next_field.GetFloat();
-    obj_movement_info.transporter_info.position.y = get_next_field.GetFloat();
-    obj_movement_info.transporter_info.position.z = get_next_field.GetFloat();
-    obj_movement_info.transporter_info.position.o = get_next_field.GetFloat();
+    obj_movement_info.transport_data.relativePosition.x = get_next_field.GetFloat();
+    obj_movement_info.transport_data.relativePosition.y = get_next_field.GetFloat();
+    obj_movement_info.transport_data.relativePosition.z = get_next_field.GetFloat();
+    obj_movement_info.transport_data.relativePosition.o = get_next_field.GetFloat();
 #else
     uint32_t transportGuid = get_next_field.GetUInt32();
     float transportX = get_next_field.GetFloat();
@@ -5094,7 +5095,7 @@ void Player::OnPushToWorld()
 
     m_TeleportState = 0;
 
-    if (GetTaxiState())
+    if (isOnTaxi())
     {
         if (m_taxiMapChangeNode != 0)
         {
@@ -5118,7 +5119,7 @@ void Player::OnPushToWorld()
     /* send weather */
     sWeatherMgr.SendWeather(this);
 
-    SetHealth((load_health > m_uint32Values[UNIT_FIELD_MAXHEALTH] ? m_uint32Values[UNIT_FIELD_MAXHEALTH] : load_health));
+    setHealth((load_health > m_uint32Values[UNIT_FIELD_MAXHEALTH] ? m_uint32Values[UNIT_FIELD_MAXHEALTH] : load_health));
     SetPower(POWER_TYPE_MANA, (load_mana > GetMaxPower(POWER_TYPE_MANA) ? GetMaxPower(POWER_TYPE_MANA) : load_mana));
 
     if (!GetSession()->HasGMPermissions())
@@ -5656,7 +5657,7 @@ void Player::BuildPlayerRepop()
     uint32 AuraIds[] = { 20584, 9036, 8326, 0 };
     RemoveAuras(AuraIds); // Cebernic: Removeaura just remove once(bug?).
 
-    SetHealth(1);
+    setHealth(1);
 
     SpellCastTargets tgt;
     tgt.m_unitTarget = this->GetGUID();
@@ -9742,7 +9743,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
 
     SpeedCheatDelay(10000);
 
-    if (GetTaxiState())
+    if (isOnTaxi())
     {
         sEventMgr.RemoveEvents(this, EVENT_PLAYER_TELEPORT);
         sEventMgr.RemoveEvents(this, EVENT_PLAYER_TAXI_DISMOUNT);
@@ -12948,8 +12949,8 @@ void Player::UpdatePowerAmm()
 #if VERSION_STRING > TBC
     WorldPacket data(SMSG_POWER_UPDATE, 5);
     FastGUIDPack(data, GetGUID());
-    data << uint8(GetPowerType());
-    data << getUInt32Value(UNIT_FIELD_POWER1 + GetPowerType());
+    data << uint8(getPowerType());
+    data << getUInt32Value(UNIT_FIELD_POWER1 + getPowerType());
     SendMessageToSet(&data, true);
 #endif
 }
