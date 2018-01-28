@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/AuraInterruptFlags.h"
 using namespace AscEmu::Packets;
 
+#if VERSION_STRING != Cata
 void WorldSession::handleSetActiveMoverOpcode(WorldPacket& recvData)
 {
     CHECK_INWORLD_RETURN
@@ -40,6 +41,7 @@ void WorldSession::handleSetActiveMoverOpcode(WorldPacket& recvData)
     movement_packet[0] = m_MoverWoWGuid.GetNewGuidMask();
     memcpy(&movement_packet[1], m_MoverWoWGuid.GetNewGuid(), m_MoverWoWGuid.GetNewGuidLen());
 }
+#endif
 
 #ifdef AE_TBC
 void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)

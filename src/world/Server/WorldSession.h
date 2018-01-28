@@ -27,6 +27,7 @@
 #include "FastQueue.h"
 #include "Units/Unit.h"
 #include "AuthCodes.h"
+#include "Data/Flags.h"
 #if VERSION_STRING == Cata
     #include "Management/AddonMgr.h"
     #include "Units/Players/PlayerDefines.hpp"
@@ -338,8 +339,13 @@ class SERVER_DECL WorldSession
         void HandleGMSurveySubmitOpcode(WorldPacket& recv_data);
 
         /// Opcodes implemented in QueryHandler.cpp:
+#if VERSION_STRING == Cata
+        void HandleNameQueryOpcode(WorldPacket& recvPacket);
+        void HandleQueryTimeOpcode(WorldPacket& recvPacket);
+#else
         void handleNameQueryOpcode(WorldPacket& recvPacket);
         void handleQueryTimeOpcode(WorldPacket& recvPacket);
+#endif
         void HandleCreatureQueryOpcode(WorldPacket& recvPacket);
         void HandleGameObjectQueryOpcode(WorldPacket& recvPacket);
         void HandleItemNameQueryOpcode(WorldPacket& recv_data);
@@ -542,7 +548,13 @@ class SERVER_DECL WorldSession
         //MIT
         bool isSessionMuted();
         bool isFloodProtectionTriggered();
+
+#if VERSION_STRING == Cata
+        // Cata still uses the old one
+        void HandleMessagechatOpcode(WorldPacket& recvData);
+#else
         void handleMessageChatOpcode(WorldPacket& recvData);
+#endif
         //MIT End
 
         void HandleEmoteOpcode(WorldPacket& recvPacket);

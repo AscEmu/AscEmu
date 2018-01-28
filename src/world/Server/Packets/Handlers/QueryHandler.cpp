@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
+#if VERSION_STRING != Cata
 void WorldSession::handleNameQueryOpcode(WorldPacket& recvData)
 {
     CmsgNameQuery query;
@@ -29,3 +30,4 @@ void WorldSession::handleQueryTimeOpcode(WorldPacket&)
 {
     SendPacket(SmsgQueryTimeResponse(UNIXTIME).serialise().get());
 }
+#endif

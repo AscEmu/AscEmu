@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
+#include "Data/Flags.h"
 
 void WorldSession::SendTrainerList(Creature* pCreature)
 {
@@ -556,7 +557,7 @@ void WorldSession::HandleSpiritHealerActivateOpcode(WorldPacket& /*recvData*/)
         _player->SetAurDuration(15007, duration);                   //cebernic: change this to setaurduration() to be refreshed.
     }
 
-    GetPlayer()->SetHealth(GetPlayer()->GetMaxHealth() / 2);
+    GetPlayer()->setHealth(GetPlayer()->GetMaxHealth() / 2);
 }
 
 void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recvData)

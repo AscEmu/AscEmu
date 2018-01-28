@@ -88,7 +88,7 @@ void Spell::SendSpellStart()
                 auto item = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                 if (item != nullptr)
                 {
-                    ip = item->GetItemProperties();
+                    ip = item->getItemProperties();
                     /* Throwing Weapon Patch by Supalosa
                     p_caster->GetItemInterface()->RemoveItemAmt(it->GetEntry(),1);
                     (Supalosa: Instead of removing one from the stack, remove one from durability)
@@ -236,7 +236,7 @@ void Spell::SendSpellGo()
             {
                 Item* it = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                 if (it != nullptr)
-                    ip = it->GetItemProperties();
+                    ip = it->getItemProperties();
             }
             else
                 ip = sMySQLStore.getItemProperties(2512);	/*rough arrow*/

@@ -322,7 +322,7 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recvData)
         else
             return;
 
-        ItemProperties const* itemProto = quest_giver->GetItemProperties();
+        ItemProperties const* itemProto = quest_giver->getItemProperties();
 
         if (itemProto->Bonding != ITEM_BIND_ON_USE || quest_giver->IsSoulbound())     // SoulBind item will be used after SoulBind()
         {

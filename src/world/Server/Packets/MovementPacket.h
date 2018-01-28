@@ -7,6 +7,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 
 #include "ManagedPacket.h"
+
+#if VERSION_STRING != Cata
+
 #if VERSION_STRING == TBC
 #include "GameTBC/Data/MovementInfoTBC.h"
 #elif VERSION_STRING == WotLK
@@ -153,3 +156,5 @@ namespace AscEmu { namespace Packets
         }
     };
 }}
+
+#endif

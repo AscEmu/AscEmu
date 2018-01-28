@@ -178,7 +178,7 @@ void WorldSession::HandleSendMail(WorldPacket& recvData)
                 continue;        // should never be hit.
 
             pItem->RemoveFromWorld();
-            pItem->SetOwner(NULL);
+            pItem->setOwner(NULL);
             pItem->SaveToDB(INVENTORY_SLOT_NOT_SET, 0, true, NULL);
             msg.items.push_back(pItem->GetLowGUID());
 
@@ -332,7 +332,7 @@ void WorldSession::HandleTakeItem(WorldPacket& recvData)
     }
 
     //Find free slot
-    SlotResult result = _player->GetItemInterface()->FindFreeInventorySlot(item->GetItemProperties());
+    SlotResult result = _player->GetItemInterface()->FindFreeInventorySlot(item->getItemProperties());
     if (result.Result == false) //End of slots
     {
         data << uint32_t(MAIL_ERR_BAG_FULL);

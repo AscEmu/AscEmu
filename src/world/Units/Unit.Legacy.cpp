@@ -13511,12 +13511,12 @@ void Unit::SetPower(uint32 type, int32 value)
 void Unit::SendPowerUpdate(bool self)
 {
 #if VERSION_STRING == Cata
-    uint32 amount = getUInt32Value(UNIT_FIELD_POWER1 + GetPowerType()); //save the amount, so we send the same to the player and everyone else
+    uint32 amount = getUInt32Value(UNIT_FIELD_POWER1 + getPowerType()); //save the amount, so we send the same to the player and everyone else
 
     WorldPacket data(SMSG_POWER_UPDATE, 14);
     FastGUIDPack(data, GetGUID());
     data << uint32(1);
-    data << uint8(GetPowerType());
+    data << uint8(getPowerType());
     data << int32(amount);
     // \todo This was added in revision 1726.  Is it necessary?  To me, it seems to just be sending the packet twice.
     //	If it is needed for something, put it back in I guess.
@@ -13524,7 +13524,7 @@ void Unit::SendPowerUpdate(bool self)
     SendMessageToSet(&data, IsPlayer());
 
     //VLack: On 3.1.3, create and send a field update packet to everyone else, as this is the only way to update their GUI with the power values.
-    WorldPacket* pkt = BuildFieldUpdatePacket(UNIT_FIELD_MAXPOWER1 + GetPowerType(), amount);
+    WorldPacket* pkt = BuildFieldUpdatePacket(UNIT_FIELD_MAXPOWER1 + getPowerType(), amount);
     SendMessageToSet(pkt, false);
     delete pkt;
     if (self) { return; }
