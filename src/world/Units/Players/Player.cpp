@@ -90,7 +90,7 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
 
     switch (speed_type)
     {
-#if VERSION_STRING > WotLK
+#if VERSION_STRING >= WotLK
         case TYPE_WALK:
             data.Initialize(MSG_MOVE_SET_WALK_SPEED);
             break;
