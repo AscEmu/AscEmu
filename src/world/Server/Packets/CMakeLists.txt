@@ -3,7 +3,6 @@
 set(PATH_PREFIX Server/Packets)
 
 set(SRC_PACKET_FILES
-   ${PATH_PREFIX}/ChatPacket.h
    ${PATH_PREFIX}/CmsgMessageChat.h
    ${PATH_PREFIX}/CmsgNameQuery.h
    ${PATH_PREFIX}/CmsgQueryTime.h
