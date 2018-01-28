@@ -25,6 +25,7 @@ namespace AscEmu { namespace Packets
         MovementInfo info;
 
     private:
+#if VERSION_STRING == TBC
         bool deserialiseTbc(WorldPacket& packet)
         {
             packet >> info.flags >> info.flags2 >> info.time
@@ -71,7 +72,7 @@ namespace AscEmu { namespace Packets
 
             return true;
         }
-
+#elif VERSION_STRING == WotLK
         bool deserialiseWotlk(WorldPacket& packet)
         {
             packet >> info.flags >> info.flags2 >> info.time
@@ -128,6 +129,7 @@ namespace AscEmu { namespace Packets
 
             return true;
         }
+#endif
 
     public:
         MovementPacket(uint16_t opcode, size_t size) :

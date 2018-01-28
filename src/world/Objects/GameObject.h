@@ -454,7 +454,7 @@ public:
         uint8 GetState() { return getUInt32Value(GAMEOBJECT_STATE); }
 
         void SetType(uint8 type) { setUInt32Value(GAMEOBJECT_TYPE_ID, type); }
-    uint32 GetType() const;
+        //uint32 GetType() const;
 
         void SetArtKit(uint8 artkit) { setUInt32Value(GAMEOBJECT_ARTKIT, artkit); }
         uint8 GetArtkKit() { return getUInt32Value(GAMEOBJECT_ARTKIT); }
