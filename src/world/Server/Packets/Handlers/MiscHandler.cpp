@@ -34,9 +34,12 @@
 #include "Map/WorldCreator.h"
 #include "Spell/Definitions/LockTypes.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
+#include "Server/Packets/SmsgLogoutResponse.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
 #endif
+
+using namespace AscEmu::Packets;
 
 void WorldSession::HandleRepopRequestOpcode(WorldPacket& /*recvData*/)
 {
@@ -974,9 +977,7 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket& /*recv_data*/)
         if (!sHookInterface.OnLogoutRequest(pPlayer))
         {
             // Declined Logout Request
-            data << uint32(1);
-            data << uint8(0);
-            SendPacket(&data);
+            SendPacket(SmsgLogoutResponse(true).serialise().get());
             return;
         }
 
@@ -986,9 +987,7 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket& /*recv_data*/)
             // Never instant logout for players while in combat or duelling
             if (pPlayer->CombatStatus.IsInCombat() || pPlayer->DuelingWith != NULL)
             {
-                data << uint32(1);
-                data << uint8(0);
-                SendPacket(&data);
+                SendPacket(SmsgLogoutResponse(true).serialise().get());
                 return;
             }
 
@@ -1009,10 +1008,7 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket& /*recv_data*/)
             }
         }
 
-
-        data << uint32(0); //Filler
-        data << uint8(0); //Logout accepted
-        SendPacket(&data);
+        SendPacket(SmsgLogoutResponse(false).serialise().get());
 
         //stop player from moving
         pPlayer->setMoveRoot(true);
