@@ -42,7 +42,9 @@ void Unit::setPowerType(uint8_t powerType)
 
 void Unit::setMaxMana(uint32_t maxMana)
 {
+#if VERSION_STRING == TBC
     write(unitData()->max_mana, maxMana);
+#endif
 }
 
 void Unit::setLevel(uint32_t level)
