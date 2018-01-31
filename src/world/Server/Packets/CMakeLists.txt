@@ -13,6 +13,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/MsgMoveFallLand.h
    ${PATH_PREFIX}/Opcode.h
    ${PATH_PREFIX}/SmsgBindPointUpdate.h
+   ${PATH_PREFIX}/SmsgChannelMemberCount.h
    ${PATH_PREFIX}/SmsgChatPlayerNotFound.h
    ${PATH_PREFIX}/SmsgClearExtraAuraInfo.h
    ${PATH_PREFIX}/SmsgInitialSpells.h

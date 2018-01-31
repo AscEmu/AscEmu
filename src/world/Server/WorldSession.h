@@ -589,7 +589,11 @@ class SERVER_DECL WorldSession
         void HandleChannelUnban(WorldPacket& recvPacket);
         void HandleChannelAnnounce(WorldPacket& recvPacket);
         void HandleChannelModerate(WorldPacket& recvPacket);
+#if VERSION_STRING == Cata
         void HandleChannelNumMembersQuery(WorldPacket& recvPacket);
+#else
+        void handleGetChannelMemberCount(WorldPacket& recvPacket);
+#endif
         void HandleChannelRosterQuery(WorldPacket& recvPacket);
 
         // Duel

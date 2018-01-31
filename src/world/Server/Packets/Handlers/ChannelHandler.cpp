@@ -26,6 +26,7 @@
 #include "Server/World.Legacy.h"
 #include "Objects/ObjectMgr.h"
 #include "Server/Packets/CmsgJoinChannel.h"
+#include "Server/Packets/SmsgChannelMemberCount.h"
 
 initialiseSingleton(ChannelMgr);
 
@@ -48,6 +49,16 @@ void WorldSession::handleChannelJoin(WorldPacket& recvPacket)
 
     channel->AttemptJoin(_player, recv_packet.password.c_str());
     LogDebugFlag(LF_OPCODE, "CMSG_JOIN_CHANNEL %s", recv_packet.channel_name.c_str());
+}
+
+void WorldSession::handleGetChannelMemberCount(WorldPacket& recvPacket)
+{
+    std::string name;
+    recvPacket >> name;
+
+    auto channel = channelmgr.GetChannel(name.c_str(), _player);
+    if (channel)
+        SendPacket(SmgsChannelMemberCount(name, channel->m_flags, channel->GetNumMembers()).serialise().get());
 }
 //MIT end
 
@@ -317,21 +328,4 @@ void WorldSession::HandleChannelRosterQuery(WorldPacket& recvPacket)
         chn->List(_player);
 }
 
-void WorldSession::HandleChannelNumMembersQuery(WorldPacket& recvPacket)
-{
-    CHECK_INWORLD_RETURN
-
-    std::string channel_name;
-    WorldPacket data(SMSG_CHANNEL_MEMBER_COUNT, recvPacket.size() + 4);
-    Channel* chn;
-    recvPacket >> channel_name;
-    chn = channelmgr.GetChannel(channel_name.c_str(), _player);
-    if (chn)
-    {
-        data << channel_name;
-        data << uint8(chn->m_flags);
-        data << uint32(chn->GetNumMembers());
-        SendPacket(&data);
-    }
-}
 #endif
