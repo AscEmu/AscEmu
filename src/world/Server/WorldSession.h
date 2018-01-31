@@ -569,7 +569,11 @@ class SERVER_DECL WorldSession
         void HandleResurrectResponseOpcode(WorldPacket& recvPacket);
 
         /// Channel Opcodes (ChannelHandler.cpp)
+#if VERSION_STRING == Cata
         void HandleChannelJoin(WorldPacket& recvPacket);
+#else
+        void handleChannelJoin(WorldPacket& recvPacket);
+#endif
         void HandleChannelLeave(WorldPacket& recvPacket);
         void HandleChannelList(WorldPacket& recvPacket);
         void HandleChannelPassword(WorldPacket& recvPacket);

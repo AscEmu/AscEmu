@@ -25,34 +25,31 @@
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
 #include "Objects/ObjectMgr.h"
+#include "Server/Packets/CmsgJoinChannel.h"
 
 initialiseSingleton(ChannelMgr);
 
+//MIT
+using namespace AscEmu::Packets;
+
 #if VERSION_STRING != Cata
-void WorldSession::HandleChannelJoin(WorldPacket& recvPacket)
+void WorldSession::handleChannelJoin(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
-    CHECK_PACKET_SIZE(recvPacket, 1);
-    std::string channelname, pass;
-    uint32 dbc_id = 0;
-    uint16 crap;        // crap = some sort of channel type?
-    Channel* chn;
-
-    recvPacket >> dbc_id >> crap;
-    recvPacket >> channelname;
-    recvPacket >> pass;
-
-    if (worldConfig.getGmClientChannelName().size() && !stricmp(worldConfig.getGmClientChannelName().c_str(), channelname.c_str()) && !GetPermissionCount())
+    CmsgJoinChannel recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
         return;
 
-    chn = channelmgr.GetCreateChannel(channelname.c_str(), _player, dbc_id);
-    if (chn == NULL)
+    if (recv_packet.channel_name.compare(worldConfig.getGmClientChannelName()) && !GetPermissionCount())
         return;
 
-    chn->AttemptJoin(_player, pass.c_str());
-    LogDebugFlag(LF_OPCODE, "ChannelJoin %s", channelname.c_str());
+    auto channel = channelmgr.GetCreateChannel(recv_packet.channel_name.c_str(), _player, recv_packet.dbc_id);
+    if (channel == nullptr)
+        return;
+
+    channel->AttemptJoin(_player, recv_packet.password.c_str());
+    LogDebugFlag(LF_OPCODE, "CMSG_JOIN_CHANNEL %s", recv_packet.channel_name.c_str());
 }
+//MIT end
 
 
 void WorldSession::HandleChannelLeave(WorldPacket& recvPacket)
