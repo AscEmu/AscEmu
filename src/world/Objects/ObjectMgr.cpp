@@ -647,7 +647,7 @@ void ObjectMgr::DelinkPlayerCorpses(Player* pOwner)
 
 void ObjectMgr::LoadGMTickets()
 {
-    QueryResult* result = CharacterDatabase.Query("SELECT ticketid, playerGuid, name, level, map, posX, posY, posZ, message, timestamp, deleted, assignedto, comment FROM gm_tickets WHERE deleted = false");
+    QueryResult* result = CharacterDatabase.Query("SELECT ticketid, playerGuid, name, level, map, posX, posY, posZ, message, timestamp, deleted, assignedto, comment FROM gm_tickets WHERE deleted = 0");
     if (result == nullptr)
         return;
 
