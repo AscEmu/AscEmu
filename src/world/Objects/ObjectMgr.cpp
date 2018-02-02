@@ -647,11 +647,12 @@ void ObjectMgr::DelinkPlayerCorpses(Player* pOwner)
 
 void ObjectMgr::LoadGMTickets()
 {
-    QueryResult* result = CharacterDatabase.Query("SELECT ticketid, playerGuid, name, level, map, posX, posY, posZ, message, timestamp, deleted, assignedto, comment FROM gm_tickets WHERE deleted = false");
+    QueryResult* result = CharacterDatabase.Query("SELECT ticketid, playerGuid, name, level, map, posX, posY, posZ, message, timestamp, deleted, assignedto, comment FROM gm_tickets");
     if (result == nullptr)
+    {
+        LogDetail("ObjectMgr : 0 active GM Tickets loaded.");
         return;
-
-    uint32 deleted = 0;
+    }
 
     do
     {
@@ -668,19 +669,11 @@ void ObjectMgr::LoadGMTickets()
         ticket->posZ = fields[7].GetFloat();
         ticket->message = fields[8].GetString();
         ticket->timestamp = fields[9].GetUInt32();
-
-        deleted = fields[10].GetUInt32();
-
-        if (deleted == 1)
-            ticket->deleted = true;
-        else
-            ticket->deleted = false;
-
+        ticket->deleted = fields[10].GetUInt32() == 1;
         ticket->assignedToPlayer = fields[11].GetUInt64();
         ticket->comment = fields[12].GetString();
 
         AddGMTicket(ticket, true);
-
     }
     while (result->NextRow());
 
