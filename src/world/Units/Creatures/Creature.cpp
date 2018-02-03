@@ -1621,7 +1621,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     m_spawnLocation.ChangeCoords(x, y, z, o);
 
     // not a neutral creature
-    if (!(m_factionDBC->RepListId == -1 && m_faction->HostileMask == 0 && m_faction->FriendlyMask == 0))
+    if (m_factionDBC && !(m_factionDBC->RepListId == -1 && m_faction->HostileMask == 0 && m_faction->FriendlyMask == 0))
     {
         GetAIInterface()->m_canCallForHelp = true;
     }

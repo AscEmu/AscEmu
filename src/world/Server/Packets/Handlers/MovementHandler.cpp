@@ -55,8 +55,9 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
     auto mover = _player->mControledUnit;
 
     MovementPacket move_packet(recvData.GetOpcode(), 0);
-    if (!move_packet.deserialise(recvData))
-        return;
+    move_packet.deserialise(recvData);
+    /*if (!move_packet.deserialise(recvData))
+        return;*/
 
     movement_info = move_packet.info;
 

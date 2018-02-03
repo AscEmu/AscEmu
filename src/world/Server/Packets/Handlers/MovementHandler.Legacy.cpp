@@ -371,9 +371,16 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /************************************************************************/
     /* Read Movement Data Packet                                            */
     /************************************************************************/
-    AscEmu::Packets::MovementPacket packet(recv_data.GetOpcode(), 0);
+    /*AscEmu::Packets::MovementPacket packet(recv_data.GetOpcode(), 0);
     packet.guid = mover->GetGUID();
-    packet.info = movement_info;
+    packet.info = movement_info;*/
+
+    AscEmu::Packets::MovementPacket packet;
+    packet.deserialise(recv_data);
+    movement_info = packet.info;
+
+    if (packet.guid != mover->GetGUID())
+        return;
 
     /*WoWGuid guid;
     recv_data >> guid;

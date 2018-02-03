@@ -24,6 +24,16 @@ namespace AscEmu { namespace Packets
         WoWGuid guid;
         MovementInfo info;
 
+        MovementPacket() : MovementPacket(0, 0)
+        {
+        }
+
+        MovementPacket(uint16_t opcode, size_t size) :
+            ManagedPacket(opcode, size),
+            info()
+        {
+        }
+
     private:
 #if VERSION_STRING == TBC
         bool deserialiseTbc(WorldPacket& packet)
@@ -75,6 +85,7 @@ namespace AscEmu { namespace Packets
 #elif VERSION_STRING == WotLK
         bool deserialiseWotlk(WorldPacket& packet)
         {
+            packet >> guid;
             packet >> info.flags >> info.flags2 >> info.time
                 >> info.position >> info.position.o;
 
@@ -130,13 +141,6 @@ namespace AscEmu { namespace Packets
             return true;
         }
 #endif
-
-    public:
-        MovementPacket(uint16_t opcode, size_t size) :
-            ManagedPacket(opcode, size),
-            info()
-        {
-        }
 
     protected:
         bool internalSerialise(WorldPacket& packet) override
