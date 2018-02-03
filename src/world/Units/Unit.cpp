@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/DiminishingGroup.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Data/WoWUnit.h"
+#include "Storage/MySQLDataStore.hpp"
 
 uint8 Unit::getRace() const { return unitData()->field_bytes_0_wowplayer.race; }
 

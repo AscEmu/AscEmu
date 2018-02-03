@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellFailure.h"
 #include "Map/MapMgr.h"
 #include "Data/WoWPlayer.h"
+#include "Management/Battleground/Battleground.h"
 
 void Player::setAttackPowerMultiplier(float val)
 {

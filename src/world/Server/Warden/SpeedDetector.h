@@ -24,6 +24,7 @@
 #define SPDT_DETECTION_ERROR 0.70f          /// ex: 10% for a speed=7 => 0.7 max speed cheat
 #define CHEAT_ALARMS_TO_TRIGGER_CHEAT 5     /// if x alarms stack up over time then it is time to kick the player
 
+class LocationVector;
 class Player;
 
 //////////////////////////////////////////////////////////////////////////////////////////

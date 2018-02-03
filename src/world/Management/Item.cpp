@@ -5,6 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Data/WoWObject.h"
 #include "Data/WoWItem.h"
+#include "Server/WUtil.h"
+#include "Item.h"
+#include "Storage/MySQLDataStore.hpp"
+#include "Map/MapMgrDefines.hpp"
+#include "Container.h"
 
 void Item::init(uint32_t high, uint32_t low)
 {

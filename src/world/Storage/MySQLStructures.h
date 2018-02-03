@@ -130,7 +130,7 @@ namespace MySQLStructure
         uint32_t phase;
 
         // sets one of the bytes of an uint32
-        uint32 setbyte(uint32 buffer, uint8 index, uint32 byte)
+        uint32_t setbyte(uint32_t buffer, uint8_t index, uint32_t byte)
         {
             // We don't want a segfault, now do we?
             if (index >= 4)

@@ -8,6 +8,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/MovementPacket.h"
 #include "Server/Packets/SmsgMoveUnsetCanFly.h"
 #include "Spell/Definitions/AuraInterruptFlags.h"
+#include "Server/WorldSession.h"
+#include "Units/Players/Player.h"
+#include "Units/Creatures/Vehicle.h"
 using namespace AscEmu::Packets;
 
 #if VERSION_STRING != Cata

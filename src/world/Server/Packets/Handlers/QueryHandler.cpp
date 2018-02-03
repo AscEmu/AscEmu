@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgNameQuery.h"
 #include "Server/Packets/SmsgNameQueryResponse.h"
 #include "Server/Packets/SmsgQueryTimeResponse.h"
+#include "Log.hpp"
+#include "Objects/ObjectMgr.h"
 
 using namespace AscEmu::Packets;
 

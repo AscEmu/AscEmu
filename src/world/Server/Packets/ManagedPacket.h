@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include <memory>
+#include "WorldPacket.h"
 
 namespace AscEmu { namespace Packets
 {
