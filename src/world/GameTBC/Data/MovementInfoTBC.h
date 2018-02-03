@@ -13,7 +13,7 @@ struct MovementInfo
     uint32_t time;
     LocationVector position;
     TransportData transport_data;
-    float_t transport_time;
+    uint32_t transport_time;
     /*
      *  -1.55   looking down
      *  0       looking forward
@@ -35,7 +35,7 @@ struct MovementInfo
         time(0),
         position(0.f, 0.f, 0.f, 0.f),
         transport_data(),
-        transport_time(0.f),
+        transport_time(0),
         pitch(0.f),
         fall_time(0),
         redirect_velocity(0.f),

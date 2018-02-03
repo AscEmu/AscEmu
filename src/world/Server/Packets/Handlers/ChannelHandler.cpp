@@ -58,7 +58,7 @@ void WorldSession::handleGetChannelMemberCount(WorldPacket& recvPacket)
 
     auto channel = channelmgr.GetChannel(name.c_str(), _player);
     if (channel)
-        SendPacket(SmgsChannelMemberCount(name, channel->m_flags, channel->GetNumMembers()).serialise().get());
+        SendPacket(SmgsChannelMemberCount(name, channel->m_flags, uint32_t(channel->GetNumMembers())).serialise().get());
 }
 //MIT end
 

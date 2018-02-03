@@ -141,9 +141,6 @@ void AddonMgr::SendAddonInfoPacket(WorldPacket* source, uint32 /*pos*/, WorldSes
     uint32 addoncount;
     unpacked >> addoncount;
 
-    uint8 unk;
-    uint8 unk1;
-    uint8 unk2;
     for (uint32 i = 0; i < addoncount; ++i)
     {
         if (unpacked.rpos() >= unpacked.size())
@@ -164,6 +161,10 @@ void AddonMgr::SendAddonInfoPacket(WorldPacket* source, uint32 /*pos*/, WorldSes
         }
 
 #if VERSION_STRING >= WotLK
+        uint8 unk;
+        uint8 unk1;
+        uint8 unk2;
+
         unk = (Enable ? 2 : 1);
         returnpacket << unk;
         unk1 = (Enable ? 1 : 0);

@@ -2329,7 +2329,7 @@ void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player*
 
     *data << uint8_t(block_count);
     data->append(updateMask->GetMask(), block_count * 4);
-    for (auto idx = 0; idx < values_count; ++idx)
+    for (uint32_t idx = 0; idx < values_count; ++idx)
     {
         if (updateMask->GetBit(idx))
             *data << m_uint32Values[idx];

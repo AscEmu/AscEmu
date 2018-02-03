@@ -349,9 +349,7 @@ void WorldSocket::_HandleAuthSession(WorldPacket* recvPacket)
     }
 #else
     std::string account;
-    uint32 unk2, unk3;
-    uint64 unk4;
-    uint32 unk5, unk6, unk7;
+    uint32 unk2;
 
     _latency = Util::getMSTime() - _latency;
 
@@ -363,6 +361,10 @@ void WorldSocket::_HandleAuthSession(WorldPacket* recvPacket)
         *recvPacket >> account;
         *recvPacket >> mClientSeed;
 #else
+        uint32 unk3;
+        uint64 unk4;
+        uint32 unk5, unk6, unk7;
+
         *recvPacket >> mClientBuild;
         *recvPacket >> unk2;
         *recvPacket >> account;

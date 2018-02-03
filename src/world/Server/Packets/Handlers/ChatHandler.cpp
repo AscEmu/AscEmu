@@ -234,7 +234,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
             }
             else
             {
-                for (auto i = 0; i < group->GetSubGroupCount(); ++i)
+                for (uint32_t i = 0; i < group->GetSubGroupCount(); ++i)
                 {
                     if (const auto sub_group = group->GetSubGroup(i))
                     {
