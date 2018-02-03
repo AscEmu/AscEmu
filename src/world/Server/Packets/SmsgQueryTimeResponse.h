@@ -15,7 +15,7 @@ namespace AscEmu { namespace Packets
     public:
         uint64_t time;
 
-        SmsgQueryTimeResponse() : SmsgQueryTimeResponse(0ULL)
+        SmsgQueryTimeResponse() : SmsgQueryTimeResponse(time_t(0))
         {
         }
 
