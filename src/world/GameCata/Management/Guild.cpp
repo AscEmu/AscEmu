@@ -2408,7 +2408,7 @@ void Guild::swapItems(Player* player, uint8_t tabId, uint8_t slotId, uint8_t des
             return;
         }
 
-        pItem->SetStackCount(splitedAmount);
+        pItem->setStackCount(splitedAmount);
         pItem->SetCreatorGUID(0);
         pItem->SaveToDB(0, 0, true, nullptr);
     }
@@ -2440,7 +2440,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
     Item* pSourceItem2 = nullptr;
     if (pSourceItem != nullptr)
     {
-        if (pSourceItem->IsSoulbound() || pSourceItem->GetItemProperties()->Class == ITEM_CLASS_QUEST)
+        if (pSourceItem->IsSoulbound() || pSourceItem->getItemProperties()->Class == ITEM_CLASS_QUEST)
         {
             player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_CANT_DROP_SOULBOUND);
             return;
@@ -2463,7 +2463,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
                 return;
             }
 
-            pSourceItem->SetStackCount(splitedAmount);
+            pSourceItem->setStackCount(splitedAmount);
             pSourceItem->SetCreatorGUID(pSourceItem2->GetCreatorGUID());
             pSourceItem2->ModStackCount(-(int32_t)splitedAmount);
             pSourceItem2->m_isDirty = true;
@@ -2493,7 +2493,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
                     return;
                 }
 
-                pDestItem->SetStackCount(splitedAmount);
+                pDestItem->setStackCount(splitedAmount);
                 pDestItem->SetCreatorGUID(pSourceItem2->GetCreatorGUID());
             }
             else
@@ -2505,8 +2505,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
         {
             getBankTab(tabId)->setItem(slotId, pSourceItem);
 
-            pSourceItem->SetOwner(nullptr);
-            pSourceItem->SetOwnerGUID(0);
+            pSourceItem->setOwner(nullptr);
             pSourceItem->SaveToDB(0, 0, true, nullptr);
         }
     }
@@ -2519,8 +2518,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
                 return;
             }
 
-            pDestItem->SetOwner(player);
-            pDestItem->SetOwnerGUID(player->GetGUID());
+            pDestItem->setOwner(player);
             pDestItem->SaveToDB(playerBag, playerSlotId, true, nullptr);
             getBankTab(tabId)->setItem(slotId, nullptr);
 

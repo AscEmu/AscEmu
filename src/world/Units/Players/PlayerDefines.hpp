@@ -415,7 +415,7 @@ enum LootType
     LOOT_PICKPOCKETING          = 2,        // 2
     LOOT_DISENCHANTING          = 2,        // 4    // ignored
     LOOT_PROSPECTING            = 2,        // 7
-    LOOT_MILLING                = 2,        // 8    
+    LOOT_MILLING                = 2,        // 8
     LOOT_INSIGNIA               = 2         // 21 unsupported by client, sending LOOT_SKINNING instead
 };
 
@@ -694,12 +694,17 @@ enum PlayerCheats
     #define PLAYER_ACTION_BUTTON_SIZE PLAYER_ACTION_BUTTON_COUNT * sizeof(uint32)
 #endif
 
+#ifdef FT_DUAL_SPEC
 #define MAX_SPEC_COUNT 2
+#else
+#define MAX_SPEC_COUNT 1
+#endif
 
 #if VERSION_STRING == Cata
-    #define GLYPHS_COUNT 9
-#else
-    #define GLYPHS_COUNT 6
+#define GLYPHS_COUNT 9
+#elif VERSION_STRING == WotLK
+#define GLYPHS_COUNT 6
 #endif
+
 
 #define MAX_QUEST_SLOT 25

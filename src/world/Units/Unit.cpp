@@ -10,9 +10,65 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/DiminishingGroup.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
+#include "Data/WoWUnit.h"
+
+uint8 Unit::getRace() const { return unitData()->field_bytes_0_wowplayer.race; }
+
+uint8 Unit::getClass() const { return unitData()->field_bytes_0_wowplayer.unit_class; }
+
+uint8 Unit::getGender() const { return unitData()->field_bytes_0_wowplayer.gender; }
+
+uint8 Unit::getPowerType() const { return unitData()->field_bytes_0_wowplayer.power_type; }
+
+void Unit::setRace(uint8_t race)
+{
+    write(unitData()->field_bytes_0_wowplayer.race, race);
+}
+
+void Unit::setClass(uint8_t class_)
+{
+    write(unitData()->field_bytes_0_wowplayer.unit_class, class_);
+}
+
+void Unit::setGender(uint8_t gender)
+{
+    write(unitData()->field_bytes_0_wowplayer.gender, gender);
+}
+
+void Unit::setPowerType(uint8_t powerType)
+{
+    write(unitData()->field_bytes_0_wowplayer.power_type, powerType);
+}
+
+void Unit::setMaxMana(uint32_t maxMana)
+{
+    write(unitData()->max_mana, maxMana);
+}
+
+void Unit::setLevel(uint32_t level)
+{
+    write(unitData()->level, level);
+    if (IsPlayer())
+        static_cast<Player*>(this)->setNextLevelXp(sMySQLStore.getPlayerXPForLevel(level));
+}
+
+bool Unit::justDied() const
+{
+    return m_deathState == JUST_DIED;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
+
+uint32_t Unit::getDynamicFlags() const
+{
+    return unitData()->dynamic_flags;
+}
+
+void Unit::setDynamicFlags(uint32_t flags)
+{
+    write(unitData()->dynamic_flags, flags);
+}
 
 #ifdef AE_TBC
 uint32_t Unit::addAuraVisual(uint32_t spell_id, uint32_t count, bool positive)
@@ -532,7 +588,15 @@ void Unit::setMoveWalk(bool set_walk)
     }
 }
 
-float Unit::getSpeedForType(UnitSpeedType speed_type, bool get_basic)
+void Unit::setHealth(uint32_t health) { write(unitData()->health, health); }
+
+void Unit::setMaxHealth(uint32_t maxHealth) { write(unitData()->max_health, maxHealth); }
+
+void Unit::setBaseHealth(uint32_t baseHealth) { write(unitData()->base_health, baseHealth); }
+
+void Unit::setBaseMana(uint32_t baseMana) { write(unitData()->base_mana, baseMana); }
+
+float Unit::getSpeedForType(UnitSpeedType speed_type, bool get_basic) const
 {
     switch (speed_type)
     {
@@ -558,6 +622,53 @@ float Unit::getSpeedForType(UnitSpeedType speed_type, bool get_basic)
             return m_basicSpeedWalk;
     }
 }
+
+float Unit::getFlySpeed() const
+{
+    return getSpeedForType(TYPE_FLY);
+}
+
+float Unit::getSwimSpeed() const
+{
+    return getSpeedForType(TYPE_SWIM);
+}
+
+float Unit::getRunSpeed() const
+{
+    return getSpeedForType(TYPE_RUN);
+}
+
+UnitSpeedType Unit::getFastestSpeedType() const
+{
+    auto fastest_speed = 0.f;
+    auto fastest_speed_type = TYPE_WALK;
+    for (uint32_t i = TYPE_WALK; i <= TYPE_PITCH_RATE; ++i)
+    {
+        const auto speed_type = static_cast<UnitSpeedType>(i + 1);
+
+        switch(speed_type)
+        {
+        case TYPE_TURN_RATE:
+        case TYPE_PITCH_RATE:
+            continue;
+            default:
+            break;
+        }
+
+        const auto speed = getSpeedForType(speed_type);
+
+        fastest_speed = speed > fastest_speed ? speed : fastest_speed;
+        fastest_speed_type = speed == fastest_speed ? speed_type : fastest_speed_type;
+    }
+    return fastest_speed_type;
+}
+
+
+float Unit::getFastestSpeed() const
+{
+    return getSpeedForType(getFastestSpeedType());
+}
+
 
 void Unit::setSpeedForType(UnitSpeedType speed_type, float speed, bool set_basic)
 {

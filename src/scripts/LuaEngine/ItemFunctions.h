@@ -138,7 +138,7 @@ namespace luaItem
 
     int GetOwner(lua_State* L, Item* ptr)
     {
-        Player* owner = ptr->GetOwner();
+        Player* owner = ptr->getOwner();
         if (owner != NULL)
             PUSH_UNIT(L, owner);
         else
@@ -184,7 +184,7 @@ namespace luaItem
     {
         if (!ptr)
             return 0;
-        ItemProperties const* proto = ptr->GetItemProperties();
+        ItemProperties const* proto = ptr->getItemProperties();
         lua_pushnumber(L, proto->ItemId);
         return 1;
     }
@@ -194,7 +194,7 @@ namespace luaItem
         if (!ptr)
             return 0;
 
-        ItemProperties const* proto = ptr->GetItemProperties();
+        ItemProperties const* proto = ptr->getItemProperties();
         lua_pushstring(L, proto->Name.c_str());
         return 1;
     }
@@ -208,7 +208,7 @@ namespace luaItem
         if (index >= 5)
             return 0;
 
-        ItemProperties const* proto = ptr->GetItemProperties();
+        ItemProperties const* proto = ptr->getItemProperties();
         lua_pushnumber(L, proto->Spells[index].Id);
         return 1;
     }
@@ -222,7 +222,7 @@ namespace luaItem
         if (index >= 5)
             return 0;
 
-        ItemProperties const* proto = ptr->GetItemProperties();
+        ItemProperties const* proto = ptr->getItemProperties();
         lua_pushnumber(L, proto->Spells[index].Trigger);
         /*
             USE				= 0,
@@ -283,25 +283,25 @@ namespace luaItem
 
     int GetItemLevel(lua_State* L, Item* ptr)
     {
-        lua_pushnumber(L, ptr->GetItemProperties()->ItemLevel);
+        lua_pushnumber(L, ptr->getItemProperties()->ItemLevel);
         return 1;
     }
 
     int GetRequiredLevel(lua_State* L, Item* ptr)
     {
-        lua_pushnumber(L, ptr->GetItemProperties()->RequiredLevel);
+        lua_pushnumber(L, ptr->getItemProperties()->RequiredLevel);
         return 1;
     }
 
     int GetBuyPrice(lua_State* L, Item* ptr)
     {
-        lua_pushnumber(L, ptr->GetItemProperties()->BuyPrice);
+        lua_pushnumber(L, ptr->getItemProperties()->BuyPrice);
         return 1;
     }
 
     int GetSellPrice(lua_State* L, Item* ptr)
     {
-        lua_pushnumber(L, ptr->GetItemProperties()->SellPrice);
+        lua_pushnumber(L, ptr->getItemProperties()->SellPrice);
         return 1;
     }
 
@@ -360,7 +360,7 @@ namespace luaItem
         uint32 count = static_cast<uint32>(luaL_checkinteger(L, 1));
         if (!count || count > 1000)
             return 0;
-        ptr->SetStackCount(count);
+        ptr->setStackCount(count);
         return 1;
     }
 
@@ -418,7 +418,7 @@ namespace luaItem
     int GetEquippedSlot(lua_State* L, Item* ptr)
     {
         if (!ptr) return 0;
-        lua_pushinteger(L, ptr->GetOwner()->GetItemInterface()->GetInventorySlotById(ptr->GetEntry()));
+        lua_pushinteger(L, ptr->getOwner()->GetItemInterface()->GetInventorySlotById(ptr->GetEntry()));
         return 1;
     }
 
@@ -446,7 +446,7 @@ namespace luaItem
         Item* pItem = objmgr.CreateItem(id, NULL);
         if (!pItem)
             RET_NIL();
-        pItem->SetStackCount(stackcount);
+        pItem->setStackCount(stackcount);
         pItem->SaveToDB(0, 0, true, NULL);
         PUSH_ITEM(L, pItem);
         return 1;

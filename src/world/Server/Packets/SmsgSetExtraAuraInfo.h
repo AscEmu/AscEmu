@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #pragma once
+#if VERSION_STRING <= TBC
 #include <cstdint>
 
 #include "ManagedPacket.h"
@@ -26,7 +27,7 @@ namespace AscEmu { namespace Packets
         }
 
         SmsgSetExtraAuraInfo(WoWGuid* guid, uint8_t aura_slot, uint32_t spell_id, uint32_t max_duration, uint32_t duration) :
-            ManagedPacket(SMSG_SET_EXTRA_AURA_INFO, 8 + sizeof(uint8_t) + sizeof(uint32_t) * 3),
+            ManagedPacket(SMSG_SET_EXTRA_AURA_INFO, 0),
             guid_was_allocated(false),
             guid(guid),
             aura_slot(aura_slot),

@@ -74,7 +74,7 @@ WorldSession::WorldSession(uint32 id, std::string Name, WorldSocket* sock) :
     memset(movement_packet, 0, sizeof(movement_packet));
 
 #if VERSION_STRING != Cata
-    movement_info.redirectVelocity = 0;
+    movement_info.redirect_velocity = 0;
 #endif
 
     for (uint8 x = 0; x < 8; x++)
@@ -742,7 +742,7 @@ void WorldSession::SendRefundInfo(uint64 GUID)
         if (item_extended_cost == nullptr)
             return;
 
-        ItemProperties const* proto = item->GetItemProperties();
+        ItemProperties const* proto = item->getItemProperties();
 
         item->SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_REFUNDABLE);
         // ////////////////////////////////////////////////////////////////////////////////////////
@@ -815,6 +815,10 @@ void WorldSession::SendAccountDataTimes(uint32 mask)
 {
 #if VERSION_STRING == TBC
     StackWorldPacket<128> data(SMSG_ACCOUNT_DATA_TIMES);
+    for (auto i = 0; i < 32; ++i)
+        data << uint32(0);
+    SendPacket(&data);
+    return;
 
     MD5Hash md5hash;
     for (int i = 0; i < 8; ++i)
@@ -1021,7 +1025,7 @@ void WorldSession::HandleEquipmentSetUse(WorldPacket& data)
         {
             // we have no item equipped in the slot, so let's equip
             AddItemResult additemresult;
-            int8 EquipError = _player->GetItemInterface()->CanEquipItemInSlot(dstbag, dstslot, item->GetItemProperties(), false, false);
+            int8 EquipError = _player->GetItemInterface()->CanEquipItemInSlot(dstbag, dstslot, item->getItemProperties(), false, false);
             if (EquipError == INV_ERR_OK)
             {
                 dstslotitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(SrcBagID, SrcSlotID, false);
@@ -1235,7 +1239,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
         {
             Item* item = pcaster->GetItemInterface()->GetInventoryItem(static_cast <int16> (imageitemslots[i]));
             if (item != nullptr)
-                data << uint32(item->GetItemProperties()->DisplayInfoID);
+                data << uint32(item->getItemProperties()->DisplayInfoID);
             else
                 data << uint32(0);
         }

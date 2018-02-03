@@ -254,7 +254,7 @@ void Creature::OnRespawn(MapMgr* m)
     }
 
     LOG_DETAIL("Respawning " I64FMT "...", GetGUID());
-    SetHealth(GetMaxHealth());
+    setHealth(GetMaxHealth());
     setUInt32Value(UNIT_DYNAMIC_FLAGS, 0); // not tagging shit
     if (m_spawn)
     {
@@ -270,7 +270,7 @@ void Creature::OnRespawn(MapMgr* m)
         }
         else if (m_spawn->death_state == CREATURE_STATE_DEAD)
         {
-            SetHealth(0);
+            setHealth(0);
             m_limbostate = true;
             setDeathState(CORPSE);
         }
@@ -996,14 +996,14 @@ void Creature::CalcStat(uint16 type)
             if (res < hp) res = hp;
             setUInt32Value(UNIT_FIELD_MAXHEALTH, res);
             if (getUInt32Value(UNIT_FIELD_HEALTH) > getUInt32Value(UNIT_FIELD_MAXHEALTH))
-                SetHealth(getUInt32Value(UNIT_FIELD_MAXHEALTH));
+                setHealth(getUInt32Value(UNIT_FIELD_MAXHEALTH));
 #endif
         }
         break;
         case STAT_INTELLECT:
         {
 #if VERSION_STRING != Classic
-            if (GetPowerType() == POWER_TYPE_MANA)
+            if (getPowerType() == POWER_TYPE_MANA)
             {
                 uint32 mana = GetBaseMana();
                 uint32 stat_bonus = (getUInt32Value(UNIT_FIELD_POSSTAT3) - getUInt32Value(UNIT_FIELD_NEGSTAT3));
@@ -1046,7 +1046,7 @@ void Creature::RegenerateHealth()
         cur++;
     else
         cur += (uint32)amt;
-    SetHealth((cur >= mh) ? mh : cur);
+    setHealth((cur >= mh) ? mh : cur);
 }
 
 void Creature::RegenerateMana()
@@ -1334,12 +1334,12 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
         health = creature_properties->MinHealth + Util::getRandomUInt(creature_properties->MaxHealth - creature_properties->MinHealth);
     }
 
-    SetHealth(health);
-    SetMaxHealth(health);
-    SetBaseHealth(health);
+    setHealth(health);
+    setMaxHealth(health);
+    setBaseHealth(health);
 
     SetMaxPower(POWER_TYPE_MANA, creature_properties->Mana);
-    SetBaseMana(creature_properties->Mana);
+    setBaseMana(creature_properties->Mana);
     SetPower(POWER_TYPE_MANA, creature_properties->Mana);
 
 
@@ -1500,9 +1500,9 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
         GetAIInterface()->onGameobject = true;
     // more hacks!
     if (creature_properties->Mana != 0)
-        SetPowerType(POWER_TYPE_MANA);
+        setPowerType(POWER_TYPE_MANA);
     else
-        SetPowerType(0);
+        setPowerType(0);
 
     if (creature_properties->guardtype == GUARDTYPE_CITY)
         m_aiInterface->m_isGuard = true;
@@ -1524,7 +1524,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     }
     else if (spawn->death_state == CREATURE_STATE_DEAD)
     {
-        SetHealth(0);
+        setHealth(0);
         m_limbostate = true;
         setDeathState(CORPSE);
     }
@@ -1582,12 +1582,12 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
 
     uint32 health = creature_properties->MinHealth + Util::getRandomUInt(creature_properties->MaxHealth - creature_properties->MinHealth);
 
-    SetHealth(health);
-    SetMaxHealth(health);
-    SetBaseHealth(health);
+    setHealth(health);
+    setMaxHealth(health);
+    setBaseHealth(health);
 
     SetMaxPower(POWER_TYPE_MANA, creature_properties->Mana);
-    SetBaseMana(creature_properties->Mana);
+    setBaseMana(creature_properties->Mana);
     SetPower(POWER_TYPE_MANA, creature_properties->Mana);
 
     uint32 model = 0;
@@ -1621,7 +1621,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     m_spawnLocation.ChangeCoords(x, y, z, o);
 
     // not a neutral creature
-    if (!(m_factionDBC->RepListId == -1 && m_faction->HostileMask == 0 && m_faction->FriendlyMask == 0))
+    if (m_factionDBC && !(m_factionDBC->RepListId == -1 && m_faction->HostileMask == 0 && m_faction->FriendlyMask == 0))
     {
         GetAIInterface()->m_canCallForHelp = true;
     }
@@ -1700,7 +1700,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
         m_useAI = false;
     }
 
-    SetPowerType(POWER_TYPE_MANA);
+    setPowerType(POWER_TYPE_MANA);
 
     if (creature_properties->guardtype == GUARDTYPE_CITY)
         m_aiInterface->m_isGuard = true;
@@ -1832,7 +1832,7 @@ void Creature::Despawn(uint32 delay, uint32 respawntime)
 
             sEventMgr.RemoveEvents(this);
             sEventMgr.AddEvent(m_mapMgr, &MapMgr::EventRespawnCreature, this, pCell->GetPositionX(), pCell->GetPositionY(), EVENT_CREATURE_RESPAWN, respawntime, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-            
+
             Unit::RemoveFromWorld(false);
 
             m_position = m_spawnLocation;
@@ -1951,7 +1951,7 @@ void Creature::RemoveLimboState(Unit* /*healer*/)
 
     m_limbostate = false;
     SetEmoteState(m_spawn ? m_spawn->emote_state : EMOTE_ONESHOT_NONE);
-    SetHealth(GetMaxHealth());
+    setHealth(GetMaxHealth());
     bInvincible = false;
 }
 
@@ -2327,7 +2327,7 @@ void Creature::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, 
     {
         if (pVictim->isTrainingDummy())
         {
-            pVictim->SetHealth(1);
+            pVictim->setHealth(1);
             return;
         }
 
@@ -2441,7 +2441,7 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     }
 
     smsg_AttackStop(this);
-    SetHealth(0);
+    setHealth(0);
 
     // Wipe our attacker set on death
     CombatStatus.Vanished();

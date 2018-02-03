@@ -350,7 +350,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
                 data = sChatHandler.FillMessageData(type, (CanUseCommand('0') && lang != LANG_ADDON) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->GetGUID(), chatTag);
             else
                 data = sChatHandler.FillMessageData(type, (CanUseCommand('c') && lang != LANG_ADDON) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->GetGUID(), chatTag);
-            if (type == CHAT_MSG_PARTY && pGroup->GetGroupType() == GROUP_TYPE_RAID)
+            if (type == CHAT_MSG_PARTY && pGroup->getGroupType() == GROUP_TYPE_RAID)
             {
                 // only send to that subgroup
                 SubGroup* sgr = _player->GetGroup() ? _player->GetGroup()->GetSubGroup(_player->GetSubGroup()) : 0;

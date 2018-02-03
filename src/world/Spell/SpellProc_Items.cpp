@@ -43,8 +43,8 @@ public:
         Item* of = static_cast<Player*>(mTarget)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
         if (mh != nullptr && of != nullptr)
         {
-            uint32 mhs = mh->GetItemProperties()->Delay;
-            uint32 ohs = of->GetItemProperties()->Delay;
+            uint32 mhs = mh->getItemProperties()->Delay;
+            uint32 ohs = of->getItemProperties()->Delay;
             mProcChance = mhs * ohs / (800 * (mhs + ohs));     // 0.75 ppm
         }
     }

@@ -80,7 +80,7 @@ void TotemSummon::Load(CreatureProperties const* properties_, Unit* pOwner, Loca
     setRace(0);
     setClass(1);
     setGender(2);
-    SetPowerType(1);
+    setPowerType(1);
     SetBaseAttackTime(MELEE, 2000);
     SetBaseAttackTime(OFFHAND, 2000);
     SetBoundingRadius(1.0f);

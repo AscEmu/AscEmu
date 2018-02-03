@@ -102,7 +102,30 @@ void WorldSession::HandleChangeVehicleSeat(WorldPacket& recv_data)
             MovementInfo mov;
 
             recv_data >> src_guid;
-            mov.init(recv_data);
+            
+            recv_data >> mov.flags >> mov.flags2 >> mov.time
+                >> mov.position >> mov.position.o;
+
+            if (mov.isOnTransport())
+            {
+                recv_data >> mov.transport_data.transportGuid >> mov.transport_data.relativePosition
+                    >> mov.transport_data.relativePosition.o >> mov.transport_time >> mov.transport_seat;
+
+                if (mov.isInterpolated())
+                    recv_data >> mov.transport_time2;
+            }
+
+            if (mov.isSwimmingOrFlying())
+                recv_data >> mov.pitch;
+
+            recv_data >> mov.fall_time;
+
+            if (mov.isFallingOrRedirected())
+                recv_data >> mov.redirect_velocity >> mov.redirect_sin >> mov.redirect_cos >> mov.redirect_2d_speed;
+
+            if (mov.isSplineMover())
+                recv_data >> mov.spline_elevation;
+
             recv_data >> dst_guid;
             recv_data >> seat;
 

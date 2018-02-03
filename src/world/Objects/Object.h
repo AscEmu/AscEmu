@@ -43,6 +43,13 @@
 #include "../shared/CommonDefines.hpp"
 #include "WorldPacket.h"
 #include "Units/Creatures/CreatureDefines.hpp"
+#if VERSION_STRING == TBC
+#include "GameTBC/Data/MovementInfoTBC.h"
+#elif VERSION_STRING == WotLK
+#include "GameWotLK/Data/MovementInfoWotLK.h"
+#endif
+
+struct WoWObject;
 
 class SpellInfo;
 
@@ -112,6 +119,7 @@ typedef struct
 
 #if VERSION_STRING == Cata
 #include "GameCata/Movement/MovementDefines.h"
+#include "LocationVector.h"
 
 class SERVER_DECL MovementInfo
 {
@@ -263,88 +271,6 @@ inline float normalizeOrientation(float orientation)
 
     return fmod(orientation, 2.0f * static_cast<float>(M_PI));
 }
-
-#else
-struct MovementInfo
-{
-    WoWGuid object_guid;
-    uint32_t flags;
-    uint16_t flags2;
-    LocationVector position;
-    uint32_t time;
-
-    //pitch
-    //-1.55=looking down, 0=looking forward, +1.55=looking up
-    float pitch;
-
-    //jumping related
-    float redirectVelocity;
-    float redirectSin;      //on slip 8 is zero, on jump some other number
-    float redirectCos;
-    float redirect2DSpeed;  //9,10 changes if you are not on foot
-
-    uint32_t fall_time;       //fall_time in ms
-
-    float spline_elevation;
-
-    struct TransporterInfo
-    {
-        Transporter* m_transporter;
-        WoWGuid transGuid;
-        uint64_t guid;        // switch to WoWGuid
-        LocationVector position;
-        uint32_t time;
-        uint32_t time2;
-        uint8_t seat;
-
-        void Clear()
-        {
-            m_transporter = nullptr;
-            transGuid = 0;
-            guid = 0;
-            position.ChangeCoords(0.0f, 0.0f, 0.0f, 0.0f);
-            time = 0;
-            time2 = 0;
-            seat = 0;
-        }
-    }transporter_info;
-
-    MovementInfo()
-    {
-        object_guid = 0;
-        flags = 0;
-        flags2 = 0;
-        position.ChangeCoords(0.0f, 0.0f, 0.0f, 0.0f);
-
-        time = 0;
-
-        pitch = 0.0f;
-
-        redirectVelocity = 0.0f;
-        redirectSin = 0.0f;
-        redirectCos = 0.0f;
-        redirect2DSpeed = 0.0f;
-
-        fall_time = 0;
-        spline_elevation = 0;
-
-        transporter_info.Clear();
-    }
-
-    void init(WorldPacket& data);
-    void write(WorldPacket& data);
-
-    bool IsOnTransport() const { return this->transporter_info.guid != 0; };
-
-    //flags uint32_t
-    bool HasMovementFlag(uint32_t move_flags) const { return (flags & move_flags) != 0; }
-    uint32_t GetMovementFlags() const { return flags; }
-    void RemoveMovementFlag(uint32_t move_flags) { flags &= ~move_flags; }
-
-    //flags2 uint16_t
-    bool HasMovementFlag2(uint16_t move_flags2) const { return (flags2 & move_flags2) != 0; }
-    uint16_t GetMovementFlags2() const { return flags2; }
-};
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -359,12 +285,39 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
 protected:
     union
     {
+        uint8_t* wow_data_ptr;
+        WoWObject* wow_data;
         int32_t* m_int32Values;
         uint32_t* m_uint32Values;
         float* m_floatValues;
     };
 
+    const WoWObject* objectData() const { return wow_data; }
+
+    void setGuid(uint64_t guid);
+    void setGuid(uint32_t low, uint32_t high);
+    void setGuidLow(uint32_t low);
+    void setGuidHigh(uint32_t high);
+    void setObjectType(uint32_t objectTypeId);
+    void setScaleX(float_t scaleX);
+
+    bool skipping_updates = false;
 public:
+    uint64_t getGuid() const;
+    uint32_t getGuidLow() const;
+    uint32_t getGuidHigh() const;
+    uint32_t getEntry() const;
+
+    void setEntry(uint32_t entry);
+
+    bool write(const uint8_t& member, uint8_t val);
+    bool write(const float_t& member, float_t val);
+    bool write(const int32_t& member, int32_t val);
+    bool write(const uint32_t& member, uint32_t val);
+    bool write(const uint64_t& member, uint64_t val);
+    bool write(const uint64_t& member, uint32_t low, uint32_t high);
+    bool writeLow(const uint64_t& member, uint32_t val);
+    bool writeHigh(const uint64_t& member, uint32_t val);
 
     void setByteValue(uint16_t index, uint8_t offset, uint8_t value);
     uint8_t getByteValue(uint16_t index, uint8_t offset) const;
@@ -409,6 +362,7 @@ public:
 
     float getDistanceSq(LocationVector target) const;
     float getDistanceSq(float x, float y, float z) const;
+    Player* asPlayer();
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Spell functions
@@ -578,7 +532,7 @@ public:
         bool IsContainer() { return m_objectTypeId == TYPEID_CONTAINER; }
 
         //! This includes any nested objects we have, inventory for example.
-        virtual uint32 BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
+        virtual uint32 buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
         uint32 BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, Player* target);
         uint32 BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask);
 
@@ -611,12 +565,15 @@ public:
 
 #if VERSION_STRING != Cata
         // TransporterInfo
-        float GetTransPositionX() const { return obj_movement_info.transporter_info.position.x; }
-        float GetTransPositionY() const { return obj_movement_info.transporter_info.position.y; }
-        float GetTransPositionZ() const { return obj_movement_info.transporter_info.position.z; }
-        float GetTransPositionO() const { return obj_movement_info.transporter_info.position.o; }
-        uint32 GetTransTime() const { return obj_movement_info.transporter_info.time; }
-        uint8 GetTransSeat() const { return obj_movement_info.transporter_info.seat; }
+        float GetTransPositionX() const { return obj_movement_info.transport_data.relativePosition.x; }
+        float GetTransPositionY() const { return obj_movement_info.transport_data.relativePosition.y; }
+        float GetTransPositionZ() const { return obj_movement_info.transport_data.relativePosition.z; }
+        float GetTransPositionO() const { return obj_movement_info.transport_data.relativePosition.o; }
+        uint32 GetTransTime() const { return obj_movement_info.transport_time; }
+#ifdef FT_VEHICLES
+        // TODO check if this is in BC
+        uint8 GetTransSeat() const { return obj_movement_info.transport_seat; }
+#endif
 #else
         float GetTransPositionX() const { return obj_movement_info.getTransportPosition()->x; }
         float GetTransPositionY() const { return obj_movement_info.getTransportPosition()->y; }
@@ -870,8 +827,8 @@ public:
         virtual void _SetCreateBits(UpdateMask* updateMask, Player* target) const;
 
         // Create updates that player will see
-        void _BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target);
-        void _BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player* target);
+        void buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target);
+        void buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player* target);
 
         // WoWGuid class
         WoWGuid m_wowGuid;

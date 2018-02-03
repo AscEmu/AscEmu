@@ -7,6 +7,7 @@ include(Game${ASCEMU_VERSION}/CMakeLists.txt)
 
 include(Chat/CMakeLists.txt)
 include(Chat/Commands/CMakeLists.txt)
+include(Data/CMakeLists.txt)
 include(Management/CMakeLists.txt)
 include(Management/Battleground/CMakeLists.txt)
 include(Management/Gossip/CMakeLists.txt)
@@ -51,19 +52,23 @@ source_group(world FILES ${SRC_WORLD_PROJECT})
 
 set(sources
    ${SRC_GAMECLASSIC_FILES}
+   ${SRC_GAMECLASSIC_DATA_FILES}
    
    ${SRC_GAMEBC_FILES}
+   ${SRC_GAMEBC_DATA_FILES}
    ${SRC_GAMEBC_HANDLER_FILES}
    ${SRC_GAMEBC_NETWORK_FILES}
    ${SRC_GAMEBC_NETWORK_PACKETS_FILES}
    ${SRC_GAMEBC_STORAGE_FILES}
    
    ${SRC_GAMELK_FILES}
+   ${SRC_GAMELK_DATA_FILES}
    ${SRC_GAMELK_HANDLER_FILES}
    ${SRC_GAMELK_NETWORK_FILES}
    ${SRC_GAMELK_STORAGE_FILES}
 
    ${SRC_GAMECATA_FILES}
+   ${SRC_GAMECATA_DATA_FILES}
    ${SRC_GAMECATA_HANDLER_FILES}
    ${SRC_GAMECATA_MANAGEMENT_FILES}
    ${SRC_GAMECATA_MOVEMENT_FILES}
@@ -75,6 +80,7 @@ set(sources
 
    ${SRC_CHAT_FILES}
    ${SRC_COMMAND_FILES}
+   ${SRC_DATA_FILES}
    ${SRC_MANAGEMENT_FILES}
    ${SRC_MANAGEMENT_BATTLEGROUND_FILES}
    ${SRC_MANAGEMENT_GOSSIP_FILES}

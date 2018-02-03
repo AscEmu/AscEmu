@@ -91,13 +91,13 @@ void Vehicle::Load(Unit* vehicleOwner, uint32 creatureEntry, uint32 vehicleid)
         case POWER_TYPE_BLOOD:
         case POWER_TYPE_OOZE:
         case POWER_TYPE_WRATH:
-            vehicleOwner->SetPowerType(POWER_TYPE_ENERGY);
+            vehicleOwner->setPowerType(POWER_TYPE_ENERGY);
             vehicleOwner->SetMaxPower(POWER_TYPE_ENERGY, 100);
             vehicleOwner->SetPower(POWER_TYPE_ENERGY, 100);
             break;
 
         case POWER_TYPE_PYRITE:
-            vehicleOwner->SetPowerType(POWER_TYPE_ENERGY);
+            vehicleOwner->setPowerType(POWER_TYPE_ENERGY);
             vehicleOwner->SetMaxPower(POWER_TYPE_ENERGY, 50);
             vehicleOwner->SetPower(POWER_TYPE_ENERGY, 50);
             break;
@@ -174,8 +174,8 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
     if (passenger->IsCreature())
     {
 #if VERSION_STRING != Cata
-        passenger->obj_movement_info.transporter_info.guid = owner->GetGUID();
-        passenger->obj_movement_info.transporter_info.seat = static_cast<uint8_t>(seatid);
+        passenger->obj_movement_info.transport_data.transportGuid = owner->GetGUID();
+        passenger->obj_movement_info.transport_seat = static_cast<uint8_t>(seatid);
 #endif
     }
 
@@ -587,8 +587,10 @@ void Vehicle::InstallAccessories()
         Creature* c = owner->GetMapMgr()->CreateCreature(accessory->accessory_entry);
         c->Load(cp, owner->GetPositionX(), owner->GetPositionY(), owner->GetPositionZ(), owner->GetOrientation());
 #if VERSION_STRING != Cata
-        c->obj_movement_info.transporter_info.guid = owner->GetGUID();
-        c->obj_movement_info.transporter_info.seat = static_cast<uint8_t>(accessory->seat);
+        c->obj_movement_info.transport_data.transportGuid = owner->GetGUID();
+#ifdef FT_VEHICLES
+        c->obj_movement_info.transport_seat = static_cast<uint8_t>(accessory->seat);
+#endif
 #endif
         c->Phase(PHASE_SET, owner->GetPhase());
         c->SetFaction(owner->GetFaction());

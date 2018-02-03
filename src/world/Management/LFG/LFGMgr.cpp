@@ -1943,7 +1943,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                             auto item = objmgr.CreateItem(qReward->reward_item[i], player);
                             if (item)
                             {
-                                item->SetStackCount(uint32(qReward->reward_itemcount[i]));
+                                item->setStackCount(uint32(qReward->reward_itemcount[i]));
                                 if (!player->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
                                 {
                                     item->DeleteMe();
@@ -1953,7 +1953,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                     }
                     else
                     {
-                        item_add->SetStackCount(item_add->GetStackCount() + qReward->reward_itemcount[i]);
+                        item_add->setStackCount(item_add->GetStackCount() + qReward->reward_itemcount[i]);
                         item_add->m_isDirty = true;
                     }
                 }
@@ -2037,7 +2037,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                             auto item = objmgr.CreateItem(qReward->reward_item[i], player);
                             if (item)
                             {
-                                item->SetStackCount(uint32(qReward->reward_itemcount[i]));
+                                item->setStackCount(uint32(qReward->reward_itemcount[i]));
                                 if (!player->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
                                 {
                                     item->DeleteMe();
@@ -2047,7 +2047,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                     }
                     else
                     {
-                        item_add->SetStackCount(item_add->GetStackCount() + qReward->reward_itemcount[i]);
+                        item_add->setStackCount(item_add->GetStackCount() + qReward->reward_itemcount[i]);
                         item_add->m_isDirty = true;
                     }
                 }

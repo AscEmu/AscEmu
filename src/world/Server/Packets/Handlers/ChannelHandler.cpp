@@ -25,34 +25,42 @@
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
 #include "Objects/ObjectMgr.h"
+#include "Server/Packets/CmsgJoinChannel.h"
+#include "Server/Packets/SmsgChannelMemberCount.h"
 
 initialiseSingleton(ChannelMgr);
 
+//MIT
+using namespace AscEmu::Packets;
+
 #if VERSION_STRING != Cata
-void WorldSession::HandleChannelJoin(WorldPacket& recvPacket)
+void WorldSession::handleChannelJoin(WorldPacket& recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
-    CHECK_PACKET_SIZE(recvPacket, 1);
-    std::string channelname, pass;
-    uint32 dbc_id = 0;
-    uint16 crap;        // crap = some sort of channel type?
-    Channel* chn;
-
-    recvPacket >> dbc_id >> crap;
-    recvPacket >> channelname;
-    recvPacket >> pass;
-
-    if (worldConfig.getGmClientChannelName().size() && !stricmp(worldConfig.getGmClientChannelName().c_str(), channelname.c_str()) && !GetPermissionCount())
+    CmsgJoinChannel recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
         return;
 
-    chn = channelmgr.GetCreateChannel(channelname.c_str(), _player, dbc_id);
-    if (chn == NULL)
+    if (recv_packet.channel_name.compare(worldConfig.getGmClientChannelName()) && !GetPermissionCount())
         return;
 
-    chn->AttemptJoin(_player, pass.c_str());
-    LogDebugFlag(LF_OPCODE, "ChannelJoin %s", channelname.c_str());
+    auto channel = channelmgr.GetCreateChannel(recv_packet.channel_name.c_str(), _player, recv_packet.dbc_id);
+    if (channel == nullptr)
+        return;
+
+    channel->AttemptJoin(_player, recv_packet.password.c_str());
+    LogDebugFlag(LF_OPCODE, "CMSG_JOIN_CHANNEL %s", recv_packet.channel_name.c_str());
 }
+
+void WorldSession::handleGetChannelMemberCount(WorldPacket& recvPacket)
+{
+    std::string name;
+    recvPacket >> name;
+
+    auto channel = channelmgr.GetChannel(name.c_str(), _player);
+    if (channel)
+        SendPacket(SmgsChannelMemberCount(name, channel->m_flags, channel->GetNumMembers()).serialise().get());
+}
+//MIT end
 
 
 void WorldSession::HandleChannelLeave(WorldPacket& recvPacket)
@@ -320,21 +328,4 @@ void WorldSession::HandleChannelRosterQuery(WorldPacket& recvPacket)
         chn->List(_player);
 }
 
-void WorldSession::HandleChannelNumMembersQuery(WorldPacket& recvPacket)
-{
-    CHECK_INWORLD_RETURN
-
-    std::string channel_name;
-    WorldPacket data(SMSG_CHANNEL_MEMBER_COUNT, recvPacket.size() + 4);
-    Channel* chn;
-    recvPacket >> channel_name;
-    chn = channelmgr.GetChannel(channel_name.c_str(), _player);
-    if (chn)
-    {
-        data << channel_name;
-        data << uint8(chn->m_flags);
-        data << uint32(chn->GetNumMembers());
-        SendPacket(&data);
-    }
-}
 #endif

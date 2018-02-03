@@ -229,7 +229,7 @@ void Player::SendLoginVerifyWorld(uint32 MapId, float X, float Y, float Z, float
 void Player::SendDungeonDifficulty()
 {
     WorldPacket data(MSG_SET_DUNGEON_DIFFICULTY, 12);
-    data << uint32(iInstanceType);
+    data << uint32(GetDungeonDifficulty());
     data << uint32(1);
     data << uint32(InGroup());
 

@@ -359,7 +359,7 @@ void FlanisSwiftwing_Gossip::OnSelectOption(Object* /*pObject*/, Player* Plr, ui
     if (item == nullptr)
         return;
 
-    item->SetStackCount(1);
+    item->setStackCount(1);
     if (!Plr->GetItemInterface()->AddItemToFreeSlot(item))
     {
         Plr->GetSession()->SendNotification("No free slots were found in your inventory!");

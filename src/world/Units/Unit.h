@@ -31,6 +31,11 @@
 #include "Movement/UnitMovementManager.hpp"
 #include "Spell/Definitions/School.h"
 #include "Storage/MySQLStructures.h"
+#if VERSION_STRING == TBC
+#include "GameTBC/Data/MovementInfoTBC.h"
+#elif VERSION_STRING == WotLK
+#include "GameWotLK/Data/MovementInfoWotLK.h"
+#endif
 
 class AIInterface;
 class Aura;
@@ -212,15 +217,17 @@ public:CombatStatusHandler() : m_Unit(nullptr), m_lastStatus(false), m_primaryAt
 // AGPL End
 
 // MIT Start
+struct WoWUnit;
 class SERVER_DECL Unit : public Object
 {
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement
-private:
 
     int32_t m_rootCounter;
-
+    const WoWUnit* unitData() const { return reinterpret_cast<WoWUnit*>(wow_data); }
 public:
+    uint32_t getDynamicFlags() const;
+    void setDynamicFlags(uint32_t flags);
 #ifdef AE_TBC
     uint32_t addAuraVisual(uint32_t spell_id, uint32_t count, bool positive);
     uint32_t addAuraVisual(uint32_t spell_id, uint32_t count, bool positive, bool &skip_client_update);
@@ -239,6 +246,10 @@ public:
     void setMoveSwim(bool set_swim);
     void setMoveDisableGravity(bool disable_gravity);
     void setMoveWalk(bool set_walk);
+    void setHealth(uint32_t health);
+    void setMaxHealth(uint32_t health);
+    void setBaseHealth(uint32_t baseHealth);
+    void setBaseMana(uint32_t baseMana);
 
     // Speed
 private:
@@ -265,7 +276,13 @@ private:
 
 public:
 
-    float getSpeedForType(UnitSpeedType speed_type, bool get_basic = false);
+    float getSpeedForType(UnitSpeedType speed_type, bool get_basic = false) const;
+    float getFlySpeed() const;
+    float getSwimSpeed() const;
+    float getRunSpeed() const;
+    UnitSpeedType getFastestSpeedType() const;
+    float getFastestSpeed() const;
+
     void setSpeedForType(UnitSpeedType speed_type, float speed, bool set_basic = false);
     void resetCurrentSpeed();
 
@@ -366,7 +383,7 @@ public:
 
     /// Stats
     uint32 getLevel() { return getUInt32Value(UNIT_FIELD_LEVEL); };
-    void setLevel(uint32 level);
+    void setLevel(uint32_t level);
     void modLevel(int32 mod) { modUInt32Value(UNIT_FIELD_LEVEL, mod); };
     uint32 getClassMask() { return 1 << (getClass() - 1); }
     uint32 getRaceMask() { return 1 << (getRace() - 1); }
@@ -521,6 +538,7 @@ public:
 
     /// Combat / Death Status
     bool isAlive() { return m_deathState == ALIVE; };
+    bool justDied() const;
     bool IsDead() { return  m_deathState != ALIVE; };
     virtual void setDeathState(DeathState s)
     {
@@ -789,7 +807,7 @@ public:
         return (int)(getUInt32Value(UNIT_FIELD_HEALTH) * 100 / getUInt32Value(UNIT_FIELD_MAXHEALTH));
     };
 
-    void SetHealthPct(uint32 val) { if (val > 0) SetHealth(float2int32(val * 0.01f * getUInt32Value(UNIT_FIELD_MAXHEALTH))); };
+    void SetHealthPct(uint32 val) { if (val > 0) setHealth(float2int32(val * 0.01f * getUInt32Value(UNIT_FIELD_MAXHEALTH))); };
 
     int GetManaPct()
     {
@@ -944,7 +962,7 @@ public:
 
     void SendFullAuraUpdate();
     void SendAuraUpdate(uint32 AuraSlot, bool remove);
-    uint32 ModVisualAuraStackCount(Aura* aur, int32 count);
+    void ModVisualAuraStackCount(Aura* aur, int32 count);
     uint8 FindVisualSlot(uint32 SpellId, bool IsPos);
     uint32 m_auravisuals[MAX_NEGATIVE_VISUAL_AURAS_END];
 
@@ -1096,10 +1114,9 @@ public:
     void SetResistance(uint16_t type, uint32 amt) { setUInt32Value(UNIT_FIELD_RESISTANCES + type, amt); }
     uint32 GetResistance(uint16_t type) { return getUInt32Value(UNIT_FIELD_RESISTANCES + type); }
 
-    void SetBaseMana(uint32 amt) { setUInt32Value(UNIT_FIELD_BASE_MANA, amt); }
+
     uint32 GetBaseMana() { return getUInt32Value(UNIT_FIELD_BASE_MANA); }
 
-    void SetBaseHealth(uint32 amt) { setUInt32Value(UNIT_FIELD_BASE_HEALTH, amt); }
     uint32 GetBaseHealth() { return getUInt32Value(UNIT_FIELD_BASE_HEALTH); }
 
     void SetPowerCostMultiplier(uint16_t school, float amt) { setFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER + school, amt); }
@@ -1187,21 +1204,20 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // bytes 0
 
-    void setRace(uint8 race) { setByteValue(UNIT_FIELD_BYTES_0, 0, race); }
-    uint8 getRace() { return getByteValue(UNIT_FIELD_BYTES_0, 0); }
+    uint8 getRace() const;
+    uint8 getClass() const;
+    uint8 getGender() const;
+    uint8 getPowerType() const;
 
-    void setClass(uint8 class_) { setByteValue(UNIT_FIELD_BYTES_0, 1, class_); }
-    uint8 getClass() { return getByteValue(UNIT_FIELD_BYTES_0, 1); }
+    void setRace(uint8_t race);
+    void setClass(uint8_t class_);
+    void setGender(uint8_t gender);
+    void setPowerType(uint8_t powerType);
 
-    uint8 getGender() { return getByteValue(UNIT_FIELD_BYTES_0, 2); }
-    void setGender(uint8 gender) { setByteValue(UNIT_FIELD_BYTES_0, 2, gender); }
+    void setMaxMana(uint32_t maxMana);
 
-    void SetPowerType(uint8 type) { setByteValue(UNIT_FIELD_BYTES_0, 3, type); }
-    uint8 GetPowerType() { return getByteValue(UNIT_FIELD_BYTES_0, 3); }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void SetHealth(uint32 val) { setUInt32Value(UNIT_FIELD_HEALTH, val); }
-    void SetMaxHealth(uint32 val) { setUInt32Value(UNIT_FIELD_MAXHEALTH, val); }
 
     uint32 GetHealth()    const { return getUInt32Value(UNIT_FIELD_HEALTH); }
     uint32 GetMaxHealth() const { return getUInt32Value(UNIT_FIELD_MAXHEALTH); }

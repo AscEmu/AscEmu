@@ -21,6 +21,9 @@ This file is released under the MIT license. See README-MIT for more information
 // Use legacy spell system
 @ASCEMU_COMMENT_WITH_NEW_SPELL_SYSTEM@#define USE_EXPERIMENTAL_SPELL_SYSTEM
 
+// Log skipping
+@ASCEMU_COMMENT_EVAIRFAIRY_LOG_SKIP@#define EVAIRFAIRY_LOG_SKIP
+
 #define VERSION_STRING @ASCEMU_VERSION@
 
 #if VERSION_STRING == Classic
@@ -31,6 +34,24 @@ This file is released under the MIT license. See README-MIT for more information
     #define AE_WOTLK
 #elif VERSION_STRING == Cata
     #define AE_CATA
+#endif
+
+#if VERSION_STRING >= TBC
+    #define FT_FLYING
+#endif
+
+#if VERSION_STRING >= WotLK
+    #define FT_ACHIEVEMENTS
+    #define FT_DEATH_KNIGHT
+    #define FT_DUAL_SPEC
+    #define FT_DUNGEON_FINDER
+    #define FT_GLYPHS
+    #define FT_VEHICLES
+#endif
+
+#if VERSION_STRING >= Cata
+    #define FT_TRANSMOG
+    #define FT_LFR
 #endif
 
 #endif // WORLD_CONF_H

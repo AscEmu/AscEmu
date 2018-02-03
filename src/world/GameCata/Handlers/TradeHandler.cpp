@@ -126,7 +126,7 @@ void WorldSession::sendTradeUpdate(bool tradeState /*= true*/)
                 data.writeBit(creatorGuid[2]);
                 data.writeBit(creatorGuid[3]);
                 data.writeBit(creatorGuid[5]);
-                data.writeBit(item->GetItemProperties()->LockId != 0);
+                data.writeBit(item->getItemProperties()->LockId != 0);
                 data.writeBit(creatorGuid[0]);
             }
             data.writeBit(giftCreatorGuid[6]);
@@ -184,7 +184,7 @@ void WorldSession::sendTradeUpdate(bool tradeState /*= true*/)
             data.WriteByteSeq(giftCreatorGuid[7]);
             data.WriteByteSeq(giftCreatorGuid[4]);
 
-            data << uint32_t(item->GetItemProperties()->ItemId);
+            data << uint32_t(item->getItemProperties()->ItemId);
 
             data.WriteByteSeq(giftCreatorGuid[0]);
 
@@ -381,14 +381,14 @@ static void setAcceptTradeMode(TradeData* myTrade, TradeData* hisTrade, Item** m
     {
         if (Item* item = myTrade->getTradeItem(TradeSlots(i)))
         {
-            LOG_DEBUG("player trade Item %s", item->GetItemProperties()->Name.c_str());
+            LOG_DEBUG("player trade Item %s", item->getItemProperties()->Name.c_str());
             myItems[i] = item;
             myItems[i]->setIsInTrade();
         }
 
         if (Item* item = hisTrade->getTradeItem(TradeSlots(i)))
         {
-            LOG_DEBUG("partner trade Item %s", item->GetItemProperties()->Name.c_str());
+            LOG_DEBUG("partner trade Item %s", item->getItemProperties()->Name.c_str());
             hisItems[i] = item;
             hisItems[i]->setIsInTrade();
         }
@@ -459,7 +459,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recvData)
     {
         if (Item* item = trade_data->getTradeItem(TradeSlots(i)))
         {
-            if (item->IsContainer() && static_cast< Container* >(item)->HasItems() || (item->GetItemProperties()->Bonding == ITEM_BIND_ON_PICKUP))
+            if (item->IsContainer() && static_cast< Container* >(item)->HasItems() || (item->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP))
             {
                 sendTradeResult(TRADE_STATUS_TRADE_CANCELED);
                 return;
@@ -468,7 +468,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recvData)
 
         if (Item* item = target_trade_data->getTradeItem(TradeSlots(i)))
         {
-            if (item->IsContainer() && static_cast<Container*>(item)->HasItems() || (item->GetItemProperties()->Bonding == ITEM_BIND_ON_PICKUP))
+            if (item->IsContainer() && static_cast<Container*>(item)->HasItems() || (item->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP))
             {
                 sendTradeResult(TRADE_STATUS_TRADE_CANCELED);
                 return;
@@ -504,13 +504,13 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recvData)
         {
             if (trade_items[i] != nullptr)
             {
-                trade_items[i]->SetOwner(trade_target);
+                trade_items[i]->setOwner(trade_target);
                 if (!trade_target->m_ItemInterface->AddItemToFreeSlot(trade_items[i]))
                     trade_items[i]->DeleteMe();
             }
             if (target_trade_items[i] != nullptr)
             {
-                target_trade_items[i]->SetOwner(_player);
+                target_trade_items[i]->setOwner(_player);
                 if (!_player->m_ItemInterface->AddItemToFreeSlot(target_trade_items[i]))
                     target_trade_items[i]->DeleteMe();
             }

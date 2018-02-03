@@ -174,6 +174,8 @@ struct Loot
         }
         return false;
     }
+
+    bool any() const;
 };
 
 struct tempy

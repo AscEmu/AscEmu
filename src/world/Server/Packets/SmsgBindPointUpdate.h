@@ -24,7 +24,7 @@ namespace AscEmu { namespace Packets
         {
         }
 
-        SmsgBindPointUpdate(float x, float y, float z, float map_id, float zone_id) :
+        SmsgBindPointUpdate(float x, float y, float z, uint32_t map_id, uint32_t zone_id) :
             ManagedPacket(SMSG_BINDPOINTUPDATE, PACKET_SIZE),
             x(x),
             y(y),

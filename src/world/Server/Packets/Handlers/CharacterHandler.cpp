@@ -32,6 +32,7 @@
 #include "Map/MapMgr.h"
 #include "Map/WorldCreator.h"
 #include "Spell/Definitions/PowerType.h"
+#include "Data/WoWPlayer.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
 #endif
@@ -796,16 +797,18 @@ void WorldSession::FullLogin(Player* plr)
 
     bool enter_world = true;
 
+    auto data = plr->getXp();
+
     // Find our transporter and add us if we're on one.
-    if (plr->obj_movement_info.transporter_info.guid != 0)
+    if (plr->obj_movement_info.transport_data.transportGuid != 0)
     {
-        Transporter* pTrans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(plr->obj_movement_info.transporter_info.guid));
+        Transporter* pTrans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(plr->obj_movement_info.transport_data.transportGuid));
         if (pTrans)
         {
             if (plr->IsDead())
             {
                 plr->ResurrectPlayer();
-                plr->SetHealth(plr->GetMaxHealth());
+                plr->setHealth(plr->GetMaxHealth());
                 plr->SetPower(POWER_TYPE_MANA, plr->GetMaxPower(POWER_TYPE_MANA));
             }
 

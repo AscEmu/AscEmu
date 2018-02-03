@@ -764,7 +764,7 @@ Aura::Aura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool 
 
     if (i_caster != nullptr)
     {
-        m_castedItemId = i_caster->GetItemProperties()->ItemId;
+        m_castedItemId = i_caster->getItemProperties()->ItemId;
         itemCasterGUID = i_caster->GetGUID();
     }
     else
@@ -1787,8 +1787,8 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
                 {
                     dmg = 0;
                     for (uint8 i = 0; i < MAX_ITEM_PROTO_DAMAGES; ++i)
-                        if (it->GetItemProperties()->Damage[i].Type == SCHOOL_NORMAL)
-                            dmg += int32((it->GetItemProperties()->Damage[i].Min + it->GetItemProperties()->Damage[i].Max) / 2);
+                        if (it->getItemProperties()->Damage[i].Type == SCHOOL_NORMAL)
+                            dmg += int32((it->getItemProperties()->Damage[i].Min + it->getItemProperties()->Damage[i].Max) / 2);
                     dmg = multiplyer * dmg / 100;
                 }
             }
@@ -2415,7 +2415,7 @@ void Aura::EventPeriodicHeal(uint32 amount)
 
     if ((curHealth + add) >= maxHealth)
     {
-        m_target->SetHealth(maxHealth);
+        m_target->setHealth(maxHealth);
         over_heal = curHealth + add - maxHealth;
     }
     else
@@ -3226,9 +3226,9 @@ void Aura::EventPeriodicHealPct(float RegenPct)
     uint32 newHealth = m_target->GetHealth() + add;
 
     if (newHealth <= m_target->GetMaxHealth())
-        m_target->SetHealth(newHealth);
+        m_target->setHealth(newHealth);
     else
-        m_target->SetHealth(m_target->GetMaxHealth());
+        m_target->setHealth(m_target->GetMaxHealth());
 
     m_target->SendPeriodicAuraLog(m_casterGuid, m_target->GetNewGUID(), m_spellInfo->getId(), m_spellInfo->getSchool(), add, 0, 0, FLAG_PERIODIC_HEAL, false);
 
@@ -3930,7 +3930,7 @@ void Aura::SpellAuraModIncreaseHealth(bool apply)
         {
             if ((int32)m_target->GetHealth() > -amt) //watch it on remove value is negative
                 m_target->ModHealth(amt);
-            else m_target->SetHealth(1); //do not kill player but do strip him good
+            else m_target->setHealth(1); //do not kill player but do strip him good
         }
     }
     else
@@ -4010,7 +4010,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
             spellId = 3025;
             if (apply)
             {
-                m_target->SetPowerType(POWER_TYPE_ENERGY);
+                m_target->setPowerType(POWER_TYPE_ENERGY);
                 m_target->SetMaxPower(POWER_TYPE_ENERGY, 100);  //100 Energy
                 m_target->SetPower(POWER_TYPE_ENERGY, 0);  //0 Energy
                 if (m_target->getRace() != RACE_NIGHTELF)//TAUREN
@@ -4021,7 +4021,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
             {
                 //turn back to mana
                 //m_target->SetBaseAttackTime(MELEE,oldap);
-                m_target->SetPowerType(POWER_TYPE_MANA);
+                m_target->setPowerType(POWER_TYPE_MANA);
                 if (m_target->m_stealth)
                 {
                     uint32 sp = m_target->m_stealth;
@@ -4059,7 +4059,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
             spellId = 1178;
             if (apply)
             {
-                m_target->SetPowerType(POWER_TYPE_RAGE);
+                m_target->setPowerType(POWER_TYPE_RAGE);
                 m_target->SetMaxPower(POWER_TYPE_RAGE, 1000);
                 m_target->SetPower(POWER_TYPE_RAGE, 0); //0 rage
 
@@ -4077,7 +4077,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
             else
             {
                 //reset back to mana
-                m_target->SetPowerType(POWER_TYPE_MANA);
+                m_target->setPowerType(POWER_TYPE_MANA);
                 m_target->RemoveAura(21178);   // remove Bear Form (Passive2)
             }
         }
@@ -4089,14 +4089,14 @@ void Aura::SpellAuraModShapeshift(bool apply)
             spellId = 9635;
             if (apply)
             {
-                m_target->SetPowerType(POWER_TYPE_RAGE);
+                m_target->setPowerType(POWER_TYPE_RAGE);
                 m_target->SetMaxPower(POWER_TYPE_RAGE, 1000);
                 m_target->SetPower(POWER_TYPE_RAGE, 0); //0 rage
                 if (m_target->getRace() != RACE_NIGHTELF)   //TAUREN
                     modelId = 2289;
             }
             else //reset back to mana
-                m_target->SetPowerType(POWER_TYPE_MANA);
+                m_target->setPowerType(POWER_TYPE_MANA);
         }
         break;
         case FORM_BATTLESTANCE:
@@ -4849,9 +4849,9 @@ void Aura::EventPeriodicLeech(uint32 amount)
 
     uint32 mh = m_caster->GetMaxHealth();
     if (newHealth <= mh)
-        m_caster->SetHealth(newHealth);
+        m_caster->setHealth(newHealth);
     else
-        m_caster->SetHealth(mh);
+        m_caster->setHealth(mh);
 
     m_target->SendPeriodicHealAuraLog(m_caster->GetNewGUID(), m_caster->GetNewGUID(), sp->getId(), heal_amount, 0, false);
     m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), sp->getId(), sp->getSchool(), heal_amount, 0, 0, FLAG_PERIODIC_LEECH, is_critical);
@@ -5300,9 +5300,9 @@ void Aura::EventPeriodicHealthFunnel(uint32 amount)
 
         uint32 mh = m_caster->GetMaxHealth();
         if (newHealth <= mh)
-            m_caster->SetHealth(newHealth);
+            m_caster->setHealth(newHealth);
         else
-            m_caster->SetHealth(mh);
+            m_caster->setHealth(mh);
 
         m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), m_spellInfo->getId(), m_spellInfo->getSchool(), 1000, 0, 0, FLAG_PERIODIC_LEECH, false);
 
@@ -6034,9 +6034,9 @@ void Aura::EventPeriodicHeal1(uint32 amount)
     uint32 mh = m_target->GetMaxHealth();
 
     if (ch > mh)
-        m_target->SetHealth(mh);
+        m_target->setHealth(mh);
     else
-        m_target->SetHealth(ch);
+        m_target->setHealth(ch);
 
     if (GetSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
     {
@@ -7108,7 +7108,7 @@ void Aura::SpellAuraModIncreaseHealthPerc(bool apply)
     {
         m_target->ModMaxHealth(-mod->fixed_amount[mod->m_effectIndex]);
         if (m_target->getUInt32Value(UNIT_FIELD_HEALTH) > m_target->getUInt32Value(UNIT_FIELD_MAXHEALTH))
-            m_target->SetHealth(m_target->getUInt32Value(UNIT_FIELD_MAXHEALTH));
+            m_target->setHealth(m_target->getUInt32Value(UNIT_FIELD_MAXHEALTH));
         if (p_target != nullptr)
             p_target->SetHealthFromSpell(static_cast<Player*>(m_target)->GetHealthFromSpell() - mod->fixed_amount[mod->m_effectIndex]);
         //		else if (m_target->IsPet())
@@ -8767,7 +8767,7 @@ void Aura::SpellAuraSpiritOfRedemption(bool apply)
     if (apply)
     {
         m_target->SetScale(0.5);
-        m_target->SetHealth(1);
+        m_target->setHealth(1);
         SpellInfo* sorInfo = sSpellCustomizations.GetSpellInfo(27792);
         Spell* sor = sSpellFactoryMgr.NewSpell(m_target, sorInfo, true, nullptr);
         SpellCastTargets spellTargets;
@@ -8778,7 +8778,7 @@ void Aura::SpellAuraSpiritOfRedemption(bool apply)
     {
         m_target->SetScale(1);
         m_target->RemoveAura(27792);
-        m_target->SetHealth(0);
+        m_target->setHealth(0);
     }
 }
 
@@ -9657,11 +9657,11 @@ void Aura::SpellAuraMirrorImage2(bool apply)
 
             item = p->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
             if (item != nullptr)
-                m_target->setUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, item->GetItemProperties()->ItemId);
+                m_target->setUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, item->getItemProperties()->ItemId);
 
             item = p->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
             if (item != nullptr)
-                m_target->setUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, item->GetItemProperties()->ItemId);
+                m_target->setUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, item->getItemProperties()->ItemId);
         }
         else
         {

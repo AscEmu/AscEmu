@@ -109,7 +109,7 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recvData)
 
     if (player->InGroup())
     {
-        SendPartyCommandResult(_player, player->GetGroup()->GetGroupType(), member_name, ERR_PARTY_ALREADY_IN_GROUP);
+        SendPartyCommandResult(_player, player->GetGroup()->getGroupType(), member_name, ERR_PARTY_ALREADY_IN_GROUP);
         WorldPacket data(SMSG_GROUP_INVITE, 45);
         data.writeBit(0);
 
@@ -387,7 +387,7 @@ void WorldSession::HandleGroupDisbandOpcode(WorldPacket& /*recvData*/)
     if (group == nullptr)
         return;
 
-    if (group->GetGroupType() & GROUP_TYPE_BG)
+    if (group->getGroupType() & GROUP_TYPE_BG)
         return;
 
     group->RemovePlayer(_player->m_playerInfo);
@@ -459,7 +459,7 @@ void WorldSession::HandleGroupRequestJoinUpdatesOpcode(WorldPacket& /*recvData*/
     if (group != nullptr)
     {
         WorldPacket data(SMSG_REAL_GROUP_UPDATE, 13);
-        data << uint8_t(group->GetGroupType());
+        data << uint8_t(group->getGroupType());
         data << uint32_t(group->GetMembersCount());
         data << uint64_t(0);  // unk
         SendPacket(&data);

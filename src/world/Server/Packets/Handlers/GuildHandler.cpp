@@ -791,7 +791,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
             c->PetitionSignerCount = PetitionSignerCount;
             memcpy(c->Data, Data, sizeof(Data));
 
-            i->SetStackCount(1);
+            i->setStackCount(1);
             i->SoulBind();
             i->SetEnchantmentId(0, c->GetID());
             i->SetItemRandomSuffixFactor(57813883);
@@ -1510,7 +1510,7 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
                 return;
             }
 
-            SlotResult sr = _player->GetItemInterface()->FindFreeInventorySlot(pDestItem->GetItemProperties());
+            SlotResult sr = _player->GetItemInterface()->FindFreeInventorySlot(pDestItem->getItemProperties());
             if (!sr.Result)
             {
                 _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_BAG_FULL);
@@ -1559,7 +1559,7 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
         if (pSourceItem != NULL)
         {
             // make sure its not a soulbound item
-            if (pSourceItem->IsSoulbound() || pSourceItem->GetItemProperties()->Class == ITEM_CLASS_QUEST)
+            if (pSourceItem->IsSoulbound() || pSourceItem->getItemProperties()->Class == ITEM_CLASS_QUEST)
             {
                 _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_CANT_DROP_SOULBOUND);
                 return;
@@ -1573,7 +1573,7 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
                 if (pSourceItem == NULL)
                     return;
 
-                pSourceItem->SetStackCount(deposit_stack);
+                pSourceItem->setStackCount(deposit_stack);
                 pSourceItem->SetCreatorGUID(pSourceItem2->GetCreatorGUID());
                 pSourceItem2->ModStackCount(-(int32)deposit_stack);
                 pSourceItem2->m_isDirty = true;
@@ -1603,7 +1603,7 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
                 if (pDestItem == NULL)
                     return;
 
-                pDestItem->SetStackCount(deposit_stack);
+                pDestItem->setStackCount(deposit_stack);
                 pDestItem->SetCreatorGUID(pSourceItem2->GetCreatorGUID());
             }
             else
@@ -1622,8 +1622,7 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
             CharacterDatabase.Execute("INSERT INTO guild_bankitems VALUES(%u, %u, %u, %u)", pGuild->getGuildId(), (uint32)pTab->iTabId, (uint32)dest_bankslot, pSourceItem->GetLowGUID());
 
             /// remove the item's association with the player
-            pSourceItem->SetOwner(NULL);
-            pSourceItem->SetOwnerGUID(0);
+            pSourceItem->setOwner(nullptr);
             pSourceItem->SaveToDB(0, 0, true, NULL);
 
             /// log it
@@ -1639,8 +1638,7 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
         else
         {
             /// the guild was robbed by some n00b! :O
-            pDestItem->SetOwner(_player);
-            pDestItem->SetOwnerGUID(_player->GetGUID());
+            pDestItem->setOwner(_player);
             pDestItem->SaveToDB(source_bagslot, source_slot, true, NULL);
 
             /// add it to him in game

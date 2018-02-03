@@ -288,7 +288,7 @@ class VaelastraszAI : public CreatureAIScript
             auto burningAdrenaline = addAISpell(BURNING_ADRENALINE, 3.0f, TARGET_ATTACKING);
             burningAdrenaline->setAttackStopTimer(2000);
 
-            getCreature()->SetHealth((uint32)(getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.3f));
+            getCreature()->setHealth((uint32)(getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.3f));
         }
 
         void OnCombatStart(Unit* /*mTarget*/) override

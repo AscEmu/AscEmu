@@ -1162,7 +1162,7 @@ bool ChatHandler::HandleCharIncreaseWeaponSkill(const char* args, WorldSession* 
         item = selected_player->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
 
     if (item != nullptr)
-        proto = item->GetItemProperties();
+        proto = item->getItemProperties();
 
     if (proto)
     {
@@ -1397,7 +1397,7 @@ bool ChatHandler::HandleCharSetItemsRepairedCommand(const char* /*args*/, WorldS
             if (player_item->IsContainer())
             {
                 auto item_container = static_cast<Container*>(player_item);
-                for (uint32 j = 0; j < item_container->GetItemProperties()->ContainerSlots; ++j)
+                for (uint32 j = 0; j < item_container->getItemProperties()->ContainerSlots; ++j)
                 {
                     player_item = item_container->GetItem(static_cast<uint16>(j));
                     if (player_item != nullptr)
@@ -1409,7 +1409,7 @@ bool ChatHandler::HandleCharSetItemsRepairedCommand(const char* /*args*/, WorldS
             }
             else
             {
-                if (player_item->GetItemProperties()->MaxDurability > 0 && i < INVENTORY_SLOT_BAG_END && player_item->GetDurability() <= 0)
+                if (player_item->getItemProperties()->MaxDurability > 0 && i < INVENTORY_SLOT_BAG_END && player_item->GetDurability() <= 0)
                 {
                     player_item->SetDurabilityToMax();
                     player_item->m_isDirty = true;
@@ -1675,7 +1675,11 @@ bool ChatHandler::HandleCharSetTalentpointsCommand(const char* args, WorldSessio
     if (!args)
     {
         RedSystemMessage(m_session, "No amount of talentpoints entered.");
+#ifdef FT_DUAL_SPEC
         RedSystemMessage(m_session, "Use: .character set talentpoints <primary_amount> <secondary_amount>");
+#else
+        RedSystemMessage(m_session, "Use: .character set talentpoints <amount>");
+#endif
         return true;
     }
 
@@ -1684,26 +1688,42 @@ bool ChatHandler::HandleCharSetTalentpointsCommand(const char* args, WorldSessio
         return true;
 
     uint32 primary_amount = 0;
-    uint32 secondary_amnount = 0;
+    uint32 secondary_amount = 0;
 
     std::stringstream ss(args);
     ss >> primary_amount;
-    ss >> secondary_amnount;
+#ifdef FT_DUAL_SPEC
+    ss >> secondary_amount;
+#endif
 
+#ifdef FT_DUAL_SPEC
     player_target->m_specs[SPEC_PRIMARY].SetTP(primary_amount);
-    player_target->m_specs[SPEC_SECONDARY].SetTP(secondary_amnount);
+    player_target->m_specs[SPEC_SECONDARY].SetTP(secondary_amount);
+#else
+    player_target->m_spec.SetTP(primary_amount);
+#endif
 
     player_target->smsg_TalentsInfo(false);
 
     if (player_target != m_session->GetPlayer())
     {
-        BlueSystemMessage(m_session, "Setting talentpoints primary: %u, secondary: %u for player %s.", primary_amount, secondary_amnount, player_target->GetName());
-        GreenSystemMessage(player_target->GetSession(), "%s set your talenpoints to primary: %u, secondary: %u.", m_session->GetPlayer()->GetName(), primary_amount, secondary_amnount);
-        sGMLog.writefromsession(m_session, "set talenpoints primary: %u, secondary: %u for player %s", primary_amount, secondary_amnount, player_target->GetName());
+#ifdef FT_DUAL_SPEC
+        BlueSystemMessage(m_session, "Setting talentpoints primary: %u, secondary: %u for player %s.", primary_amount, secondary_amount, player_target->GetName());
+        GreenSystemMessage(player_target->GetSession(), "%s set your talenpoints to primary: %u, secondary: %u.", m_session->GetPlayer()->GetName(), primary_amount, secondary_amount);
+        sGMLog.writefromsession(m_session, "set talenpoints primary: %u, secondary: %u for player %s", primary_amount, secondary_amount, player_target->GetName());
+#else
+        BlueSystemMessage(m_session, "Setting talent points %u for player %s.", primary_amount, player_target->GetName());
+        GreenSystemMessage(player_target->GetSession(), "%s set your talent points to %u.", m_session->GetPlayer()->GetName(), primary_amount);
+        sGMLog.writefromsession(m_session, "set talent points %u for player %s", primary_amount, player_target->GetName());
+#endif
     }
     else
     {
-        BlueSystemMessage(m_session, "Your talenpoints were set - primary: %u, secondary: %u.", primary_amount, secondary_amnount);
+#ifdef FT_DUAL_SPEC
+        BlueSystemMessage(m_session, "Your talent points were set - primary: %u, secondary: %u.", primary_amount, secondary_amount);
+#else
+        BlueSystemMessage(m_session, "Your talent points were set to %u.", primary_amount);
+#endif
     }
 
     return true;
@@ -1952,7 +1972,7 @@ bool ChatHandler::HandleCharListItemsCommand(const char* /*args*/, WorldSession*
         if (!(*itr))
             return false;
         itemcount++;
-        SendItemLinkToPlayer((*itr)->GetItemProperties(), m_session, true, player_target, m_session->language);
+        SendItemLinkToPlayer((*itr)->getItemProperties(), m_session, true, player_target, m_session->language);
     }
     itr.EndSearch();
 

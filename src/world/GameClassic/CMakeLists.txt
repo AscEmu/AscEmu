@@ -1,8 +1,11 @@
 # Copyright (c) 2014-2018 AscEmu Team <http://www.ascemu.org>
 
+include(GameClassic/Data/CMakeLists.txt)
+
 set(PATH_PREFIX GameClassic)
 
 set(SRC_GAMECLASSIC_FILES
+    ${PATH_PREFIX}/Handlers/CharacterHandler.cpp
     ${PATH_PREFIX}/Handlers/CharacterHandler.cpp
     ${PATH_PREFIX}/Network/Opcodes.cpp
     ${PATH_PREFIX}/Network/Opcodes.h

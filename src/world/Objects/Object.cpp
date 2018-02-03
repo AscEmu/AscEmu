@@ -44,8 +44,259 @@
 #include "Spell/Definitions/PowerType.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Units/Creatures/CreatureDefines.hpp"
+#include "Data/WoWObject.h"
 
 // MIT Start
+
+void Object::setGuid(uint64_t guid)
+{
+    write(objectData()->guid, guid);
+    m_wowGuid.Init(guid);
+}
+
+void Object::setGuid(uint32_t low, uint32_t high)
+{
+    setGuid(static_cast<uint64_t>(high) << 32 | low);
+}
+
+void Object::setGuidLow(uint32_t low)
+{
+    setGuid(low, objectData()->guid_parts.high);
+}
+
+void Object::setGuidHigh(uint32_t high)
+{
+    setGuid(objectData()->guid_parts.low, high);
+}
+
+void Object::setObjectType(uint32_t objectTypeId)
+{
+    uint32_t object_type = TYPE_OBJECT;
+    switch (objectTypeId)
+    {
+    case TYPEID_CONTAINER:
+        object_type |= TYPE_CONTAINER;
+    case TYPEID_ITEM:
+        object_type |= TYPE_ITEM;
+        break;
+    case TYPEID_PLAYER:
+        object_type |= TYPE_PLAYER;
+    case TYPEID_UNIT:
+        object_type |= TYPE_UNIT;
+        break;
+    case TYPEID_GAMEOBJECT:
+        object_type |= TYPE_GAMEOBJECT;
+        break;
+    case TYPEID_DYNAMICOBJECT:
+        object_type |= TYPE_DYNAMICOBJECT;
+        break;
+    case TYPEID_CORPSE:
+        object_type |= TYPE_CORPSE;
+        break;
+    default:
+        break;
+    }
+
+    m_objectType = object_type;
+    m_objectTypeId = objectTypeId;
+    write(objectData()->type, static_cast<uint32_t>(m_objectType));
+}
+
+void Object::setScaleX(float_t scaleX)
+{
+    write(objectData()->scale_x, scaleX);
+}
+
+uint64_t Object::getGuid() const
+{
+    return objectData()->guid;
+}
+
+uint32_t Object::getGuidLow() const
+{
+    return objectData()->guid_parts.low;
+}
+
+uint32_t Object::getGuidHigh() const
+{
+    return objectData()->guid_parts.high;
+}
+
+uint32_t Object::getEntry() const
+{
+    return objectData()->entry;
+}
+
+void Object::setEntry(uint32_t entry)
+{
+    write(objectData()->entry, entry);
+}
+
+bool Object::write(const uint8_t& member, uint8_t val)
+{
+    if (member == val)
+        return false;
+
+    const auto member_ptr = const_cast<uint8_t*>(&member);
+    *member_ptr = val;
+
+    auto distance = static_cast<uint32_t>(member_ptr - wow_data_ptr);
+    distance -= distance % 4;
+    distance /= 4;
+
+    m_updateMask.SetBit(distance);
+
+    if (!skipping_updates)
+        updateObject();
+
+    return true;
+}
+
+bool Object::write(const float_t& member, float_t val)
+{
+    if (member == val)
+        return false;
+
+    const auto nonconst_member = const_cast<float_t*>(&member);
+    *nonconst_member = val;
+
+    const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
+    auto distance = static_cast<uint32_t>(member_ptr - wow_data_ptr);
+    distance /= 4;
+
+    m_updateMask.SetBit(distance);
+
+    if (!skipping_updates)
+        updateObject();
+
+    return true;
+}
+
+bool Object::write(const int32_t& member, int32_t val)
+{
+    if (member == val)
+        return false;
+
+    const auto nonconst_member = const_cast<int32_t*>(&member);
+    *nonconst_member = val;
+
+    const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
+    auto distance = static_cast<uint32_t>(member_ptr - wow_data_ptr);
+    distance /= 4;
+
+    m_updateMask.SetBit(distance);
+
+    if (!skipping_updates)
+        updateObject();
+
+    return true;
+}
+
+bool Object::write(const uint32_t& member, uint32_t val)
+{
+    if (member == val)
+        return false;
+
+    const auto nonconst_member = const_cast<uint32_t*>(&member);
+    *nonconst_member = val;
+
+    const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
+    auto distance = static_cast<uint32_t>(member_ptr - wow_data_ptr);
+    distance /= 4;
+
+    m_updateMask.SetBit(distance);
+
+    if (!skipping_updates)
+        updateObject();
+
+    return true;
+}
+
+bool Object::write(const uint64_t& member, uint64_t val)
+{
+    if (member == val)
+        return false;
+
+    const auto nonconst_member = const_cast<uint64_t*>(&member);
+    *nonconst_member = val;
+
+    const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
+    auto distance = static_cast<uint32_t>(member_ptr - wow_data_ptr);
+    distance /= 4;
+
+    m_updateMask.SetBit(distance);
+    m_updateMask.SetBit(distance + 1);
+
+    if (!skipping_updates)
+        updateObject();
+
+    return true;
+}
+
+bool Object::writeLow(const uint64_t& member, uint32_t val)
+{
+    if (member == val)
+        return false;
+
+    const auto nonconst_member = const_cast<uint64_t*>(&member);
+    *reinterpret_cast<uint32_t*>(*nonconst_member) = val;
+
+    const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
+    auto distance = static_cast<uint32_t>(member_ptr - wow_data_ptr);
+    distance /= 4;
+
+    m_updateMask.SetBit(distance);
+
+    if (!skipping_updates)
+        updateObject();
+
+    return true;
+}
+
+bool Object::writeHigh(const uint64_t& member, uint32_t val)
+{
+    if (member == val)
+        return false;
+
+    const auto nonconst_member = const_cast<uint64_t*>(&member);
+    *(reinterpret_cast<uint32_t*>(*nonconst_member) + 1) = val;
+
+    const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
+    auto distance = static_cast<uint32_t>(member_ptr - wow_data_ptr);
+    distance /= 4;
+
+    m_updateMask.SetBit(distance + 1);
+
+    if (!skipping_updates)
+        updateObject();
+
+    return true;
+}
+
+bool Object::write(const uint64_t& member, uint32_t low, uint32_t high)
+{
+    const auto nonconst_member = const_cast<uint64_t*>(&member);
+    const auto low_ptr = reinterpret_cast<uint32_t*>(*nonconst_member);
+    const auto high_ptr = low_ptr + 1;
+
+    if (*low_ptr == low && *high_ptr == high)
+        return false;
+
+    *low_ptr = low;
+    *high_ptr = high;
+
+    const auto member_ptr = reinterpret_cast<uint8_t*>(nonconst_member);
+    auto distance = static_cast<uint32_t>(member_ptr - wow_data_ptr);
+    distance /= 4;
+
+    m_updateMask.SetBit(distance);
+    m_updateMask.SetBit(distance + 1);
+
+    if (!skipping_updates)
+        updateObject();
+
+    return true;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Object values
@@ -364,6 +615,11 @@ float Object::getDistanceSq(LocationVector comp) const
 float Object::getDistanceSq(float x, float y, float z) const
 {
     return m_position.distanceSquare(x, y, z);
+}
+
+Player* Object::asPlayer()
+{
+    return reinterpret_cast<Player*>(this);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -838,7 +1094,7 @@ void Object::_Create(uint32 mapid, float x, float y, float z, float ang)
 }
 
 #ifdef AE_TBC
-uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
+uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 {
     if (!target)
         return 0;
@@ -898,16 +1154,16 @@ uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
     *data << m_objectTypeId;
 
     //\todo remove flags (0) from function call.
-    _BuildMovementUpdate(data, flags, target);
+    buildMovementUpdate(data, flags, target);
 
 
     // we have dirty data, or are creating for ourself.
-    UpdateMask updateMask;
-    updateMask.SetCount(m_valuesCount);
-    _SetCreateBits(&updateMask, target);
+    UpdateMask update_mask;
+    update_mask.SetCount(m_valuesCount);
+    _SetCreateBits(&update_mask, target);
 
     // this will cache automatically if needed
-    _BuildValuesUpdate(data, &updateMask, target);
+    buildValuesUpdate(data, &update_mask, target);
 
     // update count: 1 ;)
     return 1;
@@ -915,7 +1171,7 @@ uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 #endif
 
 #ifndef AE_TBC
-uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
+uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 {
     if (!target)
         return 0;
@@ -1007,9 +1263,7 @@ uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
     *data << m_wowGuid;
     *data << uint8(m_objectTypeId);
 
-    //\todo remove flags (0) from function call.
-    _BuildMovementUpdate(data, updateflags, target);
-
+    buildMovementUpdate(data, updateflags, target);
 
     // we have dirty data, or are creating for ourself.
     UpdateMask updateMask;
@@ -1017,7 +1271,7 @@ uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
     _SetCreateBits(&updateMask, target);
 
     // this will cache automatically if needed
-    _BuildValuesUpdate(data, &updateMask, target);
+    buildValuesUpdate(data, &updateMask, target);
 
     // update count: 1 ;)
     return 1;
@@ -1102,7 +1356,7 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* target)
             ARCEMU_ASSERT(m_wowGuid.GetNewGuidLen() > 0);
             *data << m_wowGuid;
 
-            _BuildValuesUpdate(data, &updateMask, target);
+            buildValuesUpdate(data, &updateMask, target);
             return 1;
         }
     }
@@ -1119,7 +1373,7 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask
     ARCEMU_ASSERT(m_wowGuid.GetNewGuidLen() > 0);
     *buf << m_wowGuid;
 
-    _BuildValuesUpdate(buf, mask, nullptr);
+    buildValuesUpdate(buf, mask, nullptr);
 
     // 1 update.
     return 1;
@@ -1130,10 +1384,11 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask
 ///\todo rewrite this stuff, document unknown fields and flags
 uint32 TimeStamp();
 
+// MIT Start
 #if VERSION_STRING < WotLK
-void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
+void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 {
-    uint8_t tbc_flags = flags;
+    const auto tbc_flags = static_cast<uint8>(flags);
     uint32_t tbc_flags_2 = 0;
 
     // This is checked for nullptr later
@@ -1218,9 +1473,8 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
             {
                 if (const auto transport = this_player->GetTransport())
                 {
-
-                *data << transport->GetGUID();
-                *data << transport->GetPosition() << transport->GetOrientation();
+                    *data << transport->GetGUID();
+                    *data << transport->GetPosition() << transport->GetOrientation();
                     // According to old repo, this is meant to be a float. TODO Investigate
                     *data << transport->GetTransTime();
                 }
@@ -1288,7 +1542,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
 #endif
 
 #if VERSION_STRING == WotLK
-void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
+void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 {
     uint32 flags2 = 0;
 
@@ -1399,7 +1653,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
 
         if (flags2 & MOVEFLAG_TRANSPORT) //0x0200
         {
-            *data << WoWGuid(obj_movement_info.transporter_info.guid);
+            *data << WoWGuid(obj_movement_info.transport_data.transportGuid);
             *data << float(GetTransPositionX());
             *data << float(GetTransPositionY());
             *data << float(GetTransPositionZ());
@@ -1425,10 +1679,10 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
         {
             if (moveinfo != nullptr)
             {
-                *data << moveinfo->redirectVelocity;
-                *data << moveinfo->redirectSin;
-                *data << moveinfo->redirectCos;
-                *data << moveinfo->redirect2DSpeed;
+                *data << moveinfo->redirect_velocity;
+                *data << moveinfo->redirect_sin;
+                *data << moveinfo->redirect_cos;
+                *data << moveinfo->redirect_2d_speed;
             }
             else
             {
@@ -1554,7 +1808,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
 #endif
 
 #if VERSION_STRING == Cata
-void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /*target*/)
+void Object::buildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /*target*/)
 {
     ObjectGuid Guid = GetGUID();
 
@@ -1931,135 +2185,117 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* 
 }
 #endif
 
-//////////////////////////////////////////////////////////////////////////////////////////
-/// Creates an update block with the values of this object as determined by the updateMask.
-//////////////////////////////////////////////////////////////////////////////////////////
-void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player* target)
+void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player* target)
 {
-    bool activate_quest_object = false;
-    bool reset = false;
-    uint32 oldflags = 0;
+    auto activate_quest_object = false, reset = false;
+    uint32_t old_flags = 0;
 
-    if (updateMask->GetBit(OBJECT_FIELD_GUID) && target)	   // We're creating.
+    // Create a new object
+    if (updateMask->GetBit(OBJECT_FIELD_GUID) && target)
     {
         if (IsCreature())
         {
-            Creature* pThis = static_cast< Creature* >(this);
-            if (pThis->IsTagged() && (pThis->loot.gold || pThis->loot.items.size()))
+            auto this_creature = static_cast<Creature*>(this);
+            if (this_creature->IsTagged() && this_creature->loot.any())
             {
-                // Let's see if we're the tagger or not.
-                oldflags = m_uint32Values[UNIT_DYNAMIC_FLAGS];
-                uint32 Flags = m_uint32Values[UNIT_DYNAMIC_FLAGS];
-                uint32 oldFlags = 0;
-
-                if (pThis->GetTaggerGUID() == target->GetGUID())
+                uint32_t current_flags;
+                old_flags = current_flags = this_creature->getDynamicFlags();
+                if (this_creature->GetTaggerGUID() == target->GetGUID())
                 {
-                    // Our target is our tagger.
-                    oldFlags = U_DYN_FLAG_TAGGED_BY_OTHER;
+                    old_flags = U_DYN_FLAG_TAGGED_BY_OTHER;
+                    if (current_flags & U_DYN_FLAG_TAGGED_BY_OTHER)
+                        current_flags &= ~old_flags;
 
-                    if (Flags & U_DYN_FLAG_TAGGED_BY_OTHER)
-                        Flags &= ~oldFlags;
-
-                    if (!(Flags & U_DYN_FLAG_LOOTABLE) && pThis->HasLootForPlayer(target))
-                        Flags |= U_DYN_FLAG_LOOTABLE;
+                    if (!(current_flags & U_DYN_FLAG_LOOTABLE) && this_creature->HasLootForPlayer(target))
+                        current_flags |= U_DYN_FLAG_LOOTABLE;
                 }
                 else
                 {
-                    // Target is not the tagger.
-                    oldFlags = U_DYN_FLAG_LOOTABLE;
+                    old_flags = U_DYN_FLAG_LOOTABLE;
 
-                    if (!(Flags & U_DYN_FLAG_TAGGED_BY_OTHER))
-                        Flags |= U_DYN_FLAG_TAGGED_BY_OTHER;
+                    if (!(current_flags & U_DYN_FLAG_TAGGED_BY_OTHER))
+                        current_flags |= U_DYN_FLAG_TAGGED_BY_OTHER;
 
-                    if (Flags & U_DYN_FLAG_LOOTABLE)
-                        Flags &= ~oldFlags;
+                    if (current_flags & U_DYN_FLAG_LOOTABLE)
+                        current_flags &= ~old_flags;
                 }
 
-                m_uint32Values[UNIT_DYNAMIC_FLAGS] = Flags;
-
-                updateMask->SetBit(UNIT_DYNAMIC_FLAGS);
-
+                this_creature->setDynamicFlags(current_flags);
                 reset = true;
             }
-        }
 
-        if (target && IsGameObject())
-        {
-            GameObject* go = static_cast<GameObject*>(this);
-            QuestLogEntry* qle;
-            GameObjectProperties const* gameobject_info;
-            GameObject_QuestGiver* go_quest_giver = nullptr;
-            if (go->GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
-                go_quest_giver = static_cast<GameObject_QuestGiver*>(go);
-
-            if (go_quest_giver != nullptr && go_quest_giver->HasQuests())
+            if (IsGameObject())
             {
-                std::list<QuestRelation*>::iterator itr;
-                for (itr = go_quest_giver->QuestsBegin(); itr != go_quest_giver->QuestsEnd(); ++itr)
+                const auto this_go = static_cast<GameObject*>(this);
+                if (this_go->isQuestGiver())
                 {
-                    QuestRelation* qr = (*itr);
-                    if (qr != nullptr)
+                    auto this_qg = static_cast<GameObject_QuestGiver*>(this);
+                    if (this_qg->HasQuests())
                     {
-                        QuestProperties const* qst = qr->qst;
-                        if (qst != nullptr)
+                        for (auto quest_relation : this_qg->getQuestList())
                         {
-                            if ((qr->type & QUESTGIVER_QUEST_START && !target->HasQuest(qst->id))
-                                || (qr->type & QUESTGIVER_QUEST_END && target->HasQuest(qst->id))
-                               )
-                            {
-                                activate_quest_object = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                gameobject_info = go->GetGameObjectProperties();
-                if (gameobject_info && (gameobject_info->goMap.size() || gameobject_info->itemMap.size()))
-                {
-                    for (GameObjectGOMap::const_iterator itr = gameobject_info->goMap.begin(); itr != gameobject_info->goMap.end(); ++itr)
-                    {
-                        qle = target->GetQuestLogForEntry(itr->first->id);
-                        if (qle != nullptr)
-                        {
-                            if (qle->GetQuest()->count_required_mob == 0)
+                            if (!quest_relation)
                                 continue;
-                            for (uint8 i = 0; i < 4; ++i)
+
+                            if (const auto quest_props = quest_relation->qst)
                             {
-                                if (qle->GetQuest()->required_mob_or_go[i] == static_cast<int32>(go->GetEntry()) && qle->GetMobCount(i) < qle->GetQuest()->required_mob_or_go_count[i])
-                                {
-                                    activate_quest_object = true;
-                                    break;
-                                }
+                                activate_quest_object = (quest_relation->type & QUESTGIVER_QUEST_START && !target->HasQuest(quest_props->id))
+                                 || (quest_relation->type & QUESTGIVER_QUEST_END && !target->HasQuest(quest_props->id));
                             }
-                            if (activate_quest_object)
-                                break;
                         }
                     }
-
-                    if (!activate_quest_object)
+                    else
                     {
-                        for (GameObjectItemMap::const_iterator itr = gameobject_info->itemMap.begin();
-                             itr != go->GetGameObjectProperties()->itemMap.end();
-                             ++itr)
+                        if (const auto go_props = this_go->GetGameObjectProperties())
                         {
-                            for (std::map<uint32, uint32>::const_iterator it2 = itr->second.begin();
-                                 it2 != itr->second.end();
-                                 ++it2)
+                            if (go_props->goMap.size() > 0 || go_props->itemMap.size() > 0)
                             {
-                                if ((qle = target->GetQuestLogForEntry(itr->first->id)) != nullptr)
+                                for (const auto quest_go : go_props->goMap)
                                 {
-                                    if (target->GetItemInterface()->GetItemCount(it2->first) < it2->second)
+                                    if (const auto quest_log = target->GetQuestLogForEntry(quest_go.first->id))
                                     {
-                                        activate_quest_object = true;
+                                        const auto quest = quest_log->GetQuest();
+                                        if (quest->count_required_mob == 0)
+                                            continue;
+
+                                        for (auto i = 0; i < 4; ++i)
+                                        {
+                                            if (quest->required_mob_or_go[i] == this_go->GetEntry())
+                                            {
+                                                if (quest_log->GetMobCount(i) < quest->required_mob_or_go_count[i])
+                                                {
+                                                    activate_quest_object = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    if (activate_quest_object)
                                         break;
+                                }
+
+                                if (!activate_quest_object)
+                                {
+                                    for (auto quest_props : go_props->itemMap)
+                                    {
+                                        for (const auto item_pair : quest_props.second)
+                                        {
+                                            if (const auto quest_log = target->GetQuestLogForEntry(quest_props.first->id))
+                                            {
+                                                if (target->GetItemInterface()->GetItemCount(item_pair.first) < item_pair.second)
+                                                {
+                                                    activate_quest_object = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                        if (activate_quest_object)
+                                            break;
                                     }
                                 }
                             }
-                            if (activate_quest_object)
-                                break;
                         }
                     }
                 }
@@ -2067,54 +2303,49 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
         }
     }
 
-
-    if (activate_quest_object)
+    // We already checked if GameObject, but do it again in case logic path changes in future
+    if (activate_quest_object && IsGameObject())
     {
-        oldflags = m_uint32Values[GAMEOBJECT_DYNAMIC];
-        if (!updateMask->GetBit(GAMEOBJECT_DYNAMIC))
-            updateMask->SetBit(GAMEOBJECT_DYNAMIC);
-        m_uint32Values[GAMEOBJECT_DYNAMIC] = 1 | 8;     // 8 to show sparkles
+        const auto this_go = static_cast<GameObject*>(this);
+        old_flags = this_go->getDynamic();
+        // Show sparkles
+        this_go->setDynamic(1 | 8);
         reset = true;
     }
 
     ARCEMU_ASSERT(updateMask && updateMask->GetCount() == m_valuesCount);
-    uint32 bc;
-    uint32 values_count;
-    if (m_valuesCount > (2 * 0x20))    //if number of blocks > 2->  unit and player+item container
-    {
-        bc = updateMask->GetUpdateBlockCount();
-        values_count = std::min<uint32>(bc * 32, m_valuesCount);
 
+    uint32_t block_count, values_count;
+    if (m_valuesCount > 2 * 0x20)
+    {
+        block_count = updateMask->GetUpdateBlockCount();
+        values_count = std::min<uint32_t>(block_count * 0x20, m_valuesCount);
     }
     else
     {
-        bc = updateMask->GetBlockCount();
+        block_count = updateMask->GetBlockCount();
         values_count = m_valuesCount;
     }
 
-    *data << (uint8)bc;
-    data->append(updateMask->GetMask(), bc * 4);
-    for (uint32 index = 0; index < values_count; index++)
+    *data << uint8_t(block_count);
+    data->append(updateMask->GetMask(), block_count * 4);
+    for (auto idx = 0; idx < values_count; ++idx)
     {
-        if (updateMask->GetBit(index))
-        {
-            *data << m_uint32Values[index];
-        }
+        if (updateMask->GetBit(idx))
+            *data << m_uint32Values[idx];
     }
 
     if (reset)
     {
-        switch (GetTypeId())
-        {
-            case TYPEID_UNIT:
-                m_uint32Values[UNIT_DYNAMIC_FLAGS] = oldflags;
-                break;
-            case TYPEID_GAMEOBJECT:
-                m_uint32Values[GAMEOBJECT_DYNAMIC] = oldflags;
-                break;
-        }
+        skipping_updates = true;
+        if (IsUnit())
+            static_cast<Unit*>(this)->setDynamicFlags(old_flags);
+        else if (IsGameObject())
+            static_cast<GameObject*>(this)->setDynamic(old_flags);
+        skipping_updates = false;
     }
 }
+// MIT End
 
 // This is not called!
 void Unit::BuildHeartBeatMsg(WorldPacket* data)
@@ -3239,7 +3470,7 @@ uint32 Object::GetTeam()
 Transporter* Object::GetTransport() const
 {
 #if VERSION_STRING != Cata
-    return objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transporter_info.guid));
+    return objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transport_data.transportGuid));
 #else
     return nullptr;
 #endif

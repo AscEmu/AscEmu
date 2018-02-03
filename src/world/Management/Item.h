@@ -28,6 +28,8 @@
 #include "WorldConf.h"
 #include "LootMgr.h"
 
+class Container;
+
 struct EnchantmentInstance
 {
     DBC::Structures::SpellItemEnchantmentEntry const* Enchantment;
@@ -178,25 +180,33 @@ enum RandomEnchantmentTypes
 
 #define RANDOM_SUFFIX_MAGIC_CALCULATION(__suffix, __scale) float2int32(float(__suffix) * float(__scale) / 10000.0f);
 
+struct WoWItem;
 class SERVER_DECL Item : public Object
 {
-    public:
+    // MIT Start
+    const WoWItem* itemData() const { return reinterpret_cast<WoWItem*>(wow_data); }
+public:
+    void init(uint32_t high, uint32_t low);
+    void create(uint32_t itemId, Player* owner);
+    Player* getOwner() const;
+    void setOwner(Player* owner);
+    ItemProperties const* getItemProperties() const;
+    void setItemProperties(ItemProperties const* itemProperties);
+    void setContainer(Container* container);
+    void setContainerGuid(uint64_t guid);
+    uint64_t getOwnerGuid() const;
+    uint32_t getOwnerGuidLow() const;
+    uint32_t getOwnerGuidHigh() const;
+    void setOwnerGuid(uint64_t guid);
+    void setStackCount(uint32_t count);
+    void setSpellCharges(uint32_t idx, int32_t count);
+    void setDurability(uint32_t durability);
+    void setMaxDurability(uint32_t maxDurability);
+
+    // MIT End
+
         Item();
-        void Init(uint32 high, uint32 low);
         virtual ~Item();
-        void Create(uint32 itemid, Player* owner);
-
-        ItemProperties const* GetItemProperties() const { return m_itemProperties; }
-        void SetItemProperties(ItemProperties const* pr) { m_itemProperties = pr; }
-
-        Player* GetOwner() const { return m_owner; }
-        void SetOwner(Player* owner);
-
-        void SetOwnerGUID(uint64 GUID) { setUInt64Value(ITEM_FIELD_OWNER, GUID); }
-        uint64 GetOwnerGUID() { return getUInt64Value(ITEM_FIELD_OWNER); }
-
-        void SetContainerGUID(uint64 GUID) { setUInt64Value(ITEM_FIELD_CONTAINED, GUID); }
-        uint64 GetContainerGUID() { return getUInt64Value(ITEM_FIELD_CONTAINED); }
 
         void SetCreatorGUID(uint64 GUID) { setUInt64Value(ITEM_FIELD_CREATOR, GUID); }
         void SetGiftCreatorGUID(uint64 GUID) { setUInt64Value(ITEM_FIELD_GIFTCREATOR, GUID); }
@@ -204,7 +214,6 @@ class SERVER_DECL Item : public Object
         uint64 GetCreatorGUID() { return getUInt64Value(ITEM_FIELD_CREATOR); }
         uint64 GetGiftCreatorGUID() { return getUInt64Value(ITEM_FIELD_GIFTCREATOR); }
 
-        void SetStackCount(uint32 amt) { setUInt32Value(ITEM_FIELD_STACK_COUNT, amt); }
         uint32 GetStackCount() { return getUInt32Value(ITEM_FIELD_STACK_COUNT); }
         void ModStackCount(int32 val) { modUInt32Value(ITEM_FIELD_STACK_COUNT, val); }
 
@@ -262,8 +271,8 @@ class SERVER_DECL Item : public Object
             random_suffix = id;
         }
 
-        void SetDurability(uint32 Value) { setUInt32Value(ITEM_FIELD_DURABILITY, Value); };
-        void SetDurabilityMax(uint32 Value) { setUInt32Value(ITEM_FIELD_MAXDURABILITY, Value); };
+        void SetDurability(uint32 Value) { setUInt32Value(ITEM_FIELD_DURABILITY, Value); }
+        void SetDurabilityMax(uint32 Value) { setUInt32Value(ITEM_FIELD_MAXDURABILITY, Value); }
 
         uint32 GetDurability() { return getUInt32Value(ITEM_FIELD_DURABILITY); }
         uint32 GetDurabilityMax() { return getUInt32Value(ITEM_FIELD_MAXDURABILITY); }
@@ -410,7 +419,7 @@ class SERVER_DECL Item : public Object
 
         void RemoveFromWorld();
 
-        Loot* loot;
+    Loot* loot;
         bool locked;
         bool m_isDirty;
 

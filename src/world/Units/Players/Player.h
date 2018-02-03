@@ -340,7 +340,9 @@ class PlayerSpec
         }
 
         std::map<uint32, uint8> talents;
+#ifdef FT_GLYPHS
         uint16 glyphs[GLYPHS_COUNT];
+#endif
         ActionButton mActions[PLAYER_ACTION_BUTTON_COUNT];
     private:
 
@@ -408,10 +410,16 @@ class TradeData
 };
 #endif
 
+struct WoWPlayer;
 class SERVER_DECL Player : public Unit
 {
-
+    const WoWPlayer* playerData() const { return reinterpret_cast<WoWPlayer*>(wow_data); }
 public:
+
+    // Data
+    void setAttackPowerMultiplier(float val);
+    void setRangedAttackPowerMultiplier(float val);
+    void setExploredZone(uint32_t idx, uint32_t data);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement
@@ -432,6 +440,9 @@ public:
     uint32_t getFreePrimaryProfessionPoints() const { return getUInt32Value(PLAYER_CHARACTER_POINTS); }
 #endif
     void updateAutoRepeatSpell();
+    bool isTransferPending() const;
+    void toggleAfk();
+    void toggleDnd();
     bool m_FirstCastAutoRepeat;
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -676,7 +687,7 @@ public:
         // Taxi
         /////////////////////////////////////////////////////////////////////////////////////////
         TaxiPath* GetTaxiPath() { return m_CurrentTaxiPath; }
-        bool GetTaxiState() { return m_onTaxi; }
+        bool isOnTaxi() const { return m_onTaxi; }
         const uint32 & GetTaximask(uint8 index) const { return m_taximask[index]; }
         void LoadTaxiMask(const char* data);
         void TaxiStart(TaxiPath* path, uint32 modelid, uint32 start_node);
@@ -1129,7 +1140,7 @@ public:
 
         // Talents
         // These functions build a specific type of A9 packet
-        uint32 BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
+        uint32 buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
         void SetTalentHearthOfWildPCT(int value) { hearth_of_wild_pct = value; }
         void EventTalentHearthOfWildChange(bool apply);
 
@@ -1245,7 +1256,7 @@ public:
         void SetTalentResetTimes(uint32 value) { m_talentresettimes = value; }
 
         void SetPlayerStatus(uint8 pStatus) { m_status = pStatus; }
-        uint8 GetPlayerStatus() { return m_status; }
+    uint8 GetPlayerStatus() const;
 
         const float & GetBindPositionX() const { return m_bind_pos_x; }
         const float & GetBindPositionY() const { return m_bind_pos_y; }
@@ -1680,16 +1691,21 @@ public:
         void SetFarsightTarget(uint64 guid) { setUInt64Value(PLAYER_FARSIGHT, guid); }
         uint64 GetFarsightTarget() { return getUInt64Value(PLAYER_FARSIGHT); }
 
-        void SetXp(uint32 xp) { setUInt32Value(PLAYER_XP, xp); }
-        uint32 GetXp() { return getUInt32Value(PLAYER_XP); }
+    void setXp(uint32 xp);
+    uint32 getXp() const;
         uint32 GetXpToLevel() { return getUInt32Value(PLAYER_NEXT_LEVEL_XP); }
-        void SetNextLevelXp(uint32 xp) { setUInt32Value(PLAYER_NEXT_LEVEL_XP, xp); }
+    void setNextLevelXp(uint32_t xp);
 
         //\todo fix this
         void SetTalentPointsForAllSpec(uint32 amt)
         {
+#ifdef FT_DUAL_SPEC
             m_specs[0].SetTP(amt);
             m_specs[1].SetTP(amt);
+#else
+            m_spec.SetTP(amt);
+#endif
+
 #if VERSION_STRING != Cata
             setUInt32Value(PLAYER_CHARACTER_POINTS1, amt);
 #else
@@ -1700,8 +1716,12 @@ public:
 
         void AddTalentPointsToAllSpec(uint32 amt)
         {
+#ifdef FT_DUAL_SPEC
             m_specs[0].SetTP(m_specs[0].GetTP() + amt);
             m_specs[1].SetTP(m_specs[1].GetTP() + amt);
+#else
+            m_spec.SetTP(m_spec.GetTP() + amt);
+#endif
 #if VERSION_STRING != Cata
             setUInt32Value(PLAYER_CHARACTER_POINTS1, getUInt32Value(PLAYER_CHARACTER_POINTS1) + amt);
 #else
@@ -1712,7 +1732,7 @@ public:
 
         void SetCurrentTalentPoints(uint32 points)
         {
-            m_specs[m_talentActiveSpec].SetTP(points);
+            getActiveSpec().SetTP(points);
 #if VERSION_STRING != Cata
             setUInt32Value(PLAYER_CHARACTER_POINTS1, points);
 #else
@@ -1728,7 +1748,7 @@ public:
 #else
             uint32 points = getUInt32Value(PLAYER_CHARACTER_POINTS);
 #endif
-            Arcemu::Util::ArcemuAssert(points == m_specs[m_talentActiveSpec].GetTP());
+            Arcemu::Util::ArcemuAssert(points == getActiveSpec().GetTP());
             return points;
         }
 
@@ -2257,7 +2277,13 @@ public:
         uint32 CalcTalentPointsHaveSpent(uint32 spec);
 #endif
 
-        PlayerSpec m_specs[MAX_SPEC_COUNT];
+#ifdef FT_DUAL_SPEC
+    PlayerSpec m_specs[MAX_SPEC_COUNT];
+#else
+    PlayerSpec m_spec;
+#endif
+
+    PlayerSpec& getActiveSpec();
 
         uint8 m_roles;
 		uint32 GroupUpdateFlags;

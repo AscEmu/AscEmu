@@ -330,7 +330,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
 
     SystemMessage(m_session, "Health (cur / max): %u / %u", creature_target->GetHealth(), creature_target->GetMaxHealth());
 
-    uint16_t powertype = creature_target->GetPowerType();
+    uint16_t powertype = creature_target->getPowerType();
     if (powertype <= 6)
     {
         SystemMessage(m_session, "Powertype: %s", POWERTYPE[powertype]);

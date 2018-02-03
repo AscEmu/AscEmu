@@ -89,7 +89,7 @@ public:
                 if (item == nullptr)
                     return;
 
-                item->SetStackCount(10);
+                item->setStackCount(10);
 
                 if (!plr->GetItemInterface()->AddItemToFreeSlot(item))
                 {

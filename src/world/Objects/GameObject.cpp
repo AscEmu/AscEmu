@@ -30,6 +30,14 @@
 #include "Spell/Definitions/ProcFlags.h"
 #include "Spell/Definitions/SpellEffectTarget.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
+#include "Data/WoWGameObject.h"
+
+// MIT
+bool GameObject::isQuestGiver() const
+{
+    return GetType() == GAMEOBJECT_TYPE_QUESTGIVER;
+}
+// MIT End
 
 GameObject::GameObject(uint64 guid)
 {
@@ -95,6 +103,16 @@ GameObject::~GameObject()
         for (uint8 i = 0; i < 4; i++)
             if (m_summoner->m_ObjectSlots[i] == GetLowGUID())
                 m_summoner->m_ObjectSlots[i] = 0;
+}
+
+bool GameObject::isFishingNode() const
+{
+    return GetType() == GAMEOBJECT_TYPE_FISHINGNODE;
+}
+
+GameObjectProperties const* GameObject::GetGameObjectProperties() const
+{
+    return gameobject_properties;
 }
 
 bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, float z, float ang, float r0, float r1, float r2, float r3, uint32 overrides)
@@ -416,6 +434,11 @@ uint32 GameObject::GetGOReqSkill()
     return 0;
 }
 
+uint32 GameObject::GetType() const
+{
+    return GetGameObjectProperties()->type;
+}
+
 using G3D::Quat;
 struct QuaternionCompressed
 {
@@ -505,6 +528,16 @@ void GameObject::SetCustomAnim(uint32_t anim)
     data << uint64_t(GetGUID());
     data << uint32_t(anim);
     SendMessageToSet(&data, false, false);
+}
+
+uint32_t GameObject::getDynamic() const
+{
+    return gameObjectData()->dynamic;
+}
+
+void GameObject::setDynamic(uint32_t dynamic)
+{
+    write(gameObjectData()->dynamic, dynamic);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

@@ -34,9 +34,12 @@
 #include "Map/WorldCreator.h"
 #include "Spell/Definitions/LockTypes.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
+#include "Server/Packets/SmsgLogoutResponse.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
 #endif
+
+using namespace AscEmu::Packets;
 
 void WorldSession::HandleRepopRequestOpcode(WorldPacket& /*recvData*/)
 {
@@ -46,7 +49,7 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket& /*recvData*/)
     if (_player->getDeathState() != JUST_DIED)
         return;
 #if VERSION_STRING != Cata
-    if (_player->obj_movement_info.IsOnTransport())
+    if (_player->obj_movement_info.isOnTransport())
 #else
     if (!_player->obj_movement_info.getTransportGuid().IsEmpty())
 #endif
@@ -187,7 +190,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
         if (item == NULL)
             return;
 
-        item->SetStackCount(amt);
+        item->setStackCount(amt);
         if (pLoot->items.at(lootSlot).iRandomProperty != NULL)
         {
             item->SetItemRandomPropertyId(pLoot->items.at(lootSlot).iRandomProperty->ID);
@@ -224,7 +227,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     }
     else
     {
-        add->SetStackCount(add->GetStackCount() + amt);
+        add->setStackCount(add->GetStackCount() + amt);
         add->m_isDirty = true;
 
         sQuestMgr.OnPlayerItemPickup(GetPlayer(), add);
@@ -974,9 +977,7 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket& /*recv_data*/)
         if (!sHookInterface.OnLogoutRequest(pPlayer))
         {
             // Declined Logout Request
-            data << uint32(1);
-            data << uint8(0);
-            SendPacket(&data);
+            SendPacket(SmsgLogoutResponse(true).serialise().get());
             return;
         }
 
@@ -986,13 +987,11 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket& /*recv_data*/)
             // Never instant logout for players while in combat or duelling
             if (pPlayer->CombatStatus.IsInCombat() || pPlayer->DuelingWith != NULL)
             {
-                data << uint32(1);
-                data << uint8(0);
-                SendPacket(&data);
+                SendPacket(SmsgLogoutResponse(true).serialise().get());
                 return;
             }
 
-            if (pPlayer->m_isResting || pPlayer->GetTaxiState() || worldConfig.player.enableInstantLogoutForAccessType == 2)
+            if (pPlayer->m_isResting || pPlayer->isOnTaxi() || worldConfig.player.enableInstantLogoutForAccessType == 2)
             {
                 //Logout on NEXT sessionupdate to preserve processing of dead packets (all pending ones should be processed)
                 SetLogoutTimer(1);
@@ -1001,7 +1000,7 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket& /*recv_data*/)
         }
         if (GetPermissionCount() > 0)
         {
-            if (pPlayer->m_isResting || pPlayer->GetTaxiState() || worldConfig.player.enableInstantLogoutForAccessType > 0)
+            if (pPlayer->m_isResting || pPlayer->isOnTaxi() || worldConfig.player.enableInstantLogoutForAccessType > 0)
             {
                 //Logout on NEXT sessionupdate to preserve processing of dead packets (all pending ones should be processed)
                 SetLogoutTimer(1);
@@ -1009,10 +1008,7 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket& /*recv_data*/)
             }
         }
 
-
-        data << uint32(0); //Filler
-        data << uint8(0); //Logout accepted
-        SendPacket(&data);
+        SendPacket(SmsgLogoutResponse(false).serialise().get());
 
         //stop player from moving
         pPlayer->setMoveRoot(true);
@@ -1208,7 +1204,7 @@ void WorldSession::HandleCorpseReclaimOpcode(WorldPacket& recv_data)
     }
 
     GetPlayer()->ResurrectPlayer();
-    GetPlayer()->SetHealth(GetPlayer()->GetMaxHealth() / 2);
+    GetPlayer()->setHealth(GetPlayer()->GetMaxHealth() / 2);
 }
 #endif
 
@@ -2138,7 +2134,7 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
     //data.appendPackGUID(player->GetGUID());
     //data << player->GetNewGUID();
 #ifdef SAVE_BANDWIDTH
-    PlayerSpec *currSpec = &player->m_specs[player->m_talentActiveSpec];
+    PlayerSpec *currSpec = &player->getActiveSpec();
     data << uint32(currSpec->GetTP());
     data << uint8(1) << uint8(0);
     data << uint8(currSpec->talents.size()); //fake value, will be overwritten at the end
@@ -2146,12 +2142,16 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
         data << itr->first << itr->second;
     data << uint8(0); // Send Glyph info
 #else
-    data << uint32(player->m_specs[player->m_talentActiveSpec].GetTP());
+    data << uint32(player->getActiveSpec().GetTP());
     data << uint8(player->m_talentSpecsCount);
     data << uint8(player->m_talentActiveSpec);
     for (uint8 s = 0; s < player->m_talentSpecsCount; s++)
     {
+#ifdef FT_DUAL_SPEC
         PlayerSpec spec = player->m_specs[s];
+#else
+        PlayerSpec spec = player->m_spec;
+#endif
 
         int32 talent_max_rank;
         uint32 const* talent_tab_ids;
@@ -2202,10 +2202,12 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
 
         data.put<uint8>(pos, talent_count);
 
+#ifdef FT_GLYPHS
         // Send Glyph info
         data << uint8(GLYPHS_COUNT);
         for (uint8 i = 0; i < GLYPHS_COUNT; i++)
             data << uint16(spec.glyphs[i]);
+#endif
 
     }
 #endif
@@ -2479,7 +2481,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
     if (item == NULL)
         return;
 
-    item->SetStackCount(amt);
+    item->setStackCount(amt);
     if (pLoot->items.at(slotid).iRandomProperty != NULL)
     {
         item->SetItemRandomPropertyId(pLoot->items.at(slotid).iRandomProperty->ID);
@@ -2604,7 +2606,7 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket& recv_data)
         pItem->SetGiftCreatorGUID(0);
         pItem->SetEntry(pItem->wrapped_item_id);
         pItem->wrapped_item_id = 0;
-        pItem->SetItemProperties(it);
+        pItem->setItemProperties(it);
 
         if (it->Bonding == ITEM_BIND_ON_PICKUP)
             pItem->SoulBind();
@@ -2622,7 +2624,7 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket& recv_data)
         return;
     }
 
-    auto lock = sLockStore.LookupEntry(pItem->GetItemProperties()->LockId);
+    auto lock = sLockStore.LookupEntry(pItem->getItemProperties()->LockId);
 
     uint32 removeLockItems[LOCK_NUM_CASES] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
@@ -2774,7 +2776,7 @@ void WorldSession::HandleDismountOpcode(WorldPacket& /*recv_data*/)
     CHECK_INWORLD_RETURN
     LOG_DEBUG("WORLD: Received CMSG_DISMOUNT");
 
-    if (_player->GetTaxiState())
+    if (_player->isOnTaxi())
         return;
 
     _player->Dismount();

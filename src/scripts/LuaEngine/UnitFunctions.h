@@ -947,7 +947,7 @@ class LuaUnit
             if (item_add == nullptr)
                 return 0;
 
-            item_add->SetStackCount(count);
+            item_add->setStackCount(count);
             if (player->GetItemInterface()->AddItemToFreeSlot(item_add))
                 player->SendItemPushResult(false, true, false, true, player->GetItemInterface()->LastSearchItemBagSlot(),
                 player->GetItemInterface()->LastSearchItemSlot(), count, item_add->GetEntry(), item_add->GetItemRandomSuffixFactor(),
@@ -1068,7 +1068,7 @@ class LuaUnit
                 for (const auto& itr : ptr->getInRangePlayersSet())
                 {
                     Player* obj = static_cast<Player*>(itr);
-                    if (obj && obj->GetPowerType() == POWER_TYPE_MANA)
+                    if (obj && obj->getPowerType() == POWER_TYPE_MANA)
                         players.push_back(obj);
                 }
                 if (players.size())
@@ -1080,7 +1080,7 @@ class LuaUnit
                 for (const auto& itr : ptr->getInRangePlayersSet())
                 {
                     Player* obj = static_cast<Player*>(itr);
-                    if (obj && obj->GetPowerType() == POWER_TYPE_ENERGY)
+                    if (obj && obj->getPowerType() == POWER_TYPE_ENERGY)
                         players.push_back(obj);
                 }
                 if (players.size())
@@ -1092,7 +1092,7 @@ class LuaUnit
                 for (const auto& itr : ptr->getInRangePlayersSet())
                 {
                     Player* obj = static_cast<Player*>(itr);
-                    if (obj && obj->GetPowerType() == POWER_TYPE_RAGE)
+                    if (obj && obj->getPowerType() == POWER_TYPE_RAGE)
                         players.push_back(obj);
                 }
                 if (players.size())
@@ -1724,7 +1724,7 @@ class LuaUnit
                             Item* item = objmgr.CreateItem(qst->srcitem, plr);
                             if (item)
                             {
-                                item->SetStackCount(qst->srcitemcount ? qst->srcitemcount : 1);
+                                item->setStackCount(qst->srcitemcount ? qst->srcitemcount : 1);
                                 if (!plr->GetItemInterface()->AddItemToFreeSlot(item))
                                     item->DeleteMe();
                             }
@@ -1872,9 +1872,9 @@ class LuaUnit
         if (ptr != nullptr && val > 0)
         {
             if (val > ptr->getUInt32Value(UNIT_FIELD_MAXHEALTH))
-                ptr->SetHealth(ptr->getUInt32Value(UNIT_FIELD_MAXHEALTH));
+                ptr->setHealth(ptr->getUInt32Value(UNIT_FIELD_MAXHEALTH));
             else
-                ptr->SetHealth(val);
+                ptr->setHealth(val);
         }
         return 0;
     }
@@ -1885,7 +1885,7 @@ class LuaUnit
         if (ptr != nullptr && val > 0)
         {
             if (val < ptr->getUInt32Value(UNIT_FIELD_HEALTH))
-                ptr->SetHealth(val);
+                ptr->setHealth(val);
             ptr->setUInt32Value(UNIT_FIELD_MAXHEALTH, val);
         }
         return 0;
@@ -2730,7 +2730,7 @@ class LuaUnit
     {
         if (!ptr)
             return 0;
-        if (ptr->GetPowerType() == (uint8)POWER_TYPE_MANA)
+        if (ptr->getPowerType() == (uint8)POWER_TYPE_MANA)
             lua_pushnumber(L, (int)(ptr->GetPower(POWER_TYPE_MANA) * 100.0f / ptr->GetMaxPower(POWER_TYPE_MANA)));
         else
             lua_pushnil(L);
@@ -2746,7 +2746,7 @@ class LuaUnit
         }
         uint16 powertype;
         if (luaL_optinteger(L, 1, -1) == -1)
-            powertype = ptr->GetPowerType();
+            powertype = ptr->getPowerType();
         else
             powertype = static_cast<uint16>(luaL_optinteger(L, 1, -1));
 
@@ -2773,7 +2773,7 @@ class LuaUnit
         }
         uint16 powertype;
         if (luaL_optinteger(L, 1, -1) == -1)
-            powertype = ptr->GetPowerType();
+            powertype = ptr->getPowerType();
         else
             powertype = static_cast<uint16>(luaL_optinteger(L, 1, -1));
 
@@ -2800,7 +2800,7 @@ class LuaUnit
         }
         uint16 powertype;
         if (luaL_optinteger(L, 1, -1) == -1)
-            powertype = ptr->GetPowerType();
+            powertype = ptr->getPowerType();
         else
             powertype = static_cast<uint16>(luaL_optinteger(L, 1, -1));
 
@@ -2823,11 +2823,11 @@ class LuaUnit
 
         uint8 powertype;
         if (luaL_optinteger(L, 1, -1) == -1)
-            powertype = ptr->GetPowerType();
+            powertype = ptr->getPowerType();
         else
             powertype = static_cast<uint8>(luaL_optinteger(L, 1, -1));
 
-        ptr->SetPowerType(powertype);
+        ptr->setPowerType(powertype);
         return 0;
     }
 
@@ -2840,7 +2840,7 @@ class LuaUnit
 
         uint16 powertype;
         if (luaL_optinteger(L, 2, -1) == -1)
-            powertype = ptr->GetPowerType();
+            powertype = ptr->getPowerType();
         else
             powertype = static_cast<uint16>(luaL_optinteger(L, 2, -1));
 
@@ -2857,7 +2857,7 @@ class LuaUnit
 
         uint32 powertype;
         if (luaL_optinteger(L, 2, -1) == -1)
-            powertype = ptr->GetPowerType();
+            powertype = ptr->getPowerType();
         else
             powertype = static_cast<uint32>(luaL_optinteger(L, 2, -1));
 
@@ -2874,7 +2874,7 @@ class LuaUnit
 
         uint16 powertype;
         if (luaL_optinteger(L, 2, -1) == -1)
-            powertype = ptr->GetPowerType();
+            powertype = ptr->getPowerType();
         else
             powertype = static_cast<uint16>(luaL_optinteger(L, 2, -1));
 
@@ -2888,7 +2888,7 @@ class LuaUnit
         if (!ptr)
             return 0;
 
-        lua_pushinteger(L, ptr->GetPowerType());
+        lua_pushinteger(L, ptr->getPowerType());
         return 1;
     }
 
@@ -3236,7 +3236,7 @@ class LuaUnit
             Player* plr = static_cast<Player*>(ptr);
             if (plr->GetGroup())
             {
-                if (plr->GetGroup()->GetGroupType() == GROUP_TYPE_PARTY)
+                if (plr->GetGroup()->getGroupType() == GROUP_TYPE_PARTY)
                     lua_pushnumber(L, plr->GetGroup()->m_difficulty);
                 else
                     lua_pushnumber(L, plr->GetGroup()->m_raiddifficulty);
@@ -4216,7 +4216,7 @@ class LuaUnit
                 if (pItem->IsContainer())
                 {
                     pContainer = static_cast< Container* >(pItem);
-                    for (j = 0; j < pContainer->GetItemProperties()->ContainerSlots; ++j)
+                    for (j = 0; j < pContainer->getItemProperties()->ContainerSlots; ++j)
                     {
                         pItem = pContainer->GetItem(j);
                         if (pItem != NULL)
@@ -4227,7 +4227,7 @@ class LuaUnit
                 }
                 else
                 {
-                    if (pItem->GetItemProperties()->MaxDurability > 0 && i < INVENTORY_SLOT_BAG_END && pItem->GetDurability() <= 0)
+                    if (pItem->getItemProperties()->MaxDurability > 0 && i < INVENTORY_SLOT_BAG_END && pItem->GetDurability() <= 0)
                     {
                         pItem->SetDurabilityToMax();
                         plr->ApplyItemMods(pItem, i, true);
@@ -4739,7 +4739,7 @@ class LuaUnit
     static int IsOnTaxi(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-            lua_pushboolean(L, static_cast<Player*>(ptr)->GetTaxiState() ? 1 : 0);
+            lua_pushboolean(L, static_cast<Player*>(ptr)->isOnTaxi() ? 1 : 0);
         return 1;
     }
 
@@ -4912,7 +4912,7 @@ class LuaUnit
             Player* plr = static_cast<Player*>(ptr);
         Group* group = plr->GetGroup();
         if (group != NULL)
-            lua_pushinteger(L, group->GetGroupType());
+            lua_pushinteger(L, group->getGroupType());
         else
             lua_pushnil(L);
         return 1;
@@ -5640,12 +5640,18 @@ class LuaUnit
     {
         TEST_PLAYER()
 #if VERSION_STRING != Cata
+#ifdef FT_DUAL_SPEC
         uint32 spec = static_cast<uint32>(luaL_checkinteger(L, 1)); //0 or 1
         uint32 points = static_cast<uint32>(luaL_checkinteger(L, 2));
         static_cast<Player*>(ptr)->m_specs[spec].SetTP(points);
-
         if (spec == static_cast<Player*>(ptr)->m_talentActiveSpec)
             static_cast<Player*>(ptr)->setUInt32Value(PLAYER_CHARACTER_POINTS1, points);
+#else
+        uint32 spec = static_cast<uint32>(luaL_checkinteger(L, 1)); //0 or 1
+        uint32 points = static_cast<uint32>(luaL_checkinteger(L, 2));
+        static_cast<Player*>(ptr)->getActiveSpec().SetTP(points);
+        static_cast<Player*>(ptr)->setUInt32Value(PLAYER_CHARACTER_POINTS1, points);
+#endif
 
         static_cast<Player*>(ptr)->smsg_TalentsInfo(false);
 #else
@@ -5658,7 +5664,11 @@ class LuaUnit
     {
         TEST_PLAYER()
         uint32 spec = static_cast<uint32>(luaL_checkinteger(L, 1)); //0 or 1
+#ifdef FT_DUAL_SPEC
         PlayerSpec plrSpec = static_cast<Player*>(ptr)->m_specs[spec];
+#else
+        PlayerSpec plrSpec = static_cast<Player*>(ptr)->m_spec;
+#endif
         //uint32 Lvl = static_cast<Player*>(ptr)->getLevel();
         uint32 FreePoints = plrSpec.GetTP();
 
