@@ -11,6 +11,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Units/Players/Player.h"
 #include "Units/Creatures/Vehicle.h"
+#include "Map/CellHandlerDefines.hpp"
+#include "Objects/GameObject.h"
+#include "Server/MainServerDefines.h"
+#include "Server/Warden/SpeedDetector.h"
+#include "Objects/ObjectMgr.h"
+#include "Storage/MySQLDataStore.hpp"
 using namespace AscEmu::Packets;
 
 #if VERSION_STRING != Cata

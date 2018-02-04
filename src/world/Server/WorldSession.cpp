@@ -32,6 +32,7 @@
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Spell/Definitions/PowerType.h"
+#include "Auth/MD5.h"
 
 #if VERSION_STRING != Cata
 #include "Management/Guild.h"
