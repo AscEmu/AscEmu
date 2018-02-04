@@ -199,6 +199,8 @@ public:
     uint32_t getOwnerGuidHigh() const;
     void setOwnerGuid(uint64_t guid);
     void setStackCount(uint32_t count);
+    void setDuration(uint32_t seconds);
+    uint32_t getDuration() const;
     void setSpellCharges(uint32_t idx, int32_t count);
     void setDurability(uint32_t durability);
     void setMaxDurability(uint32_t maxDurability);
@@ -216,9 +218,6 @@ public:
 
         uint32 GetStackCount() { return getUInt32Value(ITEM_FIELD_STACK_COUNT); }
         void ModStackCount(int32 val) { modUInt32Value(ITEM_FIELD_STACK_COUNT, val); }
-
-        void SetDuration(uint32 durationseconds) { setUInt32Value(ITEM_FIELD_DURATION, durationseconds); }
-        uint32 GetDuration() { return getUInt32Value(ITEM_FIELD_DURATION); }
 
         void SetCharges(uint16_t index, uint32 charges) { setInt32Value(ITEM_FIELD_SPELL_CHARGES + index, charges); }
         void ModCharges(uint16_t index, int32 val) { modInt32Value(ITEM_FIELD_SPELL_CHARGES + index, val); }

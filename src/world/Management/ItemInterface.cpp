@@ -338,12 +338,12 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
         if (item->GetItemExpireTime() == 0)
         {
             item->SetItemExpireTime(UNIXTIME + item->getItemProperties()->ExistingDuration);
-            item->SetDuration(item->getItemProperties()->ExistingDuration);
+            item->setDuration(item->getItemProperties()->ExistingDuration);
             sEventMgr.AddEvent(item, &Item::EventRemoveItem, EVENT_REMOVE_ITEM, item->getItemProperties()->ExistingDuration * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT | EVENT_FLAG_DELETES_OBJECT);
         }
         else
         {
-            item->SetDuration(static_cast<uint32>(item->GetItemExpireTime() - UNIXTIME));
+            item->setDuration(static_cast<uint32>(item->GetItemExpireTime() - UNIXTIME));
             sEventMgr.AddEvent(item, &Item::EventRemoveItem, EVENT_REMOVE_ITEM, (item->GetItemExpireTime() - UNIXTIME) * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT | EVENT_FLAG_DELETES_OBJECT);
         }
 

@@ -67,6 +67,16 @@ void Item::setStackCount(uint32_t count)
     write(itemData()->stack_count, count);
 }
 
+void Item::setDuration(uint32_t seconds)
+{
+    write(itemData()->duration, seconds);
+}
+
+uint32_t Item::getDuration() const
+{
+    return itemData()->duration;
+}
+
 void Item::setSpellCharges(uint32_t idx, int32_t count)
 {
     ARCEMU_ASSERT(idx < WOWITEM_SPELL_CHARGES_COUNT)
