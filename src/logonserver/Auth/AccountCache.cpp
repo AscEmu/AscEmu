@@ -465,9 +465,6 @@ void InformationCore::UpdateRealmPop(uint32 realm_id, float pop)
 
 void InformationCore::SendRealms(AuthSocket* Socket)
 {
-#ifdef AE_TBC
-    writeRealmDataTbc(Socket);
-#else
     realmLock.Acquire();
 
     // packet header
@@ -521,6 +518,14 @@ void InformationCore::SendRealms(AuthSocket* Socket)
                 data << uint8((it == itr->second->CharacterMap.end()) ? 0 : it->second);
                 data << uint8(itr->second->TimeZone);
                 data << uint8(GetRealmIdByName(itr->second->Name)); // Realm ID
+
+                if (itr->second->flags & REALM_FLAG_SPECIFYBUILD)
+                {
+                    data << Socket->GetChallenge()->version1;
+                    data << Socket->GetChallenge()->version2;
+                    data << Socket->GetChallenge()->version3;
+                    data << Socket->GetChallenge()->build;
+                }
             }
         }
         else // send empty packet for other gameserver which not supports client_build
@@ -555,6 +560,8 @@ void InformationCore::SendRealms(AuthSocket* Socket)
 
     ss.clear();
 
+    std::list< LogonCommServerSocket* > server_sockets;
+
     serverSocketLock.Acquire();
 
     if (m_serverSockets.empty())
@@ -563,22 +570,19 @@ void InformationCore::SendRealms(AuthSocket* Socket)
         return;
     }
 
-    std::set<LogonCommServerSocket*>::iterator itr1;
-
-    // We copy the sockets to a list and call RefreshRealmsPop() from there because if the socket is dead,
-    // then calling the method deletes the socket and removes it from the set corrupting the iterator and causing a crash!
-    for (itr1 = m_serverSockets.begin(); itr1 != m_serverSockets.end(); ++itr1)
+    for (const auto server_socket : m_serverSockets)
     {
-        ss.push_back(*itr1);
+        server_sockets.push_back(server_socket);
     }
 
     serverSocketLock.Release();
 
-    for (SSitr = ss.begin(); SSitr != ss.end(); ++SSitr)
-        (*SSitr)->RefreshRealmsPop();
+    for (const auto server_socket : server_sockets)
+    {
+        server_socket->RefreshRealmsPop();
+    }
 
     ss.clear();
-#endif
 }
 
 void InformationCore::TimeoutSockets()
