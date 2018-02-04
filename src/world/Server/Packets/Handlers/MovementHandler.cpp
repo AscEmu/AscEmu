@@ -38,7 +38,10 @@ void WorldSession::handleSetActiveMoverOpcode(WorldPacket& recvData)
             return;
     }
 
-    m_MoverWoWGuid.Init(cmsg.guid.GetOldGuid() == 0 ? _player->GetGUID() : cmsg.guid);
+    if (cmsg.guid.GetOldGuid() == 0)
+        m_MoverWoWGuid.Init(_player->GetGUID());
+    else
+        m_MoverWoWGuid = cmsg.guid;
 
     // set up to the movement packet
     movement_packet[0] = m_MoverWoWGuid.GetNewGuidMask();
