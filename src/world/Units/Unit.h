@@ -31,7 +31,10 @@
 #include "Movement/UnitMovementManager.hpp"
 #include "Spell/Definitions/School.h"
 #include "Storage/MySQLStructures.h"
-#if VERSION_STRING == TBC
+
+#if VERSION_STRING == Classic
+#include "GameClassic/Data/MovementInfoClassic.h"
+#elif VERSION_STRING == TBC
 #include "GameTBC/Data/MovementInfoTBC.h"
 #elif VERSION_STRING == WotLK
 #include "GameWotLK/Data/MovementInfoWotLK.h"
@@ -1019,7 +1022,7 @@ public:
     void SetSummonedCritterGUID(uint64 GUID)
     {
         //\todo tbc has no field critter - use locale var.
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
         setUInt64Value(UNIT_FIELD_CRITTER, GUID);
 #endif
     }
@@ -1034,7 +1037,7 @@ public:
     uint64 GetSummonedCritterGUID()
     {
         //\todo tbc has no field critter - use locale var.
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
         return getUInt64Value(UNIT_FIELD_CRITTER);
 #else
         return 0;

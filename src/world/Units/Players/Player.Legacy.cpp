@@ -6130,7 +6130,7 @@ void Player::CleanupChannels()
     }
 }
 
-#ifdef AE_TBC
+#if VERSION_STRING <= TBC
 void Player::SendInitialActions()
 {
     WorldPacket data(SMSG_ACTION_BUTTONS, PLAYER_ACTION_BUTTON_SIZE + 1);
@@ -6143,9 +6143,7 @@ void Player::SendInitialActions()
     }
     m_session->SendPacket(&data);
 }
-#endif
-
-#ifndef AE_TBC
+#else
 void Player::SendInitialActions()
 {
 #if VERSION_STRING == Cata

@@ -10,7 +10,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #if VERSION_STRING != Cata
 
-#if VERSION_STRING == TBC
+#if VERSION_STRING == Classic
+#include "GameClassic/Data/MovementInfoClassic.h"
+#elif VERSION_STRING == TBC
 #include "GameTBC/Data/MovementInfoTBC.h"
 #elif VERSION_STRING == WotLK
 #include "GameWotLK/Data/MovementInfoWotLK.h"
@@ -35,7 +37,46 @@ namespace AscEmu { namespace Packets
         }
 
     private:
-#if VERSION_STRING == TBC
+#if VERSION_STRING == Classic
+        bool deserialiseClassic(WorldPacket& packet)
+        {
+            packet >> info.flags >> info.flags2 >> info.time
+                >> info.position >> info.position.o;
+
+            if (info.isSwimmingOrFlying())
+                packet >> info.pitch;
+
+            packet >> info.fall_time;
+
+            if (info.isFallingOrRedirected())
+                packet >> info.redirect_velocity >> info.redirect_sin >> info.redirect_cos >> info.redirect_2d_speed;
+
+            if (info.isSplineMover())
+                packet >> info.spline_elevation;
+
+            return !packet.hadReadFailure();
+        }
+
+        bool serialiseClassic(WorldPacket& packet)
+        {
+            packet << guid;
+            packet << info.flags << info.flags2 << info.time
+                << info.position << info.position.o;
+
+            if (info.isSwimmingOrFlying())
+                packet << info.pitch;
+
+            packet << info.fall_time;
+
+            if (info.isFallingOrRedirected())
+                packet << info.redirect_velocity << info.redirect_sin << info.redirect_cos << info.redirect_2d_speed;
+
+            if (info.isSplineMover())
+                packet << info.spline_elevation;
+
+            return true;
+        }
+#elif VERSION_STRING == TBC
         bool deserialiseTbc(WorldPacket& packet)
         {
             packet >> info.flags >> info.flags2 >> info.time
@@ -145,7 +186,9 @@ namespace AscEmu { namespace Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-#if VERSION_STRING == TBC
+#if VERSION_STRING == Classic
+            return serialiseClassic(packet);
+#elif VERSION_STRING == TBC
             return serialiseTbc(packet);
 #elif VERSION_STRING == WotLK
             return serialiseWotlk(packet);
@@ -154,7 +197,9 @@ namespace AscEmu { namespace Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-#if VERSION_STRING == TBC
+#if VERSION_STRING == Classic
+            return deserialiseClassic(packet);
+#elif VERSION_STRING == TBC
             return deserialiseTbc(packet);
 #elif VERSION_STRING == WotLK
             return deserialiseWotlk(packet);

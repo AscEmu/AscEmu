@@ -309,7 +309,7 @@ bool Player::isGMFlagSet()
 
 void Player::sendMovie(uint32_t movieId)
 {
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
     WorldPacket data(SMSG_TRIGGER_MOVIE, 4);
     data << uint32_t(movieId);
     m_session->SendPacket(&data);

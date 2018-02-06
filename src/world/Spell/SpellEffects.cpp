@@ -931,7 +931,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                     if (it && it->getItemProperties() && it->getItemProperties()->InventoryType == INVTYPE_SHIELD)
                         dmg = float2int32(1.3f * p_caster->getUInt32Value(PLAYER_SHIELD_BLOCK));
 #else
-                    dmg += float2int32(1.30f * p_caster->getUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_BLOCK) + GetSpellInfo()->EffectBasePoints[0]);
+                    dmg += float2int32(1.30f * p_caster->getUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_BLOCK) + GetSpellInfo()->getEffectBasePoints(0));
 #endif
                 }
             } break;

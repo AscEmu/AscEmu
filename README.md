@@ -24,9 +24,9 @@ AscEmu will support the most common versions. This is currently a work in progre
 Description | Classic | TBC | WotLK | Cataclysm
 :------------: | :------------: | :------------: | :------------: | :------------:
 Authentification | OK | OK | OK | OK
-Worldsocket | NO | OK | OK | OK
-Char Enum | NO | OK | OK | OK
-Log into world | NO | NO | OK | OK
+Worldsocket | OK | OK | OK | OK
+Char Enum | OK | OK | OK | OK
+Log into world | NO | OK | OK | OK
 
 ## Contributing
 Feel free to contribute any corrections but make sure it is useful and tested before opening PRs.

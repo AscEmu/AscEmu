@@ -43,7 +43,10 @@
 #include "../shared/CommonDefines.hpp"
 #include "WorldPacket.h"
 #include "Units/Creatures/CreatureDefines.hpp"
-#if VERSION_STRING == TBC
+
+#if VERSION_STRING == Classic
+#include "GameClassic/Data/MovementInfoClassic.h"
+#elif VERSION_STRING == TBC
 #include "GameTBC/Data/MovementInfoTBC.h"
 #elif VERSION_STRING == WotLK
 #include "GameWotLK/Data/MovementInfoWotLK.h"

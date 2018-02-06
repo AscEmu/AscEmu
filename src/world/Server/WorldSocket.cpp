@@ -231,12 +231,12 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint16 opcode, size_t len, const void* 
     Header.size = ntohs((uint16)len + 2);
 #endif
 
-#if VERSION_STRING < WotLK
-    _crypt.encryptTbcSend((uint8*)&Header, sizeof(ServerPktHeader));
-#elif VERSION_STRING == WotLK
+#if VERSION_STRING == WotLK
     _crypt.encryptWotlkSend((uint8*)&Header, sizeof(ServerPktHeader));
 #elif VERSION_STRING == Cata
     _crypt.encryptWotlkSend(((uint8*)Header.header), Header.getHeaderLength());
+#else
+    _crypt.encryptLegacySend((uint8*)&Header, sizeof(ServerPktHeader));
 #endif
 
 #if VERSION_STRING == Cata
@@ -443,14 +443,45 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     BigNumber BNK;
     BNK.SetBinary(K, 40);
 
+#if VERSION_STRING == TBC
     uint8 *key = new uint8[20];
     WowCrypt::generateTbcKey(key, K);
 
-    _crypt.setTbcKey(key, 20);
-    _crypt.initTbcCrypt();
+    _crypt.setLegacyKey(key, 20);
+    _crypt.initLegacyCrypt();
     delete[] key;
+#elif VERSION_STRING == Classic
+    static constexpr uint8_t classicAuthKey[16] = { 0x38, 0xA7, 0x83, 0x15, 
+                                         0xF8, 0x92, 0x25, 0x30, 
+                                         0x71, 0x98, 0x67, 0xB1, 
+                                         0x8C, 0x04, 0xE2, 0xAA };
+    uint8_t abuf[64], bbuf[64];
+    memset(abuf, 0x36, 64);
+    memset(bbuf, 0x5C, 64);
+    for (int i = 0; i<16; ++i)
+    {
+        abuf[i] ^= classicAuthKey[i];
+        bbuf[i] ^= classicAuthKey[i];
+    }
+
+    Sha1Hash hasher;
+    uint8_t buffer[104];
+    hasher.Initialize();
+    memcpy(buffer, abuf, 64);
+    memcpy(&buffer[64], K, 40);
+    hasher.UpdateData(buffer, 104);
+    hasher.Finalize();
+    memcpy(buffer, bbuf, 64);
+    memcpy(&buffer[64], hasher.GetDigest(), 20);
+    hasher.Initialize();
+    hasher.UpdateData(buffer, 84);
+    hasher.Finalize();
+
+    _crypt.setLegacyKey(K, 40);
+    _crypt.initLegacyCrypt();
 #else
     _crypt.initWotlkCrypt(K);
+#endif
 #endif
 
     recvData >> lang;
@@ -749,7 +780,7 @@ void WorldSocket::OnRead()
 
             // Decrypt the header
 #if VERSION_STRING < WotLK
-            _crypt.decryptTbcReceive((uint8*)&Header, sizeof(ClientPktHeader));
+            _crypt.decryptLegacyReceive((uint8*)&Header, sizeof(ClientPktHeader));
 #else
             _crypt.decryptWotlkReceive((uint8*)&Header, sizeof(ClientPktHeader));
 #endif
