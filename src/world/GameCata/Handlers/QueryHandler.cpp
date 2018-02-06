@@ -160,24 +160,25 @@ void WorldSession::HandleNameQueryOpcode(WorldPacket& recv_data)
         return;
 
     LOG_DEBUG("Received CMSG_NAME_QUERY for: %s", pn->name);
-
-    WoWGuid pguid(static_cast<uint64_t>(pn->guid));                        // VLack: The usual new style guid handling on 3.1.2
+    // VLack: The usual new style guid handling on 3.1.2
+    WoWGuid pguid(static_cast<uint64_t>(pn->guid));
     WorldPacket data(SMSG_NAME_QUERY_RESPONSE, strlen(pn->name) + 35);
-    // data << pn->guid << uint32_t(0);                                    // highguid
+    // VLack: usual, new-style guid with an uint8
     data << pguid;
-    data << uint8_t(0);                                                    // VLack: usual, new-style guid with an uint8
+    data << uint8_t(0);
+    // this is a string showed besides players name (eg. in combat log), a custom title ?
     data << pn->name;
-    data << uint8_t(0);                                                    // this is a string showed besides players name (eg. in combat log), a custom title ?
+    data << uint8_t(0);
     data << uint8_t(pn->race);
     data << uint8_t(pn->gender);
     data << uint8_t(pn->cl);
 
     //\todo check utf8 and cyrillic chars
     // check declined names
-
-    // data << uint8_t(1);                                                 // schnek: Name is declined
-
-    data << uint8_t(0);                                                    // schnek: Name is not declined
+    // Name is declined
+    // data << uint8_t(1);
+    // Name is not declined
+    data << uint8_t(0);
     SendPacket(&data);
 }
 
