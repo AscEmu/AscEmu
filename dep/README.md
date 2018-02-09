@@ -2,6 +2,10 @@
 
 # Opensource software in this folder:
 
+## Folder: recastnavigation
+- Web: https://github.com/memononen/recastnavigation
+- Version: 64385e9ed0822427bca5814d03a3f4c4d7a6db9f (2016/08/17)  
+
 ## Folder: OpenSSL
 - Web: https://www.openssl.org
 - Version: 1.0.2n (2017-12-7)
@@ -17,10 +21,6 @@
 ## Folder: lualib
 - Web: https://www.lua.org
 - Version: 5.3.4 (2017-01-12)
-
-## Folder: recastnavigation
-- Web: https://github.com/memononen/recastnavigation
-- Version: 1dd5cf1883d61e723fef3d4957cf758c50e7a52b (2015/06/22)   
 
 ## Folder: g3dlite
 - Web: http://g3d.cs.williams.edu
