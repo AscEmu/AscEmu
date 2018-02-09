@@ -452,14 +452,8 @@ void LogonCommHandler::loadRealmsConfiguration()
             realmStructure->timeZone = Config.MainConfig.getIntDefault(realmString.str(), "TimeZone", 1);
             realmStructure->population = Config.MainConfig.getFloatDefault(realmString.str(), "Population", 0.0f);
             realmStructure->lock = static_cast<uint8_t>(Config.MainConfig.getIntDefault(realmString.str(), "Lock", 0));
-            realmStructure->gameBuild = Config.MainConfig.getIntDefault(realmString.str(), "GameBuild", 0);
 
-            if (realmStructure->gameBuild == 0)
-            {
-                LOG_ERROR("Supported client build not found in world.config!");
-                delete realmStructure;
-                return;
-            }
+            realmStructure->gameBuild = VERSION_STRING;
 
             std::string realmType = Config.MainConfig.getStringDefault(realmString.str(), "Icon", "Normal");
             Util::StringToLowerCase(realmType);
