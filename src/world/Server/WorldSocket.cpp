@@ -231,12 +231,12 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint16 opcode, size_t len, const void* 
     Header.size = ntohs((uint16)len + 2);
 #endif
 
-#if VERSION_STRING == WotLK
+#if VERSION_STRING < WotLK
+    _crypt.encryptLegacySend((uint8*)&Header, sizeof(ServerPktHeader));
+#elif VERSION_STRING == WotLK
     _crypt.encryptWotlkSend((uint8*)&Header, sizeof(ServerPktHeader));
 #elif VERSION_STRING == Cata
     _crypt.encryptWotlkSend(((uint8*)Header.header), Header.getHeaderLength());
-#else
-    _crypt.encryptLegacySend((uint8*)&Header, sizeof(ServerPktHeader));
 #endif
 
 #if VERSION_STRING == Cata
@@ -479,9 +479,9 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
 
     _crypt.setLegacyKey(K, 40);
     _crypt.initLegacyCrypt();
+#endif
 #else
     _crypt.initWotlkCrypt(K);
-#endif
 #endif
 
     recvData >> lang;

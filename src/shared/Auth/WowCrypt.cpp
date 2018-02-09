@@ -32,12 +32,6 @@ bool WowCrypt::isInitialized()
     return m_isInitialized;
 }
 
-void WowCrypt::setLegacyKey(uint8_t* key, size_t length)
-{
-    crypKeyVector.resize(length);
-    std::copy(key, key + length, crypKeyVector.begin());
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // WotLK
 void WowCrypt::initWotlkCrypt(uint8_t* key)
@@ -123,6 +117,12 @@ void WowCrypt::encryptLegacySend(uint8_t* data, size_t length)
         data[t] = m_sendJ = (data[t] ^ crypKeyVector[m_sendI]) + m_sendJ;
         ++m_sendI;
     }
+}
+
+void WowCrypt::setLegacyKey(uint8_t* key, size_t length)
+{
+    crypKeyVector.resize(length);
+    std::copy(key, key + length, crypKeyVector.begin());
 }
 
 void WowCrypt::generateTbcKey(uint8_t* key, uint8_t* sessionkey)
