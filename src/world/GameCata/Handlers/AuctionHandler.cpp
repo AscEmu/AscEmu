@@ -240,7 +240,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recvData)
             return;
         }
 
-        _player->TakeGold(-int32(item_deposit));
+        _player->ModGold(-int32(item_deposit));
 
         item = _player->GetItemInterface()->SafeRemoveAndRetreiveItemByGuid(itemGUIDs[i], false);
         if (!item)
