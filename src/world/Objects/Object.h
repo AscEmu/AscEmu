@@ -636,7 +636,7 @@ public:
         bool HasFlag(const uint16 index, uint32 flag) const
         {
             ARCEMU_ASSERT(index < m_valuesCount);
-            return m_uint32Values[index] & flag;
+            return (m_uint32Values[index] & flag) != 0;
         }
 
         void ApplyModFlag(uint16 index, uint32 flag, bool apply)

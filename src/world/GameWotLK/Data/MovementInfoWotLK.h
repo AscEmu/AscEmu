@@ -52,7 +52,7 @@ struct MovementInfo
     {
     }
 
-    bool hasFlag(uint32_t flag) const { return flags & flag; }
+    bool hasFlag(uint32_t flag) const { return (flags & flag) != 0; }
     bool isOnTransport() const { return hasFlag(MOVEFLAG_TRANSPORT); }
     bool isSwimming() const { return hasFlag(MOVEFLAG_SWIMMING); }
     bool isFlying() const { return hasFlag(MOVEFLAG_FLYING); }
@@ -62,6 +62,6 @@ struct MovementInfo
     bool isFallingOrRedirected() const { return isFalling() || isRedirected(); }
     bool isSplineMover() const { return hasFlag(MOVEFLAG_SPLINE_MOVER); }
 
-    bool hasFlag2(uint32_t flag2) const { return flags2 & flag2; }
+    bool hasFlag2(uint32_t flag2) const { return (flags2 & flag2) != 0; }
     bool isInterpolated() const { return hasFlag2(MOVEFLAG2_INTERPOLATED_MOVE); }
 };

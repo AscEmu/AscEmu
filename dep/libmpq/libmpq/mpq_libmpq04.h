@@ -57,7 +57,7 @@ public:
             token[strlen(token) - 1] = 0;
             std::string s = token;
             filelist.push_back(s);
-            counter += strlen(token) + 2;
+            counter += static_cast<uint32_t>(strlen(token) + 2);
             token = strtok(NULL, seps);
         }
 

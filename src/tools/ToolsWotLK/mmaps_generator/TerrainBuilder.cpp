@@ -188,8 +188,8 @@ namespace MMAP
                 uint8 v9[V9_SIZE_SQ];
                 uint8 v8[V8_SIZE_SQ];
                 int count = 0;
-                count += fread(v9, sizeof(uint8), V9_SIZE_SQ, mapFile);
-                count += fread(v8, sizeof(uint8), V8_SIZE_SQ, mapFile);
+                count += static_cast<int>(fread(v9, sizeof(uint8), V9_SIZE_SQ, mapFile));
+                count += static_cast<int>(fread(v8, sizeof(uint8), V8_SIZE_SQ, mapFile));
                 if (count != expected)
                     printf("TerrainBuilder::loadMap: Failed to read some data expected %d, read %d\n", expected, count);
 
@@ -206,8 +206,8 @@ namespace MMAP
                 uint16 v9[V9_SIZE_SQ];
                 uint16 v8[V8_SIZE_SQ];
                 int count = 0;
-                count += fread(v9, sizeof(uint16), V9_SIZE_SQ, mapFile);
-                count += fread(v8, sizeof(uint16), V8_SIZE_SQ, mapFile);
+                count += static_cast<int>(fread(v9, sizeof(uint16), V9_SIZE_SQ, mapFile));
+                count += static_cast<int>(fread(v8, sizeof(uint16), V8_SIZE_SQ, mapFile));
                 if (count != expected)
                     printf("TerrainBuilder::loadMap: Failed to read some data expected %d, read %d\n", expected, count);
 
@@ -222,8 +222,8 @@ namespace MMAP
             else
             {
                 int count = 0;
-                count += fread(V9, sizeof(float), V9_SIZE_SQ, mapFile);
-                count += fread(V8, sizeof(float), V8_SIZE_SQ, mapFile);
+                count += static_cast<int>(fread(V9, sizeof(float), V9_SIZE_SQ, mapFile));
+                count += static_cast<int>(fread(V8, sizeof(float), V8_SIZE_SQ, mapFile));
                 if (count != expected)
                     printf("TerrainBuilder::loadMap: Failed to read some data expected %d, read %d\n", expected, count);
             }
@@ -674,7 +674,7 @@ namespace MMAP
 
                 // transform data
                 float scale = instance.iScale;
-                G3D::Matrix3 rotation = G3D::Matrix3::fromEulerAnglesXYZ(G3D::pi()*instance.iRot.z/-180.f, G3D::pi()*instance.iRot.x/-180.f, G3D::pi()*instance.iRot.y/-180.f);
+                G3D::Matrix3 rotation = G3D::Matrix3::fromEulerAnglesXYZ(static_cast<float>(G3D::pi())*instance.iRot.z/-180.f, static_cast<float>(G3D::pi())*instance.iRot.x/-180.f, static_cast<float>(G3D::pi())*instance.iRot.y/-180.f);
                 G3D::Vector3 position = instance.iPos;
                 position.x -= 32*GRID_SIZE;
                 position.y -= 32*GRID_SIZE;
