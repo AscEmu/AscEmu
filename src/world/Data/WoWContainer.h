@@ -14,7 +14,11 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 #include "WoWItem.h"
 
+#if VERSION_STRING == Classic
+#define WOWCONTAINER_ITEM_SLOT_COUNT 58
+#else
 #define WOWCONTAINER_ITEM_SLOT_COUNT 72
+#endif
 
 #pragma pack(push, 1)
 struct WoWContainer : WoWItem

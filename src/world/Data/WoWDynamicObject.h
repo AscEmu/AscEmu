@@ -21,7 +21,7 @@ struct WoWDynamicObject : WoWObject
     uint32_t dynamicobject_bytes;
     uint32_t spell_id;
     float_t radius;
-#if VERSION_STRING == TBC
+#if VERSION_STRING <= TBC
     float_t x;
     float_t y;
     float_t z;

@@ -21,7 +21,7 @@ struct WoWCorpse : WoWObject
 {
     uint64_t owner_guid;
     uint64_t party_guid;
-#if VERSION_STRING == TBC
+#if VERSION_STRING <= TBC
     float_t o;
     float_t x;
     float_t y;

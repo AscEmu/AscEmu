@@ -16,6 +16,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Data/WoWPlayer.h"
 #include "Management/Battleground/Battleground.h"
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Data
 void Player::setAttackPowerMultiplier(float val)
 {
     write(playerData()->attack_power_multiplier, val);

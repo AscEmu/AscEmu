@@ -17,7 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #define GAMEOBJECT_ROTATION_COUNT 4
 
 #pragma pack(push, 1)
-#if VERSION_STRING == TBC
+#if VERSION_STRING <= TBC
 struct WoWGameObject : WoWObject
 {
     uint64_t object_field_created_by;
@@ -37,7 +37,7 @@ struct WoWGameObject : WoWObject
     uint32_t animation_progress;
     uint32_t gameobject_padding;
 };
-#else
+#elif VERSION_STRING >= WotLK
 struct WoWGameObject : WoWObject
 {
     uint64_t object_field_created_by;

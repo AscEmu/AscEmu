@@ -416,6 +416,7 @@ class SERVER_DECL Player : public Unit
     const WoWPlayer* playerData() const { return reinterpret_cast<WoWPlayer*>(wow_data); }
 public:
 
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Data
     void setAttackPowerMultiplier(float val);
     void setRangedAttackPowerMultiplier(float val);

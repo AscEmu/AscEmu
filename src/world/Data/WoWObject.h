@@ -28,6 +28,11 @@ struct WoWObject
         } guid_parts;
         uint64_t guid;
     };
+
+#if VERSION_STRING == Cata
+    uint32_t data;
+#endif
+
     uint32_t type;
     uint32_t entry;
     float_t scale_x;

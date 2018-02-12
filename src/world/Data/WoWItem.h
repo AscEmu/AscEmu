@@ -16,10 +16,14 @@ This file is released under the MIT license. See README-MIT for more information
 
 #define WOWITEM_SPELL_CHARGES_COUNT 5
 
-#if VERSION_STRING == TBC
+#if VERSION_STRING == Classic
+#define WOWITEM_ENCHANTMENT_COUNT 21
+#elif VERSION_STRING == TBC
 #define WOWITEM_ENCHANTMENT_COUNT 33
-#else
+#elif VERSION_STRING == WotLK
 #define WOWITEM_ENCHANTMENT_COUNT 35
+#elif VERSION_STRING == Cata
+#define WOWITEM_ENCHANTMENT_COUNT 44
 #endif
 
 #pragma pack(push, 1)
@@ -45,8 +49,13 @@ struct WoWItem : WoWObject
     uint32_t enchantment[WOWITEM_ENCHANTMENT_COUNT];
     uint32_t property_seed;
     uint32_t random_properties_id;
+#if VERSION_STRING != Cata
     uint32_t item_text_id;
+#endif
     uint32_t durability;
     uint32_t max_durability;
+#if VERSION_STRING == Cata
+    uint32_t create_played_time;
+#endif
 };
 #pragma pack(pop)
