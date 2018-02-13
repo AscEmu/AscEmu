@@ -57,32 +57,34 @@ public:
     uint32_t getMechanicsType() const { return MechanicsType; }
     void setMechanicsType(uint32_t value) { MechanicsType = value; }        // used in HackFixes.cpp
 
-    uint32_t getAttributes() const { return Attributes; }
+    // Attribute checks
+    bool hasAttributes(SpellAttributes attribute) const { return (Attributes & attribute) != 0; }
+    bool hasAttributes(SpellAttributesEx attribute) const { return (AttributesEx & attribute) != 0; }
+    bool hasAttributes(SpellAttributesExB attribute) const { return (AttributesExB & attribute) != 0; }
+    bool hasAttributes(SpellAttributesExC attribute) const { return (AttributesExC & attribute) != 0; }
+    bool hasAttributes(SpellAttributesExD attribute) const { return (AttributesExD & attribute) != 0; }
+    bool hasAttributes(SpellAttributesExE attribute) const { return (AttributesExE & attribute) != 0; }
+    bool hasAttributes(SpellAttributesExF attribute) const { return (AttributesExF & attribute) != 0; }
+    bool hasAttributes(SpellAttributesExG attribute) const { return (AttributesExG & attribute) != 0; }
+
     void setAttributes(uint32_t value) { Attributes = value; }              // used in HackFixes.cpp / SpellCustomizations.cpp
     void addAttributes(uint32_t value) { Attributes |= value; }             // used in HackFixes.cpp
     void removeAttributes(uint32_t value) { Attributes &= ~value; }         // used in HackFixes.cpp
 
-    uint32_t getAttributesEx() const { return AttributesEx; }
     void setAttributesEx(uint32_t value) { AttributesEx = value; }          // used in HackFixes.cpp / SpellCustomizations.cpp
     void addAttributesEx(uint32_t value) { AttributesEx |= value; }         // used in HackFixes.cpp
 
-    uint32_t getAttributesExB() const { return AttributesExB; }
     void setAttributesExB(uint32_t value) { AttributesExB = value; }        // used in HackFixes.cpp / SpellCustomizations.cpp
 
-    uint32_t getAttributesExC() const { return AttributesExC; }
     void setAttributesExC(uint32_t value) { AttributesExC = value; }        // used in SpellCustomizations.cpp
     void addAttributesExC(uint32_t value) { AttributesExC |= value; }       // used in HackFixes.cpp
 
-    uint32_t getAttributesExD() const { return AttributesExD; }
     void setAttributesExD(uint32_t value) { AttributesExD = value; }        // used in SpellCustomizations.cpp
 
-    uint32_t getAttributesExE() const { return AttributesExE; }
     void setAttributesExE(uint32_t value) { AttributesExE = value; }        // used in SpellCustomizations.cpp
 
-    uint32_t getAttributesExF() const { return AttributesExF; }
     void setAttributesExF(uint32_t value) { AttributesExF = value; }        // used in SpellCustomizations.cpp
 
-    uint32_t getAttributesExG() const { return AttributesExG; }
     void setAttributesExG(uint32_t value) { AttributesExG = value; }        // used in SpellCustomizations.cpp
 
     uint32_t getRequiredShapeShift() const { return RequiredShapeShift; }

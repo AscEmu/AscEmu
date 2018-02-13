@@ -316,7 +316,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::SpellAuraNULL,                                                   // 259 Mod Periodic Damage Taken Pct - Periodic Shadow damage taken increased by 3% (http://thottbot.com/s60448)
     &Aura::SpellAuraNULL,                                                   // 260 Screen Effect
     &Aura::SpellAuraPhase,                                                  // 261
-    &Aura::SpellAuraIgnoreTargetAuraState,                                  // 262 SPELL_AURA_IGNORE_TARGET_AURA_STATE
+    &Aura::SpellAuraNULL,                                                   // 262 SPELL_AURA_IGNORE_TARGET_AURA_STATE
     &Aura::SpellAuraAllowOnlyAbility,                                       // 263 SPELL_AURA_ALLOW_ONLY_ABILITY
     &Aura::SpellAuraNULL,                                                   // 264
     &Aura::SpellAuraNULL,                                                   // 265
@@ -651,7 +651,7 @@ const char* SpellAuraNames[TOTAL_SPELL_AURAS] =
     "",                                                 // 272
     "",                                                 // 273
     "SPELL_AURA_CONSUMES_NO_AMMO",                      // 274
-    "",                                                 // 275
+    "SPELL_AURA_IGNORE_SHAPESHIFT",                     // 275 Ignores form/shapeshift requirements
     "",                                                 // 276
     "",                                                 // 277
     "SPELL_AURA_MOD_DISARM_RANGED",                     // 278
@@ -796,7 +796,7 @@ Aura::Aura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool 
         SetNegative(100);
     if (m_spellInfo->custom_c_is_flags & SPELL_FLAG_IS_FORCEDBUFF)
         SetPositive(100);
-    if (m_spellInfo->getAttributes() & ATTRIBUTES_NEGATIVE)
+    if (m_spellInfo->hasAttributes(ATTRIBUTES_NEGATIVE))
         SetNegative(100);
 
     if (caster->IsUnit())
@@ -861,7 +861,7 @@ void Aura::Remove()
 
     m_deleted = true;
 
-    if (!IsPassive() || m_spellInfo->getAttributesEx() & ATTRIBUTES_ON_NEXT_SWING_2)
+    if (!IsPassive() || m_spellInfo->hasAttributes(ATTRIBUTES_ON_NEXT_SWING_2))
         m_target->ModVisualAuraStackCount(this, -1);
 
     ApplyModifiers(false);
@@ -951,7 +951,7 @@ void Aura::Remove()
     }
 
     // If this aura can affect one target at a time, remove this target from the caster map
-    if (caster != nullptr && GetSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_SINGLE_TARGET_AURA && m_target->GetAuraStackCount(GetSpellId()) == 1)
+    if (caster != nullptr && GetSpellInfo()->hasAttributes(ATTRIBUTESEXE_SINGLE_TARGET_AURA) && m_target->GetAuraStackCount(GetSpellId()) == 1)
         caster->removeSingleTargetGuidForAura(GetSpellInfo()->getId());
 
     /* Remove aurastates */
@@ -1028,7 +1028,7 @@ void Aura::ApplyModifiers(bool apply)
                     SetNegative(100);
                 if (m_spellInfo->custom_c_is_flags & SPELL_FLAG_IS_FORCEDBUFF)
                     SetPositive(100);
-                if (m_spellInfo->getAttributes() & ATTRIBUTES_NEGATIVE)
+                if (m_spellInfo->hasAttributes(ATTRIBUTES_NEGATIVE))
                     SetNegative(100);
             }
 
@@ -4391,7 +4391,7 @@ void Aura::SpellAuraModSchoolImmunity(bool apply)
                         pAura != nullptr &&
                         !pAura->IsPassive() &&
                         !pAura->IsPositive() &&
-                        !(pAura->GetSpellInfo()->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY))
+                        !(pAura->GetSpellInfo()->hasAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY)))
                     {
                         pAura->Remove();
                     }
@@ -5596,7 +5596,7 @@ void Aura::SpellAuraReflectSpellsSchool(bool apply)
         rss->spellId = GetSpellId();
         rss->infront = false;
 
-        if (m_spellInfo->getAttributes() == 0x400D0 && m_spellInfo->getAttributesEx() == 0)
+        if (m_spellInfo->hasAttributes(SpellAttributes(0x400D0)) && m_spellInfo->hasAttributes(SpellAttributesEx(0)))
             rss->school = (int)(log10((float)mod->m_miscValue) / log10((float)2));
         else
             rss->school = m_spellInfo->getSchool();
@@ -9089,21 +9089,6 @@ void Aura::SpellAuraModMechanicDmgTakenPct(bool apply)
     }
 }
 
-void Aura::SpellAuraIgnoreTargetAuraState(bool apply)
-{
-    if (!m_target->IsPlayer())
-        return;
-
-    if (apply)
-    {
-        static_cast< Player* >(m_target)->ignoreAuraStateCheck = true;
-    }
-    else
-    {
-        static_cast< Player* >(m_target)->ignoreAuraStateCheck = false;
-    }
-}
-
 void Aura::SpellAuraAllowOnlyAbility(bool apply)
 {
     // cannot perform any abilities (other than those in EffectMask), currently only works on players
@@ -9113,27 +9098,15 @@ void Aura::SpellAuraAllowOnlyAbility(bool apply)
     // Generic
     if (apply)
     {
-        p_target->m_castFilterEnabled = true;
-        for (uint8_t x = 0; x < 3; x++)
-#if VERSION_STRING != Cata
-            p_target->m_castFilter[x] |= m_spellInfo->getEffectSpellClassMask(mod->m_effectIndex, x);
-#else
-            p_target->m_castFilter[x] |= m_spellInfo->EffectSpellClassMask[x];
-#endif
+        p_target->SetFlag(PLAYER_FLAGS, PLAYER_FLAG_ALLOW_ONLY_ABILITY);
     }
     else
     {
-        p_target->m_castFilterEnabled = false;	// check if we can turn it off
-        for (uint8_t x = 0; x < 3; x++)
-        {
-#if VERSION_STRING != Cata
-            p_target->m_castFilter[x] &= ~m_spellInfo->getEffectSpellClassMask(mod->m_effectIndex, x);
-#else
-            p_target->m_castFilter[x] &= ~m_spellInfo->EffectSpellClassMask[x];
-#endif
-            if (p_target->m_castFilter[x])
-                p_target->m_castFilterEnabled = true;
-        }
+        // Do not remove the flag if there is another aura active with the same aura type
+        if (p_target->hasAuraWithAuraEffect(SPELL_AURA_ALLOW_ONLY_ABILITY))
+            return;
+
+        p_target->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_ALLOW_ONLY_ABILITY);
     }
 }
 

@@ -333,7 +333,7 @@ enum PlayerFlags
     PLAYER_FLAG_UNK4                = 0x00100000,
     PLAYER_FLAG_UNK5                = 0x00200000,
     PLAYER_FLAG_UNK6                = 0x00400000,
-    PLAYER_FLAG_UNK7                = 0x00800000,
+    PLAYER_FLAG_ALLOW_ONLY_ABILITY  = 0x00800000,
     PLAYER_FLAG_IS_BANNED           = 0x01000000,
     PLAYER_FLAG_UNK8                = 0x02000000,
     PLAYER_FLAG_UNK9                = 0x04000000,

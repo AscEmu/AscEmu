@@ -1407,7 +1407,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                     _type = RANGED;
                 else
                 {
-                    if (GetSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_TYPE_OFFHAND)
+                    if (GetSpellInfo()->hasAttributes(ATTRIBUTESEXC_TYPE_OFFHAND))
                         _type = OFFHAND;
                     else
                         _type = MELEE;
@@ -3335,7 +3335,7 @@ void Spell::SpellEffectWeaponDmgPerc(uint8_t effectIndex) // Weapon Percent dama
             _type = RANGED;
         else
         {
-            if (GetSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_TYPE_OFFHAND)
+            if (GetSpellInfo()->hasAttributes(ATTRIBUTESEXC_TYPE_OFFHAND))
                 _type = OFFHAND;
             else
                 _type = MELEE;
@@ -3882,7 +3882,7 @@ void Spell::SpellEffectDispel(uint8_t effectIndex) // Dispel
             aursp = aur->GetSpellInfo();
 
             //Nothing can dispel resurrection sickness;
-            if (!aur->IsPassive() && !(aursp->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY))
+            if (!aur->IsPassive() && !aursp->hasAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY))
             {
                 if (GetSpellInfo()->getDispelType() == DISPEL_ALL)
                 {
@@ -4095,7 +4095,7 @@ void Spell::SpellEffectAddHonor(uint8_t effectIndex)
 
     uint32 val = GetSpellInfo()->getEffectBasePoints(effectIndex);
 
-    if (GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_UNK4) val /= 10;
+    if (GetSpellInfo()->hasAttributes(ATTRIBUTESEXB_UNK4)) val /= 10;
 
     val += 1;
 
@@ -4461,7 +4461,7 @@ void Spell::SpellEffectWeapondamage(uint8_t /*effectIndex*/)   // Weapon damage 
         _type = RANGED;
     else
     {
-        if (hasAttributeExC(ATTRIBUTESEXC_TYPE_OFFHAND))
+        if (GetSpellInfo()->hasAttributes(ATTRIBUTESEXC_TYPE_OFFHAND))
             _type = OFFHAND;
         else
             _type = MELEE;
@@ -4654,7 +4654,7 @@ void Spell::SpellEffectInterruptCast(uint8_t /*effectIndex*/) // Interrupt Cast
     if (!unitTarget || !unitTarget->isAlive())
         return;
 
-    if (GetSpellInfo()->getAttributesExG() & ATTRIBUTESEXG_INTERRUPT_NPC && unitTarget->IsPlayer())
+    if (GetSpellInfo()->hasAttributes(ATTRIBUTESEXG_INTERRUPT_NPC) && unitTarget->IsPlayer())
         return;
 
     if (!playerTarget)
@@ -5867,7 +5867,7 @@ void Spell::SpellEffectDummyMelee(uint8_t /*effectIndex*/)   // Normalized Weapo
         _type = RANGED;
     else
     {
-        if (GetSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_TYPE_OFFHAND)
+        if (GetSpellInfo()->hasAttributes(ATTRIBUTESEXC_TYPE_OFFHAND))
             _type = OFFHAND;
         else
             _type = MELEE;

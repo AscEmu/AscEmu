@@ -1419,7 +1419,6 @@ public:
 
         bool bReincarnation;
         bool ignoreShapeShiftChecks;
-        bool ignoreAuraStateCheck;
 
         std::map<uint32, WeaponModifier> damagedone;
         std::map<uint32, WeaponModifier> tocritchance;
@@ -2202,9 +2201,6 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////
         // end social
         /////////////////////////////////////////////////////////////////////////////////////////
-
-        bool m_castFilterEnabled;
-        uint32 m_castFilter[3];    // spell group relation of only spells that player can currently cast
 
         uint32 m_outStealthDamageBonusPct;
         uint32 m_outStealthDamageBonusPeriod;

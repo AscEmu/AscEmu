@@ -3,6 +3,7 @@
 set(PATH_PREFIX Spell)
 
 set(SRC_SPELL_FILES
+   ${PATH_PREFIX}/Spell.cpp
    ${PATH_PREFIX}/Spell.h
    ${PATH_PREFIX}/Spell.Legacy.cpp
    ${PATH_PREFIX}/Spell.Legacy.h

@@ -83,7 +83,7 @@ public:
     bool HasFireTotem = false;
     uint8 CanCast(bool tolerate)
     {
-        uint8 result = Spell::CanCast(tolerate);
+        uint8 result = Spell::canCast(tolerate);
 
         if (result == SPELL_CANCAST_OK)
         {
@@ -370,7 +370,7 @@ public:
 
     uint8 CanCast(bool tolerate)
     {
-        uint8 result = Spell::CanCast(tolerate);
+        uint8 result = Spell::canCast(tolerate);
 
         if (result == SPELL_CANCAST_OK)
         {

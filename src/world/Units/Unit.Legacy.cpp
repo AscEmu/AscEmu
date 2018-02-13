@@ -6945,7 +6945,7 @@ void Unit::CalculateResistanceReduction(Unit* pVictim, dealdamage* dmg, SpellInf
             AverageResistance = 0.75f;
 
         // NOT WOWWIKILIKE but i think it's actually to add some fullresist chance from resistances
-        if (!ability || !(ability->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY))
+        if (!ability || !ability->hasAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY))
         {
             float Resistchance = (float)pVictim->GetResistance(static_cast<uint16_t>((*dmg).school_type)) / (float)pVictim->getLevel();
             Resistchance *= Resistchance;
@@ -7156,7 +7156,7 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
         spellModFlatFloatValue(SM_FHitchance, &hitchance, ability->getSpellGroupType());
     }
 
-    if (ability && ability->getAttributes() & ATTRIBUTES_CANT_BE_DPB)
+    if (ability && ability->hasAttributes(ATTRIBUTES_CANT_BE_DPB))
     {
         dodge = 0.0f;
         parry = 0.0f;
@@ -7193,7 +7193,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
     if (!pVictim || !pVictim->isAlive() || !isAlive() || IsStunned() || IsPacified() || IsFeared())
         return;
 
-    if (!(ability && ability->getAttributesEx() & ATTRIBUTESEX_IGNORE_IN_FRONT) && !isInFront(pVictim))
+    if (!(ability && ability->hasAttributes(ATTRIBUTESEX_IGNORE_IN_FRONT)) && !isInFront(pVictim))
     {
         if (IsPlayer())
         {
@@ -7561,14 +7561,14 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         block = 0.0f;
     }
 
-    if (ability != NULL && ability->getAttributes() & ATTRIBUTES_CANT_BE_DPB)
+    if (ability != NULL && ability->hasAttributes(ATTRIBUTES_CANT_BE_DPB))
     {
         dodge = 0.0f;
         parry = 0.0f;
         block = 0.0f;
     }
 
-    if (ability && ability->getAttributesExB() & ATTRIBUTESEXB_CANT_CRIT)
+    if (ability && ability->hasAttributes(ATTRIBUTESEXB_CANT_CRIT))
         crit = 0.0f;
 
     // by victim state
@@ -9108,7 +9108,7 @@ void Unit::AddAura(Aura* aur)
     }
 
     // If this aura can only affect one target at a time
-    if (aur->GetSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_SINGLE_TARGET_AURA)
+    if (aur->GetSpellInfo()->hasAttributes(ATTRIBUTESEXE_SINGLE_TARGET_AURA))
     {
         // remove aura from the previous applied target
         Unit* caster = aur->GetUnitCaster();
@@ -9550,7 +9550,7 @@ void Unit::AddAura(Aura* aur)
 
     uint8 visualslot = 0xFF;
     //search for a visual slot
-    if (!aur->IsPassive() || (aur->m_spellInfo->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
+    if (!aur->IsPassive() || aur->m_spellInfo->hasAttributes(ATTRIBUTESEX_NO_INITIAL_AGGRO))
         visualslot = FindVisualSlot(aur->GetSpellId(), aur->IsPositive());
     aur->m_visualSlot = visualslot;
 
@@ -9640,7 +9640,7 @@ void Unit::AddAura(Aura* aur)
     }
 
     // If this aura can only affect one target at a time, store this target GUID for future reference
-    if (aur->GetSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_SINGLE_TARGET_AURA)
+    if (aur->GetSpellInfo()->hasAttributes(ATTRIBUTESEXE_SINGLE_TARGET_AURA))
     {
         Unit* caster = aur->GetUnitCaster();
         if (caster != NULL)
@@ -11975,7 +11975,7 @@ void Unit::SendAuraUpdate(uint32 AuraSlot, bool remove)
         else
             flags |= AFLAG_NEGATIVE;
 
-        if (aur->GetDuration() != 0 && !(aur->GetSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_HIDE_DURATION))
+        if (aur->GetDuration() != 0 && !aur->GetSpellInfo()->hasAttributes(ATTRIBUTESEXE_HIDE_DURATION))
             flags |= AFLAG_DURATION;
 
         data << WoWGuid(GetGUID());
@@ -12056,7 +12056,7 @@ void Unit::SendAuraUpdate(uint32 AuraSlot, bool remove)
         else
             flags |= AFLAG_NEGATIVE;
 
-        if (aur->GetDuration() != 0 && !(aur->GetSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_HIDE_DURATION))
+        if (aur->GetDuration() != 0 && !aur->GetSpellInfo()->hasAttributes(ATTRIBUTESEXE_HIDE_DURATION))
             flags |= AFLAG_DURATION;
 
         data << uint16(flags);
@@ -12117,7 +12117,7 @@ void Unit::RemoveAurasOfSchool(uint32 School, bool Positive, bool Immune)
         if (m_auras[x]
             && m_auras[x]->GetSpellInfo()->getSchool() == School
             && (!m_auras[x]->IsPositive() || Positive)
-            && (!Immune && m_auras[x]->GetSpellInfo()->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY)
+            && (!Immune && m_auras[x]->GetSpellInfo()->hasAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY))
             )
             m_auras[x]->Remove();
 }

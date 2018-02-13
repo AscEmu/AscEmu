@@ -647,17 +647,17 @@ void Object::setCurrentSpell(Spell* curSpell)
 
     // Get current spell type
     CurrentSpellType spellType = CURRENT_GENERIC_SPELL;
-    if (curSpell->GetSpellInfo()->getAttributes() & (ATTRIBUTES_ON_NEXT_ATTACK | ATTRIBUTES_ON_NEXT_SWING_2))
+    if (curSpell->GetSpellInfo()->hasAttributes(SpellAttributes(ATTRIBUTES_ON_NEXT_ATTACK | ATTRIBUTES_ON_NEXT_SWING_2)))
     {
         // Melee spell
         spellType = CURRENT_MELEE_SPELL;
     }
-    else if (curSpell->GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_AUTOREPEAT)
+    else if (curSpell->GetSpellInfo()->hasAttributes(ATTRIBUTESEXB_AUTOREPEAT))
     {
         // Autorepeat spells (Auto shot / Shoot (wand))
         spellType = CURRENT_AUTOREPEAT_SPELL;
     }
-    else if (curSpell->GetSpellInfo()->getAttributesEx() & (ATTRIBUTESEX_CHANNELED_1 | ATTRIBUTESEX_CHANNELED_2))
+    else if (curSpell->GetSpellInfo()->hasAttributes(SpellAttributesEx(ATTRIBUTESEX_CHANNELED_1 | ATTRIBUTESEX_CHANNELED_2)))
     {
         // Channeled spells
         spellType = CURRENT_CHANNELED_SPELL;
@@ -768,14 +768,14 @@ bool Object::isCastingNonMeleeSpell(bool /*checkDelayed = true*/, bool skipChann
 {
     // Check from generic spells, ignore finished spells
     if (m_currentSpell[CURRENT_GENERIC_SPELL] != nullptr && m_currentSpell[CURRENT_GENERIC_SPELL]->getState() != SPELL_STATE_FINISHED && m_currentSpell[CURRENT_GENERIC_SPELL]->getCastTimeLeft() > 0 &&
-        (!isAutoshoot || !(m_currentSpell[CURRENT_GENERIC_SPELL]->GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_NOT_RESET_AUTO_ATTACKS)))
+        (!isAutoshoot || !(m_currentSpell[CURRENT_GENERIC_SPELL]->GetSpellInfo()->hasAttributes(ATTRIBUTESEXB_NOT_RESET_AUTO_ATTACKS))))
     {
         return true;
     }
 
     // If not skipped, check from channeled spells
     if (!skipChanneled && m_currentSpell[CURRENT_CHANNELED_SPELL] != nullptr && m_currentSpell[CURRENT_CHANNELED_SPELL]->getState() != SPELL_STATE_FINISHED &&
-        (!isAutoshoot || !(m_currentSpell[CURRENT_CHANNELED_SPELL]->GetSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_NOT_RESET_AUTO_ATTACKS)))
+        (!isAutoshoot || !(m_currentSpell[CURRENT_CHANNELED_SPELL]->GetSpellInfo()->hasAttributes(ATTRIBUTESEXB_NOT_RESET_AUTO_ATTACKS))))
     {
         return true;
     }
@@ -2996,7 +2996,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
     }
     //////////////////////////////////////////////////////////////////////////////////////////
     //Post +SpellDamage Bonus Modifications
-    if (res > 0.0f && !(spellInfo->getAttributesExB() & ATTRIBUTESEXB_CANT_CRIT))
+    if (res > 0.0f && !spellInfo->hasAttributes(ATTRIBUTESEXB_CANT_CRIT))
     {
         critical = this->IsCriticalDamageForSpell(pVictim, spellInfo);
 

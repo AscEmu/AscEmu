@@ -788,7 +788,7 @@ void ApplyNormalFixes()
                 CreateDummySpell(sp->getEffectTriggerSpell(b));
             }
 
-            if (sp->getAttributes() & ATTRIBUTES_ONLY_OUTDOORS && sp->getEffectApplyAuraName(b) == SPELL_AURA_MOUNTED)
+            if (sp->hasAttributes(ATTRIBUTES_ONLY_OUTDOORS) && sp->getEffectApplyAuraName(b) == SPELL_AURA_MOUNTED)
             {
                 sp->removeAttributes(ATTRIBUTES_ONLY_OUTDOORS);
             }
