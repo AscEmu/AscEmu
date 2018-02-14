@@ -985,6 +985,18 @@ bool Unit::hasAurasWithId(uint32_t* auraId)
     return false;
 }
 
+bool Unit::hasAuraWithAuraEffect(AuraEffect type) const
+{
+    for (uint32_t i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
+    {
+        if (m_auras[i] == nullptr)
+            continue;
+        if (m_auras[i]->GetSpellInfo()->HasEffectApplyAuraName(type))
+            return true;
+    }
+    return false;
+}
+
 Aura* Unit::getAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid)
 {
     for (uint32_t i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
@@ -1000,7 +1012,7 @@ Aura* Unit::getAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid)
     return nullptr;
 }
 
-Aura* Unit::getAuraWithAuraEffect(uint32_t aura_effect)
+Aura* Unit::getAuraWithAuraEffect(AuraEffect aura_effect)
 {
     for (uint32_t i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
     {

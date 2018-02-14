@@ -692,7 +692,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
                     }
                     else
                     {
-                        if ((sp->getAttributes() & ATTRIBUTES_PASSIVE) == 0)
+                        if (sp->hasAttributes(ATTRIBUTES_PASSIVE))
                             creatureProperties.castable_spells.push_back(sp->getId());
                         else
                             creatureProperties.start_auras.insert(sp->getId());
@@ -722,7 +722,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
                     if (sp == nullptr)
                         continue;
 
-                    if ((sp->getAttributes() & ATTRIBUTES_PASSIVE) == 0)
+                    if (sp->hasAttributes(ATTRIBUTES_PASSIVE))
                         creatureProperties.castable_spells.push_back(sp->getId());
                     else
                         creatureProperties.start_auras.insert(sp->getId());

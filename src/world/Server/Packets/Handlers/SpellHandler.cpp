@@ -159,7 +159,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
         {
             if (SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(itemProto->Spells[i].Id))
             {
-                if (spellInfo->getAttributes() & ATTRIBUTES_REQ_OOC)
+                if (spellInfo->hasAttributes(ATTRIBUTES_REQ_OOC))
                 {
                     _player->GetItemInterface()->BuildInventoryChangeError(tmpItem, nullptr, INV_ERR_CANT_DO_IN_COMBAT);
                     return;
@@ -432,8 +432,8 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     }
 
     // Check are we already casting this autorepeat spell
-    if ((spellInfo->getAttributesExB() & ATTRIBUTESEXB_AUTOREPEAT) && _player->getCurrentSpell(CURRENT_AUTOREPEAT_SPELL) != nullptr
-       && spellInfo == _player->getCurrentSpell(CURRENT_AUTOREPEAT_SPELL)->GetSpellInfo())
+    if ((spellInfo->hasAttributes(ATTRIBUTESEXB_AUTOREPEAT) && _player->getCurrentSpell(CURRENT_AUTOREPEAT_SPELL) != nullptr
+       && spellInfo == _player->getCurrentSpell(CURRENT_AUTOREPEAT_SPELL)->GetSpellInfo()))
     {
         return;
     }
@@ -519,7 +519,7 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (spellInfo->getAttributes() & ATTRIBUTES_CANT_CANCEL)
+    if (spellInfo->hasAttributes(ATTRIBUTES_CANT_CANCEL))
     {
         return;
     }
@@ -531,7 +531,7 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
     }
 
     // You can't cancel an aura which is from a channeled spell, unless you are currently channeling it
-    if (spellInfo->getAttributesEx() & (ATTRIBUTESEX_CHANNELED_1 | ATTRIBUTESEX_CHANNELED_2))
+    if (spellInfo->hasAttributes(SpellAttributesEx(ATTRIBUTESEX_CHANNELED_1 | ATTRIBUTESEX_CHANNELED_2)))
     {
         if (_player->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr)
         {
@@ -572,7 +572,7 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (spellInfo->getAttributes() & ATTRIBUTES_NEGATIVE)
+    if (spellInfo->hasAttributes(ATTRIBUTES_NEGATIVE))
     {
         return;
     }

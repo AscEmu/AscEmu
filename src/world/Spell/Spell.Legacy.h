@@ -52,6 +52,9 @@ class SERVER_DECL Spell : public EventableObject
         // MIT Starts
         int32_t getFullCastTime() const { return m_castTime; }
         int32_t getCastTimeLeft() const { return m_timer; }
+
+        // todo: make canCast virtual function and implement it to the inherited functions
+        SpellCastResult canCast(bool tolerate, uint32_t* parameter1 = nullptr, uint32_t* parameter2 = nullptr);
         // MIT Ends
         // APGL Starts
         friend class DummySpellHandler;
@@ -115,15 +118,6 @@ class SERVER_DECL Spell : public EventableObject
 
         // Checks the caster is ready for cast
         virtual uint8 CanCast(bool);
-
-        bool hasAttribute(SpellAttributes attribute);
-        bool hasAttributeEx(SpellAttributesEx attribute);
-        bool hasAttributeExB(SpellAttributesExB attribute);
-        bool hasAttributeExC(SpellAttributesExC attribute);
-        bool hasAttributeExD(SpellAttributesExD attribute);
-        bool hasAttributeExE(SpellAttributesExE attribute);
-        bool hasAttributeExF(SpellAttributesExF attribute);
-        bool hasAttributeExG(SpellAttributesExG attribute);
 
         // Removes reagents, ammo, and items/charges
         void RemoveItems();

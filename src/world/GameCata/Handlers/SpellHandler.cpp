@@ -60,7 +60,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     }
 
     // Check are we already casting this autorepeat spell
-    if ((spellInfo->getAttributesExB() & ATTRIBUTESEXB_AUTOREPEAT) && _player->getCurrentSpell(CURRENT_AUTOREPEAT_SPELL) != nullptr
+    if (spellInfo->hasAttributes(ATTRIBUTESEXB_AUTOREPEAT) && _player->getCurrentSpell(CURRENT_AUTOREPEAT_SPELL) != nullptr
         && spellInfo == _player->getCurrentSpell(CURRENT_AUTOREPEAT_SPELL)->GetSpellInfo())
     {
         return;
@@ -214,12 +214,12 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (spellInfo->getAttributes() & ATTRIBUTES_CANT_CANCEL)
+    if (spellInfo->hasAttributes(ATTRIBUTES_CANT_CANCEL))
     {
         return;
     }
 
-    if (spellInfo->getAttributesEx() & (ATTRIBUTESEX_CHANNELED_1 | ATTRIBUTESEX_CHANNELED_2))
+    if (spellInfo->hasAttributes(SpellAttributesEx(ATTRIBUTESEX_CHANNELED_1 | ATTRIBUTESEX_CHANNELED_2)))
     {
         if (_player->getCurrentSpell(CURRENT_CHANNELED_SPELL) != nullptr)
         {
@@ -245,7 +245,7 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (spellInfo->getAttributes() & ATTRIBUTES_NEGATIVE)
+    if (spellInfo->hasAttributes(ATTRIBUTES_NEGATIVE))
     {
         return;
     }

@@ -521,7 +521,7 @@ void WorldSession::HandlePetCancelAura(WorldPacket& recvPacket)
     recvPacket >> guid >> spellid;
 
     SpellInfo* info = sSpellCustomizations.GetSpellInfo(spellid);
-    if (info != nullptr && info->getAttributes() & static_cast<uint32>(ATTRIBUTES_CANT_CANCEL))
+    if (info != nullptr && info->hasAttributes(ATTRIBUTES_CANT_CANCEL))
         return;
     Creature* pet = _player->GetMapMgr()->GetCreature(static_cast<uint32>(guid));
     if (pet != nullptr && (pet->GetPlayerOwner() == _player || _player->GetCurrentVehicle() && _player->GetCurrentVehicle()->IsControler(_player)))

@@ -29,6 +29,7 @@
 #include "Objects/Object.h"
 #include "Units/Summons/SummonHandler.h"
 #include "Movement/UnitMovementManager.hpp"
+#include "Spell/Definitions/AuraEffects.h"
 #include "Spell/Definitions/School.h"
 #include "Storage/MySQLStructures.h"
 
@@ -322,10 +323,11 @@ public:
     Aura* getAuraWithIdForGuid(uint32_t* auraId, uint64 guid);
 
     Aura* getAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid);
-    Aura* getAuraWithAuraEffect(uint32_t aura_effect);
+    Aura* getAuraWithAuraEffect(AuraEffect aura_effect);
 
     bool hasAurasWithId(uint32_t auraId);
     bool hasAurasWithId(uint32_t* auraId);
+    bool hasAuraWithAuraEffect(AuraEffect type) const;
 
     uint32_t getAuraCountForId(uint32_t auraId);
 

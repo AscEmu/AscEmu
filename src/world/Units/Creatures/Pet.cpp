@@ -1496,7 +1496,7 @@ void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
     }
 
 #if VERSION_STRING > TBC
-    if (showLearnSpell && m_Owner && m_Owner->GetSession() && !(sp->getAttributes() & ATTRIBUTES_NO_CAST))
+    if (showLearnSpell && m_Owner && m_Owner->GetSession() && !sp->hasAttributes(ATTRIBUTES_NO_CAST))
     {
         auto id = sp->getId();
         m_Owner->GetSession()->OutPacket(SMSG_PET_LEARNED_SPELL, 2, &id);

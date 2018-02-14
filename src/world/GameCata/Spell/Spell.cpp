@@ -44,7 +44,7 @@ This file is released under the MIT license. See README-MIT for more information
 void Spell::SendSpellStart()
 {
     // no need to send this on passive spells
-    if (!m_caster->IsInWorld() || hasAttribute(ATTRIBUTES_PASSIVE) || m_triggeredSpell)
+    if (!m_caster->IsInWorld() || GetSpellInfo()->hasAttributes(ATTRIBUTES_PASSIVE) || m_triggeredSpell)
         return;
 
     WorldPacket data(150);
@@ -156,7 +156,7 @@ void Spell::SendSpellGo()
     }
 
     // no need to send this on passive spells
-    if (!m_caster->IsInWorld() || hasAttribute(ATTRIBUTES_PASSIVE))
+    if (!m_caster->IsInWorld() || GetSpellInfo()->hasAttributes(ATTRIBUTES_PASSIVE))
         return;
 
     // Start Spell

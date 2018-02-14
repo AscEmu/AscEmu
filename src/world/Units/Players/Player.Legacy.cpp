@@ -187,7 +187,6 @@ Player::Player(uint32 guid)
     misdirectionTarget(0),
     bReincarnation(false),
     ignoreShapeShiftChecks(false),
-    ignoreAuraStateCheck(false),
     m_GM_SelectedGO(0),
     m_ShapeShifted(0),
     m_MountSpellId(0),
@@ -426,13 +425,6 @@ Player::Player(uint32 guid)
     setRangedAttackPowerMultiplier(0.f);
 
     m_resist_critical[0] = m_resist_critical[1] = 0;
-    m_castFilterEnabled = false;
-
-    for (i = 0; i < 3; i++)
-    {
-        m_attack_speed[i] = 1.0f;
-        m_castFilter[i] = 0;
-    }
 
     for (i = 0; i < SCHOOL_COUNT; i++)
         m_resist_hit_spell[i] = 0;
@@ -1230,7 +1222,7 @@ void Player::Update(unsigned long time_passed)
 
                 for (uint32 x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; x++)
                 {
-                    if (m_auras[x] && m_auras[x]->GetSpellInfo()->getAttributes() & ATTRIBUTES_ONLY_OUTDOORS)
+                    if (m_auras[x] && m_auras[x]->GetSpellInfo()->hasAttributes(ATTRIBUTES_ONLY_OUTDOORS))
                         RemoveAura(m_auras[x]);
                 }
             }
@@ -10873,7 +10865,7 @@ void Player::SaveAuras(std::stringstream & ss)
                 continue;
 
             //we are going to cast passive spells anyway on login so no need to save auras for them
-            if (aur->IsPassive() && !(aur->GetSpellInfo()->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
+            if (aur->IsPassive() && !aur->GetSpellInfo()->hasAttributes(ATTRIBUTESEX_NO_INITIAL_AGGRO))
                 continue;
 
             if (charges > 0 && aur->GetSpellId() != m_auras[prevX]->GetSpellId())
@@ -10952,7 +10944,7 @@ void Player::SetShapeShift(uint8 ss)
         if (sp == nullptr)
             continue;
 
-        if (sp->custom_apply_on_shapeshift_change || sp->getAttributes() & ATTRIBUTES_PASSIVE)        // passive/talent
+        if (sp->custom_apply_on_shapeshift_change || sp->hasAttributes(ATTRIBUTES_PASSIVE))        // passive/talent
         {
             if (sp->getRequiredShapeShift() && ((uint32)1 << (ss - 1)) & sp->getRequiredShapeShift())
             {
@@ -13719,7 +13711,7 @@ void Player::SendPreventSchoolCast(uint32 SpellSchool, uint32 unTimeMs)
         }
 
         // Not send cooldown for this spells
-        if (spellInfo->getAttributes() & ATTRIBUTES_TRIGGER_COOLDOWN)
+        if (spellInfo->hasAttributes(ATTRIBUTES_TRIGGER_COOLDOWN))
             continue;
 
         if (spellInfo->getSchool() == SpellSchool)
