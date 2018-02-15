@@ -30,7 +30,7 @@ struct WoWObject
     };
 
 #if VERSION_STRING == Cata
-    uint32_t data;
+    uint64_t data;
 #endif
 
     uint32_t type;

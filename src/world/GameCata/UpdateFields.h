@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 enum EObjectFields
 {
     OBJECT_FIELD_GUID                                = 0x0000, // Size: 2, Type: LONG, Flags: PUBLIC
-    OBJECT_FIELD_DATA                                = 0x0002, // Size: 1, Type: INT, Flags: PUBLIC
+    OBJECT_FIELD_DATA                                = 0x0002, // Size: 2, Type: LONG, Flags: PUBLIC
     OBJECT_FIELD_TYPE                                = 0x0004, // Size: 1, Type: INT, Flags: PUBLIC
     OBJECT_FIELD_ENTRY                               = 0x0005, // Size: 1, Type: INT, Flags: PUBLIC
     OBJECT_FIELD_SCALE_X                             = 0x0006, // Size: 1, Type: FLOAT, Flags: PUBLIC
