@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 #include "WoWObject.h"
+#include "GuidData.h"
 #pragma pack(push, 1)
 
 #if VERSION_STRING == Classic
@@ -84,33 +85,31 @@ struct WoWItem : WoWObject
 #if VERSION_STRING == WotLK
 
 #define WOWITEM_SPELL_CHARGES_COUNT 5
-#define WOWITEM_ENCHANTMENT_COUNT 35
+#define WOWITEM_ENCHANTMENT_COUNT 12
+
+struct WoWItem_Enchantment
+{
+    guid_union unk1;
+    uint32_t unk2;
+};
 
 struct WoWItem : WoWObject
 {
-    union
-    {
-        struct
-        {
-            uint32_t low;
-            uint32_t high;
-        } owner_guid_parts;
-
-        uint64_t owner_guid;
-    };
-    uint64_t container_guid;
-    uint64_t creator_guid;
-    uint64_t gift_creator_guid;
+    guid_union owner_guid;
+    guid_union container_guid;
+    guid_union creator_guid;
+    guid_union gift_creator_guid;
     uint32_t stack_count;
     uint32_t duration;
     int32_t spell_charges[WOWITEM_SPELL_CHARGES_COUNT];
     uint32_t flags;
-    uint32_t enchantment[WOWITEM_ENCHANTMENT_COUNT];
+    WoWItem_Enchantment enchantment[WOWITEM_ENCHANTMENT_COUNT];
     uint32_t property_seed;
     uint32_t random_properties_id;
-    uint32_t item_text_id;
     uint32_t durability;
     uint32_t max_durability;
+    uint32_t create_played_time;
+    uint32_t item_padding_0;
 };
 #endif
 

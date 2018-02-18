@@ -44,22 +44,22 @@ void Item::setContainer(Container* container)
 
 void Item::setContainerGuid(uint64_t guid)
 {
-    write(itemData()->container_guid, guid);
+    write(itemData()->container_guid.guid, guid);
 }
 
 uint64_t Item::getOwnerGuid() const
 {
-    return itemData()->owner_guid;
+    return itemData()->owner_guid.guid;
 }
 
 uint32_t Item::getOwnerGuidLow() const
 {
-    return itemData()->owner_guid_parts.low;
+    return itemData()->owner_guid.parts.low;
 }
 
 uint32_t Item::getOwnerGuidHigh() const
 {
-    return itemData()->owner_guid_parts.high;
+    return itemData()->owner_guid.parts.high;
 }
 
 void Item::setStackCount(uint32_t count)
@@ -115,14 +115,14 @@ void Item::create(uint32_t itemId, Player* owner)
 
 void Item::setOwnerGuid(uint64_t guid)
 {
-    write(itemData()->owner_guid, guid);
+    write(itemData()->owner_guid.guid, guid);
 }
 
 Player* Item::getOwner() const { return m_owner; }
 
 void Item::setOwner(Player* owner)
 {
-    write(itemData()->owner_guid, owner ? owner->getGuid() : 0UL);
+    write(itemData()->owner_guid.guid, owner ? owner->getGuid() : 0UL);
     m_owner = owner;
 }
 

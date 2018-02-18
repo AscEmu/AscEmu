@@ -64,6 +64,11 @@
 #include "Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgInitialSpells.h"
 #include "Data/WoWPlayer.h"
+#include "Data/WoWItem.h"
+#include "Data/WoWContainer.h"
+#include "Data/WoWGameObject.h"
+#include "Data/WoWDynamicObject.h"
+#include "Data/WoWCorpse.h"
 
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"

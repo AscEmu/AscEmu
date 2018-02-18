@@ -13,26 +13,25 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 #include "WoWObject.h"
+#include "GuidData.h"
 #pragma pack(push, 1)
 
-#define WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT 3
-#define WOWUNIT_VIRTUAL_ITEM_INFO_COUNT 6
-#define WOWUNIT_AURA_COUNT 56
-#define WOWUNIT_AURA_FLAGS_COUNT 14
-#define WOWUNIT_AURA_LEVELS_COUNT 14
-#define WOWUNIT_AURA_APPLICATIONS_COUNT 14
-#define WOWUNIT_RESISTANCE_COUNT 7
-#define WOWUNIT_RESISTANCE_BUFF_MOD_POSITIVE_COUNT 7
-#define WOWUNIT_RESISTANCE_BUFF_MOD_NEGATIVE_COUNT 7
-#define WOWUNIT_POWER_COST_MODIFIER 7
-#define WOWUNIT_POWER_COST_MULTIPLIER 7
+union
+{
+    struct
+    {
+        uint8_t race;
+        uint8_t unit_class;
+        uint8_t gender;
+        uint8_t power_type;
+    } s;
+    uint32_t raw;
+} typedef field_bytes_0_union;
 
 #if VERSION_STRING == Classic
-
 #define WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT 3
 #define WOWUNIT_VIRTUAL_ITEM_INFO_COUNT 6
 #define WOWUNIT_AURA_COUNT 48
-#define WOWUNIT_AURA_FLAGS_COUNT 14
 #define WOWUNIT_AURA_FLAGS_COUNT 6
 #define WOWUNIT_AURA_LEVELS_COUNT 12
 #define WOWUNIT_AURA_APPLICATIONS_COUNT 12
@@ -132,6 +131,17 @@ struct WoWUnit : WoWObject
     uint32_t unit_padding;
 };
 #elif VERSION_STRING == TBC
+#define WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT 3
+#define WOWUNIT_VIRTUAL_ITEM_INFO_COUNT 6
+#define WOWUNIT_AURA_COUNT 56
+#define WOWUNIT_AURA_FLAGS_COUNT 14
+#define WOWUNIT_AURA_LEVELS_COUNT 14
+#define WOWUNIT_AURA_APPLICATIONS_COUNT 14
+#define WOWUNIT_RESISTANCE_COUNT 7
+#define WOWUNIT_RESISTANCE_BUFF_MOD_POSITIVE_COUNT 7
+#define WOWUNIT_RESISTANCE_BUFF_MOD_NEGATIVE_COUNT 7
+#define WOWUNIT_POWER_COST_MODIFIER 7
+#define WOWUNIT_POWER_COST_MULTIPLIER 7
 struct WoWUnit : WoWObject
 {
     uint64_t charm_guid;
@@ -238,28 +248,21 @@ struct WoWUnit : WoWObject
     uint32_t unit_padding;
 };
 #elif VERSION_STRING == WotLK
+#define WOWUNIT_POWER_COUNT 7
+#define WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT 3
+#define WOWUNIT_RESISTANCE_COUNT 7
 struct WoWUnit : WoWObject
 {
-    uint64_t charm_guid;
-    uint64_t summon_guid;
-    uint64_t critter_guid;
-    uint64_t charmed_by_guid;
-    uint64_t summoned_by_guid;
-    uint64_t created_by_guid;
-    uint64_t target_guid;
-    uint64_t channel_object_guid;
+    guid_union charm_guid;
+    guid_union summon_guid;
+    guid_union critter_guid;
+    guid_union charmed_by_guid;
+    guid_union summoned_by_guid;
+    guid_union created_by_guid;
+    guid_union target_guid;
+    guid_union channel_object_guid;
     uint32_t channel_spell;
-    union
-    {
-        struct
-        {
-            uint8_t race;
-            uint8_t unit_class;
-            uint8_t gender;
-            uint8_t power_type;
-        } field_bytes_0_wowplayer;
-        uint32_t field_bytes_0;
-    };
+    field_bytes_0_union field_bytes_0;
     uint32_t health;
     uint32_t power_1;
     uint32_t power_2;
@@ -280,8 +283,8 @@ struct WoWUnit : WoWObject
     uint32_t max_power_5;
     uint32_t max_power_6;
     uint32_t max_power_7;
-    float_t power_regen_flat_modifier[7];
-    float_t power_regen_interrupted_flat_modifier[7];
+    float_t power_regen_flat_modifier[WOWUNIT_POWER_COUNT];
+    float_t power_regen_interrupted_flat_modifier[WOWUNIT_POWER_COUNT];
     uint32_t level;
     uint32_t faction_template;
     uint32_t virtual_item_slot_display[WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT];
@@ -325,8 +328,8 @@ struct WoWUnit : WoWObject
     uint32_t negative_stat_3;
     uint32_t negative_stat_4;
     uint32_t resistance[WOWUNIT_RESISTANCE_COUNT];
-    uint32_t resistance_buff_mod_positive[WOWUNIT_RESISTANCE_BUFF_MOD_POSITIVE_COUNT];
-    uint32_t resistance_buff_mod_negative[WOWUNIT_RESISTANCE_BUFF_MOD_NEGATIVE_COUNT];
+    uint32_t resistance_buff_mod_positive[WOWUNIT_RESISTANCE_COUNT];
+    uint32_t resistance_buff_mod_negative[WOWUNIT_RESISTANCE_COUNT];
     uint32_t base_mana;
     uint32_t base_health;
     uint32_t unit_bytes_2;
@@ -338,8 +341,8 @@ struct WoWUnit : WoWObject
     float_t ranged_attack_power_multiplier;
     float_t minimum_ranged_damage;
     float_t maximum_ranged_ddamage;
-    uint32_t power_cost_modifier[WOWUNIT_POWER_COST_MODIFIER];
-    float_t power_cost_multiplier[WOWUNIT_POWER_COST_MULTIPLIER];
+    uint32_t power_cost_modifier[WOWUNIT_POWER_COUNT];
+    float_t power_cost_multiplier[WOWUNIT_POWER_COUNT];
     float_t max_health_modifier;
     float_t hover_height;
     uint32_t unit_padding;

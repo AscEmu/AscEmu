@@ -13,32 +13,32 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Data/WoWUnit.h"
 #include "Storage/MySQLDataStore.hpp"
 
-uint8 Unit::getRace() const { return unitData()->field_bytes_0_wowplayer.race; }
+uint8 Unit::getRace() const { return unitData()->field_bytes_0.s.race; }
 
-uint8 Unit::getClass() const { return unitData()->field_bytes_0_wowplayer.unit_class; }
+uint8 Unit::getClass() const { return unitData()->field_bytes_0.s.unit_class; }
 
-uint8 Unit::getGender() const { return unitData()->field_bytes_0_wowplayer.gender; }
+uint8 Unit::getGender() const { return unitData()->field_bytes_0.s.gender; }
 
-uint8 Unit::getPowerType() const { return unitData()->field_bytes_0_wowplayer.power_type; }
+uint8 Unit::getPowerType() const { return unitData()->field_bytes_0.s.power_type; }
 
 void Unit::setRace(uint8_t race)
 {
-    write(unitData()->field_bytes_0_wowplayer.race, race);
+    write(unitData()->field_bytes_0.s.race, race);
 }
 
 void Unit::setClass(uint8_t class_)
 {
-    write(unitData()->field_bytes_0_wowplayer.unit_class, class_);
+    write(unitData()->field_bytes_0.s.unit_class, class_);
 }
 
 void Unit::setGender(uint8_t gender)
 {
-    write(unitData()->field_bytes_0_wowplayer.gender, gender);
+    write(unitData()->field_bytes_0.s.gender, gender);
 }
 
 void Unit::setPowerType(uint8_t powerType)
 {
-    write(unitData()->field_bytes_0_wowplayer.power_type, powerType);
+    write(unitData()->field_bytes_0.s.power_type, powerType);
 }
 
 void Unit::setMaxMana(uint32_t maxMana)

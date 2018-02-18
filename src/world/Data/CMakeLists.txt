@@ -4,6 +4,7 @@ set(PATH_PREFIX Data)
 
 set(SRC_DATA_FILES
    ${PATH_PREFIX}/Flags.h
+   ${PATH_PREFIX}/GuidData.h
    ${PATH_PREFIX}/WoWContainer.h
    ${PATH_PREFIX}/WoWCorpse.h
    ${PATH_PREFIX}/WoWDynamicObject.h
