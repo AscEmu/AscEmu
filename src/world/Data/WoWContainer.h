@@ -13,18 +13,56 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 #include "WoWItem.h"
+#pragma pack(push, 1)
+
 
 #if VERSION_STRING == Classic
-#define WOWCONTAINER_ITEM_SLOT_COUNT 58
-#else
-#define WOWCONTAINER_ITEM_SLOT_COUNT 72
-#endif
 
-#pragma pack(push, 1)
+//todo verifiy - descriptor is 72, enum 58.
+#define WOWCONTAINER_ITEM_SLOT_COUNT 58
+
 struct WoWContainer : WoWItem
 {
     uint32_t slot_count;
     uint32_t padding_container;
     uint64_t item_slot[WOWCONTAINER_ITEM_SLOT_COUNT];
 };
+#endif
+
+#if VERSION_STRING == TBC
+
+#define WOWCONTAINER_ITEM_SLOT_COUNT 72
+
+struct WoWContainer : WoWItem
+{
+    uint32_t slot_count;
+    uint32_t padding_container;
+    uint64_t item_slot[WOWCONTAINER_ITEM_SLOT_COUNT];
+};
+#endif
+
+#if VERSION_STRING == WotLK
+
+#define WOWCONTAINER_ITEM_SLOT_COUNT 72
+
+struct WoWContainer : WoWItem
+{
+    uint32_t slot_count;
+    uint32_t padding_container;
+    uint64_t item_slot[WOWCONTAINER_ITEM_SLOT_COUNT];
+};
+#endif
+
+#if VERSION_STRING == Cata
+
+#define WOWCONTAINER_ITEM_SLOT_COUNT 72
+
+struct WoWContainer : WoWItem
+{
+    uint32_t slot_count;
+    uint32_t padding_container;
+    uint64_t item_slot[WOWCONTAINER_ITEM_SLOT_COUNT];
+};
+#endif
+
 #pragma pack(pop)
