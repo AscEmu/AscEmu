@@ -12,8 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
  */
 
 #pragma once
-
 #include "WoWObject.h"
+#pragma pack(push, 1)
 
 #define WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT 3
 #define WOWUNIT_VIRTUAL_ITEM_INFO_COUNT 6
@@ -27,8 +27,19 @@ This file is released under the MIT license. See README-MIT for more information
 #define WOWUNIT_POWER_COST_MODIFIER 7
 #define WOWUNIT_POWER_COST_MULTIPLIER 7
 
-#pragma pack(push, 1)
 #if VERSION_STRING == Classic
+
+#define WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT 3
+#define WOWUNIT_VIRTUAL_ITEM_INFO_COUNT 6
+#define WOWUNIT_AURA_COUNT 48
+#define WOWUNIT_AURA_FLAGS_COUNT 14
+#define WOWUNIT_AURA_FLAGS_COUNT 6
+#define WOWUNIT_AURA_LEVELS_COUNT 12
+#define WOWUNIT_AURA_APPLICATIONS_COUNT 12
+#define WOWUNIT_RESISTANCE_COUNT 7
+#define WOWUNIT_POWER_COST_MODIFIER 7
+#define WOWUNIT_POWER_COST_MULTIPLIER 7
+
 struct WoWUnit : WoWObject
 {
     uint64_t charm_guid;
@@ -71,10 +82,10 @@ struct WoWUnit : WoWObject
     uint32_t virtual_item_slot_display[WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT];
     uint32_t virtual_item_info[WOWUNIT_VIRTUAL_ITEM_INFO_COUNT];
     uint32_t unit_flags;
-    uint32_t aura[49];
-    uint32_t aura_flags[6];
-    uint32_t aura_levels[12];
-    uint32_t aura_applications[12];
+    uint32_t aura[WOWUNIT_AURA_COUNT];
+    uint32_t aura_flags[WOWUNIT_AURA_FLAGS_COUNT];
+    uint32_t aura_levels[WOWUNIT_AURA_LEVELS_COUNT];
+    uint32_t aura_applications[WOWUNIT_AURA_APPLICATIONS_COUNT];
     uint32_t aura_state;
     uint64_t base_attack_time;
     uint32_t ranged_attack_time;
