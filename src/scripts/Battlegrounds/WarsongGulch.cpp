@@ -170,7 +170,7 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32 id)
             // apply the buff
             SpellInfo* sp = sSpellCustomizations.GetSpellInfo(m_buffs[buffslot]->GetGameObjectProperties()->raw.parameter_3);
             Spell* s = sSpellFactoryMgr.NewSpell(plr, sp, true, 0);
-            SpellCastTargets targets(plr->GetGUID());
+            SpellCastTargets targets(plr->getGuid());
             s->prepare(&targets);
 
             // despawn the gameobject (not delete!)
@@ -179,7 +179,7 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32 id)
         return;
     }
 
-    if (((id == AREATRIGGER_WSG_A_SPAWN && plr->IsTeamAlliance()) || (id == AREATRIGGER_WSG_H_SPAWN && plr->IsTeamHorde())) && (plr->m_bgHasFlag && m_flagHolders[plr->GetTeam()] == plr->GetLowGUID()))
+    if (((id == AREATRIGGER_WSG_A_SPAWN && plr->IsTeamAlliance()) || (id == AREATRIGGER_WSG_H_SPAWN && plr->IsTeamHorde())) && (plr->m_bgHasFlag && m_flagHolders[plr->GetTeam()] == plr->getGuidLow()))
     {
         if (m_flagHolders[plr->IsTeamHorde() ? TEAM_ALLIANCE : TEAM_HORDE] != 0 || m_dropFlags[plr->IsTeamHorde() ? TEAM_ALLIANCE : TEAM_HORDE]->IsInWorld())
         {
@@ -208,9 +208,9 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32 id)
         PlaySoundToAll(plr->IsTeamHorde() ? SOUND_HORDE_SCORES : SOUND_ALLIANCE_SCORES);
 
         if (plr->IsTeamHorde())
-            SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->GetGUID(), "%s captured the Alliance flag!", plr->GetName());
+            SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->getGuid(), "%s captured the Alliance flag!", plr->GetName());
         else
-            SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->GetGUID(), "%s captured the Horde flag!", plr->GetName());
+            SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->getGuid(), "%s captured the Horde flag!", plr->GetName());
 
         SetWorldState(plr->IsTeamHorde() ? WORLDSTATE_WSG_ALLIANCE_FLAG_DISPLAY : WORLDSTATE_WSG_HORDE_FLAG_DISPLAY, 1);
 
@@ -283,9 +283,9 @@ void WarsongGulch::HookOnFlagDrop(Player* plr)
     PlaySoundToAll(SOUND_FLAG_RETURNED);
 
     if (plr->IsTeamHorde())
-        SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->GetGUID(), "The Alliance flag was dropped by %s!", plr->GetName());
+        SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->getGuid(), "The Alliance flag was dropped by %s!", plr->GetName());
     else
-        SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->GetGUID(), "The Horde flag was dropped by %s!", plr->GetName());
+        SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->getGuid(), "The Horde flag was dropped by %s!", plr->GetName());
 }
 
 void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
@@ -311,9 +311,9 @@ void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
             PlaySoundToAll(SOUND_FLAG_RETURNED);
 
             if (plr->IsTeamHorde())
-                SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->GetGUID(), "The Horde flag was returned to its base by %s!", plr->GetName());
+                SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->getGuid(), "The Horde flag was returned to its base by %s!", plr->GetName());
             else
-                SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->GetGUID(), "The Alliance flag was returned to its base by %s!", plr->GetName());
+                SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->getGuid(), "The Alliance flag was returned to its base by %s!", plr->GetName());
 
             SetWorldState(plr->IsTeamHorde() ? WORLDSTATE_WSG_ALLIANCE_FLAG_DISPLAY : WORLDSTATE_WSG_HORDE_FLAG_DISPLAY, 1);
         }
@@ -334,7 +334,7 @@ void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
     if (m_dropFlags[plr->GetTeam()]->IsInWorld())
         m_dropFlags[plr->GetTeam()]->RemoveFromWorld(false);
 
-    m_flagHolders[plr->GetTeam()] = plr->GetLowGUID();
+    m_flagHolders[plr->GetTeam()] = plr->getGuidLow();
     plr->m_bgHasFlag = true;
 
     /* This is *really* strange. Even though the A9 create sent to the client is exactly the same as the first one, if
@@ -346,15 +346,15 @@ void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
 
     SpellInfo* pSp = sSpellCustomizations.GetSpellInfo(23333 + (plr->GetTeam() * 2));
     Spell* sp = sSpellFactoryMgr.NewSpell(plr, pSp, true, 0);
-    SpellCastTargets targets(plr->GetGUID());
+    SpellCastTargets targets(plr->getGuid());
     sp->prepare(&targets);
     SetWorldState(plr->IsTeamHorde() ? WORLDSTATE_WSG_ALLIANCE_FLAG_DISPLAY : WORLDSTATE_WSG_HORDE_FLAG_DISPLAY, 2);
     PlaySoundToAll(plr->IsTeamHorde() ? SOUND_HORDE_CAPTURE : SOUND_ALLIANCE_CAPTURE);
 
     if (plr->IsTeamHorde())
-        SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->GetGUID(), "The Alliance's flag has been taken by %s !", plr->GetName());
+        SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->getGuid(), "The Alliance's flag has been taken by %s !", plr->GetName());
     else
-        SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->GetGUID(), "The Horde's flag has been taken by %s !", plr->GetName());
+        SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->getGuid(), "The Horde's flag has been taken by %s !", plr->GetName());
 }
 
 void WarsongGulch::ReturnFlag(PlayerTeam team)
@@ -379,7 +379,7 @@ void WarsongGulch::HookFlagStand(Player* plr, GameObject* obj)
     if (!m_started)
     {
         Anticheat_Log->writefromsession(plr->GetSession(), "%s tryed to hook the flag in warsong gluch before battleground (ID %u) started.", plr->GetName(), this->m_id);
-        SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, plr->GetGUID(), "%s will be removed from the game for cheating.", plr->GetName());
+        SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, plr->getGuid(), "%s will be removed from the game for cheating.", plr->GetName());
         // Remove player from battleground.
         this->RemovePlayer(plr, false);
         // Kick player from server.
@@ -401,21 +401,21 @@ void WarsongGulch::HookFlagStand(Player* plr, GameObject* obj)
 
     SpellInfo* pSp = sSpellCustomizations.GetSpellInfo(23333 + (plr->GetTeam() * 2));
     Spell* sp = sSpellFactoryMgr.NewSpell(plr, pSp, true, 0);
-    SpellCastTargets targets(plr->GetGUID());
+    SpellCastTargets targets(plr->getGuid());
     sp->prepare(&targets);
 
     // set the flag holder
     plr->m_bgHasFlag = true;
-    m_flagHolders[plr->GetTeam()] = plr->GetLowGUID();
+    m_flagHolders[plr->GetTeam()] = plr->getGuidLow();
     if (m_homeFlags[plr->GetTeam()]->IsInWorld())
         m_homeFlags[plr->GetTeam()]->RemoveFromWorld(false);
 
     PlaySoundToAll(plr->IsTeamHorde() ? SOUND_HORDE_CAPTURE : SOUND_ALLIANCE_CAPTURE);
     SetWorldState(plr->IsTeamHorde() ? WORLDSTATE_WSG_ALLIANCE_FLAG_DISPLAY : WORLDSTATE_WSG_HORDE_FLAG_DISPLAY, 2);
     if (plr->IsTeamHorde())
-        SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->GetGUID(), "The Alliance's flag has been taken by %s !", plr->GetName());
+        SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->getGuid(), "The Alliance's flag has been taken by %s !", plr->GetName());
     else
-        SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->GetGUID(), "The Horde's flag has been taken by %s !", plr->GetName());
+        SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->getGuid(), "The Horde's flag has been taken by %s !", plr->GetName());
 }
 
 void WarsongGulch::HookOnPlayerKill(Player* plr, Player* /*pVictim*/)
@@ -472,7 +472,7 @@ void WarsongGulch::HookOnPlayerDeath(Player* plr)
 void WarsongGulch::HookOnMount(Player* plr)
 {
     // do we have the flag?
-    if (m_flagHolders[plr->GetTeam()] == plr->GetLowGUID())
+    if (m_flagHolders[plr->GetTeam()] == plr->getGuidLow())
         HookOnFlagDrop(plr);
 }
 

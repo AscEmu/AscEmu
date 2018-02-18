@@ -41,7 +41,7 @@ namespace luaItem
         if (LuaGlobal::instance()->m_menu != nullptr)
             delete LuaGlobal::instance()->m_menu;
 
-        LuaGlobal::instance()->m_menu = new Arcemu::Gossip::Menu(ptr->GetGUID(), text_id);
+        LuaGlobal::instance()->m_menu = new Arcemu::Gossip::Menu(ptr->getGuid(), text_id);
 
         if (autosend != 0)
             LuaGlobal::instance()->m_menu->Send(player);
@@ -130,7 +130,7 @@ namespace luaItem
         if (player == NULL)
             return 0;
 
-        Arcemu::Gossip::Menu::SendQuickMenu(ptr->GetGUID(), text_id, player, itemid, itemicon, itemtext, requiredmoney, moneytext, extra);
+        Arcemu::Gossip::Menu::SendQuickMenu(ptr->getGuid(), text_id, player, itemid, itemicon, itemtext, requiredmoney, moneytext, extra);
 
         return 0;
     }
@@ -163,7 +163,7 @@ namespace luaItem
 
     int GetGUID(lua_State* L, Item* ptr)
     {
-        PUSH_GUID(L, ptr->GetGUID());
+        PUSH_GUID(L, ptr->getGuid());
         return 1;
     }
 

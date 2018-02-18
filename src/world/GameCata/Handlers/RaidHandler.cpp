@@ -114,7 +114,7 @@ void WorldSession::HandleReadyCheckOpcode(WorldPacket& recvData)
         if (pGroup->GetLeader() == _player->m_playerInfo || pGroup->GetAssistantLeader() == _player->m_playerInfo)
         {
             WorldPacket data(MSG_RAID_READY_CHECK, 8);
-            data << GetPlayer()->GetGUID();
+            data << GetPlayer()->getGuid();
             /* send packet to group */
             pGroup->SendPacketToAll(&data);
         }
@@ -129,7 +129,7 @@ void WorldSession::HandleReadyCheckOpcode(WorldPacket& recvData)
         recvData >> ready;
 
         WorldPacket data(MSG_RAID_READY_CHECK_CONFIRM, 9);
-        data << _player->GetGUID();
+        data << _player->getGuid();
         data << ready;
 
         if (pGroup->GetLeader() && pGroup->GetLeader()->m_loggedInPlayer)

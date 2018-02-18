@@ -349,7 +349,7 @@ void WorldSession::HandleGuildQueryRanksOpcode(WorldPacket& recvData)
 
     if (Guild* guild = sGuildMgr.getGuildById(Arcemu::Util::GUID_LOPART(guildGuid)))
     {
-        if (guild->isMember(_player->GetGUID()))
+        if (guild->isMember(_player->getGuid()))
         {
             guild->sendGuildRankInfo(this);
         }
@@ -413,7 +413,7 @@ void WorldSession::HandleSaveGuildEmblemOpcode(WorldPacket& recvData)
     LogDebugFlag(LF_OPCODE, "MSG_SAVE_GUILD_EMBLEM %s: vendorGuid: %u style: %u, color: %u, borderStyle: %u, borderColor: %u, backgroundColor: %u", _player->GetName(),
         Arcemu::Util::GUID_LOPART(vendorGuid), emblemInfo.getStyle(), emblemInfo.getColor(), emblemInfo.getBorderStyle(), emblemInfo.getBorderColor(), emblemInfo.getBackgroundColor());
 
-    if (GetPlayer()->GetGuild()->getLeaderGUID() != _player->GetGUID())
+    if (GetPlayer()->GetGuild()->getLeaderGUID() != _player->getGuid())
     {
         Guild::sendSaveEmblemResult(this, GEM_ERROR_NOTGUILDMASTER);
     }
@@ -480,7 +480,7 @@ void WorldSession::HandleGuildQueryXPOpcode(WorldPacket& recvData)
 
     if (Guild* guild = sGuildMgr.getGuildById(guildId))
     {
-        if (guild->isMember(_player->GetGUID()))
+        if (guild->isMember(_player->getGuid()))
         {
             guild->sendGuildXP(this);
         }
@@ -584,7 +584,7 @@ void WorldSession::HandleGuildRequestMaxDailyXP(WorldPacket& recvData)
 
     if (Guild* guild = sGuildMgr.getGuildById(guildId))
     {
-        if (guild->isMember(_player->GetGUID()))
+        if (guild->isMember(_player->getGuid()))
         {
             WorldPacket data(SMSG_GUILD_MAX_DAILY_XP, 8);
             data << uint64_t(worldConfig.guild.maxXpPerDay);
@@ -1054,14 +1054,14 @@ void WorldSession::HandleCharterBuyOpcode(WorldPacket& recvData)
         else
         {
             Item* item = objmgr.CreateItem(item_ids[arena_type], _player);
-            Charter* charter = objmgr.CreateCharter(_player->GetLowGUID(), (CharterTypes)arenaIndex);
+            Charter* charter = objmgr.CreateCharter(_player->getGuidLow(), (CharterTypes)arenaIndex);
             if (item == nullptr || charter == nullptr)
             {
                 return;
             }
 
             charter->GuildName = name;
-            charter->ItemGuid = item->GetGUID();
+            charter->ItemGuid = item->getGuid();
 
             charter->UnkString = unkString;
             charter->Unk1 = unk3;
@@ -1134,14 +1134,14 @@ void WorldSession::HandleCharterBuyOpcode(WorldPacket& recvData)
             SendPacket(&data);
 
             Item* item = objmgr.CreateItem(ITEM_ENTRY_GUILD_CHARTER, _player);
-            charter = objmgr.CreateCharter(_player->GetLowGUID(), CHARTER_TYPE_GUILD);
+            charter = objmgr.CreateCharter(_player->getGuidLow(), CHARTER_TYPE_GUILD);
             if (item == nullptr || charter == nullptr)
             {
                 return;
             }
 
             charter->GuildName = name;
-            charter->ItemGuid = item->GetGUID();
+            charter->ItemGuid = item->getGuid();
 
             charter->UnkString = unkString;
             charter->Unk1 = unk3;
@@ -1322,7 +1322,7 @@ void WorldSession::HandleCharterSignOpcode(WorldPacket& recvData)
 
     for (uint32_t i = 0; i < charter->SignatureCount; ++i)
     {
-        if (charter->Signatures[i] == _player->GetGUID())
+        if (charter->Signatures[i] == _player->getGuid())
         {
             SendNotification(_player->GetSession()->LocalizedWorldSrv(79));
             return;
@@ -1334,7 +1334,7 @@ void WorldSession::HandleCharterSignOpcode(WorldPacket& recvData)
         return;
     }
 
-    charter->AddSignature(_player->GetLowGUID());
+    charter->AddSignature(_player->getGuidLow());
     charter->SaveToDB();
     _player->m_charters[charter->CharterType] = charter;
     _player->SaveToDB(false);
@@ -1347,7 +1347,7 @@ void WorldSession::HandleCharterSignOpcode(WorldPacket& recvData)
 
     WorldPacket data(SMSG_PETITION_SIGN_RESULTS, 100);
     data << uint64_t(itemGuid);
-    data << uint64_t(_player->GetGUID());
+    data << uint64_t(_player->getGuid());
     data << uint32_t(0);
     player->GetSession()->SendPacket(&data);
 
@@ -1374,7 +1374,7 @@ void WorldSession::HandleCharterDeclineOpcode(WorldPacket& recv_data)
     if (Player* owner = objmgr.GetPlayer(charter->GetLeader()))
     {
         WorldPacket data(MSG_PETITION_DECLINE, 8);
-        data << uint64_t(_player->GetGUID());
+        data << uint64_t(_player->getGuid());
         owner->GetSession()->SendPacket(&data);
     }
 }
@@ -1469,7 +1469,7 @@ void WorldSession::HandleCharterTurnInCharterOpcode(WorldPacket& recv_data)
         arenaTeam->m_borderColour = bordercolor;
         arenaTeam->m_borderStyle = border;
         arenaTeam->m_backgroundColour = background;
-        arenaTeam->m_leader = _player->GetLowGUID();
+        arenaTeam->m_leader = _player->getGuidLow();
         arenaTeam->m_stat_rating = 1500;
 
         objmgr.AddArenaTeam(arenaTeam);
@@ -1529,7 +1529,7 @@ void WorldSession::HandleCharterRenameOpcode(WorldPacket& recv_data)
 // GuildFinder
 void WorldSession::HandleGuildFinderAddRecruit(WorldPacket& recvData)
 {
-    if (sGuildFinderMgr.getAllMembershipRequestsForPlayer(GetPlayer()->GetLowGUID()).size() == 10)
+    if (sGuildFinderMgr.getAllMembershipRequestsForPlayer(GetPlayer()->getGuidLow()).size() == 10)
     {
         return;
     }
@@ -1589,7 +1589,7 @@ void WorldSession::HandleGuildFinderAddRecruit(WorldPacket& recvData)
         return;
     }
 
-    MembershipRequest request = MembershipRequest(GetPlayer()->GetLowGUID(), guildLowGuid, availability, classRoles, guildInterests, comment, time(nullptr));
+    MembershipRequest request = MembershipRequest(GetPlayer()->getGuidLow(), guildLowGuid, availability, classRoles, guildInterests, comment, time(nullptr));
     sGuildFinderMgr.addMembershipRequest(guildLowGuid, request);
 }
 
@@ -1627,7 +1627,7 @@ void WorldSession::HandleGuildFinderBrowse(WorldPacket& recv_data)
 
     Player* player = GetPlayer();
 
-    LFGuildPlayer settings(player->GetLowGUID(), static_cast<uint8_t>(classRoles), static_cast<uint8_t>(availability), static_cast<uint8_t>(guildInterests), ANY_FINDER_LEVEL);
+    LFGuildPlayer settings(player->getGuidLow(), static_cast<uint8_t>(classRoles), static_cast<uint8_t>(availability), static_cast<uint8_t>(guildInterests), ANY_FINDER_LEVEL);
     LFGuildStore guildList = sGuildFinderMgr.getGuildsMatchingSetting(settings, player->GetTeamReal());
     uint32_t guildCount = static_cast<uint32_t>(guildList.size());
 
@@ -1687,7 +1687,7 @@ void WorldSession::HandleGuildFinderBrowse(WorldPacket& recv_data)
 
         bufferData.WriteByteSeq(guildGUID[7]);
 
-        bufferData << uint8_t(sGuildFinderMgr.hasRequest(player->GetLowGUID(), guild->getId()));
+        bufferData << uint8_t(sGuildFinderMgr.hasRequest(player->getGuidLow(), guild->getId()));
 
         bufferData.WriteByteSeq(guildGUID[2]);
         bufferData.WriteByteSeq(guildGUID[0]);
@@ -1743,7 +1743,7 @@ void WorldSession::HandleGuildFinderDeclineRecruit(WorldPacket& recv_data)
 
 void WorldSession::HandleGuildFinderGetApplications(WorldPacket& /*recv_data*/)
 {
-    std::list<MembershipRequest> applicatedGuilds = sGuildFinderMgr.getAllMembershipRequestsForPlayer(GetPlayer()->GetLowGUID());
+    std::list<MembershipRequest> applicatedGuilds = sGuildFinderMgr.getAllMembershipRequestsForPlayer(GetPlayer()->getGuidLow());
     uint32_t applicationsCount = static_cast<uint32_t>(applicatedGuilds.size());
     WorldPacket data(SMSG_LF_GUILD_MEMBERSHIP_LIST_UPDATED, 7 + 54 * applicationsCount);
     data.writeBits(applicationsCount, 20);
@@ -1801,7 +1801,7 @@ void WorldSession::HandleGuildFinderGetApplications(WorldPacket& /*recv_data*/)
         data.flushBits();
         data.append(bufferData);
     }
-    data << uint32_t(10 - sGuildFinderMgr.countRequestsFromPlayer(GetPlayer()->GetLowGUID()));
+    data << uint32_t(10 - sGuildFinderMgr.countRequestsFromPlayer(GetPlayer()->getGuidLow()));
 
     GetPlayer()->SendPacket(&data);
 }
@@ -1892,7 +1892,7 @@ void WorldSession::HandleGuildFinderPostRequest(WorldPacket& /*recv_data*/)
     bool isGuildMaster = true;
     if (Guild* guild = sGuildMgr.getGuildById(player->GetGuildId()))
     {
-        if (guild->getLeaderGUID() != player->GetGUID())
+        if (guild->getLeaderGUID() != player->getGuid())
         {
             isGuildMaster = false;
         }
@@ -1949,7 +1949,7 @@ void WorldSession::HandleGuildFinderRemoveRecruit(WorldPacket& recv_data)
     recv_data.ReadByteSeq(guildGuid[2]);
     recv_data.ReadByteSeq(guildGuid[7]);
 
-    sGuildFinderMgr.removeMembershipRequest(Arcemu::Util::GUID_LOPART(GetPlayer()->GetGUID()), Arcemu::Util::GUID_LOPART(guildGuid));
+    sGuildFinderMgr.removeMembershipRequest(Arcemu::Util::GUID_LOPART(GetPlayer()->getGuid()), Arcemu::Util::GUID_LOPART(guildGuid));
 }
 
 void WorldSession::HandleGuildFinderSetGuildPost(WorldPacket& recv_data)
@@ -2001,7 +2001,7 @@ void WorldSession::HandleGuildFinderSetGuildPost(WorldPacket& recv_data)
 
     if (Guild* guild = sGuildMgr.getGuildById(player->GetGuildId()))
     {
-        if (guild->getLeaderGUID() != player->GetGUID())
+        if (guild->getLeaderGUID() != player->getGuid())
         {
             return;
         }

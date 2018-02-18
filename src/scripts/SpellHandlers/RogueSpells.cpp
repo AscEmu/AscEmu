@@ -58,7 +58,7 @@ bool Shiv(uint8_t /*effectIndex*/, Spell* pSpell)
     Unit* pTarget = pSpell->GetUnitTarget();
     if (!pSpell->p_caster || !pTarget) return true;
 
-    pSpell->p_caster->CastSpell(pTarget->GetGUID(), 5940, true);
+    pSpell->p_caster->CastSpell(pTarget->getGuid(), 5940, true);
 
     Item* it = pSpell->p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
     if (!it)
@@ -77,7 +77,7 @@ bool Shiv(uint8_t /*effectIndex*/, Spell* pSpell)
 
                 if (sp->custom_c_is_flags & SPELL_FLAG_IS_POISON)
                 {
-                    pSpell->p_caster->CastSpell(pTarget->GetGUID(), Entry->spell[c], true);
+                    pSpell->p_caster->CastSpell(pTarget->getGuid(), Entry->spell[c], true);
                 }
             }
         }
@@ -270,7 +270,7 @@ bool KillingSpreePeriodicDummy(uint8_t /*effectIndex*/, Aura* a, bool /*apply*/)
                 if (!itr->IsUnit() || !static_cast<Unit*>(itr)->isAlive())
                     continue;
 
-                uint64 spellTarget = itr->GetGUID();
+                uint64 spellTarget = itr->getGuid();
                 //SPELL_EFFECT_TELEPORT
                 p_target->CastSpell(spellTarget, 57840, true);
                 //SPELL_EFFECT_NORMALIZED_WEAPON_DMG and triggering 57842 with the same effect

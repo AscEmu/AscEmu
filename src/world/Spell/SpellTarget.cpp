@@ -440,7 +440,7 @@ bool Spell::AddTarget(uint32 i, uint32 TargetType, Object* obj)
             extended = DidHit(i, tmp);
             u_caster = tmp;
         }
-        ModeratedTargets.push_back(SpellTargetMod(obj->GetGUID(), hitresult));
+        ModeratedTargets.push_back(SpellTargetMod(obj->getGuid(), hitresult));
         return false;
     }
     else
@@ -448,10 +448,10 @@ bool Spell::AddTarget(uint32 i, uint32 TargetType, Object* obj)
         //check target isnt already in
         for (std::vector<uint64_t>::iterator itr = m_targetUnits[i].begin(); itr != m_targetUnits[i].end(); ++itr)
         {
-            if (obj->GetGUID() == *itr)
+            if (obj->getGuid() == *itr)
                 return false;
         }
-        t->push_back(obj->GetGUID());
+        t->push_back(obj->getGuid());
     }
 
     //final checks, require line of sight unless range/radius is 50000 yards
@@ -518,7 +518,7 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
         if (TargetType & (SPELL_TARGET_OBJECT_SELF | SPELL_TARGET_AREA_PARTY | SPELL_TARGET_AREA_RAID))
         {
             t->m_targetMask |= TARGET_FLAG_UNIT;
-            t->m_unitTarget = u_caster->GetGUID();
+            t->m_unitTarget = u_caster->getGuid();
             result = true;
         }
 
@@ -542,13 +542,13 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
                         if (target->IsUnit())
                         {
                             t->m_targetMask |= TARGET_FLAG_UNIT;
-                            t->m_unitTarget = target->GetGUID();
+                            t->m_unitTarget = target->getGuid();
                             result = true;
                         }
                         else if (target->IsGameObject())
                         {
                             t->m_targetMask |= TARGET_FLAG_OBJECT;
-                            t->m_unitTarget = target->GetGUID();
+                            t->m_unitTarget = target->getGuid();
                             result = true;
                         }
                     }
@@ -567,13 +567,13 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
                         if (target->IsUnit())
                         {
                             t->m_targetMask |= TARGET_FLAG_UNIT;
-                            t->m_unitTarget = target->GetGUID();
+                            t->m_unitTarget = target->getGuid();
                             result = true;
                         }
                         else if (target->IsGameObject())
                         {
                             t->m_targetMask |= TARGET_FLAG_OBJECT;
-                            t->m_unitTarget = target->GetGUID();
+                            t->m_unitTarget = target->getGuid();
                             result = true;
                         }
                     }
@@ -587,13 +587,13 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
                         if (target->IsUnit())
                         {
                             t->m_targetMask |= TARGET_FLAG_UNIT;
-                            t->m_unitTarget = target->GetGUID();
+                            t->m_unitTarget = target->getGuid();
                             result = true;
                         }
                         else if (target->IsGameObject())
                         {
                             t->m_targetMask |= TARGET_FLAG_OBJECT;
-                            t->m_unitTarget = target->GetGUID();
+                            t->m_unitTarget = target->getGuid();
                             result = true;
                         }
                     }
@@ -605,7 +605,7 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
                     if (target != nullptr)
                     {
                         t->m_targetMask |= TARGET_FLAG_UNIT;
-                        t->m_unitTarget = target->GetGUID();
+                        t->m_unitTarget = target->getGuid();
                     }
                 }
             }
@@ -616,13 +616,13 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
                 if (target != nullptr)
                 {
                     t->m_targetMask |= TARGET_FLAG_UNIT;
-                    t->m_unitTarget = target->GetGUID();
+                    t->m_unitTarget = target->getGuid();
                     result = true;
                 }
                 else
                 {
                     t->m_targetMask |= TARGET_FLAG_UNIT;
-                    t->m_unitTarget = u_caster->GetGUID();
+                    t->m_unitTarget = u_caster->getGuid();
                     result = true;
                 }
             }
@@ -687,7 +687,7 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
         else if (TargetType & SPELL_TARGET_AREA_SELF)
         {
             t->m_targetMask |= TARGET_FLAG_SOURCE_LOCATION | TARGET_FLAG_UNIT;
-            t->m_unitTarget = u_caster->GetGUID();
+            t->m_unitTarget = u_caster->getGuid();
             t->setSource(u_caster->GetPosition());
             t->setDestination(u_caster->GetPosition());
             result = true;
@@ -700,14 +700,14 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
                 if (u_caster->GetAIInterface()->getNextTarget() != nullptr)
                 {
                     t->m_targetMask |= TARGET_FLAG_UNIT;
-                    t->m_unitTarget = u_caster->GetAIInterface()->getNextTarget()->GetGUID();
+                    t->m_unitTarget = u_caster->GetAIInterface()->getNextTarget()->getGuid();
                     result = true;
                 }
             }
             else
             {
                 t->m_targetMask |= TARGET_FLAG_UNIT;
-                t->m_unitTarget = u_caster->GetGUID();
+                t->m_unitTarget = u_caster->getGuid();
                 result = true;
             }
         }

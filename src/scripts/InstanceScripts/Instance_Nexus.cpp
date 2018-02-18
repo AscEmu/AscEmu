@@ -576,16 +576,16 @@ class NexusScript : public InstanceScript
             switch (pCreature->GetEntry())
             {
                 case CN_KERISTRASZA:
-                    mKeristraszaGUID = pCreature->GetLowGUID();
+                    mKeristraszaGUID = pCreature->getGuidLow();
                     break;
                 case CN_ANOMALUS:
-                    mAnomalusGUID = pCreature->GetLowGUID();
+                    mAnomalusGUID = pCreature->getGuidLow();
                     break;
                 case CN_TELESTRA:
-                    mTelestraGUID = pCreature->GetLowGUID();
+                    mTelestraGUID = pCreature->getGuidLow();
                     break;
                 case CN_ORMOROK:
-                    mOrmorokGUID = pCreature->GetLowGUID();
+                    mOrmorokGUID = pCreature->getGuidLow();
                     break;
             }
         }

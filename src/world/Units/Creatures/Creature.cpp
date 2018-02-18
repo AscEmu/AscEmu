@@ -50,8 +50,8 @@ Creature::Creature(uint64 guid)
     memset(m_uint32Values, 0, ((UNIT_END)*sizeof(uint32)));
     m_updateMask.SetCount(UNIT_END);
     setUInt32Value(OBJECT_FIELD_TYPE, TYPE_UNIT | TYPE_OBJECT);
-    SetGUID(guid);
-    m_wowGuid.Init(GetGUID());
+    setGuid(guid);
+    m_wowGuid.Init(getGuid());
 
 
     m_quests = NULL;
@@ -195,7 +195,7 @@ void Creature::OnRemoveCorpse()
     if (IsInWorld() && (int32)m_mapMgr->GetInstanceID() == m_instanceId)
     {
 
-        LOG_DETAIL("Removing corpse of " I64FMT "...", GetGUID());
+        LOG_DETAIL("Removing corpse of " I64FMT "...", getGuid());
 
         setDeathState(DEAD);
         m_position = m_spawnLocation;
@@ -253,7 +253,7 @@ void Creature::OnRespawn(MapMgr* m)
         }
     }
 
-    LOG_DETAIL("Respawning " I64FMT "...", GetGUID());
+    LOG_DETAIL("Respawning " I64FMT "...", getGuid());
     setHealth(GetMaxHealth());
     setUInt32Value(UNIT_DYNAMIC_FLAGS, 0); // not tagging shit
     if (m_spawn)
@@ -1220,7 +1220,7 @@ void Creature::FormationLinkUp(uint32 SqlId)
     Creature* creature = m_mapMgr->GetSqlIdCreature(SqlId);
     if (creature != nullptr)
     {
-        m_aiInterface->m_formationLinkTarget = creature->GetGUID();
+        m_aiInterface->m_formationLinkTarget = creature->getGuid();
         haslinkupevent = false;
         event_RemoveEvents(EVENT_CREATURE_FORMATION_LINKUP);
     }
@@ -1235,7 +1235,7 @@ void Creature::ChannelLinkUpGO(uint32 SqlId)
     if (go != nullptr)
     {
         event_RemoveEvents(EVENT_CREATURE_CHANNEL_LINKUP);
-        SetChannelSpellTargetGUID(go->GetGUID());
+        SetChannelSpellTargetGUID(go->getGuid());
         SetChannelSpellId(m_spawn->channel_spell);
     }
 }
@@ -1249,7 +1249,7 @@ void Creature::ChannelLinkUpCreature(uint32 SqlId)
     if (creature != nullptr)
     {
         event_RemoveEvents(EVENT_CREATURE_CHANNEL_LINKUP);
-        SetChannelSpellTargetGUID(creature->GetGUID());
+        SetChannelSpellTargetGUID(creature->getGuid());
         SetChannelSpellId(m_spawn->channel_spell);
     }
 }
@@ -1289,7 +1289,7 @@ bool Creature::Teleport(const LocationVector& vec, MapMgr* map)
     if (map == nullptr)
         return false;
 
-    if (map->GetCreature(this->GetLowGUID()))
+    if (map->GetCreature(this->getGuidLow()))
     {
         this->SetPosition(vec);
         return true;
@@ -2240,7 +2240,7 @@ void Creature::PrepareForRemove()
         Unit* summoner = GetMapMgrUnit(GetCreatedByGUID());
         if (summoner != NULL)
         {
-            if (summoner->GetSummonedCritterGUID() == GetGUID())
+            if (summoner->GetSummonedCritterGUID() == getGuid())
                 summoner->SetSummonedCritterGUID(0);
 
             if (GetCreatedBySpell() != 0)
@@ -2252,7 +2252,7 @@ void Creature::PrepareForRemove()
     {
         if (GetCreatureProperties()->Rank == 3)
         {
-            GetMapMgr()->RemoveCombatInProgress(GetGUID());
+            GetMapMgr()->RemoveCombatInProgress(getGuid());
         }
     }
 }
@@ -2434,7 +2434,7 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
             for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
             {
                 Spell* curSpell = attacker->getCurrentSpell(CurrentSpellType(i));
-                if (curSpell != nullptr && curSpell->m_targets.m_unitTarget == GetGUID())
+                if (curSpell != nullptr && curSpell->m_targets.m_unitTarget == getGuid())
                     attacker->interruptSpellWithSpellType(CurrentSpellType(i));
             }
         }
@@ -2511,7 +2511,7 @@ void Creature::SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 
     WorldPacket data(SMSG_MESSAGECHAT, 35 + CreatureNameLength + MessageLength);
     data << type;
     data << lang;
-    data << GetGUID();
+    data << getGuid();
     data << uint32(0);            // new in 2.1.0
     data << uint32(CreatureNameLength);
     data << name;
@@ -2554,7 +2554,7 @@ void Creature::SendTimedScriptTextChatMessage(uint32 textid, uint32 delay)
     WorldPacket data(SMSG_MESSAGECHAT, 35 + CreatureNameLength + MessageLength);
     data << uint8(ct->type);            // f.e. CHAT_MSG_MONSTER_SAY enum ChatMsg (perfect name for this enum XD)
     data << uint32(ct->language);       // f.e. LANG_UNIVERSAL enum Languages
-    data << uint64(GetGUID());          // guid of the npc
+    data << uint64(getGuid());          // guid of the npc
     data << uint32(0);
     data << uint32(CreatureNameLength); // the length of the npc name (needed to calculate text beginning)
     data << name;                       // name of the npc
@@ -2578,7 +2578,7 @@ void Creature::SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg,
     WorldPacket data(SMSG_MESSAGECHAT, 35 + UnitNameLength + MessageLength);
     data << type;
     data << lang;
-    data << GetGUID();
+    data << getGuid();
     data << uint32(0);            // new in 2.1.0
     data << uint32(UnitNameLength);
     data << GetCreatureProperties()->Name;
@@ -2620,7 +2620,7 @@ void Creature::SetType(uint32 t)
 
 void Creature::BuildPetSpellList(WorldPacket& data)
 {
-    data << uint64(GetGUID());
+    data << uint64(getGuid());
     data << uint16(creature_properties->Family);
     data << uint32(0);
 

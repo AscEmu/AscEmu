@@ -699,7 +699,7 @@ const char* SpellAuraNames[TOTAL_SPELL_AURAS] =
 Player* Aura::GetPlayerCaster()
 {
     //caster and target are the same
-    if (m_casterGuid == m_target->GetGUID())
+    if (m_casterGuid == m_target->getGuid())
     {
         if (m_target->IsPlayer())
         {
@@ -723,7 +723,7 @@ Player* Aura::GetPlayerCaster()
 
 Unit* Aura::GetUnitCaster()
 {
-    if (m_casterGuid == m_target->GetGUID())
+    if (m_casterGuid == m_target->getGuid())
         return m_target;
 
     if (m_target->GetMapMgr())
@@ -736,7 +736,7 @@ Object* Aura::GetCaster()
 {
     if (m_target == nullptr)
         return nullptr;
-    if (m_casterGuid == m_target->GetGUID())
+    if (m_casterGuid == m_target->getGuid())
         return m_target;
     if (m_target->GetMapMgr())
         return m_target->GetMapMgr()->_GetObject(m_casterGuid);
@@ -753,7 +753,7 @@ Aura::Aura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool 
     m_temporary = temporary; // Aura saving related
     m_deleted = false;
     m_ignoreunapply = false;
-    m_casterGuid = caster->GetGUID();
+    m_casterGuid = caster->getGuid();
     ARCEMU_ASSERT(target != NULL);
     m_target = target;
 
@@ -765,7 +765,7 @@ Aura::Aura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool 
     if (i_caster != nullptr)
     {
         m_castedItemId = i_caster->getItemProperties()->ItemId;
-        itemCasterGUID = i_caster->GetGUID();
+        itemCasterGUID = i_caster->getGuid();
     }
     else
     {
@@ -824,7 +824,7 @@ Aura::Aura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool 
 
     m_visualSlot = 0xFF;
     pSpellId = 0;
-    // LOG_DETAIL("Aura::Constructor %u (%s) from %u.", m_spellProto->getId(), m_spellProto->Name, m_target->GetLowGUID());
+    // LOG_DETAIL("Aura::Constructor %u (%s) from %u.", m_spellProto->getId(), m_spellProto->Name, m_target->getGuidLow());
     m_auraSlot = 0xffff;
     m_interrupted = -1;
     m_flags = 0;
@@ -857,7 +857,7 @@ void Aura::Remove()
 
     sHookInterface.OnAuraRemove(this);
 
-    LogDebugFlag(LF_AURA, "Removing aura %u from unit %u", m_spellInfo->getId(), m_target->GetGUID());
+    LogDebugFlag(LF_AURA, "Removing aura %u from unit %u", m_spellInfo->getId(), m_target->getGuid());
 
     m_deleted = true;
 
@@ -879,7 +879,7 @@ void Aura::Remove()
                 if (spell_entry->getDurationIndex() < m_spellInfo->getDurationIndex())
                     m_target->RemoveAura(GetSpellInfo()->getEffectTriggerSpell(x));
         }
-        else if (IsAreaAura() && m_casterGuid == m_target->GetGUID())
+        else if (IsAreaAura() && m_casterGuid == m_target->getGuid())
             ClearAATargets();
     }
 
@@ -917,7 +917,7 @@ void Aura::Remove()
         if (caster != m_target)
         {
             caster->CombatStatus.RemoveAttackTarget(m_target);
-            m_target->CombatStatus.RemoveAttacker(caster, caster->GetGUID());
+            m_target->CombatStatus.RemoveAttacker(caster, caster->getGuid());
         }
     }
     else
@@ -1020,7 +1020,7 @@ void Aura::ApplyModifiers(bool apply)
         {
             mod = &m_modList[x];
             LogDebugFlag(LF_AURA, "WORLD: target=%u, Spell Aura id=%u (%s), SpellId=%u, EffectIndex=%u, apply=%s, duration=%u, miscValue=%d, damage=%d",
-                      m_target->GetLowGUID(), mod->m_type, SpellAuraNames[mod->m_type], m_spellInfo->getId(), mod->m_effectIndex, apply ? "true" : "false", GetDuration(), mod->m_miscValue, mod->m_amount);
+                      m_target->getGuidLow(), mod->m_type, SpellAuraNames[mod->m_type], m_spellInfo->getId(), mod->m_effectIndex, apply ? "true" : "false", GetDuration(), mod->m_miscValue, mod->m_amount);
             (*this.*SpellAuraHandler[mod->m_type])(apply);
             if (apply)
             {
@@ -1047,7 +1047,7 @@ void Aura::UpdateModifiers()
         if (mod->m_type < TOTAL_SPELL_AURAS)
         {
             LogDebugFlag(LF_AURA, "WORLD: Update Aura mods : target = %u , Spell Aura id = %u (%s), SpellId  = %u, EffectIndex = %u, duration = %u, damage = %d",
-                      m_target->GetLowGUID(), mod->m_type, SpellAuraNames[mod->m_type], m_spellInfo->getId(), mod->m_effectIndex, GetDuration(), mod->m_amount);
+                      m_target->getGuidLow(), mod->m_type, SpellAuraNames[mod->m_type], m_spellInfo->getId(), mod->m_effectIndex, GetDuration(), mod->m_amount);
             switch (mod->m_type)
             {
                 case SPELL_AURA_MOD_DECREASE_SPEED:
@@ -1079,18 +1079,18 @@ void Aura::EventUpdateGroupAA(float r)
 
     if (!owner->InGroup())
     {
-        if (m_target->GetGUID() != owner->GetGUID())
+        if (m_target->getGuid() != owner->getGuid())
         {
             if ((m_target->getDistanceSq(owner) <= r))
             {
                 if (!owner->HasAura(m_spellInfo->getId()))
-                    targets.insert(owner->GetGUID());
+                    targets.insert(owner->getGuid());
             }
             else
             {
                 if (owner->HasAura(m_spellInfo->getId()))
                 {
-                    targets.erase(owner->GetLowGUID());
+                    targets.erase(owner->getGuidLow());
                     owner->RemoveAura(m_spellInfo->getId());
                 }
             }
@@ -1123,7 +1123,7 @@ void Aura::EventUpdateGroupAA(float r)
             if (op->HasAura(m_spellInfo->getId()))
                 continue;
 
-            targets.insert(op->GetGUID());
+            targets.insert(op->getGuid());
         }
 
         owner->GetGroup()->Unlock();
@@ -1149,7 +1149,7 @@ void Aura::EventUpdateGroupAA(float r)
         if ((m_target->GetPhase() & tp->GetPhase()) == 0)
             removable = true;
 
-        if ((tp->GetGUID() != owner->GetGUID()) && !tp->InGroup())
+        if ((tp->getGuid() != owner->getGuid()) && !tp->InGroup())
             removable = true;
         else
         {
@@ -1188,18 +1188,18 @@ void Aura::EventUpdateRaidAA(float r)
 
     if (!owner->InGroup())
     {
-        if (m_target->GetGUID() != owner->GetGUID())
+        if (m_target->getGuid() != owner->getGuid())
         {
             if ((m_target->getDistanceSq(owner) <= r))
             {
                 if (!owner->HasAura(m_spellInfo->getId()))
-                    targets.insert(owner->GetGUID());
+                    targets.insert(owner->getGuid());
             }
             else
             {
                 if (owner->HasAura(m_spellInfo->getId()))
                 {
-                    targets.erase(owner->GetLowGUID());
+                    targets.erase(owner->getGuidLow());
                     owner->RemoveAura(m_spellInfo->getId());
                 }
             }
@@ -1240,7 +1240,7 @@ void Aura::EventUpdateRaidAA(float r)
                 if (op->HasAura(m_spellInfo->getId()))
                     continue;
 
-                targets.insert(op->GetGUID());
+                targets.insert(op->getGuid());
             }
         }
 
@@ -1268,7 +1268,7 @@ void Aura::EventUpdateRaidAA(float r)
         if ((m_target->GetPhase() & tp->GetPhase()) == 0)
             removable = true;
 
-        if ((tp->GetGUID() != owner->GetGUID()) && !tp->InGroup())
+        if ((tp->getGuid() != owner->getGuid()) && !tp->InGroup())
             removable = true;
 
         if (removable)
@@ -1357,7 +1357,7 @@ void Aura::EventUpdateFriendAA(float r)
         if (ou->HasAura(m_spellInfo->getId()))
             continue;
 
-        targets.insert(ou->GetGUID());
+        targets.insert(ou->getGuid());
     }
 
     for (AreaAuraList::iterator itr = targets.begin(); itr != targets.end();)
@@ -1424,7 +1424,7 @@ void Aura::EventUpdateEnemyAA(float r)
         if (ou->HasAura(m_spellInfo->getId()))
             continue;
 
-        targets.insert(ou->GetGUID());
+        targets.insert(ou->getGuid());
     }
 
     for (AreaAuraList::iterator itr = targets.begin(); itr != targets.end();)
@@ -1669,7 +1669,7 @@ void Aura::SpellAuraBindSight(bool apply)
         return;
 
     if (apply)
-        caster->SetFarsightTarget(m_target->GetGUID());
+        caster->SetFarsightTarget(m_target->getGuid());
     else
         caster->SetFarsightTarget(0);
 }
@@ -1755,7 +1755,7 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
                     if (!dmg)
                         return;
                     Spell* spell = sSpellFactoryMgr.NewSpell(c, parentsp, false, nullptr);
-                    SpellCastTargets castTargets(m_target->GetGUID());
+                    SpellCastTargets castTargets(m_target->getGuid());
 
                     //this is so not good, maybe parent spell has more then dmg effect and we use it to calc our new dmg :(
                     dmg = 0;
@@ -1857,7 +1857,7 @@ void Aura::EventPeriodicDamage(uint32 amount)
     uint32 vproc = PROC_ON_ANY_HOSTILE_ACTION | PROC_ON_ANY_DAMAGE_VICTIM;
     bool is_critical = false;
 
-    if (m_target->GetGUID() != m_casterGuid)	//don't use resist when cast on self-- this is some internal stuff
+    if (m_target->getGuid() != m_casterGuid)	//don't use resist when cast on self-- this is some internal stuff
     {
         if (c != nullptr)
         {
@@ -1968,7 +1968,7 @@ void Aura::EventPeriodicDamage(uint32 amount)
     else
         m_target->DealDamage(m_target, static_cast<int32>(res), 2, 0, GetSpellId());
 
-    if (m_target->GetGUID() != m_casterGuid && c != nullptr)	//don't use resist when cast on self-- this is some internal stuff
+    if (m_target->getGuid() != m_casterGuid && c != nullptr)	//don't use resist when cast on self-- this is some internal stuff
     {
         int32 dmg = static_cast<int32>(res);
 
@@ -2087,8 +2087,8 @@ void Aura::SpellAuraModCharm(bool apply)
         m_target->SetFaction(caster->GetFaction());
         m_target->updateInRangeOppositeFactionSet();
         m_target->GetAIInterface()->Init(m_target, AI_SCRIPT_PET, Movement::WP_MOVEMENT_SCRIPT_NONE, caster);
-        m_target->SetCharmedByGUID(caster->GetGUID());
-        caster->SetCharmedUnitGUID(target->GetGUID());
+        m_target->SetCharmedByGUID(caster->getGuid());
+        caster->SetCharmedUnitGUID(target->getGuid());
         //damn it, the other effects of enslave demon will agro him on us anyway :S
         m_target->GetAIInterface()->WipeHateList();
         m_target->GetAIInterface()->WipeTargetList();
@@ -2099,7 +2099,7 @@ void Aura::SpellAuraModCharm(bool apply)
         if (caster->GetSession())   // crashfix
         {
             WorldPacket data(SMSG_PET_SPELLS, 500);
-            data << target->GetGUID();
+            data << target->getGuid();
             data << uint16(0);
             data << uint32(0x1000);
             data << uint32(0x100);
@@ -3846,7 +3846,7 @@ void Aura::SpellAuraModDecreaseSpeed(bool apply)
 
             default:
                 /* burlex: this would be better as a if (caster is hostile to target) then effect = negative) */
-                if (m_casterGuid != m_target->GetGUID())
+                if (m_casterGuid != m_target->getGuid())
                     SetNegative();
                 break;
         }
@@ -4071,7 +4071,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
 
                 Spell* sp = sSpellFactoryMgr.NewSpell(m_target, spellInfo, true, nullptr);
                 SpellCastTargets tgt;
-                tgt.m_unitTarget = m_target->GetGUID();
+                tgt.m_unitTarget = m_target->getGuid();
                 sp->prepare(&tgt);
             }
             else
@@ -4213,7 +4213,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
 
                         Spell* sp = sSpellFactoryMgr.NewSpell(m_target, spellInfo, true, nullptr);
                         SpellCastTargets tgt;
-                        tgt.m_unitTarget = m_target->GetGUID();
+                        tgt.m_unitTarget = m_target->getGuid();
                         sp->prepare(&tgt);
                     }
                 }
@@ -4244,7 +4244,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
 
         Spell* sp = sSpellFactoryMgr.NewSpell(m_target, spellInfo, true, nullptr);
         SpellCastTargets tgt;
-        tgt.m_unitTarget = m_target->GetGUID();
+        tgt.m_unitTarget = m_target->getGuid();
         sp->prepare(&tgt);
 
         /*if (spellId2 != 0) This cannot be true CID 52824
@@ -4876,8 +4876,8 @@ void Aura::EventPeriodicLeech(uint32 amount)
 void Aura::SendTickImmune(Unit* target, Unit* caster)
 {
     WorldPacket data(SMSG_SPELLORDAMAGE_IMMUNE, 21);
-    data << (caster ? caster->GetGUID() : target->GetGUID());
-    data << target->GetGUID();
+    data << (caster ? caster->getGuid() : target->getGuid());
+    data << target->getGuid();
     data << GetSpellInfo()->getId();
     data << uint8(1);
     target->SendMessageToSet(&data, true);
@@ -5434,7 +5434,7 @@ void Aura::SpellAuraFeignDeath(bool apply)
             p_target->GetSession()->SendPacket(&data);
 
             data.Initialize(SMSG_CLEAR_TARGET);
-            data << p_target->GetGUID();
+            data << p_target->getGuid();
 
             p_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_COMBAT);
 
@@ -5933,7 +5933,7 @@ void Aura::SpellAuraSplitDamage(bool apply)
         (caster != nullptr) &&
         (m_target != nullptr) &&
         caster->IsPet() &&
-        caster->GetGUID() == m_target->GetGUID())
+        caster->getGuid() == m_target->getGuid())
         return;
 
     if (m_areaAura)
@@ -5964,7 +5964,7 @@ void Aura::SpellAuraSplitDamage(bool apply)
         ds->m_pctDamageSplit = mod->m_miscValue / 100.0f;
         ds->damage_type = static_cast<uint8>(mod->m_type);
         ds->creator = (void*)this;
-        ds->m_target = destination->GetGUID();
+        ds->m_target = destination->getGuid();
         source->m_damageSplitTarget = ds;
     }
     else
@@ -6110,7 +6110,7 @@ void Aura::SpellAuraChannelDeathItem(bool apply)
                     if (!item)
                         return;
 
-                    item->SetCreatorGUID(pCaster->GetGUID());
+                    item->SetCreatorGUID(pCaster->getGuid());
                     if (!pCaster->GetItemInterface()->AddItemToFreeSlot(item))
                     {
                         pCaster->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
@@ -6239,11 +6239,11 @@ void Aura::SpellAuraModDetectRange(bool apply)
     if (apply)
     {
         SetNegative();
-        m_caster->setDetectRangeMod(m_target->GetGUID(), mod->m_amount);
+        m_caster->setDetectRangeMod(m_target->getGuid(), mod->m_amount);
     }
     else
     {
-        m_caster->unsetDetectRangeMod(m_target->GetGUID());
+        m_caster->unsetDetectRangeMod(m_target->getGuid());
     }
 }
 
@@ -6299,7 +6299,7 @@ void Aura::SpellAuraMagnet(bool apply)
         if (!caster)
             return;
         SetPositive();
-        m_target->m_magnetcaster = caster->GetGUID();
+        m_target->m_magnetcaster = caster->getGuid();
     }
     else
     {
@@ -8771,7 +8771,7 @@ void Aura::SpellAuraSpiritOfRedemption(bool apply)
         SpellInfo* sorInfo = sSpellCustomizations.GetSpellInfo(27792);
         Spell* sor = sSpellFactoryMgr.NewSpell(m_target, sorInfo, true, nullptr);
         SpellCastTargets spellTargets;
-        spellTargets.m_unitTarget = m_target->GetGUID();
+        spellTargets.m_unitTarget = m_target->getGuid();
         sor->prepare(&spellTargets);
     }
     else

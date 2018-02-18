@@ -139,7 +139,7 @@ void WorldSession::HandleMoveTeleportAckOpcode(WorldPacket& recv_data)
     recv_data >> flags;
     recv_data >> time;
 
-    if (m_MoverWoWGuid.GetOldGuid() == _player->GetGUID())
+    if (m_MoverWoWGuid.GetOldGuid() == _player->getGuid())
     {
         if (worldConfig.antiHack.isTeleportHackCheckEnabled && !(HasGMPermissions() && worldConfig.antiHack.isAntiHackCheckDisabledForGm) && _player->GetPlayerStatus() != TRANSFER_PENDING)
         {
@@ -374,21 +374,21 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /* Read Movement Data Packet                                            */
     /************************************************************************/
     /*AscEmu::Packets::MovementPacket packet(recv_data.GetOpcode(), 0);
-    packet.guid = mover->GetGUID();
+    packet.guid = mover->getGuid();
     packet.info = movement_info;*/
 
     AscEmu::Packets::MovementPacket packet;
     packet.deserialise(recv_data);
     movement_info = packet.info;
 
-    if (packet.guid != mover->GetGUID())
+    if (packet.guid != mover->getGuid())
         return;
 
     /*WoWGuid guid;
     recv_data >> guid;
     movement_info.init(recv_data);
 
-    if (guid != mover->GetGUID())
+    if (guid != mover->getGuid())
         return;*/
 
     /* Anti Multi-Jump Check */
@@ -619,7 +619,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
             //checks that player has fallen more than 12 units, otherwise no damage will be dealt
             //falltime check is also needed here, otherwise sudden changes in Z axis position, such as using !recall, may result in death
             if (mover->isAlive() && !mover->bInvincible && (falldistance > 12) && !mover->m_noFallDamage &&
-                ((mover->GetGUID() != _player->GetGUID()) || (!_player->GodModeCheat && (UNIXTIME >= _player->m_fallDisabledUntil))))
+                ((mover->getGuid() != _player->getGuid()) || (!_player->GodModeCheat && (UNIXTIME >= _player->m_fallDisabledUntil))))
             {
                 // 1.7% damage for each unit fallen on Z axis over 13
                 uint32 health_loss = static_cast<uint32>(mover->GetHealth() * (falldistance - 12) * 0.017f);
@@ -627,7 +627,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
                 if (health_loss >= mover->GetHealth())
                     health_loss = mover->GetHealth();
 #if VERSION_STRING > TBC
-                else if ((falldistance >= 65) && (mover->GetGUID() == _player->GetGUID()))
+                else if ((falldistance >= 65) && (mover->getGuid() == _player->getGuid()))
                 {
                     // Rather than Updating achievement progress every time fall damage is taken, all criteria currently have 65 yard requirement...
                     // Achievement 964: Fall 65 yards without dying.
@@ -636,7 +636,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
                 }
 #endif
 
-                mover->SendEnvironmentalDamageLog(mover->GetGUID(), DAMAGE_FALL, health_loss);
+                mover->SendEnvironmentalDamageLog(mover->getGuid(), DAMAGE_FALL, health_loss);
                 mover->DealDamage(mover, health_loss, 0, 0, 0);
 
                 //_player->RemoveStealth(); // cebernic : why again? lost stealth by AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN already.
@@ -735,7 +735,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /************************************************************************/
 
     // Player is the active mover
-    if (m_MoverWoWGuid.GetOldGuid() == _player->GetGUID())
+    if (m_MoverWoWGuid.GetOldGuid() == _player->getGuid())
     {
 
         if (!_player->GetTransport())
@@ -798,7 +798,7 @@ void WorldSession::HandleMoveNotActiveMoverOpcode(WorldPacket& recvData)
     if ((guid != uint64(0)) && (guid == _player->GetCharmedUnitGUID()))
         m_MoverWoWGuid = guid;
     else
-        m_MoverWoWGuid.Init(_player->GetGUID());
+        m_MoverWoWGuid.Init(_player->getGuid());
 
     // set up to the movement packet
     movement_packet[0] = m_MoverWoWGuid.GetNewGuidMask();
@@ -817,7 +817,7 @@ void WorldSession::HandleMountSpecialAnimOpcode(WorldPacket& /*recvdata*/)
     CHECK_INWORLD_RETURN
 
     WorldPacket data(SMSG_MOUNTSPECIAL_ANIM, 8);
-    data << _player->GetGUID();
+    data << _player->getGuid();
     _player->SendMessageToSet(&data, true);
 }
 

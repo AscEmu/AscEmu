@@ -210,7 +210,7 @@ bool ForemansBlackjack(uint8_t /*effectIndex*/, Spell* pSpell)
     // Remove Zzz aura
     c_target->RemoveAllAuras();
 
-    pSpell->p_caster->PlaySoundToPlayer(c_target->GetGUID(), 6197);
+    pSpell->p_caster->PlaySoundToPlayer(c_target->getGuid(), 6197);
 
     // send chat message
     char msg[100];
@@ -510,7 +510,7 @@ bool Poultryizer(uint8_t /*effectIndex*/, Spell* s)
     if (!unitTarget || !unitTarget->isAlive())
         return false;
 
-    s->u_caster->CastSpell(unitTarget->GetGUID(), 30501, true);
+    s->u_caster->CastSpell(unitTarget->getGuid(), 30501, true);
 
     return true;
 }
@@ -551,7 +551,7 @@ bool ExtractGas(uint8_t /*effectIndex*/, Spell* s)
             {
                 if (s->p_caster->GetDistance2dSq(itr) < 400)
                 {
-                    s->p_caster->SetSelection(creature->GetGUID());
+                    s->p_caster->SetSelection(creature->getGuid());
                     check = true;
                     break;
                 }
@@ -720,7 +720,7 @@ bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
 
                     Unit* u = static_cast<Unit*>(o);
 
-                    if (u->GetTargetGUID() != s->p_caster->GetGUID())
+                    if (u->GetTargetGUID() != s->p_caster->getGuid())
                         continue;
 
                     if (!isAttackable(s->p_caster, u))

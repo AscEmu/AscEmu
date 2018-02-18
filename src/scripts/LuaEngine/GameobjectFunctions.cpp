@@ -36,7 +36,7 @@ int LuaGameObject::GossipCreateMenu(lua_State* L, GameObject* ptr)
     if (LuaGlobal::instance()->m_menu != NULL)
         delete LuaGlobal::instance()->m_menu;
 
-    LuaGlobal::instance()->m_menu = new Arcemu::Gossip::Menu(ptr->GetGUID(), text_id);
+    LuaGlobal::instance()->m_menu = new Arcemu::Gossip::Menu(ptr->getGuid(), text_id);
 
     if (autosend)
         LuaGlobal::instance()->m_menu->Send(target);
@@ -129,7 +129,7 @@ int LuaGameObject::GossipSendQuickMenu(lua_State* L, GameObject* ptr)
     if (player == NULL)
         return 0;
 
-    Arcemu::Gossip::Menu::SendQuickMenu(ptr->GetGUID(), text_id, player, itemid, itemicon, itemtext, requiredmoney, moneytext, extra);
+    Arcemu::Gossip::Menu::SendQuickMenu(ptr->getGuid(), text_id, player, itemid, itemicon, itemtext, requiredmoney, moneytext, extra);
 
     return 0;
 }
@@ -650,7 +650,7 @@ int LuaGameObject::CastSpell(lua_State* L, GameObject* ptr)
     if (sp)
     {
         Spell* tSpell = sSpellFactoryMgr.NewSpell(ptr, sSpellCustomizations.GetSpellInfo(sp), true, NULL);
-        SpellCastTargets tar(ptr->GetGUID());
+        SpellCastTargets tar(ptr->getGuid());
         tSpell->prepare(&tar);
     }
     return 0;
@@ -664,7 +664,7 @@ int LuaGameObject::CastSpellOnTarget(lua_State* L, GameObject* ptr)
     if (sp && target != NULL)
     {
         Spell* tSpell = sSpellFactoryMgr.NewSpell(ptr, sSpellCustomizations.GetSpellInfo(sp), true, NULL);
-        SpellCastTargets spCastTargets(target->GetGUID());
+        SpellCastTargets spCastTargets(target->getGuid());
         tSpell->prepare(&spCastTargets);
     }
     return 0;
@@ -836,7 +836,7 @@ int LuaGameObject::SendPacket(lua_State* L, GameObject* ptr)
 int LuaGameObject::GetGUID(lua_State* L, GameObject* ptr)
 {
     TEST_GO_RET();
-    PUSH_GUID(L, ptr->GetGUID());
+    PUSH_GUID(L, ptr->getGuid());
     return 1;
 }
 
@@ -1087,7 +1087,7 @@ int LuaGameObject::FullCastSpellOnTarget(lua_State* L, GameObject* ptr)
     if (sp && target != NULL)
     {
         Spell* tSpell = sSpellFactoryMgr.NewSpell(ptr, sSpellCustomizations.GetSpellInfo(sp), false, NULL);
-        SpellCastTargets sct(target->GetGUID());
+        SpellCastTargets sct(target->getGuid());
         tSpell->prepare(&sct);
     }
     return 0;
@@ -1100,7 +1100,7 @@ int LuaGameObject::FullCastSpell(lua_State* L, GameObject* ptr)
     if (sp)
     {
         Spell* tSpell = sSpellFactoryMgr.NewSpell(ptr, sSpellCustomizations.GetSpellInfo(sp), false, NULL);
-        SpellCastTargets sct(ptr->GetGUID());
+        SpellCastTargets sct(ptr->getGuid());
         tSpell->prepare(&sct);
     }
     return 0;
@@ -1173,12 +1173,12 @@ int LuaGameObject::RegisterEvent(lua_State* L, GameObject* ptr)
         TimedEvent* ev = TimedEvent::Allocate(ptr, new CallbackP1<LuaEngine, int>(LuaGlobal::instance()->luaEngine().get(), &LuaEngine::CallFunctionByReference, functionRef), EVENT_LUA_GAMEOBJ_EVENTS, delay, repeats);
         ptr->event_AddEvent(ev);
         std::map<uint64, std::set<int>>& objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
-        std::map<uint64, std::set<int>>::iterator itr = objRefs.find(ptr->GetGUID());
+        std::map<uint64, std::set<int>>::iterator itr = objRefs.find(ptr->getGuid());
         if (itr == objRefs.end())
         {
             std::set<int> refs;
             refs.insert(functionRef);
-            objRefs.insert(make_pair(ptr->GetGUID(), refs));
+            objRefs.insert(make_pair(ptr->getGuid(), refs));
         }
         else
         {
@@ -1194,7 +1194,7 @@ int LuaGameObject::RemoveEvents(lua_State* L, GameObject* ptr)
     TEST_GO();
     sEventMgr.RemoveEvents(ptr, EVENT_LUA_GAMEOBJ_EVENTS);
     std::map<uint64, std::set<int>>& objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
-    std::map<uint64, std::set<int>>::iterator itr = objRefs.find(ptr->GetGUID());
+    std::map<uint64, std::set<int>>::iterator itr = objRefs.find(ptr->getGuid());
     if (itr != objRefs.end())
     {
         std::set<int>& refs = itr->second;

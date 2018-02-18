@@ -141,7 +141,7 @@ public:
         if (!pInstance)
             return;
 
-        Arcemu::Gossip::Menu menu(object->GetGUID(), 15221, player->GetSession()->language);
+        Arcemu::Gossip::Menu menu(object->getGuid(), 15221, player->GetSession()->language);
         menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(515), 0);     // Teleport to Light's Hammer.
 
         if (pInstance->getData(CN_LORD_MARROWGAR) == Finished)

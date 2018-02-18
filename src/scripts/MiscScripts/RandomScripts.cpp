@@ -88,7 +88,7 @@ class JeanPierrePoulain : public Arcemu::Gossip::Script
 public:
     void OnHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 14500);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), 14500);
         if (plr->HasFinishedQuest(13668) || plr->HasQuest(13668) || plr->HasFinishedQuest(13667) || plr->HasQuest(13667))
         {
             menu.Send(plr);
@@ -114,7 +114,7 @@ public:
     {
         if (plr->_GetSkillLineCurrent(202, false) >= 415)
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 14785);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 14785);
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(447), 1);     // Borean Tundra
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(448), 2);     // Howling Fjord
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(449), 3);     // Sholazar Basin

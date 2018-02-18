@@ -20,7 +20,7 @@ void WorldSession::handleNameQueryOpcode(WorldPacket& recvData)
         return;
     }
 
-    const auto info = objmgr.GetPlayerInfo(query.guid.getLowGuid());
+    const auto info = objmgr.GetPlayerInfo(query.guid.getGuidLow());
     if (!info)
         return;
 

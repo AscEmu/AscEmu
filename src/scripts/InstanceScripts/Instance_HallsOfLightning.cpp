@@ -45,19 +45,19 @@ class HallsOfLightningScript : public InstanceScript
             switch (pGameObject->GetEntry())
             {
                 case GO_GENERAL_DOORS:
-                    mGeneralDoorsGUID = pGameObject->GetLowGUID();
+                    mGeneralDoorsGUID = pGameObject->getGuidLow();
                     break;
                 case GO_VOLKHAN_DOORS:
-                    mVolkhanDoorsGUID = pGameObject->GetLowGUID();
+                    mVolkhanDoorsGUID = pGameObject->getGuidLow();
                     break;
                 case GO_LOKEN_DOORS:
-                    mLokenDoorsGUID = pGameObject->GetLowGUID();
+                    mLokenDoorsGUID = pGameObject->getGuidLow();
                     break;
                 case GO_IONAR_DOORS1:
-                    mIonarDoors1GUID = pGameObject->GetLowGUID();
+                    mIonarDoors1GUID = pGameObject->getGuidLow();
                     break;
                 case GO_IONAR_DOORS2:
-                    mIonarDoors2GUID = pGameObject->GetLowGUID();
+                    mIonarDoors2GUID = pGameObject->getGuidLow();
                     break;
             }
         }

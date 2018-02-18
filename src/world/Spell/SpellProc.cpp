@@ -88,9 +88,9 @@ void SpellProc::CastSpell(Unit* victim, SpellInfo* CastingSpell, int* dmg_overwr
 {
     SpellCastTargets targets;
     if (mProcFlags & PROC_TARGET_SELF)
-        targets.m_unitTarget = mTarget->GetGUID();
+        targets.m_unitTarget = mTarget->getGuid();
     else
-        targets.m_unitTarget = victim->GetGUID();
+        targets.m_unitTarget = victim->getGuid();
 
     Spell* spell = sSpellFactoryMgr.NewSpell(mTarget, mSpell, true, nullptr);
     spell->forced_basepoints[0] = dmg_overwrite[0];

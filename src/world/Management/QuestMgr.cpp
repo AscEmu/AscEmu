@@ -236,7 +236,7 @@ uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
     if (!bValid)
     {
         //annoying message that is not needed since all objects don't exactly have quests
-        //LOG_DEBUG("QUESTS: Warning, invalid NPC " I64FMT " specified for CalcStatus. TypeId: %d.", quest_giver->GetGUID(), quest_giver->GetTypeId());
+        //LOG_DEBUG("QUESTS: Warning, invalid NPC " I64FMT " specified for CalcStatus. TypeId: %d.", quest_giver->getGuid(), quest_giver->GetTypeId());
         return status;
     }
 
@@ -306,7 +306,7 @@ uint32 QuestMgr::ActiveQuestsCount(Object* quest_giver, Player* plr)
 
     if (!bValid)
     {
-        LOG_DEBUG("QUESTS: Warning, invalid NPC " I64FMT " specified for ActiveQuestsCount. TypeId: %d.", quest_giver->GetGUID(), quest_giver->GetTypeId());
+        LOG_DEBUG("QUESTS: Warning, invalid NPC " I64FMT " specified for ActiveQuestsCount. TypeId: %d.", quest_giver->getGuid(), quest_giver->GetTypeId());
         return 0;
     }
 
@@ -332,7 +332,7 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, O
     ItemProperties const* it;
 
     data->SetOpcode(SMSG_QUESTGIVER_OFFER_REWARD);
-    *data << uint64(qst_giver->GetGUID());
+    *data << uint64(qst_giver->getGuid());
     *data << uint32(qst->id);
 
     if (lq != nullptr)
@@ -432,8 +432,8 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
 
     data->SetOpcode(SMSG_QUESTGIVER_QUEST_DETAILS);
 
-    *data << qst_giver->GetGUID();			// npc guid
-    *data << uint64(qst_giver->IsPlayer() ? qst_giver->GetGUID() : 0);						// (questsharer?) guid
+    *data << qst_giver->getGuid();			// npc guid
+    *data << uint64(qst_giver->IsPlayer() ? qst_giver->getGuid() : 0);						// (questsharer?) guid
     *data << qst->id;						// quest id
 
     if (lq != nullptr)
@@ -529,7 +529,7 @@ void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, 
     ItemProperties const* it;
     data->SetOpcode(SMSG_QUESTGIVER_REQUEST_ITEMS);
 
-    *data << qst_giver->GetGUID();
+    *data << qst_giver->getGuid();
     *data << qst->id;
 
     if (lq != nullptr)
@@ -666,7 +666,7 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
 
     data->Initialize(SMSG_QUESTGIVER_QUEST_LIST);
 
-    *data << qst_giver->GetGUID();
+    *data << qst_giver->getGuid();
     *data << plr->GetSession()->LocalizedWorldSrv(70);//"How can I help you?"; //Hello line
     *data << uint32(1);//Emote Delay
     *data << uint32(1);//Emote
@@ -783,7 +783,7 @@ void QuestMgr::BuildQuestUpdateComplete(WorldPacket* data, QuestProperties const
 void QuestMgr::SendPushToPartyResponse(Player* plr, Player* pTarget, uint8 response)
 {
     WorldPacket data(MSG_QUEST_PUSH_RESULT, 9);
-    data << uint64(pTarget->GetGUID());
+    data << uint64(pTarget->getGuid());
     data << uint8(response);
     plr->GetSession()->SendPacket(&data);
 }
@@ -1265,7 +1265,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
             {
                 Spell* spe = sSpellFactoryMgr.NewSpell(plr, spell_entry, true, NULL);
                 SpellCastTargets tgt;
-                tgt.m_unitTarget = plr->GetGUID();
+                tgt.m_unitTarget = plr->getGuid();
                 spe->prepare(&tgt);
             }
         }
@@ -1383,7 +1383,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                 data << uint16(0);
                 data << uint32(0);
                 data << uint16(2);
-                data << plr->GetGUID();
+                data << plr->getGuid();
                 plr->GetSession()->SendPacket(&data);
 
                 data.Initialize(SMSG_SPELL_GO);
@@ -1393,10 +1393,10 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                 data << uint8(0);
                 data << uint8(1);               // flags
                 data << uint8(1);			    // amount of targets
-                data << plr->GetGUID();		    // target
+                data << plr->getGuid();		    // target
                 data << uint8(0);
                 data << uint16(2);
-                data << plr->GetGUID();
+                data << plr->getGuid();
                 plr->GetSession()->SendPacket(&data);
 
                 // Teach the spell
@@ -1412,7 +1412,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
             {
                 Spell* spe = sSpellFactoryMgr.NewSpell(plr, spell_entry, true, NULL);
                 SpellCastTargets tgt;
-                tgt.m_unitTarget = plr->GetGUID();
+                tgt.m_unitTarget = plr->getGuid();
                 spe->prepare(&tgt);
             }
         }
@@ -1462,12 +1462,12 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                 {
                     pItem->setStackCount(1);
                     pItem->SaveToDB(0, 0, true, NULL);
-                    itemGuid = pItem->GetGUID();
+                    itemGuid = pItem->getGuid();
                     pItem->DeleteMe();
                 }
             }
 
-            sMailSystem.SendCreatureGameobjectMail(mailType, qst_giver->GetEntry(), plr->GetGUID(), mail_template->subject, mail_template->content, 0, 0, itemGuid, MAIL_STATIONERY_TEST1, MAIL_CHECK_MASK_HAS_BODY, qst->MailDelaySecs);
+            sMailSystem.SendCreatureGameobjectMail(mailType, qst_giver->GetEntry(), plr->getGuid(), mail_template->subject, mail_template->content, 0, 0, itemGuid, MAIL_STATIONERY_TEST1, MAIL_CHECK_MASK_HAS_BODY, qst->MailDelaySecs);
         }
     }
 }
@@ -1830,7 +1830,7 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
 
         if (!bValid)
         {
-            LOG_DEBUG("QUESTS: Warning, invalid NPC " I64FMT " specified for OnActivateQuestGiver. TypeId: %d.", qst_giver->GetGUID(), qst_giver->GetTypeId());
+            LOG_DEBUG("QUESTS: Warning, invalid NPC " I64FMT " specified for OnActivateQuestGiver. TypeId: %d.", qst_giver->getGuid(), qst_giver->GetTypeId());
             return false;
         }
 
@@ -1852,7 +1852,7 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
             LOG_DEBUG("WORLD: Sent SMSG_QUESTGIVER_QUEST_DETAILS.");
 
             if ((*itr)->qst->HasFlag(QUEST_FLAGS_AUTO_ACCEPT))
-                plr->AcceptQuest(qst_giver->GetGUID(), (*itr)->qst->id);
+                plr->AcceptQuest(qst_giver->getGuid(), (*itr)->qst->id);
         }
         else if (status == QMGR_QUEST_FINISHED)
         {

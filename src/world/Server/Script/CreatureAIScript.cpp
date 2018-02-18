@@ -988,7 +988,7 @@ void CreatureAIScript::_setTargetToChannel(Unit* target, uint32_t spellId)
 {
     if (target != nullptr)
     {
-        _creature->SetChannelSpellTargetGUID(target->GetGUID());
+        _creature->SetChannelSpellTargetGUID(target->getGuid());
         _creature->SetChannelSpellId(spellId);
     }
     else

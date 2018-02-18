@@ -717,7 +717,7 @@ class GreyheartSpellbinderAI : public CreatureAIScript
             Leotheras = getNearestCreature(376.543f, -438.631f, 29.7083f, CN_LEOTHERAS_THE_BLIND);
             if (Leotheras)
             {
-                getCreature()->SetChannelSpellTargetGUID(Leotheras->GetGUID());
+                getCreature()->SetChannelSpellTargetGUID(Leotheras->getGuid());
                 getCreature()->SetChannelSpellId(30166);//wrong
             }
         }
@@ -1569,7 +1569,7 @@ class VashjAI : public CreatureAIScript
                         {
                             channel->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                             channel->GetAIInterface()->m_canMove = false;
-                            channel->SetChannelSpellTargetGUID(getCreature()->GetGUID());
+                            channel->SetChannelSpellTargetGUID(getCreature()->getGuid());
                             channel->SetChannelSpellId(VASHJ_SHIELD);
                         }
                     }
@@ -2175,13 +2175,13 @@ class SerpentshrineCavern : public InstanceScript
             switch (pGameObject->GetEntry())
             {
                 case 184203:
-                    mBridgePart[0] = pGameObject->GetLowGUID();
+                    mBridgePart[0] = pGameObject->getGuidLow();
                     break;
                 case 184204:
-                    mBridgePart[1] = pGameObject->GetLowGUID();
+                    mBridgePart[1] = pGameObject->getGuidLow();
                     break;
                 case 184205:
-                    mBridgePart[2] = pGameObject->GetLowGUID();
+                    mBridgePart[2] = pGameObject->getGuidLow();
                     break;
             }
         }

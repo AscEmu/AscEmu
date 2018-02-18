@@ -47,7 +47,7 @@ void WorldSession::HandleTaxiQueryAvaibleNodesOpcode(WorldPacket& recvData)
 void WorldSession::SendTaxiList(Creature* pCreature)
 {
     uint32_t TaxiMask[TAXIMASK_SIZE];
-    uint64_t guid = pCreature->GetGUID();
+    uint64_t guid = pCreature->getGuid();
 
     uint32_t curloc = sTaxiMgr.GetNearestTaxiNode(_player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), _player->GetMapId());
     if (curloc == 0)

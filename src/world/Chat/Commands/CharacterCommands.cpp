@@ -31,7 +31,7 @@ bool ChatHandler::HandleCharClearCooldownsCommand(const char* /*args*/, WorldSes
         sGMLog.writefromsession(m_session, "Cleared all cooldowns for player %s", player_target->GetName());
     }
 
-    uint64 guid = player_target->GetGUID();
+    uint64 guid = player_target->getGuid();
     switch (player_target->getClass())
     {
         case WARRIOR:

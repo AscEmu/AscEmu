@@ -80,7 +80,7 @@ class LuaUnit
         if (LuaGlobal::instance()->m_menu != NULL)
             delete LuaGlobal::instance()->m_menu;
 
-        LuaGlobal::instance()->m_menu = new Arcemu::Gossip::Menu(ptr->GetGUID(), text_id);
+        LuaGlobal::instance()->m_menu = new Arcemu::Gossip::Menu(ptr->getGuid(), text_id);
 
         if (autosend != 0)
             LuaGlobal::instance()->m_menu->Send(plr);
@@ -153,7 +153,7 @@ class LuaUnit
         if (player == NULL)
             return 0;
 
-        Arcemu::Gossip::Menu::SendQuickMenu(ptr->GetGUID(), text_id, player, itemid, itemicon, itemtext, requiredmoney, moneytext, extra);
+        Arcemu::Gossip::Menu::SendQuickMenu(ptr->getGuid(), text_id, player, itemid, itemicon, itemtext, requiredmoney, moneytext, extra);
 
         return 0;
     }
@@ -398,7 +398,7 @@ class LuaUnit
         Player* plr = static_cast<Player*>(ptr);
         if (msg == NULL || !plr)
             return 0;
-        WorldPacket* data = sChatHandler.FillMessageData(type, lang, msg, plr->GetGUID(), 0);
+        WorldPacket* data = sChatHandler.FillMessageData(type, lang, msg, plr->getGuid(), 0);
         plr->GetSession()->SendChatPacket(data, 1, lang, plr->GetSession());
         for (const auto& itr : plr->getInRangePlayersSet())
         {
@@ -536,7 +536,7 @@ class LuaUnit
             uint32 sp = CHECK_ULONG(L, 1);
             Object* target = CHECK_OBJECT(L, 2);
             if (sp && target != NULL)
-                ptr->CastSpell(target->GetGUID(), sp, false);
+                ptr->CastSpell(target->getGuid(), sp, false);
         }
         return 0;
     }
@@ -545,7 +545,7 @@ class LuaUnit
         uint32 sp = CHECK_ULONG(L, 1);
         Object* target = CHECK_OBJECT(L, 2);
         if (ptr != NULL && sp && target != NULL)
-            ptr->CastSpell(target->GetGUID(), sp, true);
+            ptr->CastSpell(target->getGuid(), sp, true);
         return 0;
     }
     static int SpawnCreature(lua_State* L, Unit* ptr)
@@ -654,12 +654,12 @@ class LuaUnit
             Creature* creature = static_cast<Creature*>(ptr);
             sEventMgr.AddEvent(creature, &Creature::TriggerScriptEvent, functionRef, EVENT_LUA_CREATURE_EVENTS, delay, repeats, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
             std::map< uint64, std::set<int> > & objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
-            std::map< uint64, std::set<int> >::iterator itr = objRefs.find(ptr->GetGUID());
+            std::map< uint64, std::set<int> >::iterator itr = objRefs.find(ptr->getGuid());
             if (itr == objRefs.end())
             {
                 std::set<int> refs;
                 refs.insert(functionRef);
-                objRefs.insert(make_pair(ptr->GetGUID(), refs));
+                objRefs.insert(make_pair(ptr->getGuid(), refs));
             }
             else
             {
@@ -692,12 +692,12 @@ class LuaUnit
             TimedEvent* ev = TimedEvent::Allocate(ptr, new CallbackP1<LuaEngine, int>(LuaGlobal::instance()->luaEngine().get(), &LuaEngine::CallFunctionByReference, functionRef), EVENT_LUA_CREATURE_EVENTS, delay, repeats);
             ptr->event_AddEvent(ev);
             std::map< uint64, std::set<int> > & objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
-            std::map< uint64, std::set<int> >::iterator itr = objRefs.find(ptr->GetGUID());
+            std::map< uint64, std::set<int> >::iterator itr = objRefs.find(ptr->getGuid());
             if (itr == objRefs.end())
             {
                 std::set<int> refs;
                 refs.insert(functionRef);
-                objRefs.insert(make_pair(ptr->GetGUID(), refs));
+                objRefs.insert(make_pair(ptr->getGuid(), refs));
             }
             else
             {
@@ -713,7 +713,7 @@ class LuaUnit
         sEventMgr.RemoveEvents(ptr, EVENT_LUA_CREATURE_EVENTS);
         //Unref all contained references
         std::map< uint64, std::set<int> > & objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
-        std::map< uint64, std::set<int> >::iterator itr = objRefs.find(ptr->GetGUID());
+        std::map< uint64, std::set<int> >::iterator itr = objRefs.find(ptr->getGuid());
         if (itr != objRefs.end())
         {
             std::set<int> & refs = itr->second;
@@ -958,7 +958,7 @@ class LuaUnit
             item_add->ModStackCount(count);
             item_add->SetDirty();
             player->SendItemPushResult(false, true, false, false,
-                                       static_cast<uint8>(player->GetItemInterface()->GetBagSlotByGuid(item_add->GetGUID())), 0xFFFFFFFF,
+                                       static_cast<uint8>(player->GetItemInterface()->GetBagSlotByGuid(item_add->getGuid())), 0xFFFFFFFF,
                                        count, item_add->GetEntry(), item_add->GetItemRandomSuffixFactor(), item_add->GetItemRandomPropertyId(), item_add->GetStackCount());
         }
         PUSH_ITEM(L, item_add);
@@ -1202,7 +1202,7 @@ class LuaUnit
         TEST_PLAYER();
         uint32 soundid = static_cast<uint32>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
-        plr->PlaySoundToPlayer(plr->GetGUID(), soundid);
+        plr->PlaySoundToPlayer(plr->getGuid(), soundid);
         return 0;
     }
 
@@ -2061,7 +2061,7 @@ class LuaUnit
     static int GetGUID(lua_State* L, Unit* ptr)
     {
         if (!ptr) return 0;
-        PUSH_GUID(L, ptr->GetGUID());
+        PUSH_GUID(L, ptr->getGuid());
         return 1;
     }
 
@@ -4193,7 +4193,7 @@ class LuaUnit
         GameObject* newsel = CHECK_GO(L, 1);
         if (!newsel)
             return 0;
-        plr->m_GM_SelectedGO = newsel->GetGUID();
+        plr->m_GM_SelectedGO = newsel->getGuid();
         return 0;
     }
 
@@ -4705,7 +4705,7 @@ class LuaUnit
         TEST_PLAYER()
         Player* pl = static_cast<Player*>(ptr);
         uint32 exp = static_cast<uint32>(luaL_checkinteger(L, 1));
-        pl->GiveXP(exp, pl->GetGUID(), true);
+        pl->GiveXP(exp, pl->getGuid(), true);
         return 0;
     }
 
@@ -4819,8 +4819,8 @@ class LuaUnit
         Object* target = CHECK_OBJECT(L, 2);
         if (Csp && target != nullptr)
         {
-            ptr->CastSpell(target->GetGUID(), sSpellCustomizations.GetSpellInfo(Csp), false);
-            ptr->SetChannelSpellTargetGUID(target->GetGUID());
+            ptr->CastSpell(target->getGuid(), sSpellCustomizations.GetSpellInfo(Csp), false);
+            ptr->SetChannelSpellTargetGUID(target->getGuid());
             ptr->SetChannelSpellId(Csp);
         }
         return 0;
@@ -5104,7 +5104,7 @@ class LuaUnit
             data << pGuild->getGuildName();
             plyr->GetSession()->SendPacket(&data);
 #if VERSION_STRING != Cata
-            plyr->SetGuildInvitersGuid(sender->GetLowGUID());
+            plyr->SetGuildInvitersGuid(sender->getGuidLow());
 #endif
         }
 
@@ -6226,7 +6226,7 @@ class LuaUnit
         c->PushToWorld(ptr->GetMapMgr());
 
         // Need to delay this a bit since first the client needs to see the vehicle
-        ptr->EnterVehicle(c->GetGUID(), delay);
+        ptr->EnterVehicle(c->getGuid(), delay);
 
         return 0;
     }
@@ -6287,7 +6287,7 @@ class LuaUnit
         Creature* c = u->GetMapMgr()->CreateCreature(creature_entry);
         c->Load(cp, u->GetPositionX(), u->GetPositionY(), u->GetPositionZ(), u->GetOrientation());
         c->PushToWorld(u->GetMapMgr());
-        c->EnterVehicle(u->GetGUID(), 1);
+        c->EnterVehicle(u->getGuid(), 1);
 
         return 0;
     }

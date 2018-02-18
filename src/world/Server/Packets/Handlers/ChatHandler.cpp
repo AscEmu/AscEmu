@@ -286,7 +286,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
                 || target_is_gm_flagged
                 || we_are_gm_flagged)
             {
-                const auto target_gm_is_speaking_to_us = player_cache->CountValue64(CACHE_GM_TARGETS, _player->GetGUID()) == 0;
+                const auto target_gm_is_speaking_to_us = player_cache->CountValue64(CACHE_GM_TARGETS, _player->getGuid()) == 0;
                 if (!we_are_gm_flagged && target_is_gm_flagged && target_gm_is_speaking_to_us)
                 {
                     const auto reply = "SYSTEM: This Game Master does not currently have an open ticket from you and did not receive your whisper. Please submit a new GM Ticket request if you need to speak to a GM. This is an automatic message.";
@@ -295,7 +295,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
                     break;
                 }
 
-                const auto we_are_being_ignored = player_cache->CountValue64(CACHE_SOCIAL_IGNORELIST, _player->GetLowGUID()) > 0;
+                const auto we_are_being_ignored = player_cache->CountValue64(CACHE_SOCIAL_IGNORELIST, _player->getGuidLow()) > 0;
                 if (we_are_being_ignored)
                 {
                     SendPacket(SmsgMessageChat(CHAT_MSG_IGNORED, LANG_UNIVERSAL, player_cache->GetGUID(), recv_packet.message, we_are_gm_flagged).serialise().get());
@@ -303,7 +303,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
                     break;
                 }
 
-                player_cache->SendPacket(SmsgMessageChat(CHAT_MSG_WHISPER, language, _player->GetGUID(), recv_packet.message, we_are_gm_flagged).serialise().get());
+                player_cache->SendPacket(SmsgMessageChat(CHAT_MSG_WHISPER, language, _player->getGuid(), recv_packet.message, we_are_gm_flagged).serialise().get());
                 if (language != LANG_ADDON)
                     // TODO Verify should this be LANG_UNIVERSAL?
                     SendPacket(SmsgMessageChat(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, player_cache->GetGUID(), recv_packet.message, we_are_gm_flagged).serialise().get());
@@ -493,11 +493,11 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
 //            }
 //
 //            if (GetPlayer()->m_modlanguage >= 0)
-//                data = sChatHandler.FillMessageData(CHAT_MSG_EMOTE, GetPlayer()->m_modlanguage, msg.c_str(), _player->GetGUID(), _player->isGMFlagSet() ? 4 : 0);
+//                data = sChatHandler.FillMessageData(CHAT_MSG_EMOTE, GetPlayer()->m_modlanguage, msg.c_str(), _player->getGuid(), _player->isGMFlagSet() ? 4 : 0);
 //            else if (lang == 0 && worldConfig.player.isInterfactionChatEnabled)
-//                data = sChatHandler.FillMessageData(CHAT_MSG_EMOTE, CanUseCommand('0') ? LANG_UNIVERSAL : lang, msg.c_str(), _player->GetGUID(), _player->isGMFlagSet() ? 4 : 0);
+//                data = sChatHandler.FillMessageData(CHAT_MSG_EMOTE, CanUseCommand('0') ? LANG_UNIVERSAL : lang, msg.c_str(), _player->getGuid(), _player->isGMFlagSet() ? 4 : 0);
 //            else
-//                data = sChatHandler.FillMessageData(CHAT_MSG_EMOTE, CanUseCommand('c') ? LANG_UNIVERSAL : lang, msg.c_str(), _player->GetGUID(), _player->isGMFlagSet() ? 4 : 0);
+//                data = sChatHandler.FillMessageData(CHAT_MSG_EMOTE, CanUseCommand('c') ? LANG_UNIVERSAL : lang, msg.c_str(), _player->getGuid(), _player->isGMFlagSet() ? 4 : 0);
 //
 //            GetPlayer()->SendMessageToSet(data, true, !worldConfig.player.isInterfactionChatEnabled);
 //
@@ -522,7 +522,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
 //
 //            if (GetPlayer()->m_modlanguage >= 0)
 //            {
-//                data = sChatHandler.FillMessageData(CHAT_MSG_SAY, GetPlayer()->m_modlanguage, msg.c_str(), _player->GetGUID(), _player->isGMFlagSet() ? 4 : 0);
+//                data = sChatHandler.FillMessageData(CHAT_MSG_SAY, GetPlayer()->m_modlanguage, msg.c_str(), _player->getGuid(), _player->isGMFlagSet() ? 4 : 0);
 //                GetPlayer()->SendMessageToSet(data, true);
 //            }
 //            else
@@ -533,7 +533,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
 //                if (lang == 0 && !CanUseCommand('c') && !worldConfig.player.isInterfactionChatEnabled)
 //                    return;
 //
-//                data = sChatHandler.FillMessageData(CHAT_MSG_SAY, lang, msg.c_str(), _player->GetGUID(), _player->isGMFlagSet() ? 4 : 0);
+//                data = sChatHandler.FillMessageData(CHAT_MSG_SAY, lang, msg.c_str(), _player->getGuid(), _player->isGMFlagSet() ? 4 : 0);
 //
 //                GetPlayer()->SendMessageToSet(data, true);
 //            }
@@ -563,11 +563,11 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
 //            if (pGroup == NULL) break;
 //
 //            if (GetPlayer()->m_modlanguage >= 0)
-//                data = sChatHandler.FillMessageData(type, GetPlayer()->m_modlanguage, msg.c_str(), _player->GetGUID(), _player->isGMFlagSet() ? 4 : 0);
+//                data = sChatHandler.FillMessageData(type, GetPlayer()->m_modlanguage, msg.c_str(), _player->getGuid(), _player->isGMFlagSet() ? 4 : 0);
 //            else if (lang == 0 && worldConfig.player.isInterfactionChatEnabled)
-//                data = sChatHandler.FillMessageData(type, (CanUseCommand('0') && lang != -1) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->GetGUID(), _player->isGMFlagSet() ? 4 : 0);
+//                data = sChatHandler.FillMessageData(type, (CanUseCommand('0') && lang != -1) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->getGuid(), _player->isGMFlagSet() ? 4 : 0);
 //            else
-//                data = sChatHandler.FillMessageData(type, (CanUseCommand('c') && lang != -1) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->GetGUID(), _player->isGMFlagSet() ? 4 : 0);
+//                data = sChatHandler.FillMessageData(type, (CanUseCommand('c') && lang != -1) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->getGuid(), _player->isGMFlagSet() ? 4 : 0);
 //            if (type == CHAT_MSG_PARTY && pGroup->getGroupType() == GROUP_TYPE_RAID)
 //            {
 //                // only send to that subgroup
@@ -668,15 +668,15 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
 //
 //            if (lang == 0 && worldConfig.player.isInterfactionChatEnabled)
 //            {
-//                data = sChatHandler.FillMessageData(CHAT_MSG_YELL, (CanUseCommand('0') && lang != -1) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->GetGUID(), _player->isGMFlagSet() ? 4 : 0);
+//                data = sChatHandler.FillMessageData(CHAT_MSG_YELL, (CanUseCommand('0') && lang != -1) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->getGuid(), _player->isGMFlagSet() ? 4 : 0);
 //            }
 //            else if (GetPlayer()->m_modlanguage >= 0)
 //            {
-//                data = sChatHandler.FillMessageData(CHAT_MSG_YELL, GetPlayer()->m_modlanguage, msg.c_str(), _player->GetGUID(), _player->isGMFlagSet() ? 4 : 0);
+//                data = sChatHandler.FillMessageData(CHAT_MSG_YELL, GetPlayer()->m_modlanguage, msg.c_str(), _player->getGuid(), _player->isGMFlagSet() ? 4 : 0);
 //            }
 //            else
 //            {
-//                data = sChatHandler.FillMessageData(CHAT_MSG_YELL, (CanUseCommand('c') && lang != -1) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->GetGUID(), _player->isGMFlagSet() ? 4 : 0);
+//                data = sChatHandler.FillMessageData(CHAT_MSG_YELL, (CanUseCommand('c') && lang != -1) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->getGuid(), _player->isGMFlagSet() ? 4 : 0);
 //            }
 //
 //            _player->GetMapMgr()->SendChatMessageToCellPlayers(_player, data, 2, 1, lang, this);
@@ -718,20 +718,20 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
 //            // Check that the player isn't a gm with his status on
 //            ///\todo Game Master's on retail are able to have block whispers after they close the ticket with the current packet.
 //            // When a Game Master is visible to your player it says "This player is unavailable for whisper" I need to figure out how this done.
-//            if (!HasPermissions() && playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM) && playercache->CountValue64(CACHE_GM_TARGETS, _player->GetGUID()) == 0)
+//            if (!HasPermissions() && playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM) && playercache->CountValue64(CACHE_GM_TARGETS, _player->getGuid()) == 0)
 //            {
 //                // Build automated reply
 //                std::string Reply = "SYSTEM: This Game Master does not currently have an open ticket from you and did not receive your whisper. Please submit a new GM Ticket request if you need to speak to a GM. This is an automatic message.";
-//                data = sChatHandler.FillMessageData(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, Reply.c_str(), playercache->GetGUID(), 4);
+//                data = sChatHandler.FillMessageData(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, Reply.c_str(), playercache->getGuid(), 4);
 //                SendPacket(data);
 //                delete data;
 //                playercache->DecRef();
 //                break;
 //            }
 //
-//            if (playercache->CountValue64(CACHE_SOCIAL_IGNORELIST, _player->GetLowGUID()) > 0)
+//            if (playercache->CountValue64(CACHE_SOCIAL_IGNORELIST, _player->getGuidLow()) > 0)
 //            {
-//                data = sChatHandler.FillMessageData(CHAT_MSG_IGNORED, LANG_UNIVERSAL, msg.c_str(), playercache->GetGUID(), _player->isGMFlagSet() ? 4 : 0);
+//                data = sChatHandler.FillMessageData(CHAT_MSG_IGNORED, LANG_UNIVERSAL, msg.c_str(), playercache->getGuid(), _player->isGMFlagSet() ? 4 : 0);
 //                SendPacket(data);
 //                delete data;
 //                playercache->DecRef();
@@ -739,7 +739,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
 //            }
 //            else
 //            {
-//                data = sChatHandler.FillMessageData(CHAT_MSG_WHISPER, lang, msg.c_str(), _player->GetGUID(), _player->isGMFlagSet() ? 4 : 0);
+//                data = sChatHandler.FillMessageData(CHAT_MSG_WHISPER, lang, msg.c_str(), _player->getGuid(), _player->isGMFlagSet() ? 4 : 0);
 //                playercache->SendPacket(data);
 //            }
 //
@@ -747,7 +747,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
 //            //Sent the to Users id as the channel, this should be fine as it's not used for whisper
 //            if (lang != -1) //DO NOT SEND if its an addon message!
 //            {
-//                data = sChatHandler.FillMessageData(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, msg.c_str(), playercache->GetGUID(), playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
+//                data = sChatHandler.FillMessageData(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, msg.c_str(), playercache->getGuid(), playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
 //                SendPacket(data);
 //                delete data;
 //            }
@@ -758,7 +758,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
 //                std::string reason;
 //                playercache->GetStringValue(CACHE_AFK_DND_REASON, reason);
 //
-//                data = sChatHandler.FillMessageData(CHAT_MSG_AFK, LANG_UNIVERSAL, reason.c_str(), playercache->GetGUID(), _player->isGMFlagSet() ? 4 : 0);
+//                data = sChatHandler.FillMessageData(CHAT_MSG_AFK, LANG_UNIVERSAL, reason.c_str(), playercache->getGuid(), _player->isGMFlagSet() ? 4 : 0);
 //                SendPacket(data);
 //                delete data;
 //            }
@@ -767,7 +767,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
 //                // Has DND flag, autorespond.
 //                std::string reason;
 //                playercache->GetStringValue(CACHE_AFK_DND_REASON, reason);
-//                data = sChatHandler.FillMessageData(CHAT_MSG_DND, LANG_UNIVERSAL, reason.c_str(), playercache->GetGUID(), playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
+//                data = sChatHandler.FillMessageData(CHAT_MSG_DND, LANG_UNIVERSAL, reason.c_str(), playercache->getGuid(), playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
 //                SendPacket(data);
 //                delete data;
 //            }
@@ -874,7 +874,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
 //
 //            if (_player->m_bg != NULL)
 //            {
-//                data = sChatHandler.FillMessageData(type, lang, msg.c_str(), _player->GetGUID());
+//                data = sChatHandler.FillMessageData(type, lang, msg.c_str(), _player->getGuid());
 //                _player->m_bg->DistributePacketToTeam(data, _player->GetTeam());
 //                delete data;
 //            }
@@ -902,7 +902,7 @@ void WorldSession::HandleEmoteOpcode(WorldPacket& recv_data)
 #if VERSION_STRING > TBC
     _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, emote, 0, 0);
 #endif
-    uint64 guid = _player->GetGUID();
+    uint64 guid = _player->getGuid();
     sQuestMgr.OnPlayerEmote(_player, emote, guid);
 }
 #endif
@@ -993,11 +993,11 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
         }
 
         data << uint32(emote_text_entry->textid);
-        data << uint64(GetPlayer()->GetGUID());
+        data << uint64(GetPlayer()->getGuid());
         GetPlayer()->SendMessageToSet(&data, true); //If player receives his own emote, his animation stops.
 
         data.Initialize(SMSG_TEXT_EMOTE);
-        data << uint64(GetPlayer()->GetGUID());
+        data << uint64(GetPlayer()->getGuid());
         data << uint32(text_emote);
         data << unk;
         data << uint32(namelen);
@@ -1088,7 +1088,7 @@ void WorldSession::HandleChatIgnoredOpcode(WorldPacket & recvPacket)
         return;
     }
 
-    WorldPacket* data = sChatHandler.FillMessageData(CHAT_MSG_IGNORED, LANG_UNIVERSAL, _player->GetName(), _player->GetGUID());
+    WorldPacket* data = sChatHandler.FillMessageData(CHAT_MSG_IGNORED, LANG_UNIVERSAL, _player->GetName(), _player->getGuid());
     player->GetSession()->SendPacket(data);
     delete data;
 }

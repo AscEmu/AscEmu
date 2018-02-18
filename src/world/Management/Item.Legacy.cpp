@@ -304,7 +304,7 @@ void Item::SaveToDB(int8 containerslot, int8 slot, bool firstsave, QueryBuffer* 
 
     std::stringstream ss;
 
-    ss << "DELETE FROM playeritems WHERE guid = " << GetLowGUID() << ";";
+    ss << "DELETE FROM playeritems WHERE guid = " << getGuidLow() << ";";
 
     if (firstsave)
         CharacterDatabase.WaitExecute(ss.str().c_str());
@@ -373,7 +373,7 @@ void Item::SaveToDB(int8 containerslot, int8 slot, bool firstsave, QueryBuffer* 
         refundentry.first = 0;
         refundentry.second = 0;
 
-        refundentry = this->getOwner()->GetItemInterface()->LookupRefundable(this->GetGUID());
+        refundentry = this->getOwner()->GetItemInterface()->LookupRefundable(this->getGuid());
 
         ss << uint32(refundentry.first) << "','";
         ss << uint32(refundentry.second);
@@ -427,7 +427,7 @@ void Item::DeleteMe()
 
     // check to see if our owner is instantiated
     if (this->m_owner != NULL)
-        this->m_owner->GetItemInterface()->RemoveRefundable(this->GetGUID());
+        this->m_owner->GetItemInterface()->RemoveRefundable(this->getGuid());
 
     delete this;
 }
@@ -545,7 +545,7 @@ void Item::RemoveFromWorld()
 {
     // if we have an owner->send destroy
     if (m_owner != NULL)
-        m_owner->SendDestroyObject(GetGUID());
+        m_owner->SendDestroyObject(getGuid());
 
     if (!IsInWorld())
         return;
@@ -596,8 +596,8 @@ int32 Item::AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enc
     if (apply)
     {
         WorldPacket EnchantLog(SMSG_ENCHANTMENTLOG, 25);
-        EnchantLog << m_owner->GetGUID();
-        EnchantLog << m_owner->GetGUID();
+        EnchantLog << m_owner->getGuid();
+        EnchantLog << m_owner->getGuid();
         EnchantLog << GetEntry();
         EnchantLog << Enchantment->Id;
         EnchantLog << uint8(0);
@@ -611,7 +611,7 @@ int32 Item::AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enc
 #endif
 
         /* Only apply the enchantment bonus if we're equipped */
-        int16 slot = m_owner->GetItemInterface()->GetInventorySlotByGuid(GetGUID());
+        int16 slot = m_owner->GetItemInterface()->GetInventorySlotByGuid(getGuid());
         if (slot >= EQUIPMENT_SLOT_START && slot < EQUIPMENT_SLOT_END)
             ApplyEnchantmentBonus(Slot, true);
     }
@@ -668,14 +668,14 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
 
     // Apply the visual on the player.
 #if VERSION_STRING > TBC
-    uint32 ItemSlot = m_owner->GetItemInterface()->GetInventorySlotByGuid(GetGUID()) * 2;   //VLack: for 3.1.1 "* 18" is a bad idea, now it's "* 2"; but this could have been calculated based on UpdateFields.h! This is PLAYER_VISIBLE_ITEM_LENGTH
+    uint32 ItemSlot = m_owner->GetItemInterface()->GetInventorySlotByGuid(getGuid()) * 2;   //VLack: for 3.1.1 "* 18" is a bad idea, now it's "* 2"; but this could have been calculated based on UpdateFields.h! This is PLAYER_VISIBLE_ITEM_LENGTH
     uint32 VisibleBase = PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + ItemSlot;
     if (VisibleBase <= PLAYER_VISIBLE_ITEM_19_ENCHANTMENT)
         m_owner->setUInt32Value(static_cast<uint16_t>(VisibleBase), Apply ? Entry->Id : 0);   //On 3.1 we can't add a Slot to the base now, as we no longer have multiple fields for storing them. This in some cases will try to write for example 3 visuals into one place, but now every item has only one field for this, and as we can't choose which visual to have, we'll accept the last one.
     else
         LOG_ERROR("Item::ApplyEnchantmentBonus visual out of range! Tried to address UInt32 field %i !!!", VisibleBase);
 #else
-    uint32 ItemSlot = m_owner->GetItemInterface()->GetInventorySlotByGuid(GetGUID()) * 16;
+    uint32 ItemSlot = m_owner->GetItemInterface()->GetInventorySlotByGuid(getGuid()) * 16;
     uint32 VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + ItemSlot;
     if (VisibleBase <= PLAYER_VISIBLE_ITEM_19_PAD)
         m_owner->setUInt32Value(VisibleBase + 1 + Slot, Apply ? Entry->Id : 0);
@@ -697,11 +697,11 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                     if (Apply)
                     {
                         if (Entry->spell[c] != 0)
-                            m_owner->AddProcTriggerSpell(Entry->spell[c], 0, m_owner->GetGUID(), Entry->min[c], PROC_ON_MELEE_ATTACK, 0, nullptr, nullptr, this);
+                            m_owner->AddProcTriggerSpell(Entry->spell[c], 0, m_owner->getGuid(), Entry->min[c], PROC_ON_MELEE_ATTACK, 0, nullptr, nullptr, this);
                     }
                     else
                     {
-                        m_owner->RemoveProcTriggerSpell(Entry->spell[c], m_owner->GetGUID(), GetGUID());
+                        m_owner->RemoveProcTriggerSpell(Entry->spell[c], m_owner->getGuid(), getGuid());
                     }
                 }
                 break;
@@ -724,7 +724,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                 {
                     if (Apply)
                     {
-                        SpellCastTargets targets(m_owner->GetGUID());
+                        SpellCastTargets targets(m_owner->getGuid());
                         SpellInfo* sp;
                         Spell* spell;
 
@@ -742,7 +742,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                     else
                     {
                         if (Entry->spell[c] != 0)
-                            m_owner->RemoveAuraByItemGUID(Entry->spell[c], GetGUID());
+                            m_owner->RemoveAuraByItemGUID(Entry->spell[c], getGuid());
                     }
 
                 }
@@ -946,10 +946,10 @@ void Item::SendEnchantTimeUpdate(uint32 Slot, uint32 Duration)
     */
 
     WorldPacket* data = new WorldPacket(SMSG_ITEM_ENCHANT_TIME_UPDATE, 24);
-    *data << GetGUID();
+    *data << getGuid();
     *data << Slot;
     *data << Duration;
-    *data << m_owner->GetGUID();
+    *data << m_owner->getGuid();
     m_owner->delayedPackets.add(data);
 }
 
@@ -1194,7 +1194,7 @@ void Item::EventRemoveItem()
 {
     ARCEMU_ASSERT(this->getOwner() != NULL);
 
-    m_owner->GetItemInterface()->SafeFullRemoveItemByGuid(this->GetGUID());
+    m_owner->GetItemInterface()->SafeFullRemoveItemByGuid(this->getGuid());
 }
 
 void Item::SendDurationUpdate()
@@ -1213,7 +1213,7 @@ void Item::SendDurationUpdate()
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
     WorldPacket durationupdate(SMSG_ITEM_TIME_UPDATE, 12);
-    durationupdate << uint64(GetGUID());
+    durationupdate << uint64(getGuid());
 #if VERSION_STRING >= WotLK
     durationupdate << uint32(GetItemExpireTime() - UNIXTIME);
 #else
@@ -1255,7 +1255,7 @@ void Item::RemoveFromRefundableMap()
     uint64 GUID = 0;
 
     owner = this->getOwner();
-    GUID = this->GetGUID();
+    GUID = this->getGuid();
 
     if (owner != NULL && GUID != 0)
         owner->GetItemInterface()->RemoveRefundable(GUID);

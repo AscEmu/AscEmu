@@ -528,7 +528,7 @@ class ArthasGossip : public Arcemu::Gossip::Script
 
         void OnHello(Object* pObject, Player* Plr) override
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1, 0);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, 0);
 
             menu.AddItem(0, "We're ready to go!", 1);  //find correct txt
 

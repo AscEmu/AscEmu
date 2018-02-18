@@ -266,8 +266,8 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recvData)
             {
                 data.Initialize(SMSG_INVENTORY_CHANGE_FAILURE);
                 data << error;
-                data << srcitem->GetGUID();
-                data << dstitem->GetGUID();
+                data << srcitem->getGuid();
+                data << dstitem->getGuid();
                 data << uint8(0);
 
                 if (error == INV_ERR_YOU_MUST_REACH_LEVEL_N)
@@ -1347,7 +1347,7 @@ void WorldSession::HandleBuyItemOpcode(WorldPacket& recvData)   // right-click o
             {
                 if (item->IsEligibleForRefund() && item_extended_cost != nullptr)
                 {
-                    item->getOwner()->GetItemInterface()->AddRefundable(item->GetGUID(), item_extended_cost->costid);
+                    item->getOwner()->GetItemInterface()->AddRefundable(item->getGuid(), item_extended_cost->costid);
                 }
                 _player->SendItemPushResult(false, true, false, true, static_cast<uint8>(INVENTORY_SLOT_NOT_SET), slotresult.Result, amount * creature_item.amount, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
             }
@@ -1364,7 +1364,7 @@ void WorldSession::HandleBuyItemOpcode(WorldPacket& recvData)   // right-click o
                 {
                     if (item->IsEligibleForRefund() && item_extended_cost != nullptr)
                     {
-                        item->getOwner()->GetItemInterface()->AddRefundable(item->GetGUID(), item_extended_cost->costid);
+                        item->getOwner()->GetItemInterface()->AddRefundable(item->getGuid(), item_extended_cost->costid);
                     }
                     _player->SendItemPushResult(false, true, false, true, slotresult.ContainerSlot, slotresult.Result, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
                 }
@@ -1375,7 +1375,7 @@ void WorldSession::HandleBuyItemOpcode(WorldPacket& recvData)   // right-click o
     {
         add_item->ModStackCount(amount * creature_item.amount);
         add_item->m_isDirty = true;
-        _player->SendItemPushResult(false, true, false, false, (uint8)_player->GetItemInterface()->GetBagSlotByGuid(add_item->GetGUID()), 1, amount * creature_item.amount, add_item->GetEntry(), add_item->GetItemRandomSuffixFactor(), add_item->GetItemRandomPropertyId(), add_item->GetStackCount());
+        _player->SendItemPushResult(false, true, false, false, (uint8)_player->GetItemInterface()->GetBagSlotByGuid(add_item->getGuid()), 1, amount * creature_item.amount, add_item->GetEntry(), add_item->GetItemRandomSuffixFactor(), add_item->GetItemRandomPropertyId(), add_item->GetStackCount());
     }
 
     _player->GetItemInterface()->BuyItem(it, amount, creature);
@@ -1432,7 +1432,7 @@ void WorldSession::HandleListInventoryOpcode(WorldPacket& recvData)
         SendInventoryList(unit);
     else
     {
-        Arcemu::Gossip::Menu::SendSimpleMenu(unit->GetGUID(), vendor->cannotbuyattextid, _player);
+        Arcemu::Gossip::Menu::SendSimpleMenu(unit->getGuid(), vendor->cannotbuyattextid, _player);
     }
 }
 
@@ -1450,7 +1450,7 @@ void WorldSession::SendInventoryList(Creature* unit)
     WorldPacket data(((unit->GetSellItemCount() * 28) + 9));       // allocate
 
     data.SetOpcode(SMSG_LIST_INVENTORY);
-    data << unit->GetGUID();
+    data << unit->getGuid();
     data << uint8(0);   // placeholder for item count
 
     ItemProperties const* curItem = NULL;
@@ -1539,7 +1539,7 @@ void WorldSession::SendInventoryList(Creature* unit)
 #if VERSION_STRING != Cata
     const_cast<uint8*>(data.contents())[8] = (uint8)counter;    // set count
 #else
-    ObjectGuid guid = unit->GetGUID();
+    ObjectGuid guid = unit->getGuid();
 
     data.SetOpcode(SMSG_LIST_INVENTORY);
     data.writeBit(guid[1]);
@@ -1714,17 +1714,17 @@ void WorldSession::HandleReadItemOpcode(WorldPacket& recvPacket)
         if (item->getItemProperties()->PageId)
         {
             WorldPacket data(SMSG_READ_ITEM_OK, 4);
-            data << item->GetGUID();
+            data << item->getGuid();
             SendPacket(&data);
-            LOG_DEBUG("Sent SMSG_READ_OK %d", item->GetGUID());
+            LOG_DEBUG("Sent SMSG_READ_OK %d", item->getGuid());
         }
         else
         {
             WorldPacket data(SMSG_READ_ITEM_FAILED, 5);
-            data << item->GetGUID();
+            data << item->getGuid();
             data << uint8(2);
             SendPacket(&data);
-            LOG_DEBUG("Sent SMSG_READ_ITEM_FAILED %d", item->GetGUID());
+            LOG_DEBUG("Sent SMSG_READ_ITEM_FAILED %d", item->getGuid());
         }
     }
 }
@@ -1802,7 +1802,7 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket& recvPacket)
         }
 #if VERSION_STRING != Cata
         if (totalcost > 0)  //we already checked if it's in guild in RepairItem()
-            _player->GetGuild()->LogGuildBankActionMoney(GB_LOG_REPAIR_MONEY, _player->GetLowGUID(), totalcost);
+            _player->GetGuild()->LogGuildBankActionMoney(GB_LOG_REPAIR_MONEY, _player->getGuidLow(), totalcost);
 #endif
     }
     else
@@ -2259,7 +2259,7 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
     if (src->GetStackCount() <= 1)
     {
         // destroy the source item
-        _player->GetItemInterface()->SafeFullRemoveItemByGuid(src->GetGUID());
+        _player->GetItemInterface()->SafeFullRemoveItemByGuid(src->getGuid());
     }
     else
     {
@@ -2273,7 +2273,7 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
     dst->SetEntry(itemid);
 
     // set the giftwrapper fields
-    dst->SetGiftCreatorGUID(_player->GetGUID());
+    dst->SetGiftCreatorGUID(_player->getGuid());
     dst->SetDurability(0);
     dst->SetDurabilityMax(0);
     dst->Wrap();

@@ -331,7 +331,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
         case CHAT_MSG_SAY:
         case CHAT_MSG_EMOTE:
         {
-            GetPlayer()->sendChatPacket(type, lang, msg.c_str(), _player->GetGUID(), chatTag);
+            GetPlayer()->sendChatPacket(type, lang, msg.c_str(), _player->getGuid(), chatTag);
 
         }
         break;
@@ -345,11 +345,11 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
             if (pGroup == nullptr) break;
 
             if (GetPlayer()->m_modlanguage >= LANG_UNIVERSAL)
-                data = sChatHandler.FillMessageData(type, GetPlayer()->m_modlanguage, msg.c_str(), _player->GetGUID(), chatTag);
+                data = sChatHandler.FillMessageData(type, GetPlayer()->m_modlanguage, msg.c_str(), _player->getGuid(), chatTag);
             else if (lang == LANG_UNIVERSAL && worldConfig.player.isInterfactionChatEnabled)
-                data = sChatHandler.FillMessageData(type, (CanUseCommand('0') && lang != LANG_ADDON) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->GetGUID(), chatTag);
+                data = sChatHandler.FillMessageData(type, (CanUseCommand('0') && lang != LANG_ADDON) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->getGuid(), chatTag);
             else
-                data = sChatHandler.FillMessageData(type, (CanUseCommand('c') && lang != LANG_ADDON) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->GetGUID(), chatTag);
+                data = sChatHandler.FillMessageData(type, (CanUseCommand('c') && lang != LANG_ADDON) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->getGuid(), chatTag);
             if (type == CHAT_MSG_PARTY && pGroup->getGroupType() == GROUP_TYPE_RAID)
             {
                 // only send to that subgroup
@@ -409,15 +409,15 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
 
             if (lang == LANG_UNIVERSAL && worldConfig.player.isInterfactionChatEnabled)
             {
-                data = sChatHandler.FillMessageData(CHAT_MSG_YELL, (CanUseCommand('0') && lang != LANG_ADDON) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->GetGUID(), chatTag);
+                data = sChatHandler.FillMessageData(CHAT_MSG_YELL, (CanUseCommand('0') && lang != LANG_ADDON) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->getGuid(), chatTag);
             }
             else if (GetPlayer()->m_modlanguage >= LANG_UNIVERSAL)
             {
-                data = sChatHandler.FillMessageData(CHAT_MSG_YELL, GetPlayer()->m_modlanguage, msg.c_str(), _player->GetGUID(), chatTag);
+                data = sChatHandler.FillMessageData(CHAT_MSG_YELL, GetPlayer()->m_modlanguage, msg.c_str(), _player->getGuid(), chatTag);
             }
             else
             {
-                data = sChatHandler.FillMessageData(CHAT_MSG_YELL, (CanUseCommand('c') && lang != LANG_ADDON) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->GetGUID(), chatTag);
+                data = sChatHandler.FillMessageData(CHAT_MSG_YELL, (CanUseCommand('c') && lang != LANG_ADDON) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->getGuid(), chatTag);
             }
 
             _player->GetMapMgr()->SendChatMessageToCellPlayers(_player, data, 2, 1, lang, this);
@@ -448,7 +448,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
             // Check that the player isn't a gm with his status on
             ///\todo Game Master's on retail are able to have block whispers after they close the ticket with the current packet.
             // When a Game Master is visible to your player it says "This player is unavailable for whisper" I need to figure out how this done.
-            if (!HasPermissions() && playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM) && playercache->CountValue64(CACHE_GM_TARGETS, _player->GetGUID()) == 0)
+            if (!HasPermissions() && playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM) && playercache->CountValue64(CACHE_GM_TARGETS, _player->getGuid()) == 0)
             {
                 // Build automated reply
                 std::string Reply = "SYSTEM: This Game Master does not currently have an open ticket from you and did not receive your whisper. Please submit a new GM Ticket request if you need to speak to a GM. This is an automatic message.";
@@ -459,7 +459,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
                 break;
             }
 
-            if (playercache->CountValue64(CACHE_SOCIAL_IGNORELIST, _player->GetLowGUID()) > 0)
+            if (playercache->CountValue64(CACHE_SOCIAL_IGNORELIST, _player->getGuidLow()) > 0)
             {
                 data = sChatHandler.FillMessageData(CHAT_MSG_IGNORED, LANG_UNIVERSAL, msg.c_str(), playercache->GetGUID(), chatTag);
                 SendPacket(data);
@@ -469,7 +469,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
             }
             else
             {
-                data = sChatHandler.FillMessageData(CHAT_MSG_WHISPER, lang, msg.c_str(), _player->GetGUID(), chatTag);
+                data = sChatHandler.FillMessageData(CHAT_MSG_WHISPER, lang, msg.c_str(), _player->getGuid(), chatTag);
                 playercache->SendPacket(data);
             }
 
@@ -570,7 +570,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
         {
             if (_player->m_bg != nullptr)
             {
-                data = sChatHandler.FillMessageData(type, lang, msg.c_str(), _player->GetGUID());
+                data = sChatHandler.FillMessageData(type, lang, msg.c_str(), _player->getGuid());
                 _player->m_bg->DistributePacketToTeam(data, _player->GetTeam());
                 delete data;
             }
@@ -592,7 +592,7 @@ void WorldSession::HandleEmoteOpcode(WorldPacket& recv_data)
     _player->Emote((EmoteType)emote);
     _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, emote, 0, 0);
 
-    uint64_t guid = _player->GetGUID();
+    uint64_t guid = _player->getGuid();
     sQuestMgr.OnPlayerEmote(_player, emote, guid);
 }
 
@@ -671,7 +671,7 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
     }
 
     WorldPacket data(SMSG_TEXT_EMOTE, 28 + namelen);
-    data << uint64_t(GetPlayer()->GetGUID());
+    data << uint64_t(GetPlayer()->getGuid());
     data << uint32_t(textEmote);
     data << uint32_t(emoteNum);
     data << uint32_t(namelen);

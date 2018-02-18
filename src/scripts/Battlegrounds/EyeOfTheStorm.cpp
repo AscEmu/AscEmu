@@ -331,7 +331,7 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32 id)
             if (sp)
             {
                 Spell* pSpell = sSpellFactoryMgr.NewSpell(plr, sp, true, NULL);
-                SpellCastTargets targets(plr->GetGUID());
+                SpellCastTargets targets(plr->getGuid());
                 pSpell->prepare(&targets);
             }
             EOTSm_buffs[x]->Despawn(0, EOTS_BUFF_RESPAWN_TIME);
@@ -345,7 +345,7 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32 id)
     if (!m_started)
     {
         Anticheat_Log->writefromsession(plr->GetSession(), "%s tried to hook the flag in eye of the storm before battleground (ID %u) started.", plr->GetName(), this->m_id);
-        SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, plr->GetGUID(), "%s will be removed from the game for cheating.", plr->GetName());
+        SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, plr->getGuid(), "%s will be removed from the game for cheating.", plr->GetName());
         // Remove player from battleground.
         this->RemovePlayer(plr, false);
         // Kick    player from server.
@@ -355,7 +355,7 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32 id)
 #endif
 
     uint32 team = plr->GetTeam();
-    if (plr->GetLowGUID() != m_flagHolder)
+    if (plr->getGuidLow() != m_flagHolder)
         return;
 
     int32 val;
@@ -402,7 +402,7 @@ void EyeOfTheStorm::HookOnPlayerDeath(Player* plr)
 {
     plr->m_bgScore.Deaths++;
 
-    if (m_flagHolder == plr->GetLowGUID())
+    if (m_flagHolder == plr->getGuidLow())
         HookOnFlagDrop(plr);
 
     UpdatePvPData();
@@ -420,12 +420,12 @@ void EyeOfTheStorm::HookFlagDrop(Player* plr, GameObject* /*obj*/)
     }
 
     m_dropFlag->RemoveFromWorld(false);
-    plr->CastSpell(plr->GetGUID(), EOTS_NETHERWING_FLAG_SPELL, true);
+    plr->CastSpell(plr->getGuid(), EOTS_NETHERWING_FLAG_SPELL, true);
 
     SetWorldState(EOTS_NETHERWING_FLAG_READY, 0);
     PlaySoundToAll(plr->IsTeamHorde() ? SOUND_HORDE_CAPTURE : SOUND_ALLIANCE_CAPTURE);
-    SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + plr->GetTeam(), plr->GetGUID(), "$N has taken the flag!");
-    m_flagHolder = plr->GetLowGUID();
+    SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + plr->GetTeam(), plr->getGuid(), "$N has taken the flag!");
+    m_flagHolder = plr->getGuidLow();
 
     event_RemoveEvents(EVENT_EOTS_RESET_FLAG);
 }
@@ -441,18 +441,18 @@ bool EyeOfTheStorm::HookSlowLockOpen(GameObject* /*pGo*/, Player* pPlayer, Spell
         return false;
 
     m_standFlag->RemoveFromWorld(false);
-    pPlayer->CastSpell(pPlayer->GetGUID(), EOTS_NETHERWING_FLAG_SPELL, true);
+    pPlayer->CastSpell(pPlayer->getGuid(), EOTS_NETHERWING_FLAG_SPELL, true);
 
     SetWorldState(EOTS_NETHERWING_FLAG_READY, 0);
     PlaySoundToAll(pPlayer->IsTeamHorde() ? SOUND_HORDE_CAPTURE : SOUND_ALLIANCE_CAPTURE);
-    SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + pPlayer->GetTeam(), pPlayer->GetGUID(), "$N has taken the flag!");
-    m_flagHolder = pPlayer->GetLowGUID();
+    SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + pPlayer->GetTeam(), pPlayer->getGuid(), "$N has taken the flag!");
+    m_flagHolder = pPlayer->getGuidLow();
     return true;
 }
 
 void EyeOfTheStorm::HookOnMount(Player* plr)
 {
-    if (m_flagHolder == plr->GetLowGUID())
+    if (m_flagHolder == plr->getGuidLow())
     {
         HookOnFlagDrop(plr);
     }
@@ -475,7 +475,7 @@ void EyeOfTheStorm::OnRemovePlayer(Player* plr)
         m_CPDisplay[i].erase(plr);
     }
 
-    if (m_flagHolder == plr->GetLowGUID())
+    if (m_flagHolder == plr->getGuidLow())
     {
         HookOnFlagDrop(plr);
     }
@@ -486,7 +486,7 @@ void EyeOfTheStorm::OnRemovePlayer(Player* plr)
 
 void EyeOfTheStorm::DropFlag2(Player* plr, uint32 id)
 {
-    if (m_flagHolder != plr->GetLowGUID())
+    if (m_flagHolder != plr->getGuidLow())
         return;
 
     switch (id)
@@ -518,7 +518,7 @@ void EyeOfTheStorm::DropFlag2(Player* plr, uint32 id)
 
 void EyeOfTheStorm::HookOnFlagDrop(Player* plr)
 {
-    if (m_flagHolder != plr->GetLowGUID())
+    if (m_flagHolder != plr->getGuidLow())
         return;
 
     plr->RemoveAura(EOTS_NETHERWING_FLAG_SPELL);
@@ -528,7 +528,7 @@ void EyeOfTheStorm::HookOnFlagDrop(Player* plr)
     m_dropFlag->PushToWorld(m_mapMgr);
     m_flagHolder = 0;
     PlaySoundToAll(SOUND_FLAG_RETURNED);
-    SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + plr->GetTeam(), plr->GetGUID(), "$N has dropped the flag!");
+    SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + plr->GetTeam(), plr->getGuid(), "$N has dropped the flag!");
 
     sEventMgr.AddEvent(this, &EyeOfTheStorm::EventResetFlag, EVENT_EOTS_RESET_FLAG, 10000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }

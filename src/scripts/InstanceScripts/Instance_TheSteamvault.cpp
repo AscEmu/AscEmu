@@ -379,7 +379,7 @@ class WarlordKalitreshAI : public CreatureAIScript
                         if (getCreature()->GetDistance2dSq(pDistiller) <= 100.0f)
                         {
                             pDistiller->setUInt64Value(UNIT_FIELD_FLAGS, 0);
-                            pDistiller->SetChannelSpellTargetGUID(getCreature()->GetGUID());
+                            pDistiller->SetChannelSpellTargetGUID(getCreature()->getGuid());
                             pDistiller->SetChannelSpellId(31543);
 
                             getCreature()->GetAIInterface()->StopMovement(0);

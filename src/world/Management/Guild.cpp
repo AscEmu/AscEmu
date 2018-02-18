@@ -377,7 +377,7 @@ void Guild::PromoteGuildMember(PlayerInfo* pMember, WorldSession* pClient)
 
     // log it
     LogGuildEvent(GE_PROMOTION, 3, pClient->GetPlayer()->GetName(), pMember->name, newRank->szRankName);
-    AddGuildLogEntry(GE_LOG_PROMOTE_PLAYER, 3, pClient->GetPlayer()->GetLowGUID(), pMember->guid, newRank->iId);
+    AddGuildLogEntry(GE_LOG_PROMOTE_PLAYER, 3, pClient->GetPlayer()->getGuidLow(), pMember->guid, newRank->iId);
 
     // update in the database
     CharacterDatabase.Execute("UPDATE guild_data SET guildRank = %u WHERE playerid = %u AND guildid = %u", newRank->iId, pMember->guid, m_guildId);
@@ -434,7 +434,7 @@ void Guild::DemoteGuildMember(PlayerInfo* pMember, WorldSession* pClient)
 
     // log it
     LogGuildEvent(GE_DEMOTION, 3, pClient->GetPlayer()->GetName(), pMember->name, newRank->szRankName);
-    AddGuildLogEntry(GE_LOG_DEMOTE_PLAYER, 3, pClient->GetPlayer()->GetLowGUID(), pMember->guid, newRank->iId);
+    AddGuildLogEntry(GE_LOG_DEMOTE_PLAYER, 3, pClient->GetPlayer()->getGuidLow(), pMember->guid, newRank->iId);
 
     // update in the database
     CharacterDatabase.Execute("UPDATE guild_data SET guildRank = %u WHERE playerid = %u AND guildid = %u", newRank->iId, pMember->guid, m_guildId);
@@ -849,7 +849,7 @@ void Guild::RemoveGuildMember(PlayerInfo* pMember, WorldSession* pClient)
         if (plr)
             sChatHandler.SystemMessage(plr->GetSession(), "You have been kicked from the guild by %s", pClient->GetPlayer()->GetName());
         LogGuildEvent(GE_REMOVED, 2, pMember->name, pClient->GetPlayer()->GetName());
-        AddGuildLogEntry(GE_LOG_UNINVITE_PLAYER, 2, pClient->GetPlayer()->GetLowGUID(), pMember->guid);
+        AddGuildLogEntry(GE_LOG_UNINVITE_PLAYER, 2, pClient->GetPlayer()->getGuidLow(), pMember->guid);
     }
     else
     {
@@ -1011,7 +1011,7 @@ void Guild::disband()
 
 void Guild::ChangeGuildMaster(PlayerInfo* pNewMaster, WorldSession* pClient)
 {
-    if (pClient->GetPlayer()->GetLowGUID() != m_guildLeader)
+    if (pClient->GetPlayer()->getGuidLow() != m_guildLeader)
     {
         Guild::sendCommandResult(pClient, GC_TYPE_PROMOTE, GC_ERROR_PERMISSIONS);
         return;
@@ -1078,7 +1078,7 @@ void Guild::GuildChat(const char* szMessage, WorldSession* pClient, uint32 iType
     }
 
     WorldPacket* data = sChatHandler.FillMessageData(CHAT_MSG_GUILD, ((int32)iType) == CHAT_MSG_ADDON ? -1 : LANG_UNIVERSAL, szMessage,
-                                                     pClient->GetPlayer()->GetGUID(), pClient->GetPlayer()->isGMFlagSet() ? 4 : 0);
+                                                     pClient->GetPlayer()->getGuid(), pClient->GetPlayer()->isGMFlagSet() ? 4 : 0);
 
     m_lock.Acquire();
     for (GuildMemberMap::iterator itr = m_members.begin(); itr != m_members.end(); ++itr)
@@ -1103,7 +1103,7 @@ void Guild::OfficerChat(const char* szMessage, WorldSession* pClient, uint32 iTy
     }
 
     WorldPacket* data = sChatHandler.FillMessageData(CHAT_MSG_OFFICER, ((int32)iType) == CHAT_MSG_ADDON ? -1 : LANG_UNIVERSAL, szMessage,
-                                                     pClient->GetPlayer()->GetGUID());
+                                                     pClient->GetPlayer()->getGuid());
 
     m_lock.Acquire();
     for (GuildMemberMap::iterator itr = m_members.begin(); itr != m_members.end(); ++itr)
@@ -1330,7 +1330,7 @@ Guild* Guild::Create()
 
 void Guild::BuyBankTab(WorldSession* pClient)
 {
-    if (pClient && pClient->GetPlayer()->GetLowGUID() != m_guildLeader)
+    if (pClient && pClient->GetPlayer()->getGuidLow() != m_guildLeader)
         return;
 
     if (GetBankTabCount() >= MAX_GUILD_BANK_TABS)
@@ -1462,7 +1462,7 @@ void Guild::DepositMoney(WorldSession* pClient, uint32 uAmount)
     LogGuildEvent(GE_BANK_TAB_UPDATED, 1, buf);
 
     // log it!
-    LogGuildBankActionMoney(GB_LOG_DEPOSIT_MONEY, pClient->GetPlayer()->GetLowGUID(), uAmount);
+    LogGuildBankActionMoney(GB_LOG_DEPOSIT_MONEY, pClient->GetPlayer()->getGuidLow(), uAmount);
 }
 
 void Guild::WithdrawMoney(WorldSession* pClient, uint32 uAmount)
@@ -1510,7 +1510,7 @@ void Guild::WithdrawMoney(WorldSession* pClient, uint32 uAmount)
     SpendMoney(uAmount);
 
     // log it!
-    LogGuildBankActionMoney(GB_LOG_WITHDRAW_MONEY, pClient->GetPlayer()->GetLowGUID(), uAmount);
+    LogGuildBankActionMoney(GB_LOG_WITHDRAW_MONEY, pClient->GetPlayer()->getGuidLow(), uAmount);
 }
 
 void Guild::SpendMoney(uint32 uAmount)

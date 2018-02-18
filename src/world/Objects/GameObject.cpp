@@ -55,7 +55,7 @@ GameObject::GameObject(uint64 guid)
     std::fill(m_uint32Values, &m_uint32Values[GAMEOBJECT_END], 0);
     m_updateMask.SetCount(GAMEOBJECT_END);
     setUInt32Value(OBJECT_FIELD_TYPE, TYPE_GAMEOBJECT | TYPE_OBJECT);
-    SetGUID(guid);
+    setGuid(guid);
     SetAnimProgress(100);
     m_wowGuid.Init(guid);
     SetScale(1);
@@ -101,7 +101,7 @@ GameObject::~GameObject()
 
     if (m_summonedGo && m_summoner)
         for (uint8 i = 0; i < 4; i++)
-            if (m_summoner->m_ObjectSlots[i] == GetLowGUID())
+            if (m_summoner->m_ObjectSlots[i] == getGuidLow())
                 m_summoner->m_ObjectSlots[i] = 0;
 }
 
@@ -401,7 +401,7 @@ void GameObject::onRemoveInRangeObject(Object* pObj)
     if (m_summonedGo && m_summoner == pObj)
     {
         for (uint8 i = 0; i < 4; i++)
-            if (m_summoner->m_ObjectSlots[i] == GetLowGUID())
+            if (m_summoner->m_ObjectSlots[i] == getGuidLow())
                 m_summoner->m_ObjectSlots[i] = 0;
 
         m_summoner = 0;
@@ -412,7 +412,7 @@ void GameObject::onRemoveInRangeObject(Object* pObj)
 void GameObject::RemoveFromWorld(bool free_guid)
 {
     WorldPacket data(SMSG_GAMEOBJECT_DESPAWN_ANIM, 8);
-    data << uint64(GetGUID());
+    data << uint64(getGuid());
     SendMessageToSet(&data, true);
 
     sEventMgr.RemoveEvents(this);
@@ -525,7 +525,7 @@ void GameObject::CastSpell(uint64 TargetGUID, uint32 SpellID)
 void GameObject::SetCustomAnim(uint32_t anim)
 {
     WorldPacket data(SMSG_GAMEOBJECT_CUSTOM_ANIM, 12);
-    data << uint64_t(GetGUID());
+    data << uint64_t(getGuid());
     data << uint32_t(anim);
     SendMessageToSet(&data, false, false);
 }
@@ -852,7 +852,7 @@ void GameObject_Trap::Update(unsigned long time_passed)
             if (!o || !o->IsUnit())
                 continue;
 
-            if ((m_summoner != NULL) && (o->GetGUID() == m_summoner->GetGUID()))
+            if ((m_summoner != NULL) && (o->getGuid() == m_summoner->getGuid()))
                 continue;
 
             dist = getDistanceSq(o);
@@ -872,7 +872,7 @@ void GameObject_Trap::Update(unsigned long time_passed)
                         continue;
                 }
 
-                CastSpell(o->GetGUID(), spell);
+                CastSpell(o->getGuid(), spell);
 
                 if (m_summoner != NULL)
                     m_summoner->HandleProc(PROC_ON_TRAP_TRIGGER, reinterpret_cast<Unit*>(o), spell);
@@ -929,7 +929,7 @@ void GameObject_SpellFocus::SpawnLinkedTrap()
     }
 
     go->SetFaction(GetFaction());
-    go->setUInt64Value(OBJECT_FIELD_CREATED_BY, GetGUID());
+    go->setUInt64Value(OBJECT_FIELD_CREATED_BY, getGuid());
     go->PushToWorld(m_mapMgr);
 }
 

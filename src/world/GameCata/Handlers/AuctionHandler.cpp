@@ -67,7 +67,7 @@ void WorldSession::HandleAuctionPlaceBid(WorldPacket& recv_data)
         return;
     }
 
-    if (auct->Owner == _player->GetGUID())
+    if (auct->Owner == _player->getGuid())
     {
         SendAuctionPlaceBidResultPacket(0, AUCTION_ERR_BID_OWN_AUCTION);
         return;
@@ -91,13 +91,13 @@ void WorldSession::HandleAuctionPlaceBid(WorldPacket& recv_data)
         snprintf(subject, 100, "%u:0:0", (int)auct->pItem->GetEntry());
         sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, ah->GetID(), auct->HighestBidder, subject, "", auct->HighestBid, 0, 0, MAIL_STATIONERY_AUCTION);
 
-        if (auct->HighestBidder != (uint32_t)_player->GetLowGUID())
-            ah->SendAuctionOutBidNotificationPacket(auct, _player->GetGUID(), price);
+        if (auct->HighestBidder != (uint32_t)_player->getGuidLow())
+            ah->SendAuctionOutBidNotificationPacket(auct, _player->getGuid(), price);
     }
 
     if (auct->BuyoutPrice == price)
     {
-        auct->HighestBidder = _player->GetLowGUID();
+        auct->HighestBidder = _player->getGuidLow();
         auct->HighestBid = price;
 
         ah->QueueDeletion(auct, AUCTION_REMOVE_WON);
@@ -107,7 +107,7 @@ void WorldSession::HandleAuctionPlaceBid(WorldPacket& recv_data)
     }
     else
     {
-        auct->HighestBidder = _player->GetLowGUID();
+        auct->HighestBidder = _player->getGuidLow();
         auct->HighestBid = price;
         auct->UpdateInDB();
 
@@ -266,7 +266,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recvData)
         auct->HighestBid = 0;
         auct->HighestBidder = 0;
         auct->Id = sAuctionMgr.GenerateAuctionId();
-        auct->Owner = _player->GetLowGUID();
+        auct->Owner = _player->getGuidLow();
         auct->pItem = item;
         auct->Deleted = false;
         auct->DeletedReason = 0;

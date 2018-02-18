@@ -98,7 +98,7 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
         if (!pPet->isAlive())
             continue;
         alive_summon = true;//we found a an alive summon
-        uint64 GUID = pPet->GetGUID();
+        uint64 GUID = pPet->getGuid();
         switch (action)
         {
             case PET_ACTION_ACTION:
@@ -314,7 +314,7 @@ void WorldSession::HandleUnstablePet(WorldPacket& recv_data)
     PlayerPet* pet = _player->GetPlayerPet(petnumber);
     if (!pet)
     {
-        LOG_ERROR("PET SYSTEM: Player " I64FMT " tried to unstable non-existent pet %d", _player->GetGUID(), petnumber);
+        LOG_ERROR("PET SYSTEM: Player " I64FMT " tried to unstable non-existent pet %d", _player->getGuid(), petnumber);
         return;
     }
     //unstable selected pet but spawn it only if it's alive
@@ -341,7 +341,7 @@ void WorldSession::HandleStableSwapPet(WorldPacket& recv_data)
     PlayerPet* pet = _player->GetPlayerPet(petnumber);
     if (!pet)
     {
-        LOG_ERROR("PET SYSTEM: Player " I64FMT " tried to unstable non-existent pet %d", _player->GetGUID(), petnumber);
+        LOG_ERROR("PET SYSTEM: Player " I64FMT " tried to unstable non-existent pet %d", _player->getGuid(), petnumber);
         return;
     }
     Pet* pPet = _player->GetSummon();
@@ -460,7 +460,7 @@ void WorldSession::HandlePetRename(WorldPacket& recv_data)
     std::list<Pet*> summons = _player->GetSummons();
     for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
     {
-        if ((*itr)->GetGUID() == guid)
+        if ((*itr)->getGuid() == guid)
         {
             pet = (*itr);
             break;
@@ -514,7 +514,7 @@ void WorldSession::HandlePetUnlearn(WorldPacket& recv_data)
     recv_data >> guid;
 
     Pet* pPet = _player->GetSummon();
-    if (pPet == NULL || pPet->GetGUID() != guid)
+    if (pPet == NULL || pPet->getGuid() != guid)
     {
         sChatHandler.SystemMessage(this, "That pet is not your current pet, or you do not have a pet.");
         return;
@@ -524,7 +524,7 @@ void WorldSession::HandlePetUnlearn(WorldPacket& recv_data)
     if (!_player->HasGold(cost))
     {
         WorldPacket data(SMSG_BUY_FAILED, 12);
-        data << uint64(_player->GetGUID());
+        data << uint64(_player->getGuid());
         data << uint32(0);
         data << uint8(2);        //not enough money
         SendPacket(&data);

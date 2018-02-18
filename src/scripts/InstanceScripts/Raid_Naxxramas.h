@@ -2524,7 +2524,7 @@ class KelthuzadAI : public CreatureAIScript
         TheLichKing = getNearestCreature(3767.58f, -5117.15f, 174.49f, CN_THE_LICH_KING);
         if (TheLichKing != NULL)
         {
-            getCreature()->SetChannelSpellTargetGUID(TheLichKing->GetGUID());
+            getCreature()->SetChannelSpellTargetGUID(TheLichKing->getGuid());
             getCreature()->SetChannelSpellId(29423);
         }
 

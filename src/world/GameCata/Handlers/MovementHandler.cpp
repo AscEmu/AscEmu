@@ -19,7 +19,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     uint16_t opcode = recv_data.GetOpcode();
     Player* mover = _player;
 
-    if (m_MoverGuid != mover->GetGUID())
+    if (m_MoverGuid != mover->getGuid())
         return;
 
     if (mover->GetCharmedByGUID() || !mover->IsInWorld() || mover->GetPlayerStatus() == TRANSFER_PENDING || mover->isOnTaxi())
@@ -850,7 +850,7 @@ void WorldSession::HandleMoveTeleportAckOpcode(WorldPacket& recvData)
     recvData.ReadByteSeq(guid[3]);
     recvData.ReadByteSeq(guid[0]);
 
-    if (guid == _player->GetGUID())
+    if (guid == _player->getGuid())
     {
         if (worldConfig.antiHack.isTeleportHackCheckEnabled && !(HasGMPermissions() && worldConfig.antiHack.isAntiHackCheckDisabledForGm) && _player->GetPlayerStatus() != TRANSFER_PENDING)
         {

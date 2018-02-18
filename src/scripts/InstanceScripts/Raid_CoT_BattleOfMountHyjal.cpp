@@ -102,7 +102,7 @@ class JainaProudmooreGS : public Arcemu::Gossip::Script
             if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
                 return;
 
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 2);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 2);
             switch (static_cast<MountHyjalScript*>(pObject->GetMapMgr()->GetScript())->GetLocaleInstanceData(HYJAL_TYPE_BASIC, 0))
             {
                 case HYJAL_PHASE_NOT_STARTED:
@@ -155,7 +155,7 @@ class ThrallGS : public Arcemu::Gossip::Script
             if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
                 return;
 
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 2);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 2);
             switch (static_cast<MountHyjalScript*>(pObject->GetMapMgr()->GetScript())->GetLocaleInstanceData(HYJAL_TYPE_BASIC, 0))
             {
                 case HYJAL_PHASE_ANETHERON_COMPLETE:
@@ -355,7 +355,7 @@ class ArchimondeTriggerAI : public CreatureAIScript
             Unit* Archimonde = getNearestCreature(5598.629883f, -3447.719971f, 1576.650024f, 17968);
             if (Archimonde)
             {
-                getCreature()->SetChannelSpellTargetGUID(Archimonde->GetGUID());
+                getCreature()->SetChannelSpellTargetGUID(Archimonde->getGuid());
                 getCreature()->SetChannelSpellId(DRAIN_WORLD_TREE_VISUAL2);
             }
         }

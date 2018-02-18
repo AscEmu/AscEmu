@@ -73,7 +73,7 @@ void WorldSession::SendTabardHelp(Creature* pCreature)
 {
     WorldPacket data(8);
     data.Initialize(MSG_TABARDVENDOR_ACTIVATE);
-    data << pCreature->GetGUID();
+    data << pCreature->getGuid();
     SendPacket(&data);
 }
 
@@ -99,7 +99,7 @@ void WorldSession::SendBankerList(Creature* pCreature)
 
     WorldPacket data(8);
     data.Initialize(SMSG_SHOW_BANK);
-    data << pCreature->GetGUID();
+    data << pCreature->getGuid();
     SendPacket(&data);
 }
 
@@ -132,7 +132,7 @@ void WorldSession::SendTrainerList(Creature* pCreature)
         return;
 
     if (!_player->CanTrainAt(pTrainer))
-        Arcemu::Gossip::Menu::SendSimpleMenu(pCreature->GetGUID(), pTrainer->Cannot_Train_GossipTextId, GetPlayer());
+        Arcemu::Gossip::Menu::SendSimpleMenu(pCreature->getGuid(), pTrainer->Cannot_Train_GossipTextId, GetPlayer());
     else
     {
         WorldPacket data(SMSG_TRAINER_LIST, 5000);
@@ -142,7 +142,7 @@ void WorldSession::SendTrainerList(Creature* pCreature)
         uint8 Status;
         std::string Text;
 
-        data << pCreature->GetGUID();
+        data << pCreature->getGuid();
         data << pTrainer->TrainerType;
 
         data << uint32(0);
@@ -233,8 +233,8 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket & recvPacket)
     else
     {
         //Showing the learning spellvisuals
-        _player->playSpellVisual(pCreature->GetGUID(), 1459);
-        _player->playSpellVisual(_player->GetGUID(), 362);
+        _player->playSpellVisual(pCreature->getGuid(), 1459);
+        _player->playSpellVisual(_player->getGuid(), 362);
 
         // add the spell itself
         _player->addSpell(pSpell->pLearnSpell->getId());
@@ -309,7 +309,7 @@ void WorldSession::SendCharterRequest(Creature* pCreature)
     {
         WorldPacket data(SMSG_PETITION_SHOWLIST, 81);
 
-        data << pCreature->GetGUID();
+        data << pCreature->getGuid();
         data << uint8(0x03);        //number of charter types in packet
 
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -345,7 +345,7 @@ void WorldSession::SendCharterRequest(Creature* pCreature)
     {
         WorldPacket data(33);
         data.Initialize(SMSG_PETITION_SHOWLIST);
-        data << pCreature->GetGUID();
+        data << pCreature->getGuid();
         data << uint8(1);               // num charters in packet (although appears to only turn off the cost display, maybe due to packet not being parsed /shrug)
         data << uint32(1);              // charter 1 in packet
         data << uint32(0x16E7);         // ItemId of the guild charter
@@ -384,7 +384,7 @@ void WorldSession::SendAuctionList(Creature* auctioneer)
     }
 
     WorldPacket data(MSG_AUCTION_HELLO, 12);
-    data << uint64(auctioneer->GetGUID());
+    data << uint64(auctioneer->getGuid());
     data << uint32(AH->GetID());
     data << uint8(AH->enabled ? 1 : 0);         // Alleycat - Need to correct this properly.
     SendPacket(&data);
@@ -497,7 +497,7 @@ void WorldSession::HandleSpiritHealerActivateOpcode(WorldPacket& /*recvData*/)
         {
             SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(15007);    //resurrection sickness
             SpellCastTargets targets;
-            targets.m_unitTarget = GetPlayer()->GetGUID();
+            targets.m_unitTarget = GetPlayer()->getGuid();
             Spell* sp = sSpellFactoryMgr.NewSpell(_player, spellInfo, true, nullptr);
             sp->prepare(&targets);
         }
@@ -638,7 +638,7 @@ void WorldSession::SendInnkeeperBind(Creature* pCreature)
         OutPacket(SMSG_GOSSIP_COMPLETE, 0, NULL);
 
         data.Initialize(SMSG_BINDER_CONFIRM);
-        data << pCreature->GetGUID() << _player->GetZoneId();
+        data << pCreature->getGuid() << _player->GetZoneId();
         SendPacket(&data);
 
         _player->bHasBindDialogOpen = true;
@@ -648,7 +648,7 @@ void WorldSession::SendInnkeeperBind(Creature* pCreature)
     _player->bHasBindDialogOpen = false;
     OutPacket(SMSG_GOSSIP_COMPLETE, 0, NULL);
 
-    pCreature->CastSpell(_player->GetGUID(), BIND_SPELL_ID, true);
+    pCreature->CastSpell(_player->getGuid(), BIND_SPELL_ID, true);
 }
 #endif
 
@@ -657,7 +657,7 @@ void WorldSession::SendInnkeeperBind(Creature* pCreature)
 void WorldSession::SendSpiritHealerRequest(Creature* pCreature)
 {
     WorldPacket data(SMSG_SPIRIT_HEALER_CONFIRM, 8);
-    data << pCreature->GetGUID();
+    data << pCreature->getGuid();
     SendPacket(&data);
 }
 

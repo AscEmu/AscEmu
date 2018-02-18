@@ -559,7 +559,7 @@ bool Transporter::AddPassenger(Player* passenger)
 {
     ARCEMU_ASSERT(passenger != nullptr);
 
-    m_passengers.insert(passenger->GetLowGUID());
+    m_passengers.insert(passenger->getGuidLow());
     LOG_DEBUG("Player %s boarded transport %u.", passenger->GetName(), this->GetGameObjectProperties()->entry);
 
     if (!passenger->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
@@ -574,7 +574,7 @@ bool Transporter::RemovePassenger(Player* passenger)
 {
     ARCEMU_ASSERT(passenger != nullptr);
 
-    m_passengers.erase(passenger->GetLowGUID());
+    m_passengers.erase(passenger->getGuidLow());
     LOG_DEBUG("Player %s removed from transport %u.", passenger->GetName(), this->GetGameObjectProperties()->entry);
 
     if (passenger->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
@@ -722,12 +722,12 @@ uint32 Transporter::AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y
     pCreature->obj_movement_info.transport_data.relativePosition.y = y;
     pCreature->obj_movement_info.transport_data.relativePosition.z = z;
     pCreature->obj_movement_info.transport_data.relativePosition.o = o;
-    pCreature->obj_movement_info.transport_data.transportGuid = GetGUID();
+    pCreature->obj_movement_info.transport_data.transportGuid = getGuid();
 #else
-    pCreature->obj_movement_info.setTransportData(GetGUID(), x, y, z, o, 0, 0);
+    pCreature->obj_movement_info.setTransportData(getGuid(), x, y, z, o, 0, 0);
 #endif
 
-    pCreature->m_transportData.transportGuid = this->GetGUID();
+    pCreature->m_transportData.transportGuid = this->getGuid();
     pCreature->m_transportData.relativePosition.x = x;
     pCreature->m_transportData.relativePosition.y = y;
     pCreature->m_transportData.relativePosition.z = z;
@@ -781,12 +781,12 @@ Creature* Transporter::AddNPCPassengerInInstance(uint32 entry, float x, float y,
     pCreature->obj_movement_info.transport_data.relativePosition.y = y;
     pCreature->obj_movement_info.transport_data.relativePosition.z = z;
     pCreature->obj_movement_info.transport_data.relativePosition.o = o;
-    pCreature->obj_movement_info.transport_data.transportGuid = GetGUID();
+    pCreature->obj_movement_info.transport_data.transportGuid = getGuid();
 #else
-    pCreature->obj_movement_info.setTransportData(GetGUID(), x, y, z, o, 0, 0);
+    pCreature->obj_movement_info.setTransportData(getGuid(), x, y, z, o, 0, 0);
 #endif
 
-    pCreature->m_transportData.transportGuid = this->GetGUID();
+    pCreature->m_transportData.transportGuid = this->getGuid();
     pCreature->m_transportData.relativePosition.x = x;
     pCreature->m_transportData.relativePosition.y = y;
     pCreature->m_transportData.relativePosition.z = z;

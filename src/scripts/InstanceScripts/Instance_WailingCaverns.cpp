@@ -249,13 +249,13 @@ class DofNaralexGossip : public Arcemu::Gossip::Script
 
             if ((!Fanglord1 || !Fanglord1->isAlive()) && (!Fanglord2 || !Fanglord2->isAlive()) && (!Fanglord3 || !Fanglord3->isAlive()) && (!Fanglord4 || !Fanglord4->isAlive()))
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 699, 0);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 699, 0);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(442), 1);     // Let's go!
                 menu.Send(plr);
             }
             else
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 698, 0);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 698, 0);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(443), 1);     // I will slay those Fanglords
                 menu.Send(plr);
             }

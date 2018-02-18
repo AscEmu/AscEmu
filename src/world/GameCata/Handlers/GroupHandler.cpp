@@ -105,7 +105,7 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recvData)
         }
     }
 
-    ObjectGuid inviter_guid = player->GetGUID();
+    ObjectGuid inviter_guid = player->getGuid();
 
     if (player->InGroup())
     {
@@ -170,7 +170,7 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recvData)
         return;
     }
 
-    if (player->Social_IsIgnoring(_player->GetLowGUID()))
+    if (player->Social_IsIgnoring(_player->getGuidLow()))
     {
         SendPartyCommandResult(_player, 0, member_name, ERR_PARTY_IS_IGNORING_YOU);
         return;
@@ -229,7 +229,7 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recvData)
 
     SendPartyCommandResult(_player, 0, member_name, ERR_PARTY_NO_ERROR);
 
-    player->SetInviter(_player->GetLowGUID());
+    player->SetInviter(_player->getGuidLow());
 }
 
 void WorldSession::HandleGroupInviteResponseOpcode(WorldPacket& recvData)
@@ -267,7 +267,7 @@ void WorldSession::HandleGroupInviteResponseOpcode(WorldPacket& recvData)
             _player->SendDungeonDifficulty();
 
             Instance* instance = sInstanceMgr.GetInstanceByIds(group_inviter->GetMapId(), group_inviter->GetInstanceID());
-            if (instance != nullptr && instance->m_creatorGuid == group_inviter->GetLowGUID())
+            if (instance != nullptr && instance->m_creatorGuid == group_inviter->getGuidLow())
             {
                 group->m_instanceIds[instance->m_mapId][instance->m_difficulty] = instance->m_instanceId;
                 instance->m_creatorGroup = group->GetID();
@@ -298,7 +298,7 @@ void WorldSession::HandleGroupSetRolesOpcode(WorldPacket& recvData)
     recvData >> newRole;
 
     ObjectGuid target_guid; // Target GUID
-    ObjectGuid player_guid = GetPlayer()->GetGUID();
+    ObjectGuid player_guid = GetPlayer()->getGuid();
 
     target_guid[2] = recvData.readBit();
     target_guid[6] = recvData.readBit();
@@ -474,10 +474,10 @@ void WorldSession::HandleGroupRoleCheckBeginOpcode(WorldPacket& recvData)
 
     if (recvData.isEmpty())
     {
-        if (group->GetLeader()->guid != GetPlayer()->GetGUID() && group->GetMainAssist()->guid != GetPlayer()->GetGUID())
+        if (group->GetLeader()->guid != GetPlayer()->getGuid() && group->GetMainAssist()->guid != GetPlayer()->getGuid())
             return;
 
-        ObjectGuid guid = GetPlayer()->GetGUID();
+        ObjectGuid guid = GetPlayer()->getGuid();
 
         WorldPacket data(SMSG_ROLE_CHECK_BEGIN, 8);
         data.writeBit(guid[1]);

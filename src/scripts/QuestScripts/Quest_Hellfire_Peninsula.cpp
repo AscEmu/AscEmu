@@ -182,7 +182,7 @@ public:
         {
             if (pPlayer->GetItemInterface()->GetItemCount(29501) > 0)
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 10104, pPlayer->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 10104, pPlayer->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(463), 1);     // Walk free, Elder. Bring the spirits back to your tribe.
                 menu.Send(pPlayer);
             }

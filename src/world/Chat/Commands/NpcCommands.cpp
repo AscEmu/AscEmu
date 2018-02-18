@@ -671,8 +671,8 @@ bool ChatHandler::HandleNpcSelectCommand(const char* /*args*/, WorldSession* m_s
         return true;
     }
 
-    player->SetSelection(near_creature->GetGUID());
-    SystemMessage(m_session, "Nearest Creature %s spawnID: %u GUID: " I64FMT " selected", near_creature->GetCreatureProperties()->Name.c_str(), near_creature->spawnid, near_creature->GetGUID());
+    player->SetSelection(near_creature->getGuid());
+    SystemMessage(m_session, "Nearest Creature %s spawnID: %u GUID: " I64FMT " selected", near_creature->GetCreatureProperties()->Name.c_str(), near_creature->spawnid, near_creature->getGuid());
     return true;
 }
 
@@ -1152,7 +1152,7 @@ bool ChatHandler::HandleNpcSetFormationSlaveCommand(const char* args, WorldSessi
 
     creature_slave->GetAIInterface()->m_formationFollowDistance = distance;
     creature_slave->GetAIInterface()->m_formationFollowAngle = angle;
-    creature_slave->GetAIInterface()->m_formationLinkTarget = m_session->GetPlayer()->linkTarget->GetGUID();
+    creature_slave->GetAIInterface()->m_formationLinkTarget = m_session->GetPlayer()->linkTarget->getGuid();
     creature_slave->GetAIInterface()->m_formationLinkSqlId = m_session->GetPlayer()->linkTarget->GetSQL_id();
     creature_slave->GetAIInterface()->SetUnitToFollowAngle(angle);
 

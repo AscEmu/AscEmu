@@ -40,7 +40,7 @@ RegType<Item> ItemMethods[] =
 	{ "GetName", &luaItem::GetName },
 	{ "GetSpellId", &luaItem::GetSpellId },
 	{ "GetSpellTrigger", &luaItem::GetSpellTrigger },
-	{ "GetGUID", &luaItem::GetGUID },
+	{ "getGuid", &luaItem::GetGUID },
 	{ "AddLoot", &luaItem::AddLoot},
 	{ "SetByteValue", &luaItem::SetByteValue },
 	{ "GetByteValue", &luaItem::GetByteValue },
@@ -166,7 +166,7 @@ RegType<Unit> UnitMethods[] =
 	{ "SetMana", &LuaUnit::SetMana },
 	{ "SetMaxMana", &LuaUnit::SetMaxMana },
 	{ "GetDistance", &LuaUnit::GetDistance },
-	{ "GetGUID", &LuaUnit::GetGUID },
+	{ "getGuid", &LuaUnit::GetGUID },
 	{ "GetCreatureNearestCoords", &LuaUnit::GetCreatureNearestCoords },
 	{ "CastSpellAoF", &LuaUnit::CastSpellAoF },
 	{ "GetGameObjectNearestCoords", &LuaUnit::GetGameObjectNearestCoords },
@@ -556,7 +556,7 @@ RegType<Unit> UnitMethods[] =
 
 RegType<GameObject> GOMethods[] =
 {
-	{ "GetGUID", &LuaGameObject::GetGUID },
+	{ "getGuid", &LuaGameObject::GetGUID },
 	{ "GetName", &LuaGameObject::GetName },
 	{ "GetCreatureNearestCoords", &LuaGameObject::GetCreatureNearestCoords },
 	{ "GetAreaId", &LuaGameObject::GetAreaId },
@@ -755,7 +755,7 @@ RegType<Field> SQLFieldMethods[] =
 	{"GetLong", &luaSql::GetLong },
 	{"GetULong", &luaSql::GetULong },
 	{"GetString", &luaSql::GetString },
-	{"GetGUID", &luaSql::GetGUID },
+	{"getGuid", &luaSql::GetGUID },
 	{"GetFloat", &luaSql::GetFloat },
 	{"GetBool", &luaSql::GetBool },
 	{NULL, NULL},

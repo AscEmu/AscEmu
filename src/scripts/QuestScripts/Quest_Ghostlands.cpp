@@ -26,7 +26,7 @@ public:
 
     void OnHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1, plr->GetSession()->language);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, plr->GetSession()->language);
         if (plr->HasQuest(9164))
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(462), 1);     // Release Him.
 
@@ -50,7 +50,7 @@ public:
 
     void OnHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1, plr->GetSession()->language);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, plr->GetSession()->language);
         if (plr->HasQuest(9164))
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(462), 1);     // Release Him.
 
@@ -75,7 +75,7 @@ public:
 
     void OnHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1, plr->GetSession()->language);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, plr->GetSession()->language);
         if (plr->HasQuest(9164))
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(462), 1);     // Release Him.
 

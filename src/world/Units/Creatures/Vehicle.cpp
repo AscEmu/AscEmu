@@ -174,7 +174,7 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
     if (passenger->IsCreature())
     {
 #if VERSION_STRING != Cata
-        passenger->obj_movement_info.transport_data.transportGuid = owner->GetGUID();
+        passenger->obj_movement_info.transport_data.transportGuid = owner->getGuid();
         passenger->obj_movement_info.transport_seat = static_cast<uint8_t>(seatid);
 #endif
     }
@@ -186,7 +186,7 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
 
         passenger->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
 
-        static_cast<Player*>(passenger)->SetFarsightTarget(owner->GetGUID());
+        static_cast<Player*>(passenger)->SetFarsightTarget(owner->getGuid());
 
         if (seats[seatid]->Controller())
         {
@@ -194,8 +194,8 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
             pack << owner->GetNewGUID() << uint8(1);
             passenger->SendPacket(&pack);
 
-            passenger->SetCharmedUnitGUID(owner->GetGUID());
-            owner->SetCharmedByGUID(passenger->GetGUID());
+            passenger->SetCharmedUnitGUID(owner->getGuid());
+            owner->SetCharmedByGUID(passenger->getGuid());
             owner->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED_CREATURE);
 
             WorldPacket spells(SMSG_PET_SPELLS, 100);
@@ -206,7 +206,7 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
         }
     }
 
-    seats[seatid]->AddPassenger(passenger->GetGUID());
+    seats[seatid]->AddPassenger(passenger->getGuid());
     passenger->SetCurrentVehicle(this);
 
     if (seats[seatid]->HidesPassenger())
@@ -271,7 +271,7 @@ void Vehicle::EjectPassenger(Unit* passenger)
     // find the seat the passenger is on
     uint32 seatid = MAX_VEHICLE_SEATS;
     for (uint8 i = 0; i < MAX_VEHICLE_SEATS; i++)
-        if ((seats[i] != nullptr) && seats[i]->Usable() && seats[i]->HasPassenger() && (seats[i]->GetPassengerGUID() == passenger->GetGUID()))
+        if ((seats[i] != nullptr) && seats[i]->Usable() && seats[i]->HasPassenger() && (seats[i]->GetPassengerGUID() == passenger->getGuid()))
         {
             seatid = i;
             break;
@@ -374,7 +374,7 @@ void Vehicle::EjectPassengerFromSeat(uint32 seatid)
         }
         else{
             // The passenger summoned the vehicle, and we have no script to remove it, so we remove it here
-            if ((passengercount == 0) && (c->GetSummonedByGUID() == passenger->GetGUID()))
+            if ((passengercount == 0) && (c->GetSummonedByGUID() == passenger->getGuid()))
                 c->Despawn(1 * 1000, 0);
         }
     }
@@ -403,7 +403,7 @@ void Vehicle::MovePassengerToSeat(Unit* passenger, uint32 seat)
 {
     uint32 oldseatid = 0;
     for (uint8 i = 0; i < MAX_VEHICLE_SEATS; i++)
-        if ((seats[i] != nullptr) && (seats[i]->GetPassengerGUID() == passenger->GetGUID()))
+        if ((seats[i] != nullptr) && (seats[i]->GetPassengerGUID() == passenger->getGuid()))
         {
             oldseatid = i;
             break;
@@ -430,7 +430,7 @@ void Vehicle::MovePassengerToNextSeat(Unit* passenger)
 {
     uint32 oldseatid = 0;
     for (uint8 i = 0; i < MAX_VEHICLE_SEATS; i++)
-        if ((seats[i] != nullptr) && (seats[i]->GetPassengerGUID() == passenger->GetGUID()))
+        if ((seats[i] != nullptr) && (seats[i]->GetPassengerGUID() == passenger->getGuid()))
         {
             oldseatid = i;
             break;
@@ -461,7 +461,7 @@ void Vehicle::MovePassengerToPrevSeat(Unit* passenger)
 {
     uint32 oldseatid = MAX_VEHICLE_SEATS;
     for (uint8 i = 0; i < MAX_VEHICLE_SEATS; i++)
-        if ((seats[i] != nullptr) && (seats[i]->GetPassengerGUID() == passenger->GetGUID()))
+        if ((seats[i] != nullptr) && (seats[i]->GetPassengerGUID() == passenger->getGuid()))
         {
             oldseatid = i;
             break;
@@ -491,7 +491,7 @@ void Vehicle::MovePassengerToPrevSeat(Unit* passenger)
 uint32 Vehicle::GetSeatEntryForPassenger(Unit* passenger)
 {
     for (uint8 i = 0; i < MAX_VEHICLE_SEATS; i++)
-        if ((seats[i] != nullptr) && (seats[i]->GetPassengerGUID() == passenger->GetGUID()))
+        if ((seats[i] != nullptr) && (seats[i]->GetPassengerGUID() == passenger->getGuid()))
             return seats[i]->GetSeatInfo()->ID;
 
     return 0;
@@ -500,7 +500,7 @@ uint32 Vehicle::GetSeatEntryForPassenger(Unit* passenger)
 bool Vehicle::IsControler(Unit* aura)
 {
     for (uint8 i = 0; i < MAX_VEHICLE_SEATS; i++)
-        if ((seats[i] != nullptr) && (seats[i]->GetPassengerGUID() == aura->GetGUID()))
+        if ((seats[i] != nullptr) && (seats[i]->GetPassengerGUID() == aura->getGuid()))
             return seats[i]->GetSeatInfo()->IsController();
 
 	return 0;
@@ -587,7 +587,7 @@ void Vehicle::InstallAccessories()
         Creature* c = owner->GetMapMgr()->CreateCreature(accessory->accessory_entry);
         c->Load(cp, owner->GetPositionX(), owner->GetPositionY(), owner->GetPositionZ(), owner->GetOrientation());
 #if VERSION_STRING != Cata
-        c->obj_movement_info.transport_data.transportGuid = owner->GetGUID();
+        c->obj_movement_info.transport_data.transportGuid = owner->getGuid();
 #ifdef FT_VEHICLES
         c->obj_movement_info.transport_seat = static_cast<uint8_t>(accessory->seat);
 #endif
@@ -597,7 +597,7 @@ void Vehicle::InstallAccessories()
         c->PushToWorld(owner->GetMapMgr());
 
         AddPassengerToSeat(c, accessory->seat);
-        installed_accessories.push_back(c->GetGUID());
+        installed_accessories.push_back(c->getGuid());
     }
 }
 

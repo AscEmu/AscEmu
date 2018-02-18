@@ -56,7 +56,7 @@ public:
 
     void AIUpdate()
     {
-        getCreature()->CastSpell(getCreature()->GetGUID(), 20480, false);
+        getCreature()->CastSpell(getCreature()->getGuid(), 20480, false);
         RemoveAIUpdateEvent();
         getCreature()->GetAIInterface()->m_canMove = true;
     }
@@ -324,7 +324,7 @@ public:
 
     void OnLastPassengerLeft(Unit *passenger)
     {
-        if (getCreature()->GetSummonedByGUID() == passenger->GetGUID())
+        if (getCreature()->GetSummonedByGUID() == passenger->getGuid())
             getCreature()->Despawn(1 * 1000, 0);
     }
 };

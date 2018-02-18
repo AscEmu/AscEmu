@@ -31,7 +31,7 @@ void WorldSession::handleSetActiveMoverOpcode(WorldPacket& recvData)
     if (cmsg.guid == m_MoverWoWGuid.GetOldGuid())
         return;
 
-    if (_player->m_CurrentCharm != cmsg.guid.GetOldGuid() || _player->GetGUID() != cmsg.guid.GetOldGuid())
+    if (_player->m_CurrentCharm != cmsg.guid.GetOldGuid() || _player->getGuid() != cmsg.guid.GetOldGuid())
     {
         auto bad_packet = true;
 #if VERSION_STRING >= TBC
@@ -45,7 +45,7 @@ void WorldSession::handleSetActiveMoverOpcode(WorldPacket& recvData)
     }
 
     if (cmsg.guid.GetOldGuid() == 0)
-        m_MoverWoWGuid.Init(_player->GetGUID());
+        m_MoverWoWGuid.Init(_player->getGuid());
     else
         m_MoverWoWGuid = cmsg.guid;
 
@@ -194,7 +194,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
         m_clientTimeDelay = ms_time - movement_info.time;
 
     MovementPacket packet(recvData.GetOpcode(), 0);
-    packet.guid = mover->GetGUID();
+    packet.guid = mover->getGuid();
     packet.info = movement_info;
 
     if (_player->getInRangePlayersCount())
@@ -262,7 +262,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
                 fall_distance = 1;
 
             if (mover->isAlive() && !mover->bInvincible && fall_distance > 12 && !mover->m_noFallDamage && (mover->
-                GetGUID() != _player->GetGUID() || !_player->GodModeCheat && UNIXTIME >= _player->m_fallDisabledUntil))
+                getGuid() != _player->getGuid() || !_player->GodModeCheat && UNIXTIME >= _player->m_fallDisabledUntil))
             {
                 auto health_lost = static_cast<uint32_t>(mover->GetHealth() * (fall_distance - 12) * 0.017f);
                 if (health_lost >= mover->GetHealth())
@@ -270,12 +270,12 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
                     health_lost = mover->GetHealth();
                 }
 #ifdef FT_ACHIEVEMENTS
-                else if (fall_distance >= 65 && mover->GetGUID() == _player->GetGUID())
+                else if (fall_distance >= 65 && mover->getGuid() == _player->getGuid())
                 {
                     _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_FALL_WITHOUT_DYING, fall_distance, Player::GetDrunkenstateByValue(_player->GetDrunkValue()), 0);
                 }
 #endif
-                mover->SendEnvironmentalDamageLog(mover->GetGUID(), DAMAGE_FALL, health_lost);
+                mover->SendEnvironmentalDamageLog(mover->getGuid(), DAMAGE_FALL, health_lost);
                 mover->DealDamage(mover, health_lost, 0, 0, 0);
             }
 
@@ -365,7 +365,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
     /************************************************************************/
 
     // Player is the active mover
-    if (m_MoverWoWGuid.GetOldGuid() == _player->GetGUID())
+    if (m_MoverWoWGuid.GetOldGuid() == _player->getGuid())
     {
         if (!_player->GetTransport())
         {

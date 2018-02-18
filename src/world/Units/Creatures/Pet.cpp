@@ -352,7 +352,7 @@ void Pet::SetNameForEntry(uint32 entry)
         case PET_FELHUNTER:
         case PET_FELGUARD:
         {
-            QueryResult* result = CharacterDatabase.Query("SELECT `name` FROM `playersummons` WHERE `ownerguid`=%u AND `entry`=%d", m_Owner->GetLowGUID(), entry);
+            QueryResult* result = CharacterDatabase.Query("SELECT `name` FROM `playersummons` WHERE `ownerguid`=%u AND `entry`=%d", m_Owner->getGuidLow(), entry);
             if (result)
             {
                 m_name = result->Fetch()->GetString();
@@ -361,7 +361,7 @@ void Pet::SetNameForEntry(uint32 entry)
             else // no name found, generate one and save it
             {
                 m_name = generateName();
-                CharacterDatabase.Execute("INSERT INTO playersummons VALUES(%u, %u, '%s')", m_Owner->GetLowGUID(), entry, m_name.data());
+                CharacterDatabase.Execute("INSERT INTO playersummons VALUES(%u, %u, '%s')", m_Owner->getGuidLow(), entry, m_name.data());
             }
         }
         break;
@@ -383,7 +383,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
     }
 
     m_Owner = owner;
-    m_OwnerGuid = m_Owner->GetGUID();
+    m_OwnerGuid = m_Owner->getGuid();
     m_phase = m_Owner->GetPhase();
     m_PetNumber = m_Owner->GeneratePetNumber();
     creature_properties = ci;
@@ -416,8 +416,8 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
     SetDisplayId(ci->Male_DisplayID);
     SetNativeDisplayId(ci->Male_DisplayID);
     EventModelChange();
-    SetSummonedByGUID(owner->GetGUID());
-    SetCreatedByGUID(owner->GetGUID());
+    SetSummonedByGUID(owner->getGuid());
+    SetCreatedByGUID(owner->getGuid());
 
     setUInt32Value(UNIT_FIELD_BYTES_0, 2048 | (0 << 24));
 
@@ -621,7 +621,7 @@ void Pet::Update(unsigned long time_passed)
 
 void Pet::BuildPetSpellList(WorldPacket& data)
 {
-    data << uint64(GetGUID());
+    data << uint64(getGuid());
 
     if (myFamily != NULL)
         data << uint16(myFamily->ID);
@@ -779,7 +779,7 @@ void Pet::InitializeSpells()
         {
             // Cast on self..
             Spell* sp = sSpellFactoryMgr.NewSpell(this, info, true, NULL);
-            SpellCastTargets targets(this->GetGUID());
+            SpellCastTargets targets(this->getGuid());
             sp->prepare(&targets);
 
             continue;
@@ -843,7 +843,7 @@ AI_Spell* Pet::CreateAISpell(SpellInfo* info)
 void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
 {
     m_Owner = owner;
-    m_OwnerGuid = m_Owner->GetGUID();
+    m_OwnerGuid = m_Owner->getGuid();
     m_phase = m_Owner->GetPhase();
     mPi = pi;
     creature_properties = sMySQLStore.getCreatureProperties(mPi->entry);
@@ -952,8 +952,8 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
 
     EventModelChange();
 
-    SetSummonedByGUID(owner->GetGUID());
-    SetCreatedByGUID(owner->GetGUID());
+    SetSummonedByGUID(owner->getGuid());
+    SetCreatedByGUID(owner->getGuid());
     SetCreatedBySpell(mPi->spellid);
     SetFaction(owner->GetFaction());
 
@@ -1002,7 +1002,7 @@ void Pet::InitializeMe(bool first)
         return;
 
     m_Owner->AddSummon(this);
-    m_Owner->SetSummonedUnitGUID(GetGUID());
+    m_Owner->SetSummonedUnitGUID(getGuid());
 
     setUInt32Value(UNIT_FIELD_PETNUMBER, GetUIdFromGUID());
     setUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, (uint32)UNIXTIME);
@@ -1036,7 +1036,7 @@ void Pet::InitializeMe(bool first)
     else                // Hunter pets - load from db
     {
         // Pull from database... :/
-        QueryResult* query = CharacterDatabase.Query("SELECT * FROM playerpetspells WHERE ownerguid = %u AND petnumber = %u", m_Owner->GetLowGUID(), m_PetNumber);
+        QueryResult* query = CharacterDatabase.Query("SELECT * FROM playerpetspells WHERE ownerguid = %u AND petnumber = %u", m_Owner->getGuidLow(), m_PetNumber);
         if (query)
         {
             do
@@ -1167,7 +1167,7 @@ void Pet::OnRemoveFromWorld()
     for (itr = ownerSummons.begin(); itr != ownerSummons.end(); ++itr)
     {
         //m_Owner MUST NOT have a reference to us anymore
-        ARCEMU_ASSERT((*itr)->GetGUID() != GetGUID());
+        ARCEMU_ASSERT((*itr)->getGuid() != getGuid());
     }
 }
 
@@ -1224,7 +1224,7 @@ void Pet::PrepareForRemove(bool bUpdate, bool bSetOffline)
     }
     else if (main_summon)               //we just removed the summon displayed in the portrait so we need to update it with another one.
     {
-        m_Owner->SetSummonedUnitGUID(m_Owner->GetSummon()->GetGUID());      //set the summon still alive
+        m_Owner->SetSummonedUnitGUID(m_Owner->GetSummon()->getGuid());      //set the summon still alive
         m_Owner->GetSummon()->SendSpellsToOwner();
     }
 
@@ -1388,7 +1388,7 @@ void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
         if (IsInWorld())
         {
             Spell* spell = sSpellFactoryMgr.NewSpell(this, sp, true, NULL);
-            SpellCastTargets targets(this->GetGUID());
+            SpellCastTargets targets(this->getGuid());
             spell->prepare(&targets);
             mSpells[sp] = 0x0100;
         }
@@ -1649,7 +1649,7 @@ void Pet::Rename(std::string NewName)
     // save new summoned name to db (.pet renamepet)
     if (m_Owner->getClass() == WARLOCK)
     {
-        CharacterDatabase.Execute("UPDATE `playersummons` SET `name`='%s' WHERE `ownerguid`=%u AND `entry`=%u", m_name.data(), m_Owner->GetLowGUID(), GetEntry());
+        CharacterDatabase.Execute("UPDATE `playersummons` SET `name`='%s' WHERE `ownerguid`=%u AND `entry`=%u", m_name.data(), m_Owner->getGuidLow(), GetEntry());
     }
 
     m_Owner->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_PET_NAME);
@@ -2142,7 +2142,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
     }
 
     // Duel
-    if (pVictim->IsPlayer() && m_Owner->DuelingWith != NULL && m_Owner->DuelingWith->GetGUID() == pVictim->GetGUID())
+    if (pVictim->IsPlayer() && m_Owner->DuelingWith != NULL && m_Owner->DuelingWith->getGuid() == pVictim->getGuid())
     {
         if (pVictim->GetHealth() <= damage)
         {
@@ -2182,7 +2182,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
 
             bool setAurastateFlag = false;
 
-            if (m_Owner->getLevel() >= (pVictim->getLevel() - 8) && (GetGUID() != pVictim->GetGUID()))
+            if (m_Owner->getLevel() >= (pVictim->getLevel() - 8) && (getGuid() != pVictim->getGuid()))
             {
 #if VERSION_STRING > TBC
                 m_Owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, m_Owner->GetAreaID(), 1, 0);
@@ -2275,7 +2275,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
 
                         if (xp > 0)
                         {
-                            player_tagger->GiveXP(xp, pVictim->GetGUID(), true);
+                            player_tagger->GiveXP(xp, pVictim->getGuid(), true);
 
                             SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_LASTKILLWITHHONOR);
 
@@ -2307,13 +2307,13 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
                                 auto player_group = player_tagger->GetGroup();
 
                                 player_group->UpdateAchievementCriteriaForInrange(pVictim, ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, pVictim->GetEntry(), 1, 0);
-                                player_group->UpdateAchievementCriteriaForInrange(pVictim, ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, GetHighGUID(), GetLowGUID(), 0);
+                                player_group->UpdateAchievementCriteriaForInrange(pVictim, ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
 
                             }
                             else
                             {
                                 player_tagger->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, pVictim->GetEntry(), 1, 0);
-                                player_tagger->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, GetHighGUID(), GetLowGUID(), 0);
+                                player_tagger->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
                             }
 #endif
                         }
@@ -2326,7 +2326,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
         if (pVictim->isCritter())
         {
             m_Owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, pVictim->GetEntry(), 1, 0);
-            m_Owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, GetHighGUID(), GetLowGUID(), 0);
+            m_Owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
         }
 #endif
     }
@@ -2416,7 +2416,7 @@ void Pet::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
             for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
             {
                 Spell* curSpell = attacker->getCurrentSpell(CurrentSpellType(i));
-                if (curSpell != nullptr && curSpell->m_targets.m_unitTarget == GetGUID())
+                if (curSpell != nullptr && curSpell->m_targets.m_unitTarget == getGuid())
                     attacker->interruptSpellWithSpellType(CurrentSpellType(i));
             }
         }

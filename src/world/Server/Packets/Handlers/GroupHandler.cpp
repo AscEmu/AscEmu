@@ -93,7 +93,7 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recv_data)
         return;
     }
 
-    if (player->Social_IsIgnoring(_player->GetLowGUID()))
+    if (player->Social_IsIgnoring(_player->getGuidLow()))
     {
         SendPartyCommandResult(_player, 0, membername, ERR_PARTY_IS_IGNORING_YOU);
         return;
@@ -114,7 +114,7 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recv_data)
     SendPartyCommandResult(_player, 0, membername, ERR_PARTY_NO_ERROR);
 
     // 16/08/06 - change to guid to prevent very unlikely event of a crash in deny, etc
-    player->SetInviter(_player->GetLowGUID());
+    player->SetInviter(_player->getGuidLow());
 }
 
 ///////////////////////////////////////////////////////////////
@@ -165,7 +165,7 @@ void WorldSession::HandleGroupAcceptOpcode(WorldPacket& /*recv_data*/)
     _player->SendDungeonDifficulty();
 
     Instance* instance = sInstanceMgr.GetInstanceByIds(player->GetMapId(), player->GetInstanceID());
-    if (instance != NULL && instance->m_creatorGuid == player->GetLowGUID())
+    if (instance != NULL && instance->m_creatorGuid == player->getGuidLow())
     {
         grp->m_instanceIds[instance->m_mapId][instance->m_difficulty] = instance->m_instanceId;
         instance->m_creatorGroup = grp->GetID();
@@ -413,7 +413,7 @@ void WorldSession::HandleMinimapPingOpcode(WorldPacket& recv_data)
 
     WorldPacket data;
     data.SetOpcode(MSG_MINIMAP_PING);
-    data << _player->GetGUID();
+    data << _player->getGuid();
     data << x;
     data << y;
     party->SendPacketToAllButOne(&data, _player);
@@ -464,7 +464,7 @@ void WorldSession::HandleSetPlayerIconOpcode(WorldPacket& recv_data)
         // setting icon
         WorldPacket data(MSG_RAID_TARGET_UPDATE, 10);
         data << uint8(0);
-        data << uint64(GetPlayer()->GetGUID());
+        data << uint64(GetPlayer()->getGuid());
         data << icon;
         data << guid;
         pGroup->SendPacketToAll(&data);
@@ -515,7 +515,7 @@ void WorldSession::HandlePartyMemberStatsOpcode(WorldPacket& recv_data)
     if (!_player->GetGroup()->HasMember(plr))
         return;
 
-    if (_player->IsVisible(plr->GetGUID()))
+    if (_player->IsVisible(plr->getGuid()))
         return;
 
     Pet* pet = plr->GetSummon();
@@ -558,7 +558,7 @@ void WorldSession::HandlePartyMemberStatsOpcode(WorldPacket& recv_data)
     if (pet)
     {
         uint8 petpowertype = pet->getPowerType();
-        data << uint64(pet->GetGUID());
+        data << uint64(pet->getGuid());
         data << pet->GetName();
         data << uint16(pet->GetDisplayId());
         data << uint32(pet->GetHealth());

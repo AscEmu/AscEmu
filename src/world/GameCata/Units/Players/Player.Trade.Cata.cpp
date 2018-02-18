@@ -62,7 +62,7 @@ void TradeData::setItem(TradeSlots slot, Item* item)
 
     if (item)
     {
-        itemGuid = item->GetGUID();
+        itemGuid = item->getGuid();
     }
     else
     {
@@ -88,7 +88,7 @@ void TradeData::setSpell(uint32_t spell_id, Item* cast_item /*= nullptr*/)
 
     if (cast_item)
     {
-        itemGuid = cast_item->GetGUID();
+        itemGuid = cast_item->getGuid();
     }
     else
     {

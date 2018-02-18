@@ -68,7 +68,7 @@ void WorldSession::HandleChangeVehicleSeat(WorldPacket& recv_data)
             recv_data >> vehicle;
             recv_data >> seat;
 
-            if (vehicle.GetOldGuid() == _player->GetCurrentVehicle()->GetOwner()->GetGUID())
+            if (vehicle.GetOldGuid() == _player->GetCurrentVehicle()->GetOwner()->getGuid())
             {
                 _player->GetCurrentVehicle()->MovePassengerToSeat(_player, seat);
             }
@@ -82,7 +82,7 @@ void WorldSession::HandleChangeVehicleSeat(WorldPacket& recv_data)
                     return;
 
                 // Has to be same vehicle, or an accessory of the vehicle
-                if (_player->GetVehicleBase()->GetGUID() != u->GetVehicleBase()->GetGUID())
+                if (_player->GetVehicleBase()->getGuid() != u->GetVehicleBase()->getGuid())
                     return;
 
                 _player->GetCurrentVehicle()->EjectPassenger(_player);
@@ -136,7 +136,7 @@ void WorldSession::HandleChangeVehicleSeat(WorldPacket& recv_data)
             if (src_vehicle->GetVehicleComponent() == NULL)
                 return;
 
-            if (src_vehicle->GetGUID() != _player->GetCurrentVehicle()->GetOwner()->GetGUID())
+            if (src_vehicle->getGuid() != _player->GetCurrentVehicle()->GetOwner()->getGuid())
                 return;
 
             Unit* dst_vehicle = _player->GetMapMgr()->GetUnit(dst_guid.GetOldGuid());
@@ -146,14 +146,14 @@ void WorldSession::HandleChangeVehicleSeat(WorldPacket& recv_data)
             if (dst_vehicle->GetVehicleComponent() == NULL)
                 return;
 
-            if (src_vehicle->GetGUID() == dst_vehicle->GetGUID())
+            if (src_vehicle->getGuid() == dst_vehicle->getGuid())
             {
                 src_vehicle->GetVehicleComponent()->MovePassengerToSeat(_player, seat);
             }
             else
             {
                 // Has to be the same vehicle or an accessory of the vehicle
-                if (src_vehicle->GetVehicleBase()->GetGUID() != dst_vehicle->GetVehicleBase()->GetGUID())
+                if (src_vehicle->GetVehicleBase()->getGuid() != dst_vehicle->GetVehicleBase()->getGuid())
                     return;
 
                 _player->GetCurrentVehicle()->EjectPassenger(_player);

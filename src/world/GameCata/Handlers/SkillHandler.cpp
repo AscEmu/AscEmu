@@ -97,7 +97,7 @@ void WorldSession::HandlePetLearnTalent(WorldPacket& recvPacket)
     if (player_pet == nullptr)
         return;
 
-    if (guid != player_pet->GetGUID())
+    if (guid != player_pet->getGuid())
         return;
 
     if (player_pet->GetTPs() < 1)

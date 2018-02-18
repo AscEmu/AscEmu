@@ -501,12 +501,6 @@ public:
         virtual void OnRemoveFromWorld() {}
 
         // Guid always comes first
-        uint64 GetGUID() const { return getUInt64Value(OBJECT_FIELD_GUID); }
-        void SetGUID(uint64 GUID) { setUInt64Value(OBJECT_FIELD_GUID, GUID); }
-        const uint32 GetLowGUID() const { return m_uint32Values[OBJECT_FIELD_GUID]; }
-        uint32 GetHighGUID() { return m_uint32Values[OBJECT_FIELD_GUID + 1]; }
-        void SetLowGUID(uint32 val) { m_uint32Values[OBJECT_FIELD_GUID] = val; }
-        void SetHighGUID(uint32 val) { m_uint32Values[OBJECT_FIELD_GUID + 1] = val; }
 
         const WoWGuid & GetNewGUID() const { return m_wowGuid; }
         uint32 GetEntry() { return m_uint32Values[OBJECT_FIELD_ENTRY]; }
@@ -623,8 +617,8 @@ public:
 
         void SetNewGuid(uint32 Guid)
         {
-            SetLowGUID(Guid);
-            m_wowGuid.Init(GetGUID());
+            setGuidLow(Guid);
+            m_wowGuid.Init(getGuid());
         }
 
         void EventSetUInt32Value(uint16 index, uint32 value);

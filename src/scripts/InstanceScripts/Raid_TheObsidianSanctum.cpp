@@ -37,16 +37,16 @@ class ObsidianSanctumScript : public InstanceScript
             switch (pCreature->GetEntry())
             {
                 case CN_DRAKE_TENEBRON:
-                    m_creatureGuid[DRAKE_TENEBRON] = pCreature->GetLowGUID();
+                    m_creatureGuid[DRAKE_TENEBRON] = pCreature->getGuidLow();
                     break;
                 case CN_DRAKE_VESPERON:
-                    m_creatureGuid[DRAKE_VESPERON] = pCreature->GetLowGUID();
+                    m_creatureGuid[DRAKE_VESPERON] = pCreature->getGuidLow();
                     break;
                 case CN_DRAKE_SHADRON:
-                    m_creatureGuid[DRAKE_SHADRON] = pCreature->GetLowGUID();
+                    m_creatureGuid[DRAKE_SHADRON] = pCreature->getGuidLow();
                     break;
                 case CN_SARTHARION:
-                    m_creatureGuid[BOSS_SARTHARION] = pCreature->GetLowGUID();
+                    m_creatureGuid[BOSS_SARTHARION] = pCreature->getGuidLow();
                     break;
                 default:
                     break;

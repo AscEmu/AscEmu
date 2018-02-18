@@ -110,7 +110,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
 
     if (pLoot->items[lootSlot].looted)
     {
-        LOG_DEBUG("Player %s GUID %u tried to loot an already looted item.", _player->GetName(), _player->GetLowGUID());
+        LOG_DEBUG("Player %s GUID %u tried to loot an already looted item.", _player->GetName(), _player->getGuidLow());
         return;
     }
 
@@ -128,7 +128,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     }
     else
     {
-        LooterSet::iterator itr = pLoot->items.at(lootSlot).has_looted.find(_player->GetLowGUID());
+        LooterSet::iterator itr = pLoot->items.at(lootSlot).has_looted.find(_player->getGuidLow());
         if (pLoot->items.at(lootSlot).has_looted.end() != itr)
         {
             GetPlayer()->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ALREADY_LOOTED);
@@ -188,7 +188,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
         add->m_isDirty = true;
 
         sQuestMgr.OnPlayerItemPickup(GetPlayer(), add);
-        _player->SendItemPushResult(false, false, true, false, (uint8_t)_player->GetItemInterface()->GetBagSlotByGuid(add->GetGUID()), 0xFFFFFFFF, lootItemAmount, add->GetEntry(), add->GetItemRandomSuffixFactor(), add->GetItemRandomPropertyId(), add->GetStackCount());
+        _player->SendItemPushResult(false, false, true, false, (uint8_t)_player->GetItemInterface()->GetBagSlotByGuid(add->getGuid()), 0xFFFFFFFF, lootItemAmount, add->GetEntry(), add->GetItemRandomSuffixFactor(), add->GetItemRandomPropertyId(), add->GetStackCount());
         _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, add->GetEntry(), 1, 0);
     }
 
@@ -206,7 +206,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     }
     else
     {
-        pLoot->items.at(lootSlot).has_looted.insert(_player->GetLowGUID());
+        pLoot->items.at(lootSlot).has_looted.insert(_player->getGuidLow());
         WorldPacket data(SMSG_LOOT_REMOVED, 1);
         data << uint8_t(lootSlot);
         _player->GetSession()->SendPacket(&data);
@@ -379,7 +379,7 @@ void WorldSession::HandleLootOpcode(WorldPacket& recv_data)
                         {
                             if ((*itr)->m_loggedInPlayer && _player->GetZoneId() == (*itr)->m_loggedInPlayer->GetZoneId())
                             {
-                                data << (*itr)->m_loggedInPlayer->GetGUID();
+                                data << (*itr)->m_loggedInPlayer->getGuid();
                                 ++real_count;
                             }
                         }
@@ -416,7 +416,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
         if (pCreature == nullptr)
             return;
 
-        pCreature->loot.looters.erase(_player->GetLowGUID());
+        pCreature->loot.looters.erase(_player->getGuidLow());
         if (pCreature->loot.gold <= 0)
         {
             for (std::vector<__LootItem>::iterator i = pCreature->loot.items.begin(); i != pCreature->loot.items.end(); ++i)
@@ -453,7 +453,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
             case GAMEOBJECT_TYPE_FISHINGNODE:
             {
                 GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pGO);
-                pLGO->loot.looters.erase(_player->GetLowGUID());
+                pLGO->loot.looters.erase(_player->getGuidLow());
                 if (pGO->IsInWorld())
                 {
                     pGO->RemoveFromWorld(true);
@@ -464,7 +464,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
             case GAMEOBJECT_TYPE_CHEST:
             {
                 GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pGO);
-                pLGO->loot.looters.erase(_player->GetLowGUID());
+                pLGO->loot.looters.erase(_player->getGuidLow());
 
                 bool despawn = false;
                 if (pGO->GetGameObjectProperties()->chest.consumable == 1)
@@ -657,7 +657,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
     }
     else
     {
-        LooterSet::iterator itr = pLoot->items.at(slotid).has_looted.find(player->GetLowGUID());
+        LooterSet::iterator itr = pLoot->items.at(slotid).has_looted.find(player->getGuidLow());
 
         if (pLoot->items.at(slotid).has_looted.end() != itr)
         {
@@ -728,7 +728,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
     }
     else
     {
-        pLoot->items.at(slotid).has_looted.insert(player->GetLowGUID());
+        pLoot->items.at(slotid).has_looted.insert(player->getGuidLow());
     }
 }
 

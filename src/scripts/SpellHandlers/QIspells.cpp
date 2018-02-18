@@ -2617,7 +2617,7 @@ bool ManaRemnants(uint8_t /*effectIndex*/, Spell* pSpell)
         if (qle != nullptr && qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
         {
             pPlayer->CastSpell(Ward, sSpellCustomizations.GetSpellInfo(44981), false);
-            pPlayer->SetChannelSpellTargetGUID(Ward->GetGUID());
+            pPlayer->SetChannelSpellTargetGUID(Ward->getGuid());
             pPlayer->SetChannelSpellId(44981);
 
             pPlayer->AddQuestKill(quests[i], 0, 0);

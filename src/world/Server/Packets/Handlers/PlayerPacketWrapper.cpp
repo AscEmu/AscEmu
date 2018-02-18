@@ -35,7 +35,7 @@ void Player::SendTalentResetConfirm()
 {
     WorldPacket data(MSG_TALENT_WIPE_CONFIRM, 12);
 
-    data << uint64(GetGUID());
+    data << uint64(getGuid());
     data << uint32(CalcTalentResetCost(GetTalentResetTimes()));
 
     m_session->SendPacket(&data);
@@ -50,7 +50,7 @@ void Player::SendPetUntrainConfirm()
 
     WorldPacket data(SMSG_PET_UNLEARN_CONFIRM, 12);
 
-    data << uint64(pPet->GetGUID());
+    data << uint64(pPet->getGuid());
     data << uint32(pPet->GetUntrainCost());
 
     m_session->SendPacket(&data);
@@ -153,7 +153,7 @@ void Player::SendSpellCooldownEvent(uint32 SpellId)
     WorldPacket data(SMSG_COOLDOWN_EVENT, 12);
 
     data << uint32(SpellId);
-    data << uint64(GetGUID());
+    data << uint64(getGuid());
 
     m_session->SendPacket(&data);
 }
@@ -172,7 +172,7 @@ void Player::SendSpellModifier(uint8 spellgroup, uint8 spelltype, int32 v, bool 
 void Player::SendItemPushResult(bool created, bool recieved, bool sendtoset, bool newitem, uint8 destbagslot, uint32 destslot, uint32 count, uint32 entry, uint32 suffix, uint32 randomprop, uint32 stack)
 {
     WorldPacket data(SMSG_ITEM_PUSH_RESULT, 8 + 4 + 4 + 4 + 1 + 4 + 4 + 4 + 4 + 4 + 4);
-    data << uint64(GetGUID());
+    data << uint64(getGuid());
 
     if (recieved)
         data << uint32(1);
@@ -260,7 +260,7 @@ void Player::SendInstanceDifficulty(uint8 difficulty)
 void Player::SendNewDrunkState(uint32 state, uint32 itemid)
 {
     WorldPacket data(SMSG_CROSSED_INEBRIATION_THRESHOLD, (8 + 4 + 4));
-    data << GetGUID();
+    data << getGuid();
     data << uint32(state);
     data << uint32(itemid);
 
@@ -294,7 +294,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
         Creature* pCreature = GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
         if (!pCreature)return;
         pLoot = &pCreature->loot;
-        m_currentLoot = pCreature->GetGUID();
+        m_currentLoot = pCreature->getGuid();
 
     }
     else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
@@ -309,21 +309,21 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
         GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pGO);
         pLGO->SetState(0);
         pLoot = &pLGO->loot;
-        m_currentLoot = pLGO->GetGUID();
+        m_currentLoot = pLGO->getGuid();
     }
     else if ((guidtype == HIGHGUID_TYPE_PLAYER))
     {
         Player* p = GetMapMgr()->GetPlayer((uint32)guid);
         if (!p)return;
         pLoot = &p->loot;
-        m_currentLoot = p->GetGUID();
+        m_currentLoot = p->getGuid();
     }
     else if ((guidtype == HIGHGUID_TYPE_CORPSE))
     {
         Corpse* pCorpse = objmgr.GetCorpse((uint32)guid);
         if (!pCorpse)return;
         pLoot = &pCorpse->loot;
-        m_currentLoot = pCorpse->GetGUID();
+        m_currentLoot = pCorpse->getGuid();
     }
     else if ((guidtype == HIGHGUID_TYPE_ITEM))
     {
@@ -331,7 +331,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
         if (!pItem)
             return;
         pLoot = pItem->loot;
-        m_currentLoot = pItem->GetGUID();
+        m_currentLoot = pItem->getGuid();
     }
 
     if (!pLoot)
@@ -341,7 +341,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
     }
 
     // add to looter set
-    pLoot->looters.insert(GetLowGUID());
+    pLoot->looters.insert(getGuidLow());
 
     WorldPacket data, data2(32);
     data.SetOpcode(SMSG_LOOT_RESPONSE);
@@ -365,7 +365,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
         if (iter->iItemsCount == 0)
             continue;
 
-        LooterSet::iterator itr = iter->has_looted.find(GetLowGUID());
+        LooterSet::iterator itr = iter->has_looted.find(getGuidLow());
         if (iter->has_looted.end() != itr)
             continue;
 
@@ -668,7 +668,7 @@ void Player::SendInitialLogonPackets()
 
 void Player::SendLootUpdate(Object* o)
 {
-    if (!IsVisible(o->GetGUID()))
+    if (!IsVisible(o->getGuid()))
         return;
 
     // Build the actual update.
@@ -756,7 +756,7 @@ void Player::TagUnit(Object* o)
 void Player::SendPartyKillLog(uint64 GUID)
 {
     WorldPacket data(SMSG_PARTYKILLLOG, 16);
-    data << GetGUID();
+    data << getGuid();
     data << GUID;
 
     SendMessageToSet(&data, true);

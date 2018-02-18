@@ -281,7 +281,7 @@ void WorldSession::LogoutPlayer(bool Save)
                 switch (obj->GetTypeId())
                 {
                     case TYPEID_UNIT:
-                        static_cast <Creature*>(obj)->loot.looters.erase(_player->GetLowGUID());
+                        static_cast <Creature*>(obj)->loot.looters.erase(_player->getGuidLow());
                         break;
                     case TYPEID_GAMEOBJECT:
                         GameObject* go = static_cast<GameObject*>(obj);
@@ -290,7 +290,7 @@ void WorldSession::LogoutPlayer(bool Save)
                             break;
 
                         GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(go);
-                        pLGO->loot.looters.erase(_player->GetLowGUID());
+                        pLGO->loot.looters.erase(_player->getGuidLow());
 
                         break;
                 }
@@ -298,7 +298,7 @@ void WorldSession::LogoutPlayer(bool Save)
         }
 
 #ifndef GM_TICKET_MY_MASTER_COMPATIBLE
-        GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(_player->GetGUID());
+        GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(_player->getGuid());
         if (ticket != NULL)
         {
             // Send status change to gm_sync_channel
@@ -1097,12 +1097,12 @@ void WorldSession::HandleEquipmentSetSave(WorldPacket& data)
 
     if (success)
     {
-        LOG_DEBUG("Player %u successfully stored equipment set %u at slot %u ", _player->GetLowGUID(), set->SetGUID, set->SetID);
+        LOG_DEBUG("Player %u successfully stored equipment set %u at slot %u ", _player->getGuidLow(), set->SetGUID, set->SetID);
         _player->SendEquipmentSetSaved(set->SetID, set->SetGUID);
     }
     else
     {
-        LOG_DEBUG("Player %u couldn't store equipment set %u at slot %u ", _player->GetLowGUID(), set->SetGUID, set->SetID);
+        LOG_DEBUG("Player %u couldn't store equipment set %u at slot %u ", _player->getGuidLow(), set->SetGUID, set->SetID);
     }
 }
 
@@ -1289,13 +1289,13 @@ void WorldSession::HandleDismissCritter(WorldPacket& recv_data)
 
     if (_player->GetSummonedCritterGUID() == 0)
     {
-        LOG_ERROR("Player %u sent dismiss companion packet, but player has no companion", _player->GetLowGUID());
+        LOG_ERROR("Player %u sent dismiss companion packet, but player has no companion", _player->getGuidLow());
         return;
     }
 
     if (_player->GetSummonedCritterGUID() != GUID)
     {
-        LOG_ERROR("Player %u sent dismiss companion packet, but it doesn't match player's companion", _player->GetLowGUID());
+        LOG_ERROR("Player %u sent dismiss companion packet, but it doesn't match player's companion", _player->getGuidLow());
         return;
     }
 

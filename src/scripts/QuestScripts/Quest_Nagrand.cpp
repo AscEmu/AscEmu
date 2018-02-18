@@ -311,7 +311,7 @@ class LumpGossipScript : public Arcemu::Gossip::Script
 public:
     void OnHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 2, plr->GetSession()->language);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), 2, plr->GetSession()->language);
         menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(469), 1);     // Why are Boulderfist out this far? You know this is Kurenai territory!
         menu.Send(plr);
     };

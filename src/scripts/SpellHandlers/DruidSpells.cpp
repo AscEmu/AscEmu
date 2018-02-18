@@ -52,7 +52,7 @@ bool ImprovedLeaderOfThePack(uint8_t /*effectIndex*/, Spell* s)
     if (s->p_caster == NULL)
         return false;
 
-    s->p_caster->AddProcTriggerSpell(34299, 34299, s->p_caster->GetGUID(), 100, PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF), 0, NULL, NULL);
+    s->p_caster->AddProcTriggerSpell(34299, 34299, s->p_caster->getGuid(), 100, PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF), 0, NULL, NULL);
 
     return true;
 }

@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 void WorldSession::HandleCorpseQueryOpcode(WorldPacket& /*recvData*/)
 {
-    Corpse* pCorpse = objmgr.GetCorpseByOwner(GetPlayer()->GetLowGUID());
+    Corpse* pCorpse = objmgr.GetCorpseByOwner(GetPlayer()->getGuidLow());
     if (pCorpse == nullptr)
     {
         WorldPacket data(MSG_CORPSE_QUERY, 1);
@@ -80,7 +80,7 @@ void WorldSession::HandleInrangeQuestgiverQuery(WorldPacket& /*recvData*/)
         Creature* pCreature = static_cast<Creature*>(itr);
         if (pCreature->isQuestGiver())
         {
-            data << uint64_t(pCreature->GetGUID());
+            data << uint64_t(pCreature->getGuid());
             data << uint32_t(sQuestMgr.CalcStatus(pCreature, _player));
             ++count;
         }

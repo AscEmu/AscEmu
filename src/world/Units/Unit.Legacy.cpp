@@ -992,7 +992,7 @@ Unit::~Unit()
     for (std::list<ExtraStrike*>::iterator itx = m_extraStrikeTargets.begin(); itx != m_extraStrikeTargets.end(); ++itx)
     {
         ExtraStrike* es = *itx;
-        LOG_ERROR("ExtraStrike added to Unit %u by Spell ID %u wasn't removed when removing the Aura", GetGUID(), es->spell_info->getId());
+        LOG_ERROR("ExtraStrike added to Unit %u by Spell ID %u wasn't removed when removing the Aura", getGuid(), es->spell_info->getId());
         delete es;
     }
     m_extraStrikeTargets.clear();
@@ -1209,7 +1209,7 @@ void Unit::GiveGroupXP(Unit* pVictim, Player* PlayerInGroup)
         }*/
 
         xp = CalculateXpToGive(pVictim, PlayerInGroup);
-        PlayerInGroup->GiveXP(xp, pVictim->GetGUID(), true);
+        PlayerInGroup->GiveXP(xp, pVictim->getGuid(), true);
     }
     else
     {
@@ -1240,7 +1240,7 @@ void Unit::GiveGroupXP(Unit* pVictim, Player* PlayerInGroup)
         for (int i = 0; i < active_player_count; i++)
         {
             Player* plr = active_player_list[i];
-            plr->GiveXP(float2int32(((xp * plr->getLevel()) / total_level) * xp_mod), pVictim->GetGUID(), true);
+            plr->GiveXP(float2int32(((xp * plr->getLevel()) / total_level) * xp_mod), pVictim->getGuid(), true);
 
             active_player_list[i]->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_LASTKILLWITHHONOR);
             if (!sEventMgr.HasEvent(active_player_list[i], EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE))
@@ -3609,7 +3609,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     Spell* spell = sSpellFactoryMgr.NewSpell(this, spellInfo, true, NULL);
                     spell->forced_basepoints[0] = (val * dmg) / 300; //per tick
                     SpellCastTargets targets;
-                    targets.m_unitTarget = GetGUID();
+                    targets.m_unitTarget = getGuid();
                     spell->prepare(&targets);
                     continue;
                 }
@@ -6718,8 +6718,8 @@ void Unit::HandleProcDmgShield(uint32 flag, Unit* attacker)
             if (PROC_MISC & (*i2).m_flags)
             {
                 data.Initialize(SMSG_SPELLDAMAGESHIELD);
-                data << this->GetGUID();
-                data << attacker->GetGUID();
+                data << this->getGuid();
+                data << attacker->getGuid();
                 data << (*i2).m_spellId;
                 data << (*i2).m_damage;
                 data << (1 << (*i2).m_school);
@@ -7647,7 +7647,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
 
             if (this->IsPlayer() && this->getClass() == WARRIOR)
             {
-                static_cast<Player*>(this)->AddComboPoints(pVictim->GetGUID(), 1);
+                static_cast<Player*>(this)->AddComboPoints(pVictim->getGuid(), 1);
                 static_cast<Player*>(this)->UpdateComboPoints();
 
                 if (!sEventMgr.HasEvent(static_cast<Player*>(this), EVENT_COMBO_POINT_CLEAR_FOR_TARGET))
@@ -8081,7 +8081,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         if (IsPlayer() && static_cast<Player*>(this)->m_onStrikeSpells.size())
         {
             SpellCastTargets targets;
-            targets.m_unitTarget = pVictim->GetGUID();
+            targets.m_unitTarget = pVictim->getGuid();
             targets.m_targetMask = TARGET_FLAG_UNIT;
             Spell* cspell;
 
@@ -8425,8 +8425,8 @@ void Unit::smsg_AttackStart(Unit* pVictim)
 {
     // Send out ATTACKSTART
     WorldPacket data(SMSG_ATTACKSTART, 16);
-    data << GetGUID();
-    data << pVictim->GetGUID();
+    data << getGuid();
+    data << pVictim->getGuid();
     SendMessageToSet(&data, false);
     LOG_DEBUG("WORLD: Sent SMSG_ATTACKSTART");
 
@@ -8518,7 +8518,7 @@ void Unit::AddAura(Aura* aur)
         {
             prev_target_guid = caster->getSingleTargetGuidForAura(aur->GetSpellInfo()->getId());
 
-            if (prev_target_guid && prev_target_guid != aur->GetTarget()->GetGUID())
+            if (prev_target_guid && prev_target_guid != aur->GetTarget()->getGuid())
             {
                 Unit* prev_target = this->GetMapMgr()->GetUnit(prev_target_guid);
                 if (prev_target != NULL)
@@ -8532,7 +8532,7 @@ void Unit::AddAura(Aura* aur)
         //  2) attacker B cast on target B
         //  3) attacker A cast on target B, and aura is removed from target A
         //  4) attacker B cast on target A, and aura is not removed from target B, because caster A is now the one that casted on target B
-        if (prev_target_guid && prev_target_guid != aur->GetTarget()->GetGUID())
+        if (prev_target_guid && prev_target_guid != aur->GetTarget()->getGuid())
             removeAllAurasById(aur->GetSpellInfo()->getId());
     }
 
@@ -9062,7 +9062,7 @@ void Unit::AddAura(Aura* aur)
     {
         Unit* caster = aur->GetUnitCaster();
         if (caster != NULL)
-            caster->setSingleTargetGuidForAura(aur->GetSpellInfo()->getId(), this->GetGUID());
+            caster->setSingleTargetGuidForAura(aur->GetSpellInfo()->getId(), this->getGuid());
     }
 
     /* Set aurastates */
@@ -9118,7 +9118,7 @@ void Unit::AddAura(Aura* aur)
         {
             prev_target_guid = caster->getSingleTargetGuidForAura(aur->GetSpellInfo()->getId());
 
-            if (prev_target_guid && prev_target_guid != aur->GetTarget()->GetGUID())
+            if (prev_target_guid && prev_target_guid != aur->GetTarget()->getGuid())
             {
                 Unit* prev_target = this->GetMapMgr()->GetUnit(prev_target_guid);
                 if (prev_target != NULL)
@@ -9132,7 +9132,7 @@ void Unit::AddAura(Aura* aur)
         //  2) attacker B cast on target B
         //  3) attacker A cast on target B, and aura is removed from target A
         //  4) attacker B cast on target A, and aura is not removed from target B, because caster A is now the one that casted on target B
-        if (prev_target_guid && prev_target_guid != aur->GetTarget()->GetGUID())
+        if (prev_target_guid && prev_target_guid != aur->GetTarget()->getGuid())
             removeAllAurasById(aur->GetSpellInfo()->getId());
     }
 
@@ -9644,7 +9644,7 @@ void Unit::AddAura(Aura* aur)
     {
         Unit* caster = aur->GetUnitCaster();
         if (caster != NULL)
-            caster->setSingleTargetGuidForAura(aur->GetSpellInfo()->getId(), this->GetGUID());
+            caster->setSingleTargetGuidForAura(aur->GetSpellInfo()->getId(), this->getGuid());
     }
 
     /* Set aurastates */
@@ -9898,7 +9898,7 @@ void Unit::RemoveAllAurasByRequiredShapeShift(uint32 mask)
 bool Unit::SetAurDuration(uint32 spellId, Unit* caster, uint32 duration)
 {
     LOG_DEBUG("setAurDuration2");
-    Aura* aur = getAuraWithIdForGuid(spellId, caster->GetGUID());
+    Aura* aur = getAuraWithIdForGuid(spellId, caster->getGuid());
     if (!aur)
         return false;
     aur->SetDuration(duration);
@@ -10165,7 +10165,7 @@ void Unit::Emote(EmoteType emote)
 
     WorldPacket data(SMSG_EMOTE, 12);
     data << uint32(emote);
-    data << this->GetGUID();
+    data << this->getGuid();
     SendMessageToSet(&data, true);
 }
 #else
@@ -10173,7 +10173,7 @@ void Unit::Emote(EmoteType emote)
 {
     WorldPacket data(SMSG_EMOTE, 12);
     data << uint32_t(emote);
-    data << uint64_t(GetGUID());
+    data << uint64_t(getGuid());
     SendMessageToSet(&data, true);
 }
 #endif
@@ -10191,7 +10191,7 @@ void Unit::SendChatMessageAlternateEntry(uint32 entry, uint8 type, uint32 lang, 
     WorldPacket data(SMSG_MESSAGECHAT, 35 + UnitNameLength + MessageLength);
     data << type;
     data << lang;
-    data << GetGUID();
+    data << getGuid();
     data << uint32(0);			// new in 2.1.0
     data << uint32(UnitNameLength);
     data << ci->Name;
@@ -10241,7 +10241,7 @@ void Unit::onRemoveInRangeObject(Object* pObj)
         Unit* pUnit = static_cast<Unit*>(pObj);
         GetAIInterface()->CheckTarget(pUnit);
 
-        if (GetCharmedUnitGUID() == pObj->GetGUID())
+        if (GetCharmedUnitGUID() == pObj->getGuid())
             interruptSpell();
     }
 }
@@ -10575,7 +10575,7 @@ uint8 Unit::CastSpell(Unit* Target, SpellInfo* Sp, bool triggered)
     if (Target)
     {
         targets.m_targetMask |= TARGET_FLAG_UNIT;
-        targets.m_unitTarget = Target->GetGUID();
+        targets.m_unitTarget = Target->getGuid();
     }
     else
     {
@@ -10627,7 +10627,7 @@ uint8 Unit::CastSpell(Unit* Target, SpellInfo* Sp, uint32 forced_basepoints, boo
     if (Target != NULL)
     {
         targets.m_targetMask |= TARGET_FLAG_UNIT;
-        targets.m_unitTarget = Target->GetGUID();
+        targets.m_unitTarget = Target->getGuid();
     }
     else
     {
@@ -10654,7 +10654,7 @@ uint8 Unit::CastSpell(Unit* Target, SpellInfo* Sp, uint32 forced_basepoints, int
     if (Target != NULL)
     {
         targets.m_targetMask |= TARGET_FLAG_UNIT;
-        targets.m_unitTarget = Target->GetGUID();
+        targets.m_unitTarget = Target->getGuid();
     }
     else
     {
@@ -11896,7 +11896,7 @@ void Unit::SendFullAuraUpdate()
     }
     SendMessageToSet(&data, true);
 
-    LOG_DEBUG("Full Aura Update: GUID: " I64FMT " - Updates: %u", GetGUID(), Updates);
+    LOG_DEBUG("Full Aura Update: GUID: " I64FMT " - Updates: %u", getGuid(), Updates);
 #endif
 }
 #else
@@ -11947,7 +11947,7 @@ void Unit::SendFullAuraUpdate()
     }
     SendMessageToSet(&data, true);
 
-    LOG_DEBUG("Full Aura Update: GUID: " I64FMT " - Updates: %u", GetGUID(), Updates);
+    LOG_DEBUG("Full Aura Update: GUID: " I64FMT " - Updates: %u", getGuid(), Updates);
 }
 #endif
 
@@ -11962,7 +11962,7 @@ void Unit::SendAuraUpdate(uint32 AuraSlot, bool remove)
 
     if (remove)
     {
-        data << WoWGuid(GetGUID());
+        data << WoWGuid(getGuid());
         data << uint8(aur->m_visualSlot);
         data << uint32(0);
     }
@@ -11978,7 +11978,7 @@ void Unit::SendAuraUpdate(uint32 AuraSlot, bool remove)
         if (aur->GetDuration() != 0 && !(aur->GetSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_HIDE_DURATION))
             flags |= AFLAG_DURATION;
 
-        data << WoWGuid(GetGUID());
+        data << WoWGuid(getGuid());
         data << uint8(aur->m_visualSlot);
 
         data << uint32(aur->GetSpellId());
@@ -12038,7 +12038,7 @@ void Unit::SendAuraUpdate(uint32 AuraSlot, bool remove)
     ARCEMU_ASSERT(aur != NULL);
 
     WorldPacket data(SMSG_AURA_UPDATE, 200);
-    data << WoWGuid(GetGUID());
+    data << WoWGuid(getGuid());
     data << uint8(aur->m_visualSlot);
 
     if (remove)
@@ -12159,7 +12159,7 @@ void Unit::UpdateVisibility()
                 pObj = itr2;
 
                 can_see = plr->CanSee(pObj);
-                is_visible = plr->IsVisible(pObj->GetGUID());
+                is_visible = plr->IsVisible(pObj->getGuid());
                 if (can_see)
                 {
                     if (!is_visible)
@@ -12167,15 +12167,15 @@ void Unit::UpdateVisibility()
                         buf.clear();
                         count = pObj->buildCreateUpdateBlockForPlayer(&buf, plr);
                         plr->PushCreationData(&buf, count);
-                        plr->AddVisibleObject(pObj->GetGUID());
+                        plr->AddVisibleObject(pObj->getGuid());
                     }
                 }
                 else
                 {
                     if (is_visible)
                     {
-                        plr->SendDestroyObject(pObj->GetGUID());
-                        plr->RemoveVisibleObject(pObj->GetGUID());
+                        plr->SendDestroyObject(pObj->getGuid());
+                        plr->RemoveVisibleObject(pObj->getGuid());
                     }
                 }
 
@@ -12183,7 +12183,7 @@ void Unit::UpdateVisibility()
                 {
                     pl = static_cast<Player*>(pObj);
                     can_see = pl->CanSee(plr);
-                    is_visible = pl->IsVisible(plr->GetGUID());
+                    is_visible = pl->IsVisible(plr->getGuid());
                     if (can_see)
                     {
                         if (!is_visible)
@@ -12191,15 +12191,15 @@ void Unit::UpdateVisibility()
                             buf.clear();
                             count = plr->buildCreateUpdateBlockForPlayer(&buf, pl);
                             pl->PushCreationData(&buf, count);
-                            pl->AddVisibleObject(plr->GetGUID());
+                            pl->AddVisibleObject(plr->getGuid());
                         }
                     }
                     else
                     {
                         if (is_visible)
                         {
-                            pl->SendDestroyObject(plr->GetGUID());
-                            pl->RemoveVisibleObject(plr->GetGUID());
+                            pl->SendDestroyObject(plr->getGuid());
+                            pl->RemoveVisibleObject(plr->getGuid());
                         }
                     }
                 }
@@ -12214,13 +12214,13 @@ void Unit::UpdateVisibility()
             if (p)
             {
                 can_see = p->CanSee(this);
-                is_visible = p->IsVisible(this->GetGUID());
+                is_visible = p->IsVisible(this->getGuid());
                 if (!can_see)
                 {
                     if (is_visible)
                     {
-                        p->SendDestroyObject(GetGUID());
-                        p->RemoveVisibleObject(GetGUID());
+                        p->SendDestroyObject(getGuid());
+                        p->RemoveVisibleObject(getGuid());
                     }
                 }
                 else
@@ -12230,7 +12230,7 @@ void Unit::UpdateVisibility()
                         buf.clear();
                         count = buildCreateUpdateBlockForPlayer(&buf, p);
                         p->PushCreationData(&buf, count);
-                        p->AddVisibleObject(this->GetGUID());
+                        p->AddVisibleObject(this->getGuid());
                     }
                 }
             }
@@ -12301,7 +12301,7 @@ void Unit::EventCastSpell(Unit* Target, SpellInfo* Sp)
 {
     ARCEMU_ASSERT(Sp != NULL);
     Spell* pSpell = sSpellFactoryMgr.NewSpell(Target, Sp, true, NULL);
-    SpellCastTargets targets(Target->GetGUID());
+    SpellCastTargets targets(Target->getGuid());
     pSpell->prepare(&targets);
 }
 
@@ -12368,7 +12368,7 @@ void CombatStatusHandler::ClearMyHealers()
 
 void CombatStatusHandler::RemoveHealed(Unit* pHealTarget)
 {
-    m_healed.erase(pHealTarget->GetLowGUID());
+    m_healed.erase(pHealTarget->getGuidLow());
     UpdateFlag();
 }
 
@@ -12380,13 +12380,13 @@ void CombatStatusHandler::UpdateFlag()
         m_lastStatus = n_status;
         if (n_status)
         {
-            //printf(I64FMT" is now in combat.\n", m_Unit->GetGUID());
+            //printf(I64FMT" is now in combat.\n", m_Unit->getGuid());
             m_Unit->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_COMBAT);
             if (!m_Unit->hasUnitStateFlag(UNIT_STATE_ATTACKING)) m_Unit->addUnitStateFlag(UNIT_STATE_ATTACKING);
         }
         else
         {
-            //printf(I64FMT" is no longer in combat.\n", m_Unit->GetGUID());
+            //printf(I64FMT" is no longer in combat.\n", m_Unit->getGuid());
             m_Unit->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_COMBAT);
             if (m_Unit->hasUnitStateFlag(UNIT_STATE_ATTACKING)) m_Unit->removeUnitStateFlag(UNIT_STATE_ATTACKING);
 
@@ -12418,14 +12418,14 @@ bool CombatStatusHandler::InternalIsInCombat()
 
 void CombatStatusHandler::AddAttackTarget(const uint64 & guid)
 {
-    if (guid == m_Unit->GetGUID())
+    if (guid == m_Unit->getGuid())
        return;
 
     //we MUST be in world
     ARCEMU_ASSERT(m_Unit->IsInWorld());
 
     m_attackTargets.insert(guid);
-    //printf("Adding attack target " I64FMT " to " I64FMT "\n", guid, m_Unit->GetGUID());
+    //printf("Adding attack target " I64FMT " to " I64FMT "\n", guid, m_Unit->getGuid());
     if (m_Unit->IsPlayer() &&
         m_primaryAttackTarget != guid)			// players can only have one attack target.
     {
@@ -12440,7 +12440,7 @@ void CombatStatusHandler::AddAttackTarget(const uint64 & guid)
 
 void CombatStatusHandler::ClearPrimaryAttackTarget()
 {
-    //printf("ClearPrimaryAttackTarget for " I64FMT "\n", m_Unit->GetGUID());
+    //printf("ClearPrimaryAttackTarget for " I64FMT "\n", m_Unit->getGuid());
     if (m_primaryAttackTarget != 0)
     {
         Unit* pt = m_Unit->GetMapMgr()->GetUnit(m_primaryAttackTarget);
@@ -12449,7 +12449,7 @@ void CombatStatusHandler::ClearPrimaryAttackTarget()
             // remove from their attacker set. (if we have no longer got any DoT's, etc)
             if (!IsAttacking(pt))
             {
-                pt->CombatStatus.RemoveAttacker(m_Unit, m_Unit->GetGUID());
+                pt->CombatStatus.RemoveAttacker(m_Unit, m_Unit->getGuid());
                 m_attackTargets.erase(m_primaryAttackTarget);
             }
 
@@ -12470,7 +12470,7 @@ bool CombatStatusHandler::IsAttacking(Unit* pTarget)
     // check the target for any of our DoT's.
     for (uint32 i = MAX_NEGATIVE_AURAS_EXTEDED_START; i < MAX_NEGATIVE_AURAS_EXTEDED_END; ++i)
         if (pTarget->m_auras[i] != NULL)
-            if (m_Unit->GetGUID() == pTarget->m_auras[i]->m_casterGuid && pTarget->m_auras[i]->IsCombatStateAffecting())
+            if (m_Unit->getGuid() == pTarget->m_auras[i]->m_casterGuid && pTarget->m_auras[i]->IsCombatStateAffecting())
                 return true;
 
     // place any additional checks here
@@ -12480,21 +12480,21 @@ bool CombatStatusHandler::IsAttacking(Unit* pTarget)
 void CombatStatusHandler::RemoveAttackTarget(Unit* pTarget)
 {
     // called on aura remove, etc.
-    AttackerMap::iterator itr = m_attackTargets.find(pTarget->GetGUID());
+    AttackerMap::iterator itr = m_attackTargets.find(pTarget->getGuid());
     if (itr == m_attackTargets.end())
         return;
 
    if (!IsAttacking(pTarget))
     {
-        //printf("Removing attack target " I64FMT " on " I64FMT "\n", pTarget->GetGUID(), m_Unit->GetGUID());
+        //printf("Removing attack target " I64FMT " on " I64FMT "\n", pTarget->getGuid(), m_Unit->getGuid());
         m_attackTargets.erase(itr);
-        if (m_primaryAttackTarget == pTarget->GetGUID())
+        if (m_primaryAttackTarget == pTarget->getGuid())
             m_primaryAttackTarget = 0;
 
         UpdateFlag();
     }
     /*else
-        printf("Cannot remove attack target " I64FMT " from " I64FMT "\n", pTarget->GetGUID(), m_Unit->GetGUID());*/
+        printf("Cannot remove attack target " I64FMT " from " I64FMT "\n", pTarget->getGuid(), m_Unit->getGuid());*/
 }
 
 void CombatStatusHandler::RemoveAttacker(Unit* pAttacker, const uint64 & guid)
@@ -12505,20 +12505,20 @@ void CombatStatusHandler::RemoveAttacker(Unit* pAttacker, const uint64 & guid)
 
     if ((!pAttacker) || (!pAttacker->CombatStatus.IsAttacking(m_Unit)))
     {
-        //printf("Removing attacker " I64FMT " from " I64FMT "\n", guid, m_Unit->GetGUID());
+        //printf("Removing attacker " I64FMT " from " I64FMT "\n", guid, m_Unit->getGuid());
         m_attackers.erase(itr);
         UpdateFlag();
     }
     /*else
     {
-    printf("Cannot remove attacker " I64FMT " from " I64FMT "\n", guid, m_Unit->GetGUID());
+    printf("Cannot remove attacker " I64FMT " from " I64FMT "\n", guid, m_Unit->getGuid());
     }*/
 }
 
 void CombatStatusHandler::OnDamageDealt(Unit* pTarget)
 {
     // we added an aura, or dealt some damage to a target. they need to have us as an attacker, and they need to be our attack target if not.
-    //printf("OnDamageDealt to " I64FMT " from " I64FMT "\n", pTarget->GetGUID(), m_Unit->GetGUID());
+    //printf("OnDamageDealt to " I64FMT " from " I64FMT "\n", pTarget->getGuid(), m_Unit->getGuid());
     if (pTarget == m_Unit)
         return;
 
@@ -12526,13 +12526,13 @@ void CombatStatusHandler::OnDamageDealt(Unit* pTarget)
     if (!pTarget->isAlive() || !m_Unit->isAlive())
         return;
 
-    AttackerMap::iterator itr = m_attackTargets.find(pTarget->GetGUID());
+    AttackerMap::iterator itr = m_attackTargets.find(pTarget->getGuid());
     if (itr == m_attackTargets.end())
-        AddAttackTarget(pTarget->GetGUID());
+        AddAttackTarget(pTarget->getGuid());
 
-    itr = pTarget->CombatStatus.m_attackers.find(m_Unit->GetGUID());
+    itr = pTarget->CombatStatus.m_attackers.find(m_Unit->getGuid());
     if (itr == pTarget->CombatStatus.m_attackers.end())
-        pTarget->CombatStatus.AddAttacker(m_Unit->GetGUID());
+        pTarget->CombatStatus.AddAttacker(m_Unit->getGuid());
 
     // update the timeout
     m_Unit->CombatStatusHandler_ResetPvPTimeout();
@@ -12559,7 +12559,7 @@ void CombatStatusHandler::ClearAttackers()
         pt = m_Unit->GetMapMgr()->GetUnit(*itr);
         if (pt)
         {
-            pt->CombatStatus.m_attackers.erase(m_Unit->GetGUID());
+            pt->CombatStatus.m_attackers.erase(m_Unit->getGuid());
             pt->CombatStatus.UpdateFlag();
         }
     }
@@ -12569,7 +12569,7 @@ void CombatStatusHandler::ClearAttackers()
         pt = m_Unit->GetMapMgr()->GetUnit(*itr);
         if (pt)
         {
-            pt->CombatStatus.m_attackTargets.erase(m_Unit->GetGUID());
+            pt->CombatStatus.m_attackTargets.erase(m_Unit->getGuid());
             pt->CombatStatus.UpdateFlag();
         }
     }
@@ -12592,7 +12592,7 @@ void CombatStatusHandler::ClearHealers()
         pt = m_Unit->GetMapMgr()->GetPlayer(*itr);
         if (pt)
         {
-            pt->CombatStatus.m_healers.erase(m_Unit->GetLowGUID());
+            pt->CombatStatus.m_healers.erase(m_Unit->getGuidLow());
             pt->CombatStatus.UpdateFlag();
         }
     }
@@ -12602,7 +12602,7 @@ void CombatStatusHandler::ClearHealers()
         pt = m_Unit->GetMapMgr()->GetPlayer(*itr);
         if (pt)
         {
-            pt->CombatStatus.m_healed.erase(m_Unit->GetLowGUID());
+            pt->CombatStatus.m_healed.erase(m_Unit->getGuidLow());
             pt->CombatStatus.UpdateFlag();
         }
     }
@@ -12660,7 +12660,7 @@ void CombatStatusHandler::TryToClearAttackTargets()
         }
 
         RemoveAttackTarget(pt);
-        pt->CombatStatus.RemoveAttacker(m_Unit, m_Unit->GetGUID());
+        pt->CombatStatus.RemoveAttacker(m_Unit, m_Unit->getGuid());
     }
 }
 
@@ -12726,8 +12726,8 @@ void CombatStatusHandler::WeHealed(Unit* pHealTarget)
 
     if (pHealTarget->CombatStatus.IsInCombat())
     {
-        m_healed.insert(pHealTarget->GetLowGUID());
-        pHealTarget->CombatStatus.m_healers.insert(m_Unit->GetLowGUID());
+        m_healed.insert(pHealTarget->getGuidLow());
+        pHealTarget->CombatStatus.m_healers.insert(m_Unit->getGuidLow());
     }
 
     UpdateFlag();
@@ -13280,11 +13280,11 @@ void Unit::EventStunOrImmobilize(Unit* proc_target, bool is_victim)
         SpellCastTargets targets;
 
         if (spellInfo->getProcFlags() & PROC_TARGET_SELF)
-            targets.m_unitTarget = GetGUID();
+            targets.m_unitTarget = getGuid();
         else if (proc_target)
-            targets.m_unitTarget = proc_target->GetGUID();
+            targets.m_unitTarget = proc_target->getGuid();
         else
-            targets.m_unitTarget = GetGUID();
+            targets.m_unitTarget = getGuid();
         spell->prepare(&targets);
     }
 }
@@ -13321,11 +13321,11 @@ void Unit::EventChill(Unit* proc_target, bool is_victim)
         SpellCastTargets targets;
 
         if (spellInfo->getProcFlags() & PROC_TARGET_SELF)
-            targets.m_unitTarget = GetGUID();
+            targets.m_unitTarget = getGuid();
         else if (proc_target)
-            targets.m_unitTarget = proc_target->GetGUID();
+            targets.m_unitTarget = proc_target->getGuid();
         else
-            targets.m_unitTarget = GetGUID();
+            targets.m_unitTarget = getGuid();
         spell->prepare(&targets);
     }
 }
@@ -13514,7 +13514,7 @@ void Unit::SendPowerUpdate(bool self)
     uint32 amount = getUInt32Value(UNIT_FIELD_POWER1 + getPowerType()); //save the amount, so we send the same to the player and everyone else
 
     WorldPacket data(SMSG_POWER_UPDATE, 14);
-    FastGUIDPack(data, GetGUID());
+    FastGUIDPack(data, getGuid());
     data << uint32(1);
     data << uint8(getPowerType());
     data << int32(amount);
@@ -13533,7 +13533,7 @@ void Unit::SendPowerUpdate(bool self)
     uint32 amount = getUInt32Value(UNIT_FIELD_POWER1 + getPowerType()); //save the amount, so we send the same to the player and everyone else
 
     WorldPacket data(SMSG_POWER_UPDATE, 14);
-    FastGUIDPack(data, GetGUID());
+    FastGUIDPack(data, getGuid());
     data << (uint8)getPowerType();
     data << amount;
     // \todo This was added in revision 1726.  Is it necessary?  To me, it seems to just be sending the packet twice.
@@ -13555,7 +13555,7 @@ void Unit::UpdatePowerAmm()
     if (!IsPlayer())
         return;
     WorldPacket data(SMSG_POWER_UPDATE, 14);
-    FastGUIDPack(data, GetGUID());
+    FastGUIDPack(data, getGuid());
     data << uint8(getPowerType());
     data << getUInt32Value(UNIT_FIELD_POWER1 + getPowerType());
     SendMessageToSet(&data, true);
@@ -13583,7 +13583,7 @@ void Unit::AddGarbageSpell(Spell* sp)
 
 void Unit::AddGarbagePet(Pet* pet)
 {
-    ARCEMU_ASSERT(pet->GetPetOwner()->GetGUID() == GetGUID() && !pet->IsInWorld());
+    ARCEMU_ASSERT(pet->GetPetOwner()->getGuid() == getGuid() && !pet->IsInWorld());
     m_GarbagePets.push_back(pet);
 }
 
@@ -14236,7 +14236,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
             }
         }
         if (Unit* u = GetVehicleBase())
-            obj_movement_info.transport_data.transportGuid = u->GetGUID();
+            obj_movement_info.transport_data.transportGuid = u->getGuid();
         *data << obj_movement_info.transport_data.transportGuid;
         *data << obj_movement_info.transport_data.transportGuid;
         *data << GetTransPositionX();
@@ -14294,9 +14294,9 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
         // Code left commented for reference
         // TODO: Research whether vehicle transport guid is being updated correctly or not (and if not, update it elsewhere and remove this)
         /*if (IsPlayer() && static_cast<Player*>(this)->m_transport)
-            obj_movement_info.transporter_info.guid = static_cast<Player*>(this)->m_transport->GetGUID();
+            obj_movement_info.transporter_info.guid = static_cast<Player*>(this)->m_transport->getGuid();
         if (Unit* u = GetVehicleBase())
-            obj_movement_info.transporter_info.guid = u->GetGUID();*/
+            obj_movement_info.transporter_info.guid = u->getGuid();*/
         *data << obj_movement_info.transport_data.transportGuid;
         *data << GetTransPositionX();
         *data << GetTransPositionY();
@@ -14460,7 +14460,7 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
         return;
     }
 
-    pThis->m_CurrentCharm = pTarget->GetGUID();
+    pThis->m_CurrentCharm = pTarget->getGuid();
     if (pTarget->IsCreature())
     {
         // unit-only stuff.
@@ -14471,10 +14471,10 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
     }
 
     m_noInterrupt++;
-    SetCharmedUnitGUID(pTarget->GetGUID());
-    pTarget->SetCharmedByGUID(GetGUID());
+    SetCharmedUnitGUID(pTarget->getGuid());
+    pTarget->SetCharmedByGUID(getGuid());
     pTarget->SetCharmTempVal(pTarget->GetFaction());
-    pThis->SetFarsightTarget(pTarget->GetGUID());
+    pThis->SetFarsightTarget(pTarget->getGuid());
     pThis->mControledUnit = pTarget;
     pTarget->SetFaction(GetFaction());
     pTarget->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
@@ -14543,7 +14543,7 @@ void Unit::UnPossess()
 
     setMoveRoot(false);
 
-    if (!pTarget->IsPet() && (pTarget->GetCreatedByGUID() == GetGUID()))
+    if (!pTarget->IsPet() && (pTarget->GetCreatedByGUID() == getGuid()))
     {
         sEventMgr.AddEvent(static_cast< Object* >(pTarget), &Object::Delete, 0, 1, 1, 0);
         return;

@@ -29,7 +29,7 @@ class CurgleCranklehop_Gossip : public Arcemu::Gossip::Script
 
         void OnHello(Object* pObject, Player* plr) override
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1519);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 1519);
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TANARIS_CRANK_HIPPO), 1);
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TANARIS_CRANK_GORDUNNI), 2);
             menu.Send(plr);
@@ -37,7 +37,7 @@ class CurgleCranklehop_Gossip : public Arcemu::Gossip::Script
 
         void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* /*Code*/, uint32 /*gossipId*/) override
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 0);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 0);
             if (1 == Id)
                 menu.setTextID(1521);
             else
@@ -55,12 +55,12 @@ class TrentonLighthammer_Gossip : public Arcemu::Gossip::Script
 
         void OnHello(Object* pObject, Player* plr) override
         {
-            Arcemu::Gossip::Menu::SendQuickMenu(pObject->GetGUID(), 1758, plr, 1, GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TANARIS_TELL_TRENTON));
+            Arcemu::Gossip::Menu::SendQuickMenu(pObject->getGuid(), 1758, plr, 1, GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TANARIS_TELL_TRENTON));
         }
 
         void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 0);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 0);
             menu.setTextID(1759);
             menu.Send(plr);
         }

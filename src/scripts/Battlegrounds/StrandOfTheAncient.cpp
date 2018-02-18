@@ -515,7 +515,7 @@ void StrandOfTheAncient::HookOnUnitDied(Unit* victim)
                 continue;
             }
 
-            if (victim->GetGUID() != c->GetGUID())
+            if (victim->getGuid() != c->getGuid())
             {
                 continue;
             }
@@ -531,7 +531,7 @@ void StrandOfTheAncient::HookOnUnitDied(Unit* victim)
                 continue;
             }
 
-            if (victim->GetGUID() != canon[i]->GetGUID())
+            if (victim->getGuid() != canon[i]->getGuid())
             {
                 continue;
             }

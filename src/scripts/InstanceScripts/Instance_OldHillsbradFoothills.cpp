@@ -183,7 +183,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //        if (!pInstance)
 //            return;
 //
-//        Arcemu::Gossip::Menu menu(pObject->GetGUID(), EROZION_ON_HELLO, 0);
+//        Arcemu::Gossip::Menu menu(pObject->getGuid(), EROZION_ON_HELLO, 0);
 //        if (pInstance->GetData(OHF_PHASE_1) != OHF_DATA_DONE && !Plr->HasItemCount(25853, 1))
 //            menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(EROZION_NEED_PACKET), 1);
 //
@@ -211,7 +211,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //
 //    void OnHello(Object* pObject, Player* Plr)
 //    {
-//        Arcemu::Gossip::Menu menu(pObject->GetGUID(), BRAZAN_ON_HELLO, 0);
+//        Arcemu::Gossip::Menu menu(pObject->getGuid(), BRAZAN_ON_HELLO, 0);
 //        menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(BRAZAN_DURNHOLDE_KEEP), 1);
 //        menu.Send(Plr);
 //    }
@@ -224,7 +224,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //            {
 //                if (!Plr->HasItemCount(25853, 1))
 //                {
-//                    Arcemu::Gossip::Menu menu(pObject->GetGUID(), BRAZAN_NEED_ITEM, 0);
+//                    Arcemu::Gossip::Menu menu(pObject->getGuid(), BRAZAN_NEED_ITEM, 0);
 //                    menu.Send(Plr);
 //                }
 //                else
@@ -305,7 +305,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //
 //    void OnHello(Object* pObject, Player* Plr)
 //    {
-//        Arcemu::Gossip::Menu menu(pObject->GetGUID(), THRALL_ON_HELLO, 0);
+//        Arcemu::Gossip::Menu menu(pObject->getGuid(), THRALL_ON_HELLO, 0);
 //        menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(THRALL_START_ESCORT), 1);
 //        menu.Send(Plr);
 //    }

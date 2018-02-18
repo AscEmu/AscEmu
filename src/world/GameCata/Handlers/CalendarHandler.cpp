@@ -15,7 +15,7 @@ void WorldSession::HandleCalendarGetCalendar(WorldPacket& /*recv_data*/)
     LogDebugFlag(LF_OPCODE, "HandleCalendarGetCalendar Not handled");
 
     /* Get all events for the player */
-    uint32 guid = static_cast<uint32>(_player->GetGUID());
+    uint32 guid = static_cast<uint32>(_player->getGuid());
     LogDebugFlag(LF_OPCODE, "HandleCalendarGetCalendar CMSG_CALENDAR_GET_CALENDAR for guid %u", guid);
 }
 
@@ -38,7 +38,7 @@ void WorldSession::HandleCalendarAddEvent(WorldPacket& recvData)
     // Create an Event and save it to char db 
     LogDebugFlag(LF_OPCODE, "HandleCalendarAddEvent Not handled");
 
-    uint32 guid = static_cast<uint32>(_player->GetGUID());
+    uint32 guid = static_cast<uint32>(_player->getGuid());
 
     std::string title;
     std::string description;

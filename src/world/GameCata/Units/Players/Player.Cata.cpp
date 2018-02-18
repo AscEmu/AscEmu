@@ -77,7 +77,7 @@ void Player::sendForceMovePacket(UnitSpeedType speed_type, float speed)
 void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
 {
     WorldPacket data;
-    ObjectGuid guid = GetGUID();
+    ObjectGuid guid = getGuid();
 
     switch (speed_type)
     {
@@ -176,7 +176,7 @@ void Player::handleFall(MovementInfo const& movementInfo)
             GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_FALL_WITHOUT_DYING, falldistance, GetDrunkenstateByValue(GetDrunkValue()), 0);
         }
 
-        SendEnvironmentalDamageLog(GetGUID(), DAMAGE_FALL, health_loss);
+        SendEnvironmentalDamageLog(getGuid(), DAMAGE_FALL, health_loss);
         DealDamage(this, health_loss, 0, 0, 0);
     }
 
@@ -379,7 +379,7 @@ WorldPacket Player::buildChatMessagePacket(Player* targetPlayer, uint32_t type, 
     data << guid;
     data << uint32_t(0);
 
-    data << targetPlayer->GetGUID();
+    data << targetPlayer->getGuid();
 
     data << messageLength;
     data << message;
@@ -398,7 +398,7 @@ void Player::sendChatPacket(uint32_t type, uint32_t language, const char* messag
     for (const auto& itr : getInRangePlayersSet())
     {
         Player* p = static_cast<Player*>(itr);
-        if (p && p->GetSession() && !p->Social_IsIgnoring(GetLowGUID()) && (p->GetPhase() & senderPhase) != 0)
+        if (p && p->GetSession() && !p->Social_IsIgnoring(getGuidLow()) && (p->GetPhase() & senderPhase) != 0)
         {
             WorldPacket data = p->buildChatMessagePacket(p, type, language, message, guid, flag);
             p->SendPacket(&data);

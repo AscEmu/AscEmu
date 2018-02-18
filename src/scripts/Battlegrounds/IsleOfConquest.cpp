@@ -737,7 +737,7 @@ bool IsleOfConquest::HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* /
     {
         if (controlpoint[cpid].aura == NULL)
             continue;
-        if (controlpoint[cpid].aura->GetGUID() == pGo->GetGUID())
+        if (controlpoint[cpid].aura->getGuid() == pGo->getGuid())
             break;
     }
 
@@ -817,7 +817,7 @@ void IsleOfConquest::HookOnUnitDied(Unit *victim)
             // Was it a workshop vehicle?
             for (uint8 i = 0; i < MAX_PLAYER_TEAMS; i++)
             {
-                if ((workshopvehicle[i].creature != NULL) && (c->GetGUID() == workshopvehicle[i].creature->GetGUID()))
+                if ((workshopvehicle[i].creature != NULL) && (c->getGuid() == workshopvehicle[i].creature->getGuid()))
                 {
                     workshopvehicle[i].creature->Despawn(1 * 1000, 0);
                     workshopvehicle[i].creature = NULL;
@@ -828,7 +828,7 @@ void IsleOfConquest::HookOnUnitDied(Unit *victim)
             {
                 for (uint8 j = 0; j < 4; j++)
                 {
-                    if ((workshopdemolisher[i][j].creature != NULL) && (c->GetGUID() == workshopdemolisher[i][j].creature->GetGUID()))
+                    if ((workshopdemolisher[i][j].creature != NULL) && (c->getGuid() == workshopdemolisher[i][j].creature->getGuid()))
                     {
                         workshopdemolisher[i][j].creature->Despawn(1 * 1000, 0);
                         workshopdemolisher[i][j].creature = NULL;
@@ -841,7 +841,7 @@ void IsleOfConquest::HookOnUnitDied(Unit *victim)
             {
                 for (uint8 j = 0; j < 4; j++)
                 {
-                    if ((dockvehicle[i][j].creature != NULL) && (c->GetGUID() == dockvehicle[i][j].creature->GetGUID()))
+                    if ((dockvehicle[i][j].creature != NULL) && (c->getGuid() == dockvehicle[i][j].creature->getGuid()))
                     {
                         dockvehicle[i][j].creature->Despawn(1 * 1000, 0);
                         dockvehicle[i][j].creature = NULL;

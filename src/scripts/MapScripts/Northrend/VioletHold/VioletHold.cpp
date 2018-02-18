@@ -91,7 +91,7 @@ public:
         //Page 1: Textid and first menu item
         if (pInstance->getData(608) == PreProgress)
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 13853, 0);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 13853, 0);
             menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(600), 1);
             menu.Send(pPlayer);
         }
@@ -99,7 +99,7 @@ public:
         //If VioletHold is started, Sinclari has this item for people who aould join.
         if (pInstance->getData(608) == InProgress)
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 13853, 0);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 13853, 0);
             menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(602), 3);
             menu.Send(pPlayer);
         }
@@ -119,7 +119,7 @@ public:
         {
             case 1:
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 13854, 0);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 13854, 0);
                 menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(601), 2);
                 menu.Send(pPlayer);
             } break;

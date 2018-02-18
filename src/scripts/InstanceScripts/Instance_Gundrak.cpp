@@ -72,72 +72,72 @@ class GundrakScript : public InstanceScript
             {
                 case GO_ALTAR1_SLADRAN:
                 {
-                    mSladranAltarGUID = pGameObject->GetLowGUID();
+                    mSladranAltarGUID = pGameObject->getGuidLow();
                     pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                 }
                 break;
                 case GO_STATUE1_SLADRAN:
                 {
-                    mSladranStatueGUID = pGameObject->GetLowGUID();
+                    mSladranStatueGUID = pGameObject->getGuidLow();
                     pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                 }
                 break;
                 case GO_ALTAR2_COLOSSUS:
                 {
-                    mColossusAltarGUID = pGameObject->GetLowGUID();
+                    mColossusAltarGUID = pGameObject->getGuidLow();
                     pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                 }
                 break;
                 case GO_STATUE2_COLOSSUS:
                 {
-                    mColossusStatueGUID = pGameObject->GetLowGUID();
+                    mColossusStatueGUID = pGameObject->getGuidLow();
                     pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                 }
                 break;
                 case GO_ALTAR3_MOORABI:
                 {
-                    mMoorabiAltarGUID = pGameObject->GetLowGUID();
+                    mMoorabiAltarGUID = pGameObject->getGuidLow();
                     pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                 }
                 break;
                 case GO_STATUE3_MOORABI:
                 {
-                    mMoorabiStatueGUID = pGameObject->GetLowGUID();
+                    mMoorabiStatueGUID = pGameObject->getGuidLow();
                     pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                 }
                 break;
                 case GO_ECKDOOR:
                 {
-                    mEckDoorsGUID = pGameObject->GetLowGUID();
+                    mEckDoorsGUID = pGameObject->getGuidLow();
                     pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                 }
                 break;
                 case GO_TRAPDOOR:
                 {
-                    mTrapDoorGUID = pGameObject->GetLowGUID();
+                    mTrapDoorGUID = pGameObject->getGuidLow();
                     pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                 }
                 break;
                 case GO_COILISION:
                 {
-                    mCoilisionGUID = pGameObject->GetLowGUID();
+                    mCoilisionGUID = pGameObject->getGuidLow();
                     pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                 }
                 break;
                 case GO_GAL_DARAH_DOOR1:
                 {
-                    mDoor1GUID = pGameObject->GetLowGUID();
+                    mDoor1GUID = pGameObject->getGuidLow();
                     pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                 }
                 break;
                 case GO_GAL_DARAH_DOOR2:
                 {
-                    mDoor2GUID = pGameObject->GetLowGUID();
+                    mDoor2GUID = pGameObject->getGuidLow();
                     pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                 }
                 break;
                 case 192568:
-                    mCombatDoorsGUID = pGameObject->GetLowGUID();
+                    mCombatDoorsGUID = pGameObject->getGuidLow();
                     break;
             }
         }

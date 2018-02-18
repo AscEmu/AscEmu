@@ -199,19 +199,19 @@ class ShadowfangKeepInstance : public InstanceScript
             {
                 case GO_LEFT_CELL:
                 {
-                    go_leftCell_GUID = pGameObject->GetLowGUID();
+                    go_leftCell_GUID = pGameObject->getGuidLow();
                 }break;
                 case GO_MIDDLE_CELL:
                 {
-                    go_middleCell_GUID = pGameObject->GetLowGUID();
+                    go_middleCell_GUID = pGameObject->getGuidLow();
                 }break;
                 case GO_RIGHT_CELL:
                 {
-                    go_rightCell_GUID = pGameObject->GetLowGUID();
+                    go_rightCell_GUID = pGameObject->getGuidLow();
                 }break;
                 case GO_ARUGALS_LAIR_GATE:
                 {
-                    go_arugalsLair_GUID = pGameObject->GetLowGUID();
+                    go_arugalsLair_GUID = pGameObject->getGuidLow();
                     if (GetInstanceData(0, INDEX_NANDOS) == Finished && pGameObject->GetState() == GO_STATE_CLOSED)
                     {
                         pGameObject->SetState(GO_STATE_OPEN);
@@ -219,7 +219,7 @@ class ShadowfangKeepInstance : public InstanceScript
                 }break;
                 case GO_SORCERER_GATE:
                 {
-                    go_sorcererGate_GUID = pGameObject->GetLowGUID();
+                    go_sorcererGate_GUID = pGameObject->getGuidLow();
                     if (GetInstanceData(0, INDEX_FENRUS) == Finished && pGameObject->GetState() == GO_STATE_CLOSED)
                     {
                         pGameObject->SetState(GO_STATE_OPEN);
@@ -227,7 +227,7 @@ class ShadowfangKeepInstance : public InstanceScript
                 }break;
                 case GO_LEFT_LEVER:
                 {
-                    go_leftCellLever_GUID = pGameObject->GetLowGUID();
+                    go_leftCellLever_GUID = pGameObject->getGuidLow();
                     if (GetInstanceData(0, INDEX_RETHILGORE) != Finished)
                     {
                         pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NONSELECTABLE);
@@ -235,7 +235,7 @@ class ShadowfangKeepInstance : public InstanceScript
                 }break;
                 case GO_RIGHT_LEVER:
                 {
-                    go_rightCellLever_GUID = pGameObject->GetLowGUID();
+                    go_rightCellLever_GUID = pGameObject->getGuidLow();
                     if (GetInstanceData(0, INDEX_RETHILGORE) != Finished)
                     {
                         pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NONSELECTABLE);
@@ -243,7 +243,7 @@ class ShadowfangKeepInstance : public InstanceScript
                 }break;
                 case GO_MIDDLE_LEVER:
                 {
-                    go_middleCellLever_GUID = pGameObject->GetLowGUID();
+                    go_middleCellLever_GUID = pGameObject->getGuidLow();
                     if (GetInstanceData(0, INDEX_RETHILGORE) != Finished)
                     {
                         pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NONSELECTABLE);
@@ -251,7 +251,7 @@ class ShadowfangKeepInstance : public InstanceScript
                 }break;
                 case GO_COURTYARD_DOOR:
                 {
-                    go_courtyarDoor_GUID = pGameObject->GetLowGUID();
+                    go_courtyarDoor_GUID = pGameObject->getGuidLow();
                     if (GetInstanceData(0, INDEX_PRISONER_EVENT) == Finished && pGameObject->GetState() == GO_STATE_CLOSED)
                     {
                         pGameObject->SetState(GO_STATE_OPEN);
@@ -322,11 +322,11 @@ class ShadowfangKeepInstance : public InstanceScript
             {
                 case CN_ADAMANT:
                 {
-                    npc_adamant_GUID = GET_LOWGUID_PART(pCreature->GetGUID());
+                    npc_adamant_GUID = GET_LOWGUID_PART(pCreature->getGuid());
                 }break;
                 case CN_ASHCROMBE:
                 {
-                    npc_ashcrombe_GUID = GET_LOWGUID_PART(pCreature->GetGUID());
+                    npc_ashcrombe_GUID = GET_LOWGUID_PART(pCreature->getGuid());
                 }break;
                 // Make him hidden
                 case CN_ARUGAL:
@@ -341,7 +341,7 @@ class ShadowfangKeepInstance : public InstanceScript
                     if (GetInstanceData(0, INDEX_NANDOS) == InProgress)
                     {
                         pCreature->Despawn(60 * 4 * 1000, 0);   // Despawn in 4 mins
-                        nandos_summons.push_back(GET_LOWGUID_PART(pCreature->GetGUID()));
+                        nandos_summons.push_back(GET_LOWGUID_PART(pCreature->getGuid()));
                     }
                 }break;
                 case CN_LUPINE_DELUSION:
@@ -349,7 +349,7 @@ class ShadowfangKeepInstance : public InstanceScript
                     // Add to nandos summon lists only on his event is started
                     if (GetInstanceData(0, INDEX_NANDOS) == InProgress)
                     {
-                        nandos_summons.push_back(GET_LOWGUID_PART(pCreature->GetGUID()));
+                        nandos_summons.push_back(GET_LOWGUID_PART(pCreature->getGuid()));
                     }
                     pCreature->Despawn(60 * 4 * 1000, 0);   // Despawn in 4 mins
                 }break;
@@ -597,7 +597,7 @@ class AdamantGossip : public Arcemu::Gossip::Script
         void OnHello(Object* pObject, Player* plr) override
         {
             //TODO: correct text id
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), sMySQLStore.getGossipTextIdForNpc(pObject->GetEntry()));
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), sMySQLStore.getGossipTextIdForNpc(pObject->GetEntry()));
 
             ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->GetMapMgr()->GetScript());
             if (pInstance != nullptr && pInstance->GetInstanceData(0, INDEX_RETHILGORE) == Finished && pInstance->GetInstanceData(0, INDEX_PRISONER_EVENT) == NotStarted)
@@ -767,7 +767,7 @@ class AshcrombeGossip : public Arcemu::Gossip::Script
 
         void OnHello(Object* pObject, Player* plr) override
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), sMySQLStore.getGossipTextIdForNpc(pObject->GetEntry()));
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), sMySQLStore.getGossipTextIdForNpc(pObject->GetEntry()));
 
             ShadowfangKeepInstance* pInstance = static_cast<ShadowfangKeepInstance*>(pObject->GetMapMgr()->GetScript());
             if (pInstance != nullptr && pInstance->GetInstanceData(0, INDEX_RETHILGORE) == Finished && pInstance->GetInstanceData(0, INDEX_PRISONER_EVENT) == NotStarted)

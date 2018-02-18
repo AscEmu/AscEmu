@@ -50,7 +50,7 @@ bool Pestilence(uint8_t effectIndex, Spell* pSpell)
                 continue;
 
             Unit* Target = static_cast<Unit*>(itr);
-            if (Main->GetGUID() == Target->GetGUID() && !u_caster->HasAura(63334))
+            if (Main->getGuid() == Target->getGuid() && !u_caster->HasAura(63334))
                 continue;
 
             if (isAttackable(Target, u_caster) && u_caster->CalcDistance(itr) <= (pSpell->GetRadius(effectIndex) + inc))
@@ -74,7 +74,7 @@ bool DeathStrike(uint8_t /*effectIndex*/, Spell* pSpell)
     Unit* Target = pSpell->GetUnitTarget();
 
     // Get count of diseases on target which were casted by caster
-    uint32 count = Target->GetAuraCountWithDispelType(DISPEL_DISEASE, pSpell->p_caster->GetGUID());
+    uint32 count = Target->GetAuraCountWithDispelType(DISPEL_DISEASE, pSpell->p_caster->getGuid());
 
     // Not a logical error, Death Strike should heal only when diseases are presented on its target
     if (count)

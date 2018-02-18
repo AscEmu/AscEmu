@@ -252,7 +252,7 @@ public:
     {
         if (plr->HasQuest(10814))
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 10613, plr->GetSession()->language);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 10613, plr->GetSession()->language);
             if (plr->HasQuest(10583))
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(471), 1);     // I am listening, Dragon
 
@@ -266,19 +266,19 @@ public:
         {
             case 1:
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 10614, plr->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 10614, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(472), 2);     // But you are Dragons! How could orcs do this to you?
                 menu.Send(plr);
             } break;
             case 2:
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 10615, plr->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 10615, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(473), 3);     // Your mate?
                 menu.Send(plr);
             } break;
             case 3:
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 10616, plr->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 10616, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(474), 4);     // I have battled many beasts, Dragon. I will help you.
                 menu.Send(plr);
             } break;
@@ -346,7 +346,7 @@ public:
 
 void FlanisSwiftwing_Gossip::OnHello(Object* pObject, Player* plr)
 {
-    Arcemu::Gossip::Menu menu(pObject->GetGUID(), 40002, plr->GetSession()->language);
+    Arcemu::Gossip::Menu menu(pObject->getGuid(), 40002, plr->GetSession()->language);
     if (plr->HasQuest(10583))
         menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(475), 1);     // Examine the corpse
 

@@ -1022,7 +1022,7 @@ public:
 
         static uint32 GetGuildIdFromDB(uint64 guid);
         static int8 GetRankFromDB(uint64 guid);
-        uint32 GetGuildRank() { return (uint32)GetRankFromDB(GetGUID()); }
+        uint32 GetGuildRank() { return (uint32)GetRankFromDB(getGuid()); }
 
         int GetGuildIdInvited() { return m_GuildIdInvited; }
 

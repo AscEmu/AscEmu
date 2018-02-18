@@ -1285,7 +1285,7 @@ uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 //NOTE: it does not change fields. This is also very fast method
 WorldPacket* Object::BuildFieldUpdatePacket(uint32 index, uint32 value)
 {
-    // uint64 guidfields = GetGUID();
+    // uint64 guidfields = getGuid();
     // uint8 guidmask = 0;
     WorldPacket* packet = new WorldPacket(1500);
     packet->SetOpcode(SMSG_UPDATE_OBJECT);
@@ -1392,7 +1392,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
     uint32_t tbc_flags_2 = 0;
 
     // This is checked for nullptr later
-    const auto spline_buffer = m_objectTypeId == TYPEID_UNIT ? target->GetAndRemoveSplinePacket(GetGUID()) : nullptr;
+    const auto spline_buffer = m_objectTypeId == TYPEID_UNIT ? target->GetAndRemoveSplinePacket(getGuid()) : nullptr;
 
     Player* this_player = nullptr;
     if (GetTypeId() == TYPEID_PLAYER)
@@ -1473,7 +1473,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
             {
                 if (const auto transport = this_player->GetTransport())
                 {
-                    *data << transport->GetGUID();
+                    *data << transport->getGuid();
                     *data << transport->GetPosition() << transport->GetOrientation();
                     // According to old repo, this is meant to be a float. TODO Investigate
                     *data << transport->GetTransTime();
@@ -1483,7 +1483,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
             {
                 if (const auto transport = this_creature->GetTransport())
                 {
-                    *data << transport->GetGUID();
+                    *data << transport->getGuid();
                     *data << uint32_t(HIGHGUID_TYPE_TRANSPORTER);
                     *data << transport->GetPosition() << transport->GetOrientation();
                     *data << float(0);
@@ -1546,7 +1546,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 {
     uint32 flags2 = 0;
 
-    ByteBuffer* splinebuf = (m_objectTypeId == TYPEID_UNIT) ? target->GetAndRemoveSplinePacket(GetGUID()) : 0;
+    ByteBuffer* splinebuf = (m_objectTypeId == TYPEID_UNIT) ? target->GetAndRemoveSplinePacket(getGuid()) : 0;
 
     if (splinebuf != nullptr)
     {
@@ -1767,10 +1767,10 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 
 
     if (flags & UPDATEFLAG_LOWGUID)     //0x08
-        *data << GetLowGUID();
+        *data << getGuidLow();
 
     if (flags & UPDATEFLAG_HIGHGUID)    //0x10
-        *data << GetHighGUID();
+        *data << getGuidHigh();
 
     if (flags & UPDATEFLAG_HAS_TARGET)  //0x04
     {
@@ -1810,7 +1810,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 #if VERSION_STRING == Cata
 void Object::buildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* /*target*/)
 {
-    ObjectGuid Guid = GetGUID();
+    ObjectGuid Guid = getGuid();
 
     data->writeBit(false);
     data->writeBit(false);
@@ -2200,7 +2200,7 @@ void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player*
             {
                 uint32_t current_flags;
                 old_flags = current_flags = this_creature->getDynamicFlags();
-                if (this_creature->GetTaggerGUID() == target->GetGUID())
+                if (this_creature->GetTaggerGUID() == target->getGuid())
                 {
                     old_flags = U_DYN_FLAG_TAGGED_BY_OTHER;
                     if (current_flags & U_DYN_FLAG_TAGGED_BY_OTHER)
@@ -2351,7 +2351,7 @@ void Object::buildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player*
 void Unit::BuildHeartBeatMsg(WorldPacket* data)
 {
     data->Initialize(MSG_MOVE_HEARTBEAT, 32);
-    *data << GetGUID();
+    *data << getGuid();
     BuildMovementPacket(data);
 }
 
@@ -2472,7 +2472,7 @@ void Object::AddToWorld()
     MapMgr* mapMgr = sInstanceMgr.GetInstance(this);
     if (mapMgr == nullptr)
     {
-        LOG_ERROR("AddToWorld() failed for Object with GUID " I64FMT " MapId %u InstanceId %u", GetGUID(), GetMapId(), GetInstanceID());
+        LOG_ERROR("AddToWorld() failed for Object with GUID " I64FMT " MapId %u InstanceId %u", getGuid(), GetMapId(), GetInstanceID());
         return;
     }
 
@@ -2489,7 +2489,7 @@ void Object::AddToWorld()
             if (group == nullptr && mapMgr->pInstance->m_creatorGuid == 0)
                 return;
             // If set: Owns player the instance?
-            if (mapMgr->pInstance->m_creatorGuid != 0 && mapMgr->pInstance->m_creatorGuid != plr->GetLowGUID())
+            if (mapMgr->pInstance->m_creatorGuid != 0 && mapMgr->pInstance->m_creatorGuid != plr->getGuidLow())
                 return;
 
             if (group != nullptr)
@@ -2544,7 +2544,7 @@ void Object::PushToWorld(MapMgr* mgr)
 
     if (mgr == nullptr)
     {
-        LOG_ERROR("Invalid push to world of Object " I64FMT, GetGUID());
+        LOG_ERROR("Invalid push to world of Object " I64FMT, getGuid());
         return; //instance add failed
     }
 
@@ -3093,7 +3093,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
             Spell* sp = sSpellFactoryMgr.NewSpell(pl, entry, true, nullptr);
             sp->GetSpellInfo()->setEffectBasePoints(spellpower, 0);
             SpellCastTargets targets;
-            targets.m_unitTarget = pl->GetGUID();
+            targets.m_unitTarget = pl->getGuid();
             sp->prepare(&targets);
         }
     }
@@ -3208,10 +3208,10 @@ void Object::SendSpellLog(Object* Caster, Object* Target, uint32 Ability, uint8 
     WorldPacket data(SMSG_SPELLLOGMISS, 26);
 
     data << uint32(Ability);            // spellid
-    data << Caster->GetGUID();          // caster / player
+    data << Caster->getGuid();          // caster / player
     data << uint8(1);                   // unknown but I think they are const
     data << uint32(1);                  // unknown but I think they are const
-    data << Target->GetGUID();          // target
+    data << Target->getGuid();          // target
     data << uint8(SpellLogType);        // spelllogtype
 
     Caster->SendMessageToSet(&data, true);
@@ -3390,7 +3390,7 @@ void Object::Deactivate(MapMgr* mgr)
     {
         case TYPEID_UNIT:
             // check iterator
-            if (mgr->creature_iterator != mgr->activeCreatures.end() && (*mgr->creature_iterator)->GetGUID() == GetGUID())
+            if (mgr->creature_iterator != mgr->activeCreatures.end() && (*mgr->creature_iterator)->getGuid() == getGuid())
                 ++mgr->creature_iterator;
             mgr->activeCreatures.erase(static_cast<Creature*>(this));
             break;
@@ -3588,7 +3588,7 @@ void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId)
                 WorldPacket data(SMSG_MESSAGECHAT, 35 + creatureNameLength + messageLength);
                 data << uint8_t(npcScriptText->type);
                 data << uint32_t(npcScriptText->language);
-                data << uint64_t(GetGUID());
+                data << uint64_t(getGuid());
                 data << uint32_t(0);
                 data << uint32_t(creatureNameLength);
                 data << creatureName;
@@ -3748,7 +3748,7 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::Np
                 WorldPacket data(SMSG_MESSAGECHAT, 35 + creatureNameLength + messageLength);
                 data << uint8_t(npcMonsterSay->type);
                 data << uint32_t(npcMonsterSay->language);
-                data << uint64_t(GetGUID());
+                data << uint64_t(getGuid());
                 data << uint32_t(0);
                 data << uint32_t(creatureNameLength);
                 data << creatureName;
@@ -3846,7 +3846,7 @@ void Object::SetMapCell(MapCell* cell)
 void Object::SendAIReaction(uint32 reaction)
 {
     WorldPacket data(SMSG_AI_REACTION, 12);
-    data << uint64(GetGUID());
+    data << uint64(getGuid());
     data << uint32(reaction);
     SendMessageToSet(&data, false);
 }
@@ -3854,7 +3854,7 @@ void Object::SendAIReaction(uint32 reaction)
 void Object::SendDestroyObject()
 {
     WorldPacket data(SMSG_DESTROY_OBJECT, 9);
-    data << uint64(GetGUID());
+    data << uint64(getGuid());
     data << uint8(0);
     SendMessageToSet(&data, false);
 }

@@ -55,7 +55,7 @@ DynamicObject::DynamicObject(uint32 high, uint32 low)
     m_uint32Values[OBJECT_FIELD_TYPE] = TYPE_DYNAMICOBJECT | TYPE_OBJECT;
     m_uint32Values[OBJECT_FIELD_GUID] = low;
     m_uint32Values[OBJECT_FIELD_GUID + 1] = high;
-    m_wowGuid.Init(GetGUID());
+    m_wowGuid.Init(getGuid());
     SetScale(1);
 
 
@@ -91,7 +91,7 @@ void DynamicObject::Create(Unit* caster, Spell* pSpell, float x, float y, float 
     m_spellProto = pSpell->GetSpellInfo();
     SetEntry(m_spellProto->getId());
     setFloatValue(OBJECT_FIELD_SCALE_X, 1);
-    setUInt64Value(DYNAMICOBJECT_CASTER, caster->GetGUID());
+    setUInt64Value(DYNAMICOBJECT_CASTER, caster->getGuid());
     setByteFlag(DYNAMICOBJECT_BYTES, 0, static_cast<uint8_t>(type));
     setUInt32Value(DYNAMICOBJECT_SPELLID, m_spellProto->getId());
     setFloatValue(DYNAMICOBJECT_RADIUS, radius);
@@ -132,7 +132,7 @@ void DynamicObject::onRemoveInRangeObject(Object* pObj)
 {
     if (pObj->IsUnit())
     {
-        targets.erase(pObj->GetGUID());
+        targets.erase(pObj->getGuid());
     }
     Object::onRemoveInRangeObject(pObj);
 }
@@ -162,7 +162,7 @@ void DynamicObject::UpdateTargets()
                 continue;
 
             // skip units already hit, their range will be tested later
-            if (targets.find(target->GetGUID()) != targets.end())
+            if (targets.find(target->getGuid()) != targets.end())
                 continue;
 
             if (getDistanceSq(target) <= radius)
@@ -184,7 +184,7 @@ void DynamicObject::UpdateTargets()
                 }
 
                 // add to target list
-                targets.insert(target->GetGUID());
+                targets.insert(target->getGuid());
             }
         }
 
@@ -244,7 +244,7 @@ void DynamicObject::Remove()
 
     WorldPacket data(SMSG_GAMEOBJECT_DESPAWN_ANIM, 8);
 
-    data << GetGUID();
+    data << getGuid();
     SendMessageToSet(&data, false);
 
     if (IsInWorld())

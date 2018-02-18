@@ -638,7 +638,7 @@ Corpse* ObjectMgr::GetCorpseByOwner(uint32 ownerguid)
 void ObjectMgr::DelinkPlayerCorpses(Player* pOwner)
 {
     //dupe protection agaisnt crashs
-    Corpse* c = this->GetCorpseByOwner(pOwner->GetLowGUID());
+    Corpse* c = this->GetCorpseByOwner(pOwner->getGuidLow());
     if (!c)
         return;
     sEventMgr.AddEvent(c, &Corpse::Delink, EVENT_CORPSE_SPAWN_BONES, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -1565,7 +1565,7 @@ void ObjectMgr::CorpseAddEventDespawn(Corpse* pCorpse)
     if (!pCorpse->IsInWorld())
         delete pCorpse;
     else
-        sEventMgr.AddEvent(pCorpse->GetMapMgr(), &MapMgr::EventCorpseDespawn, pCorpse->GetGUID(), EVENT_CORPSE_DESPAWN, 600000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(pCorpse->GetMapMgr(), &MapMgr::EventCorpseDespawn, pCorpse->getGuid(), EVENT_CORPSE_DESPAWN, 600000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void ObjectMgr::CorpseCollectorUnload()
@@ -2597,14 +2597,14 @@ Player* ObjectMgr::CreatePlayer(uint8 _class)
 void ObjectMgr::AddPlayer(Player* p) //add it to global storage
 {
     _playerslock.AcquireWriteLock();
-    _players[p->GetLowGUID()] = p;
+    _players[p->getGuidLow()] = p;
     _playerslock.ReleaseWriteLock();
 }
 
 void ObjectMgr::RemovePlayer(Player* p)
 {
     _playerslock.AcquireWriteLock();
-    _players.erase(p->GetLowGUID());
+    _players.erase(p->getGuidLow());
     _playerslock.ReleaseWriteLock();
 
 }
@@ -2620,14 +2620,14 @@ Corpse* ObjectMgr::CreateCorpse()
 void ObjectMgr::AddCorpse(Corpse* p) //add it to global storage
 {
     _corpseslock.Acquire();
-    m_corpses[p->GetLowGUID()] = p;
+    m_corpses[p->getGuidLow()] = p;
     _corpseslock.Release();
 }
 
 void ObjectMgr::RemoveCorpse(Corpse* p)
 {
     _corpseslock.Acquire();
-    m_corpses.erase(p->GetLowGUID());
+    m_corpses.erase(p->getGuidLow());
     _corpseslock.Release();
 }
 

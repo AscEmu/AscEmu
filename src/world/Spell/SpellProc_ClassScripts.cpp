@@ -218,7 +218,7 @@ public:
             return;
 
         Spell* spell = sSpellFactoryMgr.NewSpell(caster, mSpell, true, nullptr);
-        SpellCastTargets targets(mTarget->GetGUID());
+        SpellCastTargets targets(mTarget->getGuid());
         spell->prepare(&targets);
     }
 
@@ -241,7 +241,7 @@ public:
             return;
         }
 
-        mItemGUID = obj->GetGUID();
+        mItemGUID = obj->getGuid();
         damage = 0;
         uint32 wp_speed;
         Item* item = static_cast< Item* >(obj);
@@ -297,7 +297,7 @@ public:
         else
             item = static_cast< Player* >(mTarget)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
 
-        if (item != nullptr && item->GetGUID() == mItemGUID)
+        if (item != nullptr && item->getGuid() == mItemGUID)
         {
             dmgOverwrite[0] = damage;
             return false;
@@ -333,7 +333,7 @@ public:
             return;
         }
 
-        mItemGUID = static_cast<Item*>(obj)->GetGUID();
+        mItemGUID = static_cast<Item*>(obj)->getGuid();
         if (mProcPerMinute)
             mProcChance = static_cast<Item*>(obj)->getItemProperties()->Delay * mProcPerMinute / 600;
     }
@@ -365,7 +365,7 @@ public:
         else
             item = static_cast<Player*>(mTarget)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
 
-        if (item != nullptr && item->GetGUID() == mItemGUID)
+        if (item != nullptr && item->getGuid() == mItemGUID)
             return false;
 
         return true;
@@ -688,7 +688,7 @@ public:
     bool DoEffect(Unit* victim, SpellInfo* castingSpell, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* /*dmgOverwrite*/, uint32 /*weaponDamageType*/)
     {
         // Check for Mind Blast hit from this proc caster
-        if (castingSpell == nullptr || mCaster != victim->GetGUID())
+        if (castingSpell == nullptr || mCaster != victim->getGuid())
             return true;
 
         switch (castingSpell->getId())
@@ -814,7 +814,7 @@ public:
     void CastSpell(Unit* victim, SpellInfo* CastingSpell, int* dmg_overwrite)
     {
         SpellCastTargets targets;
-        targets.m_unitTarget = victim->GetGUID();
+        targets.m_unitTarget = victim->getGuid();
 
         Spell* spell = sSpellFactoryMgr.NewSpell(mTarget, mSpell, true, nullptr);
         spell->forced_basepoints[0] = dmg_overwrite[0];
@@ -850,7 +850,7 @@ public:
 
     bool CanProc(Unit* victim, SpellInfo* /*castingSpell*/)
     {
-        if (victim != nullptr && mTarget->GetGUID() == victim->GetGUID())
+        if (victim != nullptr && mTarget->getGuid() == victim->getGuid())
             return true;
 
         return false;

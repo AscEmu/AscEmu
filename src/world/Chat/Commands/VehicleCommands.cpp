@@ -155,6 +155,6 @@ bool ChatHandler::HandleVehicleAddPassengerCommand(const char* args, WorldSessio
     Creature* c = u->GetMapMgr()->CreateCreature(creature_entry);
     c->Load(cp, u->GetPositionX(), u->GetPositionY(), u->GetPositionZ(), u->GetOrientation());
     c->PushToWorld(u->GetMapMgr());
-    c->EnterVehicle(u->GetGUID(), 1);
+    c->EnterVehicle(u->getGuid(), 1);
     return true;
 }

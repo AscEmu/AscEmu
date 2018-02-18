@@ -836,7 +836,7 @@ void Unit::playSpellVisual(uint64_t guid, uint32_t spell_id)
     data << uint32_t(0);
     data << uint32_t(spell_id);
 
-    data << uint32_t(guid == GetGUID() ? 1 : 0);
+    data << uint32_t(guid == getGuid() ? 1 : 0);
 
     ObjectGuid targetGuid = guid;
     data.writeBit(targetGuid[4]);

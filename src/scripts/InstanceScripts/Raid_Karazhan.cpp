@@ -30,7 +30,7 @@ class Berthold : public Arcemu::Gossip::Script
 public:
     void OnHello(Object* pObject, Player* Plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 11224);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), 11224);
         menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(428), 1);     // What is this place?
         menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(429), 2);     // Where is Medivh?
         menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(430), 3);     // How do you navigate the tower?
@@ -451,12 +451,12 @@ public:
     {
         if (WayStartBBW[pObject->GetInstanceID()] == 5)
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 8975, 0);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 8975, 0);
             menu.Send(Plr);
         }
         else
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 8970, 0);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 8970, 0);
             menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(432), 1);     // I'm not an actor.
             menu.Send(Plr);
         }
@@ -468,7 +468,7 @@ public:
         {
             case 1:
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 8971, 0);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 8971, 0);
                 menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(433), 2);     // Ok, I'll give it a try, then.
                 menu.Send(Plr);
             }
@@ -497,7 +497,7 @@ class GrandMother : public Arcemu::Gossip::Script
 public:
     void OnHello(Object* pObject, Player* Plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 7245, 0);         // Don't get too close, $N. I'm liable to fumble and bash your brains open with the face of my hammer.
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), 7245, 0);         // Don't get too close, $N. I'm liable to fumble and bash your brains open with the face of my hammer.
         menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(434), 1);         // What phat lewts you have Grandmother!
         menu.Send(Plr);
     }
@@ -1294,7 +1294,7 @@ class ShadeofAranAI : public CreatureAIScript
         {
             if (*itr)
             {
-                FlameWreathTarget[i] = (*itr)->GetGUID();
+                FlameWreathTarget[i] = (*itr)->getGuid();
                 FWTargPosX[i] = (*itr)->GetPositionX();
                 FWTargPosY[i] = (*itr)->GetPositionY();
                 getCreature()->CastSpell((*itr), FLAME_WREATH, true);
@@ -2187,9 +2187,9 @@ class MalchezaarAI : public CreatureAIScript
 
         /*for (std::vector<Player*>::iterator E_Itr = Targets.begin(); E_Itr != Targets.end(); ++E_Itr)
         {
-            if ((*E_Itr)->GetGUID() != getCreature()->GetAIInterface()->GetMostHated()->GetGUID())
+            if ((*E_Itr)->getGuid() != getCreature()->GetAIInterface()->GetMostHated()->getGuid())
             {
-                Enfeeble_Targets[i] = (*E_Itr)->GetGUID();
+                Enfeeble_Targets[i] = (*E_Itr)->getGuid();
                 Enfeeble_Health[i] = (*E_Itr)->getUInt32Value(UNIT_FIELD_HEALTH);
 
                 getCreature()->CastSpell((*E_Itr), spells[1].info, spells[1].instant);

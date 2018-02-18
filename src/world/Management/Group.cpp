@@ -295,7 +295,7 @@ void Group::Update()
                             Player* plr = (*itr2)->m_loggedInPlayer;
                             data << (plr ? plr->GetName() : (*itr2)->name);
 							if(plr)
-								data << plr->GetGUID();
+								data << plr->getGuid();
 							else
                                 data << (*itr2)->guid << uint32(0);	// highguid
 
@@ -531,7 +531,7 @@ void Group::RemovePlayer(PlayerInfo* info)
             if (pPlayer->m_auras[i] && pPlayer->m_auras[i]->m_areaAura)
             {
                 Object* caster = pPlayer->m_auras[i]->GetCaster();
-                if ((caster != NULL) && (pPlayer->GetGUID() != caster->GetGUID()))
+                if ((caster != NULL) && (pPlayer->getGuid() != caster->getGuid()))
                     pPlayer->m_auras[i]->Remove();
             }
         }
@@ -1005,7 +1005,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     if (mask & GROUP_UPDATE_FLAG_PET_GUID)
     {
         if (pet)
-            *data << (uint64)pet->GetGUID();
+            *data << (uint64)pet->getGuid();
         else
             *data << (uint64)0;
     }
@@ -1154,7 +1154,7 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
             plr = (*itr)->m_loggedInPlayer;
             if (!plr || plr == pPlayer) continue;
 
-            if (!plr->IsVisible(pPlayer->GetGUID()))
+            if (!plr->IsVisible(pPlayer->getGuid()))
             {
                 UpdateOutOfRangePlayer(plr, false, &data);
                 pPlayer->GetSession()->SendPacket(&data);
@@ -1323,7 +1323,7 @@ void Group::SendLootUpdates(Object* o)
                 {
                     PlayerInfo* p = *itr2;
 
-                    if (p->m_loggedInPlayer != NULL && p->m_loggedInPlayer->IsVisible(o->GetGUID()))       // Save updates for non-existent creatures
+                    if (p->m_loggedInPlayer != NULL && p->m_loggedInPlayer->IsVisible(o->getGuid()))       // Save updates for non-existent creatures
                         p->m_loggedInPlayer->PushUpdateData(&buf, 1);
                 }
             }
@@ -1337,11 +1337,11 @@ void Group::SendLootUpdates(Object* o)
             if (pLooter == NULL)
                 pLooter = GetLeader()->m_loggedInPlayer;
 
-            if (pLooter->IsVisible(o->GetGUID()))
+            if (pLooter->IsVisible(o->getGuid()))
             {
                 Unit* victim = static_cast< Unit* >(o);
 
-                victim->Tag(pLooter->GetGUID());
+                victim->Tag(pLooter->getGuid());
                 pLooter->PushUpdateData(&buf, 1);
             }
 
@@ -1412,7 +1412,7 @@ void Group::UpdateAchievementCriteriaForInrange(Object* o, AchievementCriteriaTy
         {
             PlayerInfo* p = *itr2;
 
-            if (p->m_loggedInPlayer != NULL && p->m_loggedInPlayer->IsVisible(o->GetGUID()))
+            if (p->m_loggedInPlayer != NULL && p->m_loggedInPlayer->IsVisible(o->getGuid()))
                 p->m_loggedInPlayer->GetAchievementMgr().UpdateAchievementCriteria(type, miscvalue1, miscvalue2, time);
         }
     }
@@ -1463,7 +1463,7 @@ uint64 Group::GetLeaderGUID()
     if (m_Leader != nullptr)
     {
         if (m_Leader->m_loggedInPlayer)
-            return m_Leader->m_loggedInPlayer->GetGUID();
+            return m_Leader->m_loggedInPlayer->getGuid();
         return (uint64)m_Leader->guid;
     }
 }

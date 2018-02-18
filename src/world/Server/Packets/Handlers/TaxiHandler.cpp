@@ -80,7 +80,7 @@ void WorldSession::SendTaxiList(Creature* pCreature)
     uint8 field;
     uint32 TaxiMask[12];
     uint32 submask;
-    uint64 guid = pCreature->GetGUID();
+    uint64 guid = pCreature->getGuid();
 
     curloc = sTaxiMgr.GetNearestTaxiNode(_player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), _player->GetMapId());
     if (curloc == 0)

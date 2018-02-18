@@ -308,7 +308,7 @@ bool JudgementLightWisdomJustice(uint8_t /*effectIndex*/, Spell* pSpell)
 
     caster->CastSpell(target, id, true);
 
-    caster->setSingleTargetGuidForAura(pSpell->GetSpellInfo()->getId(), target->GetGUID());
+    caster->setSingleTargetGuidForAura(pSpell->GetSpellInfo()->getId(), target->getGuid());
 
     return true;
 }

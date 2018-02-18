@@ -59,7 +59,7 @@ bool ChatHandler::HandleGuildCreateCommand(const char* args, WorldSession* m_ses
         return true;
     }
 
-    Charter tempCharter(0, selected_player->GetLowGUID(), CHARTER_TYPE_GUILD);
+    Charter tempCharter(0, selected_player->getGuidLow(), CHARTER_TYPE_GUILD);
     tempCharter.SignatureCount = 0;
     tempCharter.GuildName = std::string(args);
 
@@ -100,7 +100,7 @@ bool ChatHandler::HandleGuildCreateCommand(const char* args, WorldSession* m_ses
         }
     }
 
-    Charter tempCharter(0, selected_player->GetLowGUID(), CHARTER_TYPE_GUILD);
+    Charter tempCharter(0, selected_player->getGuidLow(), CHARTER_TYPE_GUILD);
     tempCharter.SignatureCount = 0;
     tempCharter.GuildName = std::string(args);
 
@@ -170,7 +170,7 @@ bool ChatHandler::HandleGuildInfoCommand(const char* /*args*/, WorldSession* ses
     GreenSystemMessage(session, "Player Guild Information:");
     GreenSystemMessage(session, "  GuildName: %s", selected_player->GetGuild()->getName().c_str());
     GreenSystemMessage(session, "  GuildId: %u", selected_player->GetGuild()->getId());
-    GreenSystemMessage(session, "  Player rank: %u", selected_player->GetRankFromDB(selected_player->GetGUID()));
+    GreenSystemMessage(session, "  Player rank: %u", selected_player->GetRankFromDB(selected_player->getGuid()));
 
     return true;
 }
@@ -235,7 +235,7 @@ bool ChatHandler::HandleGuildJoinCommand(const char* args, WorldSession* m_sessi
             return true;
         }
 
-        guild->addMember(selected_player->GetGUID(), 4);
+        guild->addMember(selected_player->getGuid(), 4);
         GreenSystemMessage(m_session, "You have joined the guild '%s'", guild->getName().c_str());
         sGMLog.writefromsession(m_session, "Force joined guild '%s'", guild->getName().c_str());
         return true;
@@ -364,7 +364,7 @@ bool ChatHandler::HandleGuildRemovePlayerCommand(const char* /*args*/, WorldSess
 #endif
 
 #if VERSION_STRING != Cata
-    if (selected_player->GetGuild()->GetGuildLeader() != selected_player->GetLowGUID() || !m_session->GetPlayer()->isGMFlagSet())
+    if (selected_player->GetGuild()->GetGuildLeader() != selected_player->getGuidLow() || !m_session->GetPlayer()->isGMFlagSet())
     {
         RedSystemMessage(m_session, "Only guild leaders and gms can remove players from a guild!");
         return true;
@@ -377,7 +377,7 @@ bool ChatHandler::HandleGuildRemovePlayerCommand(const char* /*args*/, WorldSess
 
     selected_player->GetGuild()->RemoveGuildMember(selected_player->getPlayerInfo(), selected_player->GetSession());
 #else
-    if (selected_player->GetGuild()->getLeaderGUID() != selected_player->GetGUID() || !m_session->GetPlayer()->isGMFlagSet())
+    if (selected_player->GetGuild()->getLeaderGUID() != selected_player->getGuid() || !m_session->GetPlayer()->isGMFlagSet())
     {
         RedSystemMessage(m_session, "Only guild leaders and gms can remove players from a guild!");
         return true;
@@ -388,7 +388,7 @@ bool ChatHandler::HandleGuildRemovePlayerCommand(const char* /*args*/, WorldSess
     if (selected_player != m_session->GetPlayer())
         sGMLog.writefromsession(m_session, "Kicked %s from Guild %s", selected_player->GetName(), selected_player->GetGuild()->getName().c_str());
 
-    selected_player->GetGuild()->handleRemoveMember(selected_player->GetSession(), selected_player->GetGUID());
+    selected_player->GetGuild()->handleRemoveMember(selected_player->GetSession(), selected_player->getGuid());
 #endif
     return true;
 }

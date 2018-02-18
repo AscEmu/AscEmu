@@ -120,7 +120,7 @@ void WorldSession::HandleInviteToGuild(WorldPacket& recv_data)
     data << pGuild->getGuildName();
     plyr->GetSession()->SendPacket(&data);
 
-    plyr->SetGuildInvitersGuid(_player->GetLowGUID());
+    plyr->SetGuildInvitersGuid(_player->getGuidLow());
 }
 
 void WorldSession::HandleGuildAccept(WorldPacket& /*recv_data*/)
@@ -305,7 +305,7 @@ void WorldSession::HandleGuildDisband(WorldPacket& /*recv_data*/)
         return;
     }
 
-    if (_player->m_playerInfo->guild->GetGuildLeader() != _player->GetLowGUID())
+    if (_player->m_playerInfo->guild->GetGuildLeader() != _player->getGuidLow())
     {
         Guild::sendCommandResult(this, GC_TYPE_INVITE, GC_ERROR_PERMISSIONS);
         return;
@@ -368,7 +368,7 @@ void WorldSession::HandleGuildRank(WorldPacket& recv_data)
         return;
     }
 
-    if (GetPlayer()->GetLowGUID() != _player->m_playerInfo->guild->GetGuildLeader())
+    if (GetPlayer()->getGuidLow() != _player->m_playerInfo->guild->GetGuildLeader())
     {
         Guild::sendCommandResult(this, GC_TYPE_INVITE, GC_ERROR_PERMISSIONS);
         return;
@@ -443,7 +443,7 @@ void WorldSession::HandleGuildAddRank(WorldPacket& recv_data)
         return;
     }
 
-    if (pGuild->GetGuildLeader() != _player->GetLowGUID())
+    if (pGuild->GetGuildLeader() != _player->getGuidLow())
     {
         Guild::sendCommandResult(this, GC_TYPE_CREATE, GC_ERROR_PERMISSIONS);
         return;
@@ -471,7 +471,7 @@ void WorldSession::HandleGuildDelRank(WorldPacket& /*recv_data*/)
         return;
     }
 
-    if (pGuild->GetGuildLeader() != _player->GetLowGUID())
+    if (pGuild->GetGuildLeader() != _player->getGuidLow())
     {
         Guild::sendCommandResult(this, GC_TYPE_CREATE, GC_ERROR_PERMISSIONS);
         return;
@@ -556,7 +556,7 @@ void WorldSession::HandleSaveGuildEmblem(WorldPacket& recv_data)
         return;
     }
 
-    if (pGuild->GetGuildLeader() != _player->GetLowGUID())
+    if (pGuild->GetGuildLeader() != _player->getGuidLow())
     {
         data << uint32(GEM_ERROR_NOTGUILDMASTER);
         SendPacket(&data);
@@ -699,12 +699,12 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
         {
             // Create the item and charter
             Item* i = objmgr.CreateItem(item_ids[arena_type], _player);
-            Charter* c = objmgr.CreateCharter(_player->GetLowGUID(), (CharterTypes)arena_index);
+            Charter* c = objmgr.CreateCharter(_player->getGuidLow(), (CharterTypes)arena_index);
             if (i == NULL || c == NULL)
                 return;
 
             c->GuildName = name;
-            c->ItemGuid = i->GetGUID();
+            c->ItemGuid = i->getGuid();
 
             c->UnkString = UnkString;
             c->Unk1 = crap10;
@@ -777,12 +777,12 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
 
             // Create the item and charter
             Item* i = objmgr.CreateItem(ITEM_ENTRY_GUILD_CHARTER, _player);
-            c = objmgr.CreateCharter(_player->GetLowGUID(), CHARTER_TYPE_GUILD);
+            c = objmgr.CreateCharter(_player->getGuidLow(), CHARTER_TYPE_GUILD);
             if (i == NULL || c == NULL)
                 return;
 
             c->GuildName = name;
-            c->ItemGuid = i->GetGUID();
+            c->ItemGuid = i->getGuid();
 
             c->UnkString = UnkString;
             c->Unk1 = crap10;
@@ -949,7 +949,7 @@ void WorldSession::HandleCharterSign(WorldPacket& recv_data)
 
     for (uint32 i = 0; i < c->SignatureCount; ++i)
     {
-        if (c->Signatures[i] == _player->GetGUID())
+        if (c->Signatures[i] == _player->getGuid())
         {
             SendNotification(_player->GetSession()->LocalizedWorldSrv(79));
             return;
@@ -959,7 +959,7 @@ void WorldSession::HandleCharterSign(WorldPacket& recv_data)
     if (c->IsFull())
         return;
 
-    c->AddSignature(_player->GetLowGUID());
+    c->AddSignature(_player->getGuidLow());
     c->SaveToDB();
     _player->m_charters[c->CharterType] = c;
     _player->SaveToDB(false);
@@ -969,7 +969,7 @@ void WorldSession::HandleCharterSign(WorldPacket& recv_data)
         return;
 
     WorldPacket data(SMSG_PETITION_SIGN_RESULTS, 100);
-    data << item_guid << _player->GetGUID() << uint32(0);
+    data << item_guid << _player->getGuid() << uint32(0);
     l->GetSession()->SendPacket(&data);
     data.clear();
     data << item_guid << (uint64)c->GetLeader() << uint32(0);
@@ -991,7 +991,7 @@ void WorldSession::HandleCharterDecline(WorldPacket& recv_data)
     if (owner)
     {
         WorldPacket data(MSG_PETITION_DECLINE, 8);
-        data << _player->GetGUID();
+        data << _player->getGuid();
         owner->GetSession()->SendPacket(&data);
     }
 }
@@ -1087,7 +1087,7 @@ void WorldSession::HandleCharterTurnInCharter(WorldPacket& recv_data)
         team->m_borderColour = bordercolor;
         team->m_borderStyle = border;
         team->m_backgroundColour = background;
-        team->m_leader = _player->GetLowGUID();
+        team->m_leader = _player->getGuidLow();
         team->m_stat_rating = 1500;
 
         objmgr.AddArenaTeam(team);
@@ -1166,7 +1166,7 @@ void WorldSession::HandleGuildBankBuyTab(WorldPacket& recv_data)
     if (!_player->m_playerInfo->guild)
         return;
 
-    if (_player->m_playerInfo->guild->GetGuildLeader() != _player->GetLowGUID())
+    if (_player->m_playerInfo->guild->GetGuildLeader() != _player->getGuidLow())
     {
         Guild::sendCommandResult(this, GC_TYPE_GUILD_CHAT, GC_ERROR_PERMISSIONS);
         return;
@@ -1226,7 +1226,7 @@ void WorldSession::HandleGuildBankModifyTab(WorldPacket& recv_data)
     if (pTab == NULL)
         return;
 
-    if (_player->m_playerInfo->guild->GetGuildLeader() != _player->GetLowGUID())
+    if (_player->m_playerInfo->guild->GetGuildLeader() != _player->getGuidLow())
     {
         Guild::sendCommandResult(this, GC_TYPE_GUILD_CHAT, GC_ERROR_PERMISSIONS);
         return;
@@ -1410,7 +1410,7 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
             CharacterDatabase.Execute("DELETE FROM guild_bankitems WHERE guildId = %u AND tabId = %u AND slotId = %u",
                                       pGuild->getGuildId(), pSourceTab->iTabId, source_bankslot);
             CharacterDatabase.Execute("INSERT INTO guild_bankitems VALUES(%u, %u, %u, %u)",
-                                      pGuild->getGuildId(), (uint32)pSourceTab->iTabId, (uint32)source_bankslot, pDestItem->GetLowGUID());
+                                      pGuild->getGuildId(), (uint32)pSourceTab->iTabId, (uint32)source_bankslot, pDestItem->getGuidLow());
         }
 
         if (pSourceItem == NULL)
@@ -1425,7 +1425,7 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
             CharacterDatabase.Execute("DELETE FROM guild_bankitems WHERE guildId = %u AND tabId = %u AND slotId = %u",
                                       pGuild->getGuildId(), pDestTab->iTabId, dest_bankslot);
             CharacterDatabase.Execute("INSERT INTO guild_bankitems VALUES(%u, %u, %u, %u)",
-                                      pGuild->getGuildId(), (uint32)pDestTab->iTabId, (uint32)dest_bankslot, pSourceItem->GetLowGUID());
+                                      pGuild->getGuildId(), (uint32)pDestTab->iTabId, (uint32)dest_bankslot, pSourceItem->getGuidLow());
         }
     }
     else
@@ -1619,14 +1619,14 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
             pTab->pSlots[dest_bankslot] = pSourceItem;
 
             CharacterDatabase.Execute("DELETE FROM guild_bankitems WHERE guildId = %u AND tabId = %u AND slotId = %u", pGuild->getGuildId(), pTab->iTabId, dest_bankslot);
-            CharacterDatabase.Execute("INSERT INTO guild_bankitems VALUES(%u, %u, %u, %u)", pGuild->getGuildId(), (uint32)pTab->iTabId, (uint32)dest_bankslot, pSourceItem->GetLowGUID());
+            CharacterDatabase.Execute("INSERT INTO guild_bankitems VALUES(%u, %u, %u, %u)", pGuild->getGuildId(), (uint32)pTab->iTabId, (uint32)dest_bankslot, pSourceItem->getGuidLow());
 
             /// remove the item's association with the player
             pSourceItem->setOwner(nullptr);
             pSourceItem->SaveToDB(0, 0, true, NULL);
 
             /// log it
-            pGuild->LogGuildBankAction(GB_LOG_DEPOSIT_ITEM, _player->GetLowGUID(), pSourceItem->GetEntry(),
+            pGuild->LogGuildBankAction(GB_LOG_DEPOSIT_ITEM, _player->getGuidLow(), pSourceItem->GetEntry(),
                                        (uint8)pSourceItem->GetStackCount(), pTab);
         }
 
@@ -1654,7 +1654,7 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
             else
             {
                 /// log it
-                pGuild->LogGuildBankAction(GB_LOG_WITHDRAW_ITEM, _player->GetLowGUID(), pDestItem->GetEntry(),
+                pGuild->LogGuildBankAction(GB_LOG_WITHDRAW_ITEM, _player->getGuidLow(), pDestItem->GetEntry(),
                                            (uint8)pDestItem->GetStackCount(), pTab);
             }
         }

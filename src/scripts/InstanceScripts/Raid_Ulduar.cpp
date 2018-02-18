@@ -33,7 +33,7 @@ class UlduarTeleporterGossip : public Arcemu::Gossip::Script
         //    if (!pInstance)
         //        return;
 
-        //    Arcemu::Gossip::Menu menu(object->GetGUID(), 14424, player->GetSession()->language);
+        //    Arcemu::Gossip::Menu menu(object->getGuid(), 14424, player->GetSession()->language);
         //    menu.AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(521), 0);      // Expedition Base Camp.
 
         //    // Unlock after engaging Flame Leviathan

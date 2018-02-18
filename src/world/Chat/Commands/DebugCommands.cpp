@@ -382,7 +382,7 @@ bool ChatHandler::HandleDebugPVPCreditCommand(const char* args, WorldSession* m_
 
     WorldPacket data(SMSG_PVP_CREDIT, 12);
     data << points;
-    data << player_target->GetGUID();
+    data << player_target->getGuid();
     data << rank;
     m_session->SendPacket(&data);
 

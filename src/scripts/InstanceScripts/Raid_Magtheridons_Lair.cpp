@@ -164,7 +164,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                     Magtheridon = getNearestCreature(-22.657900f, 2.159050f, -0.345542f, 17257);
                     if (Magtheridon && Channeler->isAlive() && !Channeler->GetAIInterface()->getNextTarget())
                     {
-                        Channeler->SetChannelSpellTargetGUID(Magtheridon->GetGUID());
+                        Channeler->SetChannelSpellTargetGUID(Magtheridon->getGuid());
                         Channeler->SetChannelSpellId(SHADOW_GRASP);
                     }
                 }
@@ -464,14 +464,14 @@ class ManticronCubeGO : public GameObjectAIScript
                 return;
 
             // We check if Cube Trigger is not in use
-            if (CubeTrigger && CubeTrigger->GetChannelSpellId() == SHADOW_GRASP && CubeTrigger->getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT) == Magtheridon->GetGUID())
+            if (CubeTrigger && CubeTrigger->GetChannelSpellId() == SHADOW_GRASP && CubeTrigger->getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT) == Magtheridon->getGuid())
                 return;
 
             // We set player to channel spell "on Cube"
             pPlayer->CastSpell(pPlayer, sSpellCustomizations.GetSpellInfo(SHADOW_GRASP2), false);
 
             // We trigger channeling spell on Magtheridon for Cube Trigger
-            CubeTrigger->SetChannelSpellTargetGUID(Magtheridon->GetGUID());
+            CubeTrigger->SetChannelSpellTargetGUID(Magtheridon->getGuid());
             CubeTrigger->SetChannelSpellId(SHADOW_GRASP);
 
             // We save player data in pointer as well as his position for further use
@@ -525,7 +525,7 @@ class ManticronCubeGO : public GameObjectAIScript
                     Unit* GlobalCubeTrigger = NULL;
                     GlobalCubeTrigger = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(CubeTriggers[i].x, CubeTriggers[i].y, CubeTriggers[i].z, 17376);
                     if (Magtheridon != nullptr)
-                        if (GlobalCubeTrigger && GlobalCubeTrigger->GetChannelSpellId() == SHADOW_GRASP && CubeTrigger->getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT) == Magtheridon->GetGUID())
+                        if (GlobalCubeTrigger && GlobalCubeTrigger->GetChannelSpellId() == SHADOW_GRASP && CubeTrigger->getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT) == Magtheridon->getGuid())
                             Counter++;
                 }
 
@@ -554,7 +554,7 @@ class ManticronCubeGO : public GameObjectAIScript
                 Unit* GlobalCubeTrigger = NULL;
                 GlobalCubeTrigger = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(CubeTriggers[i].x, CubeTriggers[i].y, CubeTriggers[i].z, 17376);
                 if (Magtheridon != nullptr)
-                    if (GlobalCubeTrigger && GlobalCubeTrigger->GetChannelSpellId() == SHADOW_GRASP && CubeTrigger->getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT) == Magtheridon->GetGUID())
+                    if (GlobalCubeTrigger && GlobalCubeTrigger->GetChannelSpellId() == SHADOW_GRASP && CubeTrigger->getUInt64Value(UNIT_FIELD_CHANNEL_OBJECT) == Magtheridon->getGuid())
                         Counter++;
             }
 
@@ -714,7 +714,7 @@ class HellfireChannelerAI : public CreatureAIScript
                 Magtheridon = getNearestCreature(-22.657900f, 2.159050f, -0.345542f, 17257);
                 if (Magtheridon && Magtheridon->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT))
                 {
-                    getCreature()->SetChannelSpellTargetGUID(Magtheridon->GetGUID());
+                    getCreature()->SetChannelSpellTargetGUID(Magtheridon->getGuid());
                     getCreature()->SetChannelSpellId(SHADOW_GRASP);
 
                     Magtheridon->CastSpell(Magtheridon, sSpellCustomizations.GetSpellInfo(BANISH), true);

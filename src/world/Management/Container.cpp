@@ -36,9 +36,9 @@ Container::Container(uint32 high, uint32 low) : Item()
 
     setUInt32Value(OBJECT_FIELD_TYPE, TYPE_CONTAINER | TYPE_ITEM | TYPE_OBJECT);
 
-    SetLowGUID(low);
-    SetHighGUID(high);
-    m_wowGuid.Init(GetGUID());
+    setGuidLow(low);
+    setGuidHigh(high);
+    m_wowGuid.Init(getGuid());
 
     SetScale(1);   //always 1
 
@@ -142,7 +142,7 @@ bool Container::AddItem(int16 slot, Item* item)
     //ARCEMU_ASSERT(  m_Slot[slot] == NULL);
     if (m_Slot[slot] != NULL)
     {
-        LogError("Bad container item %u slot %d", item->GetGUID(), slot);
+        LogError("Bad container item %u slot %d", item->getGuid(), slot);
         return false;
     }
 
@@ -163,7 +163,7 @@ bool Container::AddItem(int16 slot, Item* item)
             item->SoulBind();
     }
 
-    SetSlot(slot, item->GetGUID());
+    SetSlot(slot, item->getGuid());
 
     //new version to fix bag issues
     if (m_owner->IsInWorld() && !item->IsInWorld())
@@ -223,7 +223,7 @@ void Container::SwapItems(int8 SrcSlot, int8 DstSlot)
 
     if (m_Slot[DstSlot])
     {
-        SetSlot(DstSlot, m_Slot[DstSlot]->GetGUID());
+        SetSlot(DstSlot, m_Slot[DstSlot]->getGuid());
         m_Slot[DstSlot]->m_isDirty = true;
     }
     else
@@ -233,7 +233,7 @@ void Container::SwapItems(int8 SrcSlot, int8 DstSlot)
 
     if (m_Slot[SrcSlot])
     {
-        SetSlot(SrcSlot, m_Slot[SrcSlot]->GetGUID());
+        SetSlot(SrcSlot, m_Slot[SrcSlot]->getGuid());
         m_Slot[SrcSlot]->m_isDirty = true;
     }
     else
@@ -312,7 +312,7 @@ bool Container::AddItemToFreeSlot(Item* pItem, uint32* r_slot)
             pItem->setContainer(this);
             pItem->setOwner(m_owner);
 
-            SetSlot(uint16(slot), pItem->GetGUID());
+            SetSlot(uint16(slot), pItem->getGuid());
 
             if (m_owner->IsInWorld() && !pItem->IsInWorld())
             {

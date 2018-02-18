@@ -286,7 +286,7 @@ void WorldSession::HandleInitiateTradeOpcode(WorldPacket& recvData)
     data.writeBit(false);
     data.writeBits(TRADE_STATUS_BEGIN_TRADE, 5);
 
-    ObjectGuid source_guid = _player->GetGUID();
+    ObjectGuid source_guid = _player->getGuid();
     data.WriteByteMask(source_guid[2]);
     data.WriteByteMask(source_guid[4]);
     data.WriteByteMask(source_guid[6]);
@@ -489,13 +489,13 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recvData)
         {
             if (trade_items[i])
             {
-                trade_items[i]->setUInt64Value(ITEM_FIELD_GIFTCREATOR, _player->GetGUID());
-                _player->m_ItemInterface->SafeRemoveAndRetreiveItemByGuid(trade_items[i]->GetGUID(), true);
+                trade_items[i]->setUInt64Value(ITEM_FIELD_GIFTCREATOR, _player->getGuid());
+                _player->m_ItemInterface->SafeRemoveAndRetreiveItemByGuid(trade_items[i]->getGuid(), true);
             }
             if (target_trade_items[i])
             {
-                target_trade_items[i]->setUInt64Value(ITEM_FIELD_GIFTCREATOR, trade_target->GetGUID());
-                trade_target->m_ItemInterface->SafeRemoveAndRetreiveItemByGuid(target_trade_items[i]->GetGUID(), true);
+                target_trade_items[i]->setUInt64Value(ITEM_FIELD_GIFTCREATOR, trade_target->getGuid());
+                trade_target->m_ItemInterface->SafeRemoveAndRetreiveItemByGuid(target_trade_items[i]->getGuid(), true);
             }
         }
 
@@ -597,7 +597,7 @@ void WorldSession::HandleSetTradeItem(WorldPacket& recvData)
         return;
     }
 
-    if (tradeData->hasTradeItem(item->GetGUID()))
+    if (tradeData->hasTradeItem(item->getGuid()))
     {
         sendTradeResult(TRADE_STATUS_TRADE_CANCELED);
         return;

@@ -75,13 +75,13 @@ void WorldSession::HandleInitiateTradeOpcode(WorldPacket& recv_data)
         _player->ResetTradeVariables();
         pTarget->ResetTradeVariables();
 
-        pTarget->mTradeTarget = _player->GetLowGUID();
-        _player->mTradeTarget = pTarget->GetLowGUID();
+        pTarget->mTradeTarget = _player->getGuidLow();
+        _player->mTradeTarget = pTarget->getGuidLow();
 
         pTarget->mTradeStatus = TradeStatus;
         _player->mTradeStatus = TradeStatus;
 
-        data << _player->GetGUID();
+        data << _player->getGuid();
     }
 
     pTarget->m_session->SendPacket(&data);
@@ -436,7 +436,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& /*recv_data*/)
             // Remove all items from the players inventory
             for (uint32 Index = 0; Index < 6; ++Index)
             {
-                Guid = _player->mTradeItems[Index] ? _player->mTradeItems[Index]->GetGUID() : 0;
+                Guid = _player->mTradeItems[Index] ? _player->mTradeItems[Index]->getGuid() : 0;
                 if (Guid != 0)
                 {
                     if (_player->mTradeItems[Index]->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP ||
@@ -455,7 +455,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& /*recv_data*/)
                     }
                 }
 
-                Guid = pTarget->mTradeItems[Index] ? pTarget->mTradeItems[Index]->GetGUID() : 0;
+                Guid = pTarget->mTradeItems[Index] ? pTarget->mTradeItems[Index]->getGuid() : 0;
                 if (Guid != 0)
                 {
                     if (pTarget->mTradeItems[Index]->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP ||

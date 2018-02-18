@@ -2860,13 +2860,13 @@ class SCRIPT_DECL AkamaGossip : public Arcemu::Gossip::Script
 
             if (pAI->GetCurrentWaypoint() >= 10)
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 229902);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 229902);
                 menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(444), 2);     // We're ready to face Illidan.
                 menu.Send(pPlayer);
             }
             else
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 229901);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 229901);
                 menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(445), 1);     // I'm ready, Akama.
                 menu.Send(pPlayer);
             }
@@ -4254,7 +4254,7 @@ class IllidanStormrageAI : public CreatureAIScript
                             Unit* pBlade = getNearestCreature(UnitPos[0].x, UnitPos[0].y, UnitPos[0].z, CN_BLADE_OF_AZZINOTH);
                             if (pBlade != nullptr)
                             {
-                                pBlade->SetChannelSpellTargetGUID(mFoA1->getCreature()->GetGUID());
+                                pBlade->SetChannelSpellTargetGUID(mFoA1->getCreature()->getGuid());
                                 pBlade->SetChannelSpellId(TEAR_OF_AZZINOTH_CHANNEL);
                             }
                         }
@@ -4263,7 +4263,7 @@ class IllidanStormrageAI : public CreatureAIScript
                             Unit* pBlade = getNearestCreature(UnitPos[1].x, UnitPos[1].y, UnitPos[1].z, CN_BLADE_OF_AZZINOTH);
                             if (pBlade != nullptr)
                             {
-                                pBlade->SetChannelSpellTargetGUID(mFoA2->getCreature()->GetGUID());
+                                pBlade->SetChannelSpellTargetGUID(mFoA2->getCreature()->getGuid());
                                 pBlade->SetChannelSpellId(TEAR_OF_AZZINOTH_CHANNEL);
                             }
                         }

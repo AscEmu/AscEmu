@@ -210,7 +210,7 @@ void WorldSession::HandleCorpseQueryOpcode(WorldPacket& /*recv_data*/)
     WorldPacket data(MSG_CORPSE_QUERY, 25);
     MySQLStructure::MapInfo const* pMapinfo;
 
-    pCorpse = objmgr.GetCorpseByOwner(GetPlayer()->GetLowGUID());
+    pCorpse = objmgr.GetCorpseByOwner(GetPlayer()->getGuidLow());
     if (pCorpse)
     {
         pMapinfo = sMySQLStore.getWorldMapInfo(pCorpse->GetMapId());
@@ -355,7 +355,7 @@ void WorldSession::HandleInrangeQuestgiverQuery(WorldPacket& /*recv_data*/)
         Creature* pCreature = static_cast<Creature*>(itr);
         if (pCreature->isQuestGiver())
         {
-            data << pCreature->GetGUID();
+            data << pCreature->getGuid();
             data << uint8(sQuestMgr.CalcStatus(pCreature, _player));
             ++count;
         }
