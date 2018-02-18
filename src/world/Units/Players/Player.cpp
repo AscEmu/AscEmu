@@ -326,6 +326,8 @@ uint32 Player::getXp() const { return playerData()->xp; }
 
 void Player::setNextLevelXp(uint32_t xp) { write(playerData()->next_level_xp, xp); }
 
+uint32_t Player::getNextLevelXp() { return playerData()->next_level_xp; }
+
 PlayerSpec& Player::getActiveSpec()
 {
 #ifdef FT_DUAL_SPEC

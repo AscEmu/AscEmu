@@ -122,14 +122,24 @@ uint32_t Object::getGuidHigh() const
     return objectData()->guid_parts.high;
 }
 
-uint32_t Object::getEntry() const
+void Object::setType(uint32_t type)
 {
-    return objectData()->entry;
+    write(objectData()->type, type);
+}
+
+uint32_t Object::getType() const
+{
+    return objectData()->type;
 }
 
 void Object::setEntry(uint32_t entry)
 {
     write(objectData()->entry, entry);
+}
+
+uint32_t Object::getEntry() const
+{
+    return objectData()->entry;
 }
 
 bool Object::write(const uint8_t& member, uint8_t val)

@@ -1698,7 +1698,7 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
     SendLogXPGain(guid, xp, restxp, guid == 0 ? true : false);
 
     int32 newxp = getXp() + xp;
-    int32 nextlevelxp = GetXpToLevel();
+    int32 nextlevelxp = getNextLevelXp();
     uint32 level = getLevel();
     LevelInfo* li;
     bool levelup = false;
@@ -6806,7 +6806,7 @@ void Player::AddCalculatedRestXP(uint32 seconds)
 
 
     // Define xp for a full bar (= 20 bubbles)
-    uint32 xp_to_lvl = GetXpToLevel();
+    uint32 xp_to_lvl = getNextLevelXp();
 
     // get RestXP multiplier from config.
     float bubblerate = worldConfig.getFloatRate(RATE_RESTXP);

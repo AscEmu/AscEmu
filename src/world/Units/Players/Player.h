@@ -1681,7 +1681,7 @@ public:
 
     void setXp(uint32 xp);
     uint32 getXp() const;
-        uint32 GetXpToLevel() { return getUInt32Value(PLAYER_NEXT_LEVEL_XP); }
+    uint32_t getNextLevelXp();
     void setNextLevelXp(uint32_t xp);
 
         //\todo fix this

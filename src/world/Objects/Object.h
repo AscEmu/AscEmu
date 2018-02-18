@@ -309,9 +309,12 @@ public:
     uint64_t getGuid() const;
     uint32_t getGuidLow() const;
     uint32_t getGuidHigh() const;
-    uint32_t getEntry() const;
+
+    void setType(uint32_t type);
+    uint32_t getType() const;
 
     void setEntry(uint32_t entry);
+    uint32_t getEntry() const;
 
     bool write(const uint8_t& member, uint8_t val);
     bool write(const float_t& member, float_t val);
