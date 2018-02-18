@@ -342,6 +342,11 @@ struct WoWPlayer : WoWUnit
 };
 #elif VERSION_STRING == Cata
 #define WOWPLAYER_EXPLORED_ZONES_COUNT 156
+#define WOWPLAYER_SPELL_CRIT_PCT_COUNT 7
+#define WOWPLAYER_MOD_DAMAGE_DONE_COUNT 7
+#define WOWPLAYER_BUY_BACK_COUNT 12
+#define WOWPLAYER_DAILY_QUESTS_COUNT 25
+
 struct WoWPlayer : WoWUnit
 {
     uint64_t duel_arbiter;
