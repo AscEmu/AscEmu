@@ -15,53 +15,52 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WoWItem.h"
 #pragma pack(push, 1)
 
-
 #if VERSION_STRING == Classic
 
-//todo verifiy - descriptor is 72, enum 58.
-#define WOWCONTAINER_ITEM_SLOT_COUNT 58
+//todo verify - descriptor is 72, enum 58.
+#define WOWCONTAINER_ITEM_SLOT_COUNT 29
 
 struct WoWContainer : WoWItem
 {
     uint32_t slot_count;
     uint32_t padding_container;
-    uint64_t item_slot[WOWCONTAINER_ITEM_SLOT_COUNT];
+    guid_union item_slot[WOWCONTAINER_ITEM_SLOT_COUNT];
 };
 #endif
 
 #if VERSION_STRING == TBC
 
-#define WOWCONTAINER_ITEM_SLOT_COUNT 72
+#define WOWCONTAINER_ITEM_SLOT_COUNT 36
 
 struct WoWContainer : WoWItem
 {
     uint32_t slot_count;
     uint32_t padding_container;
-    uint64_t item_slot[WOWCONTAINER_ITEM_SLOT_COUNT];
+    guid_union item_slot[WOWCONTAINER_ITEM_SLOT_COUNT];
 };
 #endif
 
 #if VERSION_STRING == WotLK
 
-#define WOWCONTAINER_ITEM_SLOT_COUNT 72
+#define WOWCONTAINER_ITEM_SLOT_COUNT 36
 
 struct WoWContainer : WoWItem
 {
     uint32_t slot_count;
     uint32_t padding_container;
-    uint64_t item_slot[WOWCONTAINER_ITEM_SLOT_COUNT];
+    guid_union item_slot[WOWCONTAINER_ITEM_SLOT_COUNT];
 };
 #endif
 
 #if VERSION_STRING == Cata
 
-#define WOWCONTAINER_ITEM_SLOT_COUNT 72
+#define WOWCONTAINER_ITEM_SLOT_COUNT 36
 
 struct WoWContainer : WoWItem
 {
     uint32_t slot_count;
     uint32_t container_padding_0;
-    uint64_t item_slot[WOWCONTAINER_ITEM_SLOT_COUNT];
+    guid_union item_slot[WOWCONTAINER_ITEM_SLOT_COUNT];
 };
 #endif
 
