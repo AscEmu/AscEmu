@@ -12085,7 +12085,9 @@ void Unit::SendAuraUpdate(uint32 AuraSlot, bool remove)
 
 void Unit::ModVisualAuraStackCount(Aura* aur, int32 count)
 {
+#if VERSION_STRING == TBC
     return;
+#endif
     if (!aur)
         return;
 
