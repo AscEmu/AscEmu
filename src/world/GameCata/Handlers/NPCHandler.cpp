@@ -15,6 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellAuras.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Data/Flags.h"
+#include "Units/Creatures/Pet.h"
 
 void WorldSession::SendTrainerList(Creature* pCreature)
 {

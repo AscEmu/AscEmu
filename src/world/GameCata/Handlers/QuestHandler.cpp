@@ -7,6 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Map/WorldCreatorDefines.hpp"
+#include "Map/MapMgr.h"
+#include "Management/ItemInterface.h"
 
 void WorldSession::HandleQuestPOIQueryOpcode(WorldPacket& recvData)
 {

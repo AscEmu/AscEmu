@@ -23,19 +23,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 struct WoWItem : WoWObject
 {
-    union
-    {
-        struct
-        {
-            uint32_t low;
-            uint32_t high;
-        } owner_guid_parts;
-
-        uint64_t owner_guid;
-    };
-    uint64_t container_guid;
-    uint64_t creator_guid;
-    uint64_t gift_creator_guid;
+    guid_union owner_guid;
+    guid_union container_guid;
+    guid_union creator_guid;
+    guid_union gift_creator_guid;
     uint32_t stack_count;
     uint32_t duration;
     int32_t spell_charges[WOWITEM_SPELL_CHARGES_COUNT];
@@ -56,19 +47,10 @@ struct WoWItem : WoWObject
 
 struct WoWItem : WoWObject
 {
-    union
-    {
-        struct
-        {
-            uint32_t low;
-            uint32_t high;
-        } owner_guid_parts;
-
-        uint64_t owner_guid;
-    };
-    uint64_t container_guid;
-    uint64_t creator_guid;
-    uint64_t gift_creator_guid;
+    guid_union owner_guid;
+    guid_union container_guid;
+    guid_union creator_guid;
+    guid_union gift_creator_guid;
     uint32_t stack_count;
     uint32_t duration;
     int32_t spell_charges[WOWITEM_SPELL_CHARGES_COUNT];
@@ -120,19 +102,10 @@ struct WoWItem : WoWObject
 
 struct WoWItem : WoWObject
 {
-    union
-    {
-        struct
-        {
-            uint32_t low;
-            uint32_t high;
-        } owner_guid_parts;
-
-        uint64_t owner_guid;
-    };
-    uint64_t container_guid;
-    uint64_t creator_guid;
-    uint64_t gift_creator_guid;
+    guid_union owner_guid;
+    guid_union container_guid;
+    guid_union creator_guid;
+    guid_union gift_creator_guid;
     uint32_t stack_count;
     uint32_t duration;
     int32_t spell_charges[WOWITEM_SPELL_CHARGES_COUNT];

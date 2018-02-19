@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 #include "Server/WorldSession.h"
+#include "Storage/MySQLDataStore.hpp"
+#include "Map/MapMgr.h"
 
 void WorldSession::HandleRequestRatedBgInfoOpcode(WorldPacket & recv_data)
 {
