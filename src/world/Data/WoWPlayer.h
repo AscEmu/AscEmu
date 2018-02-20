@@ -31,8 +31,7 @@ This file is released under the MIT license. See README-MIT for more information
 #define WOWPLAYER_SKILL_INFO_COUNT 384
 #define WOWPLAYER_EXPLORED_ZONES_COUNT 64
 #define WOWPLAYER_STAT_COUNT 5
-#define WOWPLAYER_RESISTANCE_COUNT 7
-#define WOWPLAYER_DAMAGE_MOD_COUNT 7
+#define WOWPLAYER_SPELL_SCHOOL_COUNT 7
 #define WOWPLAYER_COMBAT_RATING_COUNT 20
 
 struct WoWPlayer_Quest
@@ -88,11 +87,11 @@ struct WoWPlayer : WoWUnit
     uint32_t field_coinage;
     uint32_t pos_stat[WOWPLAYER_STAT_COUNT];
     uint32_t neg_stat[WOWPLAYER_STAT_COUNT];
-    uint32_t resistance_buff_mod_pos[WOWPLAYER_RESISTANCE_COUNT];
-    uint32_t resistance_buff_mod_neg[WOWPLAYER_RESISTANCE_COUNT];
-    uint32_t field_mod_damage_done_positive[WOWPLAYER_DAMAGE_MOD_COUNT];
-    uint32_t field_mod_damage_done_negative[WOWPLAYER_DAMAGE_MOD_COUNT];
-    float_t field_mod_damage_done_pct[WOWPLAYER_DAMAGE_MOD_COUNT];
+    uint32_t resistance_buff_mod_pos[WOWPLAYER_SPELL_SCHOOL_COUNT];
+    uint32_t resistance_buff_mod_neg[WOWPLAYER_SPELL_SCHOOL_COUNT];
+    uint32_t field_mod_damage_done_positive[WOWPLAYER_SPELL_SCHOOL_COUNT];
+    uint32_t field_mod_damage_done_negative[WOWPLAYER_SPELL_SCHOOL_COUNT];
+    float_t field_mod_damage_done_pct[WOWPLAYER_SPELL_SCHOOL_COUNT];
     uint32_t field_bytes;
     uint32_t ammo_id;
     uint32_t self_resurrection_spell;
@@ -125,9 +124,8 @@ struct WoWPlayer : WoWUnit
 #define WOWPLAYER_KEYRING_SLOT_COUNT 32
 #define WOWPLAYER_VANITY_PET_SLOT_COUNT 18
 #define WOWPLAYER_SKILL_INFO_COUNT 384
-#define WOWPLAYER_SPELL_CRIT_PCT_COUNT 7
+#define WOWPLAYER_SPELL_SCHOOL_COUNT 7
 #define WOWPLAYER_EXPLORED_ZONES_COUNT 128
-#define WOWPLAYER_MOD_DAMAGE_DONE_COUNT 7
 #define WOWPLAYER_BUY_BACK_COUNT 12
 #define WOWPLAYER_COMBAT_RATING_COUNT 24
 #define WOWPLAYER_ARENA_TEAM_INFO_COUNT 18
@@ -189,15 +187,15 @@ struct WoWPlayer : WoWUnit
     float_t crit_pct;
     float_t ranged_crit_pct;
     float_t offhand_crit_pct;
-    float_t spell_crit_pct[WOWPLAYER_SPELL_CRIT_PCT_COUNT];
+    float_t spell_crit_pct[WOWPLAYER_SPELL_SCHOOL_COUNT];
     uint32_t shield_block;
     uint32_t explored_zones[WOWPLAYER_EXPLORED_ZONES_COUNT];
     uint32_t rest_state_xp;
     uint32_t field_coinage;
-    uint32_t field_mod_damage_done_positive[WOWPLAYER_MOD_DAMAGE_DONE_COUNT];
-    uint32_t field_mod_damage_done_negative[WOWPLAYER_MOD_DAMAGE_DONE_COUNT];
+    uint32_t field_mod_damage_done_positive[WOWPLAYER_SPELL_SCHOOL_COUNT];
+    uint32_t field_mod_damage_done_negative[WOWPLAYER_SPELL_SCHOOL_COUNT];
     // Listed as an int... but this seems like it would be a float? TODO: Verify
-    uint32_t field_mod_damage_done_pct[WOWPLAYER_MOD_DAMAGE_DONE_COUNT];
+    uint32_t field_mod_damage_done_pct[WOWPLAYER_SPELL_SCHOOL_COUNT];
     uint32_t field_mod_healing_done;
     uint32_t field_mod_target_resistance;
     uint32_t field_mod_target_physical_resistance;
@@ -233,8 +231,7 @@ struct WoWPlayer : WoWUnit
 #define WOWPLAYER_KEYRING_SLOT_COUNT 32
 #define WOWPLAYER_CURRENCY_TOKEN_SLOT_COUNT 32
 #define WOWPLAYER_SKILL_INFO_COUNT 384
-#define WOWPLAYER_SPELL_CRIT_PCT_COUNT 7
-#define WOWPLAYER_MOD_DAMAGE_DONE_COUNT 7
+#define WOWPLAYER_SPELL_SCHOOL_COUNT 7
 #define WOWPLAYER_BUY_BACK_COUNT 12
 #define WOWPLAYER_COMBAT_RATING_COUNT 25
 #define WOWPLAYER_ARENA_TEAM_INFO_COUNT 21
@@ -301,15 +298,15 @@ struct WoWPlayer : WoWUnit
     float_t crit_pct;
     float_t ranged_crit_pct;
     float_t offhand_crit_pct;
-    float_t spell_crit_pct[WOWPLAYER_SPELL_CRIT_PCT_COUNT];
+    float_t spell_crit_pct[WOWPLAYER_SPELL_SCHOOL_COUNT];
     uint32_t shield_block;
     uint32_t shield_block_crit_pct;
     uint32_t explored_zones[WOWPLAYER_EXPLORED_ZONES_COUNT];
     uint32_t rest_state_xp;
     uint32_t field_coinage;
-    uint32_t field_mod_damage_done_positive[WOWPLAYER_MOD_DAMAGE_DONE_COUNT];
-    uint32_t field_mod_damage_done_negative[WOWPLAYER_MOD_DAMAGE_DONE_COUNT];
-    float_t field_mod_damage_done_pct[WOWPLAYER_MOD_DAMAGE_DONE_COUNT];
+    uint32_t field_mod_damage_done_positive[WOWPLAYER_SPELL_SCHOOL_COUNT];
+    uint32_t field_mod_damage_done_negative[WOWPLAYER_SPELL_SCHOOL_COUNT];
+    float_t field_mod_damage_done_pct[WOWPLAYER_SPELL_SCHOOL_COUNT];
     uint32_t field_mod_healing_done;
     uint32_t field_mod_healing_pct;
     uint32_t field_mod_healing_done_pct;
@@ -342,8 +339,7 @@ struct WoWPlayer : WoWUnit
 };
 #elif VERSION_STRING == Cata
 #define WOWPLAYER_EXPLORED_ZONES_COUNT 156
-#define WOWPLAYER_SPELL_CRIT_PCT_COUNT 7
-#define WOWPLAYER_MOD_DAMAGE_DONE_COUNT 7
+#define WOWPLAYER_SPELL_SCHOOL_COUNT 7
 #define WOWPLAYER_BUY_BACK_COUNT 12
 #define WOWPLAYER_DAILY_QUESTS_COUNT 25
 
@@ -679,17 +675,17 @@ struct WoWPlayer : WoWUnit
     float_t crit_pct;
     float_t ranged_crit_pct;
     float_t offhand_crit_pct;
-    float_t spell_crit_pct[WOWPLAYER_SPELL_CRIT_PCT_COUNT];
+    float_t spell_crit_pct[WOWPLAYER_SPELL_SCHOOL_COUNT];
     uint32_t shield_block;
     uint32_t shield_block_crit_pct;
     uint32_t mastery;
     uint32_t explored_zones[WOWPLAYER_EXPLORED_ZONES_COUNT];
     uint32_t rest_state_xp;
     uint32_t field_coinage;
-    uint32_t field_mod_damage_done_positive[WOWPLAYER_MOD_DAMAGE_DONE_COUNT];
-    uint32_t field_mod_damage_done_negative[WOWPLAYER_MOD_DAMAGE_DONE_COUNT];
+    uint32_t field_mod_damage_done_positive[WOWPLAYER_SPELL_SCHOOL_COUNT];
+    uint32_t field_mod_damage_done_negative[WOWPLAYER_SPELL_SCHOOL_COUNT];
     // Listed as an int... but this seems like it would be a float? TODO: Verify
-    uint32_t field_mod_damage_done_pct[WOWPLAYER_MOD_DAMAGE_DONE_COUNT];
+    uint32_t field_mod_damage_done_pct[WOWPLAYER_SPELL_SCHOOL_COUNT];
     uint32_t field_mod_healing_done;
     uint32_t field_mod_healing_pct;
     uint32_t field_mod_healing_done_pct;

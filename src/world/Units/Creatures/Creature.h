@@ -263,9 +263,9 @@ class SERVER_DECL Creature : public Unit
 
         Group* GetGroup();
 
-        int32 GetDamageDoneMod(uint32 school);
+        int32 GetDamageDoneMod(uint16_t school);
 
-        float GetDamageDonePctMod(uint32 school);
+        float GetDamageDonePctMod(uint16_t school);
 
         bool IsPickPocketed();
 

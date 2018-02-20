@@ -626,8 +626,8 @@ public:
     uint32 SchoolCastPrevent[SCHOOL_COUNT];
     int32 MechanicDurationPctMod[28];
 
-    virtual int32 GetDamageDoneMod(uint32 /*school*/) { return 0; }
-    virtual float GetDamageDonePctMod(uint32 /*school*/) { return 0; }
+    virtual int32 GetDamageDoneMod(uint16_t /*school*/) { return 0; }
+    virtual float GetDamageDonePctMod(uint16_t /*school*/) { return 0; }
 
     int32 DamageTakenMod[SCHOOL_COUNT];
     float DamageTakenPctMod[SCHOOL_COUNT];

@@ -2008,7 +2008,7 @@ Group* Creature::GetGroup()
     return NULL;
 }
 
-int32 Creature::GetDamageDoneMod(uint32 school)
+int32 Creature::GetDamageDoneMod(uint16_t school)
 {
     if (school >= SCHOOL_COUNT)
         return 0;
@@ -2016,7 +2016,7 @@ int32 Creature::GetDamageDoneMod(uint32 school)
     return ModDamageDone[ school ];
 }
 
-float Creature::GetDamageDonePctMod(uint32 school)
+float Creature::GetDamageDonePctMod(uint16_t school)
 {
     if (school >= SCHOOL_COUNT)
         return 0;
