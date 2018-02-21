@@ -28,6 +28,30 @@ union
     uint32_t raw;
 } typedef field_bytes_0_union;
 
+union
+{
+    struct
+    {
+        uint8_t stand_state;
+        uint8_t remaining_pet_talents;
+        uint8_t stand_state_flags;
+        uint8_t unk;
+    } s;
+    uint32_t raw;
+} typedef field_bytes_1_union;
+
+union
+{
+    struct
+    {
+        uint8_t sheath_type;
+        uint8_t flag;
+        uint8_t rename_flag;
+        uint8_t shape_shift_form;
+    } s;
+    uint32_t raw;
+} typedef field_bytes_2_union;
+
 #if VERSION_STRING == Classic
 #define WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT 3
 #define WOWUNIT_VIRTUAL_ITEM_INFO_COUNT 6
@@ -87,7 +111,7 @@ struct WoWUnit : WoWObject
     float_t maximum_damage;
     float_t minimum_offhand_damage;
     float_t maximum_offhand_damage;
-    uint32_t unit_bytes_1;
+    field_bytes_1_union field_bytes_1;
     uint32_t pet_number;
     uint32_t pet_name_timestamp;
     uint32_t pet_experience;
@@ -107,7 +131,7 @@ struct WoWUnit : WoWObject
     uint32_t resistance[WOWUNIT_RESISTANCE_COUNT];
     uint32_t base_mana;
     uint32_t base_health;
-    uint32_t unit_bytes_2;
+    field_bytes_2_union field_bytes_2;
     uint32_t attack_power;
     uint32_t attack_power_mods;
     float_t attack_power_multiplier;
@@ -181,7 +205,7 @@ struct WoWUnit : WoWObject
     float_t maximum_damage;
     float_t minimum_offhand_damage;
     float_t maximum_offhand_damage;
-    uint32_t unit_bytes_1;
+    field_bytes_1_union field_bytes_1;
     uint32_t pet_number;
     uint32_t pet_name_timestamp;
     uint32_t pet_experience;
@@ -213,7 +237,7 @@ struct WoWUnit : WoWObject
     uint32_t resistance_buff_mod_negative[WOWUNIT_RESISTANCE_BUFF_MOD_NEGATIVE_COUNT];
     uint32_t base_mana;
     uint32_t base_health;
-    uint32_t unit_bytes_2;
+    field_bytes_2_union field_bytes_2;
     uint32_t attack_power;
     uint32_t attack_power_mods;
     float_t attack_power_multiplier;
@@ -282,7 +306,7 @@ struct WoWUnit : WoWObject
     float_t maximum_damage;
     float_t minimum_offhand_damage;
     float_t maximum_offhand_damage;
-    uint32_t unit_bytes_1;
+    field_bytes_1_union field_bytes_1;
     uint32_t pet_number;
     uint32_t pet_name_timestamp;
     uint32_t pet_experience;
@@ -312,7 +336,7 @@ struct WoWUnit : WoWObject
     uint32_t resistance_buff_mod_negative[WOWUNIT_RESISTANCE_COUNT];
     uint32_t base_mana;
     uint32_t base_health;
-    uint32_t unit_bytes_2;
+    field_bytes_2_union field_bytes_2;
     uint32_t attack_power;
     uint32_t attack_power_mods;
     float_t attack_power_multiplier;
@@ -379,7 +403,7 @@ struct WoWUnit : WoWObject
     float_t maximum_damage;
     float_t minimum_offhand_damage;
     float_t maximum_offhand_damage;
-    uint32_t unit_bytes_1;
+    field_bytes_1_union field_bytes_1;
     uint32_t pet_number;
     uint32_t pet_name_timestamp;
     uint32_t pet_experience;
@@ -410,7 +434,7 @@ struct WoWUnit : WoWObject
     uint32_t resistance_buff_mod_negative[WOWUNIT_RESISTANCE_BUFF_MOD_NEGATIVE_COUNT];
     uint32_t base_mana;
     uint32_t base_health;
-    uint32_t unit_bytes_2;
+    field_bytes_2_union field_bytes_2;
     uint32_t attack_power;
     uint32_t attack_power_mod_pos;
     uint32_t attack_power_mod_neg;

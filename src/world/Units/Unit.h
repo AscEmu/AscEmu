@@ -244,7 +244,7 @@ public:
     void setPowerType(uint8_t powerType);
 
     void setHealth(uint32_t health);
-    void setMaxHealth(uint32_t health);
+    void setMaxHealth(uint32_t maxHealth);
 
     void setBaseHealth(uint32_t baseHealth);
 
