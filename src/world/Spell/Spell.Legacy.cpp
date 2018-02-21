@@ -1636,6 +1636,8 @@ void Spell::castMe(bool check)
                     HandleModeratedTarget(target.targetGuid);
                 }
 
+                // Evairfairy's test code for TBC
+#if VERSION_STRING == TBC
                 auto apply_aura = false;
                 for (auto aura_idx = 0; aura_idx < 3; ++aura_idx)
                     apply_aura = apply_aura || GetSpellInfo()->getEffectApplyAuraName(0) != 0;
@@ -1644,9 +1646,12 @@ void Spell::castMe(bool check)
                     hadEffect = true;
                     for (auto target : UniqueTargets)
                     {
+                        // Appled note: HandleAddAura(target) is already called from Spell::SpellEffectApplyAura(i)
+                        // but with damage calculations for the aura effect, cast location, spell particle travel time (this solution applies aura instantly on spell cast, rather than when the spell particle hits target) etc
                         HandleAddAura(target);
                     }
                 }
+#endif
 
                 // spells that proc on spell cast, some talents
                 if (p_caster && p_caster->IsInWorld())
