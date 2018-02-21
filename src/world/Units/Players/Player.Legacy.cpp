@@ -307,8 +307,8 @@ Player::Player(uint32 guid)
     setGuidLow(guid);
     m_wowGuid.Init(getGuid());
 #if VERSION_STRING >= WotLK
-    auto data = playerData();
-    SetFlag(data->unit_flags_2, UNIT_FLAG2_ENABLE_POWER_REGEN);
+    SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_ENABLE_POWER_REGEN);
+
     setFloatValue(PLAYER_RUNE_REGEN_1, 0.100000f);
     setFloatValue(PLAYER_RUNE_REGEN_1 + 1, 0.100000f);
     setFloatValue(PLAYER_RUNE_REGEN_1 + 2, 0.100000f);
