@@ -224,19 +224,40 @@ struct WoWUnit;
 class SERVER_DECL Unit : public Object
 {
     //////////////////////////////////////////////////////////////////////////////////////////
-    // Movement
-
-    int32_t m_rootCounter;
+    // WoWData
     const WoWUnit* unitData() const { return reinterpret_cast<WoWUnit*>(wow_data); }
+
 public:
+
+    uint8 getRace() const;
+    void setRace(uint8_t race);
+
+    uint8 getClass() const;
+    void setClass(uint8_t class_);
+
+    uint8 getGender() const;
+    void setGender(uint8_t gender);
+
+    uint8 getPowerType() const;
+    void setPowerType(uint8_t powerType);
+
+    void setHealth(uint32_t health);
+    void setMaxHealth(uint32_t health);
+
+    void setBaseHealth(uint32_t baseHealth);
+
+    void setBaseMana(uint32_t baseMana);
+    void setMaxMana(uint32_t maxMana);
+
     uint32_t getDynamicFlags() const;
     void setDynamicFlags(uint32_t flags);
-#ifdef AE_TBC
-    uint32_t addAuraVisual(uint32_t spell_id, uint32_t count, bool positive);
-    uint32_t addAuraVisual(uint32_t spell_id, uint32_t count, bool positive, bool &skip_client_update);
-    void setAuraSlotLevel(uint32_t slot, bool positive);
-#endif
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Movement
+private:
+    int32_t m_rootCounter;
+
+public:
     void setMoveWaterWalk();
     void setMoveLandWalk();
     void setMoveFeatherFall();
@@ -249,11 +270,7 @@ public:
     void setMoveSwim(bool set_swim);
     void setMoveDisableGravity(bool disable_gravity);
     void setMoveWalk(bool set_walk);
-    void setHealth(uint32_t health);
-    void setMaxHealth(uint32_t health);
-    void setBaseHealth(uint32_t baseHealth);
-    void setBaseMana(uint32_t baseMana);
-
+ 
     // Speed
 private:
 
@@ -339,6 +356,12 @@ public:
 
     void setSingleTargetGuidForAura(uint32_t spellId, uint64_t guid);
     void removeSingleTargetGuidForAura(uint32_t spellId);
+
+#ifdef AE_TBC
+    uint32_t addAuraVisual(uint32_t spell_id, uint32_t count, bool positive);
+    uint32_t addAuraVisual(uint32_t spell_id, uint32_t count, bool positive, bool &skip_client_update);
+    void setAuraSlotLevel(uint32_t slot, bool positive);
+#endif
 
 
     // Do not alter anything below this line
@@ -1203,21 +1226,6 @@ public:
     void SetRangedAttackPowerMultiplier(float amt) { setFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER, amt); }
     float GetRangedAttackPowerMultiplier() { return getFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER); }
     void ModRangedAttackPowerMultiplier(float amt) { modFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER, amt); }
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // bytes 0
-
-    uint8 getRace() const;
-    uint8 getClass() const;
-    uint8 getGender() const;
-    uint8 getPowerType() const;
-
-    void setRace(uint8_t race);
-    void setClass(uint8_t class_);
-    void setGender(uint8_t gender);
-    void setPowerType(uint8_t powerType);
-
-    void setMaxMana(uint32_t maxMana);
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

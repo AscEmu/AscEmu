@@ -9921,6 +9921,11 @@ bool Unit::SetAurDuration(uint32 spellId, uint32 duration)
     return true;
 }
 
+bool Unit::justDied() const
+{
+    return m_deathState == JUST_DIED;
+}
+
 int32 Unit::GetSpellDmgBonus(Unit* pVictim, SpellInfo* spellInfo, int32 base_dmg, bool isdot)
 {
     float plus_damage = 0.0f;

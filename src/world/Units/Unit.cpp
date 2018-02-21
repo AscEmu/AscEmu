@@ -13,38 +13,31 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Data/WoWUnit.h"
 #include "Storage/MySQLDataStore.hpp"
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// WoWData
+
 uint8 Unit::getRace() const { return unitData()->field_bytes_0.s.race; }
+void Unit::setRace(uint8_t race) { write(unitData()->field_bytes_0.s.race, race); }
 
 uint8 Unit::getClass() const { return unitData()->field_bytes_0.s.unit_class; }
+void Unit::setClass(uint8_t class_) { write(unitData()->field_bytes_0.s.unit_class, class_); }
 
 uint8 Unit::getGender() const { return unitData()->field_bytes_0.s.gender; }
+void Unit::setGender(uint8_t gender) { write(unitData()->field_bytes_0.s.gender, gender); }
 
 uint8 Unit::getPowerType() const { return unitData()->field_bytes_0.s.power_type; }
+void Unit::setPowerType(uint8_t powerType) { write(unitData()->field_bytes_0.s.power_type, powerType); }
 
-void Unit::setRace(uint8_t race)
-{
-    write(unitData()->field_bytes_0.s.race, race);
-}
+void Unit::setHealth(uint32_t health) { write(unitData()->health, health); }
+void Unit::setMaxHealth(uint32_t maxHealth) { write(unitData()->max_health, maxHealth); }
 
-void Unit::setClass(uint8_t class_)
-{
-    write(unitData()->field_bytes_0.s.unit_class, class_);
-}
+void Unit::setBaseHealth(uint32_t baseHealth) { write(unitData()->base_health, baseHealth); }
 
-void Unit::setGender(uint8_t gender)
-{
-    write(unitData()->field_bytes_0.s.gender, gender);
-}
+void Unit::setBaseMana(uint32_t baseMana) { write(unitData()->base_mana, baseMana); }
+void Unit::setMaxMana(uint32_t maxMana) { write(unitData()->max_mana, maxMana); }
 
-void Unit::setPowerType(uint8_t powerType)
-{
-    write(unitData()->field_bytes_0.s.power_type, powerType);
-}
-
-void Unit::setMaxMana(uint32_t maxMana)
-{
-    write(unitData()->max_mana, maxMana);
-}
+uint32_t Unit::getDynamicFlags() const { return unitData()->dynamic_flags; }
+void Unit::setDynamicFlags(uint32_t flags) { write(unitData()->dynamic_flags, flags); }
 
 void Unit::setLevel(uint32_t level)
 {
@@ -53,23 +46,8 @@ void Unit::setLevel(uint32_t level)
         static_cast<Player*>(this)->setNextLevelXp(sMySQLStore.getPlayerXPForLevel(level));
 }
 
-bool Unit::justDied() const
-{
-    return m_deathState == JUST_DIED;
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
-
-uint32_t Unit::getDynamicFlags() const
-{
-    return unitData()->dynamic_flags;
-}
-
-void Unit::setDynamicFlags(uint32_t flags)
-{
-    write(unitData()->dynamic_flags, flags);
-}
 
 #ifdef AE_TBC
 uint32_t Unit::addAuraVisual(uint32_t spell_id, uint32_t count, bool positive)
@@ -588,14 +566,6 @@ void Unit::setMoveWalk(bool set_walk)
         }
     }
 }
-
-void Unit::setHealth(uint32_t health) { write(unitData()->health, health); }
-
-void Unit::setMaxHealth(uint32_t maxHealth) { write(unitData()->max_health, maxHealth); }
-
-void Unit::setBaseHealth(uint32_t baseHealth) { write(unitData()->base_health, baseHealth); }
-
-void Unit::setBaseMana(uint32_t baseMana) { write(unitData()->base_mana, baseMana); }
 
 float Unit::getSpeedForType(UnitSpeedType speed_type, bool get_basic) const
 {
