@@ -2374,6 +2374,7 @@ bool Object::SetPosition(const LocationVector & v, bool allowPorting /* = false 
 
     m_position = const_cast<LocationVector &>(v);
 
+#if VERSION_STRING != Cata
     if (!allowPorting && v.z < -500)
     {
         m_position.z = 500;
@@ -2381,6 +2382,7 @@ bool Object::SetPosition(const LocationVector & v, bool allowPorting /* = false 
 
         result = false;
     }
+#endif
 
     if (IsInWorld() && updateMap)
     {
@@ -2407,6 +2409,7 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
 
     m_position.ChangeCoords(newX, newY, newZ, newOrientation);
 
+#if VERSION_STRING != Cata
     if (!allowPorting && newZ < -500)
     {
         m_position.z = 500;
@@ -2414,6 +2417,7 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
 
         result = false;
     }
+#endif
 
     if (IsInWorld() && updateMap)
     {
