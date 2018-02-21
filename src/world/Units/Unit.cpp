@@ -16,16 +16,16 @@ This file is released under the MIT license. See README-MIT for more information
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
 
-uint8 Unit::getRace() const { return unitData()->field_bytes_0.s.race; }
+uint8_t Unit::getRace() const { return unitData()->field_bytes_0.s.race; }
 void Unit::setRace(uint8_t race) { write(unitData()->field_bytes_0.s.race, race); }
 
-uint8 Unit::getClass() const { return unitData()->field_bytes_0.s.unit_class; }
+uint8_t Unit::getClass() const { return unitData()->field_bytes_0.s.unit_class; }
 void Unit::setClass(uint8_t class_) { write(unitData()->field_bytes_0.s.unit_class, class_); }
 
-uint8 Unit::getGender() const { return unitData()->field_bytes_0.s.gender; }
+uint8_t Unit::getGender() const { return unitData()->field_bytes_0.s.gender; }
 void Unit::setGender(uint8_t gender) { write(unitData()->field_bytes_0.s.gender, gender); }
 
-uint8 Unit::getPowerType() const { return unitData()->field_bytes_0.s.power_type; }
+uint8_t Unit::getPowerType() const { return unitData()->field_bytes_0.s.power_type; }
 void Unit::setPowerType(uint8_t powerType) { write(unitData()->field_bytes_0.s.power_type, powerType); }
 
 void Unit::setHealth(uint32_t health) { write(unitData()->health, health); }
@@ -39,6 +39,7 @@ void Unit::setMaxMana(uint32_t maxMana) { write(unitData()->max_mana, maxMana); 
 uint32_t Unit::getDynamicFlags() const { return unitData()->dynamic_flags; }
 void Unit::setDynamicFlags(uint32_t flags) { write(unitData()->dynamic_flags, flags); }
 
+uint32_t Unit::getLevel() const { return unitData()->level; }
 void Unit::setLevel(uint32_t level)
 {
     write(unitData()->level, level);

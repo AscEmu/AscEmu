@@ -1779,7 +1779,7 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
             Pet* summon = GetSummon();
             if ((summon != nullptr) && (summon->IsInWorld()) && (summon->isAlive()))
             {
-                summon->modLevel(1);
+                summon->setLevel(1);
                 summon->ApplyStatsForLevel();
                 summon->UpdateSpellList();
             }

@@ -1261,7 +1261,7 @@ void Pet::GiveXP(uint32 xp)
     if (xp >= nxp)
     {
         SetTPs(GetTPsForLevel(getLevel() + 1) - GetSpentTPs());
-        modLevel(1);
+        setLevel(1);
         xp -= nxp;
         nxp = GetNextLevelXP(getLevel());
         setUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP, nxp);

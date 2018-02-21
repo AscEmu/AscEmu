@@ -1352,7 +1352,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     setLevel(creature_properties->MinLevel + (Util::getRandomUInt(creature_properties->MaxLevel - creature_properties->MinLevel)));
 
     if (mode && info)
-        modLevel(std::min(73 - getLevel(), info->lvl_mod_a));
+        setLevel(std::min(73 - getLevel(), info->lvl_mod_a));
 
     for (uint8 i = 0; i < 7; ++i)
         SetResistance(i, creature_properties->Resistances[i]);

@@ -229,16 +229,18 @@ class SERVER_DECL Unit : public Object
 
 public:
 
-    uint8 getRace() const;
+    uint8_t getRace() const;
     void setRace(uint8_t race);
+    uint32_t getRaceMask() { return 1 << (getRace() - 1); }
 
-    uint8 getClass() const;
+    uint8_t getClass() const;
     void setClass(uint8_t class_);
+    uint32_t getClassMask() { return 1 << (getClass() - 1); }
 
-    uint8 getGender() const;
+    uint8_t getGender() const;
     void setGender(uint8_t gender);
 
-    uint8 getPowerType() const;
+    uint8_t getPowerType() const;
     void setPowerType(uint8_t powerType);
 
     void setHealth(uint32_t health);
@@ -248,6 +250,10 @@ public:
 
     void setBaseMana(uint32_t baseMana);
     void setMaxMana(uint32_t maxMana);
+
+    uint32_t getLevel() const;
+    void setLevel(uint32_t level);
+
 
     uint32_t getDynamicFlags() const;
     void setDynamicFlags(uint32_t flags);
@@ -408,11 +414,6 @@ public:
     bool  canReachWithAttack(Unit* pVictim);
 
     /// Stats
-    uint32 getLevel() { return getUInt32Value(UNIT_FIELD_LEVEL); };
-    void setLevel(uint32_t level);
-    void modLevel(int32 mod) { modUInt32Value(UNIT_FIELD_LEVEL, mod); };
-    uint32 getClassMask() { return 1 << (getClass() - 1); }
-    uint32 getRaceMask() { return 1 << (getRace() - 1); }
     uint8 getStandState() { return ((uint8)getUInt32Value(UNIT_FIELD_BYTES_1)); }
 
     //// Combat
