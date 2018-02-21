@@ -370,7 +370,7 @@ class DofNaralexAI : public CreatureAIScript
                     _setDisplayId(17089);
                     Naralex->_setDisplayId(17089);
                     Naralex->sendChatMessage(CHAT_MSG_MONSTER_SAY, 5789, "I am awake... at last");
-                    Naralex->getCreature()->SetStandState(STANDSTATE_STAND);
+                    Naralex->getCreature()->setStandState(STANDSTATE_STAND);
                     setFlyMode(true);
                     Naralex->setFlyMode(true);
                     moveTo(-6.704030f, 200.308838f, -26.938824f);
@@ -433,7 +433,7 @@ class Naralex : public CreatureAIScript
         Naralex(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            getCreature()->SetStandState(STANDSTATE_SLEEP);
+            getCreature()->setStandState(STANDSTATE_SLEEP);
         }
 };
 

@@ -13951,7 +13951,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, ui
         }
     }
 
-    pVictim->SetStandState(STANDSTATE_STAND);
+    pVictim->setStandState(STANDSTATE_STAND);
 
     if (CombatStatus.IsInCombat())
         sHookInterface.OnEnterCombat(this, this);

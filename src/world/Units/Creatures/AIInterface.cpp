@@ -1405,18 +1405,18 @@ void AIInterface::Update(unsigned long time_passed)
         {
             if ((*next_timed_emote)->type == 1)   //standstate
             {
-                m_Unit->SetStandState(static_cast<uint8>((*next_timed_emote)->value));
+                m_Unit->setStandState(static_cast<uint8>((*next_timed_emote)->value));
                 m_Unit->setUInt32Value(UNIT_NPC_EMOTESTATE, 0);
             }
             else if ((*next_timed_emote)->type == 2)   //emotestate
             {
                 m_Unit->setUInt32Value(UNIT_NPC_EMOTESTATE, (*next_timed_emote)->value);
-                m_Unit->SetStandState(STANDSTATE_STAND);
+                m_Unit->setStandState(STANDSTATE_STAND);
             }
             else if ((*next_timed_emote)->type == 3)   //oneshot emote
             {
                 m_Unit->setUInt32Value(UNIT_NPC_EMOTESTATE, 0);
-                m_Unit->SetStandState(STANDSTATE_STAND);
+                m_Unit->setStandState(STANDSTATE_STAND);
                 m_Unit->Emote((EmoteType)(*next_timed_emote)->value);           // Animation
             }
 

@@ -16,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
 
+//bytes_0 begin
 uint8_t Unit::getRace() const { return unitData()->field_bytes_0.s.race; }
 void Unit::setRace(uint8_t race) { write(unitData()->field_bytes_0.s.race, race); }
 
@@ -27,6 +28,7 @@ void Unit::setGender(uint8_t gender) { write(unitData()->field_bytes_0.s.gender,
 
 uint8_t Unit::getPowerType() const { return unitData()->field_bytes_0.s.power_type; }
 void Unit::setPowerType(uint8_t powerType) { write(unitData()->field_bytes_0.s.power_type, powerType); }
+//bytes_0 end
 
 void Unit::setHealth(uint32_t health) { write(unitData()->health, health); }
 void Unit::setMaxHealth(uint32_t maxHealth) { write(unitData()->max_health, maxHealth); }
@@ -46,6 +48,11 @@ void Unit::setLevel(uint32_t level)
     if (IsPlayer())
         static_cast<Player*>(this)->setNextLevelXp(sMySQLStore.getPlayerXPForLevel(level));
 }
+
+//bytes_1 begin
+uint8_t Unit::getStandState() const { return unitData()->field_bytes_1.s.stand_state; }
+void Unit::setStandState(uint8_t standState) { write(unitData()->field_bytes_1.s.stand_state, standState); }
+//bytes_1 end
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement

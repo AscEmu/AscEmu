@@ -150,12 +150,12 @@ void OnQuestAccept(Player* pPlayer, QuestProperties* pQuest, Object* pObject)
 
 void Hanazua_II(Player* /*pPlayer*/, Object* pObject)
 {
-    (static_cast<Creature*>(pObject))->SetStandState(STANDSTATE_KNEEL);
+    (static_cast<Creature*>(pObject))->setStandState(STANDSTATE_KNEEL);
 }
 
 void Wishock(Player* pPlayer, Object* pObject)
 {
-    (static_cast<Creature*>(pObject))->SetStandState(STANDSTATE_DEAD);
+    (static_cast<Creature*>(pObject))->setStandState(STANDSTATE_DEAD);
     pPlayer->Emote(EMOTE_STATE_LAUGH);
     (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Arrgh...");
 }

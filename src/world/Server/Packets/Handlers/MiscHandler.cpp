@@ -1017,7 +1017,7 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket& /*recv_data*/)
         pPlayer->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
 
         //make player sit
-        pPlayer->SetStandState(STANDSTATE_SIT);
+        pPlayer->setStandState(STANDSTATE_SIT);
         SetLogoutTimer(20000);
     }
     /*
@@ -1067,7 +1067,7 @@ void WorldSession::HandleLogoutCancelOpcode(WorldPacket& /*recv_data*/)
     pPlayer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
 
     //make player stand
-    pPlayer->SetStandState(STANDSTATE_STAND);
+    pPlayer->setStandState(STANDSTATE_STAND);
 
     LOG_DEBUG("WORLD: sent SMSG_LOGOUT_CANCEL_ACK Message");
 }
@@ -1116,7 +1116,7 @@ void WorldSession::HandleStandStateChangeOpcode(WorldPacket& recv_data)
     uint8 animstate;
     recv_data >> animstate;
 
-    _player->SetStandState(animstate);
+    _player->setStandState(animstate);
 }
 
 #if VERSION_STRING != Cata
@@ -1608,7 +1608,7 @@ void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
         _player->setByteValue(PLAYER_BYTES, 0, static_cast<uint8>(barberShopSkinColor->hair_id));
     _player->ModGold(-(int32)cost);
 
-    _player->SetStandState(STANDSTATE_STAND);                              // stand up
+    _player->setStandState(STANDSTATE_STAND);                              // stand up
     _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_VISIT_BARBER_SHOP, 1, 0, 0);
     _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GOLD_SPENT_AT_BARBER, cost, 0, 0);
 }
@@ -1648,7 +1648,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
         case GAMEOBJECT_TYPE_CHAIR:
         {
             plyr->SafeTeleport(plyr->GetMapId(), plyr->GetInstanceID(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation());
-            plyr->SetStandState(STANDSTATE_SIT_MEDIUM_CHAIR);
+            plyr->setStandState(STANDSTATE_SIT_MEDIUM_CHAIR);
             plyr->UpdateSpeed();
         }
         break;
@@ -1660,7 +1660,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
             //send barber shop menu to player
             WorldPacket data(SMSG_ENABLE_BARBER_SHOP, 0);
             SendPacket(&data);
-            plyr->SetStandState(STANDSTATE_SIT_HIGH_CHAIR);
+            plyr->setStandState(STANDSTATE_SIT_HIGH_CHAIR);
         }
         break;
 #endif
@@ -2671,7 +2671,7 @@ void WorldSession::HandleCompleteCinematic(WorldPacket& /*recv_data*/)
     CHECK_INWORLD_RETURN
 
     // when a Cinematic is started the player is going to sit down, when its finished its standing up.
-    _player->SetStandState(STANDSTATE_STAND);
+    _player->setStandState(STANDSTATE_STAND);
     _player->camControle = false;
 }
 

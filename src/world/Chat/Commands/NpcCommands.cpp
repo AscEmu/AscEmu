@@ -1331,7 +1331,7 @@ bool ChatHandler::HandleNpcSetStandstateCommand(const char* args, WorldSession* 
         return true;
 
     uint8 old_standstate = creature_target->getStandState();
-    creature_target->SetStandState(standstate);
+    creature_target->setStandState(standstate);
 
     if (m_session->GetPlayer()->SaveAllChangesCommand)
         save = 1;

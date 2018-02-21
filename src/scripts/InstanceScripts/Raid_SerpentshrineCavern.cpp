@@ -459,7 +459,7 @@ class LeotherasAI : public CreatureAIScript
                 getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, 0);
                 getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
                 getCreature()->GetAIInterface()->m_canMove = true;
-                getCreature()->SetStandState(STANDSTATE_STAND);
+                getCreature()->setStandState(STANDSTATE_STAND);
             }
         }
 
@@ -600,7 +600,7 @@ class LeotherasAI : public CreatureAIScript
                         case 0:
                             IsMorphing = true;
                             getCreature()->setAttackTimer(15000, false);
-                            getCreature()->SetStandState(STANDSTATE_KNEEL);
+                            getCreature()->setStandState(STANDSTATE_KNEEL);
                             getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
                             getCreature()->GetAIInterface()->m_canMove = false;
@@ -613,7 +613,7 @@ class LeotherasAI : public CreatureAIScript
                             FinalPhaseTimer--;
                             if (!FinalPhaseTimer)
                             {
-                                getCreature()->SetStandState(STANDSTATE_STAND);
+                                getCreature()->setStandState(STANDSTATE_STAND);
                                 shadow = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), CN_SHADOW_OF_LEOTHERAS);
 
                                 if (shadow == NULL)
@@ -746,7 +746,7 @@ class GreyheartSpellbinderAI : public CreatureAIScript
                     Leotheras->setUInt32Value(UNIT_FIELD_FLAGS, 0);
                     Leotheras->GetAIInterface()->SetAllowedToEnterCombat(true);
                     Leotheras->GetAIInterface()->m_canMove = true;
-                    Leotheras->SetStandState(STANDSTATE_STAND);
+                    Leotheras->setStandState(STANDSTATE_STAND);
 
                     //attack nearest player
                     Player* NearestPlayer = nullptr;

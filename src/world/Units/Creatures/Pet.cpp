@@ -2121,7 +2121,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, uint3
     if (pVictim != this)
         CombatStatus.OnDamageDealt(pVictim);
 
-    pVictim->SetStandState(STANDSTATE_STAND);
+    pVictim->setStandState(STANDSTATE_STAND);
 
     if (pVictim->IsPvPFlagged())
     {

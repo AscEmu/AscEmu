@@ -40,7 +40,7 @@ public:
     void OnLoad() override
     {
         getCreature()->SetFaction(68);
-        getCreature()->SetStandState(STANDSTATE_STAND);
+        getCreature()->setStandState(STANDSTATE_STAND);
     }
 
     void OnDamageTaken(Unit* mAttacker, uint32 /*fAmount*/) override
@@ -68,9 +68,9 @@ public:
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay, okay! Enough fighting.");
             getCreature()->RemoveNegativeAuras();
             getCreature()->SetFaction(68);
-            getCreature()->SetStandState(STANDSTATE_SIT);
+            getCreature()->setStandState(STANDSTATE_SIT);
             getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(433), true);
-            sEventMgr.AddEvent(static_cast<Unit*>(getCreature()), &Unit::SetStandState, (uint8)STANDSTATE_STAND, EVENT_CREATURE_UPDATE, 18000, 0, 1);
+            sEventMgr.AddEvent(static_cast<Unit*>(getCreature()), &Unit::setStandState, (uint8)STANDSTATE_STAND, EVENT_CREATURE_UPDATE, 18000, 0, 1);
             getCreature()->GetAIInterface()->WipeTargetList();
             getCreature()->GetAIInterface()->WipeHateList();
             getCreature()->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);

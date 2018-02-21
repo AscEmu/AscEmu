@@ -555,7 +555,7 @@ class WardenMellicharAI : public CreatureAIScript
             setRooted(false);
             _setMeleeDisabled(false);
             _setCastDisabled(false);
-            getCreature()->SetStandState(STANDSTATE_KNEEL);
+            getCreature()->setStandState(STANDSTATE_KNEEL);
 
             if (shield)
                 shield->SetState(GO_STATE_OPEN);

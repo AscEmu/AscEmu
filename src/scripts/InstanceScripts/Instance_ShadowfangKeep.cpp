@@ -358,7 +358,7 @@ class ShadowfangKeepInstance : public InstanceScript
                     if (GetInstanceData(0, INDEX_ARUGAL_INTRO) == Finished)
                     {
                         // Make him look like dead
-                        pCreature->SetStandState(STANDSTATE_DEAD);
+                        pCreature->setStandState(STANDSTATE_DEAD);
                         pCreature->setDeathState(CORPSE);
                         pCreature->GetAIInterface()->m_canMove = false;
                         pCreature->SetFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_DEAD);
@@ -437,7 +437,7 @@ class ArugalAI : public CreatureAIScript
                         {
                             // Make him look like dead
                             pVincent->SendScriptTextChatMessage(SAY_VINCENT_DEATH);
-                            pVincent->SetStandState(STANDSTATE_DEAD);
+                            pVincent->setStandState(STANDSTATE_DEAD);
                             pVincent->setDeathState(CORPSE);
                             pVincent->GetAIInterface()->m_canMove = false;
                             pVincent->SetFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_DEAD);

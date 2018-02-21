@@ -414,7 +414,7 @@ void Creature::SaveToDB()
         m_spawn->bytes0 = m_uint32Values[UNIT_FIELD_BYTES_0];
         m_spawn->bytes1 = m_uint32Values[UNIT_FIELD_BYTES_1];
         m_spawn->bytes2 = m_uint32Values[UNIT_FIELD_BYTES_2];
-        m_spawn->stand_state = GetStandState();
+        m_spawn->stand_state = getStandState();
         m_spawn->death_state = 0;
         m_spawn->channel_target_creature = 0;
         m_spawn->channel_target_go = 0;
@@ -469,7 +469,7 @@ void Creature::SaveToDB()
         << m_spawn->channel_target_go << ","
         << m_spawn->channel_target_creature << ",";
 
-    ss << uint32(GetStandState()) << ",";
+    ss << uint32(getStandState()) << ",";
 
     ss << m_spawn->death_state << ",";
 
@@ -1532,7 +1532,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     if (m_invisFlag > 0)
         m_invisible = true;
     if (spawn->stand_state)
-        SetStandState((uint8)spawn->stand_state);
+        setStandState((uint8)spawn->stand_state);
 
     m_aiInterface->EventAiInterfaceParamsetFinish();
     this->m_position.x = spawn->x;
@@ -2295,7 +2295,7 @@ void Creature::DealDamage(Unit* pVictim, uint32 damage, uint32 /*targetEvent*/, 
     if (pVictim != this)
         CombatStatus.OnDamageDealt(pVictim);
 
-    pVictim->SetStandState(STANDSTATE_STAND);
+    pVictim->setStandState(STANDSTATE_STAND);
 
     if (pVictim->IsPvPFlagged())
     {

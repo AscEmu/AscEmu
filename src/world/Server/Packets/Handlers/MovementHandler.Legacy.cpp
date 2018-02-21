@@ -363,7 +363,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /* Clear standing state to stand.				                        */
     /************************************************************************/
     if (recv_data.GetOpcode() == MSG_MOVE_START_FORWARD)
-        _player->SetStandState(STANDSTATE_STAND);
+        _player->setStandState(STANDSTATE_STAND);
 
     /************************************************************************/
     /* Make sure the packet is the correct size range.                      */

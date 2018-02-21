@@ -367,7 +367,7 @@ public:
             Ogre->_setDisplayWeaponIds(28562, 0);
             Ogre->getCreature()->SetEmoteState(EMOTE_ONESHOT_EAT_NOSHEATHE);
             Ogre->getCreature()->SetFaction(35);
-            Ogre->getCreature()->SetStandState(STANDSTATE_SIT);
+            Ogre->getCreature()->setStandState(STANDSTATE_SIT);
 
             NdGo = getNearestGameObject(184315);
             if (NdGo == nullptr)

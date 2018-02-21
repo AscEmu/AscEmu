@@ -759,7 +759,7 @@ class LuaUnit
             return 0;
         uint8_t state = static_cast<uint8_t>(luaL_checkinteger(L, 1));
 
-        ptr->SetStandState(state);
+        ptr->setStandState(state);
         return 0;
     }
     static int IsInCombat(lua_State* L, Unit* ptr)

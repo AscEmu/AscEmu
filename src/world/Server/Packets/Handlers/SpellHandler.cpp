@@ -251,7 +251,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
         }
         else
         {
-            _player->SetStandState(STANDSTATE_SIT);
+            _player->setStandState(STANDSTATE_SIT);
         }
     }
 

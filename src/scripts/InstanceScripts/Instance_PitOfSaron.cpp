@@ -490,7 +490,7 @@ class KrickAI : public CreatureAIScript
                     break;
                 case 9:
                     // tyrannus kills krick
-                    getCreature()->SetStandState(STANDSTATE_DEAD);
+                    getCreature()->setStandState(STANDSTATE_DEAD);
                     getCreature()->setHealth(1);
                     sendDBChatMessage(8784); // SAY_TYRANNUS_OUTRO_9
                     _resetTimer(mOutroTimer, 12000);

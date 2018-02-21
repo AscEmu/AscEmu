@@ -229,6 +229,7 @@ class SERVER_DECL Unit : public Object
 
 public:
 
+    //bytes_0 begin
     uint8_t getRace() const;
     void setRace(uint8_t race);
     uint32_t getRaceMask() { return 1 << (getRace() - 1); }
@@ -242,6 +243,7 @@ public:
 
     uint8_t getPowerType() const;
     void setPowerType(uint8_t powerType);
+    //bytes_0 end
 
     void setHealth(uint32_t health);
     void setMaxHealth(uint32_t maxHealth);
@@ -253,6 +255,11 @@ public:
 
     uint32_t getLevel() const;
     void setLevel(uint32_t level);
+
+    //bytes_1 begin
+    uint8_t getStandState() const;
+    void setStandState(uint8_t standState);
+    //bytes_1 end
 
 
     uint32_t getDynamicFlags() const;
@@ -412,9 +419,6 @@ public:
     void SetDualWield(bool enabled);
 
     bool  canReachWithAttack(Unit* pVictim);
-
-    /// Stats
-    uint8 getStandState() { return ((uint8)getUInt32Value(UNIT_FIELD_BYTES_1)); }
 
     //// Combat
     uint32 GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability);
@@ -804,13 +808,6 @@ public:
     void EventChill(Unit* proc_target, bool is_victim = false);
 
     bool IsSitting();
-    void SetStandState(uint8 standstate);
-
-    StandState GetStandState()
-    {
-        uint32 bytes1 = getUInt32Value(UNIT_FIELD_BYTES_1);
-        return StandState(uint8(bytes1));
-    }
 
     uint32 GetFaction() { return getUInt32Value(UNIT_FIELD_FACTIONTEMPLATE); }
 

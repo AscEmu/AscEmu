@@ -1204,11 +1204,11 @@ class ShadeofAranAI : public CreatureAIScript
                     getCreature()->CastSpell(getCreature(), info_mass_polymorph, true);
                     getCreature()->setAttackTimer(2000, false);
                 }
-                else if (getCreature()->GetStandState() != STANDSTATE_SIT)
+                else if (getCreature()->getStandState() != STANDSTATE_SIT)
                 {
                     getCreature()->setAttackTimer(3000, false);
                     getCreature()->CastSpell(getCreature(), info_conjure, false);
-                    getCreature()->SetStandState(STANDSTATE_SIT);
+                    getCreature()->setStandState(STANDSTATE_SIT);
                     getCreature()->setEmoteState(EMOTE_ONESHOT_EAT);
                 }
                 else
@@ -1222,7 +1222,7 @@ class ShadeofAranAI : public CreatureAIScript
             m_time_pyroblast--;
             if (!m_time_pyroblast)
             {
-                getCreature()->SetStandState(STANDSTATE_STAND);
+                getCreature()->setStandState(STANDSTATE_STAND);
                 getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
                 getCreature()->CastSpell(getCreature(), info_pyroblast, false);
                 drinking = false;

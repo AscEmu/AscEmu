@@ -101,7 +101,7 @@ public:
                         pRazuunAI->SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
                         pRazuunAI->setRooted(true);
                     }
-                    getCreature()->SetStandState(STANDSTATE_KNEEL);
+                    getCreature()->setStandState(STANDSTATE_KNEEL);
                     getCreature()->Emote(EMOTE_ONESHOT_TALK);
                     getCreature()->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Everything is in readiness, warbringer.");
                     mJovaanPhase = 1;
@@ -118,7 +118,7 @@ public:
                 break;
                 case 2:
                 {
-                    getCreature()->SetStandState(STANDSTATE_STAND);
+                    getCreature()->setStandState(STANDSTATE_STAND);
                     mJovaanPhase = 3;
                     _resetTimer(mJovaanTimer, 1000);
                 }

@@ -214,7 +214,7 @@ public:
 
         pPrisoner->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You've freed me! The winds speak to my people one again and grant us their strength. I thank you, stranger.");
         pPrisoner->Despawn(5000, 6 * 60 * 1000);
-        pPrisoner->SetStandState(STANDSTATE_STAND);
+        pPrisoner->setStandState(STANDSTATE_STAND);
     }
 };
 
@@ -228,7 +228,7 @@ public:
 
     void OnLoad() override
     {
-        getCreature()->SetStandState(STANDSTATE_SIT);
+        getCreature()->setStandState(STANDSTATE_SIT);
         getCreature()->setDeathState(CORPSE);
         getCreature()->GetAIInterface()->m_canMove = false;
     }
@@ -259,7 +259,7 @@ public:
 
     void OnLoad() override
     {
-        getCreature()->SetStandState(STANDSTATE_DEAD);
+        getCreature()->setStandState(STANDSTATE_DEAD);
         getCreature()->setDeathState(CORPSE);
         getCreature()->GetAIInterface()->m_canMove = false;
     }

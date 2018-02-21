@@ -7119,7 +7119,7 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
     //<SHIT END>
 
     // by victim state
-    if (pVictim->IsPlayer() && pVictim->GetStandState()) //every not standing state is>0
+    if (pVictim->IsPlayer() && pVictim->getStandState()) //every not standing state is>0
     {
         hitchance = 100.0f;
     }
@@ -7572,7 +7572,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         crit = 0.0f;
 
     // by victim state
-    if (pVictim->IsPlayer() && pVictim->GetStandState())    //every not standing state is>0
+    if (pVictim->IsPlayer() && pVictim->getStandState())    //every not standing state is>0
     {
         hitchance = 100.0f;
         dodge = 0.0f;
@@ -10422,27 +10422,13 @@ int32 Unit::getDetectRangeMod(uint64 guid)
 
 bool Unit::IsSitting()
 {
-    StandState s = GetStandState();
+    auto s = getStandState();
     return
         s == STANDSTATE_SIT_CHAIR        || s == STANDSTATE_SIT_LOW_CHAIR  ||
         s == STANDSTATE_SIT_MEDIUM_CHAIR || s == STANDSTATE_SIT_HIGH_CHAIR ||
         s == STANDSTATE_SIT;
 }
 
-void Unit::SetStandState(uint8 standstate)
-{
-    //only take actions if standstate did change.
-    StandState bef = GetStandState();
-    if (bef == standstate)
-        return;
-
-    setByteValue(UNIT_FIELD_BYTES_1, 0, standstate);
-    if (standstate == STANDSTATE_STAND)  //standup
-        RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_STAND_UP);
-
-    if (IsPlayer())
-        static_cast<Player*>(this)->GetSession()->OutPacket(SMSG_STANDSTATE_UPDATE, 1, &standstate);
-}
 
 void Unit::RemoveAurasByInterruptFlag(uint32 flag)
 {

@@ -295,7 +295,7 @@ public:
             getCreature()->SetFaction(35);
             getCreature()->GetAIInterface()->WipeHateList();
             getCreature()->GetAIInterface()->WipeTargetList();
-            getCreature()->SetStandState(STANDSTATE_SIT);
+            getCreature()->setStandState(STANDSTATE_SIT);
             getCreature()->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
 
             getCreature()->Despawn(180000, 0);

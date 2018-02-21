@@ -94,7 +94,7 @@ public:
 
     void OnLoad() override
     {
-        getCreature()->SetStandState(STANDSTATE_STAND);
+        getCreature()->setStandState(STANDSTATE_STAND);
     }
 
     void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
@@ -166,7 +166,7 @@ public:
     void OnLoad() override
     {
         getCreature()->SetFaction(12);
-        getCreature()->SetStandState(STANDSTATE_STAND);
+        getCreature()->setStandState(STANDSTATE_STAND);
     }
 
     void OnDamageTaken(Unit* mAttacker, uint32 fAmount) override
