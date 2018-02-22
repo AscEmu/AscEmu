@@ -422,7 +422,7 @@ class CrystalSpikeAI : public CreatureAIScript
     {
         setCanEnterCombat(false);
         setRooted(true);
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
         despawn(4500, 0);
         RegisterAIUpdateEvent(500);

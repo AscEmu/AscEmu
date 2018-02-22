@@ -38,9 +38,6 @@ void Unit::setBaseHealth(uint32_t baseHealth) { write(unitData()->base_health, b
 void Unit::setBaseMana(uint32_t baseMana) { write(unitData()->base_mana, baseMana); }
 void Unit::setMaxMana(uint32_t maxMana) { write(unitData()->max_mana, maxMana); }
 
-uint32_t Unit::getDynamicFlags() const { return unitData()->dynamic_flags; }
-void Unit::setDynamicFlags(uint32_t flags) { write(unitData()->dynamic_flags, flags); }
-
 uint32_t Unit::getLevel() const { return unitData()->level; }
 void Unit::setLevel(uint32_t level)
 {
@@ -62,6 +59,9 @@ void Unit::setStandStateFlags(uint8_t standStateFlags) { write(unitData()->field
 uint8_t Unit::getAnimationFlags() const { return unitData()->field_bytes_1.s.animation_flag; }
 void Unit::setAnimationFlags(uint8_t animationFlags) { write(unitData()->field_bytes_1.s.animation_flag, animationFlags); }
 //bytes_1 end
+
+uint32_t Unit::getDynamicFlags() const { return unitData()->dynamic_flags; }
+void Unit::setDynamicFlags(uint32_t flags) { write(unitData()->dynamic_flags, flags); }
 
 //byte_2 begin
 uint8_t Unit::getSheathType() const { return unitData()->field_bytes_2.s.sheath_type; }

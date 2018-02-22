@@ -57,7 +57,7 @@ SERVER_DECL bool isHostile(Object* objA, Object* objB)
     if (objB->IsPlayer() && objB->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_CONT_PVP) && objA->IsCreature() && reinterpret_cast<Unit*>(objA)->GetAIInterface()->m_isNeutralGuard)
         return true;
 
-    if (objB->IsUnit() && objB->HasFlag(UNIT_FIELD_FLAGS, 2 | 128 | 256 | 65536))
+    if (objB->IsUnit() && objB->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2 | UNIT_FLAG_IGNORE_CREATURE_COMBAT | UNIT_FLAG_IGNORE_PLAYER_COMBAT | UNIT_FLAG_ALIVE))
         return false;
 
     if (!objB->m_faction || !objA->m_faction)

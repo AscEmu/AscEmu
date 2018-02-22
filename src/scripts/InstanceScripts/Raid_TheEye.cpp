@@ -567,7 +567,7 @@ class FlameStrikeAI : public CreatureAIScript
             setCanEnterCombat(false);
             _setMeleeDisabled(false);
             setRooted(true);
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         }
 
         void OnDied(Unit* /*mKiller*/) override
@@ -578,7 +578,7 @@ class FlameStrikeAI : public CreatureAIScript
 
         void AIUpdate() override
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
             _applyAura(FLAME_STRIKE_TRIGGER_FLAME_STRIKE);
             RemoveAIUpdateEvent();
             despawn(8500);
@@ -866,7 +866,7 @@ class KaelThasAI : public CreatureAIScript
 
         void OnCombatStart(Unit* /*mTarget*/) override
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+            getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
             SetAIUpdateFreq(24000);
             
             setAIAgent(AGENT_SPELL);
@@ -889,7 +889,7 @@ class KaelThasAI : public CreatureAIScript
         void OnCombatStop(Unit* /*mTarget*/) override
         {
             setRooted(false);
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+            getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
 
             if (isAlive())
             {
@@ -943,7 +943,7 @@ class KaelThasAI : public CreatureAIScript
         void SendAdvisorToFight(Creature* pCreature)
         {
             pCreature->GetAIInterface()->SetAllowedToEnterCombat(true);
-            pCreature->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+            pCreature->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
 
             Unit* pTarget = getBestPlayerTarget();
             if (pTarget != NULL)
@@ -1050,7 +1050,7 @@ class KaelThasAI : public CreatureAIScript
                         if (pCreature != nullptr)
                         {
                             pCreature->GetAIInterface()->SetAllowedToEnterCombat(true);
-                            pCreature->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+                            pCreature->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
                         }
                     }
 

@@ -51,7 +51,7 @@ public:
 
         Creature* Spirit = static_cast<Creature*>(pObject);
 
-        Spirit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        Spirit->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         Spirit->Despawn(4000, 0);
     }
 };

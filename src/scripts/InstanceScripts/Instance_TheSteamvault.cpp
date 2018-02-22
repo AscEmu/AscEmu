@@ -250,7 +250,7 @@ class NagaDistillerAI : public CreatureAIScript
 
         NagaDistillerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+            getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             _setMeleeDisabled(true);
             getCreature()->GetAIInterface()->m_canMove = false;
@@ -329,7 +329,7 @@ class WarlordKalitreshAI : public CreatureAIScript
             pDistiller = GetClosestDistiller();
             if (pDistiller)
             {
-                pDistiller->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+                pDistiller->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                 pDistiller->SetChannelSpellTargetGUID(0);
                 pDistiller->SetChannelSpellId(0);
                 pDistiller->GetAIInterface()->WipeTargetList();
@@ -378,7 +378,7 @@ class WarlordKalitreshAI : public CreatureAIScript
 
                         if (getCreature()->GetDistance2dSq(pDistiller) <= 100.0f)
                         {
-                            pDistiller->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+                            pDistiller->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
                             pDistiller->SetChannelSpellTargetGUID(getCreature()->getGuid());
                             pDistiller->SetChannelSpellId(31543);
 
@@ -403,7 +403,7 @@ class WarlordKalitreshAI : public CreatureAIScript
 
                     else if (t > EnrageTimer && RagePhase == 2)
                     {
-                        pDistiller->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+                        pDistiller->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                         pDistiller->SetChannelSpellTargetGUID(0);
                         pDistiller->SetChannelSpellId(0);
                         pDistiller->GetAIInterface()->WipeTargetList();

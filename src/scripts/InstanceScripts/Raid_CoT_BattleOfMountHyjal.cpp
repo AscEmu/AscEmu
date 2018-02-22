@@ -348,7 +348,7 @@ class ArchimondeTriggerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(ArchimondeTriggerAI);
         ArchimondeTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             getCreature()->m_noRespawn = true;
 
@@ -369,7 +369,7 @@ class DoomfireAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(DoomfireAI);
         DoomfireAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             getCreature()->m_noRespawn = true;
 

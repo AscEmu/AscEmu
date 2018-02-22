@@ -103,7 +103,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
             PhaseOneTimer = 0;
             Phase = 0;
             // Trigger settings
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             RegisterAIUpdateEvent(1000);
         }
@@ -233,7 +233,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                 if (Magtheridon)
                 {
                     Magtheridon->GetAIInterface()->SetAllowedToEnterCombat(true);
-                    Magtheridon->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+                    Magtheridon->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
                     Magtheridon->RemoveAura(BANISHMENT);
                     Magtheridon->RemoveAura(BANISH);
                 }
@@ -326,7 +326,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                                 Magtheridon->SendScriptTextChatMessage(8748);    // I... am... unleashed!
                             }
 
-                            Magtheridon->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+                            Magtheridon->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
                             Magtheridon->Emote(EMOTE_ONESHOT_CREATURE_SPECIAL);
                             Magtheridon->RemoveAura(BANISHMENT);
                         }
@@ -339,7 +339,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                         if (Magtheridon)
                         {
                             Magtheridon->GetAIInterface()->SetAllowedToEnterCombat(true);
-                            Magtheridon->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+                            Magtheridon->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
                         }
 
                         Phase = 2;
@@ -613,7 +613,7 @@ class CubeTriggerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(CubeTriggerAI);
         CubeTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         }
 };
@@ -784,7 +784,7 @@ class MagtheridonAI : public CreatureAIScript
             quake2 = addAISpell(QUAKE2, 0.0f, TARGET_VARIOUS);
             caveIn = addAISpell(CAVE_IN, 0.0f, TARGET_VARIOUS);
 
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+            getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
 
             Aura* aura = sSpellFactoryMgr.NewAura(sSpellCustomizations.GetSpellInfo(BANISHMENT), (uint32) - 1, getCreature(), getCreature());
             getCreature()->AddAura(aura);

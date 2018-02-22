@@ -500,7 +500,7 @@ class ArthasAI : public CreatureAIScript
                         c->GetAIInterface()->SetAllowedToEnterCombat(false);
                         for (uint8 i = 0; i < 7; i++)
                             c->SchoolImmunityList[i] = 1;
-                        c->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                        c->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                         //1 = 0s
                         c->SendScriptTextChatMessage(SAY_MALGANIS_01);
                         //2 = 13s

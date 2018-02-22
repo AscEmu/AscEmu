@@ -604,7 +604,7 @@ class BarnesAI : public CreatureAIScript
                         EventWOZ();
                         break;
                 }
-                getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, 1);
+                getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_SERVER_CONTROLLED);
                 WayStartBBW[getCreature()->GetInstanceID()] = 5;
             } break;
             default:
@@ -1726,7 +1726,7 @@ class FiendishImpAI : public CreatureAIScript
 
     void OnCombatStart(Unit* mTarget) override
     {
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+        getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
 
         if (getCreature()->GetDistance2dSq(mTarget) <= 1225.0f)

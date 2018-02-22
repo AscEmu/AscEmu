@@ -38,7 +38,7 @@ public:
         {
             if (mAttacker->IsPlayer())
             {
-                getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 RegisterAIUpdateEvent(1000);
                 QuestLogEntry* qle = (static_cast<Player*>(mAttacker))->GetQuestLogForEntry(1447);
                 if (!qle)
@@ -59,7 +59,7 @@ public:
         getCreature()->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+        getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
         RemoveAIUpdateEvent();
     }
 };
