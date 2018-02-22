@@ -31,7 +31,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /* Clear standing state to stand.				                        */
     /************************************************************************/
     if (opcode == MSG_MOVE_START_FORWARD)
-        mover->SetStandState(STANDSTATE_STAND);
+        mover->setStandState(STANDSTATE_STAND);
 
     //extract packet
     MovementInfo movementInfo;
