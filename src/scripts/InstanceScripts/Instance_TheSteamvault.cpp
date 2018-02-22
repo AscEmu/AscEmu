@@ -250,6 +250,7 @@ class NagaDistillerAI : public CreatureAIScript
 
         NagaDistillerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
             getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             _setMeleeDisabled(true);
@@ -329,6 +330,7 @@ class WarlordKalitreshAI : public CreatureAIScript
             pDistiller = GetClosestDistiller();
             if (pDistiller)
             {
+                //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
                 pDistiller->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                 pDistiller->SetChannelSpellTargetGUID(0);
                 pDistiller->SetChannelSpellId(0);
@@ -378,6 +380,7 @@ class WarlordKalitreshAI : public CreatureAIScript
 
                         if (getCreature()->GetDistance2dSq(pDistiller) <= 100.0f)
                         {
+                            //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
                             pDistiller->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
                             pDistiller->SetChannelSpellTargetGUID(getCreature()->getGuid());
                             pDistiller->SetChannelSpellId(31543);
@@ -403,6 +406,7 @@ class WarlordKalitreshAI : public CreatureAIScript
 
                     else if (t > EnrageTimer && RagePhase == 2)
                     {
+                        //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
                         pDistiller->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                         pDistiller->SetChannelSpellTargetGUID(0);
                         pDistiller->SetChannelSpellId(0);

@@ -422,6 +422,7 @@ class CrystalSpikeAI : public CreatureAIScript
     {
         setCanEnterCombat(false);
         setRooted(true);
+        //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
         getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
         despawn(4500, 0);

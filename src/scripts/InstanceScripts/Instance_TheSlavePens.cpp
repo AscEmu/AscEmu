@@ -52,6 +52,7 @@ class TotemsAI : public CreatureAIScript
                     break;
                 default:    // for Corrupted Nova Totem and it's also safe case
                     {
+                    //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
                         getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);    // hax
                         Despawn = 6000;
                         SpellID = 33132;
@@ -72,6 +73,7 @@ class TotemsAI : public CreatureAIScript
         void AIUpdate() override
         {
             if (getCreature()->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2))
+                //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
                 getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
 
             getCreature()->CastSpell(getCreature(), SpellID, true);

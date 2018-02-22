@@ -51,6 +51,7 @@ public:
 
         Creature* Spirit = static_cast<Creature*>(pObject);
 
+        //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
         Spirit->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         Spirit->Despawn(4000, 0);
     }

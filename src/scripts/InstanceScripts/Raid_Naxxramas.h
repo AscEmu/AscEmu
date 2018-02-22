@@ -1811,6 +1811,7 @@ class FrostBreathTriggerAI : public CreatureAIScript
     FrostBreathTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->MoveTo(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z + 10.5f);
+        //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
         getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         getCreature()->GetAIInterface()->setSplineFlying();
         getCreature()->m_noRespawn = true;
@@ -1849,9 +1850,10 @@ class FrostBreathTrigger2AI : public CreatureAIScript
     FrostBreathTrigger2AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 #ifdef DISABLE_FROST_BREATH
+        //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
         getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 #else
-        _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+        _unit->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
 #endif
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->m_canMove = false;
@@ -1875,6 +1877,7 @@ class FrostBreathTrigger3AI : public CreatureAIScript
 
     FrostBreathTrigger3AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
+        //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
         getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
         getCreature()->CastSpell(getCreature(), SAPPHIRONS_WING_BUFFET, true);
         _setMeleeDisabled(true);
@@ -1904,6 +1907,7 @@ class ChillTriggerAI : public CreatureAIScript
     ChillTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->CastSpellAoF(getCreature()->GetPosition(), sSpellCustomizations.GetSpellInfo(28547), true);
+        //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
         getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->m_canMove = false;
@@ -2501,6 +2505,7 @@ class KelthuzadAI : public CreatureAIScript
         channelKelthuzad->setAttackStopTimer(1000);
 
         _setMeleeDisabled(false);
+        //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
         getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
         getCreature()->GetAIInterface()->m_canMove = true;
 
@@ -2533,6 +2538,7 @@ class KelthuzadAI : public CreatureAIScript
         if (KelGate)
             KelGate->SetState(GO_STATE_CLOSED);
 
+        //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
         getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->m_canMove = false;
@@ -2564,6 +2570,7 @@ class KelthuzadAI : public CreatureAIScript
         setAIAgent(AGENT_NULL);
         getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         _setMeleeDisabled(false);
+        //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
         getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
         getCreature()->GetAIInterface()->m_canMove = true;
         RemoveAIUpdateEvent();
@@ -2612,6 +2619,7 @@ class KelthuzadAI : public CreatureAIScript
         getCreature()->PlaySoundToSet(8814);
 
         _setMeleeDisabled(false);
+        //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
         getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
         getCreature()->GetAIInterface()->m_canMove = true;
 
@@ -2745,6 +2753,7 @@ class KelthuzadAI : public CreatureAIScript
                 getCreature()->SetChannelSpellTargetGUID(0);
                 getCreature()->SetChannelSpellId(0);
                 _setMeleeDisabled(false);
+                //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
                 getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
                 getCreature()->GetAIInterface()->m_canMove = true;
 
@@ -2882,6 +2891,7 @@ class TheLichKingAI : public CreatureAIScript
 
     TheLichKingAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
+        //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
         getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
     }
 };

@@ -432,6 +432,7 @@ class Naralex : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(Naralex);
         Naralex(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
             getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             getCreature()->setStandState(STANDSTATE_SLEEP);
         }

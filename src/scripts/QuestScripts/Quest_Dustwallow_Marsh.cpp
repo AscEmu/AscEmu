@@ -38,6 +38,7 @@ public:
             //Missing: modify fAmount to prevent Balos Jacken death.
             //{...}
             //force player to loose target and stop melee auto-attack:
+            //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
             getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             //start AIUpdate
             RegisterAIUpdateEvent(1000);
@@ -58,6 +59,7 @@ public:
             _setMeleeDisabled(true);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             //remove not_selectable flag:
+            //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
             getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
             // decrease timer
             friendlyTimer--;
@@ -108,6 +110,7 @@ public:
         {
             if (mAttacker->IsPlayer())
             {
+                //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
                 getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 RegisterAIUpdateEvent(1000);
                 QuestLogEntry* qle = (static_cast<Player*>(mAttacker))->GetQuestLogForEntry(1173);
@@ -128,6 +131,7 @@ public:
         getCreature()->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
         getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
     }
 };
@@ -175,6 +179,7 @@ public:
         {
             if (mAttacker->IsPlayer())
             {
+                //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
                 getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 RegisterAIUpdateEvent(1000);
                 QuestLogEntry* qle = (static_cast<Player*>(mAttacker))->GetQuestLogForEntry(1324);
@@ -196,6 +201,7 @@ public:
         getCreature()->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
+        //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
         getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
     }
 };

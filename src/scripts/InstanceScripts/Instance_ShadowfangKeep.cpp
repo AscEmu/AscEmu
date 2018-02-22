@@ -617,6 +617,7 @@ class AdamantGossip : public Arcemu::Gossip::Script
                     pPrisoner->getCreature()->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                     pPrisoner->getCreature()->SendScriptTextChatMessage(SAY_ADAMANT_FOLLOW);
                     pPrisoner->RegisterAIUpdateEvent(5000);
+                    //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
                     pPrisoner->getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                     pPrisoner->getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
                     pPrisoner->getCreature()->EventAddEmote(EMOTE_ONESHOT_CHEER, 4000);
@@ -786,6 +787,7 @@ class AshcrombeGossip : public Arcemu::Gossip::Script
                     pPrisoner->getCreature()->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                     pPrisoner->getCreature()->SendScriptTextChatMessage(SAY_ASHCROMBE_FOLLOW);
                     pPrisoner->RegisterAIUpdateEvent(4000);
+                    //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
                     pPrisoner->getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                     pPrisoner->getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
                     pPrisoner->getCreature()->Emote(EMOTE_ONESHOT_POINT);

@@ -604,6 +604,7 @@ class BarnesAI : public CreatureAIScript
                         EventWOZ();
                         break;
                 }
+                //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
                 getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_SERVER_CONTROLLED);
                 WayStartBBW[getCreature()->GetInstanceID()] = 5;
             } break;
@@ -789,6 +790,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(StageLight);
     StageLight(Creature* pCreature) : CreatureAIScript(pCreature)
     {
+        //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
         getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->m_canMove = false;
@@ -1726,6 +1728,7 @@ class FiendishImpAI : public CreatureAIScript
 
     void OnCombatStart(Unit* mTarget) override
     {
+        //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
         getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
 
@@ -1801,6 +1804,7 @@ class FiendPortal : public CreatureAIScript
     {
         getCreature()->setMoveRoot(true);
 
+        //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
         getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->m_canMove = false;
@@ -2231,6 +2235,7 @@ class NetherInfernalAI : public CreatureAIScript
     {
         setRooted(true);
         setCanEnterCombat(false);
+        //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
         getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         getCreature()->m_noRespawn = true;
         RegisterAIUpdateEvent(6000);
@@ -2267,6 +2272,7 @@ class MAxesAI : public CreatureAIScript
     ADD_CREATURE_FACTORY_FUNCTION(MAxesAI);
     MAxesAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
+        //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
         getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
 
         /*spells[0].info = sSpellCustomizations.GetSpellInfo(DEMONIC_FRENZY);
@@ -2424,6 +2430,7 @@ class VoidZoneAI : public CreatureAIScript
     {
         getCreature()->setMoveRoot(true);
         getCreature()->DisableAI();
+        //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
         getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->m_canMove = false;
@@ -3114,6 +3121,7 @@ class CycloneOZ : public CreatureAIScript
     CycloneOZ(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(CYCLONE_VISUAL), true);
+        //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
         getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->m_canMove = false;

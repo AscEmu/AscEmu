@@ -120,6 +120,7 @@ class AntusulTriggerAI : public CreatureAIScript
         {
             getCreature()->GetAIInterface()->m_canMove = false;
             _setMeleeDisabled(true);
+            //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
             getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
             Unit* antusul = NULL;
@@ -278,6 +279,7 @@ class AntusulAI : public CreatureAIScript
             {
                 trigger->GetAIInterface()->m_canMove = true;
                 trigger->GetAIInterface()->setMeleeDisabled(false);
+                //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
                 trigger->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
             }
         }

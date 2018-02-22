@@ -2061,6 +2061,7 @@ void ShadeOfNaxxramasAI::OnDied(Unit* /*pKiller*/)
     CreatureAIScript* Ghost = spawnCreatureAndGetAIScript(CN_GHOST_OF_NAXXRAMAS, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->GetFaction());
     if (Ghost != nullptr)
     {
+        //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
         Ghost->getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
     }
 
@@ -2133,6 +2134,7 @@ void PortalOfShadowsAI::AIUpdate()
             CreatureAIScript* Ghost = spawnCreatureAndGetAIScript(CN_GHOST_OF_NAXXRAMAS, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->GetFaction());
             if (Ghost != nullptr)
             {
+                //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
                 Ghost->getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
             }
 

@@ -421,6 +421,7 @@ class SkarvaldTheConstructorAI : public CreatureAIScript
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "Not... over... yet.");
                 pDalronn->sendChatMessage(CHAT_MSG_MONSTER_YELL, 13203, "Skarvald, you incompetent slug! Return and make yourself useful!");
                 spawnCreature(CN_SKARVALD_GHOST, getCreature()->GetPosition());
+                //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
                 getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             }
             else if (pDalronn != nullptr && !pDalronn->isAlive())
@@ -504,6 +505,7 @@ class DalronnTheControllerAI : public CreatureAIScript
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "See... you... soon.");
                 pSkarvald->sendChatMessage(CHAT_MSG_MONSTER_YELL, 13233, "Pagh! What sort of necromancer lets death stop him? I knew you were worthless!");
                 spawnCreature(CN_DALRONN_GHOST, getCreature()->GetPosition());
+                //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
                 getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             }
             else if (pSkarvald != nullptr && !pSkarvald->isAlive())
@@ -554,6 +556,7 @@ class SkarvaldTheConstructorGhostAI : public CreatureAIScript
 
         void OnLoad() override
         {
+            //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
             getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
 
             Player* pTarget = getNearestPlayer();
@@ -581,6 +584,7 @@ class DalronnTheControllerGhostAI : public CreatureAIScript
 
         void OnLoad() override
         {
+            //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
             getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
 
             Player* pTarget = getNearestPlayer();

@@ -500,6 +500,7 @@ class ArthasAI : public CreatureAIScript
                         c->GetAIInterface()->SetAllowedToEnterCombat(false);
                         for (uint8 i = 0; i < 7; i++)
                             c->SchoolImmunityList[i] = 1;
+                        //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
                         c->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                         //1 = 0s
                         c->SendScriptTextChatMessage(SAY_MALGANIS_01);

@@ -425,6 +425,7 @@ class KrickAI : public CreatureAIScript
             setCanEnterCombat(false);
 
             // Clear Hatelist dont allow Combat and root the Unit
+            //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
             getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             getCreature()->GetAIInterface()->WipeTargetList();
@@ -531,6 +532,7 @@ class BarrageAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(BarrageAI);
         BarrageAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
             getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
             getCreature()->CastSpell(getCreature(), SPELL_EXPLODING_ORB, false);
             getCreature()->CastSpell(getCreature(), SPELL_AUTO_GROW, false);
