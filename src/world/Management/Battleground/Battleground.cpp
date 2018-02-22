@@ -901,7 +901,8 @@ Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, ui
     pCreature->SetCastSpeedMod(1.0f);
 
     pCreature->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPIRITGUIDE);
-    pCreature->setUInt32Value(UNIT_FIELD_BYTES_2, 1 | (0x10 << 8));
+    pCreature->setSheathType(SHEATH_STATE_MELEE);
+    pCreature->setPvpFlags(U_FIELD_BYTES_FLAG_AURAS);
 
     pCreature->DisableAI();
 

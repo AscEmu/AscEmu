@@ -432,7 +432,8 @@ void WorldSession::HandlePetRename(WorldPacket& recvData)
     pet->Rename(name);
 
     // Disable pet rename.
-    pet->setUInt32Value(UNIT_FIELD_BYTES_2, 1 | /* (0x28 << 8) | */ (PET_RENAME_NOT_ALLOWED << 16));
+    pet->setSheathType(SHEATH_STATE_MELEE);
+    pet->setPetFlags(PET_RENAME_NOT_ALLOWED);
 
     ARCEMU_ASSERT(pet->GetPetOwner() != NULL);
 
@@ -485,7 +486,7 @@ void WorldSession::HandlePetUnlearn(WorldPacket& recv_data)
     _player->ModGold(-cost);
 
     pPet->WipeTalents();
-    pPet->SetTPs(pPet->GetTPsForLevel(pPet->getLevel()));
+    pPet->setPetTalentPoints(pPet->GetTPsForLevel(pPet->getLevel()));
     pPet->SendTalentsToOwner();
 }
 

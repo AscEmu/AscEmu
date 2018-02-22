@@ -274,6 +274,21 @@ public:
     uint32_t getDynamicFlags() const;
     void setDynamicFlags(uint32_t flags);
 
+    //byte_2 begin
+    uint8_t getSheathType() const;
+    void setSheathType(uint8_t sheathType);
+
+    uint8_t getPvpFlags() const;
+    void setPvpFlags(uint8_t pvpFlags);
+
+    uint8_t getPetFlags() const;
+    void setPetFlags(uint8_t petFlags);
+
+    uint8_t getShapeShiftForm() const;
+    void setShapeShiftForm(uint8_t shapeShiftForm);
+    uint32_t getShapeShiftMask() { return 1 << (getShapeShiftForm() - 1); }
+    //bytes_2 end
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement
 private:
@@ -1039,10 +1054,6 @@ public:
     void SetDodgeFromSpell(float value) { m_dodgefromspell = value; }
 
     void AggroPvPGuards();
-
-    virtual void SetShapeShift(uint8 ss) { setByteValue(UNIT_FIELD_BYTES_2, 3, ss); }
-    uint8 GetShapeShift() { return getByteValue(UNIT_FIELD_BYTES_2, 3); }
-    uint32 GetShapeShiftMask() { return ((uint32)1 << (GetShapeShift() - 1)); }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Unit properties

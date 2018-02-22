@@ -3484,7 +3484,7 @@ void Spell::HandleAddAura(uint64 guid)
                     0
                 };
 
-                if (p_caster && (p_caster->GetShapeShift() == FORM_BEAR || p_caster->GetShapeShift() == FORM_DIREBEAR) &&
+                if (p_caster && (p_caster->getShapeShiftForm() == FORM_BEAR || p_caster->getShapeShiftForm() == FORM_DIREBEAR) &&
                     p_caster->hasAurasWithId(kingOfTheJungle))
                 {
                     SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(51185);
@@ -4251,15 +4251,15 @@ uint8 Spell::CanCast(bool tolerate)
         if (!p_caster->ignoreShapeShiftChecks)
         {
             // No need to go through this function if the results are gonna be ignored anyway
-            uint8 shapeError = GetErrorAtShapeshiftedCast(GetSpellInfo(), p_caster->GetShapeShift());
+            uint8 shapeError = GetErrorAtShapeshiftedCast(GetSpellInfo(), p_caster->getShapeShiftForm());
             if (shapeError != 0)
                 return shapeError;
         }
 
         // check if spell is allowed while shapeshifted
-        if (p_caster->GetShapeShift())
+        if (p_caster->getShapeShiftForm())
         {
-            switch (p_caster->GetShapeShift())
+            switch (p_caster->getShapeShiftForm())
             {
                 case FORM_TREE:
                 case FORM_BATTLESTANCE:

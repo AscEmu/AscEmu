@@ -791,7 +791,7 @@ class MagtheridonAI : public CreatureAIScript
 
             getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(BANISH), true);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-            getCreature()->setUInt32Value(UNIT_FIELD_BYTES_2, 1);
+            getCreature()->setSheathType(SHEATH_STATE_MELEE);
 
             timer_quake = timer_enrage = timer_blastNova = timer_caveIn = 0;
             PhaseSwitch = false;

@@ -45,8 +45,8 @@ union
     struct
     {
         uint8_t sheath_type;
-        uint8_t flag;
-        uint8_t rename_flag;
+        uint8_t pvp_flag;
+        uint8_t pet_flag;
         uint8_t shape_shift_form;
     } s;
     uint32_t raw;

@@ -2019,9 +2019,9 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
 
                 Player* mPlayer = static_cast< Player* >(unitTarget);
                 if (!mPlayer->IsInFeralForm() || (
-                    mPlayer->GetShapeShift() != FORM_CAT &&
-                    mPlayer->GetShapeShift() != FORM_BEAR &&
-                    mPlayer->GetShapeShift() != FORM_DIREBEAR))
+                    mPlayer->getShapeShiftForm() != FORM_CAT &&
+                    mPlayer->getShapeShiftForm() != FORM_BEAR &&
+                    mPlayer->getShapeShiftForm() != FORM_DIREBEAR))
                     break;
                 uint32 max = mPlayer->getUInt32Value(UNIT_FIELD_MAXHEALTH);
                 uint32 val = float2int32(((mPlayer->getAuraWithId(34300)) ? 0.04f : 0.02f) * max);
@@ -2036,8 +2036,8 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
 
                 Player* mPlayer = static_cast< Player* >(unitTarget);
                 if (!mPlayer->IsInFeralForm() ||
-                    (mPlayer->GetShapeShift() != FORM_BEAR &&
-                    mPlayer->GetShapeShift() != FORM_DIREBEAR))
+                    (mPlayer->getShapeShiftForm() != FORM_BEAR &&
+                    mPlayer->getShapeShiftForm() != FORM_DIREBEAR))
                     break;
                 uint32 val = mPlayer->GetPower(POWER_TYPE_RAGE);
                 if (val > 100)
@@ -6312,7 +6312,7 @@ void Spell::SpellEffectRenamePet(uint8_t /*effectIndex*/)
         !static_cast< Pet* >(unitTarget)->GetPetOwner() || static_cast< Pet* >(unitTarget)->GetPetOwner()->getClass() != HUNTER)
         return;
 
-    unitTarget->setByteValue(UNIT_FIELD_BYTES_2, 2, PET_RENAME_ALLOWED);
+    unitTarget->setPetFlags(unitTarget->getPetFlags() | PET_RENAME_ALLOWED);
 }
 
 void Spell::SpellEffectRestoreHealthPct(uint8_t /*effectIndex*/)

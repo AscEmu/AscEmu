@@ -2090,52 +2090,52 @@ bool Creature::HasItems()
 
 bool Creature::IsPvPFlagged()
 {
-    return hasByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_PVP);
+    return getPvpFlags() & U_FIELD_BYTES_FLAG_PVP;
 }
 
 void Creature::SetPvPFlag()
 {
-    setByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_PVP);
+    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_PVP);
     summonhandler.SetPvPFlags();
 }
 
 void Creature::RemovePvPFlag()
 {
-    removeByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_PVP);
+    setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_PVP);
     summonhandler.RemovePvPFlags();
 }
 
 bool Creature::IsFFAPvPFlagged()
 {
-    return hasByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_FFA_PVP);
+    return getPvpFlags() & U_FIELD_BYTES_FLAG_FFA_PVP;
 }
 
 void Creature::SetFFAPvPFlag()
 {
-    setByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_FFA_PVP);
+    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_FFA_PVP);
     summonhandler.SetFFAPvPFlags();
 }
 
 void Creature::RemoveFFAPvPFlag()
 {
-    removeByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_FFA_PVP);
+    setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_FFA_PVP);
     summonhandler.RemoveFFAPvPFlags();
 }
 
 bool Creature::IsSanctuaryFlagged()
 {
-    return hasByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_SANCTUARY);
+    return getPvpFlags() & U_FIELD_BYTES_FLAG_SANCTUARY;
 }
 
 void Creature::SetSanctuaryFlag()
 {
-    setByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_SANCTUARY);
+    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_SANCTUARY);
     summonhandler.SetSanctuaryFlags();
 }
 
 void Creature::RemoveSanctuaryFlag()
 {
-    removeByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_SANCTUARY);
+    setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_SANCTUARY);
     summonhandler.RemoveSanctuaryFlags();
 }
 

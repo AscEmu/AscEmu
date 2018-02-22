@@ -819,7 +819,8 @@ public:
 
         bool IsInFeralForm()
         {
-            int s = GetShapeShift();
+            //\todo shapeshiftform is never negative.
+            int s = getShapeShiftForm();
             if (s <= 0)
                 return false;
 

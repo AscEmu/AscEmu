@@ -2923,7 +2923,7 @@ void Aura::SpellAuraModStealth(bool apply)
             case 42943:
             case 52188:
             case 58506:
-                m_target->SetFlag(UNIT_FIELD_BYTES_2, 0x1E000000); //sneak anim
+                m_target->SetFlag(UNIT_FIELD_BYTES_2, 0x1E000000); //sneak anim \todo investigate
                 break;
         }
 
@@ -3067,7 +3067,7 @@ void Aura::SpellAuraModStealth(bool apply)
             default:
             {
                 m_target->SetStealth(0);
-                m_target->RemoveFlag(UNIT_FIELD_BYTES_2, 0x1E000000);
+                m_target->RemoveFlag(UNIT_FIELD_BYTES_2, 0x1E000000); //\todo investigate
 
                 m_target->setStandStateFlags(m_target->getStandStateFlags() &~UNIT_STAND_FLAGS_CREEP);
 
@@ -4234,7 +4234,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
             m_target->EventModelChange();
         }
 
-        m_target->SetShapeShift(static_cast<uint8_t>(mod->m_miscValue));
+        m_target->setShapeShiftForm(static_cast<uint8_t>(mod->m_miscValue));
 
         // check for spell id
         if (spellId == 0)
@@ -4313,7 +4313,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
                 m_target->RemoveAura(spellId);
         }
 
-        m_target->SetShapeShift(0);
+        m_target->setShapeShiftForm(FORM_NORMAL);
     }
 
     if (p_target != nullptr)
@@ -5733,7 +5733,7 @@ void Aura::SpellAuraMounted(bool apply)
         m_target->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, displayId);
         //m_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
 
-        if (p_target->GetShapeShift() && !(p_target->GetShapeShift() & (FORM_BATTLESTANCE | FORM_DEFENSIVESTANCE | FORM_BERSERKERSTANCE)) && p_target->m_ShapeShifted != m_spellInfo->getId())
+        if (p_target->getShapeShiftForm() && !(p_target->getShapeShiftForm() & (FORM_BATTLESTANCE | FORM_DEFENSIVESTANCE | FORM_BERSERKERSTANCE)) && p_target->m_ShapeShifted != m_spellInfo->getId())
             p_target->RemoveAura(p_target->m_ShapeShifted);
 
         p_target->DismissActivePets();

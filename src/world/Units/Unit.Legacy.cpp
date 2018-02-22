@@ -1422,11 +1422,11 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
 
             if (static_cast<Player*>(this)->IsInFeralForm())
             {
-                if (static_cast<Player*>(this)->GetShapeShift() == FORM_CAT)
+                if (static_cast<Player*>(this)->getShapeShiftForm() == FORM_CAT)
                 {
                     proc_Chance = float2int32(ppm / 0.6f);
                 }
-                else if (static_cast<Player*>(this)->GetShapeShift() == FORM_BEAR || static_cast<Player*>(this)->GetShapeShift() == FORM_DIREBEAR)
+                else if (static_cast<Player*>(this)->getShapeShiftForm() == FORM_BEAR || static_cast<Player*>(this)->getShapeShiftForm() == FORM_DIREBEAR)
                 {
                     proc_Chance = float2int32(ppm / 0.24f);
                 }
@@ -1534,7 +1534,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     if (!IsPlayer())
                         continue;
                     Player* p = static_cast<Player*>(this);
-                    if (p->GetShapeShift() != FORM_BEAR && p->GetShapeShift() != FORM_DIREBEAR)
+                    if (p->getShapeShiftForm() != FORM_BEAR && p->getShapeShiftForm() != FORM_DIREBEAR)
                         continue;
                 }
                 break;
@@ -1544,7 +1544,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                         continue;
 
                     Player* p = static_cast<Player*>(this);
-                    if (p->GetShapeShift() != FORM_CAT)
+                    if (p->getShapeShiftForm() != FORM_CAT)
                         continue;
 
                     switch (CastingSpell->getId())
@@ -1694,14 +1694,14 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                 {
                     if (!this->IsPlayer())
                         continue;
-                    if (static_cast<Player*>(this)->GetShapeShift() != FORM_BEAR ||
-                        static_cast<Player*>(this)->GetShapeShift() != FORM_DIREBEAR)
+                    if (static_cast<Player*>(this)->getShapeShiftForm() != FORM_BEAR ||
+                        static_cast<Player*>(this)->getShapeShiftForm() != FORM_DIREBEAR)
                         continue;
                 }
                 break;
                 case 37310://Bloodlust
                 {
-                    if (!this->IsPlayer() || static_cast<Player*>(this)->GetShapeShift() != FORM_CAT)
+                    if (!this->IsPlayer() || static_cast<Player*>(this)->getShapeShiftForm() != FORM_CAT)
                         continue;
                 }
                 break;
@@ -2061,9 +2061,9 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                         continue;
                     Player* mPlayer = static_cast<Player*>(this);
                     if (!mPlayer->IsInFeralForm() ||
-                        (mPlayer->GetShapeShift() != FORM_CAT &&
-                        mPlayer->GetShapeShift() != FORM_BEAR &&
-                        mPlayer->GetShapeShift() != FORM_DIREBEAR))
+                        (mPlayer->getShapeShiftForm() != FORM_CAT &&
+                        mPlayer->getShapeShiftForm() != FORM_BEAR &&
+                        mPlayer->getShapeShiftForm() != FORM_DIREBEAR))
                         continue;
                 }
                 break;
@@ -7081,7 +7081,7 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
         //chances in feral form don't depend on weapon skill
         if (static_cast<Player*>(this)->IsInFeralForm())
         {
-            uint8 form = static_cast<Player*>(this)->GetShapeShift();
+            uint8 form = static_cast<Player*>(this)->getShapeShiftForm();
             if (form == FORM_CAT || form == FORM_BEAR || form == FORM_DIREBEAR)
             {
                 SubClassSkill = SKILL_FERAL_COMBAT;
@@ -7375,7 +7375,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         //chances in feral form don't depend on weapon skill
         if (pr->IsInFeralForm())
         {
-            uint8 form = pr->GetShapeShift();
+            uint8 form = pr->getShapeShiftForm();
             if (form == FORM_CAT || form == FORM_BEAR || form == FORM_DIREBEAR)
             {
                 SubClassSkill = SKILL_FERAL_COMBAT;

@@ -444,7 +444,10 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
         }
 
         setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
-        setUInt32Value(UNIT_FIELD_BYTES_2, (0x01 | (0x28 << 8) | (0x2 << 24)));
+
+        setSheathType(SHEATH_STATE_MELEE);
+        setShapeShiftForm(FORM_TREE);   //\todo really?
+
         SetBoundingRadius(0.5f);
         SetCombatReach(0.75f);
         setPowerType(POWER_TYPE_MANA);
@@ -470,7 +473,8 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
         setUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP, GetNextLevelXP(level));
         SetPower(POWER_TYPE_FOCUS, 100);                                                // Focus
         SetMaxPower(POWER_TYPE_FOCUS, 100);
-        setUInt32Value(UNIT_FIELD_BYTES_2, 1  /* | (0x28 << 8) */ | (PET_RENAME_ALLOWED << 16));  // 0x3 -> Enable pet rename.
+        setSheathType(SHEATH_STATE_MELEE);
+        setPetFlags(PET_RENAME_ALLOWED);    // 0x3 -> Enable pet rename.
         setPowerType(POWER_TYPE_FOCUS);
     }
     SetFaction(owner->GetFaction());
@@ -913,7 +917,9 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
         SetNameForEntry(mPi->entry);
         setUInt64Value(UNIT_CREATED_BY_SPELL, mPi->spellid);
         setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
-        setUInt32Value(UNIT_FIELD_BYTES_2, (0x01 | (0x28 << 8) | (0x2 << 24)));
+        setSheathType(SHEATH_STATE_MELEE);
+        setShapeShiftForm(FORM_TREE);   //\todo really?
+
         SetBoundingRadius(0.5f);
         SetCombatReach(0.75f);
         setPowerType(POWER_TYPE_MANA);
@@ -927,7 +933,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
         SetMaxPower(POWER_TYPE_HAPPINESS, 1000000);
         setUInt32Value(UNIT_FIELD_PETEXPERIENCE, mPi->xp);
         setUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP, GetNextLevelXP(mPi->level));
-        setUInt32Value(UNIT_FIELD_BYTES_2, 1);
+        setSheathType(SHEATH_STATE_MELEE);
         SetPower(POWER_TYPE_FOCUS, 100);                                                    // Focus
         SetMaxPower(POWER_TYPE_FOCUS, 100);
         setPowerType(POWER_TYPE_FOCUS);
@@ -965,9 +971,9 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     SetPower(POWER_TYPE_HAPPINESS, mPi->current_happiness);
 
     if (mPi->renamable == 0)
-        setByteValue(UNIT_FIELD_BYTES_2, 2, PET_RENAME_NOT_ALLOWED);
+        setPetFlags(getPetFlags() | PET_RENAME_NOT_ALLOWED);
     else
-        setByteValue(UNIT_FIELD_BYTES_2, 2, PET_RENAME_ALLOWED);
+        setPetFlags(getPetFlags() | PET_RENAME_ALLOWED);
 
     //if pet was dead on logout then it should be dead now too.//we could use mPi->alive but this will break backward compatibility
     if (HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DEAD))   //LoadFromDB() (called by Player::SpawnPet()) now always revive the Pet if it was dead.
@@ -1120,9 +1126,7 @@ void Pet::UpdatePetInfo(bool bSetToOffline)
     player_pet->current_hp = GetHealth();
     player_pet->current_happiness = GetPower(POWER_TYPE_HAPPINESS);
 
-    uint32 renamable = getByteValue(UNIT_FIELD_BYTES_2, 2);
-
-    if (renamable == PET_RENAME_ALLOWED)
+    if (getPetFlags() == PET_RENAME_ALLOWED)
         player_pet->renamable = 1;
     else
         player_pet->renamable = 0;

@@ -846,13 +846,13 @@ void CreatureAIScript::_setDisplayId(uint32_t displayId)
 
 void CreatureAIScript::_setWieldWeapon(bool setWieldWeapon)
 {
-    if (setWieldWeapon && _creature->getUInt32Value(UNIT_FIELD_BYTES_2) != 1)
+    if (setWieldWeapon && _creature->getSheathType() != SHEATH_STATE_MELEE)
     {
-        _creature->setUInt32Value(UNIT_FIELD_BYTES_2, 1);
+        _creature->setSheathType(SHEATH_STATE_MELEE);
     }
-    else if (!setWieldWeapon && _creature->getUInt32Value(UNIT_FIELD_BYTES_2) != 0)
+    else if (!setWieldWeapon && _creature->getSheathType() != SHEATH_STATE_UNARMED)
     {
-        _creature->setUInt32Value(UNIT_FIELD_BYTES_2, 0);
+        _creature->setSheathType(SHEATH_STATE_UNARMED);
     }
 }
 

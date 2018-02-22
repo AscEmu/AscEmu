@@ -973,9 +973,9 @@ bool Player::Create(WorldPacket& data)
     setPowerType(powertype);
 
 #if VERSION_STRING != Cata
-    setUInt32Value(UNIT_FIELD_BYTES_2, (U_FIELD_BYTES_FLAG_PVP << 8));
+    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_PVP);
 #else
-    setByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_PVP);
+    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_PVP);
     SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
     SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_ENABLE_POWER_REGEN);
 #endif
@@ -3391,7 +3391,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     if (getClass() == WARRIOR)
         SetShapeShift(FORM_BATTLESTANCE);
 
-    setUInt32Value(UNIT_FIELD_BYTES_2, (0x28 << 8));
+    setPvpFlags(U_FIELD_BYTES_FLAG_UNK2 | U_FIELD_BYTES_FLAG_SANCTUARY);
     SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
     SetBoundingRadius(0.388999998569489f);
     SetCombatReach(1.5f);
@@ -4179,7 +4179,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     if (getClass() == WARRIOR)
         SetShapeShift(FORM_BATTLESTANCE);
 
-    setUInt32Value(UNIT_FIELD_BYTES_2, (0x28 << 8));
+    setPvpFlags(U_FIELD_BYTES_FLAG_UNK2 | U_FIELD_BYTES_FLAG_SANCTUARY);
     SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
     SetBoundingRadius(0.388999998569489f);
     SetCombatReach(1.5f);
@@ -4957,7 +4957,7 @@ void Player::OnPushToWorld()
 
     // TODO What is this?
 #ifndef AE_TBC
-    removeByteFlag(UNIT_FIELD_BYTES_2, 1, 0x28);
+    setPvpFlags(getPvpFlags() &~(U_FIELD_BYTES_FLAG_UNK2 | U_FIELD_BYTES_FLAG_SANCTUARY));
 #endif
 
     if (m_playerInfo->lastOnline + 900 < UNIXTIME)    // did we logged out for more than 15 minutes?
@@ -5072,7 +5072,7 @@ void Player::OnPushToWorld()
 
     // Update PVP Situation
     LoginPvPSetup();
-    removeByteFlag(UNIT_FIELD_BYTES_2, 1, 0x28);
+    setPvpFlags(getPvpFlags() &~(U_FIELD_BYTES_FLAG_UNK2 | U_FIELD_BYTES_FLAG_SANCTUARY));
 
     if (m_playerInfo->lastOnline + 900 < UNIXTIME)    // did we logged out for more than 15 minutes?
         m_ItemInterface->RemoveAllConjured();
@@ -5571,7 +5571,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
 
     if (this->getClass() == DRUID && slot == EQUIPMENT_SLOT_MAINHAND)
     {
-        uint8 ss = GetShapeShift();
+        uint8 ss = getShapeShiftForm();
         if (ss == FORM_MOONKIN || ss == FORM_CAT || ss == FORM_BEAR || ss == FORM_DIREBEAR)
             this->ApplyFeralAttackPower(apply, item);
     }
@@ -6484,11 +6484,11 @@ void Player::UpdateAttackSpeed()
     uint32 speed = 2000;
     Item* weap;
 
-    if (GetShapeShift() == FORM_CAT)
+    if (getShapeShiftForm() == FORM_CAT)
     {
         speed = 1000;
     }
-    else if (GetShapeShift() == FORM_BEAR || GetShapeShift() == FORM_DIREBEAR)
+    else if (getShapeShiftForm() == FORM_BEAR || getShapeShiftForm() == FORM_DIREBEAR)
     {
         speed = 2500;
     }
@@ -6543,17 +6543,17 @@ void Player::UpdateStats()
             //Agility - 10
             RAP = agi - 10;
 
-            if (GetShapeShift() == FORM_MOONKIN)
+            if (getShapeShiftForm() == FORM_MOONKIN)
             {
                 //(Strength x 2) + (Character Level x 1.5) - 20
                 AP += float2int32(static_cast<float>(lev)* 1.5f);
             }
-            if (GetShapeShift() == FORM_CAT)
+            if (getShapeShiftForm() == FORM_CAT)
             {
                 //(Strength x 2) + Agility + (Character Level x 2) - 20
                 AP += agi + (lev * 2);
             }
-            if (GetShapeShift() == FORM_BEAR || GetShapeShift() == FORM_DIREBEAR)
+            if (getShapeShiftForm() == FORM_BEAR || getShapeShiftForm() == FORM_DIREBEAR)
             {
                 //(Strength x 2) + (Character Level x 3) - 20
                 AP += (lev * 3);
@@ -6673,7 +6673,7 @@ void Player::UpdateStats()
 
     if (getUInt32Value(UNIT_FIELD_HEALTH) > res)
         setHealth(res);
-    else if ((cl == DRUID) && (GetShapeShift() == FORM_BEAR || GetShapeShift() == FORM_DIREBEAR))
+    else if ((cl == DRUID) && (getShapeShiftForm() == FORM_BEAR || getShapeShiftForm() == FORM_DIREBEAR))
     {
         res = getUInt32Value(UNIT_FIELD_MAXHEALTH) * getUInt32Value(UNIT_FIELD_HEALTH) / oldmaxhp;
         setHealth(res);
@@ -10418,7 +10418,7 @@ void Player::CompleteLoading()
         {
             if (spellInfo->getRequiredShapeShift())
             {
-                if (!(((uint32)1 << (GetShapeShift() - 1)) & spellInfo->getRequiredShapeShift()))
+                if (!(getShapeShiftMask() & spellInfo->getRequiredShapeShift()))
                     continue;
             }
 
@@ -10903,8 +10903,8 @@ void Player::SaveAuras(std::stringstream & ss)
 
 void Player::SetShapeShift(uint8 ss)
 {
-    uint8 old_ss = GetShapeShift(); //GetByte(UNIT_FIELD_BYTES_2, 3);
-    setByteValue(UNIT_FIELD_BYTES_2, 3, ss);
+    uint8 old_ss = getShapeShiftForm();
+    setShapeShiftForm(ss);
 
     //remove auras that we should not have
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
@@ -10999,7 +10999,7 @@ void Player::CalcDamage()
 {
     float delta;
     float r;
-    int ss = GetShapeShift();
+    int ss = getShapeShiftForm();
     /////////////////MAIN HAND
     float ap_bonus = GetAP() / 14000.0f;
     delta = (float)GetPosDamageDoneMod(SCHOOL_NORMAL) - (float)GetNegDamageDoneMod(SCHOOL_NORMAL);
@@ -11203,7 +11203,7 @@ void Player::CalcDamage()
 uint32 Player::GetMainMeleeDamage(uint32 AP_owerride)
 {
     float r;
-    int ss = GetShapeShift();
+    int ss = getShapeShiftForm();
     /////////////////MAIN HAND
     float ap_bonus;
     if (AP_owerride)
@@ -11977,7 +11977,7 @@ void Player::EventTalentHearthOfWildChange(bool apply)
         tval = hearth_of_wild_pct;
     else tval = -hearth_of_wild_pct;
 
-    uint32 SS = GetShapeShift();
+    uint32 SS = getShapeShiftForm();
 
     //increase stamina if :
     if (SS == FORM_BEAR || SS == FORM_DIREBEAR)
@@ -12134,7 +12134,7 @@ void Player::AddShapeShiftSpell(uint32 id)
     SpellInfo* sp = sSpellCustomizations.GetSpellInfo(id);
     mShapeShiftSpells.insert(id);
 
-    if (sp->getRequiredShapeShift() && ((uint32)1 << (GetShapeShift() - 1)) & sp->getRequiredShapeShift())
+    if (sp->getRequiredShapeShift() && getShapeShiftMask() & sp->getRequiredShapeShift())
     {
         Spell* spe = sSpellFactoryMgr.NewSpell(this, sp, true, nullptr);
         SpellCastTargets t(this->getGuid());
@@ -13192,14 +13192,14 @@ void Player::SendAvailSpells(DBC::Structures::SpellShapeshiftFormEntry const* sh
 
 bool Player::IsPvPFlagged()
 {
-    return hasByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_PVP);
+    return getPvpFlags() & U_FIELD_BYTES_FLAG_PVP;
 }
 
 void Player::SetPvPFlag()
 {
     StopPvPTimer();
 
-    setByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_PVP);
+    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_PVP);
     SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
 
     summonhandler.SetPvPFlags();
@@ -13219,7 +13219,7 @@ void Player::SetPvPFlag()
 void Player::RemovePvPFlag()
 {
     StopPvPTimer();
-    removeByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_PVP);
+    setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_PVP);
     RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
 
     summonhandler.RemovePvPFlags();
@@ -13234,13 +13234,13 @@ void Player::RemovePvPFlag()
 
 bool Player::IsFFAPvPFlagged()
 {
-    return hasByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_FFA_PVP);
+    return getPvpFlags() & U_FIELD_BYTES_FLAG_FFA_PVP;
 }
 
 void Player::SetFFAPvPFlag()
 {
     StopPvPTimer();
-    setByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_FFA_PVP);
+    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_FFA_PVP);
     SetFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP);
 
     summonhandler.SetFFAPvPFlags();
@@ -13256,7 +13256,7 @@ void Player::SetFFAPvPFlag()
 void Player::RemoveFFAPvPFlag()
 {
     StopPvPTimer();
-    removeByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_FFA_PVP);
+    setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_FFA_PVP);
     RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP);
 
     summonhandler.RemoveFFAPvPFlags();
@@ -13271,12 +13271,12 @@ void Player::RemoveFFAPvPFlag()
 
 bool Player::IsSanctuaryFlagged()
 {
-    return hasByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_SANCTUARY);
+    return getPvpFlags() & U_FIELD_BYTES_FLAG_SANCTUARY;
 }
 
 void Player::SetSanctuaryFlag()
 {
-    setByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_SANCTUARY);
+    setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_SANCTUARY);
 
     summonhandler.SetSanctuaryFlags();
 
@@ -13290,7 +13290,7 @@ void Player::SetSanctuaryFlag()
 
 void Player::RemoveSanctuaryFlag()
 {
-    removeByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_SANCTUARY);
+    setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_SANCTUARY);
 
     summonhandler.RemoveSanctuaryFlags();
 
@@ -13478,7 +13478,7 @@ void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
                 spellInfo->getEffect(2) == SPELL_EFFECT_LEARN_SPELL)
                 && ((spellInfo->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET) == 0 || ((spellInfo->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET) && GetSummon()))))
             {
-                if (spellInfo->getRequiredShapeShift() && !((uint32)1 << (GetShapeShift() - 1) & spellInfo->getRequiredShapeShift()))
+                if (spellInfo->getRequiredShapeShift() && !(getShapeShiftMask() & spellInfo->getRequiredShapeShift()))
                 {
                     // do nothing
                 }
@@ -13649,7 +13649,7 @@ void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
                 }
             }
 
-            int32 ss = GetShapeShiftMask();
+            int32 ss = getShapeShiftMask();
             if (spellInfo->RequiredShapeShift == 0 || (ss & spellInfo->RequiredShapeShift) != 0)
             {
                 if (spellInfo->IsPassive()

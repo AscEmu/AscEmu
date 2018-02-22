@@ -622,7 +622,7 @@ enum UnitBytes2_SheathState
 enum UnitBytes2_PvPFlags
 {
     U_FIELD_BYTES_FLAG_PVP          = 0x01,
-    U_FIELD_BYTES_FLAG_UNK1         = 0x04,
+    U_FIELD_BYTES_FLAG_UNK1         = 0x02,
     U_FIELD_BYTES_FLAG_FFA_PVP      = 0x04,
     U_FIELD_BYTES_FLAG_SANCTUARY    = 0x08,
     U_FIELD_BYTES_FLAG_AURAS        = 0x10,

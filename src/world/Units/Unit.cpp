@@ -63,6 +63,20 @@ uint8_t Unit::getAnimationFlags() const { return unitData()->field_bytes_1.s.ani
 void Unit::setAnimationFlags(uint8_t animationFlags) { write(unitData()->field_bytes_1.s.animation_flag, animationFlags); }
 //bytes_1 end
 
+//byte_2 begin
+uint8_t Unit::getSheathType() const { return unitData()->field_bytes_2.s.sheath_type; }
+void Unit::setSheathType(uint8_t sheathType) { write(unitData()->field_bytes_2.s.sheath_type, sheathType); }
+
+uint8_t Unit::getPvpFlags() const { return unitData()->field_bytes_2.s.pvp_flag; }
+void Unit::setPvpFlags(uint8_t pvpFlags) { write(unitData()->field_bytes_2.s.pvp_flag, pvpFlags); }
+
+uint8_t Unit::getPetFlags() const { return unitData()->field_bytes_2.s.pet_flag; }
+void Unit::setPetFlags(uint8_t petFlags) { write(unitData()->field_bytes_2.s.pet_flag, petFlags); }
+
+uint8_t Unit::getShapeShiftForm() const { return unitData()->field_bytes_2.s.shape_shift_form; }
+void Unit::setShapeShiftForm(uint8_t shapeShiftForm) { write(unitData()->field_bytes_2.s.shape_shift_form, shapeShiftForm); }
+//bytes_2 end
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
 

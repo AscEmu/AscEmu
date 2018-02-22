@@ -835,7 +835,7 @@ public:
     bool DoEffect(Unit* /*victim*/, SpellInfo* castingSpell, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, int* /*dmgOverwrite*/, uint32 /*weaponDamageType*/)
     {
         // If spell is not Mind Blast (by SpellGroupType) or player is not on shadowform, don't proc
-        if (!(castingSpell->getSpellGroupType(0) & mProcClassMask[0] && mTarget->IsPlayer() && static_cast<Player*>(mTarget)->GetShapeShift() == FORM_SHADOW))
+        if (!(castingSpell->getSpellGroupType(0) & mProcClassMask[0] && mTarget->IsPlayer() && static_cast<Player*>(mTarget)->getShapeShiftForm() == FORM_SHADOW))
             return true;
 
         return false;

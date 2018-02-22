@@ -353,7 +353,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     else
         SystemMessage(m_session, "Not in combat!");
 
-    uint8 sheat = creature_target->getByteValue(UNIT_FIELD_BYTES_2, 0);
+    uint8 sheat = creature_target->getSheathType();
     if (sheat <= 2)
         SystemMessage(m_session, "Sheat state: %s", SHEATSTATE[sheat]);
 
@@ -410,14 +410,14 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     std::string s = GetNpcFlagString(creature_target);
     GreenSystemMessage(m_session, "NpcFlags: %u%s", creature_target->getUInt32Value(UNIT_NPC_FLAGS), s.c_str());
 
-    uint8 pvp_flags = creature_target->getByteValue(UNIT_FIELD_BYTES_2, 1);
+    uint8 pvp_flags = creature_target->getPvpFlags();
     GreenSystemMessage(m_session, "PvPFlags: %u", pvp_flags);
 
     for (uint32 i = 0; i < numpvpflags; i++)
         if ((pvp_flags & UnitPvPFlagToName[i].Flag) != 0)
             GreenSystemMessage(m_session, "%s", UnitPvPFlagToName[i].Name);
 
-    uint8 pet_flags = creature_target->getByteValue(UNIT_FIELD_BYTES_2, 2);
+    uint8 pet_flags = creature_target->getPetFlags();
     if (pet_flags != 0)
     {
         GreenSystemMessage(m_session, "PetFlags: %u", pet_flags);
