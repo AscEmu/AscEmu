@@ -106,7 +106,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
     }
 
     if (recvData.GetOpcode() == MSG_MOVE_START_FORWARD)
-        _player->SetStandState(STANDSTATE_STAND);
+        _player->setStandState(STANDSTATE_STAND);
 
     auto moved = true;
     switch (recvData.GetOpcode())

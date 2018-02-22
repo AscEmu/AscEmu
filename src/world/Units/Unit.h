@@ -259,6 +259,15 @@ public:
     //bytes_1 begin
     uint8_t getStandState() const;
     void setStandState(uint8_t standState);
+
+    uint8_t getPetTalentPoints() const;
+    void setPetTalentPoints(uint8_t talentPoints);
+
+    uint8_t getStandStateFlags() const;
+    void setStandStateFlags(uint8_t standStateFlags);
+
+    uint8_t getAnimationFlags() const;
+    void setAnimationFlags(uint8_t animationFlags);
     //bytes_1 end
 
 

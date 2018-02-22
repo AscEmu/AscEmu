@@ -33,9 +33,9 @@ union
     struct
     {
         uint8_t stand_state;
-        uint8_t remaining_pet_talents;
-        uint8_t stand_state_flags;
-        uint8_t unk;
+        uint8_t pet_talent_points; // 0 for non pet creature
+        uint8_t stand_state_flag;
+        uint8_t animation_flag;
     } s;
     uint32_t raw;
 } typedef field_bytes_1_union;

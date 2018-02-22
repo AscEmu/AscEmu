@@ -695,7 +695,7 @@ void Pet::SendTalentsToOwner()
 
     WorldPacket data(SMSG_TALENTS_INFO, 50);
     data << uint8(1);                   // Pet talent packet identificator
-    data << uint32(GetTPs());           // Unspent talent points
+    data << uint32(getPetTalentPoints());           // Unspent talent points
 
     uint8 count = 0;
     size_t pos = data.wpos();
@@ -959,7 +959,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
 
     ApplyStatsForLevel();
 
-    SetTPs(static_cast<uint8>(mPi->talentpoints));
+    setPetTalentPoints(static_cast<uint8>(mPi->talentpoints));
     SetPower(getPowerType(), mPi->current_power);
     setHealth(mPi->current_hp);
     SetPower(POWER_TYPE_HAPPINESS, mPi->current_happiness);
@@ -1031,7 +1031,7 @@ void Pet::InitializeMe(bool first)
     }
     else if (first)     // Hunter pets - after taming
     {
-        SetTPs(GetTPsForLevel(getLevel()));    // set talent points
+        setPetTalentPoints(GetTPsForLevel(getLevel()));    // set talent points
     }
     else                // Hunter pets - load from db
     {
@@ -1116,7 +1116,7 @@ void Pet::UpdatePetInfo(bool bSetToOffline)
     player_pet->petstate = m_State;
     player_pet->alive = isAlive();
     player_pet->current_power = GetPower(getPowerType());
-    player_pet->talentpoints = GetTPs();
+    player_pet->talentpoints = getPetTalentPoints();
     player_pet->current_hp = GetHealth();
     player_pet->current_happiness = GetPower(POWER_TYPE_HAPPINESS);
 
@@ -1260,7 +1260,7 @@ void Pet::GiveXP(uint32 xp)
 
     if (xp >= nxp)
     {
-        SetTPs(GetTPsForLevel(getLevel() + 1) - GetSpentTPs());
+        setPetTalentPoints(GetTPsForLevel(getLevel() + 1) - GetSpentTPs());
         setLevel(1);
         xp -= nxp;
         nxp = GetNextLevelXP(getLevel());

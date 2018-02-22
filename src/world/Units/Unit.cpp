@@ -52,6 +52,15 @@ void Unit::setLevel(uint32_t level)
 //bytes_1 begin
 uint8_t Unit::getStandState() const { return unitData()->field_bytes_1.s.stand_state; }
 void Unit::setStandState(uint8_t standState) { write(unitData()->field_bytes_1.s.stand_state, standState); }
+
+uint8_t Unit::getPetTalentPoints() const { return unitData()->field_bytes_1.s.pet_talent_points; }
+void Unit::setPetTalentPoints(uint8_t talentPoints) { write(unitData()->field_bytes_1.s.pet_talent_points, talentPoints); }
+
+uint8_t Unit::getStandStateFlags() const { return unitData()->field_bytes_1.s.stand_state_flag; }
+void Unit::setStandStateFlags(uint8_t standStateFlags) { write(unitData()->field_bytes_1.s.stand_state_flag, standStateFlags); }
+
+uint8_t Unit::getAnimationFlags() const { return unitData()->field_bytes_1.s.animation_flag; }
+void Unit::setAnimationFlags(uint8_t animationFlags) { write(unitData()->field_bytes_1.s.animation_flag, animationFlags); }
 //bytes_1 end
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -275,7 +284,7 @@ void Unit::setMoveHover(bool set_hover)
         {
             AddUnitMovementFlag(MOVEFLAG_HOVER);
 
-            setByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
+            setAnimationFlags(UNIT_BYTE1_FLAG_HOVER);
 
             WorldPacket data(SMSG_SPLINE_MOVE_SET_HOVER, 10);
 #if VERSION_STRING != Cata
@@ -289,7 +298,7 @@ void Unit::setMoveHover(bool set_hover)
         {
             RemoveUnitMovementFlag(MOVEFLAG_HOVER);
 
-            removeByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
+            setAnimationFlags(getAnimationFlags() &~UNIT_BYTE1_FLAG_HOVER);
 
             WorldPacket data(SMSG_SPLINE_MOVE_UNSET_HOVER, 10);
 #if VERSION_STRING != Cata

@@ -2927,7 +2927,7 @@ void Aura::SpellAuraModStealth(bool apply)
                 break;
         }
 
-        m_target->SetFlag(UNIT_FIELD_BYTES_1, 0x020000);
+        m_target->setStandStateFlags(UNIT_STAND_FLAGS_CREEP);
         if (m_target->IsPlayer())
             m_target->SetFlag(PLAYER_FIELD_BYTES2, 0x2000);
 
@@ -3069,7 +3069,7 @@ void Aura::SpellAuraModStealth(bool apply)
                 m_target->SetStealth(0);
                 m_target->RemoveFlag(UNIT_FIELD_BYTES_2, 0x1E000000);
 
-                m_target->RemoveFlag(UNIT_FIELD_BYTES_1, 0x020000);
+                m_target->setStandStateFlags(m_target->getStandStateFlags() &~UNIT_STAND_FLAGS_CREEP);
 
                 if (p_target != nullptr)
                 {
@@ -7001,9 +7001,9 @@ void Aura::SpellAuraModHealingPCT(bool apply)
 void Aura::SpellAuraUntrackable(bool apply)
 {
     if (apply)
-        m_target->SetFlag(UNIT_FIELD_BYTES_1, UNIT_STAND_FLAGS_UNTRACKABLE);
+        m_target->setStandStateFlags(UNIT_STAND_FLAGS_UNTRACKABLE);
     else
-        m_target->RemoveFlag(UNIT_FIELD_BYTES_1, UNIT_STAND_FLAGS_UNTRACKABLE);
+        m_target->setStandStateFlags(m_target->getStandStateFlags() &~UNIT_STAND_FLAGS_UNTRACKABLE);
 }
 
 void Aura::SpellAuraModRangedAttackPower(bool apply)

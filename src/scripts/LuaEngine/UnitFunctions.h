@@ -5782,7 +5782,7 @@ class LuaUnit
         if (pet != NULL)
         {
             pet->WipeTalents();
-            pet->SetTPs(pet->GetTPsForLevel(pet->getLevel()));
+            pet->setPetTalentPoints(pet->GetTPsForLevel(pet->getLevel()));
             pet->SendTalentsToOwner();
         }
         return 0;

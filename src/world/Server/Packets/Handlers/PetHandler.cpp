@@ -533,7 +533,7 @@ void WorldSession::HandlePetUnlearn(WorldPacket& recv_data)
     _player->ModGold(-cost);
 
     pPet->WipeTalents();
-    pPet->SetTPs(pPet->GetTPsForLevel(pPet->getLevel()));
+    pPet->setPetTalentPoints(pPet->GetTPsForLevel(pPet->getLevel()));
     pPet->SendTalentsToOwner();
 }
 
@@ -596,7 +596,7 @@ void WorldSession::HandlePetLearnTalent(WorldPacket& recvPacket)
         return;
 
     // check talent points first
-    if (pPet->GetTPs() < 1)
+    if (pPet->getPetTalentPoints() < 1)
         return;
 
     // find talent entry
@@ -641,7 +641,7 @@ void WorldSession::HandlePetLearnTalent(WorldPacket& recvPacket)
     if (sp != NULL)
     {
         pPet->AddSpell(sp, true);
-        pPet->SetTPs(pPet->GetTPs() - 1);
+        pPet->setPetTalentPoints(pPet->getPetTalentPoints() - 1);
         auto id = sp->getId();
         OutPacket(SMSG_PET_LEARNED_SPELL, 4, &id);
     }
