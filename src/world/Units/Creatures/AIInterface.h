@@ -658,7 +658,9 @@ class SERVER_DECL AIInterface : public IUpdatable
         uint32 m_guardTimer;
         int32 m_currentHighestThreat;
         std::list<spawn_timed_emotes*>::iterator next_timed_emote;
-        uint32 timed_emote_expire;       
+        uint32 timed_emote_expire;
+
+        float last_updated_orientation;
 
     public:
 

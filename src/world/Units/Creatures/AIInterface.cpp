@@ -146,7 +146,9 @@ AIInterface::AIInterface()
     FollowDistance_backup(0),
     mAiScriptType(AI_SCRIPT_LONER),
     m_walkSpeed(0),
-    m_guardTimer(0)
+    m_guardTimer(0),
+
+    last_updated_orientation(0.0f)
 {
     m_aiTargets.clear();
     m_assistTargets.clear();
@@ -557,7 +559,7 @@ void AIInterface::generateWaypointScriptPatrol()
 
 void AIInterface::updateOrientation()
 {
-    if (MoveDone())
+    if (MoveDone() && last_updated_orientation != m_Unit->GetOrientation())
     {
         setFacing(m_Unit->GetOrientation());
     }
@@ -978,8 +980,9 @@ bool AIInterface::hideWayPoints(Player* player)
 // Spline functions
 void AIInterface::setFacing(float orientation)
 {
-    m_Unit->m_movementManager.m_spline.SetFacing(orientation);
+    last_updated_orientation = orientation;
 
+    m_Unit->m_movementManager.m_spline.SetFacing(orientation);
     LocationVector pos = LocationVector(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ(), orientation);
 
     sendSplineMoveToPoint(pos);
