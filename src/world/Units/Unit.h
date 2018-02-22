@@ -256,6 +256,16 @@ public:
     uint32_t getLevel() const;
     void setLevel(uint32_t level);
 
+    uint32_t getUnitFlags() const;
+    void setUnitFlags(uint32_t unitFlags);
+    void addUnitFlags(uint32_t unitFlags);
+    void removeUnitFlags(uint32_t unitFlags);
+
+    uint32_t getUnitFlags2() const;
+    void setUnitFlags2(uint32_t unitFlags2);
+    void addUnitFlags2(uint32_t unitFlags2);
+    void removeUnitFlags2(uint32_t unitFlags2);
+
     //bytes_1 begin
     uint8_t getStandState() const;
     void setStandState(uint8_t standState);
@@ -272,7 +282,14 @@ public:
 
 
     uint32_t getDynamicFlags() const;
-    void setDynamicFlags(uint32_t flags);
+    void setDynamicFlags(uint32_t dynamicFlags);
+    void addDynamicFlags(uint32_t dynamicFlags);
+    void removeDynamicFlags(uint32_t dynamicFlags);
+
+    uint32_t getNpcFlags() const;
+    void setNpcFlags(uint32_t npcFlags);
+    void addNpcFlags(uint32_t npcFlags);
+    void removeNpcFlags(uint32_t npcFlags);
 
     //byte_2 begin
     uint8_t getSheathType() const;

@@ -46,6 +46,16 @@ void Unit::setLevel(uint32_t level)
         static_cast<Player*>(this)->setNextLevelXp(sMySQLStore.getPlayerXPForLevel(level));
 }
 
+uint32_t Unit::getUnitFlags() const { return unitData()->unit_flags; }
+void Unit::setUnitFlags(uint32_t unitFlags) { write(unitData()->unit_flags, unitFlags); }
+void Unit::addUnitFlags(uint32_t unitFlags) { setUnitFlags(getUnitFlags() | unitFlags); }
+void Unit::removeUnitFlags(uint32_t unitFlags) { setUnitFlags(getUnitFlags() & ~unitFlags); }
+
+uint32_t Unit::getUnitFlags2() const { return unitData()->unit_flags_2; }
+void Unit::setUnitFlags2(uint32_t unitFlags2) { write(unitData()->unit_flags_2, unitFlags2); }
+void Unit::addUnitFlags2(uint32_t unitFlags2) { setUnitFlags2(getUnitFlags2() | unitFlags2); }
+void Unit::removeUnitFlags2(uint32_t unitFlags2) { setUnitFlags2(getUnitFlags2() & ~unitFlags2); }
+
 //bytes_1 begin
 uint8_t Unit::getStandState() const { return unitData()->field_bytes_1.s.stand_state; }
 void Unit::setStandState(uint8_t standState) { write(unitData()->field_bytes_1.s.stand_state, standState); }
@@ -61,7 +71,14 @@ void Unit::setAnimationFlags(uint8_t animationFlags) { write(unitData()->field_b
 //bytes_1 end
 
 uint32_t Unit::getDynamicFlags() const { return unitData()->dynamic_flags; }
-void Unit::setDynamicFlags(uint32_t flags) { write(unitData()->dynamic_flags, flags); }
+void Unit::setDynamicFlags(uint32_t dynamicFlags) { write(unitData()->dynamic_flags, dynamicFlags); }
+void Unit::addDynamicFlags(uint32_t dynamicFlags) { setDynamicFlags(getDynamicFlags() | dynamicFlags); }
+void Unit::removeDynamicFlags(uint32_t dynamicFlags) { setDynamicFlags(getDynamicFlags() & ~dynamicFlags); }
+
+uint32_t Unit::getNpcFlags() const { return unitData()->npc_flags; }
+void Unit::setNpcFlags(uint32_t npcFlags) { write(unitData()->npc_flags, npcFlags); }
+void Unit::addNpcFlags(uint32_t npcFlags) { setNpcFlags(getNpcFlags() | npcFlags); }
+void Unit::removeNpcFlags(uint32_t npcFlags) { setNpcFlags(getNpcFlags() & ~npcFlags); }
 
 //byte_2 begin
 uint8_t Unit::getSheathType() const { return unitData()->field_bytes_2.s.sheath_type; }
