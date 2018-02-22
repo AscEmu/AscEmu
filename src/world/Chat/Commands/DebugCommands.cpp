@@ -389,6 +389,51 @@ bool ChatHandler::HandleDebugPVPCreditCommand(const char* args, WorldSession* m_
     return true;
 }
 
+//.debug setunitbyte
+bool ChatHandler::HandleDebugSetUnitByteCommand(const char* args, WorldSession* m_session)
+{
+    uint32_t bytes;
+    uint32_t offset;
+    uint32_t value;
+    if (sscanf(args, "%u %u %u", &bytes, &offset, &value) != 3)
+    {
+        RedSystemMessage(m_session, "Command must be in format <bytes> <offset> <value>.");
+        return true;
+    }
+
+    auto unit_target = GetSelectedUnit(m_session, true);
+    if (unit_target == nullptr)
+        return true;
+
+    if (offset > 3)
+        return true;
+
+    switch (bytes)
+    {
+        case 0:
+        {
+            unit_target->setByteValue(UNIT_FIELD_BYTES_0, offset, value);
+        } break;
+        case 1:
+        {
+            unit_target->setByteValue(UNIT_FIELD_BYTES_1, offset, value);
+        } break;
+        case 2:
+        {
+            unit_target->setByteValue(UNIT_FIELD_BYTES_2, offset, value);
+        } break;
+        default:
+        {
+            RedSystemMessage(m_session, "Bytes %u are not existent. Choose from 0, 1 or 2", bytes);
+            return true;
+        }
+    }
+
+    GreenSystemMessage(m_session, "Unit Bytes %u Offset %u set to Value %u", bytes, offset, value);
+
+    return true;
+}
+
 //.playmovie
 bool ChatHandler::HandlePlayMovie(const char* args, WorldSession* m_session)
 {

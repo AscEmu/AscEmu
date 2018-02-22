@@ -189,6 +189,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleDebugSpeed(const char* args, WorldSession* m_session);
         bool HandleDebugPVPCreditCommand(const char* args, WorldSession* m_session);
         bool HandleSendCastFailed(const char* args, WorldSession* m_session);
+        bool HandleDebugSetUnitByteCommand(const char* args, WorldSession* m_session);
         // old debugcmds.cpp
         //\todo Rewrite these commands
         bool HandleDoPercentDamageCommand(const char* args, WorldSession* session);
