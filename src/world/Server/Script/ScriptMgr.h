@@ -65,11 +65,12 @@ enum ServerHookEvents
     SERVER_HOOK_EVENT_ON_OBJECTLOOT         = 25,
     SERVER_HOOK_EVENT_ON_AREATRIGGER        = 26,
     SERVER_HOOK_EVENT_ON_POST_LEVELUP       = 27,
-    SERVER_HOOK_EVENT_ON_PRE_DIE            = 28, // general unit die, not only based on players
+    SERVER_HOOK_EVENT_ON_PRE_DIE            = 28,       // general unit die, not only based on players
     SERVER_HOOK_EVENT_ON_ADVANCE_SKILLLINE  = 29,
     SERVER_HOOK_EVENT_ON_DUEL_FINISHED      = 30,
     SERVER_HOOK_EVENT_ON_AURA_REMOVE        = 31,
     SERVER_HOOK_EVENT_ON_RESURRECT          = 32,
+    SERVER_HOOK_EVENT_ON_SPELL_PERIODIC_TRIGGER = 33,   // Called on SPELL_AURA_PERIODIC_* effects
     NUM_SERVER_HOOKS
 };
 
@@ -112,6 +113,7 @@ typedef void(*tOnAdvanceSkillLine)(Player* pPlayer, uint32 SkillLine, uint32 Cur
 typedef void(*tOnDuelFinished)(Player* Winner, Player* Looser);
 typedef void(*tOnAuraRemove)(Aura* aura);
 typedef bool(*tOnResurrect)(Player* pPlayer);
+typedef void(*tOnPeriodicSpellTrigger)(Aura* pAura, bool apply);
 
 class Spell;
 class Aura;
@@ -706,6 +708,7 @@ class SERVER_DECL HookInterface : public Singleton<HookInterface>
         void OnDuelFinished(Player* Winner, Player* Looser);
         void OnAuraRemove(Aura* aura);
         bool OnResurrect(Player* pPlayer);
+        void OnPeriodicSpellTrigger(Aura* pAura, bool apply);
 };
 
 #define sScriptMgr ScriptMgr::getSingleton()
