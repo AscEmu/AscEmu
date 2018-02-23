@@ -14,7 +14,7 @@ class SilverCovenantMageGuard : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(SilverCovenantMageGuard);
         SilverCovenantMageGuard(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            getCreature()->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
             RegisterAIUpdateEvent(1500);
         }
 
@@ -61,7 +61,7 @@ class SunreaversMageGuard : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(SunreaversMageGuard);
         SunreaversMageGuard(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            getCreature()->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
             RegisterAIUpdateEvent(1500);
         }
 

@@ -656,7 +656,7 @@ public:
     void OnLoad() override
     {
         getCreature()->setMoveRoot(true);
-        getCreature()->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
         getCreature()->Die(getCreature(), getCreature()->GetHealth(), 0);
     }
 };

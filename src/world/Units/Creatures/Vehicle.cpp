@@ -184,7 +184,7 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
         WorldPacket pack(SMSG_CONTROL_VEHICLE, 0);
         passenger->SendPacket(&pack);
 
-        passenger->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
+        passenger->addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
 
         static_cast<Player*>(passenger)->SetFarsightTarget(owner->getGuid());
 
@@ -196,7 +196,7 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
 
             passenger->SetCharmedUnitGUID(owner->getGuid());
             owner->SetCharmedByGUID(passenger->getGuid());
-            owner->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED_CREATURE);
+            owner->addUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE);
 
             WorldPacket spells(SMSG_PET_SPELLS, 100);
             owner->BuildPetSpellList(spells);
@@ -210,7 +210,7 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
     passenger->SetCurrentVehicle(this);
 
     if (seats[seatid]->HidesPassenger())
-        passenger->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NOT_ATTACKABLE_2);
+        passenger->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NOT_ATTACKABLE_2);
 
     passengercount++;
     freeseats--;
@@ -307,7 +307,7 @@ void Vehicle::EjectPassengerFromSeat(uint32 seatid)
         if (passenger->IsPlayer())
         {
 
-            owner->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
+            owner->removeUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
 
             WorldPacket ack(SMSG_CLIENT_CONTROL_UPDATE, 16);
             ack << owner->GetNewGUID();
@@ -336,7 +336,7 @@ void Vehicle::EjectPassengerFromSeat(uint32 seatid)
     passenger->setMoveRoot(false);
     seats[seatid]->RemovePassenger();
     passenger->SetCurrentVehicle(nullptr);
-    passenger->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NOT_ATTACKABLE_2);
+    passenger->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NOT_ATTACKABLE_2);
 
     passengercount--;
     freeseats++;

@@ -42,8 +42,6 @@ public:
                 Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 32000);
             }
 
-            //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
-            pMogor->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
             pMogor->GetAIInterface()->SetAllowedToEnterCombat(true);
             pMogor->GetAIInterface()->MoveTo(-704.669f, 7871.08f, 45.0387f);
             pMogor->SetOrientation(1.59531f);
@@ -251,8 +249,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(mogorQAI);
     mogorQAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
-        getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+        getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
     };
 

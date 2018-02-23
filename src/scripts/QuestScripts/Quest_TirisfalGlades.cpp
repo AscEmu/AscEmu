@@ -49,8 +49,7 @@ public:
         {
             if (mAttacker->IsPlayer())
             {
-                //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
-                getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                 QuestLogEntry* qle = (static_cast<Player*>(mAttacker))->GetQuestLogForEntry(590);
                 if (!qle)
                     return;
@@ -77,8 +76,7 @@ public:
             getCreature()->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
             _setMeleeDisabled(true);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-            //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
-            getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
+            getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         }
     }
 };

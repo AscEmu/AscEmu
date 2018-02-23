@@ -12374,13 +12374,13 @@ void CombatStatusHandler::UpdateFlag()
         if (n_status)
         {
             //printf(I64FMT" is now in combat.\n", m_Unit->getGuid());
-            m_Unit->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_COMBAT);
+            m_Unit->addUnitFlags(UNIT_FLAG_COMBAT);
             if (!m_Unit->hasUnitStateFlag(UNIT_STATE_ATTACKING)) m_Unit->addUnitStateFlag(UNIT_STATE_ATTACKING);
         }
         else
         {
             //printf(I64FMT" is no longer in combat.\n", m_Unit->getGuid());
-            m_Unit->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_COMBAT);
+            m_Unit->removeUnitFlags(UNIT_FLAG_COMBAT);
             if (m_Unit->hasUnitStateFlag(UNIT_STATE_ATTACKING)) m_Unit->removeUnitStateFlag(UNIT_STATE_ATTACKING);
 
             // remove any of our healers from combat too, if they are able to be.
@@ -14470,9 +14470,9 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
     pThis->SetFarsightTarget(pTarget->getGuid());
     pThis->mControledUnit = pTarget;
     pTarget->SetFaction(GetFaction());
-    pTarget->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
+    pTarget->addUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
 
-    SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
+    addUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 
     // send "switch mover" packet
     pThis->SetClientControl(pTarget, 1);
@@ -14523,8 +14523,8 @@ void Unit::UnPossess()
     pTarget->SetCharmedByGUID(0);
     SetCharmedUnitGUID(0);
 
-    RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
-    pTarget->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
+    removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
+    pTarget->removeUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
     pTarget->SetFaction(pTarget->GetCharmTempVal());
     pTarget->updateInRangeOppositeFactionSet();
 

@@ -4373,7 +4373,7 @@ uint8 Spell::CanCast(bool tolerate)
         /**
          *	Check if we have the required reagents
          */
-        if (!(p_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NO_REAGANT_COST) && hasAttributeExE(ATTRIBUTESEXE_REAGENT_REMOVAL)))
+        if (!(p_caster->hasUnitFlags(UNIT_FLAG_NO_REAGANT_COST) && hasAttributeExE(ATTRIBUTESEXE_REAGENT_REMOVAL)))
         {
             // Skip this with enchanting scrolls
             if (!i_caster || i_caster->getItemProperties()->Flags != 268435520)
@@ -5239,7 +5239,7 @@ uint8 Spell::CanCast(bool tolerate)
             if (GetSpellInfo()->getEffect(0) == SPELL_EFFECT_SKINNING)  // skinning
             {
                 // if target doesn't have skinnable flag, don't let it be skinned
-                if (!target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE))
+                if (!target->hasUnitFlags(UNIT_FLAG_SKINNABLE))
                     return SPELL_FAILED_TARGET_UNSKINNABLE;
                 // if target is already skinned, don't let it be skinned again
                 if (target->IsCreature() && static_cast<Creature*>(target)->Skinned)
@@ -5602,7 +5602,7 @@ uint8 Spell::CanCast(bool tolerate)
         /**
          *	Confuse check
          */
-        if (u_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED) && (GetSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_CONFUSED) == 0)
+        if (u_caster->hasUnitFlags(UNIT_FLAG_CONFUSED) && (GetSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_USABLE_WHILE_CONFUSED) == 0)
             return SPELL_FAILED_CONFUSED;
     }
 
@@ -5725,7 +5725,7 @@ void Spell::RemoveItems()
 #endif
 
         // Reagent Removal
-        if (!(p_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NO_REAGANT_COST) && hasAttributeExE(ATTRIBUTESEXE_REAGENT_REMOVAL)))
+        if (!(p_caster->hasUnitFlags(UNIT_FLAG_NO_REAGANT_COST) && hasAttributeExE(ATTRIBUTESEXE_REAGENT_REMOVAL)))
         {
             for (uint8 i = 0; i < 8; i++)
             {

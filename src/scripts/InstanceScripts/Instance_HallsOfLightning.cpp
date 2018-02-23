@@ -378,8 +378,7 @@ class VolkhansAnvil : public CreatureAIScript
     VolkhansAnvil(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-        //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
-        getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         setRooted(true);
     }
 

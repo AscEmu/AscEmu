@@ -491,11 +491,11 @@ void CreatureAIScript::setCanEnterCombat(bool enterCombat)
     //Zyres 10/21/2017 creatures can be attackable even if they can not enter combat... the following line is not correct.
     if (enterCombat)
     {
-        _creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+        _creature->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
     }
     else
     {
-        _creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+        _creature->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
     }
 
     _creature->GetAIInterface()->SetAllowedToEnterCombat(enterCombat);
@@ -1515,7 +1515,7 @@ bool CreatureAIScript::isValidUnitTarget(Object* pObject, TargetFilter pFilter, 
     if (UnitTarget->IsPlayer() && static_cast<Player*>(UnitTarget)->m_isGmInvisible)
         return false;
 
-    if (UnitTarget->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH))
+    if (UnitTarget->hasUnitFlags(UNIT_FLAG_FEIGN_DEATH))
         return false;
 
     // if we apply target filtering

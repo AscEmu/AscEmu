@@ -556,7 +556,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
 
     m_session->SendPacket(&data);
 
-    SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOOTING);
+    addUnitFlags(UNIT_FLAG_LOOTING);
 }
 
 #ifdef AE_TBC

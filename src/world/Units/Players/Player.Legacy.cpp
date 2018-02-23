@@ -976,7 +976,7 @@ bool Player::Create(WorldPacket& data)
     setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_PVP);
 #else
     setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_PVP);
-    SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
+    addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
     SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_ENABLE_POWER_REGEN);
 #endif
 
@@ -984,7 +984,7 @@ bool Player::Create(WorldPacket& data)
         SetShapeShift(FORM_BATTLESTANCE);
 
 #if VERSION_STRING != Cata
-    SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
+    addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
 #endif
 
     SetStat(STAT_STRENGTH, info->strength);
@@ -1278,8 +1278,8 @@ void Player::EventDismount(uint32 money, float x, float y, float z)
     m_taxi_ride_time = 0;
 
     setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
-    RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
-    RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
+    removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
+    removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 
     setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN));
 
@@ -3392,7 +3392,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         SetShapeShift(FORM_BATTLESTANCE);
 
     setPvpFlags(U_FIELD_BYTES_FLAG_UNK2 | U_FIELD_BYTES_FLAG_SANCTUARY);
-    SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
+    addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
     SetBoundingRadius(0.388999998569489f);
     SetCombatReach(1.5f);
 
@@ -4180,7 +4180,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         SetShapeShift(FORM_BATTLESTANCE);
 
     setPvpFlags(U_FIELD_BYTES_FLAG_UNK2 | U_FIELD_BYTES_FLAG_SANCTUARY);
-    SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
+    addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
     SetBoundingRadius(0.388999998569489f);
     SetCombatReach(1.5f);
 
@@ -5734,7 +5734,7 @@ void Player::RepopRequestedPlayer()
     UpdateVisibility();
 
     // If we're in battleground, remove the skinnable flag.. has bad effects heheh
-    RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
+    removeUnitFlags(UNIT_FLAG_SKINNABLE);
 
     bool corpse = (m_bg != nullptr) ? m_bg->CreateCorpse(this) : true;
 
@@ -5868,7 +5868,7 @@ void Player::KillPlayer()
     StopMirrorTimer(MIRROR_TYPE_BREATH);
     StopMirrorTimer(MIRROR_TYPE_FIRE);
 
-    SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE); // Player death animation, also can be used with DYNAMIC_FLAGS <- huh???
+    addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE); // Player death animation, also can be used with DYNAMIC_FLAGS <- huh???
     setUInt32Value(UNIT_DYNAMIC_FLAGS, 0x00);
 
     if (getClass() == WARRIOR)   // Rage resets on death
@@ -5929,7 +5929,7 @@ void Player::CreateCorpse()
     {
         // Remove our lootable flags
         RemoveFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_LOOTABLE);
-        RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
+        removeUnitFlags(UNIT_FLAG_SKINNABLE);
 
         loot.gold = 0;
 
@@ -7883,8 +7883,8 @@ void Player::TaxiStart(TaxiPath* path, uint32 modelid, uint32 start_node)
     DismissActivePets();
 
     SetMount(modelid);
-    SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
-    SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
+    addUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
+    addUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 
     SetTaxiPath(path);
     SetTaxiPos();
@@ -8044,8 +8044,8 @@ void Player::JumpToEndTaxiNode(TaxiPath* path)
     m_taxi_ride_time = 0;
 
     setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
-    RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
-    RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
+    removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
+    removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 
     setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN));
 
@@ -9667,8 +9667,8 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
         UnSetTaxiPos();
         m_taxi_ride_time = 0;
         setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
-        RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
-        RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
+        removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
+        removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
         setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN));
     }
 
@@ -9756,8 +9756,8 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
         UnSetTaxiPos();
         m_taxi_ride_time = 0;
         setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
-        RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
-        RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
+        removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
+        removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
         setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN));
     }
 

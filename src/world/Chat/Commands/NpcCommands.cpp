@@ -426,7 +426,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
                 GreenSystemMessage(m_session, "%s", PetFlagToName[i].Name);
     }
 
-    uint32 unit_flags = creature_target->getUInt32Value(UNIT_FIELD_FLAGS);
+    uint32 unit_flags = creature_target->getUnitFlags();
     GreenSystemMessage(m_session, "UnitFlags: %u", unit_flags);
 
     for (uint32 i = 0; i < numflags; i++)

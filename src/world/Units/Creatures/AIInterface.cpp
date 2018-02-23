@@ -2078,7 +2078,7 @@ void AIInterface::AttackReaction(Unit* pUnit, uint32 damage_dealt, uint32 spellI
     if (isAiState(AI_STATE_EVADE) || !pUnit || !pUnit->isAlive() || m_Unit->IsDead() || (m_Unit == pUnit) || isAiScriptType(AI_SCRIPT_PASSIVE) || isCombatDisabled())
         return;
 
-    if ((pUnit->IsPlayer() && m_Unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT)) || (pUnit->IsCreature() && m_Unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_CREATURE_COMBAT)))
+    if ((pUnit->IsPlayer() && m_Unit->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT)) || (pUnit->IsCreature() && m_Unit->hasUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT)))
         return;
 
     if (worldConfig.terrainCollision.isCollisionEnabled && pUnit->IsPlayer())
@@ -2211,7 +2211,7 @@ bool AIInterface::UnsafeCanOwnerAttackUnit(Unit* pUnit)
         return false;
 
     //do not agro units that are faking death. Should this be based on chance ?
-    if (pUnit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH))
+    if (pUnit->hasUnitFlags(UNIT_FLAG_FEIGN_DEATH))
         return false;
 
     //don't attack owner
@@ -2262,7 +2262,7 @@ Unit* AIInterface::FindTarget()
 
     //target is immune to all form of attacks, cant attack either.
     // not attackable creatures sometimes fight enemies in scripted fights though
-    if (m_Unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NOT_ATTACKABLE_2))
+    if (m_Unit->hasUnitFlags(UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NOT_ATTACKABLE_2))
     {
         return nullptr;
     }
@@ -2283,10 +2283,10 @@ Unit* AIInterface::FindTarget()
             if (tmpPlr->isOnTaxi())
                 continue;
 
-            if (tmpPlr->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH))
+            if (tmpPlr->hasUnitFlags(UNIT_FLAG_FEIGN_DEATH))
                 continue;
 
-            if (tmpPlr->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT))
+            if (tmpPlr->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT))
                 continue;
 
             if (tmpPlr->m_invisible)
@@ -2500,10 +2500,10 @@ bool AIInterface::FindFriends(float dist)
         if (!pUnit->isAlive())
             continue;
 
-        if (pUnit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE))
+        if (pUnit->hasUnitFlags(UNIT_FLAG_NOT_SELECTABLE))
             continue;
 
-        if (pUnit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT))
+        if (pUnit->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT))
             continue;
 
         if (!(pUnit->m_phase & m_Unit->m_phase))   //We can't help a friendly unit if it is not in our phase
@@ -2599,7 +2599,7 @@ bool AIInterface::FindFriends(float dist)
             Creature* guard = m_Unit->GetMapMgr()->CreateCreature(guardid);
             guard->Load(cp, x, y, z);
             guard->SetZoneId(m_Unit->GetZoneId());
-            guard->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP); /* shitty DBs */
+            guard->addUnitFlags(UNIT_FLAG_PVP); /* shitty DBs */
             guard->m_noRespawn = true;
 
             if (guard->CanAddToWorld())

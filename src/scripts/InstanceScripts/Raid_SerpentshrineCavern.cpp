@@ -420,8 +420,7 @@ class LeotherasAI : public CreatureAIScript
             info_chaos_blast = sSpellCustomizations.GetSpellInfo(CHAOS_BLAST_ANIMATION);
             info_whirlwind = sSpellCustomizations.GetSpellInfo(WHIRLWINDLEO);
 
-            //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
-            getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+            getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
 
             SwitchTimer = 0;
@@ -457,8 +456,7 @@ class LeotherasAI : public CreatureAIScript
             {
                 //remove banish & blocks
                 getCreature()->RemoveAllAuras();
-                //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
-                getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
+                getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                 getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
                 getCreature()->GetAIInterface()->m_canMove = true;
                 getCreature()->setStandState(STANDSTATE_STAND);
@@ -603,8 +601,7 @@ class LeotherasAI : public CreatureAIScript
                             IsMorphing = true;
                             getCreature()->setAttackTimer(15000, false);
                             getCreature()->setStandState(STANDSTATE_KNEEL);
-                            //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
-                            getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+                            getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
                             getCreature()->GetAIInterface()->m_canMove = false;
                             sendDBChatMessage(4781);     // No... no! What have you done? I am the master! Do you hear me? I am... aaggh! Can't... contain him.
@@ -631,8 +628,7 @@ class LeotherasAI : public CreatureAIScript
                             FinalPhaseTimer--;
                             if (!FinalPhaseTimer)
                             {
-                                //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
-                                getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
+                                getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                                 getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
                                 getCreature()->GetAIInterface()->m_canMove = true;
                                 IsMorphing = false;
@@ -747,8 +743,6 @@ class GreyheartSpellbinderAI : public CreatureAIScript
                 {
                     //remove banish & blocks
                     Leotheras->RemoveAllAuras();
-                    //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
-                    Leotheras->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
                     Leotheras->GetAIInterface()->SetAllowedToEnterCombat(true);
                     Leotheras->GetAIInterface()->m_canMove = true;
                     Leotheras->setStandState(STANDSTATE_STAND);
@@ -779,14 +773,13 @@ class ShadowofLeotherasAI : public CreatureAIScript
         {
             info_chaos_blast = sSpellCustomizations.GetSpellInfo(CHAOS_BLAST_ANIMATION);
 
-            //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
-            getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+            getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
 
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "At last I am liberated. It has been too long since I have tasted true freedom!");
             getCreature()->PlaySoundToSet(11309);
 
-            sEventMgr.AddEvent(static_cast<Object*>(getCreature()), &Object::EventSetUInt32Value, (uint16)UNIT_FIELD_FLAGS, (uint32)0, EVENT_CREATURE_UPDATE, 7500, 0, 1);
+            sEventMgr.AddEvent(static_cast<Unit*>(getCreature()), &Unit::removeUnitFlags, static_cast<uint32>(UNIT_FLAG_IGNORE_PLAYER_COMBAT), EVENT_CREATURE_UPDATE, 7500, 0, 1);
         }
 
         void OnCombatStart(Unit* /*mTarget*/) override
@@ -1162,7 +1155,7 @@ class TidewalkerLurkerAI : public CreatureAIScript
 
                 pUnit = static_cast<Unit*>(itr);
 
-                if (pUnit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH))
+                if (pUnit->hasUnitFlags(UNIT_FLAG_FEIGN_DEATH))
                     continue;
 
                 if (!pUnit->isAlive() || getCreature() == pUnit)
@@ -1270,9 +1263,6 @@ class VashjAI : public CreatureAIScript
             getCreature()->GetAIInterface()->addWayPoint(wp);
             getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
 
-            //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
-            getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
-
             TaintedElementalTimer = 0;
             Phase = 0;
             EnchantedElementalTimer = 0;
@@ -1329,8 +1319,6 @@ class VashjAI : public CreatureAIScript
                 }
             }
 
-            //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
-            getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
             getCreature()->RemoveAura(VASHJ_SHIELD);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
             getCreature()->GetAIInterface()->m_canMove = true;
@@ -1382,8 +1370,7 @@ class VashjAI : public CreatureAIScript
                     getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                     getCreature()->GetAIInterface()->setWayPointToMove(1);
                     sendDBChatMessage(4764);     // The time is now! Leave none standing!
-                    //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
-                    getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+                    getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                     getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(VASHJ_SHIELD), true);
                     getCreature()->GetAIInterface()->setOutOfCombatRange(3000);
                     Phase = 2;
@@ -1529,7 +1516,7 @@ class VashjAI : public CreatureAIScript
                 }
 
                 //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
-                getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
+                getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                 getCreature()->RemoveAura(VASHJ_SHIELD);
                 sendDBChatMessage(4765);     // You may want to take cover.
                 getCreature()->GetAIInterface()->m_canMove = true;
@@ -1577,8 +1564,7 @@ class VashjAI : public CreatureAIScript
                         channel = spawnCreature(CN_SHIELD_GENERATOR_CHANNEL, ShieldGeneratorCoords[i][0],  ShieldGeneratorCoords[i][1],  ShieldGeneratorCoords[i][2], 0);
                         if (channel)
                         {
-                            //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
-                            channel->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                            channel->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                             channel->GetAIInterface()->m_canMove = false;
                             channel->SetChannelSpellTargetGUID(getCreature()->getGuid());
                             channel->SetChannelSpellId(VASHJ_SHIELD);

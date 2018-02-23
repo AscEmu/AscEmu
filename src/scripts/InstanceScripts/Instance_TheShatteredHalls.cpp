@@ -273,8 +273,7 @@ class ShadowmoonDarkcasterAI : public CreatureAIScript
             GrandWarlock = getNearestCreature(178.811996f, 292.377991f, -8.190210f, CN_GRAND_WARLOCK_NETHEKURSE);
             if (GrandWarlock)
             {
-                //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
-                GrandWarlock->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+                GrandWarlock->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                 GrandWarlock->GetAIInterface()->SetAllowedToEnterCombat(false);
             }
         }
@@ -592,8 +591,7 @@ class HeadAI : public CreatureAIScript
     HeadAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         _setScale(4.0f);
-        //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
-        getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         getCreature()->m_noRespawn = true;
     }
 

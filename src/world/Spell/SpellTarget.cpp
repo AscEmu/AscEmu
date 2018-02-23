@@ -409,7 +409,7 @@ bool Spell::AddTarget(uint32 i, uint32 TargetType, Object* obj)
     if (obj->IsItem() && !(TargetType & SPELL_TARGET_REQUIRE_ITEM) && !m_triggeredSpell)
         return false;
 
-    if (u_caster != nullptr && u_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT) && ((obj->IsPlayer() || obj->IsPet()) || (p_caster != nullptr || m_caster->IsPet())))
+    if (u_caster != nullptr && u_caster->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT) && ((obj->IsPlayer() || obj->IsPet()) || (p_caster != nullptr || m_caster->IsPet())))
         return false;
 
     if (TargetType & SPELL_TARGET_REQUIRE_FRIENDLY && !isFriendly(m_caster, obj))

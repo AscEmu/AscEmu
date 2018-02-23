@@ -103,8 +103,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
             PhaseOneTimer = 0;
             Phase = 0;
             // Trigger settings
-            //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
-            getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             RegisterAIUpdateEvent(1000);
         }
@@ -234,8 +233,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                 if (Magtheridon)
                 {
                     Magtheridon->GetAIInterface()->SetAllowedToEnterCombat(true);
-                    //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
-                    Magtheridon->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
+                    Magtheridon->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                     Magtheridon->RemoveAura(BANISHMENT);
                     Magtheridon->RemoveAura(BANISH);
                 }
@@ -328,8 +326,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                                 Magtheridon->SendScriptTextChatMessage(8748);    // I... am... unleashed!
                             }
 
-                            //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
-                            Magtheridon->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+                            Magtheridon->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
                             Magtheridon->Emote(EMOTE_ONESHOT_CREATURE_SPECIAL);
                             Magtheridon->RemoveAura(BANISHMENT);
                         }
@@ -342,7 +339,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                         if (Magtheridon)
                         {
                             Magtheridon->GetAIInterface()->SetAllowedToEnterCombat(true);
-                            Magtheridon->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NONE);
+                            Magtheridon->removeUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
                         }
 
                         Phase = 2;
@@ -616,8 +613,7 @@ class CubeTriggerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(CubeTriggerAI);
         CubeTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
-            getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         }
 };
@@ -716,7 +712,7 @@ class HellfireChannelerAI : public CreatureAIScript
 
                 Unit* Magtheridon = NULL;
                 Magtheridon = getNearestCreature(-22.657900f, 2.159050f, -0.345542f, 17257);
-                if (Magtheridon && Magtheridon->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT))
+                if (Magtheridon && Magtheridon->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT))
                 {
                     getCreature()->SetChannelSpellTargetGUID(Magtheridon->getGuid());
                     getCreature()->SetChannelSpellId(SHADOW_GRASP);
@@ -788,8 +784,7 @@ class MagtheridonAI : public CreatureAIScript
             quake2 = addAISpell(QUAKE2, 0.0f, TARGET_VARIOUS);
             caveIn = addAISpell(CAVE_IN, 0.0f, TARGET_VARIOUS);
 
-            //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
-            getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+            getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
 
             Aura* aura = sSpellFactoryMgr.NewAura(sSpellCustomizations.GetSpellInfo(BANISHMENT), (uint32) - 1, getCreature(), getCreature());
             getCreature()->AddAura(aura);
@@ -819,7 +814,7 @@ class MagtheridonAI : public CreatureAIScript
 
         void OnCombatStop(Unit* /*mTarget*/) override
         {
-            if (getCreature()->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT) || getCreature()->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2))
+            if (getCreature()->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT) || getCreature()->hasUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2))
                 return;
 
             GameObject* Gate = NULL;

@@ -67,8 +67,8 @@ void Summon::Load(CreatureProperties const* properties_, Unit* pOwner, LocationV
 
     this->owner = pOwner;
 
-    if (pOwner->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE))
-        SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
+    if (pOwner->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
+        addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
 
 }
 

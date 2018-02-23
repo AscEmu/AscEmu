@@ -230,7 +230,7 @@ const uint32 MAX_THRALLWP1 = 27;
 //                else
 //                {
 //                    Plr->TaxiStart(sTaxiMgr.GetTaxiPath(534), 8317, 0);
-//                    Plr->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
+//                    Plr->removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
 //                }
 //            }
 //            break;

@@ -278,7 +278,7 @@ void Creature::OnRespawn(MapMgr* m)
             setDeathState(ALIVE);
     }
 
-    RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
+    removeUnitFlags(UNIT_FLAG_SKINNABLE);
     Skinned = false;
     Tagged = false;
     TaggerGuid = 0;
@@ -409,7 +409,7 @@ void Creature::SaveToDB()
         m_spawn->z = m_position.z;
         m_spawn->o = m_position.o;
         m_spawn->emote_state = m_uint32Values[UNIT_NPC_EMOTESTATE];
-        m_spawn->flags = m_uint32Values[UNIT_FIELD_FLAGS];
+        m_spawn->flags = getUnitFlags();
         m_spawn->factionid = GetFaction();
         m_spawn->bytes0 = m_uint32Values[UNIT_FIELD_BYTES_0];
         m_spawn->bytes1 = m_uint32Values[UNIT_FIELD_BYTES_1];
@@ -459,7 +459,7 @@ void Creature::SaveToDB()
         << uint32(m_aiInterface->getWaypointScriptType()) << ","
         << m_uint32Values[UNIT_FIELD_DISPLAYID] << ","
         << GetFaction() << ","
-        << m_uint32Values[UNIT_FIELD_FLAGS] << ","
+        << getUnitFlags() << ","
         << m_uint32Values[UNIT_FIELD_BYTES_0] << ","
         << m_uint32Values[UNIT_FIELD_BYTES_1] << ","
         << m_uint32Values[UNIT_FIELD_BYTES_2] << ","
@@ -697,7 +697,7 @@ bool Creature::HasQuest(uint32 id, uint32 type)
 void Creature::setDeathState(DeathState s)
 {
     if (s == ALIVE)
-        this->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DEAD);
+        this->removeUnitFlags(UNIT_FLAG_DEAD);
 
     if (s == JUST_DIED)
     {
@@ -717,7 +717,7 @@ void Creature::setDeathState(DeathState s)
 
         // if it's not a Pet, and not a summon and it has skinningloot then we will allow skinning
         if ((GetCreatedByGUID() == 0) && (GetSummonedByGUID() == 0) && lootmgr.IsSkinnable(creature_properties->Id))
-            SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
+            addUnitFlags(UNIT_FLAG_SKINNABLE);
 
 
     }
@@ -1371,7 +1371,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     SetEquippedItem(RANGED, spawn->Item3SlotDisplay);
 
     SetFaction(spawn->factionid);
-    setUInt32Value(UNIT_FIELD_FLAGS, spawn->flags);
+    setUnitFlags(spawn->flags);
     SetEmoteState(spawn->emote_state);
     SetBoundingRadius(creature_properties->BoundingRadius);
     SetCombatReach(creature_properties->CombatReach);
@@ -2466,7 +2466,7 @@ void Creature::Die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
         }
      }
 
-    SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DEAD);
+    addUnitFlags(UNIT_FLAG_DEAD);
 
     if ((GetCreatedByGUID() == 0) && (GetTaggerGUID() != 0))
     {

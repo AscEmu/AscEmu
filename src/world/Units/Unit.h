@@ -260,6 +260,7 @@ public:
     void setUnitFlags(uint32_t unitFlags);
     void addUnitFlags(uint32_t unitFlags);
     void removeUnitFlags(uint32_t unitFlags);
+    bool hasUnitFlags(uint32_t unitFlags) const;
 
     uint32_t getUnitFlags2() const;
     void setUnitFlags2(uint32_t unitFlags2);

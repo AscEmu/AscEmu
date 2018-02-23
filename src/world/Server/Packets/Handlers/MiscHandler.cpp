@@ -507,7 +507,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
     SendPacket(&data);
 
     _player->SetLootGUID(0);
-    _player->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOOTING);
+    _player->removeUnitFlags(UNIT_FLAG_LOOTING);
     _player->m_currentLoot = 0;
 
     if (GET_TYPE_FROM_GUID(guid) == HIGHGUID_TYPE_UNIT)
@@ -1014,7 +1014,7 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket& /*recv_data*/)
         pPlayer->setMoveRoot(true);
         LoggingOut = true;
         // Set the "player locked" flag, to prevent movement
-        pPlayer->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
+        pPlayer->addUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 
         //make player sit
         pPlayer->setStandState(STANDSTATE_SIT);
@@ -1064,7 +1064,7 @@ void WorldSession::HandleLogoutCancelOpcode(WorldPacket& /*recv_data*/)
     pPlayer->setMoveRoot(false);
 
     // Remove the "player locked" flag, to allow movement
-    pPlayer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
+    pPlayer->removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 
     //make player stand
     pPlayer->setStandState(STANDSTATE_STAND);

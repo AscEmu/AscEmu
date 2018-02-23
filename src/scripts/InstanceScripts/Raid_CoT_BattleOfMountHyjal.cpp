@@ -348,8 +348,7 @@ class ArchimondeTriggerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(ArchimondeTriggerAI);
         ArchimondeTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
-            getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             getCreature()->m_noRespawn = true;
 
@@ -370,8 +369,7 @@ class DoomfireAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(DoomfireAI);
         DoomfireAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
-            getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             getCreature()->m_noRespawn = true;
 
@@ -456,7 +454,7 @@ class DoomfireAI : public CreatureAIScript
 
                 pUnit = static_cast<Unit*>(itr);
 
-                if (pUnit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH))
+                if (pUnit->hasUnitFlags(UNIT_FLAG_FEIGN_DEATH))
                     continue;
 
                 z_diff = fabs(getCreature()->GetPositionZ() - pUnit->GetPositionZ());

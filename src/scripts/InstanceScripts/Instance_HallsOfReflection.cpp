@@ -79,7 +79,7 @@ class JainaAI : public CreatureAIScript
             if (Uther && Lich)
             {
                 Lich->SetDisplayId(11686); // HACK FIX makes invisible till needed
-                Lich->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+                Lich->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
                 // 8 second delay from first chat..
                 getCreature()->SendTimedScriptTextChatMessage(SAY_JAINA_01, 8000);
 

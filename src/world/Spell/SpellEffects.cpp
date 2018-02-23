@@ -5152,7 +5152,7 @@ void Spell::SpellEffectSkinning(uint8_t /*effectIndex*/)
         static_cast<Player*>(m_caster)->SendLoot(unitTarget->getGuid(), LOOT_SKINNING, unitTarget->GetMapId());
 
         //Not skinable again
-        cr->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
+        cr->removeUnitFlags(UNIT_FLAG_SKINNABLE);
         cr->Skinned = true;
 
         if (cr->GetCreatureProperties()->Rank > 0)
@@ -5532,7 +5532,7 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
         // on corpse then :p
 
         playerTarget->bShouldHaveLootableOnCorpse = false;
-        playerTarget->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
+        playerTarget->removeUnitFlags(UNIT_FLAG_SKINNABLE);
         playerTarget->SetFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_LOOTABLE);
 
         // Send the loot.
@@ -5880,7 +5880,7 @@ void Spell::SpellEffectStartTaxi(uint8_t /*effectIndex*/)
     if (!playerTarget || !playerTarget->isAlive() || !u_caster)
         return;
 
-    if (playerTarget->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER))
+    if (playerTarget->hasUnitFlags(UNIT_FLAG_LOCK_PLAYER))
         return;
 
     TaxiPath* taxipath = sTaxiMgr.GetTaxiPath(GetSpellInfo()->getEffectMiscValue(0));

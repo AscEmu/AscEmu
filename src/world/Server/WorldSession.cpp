@@ -396,7 +396,7 @@ void WorldSession::LogoutPlayer(bool Save)
             _player->m_playerInfo->m_Group->Update();
 
         // Remove the "player locked" flag, to allow movement on next login
-        GetPlayer()->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
+        GetPlayer()->removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 
         // Save Honor Points
         // _player->SaveHonorFields();

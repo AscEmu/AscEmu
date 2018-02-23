@@ -443,7 +443,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
             SetCreatedBySpell(created_by_spell->getId());
         }
 
-        setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
+        setUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
 
         setSheathType(SHEATH_STATE_MELEE);
         setShapeShiftForm(FORM_TREE);   //\todo really?
@@ -466,7 +466,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
         SetBoundingRadius(created_from_creature->GetBoundingRadius());
         SetCombatReach(created_from_creature->GetCombatReach());
 
-        setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE | UNIT_FLAG_COMBAT);  // why combat ??
+        setUnitFlags(UNIT_FLAG_PVP_ATTACKABLE | UNIT_FLAG_COMBAT);  // why combat ??
         SetPower(POWER_TYPE_HAPPINESS, PET_HAPPINESS_UPDATE_VALUE >> 1);                //happiness
         SetMaxPower(POWER_TYPE_HAPPINESS, 1000000);
         setUInt32Value(UNIT_FIELD_PETEXPERIENCE, 0);
@@ -916,7 +916,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     {
         SetNameForEntry(mPi->entry);
         setUInt64Value(UNIT_CREATED_BY_SPELL, mPi->spellid);
-        setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
+        setUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
         setSheathType(SHEATH_STATE_MELEE);
         setShapeShiftForm(FORM_TREE);   //\todo really?
 
@@ -928,7 +928,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     {
         SetBoundingRadius(creature_properties->BoundingRadius);
         SetCombatReach(creature_properties->CombatReach);
-        setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE | UNIT_FLAG_COMBAT);      // why combat ??
+        setUnitFlags(UNIT_FLAG_PVP_ATTACKABLE | UNIT_FLAG_COMBAT);      // why combat ??
         SetPower(POWER_TYPE_HAPPINESS, PET_HAPPINESS_UPDATE_VALUE >> 1);                    //happiness
         SetMaxPower(POWER_TYPE_HAPPINESS, 1000000);
         setUInt32Value(UNIT_FIELD_PETEXPERIENCE, mPi->xp);
@@ -976,7 +976,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
         setPetFlags(getPetFlags() | PET_RENAME_ALLOWED);
 
     //if pet was dead on logout then it should be dead now too.//we could use mPi->alive but this will break backward compatibility
-    if (HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DEAD))   //LoadFromDB() (called by Player::SpawnPet()) now always revive the Pet if it was dead.
+    if (hasUnitFlags(UNIT_FLAG_DEAD))   //LoadFromDB() (called by Player::SpawnPet()) now always revive the Pet if it was dead.
         //This is because now we call SpawnPet() only if it's alive or we wanna revive it.
     {
         setUInt32Value(UNIT_DYNAMIC_FLAGS, 0);

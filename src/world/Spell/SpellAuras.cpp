@@ -1701,7 +1701,7 @@ void Aura::SpellAuraModPossess(bool apply)
             }
 
             m_target->SetCharmedByGUID(0);
-            m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
+            m_target->removeUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
             m_target->SetFaction(m_target->GetCharmTempVal());
             m_target->updateInRangeOppositeFactionSet();
         }
@@ -2013,7 +2013,7 @@ void Aura::SpellAuraModConfuse(bool apply)
         SetNegative();
 
         m_target->addUnitStateFlag(UNIT_STATE_CONFUSE);
-        m_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED);
+        m_target->addUnitFlags(UNIT_FLAG_CONFUSED);
 
         m_target->setAItoUse(true);
         m_target->GetAIInterface()->HandleEvent(EVENT_WANDER, u_caster, 0);
@@ -2031,7 +2031,7 @@ void Aura::SpellAuraModConfuse(bool apply)
     else if ((m_flags & (1 << mod->m_effectIndex)) == 0)   //add these checks to mods where immunity can cancel only 1 mod and not whole spell
     {
         m_target->removeUnitStateFlag(UNIT_STATE_CONFUSE);
-        m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED);
+        m_target->removeUnitFlags(UNIT_FLAG_CONFUSED);
         if (p_target)
             p_target->SpeedCheatReset();
 
@@ -2157,7 +2157,7 @@ void Aura::SpellAuraModFear(bool apply)
         SetNegative();
 
         m_target->addUnitStateFlag(UNIT_STATE_FEAR);
-        m_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING);
+        m_target->addUnitFlags(UNIT_FLAG_FLEEING);
 
         m_target->setAItoUse(true);
         m_target->GetAIInterface()->HandleEvent(EVENT_FEAR, u_caster, 0);
@@ -2179,7 +2179,7 @@ void Aura::SpellAuraModFear(bool apply)
         if (m_target->m_fearmodifiers <= 0)
         {
             m_target->removeUnitStateFlag(UNIT_STATE_FEAR);
-            m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING);
+            m_target->removeUnitFlags(UNIT_FLAG_FLEEING);
 
             m_target->GetAIInterface()->HandleEvent(EVENT_UNFEAR, nullptr, 0);
 
@@ -2628,7 +2628,7 @@ void Aura::SpellAuraModStun(bool apply)
 
         m_target->m_stunned++;
         m_target->addUnitStateFlag(UNIT_STATE_STUN);
-        m_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED);
+        m_target->addUnitFlags(UNIT_FLAG_STUNNED);
 
         if (m_target->IsCreature())
             m_target->GetAIInterface()->resetNextTarget();
@@ -2660,7 +2660,7 @@ void Aura::SpellAuraModStun(bool apply)
         if (m_target->m_stunned == 0)
         {
             m_target->removeUnitStateFlag(UNIT_STATE_STUN);
-            m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED);
+            m_target->removeUnitFlags(UNIT_FLAG_STUNNED);
         }
 
         // attack them back.. we seem to lose this sometimes for some reason
@@ -3538,7 +3538,7 @@ void Aura::SpellAuraModPacify(bool apply)
 
         m_target->m_pacified++;
         m_target->addUnitStateFlag(UNIT_STATE_PACIFY);
-        m_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED);
+        m_target->addUnitFlags(UNIT_FLAG_PACIFIED);
     }
     else
     {
@@ -3547,7 +3547,7 @@ void Aura::SpellAuraModPacify(bool apply)
         if (m_target->m_pacified == 0)
         {
             m_target->removeUnitStateFlag(UNIT_STATE_PACIFY);
-            m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED);
+            m_target->removeUnitFlags(UNIT_FLAG_PACIFIED);
         }
     }
 }
@@ -3606,7 +3606,7 @@ void Aura::SpellAuraModSilence(bool apply)
     {
         m_target->m_silenced++;
         m_target->addUnitStateFlag(UNIT_STATE_SILENCE);
-        m_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SILENCED);
+        m_target->addUnitFlags(UNIT_FLAG_SILENCED);
 
         // Interrupt target's current casted spell (either channeled or generic spell with cast time)
         if (m_target->isCastingNonMeleeSpell(true, false, true))
@@ -3629,7 +3629,7 @@ void Aura::SpellAuraModSilence(bool apply)
         if (m_target->m_silenced == 0)
         {
             m_target->removeUnitStateFlag(UNIT_STATE_SILENCE);
-            m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SILENCED);
+            m_target->removeUnitFlags(UNIT_FLAG_SILENCED);
         }
     }
 }
@@ -5237,7 +5237,7 @@ void Aura::SpellAuraPacifySilence(bool apply)
         m_target->m_pacified++;
         m_target->m_silenced++;
         m_target->addUnitStateFlag(UNIT_STATE_PACIFY | UNIT_STATE_SILENCE);
-        m_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED | UNIT_FLAG_SILENCED);
+        m_target->addUnitFlags(UNIT_FLAG_PACIFIED | UNIT_FLAG_SILENCED);
 
         if (m_target->isCastingNonMeleeSpell())
         {
@@ -5251,7 +5251,7 @@ void Aura::SpellAuraPacifySilence(bool apply)
         if (m_target->m_pacified == 0)
         {
             m_target->removeUnitStateFlag(UNIT_STATE_PACIFY);
-            m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED);
+            m_target->removeUnitFlags(UNIT_FLAG_PACIFIED);
         }
 
         m_target->m_silenced--;
@@ -5259,7 +5259,7 @@ void Aura::SpellAuraPacifySilence(bool apply)
         if (m_target->m_silenced == 0)
         {
             m_target->removeUnitStateFlag(UNIT_STATE_SILENCE);
-            m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SILENCED);
+            m_target->removeUnitFlags(UNIT_FLAG_SILENCED);
         }
     }
 }
@@ -5396,7 +5396,7 @@ void Aura::SpellAuraFeignDeath(bool apply)
 #if VERSION_STRING != Classic
             p_target->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH);
 #endif
-            p_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH);
+            p_target->addUnitFlags(UNIT_FLAG_FEIGN_DEATH);
             p_target->SetFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_DEAD);
 
             //now get rid of mobs agro. pTarget->CombatStatus.AttackersForgetHate() - this works only for already attacking mobs
@@ -5434,7 +5434,7 @@ void Aura::SpellAuraFeignDeath(bool apply)
             data.Initialize(SMSG_CLEAR_TARGET);
             data << p_target->getGuid();
 
-            p_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_COMBAT);
+            p_target->removeUnitFlags(UNIT_FLAG_COMBAT);
 
             if (p_target->hasUnitStateFlag(UNIT_STATE_ATTACKING))
                 p_target->removeUnitStateFlag(UNIT_STATE_ATTACKING);
@@ -5447,7 +5447,7 @@ void Aura::SpellAuraFeignDeath(bool apply)
 #if VERSION_STRING != Classic
             p_target->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH);
 #endif
-            p_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH);
+            p_target->removeUnitFlags(UNIT_FLAG_FEIGN_DEATH);
             p_target->RemoveFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_DEAD);
             p_target->StopMirrorTimer(MIRROR_TYPE_FIRE);
         }
@@ -5729,7 +5729,7 @@ void Aura::SpellAuraMounted(bool apply)
         p_target->m_MountSpellId = m_spellInfo->getId();
         p_target->flying_aura = 0;
         m_target->setUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, displayId);
-        //m_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
+        //m_target->addUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
 
         if (p_target->getShapeShiftForm() && !(p_target->getShapeShiftForm() & (FORM_BATTLESTANCE | FORM_DEFENSIVESTANCE | FORM_BERSERKERSTANCE)) && p_target->m_ShapeShifted != m_spellInfo->getId())
             p_target->RemoveAura(p_target->m_ShapeShifted);
@@ -5752,7 +5752,7 @@ void Aura::SpellAuraMounted(bool apply)
             p_target->SendPacket(&data);
 #endif
 
-            p_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNT);
+            p_target->addUnitFlags(UNIT_FLAG_MOUNT);
             p_target->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_PLAYER_VEHICLE);
 
             p_target->GetVehicleComponent()->InstallAccessories();
@@ -5764,7 +5764,7 @@ void Aura::SpellAuraMounted(bool apply)
         if (p_target->GetVehicleComponent() != nullptr)
         {
             p_target->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_PLAYER_VEHICLE);
-            p_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNT);
+            p_target->removeUnitFlags(UNIT_FLAG_MOUNT);
 
             p_target->GetVehicleComponent()->RemoveAccessories();
             p_target->GetVehicleComponent()->EjectAllPassengers();
@@ -5783,7 +5783,7 @@ void Aura::SpellAuraMounted(bool apply)
         p_target->m_MountSpellId = 0;
         p_target->flying_aura = 0;
         m_target->SetMount(0);
-        //m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
+        //m_target->removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
 
         //if we had pet then respawn
         p_target->SpawnActivePet();
@@ -9052,11 +9052,11 @@ void Aura::SpellAuraRemoveReagentCost(bool apply)
 
     if (apply)
     {
-        p_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NO_REAGANT_COST);
+        p_target->addUnitFlags(UNIT_FLAG_NO_REAGANT_COST);
     }
     else
     {
-        p_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NO_REAGANT_COST);
+        p_target->removeUnitFlags(UNIT_FLAG_NO_REAGANT_COST);
     }
 }
 void Aura::SpellAuraBlockMultipleDamage(bool apply)

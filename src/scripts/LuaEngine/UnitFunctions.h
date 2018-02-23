@@ -3053,9 +3053,9 @@ class LuaUnit
             return 0;
         ptr->m_pacified = pacified ? 1 : 0;
         if (pacified)
-            ptr->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED | UNIT_FLAG_SILENCED);
+            ptr->addUnitFlags(UNIT_FLAG_PACIFIED | UNIT_FLAG_SILENCED);
         else
-            ptr->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED | UNIT_FLAG_SILENCED);
+            ptr->removeUnitFlags(UNIT_FLAG_PACIFIED | UNIT_FLAG_SILENCED);
         return 0;
     }
 
@@ -4757,7 +4757,7 @@ class LuaUnit
         if (lock)
         {
             ptr->m_pacified = 1;
-            ptr->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED | UNIT_FLAG_SILENCED);
+            ptr->addUnitFlags(UNIT_FLAG_PACIFIED | UNIT_FLAG_SILENCED);
             WorldPacket data1(9);
             data1.Initialize(SMSG_CLIENT_CONTROL_UPDATE);
             data1 << ptr->GetNewGUID() << uint8(0x00);
@@ -4766,7 +4766,7 @@ class LuaUnit
         else
         {
             ptr->m_pacified = 0;
-            ptr->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED | UNIT_FLAG_SILENCED);
+            ptr->removeUnitFlags(UNIT_FLAG_PACIFIED | UNIT_FLAG_SILENCED);
             WorldPacket data1(9);
             data1.Initialize(SMSG_CLIENT_CONTROL_UPDATE);
             data1 << ptr->GetNewGUID() << uint8(0x01);

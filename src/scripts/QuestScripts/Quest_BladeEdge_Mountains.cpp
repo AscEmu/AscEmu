@@ -162,8 +162,7 @@ public:
     void OnLoad() override
     {
         RegisterAIUpdateEvent(5000);
-        //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
-        getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+        getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         setAIAgent(AGENT_NULL);
         _setMeleeDisabled(true);

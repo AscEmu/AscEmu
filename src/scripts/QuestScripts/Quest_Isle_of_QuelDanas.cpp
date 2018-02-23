@@ -77,13 +77,13 @@ public:
             {
                 TaxiPath* pPath = sTaxiMgr.GetTaxiPath(779);
                 pPlayer->TaxiStart(pPath, 22840, 0);
-                pPlayer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
+                pPlayer->removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
             } break;
             case 2:
             {
                 TaxiPath* pPath = sTaxiMgr.GetTaxiPath(784);
                 pPlayer->TaxiStart(pPath, 22840, 0);
-                pPlayer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
+                pPlayer->removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
             } break;
         }
     }
@@ -108,7 +108,7 @@ public:
     {
         TaxiPath* pPath = sTaxiMgr.GetTaxiPath(788);
         pPlayer->TaxiStart(pPath, 22840, 0);
-        pPlayer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
+        pPlayer->removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
     }
 };
 
