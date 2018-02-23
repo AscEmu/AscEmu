@@ -2923,7 +2923,7 @@ void Aura::SpellAuraModStealth(bool apply)
             case 42943:
             case 52188:
             case 58506:
-                m_target->SetFlag(UNIT_FIELD_BYTES_2, 0x1E000000); //sneak anim \todo investigate
+                m_target->setStandStateFlags(m_target->getStandStateFlags() | UNIT_STAND_FLAGS_CREEP);
                 break;
         }
 
@@ -3067,8 +3067,6 @@ void Aura::SpellAuraModStealth(bool apply)
             default:
             {
                 m_target->SetStealth(0);
-                m_target->RemoveFlag(UNIT_FIELD_BYTES_2, 0x1E000000); //\todo investigate
-
                 m_target->setStandStateFlags(m_target->getStandStateFlags() &~UNIT_STAND_FLAGS_CREEP);
 
                 if (p_target != nullptr)
