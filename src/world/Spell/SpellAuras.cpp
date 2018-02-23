@@ -2304,6 +2304,7 @@ void Aura::SpellAuraPeriodicHeal(bool apply)
             }
         }
     }
+    sHookInterface.OnPeriodicSpellTrigger(this, apply);
 }
 
 void Aura::EventPeriodicHeal(uint32 amount)
@@ -3432,6 +3433,8 @@ void Aura::SpellAuraPeriodicTriggerSpell(bool apply)
         }
     }
 
+    sHookInterface.OnPeriodicSpellTrigger(this, apply);
+
     if (m_spellInfo->getEffectTriggerSpell(mod->m_effectIndex) == 0)
         return;
 
@@ -3506,6 +3509,8 @@ void Aura::SpellAuraPeriodicEnergize(bool apply)
         sEventMgr.AddEvent(this, &Aura::EventPeriodicEnergize, (uint32)mod->m_amount, (uint32)mod->m_miscValue,
                            EVENT_AURA_PERIODIC_ENERGIZE, GetSpellInfo()->getEffectAmplitude(mod->m_effectIndex), 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
+
+    sHookInterface.OnPeriodicSpellTrigger(this, apply);
 }
 
 void Aura::EventPeriodicEnergize(uint32 amount, uint32 type)
@@ -5280,6 +5285,7 @@ void Aura::SpellAuraPeriodicHealthFunnel(bool apply)
         sEventMgr.AddEvent(this, &Aura::EventPeriodicHealthFunnel, amt,
                            EVENT_AURA_PERIODIC_HEALTH_FUNNEL, GetSpellInfo()->getEffectAmplitude(mod->m_effectIndex), 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
+    sHookInterface.OnPeriodicSpellTrigger(this, apply);
 }
 
 void Aura::EventPeriodicHealthFunnel(uint32 amount)
@@ -5326,6 +5332,8 @@ void Aura::SpellAuraPeriodicManaLeech(bool apply)
         sEventMgr.AddEvent(this, &Aura::EventPeriodicManaLeech, amt,
                            EVENT_AURA_PERIODIC_LEECH, GetSpellInfo()->getEffectAmplitude(mod->m_effectIndex), 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
+
+    sHookInterface.OnPeriodicSpellTrigger(this, apply);
 }
 
 void Aura::EventPeriodicManaLeech(uint32 amount)

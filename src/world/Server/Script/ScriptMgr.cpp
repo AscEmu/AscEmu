@@ -1444,3 +1444,10 @@ bool HookInterface::OnResurrect(Player* pPlayer)
     }
     return ret_val;
 }
+
+void HookInterface::OnPeriodicSpellTrigger(Aura * pAura, bool apply)
+{
+    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_SPELL_PERIODIC_TRIGGER];
+    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
+        ((tOnPeriodicSpellTrigger)*itr)(pAura, apply);
+}
