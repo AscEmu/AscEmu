@@ -307,7 +307,7 @@ Player::Player(uint32 guid)
     setGuidLow(guid);
     m_wowGuid.Init(getGuid());
 #if VERSION_STRING >= WotLK
-    SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_ENABLE_POWER_REGEN);
+    addUnitFlags2(UNIT_FLAG2_ENABLE_POWER_REGEN);
 
     setFloatValue(PLAYER_RUNE_REGEN_1, 0.100000f);
     setFloatValue(PLAYER_RUNE_REGEN_1 + 1, 0.100000f);
@@ -977,7 +977,7 @@ bool Player::Create(WorldPacket& data)
 #else
     setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_PVP);
     addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
-    SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_ENABLE_POWER_REGEN);
+    addUnitFlags2(UNIT_FLAG2_ENABLE_POWER_REGEN);
 #endif
 
     if (class_ == WARRIOR)

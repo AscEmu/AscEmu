@@ -5394,7 +5394,7 @@ void Aura::SpellAuraFeignDeath(bool apply)
             p_target->setDeathState(ALIVE);
 
 #if VERSION_STRING != Classic
-            p_target->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH);
+            p_target->addUnitFlags2(UNIT_FLAG2_FEIGN_DEATH);
 #endif
             p_target->addUnitFlags(UNIT_FLAG_FEIGN_DEATH);
             p_target->SetFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_DEAD);
@@ -5445,7 +5445,7 @@ void Aura::SpellAuraFeignDeath(bool apply)
         else
         {
 #if VERSION_STRING != Classic
-            p_target->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH);
+            p_target->removeUnitFlags2(UNIT_FLAG2_FEIGN_DEATH);
 #endif
             p_target->removeUnitFlags(UNIT_FLAG_FEIGN_DEATH);
             p_target->RemoveFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_DEAD);
@@ -8906,9 +8906,9 @@ void Aura::SpellAuraForceMoveForward(bool apply)
 {
 #if VERSION_STRING != Classic
     if (apply)
-        m_target->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FORCE_MOVE);
+        m_target->addUnitFlags2(UNIT_FLAG2_FORCE_MOVE);
     else
-        m_target->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FORCE_MOVE);
+        m_target->removeUnitFlags2(UNIT_FLAG2_FORCE_MOVE);
 #endif
 }
 
@@ -8916,9 +8916,9 @@ void Aura::SpellAuraComprehendLang(bool apply)
 {
 #if VERSION_STRING != Classic
     if (apply)
-        m_target->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_COMPREHEND_LANG);
+        m_target->addUnitFlags2(UNIT_FLAG2_COMPREHEND_LANG);
     else
-        m_target->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_COMPREHEND_LANG);
+        m_target->removeUnitFlags2(UNIT_FLAG2_COMPREHEND_LANG);
 #endif
 }
 
@@ -9633,7 +9633,7 @@ void Aura::SpellAuraMirrorImage(bool apply)
 
         s->SetDisplayId(s->GetOwner()->GetDisplayId());
 #if VERSION_STRING != Classic
-        s->setUInt32Value(UNIT_FIELD_FLAGS_2, s->getUInt32Value(UNIT_FIELD_FLAGS_2) | UNIT_FLAG2_MIRROR_IMAGE);
+        s->addUnitFlags2(UNIT_FLAG2_MIRROR_IMAGE);
 #endif
     }
 
