@@ -4561,7 +4561,7 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 /*misc1*/)
             Creature* aiowner = static_cast< Creature* >(m_Unit);
             //clear tagger.
             aiowner->UnTag();
-            aiowner->setUInt32Value(UNIT_DYNAMIC_FLAGS, aiowner->getUInt32Value(UNIT_DYNAMIC_FLAGS) & ~(U_DYN_FLAG_TAGGED_BY_OTHER | U_DYN_FLAG_LOOTABLE));
+            aiowner->removeDynamicFlags(U_DYN_FLAG_TAGGED_BY_OTHER | U_DYN_FLAG_LOOTABLE);
         }
 
         CALL_SCRIPT_EVENT(m_Unit, _internalOnCombatStop)();

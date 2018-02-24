@@ -2319,7 +2319,8 @@ void Spell::SpellEffectResurrect(uint8_t effectIndex) // Resurrect (Flat)
                     }
                     unitTarget->setHealth(hlth);
                     unitTarget->SetPower(POWER_TYPE_MANA, mana);
-                    unitTarget->setUInt32Value(UNIT_DYNAMIC_FLAGS, 0);
+                    //\note remove all dynmic flags
+                    unitTarget->setDynamicFlags(0);
                     unitTarget->setDeathState(ALIVE);
                     static_cast< Creature* >(unitTarget)->UnTag();
                     static_cast< Creature* >(unitTarget)->loot.gold = 0;
@@ -5382,7 +5383,8 @@ void Spell::SpellEffectSummonDeadPet(uint8_t /*effectIndex*/)
         spellModFlatIntValue(p_caster->SM_FMiscEffect, &damage, GetSpellInfo()->getSpellGroupType());
         spellModPercentageIntValue(p_caster->SM_PMiscEffect, &damage, GetSpellInfo()->getSpellGroupType());
 
-        pPet->setUInt32Value(UNIT_DYNAMIC_FLAGS, 0);
+        //\note remove all dynamic flags
+        pPet->setDynamicFlags(0);
         pPet->setHealth((uint32)((pPet->GetMaxHealth() * damage) / 100));
         pPet->setDeathState(ALIVE);
         pPet->GetAIInterface()->HandleEvent(EVENT_FOLLOWOWNER, pPet, 0);
@@ -5472,7 +5474,8 @@ void Spell::SpellEffectResurrectNew(uint8_t effectIndex)
                     }
                     unitTarget->setHealth(hlth);
                     unitTarget->SetPower(POWER_TYPE_MANA, mana);
-                    unitTarget->setUInt32Value(UNIT_DYNAMIC_FLAGS, 0);
+                    //\note remove all dynamic flags
+                    unitTarget->setDynamicFlags(0);
                     unitTarget->setDeathState(ALIVE);
                     static_cast< Creature* >(unitTarget)->UnTag();
                     static_cast< Creature* >(unitTarget)->loot.gold = 0;
@@ -5533,7 +5536,7 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
 
         playerTarget->bShouldHaveLootableOnCorpse = false;
         playerTarget->removeUnitFlags(UNIT_FLAG_SKINNABLE);
-        playerTarget->SetFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_LOOTABLE);
+        playerTarget->addDynamicFlags(U_DYN_FLAG_LOOTABLE);
 
         // Send the loot.
         p_caster->SendLoot(playerTarget->getGuid(), LOOT_SKINNING, playerTarget->GetMapId());

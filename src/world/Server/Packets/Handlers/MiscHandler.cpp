@@ -655,7 +655,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
         {
             plr->bShouldHaveLootableOnCorpse = false;
             plr->loot.items.clear();
-            plr->RemoveFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_LOOTABLE);
+            plr->removeDynamicFlags(U_DYN_FLAG_LOOTABLE);
         }
     }
     else if (GET_TYPE_FROM_GUID(guid) == HIGHGUID_TYPE_ITEM)     // Loot from items, eg. sacks, milling, prospecting...

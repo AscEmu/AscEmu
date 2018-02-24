@@ -1291,65 +1291,68 @@ void Group::SetRaidDifficulty(uint8 diff)
 
 void Group::SendLootUpdates(Object* o)
 {
-    // Build the actual update.
-    ByteBuffer buf(500);
-
-    uint32 Flags = o->getUInt32Value(UNIT_DYNAMIC_FLAGS);
-
-    Flags |= U_DYN_FLAG_LOOTABLE;
-    Flags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
-
-    o->BuildFieldUpdatePacket(&buf, UNIT_DYNAMIC_FLAGS, Flags);
-
-    Lock();
-
-    switch (m_LootMethod)
+    if (o->IsUnit())
     {
-        case PARTY_LOOT_RR:
-        case PARTY_LOOT_FFA:
-        case PARTY_LOOT_GROUP:
-        case PARTY_LOOT_NBG:
+        // Build the actual update.
+        ByteBuffer buf(500);
+
+        uint32 Flags = static_cast<Unit*>(o)->getDynamicFlags();
+
+        Flags |= U_DYN_FLAG_LOOTABLE;
+        Flags |= U_DYN_FLAG_TAPPED_BY_PLAYER;
+
+        o->BuildFieldUpdatePacket(&buf, UNIT_DYNAMIC_FLAGS, Flags);
+
+        Lock();
+
+        switch (m_LootMethod)
         {
-
-            SubGroup* sGrp = NULL;
-            GroupMembersSet::iterator itr2;
-
-            for (uint32 Index = 0; Index < GetSubGroupCount(); ++Index)
+            case PARTY_LOOT_RR:
+            case PARTY_LOOT_FFA:
+            case PARTY_LOOT_GROUP:
+            case PARTY_LOOT_NBG:
             {
-                sGrp = GetSubGroup(Index);
-                itr2 = sGrp->GetGroupMembersBegin();
 
-                for (; itr2 != sGrp->GetGroupMembersEnd(); ++itr2)
+                SubGroup* sGrp = NULL;
+                GroupMembersSet::iterator itr2;
+
+                for (uint32 Index = 0; Index < GetSubGroupCount(); ++Index)
                 {
-                    PlayerInfo* p = *itr2;
+                    sGrp = GetSubGroup(Index);
+                    itr2 = sGrp->GetGroupMembersBegin();
 
-                    if (p->m_loggedInPlayer != NULL && p->m_loggedInPlayer->IsVisible(o->getGuid()))       // Save updates for non-existent creatures
-                        p->m_loggedInPlayer->PushUpdateData(&buf, 1);
+                    for (; itr2 != sGrp->GetGroupMembersEnd(); ++itr2)
+                    {
+                        PlayerInfo* p = *itr2;
+
+                        if (p->m_loggedInPlayer != NULL && p->m_loggedInPlayer->IsVisible(o->getGuid()))       // Save updates for non-existent creatures
+                            p->m_loggedInPlayer->PushUpdateData(&buf, 1);
+                    }
                 }
+
+                break;
             }
 
-            break;
-        }
-
-        case PARTY_LOOT_MASTER:
-        {
-            Player* pLooter = GetLooter() ? GetLooter()->m_loggedInPlayer : NULL;
-            if (pLooter == NULL)
-                pLooter = GetLeader()->m_loggedInPlayer;
-
-            if (pLooter->IsVisible(o->getGuid()))
+            case PARTY_LOOT_MASTER:
             {
-                Unit* victim = static_cast< Unit* >(o);
+                Player* pLooter = GetLooter() ? GetLooter()->m_loggedInPlayer : NULL;
+                if (pLooter == NULL)
+                    pLooter = GetLeader()->m_loggedInPlayer;
 
-                victim->Tag(pLooter->getGuid());
-                pLooter->PushUpdateData(&buf, 1);
+                if (pLooter->IsVisible(o->getGuid()))
+                {
+                    Unit* victim = static_cast<Unit*>(o);
+
+                    victim->Tag(pLooter->getGuid());
+                    pLooter->PushUpdateData(&buf, 1);
+                }
+
+                break;
             }
-
-            break;
         }
-    }
 
-    Unlock();
+        Unlock();
+    }
 }
 
 Player* Group::GetRandomPlayerInRangeButSkip(Player* plr, float range, Player* plr_skip)

@@ -361,7 +361,7 @@ class ShadowfangKeepInstance : public InstanceScript
                         pCreature->setStandState(STANDSTATE_DEAD);
                         pCreature->setDeathState(CORPSE);
                         pCreature->GetAIInterface()->m_canMove = false;
-                        pCreature->SetFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_DEAD);
+                        pCreature->addDynamicFlags(U_DYN_FLAG_DEAD);
                         pCreature->SendScriptTextChatMessage(SAY_VINCENT_DEATH);
                     }
                 }break;
@@ -440,7 +440,7 @@ class ArugalAI : public CreatureAIScript
                             pVincent->setStandState(STANDSTATE_DEAD);
                             pVincent->setDeathState(CORPSE);
                             pVincent->GetAIInterface()->m_canMove = false;
-                            pVincent->SetFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_DEAD);
+                            pVincent->addDynamicFlags(U_DYN_FLAG_DEAD);
                         }
                     }break;
                     case 8:

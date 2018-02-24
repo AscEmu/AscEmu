@@ -255,7 +255,8 @@ void Creature::OnRespawn(MapMgr* m)
 
     LOG_DETAIL("Respawning " I64FMT "...", getGuid());
     setHealth(GetMaxHealth());
-    setUInt32Value(UNIT_DYNAMIC_FLAGS, 0); // not tagging shit
+    //\note remove all dynamic flags
+    setDynamicFlags(0); // not tagging shit
     if (m_spawn)
     {
         setUInt32Value(UNIT_NPC_FLAGS, creature_properties->NPCFLags);
@@ -266,7 +267,7 @@ void Creature::OnRespawn(MapMgr* m)
         {
             m_limbostate = true;
             setDeathState(ALIVE);   // we are not actually dead, we just appear dead
-            setUInt32Value(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_DEAD);
+            setDynamicFlags(U_DYN_FLAG_DEAD);
         }
         else if (m_spawn->death_state == CREATURE_STATE_DEAD)
         {
@@ -1520,7 +1521,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     if (spawn->death_state == CREATURE_STATE_APPEAR_DEAD)
     {
         m_limbostate = true;
-        setUInt32Value(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_DEAD);
+        setDynamicFlags(U_DYN_FLAG_DEAD);
     }
     else if (spawn->death_state == CREATURE_STATE_DEAD)
     {

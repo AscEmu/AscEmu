@@ -5869,7 +5869,8 @@ void Player::KillPlayer()
     StopMirrorTimer(MIRROR_TYPE_FIRE);
 
     addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE); // Player death animation, also can be used with DYNAMIC_FLAGS <- huh???
-    setUInt32Value(UNIT_DYNAMIC_FLAGS, 0x00);
+    //\note remove all dynamic flags
+    setDynamicFlags(0);
 
     if (getClass() == WARRIOR)   // Rage resets on death
         SetPower(POWER_TYPE_RAGE, 0);
@@ -5928,7 +5929,7 @@ void Player::CreateCorpse()
     if (m_bg)
     {
         // Remove our lootable flags
-        RemoveFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_LOOTABLE);
+        removeDynamicFlags(U_DYN_FLAG_LOOTABLE);
         removeUnitFlags(UNIT_FLAG_SKINNABLE);
 
         loot.gold = 0;

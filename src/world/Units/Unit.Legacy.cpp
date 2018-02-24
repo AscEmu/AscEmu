@@ -13615,14 +13615,14 @@ void Unit::Tag(uint64 TaggerGUID)
 {
     Tagged = true;
     this->TaggerGuid = TaggerGUID;
-    m_uint32Values[UNIT_DYNAMIC_FLAGS] |= U_DYN_FLAG_TAGGED_BY_OTHER;
+    addDynamicFlags(U_DYN_FLAG_TAGGED_BY_OTHER);
 }
 
 void Unit::UnTag()
 {
     Tagged = false;
     TaggerGuid = 0;
-    m_uint32Values[UNIT_DYNAMIC_FLAGS] &= ~U_DYN_FLAG_TAGGED_BY_OTHER;
+    removeDynamicFlags(U_DYN_FLAG_TAGGED_BY_OTHER);
 }
 
 bool Unit::IsTagged()
