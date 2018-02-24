@@ -46,8 +46,6 @@ public:
 
     void OnLoad()
     {
-        getCreature()->setUInt32Value(UNIT_FIELD_BYTES_0, 16777472);
-        getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         getCreature()->addUnitFlags(UNIT_FLAG_COMBAT);
         getCreature()->setStandState(STANDSTATE_DEAD);
 
@@ -55,20 +53,19 @@ public:
 
         switch (sid)
         {
-            case 12923:
+            case 12923: // not in db
             case 12938:
                 getCreature()->SetHealthPct(75);
                 break;
-            case 12924:
+            case 12924: // not in db
             case 12936:
                 getCreature()->SetHealthPct(50);
                 break;
-            case 12925:
+            case 12925: // not in db
             case 12937:
                 getCreature()->SetHealthPct(25);
                 break;
         }
-
     }
 };
 
