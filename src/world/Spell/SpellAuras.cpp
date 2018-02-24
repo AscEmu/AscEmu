@@ -3480,8 +3480,10 @@ void Aura::SpellAuraPeriodicTriggerSpell(bool apply)
         }
 
         sEventMgr.AddEvent(this, &Aura::EventPeriodicTriggerSpell, trigger, false, int32(0),
-                           EVENT_AURA_PERIODIC_TRIGGERSPELL, float2int32(amptitude), numticks, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            EVENT_AURA_PERIODIC_TRIGGERSPELL, float2int32(amptitude), numticks, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
+    else
+        sEventMgr.RemoveEvents(this, EVENT_AURA_PERIODIC_TRIGGERSPELL);
 }
 
 void Aura::EventPeriodicTriggerSpell(SpellInfo* spellInfo, bool overridevalues, int32 overridevalue)
@@ -3496,6 +3498,8 @@ void Aura::EventPeriodicTriggerSpell(SpellInfo* spellInfo, bool overridevalues, 
     SpellCastTargets spellTargets;
     spell->GenerateTargets(&spellTargets);
     spell->prepare(&spellTargets);
+
+    sHookInterface.OnPeriodicTriggerSpell(this);
 }
 
 void Aura::SpellAuraPeriodicEnergize(bool apply)
