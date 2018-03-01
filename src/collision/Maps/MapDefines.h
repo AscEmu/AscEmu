@@ -34,10 +34,10 @@ struct MmapTileHeader
     uint32 dtVersion;
     uint32 mmapVersion;
     uint32 size;
-    bool usesLiquids : 1;
+    uint32 usesLiquids;
 
     MmapTileHeader() : mmapMagic(MMAP_MAGIC), dtVersion(DT_NAVMESH_VERSION),
-        mmapVersion(MMAP_VERSION), size(0), usesLiquids(true) { }
+        mmapVersion(MMAP_VERSION), size(0), usesLiquids(0) {}
 };
 
 enum NavTerrain
