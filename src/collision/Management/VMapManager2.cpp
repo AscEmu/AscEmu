@@ -297,7 +297,7 @@ namespace VMAP
             {
                 LOG_ERROR("could not load '%s%s.vmo'", basepath.c_str(), filename.c_str());
                 delete worldmodel;
-                return NULL;
+                return nullptr;
             }
             LogDebugFlag(LF_VMAP, "VMapManager2 loading file '%s%s'", basepath.c_str(), filename.c_str());
             model = iLoadedModelFiles.insert(std::pair<std::string, ManagedModel>(filename, ManagedModel())).first;
