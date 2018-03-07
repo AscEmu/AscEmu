@@ -433,8 +433,10 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
         if ((unit_flags & UnitFlagToName[i].Flag) != 0)
             GreenSystemMessage(m_session, "-- %s", UnitFlagToName[i].Name);
 
+#if VERSION_STRING > Classic
     uint32 unit_flags2 = creature_target->getUnitFlags2();
     GreenSystemMessage(m_session, "UnitFlags2: %u", unit_flags2);
+#endif
 
     for (uint32 i = 0; i < numflags2; i++)
         if ((unit_flags & UnitFlagToName2[i].Flag) != 0)

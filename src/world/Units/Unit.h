@@ -262,10 +262,12 @@ public:
     void removeUnitFlags(uint32_t unitFlags);
     bool hasUnitFlags(uint32_t unitFlags) const;
 
+#if VERSION_STRING > Classic
     uint32_t getUnitFlags2() const;
     void setUnitFlags2(uint32_t unitFlags2);
     void addUnitFlags2(uint32_t unitFlags2);
     void removeUnitFlags2(uint32_t unitFlags2);
+#endif
 
     //bytes_1 begin
     uint8_t getStandState() const;
