@@ -16,6 +16,9 @@ This file is released under the MIT license. See README-MIT for more information
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
 
+uint64_t Unit::getTargetGuid() const { return unitData()->target_guid.guid; };
+void Unit::setTargetGuid(uint64_t guid) { write(unitData()->target_guid.guid, guid); }
+
 //bytes_0 begin
 uint8_t Unit::getRace() const { return unitData()->field_bytes_0.s.race; }
 void Unit::setRace(uint8_t race) { write(unitData()->field_bytes_0.s.race, race); }

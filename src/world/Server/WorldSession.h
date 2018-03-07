@@ -295,7 +295,7 @@ class SERVER_DECL WorldSession
         void HandleLogoutCancelOpcode(WorldPacket& recvPacket);
         void HandleZoneUpdateOpcode(WorldPacket& recvPacket);
         //void HandleSetTargetOpcode(WorldPacket& recvPacket);
-        void HandleSetSelectionOpcode(WorldPacket& recvPacket);
+        void handleSetSelectionOpcode(WorldPacket& recvPacket);
         void handleStandStateChangeOpcode(WorldPacket& recvPacket);
         void HandleDismountOpcode(WorldPacket& recvPacket);
 

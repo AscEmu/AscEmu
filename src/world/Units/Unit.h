@@ -229,6 +229,9 @@ class SERVER_DECL Unit : public Object
 
 public:
 
+    uint64_t getTargetGuid() const;
+    void setTargetGuid(uint64_t guid);
+
     //bytes_0 begin
     uint8_t getRace() const;
     void setRace(uint8_t race);

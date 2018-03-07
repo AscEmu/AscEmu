@@ -37,6 +37,7 @@
 #include "Server/Packets/SmsgLogoutResponse.h"
 #include "Server/Packets/CmsgStandStateChange.h"
 #include "Server/Packets/CmsgWho.h"
+#include "Server/Packets/CmsgSetSelection.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
 #endif
@@ -197,6 +198,25 @@ void WorldSession::handleWhoOpcode(WorldPacket& recv_data)
     data << sent_count;
 
     SendPacket(&data);
+}
+
+void WorldSession::handleSetSelectionOpcode(WorldPacket& recvPacket)
+{
+    CmsgSetSelection recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    _player->SetSelection(recv_packet.guid);
+
+    if (_player->m_comboPoints)
+        _player->UpdateComboPoints();
+
+    _player->SetTargetGUID(recv_packet.guid);
+    if (recv_packet.guid == 0)
+    {
+        if (_player->IsInWorld())
+            _player->CombatStatusHandler_ResetPvPTimeout();
+    }
 }
 // MIT end
 
@@ -1043,25 +1063,6 @@ void WorldSession::HandleZoneUpdateOpcode(WorldPacket& recv_data)
 
     //clear buyback
     _player->GetItemInterface()->EmptyBuyBack();
-}
-
-void WorldSession::HandleSetSelectionOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    uint64 guid;
-    recv_data >> guid;
-    _player->SetSelection(guid);
-
-    if (_player->m_comboPoints)
-        _player->UpdateComboPoints();
-
-    _player->SetTargetGUID(guid);
-    if (guid == 0) // deselected target
-    {
-        if (_player->IsInWorld())
-            _player->CombatStatusHandler_ResetPvPTimeout();
-    }
 }
 
 #if VERSION_STRING != Cata
