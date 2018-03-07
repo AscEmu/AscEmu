@@ -26,7 +26,7 @@ Description | Classic | TBC | WotLK | Cataclysm
 Authentification | OK | OK | OK | OK
 Worldsocket | OK | OK | OK | OK
 Char Enum | OK | OK | OK | OK
-Log into world | NO | OK | OK | OK
+Log into world | NO | OK (without items) | OK | OK
 
 ## Contributing
 Feel free to contribute any corrections but make sure it is useful and tested before opening PRs.
@@ -48,8 +48,8 @@ Be patient with us and give us details.
 
 ## Install
 HowTo install (detailed guides on our wiki)
-* [Windows](https://ascemu.github.io/Wiki/docs/installationguid/windows/)
-* [Ubuntu](https://ascemu.github.io/Wiki/docs/installationguid/ubuntu/)
+* [Windows](https://ascemu.github.io/Wiki/docs/installation/windows/)
+* [Ubuntu](https://ascemu.github.io/Wiki/docs/installation/ubuntu/)
 
 
 ## Links
