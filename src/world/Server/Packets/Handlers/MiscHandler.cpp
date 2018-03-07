@@ -35,11 +35,23 @@
 #include "Spell/Definitions/LockTypes.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Server/Packets/SmsgLogoutResponse.h"
+#include "Server/Packets/CmsgStandStateChange.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
 #endif
 
 using namespace AscEmu::Packets;
+
+//MIT
+void WorldSession::handleStandStateChangeOpcode(WorldPacket& recvPacket)
+{
+    CmsgStandStateChange recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    _player->setStandState(recv_packet.state);
+}
+// MIT end
 
 void WorldSession::HandleRepopRequestOpcode(WorldPacket& /*recvData*/)
 {
@@ -1107,16 +1119,6 @@ void WorldSession::HandleSetSelectionOpcode(WorldPacket& recv_data)
         if (_player->IsInWorld())
             _player->CombatStatusHandler_ResetPvPTimeout();
     }
-}
-
-void WorldSession::HandleStandStateChangeOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    uint8 animstate;
-    recv_data >> animstate;
-
-    _player->setStandState(animstate);
 }
 
 #if VERSION_STRING != Cata

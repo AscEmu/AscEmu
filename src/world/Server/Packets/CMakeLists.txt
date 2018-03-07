@@ -8,6 +8,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgNameQuery.h
    ${PATH_PREFIX}/CmsgQueryTime.h
    ${PATH_PREFIX}/CmsgSetActiveMover.h
+   ${PATH_PREFIX}/CmsgStandStateChange.h
    ${PATH_PREFIX}/ManagedPacket.h
    ${PATH_PREFIX}/MovementPacket.h
    ${PATH_PREFIX}/MsgMoveFallLand.h
