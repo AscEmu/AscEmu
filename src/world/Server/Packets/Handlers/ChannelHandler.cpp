@@ -40,7 +40,7 @@ void WorldSession::handleChannelJoin(WorldPacket& recvPacket)
     if (!recv_packet.deserialise(recvPacket))
         return;
 
-    if (recv_packet.channel_name.compare(worldConfig.getGmClientChannelName()) && !GetPermissionCount())
+    if (!recv_packet.channel_name.compare(worldConfig.getGmClientChannelName()) && !GetPermissionCount())
         return;
 
     auto channel = channelmgr.GetCreateChannel(recv_packet.channel_name.c_str(), _player, recv_packet.dbc_id);
