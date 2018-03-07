@@ -315,7 +315,7 @@ class SERVER_DECL WorldSession
         void HandleSetActionButtonOpcode(WorldPacket& recvPacket);
         void HandleSetAtWarOpcode(WorldPacket& recvPacket);
         void HandleSetWatchedFactionIndexOpcode(WorldPacket& recvPacket);
-        void HandleTogglePVPOpcode(WorldPacket& recvPacket);
+        void handleTogglePVPOpcode(WorldPacket& recvPacket);
         void HandleAmmoSetOpcode(WorldPacket& recvPacket);
         void HandleGameObjectUse(WorldPacket& recvPacket);
 #if VERSION_STRING > TBC

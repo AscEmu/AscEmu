@@ -10168,8 +10168,9 @@ void Player::PvPToggle()
             StopPvPTimer();
 
             SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+#if VERSION_STRING > TBC
             RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
-
+#endif
             if (!IsPvPFlagged())
                 SetPvPFlag();
         }
@@ -10195,13 +10196,17 @@ void Player::PvPToggle()
                     ResetPvPTimer();
                 }
                 RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+#if VERSION_STRING > TBC
                 SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
+#endif
             }
             else
             {
                 // Move into PvP state.
                 SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+#if VERSION_STRING > TBC
                 RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
+#endif
 
                 StopPvPTimer();
                 SetPvPFlag();
@@ -10223,7 +10228,9 @@ void Player::PvPToggle()
                 StopPvPTimer();
 
                 SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+#if VERSION_STRING > TBC
                 RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
+#endif
 
                 if (!IsPvPFlagged())
                     SetPvPFlag();
@@ -10236,13 +10243,17 @@ void Player::PvPToggle()
                     ResetPvPTimer();
 
                     RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+#if VERSION_STRING > TBC
                     SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
+#endif
                 }
                 else
                 {
                     // Move into PvP state.
                     SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+#if VERSION_STRING > TBC
                     RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
+#endif
 
                     StopPvPTimer();
                     SetPvPFlag();
@@ -10262,7 +10273,9 @@ void Player::PvPToggle()
                         StopPvPTimer();
 
                         SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+#if VERSION_STRING > TBC
                         RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
+#endif
 
                         if (!IsPvPFlagged())
                             SetPvPFlag();
@@ -10275,14 +10288,18 @@ void Player::PvPToggle()
                             ResetPvPTimer();
 
                             RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+#if VERSION_STRING > TBC
                             SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
+#endif
 
                         }
                         else
                         {
                             // Move into PvP state.
                             SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+#if VERSION_STRING > TBC
                             RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
+#endif
 
                             StopPvPTimer();
                             SetPvPFlag();
@@ -10295,12 +10312,16 @@ void Player::PvPToggle()
             if (!HasFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE))
             {
                 SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+#if VERSION_STRING > TBC
                 RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
+#endif
             }
             else
             {
                 RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+#if VERSION_STRING > TBC
                 SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
+#endif
             }
         }
     }

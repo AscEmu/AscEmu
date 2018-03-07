@@ -218,6 +218,11 @@ void WorldSession::handleSetSelectionOpcode(WorldPacket& recvPacket)
             _player->CombatStatusHandler_ResetPvPTimeout();
     }
 }
+
+void WorldSession::handleTogglePVPOpcode(WorldPacket& /*recvPacket*/)
+{
+    _player->PvPToggle();
+}
 // MIT end
 
 void WorldSession::HandleRepopRequestOpcode(WorldPacket& /*recvData*/)
@@ -1388,13 +1393,6 @@ void WorldSession::HandleSetWatchedFactionIndexOpcode(WorldPacket & recvPacket)
     uint32 factionid;
     recvPacket >> factionid;
     GetPlayer()->setInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, factionid);
-}
-
-void WorldSession::HandleTogglePVPOpcode(WorldPacket& /*recv_data*/)
-{
-    CHECK_INWORLD_RETURN
-
-    _player->PvPToggle();
 }
 
 void WorldSession::HandleAmmoSetOpcode(WorldPacket& recv_data)
