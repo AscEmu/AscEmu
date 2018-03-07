@@ -143,12 +143,12 @@ void WorldSession::loadSpecificHandlers()
     //WorldPacketHandlers[CMSG_CANCEL_MOUNT_AURA].handler = &WorldSession::HandleDismountOpcode;
 
     // Friends
-    WorldPacketHandlers[CMSG_CONTACT_LIST].handler = &WorldSession::HandleFriendListOpcode;
-    //WorldPacketHandlers[CMSG_ADD_FRIEND].handler = &WorldSession::HandleAddFriendOpcode;
-    //WorldPacketHandlers[CMSG_DEL_FRIEND].handler = &WorldSession::HandleDelFriendOpcode;
-    //WorldPacketHandlers[CMSG_ADD_IGNORE].handler = &WorldSession::HandleAddIgnoreOpcode;
-    //WorldPacketHandlers[CMSG_DEL_IGNORE].handler = &WorldSession::HandleDelIgnoreOpcode;
-    // WorldPacketHandlers[CMSG_SET_FRIEND_NOTE].handler = &WorldSession::HandleSetFriendNote;
+    WorldPacketHandlers[CMSG_CONTACT_LIST].handler = &WorldSession::handleFriendListOpcode;
+    //WorldPacketHandlers[CMSG_ADD_FRIEND].handler = &WorldSession::handleAddFriendOpcode;
+    //WorldPacketHandlers[CMSG_DEL_FRIEND].handler = &WorldSession::handleDelFriendOpcode;
+    //WorldPacketHandlers[CMSG_ADD_IGNORE].handler = &WorldSession::handleAddIgnoreOpcode;
+    //WorldPacketHandlers[CMSG_DEL_IGNORE].handler = &WorldSession::handleDelIgnoreOpcode;
+    // WorldPacketHandlers[CMSG_SET_CONTACT_NOTES].handler = &WorldSession::handleSetContactNotes;
 
     // Areatrigger
     //WorldPacketHandlers[CMSG_AREATRIGGER].handler = &WorldSession::HandleAreaTriggerOpcode;

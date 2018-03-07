@@ -298,11 +298,16 @@ class SERVER_DECL WorldSession
         void HandleSetSelectionOpcode(WorldPacket& recvPacket);
         void handleStandStateChangeOpcode(WorldPacket& recvPacket);
         void HandleDismountOpcode(WorldPacket& recvPacket);
-        void HandleFriendListOpcode(WorldPacket& recvPacket);
-        void HandleAddFriendOpcode(WorldPacket& recvPacket);
-        void HandleDelFriendOpcode(WorldPacket& recvPacket);
-        void HandleAddIgnoreOpcode(WorldPacket& recvPacket);
-        void HandleDelIgnoreOpcode(WorldPacket& recvPacket);
+
+        void handleFriendListOpcode(WorldPacket& recvPacket);
+        void handleAddFriendOpcode(WorldPacket& recvPacket);
+        void handleDelFriendOpcode(WorldPacket& recvPacket);
+        void handleAddIgnoreOpcode(WorldPacket& recvPacket);
+        void handleDelIgnoreOpcode(WorldPacket& recvPacket);
+
+        //\todo not used for WotLK nor TBC maybe classic?
+        void HandleSetFriendNote(WorldPacket& recvPacket);
+
         void HandleBugOpcode(WorldPacket& recv_data);
         void HandleAreaTriggerOpcode(WorldPacket& recvPacket);
         void HandleUpdateAccountData(WorldPacket& recvPacket);
@@ -861,7 +866,6 @@ class SERVER_DECL WorldSession
         void HandleWorldStateUITimerUpdate(WorldPacket& recv_data);
         void HandleSetTaxiBenchmarkOpcode(WorldPacket& recv_data);
         void HandleMirrorImageOpcode(WorldPacket& recv_data);
-        void HandleSetFriendNote(WorldPacket& recv_data);
         void HandleInrangeQuestgiverQuery(WorldPacket& recv_data);
         void HandleRemoveGlyph(WorldPacket& recv_data);
         void HandleSetFactionInactiveOpcode(WorldPacket& recv_data);

@@ -113,7 +113,7 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_LOOT_MASTER_GIVE].handler = &WorldSession::HandleLootMasterGiveOpcode;
 
     // Player Interaction
-    WorldPacketHandlers[CMSG_WHO].handler = &WorldSession::HandleWhoOpcode;
+    WorldPacketHandlers[CMSG_WHO].handler = &WorldSession::handleWhoOpcode;
     WorldPacketHandlers[CMSG_WHOIS].handler = &WorldSession::HandleWhoIsOpcode;
     WorldPacketHandlers[CMSG_LOGOUT_REQUEST].handler = &WorldSession::HandleLogoutRequestOpcode;
     WorldPacketHandlers[CMSG_PLAYER_LOGOUT].handler = &WorldSession::HandlePlayerLogoutOpcode;
@@ -123,15 +123,15 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_ZONEUPDATE].handler = &WorldSession::HandleZoneUpdateOpcode;
     // WorldPacketHandlers[CMSG_SET_TARGET_OBSOLETE].handler = &WorldSession::HandleSetTargetOpcode;
     WorldPacketHandlers[CMSG_SET_SELECTION].handler = &WorldSession::HandleSetSelectionOpcode;
-    WorldPacketHandlers[CMSG_STANDSTATECHANGE].handler = &WorldSession::HandleStandStateChangeOpcode;
+    WorldPacketHandlers[CMSG_STANDSTATECHANGE].handler = &WorldSession::handleStandStateChangeOpcode;
     WorldPacketHandlers[CMSG_CANCEL_MOUNT_AURA].handler = &WorldSession::HandleDismountOpcode;
 
     // Friends
-    WorldPacketHandlers[CMSG_CONTACT_LIST].handler = &WorldSession::HandleFriendListOpcode;
-    WorldPacketHandlers[CMSG_ADD_FRIEND].handler = &WorldSession::HandleAddFriendOpcode;
-    WorldPacketHandlers[CMSG_DEL_FRIEND].handler = &WorldSession::HandleDelFriendOpcode;
-    WorldPacketHandlers[CMSG_ADD_IGNORE].handler = &WorldSession::HandleAddIgnoreOpcode;
-    WorldPacketHandlers[CMSG_DEL_IGNORE].handler = &WorldSession::HandleDelIgnoreOpcode;
+    WorldPacketHandlers[CMSG_CONTACT_LIST].handler = &WorldSession::handleFriendListOpcode;
+    WorldPacketHandlers[CMSG_ADD_FRIEND].handler = &WorldSession::handleAddFriendOpcode;
+    WorldPacketHandlers[CMSG_DEL_FRIEND].handler = &WorldSession::handleDelFriendOpcode;
+    WorldPacketHandlers[CMSG_ADD_IGNORE].handler = &WorldSession::handleAddIgnoreOpcode;
+    WorldPacketHandlers[CMSG_DEL_IGNORE].handler = &WorldSession::handleDelIgnoreOpcode;
     WorldPacketHandlers[CMSG_BUG].handler = &WorldSession::HandleBugOpcode;
     // WorldPacketHandlers[CMSG_SET_FRIEND_NOTE].handler = &WorldSession::HandleSetFriendNote;
 
