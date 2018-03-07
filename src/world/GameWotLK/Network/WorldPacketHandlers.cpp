@@ -113,7 +113,7 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_LOOT_MASTER_GIVE].handler = &WorldSession::HandleLootMasterGiveOpcode;
 
     // Player Interaction
-    WorldPacketHandlers[CMSG_WHO].handler = &WorldSession::HandleWhoOpcode;
+    WorldPacketHandlers[CMSG_WHO].handler = &WorldSession::handleWhoOpcode;
     WorldPacketHandlers[CMSG_WHOIS].handler = &WorldSession::HandleWhoIsOpcode;
     WorldPacketHandlers[CMSG_LOGOUT_REQUEST].handler = &WorldSession::HandleLogoutRequestOpcode;
     WorldPacketHandlers[CMSG_PLAYER_LOGOUT].handler = &WorldSession::HandlePlayerLogoutOpcode;

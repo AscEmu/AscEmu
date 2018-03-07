@@ -36,6 +36,7 @@
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Server/Packets/SmsgLogoutResponse.h"
 #include "Server/Packets/CmsgStandStateChange.h"
+#include "Server/Packets/CmsgWho.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
 #endif
@@ -50,6 +51,152 @@ void WorldSession::handleStandStateChangeOpcode(WorldPacket& recvPacket)
         return;
 
     _player->setStandState(recv_packet.state);
+}
+
+void WorldSession::handleWhoOpcode(WorldPacket& recv_data)
+{
+    bool cname = false;
+    bool gname = false;
+
+    CmsgWho recv_packet;
+    if (!recv_packet.deserialise(recv_data))
+        return;
+
+    if (recv_packet.player_name.length() > 0)
+        cname = true;
+
+    if (recv_packet.guild_name.length() > 0)
+        gname = true;
+
+    LOG_DEBUG("WORLD: Recvd CMSG_WHO Message with %u zones and %u names", recv_packet.zone_count, recv_packet.name_count);
+
+    uint32 team = _player->GetTeam();
+
+    uint32 sent_count = 0;
+    uint32 total_count = 0;
+
+    //SMSG_WHO
+    WorldPacket data;
+    data.SetOpcode(SMSG_WHO);
+    data << uint64(0);
+
+    objmgr._playerslock.AcquireReadLock();
+    PlayerStorageMap::const_iterator iend = objmgr._players.end();
+    PlayerStorageMap::const_iterator itr = objmgr._players.begin();
+    while (itr != iend && sent_count < 49)   // WhoList should display 49 names not including your own
+    {
+        Player* plr = itr->second;
+        ++itr;
+
+        if (!plr->GetSession() || !plr->IsInWorld())
+            continue;
+
+        if (!worldConfig.server.showGmInWhoList && !HasGMPermissions())
+        {
+            if (plr->GetSession()->HasGMPermissions())
+                continue;
+        }
+
+        // Team check
+        if (!HasGMPermissions() && plr->GetTeam() != team && !plr->GetSession()->HasGMPermissions() && !worldConfig.player.isInterfactionMiscEnabled)
+            continue;
+
+        ++total_count;
+
+        // Add by default, if we don't have any checks
+        bool add = true;
+
+        // Chat name
+        if (cname && recv_packet.player_name != *plr->GetNameString())
+            continue;
+
+        // Guild name
+        if (gname)
+        {
+#if VERSION_STRING != Cata
+            if (!plr->GetGuild() || recv_packet.guild_name != plr->GetGuild()->getGuildName())
+                continue;
+#else
+            if (!plr->GetGuild() || recv_packet.guild_name.compare(plr->GetGuild()->getName()) != 0)
+                continue;
+#endif
+        }
+
+        // Level check
+        if (recv_packet.min_level && recv_packet.max_level)
+        {
+            // skip players outside of level range
+            if (plr->getLevel() < recv_packet.min_level || plr->getLevel() > recv_packet.max_level)
+                continue;
+        }
+
+        // Zone id compare
+        if (recv_packet.zone_count)
+        {
+            // people that fail the zone check don't get added
+            add = false;
+            for (uint32 i = 0; i < recv_packet.zone_count; ++i)
+            {
+                if (recv_packet.zones[i] == plr->GetZoneId())
+                {
+                    add = true;
+                    break;
+                }
+            }
+        }
+
+        if (!((recv_packet.class_mask >> 1) & plr->getClassMask()) || !((recv_packet.race_mask >> 1) & plr->getRaceMask()))
+            add = false;
+
+        // skip players that fail zone check
+        if (!add)
+            continue;
+
+        if (recv_packet.name_count)
+        {
+            // people that fail name check don't get added
+            add = false;
+            for (uint32 i = 0; i < recv_packet.name_count; ++i)
+            {
+                if (!strnicmp(recv_packet.names[i].c_str(), plr->GetName(), recv_packet.names[i].length()))
+                {
+                    add = true;
+                    break;
+                }
+            }
+        }
+
+        if (!add)
+            continue;
+
+        // if we're here, it means we've passed all tests
+        data << plr->GetName();
+
+#if VERSION_STRING != Cata
+        if (plr->m_playerInfo->guild)
+            data << plr->m_playerInfo->guild->getGuildName();
+        else
+            data << uint8(0);	   // Guild name
+#else
+        if (plr->m_playerInfo->m_guild)
+            data << sGuildMgr.getGuildById(plr->m_playerInfo->m_guild)->getName().c_str();
+        else
+            data << uint8(0);	   // Guild name
+#endif
+
+        data << plr->getLevel();
+        data << uint32(plr->getClass());
+        data << uint32(plr->getRace());
+        data << plr->getGender();
+        data << uint32(plr->GetZoneId());
+        ++sent_count;
+    }
+    objmgr._playerslock.ReleaseReadLock();
+    data.wpos(0);
+    data << sent_count;
+    data << sent_count;
+
+    SendPacket(&data);
 }
 // MIT end
 
@@ -696,210 +843,6 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
         LOG_DEBUG("Unhandled loot source object type in HandleLootReleaseOpcode");
 }
 #endif
-
-void WorldSession::HandleWhoOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    uint32 min_level;
-    uint32 max_level;
-    uint32 class_mask;
-    uint32 race_mask;
-    uint32 zone_count;
-    uint32* zones = 0;
-    uint32 name_count;
-    std::string* names = 0;
-    std::string chatname;
-    std::string guildname;
-    bool cname = false;
-    bool gname = false;
-    uint32 i;
-
-    recv_data >> min_level;
-    recv_data >> max_level;
-    recv_data >> chatname;
-    recv_data >> guildname;
-    recv_data >> race_mask;
-    recv_data >> class_mask;
-    recv_data >> zone_count;
-
-    if (zone_count > 0 && zone_count < 10)
-    {
-        zones = new uint32[zone_count];
-
-        for (i = 0; i < zone_count; ++i)
-            recv_data >> zones[i];
-    }
-    else
-    {
-        zone_count = 0;
-    }
-
-    recv_data >> name_count;
-    if (name_count > 0 && name_count < 10)
-    {
-        names = new std::string[name_count];
-
-        for (i = 0; i < name_count; ++i)
-            recv_data >> names[i];
-    }
-    else
-    {
-        name_count = 0;
-    }
-
-    if (chatname.length() > 0)
-        cname = true;
-
-    if (guildname.length() > 0)
-        gname = true;
-
-    LOG_DEBUG("WORLD: Recvd CMSG_WHO Message with %u zones and %u names", zone_count, name_count);
-
-    bool gm = false;
-    uint32 team = _player->GetTeam();
-    if (HasGMPermissions())
-        gm = true;
-
-    uint32 sent_count = 0;
-    uint32 total_count = 0;
-
-    PlayerStorageMap::const_iterator itr, iend;
-    Player* plr;
-    uint32 lvl;
-    bool add;
-    WorldPacket data;
-    data.SetOpcode(SMSG_WHO);
-    data << uint64(0);
-
-    objmgr._playerslock.AcquireReadLock();
-    iend = objmgr._players.end();
-    itr = objmgr._players.begin();
-    while (itr != iend && sent_count < 49)   // WhoList should display 49 names not including your own
-    {
-        plr = itr->second;
-        ++itr;
-
-        if (!plr->GetSession() || !plr->IsInWorld())
-            continue;
-
-        if (!worldConfig.server.showGmInWhoList && !HasGMPermissions())
-        {
-            if (plr->GetSession()->HasGMPermissions())
-                continue;
-        }
-
-        // Team check
-        if (!gm && plr->GetTeam() != team && !plr->GetSession()->HasGMPermissions() && !worldConfig.player.isInterfactionMiscEnabled)
-            continue;
-
-        ++total_count;
-
-        // Add by default, if we don't have any checks
-        add = true;
-
-        // Chat name
-        if (cname && chatname != *plr->GetNameString())
-            continue;
-
-        // Guild name
-        if (gname)
-        {
-#if VERSION_STRING != Cata
-            if (!plr->GetGuild() || strcmp(plr->GetGuild()->getGuildName(), guildname.c_str()) != 0)
-                continue;
-#else
-            if (!plr->GetGuild() || strcmp(plr->GetGuild()->getName().c_str(), guildname.c_str()) != 0)
-                continue;
-#endif
-        }
-
-        // Level check
-        lvl = plr->getLevel();
-
-        if (min_level && max_level)
-        {
-            // skip players outside of level range
-            if (lvl < min_level || lvl > max_level)
-                continue;
-        }
-
-        // Zone id compare
-        if (zone_count)
-        {
-            // people that fail the zone check don't get added
-            add = false;
-            for (i = 0; i < zone_count; ++i)
-            {
-                if (zones[i] == plr->GetZoneId())
-                {
-                    add = true;
-                    break;
-                }
-            }
-        }
-
-        if (!((class_mask >> 1) & plr->getClassMask()) || !((race_mask >> 1) & plr->getRaceMask()))
-            add = false;
-
-        // skip players that fail zone check
-        if (!add)
-            continue;
-
-        // name check
-        if (name_count)
-        {
-            // people that fail name check don't get added
-            add = false;
-            for (i = 0; i < name_count; ++i)
-            {
-                if (!strnicmp(names[i].c_str(), plr->GetName(), names[i].length()))
-                {
-                    add = true;
-                    break;
-                }
-            }
-        }
-
-        if (!add)
-            continue;
-
-        // if we're here, it means we've passed all testing
-        // so add the names :)
-        data << plr->GetName();
-
-#if VERSION_STRING != Cata
-        if (plr->m_playerInfo->guild)
-            data << plr->m_playerInfo->guild->getGuildName();
-        else
-            data << uint8(0);	   // Guild name
-#else
-        if (plr->m_playerInfo->m_guild)
-            data << sGuildMgr.getGuildById(plr->m_playerInfo->m_guild)->getName().c_str();
-        else
-            data << uint8(0);	   // Guild name
-#endif
-
-        data << plr->getLevel();
-        data << uint32(plr->getClass());
-        data << uint32(plr->getRace());
-        data << plr->getGender();
-        data << uint32(plr->GetZoneId());
-        ++sent_count;
-    }
-    objmgr._playerslock.ReleaseReadLock();
-    data.wpos(0);
-    data << sent_count;
-    data << sent_count;
-
-    SendPacket(&data);
-
-    // free up used memory
-    if (zones)
-        delete[] zones;
-    if (names)
-        delete[] names;
-}
 
 void WorldSession::HandleWhoIsOpcode(WorldPacket& recv_data)
 {

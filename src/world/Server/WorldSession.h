@@ -288,7 +288,7 @@ class SERVER_DECL WorldSession
         Loot* getLootFromHighGuidType(uint32_t highGuid);
         void HandleSuggestionOpcode(WorldPacket& recv_data);
 #endif
-        void HandleWhoOpcode(WorldPacket& recvPacket);
+        void handleWhoOpcode(WorldPacket& recvPacket);
         void HandleWhoIsOpcode(WorldPacket& recvPacket);
         void HandleLogoutRequestOpcode(WorldPacket& recvPacket);
         void HandlePlayerLogoutOpcode(WorldPacket& recvPacket);
