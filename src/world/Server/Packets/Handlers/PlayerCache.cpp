@@ -26,6 +26,8 @@ void PlayerCache::SendPacket(WorldPacket & p) {
     m_pendingPackets.push(data);
 }
 
+// this will work only when the packet was created with "new"
+// note all packets in m_pendingPackets will be deleted after send.
 void PlayerCache::SendPacket(WorldPacket* p) {
     m_pendingPackets.push(p);
 }
