@@ -303,7 +303,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvData)
                     break;
                 }
 
-                player_cache->SendPacket(SmsgMessageChat(CHAT_MSG_WHISPER, language, _player->getGuid(), recv_packet.message, we_are_gm_flagged).serialise().get());
+                player_cache->SendPacket(*SmsgMessageChat(CHAT_MSG_WHISPER, language, _player->getGuid(), recv_packet.message, we_are_gm_flagged).serialise().get());
                 if (language != LANG_ADDON)
                     // TODO Verify should this be LANG_UNIVERSAL?
                     SendPacket(SmsgMessageChat(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, player_cache->GetGUID(), recv_packet.message, we_are_gm_flagged).serialise().get());
