@@ -422,7 +422,7 @@ class SERVER_DECL Aura : public EventableObject
         ~Aura();
 
         void Remove();
-        void AddMod(uint32 t, int32 a, uint32 miscValue, uint8_t effectIndex);
+        void AddMod(uint32_t t, int32_t a, int32_t miscValue, uint8_t effectIndex);
 
         inline SpellInfo* GetSpellInfo() const { return m_spellInfo; }
         inline uint32 GetSpellId() const { return m_spellInfo->getId(); }

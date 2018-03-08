@@ -988,17 +988,8 @@ void Aura::Remove()
     }
 }
 
-void Aura::AddMod(uint32 t, int32 a, uint32 miscValue, uint8_t effectIndex)
+void Aura::AddMod(uint32_t t, int32_t a, int32_t miscValue, uint8_t effectIndex)
 {
-    // this is fix, when u have the same unit in target list several times
-    // for (uint32 x= 0;x<m_modcount;x++)
-    //	if (m_modList[x].i==i)return;
-
-    /*if (m_modList[0].m_type == t ||
-        m_modList[1].m_type == t ||
-        m_modList[2].m_type == t)
-        return; // don't duplicate mods // some spells apply duplicate mods, like some seals*/
-
     if (m_modcount >= 3)
     {
         LOG_ERROR("Tried to add >3 (%u) mods to spellid %u [%u:%u, %u:%u, %u:%u]", m_modcount + 1, this->m_spellInfo->getId(), m_modList[0].m_type, m_modList[0].m_amount, m_modList[1].m_type, m_modList[1].m_amount, m_modList[2].m_type, m_modList[2].m_amount);
@@ -1006,10 +997,9 @@ void Aura::AddMod(uint32 t, int32 a, uint32 miscValue, uint8_t effectIndex)
     }
     m_modList[m_modcount].m_type = t;
     m_modList[m_modcount].m_amount = a;
-    m_modList[m_modcount].m_miscValue = static_cast<uint16_t>(miscValue);
+    m_modList[m_modcount].m_miscValue = miscValue;
     m_modList[m_modcount].m_effectIndex = effectIndex;
     m_modcount++;
-    // ARCEMU_ASSERT(  m_modcount<=3);
 }
 
 void Aura::ApplyModifiers(bool apply)
@@ -5898,13 +5888,7 @@ void Aura::SpellAuraModPercStat(bool apply)
     }
     else
     {
-        //this was an assert
-        if (mod->m_miscValue >= 5)
-        {
-            LOG_ERROR("mod->m_miscValue is %u but it must be smaller than 5!", mod->m_miscValue);
-            return;
-        }
-
+        ARCEMU_ASSERT(mod->m_miscValue < 5);
         uint16_t modValue = static_cast<uint16_t>(mod->m_miscValue);
         if (p_target != nullptr)
         {
