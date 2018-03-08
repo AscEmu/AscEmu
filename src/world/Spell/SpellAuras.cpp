@@ -5898,7 +5898,13 @@ void Aura::SpellAuraModPercStat(bool apply)
     }
     else
     {
-        ARCEMU_ASSERT(mod->m_miscValue < 5);
+        //this was an assert
+        if (mod->m_miscValue >= 5)
+        {
+            LOG_ERROR("mod->m_miscValue is %u but it must be smaller than 5!", mod->m_miscValue);
+            return;
+        }
+
         uint16_t modValue = static_cast<uint16_t>(mod->m_miscValue);
         if (p_target != nullptr)
         {
