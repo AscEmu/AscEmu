@@ -378,7 +378,12 @@ class SERVER_DECL WorldSession
 #else
         void SendPartyCommandResult(Player* pPlayer, uint32 p1, std::string name, uint32 err);
 #endif
+
+#if VERSION_STRING == Cata
         void HandleGroupInviteOpcode(WorldPacket& recvPacket);
+#else
+        void handleGroupInviteOpcode(WorldPacket& recvPacket);
+#endif
         void HandleGroupCancelOpcode(WorldPacket& recvPacket);
         void HandleGroupAcceptOpcode(WorldPacket& recvPacket);
         void HandleGroupDeclineOpcode(WorldPacket& recvPacket);
