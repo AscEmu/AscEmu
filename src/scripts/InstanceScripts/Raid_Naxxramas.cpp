@@ -385,7 +385,7 @@ void MaexxnaAI::AIUpdate()
 //
 //        WebWrap->getCreature()->m_noRespawn = true;
 //        WebWrap->RegisterAIUpdateEvent(5000);
-//        WebWrap->mPlayerGuid = static_cast<Player*>(pTarget)->GetGUID();
+//        WebWrap->mPlayerGuid = static_cast<Player*>(pTarget)->getGuid();
 //
 //        if (pTarget->isCastingNonMeleeSpell())
 //            pTarget->interruptSpell();
@@ -897,7 +897,7 @@ void AnubRekhanAI::Destroy()
 //                continue;
 //
 //            PlayerPtr = static_cast<Player*>(Iter);
-//            std::set<uint32>::iterator PlayerIter = AnubRekhan->mUsedCorpseGuids.find(static_cast<uint32>(PlayerPtr->GetGUID()));
+//            std::set<uint32>::iterator PlayerIter = AnubRekhan->mUsedCorpseGuids.find(static_cast<uint32>(PlayerPtr->getGuid()));
 //            if (PlayerIter != AnubRekhan->mUsedCorpseGuids.end())
 //            {
 //                if (PlayerPtr->isAlive())
@@ -913,7 +913,7 @@ void AnubRekhanAI::Destroy()
 //                spawnLocation = PlayerPtr->GetPosition();
 //            else if (PlayerPtr->getDeathState() == CORPSE)
 //            {
-//                Corpse* myCorpse = objmgr.GetCorpseByOwner(PlayerPtr->GetLowGUID());
+//                Corpse* myCorpse = objmgr.GetCorpseByOwner(PlayerPtr->getGuidLow());
 //                if (myCorpse == NULL || myCorpse->GetCorpseState() != CORPSE_STATE_BODY)
 //                    continue;
 //
@@ -937,7 +937,7 @@ void AnubRekhanAI::Destroy()
 //        {
 //            uint32 Id = Util::getRandomUInt(static_cast<uint32>(PlayerCorpses.size() - 1));
 //            PlayerPtr = PlayerCorpses[Id].first;
-//            AnubRekhan->mUsedCorpseGuids.insert(static_cast<uint32>(PlayerPtr->GetGUID()));
+//            AnubRekhan->mUsedCorpseGuids.insert(static_cast<uint32>(PlayerPtr->getGuid()));
 //
 //            for (uint8 i = 0; i < 5; ++i)
 //            {
@@ -2061,7 +2061,7 @@ void ShadeOfNaxxramasAI::OnDied(Unit* /*pKiller*/)
     CreatureAIScript* Ghost = spawnCreatureAndGetAIScript(CN_GHOST_OF_NAXXRAMAS, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->GetFaction());
     if (Ghost != nullptr)
     {
-        Ghost->getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+        Ghost->getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
     }
 
     for (std::set< PortalOfShadowsAI* >::iterator Iter = mPortals.begin(); Iter != mPortals.end(); ++Iter)
@@ -2133,7 +2133,7 @@ void PortalOfShadowsAI::AIUpdate()
             CreatureAIScript* Ghost = spawnCreatureAndGetAIScript(CN_GHOST_OF_NAXXRAMAS, getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), getCreature()->GetOrientation(), getCreature()->GetFaction());
             if (Ghost != nullptr)
             {
-                Ghost->getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+                Ghost->getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
             }
 
             _resetTimer(mSpawnTimer, 15000);

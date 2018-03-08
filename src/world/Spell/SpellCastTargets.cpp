@@ -233,10 +233,10 @@ void SpellCastTargets::write(WorldPacket& data) const
 
 bool SpellCastTargets::hasSource() const
 {
-    return GetTargetMask() & TARGET_FLAG_SOURCE_LOCATION;
+    return (GetTargetMask() & TARGET_FLAG_SOURCE_LOCATION) != 0;
 }
 
 bool SpellCastTargets::hasDestination() const
 {
-    return GetTargetMask() & TARGET_FLAG_DEST_LOCATION;
+    return (GetTargetMask() & TARGET_FLAG_DEST_LOCATION) != 0;
 }

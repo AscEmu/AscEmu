@@ -41,11 +41,11 @@ void WorldSession::HandleGMTicketCreateOpcode(WorldPacket& recv_data)
     recv_data >> message2;
 
     // Remove pending tickets
-    objmgr.RemoveGMTicketByPlayer(GetPlayer()->GetGUID());
+    objmgr.RemoveGMTicketByPlayer(GetPlayer()->getGuid());
 
     GM_Ticket* ticket = new GM_Ticket;
     ticket->guid = uint64_t(objmgr.GenerateTicketID());
-    ticket->playerGuid = GetPlayer()->GetGUID();
+    ticket->playerGuid = GetPlayer()->getGuid();
     ticket->map = map;
     ticket->posX = x;
     ticket->posY = y;
@@ -90,7 +90,7 @@ void WorldSession::HandleGMTicketUpdateOpcode(WorldPacket& recv_data)
 
     WorldPacket data(SMSG_GMTICKET_UPDATETEXT, 4);
 
-    GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(GetPlayer()->GetGUID());
+    GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(GetPlayer()->getGuid());
     if (ticket == nullptr)
     {
         data << uint32_t(GMTNoTicketFound);
@@ -122,9 +122,9 @@ void WorldSession::HandleGMTicketUpdateOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleGMTicketDeleteOpcode(WorldPacket& /*recv_data*/)
 {
-    GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(GetPlayer()->GetGUID());
+    GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(GetPlayer()->getGuid());
 
-    objmgr.RemoveGMTicketByPlayer(GetPlayer()->GetGUID());
+    objmgr.RemoveGMTicketByPlayer(GetPlayer()->getGuid());
 
     WorldPacket data(SMSG_GMTICKET_DELETETICKET, 4);
     data << uint32_t(GMTTicketRemoved);
@@ -151,7 +151,7 @@ void WorldSession::HandleGMTicketGetTicketOpcode(WorldPacket& /*recv_data*/)
 {
     WorldPacket data(SMSG_GMTICKET_GETTICKET, 400);
 
-    GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(GetPlayer()->GetGUID());
+    GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(GetPlayer()->getGuid());
     if (ticket == nullptr)
     {
         data << uint32_t(GMTNoCurrentTicket);
@@ -197,7 +197,7 @@ void WorldSession::HandleReportLag(WorldPacket& recv_data)
 
     if (GetPlayer() != nullptr)
     {
-        CharacterDatabase.Execute("INSERT INTO lag_reports (player, account, lag_type, map_id, position_x, position_y, position_z) VALUES(%u, %u, %u, %u, %f, %f, %f)", GetPlayer()->GetLowGUID(), _accountId, lagType, mapId, position_x, position_y, position_z);
+        CharacterDatabase.Execute("INSERT INTO lag_reports (player, account, lag_type, map_id, position_x, position_y, position_z) VALUES(%u, %u, %u, %u, %f, %f, %f)", GetPlayer()->getGuidLow(), _accountId, lagType, mapId, position_x, position_y, position_z);
     }
 
     LogDebugFlag(LF_OPCODE, "Player %s has reported a lagreport with Type: %u on Map: %u", GetPlayer()->GetName(), lagType, mapId);
@@ -237,7 +237,7 @@ void WorldSession::HandleGMSurveySubmitOpcode(WorldPacket& recv_data)
     std::string comment; // receive the player comment for this survey
     recv_data >> comment;
 
-    CharacterDatabase.Execute("INSERT INTO gm_survey VALUES (%u, %u, %u, \'%s\', UNIX_TIMESTAMP(NOW()))", next_survey_id, GetPlayer()->GetLowGUID(), main_survey, CharacterDatabase.EscapeString(comment).c_str());
+    CharacterDatabase.Execute("INSERT INTO gm_survey VALUES (%u, %u, %u, \'%s\', UNIX_TIMESTAMP(NOW()))", next_survey_id, GetPlayer()->getGuidLow(), main_survey, CharacterDatabase.EscapeString(comment).c_str());
 
     LogDebugFlag(LF_OPCODE, "Player %s has submitted the gm suvey %u successfully.", GetPlayer()->GetName(), next_survey_id);
 }

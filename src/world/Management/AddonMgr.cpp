@@ -141,9 +141,6 @@ void AddonMgr::SendAddonInfoPacket(WorldPacket* source, uint32 /*pos*/, WorldSes
     uint32 addoncount;
     unpacked >> addoncount;
 
-    uint8 unk;
-    uint8 unk1;
-    uint8 unk2;
     for (uint32 i = 0; i < addoncount; ++i)
     {
         if (unpacked.rpos() >= unpacked.size())
@@ -153,6 +150,20 @@ void AddonMgr::SendAddonInfoPacket(WorldPacket* source, uint32 /*pos*/, WorldSes
         unpacked >> Enable;
         unpacked >> crc;
         unpacked >> unknown;
+
+        if (crc != STANDARD_ADDON_CRC)
+        {
+            returnpacket.append(PublicKey, 264);
+        }
+        else
+        {
+            returnpacket << uint8(2) << uint8_t(1) << uint8_t(0) << uint32_t(0) << uint8_t(0);
+        }
+
+#if VERSION_STRING >= WotLK
+        uint8 unk;
+        uint8 unk1;
+        uint8 unk2;
 
         unk = (Enable ? 2 : 1);
         returnpacket << unk;
@@ -175,10 +186,13 @@ void AddonMgr::SendAddonInfoPacket(WorldPacket* source, uint32 /*pos*/, WorldSes
         returnpacket << unk2;
         if (unk2)
             returnpacket << uint8(0);
+#endif
     }
 
     //unknown 4 bytes at the end of the packet. Stays 0 for me. Tried custom addons, deleting, faulty etc. It stays 0.
+#ifndef AE_TBC
     returnpacket << uint32(0);  //Some additional count for additional records, but we won't send them.
+#endif
 
     m_session->SendPacket(&returnpacket);
 }

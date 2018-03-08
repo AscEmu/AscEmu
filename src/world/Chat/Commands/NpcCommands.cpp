@@ -330,7 +330,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
 
     SystemMessage(m_session, "Health (cur / max): %u / %u", creature_target->GetHealth(), creature_target->GetMaxHealth());
 
-    uint16_t powertype = creature_target->GetPowerType();
+    uint16_t powertype = creature_target->getPowerType();
     if (powertype <= 6)
     {
         SystemMessage(m_session, "Powertype: %s", POWERTYPE[powertype]);
@@ -339,8 +339,8 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
 
     SystemMessage(m_session, "Damage (min / max): %f / %f", creature_target->GetMinDamage(), creature_target->GetMaxDamage());
 
-    if (creature_target->getByteValue(UNIT_FIELD_BYTES_1, 1) != 0)
-        SystemMessage(m_session, "Free pet talent points: %u", creature_target->getByteValue(UNIT_FIELD_BYTES_1, 1));
+    if (creature_target->getPetTalentPoints() != 0)
+        SystemMessage(m_session, "Free pet talent points: %u", creature_target->getPetTalentPoints());
 
     if (creature_target->GetCreatureProperties()->vehicleid > 0)
         SystemMessage(m_session, "VehicleID: %u", creature_target->GetCreatureProperties()->vehicleid);
@@ -353,7 +353,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     else
         SystemMessage(m_session, "Not in combat!");
 
-    uint8 sheat = creature_target->getByteValue(UNIT_FIELD_BYTES_2, 0);
+    uint8 sheat = creature_target->getSheathType();
     if (sheat <= 2)
         SystemMessage(m_session, "Sheat state: %s", SHEATSTATE[sheat]);
 
@@ -410,14 +410,14 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     std::string s = GetNpcFlagString(creature_target);
     GreenSystemMessage(m_session, "NpcFlags: %u%s", creature_target->getUInt32Value(UNIT_NPC_FLAGS), s.c_str());
 
-    uint8 pvp_flags = creature_target->getByteValue(UNIT_FIELD_BYTES_2, 1);
+    uint8 pvp_flags = creature_target->getPvpFlags();
     GreenSystemMessage(m_session, "PvPFlags: %u", pvp_flags);
 
     for (uint32 i = 0; i < numpvpflags; i++)
         if ((pvp_flags & UnitPvPFlagToName[i].Flag) != 0)
             GreenSystemMessage(m_session, "%s", UnitPvPFlagToName[i].Name);
 
-    uint8 pet_flags = creature_target->getByteValue(UNIT_FIELD_BYTES_2, 2);
+    uint8 pet_flags = creature_target->getPetFlags();
     if (pet_flags != 0)
     {
         GreenSystemMessage(m_session, "PetFlags: %u", pet_flags);
@@ -426,14 +426,21 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
                 GreenSystemMessage(m_session, "%s", PetFlagToName[i].Name);
     }
 
-    uint32 unit_flags = creature_target->getUInt32Value(UNIT_FIELD_FLAGS);
+    uint32 unit_flags = creature_target->getUnitFlags();
     GreenSystemMessage(m_session, "UnitFlags: %u", unit_flags);
 
     for (uint32 i = 0; i < numflags; i++)
         if ((unit_flags & UnitFlagToName[i].Flag) != 0)
             GreenSystemMessage(m_session, "-- %s", UnitFlagToName[i].Name);
 
-    uint32 dyn_flags = creature_target->getUInt32Value(UNIT_DYNAMIC_FLAGS);
+    uint32 unit_flags2 = creature_target->getUnitFlags2();
+    GreenSystemMessage(m_session, "UnitFlags2: %u", unit_flags2);
+
+    for (uint32 i = 0; i < numflags2; i++)
+        if ((unit_flags & UnitFlagToName2[i].Flag) != 0)
+            GreenSystemMessage(m_session, "-- %s", UnitFlagToName2[i].Name);
+
+    uint32 dyn_flags = creature_target->getDynamicFlags();
     GreenSystemMessage(m_session, "UnitDynamicFlags: %u", dyn_flags);
 
     for (uint32 i = 0; i < numdynflags; i++)
@@ -671,8 +678,8 @@ bool ChatHandler::HandleNpcSelectCommand(const char* /*args*/, WorldSession* m_s
         return true;
     }
 
-    player->SetSelection(near_creature->GetGUID());
-    SystemMessage(m_session, "Nearest Creature %s spawnID: %u GUID: " I64FMT " selected", near_creature->GetCreatureProperties()->Name.c_str(), near_creature->spawnid, near_creature->GetGUID());
+    player->SetSelection(near_creature->getGuid());
+    SystemMessage(m_session, "Nearest Creature %s spawnID: %u GUID: " I64FMT " selected", near_creature->GetCreatureProperties()->Name.c_str(), near_creature->spawnid, near_creature->getGuid());
     return true;
 }
 
@@ -1152,7 +1159,7 @@ bool ChatHandler::HandleNpcSetFormationSlaveCommand(const char* args, WorldSessi
 
     creature_slave->GetAIInterface()->m_formationFollowDistance = distance;
     creature_slave->GetAIInterface()->m_formationFollowAngle = angle;
-    creature_slave->GetAIInterface()->m_formationLinkTarget = m_session->GetPlayer()->linkTarget->GetGUID();
+    creature_slave->GetAIInterface()->m_formationLinkTarget = m_session->GetPlayer()->linkTarget->getGuid();
     creature_slave->GetAIInterface()->m_formationLinkSqlId = m_session->GetPlayer()->linkTarget->GetSQL_id();
     creature_slave->GetAIInterface()->SetUnitToFollowAngle(angle);
 
@@ -1331,7 +1338,7 @@ bool ChatHandler::HandleNpcSetStandstateCommand(const char* args, WorldSession* 
         return true;
 
     uint8 old_standstate = creature_target->getStandState();
-    creature_target->SetStandState(standstate);
+    creature_target->setStandState(standstate);
 
     if (m_session->GetPlayer()->SaveAllChangesCommand)
         save = 1;

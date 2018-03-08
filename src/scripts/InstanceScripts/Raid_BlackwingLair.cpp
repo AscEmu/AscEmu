@@ -288,7 +288,7 @@ class VaelastraszAI : public CreatureAIScript
             auto burningAdrenaline = addAISpell(BURNING_ADRENALINE, 3.0f, TARGET_ATTACKING);
             burningAdrenaline->setAttackStopTimer(2000);
 
-            getCreature()->SetHealth((uint32)(getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.3f));
+            getCreature()->setHealth((uint32)(getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.3f));
         }
 
         void OnCombatStart(Unit* /*mTarget*/) override
@@ -325,7 +325,7 @@ class VaelastraszGossip : public Arcemu::Gossip::Script
     public:
         void OnHello(Object* pObject, Player* Plr) override
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 9903, 0);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 9903, 0);
             menu.Send(Plr);
         }
 };

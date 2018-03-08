@@ -216,7 +216,7 @@ void ParsMapFiles()
     char id[10];
     for (unsigned int i=0; i<map_count; ++i)
     {
-        sprintf(id,"%03u",map_ids[i].id);
+        sprintf(id, "%04u", map_ids[i].id);
         sprintf(fn,"World\\Maps\\%s\\%s.wdt", map_ids[i].name, map_ids[i].name);
         WDTFile WDT(fn,map_ids[i].name);
         if(WDT.init(id, map_ids[i].id))
@@ -492,7 +492,7 @@ int main(int argc, char ** argv)
             printf("FATAL ERROR: Map.dbc not found in data file.\n");
             return 1;
         }
-        map_count=dbc->getRecordCount ();
+        map_count=static_cast<uint32_t>(dbc->getRecordCount());
         map_ids=new map_id[map_count];
         for (unsigned int x=0;x<map_count;++x)
         {

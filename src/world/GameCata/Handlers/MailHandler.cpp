@@ -174,13 +174,13 @@ void WorldSession::HandleSendMail(WorldPacket& recvData)
         for (std::vector< Item* >::iterator itr = items.begin(); itr != items.end(); ++itr)
         {
             pItem = *itr;
-            if (_player->GetItemInterface()->SafeRemoveAndRetreiveItemByGuid(pItem->GetGUID(), false) != pItem)
+            if (_player->GetItemInterface()->SafeRemoveAndRetreiveItemByGuid(pItem->getGuid(), false) != pItem)
                 continue;        // should never be hit.
 
             pItem->RemoveFromWorld();
-            pItem->SetOwner(NULL);
+            pItem->setOwner(NULL);
             pItem->SaveToDB(INVENTORY_SLOT_NOT_SET, 0, true, NULL);
-            msg.items.push_back(pItem->GetLowGUID());
+            msg.items.push_back(pItem->getGuidLow());
 
             if (GetPermissionCount() > 0)
             {
@@ -203,7 +203,7 @@ void WorldSession::HandleSendMail(WorldPacket& recvData)
 
     // Fill in the rest of the info
     msg.player_guid = player_info->guid;
-    msg.sender_guid = _player->GetGUID();
+    msg.sender_guid = _player->getGuid();
     msg.money = static_cast<uint32_t>(money);
     msg.cod = static_cast<uint32_t>(COD);
     msg.subject = subject;
@@ -332,7 +332,7 @@ void WorldSession::HandleTakeItem(WorldPacket& recvData)
     }
 
     //Find free slot
-    SlotResult result = _player->GetItemInterface()->FindFreeInventorySlot(item->GetItemProperties());
+    SlotResult result = _player->GetItemInterface()->FindFreeInventorySlot(item->getItemProperties());
     if (result.Result == false) //End of slots
     {
         data << uint32_t(MAIL_ERR_BAG_FULL);
@@ -359,7 +359,7 @@ void WorldSession::HandleTakeItem(WorldPacket& recvData)
     }
 
     data << uint32_t(MAIL_OK);
-    data << item->GetLowGUID();
+    data << item->getGuidLow();
     data << item->GetStackCount();
 
     message->items.erase(itr);
@@ -459,7 +459,7 @@ void WorldSession::HandleReturnToSender(WorldPacket& recvData)
 
     // re-assign the owner/sender
     message.player_guid = message.sender_guid;
-    message.sender_guid = _player->GetGUID();
+    message.sender_guid = _player->getGuid();
 
     message.deleted_flag = false;
     message.checked_flag = MAIL_CHECK_MASK_RETURNED;
@@ -656,7 +656,7 @@ WorldPacket* Mailbox::BuildMailboxListingPacket()
         {
             Item * pItem = objmgr.LoadItem(itr->second.items[i]);
             *data << uint8_t(i);                                              // item index (0-6)
-            *data << uint32_t((pItem ? pItem->GetLowGUID() : 0));
+            *data << uint32_t((pItem ? pItem->getGuidLow() : 0));
             *data << uint32_t((pItem ? pItem->GetEntry() : 0));
             for (uint8_t j = 0; j < MAX_INSPECTED_ENCHANTMENT_SLOT; ++j)
             {

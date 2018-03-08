@@ -117,3 +117,10 @@ void SpeedCheatDetector::ReportCheater(Player* _player)
     last_stamp = 0x0FFFFFFF;
     cheat_threat = -100; //no more reports this session (unless flooding server :P :D)
 }
+
+// MIT Start
+void SpeedCheatDetector::addSample(LocationVector v, int timestamp, float speed)
+{
+    AddSample(v.x, v.y, timestamp, speed);
+}
+// MIT End

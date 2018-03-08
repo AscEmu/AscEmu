@@ -47,11 +47,11 @@ public:
     {
         plr->AddQuestKill(5211, 0, 0);
 
-        Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 3873, plr);
+        Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 3873, plr);
 
         Creature* Spirit = static_cast<Creature*>(pObject);
 
-        Spirit->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        Spirit->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         Spirit->Despawn(4000, 0);
     }
 };

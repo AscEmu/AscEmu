@@ -29,7 +29,7 @@ public:
     {
         if (plr->HasQuest(558))
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 7012, plr->GetSession()->language);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 7012, plr->GetSession()->language);
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(505), 1);     // Lady Jaina, this may sound like an odd request... but I have a young ward who is quite shy. You are a hero to him, and he asked me to get your autograph.
             menu.Send(plr);
         }
@@ -50,7 +50,7 @@ public:
     {
         if (plr->HasQuest(925))
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 7013, plr->GetSession()->language);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 7013, plr->GetSession()->language);
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(506), 1);     // Give me hoofprint.
             menu.Send(plr);
         }
@@ -58,7 +58,7 @@ public:
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
-        Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 7014, plr);
+        Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 7014, plr);
         plr->CastSpell(plr, sSpellCustomizations.GetSpellInfo(23123), true);
     }
 };
@@ -76,7 +76,7 @@ public:
         if (sMySQLStore.getNpcText(Text) == nullptr)
             Text = DefaultGossipTextId;
 
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), Text, plr->GetSession()->language);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), Text, plr->GetSession()->language);
         sQuestMgr.FillQuestMenu(static_cast<Creature*>(pObject), plr, menu);
 
         if ((plr->HasQuest(12791) || plr->HasQuest(12794) || plr->HasQuest(12796)) && plr->HasItemCount(39740, 1, false))

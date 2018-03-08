@@ -216,7 +216,7 @@ class MalganisAI : public CreatureAIScript
             if (getCreature()->GetHealthPct() < 2)
             {
                 getCreature()->setMoveRoot(true);
-                getCreature()->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+                getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
                 for (uint8 i = 0; i < 7; ++i)
                     getCreature()->SchoolImmunityList[i] = 1;
 
@@ -500,7 +500,7 @@ class ArthasAI : public CreatureAIScript
                         c->GetAIInterface()->SetAllowedToEnterCombat(false);
                         for (uint8 i = 0; i < 7; i++)
                             c->SchoolImmunityList[i] = 1;
-                        c->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                        c->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                         //1 = 0s
                         c->SendScriptTextChatMessage(SAY_MALGANIS_01);
                         //2 = 13s
@@ -528,7 +528,7 @@ class ArthasGossip : public Arcemu::Gossip::Script
 
         void OnHello(Object* pObject, Player* Plr) override
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1, 0);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 1, 0);
 
             menu.AddItem(0, "We're ready to go!", 1);  //find correct txt
 

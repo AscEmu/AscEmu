@@ -147,7 +147,7 @@ bool GiftOfLife(uint8_t /*effectIndex*/, Spell* s)
         return false;
 
     SpellCastTargets tgt;
-    tgt.m_unitTarget = playerTarget->GetGUID();
+    tgt.m_unitTarget = playerTarget->getGuid();
     SpellInfo* inf = sSpellCustomizations.GetSpellInfo(23782);
     Spell* spe = sSpellFactoryMgr.NewSpell(s->u_caster, inf, true, NULL);
     spe->prepare(&tgt);
@@ -307,7 +307,7 @@ bool DecayFlash(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
     if (apply && pAura->GetTarget()->IsPlayer())
     {
         Player* p_target = static_cast<Player*>(pAura->GetTarget());
-        p_target->SetShapeShift(10);  //Tharon'ja Skeleton
+        p_target->SetShapeShift(FORM_SKELETON);  //Tharon'ja Skeleton
         p_target->SetDisplayId(9784);
     }
     return true;

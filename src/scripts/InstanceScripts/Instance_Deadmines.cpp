@@ -60,13 +60,13 @@ static Movement::Location Guards[] =
 //            switch (pGameObject->GetEntry())
 //            {
 //                case GO_FACTORY_DOOR:
-//                    mFactoryDoor_GUID = static_cast<uint32>(pGameObject->GetGUID());
+//                    mFactoryDoor_GUID = static_cast<uint32>(pGameObject->getGuid());
 //                    break;
 //                case GO_FACTORY_DOOR_LEVER:
-//                    mDoorLever_GUID = static_cast<uint32>(pGameObject->GetGUID());
+//                    mDoorLever_GUID = static_cast<uint32>(pGameObject->getGuid());
 //                    break;
 //                case GO_IRONCLAD_DOOR:
-//                    mIronCladDoor_GUID = static_cast<uint32>(pGameObject->GetGUID());
+//                    mIronCladDoor_GUID = static_cast<uint32>(pGameObject->getGuid());
 //                    break;
 //            }
 //        }

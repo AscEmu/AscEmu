@@ -170,7 +170,7 @@ class TerrainTile
             char filename[1024];
 
             //Normal map stuff
-            sprintf(filename, "%smaps/%03u%02u%02u.map", sWorld.settings.server.dataDir.c_str(), m_mapid, m_tx, m_ty);
+            sprintf(filename, "%smaps/%04u_%02u_%02u.map", sWorld.settings.server.dataDir.c_str(), m_mapid, m_tx, m_ty);
             m_map.Load(filename);
         }
 };

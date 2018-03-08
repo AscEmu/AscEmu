@@ -38,7 +38,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (!_player->isAlive() && _player->GetShapeShift() != FORM_SPIRITOFREDEMPTION && !(spellInfo->Attributes & ATTRIBUTES_DEAD_CASTABLE)) //They're dead, not in spirit of redemption and the spell can't be cast while dead.
+    if (!_player->isAlive() && _player->getShapeShiftForm() != FORM_SPIRITOFREDEMPTION && !(spellInfo->Attributes & ATTRIBUTES_DEAD_CASTABLE)) //They're dead, not in spirit of redemption and the spell can't be cast while dead.
         return;
 
     LogDetail("WORLD: got cast spell packet, spellId - %i (%s), data length = %i", spellId, spellInfo->Name.c_str(), recvPacket.size());
@@ -73,12 +73,12 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    SpellCastTargets targets(recvPacket, GetPlayer()->GetGUID());
+    SpellCastTargets targets(recvPacket, GetPlayer()->getGuid());
 
     // some anticheat stuff
     if (spellInfo->custom_self_cast_only)
     {
-        if (targets.m_unitTarget && targets.m_unitTarget != _player->GetGUID())
+        if (targets.m_unitTarget && targets.m_unitTarget != _player->getGuid())
         {
             // send the error message
             _player->SendCastResult(spellInfo->Id, SPELL_FAILED_BAD_TARGETS, castCount, 0);
@@ -302,7 +302,7 @@ void WorldSession::HandleCancelTotem(WorldPacket& recv_data)
 
     if (slot >= UNIT_SUMMON_SLOTS)
     {
-        LOG_ERROR("Player %u %s tried to cancel a summon at slot %u, slot number is out of range. (tried to crash the server?)", _player->GetLowGUID(), _player->GetName(), slot);
+        LOG_ERROR("Player %u %s tried to cancel a summon at slot %u, slot number is out of range. (tried to crash the server?)", _player->getGuidLow(), _player->GetName(), slot);
         return;
     }
 

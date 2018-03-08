@@ -258,12 +258,12 @@ bool MasterDemonologist1(uint8_t /*effectIndex*/, Spell* s)
     {
         //for self
         Spell* sp = sSpellFactoryMgr.NewSpell(s->p_caster, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, NULL);
-        SpellCastTargets tgt(s->p_caster->GetGUID());
+        SpellCastTargets tgt(s->p_caster->getGuid());
         sp->prepare(&tgt);
 
         //for pet
         sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, NULL);
-        SpellCastTargets tgt1(unitTarget->GetGUID());
+        SpellCastTargets tgt1(unitTarget->getGuid());
         sp->prepare(&tgt1);
     }
 
@@ -271,11 +271,11 @@ bool MasterDemonologist1(uint8_t /*effectIndex*/, Spell* s)
     {
         //for self
         Spell* sp = sSpellFactoryMgr.NewSpell(s->p_caster, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, NULL);
-        SpellCastTargets tgt(s->p_caster->GetGUID());
+        SpellCastTargets tgt(s->p_caster->getGuid());
         sp->prepare(&tgt);
         //for pet
         sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, NULL);
-        SpellCastTargets tgt1(unitTarget->GetGUID());
+        SpellCastTargets tgt1(unitTarget->getGuid());
         sp->prepare(&tgt1);
     }
 
@@ -316,23 +316,23 @@ bool MasterDemonologist2(uint8_t /*effectIndex*/, Spell* s)
     {
         //for self
         Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, nullptr);
-        SpellCastTargets tgt(p_caster->GetGUID());
+        SpellCastTargets tgt(p_caster->getGuid());
         sp->prepare(&tgt);
         //for pet
         sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, nullptr);
-        SpellCastTargets tgt1(unitTarget->GetGUID());
+        SpellCastTargets tgt1(unitTarget->getGuid());
         sp->prepare(&tgt1);
     }
     if (inc_resist_by_level_spell)
     {
         //for self
         Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, nullptr);
-        SpellCastTargets tgt(p_caster->GetGUID());
+        SpellCastTargets tgt(p_caster->getGuid());
         sp->prepare(&tgt);
 
         //for pet
         sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, NULL);
-        SpellCastTargets tgt1(unitTarget->GetGUID());
+        SpellCastTargets tgt1(unitTarget->getGuid());
         sp->prepare(&tgt1);
     }
 
@@ -373,22 +373,22 @@ bool MasterDemonologist3(uint8_t /*effectIndex*/, Spell* s)
     {
         //for self
         Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, nullptr);
-        SpellCastTargets tgt(p_caster->GetGUID());
+        SpellCastTargets tgt(p_caster->getGuid());
         sp->prepare(&tgt);
         //for pet
         sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, nullptr);
-        SpellCastTargets tgt1(unitTarget->GetGUID());
+        SpellCastTargets tgt1(unitTarget->getGuid());
         sp->prepare(&tgt1);
     }
     if (inc_resist_by_level_spell)
     {
         //for self
         Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, nullptr);
-        SpellCastTargets tgt(p_caster->GetGUID());
+        SpellCastTargets tgt(p_caster->getGuid());
         sp->prepare(&tgt);
         //for pet
         sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, nullptr);
-        SpellCastTargets tgt1(unitTarget->GetGUID());
+        SpellCastTargets tgt1(unitTarget->getGuid());
         sp->prepare(&tgt1);
     }
 
@@ -429,22 +429,22 @@ bool MasterDemonologist4(uint8_t /*effectIndex*/, Spell* s)
     {
         //for self
         Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, nullptr);
-        SpellCastTargets tgt(p_caster->GetGUID());
+        SpellCastTargets tgt(p_caster->getGuid());
         sp->prepare(&tgt);
         //for pet
         sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, nullptr);
-        SpellCastTargets tgt1(unitTarget->GetGUID());
+        SpellCastTargets tgt1(unitTarget->getGuid());
         sp->prepare(&tgt1);
     }
     if (inc_resist_by_level_spell)
     {
         //for self
         Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, nullptr);
-        SpellCastTargets tgt(p_caster->GetGUID());
+        SpellCastTargets tgt(p_caster->getGuid());
         sp->prepare(&tgt);
         //for pet
         sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, nullptr);
-        SpellCastTargets tgt1(unitTarget->GetGUID());
+        SpellCastTargets tgt1(unitTarget->getGuid());
         sp->prepare(&tgt1);
     }
 
@@ -485,11 +485,11 @@ bool MasterDemonologist5(uint8_t /*effectIndex*/, Spell* s)
     {
         //for self
         Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, nullptr);
-        SpellCastTargets tgt(p_caster->GetGUID());
+        SpellCastTargets tgt(p_caster->getGuid());
         sp->prepare(&tgt);
         //for pet
         sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, nullptr);
-        SpellCastTargets tgt1(unitTarget->GetGUID());
+        SpellCastTargets tgt1(unitTarget->getGuid());
         sp->prepare(&tgt1);
     }
 
@@ -497,11 +497,11 @@ bool MasterDemonologist5(uint8_t /*effectIndex*/, Spell* s)
     {
         //for self
         Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, nullptr);
-        SpellCastTargets tgt(p_caster->GetGUID());
+        SpellCastTargets tgt(p_caster->getGuid());
         sp->prepare(&tgt);
         //for pet
         sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, nullptr);
-        SpellCastTargets tgt1(unitTarget->GetGUID());
+        SpellCastTargets tgt1(unitTarget->getGuid());
         sp->prepare(&tgt1);
     }
 

@@ -42,7 +42,6 @@ public:
                 Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 32000);
             }
 
-            pMogor->setUInt64Value(UNIT_FIELD_FLAGS, 0);
             pMogor->GetAIInterface()->SetAllowedToEnterCombat(true);
             pMogor->GetAIInterface()->MoveTo(-704.669f, 7871.08f, 45.0387f);
             pMogor->SetOrientation(1.59531f);
@@ -250,7 +249,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(mogorQAI);
     mogorQAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+        getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
     };
 
@@ -295,7 +294,7 @@ public:
             getCreature()->SetFaction(35);
             getCreature()->GetAIInterface()->WipeHateList();
             getCreature()->GetAIInterface()->WipeTargetList();
-            getCreature()->SetStandState(STANDSTATE_SIT);
+            getCreature()->setStandState(STANDSTATE_SIT);
             getCreature()->setUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
 
             getCreature()->Despawn(180000, 0);
@@ -311,7 +310,7 @@ class LumpGossipScript : public Arcemu::Gossip::Script
 public:
     void OnHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 2, plr->GetSession()->language);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), 2, plr->GetSession()->language);
         menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(469), 1);     // Why are Boulderfist out this far? You know this is Kurenai territory!
         menu.Send(plr);
     };

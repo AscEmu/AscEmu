@@ -94,16 +94,16 @@ class UtgardeKeepScript : public InstanceScript
             switch (pCreature->GetEntry())
             {
                 case CN_PRINCE_KELESETH:
-                    mKelesethGUID = pCreature->GetLowGUID();
+                    mKelesethGUID = pCreature->getGuidLow();
                     break;
                 case CN_SKARVALD:
-                    mSkarvaldGUID = pCreature->GetLowGUID();
+                    mSkarvaldGUID = pCreature->getGuidLow();
                     break;
                 case CN_DALRONN:
-                    mDalronnGUID = pCreature->GetLowGUID();
+                    mDalronnGUID = pCreature->getGuidLow();
                     break;
                 case CN_INGVAR:
-                    mIngvarGUID = pCreature->GetLowGUID();
+                    mIngvarGUID = pCreature->getGuidLow();
                     break;
             }
         }
@@ -113,40 +113,40 @@ class UtgardeKeepScript : public InstanceScript
             switch (pGameObject->GetEntry())
             {
                 case BELLOW_1:
-                    m_fmData[0].mBellow = pGameObject->GetLowGUID();
+                    m_fmData[0].mBellow = pGameObject->getGuidLow();
                     break;
                 case BELLOW_2:
-                    m_fmData[1].mBellow = pGameObject->GetLowGUID();
+                    m_fmData[1].mBellow = pGameObject->getGuidLow();
                     break;
                 case BELLOW_3:
-                    m_fmData[2].mBellow = pGameObject->GetLowGUID();
+                    m_fmData[2].mBellow = pGameObject->getGuidLow();
                     break;
                 case FORGEFIRE_1:
-                    m_fmData[0].mFire = pGameObject->GetLowGUID();
+                    m_fmData[0].mFire = pGameObject->getGuidLow();
                     break;
                 case FORGEFIRE_2:
-                    m_fmData[1].mFire = pGameObject->GetLowGUID();
+                    m_fmData[1].mFire = pGameObject->getGuidLow();
                     break;
                 case FORGEFIRE_3:
-                    m_fmData[2].mFire = pGameObject->GetLowGUID();
+                    m_fmData[2].mFire = pGameObject->getGuidLow();
                     break;
                 case GLOWING_ANVIL_1:
-                    m_fmData[0].mAnvil = pGameObject->GetLowGUID();
+                    m_fmData[0].mAnvil = pGameObject->getGuidLow();
                     break;
                 case GLOWING_ANVIL_2:
-                    m_fmData[1].mAnvil = pGameObject->GetLowGUID();
+                    m_fmData[1].mAnvil = pGameObject->getGuidLow();
                     break;
                 case GLOWING_ANVIL_3:
-                    m_fmData[2].mAnvil = pGameObject->GetLowGUID();
+                    m_fmData[2].mAnvil = pGameObject->getGuidLow();
                     break;
                 case DALRONN_DOORS:
-                    mDalronnDoorsGUID = pGameObject->GetLowGUID();
+                    mDalronnDoorsGUID = pGameObject->getGuidLow();
                     break;
                 case INGVAR_DOORS_1:
-                    mIngvarDoors[0] = pGameObject->GetLowGUID();
+                    mIngvarDoors[0] = pGameObject->getGuidLow();
                     break;
                 case INGVAR_DOORS_2:
-                    mIngvarDoors[1] = pGameObject->GetLowGUID();
+                    mIngvarDoors[1] = pGameObject->getGuidLow();
                     break;
             }
         }
@@ -421,7 +421,7 @@ class SkarvaldTheConstructorAI : public CreatureAIScript
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "Not... over... yet.");
                 pDalronn->sendChatMessage(CHAT_MSG_MONSTER_YELL, 13203, "Skarvald, you incompetent slug! Return and make yourself useful!");
                 spawnCreature(CN_SKARVALD_GHOST, getCreature()->GetPosition());
-                getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             }
             else if (pDalronn != nullptr && !pDalronn->isAlive())
             {
@@ -504,7 +504,7 @@ class DalronnTheControllerAI : public CreatureAIScript
                 sendChatMessage(CHAT_MSG_MONSTER_YELL, 0, "See... you... soon.");
                 pSkarvald->sendChatMessage(CHAT_MSG_MONSTER_YELL, 13233, "Pagh! What sort of necromancer lets death stop him? I knew you were worthless!");
                 spawnCreature(CN_DALRONN_GHOST, getCreature()->GetPosition());
-                getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             }
             else if (pSkarvald != nullptr && !pSkarvald->isAlive())
             {
@@ -554,7 +554,7 @@ class SkarvaldTheConstructorGhostAI : public CreatureAIScript
 
         void OnLoad() override
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+            getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
 
             Player* pTarget = getNearestPlayer();
             if (pTarget != nullptr)
@@ -581,7 +581,7 @@ class DalronnTheControllerGhostAI : public CreatureAIScript
 
         void OnLoad() override
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+            getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
 
             Player* pTarget = getNearestPlayer();
             if (pTarget != nullptr)

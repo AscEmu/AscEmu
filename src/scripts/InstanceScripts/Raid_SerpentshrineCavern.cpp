@@ -420,7 +420,7 @@ class LeotherasAI : public CreatureAIScript
             info_chaos_blast = sSpellCustomizations.GetSpellInfo(CHAOS_BLAST_ANIMATION);
             info_whirlwind = sSpellCustomizations.GetSpellInfo(WHIRLWINDLEO);
 
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+            getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
 
             SwitchTimer = 0;
@@ -456,10 +456,10 @@ class LeotherasAI : public CreatureAIScript
             {
                 //remove banish & blocks
                 getCreature()->RemoveAllAuras();
-                getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, 0);
+                getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                 getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
                 getCreature()->GetAIInterface()->m_canMove = true;
-                getCreature()->SetStandState(STANDSTATE_STAND);
+                getCreature()->setStandState(STANDSTATE_STAND);
             }
         }
 
@@ -600,8 +600,8 @@ class LeotherasAI : public CreatureAIScript
                         case 0:
                             IsMorphing = true;
                             getCreature()->setAttackTimer(15000, false);
-                            getCreature()->SetStandState(STANDSTATE_KNEEL);
-                            getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+                            getCreature()->setStandState(STANDSTATE_KNEEL);
+                            getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
                             getCreature()->GetAIInterface()->m_canMove = false;
                             sendDBChatMessage(4781);     // No... no! What have you done? I am the master! Do you hear me? I am... aaggh! Can't... contain him.
@@ -613,7 +613,7 @@ class LeotherasAI : public CreatureAIScript
                             FinalPhaseTimer--;
                             if (!FinalPhaseTimer)
                             {
-                                getCreature()->SetStandState(STANDSTATE_STAND);
+                                getCreature()->setStandState(STANDSTATE_STAND);
                                 shadow = getNearestCreature(getCreature()->GetPositionX(), getCreature()->GetPositionY(), getCreature()->GetPositionZ(), CN_SHADOW_OF_LEOTHERAS);
 
                                 if (shadow == NULL)
@@ -628,7 +628,7 @@ class LeotherasAI : public CreatureAIScript
                             FinalPhaseTimer--;
                             if (!FinalPhaseTimer)
                             {
-                                getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, 0);
+                                getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                                 getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
                                 getCreature()->GetAIInterface()->m_canMove = true;
                                 IsMorphing = false;
@@ -717,7 +717,7 @@ class GreyheartSpellbinderAI : public CreatureAIScript
             Leotheras = getNearestCreature(376.543f, -438.631f, 29.7083f, CN_LEOTHERAS_THE_BLIND);
             if (Leotheras)
             {
-                getCreature()->SetChannelSpellTargetGUID(Leotheras->GetGUID());
+                getCreature()->SetChannelSpellTargetGUID(Leotheras->getGuid());
                 getCreature()->SetChannelSpellId(30166);//wrong
             }
         }
@@ -743,10 +743,9 @@ class GreyheartSpellbinderAI : public CreatureAIScript
                 {
                     //remove banish & blocks
                     Leotheras->RemoveAllAuras();
-                    Leotheras->setUInt32Value(UNIT_FIELD_FLAGS, 0);
                     Leotheras->GetAIInterface()->SetAllowedToEnterCombat(true);
                     Leotheras->GetAIInterface()->m_canMove = true;
-                    Leotheras->SetStandState(STANDSTATE_STAND);
+                    Leotheras->setStandState(STANDSTATE_STAND);
 
                     //attack nearest player
                     Player* NearestPlayer = nullptr;
@@ -774,13 +773,13 @@ class ShadowofLeotherasAI : public CreatureAIScript
         {
             info_chaos_blast = sSpellCustomizations.GetSpellInfo(CHAOS_BLAST_ANIMATION);
 
-            getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+            getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
 
             getCreature()->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "At last I am liberated. It has been too long since I have tasted true freedom!");
             getCreature()->PlaySoundToSet(11309);
 
-            sEventMgr.AddEvent(static_cast<Object*>(getCreature()), &Object::EventSetUInt32Value, (uint16)UNIT_FIELD_FLAGS, (uint32)0, EVENT_CREATURE_UPDATE, 7500, 0, 1);
+            sEventMgr.AddEvent(static_cast<Unit*>(getCreature()), &Unit::removeUnitFlags, static_cast<uint32>(UNIT_FLAG_IGNORE_PLAYER_COMBAT), EVENT_CREATURE_UPDATE, 7500, 0, 1);
         }
 
         void OnCombatStart(Unit* /*mTarget*/) override
@@ -883,7 +882,7 @@ class KarathressAI : public CreatureAIScript
                     {
                         Unit* RandomTarget = static_cast<Unit*>(itr);
 
-                        if (RandomTarget->isAlive() && getCreature()->GetDistance2dSq(RandomTarget) <= 80.0f && getCreature()->GetPowerType() == POWER_TYPE_MANA)
+                        if (RandomTarget->isAlive() && getCreature()->GetDistance2dSq(RandomTarget) <= 80.0f && getCreature()->getPowerType() == POWER_TYPE_MANA)
                             TargetTable.push_back(RandomTarget);
                     }
                 }
@@ -1156,7 +1155,7 @@ class TidewalkerLurkerAI : public CreatureAIScript
 
                 pUnit = static_cast<Unit*>(itr);
 
-                if (pUnit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH))
+                if (pUnit->hasUnitFlags(UNIT_FLAG_FEIGN_DEATH))
                     continue;
 
                 if (!pUnit->isAlive() || getCreature() == pUnit)
@@ -1264,8 +1263,6 @@ class VashjAI : public CreatureAIScript
             getCreature()->GetAIInterface()->addWayPoint(wp);
             getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
 
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
-
             TaintedElementalTimer = 0;
             Phase = 0;
             EnchantedElementalTimer = 0;
@@ -1322,7 +1319,6 @@ class VashjAI : public CreatureAIScript
                 }
             }
 
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
             getCreature()->RemoveAura(VASHJ_SHIELD);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
             getCreature()->GetAIInterface()->m_canMove = true;
@@ -1374,7 +1370,7 @@ class VashjAI : public CreatureAIScript
                     getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                     getCreature()->GetAIInterface()->setWayPointToMove(1);
                     sendDBChatMessage(4764);     // The time is now! Leave none standing!
-                    getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+                    getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                     getCreature()->CastSpell(getCreature(), sSpellCustomizations.GetSpellInfo(VASHJ_SHIELD), true);
                     getCreature()->GetAIInterface()->setOutOfCombatRange(3000);
                     Phase = 2;
@@ -1519,7 +1515,8 @@ class VashjAI : public CreatureAIScript
                     }
                 }
 
-                getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+                //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
+                getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                 getCreature()->RemoveAura(VASHJ_SHIELD);
                 sendDBChatMessage(4765);     // You may want to take cover.
                 getCreature()->GetAIInterface()->m_canMove = true;
@@ -1567,9 +1564,9 @@ class VashjAI : public CreatureAIScript
                         channel = spawnCreature(CN_SHIELD_GENERATOR_CHANNEL, ShieldGeneratorCoords[i][0],  ShieldGeneratorCoords[i][1],  ShieldGeneratorCoords[i][2], 0);
                         if (channel)
                         {
-                            channel->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                            channel->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                             channel->GetAIInterface()->m_canMove = false;
-                            channel->SetChannelSpellTargetGUID(getCreature()->GetGUID());
+                            channel->SetChannelSpellTargetGUID(getCreature()->getGuid());
                             channel->SetChannelSpellId(VASHJ_SHIELD);
                         }
                     }
@@ -2175,13 +2172,13 @@ class SerpentshrineCavern : public InstanceScript
             switch (pGameObject->GetEntry())
             {
                 case 184203:
-                    mBridgePart[0] = pGameObject->GetLowGUID();
+                    mBridgePart[0] = pGameObject->getGuidLow();
                     break;
                 case 184204:
-                    mBridgePart[1] = pGameObject->GetLowGUID();
+                    mBridgePart[1] = pGameObject->getGuidLow();
                     break;
                 case 184205:
-                    mBridgePart[2] = pGameObject->GetLowGUID();
+                    mBridgePart[2] = pGameObject->getGuidLow();
                     break;
             }
         }

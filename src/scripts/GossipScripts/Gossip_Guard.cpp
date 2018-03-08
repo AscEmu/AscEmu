@@ -15,7 +15,7 @@ public:
     uint32_t definedGossipMenu = 114;
     void OnHello(Object* object, Player* player) override
     {
-        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
+        objmgr.createGuardGossipMenuForPlayer(object->getGuid(), definedGossipMenu, player);
     }
 
     void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
@@ -23,9 +23,9 @@ public:
         if (IntId > 0)
         {
             if (gossipId != 0)
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, gossipId);
             else
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, definedGossipMenu);
         }
     }
 };
@@ -37,7 +37,7 @@ public:
     uint32_t definedGossipMenu = 122;
     void OnHello(Object* object, Player* player) override
     {
-        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
+        objmgr.createGuardGossipMenuForPlayer(object->getGuid(), definedGossipMenu, player);
     }
 
     void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
@@ -45,9 +45,9 @@ public:
         if (IntId > 0)
         {
             if (gossipId != 0)
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, gossipId);
             else
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, definedGossipMenu);
         }
     }
 };
@@ -59,7 +59,7 @@ public:
     uint32_t definedGossipMenu = 142;
     void OnHello(Object* object, Player* player) override
     {
-        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
+        objmgr.createGuardGossipMenuForPlayer(object->getGuid(), definedGossipMenu, player);
     }
 
     void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
@@ -67,9 +67,9 @@ public:
         if (IntId > 0)
         {
             if (gossipId != 0)
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, gossipId);
             else
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, definedGossipMenu);
         }
     }
 };
@@ -81,7 +81,7 @@ public:
     uint32_t definedGossipMenu = 163;
     void OnHello(Object* object, Player* player) override
     {
-        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
+        objmgr.createGuardGossipMenuForPlayer(object->getGuid(), definedGossipMenu, player);
     }
 
     void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
@@ -89,9 +89,9 @@ public:
         if (IntId > 0)
         {
             if (gossipId != 0)
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, gossipId);
             else
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, definedGossipMenu);
         }
     }
 };
@@ -103,7 +103,7 @@ public:
     uint32_t definedGossipMenu = 152;
     void OnHello(Object* object, Player* player) override
     {
-        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
+        objmgr.createGuardGossipMenuForPlayer(object->getGuid(), definedGossipMenu, player);
     }
 
     void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
@@ -111,9 +111,9 @@ public:
         if (IntId > 0)
         {
             if (gossipId != 0)
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, gossipId);
             else
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, definedGossipMenu);
         }
     }
 };
@@ -125,7 +125,7 @@ public:
     uint32_t definedGossipMenu = 132;
     void OnHello(Object* object, Player* player) override
     {
-        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
+        objmgr.createGuardGossipMenuForPlayer(object->getGuid(), definedGossipMenu, player);
     }
 
     void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
@@ -133,9 +133,9 @@ public:
         if (IntId > 0)
         {
             if (gossipId != 0)
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, gossipId);
             else
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, definedGossipMenu);
         }
     }
 };
@@ -147,7 +147,7 @@ public:
     uint32_t definedGossipMenu = 172;
     void OnHello(Object* object, Player* player) override
     {
-        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
+        objmgr.createGuardGossipMenuForPlayer(object->getGuid(), definedGossipMenu, player);
     }
 
     void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
@@ -155,9 +155,9 @@ public:
         if (IntId > 0)
         {
             if (gossipId != 0)
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, gossipId);
             else
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, definedGossipMenu);
         }
     }
 };
@@ -169,7 +169,7 @@ public:
     uint32_t definedGossipMenu = 180;
     void OnHello(Object* object, Player* player) override
     {
-        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
+        objmgr.createGuardGossipMenuForPlayer(object->getGuid(), definedGossipMenu, player);
     }
 
     void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
@@ -177,9 +177,9 @@ public:
         if (IntId > 0)
         {
             if (gossipId != 0)
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, gossipId);
             else
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, definedGossipMenu);
         }
     }
 };
@@ -191,7 +191,7 @@ public:
     uint32_t definedGossipMenu = 191;
     void OnHello(Object* object, Player* player) override
     {
-        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
+        objmgr.createGuardGossipMenuForPlayer(object->getGuid(), definedGossipMenu, player);
     }
 
     void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
@@ -199,9 +199,9 @@ public:
         if (IntId > 0)
         {
             if (gossipId != 0)
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, gossipId);
             else
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, definedGossipMenu);
         }
     }
 };
@@ -213,7 +213,7 @@ public:
     uint32_t definedGossipMenu = 724;
     void OnHello(Object* object, Player* player) override
     {
-        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
+        objmgr.createGuardGossipMenuForPlayer(object->getGuid(), definedGossipMenu, player);
     }
 
     void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
@@ -221,9 +221,9 @@ public:
         if (IntId > 0)
         {
             if (gossipId != 0)
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, gossipId);
             else
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, definedGossipMenu);
         }
     }
 };
@@ -235,7 +235,7 @@ public:
     uint32_t definedGossipMenu = 751;
     void OnHello(Object* object, Player* player) override
     {
-        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
+        objmgr.createGuardGossipMenuForPlayer(object->getGuid(), definedGossipMenu, player);
     }
 
     void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
@@ -243,9 +243,9 @@ public:
         if (IntId > 0)
         {
             if (gossipId != 0)
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, gossipId);
             else
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, definedGossipMenu);
         }
     }
 };
@@ -257,7 +257,7 @@ public:
     uint32_t definedGossipMenu = 989;
     void OnHello(Object* object, Player* player) override
     {
-        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
+        objmgr.createGuardGossipMenuForPlayer(object->getGuid(), definedGossipMenu, player);
     }
 
     void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
@@ -265,9 +265,9 @@ public:
         if (IntId > 0)
         {
             if (gossipId != 0)
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, gossipId);
             else
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, definedGossipMenu);
         }
     }
 };
@@ -279,7 +279,7 @@ public:
     uint32_t definedGossipMenu = 1003;
     void OnHello(Object* object, Player* player) override
     {
-        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
+        objmgr.createGuardGossipMenuForPlayer(object->getGuid(), definedGossipMenu, player);
     }
 
     void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
@@ -287,9 +287,9 @@ public:
         if (IntId > 0)
         {
             if (gossipId != 0)
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, gossipId);
             else
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, definedGossipMenu);
         }
     }
 };
@@ -301,7 +301,7 @@ public:
     uint32_t definedGossipMenu = 1012;
     void OnHello(Object* object, Player* player) override
     {
-        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
+        objmgr.createGuardGossipMenuForPlayer(object->getGuid(), definedGossipMenu, player);
     }
 
     void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
@@ -309,9 +309,9 @@ public:
         if (IntId > 0)
         {
             if (gossipId != 0)
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, gossipId);
             else
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, definedGossipMenu);
         }
     }
 };
@@ -323,7 +323,7 @@ public:
     uint32_t definedGossipMenu = 1035;
     void OnHello(Object* object, Player* player) override
     {
-        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
+        objmgr.createGuardGossipMenuForPlayer(object->getGuid(), definedGossipMenu, player);
     }
 
     void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
@@ -331,9 +331,9 @@ public:
         if (IntId > 0)
         {
             if (gossipId != 0)
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, gossipId);
             else
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, definedGossipMenu);
         }
     }
 };
@@ -345,7 +345,7 @@ public:
     uint32_t definedGossipMenu = 1047;
     void OnHello(Object* object, Player* player) override
     {
-        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
+        objmgr.createGuardGossipMenuForPlayer(object->getGuid(), definedGossipMenu, player);
     }
 
     void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
@@ -353,9 +353,9 @@ public:
         if (IntId > 0)
         {
             if (gossipId != 0)
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, gossipId);
             else
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, definedGossipMenu);
         }
     }
 };
@@ -367,7 +367,7 @@ public:
     uint32_t definedGossipMenu = 1058;
     void OnHello(Object* object, Player* player) override
     {
-        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
+        objmgr.createGuardGossipMenuForPlayer(object->getGuid(), definedGossipMenu, player);
     }
 
     void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
@@ -375,9 +375,9 @@ public:
         if (IntId > 0)
         {
             if (gossipId != 0)
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, gossipId);
             else
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, definedGossipMenu);
         }
     }
 };
@@ -389,7 +389,7 @@ public:
     uint32_t definedGossipMenu = 1068;
     void OnHello(Object* object, Player* player) override
     {
-        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
+        objmgr.createGuardGossipMenuForPlayer(object->getGuid(), definedGossipMenu, player);
     }
 
     void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
@@ -397,9 +397,9 @@ public:
         if (IntId > 0)
         {
             if (gossipId != 0)
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, gossipId);
             else
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, definedGossipMenu);
         }
     }
 };
@@ -411,7 +411,7 @@ public:
     uint32_t definedGossipMenu = 1095;
     void OnHello(Object* object, Player* player) override
     {
-        objmgr.createGuardGossipMenuForPlayer(object->GetGUID(), definedGossipMenu, player);
+        objmgr.createGuardGossipMenuForPlayer(object->getGuid(), definedGossipMenu, player);
     }
 
     void OnSelectOption(Object* object, Player* player, uint32 IntId, const char* /*Code*/, uint32 gossipId) override
@@ -419,9 +419,9 @@ public:
         if (IntId > 0)
         {
             if (gossipId != 0)
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, gossipId);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, gossipId);
             else
-                objmgr.createGuardGossipOptionAndSubMenu(object->GetGUID(), player, IntId, definedGossipMenu);
+                objmgr.createGuardGossipOptionAndSubMenu(object->getGuid(), player, IntId, definedGossipMenu);
         }
     }
 };

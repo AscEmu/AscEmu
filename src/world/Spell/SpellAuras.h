@@ -427,6 +427,11 @@ class SERVER_DECL Aura : public EventableObject
         inline SpellInfo* GetSpellInfo() const { return m_spellInfo; }
         inline uint32 GetSpellId() const { return m_spellInfo->getId(); }
         inline bool IsPassive() { if (!m_spellInfo) return false; return (m_spellInfo->IsPassive() && !m_areaAura); }
+#ifdef AE_TBC
+    // MIT
+    void addAuraVisual();
+    // MIT End
+#endif
 
         void ResetDuration();
 
@@ -818,7 +823,7 @@ class SERVER_DECL Aura : public EventableObject
         void SendTickImmune(Unit* target, Unit* caster);
 
     public:
-
+        uint32_t getExpiryTime() const { return expirytime; }
         bool m_temporary;	    // Skip saving
         bool m_deleted;
         int16 m_interrupted;
@@ -830,10 +835,10 @@ class SERVER_DECL Aura : public EventableObject
 class AbsorbAura : public Aura
 {
     public:
-    
-        AbsorbAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr) : 
+
+        AbsorbAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr) :
             Aura(proto, duration, caster, target, temporary, i_caster), m_total_amount(0), m_amount(0), m_pct_damage(0) {}
-        
+
         static Aura* Create(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
         {
             return new AbsorbAura(proto, duration, caster, target, temporary, i_caster);

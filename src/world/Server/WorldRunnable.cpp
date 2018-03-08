@@ -27,7 +27,7 @@ WorldRunnable::~WorldRunnable()
 
 void WorldRunnable::threadShutdown()
 {
-    m_thread->join();
+    m_thread->killAndJoin();
 }
 
 void WorldRunnable::threadRunner(AEThread& /*thread*/)

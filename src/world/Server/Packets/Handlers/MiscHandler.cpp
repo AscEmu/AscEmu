@@ -34,9 +34,12 @@
 #include "Map/WorldCreator.h"
 #include "Spell/Definitions/LockTypes.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
+#include "Server/Packets/SmsgLogoutResponse.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
 #endif
+
+using namespace AscEmu::Packets;
 
 void WorldSession::HandleRepopRequestOpcode(WorldPacket& /*recvData*/)
 {
@@ -46,7 +49,7 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket& /*recvData*/)
     if (_player->getDeathState() != JUST_DIED)
         return;
 #if VERSION_STRING != Cata
-    if (_player->obj_movement_info.IsOnTransport())
+    if (_player->obj_movement_info.isOnTransport())
 #else
     if (!_player->obj_movement_info.getTransportGuid().IsEmpty())
 #endif
@@ -127,7 +130,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
 
     if (pLoot->items[lootSlot].looted)
     {
-        LOG_DEBUG("Player %s GUID %u tried to loot an already looted item.", _player->GetName(), _player->GetLowGUID());
+        LOG_DEBUG("Player %s GUID %u tried to loot an already looted item.", _player->GetName(), _player->getGuidLow());
         return;
     }
 
@@ -146,7 +149,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     else
     {
         //make sure this player can still loot it in case of ffa_loot
-        LooterSet::iterator itr = pLoot->items.at(lootSlot).has_looted.find(_player->GetLowGUID());
+        LooterSet::iterator itr = pLoot->items.at(lootSlot).has_looted.find(_player->getGuidLow());
 
         if (pLoot->items.at(lootSlot).has_looted.end() != itr)
         {
@@ -187,7 +190,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
         if (item == NULL)
             return;
 
-        item->SetStackCount(amt);
+        item->setStackCount(amt);
         if (pLoot->items.at(lootSlot).iRandomProperty != NULL)
         {
             item->SetItemRandomPropertyId(pLoot->items.at(lootSlot).iRandomProperty->ID);
@@ -224,7 +227,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     }
     else
     {
-        add->SetStackCount(add->GetStackCount() + amt);
+        add->setStackCount(add->GetStackCount() + amt);
         add->m_isDirty = true;
 
         sQuestMgr.OnPlayerItemPickup(GetPlayer(), add);
@@ -233,7 +236,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
             false,
             true,
             false,
-            (uint8)_player->GetItemInterface()->GetBagSlotByGuid(add->GetGUID()),
+            (uint8)_player->GetItemInterface()->GetBagSlotByGuid(add->getGuid()),
             0xFFFFFFFF,
             amt,
             add->GetEntry(),
@@ -264,7 +267,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     }
     else
     {
-        pLoot->items.at(lootSlot).has_looted.insert(_player->GetLowGUID());
+        pLoot->items.at(lootSlot).has_looted.insert(_player->getGuidLow());
         WorldPacket data(1);
         data.SetOpcode(SMSG_LOOT_REMOVED);
         data << lootSlot;
@@ -476,7 +479,7 @@ void WorldSession::HandleLootOpcode(WorldPacket& recv_data)
                     {
                         if ((*itr)->m_loggedInPlayer && _player->GetZoneId() == (*itr)->m_loggedInPlayer->GetZoneId())
                         {
-                            data << (*itr)->m_loggedInPlayer->GetGUID();
+                            data << (*itr)->m_loggedInPlayer->getGuid();
                             ++real_count;
                         }
                     }
@@ -504,7 +507,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
     SendPacket(&data);
 
     _player->SetLootGUID(0);
-    _player->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOOTING);
+    _player->removeUnitFlags(UNIT_FLAG_LOOTING);
     _player->m_currentLoot = 0;
 
     if (GET_TYPE_FROM_GUID(guid) == HIGHGUID_TYPE_UNIT)
@@ -513,7 +516,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
         if (pCreature == NULL)
             return;
         // remove from looter set
-        pCreature->loot.looters.erase(_player->GetLowGUID());
+        pCreature->loot.looters.erase(_player->getGuidLow());
         if (pCreature->loot.gold <= 0)
         {
             for (std::vector<__LootItem>::iterator i = pCreature->loot.items.begin(); i != pCreature->loot.items.end(); ++i)
@@ -547,7 +550,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
             case GAMEOBJECT_TYPE_FISHINGNODE:
             {
                 GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pGO);
-                pLGO->loot.looters.erase(_player->GetLowGUID());
+                pLGO->loot.looters.erase(_player->getGuidLow());
                 if (pGO->IsInWorld())
                 {
                     pGO->RemoveFromWorld(true);
@@ -558,7 +561,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
             case GAMEOBJECT_TYPE_CHEST:
             {
                 GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pGO);
-                pLGO->loot.looters.erase(_player->GetLowGUID());
+                pLGO->loot.looters.erase(_player->getGuidLow());
                 //check for locktypes
 
                 bool despawn = false;
@@ -652,7 +655,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
         {
             plr->bShouldHaveLootableOnCorpse = false;
             plr->loot.items.clear();
-            plr->RemoveFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_LOOTABLE);
+            plr->removeDynamicFlags(U_DYN_FLAG_LOOTABLE);
         }
     }
     else if (GET_TYPE_FROM_GUID(guid) == HIGHGUID_TYPE_ITEM)     // Loot from items, eg. sacks, milling, prospecting...
@@ -974,9 +977,7 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket& /*recv_data*/)
         if (!sHookInterface.OnLogoutRequest(pPlayer))
         {
             // Declined Logout Request
-            data << uint32(1);
-            data << uint8(0);
-            SendPacket(&data);
+            SendPacket(SmsgLogoutResponse(true).serialise().get());
             return;
         }
 
@@ -986,13 +987,11 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket& /*recv_data*/)
             // Never instant logout for players while in combat or duelling
             if (pPlayer->CombatStatus.IsInCombat() || pPlayer->DuelingWith != NULL)
             {
-                data << uint32(1);
-                data << uint8(0);
-                SendPacket(&data);
+                SendPacket(SmsgLogoutResponse(true).serialise().get());
                 return;
             }
 
-            if (pPlayer->m_isResting || pPlayer->GetTaxiState() || worldConfig.player.enableInstantLogoutForAccessType == 2)
+            if (pPlayer->m_isResting || pPlayer->isOnTaxi() || worldConfig.player.enableInstantLogoutForAccessType == 2)
             {
                 //Logout on NEXT sessionupdate to preserve processing of dead packets (all pending ones should be processed)
                 SetLogoutTimer(1);
@@ -1001,7 +1000,7 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket& /*recv_data*/)
         }
         if (GetPermissionCount() > 0)
         {
-            if (pPlayer->m_isResting || pPlayer->GetTaxiState() || worldConfig.player.enableInstantLogoutForAccessType > 0)
+            if (pPlayer->m_isResting || pPlayer->isOnTaxi() || worldConfig.player.enableInstantLogoutForAccessType > 0)
             {
                 //Logout on NEXT sessionupdate to preserve processing of dead packets (all pending ones should be processed)
                 SetLogoutTimer(1);
@@ -1009,19 +1008,16 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket& /*recv_data*/)
             }
         }
 
-
-        data << uint32(0); //Filler
-        data << uint8(0); //Logout accepted
-        SendPacket(&data);
+        SendPacket(SmsgLogoutResponse(false).serialise().get());
 
         //stop player from moving
         pPlayer->setMoveRoot(true);
         LoggingOut = true;
         // Set the "player locked" flag, to prevent movement
-        pPlayer->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
+        pPlayer->addUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 
         //make player sit
-        pPlayer->SetStandState(STANDSTATE_SIT);
+        pPlayer->setStandState(STANDSTATE_SIT);
         SetLogoutTimer(20000);
     }
     /*
@@ -1068,10 +1064,10 @@ void WorldSession::HandleLogoutCancelOpcode(WorldPacket& /*recv_data*/)
     pPlayer->setMoveRoot(false);
 
     // Remove the "player locked" flag, to allow movement
-    pPlayer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
+    pPlayer->removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
 
     //make player stand
-    pPlayer->SetStandState(STANDSTATE_STAND);
+    pPlayer->setStandState(STANDSTATE_STAND);
 
     LOG_DEBUG("WORLD: sent SMSG_LOGOUT_CANCEL_ACK Message");
 }
@@ -1120,7 +1116,7 @@ void WorldSession::HandleStandStateChangeOpcode(WorldPacket& recv_data)
     uint8 animstate;
     recv_data >> animstate;
 
-    _player->SetStandState(animstate);
+    _player->setStandState(animstate);
 }
 
 #if VERSION_STRING != Cata
@@ -1180,7 +1176,7 @@ void WorldSession::HandleCorpseReclaimOpcode(WorldPacket& recv_data)
     if (pCorpse == NULL)	return;
 
     // Check that we're reviving from a corpse, and that corpse is associated with us.
-    if (GET_LOWGUID_PART(pCorpse->GetOwner()) != _player->GetLowGUID() && pCorpse->getUInt32Value(CORPSE_FIELD_FLAGS) == 5)
+    if (GET_LOWGUID_PART(pCorpse->GetOwner()) != _player->getGuidLow() && pCorpse->getUInt32Value(CORPSE_FIELD_FLAGS) == 5)
     {
         WorldPacket data(SMSG_RESURRECT_FAILED, 4);
         data << uint32(1); // this is a real guess!
@@ -1208,7 +1204,7 @@ void WorldSession::HandleCorpseReclaimOpcode(WorldPacket& recv_data)
     }
 
     GetPlayer()->ResurrectPlayer();
-    GetPlayer()->SetHealth(GetPlayer()->GetMaxHealth() / 2);
+    GetPlayer()->setHealth(GetPlayer()->GetMaxHealth() / 2);
 }
 #endif
 
@@ -1612,7 +1608,7 @@ void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
         _player->setByteValue(PLAYER_BYTES, 0, static_cast<uint8>(barberShopSkinColor->hair_id));
     _player->ModGold(-(int32)cost);
 
-    _player->SetStandState(STANDSTATE_STAND);                              // stand up
+    _player->setStandState(STANDSTATE_STAND);                              // stand up
     _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_VISIT_BARBER_SHOP, 1, 0, 0);
     _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GOLD_SPENT_AT_BARBER, cost, 0, 0);
 }
@@ -1652,7 +1648,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
         case GAMEOBJECT_TYPE_CHAIR:
         {
             plyr->SafeTeleport(plyr->GetMapId(), plyr->GetInstanceID(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation());
-            plyr->SetStandState(STANDSTATE_SIT_MEDIUM_CHAIR);
+            plyr->setStandState(STANDSTATE_SIT_MEDIUM_CHAIR);
             plyr->UpdateSpeed();
         }
         break;
@@ -1664,7 +1660,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
             //send barber shop menu to player
             WorldPacket data(SMSG_ENABLE_BARBER_SHOP, 0);
             SendPacket(&data);
-            plyr->SetStandState(STANDSTATE_SIT_HIGH_CHAIR);
+            plyr->setStandState(STANDSTATE_SIT_HIGH_CHAIR);
         }
         break;
 #endif
@@ -1672,7 +1668,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
         {
             spellInfo = sSpellCustomizations.GetSpellInfo(OPEN_CHEST);
             spell = sSpellFactoryMgr.NewSpell(plyr, spellInfo, true, NULL);
-            targets.m_unitTarget = obj->GetGUID();
+            targets.m_unitTarget = obj->getGuid();
             spell->prepare(&targets);
         }
         break;
@@ -1730,7 +1726,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                     else
                         lootmgr.FillGOLoot(&school->loot, school->GetGameObjectProperties()->raw.parameter_1, 0);
 
-                    plyr->SendLoot(school->GetGUID(), LOOT_FISHING, school->GetMapId());
+                    plyr->SendLoot(school->getGuid(), LOOT_FISHING, school->GetMapId());
                     fn->EndFishing(false);
                     school->CatchFish();
 
@@ -1738,7 +1734,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                 else if (maxskill != 0 && Rand(((plyr->_GetSkillLineCurrent(SKILL_FISHING, true) - minskill) * 100) / maxskill))
                 {
                     lootmgr.FillFishingLoot(&fn->loot, zone);
-                    plyr->SendLoot(fn->GetGUID(), LOOT_FISHING, fn->GetMapId());
+                    plyr->SendLoot(fn->getGuid(), LOOT_FISHING, fn->GetMapId());
                     fn->EndFishing(false);
                 }
                 else
@@ -1771,12 +1767,12 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
         break;
         case GAMEOBJECT_TYPE_DOOR:
         {
-            obj->Use(plyr->GetGUID());
+            obj->Use(plyr->getGuid());
         }
         break;
         case GAMEOBJECT_TYPE_BUTTON:
         {
-            obj->Use(plyr->GetGUID());
+            obj->Use(plyr->getGuid());
         }
         break;
         case GAMEOBJECT_TYPE_FLAGSTAND:
@@ -1811,7 +1807,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                 {
                     Player* summoner = static_cast<Player*>(obj->m_summoner);
 
-                    if (summoner->GetGUID() != plyr->GetGUID())
+                    if (summoner->getGuid() != plyr->getGuid())
                     {
                         if (!plyr->InGroup())
                             return;
@@ -1822,7 +1818,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                 }
             }
 
-            obj->Use(plyr->GetGUID());
+            obj->Use(plyr->getGuid());
         }
         break;
         case GAMEOBJECT_TYPE_RITUAL:
@@ -1833,18 +1829,18 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                 return;
 
             // If we clicked on the ritual we are already in, remove us, otherwise add us as a ritual member
-            if (ritual_obj->GetRitual()->HasMember(plyr->GetLowGUID()))
+            if (ritual_obj->GetRitual()->HasMember(plyr->getGuidLow()))
             {
-                ritual_obj->GetRitual()->RemoveMember(plyr->GetLowGUID());
+                ritual_obj->GetRitual()->RemoveMember(plyr->getGuidLow());
                 plyr->SetChannelSpellId(0);
                 plyr->SetChannelSpellTargetGUID(0);
                 return;
             }
             else
             {
-                ritual_obj->GetRitual()->AddMember(plyr->GetLowGUID());
+                ritual_obj->GetRitual()->AddMember(plyr->getGuidLow());
                 plyr->SetChannelSpellId(ritual_obj->GetRitual()->GetSpellID());
-                plyr->SetChannelSpellTargetGUID(ritual_obj->GetGUID());
+                plyr->SetChannelSpellTargetGUID(ritual_obj->getGuid());
             }
 
             // If we were the last required member, proceed with the ritual!
@@ -1879,7 +1875,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                         return;
 
                     spell = sSpellFactoryMgr.NewSpell(_player->GetMapMgr()->GetPlayer(ritual_obj->GetRitual()->GetCasterGUID()), info, true, NULL);
-                    targets.m_unitTarget = target->GetGUID();
+                    targets.m_unitTarget = target->getGuid();
                     spell->prepare(&targets);
                 }
                 else if (gameobject_info->entry == 177193)    // doom portal
@@ -1899,14 +1895,14 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                         break;
 
                     spell = sSpellFactoryMgr.NewSpell(psacrifice, info, true, NULL);
-                    targets.m_unitTarget = psacrifice->GetGUID();
+                    targets.m_unitTarget = psacrifice->getGuid();
                     spell->prepare(&targets);
 
                     // summons demon
                     info = sSpellCustomizations.GetSpellInfo(gameobject_info->summoning_ritual.spell_id);
                     spell = sSpellFactoryMgr.NewSpell(pCaster, info, true, NULL);
                     SpellCastTargets targets2;
-                    targets2.m_unitTarget = pCaster->GetGUID();
+                    targets2.m_unitTarget = pCaster->getGuid();
                     spell->prepare(&targets2);
                 }
                 else if (gameobject_info->entry == 179944)    // Summoning portal for meeting stones
@@ -1921,7 +1917,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
 
                     info = sSpellCustomizations.GetSpellInfo(gameobject_info->summoning_ritual.spell_id);
                     spell = sSpellFactoryMgr.NewSpell(pleader, info, true, NULL);
-                    SpellCastTargets targets2(plr->GetGUID());
+                    SpellCastTargets targets2(plr->getGuid());
                     spell->prepare(&targets2);
 
                     /* expire the gameobject */
@@ -1943,7 +1939,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
         break;
         case GAMEOBJECT_TYPE_GOOBER:
         {
-            obj->Use(plyr->GetGUID());
+            obj->Use(plyr->getGuid());
 
             plyr->CastSpell(guid, gameobject_info->goober.spell_id, false);
 
@@ -1951,7 +1947,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
             if (gameobject_info->goober.page_id)
             {
                 WorldPacket data(SMSG_GAMEOBJECT_PAGETEXT, 8);
-                data << obj->GetGUID();
+                data << obj->getGuid();
                 plyr->GetSession()->SendPacket(&data);
             }
         }
@@ -1980,7 +1976,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                 return;
 
             // We can't summon ourselves!
-            if (pPlayer->GetGUID() == _player->GetGUID())
+            if (pPlayer->getGuid() == _player->getGuid())
                 return;
 
             // Create the summoning portal
@@ -1991,10 +1987,10 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
             GameObject_Ritual* rGo = static_cast<GameObject_Ritual*>(pGo);
 
             rGo->CreateFromProto(179944, _player->GetMapId(), _player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), 0);
-            rGo->GetRitual()->Setup(_player->GetLowGUID(), pPlayer->GetLowGUID(), 18540);
+            rGo->GetRitual()->Setup(_player->getGuidLow(), pPlayer->getGuidLow(), 18540);
             rGo->PushToWorld(_player->GetMapMgr());
 
-            _player->SetChannelSpellTargetGUID(rGo->GetGUID());
+            _player->SetChannelSpellTargetGUID(rGo->getGuid());
             _player->SetChannelSpellId(rGo->GetRitual()->GetSpellID());
 
             // expire after 2mins
@@ -2049,7 +2045,7 @@ void WorldSession::HandleSetSheathedOpcode(WorldPacket& recv_data)
 
     uint32 active;
     recv_data >> active;
-    _player->setByteValue(UNIT_FIELD_BYTES_2, 0, (uint8)active);
+    _player->setSheathType((uint8)active);
 }
 
 void WorldSession::HandlePlayedTimeOpcode(WorldPacket& recv_data)
@@ -2131,14 +2127,14 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
         _player->UpdateComboPoints();
 
     WorldPacket data(SMSG_INSPECT_TALENT, 1000);
-    m_Packed_GUID.appendPackGUID(player->GetGUID());
+    m_Packed_GUID.appendPackGUID(player->getGuid());
     data.append(m_Packed_GUID);
 
     //data.appendPackGUID(guid);
-    //data.appendPackGUID(player->GetGUID());
+    //data.appendPackGUID(player->getGuid());
     //data << player->GetNewGUID();
 #ifdef SAVE_BANDWIDTH
-    PlayerSpec *currSpec = &player->m_specs[player->m_talentActiveSpec];
+    PlayerSpec *currSpec = &player->getActiveSpec();
     data << uint32(currSpec->GetTP());
     data << uint8(1) << uint8(0);
     data << uint8(currSpec->talents.size()); //fake value, will be overwritten at the end
@@ -2146,12 +2142,16 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
         data << itr->first << itr->second;
     data << uint8(0); // Send Glyph info
 #else
-    data << uint32(player->m_specs[player->m_talentActiveSpec].GetTP());
+    data << uint32(player->getActiveSpec().GetTP());
     data << uint8(player->m_talentSpecsCount);
     data << uint8(player->m_talentActiveSpec);
     for (uint8 s = 0; s < player->m_talentSpecsCount; s++)
     {
+#ifdef FT_DUAL_SPEC
         PlayerSpec spec = player->m_specs[s];
+#else
+        PlayerSpec spec = player->m_spec;
+#endif
 
         int32 talent_max_rank;
         uint32 const* talent_tab_ids;
@@ -2202,10 +2202,12 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
 
         data.put<uint8>(pos, talent_count);
 
+#ifdef FT_GLYPHS
         // Send Glyph info
         data << uint8(GLYPHS_COUNT);
         for (uint8 i = 0; i < GLYPHS_COUNT; i++)
             data << uint16(spec.glyphs[i]);
+#endif
 
     }
 #endif
@@ -2304,7 +2306,7 @@ void WorldSession::HandleSelfResurrectOpcode(WorldPacket& /*recv_data*/)
         SpellInfo* sp = sSpellCustomizations.GetSpellInfo(self_res_spell);
         Spell* s = sSpellFactoryMgr.NewSpell(_player, sp, true, NULL);
         SpellCastTargets tgt;
-        tgt.m_unitTarget = _player->GetGUID();
+        tgt.m_unitTarget = _player->getGuid();
         s->prepare(&tgt);
     }
 }
@@ -2339,7 +2341,7 @@ void WorldSession::HandleRandomRollOpcode(WorldPacket& recv_data)
 
     // append to packet, and guid
     data << roll;
-    data << _player->GetGUID();
+    data << _player->getGuid();
 
     // send to set
     if (_player->InGroup())
@@ -2446,7 +2448,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
     else
     {
         //make sure this player can still loot it in case of ffa_loot
-        LooterSet::iterator itr = pLoot->items.at(slotid).has_looted.find(player->GetLowGUID());
+        LooterSet::iterator itr = pLoot->items.at(slotid).has_looted.find(player->getGuidLow());
 
         if (pLoot->items.at(slotid).has_looted.end() != itr)
         {
@@ -2479,7 +2481,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
     if (item == NULL)
         return;
 
-    item->SetStackCount(amt);
+    item->setStackCount(amt);
     if (pLoot->items.at(slotid).iRandomProperty != NULL)
     {
         item->SetItemRandomPropertyId(pLoot->items.at(slotid).iRandomProperty->ID);
@@ -2522,7 +2524,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
     }
     else
     {
-        pLoot->items.at(slotid).has_looted.insert(player->GetLowGUID());
+        pLoot->items.at(slotid).has_looted.insert(player->getGuidLow());
     }
 }
 
@@ -2604,7 +2606,7 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket& recv_data)
         pItem->SetGiftCreatorGUID(0);
         pItem->SetEntry(pItem->wrapped_item_id);
         pItem->wrapped_item_id = 0;
-        pItem->SetItemProperties(it);
+        pItem->setItemProperties(it);
 
         if (it->Bonding == ITEM_BIND_ON_PICKUP)
             pItem->SoulBind();
@@ -2622,7 +2624,7 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket& recv_data)
         return;
     }
 
-    auto lock = sLockStore.LookupEntry(pItem->GetItemProperties()->LockId);
+    auto lock = sLockStore.LookupEntry(pItem->getItemProperties()->LockId);
 
     uint32 removeLockItems[LOCK_NUM_CASES] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
@@ -2655,13 +2657,13 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket& recv_data)
     }
 
     // fill loot
-    _player->SetLootGUID(pItem->GetGUID());
+    _player->SetLootGUID(pItem->getGuid());
     if (!pItem->loot)
     {
         pItem->loot = new Loot;
         lootmgr.FillItemLoot(pItem->loot, pItem->GetEntry());
     }
-    _player->SendLoot(pItem->GetGUID(), LOOT_DISENCHANTING, _player->GetMapId());
+    _player->SendLoot(pItem->getGuid(), LOOT_DISENCHANTING, _player->GetMapId());
 }
 
 void WorldSession::HandleCompleteCinematic(WorldPacket& /*recv_data*/)
@@ -2669,7 +2671,7 @@ void WorldSession::HandleCompleteCinematic(WorldPacket& /*recv_data*/)
     CHECK_INWORLD_RETURN
 
     // when a Cinematic is started the player is going to sit down, when its finished its standing up.
-    _player->SetStandState(STANDSTATE_STAND);
+    _player->setStandState(STANDSTATE_STAND);
     _player->camControle = false;
 }
 
@@ -2774,7 +2776,7 @@ void WorldSession::HandleDismountOpcode(WorldPacket& /*recv_data*/)
     CHECK_INWORLD_RETURN
     LOG_DEBUG("WORLD: Received CMSG_DISMOUNT");
 
-    if (_player->GetTaxiState())
+    if (_player->isOnTaxi())
         return;
 
     _player->Dismount();

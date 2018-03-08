@@ -522,7 +522,7 @@ class GruulTheDragonkillerAI : public CreatureAIScript
                             Player* pPlayer = static_cast<Player*>(itr);
                             if (!pPlayer || !pPlayer->isAlive())
                                 continue;
-                            if (pPlayer->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH))
+                            if (pPlayer->hasUnitFlags(UNIT_FLAG_FEIGN_DEATH))
                                 continue;
                             if (getRangeToObject(pPlayer) > 8.0f)
                                 continue;

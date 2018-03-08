@@ -58,17 +58,17 @@ void Summon::Load(CreatureProperties const* properties_, Unit* pOwner, LocationV
     else
         RemoveSanctuaryFlag();
 
-    SetCreatedByGUID(pOwner->GetGUID());
+    SetCreatedByGUID(pOwner->getGuid());
 
     if (pOwner->GetSummonedByGUID() == 0)
-        SetSummonedByGUID(pOwner->GetGUID());
+        SetSummonedByGUID(pOwner->getGuid());
     else
         SetSummonedByGUID(pOwner->GetSummonedByGUID());
 
     this->owner = pOwner;
 
-    if (pOwner->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE))
-        SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
+    if (pOwner->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
+        addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
 
 }
 
@@ -134,7 +134,7 @@ void Summon::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
 void Summon::onRemoveInRangeObject(Object* object)
 {
 
-    if ((owner != NULL) && (object->GetGUID() == owner->GetGUID()))
+    if ((owner != NULL) && (object->getGuid() == owner->getGuid()))
         Despawn(1, 0);
 
     Creature::onRemoveInRangeObject(object);

@@ -51,7 +51,7 @@ bool HotStreak(uint8_t effectIndex, Aura* pAura, bool apply)
         if (apply)
         {
             static uint32 classMask[3] = { 0x13, 0x21000, 0 };
-            caster->AddProcTriggerSpell(48108, pAura->GetSpellInfo()->getId(), caster->GetGUID(), pAura->GetSpellInfo()->getEffectBasePoints(effectIndex) + 1, PROC_ON_SPELL_CRIT_HIT | PROC_ON_SPELL_HIT, 0, pAura->GetSpellInfo()->getEffectSpellClassMask(effectIndex), classMask);
+            caster->AddProcTriggerSpell(48108, pAura->GetSpellInfo()->getId(), caster->getGuid(), pAura->GetSpellInfo()->getEffectBasePoints(effectIndex) + 1, PROC_ON_SPELL_CRIT_HIT | PROC_ON_SPELL_HIT, 0, pAura->GetSpellInfo()->getEffectSpellClassMask(effectIndex), classMask);
         }
         else
             caster->RemoveProcTriggerSpell(48108);
@@ -138,7 +138,7 @@ bool MirrorImage(uint8_t effectIndex, Aura* pAura, bool apply)
 {
     Unit* caster = pAura->GetUnitCaster();
     if (caster != NULL && apply && effectIndex == 2)
-        if (caster->GetGUID() == pAura->GetTarget()->GetCreatedByGUID())
+        if (caster->getGuid() == pAura->GetTarget()->GetCreatedByGUID())
             caster->CastSpell(pAura->GetTarget(), pAura->GetSpellInfo()->getEffectTriggerSpell(effectIndex), true);
 
     return true;

@@ -1779,7 +1779,7 @@ class LuaCreature : public CreatureAIScript
             }
             LuaGlobal::instance()->m_onLoadInfo.push_back(getCreature()->GetMapId());
             LuaGlobal::instance()->m_onLoadInfo.push_back(iid);
-            LuaGlobal::instance()->m_onLoadInfo.push_back(GET_LOWGUID_PART(getCreature()->GetGUID()));
+            LuaGlobal::instance()->m_onLoadInfo.push_back(GET_LOWGUID_PART(getCreature()->getGuid()));
         }
         void OnReachWP(uint32 iWaypointId, bool bForwards)
         {
@@ -1929,7 +1929,7 @@ class LuaCreature : public CreatureAIScript
             {
                 //Function Ref clean up
                 std::map< uint64, std::set<int> >& objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
-                std::map< uint64, std::set<int> >::iterator itr = objRefs.find(getCreature()->GetGUID());
+                std::map< uint64, std::set<int> >::iterator itr = objRefs.find(getCreature()->getGuid());
                 if (itr != objRefs.end())
                 {
                     std::set<int>& refs = itr->second;
@@ -2046,7 +2046,7 @@ class LuaGameObjectScript : public GameObjectAIScript
             GMAP::iterator itr = gMap.find(_gameobject->GetEntry());
             GMAP::iterator itend = gMap.upper_bound(_gameobject->GetEntry());
             GMAP::iterator it;
-            //uint64 guid = _gameobject->GetGUID(); Unused?
+            //uint64 guid = _gameobject->getGuid(); Unused?
             for (; itr != itend;)
             {
                 it = itr++;
@@ -2057,7 +2057,7 @@ class LuaGameObjectScript : public GameObjectAIScript
             }
 
             std::map< uint64, std::set<int> >& objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
-            std::map< uint64, std::set<int> >::iterator itr2 = objRefs.find(_gameobject->GetGUID());
+            std::map< uint64, std::set<int> >::iterator itr2 = objRefs.find(_gameobject->getGuid());
             std::set<int>::iterator it2;
             if (itr2 != objRefs.end())
             {

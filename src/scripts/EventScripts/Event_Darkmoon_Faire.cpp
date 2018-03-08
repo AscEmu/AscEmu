@@ -50,7 +50,7 @@ public:
         pPlayer->CastSpell(pPlayer, 24832, true);
         pPlayer->setMoveRoot(true);
         _gameobject->PlaySoundToSet(8476);
-        mPlayerGuid = static_cast<uint32>(pPlayer->GetGUID());
+        mPlayerGuid = static_cast<uint32>(pPlayer->getGuid());
         RegisterAIUpdateEvent(2200);
     }
 
@@ -195,7 +195,7 @@ public:
                 break;
         }
 
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), textId, plr->GetSession()->language);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), textId, plr->GetSession()->language);
         menu.Send(plr);
     }
 };
@@ -241,7 +241,7 @@ public:
                 break;
         }
 
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), textId, plr->GetSession()->language);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), textId, plr->GetSession()->language);
         menu.Send(plr);
     }
 };
@@ -293,14 +293,14 @@ public:
 
     void OnHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), BARK_MAXIMA_1, plr->GetSession()->language);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), BARK_MAXIMA_1, plr->GetSession()->language);
         menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_ULTRA_CANNON), 1);
         menu.Send(plr);
     }
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), BARK_MAXIMA_2, plr->GetSession()->language);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), BARK_MAXIMA_2, plr->GetSession()->language);
         menu.Send(plr);
     }
 };
@@ -328,7 +328,7 @@ class ProfessorThaddeusPaleo_Gossip : public Arcemu::Gossip::Script
 public:
     void OnHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60016, plr->GetSession()->language);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), 60016, plr->GetSession()->language);
 
         if (pObject->getUInt32Value(UNIT_NPC_FLAGS) & UNIT_NPC_FLAG_VENDOR)
             menu.AddItem(GOSSIP_ICON_VENDOR, plr->GetSession()->LocalizedGossipOption(GI_BROWS_GOODS), 1);
@@ -348,7 +348,7 @@ public:
                 break;
             case 2:
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60017, plr->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 60017, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_BEAST_DECK), 5);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_PORTAL_DECK), 6);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_ELEMENTALS_DECK), 7);
@@ -360,28 +360,28 @@ public:
                 menu.Send(plr);
             } break;
             case 5:
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 60018, plr);
+                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 60018, plr);
                 break;
             case 6:
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 60019, plr);
+                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 60019, plr);
                 break;
             case 7:
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 60020, plr);
+                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 60020, plr);
                 break;
             case 8:
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 60021, plr);
+                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 60021, plr);
                 break;
             case 9:
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 60022, plr);
+                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 60022, plr);
                 break;
             case 10:
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 60023, plr);
+                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 60023, plr);
                 break;
             case 11:
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 60024, plr);
+                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 60024, plr);
                 break;
             case 12:
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 60025, plr);
+                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 60025, plr);
                 break;
             default:
                 break;
@@ -421,12 +421,12 @@ public:
         // Check to see if the player already has a buff from Sayge.
         if (plr->HasAura(23768) || plr->HasAura(23769) || plr->HasAura(23767) || plr->HasAura(23738) || plr->HasAura(23766) || plr->HasAura(23737) || plr->HasAura(23735) || plr->HasAura(23736))
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60034, plr->GetSession()->language);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 60034, plr->GetSession()->language);
             menu.Send(plr);
         }
         else
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60026, plr->GetSession()->language);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 60026, plr->GetSession()->language);
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_READY_DISC_FORTUNE), 1);
             menu.Send(plr);
         }
@@ -440,7 +440,7 @@ public:
         {
             case 1:        // Question 1 (Initial question, always the same)
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60027, plr->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 60027, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_1_1), 10);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_1_2), 11);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_1_3), 12);
@@ -449,7 +449,7 @@ public:
             }break;
             case 10:    // Question 2 (First Answer = 1)
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60028, plr->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 60028, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_2_1), 14);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_2_2), 15);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_2_3), 16);
@@ -457,7 +457,7 @@ public:
             }break;
             case 11:     // Question 2 (First Answer = 2)
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60029, plr->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 60029, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_3_1), 17);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_3_2), 18);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_3_3), 19);
@@ -465,7 +465,7 @@ public:
             }break;
             case 12:     // Question 2 (First Answer = 3)
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60030, plr->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 60030, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_4_1), 20);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_4_2), 21);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_4_3), 22);
@@ -473,7 +473,7 @@ public:
             }break;
             case 13:     // Question 2 (First Answer = 4)
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60031, plr->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 60031, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_5_1), 23);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_5_2), 24);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_5_3), 25);
@@ -482,21 +482,21 @@ public:
             // Answers 1-#
             case 14:     // Answers: 1-1
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60032, plr->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
                 pCreature->CastSpell(plr, 23768, true);
                 menu.Send(plr);
             }break;
             case 15:     // Answers: 1-2
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60032, plr->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
                 pCreature->CastSpell(plr, 23769, true);
                 menu.Send(plr);
             }break;
             case 16:     // Answers: 1-3
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60032, plr->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
                 pCreature->CastSpell(plr, 23767, true);
                 menu.Send(plr);
@@ -504,21 +504,21 @@ public:
             // Answers 2-#
             case 17:     // Answers: 2-1
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60032, plr->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
                 pCreature->CastSpell(plr, 23738, true);
                 menu.Send(plr);
             }break;
             case 18:     // Answers: 2-2
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60032, plr->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
                 pCreature->CastSpell(plr, 23766, true);
                 menu.Send(plr);
             }break;
             case 19:     // Answers: 2-3
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60032, plr->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
                 pCreature->CastSpell(plr, 23769, true);
                 menu.Send(plr);
@@ -526,21 +526,21 @@ public:
             // Answers 3-#
             case 20:     // Answers: 3-1
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60032, plr->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
                 pCreature->CastSpell(plr, 23737, true);
                 menu.Send(plr);
             }break;
             case 21:     // Answers: 3-2
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60032, plr->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
                 pCreature->CastSpell(plr, 23735, true);
                 menu.Send(plr);
             }break;
             case 22:     // Answers: 3-3
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60032, plr->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
                 pCreature->CastSpell(plr, 23736, true);
                 menu.Send(plr);
@@ -548,21 +548,21 @@ public:
             // Answers 4-#
             case 23:     // Answers: 4-1
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60032, plr->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
                 pCreature->CastSpell(plr, 23766, true);
                 menu.Send(plr);
             }break;
             case 24:     // Answers: 4-2
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60032, plr->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
                 pCreature->CastSpell(plr, 23738, true);
                 menu.Send(plr);
             }break;
             case 25:     // Answers: 4-3
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60032, plr->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 60032, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
                 pCreature->CastSpell(plr, 23737, true);
                 menu.Send(plr);
@@ -570,7 +570,7 @@ public:
             case 30:
             {
 
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60033, plr->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 60033, plr->GetSession()->language);
                 menu.Send(plr);
                 // Cast the fortune into the player's inventory - Not working?
                 pCreature->CastSpell(plr, 23765, true);
@@ -635,7 +635,7 @@ public:
 
     void OnHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60035, plr->GetSession()->language);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), 60035, plr->GetSession()->language);
         menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WHAT_PURCHASE), 1);
         menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_FAIRE_PRIZE), 2);
         menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WHAT_ARE_DARKMOON), 3);
@@ -650,32 +650,32 @@ public:
         switch (IntId)
         {
             case 1:
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 60036, plr);           // What can I purchase?
+                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 60036, plr);           // What can I purchase?
                 break;
             case 2:
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 60037, plr);           // What are Darkmoon Faire Prize Tickets and how do I get them?
+                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 60037, plr);           // What are Darkmoon Faire Prize Tickets and how do I get them?
                 break;
             case 3:
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60038, plr->GetSession()->language);          // What are Darkmoon Cards?
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 60038, plr->GetSession()->language);          // What are Darkmoon Cards?
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_MORE), 10);
                 menu.Send(plr);
             }break;
             case 4:
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60040, plr->GetSession()->language);          // What other things can I do at the faire?
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 60040, plr->GetSession()->language);          // What other things can I do at the faire?
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_TONK_CONTROLS), 20);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ABOUT_CANON), 21);
                 menu.Send(plr);
             }break;
             case 10:
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 60039, plr);            // What are Darkmoon Cards? <more>
+                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 60039, plr);            // What are Darkmoon Cards? <more>
                 break;
             case 20:
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 60041, plr);           // What are these Tonk Control Consoles?
+                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 60041, plr);           // What are these Tonk Control Consoles?
                 break;
             case 21:
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 60042, plr);           // Tell me about the cannon.
+                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 60042, plr);           // Tell me about the cannon.
                 break;
             default:
                 break;
@@ -690,14 +690,14 @@ public:
 
     void OnHello(Object* pObject, Player* plr) override
     {
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 60013, plr->GetSession()->language);                // \todo find right text
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), 60013, plr->GetSession()->language);                // \todo find right text
         menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ASK_PROFIT), 1);    // Silas, why is most everything at the fair free? How do you make a profit?
         menu.Send(plr);
     }
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
-        Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 7336, plr);
+        Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 7336, plr);
     }
 };
 

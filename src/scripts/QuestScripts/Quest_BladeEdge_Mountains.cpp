@@ -162,7 +162,7 @@ public:
     void OnLoad() override
     {
         RegisterAIUpdateEvent(5000);
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+        getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
         setAIAgent(AGENT_NULL);
         _setMeleeDisabled(true);
@@ -367,7 +367,7 @@ public:
             Ogre->_setDisplayWeaponIds(28562, 0);
             Ogre->getCreature()->SetEmoteState(EMOTE_ONESHOT_EAT_NOSHEATHE);
             Ogre->getCreature()->SetFaction(35);
-            Ogre->getCreature()->SetStandState(STANDSTATE_SIT);
+            Ogre->getCreature()->setStandState(STANDSTATE_SIT);
 
             NdGo = getNearestGameObject(184315);
             if (NdGo == nullptr)

@@ -53,7 +53,7 @@ void WorldSession::HandleChangeVehicleSeat(WorldPacket& recvData)
         recvData >> vehicle;
         recvData >> seat;
 
-        if (vehicle.GetOldGuid() == _player->GetCurrentVehicle()->GetOwner()->GetGUID())
+        if (vehicle.GetOldGuid() == _player->GetCurrentVehicle()->GetOwner()->getGuid())
         {
             _player->GetCurrentVehicle()->MovePassengerToSeat(_player, seat);
         }
@@ -67,7 +67,7 @@ void WorldSession::HandleChangeVehicleSeat(WorldPacket& recvData)
                 return;
 
             // Has to be same vehicle, or an accessory of the vehicle
-            if (_player->GetVehicleBase()->GetGUID() != u->GetVehicleBase()->GetGUID())
+            if (_player->GetVehicleBase()->getGuid() != u->GetVehicleBase()->getGuid())
                 return;
 
             _player->GetCurrentVehicle()->EjectPassenger(_player);

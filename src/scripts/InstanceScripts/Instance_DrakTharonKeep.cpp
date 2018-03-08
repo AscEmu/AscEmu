@@ -226,7 +226,7 @@ class NovosTheSummonerAI : public CreatureAIScript
             for (const auto& iter : getCreature()->getInRangePlayersSet())
             {
                 if (iter && static_cast<Player*>(iter)->isAlive())
-                    possible_targets.push_back(static_cast<uint32>(iter->GetGUID()));
+                    possible_targets.push_back(static_cast<uint32>(iter->getGuid()));
             }
             if (possible_targets.size() > 0)
             {
@@ -256,7 +256,7 @@ class NovosTheSummonerAI : public CreatureAIScript
                         //position is guessed
                         c->Load(cp, -379.101227f, -824.835449f, 60.0f, 0.0f);
                         c->PushToWorld(getCreature()->GetMapMgr());
-                        c->SetSummonedByGUID(getCreature()->GetGUID());
+                        c->SetSummonedByGUID(getCreature()->getGuid());
                         //path finding would be usefull :)
                         Player* p_target = GetRandomPlayerTarget();
                         if (p_target)

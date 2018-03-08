@@ -1502,7 +1502,7 @@ bool AlteracValley::HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* /*
         if (m_nodes[nodeid]->m_flag == NULL)
             continue;
 
-        if (m_nodes[nodeid]->m_flag->GetGUID() == pGo->GetGUID())
+        if (m_nodes[nodeid]->m_flag->getGuid() == pGo->getGuid())
             break;
     }
 

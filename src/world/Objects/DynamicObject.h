@@ -35,10 +35,12 @@ enum DynamicObjectType
 
 typedef std::set<uint64> DynamicObjectList;
 
+struct WoWDynamicObject;
 class SERVER_DECL DynamicObject : public Object
 {
-public:
     // MIT Start
+    const WoWDynamicObject* dynamicObjectData() const { return reinterpret_cast<WoWDynamicObject*>(wow_data); }
+public:
     void Create(Unit* caster, Spell* pSpell, LocationVector lv, uint32 duration, float radius, uint32 type);
     // MIT End
 

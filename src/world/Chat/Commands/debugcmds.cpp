@@ -36,9 +36,9 @@ bool ChatHandler::HandleDebugDumpMovementCommand(const char* /*args*/, WorldSess
 
         SystemMessage(session, "Position: [%f, %f, %f, %f]", me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
 #if VERSION_STRING != Cata
-        SystemMessage(session, "On transport: %s", me->obj_movement_info.transporter_info.guid != 0 ? "yes" : "no");
-        SystemMessage(session, "Transport GUID: %lu", me->obj_movement_info.transporter_info.guid);
-        SystemMessage(session, "Transport relative position: [%f, %f, %f, %f]", me->obj_movement_info.transporter_info.position.x, me->obj_movement_info.transporter_info.position.y, me->obj_movement_info.transporter_info.position.z, me->obj_movement_info.transporter_info.position.o);
+        SystemMessage(session, "On transport: %s", me->obj_movement_info.transport_data.transportGuid != 0 ? "yes" : "no");
+        SystemMessage(session, "Transport GUID: %lu", me->obj_movement_info.transport_data.transportGuid);
+        SystemMessage(session, "Transport relative position: [%f, %f, %f, %f]", me->obj_movement_info.transport_data.relativePosition.x, me->obj_movement_info.transport_data.relativePosition.y, me->obj_movement_info.transport_data.relativePosition.z, me->obj_movement_info.transport_data.relativePosition.o);
 #else
         SystemMessage(session, "On transport: %s", !me->obj_movement_info.getTransportGuid().IsEmpty() ? "yes" : "no");
         //SystemMessage(session, "Transport GUID: %lu", me->obj_movement_info.getTransportGuid());
@@ -531,7 +531,7 @@ bool ChatHandler::HandleSendItemPushResult(const char* args, WorldSession* m_ses
 
     WorldPacket data;
     data.SetOpcode(SMSG_ITEM_PUSH_RESULT);
-    data << m_session->GetPlayer()->GetGUID();    // recivee_guid
+    data << m_session->GetPlayer()->getGuid();    // recivee_guid
     data << uint_args[2];   // type
     data << uint32(1);      // unk
     data << uint_args[1];   // count
@@ -1025,7 +1025,7 @@ SpellCastTargets SetTargets(SpellInfo* /*sp*/, uint32 /*type*/, uint32 targettyp
     if (targettype == TTYPE_SINGLETARGET)
     {
         targets.m_targetMask = TARGET_FLAG_UNIT;
-        targets.m_unitTarget = dst->GetGUID();
+        targets.m_unitTarget = dst->getGuid();
     }
     else if (targettype == TTYPE_SOURCE)
     {
@@ -1149,7 +1149,7 @@ bool ChatHandler::HandleCastSpellCommand(const char* args, WorldSession* m_sessi
 
     BlueSystemMessage(m_session, "Casting spell %d on target.", spellid);
     SpellCastTargets targets;
-    targets.m_unitTarget = target->GetGUID();
+    targets.m_unitTarget = target->getGuid();
     sp->prepare(&targets);
 
     switch (target->GetTypeId())
@@ -1197,7 +1197,7 @@ bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_ses
     data << uint16(0);
     data << uint32(0);
     data << uint16(2);
-    data << target->GetGUID();
+    data << target->getGuid();
     //        WPARCEMU_ASSERT(  data.size() == 36);
     m_session->SendPacket(&data);
 
@@ -1206,10 +1206,10 @@ bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_ses
     data << caster->GetNewGUID();
     data << spellId;
     data << uint8(0) << uint8(1) << uint8(1);
-    data << target->GetGUID();
+    data << target->getGuid();
     data << uint8(0);
     data << uint16(2);
-    data << target->GetGUID();
+    data << target->getGuid();
     //        WPARCEMU_ASSERT(  data.size() == 42);
     m_session->SendPacket(&data);
 
@@ -1250,7 +1250,7 @@ bool ChatHandler::HandleCastSelfCommand(const char* args, WorldSession* m_sessio
 
     BlueSystemMessage(m_session, "Target is casting spell %d on himself.", spellid);
     SpellCastTargets targets;
-    targets.m_unitTarget = target->GetGUID();
+    targets.m_unitTarget = target->getGuid();
     sp->prepare(&targets);
 
     switch (target->GetTypeId())

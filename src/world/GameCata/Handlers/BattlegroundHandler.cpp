@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 #include "Server/WorldSession.h"
+#include "Storage/MySQLDataStore.hpp"
+#include "Map/MapMgr.h"
 
 void WorldSession::HandleRequestRatedBgInfoOpcode(WorldPacket & recv_data)
 {
@@ -229,7 +231,7 @@ void WorldSession::HandleBattlegroundPlayerPositionsOpcode(WorldPacket& /*recv_d
     // If the two are the same, then it's from a Bg that only has 1 flag like EOTS
     if ((ap != nullptr) &&
         (hp != nullptr) &&
-        (ap->GetGUID() == hp->GetGUID()))
+        (ap->getGuid() == hp->getGuid()))
         hp = nullptr;
 
     if (hp != nullptr)
@@ -241,14 +243,14 @@ void WorldSession::HandleBattlegroundPlayerPositionsOpcode(WorldPacket& /*recv_d
 
     if (ap != nullptr)
     {
-        data << uint64(ap->GetGUID());
+        data << uint64(ap->getGuid());
         data << float(ap->GetPositionX());
         data << float(ap->GetPositionY());
     }
 
     if (hp != nullptr)
     {
-        data << uint64(hp->GetGUID());
+        data << uint64(hp->getGuid());
         data << float(hp->GetPositionX());
         data << float(hp->GetPositionY());
     }
@@ -346,7 +348,7 @@ void WorldSession::HandleInspectHonorStatsOpcode(WorldPacket& recvData)
 
     WorldPacket data(MSG_INSPECT_HONOR_STATS, 13);
 
-    data << player->GetGUID();
+    data << player->getGuid();
     data << uint8(player->GetHonorCurrency());
 #if VERSION_STRING != Classic
     data << player->getUInt32Value(PLAYER_FIELD_KILLS);
@@ -379,7 +381,7 @@ void WorldSession::HandleInspectArenaStatsOpcode(WorldPacket& recvData)
             if (team != nullptr)
             {
                 WorldPacket data(MSG_INSPECT_ARENA_TEAMS, 8 + 1 + 4 * 5);
-                data << player->GetGUID();
+                data << player->getGuid();
                 data << team->m_type;
                 data << team->m_id;
                 data << team->m_stat_rating;

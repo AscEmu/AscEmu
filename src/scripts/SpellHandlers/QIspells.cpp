@@ -1483,7 +1483,7 @@ bool ToLegionHold(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
         Creature* pJovaan = pPlayer->GetMapMgr()->CreateAndSpawnCreature(21633, -3310.743896f, 2951.929199f, 171.132538f, 5.054039f);    // Spawn Jovaan
         if (pJovaan != nullptr)
         {
-            pJovaan->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            pJovaan->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
             if (pJovaan->GetAIInterface() != nullptr)
             {
                 pJovaan->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -1701,7 +1701,7 @@ bool SymbolOfLife(uint8_t /*effectIndex*/, Spell* pSpell) // Alliance ress. ques
     if (!questOk)
         return true;
 
-    target->SetStandState(STANDSTATE_STAND);
+    target->setStandState(STANDSTATE_STAND);
     target->setDeathState(ALIVE);
 
     target->Despawn(10 * 1000, 1 * 60 * 1000);
@@ -1731,7 +1731,7 @@ bool FilledShimmeringVessel(uint8_t /*effectIndex*/, Spell* pSpell) // Blood Elf
     if (qle == nullptr)
         return true;
 
-    target->SetStandState(STANDSTATE_STAND);
+    target->setStandState(STANDSTATE_STAND);
     target->setDeathState(ALIVE);
 
     target->Despawn(30 * 1000, 1 * 60 * 1000);
@@ -2181,7 +2181,7 @@ bool TheSeersRelic(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pTarget->GetEntry() != 16852)
         return true;
 
-    pTarget->SetStandState(STANDSTATE_STAND);
+    pTarget->setStandState(STANDSTATE_STAND);
     pTarget->setDeathState(ALIVE);
     pTarget->Despawn(30 * 1000, 1 * 60 * 1000);
 
@@ -2617,7 +2617,7 @@ bool ManaRemnants(uint8_t /*effectIndex*/, Spell* pSpell)
         if (qle != nullptr && qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
         {
             pPlayer->CastSpell(Ward, sSpellCustomizations.GetSpellInfo(44981), false);
-            pPlayer->SetChannelSpellTargetGUID(Ward->GetGUID());
+            pPlayer->SetChannelSpellTargetGUID(Ward->getGuid());
             pPlayer->SetChannelSpellId(44981);
 
             pPlayer->AddQuestKill(quests[i], 0, 0);
@@ -2956,7 +2956,7 @@ bool SpragglesCanteen(uint8_t /*effectIndex*/, Spell* pSpell)
     if (qle == nullptr)
         return true;
 
-    target->SetStandState(STANDSTATE_STAND);
+    target->setStandState(STANDSTATE_STAND);
     target->setDeathState(ALIVE);
 
     target->Despawn(30 * 1000, 1 * 60 * 1000);

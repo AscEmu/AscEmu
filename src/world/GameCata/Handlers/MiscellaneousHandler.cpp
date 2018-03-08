@@ -75,7 +75,7 @@ void WorldSession::HandleObjectUpdateFailedOpcode(WorldPacket& recvData)
         return;
     }
 
-    if (_player->GetGUID() == guid)
+    if (_player->getGuid() == guid)
     {
         LogoutPlayer(true);
         return;
@@ -162,12 +162,12 @@ void WorldSession::HandleCorpseReclaimOpcode(WorldPacket& recv_data)
     uint64_t guid;
     recv_data >> guid;
 
-    Corpse* pCorpse = objmgr.GetCorpseByOwner(GetPlayer()->GetLowGUID());
+    Corpse* pCorpse = objmgr.GetCorpseByOwner(GetPlayer()->getGuidLow());
     if (pCorpse == nullptr)
         return;
 
     GetPlayer()->ResurrectPlayer();
-    GetPlayer()->SetHealth(GetPlayer()->GetMaxHealth() / 2);
+    GetPlayer()->setHealth(GetPlayer()->GetMaxHealth() / 2);
 }
 
 void WorldSession::HandleUpdateAccountData(WorldPacket& recv_data)

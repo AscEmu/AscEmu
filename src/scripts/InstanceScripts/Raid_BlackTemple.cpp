@@ -726,7 +726,7 @@ class EnslavedServantAI : public CreatureAIScript
         {
             if (_isTimerFinished(mHealthResetTimer))
             {
-                getCreature()->SetHealth(getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH));    // Found such note about this mob
+                getCreature()->setHealth(getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH));    // Found such note about this mob
                 _resetTimer(mHealthResetTimer, 45000);
             }
         }
@@ -1581,7 +1581,7 @@ class EssenceOfSufferingAI : public CreatureAIScript
                 setCanEnterCombat(false);
                 _setMeleeDisabled(false);
                 _setCastDisabled(true);
-                getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+                getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                 _removeAllAuras();
                 _removeAuraOnPlayers(EOS_AURA_OF_SUFFERING);
 
@@ -1635,7 +1635,7 @@ class EssenceOfDesireAI : public CreatureAIScript
                 setCanEnterCombat(false);
                 _setMeleeDisabled(false);
                 _setCastDisabled(true);
-                getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+                getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                 _removeAllAuras();
                 _removeAuraOnPlayers(EOD_AURA_OF_DESIRE);
 
@@ -1730,7 +1730,7 @@ class ReliquaryOfSoulsAI : public CreatureAIScript
 
         void OnCombatStart(Unit* /*mTarget*/) override
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+            getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
             _setMeleeDisabled(false);
             _setRangedDisabled(true);
 
@@ -2600,7 +2600,7 @@ class UnselectableTriggerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(UnselectableTriggerAI);
         UnselectableTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         }
 };
 
@@ -2664,21 +2664,21 @@ class GenericTriggerAI : public CreatureAIScript
 
             if (OnSpawn)
             {
-                getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+                getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
                 _applyAura(mSpellId);
                 _setMeleeDisabled(false);
                 despawn(mDespawnTimer, 0);
             }
             else
             {
-                getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                 RegisterAIUpdateEvent(AIUpdate);
             }
         }
 
         void AIUpdate() override
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
             _applyAura(mSpellId);
             _setMeleeDisabled(false);
             despawn(mDespawnTimer, 0);
@@ -2686,7 +2686,7 @@ class GenericTriggerAI : public CreatureAIScript
 
             if (getCreature()->GetEntry() == CN_FLAME_BURST)
             {
-                getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             }
         }
 
@@ -2704,7 +2704,7 @@ class EyeBeamTriggerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(EyeBeamTriggerAI);
         EyeBeamTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
             getCreature()->m_noRespawn = true;
 
@@ -2824,11 +2824,9 @@ class ParasiticShadowfiendAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(ParasiticShadowfiendAI);
         ParasiticShadowfiendAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            
-
             addAISpell(PARASITIC_SHADOWFIEND_WITH_DAMAGE, 0.0f, TARGET_ATTACKING);
 
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             _applyAura(PARASITIC_SHADOWFIEND_PASSIVE);
             getCreature()->m_noRespawn = true;
             _setScale(0.0f);
@@ -2860,13 +2858,13 @@ class SCRIPT_DECL AkamaGossip : public Arcemu::Gossip::Script
 
             if (pAI->GetCurrentWaypoint() >= 10)
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 229902);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 229902);
                 menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(444), 2);     // We're ready to face Illidan.
                 menu.Send(pPlayer);
             }
             else
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 229901);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 229901);
                 menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(445), 1);     // I'm ready, Akama.
                 menu.Send(pPlayer);
             }
@@ -3425,7 +3423,7 @@ class AkamaAI : public CreatureAIScript
             {
                 Unit* pUnit = static_cast<Unit*>(itr);
 
-                if (!pUnit || pUnit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH))
+                if (!pUnit || pUnit->hasUnitFlags(UNIT_FLAG_FEIGN_DEATH))
                     continue;
 
                 z_diff = fabs(getCreature()->GetPositionZ() - pUnit->GetPositionZ());
@@ -3486,9 +3484,10 @@ class MaievAI : public CreatureAIScript
             mTrapSummon = addAISpell(MAIEV_CAGE_TRAP_SUMMON, 0.0f, TARGET_SELF);
 
             // HACK!
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            //\todo to set flags will override all values from db. To add/remove flags use SetFlag(/RemoveFlag(
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
             getCreature()->setUInt32Value(UNIT_FIELD_MAXHEALTH, 1000000);
-            getCreature()->SetHealth(1000000);
+            getCreature()->setHealth(1000000);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
 
             SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_NONE);
@@ -3525,7 +3524,7 @@ class MaievAI : public CreatureAIScript
 
         void OnDamageTaken(Unit* /*mAttacker*/, uint32 /*fAmount*/) override
         {
-            getCreature()->SetHealth(getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH));
+            getCreature()->setHealth(getCreature()->getUInt32Value(UNIT_FIELD_MAXHEALTH));
         }
 
         void AIUpdate() override
@@ -3717,7 +3716,7 @@ class MaievAI : public CreatureAIScript
                             }
 
                             mIllidanAI->getCreature()->SetEmoteState(EMOTE_ONESHOT_NONE);
-                            mIllidanAI->getCreature()->SetHealth(0);
+                            mIllidanAI->getCreature()->setHealth(0);
                             mIllidanAI->getCreature()->setDeathState(JUST_DIED);
                         }
                         break;
@@ -4026,12 +4025,12 @@ class IllidanStormrageAI : public CreatureAIScript
             Creature* pMaiev = getNearestCreature(CN_MAIEV);
             if (pMaiev != NULL && pMaiev->isAlive())
             {
-                getCreature()->SetHealth(1);
+                getCreature()->setHealth(1);
                 setCanEnterCombat(false);
                 _applyAura(ILLIDAN_DEATH1);
                 _applyAura(ILLIDAN_DEATH2);
 
-                pMaiev->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+                pMaiev->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                 pMaiev->GetAIInterface()->setAiState(AI_STATE_IDLE);
                 pMaiev->GetAIInterface()->WipeTargetList();
                 pMaiev->GetAIInterface()->WipeHateList();
@@ -4241,7 +4240,7 @@ class IllidanStormrageAI : public CreatureAIScript
                             Creature* pBlade = spawnCreature(CN_BLADE_OF_AZZINOTH, UnitPos[i].x, UnitPos[i].y, UnitPos[i].z, UnitPos[i].o);
                             if (pBlade != NULL)
                             {
-                                pBlade->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                                pBlade->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                                 pBlade->m_noRespawn = true;
                             }
                         }
@@ -4254,7 +4253,7 @@ class IllidanStormrageAI : public CreatureAIScript
                             Unit* pBlade = getNearestCreature(UnitPos[0].x, UnitPos[0].y, UnitPos[0].z, CN_BLADE_OF_AZZINOTH);
                             if (pBlade != nullptr)
                             {
-                                pBlade->SetChannelSpellTargetGUID(mFoA1->getCreature()->GetGUID());
+                                pBlade->SetChannelSpellTargetGUID(mFoA1->getCreature()->getGuid());
                                 pBlade->SetChannelSpellId(TEAR_OF_AZZINOTH_CHANNEL);
                             }
                         }
@@ -4263,11 +4262,11 @@ class IllidanStormrageAI : public CreatureAIScript
                             Unit* pBlade = getNearestCreature(UnitPos[1].x, UnitPos[1].y, UnitPos[1].z, CN_BLADE_OF_AZZINOTH);
                             if (pBlade != nullptr)
                             {
-                                pBlade->SetChannelSpellTargetGUID(mFoA2->getCreature()->GetGUID());
+                                pBlade->SetChannelSpellTargetGUID(mFoA2->getCreature()->getGuid());
                                 pBlade->SetChannelSpellId(TEAR_OF_AZZINOTH_CHANNEL);
                             }
                         }
-                        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+                        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
                         break;
                     case 4:
                         {
@@ -4318,7 +4317,7 @@ class IllidanStormrageAI : public CreatureAIScript
                             setRooted(false);
                             _clearHateList();
                             setScriptPhase(3);
-                            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+                            getCreature()->removeUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
 
                             SetAIUpdateFreq(1000);
 
@@ -4609,7 +4608,7 @@ class IllidanStormrageAI : public CreatureAIScript
             _setMeleeDisabled(true);
             setRooted(false);
 
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+            getCreature()->removeUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
 
             mScenePart = 0;
         }
@@ -4692,7 +4691,7 @@ class IllidanStormrageAI : public CreatureAIScript
                     setRooted(false);
                     setScriptPhase(5);
 
-                    getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+                    getCreature()->removeUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
 
                     pMaievAI->RegisterAIUpdateEvent(1000);
                     pMaievAI->mYellTimer = pMaievAI->_addTimer((Util::getRandomUInt(20) + 20) * 1000);
@@ -5099,7 +5098,7 @@ class CageTrapTriggerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(CageTrapTriggerAI);
         CageTrapTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             getCreature()->GetAIInterface()->m_canMove = false;
             getCreature()->m_noRespawn = true;
 
@@ -5137,7 +5136,7 @@ class CageTrapTriggerAI : public CreatureAIScript
                         CreatureAIScript* pTriggerAI = spawnCreatureAndGetAIScript(CN_CAGE_TRAP_TRIGGER, getCreature()->GetPositionX() + PositionAdds[i][0], getCreature()->GetPositionY() + PositionAdds[i][1], getCreature()->GetPositionZ(), getCreature()->GetOrientation());
                         if (pTriggerAI != nullptr)
                         {
-                            pTriggerAI->getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                            pTriggerAI->getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                             pTriggerAI->getCreature()->GetAIInterface()->m_canMove = false;
                             pTriggerAI->getCreature()->m_noRespawn = true;
                             mTriggerAIList.push_back(pTriggerAI);

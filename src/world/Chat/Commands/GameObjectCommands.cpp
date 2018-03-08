@@ -46,7 +46,7 @@ bool ChatHandler::HandleGODamageCommand(const char* args, WorldSession* session)
         return true;
     }
 
-    uint64 guid = session->GetPlayer()->GetGUID();
+    uint64 guid = session->GetPlayer()->getGuid();
     dgo->Damage(damage, guid, 0, spellid);
 
     GreenSystemMessage(session, "GameObject has been damaged for %u hitpoints", damage);
@@ -176,7 +176,7 @@ bool ChatHandler::HandleGOInfoCommand(const char* /*args*/, WorldSession* m_sess
     SystemMessage(m_session, "%s Information:", MSG_COLOR_SUBWHITE);
     SystemMessage(m_session, "%s SpawnID:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->m_spawn != NULL ? gameobject->m_spawn->id : 0);
     SystemMessage(m_session, "%s Entry:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetEntry());
-    SystemMessage(m_session, "%s GUID:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetLowGUID());
+    SystemMessage(m_session, "%s GUID:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getGuidLow());
     SystemMessage(m_session, "%s Model:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetDisplayId());
     SystemMessage(m_session, "%s State:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetState());
     SystemMessage(m_session, "%s flags:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetFlags());
@@ -525,7 +525,7 @@ bool ChatHandler::HandleGOSelectCommand(const char* args, WorldSession* m_sessio
         return true;
     }
 
-    m_session->GetPlayer()->m_GM_SelectedGO = GObj->GetGUID();
+    m_session->GetPlayer()->m_GM_SelectedGO = GObj->getGuid();
 
     //reset last rotation values on selecting a new go.
     m_session->GetPlayer()->go_last_x_rotation = 0.0f;
@@ -554,7 +554,7 @@ bool ChatHandler::HandleGOSelectGuidCommand(const char* args, WorldSession* m_se
         return true;
     }
 
-    m_session->GetPlayer()->m_GM_SelectedGO = gameobject->GetGUID();
+    m_session->GetPlayer()->m_GM_SelectedGO = gameobject->getGuid();
     GreenSystemMessage(m_session, "GameObject [ %s ] with distance %.3f to your position selected.", gameobject->GetGameObjectProperties()->name.c_str(), m_session->GetPlayer()->CalcDistance(gameobject));
     return true;
 }
@@ -636,7 +636,7 @@ bool ChatHandler::HandleGOSpawnCommand(const char* args, WorldSession* m_session
         GreenSystemMessage(m_session, "Spawning temporarily GameObject with entry '%u'", go_spawn->entry);
     }
 
-    m_session->GetPlayer()->m_GM_SelectedGO = gameobject->GetGUID();
+    m_session->GetPlayer()->m_GM_SelectedGO = gameobject->getGuid();
 
     return true;
 }

@@ -15,6 +15,7 @@ people are awsome:
 - aaron02
 - Appled
 - AriDEV
+- Asura
 - brotalnia
 - armm77
 - Cronicman

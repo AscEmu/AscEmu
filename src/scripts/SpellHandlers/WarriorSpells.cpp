@@ -161,7 +161,7 @@ bool LastStand(uint8_t /*effectIndex*/, Spell* s)
     }
 
     SpellCastTargets tgt;
-    tgt.m_unitTarget = playerTarget->GetGUID();
+    tgt.m_unitTarget = playerTarget->getGuid();
 
     SpellInfo* inf = sSpellCustomizations.GetSpellInfo(12976);
     Spell* spe = sSpellFactoryMgr.NewSpell(s->u_caster, inf, true, NULL);

@@ -17,6 +17,11 @@
 */
 
 #include "LogonStdAfx.h"
+#include <Threading/AEThreadPool.h>
+
+using AscEmu::Threading::AEThread;
+using AscEmu::Threading::AEThreadPool;
+using std::chrono::milliseconds;
 
 // Database impl
 Database* sLogonSQL;
@@ -74,6 +79,7 @@ void LogonServer::Run(int /*argc*/, char** /*argv*/)
 
     PeriodicFunctionCaller<AccountMgr> * periodicReloadAccounts = new PeriodicFunctionCaller<AccountMgr>(AccountMgr::getSingletonPtr(), &AccountMgr::ReloadAccountsCallback, accountReloadPeriod);
     ThreadPool.ExecuteTask(periodicReloadAccounts);
+    //AEThreadPool::globalThreadPool()->queueRecurringTask([](AEThread&) {AccountMgr::getSingletonPtr()->ReloadAccountsCallback();}, milliseconds(accountReloadPeriod), "Reload Accounts");
 
     // Load conf settings..
     uint32 realmlistPort = Config.MainConfig.getIntDefault("Listen", "RealmListPort", 3724);

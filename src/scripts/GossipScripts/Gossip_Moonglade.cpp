@@ -30,7 +30,7 @@ class SilvaFilnaveth_Gossip : public Arcemu::Gossip::Script
 
         void OnHello(Object* pObject, Player* plr) override
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 0);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 0);
             if (plr->getClass() == DRUID && plr->getRace() == RACE_NIGHTELF)
             {
                 menu.setTextID(4914);
@@ -62,7 +62,7 @@ class BunthenPlainswind_Gossip : public Arcemu::Gossip::Script
 
         void OnHello(Object* pObject, Player* plr) override
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 0);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 0);
             if (plr->getClass() == DRUID && plr->getRace() == RACE_TAUREN)
             {
                 menu.setTextID(4918);

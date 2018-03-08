@@ -75,7 +75,7 @@ public:
         {
             if (mAttacker->IsPlayer())
             {
-                getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                 RegisterAIUpdateEvent(1000);
                 QuestLogEntry* qle = (static_cast<Player*>(mAttacker))->GetQuestLogForEntry(1640);
                 if (!qle)
@@ -95,7 +95,7 @@ public:
         getCreature()->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, getCreature(), 0);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
-        getCreature()->setUInt32Value(UNIT_FIELD_FLAGS, 0);
+        getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
     }
 
     void OnDied(Unit* /*mKiller*/) override

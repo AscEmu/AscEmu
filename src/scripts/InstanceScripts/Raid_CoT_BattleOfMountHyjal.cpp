@@ -102,7 +102,7 @@ class JainaProudmooreGS : public Arcemu::Gossip::Script
             if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
                 return;
 
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 2);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 2);
             switch (static_cast<MountHyjalScript*>(pObject->GetMapMgr()->GetScript())->GetLocaleInstanceData(HYJAL_TYPE_BASIC, 0))
             {
                 case HYJAL_PHASE_NOT_STARTED:
@@ -155,7 +155,7 @@ class ThrallGS : public Arcemu::Gossip::Script
             if (pObject->GetMapMgr()->GetMapId() != MAP_HYJALPAST)//in case someone spawned this NPC in another map
                 return;
 
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 2);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 2);
             switch (static_cast<MountHyjalScript*>(pObject->GetMapMgr()->GetScript())->GetLocaleInstanceData(HYJAL_TYPE_BASIC, 0))
             {
                 case HYJAL_PHASE_ANETHERON_COMPLETE:
@@ -348,14 +348,14 @@ class ArchimondeTriggerAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(ArchimondeTriggerAI);
         ArchimondeTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             getCreature()->m_noRespawn = true;
 
             Unit* Archimonde = getNearestCreature(5598.629883f, -3447.719971f, 1576.650024f, 17968);
             if (Archimonde)
             {
-                getCreature()->SetChannelSpellTargetGUID(Archimonde->GetGUID());
+                getCreature()->SetChannelSpellTargetGUID(Archimonde->getGuid());
                 getCreature()->SetChannelSpellId(DRAIN_WORLD_TREE_VISUAL2);
             }
         }
@@ -369,7 +369,7 @@ class DoomfireAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(DoomfireAI);
         DoomfireAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             getCreature()->m_noRespawn = true;
 
@@ -454,7 +454,7 @@ class DoomfireAI : public CreatureAIScript
 
                 pUnit = static_cast<Unit*>(itr);
 
-                if (pUnit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH))
+                if (pUnit->hasUnitFlags(UNIT_FLAG_FEIGN_DEATH))
                     continue;
 
                 z_diff = fabs(getCreature()->GetPositionZ() - pUnit->GetPositionZ());

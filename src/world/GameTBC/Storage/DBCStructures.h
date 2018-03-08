@@ -67,8 +67,8 @@ namespace DBC
             char const mail_template_format[] = "nsxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxx";
             char const map_format[] = "nxixssssssssssssssssxxxxxxxixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxiffiixxi";
             char const name_gen_format[] = "nsii";
-            char const skill_line_format[] = "nixssssssssssssssssxxxxxxxxxxxxxxxxxxi";
-            char const skill_line_ability_format[] = "niiiixxiiiiixxi";
+            char const skill_line_format[] = "niissssssssssssssssxxxxxxxxxxxxxxxxxxi";
+            char const skill_line_ability_format[] = "iiiiiiiiiiiiiii";
             char const stable_slot_prices_format[] = "ni";
             char const spell_cast_times_format[] = "nixx";
             char const spell_duration_format[] = "niii";
@@ -494,7 +494,7 @@ namespace DBC
             int32_t parent_map;               // 59 map_id of parent map
             float start_x;                  // 60 enter x coordinate (if exist single entry)
             float start_y;                  // 61 enter y coordinate (if exist single entry)
-            //uint32_t dayTime;               // 62 
+            //uint32_t dayTime;               // 62
             uint32_t reset_raid_time;
             uint32_t reset_heroic_tim;
             uint32_t addon;                   // 63 0-original maps, 1-tbc addon, 2-wotlk addon
@@ -512,7 +512,7 @@ namespace DBC
         {
             uint32_t id;                  // 0
             uint32_t type;                // 1
-            //uint32_t skillCostsID;      // 2
+            uint32_t skillCostsID;      // 2
             char* Name[16];             // 3-18
             //uint32_t NameFlags;         // 19
             //char* Description[16];    // 20-35
@@ -520,6 +520,7 @@ namespace DBC
             uint32_t spell_icon;          // 37
         };
 
+        //"iiiiiiiiiiiiiii"
         struct SkillLineAbilityEntry
         {
             uint32_t Id;                      // 0
@@ -527,15 +528,15 @@ namespace DBC
             uint32_t spell;                   // 2
             uint32_t race_mask;               // 3
             uint32_t class_mask;              // 4
-            //uint32_t excludeRace;           // 5
-            //uint32_t excludeClass;          // 6
+            uint32_t excludeRace;           // 5
+            uint32_t excludeClass;          // 6
             uint32_t minSkillLineRank;        // 7 req skill value
             uint32_t next;                    // 8
             uint32_t acquireMethod;           // 9 auto learn
             uint32_t grey;                    // 10 max
             uint32_t green;                   // 11 min
-            //uint32_t abandonable;           // 12
-            //uint32_t reqTP;                 // 13
+            uint32_t abandonable;           // 12
+            uint32_t reqTP;                 // 13
             uint32_t reqtrainpoints;          // 14
         };
 
@@ -580,7 +581,7 @@ namespace DBC
             uint32_t AttributesExE;                                     // 10
             uint32_t AttributesExF;                                     // 11
             uint32_t RequiredShapeShift;                                // 12
-            uint32_t ShapeshiftExclude;                                 // 13 
+            uint32_t ShapeshiftExclude;                                 // 13
             uint32_t Targets;                                           // 14
             uint32_t TargetCreatureType;                                // 15
             uint32_t RequiresSpellFocus;                                // 16
@@ -631,7 +632,7 @@ namespace DBC
             uint32_t EffectAmplitude[MAX_SPELL_EFFECTS];                // 98 - 100
             float EffectMultipleValue[MAX_SPELL_EFFECTS];             // 101 - 103
             uint32_t EffectChainTarget[MAX_SPELL_EFFECTS];              // 104 - 106
-            uint32_t EffectItemType[MAX_SPELL_EFFECTS];                 // 107 - 109 
+            uint32_t EffectItemType[MAX_SPELL_EFFECTS];                 // 107 - 109
             uint32_t EffectMiscValue[MAX_SPELL_EFFECTS];                // 110 - 112 int32_t
             uint32_t EffectMiscValueB[MAX_SPELL_EFFECTS];               // 113 - 115 int32_t
             uint32_t EffectTriggerSpell[MAX_SPELL_EFFECTS];             // 116 - 118
@@ -834,7 +835,7 @@ namespace DBC
             uint32_t uiSeatIndicatorType;                         // 36
             uint32_t powerType;                                   // 37, new in 3.1
             //uint32_t unk1;                                      // 38
-            //uint32_t unk2;                                      // 39  
+            //uint32_t unk2;                                      // 39
         };
 
         enum VehicleSeatFlags
@@ -851,7 +852,7 @@ namespace DBC
         enum VehicleSeatFlagsB
         {
             VEHICLE_SEAT_FLAG_B_NONE                     = 0x00000000,
-            VEHICLE_SEAT_FLAG_B_USABLE_FORCED            = 0x00000002, 
+            VEHICLE_SEAT_FLAG_B_USABLE_FORCED            = 0x00000002,
             VEHICLE_SEAT_FLAG_B_USABLE_FORCED_2          = 0x00000040,
             VEHICLE_SEAT_FLAG_B_USABLE_FORCED_3          = 0x00000100,
         };

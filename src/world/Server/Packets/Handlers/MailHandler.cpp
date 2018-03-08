@@ -83,7 +83,7 @@ bool MailMessage::AddMessageDataToPacket(WorldPacket& data)
                 continue;
 
             data << uint8(i++);
-            data << uint32(pItem->GetLowGUID());
+            data << uint32(pItem->getGuidLow());
             data << uint32(pItem->GetEntry());
 
             for (uint16_t j = 0; j < 7; ++j)
@@ -235,13 +235,13 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
         for (itr = items.begin(); itr != items.end(); ++itr)
         {
             pItem = *itr;
-            if (_player->GetItemInterface()->SafeRemoveAndRetreiveItemByGuid(pItem->GetGUID(), false) != pItem)
+            if (_player->GetItemInterface()->SafeRemoveAndRetreiveItemByGuid(pItem->getGuid(), false) != pItem)
                 continue;        // should never be hit.
 
             pItem->RemoveFromWorld();
-            pItem->SetOwner(nullptr);
+            pItem->setOwner(nullptr);
             pItem->SaveToDB(INVENTORY_SLOT_NOT_SET, 0, true, nullptr);
-            msg.items.push_back(pItem->GetLowGUID());
+            msg.items.push_back(pItem->getGuidLow());
 
             if (GetPermissionCount() > 0)
             {
@@ -264,7 +264,7 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
 
     // Fill in the rest of the info
     msg.player_guid = player->guid;
-    msg.sender_guid = _player->GetGUID();
+    msg.sender_guid = _player->getGuid();
 
     // 30 day expiry time for unread mail
     if (!sMailSystem.MailOption(MAIL_FLAG_NO_EXPIRY))
@@ -395,7 +395,7 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
     }
 
     //Find free slot
-    SlotResult result = _player->GetItemInterface()->FindFreeInventorySlot(item->GetItemProperties());
+    SlotResult result = _player->GetItemInterface()->FindFreeInventorySlot(item->getItemProperties());
     if (result.Result == 0) //End of slots
     {
         data << uint32(MAIL_ERR_BAG_FULL);
@@ -421,7 +421,7 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
 
     // send complete packet
     data << uint32(MAIL_OK);
-    data << item->GetLowGUID();
+    data << item->getGuidLow();
     data << item->GetStackCount();
 
     message->items.erase(itr);
@@ -523,7 +523,7 @@ void WorldSession::HandleReturnToSender(WorldPacket& recv_data)
 
     // re-assign the owner/sender
     message.player_guid = message.sender_guid;
-    message.sender_guid = _player->GetGUID();
+    message.sender_guid = _player->getGuid();
 
     message.deleted_flag = false;
     message.checked_flag = MAIL_CHECK_MASK_RETURNED;

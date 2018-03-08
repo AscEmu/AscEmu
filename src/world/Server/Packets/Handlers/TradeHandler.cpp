@@ -75,13 +75,13 @@ void WorldSession::HandleInitiateTradeOpcode(WorldPacket& recv_data)
         _player->ResetTradeVariables();
         pTarget->ResetTradeVariables();
 
-        pTarget->mTradeTarget = _player->GetLowGUID();
-        _player->mTradeTarget = pTarget->GetLowGUID();
+        pTarget->mTradeTarget = _player->getGuidLow();
+        _player->mTradeTarget = pTarget->getGuidLow();
 
         pTarget->mTradeStatus = TradeStatus;
         _player->mTradeStatus = TradeStatus;
 
-        data << _player->GetGUID();
+        data << _player->getGuid();
     }
 
     pTarget->m_session->SendPacket(&data);
@@ -290,7 +290,7 @@ void WorldSession::HandleSetTradeItem(WorldPacket& recv_data)
     if (SourceSlot >= INVENTORY_SLOT_BAG_START && SourceSlot < INVENTORY_SLOT_BAG_END)
     {
         auto item = _player->GetItemInterface()->GetInventoryItem(SourceBag);   //nullptr if it's the backpack or the item is equipped
-        if (item == nullptr || SourceSlot >= item->GetItemProperties()->ContainerSlots)  //Required as there are bags with SourceSlot > INVENTORY_SLOT_BAG_START
+        if (item == nullptr || SourceSlot >= item->getItemProperties()->ContainerSlots)  //Required as there are bags with SourceSlot > INVENTORY_SLOT_BAG_START
         {
             //More duping woohoo
             sCheatLog.writefromsession(this, "tried to cheat trade a soulbound item");
@@ -396,7 +396,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& /*recv_data*/)
             pItem = _player->mTradeItems[Index];
             if (pItem)
             {
-                if ((pItem->IsContainer() && static_cast< Container* >(pItem)->HasItems()) || (pItem->GetItemProperties()->Bonding == ITEM_BIND_ON_PICKUP))
+                if ((pItem->IsContainer() && static_cast< Container* >(pItem)->HasItems()) || (pItem->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP))
                 {
                     ItemCount = 0;
                     TargetItemCount = 0;
@@ -408,7 +408,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& /*recv_data*/)
             pItem = pTarget->mTradeItems[Index];
             if (pItem)
             {
-                if ((pItem->IsContainer() && static_cast< Container* >(pItem)->HasItems()) || (pItem->GetItemProperties()->Bonding == ITEM_BIND_ON_PICKUP))
+                if ((pItem->IsContainer() && static_cast< Container* >(pItem)->HasItems()) || (pItem->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP))
                 {
                     ItemCount = 0;
                     TargetItemCount = 0;
@@ -436,11 +436,11 @@ void WorldSession::HandleAcceptTrade(WorldPacket& /*recv_data*/)
             // Remove all items from the players inventory
             for (uint32 Index = 0; Index < 6; ++Index)
             {
-                Guid = _player->mTradeItems[Index] ? _player->mTradeItems[Index]->GetGUID() : 0;
+                Guid = _player->mTradeItems[Index] ? _player->mTradeItems[Index]->getGuid() : 0;
                 if (Guid != 0)
                 {
-                    if (_player->mTradeItems[Index]->GetItemProperties()->Bonding == ITEM_BIND_ON_PICKUP ||
-                        _player->mTradeItems[Index]->GetItemProperties()->Bonding >= ITEM_BIND_QUEST)
+                    if (_player->mTradeItems[Index]->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP ||
+                        _player->mTradeItems[Index]->getItemProperties()->Bonding >= ITEM_BIND_QUEST)
                     {
                         _player->mTradeItems[Index] = NULL;
                     }
@@ -448,18 +448,18 @@ void WorldSession::HandleAcceptTrade(WorldPacket& /*recv_data*/)
                     {
                         if (GetPermissionCount() > 0)
                         {
-                            sGMLog.writefromsession(this, "traded item %s to %s", _player->mTradeItems[Index]->GetItemProperties()->Name.c_str(), pTarget->GetName());
+                            sGMLog.writefromsession(this, "traded item %s to %s", _player->mTradeItems[Index]->getItemProperties()->Name.c_str(), pTarget->GetName());
                         }
                         // See CID53355 Unused value (overwritten before it can be used
                         //pItem = _player->m_ItemInterface->SafeRemoveAndRetreiveItemByGuid(Guid, true);
                     }
                 }
 
-                Guid = pTarget->mTradeItems[Index] ? pTarget->mTradeItems[Index]->GetGUID() : 0;
+                Guid = pTarget->mTradeItems[Index] ? pTarget->mTradeItems[Index]->getGuid() : 0;
                 if (Guid != 0)
                 {
-                    if (pTarget->mTradeItems[Index]->GetItemProperties()->Bonding == ITEM_BIND_ON_PICKUP ||
-                        pTarget->mTradeItems[Index]->GetItemProperties()->Bonding >= ITEM_BIND_QUEST)
+                    if (pTarget->mTradeItems[Index]->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP ||
+                        pTarget->mTradeItems[Index]->getItemProperties()->Bonding >= ITEM_BIND_QUEST)
                     {
                         pTarget->mTradeItems[Index] = NULL;
                     }
@@ -476,7 +476,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& /*recv_data*/)
                 pItem = _player->mTradeItems[Index];
                 if (pItem != NULL)
                 {
-                    pItem->SetOwner(pTarget); // crash fixed.
+                    pItem->setOwner(pTarget); // crash fixed.
                     if (!pTarget->m_ItemInterface->AddItemToFreeSlot(pItem))
                         pItem->DeleteMe();
                 }
@@ -484,7 +484,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& /*recv_data*/)
                 pItem = pTarget->mTradeItems[Index];
                 if (pItem != NULL)
                 {
-                    pItem->SetOwner(_player);
+                    pItem->setOwner(_player);
                     if (!_player->m_ItemInterface->AddItemToFreeSlot(pItem))
                         pItem->DeleteMe();
                 }

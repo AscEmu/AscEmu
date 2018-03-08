@@ -397,12 +397,12 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket& recv_data)
 
 void WorldSession::FullLogin(Player* plr)
 {
-    LogDebug("WorldSession : Fully loading player %u", plr->GetLowGUID());
+    LogDebug("WorldSession : Fully loading player %u", plr->getGuidLow());
 
     SetPlayer(plr);
 
-    m_MoverGuid = plr->GetGUID();
-    m_MoverWoWGuid.Init(plr->GetGUID());
+    m_MoverGuid = plr->getGuid();
+    m_MoverWoWGuid.Init(plr->getGuid());
 
     MapMgr* mapMgr = sInstanceMgr.GetInstance(plr);
     if (mapMgr && mapMgr->m_battleground)
@@ -492,13 +492,13 @@ void WorldSession::FullLogin(Player* plr)
 
     plr->UpdateAttackSpeed();
 
-    PlayerInfo* info = objmgr.GetPlayerInfo(plr->GetLowGUID());
+    PlayerInfo* info = objmgr.GetPlayerInfo(plr->getGuidLow());
     if (info == nullptr)
     {
         info = new PlayerInfo;
         info->cl = plr->getClass();
         info->gender = plr->getGender();
-        info->guid = plr->GetLowGUID();
+        info->guid = plr->getGuidLow();
         info->name = strdup(plr->GetName());
         info->lastLevel = plr->getLevel();
         info->lastOnline = UNIXTIME;
@@ -516,7 +516,7 @@ void WorldSession::FullLogin(Player* plr)
 
     SendAccountDataTimes(PER_CHARACTER_CACHE_MASK);
 
-    CharacterDatabase.Execute("UPDATE characters SET online = 1 WHERE guid = %u", plr->GetLowGUID());
+    CharacterDatabase.Execute("UPDATE characters SET online = 1 WHERE guid = %u", plr->getGuidLow());
 
     bool enter_world = true;
 
@@ -536,7 +536,7 @@ void WorldSession::FullLogin(Player* plr)
             if (plr->IsDead())
             {
                 plr->ResurrectPlayer();
-                plr->SetHealth(plr->GetMaxHealth());
+                plr->setHealth(plr->GetMaxHealth());
                 plr->SetPower(POWER_TYPE_MANA, plr->GetMaxPower(POWER_TYPE_MANA));
             }
 

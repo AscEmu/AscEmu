@@ -241,7 +241,7 @@ void Arena::OnAddPlayer(Player* plr)
 
     plr->SetFFAPvPFlag();
 
-    m_playersAlive.insert(plr->GetLowGUID());
+    m_playersAlive.insert(plr->getGuidLow());
 }
 
 void Arena::OnRemovePlayer(Player* plr)
@@ -289,11 +289,11 @@ void Arena::HookOnPlayerDeath(Player* plr)
     if (plr->m_isGmInvisible == true)
         return;
 
-    if (m_playersAlive.find(plr->GetLowGUID()) != m_playersAlive.end())
+    if (m_playersAlive.find(plr->getGuidLow()) != m_playersAlive.end())
     {
         m_playersCount[plr->GetTeam()]--;
         UpdatePlayerCounts();
-        m_playersAlive.erase(plr->GetLowGUID());
+        m_playersAlive.erase(plr->getGuidLow());
     }
 }
 
@@ -316,7 +316,7 @@ void Arena::OnStart()
         {
             Player* plr = *itr;
             plr->RemoveAura(ARENA_PREPARATION);
-            m_players2[i].insert(plr->GetLowGUID());
+            m_players2[i].insert(plr->getGuidLow());
 
             // update arena team stats
             if (rated_match && plr->m_arenaTeams[m_arenateamtype] != NULL)
@@ -445,7 +445,7 @@ void Arena::HookOnAreaTrigger(Player* plr, uint32 id)
             ARCEMU_ASSERT(sp != NULL);
 
             Spell* s = sSpellFactoryMgr.NewSpell(plr, sp, true, 0);
-            SpellCastTargets targets(plr->GetGUID());
+            SpellCastTargets targets(plr->getGuid());
             s->prepare(&targets);
 
             // despawn the gameobject (not delete!)

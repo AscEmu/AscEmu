@@ -75,7 +75,7 @@ class OnyxiaAI : public CreatureAIScript
             m_eFlamesCooldown = 1;
             m_whelpCooldown = 7;
             getCreature()->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
-            getCreature()->SetStandState(STANDSTATE_STAND);
+            getCreature()->setStandState(STANDSTATE_STAND);
             sendDBChatMessage(1725);     //How fortuitous, usually I must leave my lair to feed!
             if (m_useSpell)
                 RegisterAIUpdateEvent(getCreature()->GetBaseAttackTime(MELEE));
@@ -94,7 +94,7 @@ class OnyxiaAI : public CreatureAIScript
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
             getCreature()->GetAIInterface()->unsetSplineFlying();
             getCreature()->GetAIInterface()->m_canMove = true;
-            getCreature()->SetStandState(STANDSTATE_SLEEP);
+            getCreature()->setStandState(STANDSTATE_SLEEP);
             /*if (_unit->m_pacified > 0)
                 _unit->m_pacified--;*/
             if (m_useSpell)

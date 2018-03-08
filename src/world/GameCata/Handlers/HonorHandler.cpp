@@ -121,7 +121,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                         WorldPacket data(SMSG_PVP_CREDIT, 12);
                         uint32 pvppoints = pts * 10;
                         data << pvppoints;
-                        data << pVictim->GetGUID();
+                        data << pVictim->getGuid();
                         data << uint32(pVictim->GetPVPRank());
                         (*vtr)->GetSession()->SendPacket(&data);
                     }
@@ -140,7 +140,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
 
                 bool added = false;
                 Player* plr = static_cast<Player*>(itr);
-                if (pVictim->CombatStatus.m_attackers.find(plr->GetGUID()) != pVictim->CombatStatus.m_attackers.end())
+                if (pVictim->CombatStatus.m_attackers.find(plr->getGuid()) != pVictim->CombatStatus.m_attackers.end())
                 {
                     added = true;
                     contributors.insert(plr);
@@ -186,7 +186,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                 WorldPacket data(SMSG_PVP_CREDIT, 12);
                 uint32 pvppoints = contributorpts * 10; // Why *10?
                 data << pvppoints;
-                data << pVictim->GetGUID();
+                data << pVictim->getGuid();
                 data << uint32(pVictim->GetPVPRank());
                 pAffectedPlayer->GetSession()->SendPacket(&data);
 

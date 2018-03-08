@@ -165,7 +165,7 @@ bool ShowCompletedAchievement(uint32 achievementID, const Player* plr)
                 {
                     // somebody has this Realm First achievement... is it this player?
                     uint64 firstguid = field->GetUInt32();
-                    if (firstguid != (uint32)plr->GetGUID())
+                    if (firstguid != (uint32)plr->getGuid())
                     {
                         // nope, somebody else was first.
                         delete achievementResult;
@@ -212,7 +212,7 @@ void AchievementMgr::SaveToDB(QueryBuffer* buf)
         std::ostringstream ss;
 
         ss << "DELETE FROM character_achievement WHERE guid = ";
-        ss << m_player->GetLowGUID();
+        ss << m_player->getGuidLow();
         ss << ";";
 
         if (buf == nullptr)
@@ -250,7 +250,7 @@ void AchievementMgr::SaveToDB(QueryBuffer* buf)
             {
                 first = false;
             }
-            ss << "(" << m_player->GetLowGUID() << ", " << iter->first << ", " << iter->second << ")";
+            ss << "(" << m_player->getGuidLow() << ", " << iter->first << ", " << iter->second << ")";
         }
         if (buf == NULL)
             CharacterDatabase.ExecuteNA(ss.str().c_str());
@@ -263,7 +263,7 @@ void AchievementMgr::SaveToDB(QueryBuffer* buf)
         std::ostringstream ss;
 
         ss << "DELETE FROM character_achievement_progress WHERE guid = ";
-        ss << m_player->GetLowGUID();
+        ss << m_player->getGuidLow();
         ss << ";";
 
         if (buf == NULL)
@@ -299,7 +299,7 @@ void AchievementMgr::SaveToDB(QueryBuffer* buf)
                 {
                     first = false;
                 }
-                ss << "(" << m_player->GetLowGUID() << ", " << iter->first << ", " << iter->second->counter << ", " << iter->second->date << ")";
+                ss << "(" << m_player->getGuidLow() << ", " << iter->first << ", " << iter->second->counter << ", " << iter->second->date << ")";
             }
         }
         if (!first)
@@ -327,7 +327,7 @@ void AchievementMgr::LoadFromDB(QueryResult* achievementResult, QueryResult* cri
             if (m_completedAchievements[id] == 0)
                 m_completedAchievements[id] = fields[1].GetUInt32();
             else
-                LOG_ERROR("Duplicate completed achievement %u for player %u, skipping", id, (uint32)m_player->GetGUID());
+                LOG_ERROR("Duplicate completed achievement %u for player %u, skipping", id, (uint32)m_player->getGuid());
         }
         while (achievementResult->NextRow());
     }
@@ -344,7 +344,7 @@ void AchievementMgr::LoadFromDB(QueryResult* achievementResult, QueryResult* cri
                 m_criteriaProgress[progress_id] = progress;
             }
             else
-                LOG_ERROR("Duplicate criteria progress %u for player %u, skipping", progress_id, (uint32)m_player->GetGUID());
+                LOG_ERROR("Duplicate criteria progress %u for player %u, skipping", progress_id, (uint32)m_player->getGuid());
 
         }
         while (criteriaResult->NextRow());
@@ -373,7 +373,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
     {
         WorldPacket data(SMSG_SERVER_FIRST_ACHIEVEMENT, 200);
         data << GetPlayer()->GetName();
-        data << uint64(GetPlayer()->GetGUID());
+        data << uint64(GetPlayer()->getGuid());
         data << uint32(achievement->ID);
         data << uint32(0);
         sWorld.sendGlobalMessage(&data);
@@ -390,9 +390,9 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
             WorldPacket data(SMSG_MESSAGECHAT, 200);
             data << uint8(CHAT_MSG_GUILD_ACHIEVEMENT);
             data << uint32(LANG_UNIVERSAL);
-            data << uint64(GetPlayer()->GetGUID());
+            data << uint64(GetPlayer()->getGuid());
             data << uint32(5);
-            data << uint64(GetPlayer()->GetGUID());
+            data << uint64(GetPlayer()->getGuid());
             data << uint32(strlen(msg) + 1);
             data << msg;
             data << uint8(0);
@@ -416,9 +416,9 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
         WorldPacket cdata(SMSG_MESSAGECHAT, 200);
         cdata << uint8(CHAT_MSG_ACHIEVEMENT);
         cdata << uint32(LANG_UNIVERSAL);
-        cdata << uint64(GetPlayer()->GetGUID());
+        cdata << uint64(GetPlayer()->getGuid());
         cdata << uint32(5);
-        cdata << uint64(GetPlayer()->GetGUID());
+        cdata << uint64(GetPlayer()->getGuid());
         cdata << uint32(strlen(msg) + 1);
         cdata << msg;
         cdata << uint8(0);
@@ -473,13 +473,13 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
         for (const auto& inRangeItr : GetPlayer()->getInRangePlayersSet())
         {
             Player* p = static_cast<Player*>(inRangeItr);
-            if (p && p->GetSession() && !p->Social_IsIgnoring(GetPlayer()->GetLowGUID()))
+            if (p && p->GetSession() && !p->Social_IsIgnoring(GetPlayer()->getGuidLow()))
             {
                 // check if achievement message has already been sent to this player (in guild or group)
                 alreadySent = false;
                 for (guidIndex = 0; guidIndex < guidCount; ++guidIndex)
                 {
-                    if (guidList[guidIndex] == p->GetLowGUID())
+                    if (guidList[guidIndex] == p->getGuidLow())
                     {
                         alreadySent = true;
                         guidIndex = guidCount;
@@ -488,7 +488,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
                 if (!alreadySent)
                 {
                     p->GetSession()->SendPacket(&cdata);
-                    guidList[guidCount++] = p->GetLowGUID();
+                    guidList[guidCount++] = p->getGuidLow();
                 }
             }
         }
@@ -496,7 +496,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
         alreadySent = false;
         for (guidIndex = 0; guidIndex < guidCount; ++guidIndex)
         {
-            if (guidList[guidIndex] == GetPlayer()->GetLowGUID())
+            if (guidList[guidIndex] == GetPlayer()->getGuidLow())
             {
                 alreadySent = true;
                 guidIndex = guidCount;
@@ -1679,7 +1679,7 @@ void AchievementMgr::SendAllAchievementData(Player* player)
         else
         {
             data.SetOpcode(SMSG_RESPOND_INSPECT_ACHIEVEMENTS);
-            FastGUIDPack(data, m_player->GetGUID());
+            FastGUIDPack(data, m_player->getGuid());
         }
         packetFull = false;
 
@@ -1822,7 +1822,7 @@ void AchievementMgr::GiveAchievementReward(DBC::Structures::AchievementEntry con
         }
 
         uint32 Sender = Reward->sender;
-        uint64 receiver = GetPlayer()->GetGUID();
+        uint64 receiver = GetPlayer()->getGuid();
         std::string messageheader = Reward->subject;
         std::string messagebody = Reward->text;
 
@@ -1838,7 +1838,7 @@ void AchievementMgr::GiveAchievementReward(DBC::Structures::AchievementEntry con
         {
             pItem->SaveToDB(-1, -1, true, NULL);
             //Sending mail
-            sMailSystem.SendCreatureGameobjectMail(MAIL_TYPE_CREATURE, Sender, receiver, messageheader, messagebody, 0, 0, pItem->GetGUID(), 0, MAIL_CHECK_MASK_HAS_BODY, MAIL_DEFAULT_EXPIRATION_TIME);
+            sMailSystem.SendCreatureGameobjectMail(MAIL_TYPE_CREATURE, Sender, receiver, messageheader, messagebody, 0, 0, pItem->getGuid(), 0, MAIL_CHECK_MASK_HAS_BODY, MAIL_DEFAULT_EXPIRATION_TIME);
 
             //removing pItem
             pItem->DeleteMe();
@@ -1910,7 +1910,7 @@ bool AchievementMgr::GMCompleteAchievement(WorldSession* gmSession, int32 achiev
     if (achievement->flags & ACHIEVEMENT_FLAG_COUNTER)
     {
         gmSession->SystemMessage("Achievement (%lu) |Hachievement:%lu:" I64FMT ":0:0:0:-1:0:0:0:0|h[%s]|h is a counter and cannot be completed.",
-                                 achievement->ID, achievement->ID, gmSession->GetPlayer()->GetGUID(), achievement->name);
+                                 achievement->ID, achievement->ID, gmSession->GetPlayer()->getGuid(), achievement->name);
         return false;
     }
     CompletedAchievement(achievement);
@@ -1967,7 +1967,7 @@ bool AchievementMgr::GMCompleteCriteria(WorldSession* gmSession, int32 criteriaI
     {
         // can't complete this type of achivement (counter)
         gmSession->SystemMessage("Referred achievement (%lu) |Hachievement:%lu:" I64FMT ":0:0:0:-1:0:0:0:0|h[%s]|h is a counter and cannot be completed.",
-                                 achievement->ID, achievement->ID, gmSession->GetPlayer()->GetGUID(), achievement->name);
+                                 achievement->ID, achievement->ID, gmSession->GetPlayer()->getGuid(), achievement->name);
         return false;
     }
 
@@ -2015,7 +2015,7 @@ bool AchievementMgr::UpdateAchievementCriteria(Player* player, int32 criteriaID,
     {
         // can't complete this type of achivement (counter)
         LogDebug("AchievementMgr Referred achievement (%lu) |Hachievement:%lu:" I64FMT ":0:0:0:-1:0:0:0:0|h[%s]|h is a counter and cannot be completed.",
-            achievement->ID, achievement->ID, player->GetGUID(), achievement->name);
+            achievement->ID, achievement->ID, player->getGuid(), achievement->name);
         return false;
     }
 
@@ -2055,7 +2055,7 @@ void AchievementMgr::GMResetAchievement(int32 achievementID)
             GetPlayer()->GetSession()->SendPacket(&resetData);
         }
         m_completedAchievements.clear();
-        ss << "DELETE FROM character_achievement WHERE guid = " << m_player->GetLowGUID();
+        ss << "DELETE FROM character_achievement WHERE guid = " << m_player->getGuidLow();
         CharacterDatabase.Execute(ss.str().c_str());
     }
     else // reset a single achievement
@@ -2064,7 +2064,7 @@ void AchievementMgr::GMResetAchievement(int32 achievementID)
         resetData << uint32(achievementID);
         GetPlayer()->GetSession()->SendPacket(&resetData);
         m_completedAchievements.erase(achievementID);
-        ss << "DELETE FROM character_achievement WHERE guid = " << m_player->GetLowGUID() << " AND achievement = " << achievementID;
+        ss << "DELETE FROM character_achievement WHERE guid = " << m_player->getGuidLow() << " AND achievement = " << achievementID;
         CharacterDatabase.Execute(ss.str().c_str());
     }
 }
@@ -2086,7 +2086,7 @@ void AchievementMgr::GMResetCriteria(int32 criteriaID)
             delete iter->second;
         }
         m_criteriaProgress.clear();
-        ss << "DELETE FROM character_achievement_progress WHERE guid = " << m_player->GetLowGUID();
+        ss << "DELETE FROM character_achievement_progress WHERE guid = " << m_player->getGuidLow();
         CharacterDatabase.Execute(ss.str().c_str());
     }
     else // reset a single achievement criteria
@@ -2095,7 +2095,7 @@ void AchievementMgr::GMResetCriteria(int32 criteriaID)
         resetData << uint32(criteriaID);
         GetPlayer()->GetSession()->SendPacket(&resetData);
         m_criteriaProgress.erase(criteriaID);
-        ss << "DELETE FROM character_achievement_progress WHERE guid = " << m_player->GetLowGUID() << " AND criteria = " << criteriaID;
+        ss << "DELETE FROM character_achievement_progress WHERE guid = " << m_player->getGuidLow() << " AND criteria = " << criteriaID;
         CharacterDatabase.Execute(ss.str().c_str());
     }
     CheckAllAchievementCriteria();

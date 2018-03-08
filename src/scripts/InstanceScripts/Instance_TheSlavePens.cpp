@@ -52,7 +52,7 @@ class TotemsAI : public CreatureAIScript
                     break;
                 default:    // for Corrupted Nova Totem and it's also safe case
                     {
-                        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);    // hax
+                        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
                         Despawn = 6000;
                         SpellID = 33132;
                         AIUpdate = 5000;
@@ -71,8 +71,8 @@ class TotemsAI : public CreatureAIScript
 
         void AIUpdate() override
         {
-            if (getCreature()->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2))
-                getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+            if (getCreature()->hasUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2))
+                getCreature()->removeUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
 
             getCreature()->CastSpell(getCreature(), SpellID, true);
         }

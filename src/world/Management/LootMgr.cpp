@@ -93,6 +93,11 @@ T* RandomChoiceVector(std::vector<std::pair<T*, float> > & variant)
     return variant.begin()->first;
 }
 
+bool Loot::any() const
+{
+    return gold > 0 || items.size() > 0;
+}
+
 LootMgr::LootMgr()
 {
     is_loading = false;
@@ -766,7 +771,7 @@ void LootRoll::Finalize()
     data << _itemid;
     data << _randomsuffixid;
     data << _randompropertyid;
-    data << _player->GetGUID();
+    data << _player->getGuid();
     data << uint8(highest);
     data << uint8(hightype);
     if (_player->InGroup())
@@ -796,7 +801,7 @@ void LootRoll::Finalize()
         Item* item = objmgr.CreateItem(itemid, _player);
         if (item == nullptr)
             return;
-        item->SetStackCount(amt);
+        item->setStackCount(amt);
 
         if (pLoot->items.at(_slotid).iRandomProperty != NULL)
         {
@@ -822,10 +827,10 @@ void LootRoll::Finalize()
     }
     else
     {
-        add->SetStackCount(add->GetStackCount() + amt);
+        add->setStackCount(add->GetStackCount() + amt);
         add->m_isDirty = true;
         sQuestMgr.OnPlayerItemPickup(_player, add);
-        _player->SendItemPushResult(false, true, true, false, (uint8)_player->GetItemInterface()->GetBagSlotByGuid(add->GetGUID()), 0xFFFFFFFF, 1, add->GetEntry(), add->GetItemRandomSuffixFactor(), add->GetItemRandomPropertyId(), add->GetStackCount());
+        _player->SendItemPushResult(false, true, true, false, (uint8)_player->GetItemInterface()->GetBagSlotByGuid(add->getGuid()), 0xFFFFFFFF, 1, add->GetEntry(), add->GetItemRandomSuffixFactor(), add->GetItemRandomPropertyId(), add->GetStackCount());
 #if VERSION_STRING > TBC
         _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, add->GetEntry(), 1, 0);
 #endif
@@ -845,7 +850,7 @@ void LootRoll::Finalize()
 
 void LootRoll::PlayerRolled(Player* player, uint8 choice)
 {
-    if (m_NeedRolls.find(player->GetLowGUID()) != m_NeedRolls.end() || m_GreedRolls.find(player->GetLowGUID()) != m_GreedRolls.end())
+    if (m_NeedRolls.find(player->getGuidLow()) != m_NeedRolls.end() || m_GreedRolls.find(player->getGuidLow()) != m_GreedRolls.end())
         return; // don't allow cheaters
     int roll = Util::getRandomUInt(99) + 1;
     // create packet
@@ -853,25 +858,25 @@ void LootRoll::PlayerRolled(Player* player, uint8 choice)
     data.SetOpcode(SMSG_LOOT_ROLL);
     data << _guid;
     data << _slotid;
-    data << player->GetGUID();
+    data << player->getGuid();
     data << _itemid;
     data << _randomsuffixid;
     data << _randompropertyid;
     if (choice == NEED)
     {
-        m_NeedRolls.insert(std::make_pair(player->GetLowGUID(), roll));
+        m_NeedRolls.insert(std::make_pair(player->getGuidLow(), roll));
         data << uint8(roll);
         data << uint8(NEED);
     }
     else if (choice == GREED)
     {
-        m_GreedRolls.insert(std::make_pair(player->GetLowGUID(), roll));
+        m_GreedRolls.insert(std::make_pair(player->getGuidLow(), roll));
         data << uint8(roll);
         data << uint8(GREED);
     }
     else
     {
-        m_passRolls.insert(player->GetLowGUID());
+        m_passRolls.insert(player->getGuidLow());
         data << uint8(128);
         data << uint8(128);
     }

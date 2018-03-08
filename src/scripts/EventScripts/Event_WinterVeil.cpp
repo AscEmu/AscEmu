@@ -90,7 +90,7 @@ void WinterReveler(Player* pPlayer, Unit* pUnit)
             if (item == nullptr)
                 return;
 
-            item->SetStackCount(5);
+            item->setStackCount(5);
             auto item_add_result = pPlayer->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot);
             if (!item_add_result)
             {

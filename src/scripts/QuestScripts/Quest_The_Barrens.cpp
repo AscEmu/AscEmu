@@ -28,7 +28,7 @@ public:
     {
         if (plr->HasQuest(4921))
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 3557, plr->GetSession()->language);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 3557, plr->GetSession()->language);
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(498), 1);     // I inspect the body further.
             menu.Send(plr);
         }
@@ -36,7 +36,7 @@ public:
 
     void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
     {
-        Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 3558, plr);
+        Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 3558, plr);
 
         QuestLogEntry* qle = plr->GetQuestLogForEntry(4921);
         if (qle == nullptr)

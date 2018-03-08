@@ -76,9 +76,7 @@
 #include "Movement/Spline/SplineFlags.hpp"
 #include "Movement/MovementCommon.hpp"
 
-#include "Server/Packets/ManagedPacket.hpp"
-#include "Server/Packets/Movement/CreatureMovement.hpp"
-#include "Server/Packets/Movement/SmsgMonsterMove.hpp"
+#include "Server/Packets/Movement/CreatureMovement.h"
 
 #include "Server/IUpdatable.h"
 #include "Server/WUtil.h"

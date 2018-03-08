@@ -425,7 +425,7 @@ bool Master::_StartDB()
     wdb_result = !wdb_result ? wdb_result : !worldConfig.worldDb.password.empty();
     wdb_result = !wdb_result ? wdb_result : !worldConfig.worldDb.host.empty();
     wdb_result = !wdb_result ? wdb_result : !worldConfig.worldDb.dbName.empty();
-    wdb_result = !wdb_result ? wdb_result : worldConfig.worldDb.port;
+    wdb_result = !wdb_result ? wdb_result : worldConfig.worldDb.port != 0;
 
     Database_World = Database::CreateDatabaseInterface();
 
@@ -447,7 +447,7 @@ bool Master::_StartDB()
     cdb_result = !cdb_result ? cdb_result : !worldConfig.charDb.password.empty();
     cdb_result = !cdb_result ? cdb_result : !worldConfig.charDb.host.empty();
     cdb_result = !cdb_result ? cdb_result : !worldConfig.charDb.dbName.empty();
-    cdb_result = !cdb_result ? cdb_result : worldConfig.charDb.port;
+    cdb_result = !cdb_result ? cdb_result : worldConfig.charDb.port != 0;
 
     Database_Character = Database::CreateDatabaseInterface();
 

@@ -46,29 +46,26 @@ public:
 
     void OnLoad()
     {
-        getCreature()->setUInt32Value(UNIT_FIELD_BYTES_0, 16777472);
-        getCreature()->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        getCreature()->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_COMBAT);
-        getCreature()->setUInt32Value(UNIT_FIELD_BYTES_1, 7);
+        getCreature()->addUnitFlags(UNIT_FLAG_COMBAT);
+        getCreature()->setStandState(STANDSTATE_DEAD);
 
         uint32 sid = getCreature()->GetEntry();
 
         switch (sid)
         {
-            case 12923:
+            case 12923: // not in db
             case 12938:
                 getCreature()->SetHealthPct(75);
                 break;
-            case 12924:
+            case 12924: // not in db
             case 12936:
                 getCreature()->SetHealthPct(50);
                 break;
-            case 12925:
+            case 12925: // not in db
             case 12937:
                 getCreature()->SetHealthPct(25);
                 break;
         }
-
     }
 };
 

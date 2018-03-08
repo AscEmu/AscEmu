@@ -250,7 +250,7 @@ class NagaDistillerAI : public CreatureAIScript
 
         NagaDistillerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+            getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
             getCreature()->GetAIInterface()->SetAllowedToEnterCombat(false);
             _setMeleeDisabled(true);
             getCreature()->GetAIInterface()->m_canMove = false;
@@ -329,7 +329,7 @@ class WarlordKalitreshAI : public CreatureAIScript
             pDistiller = GetClosestDistiller();
             if (pDistiller)
             {
-                pDistiller->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+                pDistiller->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                 pDistiller->SetChannelSpellTargetGUID(0);
                 pDistiller->SetChannelSpellId(0);
                 pDistiller->GetAIInterface()->WipeTargetList();
@@ -347,7 +347,7 @@ class WarlordKalitreshAI : public CreatureAIScript
 
                 Unit* pDistiller = NULL;
                 pDistiller = GetClosestDistiller();
-                if (!pDistiller || (pDistiller->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT) && RagePhase != 0))
+                if (!pDistiller || (pDistiller->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT) && RagePhase != 0))
                 {
                     getCreature()->GetAIInterface()->SetAllowedToEnterCombat(true);
                     getCreature()->GetAIInterface()->m_canMove = true;
@@ -378,8 +378,8 @@ class WarlordKalitreshAI : public CreatureAIScript
 
                         if (getCreature()->GetDistance2dSq(pDistiller) <= 100.0f)
                         {
-                            pDistiller->setUInt64Value(UNIT_FIELD_FLAGS, 0);
-                            pDistiller->SetChannelSpellTargetGUID(getCreature()->GetGUID());
+                            pDistiller->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+                            pDistiller->SetChannelSpellTargetGUID(getCreature()->getGuid());
                             pDistiller->SetChannelSpellId(31543);
 
                             getCreature()->GetAIInterface()->StopMovement(0);
@@ -403,7 +403,7 @@ class WarlordKalitreshAI : public CreatureAIScript
 
                     else if (t > EnrageTimer && RagePhase == 2)
                     {
-                        pDistiller->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+                        pDistiller->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
                         pDistiller->SetChannelSpellTargetGUID(0);
                         pDistiller->SetChannelSpellId(0);
                         pDistiller->GetAIInterface()->WipeTargetList();

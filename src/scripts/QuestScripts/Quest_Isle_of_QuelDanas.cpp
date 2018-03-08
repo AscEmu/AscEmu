@@ -59,7 +59,7 @@ class AyrenCloudbreaker_Gossip : public Arcemu::Gossip::Script
 public:
     void OnHello(Object* pObject, Player* pPlayer) override
     {
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 12252, pPlayer->GetSession()->language);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), 12252, pPlayer->GetSession()->language);
         if (pPlayer->HasQuest(11532) || pPlayer->HasQuest(11533))
             menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(466), 1);     // Speaking of action, I've been ordered to undertake an air strike.
 
@@ -77,13 +77,13 @@ public:
             {
                 TaxiPath* pPath = sTaxiMgr.GetTaxiPath(779);
                 pPlayer->TaxiStart(pPath, 22840, 0);
-                pPlayer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
+                pPlayer->removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
             } break;
             case 2:
             {
                 TaxiPath* pPath = sTaxiMgr.GetTaxiPath(784);
                 pPlayer->TaxiStart(pPath, 22840, 0);
-                pPlayer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
+                pPlayer->removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
             } break;
         }
     }
@@ -97,7 +97,7 @@ class SCRIPT_DECL UnrestrainedDragonhawk_Gossip : public Arcemu::Gossip::Script
 public:
     void OnHello(Object* pObject, Player* pPlayer) override
     {
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 12371, pPlayer->GetSession()->language);
+        Arcemu::Gossip::Menu menu(pObject->getGuid(), 12371, pPlayer->GetSession()->language);
         if (pPlayer->HasQuest(11543) || pPlayer->HasQuest(11542))
             menu.AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(468), 1);     // <Ride the dragonhawk to Sun's Reach>
 
@@ -108,7 +108,7 @@ public:
     {
         TaxiPath* pPath = sTaxiMgr.GetTaxiPath(788);
         pPlayer->TaxiStart(pPath, 22840, 0);
-        pPlayer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
+        pPlayer->removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
     }
 };
 

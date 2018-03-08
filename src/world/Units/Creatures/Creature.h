@@ -57,8 +57,8 @@ class SERVER_DECL Creature : public Unit
         Creature(uint64 guid);
         virtual ~Creature();
 
-        GameEvent* mEvent = nullptr;
-        
+    GameEvent* mEvent = nullptr;
+
         /// For derived subclasses of Creature
         bool IsVehicle();
 
@@ -202,7 +202,7 @@ class SERVER_DECL Creature : public Unit
         void RegenerateHealth();
         void RegenerateMana();
         int BaseAttackType;
-        
+
         /// Invisibility & Stealth Detection - Partha
         bool CanSee(Unit* obj);
 
@@ -263,9 +263,9 @@ class SERVER_DECL Creature : public Unit
 
         Group* GetGroup();
 
-        int32 GetDamageDoneMod(uint32 school);
+        int32 GetDamageDoneMod(uint16_t school);
 
-        float GetDamageDonePctMod(uint32 school);
+        float GetDamageDonePctMod(uint16_t school);
 
         bool IsPickPocketed();
 

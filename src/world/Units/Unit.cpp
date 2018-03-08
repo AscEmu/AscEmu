@@ -10,9 +10,160 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/DiminishingGroup.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
+#include "Data/WoWUnit.h"
+#include "Storage/MySQLDataStore.hpp"
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// WoWData
+
+//bytes_0 begin
+uint8_t Unit::getRace() const { return unitData()->field_bytes_0.s.race; }
+void Unit::setRace(uint8_t race) { write(unitData()->field_bytes_0.s.race, race); }
+
+uint8_t Unit::getClass() const { return unitData()->field_bytes_0.s.unit_class; }
+void Unit::setClass(uint8_t class_) { write(unitData()->field_bytes_0.s.unit_class, class_); }
+
+uint8_t Unit::getGender() const { return unitData()->field_bytes_0.s.gender; }
+void Unit::setGender(uint8_t gender) { write(unitData()->field_bytes_0.s.gender, gender); }
+
+uint8_t Unit::getPowerType() const { return unitData()->field_bytes_0.s.power_type; }
+void Unit::setPowerType(uint8_t powerType) { write(unitData()->field_bytes_0.s.power_type, powerType); }
+//bytes_0 end
+
+void Unit::setHealth(uint32_t health) { write(unitData()->health, health); }
+void Unit::setMaxHealth(uint32_t maxHealth) { write(unitData()->max_health, maxHealth); }
+
+void Unit::setBaseHealth(uint32_t baseHealth) { write(unitData()->base_health, baseHealth); }
+
+void Unit::setBaseMana(uint32_t baseMana) { write(unitData()->base_mana, baseMana); }
+void Unit::setMaxMana(uint32_t maxMana) { write(unitData()->max_mana, maxMana); }
+
+uint32_t Unit::getLevel() const { return unitData()->level; }
+void Unit::setLevel(uint32_t level)
+{
+    write(unitData()->level, level);
+    if (IsPlayer())
+        static_cast<Player*>(this)->setNextLevelXp(sMySQLStore.getPlayerXPForLevel(level));
+}
+
+uint32_t Unit::getUnitFlags() const { return unitData()->unit_flags; }
+void Unit::setUnitFlags(uint32_t unitFlags) { write(unitData()->unit_flags, unitFlags); }
+void Unit::addUnitFlags(uint32_t unitFlags) { setUnitFlags(getUnitFlags() | unitFlags); }
+void Unit::removeUnitFlags(uint32_t unitFlags) { setUnitFlags(getUnitFlags() & ~unitFlags); }
+bool Unit::hasUnitFlags(uint32_t unitFlags) const { return (getUnitFlags() & unitFlags) != 0; }
+
+uint32_t Unit::getUnitFlags2() const { return unitData()->unit_flags_2; }
+void Unit::setUnitFlags2(uint32_t unitFlags2) { write(unitData()->unit_flags_2, unitFlags2); }
+void Unit::addUnitFlags2(uint32_t unitFlags2) { setUnitFlags2(getUnitFlags2() | unitFlags2); }
+void Unit::removeUnitFlags2(uint32_t unitFlags2) { setUnitFlags2(getUnitFlags2() & ~unitFlags2); }
+
+//bytes_1 begin
+uint8_t Unit::getStandState() const { return unitData()->field_bytes_1.s.stand_state; }
+void Unit::setStandState(uint8_t standState) { write(unitData()->field_bytes_1.s.stand_state, standState); }
+
+uint8_t Unit::getPetTalentPoints() const { return unitData()->field_bytes_1.s.pet_talent_points; }
+void Unit::setPetTalentPoints(uint8_t talentPoints) { write(unitData()->field_bytes_1.s.pet_talent_points, talentPoints); }
+
+uint8_t Unit::getStandStateFlags() const { return unitData()->field_bytes_1.s.stand_state_flag; }
+void Unit::setStandStateFlags(uint8_t standStateFlags) { write(unitData()->field_bytes_1.s.stand_state_flag, standStateFlags); }
+
+uint8_t Unit::getAnimationFlags() const { return unitData()->field_bytes_1.s.animation_flag; }
+void Unit::setAnimationFlags(uint8_t animationFlags) { write(unitData()->field_bytes_1.s.animation_flag, animationFlags); }
+//bytes_1 end
+
+uint32_t Unit::getDynamicFlags() const { return unitData()->dynamic_flags; }
+void Unit::setDynamicFlags(uint32_t dynamicFlags) { write(unitData()->dynamic_flags, dynamicFlags); }
+void Unit::addDynamicFlags(uint32_t dynamicFlags) { setDynamicFlags(getDynamicFlags() | dynamicFlags); }
+void Unit::removeDynamicFlags(uint32_t dynamicFlags) { setDynamicFlags(getDynamicFlags() & ~dynamicFlags); }
+
+uint32_t Unit::getNpcFlags() const { return unitData()->npc_flags; }
+void Unit::setNpcFlags(uint32_t npcFlags) { write(unitData()->npc_flags, npcFlags); }
+void Unit::addNpcFlags(uint32_t npcFlags) { setNpcFlags(getNpcFlags() | npcFlags); }
+void Unit::removeNpcFlags(uint32_t npcFlags) { setNpcFlags(getNpcFlags() & ~npcFlags); }
+
+//byte_2 begin
+uint8_t Unit::getSheathType() const { return unitData()->field_bytes_2.s.sheath_type; }
+void Unit::setSheathType(uint8_t sheathType) { write(unitData()->field_bytes_2.s.sheath_type, sheathType); }
+
+uint8_t Unit::getPvpFlags() const { return unitData()->field_bytes_2.s.pvp_flag; }
+void Unit::setPvpFlags(uint8_t pvpFlags) { write(unitData()->field_bytes_2.s.pvp_flag, pvpFlags); }
+
+uint8_t Unit::getPetFlags() const { return unitData()->field_bytes_2.s.pet_flag; }
+void Unit::setPetFlags(uint8_t petFlags) { write(unitData()->field_bytes_2.s.pet_flag, petFlags); }
+
+uint8_t Unit::getShapeShiftForm() const { return unitData()->field_bytes_2.s.shape_shift_form; }
+void Unit::setShapeShiftForm(uint8_t shapeShiftForm) { write(unitData()->field_bytes_2.s.shape_shift_form, shapeShiftForm); }
+//bytes_2 end
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
+
+#ifdef AE_TBC
+uint32_t Unit::addAuraVisual(uint32_t spell_id, uint32_t count, bool positive)
+{
+    bool out;
+    return addAuraVisual(spell_id, count, positive, out);
+}
+
+uint32_t Unit::addAuraVisual(uint32_t spell_id, uint32_t count, bool positive,
+    bool& skip_client_update)
+{
+    auto free = -1;
+    uint32_t start = positive ? MAX_POSITIVE_VISUAL_AURAS_START : MAX_POSITIVE_VISUAL_AURAS_END;
+    uint32_t end = positive ? MAX_NEGATIVE_VISUAL_AURAS_START : MAX_NEGATIVE_VISUAL_AURAS_END;
+
+    for (auto x = start; x < end; ++x)
+    {
+        if (free == -1 && m_uint32Values[UNIT_FIELD_AURA + x] == 0)
+            free = x;
+
+        if (m_uint32Values[UNIT_FIELD_AURA + x] == spell_id)
+        {
+            const auto aura = m_auras[x];
+            ModVisualAuraStackCount(aura, count);
+            skip_client_update = true;
+            return free;
+        }
+    }
+
+    skip_client_update = false;
+
+    if (free == -1)
+        return 0xff;
+
+    const auto flag_slot = static_cast<uint8_t>((free / 4));
+    const uint16_t val_slot = UNIT_FIELD_AURAFLAGS + flag_slot;
+    auto value = m_uint32Values[val_slot];
+    const auto aura_pos = free % 4 * 8;
+    value &= ~(0xff << aura_pos);
+    if (positive)
+        value |= 0x1f << aura_pos;
+    else
+        value |= 0x9 << aura_pos;
+
+    m_uint32Values[val_slot] = value;
+    m_uint32Values[UNIT_FIELD_AURA + free] = spell_id;
+    const auto aura = m_auras[free];
+    ModVisualAuraStackCount(aura, 1);
+    setAuraSlotLevel(free, positive);
+
+    return free;
+}
+
+void Unit::setAuraSlotLevel(uint32_t slot, bool positive)
+{
+    const auto index = slot / 4;
+    auto value = m_uint32Values[UNIT_FIELD_AURALEVELS + index];
+    const auto bit = slot % 4 * 8;
+    value &= ~(0xff << bit);
+    if (positive)
+        value |= 0x46 << bit;
+    else
+        value |= 0x19 << bit;
+
+    m_uint32Values[UNIT_FIELD_AURALEVELS + index] = value;
+}
+#endif
 
 void Unit::setMoveWaterWalk()
 {
@@ -165,7 +316,7 @@ void Unit::setMoveHover(bool set_hover)
         {
             AddUnitMovementFlag(MOVEFLAG_HOVER);
 
-            setByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
+            setAnimationFlags(UNIT_BYTE1_FLAG_HOVER);
 
             WorldPacket data(SMSG_SPLINE_MOVE_SET_HOVER, 10);
 #if VERSION_STRING != Cata
@@ -179,7 +330,7 @@ void Unit::setMoveHover(bool set_hover)
         {
             RemoveUnitMovementFlag(MOVEFLAG_HOVER);
 
-            removeByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
+            setAnimationFlags(getAnimationFlags() &~UNIT_BYTE1_FLAG_HOVER);
 
             WorldPacket data(SMSG_SPLINE_MOVE_UNSET_HOVER, 10);
 #if VERSION_STRING != Cata
@@ -206,7 +357,7 @@ void Unit::setMoveCanFly(bool set_fly)
             WorldPacket data(SMSG_MOVE_SET_CAN_FLY, 13);
 #if VERSION_STRING != Cata
             data << GetNewGUID();
-            data << uint32(0);
+            data << uint32(2);
 #else
             movement_info.writeMovementInfo(data, SMSG_MOVE_SET_CAN_FLY);
 #endif
@@ -222,7 +373,7 @@ void Unit::setMoveCanFly(bool set_fly)
             WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
 #if VERSION_STRING != Cata
             data << GetNewGUID();
-            data << uint32(0);
+            data << uint32(5);
 #else
             movement_info.writeMovementInfo(data, SMSG_MOVE_UNSET_CAN_FLY);
 #endif
@@ -465,7 +616,7 @@ void Unit::setMoveWalk(bool set_walk)
     }
 }
 
-float Unit::getSpeedForType(UnitSpeedType speed_type, bool get_basic)
+float Unit::getSpeedForType(UnitSpeedType speed_type, bool get_basic) const
 {
     switch (speed_type)
     {
@@ -491,6 +642,53 @@ float Unit::getSpeedForType(UnitSpeedType speed_type, bool get_basic)
             return m_basicSpeedWalk;
     }
 }
+
+float Unit::getFlySpeed() const
+{
+    return getSpeedForType(TYPE_FLY);
+}
+
+float Unit::getSwimSpeed() const
+{
+    return getSpeedForType(TYPE_SWIM);
+}
+
+float Unit::getRunSpeed() const
+{
+    return getSpeedForType(TYPE_RUN);
+}
+
+UnitSpeedType Unit::getFastestSpeedType() const
+{
+    auto fastest_speed = 0.f;
+    auto fastest_speed_type = TYPE_WALK;
+    for (uint32_t i = TYPE_WALK; i <= TYPE_PITCH_RATE; ++i)
+    {
+        const auto speed_type = static_cast<UnitSpeedType>(i + 1);
+
+        switch(speed_type)
+        {
+        case TYPE_TURN_RATE:
+        case TYPE_PITCH_RATE:
+            continue;
+            default:
+            break;
+        }
+
+        const auto speed = getSpeedForType(speed_type);
+
+        fastest_speed = speed > fastest_speed ? speed : fastest_speed;
+        fastest_speed_type = speed == fastest_speed ? speed_type : fastest_speed_type;
+    }
+    return fastest_speed_type;
+}
+
+
+float Unit::getFastestSpeed() const
+{
+    return getSpeedForType(getFastestSpeedType());
+}
+
 
 void Unit::setSpeedForType(UnitSpeedType speed_type, float speed, bool set_basic)
 {
@@ -657,7 +855,7 @@ void Unit::playSpellVisual(uint64_t guid, uint32_t spell_id)
     data << uint32_t(0);
     data << uint32_t(spell_id);
 
-    data << uint32_t(guid == GetGUID() ? 1 : 0);
+    data << uint32_t(guid == getGuid() ? 1 : 0);
 
     ObjectGuid targetGuid = guid;
     data.writeBit(targetGuid[4]);

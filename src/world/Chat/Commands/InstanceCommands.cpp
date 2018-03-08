@@ -257,7 +257,7 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
             return true;
         }
     }
-    else if (instance->m_creatorGuid == 0 || instance->m_creatorGuid != plr->GetLowGUID())
+    else if (instance->m_creatorGuid == 0 || instance->m_creatorGuid != plr->getGuidLow())
     {
         RedSystemMessage(m_session, "Player %s is not assigned to instance with id %u.", plr->GetName(), instanceId);
         return true;

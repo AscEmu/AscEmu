@@ -318,7 +318,9 @@ struct GameObjectProperties
     uint32 QuestItems[6];
 
     // Quests
+    // <quest, requirement_count>
     GameObjectGOMap goMap;
+    // <quest, [<item, item_count>]>
     GameObjectItemMap itemMap;
 };
 
@@ -372,16 +374,24 @@ enum GameObjectTypes
 
 #define CALL_GO_SCRIPT_EVENT(obj, func) if (obj->IsGameObject() && static_cast< GameObject* >(obj)->GetScript() != NULL) static_cast< GameObject* >(obj)->GetScript()->func
 
+struct WoWGameObject;
 class SERVER_DECL GameObject : public Object
 {
-    public:
+    // MIT Start
+    WoWGameObject* gameObjectData() const { return reinterpret_cast<WoWGameObject*>(wow_data); }
+public:
+    bool isQuestGiver() const;
+    // MIT End
 
         GameObject(uint64 guid);
         ~GameObject();
+    bool isFishingNode() const;
+    uint32_t getDynamic() const;
+    void setDynamic(uint32_t dynamic);
 
-        GameEvent* mEvent = nullptr;
+    GameEvent* mEvent = nullptr;
 
-        GameObjectProperties const* GetGameObjectProperties() { return gameobject_properties; }
+    GameObjectProperties const* GetGameObjectProperties() const;
         void SetGameObjectProperties(GameObjectProperties const* go_prop) { gameobject_properties = go_prop; }
 
         bool CreateFromProto(uint32 entry, uint32 mapid, float x, float y, float z, float ang, float r0 = 0.0f, float r1 = 0.0f, float r2 = 0.0f, float r3 = 0.0f, uint32 overrides = 0);
@@ -436,14 +446,15 @@ class SERVER_DECL GameObject : public Object
         void RemoveFromWorld(bool free_guid);
 
         uint32 GetGOReqSkill();
-        MapCell* m_respawnCell;
+    uint32 GetType() const;
+    MapCell* m_respawnCell;
 
 #if VERSION_STRING < WotLK
         void SetState(uint8 state) { setUInt32Value(GAMEOBJECT_STATE, state); }
         uint8 GetState() { return getUInt32Value(GAMEOBJECT_STATE); }
 
         void SetType(uint8 type) { setUInt32Value(GAMEOBJECT_TYPE_ID, type); }
-        uint32 GetType() { return this->GetGameObjectProperties()->type; }
+        //uint32 GetType() const;
 
         void SetArtKit(uint8 artkit) { setUInt32Value(GAMEOBJECT_ARTKIT, artkit); }
         uint8 GetArtkKit() { return getUInt32Value(GAMEOBJECT_ARTKIT); }
@@ -665,6 +676,11 @@ class GameObject_QuestGiver : public GameObject
         {
             m_quests = qst_lst;
         };
+
+        std::list<QuestRelation*>& getQuestList() const
+        {
+            return *m_quests;
+        }
 
     private:
 

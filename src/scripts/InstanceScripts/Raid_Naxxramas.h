@@ -1811,7 +1811,7 @@ class FrostBreathTriggerAI : public CreatureAIScript
     FrostBreathTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->GetAIInterface()->MoveTo(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z + 10.5f);
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         getCreature()->GetAIInterface()->setSplineFlying();
         getCreature()->m_noRespawn = true;
         getCreature()->Despawn(7000, 0);
@@ -1849,9 +1849,9 @@ class FrostBreathTrigger2AI : public CreatureAIScript
     FrostBreathTrigger2AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 #ifdef DISABLE_FROST_BREATH
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
 #else
-        _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+        _unit->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
 #endif
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->m_canMove = false;
@@ -1875,7 +1875,7 @@ class FrostBreathTrigger3AI : public CreatureAIScript
 
     FrostBreathTrigger3AI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
         getCreature()->CastSpell(getCreature(), SAPPHIRONS_WING_BUFFET, true);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->m_canMove = false;
@@ -1904,7 +1904,7 @@ class ChillTriggerAI : public CreatureAIScript
     ChillTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         getCreature()->CastSpellAoF(getCreature()->GetPosition(), sSpellCustomizations.GetSpellInfo(28547), true);
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->m_canMove = false;
         getCreature()->m_noRespawn = true;
@@ -2471,8 +2471,6 @@ class KelthuzadAI : public CreatureAIScript
             SoulWeavers[i] = false;
         }
 
-        
-
         auto frostbolt = addAISpell(SFROSTBOLT, 7.0f, TARGET_ATTACKING);
         frostbolt->setAttackStopTimer(2000);
 
@@ -2501,7 +2499,7 @@ class KelthuzadAI : public CreatureAIScript
         channelKelthuzad->setAttackStopTimer(1000);
 
         _setMeleeDisabled(false);
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+
         getCreature()->GetAIInterface()->m_canMove = true;
 
         DespawnTrash = false;
@@ -2524,7 +2522,7 @@ class KelthuzadAI : public CreatureAIScript
         TheLichKing = getNearestCreature(3767.58f, -5117.15f, 174.49f, CN_THE_LICH_KING);
         if (TheLichKing != NULL)
         {
-            getCreature()->SetChannelSpellTargetGUID(TheLichKing->GetGUID());
+            getCreature()->SetChannelSpellTargetGUID(TheLichKing->getGuid());
             getCreature()->SetChannelSpellId(29423);
         }
 
@@ -2533,7 +2531,7 @@ class KelthuzadAI : public CreatureAIScript
         if (KelGate)
             KelGate->SetState(GO_STATE_CLOSED);
 
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         _setMeleeDisabled(true);
         getCreature()->GetAIInterface()->m_canMove = false;
 
@@ -2564,7 +2562,8 @@ class KelthuzadAI : public CreatureAIScript
         setAIAgent(AGENT_NULL);
         getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
         _setMeleeDisabled(false);
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+
+        getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         getCreature()->GetAIInterface()->m_canMove = true;
         RemoveAIUpdateEvent();
 
@@ -2612,7 +2611,7 @@ class KelthuzadAI : public CreatureAIScript
         getCreature()->PlaySoundToSet(8814);
 
         _setMeleeDisabled(false);
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+        getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
         getCreature()->GetAIInterface()->m_canMove = true;
 
         EventStart = false;
@@ -2745,16 +2744,14 @@ class KelthuzadAI : public CreatureAIScript
                 getCreature()->SetChannelSpellTargetGUID(0);
                 getCreature()->SetChannelSpellId(0);
                 _setMeleeDisabled(false);
-                getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+                getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
                 getCreature()->GetAIInterface()->m_canMove = true;
 
                 DespawnTrash = false;
                 HelpDialog = 0;
                 GCounter = 0;
                 m_phase = 2;
-                return;
             }
-
             else if (!WaveTimer && PhaseTimer > 5)
             {
                 uint32 SpawnPoint = Util::getRandomUInt(6);
@@ -2882,7 +2879,7 @@ class TheLichKingAI : public CreatureAIScript
 
     TheLichKingAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
     }
 };
 

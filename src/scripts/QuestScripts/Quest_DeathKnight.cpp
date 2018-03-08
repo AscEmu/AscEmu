@@ -68,7 +68,8 @@ public:
         if (pCreature->GetEntry() == CN_INITIATE_1 || pCreature->GetEntry() == CN_INITIATE_2 || pCreature->GetEntry() == CN_INITIATE_3 || pCreature->GetEntry() == CN_INITIATE_4)
         {
             pPlayer->SendChatMessage(CHAT_MSG_SAY, LANG_UNIVERSAL, "I give you the key to your salvation");
-            pCreature->setUInt64Value(UNIT_FIELD_FLAGS, 0);
+            //\todo to set flags will override all values from db
+            pCreature->setUnitFlags(UNIT_FLAG_NONE);
             pCreature->GetAIInterface()->setNextTarget(pPlayer);
             pCreature->GetAIInterface()->AttackReaction(pPlayer, 1, 0);
             pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You have committed a big mistake, demon");

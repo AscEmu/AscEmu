@@ -14,6 +14,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
+#include "Data/Flags.h"
+#include "Units/Creatures/Pet.h"
 
 void WorldSession::SendTrainerList(Creature* pCreature)
 {
@@ -22,13 +24,13 @@ void WorldSession::SendTrainerList(Creature* pCreature)
         return;
 
     if (!_player->CanTrainAt(trainer))
-        Arcemu::Gossip::Menu::SendSimpleMenu(pCreature->GetGUID(), trainer->Cannot_Train_GossipTextId, GetPlayer());
+        Arcemu::Gossip::Menu::SendSimpleMenu(pCreature->getGuid(), trainer->Cannot_Train_GossipTextId, GetPlayer());
     else
     {
         WorldPacket data(SMSG_TRAINER_LIST, 5000);
         std::string text;
 
-        data << pCreature->GetGUID();
+        data << pCreature->getGuid();
         data << trainer->TrainerType;
 
         data << uint32_t(1);                    // different value for each trainer, also found in CMSG_TRAINER_BUY_SPELL
@@ -169,8 +171,8 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket & recvPacket)
     }
     else
     {
-        _player->playSpellVisual(creature->GetGUID(), 179);
-        _player->playSpellVisual(_player->GetGUID(), 362);
+        _player->playSpellVisual(creature->getGuid(), 179);
+        _player->playSpellVisual(_player->getGuid(), 362);
 
         _player->addSpell(pSpell->spell);
     }
@@ -252,7 +254,7 @@ void WorldSession::SendInnkeeperBind(Creature* pCreature)
         OutPacket(SMSG_GOSSIP_COMPLETE, 0, NULL);
 
         WorldPacket data(SMSG_BINDER_CONFIRM, 12);
-        data << uint64_t(pCreature->GetGUID());
+        data << uint64_t(pCreature->getGuid());
         data << uint32_t(_player->GetZoneId());
         SendPacket(&data);
 
@@ -263,7 +265,7 @@ void WorldSession::SendInnkeeperBind(Creature* pCreature)
     _player->bHasBindDialogOpen = false;
 
     OutPacket(SMSG_GOSSIP_COMPLETE, 0, NULL);
-    uint64_t player_guid = _player->GetGUID();
+    uint64_t player_guid = _player->getGuid();
     pCreature->CastSpell(player_guid, 3286, true);
 }
 
@@ -317,7 +319,7 @@ void WorldSession::SendTabardHelp(Creature* pCreature)
 {
     WorldPacket data(8);
     data.Initialize(MSG_TABARDVENDOR_ACTIVATE);
-    data << pCreature->GetGUID();
+    data << pCreature->getGuid();
     SendPacket(&data);
 }
 
@@ -339,7 +341,7 @@ void WorldSession::SendBankerList(Creature* pCreature)
 
     WorldPacket data(8);
     data.Initialize(SMSG_SHOW_BANK);
-    data << pCreature->GetGUID();
+    data << pCreature->getGuid();
     SendPacket(&data);
 }
 
@@ -374,7 +376,7 @@ void WorldSession::SendCharterRequest(Creature* pCreature)
     {
         WorldPacket data(SMSG_PETITION_SHOWLIST, 81);
 
-        data << pCreature->GetGUID();
+        data << pCreature->getGuid();
         data << uint8(0x03);        //number of charter types in packet
 
                                     //////////////////////////////////////////////////////////////////////////////////////////
@@ -410,7 +412,7 @@ void WorldSession::SendCharterRequest(Creature* pCreature)
     {
         WorldPacket data(33);
         data.Initialize(SMSG_PETITION_SHOWLIST);
-        data << pCreature->GetGUID();
+        data << pCreature->getGuid();
         data << uint8(1);               // num charters in packet (although appears to only turn off the cost display, maybe due to packet not being parsed /shrug)
         data << uint32(1);              // charter 1 in packet
         data << uint32(0x16E7);         // ItemId of the guild charter
@@ -444,7 +446,7 @@ void WorldSession::SendAuctionList(Creature* auctioneer)
     }
 
     WorldPacket data(MSG_AUCTION_HELLO, 12);
-    data << uint64(auctioneer->GetGUID());
+    data << uint64(auctioneer->getGuid());
     data << uint32(AH->GetID());
     data << uint8(AH->enabled ? 1 : 0);         // Alleycat - Need to correct this properly.
     SendPacket(&data);
@@ -542,7 +544,7 @@ void WorldSession::HandleSpiritHealerActivateOpcode(WorldPacket& /*recvData*/)
         {
             SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(15007);    //resurrection sickness
             SpellCastTargets targets;
-            targets.m_unitTarget = GetPlayer()->GetGUID();
+            targets.m_unitTarget = GetPlayer()->getGuid();
             Spell* sp = sSpellFactoryMgr.NewSpell(_player, spellInfo, true, nullptr);
             sp->prepare(&targets);
         }
@@ -556,7 +558,7 @@ void WorldSession::HandleSpiritHealerActivateOpcode(WorldPacket& /*recvData*/)
         _player->SetAurDuration(15007, duration);                   //cebernic: change this to setaurduration() to be refreshed.
     }
 
-    GetPlayer()->SetHealth(GetPlayer()->GetMaxHealth() / 2);
+    GetPlayer()->setHealth(GetPlayer()->GetMaxHealth() / 2);
 }
 
 void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recvData)
@@ -668,7 +670,7 @@ void WorldSession::HandleBinderActivateOpcode(WorldPacket& recvData)
 void WorldSession::SendSpiritHealerRequest(Creature* pCreature)
 {
     WorldPacket data(SMSG_SPIRIT_HEALER_CONFIRM, 8);
-    data << pCreature->GetGUID();
+    data << pCreature->getGuid();
     SendPacket(&data);
 }
 

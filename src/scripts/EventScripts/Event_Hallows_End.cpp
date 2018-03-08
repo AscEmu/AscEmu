@@ -168,7 +168,7 @@ public:
     {
         GameObject* Pumpkin = pKiller->GetMapMgr()->CreateAndSpawnGameObject(2883, getCreature()->GetPositionX() + Util::getRandomFloat(5.0f), getCreature()->GetPositionY() + Util::getRandomFloat(5.0f), getCreature()->GetPositionZ(), 0, 1);
         if (Pumpkin != nullptr)
-            getCreature()->CastSpell(Pumpkin->GetGUID(), 42277, true);
+            getCreature()->CastSpell(Pumpkin->getGuid(), 42277, true);
     }
 
     int8 WPCount;

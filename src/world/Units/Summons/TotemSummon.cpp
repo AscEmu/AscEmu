@@ -80,7 +80,7 @@ void TotemSummon::Load(CreatureProperties const* properties_, Unit* pOwner, Loca
     setRace(0);
     setClass(1);
     setGender(2);
-    SetPowerType(1);
+    setPowerType(1);
     SetBaseAttackTime(MELEE, 2000);
     SetBaseAttackTime(OFFHAND, 2000);
     SetBoundingRadius(1.0f);
@@ -88,7 +88,8 @@ void TotemSummon::Load(CreatureProperties const* properties_, Unit* pOwner, Loca
     SetDisplayId(displayID);
     SetNativeDisplayId(creature_properties->Male_DisplayID);
     SetCastSpeedMod(1.0f);
-    setUInt32Value(UNIT_DYNAMIC_FLAGS, 0);
+    //\note remove all dynamic flags
+    setDynamicFlags(0);
 
     InheritSMMods(pOwner);
 

@@ -172,12 +172,12 @@ public:
         as long as proceeding cheat death is not so height (how many rogue at the same time_
         gonna get to this point?) so it's better to use it because we wont lose anything!!
         */
-        p_target->CastSpell(p_target->GetGUID(), dSpell, true);
+        p_target->CastSpell(p_target->getGuid(), dSpell, true);
 
         // set dummy effect,
         // this spell is used to procced the post effect of cheat death later.
         // Move next line to SPELL::SpellEffectDummy ?!! well it's better in case of dbc changing!!
-        p_target->CastSpell(p_target->GetGUID(), 45182, true);
+        p_target->CastSpell(p_target->getGuid(), 45182, true);
 
         // Better to add custom cooldown procedure then fucking with entry, or not!!
         dSpell->setRecoveryTime(60000);
@@ -327,7 +327,7 @@ public:
     {
         if (target != NULL)
         {
-            uint32 count = target->GetAuraCountWithDispelType(DISPEL_DISEASE, m_caster->GetGUID());
+            uint32 count = target->GetAuraCountWithDispelType(DISPEL_DISEASE, m_caster->getGuid());
             if (count)
                 value += value * count * (GetSpellInfo()->getEffectBasePoints(2) + 1) / 200;
         }

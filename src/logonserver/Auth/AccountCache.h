@@ -130,7 +130,7 @@ class AccountMgr : public Singleton < AccountMgr >
         {
             setBusy.Acquire();
             Account* pAccount = nullptr;
-            
+
             // this should already be uppercase!
             std::map<std::string, Account*>::iterator itr = AccountDatabase.find(Name);
             if (itr != AccountDatabase.end())
@@ -209,6 +209,9 @@ class InformationCore : public Singleton<InformationCore>
             m_realms.clear();
         }
 
+#ifdef AE_TBC
+        void writeRealmDataTbc(AuthSocket* socket);
+#endif
         // Packets
         void SendRealms(AuthSocket* Socket);
 

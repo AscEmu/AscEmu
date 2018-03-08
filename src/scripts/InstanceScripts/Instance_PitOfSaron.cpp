@@ -425,7 +425,7 @@ class KrickAI : public CreatureAIScript
             setCanEnterCombat(false);
 
             // Clear Hatelist dont allow Combat and root the Unit
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+            getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
             getCreature()->GetAIInterface()->setAiState(AI_STATE_IDLE);
             getCreature()->GetAIInterface()->WipeTargetList();
             getCreature()->GetAIInterface()->WipeHateList();
@@ -490,8 +490,8 @@ class KrickAI : public CreatureAIScript
                     break;
                 case 9:
                     // tyrannus kills krick
-                    getCreature()->SetStandState(STANDSTATE_DEAD);
-                    getCreature()->SetHealth(1);
+                    getCreature()->setStandState(STANDSTATE_DEAD);
+                    getCreature()->setHealth(1);
                     sendDBChatMessage(8784); // SAY_TYRANNUS_OUTRO_9
                     _resetTimer(mOutroTimer, 12000);
                     break;
@@ -531,7 +531,7 @@ class BarrageAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(BarrageAI);
         BarrageAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            getCreature()->setUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            getCreature()->addUnitFlags(UNIT_FLAG_NOT_ATTACKABLE_2);
             getCreature()->CastSpell(getCreature(), SPELL_EXPLODING_ORB, false);
             getCreature()->CastSpell(getCreature(), SPELL_AUTO_GROW, false);
 

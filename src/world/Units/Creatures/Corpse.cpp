@@ -44,9 +44,9 @@ Corpse::Corpse(uint32 high, uint32 low)
 
     setUInt32Value(OBJECT_FIELD_TYPE, TYPE_CORPSE | TYPE_OBJECT);
 
-    SetLowGUID(low);
-    SetHighGUID(high);
-    m_wowGuid.Init(GetGUID());
+    setGuidLow(low);
+    setGuidHigh(high);
+    m_wowGuid.Init(getGuid());
 
     SetScale(1);   //always 1
 
@@ -70,7 +70,7 @@ void Corpse::Create(Player* owner, uint32 mapid, float x, float y, float z, floa
 {
     Object::_Create(mapid, x, y, z, ang);
 
-    SetOwner(owner->GetGUID());
+    SetOwner(owner->getGuid());
     _loadedfromdb = false;  // can't be created from db ;)
 }
 
@@ -78,12 +78,12 @@ void Corpse::SaveToDB()
 {
     //save corpse to DB
     std::stringstream ss;
-    ss << "DELETE FROM corpses WHERE guid = " << GetLowGUID();
+    ss << "DELETE FROM corpses WHERE guid = " << getGuidLow();
     CharacterDatabase.Execute(ss.str().c_str());
 
     ss.rdbuf()->str("");
     ss << "INSERT INTO corpses (guid, positionx, positiony, positionz, orientation, zoneId, mapId, data, instanceid) VALUES ("
-        << GetLowGUID()
+        << getGuidLow()
         << ", '" 
         << GetPositionX() 
         << "', '" << GetPositionY() 
@@ -106,7 +106,7 @@ void Corpse::DeleteFromDB()
     //delete corpse from db when its not needed anymore
     char sql[256];
 
-    snprintf(sql, 256, "DELETE FROM corpses WHERE guid=%u", (unsigned int)GetLowGUID());
+    snprintf(sql, 256, "DELETE FROM corpses WHERE guid=%u", (unsigned int)getGuidLow());
     CharacterDatabase.Execute(sql);
 }
 

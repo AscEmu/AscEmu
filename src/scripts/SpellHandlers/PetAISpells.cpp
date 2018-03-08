@@ -56,7 +56,7 @@ public:
 
     void AIUpdate()
     {
-        getCreature()->CastSpell(getCreature()->GetGUID(), 20480, false);
+        getCreature()->CastSpell(getCreature()->getGuid(), 20480, false);
         RemoveAIUpdateEvent();
         getCreature()->GetAIInterface()->m_canMove = true;
     }
@@ -118,8 +118,8 @@ public:
             // Mage mirror image spell
             if (getCreature()->GetCreatedBySpell() == 58833)
             {
-                getCreature()->SetMaxHealth(2500);
-                getCreature()->SetHealth(2500);
+                getCreature()->setMaxHealth(2500);
+                getCreature()->setHealth(2500);
                 getCreature()->SetMaxPower(POWER_TYPE_MANA, owner->GetMaxPower(POWER_TYPE_MANA));
                 getCreature()->SetPower(POWER_TYPE_MANA, owner->GetPower(POWER_TYPE_MANA));
 
@@ -200,18 +200,20 @@ public:
                 {
                     for (uint8 si = 0; si < 5; si++)
                     {
-                        if (item->GetItemProperties()->Spells[si].Id == 0)
+                        if (item->getItemProperties()->Spells[si].Id == 0)
                             continue;
 
-                        if (item->GetItemProperties()->Spells[si].Trigger == CHANCE_ON_HIT)
-                            procSpell[si] = item->GetItemProperties()->Spells[si].Id;
+                        if (item->getItemProperties()->Spells[si].Trigger == CHANCE_ON_HIT)
+                            procSpell[si] = item->getItemProperties()->Spells[si].Id;
                     }
 
                     s->SetEquippedItem(MELEE, item->GetEntry());
-                    s->SetBaseAttackTime(MELEE, item->GetItemProperties()->Delay);
+                    s->SetBaseAttackTime(MELEE, item->getItemProperties()->Delay);
                 }
 
+#if VERSION_STRING >= WotLK
                 pOwner->SetPower(POWER_TYPE_RUNIC_POWER, 0);
+#endif
             }
 
             s->SetMinDamage(float(owner->GetDamageDoneMod(SCHOOL_NORMAL)));
@@ -317,12 +319,12 @@ public:
 
     void OnLoad()
     {
-        getCreature()->setByteValue(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
+        getCreature()->setAnimationFlags(UNIT_BYTE1_FLAG_HOVER);
     }
 
     void OnLastPassengerLeft(Unit *passenger)
     {
-        if (getCreature()->GetSummonedByGUID() == passenger->GetGUID())
+        if (getCreature()->GetSummonedByGUID() == passenger->getGuid())
             getCreature()->Despawn(1 * 1000, 0);
     }
 };

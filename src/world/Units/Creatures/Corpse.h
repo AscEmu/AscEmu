@@ -35,10 +35,11 @@ enum CORPSE_STATE
 #define CORPSE_MINIMUM_RECLAIM_RADIUS 39
 #define CORPSE_MINIMUM_RECLAIM_RADIUS_SQ CORPSE_MINIMUM_RECLAIM_RADIUS * CORPSE_MINIMUM_RECLAIM_RADIUS
 
+struct WoWCorpse;
 class SERVER_DECL Corpse : public Object
 {
+        const WoWCorpse* corpseData() const { return reinterpret_cast<WoWCorpse*>(wow_data); }
     public:
-
         Corpse(uint32 high, uint32 low);
         ~Corpse();
 

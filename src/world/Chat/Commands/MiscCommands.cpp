@@ -252,11 +252,11 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
         }
         else
         {
-            named_player->SetHealth(0);
+            named_player->setHealth(0);
             named_player->KillPlayer();
             RedSystemMessage(named_player->GetSession(), "You were killed by %s with a GM command.", m_session->GetPlayer()->GetName());
             GreenSystemMessage(m_session, "Killed player %s.", args);
-            sGMLog.writefromsession(m_session, "used kill command on Player Name: %s Guid:  " I64FMT " ", m_session->GetPlayer()->GetName(), named_player->GetGUID(), named_player->GetNameString());
+            sGMLog.writefromsession(m_session, "used kill command on Player Name: %s Guid:  " I64FMT " ", m_session->GetPlayer()->GetName(), named_player->getGuid(), named_player->GetNameString());
         }
     }
     else
@@ -272,7 +272,7 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
                     if (kill_spell == nullptr)
                         return true;
 
-                    SpellCastTargets targets(unit_target->GetGUID());
+                    SpellCastTargets targets(unit_target->getGuid());
                     Spell* spell = sSpellFactoryMgr.NewSpell(m_session->GetPlayer(), kill_spell, true, 0);
                     spell->prepare(&targets);
 
@@ -284,11 +284,11 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
                 {
                     auto player = static_cast<Player*>(unit_target);
 
-                    player->SetHealth(0);
+                    player->setHealth(0);
                     player->KillPlayer();
                     RedSystemMessage(player->GetSession(), "You were killed by %s with a GM command.", m_session->GetPlayer()->GetName());
                     GreenSystemMessage(m_session, "Killed player %s.", player->GetName());
-                    sGMLog.writefromsession(m_session, "used kill command on Player Name: %s Guid:  " I64FMT " ", m_session->GetPlayer()->GetName(), player->GetGUID());
+                    sGMLog.writefromsession(m_session, "used kill command on Player Name: %s Guid:  " I64FMT " ", m_session->GetPlayer()->GetName(), player->getGuid());
                     break;
                 }
                 default:
@@ -354,7 +354,7 @@ bool ChatHandler::HandleReviveCommand(const char* args, WorldSession* m_session)
         {
             player_target->setMoveRoot(false);
             player_target->ResurrectPlayer();
-            player_target->SetHealth(player_target->GetMaxHealth());
+            player_target->setHealth(player_target->GetMaxHealth());
             player_target->SetPower(POWER_TYPE_MANA, player_target->GetMaxPower(POWER_TYPE_MANA));
             player_target->SetPower(POWER_TYPE_ENERGY, player_target->GetMaxPower(POWER_TYPE_ENERGY));
 
@@ -614,7 +614,7 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
     SystemMessage(m_session, buf);
 
 #if VERSION_STRING != Cata
-    if (obj->obj_movement_info.IsOnTransport())
+    if (obj->obj_movement_info.isOnTransport())
 #else
     if (!obj->obj_movement_info.getTransportGuid().IsEmpty())
 #endif

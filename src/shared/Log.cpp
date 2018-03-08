@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <iostream>
 #include <cstdarg>
 #include <string>
+#include "../../src/world/WorldConf.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // World functions
@@ -76,7 +77,7 @@ SessionLog::SessionLog(const char* filename, bool open)
 #else
     mFileName = _strdup(filename);
 #endif
-    
+
     mSessionLogFile = nullptr;
     if (open)
     {
@@ -325,6 +326,10 @@ void AscEmuLog::ConsoleLogError(bool file_only, const char* format, ...)
     vsnprintf(message_buffer, 32768, format, ap);
     va_end(ap);
 
+#ifdef EVAIRFAIRY_LOG_SKIP
+    return;
+#endif
+
     if (!file_only)
     {
         SetConsoleColor(CONSOLE_COLOR_RED);
@@ -349,6 +354,10 @@ void AscEmuLog::ConsoleLogErrorFunction(bool file_only, const char* function, co
     va_start(ap, format);
     vsnprintf(message_buffer, 32768, function_message, ap);
     va_end(ap);
+
+#ifdef EVAIRFAIRY_LOG_SKIP
+    return;
+#endif
 
     if (!file_only)
     {
@@ -391,7 +400,7 @@ void AscEmuLog::ConsoleLogDetail(uint8_t color, bool file_only, const char* form
 
         AscLog.SetConsoleColor(CONSOLE_COLOR_NORMAL);
     }
-        
+
 
     WriteFile(normal_log_file, message_buffer);
 }

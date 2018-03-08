@@ -82,13 +82,13 @@ class SavannahProwler : public CreatureAIScript
             uint32_t chance = Util::getRandomUInt(3);
 
             if(chance == 1)
-                getCreature()->SetStandState(STANDSTATE_SLEEP);
+                getCreature()->setStandState(STANDSTATE_SLEEP);
         }
 
         void OnCombatStart(Unit* /*pTarget*/) override
         {
-            if(getCreature()->GetStandState() == STANDSTATE_SLEEP)
-                getCreature()->SetStandState(STANDSTATE_STAND);
+            if(getCreature()->getStandState() == STANDSTATE_SLEEP)
+                getCreature()->setStandState(STANDSTATE_STAND);
         }
 
         static CreatureAIScript* Create(Creature* c) { return new SavannahProwler(c); }
@@ -401,7 +401,7 @@ class DraeneiSurvivor : public CreatureAIScript
 
         void OnLoad()
         {
-            getCreature()->SetHealth(getCreature()->GetMaxHealth() / 2);
+            getCreature()->setHealth(getCreature()->GetMaxHealth() / 2);
         }
 };
 
@@ -415,7 +415,7 @@ class GuardRoberts : public CreatureAIScript
 
         void OnLoad() override
         {
-            getCreature()->SetHealth(100);
+            getCreature()->setHealth(100);
         }
 
         void OnDied(Unit* /*mKiller*/) override

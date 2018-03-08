@@ -21,7 +21,7 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
     std::string questTurnTargetName = "";
 
     data->SetOpcode(SMSG_QUESTGIVER_QUEST_DETAILS);
-    *data << uint64_t(qst_giver->GetGUID());   // npc guid
+    *data << uint64_t(qst_giver->getGuid());   // npc guid
     *data << uint64_t(0);                      // (questsharer?) guid
     *data << uint32_t(qst->id);
 
@@ -153,7 +153,7 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, O
     std::string questTurnTargetName = "";
 
     data->SetOpcode(SMSG_QUESTGIVER_OFFER_REWARD);
-    *data << uint64_t(qst_giver->GetGUID());
+    *data << uint64_t(qst_giver->getGuid());
     *data << uint32_t(qst->id);
 
     *data << (lq ? lq->title : qst->title);
@@ -278,7 +278,7 @@ void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, 
     MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
 
     data->SetOpcode(SMSG_QUESTGIVER_REQUEST_ITEMS);
-    *data << uint64_t(qst_giver->GetGUID());
+    *data << uint64_t(qst_giver->getGuid());
     *data << uint32_t(qst->id);
 
     *data << (lq ? lq->title : qst->title);

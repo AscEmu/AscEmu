@@ -33,7 +33,7 @@ class TiareGossipScript : public Arcemu::Gossip::Script
 
         void OnHello(Object* pObject, Player* Plr) override
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), GT_TIARE, 0);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), GT_TIARE, 0);
             menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TELE_AMBER_LEDGE), 1);
             menu.Send(Plr);
         }

@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 void WorldSession::HandleCorpseQueryOpcode(WorldPacket& /*recvData*/)
 {
-    Corpse* pCorpse = objmgr.GetCorpseByOwner(GetPlayer()->GetLowGUID());
+    Corpse* pCorpse = objmgr.GetCorpseByOwner(GetPlayer()->getGuidLow());
     if (pCorpse == nullptr)
     {
         WorldPacket data(MSG_CORPSE_QUERY, 1);
@@ -80,7 +80,7 @@ void WorldSession::HandleInrangeQuestgiverQuery(WorldPacket& /*recvData*/)
         Creature* pCreature = static_cast<Creature*>(itr);
         if (pCreature->isQuestGiver())
         {
-            data << uint64_t(pCreature->GetGUID());
+            data << uint64_t(pCreature->getGuid());
             data << uint32_t(sQuestMgr.CalcStatus(pCreature, _player));
             ++count;
         }
@@ -150,7 +150,8 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recvData)
 void WorldSession::HandleNameQueryOpcode(WorldPacket& recv_data)
 {
     CHECK_PACKET_SIZE(recv_data, 8);
-    uint64 guid;
+    
+    uint64_t guid;
     recv_data >> guid;
 
     PlayerInfo* pn = objmgr.GetPlayerInfo(static_cast<uint32>(guid));
@@ -159,19 +160,25 @@ void WorldSession::HandleNameQueryOpcode(WorldPacket& recv_data)
         return;
 
     LOG_DEBUG("Received CMSG_NAME_QUERY for: %s", pn->name);
-
-    WoWGuid pguid(static_cast<uint64>(pn->guid)); //VLack: The usual new style guid handling on 3.1.2
+    // VLack: The usual new style guid handling on 3.1.2
+    WoWGuid pguid(static_cast<uint64_t>(pn->guid));
     WorldPacket data(SMSG_NAME_QUERY_RESPONSE, strlen(pn->name) + 35);
-    //    data << pn->guid << uint32(0);    //highguid
+    // VLack: usual, new-style guid with an uint8
     data << pguid;
-    data << uint8(0); //VLack: usual, new-style guid with an uint8
+    data << uint8_t(0);
+    // this is a string showed besides players name (eg. in combat log), a custom title ?
     data << pn->name;
-    data << uint8(0);       // this is a string showed besides players name (eg. in combat log), a custom title ?
-    data << uint8(pn->race);
-    data << uint8(pn->gender);
-    data << uint8(pn->cl);
-    //    data << uint8(0);            // 2.4.0, why do i get the feeling blizz is adding custom classes or custom titles? (same thing in who list)
-    data << uint8(0); //VLack: tell the server this name is not declined... (3.1 fix?)
+    data << uint8_t(0);
+    data << uint8_t(pn->race);
+    data << uint8_t(pn->gender);
+    data << uint8_t(pn->cl);
+
+    //\todo check utf8 and cyrillic chars
+    // check declined names
+    // Name is declined
+    // data << uint8_t(1);
+    // Name is not declined
+    data << uint8_t(0);
     SendPacket(&data);
 }
 

@@ -28,14 +28,14 @@ class SkornWhitecloud_Gossip : public Arcemu::Gossip::Script
     public:
         void OnHello(Object* pObject, Player* plr) override
         {
-            Arcemu::Gossip::Menu::SendQuickMenu(pObject->GetGUID(), 522, plr, 1, GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MULGORE_STORY_SKORN));
+            Arcemu::Gossip::Menu::SendQuickMenu(pObject->getGuid(), 522, plr, 1, GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MULGORE_STORY_SKORN));
         }
 
         void OnSelectOption(Object* pObject, Player* plr, uint32 /*Id*/, const char* /*Code*/, uint32 /*gossipId*/) override
         {
             if(!pObject->IsCreature())
                 return;
-            Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 523, plr);
+            Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 523, plr);
         }
 
         void Destroy() override { delete this; }

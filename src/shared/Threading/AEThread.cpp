@@ -18,7 +18,7 @@ using std::this_thread::sleep_for;
 
 namespace AscEmu { namespace Threading
 {
-    atomic<unsigned int> AEThread::ThreadIdCounter(0);
+    atomic<unsigned int> AEThread::s_thread_id_counter(0);
 
     void AEThread::threadRunner()
     {
@@ -26,16 +26,16 @@ namespace AscEmu { namespace Threading
 
         while (!m_killed)
         {
-            auto begin = steady_clock::now();
+            const auto begin = steady_clock::now();
 
             m_func(*this);
 
-            auto target = begin + m_interval;
+            const auto target = begin + m_interval;
 
             // We use this instead of sleep_until so we can interrupt
             while (!m_killed)
             {
-                auto now = steady_clock::now();
+                const auto now = steady_clock::now();
                 if (now > target)
                     break;
 
@@ -51,12 +51,19 @@ namespace AscEmu { namespace Threading
         m_done = true;
     }
 
-    AEThread::AEThread(string name, ThreadFunc func, milliseconds interval, bool autostart)
+    AEThread::AEThread(string name, ThreadFunc func, milliseconds interval, bool autostart) :
+        m_name(name),
+        m_id(s_thread_id_counter++),
+        m_func(func),
+        m_interval(interval),
+        m_killed(false),
+        m_done(true),
+        m_longSleep(false)
     {
-        m_id = ThreadIdCounter++;
+        m_id = s_thread_id_counter++;
         m_name = name;
         m_func = func;
-        m_killed = false;
+        m_killed = true;
         m_done = true;
 
         unsafeSetInterval(interval);
@@ -64,7 +71,7 @@ namespace AscEmu { namespace Threading
             reboot();
     }
 
-    AEThread::~AEThread() { killThread(); }
+    AEThread::~AEThread() { killAndJoin(); }
 
     string AEThread::getName() const { return m_name; }
 
@@ -75,7 +82,7 @@ namespace AscEmu { namespace Threading
     milliseconds AEThread::unsafeSetInterval(milliseconds interval)
     {
         m_longSleep = interval > milliseconds(m_longSleepDelay);
-        auto old_value = m_interval;
+        const auto old_value = m_interval;
         m_interval = interval;
         return old_value;
     }
@@ -86,8 +93,11 @@ namespace AscEmu { namespace Threading
         return unsafeSetInterval(interval);
     }
 
-    void AEThread::lock() { m_mtx.lock(); }
-    void AEThread::unlock() { m_mtx.unlock(); }
+    bool AEThread::isDone() const { return m_done; }
+
+    void AEThread::setWork(ThreadFunc work) { this->m_func = work; }
+
+    bool AEThread::isWorking() const { return !m_done; }
 
     bool AEThread::isKilled() const { return m_killed; }
 
@@ -101,7 +111,6 @@ namespace AscEmu { namespace Threading
 
     void AEThread::join()
     {
-        requestKill();
         if (m_thread.joinable())
             m_thread.join();
     }
@@ -117,9 +126,14 @@ namespace AscEmu { namespace Threading
             return;
         }
 
-        join();
+        // Thread is currently running, so wait for it to die and try to reboot again
+        killAndJoin();
         reboot();
     }
 
-    void AEThread::killThread() { join(); }
+    void AEThread::killAndJoin()
+    {
+        requestKill();
+        join();
+    }
 }}

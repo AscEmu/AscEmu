@@ -43,7 +43,7 @@ public:
 
         if (plr->HasFinishedQuest(9785) || plr->HasQuest(9785))
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), TextId, plr->GetSession()->language);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), TextId, plr->GetSession()->language);
             menu.AddItem(GOSSIP_ICON_CHAT, text, 1);
             menu.Send(plr);
         }
@@ -93,7 +93,7 @@ public:
     {
         if (!plr->GetItemInterface()->GetItemCount(24573, true))
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 9226, plr->GetSession()->language);
+            Arcemu::Gossip::Menu menu(pObject->getGuid(), 9226, plr->GetSession()->language);
             menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(502), 1);     // Offer treat
             menu.Send(plr);
         }
@@ -105,19 +105,19 @@ public:
         {
             case 1:
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 9227, plr->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 9227, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(503), 2);     // I'm a messenger for Draenei
                 menu.Send(plr);
             }break;
             case 2:
             {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 9229, plr->GetSession()->language);
+                Arcemu::Gossip::Menu menu(pObject->getGuid(), 9229, plr->GetSession()->language);
                 menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(504), 3);     // Get message
                 menu.Send(plr);
             }break;
             case 3:
             {
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 9231, plr);
+                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->getGuid(), 9231, plr);
 
                 if (!plr->GetItemInterface()->GetItemCount(24573, true))
                     plr->GetItemInterface()->AddItemById(24573, 1, 0);

@@ -152,7 +152,7 @@ bool GuildBankTab::setItem(uint8_t slotId, Item* item)
             }
         }
 
-        CharacterDatabase.Execute("INSERT INTO guild_bank_item VALUES (%u, %u, %u, %u)", mGuildId, (uint32_t)mTabId, slot_id, item->GetLowGUID());
+        CharacterDatabase.Execute("INSERT INTO guild_bank_item VALUES (%u, %u, %u, %u)", mGuildId, (uint32_t)mTabId, slot_id, item->getGuidLow());
     }
     else
     {

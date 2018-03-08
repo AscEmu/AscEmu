@@ -22,6 +22,7 @@
 #include "StdAfx.h"
 #include "Management/Container.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Data/WoWContainer.h"
 
 Container::Container(uint32 high, uint32 low) : Item()
 {
@@ -35,9 +36,9 @@ Container::Container(uint32 high, uint32 low) : Item()
 
     setUInt32Value(OBJECT_FIELD_TYPE, TYPE_CONTAINER | TYPE_ITEM | TYPE_OBJECT);
 
-    SetLowGUID(low);
-    SetHighGUID(high);
-    m_wowGuid.Init(GetGUID());
+    setGuidLow(low);
+    setGuidHigh(high);
+    m_wowGuid.Init(getGuid());
 
     SetScale(1);   //always 1
 
@@ -49,7 +50,7 @@ Container::~Container()
 {
     for (uint32 i = 0; i < m_itemProperties->ContainerSlots; ++i)
     {
-        if (m_Slot[i] && m_Slot[i]->GetOwner() == m_owner)
+        if (m_Slot[i] && m_Slot[i]->getOwner() == m_owner)
         {
             m_Slot[i]->DeleteMe();
         }
@@ -68,7 +69,7 @@ void Container::LoadFromDB(Field* fields)
 
 
     SetCreatorGUID(fields[5].GetUInt32());
-    SetStackCount(1);
+    setStackCount(1);
 
     setUInt32Value(ITEM_FIELD_FLAGS, fields[8].GetUInt32());
     SetItemRandomPropertyId(fields[9].GetUInt32());
@@ -94,10 +95,10 @@ void Container::Create(uint32 itemid, Player* owner)
     ///\todo this shouldn't get NULL form containers in mail fix me
     if (owner != NULL)
     {
-        SetOwnerGUID(0);
-        SetContainerGUID(owner->GetGUID());
+        setOwnerGuid(0UL);
+        setContainerGuid(owner->getGuid());
     }
-    SetStackCount(1);
+    setStackCount(1);
     SetNumSlots(m_itemProperties->ContainerSlots);
 
     m_Slot = new Item*[m_itemProperties->ContainerSlots];
@@ -135,13 +136,13 @@ bool Container::HasItems()
 
 bool Container::AddItem(int16 slot, Item* item)
 {
-    if (slot < 0 || (uint32)slot >= GetItemProperties()->ContainerSlots)
+    if (slot < 0 || (uint32)slot >= getItemProperties()->ContainerSlots)
         return false;
 
     //ARCEMU_ASSERT(  m_Slot[slot] == NULL);
     if (m_Slot[slot] != NULL)
     {
-        LogError("Bad container item %u slot %d", item->GetGUID(), slot);
+        LogError("Bad container item %u slot %d", item->getGuid(), slot);
         return false;
     }
 
@@ -151,19 +152,18 @@ bool Container::AddItem(int16 slot, Item* item)
     m_Slot[slot] = item;
     item->m_isDirty = true;
 
+    item->setContainer(this);
+    item->setOwner(m_owner);
 
-    item->SetContainerGUID(GetGUID());
-    item->SetOwner(m_owner);
-
-    if (item->GetItemProperties()->Bonding == ITEM_BIND_ON_PICKUP)
+    if (item->getItemProperties()->Bonding == ITEM_BIND_ON_PICKUP)
     {
-        if (item->GetItemProperties()->Flags & ITEM_FLAG_ACCOUNTBOUND) // don't "Soulbind" account-bound items
+        if (item->getItemProperties()->Flags & ITEM_FLAG_ACCOUNTBOUND) // don't "Soulbind" account-bound items
             item->AccountBind();
         else
             item->SoulBind();
     }
 
-    SetSlot(slot, item->GetGUID());
+    SetSlot(slot, item->getGuid());
 
     //new version to fix bag issues
     if (m_owner->IsInWorld() && !item->IsInWorld())
@@ -172,11 +172,11 @@ bool Container::AddItem(int16 slot, Item* item)
         item->PushToWorld(m_owner->GetMapMgr());
 
         ByteBuffer buf(3000);
-        uint32 count = item->BuildCreateUpdateBlockForPlayer(&buf, m_owner);
+        uint32 count = item->buildCreateUpdateBlockForPlayer(&buf, m_owner);
         m_owner->PushCreationData(&buf, count);
     }
 #if VERSION_STRING > TBC
-    m_owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM, item->GetItemProperties()->ItemId, item->GetStackCount(), 0);
+    m_owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM, item->getItemProperties()->ItemId, item->GetStackCount(), 0);
 #endif
     return true;
 }
@@ -190,7 +190,7 @@ void Container::SwapItems(int8 SrcSlot, int8 DstSlot)
     if (DstSlot < 0 || DstSlot >= (int8)m_itemProperties->ContainerSlots)
         return;
 
-    uint32 destMaxCount = (m_owner->ItemStackCheat) ? 0x7fffffff : ((m_Slot[DstSlot]) ? m_Slot[DstSlot]->GetItemProperties()->MaxCount : 0);
+    uint32 destMaxCount = (m_owner->ItemStackCheat) ? 0x7fffffff : ((m_Slot[DstSlot]) ? m_Slot[DstSlot]->getItemProperties()->MaxCount : 0);
     if (m_Slot[DstSlot] && m_Slot[SrcSlot] && m_Slot[DstSlot]->GetEntry() == m_Slot[SrcSlot]->GetEntry() && m_Slot[SrcSlot]->wrapped_item_id == 0 && m_Slot[DstSlot]->wrapped_item_id == 0 && destMaxCount > 1)
     {
         uint32 total = m_Slot[SrcSlot]->GetStackCount() + m_Slot[DstSlot]->GetStackCount();
@@ -210,7 +210,7 @@ void Container::SwapItems(int8 SrcSlot, int8 DstSlot)
             else
             {
                 int32 delta = destMaxCount - m_Slot[DstSlot]->GetStackCount();
-                m_Slot[DstSlot]->SetStackCount(destMaxCount);
+                m_Slot[DstSlot]->setStackCount(destMaxCount);
                 m_Slot[SrcSlot]->ModStackCount(-delta);
                 return;
             }
@@ -223,7 +223,7 @@ void Container::SwapItems(int8 SrcSlot, int8 DstSlot)
 
     if (m_Slot[DstSlot])
     {
-        SetSlot(DstSlot, m_Slot[DstSlot]->GetGUID());
+        SetSlot(DstSlot, m_Slot[DstSlot]->getGuid());
         m_Slot[DstSlot]->m_isDirty = true;
     }
     else
@@ -233,7 +233,7 @@ void Container::SwapItems(int8 SrcSlot, int8 DstSlot)
 
     if (m_Slot[SrcSlot])
     {
-        SetSlot(SrcSlot, m_Slot[SrcSlot]->GetGUID());
+        SetSlot(SrcSlot, m_Slot[SrcSlot]->getGuid());
         m_Slot[SrcSlot]->m_isDirty = true;
     }
     else
@@ -244,7 +244,7 @@ void Container::SwapItems(int8 SrcSlot, int8 DstSlot)
 
 Item* Container::SafeRemoveAndRetreiveItemFromSlot(int16 slot, bool destroy)
 {
-    if (slot < 0 || (uint32)slot >= GetItemProperties()->ContainerSlots)
+    if (slot < 0 || (uint32)slot >= getItemProperties()->ContainerSlots)
         return NULL;
 
     Item* pItem = m_Slot[slot];
@@ -254,10 +254,10 @@ Item* Container::SafeRemoveAndRetreiveItemFromSlot(int16 slot, bool destroy)
 
     m_Slot[slot] = NULL;
 
-    if (pItem->GetOwner() == m_owner)
+    if (pItem->getOwner() == m_owner)
     {
         SetSlot(slot, 0);
-        pItem->SetContainerGUID(0);
+        pItem->setContainer(nullptr);
 
         if (destroy)
         {
@@ -278,7 +278,7 @@ Item* Container::SafeRemoveAndRetreiveItemFromSlot(int16 slot, bool destroy)
 
 bool Container::SafeFullRemoveItemFromSlot(int16 slot)
 {
-    if (slot < 0 || (uint32)slot >= GetItemProperties()->ContainerSlots)
+    if (slot < 0 || (uint32)slot >= getItemProperties()->ContainerSlots)
         return false;
 
     Item* pItem = m_Slot[slot];
@@ -287,7 +287,7 @@ bool Container::SafeFullRemoveItemFromSlot(int16 slot)
     m_Slot[slot] = NULL;
 
     SetSlot(slot, 0);
-    pItem->SetContainerGUID(0);
+    pItem->setContainer(nullptr);
 
     if (pItem->IsInWorld())
     {
@@ -302,35 +302,43 @@ bool Container::SafeFullRemoveItemFromSlot(int16 slot)
 bool Container::AddItemToFreeSlot(Item* pItem, uint32* r_slot)
 {
     uint32 slot;
-    for (slot = 0; slot < GetItemProperties()->ContainerSlots; slot++)
+    for (slot = 0; slot < getItemProperties()->ContainerSlots; slot++)
     {
         if (!m_Slot[slot])
         {
             m_Slot[slot] = pItem;
             pItem->m_isDirty = true;
 
-            pItem->SetContainerGUID(GetGUID());
-            pItem->SetOwner(m_owner);
+            pItem->setContainer(this);
+            pItem->setOwner(m_owner);
 
-            SetSlot(uint16(slot), pItem->GetGUID());
+            SetSlot(uint16(slot), pItem->getGuid());
 
             if (m_owner->IsInWorld() && !pItem->IsInWorld())
             {
                 pItem->PushToWorld(m_owner->GetMapMgr());
                 ByteBuffer buf(2500);
-                uint32 count = pItem->BuildCreateUpdateBlockForPlayer(&buf, m_owner);
+                uint32 count = pItem->buildCreateUpdateBlockForPlayer(&buf, m_owner);
                 m_owner->PushCreationData(&buf, count);
             }
             if (r_slot)
                 *r_slot = slot;
 
 #if VERSION_STRING > TBC
-            m_owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM, pItem->GetItemProperties()->ItemId, pItem->GetStackCount(), 0);
+            m_owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM, pItem->getItemProperties()->ItemId, pItem->GetStackCount(), 0);
 #endif
             return true;
         }
     }
     return false;
+}
+
+Item* Container::GetItem(int16 slot)
+{
+    if (slot >= 0 && (uint16)slot < getItemProperties()->ContainerSlots)
+        return m_Slot[slot];
+    else
+        return 0;
 }
 
 void Container::SaveBagToDB(int8 slot, bool first, QueryBuffer* buf)
@@ -339,7 +347,7 @@ void Container::SaveBagToDB(int8 slot, bool first, QueryBuffer* buf)
 
     for (uint32 i = 0; i < m_itemProperties->ContainerSlots; ++i)
     {
-        if (m_Slot[i] && !((m_Slot[i]->GetItemProperties()->Flags) & 2))
+        if (m_Slot[i] && !((m_Slot[i]->getItemProperties()->Flags) & 2))
         {
             m_Slot[i]->SaveToDB(slot, static_cast<int8>(i), first, buf);
         }
