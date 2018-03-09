@@ -17,6 +17,7 @@ set(SRC_PACKET_FILES
    ${PATH_PREFIX}/CmsgSetContactNotes.h
    ${PATH_PREFIX}/CmsgSetSelection.h
    ${PATH_PREFIX}/CmsgStandStateChange.h
+   ${PATH_PREFIX}/CmsgTutorialFlag.h
    ${PATH_PREFIX}/CmsgWho.h
    ${PATH_PREFIX}/ManagedPacket.h
    ${PATH_PREFIX}/MovementPacket.h

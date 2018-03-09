@@ -38,6 +38,7 @@
 #include "Server/Packets/CmsgStandStateChange.h"
 #include "Server/Packets/CmsgWho.h"
 #include "Server/Packets/CmsgSetSelection.h"
+#include "Server/Packets/CmsgTutorialFlag.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
 #endif
@@ -222,6 +223,40 @@ void WorldSession::handleSetSelectionOpcode(WorldPacket& recvPacket)
 void WorldSession::handleTogglePVPOpcode(WorldPacket& /*recvPacket*/)
 {
     _player->PvPToggle();
+}
+
+void WorldSession::handleTutorialFlag(WorldPacket& recvPacket)
+{
+    CmsgTutorialFlag recv_packet;
+    if (!recv_packet.deserialise(recvPacket))
+        return;
+
+    const uint32_t tutorial_index = (recv_packet.flag / 32);
+    const uint32_t tutorial_status = (recv_packet.flag % 32);
+
+    if (tutorial_index >= 7)
+    {
+        Disconnect();
+        return;
+    }
+
+    uint32_t tutorial_flag = GetPlayer()->GetTutorialInt(tutorial_index);
+    tutorial_flag |= (1 << tutorial_status);
+    GetPlayer()->SetTutorialInt(tutorial_index, tutorial_flag);
+
+    LOG_DEBUG("Received Tutorial flag: (%u).", recv_packet.flag);
+}
+
+void WorldSession::handleTutorialClear(WorldPacket& /*recvPacket*/)
+{
+    for (uint32_t id = 0; id < 8; id++)
+        GetPlayer()->SetTutorialInt(id, 0xFFFFFFFF);
+}
+
+void WorldSession::handleTutorialReset(WorldPacket& /*recvPacket*/)
+{
+    for (uint32_t id = 0; id < 8; id++)
+        GetPlayer()->SetTutorialInt(id, 0x00000000);
 }
 // MIT end
 
@@ -1944,44 +1979,6 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleTutorialFlag(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    uint32 iFlag;
-    recv_data >> iFlag;
-
-    uint32 wInt = (iFlag / 32);
-    uint32 rInt = (iFlag % 32);
-
-    if (wInt >= 7)
-    {
-        Disconnect();
-        return;
-    }
-
-    uint32 tutflag = GetPlayer()->GetTutorialInt(wInt);
-    tutflag |= (1 << rInt);
-    GetPlayer()->SetTutorialInt(wInt, tutflag);
-
-    LOG_DEBUG("Received Tutorial Flag Set {%u}.", iFlag);
-}
-
-void WorldSession::HandleTutorialClear(WorldPacket& /*recv_data*/)
-{
-    CHECK_INWORLD_RETURN
-
-    for (uint32 iI = 0; iI < 8; iI++)
-        GetPlayer()->SetTutorialInt(iI, 0xFFFFFFFF);
-}
-
-void WorldSession::HandleTutorialReset(WorldPacket& /*recv_data*/)
-{
-    CHECK_INWORLD_RETURN
-
-    for (uint32 iI = 0; iI < 8; iI++)
-        GetPlayer()->SetTutorialInt(iI, 0x00000000);
-}
 
 void WorldSession::HandleSetSheathedOpcode(WorldPacket& recv_data)
 {

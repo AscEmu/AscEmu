@@ -432,9 +432,9 @@ void WorldSession::loadSpecificHandlers()
 
 
     // Tutorials
-    WorldPacketHandlers[CMSG_TUTORIAL_FLAG].handler = &WorldSession::HandleTutorialFlag;
-    WorldPacketHandlers[CMSG_TUTORIAL_CLEAR].handler = &WorldSession::HandleTutorialClear;
-    WorldPacketHandlers[CMSG_TUTORIAL_RESET].handler = &WorldSession::HandleTutorialReset;
+    WorldPacketHandlers[CMSG_TUTORIAL_FLAG].handler = &WorldSession::handleTutorialFlag;
+    WorldPacketHandlers[CMSG_TUTORIAL_CLEAR].handler = &WorldSession::handleTutorialClear;
+    WorldPacketHandlers[CMSG_TUTORIAL_RESET].handler = &WorldSession::handleTutorialReset;
 
     // Pets
     //WorldPacketHandlers[CMSG_PET_ACTION].handler = &WorldSession::HandlePetAction;

@@ -802,9 +802,9 @@ class SERVER_DECL WorldSession
         //void SetNpcFlagsForTalkToQuest(const uint64& guid, const uint64& targetGuid);
 
         // Tutorials
-        void HandleTutorialFlag(WorldPacket& recv_data);
-        void HandleTutorialClear(WorldPacket& recv_data);
-        void HandleTutorialReset(WorldPacket& recv_data);
+        void handleTutorialFlag(WorldPacket& recv_data);
+        void handleTutorialClear(WorldPacket& recv_data);
+        void handleTutorialReset(WorldPacket& recv_data);
 
         // Acknowledgements
         void HandleAcknowledgementOpcodes(WorldPacket& recv_data);
