@@ -12298,6 +12298,40 @@ void Unit::EventCastSpell(Unit* Target, SpellInfo* Sp)
     pSpell->prepare(&targets);
 }
 
+#if VERSION_STRING == TBC
+void Unit::SetFacing(float newo)
+{
+    SetOrientation(newo);
+
+    //generate smsg_monster_move
+    WorldPacket data(SMSG_MONSTER_MOVE, 60);
+
+    data << GetNewGUID();
+
+    data << GetPositionX();
+    data << GetPositionY();
+    data << GetPositionZ();
+    data << Util::getMSTime();
+    if (newo != 0.0f)
+    {
+        data << uint8(4);
+        data << newo;
+    }
+    else
+    {
+        data << uint8(0);
+    }
+
+    data << uint32(0x1000); //move flags: run
+    data << uint32(0); //movetime
+    data << uint32(1); //1 point
+    data << GetPositionX();
+    data << GetPositionY();
+    data << GetPositionZ();
+
+    SendMessageToSet(&data, true);
+}
+#else
 void Unit::SetFacing(float newo)
 {
     SetOrientation(newo);
@@ -12322,6 +12356,7 @@ void Unit::SetFacing(float newo)
 
     SendMessageToSet(&data, true);
 }
+#endif
 
 float Unit::get_chance_to_daze(Unit* target)
 {
