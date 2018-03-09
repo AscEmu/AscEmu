@@ -44,9 +44,11 @@ GameObject::GameObject(uint64 guid)
     m_objectType |= TYPE_GAMEOBJECT;
     m_objectTypeId = TYPEID_GAMEOBJECT;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING <= TBC
+    m_updateFlag = (UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_LOWGUID);
+#elif VERSION_STRING == WotLK
     m_updateFlag = (UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_POSITION | UPDATEFLAG_ROTATION);
-#else
+#elif VERSION_STRING == Cata
     m_updateFlag = (UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
 #endif
 
@@ -54,6 +56,7 @@ GameObject::GameObject(uint64 guid)
     m_uint32Values = _fields;
     std::fill(m_uint32Values, &m_uint32Values[GAMEOBJECT_END], 0);
     m_updateMask.SetCount(GAMEOBJECT_END);
+
     setUInt32Value(OBJECT_FIELD_TYPE, TYPE_GAMEOBJECT | TYPE_OBJECT);
     setGuid(guid);
     SetAnimProgress(100);

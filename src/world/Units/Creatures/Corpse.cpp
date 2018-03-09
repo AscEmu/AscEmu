@@ -30,9 +30,11 @@ Corpse::Corpse(uint32 high, uint32 low)
     m_objectType |= TYPE_CORPSE;
     m_objectTypeId = TYPEID_CORPSE;
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING <= TBC
+    m_updateFlag = (UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_LOWGUID);
+#elif VERSION_STRING == WotLK
     m_updateFlag = (UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_POSITION);
-#else
+#elif VERSION_STRING == Cata
     m_updateFlag = UPDATEFLAG_POSITION;
 #endif
 

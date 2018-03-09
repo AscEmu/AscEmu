@@ -192,10 +192,11 @@ void ObjectMgr::LoadTransports()
 
 Transporter::Transporter(uint64 guid) : GameObject(guid), currenttguid(0)
 {
-
-#if VERSION_STRING != Cata
+#if VERSION_STRING <= TBC
+    m_updateFlag = (UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_LOWGUID | UPDATEFLAG_TRANSPORT);
+#elif VERSION_STRING == WotLK
     m_updateFlag = (UPDATEFLAG_TRANSPORT | UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
-#else
+#elif VERSION_STRING == Cata
     m_updateFlag = UPDATEFLAG_TRANSPORT;
 #endif
 
