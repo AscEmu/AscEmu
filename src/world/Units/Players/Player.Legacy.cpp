@@ -10168,9 +10168,8 @@ void Player::PvPToggle()
             StopPvPTimer();
 
             SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
-#if VERSION_STRING > TBC
             RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
-#endif
+
             if (!IsPvPFlagged())
                 SetPvPFlag();
         }
@@ -10196,17 +10195,13 @@ void Player::PvPToggle()
                     ResetPvPTimer();
                 }
                 RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
-#if VERSION_STRING > TBC
                 SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
-#endif
             }
             else
             {
                 // Move into PvP state.
                 SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
-#if VERSION_STRING > TBC
                 RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
-#endif
 
                 StopPvPTimer();
                 SetPvPFlag();
@@ -10228,9 +10223,7 @@ void Player::PvPToggle()
                 StopPvPTimer();
 
                 SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
-#if VERSION_STRING > TBC
                 RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
-#endif
 
                 if (!IsPvPFlagged())
                     SetPvPFlag();
@@ -10243,17 +10236,13 @@ void Player::PvPToggle()
                     ResetPvPTimer();
 
                     RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
-#if VERSION_STRING > TBC
                     SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
-#endif
                 }
                 else
                 {
                     // Move into PvP state.
                     SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
-#if VERSION_STRING > TBC
                     RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
-#endif
 
                     StopPvPTimer();
                     SetPvPFlag();
@@ -13214,15 +13203,25 @@ void Player::SendAvailSpells(DBC::Structures::SpellShapeshiftFormEntry const* sh
 
 bool Player::IsPvPFlagged()
 {
+#if VERSION_STRING > TBC
     return getPvpFlags() & U_FIELD_BYTES_FLAG_PVP;
+#else
+    return getUnitFlags() & UNIT_FLAG_PVP;
+#endif
 }
 
 void Player::SetPvPFlag()
 {
     StopPvPTimer();
 
+#if VERSION_STRING > TBC
     setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_PVP);
+#else
+    SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP);
+#endif
+
     SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
+
 
     summonhandler.SetPvPFlags();
 
@@ -13234,14 +13233,20 @@ void Player::SetPvPFlag()
     }
 
     if (CombatStatus.IsInCombat())
-        SetFlag(PLAYER_FLAGS, 0x100);
+        SetFlag(PLAYER_FLAGS, PLAYER_FLAG_CONT_PVP);
 
 }
 
 void Player::RemovePvPFlag()
 {
     StopPvPTimer();
+
+#if VERSION_STRING > TBC
     setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_PVP);
+#else
+    RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP);
+#endif
+
     RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
 
     summonhandler.RemovePvPFlags();
