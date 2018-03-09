@@ -18,6 +18,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Data
+uint32_t Player::getPlayerFlags() const { return playerData()->player_flags; }
+void Player::setPlayerFlags(uint32_t flags) { write(playerData()->player_flags, flags); }
+void Player::addPlayerFlags(uint32_t flags) { setPlayerFlags(getPlayerFlags() | flags); }
+void Player::removePlayerFlags(uint32_t flags) { setPlayerFlags(getPlayerFlags() & ~flags); }
+
 void Player::setAttackPowerMultiplier(float val)
 {
     write(playerData()->attack_power_multiplier, val);

@@ -418,6 +418,11 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Data
+    void setPlayerFlags(uint32_t flags);
+    uint32_t getPlayerFlags() const;
+    void addPlayerFlags(uint32_t flags);
+    void removePlayerFlags(uint32_t flags);
+
     void setAttackPowerMultiplier(float val);
     void setRangedAttackPowerMultiplier(float val);
     void setExploredZone(uint32_t idx, uint32_t data);
