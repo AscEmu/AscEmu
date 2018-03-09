@@ -3250,11 +3250,6 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         return;
     }
 
-#if VERSION_STRING > TBC
-    // load achievements before anything else otherwise skills would complete achievements already in the DB, leading to duplicate achievements and criterias(like achievement=126).
-    m_achievementMgr.LoadFromDB(results[16].result, results[17].result);
-#endif
-
     CalculateBaseStats();
 
     // set xp
@@ -3326,21 +3321,16 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     setInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, get_next_field.GetUInt32());
     SetChosenTitle(get_next_field.GetUInt32());
     setUInt64Value(PLAYER_FIELD_KNOWN_TITLES, get_next_field.GetUInt64());
-#if VERSION_STRING > TBC
-    setUInt64Value(PLAYER_FIELD_KNOWN_TITLES1, get_next_field.GetUInt64());
-    setUInt64Value(PLAYER_FIELD_KNOWN_TITLES2, get_next_field.GetUInt64());
-#else
-    get_next_field.GetUInt32();
-    get_next_field.GetUInt32();
-#endif
+
+    get_next_field; //skip available_pvp_titles1
+    get_next_field; //skip available_pvp_titles2
+
+
     m_uint32Values[PLAYER_FIELD_COINAGE] = get_next_field.GetUInt32();
-#if VERSION_STRING != Cata
+
     m_uint32Values[PLAYER_AMMO_ID] = get_next_field.GetUInt32();
     m_uint32Values[PLAYER_CHARACTER_POINTS2] = get_next_field.GetUInt32();
-#else
-    get_next_field.GetUInt32();
-    get_next_field.GetUInt32();
-#endif
+
     load_health = get_next_field.GetUInt32();
     load_mana = get_next_field.GetUInt32();
     setHealth(load_health);
@@ -3350,7 +3340,6 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     setUInt32Value(PLAYER_BYTES_3, getGender() | (pvprank << 24));
     setUInt32Value(PLAYER_FLAGS, get_next_field.GetUInt32());
     setUInt32Value(PLAYER_FIELD_BYTES, get_next_field.GetUInt32());
-    //m_uint32Values[0x22]=(m_uint32Values[0x22]>0x46)?0x46:m_uint32Values[0x22];
 
     m_position.x = get_next_field.GetFloat();
     m_position.y = get_next_field.GetFloat();
@@ -3365,22 +3354,14 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     for (uint8 i = 0; i < 5; ++i)
         CalcStat(i);
 
-    //  for (uint32 x = PLAYER_SPELL_CRIT_PERCENTAGE1; x < PLAYER_SPELL_CRIT_PERCENTAGE06 + 1; ++x)
-    ///    SetFloatValue(x, 0.0f);
-
-#if VERSION_STRING != Classic
     for (uint16_t x = PLAYER_FIELD_MOD_DAMAGE_DONE_PCT; x < PLAYER_FIELD_MOD_HEALING_DONE_POS; ++x)
         setFloatValue(x, 1.0f);
-#endif
 
     // Normal processing...
     UpdateStats();
 
     // Initialize 'normal' fields
     SetScale(1.0f);
-#if VERSION_STRING > TBC
-    setFloatValue(UNIT_FIELD_HOVERHEIGHT, 1.0f);
-#endif
 
     //SetUInt32Value(UNIT_FIELD_POWER2, 0);
     SetPower(POWER_TYPE_FOCUS, info->focus); // focus
@@ -3409,9 +3390,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     EventModelChange();
 
     SetCastSpeedMod(1.0f);
-#if VERSION_STRING != Classic
     setUInt32Value(PLAYER_FIELD_MAX_LEVEL, worldConfig.player.playerLevelCap);
-#endif
     SetFaction(info->factiontemplate);
     if (cfaction)
     {
@@ -3441,7 +3420,8 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     m_banned = get_next_field.GetUInt32();      //Character ban
     m_banreason = get_next_field.GetString();
     m_timeLogoff = get_next_field.GetUInt32();
-    field_index++;
+
+    get_next_field; //skip online
 
     m_bind_pos_x = get_next_field.GetFloat();
     m_bind_pos_y = get_next_field.GetFloat();
@@ -3517,12 +3497,12 @@ void Player::LoadFromDBProc(QueryResultVector & results)
             m_onTaxi = true;
         }
         else
-            field_index++;
+            get_next_field; //skip taxi_mount
     }
     else
     {
-        field_index++;
-        field_index++;
+        get_next_field; //skip taxi_lastnode
+        get_next_field; //skip taxi_mount
     }
 
     obj_movement_info.transport_data.transportGuid = get_next_field.GetUInt32();
@@ -3546,11 +3526,8 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     // Load saved actionbars
     for (uint8 s = 0; s < MAX_SPEC_COUNT; ++s)
     {
-#ifdef FT_DUAL_SPEC
-        auto& spec = m_specs[s];
-#else
         auto& spec = m_spec;
-#endif
+
         start = (char*)get_next_field.GetString();
         Counter = 0;
         while (Counter < PLAYER_ACTION_BUTTON_COUNT)
@@ -3581,9 +3558,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         }
     }
 
-#ifndef FT_DUAL_SPEC
-    field_index++;
-#endif
+    get_next_field; //skip actions2
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Parse saved buffs
@@ -3667,26 +3642,12 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     for (uint8 s = 0; s < MAX_SPEC_COUNT; ++s)
     {
-        start = (char*)get_next_field.GetString();
-#ifdef FT_DUAL_SPEC
-        auto& spec = m_specs[s];
+        get_next_field; //skip glyphs1
 
-        uint8 glyphid = 0;
-        while (glyphid < GLYPHS_COUNT)
-        {
-            end = strchr(start, ',');
-            if (!end)break;
-            *end = 0;
-            m_specs[s].glyphs[glyphid] = (uint16)atol(start);
-            ++glyphid;
-            start = end + 1;
-        }
-#else
         auto& spec = m_spec;
-#endif
 
         //Load talents for spec
-        start = (char*)get_next_field.GetString();
+        start = (char*)get_next_field.GetString();  // talents1
         while (end != nullptr)
         {
             end = strchr(start, ',');
@@ -3707,6 +3668,9 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         }
     }
 
+    get_next_field; //skip glyphs2
+    get_next_field; //skip talents2
+
     m_talentSpecsCount = get_next_field.GetUInt8();
     m_talentActiveSpec = get_next_field.GetUInt8();
 
@@ -3718,27 +3682,13 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         ss >> tp1;
         ss >> tp2;
 
-#ifdef FT_DUAL_SPEC
-        m_specs[SPEC_PRIMARY].SetTP(tp1);
-        m_specs[SPEC_SECONDARY].SetTP(tp2);
-#if VERSION_STRING != Cata
-        setUInt32Value(PLAYER_CHARACTER_POINTS1, m_specs[m_talentActiveSpec].GetTP());
-#else
-        setUInt32Value(PLAYER_CHARACTER_POINTS, m_specs[m_talentActiveSpec].GetTP());
-#endif
-#else
         m_spec.SetTP(tp1);
         setUInt32Value(PLAYER_CHARACTER_POINTS1, getActiveSpec().GetTP());
-#endif
     }
 
-#if VERSION_STRING != Cata
-    get_next_field.GetUInt32();
-#else
-    m_FirstTalentTreeLock = get_next_field.GetUInt32(); // Load First Set Talent Tree
-#endif
+    get_next_field;//skipping firsttalenttree
 
-    m_phase = get_next_field.GetUInt32(); //Load the player's last phase
+    m_phase = get_next_field.GetUInt32(); //Load the player's last phase field 89
 
     uint32 xpfield = get_next_field.GetUInt32();
 
@@ -3747,7 +3697,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     else
         m_XpGain = true;
 
-    get_next_field;//skipping one
+    get_next_field;//skipping data
 
     if (get_next_field.GetUInt32() == 1)
         resettalents = true;
