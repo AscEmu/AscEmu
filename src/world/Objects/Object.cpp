@@ -3283,13 +3283,16 @@ void Object::SendAttackerStateUpdate(Object* Caster, Object* Target, dealdamage*
     data << Target->GetNewGUID();
 
     data << uint32(Damage);                 // Realdamage
+#if VERSION_STRING > TBC
     data << uint32(Overkill);               // Overkill
+#endif
     data << uint8(1);                       // Damage type counter / swing type
 
     data << uint32(g_spellSchoolConversionTable[Dmg->school_type]);         // Damage school
     data << float(Dmg->full_damage);        // Damage float
     data << uint32(Dmg->full_damage);       // Damage amount
 
+#if VERSION_STRING > TBC
     if (HitStatus & HITSTATUS_ABSORBED)
     {
         data << uint32(Abs);                // Damage absorbed
@@ -3299,11 +3302,11 @@ void Object::SendAttackerStateUpdate(Object* Caster, Object* Target, dealdamage*
     {
         data << uint32(Dmg->resisted_damage);   // Damage resisted
     }
-
+#endif
     data << uint8(VState);
     data << uint32(0);          // can be 0,1000 or -1
     data << uint32(0);
-
+#if VERSION_STRING > TBC
     if (HitStatus & HITSTATUS_BLOCK)
     {
         data << uint32(BlockedDamage);  // Damage amount blocked
@@ -3331,6 +3334,9 @@ void Object::SendAttackerStateUpdate(Object* Caster, Object* Target, dealdamage*
         data << float(0);       // Found in loop
         data << uint32(0);
     }
+#else
+    data << uint32(BlockedDamage);  // Damage amount blocked
+#endif
 
     SendMessageToSet(&data, Caster->IsPlayer());
 }

@@ -713,6 +713,143 @@ void WorldSession::HandleAutoEquipItemSlotOpcode(WorldPacket & recvData)
     }
 }
 
+#if VERSION_STRING == TBC
+void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recvData)
+{
+    CHECK_PACKET_SIZE(recvData, 4);
+
+    uint32 itemid;
+    recvData >> itemid;
+
+    ItemProperties const* itemProto = sMySQLStore.getItemProperties(itemid);
+    if (!itemProto)
+    {
+        LOG_ERROR("WORLD: Unknown item id 0x%.8X", itemid);
+        return;
+    }
+
+    std::string Name;
+    std::string Description;
+
+    MySQLStructure::LocalesItem const* li = (language > 0) ? sMySQLStore.getLocalizedItem(itemid, language) : nullptr;
+    if (li != nullptr)
+    {
+        Name = li->name;
+        Description = li->description;
+    }
+    else
+    {
+        Name = itemProto->Name;
+        Description = itemProto->Description;
+    }
+
+    WorldPacket data(SMSG_ITEM_QUERY_SINGLE_RESPONSE, 800);
+    data << itemProto->ItemId;
+    data << itemProto->Class;
+    data << uint32_t(itemProto->SubClass);
+    data << itemProto->unknown_bc;  // soundOverride
+    data << Name;
+    data << uint8(0);           // name 2?
+    data << uint8(0);           // name 3?
+    data << uint8(0);           // name 4?
+    data << itemProto->DisplayInfoID;
+    data << itemProto->Quality;
+    data << itemProto->Flags;
+    //data << itemProto->Flags2;
+    data << itemProto->BuyPrice;
+    data << itemProto->SellPrice;
+    data << itemProto->InventoryType;
+    data << itemProto->AllowableClass;
+    data << itemProto->AllowableRace;
+    data << itemProto->ItemLevel;
+    data << itemProto->RequiredLevel;
+    data << itemProto->RequiredSkill;
+    data << itemProto->RequiredSkillRank;
+    data << itemProto->RequiredSkillSubRank;
+    data << itemProto->RequiredPlayerRank1;
+    data << itemProto->RequiredPlayerRank2;
+    data << itemProto->RequiredFaction;
+    data << itemProto->RequiredFactionStanding;
+    data << itemProto->Unique;
+    data << itemProto->MaxCount;
+    data << itemProto->ContainerSlots;
+    data << itemProto->itemstatscount;  //10
+    for (uint8 i = 0; i < itemProto->itemstatscount; i++)
+    {
+        data << itemProto->Stats[i].Type;
+        data << itemProto->Stats[i].Value;
+    }
+
+    //data << itemProto->ScalingStatsEntry;
+    //data << itemProto->ScalingStatsFlag;
+    for (uint8 i = 0; i < 2; i++)
+    {
+        data << itemProto->Damage[i].Min;
+        data << itemProto->Damage[i].Max;
+        data << itemProto->Damage[i].Type;
+    }
+
+    for (uint8 i = 0; i < 3; i++)
+    {
+        data << float(0.0f);
+        data << float(0.0f);
+        data << uint32_t(0);
+    }
+
+    data << itemProto->Armor;
+    data << itemProto->HolyRes;
+    data << itemProto->FireRes;
+    data << itemProto->NatureRes;
+    data << itemProto->FrostRes;
+    data << itemProto->ShadowRes;
+    data << itemProto->ArcaneRes;
+    data << itemProto->Delay;
+    data << itemProto->AmmoType;
+    data << itemProto->Range;
+    for (uint8 i = 0; i < 5; i++)
+    {
+        data << itemProto->Spells[i].Id;
+        data << itemProto->Spells[i].Trigger;
+        data << itemProto->Spells[i].Charges;
+        data << itemProto->Spells[i].Cooldown;
+        data << itemProto->Spells[i].Category;
+        data << itemProto->Spells[i].CategoryCooldown;
+    }
+    data << itemProto->Bonding;
+
+    data << Description;
+
+    data << itemProto->PageId;
+    data << itemProto->PageLanguage;
+    data << itemProto->PageMaterial;
+    data << itemProto->QuestId;
+    data << itemProto->LockId;
+    data << itemProto->LockMaterial;
+    data << itemProto->SheathID;
+    data << itemProto->RandomPropId;
+    data << itemProto->RandomSuffixId;
+    data << itemProto->Block;
+    data << sMySQLStore.getItemSetLinkedBonus(itemProto->ItemSet);
+    data << itemProto->MaxDurability;
+    data << itemProto->ZoneNameID;
+    data << itemProto->MapID;
+    data << itemProto->BagFamily;
+    data << itemProto->TotemCategory;
+    data << itemProto->Sockets[0].SocketColor;
+    data << itemProto->Sockets[0].Unk;
+    data << itemProto->Sockets[1].SocketColor;
+    data << itemProto->Sockets[1].Unk;
+    data << itemProto->Sockets[2].SocketColor;
+    data << itemProto->Sockets[2].Unk;
+    data << itemProto->SocketBonus;
+    data << itemProto->GemProperties;
+    data << itemProto->DisenchantReqSkill;
+    data << itemProto->ArmorDamageModifier;
+    data << itemProto->ExistingDuration;                    // 2.4.2 Item duration in seconds
+
+    SendPacket(&data);
+}
+#else
 void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recvData)
 {
     CHECK_PACKET_SIZE(recvData, 4);
@@ -840,6 +977,7 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recvData)
     data << itemProto->HolidayId;                           // HolidayNames.dbc
     SendPacket(&data);
 }
+#endif
 
 void WorldSession::HandleBuyBackOpcode(WorldPacket& recvData)
 {
