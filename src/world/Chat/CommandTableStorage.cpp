@@ -410,6 +410,8 @@ void CommandTableStorage::Init()
         { "pvpcredit",          'm', &ChatHandler::HandleDebugPVPCreditCommand,     "Sends PVP credit packet, with specified rank and points",  nullptr, 0, 0, 0 },
         { "calcdist",           'd', &ChatHandler::HandleSimpleDistanceCommand,     "Displays distance between your position and x y z",        nullptr, 0, 0, 0 },
         { "setunitbyte",        'd', &ChatHandler::HandleDebugSetUnitByteCommand,   "Set value z for unit byte x with offset y.",               nullptr, 0, 0, 0 },
+        { "setplayerflags",     'd', &ChatHandler::HandleDebugSetPlayerFlagsCommand,"Add player flags x to selected player",                    nullptr, 0, 0, 0 },
+        { "getplayerflags",     'd', &ChatHandler::HandleDebugGetPlayerFlagsCommand,"Display current player flags of selected player x",        nullptr, 0, 0, 0 },
         { nullptr,              '0', nullptr,                                       "",                                                         nullptr, 0, 0, 0 }
     };
     dupe_command_table(debugCommandTable, _debugCommandTable);
