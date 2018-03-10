@@ -98,7 +98,14 @@ struct WoWItem : WoWObject
 #if VERSION_STRING == Cata
 
 #define WOWITEM_SPELL_CHARGES_COUNT 5
-#define WOWITEM_ENCHANTMENT_COUNT 44
+#define WOWITEM_ENCHANTMENT_COUNT 15
+
+struct WoWItem_Enchantment
+{
+    uint32_t unk1;
+    uint32_t unk2;
+    uint32_t unk3;
+};
 
 struct WoWItem : WoWObject
 {
@@ -110,7 +117,7 @@ struct WoWItem : WoWObject
     uint32_t duration;
     int32_t spell_charges[WOWITEM_SPELL_CHARGES_COUNT];
     uint32_t flags;
-    uint32_t enchantment[WOWITEM_ENCHANTMENT_COUNT];
+    WoWItem_Enchantment enchantment[WOWITEM_ENCHANTMENT_COUNT];
     uint32_t property_seed;
     uint32_t random_properties_id;
     uint32_t durability;
