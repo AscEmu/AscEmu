@@ -398,6 +398,7 @@ struct WoWPlayer : WoWUnit
     uint32_t skill_line[64];
     uint32_t skill_step[64];
     uint32_t skill_rank[64];
+    uint32_t skill_max_rank[64];
     uint32_t skill_mod[64];
     uint32_t skill_talent[64];
     uint32_t character_points_1;
