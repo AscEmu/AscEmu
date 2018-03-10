@@ -445,8 +445,8 @@ struct WoWUnit : WoWObject
     float_t ranged_attack_power_multiplier;
     float_t minimum_ranged_damage;
     float_t maximum_ranged_ddamage;
-    uint32_t power_cost_modifier[2];
-    float_t power_cost_multiplier[2];
+    uint32_t power_cost_modifier[7];
+    float_t power_cost_multiplier[7];
     float_t max_health_modifier;
     float_t hover_height;
     uint32_t max_item_level;
