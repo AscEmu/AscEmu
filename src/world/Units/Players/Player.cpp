@@ -21,6 +21,12 @@ This file is released under the MIT license. See README-MIT for more information
 uint64_t Player::getDuelArbiter() const { return playerData()->duel_arbiter; }
 void Player::setDuelArbiter(uint64_t guid) { write(playerData()->duel_arbiter, guid); }
 
+uint32_t Player::getPlayerFlags() const { return playerData()->player_flags; }
+void Player::setPlayerFlags(uint32_t flags) { write(playerData()->player_flags, flags); }
+void Player::addPlayerFlags(uint32_t flags) { setPlayerFlags(getPlayerFlags() | flags); }
+void Player::removePlayerFlags(uint32_t flags) { setPlayerFlags(getPlayerFlags() & ~flags); }
+bool Player::hasPlayerFlags(uint32_t flags) const { return (getPlayerFlags() & flags) != 0; }
+
 //bytes begin
 uint32_t Player::getPlayerBytes() const { return playerData()->player_bytes.raw; }
 void Player::setPlayerBytes(uint32_t bytes) { write(playerData()->player_bytes.raw, bytes); }
@@ -68,14 +74,14 @@ uint8_t Player::getPvpRank() const { return playerData()->player_bytes_3.s.pvp_r
 void Player::setPvpRank(uint8_t rank) { write(playerData()->player_bytes_3.s.pvp_rank, rank); }
 //bytes3 end
 
-uint32_t Player::getPlayerFlags() const { return playerData()->player_flags; }
-void Player::setPlayerFlags(uint32_t flags) { write(playerData()->player_flags, flags); }
-void Player::addPlayerFlags(uint32_t flags) { setPlayerFlags(getPlayerFlags() | flags); }
-void Player::removePlayerFlags(uint32_t flags) { setPlayerFlags(getPlayerFlags() & ~flags); }
-bool Player::hasPlayerFlags(uint32_t flags) const { return (getPlayerFlags() & flags) != 0; }
-
 uint32_t Player::getDuelTeam() const { return playerData()->duel_team; }
 void Player::setDuelTeam(uint32_t team) { write(playerData()->duel_team, team); }
+
+uint32_t Player::getXp() const { return playerData()->xp; }
+void Player::setXp(uint32_t xp) { write(playerData()->xp, xp); }
+
+uint32_t Player::getNextLevelXp() { return playerData()->next_level_xp; }
+void Player::setNextLevelXp(uint32_t xp) { write(playerData()->next_level_xp, xp); }
 
 void Player::setAttackPowerMultiplier(float val) { write(playerData()->attack_power_multiplier, val); }
 
@@ -372,14 +378,6 @@ void Player::sendMovie(uint32_t movieId)
 }
 
 uint8 Player::GetPlayerStatus() const { return m_status; }
-
-void Player::setXp(uint32 xp) { write(playerData()->xp, xp); }
-
-uint32 Player::getXp() const { return playerData()->xp; }
-
-void Player::setNextLevelXp(uint32_t xp) { write(playerData()->next_level_xp, xp); }
-
-uint32_t Player::getNextLevelXp() { return playerData()->next_level_xp; }
 
 PlayerSpec& Player::getActiveSpec()
 {

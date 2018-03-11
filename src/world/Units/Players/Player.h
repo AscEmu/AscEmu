@@ -421,6 +421,12 @@ public:
     uint64_t getDuelArbiter() const;
     void setDuelArbiter(uint64_t guid);
 
+    uint32_t getPlayerFlags() const;
+    void setPlayerFlags(uint32_t flags);
+    void addPlayerFlags(uint32_t flags);
+    void removePlayerFlags(uint32_t flags);
+    bool hasPlayerFlags(uint32_t flags) const;
+
     //bytes begin
     uint32_t getPlayerBytes() const;
     void setPlayerBytes(uint32_t bytes);
@@ -469,14 +475,14 @@ public:
     void setPvpRank(uint8_t rank);
     //bytes3 end
 
-    uint32_t getPlayerFlags() const;
-    void setPlayerFlags(uint32_t flags);
-    void addPlayerFlags(uint32_t flags);
-    void removePlayerFlags(uint32_t flags);
-    bool hasPlayerFlags(uint32_t flags) const;
-
     uint32_t getDuelTeam() const;
     void setDuelTeam(uint32_t team);
+
+    uint32_t getXp() const;
+    void setXp(uint32_t xp);
+
+    uint32_t getNextLevelXp();
+    void setNextLevelXp(uint32_t xp);
 
     void setAttackPowerMultiplier(float val);
     void setRangedAttackPowerMultiplier(float val);
@@ -1727,11 +1733,6 @@ public:
 
         void SetFarsightTarget(uint64 guid) { setUInt64Value(PLAYER_FARSIGHT, guid); }
         uint64 GetFarsightTarget() { return getUInt64Value(PLAYER_FARSIGHT); }
-
-    void setXp(uint32 xp);
-    uint32 getXp() const;
-    uint32_t getNextLevelXp();
-    void setNextLevelXp(uint32_t xp);
 
         //\todo fix this
         void SetTalentPointsForAllSpec(uint32 amt)
