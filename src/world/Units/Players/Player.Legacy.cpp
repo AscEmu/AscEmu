@@ -2715,8 +2715,8 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     SaveSkills(bNewCharacter, buf);
 
     ss << getInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX) << ","
-#if VERSION_STRING != Classic
-        << m_uint32Values[PLAYER_CHOSEN_TITLE] << ","
+#if VERSION_STRING > Classic
+        << getChosenTitle() << ","
 #else
         << uint32(0) << ","
 #endif

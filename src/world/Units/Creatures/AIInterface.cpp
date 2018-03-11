@@ -2033,7 +2033,7 @@ void AIInterface::DismissPet()
 
     //FIXME:Check hunter pet or not
     //FIXME:Check enslaved creature
-    m_PetOwner->SetUInt64Value(UNIT_FIELD_SUMMON, 0);
+    m_PetOwner->setSummonGuid(0);
 
     WorldPacket data;
     data.Initialize(SMSG_PET_SPELLS);

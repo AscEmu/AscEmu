@@ -533,10 +533,10 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
 
             if (TargetType & SPELL_TARGET_ANY_OBJECT)
             {
-                if (u_caster->getUInt64Value(UNIT_FIELD_TARGET))
+                if (u_caster->getTargetGuid())
                 {
                     //generate targets for things like arcane missiles trigger, tame pet, etc
-                    Object* target = u_caster->GetMapMgr()->_GetObject(u_caster->getUInt64Value(UNIT_FIELD_TARGET));
+                    Object* target = u_caster->GetMapMgr()->_GetObject(u_caster->getTargetGuid());
                     if (target != nullptr)
                     {
                         if (target->IsUnit())
@@ -578,10 +578,10 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
                         }
                     }
                 }
-                else if (u_caster->getUInt64Value(UNIT_FIELD_TARGET))
+                else if (u_caster->getTargetGuid())
                 {
                     //generate targets for things like arcane missiles trigger, tame pet, etc
-                    Object* target = u_caster->GetMapMgr()->_GetObject(u_caster->getUInt64Value(UNIT_FIELD_TARGET));
+                    Object* target = u_caster->GetMapMgr()->_GetObject(u_caster->getTargetGuid());
                     if (target != nullptr)
                     {
                         if (target->IsUnit())

@@ -8139,9 +8139,9 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                 this->Energize(owner, 34650, amount, POWER_TYPE_MANA);
         }
         //ugly hack for Bloodsworm restoring hp
-        if (getUInt64Value(UNIT_FIELD_SUMMONEDBY) != 0 && getUInt32Value(OBJECT_FIELD_ENTRY) == 28017)
+        if (getSummonedByGuid() != 0 && getUInt32Value(OBJECT_FIELD_ENTRY) == 28017)
         {
-            Player* owner = GetMapMgr()->GetPlayer((uint32)getUInt64Value(UNIT_FIELD_SUMMONEDBY));
+            Player* owner = GetMapMgr()->GetPlayer((uint32)getSummonedByGuid());
             if (owner != NULL)
                 Heal(owner, 50452, float2int32(1.5f * realdamage));
         }
