@@ -70,21 +70,21 @@ void WorldSession::HandleDuelCancelled(WorldPacket& recvData)
     SendDuelComplete(1);
     player_target->GetSession()->SendDuelComplete(1);
 
-    GameObject* arbiter = _player->GetMapMgr() ? _player->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(_player->GetDuelArbiter())) : nullptr;
+    GameObject* arbiter = _player->GetMapMgr() ? _player->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(_player->getDuelArbiter())) : nullptr;
     if (arbiter != nullptr)
     {
         arbiter->RemoveFromWorld(true);
         delete arbiter;
     }
 
-    player_target->SetDuelArbiter(0);
-    player_target->SetDuelTeam(0);
+    player_target->setDuelArbiter(0);
+    player_target->setDuelTeam(0);
     player_target->m_duelState = DUEL_STATE_FINISHED;
     player_target->m_duelCountdownTimer = 0;
     player_target->DuelingWith = nullptr;
 
-    _player->SetDuelArbiter(0);
-    _player->SetDuelTeam(0);
+    _player->setDuelArbiter(0);
+    _player->setDuelTeam(0);
     _player->m_duelState = DUEL_STATE_FINISHED;
     _player->m_duelCountdownTimer = 0;
     _player->DuelingWith = nullptr;

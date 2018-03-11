@@ -2634,20 +2634,20 @@ void WorldSession::HandleToggleCloakOpcode(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
 
-    if (_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_NOCLOAK))
-        _player->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_NOCLOAK);
+    if (_player->hasPlayerFlags(PLAYER_FLAG_NOCLOAK))
+        _player->removePlayerFlags(PLAYER_FLAG_NOCLOAK);
     else
-        _player->SetFlag(PLAYER_FLAGS, PLAYER_FLAG_NOCLOAK);
+        _player->addPlayerFlags(PLAYER_FLAG_NOCLOAK);
 }
 
 void WorldSession::HandleToggleHelmOpcode(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
 
-    if (_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_NOHELM))
-        _player->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_NOHELM);
+    if (_player->hasPlayerFlags(PLAYER_FLAG_NOHELM))
+        _player->removePlayerFlags(PLAYER_FLAG_NOHELM);
     else
-        _player->SetFlag(PLAYER_FLAGS, PLAYER_FLAG_NOHELM);
+        _player->addPlayerFlags(PLAYER_FLAG_NOHELM);
 }
 
 void WorldSession::HandleDungeonDifficultyOpcode(WorldPacket& recvData)

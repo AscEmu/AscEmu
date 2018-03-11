@@ -21,19 +21,19 @@ bool ChatHandler::HandleGMActiveCommand(const char* args, WorldSession* m_sessio
             SystemMessage(m_session, "GM Flag removed.");
             BlueSystemMessage(m_session, "<GM> Will no longer show in chat messages or above your name until you use this command again.");
         }
-        player->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_GM);
+        player->removePlayerFlags(PLAYER_FLAG_GM);
         player->SetFaction(player->GetInitialFactionId());
         player->UpdatePvPArea();
         player->UpdateVisibility();
     }
     else
     {
-        if (player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_DEVELOPER))
+        if (player->hasPlayerFlags(PLAYER_FLAG_DEVELOPER))
             HandleGMDevTagCommand("no_notice", m_session);
 
         SystemMessage(m_session, "GM Flag set.");
         BlueSystemMessage(m_session, "<GM> will now appear above your name and in chat messages until you use this command again.");
-        player->SetFlag(PLAYER_FLAGS, PLAYER_FLAG_GM);
+        player->addPlayerFlags(PLAYER_FLAG_GM);
         player->SetFaction(35);
         player->RemovePvPFlag();
         player->UpdateVisibility();
@@ -120,14 +120,14 @@ bool ChatHandler::HandleGMDevTagCommand(const char* args, WorldSession* m_sessio
     auto player = m_session->GetPlayer();
     bool toggle_no_notice = std::string(args) == "no_notice" ? true : false;
 
-    if (player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_DEVELOPER))
+    if (player->hasPlayerFlags(PLAYER_FLAG_DEVELOPER))
     {
         if (!toggle_no_notice)
         {
             SystemMessage(m_session, "DEV Flag removed.");
             BlueSystemMessage(m_session, "<DEV> Will no longer show in chat messages or above your name until you use this command again.");
         }
-        player->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_DEVELOPER);
+        player->removePlayerFlags(PLAYER_FLAG_DEVELOPER);
     }
     else
     {
@@ -136,7 +136,7 @@ bool ChatHandler::HandleGMDevTagCommand(const char* args, WorldSession* m_sessio
 
         SystemMessage(m_session, "DEV Flag set.");
         BlueSystemMessage(m_session, "<DEV> will now appear above your name and in chat messages until you use this command again.");
-        player->SetFlag(PLAYER_FLAGS, PLAYER_FLAG_DEVELOPER);
+        player->addPlayerFlags(PLAYER_FLAG_DEVELOPER);
     }
 
     return true;

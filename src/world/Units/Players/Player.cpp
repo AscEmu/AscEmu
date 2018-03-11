@@ -18,20 +18,25 @@ This file is released under the MIT license. See README-MIT for more information
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Data
+uint64_t Player::getDuelArbiter() const { return playerData()->duel_arbiter; }
+void Player::setDuelArbiter(uint64_t guid) { write(playerData()->duel_arbiter, guid); }
+
+//bytes
+//bytes2
+//bytes3
+
 uint32_t Player::getPlayerFlags() const { return playerData()->player_flags; }
 void Player::setPlayerFlags(uint32_t flags) { write(playerData()->player_flags, flags); }
 void Player::addPlayerFlags(uint32_t flags) { setPlayerFlags(getPlayerFlags() | flags); }
 void Player::removePlayerFlags(uint32_t flags) { setPlayerFlags(getPlayerFlags() & ~flags); }
+bool Player::hasPlayerFlags(uint32_t flags) const { return (getPlayerFlags() & flags) != 0; }
 
-void Player::setAttackPowerMultiplier(float val)
-{
-    write(playerData()->attack_power_multiplier, val);
-}
+uint32_t Player::getDuelTeam() const { return playerData()->duel_team; }
+void Player::setDuelTeam(uint32_t team) { write(playerData()->duel_team, team); }
 
-void Player::setRangedAttackPowerMultiplier(float val)
-{
-    write(playerData()->ranged_attack_power_multiplier, val);
-}
+void Player::setAttackPowerMultiplier(float val) { write(playerData()->attack_power_multiplier, val); }
+
+void Player::setRangedAttackPowerMultiplier(float val) { write(playerData()->ranged_attack_power_multiplier, val); }
 
 void Player::setExploredZone(uint32_t idx, uint32_t data)
 {
@@ -263,15 +268,15 @@ bool Player::isTransferPending() const
 
 void Player::toggleAfk()
 {
-    if (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_AFK))
+    if (hasPlayerFlags(PLAYER_FLAG_AFK))
     {
-        RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_AFK);
+        removePlayerFlags(PLAYER_FLAG_AFK);
         if (worldConfig.getKickAFKPlayerTime())
             sEventMgr.RemoveEvents(this, EVENT_PLAYER_SOFT_DISCONNECT);
     }
     else
     {
-        SetFlag(PLAYER_FLAGS, PLAYER_FLAG_AFK);
+        addPlayerFlags(PLAYER_FLAG_AFK);
 
         if (m_bg)
             m_bg->RemovePlayer(this, false);
@@ -284,10 +289,10 @@ void Player::toggleAfk()
 
 void Player::toggleDnd()
 {
-    if (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_DND))
-        RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_DND);
+    if (hasPlayerFlags(PLAYER_FLAG_DND))
+        removePlayerFlags(PLAYER_FLAG_DND);
     else
-        SetFlag(PLAYER_FLAGS, PLAYER_FLAG_DND);
+        addPlayerFlags(PLAYER_FLAG_DND);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -311,7 +316,7 @@ void Player::sendReportToGmMessage(std::string playerName, std::string damageLog
 // Misc
 bool Player::isGMFlagSet()
 {
-    return HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM);
+    return hasPlayerFlags(PLAYER_FLAG_GM);
 }
 
 void Player::sendMovie(uint32_t movieId)

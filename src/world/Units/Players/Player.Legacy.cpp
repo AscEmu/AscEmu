@@ -2753,28 +2753,26 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
         << m_uint32Values[PLAYER_BYTES] << ","
         << m_uint32Values[PLAYER_BYTES_2] << ",";
 
-    uint32 player_flags = m_uint32Values[PLAYER_FLAGS];
-
     // Remove un-needed and problematic player flags from being saved :p
-    if (player_flags & PLAYER_FLAG_PARTY_LEADER)
-        player_flags &= ~PLAYER_FLAG_PARTY_LEADER;
+    if (hasPlayerFlags(PLAYER_FLAG_PARTY_LEADER))
+        removePlayerFlags(PLAYER_FLAG_PARTY_LEADER);
 
-    if (player_flags & PLAYER_FLAG_AFK)
-        player_flags &= ~PLAYER_FLAG_AFK;
+    if (hasPlayerFlags(PLAYER_FLAG_AFK))
+        removePlayerFlags(PLAYER_FLAG_AFK);
 
-    if (player_flags & PLAYER_FLAG_DND)
-        player_flags &= ~PLAYER_FLAG_DND;
+    if (hasPlayerFlags(PLAYER_FLAG_DND))
+        removePlayerFlags(PLAYER_FLAG_DND);
 
-    if (player_flags & PLAYER_FLAG_GM)
-        player_flags &= ~PLAYER_FLAG_GM;
+    if (hasPlayerFlags(PLAYER_FLAG_GM))
+        removePlayerFlags(PLAYER_FLAG_GM);
 
-    if (player_flags & PLAYER_FLAG_PVP_TOGGLE)
-        player_flags &= ~PLAYER_FLAG_PVP_TOGGLE;
+    if (hasPlayerFlags(PLAYER_FLAG_PVP_TOGGLE))
+        removePlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
 
-    if (player_flags & PLAYER_FLAG_FREE_FOR_ALL_PVP)
-        player_flags &= ~PLAYER_FLAG_FREE_FOR_ALL_PVP;
+    if (hasPlayerFlags(PLAYER_FLAG_FREE_FOR_ALL_PVP))
+        removePlayerFlags(PLAYER_FLAG_FREE_FOR_ALL_PVP);
 
-    ss << player_flags << ","
+    ss << getPlayerFlags() << ","
         << m_uint32Values[PLAYER_FIELD_BYTES] << ",";
 
     if (in_arena)
@@ -3338,7 +3336,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     setUInt32Value(PLAYER_BYTES, get_next_field.GetUInt32());
     setUInt32Value(PLAYER_BYTES_2, get_next_field.GetUInt32());
     setUInt32Value(PLAYER_BYTES_3, getGender() | (pvprank << 24));
-    setUInt32Value(PLAYER_FLAGS, get_next_field.GetUInt32());
+    setPlayerFlags(get_next_field.GetUInt32());
     setUInt32Value(PLAYER_FIELD_BYTES, get_next_field.GetUInt32());
 
     m_position.x = get_next_field.GetFloat();
@@ -3354,8 +3352,10 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     for (uint8 i = 0; i < 5; ++i)
         CalcStat(i);
 
+#if VERSION_STRING != Classic
     for (uint16_t x = PLAYER_FIELD_MOD_DAMAGE_DONE_PCT; x < PLAYER_FIELD_MOD_HEALING_DONE_POS; ++x)
         setFloatValue(x, 1.0f);
+#endif
 
     // Normal processing...
     UpdateStats();
@@ -3390,7 +3390,9 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     EventModelChange();
 
     SetCastSpeedMod(1.0f);
+#if VERSION_STRING != Classic
     setUInt32Value(PLAYER_FIELD_MAX_LEVEL, worldConfig.player.playerLevelCap);
+#endif
     SetFaction(info->factiontemplate);
     if (cfaction)
     {
@@ -4083,7 +4085,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     setUInt32Value(PLAYER_BYTES, get_next_field.GetUInt32());
     setUInt32Value(PLAYER_BYTES_2, get_next_field.GetUInt32());
     setUInt32Value(PLAYER_BYTES_3, getGender() | (pvprank << 24));
-    setUInt32Value(PLAYER_FLAGS, get_next_field.GetUInt32());
+    setPlayerFlags(get_next_field.GetUInt32());
     setUInt32Value(PLAYER_FIELD_BYTES, get_next_field.GetUInt32());
     //m_uint32Values[0x22]=(m_uint32Values[0x22]>0x46)?0x46:m_uint32Values[0x22];
 
@@ -4674,7 +4676,7 @@ void Player::SetPersistentInstanceId(Instance* pInstance)
     if (pInstance == nullptr)
         return;
     // Skip this handling for flagged GMs.
-    if (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
+    if (hasPlayerFlags(PLAYER_FLAG_GM))
         return;
     // Bind instance to "my" group.
     if (m_playerInfo && m_playerInfo->m_Group && pInstance->m_creatorGroup == 0)
@@ -5634,7 +5636,7 @@ void Player::BuildPlayerRepop()
     StopMirrorTimer(MIRROR_TYPE_BREATH);
     StopMirrorTimer(MIRROR_TYPE_FIRE);
 
-    SetFlag(PLAYER_FLAGS, PLAYER_FLAG_DEATH_WORLD_ENABLE);
+    addPlayerFlags(PLAYER_FLAG_DEATH_WORLD_ENABLE);
 
     setMoveRoot(false);
     setMoveWaterWalk();
@@ -5775,7 +5777,7 @@ void Player::ResurrectPlayer()
     uint32 AuraIds[] = { 20584, 9036, 8326, 55164, 0 };
     RemoveAuras(AuraIds); // Cebernic: removeaura just remove once(bug?).
 
-    RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_DEATH_WORLD_ENABLE);
+    removePlayerFlags(PLAYER_FLAG_DEATH_WORLD_ENABLE);
     setDeathState(ALIVE);
     UpdateVisibility();
     if (m_resurrecter && IsInWorld()
@@ -6808,12 +6810,12 @@ void Player::ApplyPlayerRestState(bool apply)
     {
         m_restState = RESTSTATE_RESTED;
         m_isResting = true;
-        SetFlag(PLAYER_FLAGS, PLAYER_FLAG_RESTING);    //put zZz icon
+        addPlayerFlags(PLAYER_FLAG_RESTING);    //put zZz icon
     }
     else
     {
         m_isResting = false;
-        RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_RESTING);    //remove zZz icon
+        removePlayerFlags(PLAYER_FLAG_RESTING);    //remove zZz icon
     }
     UpdateRestState();
 }
@@ -6873,7 +6875,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
             if (pObj->m_invisible) // Invisibility - Detection of Players
             {
                 if (pObj->getDeathState() == CORPSE)
-                    return (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) != 0); // only GM can see players that are spirits
+                    return (hasPlayerFlags(PLAYER_FLAG_GM) != 0); // only GM can see players that are spirits
 
                 if (GetGroup() && pObj->GetGroup() == GetGroup() // can see invisible group members except when dueling them
                     && DuelingWith != pObj)
@@ -6884,7 +6886,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
 
                 if (m_invisDetect[INVIS_FLAG_NORMAL] < 1 // can't see invisible without proper detection
                     || pObj->m_isGmInvisible) // can't see invisible GM
-                    return (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) != 0); // GM can see invisible players
+                    return (hasPlayerFlags(PLAYER_FLAG_GM) != 0); // GM can see invisible players
             }
 
             if (m_invisible && pObj->m_invisDetect[m_invisFlag] < 1)   // Invisible - can see those that detect, but not others
@@ -6922,7 +6924,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
                 detectRange += pObj->GetBoundingRadius(); // adjust range for size of stealthed player
                 //LogDefault("Player::CanSee(%s): detect range = %f yards (%f ingame units), cansee = %s , distance = %f" , pObj->GetName() , detectRange , detectRange * detectRange , (GetDistance2dSq(pObj) > detectRange * detectRange) ? "yes" : "no" , getDistanceSq(pObj));
                 if (getDistanceSq(pObj) > detectRange * detectRange)
-                    return (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) != 0); // GM can see stealthed players
+                    return (hasPlayerFlags(PLAYER_FLAG_GM) != 0); // GM can see stealthed players
             }
 
             return !pObj->m_isGmInvisible;
@@ -6946,7 +6948,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
             {
                 // gms can see invisible units
                 /// \todo is invis detection missing here?
-                if (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
+                if (hasPlayerFlags(PLAYER_FLAG_GM))
                     return true;
                 else
                     return false;
@@ -6967,7 +6969,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
 
             /*if (uObj->m_invisible  // Invisibility - Detection of Units
                 && m_invisDetect[uObj->m_invisFlag] < 1) // can't see invisible without proper detection
-                return (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) != 0); // GM can see invisible units
+                return (hasPlayerFlags(PLAYER_FLAG_GM) != 0); // GM can see invisible units
 
             if (m_invisible && uObj->m_invisDetect[m_invisFlag] < 1)   // Invisible - can see those that detect, but not others
                 return m_isGmInvisible;*/
@@ -6995,7 +6997,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
                 }
 
                 if (m_invisDetect[gObj->invisibilityFlag] < 1) // can't see invisible without proper detection
-                    return (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) != 0); // GM can see invisible objects
+                    return (hasPlayerFlags(PLAYER_FLAG_GM) != 0); // GM can see invisible objects
             }
 
             return true;
@@ -9225,8 +9227,8 @@ void Player::RequestDuel(Player* pTarget)
     pGameObj->SetLevel(getLevel());
 
     //Assign the Flag
-    SetDuelArbiter(pGameObj->getGuid());
-    pTarget->SetDuelArbiter(pGameObj->getGuid());
+    setDuelArbiter(pGameObj->getGuid());
+    pTarget->setDuelArbiter(pGameObj->getGuid());
 
     pGameObj->PushToWorld(m_mapMgr);
 
@@ -9253,8 +9255,8 @@ void Player::DuelCountdown()
         DuelingWith->SetPower(POWER_TYPE_RAGE, 0);
 
         //Give the players a Team
-        DuelingWith->SetDuelTeam(1);  // Duel Requester
-        SetDuelTeam(2);
+        DuelingWith->setDuelTeam(1);  // Duel Requester
+        setDuelTeam(2);
 
         SetDuelState(DUEL_STATE_STARTED);
         DuelingWith->SetDuelState(DUEL_STATE_STARTED);
@@ -9270,7 +9272,7 @@ void Player::DuelBoundaryTest()
     if (!IsInWorld())
         return;
 
-    GameObject* pGameObject = GetMapMgr()->GetGameObject(GET_LOWGUID_PART(GetDuelArbiter()));
+    GameObject* pGameObject = GetMapMgr()->GetGameObject(GET_LOWGUID_PART(getDuelArbiter()));
     if (!pGameObject)
     {
         EndDuel(DUEL_WINNER_RETREAT);
@@ -9322,9 +9324,9 @@ void Player::EndDuel(uint8 WinCondition)
     if (m_duelState == DUEL_STATE_FINISHED)
     {
         //if loggingout player requested a duel then we have to make the cleanups
-        if (GET_LOWGUID_PART(GetDuelArbiter()))
+        if (GET_LOWGUID_PART(getDuelArbiter()))
         {
-            GameObject* arbiter = m_mapMgr ? GetMapMgr()->GetGameObject(GET_LOWGUID_PART(GetDuelArbiter())) : 0;
+            GameObject* arbiter = m_mapMgr ? GetMapMgr()->GetGameObject(GET_LOWGUID_PART(getDuelArbiter())) : 0;
 
             if (arbiter != nullptr)
             {
@@ -9333,10 +9335,10 @@ void Player::EndDuel(uint8 WinCondition)
             }
 
             //we do not wish to lock the other player in duel state
-            DuelingWith->SetDuelArbiter(0);
-            DuelingWith->SetDuelTeam(0);
-            SetDuelArbiter(0);
-            SetDuelTeam(0);
+            DuelingWith->setDuelArbiter(0);
+            DuelingWith->setDuelTeam(0);
+            setDuelArbiter(0);
+            setDuelTeam(0);
             sEventMgr.RemoveEvents(DuelingWith, EVENT_PLAYER_DUEL_BOUNDARY_CHECK);
             sEventMgr.RemoveEvents(DuelingWith, EVENT_PLAYER_DUEL_COUNTDOWN);
             DuelingWith->DuelingWith = nullptr;
@@ -9395,7 +9397,7 @@ void Player::EndDuel(uint8 WinCondition)
 
     //Clear Duel Related Stuff
 
-    GameObject* arbiter = m_mapMgr ? GetMapMgr()->GetGameObject(GET_LOWGUID_PART(GetDuelArbiter())) : 0;
+    GameObject* arbiter = m_mapMgr ? GetMapMgr()->GetGameObject(GET_LOWGUID_PART(getDuelArbiter())) : 0;
 
     if (arbiter != nullptr)
     {
@@ -9403,10 +9405,10 @@ void Player::EndDuel(uint8 WinCondition)
         delete arbiter;
     }
 
-    SetDuelArbiter(0);
-    SetDuelTeam(0);
-    DuelingWith->SetDuelArbiter(0);
-    DuelingWith->SetDuelTeam(0);
+    setDuelArbiter(0);
+    setDuelTeam(0);
+    DuelingWith->setDuelArbiter(0);
+    DuelingWith->setDuelTeam(0);
 
     EventAttackStop();
     DuelingWith->EventAttackStop();
@@ -9961,7 +9963,7 @@ void Player::UpdatePvPArea()
     if (at == nullptr)
         return;
 
-    if (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
+    if (hasPlayerFlags(PLAYER_FLAG_GM))
     {
         if (IsPvPFlagged())
             RemovePvPFlag();
@@ -9974,7 +9976,7 @@ void Player::UpdatePvPArea()
     // This is where all the magic happens :P
     if ((at->team == AREAC_ALLIANCE_TERRITORY && IsTeamAlliance()) || (at->team == AREAC_HORDE_TERRITORY && IsTeamHorde()))
     {
-        if (!HasFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE) && !m_pvpTimer)
+        if (!hasPlayerFlags(PLAYER_FLAG_PVP_TOGGLE) && !m_pvpTimer)
         {
             // I'm flagged and I just walked into a zone of my type. Start the 5min counter.
             ResetPvPTimer();
@@ -10002,7 +10004,7 @@ void Player::UpdatePvPArea()
             auto at2 = MapManagement::AreaManagement::AreaStorage::GetAreaById(at->zone);
             if (at2 && ((at2->team == AREAC_ALLIANCE_TERRITORY && IsTeamAlliance()) || (at2->team == AREAC_HORDE_TERRITORY && IsTeamHorde())))
             {
-                if (!HasFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE) && !m_pvpTimer)
+                if (!hasPlayerFlags(PLAYER_FLAG_PVP_TOGGLE) && !m_pvpTimer)
                 {
                     // I'm flagged and I just walked into a zone of my type. Start the 5min counter.
                     ResetPvPTimer();
@@ -10052,12 +10054,12 @@ void Player::UpdatePvPArea()
 
             if (worldConfig.getRealmType() == REALM_PVE)
             {
-                if (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE))
+                if (hasPlayerFlags(PLAYER_FLAG_PVP_TOGGLE))
                 {
                     if (!IsPvPFlagged())
                         SetPvPFlag();
                 }
-                else if (!HasFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE) && IsPvPFlagged() && !m_pvpTimer)
+                else if (!hasPlayerFlags(PLAYER_FLAG_PVP_TOGGLE) && IsPvPFlagged() && !m_pvpTimer)
                 {
                     ResetPvPTimer();
                 }
@@ -10117,8 +10119,8 @@ void Player::PvPToggle()
             // Means that we typed /pvp while we were "cooling down". Stop the timer.
             StopPvPTimer();
 
-            SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
-            RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
+            addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
+            removePlayerFlags(PLAYER_FLAG_PVP);
 
             if (!IsPvPFlagged())
                 SetPvPFlag();
@@ -10144,14 +10146,14 @@ void Player::PvPToggle()
                     // Start the "cooldown" timer.
                     ResetPvPTimer();
                 }
-                RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
-                SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
+                removePlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
+                addPlayerFlags(PLAYER_FLAG_PVP);
             }
             else
             {
                 // Move into PvP state.
-                SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
-                RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
+                addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
+                removePlayerFlags(PLAYER_FLAG_PVP);
 
                 StopPvPTimer();
                 SetPvPFlag();
@@ -10172,8 +10174,8 @@ void Player::PvPToggle()
                 // Means that we typed /pvp while we were "cooling down". Stop the timer.
                 StopPvPTimer();
 
-                SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
-                RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
+                addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
+                removePlayerFlags(PLAYER_FLAG_PVP);
 
                 if (!IsPvPFlagged())
                     SetPvPFlag();
@@ -10185,14 +10187,14 @@ void Player::PvPToggle()
                     // Start the "cooldown" timer.
                     ResetPvPTimer();
 
-                    RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
-                    SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
+                    removePlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
+                    addPlayerFlags(PLAYER_FLAG_PVP);
                 }
                 else
                 {
                     // Move into PvP state.
-                    SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
-                    RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
+                    addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
+                    removePlayerFlags(PLAYER_FLAG_PVP);
 
                     StopPvPTimer();
                     SetPvPFlag();
@@ -10211,9 +10213,9 @@ void Player::PvPToggle()
                         // Means that we typed /pvp while we were "cooling down". Stop the timer.
                         StopPvPTimer();
 
-                        SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+                        addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
 #if VERSION_STRING > TBC
-                        RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
+                        removePlayerFlags(PLAYER_FLAG_PVP);
 #endif
 
                         if (!IsPvPFlagged())
@@ -10226,18 +10228,18 @@ void Player::PvPToggle()
                             // Start the "cooldown" timer.
                             ResetPvPTimer();
 
-                            RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+                            removePlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
 #if VERSION_STRING > TBC
-                            SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
+                            addPlayerFlags(PLAYER_FLAG_PVP);
 #endif
 
                         }
                         else
                         {
                             // Move into PvP state.
-                            SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+                            addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
 #if VERSION_STRING > TBC
-                            RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
+                            removePlayerFlags(PLAYER_FLAG_PVP);
 #endif
 
                             StopPvPTimer();
@@ -10248,18 +10250,18 @@ void Player::PvPToggle()
                 }
             }
 
-            if (!HasFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE))
+            if (!hasPlayerFlags(PLAYER_FLAG_PVP_TOGGLE))
             {
-                SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+                addPlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
 #if VERSION_STRING > TBC
-                RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
+                removePlayerFlags(PLAYER_FLAG_PVP);
 #endif
             }
             else
             {
-                RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+                removePlayerFlags(PLAYER_FLAG_PVP_TOGGLE);
 #if VERSION_STRING > TBC
-                SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
+                addPlayerFlags(PLAYER_FLAG_PVP);
 #endif
             }
         }
@@ -10436,11 +10438,11 @@ void Player::CompleteLoading()
 
     // this needs to be after the cast of passive spells, because it will cast ghost form, after the remove making it in ghost alive, if no corpse.
     //death system checkout
-    if (GetHealth() <= 0 && !HasFlag(PLAYER_FLAGS, PLAYER_FLAG_DEATH_WORLD_ENABLE))
+    if (GetHealth() <= 0 && !hasPlayerFlags(PLAYER_FLAG_DEATH_WORLD_ENABLE))
     {
         setDeathState(CORPSE);
     }
-    else if (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_DEATH_WORLD_ENABLE))
+    else if (hasPlayerFlags(PLAYER_FLAG_DEATH_WORLD_ENABLE))
     {
         // Check if we have an existing corpse.
         Corpse* corpse = objmgr.GetCorpseByOwner(getGuidLow());
@@ -13170,7 +13172,7 @@ void Player::SetPvPFlag()
     SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP);
 #endif
 
-    SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
+    addPlayerFlags(PLAYER_FLAG_PVP);
 
 
     summonhandler.SetPvPFlags();
@@ -13183,7 +13185,7 @@ void Player::SetPvPFlag()
     }
 
     if (CombatStatus.IsInCombat())
-        SetFlag(PLAYER_FLAGS, PLAYER_FLAG_CONT_PVP);
+        addPlayerFlags(PLAYER_FLAG_CONT_PVP);
 
 }
 
@@ -13197,7 +13199,7 @@ void Player::RemovePvPFlag()
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP);
 #endif
 
-    RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP);
+    removePlayerFlags(PLAYER_FLAG_PVP);
 
     summonhandler.RemovePvPFlags();
 
@@ -13218,7 +13220,7 @@ void Player::SetFFAPvPFlag()
 {
     StopPvPTimer();
     setPvpFlags(getPvpFlags() | U_FIELD_BYTES_FLAG_FFA_PVP);
-    SetFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP);
+    addPlayerFlags(PLAYER_FLAG_FREE_FOR_ALL_PVP);
 
     summonhandler.SetFFAPvPFlags();
 
@@ -13234,7 +13236,7 @@ void Player::RemoveFFAPvPFlag()
 {
     StopPvPTimer();
     setPvpFlags(getPvpFlags() & ~U_FIELD_BYTES_FLAG_FFA_PVP);
-    RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP);
+    removePlayerFlags(PLAYER_FLAG_FREE_FOR_ALL_PVP);
 
     summonhandler.RemoveFFAPvPFlags();
 
@@ -15360,9 +15362,9 @@ uint16 Player::GetGroupStatus()
         status |= MEMBER_STATUS_GHOST;
     if (IsFFAPvPFlagged())
         status |= MEMBER_STATUS_PVP_FFA;
-    if (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_AFK))
+    if (hasPlayerFlags(PLAYER_FLAG_AFK))
         status |= MEMBER_STATUS_AFK;
-    if (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_DND))
+    if (hasPlayerFlags(PLAYER_FLAG_DND))
         status |= MEMBER_STATUS_DND;
     return status;
 }

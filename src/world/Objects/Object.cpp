@@ -1103,7 +1103,7 @@ void Object::_Create(uint32 mapid, float x, float y, float z, float ang)
     m_lastMapUpdatePosition.ChangeCoords(x, y, z, ang);
 }
 
-#ifdef AE_TBC
+#if VERSION_STRING <= TBC
 uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 {
     if (!target)
@@ -1180,7 +1180,7 @@ uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 }
 #endif
 
-#ifndef AE_TBC
+#if VERSION_STRING > TBC
 uint32 Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 {
     if (!target)

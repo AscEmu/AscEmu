@@ -12675,7 +12675,7 @@ void CombatStatusHandler::TryToClearAttackTargets()
     Unit* pt;
 
     if (m_Unit->IsPlayer())
-        static_cast<Player*>(m_Unit)->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_CONT_PVP);
+        static_cast<Player*>(m_Unit)->removePlayerFlags(PLAYER_FLAG_CONT_PVP);
 
     for (i = m_attackTargets.begin(); i != m_attackTargets.end();)
     {

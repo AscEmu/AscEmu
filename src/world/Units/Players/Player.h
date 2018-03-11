@@ -418,10 +418,21 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Data
+    uint64_t getDuelArbiter() const;
+    void setDuelArbiter(uint64_t guid);
+
+    //bytes
+    //bytes2
+    //bytes3
+
     void setPlayerFlags(uint32_t flags);
     uint32_t getPlayerFlags() const;
     void addPlayerFlags(uint32_t flags);
     void removePlayerFlags(uint32_t flags);
+    bool hasPlayerFlags(uint32_t flags) const;
+
+    uint32_t getDuelTeam() const;
+    void setDuelTeam(uint32_t team);
 
     void setAttackPowerMultiplier(float val);
     void setRangedAttackPowerMultiplier(float val);
@@ -1048,10 +1059,6 @@ public:
         uint8 GetDuelState() { return m_duelState; }
         // duel variables
         Player* DuelingWith;
-        void SetDuelArbiter(uint64 guid) { setUInt64Value(PLAYER_DUEL_ARBITER, guid); }
-        uint64 GetDuelArbiter() { return getUInt64Value(PLAYER_DUEL_ARBITER); }
-        void SetDuelTeam(uint32 team) { setUInt32Value(PLAYER_DUEL_TEAM, team); }
-        uint32 GetDuelTeam() { return getUInt32Value(PLAYER_DUEL_TEAM); }
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Trade
